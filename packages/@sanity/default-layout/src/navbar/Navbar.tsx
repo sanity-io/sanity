@@ -1,17 +1,16 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import classNames from 'classnames'
-import React, {createElement, useCallback, useMemo} from 'react'
-import config from 'config:sanity'
-import {StateLink} from '@sanity/base/router'
-import * as sidecar from 'part:@sanity/default-layout/sidecar?'
-import {InsufficientPermissionsMessage, LegacyLayerProvider} from '@sanity/base/components'
-// eslint-disable-next-line camelcase
-import {unstable_useCanCreateAnyOf, useCurrentUser} from '@sanity/base/hooks'
-import {Button, Card, Container, Flex, Tooltip, useMediaIndex, Text, Box} from '@sanity/ui'
+import React, {createElement, useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {SearchIcon, PlugIcon, MenuIcon, ComposeIcon, PackageIcon} from '@sanity/icons'
+import {Button, Card, Container, Flex, Tooltip, useMediaIndex, Text, Box} from '@sanity/ui'
+import {InsufficientPermissionsMessage, LegacyLayerProvider} from '@sanity/base/components'
+import {StateLink} from '@sanity/base/router'
+// eslint-disable-next-line camelcase
+import {unstable_useCanCreateAnyOf, useCurrentUser} from '@sanity/base/hooks'
+import config from 'config:sanity'
+import * as sidecar from 'part:@sanity/default-layout/sidecar?'
 import {HAS_SPACES} from '../util/spaces'
 import {Router, Tool} from '../types'
 import DatasetSelect from '../datasetSelect'
@@ -20,9 +19,8 @@ import {PresenceMenu} from './presence'
 import Branding from './branding/Branding'
 import {LoginStatus} from './loginStatus'
 import SanityStatusContainer from './studioStatus/SanityStatusContainer'
-import SearchContainer from './search/SearchContainer'
 
-import {SearchField} from './search-2'
+import {SearchField, SearchFullscreen} from './search-2'
 
 import styles from './Navbar.css'
 
@@ -73,28 +71,25 @@ export default function Navbar(props: Props) {
     createMenuIsOpen,
     onCreateButtonClick,
     onToggleMenu,
-    onSwitchTool,
     onUserLogout,
-    onSearchOpen,
-    onSearchClose,
-    onSetLoginStatusElement,
-    onSetSearchElement,
     router,
     tools,
     searchIsOpen,
     documentTypes,
-    showLabel,
     showToolMenu,
   } = props
 
   const rootState = HAS_SPACES && router.state.space ? {space: router.state.space} : {}
-  const className = classNames(styles.root, showToolMenu && styles.withToolMenu)
-  const searchClassName = classNames(styles.search, searchIsOpen && styles.searchIsOpen)
   const tool = router.state?.tool || ''
   const {value: currentUser} = useCurrentUser()
   const createAnyPermission = unstable_useCanCreateAnyOf(documentTypes)
-
   const mediaIndex = useMediaIndex()
+
+  const [searchOpen, setSearchOpen] = useState<boolean>(false)
+
+  const handleToggleSearchOpen = useCallback(() => {
+    setSearchOpen((prev) => !prev)
+  }, [])
 
   const shouldRender = useCallback(
     (key: NavElements) => {
@@ -295,115 +290,15 @@ export default function Navbar(props: Props) {
               )}
 
               {shouldRender('search-button') && (
-                <Button icon={SearchIcon} mode="bleed" onClick={onSearchOpen} />
+                <Box>
+                  <Button icon={SearchIcon} mode="bleed" onClick={handleToggleSearchOpen} />
+                  {searchOpen && <SearchFullscreen onClose={handleToggleSearchOpen} />}
+                </Box>
               )}
             </Flex>
           </Flex>
         </Flex>
       </Container>
     </Root>
-
-    // <Card className={className} data-search-open={searchIsOpen} scheme="dark">
-    //   <div className={styles.hamburger}>
-    //     <Button
-    //       aria-label="Open menu"
-    //       icon={HamburgerIcon}
-    //       kind="simple"
-    //       onClick={onToggleMenu}
-    //       padding="small"
-    //       title="Open menu"
-    //       tone="navbar"
-    //     />
-    //   </div>
-    //   <div className={styles.branding}>
-    //     <StateLink state={rootState} className={styles.brandingLink}>
-    //       <Branding projectName={config && config.project.name} />
-    //     </StateLink>
-    //   </div>
-    //   {HAS_SPACES && (
-    //     <div className={styles.datasetSelect}>
-    //       <DatasetSelect isVisible={showToolMenu} tone="navbar" />
-    //     </div>
-    //   )}
-    //   <div className={styles.createButton}>
-    //     <LegacyLayerProvider zOffset="navbarPopover">
-    //       <Tooltip
-    //         content={
-    //           createAnyPermission.granted ? (
-    //             <span className={styles.createButtonTooltipContent}>Create new document</span>
-    //           ) : (
-    //             <Card padding={2} radius={1}>
-    //               <InsufficientPermissionsMessage
-    //                 currentUser={currentUser}
-    //                 operationLabel="create any document"
-    //               />
-    //             </Card>
-    //           )
-    //         }
-    //       >
-    //         <div>
-    //           <Button
-    //             aria-label="Create"
-    //             data-testid="default-layout-global-create-button"
-    //             icon={ComposeIcon}
-    //             kind="simple"
-    //             onClick={onCreateButtonClick}
-    //             padding="small"
-    //             disabled={!createAnyPermission.granted}
-    //             selected={createMenuIsOpen}
-    //             tone="navbar"
-    //           />
-    //         </div>
-    //       </Tooltip>
-    //     </LegacyLayerProvider>
-    //   </div>
-    //   <div className={searchClassName} ref={onSetSearchElement}>
-    //     <div>
-    //       <SearchContainer
-    //         shouldBeFocused={searchIsOpen}
-    //         onOpen={onSearchOpen}
-    //         onClose={onSearchClose}
-    //       />
-    //     </div>
-    //   </div>
-    //   <div className={styles.toolSwitcher}>
-    //     {tools.length > 1 && (
-    //       <ToolMenu
-    //         direction="horizontal"
-    //         isVisible={showToolMenu}
-    //         tools={tools}
-    //         activeToolName={tool}
-    //         onSwitchTool={onSwitchTool}
-    //         router={router}
-    //         showLabel={showLabel}
-    //         tone="navbar"
-    //       />
-    //     )}
-    //   </div>
-    //   <div className={styles.extras}>{/* Insert plugins here */}</div>
-    //   <div className={styles.sanityStatus}>
-    //     <SanityStatusContainer />
-    //   </div>
-    //   {sidecar && sidecar.isSidecarEnabled && sidecar.isSidecarEnabled() && (
-    //     <div className={styles.helpButton}>
-    //       {sidecar && createElement(sidecar.SidecarToggleButton)}
-    //     </div>
-    //   )}
-    //   <div className={styles.presenceStatus}>
-    //     <PresenceMenu />
-    //   </div>
-    //   <div className={styles.loginStatus} ref={onSetLoginStatusElement}>
-    //     <LoginStatus onLogout={onUserLogout} />
-    //   </div>
-    //   <div className={styles.searchButton}>
-    //     <Button
-    //       icon={SearchIcon}
-    //       kind="simple"
-    //       onClick={onSearchOpen}
-    //       padding="small"
-    //       tone="navbar"
-    //     />
-    //   </div>
-    // </Card>
   )
 }

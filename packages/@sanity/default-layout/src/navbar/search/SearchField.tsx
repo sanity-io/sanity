@@ -1,111 +1,102 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
+import React, {useCallback, useMemo} from 'react'
+import {Text, Flex, useGlobalKeyDown, Autocomplete, Popover} from '@sanity/ui'
+import {SearchIcon} from '@sanity/icons'
+import {SearchItem, useSearch, SearchLoading} from '.'
 
-import React from 'react'
-import CloseIcon from 'part:@sanity/base/close-icon'
-import SearchIcon from 'part:@sanity/base/search-icon'
-import Hotkeys from 'part:@sanity/components/typography/hotkeys'
+const Root = ({children}: {children: React.ReactNode}) => (
+  <Flex align="center" justify="center" sizing="border" paddingX={3} style={{minHeight: 150}}>
+    {children}
+  </Flex>
+)
 
-import {Layer} from '@sanity/ui'
-import {LegacyLayerProvider} from '@sanity/base/components'
-import styles from './SearchField.css'
+export function SearchField() {
+  const {handleSearch, handleClearSearch, searchState} = useSearch()
+  const {hits, loading, searchString, error} = searchState
+  const showPopoverContent = loading || (searchString.length > 0 && hits.length === 0)
 
-interface Props {
-  hotkeys: string[]
-  isBleeding: boolean
-  isFocused: boolean
-  isOpen: boolean
-  onBlur: (event: React.FocusEvent<HTMLInputElement>) => void
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
-  onClear: () => void
-  onFocus: (event: React.FocusEvent<HTMLInputElement>) => void
-  onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void
-  onMouseDown: (event: React.MouseEvent<HTMLInputElement>) => void
-  placeholder: string
-  results: React.ReactNode
-  value: string
-}
+  useGlobalKeyDown((e) => {
+    if (e.key === 'Escape' && searchString?.length > 0) {
+      handleClearSearch()
+    }
+  })
 
-class SearchField extends React.PureComponent<Props> {
-  static defaultProps = {
-    hotkeys: undefined,
-    isBleeding: false,
-    isFocused: false,
-    isOpen: false,
-    onBlur: undefined,
-    onChange: undefined,
-    onClear: undefined,
-    onFocus: undefined,
-    onKeyDown: undefined,
-    onMouseDown: undefined,
-    placeholder: 'Search',
-    results: null,
-  }
+  const renderOption = useCallback(
+    (option) => {
+      const {data} = option.payload
+      return (
+        <SearchItem
+          data={data}
+          key={data.hit._id}
+          onClick={handleClearSearch}
+          paddingX={1}
+          paddingY={2}
+        />
+      )
+    },
+    [handleClearSearch]
+  )
 
-  inputElement = null
+  const popoverContent = useMemo(() => {
+    if (loading) {
+      return (
+        <Root>
+          <SearchLoading />
+        </Root>
+      )
+    }
 
-  setInputElement = (ref) => {
-    this.inputElement = ref
-  }
-
-  render() {
-    const {
-      hotkeys,
-      isBleeding,
-      isFocused,
-      isOpen,
-      onBlur,
-      onChange,
-      onClear,
-      onFocus,
-      onKeyDown,
-      onMouseDown,
-      placeholder,
-      results,
-      value,
-    } = this.props
-    let className = styles.root
-    if (isBleeding) className += ` ${styles.isBleeding}`
-    if (isFocused) className += ` ${styles.isFocused}`
-    if (isOpen) className += ` ${styles.isOpen}`
-    if (value.length) className += ` ${styles.hasValue}`
+    if (error) {
+      return (
+        <Flex align="center" justify="center">
+          <Text align="center">{error?.message}</Text>
+        </Flex>
+      )
+    }
 
     return (
-      <LegacyLayerProvider zOffset="navbarDialog">
-        <div className={className} onMouseDown={onMouseDown}>
-          <Layer className={styles.inputField}>
-            <label className={styles.label}>
-              <SearchIcon />
-            </label>
-            <input
-              className={styles.input}
-              type="text"
-              value={value}
-              onChange={onChange}
-              onBlur={onBlur}
-              onFocus={onFocus}
-              onKeyDown={onKeyDown}
-              placeholder={placeholder}
-              ref={this.setInputElement}
-            />
-            {hotkeys && (
-              <div className={styles.hotkeys}>
-                <Hotkeys keys={hotkeys} />
-              </div>
-            )}
-            <div
-              className={value ? styles.clearButtonWithValue : styles.clearButton}
-              onClick={onClear}
-              title="Clear search"
-            >
-              <CloseIcon />
-            </div>
-          </Layer>
-          <div className={styles.results}>{results}</div>
-        </div>
-      </LegacyLayerProvider>
+      <Root>
+        <Text align="center" muted>
+          Could not find <strong style={{wordBreak: 'break-word'}}>"{searchString}"</strong>
+        </Text>
+      </Root>
     )
-  }
-}
+  }, [error, loading, searchString])
 
-export default SearchField
+  return (
+    <Popover
+      matchReferenceWidth
+      portal
+      arrow={false}
+      content={popoverContent}
+      open={showPopoverContent}
+      radius={2}
+      scheme="light"
+    >
+      <Autocomplete
+        id="studio-search-autocomplete"
+        icon={SearchIcon}
+        placeholder="Search"
+        popover={{
+          scheme: 'light',
+          radius: 2,
+          shadow: 2,
+          constrainSize: true,
+          matchReferenceWidth: true,
+        }}
+        onQueryChange={handleSearch}
+        value={searchString}
+        options={hits.map((hit) => {
+          return {
+            value: hit.hit._id,
+            payload: {
+              data: hit,
+            },
+          }
+        })}
+        // eslint-disable-next-line react/jsx-no-bind
+        filterOption={() => true}
+        renderOption={renderOption}
+      />
+    </Popover>
+  )
+}
