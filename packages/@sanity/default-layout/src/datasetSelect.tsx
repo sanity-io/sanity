@@ -4,13 +4,11 @@
 import React from 'react'
 import {Subscription} from 'rxjs'
 import enhanceClickOutside from 'react-click-outside'
-import ChevronDownIcon from 'part:@sanity/base/chevron-down-icon'
 import {withRouterHOC} from '@sanity/base/router'
 import {map} from 'rxjs/operators'
-import {state as urlState} from '../../datastores/urlState'
-import {CONFIGURED_SPACES} from '../../util/spaces'
-
-import styles from './DatasetSelect.css'
+import {Select} from '@sanity/ui'
+import {state as urlState} from './datastores/urlState'
+import {CONFIGURED_SPACES} from './util/spaces'
 
 interface OuterProps {
   isVisible: boolean
@@ -72,28 +70,22 @@ class DatasetSelect extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const {isVisible, tone} = this.props
+    const {isVisible} = this.props
     const {currentSpace} = this.state
-    const tabIndex = isVisible ? 0 : -1
 
     return (
-      <div aria-hidden={!isVisible} className={styles.root} data-tone={tone}>
-        <select
-          onChange={this.handleChange}
-          tabIndex={tabIndex}
-          value={(currentSpace && currentSpace.name) || undefined}
-        >
-          {CONFIGURED_SPACES.map((space) => (
-            <option key={space.name} value={space.name}>
-              {space.title}
-            </option>
-          ))}
-        </select>
-
-        <div className={styles.iconContainer}>
-          <ChevronDownIcon />
-        </div>
-      </div>
+      <Select
+        onChange={this.handleChange}
+        value={(currentSpace && currentSpace.name) || undefined}
+        radius={2}
+        aria-hidden={!isVisible}
+      >
+        {CONFIGURED_SPACES.map((space) => (
+          <option key={space.name} value={space.name}>
+            {space.title}
+          </option>
+        ))}
+      </Select>
     )
   }
 }
