@@ -59,6 +59,10 @@ export function DocumentSparkline(props: DocumentSparklineProps) {
   const [transition, setTransition] = useState(false)
   useEffect(() => {
     if (!transition && loaded) {
+      // NOTE: the reason for double RAF here is a common "bug" in browsers.
+      // See: https://stackoverflow.com/questions/44145740/how-does-double-requestanimationframe-work
+      // There is no need to cancel this animation,
+      // since calling it again will cause the same result (transition=true).
       requestAnimationFrame(() => requestAnimationFrame(() => setTransition(true)))
     }
   }, [loaded, transition])
