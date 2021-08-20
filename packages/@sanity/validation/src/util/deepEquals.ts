@@ -3,25 +3,27 @@
  * MIT-licensed, copyright (c) 2017 Evgeny Poberezkin
  **/
 
-export default function equal(a: unknown, b: unknown): boolean {
+// NOTE: when converting to typescript, some of the checks were inlined (vs
+// having them in a variable) because the type predicate type narrowing only
+// works when type predicate is called inline in the condition that starts the
+// control flow branch.
+// see here: https://www.typescriptlang.org/docs/handbook/2/narrowing.html
+export default function deepEquals(a: unknown, b: unknown): boolean {
   if (a === b) {
     return true
   }
 
-  const aIsArr = Array.isArray(a)
-  const bIsArr = Array.isArray(b)
-
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length != b.length) return false
     for (let i = 0; i < a.length; i++) {
-      if (!equal(a[i], b[i])) {
+      if (!deepEquals(a[i], b[i])) {
         return false
       }
     }
     return true
   }
 
-  if (aIsArr != bIsArr) {
+  if (Array.isArray(a) != Array.isArray(b)) {
     return false
   }
 
@@ -31,23 +33,19 @@ export default function equal(a: unknown, b: unknown): boolean {
       return false
     }
 
-    const aIsDate = a instanceof Date
-    const bIsDate = b instanceof Date
     if (a instanceof Date && b instanceof Date) {
       return a.getTime() === b.getTime()
     }
 
-    if (aIsDate != bIsDate) {
+    if (a instanceof Date != b instanceof Date) {
       return false
     }
 
-    const aIsRegexp = a instanceof RegExp
-    const bIsRegexp = b instanceof RegExp
     if (a instanceof RegExp && b instanceof RegExp) {
       return a.toString() == b.toString()
     }
 
-    if (aIsRegexp != bIsRegexp) {
+    if (a instanceof RegExp != b instanceof RegExp) {
       return false
     }
 
@@ -67,7 +65,7 @@ export default function equal(a: unknown, b: unknown): boolean {
         continue
       }
 
-      if (!equal(a[key], b[key])) {
+      if (!deepEquals(a[key], b[key])) {
         return false
       }
     }
