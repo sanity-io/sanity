@@ -5,6 +5,8 @@ Array [
   Object {
     "item": [ValidationError: Must have exactly 2 items],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -14,6 +16,8 @@ Array [
   Object {
     "item": [ValidationError: Must have exactly 2 items],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -25,6 +29,8 @@ Array [
   Object {
     "item": [ValidationError: Must have at most 2 items],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -36,6 +42,8 @@ Array [
   Object {
     "item": [ValidationError: Must have at least 2 items],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -49,10 +57,14 @@ Array [
   Object {
     "item": [ValidationError: Expected type "Array", got "null"],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
   Object {
     "item": [ValidationError: Required],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -62,6 +74,8 @@ Array [
   Object {
     "item": [ValidationError: Required],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -76,6 +90,7 @@ Array [
     "path": Array [
       0,
     ],
+    "type": "validation",
   },
   Object {
     "item": [ValidationError: Can't be a duplicate],
@@ -83,6 +98,7 @@ Array [
     "path": Array [
       1,
     ],
+    "type": "validation",
   },
 ]
 `;
@@ -97,6 +113,7 @@ Array [
     "path": Array [
       0,
     ],
+    "type": "validation",
   },
   Object {
     "item": [ValidationError: Can't be a duplicate],
@@ -104,6 +121,7 @@ Array [
     "path": Array [
       2,
     ],
+    "type": "validation",
   },
 ]
 `;
@@ -118,6 +136,7 @@ Array [
     "path": Array [
       0,
     ],
+    "type": "validation",
   },
   Object {
     "item": [ValidationError: Can't be a duplicate],
@@ -125,6 +144,7 @@ Array [
     "path": Array [
       2,
     ],
+    "type": "validation",
   },
 ]
 `;
@@ -139,6 +159,7 @@ Array [
     "path": Array [
       0,
     ],
+    "type": "validation",
   },
   Object {
     "item": [ValidationError: Can't be a duplicate],
@@ -146,6 +167,7 @@ Array [
     "path": Array [
       3,
     ],
+    "type": "validation",
   },
 ]
 `;
@@ -160,6 +182,7 @@ Array [
     "path": Array [
       0,
     ],
+    "type": "validation",
   },
   Object {
     "item": [ValidationError: Can't be a duplicate],
@@ -167,6 +190,7 @@ Array [
     "path": Array [
       3,
     ],
+    "type": "validation",
   },
 ]
 `;

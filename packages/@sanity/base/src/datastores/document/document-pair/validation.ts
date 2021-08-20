@@ -14,18 +14,17 @@ import {
 import {concat, from, Observable, of, timer} from 'rxjs'
 import schema from 'part:@sanity/base/schema'
 import {validateDocument} from '@sanity/validation'
+import {Marker} from '@sanity/types'
 import {memoize} from '../utils/createMemoizer'
 import {IdPair} from '../types'
 import {editState} from './editState'
-
-type Marker = any
 
 function getValidationMarkers(draft, published): Observable<Marker[]> {
   const doc = draft || published
   if (!doc || !doc._type) {
     return of([])
   }
-  return from(validateDocument(doc, schema) as Promise<Marker[]>)
+  return from(validateDocument(doc, schema))
 }
 
 export interface ValidationStatus {

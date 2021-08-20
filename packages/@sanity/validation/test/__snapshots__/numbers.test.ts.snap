@@ -5,6 +5,8 @@ Array [
   Object {
     "item": [ValidationError: Must be greater than 10],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -14,6 +16,8 @@ Array [
   Object {
     "item": [ValidationError: Must be greater than 10],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -25,6 +29,8 @@ Array [
   Object {
     "item": [ValidationError: Must be an integer],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -36,6 +42,8 @@ Array [
   Object {
     "item": [ValidationError: Must be less than 10],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -45,6 +53,8 @@ Array [
   Object {
     "item": [ValidationError: Must be less than 10],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -56,6 +66,8 @@ Array [
   Object {
     "item": [ValidationError: Must be less than or equal 10],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -69,6 +81,8 @@ Array [
   Object {
     "item": [ValidationError: Must be greater than or equal 10],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -82,6 +96,8 @@ Array [
   Object {
     "item": [ValidationError: Must be less than 0],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -91,6 +107,8 @@ Array [
   Object {
     "item": [ValidationError: Must be less than 0],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -102,6 +120,8 @@ Array [
   Object {
     "item": [ValidationError: Must be greater than or equal 0],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -115,6 +135,8 @@ Array [
   Object {
     "item": [ValidationError: Max precision is 3],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -128,6 +150,8 @@ Array [
   Object {
     "item": [ValidationError: Value is required],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;

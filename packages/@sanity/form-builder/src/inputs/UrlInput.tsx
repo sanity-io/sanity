@@ -1,4 +1,3 @@
-import {get} from 'lodash'
 import React, {useMemo} from 'react'
 import {StringSchemaType} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
@@ -28,7 +27,7 @@ const UrlInput = React.forwardRef(function UrlInput(
     [onChange]
   )
   const uriRule = getValidationRule(type, 'uri')
-  const inputType = uriRule && get(uriRule, 'constraint.options.allowRelative') ? 'text' : 'url'
+  const inputType = uriRule?.constraint?.options?.allowRelative ? 'text' : 'url'
   return (
     <FormField
       level={level}

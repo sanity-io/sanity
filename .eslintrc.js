@@ -37,6 +37,9 @@ module.exports = {
         'import/no-unresolved': 'off',
         'no-undef': 'off',
         'import/named': 'off',
+        // the normal `no-dupe-class-members` doesn't work with TS overrides
+        'no-dupe-class-members': 'off',
+        '@typescript-eslint/no-dupe-class-members': ['error'],
       },
     },
   ],

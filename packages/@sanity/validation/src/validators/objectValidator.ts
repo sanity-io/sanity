@@ -1,60 +1,57 @@
-import ValidationError from '../ValidationError'
-import pathToString from '../util/pathToString'
-import handleValidationResult from '../util/handleValidationResult'
+import {Validators} from '@sanity/types'
+import ValidationErrorClass from '../ValidationError'
 import genericValidator from './genericValidator'
 
 const metaKeys = ['_key', '_type', '_weak']
 
-const presence = (expected, value, message) => {
-  if (expected !== 'required') {
+const objectValidators: Validators = {
+  ...genericValidator,
+
+  presence: (expected, value, message) => {
+    if (expected !== 'required') {
+      return true
+    }
+
+    const keys = value && Object.keys(value).filter((key) => !metaKeys.includes(key))
+
+    if (value === undefined || (keys && keys.length === 0)) {
+      return message || 'Required'
+    }
+
     return true
-  }
+  },
 
-  const keys = value && Object.keys(value).filter((key) => !metaKeys.includes(key))
-  if (typeof value === 'undefined' || (keys && keys.length === 0)) {
-    return new ValidationError(message || 'Required')
-  }
+  reference: (_unused, value, message) => {
+    if (!value) {
+      return true
+    }
 
-  return true
-}
+    if (typeof value._ref !== 'string') {
+      return new ValidationErrorClass(message || 'Must be a reference to a document', {
+        paths: [['$']],
+      })
+    }
 
-const reference = (unused, value, message) => {
-  if (!value) {
     return true
-  }
+  },
 
-  if (typeof value._ref !== 'string') {
-    return new ValidationError(message || 'Must be a reference to a document', {paths: ['$']})
-  }
+  block: async (validateBlock, value, message, context) => {
+    const result = await validateBlock(value, context)
+    if (typeof result === 'string') {
+      return message || result
+    }
 
-  return true
+    return result
+  },
+
+  assetRequired: (flag, value, message) => {
+    if (!value || !value.asset || !value.asset._ref) {
+      const assetType = flag.assetType || 'Asset'
+      return message || `${assetType} required`
+    }
+
+    return true
+  },
 }
 
-const block = async (validateBlock, value, message, options) => {
-  let result
-  try {
-    result = await validateBlock(value, options)
-  } catch (err) {
-    const path = pathToString(options.path)
-    err.message = `${path}: Error validating value: ${err.message}`
-    throw err
-  }
-
-  return handleValidationResult(result, message, options)
-}
-
-const assetRequired = (flag, value, message) => {
-  if (!value || !value.asset || !value.asset._ref) {
-    const assetType = flag.assetType || 'Asset'
-    return new ValidationError(message || `${assetType} required`)
-  }
-
-  return true
-}
-
-export default Object.assign({}, genericValidator, {
-  presence,
-  reference,
-  block,
-  assetRequired,
-})
+export default objectValidators

@@ -7,6 +7,8 @@ Array [
   Object {
     "item": [ValidationError: [Must start with an uppercase character - AND - 5 chars or more]],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -16,6 +18,8 @@ Array [
   Object {
     "item": [ValidationError: Needs to be a capital letter followed by at least 4 lowercase characters],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -25,6 +29,8 @@ Array [
   Object {
     "item": [ValidationError: Needs to start with a capital letter and then follow with lowercase characters],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -36,6 +42,8 @@ Array [
   Object {
     "item": [ValidationError: Must start with an uppercase character],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -45,6 +53,8 @@ Array [
   Object {
     "item": [ValidationError: Needs to start with a capital letter, unless it's an iProduct],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -56,6 +66,8 @@ Array [
   Object {
     "item": [ValidationError: [Must start with a capital R - OR - Must end with "ed"]],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -65,6 +77,8 @@ Array [
   Object {
     "item": [ValidationError: [Must be rgb(num, num, num) format - OR - Must be hex color with #-prefix]],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -74,6 +88,8 @@ Array [
   Object {
     "item": [ValidationError: [Must be rgb(num, num, num) format - OR - Must be hex color with #-prefix]],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;

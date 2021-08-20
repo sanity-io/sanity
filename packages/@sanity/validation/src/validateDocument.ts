@@ -1,10 +1,53 @@
-import Type from 'type-of-is'
-import {flatten} from 'lodash'
-import ValidationError from './ValidationError'
-import Rule from './Rule'
+import {
+  SanityDocument,
+  Schema,
+  SchemaType,
+  ObjectSchemaType,
+  ArraySchemaType,
+  Path,
+  PathSegment,
+  FieldRules,
+  ValidationContext,
+  ValidationMarker,
+  isKeyedObject,
+  isTypedObject,
+} from '@sanity/types'
+import typeString from './util/typeString'
+import ValidationErrorClass from './ValidationError'
+import RuleClass from './Rule'
 
-/* eslint-disable no-console */
-export default async (doc, schema) => {
+const appendPath = (base: Path, next: Path | PathSegment): Path => base.concat(next)
+
+const applyPathPrefix = (results: ValidationMarker[], pathPrefix: Path): ValidationMarker[] =>
+  results.map((result) => ({
+    ...result,
+    path: appendPath(pathPrefix, result.path),
+  }))
+
+const resolveTypeForArrayItem = (
+  item: unknown,
+  candidates: SchemaType[]
+): SchemaType | undefined => {
+  const itemType = isTypedObject(item) && item._type
+
+  const primitive =
+    item === undefined || item === null || (!itemType && typeString(item).toLowerCase())
+
+  if (primitive && primitive !== 'object') {
+    return candidates.find((candidate) => candidate.jsonType === primitive)
+  }
+
+  return (
+    candidates.find((candidate) => candidate.type?.name === itemType) ||
+    candidates.find((candidate) => candidate.name === itemType) ||
+    candidates.find((candidate) => candidate.name === 'object' && primitive === 'object')
+  )
+}
+
+export default async function validateDocument(
+  doc: SanityDocument,
+  schema: Schema
+): Promise<ValidationMarker[]> {
   const documentType = schema.get(doc._type)
   if (!documentType) {
     console.warn('Schema type for object type "%s" not found, skipping validation', doc._type)
@@ -15,51 +58,83 @@ export default async (doc, schema) => {
     return await validateItem(doc, documentType, [], {document: doc})
   } catch (err) {
     console.error(err)
-    return [{type: 'validation', level: 'error', path: [], item: new ValidationError(err.message)}]
+    return [
+      {
+        type: 'validation',
+        level: 'error',
+        path: [],
+        item: new ValidationErrorClass(err.message),
+      },
+    ]
   }
 }
 
-export function validateItem(item, type, path, options) {
-  if (Array.isArray(item)) {
-    return validateArray(item, type, path, options)
+export function validateItem(
+  item: unknown,
+  type: SchemaType | undefined,
+  path: Path,
+  context: ValidationContext
+): Promise<ValidationMarker[]> {
+  if (!type) {
+    return Promise.resolve([
+      {
+        type: 'validation',
+        level: 'error',
+        path,
+        item: new ValidationErrorClass('Unable to resolve type for item', {paths: [path]}),
+      },
+    ])
   }
 
-  if (typeof item === 'object') {
-    return validateObject(item, type, path, options)
+  if (Array.isArray(item) && type.jsonType === 'array') {
+    return validateArray(item, type, path, context)
   }
 
-  return validatePrimitive(item, type, path, options)
+  if (typeof item === 'object' && item !== null && type.jsonType === 'object') {
+    return validateObject(item as Record<string, unknown>, type, path, context)
+  }
+
+  return validatePrimitive(item, type, path, context)
 }
 
-function validateObject(obj, type, path, options) {
+async function validateObject(
+  obj: Record<string, unknown>,
+  type: ObjectSchemaType | undefined,
+  path: Path,
+  context: ValidationContext
+): Promise<ValidationMarker[]> {
   if (!type) {
     return []
   }
 
+  if (typeof type.validation === 'function') {
+    throw new Error(
+      `Schema type "${type.name}"'s \`validation\` was not run though \`inferFromSchema\``
+    )
+  }
+
   // Validate actual object itself
-  let objChecks = []
-  if (type.validation) {
+  let objChecks: Promise<ValidationMarker[]>[] = []
+  if (Array.isArray(type.validation)) {
     objChecks = type.validation.map(async (rule) => {
       const ruleResults = await rule.validate(obj, {
-        parent: options.parent,
-        document: options.document,
+        parent: context.parent,
+        document: context.document,
         path,
         type,
       })
 
-      return applyPath(ruleResults, path)
+      return applyPathPrefix(ruleResults, path)
     })
   }
 
   // Validate fields within object
-  const fields = type.fields || []
-
-  const fieldRules = type.validation
+  const fieldRules = (type.validation || [])
     .map((rule) => rule._fieldRules)
     .filter(Boolean)
-    .reduce(Object.assign, {})
+    .reduce<FieldRules>(Object.assign, {})
 
-  const fieldChecks = fields.map((field) => {
+  const fieldChecks = type.fields.map(async (field) => {
     // field validation from the enclosing object type
 
     const fieldValidation = fieldRules[field.name]
@@ -69,50 +144,54 @@ function validateObject(obj, type, path, options) {
     const fieldPath = appendPath(path, field.name)
     const fieldValue = obj[field.name]
 
-    return fieldValidation(new Rule())
-      .validate(fieldValue, {
-        parent: obj,
-        document: options.document,
-        path: fieldPath,
-        type: field.type,
-      })
-      .then((result) => applyPath(result, fieldPath))
+    const result = await fieldValidation(new RuleClass()).validate(fieldValue, {
+      parent: obj,
+      document: context.document,
+      path: fieldPath,
+      type: field.type,
+    })
+    return applyPathPrefix(result, fieldPath)
   })
 
-  const fieldTypeChecks = fields.map((field) => {
+  const fieldTypeChecks = type.fields.map((field) => {
     // field validation from field type
-
     const fieldPath = appendPath(path, field.name)
     const fieldValue = obj[field.name]
-    const validation = field.type && field.type.validation
-    if (!validation) {
+    if (!field.type?.validation) {
       return []
     }
     return validateItem(fieldValue, field.type, fieldPath, {
       parent: obj,
-      document: options.document,
+      document: context.document,
       path: fieldPath,
       type: field.type,
     })
   })
 
-  return Promise.all([...objChecks, ...fieldChecks, ...fieldTypeChecks]).then(flatten)
+  const results = await Promise.all([...objChecks, ...fieldChecks, ...fieldTypeChecks])
+  return results.flat()
 }
 
-function validateArray(items, type, path, options) {
+async function validateArray(
+  items: unknown[],
+  type: ArraySchemaType,
+  path: Path,
+  options: ValidationContext
+): Promise<ValidationMarker[]> {
   if (!type) {
     return [
       {
         type: 'validation',
         level: 'error',
         path,
-        item: new ValidationError('Unable to resolve type for array'),
+        item: new ValidationErrorClass('Unable to resolve type for array', {paths: [path]}),
       },
     ]
   }
   // Validate actual array itself
-  let arrayChecks = []
-  if (type.validation) {
+  let arrayChecks: Promise<ValidationMarker[]>[] = []
+
+  if (Array.isArray(type.validation)) {
     arrayChecks = type.validation.map(async (rule) => {
       const ruleResults = await rule.validate(items, {
         parent: options.parent,
@@ -121,12 +200,12 @@ function validateArray(items, type, path, options) {
         type,
       })
 
-      return applyPath(ruleResults, path)
+      return applyPathPrefix(ruleResults, path)
     })
   }
   // Validate items within array
   const itemChecks = items.map((item, i) => {
-    const pathSegment = item && item._key ? {_key: item._key} : i
+    const pathSegment = isKeyedObject(item) ? {_key: item._key} : i
     const itemType = resolveTypeForArrayItem(item, type.of)
     const itemPath = appendPath(path, [pathSegment])
     return validateItem(item, itemType, itemPath, {
@@ -136,61 +215,40 @@ function validateArray(items, type, path, options) {
     })
   })
 
-  return Promise.all([...arrayChecks, ...itemChecks]).then(flatten)
+  const result = await Promise.all([...arrayChecks, ...itemChecks])
+  return result.flat()
 }
 
-function validatePrimitive(item, type, path, options) {
+async function validatePrimitive(
+  item: unknown,
+  type: SchemaType,
+  path: Path,
+  context: ValidationContext
+): Promise<ValidationMarker[]> {
   if (!type) {
     return [
       {
         type: 'validation',
         level: 'error',
         path,
-        item: new ValidationError('Unable to resolve type for item'),
+        item: new ValidationErrorClass('Unable to resolve type for item', {paths: [path]}),
       },
     ]
   }
 
-  if (!type.validation) {
+  if (!Array.isArray(type.validation)) {
     return []
   }
 
-  const results = type.validation.map((rule) =>
-    rule
-      .validate(item, {
-        parent: options.parent,
-        document: options.document,
+  const resolved = await Promise.all(
+    type.validation.map(async (rule) => {
+      const currRuleResults = await rule.validate(item, {
+        parent: context.parent,
+        document: context.document,
         path,
-        type: {name: options.type?.name, options: options.type?.options},
       })
-      .then((currRuleResults) => applyPath(currRuleResults, path))
+      return applyPathPrefix(currRuleResults, path)
+    })
   )
-
-  return Promise.all(results).then(flatten)
-}
-
-function resolveTypeForArrayItem(item, candidates) {
-  const primitive =
-    typeof item === 'undefined' || item === null || (!item._type && Type.string(item).toLowerCase())
-
-  if (primitive && primitive !== 'object') {
-    return candidates.find((candidate) => candidate.jsonType === primitive)
-  }
-
-  return (
-    candidates.find((candidate) => candidate.type.name === item._type) ||
-    candidates.find((candidate) => candidate.name === item._type) ||
-    candidates.find((candidate) => candidate.name === 'object' && primitive === 'object')
-  )
-}
-
-function appendPath(base, next) {
-  return base.concat(next)
-}
-
-function applyPath(results, pathPrefix) {
-  return results.map((result) => {
-    const path = typeof result.path === 'undefined' ? pathPrefix : pathPrefix.concat(result.path)
-    return {type: 'validation', ...result, path}
-  })
+  return resolved.flat()
 }

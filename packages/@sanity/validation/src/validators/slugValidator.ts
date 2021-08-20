@@ -1,9 +1,10 @@
-import {get, memoize} from 'lodash'
+import {SlugIsUniqueValidator, Path, CustomValidator, isKeyedObject} from '@sanity/types'
+import {memoize} from 'lodash'
 import getClient from '../getClient'
 
 const memoizedWarnOnArraySlug = memoize(warnOnArraySlug)
 
-function getDocumentIds(id) {
+function getDocumentIds(id: string) {
   const isDraft = id.indexOf('drafts.') === 0
   return {
     published: isDraft ? id.slice('drafts.'.length) : id,
@@ -11,19 +12,28 @@ function getDocumentIds(id) {
   }
 }
 
-function serializePath(path) {
-  return path.reduce((target, part, i) => {
+function serializePath(path: Path): string {
+  return path.reduce<string>((target, part, i) => {
     const isIndex = typeof part === 'number'
-    const isKey = part && part._key
+    const isKey = isKeyedObject(part)
     const separator = i === 0 ? '' : '.'
     const add = isIndex || isKey ? '[]' : `${separator}${part}`
     return `${target}${add}`
   }, '')
 }
 
-const defaultIsUnique = (slug, options) => {
-  const {document, path, type} = options
-  const {disableArrayWarning} = type.options
+const defaultIsUnique: SlugIsUniqueValidator = (slug, context) => {
+  const {document, path, type} = context
+  const schemaOptions = type?.options as {disableArrayWarning?: boolean} | undefined
+
+  if (!document) {
+    throw new Error(`\`document\` was not provided in validation context.`)
+  }
+  if (!path) {
+    throw new Error(`\`path\` was not provided in validation context.`)
+  }
+
+  const disableArrayWarning = schemaOptions?.disableArrayWarning || false
   const {published, draft} = getDocumentIds(document._id)
   const docType = document._type
   const atPath = serializePath(path.concat('current'))
@@ -38,7 +48,7 @@ const defaultIsUnique = (slug, options) => {
     `${atPath} == $slug`,
   ].join(' && ')
 
-  return getClient().fetch(
+  return getClient().fetch<boolean>(
     `!defined(*[${constraints}][0]._id)`,
     {
       docType,
@@ -50,11 +60,11 @@ const defaultIsUnique = (slug, options) => {
   )
 }
 
-function warnOnArraySlug(path) {
+function warnOnArraySlug(serializedPath: string) {
   /* eslint-disable no-console */
   console.warn(
     [
-      `Slug field at path ${path} is within an array and cannot be automatically checked for uniqueness`,
+      `Slug field at path ${serializedPath} is within an array and cannot be automatically checked for uniqueness`,
       `If you need to check for uniqueness, provide your own "isUnique" method`,
       `To disable this message, set \`disableArrayWarning: true\` on the slug \`options\` field`,
     ].join('\n')
@@ -62,18 +72,32 @@ function warnOnArraySlug(path) {
   /* eslint-enable no-console */
 }
 
-export const slugValidator = (value, options) => {
+/**
+ * Validates slugs values by querying for uniqueness from the client.
+ *
+ * This is a custom rule implementation (e.g. `Rule.custom(slugValidator)`)
+ * that's populated in `inferFromSchemaType` when the type name is `slug`
+ */
+export const slugValidator: CustomValidator = async (value, context) => {
   if (!value) {
     return true
   }
+  if (typeof value !== 'object') {
+    return 'Slug must be an object'
+  }
 
-  if (!value.current) {
+  const slugValue = (value as {current?: string}).current
+  if (!slugValue) {
     return 'Slug must have a value'
   }
 
-  const errorMessage = 'Slug is already in use'
-  const isUnique = get(options, 'type.options.isUnique', defaultIsUnique)
-  return Promise.resolve(
-    isUnique(value.current, {...options, defaultIsUnique})
-  ).then((slugIsUnique) => (slugIsUnique ? true : errorMessage))
+  const options = context?.type?.options as {isUnique?: SlugIsUniqueValidator} | undefined
+  const isUnique = options?.isUnique || defaultIsUnique
+
+  const wasUnique = await isUnique(slugValue, {...context, defaultIsUnique})
+  if (wasUnique) {
+    return true
+  }
+
+  return 'Slug is already in use'
 }

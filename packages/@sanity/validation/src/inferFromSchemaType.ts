@@ -1,9 +1,13 @@
-import Rule from './Rule'
+import {Schema, SchemaType, Rule as IRule} from '@sanity/types'
+import RuleClass from './Rule'
 import {slugValidator} from './validators/slugValidator'
 import {blockValidator} from './validators/blockValidator'
 
-// eslint-disable-next-line complexity
-function inferFromSchemaType(typeDef, schema, visited = new Set()) {
+function inferFromSchemaType(
+  typeDef: SchemaType,
+  schema: Schema,
+  visited = new Set<SchemaType>()
+): SchemaType {
   if (visited.has(typeDef)) {
     return typeDef
   }
@@ -26,8 +30,8 @@ function inferFromSchemaType(typeDef, schema, visited = new Set()) {
   }
 
   const type = typeDef.type
-  const typed = Rule[typeDef.jsonType]
-  let base = typed ? typed(typeDef) : new Rule(typeDef)
+  const typed = RuleClass[typeDef.jsonType]
+  let base = typed ? typed(typeDef) : new RuleClass(typeDef)
 
   if (type && type.name === 'datetime') {
     base = base.type('Date')
@@ -57,12 +61,20 @@ function inferFromSchemaType(typeDef, schema, visited = new Set()) {
     base = base.block(blockValidator)
   }
 
+  // eslint-disable-next-line no-warning-comments
+  // @ts-expect-error TODO (eventually): `annotations` does not exist on the SchemaType yet
   if (typeDef.annotations) {
+    // eslint-disable-next-line no-warning-comments
+    // @ts-expect-error TODO (eventually): `annotations` does not exist on the SchemaType yet
     typeDef.annotations.forEach((annotation) => inferFromSchemaType(annotation))
   }
 
+  // eslint-disable-next-line no-warning-comments
+  // @ts-expect-error TODO (eventually): fix options list grabbing
   if (typeDef.options && typeDef.options.list && Array.isArray(typeDef.options.list)) {
     base = base.valid(
+      // eslint-disable-next-line no-warning-comments
+      // @ts-expect-error TODO (eventually): fix options list grabbing
       typeDef.options.list.map((option) => extractValueFromListOption(option, typeDef))
     )
   }
@@ -74,7 +86,7 @@ function inferFromSchemaType(typeDef, schema, visited = new Set()) {
   return typeDef
 }
 
-function inferForFields(typeDef, schema, visited) {
+function inferForFields(typeDef: SchemaType, schema: Schema, visited: Set<SchemaType>): void {
   if (typeDef.jsonType !== 'object' || !typeDef.fields) {
     return
   }
@@ -84,13 +96,13 @@ function inferForFields(typeDef, schema, visited) {
   })
 }
 
-function inferForMemberTypes(typeDef, schema, visited) {
-  if (typeDef.of && typeDef.jsonType === 'array') {
+function inferForMemberTypes(typeDef: SchemaType, schema: Schema, visited: Set<SchemaType>): void {
+  if (typeDef.jsonType === 'array' && typeDef.of) {
     typeDef.of.forEach((candidate) => inferFromSchemaType(candidate, schema, visited))
   }
 }
 
-function extractValueFromListOption(option, typeDef) {
+function extractValueFromListOption(option: unknown, typeDef: SchemaType): unknown {
   // If you define a `list` option with object items, where the item has a `value` field,
   // we don't want to treat that as the value but rather the surrounding object
   // This differs from the case where you have a title/value pair setup for a string/number, for instance
@@ -98,12 +110,18 @@ function extractValueFromListOption(option, typeDef) {
     return option
   }
 
-  return option.value === undefined ? option : option.value
+  return (option as Record<string, unknown>).value === undefined
+    ? option
+    : (option as Record<string, unknown>).value
 }
 
-function hasValueField(typeDef) {
-  while (!typeDef.fields && typeDef.type) {
+function hasValueField(typeDef: SchemaType): boolean {
+  if (!('fields' in typeDef) && typeDef.type) {
     return hasValueField(typeDef.type)
+  }
+
+  if (!typeDef || !('fields' in typeDef)) {
+    return false
   }
 
   if (!Array.isArray(typeDef.fields)) {
@@ -117,13 +135,13 @@ function hasValueField(typeDef) {
   return false
 }
 
-function inferValidation(field, baseRule) {
+function inferValidation(field: SchemaType, baseRule: IRule): IRule[] {
   if (!field.validation) {
     return [baseRule]
   }
 
-  const isLazy = typeof field.validation === 'function'
-  const validation = isLazy ? field.validation(baseRule) : field.validation
+  const validation =
+    typeof field.validation === 'function' ? field.validation(baseRule) : field.validation
   return Array.isArray(validation) ? validation : [validation]
 }
 

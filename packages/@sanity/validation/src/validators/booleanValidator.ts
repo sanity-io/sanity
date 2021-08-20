@@ -1,14 +1,16 @@
-import ValidationError from '../ValidationError'
+import {Validators} from '@sanity/types'
 import genericValidator from './genericValidator'
 
-const presence = (flag, value, message) => {
-  if (flag === 'required' && typeof value !== 'boolean') {
-    return new ValidationError(message || 'Required')
-  }
+const booleanValidators: Validators = {
+  ...genericValidator,
 
-  return true
+  presence: (flag, value, message) => {
+    if (flag === 'required' && typeof value !== 'boolean') {
+      return message || 'Required'
+    }
+
+    return true
+  },
 }
 
-export default Object.assign({}, genericValidator, {
-  presence,
-})
+export default booleanValidators

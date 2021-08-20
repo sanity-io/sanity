@@ -1,114 +1,117 @@
-import Type from 'type-of-is'
-import {flatten} from 'lodash'
+import {ValidationMarker, Validators} from '@sanity/types'
+import typeString from '../util/typeString'
 import deepEquals from '../util/deepEquals'
 import pathToString from '../util/pathToString'
-import handleValidationResult from '../util/handleValidationResult'
-import ValidationError from '../ValidationError'
-import validate from '../validate'
+import ValidationErrorClass from '../ValidationError'
 
 const SLOW_VALIDATOR_TIMEOUT = 5000
 
-const type = (expected, value, message) => {
-  const actualType = Type.string(value)
-  if (actualType !== expected && actualType !== 'undefined') {
-    return new ValidationError(message || `Expected type "${expected}", got "${actualType}"`)
+const formatValidationErrors = (options: {
+  message: string | undefined
+  results: ValidationMarker[]
+  operation: 'AND' | 'OR'
+}) => {
+  let message: string
+
+  if (options.message) {
+    message = options.message
+  } else if (options.results.length === 1) {
+    message = options.results[0]?.item.message
+  } else {
+    message = `[${options.results
+      .map((err) => err.item.message)
+      .join(` - ${options.operation} - `)}]`
   }
 
-  return true
-}
-
-const presence = (expected, value, message) => {
-  if (typeof value === 'undefined' && expected === 'required') {
-    return new ValidationError(message || 'Value is required')
-  }
-
-  return true
-}
-
-const multiple = (children, value) => {
-  const items = children.map((child) => validate(child, value, {isChild: true}))
-  return Promise.all(items).then(flatten)
-}
-
-const all = (children, value, message) =>
-  multiple(children, value).then((results) => {
-    const numErrors = results.length
-    return numErrors === 0
-      ? true
-      : formatValidationErrors(message, results, {separator: ' - AND - ', operator: 'AND'})
+  return new ValidationErrorClass(message, {
+    children: options.results.length > 1 ? options.results : undefined,
+    operation: options.operation,
   })
+}
 
-const either = (children, value, message) =>
-  multiple(children, value).then((results) => {
-    const numErrors = results.length
+const genericValidators: Validators = {
+  type: (expected, value, message) => {
+    const actualType = typeString(value)
+    if (actualType !== expected && actualType !== 'undefined') {
+      return message || `Expected type "${expected}", got "${actualType}"`
+    }
+
+    return true
+  },
+
+  presence: (expected, value, message) => {
+    if (value === undefined && expected === 'required') {
+      return message || 'Value is required'
+    }
+
+    return true
+  },
+
+  all: async (children, value, message) => {
+    const resolved = await Promise.all(children.map((child) => child.validate(value)))
+    const results = resolved.flat()
+
+    if (!results.length) return true
+
+    return formatValidationErrors({
+      message,
+      results,
+      operation: 'AND',
+    })
+  },
+
+  either: async (children, value, message) => {
+    const resolved = await Promise.all(children.map((child) => child.validate(value)))
+    const results = resolved.flat()
 
     // Read: There is at least one rule that matched
-    return numErrors < children.length
+    if (results.length < children.length) return true
+
+    return formatValidationErrors({
+      message,
+      results,
+      operation: 'OR',
+    })
+  },
+
+  valid: (allowedValues, actual, message) => {
+    const valueType = typeof actual
+    if (valueType === 'undefined') {
+      return true
+    }
+
+    const value = (valueType === 'number' || valueType === 'string') && `${actual}`
+    const strValue = value && value.length > 30 ? `${value.slice(0, 30)}…` : value
+
+    const defaultMessage = value
+      ? `Value "${strValue}" did not match any allowed values`
+      : 'Value did not match any allowed values'
+
+    return allowedValues.some((expected) => deepEquals(expected, actual))
       ? true
-      : formatValidationErrors(message, results, {separator: ' - OR - ', operator: 'OR'})
-  })
+      : new ValidationErrorClass(message || defaultMessage)
+  },
 
-const valid = (allowedValues, actual, message) => {
-  const valueType = typeof actual
-  if (valueType === 'undefined') {
-    return true
-  }
-
-  const value = (valueType === 'number' || valueType === 'string') && `${actual}`
-  const strValue = value && value.length > 30 ? `${value.slice(0, 30)}…` : value
-
-  const defaultMessage = value
-    ? `Value "${strValue}" did not match any allowed values`
-    : 'Value did not match any allowed values'
-
-  return allowedValues.some((expected) => deepEquals(expected, actual))
-    ? true
-    : new ValidationError(message || defaultMessage)
-}
-
-const custom = async (fn, value, message, options) => {
-  const slowTimer = setTimeout(() => {
-    const path = pathToString(options.path)
-
-    // eslint-disable-next-line no-console
-    console.warn(
-      `Custom validator at ${path} has taken more than ${SLOW_VALIDATOR_TIMEOUT}ms to respond`
-    )
-  }, SLOW_VALIDATOR_TIMEOUT)
-
-  let result
-  try {
-    result = await fn(value, options)
-  } catch (err) {
-    const path = pathToString(options.path)
-    err.message = `${path}: Error validating value: ${err.message}`
-    throw err
-  }
-
-  clearTimeout(slowTimer)
-
-  return handleValidationResult(result, message, options)
-}
-
-function formatValidationErrors(message, results, options = {}) {
-  const errOpts = {
-    children: results.length > 1 ? results : undefined,
-    operator: options.operator,
-  }
-
-  return results.length === 1
-    ? new ValidationError(message || results[0].item.message, errOpts)
-    : new ValidationError(
-        message || `[${results.map((err) => err.item.message).join(options.separator)}]`,
-        errOpts
+  custom: async (fn, value, message, context) => {
+    const slowTimer = setTimeout(() => {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `Custom validator at ${pathToString(
+          context.path
+        )} has taken more than ${SLOW_VALIDATOR_TIMEOUT}ms to respond`
       )
+    }, SLOW_VALIDATOR_TIMEOUT)
+
+    let result
+    try {
+      result = await fn(value, context)
+    } finally {
+      clearTimeout(slowTimer)
+    }
+
+    if (typeof result === 'string') return message || result
+    return result
+  },
 }
 
-export default {
-  all,
-  type,
-  either,
-  valid,
-  custom,
-  presence,
-}
+export default genericValidators

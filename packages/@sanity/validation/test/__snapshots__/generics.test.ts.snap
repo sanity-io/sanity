@@ -5,6 +5,8 @@ Array [
   Object {
     "item": [ValidationError: Dude it needs to be a string],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -14,6 +16,8 @@ Array [
   Object {
     "item": [ValidationError: Dude it should probably be a string],
     "level": "warning",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -23,6 +27,8 @@ Array [
   Object {
     "item": [ValidationError: Expected type "String", got "Number"],
     "level": "warning",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -32,6 +38,8 @@ Array [
   Object {
     "item": [ValidationError: Must be at least 5 characters long],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -41,6 +49,8 @@ Array [
   Object {
     "item": [ValidationError: Expected type "String", got "Number"],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;

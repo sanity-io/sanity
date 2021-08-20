@@ -116,7 +116,7 @@ describe('string', () => {
   })
 
   test('custom rule with string', async () => {
-    const rule = Rule.string().custom((val) =>
+    const rule = Rule.string().custom<string>((val) =>
       val.split('').reverse().join('') === val ? true : 'Must be a palindrome!'
     )
 
@@ -125,7 +125,7 @@ describe('string', () => {
   })
 
   test('custom async rule with string', async () => {
-    const rule = Rule.string().custom(
+    const rule = Rule.string().custom<string>(
       (val) =>
         new Promise((resolve) =>
           setTimeout(

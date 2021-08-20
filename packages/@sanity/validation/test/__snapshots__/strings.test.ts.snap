@@ -5,6 +5,8 @@ Array [
   Object {
     "item": [ValidationError: Must be a palindrome!],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -14,6 +16,8 @@ Array [
   Object {
     "item": [ValidationError: Must be a palindrome!],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -23,6 +27,8 @@ Array [
   Object {
     "item": [ValidationError: Must be exactly 5 characters long],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -32,6 +38,8 @@ Array [
   Object {
     "item": [ValidationError: Must be exactly 5 characters long],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -43,6 +51,8 @@ Array [
   Object {
     "item": [ValidationError: Must be all lowercase letters],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -52,6 +62,8 @@ Array [
   Object {
     "item": [ValidationError: Must be all lowercase letters],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -61,6 +73,8 @@ Array [
   Object {
     "item": [ValidationError: Must be all lowercase letters],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -72,6 +86,8 @@ Array [
   Object {
     "item": [ValidationError: Must be at most 5 characters long],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -83,6 +99,8 @@ Array [
   Object {
     "item": [ValidationError: Must be at least 2 characters long],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -96,6 +114,8 @@ Array [
   Object {
     "item": [ValidationError: Does not match PascalCase-pattern],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -107,6 +127,8 @@ Array [
   Object {
     "item": [ValidationError: Does not match PascalCase-pattern],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -116,6 +138,8 @@ Array [
   Object {
     "item": [ValidationError: Should not match "/^[A-Z][a-z]+$/"-pattern],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -129,6 +153,8 @@ Array [
   Object {
     "item": [ValidationError: Does not match "/^[A-Z][a-z]+$/"-pattern],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -138,6 +164,8 @@ Array [
   Object {
     "item": [ValidationError: Required],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -147,10 +175,14 @@ Array [
   Object {
     "item": [ValidationError: Expected type "String", got "null"],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
   Object {
     "item": [ValidationError: Required],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -160,6 +192,8 @@ Array [
   Object {
     "item": [ValidationError: Required],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -171,6 +205,8 @@ Array [
   Object {
     "item": [ValidationError: Must be all uppercase letters],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -180,6 +216,8 @@ Array [
   Object {
     "item": [ValidationError: Must be all uppercase letters],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -189,6 +227,8 @@ Array [
   Object {
     "item": [ValidationError: Must be all uppercase letters],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -198,6 +238,8 @@ Array [
   Object {
     "item": [ValidationError: Must be all uppercase letters],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -209,6 +251,8 @@ Array [
   Object {
     "item": [ValidationError: Username/password not allowed],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -218,6 +262,8 @@ Array [
   Object {
     "item": [ValidationError: Username/password not allowed],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -227,6 +273,8 @@ Array [
   Object {
     "item": [ValidationError: Does not match allowed protocols/schemes],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -236,6 +284,8 @@ Array [
   Object {
     "item": [ValidationError: Not a valid URL],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;
@@ -245,6 +295,8 @@ Array [
   Object {
     "item": [ValidationError: Not a valid URL],
     "level": "error",
+    "path": Array [],
+    "type": "validation",
   },
 ]
 `;

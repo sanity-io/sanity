@@ -1,33 +1,28 @@
-import {SchemaType} from '@sanity/types'
+import {SchemaType, RuleSpec} from '@sanity/types'
 
-interface Rule {
-  _rules: RuleSpec[]
-}
+/**
+ * Finds the first matching validation rule spec from a Rule class instance.
+ *
+ * @internal
+ * Note: This accesses private fields of the rule.
+ */
+export function getValidationRule<RuleFlag extends RuleSpec['flag']>(
+  type: SchemaType | null | undefined,
+  ruleName: RuleFlag
+): Extract<RuleSpec, {flag: RuleFlag}> | null {
+  const validation = type?.validation
 
-interface RuleSpec {
-  flag: string
-  constraint?: unknown
-}
-
-// Note: consider this "internals"
-export function getValidationRule<T = SchemaType>(
-  type: T & {validation?: Rule[]},
-  ruleName: string
-): RuleSpec | null {
-  if (!type || !type.validation || !type.validation.length) {
-    return null
+  if (typeof validation === 'function') {
+    throw new Error(
+      `Schema type "${type.name}"'s \`validation\` was not run though \`inferFromSchema\``
+    )
   }
+  if (!validation) return null
 
-  for (let i = 0; i < type.validation.length; i++) {
-    const validation = type.validation[i]
-    if (!validation || !validation._rules) {
-      continue
-    }
-
-    for (let r = 0; r < validation._rules.length; r++) {
-      const rule = validation._rules[r]
-      if (rule.flag === ruleName) {
-        return rule
+  for (const rule of validation) {
+    for (const ruleSpec of rule._rules) {
+      if (ruleSpec.flag === ruleName) {
+        return ruleSpec as Extract<RuleSpec, {flag: RuleFlag}>
       }
     }
   }
