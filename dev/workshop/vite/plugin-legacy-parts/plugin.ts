@@ -1,6 +1,7 @@
 import path from 'path'
 import resolve from 'resolve'
 
+const ROOT_PATH = path.resolve(__dirname, '../../../..')
 const DEBUG_PART_PATH = path.resolve(__dirname, 'parts/debug.ts')
 const EMPTY_PART_PATH = path.resolve(__dirname, 'parts/empty.ts')
 
@@ -24,7 +25,19 @@ export function pluginLegacyParts(partsResolver: any) {
         const implementations = parts.implementations[id]
 
         if (implementations && implementations.length > 0) {
-          return resolve.sync(implementations[0].path, {extensions: ['.ts', '.tsx', '.js']})
+          let partPath = resolve.sync(implementations[0].path, {
+            extensions: ['.ts', '.tsx', '.js'],
+          })
+
+          // NOTE: this is a workaround since Vite doesn't do CJS exports
+          if (id === 'part:@sanity/base/client') {
+            partPath = partPath.replace('/index.ts', '/index.esm.ts')
+          }
+
+          // eslint-disable-next-line no-console
+          console.log(id, '=>', path.relative(ROOT_PATH, partPath))
+
+          return partPath
         }
 
         if (id.endsWith('?')) {
