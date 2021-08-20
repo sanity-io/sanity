@@ -394,7 +394,7 @@ export default function PortableTextInput(props: Props) {
       {!isFullscreen && (
         <>
           <ActivateOnFocus
-            html={<h3 className={styles.activeOnFocusHeading}>Click to activate</h3>}
+            message={<h3 className={styles.activeOnFocusHeading}>Click to activate</h3>}
             onActivate={handleActivate}
             isOverlayActive={!isActive}
           >

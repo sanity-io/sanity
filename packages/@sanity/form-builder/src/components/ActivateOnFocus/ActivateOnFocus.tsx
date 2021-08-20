@@ -9,13 +9,13 @@ import {
 
 interface Props {
   children: React.ReactNode
-  html?: React.ReactNode
+  message?: React.ReactNode
   onActivate?: () => void
   isOverlayActive: boolean
 }
 
 export default function ActivateOnFocus(props: Props) {
-  const {children, html, onActivate, isOverlayActive} = props
+  const {children, message, onActivate, isOverlayActive} = props
 
   function handleClick() {
     if (onActivate) {
@@ -34,7 +34,7 @@ export default function ActivateOnFocus(props: Props) {
       {isOverlayActive && (
         <FlexContainer tabIndex={0} align="center" justify="center">
           <CardContainer />
-          <ContentContainer>{html}</ContentContainer>
+          <ContentContainer>{message}</ContentContainer>
         </FlexContainer>
       )}
       {children}
