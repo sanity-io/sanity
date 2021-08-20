@@ -1,8 +1,12 @@
-import {ValidationMarker, ValidationError, isNonNullable, ValidationContext} from '@sanity/types'
+import {ValidationMarker, ValidationError, ValidationContext} from '@sanity/types'
 import ValidationErrorClass from '../ValidationError'
 import pathToString from '../util/pathToString'
 
 type ValidationErrorLike = Pick<ValidationError, 'message'> & Partial<ValidationError>
+
+export function isNonNullable<T>(t: T): t is NonNullable<T> {
+  return t !== null || t !== undefined
+}
 
 export default function convertToValidationMarker(
   validationResult:
