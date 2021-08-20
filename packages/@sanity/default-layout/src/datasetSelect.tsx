@@ -11,12 +11,10 @@ import {state as urlState} from './datastores/urlState'
 import {CONFIGURED_SPACES} from './util/spaces'
 
 interface OuterProps {
-  isVisible: boolean
   tone?: 'navbar'
 }
 
 interface Props {
-  isVisible: boolean
   router: {
     navigate: (state: {space: string}) => void
   }
@@ -70,7 +68,6 @@ class DatasetSelect extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const {isVisible} = this.props
     const {currentSpace} = this.state
 
     return (
@@ -78,7 +75,6 @@ class DatasetSelect extends React.PureComponent<Props, State> {
         onChange={this.handleChange}
         value={(currentSpace && currentSpace.name) || undefined}
         radius={2}
-        aria-hidden={!isVisible}
       >
         {CONFIGURED_SPACES.map((space) => (
           <option key={space.name} value={space.name}>

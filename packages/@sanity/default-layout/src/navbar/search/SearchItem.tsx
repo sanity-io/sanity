@@ -2,7 +2,7 @@
 ///<reference types="@sanity/types/parts" />
 
 import React, {forwardRef, useMemo} from 'react'
-import {Card, Label, MenuItem, ResponsivePaddingProps} from '@sanity/ui'
+import {Card, Label, ResponsivePaddingProps} from '@sanity/ui'
 import {IntentLink} from '@sanity/state-router/components'
 import Preview from 'part:@sanity/base/preview?'
 import schema from 'part:@sanity/base/schema'
@@ -12,10 +12,9 @@ import {SearchHit} from '.'
 interface SearchItemProps extends ResponsivePaddingProps {
   data: SearchHit
   onClick?: () => void
-  variant?: 'menu-item' | 'card'
 }
 
-export function SearchItem({data, onClick, variant, ...restProps}: SearchItemProps) {
+export function SearchItem({data, onClick, ...restProps}: SearchItemProps) {
   const {hit, resultIndex} = data
   const type = schema.get(hit?._type)
 
@@ -37,25 +36,8 @@ export function SearchItem({data, onClick, variant, ...restProps}: SearchItemPro
     [hit._id, resultIndex, type.name]
   )
 
-  if (variant === 'menu-item') {
-    return (
-      <MenuItem data-as="a" as={LinkComponent} onClick={onClick} {...restProps}>
-        <Preview
-          value={hit}
-          layout="default"
-          type={type}
-          status={
-            <Label size={0} muted>
-              {type.title}
-            </Label>
-          }
-        />
-      </MenuItem>
-    )
-  }
-
   return (
-    <Card data-as="a" as={LinkComponent} onClick={onClick} {...restProps}>
+    <Card data-as="a" as={LinkComponent} onClick={onClick} {...restProps} radius={2}>
       <Preview
         value={hit}
         layout="default"
