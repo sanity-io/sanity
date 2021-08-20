@@ -11,11 +11,11 @@ interface Props {
   children: React.ReactNode
   html?: React.ReactNode
   onActivate?: () => void
-  isActive: boolean
+  isOverlayActive: boolean
 }
 
 export default function ActivateOnFocus(props: Props) {
-  const {children, html, onActivate, isActive} = props
+  const {children, html, onActivate, isOverlayActive} = props
 
   function handleClick() {
     if (onActivate) {
@@ -24,14 +24,14 @@ export default function ActivateOnFocus(props: Props) {
   }
 
   function handleBlur() {
-    if (onActivate && !isActive) {
+    if (onActivate && isOverlayActive) {
       onActivate()
     }
   }
 
   return (
     <OverlayContainer onClick={handleClick} onBlur={handleBlur}>
-      {!isActive && (
+      {isOverlayActive && (
         <FlexContainer tabIndex={0} align="center" justify="center">
           <CardContainer />
           <ContentContainer>{html}</ContentContainer>
