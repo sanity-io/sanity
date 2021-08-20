@@ -53,7 +53,7 @@ describe('array', () => {
 
   test('unique constraint (default, array values)', async () => {
     const rule = Rule.array().unique()
-    const refArr = (id) => [{_ref: id, _type: 'reference'}]
+    const refArr = (id: string) => [{_ref: id, _type: 'reference'}]
     await expect(rule.validate(['a', 'b', 'c', 'd'].map(refArr))).resolves.toMatchSnapshot(
       'array unique: valid'
     )

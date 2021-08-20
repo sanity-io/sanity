@@ -1,0 +1,273 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`child rules all() rules - multiple failures: all() rules - match 1`] = `Array []`;
+
+exports[`child rules all() rules - multiple failures: all() rules - multiple failures, custom messages 1`] = `
+Array [
+  Object {
+    "item": ValidationError {
+      "children": Array [
+        Object {
+          "item": ValidationError {
+            "children": undefined,
+            "message": "Must start with an uppercase character",
+            "operation": undefined,
+            "paths": Array [],
+          },
+          "level": "error",
+          "path": Array [],
+          "type": "validation",
+        },
+        Object {
+          "item": ValidationError {
+            "children": undefined,
+            "message": "5 chars or more",
+            "operation": undefined,
+            "paths": Array [],
+          },
+          "level": "error",
+          "path": Array [],
+          "type": "validation",
+        },
+      ],
+      "message": "[Must start with an uppercase character - AND - 5 chars or more]",
+      "operation": "AND",
+      "paths": Array [],
+    },
+    "level": "error",
+    "path": Array [],
+    "type": "validation",
+  },
+]
+`;
+
+exports[`child rules all() rules - single failure, custom, common error: all() rules - multiple failures, common error 1`] = `
+Array [
+  Object {
+    "item": ValidationError {
+      "children": Array [
+        Object {
+          "item": ValidationError {
+            "children": undefined,
+            "message": "Does not match \\"/^[A-Z]/\\"-pattern",
+            "operation": undefined,
+            "paths": Array [],
+          },
+          "level": "error",
+          "path": Array [],
+          "type": "validation",
+        },
+        Object {
+          "item": ValidationError {
+            "children": undefined,
+            "message": "Must be at least 5 characters long",
+            "operation": undefined,
+            "paths": Array [],
+          },
+          "level": "error",
+          "path": Array [],
+          "type": "validation",
+        },
+      ],
+      "message": "Needs to be a capital letter followed by at least 4 lowercase characters",
+      "operation": "AND",
+      "paths": Array [],
+    },
+    "level": "error",
+    "path": Array [],
+    "type": "validation",
+  },
+]
+`;
+
+exports[`child rules all() rules - single failure, custom, common error: all() rules - single failure, common error 1`] = `
+Array [
+  Object {
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Needs to start with a capital letter and then follow with lowercase characters",
+      "operation": "AND",
+      "paths": Array [],
+    },
+    "level": "error",
+    "path": Array [],
+    "type": "validation",
+  },
+]
+`;
+
+exports[`child rules all() rules - single failure: all() rules - match 1`] = `Array []`;
+
+exports[`child rules all() rules - single failure: all() rules - single failure, custom message 1`] = `
+Array [
+  Object {
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Must start with an uppercase character",
+      "operation": "AND",
+      "paths": Array [],
+    },
+    "level": "error",
+    "path": Array [],
+    "type": "validation",
+  },
+]
+`;
+
+exports[`child rules either() rules - all fail, custom, common error: either() rules - all fail, common error 1`] = `
+Array [
+  Object {
+    "item": ValidationError {
+      "children": Array [
+        Object {
+          "item": ValidationError {
+            "children": undefined,
+            "message": "Does not match \\"/^[A-Z]/\\"-pattern",
+            "operation": undefined,
+            "paths": Array [],
+          },
+          "level": "error",
+          "path": Array [],
+          "type": "validation",
+        },
+        Object {
+          "item": ValidationError {
+            "children": undefined,
+            "message": "Does not match \\"/^i[A-Z]/\\"-pattern",
+            "operation": undefined,
+            "paths": Array [],
+          },
+          "level": "error",
+          "path": Array [],
+          "type": "validation",
+        },
+      ],
+      "message": "Needs to start with a capital letter, unless it's an iProduct",
+      "operation": "OR",
+      "paths": Array [],
+    },
+    "level": "error",
+    "path": Array [],
+    "type": "validation",
+  },
+]
+`;
+
+exports[`child rules either() rules - all matches: either() rules - all match 1`] = `Array []`;
+
+exports[`child rules either() rules - all matches: either() rules - no matches 1`] = `
+Array [
+  Object {
+    "item": ValidationError {
+      "children": Array [
+        Object {
+          "item": ValidationError {
+            "children": undefined,
+            "message": "Must start with a capital R",
+            "operation": undefined,
+            "paths": Array [],
+          },
+          "level": "error",
+          "path": Array [],
+          "type": "validation",
+        },
+        Object {
+          "item": ValidationError {
+            "children": undefined,
+            "message": "Must end with \\"ed\\"",
+            "operation": undefined,
+            "paths": Array [],
+          },
+          "level": "error",
+          "path": Array [],
+          "type": "validation",
+        },
+      ],
+      "message": "[Must start with a capital R - OR - Must end with \\"ed\\"]",
+      "operation": "OR",
+      "paths": Array [],
+    },
+    "level": "error",
+    "path": Array [],
+    "type": "validation",
+  },
+]
+`;
+
+exports[`child rules either() rules - single failure: either() rules - match 1`] = `
+Array [
+  Object {
+    "item": ValidationError {
+      "children": Array [
+        Object {
+          "item": ValidationError {
+            "children": undefined,
+            "message": "Must be rgb(num, num, num) format",
+            "operation": undefined,
+            "paths": Array [],
+          },
+          "level": "error",
+          "path": Array [],
+          "type": "validation",
+        },
+        Object {
+          "item": ValidationError {
+            "children": undefined,
+            "message": "Must be hex color with #-prefix",
+            "operation": undefined,
+            "paths": Array [],
+          },
+          "level": "error",
+          "path": Array [],
+          "type": "validation",
+        },
+      ],
+      "message": "[Must be rgb(num, num, num) format - OR - Must be hex color with #-prefix]",
+      "operation": "OR",
+      "paths": Array [],
+    },
+    "level": "error",
+    "path": Array [],
+    "type": "validation",
+  },
+]
+`;
+
+exports[`child rules either() rules - single failure: either() rules - single failure, custom message 1`] = `
+Array [
+  Object {
+    "item": ValidationError {
+      "children": Array [
+        Object {
+          "item": ValidationError {
+            "children": undefined,
+            "message": "Must be rgb(num, num, num) format",
+            "operation": undefined,
+            "paths": Array [],
+          },
+          "level": "error",
+          "path": Array [],
+          "type": "validation",
+        },
+        Object {
+          "item": ValidationError {
+            "children": undefined,
+            "message": "Must be hex color with #-prefix",
+            "operation": undefined,
+            "paths": Array [],
+          },
+          "level": "error",
+          "path": Array [],
+          "type": "validation",
+        },
+      ],
+      "message": "[Must be rgb(num, num, num) format - OR - Must be hex color with #-prefix]",
+      "operation": "OR",
+      "paths": Array [],
+    },
+    "level": "error",
+    "path": Array [],
+    "type": "validation",
+  },
+]
+`;

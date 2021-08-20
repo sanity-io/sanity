@@ -3,26 +3,27 @@
  * MIT-licensed, copyright (c) 2017 Evgeny Poberezkin
  **/
 
-/* eslint max-depth: ["error", 4] */
-export default function equal(a, b) {
+// NOTE: when converting to typescript, some of the checks were inlined (vs
+// having them in a variable) because the type predicate type narrowing only
+// works when type predicate is called inline in the condition that starts the
+// control flow branch.
+// see here: https://www.typescriptlang.org/docs/handbook/2/narrowing.html
+export default function deepEquals(a: unknown, b: unknown): boolean {
   if (a === b) {
     return true
   }
 
-  const arrA = Array.isArray(a)
-  const arrB = Array.isArray(b)
-
-  if (arrA && arrB) {
+  if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length != b.length) return false
     for (let i = 0; i < a.length; i++) {
-      if (!equal(a[i], b[i])) {
+      if (!deepEquals(a[i], b[i])) {
         return false
       }
     }
     return true
   }
 
-  if (arrA != arrB) {
+  if (Array.isArray(a) != Array.isArray(b)) {
     return false
   }
 
@@ -32,23 +33,19 @@ export default function equal(a, b) {
       return false
     }
 
-    const dateA = a instanceof Date
-    const dateB = b instanceof Date
-    if (dateA && dateB) {
+    if (a instanceof Date && b instanceof Date) {
       return a.getTime() === b.getTime()
     }
 
-    if (dateA != dateB) {
+    if (a instanceof Date != b instanceof Date) {
       return false
     }
 
-    const regexpA = a instanceof RegExp
-    const regexpB = b instanceof RegExp
-    if (regexpA && regexpB) {
+    if (a instanceof RegExp && b instanceof RegExp) {
       return a.toString() == b.toString()
     }
 
-    if (regexpA != regexpB) {
+    if (a instanceof RegExp != b instanceof RegExp) {
       return false
     }
 
@@ -63,11 +60,12 @@ export default function equal(a, b) {
     }
 
     for (let i = 0; i < keys.length; i++) {
-      if (keys[i] === '_key') {
+      const key = keys[i] as keyof typeof a
+      if (key === '_key') {
         continue
       }
 
-      if (!equal(a[keys[i]], b[keys[i]])) {
+      if (!deepEquals(a[key], b[key])) {
         return false
       }
     }

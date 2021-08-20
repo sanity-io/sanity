@@ -1,0 +1,81 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`generics can customize error messages 1`] = `
+Array [
+  Object {
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Dude it needs to be a string",
+      "operation": undefined,
+      "paths": Array [],
+    },
+    "level": "error",
+    "path": Array [],
+    "type": "validation",
+  },
+]
+`;
+
+exports[`generics can customize warning messages 1`] = `
+Array [
+  Object {
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Dude it should probably be a string",
+      "operation": undefined,
+      "paths": Array [],
+    },
+    "level": "warning",
+    "path": Array [],
+    "type": "validation",
+  },
+]
+`;
+
+exports[`generics can demote errors to warnings 1`] = `
+Array [
+  Object {
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Expected type \\"String\\", got \\"Number\\"",
+      "operation": undefined,
+      "paths": Array [],
+    },
+    "level": "warning",
+    "path": Array [],
+    "type": "validation",
+  },
+]
+`;
+
+exports[`generics can merge rules 1`] = `
+Array [
+  Object {
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Must be at least 5 characters long",
+      "operation": undefined,
+      "paths": Array [],
+    },
+    "level": "error",
+    "path": Array [],
+    "type": "validation",
+  },
+]
+`;
+
+exports[`generics returns arrays of errors/warnings by default 1`] = `
+Array [
+  Object {
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Expected type \\"String\\", got \\"Number\\"",
+      "operation": undefined,
+      "paths": Array [],
+    },
+    "level": "error",
+    "path": Array [],
+    "type": "validation",
+  },
+]
+`;

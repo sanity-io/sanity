@@ -1,4 +1,5 @@
 import Schema from '@sanity/schema'
+import {ObjectSchemaType, Rule} from '@sanity/types'
 import inferFromSchema from '../src/inferFromSchema'
 
 describe('schema validation inference', () => {
@@ -27,13 +28,13 @@ describe('schema validation inference', () => {
 
     test('allowed value', async () => {
       const type = inferFromSchema(schema).get('colorList')
-      await expectNoError(type.validation, listOptions[0])
+      await expectNoError(type.validation as Rule[], listOptions[0])
     })
 
     test('disallowed value', async () => {
       const type = inferFromSchema(schema).get('colorList')
       await expectError(
-        type.validation,
+        type.validation as Rule[],
         {value: '#ccc', title: 'Gray'},
         'Value did not match any allowed value'
       )
@@ -44,7 +45,8 @@ describe('schema validation inference', () => {
       name: 'fieldValidationInferReproDoc',
       type: 'document',
       title: 'FieldValidationRepro',
-      validation: (Rule) =>
+      // eslint-disable-next-line no-shadow
+      validation: (Rule: Rule) =>
         Rule.fields({
           stringField: (fieldRule) => fieldRule.required(),
         }),
@@ -64,20 +66,25 @@ describe('schema validation inference', () => {
     })
 
     test('field validations defined on an object type does not affect the field type validation', () => {
-      const documentType = inferFromSchema(schema).get('fieldValidationInferReproDoc')
+      const documentType = inferFromSchema(schema).get(
+        'fieldValidationInferReproDoc'
+      ) as ObjectSchemaType
       const fieldWithoutValidation = documentType.fields.find(
         (field) => field.name === 'stringField'
       )
 
       // The first field should only have the validation rules that comes with its type
       expect(
-        fieldWithoutValidation.type.validation.flatMap((validation) => validation._rules)
+        (fieldWithoutValidation?.type.validation as Rule[]).flatMap(
+          // eslint-disable-next-line dot-notation
+          (validation) => validation['_rules']
+        )
       ).toEqual([{flag: 'type', constraint: 'String'}])
     })
   })
 })
 
-async function expectNoError(validations, value) {
+async function expectNoError(validations: Rule[], value: unknown) {
   const errors = (await Promise.all(validations.map((rule) => rule.validate(value)))).flat()
   if (errors.length === 0) {
     // This shouldn't actually be needed, but counts against an assertion in jest-terms
@@ -89,7 +96,12 @@ async function expectNoError(validations, value) {
   throw new Error(`Expected no errors, but found ${errors.length}:\n- ${messages}`)
 }
 
-async function expectError(validations, value, message, level = 'error') {
+async function expectError(
+  validations: Rule[],
+  value: unknown,
+  message: string | undefined,
+  level = 'error'
+) {
   const errors = (await Promise.all(validations.map((rule) => rule.validate(value)))).flat()
   if (!errors.length) {
     throw new Error(`Expected error matching "${message}", but no errors were returned.`)

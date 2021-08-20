@@ -36,11 +36,10 @@
     "jest": "^26.6.3"
   },
   "dependencies": {
-    "clone-deep": "^2.0.1",
+    "@sanity/client": "^2.15.0",
+    "@sanity/types": "^2.15.0",
     "date-fns": "^2.16.1",
-    "es6-error": "^4.0.2",
-    "lodash": "^4.17.15",
-    "type-of-is": "^3.5.1"
+    "lodash": "^4.17.15"
   },
   "jest": {
     "verbose": true,

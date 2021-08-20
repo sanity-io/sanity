@@ -1,5 +1,6 @@
 // Note: INCOMPLETE, but it's a start
 import React from 'react'
+import {Rule} from '../validation'
 import {ReferenceOptions} from '../reference'
 import {AssetSource} from '../assets'
 import {SlugOptions} from '../slug'
@@ -34,6 +35,31 @@ export type SortOrdering = {
 export type InitialValueParams = Record<string, unknown>
 export type InitialValueResolver<T> = (params?: InitialValueParams) => Promise<T> | T
 export type InitialValueProperty<T = unknown> = T | InitialValueResolver<T> | undefined
+
+/**
+ * Represents the possible values of a schema type's `validation` field.
+ *
+ * If the schema has not been run through `inferFromSchema` from
+ * `@sanity/validation` then value could be a function.
+ *
+ * `inferFromSchema` mutates the schema converts this value to an array of
+ * `Rule` instances.
+ *
+ * @privateRemarks
+ *
+ * Usage of the schema inside the studio will almost always be from the compiled
+ * `createSchema` function. In this case, you can cast the value or throw to
+ * narrow the type. E.g.:
+ *
+ * ```ts
+ * if (typeof type.validation === 'function') {
+ *   throw new Error(
+ *     `Schema type "${type.name}"'s \`validation\` was not run though \`inferFromSchema\``
+ *   )
+ * }
+ * ```
+ */
+type ValidationValue = false | Rule[] | ((rule: Rule) => Rule | Rule[])
 
 export interface BaseSchemaType {
   name: string
@@ -86,6 +112,7 @@ export interface StringSchemaType extends BaseSchemaType {
     timeFormat?: string
   }
   initialValue?: ((arg?: any) => Promise<string> | string) | string | undefined
+  validation?: ValidationValue
 }
 
 export interface TextSchemaType extends StringSchemaType {
@@ -96,6 +123,7 @@ export interface NumberSchemaType extends BaseSchemaType {
   jsonType: 'number'
   options?: EnumListProps<number>
   initialValue?: InitialValueProperty<number>
+  validation?: ValidationValue
 }
 
 export interface BooleanSchemaType extends BaseSchemaType {
@@ -104,6 +132,7 @@ export interface BooleanSchemaType extends BaseSchemaType {
     layout: 'checkbox' | 'switch'
   }
   initialValue?: InitialValueProperty<boolean>
+  validation?: ValidationValue
 }
 
 export interface ArraySchemaType<V = unknown> extends BaseSchemaType {
@@ -120,6 +149,7 @@ export interface ArraySchemaType<V = unknown> extends BaseSchemaType {
      */
     editModal?: 'dialog' | 'fullscreen' | 'popover' | 'fold'
   }
+  validation?: ValidationValue
 }
 
 export interface BlockSchemaType extends ObjectSchemaType {
@@ -144,6 +174,7 @@ export interface ObjectSchemaType extends BaseSchemaType {
   fields: ObjectField[]
   fieldsets?: Fieldset[]
   initialValue?: InitialValueProperty<Record<string, unknown>>
+  validation?: ValidationValue
 
   // Experimentals
   /* eslint-disable camelcase */
