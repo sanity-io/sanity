@@ -8,6 +8,7 @@ import makeDragAware from './makeDragAware'
 import * as utils2d from './2d/utils'
 import {Rect} from './2d/shapes'
 import styles from './styles/ImageTool.css'
+import {RootContainer} from './ImageTool.styles'
 
 import * as cursors from './cursors'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './constants'
@@ -716,7 +717,7 @@ export default class ImageTool extends React.PureComponent {
     const {image, readOnly} = this.props
     const ratio = getDevicePixelRatio()
     return (
-      <div className={styles.root}>
+      <RootContainer>
         <DragAwareCanvas
           className={styles.canvas}
           readOnly={readOnly}
@@ -729,7 +730,7 @@ export default class ImageTool extends React.PureComponent {
           height={image.height * ratio}
           width={image.width * ratio}
         />
-      </div>
+      </RootContainer>
     )
   }
 }
