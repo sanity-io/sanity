@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
+    />
+    <title>Frame – Sanity UI</title>
+    <style>
+      html,
+      body,
+      #root {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+      }
+      #root {
+        -webkit-font-smoothing: antialiased;
+      }
+      #root a {
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      window.setImmediate = window.setTimeout
+    </script>
+    <script type="module" src="/frame/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig",
+  "include": ["**/*.ts", "**/*.tsx"],
+  "compilerOptions": {
+    "outDir": "./dist/dts/",
+    "module": "ES2020",
+    "jsx": "react"
+  }
+}

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-const depcheck = require('depcheck')
 const path = require('path')
 const fs = require('fs')
+const depcheck = require('depcheck')
 const chalk = require('chalk')
 
 const cwd = path.resolve(process.cwd(), process.argv[2] || '.')
@@ -22,6 +22,8 @@ const options = {
     'part:*',
     'all:part:*',
     'sanity:*',
+    // Ignore alias used in `dev/workshop`
+    '$workshop',
     ...getProjectIgnores(cwd),
   ],
   ignoreDirs: ['lib'],
