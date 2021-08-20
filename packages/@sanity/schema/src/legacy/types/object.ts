@@ -32,6 +32,7 @@ const normalizeSearchConfig = (configs) => {
     return {
       weight: 'weight' in conf ? conf.weight : 1,
       path: toPath(conf.path),
+      mapWith: typeof conf.mapWith === 'string' ? conf.mapWith : undefined,
     }
   })
 }
