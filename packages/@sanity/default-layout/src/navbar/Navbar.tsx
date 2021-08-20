@@ -1,188 +1,181 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import React, {createElement, useCallback, useMemo, useState} from 'react'
-import styled from 'styled-components'
-import {SearchIcon, PlugIcon, MenuIcon, ComposeIcon, PackageIcon} from '@sanity/icons'
-import {Button, Card, Container, Flex, Tooltip, useMediaIndex, Text, Box} from '@sanity/ui'
+import React, {createElement, useCallback, useState, useEffect, useMemo} from 'react'
+import {SearchIcon, MenuIcon, ComposeIcon, CloseIcon} from '@sanity/icons'
+import {Button, Card, Tooltip, useMediaIndex, Text, Box, Flex, useGlobalKeyDown} from '@sanity/ui'
 import {InsufficientPermissionsMessage, LegacyLayerProvider} from '@sanity/base/components'
 import {StateLink} from '@sanity/base/router'
 // eslint-disable-next-line camelcase
 import {unstable_useCanCreateAnyOf, useCurrentUser} from '@sanity/base/hooks'
 import config from 'config:sanity'
 import * as sidecar from 'part:@sanity/default-layout/sidecar?'
+import styled from 'styled-components'
 import {HAS_SPACES} from '../util/spaces'
 import {Router, Tool} from '../types'
-import DatasetSelect from '../datasetSelect'
-import {CollapseMenu, StatusButton} from './components'
-import {PresenceMenu} from './presence'
+import {DatasetSelect} from '../datasetSelect'
 import Branding from './branding/Branding'
-import {LoginStatus} from './loginStatus'
 import SanityStatusContainer from './studioStatus/SanityStatusContainer'
-
-import {SearchField, SearchFullscreen} from './search-2'
-
-import styles from './Navbar.css'
+import {PresenceMenu, LoginStatus, SearchField, ToolMenuCollapse} from '.'
 
 interface Props {
   createMenuIsOpen: boolean
+  documentTypes: string[]
   onCreateButtonClick: () => void
-  onSearchClose: () => void
-  onSearchOpen: () => void
   onSetLoginStatusElement: (element: HTMLDivElement) => void
-  onSetSearchElement: (element: HTMLDivElement) => void
   onSwitchTool: () => void
   onToggleMenu: () => void
   onUserLogout: () => void
   router: Router
-  searchIsOpen: boolean
-  showLabel: boolean
-  showToolMenu: boolean
+  searchIsOpen: (open: boolean) => void
+  searchPortalElement: HTMLDivElement | null
   tools: Tool[]
-  documentTypes: string[]
 }
 
-type NavElements =
-  | 'sidebar'
-  | 'spaces'
-  | 'create-document'
-  | 'search-field'
-  | 'search-button'
-  | 'tools'
-  | 'hints'
-  | 'login-status'
-  | 'sanity-status'
-  | 'collapsed-presence-menu'
-  | 'branding-left'
-  | 'branding-center'
-
-const FLEX_GAP = [1, 1, 2, 2]
-
-const Root = styled(Card)`
-  position: relative;
-  display: flex;
-  align-items: center;
-  white-space: nowrap;
+const Root = styled(Card)<{$searchIsOpen: boolean}>`
+  top: 0;
+  position: ${({$searchIsOpen}) => ($searchIsOpen ? 'sticky' : 'relative')};
+  z-index: 1;
+  min-height: auto;
 `
 
-// eslint-disable-next-line complexity
-export default function Navbar(props: Props) {
+const BrandingButton = styled(Button)`
+  --card-fg-color: inherit !important;
+  display: block;
+`
+
+const LeftFlex = styled(Flex)`
+  width: max-content;
+`
+
+const CenterBox = styled(Box)``
+
+const RightFlex = styled(Flex)``
+
+const SearchCard = styled(Card)<{$fullScreen: boolean}>`
+  min-width: 253px;
+  max-width: ${({$fullScreen}) => ($fullScreen ? undefined : '350px')};
+  z-index: 1;
+  position: ${({$fullScreen}) => ($fullScreen ? 'absolute' : undefined)};
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+`
+
+const SpacingBox = styled(Box)`
+  &:empty {
+    margin: 0;
+  }
+`
+
+/**
+ * `Navbar` is the main navigation of Studio apps.
+ *
+ * The navbar layout consists of 3 wrappers:
+ * ```
+ * | LeftFlex | CenterBox | RightFlex |
+ * ```
+ *
+ * LARGE screens:
+ * ```
+ * | LeftFlex                                               | RightFlex                            |
+ * | Branding, DatasetSelect, CreateDocument, Search, Tools | Status, Hints, Presence, LoginStatus |
+ * ```
+ *
+ * MEDIUM screens:
+ * ```
+ * | LeftFlex                                   | RightFlex        |
+ * | OpenMenu, Branding, CreateDocument, Search | Status, Presence |
+ * ```
+ *
+ * SMALL screens:
+ * ```
+ * | LeftFlex                 | CenterBox | RightFlex        |
+ * | OpenMenu, CreateDocument | Branding  | Presence, Search |
+ * ```
+ */
+
+export function Navbar(props: Props) {
   const {
     createMenuIsOpen,
+    documentTypes,
     onCreateButtonClick,
     onToggleMenu,
     onUserLogout,
     router,
-    tools,
     searchIsOpen,
-    documentTypes,
-    showToolMenu,
+    searchPortalElement,
+    tools,
   } = props
 
-  const rootState = HAS_SPACES && router.state.space ? {space: router.state.space} : {}
-  const tool = router.state?.tool || ''
+  const [searchOpen, setSearchOpen] = useState<boolean>(false)
+  const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
+  const [searchButtonElement, setSearchButtonElement] = useState<HTMLButtonElement | null>(null)
   const {value: currentUser} = useCurrentUser()
   const createAnyPermission = unstable_useCanCreateAnyOf(documentTypes)
   const mediaIndex = useMediaIndex()
+  const rootState = useMemo(
+    () => (HAS_SPACES && router.state.space ? {space: router.state.space} : {}),
+    [router.state.space]
+  )
 
-  const [searchOpen, setSearchOpen] = useState<boolean>(false)
+  const shouldRender = {
+    brandingCenter: mediaIndex <= 1,
+    collapsedPresenceMenu: mediaIndex <= 1,
+    hints: mediaIndex > 1 && sidecar && sidecar.isSidecarEnabled && sidecar.isSidecarEnabled(),
+    loginStatus: mediaIndex > 1,
+    searchFullscreen: mediaIndex <= 1,
+    spaces: HAS_SPACES && mediaIndex >= 3,
+    statusContainer: mediaIndex > 1,
+    tools: mediaIndex >= 3,
+  }
+
+  useGlobalKeyDown((e) => {
+    if (e.key === 'Escape' && searchOpen) {
+      setSearchOpen(false)
+      searchButtonElement?.focus()
+    }
+  })
 
   const handleToggleSearchOpen = useCallback(() => {
-    setSearchOpen((prev) => !prev)
-  }, [])
-
-  const shouldRender = useCallback(
-    (key: NavElements) => {
-      switch (key) {
-        case 'sidebar': {
-          return mediaIndex < 3
-        }
-        case 'spaces': {
-          return HAS_SPACES && mediaIndex >= 3
-        }
-        case 'create-document': {
-          return true
-        }
-        case 'search-field': {
-          return mediaIndex >= 2 || searchIsOpen
-        }
-        case 'tools': {
-          return mediaIndex >= 3
-        }
-        case 'search-button': {
-          return mediaIndex < 2
-        }
-        case 'hints': {
-          return (
-            mediaIndex >= 2 && sidecar && sidecar.isSidecarEnabled && sidecar.isSidecarEnabled()
-          )
-        }
-        case 'login-status': {
-          return mediaIndex >= 3
-        }
-        case 'sanity-status': {
-          return mediaIndex > 2
-        }
-        case 'collapsed-presence-menu': {
-          return mediaIndex < 2
-        }
-        case 'branding-center': {
-          return mediaIndex <= 1
-        }
-        case 'branding-left': {
-          return mediaIndex > 1
-        }
-        default: {
-          return true
-        }
+    setSearchOpen((prev) => {
+      if (prev) {
+        searchButtonElement?.focus()
       }
-    },
-    [mediaIndex, searchIsOpen]
-  )
+
+      return !prev
+    })
+  }, [searchButtonElement])
+
+  useEffect(() => {
+    if (searchIsOpen && !shouldRender.searchFullscreen) {
+      setSearchOpen(false)
+      searchIsOpen(false)
+    }
+  }, [searchIsOpen, shouldRender.searchFullscreen])
+
+  useEffect(() => {
+    searchIsOpen(searchOpen)
+
+    if (searchOpen) {
+      inputElement?.focus()
+    }
+  }, [inputElement, searchButtonElement, searchIsOpen, searchOpen])
 
   const LinkComponent = useCallback(
     (linkProps) => {
-      const {name} = linkProps?.tool
-      return <StateLink {...linkProps} state={{...router.state, tool: name, [name]: undefined}} />
+      return <StateLink state={rootState} {...linkProps} />
     },
-    [router.state]
-  )
-
-  const toolOptions = useMemo(
-    () =>
-      tools.map((t) => {
-        return {
-          id: t.name,
-          text: t.title,
-          icon: t?.icon || PlugIcon,
-          mode: 'bleed',
-          tone: 'primary',
-          tool: t,
-          as: LinkComponent,
-          selected: tool === t.name,
-          'data-as': 'button',
-        }
-      }),
-    [LinkComponent, tool, tools]
+    [rootState]
   )
 
   return (
-    <Root borderBottom scheme="dark">
-      <Container width={5}>
-        <Flex
-          gap={FLEX_GAP}
-          justify="space-between"
-          align="center"
-          sizing="border"
-          paddingX={2}
-          paddingY={[2, 2, 2, 1]}
-        >
-          <Flex
-            gap={FLEX_GAP}
-            align="center"
-            style={{flex: shouldRender('branding-center') ? 'none' : 1}}
-          >
-            {shouldRender('sidebar') && (
+    <Root padding={2} scheme="dark" $searchIsOpen={searchOpen}>
+      <Flex align="center" justify="space-between">
+        <LeftFlex flex={shouldRender.brandingCenter ? undefined : 1} align="center">
+          {!shouldRender.tools && (
+            <SpacingBox marginRight={1}>
               <Button
                 aria-label="Open menu"
                 icon={MenuIcon}
@@ -190,115 +183,138 @@ export default function Navbar(props: Props) {
                 onClick={onToggleMenu}
                 title="Open menu"
               />
-            )}
-
-            {shouldRender('branding-left') && (
-              <StateLink state={rootState} className={styles.brandingLink}>
-                <Branding projectName={config && config.project.name} />
-              </StateLink>
-            )}
-
-            {shouldRender('spaces') && (
-              <Box>
-                <DatasetSelect isVisible={showToolMenu} tone="navbar" />
-              </Box>
-            )}
-
-            {shouldRender('create-document') && (
-              <Tooltip
-                portal
-                content={
-                  <Box padding={2}>
-                    {createAnyPermission.granted ? (
-                      <Text size={1} muted>
-                        Create new document
-                      </Text>
-                    ) : (
-                      <InsufficientPermissionsMessage
-                        currentUser={currentUser}
-                        operationLabel="create any document"
-                      />
-                    )}
-                  </Box>
-                }
-              >
-                <Box>
-                  <Button
-                    aria-label="Create"
-                    data-testid="default-layout-global-create-button"
-                    icon={ComposeIcon}
-                    mode="bleed"
-                    onClick={onCreateButtonClick}
-                    disabled={!createAnyPermission.granted}
-                    selected={createMenuIsOpen}
-                  />
-                </Box>
-              </Tooltip>
-            )}
-
-            {shouldRender('search-field') && (
-              <LegacyLayerProvider zOffset="navbarPopover">
-                <Box flex={1}>
-                  <SearchField />
-                </Box>
-              </LegacyLayerProvider>
-            )}
-          </Flex>
-
-          {shouldRender('branding-center') && (
-            <StateLink state={rootState} className={styles.brandingLink}>
-              <Branding projectName={config && config.project.name} />
-            </StateLink>
+            </SpacingBox>
           )}
 
-          <Flex
-            gap={FLEX_GAP}
-            justify="flex-end"
-            align="center"
-            style={{flex: shouldRender('tools') ? 1 : 'none'}}
-          >
-            {shouldRender('tools') && (
-              <LegacyLayerProvider zOffset="navbarPopover">
-                <Box flex={1}>
-                  <Card shadow={1} radius={2}>
-                    <CollapseMenu options={toolOptions} />
-                  </Card>
-                </Box>
-              </LegacyLayerProvider>
-            )}
+          {!shouldRender.brandingCenter && (
+            <SpacingBox marginRight={1}>
+              <BrandingButton forwardedAs={LinkComponent} mode="bleed">
+                <Branding projectName={config && config.project.name} />
+              </BrandingButton>
+            </SpacingBox>
+          )}
 
-            <Flex align="center" gap={1}>
-              {shouldRender('sanity-status') && (
-                <>
-                  <SanityStatusContainer />
-                  <StatusButton icon={PackageIcon} mode="bleed" statusTone="primary" />
-                </>
-              )}
-
-              {shouldRender('hints') && (
-                <Box>{sidecar && createElement(sidecar.SidecarToggleButton)}</Box>
-              )}
-
-              <LegacyLayerProvider zOffset="navbarPopover">
-                <PresenceMenu collapse={shouldRender('collapsed-presence-menu')} />
-              </LegacyLayerProvider>
-
-              {shouldRender('login-status') && (
-                <LegacyLayerProvider zOffset="navbarPopover">
-                  <LoginStatus onLogout={onUserLogout} />
-                </LegacyLayerProvider>
-              )}
-
-              {shouldRender('search-button') && (
-                <Box>
-                  <Button icon={SearchIcon} mode="bleed" onClick={handleToggleSearchOpen} />
-                  {searchOpen && <SearchFullscreen onClose={handleToggleSearchOpen} />}
-                </Box>
-              )}
+          {shouldRender.spaces && (
+            <Flex marginRight={2}>
+              <DatasetSelect />
             </Flex>
-          </Flex>
-        </Flex>
-      </Container>
+          )}
+
+          <LegacyLayerProvider zOffset="navbarPopover">
+            <Tooltip
+              portal
+              scheme="light"
+              content={
+                <Box padding={2}>
+                  {createAnyPermission.granted ? (
+                    <Text size={1} muted>
+                      Create new document
+                    </Text>
+                  ) : (
+                    <InsufficientPermissionsMessage
+                      currentUser={currentUser}
+                      operationLabel="create any document"
+                    />
+                  )}
+                </Box>
+              }
+            >
+              <SpacingBox marginRight={shouldRender.brandingCenter ? undefined : 2}>
+                <Button
+                  aria-label="Create new document"
+                  data-testid="default-layout-global-create-button"
+                  icon={ComposeIcon}
+                  mode="bleed"
+                  onClick={onCreateButtonClick}
+                  disabled={!createAnyPermission.granted}
+                  selected={createMenuIsOpen}
+                />
+              </SpacingBox>
+            </Tooltip>
+          </LegacyLayerProvider>
+
+          <LegacyLayerProvider zOffset="navbarPopover">
+            {(searchOpen || !shouldRender.searchFullscreen) && (
+              <SearchCard
+                flex={1}
+                padding={shouldRender.searchFullscreen ? 2 : undefined}
+                $fullScreen={shouldRender.searchFullscreen}
+              >
+                <Flex flex={1}>
+                  <Box flex={1} marginRight={shouldRender.tools ? undefined : 2}>
+                    <SearchField
+                      onSearchItemClick={handleToggleSearchOpen}
+                      portalElement={searchPortalElement}
+                      inputElement={setInputElement}
+                      fullScreen={shouldRender.searchFullscreen}
+                    />
+                  </Box>
+                  {shouldRender.searchFullscreen && (
+                    <Button
+                      icon={CloseIcon}
+                      aria-label="Close search"
+                      onClick={handleToggleSearchOpen}
+                      mode="bleed"
+                    />
+                  )}
+                </Flex>
+              </SearchCard>
+            )}
+          </LegacyLayerProvider>
+
+          {shouldRender.tools && (
+            <Card borderRight paddingRight={1} flex={1} overflow="visible" marginX={2}>
+              <LegacyLayerProvider zOffset="navbarPopover">
+                <ToolMenuCollapse tools={tools} router={router} />
+              </LegacyLayerProvider>
+            </Card>
+          )}
+        </LeftFlex>
+
+        {shouldRender.brandingCenter && (
+          <CenterBox marginX={1}>
+            <BrandingButton forwardedAs={LinkComponent} mode="bleed">
+              <Branding projectName={config && config.project.name} />
+            </BrandingButton>
+          </CenterBox>
+        )}
+
+        <RightFlex align="center">
+          {shouldRender.statusContainer && (
+            <SpacingBox marginRight={1}>
+              <SanityStatusContainer />
+            </SpacingBox>
+          )}
+
+          {shouldRender.hints && (
+            <Box marginRight={1}>{sidecar && createElement(sidecar.SidecarToggleButton)}</Box>
+          )}
+
+          <LegacyLayerProvider zOffset="navbarPopover">
+            <SpacingBox marginRight={1}>
+              <PresenceMenu collapse={shouldRender.collapsedPresenceMenu} maxAvatars={4} />
+            </SpacingBox>
+          </LegacyLayerProvider>
+
+          {shouldRender.tools && (
+            <LegacyLayerProvider zOffset="navbarPopover">
+              <Flex align="center">
+                <LoginStatus onLogout={onUserLogout} />
+              </Flex>
+            </LegacyLayerProvider>
+          )}
+
+          {shouldRender.searchFullscreen && (
+            <Button
+              aria-label="Open search"
+              onClick={handleToggleSearchOpen}
+              icon={SearchIcon}
+              mode="bleed"
+              ref={setSearchButtonElement}
+            />
+          )}
+        </RightFlex>
+      </Flex>
     </Root>
   )
 }
