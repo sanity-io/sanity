@@ -3,7 +3,12 @@
 exports[`generics can customize error messages 1`] = `
 Array [
   Object {
-    "item": [ValidationError: Dude it needs to be a string],
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Dude it needs to be a string",
+      "operation": undefined,
+      "paths": Array [],
+    },
     "level": "error",
     "path": Array [],
     "type": "validation",
@@ -14,7 +19,12 @@ Array [
 exports[`generics can customize warning messages 1`] = `
 Array [
   Object {
-    "item": [ValidationError: Dude it should probably be a string],
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Dude it should probably be a string",
+      "operation": undefined,
+      "paths": Array [],
+    },
     "level": "warning",
     "path": Array [],
     "type": "validation",
@@ -25,7 +35,12 @@ Array [
 exports[`generics can demote errors to warnings 1`] = `
 Array [
   Object {
-    "item": [ValidationError: Expected type "String", got "Number"],
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Expected type \\"String\\", got \\"Number\\"",
+      "operation": undefined,
+      "paths": Array [],
+    },
     "level": "warning",
     "path": Array [],
     "type": "validation",
@@ -36,7 +51,12 @@ Array [
 exports[`generics can merge rules 1`] = `
 Array [
   Object {
-    "item": [ValidationError: Must be at least 5 characters long],
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Must be at least 5 characters long",
+      "operation": undefined,
+      "paths": Array [],
+    },
     "level": "error",
     "path": Array [],
     "type": "validation",
@@ -47,7 +67,12 @@ Array [
 exports[`generics returns arrays of errors/warnings by default 1`] = `
 Array [
   Object {
-    "item": [ValidationError: Expected type "String", got "Number"],
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Expected type \\"String\\", got \\"Number\\"",
+      "operation": undefined,
+      "paths": Array [],
+    },
     "level": "error",
     "path": Array [],
     "type": "validation",

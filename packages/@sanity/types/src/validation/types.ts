@@ -251,16 +251,18 @@ export interface ValidationErrorOptions {
 }
 
 // This follows the same pattern as `RuleClass` and `Rule` above
+// Note: this class does not actually extend `Error` since it's never thrown
+// within the validation library
 export interface ValidationErrorClass {
   new (message: string, options?: ValidationErrorOptions): ValidationError
 }
 
-export interface ValidationError extends Omit<Error, 'name'> {
+export interface ValidationError {
   message: string
   children?: ValidationMarker[]
   operation?: 'AND' | 'OR'
   paths: Path[]
-  cloneWithMessage?(message: string): ValidationError
+  cloneWithMessage(message: string): ValidationError
 }
 
 export type CustomValidatorResult = true | string | ValidationError

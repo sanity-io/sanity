@@ -39,7 +39,6 @@
     "@sanity/client": "^2.15.0",
     "@sanity/types": "^2.15.0",
     "date-fns": "^2.16.1",
-    "es6-error": "^4.0.2",
     "lodash": "^4.17.15"
   },
   "jest": {

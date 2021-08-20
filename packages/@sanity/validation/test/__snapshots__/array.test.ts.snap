@@ -3,7 +3,12 @@
 exports[`array exact length constraint: exact length: too long 1`] = `
 Array [
   Object {
-    "item": [ValidationError: Must have exactly 2 items],
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Must have exactly 2 items",
+      "operation": undefined,
+      "paths": Array [],
+    },
     "level": "error",
     "path": Array [],
     "type": "validation",
@@ -14,7 +19,12 @@ Array [
 exports[`array exact length constraint: exact length: too short 1`] = `
 Array [
   Object {
-    "item": [ValidationError: Must have exactly 2 items],
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Must have exactly 2 items",
+      "operation": undefined,
+      "paths": Array [],
+    },
     "level": "error",
     "path": Array [],
     "type": "validation",
@@ -27,7 +37,12 @@ exports[`array exact length constraint: exact length: valid 1`] = `Array []`;
 exports[`array max length constraint: max length: too long 1`] = `
 Array [
   Object {
-    "item": [ValidationError: Must have at most 2 items],
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Must have at most 2 items",
+      "operation": undefined,
+      "paths": Array [],
+    },
     "level": "error",
     "path": Array [],
     "type": "validation",
@@ -40,7 +55,12 @@ exports[`array max length constraint: max length: valid 1`] = `Array []`;
 exports[`array min length constraint: min length: too short 1`] = `
 Array [
   Object {
-    "item": [ValidationError: Must have at least 2 items],
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Must have at least 2 items",
+      "operation": undefined,
+      "paths": Array [],
+    },
     "level": "error",
     "path": Array [],
     "type": "validation",
@@ -55,13 +75,23 @@ exports[`array required constraint: required: empty array 1`] = `Array []`;
 exports[`array required constraint: required: null 1`] = `
 Array [
   Object {
-    "item": [ValidationError: Expected type "Array", got "null"],
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Expected type \\"Array\\", got \\"null\\"",
+      "operation": undefined,
+      "paths": Array [],
+    },
     "level": "error",
     "path": Array [],
     "type": "validation",
   },
   Object {
-    "item": [ValidationError: Required],
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Required",
+      "operation": undefined,
+      "paths": Array [],
+    },
     "level": "error",
     "path": Array [],
     "type": "validation",
@@ -72,7 +102,12 @@ Array [
 exports[`array required constraint: required: undefined 1`] = `
 Array [
   Object {
-    "item": [ValidationError: Required],
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Required",
+      "operation": undefined,
+      "paths": Array [],
+    },
     "level": "error",
     "path": Array [],
     "type": "validation",
@@ -85,7 +120,19 @@ exports[`array required constraint: required: valid 1`] = `Array []`;
 exports[`array unique constraint (default, array values): array unique: duplicates 1`] = `
 Array [
   Object {
-    "item": [ValidationError: Can't be a duplicate],
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Can't be a duplicate",
+      "operation": undefined,
+      "paths": Array [
+        Array [
+          0,
+        ],
+        Array [
+          1,
+        ],
+      ],
+    },
     "level": "error",
     "path": Array [
       0,
@@ -93,7 +140,19 @@ Array [
     "type": "validation",
   },
   Object {
-    "item": [ValidationError: Can't be a duplicate],
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Can't be a duplicate",
+      "operation": undefined,
+      "paths": Array [
+        Array [
+          0,
+        ],
+        Array [
+          1,
+        ],
+      ],
+    },
     "level": "error",
     "path": Array [
       1,
@@ -108,7 +167,19 @@ exports[`array unique constraint (default, array values): array unique: valid 1`
 exports[`array unique constraint (default, bool values): boolean unique: duplicates 1`] = `
 Array [
   Object {
-    "item": [ValidationError: Can't be a duplicate],
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Can't be a duplicate",
+      "operation": undefined,
+      "paths": Array [
+        Array [
+          0,
+        ],
+        Array [
+          2,
+        ],
+      ],
+    },
     "level": "error",
     "path": Array [
       0,
@@ -116,7 +187,19 @@ Array [
     "type": "validation",
   },
   Object {
-    "item": [ValidationError: Can't be a duplicate],
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Can't be a duplicate",
+      "operation": undefined,
+      "paths": Array [
+        Array [
+          0,
+        ],
+        Array [
+          2,
+        ],
+      ],
+    },
     "level": "error",
     "path": Array [
       2,
@@ -131,7 +214,19 @@ exports[`array unique constraint (default, bool values): boolean unique: valid 1
 exports[`array unique constraint (default, numeric values): numeric unique: duplicates 1`] = `
 Array [
   Object {
-    "item": [ValidationError: Can't be a duplicate],
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Can't be a duplicate",
+      "operation": undefined,
+      "paths": Array [
+        Array [
+          0,
+        ],
+        Array [
+          2,
+        ],
+      ],
+    },
     "level": "error",
     "path": Array [
       0,
@@ -139,7 +234,19 @@ Array [
     "type": "validation",
   },
   Object {
-    "item": [ValidationError: Can't be a duplicate],
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Can't be a duplicate",
+      "operation": undefined,
+      "paths": Array [
+        Array [
+          0,
+        ],
+        Array [
+          2,
+        ],
+      ],
+    },
     "level": "error",
     "path": Array [
       2,
@@ -154,7 +261,19 @@ exports[`array unique constraint (default, numeric values): numeric unique: vali
 exports[`array unique constraint (default, object values): object unique: duplicates 1`] = `
 Array [
   Object {
-    "item": [ValidationError: Can't be a duplicate],
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Can't be a duplicate",
+      "operation": undefined,
+      "paths": Array [
+        Array [
+          0,
+        ],
+        Array [
+          3,
+        ],
+      ],
+    },
     "level": "error",
     "path": Array [
       0,
@@ -162,7 +281,19 @@ Array [
     "type": "validation",
   },
   Object {
-    "item": [ValidationError: Can't be a duplicate],
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Can't be a duplicate",
+      "operation": undefined,
+      "paths": Array [
+        Array [
+          0,
+        ],
+        Array [
+          3,
+        ],
+      ],
+    },
     "level": "error",
     "path": Array [
       3,
@@ -177,7 +308,19 @@ exports[`array unique constraint (default, object values): object unique: valid 
 exports[`array unique constraint (default, simple values): simple unique: duplicates 1`] = `
 Array [
   Object {
-    "item": [ValidationError: Can't be a duplicate],
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Can't be a duplicate",
+      "operation": undefined,
+      "paths": Array [
+        Array [
+          0,
+        ],
+        Array [
+          3,
+        ],
+      ],
+    },
     "level": "error",
     "path": Array [
       0,
@@ -185,7 +328,19 @@ Array [
     "type": "validation",
   },
   Object {
-    "item": [ValidationError: Can't be a duplicate],
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Can't be a duplicate",
+      "operation": undefined,
+      "paths": Array [
+        Array [
+          0,
+        ],
+        Array [
+          3,
+        ],
+      ],
+    },
     "level": "error",
     "path": Array [
       3,
