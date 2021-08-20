@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import calculateStyles from './calculateStyles'
 import Debug from 'debug'
-import {DEFAULT_HOTSPOT, DEFAULT_CROP} from './constants'
 import {debounce} from 'lodash'
-import styles from './styles/HotspotImage.css'
+import calculateStyles from './calculateStyles'
+import {DEFAULT_HOTSPOT, DEFAULT_CROP} from './constants'
+import {RootContainer} from './HotspotImage.styles'
 
 const debug = Debug('sanity-imagetool')
 
@@ -139,7 +139,7 @@ export default class HotspotImage extends React.PureComponent {
       },
     })
     return (
-      <div className={`${styles.root} ${className}`} style={style} ref={this.setContainerElement}>
+      <RootContainer className={`${className}`} style={style} ref={this.setContainerElement}>
         <div style={targetStyles.container}>
           <div style={targetStyles.padding} />
           <div style={targetStyles.crop}>
@@ -154,7 +154,7 @@ export default class HotspotImage extends React.PureComponent {
             />
           </div>
         </div>
-      </div>
+      </RootContainer>
     )
   }
 }
