@@ -1,2 +1,2 @@
-export {HistoryEvent} from './types'
+export type {HistoryEvent} from './types'
 export {transactionsToEvents} from './transactionsToEvents'
