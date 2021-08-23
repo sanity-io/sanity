@@ -3,13 +3,22 @@
 
 import {LegacyLayerProvider} from '@sanity/base/components'
 import {Layer} from '@sanity/ui'
-import classNames from 'classnames'
 import React from 'react'
 import {Subscription} from 'rxjs'
 import * as sidecar from 'part:@sanity/default-layout/sidecar?'
 import {isSidecarOpenSetting} from 'part:@sanity/default-layout/sidecar-datastore'
+import styled, {css} from 'styled-components'
 
-import styles from './Sidecar.css'
+const Root = styled(Layer)<{$open: boolean}>`
+  max-width: 420px;
+  height: 100%;
+
+  ${({$open}) =>
+    $open &&
+    css`
+      transform: translate3d(0, 0, 0);
+    `}
+`
 
 let isSidecarEnabled: () => boolean | null = null
 let SidecarLayout: React.ComponentType | null = null
@@ -76,9 +85,7 @@ class Sidecar extends React.PureComponent<{}, State> {
 
     return (
       <LegacyLayerProvider zOffset="pane">
-        <Layer className={classNames(styles.root, isOpen && styles.isOpen)}>
-          {isVisible && <SidecarLayout />}
-        </Layer>
+        <Root $open={isOpen}>{isVisible && <SidecarLayout />}</Root>
       </LegacyLayerProvider>
     )
   }
