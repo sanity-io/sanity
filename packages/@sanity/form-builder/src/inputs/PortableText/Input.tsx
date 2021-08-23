@@ -21,7 +21,7 @@ import {Path, isKeySegment, Marker, isKeyedObject} from '@sanity/types'
 import {BoundaryElementProvider, Layer, Portal, PortalProvider} from '@sanity/ui'
 import {uniqueId, isEqual} from 'lodash'
 import {useZIndex, ChangeIndicatorWithProvidedFullPath} from '@sanity/base/components'
-import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
+import ActivateOnFocus from '../../components/ActivateOnFocus/ActivateOnFocus'
 import PatchEvent from '../../PatchEvent'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import styles from './PortableTextInput.css'
@@ -394,11 +394,9 @@ export default function PortableTextInput(props: Props) {
       {!isFullscreen && (
         <>
           <ActivateOnFocus
-            inputId={activationId}
-            html={<h3 className={styles.activeOnFocusHeading}>Click to activate</h3>}
-            isActive={isActive}
+            message={<h3 className={styles.activeOnFocusHeading}>Click to activate</h3>}
             onActivate={handleActivate}
-            overlayClassName={styles.activateOnFocusOverlay}
+            isOverlayActive={!isActive}
           >
             <ChangeIndicatorWithProvidedFullPath
               compareDeep
