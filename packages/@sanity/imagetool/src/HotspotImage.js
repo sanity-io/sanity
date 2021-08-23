@@ -21,9 +21,8 @@ export default class HotspotImage extends React.PureComponent {
     src: PropTypes.string.isRequired,
     srcAspectRatio: PropTypes.number.isRequired,
     srcSet: PropTypes.string,
-    hotspot: PropTypes.object.isRequired,
-    crop: PropTypes.object.isRequired,
-    width: PropTypes.number,
+    hotspot: PropTypes.PropTypes.objectOf(PropTypes.object),
+    crop: PropTypes.PropTypes.objectOf(PropTypes.object),
     aspectRatio: PropTypes.oneOfType([PropTypes.number, PropTypes.oneOf(['auto', 'none'])]),
     alignX: PropTypes.oneOf(['center', 'left', 'right']),
     alignY: PropTypes.oneOf(['center', 'top', 'bottom']),
@@ -59,7 +58,6 @@ export default class HotspotImage extends React.PureComponent {
         "Image '%s' already loaded, refreshing (from cache) to trigger onLoad / onError",
         this.props.src
       )
-      imageElement.src = imageElement.src
     }
 
     this.updateContainerAspect(this.props)
