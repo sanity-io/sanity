@@ -155,13 +155,6 @@
   }
 }
 
-.activateOnFocusOverlay {
-  top: 1px;
-  left: 1px;
-  width: calc(100% - 2px);
-  height: calc(100% - 2px);
-}
-
 .activeOnFocusHeading {
   composes: heading4 from 'part:@sanity/base/theme/typography/headings-style';
 }
