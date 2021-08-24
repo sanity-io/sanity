@@ -1,6 +1,6 @@
 {
   "name": "@sanity/schema",
-  "version": "2.15.0",
+  "version": "2.16.0",
   "description": "",
   "main": "./lib/legacy/index.js",
   "types": "./dist/dts/legacy/index.d.ts",

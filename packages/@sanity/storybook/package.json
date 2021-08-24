@@ -1,6 +1,6 @@
 {
   "name": "@sanity/storybook",
-  "version": "2.15.1",
+  "version": "2.16.0",
   "description": "Sanity plugin for running react-storybook in a Sanity studio",
   "main": "./lib/index.js",
   "scripts": {
@@ -27,10 +27,10 @@
   },
   "homepage": "https://www.sanity.io/",
   "dependencies": {
-    "@sanity/base": "2.15.1",
-    "@sanity/server": "2.15.0",
+    "@sanity/base": "2.16.0",
+    "@sanity/server": "2.16.0",
     "@sanity/ui": "^0.36.0",
-    "@sanity/webpack-integration": "2.15.0",
+    "@sanity/webpack-integration": "2.16.0",
     "@storybook/addon-actions": "^3.4.11",
     "@storybook/addon-knobs": "^3.2.8",
     "@storybook/addons": "^3.2.6",
