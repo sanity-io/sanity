@@ -114,6 +114,7 @@ export type AssetFromSource = {
 
 export interface AssetSourceComponentProps {
   assetType?: 'file' | 'image'
+  document: SanityDocument
   dialogHeaderTitle?: string
   selectedAssets: Asset[]
   selectionType: 'single' | 'multiple'

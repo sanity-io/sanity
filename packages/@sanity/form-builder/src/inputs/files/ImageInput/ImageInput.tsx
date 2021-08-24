@@ -23,7 +23,6 @@ import ImageTool from '@sanity/imagetool'
 import {
   Asset as AssetDocument,
   AssetFromSource,
-  AssetSource,
   Image as BaseImage,
   ImageAsset,
   ImageSchemaType,
@@ -50,7 +49,7 @@ import UploadPlaceholder from '../common/UploadPlaceholder'
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
 import {FileInputButton} from '../common/FileInputButton/FileInputButton'
 import {FileTarget, Overlay} from '../common/styles'
-import {UploadState} from '../types'
+import {InternalAssetSource, UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
 import {RatioBox} from '../common/RatioBox'
 import {EMPTY_ARRAY} from '../../../utils/empty'
@@ -74,7 +73,7 @@ export type Props = {
   readOnly: boolean | null
   focusPath: Path
   directUploads?: boolean
-  assetSources?: AssetSource[]
+  assetSources?: InternalAssetSource[]
   markers: Marker[]
   presence: FormFieldPresence[]
 }
@@ -93,7 +92,7 @@ type FileInfo = {
 
 type ImageInputState = {
   isUploading: boolean
-  selectedAssetSource: AssetSource | null
+  selectedAssetSource: InternalAssetSource | null
   // Metadata about files currently over the drop area
   hoveringFiles: FileInfo[]
 }
@@ -365,7 +364,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
   handleSelectFiles = (files: File[]) => this.uploadFirstAccepted(files)
 
-  handleSelectImageFromAssetSource = (source: AssetSource) => {
+  handleSelectImageFromAssetSource = (source: InternalAssetSource) => {
     this.setState({selectedAssetSource: source})
   }
 
