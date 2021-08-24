@@ -1,7 +1,7 @@
 /* eslint-disable max-nested-callbacks */
+
 import {Observable, BehaviorSubject} from 'rxjs'
-import {createUserColorManager} from '../src/user-color/manager'
-import {ManagerOptions, UserColor} from '../src/user-color/types'
+import {UserColor, createUserColorManager, UserColorManagerOptions} from '../src/user-color'
 
 const colorPreferences = {
   anders: 'orange',
@@ -14,17 +14,17 @@ const colorPreferences = {
 
 const peopleNames = Object.keys(colorPreferences)
 
-const getMockUserStore = (): ManagerOptions['userStore'] => ({
+const getMockUserStore = (): UserColorManagerOptions['userStore'] => ({
   me: new BehaviorSubject({id: 'current'}),
 })
 
 const hues = ['blue', 'cyan', 'yellow', 'orange', 'magenta', 'purple']
-const colors: ManagerOptions['colors'] = hues.reduce((acc, hue) => {
+const colors: UserColorManagerOptions['colors'] = hues.reduce((acc, hue) => {
   acc[hue] = {background: hue, text: hue, border: hue}
   return acc
 }, {})
 
-const options: ManagerOptions = {
+const options: UserColorManagerOptions = {
   currentUserColor: 'blue',
   colors,
 }
