@@ -1,4 +1,6 @@
 import {MdFileUpload as icon} from 'react-icons/md'
+import DefaultAssetSource from 'part:@sanity/form-builder/input/image/asset-source-default'
+import DefaultFileAssetSource from 'part:@sanity/form-builder/input/file/asset-source-default'
 import petsAssetSource from '../src/assetSources/pets'
 import noopAssetSource from '../src/assetSources/noop'
 
@@ -74,7 +76,16 @@ export default {
       description: 'A lonely file',
       type: 'file',
       options: {
-        sources: [petsAssetSource, noopAssetSource],
+        sources: [DefaultFileAssetSource, petsAssetSource, noopAssetSource],
+      },
+    },
+    {
+      name: 'onlyOneImageWithCustomAssetSource',
+      title: 'Image with custom asset source',
+      description: 'A lonely image',
+      type: 'image',
+      options: {
+        sources: [DefaultAssetSource, petsAssetSource, noopAssetSource],
       },
     },
     {

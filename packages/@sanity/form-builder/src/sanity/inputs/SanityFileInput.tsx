@@ -3,7 +3,7 @@ import FileInput from '../../inputs/files/FileInput'
 import resolveUploader from '../uploads/resolveUploader'
 import withDocument from '../../utils/withDocument'
 import {
-  defaultAssetSources,
+  defaultFileAssetSources,
   formBuilderConfig,
   userDefinedFileAssetSources,
 } from '../../legacyParts'
@@ -12,7 +12,7 @@ import {AssetSource} from '@sanity/types'
 
 const globalAssetSources = userDefinedFileAssetSources
   ? userDefinedFileAssetSources
-  : defaultAssetSources
+  : defaultFileAssetSources
 
 const SUPPORT_DIRECT_UPLOADS = formBuilderConfig?.files?.directUploads !== false
 

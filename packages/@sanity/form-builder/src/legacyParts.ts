@@ -42,7 +42,8 @@ import FieldsetPart from 'part:@sanity/components/fieldsets/default'
 import ActivateOnFocusPart from 'part:@sanity/components/utilities/activate-on-focus'
 import FormFieldPart from 'part:@sanity/components/formfields/default'
 import ProgressCirclePart from 'part:@sanity/components/progress/circle'
-import defaultAssetSources from 'all:part:@sanity/form-builder/input/image/asset-source'
+import defaultImageAssetSources from 'all:part:@sanity/form-builder/input/image/asset-source'
+import defaultFileAssetSources from 'all:part:@sanity/form-builder/input/file/asset-source'
 
 export {
   BooleanInput,
@@ -89,5 +90,6 @@ export {
   ActivateOnFocusPart,
   FormFieldPart,
   ProgressCirclePart,
-  defaultAssetSources,
+  defaultImageAssetSources,
+  defaultFileAssetSources,
 }
