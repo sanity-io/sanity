@@ -1,18 +1,19 @@
 import * as React from 'react'
 import ReactDOM from 'react-dom'
-import Main from './components/Main'
+import {createBrowserHistory as createHistory} from 'history'
 import route from '../src/route'
 import RouterProvider from '../src/components/RouterProvider'
-import createHistory from 'history/createBrowserHistory'
-import NotFound from './components/NotFound'
 import {Router} from '../src/types'
+import NotFound from './components/NotFound'
+import Main from './components/Main'
 
 const router: Router = route('/omg/lol', [
   route.scope('product', '/products/:id', [route('/:detailView'), route('/user/:userId')]),
-  route('/users/:userId', (params: any): any => {
+  route('/users/:userId', (params) => {
     if (params.userId === 'me') {
       return route('/:profileSection')
     }
+    return undefined
   }),
   route.intents('/intents2'),
 ])
@@ -33,12 +34,8 @@ function render(state, pathname) {
       <RouterProvider router={router} onNavigate={handleNavigate} state={state}>
         {router.isNotFound(pathname) ? <NotFound /> : <Main />}
       </RouterProvider>
-      <div>
-        <h2>Components outside provider context</h2>
-        <Main />
-      </div>
     </div>,
-    document.getElementById('main')
+    document.getElementById('root')
   )
 }
 

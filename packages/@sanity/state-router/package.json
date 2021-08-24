@@ -16,11 +16,11 @@
     }
   },
   "scripts": {
-    "start": "remon --require ts-node/register demo-server/app.ts",
+    "start": "cd demo && vite .",
     "test": "jest",
     "compile:watch": "babel --watch --out-dir lib/ src/",
     "benchmark": "npm run compile && node --prof --logfile=benchmarks.log perf/benchmark.js",
-    "clean": "rimraf lib dest"
+    "clean": "rimraf coverage dist lib"
   },
   "keywords": [
     "sanity",
@@ -39,23 +39,17 @@
   },
   "devDependencies": {
     "@types/jest": "^26.0.22",
-    "browserify": "^14.3.0",
-    "error-capture-middleware": "0.0.2",
-    "express": "^4.16.1",
-    "history": "^4.6.3",
+    "@vitejs/plugin-react-refresh": "^1.3.6",
+    "history": "^5.0.1",
     "jest": "^26.6.3",
     "object-inspect": "^1.6.0",
     "prop-types": "^15.6.0",
-    "quickreload": "^2.1.2",
     "react": "17.0.1",
     "react-dom": "17.0.1",
-    "rebundler": "^0.3.0",
-    "remon": "^1.0.2",
     "rimraf": "^2.7.1",
-    "staticr": "^4.0.2",
     "ts-jest": "^26.5.4",
     "ts-node": "^9.1.1",
-    "tsify": "^4.0.1"
+    "vite": "^2.4.4"
   },
   "peerDependencies": {
     "react": "^16.9 || ^17",
