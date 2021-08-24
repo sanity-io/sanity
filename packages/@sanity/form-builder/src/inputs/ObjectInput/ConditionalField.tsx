@@ -1,4 +1,4 @@
-import React, {useMemo, useRef} from 'react'
+import React, {forwardRef, useMemo, useRef} from 'react'
 import {
   HiddenOption,
   HiddenOptionCallbackContext,
@@ -62,18 +62,21 @@ export const ConditionalField = ({hidden, ...rest}: Props) => {
   )
 }
 
-const ConditionalFieldWithDocument = withDocument(function ConditionalFieldWithDocument(
-  props: Omit<Props, 'hidden'> & {document: SanityDocument; hidden: HiddenOptionCallback}
-) {
-  const {document, parent, value, hidden, children} = props
+const ConditionalFieldWithDocument = withDocument(
+  forwardRef(function ConditionalFieldWithDocument(
+    props: Omit<Props, 'hidden'> & {document: SanityDocument; hidden: HiddenOptionCallback},
+    ref /* ignore ref as there's no place to put it */
+  ) {
+    const {document, parent, value, hidden, children} = props
 
-  const {value: currentUser} = useCurrentUser()
-  const shouldHide = useCheckCondition(hidden, {
-    currentUser: omitDeprecatedRole(currentUser),
-    document,
-    parent,
-    value,
+    const {value: currentUser} = useCurrentUser()
+    const shouldHide = useCheckCondition(hidden, {
+      currentUser: omitDeprecatedRole(currentUser),
+      document,
+      parent,
+      value,
+    })
+
+    return <>{shouldHide ? null : children}</>
   })
-
-  return <>{shouldHide ? null : children}</>
-})
+)
