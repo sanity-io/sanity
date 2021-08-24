@@ -2,7 +2,7 @@ import {map} from 'rxjs/operators'
 import {ReferenceFilterSearchOptions, ReferenceSchemaType} from '@sanity/types'
 import {Observable} from 'rxjs'
 import {createWeightedSearch, observeForPreview} from '../../../legacyParts'
-import {versionedClient} from '../../versionedClient'
+import {searchClient} from '../../versionedClient'
 
 export function getPreviewSnapshot(value: {_ref: string}, referenceType: ReferenceSchemaType) {
   return observeForPreview(value, referenceType).pipe(map((result: any) => result.snapshot))
@@ -20,7 +20,7 @@ export function search(
   type: ReferenceSchemaType,
   options: ReferenceFilterSearchOptions
 ): Observable<SearchHit[]> {
-  const searchWeighted = createWeightedSearch(type.to, versionedClient, options)
+  const searchWeighted = createWeightedSearch(type.to, searchClient, options)
   return searchWeighted(textTerm, {includeDrafts: false}).pipe(
     map((results: SearchResult): SearchHit[] =>
       results.map(({hit}) => ({_type: hit._type, _id: hit._id}))
