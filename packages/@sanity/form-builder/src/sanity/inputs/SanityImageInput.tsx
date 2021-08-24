@@ -1,14 +1,14 @@
 import React from 'react'
+import {AssetSource} from '@sanity/types'
 import ImageInput from '../../inputs/files/ImageInput'
 import resolveUploader from '../uploads/resolveUploader'
-import withDocument from '../../utils/withDocument'
 import {
   defaultImageAssetSources,
   formBuilderConfig,
   userDefinedImageAssetSources,
 } from '../../legacyParts'
 import {materializeReference} from './client-adapters/assets'
-import {AssetSource} from '@sanity/types'
+import {wrapWithDocument} from './wrapWithDocument'
 
 const globalAssetSources = userDefinedImageAssetSources
   ? userDefinedImageAssetSources
@@ -24,14 +24,7 @@ export default React.forwardRef(function SanityImageInput(props: Props, forwarde
   // note: type.options.sources may be an empty array and in that case we're
   // disabling selecting images from asset source  (it's a feature, not a bug)
   const assetSources = React.useMemo(
-    () =>
-      (sourcesFromSchema || globalAssetSources).map((source: AssetSource) => ({
-        ...source,
-        // Note: The asset source plugin get's passed the enclosing document by default.
-        // This is a potential performance hog, so we should consider some alternatives here
-        // e.g. we could offer a way to declare the path for the values in the document you're interested in instead
-        component: withDocument(source.component),
-      })),
+    (): AssetSource[] => (sourcesFromSchema || globalAssetSources).map(wrapWithDocument),
     [sourcesFromSchema]
   )
 

@@ -8,7 +8,6 @@ import {FormFieldSet, ImperativeToast} from '@sanity/base/components'
 import {
   Asset as AssetDocument,
   AssetFromSource,
-  AssetSource,
   File as BaseFile,
   FileAsset,
   FileSchemaType,
@@ -53,7 +52,7 @@ import {FormBuilderInput} from '../../../FormBuilderInput'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import {FileInputButton} from '../common/FileInputButton/FileInputButton'
 import {FileTarget, FileInfo, Overlay} from '../common/styles'
-import {UploadState} from '../types'
+import {InternalAssetSource, UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
 import {DropMessage} from '../common/DropMessage'
 import {handleSelectAssetFromSource} from '../common/assetSource'
@@ -84,7 +83,7 @@ export type Props = {
   readOnly: boolean | null
   focusPath: Path
   directUploads?: boolean
-  assetSources?: AssetSource[]
+  assetSources?: InternalAssetSource[]
   markers: Marker[]
   presence: FormFieldPresence[]
 }
@@ -93,7 +92,7 @@ const HIDDEN_FIELDS = ['asset']
 
 type FileInputState = {
   isUploading: boolean
-  selectedAssetSource: AssetSource | null
+  selectedAssetSource: InternalAssetSource | null
   isAdvancedEditOpen: boolean
   hoveringFiles: FileInfo[]
 }
@@ -175,7 +174,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     this.uploadFirstAccepted(files)
   }
 
-  handleSelectFileFromAssetSource = (source: AssetSource) => {
+  handleSelectFileFromAssetSource = (source: InternalAssetSource) => {
     this.setState({selectedAssetSource: source})
   }
 
