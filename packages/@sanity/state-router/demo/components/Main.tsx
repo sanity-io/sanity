@@ -1,11 +1,11 @@
-import {Router} from '../../src/components/types'
 import * as React from 'react'
+import {HOCRouter} from '../../src/components/types'
 import {StateLink, Link, RouteScope, withRouterHOC} from '../../src/components'
 import Product from './Product'
 import User from './User'
 
 type Props = {
-  router: Router
+  router: HOCRouter
 }
 
 export default withRouterHOC((props: Props) => {
