@@ -48,7 +48,6 @@ import {PresenceOverlay, FormFieldPresence} from '@sanity/base/presence'
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
 import {Uploader, UploaderResolver, UploadOptions} from '../../../sanity/uploads/types'
 import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
-import {FormBuilderInput} from '../../../FormBuilderInput'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import {FileInputButton} from '../common/FileInputButton/FileInputButton'
 import {FileTarget, FileInfo, Overlay} from '../common/styles'
@@ -57,6 +56,7 @@ import {UploadProgress} from '../common/UploadProgress'
 import {DropMessage} from '../common/DropMessage'
 import {handleSelectAssetFromSource} from '../common/assetSource'
 import {AssetBackground} from './styles'
+import {FileInputField} from './FileInputField'
 
 type Field = {
   name: string
@@ -365,17 +365,16 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     )
   }
 
-  handleFieldChange = (event: PatchEvent, field: Field) => {
+  handleFieldChange = (event: PatchEvent) => {
     const {onChange, type} = this.props
     onChange(
-      event.prefixAll(field.name).prepend(
+      event.prepend(
         setIfMissing({
           _type: type.name,
         })
       )
     )
   }
-
   handleStartAdvancedEdit = () => {
     this.setState({isAdvancedEditOpen: true})
   }
@@ -437,21 +436,35 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   renderField(field: Field) {
-    const {value, level, focusPath, onFocus, readOnly, onBlur, presence} = this.props
-    const fieldValue = value && value[field.name]
+    const {
+      value,
+      level,
+      focusPath,
+      onFocus,
+      readOnly,
+      onBlur,
+      compareValue,
+      presence,
+      markers,
+    } = this.props
+    const fieldValue = value?.[field.name]
+    const fieldMarkers = markers.filter((marker) => marker.path[0] === field.name)
+
     return (
-      <FormBuilderInput
+      <FileInputField
         key={field.name}
+        field={field}
+        parentValue={value}
         value={fieldValue}
-        type={field.type}
-        onChange={(ev) => this.handleFieldChange(ev, field)}
-        path={[field.name]}
+        onChange={this.handleFieldChange}
         onFocus={onFocus}
+        compareValue={compareValue}
         onBlur={onBlur}
         readOnly={Boolean(readOnly || field.type.readOnly)}
         focusPath={focusPath}
         level={level}
         presence={presence}
+        markers={fieldMarkers}
       />
     )
   }

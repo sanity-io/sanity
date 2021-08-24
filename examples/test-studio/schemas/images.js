@@ -47,6 +47,15 @@ export default {
           },
         },
         {
+          name: 'detailedCaption',
+          type: 'string',
+          title: 'Detailed caption',
+          options: {
+            isHighlighted: true,
+          },
+          hidden: ({parent}) => !parent?.caption,
+        },
+        {
           name: 'foo',
           type: 'string',
           title:

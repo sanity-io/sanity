@@ -6,7 +6,7 @@ import {Marker, ObjectFieldType, Path, SchemaType} from '@sanity/types'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import {InvalidValueInput} from '../InvalidValueInput'
 import PatchEvent from '../../PatchEvent'
-import {ConditionalField} from './ConditionalField'
+import {ConditionalField} from '../common/ConditionalField'
 
 interface FieldType {
   name: string
