@@ -23,6 +23,7 @@ export default class Product extends React.Component<{id: string}> {
           <WithRouter>
             {(router) => (
               <button
+                type="button"
                 onClick={() =>
                   router.navigateIntent('open', {
                     type: 'product',

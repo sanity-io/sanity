@@ -10,7 +10,9 @@ export default class SomeChild extends React.Component {
     return (
       <span>
         Hello #{this.state.random}
-        <button onClick={this.handleClick}>Click to update state of child</button>
+        <button type="button" onClick={this.handleClick}>
+          Click to update state of child
+        </button>
       </span>
     )
   }
