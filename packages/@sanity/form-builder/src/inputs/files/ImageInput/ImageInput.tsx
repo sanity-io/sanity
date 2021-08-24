@@ -34,9 +34,7 @@ import {
 import React from 'react'
 import PropTypes from 'prop-types'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
-import * as PathUtils from '@sanity/util/paths'
 import deepCompare from 'react-fast-compare'
-import {FormBuilderInput} from '../../../FormBuilderInput'
 import {
   ResolvedUploader,
   Uploader,
@@ -55,6 +53,7 @@ import {RatioBox} from '../common/RatioBox'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import {DropMessage} from '../common/DropMessage'
 import {handleSelectAssetFromSource} from '../common/assetSource'
+import {ImageInputField} from './ImageInputField'
 
 export interface Image extends Partial<BaseImage> {
   _upload?: UploadState
@@ -117,41 +116,6 @@ const EMPTY_FIELD_GROUPS: FieldGroups = {
   imageToolAndDialog: [],
 }
 const ASSET_FIELD_PATH = ['asset']
-
-type ImageInputFieldProps = {
-  field: ObjectField
-  onChange: (event: PatchEvent) => void
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  value: any
-  onBlur: () => void
-  onFocus: (path: Path) => void
-  readOnly: boolean
-  focusPath: Path
-  compareValue: any
-  markers: Marker[]
-  level: number
-  presence: FormFieldPresence[]
-}
-
-function ImageInputField(props: ImageInputFieldProps) {
-  const {onChange, field, ...restProps} = props
-
-  const handleChange = React.useCallback(
-    (ev: PatchEvent) => {
-      onChange(ev.prefixAll(field.name))
-    },
-    [onChange, field]
-  )
-
-  return (
-    <FormBuilderInput
-      {...restProps}
-      type={field.type}
-      path={PathUtils.pathFor([field.name])}
-      onChange={handleChange}
-    />
-  )
-}
 
 export default class ImageInput extends React.PureComponent<Props, ImageInputState> {
   static contextTypes = {
@@ -467,6 +431,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       <ImageInputField
         key={field.name}
         field={field}
+        parentValue={value}
         value={fieldValue}
         onChange={this.handleFieldChange}
         onFocus={onFocus}

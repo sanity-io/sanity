@@ -34,6 +34,13 @@ export default {
           options: {isHighlighted: true},
         },
         {
+          title: 'Additional description',
+          name: 'additionalDescription',
+          type: 'string',
+          options: {isHighlighted: true},
+          hidden: ({parent}) => !parent?.description,
+        },
+        {
           title: 'Not so important',
           name: 'notsoimportant',
           type: 'string',
