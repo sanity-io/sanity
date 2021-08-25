@@ -1,11 +1,7 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import React from 'react'
-import DefaultDialog from 'part:@sanity/components/dialogs/default'
-
 import {LegacyLayerProvider} from '@sanity/base/components'
-import styles from './UpdateNotifierDialog.css'
+import {Stack, Box, Card, Text, Dialog} from '@sanity/ui'
+import {VersionsTable} from './VersionsTable'
 
 interface Props {
   onClose: () => void
@@ -19,26 +15,15 @@ class CurrentVersionsDialog extends React.PureComponent<Props> {
 
   renderTable() {
     const {versions} = this.props
-    return (
-      <table className={styles.versionsTable}>
-        <thead>
-          <tr>
-            <th>Module</th>
-            <th>Installed</th>
-            <th>Latest</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Object.keys(versions).map((pkgName) => (
-            <tr key={pkgName}>
-              <td>{pkgName}</td>
-              <td>{versions[pkgName]}</td>
-              <td>{versions[pkgName]}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    )
+
+    const rows = Object.keys(versions).map((pkgName) => {
+      return {
+        name: pkgName,
+        items: [versions[pkgName], versions[pkgName]],
+      }
+    })
+
+    return <VersionsTable headings={['Module', 'Installed', 'Latest']} rows={rows} />
   }
 
   render() {
@@ -46,16 +31,24 @@ class CurrentVersionsDialog extends React.PureComponent<Props> {
 
     return (
       <LegacyLayerProvider zOffset="navbarDialog">
-        <DefaultDialog onClose={onClose} onClickOutside={onClose} size="medium">
-          <div className={styles.content}>
-            <h2 className={styles.dialogHeading}>This Studio is up to date</h2>
-            <p>It was built using the latest versions of all packages.</p>
-            <details className={styles.details}>
-              <summary className={styles.summary}>List all installed packages</summary>
-              {this.renderTable()}
-            </details>
-          </div>
-        </DefaultDialog>
+        <Dialog
+          header="The Studio is up to date"
+          id="current-versions-dialog"
+          onClose={onClose}
+          onClickOutside={onClose}
+          width={1}
+          scheme="light"
+        >
+          <Box paddingY={5} paddingX={4}>
+            <Stack space={5}>
+              <Text>It was built using the latest versions of all packages.</Text>
+              <Card as="details" paddingTop={4} borderTop>
+                <summary>List all installed packages</summary>
+                <Box marginTop={4}>{this.renderTable()}</Box>
+              </Card>
+            </Stack>
+          </Box>
+        </Dialog>
       </LegacyLayerProvider>
     )
   }

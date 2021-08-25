@@ -1,12 +1,9 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import React from 'react'
-import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import {LegacyLayerProvider} from '@sanity/base/components'
+import {Box, Card, Code, Dialog, Inline, Stack, Text} from '@sanity/ui'
+import {TerminalIcon} from '@sanity/icons'
 import {Package} from './types'
-
-import styles from './UpdateNotifierDialog.css'
+import {VersionsTable} from './VersionsTable'
 
 declare const __DEV__: boolean
 
@@ -26,68 +23,57 @@ class UpdateNotifierDialog extends React.PureComponent<Props> {
   renderTable() {
     const {outdated} = this.props
 
-    return (
-      <>
-        <div className={styles.versionsTable}>
-          <table>
-            <thead>
-              <tr>
-                <th>Module</th>
-                <th>Installed</th>
-                <th>Latest</th>
-                <th>Importance</th>
-              </tr>
-            </thead>
-            <tbody>
-              {outdated.map((pkg) => (
-                <tr key={pkg.name}>
-                  <td className={styles.npmValue}>{pkg.name}</td>
-                  <td className={styles.npmValue}>{pkg.version}</td>
-                  <td className={styles.npmValue}>{pkg.latest}</td>
-                  <td>{upperFirst(pkg.severity || 'low')}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+    const rows = outdated.map((pkg) => {
+      return {
+        name: pkg.name,
+        items: [pkg.version, pkg.latest, upperFirst(pkg.severity || 'low')],
+      }
+    })
 
-        <div className={styles.textContent}>
-          <p>
+    return (
+      <Stack space={5}>
+        <VersionsTable headings={['Module', 'Installed', 'Latest', 'Importance']} rows={rows} />
+
+        <Stack space={5}>
+          <Text>
             To upgrade, run the <a href="https://www.sanity.io/docs/reference/cli">Sanity CLI</a>{' '}
             upgrade command in your project folder from a terminal.
-          </p>
+          </Text>
 
-          <pre className={styles.code}>
-            <code>sanity upgrade</code>
-          </pre>
-        </div>
-      </>
+          <Inline space={3} paddingLeft={2}>
+            <Text muted>
+              <TerminalIcon />
+            </Text>
+            <Code>sanity upgrade</Code>
+          </Inline>
+        </Stack>
+      </Stack>
     )
   }
 
   renderContactDeveloper() {
     const {severity} = this.props
     return (
-      <>
-        <div className={styles.textContent}>
+      <Stack space={4}>
+        <Text>
           {severity === 'high' ? (
-            <p>
+            <>
               This Studio should be updated. Please get in touch with the developers and ask them to
               upgrade it for you.
-            </p>
+            </>
           ) : (
-            <p>
+            <>
               This Studio has available upgrades. Consider getting in touch with the developers and
               ask them to upgrade it for you.
-            </p>
+            </>
           )}
-        </div>
+        </Text>
 
-        <details className={styles.details}>
-          <summary className={styles.summary}>Developer info</summary>
-          {this.renderTable()}
-        </details>
-      </>
+        <Card as="details" paddingTop={4} borderTop>
+          <summary>Developer info</summary>
+          <Box marginTop={4}>{this.renderTable()}</Box>
+        </Card>
+      </Stack>
     )
   }
 
@@ -96,26 +82,33 @@ class UpdateNotifierDialog extends React.PureComponent<Props> {
 
     return (
       <LegacyLayerProvider zOffset="navbarDialog">
-        <DefaultDialog
+        <Dialog
+          header={severity === 'low' ? 'Upgrades available' : 'Studio is outdated'}
           onClose={onClose}
           onClickOutside={onClose}
-          title={severity === 'low' ? 'Upgrades available' : 'Studio is outdated'}
+          id="update-notifier-dialog"
+          width={1}
+          scheme="light"
         >
           {__DEV__ && (
-            <>
-              <div className={styles.textContent}>
-                <p>
+            <Box paddingY={5} paddingX={4}>
+              <Stack space={5}>
+                <Text>
                   This Studio is no longer up to date{' '}
                   {severity === 'high' ? 'and should be upgraded.' : 'and can be upgraded.'}
-                </p>
-              </div>
+                </Text>
 
-              {this.renderTable()}
-            </>
+                {this.renderTable()}
+              </Stack>
+            </Box>
           )}
 
-          {!__DEV__ && this.renderContactDeveloper()}
-        </DefaultDialog>
+          {!__DEV__ && (
+            <Box paddingY={5} paddingX={4}>
+              {this.renderContactDeveloper()}
+            </Box>
+          )}
+        </Dialog>
       </LegacyLayerProvider>
     )
   }
