@@ -1,6 +1,7 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
+import {isEqual} from 'lodash'
 import React from 'react'
 import {Subscription} from 'rxjs'
 import LoginWrapper from 'part:@sanity/base/login-wrapper?'
@@ -14,16 +15,19 @@ import NotFound from './main/NotFound'
 
 const handleNavigate = urlStateStore.navigate
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface Props {}
+
 interface State {
   intent?: {
     name: string
     params: {[key: string]: string}
   }
-  urlState?: {}
+  urlState?: Record<string, unknown>
   isNotFound?: boolean
 }
 
-class DefaultLayoutRoot extends React.PureComponent<{}, State> {
+class DefaultLayoutRoot extends React.PureComponent<Props, State> {
   state: State = {}
 
   urlStateSubscription: Subscription | null = null
@@ -33,12 +37,31 @@ class DefaultLayoutRoot extends React.PureComponent<{}, State> {
     maybeRedirectToBase()
 
     this.urlStateSubscription = urlStateStore.state.subscribe({
-      next: (event) =>
-        this.setState({
-          urlState: event.state,
-          isNotFound: event.isNotFound,
-          intent: event.intent,
-        }),
+      next: (event) => {
+        let urlState = this.state.urlState
+        let isNotFound = this.state.isNotFound
+        let intent = this.state.intent
+
+        if (!isEqual(this.state.urlState, event.state)) {
+          urlState = event.state
+        }
+
+        if (!isEqual(this.state.isNotFound, event.isNotFound)) {
+          isNotFound = event.isNotFound
+        }
+
+        if (!isEqual(this.state.intent, event.intent)) {
+          intent = event.intent
+        }
+
+        const urlStateEqual = this.state.urlState === urlState
+        const isNotFoundEqual = this.state.isNotFound === isNotFound
+        const intentEqual = this.state.intent === intent
+
+        if (!urlStateEqual || !isNotFoundEqual || !intentEqual) {
+          this.setState({urlState, isNotFound, intent})
+        }
+      },
     })
   }
 
