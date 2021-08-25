@@ -20,6 +20,7 @@ const DEST_DIR = 'dist'
 // Regexes/names of packages that doesn't follow the src/lib convention
 // or packages that does their own build (e.g. studios)
 const IGNORED_PACKAGES = [
+  'dev/workshop',
   'examples/depcheck-test',
   'examples/storybook',
   /examples\/.*-studio/,

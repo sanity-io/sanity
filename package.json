@@ -3,6 +3,7 @@
   "private": true,
   "isSanityMonorepo": true,
   "scripts": {
+    "workshop": "cd dev/workshop && npm run dev",
     "bootstrap": "lerna bootstrap && npm run build:cli",
     "dev": "npm start",
     "rebuild": "gulp build",
@@ -84,6 +85,8 @@
     "deepmerge": "^3.3.0",
     "del": "^5.1.0",
     "depcheck": "^1.4.1",
+    "esbuild": "^0.12.21",
+    "esbuild-register": "^3.0.0",
     "eslint": "^7.8.1",
     "eslint-config-prettier": "^6.7.0",
     "eslint-config-sanity": "^5.0.0",

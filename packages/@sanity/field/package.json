@@ -53,6 +53,7 @@
     "styled-components": "^5.2.1"
   },
   "devDependencies": {
+    "@sanity/ui-workshop": "^0.2.0",
     "react": "17.0.1",
     "rimraf": "^2.7.1"
   },

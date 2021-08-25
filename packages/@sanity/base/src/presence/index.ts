@@ -4,8 +4,8 @@ import {FormFieldPresenceContext} from './context'
 // Any changes here will affect the public API
 import {FormFieldPresence} from './types'
 
-export {GlobalPresence} from '../datastores/presence/types'
-export {FormFieldPresence}
+export type {GlobalPresence} from '../datastores/presence/types'
+export type {FormFieldPresence}
 
 export {FormFieldPresenceContext}
 export {PresenceOverlay} from './overlay/PresenceOverlay'
