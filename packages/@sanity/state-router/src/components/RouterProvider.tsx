@@ -1,3 +1,4 @@
+import {isEqual} from 'lodash'
 import React from 'react'
 import PropTypes from 'prop-types'
 import pubsub from 'nano-pubsub'
@@ -74,10 +75,14 @@ export default class RouterProvider extends React.Component<Props> {
     }
   }
 
+  // eslint-disable-next-line camelcase
   UNSAFE_componentWillReceiveProps(nextProps: Props) {
-    if (this.props.state !== nextProps.state) {
+    if (!isEqual(this._state, nextProps.state)) {
       this._state = nextProps.state
-      setTimeout(this.__internalRouter.channel.publish, 0, nextProps.state)
+
+      setTimeout(() => {
+        this.__internalRouter.channel.publish(nextProps.state)
+      }, 0)
     }
   }
 
