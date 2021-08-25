@@ -69,6 +69,7 @@ export default class HotspotImage extends React.PureComponent {
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize)
   }
+
   // eslint-disable-next-line camelcase
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.aspectRatio !== this.props.aspectRatio) {
@@ -77,6 +78,7 @@ export default class HotspotImage extends React.PureComponent {
   }
 
   updateContainerAspect(props) {
+    if (!this.containerElement) return
     if (props.aspectRatio === 'auto') {
       const parentNode = this.containerElement.parentNode
       this.setState({
