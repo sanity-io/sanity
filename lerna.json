@@ -3,7 +3,9 @@
   "concurrency": 8,
   "ci": false,
   "npmClient": "npm",
-  "npmClientArgs": ["--no-package-lock"],
+  "npmClientArgs": [
+    "--no-package-lock"
+  ],
   "packages": [
     "dev/*",
     "examples/*",
@@ -12,5 +14,5 @@
     "packages/groq",
     "packages/sanity"
   ],
-  "version": "2.16.1"
+  "version": "2.17.0"
 }
