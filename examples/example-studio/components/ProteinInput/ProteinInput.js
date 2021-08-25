@@ -7,7 +7,6 @@ import Select from 'part:@sanity/components/selects/default'
 import TextField from 'part:@sanity/components/textfields/default'
 import Button from 'part:@sanity/components/buttons/default'
 import Spinner from 'part:@sanity/components/loading/spinner'
-import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import PDBS from './PDBS'
 
 const VIEWER_OPTIONS = {
@@ -192,9 +191,7 @@ export default class ProteinInput extends React.Component {
               <Spinner center />
             </div>
           )}
-          <ActivateOnFocus>
-            <div ref={this.setViewerElement} />
-          </ActivateOnFocus>
+          <div ref={this.setViewerElement} />
         </div>
         <Button onClick={this.handleResetCamera}>Reset camera</Button>
       </Fieldset>
