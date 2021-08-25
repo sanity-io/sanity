@@ -3,7 +3,7 @@ import ImageInput from '../../inputs/files/ImageInput'
 import resolveUploader from '../uploads/resolveUploader'
 import withDocument from '../../utils/withDocument'
 import {
-  defaultAssetSources,
+  defaultImageAssetSources,
   formBuilderConfig,
   userDefinedImageAssetSources,
 } from '../../legacyParts'
@@ -12,7 +12,7 @@ import {AssetSource} from '@sanity/types'
 
 const globalAssetSources = userDefinedImageAssetSources
   ? userDefinedImageAssetSources
-  : defaultAssetSources
+  : defaultImageAssetSources
 
 const SUPPORT_DIRECT_UPLOADS = formBuilderConfig?.images?.directUploads !== false
 

@@ -568,6 +568,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
             return (
               <Component
                 selectedAssets={[imageAsset as AssetDocument]}
+                assetType="image"
                 selectionType="single"
                 onClose={this.handleAssetSourceClosed}
                 onSelect={this.handleSelectAssetFromSource}
@@ -581,6 +582,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       <Component
         selectedAssets={[]}
         selectionType="single"
+        assetType="image"
         onClose={this.handleAssetSourceClosed}
         onSelect={this.handleSelectAssetFromSource}
       />
