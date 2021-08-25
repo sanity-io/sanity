@@ -1,10 +1,7 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import React from 'react'
-import Button from 'part:@sanity/components/buttons/default'
-import PackageIcon from 'part:@sanity/base/package-icon'
 import {useId} from '@reach/auto-id'
+import {PackageIcon} from '@sanity/icons'
+import {StatusButton} from '../components'
 import CurrentVersionsDialog from './CurrentVersionsDialog'
 import UpdateNotifierDialog from './UpdateNotifierDialog'
 import {Package, Severity} from './types'
@@ -52,16 +49,13 @@ export default function SanityStatus(props: Props) {
         </div>
       )}
       {!isUpToDate && (
-        <Button
-          aria-label={`${formatUpdateLabel(outdated.length)}, ${severity} severity level.`}
+        <StatusButton
           icon={PackageIcon}
-          iconStatus="primary"
-          id={elementId}
-          kind="simple"
-          onClick={onShowDialog}
-          padding="small"
+          mode="bleed"
+          statusTone="primary"
           selected={showDialog}
-          tone="navbar"
+          aria-label={`${formatUpdateLabel(outdated.length)}, ${severity} severity level.`}
+          onClick={onShowDialog}
         />
       )}
     </>
