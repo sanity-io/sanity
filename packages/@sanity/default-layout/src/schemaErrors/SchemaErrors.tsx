@@ -1,13 +1,8 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import React from 'react'
-import PropTypes from 'prop-types'
-import ErrorIcon from 'part:@sanity/base/error-icon'
-import WarningIcon from 'part:@sanity/base/warning-icon'
+import {Box, Card, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {ArrowRightIcon, ErrorOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import generateHelpUrl from '@sanity/generate-help-url'
-
-import styles from './SchemaErrors.css'
+import PropTypes from 'prop-types'
 
 function renderPath(path) {
   return path
@@ -15,36 +10,40 @@ function renderPath(path) {
       const key = `s_${i}`
       if (segment.kind === 'type') {
         return (
-          <span className={styles.segment} key={key}>
-            <span key="name" className={styles.pathSegmentTypeName}>
+          <Flex gap={3} align="center" wrap="wrap" key={key}>
+            <Text key="name" as="span" size={3} weight="semibold">
               {segment.name}
-            </span>
-            &ensp;
-            <span key="type" className={styles.pathSegmentTypeType}>
+            </Text>
+            <Text key="type" as="span">
               {segment.type}
-            </span>
-          </span>
+            </Text>
+            {i < path.length - 1 && <ArrowRightIcon />}
+          </Flex>
         )
       }
       if (segment.kind === 'property') {
         return (
-          <span className={styles.segment} key={key}>
-            <span className={styles.pathSegmentProperty}>{segment.name}</span>
-          </span>
+          <Flex gap={3} align="center" wrap="wrap" key={key}>
+            <Text as="span">{segment.name}</Text>
+            {i < path.length - 1 && <ArrowRightIcon />}
+          </Flex>
         )
       }
       if (segment.kind === 'type') {
         return (
-          <span className={styles.segment} key={key}>
-            <span key="name" className={styles.pathSegmentTypeName}>
+          <Flex gap={3} align="center" wrap="wrap" key={key}>
+            <ArrowRightIcon />
+            <Text key="name" as="span" size={3} weight="semibold">
               {segment.name}
-            </span>
-            <span key="type" className={styles.pathSegmentTypeType}>
+            </Text>
+            <ArrowRightIcon />
+            <Text key="type" as="span">
               {segment.type}
-            </span>
-          </span>
+            </Text>
+          </Flex>
         )
       }
+
       return null
     })
     .filter(Boolean)
@@ -52,45 +51,79 @@ function renderPath(path) {
 
 function SchemaErrors(props) {
   const {problemGroups} = props
+
   return (
-    <div className={styles.root}>
-      <h2 className={styles.title}>Uh oh… found errors in schema</h2>
-      <ul className={styles.list}>
+    <Box>
+      <Card padding={[4, 4, 5]} tone="critical">
+        <Heading>Uh oh… found errors in schema</Heading>
+      </Card>
+      <Stack as="ul" space={6} padding={[4, 4, 5]}>
         {problemGroups.map((group, i) => {
           return (
-            <li key={`g_${i}`} className={styles.listItem}>
-              <h2 className={styles.path}>{renderPath(group.path)}</h2>
-              <ul className={styles.problems}>
+            <Stack as="li" space={5} key={`g_${i}`}>
+              <Heading>
+                <Flex align="center" gap={3} wrap="wrap">
+                  {renderPath(group.path)}
+                </Flex>
+              </Heading>
+
+              <Box as="ul">
                 {group.problems.map((problem, j) => (
-                  <li key={`g_${i}_p_${j}`} className={styles[`problem_${problem.severity}`]}>
-                    <div className={styles.problemSeverity}>
-                      <span className={styles.problemSeverityIcon}>
-                        {problem.severity === 'error' && <ErrorIcon />}
-                        {problem.severity === 'warning' && <WarningIcon />}
-                      </span>
-                      <span className={styles.problemSeverityText}>{problem.severity}</span>
-                    </div>
-                    <div className={styles.problemContent}>
-                      <div className={styles.problemMessage}>{problem.message}</div>
-                      {problem.helpId && (
-                        <a
-                          className={styles.problemLink}
-                          href={generateHelpUrl(problem.helpId)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          View documentation
-                        </a>
-                      )}
-                    </div>
-                  </li>
+                  <Flex as="li" key={`g_${i}_p_${j}`}>
+                    <Box flex={1}>
+                      <Stack space={4}>
+                        <Flex gap={4}>
+                          <Box>
+                            <Flex
+                              direction="column"
+                              align="center"
+                              justify="center"
+                              height="fill"
+                              gap={3}
+                            >
+                              <Text accent weight="semibold" size={1}>
+                                {problem.severity === 'error' && <ErrorOutlineIcon />}
+                                {problem.severity === 'warning' && <WarningOutlineIcon />}
+                              </Text>
+                              <Text
+                                accent
+                                style={{textTransform: 'uppercase'}}
+                                weight="semibold"
+                                size={1}
+                              >
+                                {problem.severity}
+                              </Text>
+                            </Flex>
+                          </Box>
+                          <Card tone="critical" borderRight />
+
+                          <Flex direction="column" justify="center" gap={4} flex={1}>
+                            <Text accent size={0} style={{fontFamily: 'monospace'}}>
+                              {problem.message}
+                            </Text>
+                            {problem.helpId && (
+                              <Text>
+                                <a
+                                  href={generateHelpUrl(problem.helpId)}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  View documentation
+                                </a>
+                              </Text>
+                            )}
+                          </Flex>
+                        </Flex>
+                      </Stack>
+                    </Box>
+                  </Flex>
                 ))}
-              </ul>
-            </li>
+              </Box>
+            </Stack>
           )
         })}
-      </ul>
-    </div>
+      </Stack>
+    </Box>
   )
 }
 
