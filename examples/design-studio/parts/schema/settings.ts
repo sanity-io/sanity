@@ -1,3 +1,5 @@
+import {Rule} from '@sanity/types'
+
 export default {
   type: 'document',
   name: 'settings',
@@ -8,7 +10,7 @@ export default {
       type: 'string',
       name: 'title',
       title: 'Title',
-      validation: (Rule) => Rule.required().min(10).max(80),
+      validation: (rule: Rule) => rule.required().min(10).max(80),
     },
   ],
 }

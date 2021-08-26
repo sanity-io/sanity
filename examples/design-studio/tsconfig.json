@@ -1,10 +1,13 @@
 {
   "extends": "../../tsconfig",
-  "include": ["./typings/*.d.ts", "./**/*.tsx", "./**/*.ts"],
+  "include": ["./**/*.tsx", "./**/*.ts"],
   "compilerOptions": {
-    // todo: we need to disable noImplicitAny in a transition phase and should be removed eventually
-    "noImplicitAny": false,
     "jsx": "react"
   },
-  "references": [{"path": "../../packages/@sanity/base"}]
+  "references": [
+    {"path": "../../packages/@sanity/base"},
+    {"path": "../../packages/@sanity/initial-value-templates"},
+    {"path": "../../packages/@sanity/structure"},
+    {"path": "../../packages/@sanity/types"}
+  ]
 }

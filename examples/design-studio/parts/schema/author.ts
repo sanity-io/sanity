@@ -1,19 +1,17 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
-import icon from 'part:@sanity/base/user-icon'
+import {Rule} from '@sanity/types'
+import {UserIcon} from '@sanity/icons'
 
 export default {
   type: 'document',
   name: 'author',
   title: 'Author',
-  icon,
+  icon: UserIcon,
   fields: [
     {
       type: 'string',
       name: 'name',
       title: 'Name',
-      validation: (Rule) => Rule.required().min(10).max(80),
+      validation: (rule: Rule) => rule.required().min(10).max(80),
     },
     {
       type: 'string',

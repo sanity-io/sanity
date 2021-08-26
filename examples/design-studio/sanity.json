@@ -12,7 +12,7 @@
     "@sanity/default-layout",
     "@sanity/default-login",
     "@sanity/desk-tool",
-    "ui-test-bed-tool",
+    "theme-preview-tool",
     "@sanity/google-maps-input",
     "asset-source-unsplash"
   ],
@@ -24,19 +24,19 @@
   "parts": [
     {
       "name": "part:@sanity/base/schema",
-      "path": "schemas"
+      "path": "parts/schema"
     },
     {
       "name": "part:@sanity/desk-tool/structure",
-      "path": "structure"
+      "path": "parts/structure"
     },
     {
       "name": "part:@sanity/base/initial-value-templates",
-      "path": "documentInitialValueTemplates"
+      "path": "parts/initialValueTemplates"
     },
     {
       "implements": "part:@sanity/base/theme/variables/override-style",
-      "path": "themes/dev.css"
+      "path": "parts/theme/dev.css"
     }
   ]
 }
