@@ -15,7 +15,7 @@ const missingRouter: InternalRouter = {
   resolvePathFromState: missingContext,
 }
 
-export const RouterContext = React.createContext(missingRouter)
+export const RouterContext = React.createContext<InternalRouter>(missingRouter)
 export const useRouter = () => useContext(RouterContext)
 export const useRouterState = (deps?: string[]) => {
   const router = useContext(RouterContext)
