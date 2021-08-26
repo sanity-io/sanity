@@ -1,75 +1,39 @@
-import React from 'react'
+import React, {ForwardedRef, forwardRef, useContext} from 'react'
+import {RouterContext} from '../RouterContext'
 import Link from './Link'
-import {RouterProviderContext} from './types'
-import internalRouterContextTypeCheck from './internalRouterContextTypeCheck'
 
 const EMPTY_STATE = {}
 
-type Props = {
-  state?: Record<string, any>
+interface Props {
+  state?: Record<string, unknown>
   toIndex?: boolean
 }
 
-export default class StateLink extends React.PureComponent<
-  Props & React.HTMLProps<HTMLAnchorElement>
-> {
-  context: RouterProviderContext | null = null
-  _element: Link | null = null
+const StateLink = forwardRef(function StateLink(
+  props: Props & React.HTMLProps<HTMLAnchorElement>,
+  ref: ForwardedRef<HTMLAnchorElement>
+) {
+  const {state, toIndex = false, ...rest} = props
+  const routerContext = useContext(RouterContext)
 
-  static defaultProps = {
-    replace: false,
-    toIndex: false,
+  if (!routerContext) throw new Error('StateLink: missing context value')
+
+  if (state && toIndex) {
+    throw new Error('Passing both `state` and `toIndex={true}` as props to StateLink is invalid')
   }
 
-  static contextTypes = {
-    __internalRouter: internalRouterContextTypeCheck,
-  }
-
-  resolveUrl(): string {
-    const {toIndex, state} = this.props
-
-    if (state && toIndex) {
-      throw new Error('Passing both `state` and `toIndex` as props to StateLink is invalid')
-    }
-
-    if (!state && !toIndex) {
-      // eslint-disable-next-line no-console
-      console.error(
-        new Error(
-          'No state passed to StateLink. If you want to link to an empty state, its better to use the the `toIndex` property'
-        )
+  if (!state && !toIndex) {
+    // eslint-disable-next-line no-console
+    console.error(
+      new Error(
+        'No state passed to StateLink. If you want to link to an empty state, its better to use the the `toIndex` property'
       )
-    }
-
-    const nextState = toIndex ? EMPTY_STATE : state || EMPTY_STATE
-
-    return this.resolvePathFromState(nextState)
+    )
   }
 
-  resolvePathFromState(state: Record<string, any>) {
-    if (!this.context) throw new Error('StateLink: missing context value')
+  const nextState = toIndex ? EMPTY_STATE : state || EMPTY_STATE
 
-    if (!this.context.__internalRouter) {
-      return `javascript://state@${JSON.stringify(state)}`
-    }
+  return <Link {...rest} href={routerContext.resolvePathFromState(nextState)} ref={ref} />
+})
 
-    return this.context.__internalRouter.resolvePathFromState(state)
-  }
-
-  focus() {
-    if (this._element) {
-      this._element.focus()
-    }
-  }
-
-  setElement = (element: Link | null) => {
-    if (element) {
-      this._element = element
-    }
-  }
-
-  render() {
-    const {state, toIndex, ...rest} = this.props
-    return <Link {...rest} href={this.resolveUrl()} ref={this.setElement} />
-  }
-}
+export default StateLink

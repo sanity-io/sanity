@@ -1,51 +1,24 @@
-import React from 'react'
+import React, {ForwardedRef, forwardRef, useContext} from 'react'
+import {RouterContext} from '../RouterContext'
 import Link from './Link'
-import {RouterProviderContext, IntentParameters} from './types'
-import internalRouterContextTypeCheck from './internalRouterContextTypeCheck'
+import {IntentParameters} from './types'
 
 interface IntentLinkProps {
   intent: string
   params?: IntentParameters
 }
 
-export default class IntentLink extends React.PureComponent<
-  IntentLinkProps & Omit<React.HTMLProps<HTMLAnchorElement>, 'ref'>
-> {
-  context: RouterProviderContext | null = null
+const IntentLink = forwardRef(function IntentLink(
+  props: IntentLinkProps & React.HTMLProps<HTMLAnchorElement>,
+  ref: ForwardedRef<HTMLAnchorElement>
+) {
+  const {intent, params, ...rest} = props
 
-  static contextTypes = {
-    __internalRouter: internalRouterContextTypeCheck,
-  }
+  const routerContext = useContext(RouterContext)
 
-  _element: Link | null = null
+  if (!routerContext) throw new Error('IntentLink: missing context value')
 
-  focus() {
-    if (this._element) {
-      this._element.focus()
-    }
-  }
+  return <Link {...rest} href={routerContext.resolveIntentLink(intent, params)} ref={ref} />
+})
 
-  setElement = (element: Link | null) => {
-    if (element) {
-      this._element = element
-    }
-  }
-
-  resolveIntentLink(intent: string, params?: IntentParameters) {
-    if (!this.context) throw new Error('IntentLink: missing context value')
-
-    if (!this.context.__internalRouter) {
-      return `javascript://intent@${JSON.stringify({intent, params})}`
-    }
-
-    return this.context.__internalRouter.resolveIntentLink(intent, params)
-  }
-
-  render() {
-    const {intent, params, ...restProps} = this.props
-
-    return (
-      <Link {...restProps} href={this.resolveIntentLink(intent, params)} ref={this.setElement} />
-    )
-  }
-}
+export default IntentLink
