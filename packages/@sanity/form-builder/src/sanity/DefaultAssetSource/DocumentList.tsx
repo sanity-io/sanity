@@ -46,7 +46,7 @@ export const DocumentList = ({
 
 const DocumentLink = ({document}: {document: SanityDocument}) => {
   const LinkComponent = useCallback(
-    (linkProps: React.HTMLProps<HTMLAnchorElement>) => (
+    (linkProps: Omit<React.HTMLProps<HTMLAnchorElement>, 'ref'>) => (
       <IntentLink {...linkProps} params={{id: document._id, type: document._type}} intent="edit" />
     ),
     [document]
