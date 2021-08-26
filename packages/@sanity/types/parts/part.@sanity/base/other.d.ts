@@ -6,9 +6,7 @@ declare module 'all:part:@sanity/base/absolutes' {
 declare module 'all:part:@sanity/base/component'
 
 declare module 'all:part:@sanity/base/diff-resolver' {
-  import type {ComponentType} from 'react'
-
-  type DiffComponent = ComponentType<unknown>
+  type DiffComponent = React.ComponentType<unknown>
   type DiffResolver = (schemaType: unknown) => DiffComponent | undefined
 
   const diffResolvers: DiffResolver[]
@@ -119,7 +117,7 @@ declare module 'part:@sanity/base/new-document-structure?' {
 }
 
 declare module 'part:@sanity/base/preview' {
-  import type {Reference, SchemaType} from '_self_'
+  import type {Reference, SanityDocument, SchemaType} from '_self_'
   import type {Observable} from 'rxjs'
 
   declare const PreviewBase: React.ComponentType<{
@@ -147,8 +145,15 @@ declare module 'part:@sanity/base/preview' {
     value: Record<string, any>
   }>
 
+  export const PreviewFields: React.ComponentType<{
+    document: SanityDocument
+    fields: string | string[]
+    layout?: 'inline' | 'block' | 'default' | 'card' | 'media'
+    type: Type
+    children: (snapshot: SanityDocument) => React.ReactElement
+  }>
+
   export default PreviewBase
-  export {PreviewFields} from '@sanity/preview'
 }
 
 declare module 'part:@sanity/base/preview?' {
