@@ -6,7 +6,7 @@ import {IntentLink} from './IntentLink'
  * @beta
  */
 export function IntentButton(
-  props: Omit<ComponentProps<typeof Button>, 'as' | 'href'> & {
+  props: Omit<ComponentProps<typeof Button> & ComponentProps<typeof IntentLink>, 'as' | 'href'> & {
     intent: string
     params: Record<string, string>
   }
