@@ -58,6 +58,8 @@ export default class HotspotImage extends React.PureComponent {
         "Image '%s' already loaded, refreshing (from cache) to trigger onLoad / onError",
         this.props.src
       )
+      // eslint-disable-next-line no-self-assign
+      imageElement.src = imageElement.src
     }
 
     this.updateContainerAspect(this.props)
