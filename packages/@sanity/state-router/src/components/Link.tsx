@@ -1,7 +1,5 @@
-import React, {MouseEvent} from 'react'
-import {omit} from 'lodash'
-import {RouterProviderContext} from './types'
-import internalRouterContextTypeCheck from './internalRouterContextTypeCheck'
+import React, {ForwardedRef, forwardRef, MouseEvent, useCallback, useContext} from 'react'
+import {RouterContext} from '../RouterContext'
 
 function isLeftClickEvent(event: MouseEvent) {
   return event.button === 0
@@ -14,67 +12,48 @@ function isModifiedEvent(event: MouseEvent) {
 interface LinkProps {
   replace?: boolean
 }
+const Link = forwardRef(function Link(
+  props: LinkProps & React.HTMLProps<HTMLAnchorElement>,
+  ref: ForwardedRef<HTMLAnchorElement>
+) {
+  const routerContext = useContext(RouterContext)
+  const {onClick, href, target, replace = false, ...rest} = props
 
-export default class Link extends React.PureComponent<
-  LinkProps & Omit<React.HTMLProps<HTMLAnchorElement>, 'ref'>
-> {
-  context: RouterProviderContext | null = null
-  _element: HTMLAnchorElement | null = null
+  const handleClick = useCallback(
+    (event: React.MouseEvent<HTMLAnchorElement>): void => {
+      if (!routerContext) throw new Error('Link: missing context value')
 
-  static defaultProps = {
-    replace: false,
-  }
+      if (!routerContext) {
+        return
+      }
 
-  static contextTypes = {
-    __internalRouter: internalRouterContextTypeCheck,
-  }
+      if (event.isDefaultPrevented()) {
+        return
+      }
 
-  private handleClick = (event: React.MouseEvent<HTMLAnchorElement>): void => {
-    if (!this.context) throw new Error('Link: missing context value')
+      if (!href) return
 
-    if (!this.context.__internalRouter) {
-      return
-    }
+      if (onClick) {
+        onClick(event)
+      }
 
-    if (event.isDefaultPrevented()) {
-      return
-    }
+      if (isModifiedEvent(event) || !isLeftClickEvent(event)) {
+        return
+      }
 
-    const {onClick, href, target, replace} = this.props
+      // If target prop is set (e.g. to "_blank") let browser handle link.
+      if (target) {
+        return
+      }
 
-    if (!href) return
+      event.preventDefault()
 
-    if (onClick) {
-      onClick(event)
-    }
+      routerContext.navigateUrl(href, {replace})
+    },
+    [href, onClick, replace, routerContext, target]
+  )
 
-    if (isModifiedEvent(event) || !isLeftClickEvent(event)) {
-      return
-    }
+  return <a {...rest} onClick={handleClick} href={href} target={target} ref={ref} />
+})
 
-    // If target prop is set (e.g. to "_blank") let browser handle link.
-    if (target) {
-      return
-    }
-
-    event.preventDefault()
-
-    this.context.__internalRouter.navigateUrl(href, {replace})
-  }
-
-  focus() {
-    if (this._element) {
-      this._element.focus()
-    }
-  }
-
-  setElement = (element: HTMLAnchorElement | null) => {
-    if (element) {
-      this._element = element
-    }
-  }
-
-  render() {
-    return <a {...omit(this.props, 'replace')} onClick={this.handleClick} ref={this.setElement} />
-  }
-}
+export default Link
