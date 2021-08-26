@@ -1,4 +1,6 @@
-import author from './author'
+// import author from './author'
+
+import {Rule} from '@sanity/types'
 
 const title = {
   type: 'string',
@@ -210,7 +212,7 @@ const arrayGridOfFlatImagesExample = {
           title: 'Caption',
           type: 'string',
           options: {isHighlighted: true},
-          validation: (Rule) => Rule.required().min(10).max(80),
+          validation: (rule: Rule) => rule.required().min(10).max(80),
         },
       ],
     },
@@ -238,7 +240,7 @@ const arrayGridOfImagesExample = {
               title: 'Caption',
               type: 'string',
               options: {isHighlighted: true},
-              validation: (Rule) => Rule.required().min(10).max(80),
+              validation: (rule: Rule) => rule.required().min(10).max(80),
             },
           ],
         },
@@ -346,7 +348,7 @@ const imageExample = {
       title: 'Caption',
       type: 'string',
       options: {isHighlighted: true},
-      validation: (Rule) => Rule.required().min(10).max(80),
+      validation: (rule: Rule) => rule.required().min(10).max(80),
     },
   ],
 }

@@ -24,31 +24,31 @@ const nestedItemTypeB = {
   ],
 }
 
-const nestedItemTypeC = {
-  type: 'object',
-  name: 'itemC',
-  title: 'Item C',
-  fields: [
-    {
-      type: 'string',
-      name: 'title',
-      title: 'Title',
-    },
-  ],
-}
+// const nestedItemTypeC = {
+//   type: 'object',
+//   name: 'itemC',
+//   title: 'Item C',
+//   fields: [
+//     {
+//       type: 'string',
+//       name: 'title',
+//       title: 'Title',
+//     },
+//   ],
+// }
 
-const nestedItemTypeD = {
-  type: 'object',
-  name: 'itemD',
-  title: 'Item D',
-  fields: [
-    {
-      type: 'string',
-      name: 'title',
-      title: 'Title',
-    },
-  ],
-}
+// const nestedItemTypeD = {
+//   type: 'object',
+//   name: 'itemD',
+//   title: 'Item D',
+//   fields: [
+//     {
+//       type: 'string',
+//       name: 'title',
+//       title: 'Title',
+//     },
+//   ],
+// }
 
 const itemType = {
   type: 'object',

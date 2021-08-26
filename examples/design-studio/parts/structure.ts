@@ -1,15 +1,12 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import S from '@sanity/desk-tool/structure-builder'
 import CogIcon from 'part:@sanity/base/cog-icon'
-import {JSONPreviewDocumentView} from '../documentViews/jsonPreview'
+import {JSONPreviewDocumentView} from './components/jsonPreview'
 
 const STRUCTURE_CUSTOM_TYPES = ['settings']
 const STRUCTURE_LIST_ITEM_DIVIDER = S.divider()
 
 // Add `JSON` tab to the `author` document form
-export const getDefaultDocumentNode = ({schemaType}) => {
+export const getDefaultDocumentNode = ({schemaType}: {schemaType: any}) => {
   // Conditionally return a different configuration based on the schema type
   if (schemaType === 'author') {
     return S.document().views([
@@ -36,7 +33,7 @@ const settingsListItem = S.listItem()
 
 // The default root list items (except custom ones)
 const defaultListItems = S.documentTypeListItems().filter(
-  (listItem) => !STRUCTURE_CUSTOM_TYPES.includes(listItem.getId())
+  (listItem: any) => !STRUCTURE_CUSTOM_TYPES.includes(listItem.getId())
 )
 
 export default () =>

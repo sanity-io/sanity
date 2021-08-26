@@ -1,3 +1,5 @@
+import {Rule} from '@sanity/types'
+
 const objectExample = {
   type: 'object',
   name: 'objectExample',
@@ -24,7 +26,7 @@ const pt = {
   of: [
     {
       type: 'block',
-      of: [{...objectExample, validation: (Rule) => Rule.required()}],
+      of: [{...objectExample, validation: (rule: Rule) => rule.required()}],
       marks: {
         annotations: [
           {
@@ -35,7 +37,7 @@ const pt = {
                 type: 'string',
                 name: 'href',
                 title: 'URL',
-                validation: (Rule) => Rule.required(),
+                validation: (rule: Rule) => rule.required(),
               },
               {
                 type: 'string',
