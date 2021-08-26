@@ -1,9 +1,8 @@
 import React from 'react'
 import {withRouterHOC, StateLink} from '@sanity/base/router'
+import {Card, Text, Box, Stack, Container, Heading} from '@sanity/ui'
 import {HAS_SPACES} from '../util/spaces'
 import {Router} from '../types'
-
-import styles from './NotFound.css'
 
 interface OuterProps {
   children: React.ReactNode
@@ -20,17 +19,22 @@ function NotFound(props: NotFoundProps) {
     HAS_SPACES && router.state && router.state.space ? {space: router.state.space} : {}
 
   return (
-    <div className={styles.root}>
-      <header className={styles.header}>
-        <h2>Page not found</h2>
-      </header>
+    <Card height="fill" paddingX={[5, 5, 7]} paddingY={[5, 5, 6]} sizing="border">
+      <Container>
+        <Box marginBottom={5}>
+          <Heading as="h1">Page not found</Heading>
+        </Box>
 
-      <div className={styles.content}>{props.children}</div>
-
-      <div className={styles.footer}>
-        <StateLink state={rootState}>Go to index</StateLink>
-      </div>
-    </div>
+        <Stack space={4} paddingY={4}>
+          {props.children && <Box>{props.children}</Box>}
+          <Box>
+            <Text>
+              <StateLink state={rootState}>Go to index</StateLink>
+            </Text>
+          </Box>
+        </Stack>
+      </Container>
+    </Card>
   )
 }
 
