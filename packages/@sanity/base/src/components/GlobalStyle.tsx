@@ -18,6 +18,8 @@ export const GlobalStyle = createGlobalStyle(({theme}: {theme: Theme}) => {
 
     html {
       background-color: ${color.bg};
+      text-size-adjust: 100%;
+      -webkit-tap-highlight-color: transparent;
     }
 
     ::selection {
