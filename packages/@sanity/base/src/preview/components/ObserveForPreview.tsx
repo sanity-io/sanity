@@ -84,6 +84,7 @@ type ReceivedProps = {
   error?: Error
   children: (props: unknown) => React.ReactElement
 }
+
 export default withPropsStream<OuterProps, ReceivedProps>(connect, function ObserveForPreview(
   props: ReceivedProps
 ) {

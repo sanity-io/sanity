@@ -1,24 +1,30 @@
+import {SanityDocument} from '@sanity/types'
 import React from 'react'
-import PreviewSubscriber from './PreviewSubscriber'
 import {Type} from '../types'
+import PreviewSubscriber from './PreviewSubscriber'
 
-function arrify<T>(val: T | T[]) {
+function toArray<T>(val: T | T[]) {
   if (Array.isArray(val)) {
     return val
   }
+
   return typeof val === undefined ? [] : [val]
 }
 
-type Props = {
-  document: Document
+interface PreviewFieldsProps {
+  document: SanityDocument
   fields: string | string[]
+  layout?: 'inline' | 'block' | 'default' | 'card' | 'media'
   type: Type
-  children: (snapshot: Document) => React.ReactChildren
+  children: (snapshot: SanityDocument) => React.ReactElement
 }
-export default function PreviewFields(props: Props) {
+
+export default function PreviewFields(props: PreviewFieldsProps) {
+  const {children, document, fields, layout, type} = props
+
   return (
-    <PreviewSubscriber value={props.document} type={props.type} fields={arrify(props.fields)}>
-      {({snapshot}) => <span>{snapshot ? props.children(snapshot) : null}</span>}
+    <PreviewSubscriber layout={layout} value={document} type={type} fields={toArray(fields)}>
+      {({snapshot}) => (snapshot ? children(snapshot) : null)}
     </PreviewSubscriber>
   )
 }

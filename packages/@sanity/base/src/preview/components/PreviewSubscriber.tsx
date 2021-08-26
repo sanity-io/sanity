@@ -11,7 +11,7 @@ interface Props {
   value: any
   ordering?: SortOrdering
   children: (props: any) => React.ReactElement
-  layout?: string
+  layout?: 'inline' | 'block' | 'default' | 'card' | 'media' | 'detail'
 }
 
 export default class PreviewSubscriber extends React.Component<Props> {
@@ -48,6 +48,7 @@ export default class PreviewSubscriber extends React.Component<Props> {
     if (this.props.layout && ['inline', 'block'].includes(this.props.layout)) {
       return this.renderChild(true)
     }
+
     return <WithVisibility hideDelay={HIDE_DELAY}>{this.renderChild}</WithVisibility>
   }
 }

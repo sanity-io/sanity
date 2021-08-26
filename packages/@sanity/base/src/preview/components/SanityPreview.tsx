@@ -1,7 +1,7 @@
 import React from 'react'
+import {SortOrdering, Type} from '../types'
 import PreviewSubscriber from './PreviewSubscriber'
 import RenderPreviewSnapshot from './RenderPreviewSnapshot'
-import {SortOrdering, Type} from '../types'
 
 interface Props {
   type: Type
@@ -9,7 +9,7 @@ interface Props {
   value: any
   ordering?: SortOrdering
   children: (props: any) => React.ComponentType
-  layout: string
+  layout?: 'inline' | 'block' | 'default' | 'card' | 'media' | 'detail'
 }
 
 export default function SanityPreview(props: Props) {
