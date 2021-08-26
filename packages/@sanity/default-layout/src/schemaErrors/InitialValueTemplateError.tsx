@@ -1,20 +1,21 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import PropTypes from 'prop-types'
 import React from 'react'
-import FullscreenMessageDialog from 'part:@sanity/components/dialogs/fullscreen-message'
+import {Box, Dialog, Stack, Text} from '@sanity/ui'
 
 export default function InitialValueTemplateError({errors}) {
   return (
-    <FullscreenMessageDialog color="danger" title="Initial value template error">
-      <p>Failed to load initial value templates:</p>
-      {errors.map((error: Error) => (
-        <p key={error.message}>
-          <code>{error.message}</code>
-        </p>
-      ))}
-    </FullscreenMessageDialog>
+    <Dialog header="Initial value template error" id="initial-value-error-dialog" width={1}>
+      <Box padding={4}>
+        <Stack space={4}>
+          <Text>Failed to load initial value templates:</Text>
+          {errors.map((error: Error) => (
+            <Text key={error.message}>
+              <code>{error.message}</code>
+            </Text>
+          ))}
+        </Stack>
+      </Box>
+    </Dialog>
   )
 }
 
