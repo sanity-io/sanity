@@ -1,7 +1,6 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import {useTimeAgo} from '@sanity/base/hooks'
 import {ChangeFieldWrapper} from '@sanity/base/change-indicators'
 import {
   ChangeList,
@@ -15,36 +14,27 @@ import {
 } from '@sanity/field/diff'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import {UserAvatar, ScrollContainer} from '@sanity/base/components'
-import {SelectIcon} from '@sanity/icons'
 import {AvatarStack, BoundaryElementProvider, Button, Flex, Card} from '@sanity/ui'
-import React, {useCallback, useRef} from 'react'
+import React, {useRef} from 'react'
 import {useDocumentHistory} from '../documentHistory'
-import {formatTimelineEventLabel} from '../timeline'
+import {TimelineMenu} from '../timeline'
 import {LoadingContent} from './content/loading'
 import {collectLatestAuthorAnnotations} from './helpers'
 
 import styles from './changesPanel.css'
 
 interface ChangesPanelProps {
-  changesSinceSelectRef: React.MutableRefObject<HTMLDivElement | null>
   documentId: string
-  isTimelineOpen: boolean
   loading: boolean
-  onTimelineOpen: () => void
   schemaType: ObjectSchemaType
   since: Chunk | null
-  timelineMode: 'rev' | 'since' | 'closed'
 }
 
 export function ChangesPanel({
-  changesSinceSelectRef,
   documentId,
-  isTimelineOpen,
   loading,
-  onTimelineOpen,
   since,
   schemaType,
-  timelineMode,
 }: ChangesPanelProps): React.ReactElement | null {
   const scrollRef = useRef<HTMLElement | null>(null)
   const {close: closeHistory, historyController} = useDocumentHistory()
@@ -67,14 +57,6 @@ export function ChangesPanel({
     [diff]
   )
 
-  // This is needed to stop the ClickOutside-handler (in the Popover) to treat the click
-  // as an outside-click.
-  const ignoreClickOutside = useCallback((evt: React.MouseEvent<HTMLButtonElement>) => {
-    evt.stopPropagation()
-  }, [])
-
-  const menuOpen = isTimelineOpen && timelineMode === 'since'
-
   return (
     <Card className={styles.root}>
       <Flex direction="column" height="fill">
@@ -94,27 +76,7 @@ export function ChangesPanel({
 
           <div className={styles.versionSelectContainer}>
             <div className={styles.changesSinceSelectContainer}>
-              <div ref={changesSinceSelectRef}>
-                <Button
-                  fontSize={1}
-                  iconRight={SelectIcon}
-                  mode="bleed"
-                  onClick={onTimelineOpen}
-                  onMouseUp={ignoreClickOutside}
-                  padding={2}
-                  selected={isTimelineOpen && timelineMode === 'since'}
-                  text={
-                    // eslint-disable-next-line no-nested-ternary
-                    menuOpen ? (
-                      <>Review changes since</>
-                    ) : since ? (
-                      <SinceText since={since} />
-                    ) : (
-                      <>Since unknown version</>
-                    )
-                  }
-                />
-              </div>
+              <TimelineMenu mode="since" chunk={since} />
             </div>
 
             {changeAnnotations.length > 0 && (
@@ -171,15 +133,5 @@ function Content({
     <DocumentChangeContext.Provider value={documentContext}>
       <ChangeList diff={diff} schemaType={schemaType} />
     </DocumentChangeContext.Provider>
-  )
-}
-
-function SinceText({since}: {since: Chunk}): React.ReactElement {
-  const timeAgo = useTimeAgo(since.endTimestamp, {agoSuffix: true})
-
-  return (
-    <>
-      Since {formatTimelineEventLabel(since.type)} {timeAgo}
-    </>
   )
 }

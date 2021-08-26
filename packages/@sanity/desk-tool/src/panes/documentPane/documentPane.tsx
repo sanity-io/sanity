@@ -6,7 +6,7 @@ import {BoundaryElementProvider, DialogProvider, Layer} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import classNames from 'classnames'
 import Snackbar from 'part:@sanity/components/snackbar/default'
-import React, {useCallback, useRef, useState} from 'react'
+import React, {useCallback, useState} from 'react'
 import {Path} from '@sanity/types'
 import {LegacyLayerProvider, useZIndex} from '@sanity/base/components'
 import {ChangeConnectorRoot} from '@sanity/base/change-indicators'
@@ -20,7 +20,6 @@ import {DocumentOperationResults} from './documentOperationResults'
 import {InspectDialog} from './inspectDialog'
 import {DocumentActionShortcuts, isInspectHotkey, isPreviewHotkey} from './keyboardShortcuts'
 import {DocumentStatusBar} from './statusBar'
-import {TimelinePopover} from './timeline'
 import {Doc, DocumentViewType} from './types'
 import {usePreviewUrl} from './usePreviewUrl'
 
@@ -80,7 +79,7 @@ export function DocumentPane(props: DocumentPaneProps) {
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const [actionsBoxElement, setActionsBoxElement] = useState<HTMLDivElement | null>(null)
   const features = useDeskToolFeatures()
-  const {historyController, setTimelineMode, timelineMode, open, displayed} = useDocumentHistory()
+  const {historyController, open, displayed} = useDocumentHistory()
   const historyState = historyController.selectionState
   const [showValidationTooltip, setShowValidationTooltip] = useState<boolean>(false)
   const paneRouter = usePaneRouter()
@@ -148,23 +147,7 @@ export function DocumentPane(props: DocumentPaneProps) {
 
   const handleSplitPane = useCallback(() => paneRouter.duplicateCurrent(), [paneRouter])
 
-  const changesSinceSelectRef = useRef<HTMLDivElement | null>(null)
-  const versionSelectRef = useRef<HTMLDivElement | null>(null)
-
-  const handleTimelineClose = useCallback(() => {
-    setTimelineMode('closed')
-  }, [setTimelineMode])
-
-  const handleTimelineSince = useCallback(() => {
-    setTimelineMode(timelineMode === 'since' ? 'closed' : 'since')
-  }, [timelineMode, setTimelineMode])
-
-  const handleTimelineRev = useCallback(() => {
-    setTimelineMode(timelineMode === 'rev' ? 'closed' : 'rev')
-  }, [timelineMode, setTimelineMode])
-
   const isChangesOpen = historyController.changesPanelActive()
-  const isTimelineOpen = timelineMode !== 'closed'
 
   const zOffsets = useZIndex()
 
@@ -204,7 +187,6 @@ export function DocumentPane(props: DocumentPaneProps) {
                 isClosable={isClosable}
                 isCollapsed={isCollapsed}
                 isHistoryOpen={isChangesOpen}
-                isTimelineOpen={isTimelineOpen}
                 markers={markers}
                 menuItemGroups={menuItemGroups}
                 onChange={onChange}
@@ -213,16 +195,13 @@ export function DocumentPane(props: DocumentPaneProps) {
                 onExpand={onExpand}
                 onSetActiveView={handleSetActiveView}
                 onSplitPane={handleSplitPane}
-                onTimelineOpen={handleTimelineRev}
                 paneTitle={paneTitle}
                 published={published}
                 rootElement={rootElement}
                 schemaType={schemaType}
-                timelineMode={timelineMode}
                 toggleInspect={toggleInspect}
                 value={value}
                 compareValue={isChangesOpen ? historyController.sinceAttributes() : compareValue}
-                versionSelectRef={versionSelectRef}
                 views={views}
               />
             </div>
@@ -231,14 +210,10 @@ export function DocumentPane(props: DocumentPaneProps) {
               <div className={styles.changesContainer}>
                 <BoundaryElementProvider element={rootElement}>
                   <ChangesPanel
-                    changesSinceSelectRef={changesSinceSelectRef}
                     documentId={documentId}
-                    isTimelineOpen={isTimelineOpen}
                     loading={historyState === 'loading'}
-                    onTimelineOpen={handleTimelineSince}
                     schemaType={schemaType}
                     since={historyController.sinceTime}
-                    timelineMode={timelineMode}
                   />
                 </BoundaryElementProvider>
               </div>
@@ -262,17 +237,6 @@ export function DocumentPane(props: DocumentPaneProps) {
         )}
 
         <DocumentOperationResults id={documentId} type={documentType} />
-
-        <LegacyLayerProvider zOffset="paneHeader">
-          <TimelinePopover
-            onClose={handleTimelineClose}
-            open={isTimelineOpen}
-            placement="bottom"
-            targetElement={
-              timelineMode === 'rev' ? versionSelectRef.current : changesSinceSelectRef.current
-            }
-          />
-        </LegacyLayerProvider>
 
         <LegacyLayerProvider zOffset="fullscreen">
           {isInspectOpen && (
