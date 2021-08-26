@@ -69,6 +69,7 @@ export default class HotspotImage extends React.PureComponent {
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize)
   }
+  // eslint-disable-next-line camelcase
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.aspectRatio !== this.props.aspectRatio) {
       this.updateContainerAspect(nextProps)
