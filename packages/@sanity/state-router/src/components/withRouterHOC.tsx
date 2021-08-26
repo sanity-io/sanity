@@ -14,12 +14,10 @@ const NO_CONTEXT_STATE = {
   },
 }
 
-type ChildProps<OuterProps> = OuterProps & {router: HOCRouter}
-
-export default function withRouterHOC<OuterProps>(
-  Component: ComponentType<ChildProps<OuterProps>>
+export default function withRouterHOC<Props>(
+  Component: ComponentType<Props & {router: HOCRouter}>
 ) {
-  return class WithRouter extends React.Component<OuterProps> {
+  return class WithRouter extends React.Component<Props> {
     static displayName = `withRouter(${Component.displayName || Component.name})`
     unsubscribe: (() => void) | null = null
 
