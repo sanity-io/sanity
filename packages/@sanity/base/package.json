@@ -57,7 +57,7 @@
     "@sanity/structure": "2.17.1",
     "@sanity/transaction-collator": "2.17.0",
     "@sanity/types": "2.17.1",
-    "@sanity/ui": "^0.36.0",
+    "@sanity/ui": "^0.36.3",
     "@sanity/util": "2.17.1",
     "@sanity/validation": "2.17.1",
     "boundless-arrow-key-navigation": "^1.1.0",
