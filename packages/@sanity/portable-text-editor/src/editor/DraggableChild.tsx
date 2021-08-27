@@ -7,6 +7,13 @@ import {IS_DRAGGING, IS_DRAGGING_ELEMENT_RANGE, IS_DRAGGING_CHILD_ELEMENT} from 
 const debug = debugWithName('components:DraggableChild')
 const debugRenders = false
 
+declare global {
+  interface Document {
+    // TypeScript removed this function from the default types (2021-08-26)
+    caretPositionFromPoint?(x: number, y: number): {offsetNode: Node; offset: number}
+  }
+}
+
 type ElementProps = {
   children: ReactElement
   element: SlateElement
@@ -53,7 +60,7 @@ export const DraggableChild: FunctionComponent<ElementProps> = ({
     // COMPAT: In Firefox, `caretRangeFromPoint` doesn't exist. (2020-05-14)
     if (document.caretRangeFromPoint) {
       domRange = document.caretRangeFromPoint(x, y)
-    } else {
+    } else if (document.caretPositionFromPoint) {
       const position = document.caretPositionFromPoint(x, y)
 
       if (position) {
