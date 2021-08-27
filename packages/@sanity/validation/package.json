@@ -1,6 +1,6 @@
 {
   "name": "@sanity/validation",
-  "version": "2.17.0",
+  "version": "2.17.1",
   "description": "Validation and warning infrastructure for Sanity projects",
   "main": "./lib/index.js",
   "types": "./dist/dts",
@@ -45,7 +45,7 @@
     }
   },
   "dependencies": {
-    "@sanity/types": "^2.17.0",
+    "@sanity/types": "2.17.1",
     "date-fns": "^2.16.1",
     "lodash": "^4.17.15"
   }
