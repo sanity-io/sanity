@@ -4,7 +4,7 @@
 import {DialogAction} from '@sanity/base/__legacy/@sanity/components'
 import {LegacyLayerProvider} from '@sanity/base/components'
 import {useDocumentOperation} from '@sanity/react-hooks'
-import {Button, Card, Stack} from '@sanity/ui'
+import {Button, Stack} from '@sanity/ui'
 import {RevertIcon} from '@sanity/icons'
 import PopoverDialog from 'part:@sanity/components/dialogs/popover'
 import React, {useState, useCallback} from 'react'
@@ -88,60 +88,58 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
   const showFooter = isRoot && changes.length > 1
 
   return (
-    <Card>
-      <Stack space={5}>
-        <Stack as={ChangeListWrapper} space={5}>
-          {changes.map((change) => (
-            <ChangeResolver
-              change={change}
-              key={change.key}
-              data-revert-all-changes-hover={confirmRevertAllHover ? '' : undefined}
-              readOnly={schemaType.readOnly}
-            />
-          ))}
-        </Stack>
-
-        {showFooter && isComparingCurrent && updatePermission.granted && (
-          <Stack ref={setRevertAllContainerElement}>
-            <Button
-              tone="critical"
-              mode="ghost"
-              text="Revert all changes"
-              icon={RevertIcon}
-              onClick={handleRevertAllChangesClick}
-              onMouseEnter={handleRevertAllChangesMouseEnter}
-              onMouseLeave={handleRevertAllChangesMouseLeave}
-              disabled={schemaType?.readOnly}
-            />
-          </Stack>
-        )}
-
-        {confirmRevertAllOpen && (
-          <LegacyLayerProvider zOffset="paneFooter">
-            <PopoverDialog
-              actions={[
-                {
-                  color: 'danger',
-                  action: revertAllChanges,
-                  title: 'Revert all',
-                },
-                {
-                  kind: 'simple',
-                  action: closeRevertAllChangesConfirmDialog,
-                  title: 'Cancel',
-                },
-              ]}
-              onAction={handleConfirmDialogAction}
-              onClickOutside={closeRevertAllChangesConfirmDialog}
-              referenceElement={revertAllContainerElement}
-              size="small"
-            >
-              Are you sure you want to revert all {changes.length} changes?
-            </PopoverDialog>
-          </LegacyLayerProvider>
-        )}
+    <Stack space={5}>
+      <Stack as={ChangeListWrapper} space={5}>
+        {changes.map((change) => (
+          <ChangeResolver
+            change={change}
+            key={change.key}
+            data-revert-all-changes-hover={confirmRevertAllHover ? '' : undefined}
+            readOnly={schemaType.readOnly}
+          />
+        ))}
       </Stack>
-    </Card>
+
+      {showFooter && isComparingCurrent && updatePermission.granted && (
+        <Stack ref={setRevertAllContainerElement}>
+          <Button
+            tone="critical"
+            mode="ghost"
+            text="Revert all changes"
+            icon={RevertIcon}
+            onClick={handleRevertAllChangesClick}
+            onMouseEnter={handleRevertAllChangesMouseEnter}
+            onMouseLeave={handleRevertAllChangesMouseLeave}
+            disabled={schemaType?.readOnly}
+          />
+        </Stack>
+      )}
+
+      {confirmRevertAllOpen && (
+        <LegacyLayerProvider zOffset="paneFooter">
+          <PopoverDialog
+            actions={[
+              {
+                color: 'danger',
+                action: revertAllChanges,
+                title: 'Revert all',
+              },
+              {
+                kind: 'simple',
+                action: closeRevertAllChangesConfirmDialog,
+                title: 'Cancel',
+              },
+            ]}
+            onAction={handleConfirmDialogAction}
+            onClickOutside={closeRevertAllChangesConfirmDialog}
+            referenceElement={revertAllContainerElement}
+            size="small"
+          >
+            Are you sure you want to revert all {changes.length} changes?
+          </PopoverDialog>
+        </LegacyLayerProvider>
+      )}
+    </Stack>
   )
 }
 
