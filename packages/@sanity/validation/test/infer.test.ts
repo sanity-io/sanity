@@ -1,6 +1,11 @@
+/// <reference types="@sanity/types/parts" />
+
 import Schema from '@sanity/schema'
-import {ObjectSchemaType, Rule} from '@sanity/types'
+import {ObjectSchemaType, Rule, SanityDocument} from '@sanity/types'
+import createSchema from 'part:@sanity/base/schema-creator'
+import client from 'part:@sanity/base/client'
 import inferFromSchema from '../src/inferFromSchema'
+import validateDocument from '../src/validateDocument'
 
 describe('schema validation inference', () => {
   describe('object with `options.list` and `value` field', () => {
@@ -80,6 +85,93 @@ describe('schema validation inference', () => {
           (validation) => validation['_rules']
         )
       ).toEqual([{flag: 'type', constraint: 'String'}])
+    })
+  })
+  describe('slug validation', () => {
+    const slugField = {
+      type: 'document',
+      name: 'documentWithSlug',
+      title: 'Document with Slug',
+      fields: [
+        {
+          name: 'slugField',
+          type: 'slug',
+        },
+      ],
+    }
+
+    const schema = createSchema({
+      types: [slugField],
+    })
+
+    const mockDocument: SanityDocument = {
+      _id: 'mockDocument',
+      _type: 'documentWithSlug',
+      slugField: {current: 'example-value'},
+      _createdAt: '2021-08-26T18:47:55.497Z',
+      _updatedAt: '2021-08-26T18:47:55.497Z',
+      _rev: 'example-rev',
+    }
+
+    afterEach(() => {
+      ;(client.fetch as jest.Mock).mockReset()
+    })
+
+    test('slug is valid if uniqueness queries returns true', async () => {
+      ;(client.fetch as jest.Mock).mockImplementation(() =>
+        Promise.resolve(
+          // return true to mock a unique result (valid)
+          true
+        )
+      )
+      await expect(validateDocument(mockDocument, schema)).resolves.toEqual([])
+
+      expect(client.fetch).toHaveBeenCalledTimes(1)
+      expect((client.fetch as jest.Mock).mock.calls[0]).toEqual([
+        '!defined(*[_type == $docType && !(_id in [$draft, $published]) && slugField.current == $slug][0]._id)',
+        {
+          docType: 'documentWithSlug',
+          draft: 'drafts.mockDocument',
+          published: 'mockDocument',
+          slug: 'example-value',
+        },
+        {
+          tag: 'validation.slug-is-unique',
+        },
+      ])
+    })
+
+    test('slug is invalid if uniqueness queries returns false', async () => {
+      ;(client.fetch as jest.Mock).mockReset()
+      ;(client.fetch as jest.Mock).mockImplementation(() =>
+        Promise.resolve(
+          // return false to mock a non-unique result (invalid)
+          false
+        )
+      )
+
+      await expect(validateDocument(mockDocument, schema)).resolves.toMatchObject([
+        {
+          type: 'validation',
+          path: ['slugField'],
+          level: 'error',
+          item: {message: 'Slug is already in use', paths: []},
+        },
+      ])
+
+      expect(client.fetch).toHaveBeenCalledTimes(1)
+      expect((client.fetch as jest.Mock).mock.calls[0]).toEqual([
+        '!defined(*[_type == $docType && !(_id in [$draft, $published]) && slugField.current == $slug][0]._id)',
+        {
+          docType: 'documentWithSlug',
+          draft: 'drafts.mockDocument',
+          published: 'mockDocument',
+          slug: 'example-value',
+        },
+        {
+          tag: 'validation.slug-is-unique',
+        },
+      ])
     })
   })
 })
