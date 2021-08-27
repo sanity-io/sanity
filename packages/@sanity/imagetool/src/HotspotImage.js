@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import calculateStyles from './calculateStyles'
 import Debug from 'debug'
-import {DEFAULT_HOTSPOT, DEFAULT_CROP} from './constants'
 import {debounce} from 'lodash'
-import styles from './styles/HotspotImage.css'
+import calculateStyles from './calculateStyles'
+import {DEFAULT_HOTSPOT, DEFAULT_CROP} from './constants'
+import {RootContainer} from './HotspotImage.styles'
 
 const debug = Debug('sanity-imagetool')
 
@@ -21,9 +21,8 @@ export default class HotspotImage extends React.PureComponent {
     src: PropTypes.string.isRequired,
     srcAspectRatio: PropTypes.number.isRequired,
     srcSet: PropTypes.string,
-    hotspot: PropTypes.object.isRequired,
-    crop: PropTypes.object.isRequired,
-    width: PropTypes.number,
+    hotspot: PropTypes.PropTypes.objectOf(PropTypes.object),
+    crop: PropTypes.PropTypes.objectOf(PropTypes.object),
     aspectRatio: PropTypes.oneOfType([PropTypes.number, PropTypes.oneOf(['auto', 'none'])]),
     alignX: PropTypes.oneOf(['center', 'left', 'right']),
     alignY: PropTypes.oneOf(['center', 'top', 'bottom']),
@@ -59,6 +58,7 @@ export default class HotspotImage extends React.PureComponent {
         "Image '%s' already loaded, refreshing (from cache) to trigger onLoad / onError",
         this.props.src
       )
+      // eslint-disable-next-line no-self-assign
       imageElement.src = imageElement.src
     }
 
@@ -69,6 +69,7 @@ export default class HotspotImage extends React.PureComponent {
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize)
   }
+  // eslint-disable-next-line camelcase
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.aspectRatio !== this.props.aspectRatio) {
       this.updateContainerAspect(nextProps)
@@ -139,7 +140,7 @@ export default class HotspotImage extends React.PureComponent {
       },
     })
     return (
-      <div className={`${styles.root} ${className}`} style={style} ref={this.setContainerElement}>
+      <RootContainer className={`${className}`} style={style} ref={this.setContainerElement}>
         <div style={targetStyles.container}>
           <div style={targetStyles.padding} />
           <div style={targetStyles.crop}>
@@ -154,7 +155,7 @@ export default class HotspotImage extends React.PureComponent {
             />
           </div>
         </div>
-      </div>
+      </RootContainer>
     )
   }
 }

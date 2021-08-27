@@ -4,15 +4,12 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import {memoize} from 'lodash'
 import getBackingStoreRatio from './getBackingStoreRatio'
-import makeDragAware from './makeDragAware'
 import * as utils2d from './2d/utils'
 import {Rect} from './2d/shapes'
-import styles from './styles/ImageTool.css'
+import {RootContainer, CanvasContainer} from './ImageTool.styles'
 
 import * as cursors from './cursors'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './constants'
-
-const DragAwareCanvas = makeDragAware('canvas')
 
 // The margin available in all directions for drawing the crop tool
 const MARGIN_PX = 8
@@ -716,9 +713,8 @@ export default class ImageTool extends React.PureComponent {
     const {image, readOnly} = this.props
     const ratio = getDevicePixelRatio()
     return (
-      <div className={styles.root}>
-        <DragAwareCanvas
-          className={styles.canvas}
+      <RootContainer>
+        <CanvasContainer
           readOnly={readOnly}
           ref={this.setCanvas}
           onDrag={this.handleDrag}
@@ -729,7 +725,7 @@ export default class ImageTool extends React.PureComponent {
           height={image.height * ratio}
           width={image.width * ratio}
         />
-      </div>
+      </RootContainer>
     )
   }
 }
