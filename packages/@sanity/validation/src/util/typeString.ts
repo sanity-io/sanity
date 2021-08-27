@@ -11,19 +11,13 @@ function isBuiltIn(_constructor: unknown) {
   return false
 }
 
-function getConstructorOf(obj: unknown) {
-  if (obj === null || obj === undefined) return obj
-
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  return (obj as object).constructor
-}
-
 export default function typeString(obj: unknown): string {
   // [object Blah] -> Blah
   const stringType = _toString.call(obj).slice(8, -1)
   if (obj === null || obj === undefined) return stringType.toLowerCase()
 
-  const constructorType = getConstructorOf(obj)
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  const constructorType = (obj as object).constructor
   if (constructorType && !isBuiltIn(constructorType)) return constructorType.name
   return stringType
 }
