@@ -34,7 +34,9 @@ export default {
     {id: 'pt', title: 'Portuguese'}
     //...
   ],
+  // Select Norwegian (Bokmål) by default
   defaultLanguages: ['nb'],
+  // Only show language filter for document type `page` (schemaType.name)
   documentTypes: ['page'],
   filterField: (enclosingType, field, selectedLanguageIds) =>
     !enclosingType.name.startsWith('locale') || selectedLanguageIds.includes(field.name)
