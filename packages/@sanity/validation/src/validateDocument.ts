@@ -18,12 +18,6 @@ import RuleClass from './Rule'
 
 const appendPath = (base: Path, next: Path | PathSegment): Path => base.concat(next)
 
-const applyPathPrefix = (results: ValidationMarker[], pathPrefix: Path): ValidationMarker[] =>
-  results.map((result) => ({
-    ...result,
-    path: appendPath(pathPrefix, result.path),
-  }))
-
 const resolveTypeForArrayItem = (
   item: unknown,
   candidates: SchemaType[]
@@ -81,7 +75,7 @@ export function validateItem(
         type: 'validation',
         level: 'error',
         path,
-        item: new ValidationErrorClass('Unable to resolve type for item', {paths: [path]}),
+        item: new ValidationErrorClass('Unable to resolve type for item'),
       },
     ])
   }
@@ -113,30 +107,25 @@ async function validateObject(
     )
   }
 
-  // Validate actual object itself
-  let objChecks: Promise<ValidationMarker[]>[] = []
-  if (Array.isArray(type.validation)) {
-    objChecks = type.validation.map(async (rule) => {
-      const ruleResults = await rule.validate(obj, {
-        parent: context.parent,
-        document: context.document,
-        path,
-        type,
-      })
-
-      return applyPathPrefix(ruleResults, path)
+  // Run validation for the object itself
+  const objChecks = (type.validation || []).map((rule) =>
+    rule.validate(obj, {
+      parent: context.parent,
+      document: context.document,
+      path,
+      type,
     })
-  }
+  )
 
-  // Validate fields within object
+  // Run validation for rules set at the object level with `Rule.fields({/* ... */})`
   const fieldRules = (type.validation || [])
     .map((rule) => rule._fieldRules)
     .filter(Boolean)
+    // TODO: this seems like a bug, what if multiple rules touch the same field key?
     .reduce<FieldRules>(Object.assign, {})
 
-  const fieldChecks = type.fields.map(async (field) => {
+  const fieldChecks = type.fields.map((field) => {
     // field validation from the enclosing object type
-
     const fieldValidation = fieldRules[field.name]
     if (!fieldValidation) {
       return []
@@ -144,15 +133,15 @@ async function validateObject(
     const fieldPath = appendPath(path, field.name)
     const fieldValue = obj[field.name]
 
-    const result = await fieldValidation(new RuleClass()).validate(fieldValue, {
+    return fieldValidation(new RuleClass()).validate(fieldValue, {
       parent: obj,
       document: context.document,
       path: fieldPath,
       type: field.type,
     })
-    return applyPathPrefix(result, fieldPath)
   })
 
+  // Run validation from each field's schema `validation: Rule => {/* ... */}` function
   const fieldTypeChecks = type.fields.map((field) => {
     // field validation from field type
     const fieldPath = appendPath(path, field.name)
@@ -184,25 +173,27 @@ async function validateArray(
         type: 'validation',
         level: 'error',
         path,
-        item: new ValidationErrorClass('Unable to resolve type for array', {paths: [path]}),
+        item: new ValidationErrorClass('Unable to resolve type for array'),
       },
     ]
   }
-  // Validate actual array itself
-  let arrayChecks: Promise<ValidationMarker[]>[] = []
 
-  if (Array.isArray(type.validation)) {
-    arrayChecks = type.validation.map(async (rule) => {
-      const ruleResults = await rule.validate(items, {
-        parent: options.parent,
-        document: options.document,
-        path,
-        type,
-      })
-
-      return applyPathPrefix(ruleResults, path)
-    })
+  if (typeof type.validation === 'function') {
+    throw new Error(
+      `Schema type "${type.name}"'s \`validation\` was not run though \`inferFromSchema\``
+    )
   }
+
+  // Validate actual array itself
+  const arrayChecks = (type.validation || []).map((rule) =>
+    rule.validate(items, {
+      parent: options.parent,
+      document: options.document,
+      path,
+      type,
+    })
+  )
+
   // Validate items within array
   const itemChecks = items.map((item, i) => {
     const pathSegment = isKeyedObject(item) ? {_key: item._key} : i
@@ -231,24 +222,26 @@ async function validatePrimitive(
         type: 'validation',
         level: 'error',
         path,
-        item: new ValidationErrorClass('Unable to resolve type for item', {paths: [path]}),
+        item: new ValidationErrorClass('Unable to resolve type for item'),
       },
     ]
   }
 
-  if (!Array.isArray(type.validation)) {
-    return []
+  if (typeof type.validation === 'function') {
+    throw new Error(
+      `Schema type "${type.name}"'s \`validation\` was not run though \`inferFromSchema\``
+    )
   }
 
   const resolved = await Promise.all(
-    type.validation.map(async (rule) => {
-      const currRuleResults = await rule.validate(item, {
+    (type.validation || []).map((rule) =>
+      rule.validate(item, {
         parent: context.parent,
         document: context.document,
         path,
       })
-      return applyPathPrefix(currRuleResults, path)
-    })
+    )
   )
+
   return resolved.flat()
 }

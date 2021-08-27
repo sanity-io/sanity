@@ -9,7 +9,7 @@ export function isNonNullable<T>(t: T): t is NonNullable<T> {
 }
 
 export default function convertToValidationMarker(
-  validationResult:
+  validatorResult:
     | true
     | true[]
     | string
@@ -21,26 +21,22 @@ export default function convertToValidationMarker(
   level: 'error' | 'warning' | undefined,
   context: ValidationContext
 ): ValidationMarker[] {
-  if (validationResult === true) return []
+  if (validatorResult === true) return []
 
-  if (Array.isArray(validationResult)) {
-    return validationResult
+  if (Array.isArray(validatorResult)) {
+    return validatorResult
       .flatMap((child) => convertToValidationMarker(child, level, context))
       .filter(isNonNullable)
   }
 
-  if (typeof validationResult === 'string') {
-    return convertToValidationMarker(
-      new ValidationErrorClass(validationResult, context.path && {paths: [context.path]}),
-      level,
-      context
-    )
+  if (typeof validatorResult === 'string') {
+    return convertToValidationMarker(new ValidationErrorClass(validatorResult), level, context)
   }
 
-  if (!(validationResult instanceof ValidationErrorClass)) {
+  if (!(validatorResult instanceof ValidationErrorClass)) {
     // in order to accept the `ValidationErrorLike`, it at least needs to have
     // a `message` in the object
-    if (typeof validationResult?.message !== 'string') {
+    if (typeof validatorResult?.message !== 'string') {
       throw new Error(
         `${pathToString(
           context.path
@@ -51,7 +47,7 @@ export default function convertToValidationMarker(
     // this is the occurs when an object is returned that wasn't created with the
     // `ValidationErrorClass`. in this case, we want to convert it to a class
     return convertToValidationMarker(
-      new ValidationErrorClass(validationResult.message, validationResult),
+      new ValidationErrorClass(validatorResult.message, validatorResult),
       level,
       context
     )
@@ -59,23 +55,28 @@ export default function convertToValidationMarker(
 
   const results: ValidationMarker[] = []
 
-  // Add an item at "root" level (for arrays, the actual array)
-  if (validationResult.paths.length === 0) {
-    results.push({
-      type: 'validation',
-      level: level || 'error',
-      item: validationResult,
-      path: [],
-    })
+  // the validator result does not include any item-level relative paths,
+  // then just return the top-level path with the validation result
+  if (!validatorResult.paths?.length) {
+    return [
+      {
+        type: 'validation',
+        level: level || 'error',
+        item: validatorResult,
+        path: context.path || [],
+      },
+    ]
   }
 
-  // Add individual items for each path
+  // if the validator result did include item-level relative paths, then for
+  // each item-level relative path, create a validation marker that concatenates
+  // the relative path with the path from the validation context
   return results.concat(
-    validationResult.paths.map((path) => ({
+    validatorResult.paths.map((path) => ({
       type: 'validation',
-      path,
+      path: (context.path || []).concat(path),
       level: level || 'error',
-      item: validationResult,
+      item: validatorResult,
     }))
   )
 }
