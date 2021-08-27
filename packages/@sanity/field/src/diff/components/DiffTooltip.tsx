@@ -14,7 +14,7 @@ interface DiffTooltipProps extends TooltipProps {
   path?: Path | string
 }
 
-interface DiffTooltipWithAnnotationsProps extends TooltipProps {
+interface DiffTooltipWithAnnotationsProps extends Omit<TooltipProps, 'content'> {
   annotations: AnnotationDetails[]
   children: React.ReactElement
   description?: React.ReactNode
@@ -40,11 +40,12 @@ function DiffTooltipWithAnnotation(props: DiffTooltipWithAnnotationsProps) {
 
   const content = (
     <Stack padding={3} space={2}>
-      <Label size={1} style={{textTransform: 'uppercase'}} muted>
+      <Label size={1} muted>
         {description}
       </Label>
       <Stack space={2}>
         {annotations.map((annotation, idx) => (
+          // eslint-disable-next-line react/no-array-index-key
           <AnnotationItem annotation={annotation} key={idx} />
         ))}
       </Stack>
@@ -53,13 +54,7 @@ function DiffTooltipWithAnnotation(props: DiffTooltipWithAnnotationsProps) {
 
   return (
     <LegacyLayerProvider zOffset="paneFooter">
-      <Tooltip
-        content={content}
-        data-placement={restProps.placement}
-        portal
-        allowedAutoPlacements={['top', 'bottom']}
-        {...restProps}
-      >
+      <Tooltip allowedAutoPlacements={['top', 'bottom']} portal {...restProps} content={content}>
         {children}
       </Tooltip>
     </LegacyLayerProvider>
