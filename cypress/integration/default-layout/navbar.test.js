@@ -7,7 +7,7 @@ describe('@sanity/default-layout: Navbar', () => {
     cy.get('[data-testid="default-layout-global-create-dialog"]').should(
       'have.css',
       'z-index',
-      '500401'
+      '500801'
     )
 
     cy.get(
