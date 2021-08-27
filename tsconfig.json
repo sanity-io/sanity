@@ -13,7 +13,7 @@
     "preserveConstEnums": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
-
+    "useUnknownInCatchVariables": false,
     "strict": true,
     "skipLibCheck": true
   },
