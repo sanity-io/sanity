@@ -1,5 +1,4 @@
 import {Validators} from '@sanity/types'
-import ValidationErrorClass from '../ValidationError'
 import genericValidator from './genericValidator'
 
 const metaKeys = ['_key', '_type', '_weak']
@@ -27,9 +26,7 @@ const objectValidators: Validators = {
     }
 
     if (typeof value._ref !== 'string') {
-      return new ValidationErrorClass(message || 'Must be a reference to a document', {
-        paths: [['$']],
-      })
+      return message || 'Must be a reference to a document'
     }
 
     return true
