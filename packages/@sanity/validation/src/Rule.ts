@@ -406,8 +406,7 @@ const Rule: RuleClass = class Rule implements IRule {
           const errorFromException = new ValidationErrorClass(
             `${pathToString(context.path)}: Exception occurred while validating value: ${
               err.message
-            }`,
-            {paths: context.path && [context.path]}
+            }`
           )
           return convertToValidationMarker(errorFromException, 'error', context)
         }

@@ -261,7 +261,16 @@ export interface ValidationError {
   message: string
   children?: ValidationMarker[]
   operation?: 'AND' | 'OR'
-  paths: Path[]
+  /**
+   * If writing a custom validator, you can return validation messages to
+   * specific paths inside of the current value (object or array) by populating
+   * this `paths` prop.
+   *
+   * NOTE: These paths are relative to the current value and _not_ relative to
+   * the document. Use `undefined` or an empty array to target the top-level
+   * value.
+   */
+  paths?: Path[]
   cloneWithMessage(message: string): ValidationError
 }
 

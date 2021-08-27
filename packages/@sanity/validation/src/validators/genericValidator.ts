@@ -11,7 +11,7 @@ const formatValidationErrors = (options: {
   results: ValidationMarker[]
   operation: 'AND' | 'OR'
 }) => {
-  let message: string
+  let message
 
   if (options.message) {
     message = options.message
@@ -47,8 +47,8 @@ const genericValidators: Validators = {
     return true
   },
 
-  all: async (children, value, message) => {
-    const resolved = await Promise.all(children.map((child) => child.validate(value)))
+  all: async (children, value, message, context) => {
+    const resolved = await Promise.all(children.map((child) => child.validate(value, context)))
     const results = resolved.flat()
 
     if (!results.length) return true
@@ -60,8 +60,8 @@ const genericValidators: Validators = {
     })
   },
 
-  either: async (children, value, message) => {
-    const resolved = await Promise.all(children.map((child) => child.validate(value)))
+  either: async (children, value, message, context) => {
+    const resolved = await Promise.all(children.map((child) => child.validate(value, context)))
     const results = resolved.flat()
 
     // Read: There is at least one rule that matched
@@ -89,7 +89,7 @@ const genericValidators: Validators = {
 
     return allowedValues.some((expected) => deepEquals(expected, actual))
       ? true
-      : new ValidationErrorClass(message || defaultMessage)
+      : message || defaultMessage
   },
 
   custom: async (fn, value, message, context) => {
