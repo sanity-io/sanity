@@ -18,10 +18,15 @@ import RuleClass from './Rule'
 
 const appendPath = (base: Path, next: Path | PathSegment): Path => base.concat(next)
 
-const resolveTypeForArrayItem = (
+export function resolveTypeForArrayItem(
   item: unknown,
   candidates: SchemaType[]
-): SchemaType | undefined => {
+): SchemaType | undefined {
+  // if there is only one type available, assume that it's the correct one
+  if (candidates.length === 1) {
+    return candidates[0]
+  }
+
   const itemType = isTypedObject(item) && item._type
 
   const primitive =
@@ -69,22 +74,11 @@ export function validateItem(
   path: Path,
   context: ValidationContext
 ): Promise<ValidationMarker[]> {
-  if (!type) {
-    return Promise.resolve([
-      {
-        type: 'validation',
-        level: 'error',
-        path,
-        item: new ValidationErrorClass('Unable to resolve type for item'),
-      },
-    ])
-  }
-
-  if (Array.isArray(item) && type.jsonType === 'array') {
+  if (Array.isArray(item) && type?.jsonType === 'array') {
     return validateArray(item, type, path, context)
   }
 
-  if (typeof item === 'object' && item !== null && type.jsonType === 'object') {
+  if (typeof item === 'object' && item !== null && type?.jsonType === 'object') {
     return validateObject(item as Record<string, unknown>, type, path, context)
   }
 
@@ -212,7 +206,7 @@ async function validateArray(
 
 async function validatePrimitive(
   item: unknown,
-  type: SchemaType,
+  type: SchemaType | undefined,
   path: Path,
   context: ValidationContext
 ): Promise<ValidationMarker[]> {

@@ -32,12 +32,20 @@
     "directory": "packages/@sanity/validation"
   },
   "devDependencies": {
-    "@sanity/schema": "2.16.0",
+    "@sanity/client": "^2.16.0",
+    "@sanity/schema": "^2.16.0",
     "jest": "^26.6.3"
   },
+  "peerDependencies": {
+    "@sanity/client": "^2.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@sanity/client": {
+      "optional": true
+    }
+  },
   "dependencies": {
-    "@sanity/client": "2.16.0",
-    "@sanity/types": "2.17.0",
+    "@sanity/types": "^2.17.0",
     "date-fns": "^2.16.1",
     "lodash": "^4.17.15"
   }
