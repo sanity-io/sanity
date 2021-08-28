@@ -533,5 +533,32 @@ export default {
       },
       inputComponent: CustomObjectSelectInput,
     },
+    {
+      name: 'requiredObjectWithFields',
+      description:
+        'Because this object is required, the sub-field validation will run even if the object is undefined.',
+      type: 'object',
+      validation: (Rule) => Rule.required().error('Please fill out this object'),
+      fields: [
+        {
+          name: 'title',
+          type: 'string',
+          validation: (Rule) => Rule.required().error('Title is required'),
+        },
+      ],
+    },
+    {
+      name: 'optionalObjectWithFields',
+      description:
+        'Because this object is not required, the sub-field validation will NOT run if the object is undefined. You must touch it first.',
+      type: 'object',
+      fields: [
+        {
+          name: 'title',
+          type: 'string',
+          validation: (Rule) => Rule.required().error('Title is required.'),
+        },
+      ],
+    },
   ],
 }

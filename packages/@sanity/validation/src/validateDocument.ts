@@ -18,6 +18,9 @@ import RuleClass from './Rule'
 
 const appendPath = (base: Path, next: Path | PathSegment): Path => base.concat(next)
 
+const isRecord = (maybeRecord: unknown): maybeRecord is Record<string, unknown> =>
+  typeof maybeRecord === 'object' && maybeRecord !== null && !Array.isArray(maybeRecord)
+
 export function resolveTypeForArrayItem(
   item: unknown,
   candidates: SchemaType[]
@@ -78,15 +81,15 @@ export function validateItem(
     return validateArray(item, type, path, context)
   }
 
-  if (typeof item === 'object' && item !== null && type?.jsonType === 'object') {
-    return validateObject(item as Record<string, unknown>, type, path, context)
+  if (type?.jsonType === 'object') {
+    return validateObject(item, type, path, context)
   }
 
   return validatePrimitive(item, type, path, context)
 }
 
 async function validateObject(
-  obj: Record<string, unknown>,
+  obj: unknown,
   type: ObjectSchemaType | undefined,
   path: Path,
   context: ValidationContext
@@ -101,8 +104,21 @@ async function validateObject(
     )
   }
 
+  const objValidation = type.validation || []
+
+  // this will be true if the top-level object itself is required.
+  // if the top-level object is required, then we'll run the children
+  const objIsRequired = objValidation.some((rule) => rule.isRequired())
+
+  // run the nested validation if:
+  const runNestedFieldValidation =
+    // 1. the object is truthy OR
+    !!obj ||
+    // 2. the object is not defined but the top-level object is required
+    (obj === undefined && objIsRequired)
+
   // Run validation for the object itself
-  const objChecks = (type.validation || []).map((rule) =>
+  const objChecks = objValidation.map((rule) =>
     rule.validate(obj, {
       parent: context.parent,
       document: context.document,
@@ -112,44 +128,49 @@ async function validateObject(
   )
 
   // Run validation for rules set at the object level with `Rule.fields({/* ... */})`
-  const fieldRules = (type.validation || [])
+  const fieldRules = objValidation
     .map((rule) => rule._fieldRules)
     .filter(Boolean)
     // TODO: this seems like a bug, what if multiple rules touch the same field key?
     .reduce<FieldRules>(Object.assign, {})
 
-  const fieldChecks = type.fields.map((field) => {
-    // field validation from the enclosing object type
-    const fieldValidation = fieldRules[field.name]
-    if (!fieldValidation) {
-      return []
-    }
-    const fieldPath = appendPath(path, field.name)
-    const fieldValue = obj[field.name]
+  const fieldChecks = runNestedFieldValidation
+    ? type.fields.map((field) => {
+        // field validation from the enclosing object type
+        const fieldValidation = fieldRules[field.name]
+        if (!fieldValidation) {
+          return []
+        }
+        const fieldPath = appendPath(path, field.name)
+        const fieldValue = isRecord(obj) ? obj[field.name] : undefined
 
-    return fieldValidation(new RuleClass()).validate(fieldValue, {
-      parent: obj,
-      document: context.document,
-      path: fieldPath,
-      type: field.type,
-    })
-  })
+        return fieldValidation(new RuleClass()).validate(fieldValue, {
+          parent: obj,
+          document: context.document,
+          path: fieldPath,
+          type: field.type,
+        })
+      })
+    : []
 
   // Run validation from each field's schema `validation: Rule => {/* ... */}` function
-  const fieldTypeChecks = type.fields.map((field) => {
-    // field validation from field type
-    const fieldPath = appendPath(path, field.name)
-    const fieldValue = obj[field.name]
-    if (!field.type?.validation) {
-      return []
-    }
-    return validateItem(fieldValue, field.type, fieldPath, {
-      parent: obj,
-      document: context.document,
-      path: fieldPath,
-      type: field.type,
-    })
-  })
+  const fieldTypeChecks = runNestedFieldValidation
+    ? type.fields.map((field) => {
+        // field validation from field type
+        const fieldPath = appendPath(path, field.name)
+        const fieldValue = isRecord(obj) ? obj[field.name] : undefined
+
+        if (!field.type?.validation) {
+          return []
+        }
+        return validateItem(fieldValue, field.type, fieldPath, {
+          parent: obj,
+          document: context.document,
+          path: fieldPath,
+          type: field.type,
+        })
+      })
+    : []
 
   const results = await Promise.all([...objChecks, ...fieldChecks, ...fieldTypeChecks])
   return results.flat()
