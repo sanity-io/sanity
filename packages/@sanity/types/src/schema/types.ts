@@ -71,7 +71,7 @@ export type InitialValueProperty<T = unknown> = T | InitialValueResolver<T> | un
  * }
  * ```
  */
-type ValidationValue = false | Rule[] | ((rule: Rule) => Rule | Rule[])
+export type SchemaValidationValue = false | Rule | Rule[] | ((rule: Rule) => Rule | Rule[])
 
 export interface BaseSchemaType {
   name: string
@@ -123,7 +123,7 @@ export interface StringSchemaType extends BaseSchemaType {
     timeFormat?: string
   }
   initialValue?: ((arg?: any) => Promise<string> | string) | string | undefined
-  validation?: ValidationValue
+  validation?: SchemaValidationValue
 }
 
 export interface TextSchemaType extends StringSchemaType {
@@ -134,7 +134,7 @@ export interface NumberSchemaType extends BaseSchemaType {
   jsonType: 'number'
   options?: EnumListProps<number>
   initialValue?: InitialValueProperty<number>
-  validation?: ValidationValue
+  validation?: SchemaValidationValue
 }
 
 export interface BooleanSchemaType extends BaseSchemaType {
@@ -143,7 +143,7 @@ export interface BooleanSchemaType extends BaseSchemaType {
     layout: 'checkbox' | 'switch'
   }
   initialValue?: InitialValueProperty<boolean>
-  validation?: ValidationValue
+  validation?: SchemaValidationValue
 }
 
 export interface ArraySchemaType<V = unknown> extends BaseSchemaType {
@@ -160,7 +160,7 @@ export interface ArraySchemaType<V = unknown> extends BaseSchemaType {
      */
     editModal?: 'dialog' | 'fullscreen' | 'popover' | 'fold'
   }
-  validation?: ValidationValue
+  validation?: SchemaValidationValue
 }
 
 export interface BlockSchemaType extends ObjectSchemaType {
@@ -187,7 +187,7 @@ export interface ObjectSchemaType extends BaseSchemaType {
   fields: ObjectField[]
   fieldsets?: Fieldset[]
   initialValue?: InitialValueProperty<Record<string, unknown>>
-  validation?: ValidationValue
+  validation?: SchemaValidationValue
 
   // Experimentals
   /* eslint-disable camelcase */

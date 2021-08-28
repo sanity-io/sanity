@@ -1,10 +1,10 @@
 import {Path} from '../paths'
-import {SchemaType} from '../schema'
+import {SchemaType, SchemaValidationValue} from '../schema'
 import {SanityDocument} from '../documents'
 import {ValidationMarker} from '../markers'
 
 export type RuleTypeConstraint = 'Array' | 'Boolean' | 'Date' | 'Number' | 'Object' | 'String'
-export type FieldRules = {[fieldKey: string]: (fieldRule: Rule) => Rule}
+export type FieldRules = {[fieldKey: string]: SchemaValidationValue}
 
 // Note: `RuleClass` and `Rule` are split to fit the current `@sanity/types`
 // setup. Classes are a bit weird in the `@sanity/types` package because classes
