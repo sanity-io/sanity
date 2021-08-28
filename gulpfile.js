@@ -7,9 +7,9 @@ const changed = require('gulp-changed')
 const filter = require('gulp-filter')
 const chalk = require('chalk')
 const babel = require('gulp-babel')
-const {runTsc} = require('./scripts/runTsc')
 const log = require('fancy-log')
 const through = require('through2')
+const {runTsc} = require('./scripts/runTsc')
 
 const {getPackagePaths} = require('./scripts/utils/getPackagePaths')
 
@@ -60,7 +60,7 @@ const compileTaskName = (taskType, packagePath, extra = '') => {
 
 function buildJavaScript(packageDir, destDir) {
   return withDisplayName(compileTaskName('babel', packageDir, 'cjs'), () =>
-    src(`${SRC_DIR}/**/*.{js,ts,tsx}`, {cwd: packageDir})
+    src(['!**/*.{test,spec}.{js,ts,tsx}', `${SRC_DIR}/**/*.{js,ts,tsx}`], {cwd: packageDir})
       .pipe(
         changed(destDir, {
           cwd: packageDir,
