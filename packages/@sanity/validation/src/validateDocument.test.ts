@@ -107,6 +107,100 @@ describe('validateDocument', () => {
       },
     ])
   })
+
+  it("runs nested validation on an undefined value if it's required", async () => {
+    const validation = (rule: Rule) => [
+      rule.required().error('This is required!'),
+      rule.max(160).warning('Too long!'),
+    ]
+
+    const schema = createSchema({
+      types: [
+        {
+          name: 'testDoc',
+          type: 'document',
+          title: 'Test Document',
+          fields: [
+            {name: 'registeredString', type: 'registeredString'},
+            {name: 'inlineString', type: 'string', validation},
+            {
+              name: 'registeredObject',
+              type: 'registeredObjectField',
+              validation: (rule: Rule) => rule.required(),
+            },
+            {
+              name: 'inlineObject',
+              type: 'object',
+              fields: [{name: 'foo', type: 'string', validation}],
+              validation: (rule: Rule) => rule.required(),
+            },
+            {
+              name: 'notRequiredRegisteredObject',
+              type: 'registeredObjectField',
+            },
+            {
+              name: 'notRequiredInlineObject',
+              type: 'object',
+              fields: [{name: 'foo', type: 'string', validation}],
+            },
+          ],
+        },
+        {name: 'registeredString', type: 'string', validation},
+        {
+          name: 'registeredObjectField',
+          type: 'object',
+          fields: [{name: 'foo', type: 'string', validation}],
+        },
+      ],
+    })
+
+    const document: SanityDocument = {
+      _id: 'testId',
+      _createdAt: '2021-08-27T14:48:51.650Z',
+      _rev: 'exampleRev',
+      _type: 'testDoc',
+      _updatedAt: '2021-08-27T14:48:51.650Z',
+    }
+
+    await expect(validateDocument(document, schema)).resolves.toMatchObject([
+      {
+        type: 'validation',
+        level: 'error',
+        item: {message: 'This is required!'},
+        path: ['registeredString'],
+      },
+      {
+        type: 'validation',
+        level: 'error',
+        item: {message: 'This is required!'},
+        path: ['inlineString'],
+      },
+      {
+        type: 'validation',
+        level: 'error',
+        item: {message: 'Required'},
+        path: ['registeredObject'],
+      },
+      {
+        type: 'validation',
+        level: 'error',
+        item: {message: 'This is required!'},
+        path: ['registeredObject', 'foo'],
+      },
+      {
+        type: 'validation',
+        level: 'error',
+        item: {message: 'Required'},
+        path: ['inlineObject'],
+      },
+      {
+        type: 'validation',
+        level: 'error',
+        item: {message: 'This is required!'},
+        path: ['inlineObject', 'foo'],
+      },
+    ])
+  })
 })
 
 describe('resolveTypeForArrayItem', () => {
