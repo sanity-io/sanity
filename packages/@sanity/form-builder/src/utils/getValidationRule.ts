@@ -1,4 +1,20 @@
-import {SchemaType, RuleSpec} from '@sanity/types'
+import {SchemaType, RuleSpec, SchemaValidationValue, Rule} from '@sanity/types'
+
+const normalizeRules = (
+  validation: SchemaValidationValue | undefined,
+  type?: SchemaType
+): Rule[] => {
+  if (typeof validation === 'function') {
+    throw new Error(
+      `Schema type "${
+        type?.name || '<not-found>'
+      }"'s \`validation\` was not run though \`inferFromSchema\``
+    )
+  }
+  if (!validation) return []
+  if (Array.isArray(validation)) return validation
+  return [validation]
+}
 
 /**
  * Finds the first matching validation rule spec from a Rule class instance.
@@ -10,16 +26,7 @@ export function getValidationRule<RuleFlag extends RuleSpec['flag']>(
   type: SchemaType | null | undefined,
   ruleName: RuleFlag
 ): Extract<RuleSpec, {flag: RuleFlag}> | null {
-  const validation = type?.validation
-
-  if (typeof validation === 'function') {
-    throw new Error(
-      `Schema type "${type.name}"'s \`validation\` was not run though \`inferFromSchema\``
-    )
-  }
-  if (!validation) return null
-
-  for (const rule of validation) {
+  for (const rule of normalizeRules(type?.validation, type)) {
     for (const ruleSpec of rule._rules) {
       if (ruleSpec.flag === ruleName) {
         return ruleSpec as Extract<RuleSpec, {flag: RuleFlag}>

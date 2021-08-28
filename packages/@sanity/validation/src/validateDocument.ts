@@ -2,36 +2,32 @@ import {
   SanityDocument,
   Schema,
   SchemaType,
-  ObjectSchemaType,
-  ArraySchemaType,
   Path,
-  PathSegment,
-  FieldRules,
   ValidationContext,
   ValidationMarker,
   isKeyedObject,
   isTypedObject,
+  Rule,
+  SchemaValidationValue,
 } from '@sanity/types'
 import typeString from './util/typeString'
 import ValidationErrorClass from './ValidationError'
 import RuleClass from './Rule'
 
-const appendPath = (base: Path, next: Path | PathSegment): Path => base.concat(next)
-
 const isRecord = (maybeRecord: unknown): maybeRecord is Record<string, unknown> =>
   typeof maybeRecord === 'object' && maybeRecord !== null && !Array.isArray(maybeRecord)
+
+const isNonNullable = <T>(value: T): value is NonNullable<T> =>
+  value !== null && value !== undefined
 
 export function resolveTypeForArrayItem(
   item: unknown,
   candidates: SchemaType[]
 ): SchemaType | undefined {
   // if there is only one type available, assume that it's the correct one
-  if (candidates.length === 1) {
-    return candidates[0]
-  }
+  if (candidates.length === 1) return candidates[0]
 
   const itemType = isTypedObject(item) && item._type
-
   const primitive =
     item === undefined || item === null || (!itemType && typeString(item).toLowerCase())
 
@@ -57,7 +53,12 @@ export default async function validateDocument(
   }
 
   try {
-    return await validateItem(doc, documentType, [], {document: doc})
+    return await validateItem({
+      value: doc,
+      type: documentType,
+      path: [],
+      context: {document: doc},
+    })
   } catch (err) {
     console.error(err)
     return [
@@ -65,61 +66,47 @@ export default async function validateDocument(
         type: 'validation',
         level: 'error',
         path: [],
-        item: new ValidationErrorClass(err.message),
+        item: new ValidationErrorClass(err?.message),
       },
     ]
   }
 }
 
-export function validateItem(
-  item: unknown,
-  type: SchemaType | undefined,
-  path: Path,
+interface ValidateItemOptions {
+  value: unknown
+  type: SchemaType | undefined
+  path: Path
   context: ValidationContext
-): Promise<ValidationMarker[]> {
-  if (Array.isArray(item) && type?.jsonType === 'array') {
-    return validateArray(item, type, path, context)
-  }
-
-  if (type?.jsonType === 'object') {
-    return validateObject(item, type, path, context)
-  }
-
-  return validatePrimitive(item, type, path, context)
 }
 
-async function validateObject(
-  obj: unknown,
-  type: ObjectSchemaType | undefined,
-  path: Path,
-  context: ValidationContext
-): Promise<ValidationMarker[]> {
-  if (!type) {
-    return []
+const normalizeRules = (
+  validation: SchemaValidationValue | undefined,
+  type?: SchemaType
+): Rule[] => {
+  if (typeof validation === 'function') {
+    return normalizeRules(validation(new RuleClass(type)))
   }
+  if (!validation) return []
+  if (Array.isArray(validation)) return validation
+  return [validation]
+}
 
-  if (typeof type.validation === 'function') {
+export async function validateItem({
+  value,
+  type,
+  path,
+  context,
+}: ValidateItemOptions): Promise<ValidationMarker[]> {
+  const rules = normalizeRules(type?.validation, type)
+
+  if (typeof type?.validation === 'function') {
     throw new Error(
       `Schema type "${type.name}"'s \`validation\` was not run though \`inferFromSchema\``
     )
   }
 
-  const objValidation = type.validation || []
-
-  // this will be true if the top-level object itself is required.
-  // if the top-level object is required, then we'll run the children
-  const objIsRequired = objValidation.some((rule) => rule.isRequired())
-
-  // run the nested validation if:
-  const runNestedFieldValidation =
-    // 1. the object is truthy OR
-    !!obj ||
-    // 2. the object is not defined but the top-level object is required
-    (obj === undefined && objIsRequired)
-
-  // Run validation for the object itself
-  const objChecks = objValidation.map((rule) =>
-    rule.validate(obj, {
+  const selfChecks = rules.map((rule) =>
+    rule.validate(value, {
       parent: context.parent,
       document: context.document,
       path,
@@ -127,136 +114,74 @@ async function validateObject(
     })
   )
 
-  // Run validation for rules set at the object level with `Rule.fields({/* ... */})`
-  const fieldRules = objValidation
-    .map((rule) => rule._fieldRules)
-    .filter(Boolean)
-    // TODO: this seems like a bug, what if multiple rules touch the same field key?
-    .reduce<FieldRules>(Object.assign, {})
+  const selfIsRequired = rules.some((rule) => rule.isRequired())
 
-  const fieldChecks = runNestedFieldValidation
-    ? type.fields.map((field) => {
-        // field validation from the enclosing object type
-        const fieldValidation = fieldRules[field.name]
-        if (!fieldValidation) {
-          return []
-        }
-        const fieldPath = appendPath(path, field.name)
-        const fieldValue = isRecord(obj) ? obj[field.name] : undefined
+  let nestedResults: Array<Promise<ValidationMarker[]>> = []
 
-        return fieldValidation(new RuleClass()).validate(fieldValue, {
-          parent: obj,
-          document: context.document,
-          path: fieldPath,
-          type: field.type,
+  const shouldRunNestedObjectValidation =
+    // run nested validation for objects
+    type?.jsonType === 'object' &&
+    // if the value is truthy
+    (!!value || // or
+      // (the value is null or undefined) and the top-level value is required
+      ((value === null || value === undefined) && selfIsRequired))
+
+  if (shouldRunNestedObjectValidation) {
+    const fieldTypes = type.fields.reduce<Record<string, SchemaType>>((acc, field) => {
+      acc[field.name] = field.type
+      return acc
+    }, {})
+
+    // Validation for rules set at the object level with `Rule.fields({/* ... */})`
+    nestedResults = nestedResults.concat(
+      rules
+        .map((rule) => rule._fieldRules)
+        .filter(isNonNullable)
+        .flatMap((rule) => Object.entries(rule))
+        .flatMap(([name, validation]) => {
+          const fieldType = fieldTypes[name]
+          return normalizeRules(validation, fieldType).map((subRule) => {
+            const nestedValue = isRecord(value) ? value[name] : undefined
+            return subRule.validate(nestedValue, {
+              parent: value,
+              document: context.document,
+              path: path.concat(name),
+              type: fieldType,
+            })
+          })
         })
-      })
-    : []
+    )
 
-  // Run validation from each field's schema `validation: Rule => {/* ... */}` function
-  const fieldTypeChecks = runNestedFieldValidation
-    ? type.fields.map((field) => {
-        // field validation from field type
-        const fieldPath = appendPath(path, field.name)
-        const fieldValue = isRecord(obj) ? obj[field.name] : undefined
-
-        if (!field.type?.validation) {
-          return []
-        }
-        return validateItem(fieldValue, field.type, fieldPath, {
-          parent: obj,
-          document: context.document,
-          path: fieldPath,
+    // Validation from each field's schema `validation: Rule => {/* ... */}` function
+    nestedResults = nestedResults.concat(
+      type.fields.map((field) =>
+        validateItem({
+          value: isRecord(value) ? value[field.name] : undefined,
           type: field.type,
+          path: path.concat(field.name),
+          context,
         })
-      })
-    : []
+      )
+    )
+  }
 
-  const results = await Promise.all([...objChecks, ...fieldChecks, ...fieldTypeChecks])
+  // note: unlike objects, arrays should not run nested validation for undefined
+  // values because we won't have a valid path to put a marker (i.e. missing the
+  // key or index in the path) and the downstream form builder won't have a
+  // valid target component
+  if (type?.jsonType === 'array' && Array.isArray(value)) {
+    nestedResults = nestedResults.concat(
+      value.map((item) =>
+        validateItem({
+          value: item,
+          type: resolveTypeForArrayItem(item, type.of),
+          path: path.concat(isKeyedObject(item) ? {_key: item._key} : item),
+          context,
+        })
+      )
+    )
+  }
+
+  const results = await Promise.all([...selfChecks, ...nestedResults])
   return results.flat()
-}
-
-async function validateArray(
-  items: unknown[],
-  type: ArraySchemaType,
-  path: Path,
-  options: ValidationContext
-): Promise<ValidationMarker[]> {
-  if (!type) {
-    return [
-      {
-        type: 'validation',
-        level: 'error',
-        path,
-        item: new ValidationErrorClass('Unable to resolve type for array'),
-      },
-    ]
-  }
-
-  if (typeof type.validation === 'function') {
-    throw new Error(
-      `Schema type "${type.name}"'s \`validation\` was not run though \`inferFromSchema\``
-    )
-  }
-
-  // Validate actual array itself
-  const arrayChecks = (type.validation || []).map((rule) =>
-    rule.validate(items, {
-      parent: options.parent,
-      document: options.document,
-      path,
-      type,
-    })
-  )
-
-  // Validate items within array
-  const itemChecks = items.map((item, i) => {
-    const pathSegment = isKeyedObject(item) ? {_key: item._key} : i
-    const itemType = resolveTypeForArrayItem(item, type.of)
-    const itemPath = appendPath(path, [pathSegment])
-    return validateItem(item, itemType, itemPath, {
-      parent: items,
-      document: options.document,
-      path: itemPath,
-    })
-  })
-
-  const result = await Promise.all([...arrayChecks, ...itemChecks])
-  return result.flat()
-}
-
-async function validatePrimitive(
-  item: unknown,
-  type: SchemaType | undefined,
-  path: Path,
-  context: ValidationContext
-): Promise<ValidationMarker[]> {
-  if (!type) {
-    return [
-      {
-        type: 'validation',
-        level: 'error',
-        path,
-        item: new ValidationErrorClass('Unable to resolve type for item'),
-      },
-    ]
-  }
-
-  if (typeof type.validation === 'function') {
-    throw new Error(
-      `Schema type "${type.name}"'s \`validation\` was not run though \`inferFromSchema\``
-    )
-  }
-
-  const resolved = await Promise.all(
-    (type.validation || []).map((rule) =>
-      rule.validate(item, {
-        parent: context.parent,
-        document: context.document,
-        path,
-      })
-    )
-  )
-
-  return resolved.flat()
 }
