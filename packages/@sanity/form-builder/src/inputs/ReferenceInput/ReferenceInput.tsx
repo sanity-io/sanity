@@ -213,10 +213,10 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
   const placeholder = preview.isLoading ? 'Loading…' : 'Type to search…'
   return (
     <FormField
-      htmlFor={inputId}
       __unstable_markers={markers}
       __unstable_presence={presence}
       __unstable_changeIndicator={false}
+      inputId={inputId}
       title={type.title}
       level={level}
       description={type.description}
