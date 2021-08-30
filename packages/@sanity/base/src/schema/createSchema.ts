@@ -3,8 +3,7 @@
 
 import Schema from '@sanity/schema'
 import legacyRichDate from 'part:@sanity/form-builder/input/legacy-date/schema?'
-import validateSchema from '@sanity/schema/lib/sanity/validateSchema'
-import groupProblems from '@sanity/schema/lib/sanity/groupProblems'
+import {validateSchema, groupProblems} from '@sanity/schema/_internal'
 // eslint-disable-next-line import/no-unresolved
 import {inferFromSchema as inferValidation} from '@sanity/validation'
 import slug from './types/slug'
