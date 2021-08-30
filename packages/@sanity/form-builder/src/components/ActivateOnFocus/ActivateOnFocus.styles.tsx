@@ -6,7 +6,7 @@ export const OverlayContainer = styled.div`
 `
 
 export const ContentContainer = styled.div`
-  z-index: 7;
+  z-index: 13;
   opacity: 0;
   transition: opacity 300ms linear;
 `
@@ -18,7 +18,7 @@ export const CardContainer = styled(Card)`
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 6;
+  z-index: 12;
   transition: opacity 150ms ease-in-out;
   opacity: 0;
   box-sizing: border-box;
