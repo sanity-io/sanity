@@ -1,3 +1,4 @@
 src/
 coverage/
-.ideatsconfig.tsbuildinfo
+.idea
+tsconfig.tsbuildinfo
