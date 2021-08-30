@@ -235,22 +235,23 @@ const PresenceDock = memo(function PresenceDock(props: {
 
   const margin = position === 'top' ? topMargin : bottomMargin
 
+  const style: React.CSSProperties = useMemo(
+    () => ({
+      zIndex: 2,
+      position: 'sticky',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'flex-end',
+      ...ITEM_TRANSITION,
+      transform: `translate3d(${leftOffset}px, 0px, 0px)`,
+      top: AVATAR_ARROW_HEIGHT + 1 + margin,
+      bottom: AVATAR_ARROW_HEIGHT + 1 + margin,
+    }),
+    [leftOffset, margin]
+  )
+
   return (
-    <div
-      data-dock={position}
-      key={`sticky-${position}`}
-      style={{
-        zIndex: 2,
-        position: 'sticky',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-end',
-        ...ITEM_TRANSITION,
-        transform: `translate3d(${leftOffset}px, 0px, 0px)`,
-        top: AVATAR_ARROW_HEIGHT + 1 + margin,
-        bottom: AVATAR_ARROW_HEIGHT + 1 + margin,
-      }}
-    >
+    <div data-dock={position} key={`sticky-${position}`} style={style}>
       <FieldPresenceInner
         position={position}
         maxAvatars={MAX_AVATARS_DOCK}
