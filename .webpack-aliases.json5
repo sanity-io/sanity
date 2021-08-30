@@ -7,8 +7,7 @@
 
   '@sanity/desk-tool': './packages/@sanity/desk-tool/src/_exports',
 
-  '@sanity/schema/lib': './packages/@sanity/schema/src',
-  '@sanity/schema': './packages/@sanity/schema/src/legacy',
+  '@sanity/schema': './packages/@sanity/schema/src/_exports',
 
   '@sanity/block-tools': './packages/@sanity/block-tools/src',
   '@sanity/components': './packages/@sanity/components/src',
