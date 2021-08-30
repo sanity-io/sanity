@@ -33,7 +33,12 @@ export default function ActivateOnFocus(props: Props) {
     <OverlayContainer onClick={handleClick} onBlur={handleBlur}>
       {isOverlayActive && (
         <FlexContainer tabIndex={0} align="center" justify="center">
-          <CardContainer />
+          <CardContainer
+            // Almost all input elements have radius=1, and this component is
+            // typically used for overlaying input elements.
+            // @todo Consider making `radius` a component property of `ActivateOnFocus`.
+            radius={1}
+          />
           <ContentContainer>{message}</ContentContainer>
         </FlexContainer>
       )}

@@ -12,15 +12,16 @@ export const ContentContainer = styled.div`
 `
 
 export const CardContainer = styled(Card)`
-  border: 1px solid var(--card-code-fg-color);
+  border: 1px solid var(--card-border-color);
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   z-index: 6;
-  transition: opacity 300ms linear;
+  transition: opacity 150ms ease-in-out;
   opacity: 0;
+  box-sizing: border-box;
 `
 
 export const FlexContainer = styled(Flex)`
