@@ -74,9 +74,10 @@ export function fromSlateValue(
           const {_type} = child
           if (_type !== 'span' && typeof child.value === 'object') {
             hasInlines = true
-            const {value: _v, _key: _k, _type: _t, ...rest} = child
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const {value: v, _key: k, _type: t, __inline: _i, children: _c, ...rest} = child
             return keepObjectEquality(
-              {_key: _k as string, _type: _t as string, ...rest, ..._v},
+              {_key: k as string, _type: t as string, ...rest, ...v},
               keyMap
             )
           }
