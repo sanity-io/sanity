@@ -120,8 +120,26 @@ const watchJSAndAssets = parallel(
   )
 )
 
+function matchPackages(names) {
+  const matchPkgs = names.map((n) => `packages/${n}`)
+  return (pkg) => matchPkgs.includes(pkg)
+}
+
+const CLI_PKGS = [
+  '@sanity/cli',
+  '@sanity/client',
+  '@sanity/core',
+  '@sanity/export',
+  '@sanity/import',
+  '@sanity/mutator',
+  '@sanity/resolver',
+  '@sanity/server',
+  '@sanity/util',
+  '@sanity/webpack-loader',
+]
+
 exports.js = buildJSAndAssets
-exports.ts = buildTS
+exports['build:cli'] = parallel(PACKAGE_PATHS.filter(matchPackages(CLI_PKGS)).map(buildPackage))
 exports.watchTS = series(buildTS, watchTS)
 exports.watchJS = series(buildJSAndAssets, watchJSAndAssets)
 exports.build = series(buildJSAndAssets, buildTS)

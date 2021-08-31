@@ -4,11 +4,11 @@
   "isSanityMonorepo": true,
   "scripts": {
     "workshop": "cd dev/workshop && npm run dev",
-    "bootstrap": "lerna bootstrap && npm run build:cli",
+    "bootstrap": "lerna bootstrap && npm run build:cli && npm run package",
     "dev": "npm start",
     "rebuild": "gulp build",
     "build": "gulp clean && gulp build && npm run package",
-    "build:cli": "lerna run --scope '@sanity/{cli,client,core,export,import,mutator,resolver,server,util,webpack-loader}' build",
+    "build:cli": "gulp build:cli",
     "build:js": "gulp js",
     "clean": "lerna clean && gulp clean",
     "publish": "npm run build && lerna publish --exact",
