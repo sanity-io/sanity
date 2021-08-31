@@ -29,6 +29,7 @@
     {"path": "./packages/@sanity/google-maps-input"},
     {"path": "./packages/@sanity/imagetool"},
     {"path": "./packages/@sanity/initial-value-templates"},
+    {"path": "./packages/@sanity/language-filter"},
     {"path": "./packages/@sanity/mutator"},
     {"path": "./packages/@sanity/portable-text-editor"},
     {"path": "./packages/@sanity/react-hooks"},
