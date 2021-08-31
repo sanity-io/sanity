@@ -23,6 +23,9 @@ const generations = {
 
 const isInteractive = process.stdout.isTTY && process.env.TERM !== 'dumb' && !('CI' in process.env)
 
+const ignoredWarnings = ['OPTIONAL_INPUT_FIELD_ADDED']
+const ignoredBreaking = []
+
 module.exports = async function deployApiActions(args, context) {
   // Reparsing CLI flags for better control of binary flags
   const flags = parseCliFlags(args)
@@ -163,11 +166,14 @@ function parseCliFlags(args) {
 }
 
 async function confirmValidationResult(valid, {spinner, output, prompt, force}) {
-  const {validationError, breakingChanges, dangerousChanges} = valid
+  const {validationError, breakingChanges: breaking, dangerousChanges: dangerous} = valid
   if (validationError) {
     spinner.fail()
     throw new Error(`GraphQL schema is not valid:\n\n${validationError}`)
   }
+
+  const breakingChanges = breaking.filter((change) => !ignoredBreaking.includes(change.type))
+  const dangerousChanges = dangerous.filter((change) => !ignoredWarnings.includes(change.type))
 
   const hasProblematicChanges = breakingChanges.length > 0 || dangerousChanges.length > 0
   if (force && hasProblematicChanges) {
