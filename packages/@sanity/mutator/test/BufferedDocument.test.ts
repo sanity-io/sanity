@@ -1,9 +1,7 @@
-import {test} from 'tap'
-
 import BufferedDocumentTester from './util/BufferedDocumentTester'
 
-test('simple edit cycle', (tap) => {
-  new BufferedDocumentTester(tap, {
+test('simple edit cycle', () => {
+  new BufferedDocumentTester({
     _id: 'a',
     _rev: '1',
     title: 'Hello',
@@ -46,8 +44,8 @@ test('simple edit cycle', (tap) => {
     .end()
 })
 
-test('simple remote edit', (tap) => {
-  new BufferedDocumentTester(tap, {
+test('simple remote edit', () => {
+  new BufferedDocumentTester({
     _id: 'a',
     _rev: '1',
     numbers: [0],
@@ -70,8 +68,8 @@ test('simple remote edit', (tap) => {
     .end()
 })
 
-test('simple edit cycle with remote edits causing rebase', (tap) => {
-  new BufferedDocumentTester(tap, {
+test('simple edit cycle with remote edits causing rebase', () => {
+  new BufferedDocumentTester({
     _id: 'a',
     _rev: '1',
     numbers: [0],
@@ -115,8 +113,8 @@ test('simple edit cycle with remote edits causing rebase', (tap) => {
     .end()
 })
 
-test('document being deleted by remote', (tap) => {
-  new BufferedDocumentTester(tap, {
+test('document being deleted by remote', () => {
+  new BufferedDocumentTester({
     _id: 'a',
     _rev: '1',
     text: 'hello',
@@ -144,8 +142,8 @@ test('document being deleted by remote', (tap) => {
     .localMutation(null, '3', {
       create: {_id: 'a', text: 'good morning', _createdAt: '2018-01-25T15:18:12.114Z'},
     })
-    .assert((tap, bufDoc) => {
-      tap.type(bufDoc.LOCAL._createdAt, 'string', 'New documents must have a _createdAt time')
+    .assert((bufDoc) => {
+      expect(typeof bufDoc.LOCAL._createdAt).toBe('string') // 'New documents must have a _createdAt time'
     })
     .assertLOCAL('text', 'good morning')
     .assertLOCAL('_rev', '3')
@@ -161,9 +159,9 @@ test('document being deleted by remote', (tap) => {
     .end()
 })
 
-test('document being created with `createOrReplace`', (tap) => {
+test('document being created with `createOrReplace`', () => {
   const createdAt = '2018-01-25T15:18:12.114Z'
-  new BufferedDocumentTester(tap, {
+  new BufferedDocumentTester({
     _id: 'a',
     _rev: '1',
     text: 'hello',
@@ -180,9 +178,9 @@ test('document being created with `createOrReplace`', (tap) => {
     .end()
 })
 
-test('document being created with `createIfNotExists`', (tap) => {
+test('document being created with `createIfNotExists`', () => {
   const createdAt = '2018-01-25T15:18:12.114Z'
-  new BufferedDocumentTester(tap, {
+  new BufferedDocumentTester({
     _id: 'a',
     _rev: '1',
     text: 'hello',
@@ -202,9 +200,9 @@ test('document being created with `createIfNotExists`', (tap) => {
     .end()
 })
 
-test('document being created with `create`', (tap) => {
+test('document being created with `create`', () => {
   const createdAt = '2018-01-25T15:18:12.114Z'
-  new BufferedDocumentTester(tap, {
+  new BufferedDocumentTester({
     _id: 'a',
     _rev: '1',
     text: 'hello',
@@ -223,8 +221,8 @@ test('document being created with `create`', (tap) => {
     .end()
 })
 
-test('document being deleted by local', (tap) => {
-  new BufferedDocumentTester(tap, {
+test('document being deleted by local', () => {
+  new BufferedDocumentTester({
     _id: 'a',
     _rev: '1',
     text: 'hello',
@@ -247,8 +245,8 @@ test('document being deleted by local', (tap) => {
     .end()
 })
 
-test('no-op-patch only changes _rev of target document', (tap) => {
-  new BufferedDocumentTester(tap, {
+test('no-op-patch only changes _rev of target document', () => {
+  new BufferedDocumentTester({
     _id: 'a',
     _rev: '1',
     text: 'hello',
@@ -271,8 +269,8 @@ test('no-op-patch only changes _rev of target document', (tap) => {
     .end()
 })
 
-test('remotely created documents has _rev', (tap) => {
-  new BufferedDocumentTester(tap, {
+test('remotely created documents has _rev', () => {
+  new BufferedDocumentTester({
     _id: 'a',
     _rev: '1',
   })

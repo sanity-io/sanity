@@ -1,5 +1,5 @@
 // A test jig for the BufferedDocument model
-
+import {Test as Tap} from 'tap'
 import debugLogger from 'debug'
 import {BufferedDocument, Mutation} from '../../src/document'
 import {extract} from '../../src/jsonpath'
@@ -15,7 +15,7 @@ export default class BufferedDocumentTester {
   onDeleteCalled: boolean
   tap: any
 
-  constructor(tap, attrs) {
+  constructor(attrs) {
     this.doc = new BufferedDocument(attrs)
     this.onRebaseCalled = false
     this.doc.onRebase = (edge) => {
@@ -30,7 +30,7 @@ export default class BufferedDocumentTester {
     this.doc.commitHandler = (opts) => {
       this.pendingCommit = opts
     }
-    this.tap = tap
+    this.tap = new Tap()
     this.pendingCommit = null
     this.context = 'initially'
   }
@@ -192,7 +192,7 @@ export default class BufferedDocumentTester {
   }
 
   assert(cb) {
-    cb(this.tap, this.doc)
+    cb(this.doc)
     return this
   }
 

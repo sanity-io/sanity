@@ -1,4 +1,3 @@
-import {test} from 'tap'
 import SquashingBuffer from '../src/document/SquashingBuffer'
 import Mutation from '../src/document/Mutation'
 
@@ -13,15 +12,11 @@ function patch(sb, patchDetails) {
   add(sb, {patch: patchDetails})
 }
 
-function assertNoStashedOperations(tap, sb) {
-  tap.assert(sb.out.length === 0, 'There should not be any stashed changes yet')
-}
-
-test('basic optimization of assignments to same, explicit key', (tap) => {
+test('basic optimization of assignments to same, explicit key', () => {
   const sb = new SquashingBuffer({_id: '1', _type: 'test', a: 'A string value'})
   patch(sb, {id: '1', set: {a: 'A strong value'}})
-  assertNoStashedOperations(tap, sb)
-  tap.same(sb.setOperations, {
+  expect(sb.out.length === 0) // There should not be any stashed changes yet
+  expect(sb.setOperations).toEqual({
     a: {
       patch: {
         id: '1',
@@ -32,70 +27,51 @@ test('basic optimization of assignments to same, explicit key', (tap) => {
     },
   })
   patch(sb, {id: '1', set: {a: 'A strange value'}})
-  tap.same(Object.keys(sb.setOperations), ['a'], 'Should still only be one patch')
+  expect(Object.keys(sb.setOperations)).toEqual(['a']) // Should still only be one patch
   patch(sb, {id: '1', set: {a: 'A string value'}})
-  tap.same(
-    Object.keys(sb.setOperations),
-    [],
-    'Should not be any set operations, because that last one should occlude the preceding operations and also be eliminated'
-  )
-  tap.end()
+  expect(Object.keys(sb.setOperations)).toEqual([]) // Should not be any set operations, because that last one should occlude the preceding operations and also be eliminated
 })
 
-test('optimisation of assignments to same key with aliases', (tap) => {
+test('optimisation of assignments to same key with aliases', () => {
   const sb = new SquashingBuffer({_id: '1', _type: 'test', a: 'A string value'})
   patch(sb, {id: '1', set: {a: 'A strange value'}})
   patch(sb, {id: '1', set: {'..a': 'A strong value'}})
   patch(sb, {id: '1', set: {"['a']": 'A strict value'}})
-  tap.same(
-    Object.keys(sb.setOperations),
-    ['a'],
-    'Should only be one key, since every operation above hits the same concrete path'
-  )
-  tap.end()
+  expect(Object.keys(sb.setOperations)).toEqual(['a']) //  Should only be one key, since every operation above hits the same concrete path
 })
 
-test('assigning non-string values to string field', (tap) => {
+test('assigning non-string values to string field', () => {
   const initial = {_id: '1', _type: 'test', a: 'A string value'}
   const sb = new SquashingBuffer(initial)
   patch(sb, {id: '1', set: {a: 42}})
   const mut = sb.purge('txn_id')
   const final = mut.apply(initial)
-  tap.same(final.a, 42)
-  tap.end()
+  expect(final.a).toBe(42)
 })
 
-test('stashing of changes when unoptimizable operations arrive', (tap) => {
+test('stashing of changes when unoptimizable operations arrive', () => {
   const initial = {_id: '1', _type: 'test', a: 'A string value', c: 'Some value'}
   const sb = new SquashingBuffer(initial)
   patch(sb, {id: '1', set: {a: 'Another value'}})
   patch(sb, {id: '1', set: {a: {b: 'A wrapped value'}}})
-  tap.true(sb.out, 'There should be a stashed mutation since that last patch was not optimisable')
-  tap.same(
-    Object.keys(sb.setOperations),
-    [],
-    'All setOperation should be stashed now, so we should not see them in the optimization buffer'
-  )
+  expect(sb.out).toBeTruthy() // There should be a stashed mutation since that last patch was not optimisable
+  expect(Object.keys(sb.setOperations)).toEqual([]) // All setOperation should be stashed now, so we should not see them in the optimization buffer
+
   patch(sb, {id: '1', set: {c: 'Change after stash'}})
   const mut = sb.purge('txn_id')
   const final = mut.apply(initial)
-  tap.same(
-    final,
-    {
-      _id: '1',
-      _type: 'test',
-      _rev: 'txn_id',
-      a: {
-        b: 'A wrapped value',
-      },
-      c: 'Change after stash',
+  expect(final).toEqual({
+    _id: '1',
+    _type: 'test',
+    _rev: 'txn_id',
+    a: {
+      b: 'A wrapped value',
     },
-    'The mutations did not apply correctly'
-  )
-  tap.end()
+    c: 'Change after stash',
+  })
 })
 
-test('de-duplicate createIfNotExists', (tap) => {
+test('de-duplicate createIfNotExists', () => {
   const initial = {_id: '1', _type: 'test', a: 'A string value', c: 'Some value'}
   const sb = new SquashingBuffer(initial)
   add(sb, {createIfNotExists: {_id: '1', _type: 'test', a: 'A string value', c: 'Some value'}})
@@ -109,33 +85,27 @@ test('de-duplicate createIfNotExists', (tap) => {
 
   // Check that one of the creates were removed:
   const creates = tx.mutations.filter((mut) => !!mut.createIfNotExists)
-  tap.same(1, creates.length, 'Only a single create mutation expected')
+  expect(1).toEqual(creates.length) // Only a single create mutation expected
 
   // And that the final state still applies:
   const final = tx.apply(initial)
-  tap.same(
-    final,
-    {
-      _id: '1',
-      _type: 'test',
-      _rev: 'txn_id',
-      a: {
-        b: 'A wrapped value',
-      },
-      c: 'Some value',
+  expect(final).toEqual({
+    _id: '1',
+    _type: 'test',
+    _rev: 'txn_id',
+    a: {
+      b: 'A wrapped value',
     },
-    'The mutations did not apply correctly'
-  )
+    c: 'Some value',
+  })
 
   // Make sure a new patch is respected:
   add(sb, {createIfNotExists: {_id: '1', _type: 'test', a: 'A string value', c: 'Changed'}})
   const tx2 = sb.purge('txn_id')
-  tap.same(1, tx2.mutations.length)
-
-  tap.end()
+  expect(tx2.mutations.length).toBe(1)
 })
 
-test('de-duplicate create respects deletes', (tap) => {
+test('de-duplicate create respects deletes', () => {
   const initial = {_id: '1', _type: 'test', a: 'A string value', c: 'Some value'}
   const sb = new SquashingBuffer(initial)
   add(sb, {createIfNotExists: {_id: '1', _type: 'test', a: 'A string value', c: 'Some value'}})
@@ -150,30 +120,24 @@ test('de-duplicate create respects deletes', (tap) => {
   tx.params.timestamp = '2021-01-01T12:34:55Z'
 
   const creates = tx.mutations.filter((mut) => !!mut.createIfNotExists)
-  tap.same(2, creates.length, 'Only a single create mutation expected')
+  expect(creates.length).toBe(2) // Only a single create mutation expected (note: bn - is this correct?)
 
   // And that the final state still applies:
   const final = tx.apply(initial)
-  tap.same(
-    final,
-    {
-      _id: '1',
-      _type: 'test',
-      _createdAt: '2021-01-01T12:34:55Z',
-      _updatedAt: '2021-01-01T12:34:55Z',
-      _rev: 'txn_id',
-      a: {
-        b: 'A wrapped value',
-      },
-      c: 'Changed',
+  expect(final).toEqual({
+    _id: '1',
+    _type: 'test',
+    _createdAt: '2021-01-01T12:34:55Z',
+    _updatedAt: '2021-01-01T12:34:55Z',
+    _rev: 'txn_id',
+    a: {
+      b: 'A wrapped value',
     },
-    'The mutations did not apply correctly'
-  )
-
-  tap.end()
+    c: 'Changed',
+  })
 })
 
-test('de-duplicate create respects rebasing', (tap) => {
+test('de-duplicate create respects rebasing', () => {
   const initial = {_id: '1', _type: 'test', a: 'A string value', c: 'Some value'}
   const sb = new SquashingBuffer(initial)
   add(sb, {createIfNotExists: {_id: '1', _type: 'test', a: 'A string value', c: 'Some value'}})
@@ -185,58 +149,43 @@ test('de-duplicate create respects rebasing', (tap) => {
 
   const tx = sb.purge('txn_id')
   const creates = tx.mutations.filter((mut) => !!mut.createIfNotExists)
-  tap.same(1, creates.length, 'Only a single create mutation expected')
+  expect(creates.length).toBe(1) // Only a single create mutation expected
   const final = tx.apply(initial)
-  tap.same(
-    final,
-    {
-      _id: '1',
-      _type: 'test',
-      _rev: 'txn_id',
-      a: {
-        b: 'A wrapped value',
-      },
-      c: 'Some value',
+  expect(final).toEqual({
+    _id: '1',
+    _type: 'test',
+    _rev: 'txn_id',
+    a: {
+      b: 'A wrapped value',
     },
-    'The mutations did not apply correctly'
-  )
-  tap.end()
+    c: 'Some value',
+  })
 })
 
-test('rebase with generated diff-match-patches', (tap) => {
+test('rebase with generated diff-match-patches', () => {
   const sb = new SquashingBuffer({_id: '1', _type: 'test', a: 'A string value'})
   patch(sb, {id: '1', set: {a: 'A strong value'}})
   const initial = {_id: '1', _type: 'test', a: 'A rebased string value!'}
   sb.rebase(initial)
   const mut = sb.purge('txn_id')
   const final = mut.apply(initial)
-  tap.same(
-    final,
-    {
-      _id: '1',
-      _type: 'test',
-      _rev: 'txn_id',
-      a: 'A rebased strong value!',
-    },
-    'The rebase then reapply did not apply correctly'
-  )
-  tap.end()
+  expect(final).toEqual({
+    _id: '1',
+    _type: 'test',
+    _rev: 'txn_id',
+    a: 'A rebased strong value!',
+  })
 })
 
-test('rebase with no local edits', (tap) => {
+test('rebase with no local edits', () => {
   const sb = new SquashingBuffer({_id: '1', _type: 'test', a: 'A string value'})
   const initial = {_id: '1', _type: 'test', a: 'A rebased string value!'}
   sb.rebase(initial)
   const mut = sb.purge('txn_id')
-  tap.false(mut, 'purge should not return anything when there are no local changes')
-  tap.same(
-    sb.PRESTAGE,
-    {
-      _id: '1',
-      _type: 'test',
-      a: 'A rebased string value!',
-    },
-    'The rebase with no local edits applied incorrectly'
-  )
-  tap.end()
+  expect(mut).toBeFalsy() // purge should not return anything when there are no local changes
+  expect(sb.PRESTAGE).toEqual({
+    _id: '1',
+    _type: 'test',
+    a: 'A rebased string value!',
+  })
 })

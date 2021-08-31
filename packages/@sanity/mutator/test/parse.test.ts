@@ -1,5 +1,3 @@
-import {test} from 'tap'
-
 import parse from '../src/jsonpath/parse'
 
 const cases = {
@@ -156,13 +154,13 @@ const cases = {
 }
 
 Object.keys(cases).forEach((path) => {
-  test(`Parsing jsonpath ${path}`, (tap) => {
-    const expect = cases[path]
-    if (expect) {
-      tap.same(parse(path), expect, `Tokenization failed for '${path}'`)
+  test(`Parsing jsonpath ${path}`, () => {
+    const expected = cases[path]
+    if (expected) {
+      expect(parse(path)).toEqual(expected)
     } else {
+      // eslint-disable-next-line no-console
       console.log(`Result of parsing '${path}'`, JSON.stringify(parse(path)))
     }
-    tap.end()
   })
 })

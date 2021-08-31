@@ -1,6 +1,5 @@
 // Converts an array of simple values (strings, numbers only) to a jsonmatch path string.
 
-import {test} from 'tap'
 import arrayToJSONMatchPath from '../src/jsonpath/arrayToJSONMatchPath'
 
 const cases: Array<[any, string]> = [
@@ -15,9 +14,10 @@ const cases: Array<[any, string]> = [
   // [[1, {foo: 'bar', bar: 'baz'}, 4], "[1][foo=='bar'&&bar=='baz'][4]"]
 ]
 
-test((tap) => {
-  cases.forEach(([input, expected]) => {
-    tap.same(arrayToJSONMatchPath(input), expected)
+describe('cases', () => {
+  cases.forEach(([input, expected], i) => {
+    test(`case #${i}`, () => {
+      expect(arrayToJSONMatchPath(input)).toEqual(expected)
+    })
   })
-  tap.end()
 })

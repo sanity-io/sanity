@@ -1,9 +1,9 @@
-import {test} from 'tap'
+import {Test} from 'tap'
 
 import DocumentTester from './util/DocumentTester'
 
-test('simple remote mutation', (tap) => {
-  new DocumentTester(tap, {
+test('simple remote mutation', () => {
+  new DocumentTester(new Test(), {
     _id: 'a',
     _rev: '1',
     title: 'Hello',
@@ -25,8 +25,8 @@ test('simple remote mutation', (tap) => {
     .end()
 })
 
-test('simple local mutation arrives', (tap) => {
-  new DocumentTester(tap, {
+test('simple local mutation arrives', () => {
+  new DocumentTester(new Test(), {
     _id: 'a',
     _rev: '1',
     title: 'Hello',
@@ -62,8 +62,8 @@ test('simple local mutation arrives', (tap) => {
     .end()
 })
 
-test('local mutation submitted, but remote mutation wins the race and causes a rebase', (tap) => {
-  new DocumentTester(tap, {
+test('local mutation submitted, but remote mutation wins the race and causes a rebase', () => {
+  new DocumentTester(new Test(), {
     _id: 'a',
     _rev: '1',
     count: 1,
@@ -101,8 +101,8 @@ test('local mutation submitted, but remote mutation wins the race and causes a r
     .end()
 })
 
-test('simple local mutation failing', (tap) => {
-  new DocumentTester(tap, {
+test('simple local mutation failing', () => {
+  new DocumentTester(new Test(), {
     _id: 'a',
     _rev: '1',
     title: 'Hello',
@@ -131,8 +131,8 @@ test('simple local mutation failing', (tap) => {
     .end()
 })
 
-test('simple local mutation arriving out of order', (tap) => {
-  new DocumentTester(tap, {
+test('simple local mutation arriving out of order', () => {
+  new DocumentTester(new Test(), {
     _id: 'a',
     _rev: '1',
     numbers: [],
