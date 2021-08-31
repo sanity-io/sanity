@@ -11,7 +11,7 @@ import * as urlStateStore from './datastores/urlState'
 import getOrderedTools from './util/getOrderedTools'
 import rootRouter, {maybeRedirectToBase} from './router'
 import {DefaultLayout} from './defaultLayout'
-import NotFound from './main/NotFound'
+import {NotFound} from './main'
 
 const handleNavigate = urlStateStore.navigate
 
