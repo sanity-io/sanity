@@ -34,8 +34,7 @@ module.exports = {
 
   '@sanity/react-hooks': './packages/@sanity/react-hooks/src',
 
-  '@sanity/state-router/components': './packages/@sanity/state-router/src/components',
-  '@sanity/state-router': './packages/@sanity/state-router/src',
+  '@sanity/state-router': './packages/@sanity/state-router/src/_exports',
   '@sanity/structure': './packages/@sanity/structure/src',
   '@sanity/transaction-collator': './packages/@sanity/transaction-collator/src',
   '@sanity/util': './packages/@sanity/util/src/_exports',

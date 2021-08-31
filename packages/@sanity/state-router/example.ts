@@ -1,5 +1,5 @@
-import {route} from './src'
 import assert from 'assert'
+import route from './src/route'
 
 function findAppByName(name) {
   return (

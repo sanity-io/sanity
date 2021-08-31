@@ -1,1 +1,1 @@
-module.exports = require('./lib/components')
+require('./_interopReexport')(module.exports, require('./lib/_exports/components'))

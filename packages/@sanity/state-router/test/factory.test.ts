@@ -1,4 +1,4 @@
-import {route} from '../src'
+import route from '../src/route'
 
 test('only route', () => {
   const router = route('/foo/:bar')
