@@ -36,7 +36,6 @@
     "rimraf": "^2.7.1",
     "staticr": "^4.0.2",
     "styled-components": "^5.2.1",
-    "ts-jest": "^26.5.4",
     "ts-node": "^9.1.1"
   },
   "peerDependencies": {

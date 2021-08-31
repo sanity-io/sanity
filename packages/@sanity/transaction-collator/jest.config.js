@@ -4,5 +4,8 @@ const baseConfig = require('../../../jest.config.base')
 module.exports = {
   ...baseConfig,
   displayName: require('./package.json').name,
-  testEnvironment: 'node',
+  moduleNameMapper: {
+    '^part:@sanity/base/schema$': '<rootDir>/test/mocks/schema.js',
+    '^part:@sanity/base/client$': '<rootDir>/test/mocks/client.js',
+  },
 }

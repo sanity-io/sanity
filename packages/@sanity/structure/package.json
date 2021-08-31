@@ -37,8 +37,7 @@
     "@types/jest": "^26.0.22",
     "jest": "^26.6.3",
     "rimraf": "^2.7.1",
-    "rxjs": "^6.5.3",
-    "ts-jest": "^26.5.4"
+    "rxjs": "^6.5.3"
   },
   "repository": {
     "type": "git",
@@ -48,30 +47,5 @@
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
   },
-  "homepage": "https://www.sanity.io/",
-  "jest": {
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)$",
-    "testURL": "http://localhost",
-    "transform": {
-      "^.+\\.ts$": "ts-jest"
-    },
-    "moduleFileExtensions": [
-      "ts",
-      "js",
-      "json",
-      "node"
-    ],
-    "moduleNameMapper": {
-      "^part:@sanity/base/schema$": "<rootDir>/test/mocks/schema.js",
-      "^part:@sanity/base/client$": "<rootDir>/test/mocks/client.js",
-      "^part:@sanity/desk-tool/structure\\??$": "<rootDir>/test/mocks/userStructure.js",
-      "^part:@sanity/data-aspects/resolver$": "<rootDir>/test/mocks/dataAspects.js",
-      "^part:@sanity/base/.*?-icon$": "<rootDir>/test/mocks/icon.js",
-      "^part:@sanity/base/util/document-action-utils": "<rootDir>/test/mocks/documentActionUtils.js"
-    },
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "/test/"
-    ]
-  }
+  "homepage": "https://www.sanity.io/"
 }

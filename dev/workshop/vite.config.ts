@@ -1,10 +1,8 @@
 /* eslint-disable no-process-env, no-sync */
 
-import fs from 'fs'
 import path from 'path'
 import {viteCommonjs} from '@originjs/vite-plugin-commonjs'
 import reactRefresh from '@vitejs/plugin-react-refresh'
-import JSON5 from 'json5'
 import {defineConfig} from 'vite'
 import {pluginCanonicalModules} from './vite/plugin-canonical-modules'
 import {pluginLegacyParts} from './vite/plugin-legacy-parts'
@@ -31,10 +29,10 @@ const cssPartAliases = Object.entries(parts.implementations)
   })
 
 function loadMonorepoAliases() {
-  const buf = fs.readFileSync(path.resolve(MONOREPO_PATH, '.webpack-aliases.json5'))
-  const obj = JSON5.parse(buf.toString())
+  // eslint-disable-next-line import/no-dynamic-require
+  const aliases = require(path.resolve(MONOREPO_PATH, '.module-aliases'))
 
-  return Object.entries(obj).map(([key, relativePath]: any) => ({
+  return Object.entries(aliases).map(([key, relativePath]: any) => ({
     find: key,
     replacement: path.resolve(MONOREPO_PATH, relativePath),
   }))
