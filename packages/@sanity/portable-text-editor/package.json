@@ -12,7 +12,6 @@
   "scripts": {
     "start": "cd demo && vite .",
     "clean": "rimraf coverage dist lib",
-    "posttest": "tsc --noEmit --emitDeclarationOnly false",
     "test:watch": "jest --watch",
     "test": "jest",
     "gen-doc": "typedoc --out docs src",
@@ -68,7 +67,6 @@
     "react-dom": "17.0.1",
     "rimraf": "^2.7.1",
     "rxjs": "^6.5.3",
-    "ts-jest": "^26.5.4",
     "typedoc": "^0.17.3",
     "vite": "^2.4.4"
   },

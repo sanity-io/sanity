@@ -1,7 +1,9 @@
+const baseConfig = require('../../../jest.config.base')
+
+/** @type {import('@jest/types').Config.InitialOptions} */
 module.exports = {
-  preset: 'ts-jest',
-  testRegex: 'test\\/.*\\.test\\.ts$',
+  ...baseConfig,
+  displayName: require('./package.json').name,
   testEnvironment: 'node',
   setupFilesAfterEnv: ['./test/setup.ts'],
-  collectCoverageFrom: ['src/**.ts'],
 }

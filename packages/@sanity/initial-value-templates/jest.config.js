@@ -4,11 +4,11 @@ const baseConfig = require('../../../jest.config.base')
 module.exports = {
   ...baseConfig,
   displayName: require('./package.json').name,
-  testEnvironment: 'jsdom',
+  testURL: 'http://localhost',
+  testPathIgnorePatterns: ['/lib/', '/dist/'],
   moduleNameMapper: {
     ...baseConfig.moduleNameMapper,
-    '@sanity/validation': '<rootDir>/src',
-    'part:@sanity/form-builder/input/legacy-date/schema?': '<rootDir>/test/nullExport',
-    'part:@sanity/base/client': '<rootDir>/test/mockClient',
+    '^part:@sanity/base/schema$': '<rootDir>/test/mocks/schema.js',
+    '^part:@sanity/base/initial-value-templates?': '<rootDir>/test/mocks/templates.js',
   },
 }

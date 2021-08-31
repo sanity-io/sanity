@@ -51,9 +51,6 @@
     "nock": "^9.0.5",
     "rimraf": "^2.7.1"
   },
-  "jest": {
-    "testEnvironment": "node"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git",

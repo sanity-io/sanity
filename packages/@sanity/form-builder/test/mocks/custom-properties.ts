@@ -1,0 +1,18 @@
+export default {
+  '--black': '#000',
+  '--component-bg': '#000',
+  '--component-text-color': '#000',
+  '--default-button-color': '#000',
+  '--default-button-primary-color': '#000',
+  '--default-button-success-color': '#000',
+  '--default-button-warning-color': '#000',
+  '--default-button-danger-color': '#000',
+  '--focus-color': '#000',
+  '--gray-base': '#000',
+  '--main-navigation-color': '#000',
+  '--main-navigation-color--inverted': '#000',
+  '--state-info-color': '#000',
+  '--state-success-color': '#000',
+  '--state-warning-color': '#000',
+  '--state-danger-color': '#000',
+}

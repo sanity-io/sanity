@@ -72,23 +72,6 @@
     "prop-types": "^15.6 || ^16",
     "react": "^16.9 || ^17"
   },
-  "jest": {
-    "verbose": true,
-    "testURL": "http://localhost/",
-    "testEnvironment": "node",
-    "moduleNameMapper": {
-      "^part:@sanity/base/schema$": "<rootDir>/test/mocks/schema.js",
-      "^part:@sanity/base/client$": "<rootDir>/test/mocks/client.js",
-      "^part:@sanity/data-aspects/resolver$": "<rootDir>/test/mocks/dataAspects.js",
-      "^part:@sanity/base/.*?-icon$": "<rootDir>/test/mocks/icon.js",
-      "^part:@sanity/base/util/document-action-utils": "<rootDir>/test/mocks/documentActionUtils.js",
-      "^part:@sanity/base/router": "<rootDir>/test/mocks/router.js",
-      ".*\\.css$": "<rootDir>/test/mocks/styles.js"
-    },
-    "globals": {
-      "__DEV__": false
-    }
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git",

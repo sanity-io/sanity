@@ -52,8 +52,5 @@
   },
   "peerDependencies": {
     "webpack": ">= 1.0.0"
-  },
-  "jest": {
-    "testEnvironment": "node"
   }
 }

@@ -1,31 +1,32 @@
 import path from 'path'
-import fs from 'fs'
-import JSON5 from 'json5'
 
 const MONOREPO_PATH = path.resolve(__dirname, '../../../../..')
-const ALIASES_FILENAME = `${MONOREPO_PATH}/.webpack-aliases.json5`
+const ALIASES_FILENAME = `${MONOREPO_PATH}/.module-aliases`
 
-function resolve(...segments) {
-  return path.resolve(MONOREPO_PATH, ...segments)
-}
 export function getMonorepoAliases() {
   const defaultAliases = {
     '@sanity/ui': require.resolve('@sanity/ui'),
     'styled-components': require.resolve('styled-components'),
   }
 
-  let aliasesContents = ''
+  let moduleAliases = {}
   try {
-    aliasesContents = fs.readFileSync(ALIASES_FILENAME, 'utf-8')
+    // eslint-disable-next-line import/no-dynamic-require
+    moduleAliases = require(ALIASES_FILENAME)
   } catch (err) {
     // eslint-disable-next-line no-console
     console.warn('WARNING: No path aliases found in `%s`', ALIASES_FILENAME, err.message)
   }
-  const aliases = aliasesContents ? JSON5.parse(aliasesContents) : defaultAliases
 
-  const all = Object.keys(aliases).reduce((acc, key, obj) => {
-    acc[key] = resolve(aliases[key])
+  return {...defaultAliases, ...resolveAliases(moduleAliases)}
+}
+
+function resolve(...segments) {
+  return path.resolve(MONOREPO_PATH, ...segments)
+}
+function resolveAliases(aliases) {
+  return Object.keys(aliases).reduce((acc, module) => {
+    acc[module] = resolve(aliases[module])
     return acc
   }, {})
-  return all
 }
