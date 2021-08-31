@@ -6,7 +6,7 @@ import {Tooltip} from 'part:@sanity/components/tooltip'
 import React, {useCallback, useMemo, useState} from 'react'
 import {ConnectorContext} from './ConnectorContext'
 
-import styles from './ChangeBar.css'
+import styles from './ChangeBar.module.css'
 
 function Shape(props: Omit<React.SVGProps<SVGElement>, 'ref'>) {
   return (
