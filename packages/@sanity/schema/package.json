@@ -38,8 +38,6 @@
     "object-inspect": "^1.6.0"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.22",
-    "jest": "^26.6.3",
     "rimraf": "^2.7.1"
   },
   "bugs": {

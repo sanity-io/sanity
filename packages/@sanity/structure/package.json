@@ -34,8 +34,6 @@
     "memoize-one": "^3.1.1"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.22",
-    "jest": "^26.6.3",
     "rimraf": "^2.7.1",
     "rxjs": "^6.5.3"
   },
