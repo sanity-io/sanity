@@ -1,4 +1,3 @@
-import {test} from 'tap'
 import {cloneDeep} from 'lodash'
 import {Patcher} from '../src/patch'
 
@@ -13,7 +12,7 @@ import incDec from './patchExamples/incDec'
 const examples = [].concat(set, setIfMissing, unset, diffMatchPatch, insert, incDec)
 
 examples.forEach((example) => {
-  test(example.name, (tap) => {
+  test(example.name, () => {
     // Fake some id's in there
     example.before._id = 'a'
     if (Array.isArray(example.patch)) {
@@ -32,10 +31,8 @@ examples.forEach((example) => {
     delete example.before._id
 
     // Verify patch
-    tap.same(patched, example.after, 'patch result must match example')
+    expect(patched).toEqual(example.after)
     // Verify immutability
-    tap.same(pristine, example.before, 'original value must not be touched')
-
-    tap.end()
+    expect(pristine).toEqual(example.before)
   })
 })

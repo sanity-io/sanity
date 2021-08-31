@@ -1,5 +1,3 @@
-import {test} from 'tap'
-
 import tokenize from '../src/jsonpath/tokenize'
 
 const cases = {
@@ -130,13 +128,13 @@ const cases = {
   ],
 }
 
-test('Tokenization of jsonpath', (t) => {
+test('Tokenization of jsonpath', () => {
   Object.keys(cases).forEach((path) => {
-    const expect = cases[path]
-    if (!expect) {
+    const expected = cases[path]
+    if (!expected) {
+      // eslint-disable-next-line no-console
       console.log(`Result of tokenizing '${path}'`, tokenize(path))
     }
-    t.same(tokenize(path), expect, `Tokenization failed for '${path}'`)
+    expect(tokenize(path)).toEqual(expected) // `Tokenization failed for '${path
   })
-  t.end()
 })

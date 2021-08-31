@@ -1,4 +1,3 @@
-import {test} from 'tap'
 import parse from '../src/jsonpath/parse'
 import toPath from '../src/jsonpath/toPath'
 import descend from '../src/jsonpath/descend'
@@ -45,11 +44,12 @@ const cases = {
   '[]': [],
 }
 
-Object.keys(cases).forEach((path) => {
-  test(`Verify descent for ${path}`, (tap) => {
-    const descents = descentsFor(path)
-    // console.log(path, descents)
-    tap.same(descents, cases[path])
-    tap.end()
+describe('descend', () => {
+  Object.keys(cases).forEach((path) => {
+    test(`Verify descent for ${path}`, () => {
+      const descents = descentsFor(path)
+      // console.log(path, descents)
+      expect(descents).toEqual(cases[path])
+    })
   })
 })

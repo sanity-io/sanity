@@ -1,4 +1,3 @@
-import {test} from 'tap'
 import parse from '../src/jsonpath/parse'
 import toPath from '../src/jsonpath/toPath'
 
@@ -12,9 +11,8 @@ const cases = [
   '[name == "\\"quoted\\""]',
 ]
 
-test((tap) => {
-  cases.forEach((path) => {
-    tap.same(path, toPath(parse(path)))
+cases.forEach((path, i) => {
+  test(`case #${i}`, () => {
+    expect(path).toEqual(toPath(parse(path)))
   })
-  tap.end()
 })
