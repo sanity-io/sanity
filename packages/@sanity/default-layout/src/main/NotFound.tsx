@@ -4,16 +4,12 @@ import {Card, Text, Box, Stack, Container, Heading} from '@sanity/ui'
 import {HAS_SPACES} from '../util/spaces'
 import {Router} from '../types'
 
-interface OuterProps {
-  children: React.ReactNode
-}
-
 interface NotFoundProps {
   children: React.ReactNode
   router: Router
 }
 
-function NotFound(props: NotFoundProps) {
+export const NotFound = withRouterHOC((props: NotFoundProps) => {
   const router = props.router
   const rootState =
     HAS_SPACES && router.state && router.state.space ? {space: router.state.space} : {}
@@ -36,6 +32,4 @@ function NotFound(props: NotFoundProps) {
       </Container>
     </Card>
   )
-}
-
-export default (withRouterHOC(NotFound) as any) as React.ComponentType<OuterProps>
+})
