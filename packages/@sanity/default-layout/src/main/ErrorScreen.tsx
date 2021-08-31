@@ -1,10 +1,7 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
-import Button from 'part:@sanity/components/buttons/default'
 import React from 'react'
-
-import styles from './ErrorScreen.css'
+import {Card, Code, Container, Stack, Button, Heading, Flex, Text} from '@sanity/ui'
+import {SyncIcon} from '@sanity/icons'
+import {ErrorAccordion} from '.'
 
 interface Props {
   activeTool?: {
@@ -19,7 +16,6 @@ interface Props {
     componentStack: string
   }
   onRetry: () => void
-  onShowDetails: () => void
   showErrorDetails: boolean
 }
 
@@ -47,53 +43,53 @@ function formatStack(stack) {
   )
 }
 
-function ErrorScreen(props: Props) {
-  const {activeTool, error, info, onRetry, onShowDetails, showErrorDetails} = props
+export function ErrorScreen(props: Props) {
+  const {activeTool, error, info, onRetry, showErrorDetails} = props
   const toolName = (activeTool && (activeTool.title || activeTool.name)) || 'active'
 
   return (
-    <div className={styles.root}>
-      <div className={styles.card}>
-        <header className={styles.cardHeader}>
-          <h2 className={styles.cardTitle}>The ‘{toolName}’ tool crashed</h2>
-        </header>
-
-        <div className={styles.cardContent}>
-          <div>
-            <Button onClick={onRetry}>Retry</Button>
-          </div>
-          <div>
-            <Button onClick={onShowDetails} disabled={showErrorDetails}>
-              Show details
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {showErrorDetails && (
-        <>
-          {error.stack ? (
-            <div className={styles.stack}>
-              <h3>Stack trace:</h3>
-              <pre>{formatStack(limitStackLength(getErrorWithStack(error)))}</pre>
-            </div>
-          ) : (
-            <div className={styles.stack}>
-              <h3>Error:</h3>
-              <pre>{error.message}</pre>
-            </div>
+    <Card
+      height="fill"
+      paddingX={[3, 4, 5, 7]}
+      paddingY={[5, 5, 6]}
+      sizing="border"
+      overflow="auto"
+    >
+      <Container>
+        <Stack space={5}>
+          <Heading>
+            The <i>{toolName}</i> tool crashed
+          </Heading>
+          <Stack space={4}>
+            <Text muted>
+              An uncaught exception in the <i>{toolName}</i> tool caused the Studio to crash.
+            </Text>
+            <Flex>
+              <Button text="Retry" icon={SyncIcon} tone="primary" onClick={onRetry} />
+            </Flex>
+          </Stack>
+          {showErrorDetails && (
+            <>
+              <Stack space={4}>
+                {error.stack ? (
+                  <ErrorAccordion title="Stack trace">
+                    <Code size={1}>{formatStack(limitStackLength(getErrorWithStack(error)))}</Code>
+                  </ErrorAccordion>
+                ) : (
+                  <ErrorAccordion title="Error">
+                    <Code size={1}>{error.message}</Code>
+                  </ErrorAccordion>
+                )}
+                {info && info.componentStack && (
+                  <ErrorAccordion title="Component stack">
+                    <Code size={1}>{info.componentStack.replace(/^\s*\n+/, '')}</Code>
+                  </ErrorAccordion>
+                )}
+              </Stack>
+            </>
           )}
-
-          {info && info.componentStack && (
-            <div className={styles.stack}>
-              <h3>Component stack:</h3>
-              <pre>{info.componentStack.replace(/^\s*\n+/, '')}</pre>
-            </div>
-          )}
-        </>
-      )}
-    </div>
+        </Stack>
+      </Container>
+    </Card>
   )
 }
-
-export default ErrorScreen
