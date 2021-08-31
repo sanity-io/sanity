@@ -1,4 +1,4 @@
-import {route} from '../src'
+import route from '../src/route'
 
 test('toplevel', () => {
   const router = route.scope('omg', '/foo/:bar')
