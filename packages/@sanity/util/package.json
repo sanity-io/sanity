@@ -2,8 +2,16 @@
   "name": "@sanity/util",
   "version": "2.17.1",
   "description": "Utilities shared across projects of Sanity",
-  "main": "./lib/index.js",
-  "types": "./dist/dts",
+  "main": "./lib/_exports/index.js",
+  "types": "index.d.ts",
+  "//": "the typesVersion config below is a workaround for TypeScript's lack of support for package exports",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/dts/_exports/*"
+      ]
+    }
+  },
   "scripts": {
     "build": "babel src --copy-files --extensions '.js,.jsx,.ts,.tsx' --out-dir lib",
     "clean": "rimraf lib dest",

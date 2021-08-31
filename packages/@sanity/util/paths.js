@@ -1,1 +1,1 @@
-module.exports = require('./lib/pathUtils')
+require('./_interopReexport')(module.exports, require('./lib/_exports/paths'))

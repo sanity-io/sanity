@@ -3,7 +3,7 @@ import * as fs from 'fs'
 import * as os from 'os'
 import * as path from 'path'
 import {test} from 'tap'
-import {reduceConfig, getSanityVersions, pathTools} from '../src'
+import {reduceConfig, getSanityVersions, pathTools} from '../src/_exports/index'
 
 test('merges env config', (t) => {
   const reduced = reduceConfig(
