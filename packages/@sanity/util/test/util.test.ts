@@ -2,10 +2,9 @@
 import * as fs from 'fs'
 import * as os from 'os'
 import * as path from 'path'
-import {test} from 'tap'
 import {reduceConfig, getSanityVersions, pathTools} from '../src/_exports/index'
 
-test('merges env config', (t) => {
+test('merges env config', () => {
   const reduced = reduceConfig(
     {
       foo: 'bar',
@@ -23,15 +22,14 @@ test('merges env config', (t) => {
     'production'
   )
 
-  t.strictDeepEquals(reduced.foo, 'baz')
-  t.strictDeepEquals(reduced.nested.structure, false)
-  t.strictDeepEquals(reduced.nested.onlyInOriginal, 'yes')
-  t.strictDeepEquals(reduced.nested.otherProp, 'yup')
-  t.strictDeepEquals(reduced.env, undefined)
-  t.end()
+  expect(reduced.foo).toEqual('baz')
+  expect(reduced.nested.structure).toEqual(false)
+  expect(reduced.nested.onlyInOriginal).toEqual('yes')
+  expect(reduced.nested.otherProp).toEqual('yup')
+  expect(reduced.env).toEqual(undefined)
 })
 
-test('does not crash if there is no env config specified', (t) => {
+test('does not crash if there is no env config specified', () => {
   const reduced = reduceConfig(
     {
       foo: 'bar',
@@ -40,13 +38,12 @@ test('does not crash if there is no env config specified', (t) => {
     'production'
   )
 
-  t.strictDeepEquals(reduced.foo, 'bar')
-  t.strictDeepEquals(reduced.nested.structure, true)
-  t.strictDeepEquals(reduced.nested.onlyInOriginal, 'yes')
-  t.end()
+  expect(reduced.foo).toEqual('bar')
+  expect(reduced.nested.structure).toEqual(true)
+  expect(reduced.nested.onlyInOriginal).toEqual('yes')
 })
 
-test('concats arrays', (t) => {
+test('concats arrays', () => {
   const reduced = reduceConfig(
     {
       root: true,
@@ -56,57 +53,49 @@ test('concats arrays', (t) => {
     'development'
   )
 
-  t.strictDeepEquals(reduced.root, true)
-  t.strictDeepEquals(reduced.plugins, ['@sanity/base', '@sanity/components', 'vision'])
-  t.end()
+  expect(reduced.root).toEqual(true)
+  expect(reduced.plugins).toEqual(['@sanity/base', '@sanity/components', 'vision'])
 })
 
-test('getSanityVersions: extracts correct versions', (t) => {
+test('getSanityVersions: extracts correct versions', () => {
   const versions = getSanityVersions(path.join(__dirname, 'versionsFixture'))
-  t.strictDeepEquals(versions, {
+  expect(versions).toEqual({
     '@sanity/base': '0.999.99',
     '@sanity/components': '0.777.77',
   })
-  t.end()
 })
 
-test('path tools: returns whether or not a path is empty (false)', async (t) => {
+test('path tools: returns whether or not a path is empty (false)', async () => {
   const {pathIsEmpty} = pathTools
   const isEmpty = await pathIsEmpty(__dirname)
-  t.strictDeepEquals(isEmpty, false)
-  t.end()
+  expect(isEmpty).toEqual(false)
 })
 
-test('path tools: returns whether or not a path is empty (true)', async (t) => {
+test('path tools: returns whether or not a path is empty (true)', async () => {
   const {pathIsEmpty} = pathTools
   const emptyPath = path.join(__dirname, '__temp__')
   fs.mkdirSync(emptyPath)
   const isEmpty = await pathIsEmpty(emptyPath)
   fs.rmdirSync(emptyPath)
-  t.strictDeepEquals(isEmpty, true)
-  t.end()
+  expect(isEmpty).toBe(true)
 })
 
-test('path tools: can expand home dirs', (t) => {
+test('path tools: can expand home dirs', () => {
   const {expandHome} = pathTools
-  t.strictDeepEquals(expandHome('~/tmp'), path.join(os.homedir(), 'tmp'))
-  t.end()
+  expect(expandHome('~/tmp')).toBe(path.join(os.homedir(), 'tmp'))
 })
 
-test('path tools: can absolutify relative paths', (t) => {
+test('path tools: can absolutify relative paths', () => {
   const {absolutify} = pathTools
-  t.strictDeepEquals(absolutify('./util.test.js'), path.join(process.cwd(), 'util.test.js'))
-  t.end()
+  expect(absolutify('./util.test.js')).toBe(path.join(process.cwd(), 'util.test.js'))
 })
 
-test('path tools: can absolutify homedir paths', (t) => {
+test('path tools: can absolutify homedir paths', () => {
   const {absolutify} = pathTools
-  t.strictDeepEquals(absolutify('~/tmp'), path.join(os.homedir(), 'tmp'))
-  t.end()
+  expect(absolutify('~/tmp')).toBe(path.join(os.homedir(), 'tmp'))
 })
 
-test('path tools: can absolutify (noop) absolute paths', (t) => {
+test('path tools: can absolutify (noop) absolute paths', () => {
   const {absolutify} = pathTools
-  t.strictDeepEquals(absolutify('/tmp/foo'), '/tmp/foo')
-  t.end()
+  expect(absolutify('/tmp/foo')).toBe('/tmp/foo')
 })
