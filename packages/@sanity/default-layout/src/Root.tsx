@@ -10,7 +10,7 @@ import AppLoadingScreen from 'part:@sanity/base/app-loading-screen'
 import * as urlStateStore from './datastores/urlState'
 import getOrderedTools from './util/getOrderedTools'
 import rootRouter, {maybeRedirectToBase} from './router'
-import DefaultLayout from './DefaultLayout'
+import {DefaultLayout} from './defaultLayout'
 import NotFound from './main/NotFound'
 
 const handleNavigate = urlStateStore.navigate
