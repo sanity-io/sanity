@@ -3,7 +3,6 @@ import {Box, Button, Card, Code, Stack, Text} from '@sanity/ui'
 import {TrashIcon} from '@sanity/icons'
 import {Details} from '../../components/Details'
 import PatchEvent, {unset} from '../../PatchEvent'
-import {ActivateOnFocus} from '../../transitional/ActivateOnFocus'
 import {Alert} from '../../components/Alert'
 
 declare const __DEV__: boolean
@@ -103,14 +102,12 @@ function UnknownField({
     <Card as="li" padding={3} radius={2} shadow={1} tone="caution">
       <Stack space={2}>
         <Card border radius={1}>
-          <ActivateOnFocus>
-            <Card borderBottom padding={3}>
-              <Code weight="medium">{fieldName}</Code>
-            </Card>
-            <Box padding={3}>
-              <Code language="json">{JSON.stringify(value, null, 2)}</Code>
-            </Box>
-          </ActivateOnFocus>
+          <Card borderBottom padding={3}>
+            <Code weight="medium">{fieldName}</Code>
+          </Card>
+          <Box padding={3}>
+            <Code language="json">{JSON.stringify(value, null, 2)}</Code>
+          </Box>
         </Card>
 
         {readOnly && (
