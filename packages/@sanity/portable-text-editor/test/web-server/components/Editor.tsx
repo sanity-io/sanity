@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
-import React, {useCallback, useRef, useState} from 'react'
+import React, {useCallback, useMemo, useRef, useState} from 'react'
 import {Text, Box, Card, Code} from '@sanity/ui'
 import styled from 'styled-components'
+import {Subject} from 'rxjs'
 import {
   PortableTextEditor,
   PortableTextEditable,
@@ -9,16 +10,15 @@ import {
   EditorChange,
   RenderBlockFunction,
   RenderChildFunction,
-  PortableTextBlock,
   RenderAttributes,
   EditorSelection,
-} from '../../src'
-import {applyAll} from '../../src/patch/applyPatch'
-import {keyGenerator} from '../keyGenerator'
+  PortableTextBlock,
+  Patch,
+} from '../../../src'
+import {createKeyGenerator} from '../keyGenerator'
 import {portableTextType} from '../schema'
-import {Toolbar} from './Toolbar'
 
-const HOTKEYS = {
+export const HOTKEYS = {
   marks: {
     'mod+b': 'strong',
     'mod+i': 'em',
@@ -32,44 +32,61 @@ export const BlockObject = styled.div`
   padding: 2em;
 `
 
-type Props = {
-  value: PortableTextBlock[] | undefined
-  setValue: (value: PortableTextBlock[] | undefined) => void
+function getRandomColor() {
+  const letters = '0123456789ABCDEF'
+  let color = '#'
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)]
+  }
+  return color
 }
 
-/**
- * A basic standalone editor with hotkeys and value inspection
- */
-export const Editor = ({value, setValue}: Props) => {
+export const Editor = ({
+  value,
+  onMutation,
+  editorId,
+  incomingPatches$,
+}: {
+  value: PortableTextBlock[] | undefined
+  onMutation: (mutatingPatches: Patch[]) => void
+  editorId: string
+  incomingPatches$: Subject<Patch>
+}) => {
   const [selection, setSelection] = useState<EditorSelection>(null)
   const editor = useRef<PortableTextEditor>(null)
+  const keyGenFn = useMemo(() => createKeyGenerator(editorId), [editorId])
 
   const renderBlock: RenderBlockFunction = useCallback((block, type, attributes, defaultRender) => {
-    const textType = PortableTextEditor.getPortableTextFeatures(editor.current).types.block
-    // Text blocks
-    if (type.name === textType.name) {
+    if (editor.current) {
+      const textType = PortableTextEditor.getPortableTextFeatures(editor.current).types.block
+      // Text blocks
+      if (type.name === textType.name) {
+        return (
+          <Box marginBottom={4}>
+            <Text style={{color: getRandomColor()}}>{defaultRender(block)}</Text>
+          </Box>
+        )
+      }
+      // Object blocks
       return (
-        <Box marginBottom={4}>
-          <Text>{defaultRender(block)}</Text>
-        </Box>
+        <Card marginBottom={4}>
+          <BlockObject {...attributes}>{JSON.stringify(block)}</BlockObject>
+        </Card>
       )
     }
-    // Object blocks
-    return (
-      <Card marginBottom={4}>
-        <BlockObject {...attributes}>{JSON.stringify(block)}</BlockObject>
-      </Card>
-    )
+    return defaultRender(block)
   }, [])
 
   const renderChild: RenderChildFunction = useCallback(
     (child, type, _attributes, defaultRender) => {
-      const textType = PortableTextEditor.getPortableTextFeatures(editor.current).types.span
-      // Text spans
-      if (type.name === textType.name) {
-        return defaultRender(child)
+      if (editor.current) {
+        const textType = PortableTextEditor.getPortableTextFeatures(editor.current).types.span
+        // Text spans
+        if (type.name === textType.name) {
+          return defaultRender(child)
+        }
+        // Inline objects
       }
-      // Inline objects
       return defaultRender(child)
     },
     []
@@ -102,11 +119,10 @@ export const Editor = ({value, setValue}: Props) => {
           setSelection(change.selection)
           break
         case 'mutation':
-          console.log('Mutation', change.patches)
-          setValue(applyAll(value, change.patches))
+          onMutation(change.patches)
           break
         case 'patch':
-          console.log('Patch', change.patch)
+          // console.log('Patch', change.patch)
           break
         case 'blur':
         case 'focus':
@@ -121,20 +137,23 @@ export const Editor = ({value, setValue}: Props) => {
           throw new Error(`Unhandled editor change ${JSON.stringify(change)}`)
       }
     },
-    [value, setValue]
+    [onMutation]
   )
+
+  if (!editorId) {
+    return null
+  }
 
   return (
     <PortableTextEditor
       ref={editor}
       type={portableTextType}
       onChange={handleChange}
-      selection={selection}
       value={value}
-      keyGenerator={keyGenerator}
+      keyGenerator={keyGenFn}
       readOnly={false}
+      incomingPatches$={incomingPatches$}
     >
-      <Toolbar />
       <Box padding={4} style={{outline: '1px solid #999'}}>
         <PortableTextEditable
           placeholderText="Type here!"
@@ -146,7 +165,7 @@ export const Editor = ({value, setValue}: Props) => {
         />
       </Box>
       <Box padding={4} style={{outline: '1px solid #999'}}>
-        <Code size={0} language="json">
+        <Code size={0} language="json" id="pte-selection">
           {JSON.stringify(selection)}
         </Code>
       </Box>

@@ -1,8 +1,0 @@
-{
-  "include": ["**/*"],
-  "compilerOptions": {
-    "noEmit": true,
-    "esModuleInterop": true,
-    "jsx": "react"
-  }
-}

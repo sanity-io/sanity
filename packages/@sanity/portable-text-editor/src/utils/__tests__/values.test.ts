@@ -1,4 +1,4 @@
-import {fromSlateValue, toSlateValue} from '../../src/utils/values'
+import {fromSlateValue, toSlateValue} from '../values'
 
 describe('toSlateValue', () => {
   it('checks undefined', () => {

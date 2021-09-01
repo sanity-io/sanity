@@ -1,8 +1,9 @@
 const baseConfig = require('../../../jest.config.base')
 
-/** @type {import('@jest/types').Config.InitialOptions} */
 module.exports = {
   ...baseConfig,
   displayName: require('./package.json').name,
-  testEnvironment: 'node',
+  globalSetup: '<rootDir>/test/setup/globalSetup.ts',
+  globalTeardown: '<rootDir>/test/setup/globalTeardown.ts',
+  setupFilesAfterEnv: ['<rootDir>/test/setup/afterEnv.ts'],
 }

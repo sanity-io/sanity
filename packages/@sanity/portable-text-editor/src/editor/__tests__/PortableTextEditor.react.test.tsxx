@@ -1,0 +1,255 @@
+// eslint-disable-next-line import/no-unassigned-import
+import '@testing-library/jest-dom/extend-expect'
+import {render} from '@testing-library/react'
+import {screen} from '@testing-library/dom'
+import userEvent from '@testing-library/user-event'
+import React, {ForwardedRef, forwardRef} from 'react'
+
+import Schema from '@sanity/schema'
+import {PortableTextEditor, Props} from '../PortableTextEditor'
+import {RawType} from '../../types/schema'
+import {PortableTextEditable} from '../Editable'
+import {PortableTextBlock} from '../../types/portableText'
+import {EditorSelection} from '../..'
+
+const imageType: RawType = {
+  type: 'image',
+  name: 'blockImage',
+}
+
+const someObject: RawType = {
+  type: 'object',
+  name: 'someObject',
+  fields: [{type: 'string', name: 'color'}],
+}
+
+const blockType: RawType = {
+  type: 'block',
+  name: 'myTestBlockType',
+  styles: [
+    {title: 'Normal', value: 'normal'},
+    {title: 'H1', value: 'h1'},
+    {title: 'H2', value: 'h2'},
+    {title: 'H3', value: 'h3'},
+    {title: 'H4', value: 'h4'},
+    {title: 'H5', value: 'h5'},
+    {title: 'H6', value: 'h6'},
+    {title: 'Quote', value: 'blockquote'},
+  ],
+  of: [someObject, imageType],
+}
+
+const portableTextType: RawType = {
+  type: 'array',
+  name: 'body',
+  of: [blockType, someObject],
+}
+
+const schema = Schema.compile({
+  name: 'test',
+  types: [portableTextType],
+})
+
+const helloBlock: PortableTextBlock = {
+  _key: '123',
+  _type: 'myTestBlockType',
+  markDefs: [],
+  children: [{_key: '567', _type: 'span', text: 'Hello', marks: []}],
+}
+
+const PortableTextEditorTester = forwardRef(function PortableTextEditorTester(
+  props: Partial<Omit<Props, 'type' | 'onChange | value' | 'selection' | 'placeholderText'>> & {
+    type: Props['type']
+    value?: Props['value']
+    onChange?: Props['onChange']
+    selection?: Props['selection']
+    placeholderText?: string
+  },
+  ref: ForwardedRef<any>
+) {
+  const handleOnBeforeInput = (ev: any) => {
+    console.log('handleOnBeforeInput', ev)
+  }
+  return (
+    <PortableTextEditor
+      type={props.type}
+      onChange={props.onChange || jest.fn()}
+      value={props.value || undefined}
+      // keyGenerator={keyGenerator}
+      // readOnly={false}
+    >
+      <PortableTextEditable
+        onBeforeInput={handleOnBeforeInput}
+        selection={props.selection || undefined}
+        placeholderText={props.placeholderText || 'Type here'}
+        // hotkeys={HOTKEYS}
+        // renderBlock={renderBlock}
+        // renderDecorator={renderDecorator}
+        // renderChild={renderChild}
+        spellCheck
+      />
+    </PortableTextEditor>
+  )
+})
+
+const bodyType = schema.get('body')
+
+describe('initialization', () => {
+  it('receives initial onChange events and has custom placeholder text', () => {
+    let editorRef
+    const onChange = jest.fn()
+    const {container} = render(
+      <PortableTextEditorTester
+        onChange={onChange}
+        placeholderText="Jot something down here"
+        ref={(ref: any) => (editorRef = ref)}
+        type={bodyType}
+        value={undefined}
+      />
+    )
+
+    expect(editorRef).toBeDefined()
+    expect(onChange).toHaveBeenCalledWith({type: 'ready'})
+    expect(onChange).toHaveBeenCalledWith({type: 'selection', selection: null})
+    expect(onChange).toHaveBeenCalledWith({type: 'value', value: undefined})
+    expect(container).toMatchInlineSnapshot(`
+      <div>
+        <div
+          class="pt-editable"
+          contenteditable="true"
+          data-gramm="false"
+          data-slate-editor="true"
+          data-slate-node="value"
+          role="textbox"
+          spellcheck="true"
+          style="outline: none; white-space: pre-wrap; word-wrap: break-word;"
+        >
+          <div
+            data-slate-node="element"
+          >
+            <span
+              data-slate-node="text"
+            >
+              <span
+                data-slate-leaf="true"
+              >
+                <span
+                  contenteditable="false"
+                  data-slate-placeholder="true"
+                  style="pointer-events: none; display: inline-block; width: 0px; max-width: 100%; white-space: nowrap; opacity: 0.333; user-select: none; font-style: normal; font-weight: normal; text-decoration: none;"
+                >
+                  Jot something down here
+                </span>
+                <span
+                  data-slate-length="0"
+                  data-slate-zero-width="n"
+                >
+                  ﻿
+                  <br />
+                </span>
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+    `)
+  })
+  it('takes value from props', () => {
+    const initialValue = [helloBlock]
+    const onChange = jest.fn()
+    render(<PortableTextEditorTester onChange={onChange} type={bodyType} value={initialValue} />)
+    expect(onChange).toHaveBeenCalledWith({type: 'value', value: initialValue})
+  })
+  it('takes selection from props', () => {
+    let editorRef: PortableTextEditor | undefined
+    const initialValue = [helloBlock]
+    const initialSelection: EditorSelection = {
+      anchor: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 0},
+      focus: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 0},
+    }
+    const onChange = jest.fn()
+    render(
+      <PortableTextEditorTester
+        onChange={onChange}
+        ref={(ref: any) => (editorRef = ref)}
+        selection={initialSelection}
+        type={bodyType}
+        value={initialValue}
+      />
+    )
+    expect(editorRef && PortableTextEditor.getSelection(editorRef)).toEqual(initialSelection)
+  })
+})
+
+describe('typing', () => {
+  it('can append to string', (done) => {
+    let editorRef: PortableTextEditor | undefined
+    const initialValue = [helloBlock]
+    const initialSelection: EditorSelection = {
+      anchor: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 5},
+      focus: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 5},
+    }
+    const onChange = (foo: any) => {
+      console.log(foo)
+    }
+    const {container} = render(
+      <PortableTextEditorTester
+        onChange={onChange}
+        // selection={initialSelection}
+        value={initialValue}
+        ref={(ref: any) => (editorRef = ref)}
+        type={bodyType}
+      />
+    )
+    console.log(screen.getByTestId('input'))
+    const editableElm = container.querySelector('div[class="pt-editable"]')
+    if (!editorRef || !editableElm) {
+      throw new Error('Editor not rendered')
+    }
+    // userEvent.click(elm)
+    // elm.dispatchEvent(
+    //   new FocusEvent('focus', {
+    //     bubbles: true,
+    //     cancelable: true,
+    //   })
+    // )
+    editableElm.dispatchEvent(
+      new Event('focus', {
+        bubbles: true,
+        cancelable: true,
+        // inputType: 'insertText',
+        // data: ' there',
+      })
+    )
+    editableElm.dispatchEvent(
+      new InputEvent('beforeinput', {
+        bubbles: true,
+        cancelable: true,
+        inputType: 'insertText',
+        data: ' there',
+      })
+    )
+    editableElm.dispatchEvent(
+      new Event('blur', {
+        bubbles: true,
+        cancelable: true,
+        // inputType: 'insertText',
+        // data: ' there',
+      })
+    )
+    // userEvent.keyboard('2')
+    // elm.textContent = '1'
+    // expect(container).toMatchInlineSnapshot('')
+    // userEvent.keyboard('2')
+    setTimeout(() => {
+      expect(editorRef && PortableTextEditor.getValue(editorRef)).toMatchObject(initialValue)
+      done()
+    }, 1000)
+    // expect(editorRef && PortableTextEditor.getSelection(editorRef)).not.toEqual(null)
+    // expect(onChange).toHaveBeenCalledWith([{type: 'patch', patch: undefined}])
+    // expect(container).toMatchInlineSnapshot('')
+    // expect(editorRef && PortableTextEditor.getValue(editorRef)).toEqual(undefined)
+  })
+})
+
+// https://github.com/testing-library/dom-testing-library/pull/235#issuecomment-601078339
