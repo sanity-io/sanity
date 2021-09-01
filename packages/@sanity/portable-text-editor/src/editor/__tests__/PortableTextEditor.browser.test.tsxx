@@ -1,0 +1,115 @@
+// eslint-disable-next-line import/no-unassigned-import
+import '@testing-library/jest-dom/extend-expect'
+import puppeteer, {Browser, Page} from 'puppeteer'
+
+const delay = (time: number) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, time)
+  })
+}
+
+let browser: Browser
+let page: Page
+let editableHandle: puppeteer.ElementHandle<Element>
+let valueHandle: puppeteer.ElementHandle<Element>
+let selectionHandle: puppeteer.ElementHandle<Element>
+
+describe('editing', () => {
+  beforeAll(async () => {
+    browser = await puppeteer.launch()
+    page = await browser.newPage()
+    await page.goto('http://localhost:3000')
+
+    editableHandle = await page.waitForSelector('div[contentEditable="true"]')
+    valueHandle = await page.waitForSelector('#pte-value')
+    selectionHandle = await page.waitForSelector('#pte-selection')
+  })
+  afterAll(async () => {
+    await browser.close()
+  })
+
+  it('can focus editor', async () => {
+    let selection
+    selection = await selectionHandle.evaluate((node) => node.innerHTML)
+    expect(selection).toMatchInlineSnapshot(`"<code>null</code>"`)
+    // Focus editor
+    await editableHandle.click()
+    selection = await selectionHandle.evaluate((node) => node.innerHTML)
+    expect(selection).toMatchInlineSnapshot(
+      `"<code>{\\"anchor\\":{\\"path\\":[{\\"_key\\":\\"6\\"},\\"children\\",{\\"_key\\":\\"7\\"}],\\"offset\\":0},\\"focus\\":{\\"path\\":[{\\"_key\\":\\"6\\"},\\"children\\",{\\"_key\\":\\"7\\"}],\\"offset\\":0}}</code>"`
+    )
+  })
+
+  it('can write something', async () => {
+    let value
+    value = await valueHandle.evaluate((node) => node.innerHTML)
+    expect(value).toMatchInlineSnapshot(`"<code>Not set</code>"`)
+    await editableHandle.evaluate((node) => {
+      node.dispatchEvent(
+        new InputEvent('beforeinput', {
+          bubbles: true,
+          cancelable: true,
+          inputType: 'insertText',
+          data: 'Hello world',
+        })
+      )
+    })
+    await delay(500) // Wait for editor throttling to end and do the mutation
+    value = await valueHandle.evaluate((node) => node.innerHTML)
+    expect(value).toMatchInlineSnapshot(`
+      "<code>[
+        {
+          \\"_type\\": \\"block\\",
+          \\"_key\\": \\"20\\",
+          \\"style\\": \\"normal\\",
+          \\"markDefs\\": [],
+          \\"children\\": [
+            {
+              \\"_type\\": \\"span\\",
+              \\"_key\\": \\"21\\",
+              \\"text\\": \\"Hello world\\",
+              \\"marks\\": []
+            }
+          ]
+        }
+      ]</code>"
+    `)
+  })
+
+  it('can undo', async () => {
+    let value
+    let selection
+    value = await valueHandle.evaluate((node) => node.innerHTML)
+    expect(value).toMatchInlineSnapshot(`
+      "<code>[
+        {
+          \\"_type\\": \\"block\\",
+          \\"_key\\": \\"20\\",
+          \\"style\\": \\"normal\\",
+          \\"markDefs\\": [],
+          \\"children\\": [
+            {
+              \\"_type\\": \\"span\\",
+              \\"_key\\": \\"21\\",
+              \\"text\\": \\"Hello world\\",
+              \\"marks\\": []
+            }
+          ]
+        }
+      ]</code>"
+    `)
+    selection = await selectionHandle.evaluate((node) => node.innerHTML)
+    expect(selection).toMatchInlineSnapshot(
+      `"<code>{\\"anchor\\":{\\"path\\":[{\\"_key\\":\\"20\\"},\\"children\\",{\\"_key\\":\\"21\\"}],\\"offset\\":11},\\"focus\\":{\\"path\\":[{\\"_key\\":\\"20\\"},\\"children\\",{\\"_key\\":\\"21\\"}],\\"offset\\":11}}</code>"`
+    )
+    await page.keyboard.down('Control')
+    await page.keyboard.press('z')
+    await delay(500) // Wait for editor throttling to end and do the mutation
+    value = await valueHandle.evaluate((node) => node.innerHTML)
+    expect(value).toMatchInlineSnapshot(`"<code>Not set</code>"`)
+    selection = await selectionHandle.evaluate((node) => node.innerHTML)
+    expect(selection).toMatchInlineSnapshot(
+      `"<code>{\\"anchor\\":{\\"path\\":[{\\"_key\\":\\"52\\"},\\"children\\",{\\"_key\\":\\"53\\"}],\\"offset\\":0},\\"focus\\":{\\"path\\":[{\\"_key\\":\\"52\\"},\\"children\\",{\\"_key\\":\\"53\\"}],\\"offset\\":0}}</code>"`
+    )
+  })
+})
