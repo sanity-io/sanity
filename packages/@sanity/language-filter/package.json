@@ -15,7 +15,7 @@
     "language-filter"
   ],
   "dependencies": {
-    "@sanity/types": "2.17.0",
+    "@sanity/types": "2.17.1",
     "@sanity/icons": "^1.1.4",
     "@sanity/ui": "^0.36.3",
     "lodash": "^4.17.15",
