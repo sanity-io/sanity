@@ -1,15 +1,16 @@
 import {useToast} from '@sanity/ui'
 import {useCallback, useEffect, useRef} from 'react'
+
 declare const __DEV__: boolean
 
-const SANITY_ERROR_HANDLER = Symbol.for('SANITY_ERROR_HANDLER')
+const RE_HTML_UNEXPECTED_TOKEN = /unexpected token <$/i // Trying to load HTML as JS
 
-function ErrorHandler({onUIError}) {
+function ErrorHandler({onUIError}: {onUIError: (err: Error) => void}): null {
   const {push} = useToast()
 
   const prevErrorRef = useRef(null)
 
-  const handleGlobalError = useCallback(
+  const handleGlobalError: OnErrorEventHandlerNonNull = useCallback(
     (msg, url, lineNo, columnNo, err) => {
       // Workaround for issue triggering two errors in a row in DEV (https://github.com/facebook/react/issues/10474)
       // We store a ref to the previous error and checks if it's equal to the current
@@ -27,11 +28,7 @@ function ErrorHandler({onUIError}) {
       }
 
       // Certain errors should be ignored
-      if (
-        [
-          /unexpected token <$/i, // Trying to load HTML as JS
-        ].some((item) => item.test(err.message))
-      ) {
+      if (RE_HTML_UNEXPECTED_TOKEN.test(err.message)) {
         return
       }
 
@@ -49,26 +46,26 @@ function ErrorHandler({onUIError}) {
         closable: true,
         status: 'error',
         title: __DEV__ ? `Error: ${err.message}` : 'An error occured',
-        description: "Check your browser's JavaScript console for details.",
+        description: 'Check the browser’s console for details.',
       })
     },
     [onUIError, push]
   )
 
-  ;(handleGlobalError as any).identity = SANITY_ERROR_HANDLER
-
   useEffect(() => {
-    let originalErrorHandler
+    let originalErrorHandler: OnErrorEventHandlerNonNull
 
     // Only store the original error handler if it wasn't a copy of _this_ error handler
-    if (window.onerror && (window.onerror as any).identity !== SANITY_ERROR_HANDLER) {
+    if (window.onerror && window.onerror !== handleGlobalError) {
       originalErrorHandler = window.onerror
     }
 
     window.onerror = handleGlobalError
 
     return () => {
-      window.onerror = originalErrorHandler
+      if (originalErrorHandler) {
+        window.onerror = originalErrorHandler
+      }
     }
   }, [handleGlobalError])
 
