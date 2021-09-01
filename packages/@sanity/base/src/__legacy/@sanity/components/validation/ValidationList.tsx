@@ -1,11 +1,13 @@
 import React, {useCallback} from 'react'
 import {
   ObjectSchemaType,
+  SchemaType,
   Path,
   Marker,
   isValidationErrorMarker,
   isValidationWarningMarker,
 } from '@sanity/types'
+import {startCase} from 'lodash'
 import ValidationListItem from './ValidationListItem'
 
 import styles from './ValidationList.css'
@@ -42,11 +44,22 @@ function ValidationList(props: ValidationListProps) {
     [onFocus, onClose]
   )
 
-  const resolvePathTitle = (path: Path) => {
-    const fields = documentType && documentType.fields
-    const field = fields && fields.find((curr) => curr.name === path[0])
+  const resolvePathTitle = (path: Path, schemaType: SchemaType): string[] => {
+    const [name, ...restOfPath] = path
+    if (!name) return []
 
-    return (field && field.type.title) || ''
+    // `startCase` is also used in the `@sanity/schema` to populate titles from the name
+    const current = schemaType.title || startCase(schemaType.name)
+    let nextField: SchemaType | undefined
+
+    if (schemaType.jsonType === 'object') {
+      nextField = schemaType.fields.find((field) => field.name === name)?.type
+    } else if (schemaType.jsonType == 'array') {
+      nextField = schemaType.of.find((type) => type.name === name)
+    }
+
+    const next = nextField ? resolvePathTitle(restOfPath, nextField) : []
+    return [current, ...next]
   }
 
   const hasErrors = errors.length > 0
@@ -65,7 +78,7 @@ function ValidationList(props: ValidationListProps) {
             <ValidationListItem
               kind={kind}
               truncate={truncate}
-              path={resolvePathTitle(error.path)}
+              path={resolvePathTitle(error.path, documentType)}
               marker={error}
               onClick={handleClick}
               // showLink={showLink}
@@ -80,7 +93,7 @@ function ValidationList(props: ValidationListProps) {
             <ValidationListItem
               kind={kind}
               truncate={truncate}
-              path={resolvePathTitle(warning.path)}
+              path={resolvePathTitle(warning.path, documentType)}
               marker={warning}
               onClick={handleClick}
               // showLink={showLink}
