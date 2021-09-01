@@ -1,67 +1,52 @@
-/* eslint-disable no-var, prefer-template */
-/* Unminified: */
-/*
-function errHandler(msg, url, lineNo, columnNo, err) {
-  // Certain events (ResizeObserver max loop threshold, for instance)
-  // only gives a _message_. We choose to ignore these events since
-  // they are usually not _fatal_
-  // NOTE: This checks if the error is the common "missing theme content value"
-  // error thrown by `@sanity/ui`, in order to take steps to render a helpful error message.
-  if (!err || err.message.includes('useRootTheme():')) {
-    return
-  }
+const FONT_SANS_SERIF = `-apple-system, BlinkMacSystemFont, \\'Segoe UI\\', Roboto, \\'Helvetica Neue\\', Helvetica, Arial, system-ui, sans-serif`
+const FONT_MONOSPACE = `-apple-system-ui-monospace, \\'SF Mono\\', Menlo, Monaco, Consolas, monospace`
 
-  var container = document.getElementById('sanity')
-  var wrapper = document.createElement('div')
-  wrapper.style.position = 'absolute'
-  wrapper.style.top = '50%'
-  wrapper.style.left = '50%'
-  wrapper.style.transform = 'translate(-50%, -50%)'
+const uncaughtErrorHandler = () =>
+  // prettier-ignore
+  [
+    `window.onerror = function(m,u,l,c,e) {`,
+      `var p=window.location.port;`,
+      `var h=window.location.protocol+'//'+window.location.hostname+(p?':'+p:'');`,
+      `var r=document.getElementById('sanity');`,
+      `while(r.firstChild){r.removeChild(r.firstChild);}`,
+      `var s=document.createElement('style');`,
+      `s.appendChild(document.createTextNode('`,
+        `html,body,#sanityBody,#sanity,#sanityError{height:100%;}`,
+        `body{-webkit-font-smoothing:antialiased;margin:0;}`,
+        `#sanityError{background-color:#fff;color:#121923;font-family:${FONT_SANS_SERIF};font-size:16px;line-height:21px;min-height:100%;}`,
+        `#sanityError>div{background-color:#fff;max-width:960px;margin:0 auto;padding:47px 32px 52px;}`,
+        `@media(min-width:600px){`,
+          `#sanityError>div{`,
+            `padding:47px 84px;`,
+          `}`,
+        `}`,
+        `#sanityError button{-webkit-font-smoothing:inherit;font:inherit;font-weight:500;background-color:#2276FC;color:#fff;padding:7px 12px;border-radius:3px;border:0;}`,
+        `#sanityError button:hover{background-color:#1E63D0;}`,
+        `#sanityError button:active{background-color:#1B50A5;}`,
+      `'));`,
+      `document.head.appendChild(s);`,
+      `var f=document.createElement('div');`,
+      `f.id='sanityError';`,
+      `f.innerHTML='`,
+        `<div>`,
+          `<h1 style="font-size:21px;line-height:27px;margin: 0 0 10px;">Unhandled error</h1>`,
+          `<p style="color:#66758D;margin:10px 0 14px;">Encountered an unhandled error in this Studio.</p>`,
+          `<button class="sanity-error-handler__reload-btn" type="button">Reload page</button>`,
+          `<pre style="background-color:#FDEBEA;color:#C3362C;font-size:13px;line-height:17px;padding:16px 20px;border-radius:6px;margin:32px 0 0;overflow:auto;">`,
+            `<code style="font-family:${FONT_MONOSPACE};">`,
+              `'+e.stack.replaceAll(h,'')+'`,
+            `</code>`,
+          `</pre>`,
+        `</div>`,
+      `';`,
+      `var b=f.querySelector('.sanity-error-handler__reload-btn');`,
+      `if(b){`,
+        `b.onclick=function() {`,
+          `window.location.reload();`,
+        `}`,
+      `};`,
+      `r.appendChild(f);`,
+    `};`,
+  ].join('')
 
-  var header = document.createElement('h1')
-  header.innerText = 'Uncaught error'
-
-  var pre = document.createElement('pre')
-  var stack = document.createElement('code')
-  pre.style.fontSize = '0.8em'
-  pre.style.opacity = '0.7'
-  pre.style.overflow = 'auto'
-  pre.style.whiteSpace = 'pre-wrap'
-  pre.style.maxHeight = '70vh'
-
-  var cleanStack = err.stack && err.stack.replace(err.message, '').replace(/^error: *\n?/i, '')
-  var errTitle = err.stack ? err.message : err.toString()
-  var errStack = err.stack ? '\n\nStack:\n\n' + cleanStack : ''
-  var errString = errTitle + errStack + '\n\n(Your browsers Developer Tools may contain more info)'
-  stack.textContent = errString
-
-  var reload = document.createElement('button')
-  reload.style.padding = '0.8em 1em'
-  reload.style.marginTop = '1em'
-  reload.style.border = 'none'
-  reload.style.backgroundColor = '#303030'
-  reload.style.color = '#fff'
-  reload.style.borderRadius = '4px'
-
-  reload.onclick = function() {
-    window.location.reload()
-  }
-  reload.textContent = 'Reload'
-
-  pre.appendChild(stack)
-  wrapper.appendChild(header)
-  wrapper.appendChild(pre)
-  wrapper.appendChild(reload)
-
-  while (container.firstChild) {
-    container.removeChild(container.firstChild)
-  }
-
-  container.appendChild(wrapper)
-}
-
-export default () => `window.onerror = ${errHandler.toString()}`
-*/
-
-export default () =>
-  '/* Global error handler */ window.onerror = function(e,t,n,o,r){if(r&&!r.message.includes("useRootTheme():")){var a=document.getElementById("sanity"),l=document.createElement("div");l.style.position="absolute",l.style.top="50%",l.style.left="50%",l.style.transform="translate(-50%, -50%)";var s=document.createElement("h1");s.innerText="Uncaught error";var d=document.createElement("pre"),i=document.createElement("code");d.style.fontSize="0.8em",d.style.opacity="0.7",d.style.overflow="auto",d.style.whiteSpace="pre-wrap",d.style.maxHeight="70vh";var c=r.stack&&r.stack.replace(r.message,"").replace(/^error: *\\n?/i,""),m=(r.stack?r.message:r.toString())+(r.stack?"\\n\\nStack:\\n\\n"+c:"")+"\\n\\n(Your browsers Developer Tools may contain more info)";i.textContent=m;var p=document.createElement("button");for(p.style.padding="0.8em 1em",p.style.marginTop="1em",p.style.border="none",p.style.backgroundColor="#303030",p.style.color="#fff",p.style.borderRadius="4px",p.onclick=function(){window.location.reload()},p.textContent="Reload",d.appendChild(i),l.appendChild(s),l.appendChild(d),l.appendChild(p);a.firstChild;)a.removeChild(a.firstChild);a.appendChild(l)}}'
+export default uncaughtErrorHandler
