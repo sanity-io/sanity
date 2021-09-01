@@ -78,7 +78,7 @@ export default function Document(props: DocumentProps) {
         <title>{title}</title>
         <meta name="viewport" content={viewport} />
         <meta name="robots" content="noindex" />
-        <style>{`html {background-color: #e4e8ed;}`}</style>
+        <style>{`html {background-color: #f1f3f6;}`}</style>
         {stylesheets}
         {subresources}
         {favicons}
