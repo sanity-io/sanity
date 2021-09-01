@@ -1,6 +1,7 @@
 import React from 'react'
 import {Box, Flex, Stack, Text, Skeleton, TextSkeleton} from '@sanity/ui'
 import styled from 'styled-components'
+import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {PreviewProps} from './types'
 
 const Root = styled(Flex)`
@@ -71,7 +72,13 @@ export const DefaultPreview = (props: PreviewProps<'default'>) => {
             >
               {typeof media === 'function' &&
                 media({
-                  dimensions: {width: 80, height: 80, aspect: 1, fit: 'crop'},
+                  dimensions: {
+                    width: 35,
+                    height: 35,
+                    aspect: 1,
+                    fit: 'crop',
+                    dpr: getDevicePixelRatio(),
+                  },
                   layout: 'default',
                 })}
 

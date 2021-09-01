@@ -95,7 +95,8 @@
     "rxjs-exhaustmap-with-trailing": "^1.0.0",
     "semver-compare": "^1.0.0",
     "shallow-equals": "^1.0.0",
-    "styled-components": "^5.2.1"
+    "styled-components": "^5.2.1",
+    "use-device-pixel-ratio": "^1.1.0"
   },
   "devDependencies": {
     "@types/chance": "^1.1.0",
