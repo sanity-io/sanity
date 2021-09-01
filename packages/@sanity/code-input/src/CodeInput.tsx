@@ -15,6 +15,8 @@ import styled from 'styled-components'
 import {useId} from '@reach/auto-id'
 import createHighlightMarkers, {highlightMarkersCSS} from './createHighlightMarkers'
 import {CodeInputType, CodeInputValue} from './types'
+/* eslint-disable-next-line import/no-unassigned-import */
+import './editorSupport'
 
 import {
   LANGUAGE_ALIASES,
@@ -27,29 +29,6 @@ import {
   PATH_CODE,
   PATH_FILENAME,
 } from './config'
-
-/* eslint-disable import/no-unassigned-import */
-// NOTE: MAKE SURE THESE ALIGN WITH SUPPORTED_LANGUAGES
-import 'brace/mode/batchfile'
-import 'brace/mode/css'
-import 'brace/mode/html'
-import 'brace/mode/typescript'
-import 'brace/mode/javascript'
-import 'brace/mode/json'
-import 'brace/mode/jsx'
-import 'brace/mode/markdown'
-import 'brace/mode/php'
-import 'brace/mode/sass'
-import 'brace/mode/scss'
-import 'brace/mode/python'
-import 'brace/mode/sh'
-import 'brace/mode/text'
-import './groq'
-import 'brace/theme/github'
-import 'brace/theme/monokai'
-import 'brace/theme/terminal'
-import 'brace/theme/tomorrow'
-/* eslint-enable import/no-unassigned-import */
 
 const EditorContainer = styled(Card)`
   position: relative;

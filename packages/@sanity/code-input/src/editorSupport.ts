@@ -1,0 +1,32 @@
+/* eslint-disable import/no-unassigned-import */
+// NOTE: MAKE SURE THESE ALIGN WITH SUPPORTED_LANGUAGES in ./config
+import './groq'
+import 'brace/mode/batchfile'
+import 'brace/mode/csharp'
+import 'brace/mode/css'
+import 'brace/mode/golang'
+import 'brace/mode/html'
+import 'brace/mode/java'
+import 'brace/mode/javascript'
+import 'brace/mode/json'
+import 'brace/mode/jsx'
+import 'brace/mode/markdown'
+import 'brace/mode/mysql'
+import 'brace/mode/php'
+import 'brace/mode/python'
+import 'brace/mode/ruby'
+import 'brace/mode/sass'
+import 'brace/mode/scss'
+import 'brace/mode/sh'
+import 'brace/mode/text'
+import 'brace/mode/tsx'
+import 'brace/mode/typescript'
+import 'brace/mode/xml'
+import 'brace/mode/yaml'
+
+// Themes
+import 'brace/theme/github'
+import 'brace/theme/monokai'
+import 'brace/theme/terminal'
+import 'brace/theme/tomorrow'
+/* eslint-enable import/no-unassigned-import */
