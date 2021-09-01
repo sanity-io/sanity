@@ -49,7 +49,7 @@
     "@sanity/color": "^2.1.4",
     "@sanity/generate-help-url": "2.15.0",
     "@sanity/icons": "^1.1.4",
-    "@sanity/image-url": "^0.140.19",
+    "@sanity/image-url": "^1.0.1",
     "@sanity/initial-value-templates": "2.17.2",
     "@sanity/mutator": "2.15.0",
     "@sanity/schema": "2.17.2",
