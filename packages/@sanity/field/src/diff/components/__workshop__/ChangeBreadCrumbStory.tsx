@@ -4,7 +4,7 @@ import {ChangeBreadcrumb} from '../ChangeBreadcrumb'
 
 export default function ChangeBreadCrumbStory() {
   return (
-    <Card height="fill" padding={4} tone="transparent">
+    <Card height="fill" padding={4} sizing="border" tone="transparent">
       <Flex align="center" height="fill" justify="center">
         <Container width={0}>
           <Card>

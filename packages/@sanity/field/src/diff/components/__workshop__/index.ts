@@ -7,4 +7,9 @@ export default defineScope('field/components', 'components', [
     title: 'ChangeBreadCrumb',
     component: lazy(() => import('./ChangeBreadCrumbStory')),
   },
+  {
+    name: 'diff-card',
+    title: 'DiffCard',
+    component: lazy(() => import('./DiffCardStory')),
+  },
 ])
