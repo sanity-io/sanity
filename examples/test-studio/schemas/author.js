@@ -23,12 +23,14 @@ export default {
       lastUpdated: '_updatedAt',
       media: 'image',
     },
-    prepare({title, media, awards, role}) {
-      const roleName = role ? AUTHOR_ROLES.find((option) => option.value === role) : undefined
+    prepare({title, media, awards, role: roleName}) {
+      const role = roleName ? AUTHOR_ROLES.find((option) => option.value === roleName) : undefined
+      const awardsText = awards && awards.join(', ')
+
       return {
-        title: roleName ? `${title} (${roleName})` : title,
+        title: title,
         media: media,
-        subtitle: awards && awards.join(', '),
+        subtitle: [role?.title, awardsText].filter(Boolean).join(' · '),
       }
     },
   },
