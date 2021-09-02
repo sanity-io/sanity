@@ -1,2 +1,5 @@
 export * from '../constants'
-export * from '../contexts/PaneRouterContext'
+
+// Export pane router
+export * from '../contexts/paneRouter/PaneRouterContext'
+export * from '../contexts/paneRouter/usePaneRouter'
