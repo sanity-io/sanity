@@ -3,7 +3,7 @@
 
 import {FOCUS_TERMINATOR, toString} from '@sanity/util/paths'
 import {isKeySegment, Path} from '@sanity/types'
-import {Card, Flex, Label, useClickOutside, useLayer} from '@sanity/ui'
+import {Card, Flex, Label, useClickOutside} from '@sanity/ui'
 import SanityPreview from 'part:@sanity/base/preview'
 import {Popover} from 'part:@sanity/components/popover'
 import React, {useCallback, useState, useEffect} from 'react'
@@ -105,7 +105,7 @@ function InlineObjectWithDiff({
       setOpen(true)
       onSetFocus(focusPath)
     }
-  }, [isEditing])
+  }, [focusPath, isEditing, onSetFocus])
 
   const handleOpenPopup = useCallback(
     (event) => {
@@ -117,7 +117,7 @@ function InlineObjectWithDiff({
       }
       event.preventDefault()
     },
-    [focusPath]
+    [focusPath, isRemoved, onSetFocus]
   )
 
   const handleClose = useCallback(() => {
@@ -177,13 +177,13 @@ function PopoverContent({
   schemaType: ObjectSchemaType
 }) {
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
-  const {isTopLayer} = useLayer()
+  // const {isTopLayer} = useLayer()
 
   const handleClickOutside = useCallback(() => {
     // Popover doesn't close at all when using this condition
     // if (!isTopLayer) return
     onClose()
-  }, [isTopLayer, onClose])
+  }, [onClose])
 
   useClickOutside(handleClickOutside, [popoverElement])
 
@@ -194,6 +194,7 @@ function PopoverContent({
           Empty {schemaType.title}
         </Label>
       )}
+
       {!emptyObject && <ChangeList diff={diff} schemaType={schemaType} />}
     </PopoverContainer>
   )
