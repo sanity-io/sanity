@@ -17,6 +17,7 @@ window.__sanityLegacyTheme = legacyTheme
 
 /**
  * The theme object used to configure theming of `@sanity/ui`.
+ * @internal
  */
 export const theme: RootTheme = {
   ...defaults,
