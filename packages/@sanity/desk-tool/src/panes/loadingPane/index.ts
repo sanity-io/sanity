@@ -1,1 +1,1 @@
-export {default as LoadingPane} from './LoadingPane'
+export {LoadingPane} from './LoadingPane'

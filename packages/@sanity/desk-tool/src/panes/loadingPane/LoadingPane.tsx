@@ -1,80 +1,103 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import DefaultPane from 'part:@sanity/components/panes/default'
-import Spinner from 'part:@sanity/components/loading/spinner'
-import styles from './LoadingPane.css'
+import {Box, CardTone, Flex, Spinner, Text, _raf2} from '@sanity/ui'
+import React, {useMemo, useState, useEffect} from 'react'
+import {Observable} from 'rxjs'
+import styled from 'styled-components'
+import {Delay} from '../../components/Delay'
+import {Pane, PaneContent} from '../../components/pane'
 
-export default class LoadingPane extends React.PureComponent {
-  static propTypes = {
-    title: PropTypes.string,
-    isSelected: PropTypes.bool.isRequired,
-    isCollapsed: PropTypes.bool.isRequired,
-    onExpand: PropTypes.func,
-    onCollapse: PropTypes.func,
-    path: PropTypes.arrayOf(PropTypes.string),
-    index: PropTypes.number,
-    message: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
+interface LoadingPaneProps {
+  // @todo Re-implement delay for Spinner
+  // eslint-disable-next-line react/no-unused-prop-types
+  delay?: number
+  flex?: number
+  index?: number
+  isSelected?: boolean
+  message?: string | ((p: string[]) => string | Observable<string>)
+  minWidth?: number
+  path?: string[]
+  title?: string
+  tone?: CardTone
+}
+
+const DEFAULT_MESSAGE = 'Loading…'
+
+const Content = styled(Flex)`
+  opacity: 0;
+  transition: opacity 200ms;
+
+  &[data-mounted] {
+    opacity: 1;
   }
+`
 
-  static defaultProps = {
-    // message: 'Loading…',
-    path: [],
-    title: '\u00a0',
-    index: undefined,
-    onExpand: undefined,
-    onCollapse: undefined,
-  }
+/**
+ * @internal
+ */
+export function LoadingPane(props: LoadingPaneProps) {
+  const {
+    delay = 300,
+    flex,
+    index,
+    isSelected,
+    message: messageProp,
+    minWidth,
+    path = [],
+    title,
+    tone,
+  } = props
 
-  constructor(props) {
-    super(props)
-
-    const isGetter = typeof props.message === 'function'
-    const currentMessage = isGetter ? props.message(props.path) : props.message
-    const isObservable = currentMessage && typeof currentMessage.subscribe === 'function'
-    const state = {currentMessage: isObservable ? LoadingPane.defaultProps.message : currentMessage}
-
-    if (isObservable) {
-      let isSync = true
-      this.subscription = currentMessage.subscribe((message) => {
-        if (isSync) {
-          state.currentMessage = message
-        } else {
-          this.setState({currentMessage: message})
-        }
-      })
-      isSync = false
+  const resolvedMessage = useMemo(() => {
+    if (typeof messageProp === 'function') {
+      return messageProp(path)
     }
 
-    this.state = state
-  }
+    return messageProp
+  }, [messageProp, path])
 
-  componentWillUnmount() {
-    if (this.subscription) {
-      this.subscription.unsubscribe()
-    }
-  }
+  const [currentMessage, setCurrentMessage] = useState<string | null>(() => {
+    if (typeof resolvedMessage === 'string') return resolvedMessage
+    return DEFAULT_MESSAGE
+  })
 
-  render() {
-    const {isSelected, isCollapsed, onCollapse, onExpand, title} = this.props
-    const {currentMessage} = this.state
+  useEffect(() => {
+    if (typeof resolvedMessage !== 'object') return undefined
+    if (typeof resolvedMessage.subscribe === 'function') return undefined
 
-    return (
-      <DefaultPane
-        title={title}
-        isLoading
-        isScrollable={false}
-        isSelected={isSelected}
-        isCollapsed={isCollapsed}
-        onCollapse={onCollapse}
-        onExpand={onExpand}
-        index={this.props.index}
-      >
-        {/* div wrapper to match styling of documents list pane - prevents spinner
-         * from jumping to new position when pane definition is loaded */}
-        <div className={styles.root}>
-          <Spinner center message={currentMessage} />
-        </div>
-      </DefaultPane>
-    )
-  }
+    const sub = resolvedMessage.subscribe(setCurrentMessage)
+
+    return () => sub.unsubscribe()
+  }, [resolvedMessage])
+
+  const [content, setContentElement] = useState<HTMLDivElement | null>(null)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    if (content) _raf2(() => setMounted(true))
+  }, [content])
+
+  return (
+    <Pane data-index={index} flex={flex} minWidth={minWidth} selected={isSelected} tone={tone}>
+      <PaneContent>
+        <Delay ms={delay}>
+          <Content
+            align="center"
+            data-mounted={mounted ? '' : undefined}
+            direction="column"
+            height="fill"
+            justify="center"
+            ref={setContentElement}
+          >
+            <Spinner muted />
+            {(title || currentMessage) && (
+              <Box marginTop={3}>
+                <Text align="center" muted size={1}>
+                  {title || currentMessage}
+                </Text>
+              </Box>
+            )}
+          </Content>
+        </Delay>
+      </PaneContent>
+    </Pane>
+  )
 }
