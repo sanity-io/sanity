@@ -4,12 +4,12 @@ import {HOCRouter, InternalRouter} from './types'
 
 const NO_CONTEXT_STATE = {
   state: {},
-  navigate: (state) => {
+  navigate: (state: any) => {
     throw new Error(
       `Cannot navigate to the state ${JSON.stringify(state)}. No router found in context`
     )
   },
-  navigateIntent: (intentName) => {
+  navigateIntent: (intentName: string) => {
     throw new Error(`Cannot navigate to the intent ${intentName}. No router found in context`)
   },
 }
