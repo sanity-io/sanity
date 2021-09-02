@@ -1,19 +1,20 @@
 import React, {useMemo} from 'react'
 import shallowEquals from 'shallow-equals'
-import {Marker, Path, SchemaType} from '@sanity/types'
+import {Marker, ObjectField, ObjectSchemaTypeWithOptions, Path, SchemaType} from '@sanity/types'
 import {ChangeIndicatorProvider} from '@sanity/base/change-indicators'
 import * as PathUtils from '@sanity/util/paths'
 import generateHelpUrl from '@sanity/generate-help-url'
 import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/presence'
 import PatchEvent from './PatchEvent'
 import {emptyArray} from './utils/empty'
+import {Props as InputProps} from './inputs/types'
 
 const EMPTY_MARKERS: Marker[] = emptyArray()
 const EMPTY_PATH: Path = emptyArray()
 const EMPTY_PRESENCE: FormFieldPresence[] = emptyArray()
 const WRAPPER_INNER_STYLES = {minWidth: 0}
 
-interface Props {
+interface FormBuilderInputProps {
   value: unknown
   type: SchemaType
   onChange: (event: PatchEvent) => void
@@ -23,11 +24,11 @@ interface Props {
   presence?: FormFieldPresence[]
   focusPath: Path
   markers: Marker[]
-  compareValue?: any
+  compareValue?: unknown
   level: number
   isRoot?: boolean
   path: Path
-  filterField?: (...args: any[]) => any
+  filterField?: (type: ObjectSchemaTypeWithOptions, field: ObjectField) => boolean
   onKeyUp?: (ev: React.KeyboardEvent) => void
   onKeyPress?: (ev: React.KeyboardEvent) => void
 }
@@ -39,29 +40,32 @@ interface Context {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
-const ENABLE_CONTEXT = () => {}
+const ENABLE_CONTEXT = () => undefined
 
-function getDisplayName(component) {
+function getDisplayName(component: React.ComponentType) {
   return component.displayName || component.name || 'Unknown'
 }
 
-export class FormBuilderInput extends React.Component<Props> {
-  scrollTimeout: number
-  _element: HTMLDivElement | null
+export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
   static contextTypes = {
     presence: ENABLE_CONTEXT,
     formBuilder: ENABLE_CONTEXT,
     getValuePath: ENABLE_CONTEXT,
   }
+
   static childContextTypes = {
     getValuePath: ENABLE_CONTEXT,
   }
+
   static defaultProps = {
     focusPath: EMPTY_PATH,
     path: EMPTY_PATH,
     markers: EMPTY_MARKERS,
   }
+
+  _element: HTMLDivElement | null
   _input: FormBuilderInput | HTMLDivElement | null
+  scrollTimeout: number
 
   getValuePath = () => {
     return this.context.getValuePath().concat(this.props.path)
@@ -80,7 +84,7 @@ export class FormBuilderInput extends React.Component<Props> {
     }
   }
 
-  shouldComponentUpdate(nextProps) {
+  shouldComponentUpdate(nextProps: FormBuilderInputProps) {
     const {path: oldPath, focusPath: oldFocusPath, markers: oldMarkers, ...oldProps} = this.props
     const {path: newPath, focusPath: newFocusPath, markers: newMarkers, ...newProps} = nextProps
 
@@ -92,7 +96,7 @@ export class FormBuilderInput extends React.Component<Props> {
     )
   }
 
-  componentDidUpdate(prevProps: Props) {
+  componentDidUpdate(prevProps: FormBuilderInputProps) {
     const hadFocus = PathUtils.hasFocus(prevProps.focusPath, prevProps.path)
     const hasFocus = PathUtils.hasFocus(this.props.focusPath, this.props.path)
     if (!hadFocus && hasFocus) {
@@ -147,16 +151,19 @@ export class FormBuilderInput extends React.Component<Props> {
     )
   }
 
-  handleChange = (patchEvent) => {
+  handleChange = (patchEvent: PatchEvent) => {
     const {type, onChange} = this.props
+
     if (type.readOnly) {
       return
     }
+
     onChange(patchEvent)
   }
 
-  handleFocus = (nextPath) => {
+  handleFocus = (nextPath: Path) => {
     const {path, onFocus, focusPath} = this.props
+
     if (!onFocus) {
       // eslint-disable-next-line no-console
       console.warn(
@@ -165,16 +172,20 @@ export class FormBuilderInput extends React.Component<Props> {
       )
       return
     }
+
     const nextFocusPath = Array.isArray(nextPath) ? [...path, ...nextPath] : path
+
     if (PathUtils.isEqual(focusPath, nextFocusPath)) {
       // no change
       return
     }
+
     onFocus(nextFocusPath)
   }
 
   handleBlur = () => {
     const {onBlur} = this.props
+
     if (!onBlur) {
       // eslint-disable-next-line no-console
       console.warn(
@@ -183,11 +194,13 @@ export class FormBuilderInput extends React.Component<Props> {
       )
       return
     }
+
     onBlur()
   }
 
   getChildFocusPath() {
     const {path, focusPath} = this.props
+
     return PathUtils.trimChildPath(path, focusPath)
   }
 
@@ -218,17 +231,14 @@ export class FormBuilderInput extends React.Component<Props> {
   }
 }
 
-interface FormBuilderInputInnerProps {
+interface FormBuilderInputInnerProps extends FormBuilderInputProps {
   childFocusPath: Path
-  component: any
+  component: React.ComponentType<InputProps>
   context: Context
-  onBlur: () => void
-  onChange: (patchEvent: any) => void
-  onFocus: (nextPath: any) => void
   setInput: (component: FormBuilderInput | HTMLDivElement | null) => void
 }
 
-function FormBuilderInputInner(props: FormBuilderInputInnerProps & Props) {
+function FormBuilderInputInner(props: FormBuilderInputInnerProps) {
   const {
     childFocusPath,
     compareValue,
@@ -260,43 +270,37 @@ function FormBuilderInputInner(props: FormBuilderInputInnerProps & Props) {
     return presence
       .filter((item) => PathUtils.startsWith(path, item.path))
       .map((item) => ({...item, path: PathUtils.trimChildPath(path, item.path)}))
-  }, [path, presence, readOnly])
+  }, [path, presence])
 
   const childMarkers = useMemo(() => {
     if (isRoot) return markers
 
     return markers
       .filter((marker) => PathUtils.startsWith(path, marker.path))
-      .map((marker) => ({
-        ...marker,
-        path: PathUtils.trimChildPath(path, marker.path),
-      }))
+      .map((marker) => ({...marker, path: PathUtils.trimChildPath(path, marker.path)}))
   }, [isRoot, markers, path])
 
   const isLeaf = childFocusPath.length === 0 || childFocusPath[0] === PathUtils.FOCUS_TERMINATOR
   const childCompareValue = PathUtils.get(compareValue, path)
 
-  const input = useMemo(
-    () => (
-      <InputComponent
-        {...rest}
-        focusPath={isLeaf ? undefined : childFocusPath}
-        isRoot={isRoot}
-        value={value}
-        compareValue={childCompareValue}
-        readOnly={readOnly || type.readOnly}
-        markers={childMarkers.length === 0 ? EMPTY_MARKERS : childMarkers}
-        type={type}
-        presence={childPresenceInfo}
-        onChange={onChange}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        level={level}
-        ref={setInput}
-      />
-    ),
+  const inputProps: InputProps = useMemo(
+    () => ({
+      ...rest,
+      focusPath: isLeaf ? undefined : childFocusPath,
+      isRoot,
+      value,
+      compareValue: childCompareValue,
+      readOnly: readOnly || type.readOnly,
+      markers: childMarkers.length === 0 ? EMPTY_MARKERS : childMarkers,
+      type,
+      presence: childPresenceInfo,
+      onChange,
+      onFocus,
+      onBlur,
+      level,
+      ref: setInput,
+    }),
     [
-      InputComponent,
       childCompareValue,
       childFocusPath,
       childMarkers,
@@ -314,6 +318,8 @@ function FormBuilderInputInner(props: FormBuilderInputInnerProps & Props) {
       value,
     ]
   )
+
+  const input = useMemo(() => <InputComponent {...inputProps} />, [InputComponent, inputProps])
 
   return (
     <div
