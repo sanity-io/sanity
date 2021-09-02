@@ -6,7 +6,7 @@ export type ButtonSize = 'extra-small' | 'small' | 'medium' | 'large' | 'extra-l
 export interface ButtonProps extends Omit<React.HTMLProps<HTMLButtonElement>, 'size' | 'ref'> {
   bleed?: boolean
   color?: ButtonColor
-  icon?: React.ComponentType<Record<string, unknown>>
+  icon?: React.ComponentType
   iconStatus?: 'primary' | 'success' | 'warning' | 'danger'
   inverted?: boolean
   kind?: ButtonKind
