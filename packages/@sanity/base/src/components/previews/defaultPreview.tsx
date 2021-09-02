@@ -1,5 +1,5 @@
 import React from 'react'
-import {Box, Flex, Stack, Text, Skeleton, TextSkeleton} from '@sanity/ui'
+import {Box, Flex, Stack, Text, Skeleton, TextSkeleton, rem} from '@sanity/ui'
 import styled from 'styled-components'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {PreviewProps} from './types'
@@ -13,29 +13,41 @@ const MediaWrapper = styled(Flex)`
   width: 35px;
   height: 35px;
   min-width: 35px;
-  border-radius: ${({theme}) => theme.sanity.radius[2]}px;
+  border-radius: ${({theme}) => rem(theme.sanity.radius[2])};
 
   & img {
+    display: block;
     position: absolute;
     left: 0;
     top: 0;
-    width: 100%;
-    height: 100%;
+    right: 0;
+    bottom: 0;
     object-fit: contain;
     border-radius: inherit;
+    width: 100%;
+    height: 100%;
   }
 
   & svg {
     display: block;
     font-size: calc(21 / 16 * 1em);
-
-    &[data-sanity-icon] {
-      font-size: calc(33 / 16 * 1em);
-      margin: calc(6 / 36 * -1em);
-    }
   }
 
-  & img + span {
+  & [data-sanity-icon] {
+    display: block;
+    font-size: calc(33 / 16 * 1em);
+  }
+
+  /*
+    NOTE on why we can’t use the ":after" pseudo-element:
+
+    The thing is we only want the shadow when then <MediaWrapper> contains
+    something else than <svg> – icons should not have the shadow.
+
+    This is why we use the "*:not(svg) + span" selector to target only that
+    situation to render the shadow.
+  */
+  & *:not(svg) + span {
     display: block;
     position: absolute;
     left: 0;
@@ -48,6 +60,8 @@ const MediaWrapper = styled(Flex)`
   }
 `
 
+MediaWrapper.displayName = 'MediaWrapper'
+
 export const DefaultPreview = (props: PreviewProps<'default'>) => {
   const {title, subtitle, media, status, isPlaceholder, children} = props
 
@@ -55,8 +69,11 @@ export const DefaultPreview = (props: PreviewProps<'default'>) => {
     <Root align="center">
       {isPlaceholder && (
         <>
-          <Skeleton style={{width: 35, height: 35}} radius={2} marginRight={2} animated />
-          <Stack space={2} flex={1}>
+          {media !== false && (
+            <Skeleton style={{width: 35, height: 35}} radius={2} marginRight={2} animated />
+          )}
+
+          <Stack flex={1} paddingLeft={media === false ? 1 : 0} space={2}>
             <TextSkeleton style={{maxWidth: 320}} radius={1} animated />
             <TextSkeleton style={{maxWidth: 200}} radius={1} size={1} animated />
           </Stack>
@@ -66,13 +83,7 @@ export const DefaultPreview = (props: PreviewProps<'default'>) => {
       {!isPlaceholder && (
         <>
           {media !== false && media !== undefined && (
-            <MediaWrapper
-              align="center"
-              justify="center"
-              marginRight={2}
-              sizing="border"
-              overflow="hidden"
-            >
+            <MediaWrapper align="center" justify="center" marginRight={2} overflow="hidden">
               {typeof media === 'function' &&
                 media({
                   dimensions: {
@@ -93,7 +104,7 @@ export const DefaultPreview = (props: PreviewProps<'default'>) => {
             </MediaWrapper>
           )}
 
-          <Stack space={2} flex={1}>
+          <Stack flex={1} paddingLeft={media === false ? 1 : 0} space={2}>
             <Text textOverflow="ellipsis" style={{color: 'inherit'}}>
               {title && typeof title === 'function' ? title({layout: 'default'}) : title}
               {!title && <>Untitled</>}
@@ -109,7 +120,7 @@ export const DefaultPreview = (props: PreviewProps<'default'>) => {
           </Stack>
 
           {status && (
-            <Box padding={3}>
+            <Box paddingLeft={3} paddingRight={1}>
               {typeof status === 'function' ? status({layout: 'default'}) : status}
             </Box>
           )}

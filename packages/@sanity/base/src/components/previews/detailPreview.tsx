@@ -2,15 +2,7 @@ import React from 'react'
 import {Box, Stack, Text, Skeleton, TextSkeleton, useTheme} from '@sanity/ui'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {MediaDimensions, PreviewProps} from './types'
-import {
-  Root,
-  Top,
-  Content,
-  Header,
-  StatusWrapper,
-  MediaWrapper,
-  MediaString,
-} from './detailPreview.styled'
+import {Root, Top, Content, Header, StatusWrapper, MediaWrapper} from './detailPreview.styled'
 
 const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   width: 80,
@@ -56,11 +48,13 @@ export const DetailPreview: React.FunctionComponent<PreviewProps<'detail'>> = (p
               dimensions: mediaDimensions,
               layout: 'detail',
             })}
-          {typeof media === 'string' && <MediaString>{media}</MediaString>}
+          {typeof media === 'string' && <div>{media}</div>}
           {React.isValidElement(media) && media}
+          <span />
         </MediaWrapper>
       )}
-      <Content justify="center" direction="column">
+
+      <Content flex={1} justify="center" direction="column" paddingLeft={media === false ? 1 : 0}>
         <Top align="center" justify="space-between">
           <Header space={2} flex={1}>
             <Text textOverflow="ellipsis" style={{color: 'inherit'}}>
@@ -74,12 +68,14 @@ export const DetailPreview: React.FunctionComponent<PreviewProps<'detail'>> = (p
               </Text>
             )}
           </Header>
+
           {status && (
-            <StatusWrapper paddingLeft={1}>
+            <StatusWrapper paddingLeft={3} paddingRight={1}>
               {typeof status === 'function' ? status({layout: 'detail'}) : status}
             </StatusWrapper>
           )}
         </Top>
+
         {description && (
           <Box marginTop={3} overflow="hidden" style={{maxHeight}}>
             <Text muted size={1}>
