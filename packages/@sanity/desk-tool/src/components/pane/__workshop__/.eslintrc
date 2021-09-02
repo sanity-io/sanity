@@ -1,0 +1,5 @@
+{
+  "rules": {
+    "no-nested-ternary": "off"
+  }
+}
