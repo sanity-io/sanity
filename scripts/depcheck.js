@@ -17,6 +17,7 @@ const package = require(`${cwd}/package.json`)
 const options = {
   ignoreMatches: [
     '@types/jest',
+    '@types/webpack-env',
     'ts-node',
     'config:*',
     'part:*',
