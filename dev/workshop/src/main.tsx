@@ -40,15 +40,15 @@ const GlobalStyle = createGlobalStyle`
 const WORKSHOP_COLLECTIONS = [
   {
     name: 'base',
-    title: <code>@sanity/base</code>,
+    title: '@sanity/base',
   },
   {
     name: 'desk-tool',
-    title: <code>@sanity/desk-tool</code>,
+    title: '@sanity/desk-tool',
   },
   {
     name: 'field',
-    title: <code>@sanity/field</code>,
+    title: '@sanity/field',
   },
 ]
 
@@ -80,7 +80,7 @@ function Root() {
         <GlobalStyle />
       </ThemeColorProvider>
       <Workshop
-        collections={WORKSHOP_COLLECTIONS as any}
+        collections={WORKSHOP_COLLECTIONS}
         frameUrl="/frame/"
         location={studioLocation}
         onLocationPush={handleLocationPush}
