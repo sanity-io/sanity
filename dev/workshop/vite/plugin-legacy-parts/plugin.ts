@@ -11,6 +11,14 @@ export function pluginLegacyParts(partsResolver: any) {
     name: 'workshop-scopes',
 
     async resolveId(id: string) {
+      if (id === 'styled-components') {
+        return require.resolve('styled-components')
+      }
+
+      if (id === '@sanity/ui') {
+        return require.resolve('@sanity/ui')
+      }
+
       if (id === 'config:sanity') {
         return path.resolve(__dirname, '../../sanity.json')
       }
