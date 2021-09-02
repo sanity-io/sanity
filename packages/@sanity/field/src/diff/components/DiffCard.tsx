@@ -1,6 +1,6 @@
 import {Path} from '@sanity/types'
 import React, {forwardRef} from 'react'
-import {Card, rem} from '@sanity/ui'
+import {Box, rem} from '@sanity/ui'
 import styled from 'styled-components'
 import {Annotation, Diff, getAnnotationAtPath} from '../../diff'
 import {useAnnotationColor} from '../annotations'
@@ -22,13 +22,14 @@ interface DiffCardWithAnnotationProps {
   tooltip?: {description?: React.ReactNode} | boolean
 }
 
-const StyledCard = styled(Card)`
-  --diffcard-radius: ${({theme}) => rem(theme.sanity.radius[2])};
-  --diffcard-background: ${({theme}) => theme.sanity.color.card.enabled.bg};
+const StyledCard = styled(Box)`
+  --diff-card-radius: ${({theme}) => rem(theme.sanity.radius[2])};
 
+  background-color: var(--card-bg-color);
+  color: var(--card-fg-color);
   max-width: 100%;
   position: relative;
-  border-radius: var(--diffcard-radius);
+  border-radius: var(--diff-card-radius);
 
   &:not(del) {
     text-decoration: none;
@@ -50,10 +51,10 @@ const StyledCard = styled(Card)`
 
       &::after {
         bottom: -3px;
-        border-top: 1px solid var(---diffcard-background);
+        border-top: 1px solid var(---card-bg-color);
         border-bottom: 2px solid currentColor;
-        border-bottom-left-radius: var(--diffcard-radius);
-        border-bottom-right-radius: var(--diffcard-radius);
+        border-bottom-left-radius: var(--diff-card-radius);
+        border-bottom-right-radius: var(--diff-card-radius);
       }
     }
 
@@ -63,10 +64,10 @@ const StyledCard = styled(Card)`
 
       &::after {
         bottom: -3px;
-        border-top: 1px solid var(---diffcard-background);
+        border-top: 1px solid var(---card-bg-color);
         border-bottom: 2px solid currentColor;
-        border-bottom-left-radius: var(--diffcard-radius);
-        border-bottom-right-radius: var(--diffcard-radius);
+        border-bottom-left-radius: var(--diff-card-radius);
+        border-bottom-right-radius: var(--diff-card-radius);
       }
     }
   }
@@ -113,8 +114,8 @@ const DiffCardWithAnnotation = forwardRef(
         radius={1}
         style={{
           ...style,
-          backgroundColor: color.background,
-          color: color.text,
+          '--card-bg-color': color.background,
+          '--card-fg-color': color.text,
         }}
         {...elementProps}
       >

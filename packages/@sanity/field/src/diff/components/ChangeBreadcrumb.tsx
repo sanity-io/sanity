@@ -11,9 +11,10 @@ export function ChangeBreadcrumb({
   titlePath: ChangeTitlePath
 }): React.ReactElement {
   return (
-    <Flex align="center" paddingBottom={1}>
+    <Flex align="center">
       {titlePath.map((titleSegment, idx) => {
         const showSegment = typeof titleSegment === 'string' || !change || change.showIndex
+
         if (!showSegment) {
           return null
         }
@@ -21,8 +22,8 @@ export function ChangeBreadcrumb({
         return (
           <Fragment key={idx}>
             {idx > 0 && (
-              <Box paddingX={1}>
-                <Text size={1} muted as="em">
+              <Box as="span" paddingX={1}>
+                <Text as="span" size={1} muted>
                   /
                 </Text>
               </Box>
