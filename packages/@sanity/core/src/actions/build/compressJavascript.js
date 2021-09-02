@@ -1,19 +1,36 @@
 import path from 'path'
-import execa from 'execa'
+import fs from 'fs'
 import fse from 'fs-extra'
-import resolveBin from 'resolve-bin'
+import terser from 'terser'
 
-export default async (inputFile) => {
-  const terserBin = resolveBin.sync('terser')
-  if (!terserBin) {
-    throw new Error(`Can't find terser binary, cannot compress bundles`)
-  }
-
+/**
+ * @param {string} inputFile
+ */
+export default async function (inputFile) {
+  const buffer = await fs.promises.readFile(inputFile)
   const outPath = `${inputFile}.min`
-  const {stderr, stdout, code} = await execa(terserBin, ['-c', '-m', '-o', outPath, inputFile])
-  if (code > 0) {
-    throw new Error(`Failed to minify bundle (${path.basename(inputFile)}):\n\n${stderr || stdout}`)
+
+  let result
+  try {
+    result = await terser.minify(buffer.toString(), {
+      compress: true,
+      mangle: true,
+    })
+  } catch (e) {
+    throw new Error(
+      `Failed to minify bundle (${path.basename(inputFile)}):\n\n${e?.message || 'Terser Error'}`
+    )
   }
+
+  if (!result?.code) {
+    throw new Error(
+      `Failed to minify bundle (${path.basename(inputFile)}):\n\n${
+        result.error?.message || 'No code output from Terser.'
+      }`
+    )
+  }
+
+  await fs.promises.writeFile(outPath, result.code)
 
   await fse.unlink(inputFile)
   await fse.move(outPath, inputFile)
