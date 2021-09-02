@@ -3,7 +3,6 @@ import CogIcon from 'part:@sanity/base/cog-icon'
 import {JSONPreviewDocumentView} from './components/jsonPreview'
 
 const STRUCTURE_CUSTOM_TYPES = ['settings']
-const STRUCTURE_LIST_ITEM_DIVIDER = S.divider()
 
 // Add `JSON` tab to the `author` document form
 export const getDefaultDocumentNode = ({schemaType}: {schemaType: any}) => {
@@ -36,7 +35,33 @@ const defaultListItems = S.documentTypeListItems().filter(
   (listItem: any) => !STRUCTURE_CUSTOM_TYPES.includes(listItem.getId())
 )
 
+const listExample = S.listItem()
+  .title('List example')
+  .child(
+    S.list()
+      .title('List example')
+      .items([])
+      .menuItems([
+        S.menuItem()
+          .title('Callback')
+          .action(() => {
+            // eslint-disable-next-line no-console
+            console.log('Callback!')
+          }),
+        S.menuItem()
+          .title('Sort by title')
+          .action('setSortOrder')
+          .params({
+            by: {
+              field: 'title',
+              direction: 'asc',
+            },
+          }),
+        // S.menuItem().title('No action'),
+      ])
+  )
+
 export default () =>
   S.list()
     .title('Content')
-    .items([settingsListItem, STRUCTURE_LIST_ITEM_DIVIDER, ...defaultListItems])
+    .items([settingsListItem, S.divider(), listExample, S.divider(), ...defaultListItems])
