@@ -26,13 +26,6 @@ export const ScrollContainer = React.forwardRef(function ScrollContainer<
   const parentContext = React.useContext(ScrollContext)
   const childContext = React.useMemo(() => createPubSub<Event>(), [])
 
-  const handleScroll = React.useCallback(
-    (event: Event) => {
-      childContext.publish(event)
-    },
-    [childContext]
-  )
-
   React.useEffect(() => {
     if (onScroll) {
       // emit scroll events from children
@@ -50,17 +43,23 @@ export const ScrollContainer = React.forwardRef(function ScrollContainer<
   }, [parentContext, childContext])
 
   React.useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    selfRef.current!.addEventListener('scroll', handleScroll, {
-      passive: true,
-      capture: true,
-    })
+    const handleScroll = (event: Event) => {
+      childContext.publish(event)
+    }
+
+    if (selfRef.current) {
+      selfRef.current.addEventListener('scroll', handleScroll, {
+        passive: true,
+        capture: true,
+      })
+    }
 
     return () => {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      selfRef.current!.removeEventListener('scroll', handleScroll)
+      if (selfRef.current) {
+        selfRef.current.removeEventListener('scroll', handleScroll)
+      }
     }
-  }, [handleScroll])
+  }, [childContext])
 
   const setRef = (el: HTMLElement | null) => {
     selfRef.current = el
@@ -70,7 +69,7 @@ export const ScrollContainer = React.forwardRef(function ScrollContainer<
 
   return (
     <ScrollContext.Provider value={childContext}>
-      {React.createElement(as, {ref: setRef, ...rest})}
+      {React.createElement(as, {ref: setRef, 'data-ui': 'ScrollContainer', ...rest})}
     </ScrollContext.Provider>
   )
 })
