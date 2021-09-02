@@ -1,16 +1,30 @@
 import path from 'path'
 import resolve from 'resolve'
+import chalk from 'chalk'
+import {PluginOption} from 'vite'
 
 const ROOT_PATH = path.resolve(__dirname, '../../../..')
 const DEBUG_PART_PATH = path.resolve(__dirname, 'parts/debug.ts')
 const EMPTY_PART_PATH = path.resolve(__dirname, 'parts/empty.ts')
 
+function isDeprecated(partName: string, source?: string) {
+  if (source && source.includes('/packages/@sanity/base/src/__legacy/')) {
+    return false
+  }
+
+  return (
+    partName.startsWith('part:@sanity/components/') ||
+    partName.endsWith('-icon') ||
+    partName.endsWith('-style')
+  )
+}
+
 // NOTE: this plugin is not a complete implementation of the PARTS system (but it could be)
-export function pluginLegacyParts(partsResolver: any) {
+export function pluginLegacyParts(partsResolver: any): PluginOption {
   return {
     name: 'workshop-scopes',
 
-    async resolveId(id: string) {
+    async resolveId(id, source) {
       if (id === 'styled-components') {
         return require.resolve('styled-components')
       }
@@ -42,8 +56,24 @@ export function pluginLegacyParts(partsResolver: any) {
             partPath = partPath.replace('/index.ts', '/index.esm.ts')
           }
 
+          const msg = [
+            `PART:        ${id}`,
+            `Resolves to: ${path.relative(ROOT_PATH, partPath)}`,
+            source && `Imported by: ${path.relative(ROOT_PATH, source)}`,
+          ]
+            .filter(Boolean)
+            .join('\n')
+
+          if (isDeprecated(id, source)) {
+            // eslint-disable-next-line no-console
+            console.log(chalk.red(msg))
+          } else {
+            // eslint-disable-next-line no-console
+            console.log(chalk.gray(msg))
+          }
+
           // eslint-disable-next-line no-console
-          console.log(id, '=>', path.relative(ROOT_PATH, partPath))
+          console.log('')
 
           return partPath
         }
