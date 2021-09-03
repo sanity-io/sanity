@@ -1,0 +1,14 @@
+# ignored folders
+**/node_modules
+**/lib
+**/dist
+**/coverage
+**/bin
+/packages/@sanity/webpack-integration/test/fixtures
+/packages/@sanity/types/parts/part.@sanity/components/build-snapshot
+/packages/@sanity/block-tools/test/tests/HtmlDeserializer
+
+# ignored extensions
+*.html
+*.min.js
+*.min.css
