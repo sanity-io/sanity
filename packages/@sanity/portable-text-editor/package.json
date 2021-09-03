@@ -43,8 +43,7 @@
     "debug": "^3.2.7",
     "is-hotkey": "^0.1.6",
     "lodash": "^4.17.15",
-    "slate": "^0.58.4",
-    "styled-components": "^5.2.1"
+    "slate": "^0.58.4"
   },
   "devDependencies": {
     "@babel/core": "^7.11.6",
@@ -70,7 +69,8 @@
   },
   "peerDependencies": {
     "react": ">=16.8.0",
-    "rxjs": ">=6.5.3"
+    "rxjs": ">=6.5.3",
+    "styled-components": "^5.2.0"
   },
   "repository": {
     "type": "git",

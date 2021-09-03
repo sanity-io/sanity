@@ -41,8 +41,7 @@
     "lodash": "^4.17.15",
     "react-click-outside": "^3.0.0",
     "react-props-stream": "^1.0.0",
-    "rxjs": "^6.5.3",
-    "styled-components": "^5.2.1"
+    "rxjs": "^6.5.3"
   },
   "devDependencies": {
     "@sanity/types": "2.18.0",
@@ -55,6 +54,7 @@
     "@sanity/base": "^2.0.0",
     "prop-types": "^15.6 || ^16",
     "react": "^16.9 || ^17",
-    "react-dom": "^16.9 || ^17"
+    "react-dom": "^16.9 || ^17",
+    "styled-components": "^5.2.0"
   }
 }

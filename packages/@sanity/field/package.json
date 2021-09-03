@@ -49,8 +49,7 @@
     "@sanity/util": "2.18.0",
     "diff-match-patch": "^1.0.4",
     "lodash": "^4.17.15",
-    "sanity-diff-patch": "^1.0.9",
-    "styled-components": "^5.2.1"
+    "sanity-diff-patch": "^1.0.9"
   },
   "devDependencies": {
     "@sanity/ui-workshop": "^0.2.0",
@@ -58,7 +57,8 @@
     "rimraf": "^2.7.1"
   },
   "peerDependencies": {
-    "react": "^16.2.0 || ^17"
+    "react": "^16.2.0 || ^17",
+    "styled-components": "^5.2.0"
   },
   "repository": {
     "type": "git",

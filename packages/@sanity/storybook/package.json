@@ -39,12 +39,12 @@
     "express": "^4.16.1",
     "react-addons-create-fragment": "^15.4.2",
     "shelljs": "^0.7.6",
-    "styled-components": "^5.2.1",
     "webpack": "^3.8.1"
   },
   "peerDependencies": {
     "prop-types": "^15.6 || ^16",
     "react": "^16.9 || ^17",
-    "react-dom": "^16.9 || ^17"
+    "react-dom": "^16.9 || ^17",
+    "styled-components": "^5.2.0"
   }
 }

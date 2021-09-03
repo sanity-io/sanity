@@ -57,8 +57,7 @@
     "react-rx": "^1.0.0-beta.6",
     "react-tiny-virtual-list": "^2.0.5",
     "rxjs": "^6.5.3",
-    "shallow-equals": "^1.0.0",
-    "styled-components": "^5.2.1"
+    "shallow-equals": "^1.0.0"
   },
   "devDependencies": {
     "@types/classnames": "^2.2.10",
@@ -69,7 +68,8 @@
   "peerDependencies": {
     "@sanity/base": "^2.0.0",
     "prop-types": "^15.6 || ^16",
-    "react": "^16.9 || ^17"
+    "react": "^16.9 || ^17",
+    "styled-components": "^5.2.0"
   },
   "repository": {
     "type": "git",
