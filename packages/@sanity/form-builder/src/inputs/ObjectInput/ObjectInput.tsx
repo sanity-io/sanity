@@ -13,6 +13,7 @@ import {FormFieldSet} from '@sanity/base/components'
 
 import {Grid} from '@sanity/ui'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
+import {applyAll} from '../../patch/applyPatch'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {ObjectInputField} from './ObjectInputField'
 import {UnknownFields} from './UnknownFields'
@@ -25,6 +26,10 @@ const EMPTY_PATH: Path = EMPTY_ARRAY
 
 function isSingleFieldset(fieldset: Fieldset): fieldset is SingleFieldSet {
   return Boolean(fieldset.single)
+}
+
+function isRecord(obj: unknown): obj is Record<string, unknown> {
+  return typeof obj === 'object' && obj !== null && !Array.isArray(obj)
 }
 
 export interface Props {
@@ -74,8 +79,31 @@ export const ObjectInput = memo(
     } = props
 
     const handleFieldChange = React.useCallback(
-      (fieldEvent: PatchEvent, field) => {
+      (fieldEvent: PatchEvent, field: ObjectField) => {
         let event = fieldEvent.prefixAll(field.name)
+
+        const patchesIncludesUnset = event.patches.some((patch) => patch.type === 'unset')
+
+        // check if the result of the incoming patches will result in an empty object.
+        // first apply all the patches to the current value to get the result.
+        const result =
+          // check if the patch includes an unset and bail out early if not
+          patchesIncludesUnset &&
+          applyAll(
+            value || {},
+            // unset the `_type` when computing the result since its auto-populated.
+            // see note below for `_key`
+            event.append(unset(['_type'])).patches
+          )
+
+        // if the result has no keys left in it.
+        // note: for arrays we retain empty objects so `_key` is not considered
+        if (isRecord(result) && Object.keys(result).length === 0) {
+          // then unset the whole object
+          onChange?.(PatchEvent.from(unset()))
+          return
+        }
+
         if (!isRoot) {
           event = event.prepend(setIfMissing(type.name === 'object' ? {} : {_type: type.name}))
           if (value) {
