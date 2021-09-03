@@ -1,4 +1,3 @@
-// import {theme} from '@sanity/base'
 import {ThemeColorSchemeKey, ThemeProvider} from '@sanity/ui'
 import {WorkshopFrame} from '@sanity/ui-workshop'
 import React, {useState} from 'react'
@@ -16,7 +15,7 @@ Refractor.registerLanguage(json)
 Refractor.registerLanguage(jsx)
 Refractor.registerLanguage(typescript)
 
-function Root() {
+function Main() {
   const [scheme, setScheme] = useState<ThemeColorSchemeKey>('light')
 
   return (
@@ -26,4 +25,4 @@ function Root() {
   )
 }
 
-ReactDOM.render(<Root />, document.getElementById('root'))
+ReactDOM.render(<Main />, document.getElementById('root'))
