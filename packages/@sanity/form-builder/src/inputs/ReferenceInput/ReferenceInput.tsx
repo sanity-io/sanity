@@ -1,4 +1,5 @@
 /* eslint-disable max-nested-callbacks */
+
 import React, {ForwardedRef, forwardRef, useCallback, useMemo, useState} from 'react'
 import {isValidationErrorMarker, Marker, Path, Reference, ReferenceSchemaType} from '@sanity/types'
 import {LinkIcon} from '@sanity/icons'
@@ -39,7 +40,6 @@ type SearchFunction = (query: string) => Observable<SearchHit[]>
 
 export type Props = {
   value?: Reference
-  compareValue?: Reference
   type: ReferenceSchemaType
   markers: Marker[]
   focusPath: Path
@@ -81,7 +81,6 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
     onSearch,
     onChange,
     presence,
-    compareValue,
     focusPath = EMPTY_ARRAY,
     onFocus,
     onBlur,
@@ -286,7 +285,6 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
           path={[]}
           hasFocus={focusPath[0] === '_ref'}
           value={value?._ref}
-          compareValue={compareValue?._ref}
         >
           <div style={{lineHeight: 0}}>
             <Autocomplete
