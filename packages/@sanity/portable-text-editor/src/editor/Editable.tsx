@@ -239,8 +239,8 @@ export const PortableTextEditable = (props: Props) => {
   }
 
   useEffect(() => {
-    KEY_TO_SLATE_ELEMENT.set(editor, undefined)
-    KEY_TO_VALUE_ELEMENT.set(editor, undefined)
+    KEY_TO_SLATE_ELEMENT.set(editor, {})
+    KEY_TO_VALUE_ELEMENT.set(editor, {})
     return () => {
       KEY_TO_SLATE_ELEMENT.delete(editor)
       KEY_TO_VALUE_ELEMENT.delete(editor)
