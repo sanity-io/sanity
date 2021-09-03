@@ -77,20 +77,23 @@ export const PortableTextEditable = (props: Props) => {
     readOnly,
   } = portableTextEditor
 
-  const createPlaceHolderBlock = () => ({
-    _type: portableTextFeatures.types.block.name,
-    _key: keyGenerator(),
-    style: 'normal',
-    markDefs: [],
-    children: [
-      {
-        _type: 'span',
-        _key: keyGenerator(),
-        text: '',
-        marks: [],
-      },
-    ],
-  })
+  const placeHolderBlock = useMemo(
+    () => ({
+      _type: portableTextFeatures.types.block.name,
+      _key: keyGenerator(),
+      style: 'normal',
+      markDefs: [],
+      children: [
+        {
+          _type: 'span',
+          _key: keyGenerator(),
+          text: '',
+          marks: [],
+        },
+      ],
+    }),
+    [portableTextFeatures.types.block.name, keyGenerator]
+  )
 
   // React/UI-spesific plugins
   const withInsertData = useMemo(
@@ -134,7 +137,7 @@ export const PortableTextEditable = (props: Props) => {
   const [stateValue, setStateValue] = useState(
     // Default value
     toSlateValue(
-      getValueOrIntitialValue(value, [createPlaceHolderBlock()]),
+      getValueOrIntitialValue(value, [placeHolderBlock]),
       portableTextFeatures.types.block.name,
       KEY_TO_SLATE_ELEMENT.get(editor)
     )
@@ -474,7 +477,7 @@ export const PortableTextEditable = (props: Props) => {
         onChange={handleChange}
         editor={editor}
         selection={selection}
-        value={getValueOrIntitialValue(stateValue, [createPlaceHolderBlock()])}
+        value={getValueOrIntitialValue(stateValue, [placeHolderBlock])}
       >
         <SlateEditable
           autoFocus={false}
