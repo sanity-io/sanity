@@ -25,8 +25,7 @@
     "@sanity/types": "2.18.0",
     "@sanity/ui": "^0.36.3",
     "lodash": "^4.17.15",
-    "rxjs": "^6.5.3",
-    "styled-components": "^5.2.1"
+    "rxjs": "^6.5.3"
   },
   "devDependencies": {
     "@sanity/base": "2.18.0",
@@ -36,7 +35,8 @@
   "peerDependencies": {
     "@sanity/base": "^2.0.0",
     "prop-types": "^15.6 || ^16",
-    "react": "^16.9 || ^17"
+    "react": "^16.9 || ^17",
+    "styled-components": "^5.2.0"
   },
   "repository": {
     "type": "git",

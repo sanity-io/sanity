@@ -53,8 +53,7 @@
     "rxjs": "^6.5.3",
     "scroll-into-view-if-needed": "^2.2.26",
     "shallow-equals": "^1.0.0",
-    "speakingurl": "^13.0.0",
-    "styled-components": "^5.2.1"
+    "speakingurl": "^13.0.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.11.10",
@@ -66,12 +65,14 @@
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "rimraf": "^2.7.1",
+    "styled-components": "^5.2.0",
     "ts-node": "^9.1.1"
   },
   "peerDependencies": {
     "prop-types": "^15.6 || ^16",
     "react": "^16.9 || ^17",
-    "react-dom": "^16.9 || ^17"
+    "react-dom": "^16.9 || ^17",
+    "styled-components": "^5.2.0"
   },
   "directories": {
     "test": "test"
