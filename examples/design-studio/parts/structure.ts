@@ -1,5 +1,6 @@
 import S from '@sanity/desk-tool/structure-builder'
 import CogIcon from 'part:@sanity/base/cog-icon'
+import {CustomPane} from './components/CustomPane'
 import {JSONPreviewDocumentView} from './components/jsonPreview'
 
 const STRUCTURE_CUSTOM_TYPES = ['settings']
@@ -61,7 +62,25 @@ const listExample = S.listItem()
       ])
   )
 
+const customPaneExample = S.listItem()
+  .title('Custom pane')
+  .child(
+    S.component(CustomPane)
+      .id('custom')
+      .title('Custom')
+      .child((id) => {
+        return S.list().id(id).title(id)
+      })
+  )
+
 export default () =>
   S.list()
     .title('Content')
-    .items([settingsListItem, S.divider(), listExample, S.divider(), ...defaultListItems])
+    .items([
+      settingsListItem,
+      S.divider(),
+      customPaneExample,
+      listExample,
+      S.divider(),
+      ...defaultListItems,
+    ])
