@@ -551,7 +551,6 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                 path={[]}
                 hasFocus={this.hasFileTargetFocus()}
                 value={value?.asset?._ref}
-                compareValue={compareValue?.asset?._ref}
               >
                 <FileTarget
                   tabIndex={readOnly ? undefined : 0}
