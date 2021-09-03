@@ -69,6 +69,26 @@
   font-size: var(--font-size-small);
   line-height: var(--line-height-small);
   font-weight: 600;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  @nest & > *:not(:last-child) {
+    position: relative;
+    margin-right: var(--medium-padding);
+  }
+
+  @nest & > *:not(:last-child)::before {
+    content: '/';
+    font-size: var(--font-size-xsmall);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--text-muted);
+    position: absolute;
+    top: 50%;
+    left: calc(100% + var(--medium-padding) / 2);
+    transform: translate(-50%, -50%);
+  }
 }
 
 .message {

@@ -14,13 +14,14 @@ interface ValidationListItemProps {
   kind?: 'simple'
   marker: Marker
   onClick?: (path?: Path) => void
-  path: string
+  path: string | string[]
   // showLink?: boolean
   truncate?: boolean
 }
 
 function ValidationListItem(props: ValidationListItemProps) {
-  const {hasFocus, kind, marker, onClick, path, truncate} = props
+  const {hasFocus, kind, marker, onClick, truncate} = props
+  const path = Array.isArray(props.path) ? props.path : [props.path || '']
   const hasOnClick = Boolean(props.onClick)
   const rootRef = useRef<HTMLDivElement | null>(null)
   const hasFocusRef = useRef(hasFocus || false)
@@ -55,7 +56,14 @@ function ValidationListItem(props: ValidationListItemProps) {
       </span>
 
       <div className={styles.content}>
-        {path && <div className={styles.path}>{path}</div>}
+        {path.length && (
+          <div title={path.join(' / ')} className={styles.path}>
+            {path.map((pathSegment, i) => (
+              // eslint-disable-next-line react/no-array-index-key
+              <span key={`${pathSegment}-${i}`}>{pathSegment}</span>
+            ))}
+          </div>
+        )}
         {marker.item.message && <div className={styles.message}>{marker.item.message}</div>}
       </div>
     </>
