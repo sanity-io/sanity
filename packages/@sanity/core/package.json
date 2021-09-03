@@ -59,14 +59,13 @@
     "pirates": "^4.0.0",
     "pluralize": "^7.0.0",
     "pretty-ms": "^7.0.1",
-    "resolve-bin": "^0.4.0",
     "resolve-from": "^4.0.0",
     "rimraf": "^2.7.1",
     "rxjs": "^6.5.3",
     "semver": "^6.1.2",
     "simple-get": "^4.0.0",
     "tar-fs": "^1.16.0",
-    "terser": "4.6.7",
+    "terser": "^5.7.2",
     "yargs": "^16.2.0"
   },
   "repository": {
