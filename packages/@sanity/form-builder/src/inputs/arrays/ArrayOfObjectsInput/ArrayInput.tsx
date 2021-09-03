@@ -1,6 +1,7 @@
 import {FormFieldPresence} from '@sanity/base/presence'
 import {
   ArraySchemaType,
+  isKeySegment,
   isObjectSchemaType,
   Marker,
   ObjectSchemaType,
@@ -22,6 +23,7 @@ import {Details} from '../../../components/Details'
 import {Item, List} from '../common/list'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import ArrayFunctions from '../common/ArrayFunctions'
+import {applyAll} from '../../../patch/applyPatch'
 import {ArrayItem} from './item'
 import {ArrayMember} from './types'
 import {uploadTarget} from './uploadTarget/uploadTarget'
@@ -138,7 +140,21 @@ export class ArrayInput extends React.Component<Props> {
   removeItem(item: ArrayMember) {
     const {onChange, onFocus, value} = this.props
 
-    onChange(PatchEvent.from(unset(item._key ? [{_key: item._key}] : [value.indexOf(item)])))
+    // create a patch for removing the item
+    const patch = PatchEvent.from(
+      unset(isKeySegment(item) ? [{_key: item._key}] : [value.indexOf(item)])
+    )
+    // apply the patch to the current value
+    const result = applyAll(value || [], patch.patches)
+
+    // if the result is an empty array
+    if (Array.isArray(result) && !result.length) {
+      // then unset the value
+      onChange(PatchEvent.from(unset()))
+    } else {
+      // otherwise apply the patch
+      onChange(patch)
+    }
 
     if (item._key in this.uploadSubscriptions) {
       this.uploadSubscriptions[item._key].unsubscribe()
