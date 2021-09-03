@@ -392,10 +392,6 @@ const Rule: RuleClass = class Rule implements IRule {
 
         let specConstraint = 'constraint' in curr ? curr.constraint : null
         if (isFieldRef(specConstraint)) {
-          if (!context.parent) {
-            throw new Error('Field reference provided, but no parent received')
-          }
-
           specConstraint = get(context.parent, specConstraint.path)
         }
 
