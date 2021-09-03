@@ -14,8 +14,7 @@
     "clean": "rimraf coverage dist lib",
     "test:watch": "jest --watch",
     "test": "jest",
-    "gen-doc": "typedoc --out docs src",
-    "eslint": "eslint 'src/**/*.{ts,js,tsx}'"
+    "gen-doc": "typedoc --out docs src"
   },
   "keywords": [
     "sanity",
@@ -65,7 +64,6 @@
     "babel-plugin-lodash": "^3.3.4",
     "babel-plugin-styled-components": "^1.10.7",
     "diff-match-patch": "^1.0.4",
-    "eslint": "^7.8.1",
     "express": "^4.16.1",
     "express-ws": "^5.0.2",
     "jest": "^27.1.0",

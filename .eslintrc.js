@@ -24,25 +24,29 @@ module.exports = {
     'prettier/react',
   ],
   rules: {
-    'import/no-extraneous-dependencies': 'off', // because of parts
     camelcase: ['error', {allow: ['^unstable_', '^Unstable_']}],
+    'sort-imports': 'off', // prefer import/order
+    'max-nested-callbacks': ['error', {max: 5}],
+    'import/no-extraneous-dependencies': 'off', // because of parts
     'import/no-unresolved': ['error', {ignore: ['.*:.*']}], // because of parts
     'prettier/prettier': 'error',
-    'sort-imports': 'off', // prefer import/order
+    'react/no-array-index-key': 'off',
   },
   plugins: ['import', '@typescript-eslint', 'prettier', 'react'],
   overrides: [
     {
       files: ['*.{ts,tsx}'],
       rules: {
-        'import/no-unresolved': 'off',
         'no-undef': 'off',
         'import/named': 'off',
-        // the normal `no-dupe-class-members` doesn't work with TS overrides
+        'import/no-unresolved': 'off',
+
         'no-dupe-class-members': 'off',
         '@typescript-eslint/no-dupe-class-members': ['error'],
+
         'no-unused-vars': 'off',
         '@typescript-eslint/no-unused-vars': ['warn'],
+
         'no-shadow': 'off',
         '@typescript-eslint/no-shadow': ['error'],
       },

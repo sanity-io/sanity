@@ -22,10 +22,9 @@
     "init": "lerna clean --yes && npm run bootstrap && npm run build",
     "deploy-test": "npm run build && cd dev/test-studio && sanity deploy",
     "deploy-movies": "npm run build && cd examples/movies-studio && sanity deploy",
-    "lint": "npm run eslint -- .",
     "depcheck": "lerna exec \\$LERNA_ROOT_PATH/scripts/depcheck.js --no-bail --parallel",
-    "eslint": "eslint --ext=.js,.jsx,.mjs,.ts,.tsx --quiet",
-    "lint:fix": "eslint . --quiet --fix",
+    "lint": "eslint --ext=.js,.ts,.tsx --quiet --cache .",
+    "lint:fix": "npm run lint -- --fix",
     "start": "npm run test-studio",
     "ecommerce-studio": "cd examples/ecommerce-studio && npm start",
     "test-studio": "cd dev/test-studio && npm start",
@@ -48,23 +47,13 @@
     "normalize-pkgfields": "node scripts/normalizePackageFields.js",
     "check-git-status": "[ -z \"$(git status --porcelain)\" ] || (echo \"Commit first\" && exit 1)",
     "prettify": "npm run check-git-status && npx prettier -cwu *",
-    "lint-next": "npm run eslint -- `git diff --name-only next --diff-filter ACMRTUXB`",
-    "verify-format": "lerna run clean && prettier -cu *",
+    "lint-next": "npm run lint -- `git diff --name-only next --diff-filter ACMRTUXB`",
+    "verify-format": "learn run clean && prettier -cu *",
     "postinstall": "node ./scripts/validateMonorepoDependencies.js && npm run bootstrap",
-    "vercel-build": "npm run build:js && cd dev/test-studio && npm run build -- -y",
+    "vercel-build": "npm run build:js && cd examples/test-studio && npm run build -- -y",
     "type-check": "tsc -b --force",
     "cypress:open": "cypress open --config-file cypress/cypress.json",
     "cypress:run": "cypress run --config-file cypress/cypress.json"
-  },
-  "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ]
-  },
-  "lint-staged": {
-    "*.js": "eslint --cache --fix",
-    "*.css": "stylelint --fix",
-    "*.!(js|css)": "prettier --write --ignore-unknown"
   },
   "devDependencies": {
     "@babel/cli": "^7.11.6",
@@ -103,7 +92,7 @@
     "eslint-config-sanity": "^5.0.0",
     "eslint-import-resolver-webpack": "^0.11.1",
     "eslint-plugin-cypress": "^2.11.2",
-    "eslint-plugin-es5": "^1.4.1",
+    "eslint-plugin-es5": "^1.5.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.20.6",

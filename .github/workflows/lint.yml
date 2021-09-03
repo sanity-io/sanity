@@ -57,7 +57,8 @@ jobs:
 
           for FILE_NAME in $CHANGED_JS_FILES
           do
-            npm run eslint -- $FILE_NAME
+            # if you pass a direct filename to eslint, you don't need to specify extensions
+            npx eslint $FILE_NAME
           done
 
       - name: Notify Slack about build failure

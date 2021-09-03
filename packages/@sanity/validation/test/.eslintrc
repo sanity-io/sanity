@@ -4,7 +4,6 @@
     "jest": true
   },
   "rules": {
-    "no-sync": 0,
-    "max-nested-callbacks": ["error", 4]
+    "no-sync": 0
   }
 }
