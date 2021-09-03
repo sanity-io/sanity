@@ -11,6 +11,7 @@
     "build:cli": "gulp build:cli",
     "build:js": "gulp js",
     "clean": "lerna clean && gulp clean && rimraf node_modules",
+    "sort-package-json": "sort-package-json \"**/package.json\" \"!**/node_modules\"",
     "publish": "npm run build && lerna publish --exact",
     "publish-canary": "RELEASE_TAG=canary npm run publish-tag",
     "publish-current-branch": "RELEASE_TAG=`git rev-parse --abbrev-ref HEAD | sed 's/\\//\\_/g'` npm run publish-tag",
@@ -54,6 +55,16 @@
     "type-check": "tsc -b --force",
     "cypress:open": "cypress open --config-file cypress/cypress.json",
     "cypress:run": "cypress run --config-file cypress/cypress.json"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix",
+    "*.css": "stylelint --fix",
+    "*.!(js|css)": "prettier --write --ignore-unknown"
   },
   "devDependencies": {
     "@babel/cli": "^7.11.6",
@@ -118,6 +129,7 @@
     "minimist": "^1.2.0",
     "prettier": "2.1.2",
     "puppeteer": "^11.0.0",
+    "prettier-plugin-packagejson": "^2.2.11",
     "rimraf": "^2.7.1",
     "semver": "^6.2.3",
     "start-server-and-test": "^1.11.7",
