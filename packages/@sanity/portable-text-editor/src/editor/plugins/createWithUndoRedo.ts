@@ -40,11 +40,11 @@ const isSaving = (editor: Editor): boolean | undefined => {
   return SAVING.get(editor)
 }
 
-export function createWithUndoRedo(incomingPatche$?: PatchObservable) {
+export function createWithUndoRedo(incomingPatches$?: PatchObservable) {
   // Subscribe to incoming patches
   const incomingPatches: {patch: Patch; time: Date}[] = []
-  if (incomingPatche$) {
-    incomingPatche$.subscribe((patch) => {
+  if (incomingPatches$) {
+    incomingPatches$.subscribe((patch) => {
       incomingPatches.push({patch: patch, time: new Date()})
     })
   }

@@ -31,7 +31,7 @@ type Props = {
   keyGenerator?: () => string
   maxBlocks?: number | string
   onChange: (change: EditorChange) => void
-  incomingPatche$?: PatchObservable
+  incomingPatches$?: PatchObservable
   readOnly?: boolean
   selection?: EditorSelection
   type: Type | RawSchemaType
@@ -152,7 +152,7 @@ export class PortableTextEditor extends React.Component<Props, State> {
   public keyGenerator: () => string
   public maxBlocks: number | undefined
   public readOnly: boolean
-  public incomingPatche$?: PatchObservable
+  public incomingPatches$?: PatchObservable
 
   constructor(props: Props) {
     super(props)
@@ -184,7 +184,7 @@ export class PortableTextEditor extends React.Component<Props, State> {
       })
       state = {...state, invalidValueResolution: validation.resolution}
     }
-    this.incomingPatche$ = props.incomingPatche$
+    this.incomingPatches$ = props.incomingPatches$
     this.maxBlocks =
       typeof props.maxBlocks === 'undefined'
         ? undefined

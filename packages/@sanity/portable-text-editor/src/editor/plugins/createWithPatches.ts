@@ -54,7 +54,7 @@ export function createWithPatches(
   }: PatchFunctions,
   change$: Subject<EditorChange>,
   portableTextFeatures: PortableTextFeatures,
-  incomingPatche$?: PatchObservable
+  incomingPatches$?: PatchObservable
 ): (editor: PortableTextSlateEditor) => PortableTextSlateEditor {
   const patchToOperations = createPatchToOperations(portableTextFeatures)
   let previousChildren: (Node | Partial<Node>)[]
@@ -70,8 +70,8 @@ export function createWithPatches(
     }, THROTTLE_EDITOR_MS)
 
     // Inspect incoming patches and adjust editor selection accordingly.
-    if (incomingPatche$) {
-      incomingPatche$.subscribe((patch: Patch) => {
+    if (incomingPatches$) {
+      incomingPatches$.subscribe((patch: Patch) => {
         previousChildren = editor.children
         debug('Handling incoming patch', patch.type)
         if (isThrottling) {

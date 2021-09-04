@@ -70,7 +70,7 @@ export const PortableTextEditable = (props: Props) => {
   const {
     change$,
     isThrottling,
-    incomingPatche$,
+    incomingPatches$,
     keyGenerator,
     maxBlocks,
     portableTextFeatures,
@@ -123,7 +123,7 @@ export const PortableTextEditable = (props: Props) => {
                 keyGenerator,
                 change$,
                 maxBlocks,
-                incomingPatche$,
+                incomingPatches$,
                 readOnly,
               })
             )
