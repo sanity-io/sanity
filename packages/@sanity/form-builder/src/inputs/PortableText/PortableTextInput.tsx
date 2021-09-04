@@ -196,7 +196,7 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
     () => (
       <PortableTextEditor
         ref={ref}
-        incomingPatche$={patche$.asObservable()}
+        incomingPatches$={patche$.asObservable()}
         key={`portable-text-editor-${editorId}`}
         onChange={handleEditorChange}
         maxBlocks={undefined} // TODO: from schema?
