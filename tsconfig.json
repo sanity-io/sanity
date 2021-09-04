@@ -21,6 +21,7 @@
     {"path": "./packages/@sanity/base"},
     {"path": "./packages/@sanity/block-tools"},
     {"path": "./packages/@sanity/code-input"},
+    {"path": "./packages/@sanity/core"},
     {"path": "./packages/@sanity/default-layout"},
     {"path": "./packages/@sanity/desk-tool"},
     {"path": "./packages/@sanity/diff"},
