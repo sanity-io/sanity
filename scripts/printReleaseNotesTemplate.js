@@ -34,7 +34,7 @@ A few words about the awesome feature Y, preferably with screengifs
 # 📓 Full changelog
 Author | Message | Commit
 ------------ | ------------- | -------------
-${execa.shellSync(CHANGELOG_COMMAND).stdout}
+${execa.commandSync(CHANGELOG_COMMAND, {shell: true}).stdout}
 `
 
 // eslint-disable-next-line no-console
