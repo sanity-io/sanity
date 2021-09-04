@@ -8,6 +8,7 @@ import getConfig from '@sanity/util/lib/getConfig'
 import chooseDatasetPrompt from '../dataset/chooseDatasetPrompt'
 import {tryInitializePluginConfigs} from '../../actions/config/reinitializePluginConfigs'
 import checkStudioDependencyVersions from '../../util/checkStudioDependencyVersions'
+import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
 import debug from '../../debug'
 import {formatMessage, isLikelyASyntaxError} from './formatMessage'
 
@@ -32,7 +33,8 @@ export default async (args, context) => {
     project: sanityConfig.get('project'),
   }
 
-  checkStudioDependencyVersions(workDir)
+  await checkStudioDependencyVersions(workDir)
+  await checkRequiredDependencies(context)
 
   let compileSpinner
   const configSpinner = output.spinner('Checking configuration files...')
