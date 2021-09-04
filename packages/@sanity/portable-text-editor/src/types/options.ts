@@ -9,7 +9,7 @@ export type createEditorOptions = {
   change$: Subject<EditorChange>
   maxBlocks?: number
   hotkeys?: HotkeyOptions
-  incomingPatche$?: PatchObservable
+  incomingPatches$?: PatchObservable
   readOnly: boolean
 }
 

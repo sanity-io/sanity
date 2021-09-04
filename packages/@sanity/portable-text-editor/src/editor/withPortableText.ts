@@ -38,7 +38,7 @@ export const withPortableText = <T extends Editor>(
     keyGenerator,
     change$,
     maxBlocks,
-    incomingPatche$,
+    incomingPatches$,
     readOnly,
   } = options
   const operationToPatches = createOperationToPatches(portableTextFeatures)
@@ -46,14 +46,14 @@ export const withPortableText = <T extends Editor>(
   const withScemaTypes = createWithSchemaTypes(portableTextFeatures)
   const withPatches = readOnly
     ? disablePlugin('withPatches')
-    : createWithPatches(operationToPatches, change$, portableTextFeatures, incomingPatche$)
+    : createWithPatches(operationToPatches, change$, portableTextFeatures, incomingPatches$)
 
   const withMaxBlocks =
     maxBlocks && maxBlocks > 0 ? createWithMaxBlocks(maxBlocks) : disablePlugin('withMaxBlocks')
   const withPortableTextLists = createWithPortableTextLists(portableTextFeatures, change$)
   const withUndoRedo = readOnly
     ? disablePlugin('withUndoRedo')
-    : createWithUndoRedo(incomingPatche$)
+    : createWithUndoRedo(incomingPatches$)
   const withPortableTextMarkModel = createWithPortableTextMarkModel(
     portableTextFeatures,
     keyGenerator,
