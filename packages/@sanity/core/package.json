@@ -68,6 +68,13 @@
     "terser": "^5.7.2",
     "yargs": "^16.2.0"
   },
+  "devDependencies": {
+    "@sanity/client": "2.18.0",
+    "@types/fs-extra": "^7.0.0",
+    "@types/inquirer": "^6.0.2",
+    "@types/resolve-from": "^4.0.0",
+    "@types/semver": "^6.2.3"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git",

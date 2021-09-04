@@ -8,6 +8,7 @@ import getConfig from '@sanity/util/lib/getConfig'
 import {getWebpackCompiler, getDocumentElement, ReactDOM} from '@sanity/server'
 import sortModulesBySize from '../../stats/sortModulesBySize'
 import checkStudioDependencyVersions from '../../util/checkStudioDependencyVersions'
+import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
 import {tryInitializePluginConfigs} from '../config/reinitializePluginConfigs'
 import compressJavascript from './compressJavascript'
 
@@ -39,7 +40,8 @@ export default async (args, context) => {
 
   await tryInitializePluginConfigs({workDir, output, env: 'production'})
 
-  checkStudioDependencyVersions(workDir)
+  await checkStudioDependencyVersions(workDir)
+  await checkRequiredDependencies(context)
 
   const envVars = webpackIntegration.getSanityEnvVars({env: 'production', basePath: workDir})
   const envVarKeys = Object.keys(envVars)
