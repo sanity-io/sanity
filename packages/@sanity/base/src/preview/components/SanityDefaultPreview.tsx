@@ -58,6 +58,7 @@ export default class SanityDefaultPreview extends React.PureComponent<Props> {
             .width(dimensions.width || 100)
             .height(dimensions.height || 100)
             .fit(dimensions.fit)
+            .dpr(dimensions.dpr || 1)
             .url() || ''
         }
       />

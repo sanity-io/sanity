@@ -30,6 +30,7 @@ export type MediaDimensions = {
   height?: number
   fit?: ImageUrlFitMode
   aspect?: number
+  dpr?: number
 }
 
 export interface PreviewProps<LayoutKey = PreviewLayoutKey> {
