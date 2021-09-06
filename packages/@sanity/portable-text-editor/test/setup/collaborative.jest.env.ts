@@ -10,7 +10,7 @@ ipc.config.silent = true
 
 const WEB_SERVER_ROOT_URL = 'http://localhost:3000'
 
-const SELECTION_EVENT_DELAY_MS = 500
+const SELECTION_EVENT_DELAY_MS = 50
 
 // Forward debug info from the PTE in the browsers
 // const DEBUG = 'sanity-pte:*'
@@ -140,11 +140,11 @@ export default class CollaborationEnvironment extends NodeEnvironment {
             pressKey: async (keyName: string, times?: number) => {
               for (let i = 0; i < (times || 1); i++) {
                 await editableHandle.press(keyName)
-                if (keyName.length === 1 || keyName === 'Backspace' || keyName === 'Delete') {
-                  await waitForRevision()
-                } else {
-                  await delay(300)
-                }
+              }
+              if (keyName.length === 1 || keyName === 'Backspace' || keyName === 'Delete') {
+                await waitForRevision()
+              } else {
+                await delay(SELECTION_EVENT_DELAY_MS)
               }
             },
             focus: async () => {
