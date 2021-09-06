@@ -9,7 +9,7 @@ export default function getProviders() {
       withCredentials: true,
     })
     .then((res) => {
-      const {providers, thirdPartyLogin} = res
+      const {providers, thirdPartyLogin, sso} = res
       const customProviders = (config.providers && config.providers.entries) || []
       if (customProviders.length === 0) {
         return providers
@@ -20,7 +20,9 @@ export default function getProviders() {
         // login options through the config. These shouldn't be treated as custom login providers
         // which require the third-party login feature, but as the official provider
         const isOfficial = providers.some((official) => official.url === provider.url)
-        return {...provider, custom: !isOfficial, supported: isOfficial || thirdPartyLogin}
+        const isSupported =
+          isOfficial || thirdPartyLogin || (sso && Object.values(sso).some(Boolean))
+        return {...provider, custom: !isOfficial, supported: isSupported}
       })
 
       if (config.providers.mode === 'replace') {
