@@ -91,8 +91,6 @@ export interface BaseSchemaType {
 
   validation?: SchemaValidationValue
 
-  validation?: SchemaValidationValue
-
   preview?: {
     select?: PreviewValue
     prepare: (
