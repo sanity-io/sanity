@@ -5,13 +5,17 @@ export default {}
 type Value = PortableTextBlock[] | undefined
 
 type Editor = {
-  getValue: () => Promise<Value>
+  editorId: string
+  focus: () => Promise<void>
   getSelection: () => Promise<EditorSelection | null>
-  insertText: (text: string) => Promise<void>
+  getValue: () => Promise<Value>
   insertNewLine: () => Promise<void>
+  insertText: (text: string) => Promise<void>
   pressKey: (keyName: string, times?: number) => Promise<void>
+  setSelection: (selection: EditorSelection | null) => Promise<void>
+  testId: string
 }
 declare global {
-  function setDocumentValue(value: Value): void
   function getEditors(): Promise<Editor[]>
+  function setDocumentValue(value: Value): void
 }
