@@ -296,71 +296,71 @@
     },
     {
       "implements": "part:@sanity/base/theme/variables-style",
-      "path": "styles/variables.css"
+      "path": "__legacy/@sanity/styles/variables.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables/globals-style",
-      "path": "styles/variables/globals.css"
+      "path": "__legacy/@sanity/styles/variables/globals.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables/override-style",
-      "path": "styles/variables/override.css"
+      "path": "__legacy/@sanity/styles/variables/override.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables/fonts-style",
-      "path": "styles/fonts.css"
+      "path": "__legacy/@sanity/styles/fonts.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables/brand-colors-style",
-      "path": "styles/variables/brand-colors.css"
+      "path": "__legacy/@sanity/styles/variables/brand-colors.css"
     },
     {
       "implements": "part:@sanity/base/theme/animation-style",
-      "path": "styles/animation.css"
+      "path": "__legacy/@sanity/styles/animation.css"
     },
     {
       "implements": "part:@sanity/base/theme/responsive-style",
-      "path": "styles/responsive.css"
+      "path": "__legacy/@sanity/styles/responsive.css"
     },
     {
       "implements": "part:@sanity/base/theme/shadows-style",
-      "path": "styles/shadows.css"
+      "path": "__legacy/@sanity/styles/shadows.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables/code-style",
-      "path": "styles/variables/code.css"
+      "path": "__legacy/@sanity/styles/variables/code.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables/forms-style",
-      "path": "styles/variables/forms.css"
+      "path": "__legacy/@sanity/styles/variables/forms.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables/gray-colors-style",
-      "path": "styles/variables/gray-colors.css"
+      "path": "__legacy/@sanity/styles/variables/gray-colors.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables/layers-style",
-      "path": "styles/variables/layers.css"
+      "path": "__legacy/@sanity/styles/variables/layers.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables/list-style",
-      "path": "styles/variables/list.css"
+      "path": "__legacy/@sanity/styles/variables/list.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables/progress-style",
-      "path": "styles/variables/progress.css"
+      "path": "__legacy/@sanity/styles/variables/progress.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables/selectable-item-style",
-      "path": "styles/variables/selectable-item.css"
+      "path": "__legacy/@sanity/styles/variables/selectable-item.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables/state-colors-style",
-      "path": "styles/variables/state-colors.css"
+      "path": "__legacy/@sanity/styles/variables/state-colors.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables/typography-style",
-      "path": "styles/variables/typography.css"
+      "path": "__legacy/@sanity/styles/variables/typography.css"
     },
     {
       "name": "part:@sanity/base/location",
@@ -429,63 +429,63 @@
     },
     {
       "implements": "part:@sanity/base/theme/layout/box-style",
-      "path": "styles/layout/box.css"
+      "path": "__legacy/@sanity/styles/layout/box.css"
     },
     {
       "implements": "part:@sanity/base/theme/layout/selectable-style",
-      "path": "styles/layout/selectable.css"
+      "path": "__legacy/@sanity/styles/layout/selectable.css"
     },
     {
       "implements": "part:@sanity/base/theme/forms/validation-style",
-      "path": "styles/forms/validation.css"
+      "path": "__legacy/@sanity/styles/forms/validation.css"
     },
     {
       "implements": "part:@sanity/base/theme/layout/positioning-style",
-      "path": "styles/layout/positioning.css"
+      "path": "__legacy/@sanity/styles/layout/positioning.css"
     },
     {
       "implements": "part:@sanity/base/theme/layout/scrolling-style",
-      "path": "styles/layout/scrolling.css"
+      "path": "__legacy/@sanity/styles/layout/scrolling.css"
     },
     {
       "implements": "part:@sanity/base/theme/layout/helpers",
-      "path": "styles/layout/helpers.css"
+      "path": "__legacy/@sanity/styles/layout/helpers.css"
     },
     {
       "implements": "part:@sanity/base/theme/forms/text-input-style",
-      "path": "styles/forms/text-input.css"
+      "path": "__legacy/@sanity/styles/forms/text-input.css"
     },
     {
       "implements": "part:@sanity/base/theme/forms/textarea-style",
-      "path": "styles/forms/textarea.css"
+      "path": "__legacy/@sanity/styles/forms/textarea.css"
     },
     {
       "implements": "part:@sanity/base/theme/forms/clear-button-style",
-      "path": "styles/forms/clear-button.css"
+      "path": "__legacy/@sanity/styles/forms/clear-button.css"
     },
     {
       "implements": "part:@sanity/base/theme/typography/headings-style",
-      "path": "styles/typography/headings.css"
+      "path": "__legacy/@sanity/styles/typography/headings.css"
     },
     {
       "implements": "part:@sanity/base/theme/typography/text-blocks-style",
-      "path": "styles/typography/text-blocks.css"
+      "path": "__legacy/@sanity/styles/typography/text-blocks.css"
     },
     {
       "implements": "part:@sanity/base/theme/typography/code-style",
-      "path": "styles/typography/code.css"
+      "path": "__legacy/@sanity/styles/typography/code.css"
     },
     {
       "implements": "part:@sanity/base/theme/typography/forms-style",
-      "path": "styles/typography/forms.css"
+      "path": "__legacy/@sanity/styles/typography/forms.css"
     },
     {
       "implements": "part:@sanity/base/theme/body-style",
-      "path": "styles/body.css"
+      "path": "__legacy/@sanity/styles/body.css"
     },
     {
       "implements": "part:@sanity/base/theme/layout/backgrounds-style",
-      "path": "styles/layout/backgrounds.css"
+      "path": "__legacy/@sanity/styles/layout/backgrounds.css"
     },
     {
       "name": "part:@sanity/base/close-icon",
@@ -1037,7 +1037,7 @@
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "styles/variables/story"
+      "path": "__legacy/@sanity/styles/variables/story"
     },
     {
       "implements": "part:@sanity/base/component",
