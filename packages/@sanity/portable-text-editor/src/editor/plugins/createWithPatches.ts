@@ -58,6 +58,7 @@ export function createWithPatches(
 ): (editor: PortableTextSlateEditor) => PortableTextSlateEditor {
   const patchToOperations = createPatchToOperations(portableTextFeatures)
   let previousChildren: (Node | Partial<Node>)[]
+  let previousChildrenOnPatch: (Node | Partial<Node>)[]
   let isThrottling = false
   return function withPatches(editor: PortableTextSlateEditor) {
     PATCHING.set(editor, true)
@@ -72,19 +73,19 @@ export function createWithPatches(
     // Inspect incoming patches and adjust editor selection accordingly.
     if (incomingPatches$) {
       incomingPatches$.subscribe((patch: Patch) => {
-        previousChildren = editor.children
+        previousChildrenOnPatch = previousChildren
         debug('Handling incoming patch', patch.type)
         if (isThrottling) {
           withoutPatching(editor, () => {
             if (patchToOperations(editor, patch)) {
               debug('Applied patch in the throttled state', patch.type)
             } else {
-              adjustSelection(editor, patch, previousChildren)
+              adjustSelection(editor, patch, previousChildrenOnPatch, portableTextFeatures)
             }
           })
         } else {
           debug('Adjusting selection for patch', patch.type)
-          adjustSelection(editor, patch, previousChildren)
+          adjustSelection(editor, patch, previousChildrenOnPatch, portableTextFeatures)
         }
       })
     }
@@ -217,7 +218,8 @@ export function createWithPatches(
 function adjustSelection(
   editor: Editor,
   patch: Patch,
-  previousChildren: (Node | Partial<Node>)[]
+  previousChildren: (Node | Partial<Node>)[],
+  portableTextFeatures: PortableTextFeatures
 ): Range | null {
   const selection = editor.selection
   if (selection === null) {
