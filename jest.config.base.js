@@ -1,5 +1,5 @@
-const moduleAliases = require('./.module-aliases')
 const path = require('path')
+const moduleAliases = require('./.module-aliases')
 
 /**
  * Takes a list of path aliases and converts them into jest module mappings with some
@@ -38,8 +38,8 @@ module.exports = {
       },
     ],
   },
-  testRegex:
-    '(src/(.*__tests__/.*|(\\.|/)(test|spec))\\.[jt]sx?$)|(test/((.*\\.|/)(test|spec))\\.[jt]sx?$)',
+  testMatch: ['**/*.{test,spec}.{js,ts,tsx}'],
+  testPathIgnorePatterns: ['/(node_modules|lib|dist|bin|coverage)/'],
   moduleNameMapper: jestify({
     ...moduleAliases,
     'part:@sanity/components/fieldsets/default':
