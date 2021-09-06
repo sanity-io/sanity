@@ -158,6 +158,10 @@ async function installDependenciesWithPrompt(
   const yarnLockExists = await fileExists(path.join(workDir, 'yarn.lock'))
   const installPackageArgs: string[] = []
 
+  const isInteractive =
+    // eslint-disable-next-line no-process-env
+    process.stdout.isTTY && process.env.TERM !== 'dumb' && !('CI' in process.env)
+
   output.print('The Sanity studio needs to install missing dependencies:')
   for (const [pkgName, version] of Object.entries(dependencies)) {
     const declaration = `${pkgName}@${version}`
@@ -165,12 +169,15 @@ async function installDependenciesWithPrompt(
     installPackageArgs.push(declaration)
   }
 
-  const pkgManager = await prompt.single({
-    type: 'list',
-    message: 'Would you like to use npm or yarn to install these?',
-    choices: ['npm', 'yarn'],
-    default: yarnLockExists ? 'yarn' : 'npm',
-  })
+  const defaultPkgManager = yarnLockExists ? 'yarn' : 'npm'
+  const pkgManager = isInteractive
+    ? await prompt.single({
+        type: 'list',
+        message: 'Would you like to use npm or yarn to install these?',
+        choices: ['npm', 'yarn'],
+        default: defaultPkgManager,
+      })
+    : defaultPkgManager
 
   if (pkgManager === 'yarn') {
     return yarn(['add', ...installPackageArgs], {
