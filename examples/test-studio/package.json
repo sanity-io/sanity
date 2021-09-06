@@ -47,7 +47,8 @@
     "react-json-pretty": "^2.2.0",
     "sanity-plugin-dashboard-widget-cats": "^0.0.2",
     "sanity-plugin-dashboard-widget-document-list": "^0.0.13",
-    "sanity-plugin-mux-input": "^1.0.1"
+    "sanity-plugin-mux-input": "^1.0.1",
+    "styled-components": "^5.2.0"
   },
   "devDependencies": {
     "rimraf": "^2.7.1"

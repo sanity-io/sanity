@@ -23,7 +23,7 @@
     "react-dom": "17.0.1",
     "react-refractor": "^2.1.2",
     "refractor": "^3.3.1",
-    "styled-components": "^5.2.1"
+    "styled-components": "^5.2.0"
   },
   "devDependencies": {
     "@originjs/vite-plugin-commonjs": "1.0.0-beta7",

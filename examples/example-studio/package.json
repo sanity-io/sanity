@@ -38,7 +38,8 @@
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-icons": "^3.11.0",
-    "react-tooltip": "^3.5.0"
+    "react-tooltip": "^3.5.0",
+    "styled-components": "^5.2.0"
   },
   "devDependencies": {
     "rimraf": "^2.7.1"
