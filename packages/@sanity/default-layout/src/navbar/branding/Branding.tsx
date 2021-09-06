@@ -2,11 +2,36 @@
 ///<reference types="@sanity/types/parts" />
 
 import React, {createElement} from 'react'
-import styles from 'part:@sanity/default-layout/branding-style'
 import BrandLogo from 'part:@sanity/base/brand-logo?'
+import styled from 'styled-components'
+import {Text, Box} from '@sanity/ui'
+
+const Root = styled(Box)`
+  color: inherit;
+  position: relative;
+  text-decoration: none;
+`
+
+const ProjectNameText = styled(Text)`
+  display: block;
+  white-space: nowrap;
+`
+
+const LogoContainer = styled(Box)`
+  color: inherit;
+  cursor: pointer;
+  display: block;
+
+  svg {
+    display: block;
+    fill: currentColor;
+    height: 1em;
+    width: auto;
+  }
+`
 
 interface Props {
-  logo?: React.ComponentType<{}>
+  logo?: React.ComponentType
   projectName: string
 }
 
@@ -15,15 +40,15 @@ function Branding(props: Props) {
   const logo = props.logo || BrandLogo
 
   return (
-    <div className={styles.root}>
-      {logo && <div className={styles.brandLogoContainer}>{createElement(logo)}</div>}
+    <Root>
+      {logo && <LogoContainer>{createElement(logo)}</LogoContainer>}
 
       {!logo && (
-        <div>
-          <h1 className={styles.projectName}>{projectName}</h1>
-        </div>
+        <ProjectNameText align="center" forwardedAs="h1" textOverflow="ellipsis" weight="bold">
+          {projectName}
+        </ProjectNameText>
       )}
-    </div>
+    </Root>
   )
 }
 
