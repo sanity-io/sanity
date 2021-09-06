@@ -60,7 +60,8 @@ export function createOperationToPatches(
       prevBlock.children &&
       prevBlock.children[operation.path[1]] &&
       prevBlock.children[operation.path[1]].text
-    return [diffMatchPatch(prevText || '', child.text, path)]
+    const patch = diffMatchPatch(prevText || '', child.text, path)
+    return patch.value.length ? [patch] : []
   }
 
   function removeTextPatch(
@@ -85,7 +86,8 @@ export function createOperationToPatches(
       beforeValue[operation.path[0]].children &&
       beforeValue[operation.path[0]].children[operation.path[1]] &&
       beforeValue[operation.path[0]].children[operation.path[1]].text
-    return [diffMatchPatch(prevText || '', child.text, path)]
+    const patch = diffMatchPatch(prevText || '', child.text, path)
+    return patch.value ? [patch] : []
   }
 
   function setNodePatch(editor: Editor, operation: SetNodeOperation) {
