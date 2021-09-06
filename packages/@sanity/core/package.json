@@ -73,7 +73,8 @@
     "@types/fs-extra": "^7.0.0",
     "@types/inquirer": "^6.0.2",
     "@types/resolve-from": "^4.0.0",
-    "@types/semver": "^6.2.3"
+    "@types/semver": "^6.2.3",
+    "inquirer": "^6.0.0"
   },
   "repository": {
     "type": "git",
