@@ -3,6 +3,7 @@
   "version": "2.15.0",
   "description": "Generates URLs to specific sections of the Sanity documentation",
   "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "test": "tape test/**/*.test.js",
     "clean": "rimraf lib dest"
