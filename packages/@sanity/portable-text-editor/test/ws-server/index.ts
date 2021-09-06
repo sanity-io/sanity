@@ -12,16 +12,20 @@ const messages = new Subject()
 
 const PORT = 3001
 const valueMap: Record<string, PortableTextBlock[] | undefined> = {}
+const revisionMap: Record<string, string> = {}
 
 ipc.config.id = 'socketServer'
 ipc.config.retry = 1500
 ipc.config.silent = true
 
 ipc.serveNet(() => {
-  ipc.server.on('ws-payload', (message) => {
+  ipc.server.on('payload', (message) => {
     const data = JSON.parse(message)
     if (data.type === 'value') {
-      valueMap[data.testSuiteId] = data.value
+      valueMap[data.testId] = data.value
+    }
+    if (data.type === 'revId') {
+      revisionMap[data.testId] = data.revId
     }
     messages.next(message)
   })
@@ -35,29 +39,39 @@ const sub = messages.subscribe((next: any) => {
 })
 
 app.ws('/', (s, req) => {
-  const testSuiteId = req.query.testSuiteId?.toString()
-  if (testSuiteId && !sockets.includes(s)) {
+  const testId = req.query.testId?.toString()
+  if (testId && !sockets.includes(s)) {
     sockets.push(s)
-    s.send(JSON.stringify({type: 'value', value: valueMap[testSuiteId], testSuiteId}))
+    s.send(
+      JSON.stringify({type: 'value', value: valueMap[testId], testId, revId: revisionMap[testId]})
+    )
   }
   s.on('close', () => {
     sockets = sockets.filter((socket: any) => socket !== s)
   })
   s.on('message', (msg: string) => {
-    const parsed = JSON.parse(msg)
-    if (parsed.type === 'mutation' && testSuiteId) {
-      valueMap[testSuiteId] = applyAll(valueMap[testSuiteId], parsed.patches)
-      messages.next(JSON.stringify({type: 'value', value: valueMap[testSuiteId], testSuiteId}))
-      messages.next(JSON.stringify(parsed))
+    const data = JSON.parse(msg)
+    if (data.type === 'mutation' && testId) {
+      valueMap[testId] = applyAll(valueMap[testId], data.patches)
+      messages.next(
+        JSON.stringify({
+          type: 'value',
+          value: valueMap[testId],
+          testId,
+          revId: revisionMap[testId],
+        })
+      )
+      messages.next(JSON.stringify(data))
+    }
+    if (data.type === 'selection') {
+      messages.next(JSON.stringify(data))
     }
   })
 })
-const server = app.listen(PORT, () =>
-  console.log('\n\nWebsocket server started on http://localhost:3001/\n')
-)
+const server = app.listen(PORT)
+
 process.on('SIGTERM', () => {
-  ipc.server.stop()
-  server.close()
   sub.unsubscribe()
-  console.log('\n\nWebsocket server stopped.\n')
+  server.close()
+  ipc.server.stop()
 })

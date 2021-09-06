@@ -46,13 +46,15 @@ export const Editor = ({
   onMutation,
   editorId,
   incomingPatches$,
+  selection,
 }: {
   value: PortableTextBlock[] | undefined
   onMutation: (mutatingPatches: Patch[]) => void
   editorId: string
   incomingPatches$: Subject<Patch>
+  selection: EditorSelection | null
 }) => {
-  const [selection, setSelection] = useState<EditorSelection>(null)
+  const [selectionValue, setSelectionValue] = useState<EditorSelection | null>(selection)
   const editor = useRef<PortableTextEditor>(null)
   const keyGenFn = useMemo(() => createKeyGenerator(editorId), [editorId])
 
@@ -116,14 +118,12 @@ export const Editor = ({
     (change: EditorChange): void => {
       switch (change.type) {
         case 'selection':
-          setSelection(change.selection)
+          setSelectionValue(change.selection)
           break
         case 'mutation':
           onMutation(change.patches)
           break
         case 'patch':
-          // console.log('Patch', change.patch)
-          break
         case 'blur':
         case 'focus':
         case 'invalidValue':
@@ -161,12 +161,13 @@ export const Editor = ({
           renderBlock={renderBlock}
           renderDecorator={renderDecorator}
           renderChild={renderChild}
+          selection={selection}
           spellCheck
         />
       </Box>
       <Box padding={4} style={{outline: '1px solid #999'}}>
         <Code size={0} language="json" id="pte-selection">
-          {JSON.stringify(selection)}
+          {JSON.stringify(selectionValue)}
         </Code>
       </Box>
     </PortableTextEditor>
