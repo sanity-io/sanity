@@ -5,7 +5,7 @@ import inferFromSchemaType from './inferFromSchemaType'
 function inferFromSchema(schema: Schema): Schema {
   const typeNames = schema.getTypeNames()
   typeNames.forEach((typeName) => {
-    inferFromSchemaType(schema.get(typeName), schema)
+    inferFromSchemaType(schema.get(typeName))
   })
   return schema
 }
