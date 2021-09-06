@@ -289,8 +289,8 @@ function adjustSelection(
       debug('No block found trying to adjust for unset child')
       return null
     }
-    if (selection.focus.path[0] === blockIndex) {
-      const [, childIndex] = findChildAndIndexFromPath(patch.path[2], block)
+    const [, childIndex] = findChildAndIndexFromPath(patch.path[2], block)
+    if (selection.focus.path[0] === blockIndex && selection.focus.path[2] >= childIndex) {
       const prevIndexOrLastIndex =
         childIndex === -1 || block.children.length === 1 ? block.children.length - 1 : childIndex
       const prevText = block.children[prevIndexOrLastIndex].text as Text
@@ -337,27 +337,52 @@ function adjustSelection(
   // Unset patches on block level
   if (patch.type === 'unset' && patch.path.length === 1) {
     const blkAndIdx = findBlockAndIndexFromPath(patch.path[0], previousChildren)
+
     let [, blockIndex] = blkAndIdx
     const [block] = blkAndIdx
-    if (!block || typeof blockIndex === 'undefined') {
-      debug('no block found in editor trying to adjust selection for unset block')
-      // Naively try to adjust as the block above us have been removed.
+    if (
+      !block ||
+      typeof blockIndex === 'undefined' ||
+      (Path.isBefore(selection.anchor.path, [blockIndex]) &&
+        Path.isBefore(selection.focus.path, [blockIndex]))
+    ) {
+      return null
+    }
+
+    const isTextBlock = block._type === portableTextFeatures.types.block.name
+
+    const addToOffset =
+      isTextBlock &&
+      isEqual(selection.anchor.path[0], blockIndex) &&
+      isEqual(selection.focus.path[0], blockIndex)
+        ? block.children
+            .map((child) => child._type === portableTextFeatures.types.span.name && child.text)
+            .filter(Boolean)
+            .join('').length + 1
+        : 0
+
+    if (
+      isEqual(selection.anchor.path[0], blockIndex) &&
+      isEqual(selection.focus.path[0], blockIndex)
+    ) {
       blockIndex = Math.max(0, selection.focus.path[0] - 1)
     }
     const newSelection = {...selection}
     if (Path.isAfter(selection.anchor.path, [blockIndex])) {
-      newSelection.anchor = {...selection.anchor}
+      newSelection.anchor = {...newSelection.anchor}
       newSelection.anchor.path = [
         Math.max(0, newSelection.anchor.path[0] - 1),
         ...newSelection.anchor.path.slice(1),
       ]
+      newSelection.anchor.offset += addToOffset
     }
     if (Path.isAfter(selection.focus.path, [blockIndex])) {
-      newSelection.focus = {...selection.focus}
+      newSelection.focus = {...newSelection.focus}
       newSelection.focus.path = [
         Math.max(0, newSelection.focus.path[0] - 1),
         ...newSelection.focus.path.slice(1),
       ]
+      newSelection.focus.offset += addToOffset
     }
     if (!isEqual(newSelection, selection)) {
       debug('adjusting selection for unset block')
