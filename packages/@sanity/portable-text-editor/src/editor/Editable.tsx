@@ -225,7 +225,7 @@ export const PortableTextEditable = (props: Props) => {
   // )
 
   const setValueFromProps = () => {
-    const fromMap = VALUE_TO_SLATE_VALUE.get(value || []) as any
+    const fromMap = VALUE_TO_SLATE_VALUE.get(value || [])
     if (fromMap === stateValue) {
       debug('Value in sync, not updating value from props')
     } else {
@@ -236,7 +236,7 @@ export const PortableTextEditable = (props: Props) => {
         KEY_TO_SLATE_ELEMENT.get(editor)
       )
       setStateValue(slateValueFromProps)
-      VALUE_TO_SLATE_VALUE.set(value || [], slateValueFromProps as any)
+      VALUE_TO_SLATE_VALUE.set(value || [], slateValueFromProps)
       change$.next({type: 'value', value})
     }
   }
