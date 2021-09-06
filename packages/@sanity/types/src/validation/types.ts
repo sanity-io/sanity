@@ -33,32 +33,41 @@ export interface RuleClass {
 }
 
 export interface Rule {
+  // Note: these prop is not actually deprecated but there is better TS Doc
+  // support for `@deprecated` than `@internal`
   /**
    * @internal
+   * @deprecated internal use only
    */
   _type: RuleTypeConstraint | undefined
   /**
    * @internal
+   * @deprecated internal use only
    */
   _level: 'error' | 'warning' | undefined
   /**
    * @internal
+   * @deprecated internal use only
    */
   _required: 'required' | 'optional' | undefined
   /**
    * @internal
+   * @deprecated internal use only
    */
   _typeDef: SchemaType | undefined
   /**
    * @internal
+   * @deprecated internal use only
    */
   _message: string | undefined
   /**
    * @internal
+   * @deprecated internal use only
    */
   _rules: RuleSpec[]
   /**
    * @internal
+   * @deprecated internal use only
    */
   _fieldRules: FieldRules | undefined
 
