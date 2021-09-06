@@ -21,7 +21,7 @@ function inferFromSchemaType(
 
   const isInitialized =
     Array.isArray(typeDef.validation) &&
-    typeDef.validation.every((item) => typeof item.validate === 'function')
+    typeDef.validation.every((item) => typeof item?.validate === 'function')
 
   if (isInitialized) {
     inferForFields(typeDef, schema, visited)

@@ -87,7 +87,7 @@ const normalizeRules = (
     return normalizeRules(validation(new RuleClass(type)))
   }
   if (!validation) return []
-  if (Array.isArray(validation)) return validation
+  if (Array.isArray(validation)) return normalizeRules(validation)
   return [validation]
 }
 
