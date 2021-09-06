@@ -33,13 +33,11 @@ export const blockValidator: BlockValidator = async (value, context) => {
   value.markDefs.forEach((markDef: any) => {
     const annotationType = activeAnnotationTypes.find((aType) => aType.name === markDef._type)
     const validations = validateItem({
+      document: context.document,
       value: markDef,
       type: annotationType,
-      path: ['markDefs', {_key: markDef._key}],
-      context: {
-        parent: value,
-        document: context.document,
-      },
+      path: (context.path || []).concat(['markDefs', {_key: markDef._key}]),
+      parent: value,
     })
     annotationValidations.push(validations)
   })
