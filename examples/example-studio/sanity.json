@@ -13,7 +13,6 @@
     "@sanity/default-login",
     "@sanity/code-input",
     "@sanity/desk-tool",
-    "@sanity/storybook",
     "@sanity/vision",
     "@sanity/language-filter"
   ],

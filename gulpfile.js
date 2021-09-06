@@ -22,7 +22,6 @@ const DEST_DIR = 'dist'
 const IGNORED_PACKAGES = [
   'dev/workshop',
   'examples/depcheck-test',
-  'examples/storybook',
   /examples\/.*-studio/,
   'packages/@sanity/components',
   'packages/@sanity/date-input',

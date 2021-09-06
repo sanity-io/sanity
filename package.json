@@ -26,7 +26,6 @@
     "eslint": "node_modules/.bin/eslint --ext=.js,.jsx,.mjs,.ts,.tsx --quiet",
     "lint:fix": "eslint . --quiet --fix",
     "start": "npm run test-studio",
-    "storybook": "cd examples/storybook && npm start",
     "ecommerce-studio": "cd examples/ecommerce-studio && npm start",
     "test-studio": "cd examples/test-studio && npm start",
     "clean-studio": "cd examples/clean-studio && npm start",

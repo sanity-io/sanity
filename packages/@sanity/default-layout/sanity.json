@@ -45,10 +45,6 @@
     {
       "implements": "part:@sanity/default-layout/branding-style",
       "path": "navbar/branding/Branding.css"
-    },
-    {
-      "implements": "part:@sanity/base/component",
-      "path": "story"
     }
   ]
 }
