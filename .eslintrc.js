@@ -40,6 +40,8 @@ module.exports = {
         // the normal `no-dupe-class-members` doesn't work with TS overrides
         'no-dupe-class-members': 'off',
         '@typescript-eslint/no-dupe-class-members': ['error'],
+        'no-unused-vars': 'off',
+        '@typescript-eslint/no-unused-vars': ['warn'],
       },
     },
   ],
