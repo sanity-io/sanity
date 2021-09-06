@@ -4,23 +4,24 @@
 import React from 'react'
 import imageUrlBuilder from '@sanity/image-url'
 import assetUrlBuilder from 'part:@sanity/base/asset-url-builder'
-import PreviewComponentCard from 'part:@sanity/components/previews/card'
-import PreviewComponentDetail from 'part:@sanity/components/previews/detail'
-import PreviewComponentInline from 'part:@sanity/components/previews/inline'
-import PreviewComponentMedia from 'part:@sanity/components/previews/media'
-import PreviewComponentBlock from 'part:@sanity/components/previews/block'
-import PreviewComponentBlockImage from 'part:@sanity/components/previews/block-image'
 import fileIcon from 'part:@sanity/base/file-icon'
-import {DefaultPreview} from '../../components/previews'
+import {
+  DefaultPreview,
+  BlockImagePreview,
+  BlockPreview,
+  DetailPreview,
+  InlinePreview,
+  MediaPreview,
+} from '../../components/previews'
 import {versionedClient} from '../../client/versionedClient'
 
 const previewComponentMap: {[key: string]: React.ComponentType<any>} = {
   default: DefaultPreview,
-  card: PreviewComponentCard,
-  media: PreviewComponentMedia,
-  detail: PreviewComponentDetail,
-  inline: PreviewComponentInline,
-  block: PreviewComponentBlock,
+  card: DefaultPreview,
+  media: MediaPreview,
+  detail: DetailPreview,
+  inline: InlinePreview,
+  block: BlockPreview,
 }
 
 function extractUploadState(value) {
@@ -123,7 +124,7 @@ export default class SanityDefaultPreview extends React.PureComponent<Props> {
       : previewComponentMap.default
 
     if (_renderAsBlockImage) {
-      PreviewComponent = PreviewComponentBlockImage
+      PreviewComponent = BlockImagePreview
     }
 
     const {_upload, value} = extractUploadState(this.props.value)
