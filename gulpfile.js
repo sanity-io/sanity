@@ -60,7 +60,7 @@ const compileTaskName = (taskType, packagePath, extra = '') => {
 
 function buildJavaScript(packageDir, destDir) {
   return withDisplayName(compileTaskName('babel', packageDir, 'cjs'), () =>
-    src(['!**/*.{test,spec}.{js,ts,tsx}', `${SRC_DIR}/**/*.{js,ts,tsx}`], {cwd: packageDir})
+    src([`${SRC_DIR}/**/*.{js,ts,tsx}`, '!**/*.{test,spec}.{js,ts,tsx}'], {cwd: packageDir})
       .pipe(
         changed(destDir, {
           cwd: packageDir,
