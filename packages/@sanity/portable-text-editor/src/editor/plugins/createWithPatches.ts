@@ -254,8 +254,8 @@ function adjustSelection(
         // This thing is exotic but actually works!
         const isBeforeUserSelection =
           parsed.start1 !== null &&
-          parsed.start1 + testString.length <= selection.focus.offset &&
-          parsed.start1 + testString.length <= selection.anchor.offset
+          parsed.start1 + testString.length < selection.focus.offset &&
+          parsed.start1 + testString.length < selection.anchor.offset
 
         const distance = parsed.length2 - parsed.length1
 
