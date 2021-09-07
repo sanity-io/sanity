@@ -59,10 +59,7 @@ describe('collaborate editing', () => {
       anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 11},
       focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 11},
     })
-    expect(selectionB).toEqual({
-      anchor: {offset: 0, path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}]},
-      focus: {offset: 0, path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}]},
-    })
+    expect(selectionB).toEqual(null)
   })
 
   it('will update value in editor A when editor B writes something', async () => {

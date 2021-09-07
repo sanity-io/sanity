@@ -59,13 +59,6 @@ export const Editor = ({
   const editor = useRef<PortableTextEditor>(null)
   const keyGenFn = useMemo(() => createKeyGenerator(editorId), [editorId])
 
-  // Make sure tests always has focus or keyPress can become hard to test.
-  useEffect(() => {
-    if (editor.current && value) {
-      PortableTextEditor.focus(editor.current)
-    }
-  }, [editor, value])
-
   const renderBlock: RenderBlockFunction = useCallback((block, type, attributes, defaultRender) => {
     if (editor.current) {
       const textType = PortableTextEditor.getPortableTextFeatures(editor.current).types.block

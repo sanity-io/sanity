@@ -3,7 +3,7 @@ import React, {useCallback, useMemo, useState} from 'react'
 
 import ReactDOM from 'react-dom'
 import {Subject} from 'rxjs'
-import {EditorSelection, Patch, PortableTextBlock} from '../../src'
+import {EditorSelection, Patch, PortableTextBlock, PortableTextEditor} from '../../src'
 import {Editor} from './components/Editor'
 import {Value} from './components/Value'
 

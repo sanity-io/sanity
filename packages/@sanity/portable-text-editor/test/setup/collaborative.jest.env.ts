@@ -2,7 +2,7 @@ import NodeEnvironment from 'jest-environment-node'
 import puppeteer from 'puppeteer'
 import ipc from 'node-ipc'
 import {isEqual} from 'lodash'
-import {EditorSelection, PortableTextBlock} from '../../src'
+import {EditorSelection, PortableTextBlock, EditorSelectionPoint} from '../../src'
 
 ipc.config.id = 'collaborative-jest-environment-ipc-client'
 ipc.config.retry = 1500
@@ -12,6 +12,7 @@ const WEB_SERVER_ROOT_URL = 'http://localhost:3000'
 
 // Forward debug info from the PTE in the browsers
 // const DEBUG = 'sanity-pte:*'
+// eslint-disable-next-line no-process-env
 const DEBUG = process.env.DEBUG || false
 
 let testId: string
@@ -110,6 +111,9 @@ export default class CollaborationEnvironment extends NodeEnvironment {
           const selectionHandle: puppeteer.ElementHandle<HTMLDivElement> = await page.waitForSelector(
             '#pte-selection'
           )
+          const valueHandle: puppeteer.ElementHandle<HTMLDivElement> = await page.waitForSelector(
+            '#pte-value'
+          )
           const waitForRevision = async () => {
             const revId = (Math.random() + 1).toString(36).substring(7)
             ipc.of.socketServer.emit(
@@ -117,6 +121,7 @@ export default class CollaborationEnvironment extends NodeEnvironment {
               JSON.stringify({type: 'revId', revId, testId, editorId})
             )
             await page.waitForSelector(`code[data-rev-id="${revId}"]`)
+            await delay(250) // Give selection time to catch up in the editor after a new value so that it's ready to test afterwards
           }
           const getSelection = async (): Promise<EditorSelection | null> => {
             const selection = await selectionHandle.evaluate((node) =>
@@ -124,33 +129,50 @@ export default class CollaborationEnvironment extends NodeEnvironment {
             )
             return selection
           }
-          const waitForSelection = async (selectionChangeFn: () => Promise<void>) => {
-            const selection = await getSelection()
+          const waitForNewSelection = async (selectionChangeFn: () => Promise<void>) => {
+            const oldSelection = await getSelection()
             await selectionChangeFn()
-            const dataVal = selection ? JSON.stringify(selection) : 'null'
+            const dataVal = oldSelection ? JSON.stringify(oldSelection) : 'null'
             await page.waitForSelector(`code[data-selection]:not([data-selection='${dataVal}'])`)
+          }
+
+          const waitForSelection = async (selection: EditorSelection) => {
+            const value = await valueHandle.evaluate((node): PortableTextBlock[] | undefined =>
+              node.innerText ? JSON.parse(node.innerText) : undefined
+            )
+            const normalized = normalizeSelection(selection, value)
+            const dataVal = JSON.stringify(normalized)
+            await page.waitForSelector(`code[data-selection='${dataVal}']`)
           }
           return {
             testId,
             editorId,
             insertText: async (text: string) => {
-              await editableHandle.evaluate(
-                (node, args) => {
-                  node.dispatchEvent(
-                    new InputEvent('beforeinput', {
-                      bubbles: true,
-                      cancelable: true,
-                      inputType: 'insertText',
-                      data: args[0],
-                    })
+              await editableHandle.focus()
+              await Promise.all([
+                waitForRevision(),
+                waitForNewSelection(async () => {
+                  await editableHandle.evaluate(
+                    (node, args) => {
+                      node.dispatchEvent(
+                        new InputEvent('beforeinput', {
+                          bubbles: true,
+                          cancelable: true,
+                          inputType: 'insertText',
+                          data: args[0],
+                        })
+                      )
+                    },
+                    [text]
                   )
-                },
-                [text]
-              )
-              await waitForRevision()
+                }),
+              ])
             },
             pressKey: async (keyName: string, times?: number) => {
-              const pressKey = () => editableHandle.press(keyName)
+              await editableHandle.focus()
+              const pressKey = async () => {
+                await editableHandle.press(keyName)
+              }
               for (let i = 0; i < (times || 1); i++) {
                 // Value manipulation keys
                 if (
@@ -174,7 +196,7 @@ export default class CollaborationEnvironment extends NodeEnvironment {
                     'End',
                   ].includes(keyName)
                 ) {
-                  await waitForSelection(() => pressKey())
+                  await waitForNewSelection(() => pressKey())
                 } else {
                   // Unknown keys, test needs should be covered by the above cases.
                   console.warn(`Key ${keyName} not accounted for`)
@@ -186,6 +208,7 @@ export default class CollaborationEnvironment extends NodeEnvironment {
               await editableHandle.focus()
             },
             setSelection: async (selection: EditorSelection | null) => {
+              await editableHandle.focus()
               ipc.of.socketServer.emit(
                 'payload',
                 JSON.stringify({
@@ -195,12 +218,9 @@ export default class CollaborationEnvironment extends NodeEnvironment {
                   editorId,
                 })
               )
-              await waitForSelection(() => delay(300)) // A little delay to let selection "manifest itself" via websocket.
+              await waitForSelection(selection)
             },
             async getValue(): Promise<PortableTextBlock[] | undefined> {
-              const valueHandle: puppeteer.ElementHandle<HTMLDivElement> = await page.waitForSelector(
-                '#pte-value'
-              )
               const value = await valueHandle.evaluate((node): PortableTextBlock[] | undefined =>
                 node.innerText ? JSON.parse(node.innerText) : undefined
               )
@@ -211,4 +231,58 @@ export default class CollaborationEnvironment extends NodeEnvironment {
         })
       )
   }
+}
+
+function normalizeSelection(selection: EditorSelection, value: PortableTextBlock[] | undefined) {
+  if (!selection || !value || value.length === 0) {
+    return null
+  }
+  let newAnchor: EditorSelectionPoint | null = null
+  let newFocus: EditorSelectionPoint | null = null
+  const {anchor, focus} = selection
+  if (anchor && value.find((blk) => isEqual({_key: blk._key}, anchor.path[0]))) {
+    newAnchor = normalizePoint(anchor, value)
+  }
+  if (focus && value.find((blk) => isEqual({_key: blk._key}, focus.path[0]))) {
+    newFocus = normalizePoint(focus, value)
+  }
+  if (newAnchor && newFocus) {
+    return {anchor: newAnchor, focus: newFocus}
+  }
+  return null
+}
+
+function normalizePoint(point: EditorSelectionPoint, value: PortableTextBlock[]) {
+  if (!point || !value) {
+    return null
+  }
+  const newPath: any = []
+  let newOffset: number = point.offset || 0
+  const blockKey =
+    typeof point.path[0] === 'object' && '_key' in point.path[0] && point.path[0]._key
+  const childKey =
+    typeof point.path[2] === 'object' && '_key' in point.path[2] && point.path[2]._key
+  const block: PortableTextBlock | undefined = value.find((blk) => blk._key === blockKey)
+  if (block) {
+    newPath.push({_key: block._key})
+  } else {
+    return null
+  }
+  if (block && point.path[1] === 'children') {
+    if (!block.children || block.children.length === 0) {
+      return null
+    }
+    const child = block.children.find((cld: any) => cld._key === childKey)
+    if (child) {
+      newPath.push('children')
+      newPath.push({_key: child._key})
+      newOffset =
+        child.text && child.text.length >= point.offset
+          ? point.offset
+          : (child.text && child.text.length) || 0
+    } else {
+      return null
+    }
+  }
+  return {path: newPath, offset: newOffset}
 }
