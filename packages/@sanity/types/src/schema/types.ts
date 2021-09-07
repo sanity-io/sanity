@@ -250,6 +250,7 @@ export interface ObjectSchemaType extends BaseSchemaType {
   fields: ObjectField[]
   fieldsets?: Fieldset[]
   initialValue?: InitialValueProperty<Record<string, unknown>>
+  weak?: boolean
 
   // Experimentals
   // Note: `path` is a string in the _specification_, but converted to a
