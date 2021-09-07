@@ -1,6 +1,6 @@
 import path from 'path'
 import execa from 'execa'
-import semver from 'semver'
+import semver, {SemVer} from 'semver'
 import resolveFrom from 'resolve-from'
 import {readJSON, access} from 'fs-extra'
 import oneline from 'oneline'
@@ -46,6 +46,21 @@ export async function checkRequiredDependencies(context: CliCommandContext): Pro
     return
   }
 
+  // Theoretically the version specified in package.json could be incorrect, eg `foo`
+  let minDeclaredStyledComponentsVersion: SemVer | null = null
+  try {
+    minDeclaredStyledComponentsVersion = semver.minVersion(declaredStyledComponentsVersion)
+  } catch (err) {
+    // Intentional fall-through (variable will be left as null, throwing below)
+  }
+
+  if (!minDeclaredStyledComponentsVersion) {
+    throw new Error(oneline`
+      Declared dependency \`styled-components\` has an invalid version range:
+      \`${declaredStyledComponentsVersion}\`.
+    `)
+  }
+
   // The declared version should be semver-compatible with the version specified as a
   // peer dependency in `@sanity/base`. If not, we should tell the user to change it.
   //
@@ -54,10 +69,7 @@ export async function checkRequiredDependencies(context: CliCommandContext): Pro
   // (^x.x.x / ~x.x.x / x.x.x)
   if (
     isComparableRange(declaredStyledComponentsVersion) &&
-    !semver.satisfies(
-      normalizeVersion(declaredStyledComponentsVersion),
-      wantedStyledComponentsVersionRange
-    )
+    !semver.satisfies(minDeclaredStyledComponentsVersion, wantedStyledComponentsVersionRange)
   ) {
     output.warn(oneline`
       Declared version of styled-components (${declaredStyledComponentsVersion})
@@ -201,10 +213,6 @@ function isPackageManifest(item: unknown): item is PartialPackageManifest {
 
 function isComparableRange(range: string): boolean {
   return /^[\^~]?\d+(\.\d+)?(\.\d+)?$/.test(range)
-}
-
-function normalizeVersion(version: string): string {
-  return version.replace(/^[\^~]/, '')
 }
 
 /**
