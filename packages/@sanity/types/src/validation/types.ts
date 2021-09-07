@@ -207,6 +207,7 @@ export type ValidationContext = {
   type?: SchemaType
   document?: SanityDocument
   path?: Path
+  getDocumentExists?: (options: {id: string}) => Promise<boolean>
 }
 
 /**
