@@ -40,6 +40,13 @@ type Props = {
 }
 
 export default class SanityDefaultPreview extends React.PureComponent<Props> {
+  componentDidMount() {
+    if (this.props.layout === 'card') {
+      console.warn(
+        'The `card` layout option in previews is deprecated. Please use `default` instead.'
+      )
+    }
+  }
   renderMedia = (options) => {
     const imageBuilder = imageUrlBuilder(versionedClient)
 

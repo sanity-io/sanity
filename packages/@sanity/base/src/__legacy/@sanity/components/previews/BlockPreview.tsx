@@ -40,7 +40,7 @@ export default class BlockPreview extends React.PureComponent<BlockPreviewProps>
   componentDidMount() {
     // eslint-disable-next-line no-console
     console.warn(
-      'BlockPreview from `part:@sanity/components/previews/block` is deprecated. Please import from `@sanity/base/components` instead'
+      "BlockPreview from `part:@sanity/components/previews/block` is deprecated. Please use `import {BlockPreview} from '@sanity/base/components'` instead"
     )
   }
   render() {

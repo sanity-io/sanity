@@ -27,7 +27,7 @@ export default class BlockImagePreview extends React.PureComponent<BlockImagePre
   componentDidMount() {
     // eslint-disable-next-line no-console
     console.warn(
-      'BlockImagePreview from `part:@sanity/components/previews/block-image` is deprecated. Please import from `@sanity/base/components` instead'
+      "BlockImagePreview from `part:@sanity/components/previews/block-image` is deprecated. Please use `import {BlockImagePreview} from '@sanity/base/components'` instead"
     )
   }
   // eslint-disable-next-line complexity

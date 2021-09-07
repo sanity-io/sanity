@@ -31,7 +31,7 @@ export default class DetailPreview extends React.PureComponent<DetailPreviewProp
   componentDidMount() {
     // eslint-disable-next-line no-console
     console.warn(
-      'DetailPreview from `part:@sanity/components/previews/detail` is deprecated. Please import from `@sanity/base/components` instead'
+      "DetailPreview from `part:@sanity/components/previews/detail` is deprecated. Please use `import {DetailPreview} from '@sanity/base/components'` instead"
     )
   }
 

@@ -28,7 +28,7 @@ export default class MediaPreview extends React.PureComponent<MediaPreviewProps>
   componentDidMount() {
     // eslint-disable-next-line no-console
     console.warn(
-      'MediaPreview from `part:@sanity/components/previews/media` is deprecated. Please import from `@sanity/base/components` instead'
+      "MediaPreview from `part:@sanity/components/previews/media` is deprecated. Please use `import {MediaPreview} from '@sanity/base/components'` instead"
     )
   }
   // eslint-disable-next-line complexity

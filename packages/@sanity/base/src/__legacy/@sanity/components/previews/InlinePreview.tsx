@@ -23,7 +23,7 @@ export default class InlinePreview extends React.PureComponent<InlinePreviewProp
   componentDidMount() {
     // eslint-disable-next-line no-console
     console.warn(
-      'InlinePreview from `part:@sanity/components/previews/inline` is deprecated. Please import from `@sanity/base/components` instead'
+      "InlinePreview from `part:@sanity/components/previews/inline` is deprecated. Please use `import {InlinePreview} from '@sanity/base/components'` instead"
     )
   }
   // eslint-disable-next-line complexity
