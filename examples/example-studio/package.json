@@ -27,7 +27,6 @@
     "@sanity/default-login": "2.18.0",
     "@sanity/desk-tool": "2.18.0",
     "@sanity/language-filter": "2.18.0",
-    "@sanity/storybook": "2.18.0",
     "@sanity/vision": "2.17.2",
     "bio-pv": "^1.8.1",
     "date-fns": "^2.16.1",

@@ -1,6 +1,0 @@
-@import 'part:@sanity/base/theme/variables-style';
-
-.root {
-  background: var(--component-bg);
-  padding: var(--small-padding);
-}

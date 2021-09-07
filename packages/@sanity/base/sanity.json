@@ -1033,7 +1033,7 @@
     },
     {
       "name": "part:@sanity/base/component",
-      "description": "React Storybook (https://github.com/kadirahq/react-storybook) stories"
+      "description": "DEPRECATED: React Storybook (https://github.com/kadirahq/react-storybook) stories"
     },
     {
       "implements": "part:@sanity/base/component",

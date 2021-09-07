@@ -3,7 +3,7 @@ import webpack from 'webpack'
 import registerBabel from '@babel/register'
 import webpackDevMiddleware from 'webpack-dev-middleware'
 import webpackHotMiddleware from 'webpack-hot-middleware'
-import {getBaseServer, applyStaticRoutes, callInitializers} from './baseServer'
+import {getBaseServer, applyStaticRoutes} from './baseServer'
 import getWebpackDevConfig from './configs/webpack.config.dev'
 import getStaticBasePath from './util/getStaticBasePath'
 import isSanityMonorepo from './configs/isSanityMonorepo'
@@ -51,9 +51,6 @@ export default function getDevServer(config = {}) {
 
   // Expose webpack compiler on server instance
   app.locals.compiler = compiler
-
-  // Call any registered initializers
-  callInitializers(config)
 
   return applyStaticRoutes(app, config)
 }

@@ -61,7 +61,6 @@
     "@sanity/util": "2.18.0",
     "@sanity/validation": "2.18.0",
     "boundless-arrow-key-navigation": "^1.1.0",
-    "chance": "^1.0.4",
     "circular-at": "^1.0.3",
     "classnames": "^2.2.5",
     "dataloader": "^2.0.0",
@@ -98,7 +97,6 @@
     "use-device-pixel-ratio": "^1.1.0"
   },
   "devDependencies": {
-    "@types/chance": "^1.1.0",
     "@types/element-resize-detector": "1.1.2",
     "@types/raf": "^3.4.0",
     "@types/refractor": "^3.0.0",
