@@ -4,8 +4,12 @@ import semver, {SemVer} from 'semver'
 import resolveFrom from 'resolve-from'
 import {readJSON, access} from 'fs-extra'
 import oneline from 'oneline'
+import type {CliCommandContext} from '../types'
 
-import {CliCommandContext} from '../types'
+const defaultStudioManifestProps: PartialPackageManifest = {
+  name: 'studio',
+  version: '1.0.0',
+}
 
 /**
  * Checks that the studio has declared and installed the required dependencies
@@ -24,7 +28,7 @@ export async function checkRequiredDependencies(context: CliCommandContext): Pro
     installedStyledComponentsVersion,
   ] = await Promise.all([
     await readBasePeerDependencies(studioPath),
-    await readPackageManifest(path.join(studioPath, 'package.json')),
+    await readPackageManifest(path.join(studioPath, 'package.json'), defaultStudioManifestProps),
     await readModuleVersion(studioPath, 'styled-components'),
   ])
 
@@ -138,10 +142,13 @@ async function readModuleVersion(studioPath: string, moduleName: string): Promis
  * @param packageJsonPath Path to package.json to read
  * @returns Reduced package.json with guarantees for name, version and dependency fields
  */
-async function readPackageManifest(packageJsonPath: string): Promise<PackageManifest> {
+async function readPackageManifest(
+  packageJsonPath: string,
+  defaults: Partial<PartialPackageManifest> = {}
+): Promise<PackageManifest> {
   let manifest: unknown
   try {
-    manifest = await readJSON(packageJsonPath)
+    manifest = {...defaults, ...(await readJSON(packageJsonPath))}
   } catch (err) {
     throw new Error(`Failed to read "${packageJsonPath}": ${err.message}`)
   }
