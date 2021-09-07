@@ -45,7 +45,8 @@ export function resolveTypeForArrayItem(
 
 export default async function validateDocument(
   doc: SanityDocument,
-  schema: Schema
+  schema: Schema,
+  context?: Pick<ValidationContext, 'getDocumentExists'>
 ): Promise<ValidationMarker[]> {
   const documentType = schema.get(doc._type)
   if (!documentType) {
@@ -60,6 +61,7 @@ export default async function validateDocument(
       path: [],
       document: doc,
       type: documentType,
+      getDocumentExists: context?.getDocumentExists,
     })
   } catch (err) {
     console.error(err)

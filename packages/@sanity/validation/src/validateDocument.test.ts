@@ -165,6 +165,7 @@ describe('validateItem', () => {
         path: [],
         parent: undefined,
         type: schema.get('testObj'),
+        getDocumentExists: undefined,
       })
     ).resolves.toMatchObject([
       {
@@ -235,6 +236,7 @@ describe('validateItem', () => {
         path: undefined,
         type: schema.get('testObj'),
         value: {foo: 5},
+        getDocumentExists: undefined,
       })
     ).resolves.toMatchObject([
       {
@@ -285,6 +287,7 @@ describe('validateItem', () => {
         path: [],
         type: schema.get('values'),
         value: values,
+        getDocumentExists: undefined,
       })
     ).resolves.toEqual([
       {
@@ -377,6 +380,7 @@ describe('validateItem', () => {
         document,
         parent: document,
         path: undefined,
+        getDocumentExists: undefined,
       })
     ).resolves.toMatchObject([
       {
@@ -517,6 +521,7 @@ describe('validateItem', () => {
       parent: undefined,
       path: undefined,
       type: schema.get('root'),
+      getDocumentExists: undefined,
     })
 
     // after `validateItem(...)` has been initiated, all of the custom

@@ -38,6 +38,7 @@ export const blockValidator: BlockValidator = async (value, context) => {
       type: annotationType,
       path: (context.path || []).concat(['markDefs', {_key: markDef._key}]),
       parent: value,
+      getDocumentExists: context.getDocumentExists,
     })
     annotationValidations.push(validations)
   })
