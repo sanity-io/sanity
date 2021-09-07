@@ -182,6 +182,141 @@ describe('schema validation inference', () => {
       ])
     })
   })
+  describe('reference validation', () => {
+    const documentWithReference = {
+      type: 'document',
+      name: 'documentWithReference',
+      title: 'Document with Reference',
+      fields: [
+        {
+          name: 'referenceField',
+          type: 'reference',
+          to: [{type: 'documentWithReference'}],
+        },
+        {
+          name: 'referenceFieldWeak',
+          type: 'reference',
+          weak: true,
+          to: [{type: 'documentWithReference'}],
+        },
+      ],
+    }
+
+    const schema = createSchema({
+      types: [documentWithReference],
+    })
+
+    const mockDocument: SanityDocument = {
+      _id: 'mockDocument',
+      _type: 'documentWithReference',
+      _createdAt: '2021-08-26T18:47:55.497Z',
+      _updatedAt: '2021-08-26T18:47:55.497Z',
+      _rev: 'example-rev',
+    }
+
+    afterEach(() => {
+      ;(client.fetch as jest.Mock).mockReset()
+    })
+
+    test('reference is invalid if no _ref is present', async () => {
+      await expect(
+        validateDocument(
+          {
+            ...mockDocument,
+            referenceField: {
+              _type: 'not-a-reference',
+            },
+          },
+          schema
+        )
+      ).resolves.toMatchObject([
+        {
+          item: {message: 'Must be a reference to a document'},
+          level: 'error',
+          path: ['referenceField'],
+          type: 'validation',
+        },
+      ])
+    })
+
+    test('referenced document must exist (unless weak)', async () => {
+      const mockGetDocumentExists = jest.fn(() => Promise.resolve(false))
+      await expect(
+        validateDocument(
+          {
+            ...mockDocument,
+            referenceField: {
+              _ref: 'example-id',
+            },
+          },
+
+          schema,
+          {getDocumentExists: mockGetDocumentExists}
+        )
+      ).resolves.toMatchObject([
+        {
+          item: {message: /.+/},
+          level: 'error',
+          path: ['referenceField'],
+          type: 'validation',
+        },
+      ])
+
+      expect(mockGetDocumentExists.mock.calls).toMatchObject([[{id: 'example-id'}]])
+    })
+
+    test('reference is valid if schema type is marked as weak', async () => {
+      await expect(
+        validateDocument(
+          {
+            ...mockDocument,
+            referenceFieldWeak: {_ref: 'example-id'},
+          },
+          schema
+        )
+      ).resolves.toEqual([])
+    })
+
+    test('throws if `getDocumentExists` is not present', async () => {
+      const result = await validateDocument(
+        {
+          ...mockDocument,
+          referenceField: {
+            _ref: 'example-id',
+          },
+        },
+
+        schema,
+        {getDocumentExists: undefined}
+      )
+
+      expect(result).toHaveLength(1)
+      expect(
+        result[0].item.message.includes(
+          '`getDocumentExists` was not provided in validation context'
+        )
+      ).toBe(true)
+    })
+
+    test('reference is valid if schema type is strong and document does exists', async () => {
+      const mockGetDocumentExists = jest.fn(() => Promise.resolve(true))
+      await expect(
+        validateDocument(
+          {
+            ...mockDocument,
+            referenceField: {
+              _ref: 'example-id',
+            },
+          },
+
+          schema,
+          {getDocumentExists: mockGetDocumentExists}
+        )
+      ).resolves.toEqual([])
+
+      expect(mockGetDocumentExists.mock.calls).toMatchObject([[{id: 'example-id'}]])
+    })
+  })
 })
 
 async function expectNoError(validations: Rule[], value: unknown) {
