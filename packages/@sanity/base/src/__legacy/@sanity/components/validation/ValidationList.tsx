@@ -44,23 +44,32 @@ function ValidationList(props: ValidationListProps) {
     [onFocus, onClose]
   )
 
-  const resolvePathTitle = (path: Path, schemaType: SchemaType): string[] => {
-    const [name, ...restOfPath] = path
-    if (!name) return []
+  const resolvePathTitle = useCallback(
+    (initialPath: Path): string[] => {
+      const traverse = (path: Path, schemaType: SchemaType): string[] => {
+        const [name, ...restOfPath] = path
 
-    // `startCase` is also used in the `@sanity/schema` to populate titles from the name
-    const current = schemaType.title || startCase(schemaType.name)
-    let nextField: SchemaType | undefined
+        // `startCase` is also used in the `@sanity/schema` to populate titles from the name
+        const current = schemaType.title || startCase(schemaType.name)
+        let nextField: SchemaType | undefined
 
-    if (schemaType.jsonType === 'object') {
-      nextField = schemaType.fields.find((field) => field.name === name)?.type
-    } else if (schemaType.jsonType == 'array') {
-      nextField = schemaType.of.find((type) => type.name === name)
-    }
+        if (schemaType.jsonType === 'object') {
+          nextField = schemaType.fields.find((field) => field.name === name)?.type
+        } else if (schemaType.jsonType == 'array') {
+          nextField = schemaType.of.find((type) => type.name === name)
+        }
 
-    const next = nextField ? resolvePathTitle(restOfPath, nextField) : []
-    return [current, ...next]
-  }
+        const next = nextField ? traverse(restOfPath, nextField) : []
+        return [current, ...next]
+      }
+
+      const result = traverse(initialPath, documentType)
+      // if the resulting title is longer than one path, we can omit the document title
+      if (result.length > 1) return result.slice(1)
+      return result
+    },
+    [documentType]
+  )
 
   const hasErrors = errors.length > 0
   const hasWarnings = warnings.length > 0
@@ -78,7 +87,7 @@ function ValidationList(props: ValidationListProps) {
             <ValidationListItem
               kind={kind}
               truncate={truncate}
-              path={resolvePathTitle(error.path, documentType)}
+              path={resolvePathTitle(error.path)}
               marker={error}
               onClick={handleClick}
               // showLink={showLink}
@@ -93,7 +102,7 @@ function ValidationList(props: ValidationListProps) {
             <ValidationListItem
               kind={kind}
               truncate={truncate}
-              path={resolvePathTitle(warning.path, documentType)}
+              path={resolvePathTitle(warning.path)}
               marker={warning}
               onClick={handleClick}
               // showLink={showLink}
