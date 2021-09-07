@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import React, {useCallback, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Text, Box, Card, Code} from '@sanity/ui'
 import styled from 'styled-components'
 import {Subject} from 'rxjs'
@@ -55,8 +55,16 @@ export const Editor = ({
   selection: EditorSelection | null
 }) => {
   const [selectionValue, setSelectionValue] = useState<EditorSelection | null>(selection)
+  const selectionString = useMemo(() => JSON.stringify(selectionValue), [selectionValue])
   const editor = useRef<PortableTextEditor>(null)
   const keyGenFn = useMemo(() => createKeyGenerator(editorId), [editorId])
+
+  // Make sure tests always has focus or keyPress can become hard to test.
+  useEffect(() => {
+    if (editor.current && value) {
+      PortableTextEditor.focus(editor.current)
+    }
+  }, [editor, value])
 
   const renderBlock: RenderBlockFunction = useCallback((block, type, attributes, defaultRender) => {
     if (editor.current) {
@@ -166,8 +174,14 @@ export const Editor = ({
         />
       </Box>
       <Box padding={4} style={{outline: '1px solid #999'}}>
-        <Code size={0} language="json" id="pte-selection">
-          {JSON.stringify(selectionValue)}
+        <Code
+          as="code"
+          size={0}
+          language="json"
+          id="pte-selection"
+          data-selection={selectionString}
+        >
+          {selectionString}
         </Code>
       </Box>
     </PortableTextEditor>

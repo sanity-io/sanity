@@ -25,7 +25,7 @@ describe('selection adjustment', () => {
       await editorA.pressKey('ArrowRight', 2)
       let selectionA = await editorA.getSelection()
       expect(selectionA).toEqual(expectedSelection)
-      await editorB.insertNewLine()
+      await editorB.pressKey('Enter')
       selectionA = await editorA.getSelection()
       expect(selectionA).toEqual(expectedSelection)
     })

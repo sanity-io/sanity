@@ -59,7 +59,10 @@ describe('collaborate editing', () => {
       anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 11},
       focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 11},
     })
-    expect(selectionB).toEqual(null)
+    expect(selectionB).toEqual({
+      anchor: {offset: 0, path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}]},
+      focus: {offset: 0, path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}]},
+    })
   })
 
   it('will update value in editor A when editor B writes something', async () => {
@@ -145,7 +148,7 @@ describe('collaborate editing', () => {
       focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 18},
     })
     await editorA.setSelection(desiredSelectionA)
-    await editorB.insertNewLine()
+    await editorB.pressKey('Enter')
     const valA = await editorA.getValue()
     const valB = await editorB.getValue()
     expect(valA).toEqual(valB)
@@ -372,7 +375,7 @@ describe('collaborate editing', () => {
       anchor: {offset: 17, path: [{_key: 'B-3'}, 'children', {_key: 'B-2'}]},
       focus: {offset: 17, path: [{_key: 'B-3'}, 'children', {_key: 'B-2'}]},
     })
-    await editorA.insertNewLine()
+    await editorA.pressKey('Enter')
     await editorA.insertText('A new line appears')
     const valA = await editorA.getValue()
     const valB = await editorB.getValue()

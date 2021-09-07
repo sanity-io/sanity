@@ -13,6 +13,12 @@ const messages = new Subject()
 const PORT = 3001
 const valueMap: Record<string, PortableTextBlock[] | undefined> = {}
 const revisionMap: Record<string, string> = {}
+const editorToSocket = new WeakMap<{editorId: string; testId: string}, any>()
+
+let sockets: any = []
+const sub = messages.subscribe((next: any) => {
+  sockets.forEach((socket: any) => socket.send(next))
+})
 
 ipc.config.id = 'socketServer'
 ipc.config.retry = 1500
@@ -32,18 +38,17 @@ ipc.serveNet(() => {
 })
 ipc.server.start()
 
-let sockets: any = []
-
-const sub = messages.subscribe((next: any) => {
-  sockets.forEach((socket: any) => socket.send(next))
-})
-
 app.ws('/', (s, req) => {
   const testId = req.query.testId?.toString()
   if (testId && !sockets.includes(s)) {
     sockets.push(s)
     s.send(
-      JSON.stringify({type: 'value', value: valueMap[testId], testId, revId: revisionMap[testId]})
+      JSON.stringify({
+        type: 'value',
+        value: valueMap[testId],
+        testId,
+        revId: revisionMap[testId] || 'first',
+      })
     )
   }
   s.on('close', () => {
@@ -51,6 +56,9 @@ app.ws('/', (s, req) => {
   })
   s.on('message', (msg: string) => {
     const data = JSON.parse(msg)
+    if (data.type === 'hello') {
+      editorToSocket.set({editorId: data.editorId, testId: data.testId}, s)
+    }
     if (data.type === 'mutation' && testId) {
       valueMap[testId] = applyAll(valueMap[testId], data.patches)
       messages.next(
@@ -61,9 +69,6 @@ app.ws('/', (s, req) => {
           revId: revisionMap[testId],
         })
       )
-      messages.next(JSON.stringify(data))
-    }
-    if (data.type === 'selection') {
       messages.next(JSON.stringify(data))
     }
   })

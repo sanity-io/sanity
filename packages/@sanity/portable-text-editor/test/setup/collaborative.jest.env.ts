@@ -10,11 +10,9 @@ ipc.config.silent = true
 
 const WEB_SERVER_ROOT_URL = 'http://localhost:3000'
 
-const SELECTION_EVENT_DELAY_MS = 50
-
 // Forward debug info from the PTE in the browsers
 // const DEBUG = 'sanity-pte:*'
-const DEBUG = false
+const DEBUG = process.env.DEBUG || false
 
 let testId: string
 
@@ -109,10 +107,28 @@ export default class CollaborationEnvironment extends NodeEnvironment {
         [this._pageA, this._pageB].map(async (page, index) => {
           const editorId = ['A', 'B'][index]
           const editableHandle = await page.waitForSelector('div[contentEditable="true"]')
+          const selectionHandle: puppeteer.ElementHandle<HTMLDivElement> = await page.waitForSelector(
+            '#pte-selection'
+          )
           const waitForRevision = async () => {
             const revId = (Math.random() + 1).toString(36).substring(7)
-            ipc.of.socketServer.emit('payload', JSON.stringify({type: 'revId', revId, testId}))
+            ipc.of.socketServer.emit(
+              'payload',
+              JSON.stringify({type: 'revId', revId, testId, editorId})
+            )
             await page.waitForSelector(`code[data-rev-id="${revId}"]`)
+          }
+          const getSelection = async (): Promise<EditorSelection | null> => {
+            const selection = await selectionHandle.evaluate((node) =>
+              node.innerText ? JSON.parse(node.innerText) : null
+            )
+            return selection
+          }
+          const waitForSelection = async (selectionChangeFn: () => Promise<void>) => {
+            const selection = await getSelection()
+            await selectionChangeFn()
+            const dataVal = selection ? JSON.stringify(selection) : 'null'
+            await page.waitForSelector(`code[data-selection]:not([data-selection='${dataVal}'])`)
           }
           return {
             testId,
@@ -133,25 +149,43 @@ export default class CollaborationEnvironment extends NodeEnvironment {
               )
               await waitForRevision()
             },
-            insertNewLine: async () => {
-              await editableHandle.press('Enter')
-              await waitForRevision()
-            },
             pressKey: async (keyName: string, times?: number) => {
+              const pressKey = () => editableHandle.press(keyName)
               for (let i = 0; i < (times || 1); i++) {
-                await editableHandle.press(keyName)
-              }
-              if (keyName.length === 1 || keyName === 'Backspace' || keyName === 'Delete') {
-                await waitForRevision()
-              } else {
-                await delay(SELECTION_EVENT_DELAY_MS)
+                // Value manipulation keys
+                if (
+                  keyName.length === 1 ||
+                  keyName === 'Backspace' ||
+                  keyName === 'Delete' ||
+                  keyName === 'Enter'
+                ) {
+                  await pressKey()
+                  await waitForRevision()
+                } else if (
+                  // Selection manipulation keys
+                  [
+                    'ArrowUp',
+                    'ArrowDown',
+                    'ArrowLeft',
+                    'ArrowRight',
+                    'PageUp',
+                    'PageDown',
+                    'Home',
+                    'End',
+                  ].includes(keyName)
+                ) {
+                  await waitForSelection(() => pressKey())
+                } else {
+                  // Unknown keys, test needs should be covered by the above cases.
+                  console.warn(`Key ${keyName} not accounted for`)
+                  await pressKey()
+                }
               }
             },
             focus: async () => {
               await editableHandle.focus()
             },
             setSelection: async (selection: EditorSelection | null) => {
-              await editableHandle.focus()
               ipc.of.socketServer.emit(
                 'payload',
                 JSON.stringify({
@@ -161,7 +195,7 @@ export default class CollaborationEnvironment extends NodeEnvironment {
                   editorId,
                 })
               )
-              await delay(SELECTION_EVENT_DELAY_MS)
+              await waitForSelection(() => delay(300)) // A little delay to let selection "manifest itself" via websocket.
             },
             async getValue(): Promise<PortableTextBlock[] | undefined> {
               const valueHandle: puppeteer.ElementHandle<HTMLDivElement> = await page.waitForSelector(
@@ -172,15 +206,7 @@ export default class CollaborationEnvironment extends NodeEnvironment {
               )
               return value
             },
-            async getSelection(): Promise<EditorSelection | null> {
-              const selectionHandle: puppeteer.ElementHandle<HTMLDivElement> = await page.waitForSelector(
-                '#pte-selection'
-              )
-              const selection = await selectionHandle.evaluate((node) =>
-                node.innerText ? JSON.parse(node.innerText) : null
-              )
-              return selection
-            },
+            getSelection,
           }
         })
       )

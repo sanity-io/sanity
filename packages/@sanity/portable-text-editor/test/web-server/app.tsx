@@ -23,25 +23,37 @@ export function App() {
   }, [])
   const webSocket = useMemo(() => {
     const socket = new WebSocket(`ws://localhost:3001/?editorId=${editorId}&testId=${testId}`)
+    socket.addEventListener('open', () => {
+      socket.send(JSON.stringify({type: 'hello', editorId, testId}))
+    })
     socket.addEventListener('message', (message) => {
       if (message.data && typeof message.data === 'string') {
         const data = JSON.parse(message.data)
         if (data.testId === testId) {
-          if (data.type === 'value') {
-            setValue(data.value)
-            setRevId(data.revId)
-          }
-          if (data.type === 'selection' && data.editorId === editorId) {
-            setSelection(data.selection)
-          }
-          if (data.type === 'mutation' && data.editorId !== editorId) {
-            data.patches.map((patch) => incomingPatches$.next(patch))
+          switch (data.type) {
+            case 'value':
+              setValue(data.value)
+              setRevId(data.revId)
+              break
+            case 'selection':
+              if (data.editorId === editorId && data.testId === testId) {
+                setSelection(data.selection)
+              }
+              break
+            case 'mutation':
+              if (data.editorId !== editorId && data.testId === testId) {
+                data.patches.map((patch) => incomingPatches$.next(patch))
+              }
+              break
+            default:
+            // Nothing
           }
         }
       }
     })
     return socket
   }, [editorId, incomingPatches$, testId])
+
   const handleMutation = useCallback(
     (patches: Patch[]) => {
       if (webSocket) {
@@ -50,6 +62,7 @@ export function App() {
     },
     [editorId, testId, webSocket]
   )
+
   return (
     <ThemeProvider theme={studioTheme}>
       <Stack>

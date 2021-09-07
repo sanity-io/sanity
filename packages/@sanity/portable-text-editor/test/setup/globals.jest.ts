@@ -9,7 +9,6 @@ type Editor = {
   focus: () => Promise<void>
   getSelection: () => Promise<EditorSelection | null>
   getValue: () => Promise<Value>
-  insertNewLine: () => Promise<void>
   insertText: (text: string) => Promise<void>
   pressKey: (keyName: string, times?: number) => Promise<void>
   setSelection: (selection: EditorSelection | null) => Promise<void>
