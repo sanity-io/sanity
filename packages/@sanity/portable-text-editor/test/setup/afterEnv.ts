@@ -1,4 +1,4 @@
-jest.setTimeout(10 * 1000)
+jest.setTimeout(20 * 1000)
 
 // beforeAll(() => {
 //   console.log('beforeAll')
