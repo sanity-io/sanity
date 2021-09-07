@@ -7,7 +7,6 @@ import {resolveParts} from '@sanity/resolver'
 import getStaticBasePath from './util/getStaticBasePath'
 
 const docPart = 'part:@sanity/base/document'
-const initPart = 'part:@sanity/server/initializer'
 
 const getDefaultModule = (mod) => {
   return mod && mod.__esModule ? mod.default : mod
@@ -85,18 +84,4 @@ export function applyStaticRoutes(app, config = {}) {
   })
 
   return app
-}
-
-export function callInitializers(config) {
-  resolveParts(config).then((res) => {
-    const parts = res.implementations[initPart]
-    if (!parts) {
-      return
-    }
-
-    res.implementations[initPart]
-      // eslint-disable-next-line import/no-dynamic-require
-      .map((part) => getDefaultModule(require(part.path)))
-      .forEach((initializer) => initializer(config))
-  })
 }
