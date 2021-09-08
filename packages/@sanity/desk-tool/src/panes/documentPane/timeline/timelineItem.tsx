@@ -34,6 +34,9 @@ export function TimelineItem(props: {
   const authorUserIds = Array.from(chunk.authors)
   const timeAgo = useTimeAgo(timestamp, {minimal: true})
 
+  const isSelected = state === 'selected'
+  const isWithinSelection = state === 'withinSelection'
+
   const handleClick = useCallback(
     (evt: React.MouseEvent<HTMLDivElement>) => {
       evt.preventDefault()
@@ -50,9 +53,10 @@ export function TimelineItem(props: {
       data-chunk-id={chunk.id}
       paddingY={0}
       paddingX={2}
-      $tone={TIMELINE_ITEM_EVENT_TONE[type]}
+      tone={isSelected || isWithinSelection ? 'default' : TIMELINE_ITEM_EVENT_TONE[type]}
+      pressed={isWithinSelection}
       state={state}
-      selected={state === 'selected'}
+      selected={isSelected}
       disabled={state === 'disabled'}
       data-selection-bottom={isSelectionBottom}
       data-selection-top={isSelectionTop}
