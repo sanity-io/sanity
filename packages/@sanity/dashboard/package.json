@@ -23,7 +23,7 @@
     "@sanity/icons": "^1.1.7",
     "@sanity/image-url": "^1.0.1",
     "@sanity/types": "2.18.0",
-    "@sanity/ui": "^0.36.7",
+    "@sanity/ui": "^0.36.8",
     "lodash": "^4.17.15",
     "rxjs": "^6.5.3"
   },

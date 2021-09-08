@@ -35,7 +35,7 @@
     "@sanity/production-preview": "2.15.0",
     "@sanity/studio-hints": "2.18.0",
     "@sanity/types": "2.18.0",
-    "@sanity/ui": "^0.36.7",
+    "@sanity/ui": "^0.36.8",
     "@sanity/vision": "2.17.2",
     "@turf/helpers": "^6.0.1",
     "@turf/points-within-polygon": "^5.1.5",
