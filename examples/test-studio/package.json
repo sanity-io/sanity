@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "build": "sanity build",
-    "start": "sanity start",
+    "start": "sanity start --host 0.0.0.0",
     "clean": "rimraf dist"
   },
   "keywords": [
