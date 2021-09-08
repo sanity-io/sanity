@@ -104,7 +104,7 @@ export const Timeline = ({
         })}
       </Menu>
 
-      {timeline.reachedEarliestEntry && (
+      {!timeline.reachedEarliestEntry && (
         <Box padding={4} ref={setLoadingElement}>
           <Spinner center />
         </Box>
