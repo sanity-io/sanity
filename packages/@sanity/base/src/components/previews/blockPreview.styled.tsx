@@ -7,8 +7,7 @@ export const Root = styled(Box)`
   width: 100%;
 `
 
-export const ContentWrapper = styled(Box)`
-`
+export const ContentWrapper = styled(Box)``
 
 export const Header = styled(Flex)`
   flex-grow: 1;

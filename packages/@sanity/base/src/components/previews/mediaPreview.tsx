@@ -1,9 +1,6 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
-import ProgressCircle from 'part:@sanity/components/progress/circle'
 import React from 'react'
 import {Box, Text} from '@sanity/ui'
+import {ProgressCircle} from './progressCircle'
 import {MediaDimensions} from './types'
 import {MediaWrapper, MediaString, Root, ProgressWrapper} from './mediaPreview.styled'
 
@@ -63,7 +60,7 @@ export const MediaPreview: React.FunctionComponent<MediaPreviewProps> = (props) 
         )}
         {React.isValidElement(media) && media}
         {typeof progress === 'number' && progress > -1 && (
-          <ProgressWrapper>
+          <ProgressWrapper align="center" justify="center">
             <ProgressCircle percent={progress} showPercent text="Uploaded" />
           </ProgressWrapper>
         )}

@@ -32,7 +32,7 @@ export const MediaWrapper = styled(Flex)`
 export const Root = styled(Box)`
   position: relative;
   overflow: hidden;
-  width: 100%;
+  flex-grow: 1;
 `
 
 export const Progress = styled(Flex).attrs({justify: 'center', align: 'center'})`
@@ -59,12 +59,27 @@ export const MediaString = styled(Flex)`
   max-width: 100%;
 `
 
-export const ProgressWrapper = styled(Box)`
+export const ProgressWrapper = styled(Flex)`
   position: absolute;
   width: 100%;
   height: 100%;
+  top: 0;
+  left: 0;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: color(var(--component-bg) a(70%));
+
+  > * {
+    position: relative;
+    z-index: 2;
+  }
+
+  &:before {
+    background-color: var(--card-bg-color);
+    opacity: 0.7;
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+  }
 `
