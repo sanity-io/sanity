@@ -43,18 +43,53 @@ const cli = meow(
     --token = SANITY_IMPORT_TOKEN
 `,
   {
-    boolean: [
-      'replace',
-      'missing',
-      'allow-failing-assets',
-      'allow-assets-in-different-dataset',
-      'replace-assets',
-    ],
-    alias: {
-      p: 'project',
-      d: 'dataset',
-      t: 'token',
-      c: 'asset-concurrency',
+    flags: {
+      // Required, but validated below for better error output
+      project: {
+        type: 'string',
+        alias: 'p',
+      },
+
+      dataset: {
+        type: 'string',
+        alias: 'd',
+      },
+
+      token: {
+        type: 'string',
+        alias: 't',
+      },
+
+      // Optional
+      replace: {
+        type: 'boolean',
+        default: false,
+      },
+
+      missing: {
+        type: 'boolean',
+        default: false,
+      },
+
+      allowFailingAssets: {
+        type: 'boolean',
+        default: false,
+      },
+
+      allowAssetsInDifferentDataset: {
+        type: 'boolean',
+        default: false,
+      },
+
+      replaceAssets: {
+        type: 'boolean',
+        default: false,
+      },
+
+      assetConcurrency: {
+        type: 'number',
+        alias: 'c',
+      },
     },
   }
 )
