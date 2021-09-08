@@ -16,7 +16,7 @@ import {Type} from '../../types/schema'
 import {PortableTextBlock, PortableTextChild, PortableTextFeatures} from '../../types/portableText'
 import {EditorSelection, PortableTextSlateEditor} from '../../types/editor'
 import {toSlateValue, fromSlateValue, isEqualToEmptyEditor} from '../../utils/values'
-import {toSlateRange, toPortableTextRange} from '../../utils/selection'
+import {toSlateRange, toPortableTextRange} from '../../utils/ranges'
 import {PortableTextEditor} from '../PortableTextEditor'
 
 import {debugWithName} from '../../utils/debug'

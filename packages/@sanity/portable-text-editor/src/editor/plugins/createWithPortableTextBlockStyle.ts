@@ -3,7 +3,7 @@ import {Editor, Transforms, Element, Path} from 'slate'
 import {PortableTextFeatures} from '../../types/portableText'
 import {EditorChange, PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
-import {toPortableTextRange} from '../../utils/selection'
+import {toPortableTextRange} from '../../utils/ranges'
 
 const debug = debugWithName('plugin:withPortableTextBlockStyle')
 

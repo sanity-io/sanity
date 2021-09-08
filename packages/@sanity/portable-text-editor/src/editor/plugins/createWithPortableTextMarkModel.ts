@@ -10,7 +10,7 @@ import {Editor, Range, Transforms, Text, Path, NodeEntry, Element} from 'slate'
 
 import {debugWithName} from '../../utils/debug'
 import {EditorChange, PortableTextSlateEditor} from '../../types/editor'
-import {toPortableTextRange} from '../../utils/selection'
+import {toPortableTextRange} from '../../utils/ranges'
 import {PortableTextFeatures} from '../../types/portableText'
 
 const debug = debugWithName('plugin:withPortableTextMarkModel')
