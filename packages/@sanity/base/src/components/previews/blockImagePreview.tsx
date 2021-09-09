@@ -1,5 +1,6 @@
 import React from 'react'
 import {Box, Flex, Heading, Text} from '@sanity/ui'
+import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {MediaDimensions} from './types'
 import {Root, MediaWrapper, MetadataWrapper} from './blockImagePreview.styled'
 
@@ -19,12 +20,16 @@ interface BlockImagePreviewProps {
   status?: React.ReactNode | BlockImagePreviewStatusComponent
 }
 
-const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {width: 600, height: 600, fit: 'fillmax'}
+const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
+  width: 600,
+  height: 600,
+  fit: 'fillmax',
+  dpr: getDevicePixelRatio(),
+}
 
 // @todo This is to make sure there is the correct amount of spacing below the dropdown in `BlockObjectPreview`. Remove when `BlockObjectPreview` is migrated to Sanity UI.
 const STYLE_HEADING = {marginBottom: '2px'}
 
-// @todo Does https://github.com/sanity-io/sanity/pull/2728 apply here in `media`?
 export const BlockImagePreview: React.FunctionComponent<BlockImagePreviewProps> = (props) => {
   const {title, subtitle, description, mediaDimensions, media, children, status} = props
   return (

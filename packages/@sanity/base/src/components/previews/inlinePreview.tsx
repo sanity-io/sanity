@@ -1,5 +1,6 @@
 import React from 'react'
 import {Box} from '@sanity/ui'
+import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {MediaDimensions} from './types'
 import {MediaWrapper, InheritedText, Root} from './inlinePreview.styled'
 
@@ -15,6 +16,7 @@ const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   height: 32,
   fit: 'crop',
   aspect: 1,
+  dpr: getDevicePixelRatio(),
 }
 
 export const InlinePreview: React.FunctionComponent<InlinePreviewProps> = (props) => {

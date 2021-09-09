@@ -26,7 +26,6 @@ interface BlockPreviewProps {
   extendedPreview?: BlockPreviewFieldProp
 }
 
-// @todo Correct default dimensions?
 const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   width: 40,
   height: 40,
