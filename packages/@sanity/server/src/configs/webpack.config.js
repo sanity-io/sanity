@@ -78,6 +78,7 @@ export default (config = {}) => {
       alias: {
         react: getModulePath('react'),
         'react-dom': getModulePath('react-dom'),
+        'styled-components': getModulePath('styled-components'),
         moment$: 'moment/moment.js',
         'react-native': 'react-native-web',
         ...rxPaths(),
