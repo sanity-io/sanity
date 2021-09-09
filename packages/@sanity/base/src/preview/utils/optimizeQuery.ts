@@ -47,11 +47,14 @@ function toSubQuery({ids, fields}: {ids: string[]; fields: string[]}) {
     .join(',')}}`
 }
 
-export function toGradientQuery(combinedSelections: CombinedSelection[]) {
+export function toGradientQuery(combinedSelections: CombinedSelection[]): string {
   return `[${combinedSelections.map(toSubQuery).join(',')}][0...${combinedSelections.length}]`
 }
 
-export function reassemble(queryResult: Result[], combinedSelections: CombinedSelection[]) {
+export function reassemble(
+  queryResult: Result[],
+  combinedSelections: CombinedSelection[]
+): (Doc | null)[] {
   return queryResult.reduce((reprojected: (Doc | null)[], subResult, index) => {
     const map = combinedSelections[index].map
     map.forEach((resultIdx, i) => {
