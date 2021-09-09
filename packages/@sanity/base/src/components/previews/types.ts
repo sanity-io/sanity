@@ -35,9 +35,9 @@ export type MediaDimensions = {
 
 export interface PreviewProps<LayoutKey = PreviewLayoutKey> {
   children?: React.ReactNode
-  description?: React.ReactNode | React.ComponentType<{layout: LayoutKey}>
   extendedPreview?: unknown
   isPlaceholder?: boolean
+  mediaDimensions?: MediaDimensions
   media?:
     | React.ReactNode
     | React.FC<{
@@ -46,8 +46,9 @@ export interface PreviewProps<LayoutKey = PreviewLayoutKey> {
       }>
   progress?: number
   status?: React.ReactNode | React.FC<{layout: LayoutKey}>
-  subtitle?: React.ReactNode | React.FC<{layout: LayoutKey}>
   title?: React.ReactNode | React.FC<{layout: LayoutKey}>
+  subtitle?: React.ReactNode | React.FC<{layout: LayoutKey}>
+  description?: React.ReactNode | React.FC<{layout: LayoutKey}>
 }
 
 export type PreviewComponent = React.ComponentType<PreviewProps>

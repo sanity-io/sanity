@@ -35,22 +35,6 @@ export const Root = styled(Box)`
   flex-grow: 1;
 `
 
-export const Progress = styled(Flex).attrs({justify: 'center', align: 'center'})`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-
-  &:before {
-    background-color: var(--card-bg-color);
-    content: '';
-    display: block;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-  }
-`
-
 export const MediaString = styled(Flex)`
   position: absolute;
   width: 100%;

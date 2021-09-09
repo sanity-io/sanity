@@ -1,24 +1,8 @@
 import React from 'react'
 import {Box, Flex, Heading, Text} from '@sanity/ui'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
-import {MediaDimensions} from './types'
+import {MediaDimensions, PreviewProps} from './types'
 import {Root, MediaWrapper, MetadataWrapper} from './blockImagePreview.styled'
-
-type BlockImagePreviewStatusComponent = React.FunctionComponent<{
-  layout: 'default'
-}>
-
-interface BlockImagePreviewProps {
-  title?: React.ReactNode | React.FC<Record<string, unknown>>
-  subtitle?: React.ReactNode | React.FC<Record<string, unknown>>
-  description?: React.ReactNode | React.FC<Record<string, unknown>>
-  mediaDimensions?: MediaDimensions
-  media?:
-    | React.ReactNode
-    | React.FunctionComponent<{dimensions: MediaDimensions; layout: 'blockImage'}>
-  children?: React.ReactNode
-  status?: React.ReactNode | BlockImagePreviewStatusComponent
-}
 
 const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   width: 600,
@@ -30,7 +14,7 @@ const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
 // @todo This is to make sure there is the correct amount of spacing below the dropdown in `BlockObjectPreview`. Remove when `BlockObjectPreview` is migrated to Sanity UI.
 const STYLE_HEADING = {marginBottom: '2px'}
 
-export const BlockImagePreview: React.FunctionComponent<BlockImagePreviewProps> = (props) => {
+export const BlockImagePreview: React.FunctionComponent<PreviewProps<'block'>> = (props) => {
   const {title, subtitle, description, mediaDimensions, media, children, status} = props
   return (
     <Root>
@@ -48,7 +32,7 @@ export const BlockImagePreview: React.FunctionComponent<BlockImagePreviewProps> 
             {typeof media === 'function' &&
               media({
                 dimensions: mediaDimensions || DEFAULT_MEDIA_DIMENSIONS,
-                layout: 'blockImage',
+                layout: 'block',
               })}
             {typeof media === 'string' && <Box>{media}</Box>}
             {React.isValidElement(media) && media}
@@ -65,17 +49,13 @@ export const BlockImagePreview: React.FunctionComponent<BlockImagePreviewProps> 
             {description && (
               <Box marginTop={2}>
                 <Text muted size={1} textOverflow="ellipsis">
-                  {description}
+                  {typeof description === 'function' ? description({layout: 'block'}) : description}
                 </Text>
               </Box>
             )}
             {status && (
               <Box marginTop={2}>
-                {(typeof status === 'function' &&
-                  status({
-                    layout: 'default',
-                  })) ||
-                  status}
+                {typeof status === 'function' ? status({layout: 'block'}) : status}
               </Box>
             )}
           </MetadataWrapper>

@@ -1,6 +1,7 @@
 import React from 'react'
 import {Box, Stack, Text, Skeleton, TextSkeleton} from '@sanity/ui'
-import {MediaDimensions} from './types'
+import {getDevicePixelRatio} from 'use-device-pixel-ratio'
+import {MediaDimensions, PreviewProps} from './types'
 import {
   Root,
   Top,
@@ -10,18 +11,6 @@ import {
   MediaWrapper,
   MediaString,
 } from './detailPreview.styled'
-import {getDevicePixelRatio} from 'use-device-pixel-ratio'
-
-interface DetailPreviewProps {
-  title?: React.ReactNode | React.FC<{layout: 'detail'}>
-  subtitle?: React.ReactNode | React.FC<{layout: 'detail'}>
-  description?: React.ReactNode | React.FC<{layout: 'detail'}>
-  status?: React.ReactNode | React.FC<{layout: 'detail'}>
-  media?: React.ReactNode | React.FC<{dimensions: MediaDimensions; layout: 'detail'}>
-  mediaDimensions?: MediaDimensions
-  children?: React.ReactNode
-  isPlaceholder?: boolean
-}
 
 const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   width: 80,
@@ -31,7 +20,7 @@ const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   dpr: getDevicePixelRatio(),
 }
 
-export const DetailPreview: React.FunctionComponent<DetailPreviewProps> = (props) => {
+export const DetailPreview: React.FunctionComponent<PreviewProps<'detail'>> = (props) => {
   const {
     title,
     subtitle,
@@ -74,40 +63,26 @@ export const DetailPreview: React.FunctionComponent<DetailPreviewProps> = (props
         <Top align="center" justify="space-between">
           <Header space={2} flex={1}>
             <Text textOverflow="ellipsis" style={{color: 'inherit'}}>
-              {title && (
-                <>
-                  {typeof title !== 'function' && title}
-                  {typeof title === 'function' && title({layout: 'detail'})}
-                </>
-              )}
+              {title && <>{typeof title === 'function' ? title({layout: 'detail'}) : title}</>}
               {!title && <>Untitled</>}
             </Text>
 
             {subtitle && (
               <Text muted size={1} textOverflow="ellipsis">
-                {(typeof subtitle === 'function' && subtitle({layout: 'detail'})) || subtitle}
+                {typeof subtitle === 'function' ? subtitle({layout: 'detail'}) : subtitle}
               </Text>
             )}
           </Header>
           {status && (
             <StatusWrapper paddingLeft={1}>
-              {(typeof status === 'function' &&
-                status({
-                  layout: 'detail',
-                })) ||
-                status}
+              {typeof status === 'function' ? status({layout: 'detail'}) : status}
             </StatusWrapper>
           )}
         </Top>
         {description && (
           <Box marginTop={3}>
             <Text muted size={1}>
-              {typeof description === 'function' &&
-                description({
-                  layout: 'detail',
-                })}
-              {typeof description === 'string' && description}
-              {typeof description === 'object' && description}
+              {typeof description === 'function' ? description({layout: 'detail'}) : description}
             </Text>
           </Box>
         )}

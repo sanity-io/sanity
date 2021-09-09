@@ -7,7 +7,7 @@ export const Root = styled.span`
   line-height: 1;
 `
 
-export const MediaWrapper = styled(Box).attrs({marginRight: 1})`
+export const MediaWrapper = styled(Box)`
   display: inline-block;
   vertical-align: top;
   position: relative;

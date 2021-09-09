@@ -1,15 +1,8 @@
 import React from 'react'
 import {Box} from '@sanity/ui'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
-import {MediaDimensions} from './types'
+import {MediaDimensions, PreviewProps} from './types'
 import {MediaWrapper, InheritedText, Root} from './inlinePreview.styled'
-
-interface InlinePreviewProps {
-  title?: React.ReactNode | React.FC<{layout: 'inline'}>
-  media?: React.ReactNode | React.FC<{dimensions: MediaDimensions; layout: 'default'}>
-  children?: React.ReactNode
-  mediaDimensions?: MediaDimensions
-}
 
 const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   width: 32,
@@ -19,7 +12,7 @@ const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   dpr: getDevicePixelRatio(),
 }
 
-export const InlinePreview: React.FunctionComponent<InlinePreviewProps> = (props) => {
+export const InlinePreview: React.FunctionComponent<PreviewProps<'inline'>> = (props) => {
   const {title, media, mediaDimensions = DEFAULT_MEDIA_DIMENSIONS, children} = props
 
   if (!title && !media) {
@@ -29,22 +22,22 @@ export const InlinePreview: React.FunctionComponent<InlinePreviewProps> = (props
   return (
     <Root>
       {media && (
-        <MediaWrapper as="span">
+        <MediaWrapper marginRight={1}>
           {typeof media === 'function' &&
             media({
               dimensions: mediaDimensions,
-              layout: 'default',
+              layout: 'inline',
             })}
           {typeof media !== 'function' && media}
           {React.isValidElement(media) && media}
         </MediaWrapper>
       )}
       <InheritedText marginRight={1}>
-        {(typeof title === 'function' &&
-          title({
-            layout: 'inline',
-          })) ||
-          title}
+        {typeof title === 'function'
+          ? title({
+              layout: 'inline',
+            })
+          : title}
       </InheritedText>
       {children && <Box as="span">{children}</Box>}
     </Root>

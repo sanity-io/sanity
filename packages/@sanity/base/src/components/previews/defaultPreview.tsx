@@ -92,18 +92,13 @@ export const DefaultPreview = (props: PreviewProps<'default'>) => {
 
           <Stack space={2} flex={1}>
             <Text textOverflow="ellipsis" style={{color: 'inherit'}}>
-              {title && (
-                <>
-                  {typeof title !== 'function' && title}
-                  {typeof title === 'function' && title({layout: 'default'})}
-                </>
-              )}
+              {title && <>{typeof title === 'function' ? title({layout: 'default'}) : title}</>}
               {!title && <>Untitled</>}
             </Text>
 
             {subtitle && (
               <Text muted size={1} textOverflow="ellipsis">
-                {(typeof subtitle === 'function' && subtitle({layout: 'default'})) || subtitle}
+                {typeof subtitle === 'function' ? subtitle({layout: 'default'}) : subtitle}
               </Text>
             )}
 
@@ -112,7 +107,7 @@ export const DefaultPreview = (props: PreviewProps<'default'>) => {
 
           {status && (
             <Box padding={3}>
-              {(typeof status === 'function' && status({layout: 'default'})) || status}
+              {typeof status === 'function' ? status({layout: 'default'}) : status}
             </Box>
           )}
         </>

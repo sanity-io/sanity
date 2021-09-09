@@ -2,17 +2,8 @@ import React from 'react'
 import {Box, Text} from '@sanity/ui'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {ProgressCircle} from './progressCircle'
-import {MediaDimensions} from './types'
+import {MediaDimensions, PreviewProps} from './types'
 import {MediaWrapper, MediaString, Root, ProgressWrapper} from './mediaPreview.styled'
-
-interface MediaPreviewProps {
-  title?: string
-  media?: React.ReactNode | React.FC<{dimensions: MediaDimensions; layout: 'media'}>
-  progress?: number
-  mediaDimensions?: MediaDimensions
-  children?: React.ReactNode
-  isPlaceholder?: boolean
-}
 
 const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   width: 160,
@@ -22,7 +13,7 @@ const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   dpr: getDevicePixelRatio(),
 }
 
-export const MediaPreview: React.FunctionComponent<MediaPreviewProps> = (props) => {
+export const MediaPreview: React.FunctionComponent<PreviewProps<'media'>> = (props) => {
   const {
     title,
     media,
