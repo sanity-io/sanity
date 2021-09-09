@@ -105,7 +105,7 @@ function UnknownField({
           <Card borderBottom padding={3}>
             <Code weight="medium">{fieldName}</Code>
           </Card>
-          <Box padding={3}>
+          <Box overflow="auto" padding={3}>
             <Code language="json">{JSON.stringify(value, null, 2)}</Code>
           </Box>
         </Card>
