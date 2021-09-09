@@ -1,12 +1,9 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import React from 'react'
-import customResolver from 'part:@sanity/base/preview-resolver?'
+import {isReferenceSchemaType} from '@sanity/types'
 import {get} from 'lodash'
+import {previewResolver as customResolver} from '../../legacyParts'
 import {Type} from '../types'
 import SanityDefaultPreview from './SanityDefaultPreview'
-import {isReferenceSchemaType} from '@sanity/types'
 
 // Set this to true for debugging preview subscriptions
 const DEBUG = false
