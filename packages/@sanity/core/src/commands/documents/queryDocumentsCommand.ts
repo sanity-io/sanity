@@ -17,7 +17,7 @@ Examples
   sanity documents query '*[_type == "movie"]|order(releaseDate asc)[0]{title}' --dataset staging
 
   # Use API version v2021-06-07 and do a query
-  sanity documents query '*[_id == "header"] { "headerText": pt::text(body) }'
+  sanity documents query --api-version v2021-06-07 '*[_id == "header"] { "headerText": pt::text(body) }'
 `
 
 interface CliQueryCommandFlags {
