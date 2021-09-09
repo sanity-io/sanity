@@ -1,2 +1,2 @@
-/* eslint-disable @typescript-eslint/no-var-requires, import/unambiguous */
-module.exports = require('./lib/PatchEvent')
+// Legacy package export for non-esm environments
+require('./_interopReexport')(module.exports, require('./lib/_exports/PatchEvent'))
