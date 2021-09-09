@@ -7,6 +7,10 @@ import ErrorScreen from './ErrorScreen'
 
 declare const __DEV__: boolean
 
+const defaultUnknownError = {
+  message: 'An unknown error occured while rendering',
+}
+
 interface Props {
   tool: string
 }
@@ -56,7 +60,9 @@ export default class RenderTool extends React.Component<Props> {
       return (
         <ErrorScreen
           activeTool={this.getActiveTool()}
-          error={error}
+          // Some (rare) errors doesn't seem to have any Error instance attached
+          // In these cases, default to an error-like object with a generic message
+          error={error || defaultUnknownError}
           info={info}
           onRetry={this.handleRetry}
           onShowDetails={this.handleShowDetails}

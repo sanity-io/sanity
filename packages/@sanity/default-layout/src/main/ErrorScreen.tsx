@@ -72,15 +72,24 @@ function ErrorScreen(props: Props) {
 
       {showErrorDetails && (
         <>
-          <div className={styles.stack}>
-            <h3>Stack trace:</h3>
-            <pre>{formatStack(limitStackLength(getErrorWithStack(error)))}</pre>
-          </div>
+          {error.stack ? (
+            <div className={styles.stack}>
+              <h3>Stack trace:</h3>
+              <pre>{formatStack(limitStackLength(getErrorWithStack(error)))}</pre>
+            </div>
+          ) : (
+            <div className={styles.stack}>
+              <h3>Error:</h3>
+              <pre>{error.message}</pre>
+            </div>
+          )}
 
-          <div className={styles.stack}>
-            <h3>Component stack:</h3>
-            <pre>{info.componentStack.replace(/^\s*\n+/, '')}</pre>
-          </div>
+          {info && info.componentStack && (
+            <div className={styles.stack}>
+              <h3>Component stack:</h3>
+              <pre>{info.componentStack.replace(/^\s*\n+/, '')}</pre>
+            </div>
+          )}
         </>
       )}
     </div>
