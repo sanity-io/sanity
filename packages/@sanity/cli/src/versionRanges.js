@@ -2,7 +2,6 @@ export default {
   // Dependencies for a default Sanity installation
   core: {
     '@sanity/base': 'latest',
-    '@sanity/components': 'latest',
     '@sanity/core': 'latest',
     '@sanity/default-layout': 'latest',
     '@sanity/default-login': 'latest',
