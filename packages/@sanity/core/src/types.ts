@@ -7,6 +7,15 @@
 import type {ChildProcessWithoutNullStreams} from 'child_process'
 import type {SanityClient} from '@sanity/client'
 import type {prompt, Separator, DistinctQuestion} from 'inquirer'
+import type chalk from 'chalk'
+
+export interface CliCommandArguments<F = Record<string, unknown>> {
+  groupOrCommand: string
+  argv: string[]
+  extOptions: F
+  argsWithoutOptions: string[]
+  extraArguments: string[]
+}
 
 export interface CliCommandContext {
   output: CliOutputter
@@ -16,9 +25,7 @@ export interface CliCommandContext {
   cliRoot: string
   workDir: string
   corePath: string
-
-  // @todo add chalk typings (it's a direct assignment of chalk@^2.4.2)
-  // chalk: Chalk
+  chalk: typeof chalk
 }
 
 export interface CliOutputter {
@@ -36,7 +43,7 @@ export type CliPrompter = typeof prompt & {
   single: <T = string>(question: Omit<DistinctQuestion, 'name'> & {choices: string[]}) => Promise<T>
 }
 
-export type CliApiClient = (options: {
+export type CliApiClient = (options?: {
   requireUser?: boolean
   requireProject?: boolean
 }) => SanityClient
