@@ -22,11 +22,10 @@ module.exports = {
   '@sanity/components': './packages/@sanity/components/src',
   '@sanity/diff': './packages/@sanity/diff/src',
   '@sanity/field': './packages/@sanity/field/src',
-  '@sanity/form-builder/PatchEvent': './packages/@sanity/form-builder/src/PatchEvent',
+  '@sanity/form-builder': './packages/@sanity/form-builder/src/_exports',
   // Required by BarcodeInput in the Ecommerce template
   '@sanity/form-builder/lib/FormBuilderInput':
     './packages/@sanity/form-builder/src/FormBuilderInput',
-  '@sanity/form-builder': './packages/@sanity/form-builder/src',
   '@sanity/imagetool': './packages/@sanity/imagetool/src',
   '@sanity/initial-value-templates': './packages/@sanity/initial-value-templates/src',
   '@sanity/portable-text-editor': './packages/@sanity/portable-text-editor/src',
