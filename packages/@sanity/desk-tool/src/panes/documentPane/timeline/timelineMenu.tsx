@@ -66,38 +66,26 @@ export function TimelineMenu({chunk, mode}: TimelineMenuProps) {
     [historyController]
   )
 
-  const content = useMemo(
-    () =>
-      open && (
-        <Card ref={setMenuContent as any} radius={3}>
-          {mode === 'rev' ? (
-            <Timeline
-              timeline={timeline}
-              onSelect={selectRev}
-              onLoadMore={loadMoreHistory}
-              {...revTimelineProps(historyController.realRevChunk)}
-            />
-          ) : (
-            <Timeline
-              timeline={timeline}
-              onSelect={selectSince}
-              onLoadMore={loadMoreHistory}
-              {...sinceTimelineProps(historyController.sinceTime!, historyController.realRevChunk)}
-            />
-          )}
-        </Card>
-      ),
-    [
-      historyController.realRevChunk,
-      historyController.sinceTime,
-      loadMoreHistory,
-      mode,
-      open,
-      selectRev,
-      selectSince,
-      timeline,
-    ]
+  const content = open && (
+    <Card ref={setMenuContent as any} radius={3}>
+      {mode === 'rev' ? (
+        <Timeline
+          timeline={timeline}
+          onSelect={selectRev}
+          onLoadMore={loadMoreHistory}
+          {...revTimelineProps(historyController.realRevChunk)}
+        />
+      ) : (
+        <Timeline
+          timeline={timeline}
+          onSelect={selectSince}
+          onLoadMore={loadMoreHistory}
+          {...sinceTimelineProps(historyController.sinceTime!, historyController.realRevChunk)}
+        />
+      )}
+    </Card>
   )
+
   const timeAgo = useTimeAgo(chunk?.endTimestamp || '', {agoSuffix: true})
 
   const revLabel = chunk
