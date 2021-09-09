@@ -1,6 +1,3 @@
 {
-  "plugins": [
-    "@sanity/base",
-    "@sanity/components"
-  ]
+  "plugins": ["@sanity/base", "@sanity/desk-tool"]
 }

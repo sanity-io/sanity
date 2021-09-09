@@ -116,7 +116,7 @@ test('should be able to load sanity plugin versions', (t) => {
   const versions = require('sanity:versions')
   t.deepEqual(versions, {
     '@sanity/base': '0.999.99',
-    '@sanity/components': '0.777.77',
+    '@sanity/desk-tool': '0.777.77',
   })
 
   restore()

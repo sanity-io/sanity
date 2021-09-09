@@ -5,6 +5,6 @@
   "description": "Fake project, used for testing",
   "dependencies": {
     "@sanity/base": "^0.999.0",
-    "@sanity/components": "^0.777.33"
+    "@sanity/desk-tool": "^0.777.33"
   }
 }
