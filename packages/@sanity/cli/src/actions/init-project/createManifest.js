@@ -117,7 +117,6 @@ export function createSanityManifest(data, opts) {
 
       plugins: [
         '@sanity/base',
-        '@sanity/components',
         '@sanity/default-layout',
         '@sanity/default-login',
         '@sanity/desk-tool',
