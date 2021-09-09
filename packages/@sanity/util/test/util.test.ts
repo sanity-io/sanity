@@ -47,21 +47,21 @@ test('concats arrays', () => {
   const reduced = reduceConfig(
     {
       root: true,
-      plugins: ['@sanity/base', '@sanity/components'],
+      plugins: ['@sanity/base', '@sanity/desk-tool'],
       env: {development: {plugins: ['vision']}},
     },
     'development'
   )
 
   expect(reduced.root).toEqual(true)
-  expect(reduced.plugins).toEqual(['@sanity/base', '@sanity/components', 'vision'])
+  expect(reduced.plugins).toEqual(['@sanity/base', '@sanity/desk-tool', 'vision'])
 })
 
 test('getSanityVersions: extracts correct versions', () => {
   const versions = getSanityVersions(path.join(__dirname, 'versionsFixture'))
   expect(versions).toEqual({
     '@sanity/base': '0.999.99',
-    '@sanity/components': '0.777.77',
+    '@sanity/desk-tool': '0.777.77',
   })
 })
 
