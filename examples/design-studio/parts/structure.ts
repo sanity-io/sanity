@@ -26,7 +26,15 @@ export const getDefaultDocumentNode = ({schemaType}: {schemaType: string}) => {
   if (schemaType === 'documentWithViews') {
     return S.document().views([
       S.view.form(),
-      S.view.component(StyledTestView).title('Styled Test'),
+      S.view.component(StyledTestView).title('Styled Test 1'),
+      S.view.component(StyledTestView).title('Styled Test 2'),
+      S.view.component(StyledTestView).title('Styled Test 3'),
+      S.view.component(StyledTestView).title('Styled Test 4'),
+      S.view.component(StyledTestView).title('Styled Test 5'),
+      S.view.component(StyledTestView).title('Styled Test 6'),
+      S.view.component(StyledTestView).title('Styled Test 7'),
+      S.view.component(StyledTestView).title('Styled Test 8'),
+      S.view.component(StyledTestView).title('Styled Test 9'),
     ])
   }
 
