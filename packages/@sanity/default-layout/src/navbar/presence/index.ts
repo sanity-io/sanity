@@ -1,2 +1,2 @@
-export * from './presenceMenu'
-export * from './presenceMenuItem'
+export * from './PresenceMenu'
+export * from './PresenceMenuItem'
