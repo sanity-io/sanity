@@ -23,7 +23,6 @@ const IGNORED_PACKAGES = [
   'dev/workshop',
   'examples/depcheck-test',
   /examples\/.*-studio/,
-  'packages/@sanity/components',
   'packages/@sanity/date-input',
   'packages/@sanity/eventsource',
   'packages/@sanity/generate-help-url',
