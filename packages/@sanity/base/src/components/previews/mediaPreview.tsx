@@ -1,7 +1,7 @@
 import React from 'react'
 import {Box, Text} from '@sanity/ui'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
-import {ProgressCircle} from './progressCircle'
+import {ProgressCircle} from '../progress'
 import {MediaDimensions, PreviewProps} from './types'
 import {MediaWrapper, MediaString, Root, ProgressWrapper} from './mediaPreview.styled'
 

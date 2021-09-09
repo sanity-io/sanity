@@ -1,5 +1,4 @@
 import React from 'react'
-import {Box, Text} from '@sanity/ui'
 import {
   Root,
   StatusText,

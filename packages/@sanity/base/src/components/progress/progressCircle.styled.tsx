@@ -110,8 +110,8 @@ export const ActiveCircle = styled.circle`
   transform-origin: center center;
   stroke: var(--card-fg-color);
   fill: none;
-  stroke-width: var(--stroke-width);
-  stroke-dasharray: 0, var(--circumference);
+  stroke-width: ${STROKE_WIDTH};
+  stroke-dasharray: 0, ${CIRCUMFERENCE};
   animation: ${strokeDash} 6s ease-out infinite, ${strokeWidth} 3s ease-out infinite,
     ${rotate} 18s linear infinite;
 
