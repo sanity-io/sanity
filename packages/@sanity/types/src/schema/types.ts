@@ -192,9 +192,10 @@ export interface ObjectSchemaType extends BaseSchemaType {
   initialValue?: InitialValueProperty<Record<string, unknown>>
 
   // Experimentals
-  /* eslint-disable camelcase */
-  __experimental_search?: {path: string; weight: number; mapWith?: string}[]
-  /* eslint-enable camelcase */
+  // Note: `path` is a string in the _specification_, but converted to a
+  // string array in the schema normalization/compilation step
+  // eslint-disable-next-line camelcase
+  __experimental_search?: {path: string[]; weight: number; mapWith?: string}[]
 }
 
 export interface ObjectSchemaTypeWithOptions extends ObjectSchemaType {
