@@ -1,5 +1,5 @@
 import React from 'react'
-import {Box, Stack, Text, Skeleton, TextSkeleton} from '@sanity/ui'
+import {Box, Stack, Text, Skeleton, TextSkeleton, useTheme} from '@sanity/ui'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {MediaDimensions, PreviewProps} from './types'
 import {
@@ -31,17 +31,18 @@ export const DetailPreview: React.FunctionComponent<PreviewProps<'detail'>> = (p
     children,
     isPlaceholder,
   } = props
+  const {fonts} = useTheme().sanity
+  const textSize = fonts.text.sizes[1]
+  const maxHeight = textSize.lineHeight * 2 - textSize.ascenderHeight - textSize.descenderHeight
 
   if (isPlaceholder) {
     return (
       <Root align="center">
-        <>
-          <Skeleton style={{width: 80, height: 80}} radius={2} marginRight={2} animated />
-          <Stack space={2} flex={1}>
-            <TextSkeleton style={{maxWidth: 320}} radius={1} animated />
-            <TextSkeleton style={{maxWidth: 200}} radius={1} size={1} animated />
-          </Stack>
-        </>
+        <Skeleton style={{width: 80, height: 80}} radius={2} marginRight={2} animated />
+        <Stack space={2} flex={1}>
+          <TextSkeleton style={{maxWidth: 320}} radius={1} animated />
+          <TextSkeleton style={{maxWidth: 200}} radius={1} size={1} animated />
+        </Stack>
       </Root>
     )
   }
@@ -63,7 +64,7 @@ export const DetailPreview: React.FunctionComponent<PreviewProps<'detail'>> = (p
         <Top align="center" justify="space-between">
           <Header space={2} flex={1}>
             <Text textOverflow="ellipsis" style={{color: 'inherit'}}>
-              {title && <>{typeof title === 'function' ? title({layout: 'detail'}) : title}</>}
+              {title && typeof title === 'function' ? title({layout: 'detail'}) : title}
               {!title && <>Untitled</>}
             </Text>
 
@@ -80,7 +81,7 @@ export const DetailPreview: React.FunctionComponent<PreviewProps<'detail'>> = (p
           )}
         </Top>
         {description && (
-          <Box marginTop={3}>
+          <Box marginTop={3} overflow="hidden" style={{maxHeight}}>
             <Text muted size={1}>
               {typeof description === 'function' ? description({layout: 'detail'}) : description}
             </Text>

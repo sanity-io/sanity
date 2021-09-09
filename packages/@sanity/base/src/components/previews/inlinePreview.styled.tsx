@@ -11,7 +11,10 @@ export const MediaWrapper = styled(Box)`
   display: inline-block;
   vertical-align: top;
   position: relative;
-  padding-right: 0.125rem;
+
+  &:not([hidden]) {
+    display: inline-block;
+  }
 
   > img {
     height: calc(14 / 16 * 1em);

@@ -3,10 +3,7 @@ import styled from 'styled-components'
 
 export const MediaWrapper = styled(Flex)`
   position: absolute !important;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background-color: var(--card-hairline-hard-color);
   border-radius: ${({theme}) => rem(theme.sanity.radius[2])};
 
@@ -20,10 +17,7 @@ export const MediaWrapper = styled(Flex)`
   &::after {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     box-shadow: inset 0 0 0 1px var(--card-shadow-umbra-color);
     border-radius: ${({theme}) => rem(theme.sanity.radius[2])};
   }
@@ -45,10 +39,7 @@ export const MediaString = styled(Flex)`
 
 export const ProgressWrapper = styled(Flex)`
   position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
+  inset: 0;
   display: flex;
 
   > * {
@@ -61,9 +52,6 @@ export const ProgressWrapper = styled(Flex)`
     opacity: 0.7;
     content: '';
     position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
+    inset: 0;
   }
 `

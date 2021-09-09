@@ -40,7 +40,7 @@ export const BlockPreview: React.FunctionComponent<PreviewProps<'block'>> = (pro
 
         <ContentWrapper flex={1} paddingY={1}>
           <Text textOverflow="ellipsis" style={{color: 'inherit'}}>
-            {title && <>{typeof title === 'function' ? title({layout: 'block'}) : title}</>}
+            {title && typeof title === 'function' ? title({layout: 'block'}) : title}
             {!title && <>Untitled</>}
           </Text>
 

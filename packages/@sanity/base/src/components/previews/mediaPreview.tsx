@@ -29,15 +29,15 @@ export const MediaPreview: React.FunctionComponent<PreviewProps<'media'>> = (pro
 
   if (isPlaceholder) {
     return (
-      <Root>
-        <Box style={STYLES_PADDER} />
+      <Root overflow="hidden" flex={1}>
+        <div style={STYLES_PADDER} />
       </Root>
     )
   }
 
   return (
-    <Root title={typeof title === 'string' ? title : undefined}>
-      <Box style={STYLES_PADDER} />
+    <Root overflow="hidden" flex={1} title={typeof title === 'string' ? title : undefined}>
+      <div style={STYLES_PADDER} />
 
       <MediaWrapper align="center" justify="center">
         {typeof media === 'undefined' && <Box>{title}</Box>}
