@@ -2,7 +2,16 @@
   "name": "@sanity/form-builder",
   "version": "2.22.2",
   "description": "Sanity form builder",
-  "main": "lib/index.js",
+  "main": "lib/_exports/index.js",
+  "types": "index.d.ts",
+  "//": "the typesVersion config below is a workaround for TypeScript's lack of support for package exports",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/dts/_exports/*"
+      ]
+    }
+  },
   "scripts": {
     "clean": "rimraf lib dest",
     "test": "jest"
