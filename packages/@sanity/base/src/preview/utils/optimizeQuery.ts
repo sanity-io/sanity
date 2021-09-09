@@ -2,7 +2,7 @@
 ///<reference types="@sanity/types/parts" />
 
 import {identity, sortBy, values} from 'lodash'
-import {escapeField, fieldNeedsEscape} from 'part:@sanity/base/util/search-utils'
+import {escapeField, fieldNeedsEscape} from '../../util/searchUtils'
 import {FieldName, Id, Selection} from '../types'
 import {INCLUDE_FIELDS_QUERY} from '../constants'
 
