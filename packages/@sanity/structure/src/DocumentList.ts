@@ -70,6 +70,7 @@ export interface DocumentList extends GenericList {
 interface DocumentListOptions {
   filter: string
   params?: {[key: string]: any}
+  apiVersion?: string
   defaultOrdering?: SortItem[]
 }
 
@@ -83,6 +84,14 @@ export class DocumentListBuilder extends GenericListBuilder<
     super()
     this.spec = spec ? spec : {}
     this.initialValueTemplatesSpecified = Boolean(spec && spec.initialValueTemplates)
+  }
+
+  apiVersion(apiVersion: string): DocumentListBuilder {
+    return this.clone({options: {...(this.spec.options || {filter: ''}), apiVersion}})
+  }
+
+  getApiVersion(): string | undefined {
+    return this.spec.options?.apiVersion
   }
 
   filter(filter: string): DocumentListBuilder {
