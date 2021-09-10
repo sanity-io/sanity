@@ -1,9 +1,9 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import {IntentLink} from 'part:@sanity/base/router'
 import React from 'react'
 import {Box, Tooltip} from '@sanity/ui'
+import {IntentLink} from '../../../../router'
 import {MediaDimensions} from '../types'
 import {InsufficientPermissionsMessage} from '../../../../components'
 

@@ -3,7 +3,7 @@
 
 import classNames from 'classnames'
 import React from 'react'
-import {IntentLink} from 'part:@sanity/base/router'
+import {IntentLink} from '../../../../router'
 import styles from 'part:@sanity/components/menus/default-style'
 import {MenuItem as MenuItemType} from './types'
 

@@ -5,7 +5,7 @@ import {isEqual} from 'lodash'
 import {interval, of} from 'rxjs'
 import {map, switchMap, distinctUntilChanged, debounce} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
-import {withRouterHOC} from 'part:@sanity/base/router'
+import {withRouterHOC} from '@sanity/base/router'
 import {getTemplateById} from '@sanity/base/initial-value-templates'
 import {
   resolvePanes,

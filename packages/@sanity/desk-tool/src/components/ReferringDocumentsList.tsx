@@ -3,7 +3,7 @@ import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
 import Preview from 'part:@sanity/base/preview'
 import schema from 'part:@sanity/base/schema'
-import {useRouter} from 'part:@sanity/base/router'
+import {useRouter} from '@sanity/base/router'
 
 export interface ReferringDocumentsListProps {
   documents: Record<string, any>[]

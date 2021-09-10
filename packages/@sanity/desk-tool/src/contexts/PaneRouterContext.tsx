@@ -4,7 +4,7 @@
 /* eslint-disable react/prop-types, react/no-multi-comp */
 import React, {useContext, useMemo} from 'react'
 import {isEqual, pick, omit} from 'lodash'
-import {StateLink, HOCRouter} from 'part:@sanity/base/router'
+import {StateLink, HOCRouter} from '@sanity/base/router'
 
 const contextCache = new WeakMap<any, Map<string, PaneRouterContextShape>>()
 
@@ -161,7 +161,7 @@ type PaneRouterContextFactory = (options: {
 }) => PaneRouterContextShape
 
 interface DeskToolPanesProps {
-  router: typeof HOCRouter
+  router: HOCRouter
 }
 
 export function getPaneRouterContextFactory(

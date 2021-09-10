@@ -3,7 +3,7 @@
 
 import tools from 'all:part:@sanity/base/tool'
 import config from 'config:sanity'
-import {route} from 'part:@sanity/base/router'
+import {route} from '@sanity/base/router'
 import {CONFIGURED_SPACES, HAS_SPACES} from './util/spaces'
 
 const basePath = ((config.project && config.project.basePath) || '').replace(/\/+$/, '')

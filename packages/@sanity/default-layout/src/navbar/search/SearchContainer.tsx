@@ -17,7 +17,7 @@ import {
   tap,
 } from 'rxjs/operators'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import {IntentLink} from 'part:@sanity/base/router'
+import {IntentLink} from '@sanity/base/router'
 import search from 'part:@sanity/base/search'
 import SearchField from './SearchField'
 import SearchResults from './SearchResults'
