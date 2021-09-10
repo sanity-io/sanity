@@ -19,7 +19,9 @@ const resolveTypeForDocument = (id: string): Promise<string | undefined> => {
   const query = '*[_id in [$documentId, $draftId]]._type'
   const documentId = id.replace(/^drafts\./, '')
   const draftId = `drafts.${documentId}`
-  return client.fetch(query, {documentId, draftId}).then((types) => types[0])
+  return client
+    .fetch(query, {documentId, draftId}, {tag: 'structure.resolve-type'})
+    .then((types) => types[0])
 }
 
 const validateFilter = (spec: PartialDocumentList, options: SerializeOptions) => {
