@@ -16,6 +16,12 @@ interface ProgressCircleProps {
 }
 
 export default class ProgressCircle extends React.PureComponent<ProgressCircleProps> {
+  componentDidMount() {
+    // eslint-disable-next-line no-console
+    console.warn(
+      "ProgressCircle from `part:@sanity/components/progress/circle` is deprecated. Please use `import {ProgressCircle} from '@sanity/base/components'` instead"
+    )
+  }
   render() {
     const {percent = 0, text, style, showPercent, isComplete} = this.props
 

@@ -24,6 +24,12 @@ interface BlockImagePreviewProps {
 const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {width: 600, height: 600, fit: 'fillmax'}
 
 export default class BlockImagePreview extends React.PureComponent<BlockImagePreviewProps> {
+  componentDidMount() {
+    // eslint-disable-next-line no-console
+    console.warn(
+      "BlockImagePreview from `part:@sanity/components/previews/block-image` is deprecated. Please use `import {BlockImagePreview} from '@sanity/base/components'` instead"
+    )
+  }
   // eslint-disable-next-line complexity
   render() {
     const {title, subtitle, description, mediaDimensions, media, children, status} = this.props

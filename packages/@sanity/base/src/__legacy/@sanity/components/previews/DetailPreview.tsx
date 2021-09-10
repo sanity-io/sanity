@@ -28,6 +28,13 @@ const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
 export default class DetailPreview extends React.PureComponent<DetailPreviewProps> {
   index = index++
 
+  componentDidMount() {
+    // eslint-disable-next-line no-console
+    console.warn(
+      "DetailPreview from `part:@sanity/components/previews/detail` is deprecated. Please use `import {DetailPreview} from '@sanity/base/components'` instead"
+    )
+  }
+
   // eslint-disable-next-line complexity
   render() {
     const {

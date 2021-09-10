@@ -37,6 +37,8 @@ const svgStyles: React.CSSProperties = {
   height: '100%',
 }
 
+// @todo remove this component in next major release
+
 export default class CardPreview extends React.PureComponent<CardPreviewProps> {
   static defaultProps = {
     title: 'Untitled',
@@ -57,6 +59,13 @@ export default class CardPreview extends React.PureComponent<CardPreviewProps> {
   }
 
   dateElement: HTMLDivElement | null = null
+
+  componentDidMount() {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'CardPreview from `part:@sanity/components/previews/card` is deprecated, and will be removed in a future update.'
+    )
+  }
 
   // eslint-disable-next-line camelcase
   UNSAFE_componentWillReceiveProps(nextProps) {

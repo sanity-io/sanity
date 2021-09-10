@@ -20,6 +20,12 @@ const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
 }
 
 export default class InlinePreview extends React.PureComponent<InlinePreviewProps> {
+  componentDidMount() {
+    // eslint-disable-next-line no-console
+    console.warn(
+      "InlinePreview from `part:@sanity/components/previews/inline` is deprecated. Please use `import {InlinePreview} from '@sanity/base/components'` instead"
+    )
+  }
   // eslint-disable-next-line complexity
   render() {
     const {title, media, mediaDimensions = DEFAULT_MEDIA_DIMENSIONS, children} = this.props
