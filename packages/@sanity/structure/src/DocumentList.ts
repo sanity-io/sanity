@@ -1,7 +1,7 @@
 import {getParameterlessTemplatesBySchemaType} from '@sanity/initial-value-templates'
 import {SchemaType, getDefaultSchema} from './parts/Schema'
 import {isActionEnabled} from './parts/documentActionUtils'
-import {client} from './parts/Client'
+import {structureClient} from './parts/Client'
 import {SortItem} from './Sort'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {SerializeOptions, Child} from './StructureNodes'
@@ -19,7 +19,7 @@ const resolveTypeForDocument = (id: string): Promise<string | undefined> => {
   const query = '*[_id in [$documentId, $draftId]]._type'
   const documentId = id.replace(/^drafts\./, '')
   const draftId = `drafts.${documentId}`
-  return client
+  return structureClient
     .fetch(query, {documentId, draftId}, {tag: 'structure.resolve-type'})
     .then((types) => types[0])
 }
