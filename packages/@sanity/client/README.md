@@ -13,7 +13,7 @@ Sanity Client requires the JavaScript runtime to have a global ES6-compliant `Pr
 The client can be installed from npm:
 
 ```
-npm install --save @sanity/client
+npm install -g @sanity/client
 ```
 
 ## API
@@ -23,7 +23,7 @@ const sanityClient = require('@sanity/client')
 const client = sanityClient({
   projectId: 'your-project-id',
   dataset: 'bikeshop',
-  apiVersion: '2019-01-29', // use current UTC date - see "specifying API version"!
+  apiVersion: '2021-03-25', // use current UTC date - see "specifying API version"!
   token: 'sanity-auth-token', // or leave blank for unauthenticated usage
   useCdn: true, // `false` if you want to ensure fresh data
 })
@@ -31,13 +31,13 @@ const client = sanityClient({
 
 `const client = sanityClient(options)`
 
-Initializes a new Sanity Client. Required options are `projectId`, `dataset` and `apiVersion`. Setting a value for `useCdn` is encouraged.
+Initializes a new Sanity Client. Required options are `projectId`, `dataset`, and `apiVersion`. Setting a value for `useCdn` is encouraged.
 
 ### Specifying API version
 
 Sanity uses ISO dates (YYYY-MM-DD) in UTC timezone for versioning. The explanation for this can be found [in the documentation](http://sanity.io/docs/api-versioning)
 
-In general, unless you know what API version you want to use, you'll want to set it to todays UTC date. By doing this, you'll get all the latest bugfixes and features, while locking the API to prevent breaking changes.
+In general, unless you know what API version you want to use, you'll want to set it to today's UTC date. By doing this, you'll get all the latest bugfixes and features, while locking the API to prevent breaking changes.
 
 **Note**: Do not be tempted to use a dynamic value for the `apiVersion`. The reason for setting a static value is to prevent unexpected, breaking changes.
 
@@ -88,7 +88,7 @@ Likewise, you can also have the client return the document _before_ the mutation
 
 ### Fetch a single document
 
-This will fetch a document from the [Doc endpoint](https://www.sanity.io/docs/http-doc). This endpoint cuts through any caching/indexing middleware that may involve delayed processing. Should be used sparingly and performing a query is usually a better option.
+This will fetch a document from the [Doc endpoint](https://www.sanity.io/docs/http-doc). This endpoint cuts through any caching/indexing middleware that may involve delayed processing. As it is less scalable/performant than the other query mechanisms, it should be used sparingly. Performing a query is usually a better option.
 
 ```js
 client.getDocument('bike-123').then((bike) => {
@@ -98,7 +98,7 @@ client.getDocument('bike-123').then((bike) => {
 
 ### Fetch multiple documents in one go
 
-This will fetch multiple documents in one request from the [Doc endpoint](https://www.sanity.io/docs/http-doc). his endpoint cuts through any caching/indexing middleware that may involve delayed processing. Should be used sparingly and performing a query is usually a better option.
+This will fetch multiple documents in one request from the [Doc endpoint](https://www.sanity.io/docs/http-doc). This endpoint cuts through any caching/indexing middleware that may involve delayed processing. As it is less scalable/performant than the other query mechanisms, it should be used sparingly. Performing a query is usually a better option.
 
 ```js
 client.getDocuments(['bike123', 'bike345']).then(([bike123, bike345]) => {
@@ -107,7 +107,7 @@ client.getDocuments(['bike123', 'bike345']).then(([bike123, bike345]) => {
 })
 ```
 
-Note: Unlike in the HTTP API, the order/position of documents is _preserved_ based on the original array of IDs. If a any of the documents are missing, they will be replaced by a `null` entry in the returned array:
+Note: Unlike in the HTTP API, the order/position of documents is _preserved_ based on the original array of IDs. If any of the documents are missing, they will be replaced by a `null` entry in the returned array:
 
 ```js
 const ids = ['bike123', 'nonexistent-document', 'bike345']
@@ -134,6 +134,8 @@ client.create(doc).then((res) => {
 `client.create(doc)`
 
 Create a document. Argument is a plain JS object representing the document. It must contain a `_type` attribute. It _may_ contain an `_id`. If an ID is not specified, it will automatically be created.
+
+To create a draft document, add an `_id` attribute set to `'drafts.'`.
 
 ### Creating/replacing documents
 
