@@ -1,18 +1,19 @@
 import {defer, partition, merge, of, throwError, asyncScheduler, Observable} from 'rxjs'
 import {mergeMap, throttleTime, share, take} from 'rxjs/operators'
 import {exhaustMapToWithTrailing} from 'rxjs-exhaustmap-with-trailing'
-import {versionedClient} from '../../client/versionedClient'
+import {getVersionedClient} from '../../client/versionedClient'
 import {ReconnectEvent, WelcomeEvent, MutationEvent} from './types'
 
 type Params = Record<string, string>
 
 export interface ListenQueryOptions {
   tag?: string
+  apiVersion?: string
 }
 
 const fetch = (query: string, params: Params, options: ListenQueryOptions) =>
   defer(() =>
-    versionedClient.observable.fetch(query, params, {
+    getVersionedClient(options.apiVersion).observable.fetch(query, params, {
       tag: options.tag,
       filterResponse: true,
     })
@@ -20,7 +21,7 @@ const fetch = (query: string, params: Params, options: ListenQueryOptions) =>
 
 const listen = (query: string, params: Params, options: ListenQueryOptions) =>
   defer(() =>
-    versionedClient.listen(query, params, {
+    getVersionedClient(options.apiVersion).listen(query, params, {
       events: ['welcome', 'mutation', 'reconnect'],
       includeResult: false,
       visibility: 'query',
