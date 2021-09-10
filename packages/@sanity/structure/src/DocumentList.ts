@@ -42,8 +42,8 @@ const resolveDocumentChildForItem: ChildResolver = (
   options: ChildResolverOptions
 ): ItemChild | Promise<ItemChild> | undefined => {
   const parentItem = options.parent as DocumentList
-  const schemaType = parentItem.schemaTypeName || resolveTypeForDocument(itemId)
-  return Promise.resolve(schemaType).then((schemaType) =>
+  const type = parentItem.schemaTypeName || resolveTypeForDocument(itemId)
+  return Promise.resolve(type).then((schemaType) =>
     schemaType
       ? getDefaultDocumentNode({schemaType, documentId: itemId})
       : new DocumentBuilder().id('editor').documentId(itemId).schemaType('')
@@ -87,8 +87,8 @@ export class DocumentListBuilder extends GenericListBuilder<
     return this.clone({options: {...(this.spec.options || {}), filter}})
   }
 
-  getFilter() {
-    return this.spec.options && this.spec.options.filter
+  getFilter(): string | undefined {
+    return this.spec.options?.filter
   }
 
   schemaType(type: SchemaType | string): DocumentListBuilder {
@@ -96,18 +96,18 @@ export class DocumentListBuilder extends GenericListBuilder<
     return this.clone({schemaTypeName})
   }
 
-  getSchemaType() {
+  getSchemaType(): string | undefined {
     return this.spec.schemaTypeName
   }
 
-  params(params: {}): DocumentListBuilder {
+  params(params: Record<string, unknown>): DocumentListBuilder {
     return this.clone({
       options: {...(this.spec.options || {filter: ''}), params},
     })
   }
 
-  getParams() {
-    return this.spec.options && this.spec.options.params
+  getParams(): Record<string, unknown> | undefined {
+    return this.spec.options?.params
   }
 
   defaultOrdering(ordering: SortItem[]): DocumentListBuilder {
@@ -120,8 +120,8 @@ export class DocumentListBuilder extends GenericListBuilder<
     })
   }
 
-  getDefaultOrdering() {
-    return this.spec.options && this.spec.options.defaultOrdering
+  getDefaultOrdering(): SortItem[] | undefined {
+    return this.spec.options?.defaultOrdering
   }
 
   serialize(options: SerializeOptions = {path: []}): DocumentList {
@@ -170,7 +170,7 @@ export class DocumentListBuilder extends GenericListBuilder<
     return builder
   }
 
-  getSpec() {
+  getSpec(): PartialDocumentList {
     return this.spec
   }
 }
@@ -187,7 +187,7 @@ function inferInitialValueTemplates(
     return undefined
   }
 
-  let templateItems: InitialValueTemplateItem[] = []
+  const templateItems: InitialValueTemplateItem[] = []
   return typeNames.reduce((items, typeName) => {
     const schemaType = schema.get(typeName)
     if (!isActionEnabled(schemaType, 'create')) {
