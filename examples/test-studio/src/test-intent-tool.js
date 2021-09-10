@@ -1,5 +1,5 @@
 import React from 'react'
-import {route, withRouterHOC} from 'part:@sanity/base/router'
+import {route, withRouterHOC} from '@sanity/base/router'
 
 export default {
   router: route('/:type/:id'),

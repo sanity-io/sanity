@@ -3,7 +3,7 @@
 
 /* eslint-disable react/prop-types */
 import React, {FunctionComponent} from 'react'
-import {IntentLink} from 'part:@sanity/base/router'
+import {IntentLink} from '@sanity/base/router'
 
 import styles from './BlockObjectMenuItem.css'
 

@@ -1,8 +1,5 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import React from 'react'
-import {withRouterHOC, StateLink} from 'part:@sanity/base/router'
+import {withRouterHOC, StateLink} from '@sanity/base/router'
 import {HAS_SPACES} from '../util/spaces'
 import {Router} from '../types'
 

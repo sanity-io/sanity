@@ -3,7 +3,7 @@
 
 import React, {useEffect} from 'react'
 import {uuid} from '@sanity/uuid'
-import {route, useRouterState} from 'part:@sanity/base/router'
+import {route, useRouterState} from '@sanity/base/router'
 import {parsePanesSegment, encodePanesSegment} from '../utils/parsePanesSegment'
 import {IntentResolver} from '../components/IntentResolver'
 import {EMPTY_PARAMS} from '../constants'

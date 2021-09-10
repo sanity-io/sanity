@@ -2,7 +2,7 @@ import {DocumentActionComponent} from '@sanity/base'
 import {CopyIcon} from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
 import {useDocumentOperation} from '@sanity/react-hooks'
-import {useRouter} from 'part:@sanity/base/router'
+import {useRouter} from '@sanity/base/router'
 import React, {useCallback, useState} from 'react'
 import {
   unstable_useCheckDocumentPermission as useCheckDocumentPermission,

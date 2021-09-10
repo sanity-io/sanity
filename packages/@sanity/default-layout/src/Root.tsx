@@ -4,7 +4,7 @@
 import React from 'react'
 import {Subscription} from 'rxjs'
 import LoginWrapper from 'part:@sanity/base/login-wrapper?'
-import {RouterProvider} from 'part:@sanity/base/router'
+import {RouterProvider} from '@sanity/base/router'
 import AppLoadingScreen from 'part:@sanity/base/app-loading-screen'
 import * as urlStateStore from './datastores/urlState'
 import getOrderedTools from './util/getOrderedTools'

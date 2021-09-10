@@ -1,6 +1,6 @@
 import {DocumentActionComponent, DocumentActionDialogProps} from '@sanity/base'
 import {useDocumentOperation} from '@sanity/react-hooks'
-import {useRouter} from 'part:@sanity/base/router'
+import {useRouter} from '@sanity/base/router'
 import {RestoreIcon} from '@sanity/icons'
 import React, {useCallback, useMemo, useState} from 'react'
 

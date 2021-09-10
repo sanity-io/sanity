@@ -2,7 +2,7 @@
 ///<reference types="@sanity/types/parts" />
 
 import React from 'react'
-import {IntentLink} from 'part:@sanity/base/router'
+import {IntentLink} from '../../../../router'
 import createButtonLike from './createButtonLike'
 
 const AsLink = createButtonLike(IntentLink as any, {displayName: 'LinkButton'})

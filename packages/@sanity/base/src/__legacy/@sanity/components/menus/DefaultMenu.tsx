@@ -5,10 +5,10 @@
 
 import React from 'react'
 import {groupBy, flatten} from 'lodash'
-import {withRouterHOC} from 'part:@sanity/base/router'
 import styles from 'part:@sanity/components/menus/default-style'
 import enhanceWithClickOutside from 'react-click-outside'
 import classNames from 'classnames'
+import {withRouterHOC} from '../../../../router'
 import DefaultMenuItem from './DefaultMenuItem'
 import {MenuItemGroup as MenuItemGroupType, MenuItem as MenuItemType} from './types'
 
