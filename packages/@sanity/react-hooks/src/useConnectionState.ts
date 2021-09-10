@@ -2,7 +2,7 @@
 ///<reference types="@sanity/types/parts" />
 
 import documentStore from 'part:@sanity/base/datastore/document'
-import {distinctUntilChanged, map, mapTo, switchMap} from 'rxjs/operators'
+import {distinctUntilChanged, map, mapTo, startWith, switchMap} from 'rxjs/operators'
 import {of, timer} from 'rxjs'
 import {useMemoObservable} from 'react-rx'
 
@@ -19,6 +19,7 @@ export function useConnectionState(publishedDocId: string, docTypeName: string):
         switchMap((isConnected) =>
           isConnected ? of('connected') : timer(200).pipe(mapTo('reconnecting'))
         ),
+        startWith(INITIAL),
         distinctUntilChanged()
       ),
     [publishedDocId, docTypeName],
