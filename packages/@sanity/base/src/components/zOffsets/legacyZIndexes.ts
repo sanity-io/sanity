@@ -16,7 +16,7 @@ export function getLegacyZIndexes(): ZIndexContextValue {
     pane: getCustomCSSPropertyNumber('--zindex-pane') || defaults.pane,
     paneHeader: defaults.paneHeader,
     paneFooter: defaults.paneFooter,
-    paneResizer: getCustomCSSPropertyNumber('--zindex-pane-resizer') || defaults.paneResizer,
+    paneResizer: defaults.paneResizer,
     portal: getCustomCSSPropertyNumber('--zindex-portal') || defaults.portal,
     popover: getCustomCSSPropertyNumber('--zindex-popover') || defaults.popover,
     modal: getCustomCSSPropertyNumber('--zindex-modal') || defaults.modal,
