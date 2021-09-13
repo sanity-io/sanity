@@ -1,6 +1,3 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import {useTimeAgo} from '@sanity/base/hooks'
 import {Chunk} from '@sanity/field/diff'
 import {SelectIcon} from '@sanity/icons'
