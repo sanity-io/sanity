@@ -1,159 +1,107 @@
-import React, {forwardRef, useCallback, useMemo} from 'react'
-import {
-  Text,
-  Flex,
-  useGlobalKeyDown,
-  Autocomplete,
-  Popover,
-  Box,
-  Card,
-  PortalProvider,
-  Portal,
-  PopoverProps,
-  CardProps,
-} from '@sanity/ui'
+import React, {useCallback, useMemo} from 'react'
+import {Text, Flex, Autocomplete, Box, PortalProvider} from '@sanity/ui'
 import {SearchIcon} from '@sanity/icons'
 import styled from 'styled-components'
-import {SearchItem, useSearch} from '.'
+import {SearchItem, useSearch, SearchPopoverContent, SearchFullscreenContent} from '.'
 
-const ResultsPopover = styled(Popover)`
-  & > div {
-    min-height: 43px;
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  &[data-popper-reference-hidden='true'] {
-    display: none;
-  }
-`
-
-const FullscreenContentCard = styled(Card)`
-  position: absolute;
-  inset: 0 0 0 0;
-`
-
-const PopoverContentFlex = styled(Flex)`
-  min-height: 200;
+const StyledText = styled(Text)`
+  word-break: break-word;
 `
 
 export function SearchField({
   portalElement,
   fullScreen,
   inputElement,
+  onSearchItemClick,
 }: {
   portalElement: HTMLDivElement | null
   fullScreen: boolean
   inputElement: (el: HTMLInputElement | null) => void
+  onSearchItemClick: () => void
 }) {
-  const {handleSearch, handleClearSearch, searchState} = useSearch()
+  const {handleSearch, searchState} = useSearch()
   const {hits, loading, searchString, error} = searchState
 
-  useGlobalKeyDown((e) => {
-    if (e.key === 'Escape' && searchString?.length > 0) {
-      handleClearSearch()
+  const handleClickItem = useCallback(() => {
+    if (fullScreen && onSearchItemClick) {
+      onSearchItemClick()
     }
-  })
+  }, [fullScreen, onSearchItemClick])
 
   const filterOption = useCallback(() => true, [])
 
   const renderOption = useCallback(
     (option) => {
       const {data} = option.payload
-      return <SearchItem data={data} key={data.hit._id} onClick={handleClearSearch} padding={2} />
+      return <SearchItem data={data} key={data.hit._id} onClick={handleClickItem} padding={2} />
     },
-    [handleClearSearch]
-  )
-
-  const FullscreenContent = useMemo(
-    () =>
-      // eslint-disable-next-line no-shadow
-      forwardRef(function LinkComponent(
-        cardProps: CardProps & {children: React.ReactNode; hidden?: boolean},
-        ref: React.ForwardedRef<HTMLDivElement>
-      ) {
-        return (
-          <Portal>
-            <FullscreenContentCard ref={ref} scheme="light" {...cardProps} />
-          </Portal>
-        )
-      }),
-    []
+    [handleClickItem]
   )
 
   const renderPopoverFullscreen = useCallback(
     (props, ref) => {
       if (!props.hidden && error) {
         return (
-          <FullscreenContent tone="critical">
-            <Flex align="center" height="fill" justify="center">
-              <Text align="center" muted>
+          <SearchFullscreenContent tone="critical">
+            <Flex
+              align="center"
+              flex={1}
+              height="fill"
+              justify="center"
+              padding={4}
+              sizing="border"
+            >
+              <StyledText align="center" muted>
                 {error.message}
-              </Text>
+              </StyledText>
             </Flex>
-          </FullscreenContent>
+          </SearchFullscreenContent>
         )
       }
 
       if (!props.hidden && searchString && !loading && hits.length === 0) {
         return (
-          <FullscreenContent>
-            <Flex align="center" height="fill" justify="center">
-              <Text align="center" muted>
+          <SearchFullscreenContent>
+            <Flex
+              align="center"
+              flex={1}
+              height="fill"
+              justify="center"
+              padding={4}
+              sizing="border"
+            >
+              <StyledText align="center" muted>
                 No results for <strong>‘{searchString}’</strong>
-              </Text>
+              </StyledText>
             </Flex>
-          </FullscreenContent>
+          </SearchFullscreenContent>
         )
       }
 
       return (
-        <FullscreenContent hidden={props.hidden} ref={ref}>
+        <SearchFullscreenContent hidden={props.hidden} ref={ref}>
           {props.content}
-        </FullscreenContent>
+        </SearchFullscreenContent>
       )
     },
-    [error, searchString, loading, hits, FullscreenContent]
-  )
-
-  const PopoverContent = useMemo(
-    () =>
-      // eslint-disable-next-line no-shadow
-      forwardRef(function LinkComponent(
-        popoverProps: PopoverProps,
-        ref: React.ForwardedRef<HTMLDivElement>
-      ) {
-        return (
-          <ResultsPopover
-            portal
-            placement="bottom"
-            arrow={false}
-            constrainSize
-            ref={ref}
-            scheme="light"
-            matchReferenceWidth
-            {...popoverProps}
-          />
-        )
-      }),
-    []
+    [error, searchString, loading, hits]
   )
 
   const renderPopover = useCallback(
     (props, ref) => {
       if (!props.hidden && error) {
         return (
-          <PopoverContent
+          <SearchPopoverContent
             open={!props.hidden}
             referenceElement={props.inputElement}
             ref={ref}
             content={
               <Box padding={4}>
-                <PopoverContentFlex align="center" height="fill" justify="center">
-                  <Text align="center" muted>
-                    Something went wrong while searching
-                  </Text>
-                </PopoverContentFlex>
+                <Flex align="center" height="fill" justify="center">
+                  <StyledText align="center" muted>
+                    {error?.message || 'Something went wrong while searching'}
+                  </StyledText>
+                </Flex>
               </Box>
             }
           />
@@ -162,17 +110,17 @@ export function SearchField({
 
       if (!props.hidden && searchString && !loading && hits.length === 0) {
         return (
-          <PopoverContent
+          <SearchPopoverContent
             open={!props.hidden}
             referenceElement={props.inputElement}
             ref={ref}
             content={
               <Box padding={4}>
-                <PopoverContentFlex align="center" height="fill" justify="center">
-                  <Text align="center" muted>
+                <Flex align="center" height="fill" justify="center">
+                  <StyledText align="center" muted>
                     No results for <strong>‘{searchString}’</strong>
-                  </Text>
-                </PopoverContentFlex>
+                  </StyledText>
+                </Flex>
               </Box>
             }
           />
@@ -181,7 +129,7 @@ export function SearchField({
 
       if (!props.hidden && hits.length > 0) {
         return (
-          <PopoverContent
+          <SearchPopoverContent
             open={!props.hidden}
             referenceElement={props.inputElement}
             ref={ref}
@@ -192,7 +140,7 @@ export function SearchField({
 
       return undefined
     },
-    [error, searchString, loading, hits, PopoverContent]
+    [error, searchString, loading, hits]
   )
 
   const autoComplete = useMemo(
@@ -201,7 +149,7 @@ export function SearchField({
         icon={SearchIcon}
         key="studio-search"
         id="studio-search"
-        listBox={{padding: 2}}
+        listBox={{padding: fullScreen ? 2 : 1}}
         loading={loading}
         onQueryChange={handleSearch}
         options={hits.map((hit) => {
