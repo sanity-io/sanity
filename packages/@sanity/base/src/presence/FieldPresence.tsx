@@ -6,7 +6,8 @@
 
 import React, {memo, useContext} from 'react'
 import {sortBy, uniqBy} from 'lodash'
-import {AvatarCounter, AvatarPosition} from 'part:@sanity/components/avatar'
+import {AvatarPosition} from 'part:@sanity/components/avatar'
+import {Avatar} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {UserAvatar} from '../components/UserAvatar'
 import {
@@ -94,7 +95,7 @@ export const FieldPresenceInner = memo(function FieldPresenceInner({
     hidden.length >= 2
       ? {
           key: 'counter',
-          element: <AvatarCounter count={hidden.length} />,
+          element: <Avatar initials={hidden.length.toString()} />,
         }
       : null,
   ].filter(Boolean)
