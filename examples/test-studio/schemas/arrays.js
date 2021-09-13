@@ -1,5 +1,5 @@
 import React from 'react'
-import {MdFormatListNumbered as icon} from 'react-icons/md'
+import {ImageIcon, OlistIcon} from '@sanity/icons'
 
 export const topLevelArrayType = {
   name: 'topLevelArrayType',
@@ -16,6 +16,7 @@ export const topLevelArrayType = {
     },
   ],
 }
+
 export const topLevelPrimitiveArrayType = {
   name: 'topLevelPrimitiveArrayType',
   type: 'array',
@@ -35,7 +36,7 @@ export default {
   name: 'arraysTest',
   type: 'document',
   title: 'Arrays test',
-  icon,
+  icon: OlistIcon,
   fields: [
     {
       name: 'title',
@@ -91,7 +92,7 @@ export default {
       of: [
         {
           type: 'image',
-          icon: icon,
+          icon: ImageIcon,
         },
         {
           type: 'book',
@@ -123,7 +124,7 @@ export default {
       of: [
         {
           type: 'image',
-          icon: icon,
+          icon: ImageIcon,
         },
         {
           type: 'book',
@@ -155,7 +156,7 @@ export default {
       of: [
         {
           type: 'image',
-          icon: icon,
+          icon: ImageIcon,
         },
         {
           type: 'book',
@@ -187,7 +188,7 @@ export default {
       of: [
         {
           type: 'image',
-          icon: icon,
+          icon: ImageIcon,
         },
         {
           type: 'book',

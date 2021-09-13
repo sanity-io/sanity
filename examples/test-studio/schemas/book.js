@@ -1,4 +1,4 @@
-import {FaBook as BookIcon} from 'react-icons/fa'
+import {BookIcon} from '@sanity/icons'
 
 function formatSubtitle(book) {
   return [

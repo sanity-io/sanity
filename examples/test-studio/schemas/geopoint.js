@@ -1,12 +1,12 @@
+import {EarthGlobeIcon} from '@sanity/icons'
 import React from 'react'
-import {MdPinDrop as icon} from 'react-icons/md'
 import config from 'config:@sanity/google-maps-input'
 
 export default {
   name: 'geopointTest',
   type: 'document',
   title: 'Geopoint test',
-  icon,
+  icon: EarthGlobeIcon,
   fields: [
     {
       name: 'title',

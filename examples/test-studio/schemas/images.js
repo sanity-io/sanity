@@ -1,4 +1,4 @@
-import icon from 'part:@sanity/base/image-icon'
+import {ImagesIcon} from '@sanity/icons'
 import petsAssetSource from '../src/assetSources/pets'
 import noopAssetSource from '../src/assetSources/noop'
 
@@ -19,7 +19,7 @@ export default {
   name: 'imagesTest',
   type: 'document',
   title: 'Images test',
-  icon,
+  icon: ImagesIcon,
   description: 'Different test cases of image fields',
   // readOnly: true,
   fields: [

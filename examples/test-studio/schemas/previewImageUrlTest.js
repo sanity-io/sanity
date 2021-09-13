@@ -1,5 +1,6 @@
 export default {
   name: 'previewImageUrlTest',
+  // icon: MonitorIcon,
   type: 'document',
   title: 'Preview: Using imageUrl in preview',
   preview: {

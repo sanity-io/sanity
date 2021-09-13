@@ -1,10 +1,10 @@
-import icon from 'part:@sanity/base/file-icon'
+import {BinaryDocumentIcon} from '@sanity/icons'
 
 export default {
   name: 'filesTest',
   type: 'document',
   title: 'Files test',
-  icon,
+  icon: BinaryDocumentIcon,
   fields: [
     {
       name: 'title',
