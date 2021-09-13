@@ -1,7 +1,7 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import {Box, Code, Flex, Spinner, Text} from '@sanity/ui'
 import sanityClient from 'part:@sanity/base/client'
-import Spinner from 'part:@sanity/components/loading/spinner'
+import PropTypes from 'prop-types'
+import React from 'react'
 
 const client = sanityClient.withConfig({apiVersion: '1'})
 
@@ -37,6 +37,9 @@ export default class JsonDocumentDump extends React.PureComponent {
   dispose() {
     if (this.document$) {
       this.document$.unsubscribe()
+    }
+
+    if (this.documentListener$) {
       this.documentListener$.unsubscribe()
     }
   }
@@ -51,18 +54,34 @@ export default class JsonDocumentDump extends React.PureComponent {
 
   render() {
     const {isLoading, document} = this.state
+
     if (isLoading) {
-      return <Spinner center message="Loading..." />
+      return (
+        <Flex align="center" direction="column" height="fill" justify="center">
+          <Spinner muted />
+          <Box marginTop={3}>
+            <Text align="center" muted size={1}>
+              Loading document…
+            </Text>
+          </Box>
+        </Flex>
+      )
     }
 
     if (!document) {
-      return <div>Document not found</div>
+      return (
+        <Box padding={4}>
+          <Text muted>Document not found.</Text>
+        </Box>
+      )
     }
 
     return (
-      <pre>
-        <code>{JSON.stringify(document, null, 2)}</code>
-      </pre>
+      <Box height="fill" overflow="auto" padding={4} sizing="border">
+        <Code language="json" size={[1, 1, 2]}>
+          {JSON.stringify(document, null, 2)}
+        </Code>
+      </Box>
     )
   }
 }

@@ -1,4 +1,4 @@
-import {PlayIcon} from '@sanity/icons'
+import {ArrorRightIcon} from '@sanity/icons'
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -16,7 +16,7 @@ export const initialValuesTest = {
   name: 'initialValuesTest',
   type: 'document',
   title: 'Initial values test',
-  icon: PlayIcon,
+  icon: ArrorRightIcon,
   initialValue: {superlatives: {norwegian: 'Kjempebra'}},
   fields: [
     {

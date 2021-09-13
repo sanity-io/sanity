@@ -4,9 +4,9 @@ import EyeIcon from 'part:@sanity/base/eye-icon'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import ImagesIcon from 'part:@sanity/base/images-icon'
 import UsersIcon from 'part:@sanity/base/users-icon'
+import S from '@sanity/desk-tool/structure-builder'
 import JsonDocumentDump from './components/JsonDocumentDump'
 import {DeveloperPreview} from './previews/developer'
-import S from '@sanity/desk-tool/structure-builder'
 
 // For testing. Bump the timeout to introduce som lag
 const delay = (val, ms = 10) => new Promise((resolve) => setTimeout(resolve, ms, val))
@@ -32,7 +32,7 @@ export default () =>
 
       S.listItem()
         .title('Anything with a title')
-        .icon(() => <span style={{fontSize: '2em'}}>T</span>)
+        .icon(() => <span data-sanity-icon>T</span>)
         .child(() =>
           delay(
             S.documentList({
@@ -58,15 +58,18 @@ export default () =>
 
       S.documentListItem()
         .id('grrm')
+        .title('GRRM')
         .schemaType('author')
         .child(
           S.component(JsonDocumentDump)
             .id('json-dump')
+            .title('GRRM')
             .options({pass: 'through'})
             .menuItems([
               S.menuItem().title('Reload').action('reload').icon(RefreshIcon).showAsAction(true),
             ])
         ),
+
       S.listItem()
         .title('Deep')
         .child(

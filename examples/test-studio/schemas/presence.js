@@ -1,5 +1,5 @@
 import {range} from 'lodash'
-import {FaBook as BookIcon} from 'react-icons/fa'
+import {RocketIcon} from '@sanity/icons'
 import {CustomInputWithDefaultPresence} from '../src/components/CustomInputWithDefaultPresence'
 import {CustomInputWithDialogOverlay} from '../src/components/CustomInputWithDialogOverlay'
 
@@ -14,6 +14,7 @@ export const objectWithNestedArray = {
     ),
   ],
 }
+
 export const collapsibleObject = {
   type: 'object',
   name: 'nestedCollapsibleObject',
@@ -25,12 +26,13 @@ export const collapsibleObject = {
     ),
   ],
 }
+
 export default {
   name: 'presence',
   type: 'document',
   title: 'Presence test',
   description: 'A type made for testing different aspects of presence',
-  icon: BookIcon,
+  icon: RocketIcon,
   fields: [
     {
       name: 'title',

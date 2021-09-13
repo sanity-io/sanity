@@ -1,10 +1,10 @@
-import {MdEmail as icon} from 'react-icons/md'
+import {EnvelopeIcon} from '@sanity/icons'
 
 export default {
   name: 'emailsTest',
   type: 'document',
   title: 'Emails test',
-  icon,
+  icon: EnvelopeIcon,
   fields: [
     {
       name: 'title',
