@@ -17,8 +17,8 @@ var nodeVersionParts = process.version
 
 var majorVersion = nodeVersionParts[0]
 var minorVersion = nodeVersionParts[1]
-if (majorVersion < 8 || (majorVersion === 8 && minorVersion < 6)) {
-  console.error(err + 'Node.js version 8.6 or higher required. You are running ' + process.version)
+if (majorVersion < 12) {
+  console.error(err + 'Node.js version 12 or higher required. You are running ' + process.version)
   console.error('')
   process.exit(1)
 }
