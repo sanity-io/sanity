@@ -11,6 +11,10 @@ const defaultStudioManifestProps: PartialPackageManifest = {
   version: '1.0.0',
 }
 
+interface CheckResult {
+  didInstall: boolean
+}
+
 /**
  * Checks that the studio has declared and installed the required dependencies
  * needed by the Sanity modules. While we generally use regular, explicit
@@ -20,7 +24,7 @@ const defaultStudioManifestProps: PartialPackageManifest = {
  * If these dependencies are not installed/declared, we want to prompt the user
  * whether or not to add them to `package.json` and install them using yarn/npm
  */
-export async function checkRequiredDependencies(context: CliCommandContext): Promise<void> {
+export async function checkRequiredDependencies(context: CliCommandContext): Promise<CheckResult> {
   const {workDir: studioPath, output} = context
   const [
     basePeerDependencies,
@@ -37,7 +41,7 @@ export async function checkRequiredDependencies(context: CliCommandContext): Pro
   // of an indeterminate state, so we'll just have to accept it and assume things will work.
   const wantedStyledComponentsVersionRange = basePeerDependencies['styled-components']
   if (!wantedStyledComponentsVersionRange) {
-    return
+    return {didInstall: false}
   }
 
   // The studio _must_ now declare `styled-components` as a dependency. If it's not there,
@@ -45,9 +49,16 @@ export async function checkRequiredDependencies(context: CliCommandContext): Pro
   // dependencies before running whatever command was being run
   const declaredStyledComponentsVersion = studioPackageManifest.dependencies['styled-components']
   if (!declaredStyledComponentsVersion) {
+    const [file, ...args] = process.argv
     const deps = {'styled-components': wantedStyledComponentsVersionRange}
     await installDependenciesWithPrompt(deps, context)
-    return
+
+    // Re-run the same command (sanity start/sanity build etc) after installation,
+    // as it can have shifted the entire `node_modules` folder around, result in
+    // broken assumptions about installation paths. This is a hack, and should be
+    // solved properly.
+    await execa(file, args, {cwd: studioPath, stdio: 'inherit'})
+    return {didInstall: true}
   }
 
   // Theoretically the version specified in package.json could be incorrect, eg `foo`
@@ -99,6 +110,8 @@ export async function checkRequiredDependencies(context: CliCommandContext): Pro
       This might cause problems!
     `)
   }
+
+  return {didInstall: false}
 }
 
 /**
@@ -172,7 +185,7 @@ async function readPackageManifest(
 async function installDependenciesWithPrompt(
   dependencies: Record<string, string>,
   context: CliCommandContext
-): Promise<unknown> {
+): Promise<void> {
   const {output, prompt, workDir, yarn} = context
   const yarnLockExists = await fileExists(path.join(workDir, 'yarn.lock'))
   const installPackageArgs: string[] = []
@@ -199,19 +212,19 @@ async function installDependenciesWithPrompt(
     : defaultPkgManager
 
   if (pkgManager === 'yarn') {
-    return yarn(['add', ...installPackageArgs], {
+    await yarn(['add', ...installPackageArgs], {
       error: output.error,
       print: output.print,
       rootDir: workDir,
     })
+  } else {
+    const npmArgs = ['install', '--legacy-peer-deps', '--save', ...installPackageArgs]
+    output.print(`Running 'npm ${npmArgs.join(' ')}'`)
+    await execa('npm', npmArgs, {
+      cwd: workDir,
+      stdio: 'inherit',
+    })
   }
-
-  const npmArgs = ['install', '--legacy-peer-deps', '--save', ...installPackageArgs]
-  output.print(`Running 'npm ${npmArgs.join(' ')}'`)
-  return execa('npm', npmArgs, {
-    cwd: workDir,
-    stdio: 'inherit',
-  })
 }
 
 function isPackageManifest(item: unknown): item is PartialPackageManifest {

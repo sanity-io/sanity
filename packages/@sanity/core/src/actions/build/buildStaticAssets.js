@@ -41,7 +41,12 @@ export default async (args, context) => {
   await tryInitializePluginConfigs({workDir, output, env: 'production'})
 
   await checkStudioDependencyVersions(workDir)
-  await checkRequiredDependencies(context)
+
+  // If the check resulted in a dependency install, the CLI command will be re-run,
+  // thus we want to exit early
+  if ((await checkRequiredDependencies(context)).didInstall) {
+    return
+  }
 
   const envVars = webpackIntegration.getSanityEnvVars({env: 'production', basePath: workDir})
   const envVarKeys = Object.keys(envVars)

@@ -34,7 +34,12 @@ export default async (args, context) => {
   }
 
   await checkStudioDependencyVersions(workDir)
-  await checkRequiredDependencies(context)
+
+  // If the check resulted in a dependency install, the CLI command will be re-run,
+  // thus we want to exit early
+  if ((await checkRequiredDependencies(context)).didInstall) {
+    return
+  }
 
   let compileSpinner
   const configSpinner = output.spinner('Checking configuration files...')
