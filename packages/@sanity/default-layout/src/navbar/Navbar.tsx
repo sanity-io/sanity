@@ -10,13 +10,14 @@ import {StateLink} from '@sanity/base/router'
 import {unstable_useCanCreateAnyOf, useCurrentUser} from '@sanity/base/hooks'
 import config from 'config:sanity'
 import * as sidecar from 'part:@sanity/default-layout/sidecar?'
+import ToolMenu from 'part:@sanity/default-layout/tool-switcher'
 import styled from 'styled-components'
 import {HAS_SPACES} from '../util/spaces'
 import {Router, Tool} from '../types'
 import {DatasetSelect} from '../datasetSelect'
 import Branding from './branding/Branding'
 import SanityStatusContainer from './studioStatus/SanityStatusContainer'
-import {PresenceMenu, LoginStatus, SearchField, ToolMenuCollapse} from '.'
+import {PresenceMenu, LoginStatus, SearchField} from '.'
 
 interface Props {
   createMenuIsOpen: boolean
@@ -263,7 +264,7 @@ export function Navbar(props: Props) {
           {shouldRender.tools && (
             <Card borderRight paddingRight={1} flex={1} overflow="visible" marginX={2}>
               <LegacyLayerProvider zOffset="navbarPopover">
-                <ToolMenuCollapse tools={tools} router={router} />
+                <ToolMenu direction="horizontal" router={router} tools={tools} />
               </LegacyLayerProvider>
             </Card>
           )}
