@@ -3,7 +3,7 @@
 
 import React, {forwardRef, useMemo} from 'react'
 import {Card, Label, ResponsivePaddingProps} from '@sanity/ui'
-import {IntentLink} from '@sanity/state-router/components'
+import {IntentLink} from '@sanity/base/router'
 import Preview from 'part:@sanity/base/preview?'
 import schema from 'part:@sanity/base/schema'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
