@@ -1,5 +1,4 @@
 import React from 'react'
-import {tap} from 'rxjs/operators'
 import {
   SNAP_TO_DOCK_DISTANCE_BOTTOM,
   SNAP_TO_DOCK_DISTANCE_TOP,
@@ -8,30 +7,11 @@ import {
   INTERSECTION_THRESHOLDS,
 } from '../constants'
 import {ReportedRegionWithRect, RegionWithIntersectionDetails, FieldPresenceData} from '../types'
-import {createIntersectionObserver, ObservableIntersectionObserver} from './intersectionObserver'
+import {createIntersectionObserver} from './intersectionObserver'
+import {WithIntersection} from './WithIntersection'
+
 import {RootWrapper, OverlayWrapper} from './RegionsWithIntersections.styled'
 import styles from './RegionsWithIntersections.css'
-
-interface WithIntersectionProps extends React.ComponentProps<'div'> {
-  onIntersection: (id, IntersectionObserverEntry) => void
-  io: ObservableIntersectionObserver
-  id: string
-}
-const WithIntersection = (props: WithIntersectionProps) => {
-  const {onIntersection, io, id, ...rest} = props
-  const element = React.useRef<HTMLDivElement | null>(null)
-  React.useEffect(() => {
-    const el = element.current
-    if (!el) return undefined
-    const subscription = io
-      .observe(el)
-      .pipe(tap((entry) => onIntersection(id, entry)))
-      .subscribe()
-    return () => subscription.unsubscribe()
-  }, [io])
-
-  return <div ref={element} {...rest} />
-}
 
 type Props = {
   regions: ReportedRegionWithRect<FieldPresenceData>[]
