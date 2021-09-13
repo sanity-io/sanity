@@ -17,7 +17,10 @@ const MediaWrapper = styled(Flex)`
 
   & img {
     position: absolute;
-    inset: 0;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
     object-fit: cover;
     border-radius: inherit;
   }
@@ -35,7 +38,10 @@ const MediaWrapper = styled(Flex)`
   & img + span {
     display: block;
     position: absolute;
-    inset: 0 0 0 0;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
     box-shadow: inset 0 0 0 1px var(--card-fg-color);
     opacity: 0.2;
     border-radius: inherit;
