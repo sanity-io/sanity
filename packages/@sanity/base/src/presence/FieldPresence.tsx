@@ -1,13 +1,7 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
-/* eslint-disable @typescript-eslint/no-use-before-define */
-/* eslint-disable react/require-default-props */
 
 import React, {memo, useContext} from 'react'
 import {sortBy, uniqBy} from 'lodash'
-import {AvatarPosition} from 'part:@sanity/components/avatar'
-import {AvatarCounter} from '@sanity/ui'
+import {AvatarCounter, AvatarPosition} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {UserAvatar} from '../components/UserAvatar'
 import {
