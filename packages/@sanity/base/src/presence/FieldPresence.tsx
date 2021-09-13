@@ -1,4 +1,3 @@
-
 import React, {memo, useContext} from 'react'
 import {sortBy, uniqBy} from 'lodash'
 import {AvatarCounter, AvatarPosition} from '@sanity/ui'
@@ -11,7 +10,7 @@ import {
   DISABLE_OVERLAY,
 } from './constants'
 import {splitRight} from './utils'
-import styles from './FieldPresence.css'
+import {FlexBox, InnerBox} from './FieldPresence.styled'
 import {FormFieldPresenceContext} from './context'
 import {PresenceTooltip} from './PresenceTooltip'
 import {FormFieldPresence} from './types'
@@ -36,7 +35,7 @@ function FieldPresenceWithOverlay(props: FieldPresenceProps) {
   const minWidth = -AVATAR_DISTANCE + (AVATAR_SIZE + AVATAR_DISTANCE) * props.maxAvatars
 
   return (
-    <div ref={ref} className={styles.root} style={{minWidth: minWidth, minHeight: AVATAR_SIZE}} />
+    <FlexBox justify="flex-end" ref={ref} style={{minWidth: minWidth, minHeight: AVATAR_SIZE}} />
   )
 }
 
@@ -98,11 +97,11 @@ export const FieldPresenceInner = memo(function FieldPresenceInner({
   const currWidth = Math.min(calcAvatarStackWidth(uniquePresence.length), maxWidth)
 
   return (
-    <div className={styles.root} style={{width: maxWidth}}>
+    <FlexBox justify="flex-end" style={{width: maxWidth}}>
       <div />
 
       <PresenceTooltip items={uniquePresence} placement="top">
-        <div className={styles.inner} style={{width: currWidth}}>
+        <InnerBox direction="row-reverse" style={{width: currWidth}}>
           {avatars.map(
             (av, i) =>
               av && (
@@ -121,8 +120,8 @@ export const FieldPresenceInner = memo(function FieldPresenceInner({
                 </div>
               )
           )}
-        </div>
+        </InnerBox>
       </PresenceTooltip>
-    </div>
+    </FlexBox>
   )
 })
