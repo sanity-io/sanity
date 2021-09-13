@@ -1,4 +1,15 @@
 {
-  "extends": "../../../.babelrc",
-  "presets": ["@babel/typescript"]
+  "presets": [
+    [
+      "@babel/env",
+      {
+        "targets": {
+          "node": "12"
+        },
+        "modules": "commonjs"
+      }
+    ],
+    "@babel/typescript"
+  ],
+  "plugins": ["lodash", "@babel/plugin-proposal-class-properties"]
 }
