@@ -9,6 +9,7 @@ import {
 } from '../constants'
 import {ReportedRegionWithRect, RegionWithIntersectionDetails, FieldPresenceData} from '../types'
 import {createIntersectionObserver, ObservableIntersectionObserver} from './intersectionObserver'
+import {RootWrapper, OverlayWrapper} from './RegionsWithIntersections.styled'
 import styles from './RegionsWithIntersections.css'
 
 interface WithIntersectionProps extends React.ComponentProps<'div'> {
@@ -116,7 +117,7 @@ export const RegionsWithIntersections = React.forwardRef(function RegionsWithInt
     : []) as RegionWithIntersectionDetails[]
 
   return (
-    <div className={styles.root} ref={ref}>
+    <RootWrapper ref={ref}>
       <WithIntersection
         io={io}
         id="::top"
@@ -130,14 +131,10 @@ export const RegionsWithIntersections = React.forwardRef(function RegionsWithInt
         }}
       />
       <div>{children}</div>
-      <div
-        ref={overlayRef}
-        className={styles.overlay}
-        style={{background: DEBUG ? 'rgba(255; 0; 0; 0.25)' : ''}}
-      >
+      <OverlayWrapper ref={overlayRef} style={{background: DEBUG ? 'rgba(255; 0; 0; 0.25)' : ''}}>
         {overlayRef.current &&
           render(regionsWithIntersectionDetails, overlayRef.current.offsetWidth)}
-      </div>
+      </OverlayWrapper>
       {regions.map((region) => {
         const forceWidth = region.rect.width === 0
         return (
@@ -174,6 +171,6 @@ export const RegionsWithIntersections = React.forwardRef(function RegionsWithInt
           backgroundColor: DEBUG ? 'blue' : 'none',
         }}
       />
-    </div>
+    </RootWrapper>
   )
 })
