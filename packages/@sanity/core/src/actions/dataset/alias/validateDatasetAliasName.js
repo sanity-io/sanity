@@ -1,3 +1,5 @@
+const MAX_DATASET_NAME_LENGTH = 64
+
 module.exports = (datasetName) => {
   if (!datasetName) {
     return 'Alias name is missing'
@@ -13,8 +15,8 @@ module.exports = (datasetName) => {
     return 'Alias name must be at least two characters long'
   }
 
-  if (name.length > 20) {
-    return 'Alias name must be at most 20 characters'
+  if (name.length > MAX_DATASET_NAME_LENGTH) {
+    return `Alias name must be at most ${MAX_DATASET_NAME_LENGTH} characters`
   }
 
   if (!/^[a-z0-9~]/.test(name)) {
