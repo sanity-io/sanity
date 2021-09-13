@@ -6,7 +6,7 @@
   "types": "./dist/dts/index.d.ts",
   "author": "Sanity.io <hello@sanity.io>",
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=12.0.0"
   },
   "license": "MIT",
   "scripts": {
