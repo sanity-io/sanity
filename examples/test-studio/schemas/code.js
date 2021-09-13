@@ -1,10 +1,10 @@
-import {MdCode as icon} from 'react-icons/md'
+import {CodeBlockIcon} from '@sanity/icons'
 
 export default {
   name: 'codeTest',
   type: 'document',
   title: 'Code test',
-  icon,
+  icon: CodeBlockIcon,
   fields: [
     {
       name: 'title',

@@ -1,10 +1,6 @@
-import React from 'react'
-import {
-  MdRateReview as icon,
-  MdPhotoLibrary as imageIcon,
-  MdFormatColorFill as colorIcon,
-} from 'react-icons/md'
+import {ComposeIcon, DropIcon, ImageIcon} from '@sanity/icons'
 import {BlockEditor} from 'part:@sanity/form-builder'
+import React from 'react'
 
 const CustomEditor = React.forwardRef((props, ref) => {
   const {markers, value} = props
@@ -20,7 +16,7 @@ export default {
   name: 'blocksTest',
   title: 'Blocks test',
   type: 'document',
-  icon,
+  icon: ComposeIcon,
   fields: [
     {
       name: 'title',
@@ -39,7 +35,7 @@ export default {
       description: 'Profound description of what belongs here',
       type: 'array',
       of: [
-        {type: 'image', title: 'Image', icon: imageIcon},
+        {type: 'image', title: 'Image', icon: ImageIcon},
         {
           type: 'reference',
           name: 'authorReference',
@@ -58,7 +54,7 @@ export default {
           type: 'color',
           name: 'colorBlock',
           title: 'Color (block)',
-          icon: colorIcon,
+          icon: DropIcon,
         },
         {
           type: 'object',
@@ -293,7 +289,7 @@ export default {
             decorators: [
               {title: 'Strong', value: 'strong'},
               {title: 'Emphasis', value: 'em'},
-              {title: 'Decorator with custom icon', value: 'color', icon: colorIcon},
+              {title: 'Decorator with custom icon', value: 'color', icon: DropIcon},
             ],
             annotations: [
               {
@@ -306,7 +302,7 @@ export default {
                 title: 'Annotation with custom icon',
                 name: 'test',
                 type: 'object',
-                icon: colorIcon,
+                icon: DropIcon,
                 fields: [
                   {
                     name: 'testString',

@@ -1,10 +1,10 @@
-import {MdCenterFocusWeak as icon} from 'react-icons/md'
+import {CollapseIcon} from '@sanity/icons'
 
 export default {
   name: 'focusTest',
   type: 'document',
   title: 'Focus test',
-  icon,
+  icon: CollapseIcon,
   fields: [
     {
       name: 'first',

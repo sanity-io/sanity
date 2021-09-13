@@ -1,10 +1,10 @@
-import {MdCheckBox as icon} from 'react-icons/md'
+import {CheckmarkCircleIcon} from '@sanity/icons'
 
 export default {
   name: 'booleansTest',
   type: 'document',
   title: 'Booleans test',
-  icon,
+  icon: CheckmarkCircleIcon,
   fieldsets: [
     {
       name: 'collection',

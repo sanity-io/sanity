@@ -1,10 +1,10 @@
-import {FaTasks as icon} from 'react-icons/fa'
+import {BlockquoteIcon} from '@sanity/icons'
 
 export default {
   name: 'fieldsetsTest',
   type: 'document',
   title: 'Fieldsets test',
-  icon,
+  icon: BlockquoteIcon,
   preview: {
     select: {
       title: 'myObject.first',

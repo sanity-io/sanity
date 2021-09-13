@@ -1,10 +1,10 @@
-import {MdLink as icon} from 'react-icons/md'
+import {LinkIcon} from '@sanity/icons'
 
 export default {
   name: 'urlsTest',
   type: 'document',
   title: 'URLs test',
-  icon,
+  icon: LinkIcon,
   fields: [
     {
       name: 'title',

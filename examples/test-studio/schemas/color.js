@@ -1,12 +1,13 @@
 /* eslint-disable react/display-name */
+
+import {DropIcon} from '@sanity/icons'
 import React from 'react'
-import {MdFormatColorFill as icon} from 'react-icons/md'
 
 export default {
   name: 'colorTest',
   type: 'document',
   title: 'Color',
-  icon,
+  icon: DropIcon,
   preview: {
     select: {
       title: 'title',
