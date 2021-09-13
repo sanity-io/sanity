@@ -114,6 +114,7 @@ export function SideMenu(props: Props) {
         <Box flex={1} overflow="auto" padding={[3, 3, 4]}>
           <ToolMenu
             activeToolName={activeToolName}
+            direction="vertical"
             isVisible={isOpen}
             onSwitchTool={onSwitchTool}
             router={router}

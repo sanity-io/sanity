@@ -12,4 +12,49 @@ declare module 'part:@sanity/default-layout/sidecar?' {
 
 declare module 'part:@sanity/default-layout/studio-hints-config'
 declare module 'part:@sanity/default-layout/studio-hints-config?'
-declare module 'part:@sanity/default-layout/tool-switcher'
+declare module 'part:@sanity/default-layout/tool-switcher' {
+  interface Router {
+    state: {space?: string; tool: string}
+    navigate: () => void
+  }
+
+  interface Tool {
+    canHandleIntent?: (
+      intent: Record<string, any>,
+      params: Record<string, any>,
+      state: Record<string, any>
+    ) => void
+    component?: React.ComponentType
+    icon?: React.ComponentType
+    getIntentState?: (
+      intent: Record<string, any>,
+      params: Record<string, any>,
+      state: Record<string, any>,
+      payload: Record<string, any>
+    ) => void
+    name: string
+    title: string
+    router?: Record<string, any>
+  }
+
+  interface VerticalToolSwitcherProps {
+    activeToolName: string
+    direction: 'vertical'
+    isVisible: boolean
+    onSwitchTool: () => void
+    router: Router
+    tools: Tool[]
+  }
+
+  interface HorizontalToolSwitcherProps {
+    direction: 'horizontal'
+    router: Router
+    tools: Tool[]
+  }
+
+  type ToolSwitcherProps = VerticalToolSwitcherProps | HorizontalToolSwitcherProps
+
+  const ToolSwitcher: React.ComponentType<ToolSwitcherProps>
+
+  export default ToolSwitcher
+}
