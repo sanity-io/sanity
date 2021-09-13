@@ -1,9 +1,11 @@
 import chalk from 'chalk'
 
+const MAX_DATASET_NAME_LENGTH = 64
+
 const datasetNameError =
   'Dataset names can only contain lowercase characters,' +
   'numbers, underscores and dashes' +
-  'and can be at most 20 characters.'
+  `and can be at most ${MAX_DATASET_NAME_LENGTH} characters.`
 
 export default function promptForDatasetName(prompt, options = {}, existingDatasets = []) {
   return prompt.single({
@@ -14,8 +16,8 @@ export default function promptForDatasetName(prompt, options = {}, existingDatas
         return `Dataset name already exists`
       }
 
-      if (!name || name.length < 2 || name.length > 20) {
-        return 'Dataset name must be between 2 and 20 characters'
+      if (!name || name.length < 2 || name.length > MAX_DATASET_NAME_LENGTH) {
+        return `Dataset name must be between 2 and ${MAX_DATASET_NAME_LENGTH} characters`
       }
 
       if (name.toLowerCase() !== name) {
