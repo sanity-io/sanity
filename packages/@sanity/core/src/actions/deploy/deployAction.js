@@ -67,7 +67,14 @@ export default async (args, context) => {
     const overrides = {project: {basePath: undefined}}
     const buildStaticAssets = lazyRequire(require.resolve('../build/buildStaticAssets'))
     const buildArgs = [args.argsWithoutOptions[0]].filter(Boolean)
-    await buildStaticAssets({extOptions: flags, argsWithoutOptions: buildArgs, overrides}, context)
+    const {didCompile} = await buildStaticAssets(
+      {extOptions: flags, argsWithoutOptions: buildArgs, overrides},
+      context
+    )
+
+    if (!didCompile) {
+      return
+    }
   }
 
   // Ensure that the directory exists, is a directory and seems to have valid content

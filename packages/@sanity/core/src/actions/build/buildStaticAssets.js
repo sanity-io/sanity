@@ -15,7 +15,7 @@ import compressJavascript from './compressJavascript'
 const rimraf = promisify(rimTheRaf)
 const absoluteMatch = /^https?:\/\//i
 
-export default async (args, context) => {
+export default async function buildStaticAssets(args, context) {
   const overrides = args.overrides || {}
   const {output, prompt, workDir} = context
   const flags = Object.assign(
@@ -45,7 +45,7 @@ export default async (args, context) => {
   // If the check resulted in a dependency install, the CLI command will be re-run,
   // thus we want to exit early
   if ((await checkRequiredDependencies(context)).didInstall) {
-    return
+    return {didCompile: false}
   }
 
   const envVars = webpackIntegration.getSanityEnvVars({env: 'production', basePath: workDir})
@@ -82,7 +82,7 @@ export default async (args, context) => {
 
   spin = output.spinner('Building Sanity').start()
 
-  const bundle = {}
+  const bundle = {didCompile: true}
 
   try {
     // Compile the bundle
