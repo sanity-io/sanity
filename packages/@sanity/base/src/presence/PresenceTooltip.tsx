@@ -21,13 +21,11 @@ export function PresenceTooltip(props: PresenceTooltipProps) {
       {items.map((item) => (
         <Card key={item.user.id} padding={1}>
           <Flex align="center">
-            <div className={styles.avatarContainer}>
+            <div>
               <UserAvatar user={item.user} status="online" />
             </div>
 
-            <div className={styles.textContainer}>
-              <div className={styles.item__displayName}>{item.user.displayName}</div>
-            </div>
+            <div className={styles.textContainer}>{item.user.displayName}</div>
           </Flex>
         </Card>
       ))}
