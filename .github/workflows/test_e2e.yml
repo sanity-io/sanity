@@ -4,6 +4,7 @@ on: [push]
 
 jobs:
   e2e:
+    name: End-to-end tests
     runs-on: ubuntu-latest
 
     strategy:

@@ -4,6 +4,7 @@ on: [push]
 
 jobs:
   test-perf:
+    name: Performance tests
     runs-on: ubuntu-latest
 
     strategy:
