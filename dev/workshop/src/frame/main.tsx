@@ -1,6 +1,6 @@
-import {ThemeColorSchemeKey, ThemeProvider} from '@sanity/ui'
+import {ErrorBoundary, ThemeColorSchemeKey, ThemeProvider} from '@sanity/ui'
 import {WorkshopFrame} from '@sanity/ui-workshop'
-import React, {useState} from 'react'
+import React, {useCallback, useState} from 'react'
 import ReactDOM from 'react-dom'
 import Refractor from 'react-refractor'
 import javascript from 'refractor/lang/javascript'
@@ -18,10 +18,22 @@ Refractor.registerLanguage(typescript)
 function Main() {
   const [scheme, setScheme] = useState<ThemeColorSchemeKey>('light')
 
+  const handleError = useCallback((params: {error: Error; info: React.ErrorInfo}) => {
+    // eslint-disable-next-line no-console
+    console.log('@todo: handle react error:', params)
+  }, [])
+
   return (
-    <ThemeProvider scheme={scheme} theme={theme}>
-      <WorkshopFrame frameUrl="/frame/" scopes={scopes} setScheme={setScheme} title="@sanity/ui" />
-    </ThemeProvider>
+    <ErrorBoundary onCatch={handleError}>
+      <ThemeProvider scheme={scheme} theme={theme}>
+        <WorkshopFrame
+          frameUrl="/frame/"
+          scopes={scopes}
+          setScheme={setScheme}
+          title="@sanity/ui"
+        />
+      </ThemeProvider>
+    </ErrorBoundary>
   )
 }
 

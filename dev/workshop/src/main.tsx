@@ -1,4 +1,4 @@
-import {ThemeColorProvider, ThemeProvider, usePrefersDark} from '@sanity/ui'
+import {ErrorBoundary, ThemeProvider, usePrefersDark} from '@sanity/ui'
 import {Workshop, WorkshopLocation} from '@sanity/ui-workshop'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import ReactDOM from 'react-dom'
@@ -7,7 +7,6 @@ import javascript from 'refractor/lang/javascript'
 import json from 'refractor/lang/json'
 import jsx from 'refractor/lang/jsx'
 import typescript from 'refractor/lang/typescript'
-import {createGlobalStyle} from 'styled-components'
 import {theme as studioTheme} from './theme'
 import {LocationProvider, useLocation} from './location'
 import {scopes} from '$workshop'
@@ -16,26 +15,6 @@ Refractor.registerLanguage(javascript)
 Refractor.registerLanguage(json)
 Refractor.registerLanguage(jsx)
 Refractor.registerLanguage(typescript)
-
-const GlobalStyle = createGlobalStyle`
-  html {
-    background-color: ${({theme}) => theme.sanity.color.base.bg};
-  }
-
-  html,
-  body,
-  #root {
-    height: 100%;
-  }
-
-  body {
-    margin: 0;
-  }
-
-  #root {
-    -webkit-font-smoothing: antialiased;
-  }
-`
 
 const WORKSHOP_COLLECTIONS = [
   {
@@ -49,6 +28,10 @@ const WORKSHOP_COLLECTIONS = [
   {
     name: 'field',
     title: '@sanity/field',
+  },
+  {
+    name: 'form-builder',
+    title: '@sanity/form-builder',
   },
 ]
 
@@ -72,23 +55,27 @@ function Root() {
     setScheme(prefersDark ? 'dark' : 'light')
   }, [prefersDark])
 
+  const handleError = useCallback((params: {error: Error; info: React.ErrorInfo}) => {
+    // eslint-disable-next-line no-console
+    console.log('@todo: handle react error:', params)
+  }, [])
+
   return (
-    <ThemeProvider scheme={scheme} theme={studioTheme}>
-      <ThemeColorProvider tone="transparent">
-        <GlobalStyle />
-      </ThemeColorProvider>
-      <Workshop
-        collections={WORKSHOP_COLLECTIONS}
-        frameUrl="/frame/"
-        location={studioLocation}
-        onLocationPush={handleLocationPush}
-        onLocationReplace={handleLocationReplace}
-        scheme={scheme}
-        scopes={scopes}
-        setScheme={setScheme}
-        title="Studio Workshop"
-      />
-    </ThemeProvider>
+    <ErrorBoundary onCatch={handleError}>
+      <ThemeProvider scheme={scheme} theme={studioTheme}>
+        <Workshop
+          collections={WORKSHOP_COLLECTIONS}
+          frameUrl="/frame/"
+          location={studioLocation}
+          onLocationPush={handleLocationPush}
+          onLocationReplace={handleLocationReplace}
+          scheme={scheme}
+          scopes={scopes}
+          setScheme={setScheme}
+          title="Studio Workshop"
+        />
+      </ThemeProvider>
+    </ErrorBoundary>
   )
 }
 

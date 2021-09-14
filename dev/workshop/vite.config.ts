@@ -43,6 +43,7 @@ const monorepoAliases = loadMonorepoAliases()
 
 export default defineConfig({
   build: {
+    // minify: false,
     outDir: path.resolve(__dirname, 'public'),
     rollupOptions: {
       input: {
@@ -50,6 +51,7 @@ export default defineConfig({
         frame: path.resolve(__dirname, 'src/frame/index.html'),
       },
     },
+    // sourcemap: true,
   },
   define: {
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
@@ -57,7 +59,7 @@ export default defineConfig({
   plugins: [
     reactRefresh(),
     pluginLegacyParts(partsResolver),
-    pluginCanonicalModules(['@sanity/ui', 'styled-components', 'react', 'react-dom']),
+    pluginCanonicalModules(['@sanity/ui', 'react', 'react-dom', 'styled-components']),
     pluginWorkshopScopes(),
     viteCommonjs({
       include: ['@sanity/eventsource'],

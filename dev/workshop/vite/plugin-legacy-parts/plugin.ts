@@ -6,9 +6,11 @@ import {PluginOption} from 'vite'
 const ROOT_PATH = path.resolve(__dirname, '../../../..')
 const DEBUG_PART_PATH = path.resolve(__dirname, 'parts/debug.ts')
 const EMPTY_PART_PATH = path.resolve(__dirname, 'parts/empty.ts')
+// const RE_CSS_PART = /(?:'|")(part\:.*)(?:'|")/gm
+const RE_CSS_IMPORT_PART = /@import (?:'|")(part:.*)(?:'|");/gm
 
 function isDeprecated(partName: string, source?: string) {
-  if (source && source.includes('/packages/@sanity/base/src/__legacy/')) {
+  if (source && (source.includes('/__legacy') || source.includes('/legacyPart'))) {
     return false
   }
 
@@ -44,9 +46,12 @@ export function pluginLegacyParts(partsResolver: any): PluginOption {
           })
 
           const msg = [
+            `\n`,
+            `================================================================================`,
             `PART:        ${id}`,
             `Resolves to: ${path.relative(ROOT_PATH, partPath)}`,
             source && `Imported by: ${path.relative(ROOT_PATH, source)}`,
+            ``,
           ]
             .filter(Boolean)
             .join('\n')
@@ -56,11 +61,8 @@ export function pluginLegacyParts(partsResolver: any): PluginOption {
             console.log(chalk.red(msg))
           } else {
             // eslint-disable-next-line no-console
-            console.log(chalk.gray(msg))
+            // console.log(msg)
           }
-
-          // eslint-disable-next-line no-console
-          console.log('')
 
           return partPath
         }
@@ -77,6 +79,35 @@ export function pluginLegacyParts(partsResolver: any): PluginOption {
       }
 
       return undefined
+    },
+
+    transform(src, id) {
+      if (!id.endsWith('.css')) return undefined
+
+      // =============================================== //
+      // This will strip `@import '...';` from CSS files //
+      // =============================================== //
+
+      const matches: RegExpExecArray[] = []
+      let m: RegExpExecArray | null
+
+      while ((m = RE_CSS_IMPORT_PART.exec(src))) {
+        matches.push(m)
+      }
+
+      if (matches.length === 0) {
+        return undefined
+      }
+
+      let result = src
+
+      for (const match of matches) {
+        while (result.indexOf(match[0]) > -1) {
+          result = result.replace(match[0], '')
+        }
+      }
+
+      return result
     },
   }
 }

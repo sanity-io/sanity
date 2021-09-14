@@ -11,25 +11,24 @@
         -webkit-text-size-adjust: 100%;
         text-size-adjust: 100%;
         -webkit-tap-highlight-color: transparent;
+        -webkit-font-smoothing: antialiased;
       }
       html,
       body,
       #root {
         height: 100%;
-      }
-      body {
         margin: 0;
       }
-      #root {
-        -webkit-font-smoothing: antialiased;
-      }
     </style>
+    <script>
+      window.setImmediate = window.setTimeout
+      window.onerror = function (err) {
+        console.log('@todo: handle window error:', err)
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
-    <script>
-      window.setImmediate = window.setTimeout
-    </script>
     <script type="module" src="/frame/main.tsx"></script>
   </body>
 </html>

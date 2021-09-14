@@ -5,14 +5,14 @@
   "main": "package.json",
   "license": "MIT",
   "scripts": {
-    "build": "NODE_ENV=production vite build",
+    "build": "vite build",
     "clean": "rimraf parts.ts public",
     "dev": "npm run parts:generate && vite",
     "lint": "eslint . --ext .js,.jsx,.mjs,.ts,.tsx --quiet",
     "parts:generate": "node -r esbuild-register __legacy/gen-parts.ts",
     "prebuild": "npm run clean && npm run parts:generate",
     "start": "http-server -a localhost -c-0 -p 9009 -s -P http://localhost:9009/index.html? public",
-    "vercel-build": "npm run parts:generate && NODE_ENV=production npx vite build",
+    "vercel-build": "npm run parts:generate && npx vite build",
     "type-check": "tsc -b"
   },
   "dependencies": {
@@ -27,7 +27,7 @@
     "styled-components": "^5.2.0"
   },
   "devDependencies": {
-    "@originjs/vite-plugin-commonjs": "1.0.0-beta7",
+    "@originjs/vite-plugin-commonjs": "1.0.0",
     "@sanity/base": "2.20.0",
     "@sanity/default-layout": "2.20.0",
     "@sanity/default-login": "2.19.0",
