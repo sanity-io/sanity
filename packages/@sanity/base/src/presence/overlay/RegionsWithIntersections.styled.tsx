@@ -1,7 +1,7 @@
 import styled, {css} from 'styled-components'
 import {WithIntersection} from './WithIntersection'
 
-interface StyleWithIntersectionProps {
+interface styleProps {
   debug: boolean
   margins?: [number, number, number, number]
 }
@@ -26,46 +26,40 @@ export const RegionWrapper = css`
   position: absolute;
 `
 
-export const TopRegionWrapper = styled(WithIntersection)(
-  ({debug, margins}: StyleWithIntersectionProps) => {
-    return css`
-      ${RegionWrapper}
+export const TopRegionWrapper = styled(WithIntersection)(({debug, margins}: styleProps) => {
+  return css`
+    ${RegionWrapper}
 
-      z-index: 100;
-      position: sticky;
-      height: 1px;
-      top: ${margins[0] - 1}px;
-      background-color: ${debug ? 'red' : 'none'};
-    `
-  }
-)
+    z-index: 100;
+    position: sticky;
+    height: 1px;
+    top: ${margins[0] - 1}px;
+    background-color: ${debug ? 'red' : 'none'};
+  `
+})
 
-export const MiddleRegionWrapper = styled(WithIntersection)(
-  ({debug}: StyleWithIntersectionProps) => {
-    return css`
-      ${RegionWrapper}
+export const MiddleRegionWrapper = styled(WithIntersection)(({debug}: styleProps) => {
+  return css`
+    ${RegionWrapper}
 
-      visibility: 'none';
+    visibility: 'none';
 
-      ${debug &&
-      css`
-        background: rgba(255, 0, 0, 0.25);
-        outline: 1px solid #00b;
-        visibility: 'visible';
-      `}
-    `
-  }
-)
+    ${debug &&
+    css`
+      background: rgba(255, 0, 0, 0.25);
+      outline: 1px solid #00b;
+      visibility: 'visible';
+    `}
+  `
+})
 
-export const BottomRegionWrapper = styled(WithIntersection)(
-  ({debug}: StyleWithIntersectionProps) => {
-    return css`
-      ${RegionWrapper}
+export const BottomRegionWrapper = styled(WithIntersection)(({debug}: styleProps) => {
+  return css`
+    ${RegionWrapper}
 
-      position: sticky;
-      bottom: -1px;
-      height: 1;
-      background-color: ${debug ? 'blue' : 'none'};
-    `
-  }
-)
+    position: sticky;
+    bottom: -1px;
+    height: 1;
+    background-color: ${debug ? 'blue' : 'none'};
+  `
+})
