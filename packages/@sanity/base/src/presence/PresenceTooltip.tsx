@@ -1,11 +1,9 @@
-// @todo: remove the following line when part imports has been removed from this file
-
 import React from 'react'
 import {Tooltip, Placement, Card, Flex} from '@sanity/ui'
 import {UserAvatar} from '../components/UserAvatar'
 import type {FormFieldPresence} from './types'
 
-import styles from './PresenceTooltip.css'
+import {TextWrapper} from './PresenceTooltip.styled'
 
 interface PresenceTooltipProps {
   children?: React.ReactElement
@@ -25,7 +23,7 @@ export function PresenceTooltip(props: PresenceTooltipProps) {
               <UserAvatar user={item.user} status="online" />
             </div>
 
-            <div className={styles.textContainer}>{item.user.displayName}</div>
+            <TextWrapper>{item.user.displayName}</TextWrapper>
           </Flex>
         </Card>
       ))}
