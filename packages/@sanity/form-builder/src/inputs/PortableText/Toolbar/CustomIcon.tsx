@@ -1,6 +1,6 @@
 import React from 'react'
 
-import styles from './CustomIcon.css'
+import styles from './CustomIcon.module.css'
 
 interface Props {
   icon: string

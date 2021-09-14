@@ -5,7 +5,7 @@
 import React, {FunctionComponent} from 'react'
 import {IntentLink} from '@sanity/base/router'
 
-import styles from './BlockObjectMenuItem.css'
+import styles from './BlockObjectMenuItem.module.css'
 
 // This component renders the dropdown button menu on the block object's preview
 

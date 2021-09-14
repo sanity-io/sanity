@@ -9,7 +9,7 @@ import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import Preview from '../../../Preview'
 import {PatchEvent} from '../../../PatchEvent'
 
-import styles from './InlineObject.css'
+import styles from './InlineObject.module.css'
 
 type Props = {
   value: PortableTextChild

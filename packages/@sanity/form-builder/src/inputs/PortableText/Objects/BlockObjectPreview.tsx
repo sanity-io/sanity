@@ -15,7 +15,7 @@ import VisibilityIcon from 'part:@sanity/base/visibility-icon'
 import Preview from '../../../Preview'
 import {MenuItem, DropDownMenuItemProps} from './BlockObjectMenuItem'
 
-import styles from './BlockObject.css'
+import styles from './BlockObject.module.css'
 
 type Props = {
   type: Type

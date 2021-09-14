@@ -1,7 +1,7 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import React, {useMemo} from 'react'
+import React from 'react'
 import BlockExtras from 'part:@sanity/form-builder/input/block-editor/block-extras'
 import {isKeySegment, Marker, Path} from '@sanity/types'
 import {
@@ -14,7 +14,7 @@ import PatchEvent from '../../../PatchEvent'
 import createBlockActionPatchFn from './utils/createBlockActionPatchFn'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
 
-import styles from './BlockExtrasOverlay.css'
+import styles from './BlockExtrasOverlay.module.css'
 
 type Props = {
   isFullscreen: boolean

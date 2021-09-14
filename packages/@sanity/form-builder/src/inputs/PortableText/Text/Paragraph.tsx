@@ -1,5 +1,5 @@
 import React from 'react'
-import styles from './Paragraph.css'
+import styles from './Paragraph.module.css'
 
 interface Props {
   children: React.ReactNode
