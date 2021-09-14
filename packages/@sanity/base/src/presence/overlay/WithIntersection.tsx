@@ -18,7 +18,6 @@ export const WithIntersection = (props: WithIntersectionProps) => {
       .pipe(tap((entry) => onIntersection(id, entry)))
       .subscribe()
     return () => subscription.unsubscribe()
-  }, [io])
-
+  }, [io, id, onIntersection])
   return <div ref={element} {...rest} />
 }

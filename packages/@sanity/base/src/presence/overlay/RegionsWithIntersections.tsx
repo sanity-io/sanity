@@ -8,10 +8,14 @@ import {
 } from '../constants'
 import {ReportedRegionWithRect, RegionWithIntersectionDetails, FieldPresenceData} from '../types'
 import {createIntersectionObserver} from './intersectionObserver'
-import {WithIntersection} from './WithIntersection'
 
-import {RootWrapper, OverlayWrapper} from './RegionsWithIntersections.styled'
-import styles from './RegionsWithIntersections.css'
+import {
+  RootWrapper,
+  OverlayWrapper,
+  TopRegionWrapper,
+  MiddleRegionWrapper,
+  BottomRegionWrapper,
+} from './RegionsWithIntersections.styled'
 
 type Props = {
   regions: ReportedRegionWithRect<FieldPresenceData>[]
@@ -98,17 +102,12 @@ export const RegionsWithIntersections = React.forwardRef(function RegionsWithInt
 
   return (
     <RootWrapper ref={ref}>
-      <WithIntersection
+      <TopRegionWrapper
         io={io}
         id="::top"
         onIntersection={onIntersection}
-        style={{
-          zIndex: 100,
-          position: 'sticky',
-          top: margins[0] - 1,
-          height: 1,
-          backgroundColor: DEBUG ? 'red' : 'none',
-        }}
+        debug={DEBUG}
+        margins={margins}
       />
       <div>{children}</div>
       <OverlayWrapper ref={overlayRef} style={{background: DEBUG ? 'rgba(255; 0; 0; 0.25)' : ''}}>
@@ -118,30 +117,24 @@ export const RegionsWithIntersections = React.forwardRef(function RegionsWithInt
       {regions.map((region) => {
         const forceWidth = region.rect.width === 0
         return (
-          <WithIntersection
-            className={styles.region}
+          <MiddleRegionWrapper
             io={io}
             onIntersection={onIntersection}
             key={region.id}
             id={region.id}
+            debug={DEBUG}
             style={{
-              ...(DEBUG
-                ? {
-                    background: 'rgba(255, 0, 0, 0.25)',
-                    outline: '1px solid #00b',
-                  }
-                : {}),
               width: forceWidth ? 1 : region.rect.width,
               left: region.rect.left - (forceWidth ? 1 : 0),
               top: region.rect.top - INTERSECTION_ELEMENT_PADDING,
               height: region.rect.height + INTERSECTION_ELEMENT_PADDING * 2,
-              visibility: DEBUG ? 'visible' : 'hidden',
             }}
           />
         )
       })}
-      <WithIntersection
+      <BottomRegionWrapper
         id="::bottom"
+        debug={DEBUG}
         io={io}
         onIntersection={onIntersection}
         style={{
