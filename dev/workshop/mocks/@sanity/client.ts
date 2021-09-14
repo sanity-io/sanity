@@ -2,17 +2,36 @@
 
 export default createClient
 
-function createClient(opts: unknown) {
-  console.log('[mock] sanityClient', opts)
+function createClient(clientOpts: any) {
+  console.log('[mock] sanityClient.create', clientOpts)
   return {
-    clone: createClient,
-    config: createClient,
-    getUrl: (...args: unknown[]) => {
-      console.log('[mock] sanityClient.getUrl', ...args)
-      return ''
+    clone: (opts: any = {}) => createClient({...clientOpts, ...opts}),
+    config: (opts: any = {}) => createClient({...clientOpts, ...opts}),
+    getUrl: (uri: string) => {
+      console.log('[mock] sanityClient.getUrl', uri)
+      return uri
     },
-    request: (...args: unknown[]) => {
-      console.log('[mock] sanityClient.request', ...args)
+    request: (opts: any) => {
+      console.log('[mock] sanityClient.request', opts)
+
+      if (opts.uri === '/users/me') {
+        return Promise.resolve({
+          id: 'foo',
+          name: 'Doug Engelbart',
+          email: 'doug@sanity.io',
+          profileImage: 'https://source.unsplash.com/96x96/?face',
+          role: 'administrator',
+          roles: [
+            {
+              name: 'administrator',
+              title: 'Administrator',
+              description:
+                'Read and write access to all datasets, with full access to all project settings.',
+            },
+          ],
+        })
+      }
+
       return Promise.resolve({})
     },
   }
