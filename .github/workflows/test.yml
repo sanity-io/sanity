@@ -4,6 +4,7 @@ on: [push]
 
 jobs:
   test:
+    name: Test (${{ matrix.os }} / node ${{ matrix.node }})
     runs-on: ${{ matrix.os }}
     continue-on-error: ${{ matrix.experimental }}
 
