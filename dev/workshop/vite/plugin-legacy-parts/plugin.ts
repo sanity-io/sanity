@@ -25,14 +25,6 @@ export function pluginLegacyParts(partsResolver: any): PluginOption {
     name: 'workshop-scopes',
 
     async resolveId(id, source) {
-      if (id === 'styled-components') {
-        return require.resolve('styled-components')
-      }
-
-      if (id === '@sanity/ui') {
-        return require.resolve('@sanity/ui')
-      }
-
       if (id === 'config:sanity') {
         return path.resolve(__dirname, '../../sanity.json')
       }
@@ -47,14 +39,9 @@ export function pluginLegacyParts(partsResolver: any): PluginOption {
         const implementations = parts.implementations[id]
 
         if (implementations && implementations.length > 0) {
-          let partPath = resolve.sync(implementations[0].path, {
+          const partPath = resolve.sync(implementations[0].path, {
             extensions: ['.ts', '.tsx', '.js'],
           })
-
-          // NOTE: this is a workaround since Vite doesn't do CJS exports
-          if (id === 'part:@sanity/base/client') {
-            partPath = partPath.replace('/index.ts', '/index.esm.ts')
-          }
 
           const msg = [
             `PART:        ${id}`,
