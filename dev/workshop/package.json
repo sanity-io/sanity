@@ -5,7 +5,7 @@
   "main": "package.json",
   "license": "MIT",
   "scripts": {
-    "build": "echo '@todo: NODE_ENV=production vite build'",
+    "build": "NODE_ENV=production vite build",
     "clean": "rimraf parts.ts public",
     "dev": "npm run parts:generate && vite",
     "lint": "eslint . --ext .js,.jsx,.mjs,.ts,.tsx --quiet",
@@ -43,6 +43,7 @@
     "globby": "^10.0.0",
     "postcss-cssnext": "^3.0.2",
     "resolve": "^1.3.3",
+    "rimraf": "^2.7.1",
     "vite": "^2.4.4"
   }
 }

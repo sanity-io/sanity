@@ -12,7 +12,6 @@ import parts from './__legacy/parts'
 
 const SRC_PATH = path.resolve(__dirname, 'src')
 const MONOREPO_PATH = path.resolve(__dirname, '../..')
-const CANONICAL_MODULES = ['@sanity/ui', 'styled-components', 'react', 'react-dom']
 
 const partsResolver = createPartsResolver()
 
@@ -32,10 +31,12 @@ function loadMonorepoAliases() {
   // eslint-disable-next-line import/no-dynamic-require
   const aliases = require(path.resolve(MONOREPO_PATH, '.module-aliases'))
 
-  return Object.entries(aliases).map(([key, relativePath]: any) => ({
-    find: key,
-    replacement: path.resolve(MONOREPO_PATH, relativePath),
-  }))
+  return Object.entries(aliases)
+    .filter(([key]) => key != '@sanity/client')
+    .map(([key, relativePath]: any) => ({
+      find: key,
+      replacement: path.resolve(MONOREPO_PATH, relativePath),
+    }))
 }
 
 const monorepoAliases = loadMonorepoAliases()
@@ -56,12 +57,31 @@ export default defineConfig({
   plugins: [
     reactRefresh(),
     pluginLegacyParts(partsResolver),
-    pluginCanonicalModules(CANONICAL_MODULES),
+    pluginCanonicalModules(['@sanity/ui', 'styled-components', 'react', 'react-dom']),
     pluginWorkshopScopes(),
-    viteCommonjs({include: ['@sanity/client', '@sanity/eventsource', '@sanity/generate-help-url']}),
+    viteCommonjs({
+      include: ['@sanity/eventsource'],
+    }),
   ],
   resolve: {
-    alias: [...monorepoAliases, ...cssPartAliases],
+    alias: [
+      ...monorepoAliases,
+      ...cssPartAliases,
+
+      // NOTE: this is a workaround since Vite doesn't do CJS exports
+      {
+        find: '@sanity/client',
+        replacement: path.resolve(__dirname, 'mocks/@sanity/client.ts'),
+      },
+      {
+        find: '@sanity/generate-help-url',
+        replacement: path.resolve(__dirname, 'mocks/@sanity/generate-help-url.ts'),
+      },
+      {
+        find: 'part:@sanity/base/client',
+        replacement: path.resolve(MONOREPO_PATH, 'packages/@sanity/base/src/client/index.esm.ts'),
+      },
+    ],
   },
   root: SRC_PATH,
   server: {
