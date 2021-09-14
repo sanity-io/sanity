@@ -99,7 +99,7 @@ function resolvePluginPath(plugin, sync) {
       throw getPluginNotFoundError(plugin.name, locations)
     }
 
-    return location
+    return path.resolve(location)
   }
 
   return Promise.all(locations.map(pathExists))
@@ -109,7 +109,7 @@ function resolvePluginPath(plugin, sync) {
         throw getPluginNotFoundError(plugin.name, locations)
       }
 
-      return locations[index]
+      return path.resolve(locations[index])
     })
 }
 

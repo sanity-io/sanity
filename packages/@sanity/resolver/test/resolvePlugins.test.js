@@ -202,14 +202,14 @@ describe('plugin resolver', () => {
     it('prefers fully qualified, local path (/plugins/sanity-plugin-<name>)', () => {
       mockFs(getResolutionOrderFixture({chosenMethod: 'fullLocalPath'}))
       return resolvePlugins(opts).then((plugins) => {
-        expect(plugins[0].path).toBe('/sanity/plugins/sanity-plugin-bar')
+        expect(plugins[0].path).toBe(path.resolve('/sanity/plugins/sanity-plugin-bar'))
       })
     })
 
     it('prefers short-named, local path as 2nd option (/plugins/<name>)', () => {
       mockFs(getResolutionOrderFixture({chosenMethod: 'shortLocalPath'}))
       return resolvePlugins(opts).then((plugins) => {
-        expect(plugins[0].path).toBe('/sanity/plugins/bar')
+        expect(plugins[0].path).toBe(path.resolve('/sanity/plugins/bar'))
       })
     })
 
@@ -218,7 +218,7 @@ describe('plugin resolver', () => {
       mockFs(getResolutionOrderFixture({chosenMethod: 'subNodeModules'}))
       return resolvePlugins(opts).then((plugins) => {
         expect(plugins[0].path).toBe(
-          '/sanity/node_modules/sanity-plugin-foo/node_modules/sanity-plugin-bar'
+          path.resolve('/sanity/node_modules/sanity-plugin-foo/node_modules/sanity-plugin-bar')
         )
       })
     })
@@ -226,7 +226,7 @@ describe('plugin resolver', () => {
     it('prefers fully qualified in root node_modules as 4th option (/node_modules/sanity-plugin-<name>)', () => {
       mockFs(getResolutionOrderFixture({chosenMethod: 'nodeModules'}))
       return resolvePlugins(opts).then((plugins) => {
-        expect(plugins[0].path).toBe('/sanity/node_modules/sanity-plugin-bar')
+        expect(plugins[0].path).toBe(path.resolve('/sanity/node_modules/sanity-plugin-bar'))
       })
     })
 
@@ -234,11 +234,11 @@ describe('plugin resolver', () => {
       mockFs(getNodeResolutionTree())
       const resolveOpts = Object.assign({}, opts, {basePath: '/sanity/app'})
       return resolvePlugins(resolveOpts).then((plugins) => {
-        expect(plugins[0].path).toBe('/sanity/node_modules/@sanity/default-layout')
-        expect(plugins[1].path).toBe('/sanity/node_modules/@sanity/core')
-        expect(plugins[2].path).toBe('/node_modules/@sanity/strawberry')
-        expect(plugins[3].path).toBe('/node_modules/sanity-plugin-rebeltastic')
-        expect(plugins[4].path).toBe('/sanity/app')
+        expect(plugins[0].path).toBe(path.resolve('/sanity/node_modules/@sanity/default-layout'))
+        expect(plugins[1].path).toBe(path.resolve('/sanity/node_modules/@sanity/core'))
+        expect(plugins[2].path).toBe(path.resolve('/node_modules/@sanity/strawberry'))
+        expect(plugins[3].path).toBe(path.resolve('/node_modules/sanity-plugin-rebeltastic'))
+        expect(plugins[4].path).toBe(path.resolve('/sanity/app'))
       })
     })
   })
@@ -247,26 +247,30 @@ describe('plugin resolver', () => {
     mockFs(getBasicTree())
     return resolveParts(opts).then((res) => {
       const settings = res.definitions['part:@sanity/default-layout/settingsPane']
-      expect(settings.path).toBe('/sanity/node_modules/@sanity/default-layout')
+      expect(settings.path).toBe(path.resolve('/sanity/node_modules/@sanity/default-layout'))
 
       const tool = res.implementations['part:@sanity/default-layout/tool']
       expect(tool).toHaveLength(2)
       expect(tool[0]).toEqual({
         plugin: 'instagram',
-        path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/InstagramTool',
+        path: path.resolve(
+          '/sanity/node_modules/sanity-plugin-instagram/lib/components/InstagramTool'
+        ),
       })
 
       const main = res.implementations['part:@sanity/core/root']
       expect(main).toHaveLength(1)
       expect(main[0]).toEqual({
         plugin: '@sanity/default-layout',
-        path: '/sanity/node_modules/@sanity/default-layout/lib/components/Root',
+        path: path.resolve('/sanity/node_modules/@sanity/default-layout/lib/components/Root'),
       })
 
       const comments = res.implementations['part:instagram/commentsList']
       expect(comments[0]).toEqual({
         plugin: 'instagram',
-        path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/CommentsList',
+        path: path.resolve(
+          '/sanity/node_modules/sanity-plugin-instagram/lib/components/CommentsList'
+        ),
       })
     })
   })
@@ -276,10 +280,10 @@ describe('plugin resolver', () => {
     return resolveParts(opts).then((res) => {
       expect(res.plugins).toHaveLength(4)
       expect(res.plugins.map((plugin) => plugin.path)).toEqual([
-        '/sanity/node_modules/@sanity/default-layout',
-        '/sanity/node_modules/@sanity/core',
-        '/sanity/node_modules/sanity-plugin-instagram',
-        '/sanity',
+        path.resolve('/sanity/node_modules/@sanity/default-layout'),
+        path.resolve('/sanity/node_modules/@sanity/core'),
+        path.resolve('/sanity/node_modules/sanity-plugin-instagram'),
+        path.resolve('/sanity'),
       ])
     })
   })
@@ -290,10 +294,10 @@ describe('plugin resolver', () => {
     const res = resolveParts(syncOpts)
     expect(res.plugins).toHaveLength(4)
     expect(res.plugins.map((plugin) => plugin.path)).toEqual([
-      '/sanity/node_modules/@sanity/default-layout',
-      '/sanity/node_modules/@sanity/core',
-      '/sanity/node_modules/sanity-plugin-instagram',
-      '/sanity',
+      path.resolve('/sanity/node_modules/@sanity/default-layout'),
+      path.resolve('/sanity/node_modules/@sanity/core'),
+      path.resolve('/sanity/node_modules/sanity-plugin-instagram'),
+      path.resolve('/sanity'),
     ])
   })
 
@@ -311,12 +315,14 @@ describe('plugin resolver', () => {
     return resolveParts(opts).then((res) => {
       expect(res.implementations['part:@sanity/default-layout/tool'][0]).toEqual({
         plugin: 'foo',
-        path: '/sanity/plugins/foo/src/File',
+        path: path.resolve('/sanity/plugins/foo/src/File'),
       })
 
       expect(res.implementations['part:@sanity/default-layout/tool'][1]).toEqual({
         plugin: 'instagram',
-        path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/InstagramTool',
+        path: path.resolve(
+          '/sanity/node_modules/sanity-plugin-instagram/lib/components/InstagramTool'
+        ),
       })
     })
   })
@@ -326,12 +332,14 @@ describe('plugin resolver', () => {
     return resolveParts(Object.assign({}, opts, {useCompiledPaths: true})).then((res) => {
       expect(res.implementations['part:@sanity/default-layout/tool'][0]).toEqual({
         plugin: 'foo',
-        path: '/sanity/plugins/foo/lib/File',
+        path: path.resolve('/sanity/plugins/foo/lib/File'),
       })
 
       expect(res.implementations['part:@sanity/default-layout/tool'][1]).toEqual({
         plugin: 'instagram',
-        path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/InstagramTool',
+        path: path.resolve(
+          '/sanity/node_modules/sanity-plugin-instagram/lib/components/InstagramTool'
+        ),
       })
     })
   })
@@ -341,17 +349,17 @@ describe('plugin resolver', () => {
     return resolveParts(opts).then((res) => {
       expect(res.implementations['part:foo/relative'][0]).toEqual({
         plugin: 'foo',
-        path: '/sanity/plugins/foo/src/relative/Path.js',
+        path: path.resolve('/sanity/plugins/foo/src/relative/Path.js'),
       })
 
       expect(res.implementations['part:foo/absolute'][0]).toEqual({
         plugin: 'foo',
-        path: '/absolute/path/to/File.js',
+        path: path.resolve('/absolute/path/to/File.js'),
       })
 
       expect(res.implementations['part:foo/dot-path'][0]).toEqual({
         plugin: 'foo',
-        path: '/sanity/plugins/foo/locale/en-us.json',
+        path: path.resolve('/sanity/plugins/foo/locale/en-us.json'),
       })
     })
   })
@@ -363,7 +371,7 @@ describe('plugin resolver', () => {
       expect(fulfillers).toHaveLength(2)
       expect(fulfillers[0]).toEqual({
         plugin: 'foo',
-        path: '/sanity/plugins/foo/src/InstaComments',
+        path: path.resolve('/sanity/plugins/foo/src/InstaComments'),
       })
     })
   })
@@ -382,15 +390,17 @@ describe('plugin resolver', () => {
     return resolveParts(opts).then((res) => {
       expect(res.implementations['part:@sanity/default-layout/header-style']).toEqual([
         {
-          path: '/sanity/node_modules/sanity-plugin-screaming-dev-badge/css/scream.css',
+          path: path.resolve(
+            '/sanity/node_modules/sanity-plugin-screaming-dev-badge/css/scream.css'
+          ),
           plugin: 'screaming-dev-badge',
         },
         {
-          path: '/sanity/node_modules/sanity-plugin-material-design/css/header.css',
+          path: path.resolve('/sanity/node_modules/sanity-plugin-material-design/css/header.css'),
           plugin: 'material-design',
         },
         {
-          path: '/sanity/node_modules/@sanity/default-layout/css/header.css',
+          path: path.resolve('/sanity/node_modules/@sanity/default-layout/css/header.css'),
           plugin: '@sanity/default-layout',
         },
       ])
@@ -417,7 +427,7 @@ describe('plugin resolver', () => {
     mockFs(getRootLevelPartsTree())
     return resolveParts(opts).then((res) => {
       expect(res.definitions).toHaveProperty('part:@sanity/config/schema')
-      expect(res.definitions['part:@sanity/config/schema'].path).toBe('/sanity')
+      expect(res.definitions['part:@sanity/config/schema'].path).toBe(path.resolve('/sanity'))
 
       expect(res.implementations).toHaveProperty('part:@sanity/config/schema')
       expect(res.implementations['part:@sanity/config/schema'][0].path).toEqual(
@@ -426,7 +436,7 @@ describe('plugin resolver', () => {
 
       const last = res.plugins[res.plugins.length - 1]
       expect(last.name).toBe('(project root)')
-      expect(last.path).toBe('/sanity')
+      expect(last.path).toBe(path.resolve('/sanity'))
     })
   })
 
@@ -447,21 +457,25 @@ describe('plugin resolver', () => {
     mockFs(getResolutionOrderFixture({chosenMethod: 'subNodeModules'}))
 
     const rootPath = resolveProjectRoot({
-      basePath: '/sanity/node_modules/sanity-plugin-foo/node_modules/sanity-plugin-bar',
+      basePath: path.resolve(
+        '/sanity/node_modules/sanity-plugin-foo/node_modules/sanity-plugin-bar'
+      ),
       sync: true,
     })
 
-    expect(rootPath).toBe('/sanity')
+    expect(rootPath).toBe(path.resolve('/sanity'))
   })
 
   it('should resolve project root if option is passed', () => {
     mockFs(getResolutionOrderFixture({chosenMethod: 'subNodeModules'}))
 
     return resolveParts({
-      basePath: '/sanity/node_modules/sanity-plugin-foo/node_modules/sanity-plugin-bar',
+      basePath: path.resolve(
+        '/sanity/node_modules/sanity-plugin-foo/node_modules/sanity-plugin-bar'
+      ),
       resolveProjectRoot: true,
     }).then((parts) => {
-      expect(parts.plugins[parts.plugins.length - 1].path).toBe('/sanity')
+      expect(parts.plugins[parts.plugins.length - 1].path).toBe(path.resolve('/sanity'))
     })
   })
 
@@ -475,7 +489,7 @@ describe('plugin resolver', () => {
 
       expect(parts.implementations['part:my-parent-plugin/foo/bar'][0]).toEqual({
         plugin: 'my-parent-plugin',
-        path: '/sanity/my-parent-plugin/foobar.js',
+        path: path.resolve('/sanity/my-parent-plugin/foobar.js'),
       })
     })
   })
