@@ -26,7 +26,7 @@ import {Patch} from '../../patch/types'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
 import Input from './Input'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
-import styles from './PortableTextInput.css'
+import styles from './PortableTextInput.module.css'
 
 export type PatchWithOrigin = Patch & {
   origin: 'local' | 'remote' | 'internal'
@@ -43,7 +43,7 @@ type PatchSubscriber = ({
 
 type Props = {
   focusPath: Path
-  hotkeys: HotkeyOptions
+  hotkeys?: HotkeyOptions
   level: number
   markers: Marker[]
   onBlur: () => void
@@ -257,7 +257,7 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
   )
 })
 
-export default withPatchSubscriber(
+export default (withPatchSubscriber(
   class PortableTextInputWithFocusAndBlur extends React.Component<
     Props & {children: React.ReactNode}
   > {
@@ -288,4 +288,4 @@ export default withPatchSubscriber(
       )
     }
   }
-)
+) as any) as React.ComponentType<Props>

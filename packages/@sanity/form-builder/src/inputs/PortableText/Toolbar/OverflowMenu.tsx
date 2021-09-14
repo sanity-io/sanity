@@ -8,7 +8,7 @@ import EllipsisIcon from 'part:@sanity/base/ellipsis-icon'
 import {MenuButton} from 'part:@sanity/components/menu-button'
 import React, {useEffect, useRef, useState, useMemo} from 'react'
 
-import styles from './OverflowMenu.css'
+import styles from './OverflowMenu.module.css'
 
 interface Action {
   firstInGroup?: boolean

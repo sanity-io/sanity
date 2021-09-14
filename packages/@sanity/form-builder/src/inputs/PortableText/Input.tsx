@@ -24,7 +24,7 @@ import {useZIndex, ChangeIndicatorWithProvidedFullPath} from '@sanity/base/compo
 import ActivateOnFocus from '../../components/ActivateOnFocus/ActivateOnFocus'
 import PatchEvent from '../../PatchEvent'
 import {EMPTY_ARRAY} from '../../utils/empty'
-import styles from './PortableTextInput.css'
+import styles from './PortableTextInput.module.css'
 import {BlockObject} from './Objects/BlockObject'
 import {InlineObject} from './Objects/InlineObject'
 import {EditObject} from './Objects/EditObject'

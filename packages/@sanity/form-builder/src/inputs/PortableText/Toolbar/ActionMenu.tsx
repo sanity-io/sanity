@@ -8,7 +8,7 @@ import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-e
 import {OverflowMenu} from './OverflowMenu'
 import {PTEToolbarAction, PTEToolbarActionGroup} from './types'
 
-import styles from './ActionMenu.css'
+import styles from './ActionMenu.module.css'
 
 interface Props {
   disabled: boolean

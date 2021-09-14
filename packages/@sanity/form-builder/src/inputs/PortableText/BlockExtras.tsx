@@ -12,7 +12,7 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {RenderCustomMarkers} from './types'
-import styles from './BlockExtras.css'
+import styles from './BlockExtras.module.css'
 
 type Props = {
   block: PortableTextBlock

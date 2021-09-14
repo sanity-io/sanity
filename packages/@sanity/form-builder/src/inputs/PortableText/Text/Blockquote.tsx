@@ -1,5 +1,5 @@
 import React from 'react'
-import styles from './Blockquote.css'
+import styles from './Blockquote.module.css'
 
 type Props = {
   children: React.ReactNode

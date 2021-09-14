@@ -1,5 +1,5 @@
 import React from 'react'
-import styles from './Decorator.css'
+import styles from './Decorator.module.css'
 
 type Props = {
   mark: string

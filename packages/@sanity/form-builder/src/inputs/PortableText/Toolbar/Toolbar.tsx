@@ -21,7 +21,7 @@ import BlockStyleSelect from './BlockStyleSelect'
 import InsertMenu from './InsertMenu'
 import {getBlockStyleSelectProps, getInsertMenuItems, getPTEToolbarActionGroups} from './helpers'
 
-import styles from './Toolbar.css'
+import styles from './Toolbar.module.css'
 
 const SLOW_INITIAL_VALUE_LIMIT = 300
 

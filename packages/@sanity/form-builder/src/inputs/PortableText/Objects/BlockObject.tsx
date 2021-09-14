@@ -15,7 +15,7 @@ import {PatchEvent} from '../../../PatchEvent'
 import {useScrollIntoViewOnFocusWithin} from '../../../hooks/useScrollIntoViewOnFocusWithin'
 import {hasFocusWithinPath} from '../../../utils/focusUtils'
 import {BlockObjectPreview} from './BlockObjectPreview'
-import styles from './BlockObject.css'
+import styles from './BlockObject.module.css'
 
 type Props = {
   attributes: RenderAttributes

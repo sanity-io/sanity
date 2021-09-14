@@ -1,6 +1,6 @@
 import {PortableTextBlock} from '@sanity/portable-text-editor'
 import React from 'react'
-import styles from './Header.css'
+import styles from './Header.module.css'
 
 type Props = {
   block: PortableTextBlock

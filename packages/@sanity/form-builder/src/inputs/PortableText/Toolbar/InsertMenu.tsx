@@ -8,7 +8,7 @@ import {MenuButton} from 'part:@sanity/components/menu-button'
 import React, {useCallback} from 'react'
 import {BlockItem} from './types'
 
-import styles from './InsertMenu.css'
+import styles from './InsertMenu.module.css'
 
 interface InsertMenuProps {
   disabled: boolean
