@@ -4,11 +4,18 @@ on: [push]
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental }}
 
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x]
+        os: [ubuntu-latest]
+        node: [12, 14, 16]
+        experimental: [false]
+        include:
+          - os: windows-latest
+            node: 16
+            experimental: true
 
     steps:
       - name: Checkout
@@ -77,6 +84,6 @@ jobs:
           SLACK_BOT_TOKEN: ${{ secrets.ACTIONS_SLACK_BOT_TOKEN }}
         uses: voxmedia/github-action-slack-notify-build@v1
         with:
-          channel: prj-components
+          channel: studio-internal
           status: FAILED
           color: danger
