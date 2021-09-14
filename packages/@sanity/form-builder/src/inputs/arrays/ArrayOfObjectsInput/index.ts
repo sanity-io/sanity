@@ -1,1 +1,2 @@
-export {ArrayInput as default, Props} from './ArrayInput'
+export {ArrayInput as default} from './ArrayInput'
+export type {Props} from './ArrayInput'
