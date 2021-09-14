@@ -12,6 +12,7 @@
     "parts:generate": "node -r esbuild-register __legacy/gen-parts.ts",
     "prebuild": "npm run clean && npm run parts:generate",
     "start": "http-server -a localhost -c-0 -p 9009 -s -P http://localhost:9009/index.html? public",
+    "vercel-build": "npm run parts:generate && NODE_ENV=production npx vite build",
     "type-check": "tsc -b"
   },
   "dependencies": {
