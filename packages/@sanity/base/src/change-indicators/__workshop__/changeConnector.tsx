@@ -1,13 +1,14 @@
-import {Path} from '@sanity/types/src'
-import {Container, Flex, Stack, Text} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {Path} from '@sanity/types'
+import {Card, Container, Flex, LayerProvider, Stack, Text} from '@sanity/ui'
+import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
-import {ChangeIndicatorProvider} from '../ChangeIndicator'
+import {ScrollContainer} from '../../components'
+import {ChangeFieldWrapper} from '../ChangeFieldWrapper'
+import {ChangeIndicator, ChangeIndicatorProvider} from '../ChangeIndicator'
 import {ChangeConnectorRoot} from '../overlay/ChangeConnectorRoot'
 
 const Root = styled(ChangeConnectorRoot)`
   height: 100%;
-  overflow: auto;
   outline: 1px solid var(--card-border-color);
   position: relative;
 `
@@ -16,78 +17,99 @@ export default function ChangeConnectorStory() {
   const isReviewChangesOpen = true
   const onOpenReviewChanges = useCallback(() => undefined, [])
   const onSetFocus = useCallback(() => undefined, [])
+  const [focusPath, setFocusPath] = useState<Path>([])
 
   return (
-    <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
-      <Container height="fill" style={{maxHeight: 320}} width={0}>
-        <Root
-          isReviewChangesOpen={isReviewChangesOpen}
-          onOpenReviewChanges={onOpenReviewChanges}
-          onSetFocus={onSetFocus}
-        >
-          <Flex gap={3} padding={4}>
-            <Stack
-              flex={1}
-              padding={4}
-              space={4}
-              style={{outline: '1px solid var(--card-border-color)'}}
+    <LayerProvider>
+      <Card height="fill" tone="transparent">
+        <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
+          <Container height="fill" style={{maxHeight: 320}} width={1}>
+            <Root
+              isReviewChangesOpen={isReviewChangesOpen}
+              onOpenReviewChanges={onOpenReviewChanges}
+              onSetFocus={onSetFocus}
             >
-              <DebugField path={['title']} focusPath={['title']} value="Test" compareValue="Test">
-                <Text>Field A</Text>
-              </DebugField>
-              <Text>Field B</Text>
-              <Text>Field C</Text>
-              <Text>Field D</Text>
-              <Text>Field E</Text>
-              <Text>Field F</Text>
-              <Text>Field G</Text>
-              <Text>Field H</Text>
-              <Text>Field I</Text>
-              <Text>Field J</Text>
-              <Text>Field K</Text>
-              <Text>Field L</Text>
-              <Text>Field M</Text>
-              <Text>Field N</Text>
-            </Stack>
+              <Flex height="fill">
+                <Card
+                  as={ScrollContainer}
+                  data-ui="ScrollContainer"
+                  flex={1}
+                  overflow="auto"
+                  padding={5}
+                  style={{position: 'relative'}}
+                >
+                  <Stack space={9}>
+                    <DebugFormField
+                      path={['a']}
+                      focusPath={focusPath}
+                      setFocusPath={setFocusPath}
+                      value="A"
+                      compareValue="B"
+                    >
+                      <Text>Field A</Text>
+                    </DebugFormField>
+                    <DebugFormField
+                      path={['b']}
+                      focusPath={focusPath}
+                      setFocusPath={setFocusPath}
+                      value="B"
+                      compareValue="C"
+                    >
+                      <Text>Field B</Text>
+                    </DebugFormField>
+                    <DebugFormField
+                      path={['c']}
+                      focusPath={focusPath}
+                      setFocusPath={setFocusPath}
+                      value="C"
+                      compareValue="D"
+                    >
+                      <Text>Field C</Text>
+                    </DebugFormField>
+                  </Stack>
+                </Card>
 
-            <Stack
-              flex={1}
-              padding={4}
-              space={4}
-              style={{outline: '1px solid var(--card-border-color)'}}
-            >
-              <DebugField path={['title']} focusPath={['title']} value="Test" compareValue="Test">
-                <Text>Field A</Text>
-              </DebugField>
-              <Text>Field B</Text>
-              <Text>Field C</Text>
-              <Text>Field D</Text>
-              <Text>Field E</Text>
-              <Text>Field F</Text>
-              <Text>Field G</Text>
-              <Text>Field H</Text>
-              <Text>Field I</Text>
-              <Text>Field J</Text>
-              <Text>Field K</Text>
-              <Text>Field L</Text>
-              <Text>Field M</Text>
-              <Text>Field N</Text>
-            </Stack>
-          </Flex>
-        </Root>
-      </Container>
-    </Flex>
+                <Card
+                  as={ScrollContainer}
+                  data-ui="ScrollContainer"
+                  borderLeft
+                  flex={1}
+                  overflow="auto"
+                  padding={5}
+                  style={{position: 'relative'}}
+                >
+                  <Stack flex={1} space={9}>
+                    <DebugDiffField path={['a']}>
+                      <Text>Diff A</Text>
+                    </DebugDiffField>
+                    <DebugDiffField path={['b']}>
+                      <Text>Diff B</Text>
+                    </DebugDiffField>
+                    <DebugDiffField path={['c']}>
+                      <Text>Diff C</Text>
+                    </DebugDiffField>
+                  </Stack>
+                </Card>
+              </Flex>
+            </Root>
+          </Container>
+        </Flex>
+      </Card>
+    </LayerProvider>
   )
 }
 
-function DebugField(props: {
+function DebugFormField(props: {
   children?: React.ReactNode
   focusPath: Path
   path: Path
   value: unknown
   compareValue: unknown
+  setFocusPath: (p: Path) => void
 }) {
-  const {children, focusPath, path, value, compareValue} = props
+  const {children, focusPath, path, value, compareValue, setFocusPath} = props
+  const handleBlur = useCallback(() => setFocusPath([]), [setFocusPath])
+  const handleFocus = useCallback(() => setFocusPath(path), [path, setFocusPath])
 
   return (
     <ChangeIndicatorProvider
@@ -96,7 +118,37 @@ function DebugField(props: {
       value={value}
       compareValue={compareValue}
     >
-      <div style={{outline: '1px solid var(--card-border-color)'}}>{children}</div>
+      <ChangeIndicator>
+        <Card border onBlur={handleBlur} onFocus={handleFocus} padding={3} radius={1} tabIndex={0}>
+          {children}
+        </Card>
+      </ChangeIndicator>
     </ChangeIndicatorProvider>
+  )
+}
+
+function DebugDiffField(props: {children?: React.ReactNode; path: Path}) {
+  const {children, path} = props
+  const [hovered, setHovered] = useState(false)
+
+  const handleMouseEnter = useCallback(() => setHovered(true), [])
+  const handleMouseLeave = useCallback(() => setHovered(false), [])
+
+  const handleClick = useCallback(() => {
+    //
+  }, [])
+
+  return (
+    <ChangeFieldWrapper hasHover={hovered} path={path}>
+      <Card
+        borderLeft
+        onClick={handleClick}
+        padding={3}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        {children}
+      </Card>
+    </ChangeFieldWrapper>
   )
 }
