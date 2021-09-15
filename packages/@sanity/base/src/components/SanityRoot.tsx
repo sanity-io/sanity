@@ -96,7 +96,7 @@ function AppProvider() {
               <ThemeColorProvider tone="transparent">
                 <GlobalStyle />
               </ThemeColorProvider>
-              <Root scheme="light">
+              <Root>
                 <DevServerStatus />
                 <ErrorHandler onUIError={setUIError} />
                 <RootComponent />
