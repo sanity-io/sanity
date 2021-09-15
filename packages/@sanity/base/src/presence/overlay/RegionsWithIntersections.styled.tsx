@@ -42,13 +42,13 @@ export const MiddleRegionWrapper = styled(WithIntersection)(({debug}: styleProps
   return css`
     ${RegionWrapper}
 
-    visibility: 'none';
+    visibility: none;
 
     ${debug &&
     css`
       background: rgba(255, 0, 0, 0.25);
       outline: 1px solid #00b;
-      visibility: 'visible';
+      visibility: visible;
     `}
   `
 })
