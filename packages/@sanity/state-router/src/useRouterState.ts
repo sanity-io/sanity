@@ -3,15 +3,15 @@ import {RouterState} from './components/types'
 import {RouterContext} from './RouterContext'
 
 export const useRouterState = (): RouterState => {
-  const router = useContext(RouterContext)
-  const [routerState, setState] = useState<RouterState>(router.getState())
+  const {channel, getState} = useContext(RouterContext)
+  const [routerState, setState] = useState<RouterState>(getState())
 
   useEffect(() => {
     // subscribe() returns an unsubscribe function, so this'll handle unmounting
-    return router.channel.subscribe(() => {
-      setState(router.getState())
+    return channel.subscribe(() => {
+      setState(getState())
     })
-  }, [router])
+  }, [channel, getState])
 
   return routerState
 }
