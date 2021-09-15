@@ -33,7 +33,6 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
     isChanged: boolean
     hasFocus: boolean
     fullPath: Path
-    children: React.ReactNode
     disabled?: boolean
   }
 ) {
@@ -48,9 +47,9 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
     disabled ? null : `field-${PathUtils.toString(fullPath)}`,
     () => ({
       element: ref.current!,
-      path: props.fullPath,
-      isChanged: props.isChanged,
-      hasFocus: props.hasFocus,
+      path: fullPath,
+      isChanged: isChanged,
+      hasFocus: hasFocus,
       hasHover: hasHover,
       zIndex: layer.zIndex,
     }),
@@ -93,8 +92,8 @@ export function ChangeIndicatorScope(props: {path: Path; children?: React.ReactN
 export function ChangeIndicatorProvider(props: {
   path: Path
   focusPath: Path
-  value: any
-  compareValue: any
+  value: unknown
+  compareValue: unknown
   children: React.ReactNode
 }) {
   const {compareValue, value} = props
@@ -128,7 +127,7 @@ interface CoreProps {
   className?: string
   disabled?: boolean
   fullPath: Path
-  compareDeep: boolean
+  compareDeep?: boolean
   value: unknown
   hasFocus: boolean
   compareValue: unknown
@@ -198,6 +197,16 @@ export const ChangeIndicatorForFieldPath = ({
   )
 }
 
+interface ChangeIndicatorWithProvidedFullPathProps {
+  className?: string
+  disabled?: boolean
+  path: Path
+  value: unknown
+  hasFocus: boolean
+  compareDeep?: boolean
+  children?: React.ReactNode
+}
+
 export const ChangeIndicatorWithProvidedFullPath = ({
   className,
   disabled,
@@ -206,7 +215,7 @@ export const ChangeIndicatorWithProvidedFullPath = ({
   hasFocus,
   compareDeep,
   children,
-}: any) => {
+}: ChangeIndicatorWithProvidedFullPathProps) => {
   const parentContext = React.useContext(ChangeIndicatorContext)
 
   const fullPath = React.useMemo(() => PathUtils.pathFor(parentContext.fullPath.concat(path)), [
@@ -237,8 +246,8 @@ export interface ChangeIndicatorContextProvidedProps {
 }
 
 export const ChangeIndicatorCompareValueProvider = (props: {
-  value: any
-  compareValue: any
+  value: unknown
+  compareValue: unknown
   children: React.ReactNode
 }) => {
   const parentContext = React.useContext(ChangeIndicatorContext)

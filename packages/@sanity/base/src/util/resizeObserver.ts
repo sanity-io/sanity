@@ -1,5 +1,4 @@
 import {ResizeObserver as Polyfill, ResizeObserverEntry} from '@juggle/resize-observer'
-
 import createPubSub, {Subscriber} from 'nano-pubsub'
 
 const ResizeObserver: typeof Polyfill = (window as any).ResizeObserver || Polyfill
@@ -14,9 +13,11 @@ export interface SharedResizeObserver {
 
 export const createSharedResizeObserver = (): SharedResizeObserver => {
   const event = createPubSub<ResizeObserverEntry[]>()
+
   const resizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]) =>
     event.publish(entries)
   )
+
   return {
     observe: (
       element: Element,
@@ -29,7 +30,9 @@ export const createSharedResizeObserver = (): SharedResizeObserver => {
           observer(entry)
         }
       })
+
       resizeObserver.observe(element, options)
+
       return () => {
         unsubscribe()
         resizeObserver.unobserve(element)
@@ -37,4 +40,5 @@ export const createSharedResizeObserver = (): SharedResizeObserver => {
     },
   }
 }
+
 export const resizeObserver = createSharedResizeObserver()
