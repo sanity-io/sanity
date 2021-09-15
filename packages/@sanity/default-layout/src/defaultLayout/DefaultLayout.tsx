@@ -15,7 +15,7 @@ import {SideMenu} from '../sideMenu'
 import getNewDocumentModalActions from '../util/getNewDocumentModalActions'
 import {Router, Tool} from '../types'
 import {Navbar} from '../navbar'
-import {Root, MainArea, ToolContainer, SidecarContainer, PortalBox} from './styles'
+import {RootFlex, MainAreaFlex, ToolBox, SidecarBox, PortalBox} from './styles'
 import {LoadingScreen} from './LoadingScreen'
 
 interface OuterProps {
@@ -89,7 +89,12 @@ export const DefaultLayout = withRouterHOC((props: Props) => {
     const documentTypes = getNewDocumentModalActions().map((action) => action.schemaType)
 
     return (
-      <Root $isOverlayVisible={isOverlayVisible}>
+      <RootFlex
+        $isOverlayVisible={isOverlayVisible}
+        direction="column"
+        height="fill"
+        sizing="border"
+      >
         {showLoadingScreen && (
           <LoadingScreen
             loaded={loaded || document.visibilityState == 'hidden'}
@@ -124,19 +129,19 @@ export const DefaultLayout = withRouterHOC((props: Props) => {
           />
         )}
 
-        <MainArea $isOverlayVisible={isOverlayVisible}>
-          <ToolContainer hidden={searchIsOpen}>
+        <MainAreaFlex flex={1} height="fill" overflow={isOverlayVisible ? 'hidden' : undefined}>
+          <ToolBox hidden={searchIsOpen} height="fill" flex={1}>
             <RouteScope scope={tool}>
               <RenderTool tool={tool} />
             </RouteScope>
-          </ToolContainer>
+          </ToolBox>
 
-          <SidecarContainer hidden={searchIsOpen}>
+          <SidecarBox hidden={searchIsOpen}>
             <Sidecar />
-          </SidecarContainer>
+          </SidecarBox>
 
           {searchIsOpen && <PortalBox flex={1} ref={setPortalElement} />}
-        </MainArea>
+        </MainAreaFlex>
 
         {createMenuIsOpen && (
           <LegacyLayerProvider zOffset="navbar">
@@ -150,7 +155,7 @@ export const DefaultLayout = withRouterHOC((props: Props) => {
         {absolutes.map((Abs, i) => (
           <Abs key={String(i)} />
         ))}
-      </Root>
+      </RootFlex>
     )
   }
 
