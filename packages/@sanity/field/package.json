@@ -52,7 +52,7 @@
     "sanity-diff-patch": "^1.0.9"
   },
   "devDependencies": {
-    "@sanity/ui-workshop": "^0.2.6",
+    "@sanity/ui-workshop": "^0.3.1",
     "react": "17.0.1",
     "rimraf": "^2.7.1"
   },

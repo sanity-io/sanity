@@ -1,14 +1,16 @@
-export interface LocationQuery {
-  [key: string]: undefined | string | string[] | LocationQuery | LocationQuery[]
-}
-
 export interface LocationState {
   path: string
   title: string
-  query: LocationQuery
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  query: {[key: string]: any}
 }
 
-export type PartialLocationState = Partial<LocationState>
+export interface PartialLocationState {
+  path?: string
+  title?: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  query?: {[key: string]: any}
+}
 
 export interface LocationContextValue extends LocationState {
   handleLinkClick: (evt: React.MouseEvent<HTMLElement>) => void
