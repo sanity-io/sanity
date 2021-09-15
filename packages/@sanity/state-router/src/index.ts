@@ -3,7 +3,10 @@ import resolvePathFromState from './resolvePathFromState'
 
 export type {Router} from './types'
 export {default as route} from './route'
-export {RouterContext, useRouter, useRouterState} from './RouterContext'
+export {RouterContext} from './RouterContext'
+
+export * from './useRouter'
+export * from './useRouterState'
 
 export {resolveStateFromPath}
 export {resolvePathFromState}
