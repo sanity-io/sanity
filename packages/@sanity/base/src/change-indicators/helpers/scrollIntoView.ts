@@ -1,9 +1,9 @@
-import {isScrollable} from './scrollUtils'
 import {Rect} from '../overlay/types'
+import {isScrollable} from './scrollUtils'
 
 const SCROLL_INTO_VIEW_TOP_PADDING = -15
 
-const scrollIntoView = (field: {element: HTMLElement; rect: Rect; bounds: Rect}) => {
+export function scrollIntoView(field: {element: HTMLElement; rect: Rect; bounds: Rect}): void {
   const element = field.element
 
   /*
@@ -35,5 +35,3 @@ const scrollIntoView = (field: {element: HTMLElement; rect: Rect; bounds: Rect})
     behavior: 'smooth',
   })
 }
-
-export default scrollIntoView

@@ -14,16 +14,17 @@ export const ChangeFieldWrapper = (props: {
   hasHover: boolean
 }) => {
   const ref = React.useRef<HTMLDivElement>(null)
-
   const {onSetFocus} = React.useContext(ConnectorContext)
-
   const [isHover, setHover] = React.useState(false)
+
   const onMouseEnter = React.useCallback(() => {
     setHover(true)
   }, [])
+
   const onMouseLeave = React.useCallback(() => {
     setHover(false)
   }, [])
+
   useReporter(
     `change-${PathUtils.toString(props.path)}`,
     () => ({

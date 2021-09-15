@@ -1,8 +1,8 @@
 import React from 'react'
-import {Reported} from './tracker'
 import {IsEqualFunction} from '../components/react-track-elements/createUseReporter'
+import {Reported} from './tracker'
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
+// eslint-disable-next-line no-empty-function, @typescript-eslint/no-empty-function
 function noop() {}
 
 function NoopTracker({children}: {children: React.ReactNode}) {

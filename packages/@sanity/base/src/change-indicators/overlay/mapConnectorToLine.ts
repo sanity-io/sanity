@@ -1,5 +1,5 @@
-import {ConnectorLinePoint, Rect} from './types'
 import {ARROW_MARGIN_Y, ARROW_THRESHOLD, CONNECTOR_MARGIN} from '../constants'
+import {ConnectorLinePoint, Rect} from './types'
 
 function getConnectorLinePoint(rect: Rect, bounds: Rect): ConnectorLinePoint {
   const centerY = rect.top + rect.height / 2
@@ -24,7 +24,9 @@ interface Connector {
   to: {rect: Rect; bounds: Rect}
 }
 
-export function mapConnectorToLine(connector: Connector) {
+export function mapConnectorToLine(
+  connector: Connector
+): {from: ConnectorLinePoint; to: ConnectorLinePoint} {
   const fromBounds = {
     top: connector.from.bounds.top + ARROW_THRESHOLD,
     bottom: connector.from.bounds.top + connector.from.bounds.height - ARROW_THRESHOLD,
