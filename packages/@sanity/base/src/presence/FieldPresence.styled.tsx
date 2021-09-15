@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import {Flex} from '@sanity/ui'
 
-export const FlexBox = styled(Flex)`
+export const FlexWrapper = styled(Flex)`
   & > div:first-child {
     flex: 1;
     min-width: 0;

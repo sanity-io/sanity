@@ -10,7 +10,7 @@ import {
   DISABLE_OVERLAY,
 } from './constants'
 import {splitRight} from './utils'
-import {FlexBox, InnerBox} from './FieldPresence.styled'
+import {FlexWrapper, InnerBox} from './FieldPresence.styled'
 import {FormFieldPresenceContext} from './context'
 import {PresenceTooltip} from './PresenceTooltip'
 import {FormFieldPresence} from './types'
@@ -35,7 +35,11 @@ function FieldPresenceWithOverlay(props: FieldPresenceProps) {
   const minWidth = -AVATAR_DISTANCE + (AVATAR_SIZE + AVATAR_DISTANCE) * props.maxAvatars
 
   return (
-    <FlexBox justify="flex-end" ref={ref} style={{minWidth: minWidth, minHeight: AVATAR_SIZE}} />
+    <FlexWrapper
+      justify="flex-end"
+      ref={ref}
+      style={{minWidth: minWidth, minHeight: AVATAR_SIZE}}
+    />
   )
 }
 
@@ -97,7 +101,7 @@ export const FieldPresenceInner = memo(function FieldPresenceInner({
   const currWidth = Math.min(calcAvatarStackWidth(uniquePresence.length), maxWidth)
 
   return (
-    <FlexBox justify="flex-end" style={{width: maxWidth}}>
+    <FlexWrapper justify="flex-end" style={{width: maxWidth}}>
       <div />
 
       <PresenceTooltip items={uniquePresence} placement="top">
@@ -122,6 +126,6 @@ export const FieldPresenceInner = memo(function FieldPresenceInner({
           )}
         </InnerBox>
       </PresenceTooltip>
-    </FlexBox>
+    </FlexWrapper>
   )
 })
