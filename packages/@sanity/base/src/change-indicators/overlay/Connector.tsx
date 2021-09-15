@@ -1,7 +1,6 @@
 import React from 'react'
 
-import {arrowPath, generateConnectorPath} from './connectorPath'
-import {mapConnectorToLine} from './mapConnectorToLine'
+import classNames from 'classnames'
 import {
   ARROW_MARGIN_X,
   ARROW_MARGIN_Y,
@@ -10,9 +9,10 @@ import {
   INTERACTIVE_STROKE_WIDTH,
   STROKE_WIDTH,
 } from '../constants'
+import {arrowPath, generateConnectorPath} from './connectorPath'
+import {mapConnectorToLine} from './mapConnectorToLine'
 import {Rect} from './types'
-import styles from './Connector.css'
-import classNames from 'classnames'
+import styles from './Connector.module.css'
 import {ClampedRect} from './ClampedRect'
 
 interface Props {

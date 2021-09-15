@@ -1,4 +1,4 @@
-import React from 'react'
+import {createContext} from 'react'
 import {Path} from '@sanity/types'
 
 export interface ConnectorContextValue {
@@ -7,7 +7,7 @@ export interface ConnectorContextValue {
   onSetFocus: (nextPath: Path) => void | undefined
 }
 
-export const ConnectorContext: React.Context<ConnectorContextValue> = React.createContext({
+export const ConnectorContext = createContext<ConnectorContextValue>({
   isReviewChangesOpen: false,
   onOpenReviewChanges: () => undefined,
   onSetFocus: () => undefined,

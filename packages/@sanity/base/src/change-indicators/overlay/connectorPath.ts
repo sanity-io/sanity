@@ -7,7 +7,7 @@ import {
 } from '../constants'
 import {ConnectorLine} from './types'
 
-export function arrowPath(x: number, y: number, dir: number) {
+export function arrowPath(x: number, y: number, dir: number): string {
   return [
     `M ${x - ARROW_SIZE} ${y - ARROW_SIZE * dir} `,
     `L ${x} ${y}`,
@@ -31,7 +31,7 @@ function quadCurve(x1: number, y1: number, x: number, y: number) {
   return `Q${x1} ${y1} ${x} ${y}`
 }
 
-export function generateConnectorPath(line: ConnectorLine) {
+export function generateConnectorPath(line: ConnectorLine): string {
   const {from, to} = line
   const {left: fromX, top: fromY} = from
   const {left: toX, top: toY} = to

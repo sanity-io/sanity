@@ -1,18 +1,19 @@
-import React from 'react'
+import React, {useCallback, useMemo, useState} from 'react'
 import {sortBy} from 'lodash'
 import {Path} from '@sanity/types'
 import {ScrollMonitor} from '../../components/scroll'
 import {useReportedValues, Reported, TrackedChange} from '../'
 import {findMostSpecificTarget} from '../helpers/findMostSpecificTarget'
-import {getElementGeometry} from '../helpers/getElementGeometry'
-import isChangeBar from '../helpers/isChangeBar'
-import scrollIntoView from '../helpers/scrollIntoView'
+import {isChangeBar} from '../helpers/isChangeBar'
+import {scrollIntoView} from '../helpers/scrollIntoView'
 import {DEBUG_LAYER_BOUNDS} from '../constants'
-import {resizeObserver} from '../../util/resizeObserver'
+import {getOffsetsTo} from '../helpers/getOffsetsTo'
+import {TrackedArea} from '../tracker'
 import {Connector} from './Connector'
-
-import styles from './ConnectorsOverlay.css'
 import {DebugLayers} from './DebugLayers'
+import {useResizeObserver} from './useResizeObserver'
+
+import styles from './ConnectorsOverlay.module.css'
 
 export interface Rect {
   height: number
@@ -21,37 +22,27 @@ export interface Rect {
   left: number
 }
 
-interface Props {
-  rootRef: HTMLDivElement
+interface ConnectorsOverlayProps {
+  rootElement: HTMLDivElement
   onSetFocus: (nextFocusPath: Path) => void
 }
 
-function useResizeObserver(
-  element: HTMLDivElement,
-  onResize: (event: ResizeObserverEntry) => void
+function getState(
+  allReportedValues: Reported<TrackedChange | TrackedArea>[],
+  hovered: string | null,
+  byId: Map<string, TrackedChange | TrackedArea>,
+  rootElement: HTMLElement
 ) {
-  React.useEffect(() => resizeObserver.observe(element, onResize), [element, onResize])
-}
-export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Props) {
-  const {rootRef, onSetFocus} = props
-
-  const [hovered, setHovered] = React.useState<string | null>(null)
-
-  const allReportedValues = useReportedValues()
-  const [, forceUpdate] = React.useReducer((n) => n + 1, 0)
-
-  useResizeObserver(rootRef, forceUpdate)
-
-  const byId = new Map(allReportedValues)
-
   const changeBarsWithHover: Reported<TrackedChange>[] = []
   const changeBarsWithFocus: Reported<TrackedChange>[] = []
+
   for (const value of allReportedValues) {
     if (!isChangeBar(value) || !value[1].isChanged) {
       continue
     }
 
     const [id, reportedChangeBar] = value
+
     if (id === hovered) {
       changeBarsWithHover.push(value)
       continue
@@ -69,9 +60,10 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
   }
 
   const isHoverConnector = changeBarsWithHover.length > 0
-  const changeBarsWithFocusOrHover = isHoverConnector ? changeBarsWithHover : changeBarsWithFocus
 
-  const enabledConnectors = changeBarsWithFocusOrHover
+  const changeBars = isHoverConnector ? changeBarsWithHover : changeBarsWithFocus
+
+  const connectors = changeBars
     .map(([id]) => ({
       field: {id, ...findMostSpecificTarget('field', id, byId)},
       change: {id, ...findMostSpecificTarget('change', id, byId)},
@@ -81,50 +73,121 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
       hasHover: field.hasHover || change.hasHover,
       hasFocus: field.hasFocus,
       hasRevertHover: change.hasRevertHover,
-      field: {...field, ...getElementGeometry(field.element, rootRef)},
-      change: {...change, ...getElementGeometry(change.element, rootRef)},
+      field: {...field, ...getOffsetsTo(field.element, rootElement)},
+      change: {...change, ...getOffsetsTo(change.element, rootElement)},
     }))
 
-  const visibleConnectors = sortBy(enabledConnectors, (c) => -c.field.path.length).slice(0, 1)
+  return {connectors, isHoverConnector}
+}
+
+interface State {
+  connectors: {
+    field: TrackedChange & {id: string; rect: Rect; bounds: Rect}
+    change: TrackedChange & {id: string; rect: Rect; bounds: Rect}
+    hasFocus: boolean
+    hasHover: boolean
+    hasRevertHover: boolean
+  }[]
+  isHoverConnector: boolean
+}
+
+export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
+  const {rootElement, onSetFocus} = props
+  const [hovered, setHovered] = React.useState<string | null>(null)
+  const allReportedValues = useReportedValues()
+  const byId = useMemo(() => new Map(allReportedValues), [allReportedValues])
+
+  const [{connectors, isHoverConnector}, setState] = useState<State>(() =>
+    getState(allReportedValues, hovered, byId, rootElement)
+  )
+
+  const visibleConnectors = useMemo(
+    () => sortBy(connectors, (c) => -c.field.path.length).slice(0, 1),
+    [connectors]
+  )
+
+  const handleScrollOrResize = useCallback(() => {
+    setState(getState(allReportedValues, hovered, byId, rootElement))
+  }, [byId, allReportedValues, hovered, rootElement])
+
+  useResizeObserver(rootElement, handleScrollOrResize)
 
   return (
-    <ScrollMonitor onScroll={forceUpdate}>
+    <ScrollMonitor onScroll={handleScrollOrResize}>
       <svg
         className={styles.svg}
         style={{zIndex: visibleConnectors[0] && visibleConnectors[0].field.zIndex}}
       >
         {visibleConnectors.map(({field, change, hasFocus, hasHover, hasRevertHover}) => {
-          const onConnectorClick = () => {
-            scrollIntoView(field)
-            scrollIntoView(change)
-
-            onSetFocus(field.path)
+          if (!change) {
+            return null
           }
 
           return (
-            <React.Fragment key={`field-${field.id}`}>
-              {change && (
-                <>
-                  <g
-                    onClick={onConnectorClick}
-                    onMouseEnter={() => setHovered(field.id)}
-                    onMouseLeave={() => setHovered(null)}
-                  >
-                    <Connector
-                      from={{rect: field.rect, bounds: field.bounds}}
-                      to={{rect: change.rect, bounds: change.bounds}}
-                      focused={hasFocus}
-                      hovered={hasHover || isHoverConnector}
-                      revertHovered={hasRevertHover}
-                    />
-                  </g>
-                  {DEBUG_LAYER_BOUNDS && <DebugLayers field={field} change={change} />}
-                </>
-              )}
-            </React.Fragment>
+            <ConnectorGroup
+              field={field}
+              change={change}
+              hasFocus={hasFocus}
+              hasHover={hasHover}
+              hasRevertHover={hasRevertHover}
+              key={field.id}
+              onSetFocus={onSetFocus}
+              setHovered={setHovered}
+              isHoverConnector={isHoverConnector}
+            />
           )
         })}
       </svg>
     </ScrollMonitor>
   )
-})
+}
+
+interface ConnectorGroupProps {
+  field: TrackedChange & {id: string; rect: Rect; bounds: Rect}
+  change: TrackedChange & {id: string; rect: Rect; bounds: Rect}
+  hasFocus: boolean
+  hasHover: boolean
+  hasRevertHover: boolean
+  setHovered: (id: string | null) => void
+  onSetFocus: (nextFocusPath: Path) => void
+  isHoverConnector: boolean
+}
+
+function ConnectorGroup(props: ConnectorGroupProps) {
+  const {
+    change,
+    field,
+    hasFocus,
+    hasHover,
+    hasRevertHover,
+    onSetFocus,
+    setHovered,
+    isHoverConnector,
+  } = props
+
+  const onConnectorClick = useCallback(() => {
+    scrollIntoView(field)
+    scrollIntoView(change)
+
+    onSetFocus(field.path)
+  }, [field, change, onSetFocus])
+
+  const handleMouseEnter = useCallback(() => setHovered(field.id), [field, setHovered])
+  const handleMouseLeave = useCallback(() => setHovered(null), [setHovered])
+
+  return (
+    <>
+      <g onClick={onConnectorClick} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+        <Connector
+          from={{rect: field.rect, bounds: field.bounds}}
+          to={{rect: change.rect, bounds: change.bounds}}
+          focused={hasFocus}
+          hovered={hasHover || isHoverConnector}
+          revertHovered={hasRevertHover}
+        />
+      </g>
+
+      {DEBUG_LAYER_BOUNDS && <DebugLayers field={field} change={change} />}
+    </>
+  )
+}
