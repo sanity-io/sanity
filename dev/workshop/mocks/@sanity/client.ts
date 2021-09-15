@@ -7,6 +7,7 @@ function createClient(clientOpts: any) {
   return {
     clone: (opts: any = {}) => createClient({...clientOpts, ...opts}),
     config: (opts: any = {}) => createClient({...clientOpts, ...opts}),
+    withConfig: (opts: any = {}) => createClient({...clientOpts, ...opts}),
     getUrl: (uri: string) => {
       console.log('[mock] sanityClient.getUrl', uri)
       return uri
