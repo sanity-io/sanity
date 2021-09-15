@@ -1,6 +1,6 @@
 import React from 'react'
 import {tap} from 'rxjs/operators'
-import {ObservableIntersectionObserver} from './intersectionObserver'
+import type {ObservableIntersectionObserver} from './intersectionObserver'
 
 export interface WithIntersectionProps extends React.ComponentProps<'div'> {
   onIntersection: (id, IntersectionObserverEntry) => void
