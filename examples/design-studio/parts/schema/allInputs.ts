@@ -522,6 +522,13 @@ export default {
   name: 'allInputs',
   title: 'All inputs',
   fieldsets: [{name: 'dates', title: 'Date types'}],
+  preview: {
+    select: {
+      media: 'imageExample',
+      title: 'title',
+      subtitle: 'textExample',
+    },
+  },
   fields: [
     // metadata
     title,
