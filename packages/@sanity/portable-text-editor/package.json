@@ -6,7 +6,7 @@
   "types": "./dist/dts/index.d.ts",
   "author": "Sanity.io <hello@sanity.io>",
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=12.0.0"
   },
   "license": "MIT",
   "scripts": {
@@ -24,6 +24,7 @@
     "headless",
     "realtime",
     "content",
+    "portable-text-editor",
     "structure",
     "api",
     "collaborative",
@@ -88,7 +89,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity/sanity.git"
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/portable-text-editor"
   },
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
