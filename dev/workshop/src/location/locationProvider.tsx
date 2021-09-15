@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {getNewState, getStateFromWindow, getUrlFromState} from './helpers'
+import {getNewState, getStateFromAnchor, getStateFromWindow, getUrlFromState} from './helpers'
 import {LocationContext} from './locationContext'
 
 interface LocationProviderProps {
@@ -47,11 +47,11 @@ export function LocationProvider(props: LocationProviderProps): React.ReactEleme
   const handleLinkClick = useCallback(
     (event: React.MouseEvent<HTMLElement>) => {
       if (!(event.ctrlKey || event.metaKey || event.shiftKey)) {
-        const target = event.currentTarget as HTMLAnchorElement
+        const target = event.currentTarget as HTMLAnchorElement | null
 
         if (target) {
           event.preventDefault()
-          pushState({path: target.pathname})
+          pushState(getStateFromAnchor(target))
         }
       }
     },
