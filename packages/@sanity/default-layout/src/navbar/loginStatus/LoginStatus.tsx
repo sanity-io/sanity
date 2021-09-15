@@ -1,10 +1,21 @@
 import React from 'react'
 import {UserAvatar} from '@sanity/base/components'
-import {Button, MenuItem, Menu, MenuButton, Flex, Box, Text} from '@sanity/ui'
+import {Button, MenuItem, Menu, MenuButton, Flex, Box, Text, MenuButtonProps} from '@sanity/ui'
 import {ChevronDownIcon, LeaveIcon} from '@sanity/icons'
+import styled from 'styled-components'
 
 interface LoginStatusProps {
   onLogout: () => void
+}
+
+const StyledMenu = styled(Menu)`
+  min-width: 120px;
+`
+
+const MENU_BUTTON_POPOVER_PROPS: MenuButtonProps['popover'] = {
+  portal: true,
+  scheme: 'light',
+  placement: 'bottom-end',
 }
 
 export function LoginStatus({onLogout}: LoginStatusProps) {
@@ -12,9 +23,9 @@ export function LoginStatus({onLogout}: LoginStatusProps) {
     <MenuButton
       button={
         <Button mode="bleed" paddingX={1} paddingY={0} title="Toggle user menu">
-          <Flex align="center" gap={1}>
+          <Flex align="center">
             <UserAvatar size="medium" tone="navbar" userId="me" />
-            <Box>
+            <Box marginLeft={1}>
               <Text size={1}>
                 <ChevronDownIcon />
               </Text>
@@ -24,12 +35,11 @@ export function LoginStatus({onLogout}: LoginStatusProps) {
       }
       id="login-status-menu"
       menu={
-        <Menu>
-          <MenuItem text="Sign out" padding={4} icon={LeaveIcon} onClick={onLogout} />
-        </Menu>
+        <StyledMenu>
+          <MenuItem text="Sign out" icon={LeaveIcon} onClick={onLogout} />
+        </StyledMenu>
       }
-      placement="bottom-end"
-      popover={{portal: true, scheme: 'light'}}
+      popover={MENU_BUTTON_POPOVER_PROPS}
     />
   )
 }
