@@ -113,7 +113,7 @@ export const RegionsWithIntersections = React.forwardRef(function RegionsWithInt
         margins={margins}
       />
       <div>{children}</div>
-      <OverlayWrapper ref={overlayRef} style={{background: DEBUG ? 'rgba(255; 0; 0; 0.25)' : ''}}>
+      <OverlayWrapper ref={overlayRef}>
         {overlayRef.current &&
           render(regionsWithIntersectionDetails, overlayRef.current.offsetWidth)}
       </OverlayWrapper>
@@ -135,18 +135,7 @@ export const RegionsWithIntersections = React.forwardRef(function RegionsWithInt
           />
         )
       })}
-      <BottomRegionWrapper
-        id="::bottom"
-        debug={DEBUG}
-        io={io}
-        onIntersection={onIntersection}
-        style={{
-          position: 'sticky',
-          bottom: -1,
-          height: 1,
-          backgroundColor: DEBUG ? 'blue' : 'none',
-        }}
-      />
+      <BottomRegionWrapper id="::bottom" debug={DEBUG} io={io} onIntersection={onIntersection} />
     </RootWrapper>
   )
 })
