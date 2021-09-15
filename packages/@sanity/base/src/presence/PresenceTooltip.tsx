@@ -15,7 +15,7 @@ export function PresenceTooltip(props: PresenceTooltipProps) {
   const {children, items, placement} = props
 
   const content = (
-    <Card padding={2}>
+    <Card radius={2} padding={2}>
       {items.map((item) => (
         <Card key={item.user.id} padding={1}>
           <Flex align="center">
@@ -31,7 +31,7 @@ export function PresenceTooltip(props: PresenceTooltipProps) {
   )
 
   return (
-    <Tooltip content={content} placement={placement}>
+    <Tooltip content={content} open placement={placement}>
       {children}
     </Tooltip>
   )
