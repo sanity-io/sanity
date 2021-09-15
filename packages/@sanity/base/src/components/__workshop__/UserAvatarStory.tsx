@@ -1,15 +1,16 @@
-import {Flex, Inline} from '@sanity/ui'
+import {AvatarSize, Flex} from '@sanity/ui'
+import {useSelect} from '@sanity/ui-workshop'
 import React from 'react'
 import {UserAvatar} from '../UserAvatar'
 
+const AVATAR_SIZE_OPTIONS: Record<string, AvatarSize> = {'0': 0, '1': 1, '2': 2}
+
 export default function UserAvatarStory() {
+  const size = useSelect('Size', AVATAR_SIZE_OPTIONS, 2)
+
   return (
     <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
-      <Inline space={3}>
-        <UserAvatar size={0} userId="me" />
-        <UserAvatar size={1} userId="me" />
-        <UserAvatar size={2} userId="me" />
-      </Inline>
+      <UserAvatar size={size} userId="me" />
     </Flex>
   )
 }
