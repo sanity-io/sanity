@@ -34,4 +34,4 @@ export const SLIDE_RIGHT_THRESHOLD_TOP = 20
 export const SLIDE_RIGHT_THRESHOLD_BOTTOM = 20
 
 // Switch on debug mode (will display regions)
-export const DEBUG = true
+export const DEBUG = false
