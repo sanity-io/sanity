@@ -53,19 +53,17 @@ const WORKSHOP_COLLECTIONS = [
 ]
 
 function Root() {
-  const {path, pushState, replaceState} = useLocation()
+  const {path, pushState, query, replaceState} = useLocation()
 
-  const handleLocationPush = useCallback(
-    (newLoc: WorkshopLocation) => pushState({path: newLoc.path}),
-    [pushState]
-  )
+  const handleLocationPush = useCallback((newLoc: WorkshopLocation) => pushState(newLoc), [
+    pushState,
+  ])
 
-  const handleLocationReplace = useCallback(
-    (newLoc: WorkshopLocation) => replaceState({path: newLoc.path}),
-    [replaceState]
-  )
+  const handleLocationReplace = useCallback((newLoc: WorkshopLocation) => replaceState(newLoc), [
+    replaceState,
+  ])
 
-  const studioLocation: WorkshopLocation = useMemo(() => ({path}), [path])
+  const studioLocation: WorkshopLocation = useMemo(() => ({path, query}), [path, query])
 
   const prefersDark = usePrefersDark()
   const [scheme, setScheme] = useState<'light' | 'dark'>(prefersDark ? 'dark' : 'light')

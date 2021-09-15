@@ -2,12 +2,22 @@ import qs from 'qs'
 import type {LocationState} from './types'
 
 export function getStateFromWindow(): LocationState {
-  const query = qs.parse(window.location.search.substr(1))
+  const query = qs.parse(location.search.substr(1))
 
   return {
-    path: window.location.pathname,
+    path: location.pathname,
     query,
-    title: window.document.title,
+    title: document.title,
+  }
+}
+
+export function getStateFromAnchor(a: HTMLAnchorElement): LocationState {
+  const query = qs.parse(a.search.substr(1))
+
+  return {
+    path: a.pathname,
+    query,
+    title: a.getAttribute('data-page-title') || document.title,
   }
 }
 
