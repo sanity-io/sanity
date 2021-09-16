@@ -17,7 +17,7 @@ export const OverlayWrapper = styled.div`
   right: 0;
   bottom: 0;
   pointer-events: none;
-  z-index: 5;
+  z-index: 13;
 `
 
 export const RegionWrapper = css`
