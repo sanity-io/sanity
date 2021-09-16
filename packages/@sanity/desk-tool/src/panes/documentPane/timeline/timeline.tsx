@@ -1,6 +1,3 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import React, {useCallback, useEffect, useRef, useState} from 'react'
 import {Chunk} from '@sanity/field/diff'
 import {Menu, Stack, Text, Spinner, Flex} from '@sanity/ui'
