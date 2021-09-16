@@ -3,9 +3,10 @@ import {map, switchMap} from 'rxjs/operators'
 import {Stack, Spinner, Card, Box, Text, Button} from '@sanity/ui'
 import {RobotIcon} from '@sanity/icons'
 import styled from 'styled-components'
+import {DefaultPreview} from '@sanity/base/components'
 import {versionedClient} from '../../versionedClient'
 import {DashboardWidget} from '../../DashboardTool'
-import {DefaultPreview, userStore} from '../../legacyParts'
+import {userStore} from '../../legacyParts'
 
 const AvatarWrapper = styled(Card)`
   box-sizing: border-box;
