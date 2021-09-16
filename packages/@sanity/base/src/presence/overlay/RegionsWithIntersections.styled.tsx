@@ -58,7 +58,7 @@ export const BottomRegionWrapper = styled(WithIntersection)(({debug}: styleProps
     ${RegionWrapper}
 
     position: sticky;
-    bottom: -1;
+    bottom: -1px;
     height: 1px;
     background-color: ${debug ? 'blue' : 'transparent'};
   `
