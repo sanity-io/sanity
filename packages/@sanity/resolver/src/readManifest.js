@@ -1,4 +1,5 @@
 /* eslint-disable no-sync, no-process-env */
+import fs from 'fs'
 import fse from 'fs-extra'
 import path from 'path'
 import generateHelpUrl from '@sanity/generate-help-url'
@@ -46,7 +47,7 @@ function readManifest(opts = {}) {
     return readManifestSync(manifestPath, options)
   }
 
-  return fse
+  return fs.promises
     .readFile(manifestPath, {encoding: 'utf8'})
     .then((raw) => parseManifest(raw, options))
     .catch((err) => handleManifestReadError(err, options))
