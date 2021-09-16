@@ -22,6 +22,7 @@ Object {
     "menuItemGroups": Array [],
     "menuItems": Array [],
     "options": Object {
+      "apiVersion": "1",
       "filter": "author == \\"grrm\\"",
     },
     "schemaTypeName": undefined,

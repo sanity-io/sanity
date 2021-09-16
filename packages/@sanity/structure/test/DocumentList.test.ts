@@ -60,6 +60,20 @@ test('builds document lists through setters (alt order #2)', () => {
   ).toMatchSnapshot()
 })
 
+test('builds document lists with custom api version', () => {
+  expect(
+    S.documentList()
+      .id('pets')
+      .title('Pets')
+      .filter('_type == $type && count(humanAssociates[name == $human]) > 0')
+      .params({type: 'pet', human: 'Espen'})
+      .apiVersion('v2021-09-17')
+      .defaultLayout('detail')
+      .defaultOrdering([{field: 'title', direction: 'asc'}])
+      .serialize()
+  ).toMatchSnapshot()
+})
+
 test('default child resolver resolves to editor', (done) => {
   const list = S.documentList()
     .id('books')
@@ -96,6 +110,7 @@ test('builder is immutable', () => {
   expect(original.id('foo')).not.toBe(original)
   expect(original.title('foo')).not.toBe(original)
   expect(original.filter('foo == "bar"')).not.toBe(original)
+  expect(original.apiVersion('v1')).not.toBe(original)
   expect(original.params({foo: 'bar'})).not.toBe(original)
   expect(original.menuItems([])).not.toBe(original)
   expect(original.showIcons(false)).not.toBe(original)
@@ -115,6 +130,7 @@ test('getters work', () => {
   expect(original.id('foo').getId()).toEqual('foo')
   expect(original.title('bar').getTitle()).toEqual('bar')
   expect(original.filter('foo == "bar"').getFilter()).toEqual('foo == "bar"')
+  expect(original.apiVersion('v2021-03-25').getApiVersion()).toEqual('v2021-03-25')
   expect(original.params({foo: 'bar'}).getParams()).toEqual({foo: 'bar'})
   expect(original.menuItems([]).getMenuItems()).toEqual([])
   expect(original.menuItemGroups([]).getMenuItemGroups()).toEqual([])

@@ -161,6 +161,10 @@ export class DocumentListBuilder extends GenericListBuilder<
       child: this.spec.child || resolveDocumentChildForItem,
       options: {
         ...this.spec.options,
+        apiVersion:
+          this.spec.options.apiVersion ||
+          // If this is a simple type filter, use modern API version - otherwise default to v1
+          (this.spec.options?.filter === '_type == $type' ? '2021-06-07' : '1'),
         filter: validateFilter(this.spec, options),
       },
     }
