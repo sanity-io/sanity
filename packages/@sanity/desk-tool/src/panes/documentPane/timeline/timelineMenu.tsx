@@ -4,6 +4,7 @@ import {SelectIcon} from '@sanity/icons'
 import {useClickOutside, Button, Box, Popover} from '@sanity/ui'
 import {upperFirst} from 'lodash'
 import React, {useCallback, useState} from 'react'
+import styled from 'styled-components'
 import {useDocumentHistory} from '../documentHistory'
 import {sinceTimelineProps, revTimelineProps, formatTimelineEventLabel} from './helpers'
 import {Timeline} from './timeline'
@@ -12,6 +13,26 @@ interface TimelineMenuProps {
   chunk: Chunk | null
   mode: 'rev' | 'since'
 }
+
+const Root = styled(Popover)`
+  & > div {
+    display: flex;
+    flex-direction: column;
+
+    & > [data-ui='Card'] {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+
+      /* This is the scrollable container rendered by <Timeline /> */
+      & > div {
+        flex: 1;
+        min-height: 0;
+      }
+    }
+  }
+`
 
 export function TimelineMenu({chunk, mode}: TimelineMenuProps) {
   const [open, setOpen] = useState(false)
@@ -98,13 +119,7 @@ export function TimelineMenu({chunk, mode}: TimelineMenuProps) {
 
   return (
     <Box margin={1} data-ui="versionMenu">
-      <Popover
-        content={content}
-        referenceElement={buttonRef}
-        open={open}
-        boundaryElement={menuContent}
-        portal
-      >
+      <Root constrainSize content={content} referenceElement={buttonRef} open={open} portal>
         <Button
           ref={setButtonRef as any}
           text={open ? openLabel : buttonLabel}
@@ -116,7 +131,7 @@ export function TimelineMenu({chunk, mode}: TimelineMenuProps) {
           iconRight={SelectIcon}
           onClick={open ? handleClose : handleOpen}
         />
-      </Popover>
+      </Root>
     </Box>
   )
 }

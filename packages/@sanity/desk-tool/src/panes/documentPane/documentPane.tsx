@@ -88,6 +88,10 @@ export function DocumentPane(props: DocumentPaneProps) {
     paneRouter.params.path ? PathUtils.fromString(paneRouter.params.path) : []
   )
   const isInspectOpen = paneRouter.params.inspect === 'on'
+  const [
+    documentAndChangesContainer,
+    setDocumentAndChangesContainer,
+  ] = useState<HTMLDivElement | null>(null)
 
   const handleFocus = useCallback(
     (nextFocusPath: Path) => {
@@ -168,57 +172,60 @@ export function DocumentPane(props: DocumentPaneProps) {
         rootRef={setRootElement}
       >
         <DialogProvider position={['fixed', 'absolute']} zOffset={zOffsets.portal}>
-          <ChangeConnectorRoot
-            onSetFocus={handleFocus}
-            onOpenReviewChanges={open}
-            isReviewChangesOpen={isChangesOpen}
-            className={styles.documentAndChangesContainer}
-          >
-            <div className={styles.documentContainer}>
-              <DocumentPanel
-                activeViewId={activeViewId}
-                documentId={documentId}
-                documentType={documentType}
-                draft={draft}
-                idPrefix={paneKey}
-                formInputFocusPath={formInputFocusPath}
-                onFormInputFocus={handleFocus}
-                initialValue={initialValue}
-                isClosable={isClosable}
-                isCollapsed={isCollapsed}
-                isHistoryOpen={isChangesOpen}
-                markers={markers}
-                menuItemGroups={menuItemGroups}
-                onChange={onChange}
-                onCloseView={handleClosePane}
-                onCollapse={onCollapse}
-                onExpand={onExpand}
-                onSetActiveView={handleSetActiveView}
-                onSplitPane={handleSplitPane}
-                paneTitle={paneTitle}
-                published={published}
-                rootElement={rootElement}
-                schemaType={schemaType}
-                toggleInspect={toggleInspect}
-                value={value}
-                compareValue={isChangesOpen ? historyController.sinceAttributes() : compareValue}
-                views={views}
-              />
-            </div>
-
-            {features.reviewChanges && !isCollapsed && isChangesOpen && (
-              <div className={styles.changesContainer}>
-                <BoundaryElementProvider element={rootElement}>
-                  <ChangesPanel
-                    documentId={documentId}
-                    loading={historyState === 'loading'}
-                    schemaType={schemaType}
-                    since={historyController.sinceTime}
-                  />
-                </BoundaryElementProvider>
+          <div className={styles.documentAndChangesContainer} ref={setDocumentAndChangesContainer}>
+            <ChangeConnectorRoot
+              onSetFocus={handleFocus}
+              onOpenReviewChanges={open}
+              isReviewChangesOpen={isChangesOpen}
+            >
+              <div className={styles.documentContainer}>
+                <DocumentPanel
+                  activeViewId={activeViewId}
+                  documentId={documentId}
+                  documentType={documentType}
+                  draft={draft}
+                  idPrefix={paneKey}
+                  formInputFocusPath={formInputFocusPath}
+                  onFormInputFocus={handleFocus}
+                  initialValue={initialValue}
+                  isClosable={isClosable}
+                  isCollapsed={isCollapsed}
+                  isHistoryOpen={isChangesOpen}
+                  markers={markers}
+                  menuItemGroups={menuItemGroups}
+                  onChange={onChange}
+                  onCloseView={handleClosePane}
+                  onCollapse={onCollapse}
+                  onExpand={onExpand}
+                  onSetActiveView={handleSetActiveView}
+                  onSplitPane={handleSplitPane}
+                  paneTitle={paneTitle}
+                  published={published}
+                  rootElement={rootElement}
+                  schemaType={schemaType}
+                  toggleInspect={toggleInspect}
+                  value={value}
+                  compareValue={isChangesOpen ? historyController.sinceAttributes() : compareValue}
+                  views={views}
+                  timelinePopoverBoundaryElement={documentAndChangesContainer}
+                />
               </div>
-            )}
-          </ChangeConnectorRoot>
+
+              {features.reviewChanges && !isCollapsed && isChangesOpen && (
+                <div className={styles.changesContainer}>
+                  <BoundaryElementProvider element={rootElement}>
+                    <ChangesPanel
+                      documentId={documentId}
+                      loading={historyState === 'loading'}
+                      schemaType={schemaType}
+                      since={historyController.sinceTime}
+                      timelinePopoverBoundaryElement={documentAndChangesContainer}
+                    />
+                  </BoundaryElementProvider>
+                </div>
+              )}
+            </ChangeConnectorRoot>
+          </div>
         </DialogProvider>
 
         <LegacyLayerProvider zOffset="paneFooter">

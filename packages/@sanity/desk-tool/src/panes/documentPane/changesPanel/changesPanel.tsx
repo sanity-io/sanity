@@ -13,7 +13,7 @@ import {
   ObjectSchemaType,
 } from '@sanity/field/diff'
 import CloseIcon from 'part:@sanity/base/close-icon'
-import {UserAvatar, ScrollContainer} from '@sanity/base/components'
+import {UserAvatar, ScrollContainer, LegacyLayerProvider} from '@sanity/base/components'
 import {AvatarStack, BoundaryElementProvider, Button, Flex, Card} from '@sanity/ui'
 import React, {useRef} from 'react'
 import {useDocumentHistory} from '../documentHistory'
@@ -28,6 +28,7 @@ interface ChangesPanelProps {
   loading: boolean
   schemaType: ObjectSchemaType
   since: Chunk | null
+  timelinePopoverBoundaryElement: HTMLDivElement | null
 }
 
 export function ChangesPanel({
@@ -35,6 +36,7 @@ export function ChangesPanel({
   loading,
   since,
   schemaType,
+  timelinePopoverBoundaryElement,
 }: ChangesPanelProps): React.ReactElement | null {
   const scrollRef = useRef<HTMLElement | null>(null)
   const {close: closeHistory, historyController} = useDocumentHistory()
@@ -76,7 +78,11 @@ export function ChangesPanel({
 
           <div className={styles.versionSelectContainer}>
             <div className={styles.changesSinceSelectContainer}>
-              <TimelineMenu mode="since" chunk={since} />
+              <BoundaryElementProvider element={timelinePopoverBoundaryElement}>
+                <LegacyLayerProvider zOffset="paneHeader">
+                  <TimelineMenu mode="since" chunk={since} />
+                </LegacyLayerProvider>
+              </BoundaryElementProvider>
             </div>
 
             {changeAnnotations.length > 0 && (

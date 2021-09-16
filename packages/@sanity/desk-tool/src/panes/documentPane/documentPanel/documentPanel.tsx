@@ -49,10 +49,11 @@ interface DocumentPanelProps {
   value: any
   compareValue: any
   views: DocumentView[]
+  timelinePopoverBoundaryElement: HTMLDivElement | null
 }
 
 export function DocumentPanel(props: DocumentPanelProps) {
-  const {toggleInspect, isHistoryOpen, views, activeViewId} = props
+  const {toggleInspect, isHistoryOpen, views, activeViewId, timelinePopoverBoundaryElement} = props
   const parentPortal = usePortal()
   const features = useDeskToolFeatures()
   const portalRef = useRef<HTMLDivElement | null>(null)
@@ -151,6 +152,7 @@ export function DocumentPanel(props: DocumentPanelProps) {
             views={props.views}
             rev={revTime}
             isHistoryOpen={isHistoryOpen}
+            timelinePopoverBoundaryElement={timelinePopoverBoundaryElement}
           />
         </Layer>
       </LegacyLayerProvider>
