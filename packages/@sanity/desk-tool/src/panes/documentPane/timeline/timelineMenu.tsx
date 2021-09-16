@@ -1,9 +1,9 @@
 import {useTimeAgo} from '@sanity/base/hooks'
 import {Chunk} from '@sanity/field/diff'
 import {SelectIcon} from '@sanity/icons'
-import {useClickOutside, Button, Box, Popover, Card} from '@sanity/ui'
+import {useClickOutside, Button, Box, Popover} from '@sanity/ui'
 import {upperFirst} from 'lodash'
-import React, {useCallback, useState, useMemo} from 'react'
+import React, {useCallback, useState} from 'react'
 import {useDocumentHistory} from '../documentHistory'
 import {sinceTimelineProps, revTimelineProps, formatTimelineEventLabel} from './helpers'
 import {Timeline} from './timeline'
@@ -64,7 +64,7 @@ export function TimelineMenu({chunk, mode}: TimelineMenuProps) {
   )
 
   const content = open && (
-    <Card ref={setMenuContent as any} radius={3}>
+    <div ref={setMenuContent as any}>
       {mode === 'rev' ? (
         <Timeline
           timeline={timeline}
@@ -80,7 +80,7 @@ export function TimelineMenu({chunk, mode}: TimelineMenuProps) {
           {...sinceTimelineProps(historyController.sinceTime!, historyController.realRevChunk)}
         />
       )}
-    </Card>
+    </div>
   )
 
   const timeAgo = useTimeAgo(chunk?.endTimestamp || '', {agoSuffix: true})
