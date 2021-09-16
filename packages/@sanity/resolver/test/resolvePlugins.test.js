@@ -238,7 +238,7 @@ describe('plugin resolver', () => {
         expect(plugins[1].path).toBe(path.resolve('/sanity/node_modules/@sanity/core'))
         expect(plugins[2].path).toBe(path.resolve('/node_modules/@sanity/strawberry'))
         expect(plugins[3].path).toBe(path.resolve('/node_modules/sanity-plugin-rebeltastic'))
-        expect(plugins[4].path).toBe(path.resolve('/sanity/app'))
+        expect(path.resolve(plugins[4].path)).toBe(path.resolve('/sanity/app'))
       })
     })
   })
@@ -279,7 +279,7 @@ describe('plugin resolver', () => {
     mockFs(getBasicTree())
     return resolveParts(opts).then((res) => {
       expect(res.plugins).toHaveLength(4)
-      expect(res.plugins.map((plugin) => plugin.path)).toEqual([
+      expect(res.plugins.map((plugin) => path.resolve(plugin.path))).toEqual([
         path.resolve('/sanity/node_modules/@sanity/default-layout'),
         path.resolve('/sanity/node_modules/@sanity/core'),
         path.resolve('/sanity/node_modules/sanity-plugin-instagram'),
@@ -293,7 +293,7 @@ describe('plugin resolver', () => {
 
     const res = resolveParts(syncOpts)
     expect(res.plugins).toHaveLength(4)
-    expect(res.plugins.map((plugin) => plugin.path)).toEqual([
+    expect(res.plugins.map((plugin) => path.resolve(plugin.path))).toEqual([
       path.resolve('/sanity/node_modules/@sanity/default-layout'),
       path.resolve('/sanity/node_modules/@sanity/core'),
       path.resolve('/sanity/node_modules/sanity-plugin-instagram'),
@@ -354,7 +354,7 @@ describe('plugin resolver', () => {
 
       expect(res.implementations['part:foo/absolute'][0]).toEqual({
         plugin: 'foo',
-        path: path.resolve('/absolute/path/to/File.js'),
+        path: '/absolute/path/to/File.js',
       })
 
       expect(res.implementations['part:foo/dot-path'][0]).toEqual({
@@ -427,16 +427,18 @@ describe('plugin resolver', () => {
     mockFs(getRootLevelPartsTree())
     return resolveParts(opts).then((res) => {
       expect(res.definitions).toHaveProperty('part:@sanity/config/schema')
-      expect(res.definitions['part:@sanity/config/schema'].path).toBe(path.resolve('/sanity'))
+      expect(path.resolve(res.definitions['part:@sanity/config/schema'].path)).toBe(
+        path.resolve('/sanity')
+      )
 
       expect(res.implementations).toHaveProperty('part:@sanity/config/schema')
-      expect(res.implementations['part:@sanity/config/schema'][0].path).toEqual(
-        path.join('/sanity', 'schema', 'schema.js')
+      expect(path.resolve(res.implementations['part:@sanity/config/schema'][0].path)).toEqual(
+        path.resolve(path.join('/sanity', 'schema', 'schema.js'))
       )
 
       const last = res.plugins[res.plugins.length - 1]
       expect(last.name).toBe('(project root)')
-      expect(last.path).toBe(path.resolve('/sanity'))
+      expect(path.resolve(last.path)).toBe(path.resolve('/sanity'))
     })
   })
 
@@ -448,7 +450,7 @@ describe('plugin resolver', () => {
 
       expect(res.implementations).toHaveProperty('part:@sanity/core/root')
       expect(res.implementations['part:@sanity/core/root'][0].path).toBe(
-        '/sanity/myRootComponent.js'
+        path.resolve('/sanity/myRootComponent.js')
       )
     })
   })
