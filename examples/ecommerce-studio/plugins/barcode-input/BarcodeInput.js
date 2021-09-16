@@ -1,3 +1,5 @@
+// Copied from packages/@sanity/cli/templates/ecommerce/plugins/barcode-input/BarcodeInput.js
+
 import React, {useState} from 'react'
 import PropTypes from 'prop-types'
 import Barcode from 'react-barcode'

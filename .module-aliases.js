@@ -21,6 +21,9 @@ module.exports = {
   '@sanity/diff': './packages/@sanity/diff/src',
   '@sanity/field': './packages/@sanity/field/src',
   '@sanity/form-builder/PatchEvent': './packages/@sanity/form-builder/src/PatchEvent',
+  // Required by BarcodeInput in the Ecommerce template
+  '@sanity/form-builder/lib/FormBuilderInput':
+    './packages/@sanity/form-builder/src/FormBuilderInput',
   '@sanity/form-builder': './packages/@sanity/form-builder/src',
   '@sanity/imagetool': './packages/@sanity/imagetool/src',
   '@sanity/initial-value-templates': './packages/@sanity/initial-value-templates/src',

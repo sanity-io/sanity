@@ -1,9 +1,13 @@
 // Copied from packages/@sanity/cli/templates/ecommerce/plugins/barcode-input/BarcodeType.js
 
+import BarcodeInput from './BarcodeInput'
+
 export default {
   name: 'barcode',
   title: 'Barcode',
   type: 'object',
+  inputComponent: BarcodeInput,
+
   preview: {
     select: {
       title: 'barcode',
