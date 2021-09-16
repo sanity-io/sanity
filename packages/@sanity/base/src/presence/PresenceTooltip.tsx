@@ -1,5 +1,5 @@
 import React from 'react'
-import {Tooltip, Placement, Box, Card, Flex} from '@sanity/ui'
+import {Tooltip, Placement, Box, Flex} from '@sanity/ui'
 import {UserAvatar} from '../components/UserAvatar'
 import type {FormFieldPresence} from './types'
 
@@ -17,7 +17,7 @@ export function PresenceTooltip(props: PresenceTooltipProps) {
   const content = (
     <Box padding={1}>
       {items.map((item) => (
-        <Card key={item.user.id} padding={1}>
+        <Box key={item.user.id} padding={1}>
           <Flex align="center">
             <div>
               <UserAvatar user={item.user} status="online" />
@@ -25,7 +25,7 @@ export function PresenceTooltip(props: PresenceTooltipProps) {
 
             <TextWrapper>{item.user.displayName}</TextWrapper>
           </Flex>
-        </Card>
+        </Box>
       ))}
     </Box>
   )
