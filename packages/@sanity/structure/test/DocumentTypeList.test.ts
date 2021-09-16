@@ -1,6 +1,6 @@
 import {StructureBuilder as S} from '../src'
-import serializeStructure from './util/serializeStructure'
 import {getDefaultSchema, SchemaType} from '../src/parts/Schema'
+import serializeStructure from './util/serializeStructure'
 
 test('builds document type lists with only required properties', () => {
   expect(
@@ -44,6 +44,19 @@ test('throws if no filter is set', () => {
   expect(() =>
     S.documentTypeList('author').id('foo').filter('').serialize()
   ).toThrowErrorMatchingSnapshot()
+})
+
+test('defaults to modern api version ', () => {
+  expect(S.documentTypeList('author').serialize()).toHaveProperty(
+    'options.apiVersion',
+    '2021-06-07'
+  )
+})
+
+test('defaults to api version v1 if custom filter is specified', () => {
+  expect(
+    S.documentTypeList('author').filter('_type == $type && custom == "prop"').serialize()
+  ).toHaveProperty('options.apiVersion', '1')
 })
 
 test('builds document type lists through setters', () => {

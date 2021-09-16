@@ -75,6 +75,7 @@ Object {
     },
   ],
   "options": Object {
+    "apiVersion": "2021-06-07",
     "defaultOrdering": Array [
       Object {
         "direction": "desc",
@@ -167,6 +168,7 @@ Object {
     },
   ],
   "options": Object {
+    "apiVersion": "2021-06-07",
     "defaultOrdering": Array [
       Object {
         "direction": "desc",
@@ -259,6 +261,7 @@ Object {
     },
   ],
   "options": Object {
+    "apiVersion": "2021-06-07",
     "defaultOrdering": Array [
       Object {
         "direction": "asc",
@@ -351,6 +354,7 @@ Object {
     },
   ],
   "options": Object {
+    "apiVersion": "2021-06-07",
     "defaultOrdering": Array [
       Object {
         "direction": "desc",
@@ -443,6 +447,7 @@ Object {
     },
   ],
   "options": Object {
+    "apiVersion": "2021-06-07",
     "defaultOrdering": Array [
       Object {
         "direction": "desc",
@@ -535,6 +540,7 @@ Object {
     },
   ],
   "options": Object {
+    "apiVersion": "2021-06-07",
     "defaultOrdering": Array [
       Object {
         "direction": "desc",
@@ -627,6 +633,7 @@ Object {
     },
   ],
   "options": Object {
+    "apiVersion": "2021-06-07",
     "defaultOrdering": Array [
       Object {
         "direction": "desc",
