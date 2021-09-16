@@ -3,8 +3,7 @@
 
 import React, {useCallback, useEffect, useRef, useState} from 'react'
 import {Chunk} from '@sanity/field/diff'
-import {Box, Menu, Stack, Text} from '@sanity/ui'
-import Spinner from 'part:@sanity/components/loading/spinner'
+import {Menu, Stack, Text, Spinner, Flex} from '@sanity/ui'
 import {Timeline as TimelineModel} from '../documentHistory/history/timeline'
 import {TimelineItem} from './timelineItem'
 import {TimelineItemState} from './types'
@@ -105,9 +104,9 @@ export const Timeline = ({
       </Menu>
 
       {!timeline.reachedEarliestEntry && (
-        <Box padding={4} ref={setLoadingElement}>
-          <Spinner center />
-        </Box>
+        <Flex align="center" justify="center" padding={4} ref={setLoadingElement}>
+          <Spinner muted />
+        </Flex>
       )}
     </Root>
   )
