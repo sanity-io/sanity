@@ -96,15 +96,15 @@ export const ObjectInput = memo(
             event.append(unset(['_type'])).patches
           )
 
-        // if the result has no keys left in it.
-        // note: for arrays we retain empty objects so `_key` is not considered
-        if (isRecord(result) && Object.keys(result).length === 0) {
-          // then unset the whole object
-          onChange?.(PatchEvent.from(unset()))
-          return
-        }
-
         if (!isRoot) {
+          // if the result has no keys left in it.
+          // note: for arrays we retain empty objects so `_key` is not considered
+          if (isRecord(result) && Object.keys(result).length === 0) {
+            // then unset the whole object
+            onChange?.(PatchEvent.from(unset()))
+            return
+          }
+
           event = event.prepend(setIfMissing(type.name === 'object' ? {} : {_type: type.name}))
           if (value) {
             const valueTypeName = value && value._type
