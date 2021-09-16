@@ -32,7 +32,7 @@ module.exports = {
   plugins: ['import', '@typescript-eslint', 'prettier', 'react'],
   overrides: [
     {
-      files: ['*.ts', '*.tsx'],
+      files: ['*.{ts,tsx}'],
       rules: {
         'import/no-unresolved': 'off',
         'no-undef': 'off',
@@ -43,6 +43,10 @@ module.exports = {
         'no-unused-vars': 'off',
         '@typescript-eslint/no-unused-vars': ['warn'],
       },
+    },
+    {
+      files: ['*.test.{js,ts,tsx}'],
+      env: {jest: true},
     },
   ],
 }
