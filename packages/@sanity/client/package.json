@@ -15,7 +15,7 @@
     "coverage": "DEBUG=sanity NODE_ENV=test nyc --reporter=html --reporter=lcov --reporter=text npm test",
     "minify": "terser -c -m -- umd/sanityClient.js > umd/sanityClient.min.js",
     "prepublishOnly": "npm run build",
-    "test": "NODE_ENV=test tape -r @babel/register test/*.test.js"
+    "test": "tape -r @babel/register test/*.test.js"
   },
   "browser": {
     "./src/http/nodeMiddleware.js": "./src/http/browserMiddleware.js",
