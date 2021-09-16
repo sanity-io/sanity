@@ -1,7 +1,4 @@
 {
-  "env": {
-    "jest": true
-  },
   "rules": {
     "max-nested-callbacks": 0,
     "complexity": 0
