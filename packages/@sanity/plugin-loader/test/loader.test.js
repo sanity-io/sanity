@@ -124,11 +124,16 @@ test('should be able to load sanity plugin versions', (t) => {
 })
 
 test('should be able to load CSS files through PostCSS', (t) => {
-  const restore = pluginLoader({basePath: path.join(__dirname, 'fixture')})
+  const restore = pluginLoader({
+    // Custom scoped name because hashes seem to differ between windows and unix
+    // (we're migrating away from CSS modules - we can live with this inconsistency)
+    generateScopedName: '[name]__[local]',
+    basePath: path.join(__dirname, 'fixture'),
+  })
 
   const styles = require('part:date/datepicker-style')
-  t.is(styles.something, 'datepicker__something___2IJMX base__base___3XsAc')
-  t.is(styles.zebra, 'datepicker__zebra___1_qke')
+  t.is(styles.something, 'datepicker__something base__base')
+  t.is(styles.zebra, 'datepicker__zebra')
 
   restore()
   t.end()
