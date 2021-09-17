@@ -13,8 +13,9 @@ import * as sidecar from 'part:@sanity/default-layout/sidecar?'
 import ToolMenu from 'part:@sanity/default-layout/tool-switcher'
 import styled from 'styled-components'
 import {HAS_SPACES} from '../util/spaces'
-import {Router, Tool} from '../types'
+import {Tool} from '../types'
 import {DatasetSelect} from '../datasetSelect'
+import {useDefaultLayoutRouter} from '../useDefaultLayoutRouter'
 import Branding from './branding/Branding'
 import SanityStatusContainer from './studioStatus/SanityStatusContainer'
 import {PresenceMenu, LoginStatus, SearchField} from '.'
@@ -25,7 +26,6 @@ interface Props {
   onCreateButtonClick: () => void
   onToggleMenu: () => void
   onUserLogout: () => void
-  router: Router
   searchIsOpen: (open: boolean) => void
   searchPortalElement: HTMLDivElement | null
   tools: Tool[]
@@ -102,7 +102,6 @@ export function Navbar(props: Props) {
     onCreateButtonClick,
     onToggleMenu,
     onUserLogout,
-    router,
     searchIsOpen,
     searchPortalElement,
     tools,
@@ -114,9 +113,11 @@ export function Navbar(props: Props) {
   const {value: currentUser} = useCurrentUser()
   const createAnyPermission = unstable_useCanCreateAnyOf(documentTypes)
   const mediaIndex = useMediaIndex()
+  const router = useDefaultLayoutRouter()
+
   const rootState = useMemo(
-    () => (HAS_SPACES && router.state.space ? {space: router.state.space} : {}),
-    [router.state.space]
+    () => (HAS_SPACES && router?.state?.space ? {space: router?.state?.space} : {}),
+    [router]
   )
 
   const shouldRender = {
@@ -264,7 +265,7 @@ export function Navbar(props: Props) {
           {shouldRender.tools && (
             <Card borderRight paddingRight={1} flex={1} overflow="visible" marginX={2}>
               <LegacyLayerProvider zOffset="navbarPopover">
-                <ToolMenu direction="horizontal" router={router} tools={tools} />
+                <ToolMenu direction="horizontal" tools={tools} />
               </LegacyLayerProvider>
             </Card>
           )}

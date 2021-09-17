@@ -41,13 +41,11 @@ declare module 'part:@sanity/default-layout/tool-switcher' {
     direction: 'vertical'
     isVisible: boolean
     onSwitchTool: () => void
-    router: Router
     tools: Tool[]
   }
 
   interface HorizontalToolSwitcherProps {
     direction: 'horizontal'
-    router: Router
     tools: Tool[]
   }
 

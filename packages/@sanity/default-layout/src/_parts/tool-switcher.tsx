@@ -3,7 +3,7 @@
  */
 
 import React from 'react'
-import {Router, Tool} from '../types'
+import {Tool} from '../types'
 import VerticalToolMenu from '../navbar/toolMenu/ToolMenu'
 import {ToolMenuCollapse as HorizontalToolMenu} from '../navbar/toolMenuCollapse'
 
@@ -12,13 +12,11 @@ interface VerticalToolSwitcherProps {
   activeToolName: string
   isVisible: boolean
   onSwitchTool: () => void
-  router: Router
   tools: Tool[]
 }
 
 interface HorizontalToolSwitcherProps {
   direction: 'horizontal'
-  router: Router
   tools: Tool[]
 }
 
