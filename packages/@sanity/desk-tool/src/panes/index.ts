@@ -1,2 +1,2 @@
-export {default as DeskToolPane} from './DeskToolPane'
+export * from './DeskToolPane'
 export * from './loadingPane'
