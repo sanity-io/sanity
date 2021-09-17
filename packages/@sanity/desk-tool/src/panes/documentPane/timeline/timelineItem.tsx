@@ -1,4 +1,4 @@
-import React, {useCallback, createElement} from 'react'
+import React, {useCallback, createElement, useState} from 'react'
 import {useTimeAgo} from '@sanity/base/hooks'
 import {Chunk, ChunkType} from '@sanity/field/diff'
 import {Box, Flex, Stack, Text, ButtonTone} from '@sanity/ui'
@@ -37,6 +37,8 @@ export function TimelineItem(props: {
   const isSelected = state === 'selected'
   const isWithinSelection = state === 'withinSelection'
 
+  const [isHovered, setHovered] = useState(false)
+
   const handleClick = useCallback(
     (evt: React.MouseEvent<HTMLDivElement>) => {
       evt.preventDefault()
@@ -47,42 +49,51 @@ export function TimelineItem(props: {
   )
 
   return (
-    <Root
-      data-ui="timelineItem"
-      radius={2}
-      data-chunk-id={chunk.id}
-      paddingY={0}
-      paddingX={2}
-      tone={isSelected || isWithinSelection ? 'default' : TIMELINE_ITEM_EVENT_TONE[type]}
-      pressed={isWithinSelection}
-      state={state}
-      selected={isSelected}
-      disabled={state === 'disabled'}
-      data-selection-bottom={isSelectionBottom}
-      data-selection-top={isSelectionTop}
-      onClick={handleClick}
+    <div
+      // eslint-disable-next-line react/jsx-no-bind
+      onMouseEnter={() => setHovered(true)}
+      // eslint-disable-next-line react/jsx-no-bind
+      onMouseLeave={() => setHovered(false)}
     >
-      <Flex align="stretch">
-        <IconWrapper align="center">
-          <IconBox padding={2}>
-            <Text size={2}>{iconComponent && createElement(iconComponent)}</Text>
-          </IconBox>
-        </IconWrapper>
+      <Root
+        data-ui="timelineItem"
+        radius={2}
+        data-chunk-id={chunk.id}
+        paddingY={0}
+        paddingX={2}
+        tone={
+          isHovered || isSelected || isWithinSelection ? 'default' : TIMELINE_ITEM_EVENT_TONE[type]
+        }
+        pressed={isWithinSelection}
+        state={state}
+        selected={isSelected}
+        disabled={state === 'disabled'}
+        data-selection-bottom={isSelectionBottom}
+        data-selection-top={isSelectionTop}
+        onClick={handleClick}
+      >
+        <Flex align="stretch">
+          <IconWrapper align="center">
+            <IconBox padding={2}>
+              <Text size={2}>{iconComponent && createElement(iconComponent)}</Text>
+            </IconBox>
+          </IconWrapper>
 
-        <Stack space={2} margin={2}>
-          <Box>
-            <EventLabel size={1} weight="medium">
-              {formatTimelineEventLabel(type) || <code>{type}</code>}
-            </EventLabel>
-          </Box>
-          <Text size={0} muted>
-            {timeAgo}
-          </Text>
-        </Stack>
-        <Flex flex={1} justify="flex-end" align="center">
-          <UserAvatarStack maxLength={3} userIds={authorUserIds} />
+          <Stack space={2} margin={2}>
+            <Box>
+              <EventLabel size={1} weight="medium">
+                {formatTimelineEventLabel(type) || <code>{type}</code>}
+              </EventLabel>
+            </Box>
+            <Text size={0} muted>
+              {timeAgo}
+            </Text>
+          </Stack>
+          <Flex flex={1} justify="flex-end" align="center">
+            <UserAvatarStack maxLength={3} userIds={authorUserIds} />
+          </Flex>
         </Flex>
-      </Flex>
-    </Root>
+      </Root>
+    </div>
   )
 }

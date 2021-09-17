@@ -1,4 +1,4 @@
-import {Text, Box, MenuItem, Theme, Flex, ButtonTone} from '@sanity/ui'
+import {Text, Box, MenuItem, Theme, Flex} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {TimelineItemState} from './types'
 
