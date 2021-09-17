@@ -25,7 +25,7 @@
     "@sanity/default-layout": "2.19.4",
     "@sanity/default-login": "2.19.0",
     "@sanity/desk-tool": "2.19.4",
-    "@sanity/form-builder": "2.19.3",
+    "@sanity/form-builder": "2.19.4",
     "@sanity/ui": "^0.36.8",
     "prop-types": "^15.6.0",
     "react": "17.0.1",
