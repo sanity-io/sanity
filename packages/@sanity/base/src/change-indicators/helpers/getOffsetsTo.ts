@@ -8,8 +8,8 @@ export const getOffsetsTo = (
   const bounds: Rect = {
     top: 0,
     left: 0,
-    height: target.offsetHeight, // Number.MAX_SAFE_INTEGER,
-    width: target.offsetWidth, // Number.MAX_SAFE_INTEGER,
+    height: target.offsetHeight,
+    width: target.offsetWidth,
   }
 
   const rect: Rect = {
