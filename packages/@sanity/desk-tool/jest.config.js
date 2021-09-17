@@ -11,7 +11,6 @@ module.exports = {
     '^part:@sanity/data-aspects/resolver$': '<rootDir>/test/mocks/dataAspects.js',
     '^part:@sanity/base/.*?-icon$': '<rootDir>/test/mocks/icon.js',
     '^part:@sanity/base/util/document-action-utils': '<rootDir>/test/mocks/documentActionUtils.js',
-    '^part:@sanity/base/router': '<rootDir>/test/mocks/router.js',
     '.*\\.css$': '<rootDir>/test/mocks/styles.js',
   },
   globals: {
