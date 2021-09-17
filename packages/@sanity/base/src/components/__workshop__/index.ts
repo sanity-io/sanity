@@ -7,4 +7,9 @@ export default defineScope('base/components', 'components', [
     title: 'UserAvatar',
     component: lazy(() => import('./UserAvatarStory')),
   },
+  {
+    name: 'collapse-menu',
+    title: 'CollapseMenu',
+    component: lazy(() => import('./CollapseMenuStory')),
+  },
 ])
