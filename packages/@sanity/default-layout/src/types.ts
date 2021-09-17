@@ -25,4 +25,5 @@ export interface User {
 
 export interface Router {
   state: {space?: string; tool: string}
+  navigate: (nextState: Record<string, unknown>, options?: {replace: boolean}) => void
 }
