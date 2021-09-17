@@ -1,7 +1,7 @@
 import path from 'path'
 import webpack from 'webpack'
 import registerBabel from '@babel/register'
-import webpackDevMiddleware from 'webpack-dev-middleware'
+import webpackDevMiddleware from '@sanity/webpack-dev-middleware'
 import webpackHotMiddleware from 'webpack-hot-middleware'
 import {getBaseServer, applyStaticRoutes} from './baseServer'
 import getWebpackDevConfig from './configs/webpack.config.dev'
