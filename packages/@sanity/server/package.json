@@ -48,6 +48,7 @@
     "@sanity/eventsource": "2.14.0",
     "@sanity/resolver": "2.19.0",
     "@sanity/util": "2.19.0",
+    "@sanity/webpack-dev-middleware": "^2.0.6",
     "@sanity/webpack-integration": "2.19.0",
     "babel-loader": "^8.0.6",
     "eventsource-polyfill": "^0.9.6",
@@ -67,18 +68,15 @@
     "style-loader": "^0.20.1",
     "symbol-observable": "^1.2.0",
     "webpack": "^3.8.1",
-    "webpack-dev-middleware": "^2.0.5",
     "webpack-hot-middleware": "2.25.0"
   },
   "devDependencies": {
     "find-config": "^1.0.0",
-    "prop-types": "^15.6.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "rimraf": "^2.7.1"
   },
   "peerDependencies": {
-    "prop-types": "^15.6 || ^16",
     "react": "^16.9 || ^17",
     "react-dom": "^16.9 || ^17"
   }
