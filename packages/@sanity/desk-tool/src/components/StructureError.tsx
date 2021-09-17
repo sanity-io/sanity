@@ -48,7 +48,7 @@ export function StructureError(props: StructureErrorProps) {
       <Container>
         <Heading as="h2">Encountered an error while reading structure</Heading>
 
-        <Card marginTop={4} padding={4} radius={2} shadow={1} tone="inherit">
+        <Card marginTop={4} padding={4} radius={2} overflow="auto" shadow={1} tone="inherit">
           {path.length > 0 && (
             <Stack space={2}>
               <Label>Structure path</Label>

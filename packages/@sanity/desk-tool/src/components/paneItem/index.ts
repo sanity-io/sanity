@@ -1,1 +1,1 @@
-export {default as PaneItem} from './PaneItem'
+export * from './PaneItem'

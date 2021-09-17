@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {WarningOutlineIcon} from '@sanity/icons'
 import {SanityDocument} from '@sanity/types'
 import React from 'react'
@@ -8,7 +11,7 @@ export interface MissingSchemaTypeProps {
   value: SanityDocument
 }
 
-const getUnknownTypeFallback = (id: string, typeName: string) => ({
+const getUnknownTypeFallback = (id: string, typeName: string): Partial<SanityDocument> => ({
   title: (
     <em>
       No schema found for type <code>{typeName}</code>

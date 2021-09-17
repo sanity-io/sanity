@@ -1,55 +1,40 @@
-import React, {forwardRef, useContext, useMemo} from 'react'
-import PropTypes from 'prop-types'
-import {Card, Text} from '@sanity/ui'
+import React, {forwardRef, useMemo} from 'react'
 import {FolderIcon, ChevronRightIcon, DocumentIcon} from '@sanity/icons'
+import {isSanityDocument, SanityDocument, SchemaType} from '@sanity/types'
+import {Card, Text} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
 import {SanityDefaultPreview} from 'part:@sanity/base/preview'
-import {DocumentPaneItemPreview} from '../../components/DocumentPaneItemPreview'
-import getIconWithFallback from '../../utils/getIconWithFallback'
-import {MissingSchemaType} from '../../components/MissingSchemaType'
-import {PaneRouterContext} from '../../contexts/PaneRouterContext'
+import {getIconWithFallback} from '../../utils/getIconWithFallback'
+import {MissingSchemaType} from '../MissingSchemaType'
+import {usePaneRouter} from '../../contexts/paneRouter'
+import {PreviewValue} from '../../types'
+import {PaneItemPreview} from './PaneItemPreview'
 
-PaneItem.propTypes = {
-  id: PropTypes.string.isRequired,
-  layout: PropTypes.string,
-  isSelected: PropTypes.bool,
-  isActive: PropTypes.bool,
-  icon: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
-  value: PropTypes.shape({
-    _id: PropTypes.string,
-    _type: PropTypes.string,
-    title: PropTypes.string,
-    subtitle: PropTypes.string,
-    media: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
-  }),
-  schemaType: PropTypes.shape({
-    name: PropTypes.string,
-    icon: PropTypes.func,
-  }),
+interface PaneItemProps {
+  id: string
+  layout?: 'inline' | 'block' | 'default' | 'card' | 'media' | 'detail'
+  isSelected?: boolean
+  isActive?: boolean
+  icon?: React.ComponentType<any> | false
+  title?: string
+  value?: PreviewValue | SanityDocument
+  schemaType?: SchemaType
 }
 
-PaneItem.defaultProps = {
-  layout: 'default',
-  icon: undefined,
-  value: null,
-  isSelected: false,
-  isActive: false,
-  schemaType: null,
-}
-
-export default function PaneItem(props) {
-  const {id, isSelected, schemaType, layout, icon, value, isActive} = props
-  const {ChildLink} = useContext(PaneRouterContext)
+export function PaneItem(props: PaneItemProps) {
+  const {id, isActive, isSelected, schemaType, layout = 'default', icon, title, value} = props
+  const {ChildLink} = usePaneRouter()
   const hasSchemaType = Boolean(schemaType && schemaType.name && schema.get(schemaType.name))
+  const previewValue = useMemo(() => ({title}), [title])
 
   const preview = useMemo(() => {
-    if (value && value._id) {
-      if (!hasSchemaType) {
+    if (value && isSanityDocument(value)) {
+      if (!schemaType || !hasSchemaType) {
         return <MissingSchemaType value={value} />
       }
 
       return (
-        <DocumentPaneItemPreview
+        <PaneItemPreview
           icon={getIconWithFallback(icon, schemaType, DocumentIcon)}
           layout={layout}
           schemaType={schemaType}
@@ -61,21 +46,21 @@ export default function PaneItem(props) {
     return (
       <SanityDefaultPreview
         status={
-          <Text muted size={1}>
+          <Text muted>
             <ChevronRightIcon />
           </Text>
         }
         icon={getIconWithFallback(icon, schemaType, FolderIcon)}
         layout={layout}
-        value={value}
+        value={previewValue}
       />
     )
-  }, [hasSchemaType, icon, layout, schemaType, value])
+  }, [hasSchemaType, icon, layout, previewValue, schemaType, value])
 
   const LinkComponent = useMemo(
     () =>
       // eslint-disable-next-line no-shadow
-      forwardRef(function LinkComponent(linkProps, ref) {
+      forwardRef(function LinkComponent(linkProps: any, ref: any) {
         return <ChildLink {...linkProps} childId={id} ref={ref} />
       }),
     [ChildLink, id]
@@ -92,6 +77,7 @@ export default function PaneItem(props) {
         radius={2}
         pressed={!isActive && isSelected}
         selected={isActive && isSelected}
+        tone="inherit"
       >
         {preview}
       </Card>
