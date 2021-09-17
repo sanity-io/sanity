@@ -1,137 +1,178 @@
-import React from 'react'
-import {Box, Stack} from '@sanity/ui'
-import PropTypes from 'prop-types'
-import DefaultPane from 'part:@sanity/components/panes/default'
-import listStyles from 'part:@sanity/components/lists/default-style'
-import {PaneRouterContext} from '../../contexts/PaneRouterContext'
+import React, {useCallback, useMemo, useState} from 'react'
+import {Box, Button, Stack} from '@sanity/ui'
+import {
+  MenuItem as MenuItemType,
+  MenuItemGroup as MenuItemGroupType,
+} from '@sanity/base/__legacy/@sanity/components'
+import styled from 'styled-components'
+import {ArrowLeftIcon} from '@sanity/icons'
+import {PaneContextMenuButton, Pane, PaneContent, PaneHeader, usePaneLayout} from '../../components'
 import {PaneItem} from '../../components/paneItem'
-import {ListView} from '../../components/listView'
+import {useDeskTool} from '../../contexts/deskTool'
+import {usePaneRouter} from '../../contexts/paneRouter'
+import {BaseDeskToolPaneProps} from '../types'
 
-const EMPTY_ARRAY = []
-const EMPTY_RECORD = {}
+interface ListPaneItem {
+  id: string
+  icon?: boolean
+  type: string
+  displayOptions?: {showIcon?: boolean}
+  schemaType?: {name?: string}
+}
 
-export default class ListPane extends React.PureComponent {
-  static contextType = PaneRouterContext
-
-  static propTypes = {
-    index: PropTypes.number.isRequired,
-    title: PropTypes.string.isRequired,
-    childItemId: PropTypes.string.isRequired,
-    className: PropTypes.string,
-    styles: PropTypes.object, // eslint-disable-line react/forbid-prop-types
-    defaultLayout: PropTypes.string,
-    items: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        type: PropTypes.string.isRequired,
-        schemaType: PropTypes.shape({name: PropTypes.string}),
-      })
-    ),
-    menuItems: PropTypes.arrayOf(
-      PropTypes.shape({
-        title: PropTypes.string.isRequired,
-      })
-    ),
-    menuItemGroups: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.string.isRequired,
-      })
-    ),
-    displayOptions: PropTypes.shape({
-      showIcons: PropTypes.bool,
-    }),
-    isSelected: PropTypes.bool.isRequired,
-    isActive: PropTypes.bool.isRequired,
-    isCollapsed: PropTypes.bool.isRequired,
-    onExpand: PropTypes.func,
-    onCollapse: PropTypes.func,
+type ListPaneProps = BaseDeskToolPaneProps<{
+  defaultLayout?: 'inline' | 'block' | 'default' | 'card' | 'media' | 'detail'
+  displayOptions?: {
+    showIcons?: boolean
   }
+  items?: ListPaneItem[]
+  menuItems?: MenuItemType[]
+  menuItemGroups?: MenuItemGroupType[]
+  title: string
+}>
 
-  static defaultProps = {
-    className: '',
-    items: EMPTY_ARRAY,
-    menuItems: EMPTY_ARRAY,
-    menuItemGroups: EMPTY_ARRAY,
-    displayOptions: EMPTY_RECORD,
-    styles: undefined,
-    onExpand: undefined,
-    onCollapse: undefined,
-    defaultLayout: undefined,
-  }
+const Divider = styled.hr`
+  background-color: var(--card-border-color);
+  height: 1px;
+  margin: 0;
+  border: none;
+`
 
-  itemIsSelected(item) {
-    return this.props.childItemId === item.id
-  }
+/**
+ * @internal
+ */
+export function ListPane(props: ListPaneProps) {
+  const {childItemId, index, isSelected, isActive, pane, paneKey} = props
+  const {features} = useDeskTool()
+  const {collapsed: layoutCollapsed} = usePaneLayout()
+  const {BackLink} = usePaneRouter()
 
-  shouldShowIconForItem = (item) => {
-    const paneShowIcons = this.props.displayOptions.showIcons
-    const itemShowIcon = item.displayOptions && item.displayOptions.showIcon
+  const {
+    defaultLayout,
+    displayOptions = {},
+    items = [],
+    menuItems = [],
+    menuItemGroups = [],
+    title,
+  } = pane
 
-    // Specific true/false on item should have presedence over list setting
-    if (typeof itemShowIcon !== 'undefined') {
-      return itemShowIcon === false ? false : item.icon
+  const paneShowIcons = displayOptions.showIcons
+
+  const itemIsSelected = useCallback(
+    (item: ListPaneItem) => {
+      return childItemId === item.id
+    },
+    [childItemId]
+  )
+
+  const shouldShowIconForItem = useCallback(
+    (item: ListPaneItem) => {
+      const itemShowIcon = item.displayOptions?.showIcon
+
+      // Specific true/false on item should have presedence over list setting
+      if (typeof itemShowIcon !== 'undefined') {
+        return itemShowIcon === false ? false : item.icon
+      }
+
+      // If no item setting is defined, defer to the pane settings
+      return paneShowIcons === false ? false : item.icon
+    },
+    [paneShowIcons]
+  )
+
+  const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
+
+  const handleAction = useCallback((item: MenuItemType) => {
+    if (typeof item.action === 'function') {
+      item.action(item.params)
+      return
     }
 
-    // If no item setting is defined, defer to the pane settings
-    return paneShowIcons === false ? false : item.icon
-  }
+    if (typeof item.action === 'string') {
+      // eslint-disable-next-line no-console
+      console.warn('No handler for action:', item.action)
+      return
+    }
 
-  render() {
-    const {
-      title,
-      styles,
-      className,
-      defaultLayout,
-      items,
-      index,
-      menuItems,
-      menuItemGroups,
-      isSelected,
-      isCollapsed,
-      onCollapse,
-      onExpand,
-      isActive,
-    } = this.props
+    // eslint-disable-next-line no-console
+    console.warn('The menu item is missing the `action` property')
+  }, [])
 
-    return (
-      <DefaultPane
-        data-testid="desk-tool-list-pane"
-        index={index}
+  const actions = useMemo(
+    () =>
+      menuItems.length > 0 && (
+        <PaneContextMenuButton
+          boundaryElement={rootElement}
+          items={menuItems}
+          itemGroups={menuItemGroups}
+          onAction={handleAction}
+        />
+      ),
+    [handleAction, menuItemGroups, menuItems, rootElement]
+  )
+
+  const header = useMemo(
+    () => (
+      <PaneHeader
+        actions={actions}
+        backButton={
+          features.backButton &&
+          index > 0 && <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" />
+        }
         title={title}
-        styles={styles}
-        className={className}
-        isSelected={isSelected}
-        isCollapsed={isCollapsed}
-        onCollapse={onCollapse}
-        onExpand={onExpand}
-        menuItems={menuItems}
-        menuItemGroups={menuItemGroups}
-      >
-        <ListView layout={defaultLayout}>
-          <Stack overflow="auto" paddingY={2} space={1}>
-            {items.map((item) =>
-              item.type === 'divider' ? (
-                <Box paddingY={1} key={item.id}>
-                  <hr className={listStyles.divider} />
-                </Box>
-              ) : (
-                <Box key={item.id} paddingX={2}>
-                  <PaneItem
-                    id={item.id}
-                    index={index}
-                    value={item}
-                    icon={this.shouldShowIconForItem(item)}
-                    layout={defaultLayout}
-                    isSelected={this.itemIsSelected(item)}
-                    isActive={isActive}
-                    schemaType={item.schemaType}
-                  />
+      />
+    ),
+    [actions, BackLink, features.backButton, index, title]
+  )
+
+  const content = useMemo(
+    () => (
+      <PaneContent overflow={layoutCollapsed ? undefined : 'auto'}>
+        <Stack padding={2} space={1}>
+          {items.map((item) => {
+            if (item.type === 'divider') {
+              return (
+                <Box key={item.id} paddingY={1}>
+                  <Divider />
                 </Box>
               )
-            )}
-          </Stack>
-        </ListView>
-      </DefaultPane>
-    )
-  }
+            }
+
+            return (
+              <PaneItem
+                icon={shouldShowIconForItem(item)}
+                id={item.id}
+                isActive={isActive}
+                isSelected={itemIsSelected(item)}
+                key={item.id}
+                layout={defaultLayout}
+                schemaType={item.schemaType}
+                value={item}
+              />
+            )
+          })}
+        </Stack>
+      </PaneContent>
+    ),
+    [defaultLayout, isActive, itemIsSelected, items, layoutCollapsed, shouldShowIconForItem]
+  )
+
+  return useMemo(
+    () => (
+      <Pane
+        currentMaxWidth={350}
+        data-index={index}
+        data-pane-key={paneKey}
+        data-testid="desk-tool-list-pane"
+        maxWidth={640}
+        minWidth={320}
+        selected={isSelected}
+        ref={setRootElement}
+      >
+        {header}
+        {content}
+      </Pane>
+    ),
+    [content, header, index, isSelected, paneKey]
+  )
 }
