@@ -1,1 +1,1 @@
-export {default as UserComponentPane} from './UserComponentPane'
+export * from './UserComponentPane'

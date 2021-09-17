@@ -1,112 +1,66 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import DefaultPane from 'part:@sanity/components/panes/default'
-import userComponentPaneStyles from './UserComponentPane.css'
+import React, {createElement, isValidElement, useCallback, useRef, useState} from 'react'
+import {MenuItem, MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
+import {isValidElementType} from 'react-is'
+import {PaneContextMenuButton, Pane, PaneHeader} from '../../components/pane'
+import {BaseDeskToolPaneProps} from '../types'
+import {DeskToolPaneActionHandler} from '../../types'
 
-function noActionFn() {
-  // eslint-disable-next-line no-console
-  console.warn('No handler defined for action')
-}
+type UserComponentPaneProps = BaseDeskToolPaneProps<{
+  type: 'component'
+  component: React.ComponentType | React.ReactNode
+  menuItems?: MenuItem[]
+  menuItemGroups?: MenuItemGroup[]
+  title?: string
+}>
 
-const EMPTY_ARRAY = []
-const EMPTY_RECORD = {}
+/**
+ * @internal
+ */
+export function UserComponentPane(props: UserComponentPaneProps) {
+  const {index, isSelected, pane, ...restProps} = props
+  const {component, menuItems = [], menuItemGroups = [], title = ''} = pane
+  const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
+  const userComponent = useRef<{
+    actionHandlers?: Record<string, DeskToolPaneActionHandler>
+  } | null>(null)
 
-export default class UserComponentPane extends React.PureComponent {
-  static propTypes = {
-    styles: PropTypes.object, // eslint-disable-line react/forbid-prop-types
-    title: PropTypes.string,
-    index: PropTypes.number.isRequired,
-    type: PropTypes.string.isRequired,
-    component: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
-    options: PropTypes.object, // eslint-disable-line react/forbid-prop-types
-    isSelected: PropTypes.bool.isRequired,
-    isCollapsed: PropTypes.bool.isRequired,
-    onExpand: PropTypes.func,
-    onCollapse: PropTypes.func,
-    renderActions: PropTypes.func,
-    menuItems: PropTypes.arrayOf(
-      PropTypes.shape({
-        title: PropTypes.string.isRequired,
-      })
-    ),
-    menuItemGroups: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.string.isRequired,
-      })
-    ),
-  }
+  const handleAction = useCallback((item: MenuItem) => {
+    let handler: MenuItem['action'] | null = null
 
-  static defaultProps = {
-    title: '',
-    options: EMPTY_RECORD,
-    menuItems: EMPTY_ARRAY,
-    menuItemGroups: EMPTY_ARRAY,
-    styles: undefined,
-    onExpand: undefined,
-    onCollapse: undefined,
-    renderActions: undefined,
-  }
-
-  constructor(props) {
-    super(props)
-
-    this.userComponent = React.createRef()
-  }
-
-  handleAction = (item) => {
-    let handler
     if (typeof item.action === 'function') {
       handler = item.action
-    } else {
+    } else if (typeof item.action === 'string') {
       handler =
-        this.userComponent &&
-        this.userComponent.current &&
-        this.userComponent.current.actionHandlers &&
-        this.userComponent.current.actionHandlers[item.action]
+        userComponent.current &&
+        userComponent.current.actionHandlers &&
+        userComponent.current.actionHandlers[item.action]
     }
 
-    if (handler) {
-      handler(item.params, this)
+    if (typeof handler === 'function') {
+      handler(item.params)
     } else {
-      noActionFn()
+      // eslint-disable-next-line no-console
+      console.warn('No handler defined for action:', item.action)
     }
-  }
+  }, [])
 
-  render() {
-    const {
-      isSelected,
-      isCollapsed,
-      onCollapse,
-      onExpand,
-      component,
-      index,
-      styles,
-      title,
-      type,
-      menuItems,
-      menuItemGroups,
-      renderActions,
-      ...rest
-    } = this.props
+  const actions = menuItems.length > 0 && (
+    <PaneContextMenuButton
+      boundaryElement={rootElement}
+      items={menuItems}
+      itemGroups={menuItemGroups}
+      onAction={handleAction}
+    />
+  )
 
-    const hideHeader = !title && !menuItems.length && !renderActions
-    const paneStyles = hideHeader ? {header: userComponentPaneStyles.noHeader} : {}
-    const UserComponent = typeof component === 'function' && component
+  return (
+    <Pane data-index={index} minWidth={320} selected={isSelected} ref={setRootElement}>
+      <PaneHeader actions={actions} title={title} />
 
-    return (
-      <DefaultPane
-        styles={paneStyles}
-        title={title}
-        menuItems={menuItems}
-        menuItemGroups={menuItemGroups}
-        isSelected={isSelected}
-        isCollapsed={isCollapsed}
-        onCollapse={onCollapse}
-        onExpand={onExpand}
-        onAction={this.handleAction}
-      >
-        {UserComponent ? <UserComponent ref={this.userComponent} {...rest} /> : component}
-      </DefaultPane>
-    )
-  }
+      {isValidElementType(component) &&
+        createElement(component, {...restProps, ref: userComponent})}
+
+      {isValidElement(component) && component}
+    </Pane>
+  )
 }
