@@ -2,10 +2,10 @@ import React, {forwardRef, useMemo} from 'react'
 import {GlobalPresence} from '@sanity/base/presence'
 import {orderBy} from 'lodash'
 import * as PathUtils from '@sanity/util/paths'
-import {Card, MenuItem} from '@sanity/ui'
+import {Box, Card, Flex, MenuItem, Text} from '@sanity/ui'
 import {UserAvatar} from '@sanity/base/components'
 import {LinkIcon} from '@sanity/icons'
-import {IntentLink} from '@sanity/state-router/components'
+import {IntentLink} from '@sanity/base/router'
 import styled from 'styled-components'
 
 interface PresenceListRowProps {
@@ -14,13 +14,9 @@ interface PresenceListRowProps {
 
 const AvatarCard = styled(Card)`
   background: transparent;
+  margin: calc((-35px + 11px) / 2);
 `
 
-const StyledMenuItem = styled(MenuItem)`
-  [data-ui='Flex'] {
-    align-items: center;
-  }
-`
 export function PresenceMenuItem({presence}: PresenceListRowProps) {
   const lastActiveLocation = orderBy(presence.locations || [], ['lastActiveAt'], ['desc']).find(
     (location) => location.documentId
@@ -47,16 +43,27 @@ export function PresenceMenuItem({presence}: PresenceListRowProps) {
   )
 
   return (
-    <StyledMenuItem
-      forwardedAs={lastActiveLocation ? LinkComponent : 'div'}
+    <MenuItem
+      as={lastActiveLocation ? LinkComponent : 'div'}
       data-as={lastActiveLocation ? 'a' : 'div'}
-      iconRight={hasLink ? LinkIcon : null}
-      text={presence.user.displayName}
-      icon={
+      padding={4}
+      paddingRight={3}
+    >
+      <Flex align="center">
         <AvatarCard scheme="light">
           <UserAvatar size={1} key={presence.user.id} user={presence.user} />
         </AvatarCard>
-      }
-    />
+        <Box flex={1} marginLeft={4}>
+          <Text textOverflow="ellipsis">{presence.user.displayName}</Text>
+        </Box>
+        {hasLink && (
+          <Box marginLeft={3}>
+            <Text>
+              <LinkIcon />
+            </Text>
+          </Box>
+        )}
+      </Flex>
+    </MenuItem>
   )
 }
