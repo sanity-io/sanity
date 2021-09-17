@@ -1,16 +1,15 @@
 import React from 'react'
-import {withRouterHOC, StateLink} from '@sanity/base/router'
+import {StateLink} from '@sanity/base/router'
 import {Card, Text, Box, Stack, Container, Heading} from '@sanity/ui'
 import {HAS_SPACES} from '../util/spaces'
-import {Router} from '../types'
+import {useDefaultLayoutRouter} from '../useDefaultLayoutRouter'
 
 interface NotFoundProps {
   children: React.ReactNode
-  router: Router
 }
 
-export const NotFound = withRouterHOC((props: NotFoundProps) => {
-  const router = props.router
+export const NotFound = (props: NotFoundProps) => {
+  const router = useDefaultLayoutRouter()
   const rootState =
     HAS_SPACES && router.state && router.state.space ? {space: router.state.space} : {}
 
@@ -32,4 +31,4 @@ export const NotFound = withRouterHOC((props: NotFoundProps) => {
       </Container>
     </Card>
   )
-})
+}

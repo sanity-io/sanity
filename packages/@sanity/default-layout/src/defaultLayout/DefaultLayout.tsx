@@ -2,7 +2,7 @@
 ///<reference types="@sanity/types/parts" />
 
 import React, {useState, useEffect, useCallback} from 'react'
-import {RouteScope, withRouterHOC} from '@sanity/base/router'
+import {RouteScope} from '@sanity/base/router'
 import absolutes from 'all:part:@sanity/base/absolutes'
 import userStore from 'part:@sanity/base/user'
 import {LegacyLayerProvider} from '@sanity/base/components'
@@ -13,22 +13,19 @@ import {CreateDocumentDialog} from '../createDocumentDialog'
 import {SchemaErrorReporter} from '../schemaErrors/SchemaErrorReporter'
 import {SideMenu} from '../sideMenu'
 import getNewDocumentModalActions from '../util/getNewDocumentModalActions'
-import {Router, Tool} from '../types'
+import {Tool} from '../types'
 import {Navbar} from '../navbar'
+import {useDefaultLayoutRouter} from '../useDefaultLayoutRouter'
 import {RootFlex, MainAreaFlex, ToolBox, SidecarBox, PortalBox} from './styles'
 import {LoadingScreen} from './LoadingScreen'
 
-interface OuterProps {
-  tools: Tool[]
-}
-
 interface Props {
-  router: Router
   tools: Tool[]
 }
 
-export const DefaultLayout = withRouterHOC((props: Props) => {
-  const {tools, router} = props
+export const DefaultLayout = (props: Props) => {
+  const {tools} = props
+  const router = useDefaultLayoutRouter()
   const [createMenuIsOpen, setCreateMenuIsOpen] = useState<boolean>(false)
   const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false)
   const [showLoadingScreen, setShowLoadingScreen] = useState<boolean>(true)
@@ -160,4 +157,4 @@ export const DefaultLayout = withRouterHOC((props: Props) => {
   }
 
   return <SchemaErrorReporter>{renderContent}</SchemaErrorReporter>
-}) as React.ComponentType<OuterProps>
+}

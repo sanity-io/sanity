@@ -1,6 +1,6 @@
 export interface Router {
   state: {space?: string; tool: string}
-  navigate: () => void
+  navigate: (nextState: Record<string, unknown>, options?: {replace: boolean}) => void
 }
 
 export interface Tool {
