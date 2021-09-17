@@ -117,15 +117,43 @@ declare module 'part:@sanity/base/new-document-structure?' {
 }
 
 declare module 'part:@sanity/base/preview' {
-  import type {Reference, SanityDocument, SchemaType} from '_self_'
+  import type {ImageUrlFitMode, Reference, SanityDocument, SchemaType} from '_self_'
   import type {Observable} from 'rxjs'
+
+  export type MediaDimensions = {
+    width?: number
+    height?: number
+    fit?: ImageUrlFitMode
+    aspect?: number
+    dpr?: number
+  }
+
+  type PreviewLayoutKey = 'default' | 'card' | 'media' | 'detail' | 'inline' | 'block'
+
+  interface PreviewProps<LayoutKey = PreviewLayoutKey> {
+    children?: React.ReactNode
+    extendedPreview?: unknown
+    isPlaceholder?: boolean
+    mediaDimensions?: MediaDimensions
+    media?:
+      | React.ReactNode
+      | React.FC<{
+          dimensions: MediaDimensions
+          layout: LayoutKey
+        }>
+    progress?: number
+    status?: React.ReactNode | React.FC<{layout: LayoutKey}>
+    title?: React.ReactNode | React.FC<{layout: LayoutKey}>
+    subtitle?: React.ReactNode | React.FC<{layout: LayoutKey}>
+    description?: React.ReactNode | React.FC<{layout: LayoutKey}>
+  }
 
   declare const PreviewBase: React.ComponentType<{
     type?: SchemaType
     fields?: string[]
     value: any
     children?: (props: any) => React.ComponentType
-    layout: 'inline' | 'block' | 'default' | 'card' | 'media'
+    layout: 'default' | 'card' | 'media' | 'detail' | 'inline' | 'block'
   }>
 
   type previewObserver = (
@@ -136,20 +164,20 @@ declare module 'part:@sanity/base/preview' {
   export const observeForPreview: previewObserver
   export const observePaths: (id: string, paths: string[]) => Observable<Record<string, string>>
 
-  export const SanityDefaultPreview: React.ComponentType<{
-    icon?: any
-    isPlaceholder?: boolean
-    layout?: 'inline' | 'block' | 'default' | 'card' | 'media'
-    status?: React.ReactNode
-    type?: any
-    value: Record<string, any>
-  }>
+  export const SanityDefaultPreview: React.ComponentType<
+    {
+      _renderAsBlockImage?: boolean
+      icon?: React.ComponentType<any> | false
+      layout?: 'default' | 'card' | 'media' | 'detail' | 'inline' | 'block'
+      value: Partial<SanityDocument>
+    } & PreviewProps
+  >
 
   export const PreviewFields: React.ComponentType<{
     document: SanityDocument
     fields: string | string[]
-    layout?: 'inline' | 'block' | 'default' | 'card' | 'media'
-    type: Type
+    layout?: 'inline' | 'block' | 'default' | 'card' | 'media' | 'detail'
+    type: SchemaType
     children: (snapshot: SanityDocument) => React.ReactElement
   }>
 
