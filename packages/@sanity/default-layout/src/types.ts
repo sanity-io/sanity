@@ -1,7 +1,3 @@
-export interface Router {
-  state: {space?: string; tool: string}
-}
-
 export interface Tool {
   canHandleIntent?: (
     intent: Record<string, any>,
@@ -25,4 +21,8 @@ export interface User {
   email: string
   name?: string
   profileImage?: string
+}
+
+export interface Router {
+  state: {space?: string; tool: string}
 }

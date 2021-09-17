@@ -2,10 +2,11 @@ import {PlugIcon} from '@sanity/icons'
 import {StateLink} from '@sanity/base/router'
 import React, {useMemo} from 'react'
 import {CollapseMenu, CollapseMenuButton} from '@sanity/base/components'
-import {Tool, Router} from '../../types'
+import {Tool} from '../../types'
+import {useDefaultLayoutRouter} from '../../useDefaultLayoutRouter'
 
-export function ToolMenuCollapse({tools, router}: {tools: Tool[]; router: Router}) {
-  const activeTool = router.state.tool || ''
+export function ToolMenuCollapse({tools}: {tools: Tool[]}) {
+  const router = useDefaultLayoutRouter()
 
   return useMemo(
     () => (
@@ -15,7 +16,7 @@ export function ToolMenuCollapse({tools, router}: {tools: Tool[]; router: Router
             <StateLink
               {...props}
               state={{
-                ...router.state,
+                ...(router?.state || {}),
                 tool: tool?.name,
                 [tool?.name]: undefined,
               }}
@@ -32,12 +33,12 @@ export function ToolMenuCollapse({tools, router}: {tools: Tool[]; router: Router
               tooltipProps={{scheme: 'light'}}
               text={tool.title}
               icon={tool?.icon || PlugIcon}
-              selected={activeTool === tool?.name}
+              selected={router?.state?.tool === tool?.name}
             />
           )
         })}
       </CollapseMenu>
     ),
-    [activeTool, router.state, tools]
+    [router?.state, tools]
   )
 }

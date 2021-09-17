@@ -82,7 +82,7 @@ export const DefaultLayout = (props: Props) => {
 
   const renderContent = () => {
     const isOverlayVisible = menuIsOpen || searchIsOpen
-    const tool = router?.state?.tool || ''
+    const tool = router.state?.tool || ''
     const documentTypes = getNewDocumentModalActions().map((action) => action.schemaType)
 
     return (
@@ -105,7 +105,6 @@ export const DefaultLayout = (props: Props) => {
             createMenuIsOpen={createMenuIsOpen}
             onCreateButtonClick={handleCreateButtonClick}
             onToggleMenu={handleToggleMenu}
-            router={router}
             documentTypes={documentTypes}
             onUserLogout={handleLogout}
             searchIsOpen={handleSearchOpen}
@@ -120,7 +119,6 @@ export const DefaultLayout = (props: Props) => {
             onClose={handleToggleMenu}
             onSignOut={handleLogout}
             onSwitchTool={handleSwitchTool}
-            router={router}
             tools={tools}
             user={currentUser}
           />

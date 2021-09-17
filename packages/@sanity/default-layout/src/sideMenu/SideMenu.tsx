@@ -8,7 +8,7 @@ import React, {useEffect, useRef} from 'react'
 import ToolMenu from 'part:@sanity/default-layout/tool-switcher'
 import styled from 'styled-components'
 import {DatasetSelect} from '../datasetSelect'
-import {Router, Tool, User} from '../types'
+import {Tool, User} from '../types'
 import {HAS_SPACES} from '../util/spaces'
 
 interface Props {
@@ -17,7 +17,6 @@ interface Props {
   onClose: () => void
   onSignOut: () => void
   onSwitchTool: () => void
-  router: Router
   tools: Tool[]
   user: User
 }
@@ -55,7 +54,7 @@ const InnerCard = styled(Card)<{$open: boolean}>`
 `
 
 export function SideMenu(props: Props) {
-  const {activeToolName, isOpen, onClose, onSignOut, onSwitchTool, router, tools, user} = props
+  const {activeToolName, isOpen, onClose, onSignOut, onSwitchTool, tools, user} = props
   const zIndex = useZIndex()
   const closeButtonRef = useRef<HTMLButtonElement>()
   const tabIndex = isOpen ? 0 : -1
@@ -117,7 +116,6 @@ export function SideMenu(props: Props) {
             direction="vertical"
             isVisible={isOpen}
             onSwitchTool={onSwitchTool}
-            router={router}
             tools={tools}
           />
         </Box>

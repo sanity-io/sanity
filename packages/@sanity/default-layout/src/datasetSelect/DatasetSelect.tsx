@@ -1,13 +1,13 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react'
 import {Subscription} from 'rxjs'
-import {useRouter} from '@sanity/base/router'
 import {map} from 'rxjs/operators'
 import {Select} from '@sanity/ui'
 import {state as urlState} from '../datastores/urlState'
 import {CONFIGURED_SPACES} from '../util/spaces'
+import {useDefaultLayoutRouter} from '../useDefaultLayoutRouter'
 
 export function DatasetSelect(props) {
-  const router = useRouter()
+  const router = useDefaultLayoutRouter()
   const [currentSpace, setCurrentSpace] = useState<{name: string} | null>(null)
   const currentSpaceSubscription: React.MutableRefObject<Subscription | undefined> = useRef()
 
