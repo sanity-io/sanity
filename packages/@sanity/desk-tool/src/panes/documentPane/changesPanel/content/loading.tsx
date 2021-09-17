@@ -1,15 +1,13 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import React from 'react'
-import Spinner from 'part:@sanity/components/loading/spinner'
-
-import styles from './loading.css'
+import {Box, Flex, Spinner, Text} from '@sanity/ui'
 
 export function LoadingContent() {
   return (
-    <div className={styles.root}>
-      <Spinner center className={styles.spinner} message="Loading changes…" />
-    </div>
+    <Flex align="center" justify="center">
+      <Spinner muted />
+      <Box marginTop={3}>
+        <Text align="center">Loading changes…</Text>
+      </Box>
+    </Flex>
   )
 }

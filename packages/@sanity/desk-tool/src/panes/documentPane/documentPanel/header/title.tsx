@@ -1,24 +1,29 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import * as React from 'react'
+import React from 'react'
 import schema from 'part:@sanity/base/schema'
 import {PreviewFields} from 'part:@sanity/base/preview'
-import {Doc} from '../../types'
+import {SanityDocument} from '@sanity/types'
 
-export function DocumentHeaderTitle({
-  documentType,
-  paneTitle,
-  value,
-}: {
+interface DocumentHeaderTitleProps {
   documentType: string
   paneTitle?: string
-  value: Doc | null
-}) {
+  value: Partial<SanityDocument> | null
+}
+
+const PREVIEW_FIELDS = ['title']
+
+function renderTitle({title}: SanityDocument) {
+  return title ? <>{title}</> : <em>Untitled</em>
+}
+
+export function DocumentHeaderTitle(props: DocumentHeaderTitleProps) {
+  const {documentType, paneTitle, value} = props
   const type = schema.get(documentType)
 
   if (paneTitle) {
-    return <span>{paneTitle}</span>
+    return <>{paneTitle}</>
   }
 
   if (!value) {
@@ -26,10 +31,8 @@ export function DocumentHeaderTitle({
   }
 
   return (
-    <PreviewFields document={value} type={type} fields={['title']}>
-      {({title}) => (title ? <span>{title}</span> : <em>Untitled</em>)}
+    <PreviewFields document={value} layout="inline" type={type} fields={PREVIEW_FIELDS}>
+      {renderTitle}
     </PreviewFields>
   )
 }
-
-DocumentHeaderTitle.defaultProps = {paneTitle: undefined}

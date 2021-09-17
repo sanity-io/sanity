@@ -1,28 +1,22 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import {SanityDocument} from '@sanity/types'
-import FullScreenDialog from 'part:@sanity/components/dialogs/fullscreen'
-import Tab from 'part:@sanity/components/tabs/tab'
-import TabList from 'part:@sanity/components/tabs/tab-list'
-import TabPanel from 'part:@sanity/components/tabs/tab-panel'
+import {Card, Code, Dialog, Flex, Tab, TabList, TabPanel} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import JSONInspector from 'react-json-inspector'
 import {withPropsStream} from 'react-props-stream'
 import {combineLatest, Observable} from 'rxjs'
 import {map} from 'rxjs/operators'
 import {DocTitle} from '../../../components/DocTitle'
-import settings from '../../../settings'
+import {deskToolSettings} from '../../../settings'
 import {VIEW_MODE_PARSED, VIEW_MODE_RAW, VIEW_MODES} from './constants'
-import {isExpanded, maybeSelectAll, select, toggleExpanded} from './helpers'
+import {isDocumentWithType, isExpanded, maybeSelectAll, select, toggleExpanded} from './helpers'
+import {JSONInspectorWrapper} from './inspectDialog.styles'
+import {Search} from './Search'
 import {InspectViewMode} from './types'
-
-import styles from './inspectDialog.css'
 
 interface InspectDialogProps {
   idPrefix: string
   onClose: () => void
-  value: SanityDocument | null
+  value: Partial<SanityDocument> | null
 }
 
 interface InnerInspectDialogProps extends InspectDialogProps {
@@ -30,7 +24,7 @@ interface InnerInspectDialogProps extends InspectDialogProps {
   viewMode: InspectViewMode
 }
 
-const viewModeSettings = settings.forKey('inspect-view-preferred-view-mode')
+const viewModeSettings = deskToolSettings.forKey('inspect-view-preferred-view-mode')
 
 function mapReceivedPropsToChildProps(
   props$: Observable<InspectDialogProps>
@@ -48,7 +42,7 @@ function mapReceivedPropsToChildProps(
 
 function InspectDialogComponent(props: InnerInspectDialogProps) {
   const {idPrefix, onClose, onViewModeChange, value, viewMode} = props
-  const tabIdPrefix = `${idPrefix}_inspect_`
+  const dialogIdPrevix = `${idPrefix}_inspect_`
 
   const setParsedViewMode = useCallback(() => {
     onViewModeChange(VIEW_MODE_PARSED)
@@ -59,9 +53,10 @@ function InspectDialogComponent(props: InnerInspectDialogProps) {
   }, [onViewModeChange])
 
   return (
-    <FullScreenDialog
-      title={
-        value ? (
+    <Dialog
+      id={`${dialogIdPrevix}dialog`}
+      header={
+        isDocumentWithType(value) ? (
           <span>
             Inspecting{' '}
             <em>
@@ -73,51 +68,65 @@ function InspectDialogComponent(props: InnerInspectDialogProps) {
         )
       }
       onClose={onClose}
+      width={3}
     >
-      <div>
-        <div className={styles.toolbar}>
-          <TabList>
+      <Flex direction="column" height="fill">
+        <Card padding={3} shadow={1} style={{position: 'sticky', bottom: 0, zIndex: 3}}>
+          <TabList space={1}>
             <Tab
-              aria-controls={`${tabIdPrefix}tabpanel`}
-              id={`${tabIdPrefix}tab-${VIEW_MODE_PARSED.id}`}
-              isActive={viewMode === VIEW_MODE_PARSED}
+              aria-controls={`${dialogIdPrevix}tabpanel`}
+              fontSize={1}
+              id={`${dialogIdPrevix}tab-${VIEW_MODE_PARSED.id}`}
               label={VIEW_MODE_PARSED.title}
               onClick={setParsedViewMode}
+              selected={viewMode === VIEW_MODE_PARSED}
             />
             <Tab
-              aria-controls={`${tabIdPrefix}tabpanel`}
-              id={`${tabIdPrefix}tab-${VIEW_MODE_RAW.id}`}
-              isActive={viewMode === VIEW_MODE_RAW}
+              aria-controls={`${dialogIdPrevix}tabpanel`}
+              fontSize={1}
+              id={`${dialogIdPrevix}tab-${VIEW_MODE_RAW.id}`}
               label={VIEW_MODE_RAW.title}
               onClick={setRawViewMode}
+              selected={viewMode === VIEW_MODE_RAW}
             />
           </TabList>
-        </div>
+        </Card>
 
         <TabPanel
-          aria-labelledby={`${tabIdPrefix}tab-${viewMode.id}`}
-          className={styles.content}
-          id={`${tabIdPrefix}tabpanel`}
+          aria-labelledby={`${dialogIdPrevix}tab-${viewMode.id}`}
+          flex={1}
+          id={`${dialogIdPrevix}tabpanel`}
+          overflow="auto"
+          padding={4}
+          style={{outline: 'none'}}
         >
           {viewMode === VIEW_MODE_PARSED && (
-            <div className={styles.jsonInspectorContainer}>
-              <JSONInspector isExpanded={isExpanded} onClick={toggleExpanded} data={value} />
-            </div>
+            <JSONInspectorWrapper>
+              <JSONInspector
+                data={value}
+                isExpanded={isExpanded}
+                onClick={toggleExpanded}
+                search={Search}
+              />
+            </JSONInspectorWrapper>
           )}
+
           {viewMode === VIEW_MODE_RAW && (
-            <pre
-              className={styles.raw}
-              tabIndex={0}
-              onKeyDown={maybeSelectAll}
-              onDoubleClick={select}
-              onFocus={select}
-            >
-              {JSON.stringify(value, null, 2)}
-            </pre>
+            <Card padding={3}>
+              <Code
+                language="json"
+                tabIndex={0}
+                onKeyDown={maybeSelectAll}
+                onDoubleClick={select}
+                onFocus={select}
+              >
+                {JSON.stringify(value, null, 2)}
+              </Code>
+            </Card>
           )}
         </TabPanel>
-      </div>
-    </FullScreenDialog>
+      </Flex>
+    </Dialog>
   )
 }
 

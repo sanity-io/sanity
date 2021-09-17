@@ -1,12 +1,12 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
+import {SanityDocument} from '@sanity/types'
 import resolveProductionPreviewUrl from 'part:@sanity/transitional/production-preview/resolve-production-url?'
 import {useMemo} from 'react'
 import {useDocumentHistory} from './documentHistory'
-import {Doc} from './types'
 
-export function usePreviewUrl(value: Doc | null): string | null {
+export function usePreviewUrl(value: Partial<SanityDocument> | null): string | null {
   const {
     historyController: {revTime},
   } = useDocumentHistory()

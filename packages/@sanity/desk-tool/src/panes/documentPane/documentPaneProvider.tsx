@@ -1,131 +1,129 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import React from 'react'
-import {MenuItem, MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
+import React, {useCallback} from 'react'
 import {
   useConnectionState,
   useDocumentOperation,
   useEditState,
   useValidationStatus,
 } from '@sanity/react-hooks'
-import {Code} from '@sanity/ui'
+import {SanityDocument} from '@sanity/types'
+import {Card, Code, Stack, Text} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import withInitialValue from '../../utils/withInitialValue'
-import ErrorPane from '../errorPane/ErrorPane'
+import {ErrorPane} from '../errorPane'
 import {LoadingPane} from '../loadingPane'
 import {DocumentHistoryProvider} from './documentHistory'
 import {DocumentPane} from './documentPane'
-import {Doc, DocumentPaneOptions} from './types'
-import {getInitialValue} from './utils/value'
+import {DocumentPaneProviderProps} from './types'
+import {useInitialValue} from './lib/initialValue'
 
 declare const __DEV__: boolean
 
-interface Props {
-  title?: string
-  paneKey: string
-  type: any
-  isLoading: boolean
-  isSelected: boolean
-  isCollapsed: boolean
-  onChange: (patches: any[]) => void
-  isClosable: boolean
-  onExpand?: () => void
-  onCollapse?: () => void
-  menuItems: MenuItem[]
-  menuItemGroups: MenuItemGroup[]
-  views: {
-    type: string
-    id: string
-    title: string
-    options: Record<string, unknown>
-    component: React.ComponentType<any>
-  }[]
-  initialValue?: Doc
-  options: DocumentPaneOptions
-}
-
-// eslint-disable-next-line complexity
-export const DocumentPaneProvider = withInitialValue(function DocumentPaneProvider(props: Props) {
-  const documentIdRaw = props.options.id
+/**
+ * @internal
+ */
+export const DocumentPaneProvider = function DocumentPaneProvider(
+  props: DocumentPaneProviderProps
+) {
+  const {index, isClosable, pane, paneKey} = props
+  const {options, menuItemGroups, title, views} = pane
+  const initialValue = useInitialValue(options.id, pane.options)
+  const documentIdRaw = options.id
   const documentId = getPublishedId(documentIdRaw)
-  const documentTypeName = props.options.type
+  const documentTypeName = options.type
   const {patch}: any = useDocumentOperation(documentId, documentTypeName)
   const editState: any = useEditState(documentId, documentTypeName)
   const {markers} = useValidationStatus(documentId, documentTypeName)
   const connectionState = useConnectionState(documentId, documentTypeName)
   const schemaType = schema.get(documentTypeName)
+  const value: Partial<SanityDocument> =
+    editState?.draft || editState?.published || initialValue.value
 
-  const onChange = React.useCallback(
-    (patches) => {
-      patch.execute(patches, props.initialValue)
-    },
-    [patch, props.initialValue]
-  )
+  const onChange = useCallback((patches) => patch.execute(patches, initialValue.value), [
+    patch,
+    initialValue.value,
+  ])
 
   if (!schemaType) {
-    const value = editState && (editState.draft || editState.published)
-
     return (
       <ErrorPane
         {...props}
-        color="warning"
+        flex={2.5}
+        minWidth={320}
         title={
           <>
             Unknown document type: <code>{documentTypeName}</code>
           </>
         }
+        tone="caution"
       >
-        {documentTypeName && (
-          <p>
-            This document has the schema type <code>{documentTypeName}</code>, which is not defined
-            as a type in the local content studio schema.
-          </p>
-        )}
-        {!documentTypeName && (
-          <p>This document does not exist, and no schema type was specified for it.</p>
-        )}
-        {__DEV__ && value && (
-          <div>
-            <h4>Here is the JSON representation of the document:</h4>
-            <Code language="json">{JSON.stringify(value, null, 2)}</Code>
-          </div>
-        )}
+        <Stack space={4}>
+          {documentTypeName && (
+            <Text as="p">
+              This document has the schema type <code>{documentTypeName}</code>, which is not
+              defined as a type in the local content studio schema.
+            </Text>
+          )}
+
+          {!documentTypeName && (
+            <Text as="p">
+              This document does not exist, and no schema type was specified for it.
+            </Text>
+          )}
+
+          {__DEV__ && value && (
+            <>
+              <Text as="p">Here is the JSON representation of the document:</Text>
+              <Card padding={3} overflow="auto" radius={2} shadow={1} tone="inherit">
+                <Code language="json" size={[1, 1, 2]}>
+                  {JSON.stringify(value, null, 2)}
+                </Code>
+              </Card>
+            </>
+          )}
+        </Stack>
       </ErrorPane>
     )
   }
 
   if (connectionState === 'connecting' || !editState) {
-    return <LoadingPane {...props} delay={600} title={`Loading ${schemaType.title}…`} />
+    return (
+      <LoadingPane {...props} flex={2.5} minWidth={320} title={`Loading ${schemaType.title}…`} />
+    )
   }
 
-  const initialValue = getInitialValue({initialValue: props.initialValue, options: props.options})
-  const value = editState.draft || editState.published || initialValue
+  if (initialValue.error) {
+    return (
+      <ErrorPane flex={2.5} minWidth={320} title="Failed to resolve initial value">
+        <Text as="p">Check developer console for details.</Text>
+      </ErrorPane>
+    )
+  }
 
   return (
     <DocumentHistoryProvider documentId={documentId} value={value}>
       <DocumentPane
-        title={props.title}
+        title={title}
         connectionState={connectionState}
         documentId={documentId}
         documentIdRaw={documentIdRaw}
         documentType={documentTypeName}
         draft={editState.draft}
-        initialValue={initialValue}
-        isClosable={props.isClosable}
-        isCollapsed={props.isCollapsed}
-        isSelected={props.isSelected}
+        index={index}
+        initialValue={initialValue.value}
+        isClosable={isClosable}
         markers={markers}
-        menuItemGroups={props.menuItemGroups}
+        menuItemGroups={menuItemGroups}
         onChange={onChange}
-        paneKey={props.paneKey}
+        paneKey={paneKey}
         published={editState.published}
         schemaType={schemaType}
         value={value}
         compareValue={editState.published}
-        views={props.views}
+        views={views}
       />
     </DocumentHistoryProvider>
   )
-})
+}

@@ -1,6 +1,3 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import {useId} from '@reach/auto-id'
 import {DocumentActionDescription} from '@sanity/base'
 import {LegacyLayerProvider} from '@sanity/base/components'

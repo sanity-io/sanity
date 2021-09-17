@@ -1,6 +1,7 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
-import type {DocumentActionDescription} from '@sanity/base'
+
+import {DocumentActionDescription} from '@sanity/base'
 import {LegacyLayerProvider} from '@sanity/base/components'
 import {useEditState} from '@sanity/react-hooks'
 import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
@@ -8,10 +9,13 @@ import resolveDocumentActions from 'part:@sanity/base/document-actions/resolver'
 import isHotkey from 'is-hotkey'
 import React, {useCallback, useState} from 'react'
 import {ActionStateDialog} from '../statusBar'
+import {Pane} from '../../../components/pane'
 
 export interface KeyboardShortcutResponderProps {
   actionsBoxElement?: HTMLElement | null
   activeIndex: number
+  flex: number
+  minWidth: number
   onActionStart: (index: number) => void
   rootRef: React.Ref<HTMLDivElement>
   states: DocumentActionDescription[]
@@ -30,6 +34,7 @@ function KeyboardShortcutResponder(
     states,
     ...rest
   } = props
+
   const activeAction = states[activeIndex]
 
   const handleKeyDown = useCallback(
@@ -62,7 +67,7 @@ function KeyboardShortcutResponder(
   )
 
   return (
-    <div onKeyDown={handleKeyDown} tabIndex={-1} {...rest} ref={rootRef}>
+    <Pane onKeyDown={handleKeyDown} tabIndex={-1} {...rest} ref={rootRef}>
       {children}
 
       {activeAction && activeAction.dialog && (
@@ -70,13 +75,15 @@ function KeyboardShortcutResponder(
           <ActionStateDialog dialog={activeAction.dialog} referenceElement={actionsBoxElement} />
         </LegacyLayerProvider>
       )}
-    </div>
+    </Pane>
   )
 }
 
 export interface DocumentActionShortcutsProps {
   actionsBoxElement?: HTMLElement | null
+  flex: number
   id: string
+  minWidth: number
   type: string
   rootRef: React.Ref<HTMLDivElement>
 }
@@ -92,7 +99,9 @@ export const DocumentActionShortcuts = React.memo(
       setActiveIndex(idx)
     }, [])
 
-    return actions ? (
+    if (!actions) return null
+
+    return (
       <RenderActionCollectionState
         actions={actions}
         actionsBoxElement={actionsBoxElement}
@@ -104,7 +113,7 @@ export const DocumentActionShortcuts = React.memo(
       >
         {children}
       </RenderActionCollectionState>
-    ) : null
+    )
   }
 )
 

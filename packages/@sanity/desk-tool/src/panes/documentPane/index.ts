@@ -1,1 +1,1 @@
-export * from './documentPaneProvider'
+export {DocumentPaneProvider as DocumentPane} from './documentPaneProvider'

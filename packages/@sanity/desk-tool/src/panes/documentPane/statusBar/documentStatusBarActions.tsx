@@ -4,7 +4,6 @@
 import React, {useCallback, useMemo, useState} from 'react'
 import {DocumentActionDescription} from '@sanity/base'
 import {EditStateFor} from '@sanity/base/_internal'
-
 import {useEditState, useConnectionState} from '@sanity/react-hooks'
 import {Box, Flex, Tooltip, Stack, Button, Hotkeys, LayerProvider, Text} from '@sanity/ui'
 import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
@@ -61,6 +60,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsProps) {
               <Button
                 disabled={disabled || Boolean(firstActionState.disabled)}
                 icon={firstActionState.icon}
+                // eslint-disable-next-line react/jsx-handler-names
                 onClick={firstActionState.onHandle}
                 ref={setButtonElement}
                 text={firstActionState.label}

@@ -37,15 +37,15 @@ type Props = {
   type: string
 }
 
-export const DocumentOperationResults = React.memo((props: Props) => {
-  const {push} = useToast()
+export function DocumentOperationResults(props: Props) {
+  const {push: pushToast} = useToast()
   const event: any = useDocumentOperationEvent(props.id, props.type)
 
   useEffect(() => {
     if (!event) return
 
     if (event.type === 'error') {
-      push({
+      pushToast({
         closable: true,
         status: 'error',
         title: getOpErrorTitle(event.op),
@@ -59,15 +59,13 @@ export const DocumentOperationResults = React.memo((props: Props) => {
     }
 
     if (event.type === 'success' && !IGNORE_OPS.includes(event.op)) {
-      push({
+      pushToast({
         closable: true,
         status: 'success',
         title: getOpSuccessTitle(event.op),
       })
     }
-  }, [event, push])
+  }, [event, pushToast])
 
   return null
-})
-
-DocumentOperationResults.displayName = 'DocumentOperationResults'
+}

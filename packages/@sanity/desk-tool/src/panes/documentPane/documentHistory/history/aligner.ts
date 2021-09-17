@@ -1,3 +1,4 @@
+import {SanityDocument} from '@sanity/types'
 import {applyPatch} from 'mendoza'
 import {Timeline} from './timeline'
 import {
@@ -6,7 +7,6 @@ import {
   DocumentRemoteMutationVersionEvent,
   Attributes,
   CombinedDocument,
-  Doc,
 } from './types'
 
 type VersionState = {
@@ -48,7 +48,7 @@ function align(history: TransactionLogEvent, state: VersionState): number {
   return 0
 }
 
-function startFromSnapshot(state: VersionState, doc: Doc) {
+function startFromSnapshot(state: VersionState, doc: SanityDocument) {
   state.hasAttrs = true
 
   if (doc) {

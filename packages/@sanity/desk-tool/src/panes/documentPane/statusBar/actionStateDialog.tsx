@@ -51,7 +51,9 @@ export function ActionStateDialog(props: ActionStateDialogProps) {
   return (
     <Dialog
       id={dialogId}
+      // eslint-disable-next-line react/jsx-handler-names
       onClose={unknownDialog.onClose}
+      // eslint-disable-next-line react/jsx-handler-names
       onClickOutside={unknownDialog.onClose}
       width={2}
     >
