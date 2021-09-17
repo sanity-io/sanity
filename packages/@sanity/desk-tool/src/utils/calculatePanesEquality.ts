@@ -1,7 +1,10 @@
 import {isEqual} from 'lodash'
+import {RouterPane} from '../types'
 
-// eslint-disable-next-line import/prefer-default-export
-export const calculatePanesEquality = (prev = [], next = []) => {
+export const calculatePanesEquality = (
+  prev: RouterPane[][] = [],
+  next: RouterPane[][] = []
+): {ids: boolean; params: boolean} => {
   if (prev === next) {
     return {ids: true, params: true}
   }
