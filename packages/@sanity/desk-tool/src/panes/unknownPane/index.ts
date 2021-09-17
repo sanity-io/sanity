@@ -1,1 +1,1 @@
-export {default as UnknownPane} from './UnknownPaneType'
+export * from './UnknownPaneType'
