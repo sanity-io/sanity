@@ -1,7 +1,15 @@
-import * as React from 'react'
-import * as PropTypes from 'prop-types'
+import React from 'react'
 
-export default class UseState extends React.Component {
+interface Props<T = any> {
+  children: (arg: [v: T, set: (v: T) => void]) => React.ReactNode
+  startWith: T
+}
+
+interface State {
+  value: any
+}
+
+export default class UseState extends React.Component<Props, State> {
   constructor(props) {
     super(props)
     this.state = {value: props.startWith}
@@ -12,9 +20,4 @@ export default class UseState extends React.Component {
   render() {
     return this.props.children([this.state.value, this.setValue])
   }
-}
-
-UseState.propTypes = {
-  startWith: PropTypes.any,
-  children: PropTypes.func,
 }

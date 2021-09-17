@@ -1,5 +1,5 @@
 import {EMPTY_PARAMS} from '../constants'
-import {exclusiveParams} from '../contexts/PaneRouterContext'
+import {exclusiveParams} from '../contexts/paneRouter'
 
 // old: authors;knut,{"template":"diaryEntry"}
 // new: authors;knut,view=diff,eyJyZXYxIjoiYWJjMTIzIiwicmV2MiI6ImRlZjQ1NiJ9|latest-posts
@@ -34,7 +34,7 @@ function encodeChunks(pane, i, group) {
   const sameAsFirst = i !== 0 && id === group[0].id
   const encodedPayload = typeof payload === 'undefined' ? undefined : btoa(JSON.stringify(payload))
 
-  const encodedParams = Object.keys(params).reduce((pairs, key) => {
+  const encodedParams = Object.keys(params).reduce<string[]>((pairs, key) => {
     if (
       sameAsFirst &&
       i !== 0 &&
@@ -81,7 +81,7 @@ export function encodePanesSegment(panes) {
 }
 
 export function parseOldPanesSegment(str) {
-  const chunks = []
+  const chunks: {id: string; payload: unknown}[] = []
 
   let buffer = str
   while (buffer.length) {

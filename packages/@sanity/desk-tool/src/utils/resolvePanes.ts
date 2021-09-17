@@ -1,16 +1,21 @@
 import {useEffect, useState} from 'react'
 import shallowEquals from 'shallow-equals'
-import {Observable, defer, throwError, from, of as observableOf} from 'rxjs'
+import {Observable, defer, throwError, from, of as observableOf, Subscription, Observer} from 'rxjs'
 import {map, switchMap, distinctUntilChanged} from 'rxjs/operators'
 import leven from 'leven'
+import generateHelpUrl from '@sanity/generate-help-url'
 import {LOADING_PANE} from '../constants'
-import defaultStructure from '../defaultStructure'
+import {defaultStructure} from '../defaultStructure'
+import {StructurePane} from '../types'
 import isSubscribable from './isSubscribable'
 import validateStructure from './validateStructure'
 import serializeStructure from './serializeStructure'
-import generateHelpUrl from '@sanity/generate-help-url'
 
 const KNOWN_STRUCTURE_EXPORTS = ['getDefaultDocumentNode']
+
+declare global {
+  const __DEV__: boolean
+}
 
 let prevStructureError = null
 if (__DEV__) {
@@ -25,7 +30,13 @@ if (__DEV__) {
   }
 }
 
-export function resolvePanes(structure, paneGroups, prevStructure, fromIndex, options) {
+export function resolvePanes(
+  structure,
+  paneGroups,
+  prevStructure,
+  fromIndex,
+  options: {silent?: boolean} = {}
+): Observable<StructurePane[]> {
   const waitStructure = isSubscribable(structure) ? from(structure) : observableOf(structure)
   return waitStructure.pipe(
     switchMap((struct) =>
@@ -48,8 +59,14 @@ function sumPaneSegments(paneGroups) {
   return paneGroups.reduce((count, curr) => count + curr.length, 0)
 }
 
-function resolveForStructure(structure, paneGroups, prevStructure, fromIndex, options = {}) {
-  return Observable.create((subscriber) => {
+function resolveForStructure(
+  structure,
+  paneGroups,
+  prevStructure,
+  fromIndex,
+  options: {silent?: boolean} = {}
+): Observable<StructurePane[]> {
+  return Observable.create((subscriber: Observer<StructurePane[]>) => {
     try {
       validateStructure(structure)
     } catch (err) {
@@ -64,7 +81,7 @@ function resolveForStructure(structure, paneGroups, prevStructure, fromIndex, op
     const totalPanes = sumPaneSegments(paneSegments)
     const [fromRootIndex, fromSplitIndex] = fromIndex
     let panes = getInitialPanes(prevStructure, totalPanes, fromRootIndex + 1 + fromSplitIndex)
-    const subscriptions = []
+    const subscriptions: Subscription[] = []
 
     // Start with all-loading (or previous structure) state
     subscriber.next(panes)
@@ -208,7 +225,8 @@ function resolveForStructure(structure, paneGroups, prevStructure, fromIndex, op
 
     function unsubscribe() {
       while (subscriptions.length) {
-        subscriptions.pop().unsubscribe()
+        const sub = subscriptions.pop()
+        if (sub) sub.unsubscribe()
       }
     }
   })
@@ -263,7 +281,7 @@ export const loadStructure = () => {
 export const useStructure = (segments, options = {}) => {
   const hasSegments = Boolean(segments)
   const numSegments = sumPaneSegments(segments || [])
-  const [{structure, error}, setStructure] = useState({structure: null, error: null})
+  const [{structure, error}, setStructure] = useState<any>({structure: null, error: null})
 
   // @todo This leads to deep update loops unless we serialize paneSegments
   // @todo We should try to memoize/prevent this without resorting to JSON.stringify
@@ -317,7 +335,7 @@ function warnOnUnknownExports(mod) {
   keys
     .filter((key) => !known.includes(key))
     .forEach((key) => {
-      const {closest} = known.reduce(
+      const {closest} = known.reduce<{closest: any; distance: number}>(
         (acc, current) => {
           const distance = leven(current, key)
           return distance < 3 && distance < acc.distance ? {closest: current, distance} : acc

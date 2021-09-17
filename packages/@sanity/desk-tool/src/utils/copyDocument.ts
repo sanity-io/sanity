@@ -1,17 +1,20 @@
 import {isObject, omit} from 'lodash'
 
-function copyReference(reference) {
+function copyReference(reference: Record<string, unknown>) {
   return Object.assign({}, reference)
 }
 
-function copyObject(object, options = {}) {
+function copyObject(
+  object: Record<string, unknown>,
+  options: {excludeReferences?: boolean; omit?: string[]} = {}
+) {
   return Object.keys(object).reduce((copy, key) => {
     copy[key] = copyAny(object[key], options)
     return copy
   }, {})
 }
 
-function copyArray(array, options = {}) {
+function copyArray(array: unknown[], options: {excludeReferences?: boolean; omit?: string[]} = {}) {
   return array.map((item) => copyAny(item, options)).filter(Boolean)
 }
 
@@ -25,7 +28,7 @@ function isReference(value) {
   )
 }
 
-function copyAny(value, options) {
+function copyAny(value: unknown, options: {excludeReferences?: boolean; omit?: string[]} = {}) {
   if (Array.isArray(value)) {
     return copyArray(value, options)
   }
@@ -39,14 +42,15 @@ function copyAny(value, options) {
 
   if (isObject(value)) {
     if (isReference(value)) {
-      return options.excludeReferences ? undefined : copyReference(value)
+      return options.excludeReferences ? undefined : copyReference(value as Record<string, unknown>)
     }
-    return copyObject(value, options)
+
+    return copyObject(value as Record<string, unknown>, options)
   }
   return value
 }
 
-export default function copyDocument(doc, options = {}) {
-  const omitProps = ['_id'].concat(options.omit)
+export default function copyDocument(doc, options: {omit?: string[]} = {}) {
+  const omitProps = ['_id'].concat(options.omit || [])
   return copyAny(omit(doc, omitProps), options)
 }

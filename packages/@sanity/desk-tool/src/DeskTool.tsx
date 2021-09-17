@@ -1,360 +1,268 @@
-import isHotkey from 'is-hotkey'
-import React from 'react'
-import PropTypes from 'prop-types'
-import {isEqual} from 'lodash'
-import {interval, of} from 'rxjs'
-import {map, switchMap, distinctUntilChanged, debounce} from 'rxjs/operators'
-import shallowEquals from 'shallow-equals'
-import {withRouterHOC} from '@sanity/base/router'
 import {getTemplateById} from '@sanity/base/initial-value-templates'
+import {useRouter, useRouterState} from '@sanity/base/router'
+import {PortalProvider, useToast} from '@sanity/ui'
+import React, {useState, useEffect, useCallback, useMemo, useRef, Fragment} from 'react'
+import {Observable, interval, of} from 'rxjs'
+import {map, switchMap, distinctUntilChanged, debounce} from 'rxjs/operators'
+import styled from 'styled-components'
+import {PaneLayout} from './components/pane'
+import {StructureError} from './components/StructureError'
+import {LOADING_PANE} from './constants'
+import {DeskToolProvider} from './contexts/deskTool'
+import {
+  getIntentRouteParams,
+  getPaneDiffIndex,
+  getWaitMessages,
+  hasLoading,
+  isSaveHotkey,
+} from './helpers'
+import {DeskToolPane, LoadingPane} from './panes'
+import {RouterPane, StructureErrorType, StructurePane} from './types'
 import {
   resolvePanes,
   loadStructure,
   maybeSerialize,
   setStructureResolveError,
-} from '../utils/resolvePanes'
-import {StructureError} from '../components/StructureError'
-import {calculatePanesEquality} from '../utils/calculatePanesEquality'
-import isNarrowScreen from '../utils/isNarrowScreen'
-import windowWidth$ from '../utils/windowWidth'
-import {LOADING_PANE} from '../constants'
-import DeskToolPanes from './DeskToolPanes'
+} from './utils/resolvePanes'
 
-const EMPTY_PANE_KEYS = []
+interface DeskToolProps {
+  onPaneChange: (panes: StructurePane[]) => void
+}
 
-const hasLoading = (panes) => panes.some((item) => item === LOADING_PANE)
+const StyledPaneLayout = styled(PaneLayout)`
+  min-height: 100%;
+  min-width: 320px;
+`
 
-const isSaveHotkey = isHotkey('mod+s')
+/**
+ * @internal
+ */
+export function DeskTool(props: DeskToolProps) {
+  const {onPaneChange} = props
+  const {push: pushToast} = useToast()
+  const {navigate} = useRouter()
+  const routerState = useRouterState()
+  const routerPanes: RouterPane[][] = useMemo(() => routerState?.panes || [], [routerState?.panes])
+  const [error, setError] = useState<StructureErrorType | null>(null)
+  const prevRouterPanesRef = useRef<RouterPane[][] | null>(null)
+  const currRouterPanesRef = useRef<RouterPane[][]>(routerPanes)
+  const [layoutCollapsed, setLayoutCollapsed] = useState(false)
+  const [resolvedPanes, setResolvedPanes] = useState<StructurePane[]>([])
+  const resolvedPanesRef = useRef(resolvedPanes)
+  const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
+  const structure$Ref = useRef<Observable<any> | null>(null)
 
-export default withRouterHOC(
-  // eslint-disable-next-line react/prefer-stateless-function
-  class DeskTool extends React.Component {
-    static contextTypes = {
-      addToSnackQueue: PropTypes.func,
+  const {action, legacyEditDocumentId, type: schemaType, editDocumentId, params = {}} =
+    routerState || {}
+
+  const paneKeys = useMemo(() => {
+    return routerPanes.reduce<string[]>(
+      (ids, group) => ids.concat(group.map((sibling) => sibling.id)),
+      ['root']
+    )
+  }, [routerPanes])
+
+  const paneGroups: RouterPane[][] = useMemo(
+    () => [[{id: 'root', params: {}}]].concat(routerPanes || []),
+    [routerPanes]
+  )
+
+  const groupIndexes = useMemo(
+    () =>
+      routerPanes.reduce<number[]>(
+        (ids, group) => ids.concat(group.map((_, groupIndex) => groupIndex)),
+        []
+      ),
+    [routerPanes]
+  )
+
+  const setResolveError = useCallback((_error: StructureErrorType) => {
+    setStructureResolveError(_error)
+
+    // Log error for proper stack traces
+    console.error(_error) // eslint-disable-line no-console
+
+    setError(_error)
+  }, [])
+
+  const handleRootCollapse = useCallback(() => setLayoutCollapsed(true), [])
+
+  const handleRootExpand = useCallback(() => setLayoutCollapsed(false), [])
+
+  // Load the structure configuration observable
+  useEffect(() => {
+    structure$Ref.current = loadStructure().pipe(distinctUntilChanged(), map(maybeSerialize))
+
+    return () => {
+      structure$Ref.current = null
+    }
+  }, [])
+
+  // The pane layout is "collapsed" on small screens, and only shows 1 pane at a time.
+  // Remove pane siblings (i.e. split panes) as the pane layout collapses.
+  useEffect(() => {
+    if (!layoutCollapsed) {
+      return
     }
 
-    static propTypes = {
-      router: PropTypes.shape({
-        navigate: PropTypes.func.isRequired,
-        state: PropTypes.shape({
-          panes: PropTypes.arrayOf(
-            PropTypes.arrayOf(
-              PropTypes.shape({
-                id: PropTypes.string.isRequired,
-                params: PropTypes.object,
-              })
-            )
-          ),
-          params: PropTypes.shape({
-            template: PropTypes.string,
-          }),
-          editDocumentId: PropTypes.string,
-          legacyEditDocumentId: PropTypes.string,
-          type: PropTypes.string,
-          action: PropTypes.string,
-        }),
-      }).isRequired,
-      onPaneChange: PropTypes.func.isRequired,
+    const hasSiblings = routerPanes.some((group) => group.length > 1)
+
+    if (!hasSiblings) {
+      return
     }
 
-    state = {
-      // eslint-disable-next-line react/no-unused-state
-      isResolving: true,
-      hasNarrowScreen: isNarrowScreen(),
-      panes: null,
+    const withoutSiblings = routerPanes.map((group) => [group[0]])
+
+    navigate({panes: withoutSiblings}, {replace: true})
+  }, [navigate, layoutCollapsed, routerPanes])
+
+  // Handle old-style URLs
+  useEffect(() => {
+    const {template: templateName, ...payloadParams} = params
+    const template = getTemplateById(templateName)
+    const type = (template && template.schemaType) || schemaType
+    const shouldRewrite = (action === 'edit' && legacyEditDocumentId) || (type && editDocumentId)
+
+    if (!shouldRewrite) {
+      return
     }
 
-    constructor(props) {
-      super(props)
+    navigate(
+      getIntentRouteParams({
+        id: editDocumentId || legacyEditDocumentId,
+        type,
+        payloadParams,
+        templateName,
+      }),
+      {replace: true}
+    )
+  }, [action, editDocumentId, legacyEditDocumentId, navigate, params, schemaType])
 
-      props.onPaneChange([])
-    }
-
-    setResolvedPanes = (panes) => {
-      const router = this.props.router
-      const paneSegments = router.state.panes || []
-
-      this.setState({
-        panes,
-        // eslint-disable-next-line react/no-unused-state
-        isResolving: false,
-      })
-
-      if (panes.length < paneSegments.length) {
-        router.navigate(
-          {...router.state, panes: paneSegments.slice(0, panes.length)},
-          {replace: true}
-        )
-      }
-    }
-
-    setResolveError = (error) => {
-      setStructureResolveError(error)
-
-      // Log error for proper stacktraces
-      console.error(error) // eslint-disable-line no-console
-
-      this.setState({
-        error,
-        // eslint-disable-next-line react/no-unused-state
-        isResolving: false,
-      })
-    }
-
-    derivePanes(props, fromIndex = [0, 0]) {
-      if (this.paneDeriver) {
-        this.paneDeriver.unsubscribe()
-      }
-
-      this.setState({
-        // eslint-disable-next-line react/no-unused-state
-        isResolving: true,
-      })
-      this.paneDeriver = loadStructure()
-        .pipe(
-          distinctUntilChanged(),
-          map(maybeSerialize),
-          switchMap((structure) =>
-            resolvePanes(structure, props.router.state.panes || [], this.state.panes, fromIndex)
-          ),
-          switchMap((panes) =>
-            hasLoading(panes) ? of(panes).pipe(debounce(() => interval(50))) : of(panes)
-          )
-        )
-        .subscribe(this.setResolvedPanes, this.setResolveError)
-    }
-
-    panesAreEqual = (prev, next) => calculatePanesEquality(prev, next).ids
-
-    shouldDerivePanes = (nextProps, prevProps) => {
-      const nextRouterState = nextProps.router.state
-      const prevRouterState = prevProps.router.state
-
-      return (
-        !this.panesAreEqual(prevRouterState.panes, nextRouterState.panes) ||
-        nextRouterState.legacyEditDocumentId !== prevRouterState.legacyEditDocumentId ||
-        nextRouterState.type !== prevRouterState.type ||
-        nextRouterState.action !== prevRouterState.action
-      )
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-      if (
-        prevProps.onPaneChange !== this.props.onPaneChange ||
-        prevState.panes !== this.state.panes
-      ) {
-        this.props.onPaneChange(this.state.panes || [])
-      }
-
-      const prevPanes = prevProps.router.state.panes || []
-      const nextPanes = this.props.router.state.panes || []
-      const panesEqual = calculatePanesEquality(prevPanes, nextPanes)
-
-      if (!panesEqual.ids && this.shouldDerivePanes(this.props, prevProps)) {
-        const diffAt = getPaneDiffIndex(nextPanes, prevPanes)
-
-        if (diffAt) {
-          this.derivePanes(this.props, diffAt)
-        }
-      }
-    }
-
-    shouldComponentUpdate(nextProps, nextState) {
-      const {router: oldRouter, ...oldProps} = this.props
-      const {router: newRouter, ...newProps} = nextProps
-      const {panes: oldPanes, ...oldState} = this.state
-      const {panes: newPanes, ...newState} = nextState
-      const prevPanes = oldRouter.state.panes || []
-      const nextPanes = newRouter.state.panes || []
-      const panesEqual = calculatePanesEquality(prevPanes, nextPanes)
-
-      const shouldUpdate =
-        !panesEqual.params ||
-        !panesEqual.ids ||
-        !shallowEquals(oldProps, newProps) ||
-        !isEqual(oldPanes, newPanes) ||
-        !shallowEquals(oldState, newState)
-
-      return shouldUpdate
-    }
-
-    maybeHandleOldUrl() {
-      const {navigate} = this.props.router
-      const {
-        action,
-        legacyEditDocumentId,
-        type: schemaType,
-        editDocumentId,
-        params = {},
-      } = this.props.router.state
-
-      const {template: templateName, ...payloadParams} = params
-      const template = getTemplateById(templateName)
-      const type = (template && template.schemaType) || schemaType
-      const shouldRewrite = (action === 'edit' && legacyEditDocumentId) || (type && editDocumentId)
-      if (!shouldRewrite) {
-        return
-      }
-
-      navigate(
-        getIntentRouteParams({
-          id: editDocumentId || legacyEditDocumentId,
-          type,
-          payloadParams,
-          templateName,
-        }),
-        {replace: true}
-      )
-    }
-
-    maybeCutSiblingPanes() {
-      const {hasNarrowScreen} = this.state
-      if (!hasNarrowScreen) {
-        return
-      }
-
-      const {navigate} = this.props.router
-      const panes = this.props.router.state.panes || []
-      const hasSiblings = panes.some((group) => group.length > 1)
-      if (!hasSiblings) {
-        return
-      }
-
-      const withoutSiblings = panes.map((group) => [group[0]])
-      navigate({panes: withoutSiblings}, {replace: true})
-    }
-
-    componentDidMount() {
-      this.resizeSubscriber = windowWidth$.subscribe(() => {
-        const hasNarrowScreen = isNarrowScreen()
-        if (this.state.hasNarrowScreen !== hasNarrowScreen) {
-          this.setState({hasNarrowScreen: isNarrowScreen()}, this.maybeCutSiblingPanes)
-        }
-      })
-
-      this.maybeCutSiblingPanes()
-      this.maybeHandleOldUrl()
-      this.derivePanes(this.props)
-      this.props.onPaneChange(this.state.panes || [])
-
-      window.addEventListener('keydown', this.handleGlobalKeyDown)
-    }
-
-    componentWillUnmount() {
-      if (this.paneDeriver) {
-        this.paneDeriver.unsubscribe()
-      }
-
-      if (this.resizeSubscriber) {
-        this.resizeSubscriber.unsubscribe()
-      }
-
-      window.removeEventListener('keydown', this.handleGlobalKeyDown)
-    }
-
-    handleGlobalKeyDown = (event) => {
+  useEffect(() => {
+    const handleGlobalKeyDown = (event: KeyboardEvent) => {
       // Prevent `Cmd+S`
       if (isSaveHotkey(event)) {
         event.preventDefault()
 
-        this.context.addToSnackQueue({
+        pushToast({
+          closable: true,
           id: 'auto-save-message',
-          isOpen: true,
-          setFocus: false,
-          kind: 'info',
+          status: 'info',
           title: 'Sanity auto-saves your work!',
-          autoDismissTimeout: 4000,
-          isCloseable: true,
+          duration: 4000,
         })
       }
     }
 
-    render() {
-      const {router} = this.props
-      const {panes, error} = this.state
-      if (error) {
-        return <StructureError error={error} />
-      }
+    window.addEventListener('keydown', handleGlobalKeyDown)
 
-      const keys =
-        (router.state.panes || []).reduce(
-          (ids, group) => ids.concat(group.map((sibling) => sibling.id)),
-          []
-        ) || EMPTY_PANE_KEYS
+    return () => {
+      window.removeEventListener('keydown', handleGlobalKeyDown)
+    }
+  }, [pushToast])
 
-      const groupIndexes = (router.state.panes || []).reduce(
-        (ids, group) => ids.concat(group.map((sibling, groupIndex) => groupIndex)),
-        []
+  useEffect(() => {
+    prevRouterPanesRef.current = currRouterPanesRef.current
+    currRouterPanesRef.current = routerPanes
+  }, [routerPanes])
+
+  useEffect(() => {
+    const structure$ = structure$Ref.current
+
+    if (!structure$) return undefined
+
+    const _resolvedPanes = resolvedPanesRef.current
+    const prevPanes = prevRouterPanesRef.current
+    const nextPanes = currRouterPanesRef.current
+    const fromIndex = getPaneDiffIndex(nextPanes, prevPanes) || [0, 0]
+
+    const resolvedPanes$ = structure$.pipe(
+      switchMap((structure) => resolvePanes(structure, routerPanes, _resolvedPanes, fromIndex)),
+      switchMap((_panes) =>
+        hasLoading(_panes) ? of(_panes).pipe(debounce(() => interval(50))) : of(_panes)
       )
+    )
 
-      if (!panes) {
-        return null
-      }
+    const sub = resolvedPanes$.subscribe({
+      next(value) {
+        setResolvedPanes(value)
+        resolvedPanesRef.current = value
+      },
+      error(err) {
+        setResolveError(err)
+      },
+    })
 
-      return (
-        <DeskToolPanes
-          router={router}
-          panes={this.state.panes}
-          keys={keys}
-          groupIndexes={groupIndexes}
-          autoCollapse
-        />
-      )
-    }
-  }
-)
+    return () => sub.unsubscribe()
+  }, [routerPanes, setResolveError, setResolvedPanes])
 
-function getPaneDiffIndex(nextPanes, prevPanes) {
-  if (!nextPanes.length) {
-    return [0, 0]
+  useEffect(() => onPaneChange(resolvedPanes), [onPaneChange, resolvedPanes])
+
+  if (error) {
+    return <StructureError error={error} />
   }
 
-  const maxPanes = Math.max(nextPanes.length, prevPanes.length)
-  for (let index = 0; index < maxPanes; index++) {
-    const nextGroup = nextPanes[index]
-    const prevGroup = prevPanes[index]
-
-    // Whole group is now invalid
-    if (!prevGroup || !nextGroup) {
-      return [index, 0]
-    }
-
-    // Less panes than previously? Resolve whole group
-    if (prevGroup.length > nextGroup.length) {
-      return [index, 0]
-    }
-
-    /* eslint-disable max-depth */
-    // Iterate over siblings
-    for (let splitIndex = 0; splitIndex < nextGroup.length; splitIndex++) {
-      const nextSibling = nextGroup[splitIndex]
-      const prevSibling = prevGroup[splitIndex]
-
-      // Didn't have a sibling here previously, diff from here!
-      if (!prevSibling) {
-        return [index, splitIndex]
-      }
-
-      // Does the ID differ from the previous?
-      if (nextSibling.id !== prevSibling.id) {
-        return [index, splitIndex]
-      }
-    }
-    /* eslint-enable max-depth */
+  if (resolvedPanes.length === 0) {
+    return null
   }
 
-  // "No diff"
-  return undefined
-}
+  let i = -1
+  let path: string[] = []
 
-function getIntentRouteParams({id, type, payloadParams, templateName}) {
-  return {
-    intent: 'edit',
-    params: {
-      id,
-      ...(type ? {type} : {}),
-      ...(templateName ? {template: templateName} : {}),
-    },
-    payload: Object.keys(payloadParams).length > 0 ? payloadParams : undefined,
-  }
+  return (
+    <DeskToolProvider layoutCollapsed={layoutCollapsed}>
+      <PortalProvider element={portalElement || null}>
+        <StyledPaneLayout
+          flex={1}
+          height={layoutCollapsed ? undefined : 'fill'}
+          minWidth={512}
+          onCollapse={handleRootCollapse}
+          onExpand={handleRootExpand}
+        >
+          {paneGroups.map((group, groupIndex) => {
+            return (
+              // eslint-disable-next-line react/no-array-index-key
+              <Fragment key={groupIndex}>
+                {group.map((sibling, siblingIndex) => {
+                  const pane = resolvedPanes[++i]
+
+                  if (!pane) return null
+
+                  path = path.concat([pane.id || `[${i}]`])
+
+                  if (pane === LOADING_PANE) {
+                    return (
+                      <LoadingPane
+                        key={`loading-${i}`}
+                        path={path}
+                        index={i}
+                        message={getWaitMessages}
+                        isSelected={i === resolvedPanes.length - 1}
+                      />
+                    )
+                  }
+
+                  return (
+                    <DeskToolPane
+                      group={group}
+                      groupIndexes={groupIndexes}
+                      i={i}
+                      index={groupIndex}
+                      key={`${i}-${pane.id}`}
+                      pane={pane}
+                      paneKeys={paneKeys}
+                      panes={resolvedPanes}
+                      sibling={sibling}
+                      siblingIndex={siblingIndex}
+                    />
+                  )
+                })}
+              </Fragment>
+            )
+          })}
+        </StyledPaneLayout>
+        <div data-portal="" ref={setPortalElement} />
+      </PortalProvider>
+    </DeskToolProvider>
+  )
 }

@@ -1,8 +1,12 @@
-import {from as observableFrom, of as observableOf} from 'rxjs'
+import {from as observableFrom, Observable, of as observableOf} from 'rxjs'
 import {mergeMap} from 'rxjs/operators'
 import isSubscribable from './isSubscribable'
 
-export default function serializeStructure(item, context, resolverArgs = []) {
+export default function serializeStructure(
+  item: any,
+  context?: any,
+  resolverArgs: any[] = []
+): Observable<any> {
   // Lazy
   if (typeof item === 'function') {
     return serializeStructure(item(...resolverArgs), context, resolverArgs)
