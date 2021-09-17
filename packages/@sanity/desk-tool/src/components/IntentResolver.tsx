@@ -1,17 +1,22 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
+import {useRouter} from '@sanity/base/router'
+import {Flex, Box, Spinner, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {getTemplateById} from '@sanity/base/initial-value-templates'
 import React, {useEffect, useState} from 'react'
 import {of} from 'rxjs'
 import {map} from 'rxjs/operators'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import {useRouter} from '@sanity/base/router'
-import Spinner from 'part:@sanity/components/loading/spinner'
+import {LOADING_PANE} from '../constants'
 import {versionedClient} from '../versionedClient'
 import {useStructure} from '../utils/resolvePanes'
-import {LOADING_PANE} from '../constants'
+import {Delay} from './Delay'
 import {StructureError} from './StructureError'
 
 export interface IntentResolverProps {
+  intent: string
   params: {type: string; id: string; [key: string]: unknown}
   payload: unknown
 }
@@ -40,7 +45,6 @@ function removeDraftPrefix(documentId: string) {
  *   - Yes: Resolves to "<typeName>;<documentId>"
  *   - No : Resolves to fallback edit pane (context-less)
  */
-// eslint-disable-next-line complexity
 export const IntentResolver = React.memo(function IntentResolver({
   params,
   payload,
@@ -63,13 +67,33 @@ export const IntentResolver = React.memo(function IntentResolver({
     return isLoaded ? (
       <Redirect panes={[[{id: `__edit__${id || uuid()}`, params: otherParams}]]} />
     ) : (
-      <Spinner center message="Resolving document type…" delay={600} />
+      <Delay ms={600}>
+        <Flex justify="center">
+          <Spinner muted />
+          <Box marginTop={3}>
+            <Text muted size={1}>
+              Resolving document type…
+            </Text>
+          </Box>
+        </Flex>
+      </Delay>
     )
   }
 
   const isLoading = !structure || structure.some((item) => item === LOADING_PANE)
   if (isLoading) {
-    return <Spinner center message="Resolving structure…" delay={600} />
+    return (
+      <Delay ms={600}>
+        <Flex justify="center">
+          <Spinner muted />
+          <Box marginTop={3}>
+            <Text muted size={1}>
+              Resolving structure…
+            </Text>
+          </Box>
+        </Flex>
+      </Delay>
+    )
   }
 
   const panes = getNewRouterState({
@@ -111,7 +135,18 @@ function Redirect({panes}) {
     router.navigate({panes}, {replace: true})
   })
 
-  return <Spinner center message="Redirecting…" delay={600} />
+  return (
+    <Delay ms={600}>
+      <Flex justify="center">
+        <Spinner muted />
+        <Box marginTop={3}>
+          <Text muted size={1}>
+            Redirecting…
+          </Text>
+        </Box>
+      </Flex>
+    </Delay>
+  )
 }
 
 function useDocumentType(documentId: string, specifiedType: string) {

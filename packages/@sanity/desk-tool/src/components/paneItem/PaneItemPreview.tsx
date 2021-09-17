@@ -1,124 +1,43 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
 
-import {SanityDocument} from '@sanity/types'
+import {SanityDocument, SchemaType} from '@sanity/types'
+import {SanityDefaultPreview} from 'part:@sanity/base/preview'
 import React from 'react'
-import {combineLatest, concat, of, Subscription} from 'rxjs'
-import {assignWith} from 'lodash'
-import {map} from 'rxjs/operators'
-import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import {SanityDefaultPreview, observeForPreview} from 'part:@sanity/base/preview'
-import {WarningOutlineIcon} from '@sanity/icons'
-import {NotPublishedStatus} from './NotPublishedStatus'
-import {DraftStatus} from './DraftStatus'
+import {Subscription} from 'rxjs'
+import {getPreviewStateObservable, getStatusIndicator, getValueWithFallback} from './helpers'
+import {PaneItemPreviewState} from './types'
 
-export interface DocumentPaneItemPreviewProps {
-  icon: React.FunctionComponent | boolean
-  layout: 'inline' | 'block' | 'default' | 'card' | 'media'
-  schemaType: any
+export interface PaneItemPreviewProps {
+  icon: React.ComponentType<any> | false
+  layout: 'inline' | 'block' | 'default' | 'card' | 'media' | 'detail'
+  schemaType: SchemaType
   value: SanityDocument
 }
 
-export interface DocumentPaneItemPreviewState {
-  isLoading?: boolean
-  draft?: SanityDocument | null
-  published?: SanityDocument | null
-}
-
-const isLiveEditEnabled = (schemaType: any) => schemaType.liveEdit === true
-
-const getStatusIndicator = (draft?: SanityDocument | null, published?: SanityDocument | null) => {
-  if (draft) {
-    return DraftStatus
-  }
-  return published ? null : NotPublishedStatus
-}
-
-const getMissingDocumentFallback = (item: SanityDocument) => ({
-  title: (
-    <span style={{fontStyle: 'italic'}}>
-      {item.title ? String(item.title) : 'Missing document'}
-    </span>
-  ),
-  subtitle: (
-    <span style={{fontStyle: 'italic'}}>
-      {item.title ? `Missing document ID: ${item._id}` : `Document ID: ${item._id}`}
-    </span>
-  ),
-  media: WarningOutlineIcon,
-})
-
-const getValueWithFallback = ({
-  value,
-  draft,
-  published,
-}: {
-  value: SanityDocument
-  draft?: SanityDocument | null
-  published?: SanityDocument | null
-}): Record<string, unknown> => {
-  const snapshot = draft || published
-
-  if (!snapshot) {
-    return getMissingDocumentFallback(value)
-  }
-
-  return assignWith({}, snapshot, value, (objValue, srcValue) => {
-    return typeof srcValue === 'undefined' ? objValue : srcValue
-  })
-}
-
-export class DocumentPaneItemPreview extends React.Component<
-  DocumentPaneItemPreviewProps,
-  DocumentPaneItemPreviewState
-> {
-  state: DocumentPaneItemPreviewState = {}
+export class PaneItemPreview extends React.Component<PaneItemPreviewProps, PaneItemPreviewState> {
+  state: PaneItemPreviewState = {}
 
   subscription: Subscription
 
-  constructor(props: DocumentPaneItemPreviewProps) {
+  constructor(props: PaneItemPreviewProps) {
     super(props)
+
     const {value, schemaType} = props
     const {title} = value
+
     let sync = true
-    this.subscription = concat(
-      of({isLoading: true}),
-      combineLatest([
-        isLiveEditEnabled(schemaType)
-          ? of({snapshot: null})
-          : observeForPreview(
-              // @todo: fix typings
-              {_id: getDraftId(value._id)} as any,
-              schemaType
-            ),
-        observeForPreview(
-          // @todo: fix typings
-          {_id: getPublishedId(value._id)} as any,
-          schemaType
-        ),
-      ]).pipe(
-        map(([draft, published]) => ({
-          draft: draft.snapshot
-            ? {
-                title,
-                ...(draft.snapshot as any),
-              }
-            : null,
-          published: published.snapshot
-            ? {
-                title,
-                ...(published.snapshot as any),
-              }
-            : null,
-          isLoading: false,
-        }))
-      )
-    ).subscribe((state) => {
-      if (sync) {
-        this.state = state
-      } else {
-        this.setState(state)
+
+    this.subscription = getPreviewStateObservable(schemaType, value._id, title).subscribe(
+      (state) => {
+        if (sync) {
+          this.state = state
+        } else {
+          this.setState(state)
+        }
       }
-    })
+    )
+
     sync = false
   }
 
@@ -129,7 +48,7 @@ export class DocumentPaneItemPreview extends React.Component<
   }
 
   render() {
-    const {value, schemaType, layout, icon} = this.props
+    const {value, layout, icon} = this.props
     const {draft, published, isLoading} = this.state
 
     return (
@@ -138,7 +57,6 @@ export class DocumentPaneItemPreview extends React.Component<
         isPlaceholder={isLoading}
         icon={icon}
         layout={layout}
-        type={schemaType}
         status={isLoading ? null : getStatusIndicator(draft, published)}
       />
     )

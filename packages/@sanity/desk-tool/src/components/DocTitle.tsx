@@ -1,20 +1,29 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {SanityDocument} from '@sanity/types'
 import React from 'react'
-import schema from 'part:@sanity/base/schema'
 import {PreviewFields} from 'part:@sanity/base/preview'
+import schema from 'part:@sanity/base/schema'
 
 export interface DocTitleProps {
-  document: SanityDocument
+  document: Partial<Omit<SanityDocument, '_type'>> & {_type: SanityDocument['_type']}
 }
 
-const renderTitle = ({title}: {title?: string}) => <span>{title}</span>
+const renderTitle = ({title}: SanityDocument) => <>{title}</>
+
+const PREVIEW_FIELDS = ['title']
 
 export function DocTitle(props: DocTitleProps) {
   const {document} = props
-  const type = schema.get(document._type)
+  const schemaType = schema.get(document._type)
+
+  if (!schemaType) {
+    return <>&lt;Missing type&gt;</>
+  }
 
   return (
-    <PreviewFields document={document} type={type} fields={['title']}>
+    <PreviewFields document={document} fields={PREVIEW_FIELDS} layout="inline" type={schemaType}>
       {renderTitle}
     </PreviewFields>
   )

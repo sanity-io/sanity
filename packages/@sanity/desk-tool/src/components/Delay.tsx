@@ -1,28 +1,29 @@
-import * as React from 'react'
-import * as PropTypes from 'prop-types'
+import React, {useEffect, useState} from 'react'
 
-export default class Delay extends React.Component {
-  state = {done: false}
+export function Delay({
+  children,
+  ms = 0,
+}: {
+  children?: React.ReactElement | (() => React.ReactElement)
+  ms?: number
+}): React.ReactElement {
+  const [ready, setReady] = useState(ms <= 0)
 
-  componentDidMount() {
-    this.timer = setTimeout(() => {
-      this.setState({done: true})
-    }, this.props.ms)
-  }
-  componentWillUnmount() {
-    clearTimeout(this.timer)
-  }
-
-  render() {
-    const {children} = this.props
-    if (!this.state.done) {
-      return null
+  useEffect(() => {
+    if (ms <= 0) {
+      return undefined
     }
-    return typeof children === 'function' ? children() : children
-  }
-}
 
-Delay.propTypes = {
-  children: PropTypes.oneOfType([PropTypes.func, PropTypes.node]),
-  ms: PropTypes.number.isRequired,
+    const timeoutId = setTimeout(() => setReady(true), ms)
+
+    return () => {
+      clearTimeout(timeoutId)
+    }
+  }, [ms])
+
+  if (!ready || !children) {
+    return <></>
+  }
+
+  return typeof children === 'function' ? children() : children
 }

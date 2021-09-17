@@ -5,7 +5,7 @@ import {Text, Tooltip} from '@sanity/ui'
 export function NotPublishedStatus() {
   return (
     <Tooltip content={<>Not published</>}>
-      <Text>
+      <Text muted>
         <UnpublishIcon />
       </Text>
     </Tooltip>
