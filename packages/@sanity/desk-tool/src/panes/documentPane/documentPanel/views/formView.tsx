@@ -1,36 +1,27 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-
-import React from 'react'
-import {Subscription} from 'rxjs'
+import {PresenceOverlay} from '@sanity/base/presence'
+import {Marker, Path, SanityDocument} from '@sanity/types'
+import {Box, Button, Container, Text} from '@sanity/ui'
 import {isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
-import Button from 'part:@sanity/components/buttons/default'
 import schema from 'part:@sanity/base/schema'
 import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-component'
 import filterFieldFn$ from 'part:@sanity/desk-tool/filter-fields-fn?'
-import {Path} from '@sanity/types'
-import {PresenceOverlay} from '@sanity/base/presence'
-import {Doc} from '../../types'
+import React from 'react'
+import {Subscription} from 'rxjs'
 import {EditForm} from './editForm'
 
-import styles from './formView.css'
-
-interface Props {
+interface FormViewProps {
   id: string
   readOnly?: boolean
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  value: Doc | null
-  compareValue: Doc | null
-  initialValue: Doc
+  value: Partial<SanityDocument> | null
+  compareValue: SanityDocument | null
+  initialValue: Partial<SanityDocument>
   isConnected: boolean
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onChange: (patches: any[]) => void
   schemaType: {name: string; title: string}
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  markers: Array<{path: any[]}>
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  markers: Marker[]
   focusPath: Path
   onFocus: (path: Path) => void
   margins: [number, number, number, number]
@@ -42,7 +33,7 @@ const INITIAL_STATE = {
   filterField: () => true,
 }
 
-export class FormView extends React.PureComponent<Props> {
+export class FormView extends React.PureComponent<FormViewProps> {
   static defaultProps = {
     markers: [],
     isConnected: true,
@@ -50,12 +41,10 @@ export class FormView extends React.PureComponent<Props> {
 
   state = INITIAL_STATE
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   filterFieldFnSubscription: Subscription | null = null
 
   componentDidMount() {
     if (filterFieldFn$) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.filterFieldFnSubscription = filterFieldFn$.subscribe((filterField: any) =>
         this.setState({filterField})
       )
@@ -73,7 +62,7 @@ export class FormView extends React.PureComponent<Props> {
   }
 
   handleEditAsActualType = () => {
-    // TODO
+    // @todo
   }
 
   isReadOnly() {
@@ -103,22 +92,29 @@ export class FormView extends React.PureComponent<Props> {
     const {filterField} = this.state
     const readOnly = this.isReadOnly()
     const documentId = value && value._id && value._id.replace(/^drafts\./, '')
-
     const hasTypeMismatch = value && value._type && value._type !== schemaType.name
+
     if (hasTypeMismatch) {
       return (
-        <div className={styles.typeMisMatchMessage}>
-          This document is of type <code>{value!._type}</code> and cannot be edited as{' '}
-          <code>{schemaType.name}</code>
-          <div>
-            <Button onClick={this.handleEditAsActualType}>Edit as {value!._type} instead</Button>
-          </div>
-        </div>
+        <Container paddingX={4} paddingY={5} sizing="border" width={1}>
+          <Text>
+            This document is of type <code>{value?._type}</code> and cannot be edited as{' '}
+            <code>{schemaType.name}</code>.
+          </Text>
+
+          <Box marginTop={4}>
+            <Button
+              onClick={this.handleEditAsActualType}
+              text={<>Edit as {value?._type} instead</>}
+              tone="critical"
+            />
+          </Box>
+        </Container>
       )
     }
 
     return (
-      <div className={styles.root}>
+      <Container paddingX={4} paddingTop={5} paddingBottom={9} sizing="border" width={1}>
         <PresenceOverlay margins={margins}>
           <EditForm
             id={id}
@@ -140,7 +136,7 @@ export class FormView extends React.PureComponent<Props> {
         {afterEditorComponents.map((AfterEditorComponent: any, idx: number) => (
           <AfterEditorComponent key={String(idx)} documentId={documentId} />
         ))}
-      </div>
+      </Container>
     )
   }
 }

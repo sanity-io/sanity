@@ -1,8 +1,8 @@
 import React, {useCallback, useMemo, useState} from 'react'
 import {useMemoObservable} from 'react-rx'
+import {SanityDocument} from '@sanity/types'
 import {versionedClient} from '../../../versionedClient'
-import {usePaneRouter} from '../../../contexts/PaneRouterContext'
-import {Doc} from '../types'
+import {usePaneRouter} from '../../../contexts/paneRouter'
 import {DocumentHistoryContext} from './context'
 import {createObservableController} from './history/controller'
 import {Timeline} from './history/timeline'
@@ -10,7 +10,7 @@ import {Timeline} from './history/timeline'
 interface DocumentHistoryProviderProps {
   children: React.ReactNode
   documentId: string
-  value: Doc | null
+  value: Partial<SanityDocument> | null
 }
 
 declare const __DEV__: boolean
@@ -60,10 +60,10 @@ export function DocumentHistoryProvider(props: DocumentHistoryProviderProps) {
     [paneRouter]
   )
 
-  let displayed = value
+  let displayed: Partial<SanityDocument> | null = value
 
   if (historyController.onOlderRevision()) {
-    displayed = historyController.displayed()
+    displayed = historyController.displayed() as any
   }
 
   return (

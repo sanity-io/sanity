@@ -1,68 +1,65 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import {MenuItem, MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
-import {LegacyLayerProvider} from '@sanity/base/components'
+import {useTimeAgo} from '@sanity/base/hooks'
+import {
+  MenuItem as MenuItemType,
+  MenuItemGroup as MenuItemGroupType,
+} from '@sanity/base/__legacy/@sanity/components'
 import {Chunk} from '@sanity/field/diff'
-import {CloseIcon, SplitVerticalIcon} from '@sanity/icons'
-import {Path} from '@sanity/types'
-import {Box, BoundaryElementProvider, Button, Layer} from '@sanity/ui'
-import classNames from 'classnames'
-import {negate} from 'lodash'
+import {ArrowLeftIcon, CloseIcon, SelectIcon, SplitVerticalIcon} from '@sanity/icons'
+import {Marker, Path} from '@sanity/types'
+import {Button, Inline} from '@sanity/ui'
+import {negate, upperFirst} from 'lodash'
 import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
-import React, {useCallback, useMemo, useState} from 'react'
-import {useDeskToolFeatures} from '../../../../features'
-
+import React, {forwardRef, useCallback, useMemo} from 'react'
+import {PaneHeader, PaneContextMenuButton} from '../../../../components/pane'
+import {useDeskTool} from '../../../../contexts/deskTool'
+import {usePaneRouter} from '../../../../contexts/paneRouter'
+import {formatTimelineEventLabel} from '../../timeline'
 import {DocumentView} from '../../types'
-import {TimelineMenu} from '../../timeline'
-import {DocumentPanelContextMenu} from './contextMenu'
 import {DocumentHeaderTabs} from './tabs'
 import {ValidationMenu} from './validationMenu'
-
-import styles from './header.css'
 
 export interface DocumentPanelHeaderProps {
   activeViewId?: string
   idPrefix: string
   isClosable: boolean
-  isCollapsed: boolean
   isHistoryOpen: boolean
-  markers: any
-  menuItems: MenuItem[]
-  menuItemGroups: MenuItemGroup[]
+  isTimelineOpen: boolean
+  markers: Marker[]
+  menuItems: MenuItemType[]
+  menuItemGroups: MenuItemGroupType[]
   onCloseView: () => void
-  onContextMenuAction: (action: MenuItem) => void
-  onCollapse?: () => void
-  onExpand?: () => void
-  onSetActiveView: (id: string | null) => void
+  onContextMenuAction: (action: MenuItemType) => void
   onSplitPane?: () => void
   onSetFormInputFocus: (path: Path) => void
   rev: Chunk | null
   rootElement: HTMLDivElement | null
   schemaType: any
   title: React.ReactNode
+  versionSelectRef: React.MutableRefObject<HTMLButtonElement | null>
   views: DocumentView[]
   timelinePopoverBoundaryElement: HTMLDivElement | null
 }
 
-const isActionButton = (item: MenuItem) => (item as any).showAsAction
+const isActionButton = (item: MenuItemType) => Boolean(item.showAsAction)
 const isMenuButton = negate(isActionButton)
 
-// eslint-disable-next-line complexity
-export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
+export const DocumentPanelHeader = forwardRef(function DocumentPanelHeader(
+  props: DocumentPanelHeaderProps,
+  ref: React.ForwardedRef<HTMLDivElement>
+) {
   const {
     activeViewId,
     idPrefix,
     isClosable,
-    isCollapsed,
+    isTimelineOpen,
     markers,
     menuItems,
     menuItemGroups,
     onCloseView,
     onContextMenuAction,
-    onCollapse,
-    onExpand,
-    onSetActiveView,
     onSplitPane,
     rev,
     rootElement,
@@ -72,146 +69,149 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
     views,
     timelinePopoverBoundaryElement,
   } = props
-  const features = useDeskToolFeatures()
+  const {features} = useDeskTool()
+  const {BackLink, index} = usePaneRouter()
   const contextMenuItems = useMemo(() => menuItems.filter(isMenuButton), [menuItems])
-  const [isContextMenuOpen, setContextMenuOpen] = useState(false)
   const [isValidationOpen, setValidationOpen] = React.useState<boolean>(false)
 
-  const handleTitleClick = useCallback(() => {
-    if (isCollapsed && onExpand) onExpand()
-    if (!isCollapsed && onCollapse) onCollapse()
-  }, [isCollapsed, onExpand, onCollapse])
+  // This is needed to stop the ClickOutside-handler (in the Popover) to treat the click
+  // as an outside-click.
+  const ignoreClickOutside = useCallback((evt: React.MouseEvent<HTMLButtonElement>) => {
+    evt.stopPropagation()
+  }, [])
 
   const showTabs = views.length > 1
   const showVersionMenu = features.reviewChanges || views.length === 1
 
+  const languageMenu = LanguageFilter && (
+    <LanguageFilter key="language-menu" schemaType={schemaType} />
+  )
+
   const validationMenu = useMemo(
-    () => (
-      <div>
+    () =>
+      markers.length > 0 && (
         <ValidationMenu
           boundaryElement={rootElement}
           isOpen={isValidationOpen}
+          key="validation-menu"
           markers={markers}
           schemaType={schemaType}
           setFocusPath={onSetFormInputFocus}
           setOpen={setValidationOpen}
         />
-      </div>
-    ),
+      ),
     [isValidationOpen, markers, onSetFormInputFocus, rootElement, schemaType]
   )
 
   const contextMenu = useMemo(
     () => (
-      <div>
-        <DocumentPanelContextMenu
-          boundaryElement={rootElement}
-          isCollapsed={isCollapsed}
-          itemGroups={menuItemGroups}
-          items={contextMenuItems}
-          onAction={onContextMenuAction}
-          open={isContextMenuOpen}
-          setOpen={setContextMenuOpen}
-        />
-      </div>
+      <PaneContextMenuButton
+        boundaryElement={rootElement}
+        itemGroups={menuItemGroups}
+        items={contextMenuItems}
+        key="context-menu"
+        onAction={onContextMenuAction}
+      />
     ),
-    [
-      contextMenuItems,
-      isCollapsed,
-      isContextMenuOpen,
-      menuItemGroups,
-      onContextMenuAction,
-      rootElement,
-    ]
+    [contextMenuItems, menuItemGroups, onContextMenuAction, rootElement]
   )
 
-  const splitViewActions = useMemo(
-    () =>
-      features.splitViews && (
-        <>
-          {onSplitPane && views.length > 1 && (
-            <div>
-              <Button
-                icon={SplitVerticalIcon}
-                mode="bleed"
-                onClick={onSplitPane}
-                padding={2}
-                title="Split pane right"
-              />
-            </div>
-          )}
+  const splitPaneButton = useMemo(() => {
+    if (!features.splitViews || !onSplitPane || views.length <= 1) {
+      return null
+    }
 
-          {onSplitPane && isClosable && (
-            <div>
-              <Button
-                icon={CloseIcon}
-                mode="bleed"
-                onClick={onCloseView}
-                padding={2}
-                title="Close pane"
-              />
-            </div>
-          )}
-        </>
-      ),
-    [features.splitViews, isClosable, onCloseView, onSplitPane, views.length]
-  )
+    return (
+      <Button
+        icon={SplitVerticalIcon}
+        key="split-pane-button"
+        mode="bleed"
+        onClick={onSplitPane}
+        title="Split pane right"
+      />
+    )
+  }, [features.splitViews, onSplitPane, views.length])
+
+  const closeViewButton = useMemo(() => {
+    if (!features.splitViews || !onSplitPane || !isClosable) {
+      return null
+    }
+
+    return (
+      <Button
+        icon={CloseIcon}
+        key="close-view-button"
+        mode="bleed"
+        onClick={onCloseView}
+        title="Close pane"
+      />
+    )
+  }, [features.splitViews, isClosable, onCloseView, onSplitPane])
 
   const tabs = useMemo(
     () =>
       showTabs && (
-        <div className={styles.tabsContainer}>
-          <DocumentHeaderTabs
-            activeViewId={activeViewId}
-            idPrefix={idPrefix}
-            onSetActiveView={onSetActiveView}
-            views={views}
-          />
-        </div>
+        <DocumentHeaderTabs activeViewId={activeViewId} idPrefix={idPrefix} views={views} />
       ),
-    [activeViewId, idPrefix, onSetActiveView, showTabs, views]
+    [activeViewId, idPrefix, showTabs, views]
   )
 
   const versionMenu = useMemo(
     () =>
       showVersionMenu && (
-        <Box marginX={1} style={{marginLeft: 'auto'}}>
-          <BoundaryElementProvider element={timelinePopoverBoundaryElement}>
-            <LegacyLayerProvider zOffset="paneHeader">
-              <TimelineMenu chunk={rev} mode="rev" />
-            </LegacyLayerProvider>
-          </BoundaryElementProvider>
-        </Box>
+        <Button
+          fontSize={1}
+          iconRight={SelectIcon}
+          mode="bleed"
+          onMouseUp={ignoreClickOutside}
+          onClick={onTimelineOpen}
+          padding={2}
+          ref={versionSelectRef}
+          selected={isTimelineOpen && timelineMode === 'rev'}
+          text={
+            // eslint-disable-next-line no-nested-ternary
+            menuOpen ? (
+              <>Select version</>
+            ) : rev ? (
+              <TimelineButtonLabel rev={rev} />
+            ) : (
+              <>Current version</>
+            )
+          }
+        />
       ),
     [rev, showVersionMenu, timelinePopoverBoundaryElement]
   )
 
   return (
-    <Layer className={classNames(styles.root, isCollapsed && styles.isCollapsed)}>
-      <div className={styles.mainNav}>
-        <div className={styles.title} onClick={handleTitleClick}>
-          <strong>{title}</strong>
-        </div>
-
-        <div className={styles.paneActions}>
-          {LanguageFilter && (
-            <div>
-              <LanguageFilter schemaType={schemaType} />
-            </div>
-          )}
-
+    <PaneHeader
+      actions={
+        <Inline space={1}>
+          {languageMenu}
           {validationMenu}
           {contextMenu}
-          {splitViewActions}
-        </div>
-      </div>
+          {splitPaneButton}
+          {closeViewButton}
+        </Inline>
+      }
+      backButton={
+        features.backButton &&
+        index > 0 && <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" />
+      }
+      ref={ref}
+      subActions={versionMenu}
+      tabs={tabs}
+      title={title}
+    />
+  )
+})
 
-      {(showTabs || showVersionMenu) && (
-        <div className={styles.viewNav}>
-          {tabs}
-          {versionMenu}
-        </div>
-      )}
-    </Layer>
+function TimelineButtonLabel({rev}: {rev: Chunk}) {
+  const timeAgo = useTimeAgo(rev.endTimestamp, {agoSuffix: true})
+
+  return (
+    <>
+      {upperFirst(formatTimelineEventLabel(rev.type))} {timeAgo}
+    </>
   )
 }

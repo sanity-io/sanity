@@ -1,61 +1,43 @@
-import {ComponentType} from 'react'
+import {MenuItem, MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
+import {SanityDocument} from '@sanity/types'
+import {BaseDeskToolPaneProps} from '../types'
 
 export interface DocumentPaneOptions {
   id: string
   type: string
   template?: string
+  templateParameters?: Record<string, unknown>
 }
 
 export interface DocumentView {
   type: string
   id: string
   title: string
+  // @todo: provide proper typings for this
+  // eslint-disable-next-line @typescript-eslint/ban-types
   options: {}
-  component: ComponentType<any>
-  icon?: ComponentType<any>
+  component: React.ComponentType<{
+    document: {
+      draft: SanityDocument | null
+      displayed: Partial<SanityDocument>
+      historical: Partial<SanityDocument> | null
+      published: SanityDocument | null
+    }
+    documentId: string
+    // @todo: provide proper typings for this
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    options: {}
+    schemaType: any
+  }>
+  icon?: React.ComponentType
 }
 
-export interface Doc {
-  _id?: string
-  _type?: string
-  _rev?: string
-  _updatedAt?: string
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any
-}
-
-// export interface MenuAction {
-//   action: string
-//   icon?: React.FunctionComponent | React.Component
-//   isDisabled?: boolean
-//   title: React.ReactNode
-//   url?: string
-// }
-
-// export interface MenuItemGroup {
-//   id: string
-// }
-
-export interface DocumentViewType {
-  type: string
-  id: string
-  title: string
-  options: {}
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  component: React.ComponentType<any>
-}
-
-export interface ObjectSchemaType {
-  name: string
-  jsonType: string
+export type DocumentPaneProviderProps = BaseDeskToolPaneProps<{
+  type: 'document'
+  initialValue?: SanityDocument
+  menuItems: MenuItem[]
+  menuItemGroups: MenuItemGroup[]
+  options: DocumentPaneOptions
   title?: string
-  fields: ObjectField[]
-  diffComponent?: ComponentType<any>
-}
-
-export interface ObjectField {
-  name: string
-  type: SchemaType
-}
-
-export type SchemaType = ObjectSchemaType
+  views: DocumentView[]
+}>

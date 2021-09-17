@@ -2,11 +2,11 @@ import {DocumentBadgeDescription} from '@sanity/base'
 import {EditStateFor} from '@sanity/base/_internal'
 import {useTimeAgo} from '@sanity/base/hooks'
 import {EditIcon} from '@sanity/icons'
-import {Box, Flex} from '@sanity/ui'
+import {Box, Flex, useElementRect} from '@sanity/ui'
 import React, {useEffect, useMemo, useState, useRef} from 'react'
+import {raf2} from '../../../../lib/raf'
 import {useDocumentHistory} from '../../documentHistory'
 import {DocumentBadges} from './documentBadges'
-import {useElementRect} from './lib/useElementRect'
 import {ReviewChangesButton} from './reviewChangesButton'
 import {IconBadge} from './iconBadge'
 import {
@@ -63,8 +63,10 @@ export function DocumentSparkline(props: DocumentSparklineProps) {
       // See: https://stackoverflow.com/questions/44145740/how-does-double-requestanimationframe-work
       // There is no need to cancel this animation,
       // since calling it again will cause the same result (transition=true).
-      requestAnimationFrame(() => requestAnimationFrame(() => setTransition(true)))
+      return raf2(() => setTransition(true))
     }
+
+    return undefined
   }, [loaded, transition])
 
   const metadataBoxStyle = useMemo(

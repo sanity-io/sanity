@@ -2,7 +2,6 @@ import {RemoteSnapshotVersionEvent} from '@sanity/base/_internal'
 
 export {DocumentRemoteMutationEvent} from '@sanity/base/_internal'
 export {ChunkType, Chunk} from '@sanity/field/diff'
-export {Doc} from '../../types'
 export {RemoteSnapshotVersionEvent}
 
 export type DocumentRemoteMutationVersionEvent = Exclude<

@@ -1,57 +1,64 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import {MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
-import {BoundaryElementProvider, DialogProvider, Layer} from '@sanity/ui'
-import * as PathUtils from '@sanity/util/paths'
-import classNames from 'classnames'
-import Snackbar from 'part:@sanity/components/snackbar/default'
-import React, {useCallback, useState} from 'react'
-import {Path} from '@sanity/types'
+import {MenuItem, MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
+import {BoundaryElementProvider, DialogProvider, Flex, useToast, useElementRect} from '@sanity/ui'
+import {fromString as pathFromString, pathFor} from '@sanity/util/paths'
+import {Path, Marker, SanityDocument} from '@sanity/types'
 import {LegacyLayerProvider, useZIndex} from '@sanity/base/components'
 import {ChangeConnectorRoot} from '@sanity/base/change-indicators'
+import isHotkey from 'is-hotkey'
 import {setLocation} from 'part:@sanity/base/datastore/presence'
-import {usePaneRouter} from '../../contexts/PaneRouterContext'
-import {useDeskToolFeatures} from '../../features'
+import React, {useCallback, useEffect, useRef, useState, useMemo} from 'react'
+import styled from 'styled-components'
+import {usePaneRouter} from '../../contexts/paneRouter'
+import {useDeskTool} from '../../contexts/deskTool'
+import {PaneFooter} from '../../components/pane'
+import {useUnique} from '../../lib/useUnique'
+import {usePaneLayout} from '../../components/pane/usePaneLayout'
 import {ChangesPanel} from './changesPanel'
 import {useDocumentHistory} from './documentHistory'
 import {DocumentPanel} from './documentPanel'
 import {DocumentOperationResults} from './documentOperationResults'
 import {InspectDialog} from './inspectDialog'
-import {DocumentActionShortcuts, isInspectHotkey, isPreviewHotkey} from './keyboardShortcuts'
+import {DocumentActionShortcuts} from './keyboardShortcuts'
+import {getMenuItems} from './menuItems'
 import {DocumentStatusBar} from './statusBar'
-import {Doc, DocumentViewType} from './types'
+import {TimelinePopover} from './timeline'
+import {DocumentView} from './types'
 import {usePreviewUrl} from './usePreviewUrl'
 
-import styles from './documentPane.css'
-
-interface DocumentPaneProps {
+type DocumentPaneProps = {
+  compareValue: SanityDocument | null
   connectionState: 'connecting' | 'connected' | 'reconnecting'
   documentId: string
   documentIdRaw: string
   documentType: string
-  draft: Doc | null
-  initialValue: Doc
+  draft: SanityDocument | null
+  index: number
+  initialValue: Partial<SanityDocument>
   isClosable: boolean
-  isCollapsed: boolean
-  isSelected: boolean
-  markers: any[]
+  markers: Marker[]
   menuItemGroups: MenuItemGroup[]
   onChange: (patches: any[]) => void
-  onExpand?: () => void
-  onCollapse?: () => void
   paneKey: string
-  published: Doc | null
+  published: SanityDocument | null
   schemaType: any
   title?: string
-  views: DocumentViewType[]
-  value: Doc | null
-  compareValue: Doc | null
+  value: Partial<SanityDocument> | null
+  views: DocumentView[]
 }
 
 const EMPTY_ARRAY = []
 
-// eslint-disable-next-line complexity
+const StyledChangeConnectorRoot = styled(ChangeConnectorRoot)`
+  flex: 2;
+  display: flex;
+  direction: column;
+  min-width: 0;
+  height: 100%;
+`
+
 export function DocumentPane(props: DocumentPaneProps) {
   const {
     connectionState,
@@ -59,43 +66,66 @@ export function DocumentPane(props: DocumentPaneProps) {
     documentIdRaw,
     documentType,
     draft,
-    initialValue,
-    isSelected,
-    isCollapsed,
+    index,
+    initialValue: initialValueProp,
     isClosable,
-    markers,
+    markers: markersProp,
     menuItemGroups = EMPTY_ARRAY,
     onChange,
-    onCollapse,
-    onExpand,
     paneKey,
     published,
     title: paneTitle,
     schemaType,
     value,
     compareValue,
-    views = [],
+    views: viewsProp = EMPTY_ARRAY,
   } = props
+  const {features} = useDeskTool()
+  const {collapsed: layoutCollapsed} = usePaneLayout()
+  const markers = useUnique(markersProp)
+  const initialValue = useUnique(initialValueProp)
+  const views = useUnique(viewsProp)
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
+  const [footerElement, setFooterElement] = useState<HTMLDivElement | null>(null)
   const [actionsBoxElement, setActionsBoxElement] = useState<HTMLDivElement | null>(null)
-  const features = useDeskToolFeatures()
-  const {historyController, open, displayed} = useDocumentHistory()
+  const footerRect = useElementRect(footerElement)
+  const {
+    historyController,
+    setTimelineMode,
+    timelineMode,
+    open: openHistory,
+    displayed,
+  } = useDocumentHistory()
   const historyState = historyController.selectionState
-  const [showValidationTooltip, setShowValidationTooltip] = useState<boolean>(false)
   const paneRouter = usePaneRouter()
   const activeViewId = paneRouter.params.view || (views[0] && views[0].id)
   const [formInputFocusPath, setFocusPath] = React.useState<Path>(() =>
-    paneRouter.params.path ? PathUtils.fromString(paneRouter.params.path) : []
+    paneRouter.params.path ? pathFromString(paneRouter.params.path) : []
   )
   const isInspectOpen = paneRouter.params.inspect === 'on'
-  const [
-    documentAndChangesContainer,
-    setDocumentAndChangesContainer,
-  ] = useState<HTMLDivElement | null>(null)
+  const previewUrl = usePreviewUrl(value)
+  const changesSinceSelectRef = useRef<HTMLButtonElement | null>(null)
+  const versionSelectRef = useRef<HTMLButtonElement | null>(null)
+  const isChangesOpen = historyController.changesPanelActive()
+  const isTimelineOpen = timelineMode !== 'closed'
+  const zOffsets = useZIndex()
+  const inspectValue = displayed || initialValue
+  const {push: pushToast} = useToast()
+  const hasValue = Boolean(value)
+  const menuItems = useMemo(
+    () =>
+      getMenuItems({
+        features,
+        hasValue,
+        isHistoryOpen: isChangesOpen,
+        previewUrl,
+      }),
+    [features, hasValue, isChangesOpen, previewUrl]
+  )
 
   const handleFocus = useCallback(
     (nextFocusPath: Path) => {
-      setFocusPath(PathUtils.pathFor(nextFocusPath))
+      setFocusPath(pathFor(nextFocusPath))
       setLocation([
         {
           type: 'document',
@@ -120,141 +150,194 @@ export function DocumentPane(props: DocumentPaneProps) {
     [isInspectOpen, paneRouter]
   )
 
-  const previewUrl = usePreviewUrl(value)
+  const handleMenuAction = useCallback(
+    (item: MenuItem) => {
+      if (item.action === 'production-preview') {
+        window.open(item.url)
+        return true
+      }
+
+      if (item.action === 'inspect') {
+        toggleInspect(true)
+        return true
+      }
+
+      if (item.action === 'reviewChanges') {
+        openHistory()
+        return true
+      }
+
+      return false
+    },
+    [openHistory, toggleInspect]
+  )
 
   const handleKeyUp = useCallback(
-    (event: any) => {
-      if (event.key === 'Escape' && showValidationTooltip) {
-        setShowValidationTooltip(false)
-      }
-
-      if (isInspectHotkey(event)) {
-        toggleInspect()
-      }
-
-      if (isPreviewHotkey(event)) {
-        if (previewUrl) {
-          window.open(previewUrl)
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      for (const item of menuItems) {
+        if (item.shortcut) {
+          if (isHotkey(item.shortcut, event)) {
+            event.preventDefault()
+            event.stopPropagation()
+            handleMenuAction(item)
+            return
+          }
         }
       }
     },
-    [previewUrl, showValidationTooltip, toggleInspect]
+    [handleMenuAction, menuItems]
   )
 
   const handleInspectClose = useCallback(() => toggleInspect(false), [toggleInspect])
-
-  const handleSetActiveView = useCallback((id: string | null) => paneRouter.setView(id as any), [
-    paneRouter,
-  ])
 
   const handleClosePane = useCallback(() => paneRouter.closeCurrent(), [paneRouter])
 
   const handleSplitPane = useCallback(() => paneRouter.duplicateCurrent(), [paneRouter])
 
-  const isChangesOpen = historyController.changesPanelActive()
+  const handleTimelineClose = useCallback(() => {
+    setTimelineMode('closed')
+  }, [setTimelineMode])
 
-  const zOffsets = useZIndex()
+  const handleTimelineSince = useCallback(() => {
+    setTimelineMode(timelineMode === 'since' ? 'closed' : 'since')
+  }, [timelineMode, setTimelineMode])
 
-  const inspectValue = displayed || initialValue
+  const handleTimelineRev = useCallback(() => {
+    setTimelineMode(timelineMode === 'rev' ? 'closed' : 'rev')
+  }, [timelineMode, setTimelineMode])
+
+  useEffect(() => {
+    if (connectionState === 'reconnecting') {
+      pushToast({
+        id: 'desk-tool/reconnecting',
+        status: 'warning',
+        title: <>Connection lost. Reconnecting…</>,
+      })
+    }
+  }, [connectionState, pushToast])
+
+  const updatedAt = value?._updatedAt
+
+  const paneFooter = useMemo(
+    () => (
+      <PaneFooter ref={setFooterElement}>
+        <DocumentStatusBar
+          actionsBoxRef={setActionsBoxElement}
+          id={documentId}
+          type={documentType}
+          lastUpdated={updatedAt}
+        />
+      </PaneFooter>
+    ),
+    [documentId, documentType, setActionsBoxElement, updatedAt]
+  )
+
+  const timelinePopover = useMemo(
+    () => (
+      <LegacyLayerProvider zOffset="paneHeader">
+        <TimelinePopover
+          onClose={handleTimelineClose}
+          open={isTimelineOpen}
+          placement="bottom"
+          targetElement={
+            timelineMode === 'rev' ? versionSelectRef.current : changesSinceSelectRef.current
+          }
+        />
+      </LegacyLayerProvider>
+    ),
+    [handleTimelineClose, isTimelineOpen, timelineMode]
+  )
+
+  const inspectDialog = useMemo(
+    () => (
+      <LegacyLayerProvider zOffset="fullscreen">
+        {isInspectOpen && (
+          <InspectDialog idPrefix={paneKey} onClose={handleInspectClose} value={inspectValue} />
+        )}
+      </LegacyLayerProvider>
+    ),
+    [handleInspectClose, inspectValue, isInspectOpen, paneKey]
+  )
 
   return (
-    <LegacyLayerProvider zOffset="pane">
-      <DocumentActionShortcuts
-        actionsBoxElement={actionsBoxElement}
-        id={documentIdRaw}
-        type={documentType}
-        onKeyUp={handleKeyUp}
-        className={classNames([
-          styles.root,
-          isCollapsed && styles.isCollapsed,
-          isSelected ? styles.isActive : styles.isDisabled,
-        ])}
-        rootRef={setRootElement}
-      >
-        <DialogProvider position={['fixed', 'absolute']} zOffset={zOffsets.portal}>
-          <div className={styles.documentAndChangesContainer} ref={setDocumentAndChangesContainer}>
-            <ChangeConnectorRoot
-              onSetFocus={handleFocus}
-              onOpenReviewChanges={open}
-              isReviewChangesOpen={isChangesOpen}
-            >
-              <div className={styles.documentContainer}>
-                <DocumentPanel
-                  activeViewId={activeViewId}
-                  documentId={documentId}
-                  documentType={documentType}
-                  draft={draft}
-                  idPrefix={paneKey}
-                  formInputFocusPath={formInputFocusPath}
-                  onFormInputFocus={handleFocus}
-                  initialValue={initialValue}
-                  isClosable={isClosable}
-                  isCollapsed={isCollapsed}
-                  isHistoryOpen={isChangesOpen}
-                  markers={markers}
-                  menuItemGroups={menuItemGroups}
-                  onChange={onChange}
-                  onCloseView={handleClosePane}
-                  onCollapse={onCollapse}
-                  onExpand={onExpand}
-                  onSetActiveView={handleSetActiveView}
-                  onSplitPane={handleSplitPane}
-                  paneTitle={paneTitle}
-                  published={published}
-                  rootElement={rootElement}
-                  schemaType={schemaType}
-                  toggleInspect={toggleInspect}
-                  value={value}
-                  compareValue={isChangesOpen ? historyController.sinceAttributes() : compareValue}
-                  views={views}
-                  timelinePopoverBoundaryElement={documentAndChangesContainer}
-                />
-              </div>
-
-              {features.reviewChanges && !isCollapsed && isChangesOpen && (
-                <div className={styles.changesContainer}>
-                  <BoundaryElementProvider element={rootElement}>
-                    <ChangesPanel
-                      documentId={documentId}
-                      loading={historyState === 'loading'}
-                      schemaType={schemaType}
-                      since={historyController.sinceTime}
-                      timelinePopoverBoundaryElement={documentAndChangesContainer}
-                    />
-                  </BoundaryElementProvider>
-                </div>
-              )}
-            </ChangeConnectorRoot>
-          </div>
-        </DialogProvider>
-
-        <LegacyLayerProvider zOffset="paneFooter">
-          <Layer className={styles.footerContainer}>
-            <DocumentStatusBar
-              actionsBoxRef={setActionsBoxElement}
-              id={documentId}
-              type={documentType}
-              lastUpdated={value && value._updatedAt}
-            />
-          </Layer>
-        </LegacyLayerProvider>
-
-        {connectionState === 'reconnecting' && (
-          <Snackbar kind="warning" isPersisted title="Connection lost. Reconnecting…" />
-        )}
-
-        <DocumentOperationResults id={documentId} type={documentType} />
-
-        <LegacyLayerProvider zOffset="fullscreen">
-          {isInspectOpen && (
-            <InspectDialog
+    <DocumentActionShortcuts
+      actionsBoxElement={actionsBoxElement}
+      data-index={index}
+      data-pane-key={paneKey}
+      data-ui="DocumentPane"
+      flex={2.5}
+      id={documentIdRaw}
+      minWidth={isChangesOpen ? 640 : 320}
+      type={documentType}
+      onKeyUp={handleKeyUp}
+      rootRef={setRootElement}
+    >
+      <DialogProvider position={['fixed', 'absolute']} zOffset={zOffsets.portal}>
+        <Flex flex={1} height={layoutCollapsed ? undefined : 'fill'}>
+          <StyledChangeConnectorRoot
+            onSetFocus={handleFocus}
+            onOpenReviewChanges={openHistory}
+            isReviewChangesOpen={isChangesOpen}
+          >
+            <DocumentPanel
+              activeViewId={activeViewId}
+              documentId={documentId}
+              documentType={documentType}
+              draft={draft}
+              footerHeight={footerRect?.height || null}
               idPrefix={paneKey}
-              onClose={handleInspectClose}
-              value={inspectValue as any}
+              formInputFocusPath={formInputFocusPath}
+              onFormInputFocus={handleFocus}
+              initialValue={initialValue}
+              isClosable={isClosable}
+              isHistoryOpen={isChangesOpen}
+              isTimelineOpen={isTimelineOpen}
+              markers={markers}
+              menuItems={menuItems}
+              menuItemGroups={menuItemGroups}
+              onChange={onChange}
+              onCloseView={handleClosePane}
+              onMenuAction={handleMenuAction}
+              onSplitPane={handleSplitPane}
+              onTimelineOpen={handleTimelineRev}
+              paneTitle={paneTitle}
+              published={published}
+              rootElement={rootElement}
+              schemaType={schemaType}
+              timelineMode={timelineMode}
+              value={value}
+              compareValue={
+                isChangesOpen ? (historyController.sinceAttributes() as any) : compareValue
+              }
+              versionSelectRef={versionSelectRef}
+              views={views}
             />
-          )}
-        </LegacyLayerProvider>
-      </DocumentActionShortcuts>
-    </LegacyLayerProvider>
+
+            {features.reviewChanges && isChangesOpen && (
+              <BoundaryElementProvider element={rootElement}>
+                <ChangesPanel
+                  changesSinceSelectRef={changesSinceSelectRef}
+                  documentId={documentId}
+                  isTimelineOpen={isTimelineOpen}
+                  loading={historyState === 'loading'}
+                  onTimelineOpen={handleTimelineSince}
+                  schemaType={schemaType}
+                  since={historyController.sinceTime}
+                  timelineMode={timelineMode}
+                />
+              </BoundaryElementProvider>
+            )}
+          </StyledChangeConnectorRoot>
+        </Flex>
+      </DialogProvider>
+
+      {paneFooter}
+
+      <DocumentOperationResults id={documentId} type={documentType} />
+
+      {timelinePopover}
+
+      {inspectDialog}
+    </DocumentActionShortcuts>
   )
 }

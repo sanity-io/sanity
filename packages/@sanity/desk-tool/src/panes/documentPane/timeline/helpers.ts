@@ -1,6 +1,3 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import {Chunk, ChunkType} from '@sanity/field/diff'
 import {IconComponent} from '@sanity/icons'
 import {TIMELINE_ICON_COMPONENTS, TIMELINE_LABELS} from './constants'

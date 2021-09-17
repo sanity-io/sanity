@@ -1,5 +1,6 @@
-import {isObject} from 'lodash'
+import {SanityDocument} from '@sanity/types'
 import HLRU from 'hashlru'
+import {isRecord} from '../../../utils/isRecord'
 
 const lru = HLRU(1000)
 
@@ -7,7 +8,7 @@ export function isExpanded(keyPath: any, value: any): any {
   const cached = lru.get(keyPath)
 
   if (cached === undefined) {
-    lru.set(keyPath, Array.isArray(value) || isObject(value))
+    lru.set(keyPath, Array.isArray(value) || isRecord(value))
     return isExpanded(keyPath, value)
   }
 
@@ -52,4 +53,10 @@ export function maybeSelectAll(event: any): void {
   event.preventDefault()
 
   selectElement(event.currentTarget)
+}
+
+export function isDocumentWithType(
+  value: Partial<SanityDocument> | null
+): value is Partial<SanityDocument> & {_type: SanityDocument['_type']} {
+  return value?._type === 'string'
 }
