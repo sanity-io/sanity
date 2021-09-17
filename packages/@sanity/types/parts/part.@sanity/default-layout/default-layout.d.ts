@@ -15,7 +15,6 @@ declare module 'part:@sanity/default-layout/studio-hints-config?'
 declare module 'part:@sanity/default-layout/tool-switcher' {
   interface Router {
     state: {space?: string; tool: string}
-    navigate: () => void
   }
 
   interface Tool {
