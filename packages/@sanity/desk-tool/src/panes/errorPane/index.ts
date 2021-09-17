@@ -1,1 +1,1 @@
-export {default as ErrorPane} from './ErrorPane'
+export {ErrorPane} from './ErrorPane'
