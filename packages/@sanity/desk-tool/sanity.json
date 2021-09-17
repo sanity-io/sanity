@@ -42,10 +42,6 @@
       "description": "An observable that emits a function to filter fields in form builder"
     },
     {
-      "implements": "part:@sanity/base/component",
-      "path": "components/story"
-    },
-    {
       "implements": "part:@sanity/base/diff-resolver",
       "path": "diffResolver"
     }
