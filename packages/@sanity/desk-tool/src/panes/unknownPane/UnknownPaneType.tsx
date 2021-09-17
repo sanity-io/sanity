@@ -1,50 +1,35 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import DefaultPane from 'part:@sanity/components/panes/default'
-import styles from './UnknownPaneType.css'
+import {Box, Text} from '@sanity/ui'
+import {Pane, PaneContent, PaneHeader} from '../../components/pane'
+import {BaseDeskToolPaneProps} from '../types'
 
-export default class UnknownPaneType extends React.PureComponent {
-  static propTypes = {
-    type: PropTypes.string,
-    isSelected: PropTypes.bool.isRequired,
-    isCollapsed: PropTypes.bool.isRequired,
-    onExpand: PropTypes.func,
-    onCollapse: PropTypes.func,
-    index: PropTypes.number,
-  }
+type UnknownPaneProps = BaseDeskToolPaneProps<{
+  type: string
+}>
 
-  static defaultProps = {
-    type: undefined,
-    onExpand: undefined,
-    onCollapse: undefined,
-  }
+/**
+ * @internal
+ */
+export function UnknownPane(props: UnknownPaneProps) {
+  const {index, isSelected, pane} = props
+  const {type} = pane
 
-  render() {
-    const {isSelected, isCollapsed, onCollapse, onExpand, type} = this.props
-
-    return (
-      <DefaultPane
-        title="Unknown pane type"
-        index={this.props.index}
-        isSelected={isSelected}
-        isCollapsed={isCollapsed}
-        onCollapse={onCollapse}
-        onExpand={onExpand}
-      >
-        <div className={styles.root}>
-          <p>
-            {type ? (
-              <span>
-                Structure item of type <code>{type}</code> is not a known entity.
-              </span>
-            ) : (
-              <span>
-                Structure item is missing required <code>type</code> property.
-              </span>
-            )}
-          </p>
-        </div>
-      </DefaultPane>
-    )
-  }
+  return (
+    <Pane data-index={index} selected={isSelected}>
+      <PaneHeader title="Unknown pane type" />
+      <PaneContent>
+        <Box padding={4}>
+          {type ? (
+            <Text as="p" muted>
+              Structure item of type <code>{type}</code> is not a known entity.
+            </Text>
+          ) : (
+            <Text as="p" muted>
+              Structure item is missing required <code>type</code> property.
+            </Text>
+          )}
+        </Box>
+      </PaneContent>
+    </Pane>
+  )
 }
