@@ -1,6 +1,3 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import {UserAvatar} from '@sanity/base/components'
 import {useGlobalPresence} from '@sanity/base/hooks'
 import {
@@ -9,11 +6,12 @@ import {
   MenuButton,
   Menu,
   MenuDivider,
-  MenuItem as UIMenuItem,
+  MenuItem,
   Button,
   Text,
   Box,
   Stack,
+  MenuButtonProps,
 } from '@sanity/ui'
 import {CogIcon, UsersIcon} from '@sanity/icons'
 import React, {useMemo} from 'react'
@@ -35,18 +33,23 @@ const FooterCard = styled(Card)`
   bottom: 0;
 `
 
-const MenuItem = styled(UIMenuItem)`
-  [data-ui='Flex'] {
-    align-items: center;
-  }
+const StyledMenu = styled(Menu)`
+  max-width: 350px;
+  min-width: 250px;
 `
+
+const PRESENCE_MENU_POPOVER_PROPS: MenuButtonProps['popover'] = {
+  portal: true,
+  constrainSize: true,
+  scheme: 'light',
+}
 
 export function PresenceMenu({collapse, maxAvatars}: PresenceMenuProps) {
   const {projectId} = versionedClient.config()
   const presence = useGlobalPresence()
   const hasPresence = presence.length > 0
 
-  const PresenceButton = useMemo(
+  const button = useMemo(
     () =>
       collapse ? (
         <StatusButton
@@ -55,7 +58,7 @@ export function PresenceMenu({collapse, maxAvatars}: PresenceMenuProps) {
           statusTone={hasPresence ? 'positive' : undefined}
         />
       ) : (
-        <Button mode="bleed" tone="primary" padding={1}>
+        <Button mode="bleed" padding={1}>
           <AvatarStackCard>
             <AvatarStack maxLength={maxAvatars}>
               {presence.map((item) => (
@@ -70,48 +73,46 @@ export function PresenceMenu({collapse, maxAvatars}: PresenceMenuProps) {
 
   return (
     <MenuButton
-      button={PresenceButton}
-      popover={{portal: true, constrainSize: true, scheme: 'light'}}
+      button={button}
+      popover={PRESENCE_MENU_POPOVER_PROPS}
       id="presence-menu"
-      placement="bottom-end"
+      placement="bottom"
       menu={
-        <Menu padding={0}>
-          <>
-            {!hasPresence && (
-              <Box paddingX={3} paddingY={4}>
-                <Stack space={3}>
-                  <Text weight="semibold" size={2}>
-                    No one else is here
-                  </Text>
-                  <Text size={1} muted>
-                    Invite people to the project to see their online status.
-                  </Text>
-                </Stack>
-              </Box>
-            )}
-            {hasPresence && (
-              <Box padding={1} paddingBottom={0}>
-                {presence.map((item) => (
-                  <PresenceMenuItem presence={item} key={item.user.id} />
-                ))}
-              </Box>
-            )}
-            <FooterCard padding={1} paddingTop={0} radius={3}>
-              <Stack space={1}>
-                <MenuDivider />
-                <MenuItem
-                  forwardedAs="a"
-                  text="Manage members"
-                  paddingY={4}
-                  iconRight={CogIcon}
-                  href={`https://sanity.io/manage/project/${projectId}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                />
+        <StyledMenu padding={0}>
+          {!hasPresence && (
+            <Box paddingX={3} paddingY={4}>
+              <Stack space={3}>
+                <Text weight="semibold" size={2}>
+                  No one else is here
+                </Text>
+                <Text size={1} muted>
+                  Invite people to the project to see their online status.
+                </Text>
               </Stack>
-            </FooterCard>
-          </>
-        </Menu>
+            </Box>
+          )}
+          {hasPresence && (
+            <Box padding={1} paddingBottom={0}>
+              {presence.map((item) => (
+                <PresenceMenuItem presence={item} key={item.user.id} />
+              ))}
+            </Box>
+          )}
+          <FooterCard padding={1} paddingTop={0} radius={3}>
+            <Stack space={1}>
+              <MenuDivider />
+              <MenuItem
+                as="a"
+                text="Manage members"
+                paddingY={4}
+                iconRight={CogIcon}
+                href={`https://sanity.io/manage/project/${projectId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              />
+            </Stack>
+          </FooterCard>
+        </StyledMenu>
       }
     />
   )
