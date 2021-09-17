@@ -15,6 +15,7 @@
   "license": "MIT",
   "scripts": {
     "clean": "rimraf lib dest",
+    "lint": "eslint . --ext .js,.jsx,.mjs,.ts,.tsx --quiet",
     "test": "jest"
   },
   "keywords": [
