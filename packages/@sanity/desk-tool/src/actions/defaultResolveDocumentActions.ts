@@ -2,6 +2,7 @@
 ///<reference types="@sanity/types/parts" />
 
 import {DocumentActionComponent} from '@sanity/base'
+import {EditStateFor} from '@sanity/base/_internal'
 import schema from 'part:@sanity/base/schema'
 import {isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
 import {
@@ -22,7 +23,7 @@ function isDocumentAction(
 
 // todo: this should be replaced with the defaultResolveDocumentActions function from ./defaultDocumentActions eventually,
 // it is kept here for now to preserve backwards compatibility with __experimental_actions
-export default function resolveDocumentActions(props: any): DocumentActionComponent[] {
+export default function resolveDocumentActions(props: EditStateFor): DocumentActionComponent[] {
   const schemaType = schema.get(props.type)
 
   return [
