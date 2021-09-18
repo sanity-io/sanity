@@ -8,7 +8,7 @@ import {
 } from '@sanity/base/hooks'
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
 import {TimeAgo} from '../components/TimeAgo'
-import {useDocumentHistory} from '../panes/documentPane/documentHistory'
+import {useDocumentHistory} from '../panes/document/documentHistory'
 
 const DISABLED_REASON_TITLE = {
   LIVE_EDIT_ENABLED: 'Cannot publish since liveEdit is enabled for this document type',

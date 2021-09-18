@@ -1,1 +1,0 @@
-export {DocumentsListPane} from './DocumentsListPane'
