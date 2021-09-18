@@ -1,13 +1,14 @@
 import {route, useRouterState} from '@sanity/base/router'
 import {MasterDetailIcon} from '@sanity/icons'
 import React, {useEffect} from 'react'
-import {IntentResolver} from './components/IntentResolver'
-import {DeskTool as DeskToolRoot} from './DeskTool'
-import {getIntentState, setActivePanes} from './getIntentState'
-import {legacyEditParamsToPath, legacyEditParamsToState, toPath, toState} from './helpers'
+import {IntentResolver} from '../components/IntentResolver'
+import {DeskTool as DeskToolRoot} from '../DeskTool'
+import {getIntentState, setActivePanes} from '../getIntentState'
+import {legacyEditParamsToPath, legacyEditParamsToState, toPath, toState} from '../helpers'
 
 function DeskToolPaneStateSyncer() {
-  const {intent, params, payload} = useRouterState()
+  const routerState = useRouterState()
+  const {intent, params, payload} = routerState || {}
 
   useEffect(() => {
     // Set active panes to blank on mount and unmount

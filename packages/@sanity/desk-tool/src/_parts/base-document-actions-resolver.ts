@@ -5,13 +5,11 @@ import {DocumentActionComponent} from '@sanity/base'
 import {EditStateFor} from '@sanity/base/_internal'
 import schema from 'part:@sanity/base/schema'
 import {isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
-import {
-  PublishAction,
-  DiscardChangesAction,
-  UnpublishAction,
-  DuplicateAction,
-  DeleteAction,
-} from './defaultDocumentActions'
+import {PublishAction} from '../actions/PublishAction'
+import {DiscardChangesAction} from '../actions/DiscardChangesAction'
+import {UnpublishAction} from '../actions/UnpublishAction'
+import {DuplicateAction} from '../actions/DuplicateAction'
+import {DeleteAction} from '../actions/DeleteAction'
 
 // NOTE: this is a small utility function to avoid having to _cast_ the
 // filtered array below to `DocumentActionComponent[]`.
