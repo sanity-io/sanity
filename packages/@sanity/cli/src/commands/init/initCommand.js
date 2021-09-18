@@ -41,7 +41,7 @@ Examples
 
 export default {
   name: 'init',
-  signature: 'init [plugin]',
+  signature: '[plugin]',
   description: 'Initialize a new Sanity project or plugin',
   helpText,
   action: (args, context) => {
