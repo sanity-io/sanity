@@ -2,12 +2,12 @@ import {omit} from 'lodash'
 import React, {useMemo} from 'react'
 import {exclusiveParams, PaneRouterProvider} from '../contexts/paneRouter'
 import {RouterPane, StructurePane} from '../types'
-import {DocumentsListPane} from './documentsListPane'
-import {UserComponentPane} from './userComponentPane'
-import {UnknownPane} from './unknownPane'
-import {DocumentPane} from './documentPane'
-import {ListPane} from './listPane'
+import {DocumentPane} from './document'
+import {DocumentListPane} from './documentList'
+import {ListPane} from './list'
 import {BaseDeskToolPaneProps} from './types'
+import {UnknownPane} from './unknown'
+import {UserComponentPane} from './userComponent'
 
 interface DeskToolPaneProps {
   group: RouterPane[]
@@ -27,7 +27,7 @@ const paneMap: Record<
 > = {
   component: UserComponentPane,
   document: DocumentPane,
-  documentList: DocumentsListPane,
+  documentList: DocumentListPane,
   list: ListPane,
 }
 

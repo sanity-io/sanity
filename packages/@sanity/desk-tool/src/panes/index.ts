@@ -1,2 +1,2 @@
 export * from './DeskToolPane'
-export * from './loadingPane'
+export * from './loading'
