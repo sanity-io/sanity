@@ -1,11 +1,11 @@
 import {DocumentBadgeComponent} from '@sanity/base'
-import {LiveEditBadge} from './LiveEditBadge'
+import {LiveEditBadge} from '../badges/LiveEditBadge'
 
 // @todo: remove these 2 exports (should not be used)
-export {PublishedStatusBadge} from './PublishedStatusBadge'
-export {DraftStatusBadge} from './DraftStatusBadge'
+export {PublishedStatusBadge} from '../badges/PublishedStatusBadge'
+export {DraftStatusBadge} from '../badges/DraftStatusBadge'
 
-export {LiveEditBadge} from './LiveEditBadge'
+export {LiveEditBadge} from '../badges/LiveEditBadge'
 
 const DEFAULT_BADGES = [LiveEditBadge]
 

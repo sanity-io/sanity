@@ -3,31 +3,29 @@
     "source": "./src",
     "compiled": "./lib"
   },
-
   "plugins": ["@sanity/form-builder", "@sanity/data-aspects"],
-
   "parts": [
     {
       "implements": "part:@sanity/base/tool",
-      "path": "tool"
+      "path": "_parts/base-tool"
     },
     {
       "implements": "part:@sanity/base/document-actions",
       "description": "The default document actions",
-      "path": "actions/defaultDocumentActions"
+      "path": "_parts/base-document-actions"
     },
     {
       "implements": "part:@sanity/base/document-actions/resolver",
-      "path": "actions/defaultResolveDocumentActions"
+      "path": "_parts/base-document-actions-resolver"
     },
     {
       "implements": "part:@sanity/base/document-badges",
       "description": "The default document badges",
-      "path": "badges/defaultDocumentBadges"
+      "path": "_parts/base-document-badges"
     },
     {
       "implements": "part:@sanity/base/document-badges/resolver",
-      "path": "badges/defaultResolveDocumentBadges"
+      "path": "_parts/base-document-badges-resolver"
     },
     {
       "name": "part:@sanity/desk-tool/after-editor-component",
@@ -43,7 +41,7 @@
     },
     {
       "implements": "part:@sanity/base/diff-resolver",
-      "path": "diffResolver"
+      "path": "_parts/base-diff-resolver"
     }
   ]
 }

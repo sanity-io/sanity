@@ -1,9 +1,9 @@
 import {DocumentActionComponent} from '@sanity/base'
-import {PublishAction} from './PublishAction'
-import {DiscardChangesAction} from './DiscardChangesAction'
-import {UnpublishAction} from './UnpublishAction'
-import {DuplicateAction} from './DuplicateAction'
-import {DeleteAction} from './DeleteAction'
+import {PublishAction} from '../actions/PublishAction'
+import {DiscardChangesAction} from '../actions/DiscardChangesAction'
+import {UnpublishAction} from '../actions/UnpublishAction'
+import {DuplicateAction} from '../actions/DuplicateAction'
+import {DeleteAction} from '../actions/DeleteAction'
 
 export {PublishAction}
 export {DiscardChangesAction}
