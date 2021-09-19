@@ -34,9 +34,13 @@ export const RegionsWithIntersections = React.forwardRef(function RegionsWithInt
   props: Props,
   ref: any
 ) {
-  const {regions, render, children, margins} = props
+  const {regions, render, children, margins: marginsProp} = props
 
   const overlayRef = React.useRef<HTMLDivElement | null>(null)
+
+  // Make sure `margins` is memoized
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const margins = useMemo(() => marginsProp, [JSON.stringify(marginsProp)])
 
   const io = React.useMemo(
     () =>
