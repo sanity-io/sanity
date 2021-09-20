@@ -1,10 +1,10 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react'
 import {Chunk} from '@sanity/field/diff'
-import {Menu, Stack, Text, Spinner, Flex} from '@sanity/ui'
+import {Stack, Text, Spinner, Flex} from '@sanity/ui'
 import {Timeline as TimelineModel} from '../documentHistory/history/timeline'
 import {TimelineItem} from './timelineItem'
 import {TimelineItemState} from './types'
-import {Root} from './timeline.styled'
+import {Root, MenuWrapper} from './timeline.styled'
 
 interface TimelineProps {
   timeline: TimelineModel
@@ -65,7 +65,7 @@ export const Timeline = ({
           </Text>
         </Stack>
       )}
-      <Menu ref={listRef} padding={1} space={0}>
+      <MenuWrapper ref={listRef} padding={1} space={0}>
         {timeline.mapChunks((chunk) => {
           const isSelectionTop = topSelection === chunk
           const isSelectionBottom = bottomSelection === chunk
@@ -98,7 +98,7 @@ export const Timeline = ({
 
           return item
         })}
-      </Menu>
+      </MenuWrapper>
 
       {!timeline.reachedEarliestEntry && (
         <Flex align="center" justify="center" padding={4} ref={setLoadingElement}>
