@@ -1,6 +1,6 @@
 {
   "name": "@sanity/util",
-  "version": "2.19.0",
+  "version": "2.20.0",
   "description": "Utilities shared across projects of Sanity",
   "main": "./lib/_exports/index.js",
   "types": "index.d.ts",
