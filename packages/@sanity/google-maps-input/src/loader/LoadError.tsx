@@ -1,34 +1,36 @@
 import * as React from 'react'
-import styles from './LoadError.css'
+import {Card, Box, Text, Code} from '@sanity/ui'
 
 type Props = {error: Error; isAuthError: false} | {isAuthError: true}
 
 export function LoadError(props: Props) {
   return (
-    <div className={styles.card}>
-      <header className={styles.cardHeader}>
-        <h2 className={styles.cardTitle}>Google Maps failed to load</h2>
-      </header>
+    <Card tone="critical" radius={1}>
+      <Box as="header" paddingX={4} paddingTop={4} paddingBottom={1}>
+        <Text as="h2" weight="bold">
+          Google Maps failed to load
+        </Text>
+      </Box>
 
-      <div className={styles.cardContent}>
+      <Box paddingX={4} paddingTop={4} paddingBottom={1}>
         {props.isAuthError ? (
           <AuthError />
         ) : (
           <>
-            <h3>Error details:</h3>
+            <Text as="h3">Error details:</Text>
             <pre>
-              <code>{props.error?.message}</code>
+              <Code size={1}>{props.error?.message}</Code>
             </pre>
           </>
         )}
-      </div>
-    </div>
+      </Box>
+    </Card>
   )
 }
 
 function AuthError() {
   return (
-    <>
+    <Text>
       <p>The error appears to be related to authentication</p>
       <p>Common causes include:</p>
       <ul>
@@ -37,6 +39,6 @@ function AuthError() {
         <li>Missing authentication scope</li>
       </ul>
       <p>Check the browser developer tools for more information.</p>
-    </>
+    </Text>
   )
 }
