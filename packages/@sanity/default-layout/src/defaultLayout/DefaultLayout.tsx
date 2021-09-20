@@ -16,7 +16,7 @@ import getNewDocumentModalActions from '../util/getNewDocumentModalActions'
 import {Tool} from '../types'
 import {Navbar} from '../navbar'
 import {useDefaultLayoutRouter} from '../useDefaultLayoutRouter'
-import {RootFlex, MainAreaFlex, ToolBox, SidecarBox, PortalBox} from './styles'
+import {RootFlex, MainAreaFlex, ToolBox, SidecarBox, PortalDiv} from './styles'
 import {LoadingScreen} from './LoadingScreen'
 
 interface Props {
@@ -81,17 +81,11 @@ export const DefaultLayout = (props: Props) => {
   }, [])
 
   const renderContent = () => {
-    const isOverlayVisible = menuIsOpen || searchIsOpen
     const tool = router.state?.tool || ''
     const documentTypes = getNewDocumentModalActions().map((action) => action.schemaType)
 
     return (
-      <RootFlex
-        $isOverlayVisible={isOverlayVisible}
-        direction="column"
-        height="fill"
-        sizing="border"
-      >
+      <RootFlex $isOverlayVisible={menuIsOpen} direction="column" data-testid="DefaultLayout">
         {showLoadingScreen && (
           <LoadingScreen
             loaded={loaded || document.visibilityState == 'hidden'}
@@ -107,7 +101,7 @@ export const DefaultLayout = (props: Props) => {
             onToggleMenu={handleToggleMenu}
             documentTypes={documentTypes}
             onUserLogout={handleLogout}
-            searchIsOpen={handleSearchOpen}
+            onSearchOpen={handleSearchOpen}
             searchPortalElement={portalElement}
           />
         </LegacyLayerProvider>
@@ -124,8 +118,13 @@ export const DefaultLayout = (props: Props) => {
           />
         )}
 
-        <MainAreaFlex flex={1} height="fill" overflow={isOverlayVisible ? 'hidden' : undefined}>
-          <ToolBox hidden={searchIsOpen} height="fill" flex={1}>
+        <MainAreaFlex
+          flex={1}
+          height="fill"
+          overflow={menuIsOpen ? 'hidden' : undefined}
+          direction={searchIsOpen ? 'column' : undefined}
+        >
+          <ToolBox hidden={searchIsOpen} height="fill" flex={1} data-testid="ToolBox">
             <RouteScope scope={tool}>
               <RenderTool tool={tool} />
             </RouteScope>
@@ -135,7 +134,7 @@ export const DefaultLayout = (props: Props) => {
             <Sidecar />
           </SidecarBox>
 
-          {searchIsOpen && <PortalBox flex={1} ref={setPortalElement} />}
+          {searchIsOpen && <PortalDiv ref={setPortalElement} />}
         </MainAreaFlex>
 
         {createMenuIsOpen && (
