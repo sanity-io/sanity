@@ -6,10 +6,15 @@ import webpackIntegration from '@sanity/webpack-integration/v3'
 import ExtractTextPlugin from 'extract-text-webpack-plugin'
 import rxPaths from 'rxjs/_esm5/path-mapping'
 import getStaticBasePath from '../util/getStaticBasePath'
+import isSanityMonorepo from './isSanityMonorepo'
+import {getMonorepoAliases} from './monorepoAliases'
 import {getModulePath} from './getModulePath'
 
 // eslint-disable-next-line complexity
 export default (config = {}) => {
+  const basePath = config.basePath || process.cwd()
+  config.isSanityMonorepo = isSanityMonorepo(basePath)
+
   const staticPath = getStaticBasePath(config)
   const env = config.env || 'development'
   const wpIntegrationOptions = {
@@ -19,7 +24,6 @@ export default (config = {}) => {
     isSanityMonorepo: config.isSanityMonorepo,
   }
 
-  const basePath = config.basePath || process.cwd()
   const skipMinify = config.skipMinify || false
 
   const reactPath = resolveFrom.silent(basePath, 'react')
@@ -82,6 +86,7 @@ export default (config = {}) => {
         moment$: 'moment/moment.js',
         'react-native': 'react-native-web',
         ...rxPaths(),
+        ...(config.isSanityMonorepo ? getMonorepoAliases() : {}),
       },
       extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.ts', '.tsx'],
     },
