@@ -3,30 +3,35 @@ import styled, {css} from 'styled-components'
 import {TimelineItemState} from './types'
 
 export interface TimelineItemProps {
-  state: TimelineItemState
+  state?: TimelineItemState
   theme: Theme
+  isHovered?: boolean
 }
 
-export const IconWrapper = styled(Flex)`
-  --timeline-hairline-width: 1.3px;
-  position: relative;
-  z-index: 2;
-  margin: 0;
-  padding: 0;
+export const IconWrapper = styled(Flex)(({theme}: TimelineItemProps) => {
+  const borderColor = theme.sanity.color.base.skeleton?.from
 
-  &::before {
-    position: absolute;
-    content: '';
-    height: 100%;
-    width: var(--timeline-hairline-width);
-    background: var(--card-border-color);
-    top: 0;
-    left: calc((100% - var(--timeline-hairline-width)) / 2);
-    z-index: 1;
-  }
-`
+  return css`
+    --timeline-hairline-width: 1.3px;
+    position: relative;
+    z-index: 2;
+    margin: 0;
+    padding: 0;
 
-export const Root = styled(MenuItem)(({state = 'enabled', theme}: TimelineItemProps) => {
+    &::before {
+      position: absolute;
+      content: '';
+      height: 100%;
+      width: var(--timeline-hairline-width);
+      background: ${borderColor};
+      top: 0;
+      left: calc((100% - var(--timeline-hairline-width)) / 2);
+      z-index: 1;
+    }
+  `
+})
+
+export const Root = styled(MenuItem)(({state = 'enabled', isHovered, theme}: TimelineItemProps) => {
   const {color} = theme.sanity
 
   const selectedState = color.button.default.primary.enabled
@@ -72,6 +77,13 @@ export const Root = styled(MenuItem)(({state = 'enabled', theme}: TimelineItemPr
     &:last-child ${IconWrapper}::before {
       height: 50%;
     }
+
+    ${(isHovered || state === 'selected') &&
+    css`
+      ${IconWrapper}::before {
+        background: transparent;
+      }
+    `}
   `
 })
 
