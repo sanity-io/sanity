@@ -182,6 +182,86 @@ describe('schema validation inference', () => {
       ])
     })
   })
+  describe('url validations', () => {
+    const urlValidationsDoc = {
+      name: 'urlValidationsDoc',
+      type: 'document',
+      title: 'URL Validations Document',
+      fields: [
+        {name: 'someUrl', type: 'url'},
+        {name: 'defaultBlocks', type: 'array', of: [{type: 'block'}]},
+        {
+          name: 'customLinkBlocks',
+          type: 'array',
+          of: [
+            {
+              type: 'block',
+              marks: {
+                annotations: [
+                  {
+                    name: 'link',
+                    type: 'object',
+                    title: 'link',
+                    fields: [{name: 'href', type: 'url'}],
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      ],
+    }
+
+    const schema = Schema.compile({
+      types: [urlValidationsDoc],
+    })
+    inferFromSchema(schema)
+
+    test('allows mailto links in default blocks via the default link annotation', async () => {
+      const result = await validateDocument(
+        {
+          _id: 'example-id',
+          _type: 'urlValidationsDoc',
+          // this is invalid because it's not an http/https link
+          someUrl: 'mailto:hello@example.com',
+          customLinkBlocks: [
+            {
+              _key: 'example',
+              _type: 'block',
+              children: [{_key: 'example', _type: 'span', marks: ['marker'], text: 'a link'}],
+              // this is also invalid because it's not an http/https link
+              markDefs: [{_key: 'marker', _type: 'link', href: 'mailto:me@example.com'}],
+              style: 'normal',
+            },
+          ],
+          defaultBlocks: [
+            {
+              _key: 'example',
+              _type: 'block',
+              children: [{_key: 'example', _type: 'span', marks: ['marker'], text: 'a link'}],
+              // however, this _is_ valid because it's using the default mailto, which allows mailto
+              markDefs: [{_key: 'marker', _type: 'link', href: 'mailto:me@example.com'}],
+              style: 'normal',
+            },
+          ],
+        },
+        schema
+      )
+
+      expect(result).toMatchObject([
+        {
+          item: {message: 'Does not match allowed protocols/schemes'},
+          path: ['someUrl'],
+        },
+        {
+          item: {message: 'Does not match allowed protocols/schemes'},
+          level: 'error',
+          path: ['customLinkBlocks', {_key: 'example'}, 'markDefs', {_key: 'marker'}, 'href'],
+          type: 'validation',
+        },
+      ])
+    })
+  })
 })
 
 async function expectNoError(validations: Rule[], value: unknown) {
