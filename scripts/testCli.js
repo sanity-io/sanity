@@ -86,15 +86,25 @@ if (!githubWorkspace && !skipDelete) {
   const binPath = path.join(basePath, 'packages', '@sanity', 'cli', 'bin', 'sanity')
 
   // Test `sanity build` command in test studio with all customizations
-  spawn(binPath, ['build', '-y'], {
+  spawn(process.argv[0], [binPath, 'build', '-y'], {
     cwd: path.join(basePath, 'examples', 'test-studio'),
     stdio: 'inherit',
   })
 
   // Test `sanity init` command
   spawn(
-    binPath,
-    ['init', '-y', '--project', 'ppsg7ml5', '--dataset', 'test', '--output-path', tmpProjectPath],
+    process.argv[0],
+    [
+      binPath,
+      'init',
+      '-y',
+      '--project',
+      'ppsg7ml5',
+      '--dataset',
+      'test',
+      '--output-path',
+      tmpProjectPath,
+    ],
     {
       cwd: tmpPath,
       stdio: 'inherit',
@@ -113,7 +123,7 @@ if (!githubWorkspace && !skipDelete) {
   )
 
   // Test `sanity build` but with the code from this checkout, not from latest npm release
-  spawn(binPath, ['build', '--no-minify'], {
+  spawn(process.argv[0], [binPath, 'build', '--no-minify'], {
     cwd: tmpProjectPath,
     stdio: 'inherit',
   })
