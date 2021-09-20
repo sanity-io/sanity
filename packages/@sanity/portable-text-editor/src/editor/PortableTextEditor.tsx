@@ -27,7 +27,7 @@ export const defaultKeyGenerator = () => randomKey(12)
 
 const debug = debugWithName('component:PortableTextEditor')
 
-type Props = {
+export type PortableTextEditorProps = {
   keyGenerator?: () => string
   maxBlocks?: number | string
   onChange: (change: EditorChange) => void
@@ -44,7 +44,7 @@ type State = {
 }
 
 // The PT editor's public API
-export class PortableTextEditor extends React.Component<Props, State> {
+export class PortableTextEditor extends React.Component<PortableTextEditorProps, State> {
   static activeAnnotations = (editor: PortableTextEditor): PortableTextBlock[] => {
     return editor && editor.editable ? editor.editable.activeAnnotations() : []
   }
@@ -154,7 +154,7 @@ export class PortableTextEditor extends React.Component<Props, State> {
   public readOnly: boolean
   public incomingPatches$?: PatchObservable
 
-  constructor(props: Props) {
+  constructor(props: PortableTextEditorProps) {
     super(props)
     // Test if we have a compiled schema type, if not, conveniently compile it
     this.type = props.type.hasOwnProperty('jsonType') ? props.type : compileType(props.type)
@@ -198,7 +198,7 @@ export class PortableTextEditor extends React.Component<Props, State> {
     this.changeSubscription.unsubscribe()
   }
 
-  componentDidUpdate(prevProps: Props) {
+  componentDidUpdate(prevProps: PortableTextEditorProps) {
     this.readOnly = this.props.readOnly || false
     // Validate again if value length has changed
     if (this.props.value && (prevProps.value || []).length !== this.props.value.length) {
