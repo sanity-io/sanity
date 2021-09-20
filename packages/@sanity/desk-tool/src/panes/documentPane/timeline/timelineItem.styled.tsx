@@ -2,13 +2,17 @@ import {Text, Box, MenuItem, Theme, Flex} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {TimelineItemState} from './types'
 
+export interface IconWrapperProps {
+  theme: Theme
+}
+
 export interface TimelineItemProps {
   state: TimelineItemState
   theme: Theme
   isHovered: boolean
 }
 
-export const IconWrapper = styled(Flex)(({theme}: TimelineItemProps) => {
+export const IconWrapper = styled(Flex)(({theme}: IconWrapperProps) => {
   const borderColor = theme.sanity.color.base.skeleton?.from
 
   return css`
