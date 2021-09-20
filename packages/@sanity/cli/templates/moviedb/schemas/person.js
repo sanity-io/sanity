@@ -1,4 +1,4 @@
-import UserIcon from 'part:@sanity/base/user-icon'
+import {UserIcon} from '@sanity/icons'
 
 export default {
   name: 'person',
