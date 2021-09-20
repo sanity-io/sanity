@@ -1,12 +1,14 @@
+/**
+ * @jest-environment jsdom
+ */
+/* eslint-disable no-irregular-whitespace */
 // eslint-disable-next-line import/no-unassigned-import
 import '@testing-library/jest-dom/extend-expect'
 import {render} from '@testing-library/react'
-import {screen} from '@testing-library/dom'
-import userEvent from '@testing-library/user-event'
 import React, {ForwardedRef, forwardRef} from 'react'
 
 import Schema from '@sanity/schema'
-import {PortableTextEditor, Props} from '../PortableTextEditor'
+import {PortableTextEditor, PortableTextEditorProps} from '../PortableTextEditor'
 import {RawType} from '../../types/schema'
 import {PortableTextEditable} from '../Editable'
 import {PortableTextBlock} from '../../types/portableText'
@@ -58,28 +60,28 @@ const helloBlock: PortableTextBlock = {
 }
 
 const PortableTextEditorTester = forwardRef(function PortableTextEditorTester(
-  props: Partial<Omit<Props, 'type' | 'onChange | value' | 'selection' | 'placeholderText'>> & {
-    type: Props['type']
-    value?: Props['value']
-    onChange?: Props['onChange']
-    selection?: Props['selection']
+  props: Partial<
+    Omit<PortableTextEditorProps, 'type' | 'onChange | value' | 'selection' | 'placeholderText'>
+  > & {
+    type: PortableTextEditorProps['type']
+    value?: PortableTextEditorProps['value']
+    onChange?: PortableTextEditorProps['onChange']
+    selection?: PortableTextEditorProps['selection']
     placeholderText?: string
   },
-  ref: ForwardedRef<any>
+  ref: ForwardedRef<PortableTextEditor>
 ) {
-  const handleOnBeforeInput = (ev: any) => {
-    console.log('handleOnBeforeInput', ev)
-  }
   return (
     <PortableTextEditor
       type={props.type}
       onChange={props.onChange || jest.fn()}
       value={props.value || undefined}
+      ref={ref}
       // keyGenerator={keyGenerator}
       // readOnly={false}
     >
       <PortableTextEditable
-        onBeforeInput={handleOnBeforeInput}
+        // onBeforeInput={handleOnBeforeInput}
         selection={props.selection || undefined}
         placeholderText={props.placeholderText || 'Type here'}
         // hotkeys={HOTKEYS}
@@ -96,19 +98,19 @@ const bodyType = schema.get('body')
 
 describe('initialization', () => {
   it('receives initial onChange events and has custom placeholder text', () => {
-    let editorRef
+    const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
     const onChange = jest.fn()
     const {container} = render(
       <PortableTextEditorTester
         onChange={onChange}
         placeholderText="Jot something down here"
-        ref={(ref: any) => (editorRef = ref)}
+        ref={editorRef}
         type={bodyType}
         value={undefined}
       />
     )
 
-    expect(editorRef).toBeDefined()
+    expect(editorRef.current).not.toBe(null)
     expect(onChange).toHaveBeenCalledWith({type: 'ready'})
     expect(onChange).toHaveBeenCalledWith({type: 'selection', selection: null})
     expect(onChange).toHaveBeenCalledWith({type: 'value', value: undefined})
@@ -161,7 +163,7 @@ describe('initialization', () => {
     expect(onChange).toHaveBeenCalledWith({type: 'value', value: initialValue})
   })
   it('takes selection from props', () => {
-    let editorRef: PortableTextEditor | undefined
+    const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
     const initialValue = [helloBlock]
     const initialSelection: EditorSelection = {
       anchor: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 0},
@@ -171,85 +173,16 @@ describe('initialization', () => {
     render(
       <PortableTextEditorTester
         onChange={onChange}
-        ref={(ref: any) => (editorRef = ref)}
+        ref={editorRef}
         selection={initialSelection}
         type={bodyType}
         value={initialValue}
       />
     )
-    expect(editorRef && PortableTextEditor.getSelection(editorRef)).toEqual(initialSelection)
+    if (!editorRef.current) {
+      throw new Error('No editor')
+    }
+    PortableTextEditor.focus(editorRef.current)
+    expect(PortableTextEditor.getSelection(editorRef.current)).toEqual(initialSelection)
   })
 })
-
-describe('typing', () => {
-  it('can append to string', (done) => {
-    let editorRef: PortableTextEditor | undefined
-    const initialValue = [helloBlock]
-    const initialSelection: EditorSelection = {
-      anchor: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 5},
-      focus: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 5},
-    }
-    const onChange = (foo: any) => {
-      console.log(foo)
-    }
-    const {container} = render(
-      <PortableTextEditorTester
-        onChange={onChange}
-        // selection={initialSelection}
-        value={initialValue}
-        ref={(ref: any) => (editorRef = ref)}
-        type={bodyType}
-      />
-    )
-    console.log(screen.getByTestId('input'))
-    const editableElm = container.querySelector('div[class="pt-editable"]')
-    if (!editorRef || !editableElm) {
-      throw new Error('Editor not rendered')
-    }
-    // userEvent.click(elm)
-    // elm.dispatchEvent(
-    //   new FocusEvent('focus', {
-    //     bubbles: true,
-    //     cancelable: true,
-    //   })
-    // )
-    editableElm.dispatchEvent(
-      new Event('focus', {
-        bubbles: true,
-        cancelable: true,
-        // inputType: 'insertText',
-        // data: ' there',
-      })
-    )
-    editableElm.dispatchEvent(
-      new InputEvent('beforeinput', {
-        bubbles: true,
-        cancelable: true,
-        inputType: 'insertText',
-        data: ' there',
-      })
-    )
-    editableElm.dispatchEvent(
-      new Event('blur', {
-        bubbles: true,
-        cancelable: true,
-        // inputType: 'insertText',
-        // data: ' there',
-      })
-    )
-    // userEvent.keyboard('2')
-    // elm.textContent = '1'
-    // expect(container).toMatchInlineSnapshot('')
-    // userEvent.keyboard('2')
-    setTimeout(() => {
-      expect(editorRef && PortableTextEditor.getValue(editorRef)).toMatchObject(initialValue)
-      done()
-    }, 1000)
-    // expect(editorRef && PortableTextEditor.getSelection(editorRef)).not.toEqual(null)
-    // expect(onChange).toHaveBeenCalledWith([{type: 'patch', patch: undefined}])
-    // expect(container).toMatchInlineSnapshot('')
-    // expect(editorRef && PortableTextEditor.getValue(editorRef)).toEqual(undefined)
-  })
-})
-
-// https://github.com/testing-library/dom-testing-library/pull/235#issuecomment-601078339
