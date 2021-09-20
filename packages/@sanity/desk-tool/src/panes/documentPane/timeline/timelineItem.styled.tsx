@@ -3,9 +3,9 @@ import styled, {css} from 'styled-components'
 import {TimelineItemState} from './types'
 
 export interface TimelineItemProps {
-  state?: TimelineItemState
+  state: TimelineItemState
   theme: Theme
-  isHovered?: boolean
+  isHovered: boolean
 }
 
 export const IconWrapper = styled(Flex)(({theme}: TimelineItemProps) => {
