@@ -8,7 +8,7 @@
  * so we don't have to deal with the differences of powershell vs bash and such
  */
 
-/* eslint-disable no-process-env, no-console */
+/* eslint-disable no-process-env, no-console, no-process-exit */
 const os = require('os')
 const path = require('path')
 const util = require('util')
@@ -25,7 +25,7 @@ const skipDelete = process.argv.includes('--skip-delete')
 const tmpPath = process.env.RUNNER_TEMP || os.tmpdir()
 const tmpProjectPath = path.join(tmpPath, 'test-project')
 const githubWorkspace = process.env.GITHUB_WORKSPACE
-const basePath = process.env.GITHUB_WORKSPACE || path.join(__dirname, '..')
+const basePath = githubWorkspace || path.join(__dirname, '..')
 
 /** Utility functions */
 function spawn(filePath, args, options = {}) {
@@ -64,6 +64,9 @@ if (!githubWorkspace && !skipDelete) {
 
 /** Actual CLI tests */
 ;(async function testCli() {
+  // For debugging clarity
+  console.log('Base path is %s', basePath)
+
   // Schedule cleanup tasks before exiting
   process.on('exit', cleanup)
 
@@ -83,7 +86,7 @@ if (!githubWorkspace && !skipDelete) {
   const binPath = path.join(basePath, 'packages', '@sanity', 'cli', 'bin', 'sanity')
 
   // Test `sanity build` command in test studio with all customizations
-  spawn(binPath, ['build', '-y', '--no-minify'], {
+  spawn(binPath, ['build', '-y'], {
     cwd: path.join(basePath, 'examples', 'test-studio'),
     stdio: 'inherit',
   })
@@ -114,4 +117,7 @@ if (!githubWorkspace && !skipDelete) {
     cwd: tmpProjectPath,
     stdio: 'inherit',
   })
-})()
+})().catch((error) => {
+  console.error(error)
+  process.exit(1)
+})
