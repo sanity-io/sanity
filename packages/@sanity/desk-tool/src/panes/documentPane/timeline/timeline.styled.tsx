@@ -1,9 +1,12 @@
-import {Box, Menu} from '@sanity/ui'
+import {Box, Menu, Stack} from '@sanity/ui'
 import styled from 'styled-components'
 
 export const Root = styled(Box)`
   overflow: auto;
   -webkit-overflow-scrolling: touch;
+`
+export const StackWrapper = styled(Stack)`
+  max-width: 200px;
 `
 
 export const MenuWrapper = styled(Menu)`

@@ -1,10 +1,10 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react'
 import {Chunk} from '@sanity/field/diff'
-import {Stack, Text, Spinner, Flex} from '@sanity/ui'
+import {Text, Spinner, Flex} from '@sanity/ui'
 import {Timeline as TimelineModel} from '../documentHistory/history/timeline'
 import {TimelineItem} from './timelineItem'
 import {TimelineItemState} from './types'
-import {Root, MenuWrapper} from './timeline.styled'
+import {Root, StackWrapper, MenuWrapper} from './timeline.styled'
 
 interface TimelineProps {
   timeline: TimelineModel
@@ -57,13 +57,13 @@ export const Timeline = ({
   return (
     <Root ref={rootRef as any} onScroll={checkIfLoadIsNeeded} data-ui="timeline">
       {timeline.chunkCount === 0 && (
-        <Stack padding={4} space={3} style={{maxWidth: 200}}>
+        <StackWrapper padding={4} space={3}>
           <Text weight="bold">No document history</Text>
           <Text muted size={1}>
             When changing the content of the document, the document versions will appear in this
             menu.
           </Text>
-        </Stack>
+        </StackWrapper>
       )}
       <MenuWrapper ref={listRef} padding={1} space={0}>
         {timeline.mapChunks((chunk) => {
