@@ -46,42 +46,15 @@ jobs:
         run: npm run build
 
       - name: Build CLI
-        shell: bash
         run: |
           # Build CLI to a single file
           cd packages/@sanity/cli
           npm run pack
 
-          # Remove source and dependencies from CLI to ensure it works standalone
-          npx rimraf packages/@sanity/cli/node_modules
-          npx rimraf packages/@sanity/cli/src && npx rimraf packages/@sanity/cli/lib
-
-          # Allow running the Sanity CLI tool without specifying absolute path
-          echo "${GITHUB_WORKSPACE}/packages/@sanity/cli/bin" >> $GITHUB_PATH
-
-      - name: Test sanity build command
-        shell: bash
+      - name: Test CLI
+        working-directory: ${{ env.GITHUB_WORKSPACE }}
         run: |
-          # Test building the test studio with all customizations
-          cd $GITHUB_WORKSPACE/examples/test-studio
-          sanity build -y
-
-      - name: Test sanity init command
-        shell: bash
-        run: |
-          # Test initializing a project in unattended mode
-          cd $RUNNER_TEMP
-          sanity init -y --project=ppsg7ml5 --dataset=test --output-path=$RUNNER_TEMP/test-project
-
-      - name: Test build with new code
-        shell: bash
-        run: |
-          # Use the newly commited changes instead of the latest dependencies from NPM
-          cd $RUNNER_TEMP/test-project
-          $GITHUB_WORKSPACE/scripts/symlinkDependencies.js .
-
-          # Test building the project with latest dependencies
-          sanity build --skip-minify
+          node scripts/testCli.js
 
       - name: Notify Slack about build failure
         if: failure() && github.ref == 'refs/heads/ui/main'
