@@ -1,7 +1,6 @@
 import webpack from 'webpack'
 import applyStaticLoaderFix from '../util/applyStaticLoaderFix'
 import getBaseConfig from './webpack.config'
-import {getMonorepoAliases} from './monorepoAliases'
 import {getModulePath} from './getModulePath'
 import {applyLocalWebpackConfig} from './applyLocalWebpackConfig'
 
@@ -18,15 +17,10 @@ export default (config) => {
       ].concat(baseConfig.entry.vendor),
     }),
     resolve: {
-      alias: Object.assign(
-        {},
-        baseConfig.resolve.alias,
-        {
-          'react-dom': getModulePath('@hot-loader/react-dom'),
-          'webpack-hot-middleware/client': require.resolve('../browser/hot-client'),
-        },
-        config.isSanityMonorepo ? getMonorepoAliases() : {}
-      ),
+      alias: Object.assign({}, baseConfig.resolve.alias, {
+        'react-dom': getModulePath('@hot-loader/react-dom'),
+        'webpack-hot-middleware/client': require.resolve('../browser/hot-client'),
+      }),
       extensions: baseConfig.resolve.extensions,
     },
     plugins: (baseConfig.plugins || []).concat([
