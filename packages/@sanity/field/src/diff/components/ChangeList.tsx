@@ -110,6 +110,8 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
             }
             open={confirmRevertAllOpen}
             padding={4}
+            placement={'left'}
+            portal
             referenceElement={revertAllContainerElement}
           >
             <Stack ref={setRevertAllContainerElement}>
