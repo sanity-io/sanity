@@ -3,7 +3,6 @@ import {Button, Box, Card, Grid, Stack, Popover, Text, useClickOutside} from '@s
 import {RevertIcon} from '@sanity/icons'
 import React, {useState} from 'react'
 import {unstable_useCheckDocumentPermission as useCheckDocumentPermission} from '@sanity/base/hooks'
-import styled from 'styled-components'
 import {ObjectDiff, ObjectSchemaType, ChangeNode, OperationsAPI} from '../../types'
 import {DiffContext} from '../contexts/DiffContext'
 import {buildObjectChangeList} from '../changes/buildChangeList'
@@ -12,16 +11,13 @@ import {ChangeResolver} from './ChangeResolver'
 import {DocumentChangeContext} from './DocumentChangeContext'
 import {NoChanges} from './NoChanges'
 
+import {ChangeListWrapper, PopoverWrapper} from './ChangeList.styled'
+
 interface Props {
   schemaType: ObjectSchemaType
   diff: ObjectDiff
   fields?: string[]
 }
-
-const ChangeListWrapper = styled.div`
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-`
 
 export function ChangeList({diff, fields, schemaType}: Props): React.ReactElement | null {
   const {documentId, isComparingCurrent} = React.useContext(DocumentChangeContext)
@@ -94,7 +90,7 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
         </Stack>
 
         {showFooter && isComparingCurrent && updatePermission.granted && (
-          <Popover
+          <PopoverWrapper
             content={
               <Box>
                 Are you sure you want to revert all {changes.length} changes?
@@ -126,7 +122,7 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
                 disabled={schemaType?.readOnly}
               />
             </Stack>
-          </Popover>
+          </PopoverWrapper>
         )}
       </Stack>
     </Card>
