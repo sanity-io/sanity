@@ -249,7 +249,6 @@ export default function PortableTextInput(props: Props) {
           attributes={attributes}
           editor={editor}
           markers={blockMarkers}
-          onChange={handleFormBuilderEditObjectChange}
           focusPath={focusPath || EMPTY_ARRAY}
           onFocus={onFocus}
           readOnly={readOnly}
@@ -274,7 +273,6 @@ export default function PortableTextInput(props: Props) {
       <InlineObject
         attributes={attributes}
         markers={inlineMarkers}
-        onChange={handleFormBuilderEditObjectChange}
         onFocus={onFocus}
         readOnly={readOnly}
         type={childType}
@@ -291,10 +289,7 @@ export default function PortableTextInput(props: Props) {
       <Annotation
         attributes={attributes}
         markers={annotationMarkers}
-        onChange={handleFormBuilderEditObjectChange}
         onFocus={onFocus}
-        readOnly={readOnly}
-        type={annotationType}
         value={annotation}
       >
         {defaultRender()}

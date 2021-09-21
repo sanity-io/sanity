@@ -1,23 +1,19 @@
 /* eslint-disable react/prop-types */
 import React, {FunctionComponent, SyntheticEvent} from 'react'
 import classNames from 'classnames'
-import {PortableTextChild, Type, RenderAttributes} from '@sanity/portable-text-editor'
+import {PortableTextChild, RenderAttributes} from '@sanity/portable-text-editor'
 
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {Path, Marker, isValidationErrorMarker} from '@sanity/types'
-import {PatchEvent} from '../../../PatchEvent'
 
 import styles from './Annotation.module.css'
 
 type Props = {
   value: PortableTextChild
-  type: Type
   children: JSX.Element
   attributes: RenderAttributes
-  readOnly: boolean
   markers: Marker[]
   onFocus: (path: Path) => void
-  onChange: (patchEvent: PatchEvent, path: Path) => void
 }
 
 export const Annotation: FunctionComponent<Props> = ({
