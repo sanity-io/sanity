@@ -2,6 +2,7 @@ import React from 'react'
 import {Box, Flex, Stack, Text, Skeleton, TextSkeleton} from '@sanity/ui'
 import styled from 'styled-components'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
+import classNames from 'classnames'
 import {PreviewProps} from './types'
 
 const Root = styled(Flex)`
@@ -48,73 +49,100 @@ const MediaWrapper = styled(Flex)`
   }
 `
 
-export const DefaultPreview = (props: PreviewProps<'default'>) => {
-  const {title, subtitle, media, status, isPlaceholder, children} = props
+type DefaultPreviewProps = PreviewProps<'default'> & {
+  styles?: {
+    root?: string
+    placeholder?: string
+    media?: string
+    heading?: string
+    title?: string
+    subtitle?: string
+    hasSubtitle?: string
+    mediaString?: string
+    status?: string
+    children?: string
+  }
+}
+
+export const DefaultPreview = (props: DefaultPreviewProps) => {
+  const {title, subtitle, media, status, isPlaceholder, children, styles = {}} = props
+  const rootClassName = classNames(styles.root, subtitle !== undefined && styles.hasSubtitle)
+
+  if (isPlaceholder) {
+    return (
+      <Root align="center" className={styles.placeholder}>
+        {isPlaceholder && (
+          <>
+            <Skeleton
+              style={{width: 35, height: 35}}
+              radius={2}
+              marginRight={2}
+              className={styles.media}
+              animated
+            />
+            <Stack space={2} flex={1}>
+              <TextSkeleton style={{maxWidth: 320}} radius={1} animated />
+              <TextSkeleton style={{maxWidth: 200}} radius={1} size={1} animated />
+            </Stack>
+          </>
+        )}
+      </Root>
+    )
+  }
 
   return (
-    <Root align="center">
-      {isPlaceholder && (
-        <>
-          <Skeleton style={{width: 35, height: 35}} radius={2} marginRight={2} animated />
-          <Stack space={2} flex={1}>
-            <TextSkeleton style={{maxWidth: 320}} radius={1} animated />
-            <TextSkeleton style={{maxWidth: 200}} radius={1} size={1} animated />
-          </Stack>
-        </>
-      )}
+    <Root align="center" className={rootClassName}>
+      <>
+        {media !== false && media !== undefined && (
+          <MediaWrapper
+            align="center"
+            justify="center"
+            marginRight={2}
+            sizing="border"
+            overflow="hidden"
+            className={styles.media}
+          >
+            {typeof media === 'function' &&
+              media({
+                dimensions: {
+                  width: 35,
+                  height: 35,
+                  aspect: 1,
+                  fit: 'crop',
+                  dpr: getDevicePixelRatio(),
+                },
+                layout: 'default',
+              })}
 
-      {!isPlaceholder && (
-        <>
-          {media !== false && media !== undefined && (
-            <MediaWrapper
-              align="center"
-              justify="center"
-              marginRight={2}
-              sizing="border"
-              overflow="hidden"
-            >
-              {typeof media === 'function' &&
-                media({
-                  dimensions: {
-                    width: 35,
-                    height: 35,
-                    aspect: 1,
-                    fit: 'crop',
-                    dpr: getDevicePixelRatio(),
-                  },
-                  layout: 'default',
-                })}
+            {typeof media === 'string' && <div className={styles.mediaString}>{media}</div>}
 
-              {typeof media === 'string' && <div>{media}</div>}
+            {React.isValidElement(media) && media}
 
-              {React.isValidElement(media) && media}
+            <span />
+          </MediaWrapper>
+        )}
 
-              <span />
-            </MediaWrapper>
-          )}
+        <Stack space={2} flex={1} className={styles.heading}>
+          <Text textOverflow="ellipsis" style={{color: 'inherit'}} className={styles.title}>
+            {title && typeof title === 'function' ? title({layout: 'default'}) : title}
+            {!title && <>Untitled</>}
+          </Text>
 
-          <Stack space={2} flex={1}>
-            <Text textOverflow="ellipsis" style={{color: 'inherit'}}>
-              {title && typeof title === 'function' ? title({layout: 'default'}) : title}
-              {!title && <>Untitled</>}
+          {subtitle && (
+            <Text muted size={1} textOverflow="ellipsis" className={styles.subtitle}>
+              {typeof subtitle === 'function' ? subtitle({layout: 'default'}) : subtitle}
             </Text>
-
-            {subtitle && (
-              <Text muted size={1} textOverflow="ellipsis">
-                {typeof subtitle === 'function' ? subtitle({layout: 'default'}) : subtitle}
-              </Text>
-            )}
-
-            {children && <div>{children}</div>}
-          </Stack>
-
-          {status && (
-            <Box padding={3}>
-              {typeof status === 'function' ? status({layout: 'default'}) : status}
-            </Box>
           )}
-        </>
-      )}
+
+          {children && <div className={styles.children}>{children}</div>}
+        </Stack>
+
+        {status && (
+          <Box padding={3} className={styles.status}>
+            {typeof status === 'function' ? status({layout: 'default'}) : status}
+          </Box>
+        )}
+      </>
     </Root>
   )
 }
