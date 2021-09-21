@@ -1,13 +1,7 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
-import {DialogAction} from '@sanity/base/__legacy/@sanity/components'
-import {LegacyLayerProvider} from '@sanity/base/components'
 import {useDocumentOperation} from '@sanity/react-hooks'
-import PopoverDialog from 'part:@sanity/components/dialogs/popover'
 import React, {useCallback, useContext, useState} from 'react'
 import {unstable_useCheckDocumentPermission as useCheckDocumentPermission} from '@sanity/base/hooks'
-import {rem, Stack, Box} from '@sanity/ui'
+import {rem, Stack, Box, Button, Text, Grid, Popover, useClickOutside} from '@sanity/ui'
 import styled from 'styled-components'
 import {undoChange} from '../changes/undoChange'
 import {DiffContext} from '../contexts/DiffContext'
@@ -84,10 +78,6 @@ export function FieldChange({
     setConfirmRevertOpen(false)
   }, [])
 
-  const handleConfirmDialogAction = useCallback((action: DialogAction) => {
-    if (action.action) action.action()
-  }, [])
-
   const handleRevertButtonMouseEnter = useCallback(() => {
     setRevertHovered(true)
   }, [])
@@ -95,6 +85,8 @@ export function FieldChange({
   const handleRevertButtonMouseLeave = useCallback(() => {
     setRevertHovered(false)
   }, [])
+
+  useClickOutside(() => setConfirmRevertOpen(false), [revertButtonElement])
 
   return change.schemaType.hidden === true ? null : (
     <Stack space={1} as={FieldChangeContainer} {...restProps}>
@@ -131,31 +123,26 @@ export function FieldChange({
         </DiffInspectWrapper>
       </FieldWrapper>
 
-      {confirmRevertOpen && (
-        <LegacyLayerProvider zOffset="paneFooter">
-          <PopoverDialog
-            actions={[
-              {
-                color: 'danger',
-                action: handleRevertChanges,
-                title: 'Revert change',
-              },
-              {
-                kind: 'simple',
-                action: closeRevertChangesConfirmDialog,
-                title: 'Cancel',
-              },
-            ]}
-            onAction={handleConfirmDialogAction}
-            onClickOutside={closeRevertChangesConfirmDialog}
-            portal
-            referenceElement={revertButtonElement}
-            size="small"
-          >
+      <Popover
+        content={
+          <Box>
             Are you sure you want to revert the changes?
-          </PopoverDialog>
-        </LegacyLayerProvider>
-      )}
+            <Grid columns={2} gap={2} marginTop={2}>
+              <Button mode="ghost" onClick={closeRevertChangesConfirmDialog}>
+                <Text align="center">Cancel</Text>
+              </Button>
+              <Button tone="critical" onClick={handleRevertChanges}>
+                <Text align="center">Revert change</Text>
+              </Button>
+            </Grid>
+          </Box>
+        }
+        open={confirmRevertOpen}
+        portal
+        padding={4}
+        placement={'left'}
+        referenceElement={revertButtonElement}
+      />
     </Stack>
   )
 }
