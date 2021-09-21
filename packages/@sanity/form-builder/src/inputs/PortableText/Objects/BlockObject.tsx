@@ -10,8 +10,6 @@ import {
 } from '@sanity/portable-text-editor'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 
-import {PatchEvent} from '../../../PatchEvent'
-
 import {useScrollIntoViewOnFocusWithin} from '../../../hooks/useScrollIntoViewOnFocusWithin'
 import {hasFocusWithinPath} from '../../../utils/focusUtils'
 import {BlockObjectPreview} from './BlockObjectPreview'
@@ -21,7 +19,6 @@ type Props = {
   attributes: RenderAttributes
   editor: PortableTextEditor
   markers: Marker[]
-  onChange: (patchEvent: PatchEvent, path: Path) => void
   onFocus: (path: Path) => void
   focusPath: Path
   readOnly: boolean
@@ -78,9 +75,7 @@ export const BlockObject: FunctionComponent<Props> = ({
       <BlockObjectPreview
         type={type}
         value={value}
-        path={path}
         readOnly={readOnly}
-        onFocus={onFocus}
         onClickingDelete={handleDelete}
         onClickingEdit={handleEdit}
       />

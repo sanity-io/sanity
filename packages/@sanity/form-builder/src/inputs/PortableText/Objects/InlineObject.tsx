@@ -7,7 +7,6 @@ import {Path, Marker, isValidationErrorMarker} from '@sanity/types'
 
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import Preview from '../../../Preview'
-import {PatchEvent} from '../../../PatchEvent'
 
 import styles from './InlineObject.module.css'
 
@@ -18,7 +17,6 @@ type Props = {
   readOnly: boolean
   markers: Marker[]
   onFocus: (path: Path) => void
-  onChange: (patchEvent: PatchEvent, path: Path) => void
 }
 
 export const InlineObject: FunctionComponent<Props> = ({
