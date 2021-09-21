@@ -26,14 +26,14 @@ interface Props {
   onCreateButtonClick: () => void
   onToggleMenu: () => void
   onUserLogout: () => void
-  searchIsOpen: (open: boolean) => void
+  onSearchOpen: (open: boolean) => void
   searchPortalElement: HTMLDivElement | null
   tools: Tool[]
 }
 
-const Root = styled(Card)<{$searchIsOpen: boolean}>`
+const Root = styled(Card)<{$onSearchOpen: boolean}>`
   top: 0;
-  position: ${({$searchIsOpen}) => ($searchIsOpen ? 'sticky' : 'relative')};
+  position: ${({$onSearchOpen}) => ($onSearchOpen ? 'sticky' : 'relative')};
   z-index: 1;
   min-height: auto;
 `
@@ -102,7 +102,7 @@ export function Navbar(props: Props) {
     onCreateButtonClick,
     onToggleMenu,
     onUserLogout,
-    searchIsOpen,
+    onSearchOpen,
     searchPortalElement,
     tools,
   } = props
@@ -149,19 +149,19 @@ export function Navbar(props: Props) {
   }, [searchButtonElement])
 
   useEffect(() => {
-    if (searchIsOpen && !shouldRender.searchFullscreen) {
+    if (onSearchOpen && !shouldRender.searchFullscreen) {
       setSearchOpen(false)
-      searchIsOpen(false)
+      onSearchOpen(false)
     }
-  }, [searchIsOpen, shouldRender.searchFullscreen])
+  }, [onSearchOpen, shouldRender.searchFullscreen])
 
   useEffect(() => {
-    searchIsOpen(searchOpen)
+    onSearchOpen(searchOpen)
 
     if (searchOpen) {
       inputElement?.focus()
     }
-  }, [inputElement, searchButtonElement, searchIsOpen, searchOpen])
+  }, [inputElement, searchButtonElement, onSearchOpen, searchOpen])
 
   const LinkComponent = useCallback(
     (linkProps) => {
@@ -171,7 +171,7 @@ export function Navbar(props: Props) {
   )
 
   return (
-    <Root padding={2} scheme="dark" $searchIsOpen={searchOpen}>
+    <Root padding={2} scheme="dark" $onSearchOpen={searchOpen}>
       <Flex align="center" justify="space-between">
         <LeftFlex flex={shouldRender.brandingCenter ? undefined : 1} align="center">
           {!shouldRender.tools && (
@@ -241,7 +241,7 @@ export function Navbar(props: Props) {
                 $fullScreen={shouldRender.searchFullscreen}
               >
                 <Flex flex={1}>
-                  <Box flex={1} marginRight={shouldRender.tools ? undefined : 2}>
+                  <Box flex={1} marginRight={shouldRender.tools ? undefined : [1, 1, 2]}>
                     <SearchField
                       onSearchItemClick={handleToggleSearchOpen}
                       portalElement={searchPortalElement}
