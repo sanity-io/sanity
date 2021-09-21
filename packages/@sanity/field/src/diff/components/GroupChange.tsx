@@ -1,13 +1,7 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
-import {DialogAction} from '@sanity/base/__legacy/@sanity/components'
-import {LegacyLayerProvider} from '@sanity/base/components'
 import {useDocumentOperation} from '@sanity/react-hooks'
-import PopoverDialog from 'part:@sanity/components/dialogs/popover'
 import React, {useCallback, useContext, useState} from 'react'
 import {unstable_useCheckDocumentPermission as useCheckDocumentPermission} from '@sanity/base/hooks'
-import {Box, rem, Stack} from '@sanity/ui'
+import {Box, rem, Stack, Button, Grid, Popover, Text, useClickOutside} from '@sanity/ui'
 import styled from 'styled-components'
 import {undoChange} from '../changes/undoChange'
 import {isFieldChange} from '../helpers'
@@ -90,9 +84,7 @@ export function GroupChange({
     setConfirmRevertOpen(false)
   }, [])
 
-  const handleConfirmDialogAction = useCallback((action: DialogAction) => {
-    if (action.action) action.action()
-  }, [])
+  useClickOutside(() => setConfirmRevertOpen(false), [revertButtonElement])
 
   const setRevertButtonRef = useCallback(
     (el: HTMLDivElement | null) => {
@@ -144,30 +136,26 @@ export function GroupChange({
         </FieldWrapper>
       )}
 
-      {confirmRevertOpen && (
-        <LegacyLayerProvider zOffset="paneFooter">
-          <PopoverDialog
-            actions={[
-              {
-                color: 'danger',
-                action: handleRevertChanges,
-                title: 'Revert change',
-              },
-              {
-                kind: 'simple',
-                action: closeRevertChangesConfirmDialog,
-                title: 'Cancel',
-              },
-            ]}
-            onAction={handleConfirmDialogAction}
-            // portal
-            referenceElement={revertButtonElement}
-            size="small"
-          >
+      <Popover
+        content={
+          <Box>
             Are you sure you want to revert the changes?
-          </PopoverDialog>
-        </LegacyLayerProvider>
-      )}
+            <Grid columns={2} gap={2} marginTop={2}>
+              <Button mode="ghost" onClick={closeRevertChangesConfirmDialog}>
+                <Text align="center">Cancel</Text>
+              </Button>
+              <Button tone="critical" onClick={handleRevertChanges}>
+                <Text align="center">Revert change</Text>
+              </Button>
+            </Grid>
+          </Box>
+        }
+        portal
+        padding={4}
+        placement={'left'}
+        open={confirmRevertOpen}
+        referenceElement={revertButtonElement}
+      />
     </Stack>
   )
 }
