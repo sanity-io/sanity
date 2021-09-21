@@ -1021,15 +1021,15 @@
     },
     {
       "implements": "part:@sanity/base/sanity-logo",
-      "path": "components/logos/SanityLogo"
+      "path": "__legacy/@sanity/components/logos/SanityLogo"
     },
     {
       "implements": "part:@sanity/base/sanity-logo-alpha",
-      "path": "components/logos/SanityLogoAlpha"
+      "path": "__legacy/@sanity/components/logos/SanityLogoAlpha"
     },
     {
       "implements": "part:@sanity/base/sanity-studio-logo",
-      "path": "components/logos/SanityStudioLogo"
+      "path": "__legacy/@sanity/components/logos/SanityStudioLogo"
     },
     {
       "name": "part:@sanity/base/component",
