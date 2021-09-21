@@ -1,6 +1,5 @@
 import React from 'react'
 import DelayedSpinner from '../components/DelayedSpinner'
-import ErrorDialog from '../components/ErrorDialog'
 import VisionGui from '../components/VisionGui'
 import LoadingContainer from './LoadingContainer'
 

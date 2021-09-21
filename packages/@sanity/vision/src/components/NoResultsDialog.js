@@ -1,17 +1,17 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import {Box, Code, Text, Stack} from '@sanity/ui'
 
 function NoResultsDialog(props) {
   return (
-    <div className="vision_no-results">
-      <h1>No matches</h1>
-      <p>
-        No documents found in dataset <code>{props.dataset}</code> that match query:
-      </p>
-      <pre>
-        <code>{props.query}</code>
-      </pre>
-    </div>
+    <Box paddingY={2} className="vision_no-results">
+      <Stack space={5}>
+        <Text as="p" muted>
+          No documents found in dataset <code>{props.dataset}</code> that match query:
+        </Text>
+        <Code>{props.query}</Code>
+      </Stack>
+    </Box>
   )
 }
 

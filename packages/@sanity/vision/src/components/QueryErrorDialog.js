@@ -1,16 +1,17 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import {Box, Stack} from '@sanity/ui'
 import QueryErrorDetails from './QueryErrorDetails'
+import {ErrorCode} from './QueryErrorDialog.styled'
 
 function QueryErrorDialog(props) {
   return (
-    <div className="vision_query-error">
-      <h2>Query error</h2>
-      <pre>
-        <code>{props.error.message}</code>
-      </pre>
-      <QueryErrorDetails error={props.error} />
-    </div>
+    <Box className="vision_query-error">
+      <Stack space={5} marginTop={2}>
+        <ErrorCode size={1}>{props.error.message}</ErrorCode>
+        <QueryErrorDetails error={props.error} />
+      </Stack>
+    </Box>
   )
 }
 
