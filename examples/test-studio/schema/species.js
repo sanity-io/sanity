@@ -27,7 +27,9 @@ export default {
     },
     prepare(value) {
       return {
-        title: `${value.genus} ${value.species}`,
+        title: [value.genus, value.species, value.name && `(${value.name})`]
+          .filter(Boolean)
+          .join(' '),
         subtitle: value.name,
       }
     },
