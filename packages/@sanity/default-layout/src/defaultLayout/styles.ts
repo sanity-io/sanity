@@ -8,31 +8,29 @@ export const RootFlex = styled(Flex)<{$isOverlayVisible: boolean}>`
       overflow: hidden;
     `}
 
-  min-height: 100%;
+  @media (max-width: ${({theme}) => theme.sanity.media[0] - 1}px) {
+    min-height: 100%;
 
-  @media (min-width: ${({theme}) => theme.sanity.media[2]}px) {
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
-  }
-
-  @media (max-width: ${({theme}) => theme.sanity.media[2] - 1}px) {
     & > * {
       min-height: auto;
     }
+  }
+
+  @media (min-width: ${({theme}) => theme.sanity.media[0]}px) {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
   }
 `
 
 export const MainAreaFlex = styled(Flex)`
   position: relative;
-  min-height: auto;
 `
 
 export const ToolBox = styled(Box)`
   position: relative;
-  height: auto;
 
-  @media (min-width: ${({theme}) => theme.sanity.media[2]}px) {
+  @media (min-width: ${({theme}) => theme.sanity.media[0]}px) {
     overflow: auto;
   }
 `
@@ -40,11 +38,11 @@ export const ToolBox = styled(Box)`
 export const SidecarBox = styled.div`
   position: relative;
 
-  @media (max-width: ${({theme}) => theme.sanity.media[2] - 1}px) {
+  @media (max-width: ${({theme}) => theme.sanity.media[0] - 1}px) {
     display: none;
   }
 
-  @media (min-width: ${({theme}) => theme.sanity.media[2]}px) {
+  @media (min-width: ${({theme}) => theme.sanity.media[0]}px) {
     width: 420px;
 
     &:empty {

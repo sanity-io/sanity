@@ -120,7 +120,6 @@ export const DefaultLayout = (props: Props) => {
 
         <MainAreaFlex
           flex={1}
-          height="fill"
           overflow={menuIsOpen ? 'hidden' : undefined}
           direction={searchIsOpen ? 'column' : undefined}
         >
