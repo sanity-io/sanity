@@ -19,7 +19,7 @@ interface PreviewFieldsProps {
 export default function PreviewFields(props: PreviewFieldsProps) {
   return (
     <PreviewSubscriber value={props.document} type={props.type} fields={arrify(props.fields)}>
-      {({snapshot}) => <span>{snapshot ? props.children(snapshot) : null}</span>}
+      {({snapshot}) => <>{snapshot ? props.children(snapshot) : null}</>}
     </PreviewSubscriber>
   )
 }
