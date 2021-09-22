@@ -57,12 +57,12 @@ function InspectDialogComponent(props: InnerInspectDialogProps) {
       id={`${dialogIdPrevix}dialog`}
       header={
         isDocumentWithType(value) ? (
-          <span>
+          <>
             Inspecting{' '}
             <em>
               <DocTitle document={value} />
             </em>
-          </span>
+          </>
         ) : (
           <em>No value</em>
         )
@@ -112,17 +112,15 @@ function InspectDialogComponent(props: InnerInspectDialogProps) {
           )}
 
           {viewMode === VIEW_MODE_RAW && (
-            <Card padding={3}>
-              <Code
-                language="json"
-                tabIndex={0}
-                onKeyDown={maybeSelectAll}
-                onDoubleClick={select}
-                onFocus={select}
-              >
-                {JSON.stringify(value, null, 2)}
-              </Code>
-            </Card>
+            <Code
+              language="json"
+              tabIndex={0}
+              onKeyDown={maybeSelectAll}
+              onDoubleClick={select}
+              onFocus={select}
+            >
+              {JSON.stringify(value, null, 2)}
+            </Code>
           )}
         </TabPanel>
       </Flex>
