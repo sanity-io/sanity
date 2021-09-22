@@ -1,12 +1,13 @@
+import {SchemaType} from '@sanity/types'
 import React from 'react'
-import {SortOrdering, Type} from '../types'
+import {SortOrdering} from '../types'
 import WithVisibility from './WithVisibility'
 import ObserveForPreview from './ObserveForPreview'
 
 const HIDE_DELAY = 20 * 1000
 
 interface Props {
-  type: Type
+  type: SchemaType
   fields: string[]
   value: any
   ordering?: SortOrdering

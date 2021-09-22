@@ -1,4 +1,5 @@
-import {SchemaType} from '@sanity/types'
+export {PrepareViewOptions} from '@sanity/types'
+export {SortOrdering} from '@sanity/types'
 
 export type Id = string
 
@@ -11,8 +12,6 @@ export type FieldName = string
 
 export type Path = FieldName[]
 export type Selection = [Id, FieldName[]]
-export {PrepareViewOptions} from '@sanity/types'
-export {SortOrdering} from '@sanity/types'
 
 export type PreviewConfig = {
   select: {
@@ -21,4 +20,3 @@ export type PreviewConfig = {
     description: string
   }
 }
-export type Type = SchemaType

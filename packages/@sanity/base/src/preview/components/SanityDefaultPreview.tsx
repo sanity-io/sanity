@@ -1,8 +1,6 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import React from 'react'
 import imageUrlBuilder from '@sanity/image-url'
+import {ImageUrlFitMode, SanityDocument} from '@sanity/types'
 import {assetUrlBuilder} from '../../assets'
 import FileIcon from '../../components/icons/File'
 import {versionedClient} from '../../client/versionedClient'
@@ -14,8 +12,20 @@ import {
   InlinePreview,
   MediaPreview,
 } from '../../components/previews'
+import {
+  PreviewComponent as PreviewComponentType,
+  PreviewProps,
+} from '../../components/previews/types'
 
-const previewComponentMap: {[key: string]: React.ComponentType<any>} = {
+interface UploadState {
+  progress: number
+  initiated: string
+  updated: string
+  file: {name: string; type: string}
+  previewImage?: string
+}
+
+const previewComponentMap: {[key: string]: PreviewComponentType} = {
   default: DefaultPreview,
   card: DefaultPreview,
   media: MediaPreview,
@@ -24,22 +34,32 @@ const previewComponentMap: {[key: string]: React.ComponentType<any>} = {
   block: BlockPreview,
 }
 
-function extractUploadState(value) {
+function isString(value: unknown): value is string {
+  return typeof value === 'string'
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && !Array.isArray(value) && typeof value === 'object'
+}
+
+function extractUploadState(
+  value: Partial<SanityDocument>
+): {_upload: UploadState | null; value: Partial<SanityDocument>} {
   if (!value || typeof value !== 'object') {
     return {_upload: null, value}
   }
   const {_upload, ...rest} = value
-  return {_upload, value: rest}
+  return {_upload: _upload as UploadState, value: rest}
 }
 
-type Props = {
-  _renderAsBlockImage: boolean
-  layout: keyof typeof previewComponentMap
-  value: any
-  icon: any
+interface SanityDefaultPreviewProps extends PreviewProps {
+  _renderAsBlockImage?: boolean
+  icon?: React.ComponentType<any> | false
+  layout?: 'default' | 'card' | 'media' | 'detail' | 'inline' | 'block'
+  value: Partial<SanityDocument>
 }
 
-export default class SanityDefaultPreview extends React.PureComponent<Props> {
+export default class SanityDefaultPreview extends React.PureComponent<SanityDefaultPreviewProps> {
   componentDidMount() {
     if (this.props.layout === 'card') {
       console.warn(
@@ -47,7 +67,10 @@ export default class SanityDefaultPreview extends React.PureComponent<Props> {
       )
     }
   }
-  renderMedia = (options) => {
+
+  renderMedia = (options: {
+    dimensions: {width?: number; height?: number; fit: ImageUrlFitMode; dpr?: number}
+  }) => {
     const imageBuilder = imageUrlBuilder(versionedClient)
 
     // This functions exists because the previews provides options
@@ -59,7 +82,7 @@ export default class SanityDefaultPreview extends React.PureComponent<Props> {
     // Handle sanity image
     return (
       <img
-        alt={value.title}
+        alt={isString(value.title) ? value.title : undefined}
         src={
           imageBuilder
             .image(media)
@@ -78,9 +101,9 @@ export default class SanityDefaultPreview extends React.PureComponent<Props> {
     const {dimensions} = options
     const {value} = this.props
     const imageUrl = value.imageUrl
-    if (imageUrl) {
+    if (isString(imageUrl)) {
       const assetUrl = assetUrlBuilder(imageUrl.split('?')[0], dimensions)
-      return <img src={assetUrl} alt={value.title} />
+      return <img src={assetUrl} alt={isString(value.title) ? value.title : undefined} />
     }
     return undefined
   }
@@ -105,7 +128,7 @@ export default class SanityDefaultPreview extends React.PureComponent<Props> {
     }
 
     // If the asset is on media
-    if (value.media && value.media._type === 'reference' && value.media._ref) {
+    if (isRecord(value.media) && value.media._type === 'reference' && value.media._ref) {
       return this.renderMedia
     }
 
@@ -115,7 +138,7 @@ export default class SanityDefaultPreview extends React.PureComponent<Props> {
     }
 
     // Handle sanity image
-    if (media && media.asset) {
+    if (isRecord(media) && media.asset) {
       return this.renderMedia
     }
 
@@ -124,7 +147,13 @@ export default class SanityDefaultPreview extends React.PureComponent<Props> {
   }
 
   render() {
-    const {layout, _renderAsBlockImage, ...rest} = this.props
+    const {
+      icon, // omit
+      layout,
+      _renderAsBlockImage,
+      value: valueProp,
+      ...rest
+    } = this.props
 
     let PreviewComponent = previewComponentMap.hasOwnProperty(layout)
       ? previewComponentMap[layout]
@@ -134,7 +163,7 @@ export default class SanityDefaultPreview extends React.PureComponent<Props> {
       PreviewComponent = BlockImagePreview
     }
 
-    const {_upload, value} = extractUploadState(this.props.value)
+    const {_upload, value} = extractUploadState(valueProp)
 
     const item = _upload
       ? {

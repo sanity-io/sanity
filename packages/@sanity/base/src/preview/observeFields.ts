@@ -3,7 +3,7 @@ import {
   concat,
   defer,
   EMPTY,
-  from as observableFrom,
+  from,
   merge,
   Observable,
   of as observableOf,
@@ -29,9 +29,10 @@ import hasEqualFields from './utils/hasEqualFields'
 import isUniqueBy from './utils/isUniqueBy'
 
 let _globalListener
+
 const getGlobalEvents = () => {
   if (!_globalListener) {
-    const allEvents$ = observableFrom(
+    const allEvents$ = from(
       versionedClient.listen(
         '*[!(_id in path("_.**"))]',
         {},
@@ -59,11 +60,13 @@ const getGlobalEvents = () => {
     welcome$.subscribe()
 
     const mutations$ = allEvents$.pipe(filter((event: any) => event.type === 'mutation'))
+
     _globalListener = {
       welcome$,
       mutations$,
     }
   }
+
   return _globalListener
 }
 
