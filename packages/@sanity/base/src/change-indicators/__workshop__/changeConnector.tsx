@@ -7,6 +7,13 @@ import {ChangeFieldWrapper} from '../ChangeFieldWrapper'
 import {ChangeIndicator, ChangeIndicatorProvider} from '../ChangeIndicator'
 import {ChangeConnectorRoot} from '../overlay/ChangeConnectorRoot'
 
+const TestContainer = styled(Container).attrs({
+  height: 'fill',
+  width: 1,
+})`
+  max-height: 320px;
+`
+
 const Root = styled(ChangeConnectorRoot)`
   height: 100%;
   outline: 1px solid var(--card-border-color);
@@ -23,7 +30,7 @@ export default function ChangeConnectorStory() {
     <LayerProvider>
       <Card height="fill" tone="transparent">
         <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
-          <Container height="fill" style={{maxHeight: 320}} width={1}>
+          <TestContainer>
             <Root
               isReviewChangesOpen={isReviewChangesOpen}
               onOpenReviewChanges={onOpenReviewChanges}
@@ -92,7 +99,7 @@ export default function ChangeConnectorStory() {
                 </Card>
               </Flex>
             </Root>
-          </Container>
+          </TestContainer>
         </Flex>
       </Card>
     </LayerProvider>
@@ -134,19 +141,9 @@ function DebugDiffField(props: {children?: React.ReactNode; path: Path}) {
   const handleMouseEnter = useCallback(() => setHovered(true), [])
   const handleMouseLeave = useCallback(() => setHovered(false), [])
 
-  const handleClick = useCallback(() => {
-    //
-  }, [])
-
   return (
     <ChangeFieldWrapper hasHover={hovered} path={path}>
-      <Card
-        borderLeft
-        onClick={handleClick}
-        padding={3}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-      >
+      <Card borderLeft padding={3} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
         {children}
       </Card>
     </ChangeFieldWrapper>
