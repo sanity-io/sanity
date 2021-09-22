@@ -31,7 +31,6 @@ interface DocumentPanelProps {
   isClosable: boolean
   isCollapsed: boolean
   isHistoryOpen: boolean
-  isTimelineOpen: boolean
   markers: any
   menuItemGroups: MenuItemGroup[]
   onChange: (patches: any[]) => void
@@ -42,21 +41,19 @@ interface DocumentPanelProps {
   onExpand?: () => void
   onSetActiveView: (id: string | null) => void
   onSplitPane: () => void
-  onTimelineOpen: () => void
   paneTitle?: string
   published: Doc | null
   rootElement: HTMLDivElement | null
   schemaType: any
-  timelineMode: 'rev' | 'since' | 'closed'
   toggleInspect: (val: boolean) => void
   value: any
   compareValue: any
-  versionSelectRef: React.MutableRefObject<HTMLDivElement | null>
   views: DocumentView[]
+  timelinePopoverBoundaryElement: HTMLDivElement | null
 }
 
 export function DocumentPanel(props: DocumentPanelProps) {
-  const {toggleInspect, isHistoryOpen, views, activeViewId} = props
+  const {toggleInspect, isHistoryOpen, views, activeViewId, timelinePopoverBoundaryElement} = props
   const parentPortal = usePortal()
   const features = useDeskToolFeatures()
   const portalRef = useRef<HTMLDivElement | null>(null)
@@ -133,7 +130,6 @@ export function DocumentPanel(props: DocumentPanelProps) {
             idPrefix={props.idPrefix}
             isClosable={props.isClosable}
             isCollapsed={props.isCollapsed}
-            isTimelineOpen={props.isTimelineOpen}
             markers={props.markers}
             menuItemGroups={props.menuItemGroups}
             menuItems={menuItems}
@@ -143,11 +139,9 @@ export function DocumentPanel(props: DocumentPanelProps) {
             onExpand={props.onExpand}
             onSetActiveView={props.onSetActiveView}
             onSplitPane={props.onSplitPane}
-            onTimelineOpen={props.onTimelineOpen}
             rootElement={props.rootElement}
             schemaType={props.schemaType}
             onSetFormInputFocus={props.onFormInputFocus}
-            timelineMode={props.timelineMode}
             title={
               <DocumentHeaderTitle
                 documentType={props.documentType}
@@ -155,10 +149,10 @@ export function DocumentPanel(props: DocumentPanelProps) {
                 value={props.value}
               />
             }
-            versionSelectRef={props.versionSelectRef}
             views={props.views}
             rev={revTime}
             isHistoryOpen={isHistoryOpen}
+            timelinePopoverBoundaryElement={timelinePopoverBoundaryElement}
           />
         </Layer>
       </LegacyLayerProvider>

@@ -1,15 +1,10 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
-import React, {forwardRef, useCallback, useEffect, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useRef, useState} from 'react'
 import {Chunk} from '@sanity/field/diff'
-import {Stack, Text} from '@sanity/ui'
-import Spinner from 'part:@sanity/components/loading/spinner'
+import {Text, Spinner, Flex} from '@sanity/ui'
 import {Timeline as TimelineModel} from '../documentHistory/history/timeline'
 import {TimelineItem} from './timelineItem'
 import {TimelineItemState} from './types'
-
-import styles from './timeline.css'
+import {Root, StackWrapper, MenuWrapper} from './timeline.styled'
 
 interface TimelineProps {
   timeline: TimelineModel
@@ -27,113 +22,91 @@ interface TimelineProps {
 // Must be a positive number
 const LOAD_MORE_OFFSET = 20
 
-export const Timeline = forwardRef<HTMLDivElement, TimelineProps>(
-  (
-    {timeline, disabledBeforeSelection, topSelection, bottomSelection, onSelect, onLoadMore},
-    ref
-  ) => {
-    const rootRef = useRef<HTMLDivElement | null>(null)
-    const listRef = useRef<HTMLOListElement | null>(null)
-    const [loadingElement, setLoadingElement] = useState<HTMLDivElement | null>(null)
+export const Timeline = ({
+  timeline,
+  disabledBeforeSelection,
+  topSelection,
+  bottomSelection,
+  onSelect,
+  onLoadMore,
+}: TimelineProps) => {
+  const rootRef = useRef<HTMLDivElement | null>(null)
+  const listRef = useRef<HTMLOListElement | null>(null)
+  const [loadingElement, setLoadingElement] = useState<HTMLDivElement | null>(null)
 
-    let state: TimelineItemState = disabledBeforeSelection ? 'disabled' : 'enabled'
+  let state: TimelineItemState = disabledBeforeSelection ? 'disabled' : 'enabled'
 
-    const checkIfLoadIsNeeded = useCallback(() => {
-      const rootEl = rootRef.current
+  const checkIfLoadIsNeeded = useCallback(() => {
+    const rootEl = rootRef.current
 
-      if (loadingElement && rootEl) {
-        const {offsetHeight, scrollTop} = rootEl
-        const bottomPosition = offsetHeight + scrollTop + LOAD_MORE_OFFSET
-        const isVisible = loadingElement.offsetTop < bottomPosition
+    if (loadingElement && rootEl) {
+      const {offsetHeight, scrollTop} = rootEl
+      const bottomPosition = offsetHeight + scrollTop + LOAD_MORE_OFFSET
+      const isVisible = loadingElement.offsetTop < bottomPosition
 
-        if (isVisible) {
-          // @todo: find out why, for some reason, it won't load without RAF wrapper
-          requestAnimationFrame(() => onLoadMore(isVisible))
-        }
+      if (isVisible) {
+        // @todo: find out why, for some reason, it won't load without RAF wrapper
+        requestAnimationFrame(() => onLoadMore(isVisible))
       }
-    }, [onLoadMore, loadingElement])
+    }
+  }, [onLoadMore, loadingElement])
 
-    // This is needed because we set the reference element both for
-    // the provided `ref` from `forwardRef`, and the local `rootRef`.
-    const setRef = useCallback(
-      (el: HTMLDivElement | null) => {
-        if (ref) {
-          if (typeof ref === 'function') ref(el)
-          if (typeof ref === 'object') (ref as any).current = el
-        }
-        rootRef.current = el
-      },
-      [ref]
-    )
+  // Load whenever it's needed
+  useEffect(checkIfLoadIsNeeded, [checkIfLoadIsNeeded])
 
-    // Load whenever it's needed
-    useEffect(checkIfLoadIsNeeded, [checkIfLoadIsNeeded])
+  return (
+    <Root ref={rootRef as any} onScroll={checkIfLoadIsNeeded} data-ui="timeline">
+      {timeline.chunkCount === 0 && (
+        <StackWrapper padding={4} space={3}>
+          <Text weight="bold">No document history</Text>
+          <Text muted size={1}>
+            When changing the content of the document, the document versions will appear in this
+            menu.
+          </Text>
+        </StackWrapper>
+      )}
+      <MenuWrapper ref={listRef} padding={1} space={0}>
+        {timeline.mapChunks((chunk) => {
+          const isSelectionTop = topSelection === chunk
+          const isSelectionBottom = bottomSelection === chunk
 
-    // On mount: Scroll to selected timeline item
-    useEffect(() => {
-      const selectedEl = listRef.current?.querySelector('[data-state="selected"]')
+          if (isSelectionTop) {
+            state = 'withinSelection'
+          }
 
-      if (selectedEl) {
-        window.requestAnimationFrame(() => {
-          selectedEl.scrollIntoView({block: 'center'})
-        })
-      }
-    }, [])
+          if (isSelectionBottom) {
+            state = 'selected'
+          }
 
-    return (
-      <div className={styles.root} ref={setRef} onScroll={checkIfLoadIsNeeded}>
-        {timeline.chunkCount === 0 && (
-          <Stack padding={4} space={3} style={{maxWidth: 200}}>
-            <Text weight="bold">No document history</Text>
-            <Text muted size={1}>
-              When changing the content of the document, the document versions will appear in this
-              menu.
-            </Text>
-          </Stack>
-        )}
-        <ol className={styles.list} ref={listRef}>
-          {timeline.mapChunks((chunk) => {
-            const isSelectionTop = topSelection === chunk
-            const isSelectionBottom = bottomSelection === chunk
+          const item = (
+            <TimelineItem
+              chunk={chunk}
+              isSelectionBottom={isSelectionBottom}
+              isSelectionTop={isSelectionTop}
+              key={chunk.id}
+              state={state}
+              onSelect={onSelect}
+              type={chunk.type}
+              timestamp={chunk.endTimestamp}
+            />
+          )
 
-            if (isSelectionTop) {
-              state = 'withinSelection'
-            }
+          // Flip it back to normal after we've rendered the active one.
+          if (state === 'selected') {
+            state = 'enabled'
+          }
 
-            if (isSelectionBottom) {
-              state = 'selected'
-            }
+          return item
+        })}
+      </MenuWrapper>
 
-            const item = (
-              <TimelineItem
-                chunk={chunk}
-                isSelectionBottom={isSelectionBottom}
-                isSelectionTop={isSelectionTop}
-                key={chunk.id}
-                state={state}
-                onSelect={onSelect}
-                type={chunk.type}
-                timestamp={chunk.endTimestamp}
-              />
-            )
-
-            // Flip it back to normal after we've rendered the active one.
-            if (state === 'selected') {
-              state = 'enabled'
-            }
-
-            return item
-          })}
-        </ol>
-
-        {!timeline.reachedEarliestEntry && (
-          <div className={styles.loading} ref={setLoadingElement}>
-            <Spinner center />
-          </div>
-        )}
-      </div>
-    )
-  }
-)
+      {!timeline.reachedEarliestEntry && (
+        <Flex align="center" justify="center" padding={4} ref={setLoadingElement}>
+          <Spinner muted />
+        </Flex>
+      )}
+    </Root>
+  )
+}
 
 Timeline.displayName = 'Timeline'

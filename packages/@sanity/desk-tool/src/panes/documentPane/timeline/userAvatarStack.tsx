@@ -2,8 +2,8 @@
 ///<reference types="@sanity/types/parts" />
 
 import {UserAvatar} from '@sanity/base/components'
-import {AvatarStack} from 'part:@sanity/components/avatar'
 import React from 'react'
+import {AvatarStack} from '@sanity/ui'
 
 interface UserAvatarStackProps {
   maxLength?: number

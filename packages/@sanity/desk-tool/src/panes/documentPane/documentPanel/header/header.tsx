@@ -1,19 +1,20 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import {useTimeAgo} from '@sanity/base/hooks'
 import {MenuItem, MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
+import {LegacyLayerProvider} from '@sanity/base/components'
 import {Chunk} from '@sanity/field/diff'
-import {CloseIcon, SelectIcon, SplitVerticalIcon} from '@sanity/icons'
+import {CloseIcon, SplitVerticalIcon} from '@sanity/icons'
 import {Path} from '@sanity/types'
-import {Button, Layer} from '@sanity/ui'
+import {Box, BoundaryElementProvider, Button, Layer} from '@sanity/ui'
 import classNames from 'classnames'
-import {negate, upperFirst} from 'lodash'
+import {negate} from 'lodash'
 import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
 import React, {useCallback, useMemo, useState} from 'react'
 import {useDeskToolFeatures} from '../../../../features'
-import {formatTimelineEventLabel} from '../../timeline'
+
 import {DocumentView} from '../../types'
+import {TimelineMenu} from '../../timeline'
 import {DocumentPanelContextMenu} from './contextMenu'
 import {DocumentHeaderTabs} from './tabs'
 import {ValidationMenu} from './validationMenu'
@@ -26,7 +27,6 @@ export interface DocumentPanelHeaderProps {
   isClosable: boolean
   isCollapsed: boolean
   isHistoryOpen: boolean
-  isTimelineOpen: boolean
   markers: any
   menuItems: MenuItem[]
   menuItemGroups: MenuItemGroup[]
@@ -37,14 +37,12 @@ export interface DocumentPanelHeaderProps {
   onSetActiveView: (id: string | null) => void
   onSplitPane?: () => void
   onSetFormInputFocus: (path: Path) => void
-  onTimelineOpen: () => void
   rev: Chunk | null
   rootElement: HTMLDivElement | null
   schemaType: any
-  timelineMode: 'rev' | 'since' | 'closed'
   title: React.ReactNode
-  versionSelectRef: React.MutableRefObject<HTMLDivElement | null>
   views: DocumentView[]
+  timelinePopoverBoundaryElement: HTMLDivElement | null
 }
 
 const isActionButton = (item: MenuItem) => (item as any).showAsAction
@@ -57,7 +55,6 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
     idPrefix,
     isClosable,
     isCollapsed,
-    isTimelineOpen,
     markers,
     menuItems,
     menuItemGroups,
@@ -67,15 +64,13 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
     onExpand,
     onSetActiveView,
     onSplitPane,
-    onTimelineOpen,
     rev,
     rootElement,
     schemaType,
     onSetFormInputFocus,
-    timelineMode,
     title,
-    versionSelectRef,
     views,
+    timelinePopoverBoundaryElement,
   } = props
   const features = useDeskToolFeatures()
   const contextMenuItems = useMemo(() => menuItems.filter(isMenuButton), [menuItems])
@@ -87,15 +82,8 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
     if (!isCollapsed && onCollapse) onCollapse()
   }, [isCollapsed, onExpand, onCollapse])
 
-  // This is needed to stop the ClickOutside-handler (in the Popover) to treat the click
-  // as an outside-click.
-  const ignoreClickOutside = useCallback((evt: React.MouseEvent<HTMLButtonElement>) => {
-    evt.stopPropagation()
-  }, [])
-
   const showTabs = views.length > 1
   const showVersionMenu = features.reviewChanges || views.length === 1
-  const menuOpen = isTimelineOpen && timelineMode === 'rev'
 
   const validationMenu = useMemo(
     () => (
@@ -187,38 +175,15 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
   const versionMenu = useMemo(
     () =>
       showVersionMenu && (
-        <div className={styles.versionSelectContainer} ref={versionSelectRef}>
-          <Button
-            fontSize={1}
-            iconRight={SelectIcon}
-            mode="bleed"
-            onMouseUp={ignoreClickOutside}
-            onClick={onTimelineOpen}
-            padding={2}
-            selected={isTimelineOpen && timelineMode === 'rev'}
-            text={
-              // eslint-disable-next-line no-nested-ternary
-              menuOpen ? (
-                <>Select version</>
-              ) : rev ? (
-                <TimelineButtonLabel rev={rev} />
-              ) : (
-                <>Current version</>
-              )
-            }
-          />
-        </div>
+        <Box marginX={1} style={{marginLeft: 'auto'}}>
+          <BoundaryElementProvider element={timelinePopoverBoundaryElement}>
+            <LegacyLayerProvider zOffset="paneHeader">
+              <TimelineMenu chunk={rev} mode="rev" />
+            </LegacyLayerProvider>
+          </BoundaryElementProvider>
+        </Box>
       ),
-    [
-      ignoreClickOutside,
-      isTimelineOpen,
-      menuOpen,
-      onTimelineOpen,
-      rev,
-      showVersionMenu,
-      timelineMode,
-      versionSelectRef,
-    ]
+    [rev, showVersionMenu, timelinePopoverBoundaryElement]
   )
 
   return (
@@ -248,15 +213,5 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
         </div>
       )}
     </Layer>
-  )
-}
-
-function TimelineButtonLabel({rev}: {rev: Chunk}) {
-  const timeAgo = useTimeAgo(rev.endTimestamp, {agoSuffix: true})
-
-  return (
-    <>
-      {upperFirst(formatTimelineEventLabel(rev.type))} {timeAgo}
-    </>
   )
 }

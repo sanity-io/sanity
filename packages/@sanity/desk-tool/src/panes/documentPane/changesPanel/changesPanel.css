@@ -56,8 +56,8 @@
 }
 
 .versionSelectContainer {
-  padding: var(--extra-small-padding) var(--small-padding);
-  padding-right: calc(var(--medium-padding) - var(--extra-small-padding) + 1px);
+  padding: 0 var(--small-padding);
+  /* padding-right: calc(var(--medium-padding) - var(--extra-small-padding) + 1px); */
   display: flex;
   align-items: center;
 

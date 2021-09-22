@@ -4,8 +4,8 @@ import {
   IconComponent,
   PublishIcon,
   UnpublishIcon,
-  AddIcon,
   CloseIcon,
+  AddCircleIcon,
 } from '@sanity/icons'
 
 export const TIMELINE_LABELS: {[key: string]: string | undefined} = {
@@ -20,10 +20,10 @@ export const TIMELINE_LABELS: {[key: string]: string | undefined} = {
 }
 
 export const TIMELINE_ICON_COMPONENTS: {[key: string]: IconComponent | undefined} = {
-  create: AddIcon,
+  create: AddCircleIcon,
   delete: TrashIcon,
   discardDraft: CloseIcon,
-  initial: AddIcon,
+  initial: AddCircleIcon,
   editDraft: EditIcon,
   editLive: EditIcon,
   publish: PublishIcon,

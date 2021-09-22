@@ -28,7 +28,6 @@
     "sanity-tool"
   ],
   "dependencies": {
-    "@popperjs/core": "^2.5.4",
     "@reach/auto-id": "^0.13.2",
     "@sanity/base": "2.20.0",
     "@sanity/client": "2.19.0",
