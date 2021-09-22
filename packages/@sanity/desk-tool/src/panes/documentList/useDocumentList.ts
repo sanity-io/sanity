@@ -1,6 +1,3 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import {VirtualListChangeOpts} from '@sanity/ui'
 import {getQueryResults} from 'part:@sanity/base/query-container'
 import {useEffect, useState, useCallback, useMemo, useRef} from 'react'
@@ -106,8 +103,8 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
     return () => sub.unsubscribe()
   }, [fullList, query, params])
 
-  // If the `filter`/`params` has changed, set up a new query from scratch
-  // If `sortOrder` changed, set up a new query from scratch as well
+  // If `filter` or `params` changed, set up a new query from scratch.
+  // If `sortOrder` changed, set up a new query from scratch as well.
   useEffect(() => {
     setResult(null)
     setFullList(false)

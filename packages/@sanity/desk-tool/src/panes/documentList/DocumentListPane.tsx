@@ -25,6 +25,7 @@ type DocumentListPaneProps = BaseDeskToolPaneProps<{
     defaultOrdering: SortOrderBy[]
     params?: Record<string, unknown>
   }
+  schemaTypeName?: string
   title: string
 }>
 
@@ -40,8 +41,10 @@ export function DocumentListPane(props: DocumentListPaneProps) {
     menuItems,
     menuItemGroups,
     options,
+    schemaTypeName,
     title,
   } = pane
+
   const {defaultOrdering, filter} = options
   const params = useShallowUnique(options.params || EMPTY_RECORD)
   const typeName = useMemo(() => getTypeNameFromSingleTypeFilter(filter, params), [filter, params])
@@ -69,6 +72,7 @@ export function DocumentListPane(props: DocumentListPaneProps) {
         initialValueTemplates={initialValueTemplates}
         menuItems={menuItems}
         menuItemGroups={menuItemGroups}
+        schemaTypeName={schemaTypeName}
         setLayout={setLayout}
         setSortOrder={setSortOrder}
         title={title}

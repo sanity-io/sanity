@@ -72,13 +72,13 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   const renderItem = useCallback(
     (item) => (
       <PaneItem
-        id={getPublishedId(item._id)}
-        layout={layout}
-        value={item}
         icon={showIcons === false ? false : undefined}
-        schemaType={schema.get(item._type)}
+        id={getPublishedId(item._id)}
         isSelected={childItemId === getPublishedId(item._id)}
         isActive={isActive}
+        layout={layout}
+        schemaType={schema.get(item._type)}
+        value={item}
       />
     ),
     [childItemId, isActive, layout, showIcons]

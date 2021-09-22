@@ -2,7 +2,7 @@ import {MenuItem as MenuItemType} from '@sanity/base/__legacy/@sanity/components
 import {ComposeIcon} from '@sanity/icons'
 import {Box, Button, Label, Menu, MenuButton, PopoverProps} from '@sanity/ui'
 import React from 'react'
-import {IntentMenuItem} from './IntentMenuItem'
+import {IntentMenuItem} from '../../components/IntentMenuItem'
 
 const POPOVER_PROPS: PopoverProps = {
   constrainSize: true,
@@ -23,7 +23,12 @@ export function CreateMenuButton(props: {items: MenuItemType[]}) {
             <Label muted>Create</Label>
           </Box>
           {items.map((createItem, createItemIndex) => (
-            <IntentMenuItem intent={createItem.intent!} item={createItem} key={createItemIndex} />
+            <IntentMenuItem
+              icon={createItem.icon}
+              intent={createItem.intent!}
+              key={createItemIndex}
+              text={createItem.title}
+            />
           ))}
         </Menu>
       }
