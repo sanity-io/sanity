@@ -2,7 +2,7 @@ import {useContext, useEffect, useState} from 'react'
 import {RouterState} from './components/types'
 import {RouterContext} from './RouterContext'
 
-export const useRouterState = (): RouterState => {
+export const useRouterState = (): RouterState | null => {
   const {channel, getState} = useContext(RouterContext)
   const [routerState, setState] = useState<RouterState>(getState())
 
