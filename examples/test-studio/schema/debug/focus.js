@@ -12,6 +12,12 @@ export default {
       title: 'Title',
     },
     {
+      name: 'reference',
+      type: 'reference',
+      title: 'Reference',
+      to: [{type: 'species'}],
+    },
+    {
       name: 'second',
       type: 'number',
       title: 'Num',
