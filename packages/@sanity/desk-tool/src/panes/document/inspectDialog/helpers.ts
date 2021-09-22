@@ -58,5 +58,5 @@ export function maybeSelectAll(event: any): void {
 export function isDocumentWithType(
   value: Partial<SanityDocument> | null
 ): value is Partial<SanityDocument> & {_type: SanityDocument['_type']} {
-  return value?._type === 'string'
+  return typeof value?._type === 'string'
 }
