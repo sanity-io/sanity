@@ -1,4 +1,5 @@
-import React, {useCallback, useMemo, useState} from 'react'
+import React, {useCallback, useMemo} from 'react'
+import {SchemaType} from '@sanity/types'
 import {Box, Button, Stack} from '@sanity/ui'
 import {
   MenuItem as MenuItemType,
@@ -9,15 +10,16 @@ import {ArrowLeftIcon} from '@sanity/icons'
 import {PaneContextMenuButton, Pane, PaneContent, PaneHeader, usePaneLayout} from '../../components'
 import {PaneItem} from '../../components/paneItem'
 import {useDeskTool} from '../../contexts/deskTool'
-import {usePaneRouter} from '../../contexts/paneRouter'
+import {BackLink} from '../../contexts/paneRouter'
 import {BaseDeskToolPaneProps} from '../types'
 
 interface ListPaneItem {
   id: string
-  icon?: boolean
+  icon?: React.ComponentType<any> | false
   type: string
   displayOptions?: {showIcon?: boolean}
-  schemaType?: {name?: string}
+  schemaType?: SchemaType
+  title?: string
 }
 
 type ListPaneProps = BaseDeskToolPaneProps<{
@@ -45,7 +47,6 @@ export function ListPane(props: ListPaneProps) {
   const {childItemId, index, isSelected, isActive, pane, paneKey} = props
   const {features} = useDeskTool()
   const {collapsed: layoutCollapsed} = usePaneLayout()
-  const {BackLink} = usePaneRouter()
 
   const {
     defaultLayout,
@@ -66,21 +67,19 @@ export function ListPane(props: ListPaneProps) {
   )
 
   const shouldShowIconForItem = useCallback(
-    (item: ListPaneItem) => {
+    (item: ListPaneItem): boolean => {
       const itemShowIcon = item.displayOptions?.showIcon
 
       // Specific true/false on item should have presedence over list setting
       if (typeof itemShowIcon !== 'undefined') {
-        return itemShowIcon === false ? false : item.icon
+        return itemShowIcon !== false // Boolean(item.icon)
       }
 
       // If no item setting is defined, defer to the pane settings
-      return paneShowIcons === false ? false : item.icon
+      return paneShowIcons !== false // Boolean(item.icon)
     },
     [paneShowIcons]
   )
-
-  const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
 
   const handleAction = useCallback((item: MenuItemType) => {
     if (typeof item.action === 'function') {
@@ -102,13 +101,12 @@ export function ListPane(props: ListPaneProps) {
     () =>
       menuItems.length > 0 && (
         <PaneContextMenuButton
-          boundaryElement={rootElement}
           items={menuItems}
           itemGroups={menuItemGroups}
           onAction={handleAction}
         />
       ),
-    [handleAction, menuItemGroups, menuItems, rootElement]
+    [handleAction, menuItemGroups, menuItems]
   )
 
   const header = useMemo(
@@ -122,7 +120,7 @@ export function ListPane(props: ListPaneProps) {
         title={title}
       />
     ),
-    [actions, BackLink, features.backButton, index, title]
+    [actions, features.backButton, index, title]
   )
 
   const content = useMemo(
@@ -140,14 +138,14 @@ export function ListPane(props: ListPaneProps) {
 
             return (
               <PaneItem
-                icon={shouldShowIconForItem(item)}
+                icon={shouldShowIconForItem(item) ? item.icon : false}
                 id={item.id}
                 isActive={isActive}
                 isSelected={itemIsSelected(item)}
                 key={item.id}
                 layout={defaultLayout}
                 schemaType={item.schemaType}
-                value={item}
+                title={item.title}
               />
             )
           })}
@@ -167,7 +165,6 @@ export function ListPane(props: ListPaneProps) {
         maxWidth={640}
         minWidth={320}
         selected={isSelected}
-        ref={setRootElement}
       >
         {header}
         {content}
