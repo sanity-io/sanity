@@ -72,7 +72,8 @@ export function LoadingPane(props: LoadingPaneProps) {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    if (content) _raf2(() => setMounted(true))
+    if (!content) return undefined
+    return _raf2(() => setMounted(true))
   }, [content])
 
   return (
