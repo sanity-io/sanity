@@ -38,7 +38,7 @@ export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revisio
     return {
       type: 'error',
       onClose: () => setError(null),
-      title: 'An error occured',
+      title: 'An error occurred',
       content: error.message,
     }
   }, [error, handleConfirm, isConfirmDialogOpen, onComplete])
