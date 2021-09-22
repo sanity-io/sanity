@@ -26,13 +26,6 @@ export const JSONInspectorWrapper = styled.div(({theme}: {theme: Theme}) => {
       display: none;
     }
 
-    /* Highlight each document when hovering */
-    & .json-inspector .json-inspector__leaf_root > .json-inspector__leaf:hover {
-    }
-
-    & .json-inspector .json-inspector__leaf_root > .json-inspector__leaf {
-    }
-
     & .json-inspector .json-inspector__line {
       display: block;
       position: relative;
@@ -72,7 +65,6 @@ export const JSONInspectorWrapper = styled.div(({theme}: {theme: Theme}) => {
       content: '▾ ';
       font-size: ${fonts.code.sizes[2].fontSize}px;
       line-height: ${fonts.code.sizes[2].lineHeight}px;
-      /* margin-left: 3px; */
     }
 
     & .json-inspector .json-inspector__radio,
@@ -116,9 +108,6 @@ export const JSONInspectorWrapper = styled.div(({theme}: {theme: Theme}) => {
 
     & .json-inspector .json-inspector__value_number {
       color: ${color.syntax.number};
-    }
-
-    & .json-inspector .json-inspector__hl {
     }
 
     & .json-inspector .json-inspector__show-original {

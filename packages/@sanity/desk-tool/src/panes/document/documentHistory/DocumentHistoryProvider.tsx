@@ -60,7 +60,7 @@ export function DocumentHistoryProvider(props: DocumentHistoryProviderProps) {
     [paneRouter]
   )
 
-  let displayed: Partial<SanityDocument> | null = value
+  let displayed = value
 
   if (historyController.onOlderRevision()) {
     displayed = historyController.displayed() as any

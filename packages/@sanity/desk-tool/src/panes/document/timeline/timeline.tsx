@@ -65,6 +65,7 @@ export const Timeline = ({
           </Text>
         </StackWrapper>
       )}
+
       <MenuWrapper ref={listRef} padding={1} space={0}>
         {timeline.mapChunks((chunk) => {
           const isSelectionTop = topSelection === chunk
