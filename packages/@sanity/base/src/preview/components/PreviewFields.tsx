@@ -1,6 +1,6 @@
+import {SchemaType} from '@sanity/types'
 import React from 'react'
 import PreviewSubscriber from './PreviewSubscriber'
-import {Type} from '../types'
 
 function arrify<T>(val: T | T[]) {
   if (Array.isArray(val)) {
@@ -9,13 +9,14 @@ function arrify<T>(val: T | T[]) {
   return typeof val === undefined ? [] : [val]
 }
 
-type Props = {
+interface PreviewFieldsProps {
   document: Document
   fields: string | string[]
-  type: Type
+  type: SchemaType
   children: (snapshot: Document) => React.ReactChildren
 }
-export default function PreviewFields(props: Props) {
+
+export default function PreviewFields(props: PreviewFieldsProps) {
   return (
     <PreviewSubscriber value={props.document} type={props.type} fields={arrify(props.fields)}>
       {({snapshot}) => <span>{snapshot ? props.children(snapshot) : null}</span>}

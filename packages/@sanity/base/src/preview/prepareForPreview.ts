@@ -2,7 +2,7 @@ import {isTitledListValue, SchemaType, TitledListValue} from '@sanity/types'
 import {debounce, flatten, get, isPlainObject, pick, uniqBy} from 'lodash'
 import {INVALID_PREVIEW_FALLBACK} from './constants'
 import {isPortableTextArray, extractTextFromBlocks} from './utils/portableText'
-import {PrepareViewOptions, Type} from './types'
+import {PrepareViewOptions} from './types'
 import {keysOf} from './utils/keysOf'
 
 const PRESERVE_KEYS = ['_id', '_type', '_upload']
@@ -35,7 +35,7 @@ const errorCollector = (() => {
   let errorsByType = {}
 
   return {
-    add: (type: Type, value: SelectedValue, error: Error) => {
+    add: (type: SchemaType, value: SelectedValue, error: Error) => {
       if (!errorsByType[type.name]) {
         errorsByType[type.name] = []
       }
@@ -201,7 +201,7 @@ function defaultPrepare(value: SelectedValue) {
 }
 
 export function invokePrepare(
-  type: Type,
+  type: SchemaType,
   value: SelectedValue,
   viewOptions: PrepareViewOptions = {}
 ): PrepareInvocationResult {

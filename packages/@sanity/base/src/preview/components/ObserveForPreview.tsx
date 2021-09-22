@@ -1,3 +1,4 @@
+import {SchemaType} from '@sanity/types'
 import React from 'react'
 import {withPropsStream} from 'react-props-stream'
 import shallowEquals from 'shallow-equals'
@@ -12,7 +13,7 @@ import {
 } from 'rxjs/operators'
 import {concat, of, Observable} from 'rxjs'
 import {observeForPreview} from '../'
-import {FieldName, SortOrdering, Type} from '../types'
+import {FieldName, SortOrdering} from '../types'
 import {PreparedValue} from '../prepareForPreview'
 
 function isNonNullable<T>(value: T): value is NonNullable<T> {
@@ -39,7 +40,7 @@ function memoizeBy<T>(isActive$: Observable<boolean>) {
 type OuterProps = {
   isActive: boolean
   value: any
-  type: Type
+  type: SchemaType
   children: (props: any) => React.ReactElement
   fields: FieldName[]
   ordering?: SortOrdering
@@ -79,10 +80,10 @@ const connect = (props$: Observable<OuterProps>): Observable<ReceivedProps> => {
 
 type ReceivedProps = {
   snapshot: PreparedValue | null
-  type: Type
+  type: SchemaType
   isLoading: boolean
   error?: Error
-  children: (props: unknown) => React.ReactElement
+  children: (props: any) => React.ReactElement
 }
 export default withPropsStream<OuterProps, ReceivedProps>(connect, function ObserveForPreview(
   props: ReceivedProps
