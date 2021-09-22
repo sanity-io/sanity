@@ -16,7 +16,7 @@ export const IconWrapper = styled(Flex)(({theme}: IconWrapperProps) => {
   const borderColor = theme.sanity.color.base.skeleton?.from
 
   return css`
-    --timeline-hairline-width: 1.3px;
+    --timeline-hairline-width: 1px;
     position: relative;
     z-index: 2;
     margin: 0;
