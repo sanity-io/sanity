@@ -1,8 +1,8 @@
 import styled, {css} from 'styled-components'
 import {WithIntersection} from './WithIntersection'
 
-interface styleProps {
-  debug: boolean
+interface StyleProps {
+  $debug: boolean
   margins?: [number, number, number, number]
 }
 
@@ -26,7 +26,7 @@ export const RegionWrapper = css`
   position: absolute;
 `
 
-export const TopRegionWrapper = styled(WithIntersection)(({debug, margins}: styleProps) => {
+export const TopRegionWrapper = styled(WithIntersection)(({$debug, margins}: StyleProps) => {
   return css`
     ${RegionWrapper}
 
@@ -34,17 +34,17 @@ export const TopRegionWrapper = styled(WithIntersection)(({debug, margins}: styl
     position: sticky;
     height: 1px;
     top: ${margins[0] - 1}px;
-    background-color: ${debug ? 'red' : 'none'};
+    background-color: ${$debug ? 'red' : 'none'};
   `
 })
 
-export const MiddleRegionWrapper = styled(WithIntersection)(({debug}: styleProps) => {
+export const MiddleRegionWrapper = styled(WithIntersection)(({$debug}: StyleProps) => {
   return css`
     ${RegionWrapper}
 
     visibility: none;
 
-    ${debug &&
+    ${$debug &&
     css`
       background: rgba(255, 0, 0, 0.25);
       outline: 1px solid #00b;
@@ -53,13 +53,13 @@ export const MiddleRegionWrapper = styled(WithIntersection)(({debug}: styleProps
   `
 })
 
-export const BottomRegionWrapper = styled(WithIntersection)(({debug}: styleProps) => {
+export const BottomRegionWrapper = styled(WithIntersection)(({$debug}: StyleProps) => {
   return css`
     ${RegionWrapper}
 
     position: sticky;
     bottom: -1px;
     height: 1px;
-    background-color: ${debug ? 'blue' : 'transparent'};
+    background-color: ${$debug ? 'blue' : 'transparent'};
   `
 })

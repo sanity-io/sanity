@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react'
+import React, {forwardRef, useCallback, useMemo, useRef, useState} from 'react'
 import {
   SNAP_TO_DOCK_DISTANCE_BOTTOM,
   SNAP_TO_DOCK_DISTANCE_TOP,
@@ -17,7 +17,7 @@ import {
   BottomRegionWrapper,
 } from './RegionsWithIntersections.styled'
 
-type Props = {
+interface RegionsWithIntersectionsProps {
   regions: ReportedRegionWithRect<FieldPresenceData>[]
   render: (
     regionsWithIntersectionDetails: RegionWithIntersectionDetails[],
@@ -28,32 +28,32 @@ type Props = {
 }
 
 const toPx = (num: number) => `${num}px`
-const invert = (num: number) => -num
+const negate = (num: number) => 0 - num
 
-export const RegionsWithIntersections = React.forwardRef(function RegionsWithIntersections(
-  props: Props,
-  ref: any
+export const RegionsWithIntersections = forwardRef(function RegionsWithIntersections(
+  props: RegionsWithIntersectionsProps,
+  ref: React.ForwardedRef<HTMLDivElement>
 ) {
   const {regions, render, children, margins: marginsProp} = props
 
-  const overlayRef = React.useRef<HTMLDivElement | null>(null)
+  const overlayRef = useRef<HTMLDivElement | null>(null)
 
   // Make sure `margins` is memoized
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const margins = useMemo(() => marginsProp, [JSON.stringify(marginsProp)])
 
-  const io = React.useMemo(
+  const io = useMemo(
     () =>
       createIntersectionObserver({
-        rootMargin: margins.map(invert).map(toPx).join(' '),
+        rootMargin: margins.map(negate).map(toPx).join(' '),
         threshold: INTERSECTION_THRESHOLDS,
       }),
     [margins]
   )
 
-  const [intersections, setIntersections] = React.useState({})
+  const [intersections, setIntersections] = useState({})
 
-  const onIntersection = React.useCallback((id, entry) => {
+  const onIntersection = useCallback((id, entry) => {
     setIntersections((current) => ({...current, [id]: entry}))
   }, [])
 
@@ -117,10 +117,10 @@ export const RegionsWithIntersections = React.forwardRef(function RegionsWithInt
   return (
     <RootWrapper ref={ref}>
       <TopRegionWrapper
+        $debug={DEBUG}
         io={io}
         id="::top"
         onIntersection={onIntersection}
-        debug={DEBUG}
         margins={margins}
       />
       <div>{children}</div>
@@ -132,11 +132,11 @@ export const RegionsWithIntersections = React.forwardRef(function RegionsWithInt
         const forceWidth = region.rect.width === 0
         return (
           <MiddleRegionWrapper
+            $debug={DEBUG}
             io={io}
             onIntersection={onIntersection}
             key={region.id}
             id={region.id}
-            debug={DEBUG}
             style={{
               width: forceWidth ? 1 : region.rect.width,
               left: region.rect.left - (forceWidth ? 1 : 0),
@@ -146,7 +146,7 @@ export const RegionsWithIntersections = React.forwardRef(function RegionsWithInt
           />
         )
       })}
-      <BottomRegionWrapper id="::bottom" debug={DEBUG} io={io} onIntersection={onIntersection} />
+      <BottomRegionWrapper $debug={DEBUG} id="::bottom" io={io} onIntersection={onIntersection} />
     </RootWrapper>
   )
 })

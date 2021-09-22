@@ -2,12 +2,15 @@ import React from 'react'
 import {tap} from 'rxjs/operators'
 import type {ObservableIntersectionObserver} from './intersectionObserver'
 
-export interface WithIntersectionProps extends React.ComponentProps<'div'> {
-  onIntersection: (id, IntersectionObserverEntry) => void
+export interface WithIntersectionProps {
+  onIntersection: (id: string, entry: IntersectionObserverEntry) => void
   io: ObservableIntersectionObserver
   id: string
 }
-export const WithIntersection = (props: WithIntersectionProps) => {
+
+export const WithIntersection = (
+  props: WithIntersectionProps & React.HTMLProps<HTMLDivElement>
+) => {
   const {onIntersection, io, id, ...rest} = props
   const element = React.useRef<HTMLDivElement | null>(null)
   React.useEffect(() => {
