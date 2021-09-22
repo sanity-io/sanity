@@ -44,7 +44,7 @@ export const UnpublishAction: DocumentActionComponent = ({
       return {
         type: 'error',
         onClose: () => setError(null),
-        title: 'An error occured',
+        title: 'An error occurred',
         content: error.message,
       }
     }
