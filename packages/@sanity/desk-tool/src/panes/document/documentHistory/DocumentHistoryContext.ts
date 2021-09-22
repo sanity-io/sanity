@@ -1,4 +1,4 @@
-import {SanityDocument} from '@sanity/types/src'
+import {SanityDocument} from '@sanity/types'
 import {createContext} from 'react'
 import {Controller} from './history/Controller'
 import {Timeline} from './history/Timeline'

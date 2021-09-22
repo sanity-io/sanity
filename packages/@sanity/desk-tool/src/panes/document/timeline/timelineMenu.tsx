@@ -1,7 +1,7 @@
 import {useTimeAgo} from '@sanity/base/hooks'
 import {Chunk} from '@sanity/field/diff'
 import {SelectIcon} from '@sanity/icons'
-import {useClickOutside, Button, Box, Popover} from '@sanity/ui'
+import {useClickOutside, Button, Popover} from '@sanity/ui'
 import {upperFirst} from 'lodash'
 import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
@@ -36,9 +36,8 @@ const Root = styled(Popover)`
 
 export function TimelineMenu({chunk, mode}: TimelineMenuProps) {
   const [open, setOpen] = useState(false)
-  const [buttonRef, setButtonRef] = useState(null)
-  const [menuContent, setMenuContent] = useState(null)
-
+  const [buttonRef, setButtonRef] = useState<HTMLButtonElement | null>(null)
+  const [menuContent, setMenuContent] = useState<HTMLDivElement | null>(null)
   const {historyController, setRange, setTimelineMode, timeline} = useDocumentHistory()
 
   const handleOpen = () => {
@@ -85,19 +84,19 @@ export function TimelineMenu({chunk, mode}: TimelineMenuProps) {
   )
 
   const content = open && (
-    <div ref={setMenuContent as any}>
+    <div ref={setMenuContent}>
       {mode === 'rev' ? (
         <Timeline
-          timeline={timeline}
           onSelect={selectRev}
           onLoadMore={loadMoreHistory}
+          timeline={timeline}
           {...revTimelineProps(historyController.realRevChunk)}
         />
       ) : (
         <Timeline
-          timeline={timeline}
           onSelect={selectSince}
           onLoadMore={loadMoreHistory}
+          timeline={timeline}
           {...sinceTimelineProps(historyController.sinceTime!, historyController.realRevChunk)}
         />
       )}
@@ -118,20 +117,24 @@ export function TimelineMenu({chunk, mode}: TimelineMenuProps) {
   const buttonLabel = mode === 'rev' ? revLabel : sinceLabel
 
   return (
-    <Box margin={1} data-ui="versionMenu">
-      <Root constrainSize content={content} referenceElement={buttonRef} open={open} portal>
-        <Button
-          ref={setButtonRef as any}
-          text={open ? openLabel : buttonLabel}
-          tone={open ? 'primary' : 'default'}
-          selected={open}
-          mode="bleed"
-          fontSize={1}
-          padding={2}
-          iconRight={SelectIcon}
-          onClick={open ? handleClose : handleOpen}
-        />
-      </Root>
-    </Box>
+    <Root
+      constrainSize
+      content={content}
+      data-ui="versionMenu"
+      open={open}
+      portal
+      referenceElement={buttonRef}
+    >
+      <Button
+        mode="bleed"
+        fontSize={1}
+        padding={2}
+        iconRight={SelectIcon}
+        onClick={open ? handleClose : handleOpen}
+        ref={setButtonRef}
+        selected={open}
+        text={open ? openLabel : buttonLabel}
+      />
+    </Root>
   )
 }

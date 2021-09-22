@@ -9,7 +9,7 @@ import {LegacyLayerProvider, useZIndex} from '@sanity/base/components'
 import {ChangeConnectorRoot} from '@sanity/base/change-indicators'
 import isHotkey from 'is-hotkey'
 import {setLocation} from 'part:@sanity/base/datastore/presence'
-import React, {useCallback, useEffect, useRef, useState, useMemo} from 'react'
+import React, {useCallback, useEffect, useState, useMemo} from 'react'
 import styled from 'styled-components'
 import {usePaneRouter} from '../../contexts/paneRouter'
 import {useDeskTool} from '../../contexts/deskTool'
@@ -24,7 +24,6 @@ import {InspectDialog} from './inspectDialog'
 import {DocumentActionShortcuts} from './keyboardShortcuts'
 import {getMenuItems} from './menuItems'
 import {DocumentStatusBar} from './statusBar'
-import {TimelinePopover} from './timeline'
 import {DocumentView} from './types'
 import {usePreviewUrl} from './usePreviewUrl'
 
@@ -89,13 +88,7 @@ export function DocumentPane(props: DocumentPaneProps) {
   const [footerElement, setFooterElement] = useState<HTMLDivElement | null>(null)
   const [actionsBoxElement, setActionsBoxElement] = useState<HTMLDivElement | null>(null)
   const footerRect = useElementRect(footerElement)
-  const {
-    historyController,
-    setTimelineMode,
-    timelineMode,
-    open: openHistory,
-    displayed,
-  } = useDocumentHistory()
+  const {historyController, open: openHistory, displayed} = useDocumentHistory()
   const historyState = historyController.selectionState
   const paneRouter = usePaneRouter()
   const activeViewId = paneRouter.params.view || (views[0] && views[0].id)
@@ -104,22 +97,14 @@ export function DocumentPane(props: DocumentPaneProps) {
   )
   const isInspectOpen = paneRouter.params.inspect === 'on'
   const previewUrl = usePreviewUrl(value)
-  const changesSinceSelectRef = useRef<HTMLButtonElement | null>(null)
-  const versionSelectRef = useRef<HTMLButtonElement | null>(null)
   const isChangesOpen = historyController.changesPanelActive()
-  const isTimelineOpen = timelineMode !== 'closed'
   const zOffsets = useZIndex()
   const inspectValue = displayed || initialValue
   const {push: pushToast} = useToast()
   const hasValue = Boolean(value)
+
   const menuItems = useMemo(
-    () =>
-      getMenuItems({
-        features,
-        hasValue,
-        isHistoryOpen: isChangesOpen,
-        previewUrl,
-      }),
+    () => getMenuItems({features, hasValue, isHistoryOpen: isChangesOpen, previewUrl}),
     [features, hasValue, isChangesOpen, previewUrl]
   )
 
@@ -194,18 +179,6 @@ export function DocumentPane(props: DocumentPaneProps) {
 
   const handleSplitPane = useCallback(() => paneRouter.duplicateCurrent(), [paneRouter])
 
-  const handleTimelineClose = useCallback(() => {
-    setTimelineMode('closed')
-  }, [setTimelineMode])
-
-  const handleTimelineSince = useCallback(() => {
-    setTimelineMode(timelineMode === 'since' ? 'closed' : 'since')
-  }, [timelineMode, setTimelineMode])
-
-  const handleTimelineRev = useCallback(() => {
-    setTimelineMode(timelineMode === 'rev' ? 'closed' : 'rev')
-  }, [timelineMode, setTimelineMode])
-
   useEffect(() => {
     if (connectionState === 'reconnecting') {
       pushToast({
@@ -230,22 +203,6 @@ export function DocumentPane(props: DocumentPaneProps) {
       </PaneFooter>
     ),
     [documentId, documentType, setActionsBoxElement, updatedAt]
-  )
-
-  const timelinePopover = useMemo(
-    () => (
-      <LegacyLayerProvider zOffset="paneHeader">
-        <TimelinePopover
-          onClose={handleTimelineClose}
-          open={isTimelineOpen}
-          placement="bottom"
-          targetElement={
-            timelineMode === 'rev' ? versionSelectRef.current : changesSinceSelectRef.current
-          }
-        />
-      </LegacyLayerProvider>
-    ),
-    [handleTimelineClose, isTimelineOpen, timelineMode]
   )
 
   const inspectDialog = useMemo(
@@ -291,7 +248,6 @@ export function DocumentPane(props: DocumentPaneProps) {
               initialValue={initialValue}
               isClosable={isClosable}
               isHistoryOpen={isChangesOpen}
-              isTimelineOpen={isTimelineOpen}
               markers={markers}
               menuItems={menuItems}
               menuItemGroups={menuItemGroups}
@@ -299,31 +255,24 @@ export function DocumentPane(props: DocumentPaneProps) {
               onCloseView={handleClosePane}
               onMenuAction={handleMenuAction}
               onSplitPane={handleSplitPane}
-              onTimelineOpen={handleTimelineRev}
               paneTitle={paneTitle}
               published={published}
               rootElement={rootElement}
               schemaType={schemaType}
-              timelineMode={timelineMode}
               value={value}
               compareValue={
                 isChangesOpen ? (historyController.sinceAttributes() as any) : compareValue
               }
-              versionSelectRef={versionSelectRef}
               views={views}
             />
 
             {features.reviewChanges && isChangesOpen && (
               <BoundaryElementProvider element={rootElement}>
                 <ChangesPanel
-                  changesSinceSelectRef={changesSinceSelectRef}
                   documentId={documentId}
-                  isTimelineOpen={isTimelineOpen}
                   loading={historyState === 'loading'}
-                  onTimelineOpen={handleTimelineSince}
                   schemaType={schemaType}
                   since={historyController.sinceTime}
-                  timelineMode={timelineMode}
                 />
               </BoundaryElementProvider>
             )}
@@ -334,8 +283,6 @@ export function DocumentPane(props: DocumentPaneProps) {
       {paneFooter}
 
       <DocumentOperationResults id={documentId} type={documentType} />
-
-      {timelinePopover}
 
       {inspectDialog}
     </DocumentActionShortcuts>

@@ -27,7 +27,6 @@ interface DocumentPanelProps {
   initialValue: Partial<SanityDocument>
   isClosable: boolean
   isHistoryOpen: boolean
-  isTimelineOpen: boolean
   markers: Marker[]
   menuItems: MenuItem[]
   menuItemGroups: MenuItemGroup[]
@@ -41,12 +40,9 @@ interface DocumentPanelProps {
   published: SanityDocument | null
   rootElement: HTMLDivElement | null
   schemaType: any
-  timelineMode: 'rev' | 'since' | 'closed'
   value: Partial<SanityDocument> | null
   compareValue: SanityDocument | null
-  versionSelectRef: React.MutableRefObject<HTMLButtonElement | null>
   views: DocumentView[]
-  timelinePopoverBoundaryElement: HTMLDivElement | null
 }
 
 const Scroller = styled(ScrollContainer)<{$disabled?: boolean}>(({$disabled}) => {
@@ -75,7 +71,6 @@ export function DocumentPanel(props: DocumentPanelProps) {
     initialValue,
     isClosable,
     isHistoryOpen,
-    isTimelineOpen,
     markers,
     menuItems,
     menuItemGroups,
@@ -84,15 +79,12 @@ export function DocumentPanel(props: DocumentPanelProps) {
     onCloseView,
     onMenuAction,
     onSplitPane,
-    onTimelineOpen,
     paneTitle,
     published,
     rootElement,
     schemaType,
-    timelineMode,
     value,
     compareValue,
-    versionSelectRef,
     views,
   } = props
   const {collapsed: layoutCollapsed} = usePaneLayout()
@@ -138,22 +130,18 @@ export function DocumentPanel(props: DocumentPanelProps) {
         activeViewId={activeViewId}
         idPrefix={idPrefix}
         isClosable={isClosable}
-        isTimelineOpen={isTimelineOpen}
         markers={markers}
         menuItemGroups={menuItemGroups}
         menuItems={menuItems}
         onCloseView={onCloseView}
         onContextMenuAction={onMenuAction}
         onSplitPane={onSplitPane}
-        onTimelineOpen={onTimelineOpen}
         rootElement={rootElement}
         schemaType={schemaType}
         onSetFormInputFocus={onFormInputFocus}
-        timelineMode={timelineMode}
         title={
           <DocumentHeaderTitle documentType={documentType} paneTitle={paneTitle} value={value} />
         }
-        versionSelectRef={versionSelectRef}
         views={views}
         ref={setHeaderElement}
         rev={revTime}

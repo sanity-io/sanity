@@ -1,6 +1,6 @@
 import {useDocumentOperationEvent} from '@sanity/react-hooks'
 import {useToast} from '@sanity/ui'
-import React, {useEffect} from 'react'
+import React, {memo, useEffect} from 'react'
 
 function getOpErrorTitle(op: string): string {
   if (op === 'delete') {
@@ -37,9 +37,12 @@ type DocumentOperationResultsProps = {
   type: string
 }
 
-export function DocumentOperationResults(props: DocumentOperationResultsProps) {
+export const DocumentOperationResults = memo(function DocumentOperationResults(
+  props: DocumentOperationResultsProps
+) {
+  const {id, type} = props
   const {push: pushToast} = useToast()
-  const event: any = useDocumentOperationEvent(props.id, props.type)
+  const event: any = useDocumentOperationEvent(id, type)
 
   useEffect(() => {
     if (!event) return
@@ -47,6 +50,7 @@ export function DocumentOperationResults(props: DocumentOperationResultsProps) {
     if (event.type === 'error') {
       pushToast({
         closable: true,
+        duration: 30000, // 30s
         status: 'error',
         title: getOpErrorTitle(event.op),
         description: (
@@ -68,4 +72,4 @@ export function DocumentOperationResults(props: DocumentOperationResultsProps) {
   }, [event, pushToast])
 
   return null
-}
+})
