@@ -2,7 +2,7 @@
 /* eslint-disable max-depth */
 /**
  * This plugin will make the editor support undo/redo on the local state only.
- * The undo/redo steps are rebased against incoming patches since the step occured.
+ * The undo/redo steps are rebased against incoming patches since the step occurred.
  */
 
 import {isEqual, flatten} from 'lodash'

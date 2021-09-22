@@ -18,7 +18,7 @@ ErrorDialog.propTypes = {
 }
 
 ErrorDialog.defaultProps = {
-  heading: 'An error occured',
+  heading: 'An error occurred',
 }
 
 export default ErrorDialog

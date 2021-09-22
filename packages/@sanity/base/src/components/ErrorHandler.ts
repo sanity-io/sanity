@@ -45,7 +45,7 @@ function ErrorHandler({onUIError}: {onUIError: (err: Error) => void}): null {
       push({
         closable: true,
         status: 'error',
-        title: __DEV__ ? `Error: ${err.message}` : 'An error occured',
+        title: __DEV__ ? `Error: ${err.message}` : 'An error occurred',
         description: 'Check the browser’s console for details.',
       })
     },

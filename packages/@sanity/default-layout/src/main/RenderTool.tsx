@@ -9,7 +9,7 @@ import {ErrorScreen} from '.'
 declare const __DEV__: boolean
 
 const defaultUnknownError = {
-  message: 'An unknown error occured while rendering',
+  message: 'An unknown error occurred while rendering',
 }
 
 interface Props {
