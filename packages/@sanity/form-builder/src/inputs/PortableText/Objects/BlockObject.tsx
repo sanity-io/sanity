@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, {FunctionComponent, SyntheticEvent, useMemo, useRef} from 'react'
+import React, {FunctionComponent, SyntheticEvent, useCallback, useMemo, useRef} from 'react'
 import classNames from 'classnames'
 import {Path, Marker, isValidationErrorMarker} from '@sanity/types'
 import {
@@ -40,36 +40,47 @@ export const BlockObject: FunctionComponent<Props> = ({
 
   useScrollIntoViewOnFocusWithin(elementRef, hasFocusWithinPath(focusPath, value))
 
-  const errors = markers.filter(isValidationErrorMarker)
-  const classnames = classNames([
-    styles.root,
-    focused && styles.focused,
-    selected && styles.selected,
-    errors.length > 0 && styles.hasErrors,
-  ])
+  const errors = useMemo(() => markers.filter(isValidationErrorMarker), [markers])
+  const classnames = useMemo(
+    () =>
+      classNames([
+        styles.root,
+        focused && styles.focused,
+        selected && styles.selected,
+        errors.length > 0 && styles.hasErrors,
+      ]),
+    [errors.length, focused, selected]
+  )
 
-  const handleClickToOpen = (event: SyntheticEvent<HTMLElement>): void => {
-    if (focused) {
-      event.preventDefault()
-      event.stopPropagation()
-      onFocus(path.concat(FOCUS_TERMINATOR))
-    } else {
-      onFocus(path)
-    }
-  }
+  const handleClickToOpen = useCallback(
+    (event: SyntheticEvent<HTMLElement>): void => {
+      if (focused) {
+        event.preventDefault()
+        event.stopPropagation()
+        onFocus(path.concat(FOCUS_TERMINATOR))
+      } else {
+        onFocus(path)
+      }
+    },
+    [focused, onFocus, path]
+  )
 
-  const handleEdit = (): void => {
+  const handleEdit = useCallback((): void => {
     onFocus(path.concat(FOCUS_TERMINATOR))
-  }
+  }, [onFocus, path])
 
-  const handleDelete = (): void => {
-    PortableTextEditor.delete(
-      editor,
-      {focus: {path, offset: 0}, anchor: {path, offset: 0}},
-      {mode: 'block'}
-    )
-    PortableTextEditor.focus(editor)
-  }
+  const handleDelete = useCallback(
+    () => (): void => {
+      PortableTextEditor.delete(
+        editor,
+        {focus: {path, offset: 0}, anchor: {path, offset: 0}},
+        {mode: 'block'}
+      )
+      PortableTextEditor.focus(editor)
+    },
+    [editor, path]
+  )
+
   const blockPreview = useMemo(() => {
     return (
       <BlockObjectPreview
@@ -80,7 +91,7 @@ export const BlockObject: FunctionComponent<Props> = ({
         onClickingEdit={handleEdit}
       />
     )
-  }, [value, readOnly])
+  }, [type, value, readOnly, handleDelete, handleEdit])
   return (
     <div className={classnames} ref={elementRef} onDoubleClick={handleClickToOpen}>
       <div className={styles.previewContainer} style={readOnly ? {cursor: 'default'} : {}}>
