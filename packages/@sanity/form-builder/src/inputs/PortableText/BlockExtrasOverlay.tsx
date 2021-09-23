@@ -1,13 +1,12 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import React from 'react'
+import React, {useMemo} from 'react'
 import BlockExtras from 'part:@sanity/form-builder/input/block-editor/block-extras'
 import {isKeySegment, Marker, Path} from '@sanity/types'
 import {
   PortableTextBlock,
   PortableTextEditor,
-  PortableTextFeatures,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import PatchEvent from '../../../PatchEvent'
@@ -32,9 +31,6 @@ const findBlockMarkers = (block: PortableTextBlock, markers: Marker[]): Marker[]
 export default function BlockExtrasOverlay(props: Props) {
   const {value} = props
 
-  const editor = usePortableTextEditor()
-  const ptFeatures = PortableTextEditor.getPortableTextFeatures(editor)
-
   // Render overlay for each block
   return (
     <div className={styles.root}>
@@ -42,7 +38,6 @@ export default function BlockExtrasOverlay(props: Props) {
         <BlockExtrasWithBlockActionsAndHeight
           {...props}
           block={blk}
-          ptFeatures={ptFeatures}
           key={`blockExtras-${blk._key}`}
         />
       ))}
@@ -56,7 +51,6 @@ type BlockExtrasWithBlockActionsAndHeightProps = {
   markers: Marker[]
   onFocus: (path: Path) => void
   onChange: (event: PatchEvent) => void
-  ptFeatures: PortableTextFeatures
   renderBlockActions?: RenderBlockActions
   renderCustomMarkers?: RenderCustomMarkers
   value: PortableTextBlock[] | undefined
@@ -71,13 +65,17 @@ function BlockExtrasWithBlockActionsAndHeight(
     markers,
     onChange,
     onFocus,
-    ptFeatures,
     renderBlockActions,
     renderCustomMarkers,
     value,
   } = props
   const editor = usePortableTextEditor()
-  const blockMarkers = findBlockMarkers(block, markers)
+  const blockMarkers = useMemo(() => findBlockMarkers(block, markers), [block, markers])
+  const allowedDecorators = useMemo(
+    () => PortableTextEditor.getPortableTextFeatures(editor).decorators.map((dec) => dec.value),
+    [editor]
+  )
+  // eslint-disable-next-line react/no-find-dom-node
   const element = PortableTextEditor.findDOMNode(editor, block) as HTMLElement
   if (!element) {
     return null
@@ -91,9 +89,11 @@ function BlockExtrasWithBlockActionsAndHeight(
         <RenderComponent
           block={block}
           value={value}
-          set={createBlockActionPatchFn('set', block, onChange, ptFeatures)}
-          unset={createBlockActionPatchFn('unset', block, onChange, ptFeatures) as () => void}
-          insert={createBlockActionPatchFn('insert', block, onChange, ptFeatures)}
+          set={createBlockActionPatchFn('set', block, onChange, allowedDecorators)}
+          unset={
+            createBlockActionPatchFn('unset', block, onChange, allowedDecorators) as () => void
+          }
+          insert={createBlockActionPatchFn('insert', block, onChange, allowedDecorators)}
         />
       )
     }
