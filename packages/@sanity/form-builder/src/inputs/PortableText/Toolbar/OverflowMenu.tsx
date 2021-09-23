@@ -1,12 +1,10 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-/* eslint-disable no-undef */
-
 import classNames from 'classnames'
 import EllipsisIcon from 'part:@sanity/base/ellipsis-icon'
 import {MenuButton} from 'part:@sanity/components/menu-button'
-import React, {useEffect, useRef, useState, useMemo} from 'react'
+import React, {useEffect, useRef, useState, useMemo, useCallback} from 'react'
 
 import styles from './OverflowMenu.module.css'
 
@@ -51,7 +49,7 @@ export function OverflowMenu(props: Props) {
   const lastHidden = hiddenActions.length === 1
   const ioRef = useRef<IntersectionObserver | null>(null)
   const [open, setOpen] = useState(false)
-  const handleClose = () => setOpen(false)
+  const handleClose = useCallback(() => () => setOpen(false), [])
 
   useEffect(() => {
     const actionBar = actionBarRef.current

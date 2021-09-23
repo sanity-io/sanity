@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable react/jsx-handler-names */
-/* eslint-disable react/jsx-no-bind */
-
 import {
   HotkeyOptions,
   RenderBlockFunction,
@@ -11,7 +7,7 @@ import {
   PortableTextEditor,
 } from '@sanity/portable-text-editor'
 import classNames from 'classnames'
-import React, {useCallback} from 'react'
+import React, {useCallback, useMemo} from 'react'
 import {Path, SchemaType} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {resolveInitialValueForType} from '@sanity/initial-value-templates'
@@ -24,6 +20,8 @@ import {getBlockStyleSelectProps, getInsertMenuItems, getPTEToolbarActionGroups}
 import styles from './Toolbar.module.css'
 
 const SLOW_INITIAL_VALUE_LIMIT = 300
+
+const preventDefault = (event) => event.preventDefault()
 
 interface Props {
   hotkeys: HotkeyOptions
@@ -112,7 +110,7 @@ function PTEToolbar(props: Props) {
     [editor, onFocus, resolveInitialValue]
   )
 
-  const actionGroups = React.useMemo(
+  const actionGroups = useMemo(
     () =>
       editor ? getPTEToolbarActionGroups(editor, selection, handleInsertAnnotation, hotkeys) : [],
     [editor, selection, handleInsertAnnotation, hotkeys]
@@ -131,8 +129,8 @@ function PTEToolbar(props: Props) {
       className={classNames(styles.root, isFullscreen && styles.fullscreen)}
       // Ensure the editor doesn't lose focus when interacting
       // with the toolbar (prevent focus click events)
-      onMouseDown={(event) => event.preventDefault()}
-      onKeyPress={(event) => event.preventDefault()}
+      onMouseDown={preventDefault}
+      onKeyPress={preventDefault}
     >
       {blockStyleSelectProps && blockStyleSelectProps.items.length > 1 && (
         <div className={styles.blockStyleSelectContainer}>
@@ -141,7 +139,6 @@ function PTEToolbar(props: Props) {
             className={styles.blockStyleSelect}
             disabled={disabled}
             padding="small"
-            selection={selection}
             readOnly={readOnly}
             renderBlock={renderBlock}
           />
