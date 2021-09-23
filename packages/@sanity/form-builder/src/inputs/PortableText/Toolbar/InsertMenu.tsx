@@ -1,11 +1,10 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
-
+import React, {useCallback, useMemo} from 'react'
 import {ButtonProps} from '@sanity/base/__legacy/@sanity/components'
 import PlusIcon from 'part:@sanity/base/plus-icon'
 import Button from 'part:@sanity/components/buttons/default'
-import {MenuButton} from 'part:@sanity/components/menu-button'
-import React, {useCallback} from 'react'
+import {MenuButton} from '../../../legacyParts'
 import {BlockItem} from './types'
 
 import styles from './InsertMenu.module.css'
@@ -24,12 +23,15 @@ export default function InsertMenu(props: InsertMenuProps) {
     setOpen(false)
   }, [])
 
-  const menu = (
-    <div className={styles.menu}>
-      {items.map((item) => (
-        <InsertMenuItem item={item} onClick={handleClose} key={item.key} />
-      ))}
-    </div>
+  const menu = useMemo(
+    () => (
+      <div className={styles.menu}>
+        {items.map((item) => (
+          <InsertMenuItem item={item} onClick={handleClose} key={item.key} />
+        ))}
+      </div>
+    ),
+    [handleClose, items]
   )
 
   return (

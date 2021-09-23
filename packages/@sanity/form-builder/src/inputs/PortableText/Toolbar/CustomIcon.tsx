@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useMemo} from 'react'
 
 import styles from './CustomIcon.module.css'
 
@@ -10,10 +10,13 @@ interface Props {
 export default function CustomIcon(props: Props) {
   const {icon, active} = props
 
-  const inlineStyle = {
-    backgroundImage: `url(${icon})`,
-    filter: active ? 'invert(100%)' : 'invert(0%)',
-  }
+  const inlineStyle = useMemo(
+    () => ({
+      backgroundImage: `url(${icon})`,
+      filter: active ? 'invert(100%)' : 'invert(0%)',
+    }),
+    [active, icon]
+  )
 
   return <div className={styles.root} style={inlineStyle} />
 }
