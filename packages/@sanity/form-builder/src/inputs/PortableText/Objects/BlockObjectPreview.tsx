@@ -1,15 +1,8 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 /* eslint-disable react/prop-types */
-import React, {FunctionComponent} from 'react'
+import React, {FunctionComponent, useCallback, useMemo} from 'react'
 import {PortableTextBlock, Type} from '@sanity/portable-text-editor'
-import DropDownButton from 'part:@sanity/components/buttons/dropdown'
-
-import EditIcon from 'part:@sanity/base/edit-icon'
-import LinkIcon from 'part:@sanity/base/link-icon'
-import TrashIcon from 'part:@sanity/base/trash-icon'
-import VisibilityIcon from 'part:@sanity/base/visibility-icon'
+import {EditIcon, LinkIcon, TrashIcon, EyeOpenIcon} from '@sanity/icons'
+import {DropDownButton} from '../../../legacyParts'
 
 import Preview from '../../../Preview'
 import {MenuItem, DropDownMenuItemProps} from './BlockObjectMenuItem'
@@ -31,46 +24,52 @@ export const BlockObjectPreview: FunctionComponent<Props> = ({
   onClickingEdit,
   onClickingDelete,
 }): JSX.Element => {
-  const menuItems: DropDownMenuItemProps[] = []
-  if (value._ref) {
-    menuItems.push({
-      title: 'Go to reference',
-      icon: LinkIcon,
-      intent: 'edit',
-      params: {id: value._ref},
-    })
-  }
-  if (readOnly) {
-    menuItems.push({
-      title: 'View',
-      icon: VisibilityIcon,
-      name: 'view',
-    })
-  } else {
-    menuItems.push({
-      title: 'Edit',
-      icon: EditIcon,
-      name: 'edit',
-    })
-    menuItems.push({
-      title: 'Delete',
-      icon: TrashIcon,
-      name: 'delete',
-      color: 'danger',
-    })
-  }
+  const menuItems: DropDownMenuItemProps[] = useMemo(() => {
+    const items = []
+    if (value._ref) {
+      items.push({
+        title: 'Go to reference',
+        icon: LinkIcon,
+        intent: 'edit',
+        params: {id: value._ref},
+      })
+    }
+    if (readOnly) {
+      items.push({
+        title: 'View',
+        icon: EyeOpenIcon,
+        name: 'view',
+      })
+    } else {
+      items.push({
+        title: 'Edit',
+        icon: EditIcon,
+        name: 'edit',
+      })
+      items.push({
+        title: 'Delete',
+        icon: TrashIcon,
+        name: 'delete',
+        color: 'danger',
+      })
+    }
+    return items
+  }, [readOnly, value._ref])
 
-  const handleHeaderMenuAction = (item: DropDownMenuItemProps): void => {
-    if (item.name === 'delete') {
-      onClickingDelete()
-    }
-    if (item.name === 'edit') {
-      onClickingEdit()
-    }
-    if (item.name === 'view') {
-      onClickingEdit()
-    }
-  }
+  const handleHeaderMenuAction = useCallback(
+    (item: DropDownMenuItemProps): void => {
+      if (item.name === 'delete') {
+        onClickingDelete()
+      }
+      if (item.name === 'edit') {
+        onClickingEdit()
+      }
+      if (item.name === 'view') {
+        onClickingEdit()
+      }
+    },
+    [onClickingDelete, onClickingEdit]
+  )
 
   return (
     <div className={styles.preview}>
