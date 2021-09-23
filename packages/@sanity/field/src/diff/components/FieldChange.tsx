@@ -14,6 +14,8 @@ import {FallbackDiff} from './FallbackDiff'
 import {RevertChangesButton} from './RevertChangesButton'
 import {ValueError} from './ValueError'
 
+import {BoxContentWrapper} from './FieldChange.styled'
+
 const FieldChangeContainer = styled.div`
   --field-change-error: ${({theme}) => theme.sanity.color.solid.critical.enabled.bg};
   &[data-revert-all-changes-hover] [data-revert-all-hover]::before {
@@ -109,40 +111,41 @@ export function FieldChange({
             </DiffErrorBoundary>
           )}
           {isComparingCurrent && updatePermission.granted && (
-            <Box flex={1}>
-              <RevertChangesButton
-                onClick={handleRevertChangesConfirm}
-                onMouseEnter={handleRevertButtonMouseEnter}
-                onMouseLeave={handleRevertButtonMouseLeave}
-                ref={setRevertButtonElement}
-                selected={confirmRevertOpen}
-                disabled={readOnly || change?.parentSchema?.readOnly || change.schemaType.readOnly}
-              />
-            </Box>
+            <Popover
+              content={
+                <BoxContentWrapper padding={3} sizing="border">
+                  abc Are you sure you want to revert the changes?
+                  <Grid columns={2} gap={2} marginTop={2}>
+                    <Button mode="ghost" onClick={closeRevertChangesConfirmDialog}>
+                      <Text align="center">Cancel</Text>
+                    </Button>
+                    <Button tone="critical" onClick={handleRevertChanges}>
+                      <Text align="center">Revert change</Text>
+                    </Button>
+                  </Grid>
+                </BoxContentWrapper>
+              }
+              open={confirmRevertOpen}
+              portal
+              placement="left"
+              preventOverflow
+            >
+              <Box flex={1}>
+                <RevertChangesButton
+                  onClick={handleRevertChangesConfirm}
+                  onMouseEnter={handleRevertButtonMouseEnter}
+                  onMouseLeave={handleRevertButtonMouseLeave}
+                  ref={setRevertButtonElement}
+                  selected={confirmRevertOpen}
+                  disabled={
+                    readOnly || change?.parentSchema?.readOnly || change.schemaType.readOnly
+                  }
+                />
+              </Box>
+            </Popover>
           )}
         </DiffInspectWrapper>
       </FieldWrapper>
-
-      <Popover
-        content={
-          <Box>
-            Are you sure you want to revert the changes?
-            <Grid columns={2} gap={2} marginTop={2}>
-              <Button mode="ghost" onClick={closeRevertChangesConfirmDialog}>
-                <Text align="center">Cancel</Text>
-              </Button>
-              <Button tone="critical" onClick={handleRevertChanges}>
-                <Text align="center">Revert change</Text>
-              </Button>
-            </Grid>
-          </Box>
-        }
-        open={confirmRevertOpen}
-        portal
-        padding={4}
-        placement={'left'}
-        referenceElement={revertButtonElement}
-      />
     </Stack>
   )
 }
