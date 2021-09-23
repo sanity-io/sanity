@@ -1,7 +1,6 @@
-/* eslint-disable react/prop-types */
 import React, {FunctionComponent, SyntheticEvent, useCallback, useMemo, useRef} from 'react'
 import classNames from 'classnames'
-import {Path, Marker, isValidationErrorMarker} from '@sanity/types'
+import {Path} from '@sanity/types'
 import {
   PortableTextEditor,
   PortableTextBlock,
@@ -18,7 +17,7 @@ import styles from './BlockObject.module.css'
 type Props = {
   attributes: RenderAttributes
   editor: PortableTextEditor
-  markers: Marker[]
+  hasError: boolean
   onFocus: (path: Path) => void
   focusPath: Path
   readOnly: boolean
@@ -29,8 +28,8 @@ type Props = {
 export const BlockObject: FunctionComponent<Props> = ({
   attributes: {focused, selected, path},
   editor,
-  markers,
   focusPath,
+  hasError,
   onFocus,
   readOnly,
   type,
@@ -40,16 +39,15 @@ export const BlockObject: FunctionComponent<Props> = ({
 
   useScrollIntoViewOnFocusWithin(elementRef, hasFocusWithinPath(focusPath, value))
 
-  const errors = useMemo(() => markers.filter(isValidationErrorMarker), [markers])
   const classnames = useMemo(
     () =>
       classNames([
         styles.root,
         focused && styles.focused,
         selected && styles.selected,
-        errors.length > 0 && styles.hasErrors,
+        hasError && styles.hasErrors,
       ]),
-    [errors.length, focused, selected]
+    [hasError, focused, selected]
   )
 
   const handleClickToOpen = useCallback(
