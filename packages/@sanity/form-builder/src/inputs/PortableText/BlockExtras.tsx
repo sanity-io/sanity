@@ -1,16 +1,13 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
-import React from 'react'
+import React, {useMemo} from 'react'
 import classNames from 'classnames'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/change-indicators'
-import Markers from 'part:@sanity/form-builder/input/block-editor/block-markers'
 import {isKeySegment, Marker, Path} from '@sanity/types'
 import {
   PortableTextBlock,
   PortableTextEditor,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
+import {Markers} from '../../legacyParts'
 import {RenderCustomMarkers} from './types'
 import styles from './BlockExtras.module.css'
 
@@ -30,28 +27,32 @@ export default function BlockExtras(props: Props) {
   const errors = blockValidation.filter((mrkr) => mrkr.level === 'error')
   const warnings = blockValidation.filter((mrkr) => mrkr.level === 'warning')
   const empty = markers.length === 0 && !blockActions
-  const content = (
-    <div className={styles.content} style={{height: `${height}px`}}>
-      {markers.length > 0 && (
-        <div className={styles.markers}>
-          <Markers
-            className={styles.markers}
-            markers={markers}
-            scopedValidation={blockValidation}
-            onFocus={onFocus}
-            renderCustomMarkers={renderCustomMarkers}
-          />
-        </div>
-      )}
-      {blockActions && <div className={styles.blockActions}>{blockActions}</div>}
-      {/* Make sure it gets proper height (has content). Insert an zero-width-space if empty */}
-      {empty && <>&#8203;</>}
-    </div>
+  const content = useMemo(
+    () => (
+      <div className={styles.content} style={{height: `${height}px`}}>
+        {markers.length > 0 && (
+          <div className={styles.markers}>
+            <Markers
+              className={styles.markers}
+              markers={markers}
+              scopedValidation={blockValidation}
+              onFocus={onFocus}
+              renderCustomMarkers={renderCustomMarkers}
+            />
+          </div>
+        )}
+        {blockActions && <div className={styles.blockActions}>{blockActions}</div>}
+        {/* Make sure it gets proper height (has content). Insert an zero-width-space if empty */}
+        {empty && <>&#8203;</>}
+      </div>
+    ),
+    [blockActions, blockValidation, empty, height, markers, onFocus, renderCustomMarkers]
   )
   const path = PortableTextEditor.getSelection(editor)?.focus.path
   const hasFocus = path && isKeySegment(path[0]) ? path[0]._key === block._key : false
-  const returned =
-    isFullscreen && path && isKeySegment(path[0]) ? (
+  const showChangeIndicators = isFullscreen && path && isKeySegment(path[0])
+  const contentWithChangeIndicators = useMemo(
+    () => (
       <ChangeIndicatorWithProvidedFullPath
         className={styles.changeIndicator}
         compareDeep
@@ -61,22 +62,22 @@ export default function BlockExtras(props: Props) {
       >
         {content}
       </ChangeIndicatorWithProvidedFullPath>
-    ) : (
-      content
-    )
-  return (
-    <div
-      className={classNames([
+    ),
+    [block, content, hasFocus]
+  )
+  const blockExtras = showChangeIndicators ? contentWithChangeIndicators : content
+  const activeClassNames = useMemo(
+    () =>
+      classNames([
         styles.root,
         hasFocus && styles.hasFocus,
         isFullscreen && styles.hasFullScreen,
         errors.length > 0 && styles.withError,
         warnings.length > 0 && !errors.length && styles.withWarning,
-      ])}
-    >
-      {returned}
-    </div>
+      ]),
+    [errors.length, hasFocus, isFullscreen, warnings.length]
   )
+  return <div className={activeClassNames}>{blockExtras}</div>
 }
 
 function getValidationMarkers(markers: Marker[]) {

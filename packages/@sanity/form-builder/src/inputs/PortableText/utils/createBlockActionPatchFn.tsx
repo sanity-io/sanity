@@ -1,5 +1,5 @@
 import {normalizeBlock} from '@sanity/block-tools'
-import {PortableTextBlock, PortableTextFeatures} from '@sanity/portable-text-editor'
+import {PortableTextBlock} from '@sanity/portable-text-editor'
 import PatchEvent, {insert, unset, set} from '../../../PatchEvent'
 
 type UnsetFunction = () => void
@@ -10,10 +10,9 @@ export default function createBlockActionPatchFn(
   type: string,
   block: PortableTextBlock,
   onPatch: (event: PatchEvent) => void,
-  portableTextFeatures: PortableTextFeatures
+  allowedDecorators: string[]
 ): UnsetFunction | SetFunction | InsertFunction {
   let toInsert
-  const allowedDecorators = portableTextFeatures.decorators.map((item) => item.value)
   switch (type) {
     case 'set':
       return (givenBlock: PortableTextBlock): void => {
