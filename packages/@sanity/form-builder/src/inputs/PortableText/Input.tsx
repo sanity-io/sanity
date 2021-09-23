@@ -230,9 +230,14 @@ export default function PortableTextInput(props: Props) {
 
   const renderBlock = useCallback(
     (block, blockType, attributes, defaultRender) => {
-      const blockMarkers = markers.filter(
-        (marker) => isKeySegment(marker.path[0]) && marker.path[0]._key === block._key
-      )
+      const hasError =
+        markers.filter(
+          (marker) =>
+            isKeySegment(marker.path[0]) &&
+            marker.path[0]._key === block._key &&
+            marker.type === 'validation' &&
+            marker.level === 'error'
+        ).length > 0
       let renderedBlock = defaultRender(block)
       // Text blocks
       if (block._type === blockTypeName) {
@@ -250,7 +255,7 @@ export default function PortableTextInput(props: Props) {
           <BlockObject
             attributes={attributes}
             editor={editor}
-            markers={blockMarkers}
+            hasError={hasError}
             focusPath={focusPath || EMPTY_ARRAY}
             onFocus={onFocus}
             readOnly={readOnly}
