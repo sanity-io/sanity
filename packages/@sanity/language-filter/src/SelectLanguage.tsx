@@ -94,23 +94,21 @@ const SelectLanguage = ({
   }
 
   const content = (
-    <div onKeyUp={handleKeyUp}>
-      <Box padding={2}>
-        <Flex>
-          <Button
-            type="button"
-            mode="ghost"
-            tone="default"
-            onClick={allIsSelected ? handleSelectNone : handleSelectAll}
-            paddingX={3}
-            paddingY={2}
-            autoFocus
-            style={STYLES_TOGGLE}
-          >
-            Select {allIsSelected ? 'none' : 'all'}
-          </Button>
-        </Flex>
-      </Box>
+    <Box overflow="auto" sizing="border" onKeyUp={handleKeyUp}>
+      <Flex padding={2}>
+        <Button
+          type="button"
+          mode="ghost"
+          tone="default"
+          onClick={allIsSelected ? handleSelectNone : handleSelectAll}
+          paddingX={3}
+          paddingY={2}
+          autoFocus
+          style={STYLES_TOGGLE}
+        >
+          Select {allIsSelected ? 'none' : 'all'}
+        </Button>
+      </Flex>
       <Box padding={3} paddingX={2}>
         <Stack as="ul" space={3}>
           {languages.map((lang) => {
@@ -138,7 +136,7 @@ const SelectLanguage = ({
           })}
         </Stack>
       </Box>
-    </div>
+    </Box>
   )
 
   return (
@@ -165,9 +163,10 @@ const SelectLanguage = ({
       <Popover
         content={content}
         open={isOpen}
-        placement="top"
+        placement="bottom"
         ref={setPopoverRef}
         referenceElement={triggerRef}
+        constrainSize
         autoFocus
         portal
       />
