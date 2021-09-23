@@ -69,7 +69,7 @@ export const ScrollContainer = React.forwardRef(function ScrollContainer<
 
   return (
     <ScrollContext.Provider value={childContext}>
-      {React.createElement(as, {ref: setRef, 'data-ui': 'ScrollContainer', ...rest})}
+      {React.createElement(as, {ref: setRef, 'data-testid': 'scroll-container', ...rest})}
     </ScrollContext.Provider>
   )
 })
