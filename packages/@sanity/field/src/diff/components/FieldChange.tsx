@@ -81,7 +81,7 @@ export function FieldChange({
             <Popover
               content={
                 <BoxContentWrapper padding={3} sizing="border">
-                  abc Are you sure you want to revert the changes?
+                  Are you sure you want to revert the changes?
                   <Grid columns={2} gap={2} marginTop={2}>
                     <Button mode="ghost" onClick={closeRevertChangesConfirmDialog}>
                       <Text align="center">Cancel</Text>
