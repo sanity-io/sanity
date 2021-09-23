@@ -3,13 +3,13 @@
 
 /* eslint-disable react/no-multi-comp */
 
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, useCallback, useMemo} from 'react'
 import StyleSelect from 'part:@sanity/components/selects/style'
 import {
-  EditorSelection,
   PortableTextEditor,
   RenderBlockFunction,
   usePortableTextEditor,
+  usePortableTextEditorSelection,
 } from '@sanity/portable-text-editor'
 import {BlockStyleItem} from './types'
 
@@ -19,17 +19,21 @@ type Props = {
   padding?: string
   readOnly: boolean
   renderBlock: RenderBlockFunction
-  selection: EditorSelection
   items: BlockStyleItem[]
   value: BlockStyleItem[]
 }
 
+const preventDefault = (event: any) => event.preventDefault()
+
 export default function BlockStyleSelect(props: Props): JSX.Element {
-  const {className, disabled, items, padding, readOnly, renderBlock, value, selection} = props
+  const {className, disabled, items, padding, readOnly, renderBlock, value} = props
   const editor = usePortableTextEditor()
+  const selection = usePortableTextEditorSelection()
   const [changed, setChanged] = useState(false)
 
-  const features = React.useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [editor])
+  const ptFeatures = useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [editor])
+  const spanType = useMemo(() => ptFeatures.types.span, [ptFeatures])
+  const blockType = useMemo(() => ptFeatures.types.block, [ptFeatures])
 
   // Use this effect to set focus back into the editor when the new value get's in.
   useEffect(() => {
@@ -37,17 +41,20 @@ export default function BlockStyleSelect(props: Props): JSX.Element {
       PortableTextEditor.focus(editor)
       setChanged(false)
     }
-  }, [value, changed])
+  }, [value, changed, editor])
 
-  const handleChange = (item: BlockStyleItem): void => {
-    const focusBlock = PortableTextEditor.focusBlock(editor)
-    if (focusBlock && item.style !== focusBlock.style) {
-      PortableTextEditor.toggleBlockStyle(editor, item.style)
-    }
-    setChanged(true)
-  }
+  const handleChange = useCallback(
+    (item: BlockStyleItem): void => {
+      const focusBlock = selection && PortableTextEditor.focusBlock(editor)
+      if (focusBlock && item.style !== focusBlock.style) {
+        PortableTextEditor.toggleBlockStyle(editor, item.style)
+      }
+      setChanged(true)
+    },
+    [editor, selection]
+  )
 
-  const renderItem = React.useCallback(
+  const renderItem = useCallback(
     (item: BlockStyleItem): JSX.Element => {
       if (item.style) {
         const StyleComponent = item.styleComponent
@@ -55,17 +62,17 @@ export default function BlockStyleSelect(props: Props): JSX.Element {
         return renderBlock(
           {
             _key: '1',
-            _type: features.types.block.name,
+            _type: blockType.name,
             children: [
               {
                 _key: '2',
-                _type: features.types.span.name,
+                _type: spanType.name,
                 text: item.title,
               },
             ],
             style: item.style,
           },
-          features.types.block,
+          blockType,
           {focused: false, selected: false, path: []},
           () =>
             StyleComponent ? <StyleComponent>{item.title}</StyleComponent> : <>{item.title}</>,
@@ -76,17 +83,21 @@ export default function BlockStyleSelect(props: Props): JSX.Element {
 
       return <div key={item.key}>No style</div>
     },
-    [selection]
+    [blockType, renderBlock, spanType]
   )
-  const focusBlock = PortableTextEditor.focusBlock(editor)
+
+  const focusBlock = useMemo(() => selection && PortableTextEditor.focusBlock(editor), [
+    editor,
+    selection,
+  ])
 
   // @todo: Document what's going on here
-  const _disabled = focusBlock ? features.types.block.name !== focusBlock._type : false
+  const _disabled = focusBlock ? blockType.name !== focusBlock._type : false
   return (
     <label className={className}>
       <span style={{display: 'none'}}>Text</span>
       <StyleSelect
-        onClick={(event) => event.preventDefault()}
+        onClick={preventDefault}
         disabled={readOnly || disabled || _disabled}
         items={items}
         onChange={handleChange}

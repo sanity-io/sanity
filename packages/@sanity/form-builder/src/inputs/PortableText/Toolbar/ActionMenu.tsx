@@ -3,7 +3,7 @@
 
 import Button from 'part:@sanity/components/buttons/default'
 // import ToggleButton from 'part:@sanity/components/toggles/button'
-import React, {useCallback} from 'react'
+import React, {useCallback, useMemo} from 'react'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {OverflowMenu} from './OverflowMenu'
 import {PTEToolbarAction, PTEToolbarActionGroup} from './types'
@@ -18,7 +18,10 @@ interface Props {
 
 function ActionButton(props: {action: PTEToolbarAction; disabled: boolean; visible: boolean}) {
   const {action, disabled, visible} = props
-  const title = action.hotkeys ? `${action.title} (${action.hotkeys.join('+')})` : action.title
+  const title = useMemo(
+    () => (action.hotkeys ? `${action.title} (${action.hotkeys.join('+')})` : action.title),
+    [action.hotkeys, action.title]
+  )
 
   const handleClick = useCallback(() => {
     action.handle()
@@ -42,12 +45,15 @@ function ActionButton(props: {action: PTEToolbarAction; disabled: boolean; visib
 
 function ActionMenuItem(props: {action: PTEToolbarAction; disabled: boolean; onClose: () => void}) {
   const {action, disabled, onClose} = props
-  const title = action.hotkeys ? `${action.title} (${action.hotkeys.join('+')})` : action.title
+  const title = useMemo(
+    () => (action.hotkeys ? `${action.title} (${action.hotkeys.join('+')})` : action.title),
+    [action.hotkeys, action.title]
+  )
 
   const handleClick = useCallback(() => {
     action.handle()
     onClose()
-  }, [action])
+  }, [action, onClose])
 
   return (
     <Button
