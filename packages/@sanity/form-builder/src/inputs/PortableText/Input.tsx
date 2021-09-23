@@ -299,13 +299,18 @@ export default function PortableTextInput(props: Props) {
 
   const renderAnnotation = useCallback(
     (annotation, annotationType, attributes, defaultRender) => {
-      const annotationMarkers = markers.filter(
-        (marker) => isKeySegment(marker.path[2]) && marker.path[2]._key === annotation._key
-      )
+      const hasError =
+        markers.filter(
+          (marker) =>
+            isKeySegment(marker.path[2]) &&
+            marker.path[2]._key === annotation._key &&
+            marker.type === 'validation' &&
+            marker.level === 'error'
+        ).length > 0
       return (
         <Annotation
           attributes={attributes}
-          markers={annotationMarkers}
+          hasError={hasError}
           onFocus={onFocus}
           value={annotation}
         >
