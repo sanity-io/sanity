@@ -4,7 +4,7 @@
 import {uniqueId} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
 import Snackbar from 'part:@sanity/components/snackbar/default'
-import React, {useEffect, useState, useMemo} from 'react'
+import React, {useEffect, useState, useMemo, useCallback} from 'react'
 import {Marker, Path} from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {
@@ -19,7 +19,7 @@ import {
   HotkeyOptions,
 } from '@sanity/portable-text-editor'
 import {Subject} from 'rxjs'
-import {Box} from '@sanity/ui'
+import {Box, useToast} from '@sanity/ui'
 import PatchEvent from '../../PatchEvent'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {Patch} from '../../patch/types'
@@ -33,7 +33,7 @@ export type PatchWithOrigin = Patch & {
   timestamp: Date
 }
 
-type PatchSubscribe = (subscribeFn: PatchSubscriber) => void
+type PatchSubscribe = (subscribeFn: PatchSubscriber) => () => void
 type PatchSubscriber = ({
   patches,
 }: {
@@ -79,26 +79,13 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
     renderCustomMarkers,
     type,
     value,
+    subscribe,
   } = props
-
-  // The PortableTextEditor will not re-render unless the value is changed (which is good).
-  // But, we want to re-render it when the markers changes too,
-  // (we render error indicators directly in the editor nodes for inline objects and annotations)
-  const validationHash = markers
-    .filter((marker) => marker.type === 'validation')
-    .map((marker) => JSON.stringify(marker.path).concat(marker.type).concat(marker.level))
-    .sort()
-    .join('')
-  const forceUpdate = (fromValue?: PortableTextBlock[] | undefined) => {
-    const val = fromValue || props.value
-    setValueTouchedByMarkers(val ? [...val] : val)
-  }
-  const [valueTouchedByMarkers, setValueTouchedByMarkers] = useState(props.value)
-  useEffect(forceUpdate, [validationHash, value])
 
   const [editorErrorNotification, setEditorErrorNotification]: [ErrorChange, any] = useState(
     undefined
   )
+  const toast = useToast()
 
   // Reset invalidValue if new value is coming in from props
   const [invalidValue, setInvalidValue] = useState(null)
@@ -106,75 +93,77 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
     if (invalidValue && value !== invalidValue.value) {
       setInvalidValue(null)
     }
-  }, [value])
-
-  // Subscribe to incoming patches
-  let unsubscribe
-  useEffect(() => {
-    unsubscribe = props.subscribe(handleDocumentPatches)
-    return () => {
-      unsubscribe()
-    }
-  }, [])
+  }, [invalidValue, value])
 
   // Memoized patch stream
-  const patche$: Subject<EditorPatch> = useMemo(() => new Subject(), [])
-  const patchObservable = useMemo(() => patche$.asObservable(), [patche$])
+  const patches$: Subject<EditorPatch> = useMemo(() => new Subject(), [])
+  const patchObservable = useMemo(() => patches$.asObservable(), [patches$])
 
   // Handle incoming patches from withPatchSubscriber HOC
-  function handleDocumentPatches({
-    patches,
-  }: {
-    patches: PatchWithOrigin[]
-    snapshot: PortableTextBlock[] | undefined
-  }): void {
-    const patchSelection =
-      patches && patches.length > 0 && patches.filter((patch) => patch.origin !== 'local')
-    if (patchSelection) {
-      patchSelection.map((patch) => patche$.next(patch))
-    }
-  }
+  const handleDocumentPatches = useCallback(
+    ({patches}: {patches: PatchWithOrigin[]; snapshot: PortableTextBlock[] | undefined}): void => {
+      const patchSelection =
+        patches && patches.length > 0 && patches.filter((patch) => patch.origin !== 'local')
+      if (patchSelection) {
+        patchSelection.map((patch) => patches$.next(patch))
+      }
+    },
+    [patches$]
+  )
+
+  // Subscribe to incoming patches
+  useEffect(() => {
+    const unsubscribe = subscribe(handleDocumentPatches)
+    return () => unsubscribe()
+  }, [handleDocumentPatches, subscribe])
 
   // Handle editor changes
   const [hasFocus, setHasFocus] = useState(false)
-  function handleEditorChange(change: EditorChange): void {
-    switch (change.type) {
-      case 'mutation':
-        // Don't wait for the result
-        setTimeout(() => {
+  const handleEditorChange = useCallback(
+    (change: EditorChange): void => {
+      switch (change.type) {
+        case 'mutation':
+          // Don't wait for the result
+          setTimeout(() => {
+            onChange(PatchEvent.from(change.patches))
+          })
+          break
+        case 'focus':
+          setHasFocus(true)
+          break
+        case 'blur':
+          setHasFocus(false)
+          break
+        case 'undo':
+        case 'redo':
           onChange(PatchEvent.from(change.patches))
-        })
-        break
-      case 'focus':
-        setHasFocus(true)
-        break
-      case 'blur':
-        setHasFocus(false)
-        break
-      case 'undo':
-      case 'redo':
-        onChange(PatchEvent.from(change.patches))
-        break
-      case 'invalidValue':
-        setInvalidValue(change)
-        break
-      case 'error':
-        setEditorErrorNotification(change)
-        break
-      default:
-    }
-  }
+          break
+        case 'invalidValue':
+          setInvalidValue(change)
+          break
+        case 'error':
+          toast.push({
+            status: change.level,
+            description: change.description,
+          })
+          break
+        default:
+      }
+    },
+    [onChange, toast]
+  )
 
   const [ignoreValidationError, setIgnoreValidationError] = useState(false)
-  function handleIgnoreValidation(): void {
-    setIgnoreValidationError(true)
-  }
 
-  const handleFocusSkipper = () => {
+  const handleIgnoreValidation = useCallback((): void => {
+    setIgnoreValidationError(true)
+  }, [])
+
+  const handleFocusSkipper = useCallback(() => {
     if (ref.current) {
       PortableTextEditor.focus(ref.current)
     }
-  }
+  }, [ref])
 
   // Render error message and resolution
   let respondToInvalidContent = null
@@ -191,7 +180,7 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
   }
 
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const handleToggleFullscreen = () => setIsFullscreen(!isFullscreen)
+  const handleToggleFullscreen = useCallback(() => setIsFullscreen(!isFullscreen), [isFullscreen])
   const editorId = useMemo(() => uniqueId('PortableTextInputRoot'), [])
   const editorInput = useMemo(
     () => (
@@ -203,7 +192,7 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
         maxBlocks={undefined} // TODO: from schema?
         readOnly={readOnly}
         type={type}
-        value={valueTouchedByMarkers}
+        value={value}
       >
         {!readOnly && (
           <button
@@ -217,7 +206,6 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
         )}
         <Input
           focusPath={focusPath}
-          forceUpdate={forceUpdate}
           hasFocus={hasFocus}
           hotkeys={hotkeys}
           isFullscreen={isFullscreen}
@@ -228,18 +216,45 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
           onFocus={onFocus}
           onPaste={onPaste}
           onToggleFullscreen={handleToggleFullscreen}
-          patche$={patche$}
+          patches$={patches$}
           presence={presence}
           readOnly={readOnly}
           renderBlockActions={renderBlockActions}
           renderCustomMarkers={renderCustomMarkers}
           type={props.type}
-          value={valueTouchedByMarkers}
+          value={value}
         />
       </PortableTextEditor>
     ),
-    [focusPath, hasFocus, isFullscreen, presence, readOnly, valueTouchedByMarkers]
+    [
+      editorId,
+      focusPath,
+      handleEditorChange,
+      handleFocusSkipper,
+      handleToggleFullscreen,
+      hasFocus,
+      hotkeys,
+      isFullscreen,
+      markers,
+      onBlur,
+      onChange,
+      onCopy,
+      onFocus,
+      onPaste,
+      patches$,
+      presence,
+      props.type,
+      readOnly,
+      ref,
+      renderBlockActions,
+      renderCustomMarkers,
+      type,
+      value,
+    ]
   )
+
+  const clearErrorNotification = useCallback(() => setEditorErrorNotification(undefined), [])
+
   return (
     <>
       {editorErrorNotification && (
@@ -247,7 +262,7 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
         <Snackbar
           kind={editorErrorNotification.level}
           isPersisted
-          onAction={() => setEditorErrorNotification(undefined)}
+          onAction={clearErrorNotification}
           subtitle={<div>{editorErrorNotification.description}</div>}
         />
       )}
@@ -293,4 +308,4 @@ export default (withPatchSubscriber(
       )
     }
   }
-) as any) as React.ComponentType<Props>
+) as React.ComponentType) as React.ComponentType<Props>
