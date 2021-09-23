@@ -270,21 +270,18 @@ export default function PortableTextInput(props: Props) {
       if (isSpan) {
         return defaultRender(child)
       }
-      const inlineMarkers = markers.filter(
-        (marker) => isKeySegment(marker.path[2]) && marker.path[2]._key === child._key
-      )
-      // const hasError =
-      //   markers.filter(
-      //     (marker) =>
-      //       isKeySegment(marker.path[2]) &&
-      //       marker.path[2]._key === child._key &&
-      //       marker.type === 'validation' &&
-      //       marker.level === 'error'
-      //   ).length > 0
+      const hasError =
+        markers.filter(
+          (marker) =>
+            isKeySegment(marker.path[2]) &&
+            marker.path[2]._key === child._key &&
+            marker.type === 'validation' &&
+            marker.level === 'error'
+        ).length > 0
       return (
         <InlineObject
           attributes={attributes}
-          markers={inlineMarkers}
+          hasError={hasError}
           onFocus={onFocus}
           readOnly={readOnly}
           type={childType}
