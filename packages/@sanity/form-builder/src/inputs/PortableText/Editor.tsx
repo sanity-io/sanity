@@ -2,7 +2,6 @@ import {
   HotkeyOptions,
   PortableTextBlock,
   PortableTextEditable,
-  PortableTextFeatures,
   RenderAnnotationFunction,
   RenderBlockFunction,
   RenderChildFunction,
@@ -36,7 +35,6 @@ type Props = {
   onFormBuilderChange: (change: PatchEvent) => void
   onPaste?: OnPasteFn
   onToggleFullscreen: () => void
-  portableTextFeatures: PortableTextFeatures
   readOnly: boolean | null
   renderAnnotation: RenderAnnotationFunction
   renderBlock: RenderBlockFunction
