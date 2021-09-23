@@ -221,7 +221,6 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
           readOnly={readOnly}
           renderBlockActions={renderBlockActions}
           renderCustomMarkers={renderCustomMarkers}
-          type={props.type}
           value={value}
         />
       </PortableTextEditor>
@@ -243,7 +242,6 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
       onPaste,
       patches$,
       presence,
-      props.type,
       readOnly,
       ref,
       renderBlockActions,

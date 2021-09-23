@@ -3,13 +3,11 @@ import {Subject} from 'rxjs'
 import React, {useEffect, useState, useMemo, useCallback} from 'react'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {
-  getPortableTextFeatures,
   OnCopyFn,
   OnPasteFn,
   Patch as EditorPatch,
   PortableTextBlock,
   PortableTextEditor,
-  Type,
   usePortableTextEditor,
   usePortableTextEditorSelection,
   HotkeyOptions,
@@ -49,7 +47,6 @@ type Props = {
   readOnly: boolean | null
   renderBlockActions?: RenderBlockActions
   renderCustomMarkers?: RenderCustomMarkers
-  type: Type
   value: PortableTextBlock[] | undefined
 }
 
@@ -75,8 +72,7 @@ export default function PortableTextInput(props: Props) {
 
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
-
-  const ptFeatures = useMemo(() => getPortableTextFeatures(props.type), [props.type])
+  const ptFeatures = useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [editor])
 
   // States
   const [isActive, setIsActive] = useState(false)
@@ -355,7 +351,6 @@ export default function PortableTextInput(props: Props) {
         onCopy={onCopy}
         onPaste={onPaste}
         onToggleFullscreen={handleToggleFullscreen}
-        portableTextFeatures={ptFeatures}
         readOnly={isActive === false || readOnly}
         renderAnnotation={renderAnnotation}
         renderBlock={renderBlock}
@@ -379,7 +374,6 @@ export default function PortableTextInput(props: Props) {
       onCopy,
       onPaste,
       handleToggleFullscreen,
-      ptFeatures,
       isActive,
       readOnly,
       renderAnnotation,
