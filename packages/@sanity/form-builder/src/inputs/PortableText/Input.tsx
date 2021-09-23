@@ -44,7 +44,7 @@ type Props = {
   onFocus: (path: Path) => void
   onPaste?: OnPasteFn
   onToggleFullscreen: () => void
-  patche$: Subject<EditorPatch>
+  patches$: Subject<EditorPatch>
   presence: FormFieldPresence[]
   readOnly: boolean | null
   renderBlockActions?: RenderBlockActions
@@ -206,10 +206,10 @@ export default function PortableTextInput(props: Props) {
         .forEach((segment) => {
           _patchEvent = _patchEvent.prefixAll(segment)
         })
-      _patchEvent.patches.map((patch) => props.patche$.next(patch))
+      _patchEvent.patches.map((patch) => props.patches$.next(patch))
       onChange(_patchEvent)
     },
-    [onChange, props.patche$]
+    [onChange, props.patches$]
   )
 
   const handleEditObjectFormBuilderFocus = useCallback(
