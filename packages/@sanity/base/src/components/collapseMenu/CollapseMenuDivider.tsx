@@ -1,6 +1,11 @@
 import React from 'react'
-import {Card} from '@sanity/ui'
+import styled from 'styled-components'
 
-export function CollapseMenuDivider() {
-  return <Card borderRight data-ui="CollapseMenuDivider" tone="inherit" height="fill" />
+const DividerDiv = styled.div`
+  border-right: 1px solid var(--card-border-color);
+  height: auto;
+`
+
+export function CollapseMenuDivider({...rest}) {
+  return <DividerDiv data-ui="CollapseMenuDivider" {...rest} />
 }

@@ -6,6 +6,7 @@ import React, {
   ReactElement,
   Children,
   cloneElement,
+  Fragment,
 } from 'react'
 import {
   Box,
@@ -18,6 +19,7 @@ import {
   Tooltip,
   useElementRect,
   PopoverProps,
+  MenuDivider,
 } from '@sanity/ui'
 import {InView} from 'react-intersection-observer'
 import {EllipsisVerticalIcon} from '@sanity/icons'
@@ -32,33 +34,40 @@ interface CollapseMenuProps {
   onMenuVisible?: (visible: boolean) => void
 }
 
-const Root = styled(Box)<{$hide?: boolean}>`
+const RootBox = styled(Box)<{$hide?: boolean}>`
   border-radius: inherit;
-  overflow: hidden;
   position: relative;
-  white-space: nowrap;
-  width: 100%;
-  padding: 0.25rem;
-  margin: -0.25rem;
+  overflow: hidden;
+  /**
+  * We need to add padding + negative margin to make the focusRing  visible
+  */
+  padding: ${({theme}) => theme.sanity.focusRing.width}px;
+  margin: -${({theme}) => theme.sanity.focusRing.width}px;
 `
 
-const Inner = styled(Flex)<{$hide?: boolean}>`
+const InnerFlex = styled(Flex)<{$hide?: boolean}>`
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
+  overflow: hidden;
+  white-space: nowrap;
   pointer-events: ${({$hide}) => ($hide ? 'none' : 'inherit')};
   opacity: ${({$hide}) => ($hide ? 0 : 1)};
   position: ${({$hide}) => ($hide ? 'absolute' : 'static')};
   visibility: ${({$hide}) => ($hide ? 'hidden' : 'visible')};
   width: ${({$hide}) => ($hide ? 'max-content' : 'auto')};
+  /**
+  * We need to add padding + negative margin to make the focusRing  visible
+  */
+  padding: ${({theme}) => theme.sanity.focusRing.width}px;
+  margin: -${({theme}) => theme.sanity.focusRing.width}px;
 `
 
 const OptionBox = styled(Box)<{$inView: boolean}>`
-  display: flex;
-  flex-shrink: 0;
   list-style: none;
+  display: flex;
   white-space: nowrap;
   visibility: ${({$inView}) => ($inView ? 'visible' : 'hidden')};
   pointer-events: ${({$inView}) => ($inView ? 'inherit' : 'none')};
@@ -66,21 +75,37 @@ const OptionBox = styled(Box)<{$inView: boolean}>`
 
 export function CollapseMenu(props: CollapseMenuProps) {
   const {children, menuButton, gap = 1, onMenuVisible, menuPopoverProps} = props
-  const [rootRef, setRootRef] = useState<HTMLDivElement | null>(null)
-  const [expandedRef, setExpandedRef] = useState<HTMLDivElement | null>(null)
-  const [collapsedInnerRef, setCollapsedInnerRef] = useState<HTMLDivElement | null>(null)
+
+  const [rootBoxElement, setRootBoxElement] = useState<HTMLDivElement | null>(null)
+  const [innerFlexElement, setInnerFlexElement] = useState<HTMLDivElement | null>(null)
   const [collapsed, setCollapsed] = useState<boolean>(true)
   const [menuOptions, setMenuOptions] = useState<ReactElement[] | []>([])
-  const rootRect = useElementRect(rootRef)
+  const rootBoxRect = useElementRect(rootBoxElement)
+
+  /**
+   * Array of children
+   */
   const childrenArray = useMemo(() => Children.toArray(children) as ReactElement[], [children])
 
-  //Filter to get the latest state of menu options
+  /**
+   * Filter to get the latest state of menu options
+   */
   const menuOptionsArray = useMemo(
     () => childrenArray.filter(({key}) => menuOptions.find((o: ReactElement) => o.key === key)),
     [childrenArray, menuOptions]
   )
 
-  // Pick what button to render as menu button
+  /**
+   * Menu popover props
+   */
+  const popoverProps: PopoverProps = useMemo(
+    () => ({portal: true, placement: 'bottom', preventOverflow: true, ...menuPopoverProps}),
+    [menuPopoverProps]
+  )
+
+  /**
+   * Pick what button to render as menu button
+   */
   const menuButtonToRender = useMemo(() => {
     if (menuButton) {
       return menuButton
@@ -88,13 +113,29 @@ export function CollapseMenu(props: CollapseMenuProps) {
     return <Button mode="bleed" icon={EllipsisVerticalIcon} />
   }, [menuButton])
 
-  const menuIsVisible = collapsed && menuOptionsArray.length > 0
+  /**
+   * Check if menu is visible
+   */
+  const menuIsVisible = useMemo(() => collapsed && menuOptionsArray.length > 0, [
+    collapsed,
+    menuOptionsArray.length,
+  ])
 
   useEffect(() => {
     if (onMenuVisible) {
       onMenuVisible(menuIsVisible)
     }
   }, [menuIsVisible, onMenuVisible])
+
+  /**
+   * Compare RootBox width with InnerFlex scrollWidth to collapse/expand menu
+   */
+  useEffect(() => {
+    if (rootBoxRect && innerFlexElement) {
+      const collapse = rootBoxRect.width < innerFlexElement.scrollWidth
+      setCollapsed(collapse)
+    }
+  }, [innerFlexElement, rootBoxRect])
 
   // Add or remove option in menuOptions
   const handleInViewChange = useCallback(
@@ -116,29 +157,22 @@ export function CollapseMenu(props: CollapseMenuProps) {
 
   //Check if child is in menu
   const isInMenu = useCallback(
-    (option) => {
-      const exists = menuOptions.some(({key}) => key === option.key)
+    (childKey) => {
+      const exists = menuOptionsArray.some((o) => o.key === childKey)
       return exists
     },
-    [menuOptions]
+    [menuOptionsArray]
   )
 
-  //Check if menu should collapse
-  useEffect(() => {
-    if (rootRect && expandedRef) {
-      const collapse = rootRect.width < expandedRef.scrollWidth
-      setCollapsed(collapse)
-    }
-  }, [expandedRef, rootRect])
-
   return (
-    <Root ref={setRootRef} display="flex" data-ui="CollapseMenu" sizing="border">
-      {/* Expanded row */}
-      <Inner ref={setExpandedRef} $hide={collapsed} aria-hidden={collapsed}>
+    <RootBox ref={setRootBoxElement} display="flex" data-ui="CollapseMenu" sizing="border">
+      {/* Expanded row, visible when there is enough space to show text on buttons */}
+      <InnerFlex align="center" ref={setInnerFlexElement} $hide={collapsed} aria-hidden={collapsed}>
         <Flex as="ul" gap={gap}>
-          {childrenArray.map((child) => {
+          {childrenArray.map((child, index) => {
             const {
               buttonProps = {},
+              dividerBefore,
               // eslint-disable-next-line @typescript-eslint/no-unused-vars
               menuItemProps,
               // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -146,122 +180,139 @@ export function CollapseMenu(props: CollapseMenuProps) {
               ...restProps
             } = child.props as CollapseMenuItemProps
 
+            const showDivider = dividerBefore && index !== 0
+
             return (
-              <Box as="li" key={child.key}>
-                {cloneElement(
-                  child,
-                  {
-                    ...{...restProps, ...buttonProps},
-                  },
-                  null
-                )}
-              </Box>
+              <Fragment key={child.key}>
+                {showDivider && <CollapseMenuDivider />}
+                <Tooltip
+                  portal
+                  disabled
+                  {...tooltipProps}
+                  content={
+                    <Box padding={2} sizing="border">
+                      <Text size={1} muted>
+                        {tooltipProps?.text}
+                      </Text>
+                    </Box>
+                  }
+                >
+                  <Box as="li">
+                    {cloneElement(child, {
+                      ...{...restProps, ...buttonProps},
+                    })}
+                  </Box>
+                </Tooltip>
+              </Fragment>
             )
           })}
         </Flex>
-      </Inner>
+      </InnerFlex>
 
-      {/* Collapsed row */}
-      <Inner gap={gap} $hide={!collapsed} aria-hidden={!collapsed}>
-        <Flex ref={setCollapsedInnerRef} gap={gap} as="ul">
-          {childrenArray.map((child) => {
-            if (child.type === CollapseMenuDivider) {
-              return child
-            }
-
+      {/* Collapsed row, visible when there is not enough space to show text on buttons */}
+      <InnerFlex align="center" gap={gap} $hide={!collapsed} aria-hidden={!collapsed}>
+        <Flex gap={gap} as="ul">
+          {childrenArray.map((child, index) => {
             if (child.type !== CollapseMenuButton) {
-              return child
+              return null
             }
 
             const {
-              text,
               buttonProps = {},
+              dividerBefore,
+              collapseText = true,
               // eslint-disable-next-line @typescript-eslint/no-unused-vars
               menuItemProps,
+              text,
               tooltipProps,
               ...restProps
             } = child.props as CollapseMenuItemProps
 
+            const showDivider = index !== 0 && dividerBefore
+
             return (
               <InView
+                aria-hidden={isInMenu(child.key)}
                 // eslint-disable-next-line react/jsx-no-bind
-                onChange={(inView) => handleInViewChange({inView, child: child})}
-                root={collapsedInnerRef}
+                onChange={(inView) => handleInViewChange({inView, child})}
                 key={child.key}
                 threshold={1}
                 rootMargin="0px 2px 0px 0px"
-                aria-hidden={isInMenu(child.key)}
               >
                 {({ref, inView}) => (
                   <OptionBox ref={ref} as="li" $inView={inView && collapsed}>
-                    <Tooltip
-                      {...tooltipProps}
-                      portal
-                      disabled={!inView}
-                      content={
-                        <Box padding={2} sizing="border">
-                          <Text size={1}>{text}</Text>
-                        </Box>
-                      }
-                    >
-                      <Box>
-                        {cloneElement(
-                          child,
-                          {
-                            ...{...restProps, ...buttonProps},
-                            text: null,
-                            'aria-label': text,
-                          },
-                          null
-                        )}
-                      </Box>
-                    </Tooltip>
+                    {showDivider && <CollapseMenuDivider />}
+                    <Box marginLeft={showDivider ? gap : undefined}>
+                      <Tooltip
+                        disabled={!inView || !collapseText}
+                        portal
+                        {...tooltipProps}
+                        content={
+                          <Box padding={2} sizing="border">
+                            <Text size={1} muted>
+                              {tooltipProps?.text || text}
+                            </Text>
+                          </Box>
+                        }
+                      >
+                        {cloneElement(child, {
+                          ...{...restProps, ...buttonProps},
+                          'aria-label': text,
+                          text: collapseText ? null : text,
+                        })}
+                      </Tooltip>
+                    </Box>
                   </OptionBox>
                 )}
               </InView>
             )
           })}
         </Flex>
-      </Inner>
+      </InnerFlex>
 
-      {/* Menu */}
+      {/* Menu displaying the options that is outside of RootBox in collapsed state  */}
       {menuIsVisible && (
         <MenuButton
           button={menuButtonToRender}
           id="collapse-menu"
+          popover={popoverProps}
           menu={
             <Menu>
-              {menuOptionsArray.map((child) => {
+              {menuOptionsArray.map((child, index) => {
                 const {
-                  icon,
-                  selected,
-                  text,
-                  menuItemProps = {},
                   // eslint-disable-next-line @typescript-eslint/no-unused-vars
                   buttonProps,
+                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                  collapseText,
+                  dividerBefore,
+                  icon,
+                  menuItemProps = {},
+                  selected,
+                  text,
                   // eslint-disable-next-line @typescript-eslint/no-unused-vars
                   tooltipProps,
                   ...restProps
                 } = child.props as CollapseMenuItemProps
 
                 return (
-                  <MenuItem
-                    {...restProps}
-                    {...menuItemProps}
-                    icon={icon}
-                    key={child.key}
-                    text={text}
-                    fontSize={2}
-                    radius={2}
-                    pressed={selected}
-                  />
+                  <Fragment key={child.key}>
+                    {dividerBefore && index !== 0 && <MenuDivider />}
+                    <MenuItem
+                      {...restProps}
+                      icon={icon}
+                      text={text}
+                      fontSize={2}
+                      radius={2}
+                      {...menuItemProps}
+                      pressed={selected}
+                    />
+                  </Fragment>
                 )
               })}
             </Menu>
           }
-          popover={{portal: true, placement: 'bottom', preventOverflow: true, ...menuPopoverProps}}
         />
       )}
-    </Root>
+    </RootBox>
   )
 }
