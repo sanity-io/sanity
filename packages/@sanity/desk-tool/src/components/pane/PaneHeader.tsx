@@ -2,7 +2,7 @@ import {LegacyLayerProvider} from '@sanity/base/components'
 import {useElementRect, Box, Card, Flex, LayerProvider} from '@sanity/ui'
 import React, {useMemo, useState, useCallback, useEffect, useRef, forwardRef} from 'react'
 import {usePane} from './usePane'
-import {Layout, Root, TabsBox, TitleText} from './PaneHeader.styles'
+import {Layout, Root, TabsBox, TitleBox, TitleText} from './PaneHeader.styles'
 
 interface PaneHeaderProps {
   actions?: React.ReactNode
@@ -65,16 +65,16 @@ export const PaneHeader = forwardRef(function PaneHeader(
             >
               {backButton}
 
-              <Box flex={1} paddingY={3} paddingLeft={backButton ? 1 : 3}>
-                <TitleText
-                  onClick={handleTitleClick}
-                  tabIndex={0}
-                  textOverflow="ellipsis"
-                  weight="semibold"
-                >
+              <TitleBox
+                flex={1}
+                onClick={handleTitleClick}
+                paddingY={3}
+                paddingLeft={backButton ? 1 : 3}
+              >
+                <TitleText tabIndex={0} textOverflow="ellipsis" weight="semibold">
                   {title}
                 </TitleText>
-              </Box>
+              </TitleBox>
 
               {actions && (
                 <Box hidden={!actionsVisible} paddingLeft={1}>
