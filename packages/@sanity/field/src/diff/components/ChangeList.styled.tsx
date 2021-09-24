@@ -7,7 +7,7 @@ export const ChangeListWrapper = styled.div`
 `
 
 export const PopoverWrapper = styled(Popover)`
-  /* needed to keep this z-index from the previous implementation in order for the popover to appear
-  * on top of the DocumentStatusBar at the bottom */
-  z-index: 20300 !important;
+  &[data-popper-reference-hidden='true'] {
+    display: none;
+  }
 `
