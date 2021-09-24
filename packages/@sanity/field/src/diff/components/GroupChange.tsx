@@ -102,7 +102,7 @@ export function GroupChange({
           padding={4}
           placement={'left'}
           open={confirmRevertOpen}
-          referenceElement={revertButtonElement}
+          ref={setRevertButtonElement}
         >
           <Box>
             <RevertChangesButton
