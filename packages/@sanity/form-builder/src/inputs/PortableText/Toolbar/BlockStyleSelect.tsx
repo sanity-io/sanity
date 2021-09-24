@@ -1,39 +1,77 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
-/* eslint-disable react/no-multi-comp */
-
-import React, {useEffect, useState, useCallback, useMemo} from 'react'
-import StyleSelect from 'part:@sanity/components/selects/style'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   PortableTextEditor,
   RenderBlockFunction,
   usePortableTextEditor,
   usePortableTextEditorSelection,
 } from '@sanity/portable-text-editor'
+import {Button, Menu, MenuButton, MenuButtonProps, MenuItem, Stack} from '@sanity/ui'
+import {SelectIcon} from '@sanity/icons'
+import styled from 'styled-components'
 import {BlockStyleItem} from './types'
 
 type Props = {
-  className: string
   disabled: boolean
-  padding?: string
   readOnly: boolean
   renderBlock: RenderBlockFunction
   items: BlockStyleItem[]
   value: BlockStyleItem[]
+  isFullscreen?: boolean
+}
+
+const StyledMenuItem = styled(MenuItem)`
+  * {
+    margin: 0;
+    color: inherit;
+    border-color: inherit;
+  }
+`
+
+const MENU_POPOVER_PROPS: MenuButtonProps['popover'] = {
+  portal: true,
+  constrainSize: true,
+  placement: 'bottom-start',
 }
 
 const preventDefault = (event: any) => event.preventDefault()
 
 export default function BlockStyleSelect(props: Props): JSX.Element {
-  const {className, disabled, items, padding, readOnly, renderBlock, value} = props
+  const {disabled, items, readOnly, renderBlock, value, isFullscreen} = props
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
   const [changed, setChanged] = useState(false)
 
-  const ptFeatures = useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [editor])
-  const spanType = useMemo(() => ptFeatures.types.span, [ptFeatures])
-  const blockType = useMemo(() => ptFeatures.types.block, [ptFeatures])
+  const features = useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [editor])
+  const focusBlock = useMemo(() => selection && PortableTextEditor.focusBlock(editor), [
+    editor,
+    selection,
+  ])
+  const blockType = features.types.block
+  const spanType = features.types.span
+
+  // @todo: Document what's going on here
+  const _disabled = useMemo(
+    () => (focusBlock ? features.types.block.name !== focusBlock._type : false),
+    [features.types.block.name, focusBlock]
+  )
+
+  const menuButtonText = useMemo(() => {
+    if (value && value.length > 1) {
+      return 'Multiple'
+    }
+    if (value && value.length == 1) {
+      return value[0].title
+    }
+    return 'No style'
+  }, [value])
+
+  const menuButtonPadding = useMemo(() => (isFullscreen ? 3 : 2), [isFullscreen])
+
+  const menuButtonDisabled = useMemo(() => _disabled || readOnly || disabled, [
+    _disabled,
+    disabled,
+    readOnly,
+  ])
 
   // Use this effect to set focus back into the editor when the new value get's in.
   useEffect(() => {
@@ -45,13 +83,12 @@ export default function BlockStyleSelect(props: Props): JSX.Element {
 
   const handleChange = useCallback(
     (item: BlockStyleItem): void => {
-      const focusBlock = selection && PortableTextEditor.focusBlock(editor)
       if (focusBlock && item.style !== focusBlock.style) {
         PortableTextEditor.toggleBlockStyle(editor, item.style)
       }
       setChanged(true)
     },
-    [editor, selection]
+    [editor, focusBlock]
   )
 
   const renderItem = useCallback(
@@ -83,29 +120,42 @@ export default function BlockStyleSelect(props: Props): JSX.Element {
 
       return <div key={item.key}>No style</div>
     },
-    [blockType, renderBlock, spanType]
+    [blockType, renderBlock, spanType.name]
   )
 
-  const focusBlock = useMemo(() => selection && PortableTextEditor.focusBlock(editor), [
-    editor,
-    selection,
-  ])
-
-  // @todo: Document what's going on here
-  const _disabled = focusBlock ? blockType.name !== focusBlock._type : false
   return (
-    <label className={className}>
-      <span style={{display: 'none'}}>Text</span>
-      <StyleSelect
-        onClick={preventDefault}
-        disabled={readOnly || disabled || _disabled}
-        items={items}
-        onChange={handleChange}
-        padding={padding}
-        renderItem={renderItem}
-        transparent
-        value={value}
-      />
-    </label>
+    <MenuButton
+      popover={MENU_POPOVER_PROPS}
+      id="block-style-select"
+      button={
+        <Stack>
+          <Button
+            disabled={menuButtonDisabled}
+            iconRight={SelectIcon}
+            mode="bleed"
+            onClick={preventDefault}
+            padding={menuButtonPadding}
+            text={menuButtonText}
+          />
+        </Stack>
+      }
+      menu={
+        <Menu>
+          {items.map((item) => {
+            return (
+              <StyledMenuItem
+                padding={2}
+                key={item.key}
+                pressed={item.active}
+                // eslint-disable-next-line react/jsx-no-bind
+                onClick={() => handleChange(item)}
+              >
+                {renderItem(item)}
+              </StyledMenuItem>
+            )
+          })}
+        </Menu>
+      }
+    />
   )
 }
