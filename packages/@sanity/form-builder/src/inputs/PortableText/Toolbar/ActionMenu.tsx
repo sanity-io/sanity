@@ -1,101 +1,87 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
-import Button from 'part:@sanity/components/buttons/default'
-// import ToggleButton from 'part:@sanity/components/toggles/button'
-import React, {useCallback, useMemo} from 'react'
+import React, {useMemo} from 'react'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
-import {OverflowMenu} from './OverflowMenu'
+import {CollapseMenu, CollapseMenuButton, CollapseMenuButtonProps} from '@sanity/base/components'
+import {Button} from '@sanity/ui'
+import {EllipsisVerticalIcon} from '@sanity/icons'
 import {PTEToolbarAction, PTEToolbarActionGroup} from './types'
-
-import styles from './ActionMenu.module.css'
 
 interface Props {
   disabled: boolean
   groups: PTEToolbarActionGroup[]
   readOnly: boolean
-}
-
-function ActionButton(props: {action: PTEToolbarAction; disabled: boolean; visible: boolean}) {
-  const {action, disabled, visible} = props
-  const title = useMemo(
-    () => (action.hotkeys ? `${action.title} (${action.hotkeys.join('+')})` : action.title),
-    [action.hotkeys, action.title]
-  )
-
-  const handleClick = useCallback(() => {
-    action.handle()
-  }, [action])
-
-  return (
-    <Button
-      aria-hidden={!visible}
-      data-visible={visible}
-      disabled={disabled}
-      icon={action.icon}
-      kind="simple"
-      padding="small"
-      onClick={handleClick}
-      tabIndex={visible ? 0 : -1}
-      selected={action.active}
-      title={title}
-    />
-  )
-}
-
-function ActionMenuItem(props: {action: PTEToolbarAction; disabled: boolean; onClose: () => void}) {
-  const {action, disabled, onClose} = props
-  const title = useMemo(
-    () => (action.hotkeys ? `${action.title} (${action.hotkeys.join('+')})` : action.title),
-    [action.hotkeys, action.title]
-  )
-
-  const handleClick = useCallback(() => {
-    action.handle()
-    onClose()
-  }, [action, onClose])
-
-  return (
-    <Button
-      bleed
-      className={styles.menuItem}
-      disabled={disabled}
-      icon={action.icon}
-      kind="simple"
-      onClick={handleClick}
-      selected={action.active}
-    >
-      {title}
-    </Button>
-  )
+  isFullscreen?: boolean
 }
 
 export default function ActionMenu(props: Props) {
-  const {disabled, groups, readOnly} = props
+  const {disabled, groups, readOnly, isFullscreen} = props
   const editor = usePortableTextEditor()
-  const focusBlock = PortableTextEditor.focusBlock(editor)
-  const focusChild = PortableTextEditor.focusChild(editor)
-  const ptFeatures = PortableTextEditor.getPortableTextFeatures(editor)
+  const focusBlock = useMemo(() => PortableTextEditor.focusBlock(editor), [editor])
+  const focusChild = useMemo(() => PortableTextEditor.focusChild(editor), [editor])
+  const ptFeatures = useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [editor])
 
-  const isNotText =
-    (focusBlock && focusBlock._type !== ptFeatures.types.block.name) ||
-    (focusChild && focusChild._type !== ptFeatures.types.span.name)
+  const isNotText = useMemo(
+    () =>
+      (focusBlock && focusBlock._type !== ptFeatures.types.block.name) ||
+      (focusChild && focusChild._type !== ptFeatures.types.span.name),
+    [focusBlock, focusChild, ptFeatures.types.block.name, ptFeatures.types.span.name]
+  )
 
-  const actions = groups.reduce((acc: PTEToolbarAction[], group) => {
-    return acc.concat(
-      group.actions.map((action, actionIndex) => {
-        if (actionIndex === 0) return {...action, firstInGroup: true}
-        return action
-      })
-    )
-  }, [])
+  const actions = useMemo(
+    () =>
+      groups.reduce((acc, group) => {
+        return acc.concat(
+          group.actions.map((action: PTEToolbarAction, actionIndex) => {
+            if (actionIndex === 0) return {...action, firstInGroup: true}
+            return action
+          })
+        )
+      }, []),
+    [groups]
+  )
+
+  const collapsesButtonProps: CollapseMenuButtonProps = useMemo(
+    () => ({padding: isFullscreen ? 3 : 2, mode: 'bleed'}),
+    [isFullscreen]
+  )
+
+  const menuButtonPadding = useMemo(() => (isFullscreen ? 3 : 2), [isFullscreen])
+  const disableMenuButton = useMemo(() => disabled || readOnly, [disabled, readOnly])
+
+  const children = useMemo(
+    () =>
+      actions.map((action) => {
+        const {handle} = action
+
+        return (
+          <CollapseMenuButton
+            disabled={action.disabled || isNotText || readOnly || disabled}
+            buttonProps={collapsesButtonProps}
+            dividerBefore={action.firstInGroup}
+            icon={action.icon}
+            key={action.key}
+            onClick={handle}
+            selected={action.active}
+            text={action.title}
+            tooltipProps={{disabled: disabled, placement: 'top'}}
+          />
+        )
+      }),
+    [actions, collapsesButtonProps, disabled, isNotText, readOnly]
+  )
 
   return (
-    <OverflowMenu
-      actions={actions}
-      actionButtonComponent={ActionButton}
-      actionMenuItemComponent={ActionMenuItem}
-      disabled={disabled || readOnly || isNotText}
-    />
+    <CollapseMenu
+      gap={1}
+      menuButton={
+        <Button
+          icon={EllipsisVerticalIcon}
+          mode="bleed"
+          padding={menuButtonPadding}
+          disabled={disableMenuButton}
+        />
+      }
+    >
+      {children}
+    </CollapseMenu>
   )
 }
