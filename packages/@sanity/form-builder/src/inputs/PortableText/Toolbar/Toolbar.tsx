@@ -6,22 +6,17 @@ import {
   Type,
   PortableTextEditor,
 } from '@sanity/portable-text-editor'
-import classNames from 'classnames'
 import React, {useCallback, useMemo} from 'react'
 import {Path, SchemaType} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {resolveInitialValueForType} from '@sanity/initial-value-templates'
-import {useToast} from '@sanity/ui'
+import {Box, Button, Flex, useToast} from '@sanity/ui'
+import {CollapseIcon, ExpandIcon} from '@sanity/icons'
+import styled, {css} from 'styled-components'
 import ActionMenu from './ActionMenu'
 import BlockStyleSelect from './BlockStyleSelect'
 import InsertMenu from './InsertMenu'
 import {getBlockStyleSelectProps, getInsertMenuItems, getPTEToolbarActionGroups} from './helpers'
-
-import styles from './Toolbar.module.css'
-
-const SLOW_INITIAL_VALUE_LIMIT = 300
-
-const preventDefault = (event) => event.preventDefault()
 
 interface Props {
   hotkeys: HotkeyOptions
@@ -29,22 +24,52 @@ interface Props {
   readOnly: boolean
   renderBlock: RenderBlockFunction
   onFocus: (path: Path) => void
+  onToggleFullscreen: () => void
 }
 
+const RootFlex = styled(Flex)`
+  width: 100%;
+`
+
+const StyleSelectBox = styled(Box)`
+  min-width: 8em;
+  border-right: 1px solid var(--card-border-color);
+`
+
+const ActionMenuBox = styled(Box)<{$withMaxWidth: boolean}>`
+  ${({$withMaxWidth}) =>
+    $withMaxWidth &&
+    css`
+      max-width: max-content;
+    `}
+`
+
+const InsertMenuBox = styled(Box)`
+  border-left: 1px solid var(--card-border-color);
+`
+
+const FullscreenButtonBox = styled(Box)`
+  border-left: 1px solid var(--card-border-color);
+`
+
+const SLOW_INITIAL_VALUE_LIMIT = 300
+
+const preventDefault = (e) => e.preventDefault()
+
 function PTEToolbar(props: Props) {
-  const {hotkeys, isFullscreen, readOnly, onFocus, renderBlock} = props
+  const {hotkeys, isFullscreen, readOnly, onFocus, renderBlock, onToggleFullscreen} = props
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
   const disabled = !selection
 
-  const toast = useToast()
+  const {push} = useToast()
 
   const resolveInitialValue = useCallback(
     (type: Type) => {
       let isSlow = false
       const slowTimer = setTimeout(() => {
         isSlow = true
-        toast.push({
+        push({
           id: 'resolving-initial-value',
           status: 'info',
           title: 'Resolving initial value…',
@@ -55,7 +80,7 @@ function PTEToolbar(props: Props) {
           if (isSlow) {
             // I found no way to close an existing toast, so this will replace the message in the
             // "Resolving initial value…"-toast and then make sure it gets closed.
-            toast.push({
+            push({
               id: 'resolving-initial-value',
               status: 'info',
               duration: 500,
@@ -65,7 +90,7 @@ function PTEToolbar(props: Props) {
           return value
         })
         .catch((error) => {
-          toast.push({
+          push({
             title: `Could not resolve initial value`,
             id: 'resolving-initial-value',
             description: `Unable to resolve initial value for type: ${type.name}: ${error.message}.`,
@@ -75,7 +100,7 @@ function PTEToolbar(props: Props) {
         })
         .finally(() => clearTimeout(slowTimer))
     },
-    [toast]
+    [push]
   )
 
   const handleInsertBlock = useCallback(
@@ -118,43 +143,65 @@ function PTEToolbar(props: Props) {
   const actionsLen = actionGroups.reduce((acc, x) => acc + x.actions.length, 0)
   const blockStyleSelectProps = editor ? getBlockStyleSelectProps(editor) : null
 
-  const insertMenuItems = React.useMemo(
+  const insertMenuItems = useMemo(
     () =>
       editor ? getInsertMenuItems(editor, selection, handleInsertBlock, handleInsertInline) : [],
     [editor, handleInsertBlock, handleInsertInline, selection]
   )
 
+  const showInsertMenu = useMemo(() => insertMenuItems.length > 0, [insertMenuItems])
+  const fullscreenButtonIcon = useMemo(() => (isFullscreen ? CollapseIcon : ExpandIcon), [
+    isFullscreen,
+  ])
+  const fullscreenButtonPadding = useMemo(() => (isFullscreen ? 3 : 2), [isFullscreen])
+
   return (
-    <div
-      className={classNames(styles.root, isFullscreen && styles.fullscreen)}
+    <RootFlex
+      align="center"
       // Ensure the editor doesn't lose focus when interacting
       // with the toolbar (prevent focus click events)
       onMouseDown={preventDefault}
       onKeyPress={preventDefault}
     >
-      {blockStyleSelectProps && blockStyleSelectProps.items.length > 1 && (
-        <div className={styles.blockStyleSelectContainer}>
-          <BlockStyleSelect
-            {...blockStyleSelectProps}
-            className={styles.blockStyleSelect}
-            disabled={disabled}
-            padding="small"
-            readOnly={readOnly}
-            renderBlock={renderBlock}
-          />
-        </div>
-      )}
+      <StyleSelectBox padding={1}>
+        <BlockStyleSelect
+          {...blockStyleSelectProps}
+          disabled={disabled}
+          readOnly={readOnly}
+          renderBlock={renderBlock}
+          isFullscreen={isFullscreen}
+        />
+      </StyleSelectBox>
       {actionsLen > 0 && (
-        <div className={styles.actionMenuContainer}>
-          <ActionMenu disabled={disabled} groups={actionGroups} readOnly={readOnly} />
-        </div>
+        <ActionMenuBox flex={1} padding={1} $withMaxWidth={showInsertMenu}>
+          <ActionMenu
+            disabled={disabled}
+            groups={actionGroups}
+            readOnly={readOnly}
+            isFullscreen={isFullscreen}
+          />
+        </ActionMenuBox>
       )}
-      {insertMenuItems.length > 0 && (
-        <div className={styles.insertMenuContainer}>
-          <InsertMenu disabled={disabled} items={insertMenuItems} readOnly={readOnly} />
-        </div>
+      {showInsertMenu && (
+        <InsertMenuBox flex={1} padding={1}>
+          <InsertMenu
+            disabled={disabled}
+            items={insertMenuItems}
+            readOnly={readOnly}
+            isFullscreen={isFullscreen}
+          />
+        </InsertMenuBox>
       )}
-    </div>
+
+      <FullscreenButtonBox padding={1}>
+        <Button
+          padding={fullscreenButtonPadding}
+          icon={fullscreenButtonIcon}
+          mode="bleed"
+          onClick={onToggleFullscreen}
+        />
+      </FullscreenButtonBox>
+    </RootFlex>
   )
 }
 
