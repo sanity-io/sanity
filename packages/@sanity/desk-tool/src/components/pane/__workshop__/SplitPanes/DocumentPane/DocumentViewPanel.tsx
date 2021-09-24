@@ -1,4 +1,4 @@
-import {RestoreIcon} from '@sanity/icons'
+import {ArrowLeftIcon, RestoreIcon} from '@sanity/icons'
 import {Box, Button, Flex, Text, Stack, Container} from '@sanity/ui'
 import React from 'react'
 import {PaneContent} from '../../../PaneContent'
@@ -21,7 +21,10 @@ export function DocumentViewPanel(props: {
       height="fill"
       overflow={layoutCollapsed ? undefined : 'hidden'}
     >
-      <PaneHeader title="Document" />
+      <PaneHeader
+        backButton={layoutCollapsed && <Button icon={ArrowLeftIcon} mode="bleed" />}
+        title="Document"
+      />
       <PaneContent>
         <Box
           height={layoutCollapsed ? undefined : 'fill'}
