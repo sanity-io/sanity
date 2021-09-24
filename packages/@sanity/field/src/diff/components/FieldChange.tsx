@@ -1,7 +1,7 @@
 import {useDocumentOperation} from '@sanity/react-hooks'
 import React, {useCallback, useContext, useState} from 'react'
 import {unstable_useCheckDocumentPermission as useCheckDocumentPermission} from '@sanity/base/hooks'
-import {Stack, Box, Button, Text, Grid, Popover, useClickOutside} from '@sanity/ui'
+import {Stack, Box, Button, Text, Grid, useClickOutside} from '@sanity/ui'
 import {undoChange} from '../changes/undoChange'
 import {DiffContext} from '../contexts/DiffContext'
 import {FieldChangeNode, OperationsAPI} from '../../types'
@@ -13,7 +13,7 @@ import {FallbackDiff} from './FallbackDiff'
 import {RevertChangesButton} from './RevertChangesButton'
 import {ValueError} from './ValueError'
 
-import {FieldChangeContainer, DiffBorder, BoxContentWrapper} from './FieldChange.styled'
+import {FieldChangeContainer, DiffBorder, PopoverWrapper} from './FieldChange.styled'
 
 export function FieldChange({
   change,
@@ -78,9 +78,9 @@ export function FieldChange({
             </DiffErrorBoundary>
           )}
           {isComparingCurrent && updatePermission.granted && (
-            <Popover
+            <PopoverWrapper
               content={
-                <BoxContentWrapper padding={3} sizing="border">
+                <Box padding={3} sizing="border">
                   Are you sure you want to revert the changes?
                   <Grid columns={2} gap={2} marginTop={2}>
                     <Button mode="ghost" onClick={closeRevertChangesConfirmDialog}>
@@ -90,12 +90,11 @@ export function FieldChange({
                       <Text align="center">Revert change</Text>
                     </Button>
                   </Grid>
-                </BoxContentWrapper>
+                </Box>
               }
               open={confirmRevertOpen}
               portal
               placement="left"
-              preventOverflow
             >
               <Box flex={1}>
                 <RevertChangesButton
@@ -109,7 +108,7 @@ export function FieldChange({
                   }
                 />
               </Box>
-            </Popover>
+            </PopoverWrapper>
           )}
         </DiffInspectWrapper>
       </FieldWrapper>

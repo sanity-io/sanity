@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import {rem, Box} from '@sanity/ui'
+import {rem, Box, Popover} from '@sanity/ui'
 
 export const FieldChangeContainer = styled.div`
   --field-change-error: ${({theme}) => theme.sanity.color.solid.critical.enabled.bg};
@@ -33,8 +33,8 @@ export const DiffBorder = styled.div`
   }
 `
 
-export const BoxContentWrapper = styled(Box)`
-  /* max width is needed for smaller screens where the popover will otherwise be considered "larger" than
- the change area making it adjust horizontally when it's not needed */
-  max-width: 295px;
+export const PopoverWrapper = styled(Popover)`
+  &[data-popper-reference-hidden='true'] {
+    display: none;
+  }
 `
