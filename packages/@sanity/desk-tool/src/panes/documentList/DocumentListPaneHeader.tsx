@@ -135,7 +135,7 @@ export function DocumentListPaneHeader(props: {
         <PaneContextMenuButton
           items={menuItems}
           itemGroups={menuItemGroups}
-          key="$contextMenu"
+          key="$ContextMenu"
           onAction={handleAction}
         />
       ) : null,
@@ -149,7 +149,7 @@ export function DocumentListPaneHeader(props: {
       // Replace the "Create" button when there are multiple initial value templates
       if (createMenuItems.length > 1 && isDefaultCreateActionItem(action, schemaType)) {
         foundCreateButton = true
-        return <CreateMenuButton items={createMenuItems} />
+        return <CreateMenuButton items={createMenuItems} key={action.key || actionIndex} />
       }
 
       if (action.intent) {
@@ -180,7 +180,7 @@ export function DocumentListPaneHeader(props: {
 
     const createMenuButton =
       foundCreateButton || createMenuItems.length <= 1 ? null : (
-        <CreateMenuButton items={createMenuItems} />
+        <CreateMenuButton items={createMenuItems} key="$CreateMenuButton" />
       )
 
     return <Inline space={1}>{[...actionNodes, createMenuButton, contextMenu]}</Inline>
