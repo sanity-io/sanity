@@ -95,13 +95,13 @@ export function FieldChange({
               open={confirmRevertOpen}
               portal
               placement="left"
+              ref={setRevertButtonElement}
             >
               <Box flex={1}>
                 <RevertChangesButton
                   onClick={handleRevertChangesConfirm}
                   onMouseEnter={handleRevertButtonMouseEnter}
                   onMouseLeave={handleRevertButtonMouseLeave}
-                  ref={setRevertButtonElement}
                   selected={confirmRevertOpen}
                   disabled={
                     readOnly || change?.parentSchema?.readOnly || change.schemaType.readOnly
