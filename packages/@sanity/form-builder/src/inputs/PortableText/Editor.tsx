@@ -197,21 +197,14 @@ function PortableTextSanityEditor(props: Props) {
     () => (
       <div className={styles.editorBox}>
         <div className={styles.header}>
-          <div className={styles.toolbarContainer}>
-            <Toolbar
-              isFullscreen={isFullscreen}
-              hotkeys={hotkeys}
-              onFocus={onFocus}
-              renderBlock={renderBlock}
-              readOnly={readOnly}
-            />
-          </div>
-          <div className={styles.fullscreenButtonContainer}>
-            <ExpandCollapseButton
-              isFullscreen={isFullscreen}
-              onToggleFullscreen={onToggleFullscreen}
-            />
-          </div>
+          <Toolbar
+            isFullscreen={isFullscreen}
+            hotkeys={hotkeys}
+            onFocus={onFocus}
+            renderBlock={renderBlock}
+            readOnly={readOnly}
+            onToggleFullscreen={onToggleFullscreen}
+          />
         </div>
 
         <div className={styles.editorBoxContent}>
