@@ -108,9 +108,9 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
             padding={4}
             placement={'left'}
             portal
-            referenceElement={revertAllContainerElement}
+            ref={setRevertAllContainerElement}
           >
-            <Stack ref={setRevertAllContainerElement}>
+            <Stack>
               <Button
                 tone="critical"
                 mode="ghost"
