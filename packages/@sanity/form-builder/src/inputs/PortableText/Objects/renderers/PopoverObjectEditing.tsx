@@ -2,7 +2,7 @@
 ///<reference types="@sanity/types/parts" />
 
 /* eslint-disable react/prop-types */
-import React, {FunctionComponent, useEffect, useState} from 'react'
+import React, {FunctionComponent, useCallback, useEffect, useState} from 'react'
 
 import PopoverDialog from 'part:@sanity/components/dialogs/popover'
 
@@ -48,16 +48,20 @@ export const PopoverObjectEditing: FunctionComponent<Props> = ({
   type,
 }) => {
   const editor = usePortableTextEditor()
-  const handleChange = (patchEvent: PatchEvent): void => onChange(patchEvent, path)
-  const getEditorElement = () => {
+  const handleChange = useCallback((patchEvent: PatchEvent): void => onChange(patchEvent, path), [
+    onChange,
+    path,
+  ])
+  const getEditorElement = useCallback(() => {
     const [editorObject] = PortableTextEditor.findByPath(editor, editorPath)
+    // eslint-disable-next-line react/no-find-dom-node
     return PortableTextEditor.findDOMNode(editor, editorObject) as HTMLElement
-  }
+  }, [editor, editorPath])
   const [refElement, setRefElement] = useState(getEditorElement())
 
   useEffect(() => {
     setRefElement(getEditorElement())
-  }, [object])
+  }, [getEditorElement, object])
 
   return (
     <PopoverDialog
