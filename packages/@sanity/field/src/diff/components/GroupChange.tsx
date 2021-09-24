@@ -1,7 +1,7 @@
 import {useDocumentOperation} from '@sanity/react-hooks'
 import React, {useCallback, useContext, useState} from 'react'
 import {unstable_useCheckDocumentPermission as useCheckDocumentPermission} from '@sanity/base/hooks'
-import {Box, Stack, Button, Grid, Popover, Text, useClickOutside} from '@sanity/ui'
+import {Box, Stack, Button, Grid, Text, useClickOutside} from '@sanity/ui'
 import {undoChange} from '../changes/undoChange'
 import {isFieldChange} from '../helpers'
 import {isPTSchemaType} from '../../types/portableText/diff'
@@ -84,14 +84,35 @@ export function GroupChange({
         ))}
       </Stack>
       {isComparingCurrent && updatePermission.granted && (
-        <Box>
-          <RevertChangesButton
-            onClick={handleRevertChangesConfirm}
-            ref={setRevertButtonRef}
-            selected={confirmRevertOpen}
-            disabled={group?.schemaType?.readOnly || readOnly}
-          />
-        </Box>
+        <PopoverWrapper
+          content={
+            <Box>
+              Are you sure you want to revert the changes?
+              <Grid columns={2} gap={2} marginTop={2}>
+                <Button mode="ghost" onClick={closeRevertChangesConfirmDialog}>
+                  <Text align="center">Cancel</Text>
+                </Button>
+                <Button tone="critical" onClick={handleRevertChanges}>
+                  <Text align="center">Revert change</Text>
+                </Button>
+              </Grid>
+            </Box>
+          }
+          portal
+          padding={4}
+          placement={'left'}
+          open={confirmRevertOpen}
+          referenceElement={revertButtonElement}
+        >
+          <Box>
+            <RevertChangesButton
+              onClick={handleRevertChangesConfirm}
+              ref={setRevertButtonRef}
+              selected={confirmRevertOpen}
+              disabled={group?.schemaType?.readOnly || readOnly}
+            />
+          </Box>
+        </PopoverWrapper>
       )}
     </Stack>
   )
@@ -106,27 +127,6 @@ export function GroupChange({
           {content}
         </FieldWrapper>
       )}
-
-      <PopoverWrapper
-        content={
-          <Box>
-            Are you sure you want to revert the changes?
-            <Grid columns={2} gap={2} marginTop={2}>
-              <Button mode="ghost" onClick={closeRevertChangesConfirmDialog}>
-                <Text align="center">Cancel</Text>
-              </Button>
-              <Button tone="critical" onClick={handleRevertChanges}>
-                <Text align="center">Revert change</Text>
-              </Button>
-            </Grid>
-          </Box>
-        }
-        portal
-        padding={4}
-        placement={'left'}
-        open={confirmRevertOpen}
-        referenceElement={revertButtonElement}
-      />
     </Stack>
   )
 }
