@@ -25,7 +25,7 @@
     "@sanity/default-layout": "2.20.0",
     "@sanity/default-login": "2.19.0",
     "@sanity/desk-tool": "2.20.0",
-    "@sanity/icons": "^1.1.7",
+    "@sanity/icons": "^1.2.1",
     "@sanity/types": "2.19.0",
     "@sanity/vision": "2.20.0",
     "pretty-bytes": "^4.0.2",

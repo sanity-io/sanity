@@ -22,9 +22,9 @@
   "dependencies": {
     "@reach/auto-id": "^0.13.2",
     "@sanity/base": "2.20.0",
-    "@sanity/icons": "^1.1.7",
+    "@sanity/icons": "^1.2.1",
     "@sanity/types": "2.19.0",
-    "@sanity/ui": "^0.36.10",
+    "@sanity/ui": "^0.36.12",
     "@sanity/util": "2.20.0",
     "brace": "^0.11.1",
     "lodash": "^4.17.15",
