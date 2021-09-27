@@ -15,7 +15,7 @@ import {Rect} from './types'
 import styles from './Connector.module.css'
 import {ClampedRect} from './ClampedRect'
 
-import {DebugRectWrapper} from './Connector.styled'
+import {DebugRectWrapper, PathWrapper} from './Connector.styled'
 
 interface Props {
   from: {rect: Rect; bounds: Rect}
@@ -35,13 +35,6 @@ export function Connector({from, to, hovered, focused, revertHovered}: Props) {
 
   const linePathDescription = generateConnectorPath(line)
 
-  const pathClassName = classNames(
-    styles.path,
-    focused && styles.focused,
-    revertHovered && styles.revertHovered,
-    hovered && !focused && !revertHovered && styles.hovered
-  )
-
   const rightBarClassName = classNames(
     styles.rightBar,
     focused && styles.rightBarFocused,
@@ -57,7 +50,13 @@ export function Connector({from, to, hovered, focused, revertHovered}: Props) {
         strokeWidth={INTERACTIVE_STROKE_WIDTH}
       />
 
-      <path className={pathClassName} d={linePathDescription} strokeWidth={STROKE_WIDTH} />
+      <PathWrapper
+        focused={focused}
+        revertedHovered={revertHovered}
+        hovered={hovered && !focused && !revertHovered}
+        d={linePathDescription}
+        strokeWidth={STROKE_WIDTH}
+      />
       <ClampedRect
         className={rightBarClassName}
         top={to.rect.top}
@@ -68,8 +67,10 @@ export function Connector({from, to, hovered, focused, revertHovered}: Props) {
       />
 
       {line.from.isAbove && (
-        <path
-          className={pathClassName}
+        <PathWrapper
+          focused={focused}
+          revertedHovered={revertHovered}
+          hovered={hovered && !focused && !revertHovered}
           d={arrowPath(
             line.from.left + ARROW_MARGIN_X,
             line.from.bounds.top - ARROW_THRESHOLD + ARROW_MARGIN_Y,
@@ -80,8 +81,10 @@ export function Connector({from, to, hovered, focused, revertHovered}: Props) {
       )}
 
       {line.from.isBelow && (
-        <path
-          className={pathClassName}
+        <PathWrapper
+          focused={focused}
+          revertedHovered={revertHovered}
+          hovered={hovered && !focused && !revertHovered}
           d={arrowPath(
             line.from.left + ARROW_MARGIN_X,
             line.from.bounds.top + line.from.bounds.height + ARROW_THRESHOLD - ARROW_MARGIN_Y,
@@ -92,8 +95,10 @@ export function Connector({from, to, hovered, focused, revertHovered}: Props) {
       )}
 
       {line.to.isAbove && (
-        <path
-          className={pathClassName}
+        <PathWrapper
+          focused={focused}
+          revertedHovered={revertHovered}
+          hovered={hovered && !focused && !revertHovered}
           d={arrowPath(
             line.to.bounds.left + ARROW_MARGIN_X,
             line.to.bounds.top - ARROW_THRESHOLD + ARROW_MARGIN_Y,
@@ -104,8 +109,10 @@ export function Connector({from, to, hovered, focused, revertHovered}: Props) {
       )}
 
       {line.to.isBelow && (
-        <path
-          className={pathClassName}
+        <PathWrapper
+          focused={focused}
+          revertedHovered={revertHovered}
+          hovered={hovered && !focused && !revertHovered}
           d={arrowPath(
             line.to.bounds.left + ARROW_MARGIN_X,
             line.to.bounds.top + line.to.bounds.height + ARROW_THRESHOLD - ARROW_MARGIN_Y,
