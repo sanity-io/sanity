@@ -29,7 +29,7 @@ export interface PaneRouterContextValue {
   /**
    * Params of the current pane
    */
-  params: Record<string, string>
+  params: Record<string, string | undefined>
 
   /**
    * Whether or not the pane has any siblings (within the same group)
