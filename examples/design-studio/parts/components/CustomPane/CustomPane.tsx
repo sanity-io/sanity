@@ -1,11 +1,12 @@
 import React, {useCallback} from 'react'
-import {Button, Card, Stack} from '@sanity/ui'
+import {Button, Card, Code, Stack} from '@sanity/ui'
 import {usePaneRouter} from '@sanity/desk-tool'
 
-export function CustomPane() {
+export function CustomPane(props: any) {
   return (
     <Card height="fill" tone="transparent">
       <Stack padding={2} space={1}>
+        <Code language="json">{JSON.stringify(props, null, 2)}</Code>
         <Item id="foo" />
         <Item id="bar" />
         <Item id="baz" />
