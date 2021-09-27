@@ -10,6 +10,7 @@ import {PaneContextMenuButton, PaneHeader, usePane} from '../../components/pane'
 import {useDeskTool} from '../../contexts/deskTool'
 import {BackLink} from '../../contexts/paneRouter'
 import {DeskToolPaneActionHandler} from '../../types/types'
+import {useDeskToolPaneActions} from '../useDeskToolPaneActions'
 import {Layout, SortOrder} from './types'
 import {CreateMenuButton} from './CreateMenuButton'
 
@@ -104,30 +105,10 @@ export function DocumentListPaneHeader(props: {
     [initialValueTemplates]
   )
 
-  const [actionItems, menuItems] = useMemo(() => {
-    if (!menuItemsProp) {
-      return [[], []]
-    }
-
-    const _actionItems: MenuItemType[] = []
-    const _menuItems: MenuItemType[] = []
-
-    for (const menuItem of menuItemsProp) {
-      const {showAsAction} = menuItem
-
-      const isActionItem =
-        showAsAction &&
-        (!collapsed || (typeof showAsAction === 'object' && showAsAction.whenCollapsed))
-
-      if (isActionItem) {
-        _actionItems.push(menuItem)
-      } else {
-        _menuItems.push(menuItem)
-      }
-    }
-
-    return [_actionItems, _menuItems]
-  }, [collapsed, menuItemsProp])
+  const {actionItems, menuItems} = useDeskToolPaneActions({
+    collapsed,
+    menuItems: menuItemsProp,
+  })
 
   const contextMenu = useMemo(
     () =>
