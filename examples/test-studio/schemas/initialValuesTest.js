@@ -12,6 +12,93 @@ export const superlatives = {
   ],
 }
 
+const INITIAL_PORTABLE_TEXT_VALUE = [
+  {
+    _type: 'block',
+    children: [
+      {
+        _type: 'span',
+        marks: [],
+        text: 'this ',
+      },
+      {
+        _type: 'span',
+        marks: ['strong'],
+        text: 'is',
+      },
+      {
+        _type: 'span',
+        marks: [],
+        text: ' the ',
+      },
+      {
+        _type: 'span',
+        marks: ['em'],
+        text: 'initial',
+      },
+      {
+        _type: 'span',
+        marks: [],
+        text: ' portable ',
+      },
+      {
+        _type: 'span',
+        marks: ['underline'],
+        text: 'text',
+      },
+      {
+        _type: 'span',
+        marks: [],
+        text: ' value',
+      },
+    ],
+    markDefs: [],
+    style: 'normal',
+  },
+  {
+    _type: 'block',
+    children: [
+      {
+        _type: 'span',
+        marks: [],
+        text: 'foo',
+      },
+    ],
+    level: 1,
+    listItem: 'bullet',
+    markDefs: [],
+    style: 'normal',
+  },
+  {
+    _type: 'block',
+    children: [
+      {
+        _type: 'span',
+        marks: ['code'],
+        text: 'bar',
+      },
+    ],
+    level: 1,
+    listItem: 'bullet',
+    markDefs: [],
+    style: 'normal',
+  },
+  {
+    _type: 'block',
+    children: [
+      {
+        _type: 'span',
+        marks: [],
+        text: 'baz',
+      },
+    ],
+    level: 1,
+    listItem: 'bullet',
+    markDefs: [],
+    style: 'normal',
+  },
+]
+
 export const initialValuesTest = {
   name: 'initialValuesTest',
   type: 'document',
@@ -218,90 +305,3 @@ export const initialValuesTest = {
     {name: 'recursive', type: 'initialValuesTest'},
   ],
 }
-
-const INITIAL_PORTABLE_TEXT_VALUE = [
-  {
-    _type: 'block',
-    children: [
-      {
-        _type: 'span',
-        marks: [],
-        text: 'this ',
-      },
-      {
-        _type: 'span',
-        marks: ['strong'],
-        text: 'is',
-      },
-      {
-        _type: 'span',
-        marks: [],
-        text: ' the ',
-      },
-      {
-        _type: 'span',
-        marks: ['em'],
-        text: 'initial',
-      },
-      {
-        _type: 'span',
-        marks: [],
-        text: ' portable ',
-      },
-      {
-        _type: 'span',
-        marks: ['underline'],
-        text: 'text',
-      },
-      {
-        _type: 'span',
-        marks: [],
-        text: ' value',
-      },
-    ],
-    markDefs: [],
-    style: 'normal',
-  },
-  {
-    _type: 'block',
-    children: [
-      {
-        _type: 'span',
-        marks: [],
-        text: 'foo',
-      },
-    ],
-    level: 1,
-    listItem: 'bullet',
-    markDefs: [],
-    style: 'normal',
-  },
-  {
-    _type: 'block',
-    children: [
-      {
-        _type: 'span',
-        marks: ['code'],
-        text: 'bar',
-      },
-    ],
-    level: 1,
-    listItem: 'bullet',
-    markDefs: [],
-    style: 'normal',
-  },
-  {
-    _type: 'block',
-    children: [
-      {
-        _type: 'span',
-        marks: [],
-        text: 'baz',
-      },
-    ],
-    level: 1,
-    listItem: 'bullet',
-    markDefs: [],
-    style: 'normal',
-  },
-]

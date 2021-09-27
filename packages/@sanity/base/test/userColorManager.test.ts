@@ -3,6 +3,10 @@
 import {Observable, BehaviorSubject} from 'rxjs'
 import {UserColor, createUserColorManager, UserColorManagerOptions} from '../src/user-color'
 
+jest.mock('part:@sanity/base/user', () => {
+  return jest.createMockFromModule('part:@sanity/base/user')
+})
+
 const colorPreferences = {
   anders: 'orange',
   devin: 'blue',
@@ -188,5 +192,5 @@ function expectColor(obs: Observable<UserColor>, expectedHue: string) {
 // returning a promise that waits until the next tick (ish) will ensure
 // that errors thrown after test code does not silently get swallowed
 function nextTick() {
-  return new Promise((resolve) => setImmediate(resolve))
+  return new Promise((resolve) => setTimeout(resolve, 0))
 }
