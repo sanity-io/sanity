@@ -1,9 +1,9 @@
-import {EditIcon, RestoreIcon, SyncIcon} from '@sanity/icons'
+import {EditIcon, SyncIcon} from '@sanity/icons'
 import {useSyncState} from '@sanity/react-hooks'
-import {ButtonProps, Box, Flex, Text} from '@sanity/ui'
+import {ButtonProps, Box, Flex, Text, Button} from '@sanity/ui'
 import React, {forwardRef} from 'react'
 import {useDocumentHistory} from '../../documentHistory'
-import {Root, TextBox} from './ReviewChangesButton.styled'
+import {AnimatedSyncIcon} from './AnimatedSyncIcon.styled'
 
 export interface ReviewChangesButtonProps
   extends Omit<ButtonProps, 'mode' | 'onClick' | 'padding' | 'selected' | 'tone' | 'type'> {
@@ -14,7 +14,7 @@ export const ReviewChangesButton = forwardRef(function ReviewChangesButton(
   props: ReviewChangesButtonProps & React.HTMLProps<HTMLButtonElement>,
   ref: React.ForwardedRef<HTMLButtonElement>
 ) {
-  const {lastUpdatedTimeAgo, ...restProps} = props
+  const {lastUpdatedTimeAgo} = props
 
   const {
     close: closeReviewChanges,
@@ -28,37 +28,23 @@ export const ReviewChangesButton = forwardRef(function ReviewChangesButton(
   const syncing = syncState.isSyncing
 
   return (
-    <Root
-      {...restProps}
-      mode="ghost"
-      onClick={open ? closeReviewChanges : openReviewChanges}
+    <Button
+      mode="bleed"
+      tone="caution"
       padding={3}
+      onClick={open ? closeReviewChanges : openReviewChanges}
       ref={ref}
       selected={open}
       title="Review changes"
-      tone="caution"
     >
       <Flex align="center">
         <Box marginRight={3}>
-          <Text>
-            {syncing ? (
-              <SyncIcon data-icon-enabled="" data-spin="" />
-            ) : (
-              <EditIcon data-icon-enabled="" />
-            )}
-            <RestoreIcon data-icon-hovered="" />
-          </Text>
+          <Text size={3}>{syncing ? <AnimatedSyncIcon /> : <EditIcon />}</Text>
         </Box>
-
-        <TextBox flex={1}>
-          <Text size={0} weight="semibold">
-            Changed
-          </Text>
-          <Box marginTop={1}>
-            <Text size={0}>{lastUpdatedTimeAgo || <>&nbsp;</>}</Text>
-          </Box>
-        </TextBox>
+        <Text size={1} weight="medium">
+          {lastUpdatedTimeAgo || <>&nbsp;</>}
+        </Text>
       </Flex>
-    </Root>
+    </Button>
   )
 })

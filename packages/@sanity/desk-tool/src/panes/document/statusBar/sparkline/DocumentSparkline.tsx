@@ -2,13 +2,12 @@ import {DocumentBadgeDescription} from '@sanity/base'
 import {EditStateFor} from '@sanity/base/_internal'
 import {useTimeAgo} from '@sanity/base/hooks'
 import {EditIcon} from '@sanity/icons'
-import {Box, Flex, useElementRect} from '@sanity/ui'
+import {Box, Button, Flex, useElementRect} from '@sanity/ui'
 import React, {useEffect, useMemo, useState, useRef} from 'react'
 import {raf2} from '../../../../lib/raf'
 import {useDocumentHistory} from '../../documentHistory'
 import {DocumentBadges} from './DocumentBadges'
 import {ReviewChangesButton} from './ReviewChangesButton'
-import {IconBadge} from './IconBadge'
 import {
   BadgesBox,
   MetadataBox,
@@ -38,7 +37,7 @@ export function DocumentSparkline(props: DocumentSparklineProps) {
     agoSuffix: true,
   })
 
-  const lastUpdatedTimeAgo = useTimeAgo(lastUpdated || '', {minimal: true, agoSuffix: true})
+  const lastUpdatedTimeAgo = useTimeAgo(lastUpdated || '', {minimal: true})
 
   // Keep track of the size of the review changes button
   const [
@@ -111,7 +110,13 @@ export function DocumentSparkline(props: DocumentSparklineProps) {
         {!liveEdit && (
           <>
             <ReviewChangesBadgeBox>
-              <IconBadge icon={EditIcon} muted tone="caution" />
+              <Button
+                icon={EditIcon}
+                mode="bleed"
+                tone="caution"
+                title="Review changes"
+                tabIndex={-1}
+              />
             </ReviewChangesBadgeBox>
 
             <ReviewChangesButtonBox>
