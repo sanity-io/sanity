@@ -7,6 +7,7 @@ import UsersIcon from 'part:@sanity/base/users-icon'
 import S from '@sanity/desk-tool/structure-builder'
 import JsonDocumentDump from './components/JsonDocumentDump'
 import {DeveloperPreview} from './previews/developer'
+import {DebugPane} from './panes/debug'
 
 // For testing. Bump the timeout to introduce som lag
 const delay = (val, ms = 10) => new Promise((resolve) => setTimeout(resolve, ms, val))
@@ -26,6 +27,32 @@ export default () =>
     .id('root')
     .title('Content')
     .items([
+      S.listItem()
+        .id('custom1')
+        .title('Custom pane (1)')
+        .child(
+          S.component(DebugPane)
+            .id('custom1')
+            .title('Custom pane #1')
+            .options({no: 1})
+            .menuItems([
+              S.menuItem().title('Test 1').action('test-1').showAsAction(true),
+              S.menuItem().title('Test 2').action('test-2'), //.showAsAction(true),
+            ])
+        ),
+      S.listItem()
+        .id('custom2')
+        .title('Custom pane (2)')
+        .child(
+          S.component(DebugPane)
+            .id('custom2')
+            .title('Custom pane #2')
+            .options({no: 1})
+            .menuItems([S.menuItem().title('Test 1').action('test-1').showAsAction(true)])
+        ),
+
+      S.divider(),
+
       S.documentListItem().id('foo-bar').title('Singleton author').schemaType('author'),
 
       S.divider(),
