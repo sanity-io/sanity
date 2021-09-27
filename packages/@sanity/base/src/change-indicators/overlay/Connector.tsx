@@ -15,6 +15,8 @@ import {Rect} from './types'
 import styles from './Connector.module.css'
 import {ClampedRect} from './ClampedRect'
 
+import {DebugRectWrapper} from './Connector.styled'
+
 interface Props {
   from: {rect: Rect; bounds: Rect}
   to: {rect: Rect; bounds: Rect}
@@ -115,8 +117,7 @@ export function Connector({from, to, hovered, focused, revertHovered}: Props) {
 
       {DEBUG && (
         <>
-          <rect
-            className={styles.debugRect}
+          <DebugRectWrapper
             x={line.from.bounds.left}
             y={line.from.bounds.top}
             width={line.from.bounds.width}
@@ -124,8 +125,7 @@ export function Connector({from, to, hovered, focused, revertHovered}: Props) {
             stroke="green"
           />
 
-          <rect
-            className={styles.debugRect}
+          <DebugRectWrapper
             x={line.to.bounds.left}
             y={line.to.bounds.top}
             width={line.to.bounds.width}
@@ -135,8 +135,7 @@ export function Connector({from, to, hovered, focused, revertHovered}: Props) {
 
           {!line.from.outOfBounds && (
             <g transform={`translate(${line.from.bounds.left} ${line.from.bounds.top})`}>
-              <rect
-                className={styles.debugRect}
+              <DebugRectWrapper
                 width={line.from.bounds.width}
                 height={line.from.bounds.height}
                 strokeWidth={STROKE_WIDTH}
@@ -147,8 +146,7 @@ export function Connector({from, to, hovered, focused, revertHovered}: Props) {
 
           {!line.to.outOfBounds && (
             <g transform={`translate(${line.to.bounds.left} ${line.to.bounds.top})`}>
-              <rect
-                className={styles.debugRect}
+              <DebugRectWrapper
                 width={line.to.bounds.width}
                 height={line.to.bounds.height}
                 strokeWidth={STROKE_WIDTH}
