@@ -5,16 +5,18 @@ import {isValidElementType} from 'react-is'
 import {ArrowLeftIcon} from '@sanity/icons'
 import {PaneContextMenuButton, Pane, PaneHeader} from '../../components/pane'
 import {useDeskTool} from '../../contexts/deskTool'
-import {BackLink} from '../../contexts/paneRouter'
+import {BackLink, usePaneRouter} from '../../contexts/paneRouter'
 import {BaseDeskToolPaneProps} from '../types'
 import {DeskToolPaneActionHandler} from '../../types'
 
 type UserComponentPaneProps = BaseDeskToolPaneProps<{
+  id: string
   type: 'component'
   component: React.ComponentType | React.ReactNode
   menuItems?: MenuItem[]
   menuItemGroups?: MenuItemGroup[]
-  title?: string
+  options: Record<string, unknown>
+  title: string
 }>
 
 /**
@@ -22,8 +24,9 @@ type UserComponentPaneProps = BaseDeskToolPaneProps<{
  */
 export function UserComponentPane(props: UserComponentPaneProps) {
   const {index, isSelected, pane, ...restProps} = props
+  const {params} = usePaneRouter()
   const {features} = useDeskTool()
-  const {component, menuItems = [], menuItemGroups = [], title = ''} = pane
+  const {component, menuItems = [], menuItemGroups = [], title = '', type, ...restPane} = pane
   const userComponent = useRef<{
     actionHandlers?: Record<string, DeskToolPaneActionHandler>
   } | null>(null)
@@ -54,17 +57,25 @@ export function UserComponentPane(props: UserComponentPaneProps) {
 
   return (
     <Pane data-index={index} minWidth={320} selected={isSelected}>
-      <PaneHeader
-        actions={actions}
-        backButton={
-          features.backButton &&
-          index > 0 && <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" />
-        }
-        title={title}
-      />
+      {(actions || title) && (
+        <PaneHeader
+          actions={actions}
+          backButton={
+            features.backButton &&
+            index > 0 && <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" />
+          }
+          title={title}
+        />
+      )}
 
       {isValidElementType(component) &&
-        createElement(component, {...restProps, ref: userComponent})}
+        createElement(component, {
+          ...restProps,
+          ...restPane,
+          ref: userComponent,
+          // NOTE: this is for backwards compatibility
+          urlParams: params,
+        })}
 
       {isValidElement(component) && component}
     </Pane>
