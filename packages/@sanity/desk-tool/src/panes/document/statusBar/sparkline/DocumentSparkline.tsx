@@ -34,7 +34,6 @@ export function DocumentSparkline(props: DocumentSparklineProps) {
 
   const lastPublishedTimeAgo = useTimeAgo(lastPublished || '', {
     minimal: true,
-    agoSuffix: true,
   })
 
   const lastUpdatedTimeAgo = useTimeAgo(lastUpdated || '', {minimal: true})
