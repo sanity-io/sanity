@@ -7,8 +7,9 @@ import newDocumentStructure from 'part:@sanity/base/new-document-structure?'
 import {getTemplateById} from '@sanity/base/initial-value-templates'
 import S from '@sanity/base/structure-builder'
 
-export default function getNewDocumentModalActions() {
+export function getNewDocumentModalActions() {
   let structure = newDocumentStructure
+
   if (structure && !Array.isArray(structure)) {
     // eslint-disable-next-line no-console
     console.error(

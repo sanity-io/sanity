@@ -10,8 +10,7 @@ interface NotFoundProps {
 
 export const NotFound = (props: NotFoundProps) => {
   const router = useDefaultLayoutRouter()
-  const rootState =
-    HAS_SPACES && router.state && router.state?.space ? {space: router.state.space} : {}
+  const rootState = HAS_SPACES && router.state.space ? {space: router.state.space} : {}
 
   return (
     <Card height="fill" paddingX={[5, 5, 7]} paddingY={[5, 5, 6]} sizing="border">
