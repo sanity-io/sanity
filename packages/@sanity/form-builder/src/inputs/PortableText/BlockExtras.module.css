@@ -31,10 +31,6 @@
   }
 }
 
-:not(.hasFullScreen) .content {
-  margin-left: 100%;
-}
-
 .withError {
   composes: root;
 
