@@ -2,6 +2,7 @@ const basename = require('path').basename
 const parseUrl = require('url').parse
 const debug = require('debug')('sanity:import')
 const pMap = require('p-map')
+const {isSanityImageUrl} = require('@sanity/asset-utils')
 const progressStepper = require('./util/progressStepper')
 const getHashedBufferForUri = require('./util/getHashedBufferForUri')
 const retryOnFailure = require('./util/retryOnFailure')
@@ -171,7 +172,9 @@ async function getAssetDocumentIdForHash(client, type, sha1hash, attemptNum, tag
       return null
     }
 
-    const exists = await urlExists(assetDoc.url)
+    // By adding `fm=json` to image requests, we do a slightly cheaper operation
+    const assetUrl = isSanityImageUrl(assetDoc.url) ? `${assetDoc.url}?fm=json` : assetDoc.url
+    const exists = await urlExists(assetUrl)
     if (!exists) {
       debug(`Asset document ${assetDoc._id} exists, but file does not. Overwriting.`)
       return null
