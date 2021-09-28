@@ -17,7 +17,7 @@ import {validateDocument} from '@sanity/validation'
 import {Marker} from '@sanity/types'
 import {memoize} from '../utils/createMemoizer'
 import {IdPair} from '../types'
-import {editState} from './editState'
+import {editState, EditStateFor} from './editState'
 
 function getValidationMarkers(draft, published): Observable<Marker[]> {
   const doc = draft || published
@@ -33,7 +33,7 @@ export interface ValidationStatus {
 }
 
 const INITIAL_VALIDATION_STATUS: ValidationStatus = {isValidating: true, markers: []}
-function validateEditState(_editState: any) {
+function validateEditState(_editState: EditStateFor) {
   return getValidationMarkers(_editState.draft, _editState.published).pipe(
     map((markers) => ({
       markers,
