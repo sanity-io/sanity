@@ -52,6 +52,9 @@ class ParamsEditor extends React.PureComponent {
       tabSize: 2,
       mode: {name: 'javascript', json: true},
       autoCloseBrackets: true,
+      extraKeys: {
+        Tab: false,
+      },
     }
     return (
       <ReactCodeMirror
