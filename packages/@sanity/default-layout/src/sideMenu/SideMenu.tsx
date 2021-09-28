@@ -4,7 +4,7 @@
 import {UserAvatar, useZIndex} from '@sanity/base/components'
 import {Layer, Card, Flex, Text, Box, Button, Stack, useGlobalKeyDown} from '@sanity/ui'
 import {CloseIcon, LeaveIcon} from '@sanity/icons'
-import React, {useEffect, useRef} from 'react'
+import React, {memo, useEffect, useRef} from 'react'
 import ToolMenu from 'part:@sanity/default-layout/tool-switcher'
 import styled from 'styled-components'
 import {DatasetSelect} from '../datasetSelect'
@@ -53,7 +53,7 @@ const InnerCard = styled(Card)<{$open: boolean}>`
   transition: 200ms transform ease-in-out;
 `
 
-export function SideMenu(props: Props) {
+export const SideMenu = memo(function SideMenu(props: Props) {
   const {activeToolName, isOpen, onClose, onSignOut, onSwitchTool, tools, user} = props
   const zIndex = useZIndex()
   const closeButtonRef = useRef<HTMLButtonElement>()
@@ -135,4 +135,4 @@ export function SideMenu(props: Props) {
       </InnerCard>
     </Root>
   )
-}
+})

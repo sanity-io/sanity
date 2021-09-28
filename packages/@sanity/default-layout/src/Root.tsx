@@ -2,8 +2,7 @@
 ///<reference types="@sanity/types/parts" />
 
 import {isEqual} from 'lodash'
-import React from 'react'
-import {Subscription} from 'rxjs'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import LoginWrapper from 'part:@sanity/base/login-wrapper?'
 import {RouterProvider} from '@sanity/base/router'
 import AppLoadingScreen from 'part:@sanity/base/app-loading-screen'
@@ -12,11 +11,6 @@ import getOrderedTools from './util/getOrderedTools'
 import rootRouter, {maybeRedirectToBase} from './router'
 import {DefaultLayout} from './defaultLayout'
 import {NotFound} from './main'
-
-const handleNavigate = urlStateStore.navigate
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface Props {}
 
 interface State {
   intent?: {
@@ -27,77 +21,87 @@ interface State {
   isNotFound?: boolean
 }
 
-class DefaultLayoutRoot extends React.PureComponent<Props, State> {
-  state: State = {}
+function DefaultLayoutRoot() {
+  const [state, setState] = useState<State>({})
+  const tools = getOrderedTools()
 
-  urlStateSubscription: Subscription | null = null
+  useEffect(() => {
+    return () => {
+      // reset state on unmount
+      setState({})
+    }
+  }, [])
 
-  // eslint-disable-next-line camelcase
-  UNSAFE_componentWillMount() {
-    maybeRedirectToBase()
+  useEffect(maybeRedirectToBase, [])
 
-    this.urlStateSubscription = urlStateStore.state.subscribe({
+  useEffect(() => {
+    const sub = urlStateStore.state.subscribe({
       next: (event) => {
-        let urlState = this.state.urlState
-        let isNotFound = this.state.isNotFound
-        let intent = this.state.intent
+        let urlState = state.urlState
+        let isNotFound = state.isNotFound
+        let intent = state.intent
 
-        if (!isEqual(this.state.urlState, event.state)) {
+        if (!isEqual(state.urlState, event.state)) {
           urlState = event.state
         }
 
-        if (!isEqual(this.state.isNotFound, event.isNotFound)) {
+        if (!isEqual(state.isNotFound, event.isNotFound)) {
           isNotFound = event.isNotFound
         }
 
-        if (!isEqual(this.state.intent, event.intent)) {
+        if (!isEqual(state.intent, event.intent)) {
           intent = event.intent
         }
 
-        const urlStateEqual = this.state.urlState === urlState
-        const isNotFoundEqual = this.state.isNotFound === isNotFound
-        const intentEqual = this.state.intent === intent
+        const urlStateEqual = state.urlState === urlState
+        const isNotFoundEqual = state.isNotFound === isNotFound
+        const intentEqual = state.intent === intent
 
         if (!urlStateEqual || !isNotFoundEqual || !intentEqual) {
-          this.setState({urlState, isNotFound, intent})
+          setState({urlState, isNotFound, intent})
         }
       },
     })
+
+    return () => sub.unsubscribe()
+  }, [state])
+
+  const children = useMemo(
+    () =>
+      state.isNotFound ? (
+        <NotFound>
+          {state.intent && (
+            <div>
+              No tool can handle the intent: <strong>{state.intent.name}</strong> with parameters{' '}
+              <pre>{JSON.stringify(state.intent.params)}</pre>
+            </div>
+          )}
+        </NotFound>
+      ) : (
+        <DefaultLayout tools={tools} />
+      ),
+    [state.isNotFound, state.intent, tools]
+  )
+
+  const handleNavigate = useCallback((url: string, options: any) => {
+    urlStateStore.navigate(url, options)
+  }, [])
+
+  const routedChildren = state.urlState && (
+    <RouterProvider router={rootRouter} state={state.urlState} onNavigate={handleNavigate}>
+      {children}
+    </RouterProvider>
+  )
+
+  if (routedChildren && LoginWrapper) {
+    return (
+      <LoginWrapper LoadingScreen={<AppLoadingScreen text="Logging in" />}>
+        {routedChildren}
+      </LoginWrapper>
+    )
   }
 
-  componentWillUnmount() {
-    this.urlStateSubscription.unsubscribe()
-  }
-
-  render() {
-    const {intent, urlState, isNotFound} = this.state
-    const tools = getOrderedTools()
-
-    const content = isNotFound ? (
-      <NotFound>
-        {intent && (
-          <div>
-            No tool can handle the intent: <strong>{intent.name}</strong> with parameters{' '}
-            <pre>{JSON.stringify(intent.params)}</pre>
-          </div>
-        )}
-      </NotFound>
-    ) : (
-      <DefaultLayout tools={tools} />
-    )
-
-    const router = (
-      <RouterProvider router={rootRouter} state={urlState} onNavigate={handleNavigate}>
-        {content}
-      </RouterProvider>
-    )
-
-    return LoginWrapper ? (
-      <LoginWrapper LoadingScreen={<AppLoadingScreen text="Logging in" />}>{router}</LoginWrapper>
-    ) : (
-      router
-    )
-  }
+  return routedChildren || <></>
 }
 
 export default DefaultLayoutRoot

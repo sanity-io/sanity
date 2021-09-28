@@ -1,21 +1,21 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import React, {useState, useEffect, useCallback} from 'react'
+import React, {memo, useState, useEffect, useCallback} from 'react'
 import {RouteScope} from '@sanity/base/router'
 import absolutes from 'all:part:@sanity/base/absolutes'
 import userStore from 'part:@sanity/base/user'
 import {LegacyLayerProvider} from '@sanity/base/components'
 import {useCurrentUser} from '@sanity/base/hooks'
 import Sidecar from '../addons/Sidecar'
-import RenderTool from '../main/RenderTool'
+import {RenderTool} from '../main/RenderTool'
 import {CreateDocumentDialog} from '../createDocumentDialog'
 import {SchemaErrorReporter} from '../schemaErrors/SchemaErrorReporter'
 import {SideMenu} from '../sideMenu'
-import getNewDocumentModalActions from '../util/getNewDocumentModalActions'
 import {Tool} from '../types'
 import {Navbar} from '../navbar'
 import {useDefaultLayoutRouter} from '../useDefaultLayoutRouter'
+import {NEW_DOCUMENT_ACTIONS, NEW_DOCUMENT_TYPES} from '../constants'
 import {RootFlex, MainAreaFlex, ToolBox, SidecarBox, PortalDiv} from './styles'
 import {LoadingScreen} from './LoadingScreen'
 
@@ -23,7 +23,7 @@ interface Props {
   tools: Tool[]
 }
 
-export const DefaultLayout = (props: Props) => {
+export const DefaultLayout = memo(function DefaultLayout(props: Props) {
   const {tools} = props
   const router = useDefaultLayoutRouter()
   const [createMenuIsOpen, setCreateMenuIsOpen] = useState<boolean>(false)
@@ -81,8 +81,7 @@ export const DefaultLayout = (props: Props) => {
   }, [])
 
   const renderContent = () => {
-    const tool = router.state?.tool || ''
-    const documentTypes = getNewDocumentModalActions().map((action) => action.schemaType)
+    const tool = router.state.tool || ''
 
     return (
       <RootFlex $isOverlayVisible={menuIsOpen} direction="column" data-testid="DefaultLayout">
@@ -99,7 +98,7 @@ export const DefaultLayout = (props: Props) => {
             createMenuIsOpen={createMenuIsOpen}
             onCreateButtonClick={handleCreateButtonClick}
             onToggleMenu={handleToggleMenu}
-            documentTypes={documentTypes}
+            documentTypes={NEW_DOCUMENT_TYPES}
             onUserLogout={handleLogout}
             onSearchOpen={handleSearchOpen}
             searchPortalElement={portalElement}
@@ -138,10 +137,7 @@ export const DefaultLayout = (props: Props) => {
 
         {createMenuIsOpen && (
           <LegacyLayerProvider zOffset="navbar">
-            <CreateDocumentDialog
-              onClose={handleActionModalClose}
-              actions={getNewDocumentModalActions()}
-            />
+            <CreateDocumentDialog onClose={handleActionModalClose} actions={NEW_DOCUMENT_ACTIONS} />
           </LegacyLayerProvider>
         )}
 
@@ -153,4 +149,4 @@ export const DefaultLayout = (props: Props) => {
   }
 
   return <SchemaErrorReporter>{renderContent}</SchemaErrorReporter>
-}
+})
