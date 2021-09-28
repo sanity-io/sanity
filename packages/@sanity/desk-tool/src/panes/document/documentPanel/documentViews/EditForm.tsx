@@ -13,7 +13,7 @@ import {tap} from 'rxjs/operators'
 const preventDefault = (ev: React.FormEvent) => ev.preventDefault()
 
 interface EditFormProps {
-  compareValue: SanityDocument | null
+  compareValue: Partial<SanityDocument> | null
   filterField: () => boolean
   focusPath: Path
   id: string

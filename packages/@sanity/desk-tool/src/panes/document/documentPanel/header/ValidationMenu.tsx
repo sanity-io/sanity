@@ -1,27 +1,35 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
+import {useId} from '@reach/auto-id'
 import {ValidationList} from '@sanity/base/components'
 import {ErrorOutlineIcon} from '@sanity/icons'
-import React, {useCallback} from 'react'
 import {Button, Menu, MenuButton} from '@sanity/ui'
-import {useId} from '@reach/auto-id'
+import React, {useCallback, useMemo} from 'react'
+import {useDocumentPane} from '../../useDocumentPane'
 
 interface ValidationMenuProps {
   boundaryElement: HTMLDivElement | null
   isOpen: boolean
-  // @todo: replace with type from @sanity/types
-  markers: any[]
-  schemaType: any
-  setFocusPath: (path: any) => void
   setOpen: (val: boolean) => void
 }
 
 export function ValidationMenu(props: ValidationMenuProps) {
-  const {boundaryElement, isOpen, markers, schemaType, setFocusPath, setOpen} = props
-  const validationMarkers = markers.filter((marker) => marker.type === 'validation')
-  const validationErrorMarkers = validationMarkers.filter((marker) => marker.level === 'error')
-  const validationWarningwarnings = validationMarkers.filter((marker) => marker.level === 'warning')
+  const {boundaryElement, isOpen, setOpen} = props
+  const {documentSchema, handleFocus, markers} = useDocumentPane()
+
+  const validationMarkers = useMemo(
+    () => markers.filter((marker) => marker.type === 'validation'),
+    [markers]
+  )
+
+  const validationErrorMarkers = useMemo(
+    () => validationMarkers.filter((marker) => marker.level === 'error'),
+    [validationMarkers]
+  )
+
+  const validationWarningwarnings = useMemo(
+    () => validationMarkers.filter((marker) => marker.level === 'warning'),
+    [validationMarkers]
+  )
+
   const id = useId()
 
   const handleClose = useCallback(() => setOpen(false), [setOpen])
@@ -32,10 +40,10 @@ export function ValidationMenu(props: ValidationMenuProps) {
 
   const popoverContent = (
     <ValidationList
-      documentType={schemaType}
+      documentType={documentSchema}
       markers={validationMarkers}
       onClose={handleClose}
-      onFocus={setFocusPath}
+      onFocus={handleFocus}
     />
   )
 

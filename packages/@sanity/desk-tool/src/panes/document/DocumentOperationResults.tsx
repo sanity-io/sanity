@@ -1,6 +1,7 @@
 import {useDocumentOperationEvent} from '@sanity/react-hooks'
 import {useToast} from '@sanity/ui'
 import React, {memo, useEffect} from 'react'
+import {useDocumentPane} from './useDocumentPane'
 
 function getOpErrorTitle(op: string): string {
   if (op === 'delete') {
@@ -32,17 +33,10 @@ function getOpSuccessTitle(op: string): string {
 
 const IGNORE_OPS = ['patch', 'commit']
 
-type DocumentOperationResultsProps = {
-  id: string
-  type: string
-}
-
-export const DocumentOperationResults = memo(function DocumentOperationResults(
-  props: DocumentOperationResultsProps
-) {
-  const {id, type} = props
+export const DocumentOperationResults = memo(function DocumentOperationResults() {
   const {push: pushToast} = useToast()
-  const event: any = useDocumentOperationEvent(id, type)
+  const {documentId, documentType} = useDocumentPane()
+  const event: any = useDocumentOperationEvent(documentId, documentType)
 
   useEffect(() => {
     if (!event) return

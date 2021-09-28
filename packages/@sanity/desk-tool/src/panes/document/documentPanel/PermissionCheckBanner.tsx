@@ -1,21 +1,18 @@
 import React from 'react'
+import {useCurrentUser} from '@sanity/base/hooks'
 import {Box, Card, Container, Flex, Text} from '@sanity/ui'
 import {ReadOnlyIcon} from '@sanity/icons'
 import styled from 'styled-components'
-
-interface PermissionCheckBannerProps {
-  requiredPermission: string
-  permission: {granted: boolean; reason: string}
-  currentUser?: {roles: {name: string; title: string}[]}
-}
+import {useDocumentPane} from '../useDocumentPane'
 
 const Root = styled(Card)`
   position: relative;
   z-index: 50;
 `
 
-export function PermissionCheckBanner(props: PermissionCheckBannerProps) {
-  const {permission, requiredPermission, currentUser} = props
+export function PermissionCheckBanner() {
+  const {value: currentUser} = useCurrentUser()
+  const {permission, requiredPermission} = useDocumentPane()
   const plural = currentUser?.roles?.length !== 1
 
   const roles = join(

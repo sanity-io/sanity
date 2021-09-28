@@ -1,15 +1,9 @@
-import {SanityDocument} from '@sanity/types'
 import {useEffect, useMemo, useState} from 'react'
 import {usePaneRouter} from '../../../../contexts/paneRouter'
 import {useUnique} from '../../../../lib/useUnique'
 import {DocumentPaneOptions} from '../../types'
 import {getInitialValueObservable} from './getInitialValue'
-
-interface InitialValueState {
-  loading: boolean
-  error: Error | null
-  value: Partial<SanityDocument>
-}
+import {InitialValueState} from './types'
 
 /**
  * @internal

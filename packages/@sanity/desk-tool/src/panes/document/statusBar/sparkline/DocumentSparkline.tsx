@@ -1,11 +1,10 @@
-import {DocumentBadgeDescription} from '@sanity/base'
-import {EditStateFor} from '@sanity/base/_internal'
 import {useTimeAgo} from '@sanity/base/hooks'
 import {EditIcon} from '@sanity/icons'
 import {Box, Flex, useElementRect} from '@sanity/ui'
 import React, {useEffect, useMemo, useState, useRef} from 'react'
 import {raf2} from '../../../../lib/raf'
 import {useDocumentHistory} from '../../documentHistory'
+import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentBadges} from './DocumentBadges'
 import {ReviewChangesButton} from './ReviewChangesButton'
 import {IconBadge} from './IconBadge'
@@ -17,14 +16,9 @@ import {
 } from './DocumentSparkline.styled'
 import {PublishStatus} from './PublishStatus'
 
-interface DocumentSparklineProps {
-  badges: DocumentBadgeDescription[]
-  editState: EditStateFor | null
-  lastUpdated: string | undefined | null
-}
-
-export function DocumentSparkline(props: DocumentSparklineProps) {
-  const {badges, lastUpdated, editState} = props
+export function DocumentSparkline() {
+  const {editState, value} = useDocumentPane()
+  const lastUpdated = value?._updatedAt
   const lastPublished = editState?.published?._updatedAt
   const {historyController} = useDocumentHistory()
   const showingRevision = historyController.onOlderRevision()
@@ -125,7 +119,7 @@ export function DocumentSparkline(props: DocumentSparklineProps) {
         )}
 
         <BadgesBox flex={1} marginLeft={3}>
-          <DocumentBadges editState={editState} badges={badges} />
+          <DocumentBadges />
         </BadgesBox>
       </MetadataBox>
     </Flex>

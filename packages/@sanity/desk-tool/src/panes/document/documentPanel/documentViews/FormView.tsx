@@ -16,7 +16,7 @@ interface FormViewProps {
   id: string
   readOnly?: boolean
   value: Partial<SanityDocument> | null
-  compareValue: SanityDocument | null
+  compareValue: Partial<SanityDocument> | null
   initialValue: Partial<SanityDocument>
   isConnected: boolean
   onChange: (patches: any[]) => void

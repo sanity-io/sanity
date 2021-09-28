@@ -1,45 +1,28 @@
-import React, {useCallback, useMemo, useState} from 'react'
-import {useMemoObservable} from 'react-rx'
+import React, {useCallback, useState} from 'react'
 import {SanityDocument} from '@sanity/types'
-import {versionedClient} from '../../../versionedClient'
 import {usePaneRouter} from '../../../contexts/paneRouter'
 import {DocumentHistoryContext} from './DocumentHistoryContext'
-import {createObservableController} from './history/Controller'
+import {Controller} from './history/Controller'
 import {Timeline} from './history/Timeline'
 
 interface DocumentHistoryProviderProps {
   children: React.ReactNode
-  documentId: string
+  controller: Controller
+  timeline: Timeline
   value: Partial<SanityDocument> | null
 }
 
 declare const __DEV__: boolean
 
 export function DocumentHistoryProvider(props: DocumentHistoryProviderProps) {
-  const {children, documentId, value} = props
+  const {children, controller, timeline, value} = props
 
   const paneRouter = usePaneRouter()
 
   const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')
 
-  const timeline = useMemo(() => new Timeline({publishedId: documentId, enableTrace: __DEV__}), [
-    documentId,
-  ])
-
-  // note: this emits sync so can never be null
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const {historyController} = useMemoObservable(
-    () =>
-      createObservableController({
-        timeline,
-        documentId,
-        client: versionedClient,
-      }),
-    [documentId, timeline]
-  )!
-
   const {since, rev} = paneRouter.params as Record<string, string | undefined>
-  historyController.setRange(since || null, rev || null)
+  controller.setRange(since || null, rev || null)
 
   const close = useCallback(() => {
     paneRouter.setParams({...paneRouter.params, since: undefined})
@@ -62,8 +45,8 @@ export function DocumentHistoryProvider(props: DocumentHistoryProviderProps) {
 
   let displayed = value
 
-  if (historyController.onOlderRevision()) {
-    displayed = historyController.displayed() as any
+  if (controller.onOlderRevision()) {
+    displayed = controller.displayed() as any
   }
 
   return (
@@ -71,7 +54,7 @@ export function DocumentHistoryProvider(props: DocumentHistoryProviderProps) {
       value={{
         displayed,
         timeline,
-        historyController,
+        historyController: controller,
         setRange,
         close,
         open,

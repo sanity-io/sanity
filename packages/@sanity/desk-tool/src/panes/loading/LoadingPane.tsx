@@ -19,6 +19,7 @@ interface LoadingPaneProps {
   tone?: CardTone
 }
 
+const DELAY = false
 const DEFAULT_MESSAGE = 'Loading…'
 
 const Content = styled(Flex)`
@@ -68,37 +69,38 @@ export function LoadingPane(props: LoadingPaneProps) {
     return () => sub.unsubscribe()
   }, [resolvedMessage])
 
-  const [content, setContentElement] = useState<HTMLDivElement | null>(null)
+  const [contentElement, setContentElement] = useState<HTMLDivElement | null>(null)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    if (!content) return undefined
+    if (!contentElement) return undefined
     return _raf2(() => setMounted(true))
-  }, [content])
+  }, [contentElement])
+
+  const content = (
+    <Content
+      align="center"
+      data-mounted={mounted ? '' : undefined}
+      direction="column"
+      height="fill"
+      justify="center"
+      ref={setContentElement}
+    >
+      <Spinner muted />
+
+      {(title || currentMessage) && (
+        <Box marginTop={3}>
+          <Text align="center" muted size={1}>
+            {title || currentMessage}
+          </Text>
+        </Box>
+      )}
+    </Content>
+  )
 
   return (
     <Pane data-index={index} flex={flex} minWidth={minWidth} selected={isSelected} tone={tone}>
-      <PaneContent>
-        <Delay ms={delay}>
-          <Content
-            align="center"
-            data-mounted={mounted ? '' : undefined}
-            direction="column"
-            height="fill"
-            justify="center"
-            ref={setContentElement}
-          >
-            <Spinner muted />
-            {(title || currentMessage) && (
-              <Box marginTop={3}>
-                <Text align="center" muted size={1}>
-                  {title || currentMessage}
-                </Text>
-              </Box>
-            )}
-          </Content>
-        </Delay>
-      </PaneContent>
+      <PaneContent>{DELAY ? <Delay ms={delay}>{content}</Delay> : content}</PaneContent>
     </Pane>
   )
 }

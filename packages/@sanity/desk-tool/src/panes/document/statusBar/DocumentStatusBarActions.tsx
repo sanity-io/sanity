@@ -3,29 +3,22 @@
 
 import React, {useCallback, useMemo, useState} from 'react'
 import {DocumentActionDescription} from '@sanity/base'
-import {EditStateFor} from '@sanity/base/_internal'
-import {useEditState, useConnectionState} from '@sanity/react-hooks'
 import {Box, Flex, Tooltip, Stack, Button, Hotkeys, LayerProvider, Text} from '@sanity/ui'
 import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
-import resolveDocumentActions from 'part:@sanity/base/document-actions/resolver'
 import {HistoryRestoreAction} from '../../../actions/HistoryRestoreAction'
+import {useDocumentPane} from '../useDocumentPane'
+import {useDocumentHistory} from '../documentHistory'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
 import {LEGACY_BUTTON_COLOR_TO_TONE} from './constants'
 
-export interface DocumentStatusBarActionsProps {
+interface DocumentStatusBarActionsInnerProps {
   disabled: boolean
   showMenu: boolean
   states: DocumentActionDescription[]
 }
 
-export interface HistoryStatusBarActionsProps {
-  id: string
-  type: string
-  revision: string
-}
-
-function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsProps) {
+function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps) {
   const {disabled, showMenu, states} = props
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
@@ -88,12 +81,9 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsProps) {
   )
 }
 
-export function DocumentStatusBarActions(props: {id: string; type: string}) {
-  const {id, type} = props
-  const editState: EditStateFor | null = useEditState(id, type) as any
-  const connectionState = useConnectionState(id, type)
+export function DocumentStatusBarActions() {
+  const {actions, connectionState, editState} = useDocumentPane()
   const [isMenuOpen, setMenuOpen] = useState(false)
-  const actions = editState ? resolveDocumentActions(editState) : null
   const handleMenuOpen = useCallback(() => setMenuOpen(true), [])
   const handleMenuClose = useCallback(() => setMenuOpen(false), [])
   const handleActionComplete = useCallback(() => setMenuOpen(false), [])
@@ -119,18 +109,12 @@ export function DocumentStatusBarActions(props: {id: string; type: string}) {
 
 const historyActions = [HistoryRestoreAction]
 
-export function HistoryStatusBarActions(props: HistoryStatusBarActionsProps) {
-  const {id, revision, type} = props
-  const editState: EditStateFor | null = useEditState(id, type) as any
-  const connectionState = useConnectionState(id, type)
+export function HistoryStatusBarActions() {
+  const {historyController} = useDocumentHistory()
+  const revision = historyController.revTime?.id || ''
+  const {connectionState, editState} = useDocumentPane()
   const disabled = (editState?.draft || editState?.published || {})._rev === revision
-  const actionProps = useMemo(
-    () => ({
-      ...(editState || {}),
-      revision,
-    }),
-    [editState, revision]
-  )
+  const actionProps = useMemo(() => ({...(editState || {}), revision}), [editState, revision])
 
   if (!editState) {
     return null
