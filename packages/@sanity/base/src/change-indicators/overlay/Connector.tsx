@@ -12,10 +12,13 @@ import {
 import {arrowPath, generateConnectorPath} from './connectorPath'
 import {mapConnectorToLine} from './mapConnectorToLine'
 import {Rect} from './types'
-import styles from './Connector.module.css'
-import {ClampedRect} from './ClampedRect'
 
-import {DebugRectWrapper, PathWrapper, InteractivePathWrapper} from './Connector.styled'
+import {
+  DebugRectWrapper,
+  PathWrapper,
+  InteractivePathWrapper,
+  RightBarWrapper,
+} from './Connector.styled'
 
 interface Props {
   from: {rect: Rect; bounds: Rect}
@@ -35,13 +38,6 @@ export function Connector({from, to, hovered, focused, revertHovered}: Props) {
 
   const linePathDescription = generateConnectorPath(line)
 
-  const rightBarClassName = classNames(
-    styles.rightBar,
-    focused && styles.rightBarFocused,
-    revertHovered && styles.rightBarRevertHovered,
-    hovered && !focused && !revertHovered && styles.rightBarHovered
-  )
-
   return (
     <>
       <InteractivePathWrapper d={linePathDescription} strokeWidth={INTERACTIVE_STROKE_WIDTH} />
@@ -53,8 +49,10 @@ export function Connector({from, to, hovered, focused, revertHovered}: Props) {
         d={linePathDescription}
         strokeWidth={STROKE_WIDTH}
       />
-      <ClampedRect
-        className={rightBarClassName}
+      <RightBarWrapper
+        focused={focused}
+        revertedHovered={revertHovered}
+        hovered={hovered && !focused && !revertHovered}
         top={to.rect.top}
         left={to.rect.left}
         height={to.rect.height}

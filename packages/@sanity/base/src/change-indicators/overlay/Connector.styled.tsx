@@ -1,5 +1,6 @@
 import {Theme} from '@sanity/ui'
 import styled, {css} from 'styled-components'
+import {ClampedRect} from './ClampedRect'
 
 interface PathInterface {
   focused: boolean
@@ -58,3 +59,29 @@ export const InteractivePathWrapper = styled.path`
     opacity: 0.1;
   }
 `
+
+export const RightBarWrapper = styled(ClampedRect)(
+  ({focused, revertedHovered, hovered, theme}: PathInterface) => {
+    const hoveredColor = theme.sanity.color.spot.yellow
+
+    return css`
+      stroke: none;
+      pointer-events: none;
+
+      ${focused &&
+      css`
+        fill: var(--card-focus-ring-color);
+      `}
+
+      ${revertedHovered &&
+      css`
+        fill: var(--card-accent-fg-color);
+      `}
+
+    ${hovered &&
+      css`
+        fill: ${hoveredColor};
+      `}
+    `
+  }
+)
