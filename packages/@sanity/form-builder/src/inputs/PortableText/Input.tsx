@@ -24,12 +24,10 @@ import {BlockObject} from './Objects/BlockObject'
 import {InlineObject} from './Objects/InlineObject'
 import {EditObject} from './Objects/EditObject'
 import {Annotation} from './Text/Annotation'
-import Blockquote from './Text/Blockquote'
-import Header from './Text/Header'
-import Paragraph from './Text/Paragraph'
 import {RenderBlockActions, RenderCustomMarkers, ObjectEditData} from './types'
 import PortableTextSanityEditor from './Editor'
 import {BlockExtrasWrapper} from './BlockExtras'
+import {TextBlock} from './TextBlock'
 
 type Props = {
   focusPath: Path
@@ -223,7 +221,7 @@ export default function PortableTextInput(props: Props) {
   }, [])
 
   const spanTypeName = useMemo(() => ptFeatures.types.span.name, [ptFeatures])
-  const blockTypeName = useMemo(() => ptFeatures.types.block.name, [ptFeatures])
+  const textBlockTypeName = useMemo(() => ptFeatures.types.block.name, [ptFeatures])
 
   const renderBlock = useCallback(
     (block, blockType, attributes, defaultRender) => {
@@ -236,18 +234,15 @@ export default function PortableTextInput(props: Props) {
             marker.level === 'error'
         ).length > 0
       let renderedBlock = defaultRender(block)
-      // Text blocks
-      if (block._type === blockTypeName) {
-        // Deal with block style
-        if (block.style === 'blockquote') {
-          renderedBlock = <Blockquote>{renderedBlock}</Blockquote>
-        } else if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(block.style)) {
-          renderedBlock = <Header block={block}>{renderedBlock}</Header>
-        } else {
-          renderedBlock = <Paragraph>{renderedBlock}</Paragraph>
-        }
+      const isTextBlock = block._type === textBlockTypeName
+      const blockRef: React.RefObject<HTMLDivElement> = React.createRef()
+      if (isTextBlock) {
+        renderedBlock = (
+          <TextBlock level={attributes.level} listItem={block.listItem} style={block.style}>
+            {defaultRender(block)}
+          </TextBlock>
+        )
       } else {
-        // Object blocks
         renderedBlock = (
           <BlockObject
             attributes={attributes}
@@ -261,7 +256,6 @@ export default function PortableTextInput(props: Props) {
           />
         )
       }
-      const blockRef: React.RefObject<any> = React.createRef()
       return (
         <>
           <div ref={blockRef}>{renderedBlock}</div>
@@ -277,7 +271,17 @@ export default function PortableTextInput(props: Props) {
         </>
       )
     },
-    [blockTypeName, editor, focusPath, isFullscreen, markers, onChange, onFocus, readOnly, value]
+    [
+      markers,
+      textBlockTypeName,
+      isFullscreen,
+      onFocus,
+      value,
+      onChange,
+      editor,
+      focusPath,
+      readOnly,
+    ]
   )
 
   const renderChild = useCallback(
