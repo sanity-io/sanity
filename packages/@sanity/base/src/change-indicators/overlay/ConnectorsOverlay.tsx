@@ -13,7 +13,7 @@ import {Connector} from './Connector'
 import {DebugLayers} from './DebugLayers'
 import {useResizeObserver} from './useResizeObserver'
 
-import styles from './ConnectorsOverlay.module.css'
+import {SvgWrapper} from './ConnectorsOverlay.styled'
 
 export interface Rect {
   height: number
@@ -114,10 +114,7 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
 
   return (
     <ScrollMonitor onScroll={handleScrollOrResize}>
-      <svg
-        className={styles.svg}
-        style={{zIndex: visibleConnectors[0] && visibleConnectors[0].field.zIndex}}
-      >
+      <SvgWrapper style={{zIndex: visibleConnectors[0] && visibleConnectors[0].field.zIndex}}>
         {visibleConnectors.map(({field, change, hasFocus, hasHover, hasRevertHover}) => {
           if (!change) {
             return null
@@ -137,7 +134,7 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
             />
           )
         })}
-      </svg>
+      </SvgWrapper>
     </ScrollMonitor>
   )
 }

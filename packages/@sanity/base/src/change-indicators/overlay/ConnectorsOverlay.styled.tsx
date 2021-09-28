@@ -1,6 +1,6 @@
-@import 'part:@sanity/base/theme/variables-style';
+import styled from 'styled-components'
 
-.svg {
+export const SvgWrapper = styled.svg`
   pointer-events: none;
   position: absolute;
   left: 0;
@@ -9,4 +9,4 @@
   bottom: 0;
   width: 100%;
   height: 100%;
-}
+`
