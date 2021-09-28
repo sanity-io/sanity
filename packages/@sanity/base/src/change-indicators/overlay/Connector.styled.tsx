@@ -19,7 +19,6 @@ export const DebugRectWrapper = styled.rect`
 export const PathWrapper = styled.path(
   ({focused, revertedHovered, hovered, theme}: PathInterface) => {
     /* these colours aren't freeøy available on the current theme */
-    const focusColor = theme.sanity.color.spot.blue
     const hoveredColor = theme.sanity.color.spot.yellow
 
     return css`
@@ -30,7 +29,7 @@ export const PathWrapper = styled.path(
 
       ${focused &&
       css`
-        stroke: ${focusColor};
+        stroke: var(--card-focus-ring-color);
       `}
 
       ${revertedHovered &&
@@ -62,6 +61,7 @@ export const InteractivePathWrapper = styled.path`
 
 export const RightBarWrapper = styled(ClampedRect)(
   ({focused, revertedHovered, hovered, theme}: PathInterface) => {
+    /* these colours aren't freeøy available on the current theme */
     const hoveredColor = theme.sanity.color.spot.yellow
 
     return css`
