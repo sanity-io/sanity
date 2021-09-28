@@ -1,5 +1,5 @@
 // Re-export Popper.js's `Placement` type
-export {Placement} from '@popperjs/core'
+export type {Placement} from '@popperjs/core'
 
 export * from './autocomplete/types'
 export * from './buttons/types'
