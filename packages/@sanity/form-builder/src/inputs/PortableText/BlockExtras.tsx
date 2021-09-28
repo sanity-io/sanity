@@ -101,6 +101,8 @@ const commonStyle: CSSProperties = {
   right: 0,
   bottom: 0,
   pointerEvents: 'none',
+  userSelect: 'none',
+  width: '100%',
 }
 
 const findBlockMarkers = (block: PortableTextBlock, markers: Marker[]): Marker[] =>
