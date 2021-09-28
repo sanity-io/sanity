@@ -33,6 +33,7 @@ const collectLast = (source) =>
     setTimeout(() => resolve(done()), 100)
   })
 
+// TODO: fix these tests?
 describe.skip('resolvePanes', () => {
   test('can resolve one-pane structure', () =>
     expect(collectLast(resolvePanes(singleStatsStructure, []))).resolves.toMatchObject([

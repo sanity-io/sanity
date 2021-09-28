@@ -3,10 +3,12 @@
 //
 // this file is currently read by:
 // - webpack when running the dev server
+// - vite config for the workshop
 // - jest when running test suite
-// note: order matters. The most specific paths should appear first
-
+//
 module.exports = {
+  // note: don't include any regex in the module expressions
+  // because they will be escaped by our jest config.
   '@sanity/base/__legacy/@sanity/components':
     './packages/@sanity/base/src/__legacy/@sanity/components',
 
@@ -29,8 +31,8 @@ module.exports = {
   '@sanity/initial-value-templates': './packages/@sanity/initial-value-templates/src',
   '@sanity/portable-text-editor': './packages/@sanity/portable-text-editor/src',
   '@sanity/mutator': './packages/@sanity/mutator/src',
-  '@sanity/client': './packages/@sanity/client/src/sanityClient.js',
-  '@sanity/resolver': './packages/@sanity/resolver/src/resolver.js',
+  '@sanity/client': './packages/@sanity/client/src/sanityClient',
+  '@sanity/resolver': './packages/@sanity/resolver/src/resolver',
 
   '@sanity/react-hooks': './packages/@sanity/react-hooks/src',
 
