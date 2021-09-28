@@ -1,5 +1,6 @@
-import getDefaultModule from './getDefaultModule'
 import {Ordering} from '../Sort'
+import {FixMe} from '../types'
+import getDefaultModule from './getDefaultModule'
 
 interface Schema {
   name: string
@@ -17,18 +18,18 @@ interface PreviewFields {
 }
 
 interface PreviewPreparer {
-  (selection: {}): PreviewFields
+  (selection: Record<string, unknown>): PreviewFields
 }
 
 export interface SchemaType {
   name: string
   title?: string
-  icon?: Function
+  icon?: FixMe
   type?: SchemaType
   to?: SchemaField[]
   fields?: SchemaField[]
   orderings?: Ordering[]
-  initialValue?: Function | {[key: string]: any}
+  initialValue?: FixMe | {[key: string]: unknown}
   preview?: {
     select?: PreviewFields
     prepare?: PreviewPreparer

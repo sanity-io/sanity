@@ -28,7 +28,10 @@ Object {
     Object {
       "action": "setSortOrder",
       "group": "sorting",
-      "icon": [Function],
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
       "params": Object {
         "by": Array [
           Object {
@@ -43,7 +46,10 @@ Object {
     Object {
       "action": "setSortOrder",
       "group": "sorting",
-      "icon": [Function],
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
       "params": Object {
         "by": Array [
           Object {
@@ -58,7 +64,10 @@ Object {
     Object {
       "action": "setLayout",
       "group": "layout",
-      "icon": [Function],
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
       "params": Object {
         "layout": "default",
       },
@@ -67,7 +76,10 @@ Object {
     Object {
       "action": "setLayout",
       "group": "layout",
-      "icon": [Function],
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
       "params": Object {
         "layout": "detail",
       },
@@ -121,7 +133,10 @@ Object {
     Object {
       "action": "setSortOrder",
       "group": "sorting",
-      "icon": [Function],
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
       "params": Object {
         "by": Array [
           Object {
@@ -136,7 +151,10 @@ Object {
     Object {
       "action": "setSortOrder",
       "group": "sorting",
-      "icon": [Function],
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
       "params": Object {
         "by": Array [
           Object {
@@ -151,7 +169,10 @@ Object {
     Object {
       "action": "setLayout",
       "group": "layout",
-      "icon": [Function],
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
       "params": Object {
         "layout": "default",
       },
@@ -160,7 +181,10 @@ Object {
     Object {
       "action": "setLayout",
       "group": "layout",
-      "icon": [Function],
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
       "params": Object {
         "layout": "detail",
       },
@@ -214,7 +238,10 @@ Object {
     Object {
       "action": "setSortOrder",
       "group": "sorting",
-      "icon": [Function],
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
       "params": Object {
         "by": Array [
           Object {
@@ -229,7 +256,10 @@ Object {
     Object {
       "action": "setSortOrder",
       "group": "sorting",
-      "icon": [Function],
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
       "params": Object {
         "by": Array [
           Object {
@@ -244,7 +274,10 @@ Object {
     Object {
       "action": "setLayout",
       "group": "layout",
-      "icon": [Function],
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
       "params": Object {
         "layout": "default",
       },
@@ -253,7 +286,10 @@ Object {
     Object {
       "action": "setLayout",
       "group": "layout",
-      "icon": [Function],
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
       "params": Object {
         "layout": "detail",
       },
@@ -307,7 +343,10 @@ Object {
     Object {
       "action": "setSortOrder",
       "group": "sorting",
-      "icon": [Function],
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
       "params": Object {
         "by": Array [
           Object {
@@ -322,7 +361,10 @@ Object {
     Object {
       "action": "setSortOrder",
       "group": "sorting",
-      "icon": [Function],
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
       "params": Object {
         "by": Array [
           Object {
@@ -337,7 +379,10 @@ Object {
     Object {
       "action": "setLayout",
       "group": "layout",
-      "icon": [Function],
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
       "params": Object {
         "layout": "default",
       },
@@ -346,7 +391,10 @@ Object {
     Object {
       "action": "setLayout",
       "group": "layout",
-      "icon": [Function],
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
       "params": Object {
         "layout": "detail",
       },
@@ -400,7 +448,10 @@ Object {
     Object {
       "action": "setSortOrder",
       "group": "sorting",
-      "icon": [Function],
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
       "params": Object {
         "by": Array [
           Object {
@@ -415,7 +466,10 @@ Object {
     Object {
       "action": "setSortOrder",
       "group": "sorting",
-      "icon": [Function],
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
       "params": Object {
         "by": Array [
           Object {
@@ -430,7 +484,10 @@ Object {
     Object {
       "action": "setLayout",
       "group": "layout",
-      "icon": [Function],
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
       "params": Object {
         "layout": "default",
       },
@@ -439,7 +496,10 @@ Object {
     Object {
       "action": "setLayout",
       "group": "layout",
-      "icon": [Function],
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
       "params": Object {
         "layout": "detail",
       },
@@ -493,7 +553,10 @@ Object {
     Object {
       "action": "setSortOrder",
       "group": "sorting",
-      "icon": [Function],
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
       "params": Object {
         "by": Array [
           Object {
@@ -508,7 +571,10 @@ Object {
     Object {
       "action": "setSortOrder",
       "group": "sorting",
-      "icon": [Function],
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
       "params": Object {
         "by": Array [
           Object {
@@ -523,7 +589,10 @@ Object {
     Object {
       "action": "setLayout",
       "group": "layout",
-      "icon": [Function],
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
       "params": Object {
         "layout": "default",
       },
@@ -532,7 +601,10 @@ Object {
     Object {
       "action": "setLayout",
       "group": "layout",
-      "icon": [Function],
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
       "params": Object {
         "layout": "detail",
       },
@@ -586,7 +658,10 @@ Object {
     Object {
       "action": "setSortOrder",
       "group": "sorting",
-      "icon": [Function],
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
       "params": Object {
         "by": Array [
           Object {
@@ -601,7 +676,10 @@ Object {
     Object {
       "action": "setSortOrder",
       "group": "sorting",
-      "icon": [Function],
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
       "params": Object {
         "by": Array [
           Object {
@@ -616,7 +694,10 @@ Object {
     Object {
       "action": "setLayout",
       "group": "layout",
-      "icon": [Function],
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
       "params": Object {
         "layout": "default",
       },
@@ -625,7 +706,10 @@ Object {
     Object {
       "action": "setLayout",
       "group": "layout",
-      "icon": [Function],
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
       "params": Object {
         "layout": "detail",
       },

@@ -3,6 +3,7 @@ import {Serializable, SerializeOptions, SerializePath} from '../StructureNodes'
 import {SerializeError} from '..'
 import {HELP_URL} from '../SerializeError'
 import {validateId} from '../util/validateId'
+import {FixMe} from '../types'
 import {ComponentViewBuilder} from './ComponentView'
 import {FormViewBuilder} from './FormView'
 
@@ -10,7 +11,7 @@ export interface View {
   type: string
   id: string
   title: string
-  icon?: Function
+  icon?: FixMe
 }
 
 export abstract class GenericViewBuilder<L extends Partial<View>, ConcreteImpl>
@@ -33,7 +34,7 @@ export abstract class GenericViewBuilder<L extends Partial<View>, ConcreteImpl>
     return this.spec.title
   }
 
-  icon(icon: Function) {
+  icon(icon: FixMe) {
     return this.clone({icon})
   }
 

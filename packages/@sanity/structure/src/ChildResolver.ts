@@ -1,4 +1,5 @@
 import {CollectionBuilder, Collection, SerializePath, SerializeOptions} from './StructureNodes'
+import {FixMe} from './types'
 
 export interface ChildResolverOptions {
   index: number
@@ -8,10 +9,10 @@ export interface ChildResolverOptions {
   serializeOptions?: SerializeOptions
 }
 
-export type ItemChild = CollectionBuilder | Collection | Function | undefined
+export type ItemChild = CollectionBuilder | Collection | FixMe | undefined
 
 interface ChildObservable {
-  subscribe: (child: ItemChild | Promise<ItemChild>) => {}
+  subscribe: (child: ItemChild | Promise<ItemChild>) => Record<string, unknown>
 }
 
 export interface ChildResolver {
