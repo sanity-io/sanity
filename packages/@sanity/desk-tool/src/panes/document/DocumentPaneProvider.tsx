@@ -11,7 +11,7 @@ import {
   useValidationStatus,
 } from '@sanity/react-hooks'
 import {Path, SanityDocument} from '@sanity/types'
-import {Card, Code, Stack, Text, useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui'
 import {fromString as pathFromString, pathFor} from '@sanity/util/paths'
 import isHotkey from 'is-hotkey'
 import {setLocation} from 'part:@sanity/base/datastore/presence'
@@ -20,8 +20,6 @@ import resolveDocumentBadges from 'part:@sanity/base/document-badges/resolver'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import schema from 'part:@sanity/base/schema'
 import {useMemoObservable} from 'react-rx'
-import {ErrorPane} from '../error'
-import {LoadingPane} from '../loading'
 import {useDeskTool} from '../../contexts/deskTool'
 import {usePaneRouter} from '../../contexts/paneRouter'
 import {useUnique} from '../../lib/useUnique'
@@ -61,34 +59,19 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
   const documentSchema = schema.get(documentType)
   const value: Partial<SanityDocument> =
     editState?.draft || editState?.published || initialValue.value
-
   const actions = useMemo(() => (editState ? resolveDocumentActions(editState) : null), [editState])
   const badges = useMemo(() => (editState ? resolveDocumentBadges(editState) : null), [editState])
   const markers = useUnique(markersRaw)
   const views = useUnique(viewsProp)
-
+  const params = paneRouter.params
   const [focusPath, setFocusPath] = useState<Path>(() =>
-    paneRouter.params.path ? pathFromString(paneRouter.params.path) : []
+    params.path ? pathFromString(params.path) : []
   )
-
-  const handleFocus = useCallback(
-    (nextFocusPath: Path) => {
-      setFocusPath(pathFor(nextFocusPath))
-
-      setLocation([
-        {type: 'document', documentId, path: nextFocusPath, lastActiveAt: new Date().toISOString()},
-      ])
-    },
-    [documentId, setFocusPath]
-  )
-
-  const activeViewId = paneRouter.params.view || (views[0] && views[0].id) || null
-
+  const activeViewId = params.view || (views[0] && views[0].id) || null
   const timeline = useMemo(() => new Timeline({publishedId: documentId, enableTrace: __DEV__}), [
     documentId,
   ])
-
-  // note: this emits sync so can never be null
+  // NOTE: this emits sync so can never be null
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const {historyController} = useMemoObservable(
     () =>
@@ -99,7 +82,6 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
       }),
     [documentId, timeline]
   )!
-
   const changesOpen = historyController.changesPanelActive()
   const previewUrl = useMemo(() => getPreviewUrl(historyController, value), [
     historyController,
@@ -112,45 +94,57 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
     changesOpen,
     previewUrl,
   ])
+  const requiredPermission = value?._createdAt ? 'update' : 'create'
+  const permission = useCheckDocumentPermission(documentId, documentType, requiredPermission)
+  const inspectOpen = params.inspect === 'on'
+  const compareValue: Partial<SanityDocument> | null = changesOpen
+    ? (historyController.sinceAttributes() as any)
+    : editState?.published || null
+  const ready = connectionState === 'connected'
+
+  const handleFocus = useCallback(
+    (nextFocusPath: Path) => {
+      setFocusPath(pathFor(nextFocusPath))
+
+      setLocation([
+        {
+          type: 'document',
+          documentId,
+          path: nextFocusPath,
+          lastActiveAt: new Date().toISOString(),
+        },
+      ])
+    },
+    [documentId, setFocusPath]
+  )
 
   const handleChange = useCallback((patches) => patch.execute(patches, initialValue.value), [
     patch,
     initialValue.value,
   ])
 
-  const requiredPermission = value?._createdAt ? 'update' : 'create'
-
-  const permission = useCheckDocumentPermission(documentId, documentType, requiredPermission)
-
   const handleHistoryClose = useCallback(() => {
-    paneRouter.setParams({...paneRouter.params, since: undefined})
-  }, [paneRouter])
+    paneRouter.setParams({...params, since: undefined})
+  }, [paneRouter, params])
 
   const handleHistoryOpen = useCallback(() => {
-    paneRouter.setParams({...paneRouter.params, since: '@lastPublished'})
-  }, [paneRouter])
+    paneRouter.setParams({...params, since: '@lastPublished'})
+  }, [paneRouter, params])
 
   const handlePaneClose = useCallback(() => paneRouter.closeCurrent(), [paneRouter])
 
   const handlePaneSplit = useCallback(() => paneRouter.duplicateCurrent(), [paneRouter])
 
-  const inspectOpen = paneRouter.params.inspect === 'on'
-
-  // const isChangesOpen = historyController.changesPanelActive()
-  const compareValue: Partial<SanityDocument> | null = changesOpen
-    ? (historyController.sinceAttributes() as any)
-    : editState?.published || null
-
   const toggleInspect = useCallback(
     (toggle = !inspectOpen) => {
-      const {inspect: oldInspect, ...params} = paneRouter.params
+      const {inspect, ...restParams} = params
       if (toggle) {
-        paneRouter.setParams({inspect: 'on', ...params})
+        paneRouter.setParams({inspect: 'on', ...restParams})
       } else {
-        paneRouter.setParams(params)
+        paneRouter.setParams(restParams)
       }
     },
-    [inspectOpen, paneRouter]
+    [inspectOpen, paneRouter, params]
   )
 
   const handleMenuAction = useCallback(
@@ -226,6 +220,7 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
       paneKey,
       permission,
       previewUrl,
+      ready,
       requiredPermission,
       title,
       value,
@@ -263,6 +258,7 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
       paneKey,
       permission,
       previewUrl,
+      ready,
       requiredPermission,
       title,
       value,
@@ -280,66 +276,11 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
     }
   }, [connectionState, pushToast])
 
-  if (!documentSchema) {
-    return (
-      <ErrorPane
-        {...props}
-        flex={2.5}
-        minWidth={320}
-        title={
-          <>
-            Unknown document type: <code>{documentType}</code>
-          </>
-        }
-        tone="caution"
-      >
-        <Stack space={4}>
-          {documentType && (
-            <Text as="p">
-              This document has the schema type <code>{documentType}</code>, which is not defined as
-              a type in the local content studio schema.
-            </Text>
-          )}
-
-          {!documentType && (
-            <Text as="p">
-              This document does not exist, and no schema type was specified for it.
-            </Text>
-          )}
-
-          {__DEV__ && value && (
-            <>
-              <Text as="p">Here is the JSON representation of the document:</Text>
-              <Card padding={3} overflow="auto" radius={2} shadow={1} tone="inherit">
-                <Code language="json" size={[1, 1, 2]}>
-                  {JSON.stringify(value, null, 2)}
-                </Code>
-              </Card>
-            </>
-          )}
-        </Stack>
-      </ErrorPane>
-    )
-  }
-
-  if (connectionState === 'connecting' || !editState) {
-    return (
-      <LoadingPane
-        {...props}
-        flex={2.5}
-        minWidth={320}
-        title={`Loading ${documentSchema.title}…`}
-      />
-    )
-  }
-
-  if (initialValue.error) {
-    return (
-      <ErrorPane flex={2.5} minWidth={320} title="Failed to resolve initial value">
-        <Text as="p">Check developer console for details.</Text>
-      </ErrorPane>
-    )
-  }
+  // Reset `focusPath` when `documentId` or `params.path` changes
+  useEffect(() => {
+    // Reset focus path
+    setFocusPath(params.path ? pathFromString(params.path) : [])
+  }, [documentId, params.path])
 
   return (
     <DocumentHistoryProvider controller={historyController} timeline={timeline} value={value}>

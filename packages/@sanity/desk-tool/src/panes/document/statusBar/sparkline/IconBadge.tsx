@@ -1,6 +1,6 @@
 import {IconComponent} from '@sanity/icons'
 import styled, {css} from 'styled-components'
-import React, {createElement} from 'react'
+import React, {createElement, memo} from 'react'
 import {Text, Theme} from '@sanity/ui'
 
 export type IconBadgeTone = 'positive' | 'caution' | 'critical'
@@ -41,7 +41,7 @@ const Root = styled.div<IconBadgeRootStyleProps>(
   }
 )
 
-export function IconBadge(props: {
+export const IconBadge = memo(function IconBadge(props: {
   disabled?: boolean
   icon: IconComponent
   muted?: boolean
@@ -54,4 +54,4 @@ export function IconBadge(props: {
       <Text as="span">{createElement(icon)}</Text>
     </Root>
   )
-}
+})

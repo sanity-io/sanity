@@ -1,7 +1,7 @@
 import {getTemplateById} from '@sanity/base/initial-value-templates'
 import {useRouter, useRouterState} from '@sanity/base/router'
 import {PortalProvider, useToast} from '@sanity/ui'
-import React, {useState, useEffect, useCallback, useMemo, useRef, Fragment} from 'react'
+import React, {useState, useEffect, useCallback, useMemo, useRef} from 'react'
 import {Observable, interval, of} from 'rxjs'
 import {map, switchMap, distinctUntilChanged, debounce, tap} from 'rxjs/operators'
 import styled from 'styled-components'
@@ -9,6 +9,7 @@ import {PaneLayout} from './components/pane'
 import {StructureError} from './components/StructureError'
 import {LOADING_PANE} from './constants'
 import {DeskToolProvider} from './contexts/deskTool'
+import {getPanes} from './getPanes'
 import {
   getIntentRouteParams,
   getPaneDiffIndex,
@@ -16,6 +17,7 @@ import {
   hasLoading,
   isSaveHotkey,
 } from './helpers'
+import {useUnique} from './lib/useUnique'
 import {DeskToolPane, LoadingPane} from './panes'
 import {RouterPaneGroup, StructureErrorType, StructurePane} from './types'
 import {
@@ -42,9 +44,9 @@ export function DeskTool(props: DeskToolProps) {
   const {push: pushToast} = useToast()
   const {navigate} = useRouter()
   const routerState = useRouterState()
-  const routerPanes: RouterPaneGroup[] = useMemo(() => routerState?.panes || [], [
-    routerState?.panes,
-  ])
+  const routerPanes: RouterPane[][] = useUnique(
+    useMemo(() => routerState?.panes || [], [routerState?.panes])
+  )
   const [error, setError] = useState<StructureErrorType | null>(null)
   const prevRouterPanesRef = useRef<RouterPaneGroup[] | null>(null)
   const currRouterPanesRef = useRef<RouterPaneGroup[]>(routerPanes)
@@ -57,25 +59,8 @@ export function DeskTool(props: DeskToolProps) {
   const {action, legacyEditDocumentId, type: schemaType, editDocumentId, params = {}} =
     routerState || {}
 
-  const paneKeys = useMemo(() => {
-    return routerPanes.reduce<string[]>(
-      (ids, group) => ids.concat(group.map((sibling) => sibling.id)),
-      ['root']
-    )
-  }, [routerPanes])
-
-  const paneGroups: RouterPaneGroup[] = useMemo(
-    () => ([[{id: 'root', params: {}}]] as RouterPaneGroup[]).concat(routerPanes || []),
-    [routerPanes]
-  )
-
-  const groupIndexes = useMemo(
-    () =>
-      routerPanes.reduce<number[]>(
-        (ids, group) => ids.concat(group.map((_, groupIndex) => groupIndex)),
-        []
-      ),
-    [routerPanes]
+  const panes = useUnique(
+    useMemo(() => getPanes(resolvedPanes, routerPanes), [resolvedPanes, routerPanes])
   )
 
   const setResolveError = useCallback((_error: StructureErrorType) => {
@@ -200,71 +185,78 @@ export function DeskTool(props: DeskToolProps) {
 
   useEffect(() => onPaneChange(resolvedPanes), [onPaneChange, resolvedPanes])
 
-  if (error) {
-    return <StructureError error={error} />
-  }
+  const children = useMemo(() => {
+    if (panes.length === 0) return null
 
-  if (resolvedPanes.length === 0) {
-    return null
-  }
+    return panes.map((paneData) => {
+      const {
+        active,
+        childItemId,
+        closable,
+        groupIndex,
+        itemId,
+        key: paneKey,
+        pane,
+        index: paneIndex,
+        params: paneParams,
+        path,
+        payload,
+        siblingIndex,
+        selected,
+      } = paneData
 
-  let i = -1
-  let path: string[] = []
+      if (pane === LOADING_PANE) {
+        return (
+          <LoadingPane
+            key={`loading-${paneIndex}`}
+            path={path}
+            index={paneIndex}
+            message={getWaitMessages}
+            selected={selected}
+          />
+        )
+      }
 
-  return (
-    <DeskToolProvider layoutCollapsed={layoutCollapsed}>
-      <PortalProvider element={portalElement || null}>
-        <StyledPaneLayout
-          flex={1}
-          height={layoutCollapsed ? undefined : 'fill'}
-          minWidth={512}
-          onCollapse={handleRootCollapse}
-          onExpand={handleRootExpand}
-        >
-          {paneGroups.map((group, groupIndex) => {
-            return (
-              // eslint-disable-next-line react/no-array-index-key
-              <Fragment key={groupIndex}>
-                {group.map((sibling, siblingIndex) => {
-                  const pane = resolvedPanes[++i]
+      return (
+        <DeskToolPane
+          active={active}
+          closable={closable}
+          groupIndex={groupIndex}
+          index={paneIndex}
+          key={`${pane.type}-${paneIndex}`}
+          pane={pane}
+          childItemId={childItemId}
+          itemId={itemId}
+          paneKey={paneKey}
+          params={paneParams}
+          payload={payload}
+          selected={selected}
+          siblingIndex={siblingIndex}
+        />
+      )
+    })
+  }, [panes])
 
-                  if (!pane) return null
+  return useMemo(() => {
+    if (error) {
+      return <StructureError error={error} />
+    }
 
-                  path = path.concat([pane.id || `[${i}]`])
-
-                  if (pane === LOADING_PANE) {
-                    return (
-                      <LoadingPane
-                        key={`loading-${i}`}
-                        path={path}
-                        index={i}
-                        message={getWaitMessages}
-                        isSelected={i === resolvedPanes.length - 1}
-                      />
-                    )
-                  }
-
-                  return (
-                    <DeskToolPane
-                      group={group}
-                      groupIndexes={groupIndexes}
-                      i={i}
-                      index={groupIndex}
-                      key={`${i}-${pane.id}`}
-                      pane={pane}
-                      paneKeys={paneKeys}
-                      panes={resolvedPanes}
-                      sibling={sibling}
-                      siblingIndex={siblingIndex}
-                    />
-                  )
-                })}
-              </Fragment>
-            )
-          })}
-        </StyledPaneLayout>
-        <div data-portal="" ref={setPortalElement} />
-      </PortalProvider>
-    </DeskToolProvider>
-  )
+    return (
+      <DeskToolProvider layoutCollapsed={layoutCollapsed}>
+        <PortalProvider element={portalElement || null}>
+          <StyledPaneLayout
+            flex={1}
+            height={layoutCollapsed ? undefined : 'fill'}
+            minWidth={512}
+            onCollapse={handleRootCollapse}
+            onExpand={handleRootExpand}
+          >
+            {children}
+          </StyledPaneLayout>
+          <div data-portal="" ref={setPortalElement} />
+        </PortalProvider>
+      </DeskToolProvider>
+    )
+  }, [children, error, handleRootCollapse, handleRootExpand, layoutCollapsed, portalElement])
 }

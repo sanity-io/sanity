@@ -13,7 +13,11 @@ function renderTitle({title}: SanityDocument) {
 }
 
 export function DocumentHeaderTitle() {
-  const {documentSchema, title, value} = useDocumentPane()
+  const {connectionState, documentSchema, title, value} = useDocumentPane()
+
+  if (connectionState !== 'connected') {
+    return <></>
+  }
 
   if (title) {
     return <>{title}</>

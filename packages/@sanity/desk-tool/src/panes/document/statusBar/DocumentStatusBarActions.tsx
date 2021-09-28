@@ -1,7 +1,7 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import React, {useCallback, useMemo, useState} from 'react'
+import React, {memo, useCallback, useMemo, useState} from 'react'
 import {DocumentActionDescription} from '@sanity/base'
 import {Box, Flex, Tooltip, Stack, Button, Hotkeys, LayerProvider, Text} from '@sanity/ui'
 import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
@@ -81,14 +81,14 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
   )
 }
 
-export function DocumentStatusBarActions() {
+export const DocumentStatusBarActions = memo(function DocumentStatusBarActions() {
   const {actions, connectionState, editState} = useDocumentPane()
   const [isMenuOpen, setMenuOpen] = useState(false)
   const handleMenuOpen = useCallback(() => setMenuOpen(true), [])
   const handleMenuClose = useCallback(() => setMenuOpen(false), [])
   const handleActionComplete = useCallback(() => setMenuOpen(false), [])
 
-  if (!actions) {
+  if (!actions || !editState) {
     return null
   }
 
@@ -105,20 +105,16 @@ export function DocumentStatusBarActions() {
       disabled={connectionState !== 'connected'}
     />
   )
-}
+})
 
 const historyActions = [HistoryRestoreAction]
 
-export function HistoryStatusBarActions() {
+export const HistoryStatusBarActions = memo(function HistoryStatusBarActions() {
   const {historyController} = useDocumentHistory()
   const revision = historyController.revTime?.id || ''
   const {connectionState, editState} = useDocumentPane()
   const disabled = (editState?.draft || editState?.published || {})._rev === revision
   const actionProps = useMemo(() => ({...(editState || {}), revision}), [editState, revision])
-
-  if (!editState) {
-    return null
-  }
 
   return (
     <RenderActionCollectionState
@@ -128,4 +124,4 @@ export function HistoryStatusBarActions() {
       disabled={connectionState !== 'connected' || Boolean(disabled)}
     />
   )
-}
+})

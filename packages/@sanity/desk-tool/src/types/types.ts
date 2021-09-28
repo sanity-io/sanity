@@ -62,7 +62,7 @@ export type RouterPaneGroup = RouterSplitPane[]
  */
 export interface RouterSplitPane {
   id: string
-  params?: Record<string, string>
+  params?: Record<string, string | undefined>
   payload?: unknown
 }
 

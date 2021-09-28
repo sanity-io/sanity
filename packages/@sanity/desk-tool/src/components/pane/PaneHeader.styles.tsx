@@ -1,4 +1,4 @@
-import {Box, Flex, Layer, rgba, Text, Theme} from '@sanity/ui'
+import {Box, Flex, Layer, rgba, TextSkeleton, Text, Theme} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 
 export const Root = styled(Layer)`
@@ -27,6 +27,11 @@ export const Layout = styled(Flex)`
 `
 
 export const TitleBox = styled(Box)``
+
+export const TitleTextSkeleton = styled(TextSkeleton)`
+  width: 66%;
+  max-width: 175px;
+`
 
 export const TitleText = styled(Text)`
   cursor: default;

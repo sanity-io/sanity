@@ -15,10 +15,10 @@ import {TimelineMenu} from '../../timeline'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {ValidationMenu} from './ValidationMenu'
+import {DocumentHeaderTitle} from './DocumentHeaderTitle'
 
 export interface DocumentPanelHeaderProps {
   rootElement: HTMLDivElement | null
-  title: React.ReactNode
 }
 
 const isActionButton = (item: MenuItemType) => Boolean(item.showAsAction)
@@ -28,7 +28,7 @@ export const DocumentPanelHeader = forwardRef(function DocumentPanelHeader(
   props: DocumentPanelHeaderProps,
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
-  const {rootElement, title} = props
+  const {rootElement} = props
   const {
     closable,
     documentSchema,
@@ -38,6 +38,7 @@ export const DocumentPanelHeader = forwardRef(function DocumentPanelHeader(
     markers,
     menuItems,
     menuItemGroups,
+    ready,
     views,
   } = useDocumentPane()
   const {historyController} = useDocumentHistory()
@@ -49,8 +50,9 @@ export const DocumentPanelHeader = forwardRef(function DocumentPanelHeader(
   const showTabs = views.length > 1
   const showVersionMenu = features.reviewChanges || views.length === 1
 
-  const languageMenu = LanguageFilter && (
-    <LanguageFilter key="language-menu" schemaType={documentSchema} />
+  const languageMenu = useMemo(
+    () => LanguageFilter && <LanguageFilter key="language-menu" schemaType={documentSchema} />,
+    [documentSchema]
   )
 
   const validationMenu = useMemo(
@@ -112,25 +114,38 @@ export const DocumentPanelHeader = forwardRef(function DocumentPanelHeader(
 
   const tabs = useMemo(() => showTabs && <DocumentHeaderTabs />, [showTabs])
 
-  return (
-    <PaneHeader
-      actions={
-        <Inline space={1}>
-          {languageMenu}
-          {validationMenu}
-          {contextMenu}
-          {splitPaneButton}
-          {closeViewButton}
-        </Inline>
-      }
-      backButton={
-        features.backButton &&
-        index > 0 && <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" />
-      }
-      ref={ref}
-      subActions={showVersionMenu && <TimelineMenu chunk={rev} mode="rev" />}
-      tabs={tabs}
-      title={title}
-    />
+  const actions = useMemo(
+    () => (
+      <Inline space={1}>
+        {languageMenu}
+        {validationMenu}
+        {contextMenu}
+        {splitPaneButton}
+        {closeViewButton}
+      </Inline>
+    ),
+    [languageMenu, validationMenu, contextMenu, splitPaneButton, closeViewButton]
+  )
+
+  const backButton = useMemo(
+    () =>
+      features.backButton &&
+      index > 0 && <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" />,
+    [features.backButton, index]
+  )
+
+  return useMemo(
+    () => (
+      <PaneHeader
+        actions={actions}
+        backButton={backButton}
+        loading={!ready}
+        ref={ref}
+        subActions={showVersionMenu && <TimelineMenu chunk={rev} mode="rev" />}
+        tabs={tabs}
+        title={<DocumentHeaderTitle />}
+      />
+    ),
+    [actions, backButton, ready, ref, rev, showVersionMenu, tabs]
   )
 })

@@ -33,12 +33,14 @@ function DocumentHeaderTab(props: {
   viewId: string | null
 }) {
   const {icon, id, isActive, label, tabPanelId, viewId} = props
+  const {ready} = useDocumentPane()
   const {setView} = usePaneRouter()
   const handleClick = useCallback(() => setView(viewId), [setView, viewId])
 
   return (
     <Tab
       aria-controls={tabPanelId}
+      disabled={!ready}
       fontSize={1}
       icon={icon}
       id={id}
