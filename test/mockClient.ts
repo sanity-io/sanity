@@ -26,6 +26,9 @@ const mockClient = {
   clone: () => mockClient,
   fetch: () => Promise.resolve(null),
   request: () => Promise.resolve(null),
+  observable: {
+    listen: () => NEVER,
+  },
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   listen: () => NEVER,
 }

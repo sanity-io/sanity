@@ -1,7 +1,7 @@
 import {omit} from 'lodash'
 import React, {useMemo} from 'react'
 import {exclusiveParams, PaneRouterProvider} from '../contexts/paneRouter'
-import {RouterPane, StructurePane} from '../types'
+import {RouterSplitPane, StructurePane} from '../types'
 import {DocumentPane} from './document'
 import {DocumentListPane} from './documentList'
 import {ListPane} from './list'
@@ -10,14 +10,14 @@ import {UnknownPane} from './unknown'
 import {UserComponentPane} from './userComponent'
 
 interface DeskToolPaneProps {
-  group: RouterPane[]
+  group: RouterSplitPane[]
   groupIndexes: number[]
   i: number
   index: number
   pane: StructurePane
   paneKeys: string[]
   panes: StructurePane[]
-  sibling: RouterPane
+  sibling: RouterSplitPane
   siblingIndex: number
 }
 
