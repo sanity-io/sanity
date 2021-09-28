@@ -1,5 +1,5 @@
 import {useDocumentOperation} from '@sanity/react-hooks'
-import {Button, Box, Card, Grid, Stack, Popover, Text, useClickOutside} from '@sanity/ui'
+import {Button, Box, Card, Grid, Stack, Text, useClickOutside} from '@sanity/ui'
 import {RevertIcon} from '@sanity/icons'
 import React, {useState} from 'react'
 import {unstable_useCheckDocumentPermission as useCheckDocumentPermission} from '@sanity/base/hooks'
