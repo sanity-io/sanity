@@ -4,8 +4,9 @@
   width: 100%;
   box-sizing: border-box;
   position: relative;
-  overflow: hidden;
   z-index: var(--zindex-portal);
+  overflow: visible;
+  pointer-events: none;
 }
 
 .content {
@@ -16,6 +17,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  margin-left: 100%;
 
   @nest &:hover::before {
     content: '';
@@ -29,11 +31,7 @@
   }
 }
 
-.hasFullScreen {
-  overflow: visible;
-}
-
-.hasFullScreen .content {
+:not(.hasFullScreen) .content {
   margin-left: 100%;
 }
 
