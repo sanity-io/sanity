@@ -1,10 +1,6 @@
-import getDefaultModule from './getDefaultModule'
+import {ComposeIcon, SortIcon, StackCompactIcon, SplitHorizontalIcon} from '@sanity/icons'
 
-// We are lazy-loading the part to work around typescript trying to resolve it
-export const getPlusIcon = (): Function =>
-  getDefaultModule(require('part:@sanity/base/compose-icon'))
-export const getSortIcon = (): Function => getDefaultModule(require('part:@sanity/base/sort-icon'))
-export const getListIcon = (): Function =>
-  getDefaultModule(require('part:@sanity/base/stack-compact-icon'))
-export const getDetailsIcon = (): Function =>
-  getDefaultModule(require('part:@sanity/base/stack-icon'))
+export const getPlusIcon = (): React.ComponentType => ComposeIcon
+export const getSortIcon = (): React.ComponentType => SortIcon
+export const getListIcon = (): React.ComponentType => StackCompactIcon
+export const getDetailsIcon = (): React.ComponentType => SplitHorizontalIcon
