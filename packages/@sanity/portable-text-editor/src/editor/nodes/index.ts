@@ -15,7 +15,7 @@ export const DraggableBlockWrapper = styled.div`
   }};
 `
 
-export const BlockObject = styled.div`
+export const DefaultBlockObject = styled.div`
   user-select: none;
   border: ${(props: {selected: boolean}) => {
     if (props.selected) {
@@ -25,7 +25,7 @@ export const BlockObject = styled.div`
   }};
 `
 
-export const InlineObject = styled.span`
+export const DefaultInlineObject = styled.span`
   background: #999;
   border: ${(props: {selected: boolean}) => {
     if (props.selected) {
@@ -37,7 +37,7 @@ export const InlineObject = styled.span`
 
 type ListItemProps = {listLevel: number; listStyle: string}
 
-export const ListItem = styled.div<ListItemProps>`
+export const DefaultListItem = styled.div<ListItemProps>`
   &.pt-list-item {
     width: fit-content;
     position: relative;
@@ -89,7 +89,7 @@ export const ListItem = styled.div<ListItemProps>`
   }
 `
 
-export const ListItemInner = styled.div``
+export const DefaultListItemInner = styled.div``
 
 function getLeftPositionForListLevel(level: number) {
   switch (Number(level)) {
