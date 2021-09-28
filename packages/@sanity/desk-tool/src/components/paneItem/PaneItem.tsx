@@ -13,16 +13,16 @@ import {PaneItemPreview} from './PaneItemPreview'
 interface PaneItemProps {
   id: string
   layout?: 'inline' | 'block' | 'default' | 'card' | 'media' | 'detail'
-  isSelected?: boolean
-  isActive?: boolean
   icon?: React.ComponentType<any> | false
+  pressed?: boolean
+  selected?: boolean
   title?: string
   value?: PreviewValue | SanityDocument
   schemaType?: SchemaType
 }
 
 export function PaneItem(props: PaneItemProps) {
-  const {id, isActive, isSelected, schemaType, layout = 'default', icon, title, value} = props
+  const {icon, id, layout = 'default', pressed, schemaType, selected, title, value} = props
   const {ChildLink} = usePaneRouter()
   const hasSchemaType = Boolean(schemaType && schemaType.name && schema.get(schemaType.name))
   const previewValue = useMemo(() => ({title}), [title])
@@ -75,13 +75,13 @@ export function PaneItem(props: PaneItemProps) {
         data-ui="PaneItem"
         padding={2}
         radius={2}
-        pressed={!isActive && isSelected}
-        selected={isActive && isSelected}
+        pressed={pressed}
+        selected={selected}
         tone="inherit"
       >
         {preview}
       </Card>
     ),
-    [isActive, isSelected, LinkComponent, preview]
+    [LinkComponent, pressed, preview, selected]
   )
 }

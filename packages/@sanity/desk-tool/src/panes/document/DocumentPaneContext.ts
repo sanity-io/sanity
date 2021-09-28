@@ -17,7 +17,7 @@ export interface DocumentPaneContextValue {
   closable: boolean
   compareValue: Partial<SanityDocument> | null
   connectionState: 'connecting' | 'reconnecting' | 'connected'
-  editState?: EditStateFor | null
+  editState: EditStateFor | null
   documentId: string
   documentIdRaw: string
   documentSchema: DocumentSchema | null
@@ -41,6 +41,7 @@ export interface DocumentPaneContextValue {
   paneKey: string
   permission: {granted: boolean; reason: string}
   previewUrl: string | null
+  ready: boolean
   requiredPermission: 'create' | 'update'
   title: string | null
   value: Partial<SanityDocument>
@@ -79,6 +80,7 @@ export const DocumentPaneContext = createContext<DocumentPaneContextValue>({
   paneKey: '',
   permission: {granted: false, reason: ''},
   previewUrl: null,
+  ready: false,
   requiredPermission: 'update',
   title: null,
   value: {},

@@ -28,10 +28,10 @@ const Scroller = styled(ScrollContainer)`
 `
 
 export function ChangesPanel(): React.ReactElement | null {
-  const {documentId, documentSchema} = useDocumentPane()
+  const {documentId, documentSchema, handleHistoryClose} = useDocumentPane()
   const {collapsed} = usePane()
   const scrollRef = useRef<HTMLDivElement | null>(null)
-  const {close: closeHistory, historyController} = useDocumentHistory()
+  const {historyController} = useDocumentHistory()
   const historyState = historyController.selectionState
   const loading = historyState === 'loading'
   const since = historyController.sinceTime
@@ -73,7 +73,7 @@ export function ChangesPanel(): React.ReactElement | null {
           <Button
             icon={CloseIcon}
             mode="bleed"
-            onClick={closeHistory}
+            onClick={handleHistoryClose}
             padding={3}
             title="Hide changes panel"
           />

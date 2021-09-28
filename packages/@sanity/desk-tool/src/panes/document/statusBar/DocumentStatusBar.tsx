@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {Box, Flex} from '@sanity/ui'
 import {useDocumentHistory} from '../documentHistory'
@@ -21,15 +21,18 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {historyController} = useDocumentHistory()
   const showingRevision = historyController.onOlderRevision()
 
-  return (
-    <Box paddingLeft={3} paddingRight={[3, 4]} paddingY={[3, 3]}>
-      <Flex align="center">
-        <Box flex={[1, 2]}>{badges && <DocumentSparkline />}</Box>
+  return useMemo(
+    () => (
+      <Box paddingLeft={3} paddingRight={[3, 4]} paddingY={[3, 3]}>
+        <Flex align="center">
+          <Box flex={[1, 2]}>{badges && <DocumentSparkline />}</Box>
 
-        <DocumentActionsBox flex={1} marginLeft={[1, 3]} ref={actionsBoxRef}>
-          {showingRevision ? <HistoryStatusBarActions /> : <DocumentStatusBarActions />}
-        </DocumentActionsBox>
-      </Flex>
-    </Box>
+          <DocumentActionsBox flex={1} marginLeft={[1, 3]} ref={actionsBoxRef}>
+            {showingRevision ? <HistoryStatusBarActions /> : <DocumentStatusBarActions />}
+          </DocumentActionsBox>
+        </Flex>
+      </Box>
+    ),
+    [actionsBoxRef, badges, showingRevision]
   )
 }

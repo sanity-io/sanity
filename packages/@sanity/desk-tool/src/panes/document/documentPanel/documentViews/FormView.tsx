@@ -1,142 +1,180 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
+import {useDocumentPresence} from '@sanity/base/hooks'
 import {PresenceOverlay} from '@sanity/base/presence'
-import {Marker, Path, SanityDocument} from '@sanity/types'
-import {Box, Button, Container, Text} from '@sanity/ui'
-import {isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
-import schema from 'part:@sanity/base/schema'
+import {Box, Container, Text} from '@sanity/ui'
 import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-component'
+import documentStore from 'part:@sanity/base/datastore/document'
+import schema from 'part:@sanity/base/schema'
+import {isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
 import filterFieldFn$ from 'part:@sanity/desk-tool/filter-fields-fn?'
-import React from 'react'
-import {Subscription} from 'rxjs'
-import {EditForm} from './EditForm'
+import {FormBuilder} from 'part:@sanity/form-builder'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import {tap} from 'rxjs/operators'
+import {useDocumentHistory} from '../../documentHistory'
+import {useDocumentPane} from '../../useDocumentPane'
 
 interface FormViewProps {
-  id: string
-  readOnly?: boolean
-  value: Partial<SanityDocument> | null
-  compareValue: Partial<SanityDocument> | null
-  initialValue: Partial<SanityDocument>
-  isConnected: boolean
-  onChange: (patches: any[]) => void
-  schemaType: {name: string; title: string}
-  markers: Marker[]
-  focusPath: Path
-  onFocus: (path: Path) => void
+  hidden: boolean
   margins: [number, number, number, number]
 }
 
-const noop = () => undefined
+interface FormViewState {
+  filterField: () => boolean
+}
 
-const INITIAL_STATE = {
+const INITIAL_STATE: FormViewState = {
   filterField: () => true,
 }
 
-export class FormView extends React.PureComponent<FormViewProps> {
-  static defaultProps = {
-    markers: [],
-    isConnected: true,
-  }
+const preventDefault = (ev: React.FormEvent) => ev.preventDefault()
+const noop = () => undefined
 
-  state = INITIAL_STATE
+export function FormView(props: FormViewProps) {
+  const {hidden, margins} = props
+  const {
+    compareValue,
+    documentId,
+    documentSchema,
+    documentType,
+    focusPath,
+    handleChange,
+    handleFocus,
+    markers,
+    permission,
+    ready,
+  } = useDocumentPane()
+  const presence = useDocumentPresence(documentId)
+  const {historyController} = useDocumentHistory()
+  const {revTime: rev} = historyController
+  const [{filterField}, setState] = useState<FormViewState>(INITIAL_STATE)
+  const {displayed} = useDocumentHistory()
+  const value = useMemo(() => (ready ? displayed : null), [displayed, ready])
+  const hasTypeMismatch = value !== null && value._type !== documentSchema.name
+  const isNonExistent = !value || !value._id
 
-  filterFieldFnSubscription: Subscription | null = null
+  // Create a patch channel for each document ID
+  const [patchChannel] = useState(() => FormBuilder.createPatchChannel())
 
-  componentDidMount() {
-    if (filterFieldFn$) {
-      this.filterFieldFnSubscription = filterFieldFn$.subscribe((filterField: any) =>
-        this.setState({filterField})
-      )
-    }
-  }
-
-  componentWillUnmount() {
-    if (this.filterFieldFnSubscription) {
-      this.filterFieldFnSubscription.unsubscribe()
-    }
-  }
-
-  handleBlur = () => {
-    // do nothing
-  }
-
-  handleEditAsActualType = () => {
-    // @todo
-  }
-
-  isReadOnly() {
-    const {value, schemaType, isConnected, readOnly} = this.props
-    const isNonExistent = !value || !value._id
-
+  const readOnly = useMemo(() => {
     return (
-      readOnly ||
-      !isConnected ||
-      !isActionEnabled(schemaType, 'update') ||
-      (isNonExistent && !isActionEnabled(schemaType, 'create'))
+      !ready ||
+      rev !== null ||
+      !permission.granted ||
+      !isActionEnabled(documentSchema, 'update') ||
+      (isNonExistent && !isActionEnabled(documentSchema, 'create'))
     )
-  }
+  }, [documentSchema, isNonExistent, permission, ready, rev])
 
-  render() {
-    const {
-      id,
-      focusPath,
-      onFocus,
-      value,
-      initialValue,
-      markers,
-      schemaType,
-      compareValue,
-      margins,
-    } = this.props
-    const {filterField} = this.state
-    const readOnly = this.isReadOnly()
-    const documentId = value && value._id && value._id.replace(/^drafts\./, '')
-    const hasTypeMismatch = value && value._type && value._type !== schemaType.name
+  useEffect(() => {
+    if (!filterFieldFn$) return undefined
 
+    const sub = filterFieldFn$.subscribe((nextFilterField: any) =>
+      setState({filterField: nextFilterField})
+    )
+
+    return () => sub.unsubscribe()
+  }, [])
+
+  const handleBlur = useCallback(() => {
+    // do nothing
+  }, [])
+
+  useEffect(() => {
+    const sub = documentStore.pair
+      .documentEvents(documentId, documentType)
+      .pipe(tap((event) => patchChannel.receiveEvent(event)))
+      .subscribe()
+
+    return () => {
+      sub.unsubscribe()
+    }
+  }, [documentId, documentType, patchChannel])
+
+  const form = useMemo(() => {
     if (hasTypeMismatch) {
       return (
-        <Container paddingX={4} paddingY={5} sizing="border" width={1}>
+        <>
           <Text>
             This document is of type <code>{value?._type}</code> and cannot be edited as{' '}
-            <code>{schemaType.name}</code>.
+            <code>{documentSchema.name}</code>.
           </Text>
 
-          <Box marginTop={4}>
+          {/* @todo */}
+          {/* <Box marginTop={4}>
             <Button
-              onClick={this.handleEditAsActualType}
-              text={<>Edit as {value?._type} instead</>}
+              onClick={handleEditAsActualType}
+              text={<>Edit as <code>{value?._type}</code> instead</>}
               tone="critical"
             />
-          </Box>
-        </Container>
+          </Box> */}
+        </>
       )
     }
 
     return (
-      <Container paddingX={4} paddingTop={5} paddingBottom={9} sizing="border" width={1}>
-        <PresenceOverlay margins={margins}>
-          <EditForm
-            id={id}
-            value={value || initialValue}
-            compareValue={compareValue}
-            filterField={filterField}
-            focusPath={focusPath}
-            markers={markers}
-            onBlur={this.handleBlur}
-            onChange={readOnly ? noop : this.props.onChange}
-            onFocus={onFocus}
-            readOnly={readOnly}
-            schema={schema}
-            type={schemaType}
-          />
-        </PresenceOverlay>
-
-        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-        {afterEditorComponents.map((AfterEditorComponent: any, idx: number) => (
-          <AfterEditorComponent key={String(idx)} documentId={documentId} />
-        ))}
-      </Container>
+      <PresenceOverlay margins={margins}>
+        <Box as="form" onSubmit={preventDefault}>
+          {patchChannel && (
+            <FormBuilder
+              schema={schema}
+              patchChannel={patchChannel}
+              value={value}
+              compareValue={compareValue}
+              type={documentSchema}
+              presence={presence}
+              filterField={filterField}
+              readOnly={readOnly}
+              onBlur={handleBlur}
+              onFocus={handleFocus}
+              focusPath={focusPath}
+              onChange={readOnly ? noop : handleChange}
+              markers={markers}
+            />
+          )}
+        </Box>
+      </PresenceOverlay>
     )
-  }
+  }, [
+    compareValue,
+    documentSchema,
+    filterField,
+    focusPath,
+    handleBlur,
+    handleChange,
+    handleFocus,
+    hasTypeMismatch,
+    margins,
+    markers,
+    patchChannel,
+    presence,
+    readOnly,
+    value,
+  ])
+
+  const after = useMemo(
+    () =>
+      Array.isArray(afterEditorComponents) &&
+      afterEditorComponents.map(
+        (AfterEditorComponent: React.ComponentType<{documentId: string}>, idx: number) => (
+          <AfterEditorComponent key={String(idx)} documentId={documentId} />
+        )
+      ),
+    [documentId]
+  )
+
+  return (
+    <Container
+      hidden={hidden}
+      paddingX={4}
+      paddingTop={5}
+      paddingBottom={9}
+      sizing="border"
+      width={1}
+    >
+      {form}
+      {after}
+    </Container>
+  )
 }

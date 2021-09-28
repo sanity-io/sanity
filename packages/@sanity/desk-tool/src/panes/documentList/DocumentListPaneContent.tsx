@@ -5,6 +5,7 @@ import {SyncIcon} from '@sanity/icons'
 import {
   Box,
   Button,
+  Card,
   Container,
   Flex,
   Heading,
@@ -70,17 +71,23 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   }, [collapsed])
 
   const renderItem = useCallback(
-    (item) => (
-      <PaneItem
-        icon={showIcons === false ? false : undefined}
-        id={getPublishedId(item._id)}
-        isSelected={childItemId === getPublishedId(item._id)}
-        isActive={isActive}
-        layout={layout}
-        schemaType={schema.get(item._type)}
-        value={item}
-      />
-    ),
+    (item) => {
+      const isSelected = childItemId === getPublishedId(item._id)
+      const pressed = !isActive && isSelected
+      const selected = isActive && isSelected
+
+      return (
+        <PaneItem
+          icon={showIcons === false ? false : undefined}
+          id={getPublishedId(item._id)}
+          pressed={pressed}
+          selected={selected}
+          layout={layout}
+          schemaType={schema.get(item._type)}
+          value={item}
+        />
+      )
+    },
     [childItemId, isActive, layout, showIcons]
   )
 
@@ -110,7 +117,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
       )
     }
 
-    if (isLoading || items === null) {
+    if (items === null) {
       return (
         <Flex align="center" direction="column" height="fill" justify="center">
           <Delay ms={300}>
@@ -157,13 +164,20 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
           />
         )}
 
-        {(isLoading || hasMoreItems) && (
-          <Box marginTop={1} padding={4}>
-            <Text align="center" muted>
-              {isLoading && <>Loading…</>}
-              {!isLoading && <>The list has more documents</>}
+        {isLoading && (
+          <Card borderTop marginTop={1} paddingX={3} paddingY={4}>
+            <Text align="center" muted size={1}>
+              Loading…
             </Text>
-          </Box>
+          </Card>
+        )}
+
+        {hasMoreItems && (
+          <Card marginTop={1} paddingX={3} paddingY={4} radius={2} tone="transparent">
+            <Text align="center" muted size={1}>
+              Displaying a maximum of {FULL_LIST_LIMIT} documents
+            </Text>
+          </Card>
         )}
       </Box>
     )

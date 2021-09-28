@@ -2,6 +2,7 @@ import {useRouter, useRouterState} from '@sanity/base/router'
 import {pick, omit, isEqual} from 'lodash'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useUnique} from '../../lib/useUnique'
+import {RouterPane} from '../../types'
 import {exclusiveParams} from './constants'
 import {ChildLink} from './ChildLink'
 import {PaneRouterContext} from './PaneRouterContext'
@@ -26,20 +27,20 @@ export function PaneRouterProvider(props: {
   const {children, flatIndex, index, params: paramsProp, payload: payloadProp, siblingIndex} = props
   const {navigate, navigateIntent} = useRouter()
   const routerState = useUnique(useRouterState())
-  const routerPanes = useUnique(useMemo(() => routerState?.panes || [], [routerState?.panes]))
+  const routerPanes: RouterPane[][] = useUnique(
+    useMemo(() => routerState?.panes || [], [routerState?.panes])
+  )
+
   const groupIndex = index - 1
 
-  //
   const [params, _setParams] = useState(paramsProp)
   const paramsRef = useRef(paramsProp)
 
-  //
   const [payload, _setPayload] = useState(payloadProp)
   const payloadRef = useRef(payloadProp)
 
   // Update params state
   useEffect(() => {
-    // return
     if (!isEqual(paramsRef.current, paramsProp)) {
       paramsRef.current = paramsProp
       _setParams(paramsProp)
@@ -48,30 +49,27 @@ export function PaneRouterProvider(props: {
 
   // Update payload state
   useEffect(() => {
-    // return
     if (!isEqual(payloadRef.current, payloadProp)) {
       payloadRef.current = payloadProp
       _setPayload(payloadProp)
     }
   }, [payloadProp])
 
-  const currentGroup = useMemo(() => {
-    return (routerPanes[groupIndex] || []).slice()
-  }, [groupIndex, routerPanes])
-
   const modifyCurrentGroup = useCallback(
-    (modifier) => {
-      const newPanes = routerPanes.slice()
+    (modifier: (siblings: RouterPane[], item: RouterPane) => RouterPane[]) => {
+      const newPanes = routerPanes.slice(0)
+
+      const currentGroup = routerPanes[groupIndex] ? routerPanes[groupIndex].slice(0) : []
 
       newPanes.splice(groupIndex, 1, modifier(currentGroup, currentGroup[siblingIndex]))
 
       const newRouterState = {...(routerState || {}), panes: newPanes}
 
-      navigate(newRouterState)
+      setTimeout(() => navigate(newRouterState), 0)
 
       return newRouterState
     },
-    [currentGroup, groupIndex, navigate, routerPanes, routerState, siblingIndex]
+    [groupIndex, navigate, routerPanes, routerState, siblingIndex]
   )
 
   const setPayload: PaneRouterContextValue['setPayload'] = useCallback(
@@ -97,11 +95,10 @@ export function PaneRouterProvider(props: {
   const setParams: PaneRouterContextValue['setParams'] = useCallback(
     (nextParams, setOptions = {}) => {
       const currParams = paramsRef.current
-      const _nextParams = {...currParams, ...nextParams}
 
-      if (!isEqual(currParams, _nextParams)) {
-        _setParams(_nextParams)
-        paramsRef.current = _nextParams
+      if (!isEqual(currParams, nextParams)) {
+        _setParams(nextParams)
+        paramsRef.current = nextParams
       }
 
       const {recurseIfInherited} = {...DEFAULT_SET_PARAMS_OPTIONS, ...setOptions}
@@ -173,10 +170,10 @@ export function PaneRouterProvider(props: {
       params,
 
       // Whether or not the pane has any siblings (within the same group)
-      hasGroupSiblings: currentGroup.length > 1,
+      hasGroupSiblings: routerPanes[groupIndex] ? routerPanes[groupIndex].length > 1 : false,
 
       // The length of the current group
-      groupLength: currentGroup.length,
+      groupLength: routerPanes[groupIndex] ? routerPanes[groupIndex].length : 0,
 
       // Current router state for the "panes" property
       routerPanesState: routerPanes,
@@ -189,7 +186,9 @@ export function PaneRouterProvider(props: {
 
       // Replaces the current pane with a new one
       replaceCurrent: (opts = {}): void => {
-        modifyCurrentGroup(() => [{id: opts.id, payload: opts.payload, params: opts.params}])
+        modifyCurrentGroup(() => [
+          {id: opts.id || '', payload: opts.payload, params: opts.params || {}},
+        ])
       },
 
       // Removes the current pane from the group
@@ -217,10 +216,11 @@ export function PaneRouterProvider(props: {
       setView: (viewId) => {
         const {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          view,
-          ...rest
+          view, // omit
+          ...restParams
         } = paramsRef.current
-        return setParams(viewId ? {...rest, view: viewId} : rest)
+
+        return setParams(viewId ? {...restParams, view: viewId} : restParams)
       },
 
       // Set the parameters for the current pane
@@ -233,7 +233,6 @@ export function PaneRouterProvider(props: {
       navigateIntent,
     }),
     [
-      currentGroup,
       flatIndex,
       groupIndex,
       modifyCurrentGroup,

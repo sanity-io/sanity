@@ -1,7 +1,5 @@
-// import {MenuItem} from '@sanity/base/__legacy/@sanity/components'
 import {BoundaryElementProvider, Flex, PortalProvider, usePortal, useElementRect} from '@sanity/ui'
-import React, {createElement, useMemo, useRef, useState} from 'react'
-// import {Path} from '@sanity/types'
+import React, {createElement, useEffect, useMemo, useRef, useState} from 'react'
 import {ScrollContainer} from '@sanity/base/components'
 import styled, {css} from 'styled-components'
 import {useDocumentHistory} from '../documentHistory'
@@ -9,50 +7,43 @@ import {PaneContent} from '../../../components/pane'
 import {usePaneLayout} from '../../../components/pane/usePaneLayout'
 import {useDeskTool} from '../../../contexts/deskTool'
 import {useDocumentPane} from '../useDocumentPane'
-import {DocumentHeaderTitle, DocumentPanelHeader} from './header'
+import {DocumentPanelHeader} from './header'
 import {FormView} from './documentViews'
 import {PermissionCheckBanner} from './PermissionCheckBanner'
 
 interface DocumentPanelProps {
   footerHeight: number | null
-  // isClosable: boolean
-  // isHistoryOpen: boolean
-  // onChange: (patches: any[]) => void
-  // onCloseView: () => void
-  // onMenuAction: (item: MenuItem) => void
-  // onSplitPane: () => void
-  // paneTitle?: string
   rootElement: HTMLDivElement | null
 }
 
-const Scroller = styled(ScrollContainer)<{$disabled?: boolean}>(({$disabled}) => {
-  if ($disabled) {
-    return {height: '100%'}
+const Scroller = styled(ScrollContainer)<{$disabled?: boolean; $ready: boolean}>(
+  ({$disabled, $ready}) => {
+    if ($disabled) {
+      return {height: '100%'}
+    }
+
+    return css`
+      height: 100%;
+      overflow: auto;
+      position: relative;
+      scroll-behavior: smooth;
+      outline: none;
+      /* opacity: ${$ready ? undefined : 0.5}; */
+      /* transition: opacity 200ms; */
+    `
   }
+)
 
-  return css`
-    height: 100%;
-    overflow: auto;
-    position: relative;
-    scroll-behavior: smooth;
-    outline: none;
-  `
-})
-
-export function DocumentPanel(props: DocumentPanelProps) {
+export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {footerHeight, rootElement} = props
   const {
     activeViewId,
-    compareValue,
     documentId,
     documentSchema,
     editState,
     focusPath,
-    handleChange,
-    handleFocus,
     initialValue,
-    markers,
-    permission,
+    ready,
     value,
     views,
   } = useDocumentPane()
@@ -62,12 +53,9 @@ export function DocumentPanel(props: DocumentPanelProps) {
   const [headerElement, setHeaderElement] = useState<HTMLDivElement | null>(null)
   const headerRect = useElementRect(headerElement)
   const portalRef = useRef<HTMLDivElement | null>(null)
-  const [
-    documentViewerContainerElement,
-    setDocumentViewerContainerElement,
-  ] = useState<HTMLDivElement | null>(null)
-  const {displayed, historyController} = useDocumentHistory()
-  const {revTime: rev} = historyController
+  const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
+  const {displayed} = useDocumentHistory()
+
   const activeView = useMemo(
     () => views.find((view) => view.id === activeViewId) || views[0] || {type: 'form'},
     [activeViewId, views]
@@ -87,58 +75,78 @@ export function DocumentPanel(props: DocumentPanelProps) {
     return [0, 0, 2, 0]
   }, [layoutCollapsed, footerHeight, headerRect])
 
-  return (
-    <Flex direction="column" flex={2} overflow={layoutCollapsed ? undefined : 'hidden'}>
-      <DocumentPanelHeader
-        rootElement={rootElement}
-        title={<DocumentHeaderTitle />}
-        ref={setHeaderElement}
-      />
+  const formViewHidden = activeView.type !== 'form'
 
-      <PaneContent>
-        <PortalProvider element={portalElement}>
-          <BoundaryElementProvider element={documentViewerContainerElement}>
-            {activeView.type === 'form' && <PermissionCheckBanner />}
+  const activeViewNode = useMemo(
+    () =>
+      activeView.type === 'component' &&
+      activeView.component &&
+      createElement(activeView.component, {
+        document: {
+          draft: editState?.draft || null,
+          displayed: displayed || value || initialValue,
+          historical: displayed,
+          published: editState?.published || null,
+        },
+        documentId,
+        options: activeView.options,
+        schemaType: documentSchema,
+      }),
+    [
+      activeView,
+      displayed,
+      documentId,
+      documentSchema,
+      editState?.draft,
+      editState?.published,
+      initialValue,
+      value,
+    ]
+  )
 
-            <Scroller
-              $disabled={layoutCollapsed}
-              data-ui="Scroller"
-              ref={setDocumentViewerContainerElement}
-            >
-              {activeView.type === 'form' && (
-                <FormView
-                  id={documentId}
-                  initialValue={initialValue.value}
-                  focusPath={focusPath}
-                  onFocus={handleFocus}
-                  markers={markers}
-                  onChange={handleChange}
-                  readOnly={rev !== null || !permission.granted}
-                  schemaType={documentSchema}
-                  value={displayed}
-                  margins={margins}
-                  compareValue={compareValue}
-                />
-              )}
+  // Scroll to top as `documentId` changes
+  useEffect(() => {
+    if (!documentScrollElement) return
+    documentScrollElement.scrollTo(0, 0)
+  }, [documentId, documentScrollElement])
 
-              {activeView.type === 'component' &&
-                createElement(activeView.component, {
-                  document: {
-                    draft: editState?.draft || null,
-                    displayed: displayed || value || initialValue,
-                    historical: displayed,
-                    published: editState?.published || null,
-                  },
-                  documentId,
-                  options: activeView.options,
-                  schemaType: documentSchema,
-                })}
-            </Scroller>
+  return useMemo(
+    () => (
+      <Flex direction="column" flex={2} overflow={layoutCollapsed ? undefined : 'hidden'}>
+        <DocumentPanelHeader rootElement={rootElement} ref={setHeaderElement} />
 
-            <div data-testid="document-panel-portal" ref={portalRef} />
-          </BoundaryElementProvider>
-        </PortalProvider>
-      </PaneContent>
-    </Flex>
+        <PaneContent>
+          <PortalProvider element={portalElement}>
+            <BoundaryElementProvider element={documentScrollElement}>
+              {activeView.type === 'form' && <PermissionCheckBanner />}
+
+              <Scroller
+                $disabled={layoutCollapsed}
+                $ready={ready}
+                data-testid="document-panel-scroller"
+                ref={setDocumentScrollElement}
+              >
+                <FormView hidden={formViewHidden} key={documentId} margins={margins} />
+                {activeViewNode}
+              </Scroller>
+
+              <div data-testid="document-panel-portal" ref={portalRef} />
+            </BoundaryElementProvider>
+          </PortalProvider>
+        </PaneContent>
+      </Flex>
+    ),
+    [
+      activeView.type,
+      activeViewNode,
+      documentId,
+      documentScrollElement,
+      formViewHidden,
+      layoutCollapsed,
+      margins,
+      portalElement,
+      ready,
+      rootElement,
+    ]
   )
 }

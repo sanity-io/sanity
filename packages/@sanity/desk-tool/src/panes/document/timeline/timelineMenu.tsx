@@ -6,6 +6,7 @@ import {upperFirst} from 'lodash'
 import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
 import {useDocumentHistory} from '../documentHistory'
+import {useDocumentPane} from '../useDocumentPane'
 import {sinceTimelineProps, revTimelineProps, formatTimelineEventLabel} from './helpers'
 import {Timeline} from './timeline'
 
@@ -35,6 +36,7 @@ const Root = styled(Popover)`
 `
 
 export function TimelineMenu({chunk, mode}: TimelineMenuProps) {
+  const {ready} = useDocumentPane()
   const [open, setOpen] = useState(false)
   const [buttonRef, setButtonRef] = useState<HTMLButtonElement | null>(null)
   const [menuContent, setMenuContent] = useState<HTMLDivElement | null>(null)
@@ -126,6 +128,7 @@ export function TimelineMenu({chunk, mode}: TimelineMenuProps) {
       referenceElement={buttonRef}
     >
       <Button
+        disabled={!ready}
         mode="bleed"
         fontSize={1}
         padding={2}

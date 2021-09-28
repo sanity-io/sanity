@@ -9,8 +9,6 @@ export interface HistoryContextInstance {
   timeline: Timeline
   historyController: Controller
   displayed: Partial<SanityDocument> | null
-  open(): void
-  close(): void
   setRange(since: string | null, rev: string | null): void
   timelineMode: TimelineMode
   setTimelineMode: (mode: TimelineMode) => void

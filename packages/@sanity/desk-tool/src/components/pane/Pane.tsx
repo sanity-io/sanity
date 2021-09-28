@@ -114,6 +114,17 @@ export const Pane = forwardRef(function Pane(
 
   const hidden = layoutCollapsed && !isLast
 
+  const divider = useMemo(
+    () =>
+      !isLast &&
+      !layoutCollapsed && (
+        <LegacyLayerProvider zOffset="paneResizer">
+          <PaneDivider disabled={collapsed} element={rootElement} />
+        </LegacyLayerProvider>
+      ),
+    [collapsed, isLast, layoutCollapsed, rootElement]
+  )
+
   return (
     <>
       <LegacyLayerProvider zOffset="pane">
@@ -141,11 +152,7 @@ export const Pane = forwardRef(function Pane(
         </PaneContext.Provider>
       </LegacyLayerProvider>
 
-      {!isLast && !layoutCollapsed && (
-        <LegacyLayerProvider zOffset="paneResizer">
-          <PaneDivider disabled={collapsed} element={rootElement} />
-        </LegacyLayerProvider>
-      )}
+      {divider}
     </>
   )
 })
