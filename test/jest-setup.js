@@ -1,7 +1,7 @@
 const path = require('path')
 const dotenv = require('dotenv')
 
-dotenv.config({path: path.resolve(__dirname, './.env')})
+dotenv.config({path: path.resolve(__dirname, '../.env')})
 
 if (typeof window !== 'undefined') {
   // https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom

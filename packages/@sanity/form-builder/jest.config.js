@@ -1,5 +1,5 @@
 const path = require('path')
-const createConfig = require('../../../jest.config.base')
+const createConfig = require('../../../createJestConfig')
 
 module.exports = createConfig({
   displayName: require('./package.json').name,

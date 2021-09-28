@@ -124,7 +124,7 @@ function createProjectConfig({
     },
     testMatch: [...testMatch, '<rootDir>/**/*.{test,spec}.{js,ts,tsx}'],
     testPathIgnorePatterns: [...testPathIgnorePatterns, '/(node_modules|lib|dist|bin|coverage)/'],
-    setupFiles: [...setupFiles, require.resolve('./jest-setup.js')],
+    setupFiles: [...setupFiles, require.resolve('./test/jest-setup.js')],
     testURL: 'http://localhost:3333',
     testEnvironment: 'jsdom',
     globals: {__DEV__: false, ...globals},
