@@ -1,18 +1,5 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-.interactivePath {
-  fill: none;
-  pointer-events: stroke;
-  stroke: var(--focus-color);
-  cursor: pointer;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  opacity: 0;
-  @nest &:hover {
-    opacity: 0.1;
-  }
-}
-
 .rightBar {
   stroke: none;
   fill: var(--focus-color);

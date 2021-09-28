@@ -44,3 +44,17 @@ export const PathWrapper = styled.path(
     `
   }
 )
+
+export const InteractivePathWrapper = styled.path`
+  fill: none;
+  pointer-events: stroke;
+  stroke: var(--card-focus-ring-color);
+  cursor: pointer;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+
+  &:hover {
+    opacity: 0.1;
+  }
+`

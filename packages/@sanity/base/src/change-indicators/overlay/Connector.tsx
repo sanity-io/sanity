@@ -15,7 +15,7 @@ import {Rect} from './types'
 import styles from './Connector.module.css'
 import {ClampedRect} from './ClampedRect'
 
-import {DebugRectWrapper, PathWrapper} from './Connector.styled'
+import {DebugRectWrapper, PathWrapper, InteractivePathWrapper} from './Connector.styled'
 
 interface Props {
   from: {rect: Rect; bounds: Rect}
@@ -44,11 +44,7 @@ export function Connector({from, to, hovered, focused, revertHovered}: Props) {
 
   return (
     <>
-      <path
-        className={styles.interactivePath}
-        d={linePathDescription}
-        strokeWidth={INTERACTIVE_STROKE_WIDTH}
-      />
+      <InteractivePathWrapper d={linePathDescription} strokeWidth={INTERACTIVE_STROKE_WIDTH} />
 
       <PathWrapper
         focused={focused}
