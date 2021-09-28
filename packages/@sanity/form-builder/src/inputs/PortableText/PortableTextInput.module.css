@@ -254,7 +254,7 @@
 
   /* Block objects */
 
-  @nest & > div > div[class~='pt-object-block'] {
+  /* @nest & > div > div[class~='pt-object-block'] {
     margin: var(--medium-padding) 0;
 
     @nest &:first-child {
@@ -264,13 +264,13 @@
     @nest &:last-child {
       margin-top: 0;
     }
-  }
+  } */
 
   /* space between different types of lists */
-  @nest & > div > div[class~='pt-list-item-bullet'] + div[class~='pt-list-item-number'],
+  /* @nest & > div > div[class~='pt-list-item-bullet'] + div[class~='pt-list-item-number'],
     & > div > div[class~='pt-list-item-number'] + div[class~='pt-list-item-bullet'] {
     margin-top: var(--medium-padding);
-  }
+  } */
 }
 
 .blockExtras {
