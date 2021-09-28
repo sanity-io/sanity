@@ -263,9 +263,10 @@ class VisionGui extends React.PureComponent {
   }
 
   handleKeyDown(event) {
+    const {validParams} = this.state
     const isWithinRoot =
       this._visionRoot.current && nodeContains(this._visionRoot.current, event.target)
-    if (isRunHotkey(event) && isWithinRoot) {
+    if (isRunHotkey(event) && isWithinRoot && validParams) {
       this.handleQueryExecution()
     }
   }
@@ -547,39 +548,52 @@ class VisionGui extends React.PureComponent {
                   {/* Controls (listen/run) */}
                   <ControlsContainer>
                     <Card padding={3} paddingX={3}>
-                      <Flex justify="space-evenly">
-                        <Card flex={1}>
-                          <Tooltip
-                            content={
-                              <Card padding={2} radius={4}>
-                                <Hotkeys keys={['Ctrl', 'Enter']} />
-                              </Card>
-                            }
-                            placement="top"
-                            portal
-                          >
+                      <Tooltip
+                        content={
+                          <Card padding={2} radius={4}>
+                            <Text size={1} muted>
+                              Parameters are not valid JSON
+                            </Text>
+                          </Card>
+                        }
+                        placement="top"
+                        disabled={validParams}
+                        portal
+                      >
+                        <Flex justify="space-evenly">
+                          <Card flex={1}>
+                            <Tooltip
+                              content={
+                                <Card padding={2} radius={4}>
+                                  <Hotkeys keys={['Ctrl', 'Enter']} />
+                                </Card>
+                              }
+                              placement="top"
+                              portal
+                            >
+                              <ButtonFullWidth
+                                onClick={this.handleQueryExecution}
+                                icon={PlayIcon}
+                                loading={queryInProgress}
+                                disabled={listenInProgress || !validParams}
+                                tone="primary"
+                                text="Fetch"
+                              />
+                            </Tooltip>
+                          </Card>
+                          <Card flex={1} marginLeft={3}>
                             <ButtonFullWidth
-                              onClick={this.handleQueryExecution}
-                              icon={PlayIcon}
-                              loading={queryInProgress}
-                              disabled={listenInProgress || !validParams}
-                              tone="primary"
-                              text="Fetch"
+                              onClick={this.handleListenExecution}
+                              type="button"
+                              icon={listenInProgress ? StopIcon : PlayIcon}
+                              text={listenInProgress ? 'Stop' : 'Listen'}
+                              mode="ghost"
+                              disabled={!validParams}
+                              tone={listenInProgress ? 'positive' : 'default'}
                             />
-                          </Tooltip>
-                        </Card>
-                        <Card flex={1} marginLeft={3}>
-                          <ButtonFullWidth
-                            onClick={this.handleListenExecution}
-                            type="button"
-                            icon={listenInProgress ? StopIcon : PlayIcon}
-                            text={listenInProgress ? 'Stop' : 'Listen'}
-                            mode="ghost"
-                            disabled={!validParams}
-                            tone={listenInProgress ? 'positive' : 'default'}
-                          />
-                        </Card>
-                      </Flex>
+                          </Card>
+                        </Flex>
+                      </Tooltip>
                     </Card>
                   </ControlsContainer>
                 </InputContainer>
