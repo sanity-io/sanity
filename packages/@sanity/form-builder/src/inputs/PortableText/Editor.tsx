@@ -15,14 +15,13 @@ import {
 import {Marker} from '@sanity/types'
 import {useLayer} from '@sanity/ui'
 import {ScrollContainer} from '@sanity/base/components'
-import React, {useMemo, useEffect, useCallback} from 'react'
+import React, {useMemo, useEffect} from 'react'
 import PatchEvent from '../../PatchEvent'
 import styles from './PortableTextInput.module.css'
 import Toolbar from './Toolbar/Toolbar'
 import {ExpandCollapseButton} from './expandCollapseButton'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
 import Decorator from './Text/Decorator'
-import BlockExtrasOverlay from './BlockExtrasOverlay'
 
 type Props = {
   initialSelection?: EditorSelection
@@ -194,29 +193,6 @@ function PortableTextSanityEditor(props: Props) {
     }
   }, [isFullscreen, isTopLayer, onToggleFullscreen])
 
-  const blockExtras = useCallback(
-    () => (
-      <BlockExtrasOverlay
-        isFullscreen={isFullscreen}
-        markers={markers}
-        onFocus={onFocus}
-        onChange={props.onFormBuilderChange}
-        renderBlockActions={readOnly ? undefined : renderBlockActions}
-        renderCustomMarkers={props.renderCustomMarkers}
-        value={value}
-      />
-    ),
-    [
-      isFullscreen,
-      markers,
-      onFocus,
-      props.onFormBuilderChange,
-      props.renderCustomMarkers,
-      readOnly,
-      renderBlockActions,
-      value,
-    ]
-  )
   const sanityEditor = useMemo(
     () => (
       <div className={styles.editorBox}>
@@ -241,7 +217,6 @@ function PortableTextSanityEditor(props: Props) {
         <div className={styles.editorBoxContent}>
           <ScrollContainer className={scClassNames} ref={setScrollContainerElement}>
             <div className={editorWrapperClassNames}>
-              <div className={styles.blockExtras}>{blockExtras()}</div>
               <div className={editorClassNames}>
                 <PortableTextEditable
                   hotkeys={hotkeys}
@@ -263,7 +238,6 @@ function PortableTextSanityEditor(props: Props) {
       </div>
     ),
     [
-      blockExtras,
       editorClassNames,
       editorWrapperClassNames,
       hotkeys,

@@ -29,6 +29,7 @@ import Header from './Text/Header'
 import Paragraph from './Text/Paragraph'
 import {RenderBlockActions, RenderCustomMarkers, ObjectEditData} from './types'
 import PortableTextSanityEditor from './Editor'
+import {BlockExtrasWrapper} from './BlockExtras'
 
 type Props = {
   focusPath: Path
@@ -260,9 +261,23 @@ export default function PortableTextInput(props: Props) {
           />
         )
       }
-      return renderedBlock
+      const blockRef: React.RefObject<any> = React.createRef()
+      return (
+        <>
+          <div ref={blockRef}>{renderedBlock}</div>
+          <BlockExtrasWrapper
+            block={block}
+            blockRef={blockRef}
+            isFullscreen={isFullscreen}
+            markers={markers}
+            onFocus={onFocus}
+            value={value}
+            onChange={onChange}
+          />
+        </>
+      )
     },
-    [blockTypeName, editor, focusPath, markers, onFocus, readOnly]
+    [blockTypeName, editor, focusPath, isFullscreen, markers, onChange, onFocus, readOnly, value]
   )
 
   const renderChild = useCallback(
@@ -339,28 +354,30 @@ export default function PortableTextInput(props: Props) {
 
   const ptEditor = useMemo(
     () => (
-      <PortableTextSanityEditor
-        hotkeys={hotkeys}
-        initialSelection={initialSelection}
-        isFullscreen={isFullscreen}
-        key={`editor-${activationId}`}
-        markers={markers}
-        onBlur={onBlur}
-        onFocus={onFocus}
-        onFormBuilderChange={onChange}
-        onCopy={onCopy}
-        onPaste={onPaste}
-        onToggleFullscreen={handleToggleFullscreen}
-        readOnly={isActive === false || readOnly}
-        renderAnnotation={renderAnnotation}
-        renderBlock={renderBlock}
-        renderBlockActions={renderBlockActions}
-        renderChild={renderChild}
-        renderCustomMarkers={renderCustomMarkers}
-        setPortalElement={setPortalElement}
-        setScrollContainerElement={setScrollContainerElement}
-        value={value}
-      />
+      <>
+        <PortableTextSanityEditor
+          hotkeys={hotkeys}
+          initialSelection={initialSelection}
+          isFullscreen={isFullscreen}
+          key={`editor-${activationId}`}
+          markers={markers}
+          onBlur={onBlur}
+          onFocus={onFocus}
+          onFormBuilderChange={onChange}
+          onCopy={onCopy}
+          onPaste={onPaste}
+          onToggleFullscreen={handleToggleFullscreen}
+          readOnly={isActive === false || readOnly}
+          renderAnnotation={renderAnnotation}
+          renderBlock={renderBlock}
+          renderBlockActions={renderBlockActions}
+          renderChild={renderChild}
+          renderCustomMarkers={renderCustomMarkers}
+          setPortalElement={setPortalElement}
+          setScrollContainerElement={setScrollContainerElement}
+          value={value}
+        />
+      </>
     ),
     [
       hotkeys,
