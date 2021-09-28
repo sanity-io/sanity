@@ -2,33 +2,45 @@ import React from 'react'
 import {Element} from 'slate'
 import {PortableTextFeatures} from '../../types/portableText'
 import {DraggableBlock} from '../DraggableBlock'
+import {DefaultListItem, DefaultListItemInner} from '.'
 
 type Props = {
+  children: JSX.Element
   element: Element
   portableTextFeatures: PortableTextFeatures
   readOnly: boolean
 }
-export default class TextBlock extends React.Component<Props> {
-  render() {
-    const {portableTextFeatures, children, element, readOnly} = this.props
-    const style = typeof element.style === 'string' ? element.style : 'normal'
-    // Should we render a custom style?
-    let CustomStyle
-    const blockStyle =
-      portableTextFeatures && style
-        ? portableTextFeatures.styles.find((item) => item.value === style)
-        : undefined
-    if (blockStyle) {
-      // TODO: Look into this API.
-      CustomStyle = blockStyle.blockEditor && blockStyle.blockEditor.render
-    }
-    return (
-      <DraggableBlock element={element} readOnly={readOnly}>
-        <>
-          {!CustomStyle && children}
-          {CustomStyle && <CustomStyle style={style}>{children}</CustomStyle>}
-        </>
-      </DraggableBlock>
+export default function TextBlock(props: Props) {
+  const {portableTextFeatures, children, element, readOnly} = props
+  const style = typeof element.style === 'string' ? element.style : 'normal'
+  // Should we render a custom style?
+  // TODO: Look into this API. This is legacy support for older Sanity Studio versions via the type
+  let CustomStyle
+  const blockStyle =
+    portableTextFeatures && style
+      ? portableTextFeatures.styles.find((item) => item.value === style)
+      : undefined
+  if (blockStyle) {
+    CustomStyle = blockStyle.blockEditor && blockStyle.blockEditor.render
+  }
+
+  let renderedBlock = children
+  if (element.listItem) {
+    renderedBlock = (
+      <DefaultListItem
+        listStyle={(element.listItem as string) || 'bullet'}
+        listLevel={(element.level as number) || 0}
+      >
+        <DefaultListItemInner>{renderedBlock}</DefaultListItemInner>
+      </DefaultListItem>
     )
   }
+  return (
+    <DraggableBlock element={element} readOnly={readOnly}>
+      <>
+        {!CustomStyle && renderedBlock}
+        {CustomStyle && <CustomStyle style={style}>{renderedBlock}</CustomStyle>}
+      </>
+    </DraggableBlock>
+  )
 }
