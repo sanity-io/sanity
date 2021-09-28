@@ -7,3 +7,4 @@
 /.eslintrc
 /yarn.lock
 tsconfig.tsbuildinfo
+!templates/**/.gitignore

@@ -6,14 +6,7 @@ import legacyTheme from 'sanity:css-custom-properties'
 import {color} from './color'
 import {fonts} from './fonts'
 
-// For debugging purposes
-declare global {
-  interface Window {
-    __sanityLegacyTheme: Record<string, string>
-  }
-}
-
-const isLegacyDefaultTheme = legacyTheme['--sanity-color-black'] === '#121923'
+const THEME_IS_DEFAULT_LEGACY = legacyTheme['--sanity-theme-default']
 
 /**
  * The theme object used to configure theming of `@sanity/ui`.
@@ -21,12 +14,12 @@ const isLegacyDefaultTheme = legacyTheme['--sanity-color-black'] === '#121923'
  */
 export const theme: RootTheme = {
   ...defaults,
-  color: isLegacyDefaultTheme ? defaults.color : color,
+  color: THEME_IS_DEFAULT_LEGACY ? defaults.color : color,
   focusRing: {
     offset: -1,
     width: 2,
   },
-  fonts: isLegacyDefaultTheme ? defaults.fonts : fonts,
+  fonts: THEME_IS_DEFAULT_LEGACY ? defaults.fonts : fonts,
   media: [
     parseInt(legacyTheme['--screen-medium-break'], 10) || 512,
     parseInt(legacyTheme['--screen-default-break'], 10) || 640,

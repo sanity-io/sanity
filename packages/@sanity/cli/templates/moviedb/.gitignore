@@ -1,10 +1,12 @@
 # Logs
-logs
+/logs
 *.log
 
 # Coverage directory used by tools like istanbul
-coverage
+/coverage
 
 # Dependency directories
 node_modules
-dist
+
+# Compiled sanity studio
+/dist

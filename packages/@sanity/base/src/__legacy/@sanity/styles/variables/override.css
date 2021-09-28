@@ -1,4 +1,8 @@
 :root {
+  /* NOTE: do not remove of rename this property! */
+  /* This specifies that the current theme is the default studio theme. */
+  --sanity-theme-default: 1;
+
   --sanity-color-black: #121923;
   --sanity-color-white: #fff;
   --sanity-color-blue-500: #2276fc;

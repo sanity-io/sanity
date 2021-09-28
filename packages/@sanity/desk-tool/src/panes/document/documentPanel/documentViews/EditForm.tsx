@@ -44,17 +44,9 @@ export function EditForm(props: EditFormProps) {
   } = props
   const presence = useDocumentPresence(id)
   const subscriptionRef = useRef<Subscription | null>(null)
-  const patchChannelRef = useRef<any>(null)
+  const patchChannel = useMemo(() => FormBuilder.createPatchChannel(), [])
 
   useEffect(() => {
-    patchChannelRef.current = FormBuilder.createPatchChannel()
-  }, [])
-
-  useEffect(() => {
-    const patchChannel = patchChannelRef.current
-
-    if (patchChannel) return undefined
-
     subscriptionRef.current = documentStore.pair
       .documentEvents(id, type.name)
       .pipe(
@@ -70,20 +62,20 @@ export function EditForm(props: EditFormProps) {
         subscriptionRef.current = null
       }
     }
-  }, [id, type.name])
+  }, [id, patchChannel, type.name])
 
   return useMemo(
     () => (
       <Box as="form" onSubmit={preventDefault}>
         <FormBuilder
           schema={schema}
-          patchChannel={patchChannelRef.current}
+          patchChannel={patchChannel}
           value={value || {_type: type}}
           compareValue={compareValue}
           type={type}
           presence={presence}
           filterField={filterField}
-          readOnly={!patchChannelRef.current || readOnly}
+          readOnly={readOnly}
           onBlur={onBlur}
           onFocus={onFocus}
           focusPath={focusPath}
@@ -100,6 +92,7 @@ export function EditForm(props: EditFormProps) {
       onBlur,
       onChange,
       onFocus,
+      patchChannel,
       presence,
       readOnly,
       schema,

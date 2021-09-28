@@ -1,15 +1,8 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
-import {DialogAction} from '@sanity/base/__legacy/@sanity/components'
-import {LegacyLayerProvider} from '@sanity/base/components'
 import {useDocumentOperation} from '@sanity/react-hooks'
-import {Button, Card, Stack} from '@sanity/ui'
+import {Button, Box, Card, Grid, Stack, Popover, Text, useClickOutside} from '@sanity/ui'
 import {RevertIcon} from '@sanity/icons'
-import PopoverDialog from 'part:@sanity/components/dialogs/popover'
-import React, {useState, useCallback} from 'react'
+import React, {useState} from 'react'
 import {unstable_useCheckDocumentPermission as useCheckDocumentPermission} from '@sanity/base/hooks'
-import styled from 'styled-components'
 import {ObjectDiff, ObjectSchemaType, ChangeNode, OperationsAPI} from '../../types'
 import {DiffContext} from '../contexts/DiffContext'
 import {buildObjectChangeList} from '../changes/buildChangeList'
@@ -18,16 +11,13 @@ import {ChangeResolver} from './ChangeResolver'
 import {DocumentChangeContext} from './DocumentChangeContext'
 import {NoChanges} from './NoChanges'
 
+import {ChangeListWrapper, PopoverWrapper} from './ChangeList.styled'
+
 interface Props {
   schemaType: ObjectSchemaType
   diff: ObjectDiff
   fields?: string[]
 }
-
-const ChangeListWrapper = styled.div`
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-`
 
 export function ChangeList({diff, fields, schemaType}: Props): React.ReactElement | null {
   const {documentId, isComparingCurrent} = React.useContext(DocumentChangeContext)
@@ -73,13 +63,11 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
     setConfirmRevertAllOpen(false)
   }, [])
 
-  const handleConfirmDialogAction = useCallback((action: DialogAction) => {
-    if (action.action) action.action()
-  }, [])
-
   const [revertAllContainerElement, setRevertAllContainerElement] = useState<HTMLDivElement | null>(
     null
   )
+
+  useClickOutside(() => setConfirmRevertAllOpen(false), [revertAllContainerElement])
 
   if (changes.length === 0) {
     return isRoot ? <NoChanges /> : null
@@ -102,43 +90,39 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
         </Stack>
 
         {showFooter && isComparingCurrent && updatePermission.granted && (
-          <Stack ref={setRevertAllContainerElement}>
-            <Button
-              tone="critical"
-              mode="ghost"
-              text="Revert all changes"
-              icon={RevertIcon}
-              onClick={handleRevertAllChangesClick}
-              onMouseEnter={handleRevertAllChangesMouseEnter}
-              onMouseLeave={handleRevertAllChangesMouseLeave}
-              disabled={schemaType?.readOnly}
-            />
-          </Stack>
-        )}
-
-        {confirmRevertAllOpen && (
-          <LegacyLayerProvider zOffset="paneFooter">
-            <PopoverDialog
-              actions={[
-                {
-                  color: 'danger',
-                  action: revertAllChanges,
-                  title: 'Revert all',
-                },
-                {
-                  kind: 'simple',
-                  action: closeRevertAllChangesConfirmDialog,
-                  title: 'Cancel',
-                },
-              ]}
-              onAction={handleConfirmDialogAction}
-              onClickOutside={closeRevertAllChangesConfirmDialog}
-              referenceElement={revertAllContainerElement}
-              size="small"
-            >
-              Are you sure you want to revert all {changes.length} changes?
-            </PopoverDialog>
-          </LegacyLayerProvider>
+          <PopoverWrapper
+            content={
+              <Box>
+                Are you sure you want to revert all {changes.length} changes?
+                <Grid columns={2} gap={2} marginTop={2}>
+                  <Button mode="ghost" onClick={closeRevertAllChangesConfirmDialog}>
+                    <Text align="center">Cancel</Text>
+                  </Button>
+                  <Button tone="critical" onClick={revertAllChanges}>
+                    <Text align="center">Revert all</Text>
+                  </Button>
+                </Grid>
+              </Box>
+            }
+            open={confirmRevertAllOpen}
+            padding={4}
+            placement={'left'}
+            portal
+            ref={setRevertAllContainerElement}
+          >
+            <Stack>
+              <Button
+                tone="critical"
+                mode="ghost"
+                text="Revert all changes"
+                icon={RevertIcon}
+                onClick={handleRevertAllChangesClick}
+                onMouseEnter={handleRevertAllChangesMouseEnter}
+                onMouseLeave={handleRevertAllChangesMouseLeave}
+                disabled={schemaType?.readOnly}
+              />
+            </Stack>
+          </PopoverWrapper>
         )}
       </Stack>
     </Card>

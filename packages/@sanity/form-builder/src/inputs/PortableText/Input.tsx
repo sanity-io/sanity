@@ -20,7 +20,7 @@ import {
 import {Path, isKeySegment, Marker, isKeyedObject} from '@sanity/types'
 import {BoundaryElementProvider, Layer, Portal, PortalProvider} from '@sanity/ui'
 import {uniqueId, isEqual} from 'lodash'
-import {useZIndex, ChangeIndicatorWithProvidedFullPath} from '@sanity/base/components'
+import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/components'
 import ActivateOnFocus from '../../components/ActivateOnFocus/ActivateOnFocus'
 import PatchEvent from '../../PatchEvent'
 import {EMPTY_ARRAY} from '../../utils/empty'
@@ -77,8 +77,6 @@ export default function PortableTextInput(props: Props) {
     renderCustomMarkers,
     value,
   } = props
-
-  const zindex = useZIndex()
 
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
@@ -373,10 +371,7 @@ export default function PortableTextInput(props: Props) {
         <Portal key={`portal-${activationId}`}>
           <PortalProvider element={portalElement}>
             <BoundaryElementProvider element={scrollContainerElement}>
-              <Layer
-                className={classNames(styles.fullscreenPortal, readOnly && styles.readOnly)}
-                zOffset={zindex.portal}
-              >
+              <Layer className={classNames(styles.fullscreenPortal, readOnly && styles.readOnly)}>
                 {ptEditor}
               </Layer>
 

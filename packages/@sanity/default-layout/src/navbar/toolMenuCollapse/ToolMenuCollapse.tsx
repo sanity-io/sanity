@@ -1,6 +1,6 @@
 import {PlugIcon} from '@sanity/icons'
 import {StateLink} from '@sanity/base/router'
-import React, {useMemo} from 'react'
+import React, {forwardRef, useMemo} from 'react'
 import {CollapseMenu, CollapseMenuButton} from '@sanity/base/components'
 import {Tool} from '../../types'
 import {useDefaultLayoutRouter} from '../../useDefaultLayoutRouter'
@@ -12,16 +12,19 @@ export function ToolMenuCollapse({tools}: {tools: Tool[]}) {
     () => (
       <CollapseMenu menuPopoverProps={{scheme: 'light'}} gap={1}>
         {tools?.map((tool) => {
-          const Link = (props: any) => (
-            <StateLink
-              {...props}
-              state={{
-                ...(router?.state || {}),
-                tool: tool?.name,
-                [tool?.name]: undefined,
-              }}
-            />
-          )
+          const Link = forwardRef(function Link(props: any, ref) {
+            return (
+              <StateLink
+                ref={ref}
+                {...props}
+                state={{
+                  ...(router?.state || {}),
+                  tool: tool?.name,
+                  [tool?.name]: undefined,
+                }}
+              />
+            )
+          })
 
           return (
             <CollapseMenuButton

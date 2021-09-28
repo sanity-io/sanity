@@ -132,6 +132,7 @@
 
   @nest .fullscreenPortal & {
     overflow: auto;
+    position: relative;
 
     @media (--screen-medium) {
       padding: var(--medium-padding);

@@ -13,7 +13,7 @@ describe('@sanity/default-layout: Navbar', () => {
     cy.get('[data-testid="desk-tool-list-pane"] [data-testid="pane-header"]').should(
       'have.css',
       'z-index',
-      '101'
+      '201'
     )
   })
 })

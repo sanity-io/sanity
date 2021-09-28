@@ -194,7 +194,7 @@ export function DocumentPanel(props: DocumentPanelProps) {
                 })}
             </Scroller>
 
-            <div ref={portalRef} />
+            <div data-testid="document-panel-portal" ref={portalRef} />
           </BoundaryElementProvider>
         </PortalProvider>
       </PaneContent>

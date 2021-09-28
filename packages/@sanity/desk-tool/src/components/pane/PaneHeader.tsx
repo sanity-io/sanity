@@ -1,5 +1,5 @@
 import {LegacyLayerProvider} from '@sanity/base/components'
-import {useElementRect, Box, Card, Flex} from '@sanity/ui'
+import {useElementRect, Box, Card, Flex, LayerProvider} from '@sanity/ui'
 import React, {useMemo, useState, useCallback, useEffect, useRef, forwardRef} from 'react'
 import {usePane} from './usePane'
 import {Layout, Root, TabsBox, TitleText} from './PaneHeader.styles'
@@ -51,55 +51,57 @@ export const PaneHeader = forwardRef(function PaneHeader(
   }, [collapsed, expand])
 
   return (
-    <Root data-collapsed={collapsed ? '' : undefined} data-testid="pane-header" ref={ref}>
-      <LegacyLayerProvider zOffset="paneHeader">
-        <Card data-collapsed={collapsed ? '' : undefined} tone="inherit">
-          <Layout
-            onTransitionEnd={handleTransitionEnd}
-            onClick={handleLayoutClick}
-            padding={2}
-            paddingBottom={tabs || subActions ? 1 : 2}
-            sizing="border"
-            style={layoutStyle}
-          >
-            {backButton}
-
-            <Box flex={1} paddingY={3} paddingLeft={backButton ? 1 : 3}>
-              <TitleText
-                onClick={handleTitleClick}
-                tabIndex={0}
-                textOverflow="ellipsis"
-                weight="semibold"
-              >
-                {title}
-              </TitleText>
-            </Box>
-
-            {actions && (
-              <Box hidden={!actionsVisible} paddingLeft={1}>
-                <LegacyLayerProvider zOffset="paneHeader">{actions}</LegacyLayerProvider>
-              </Box>
-            )}
-          </Layout>
-
-          {(tabs || subActions) && (
-            <Flex
-              align="center"
-              hidden={collapsed}
-              paddingTop={0}
-              paddingRight={2}
-              paddingBottom={2}
-              paddingLeft={3}
+    <LayerProvider zOffset={100}>
+      <Root data-collapsed={collapsed ? '' : undefined} data-testid="pane-header" ref={ref}>
+        <LegacyLayerProvider zOffset="paneHeader">
+          <Card data-collapsed={collapsed ? '' : undefined} tone="inherit">
+            <Layout
+              onTransitionEnd={handleTransitionEnd}
+              onClick={handleLayoutClick}
+              padding={2}
+              paddingBottom={tabs || subActions ? 1 : 2}
+              sizing="border"
+              style={layoutStyle}
             >
-              <TabsBox flex={1} marginRight={subActions ? 3 : 0}>
-                <div>{tabs}</div>
-              </TabsBox>
+              {backButton}
 
-              {subActions && <Box>{subActions}</Box>}
-            </Flex>
-          )}
-        </Card>
-      </LegacyLayerProvider>
-    </Root>
+              <Box flex={1} paddingY={3} paddingLeft={backButton ? 1 : 3}>
+                <TitleText
+                  onClick={handleTitleClick}
+                  tabIndex={0}
+                  textOverflow="ellipsis"
+                  weight="semibold"
+                >
+                  {title}
+                </TitleText>
+              </Box>
+
+              {actions && (
+                <Box hidden={!actionsVisible} paddingLeft={1}>
+                  <LegacyLayerProvider zOffset="paneHeader">{actions}</LegacyLayerProvider>
+                </Box>
+              )}
+            </Layout>
+
+            {(tabs || subActions) && (
+              <Flex
+                align="center"
+                hidden={collapsed}
+                paddingTop={0}
+                paddingRight={2}
+                paddingBottom={2}
+                paddingLeft={3}
+              >
+                <TabsBox flex={1} marginRight={subActions ? 3 : 0}>
+                  <div>{tabs}</div>
+                </TabsBox>
+
+                {subActions && <Box>{subActions}</Box>}
+              </Flex>
+            )}
+          </Card>
+        </LegacyLayerProvider>
+      </Root>
+    </LayerProvider>
   )
 })
