@@ -33,11 +33,13 @@
     "rxjs": "^6.5.3"
   },
   "devDependencies": {
+    "@sanity/base": "2.20.0",
     "react": "17.0.1",
     "rimraf": "^2.7.1",
     "rxjs": "^6.5.3"
   },
   "peerDependencies": {
+    "@sanity/base": "^2.0",
     "react": "^16.9 || ^17"
   },
   "repository": {
