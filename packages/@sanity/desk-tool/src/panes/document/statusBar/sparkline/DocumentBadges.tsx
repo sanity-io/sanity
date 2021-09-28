@@ -2,15 +2,10 @@
 ///<reference types="@sanity/types/parts" />
 
 import {DocumentBadgeDescription} from '@sanity/base'
-import {EditStateFor} from '@sanity/base/_internal'
 import {Badge, BadgeTone, Box, Inline, Text, Tooltip} from '@sanity/ui'
 import {RenderBadgeCollectionState} from 'part:@sanity/base/actions/utils'
 import React from 'react'
-
-export interface DocumentBadgesProps {
-  badges: DocumentBadgeDescription[]
-  editState: EditStateFor | null
-}
+import {useDocumentPane} from '../../useDocumentPane'
 
 interface DocumentBadgesInnerProps {
   states: DocumentBadgeDescription[]
@@ -59,8 +54,8 @@ function DocumentBadgesInner({states}: DocumentBadgesInnerProps) {
   )
 }
 
-export function DocumentBadges(props: DocumentBadgesProps) {
-  const {badges, editState} = props
+export function DocumentBadges() {
+  const {badges, editState} = useDocumentPane()
 
   if (!badges) return null
 

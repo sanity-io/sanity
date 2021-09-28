@@ -1,48 +1,28 @@
-import {MenuItem, MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
+// import {MenuItem} from '@sanity/base/__legacy/@sanity/components'
 import {BoundaryElementProvider, Flex, PortalProvider, usePortal, useElementRect} from '@sanity/ui'
 import React, {createElement, useMemo, useRef, useState} from 'react'
-import {Marker, Path, SanityDocument} from '@sanity/types'
+// import {Path} from '@sanity/types'
 import {ScrollContainer} from '@sanity/base/components'
-import {
-  unstable_useCheckDocumentPermission as useCheckDocumentPermission,
-  useCurrentUser,
-} from '@sanity/base/hooks'
 import styled, {css} from 'styled-components'
 import {useDocumentHistory} from '../documentHistory'
-import {DocumentView} from '../types'
 import {PaneContent} from '../../../components/pane'
 import {usePaneLayout} from '../../../components/pane/usePaneLayout'
 import {useDeskTool} from '../../../contexts/deskTool'
+import {useDocumentPane} from '../useDocumentPane'
 import {DocumentHeaderTitle, DocumentPanelHeader} from './header'
 import {FormView} from './documentViews'
 import {PermissionCheckBanner} from './PermissionCheckBanner'
 
 interface DocumentPanelProps {
-  activeViewId: string
-  documentId: string
-  documentType: string
-  draft: SanityDocument | null
   footerHeight: number | null
-  idPrefix: string
-  initialValue: Partial<SanityDocument>
-  isClosable: boolean
-  isHistoryOpen: boolean
-  markers: Marker[]
-  menuItems: MenuItem[]
-  menuItemGroups: MenuItemGroup[]
-  onChange: (patches: any[]) => void
-  formInputFocusPath: Path
-  onFormInputFocus: (focusPath: Path) => void
-  onCloseView: () => void
-  onMenuAction: (item: MenuItem) => void
-  onSplitPane: () => void
-  paneTitle?: string
-  published: SanityDocument | null
+  // isClosable: boolean
+  // isHistoryOpen: boolean
+  // onChange: (patches: any[]) => void
+  // onCloseView: () => void
+  // onMenuAction: (item: MenuItem) => void
+  // onSplitPane: () => void
+  // paneTitle?: string
   rootElement: HTMLDivElement | null
-  schemaType: any
-  value: Partial<SanityDocument> | null
-  compareValue: SanityDocument | null
-  views: DocumentView[]
 }
 
 const Scroller = styled(ScrollContainer)<{$disabled?: boolean}>(({$disabled}) => {
@@ -60,33 +40,22 @@ const Scroller = styled(ScrollContainer)<{$disabled?: boolean}>(({$disabled}) =>
 })
 
 export function DocumentPanel(props: DocumentPanelProps) {
+  const {footerHeight, rootElement} = props
   const {
     activeViewId,
-    documentId,
-    documentType,
-    draft,
-    footerHeight,
-    formInputFocusPath,
-    idPrefix,
-    initialValue,
-    isClosable,
-    isHistoryOpen,
-    markers,
-    menuItems,
-    menuItemGroups,
-    onChange,
-    onFormInputFocus,
-    onCloseView,
-    onMenuAction,
-    onSplitPane,
-    paneTitle,
-    published,
-    rootElement,
-    schemaType,
-    value,
     compareValue,
+    documentId,
+    documentSchema,
+    editState,
+    focusPath,
+    handleChange,
+    handleFocus,
+    initialValue,
+    markers,
+    permission,
+    value,
     views,
-  } = props
+  } = useDocumentPane()
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const parentPortal = usePortal()
   const {features} = useDeskTool()
@@ -98,17 +67,11 @@ export function DocumentPanel(props: DocumentPanelProps) {
     setDocumentViewerContainerElement,
   ] = useState<HTMLDivElement | null>(null)
   const {displayed, historyController} = useDocumentHistory()
+  const {revTime: rev} = historyController
   const activeView = useMemo(
     () => views.find((view) => view.id === activeViewId) || views[0] || {type: 'form'},
     [activeViewId, views]
   )
-  const {revTime} = historyController
-
-  const {value: currentUser} = useCurrentUser()
-
-  const requiredPermission = value?._createdAt ? 'update' : 'create'
-
-  const permission = useCheckDocumentPermission(documentId, documentType, requiredPermission)
 
   // Use a local portal container when split panes is supported
   const portalElement: HTMLElement | null = features.splitPanes
@@ -127,37 +90,15 @@ export function DocumentPanel(props: DocumentPanelProps) {
   return (
     <Flex direction="column" flex={2} overflow={layoutCollapsed ? undefined : 'hidden'}>
       <DocumentPanelHeader
-        activeViewId={activeViewId}
-        idPrefix={idPrefix}
-        isClosable={isClosable}
-        markers={markers}
-        menuItemGroups={menuItemGroups}
-        menuItems={menuItems}
-        onCloseView={onCloseView}
-        onContextMenuAction={onMenuAction}
-        onSplitPane={onSplitPane}
         rootElement={rootElement}
-        schemaType={schemaType}
-        onSetFormInputFocus={onFormInputFocus}
-        title={
-          <DocumentHeaderTitle documentType={documentType} paneTitle={paneTitle} value={value} />
-        }
-        views={views}
+        title={<DocumentHeaderTitle />}
         ref={setHeaderElement}
-        rev={revTime}
-        isHistoryOpen={isHistoryOpen}
       />
 
       <PaneContent>
         <PortalProvider element={portalElement}>
           <BoundaryElementProvider element={documentViewerContainerElement}>
-            {activeView.type === 'form' && (
-              <PermissionCheckBanner
-                permission={permission}
-                requiredPermission={requiredPermission}
-                currentUser={currentUser}
-              />
-            )}
+            {activeView.type === 'form' && <PermissionCheckBanner />}
 
             <Scroller
               $disabled={layoutCollapsed}
@@ -167,13 +108,13 @@ export function DocumentPanel(props: DocumentPanelProps) {
               {activeView.type === 'form' && (
                 <FormView
                   id={documentId}
-                  initialValue={initialValue}
-                  focusPath={formInputFocusPath}
-                  onFocus={onFormInputFocus}
+                  initialValue={initialValue.value}
+                  focusPath={focusPath}
+                  onFocus={handleFocus}
                   markers={markers}
-                  onChange={onChange}
-                  readOnly={revTime !== null || !permission.granted}
-                  schemaType={schemaType}
+                  onChange={handleChange}
+                  readOnly={rev !== null || !permission.granted}
+                  schemaType={documentSchema}
                   value={displayed}
                   margins={margins}
                   compareValue={compareValue}
@@ -183,14 +124,14 @@ export function DocumentPanel(props: DocumentPanelProps) {
               {activeView.type === 'component' &&
                 createElement(activeView.component, {
                   document: {
-                    draft: draft,
+                    draft: editState?.draft || null,
                     displayed: displayed || value || initialValue,
                     historical: displayed,
-                    published: published,
+                    published: editState?.published || null,
                   },
                   documentId,
                   options: activeView.options,
-                  schemaType,
+                  schemaType: documentSchema,
                 })}
             </Scroller>
 
