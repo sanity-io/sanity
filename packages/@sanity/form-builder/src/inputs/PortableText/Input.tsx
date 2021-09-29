@@ -31,6 +31,8 @@ import PortableTextSanityEditor from './Editor'
 import {BlockExtrasWithChangeIndicator} from './legacyParts/BlockExtras'
 import {TextBlock} from './TextBlock'
 
+const ROOT_PATH = []
+
 type Props = {
   editorId: string
   focusPath: Path
@@ -449,8 +451,6 @@ export default function PortableTextInput(props: Props) {
     value,
   ])
 
-  const rootPath = useMemo(() => [], [])
-
   return (
     <div className={classNames(styles.root, hasFocus && styles.focus, readOnly && styles.readOnly)}>
       {isFullscreen && (
@@ -478,7 +478,7 @@ export default function PortableTextInput(props: Props) {
               compareDeep
               value={value}
               hasFocus={hasFocus && objectEditData === null}
-              path={rootPath}
+              path={ROOT_PATH}
             >
               {ptEditor}
             </ChangeIndicatorWithProvidedFullPath>
