@@ -1,4 +1,4 @@
-import React, {forwardRef, useMemo} from 'react'
+import React, {forwardRef, useCallback, useEffect, useMemo, useState} from 'react'
 import {FolderIcon, ChevronRightIcon, DocumentIcon} from '@sanity/icons'
 import {isSanityDocument, SanityDocument, SchemaType} from '@sanity/types'
 import {Card, Text} from '@sanity/ui'
@@ -26,6 +26,7 @@ export function PaneItem(props: PaneItemProps) {
   const {ChildLink} = usePaneRouter()
   const hasSchemaType = Boolean(schemaType && schemaType.name && schema.get(schemaType.name))
   const previewValue = useMemo(() => ({title}), [title])
+  const [clicked, setClicked] = useState(false)
 
   const preview = useMemo(() => {
     if (value && isSanityDocument(value)) {
@@ -66,6 +67,11 @@ export function PaneItem(props: PaneItemProps) {
     [ChildLink, id]
   )
 
+  const handleClick = useCallback(() => setClicked(true), [])
+
+  // Reset `clicked` state when `selected` prop changes
+  useEffect(() => setClicked(false), [selected])
+
   return useMemo(
     () => (
       <Card
@@ -75,13 +81,14 @@ export function PaneItem(props: PaneItemProps) {
         data-ui="PaneItem"
         padding={2}
         radius={2}
+        onClick={handleClick}
         pressed={pressed}
-        selected={selected}
+        selected={selected || clicked}
         tone="inherit"
       >
         {preview}
       </Card>
     ),
-    [LinkComponent, pressed, preview, selected]
+    [clicked, handleClick, LinkComponent, pressed, preview, selected]
   )
 }
