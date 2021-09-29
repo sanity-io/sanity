@@ -59,7 +59,7 @@ export const PaneHeader = forwardRef(function PaneHeader(
               onTransitionEnd={handleTransitionEnd}
               onClick={handleLayoutClick}
               padding={2}
-              paddingBottom={tabs || subActions ? 1 : 2}
+              paddingBottom={tabs || subActions ? 0 : 2}
               sizing="border"
               style={layoutStyle}
             >
@@ -94,8 +94,8 @@ export const PaneHeader = forwardRef(function PaneHeader(
                 paddingBottom={2}
                 paddingLeft={3}
               >
-                <TabsBox flex={1} marginRight={subActions ? 3 : 0}>
-                  <div>{tabs}</div>
+                <TabsBox flex={1} marginRight={subActions ? 3 : 0} paddingY={1}>
+                  <Box>{tabs}</Box>
                 </TabsBox>
 
                 {subActions && <Box>{subActions}</Box>}
