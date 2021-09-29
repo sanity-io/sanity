@@ -26,7 +26,7 @@ import {EditObject} from './Objects/EditObject'
 import {Annotation} from './Text/Annotation'
 import {RenderBlockActions, RenderCustomMarkers, ObjectEditData} from './types'
 import PortableTextSanityEditor from './Editor'
-import {BlockExtrasWrapper} from './BlockExtras'
+import {BlockExtrasWrapper} from './legacyParts/BlockExtras'
 import {TextBlock} from './TextBlock'
 
 type Props = {

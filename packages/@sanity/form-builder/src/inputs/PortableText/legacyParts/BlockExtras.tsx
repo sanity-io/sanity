@@ -8,31 +8,21 @@ import {
   RenderAttributes,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
-import {Markers} from '../../legacyParts'
-import PatchEvent from '../../PatchEvent'
-import {RenderBlockActions, RenderCustomMarkers} from './types'
+import {Markers} from '../../../legacyParts'
+import PatchEvent from '../../../PatchEvent'
+import {RenderBlockActions, RenderCustomMarkers} from '../types'
 import styles from './BlockExtras.module.css'
-import createBlockActionPatchFn from './utils/createBlockActionPatchFn'
+import createBlockActionPatchFn from '../utils/createBlockActionPatchFn'
 
 type Props = {
   attributes: RenderAttributes
-  block: PortableTextBlock
-  blockActions?: Node
-  isFullscreen: boolean
+  blockActions?: JSX.Element
   markers: Marker[]
   onFocus: (path: Path) => void
   renderCustomMarkers?: RenderCustomMarkers
 }
 export default function BlockExtras(props: Props) {
-  const {
-    attributes,
-    block,
-    blockActions,
-    isFullscreen,
-    markers,
-    onFocus,
-    renderCustomMarkers,
-  } = props
+  const {attributes, blockActions, markers, onFocus, renderCustomMarkers} = props
   const blockValidation = getValidationMarkers(markers)
   const errors = blockValidation.filter((mrkr) => mrkr.level === 'error')
   const warnings = blockValidation.filter((mrkr) => mrkr.level === 'warning')
@@ -58,22 +48,6 @@ export default function BlockExtras(props: Props) {
     ),
     [blockActions, blockValidation, empty, markers, onFocus, renderCustomMarkers]
   )
-  const showChangeIndicators = isFullscreen
-  const contentWithChangeIndicators = useMemo(
-    () => (
-      <ChangeIndicatorWithProvidedFullPath
-        className={styles.changeIndicator}
-        compareDeep
-        value={block}
-        hasFocus={attributes.focused}
-        path={[{_key: block._key}]}
-      >
-        {content}
-      </ChangeIndicatorWithProvidedFullPath>
-    ),
-    [block, content, attributes]
-  )
-  const blockExtras = showChangeIndicators ? contentWithChangeIndicators : content
   const activeClassNames = useMemo(
     () =>
       classNames([
@@ -84,7 +58,7 @@ export default function BlockExtras(props: Props) {
       ]),
     [attributes.focused, errors.length, warnings.length]
   )
-  return <div className={activeClassNames}>{blockExtras}</div>
+  return <div className={activeClassNames}>{content}</div>
 }
 
 function getValidationMarkers(markers: Marker[]) {
@@ -119,7 +93,7 @@ type BlockExtrasWithBlockActionsAndHeightProps = {
   attributes: RenderAttributes
   block: PortableTextBlock
   blockRef: React.RefObject<HTMLDivElement>
-  isFullscreen: boolean
+  isFullscreen?: boolean
   markers: Marker[]
   onFocus: (path: Path) => void
   onChange: (event: PatchEvent) => void
@@ -147,23 +121,6 @@ export function BlockExtrasWrapper(props: BlockExtrasWithBlockActionsAndHeightPr
     () => PortableTextEditor.getPortableTextFeatures(editor).decorators.map((dec) => dec.value),
     [editor]
   )
-  let actions = null
-  if (renderBlockActions) {
-    const RenderComponent = renderBlockActions
-    if (block) {
-      actions = (
-        <RenderComponent
-          block={block}
-          value={value}
-          set={createBlockActionPatchFn('set', block, onChange, allowedDecorators)}
-          unset={
-            createBlockActionPatchFn('unset', block, onChange, allowedDecorators) as () => void
-          }
-          insert={createBlockActionPatchFn('insert', block, onChange, allowedDecorators)}
-        />
-      )
-    }
-  }
   const [style, setStyle] = useState(commonStyle)
   useEffect(() => {
     if (blockRef.current) {
@@ -174,17 +131,55 @@ export function BlockExtrasWrapper(props: BlockExtrasWithBlockActionsAndHeightPr
       setStyle({...commonStyle, height, top})
     }
   }, [blockRef])
-  return (
-    <div style={style} contentEditable={false}>
+  const actions = useMemo(() => {
+    if (renderBlockActions) {
+      const RenderComponent = renderBlockActions
+      if (block) {
+        return (
+          <RenderComponent
+            block={block}
+            value={value}
+            set={createBlockActionPatchFn('set', block, onChange, allowedDecorators)}
+            unset={
+              createBlockActionPatchFn('unset', block, onChange, allowedDecorators) as () => void
+            }
+            insert={createBlockActionPatchFn('insert', block, onChange, allowedDecorators)}
+          />
+        )
+      }
+    }
+    return null
+  }, [allowedDecorators, block, onChange, renderBlockActions, value])
+  const extras = useMemo(
+    () => (
       <BlockExtras
         attributes={attributes}
-        block={block}
-        isFullscreen={isFullscreen}
         blockActions={actions}
         markers={blockMarkers}
         onFocus={onFocus}
         renderCustomMarkers={renderCustomMarkers}
       />
+    ),
+    [actions, attributes, blockMarkers, onFocus, renderCustomMarkers]
+  )
+  const withChangeIndicators = useMemo(
+    () =>
+      isFullscreen && (
+        <ChangeIndicatorWithProvidedFullPath
+          className={styles.changeIndicator}
+          compareDeep
+          value={block}
+          hasFocus={attributes.focused}
+          path={[{_key: block._key}]}
+        >
+          {extras}
+        </ChangeIndicatorWithProvidedFullPath>
+      ),
+    [attributes.focused, block, extras, isFullscreen]
+  )
+  return (
+    <div style={style} contentEditable={false}>
+      {withChangeIndicators || extras}
     </div>
   )
 }
