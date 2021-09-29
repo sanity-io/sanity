@@ -12,47 +12,47 @@ export default function TestStory() {
     <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
       <Container width={1}>
         <Card padding={3} shadow={1}>
-          <TextBlock hasErrors={hasErrors} style="h1">
+          <TextBlock hasError={hasErrors} style="h1">
             Hello, world
           </TextBlock>
-          <TextBlock hasErrors={hasErrors} style="h2">
+          <TextBlock hasError={hasErrors} style="h2">
             Hello, world
           </TextBlock>
-          <TextBlock hasErrors={hasErrors} style="h3">
+          <TextBlock hasError={hasErrors} style="h3">
             Hello, world
           </TextBlock>
-          <TextBlock hasErrors={hasErrors} style="h4">
+          <TextBlock hasError={hasErrors} style="h4">
             Hello, world
           </TextBlock>
-          <TextBlock hasErrors={hasErrors} style="h5">
+          <TextBlock hasError={hasErrors} style="h5">
             Hello, world
           </TextBlock>
-          <TextBlock hasErrors={hasErrors} style="h6">
+          <TextBlock hasError={hasErrors} style="h6">
             Hello, world
           </TextBlock>
 
           <TextBlock>Paragraph</TextBlock>
-          <TextBlock hasErrors={hasErrors} style="blockquote">
+          <TextBlock hasError={hasErrors} style="blockquote">
             Blockquote
           </TextBlock>
 
-          <TextBlock hasErrors={hasErrors} listItem="bullet">
+          <TextBlock hasError={hasErrors} listItem="bullet">
             Hello, world
           </TextBlock>
-          <TextBlock hasErrors={hasErrors} listItem="bullet">
+          <TextBlock hasError={hasErrors} listItem="bullet">
             Hello, world
           </TextBlock>
-          <TextBlock hasErrors={hasErrors} listItem="bullet">
+          <TextBlock hasError={hasErrors} listItem="bullet">
             Hello, world
           </TextBlock>
 
-          <TextBlock hasErrors={hasErrors} listItem="number">
+          <TextBlock hasError={hasErrors} listItem="number">
             Hello, world
           </TextBlock>
-          <TextBlock hasErrors={hasErrors} listItem="number">
+          <TextBlock hasError={hasErrors} listItem="number">
             Hello, world
           </TextBlock>
-          <TextBlock hasErrors={hasErrors} listItem="number">
+          <TextBlock hasError={hasErrors} listItem="number">
             Hello, world
           </TextBlock>
         </Card>
