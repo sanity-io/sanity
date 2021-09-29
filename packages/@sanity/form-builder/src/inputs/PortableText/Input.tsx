@@ -28,7 +28,7 @@ import {EditObject} from './Objects/EditObject'
 import {Annotation} from './Text/Annotation'
 import {RenderBlockActions, RenderCustomMarkers, ObjectEditData} from './types'
 import PortableTextSanityEditor from './Editor'
-import {BlockExtrasWrapper} from './legacyParts/BlockExtras'
+import {BlockExtrasWithChangeIndicator} from './legacyParts/BlockExtras'
 import {TextBlock} from './TextBlock'
 
 type Props = {
@@ -246,10 +246,11 @@ export default function PortableTextInput(props: Props) {
       if (isTextBlock) {
         renderedBlock = (
           <TextBlock
+            blockRef={blockRef}
+            hasError={hasError}
             level={block.level}
             listItem={block.listItem}
             style={block.style}
-            hasError={hasError}
           >
             {defaultRender(block)}
           </TextBlock>
@@ -258,9 +259,10 @@ export default function PortableTextInput(props: Props) {
         renderedBlock = (
           <BlockObject
             attributes={attributes}
+            blockRef={blockRef}
             editor={editor}
-            hasError={hasError}
             focusPath={focusPath || EMPTY_ARRAY}
+            hasError={hasError}
             onFocus={onFocus}
             readOnly={readOnly}
             type={blockType}
@@ -270,8 +272,8 @@ export default function PortableTextInput(props: Props) {
       }
       return (
         <>
-          <div ref={blockRef}>{renderedBlock}</div>
-          <BlockExtrasWrapper
+          {renderedBlock}
+          <BlockExtrasWithChangeIndicator
             attributes={attributes}
             block={block}
             blockRef={blockRef}
