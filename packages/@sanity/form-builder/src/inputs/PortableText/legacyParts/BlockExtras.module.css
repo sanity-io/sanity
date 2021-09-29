@@ -2,11 +2,11 @@
 
 .root {
   width: 100%;
+  height: 100%;
   box-sizing: border-box;
-  position: relative;
+  position: absolute;
   z-index: var(--zindex-portal);
   overflow: visible;
-  pointer-events: none;
 }
 
 .content {
@@ -53,7 +53,7 @@
 }
 
 .blockActions {
-  pointer-events: all;
+  border: 1px solid red;
 
   @nest & .content {
     color: var(--text-color);
@@ -62,7 +62,6 @@
 }
 
 .markers {
-  pointer-events: all;
   width: calc(var(--block-extras-width) - var(--small-padding) * 2);
 
   @nest & .content {
