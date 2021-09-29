@@ -78,7 +78,7 @@ export const Root = styled(MenuItem)(({state = 'enabled', isHovered, theme}: Tim
       }
     `}
 
-    // line styling👇
+    // line styling 👇
       &:first-child ${IconWrapper}::before {
       height: 50%;
       top: unset;
