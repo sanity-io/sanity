@@ -16,7 +16,7 @@ import {
 } from '@sanity/portable-text-editor'
 import {Path, isKeySegment, Marker, isKeyedObject} from '@sanity/types'
 import {BoundaryElementProvider, Layer, Portal, PortalProvider} from '@sanity/ui'
-import {uniqueId, isEqual} from 'lodash'
+import {isEqual} from 'lodash'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/components'
 import ActivateOnFocus from '../../components/ActivateOnFocus/ActivateOnFocus'
 import PatchEvent from '../../PatchEvent'
@@ -32,6 +32,7 @@ import {BlockExtrasWithChangeIndicator} from './legacyParts/BlockExtras'
 import {TextBlock} from './TextBlock'
 
 type Props = {
+  editorId: string
   focusPath: Path
   hasFocus: boolean
   hotkeys: HotkeyOptions
@@ -53,6 +54,7 @@ type Props = {
 
 export default function PortableTextInput(props: Props) {
   const {
+    editorId,
     focusPath,
     hasFocus,
     hotkeys,
@@ -366,8 +368,6 @@ export default function PortableTextInput(props: Props) {
     focus()
   }, [editor, focus, objectEditData, onFocus])
 
-  const activationId = useMemo(() => uniqueId('PortableTextInput'), [])
-
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
   const [scrollContainerElement, setScrollContainerElement] = useState<HTMLElement | null>(null)
 
@@ -378,7 +378,7 @@ export default function PortableTextInput(props: Props) {
           hotkeys={hotkeys}
           initialSelection={initialSelection}
           isFullscreen={isFullscreen}
-          key={`editor-${activationId}`}
+          key={`editor-${editorId}`}
           markers={markers}
           onBlur={onBlur}
           onFocus={onFocus}
@@ -402,7 +402,7 @@ export default function PortableTextInput(props: Props) {
       hotkeys,
       initialSelection,
       isFullscreen,
-      activationId,
+      editorId,
       markers,
       onBlur,
       onFocus,
@@ -454,7 +454,7 @@ export default function PortableTextInput(props: Props) {
   return (
     <div className={classNames(styles.root, hasFocus && styles.focus, readOnly && styles.readOnly)}>
       {isFullscreen && (
-        <Portal key={`portal-${activationId}`}>
+        <Portal key={`portal-${editorId}`}>
           <PortalProvider element={portalElement}>
             <BoundaryElementProvider element={scrollContainerElement}>
               <Layer className={classNames(styles.fullscreenPortal, readOnly && styles.readOnly)}>

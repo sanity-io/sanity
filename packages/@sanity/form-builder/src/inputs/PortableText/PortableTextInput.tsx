@@ -197,6 +197,7 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
           </button>
         )}
         <Input
+          editorId={editorId}
           focusPath={focusPath}
           hasFocus={hasFocus}
           hotkeys={hotkeys}
