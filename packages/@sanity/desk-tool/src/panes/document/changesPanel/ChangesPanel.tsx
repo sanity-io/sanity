@@ -75,33 +75,37 @@ export function ChangesPanel(props: ChangesPanelProps): React.ReactElement | nul
     >
       <PaneHeader
         actions={
-          <Button
-            icon={CloseIcon}
-            mode="bleed"
-            onClick={closeHistory}
-            padding={3}
-            title="Hide changes panel"
-          />
+          <Flex>
+            {changeAnnotations.length > 0 && (
+              <Box padding={1}>
+                <DiffTooltip
+                  annotations={changeAnnotations}
+                  description="Changes by"
+                  placement="bottom-end"
+                >
+                  <AvatarStack maxLength={4}>
+                    {changeAnnotations.map(({author}) => (
+                      <UserAvatar key={author} userId={author} />
+                    ))}
+                  </AvatarStack>
+                </DiffTooltip>
+              </Box>
+            )}
+            <Button
+              icon={CloseIcon}
+              mode="bleed"
+              onClick={closeHistory}
+              padding={3}
+              title="Hide changes panel"
+            />
+          </Flex>
         }
-        subActions={
-          changeAnnotations.length > 0 && (
-            <Box paddingRight={1}>
-              <DiffTooltip
-                annotations={changeAnnotations}
-                description="Changes by"
-                placement="bottom-end"
-              >
-                <AvatarStack maxLength={4}>
-                  {changeAnnotations.map(({author}) => (
-                    <UserAvatar key={author} userId={author} />
-                  ))}
-                </AvatarStack>
-              </DiffTooltip>
-            </Box>
-          )
+        backButton={
+          <Flex style={{flexGrow: 1}}>
+            <TimelineMenu mode="since" chunk={since} />
+          </Flex>
         }
-        tabs={<TimelineMenu mode="since" chunk={since} />}
-        title="Changes"
+        title={''}
       />
 
       <PaneContent>

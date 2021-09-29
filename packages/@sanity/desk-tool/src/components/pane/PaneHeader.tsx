@@ -9,7 +9,7 @@ interface PaneHeaderProps {
   backButton?: React.ReactNode
   subActions?: React.ReactNode
   tabs?: React.ReactNode
-  title: React.ReactNode
+  title?: React.ReactNode
 }
 
 /**
@@ -65,19 +65,21 @@ export const PaneHeader = forwardRef(function PaneHeader(
             >
               {backButton}
 
-              <Box flex={1} paddingY={3} paddingLeft={backButton ? 1 : 3}>
-                <TitleText
-                  onClick={handleTitleClick}
-                  tabIndex={0}
-                  textOverflow="ellipsis"
-                  weight="semibold"
-                >
-                  {title}
-                </TitleText>
-              </Box>
+              {title && (
+                <Box flex={1} paddingY={3} paddingLeft={backButton ? 1 : 3}>
+                  <TitleText
+                    onClick={handleTitleClick}
+                    tabIndex={0}
+                    textOverflow="ellipsis"
+                    weight="semibold"
+                  >
+                    {title}
+                  </TitleText>
+                </Box>
+              )}
 
               {actions && (
-                <Box hidden={!actionsVisible} paddingLeft={1}>
+                <Box hidden={!actionsVisible} paddingLeft={1} style={{flexShrink: 0}}>
                   <LegacyLayerProvider zOffset="paneHeader">{actions}</LegacyLayerProvider>
                 </Box>
               )}

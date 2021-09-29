@@ -8,7 +8,7 @@ import {
 import {Chunk} from '@sanity/field/diff'
 import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
 import {Marker, Path} from '@sanity/types'
-import {Button, Inline} from '@sanity/ui'
+import {Button, Flex} from '@sanity/ui'
 import {negate} from 'lodash'
 import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
 import React, {forwardRef, useMemo} from 'react'
@@ -145,20 +145,20 @@ export const DocumentPanelHeader = forwardRef(function DocumentPanelHeader(
   return (
     <PaneHeader
       actions={
-        <Inline space={1}>
+        <Flex>
+          {showVersionMenu && <TimelineMenu chunk={rev} mode="rev" />}
           {languageMenu}
           {validationMenu}
           {contextMenu}
-          {splitPaneButton}
           {closeViewButton}
-        </Inline>
+        </Flex>
       }
       backButton={
         features.backButton &&
         index > 0 && <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" />
       }
       ref={ref}
-      subActions={showVersionMenu && <TimelineMenu chunk={rev} mode="rev" />}
+      subActions={splitPaneButton}
       tabs={tabs}
       title={title}
     />

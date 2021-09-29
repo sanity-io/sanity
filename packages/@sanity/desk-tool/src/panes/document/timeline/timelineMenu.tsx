@@ -110,7 +110,7 @@ export function TimelineMenu({chunk, mode}: TimelineMenuProps) {
     : 'Current version'
 
   const sinceLabel = chunk
-    ? `Since ${formatTimelineEventLabel(chunk.type)} ${timeAgo}`
+    ? `Changes since ${formatTimelineEventLabel(chunk.type)} ${timeAgo}`
     : 'Since unknown version'
 
   const openLabel = mode === 'rev' ? 'Select version' : 'Review changes since'
@@ -128,12 +128,14 @@ export function TimelineMenu({chunk, mode}: TimelineMenuProps) {
       <Button
         mode="bleed"
         fontSize={1}
-        padding={2}
+        paddingY={2}
+        paddingX={3}
         iconRight={SelectIcon}
         onClick={open ? handleClose : handleOpen}
         ref={setButtonRef}
         selected={open}
         text={open ? openLabel : buttonLabel}
+        style={{maxWidth: '100%'}}
       />
     </Root>
   )
