@@ -1,1 +1,1 @@
-export {default} from '../../inputs/PortableText/BlockExtras'
+export {default} from '../../inputs/PortableText/legacyParts/BlockExtras'
