@@ -34,9 +34,21 @@ export function DocumentSparkline(props: DocumentSparklineProps) {
 
   const lastPublishedTimeAgo = useTimeAgo(lastPublished || '', {
     minimal: true,
+    agoSuffix: true,
   })
 
-  const lastUpdatedTimeAgo = useTimeAgo(lastUpdated || '', {minimal: true})
+  const lastUpdatedTimeAgo = useTimeAgo(lastUpdated || '', {
+    minimal: true,
+    agoSuffix: true,
+  })
+
+  const lastPublishedTime = useTimeAgo(lastPublished || '', {
+    minimal: true,
+  })
+
+  const lastUpdatedTime = useTimeAgo(lastUpdated || '', {
+    minimal: true,
+  })
 
   // Keep track of the size of the review changes button
   const [
@@ -91,9 +103,10 @@ export function DocumentSparkline(props: DocumentSparklineProps) {
         <Box marginRight={1}>
           <PublishStatus
             disabled={showingRevision}
-            lastPublishedTimeAgo={lastPublishedTimeAgo}
             lastUpdated={lastUpdated}
+            lastPublishedTimeAgo={lastPublishedTimeAgo}
             lastUpdatedTimeAgo={lastUpdatedTimeAgo}
+            lastPublishedTime={lastPublishedTime}
             liveEdit={liveEdit}
           />
         </Box>
@@ -122,6 +135,7 @@ export function DocumentSparkline(props: DocumentSparklineProps) {
               <ReviewChangesButton
                 disabled={showingRevision}
                 lastUpdatedTimeAgo={lastUpdatedTimeAgo}
+                lastUpdatedTime={lastUpdatedTime}
                 ref={setReviewChangesButtonElement}
               />
             </ReviewChangesButtonBox>
