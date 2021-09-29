@@ -11,6 +11,8 @@ import {
   usePortableTextEditor,
   usePortableTextEditorSelection,
   HotkeyOptions,
+  RenderAttributes,
+  Type,
 } from '@sanity/portable-text-editor'
 import {Path, isKeySegment, Marker, isKeyedObject} from '@sanity/types'
 import {BoundaryElementProvider, Layer, Portal, PortalProvider} from '@sanity/ui'
@@ -224,7 +226,12 @@ export default function PortableTextInput(props: Props) {
   const textBlockTypeName = useMemo(() => ptFeatures.types.block.name, [ptFeatures])
 
   const renderBlock = useCallback(
-    (block, blockType, attributes, defaultRender) => {
+    (
+      block: PortableTextBlock,
+      blockType: Type,
+      attributes: RenderAttributes,
+      defaultRender: (b: PortableTextBlock) => JSX.Element
+    ) => {
       const hasError =
         markers.filter(
           (marker) =>
@@ -239,7 +246,7 @@ export default function PortableTextInput(props: Props) {
       if (isTextBlock) {
         renderedBlock = (
           <TextBlock
-            level={attributes.level}
+            level={block.level}
             listItem={block.listItem}
             style={block.style}
             hasError={hasError}
