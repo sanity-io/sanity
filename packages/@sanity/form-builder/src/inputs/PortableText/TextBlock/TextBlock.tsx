@@ -4,6 +4,7 @@ import styled, {css} from 'styled-components'
 
 export interface TextBlockProps {
   children: React.ReactNode
+  hasError?: boolean
   level?: number
   listItem?: 'bullet' | 'number'
   style?: string
