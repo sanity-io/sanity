@@ -233,7 +233,7 @@ export default function PortableTextInput(props: Props) {
             marker.type === 'validation' &&
             marker.level === 'error'
         ).length > 0
-      let renderedBlock = defaultRender(block)
+      let renderedBlock
       const isTextBlock = block._type === textBlockTypeName
       const blockRef: React.RefObject<HTMLDivElement> = React.createRef()
       if (isTextBlock) {
@@ -260,6 +260,7 @@ export default function PortableTextInput(props: Props) {
         <>
           <div ref={blockRef}>{renderedBlock}</div>
           <BlockExtrasWrapper
+            attributes={attributes}
             block={block}
             blockRef={blockRef}
             isFullscreen={isFullscreen}
