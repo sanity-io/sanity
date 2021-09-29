@@ -5,6 +5,7 @@ import {isKeySegment, Marker, Path} from '@sanity/types'
 import {
   PortableTextBlock,
   PortableTextEditor,
+  RenderAttributes,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {Markers} from '../../legacyParts'
@@ -14,6 +15,7 @@ import styles from './BlockExtras.module.css'
 import createBlockActionPatchFn from './utils/createBlockActionPatchFn'
 
 type Props = {
+  attributes: RenderAttributes
   block: PortableTextBlock
   blockActions?: Node
   isFullscreen: boolean
@@ -22,8 +24,15 @@ type Props = {
   renderCustomMarkers?: RenderCustomMarkers
 }
 export default function BlockExtras(props: Props) {
-  const editor = usePortableTextEditor()
-  const {block, blockActions, isFullscreen, markers, onFocus, renderCustomMarkers} = props
+  const {
+    attributes,
+    block,
+    blockActions,
+    isFullscreen,
+    markers,
+    onFocus,
+    renderCustomMarkers,
+  } = props
   const blockValidation = getValidationMarkers(markers)
   const errors = blockValidation.filter((mrkr) => mrkr.level === 'error')
   const warnings = blockValidation.filter((mrkr) => mrkr.level === 'warning')
@@ -49,33 +58,31 @@ export default function BlockExtras(props: Props) {
     ),
     [blockActions, blockValidation, empty, markers, onFocus, renderCustomMarkers]
   )
-  const path = PortableTextEditor.getSelection(editor)?.focus.path
-  const hasFocus = path && isKeySegment(path[0]) ? path[0]._key === block._key : false
-  const showChangeIndicators = isFullscreen && path && isKeySegment(path[0])
+  const showChangeIndicators = isFullscreen
   const contentWithChangeIndicators = useMemo(
     () => (
       <ChangeIndicatorWithProvidedFullPath
         className={styles.changeIndicator}
         compareDeep
         value={block}
-        hasFocus={hasFocus}
+        hasFocus={attributes.focused}
         path={[{_key: block._key}]}
       >
         {content}
       </ChangeIndicatorWithProvidedFullPath>
     ),
-    [block, content, hasFocus]
+    [block, content, attributes]
   )
   const blockExtras = showChangeIndicators ? contentWithChangeIndicators : content
   const activeClassNames = useMemo(
     () =>
       classNames([
         styles.root,
-        hasFocus && styles.hasFocus,
+        attributes.focused && styles.hasFocus,
         errors.length > 0 && styles.withError,
         warnings.length > 0 && !errors.length && styles.withWarning,
       ]),
-    [errors.length, hasFocus, warnings.length]
+    [attributes.focused, errors.length, warnings.length]
   )
   return <div className={activeClassNames}>{blockExtras}</div>
 }
@@ -109,6 +116,7 @@ const findBlockMarkers = (block: PortableTextBlock, markers: Marker[]): Marker[]
   markers.filter((marker) => isKeySegment(marker.path[0]) && marker.path[0]._key === block._key)
 
 type BlockExtrasWithBlockActionsAndHeightProps = {
+  attributes: RenderAttributes
   block: PortableTextBlock
   blockRef: React.RefObject<HTMLDivElement>
   isFullscreen: boolean
@@ -122,6 +130,7 @@ type BlockExtrasWithBlockActionsAndHeightProps = {
 
 export function BlockExtrasWrapper(props: BlockExtrasWithBlockActionsAndHeightProps): JSX.Element {
   const {
+    attributes,
     block,
     blockRef,
     isFullscreen,
@@ -168,6 +177,7 @@ export function BlockExtrasWrapper(props: BlockExtrasWithBlockActionsAndHeightPr
   return (
     <div style={style} contentEditable={false}>
       <BlockExtras
+        attributes={attributes}
         block={block}
         isFullscreen={isFullscreen}
         blockActions={actions}
