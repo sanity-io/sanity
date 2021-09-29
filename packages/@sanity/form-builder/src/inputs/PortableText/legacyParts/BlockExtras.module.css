@@ -10,6 +10,7 @@
 }
 
 .content {
+  height: 100%;
   margin-left: calc(100% - var(--block-extras-width));
   border-left: 2px solid transparent;
   padding: var(--small-padding) 0 var(--small-padding) calc(var(--small-padding) - 2px);
@@ -53,7 +54,8 @@
 }
 
 .blockActions {
-  border: 1px solid red;
+  display: flex;
+  pointer-events: all !important;
 
   @nest & .content {
     color: var(--text-color);
@@ -62,6 +64,8 @@
 }
 
 .markers {
+  display: flex;
+  pointer-events: all !important;
   width: calc(var(--block-extras-width) - var(--small-padding) * 2);
 
   @nest & .content {

@@ -15,7 +15,7 @@ import {
   Type,
 } from '@sanity/portable-text-editor'
 import {Path, isKeySegment, Marker, isKeyedObject} from '@sanity/types'
-import {BoundaryElementProvider, Layer, Portal, PortalProvider} from '@sanity/ui'
+import {BoundaryElementProvider, Box, Layer, Portal, PortalProvider} from '@sanity/ui'
 import {isEqual} from 'lodash'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/components'
 import ActivateOnFocus from '../../components/ActivateOnFocus/ActivateOnFocus'
@@ -28,7 +28,7 @@ import {EditObject} from './Objects/EditObject'
 import {Annotation} from './Text/Annotation'
 import {RenderBlockActions, RenderCustomMarkers, ObjectEditData} from './types'
 import PortableTextSanityEditor from './Editor'
-import {BlockExtrasWithChangeIndicator} from './legacyParts/BlockExtras'
+import {BlockExtrasWithChangeIndicator} from './BlockExtrasOverlay'
 import {TextBlock} from './TextBlock'
 
 const ROOT_PATH = []
@@ -275,7 +275,7 @@ export default function PortableTextInput(props: Props) {
         )
       }
       return (
-        <>
+        <Box>
           {renderedBlock}
           <BlockExtrasWithChangeIndicator
             attributes={attributes}
@@ -283,23 +283,27 @@ export default function PortableTextInput(props: Props) {
             blockRef={blockRef}
             isFullscreen={isFullscreen}
             markers={markers}
-            onFocus={onFocus}
-            value={value}
             onChange={onChange}
+            onFocus={onFocus}
+            renderBlockActions={readOnly ? undefined : renderBlockActions}
+            renderCustomMarkers={renderCustomMarkers}
+            value={value}
           />
-        </>
+        </Box>
       )
     },
     [
-      markers,
-      textBlockTypeName,
-      isFullscreen,
-      onFocus,
-      value,
-      onChange,
       editor,
       focusPath,
+      isFullscreen,
+      markers,
+      onChange,
+      onFocus,
       readOnly,
+      renderBlockActions,
+      renderCustomMarkers,
+      textBlockTypeName,
+      value,
     ]
   )
 
