@@ -1,15 +1,10 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import {uniqueId} from 'lodash'
-import FormField from 'part:@sanity/components/formfields/default'
-import Snackbar from 'part:@sanity/components/snackbar/default'
+import {FormField} from '@sanity/base/components'
 import React, {useEffect, useState, useMemo, useCallback} from 'react'
 import {Marker, Path} from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {
   EditorChange,
-  ErrorChange,
   OnCopyFn,
   OnPasteFn,
   Patch as EditorPatch,
@@ -82,9 +77,6 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
     subscribe,
   } = props
 
-  const [editorErrorNotification, setEditorErrorNotification]: [ErrorChange, any] = useState(
-    undefined
-  )
   const toast = useToast()
 
   // Reset invalidValue if new value is coming in from props
@@ -251,19 +243,8 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
     ]
   )
 
-  const clearErrorNotification = useCallback(() => setEditorErrorNotification(undefined), [])
-
   return (
     <>
-      {editorErrorNotification && (
-        // Display intended editor errors to the user
-        <Snackbar
-          kind={editorErrorNotification.level}
-          isPersisted
-          onAction={clearErrorNotification}
-          subtitle={<div>{editorErrorNotification.description}</div>}
-        />
-      )}
       {invalidValue && !ignoreValidationError && respondToInvalidContent}
       {(!invalidValue || ignoreValidationError) && editorInput}
     </>
@@ -289,12 +270,12 @@ export default (withPatchSubscriber(
       const {type, level, markers, presence} = this.props
       return (
         <FormField
+          __unstable_changeIndicator={false}
+          __unstable_markers={markers}
+          __unstable_presence={presence}
           description={type.description}
-          label={type.title}
           level={level}
-          markers={markers}
-          presence={presence}
-          changeIndicator={false}
+          title={type.title}
         >
           <PortableTextInputWithRef
             {...this.props}
