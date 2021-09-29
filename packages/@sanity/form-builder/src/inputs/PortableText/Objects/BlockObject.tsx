@@ -16,6 +16,7 @@ import styles from './BlockObject.module.css'
 
 type Props = {
   attributes: RenderAttributes
+  blockRef?: React.RefObject<HTMLDivElement>
   editor: PortableTextEditor
   hasError: boolean
   onFocus: (path: Path) => void
@@ -27,6 +28,7 @@ type Props = {
 
 export const BlockObject: FunctionComponent<Props> = ({
   attributes: {focused, selected, path},
+  blockRef,
   editor,
   focusPath,
   hasError,
@@ -92,7 +94,11 @@ export const BlockObject: FunctionComponent<Props> = ({
   }, [type, value, readOnly, handleDelete, handleEdit])
   return (
     <div className={classnames} ref={elementRef} onDoubleClick={handleClickToOpen}>
-      <div className={styles.previewContainer} style={readOnly ? {cursor: 'default'} : {}}>
+      <div
+        className={styles.previewContainer}
+        style={readOnly ? {cursor: 'default'} : {}}
+        ref={blockRef}
+      >
         {blockPreview}
       </div>
     </div>

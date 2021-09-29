@@ -11,8 +11,8 @@ import {
 import {Markers} from '../../../legacyParts'
 import PatchEvent from '../../../PatchEvent'
 import {RenderBlockActions, RenderCustomMarkers} from '../types'
-import styles from './BlockExtras.module.css'
 import createBlockActionPatchFn from '../utils/createBlockActionPatchFn'
+import styles from './BlockExtras.module.css'
 
 type Props = {
   attributes: RenderAttributes
@@ -84,6 +84,7 @@ const commonStyle: CSSProperties = {
   pointerEvents: 'none',
   userSelect: 'none',
   width: '100%',
+  height: 'auto',
 }
 
 const findBlockMarkers = (block: PortableTextBlock, markers: Marker[]): Marker[] =>
@@ -102,7 +103,9 @@ type BlockExtrasWithBlockActionsAndHeightProps = {
   value: PortableTextBlock[] | undefined
 }
 
-export function BlockExtrasWrapper(props: BlockExtrasWithBlockActionsAndHeightProps): JSX.Element {
+export function BlockExtrasWithChangeIndicator(
+  props: BlockExtrasWithBlockActionsAndHeightProps
+): JSX.Element {
   const {
     attributes,
     block,
@@ -162,20 +165,21 @@ export function BlockExtrasWrapper(props: BlockExtrasWithBlockActionsAndHeightPr
     ),
     [actions, attributes, blockMarkers, onFocus, renderCustomMarkers]
   )
+  const path = useMemo(() => [{_key: block._key}], [block._key])
+  const hasFocus = attributes.focused
   const withChangeIndicators = useMemo(
     () =>
       isFullscreen && (
         <ChangeIndicatorWithProvidedFullPath
-          className={styles.changeIndicator}
           compareDeep
           value={block}
-          hasFocus={attributes.focused}
-          path={[{_key: block._key}]}
+          hasFocus={hasFocus}
+          path={path}
         >
-          {extras}
+          <div style={{height: style.height}}>{extras}</div>
         </ChangeIndicatorWithProvidedFullPath>
       ),
-    [attributes.focused, block, extras, isFullscreen]
+    [hasFocus, block, path, extras, isFullscreen, style]
   )
   return (
     <div style={style} contentEditable={false}>

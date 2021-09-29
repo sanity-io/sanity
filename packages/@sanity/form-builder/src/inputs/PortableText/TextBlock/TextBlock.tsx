@@ -3,6 +3,7 @@ import {Box, Heading, rem, Text, Theme} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 
 export interface TextBlockProps {
+  blockRef?: React.RefObject<HTMLDivElement>
   children: React.ReactNode
   hasError?: boolean
   level?: number
@@ -91,7 +92,7 @@ const HEADER_SIZES: {[key: string]: number | undefined} = {
 }
 
 export function TextBlock(props: TextBlockProps): React.ReactElement {
-  const {children, level, listItem, style} = props
+  const {children, level, listItem, style, blockRef} = props
 
   const {$size, $style} = useMemo((): {$size: number; $style: 'text' | 'heading'} => {
     if (HEADER_STYLES.includes(style)) {
@@ -141,6 +142,7 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
       data-ui="TextBlock"
       paddingX={3}
       paddingY={listItem ? 2 : 3}
+      ref={blockRef}
     >
       {text}
     </Root>
