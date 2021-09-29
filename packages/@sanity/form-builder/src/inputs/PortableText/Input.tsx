@@ -238,7 +238,12 @@ export default function PortableTextInput(props: Props) {
       const blockRef: React.RefObject<HTMLDivElement> = React.createRef()
       if (isTextBlock) {
         renderedBlock = (
-          <TextBlock level={attributes.level} listItem={block.listItem} style={block.style}>
+          <TextBlock
+            level={attributes.level}
+            listItem={block.listItem}
+            style={block.style}
+            hasError={hasError}
+          >
             {defaultRender(block)}
           </TextBlock>
         )
