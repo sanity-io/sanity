@@ -267,12 +267,13 @@ export type OnCopyFn = (
 export type PatchObservable = Observable<Patch>
 
 export type RenderAttributes = {
-  focused: boolean
-  selected: boolean
-  path: Path
   annotations?: PortableTextBlock[]
-  style?: string
+  focused: boolean
+  level?: number
   listItem?: string
+  path: Path
+  selected: boolean
+  style?: string
 }
 
 export type RenderBlockFunction = (
