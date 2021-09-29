@@ -123,9 +123,14 @@ export const Element: FunctionComponent<ElementProps> = ({
     if (debugRenders) {
       debug(`Render ${element._key} (text block)`)
     }
-    renderAttribs.style = (element.style as string) || 'normal'
+    if (typeof element.style === 'string') {
+      renderAttribs.style = (element.style as string) || 'normal'
+    }
     if (element.listItem) {
       renderAttribs.listItem = element.listItem as string
+    }
+    if (element.listItem && Number.isInteger(element.level)) {
+      renderAttribs.level = element.level as number
     }
     const textBlock = (
       <TextBlock element={element} portableTextFeatures={portableTextFeatures} readOnly={readOnly}>
