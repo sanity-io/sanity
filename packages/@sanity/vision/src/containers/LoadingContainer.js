@@ -19,6 +19,7 @@ class LoadingContainer extends React.PureComponent {
 
   componentDidMount() {
     const subs = this.getSubscriptions()
+    // eslint-disable-next-line no-multi-assign
     const stateKeys = (this.stateKeys = Object.keys(subs))
 
     this.subscriptions = stateKeys.reduce((target, key) => {

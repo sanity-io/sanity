@@ -24,6 +24,9 @@
     "@sanity/ui": "^0.36.12",
     "classnames": "^2.2.5",
     "codemirror": "^5.47.0",
+    "json5": "^1.0.1",
+    "is-hotkey": "^0.1.6",
+    "lodash": "^4.17.15",
     "moment": "^2.19.1",
     "query-string": "^4.3.2",
     "react-codemirror2": "^6.0.0",
@@ -41,7 +44,8 @@
     "@sanity/base": "^2.19.4",
     "prop-types": "^15.6 || ^16",
     "react": "^16.9 || ^17",
-    "react-dom": "^16.9 || ^17"
+    "react-dom": "^16.9 || ^17",
+    "styled-components": "^5.2.0"
   },
   "repository": {
     "type": "git",

@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-
+import {Box} from '@sanity/ui'
+import {ErrorCode} from './QueryErrorDialog.styled'
 function QueryErrorDetails(props) {
   const details = {...props.error.details, ...mapToLegacyDetails(props.error.details)}
   if (!details.line) {
@@ -9,12 +10,13 @@ function QueryErrorDetails(props) {
 
   return (
     <div>
-      <pre>
-        <code>{`${details.line}\n${dashLine(details.column, details.columnEnd)}`}</code>
-      </pre>
-      <pre>
-        <code>{`Line:   ${details.lineNumber}\nColumn: ${details.column}`}</code>
-      </pre>
+      <ErrorCode size={1}>{`${details.line}\n${dashLine(
+        details.column,
+        details.columnEnd
+      )}`}</ErrorCode>
+      <Box marginTop={4}>
+        <ErrorCode size={1}>{`Line:   ${details.lineNumber}\nColumn: ${details.column}`}</ErrorCode>
+      </Box>
     </div>
   )
 }

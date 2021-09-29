@@ -3,9 +3,23 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import queryString from 'query-string'
 import SplitPane from 'react-split-pane'
-import {PlayIcon} from '@sanity/icons'
-import {Flex, Card, Button, Stack, Box, Label, Select, Text, TextInput} from '@sanity/ui'
+import {PlayIcon, StopIcon, CopyIcon} from '@sanity/icons'
+import isHotkey from 'is-hotkey'
+import {
+  Flex,
+  Card,
+  Stack,
+  Box,
+  Hotkeys,
+  Label,
+  Select,
+  Text,
+  TextInput,
+  Tooltip,
+  Grid,
+} from '@sanity/ui'
 import studioClient from 'part:@sanity/base/client'
+import {FormFieldValidationStatus} from '@sanity/base/components'
 import {storeState, getState} from '../util/localState'
 import parseApiQueryString from '../util/parseApiQueryString'
 import tryParseParams from '../util/tryParseParams'
@@ -17,15 +31,41 @@ import ParamsEditor from './ParamsEditor'
 import ResultView from './ResultView'
 import NoResultsDialog from './NoResultsDialog'
 import QueryErrorDialog from './QueryErrorDialog'
+import {
+  Root,
+  Header,
+  SplitpaneContainer,
+  QueryCopyLink,
+  InputBackgroundContainer,
+  InputBackgroundContainerLeft,
+  InputContainer,
+  ResultOuterContainer,
+  ResultInnerContainer,
+  ResultContainer,
+  Result,
+  ControlsContainer,
+  ButtonFullWidth,
+  TimingsFooter,
+  TimingsCard,
+  TimingsTextContainer,
+} from './VisionGui.styled'
 
 /* eslint-disable import/no-unassigned-import, import/no-unresolved */
 import 'codemirror/lib/codemirror.css?raw'
 import 'codemirror/theme/material.css?raw'
 import 'codemirror/addon/hint/show-hint.css?raw'
+
+function nodeContains(node, other) {
+  if (!node || !other) {
+    return false
+  }
+  // eslint-disable-next-line no-bitwise
+  return node === other || !!(node.compareDocumentPosition(other) & 16)
+}
 /* eslint-enable import/no-unassigned-import, import/no-unresolved */
 
-const NO_POINTER_EVENTS = {pointerEvents: 'none'}
 const sanityUrl = /\.api\.sanity\.io\/(vx|v1|v\d{4}-\d\d-\d\d)\/.*?(?:query|listen)\/(.*?)\?(.*)/
+const isRunHotkey = (event) => isHotkey('ctrl+enter', event) || isHotkey('mod+enter', event)
 
 const handleCopyUrl = () => {
   const emailLink = document.querySelector('#vision-query-url')
@@ -61,6 +101,7 @@ class VisionGui extends React.PureComponent {
       apiVersion = apiVersions[0]
     }
 
+    this._visionRoot = React.createRef()
     this._queryEditorContainer = React.createRef()
     this._paramsEditorContainer = React.createRef()
 
@@ -68,6 +109,8 @@ class VisionGui extends React.PureComponent {
 
     this.subscribers = {}
     this.state = {
+      paramValidationMarkers: [],
+      validParams: true,
       query: lastQuery,
       params: lastParams && tryParseParams(lastParams),
       rawParams: lastParams,
@@ -80,21 +123,23 @@ class VisionGui extends React.PureComponent {
     this.handleChangeApiVersion = this.handleChangeApiVersion.bind(this)
     this.handleCustomApiVersionChange = this.handleCustomApiVersionChange.bind(this)
     this.handleListenExecution = this.handleListenExecution.bind(this)
-    this.handleListenerCancellation = this.handleListenerCancellation.bind(this)
     this.handleListenerMutation = this.handleListenerMutation.bind(this)
     this.handleQueryExecution = this.handleQueryExecution.bind(this)
     this.handleQueryChange = this.handleQueryChange.bind(this)
     this.handleParamsChange = this.handleParamsChange.bind(this)
     this.handlePaste = this.handlePaste.bind(this)
+    this.handleKeyDown = this.handleKeyDown.bind(this)
   }
 
   componentDidMount() {
     window.document.addEventListener('paste', this.handlePaste)
+    window.document.addEventListener('keydown', this.handleKeyDown)
   }
 
   componentWillUnmount() {
     this.cancelQuery()
     this.cancelListener()
+    this.cancelEventListener()
   }
 
   handlePaste(evt) {
@@ -157,6 +202,10 @@ class VisionGui extends React.PureComponent {
     this.subscribers.listen = null
   }
 
+  cancelEventListener() {
+    window.removeEventListener('keydown', this.handleKeyDown)
+  }
+
   handleChangeDataset(evt) {
     const dataset = evt.target.value
     storeState('dataset', dataset)
@@ -213,13 +262,13 @@ class VisionGui extends React.PureComponent {
     this.setState({listenMutations})
   }
 
-  handleListenerCancellation() {
-    if (!this.state.listenInProgress) {
-      return
+  handleKeyDown(event) {
+    const {validParams} = this.state
+    const isWithinRoot =
+      this._visionRoot.current && nodeContains(this._visionRoot.current, event.target)
+    if (isRunHotkey(event) && isWithinRoot && validParams) {
+      this.handleQueryExecution()
     }
-
-    this.cancelListener()
-    this.setState({listenInProgress: false})
   }
 
   handleListenExecution() {
@@ -245,7 +294,7 @@ class VisionGui extends React.PureComponent {
       queryInProgress: false,
       listenInProgress: !paramsError && Boolean(query),
       error: paramsError || undefined,
-      result: undefined,
+      // result: undefined,
       queryTime: null,
       e2eTime: null,
     })
@@ -297,7 +346,7 @@ class VisionGui extends React.PureComponent {
     this.subscribers.query = this.client.observable
       .fetch(query, params, {filterResponse: false, tag: 'vision'})
       .subscribe({
-        next: (res) =>
+        next: (res) => {
           this.setState({
             executedQuery: query,
             queryTime: res.ms,
@@ -305,7 +354,8 @@ class VisionGui extends React.PureComponent {
             result: res.result,
             queryInProgress: false,
             error: null,
-          }),
+          })
+        },
         error: (error) =>
           this.setState({
             error,
@@ -320,7 +370,25 @@ class VisionGui extends React.PureComponent {
   }
 
   handleParamsChange(data) {
-    this.setState({rawParams: data.raw, params: data.parsed})
+    const {raw, parsed, valid, validationError} = data
+    const paramValidationMarkers = valid
+      ? []
+      : [
+          {
+            type: 'validation',
+            level: 'error',
+            item: {
+              message: validationError || 'Invalid JSON',
+            },
+          },
+        ]
+
+    this.setState({
+      rawParams: raw,
+      params: parsed,
+      validParams: valid,
+      paramValidationMarkers,
+    })
   }
 
   render() {
@@ -340,26 +408,32 @@ class VisionGui extends React.PureComponent {
       dataset,
       customApiVersion,
       isValidApiVersion,
+      validParams,
+      paramValidationMarkers,
     } = this.state
-    const styles = this.context.styles.visionGui
     const hasResult = !error && !queryInProgress && typeof result !== 'undefined'
     const hasEmptyResult = hasResult && Array.isArray(result) && result.length === 0
 
     // Note that because of react-json-inspector, we need at least one
     // addressable, non-generated class name. Therefore;
     // leave `sanity-vision` untouched!
-    const visionClass = ['sanity-vision', this.context.styles.visionGui.root]
-      .filter(Boolean)
-      .join(' ')
+    const visionClass = ['sanity-vision'].filter(Boolean).join(' ')
 
     return (
-      <div className={visionClass}>
-        <Card className={styles.header}>
-          <Flex>
+      <Root
+        tone="default"
+        className={visionClass}
+        ref={this._visionRoot}
+        display="flex"
+        sizing="border"
+        overflow="hidden"
+      >
+        <Header paddingX={3} paddingY={2}>
+          <Grid columns={12}>
             {/* Dataset selector */}
-            <Box padding={1}>
+            <Box padding={1} column={2}>
               <Stack>
-                <Card padding={2}>
+                <Card paddingY={2}>
                   <Label>Dataset</Label>
                 </Card>
                 <Select value={dataset} onChange={this.handleChangeDataset}>
@@ -371,9 +445,9 @@ class VisionGui extends React.PureComponent {
             </Box>
 
             {/* API version selector */}
-            <Box padding={1}>
+            <Box padding={1} column={2}>
               <Stack>
-                <Card padding={2}>
+                <Card paddingY={2}>
                   <Label>API version</Label>
                 </Card>
                 <Select
@@ -392,9 +466,9 @@ class VisionGui extends React.PureComponent {
 
             {/* Custom API version input */}
             {customApiVersion && (
-              <Box padding={1}>
+              <Box padding={1} column={2}>
                 <Stack>
-                  <Card padding={2}>
+                  <Card paddingY={2}>
                     <Label>Custom API version</Label>
                   </Card>
 
@@ -409,115 +483,179 @@ class VisionGui extends React.PureComponent {
 
             {/* Query URL (for copying) */}
             {typeof url === 'string' ? (
-              <Box padding={1} flex={1}>
+              <Box padding={1} flex={1} column={customApiVersion ? 6 : 8}>
                 <Stack>
-                  <Card padding={2}>
+                  <Card paddingY={2}>
                     <Label>
                       Query URL&nbsp;
-                      <a onClick={handleCopyUrl} className={styles.queryUrlCopy}>
-                        [copy]
-                      </a>
+                      <QueryCopyLink onClick={handleCopyUrl}>[copy]</QueryCopyLink>
                     </Label>
                   </Card>
-                  <TextInput readOnly id="vision-query-url" value={url} />
+                  <TextInput
+                    readOnly
+                    id="vision-query-url"
+                    value={url}
+                    iconRight={CopyIcon}
+                    onClick={handleCopyUrl}
+                  />
                 </Stack>
               </Box>
             ) : (
               <Box flex={1} />
             )}
-
-            {/* Execution time */}
-            {typeof queryTime === 'number' && (
-              <Box padding={1}>
-                <Stack>
-                  <Card padding={2}>
-                    <Label>Timings</Label>
-                  </Card>
-                  <Stack space={2}>
-                    <Text size={2}>Execution: {queryTime}ms</Text>
-                    <Text size={2}>End-to-end: {e2eTime}ms</Text>
-                  </Stack>
-                </Stack>
-              </Box>
-            )}
-
-            {/* Controls (listen/run) */}
-            <Box padding={1}>
-              <Stack>
-                <Card padding={2}>
-                  <Label align="right">Controls</Label>
-                </Card>
-                <Flex>
-                  <Card onClick={this.handleListenerCancellation}>
-                    <Button
-                      style={listenInProgress ? NO_POINTER_EVENTS : undefined}
-                      onClick={this.handleListenExecution}
-                      loading={listenInProgress}
-                      type="button"
-                      text="Listen"
-                      mode="ghost"
-                    />
-                  </Card>
-
-                  <Card marginLeft={1}>
-                    <Button
-                      onClick={this.handleQueryExecution}
-                      icon={PlayIcon}
-                      loading={queryInProgress}
-                      tone="primary"
-                      text="Run query"
-                    />
-                  </Card>
-                </Flex>
-              </Stack>
-            </Box>
-          </Flex>
-        </Card>
-        <div className={styles.splitContainer}>
+          </Grid>
+        </Header>
+        <SplitpaneContainer flex={1}>
           <SplitPane split="vertical" minSize={150} defaultSize={400}>
-            <div className={styles.edit}>
-              <SplitPane split="horizontal" defaultSize={'80%'}>
-                <div className={styles.inputContainer} ref={this._queryEditorContainer}>
-                  <h3 className={styles.inputLabelQuery || 'query'}>Query</h3>
-                  <QueryEditor
-                    className={styles.queryEditor}
-                    value={this.state.query}
-                    onExecute={this.handleQueryExecution}
-                    onChange={this.handleQueryChange}
-                    schema={this.props.schema}
-                  />
-                </div>
-                <div className={styles.inputContainer} ref={this._paramsEditorContainer}>
-                  <h3 className={styles.inputLabelQuery || 'query'}>Params</h3>
-                  <ParamsEditor
-                    className={styles.paramsEditor}
-                    classNameInvalid={styles.paramsEditorInvalid}
-                    value={this.state.rawParams}
-                    onExecute={this.handleQueryExecution}
-                    onChange={this.handleParamsChange}
-                  />
-                </div>
+            <Box height="stretch" flex={1}>
+              <SplitPane split="horizontal" defaultSize={'50%'}>
+                <InputContainer display="flex" ref={this._queryEditorContainer}>
+                  <Card flex={1}>
+                    <InputBackgroundContainerLeft>
+                      <Flex marginLeft={3}>
+                        <Label muted>Query</Label>
+                      </Flex>
+                    </InputBackgroundContainerLeft>
+                    <QueryEditor
+                      value={this.state.query}
+                      onExecute={this.handleQueryExecution}
+                      onChange={this.handleQueryChange}
+                      schema={this.props.schema}
+                    />
+                  </Card>
+                </InputContainer>
+                <InputContainer display="flex" ref={this._paramsEditorContainer}>
+                  <Card flex={1} tone={validParams ? 'default' : 'critical'}>
+                    <InputBackgroundContainerLeft>
+                      <Flex marginLeft={3}>
+                        <Label muted>Params</Label>
+                        {paramValidationMarkers.length > 0 && (
+                          <Box marginLeft={2}>
+                            <FormFieldValidationStatus
+                              fontSize={1}
+                              __unstable_markers={paramValidationMarkers}
+                            />
+                          </Box>
+                        )}
+                      </Flex>
+                    </InputBackgroundContainerLeft>
+                    <ParamsEditor
+                      value={this.state.rawParams}
+                      onExecute={this.handleQueryExecution}
+                      onChange={this.handleParamsChange}
+                    />
+                  </Card>
+                  {/* Controls (listen/run) */}
+                  <ControlsContainer>
+                    <Card padding={3} paddingX={3}>
+                      <Tooltip
+                        content={
+                          <Card padding={2} radius={4}>
+                            <Text size={1} muted>
+                              Parameters are not valid JSON
+                            </Text>
+                          </Card>
+                        }
+                        placement="top"
+                        disabled={validParams}
+                        portal
+                      >
+                        <Flex justify="space-evenly">
+                          <Card flex={1}>
+                            <Tooltip
+                              content={
+                                <Card padding={2} radius={4}>
+                                  <Hotkeys keys={['Ctrl', 'Enter']} />
+                                </Card>
+                              }
+                              placement="top"
+                              portal
+                            >
+                              <ButtonFullWidth
+                                onClick={this.handleQueryExecution}
+                                icon={PlayIcon}
+                                loading={queryInProgress}
+                                disabled={listenInProgress || !validParams}
+                                tone="primary"
+                                text="Fetch"
+                              />
+                            </Tooltip>
+                          </Card>
+                          <Card flex={1} marginLeft={3}>
+                            <ButtonFullWidth
+                              onClick={this.handleListenExecution}
+                              type="button"
+                              icon={listenInProgress ? StopIcon : PlayIcon}
+                              text={listenInProgress ? 'Stop' : 'Listen'}
+                              mode="ghost"
+                              disabled={!validParams}
+                              tone={listenInProgress ? 'positive' : 'default'}
+                            />
+                          </Card>
+                        </Flex>
+                      </Tooltip>
+                    </Card>
+                  </ControlsContainer>
+                </InputContainer>
               </SplitPane>
-            </div>
-            <div className={styles.resultContainer}>
-              <h3 className={styles.inputLabelQuery || 'resultLabel'}>Result</h3>
-              <div className={styles.result}>
-                {queryInProgress && <DelayedSpinner />}
-                {error && <QueryErrorDialog error={error} />}
-                {hasResult && !hasEmptyResult && <ResultView data={result} query={query} />}
-                {hasEmptyResult && (
-                  <div className={styles.noResult}>
-                    <NoResultsDialog query={executedQuery} dataset={dataset} />
-                  </div>
-                )}
-                {listenMutations && listenMutations.length > 0 && (
-                  <ResultView data={listenMutations} />
-                )}
-              </div>
-            </div>
+            </Box>
+            <ResultOuterContainer direction="column">
+              <ResultInnerContainer flex={1}>
+                <ResultContainer
+                  flex={1}
+                  overflow="hidden"
+                  tone={error ? 'critical' : 'default'}
+                  $isInvalid={error}
+                >
+                  <Result padding={3} paddingTop={5} overflow="auto" $isInvalid={error}>
+                    <InputBackgroundContainer>
+                      <Box marginLeft={3}>
+                        <Label muted>Result</Label>
+                      </Box>
+                    </InputBackgroundContainer>
+                    {queryInProgress && (
+                      <Box marginTop={3}>
+                        <DelayedSpinner />
+                      </Box>
+                    )}
+                    {error && (
+                      <Box>
+                        <QueryErrorDialog error={error} />
+                      </Box>
+                    )}
+                    {hasResult && !hasEmptyResult && <ResultView data={result} query={query} />}
+                    {hasEmptyResult && (
+                      <Box>
+                        <NoResultsDialog query={executedQuery} dataset={dataset} />
+                      </Box>
+                    )}
+                    {listenMutations && listenMutations.length > 0 && (
+                      <ResultView data={listenMutations} />
+                    )}
+                  </Result>
+                </ResultContainer>
+              </ResultInnerContainer>
+              {/* Execution time */}
+              <TimingsFooter>
+                <TimingsCard paddingX={4} paddingY={3} sizing="border">
+                  <TimingsTextContainer align="center">
+                    <Card>
+                      <Text muted>
+                        Execution: {typeof queryTime === 'number' ? `${queryTime}ms` : 'n/a'}
+                      </Text>
+                    </Card>
+                    <Card marginLeft={4}>
+                      <Text muted>
+                        End-to-end: {typeof e2eTime === 'number' ? `${e2eTime}ms` : 'n/a'}
+                      </Text>
+                    </Card>
+                  </TimingsTextContainer>
+                </TimingsCard>
+              </TimingsFooter>
+            </ResultOuterContainer>
           </SplitPane>
-        </div>
-      </div>
+        </SplitpaneContainer>
+      </Root>
     )
   }
 }
@@ -529,11 +667,6 @@ VisionGui.propTypes = {
       name: PropTypes.string,
     })
   ),
-}
-
-VisionGui.contextTypes = {
-  styles: PropTypes.object,
-  components: PropTypes.object,
 }
 
 export default VisionGui
