@@ -1,11 +1,11 @@
 /* eslint-disable max-nested-callbacks */
 /// <reference types="@sanity/types/parts" />
 
+import * as Rx from 'rxjs'
+import * as operators from 'rxjs/operators'
 import {render, act} from '@testing-library/react'
 import React, {useEffect, useMemo, useState} from 'react'
-import {Subject, of} from 'rxjs'
 import {useRouter} from '@sanity/base/router'
-import * as ops from 'rxjs/operators'
 import {RouterProvider} from '@sanity/state-router/components'
 import {LayerProvider, ThemeProvider, studioTheme, ToastProvider, useElementRect} from '@sanity/ui'
 import type {CurrentUser} from '@sanity/types'
@@ -93,7 +93,7 @@ function createTestingProvider({initialRouterState = {}}: CreateTestingProviderO
 
   type Navigate = ReturnType<typeof useRouter>['navigate']
   const navigatePromise = createDeferredPromise<Navigate>()
-  const paneChanges$ = new Subject<RouterPaneGroup[]>()
+  const paneChanges$ = new Rx.Subject<RouterPaneGroup[]>()
 
   const handlePaneChange = (panes: RouterPaneGroup[]) => paneChanges$.next(panes)
 
@@ -111,9 +111,9 @@ function createTestingProvider({initialRouterState = {}}: CreateTestingProviderO
       const changes = await paneChanges$
         .pipe(
           // collect values into a buffer until there is no emission after 500ms
-          ops.buffer(paneChanges$.pipe(ops.debounceTime(500))),
+          operators.buffer(paneChanges$.pipe(operators.debounceTime(500))),
           // then grab the first of this stream to complete it
-          ops.first()
+          operators.first()
         )
         .toPromise()
       return {changes}
@@ -122,9 +122,9 @@ function createTestingProvider({initialRouterState = {}}: CreateTestingProviderO
     return paneChanges$
       .pipe(
         // take until there is no emission after 500ms
-        ops.debounceTime(500),
+        operators.debounceTime(500),
         // then grab the first value to complete the stream
-        ops.first()
+        operators.first()
       )
       .toPromise()
   }
@@ -142,12 +142,14 @@ function createTestingProvider({initialRouterState = {}}: CreateTestingProviderO
   function TestingProvider() {
     const [state, setState] = useState(initialRouterState)
     const location$ = useMemo(() => {
-      const locationSubject = new Subject<string>()
+      const locationSubject = new Rx.Subject<string>()
 
       locationSubject
         .pipe(
-          ops.map((url) => deskTool.router.decode(new URL(url, window.location.href).pathname)),
-          ops.filter(isNonNullable)
+          operators.map((url) =>
+            deskTool.router.decode(new URL(url, window.location.href).pathname)
+          ),
+          operators.filter(isNonNullable)
         )
         .subscribe((e) => setState(e))
 
@@ -505,8 +507,8 @@ describe('DeskTool', () => {
 
       const dynamicChild = (id: string) => {
         if (id === 'observableChild') {
-          return of(1, 2, 3).pipe(
-            ops.map((i) => ({
+          return Rx.of(1, 2, 3).pipe(
+            operators.map((i) => ({
               id: `observableChild${i}`,
               child: (nestedId: string) => ({
                 id: `${nestedId}FromObservable${i}`,
