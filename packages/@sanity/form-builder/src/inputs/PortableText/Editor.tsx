@@ -19,7 +19,6 @@ import React, {useMemo, useEffect} from 'react'
 import PatchEvent from '../../PatchEvent'
 import styles from './PortableTextInput.module.css'
 import Toolbar from './Toolbar/Toolbar'
-import {ExpandCollapseButton} from './expandCollapseButton'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
 import Decorator from './Text/Decorator'
 
