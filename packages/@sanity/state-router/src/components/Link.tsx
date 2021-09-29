@@ -11,13 +11,14 @@ function isModifiedEvent(event: MouseEvent) {
 
 interface LinkProps {
   replace?: boolean
+  disabled?: boolean
 }
 const Link = forwardRef(function Link(
   props: LinkProps & React.HTMLProps<HTMLAnchorElement>,
   ref: ForwardedRef<HTMLAnchorElement>
 ) {
   const routerContext = useContext(RouterContext)
-  const {onClick, href, target, replace = false, ...rest} = props
+  const {onClick, href, target, replace = false, disabled = false, ...rest} = props
 
   const handleClick = useCallback(
     (event: React.MouseEvent<HTMLAnchorElement>): void => {
@@ -32,6 +33,8 @@ const Link = forwardRef(function Link(
       }
 
       if (!href) return
+
+      if (!disabled) return
 
       if (onClick) {
         onClick(event)
@@ -53,7 +56,9 @@ const Link = forwardRef(function Link(
     [href, onClick, replace, routerContext, target]
   )
 
-  return <a {...rest} onClick={handleClick} href={href} target={target} ref={ref} />
+  const LinkElement = disabled ? 'span' : 'a'
+
+  return <LinkElement {...rest} onClick={handleClick} href={href} target={target} ref={ref} />
 })
 
 export default Link
