@@ -2,6 +2,7 @@ import isHotkey from 'is-hotkey'
 import {merge, of} from 'rxjs'
 import {mapTo, delay} from 'rxjs/operators'
 import {LOADING_PANE} from './constants'
+import {RouterPaneGroup} from './types'
 import {parsePanesSegment, encodePanesSegment} from './utils/parsePanesSegment'
 
 /**
@@ -105,14 +106,14 @@ export function getWaitMessages(path) {
 /**
  * @internal
  */
-export function toState(pathSegment: string) {
+export function toState(pathSegment: string): RouterPaneGroup[] {
   return parsePanesSegment(decodeURIComponent(pathSegment))
 }
 
 /**
  * @internal
  */
-export function toPath(panes) {
+export function toPath(panes: RouterPaneGroup[]): string {
   return encodePanesSegment(panes)
 }
 

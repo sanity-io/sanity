@@ -1,15 +1,29 @@
 import {EMPTY_PARAMS} from '../constants'
 import {exclusiveParams} from '../contexts/paneRouter'
+import {RouterPaneGroup, RouterSplitPane} from '../types'
 
 // old: authors;knut,{"template":"diaryEntry"}
 // new: authors;knut,view=diff,eyJyZXYxIjoiYWJjMTIzIiwicmV2MiI6ImRlZjQ1NiJ9|latest-posts
 
 const panePattern = /^([.a-z0-9_-]+),?({.*?})?(?:(;|$))/i
-const isParam = (str) => /^[a-z0-9]+=[^=]+/i.test(str)
-const isPayload = (str) =>
+const isParam = (str: string) => /^[a-z0-9]+=[^=]+/i.test(str)
+const isPayload = (str: string) =>
   /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(str)
 
-function parseChunks(chunks, initial = {}) {
+type Truthy<T> = T extends false
+  ? never
+  : T extends ''
+  ? never
+  : T extends 0
+  ? never
+  : T extends 0n
+  ? never
+  : T extends null | undefined
+  ? NonNullable<T>
+  : T
+const isTruthy = (Boolean as (t: unknown) => boolean) as <T>(t: T) => t is Truthy<T>
+
+function parseChunks(chunks: string[], initial: RouterSplitPane): RouterSplitPane {
   return chunks.reduce(
     (pane, chunk) => {
       if (isParam(chunk)) {
@@ -29,17 +43,17 @@ function parseChunks(chunks, initial = {}) {
   )
 }
 
-function encodeChunks(pane, i, group) {
+function encodeChunks(pane: RouterSplitPane, index: number, group: RouterPaneGroup): string {
   const {payload, params = {}, id} = pane
-  const sameAsFirst = i !== 0 && id === group[0].id
+  const sameAsFirst = index !== 0 && id === group[0].id
   const encodedPayload = typeof payload === 'undefined' ? undefined : btoa(JSON.stringify(payload))
 
   const encodedParams = Object.keys(params).reduce<string[]>((pairs, key) => {
     if (
       sameAsFirst &&
-      i !== 0 &&
+      index !== 0 &&
       !exclusiveParams.includes(key) &&
-      group[0].params[key] === params[key]
+      group[0].params?.[key] === params[key]
     ) {
       return pairs
     }
@@ -49,12 +63,12 @@ function encodeChunks(pane, i, group) {
 
   return (
     [sameAsFirst ? '' : id]
-      .concat([encodedParams.length > 0 && encodedParams, encodedPayload].filter(Boolean))
+      .concat([encodedParams.length > 0 && encodedParams, encodedPayload].filter(isTruthy).flat())
       .join(',') || ','
   )
 }
 
-export function parsePanesSegment(str) {
+export function parsePanesSegment(str: string): RouterPaneGroup[] {
   if (str.indexOf(',{') !== -1) {
     return parseOldPanesSegment(str)
   }
@@ -73,15 +87,15 @@ export function parsePanesSegment(str) {
     .filter((group) => group.length > 0)
 }
 
-export function encodePanesSegment(panes) {
+export function encodePanesSegment(panes: RouterPaneGroup[]): string {
   return (panes || [])
     .map((group) => group.map(encodeChunks).join('|'))
     .map(encodeURIComponent)
     .join(';')
 }
 
-export function parseOldPanesSegment(str) {
-  const chunks: {id: string; payload: unknown}[] = []
+export function parseOldPanesSegment(str: string): RouterPaneGroup[] {
+  const chunks: RouterPaneGroup = []
 
   let buffer = str
   while (buffer.length) {
@@ -97,7 +111,7 @@ export function parseOldPanesSegment(str) {
     buffer = buffer.slice(match.length)
   }
 
-  return chunks
+  return [chunks]
 }
 
 function tryParsePayload(json) {

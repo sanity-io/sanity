@@ -3,7 +3,7 @@ import {useRouter, useRouterState} from '@sanity/base/router'
 import {PortalProvider, useToast} from '@sanity/ui'
 import React, {useState, useEffect, useCallback, useMemo, useRef, Fragment} from 'react'
 import {Observable, interval, of} from 'rxjs'
-import {map, switchMap, distinctUntilChanged, debounce} from 'rxjs/operators'
+import {map, switchMap, distinctUntilChanged, debounce, tap} from 'rxjs/operators'
 import styled from 'styled-components'
 import {PaneLayout} from './components/pane'
 import {StructureError} from './components/StructureError'
@@ -17,7 +17,7 @@ import {
   isSaveHotkey,
 } from './helpers'
 import {DeskToolPane, LoadingPane} from './panes'
-import {RouterPane, StructureErrorType, StructurePane} from './types'
+import {RouterPaneGroup, StructureErrorType, StructurePane} from './types'
 import {
   resolvePanes,
   loadStructure,
@@ -42,10 +42,12 @@ export function DeskTool(props: DeskToolProps) {
   const {push: pushToast} = useToast()
   const {navigate} = useRouter()
   const routerState = useRouterState()
-  const routerPanes: RouterPane[][] = useMemo(() => routerState?.panes || [], [routerState?.panes])
+  const routerPanes: RouterPaneGroup[] = useMemo(() => routerState?.panes || [], [
+    routerState?.panes,
+  ])
   const [error, setError] = useState<StructureErrorType | null>(null)
-  const prevRouterPanesRef = useRef<RouterPane[][] | null>(null)
-  const currRouterPanesRef = useRef<RouterPane[][]>(routerPanes)
+  const prevRouterPanesRef = useRef<RouterPaneGroup[] | null>(null)
+  const currRouterPanesRef = useRef<RouterPaneGroup[]>(routerPanes)
   const [layoutCollapsed, setLayoutCollapsed] = useState(false)
   const [resolvedPanes, setResolvedPanes] = useState<StructurePane[]>([])
   const resolvedPanesRef = useRef(resolvedPanes)
@@ -62,8 +64,8 @@ export function DeskTool(props: DeskToolProps) {
     )
   }, [routerPanes])
 
-  const paneGroups: RouterPane[][] = useMemo(
-    () => [[{id: 'root', params: {}}]].concat(routerPanes || []),
+  const paneGroups: RouterPaneGroup[] = useMemo(
+    () => ([[{id: 'root', params: {}}]] as RouterPaneGroup[]).concat(routerPanes || []),
     [routerPanes]
   )
 

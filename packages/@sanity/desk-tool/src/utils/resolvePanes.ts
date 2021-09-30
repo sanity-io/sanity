@@ -6,7 +6,7 @@ import leven from 'leven'
 import generateHelpUrl from '@sanity/generate-help-url'
 import {LOADING_PANE} from '../constants'
 import {defaultStructure} from '../defaultStructure'
-import {StructurePane} from '../types'
+import {StructurePane, RouterPaneGroup, RouterSplitPaneContext} from '../types'
 import isSubscribable from './isSubscribable'
 import validateStructure from './validateStructure'
 import serializeStructure from './serializeStructure'
@@ -45,25 +45,29 @@ export function resolvePanes(
   )
 }
 
-function getInitialPanes(prevStructure, numPanes, fromIndex) {
-  const allLoading = new Array(numPanes).fill(LOADING_PANE)
+function getInitialPanes(
+  prevStructure: RouterPaneGroup[] | null,
+  numPanes: number,
+  fromIndex: number
+): Array<typeof LOADING_PANE | StructurePane> {
+  const allLoading = new Array(numPanes).fill(LOADING_PANE) as typeof LOADING_PANE[]
   if (!prevStructure) {
     return allLoading
   }
 
-  const remains = prevStructure.slice(0, fromIndex)
+  const remains = prevStructure.slice(0, fromIndex) as Array<typeof LOADING_PANE | StructurePane>
   return remains.concat(allLoading.slice(fromIndex))
 }
 
-function sumPaneSegments(paneGroups) {
-  return paneGroups.reduce((count, curr) => count + curr.length, 0)
+function sumPaneSegments(paneGroups: RouterPaneGroup[]) {
+  return paneGroups.reduce<number>((count, curr) => count + curr.length, 0)
 }
 
 function resolveForStructure(
   structure,
   paneGroups,
   prevStructure,
-  fromIndex,
+  fromIndex: [number, number],
   options: {silent?: boolean} = {}
 ): Observable<StructurePane[]> {
   return Observable.create((subscriber: Observer<StructurePane[]>) => {
@@ -101,7 +105,7 @@ function resolveForStructure(
 
       const parent = index === 0 ? null : findParentForSegmentIndex(index - 1)
       const path = paneSegments.slice(0, index + 1).map((segment) => segment[0].id)
-      const context = {parent, index, splitIndex, path}
+      const context: RouterSplitPaneContext = {parent, index, splitIndex, path}
 
       if (index === 0) {
         const {id} = paneSegments[index][splitIndex]
@@ -138,7 +142,7 @@ function resolveForStructure(
       )
     }
 
-    function findSegmentGroupIndexForPaneAtIndex(index) {
+    function findSegmentGroupIndexForPaneAtIndex(index: number): number | null {
       for (let i = 0, pane = 0; i < paneSegments.length; i++) {
         for (let x = 0; x < paneSegments[i].length; x++) {
           // eslint-disable-next-line max-depth
@@ -170,7 +174,7 @@ function resolveForStructure(
       return null
     }
 
-    function findParentForSegmentIndex(index) {
+    function findParentForSegmentIndex(index: number) {
       const parentGroupIndex = findSegmentGroupIndexForPaneAtIndex(index)
       return parentGroupIndex === null ? null : panes[parentGroupIndex]
     }
@@ -269,7 +273,7 @@ export const loadStructure = () => {
   if (!isStructure(structure)) {
     return throwError(
       new Error(
-        `Structure needs to export a function, an observable, a promise or a stucture builder, got ${typeof structure}`
+        `Structure needs to export a function, an observable, a promise or a structure builder, got ${typeof structure}`
       )
     )
   }

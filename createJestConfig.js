@@ -6,20 +6,17 @@ const jestModuleAliases = {
   '@sanity/bifur-client': './test/mockBifurClient',
   'part:@sanity/base/schema': './test/mockSchema',
   'part:@sanity/base/client': './test/mockClient',
-  'part:@sanity/form-builder/input/image/asset-sources?': './test/undefined',
   'part:@sanity/base/initial-value-templates?': './test/emptyArray',
-  'part:@sanity/form-builder/input/legacy-date/schema?': './test/null',
   'config:sanity': './examples/test-studio/sanity.json',
   'sanity:css-custom-properties': './test/emptyObject',
 }
 
 // note: these can contain regex for matching
 const regexMapper = {
-  'part:@sanity.*-style': './test/emptyObject',
-  '.*\\.css': './test/emptyObject',
-  'all:.*': './test/emptyArray',
-  'config:.*': './test/undefined',
-  'part:.*\\?': './test/undefined',
+  '^part:@sanity.*-style$': './test/emptyObject',
+  '.*\\.css$': './test/emptyObject',
+  '^all:.*$': './test/emptyArray',
+  '^config:.*$': './test/undefined',
 }
 
 const partPackages = [
@@ -73,6 +70,53 @@ const partsAliases = Object.fromEntries(
   })
 )
 
+// note: these have to be mocked on an individual file level because using
+// `jest.mock` on them will replace the target file (and the the source import).
+// with this, it's possible for a mock implementation to override multiple other
+// optional parts
+const optionalParts = {
+  '^part:@sanity/form-builder/input/image/asset-sources\\?$':
+    './test/optionalParts/formBuilderInputImageAssetSources',
+  '^part:@sanity/base/initial-value-templates\\?$':
+    './test/optionalParts/baseInitialValueTemplates',
+  '^part:@sanity/form-builder/input/legacy-date/schema\\?$':
+    './test/optionalParts/formBuilderInputLegacyDateSchema',
+  '^part:@sanity/base/preview-resolver\\?$': './test/optionalParts/basePreviewResolver',
+  '^part:@sanity/dashboard/config\\?$': './test/optionalParts/dashboardConfig',
+  '^part:@sanity/base/login-wrapper\\?$': './test/optionalParts/baseLoginWrapper',
+  '^part:@sanity/desk-tool/structure\\?$': './test/optionalParts/deskToolStructure',
+  '^part:@sanity/base/brand-logo\\?$': './test/optionalParts/baseBrandLogo',
+  '^part:@sanity/form-builder/input/boolean\\?$': './test/optionalParts/formBuilderInputBoolean',
+  '^part:@sanity/form-builder/input/datetime\\?$': './test/optionalParts/formBuilderInputDatetime',
+  '^part:@sanity/form-builder/input/email\\?$': './test/optionalParts/formBuilderInputEmail',
+  '^part:@sanity/form-builder/input/geopoint\\?$': './test/optionalParts/formBuilderInputGeopoint',
+  '^part:@sanity/form-builder/input/number\\?$': './test/optionalParts/formBuilderInputNumber',
+  '^part:@sanity/form-builder/input/object\\?$': './test/optionalParts/formBuilderInputObject',
+  '^part:@sanity/form-builder/input/reference\\?$':
+    './test/optionalParts/formBuilderInputReference',
+  '^part:@sanity/form-builder/input/string\\?$': './test/optionalParts/formBuilderInputString',
+  '^part:@sanity/form-builder/input/text\\?$': './test/optionalParts/formBuilderInputText',
+  '^part:@sanity/form-builder/input/url\\?$': './test/optionalParts/formBuilderInputUrl',
+  '^part:@sanity/form-builder/input/file/asset-sources\\?$':
+    './test/optionalParts/formBuilderInputFileAssetSources',
+  '^part:@sanity/default-layout/studio-hints-config\\?$':
+    './test/optionalParts/defaultLayoutStudioHintsConfig',
+  '^part:@sanity/base/schema\\?$': './test/optionalParts/baseSchema',
+  '^part:@sanity/base/configure-client\\?$': './test/optionalParts/baseConfigureClient',
+  '^part:@sanity/components/dialogs/fullscreen-message\\?$':
+    './test/optionalParts/componentsDialogsFullscreenMessage',
+  '^part:@sanity/default-layout/sidecar\\?$': './test/optionalParts/defaultLayoutSidecar',
+  '^part:@sanity/base/new-document-structure\\?$': './test/optionalParts/baseNewDocumentStructure',
+  '^part:@sanity/transitional/production-preview/resolve-production-url\\?$':
+    './test/optionalParts/transitionalProductionPreviewResolveProductionUrl',
+  '^part:@sanity/base/client\\?$': './test/optionalParts/baseClient',
+  '^part:@sanity/base/preview\\?$': './test/optionalParts/basePreview',
+  '^part:@sanity/form-builder/input-resolver\\?$': './test/optionalParts/formBuilderInputResolver',
+  '^part:@sanity/desk-tool/filter-fields-fn\\?$': './test/optionalParts/deskToolFilterFieldsFn',
+  '^part:@sanity/desk-tool/language-select-component\\?$':
+    './test/optionalParts/deskToolLanguageSelectComponent',
+}
+
 /**
  * @param {import('@jest/types').Config.InitialOptions
  *  | (config: import('@jest/types').Config.InitialOptions) => any} inputConfig
@@ -88,6 +132,8 @@ function createProjectConfig({
   ...restOfInputConfig
 } = {}) {
   const defaultModuleNameMapper = resolvePaths({
+    ...optionalParts,
+
     // > The order in which the mappings are defined matters. Patterns are
     // > checked one by one until one fits. The most specific rule should be
     // > listed first. This is true for arrays of module names as well.
@@ -124,7 +170,7 @@ function createProjectConfig({
     },
     testMatch: [...testMatch, '<rootDir>/**/*.{test,spec}.{js,ts,tsx}'],
     testPathIgnorePatterns: [...testPathIgnorePatterns, '/(node_modules|lib|dist|bin|coverage)/'],
-    setupFiles: [...setupFiles, require.resolve('./test/jest-setup.js')],
+    setupFiles: [...setupFiles, path.resolve(__dirname, './test/jest-setup.ts')],
     testURL: 'http://localhost:3333',
     testEnvironment: 'jsdom',
     globals: {__DEV__: false, ...globals},

@@ -58,6 +58,7 @@
   "devDependencies": {
     "@sanity/base": "2.20.0",
     "@sanity/ui-workshop": "^0.3.4",
+    "@testing-library/react": "^11.2.5",
     "@types/is-hotkey": "^0.1.3",
     "@types/shallow-equals": "^1.0.0",
     "@types/webpack-env": "^1.16.2",
