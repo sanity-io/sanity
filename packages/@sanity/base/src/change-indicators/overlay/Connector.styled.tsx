@@ -9,41 +9,43 @@ interface PathProps {
   theme: Theme
 }
 
-export const DebugRectWrapper = styled.rect`
+export const DebugRect = styled.rect`
   stroke: #ccc;
   fill: none;
   pointer-events: none;
   stroke-linecap: round;
 `
 
-export const PathWrapper = styled.path(({focused, revertedHovered, hovered, theme}: PathProps) => {
-  /* these colours aren't freely available on the current theme */
-  const hoveredColor = theme.sanity.color.spot.yellow
+export const ConnectorPath = styled.path(
+  ({focused, revertedHovered, hovered, theme}: PathProps) => {
+    /* these colours aren't freely available on the current theme */
+    const hoveredColor = theme.sanity.color.spot.yellow
 
-  return css`
-    fill: none;
-    pointer-events: none;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+    return css`
+      fill: none;
+      pointer-events: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
 
-    ${focused &&
-    css`
-      stroke: var(--card-focus-ring-color);
-    `}
+      ${focused &&
+      css`
+        stroke: var(--card-focus-ring-color);
+      `}
 
-    ${revertedHovered &&
-    css`
-      stroke: var(--card-accent-fg-color);
-    `}
+      ${revertedHovered &&
+      css`
+        stroke: var(--card-accent-fg-color);
+      `}
 
     ${hovered &&
-    css`
-      stroke: ${hoveredColor};
-    `}
-  `
-})
+      css`
+        stroke: ${hoveredColor};
+      `}
+    `
+  }
+)
 
-export const InteractivePathWrapper = styled.path`
+export const InteractivePath = styled.path`
   fill: none;
   pointer-events: stroke;
   stroke: var(--card-focus-ring-color);
