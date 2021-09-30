@@ -84,7 +84,7 @@ export const DefaultLayout = memo(function DefaultLayout(props: Props) {
     const tool = router.state.tool || ''
 
     return (
-      <RootFlex $isOverlayVisible={menuIsOpen} direction="column" data-testid="DefaultLayout">
+      <RootFlex $isOverlayVisible={menuIsOpen} data-testid="default-layout" direction="column">
         {showLoadingScreen && (
           <LoadingScreen
             loaded={loaded || document.visibilityState == 'hidden'}
@@ -118,11 +118,17 @@ export const DefaultLayout = memo(function DefaultLayout(props: Props) {
         )}
 
         <MainAreaFlex
+          direction={['column', 'row']}
           flex={1}
           overflow={menuIsOpen ? 'hidden' : undefined}
-          direction={searchIsOpen ? 'column' : undefined}
         >
-          <ToolBox hidden={searchIsOpen} height="fill" flex={1} data-testid="ToolBox">
+          <ToolBox
+            data-testid="default-layout__tool-box"
+            direction="column"
+            flex={1}
+            hidden={searchIsOpen}
+            height="fill"
+          >
             <RouteScope scope={tool}>
               <RenderTool tool={tool} />
             </RouteScope>
