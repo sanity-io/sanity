@@ -18,7 +18,7 @@ export const DebugRectWrapper = styled.rect`
 
 export const PathWrapper = styled.path(
   ({focused, revertedHovered, hovered, theme}: PathInterface) => {
-    /* these colours aren't freeøy available on the current theme */
+    /* these colours aren't freely available on the current theme */
     const hoveredColor = theme.sanity.color.spot.yellow
 
     return css`
@@ -61,7 +61,7 @@ export const InteractivePathWrapper = styled.path`
 
 export const RightBarWrapper = styled(ClampedRect)(
   ({focused, revertedHovered, hovered, theme}: PathInterface) => {
-    /* these colours aren't freeøy available on the current theme */
+    /* these colours aren't freely available on the current theme */
     const hoveredColor = theme.sanity.color.spot.yellow
 
     return css`
