@@ -3,11 +3,11 @@ import styled, {css} from 'styled-components'
 import {Theme} from '@sanity/ui'
 import {EditIcon} from '@sanity/icons'
 
-interface BarAndShapeInterface {
+interface ThemeContext {
   theme: Theme
 }
 
-interface RootInterface {
+interface RootProps {
   focus: boolean
   hover: boolean
   changed: boolean
@@ -39,7 +39,7 @@ export const TooltipTriggerWrapper = styled.div`
   transition: opacity 100ms;
 `
 
-export const BarWrapper = styled.div(({theme}: BarAndShapeInterface) => {
+export const BarWrapper = styled.div(({theme}: ThemeContext) => {
   /* these colours aren't freeøy available on the current theme */
   const notSelectedColor = theme.sanity.color.spot.yellow
 
@@ -90,7 +90,7 @@ export const EditIconWrapper = styled(EditIcon)`
   }
 `
 
-export const ShapeWrapper = styled(Shape)(({theme}: BarAndShapeInterface) => {
+export const ShapeWrapper = styled(Shape)(({theme}: ThemeContext) => {
   /* these colours aren't freeøy available on the current theme */
   const notSelectedColor = theme.sanity.color.spot.yellow
 
@@ -140,7 +140,7 @@ const BadgeOpen = css`
 `
 
 export const ChangeBarWrapper = styled.div(
-  ({focus, hover, changed, disabled, isReviewChangeOpen}: RootInterface) => {
+  ({focus, hover, changed, disabled, isReviewChangeOpen}: RootProps) => {
     if (disabled)
       return css`
         ${TooltipTriggerWrapper} {
