@@ -40,7 +40,7 @@ export const TooltipTriggerWrapper = styled.div`
 `
 
 export const BarWrapper = styled.div(({theme}: ThemeContext) => {
-  /* these colours aren't freeøy available on the current theme */
+  /* these colours aren't freely available on the current theme */
   const notSelectedColor = theme.sanity.color.spot.yellow
 
   return css`
@@ -91,7 +91,7 @@ export const EditIconWrapper = styled(EditIcon)`
 `
 
 export const ShapeWrapper = styled(Shape)(({theme}: ThemeContext) => {
-  /* these colours aren't freeøy available on the current theme */
+  /* these colours aren't freely available on the current theme */
   const notSelectedColor = theme.sanity.color.spot.yellow
 
   return css`
