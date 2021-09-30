@@ -1,6 +1,8 @@
 import {route} from '@sanity/base/router'
 import {legacyEditParamsToPath, legacyEditParamsToState, toPath, toState} from './helpers'
 
+// http://localhost:3333/intent/create/template=book-by-author;type=book/eyJhdXRob3JJZCI6Imdycm0ifQ==
+
 export const router = route('/', [
   // "Asynchronous intent resolving" route
   route.intents('/intent'),
