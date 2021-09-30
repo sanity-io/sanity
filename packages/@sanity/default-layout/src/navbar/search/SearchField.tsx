@@ -4,21 +4,20 @@ import {SearchIcon} from '@sanity/icons'
 import styled from 'styled-components'
 import {SearchItem, useSearch, SearchPopoverContent, SearchFullscreenContent} from '.'
 
+interface SearchFieldProps {
+  fullScreen: boolean
+  inputElement: (el: HTMLInputElement | null) => void
+  onSearchItemClick: () => void
+  portalElement: HTMLDivElement | null
+  relatedElements?: HTMLElement[]
+}
+
 const StyledText = styled(Text)`
   word-break: break-word;
 `
 
-export function SearchField({
-  portalElement,
-  fullScreen,
-  inputElement,
-  onSearchItemClick,
-}: {
-  portalElement: HTMLDivElement | null
-  fullScreen: boolean
-  inputElement: (el: HTMLInputElement | null) => void
-  onSearchItemClick: () => void
-}) {
+export function SearchField(props: SearchFieldProps) {
+  const {fullScreen, inputElement, onSearchItemClick, portalElement, relatedElements} = props
   const {handleSearch, searchState} = useSearch()
   const {hits, loading, searchString, error} = searchState
 
@@ -39,8 +38,8 @@ export function SearchField({
   )
 
   const renderPopoverFullscreen = useCallback(
-    (props, ref) => {
-      if (!props.hidden && error) {
+    (popoverProps, ref) => {
+      if (!popoverProps.hidden && error) {
         return (
           <SearchFullscreenContent tone="critical">
             <Flex
@@ -59,7 +58,7 @@ export function SearchField({
         )
       }
 
-      if (!props.hidden && searchString && !loading && hits.length === 0) {
+      if (!popoverProps.hidden && searchString && !loading && hits.length === 0) {
         return (
           <SearchFullscreenContent>
             <Flex
@@ -79,8 +78,8 @@ export function SearchField({
       }
 
       return (
-        <SearchFullscreenContent hidden={props.hidden} ref={ref}>
-          {props.content}
+        <SearchFullscreenContent hidden={popoverProps.hidden} ref={ref}>
+          {popoverProps.content}
         </SearchFullscreenContent>
       )
     },
@@ -88,12 +87,12 @@ export function SearchField({
   )
 
   const renderPopover = useCallback(
-    (props, ref) => {
-      if (!props.hidden && error) {
+    (popoverProps, ref) => {
+      if (!popoverProps.hidden && error) {
         return (
           <SearchPopoverContent
-            open={!props.hidden}
-            referenceElement={props.inputElement}
+            open={!popoverProps.hidden}
+            referenceElement={popoverProps.inputElement}
             ref={ref}
             content={
               <Box padding={4}>
@@ -108,11 +107,11 @@ export function SearchField({
         )
       }
 
-      if (!props.hidden && searchString && !loading && hits.length === 0) {
+      if (!popoverProps.hidden && searchString && !loading && hits.length === 0) {
         return (
           <SearchPopoverContent
-            open={!props.hidden}
-            referenceElement={props.inputElement}
+            open={!popoverProps.hidden}
+            referenceElement={popoverProps.inputElement}
             ref={ref}
             content={
               <Box padding={4}>
@@ -127,13 +126,13 @@ export function SearchField({
         )
       }
 
-      if (!props.hidden && hits.length > 0) {
+      if (!popoverProps.hidden && hits.length > 0) {
         return (
           <SearchPopoverContent
-            open={!props.hidden}
-            referenceElement={props.inputElement}
+            open={!popoverProps.hidden}
+            referenceElement={popoverProps.inputElement}
             ref={ref}
-            content={props.content}
+            content={popoverProps.content}
           />
         )
       }
@@ -146,9 +145,10 @@ export function SearchField({
   const autoComplete = useMemo(
     () => (
       <Autocomplete
+        filterOption={filterOption}
         icon={SearchIcon}
-        key="studio-search"
         id="studio-search"
+        key="studio-search"
         listBox={{padding: fullScreen ? 2 : 1}}
         loading={loading}
         onQueryChange={handleSearch}
@@ -163,7 +163,7 @@ export function SearchField({
         placeholder="Search"
         radius={2}
         ref={inputElement}
-        filterOption={filterOption}
+        relatedElements={relatedElements}
         renderOption={renderOption}
         renderPopover={fullScreen ? renderPopoverFullscreen : renderPopover}
       />
@@ -175,15 +175,12 @@ export function SearchField({
       hits,
       inputElement,
       loading,
+      relatedElements,
       renderOption,
       renderPopover,
       renderPopoverFullscreen,
     ]
   )
 
-  if (fullScreen) {
-    return <PortalProvider element={portalElement}>{autoComplete}</PortalProvider>
-  }
-
-  return <PortalProvider element={null}>{autoComplete}</PortalProvider>
+  return <PortalProvider element={fullScreen ? portalElement : null}>{autoComplete}</PortalProvider>
 }
