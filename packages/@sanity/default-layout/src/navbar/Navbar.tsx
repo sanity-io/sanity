@@ -109,7 +109,13 @@ export const Navbar = memo(function Navbar(props: Props) {
 
   const [searchOpen, setSearchOpen] = useState<boolean>(false)
   const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
-  const [searchButtonElement, setSearchButtonElement] = useState<HTMLButtonElement | null>(null)
+  const [searchOpenButtonElement, setSearchOpenButtonElement] = useState<HTMLButtonElement | null>(
+    null
+  )
+  const [
+    searchCloseButtonElement,
+    setSearchCloseButtonElement,
+  ] = useState<HTMLButtonElement | null>(null)
   const {value: currentUser} = useCurrentUser()
   const createAnyPermission = unstable_useCanCreateAnyOf(documentTypes)
   const mediaIndex = useMediaIndex()
@@ -137,20 +143,22 @@ export const Navbar = memo(function Navbar(props: Props) {
   useGlobalKeyDown((e) => {
     if (e.key === 'Escape' && searchOpen) {
       setSearchOpen(false)
-      searchButtonElement?.focus()
+      searchOpenButtonElement?.focus()
     }
   })
 
+  // @todo: explain what this does
   const handleToggleSearchOpen = useCallback(() => {
     setSearchOpen((prev) => {
       if (prev) {
-        searchButtonElement?.focus()
+        searchOpenButtonElement?.focus()
       }
 
       return !prev
     })
-  }, [searchButtonElement])
+  }, [searchOpenButtonElement])
 
+  // @todo: explain what this does
   useEffect(() => {
     if (onSearchOpen && !shouldRender.searchFullscreen) {
       setSearchOpen(false)
@@ -158,13 +166,14 @@ export const Navbar = memo(function Navbar(props: Props) {
     }
   }, [onSearchOpen, shouldRender.searchFullscreen])
 
+  // @todo: explain what this does
   useEffect(() => {
     onSearchOpen(searchOpen)
 
     if (searchOpen) {
       inputElement?.focus()
     }
-  }, [inputElement, searchButtonElement, onSearchOpen, searchOpen])
+  }, [inputElement, searchOpenButtonElement, onSearchOpen, searchOpen])
 
   const LinkComponent = useCallback(
     (linkProps) => {
@@ -172,6 +181,15 @@ export const Navbar = memo(function Navbar(props: Props) {
     },
     [rootState]
   )
+
+  // The HTML elements that are part of the search view (i.e. the "close" button that is visible
+  // when in fullscreen mode on narrow devices) needs to be passed to `<Autocomplete />` so it knows
+  // how to make the search experience work properly for non-sighted users.
+  // Specifically – without passing `relatedElements`, the listbox with results will close when you
+  // TAB to focus the "close" button, and that‘s not a good experience for anyone.
+  const searchRelatedElements = useMemo(() => [searchCloseButtonElement].filter(Boolean), [
+    searchCloseButtonElement,
+  ])
 
   return useMemo(
     () => (
@@ -247,10 +265,11 @@ export const Navbar = memo(function Navbar(props: Props) {
                   <Flex flex={1}>
                     <Box flex={1} marginRight={shouldRender.tools ? undefined : [1, 1, 2]}>
                       <SearchField
+                        fullScreen={shouldRender.searchFullscreen}
+                        inputElement={setInputElement}
                         onSearchItemClick={handleToggleSearchOpen}
                         portalElement={searchPortalElement}
-                        inputElement={setInputElement}
-                        fullScreen={shouldRender.searchFullscreen}
+                        relatedElements={searchRelatedElements}
                       />
                     </Box>
                     {shouldRender.searchFullscreen && (
@@ -259,6 +278,7 @@ export const Navbar = memo(function Navbar(props: Props) {
                         aria-label="Close search"
                         onClick={handleToggleSearchOpen}
                         mode="bleed"
+                        ref={setSearchCloseButtonElement}
                       />
                     )}
                   </Flex>
@@ -314,7 +334,7 @@ export const Navbar = memo(function Navbar(props: Props) {
                 onClick={handleToggleSearchOpen}
                 icon={SearchIcon}
                 mode="bleed"
-                ref={setSearchButtonElement}
+                ref={setSearchOpenButtonElement}
               />
             )}
           </RightFlex>
@@ -322,16 +342,17 @@ export const Navbar = memo(function Navbar(props: Props) {
       </Root>
     ),
     [
-      LinkComponent,
       createAnyPermission.granted,
       createMenuIsOpen,
       currentUser,
       handleToggleSearchOpen,
+      LinkComponent,
       onCreateButtonClick,
       onToggleMenu,
       onUserLogout,
       searchOpen,
       searchPortalElement,
+      searchRelatedElements,
       shouldRender,
       tools,
     ]
