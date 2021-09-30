@@ -1,4 +1,4 @@
-import {Avatar, AvatarPosition, AvatarSize, AvatarStatus} from '@sanity/ui'
+import {Avatar, AvatarPosition, AvatarSize, AvatarStatus, Box, Text, Tooltip} from '@sanity/ui'
 import React, {useState} from 'react'
 import type {User} from '@sanity/types'
 import {useUserColor} from '../user-color'
@@ -14,7 +14,10 @@ interface BaseProps {
   tone?: 'navbar'
 }
 
-export type Props = BaseProps & UserProps
+export type Props = BaseProps &
+  UserProps & {
+    withTooltip?: boolean
+  }
 
 interface LoadedUserProps extends BaseProps {
   user: User
@@ -47,10 +50,34 @@ function nameToInitials(fullName: string) {
 
 export function UserAvatar(props: Props) {
   if (isLoaded(props)) {
+    if (props.withTooltip) {
+      return <TooltipUserAvatar {...props} />
+    }
     return <StaticUserAvatar {...props} />
   }
 
   return <UserAvatarLoader {...props} />
+}
+
+function TooltipUserAvatar(props: LoadedUserProps) {
+  const {
+    user: {displayName},
+  } = props
+  return (
+    <Tooltip
+      content={
+        <Box padding={2}>
+          <Text size={1}>{displayName}</Text>
+        </Box>
+      }
+      placement="top"
+      portal
+    >
+      <div>
+        <StaticUserAvatar {...props} />
+      </div>
+    </Tooltip>
+  )
 }
 
 function StaticUserAvatar({user, animateArrowFrom, position, size, status, tone}: LoadedUserProps) {

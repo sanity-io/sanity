@@ -78,6 +78,7 @@ export const Root = styled(MenuItem)(({state = 'enabled', isHovered, theme}: Tim
       }
     `}
 
+    // line styling 👇
       &:first-child ${IconWrapper}::before {
       height: 50%;
       top: unset;
@@ -94,6 +95,11 @@ export const Root = styled(MenuItem)(({state = 'enabled', isHovered, theme}: Tim
         background: transparent;
       }
     `}
+
+    // Remove timeline lines when using the keyboard to navigate timeline items
+    &:focus ${IconWrapper}::before {
+      background: transparent;
+    }
   `
 })
 
