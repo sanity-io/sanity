@@ -1,7 +1,7 @@
 import {useRouterState} from '@sanity/base/router'
 import {MasterDetailIcon} from '@sanity/icons'
 import React, {useEffect, useMemo} from 'react'
-import {IntentResolver} from '../components/IntentResolver'
+import {IntentResolver} from '../components/intentResolver'
 import {DeskTool} from '../DeskTool'
 import {getIntentState, setActivePanes} from '../getIntentState'
 import {useUnique} from '../lib/useUnique'

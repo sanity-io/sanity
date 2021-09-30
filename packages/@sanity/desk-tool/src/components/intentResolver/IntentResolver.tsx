@@ -1,19 +1,14 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
-import {useRouter} from '@sanity/base/router'
-import {Flex, Box, Spinner, Text} from '@sanity/ui'
+import {Box, Card, Flex, Spinner, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {getTemplateById} from '@sanity/base/initial-value-templates'
-import React, {useEffect, useState} from 'react'
-import {of} from 'rxjs'
-import {map} from 'rxjs/operators'
-import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import {LOADING_PANE} from '../constants'
-import {versionedClient} from '../versionedClient'
-import {useStructure} from '../utils/resolvePanes'
-import {Delay} from './Delay'
-import {StructureError} from './StructureError'
+import React, {useMemo} from 'react'
+import {LOADING_PANE} from '../../constants'
+import {useStructure} from '../../utils/resolvePanes'
+import {useUnique} from '../../lib/useUnique'
+import {Delay} from '../Delay'
+import {StructureError} from '../StructureError'
+import {Redirect} from './Redirect'
+import {removeDraftPrefix, useDocumentType} from './helpers'
 
 export interface IntentResolverProps {
   intent: string
@@ -22,18 +17,6 @@ export interface IntentResolverProps {
 }
 
 const FALLBACK_ID = '__fallback__'
-
-function removeDraftPrefix(documentId: string) {
-  const publishedId = getPublishedId(documentId)
-  if (publishedId !== documentId) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'Removed unexpected draft id in document link: All links to documents should have the `draft.`-prefix removed and something appears to have made an intent link to `%s`',
-      documentId
-    )
-  }
-  return publishedId
-}
 
 /**
  *
@@ -49,129 +32,94 @@ export const IntentResolver = React.memo(function IntentResolver({
   params,
   payload,
 }: IntentResolverProps) {
-  const {type: specifiedSchemaType, id, ...otherParams} = params || {}
-
+  const {type: specifiedSchemaType, id, ...otherParamsNonUnique} = params || {}
+  const otherParams = useUnique(otherParamsNonUnique)
   const documentId = id || FALLBACK_ID
   const {documentType, isLoaded} = useDocumentType(documentId, specifiedSchemaType)
-  const paneSegments = documentType
-    ? [[{id: documentType, params: otherParams}], [{id: documentId, params: otherParams, payload}]]
-    : undefined
+  const paneSegments = useMemo(
+    () =>
+      documentType
+        ? [
+            [{id: documentType, params: otherParams}],
+            [{id: documentId, params: otherParams, payload}],
+          ]
+        : undefined,
+    [documentId, documentType, otherParams, payload]
+  )
 
   const {structure, error} = useStructure(paneSegments, {silent: true})
+  const isLoading = Boolean(!structure || structure.some((item) => item === LOADING_PANE))
+
+  const panes = useMemo(() => {
+    if (error) return null
+    if (!documentType) return null
+    if (isLoading) return null
+    if (!paneSegments) return null
+
+    const lastChild = structure[structure.length - 1] || {}
+    const lastGroup = paneSegments[paneSegments.length - 1]
+    const lastSibling = lastGroup[lastGroup.length - 1]
+    const terminatesInDocument =
+      lastChild.type === 'document' && lastChild.options.id === documentId
+    const {template: isTemplateCreate, ..._otherParams} = otherParams
+    const template: any = isTemplateCreate && getTemplateById(otherParams.template as any)
+    const type = (template && template.schemaType) || documentType
+    const fallbackParameters = {..._otherParams, type, template: otherParams.template}
+    const newDocumentId = documentId === FALLBACK_ID ? uuid() : removeDraftPrefix(documentId)
+
+    return terminatesInDocument
+      ? paneSegments
+          .slice(0, -1)
+          .concat([lastGroup.slice(0, -1).concat({...lastSibling, id: newDocumentId})])
+      : [[{id: `__edit__${newDocumentId}`, params: fallbackParameters, payload}]]
+  }, [documentId, documentType, error, isLoading, otherParams, paneSegments, payload, structure])
+
+  const nonDocumentTypePanes = useMemo(
+    () => [[{id: `__edit__${id || uuid()}`, params: otherParams}]],
+    [id, otherParams]
+  )
 
   if (error) {
     return <StructureError error={error} />
   }
 
   if (!documentType) {
-    return isLoaded ? (
-      <Redirect panes={[[{id: `__edit__${id || uuid()}`, params: otherParams}]]} />
-    ) : (
-      <Delay ms={600}>
-        <Flex justify="center">
-          <Spinner muted />
-          <Box marginTop={3}>
-            <Text muted size={1}>
-              Resolving document type…
-            </Text>
-          </Box>
-        </Flex>
-      </Delay>
+    if (isLoaded) {
+      return <Redirect panes={nonDocumentTypePanes} />
+    }
+
+    return (
+      <Card height="fill">
+        <Delay ms={300}>
+          <Flex align="center" direction="column" height="fill" justify="center">
+            <Spinner muted />
+            <Box marginTop={3}>
+              <Text align="center" muted size={1}>
+                Resolving document type…
+              </Text>
+            </Box>
+          </Flex>
+        </Delay>
+      </Card>
     )
   }
 
-  const isLoading = !structure || structure.some((item) => item === LOADING_PANE)
   if (isLoading) {
     return (
-      <Delay ms={600}>
-        <Flex justify="center">
-          <Spinner muted />
-          <Box marginTop={3}>
-            <Text muted size={1}>
-              Resolving structure…
-            </Text>
-          </Box>
-        </Flex>
-      </Delay>
+      <Card height="fill">
+        <Delay ms={300}>
+          <Flex align="center" direction="column" height="fill" justify="center">
+            <Spinner muted />
+            <Box marginTop={3}>
+              <Text muted size={1}>
+                Resolving structure…
+              </Text>
+            </Box>
+          </Flex>
+        </Delay>
+      </Card>
     )
   }
 
-  const panes = getNewRouterState({
-    structure,
-    documentType,
-    params: otherParams,
-    payload,
-    paneSegments,
-    documentId,
-  })
-
-  return <Redirect panes={panes} />
+  return panes ? <Redirect panes={panes} /> : null
 })
-
-function getNewRouterState({structure, documentType, params, payload, documentId, paneSegments}) {
-  const lastChild = structure[structure.length - 1] || {}
-  const lastGroup = paneSegments[paneSegments.length - 1]
-  const lastSibling = lastGroup[lastGroup.length - 1]
-  const terminatesInDocument = lastChild.type === 'document' && lastChild.options.id === documentId
-
-  const {template: isTemplateCreate, ...otherParams} = params
-  const template = isTemplateCreate && getTemplateById(params.template)
-  const type = (template && template.schemaType) || documentType
-  const fallbackParameters = {...otherParams, type, template: params.template}
-  const newDocumentId = documentId === FALLBACK_ID ? uuid() : removeDraftPrefix(documentId)
-
-  return terminatesInDocument
-    ? paneSegments
-        .slice(0, -1)
-        .concat([lastGroup.slice(0, -1).concat({...lastSibling, id: newDocumentId})])
-    : [[{id: `__edit__${newDocumentId}`, params: fallbackParameters, payload}]]
-}
-
-// Navigates to passed router panes state on mount
-function Redirect({panes}) {
-  const router = useRouter()
-
-  useEffect(() => {
-    router.navigate({panes}, {replace: true})
-  })
-
-  return (
-    <Delay ms={600}>
-      <Flex justify="center">
-        <Spinner muted />
-        <Box marginTop={3}>
-          <Text muted size={1}>
-            Redirecting…
-          </Text>
-        </Box>
-      </Flex>
-    </Delay>
-  )
-}
-
-function useDocumentType(documentId: string, specifiedType: string) {
-  const [{documentType, isLoaded}, setDocumentType] = useState<{
-    documentType?: string
-    isLoaded: boolean
-  }>({isLoaded: false})
-  useEffect(() => {
-    const sub = resolveTypeForDocument(documentId, specifiedType).subscribe((typeName) =>
-      setDocumentType({documentType: typeName, isLoaded: true})
-    )
-    return () => sub.unsubscribe()
-  })
-  return {documentType, isLoaded}
-}
-
-function resolveTypeForDocument(id: string, specifiedType: string) {
-  if (specifiedType) {
-    return of(specifiedType)
-  }
-
-  const query = '*[_id in [$documentId, $draftId]]._type'
-  const documentId = id.replace(/^drafts\./, '')
-  const draftId = `drafts.${documentId}`
-  return versionedClient.observable
-    .fetch(query, {documentId, draftId})
-    .pipe(map((types) => types[0]))
-}
