@@ -106,7 +106,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   // Scroll to top as `documentId` changes
   useEffect(() => {
-    if (!documentScrollElement) return
+    if (!documentScrollElement?.scrollTo) return
     documentScrollElement.scrollTo(0, 0)
   }, [documentId, documentScrollElement])
 
