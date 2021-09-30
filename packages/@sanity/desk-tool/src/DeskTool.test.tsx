@@ -30,6 +30,29 @@ jest.mock('part:@sanity/base/authentication-fetcher', () => {
   }
 })
 
+jest.mock('part:@sanity/base/schema', () => {
+  const createSchema = jest.requireActual('part:@sanity/base/schema-creator')
+
+  return createSchema({
+    name: 'mockSchema',
+    types: [
+      {
+        name: 'myType',
+        title: 'Mock Document',
+        type: 'document',
+        fields: [{name: 'title', type: 'string'}],
+      },
+    ],
+  })
+})
+
+jest.mock('part:@sanity/base/grants', () => {
+  const {of} = jest.requireActual('rxjs') as typeof import('rxjs')
+  return {
+    checkDocumentPermission: () => of({granted: true, reason: ''}),
+  }
+})
+
 jest.mock('@sanity/ui', () => {
   // causes `ResizeObserver` not found errors
   const sanityUi = jest.requireActual('@sanity/ui')

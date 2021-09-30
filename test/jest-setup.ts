@@ -19,6 +19,15 @@ if (typeof window !== 'undefined') {
     })),
   })
 
+  Object.defineProperty(window, 'IntersectionObserver', {
+    writable: true,
+    value: class IntersectionObserver {
+      observe = jest.fn()
+      unobserve = jest.fn()
+      disconnect = jest.fn()
+    },
+  })
+
   jest.mock('@sanity/ui', () => {
     // causes `ResizeObserver` not found errors
     const sanityUi = jest.requireActual('@sanity/ui')
