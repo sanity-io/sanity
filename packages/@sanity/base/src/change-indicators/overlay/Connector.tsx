@@ -1,6 +1,5 @@
 import React from 'react'
 
-import classNames from 'classnames'
 import {
   ARROW_MARGIN_X,
   ARROW_MARGIN_Y,
@@ -12,8 +11,8 @@ import {
 import {arrowPath, generateConnectorPath} from './connectorPath'
 import {mapConnectorToLine} from './mapConnectorToLine'
 import {Rect} from './types'
-import styles from './Connector.module.css'
-import {ClampedRect} from './ClampedRect'
+
+import {DebugRect, ConnectorPath, InteractivePath, RightBarWrapper} from './Connector.styled'
 
 interface Props {
   from: {rect: Rect; bounds: Rect}
@@ -33,31 +32,21 @@ export function Connector({from, to, hovered, focused, revertHovered}: Props) {
 
   const linePathDescription = generateConnectorPath(line)
 
-  const pathClassName = classNames(
-    styles.path,
-    focused && styles.focused,
-    revertHovered && styles.revertHovered,
-    hovered && !focused && !revertHovered && styles.hovered
-  )
-
-  const rightBarClassName = classNames(
-    styles.rightBar,
-    focused && styles.rightBarFocused,
-    revertHovered && styles.rightBarRevertHovered,
-    hovered && !focused && !revertHovered && styles.rightBarHovered
-  )
-
   return (
     <>
-      <path
-        className={styles.interactivePath}
-        d={linePathDescription}
-        strokeWidth={INTERACTIVE_STROKE_WIDTH}
-      />
+      <InteractivePath d={linePathDescription} strokeWidth={INTERACTIVE_STROKE_WIDTH} />
 
-      <path className={pathClassName} d={linePathDescription} strokeWidth={STROKE_WIDTH} />
-      <ClampedRect
-        className={rightBarClassName}
+      <ConnectorPath
+        focused={focused}
+        revertedHovered={revertHovered}
+        hovered={hovered && !focused && !revertHovered}
+        d={linePathDescription}
+        strokeWidth={STROKE_WIDTH}
+      />
+      <RightBarWrapper
+        focused={focused}
+        revertedHovered={revertHovered}
+        hovered={hovered && !focused && !revertHovered}
         top={to.rect.top}
         left={to.rect.left}
         height={to.rect.height}
@@ -66,8 +55,10 @@ export function Connector({from, to, hovered, focused, revertHovered}: Props) {
       />
 
       {line.from.isAbove && (
-        <path
-          className={pathClassName}
+        <ConnectorPath
+          focused={focused}
+          revertedHovered={revertHovered}
+          hovered={hovered && !focused && !revertHovered}
           d={arrowPath(
             line.from.left + ARROW_MARGIN_X,
             line.from.bounds.top - ARROW_THRESHOLD + ARROW_MARGIN_Y,
@@ -78,8 +69,10 @@ export function Connector({from, to, hovered, focused, revertHovered}: Props) {
       )}
 
       {line.from.isBelow && (
-        <path
-          className={pathClassName}
+        <ConnectorPath
+          focused={focused}
+          revertedHovered={revertHovered}
+          hovered={hovered && !focused && !revertHovered}
           d={arrowPath(
             line.from.left + ARROW_MARGIN_X,
             line.from.bounds.top + line.from.bounds.height + ARROW_THRESHOLD - ARROW_MARGIN_Y,
@@ -90,8 +83,10 @@ export function Connector({from, to, hovered, focused, revertHovered}: Props) {
       )}
 
       {line.to.isAbove && (
-        <path
-          className={pathClassName}
+        <ConnectorPath
+          focused={focused}
+          revertedHovered={revertHovered}
+          hovered={hovered && !focused && !revertHovered}
           d={arrowPath(
             line.to.bounds.left + ARROW_MARGIN_X,
             line.to.bounds.top - ARROW_THRESHOLD + ARROW_MARGIN_Y,
@@ -102,8 +97,10 @@ export function Connector({from, to, hovered, focused, revertHovered}: Props) {
       )}
 
       {line.to.isBelow && (
-        <path
-          className={pathClassName}
+        <ConnectorPath
+          focused={focused}
+          revertedHovered={revertHovered}
+          hovered={hovered && !focused && !revertHovered}
           d={arrowPath(
             line.to.bounds.left + ARROW_MARGIN_X,
             line.to.bounds.top + line.to.bounds.height + ARROW_THRESHOLD - ARROW_MARGIN_Y,
@@ -115,8 +112,7 @@ export function Connector({from, to, hovered, focused, revertHovered}: Props) {
 
       {DEBUG && (
         <>
-          <rect
-            className={styles.debugRect}
+          <DebugRect
             x={line.from.bounds.left}
             y={line.from.bounds.top}
             width={line.from.bounds.width}
@@ -124,8 +120,7 @@ export function Connector({from, to, hovered, focused, revertHovered}: Props) {
             stroke="green"
           />
 
-          <rect
-            className={styles.debugRect}
+          <DebugRect
             x={line.to.bounds.left}
             y={line.to.bounds.top}
             width={line.to.bounds.width}
@@ -135,8 +130,7 @@ export function Connector({from, to, hovered, focused, revertHovered}: Props) {
 
           {!line.from.outOfBounds && (
             <g transform={`translate(${line.from.bounds.left} ${line.from.bounds.top})`}>
-              <rect
-                className={styles.debugRect}
+              <DebugRect
                 width={line.from.bounds.width}
                 height={line.from.bounds.height}
                 strokeWidth={STROKE_WIDTH}
@@ -147,8 +141,7 @@ export function Connector({from, to, hovered, focused, revertHovered}: Props) {
 
           {!line.to.outOfBounds && (
             <g transform={`translate(${line.to.bounds.left} ${line.to.bounds.top})`}>
-              <rect
-                className={styles.debugRect}
+              <DebugRect
                 width={line.to.bounds.width}
                 height={line.to.bounds.height}
                 strokeWidth={STROKE_WIDTH}
