@@ -1,9 +1,10 @@
-import {View, GenericViewBuilder} from './View'
 import {SerializeOptions} from '../StructureNodes'
 import {SerializeError, HELP_URL} from '../SerializeError'
+import {FixMe} from '../types'
+import {View, GenericViewBuilder} from './View'
 
 export interface ComponentView extends View {
-  component: Function
+  component: FixMe
   options: {[key: string]: any}
 }
 
@@ -17,7 +18,7 @@ export class ComponentViewBuilder extends GenericViewBuilder<
 > {
   protected spec: Partial<ComponentView>
 
-  constructor(componentOrSpec?: Function | Partial<ComponentView>) {
+  constructor(componentOrSpec?: FixMe | Partial<ComponentView>) {
     const spec = isComponentSpec(componentOrSpec) ? {...componentOrSpec} : {options: {}}
 
     super()
@@ -32,7 +33,7 @@ export class ComponentViewBuilder extends GenericViewBuilder<
     }
   }
 
-  component(component: Function) {
+  component(component: FixMe) {
     return this.clone({component})
   }
 
