@@ -28,11 +28,6 @@ const Shape = (props: Omit<React.SVGProps<SVGElement>, 'ref'>) => {
 
 const animationSpeed = 150
 
-export const responsiveSizes = {
-  maxScreenMedium: `(max-width: 511px)`,
-  screenMedium: `(min-width: 512px)`,
-}
-
 export const TooltipTriggerWrapper = styled.div`
   position: relative;
   opacity: 1;
@@ -42,6 +37,7 @@ export const TooltipTriggerWrapper = styled.div`
 export const BarWrapper = styled.div(({theme}: ThemeContext) => {
   /* these colours aren't freely available on the current theme */
   const notSelectedColor = theme.sanity.color.spot.yellow
+  const screenMedium = theme.sanity.media[0]
 
   return css`
     position: absolute;
@@ -53,28 +49,32 @@ export const BarWrapper = styled.div(({theme}: ThemeContext) => {
     border-bottom-right-radius: 2px;
     border-top-right-radius: 2px;
 
-    @media ${responsiveSizes.screenMedium} {
+    @media (min-width: ${screenMedium}px) {
       display: unset;
     }
   `
 })
 
-export const BadgeWrapper = styled.div`
-  position: absolute;
-  top: 50%;
-  left: -9px;
-  width: 19px;
-  height: 19px;
-  border-radius: 9.5px;
-  transform: translate3d(-0.5px, -10px, 0) scale(0, 1);
+export const BadgeWrapper = styled.div(({theme}: ThemeContext) => {
+  const maxScreenMedium = theme.sanity.media[0] - 1
 
-  transition: transform ${animationSpeed}ms, opacity ${animationSpeed}ms;
+  return css`
+    position: absolute;
+    top: 50%;
+    left: -9px;
+    width: 19px;
+    height: 19px;
+    border-radius: 9.5px;
+    transform: translate3d(-0.5px, -10px, 0) scale(0, 1);
 
-  @media ${responsiveSizes.maxScreenMedium} {
-    /* hide on mobile */
-    display: none;
-  }
-`
+    transition: transform ${animationSpeed}ms, opacity ${animationSpeed}ms;
+
+    @media (max-width: ${maxScreenMedium}px) {
+      /* hide on mobile */
+      display: none;
+    }
+  `
+})
 
 export const EditIconWrapper = styled(EditIcon)`
   display: block;
@@ -93,6 +93,7 @@ export const EditIconWrapper = styled(EditIcon)`
 export const ShapeWrapper = styled(Shape)(({theme}: ThemeContext) => {
   /* these colours aren't freely available on the current theme */
   const notSelectedColor = theme.sanity.color.spot.yellow
+  const maxScreenMedium = theme.sanity.media[0] - 1
 
   return css`
     display: block;
@@ -102,7 +103,7 @@ export const ShapeWrapper = styled(Shape)(({theme}: ThemeContext) => {
     transform: translate3d(-0.5px, -4px, 0);
     color: ${notSelectedColor};
 
-    @media ${responsiveSizes.maxScreenMedium} {
+    @media (max-width: ${maxScreenMedium}px) {
       /* hide on mobile */
       display: none;
     }
