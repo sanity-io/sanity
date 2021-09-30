@@ -1,6 +1,6 @@
 import {uuid} from '@sanity/uuid'
 import {EMPTY_PARAMS} from './constants'
-import {RouterPane} from './types'
+import {RouterPaneGroup, RouterSplitPane} from './types'
 
 const state: {activePanes: any[]} = {activePanes: []}
 
@@ -14,10 +14,10 @@ export function setActivePanes(panes: any[]): void {
 export function getIntentState(
   intentName: string,
   params: Record<string, string | undefined>,
-  currentState: {panes: RouterPane[][]} | undefined,
+  currentState: {panes: RouterPaneGroup[]} | undefined,
   payload: unknown
 ):
-  | {panes: RouterPane[][]}
+  | {panes: RouterPaneGroup[]}
   | {intent: string; params: Record<string, string | undefined>; payload: unknown} {
   const paneSegments = (currentState && currentState.panes) || []
   const activePanes = state.activePanes || []
@@ -29,7 +29,7 @@ export function getIntentState(
     const pane = activePanes[i]
 
     if (pane.canHandleIntent && pane.canHandleIntent(intentName, params, {pane, index: i})) {
-      const paneParams: RouterPane['params'] = isTemplate
+      const paneParams: RouterSplitPane['params'] = isTemplate
         ? {template: params.template}
         : EMPTY_PARAMS
 
