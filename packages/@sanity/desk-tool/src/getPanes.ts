@@ -1,6 +1,6 @@
 import {omit} from 'lodash'
 import {exclusiveParams} from './contexts/paneRouter'
-import {RouterPane} from './types'
+import {RouterPaneGroup} from './types'
 
 interface PaneData {
   active: boolean
@@ -18,7 +18,7 @@ interface PaneData {
   siblingIndex: number
 }
 
-export function getPanes(resolvedPanes: any[], routerPanes: RouterPane[][]): PaneData[] {
+export function getPanes(resolvedPanes: any[], routerPanes: RouterPaneGroup[]): PaneData[] {
   let path = ''
   let paneIndex = 0
 
@@ -29,7 +29,7 @@ export function getPanes(resolvedPanes: any[], routerPanes: RouterPane[][]): Pan
     ['root']
   )
 
-  const paneGroups: RouterPane[][] = [[{id: 'root', params: {}}]].concat(routerPanes || [])
+  const paneGroups: RouterPaneGroup[] = [[{id: 'root'}]].concat(routerPanes || [])
 
   const groupsLen = paneGroups.length
 

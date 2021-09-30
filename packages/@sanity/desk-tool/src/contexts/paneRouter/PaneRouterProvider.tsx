@@ -2,7 +2,7 @@ import {useRouter, useRouterState} from '@sanity/base/router'
 import {pick, omit, isEqual} from 'lodash'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useUnique} from '../../lib/useUnique'
-import {RouterPane} from '../../types'
+import {RouterPaneGroup, RouterSplitPane} from '../../types'
 import {exclusiveParams} from './constants'
 import {ChildLink} from './ChildLink'
 import {PaneRouterContext} from './PaneRouterContext'
@@ -27,7 +27,7 @@ export function PaneRouterProvider(props: {
   const {children, flatIndex, index, params: paramsProp, payload: payloadProp, siblingIndex} = props
   const {navigate, navigateIntent} = useRouter()
   const routerState = useUnique(useRouterState())
-  const routerPanes: RouterPane[][] = useUnique(
+  const routerPaneGroups: RouterPaneGroup[] = useUnique(
     useMemo(() => routerState?.panes || [], [routerState?.panes])
   )
 
@@ -56,10 +56,10 @@ export function PaneRouterProvider(props: {
   }, [payloadProp])
 
   const modifyCurrentGroup = useCallback(
-    (modifier: (siblings: RouterPane[], item: RouterPane) => RouterPane[]) => {
-      const newPanes = routerPanes.slice(0)
+    (modifier: (siblings: RouterPaneGroup, item: RouterSplitPane) => RouterPaneGroup) => {
+      const newPanes = routerPaneGroups.slice(0)
 
-      const currentGroup = routerPanes[groupIndex] ? routerPanes[groupIndex].slice(0) : []
+      const currentGroup = routerPaneGroups[groupIndex] ? routerPaneGroups[groupIndex].slice(0) : []
 
       newPanes.splice(groupIndex, 1, modifier(currentGroup, currentGroup[siblingIndex]))
 
@@ -69,7 +69,7 @@ export function PaneRouterProvider(props: {
 
       return newRouterState
     },
-    [groupIndex, navigate, routerPanes, routerState, siblingIndex]
+    [groupIndex, navigate, routerPaneGroups, routerState, siblingIndex]
   )
 
   const setPayload: PaneRouterContextValue['setPayload'] = useCallback(
@@ -118,7 +118,7 @@ export function PaneRouterProvider(props: {
         if (recurseIfInherited) {
           const newParamKeys = Object.keys(nextParams)
           const inheritedKeys = Object.keys(paramsProp).filter(
-            (key) => rootParams[key] === paramsProp[key]
+            (key) => rootParams && rootParams[key] === paramsProp[key]
           )
 
           const removedInheritedKeys = inheritedKeys.filter((key) => !nextParams[key])
@@ -136,7 +136,10 @@ export function PaneRouterProvider(props: {
           // If it's a duplicate of the group root, we should only set the parameters
           // that differ from the group root.
           const newParams = Object.keys(nextParams).reduce((siblingParams, key) => {
-            if (exclusiveParams.includes(key) || nextParams[key] !== rootParams[key]) {
+            if (
+              exclusiveParams.includes(key) ||
+              (rootParams && nextParams[key] !== rootParams[key])
+            ) {
               siblingParams[key] = nextParams[key]
             }
 
@@ -170,13 +173,15 @@ export function PaneRouterProvider(props: {
       params,
 
       // Whether or not the pane has any siblings (within the same group)
-      hasGroupSiblings: routerPanes[groupIndex] ? routerPanes[groupIndex].length > 1 : false,
+      hasGroupSiblings: routerPaneGroups[groupIndex]
+        ? routerPaneGroups[groupIndex].length > 1
+        : false,
 
       // The length of the current group
-      groupLength: routerPanes[groupIndex] ? routerPanes[groupIndex].length : 0,
+      groupLength: routerPaneGroups[groupIndex] ? routerPaneGroups[groupIndex].length : 0,
 
       // Current router state for the "panes" property
-      routerPanesState: routerPanes,
+      routerPanesState: routerPaneGroups,
 
       // Curried StateLink that passes the correct state automatically
       ChildLink,
@@ -239,7 +244,7 @@ export function PaneRouterProvider(props: {
       navigateIntent,
       params,
       payload,
-      routerPanes,
+      routerPaneGroups,
       setParams,
       setPayload,
       siblingIndex,

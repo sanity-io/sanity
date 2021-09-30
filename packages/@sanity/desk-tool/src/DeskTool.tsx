@@ -3,7 +3,7 @@ import {useRouter, useRouterState} from '@sanity/base/router'
 import {PortalProvider, useToast} from '@sanity/ui'
 import React, {useState, useEffect, useCallback, useMemo, useRef} from 'react'
 import {Observable, interval, of} from 'rxjs'
-import {map, switchMap, distinctUntilChanged, debounce, tap} from 'rxjs/operators'
+import {map, switchMap, distinctUntilChanged, debounce} from 'rxjs/operators'
 import styled from 'styled-components'
 import {PaneLayout} from './components/pane'
 import {StructureError} from './components/StructureError'
@@ -44,7 +44,7 @@ export function DeskTool(props: DeskToolProps) {
   const {push: pushToast} = useToast()
   const {navigate} = useRouter()
   const routerState = useRouterState()
-  const routerPanes: RouterPane[][] = useUnique(
+  const routerPanes: RouterPaneGroup[] = useUnique(
     useMemo(() => routerState?.panes || [], [routerState?.panes])
   )
   const [error, setError] = useState<StructureErrorType | null>(null)
