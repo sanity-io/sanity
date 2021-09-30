@@ -12,10 +12,12 @@ interface BaseProps {
   size?: LegacyAvatarSize | AvatarSize
   status?: AvatarStatus
   tone?: 'navbar'
-  withTooltip?: boolean
 }
 
-export type Props = BaseProps & UserProps
+export type Props = BaseProps &
+  UserProps & {
+    withTooltip?: boolean
+  }
 
 interface LoadedUserProps extends BaseProps {
   user: User
