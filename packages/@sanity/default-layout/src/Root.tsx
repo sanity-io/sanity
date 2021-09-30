@@ -93,7 +93,7 @@ function DefaultLayoutRoot() {
     </RouterProvider>
   )
 
-  if (routedChildren && LoginWrapper) {
+  if (LoginWrapper) {
     return (
       <LoginWrapper LoadingScreen={<AppLoadingScreen text="Logging in" />}>
         {routedChildren}
@@ -101,7 +101,7 @@ function DefaultLayoutRoot() {
     )
   }
 
-  return routedChildren || <></>
+  return <>{routedChildren}</>
 }
 
 export default DefaultLayoutRoot
