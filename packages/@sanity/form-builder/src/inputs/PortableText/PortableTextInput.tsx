@@ -14,14 +14,14 @@ import {
   HotkeyOptions,
 } from '@sanity/portable-text-editor'
 import {Subject} from 'rxjs'
-import {Box, useToast} from '@sanity/ui'
+import {Box, Text, useToast} from '@sanity/ui'
 import PatchEvent from '../../PatchEvent'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {Patch} from '../../patch/types'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
 import Input from './Input'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
-import styles from './PortableTextInput.module.css'
+import VisibleOnFocusButton from './VisibleOnFocusButton'
 
 export type PatchWithOrigin = Patch & {
   origin: 'local' | 'remote' | 'internal'
@@ -151,12 +151,6 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
     setIgnoreValidationError(true)
   }, [])
 
-  const handleFocusSkipper = useCallback(() => {
-    if (ref.current) {
-      PortableTextEditor.focus(ref.current)
-    }
-  }, [ref])
-
   // Render error message and resolution
   let respondToInvalidContent = null
   if (invalidValue) {
@@ -174,6 +168,19 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
   const [isFullscreen, setIsFullscreen] = useState(false)
   const handleToggleFullscreen = useCallback(() => setIsFullscreen(!isFullscreen), [isFullscreen])
   const editorId = useMemo(() => uniqueId('PortableTextInputRoot'), [])
+  const focusSkipperButton = useMemo(() => {
+    const handleFocusSkipperClicked = () => {
+      if (ref.current) {
+        PortableTextEditor.focus(ref.current)
+      }
+    }
+    return (
+      // eslint-disable-next-line react/jsx-no-bind
+      <VisibleOnFocusButton onClick={handleFocusSkipperClicked} style={{position: 'absolute'}}>
+        <Text>Jump to editor</Text>
+      </VisibleOnFocusButton>
+    )
+  }, [ref])
   const editorInput = useMemo(
     () => (
       <PortableTextEditor
@@ -186,16 +193,7 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
         type={type}
         value={value}
       >
-        {!readOnly && (
-          <button
-            type="button"
-            tabIndex={0}
-            className={styles.focusSkipper}
-            onClick={handleFocusSkipper}
-          >
-            Jump to editor
-          </button>
-        )}
+        {!readOnly && focusSkipperButton}
         <Input
           editorId={editorId}
           focusPath={focusPath}
@@ -221,8 +219,8 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
     [
       editorId,
       focusPath,
+      focusSkipperButton,
       handleEditorChange,
-      handleFocusSkipper,
       handleToggleFullscreen,
       hasFocus,
       hotkeys,
