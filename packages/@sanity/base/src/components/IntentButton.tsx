@@ -11,5 +11,5 @@ export function IntentButton(
     params: Record<string, string>
   }
 ) {
-  return <Button {...props} as={IntentLink} />
+  return props.disabled ? <Button {...props} as={'a'} /> : <Button {...props} as={IntentLink} />
 }
