@@ -52,7 +52,7 @@ const CenterBox = styled(Box)``
 const RightFlex = styled(Flex)``
 
 const SearchCard = styled(Card)<{$fullScreen: boolean}>`
-  min-width: 253px;
+  min-width: ${({$fullScreen}) => ($fullScreen ? undefined : '253px')};
   max-width: ${({$fullScreen}) => ($fullScreen ? undefined : '350px')};
   z-index: 1;
   position: ${({$fullScreen}) => ($fullScreen ? 'absolute' : undefined)};
@@ -193,7 +193,7 @@ export const Navbar = memo(function Navbar(props: Props) {
 
   return useMemo(
     () => (
-      <Root padding={2} scheme="dark" $onSearchOpen={searchOpen}>
+      <Root $onSearchOpen={searchOpen} padding={2} scheme="dark">
         <Flex align="center" justify="space-between">
           <LeftFlex flex={shouldRender.brandingCenter ? undefined : 1} align="center">
             {!shouldRender.tools && (
@@ -258,11 +258,13 @@ export const Navbar = memo(function Navbar(props: Props) {
             <LegacyLayerProvider zOffset="navbarPopover">
               {(searchOpen || !shouldRender.searchFullscreen) && (
                 <SearchCard
+                  $fullScreen={shouldRender.searchFullscreen}
                   flex={1}
                   padding={shouldRender.searchFullscreen ? 2 : undefined}
-                  $fullScreen={shouldRender.searchFullscreen}
+                  scheme={shouldRender.searchFullscreen ? 'light' : undefined}
+                  shadow={shouldRender.searchFullscreen ? 1 : undefined}
                 >
-                  <Flex flex={1}>
+                  <Flex>
                     <Box flex={1} marginRight={shouldRender.tools ? undefined : [1, 1, 2]}>
                       <SearchField
                         fullScreen={shouldRender.searchFullscreen}
