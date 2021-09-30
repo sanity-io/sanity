@@ -289,25 +289,3 @@
   }
 }
 
-.focusSkipper {
-  position: absolute;
-  height: 1px;
-  width: 1px;
-  margin: 0;
-  overflow: hidden;
-  clip: rect(1px, 1px, 1px, 1px);
-  padding: 0.2em;
-  background-color: var(--component-bg);
-  border: var(--input-border-size) solid var(--input-border-color);
-  border-radius: var(--input-border-radius);
-
-  @nest &:focus {
-    z-index: 20;
-    width: auto;
-    height: auto;
-    clip: auto;
-    outline: none;
-    box-shadow: var(--input-box-shadow-thin--focus);
-    border-color: var(--input-border-color-focus);
-  }
-}
