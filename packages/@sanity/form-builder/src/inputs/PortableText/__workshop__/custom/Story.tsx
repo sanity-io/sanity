@@ -12,9 +12,9 @@ export default function Story() {
 
   return (
     <LayerProvider>
-      <Card height="fill" padding={4}>
+      <Card height="fill" padding={4} sizing="border">
         <Flex align="center" height="fill" justify="center">
-          <Container width={0}>
+          <Container width={1}>
             <TestInput readOnly={readOnly} value={value} type={portableTextType} schema={schema} />
           </Container>
         </Flex>
