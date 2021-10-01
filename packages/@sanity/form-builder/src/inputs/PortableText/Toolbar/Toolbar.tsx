@@ -168,7 +168,6 @@ function PTEToolbar(props: Props) {
           {...blockStyleSelectProps}
           disabled={disabled}
           readOnly={readOnly}
-          renderBlock={renderBlock}
           isFullscreen={isFullscreen}
         />
       </StyleSelectBox>
