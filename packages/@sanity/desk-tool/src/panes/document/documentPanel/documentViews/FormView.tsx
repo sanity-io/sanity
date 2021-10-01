@@ -12,7 +12,6 @@ import filterFieldFn$ from 'part:@sanity/desk-tool/filter-fields-fn?'
 import {FormBuilder} from 'part:@sanity/form-builder'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {tap} from 'rxjs/operators'
-import {useDocumentHistory} from '../../documentHistory'
 import {useDocumentPane} from '../../useDocumentPane'
 
 interface FormViewProps {
@@ -35,21 +34,21 @@ export function FormView(props: FormViewProps) {
   const {hidden, margins} = props
   const {
     compareValue,
+    displayed,
     documentId,
     documentSchema,
     documentType,
     focusPath,
     handleChange,
     handleFocus,
+    historyController,
     markers,
     permission,
     ready,
   } = useDocumentPane()
   const presence = useDocumentPresence(documentId)
-  const {historyController} = useDocumentHistory()
   const {revTime: rev} = historyController
   const [{filterField}, setState] = useState<FormViewState>(INITIAL_STATE)
-  const {displayed} = useDocumentHistory()
   const value = useMemo(() => (ready ? displayed : null), [displayed, ready])
   const hasTypeMismatch = value !== null && value._type !== documentSchema.name
   const isNonExistent = !value || !value._id

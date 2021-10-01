@@ -2,7 +2,6 @@ import {EditIcon} from '@sanity/icons'
 import {Box, Flex, useElementRect} from '@sanity/ui'
 import React, {useEffect, useMemo, useState, useRef, memo} from 'react'
 import {raf2} from '../../../../lib/raf'
-import {useDocumentHistory} from '../../documentHistory'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentBadges} from './DocumentBadges'
 import {ReviewChangesButton} from './ReviewChangesButton'
@@ -16,10 +15,9 @@ import {
 import {PublishStatus} from './PublishStatus'
 
 export const DocumentSparkline = memo(function DocumentSparkline() {
-  const {editState, value} = useDocumentPane()
+  const {editState, historyController, value} = useDocumentPane()
   const lastUpdated = value?._updatedAt
   const lastPublished = editState?.published?._updatedAt
-  const {historyController} = useDocumentHistory()
   const showingRevision = historyController.onOlderRevision()
   const liveEdit = Boolean(editState?.liveEdit)
   const published = Boolean(editState?.published)

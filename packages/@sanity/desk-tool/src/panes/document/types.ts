@@ -2,6 +2,8 @@ import {MenuItem, MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
 import {SanityDocument} from '@sanity/types'
 import {BaseDeskToolPaneProps} from '../types'
 
+export type TimelineMode = 'since' | 'rev' | 'closed'
+
 export interface DocumentPaneOptions {
   id: string
   type: string
