@@ -61,7 +61,7 @@ export default function ActionMenu(props: Props) {
             key={action.key}
             onClick={handle}
             selected={action.active}
-            text={action.title}
+            text={action.title || action.key}
             tooltipProps={{disabled: disabled, placement: 'top'}}
           />
         )
