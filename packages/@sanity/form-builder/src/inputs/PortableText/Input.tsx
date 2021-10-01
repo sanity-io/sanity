@@ -29,7 +29,7 @@ import {Annotation} from './Text/Annotation'
 import {RenderBlockActions, RenderCustomMarkers, ObjectEditData} from './types'
 import PortableTextSanityEditor from './Editor'
 import {BlockExtrasWithChangeIndicator} from './BlockExtrasOverlay'
-import {TextBlock} from './TextBlock'
+import {TextBlock} from './Text/TextBlock'
 
 const ROOT_PATH = []
 
