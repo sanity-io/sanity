@@ -87,8 +87,6 @@ function InnerDocumentPane() {
     []
   )
 
-  const documentOperationResults = useMemo(() => <DocumentOperationResults />, [])
-
   const inspectDialog = useMemo(
     () => (
       <LegacyLayerProvider zOffset="fullscreen">
@@ -125,14 +123,13 @@ function InnerDocumentPane() {
           </Flex>
         </DialogProvider>
         {footer}
-        {documentOperationResults}
+        <DocumentOperationResults />
         {inspectDialog}
       </>
     )
   }, [
     changesOpen,
     changesPanel,
-    documentOperationResults,
     documentPanel,
     footer,
     handleFocus,

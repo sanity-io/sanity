@@ -55,7 +55,7 @@ export function FormView(props: FormViewProps) {
   const isNonExistent = !value || !value._id
 
   // Create a patch channel for each document ID
-  const [patchChannel] = useState(() => FormBuilder.createPatchChannel())
+  const patchChannel = useMemo(() => FormBuilder.createPatchChannel(), [documentId])
 
   const readOnly = useMemo(() => {
     return (
@@ -116,23 +116,21 @@ export function FormView(props: FormViewProps) {
     return (
       <PresenceOverlay margins={margins}>
         <Box as="form" onSubmit={preventDefault}>
-          {patchChannel && (
-            <FormBuilder
-              schema={schema}
-              patchChannel={patchChannel}
-              value={value}
-              compareValue={compareValue}
-              type={documentSchema}
-              presence={presence}
-              filterField={filterField}
-              readOnly={readOnly}
-              onBlur={handleBlur}
-              onFocus={handleFocus}
-              focusPath={focusPath}
-              onChange={readOnly ? noop : handleChange}
-              markers={markers}
-            />
-          )}
+          <FormBuilder
+            schema={schema}
+            patchChannel={patchChannel}
+            value={value}
+            compareValue={compareValue}
+            type={documentSchema}
+            presence={presence}
+            filterField={filterField}
+            readOnly={readOnly}
+            onBlur={handleBlur}
+            onFocus={handleFocus}
+            focusPath={focusPath}
+            onChange={readOnly ? noop : handleChange}
+            markers={markers}
+          />
         </Box>
       </PresenceOverlay>
     )
