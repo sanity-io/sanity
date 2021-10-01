@@ -10,7 +10,7 @@ import {InsufficientPermissionsMessage} from '@sanity/base/components'
 import {ConfirmDelete} from '../components/ConfirmDelete'
 
 const DISABLED_REASON_TITLE = {
-  NOTHING_TO_DELETE: "This document doesn't yet exist or is already deleted",
+  NOTHING_TO_DELETE: 'This document doesn‘t yet exist or is already deleted',
 }
 
 export const DeleteAction: DocumentActionComponent = ({id, type, draft, published, onComplete}) => {

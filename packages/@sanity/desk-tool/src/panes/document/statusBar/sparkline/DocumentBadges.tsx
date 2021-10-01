@@ -26,9 +26,7 @@ function DocumentBadgesInner({states}: DocumentBadgesInnerProps) {
           content={
             badge.title && (
               <Box padding={2}>
-                <Text muted size={1}>
-                  {badge.title}
-                </Text>
+                <Text size={1}>{badge.title}</Text>
               </Box>
             )
           }

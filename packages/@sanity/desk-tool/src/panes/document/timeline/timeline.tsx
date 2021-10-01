@@ -57,8 +57,10 @@ export const Timeline = ({
   return (
     <Root ref={rootRef as any} onScroll={checkIfLoadIsNeeded} data-ui="timeline">
       {timeline.chunkCount === 0 && (
-        <StackWrapper padding={4} space={3}>
-          <Text weight="bold">No document history</Text>
+        <StackWrapper padding={3} space={3}>
+          <Text size={1} weight="semibold">
+            No document history
+          </Text>
           <Text muted size={1}>
             When changing the content of the document, the document versions will appear in this
             menu.
@@ -66,40 +68,42 @@ export const Timeline = ({
         </StackWrapper>
       )}
 
-      <MenuWrapper ref={listRef} padding={1} space={0}>
-        {timeline.mapChunks((chunk) => {
-          const isSelectionTop = topSelection === chunk
-          const isSelectionBottom = bottomSelection === chunk
+      {timeline.chunkCount > 0 && (
+        <MenuWrapper ref={listRef} padding={1} space={0}>
+          {timeline.mapChunks((chunk) => {
+            const isSelectionTop = topSelection === chunk
+            const isSelectionBottom = bottomSelection === chunk
 
-          if (isSelectionTop) {
-            state = 'withinSelection'
-          }
+            if (isSelectionTop) {
+              state = 'withinSelection'
+            }
 
-          if (isSelectionBottom) {
-            state = 'selected'
-          }
+            if (isSelectionBottom) {
+              state = 'selected'
+            }
 
-          const item = (
-            <TimelineItem
-              chunk={chunk}
-              isSelectionBottom={isSelectionBottom}
-              isSelectionTop={isSelectionTop}
-              key={chunk.id}
-              state={state}
-              onSelect={onSelect}
-              type={chunk.type}
-              timestamp={chunk.endTimestamp}
-            />
-          )
+            const item = (
+              <TimelineItem
+                chunk={chunk}
+                isSelectionBottom={isSelectionBottom}
+                isSelectionTop={isSelectionTop}
+                key={chunk.id}
+                state={state}
+                onSelect={onSelect}
+                type={chunk.type}
+                timestamp={chunk.endTimestamp}
+              />
+            )
 
-          // Flip it back to normal after we've rendered the active one.
-          if (state === 'selected') {
-            state = 'enabled'
-          }
+            // Flip it back to normal after we've rendered the active one.
+            if (state === 'selected') {
+              state = 'enabled'
+            }
 
-          return item
-        })}
-      </MenuWrapper>
+            return item
+          })}
+        </MenuWrapper>
+      )}
 
       {!timeline.reachedEarliestEntry && (
         <Flex align="center" justify="center" padding={4} ref={setLoadingElement}>
