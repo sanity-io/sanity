@@ -292,6 +292,7 @@ class VisionGui extends React.PureComponent {
       url,
       listenMutations: [],
       queryInProgress: false,
+      result: undefined,
       listenInProgress: !paramsError && Boolean(query),
       error: paramsError || undefined,
       // result: undefined,
