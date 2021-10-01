@@ -1,19 +1,27 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   PortableTextEditor,
-  RenderBlockFunction,
   usePortableTextEditor,
   usePortableTextEditorSelection,
 } from '@sanity/portable-text-editor'
-import {Button, Menu, MenuButton, MenuButtonProps, MenuItem, Stack} from '@sanity/ui'
+import {Button, Menu, MenuButton, MenuButtonProps, MenuItem, Stack, Text} from '@sanity/ui'
 import {SelectIcon} from '@sanity/icons'
 import styled from 'styled-components'
+import {
+  Heading1,
+  Heading2,
+  Heading3,
+  Heading4,
+  Heading5,
+  Heading6,
+  BlockQuote,
+  Normal,
+} from '../Text/TextBlock'
 import {BlockStyleItem} from './types'
 
 type Props = {
   disabled: boolean
   readOnly: boolean
-  renderBlock: RenderBlockFunction
   items: BlockStyleItem[]
   value: BlockStyleItem[]
   isFullscreen?: boolean
@@ -33,10 +41,27 @@ const MENU_POPOVER_PROPS: MenuButtonProps['popover'] = {
   placement: 'bottom-start',
 }
 
-const preventDefault = (event: any) => event.preventDefault()
+const TEXT_STYLE_OPTIONS = {
+  h1: <Heading1>Heading 1</Heading1>,
+  h2: <Heading2>Heading 2</Heading2>,
+  h3: <Heading3>Heading 3</Heading3>,
+  h4: <Heading4>Heading 4</Heading4>,
+  h5: <Heading5>Heading 5</Heading5>,
+  h6: <Heading6>Heading 6</Heading6>,
+  normal: <Normal>Normal</Normal>,
+  blockquote: (
+    <BlockQuote>
+      <Text>Quote</Text>
+    </BlockQuote>
+  ),
+}
+
+const TEXT_STYLE_KEYS = Object.keys(TEXT_STYLE_OPTIONS)
+
+const preventDefault = (event: React.MouseEvent<HTMLButtonElement>) => event.preventDefault()
 
 export default function BlockStyleSelect(props: Props): JSX.Element {
-  const {disabled, items, readOnly, renderBlock, value, isFullscreen} = props
+  const {disabled, items, readOnly, value, isFullscreen} = props
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
   const [changed, setChanged] = useState(false)
@@ -46,8 +71,6 @@ export default function BlockStyleSelect(props: Props): JSX.Element {
     editor,
     selection,
   ])
-  const blockType = features.types.block
-  const spanType = features.types.span
 
   // @todo: Document what's going on here
   const _disabled = useMemo(
@@ -91,37 +114,15 @@ export default function BlockStyleSelect(props: Props): JSX.Element {
     [editor, focusBlock]
   )
 
-  const renderItem = useCallback(
-    (item: BlockStyleItem): JSX.Element => {
-      if (item.style) {
-        const StyleComponent = item.styleComponent
+  const renderOption = useCallback((style: string) => {
+    const hasTextStyle = TEXT_STYLE_KEYS.includes(style)
 
-        return renderBlock(
-          {
-            _key: '1',
-            _type: blockType.name,
-            children: [
-              {
-                _key: '2',
-                _type: spanType.name,
-                text: item.title,
-              },
-            ],
-            style: item.style,
-          },
-          blockType,
-          {focused: false, selected: false, path: []},
-          () =>
-            StyleComponent ? <StyleComponent>{item.title}</StyleComponent> : <>{item.title}</>,
-          // @todo: remove this:
-          React.createRef()
-        )
-      }
+    if (hasTextStyle) {
+      return TEXT_STYLE_OPTIONS[style]
+    }
 
-      return <div key={item.key}>No style</div>
-    },
-    [blockType, renderBlock, spanType.name]
-  )
+    return <Text>{style}</Text>
+  }, [])
 
   return (
     <MenuButton
@@ -144,13 +145,12 @@ export default function BlockStyleSelect(props: Props): JSX.Element {
           {items.map((item) => {
             return (
               <StyledMenuItem
-                padding={2}
                 key={item.key}
                 pressed={item.active}
                 // eslint-disable-next-line react/jsx-no-bind
                 onClick={() => handleChange(item)}
               >
-                {renderItem(item)}
+                {renderOption(item.style)}
               </StyledMenuItem>
             )
           })}
