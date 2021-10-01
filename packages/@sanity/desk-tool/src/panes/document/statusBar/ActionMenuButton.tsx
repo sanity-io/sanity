@@ -104,9 +104,7 @@ function ActionMenuListItem(props: ActionMenuListItemProps) {
 
   const tooltipContent = actionState.title && (
     <Box padding={2}>
-      <Text size={1} muted>
-        {actionState.title}
-      </Text>
+      <Text size={1}>{actionState.title}</Text>
     </Box>
   )
 

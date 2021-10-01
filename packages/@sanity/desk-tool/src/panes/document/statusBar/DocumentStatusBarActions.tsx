@@ -28,9 +28,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
 
     return (
       <Flex padding={2} style={{maxWidth: 300}} align="center">
-        <Text size={1} muted>
-          {firstActionState.title}
-        </Text>
+        <Text size={1}>{firstActionState.title}</Text>
         {firstActionState.shortcut && (
           <Box marginLeft={firstActionState.title ? 2 : 0}>
             <Hotkeys
