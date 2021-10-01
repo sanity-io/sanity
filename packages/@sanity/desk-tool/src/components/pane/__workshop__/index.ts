@@ -8,6 +8,11 @@ export default defineScope('desk-tool/pane', 'Pane', [
     component: lazy(() => import('./tabs')),
   },
   {
+    name: 'single-select-tabs',
+    title: 'Single-select tabs',
+    component: lazy(() => import('./tabs--singleSelect')),
+  },
+  {
     name: 'example',
     title: 'Example',
     component: lazy(() => import('./example')),

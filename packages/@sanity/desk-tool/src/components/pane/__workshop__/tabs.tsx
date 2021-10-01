@@ -58,7 +58,23 @@ export default function TabsStory() {
     [manyTabs]
   )
 
-  const [id, setId] = useState(['apples'])
+  const [id, setId] = useState(['all'])
+
+  const selectTabs = (name) => {
+    if (name == 'all') {
+      setId([name])
+    } else {
+      setId((currentId) => currentId.filter((tag) => tag !== 'all'))
+    }
+
+    if (id.includes(name)) {
+      if (id.length != 1) {
+        setId((currentId) => currentId.filter((tag) => tag !== name))
+      }
+    } else {
+      setId((currentId) => [...currentId, name])
+    }
+  }
 
   const DocumentTab = ({name, label = name}) => {
     return (
@@ -66,7 +82,7 @@ export default function TabsStory() {
         aria-controls={`${name}-panel`}
         id={`${name}-tab`}
         label={label ? label : name}
-        onClick={() => setId((id) => [...id, name])}
+        onClick={() => selectTabs(name)}
         selected={id.includes(name)}
       />
     )
@@ -111,18 +127,38 @@ export default function TabsStory() {
                   <DocumentTab name="oranges" />
                   <DocumentTab name="kitties" />
                   <DocumentTab name="puppies" />
+                  <DocumentTab name="animals" />
+                  <DocumentTab name="fruits" />
                 </TabList>
               </Card>
-              <TaggedElement tag={['apples', 'puppies']}>
+              <TaggedElement tag={['apples', 'puppies', 'animals', 'fruits']}>
                 <Text>Apples & puppies</Text>
               </TaggedElement>
-              <TaggedElement tag={['oranges', 'kitties']}>
+              <TaggedElement tag={['oranges', 'kitties', 'animals', 'fruits']}>
                 <Text>Oranges & kitties</Text>
               </TaggedElement>
-              <TaggedElement tag={['apples', 'kitties']}>
+              <TaggedElement tag={['apples', 'kitties', 'animals', 'fruits']}>
                 <Text>Apples & kitties</Text>
               </TaggedElement>
-              <TaggedElement tag={['oranges', 'puppies']}>
+              <TaggedElement tag={['oranges', 'puppies', 'animals', 'fruits']}>
+                <Text>Oranges & puppies</Text>
+              </TaggedElement>
+              <TaggedElement tag={['apples', 'fruits']}>
+                <Text>Apples</Text>
+              </TaggedElement>
+              <TaggedElement tag={['oranges', 'fruits']}>
+                <Text>Oranges</Text>
+              </TaggedElement>
+              <TaggedElement tag={['kitties', 'animals']}>
+                <Text>Kitties</Text>
+              </TaggedElement>
+              <TaggedElement tag={['puppies', 'animals']}>
+                <Text>Puppies</Text>
+              </TaggedElement>
+              <TaggedElement tag={['puppies', 'kitties', 'animals']}>
+                <Text>Apples & kitties</Text>
+              </TaggedElement>
+              <TaggedElement tag={['oranges', 'apples', 'fruits']}>
                 <Text>Oranges & puppies</Text>
               </TaggedElement>
             </Stack>
