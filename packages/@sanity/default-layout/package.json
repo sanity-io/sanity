@@ -38,7 +38,6 @@
     "@sanity/icons": "^1.2.1",
     "@sanity/util": "2.20.0",
     "lodash": "^4.17.15",
-    "react-props-stream": "^1.0.0",
     "react-rx": "^1.0.0-beta.6",
     "rxjs": "^6.5.3"
   },
