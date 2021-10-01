@@ -9,3 +9,4 @@ export {
 export {useUserColor} from '../user-color/hooks'
 export {useTimeAgo} from '../time/useTimeAgo'
 export {useDocumentValues} from '../datastores/document/useDocumentValues'
+export {useModuleStatus} from '../module-status'
