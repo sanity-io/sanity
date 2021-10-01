@@ -24,7 +24,6 @@ import {useDeskTool} from '../../contexts/deskTool'
 import {usePaneRouter} from '../../contexts/paneRouter'
 import {useUnique} from '../../lib/useUnique'
 import {versionedClient} from '../../versionedClient'
-import {DocumentHistoryProvider} from './documentHistory'
 import {createObservableController} from './documentHistory/history/Controller'
 import {Timeline} from './documentHistory/history/Timeline'
 import {DocumentPaneContext, DocumentPaneContextValue} from './DocumentPaneContext'
@@ -71,6 +70,7 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
   const timeline = useMemo(() => new Timeline({publishedId: documentId, enableTrace: __DEV__}), [
     documentId,
   ])
+  const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')
   // NOTE: this emits sync so can never be null
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const {historyController} = useMemoObservable(
@@ -82,6 +82,11 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
       }),
     [documentId, timeline]
   )!
+  /**
+   * @todo: this will now happen on each render, but should be refactored so it happens only when
+   * the `rev`, `since` or `historyController` values change.
+   */
+  historyController.setRange(params.since || null, params.rev || null)
   const changesOpen = historyController.changesPanelActive()
   const previewUrl = useMemo(() => getPreviewUrl(historyController, value), [
     historyController,
@@ -101,6 +106,24 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
     ? (historyController.sinceAttributes() as any)
     : editState?.published || null
   const ready = connectionState === 'connected'
+  const displayed: Partial<SanityDocument> | null = useMemo(
+    () => {
+      return historyController.onOlderRevision() ? historyController.displayed() : value
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [historyController, params.rev, params.since, value]
+  )
+
+  const setTimelineRange = useCallback(
+    (newSince: string, newRev: string | null) => {
+      paneRouter.setParams({
+        ...paneRouter.params,
+        since: newSince,
+        rev: newRev || undefined,
+      })
+    },
+    [paneRouter]
+  )
 
   const handleFocus = useCallback(
     (nextFocusPath: Path) => {
@@ -137,7 +160,11 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
 
   const toggleInspect = useCallback(
     (toggle = !inspectOpen) => {
-      const {inspect, ...restParams} = params
+      const {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        inspect, // omit
+        ...restParams
+      } = params
       if (toggle) {
         paneRouter.setParams({inspect: 'on', ...restParams})
       } else {
@@ -196,6 +223,7 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
       closable,
       compareValue,
       connectionState,
+      displayed,
       documentId,
       documentIdRaw,
       documentSchema,
@@ -211,6 +239,7 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
       handleMenuAction,
       handlePaneClose,
       handlePaneSplit,
+      historyController,
       index,
       initialValue,
       inspectOpen,
@@ -222,6 +251,10 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
       previewUrl,
       ready,
       requiredPermission,
+      setTimelineMode,
+      setTimelineRange,
+      timeline,
+      timelineMode,
       title,
       value,
       views,
@@ -234,6 +267,7 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
       closable,
       compareValue,
       connectionState,
+      displayed,
       documentId,
       documentIdRaw,
       documentType,
@@ -249,6 +283,7 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
       handleMenuAction,
       handlePaneClose,
       handlePaneSplit,
+      historyController,
       index,
       initialValue,
       inspectOpen,
@@ -260,6 +295,10 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
       previewUrl,
       ready,
       requiredPermission,
+      setTimelineMode,
+      setTimelineRange,
+      timeline,
+      timelineMode,
       title,
       value,
       views,
@@ -283,8 +322,6 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
   }, [documentId, params.path])
 
   return (
-    <DocumentHistoryProvider controller={historyController} timeline={timeline} value={value}>
-      <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
-    </DocumentHistoryProvider>
+    <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
   )
 }

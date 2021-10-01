@@ -10,7 +10,6 @@ import React, {forwardRef, useMemo} from 'react'
 import {PaneHeader, PaneContextMenuButton} from '../../../../components/pane'
 import {useDeskTool} from '../../../../contexts/deskTool'
 import {BackLink, usePaneRouter} from '../../../../contexts/paneRouter'
-import {useDocumentHistory} from '../../documentHistory'
 import {TimelineMenu} from '../../timeline'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
@@ -35,13 +34,13 @@ export const DocumentPanelHeader = forwardRef(function DocumentPanelHeader(
     handleMenuAction,
     handlePaneClose,
     handlePaneSplit,
+    historyController,
     markers,
     menuItems,
     menuItemGroups,
     ready,
     views,
   } = useDocumentPane()
-  const {historyController} = useDocumentHistory()
   const {revTime: rev} = historyController
   const {features} = useDeskTool()
   const {index} = usePaneRouter()

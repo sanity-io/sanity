@@ -3,8 +3,10 @@ import {EditStateFor} from '@sanity/base/_internal'
 import {MenuItem, MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
 import {Marker, Path, SanityDocument} from '@sanity/types'
 import {createContext} from 'react'
+import {Controller as HistoryController} from './documentHistory/history/Controller'
+import {Timeline} from './documentHistory/history/Timeline'
 import {InitialValueState} from './lib/initialValue/types'
-import {DocumentView} from './types'
+import {DocumentView, TimelineMode} from './types'
 
 // @todo: provide a TS type for this
 type DocumentSchema = any
@@ -17,6 +19,7 @@ export interface DocumentPaneContextValue {
   closable: boolean
   compareValue: Partial<SanityDocument> | null
   connectionState: 'connecting' | 'reconnecting' | 'connected'
+  displayed: Partial<SanityDocument> | null
   editState: EditStateFor | null
   documentId: string
   documentIdRaw: string
@@ -32,6 +35,7 @@ export interface DocumentPaneContextValue {
   handleMenuAction: (item: MenuItem) => void
   handlePaneClose: () => void
   handlePaneSplit: () => void
+  historyController: HistoryController
   index: number
   initialValue: InitialValueState
   inspectOpen: boolean
@@ -43,46 +47,13 @@ export interface DocumentPaneContextValue {
   previewUrl: string | null
   ready: boolean
   requiredPermission: 'create' | 'update'
+  setTimelineMode: (mode: TimelineMode) => void
+  setTimelineRange(since: string | null, rev: string | null): void
+  timeline: Timeline
+  timelineMode: TimelineMode
   title: string | null
   value: Partial<SanityDocument>
   views: DocumentView[]
 }
 
-export const DocumentPaneContext = createContext<DocumentPaneContextValue>({
-  activeViewId: null,
-  actions: null,
-  badges: null,
-  changesOpen: false,
-  closable: false,
-  compareValue: null,
-  connectionState: 'connecting',
-  editState: null,
-  documentId: '',
-  documentIdRaw: '',
-  documentSchema: null,
-  documentType: '',
-  focusPath: [],
-  handleChange: () => undefined,
-  handleFocus: () => undefined,
-  handleHistoryClose: () => undefined,
-  handleHistoryOpen: () => undefined,
-  handleInspectClose: () => undefined,
-  handleKeyUp: () => undefined,
-  handleMenuAction: () => undefined,
-  handlePaneClose: () => undefined,
-  handlePaneSplit: () => undefined,
-  index: 0,
-  initialValue: {loading: true, error: null, value: {}},
-  inspectOpen: false,
-  markers: [],
-  menuItems: [],
-  menuItemGroups: [],
-  paneKey: '',
-  permission: {granted: false, reason: ''},
-  previewUrl: null,
-  ready: false,
-  requiredPermission: 'update',
-  title: null,
-  value: {},
-  views: [],
-})
+export const DocumentPaneContext = createContext<DocumentPaneContextValue | null>(null)

@@ -1,7 +1,6 @@
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {Box, Flex} from '@sanity/ui'
-import {useDocumentHistory} from '../documentHistory'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentStatusBarActions, HistoryStatusBarActions} from './DocumentStatusBarActions'
 import {DocumentSparkline} from './sparkline/DocumentSparkline'
@@ -17,8 +16,7 @@ const DocumentActionsBox = styled(Box)`
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef} = props
-  const {badges} = useDocumentPane()
-  const {historyController} = useDocumentHistory()
+  const {badges, historyController} = useDocumentPane()
   const showingRevision = historyController.onOlderRevision()
 
   return useMemo(

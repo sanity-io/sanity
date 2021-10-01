@@ -2,7 +2,6 @@ import {BoundaryElementProvider, Flex, PortalProvider, usePortal, useElementRect
 import React, {createElement, useEffect, useMemo, useRef, useState} from 'react'
 import {ScrollContainer} from '@sanity/base/components'
 import styled, {css} from 'styled-components'
-import {useDocumentHistory} from '../documentHistory'
 import {PaneContent} from '../../../components/pane'
 import {usePaneLayout} from '../../../components/pane/usePaneLayout'
 import {useDeskTool} from '../../../contexts/deskTool'
@@ -34,6 +33,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {footerHeight, rootElement} = props
   const {
     activeViewId,
+    displayed,
     documentId,
     documentSchema,
     editState,
@@ -48,7 +48,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const headerRect = useElementRect(headerElement)
   const portalRef = useRef<HTMLDivElement | null>(null)
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
-  const {displayed} = useDocumentHistory()
 
   const activeView = useMemo(
     () => views.find((view) => view.id === activeViewId) || views[0] || {type: 'form'},

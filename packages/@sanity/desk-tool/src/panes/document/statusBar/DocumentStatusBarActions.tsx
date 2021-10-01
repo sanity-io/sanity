@@ -7,7 +7,6 @@ import {Box, Flex, Tooltip, Stack, Button, Hotkeys, LayerProvider, Text} from '@
 import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
 import {HistoryRestoreAction} from '../../../actions/HistoryRestoreAction'
 import {useDocumentPane} from '../useDocumentPane'
-import {useDocumentHistory} from '../documentHistory'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
 import {LEGACY_BUTTON_COLOR_TO_TONE} from './constants'
@@ -108,9 +107,8 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
 const historyActions = [HistoryRestoreAction]
 
 export const HistoryStatusBarActions = memo(function HistoryStatusBarActions() {
-  const {historyController} = useDocumentHistory()
+  const {connectionState, editState, historyController} = useDocumentPane()
   const revision = historyController.revTime?.id || ''
-  const {connectionState, editState} = useDocumentPane()
   const disabled = (editState?.draft || editState?.published || {})._rev === revision
   const actionProps = useMemo(() => ({...(editState || {}), revision}), [editState, revision])
 

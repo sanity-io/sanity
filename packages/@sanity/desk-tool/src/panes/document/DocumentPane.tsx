@@ -18,7 +18,6 @@ import {PaneFooter} from '../../components/pane'
 import {usePaneLayout} from '../../components/pane/usePaneLayout'
 import {ErrorPane} from '../error'
 import {ChangesPanel} from './changesPanel'
-import {useDocumentHistory} from './documentHistory'
 import {DocumentPanel} from './documentPanel'
 import {DocumentOperationResults} from './DocumentOperationResults'
 import {InspectDialog} from './inspectDialog'
@@ -54,6 +53,7 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
 function InnerDocumentPane() {
   const {
     changesOpen,
+    displayed,
     documentSchema,
     documentType,
     handleFocus,
@@ -65,7 +65,6 @@ function InnerDocumentPane() {
   } = useDocumentPane()
   const {features} = useDeskTool()
   const {collapsed: layoutCollapsed} = usePaneLayout()
-  const {displayed} = useDocumentHistory()
   const zOffsets = useZIndex()
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const [footerElement, setFooterElement] = useState<HTMLDivElement | null>(null)
@@ -108,6 +107,55 @@ function InnerDocumentPane() {
   }, [changesOpen, features.reviewChanges, rootElement])
 
   const children = useMemo(() => {
+    if (!documentSchema) {
+      return (
+        <ErrorPane
+          flex={2.5}
+          minWidth={320}
+          title={
+            <>
+              Unknown document type: <code>{documentType}</code>
+            </>
+          }
+          tone="caution"
+        >
+          <Stack space={4}>
+            {documentType && (
+              <Text as="p">
+                This document has the schema type <code>{documentType}</code>, which is not defined
+                as a type in the local content studio schema.
+              </Text>
+            )}
+
+            {!documentType && (
+              <Text as="p">
+                This document does not exist, and no schema type was specified for it.
+              </Text>
+            )}
+
+            {__DEV__ && value && (
+              <>
+                <Text as="p">Here is the JSON representation of the document:</Text>
+                <Card padding={3} overflow="auto" radius={2} shadow={1} tone="inherit">
+                  <Code language="json" size={[1, 1, 2]}>
+                    {JSON.stringify(value, null, 2)}
+                  </Code>
+                </Card>
+              </>
+            )}
+          </Stack>
+        </ErrorPane>
+      )
+    }
+
+    if (initialValue.error) {
+      return (
+        <ErrorPane flex={2.5} minWidth={320} title="Failed to resolve initial value">
+          <Text as="p">Check developer console for details.</Text>
+        </ErrorPane>
+      )
+    }
+
     return (
       <>
         <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
@@ -131,62 +179,17 @@ function InnerDocumentPane() {
     changesOpen,
     changesPanel,
     documentPanel,
+    documentSchema,
+    documentType,
     footer,
     handleFocus,
     handleHistoryOpen,
+    initialValue.error,
     inspectDialog,
     layoutCollapsed,
+    value,
     zOffsets.portal,
   ])
-
-  if (!documentSchema) {
-    return (
-      <ErrorPane
-        flex={2.5}
-        minWidth={320}
-        title={
-          <>
-            Unknown document type: <code>{documentType}</code>
-          </>
-        }
-        tone="caution"
-      >
-        <Stack space={4}>
-          {documentType && (
-            <Text as="p">
-              This document has the schema type <code>{documentType}</code>, which is not defined as
-              a type in the local content studio schema.
-            </Text>
-          )}
-
-          {!documentType && (
-            <Text as="p">
-              This document does not exist, and no schema type was specified for it.
-            </Text>
-          )}
-
-          {__DEV__ && value && (
-            <>
-              <Text as="p">Here is the JSON representation of the document:</Text>
-              <Card padding={3} overflow="auto" radius={2} shadow={1} tone="inherit">
-                <Code language="json" size={[1, 1, 2]}>
-                  {JSON.stringify(value, null, 2)}
-                </Code>
-              </Card>
-            </>
-          )}
-        </Stack>
-      </ErrorPane>
-    )
-  }
-
-  if (initialValue.error) {
-    return (
-      <ErrorPane flex={2.5} minWidth={320} title="Failed to resolve initial value">
-        <Text as="p">Check developer console for details.</Text>
-      </ErrorPane>
-    )
-  }
 
   return (
     <DocumentActionShortcuts
