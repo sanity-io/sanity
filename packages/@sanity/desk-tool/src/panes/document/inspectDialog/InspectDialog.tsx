@@ -15,7 +15,6 @@ import {Search} from './Search'
 import {InspectViewMode} from './types'
 
 interface InspectDialogProps {
-  // onClose: () => void
   value: Partial<SanityDocument> | null
 }
 

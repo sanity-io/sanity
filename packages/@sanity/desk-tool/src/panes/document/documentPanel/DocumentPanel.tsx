@@ -16,23 +16,19 @@ interface DocumentPanelProps {
   rootElement: HTMLDivElement | null
 }
 
-const Scroller = styled(ScrollContainer)<{$disabled?: boolean; $ready: boolean}>(
-  ({$disabled, $ready}) => {
-    if ($disabled) {
-      return {height: '100%'}
-    }
-
-    return css`
-      height: 100%;
-      overflow: auto;
-      position: relative;
-      scroll-behavior: smooth;
-      outline: none;
-      /* opacity: ${$ready ? undefined : 0.5}; */
-      /* transition: opacity 200ms; */
-    `
+const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => {
+  if ($disabled) {
+    return {height: '100%'}
   }
-)
+
+  return css`
+    height: 100%;
+    overflow: auto;
+    position: relative;
+    scroll-behavior: smooth;
+    outline: none;
+  `
+})
 
 export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {footerHeight, rootElement} = props
@@ -41,9 +37,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     documentId,
     documentSchema,
     editState,
-    focusPath,
     initialValue,
-    ready,
     value,
     views,
   } = useDocumentPane()
@@ -121,8 +115,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
               {activeView.type === 'form' && <PermissionCheckBanner />}
 
               <Scroller
-                $disabled={layoutCollapsed}
-                $ready={ready}
+                $disabled={layoutCollapsed || false}
                 data-testid="document-panel-scroller"
                 ref={setDocumentScrollElement}
               >
@@ -145,7 +138,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       layoutCollapsed,
       margins,
       portalElement,
-      ready,
       rootElement,
     ]
   )
