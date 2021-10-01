@@ -15,7 +15,7 @@ import {
   Type,
 } from '@sanity/portable-text-editor'
 import {Path, isKeySegment, Marker, isKeyedObject} from '@sanity/types'
-import {BoundaryElementProvider, Box, Layer, Portal, PortalProvider} from '@sanity/ui'
+import {BoundaryElementProvider, Box, Layer, Portal, PortalProvider, usePortal} from '@sanity/ui'
 import {isEqual} from 'lodash'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/components'
 import ActivateOnFocus from '../../components/ActivateOnFocus/ActivateOnFocus'
@@ -74,10 +74,11 @@ export default function PortableTextInput(props: Props) {
     renderCustomMarkers,
     value,
   } = props
-
+  const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
   const ptFeatures = useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [editor])
+  const portal = usePortal()
 
   // States
   const [isActive, setIsActive] = useState(false)
@@ -379,30 +380,28 @@ export default function PortableTextInput(props: Props) {
 
   const ptEditor = useMemo(
     () => (
-      <>
-        <PortableTextSanityEditor
-          hotkeys={hotkeys}
-          initialSelection={initialSelection}
-          isFullscreen={isFullscreen}
-          key={`editor-${editorId}`}
-          markers={markers}
-          onBlur={onBlur}
-          onFocus={onFocus}
-          onFormBuilderChange={onChange}
-          onCopy={onCopy}
-          onPaste={onPaste}
-          onToggleFullscreen={handleToggleFullscreen}
-          readOnly={isActive === false || readOnly}
-          renderAnnotation={renderAnnotation}
-          renderBlock={renderBlock}
-          renderBlockActions={renderBlockActions}
-          renderChild={renderChild}
-          renderCustomMarkers={renderCustomMarkers}
-          setPortalElement={setPortalElement}
-          setScrollContainerElement={setScrollContainerElement}
-          value={value}
-        />
-      </>
+      <PortableTextSanityEditor
+        hotkeys={hotkeys}
+        initialSelection={initialSelection}
+        isFullscreen={isFullscreen}
+        key={`editor-${editorId}`}
+        markers={markers}
+        onBlur={onBlur}
+        onFocus={onFocus}
+        onFormBuilderChange={onChange}
+        onCopy={onCopy}
+        onPaste={onPaste}
+        onToggleFullscreen={handleToggleFullscreen}
+        readOnly={isActive === false || readOnly}
+        renderAnnotation={renderAnnotation}
+        renderBlock={renderBlock}
+        renderBlockActions={renderBlockActions}
+        renderChild={renderChild}
+        renderCustomMarkers={renderCustomMarkers}
+        setPortalElement={setPortalElement}
+        setScrollContainerElement={setScrollContainerElement}
+        value={value}
+      />
     ),
     [
       hotkeys,
@@ -455,41 +454,60 @@ export default function PortableTextInput(props: Props) {
     value,
   ])
 
-  return (
-    <div className={classNames(styles.root, hasFocus && styles.focus, readOnly && styles.readOnly)}>
-      {isFullscreen && (
-        <Portal key={`portal-${editorId}`}>
-          <PortalProvider element={portalElement}>
-            <BoundaryElementProvider element={scrollContainerElement}>
-              <Layer className={classNames(styles.fullscreenPortal, readOnly && styles.readOnly)}>
-                {ptEditor}
-              </Layer>
-
-              {editObject}
-            </BoundaryElementProvider>
-          </PortalProvider>
-        </Portal>
-      )}
-
-      {!isFullscreen && (
-        <>
-          <ActivateOnFocus
-            message={<h3 className={styles.activeOnFocusHeading}>Click to activate</h3>}
-            onActivate={handleActivate}
-            isOverlayActive={!isActive}
-          >
-            <ChangeIndicatorWithProvidedFullPath
-              compareDeep
-              value={value}
-              hasFocus={hasFocus && objectEditData === null}
-              path={ROOT_PATH}
-            >
+  const children = useMemo(() => {
+    if (isFullscreen) {
+      return (
+        <PortalProvider element={portalElement}>
+          <BoundaryElementProvider element={scrollContainerElement}>
+            <Layer className={classNames(styles.fullscreenPortal, readOnly && styles.readOnly)}>
               {ptEditor}
-            </ChangeIndicatorWithProvidedFullPath>
-          </ActivateOnFocus>
+            </Layer>
+
+            {editObject}
+          </BoundaryElementProvider>
+        </PortalProvider>
+      )
+    }
+
+    return (
+      <ActivateOnFocus
+        message={<h3 className={styles.activeOnFocusHeading}>Click to activate</h3>}
+        onActivate={handleActivate}
+        isOverlayActive={!isActive}
+      >
+        <ChangeIndicatorWithProvidedFullPath
+          compareDeep
+          value={value}
+          hasFocus={hasFocus && objectEditData === null}
+          path={ROOT_PATH}
+        >
+          {ptEditor}
           {editObject}
-        </>
-      )}
+        </ChangeIndicatorWithProvidedFullPath>
+      </ActivateOnFocus>
+    )
+  }, [
+    editObject,
+    handleActivate,
+    hasFocus,
+    isActive,
+    isFullscreen,
+    objectEditData,
+    portalElement,
+    ptEditor,
+    readOnly,
+    scrollContainerElement,
+    value,
+  ])
+
+  return (
+    <div
+      className={classNames(styles.root, hasFocus && styles.focus, readOnly && styles.readOnly)}
+      ref={setRootElement}
+    >
+      <PortalProvider element={isFullscreen ? portal.element : rootElement}>
+        <Portal>{children}</Portal>
+      </PortalProvider>
     </div>
   )
 }
