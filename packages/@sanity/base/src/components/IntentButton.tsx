@@ -11,5 +11,5 @@ export function IntentButton(
     params: Record<string, string>
   }
 ) {
-  return props.disabled ? <Button {...props} as="a" /> : <Button {...props} as={IntentLink} />
+  return props.disabled ? <Button {...props} as="a" role="link" aria-disabled="true" /> : <Button {...props} as={IntentLink} />
 }
