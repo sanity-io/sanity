@@ -200,9 +200,7 @@ export function CollapseMenu(props: CollapseMenuProps) {
                       disabled={!inView}
                       content={
                         <Box padding={2} sizing="border">
-                          <Text size={1} muted>
-                            {text}
-                          </Text>
+                          <Text size={1}>{text}</Text>
                         </Box>
                       }
                     >
