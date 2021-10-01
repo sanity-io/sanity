@@ -3,6 +3,11 @@ import {lazy} from 'react'
 
 export default defineScope('desk-tool/pane', 'Pane', [
   {
+    name: 'tabs',
+    title: 'Tabs',
+    component: lazy(() => import('./tabs')),
+  },
+  {
     name: 'example',
     title: 'Example',
     component: lazy(() => import('./example')),
