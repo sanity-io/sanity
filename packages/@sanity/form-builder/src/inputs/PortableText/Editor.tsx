@@ -16,11 +16,13 @@ import {Marker} from '@sanity/types'
 import {useLayer} from '@sanity/ui'
 import {ScrollContainer} from '@sanity/base/components'
 import React, {useMemo, useEffect} from 'react'
+import styled from 'styled-components'
 import PatchEvent from '../../PatchEvent'
 import styles from './PortableTextInput.module.css'
 import Toolbar from './Toolbar/Toolbar'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
 import Decorator from './Text/Decorator'
+import {parentCounterResetCSS} from './Text/TextBlock'
 
 type Props = {
   initialSelection?: EditorSelection
@@ -43,6 +45,10 @@ type Props = {
   setScrollContainerElement: (el: HTMLElement | null) => void
   value: PortableTextBlock[] | undefined
 }
+
+const EditableWrapper = styled.div`
+  ${parentCounterResetCSS};
+`
 
 const renderDecorator: RenderDecoratorFunction = (mark, mType, attributes, defaultRender) => {
   return <Decorator mark={mark}>{defaultRender()}</Decorator>
@@ -209,7 +215,7 @@ function PortableTextSanityEditor(props: Props) {
         <div className={styles.editorBoxContent}>
           <ScrollContainer className={scClassNames} ref={setScrollContainerElement}>
             <div className={editorWrapperClassNames}>
-              <div className={editorClassNames}>
+              <EditableWrapper className={editorClassNames}>
                 <PortableTextEditable
                   hotkeys={hotkeys}
                   onCopy={onCopy}
@@ -222,7 +228,7 @@ function PortableTextSanityEditor(props: Props) {
                   selection={initialSelection}
                   spellCheck
                 />
-              </div>
+              </EditableWrapper>
             </div>
           </ScrollContainer>
           <div data-portal="" ref={setPortalElement} />
