@@ -1,4 +1,3 @@
-/* eslint-disable react/no-multi-comp */
 import React from 'react'
 import PropTypes from 'prop-types'
 import generateHelpUrl from '@sanity/generate-help-url'
@@ -11,7 +10,7 @@ export default class LoginDialog extends React.Component {
     title: PropTypes.node.isRequired,
     description: PropTypes.node,
     projectId: PropTypes.string,
-    SanityLogo: PropTypes.func,
+    SanityLogo: PropTypes.oneOfType([PropTypes.object, PropTypes.node, PropTypes.func]),
   }
 
   static defaultProps = {
@@ -120,7 +119,7 @@ export default class LoginDialog extends React.Component {
 
     if (isLoaded && !shouldRedirect) {
       return (
-        <Dialog header="Sign in" width={1} cardShadow={2}>
+        <Dialog header="Please sign in" width={0} cardShadow={2}>
           <LoginDialogContent
             title={title}
             description={description}
