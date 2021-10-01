@@ -229,9 +229,7 @@ export const Navbar = memo(function Navbar(props: Props) {
                 content={
                   <Box padding={2}>
                     {createAnyPermission.granted ? (
-                      <Text size={1} muted>
-                        Create new document
-                      </Text>
+                      <Text size={1}>Create new document</Text>
                     ) : (
                       <InsufficientPermissionsMessage
                         currentUser={currentUser}
