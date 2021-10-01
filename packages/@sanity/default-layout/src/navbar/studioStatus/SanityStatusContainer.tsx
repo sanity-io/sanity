@@ -1,79 +1,37 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
-import React from 'react'
-import {of} from 'rxjs'
-import {flatMap, catchError} from 'rxjs/operators'
-import userStore from 'part:@sanity/base/user'
-import {withPropsStream} from 'react-props-stream'
-import VersionChecker from 'part:@sanity/base/version-checker'
-import versions from 'sanity:versions'
+import React, {useCallback, useState} from 'react'
+import {useCurrentUser, useModuleStatus} from '@sanity/base/hooks'
 import SanityStatus from '../studioStatus/SanityStatus'
-import {Package, Severity} from './types'
+import {Severity} from './types'
 
-interface Props {
-  showStatus: boolean
-  versionReply: {outdated?: Package[]; isSupported: boolean; isUpToDate: boolean}
+const levels: Severity[] = ['low', 'medium', 'high']
+
+const getHighestLevel = (outdated: {severity?: 'low' | 'medium' | 'high' | 'notice'}[]) =>
+  outdated.reduce((acc, pkg) => Math.max(acc, levels.indexOf(pkg.severity || 'low')), 0)
+
+export default function SanityStatusContainer() {
+  const [showDialog, setShowDialog] = useState(false)
+  const {value: user} = useCurrentUser()
+  const {value: moduleStatus} = useModuleStatus()
+  const handleHideDialog = useCallback(() => setShowDialog(false), [setShowDialog])
+  const handleShowDialog = useCallback(() => setShowDialog(true), [setShowDialog])
+
+  if (!moduleStatus || !user || !user.roles.some((role) => role.name === 'administrator')) {
+    return null
+  }
+
+  const {outdated, isSupported, isUpToDate, installed} = moduleStatus
+  const level = levels[getHighestLevel(outdated || [])]
+
+  return (
+    <SanityStatus
+      isSupported={isSupported}
+      isUpToDate={isUpToDate}
+      level={level}
+      showDialog={showDialog}
+      onHideDialog={handleHideDialog}
+      onShowDialog={handleShowDialog}
+      outdated={outdated}
+      versions={installed}
+    />
+  )
 }
-
-const levels: Array<Severity> = ['low', 'medium', 'high']
-
-const getHighestLevel = (outdated: Package[]) =>
-  outdated.reduce((acc, pkg) => Math.max(acc, levels.indexOf(pkg.severity)), 0)
-
-class SanityStatusContainer extends React.PureComponent<Props> {
-  state = {
-    showDialog: false,
-  }
-
-  handleHideDialog = () => {
-    this.setState({showDialog: false})
-  }
-
-  handleShowDialog = () => {
-    this.setState({showDialog: true})
-  }
-
-  render() {
-    if (!this.props.showStatus) {
-      return null
-    }
-
-    const {outdated, isSupported, isUpToDate} = this.props.versionReply
-    const level = levels[getHighestLevel(outdated || [])]
-
-    return (
-      <SanityStatus
-        isSupported={isSupported}
-        isUpToDate={isUpToDate}
-        level={level}
-        showDialog={this.state.showDialog}
-        onHideDialog={this.handleHideDialog}
-        onShowDialog={this.handleShowDialog}
-        outdated={outdated}
-        versions={versions}
-      />
-    )
-  }
-}
-
-interface CurrentUser {
-  role: string | 'administrator'
-}
-
-export default withPropsStream(
-  userStore.me.pipe(
-    flatMap(((user: CurrentUser) => {
-      if (user && user.role === 'administrator') {
-        return VersionChecker.checkVersions().then(({result}) => ({
-          versionReply: result,
-          showStatus: true,
-        }))
-      }
-
-      return {showStatus: false}
-    }) as any),
-    catchError((err) => of({error: err, showStatus: false}))
-  ),
-  SanityStatusContainer
-)
