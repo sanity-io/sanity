@@ -1,7 +1,9 @@
 import React from 'react'
 import {Card, Code, Container, Stack, Button, Heading, Flex, Text} from '@sanity/ui'
 import {SyncIcon} from '@sanity/icons'
-import {ErrorAccordion} from '.'
+import {ErrorAccordion} from './ErrorAccordion'
+
+declare const __DEV__: boolean
 
 interface Props {
   activeTool?: {
@@ -72,16 +74,16 @@ export function ErrorScreen(props: Props) {
             <>
               <Stack space={4}>
                 {error.stack ? (
-                  <ErrorAccordion title="Stack trace">
+                  <ErrorAccordion open={__DEV__} title="Stack trace">
                     <Code size={1}>{formatStack(limitStackLength(getErrorWithStack(error)))}</Code>
                   </ErrorAccordion>
                 ) : (
-                  <ErrorAccordion title="Error">
+                  <ErrorAccordion open={__DEV__} title="Error">
                     <Code size={1}>{error.message}</Code>
                   </ErrorAccordion>
                 )}
                 {info && info.componentStack && (
-                  <ErrorAccordion title="Component stack">
+                  <ErrorAccordion open={__DEV__} title="Component stack">
                     <Code size={1}>{info.componentStack.replace(/^\s*\n+/, '')}</Code>
                   </ErrorAccordion>
                 )}

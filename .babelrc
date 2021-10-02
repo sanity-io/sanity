@@ -12,7 +12,9 @@
         },
         "modules": "commonjs"
       }
-    ]
+    ],
+    "@babel/preset-typescript",
+    "@babel/preset-react"
   ],
   "plugins": ["lodash", "@babel/plugin-proposal-class-properties"]
 }

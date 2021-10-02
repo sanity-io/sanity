@@ -67,7 +67,7 @@ function getAuthChannel(baseUrl, provider, iv) {
   const uuid = crypto.randomBytes(16).toString('hex')
   let listenUrl
   if (provider.type === 'saml') {
-    listenUrl = `${baseUrl}/vX/auth/saml/listen/${provider.id}/${uuid}?iv=${iv}`
+    listenUrl = `${baseUrl}/v2021-10-01/auth/saml/listen/${provider.id}/${uuid}?iv=${iv}`
   } else {
     listenUrl = `${baseUrl}/v1/auth/listen/${provider.name}/${uuid}?iv=${iv}`
   }

@@ -9,7 +9,6 @@ const JEST_PROJECTS = [
   '@sanity/initial-value-templates',
   '@sanity/mutator',
   '@sanity/portable-text-editor',
-  '@sanity/react-hooks',
   '@sanity/schema',
   '@sanity/state-router',
   '@sanity/structure',

@@ -36,7 +36,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@sanity/asset-utils": "^1.1.2",
+    "@sanity/asset-utils": "^1.2.0",
     "@sanity/base": "2.20.0",
     "@sanity/client": "2.19.0",
     "@sanity/color": "^2.1.5",

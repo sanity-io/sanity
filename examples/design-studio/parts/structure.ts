@@ -85,6 +85,7 @@ const customPaneExample = S.listItem()
   .child(
     S.component(CustomPane)
       .id('custom')
+      .options({custom: 'foo'})
       .title('Custom')
       .child((id) => {
         return S.list().id(id).title(id)

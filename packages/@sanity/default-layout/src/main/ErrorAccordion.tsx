@@ -2,8 +2,16 @@ import React, {useCallback, useMemo, useState} from 'react'
 import {Button, Card, Stack} from '@sanity/ui'
 import {ToggleArrowRightIcon} from '@sanity/icons'
 
-export function ErrorAccordion({children, title}: {children: React.ReactNode; title: string}) {
-  const [open, setOpen] = useState(false)
+export function ErrorAccordion({
+  children,
+  open: openProp = false,
+  title,
+}: {
+  children: React.ReactNode
+  open: boolean
+  title: string
+}) {
+  const [open, setOpen] = useState(openProp)
   const toggle = useCallback(() => setOpen((v) => !v), [])
   const icon = useMemo(
     () => <ToggleArrowRightIcon style={{transform: open && 'rotate(90deg)'}} />,
@@ -11,7 +19,7 @@ export function ErrorAccordion({children, title}: {children: React.ReactNode; ti
   )
 
   return (
-    <Card radius={3} tone="critical" overflow="hidden">
+    <Card radius={2} tone="critical" overflow="hidden">
       <Stack>
         <Button
           fontSize={1}
@@ -19,14 +27,14 @@ export function ErrorAccordion({children, title}: {children: React.ReactNode; ti
           justify="flex-start"
           mode="bleed"
           onClick={toggle}
-          padding={4}
+          padding={3}
           radius={0}
           space={2}
           text={title}
         />
       </Stack>
 
-      <Card borderTop hidden={!open} padding={4} overflow="auto" tone="inherit">
+      <Card borderTop hidden={!open} padding={3} overflow="auto" tone="inherit">
         {children}
       </Card>
     </Card>

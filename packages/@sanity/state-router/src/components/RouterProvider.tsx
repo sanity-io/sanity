@@ -12,14 +12,14 @@ import {
   IntentParameters,
 } from './types'
 
-type Props = {
+type RouterProviderProps = {
   onNavigate: (nextPath: string, options?: NavigateOptions) => void
   router: Router
   state: RouterState
   children: React.ReactNode
 }
 
-export default class RouterProvider extends React.Component<Props> {
+export default class RouterProvider extends React.Component<RouterProviderProps> {
   public static childContextTypes = {
     __internalRouter: PropTypes.object,
   }
@@ -27,7 +27,7 @@ export default class RouterProvider extends React.Component<Props> {
   __internalRouter: InternalRouter
   _state: RouterState
 
-  constructor(props: Props) {
+  constructor(props: RouterProviderProps) {
     super(props)
     this._state = props.state
     this.__internalRouter = {
@@ -76,7 +76,7 @@ export default class RouterProvider extends React.Component<Props> {
   }
 
   // eslint-disable-next-line camelcase
-  UNSAFE_componentWillReceiveProps(nextProps: Props) {
+  UNSAFE_componentWillReceiveProps(nextProps: RouterProviderProps) {
     if (!isEqual(this._state, nextProps.state)) {
       this._state = nextProps.state
 

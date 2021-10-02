@@ -7,6 +7,14 @@ import client from 'part:@sanity/base/client'
 import inferFromSchema from '../src/inferFromSchema'
 import validateDocument from '../src/validateDocument'
 
+jest.mock('part:@sanity/base/client', () => {
+  const mockClient = {
+    fetch: jest.fn(),
+    withConfig: jest.fn(() => mockClient),
+  }
+  return mockClient
+})
+
 describe('schema validation inference', () => {
   describe('object with `options.list` and `value` field', () => {
     const listOptions = [

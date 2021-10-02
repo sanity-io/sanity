@@ -33,6 +33,7 @@ const collectLast = (source) =>
     setTimeout(() => resolve(done()), 100)
   })
 
+// TODO: fix these tests or combine with DeskTool.test.tsx
 describe.skip('resolvePanes', () => {
   test('can resolve one-pane structure', () =>
     expect(collectLast(resolvePanes(singleStatsStructure, []))).resolves.toMatchObject([

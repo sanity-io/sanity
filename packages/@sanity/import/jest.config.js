@@ -1,7 +1,6 @@
-const baseConfig = require('../../../jest.config.base')
+const createConfig = require('../../../createJestConfig')
 
-module.exports = {
-  ...baseConfig,
+module.exports = createConfig({
   displayName: require('./package.json').name,
   testEnvironment: 'node',
-}
+})

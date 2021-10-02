@@ -9,6 +9,7 @@ import {ListBuilder} from './List'
 import {DocumentBuilder} from './Document'
 import {ComponentBuilder} from './Component'
 import {validateId} from './util/validateId'
+import {FixMe} from './types'
 
 type UnserializedListItemChild = Collection | CollectionBuilder | ChildResolver
 
@@ -25,7 +26,7 @@ interface ListItemDisplayOptions {
 export interface ListItemInput {
   id: string
   title?: string
-  icon?: Function
+  icon?: FixMe
   child?: ListItemChild
   displayOptions?: ListItemDisplayOptions
   schemaType?: SchemaType | string
@@ -35,7 +36,7 @@ export interface ListItem {
   id: string
   type: string
   title?: string
-  icon?: Function
+  icon?: FixMe
   child?: ListItemChild
   displayOptions?: ListItemDisplayOptions
   schemaType?: SchemaType
@@ -44,7 +45,7 @@ export interface ListItem {
 export interface UnserializedListItem {
   id: string
   title: string
-  icon?: Function
+  icon?: FixMe
   child?: UnserializedListItemChild
   displayOptions?: ListItemDisplayOptions
   schemaType?: SchemaType | string
@@ -75,7 +76,7 @@ export class ListItemBuilder implements Serializable {
     return this.spec.title
   }
 
-  icon(icon: Function): ListItemBuilder {
+  icon(icon: FixMe): ListItemBuilder {
     return this.clone({icon})
   }
 
@@ -152,8 +153,8 @@ export class ListItemBuilder implements Serializable {
     // context, so we may lazily resolve it at some point in the future without losing context
     if (typeof listChild === 'function') {
       const originalChild = listChild
-      listChild = (itemId, options) => {
-        return originalChild(itemId, {...options, serializeOptions})
+      listChild = (itemId, childOptions) => {
+        return originalChild(itemId, {...childOptions, serializeOptions})
       }
     }
 

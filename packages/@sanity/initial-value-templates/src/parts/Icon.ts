@@ -1,9 +1,12 @@
-import getDefaultModule from './getDefaultModule'
+import {ComposeIcon, SortIcon, StackCompactIcon, SplitHorizontalIcon} from '@sanity/icons'
 
-// We are lazy-loading the part to work around typescript trying to resolve it
-export const getPlusIcon = (): Function =>
-  getDefaultModule(require('part:@sanity/base/compose-icon'))
-export const getSortIcon = (): Function => getDefaultModule(require('part:@sanity/base/sort-icon'))
-export const getListIcon = (): Function => getDefaultModule(require('part:@sanity/base/bars-icon'))
-export const getDetailsIcon = (): Function =>
-  getDefaultModule(require('part:@sanity/base/th-list-icon'))
+// @todo This legacy typing causes linting errors once we touch anything
+// in the structure package. We should update it in the future when we do
+// a pass on types
+// eslint-disable-next-line @typescript-eslint/ban-types
+type FixMe = Function
+
+export const getPlusIcon = (): FixMe => ComposeIcon
+export const getSortIcon = (): FixMe => SortIcon
+export const getListIcon = (): FixMe => StackCompactIcon
+export const getDetailsIcon = (): FixMe => SplitHorizontalIcon

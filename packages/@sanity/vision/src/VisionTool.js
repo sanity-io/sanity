@@ -1,11 +1,11 @@
 import {route} from '@sanity/base/router'
 import SanityVision from './SanityVision'
-import VisibilityIcon from 'part:@sanity/base/visibility-icon'
+import {EyeOpenIcon} from '@sanity/icons'
 
 export default {
   router: route('/*'),
   name: 'vision',
   title: 'Vision',
-  icon: VisibilityIcon,
+  icon: EyeOpenIcon,
   component: SanityVision,
 }

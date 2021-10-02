@@ -10,6 +10,7 @@ import {PaneContextMenuButton, PaneHeader, usePane} from '../../components/pane'
 import {useDeskTool} from '../../contexts/deskTool'
 import {BackLink} from '../../contexts/paneRouter'
 import {DeskToolPaneActionHandler} from '../../types/types'
+import {useDeskToolPaneActions} from '../useDeskToolPaneActions'
 import {Layout, SortOrder} from './types'
 import {CreateMenuButton} from './CreateMenuButton'
 
@@ -104,30 +105,10 @@ export function DocumentListPaneHeader(props: {
     [initialValueTemplates]
   )
 
-  const [actionItems, menuItems] = useMemo(() => {
-    if (!menuItemsProp) {
-      return [[], []]
-    }
-
-    const _actionItems: MenuItemType[] = []
-    const _menuItems: MenuItemType[] = []
-
-    for (const menuItem of menuItemsProp) {
-      const {showAsAction} = menuItem
-
-      const isActionItem =
-        showAsAction &&
-        (!collapsed || (typeof showAsAction === 'object' && showAsAction.whenCollapsed))
-
-      if (isActionItem) {
-        _actionItems.push(menuItem)
-      } else {
-        _menuItems.push(menuItem)
-      }
-    }
-
-    return [_actionItems, _menuItems]
-  }, [collapsed, menuItemsProp])
+  const {actionItems, menuItems} = useDeskToolPaneActions({
+    collapsed,
+    menuItems: menuItemsProp,
+  })
 
   const contextMenu = useMemo(
     () =>
@@ -135,7 +116,7 @@ export function DocumentListPaneHeader(props: {
         <PaneContextMenuButton
           items={menuItems}
           itemGroups={menuItemGroups}
-          key="$contextMenu"
+          key="$ContextMenu"
           onAction={handleAction}
         />
       ) : null,
@@ -149,7 +130,7 @@ export function DocumentListPaneHeader(props: {
       // Replace the "Create" button when there are multiple initial value templates
       if (createMenuItems.length > 1 && isDefaultCreateActionItem(action, schemaType)) {
         foundCreateButton = true
-        return <CreateMenuButton items={createMenuItems} />
+        return <CreateMenuButton items={createMenuItems} key={action.key || actionIndex} />
       }
 
       if (action.intent) {
@@ -180,7 +161,7 @@ export function DocumentListPaneHeader(props: {
 
     const createMenuButton =
       foundCreateButton || createMenuItems.length <= 1 ? null : (
-        <CreateMenuButton items={createMenuItems} />
+        <CreateMenuButton items={createMenuItems} key="$CreateMenuButton" />
       )
 
     return <Inline space={1}>{[...actionNodes, createMenuButton, contextMenu]}</Inline>

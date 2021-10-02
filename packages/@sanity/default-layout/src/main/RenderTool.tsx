@@ -4,7 +4,7 @@
 import React from 'react'
 import {Box, Card, Container, Heading, Stack, Text} from '@sanity/ui'
 import tools from 'all:part:@sanity/base/tool'
-import {ErrorScreen} from '.'
+import {ErrorScreen} from './ErrorScreen'
 
 declare const __DEV__: boolean
 

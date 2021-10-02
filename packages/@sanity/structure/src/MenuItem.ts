@@ -6,6 +6,7 @@ import {Partial} from './Partial'
 import {SortItem, Ordering, DEFAULT_ORDERING_OPTIONS} from './Sort'
 import {SerializeOptions, Serializable, SerializePath} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
+import {FixMe} from './types'
 
 const SortIcon = getSortIcon()
 
@@ -21,13 +22,16 @@ type ShowAsAction = {
   whenCollapsed: boolean
 }
 
+type ActionType = string | ((params: Record<string, string> | undefined, scope?: any) => void)
+type ParamsType = Record<string, string | unknown | undefined>
+
 export interface MenuItem {
   title: string
-  action?: string | Function
+  action?: ActionType
   intent?: Intent
   group?: string
-  icon?: Function
-  params?: object
+  icon?: FixMe
+  params?: ParamsType
   showAsAction?: boolean | ShowAsAction
 }
 
@@ -40,7 +44,7 @@ export class MenuItemBuilder implements Serializable {
     this.spec = spec ? spec : {}
   }
 
-  action(action: string | Function): MenuItemBuilder {
+  action(action: ActionType): MenuItemBuilder {
     return this.clone({action})
   }
 
@@ -72,7 +76,7 @@ export class MenuItemBuilder implements Serializable {
     return this.spec.group
   }
 
-  icon(icon: Function): MenuItemBuilder {
+  icon(icon: FixMe): MenuItemBuilder {
     return this.clone({icon})
   }
 
@@ -80,7 +84,7 @@ export class MenuItemBuilder implements Serializable {
     return this.spec.icon
   }
 
-  params(params: object): MenuItemBuilder {
+  params(params: ParamsType): MenuItemBuilder {
     return this.clone({params})
   }
 

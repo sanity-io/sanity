@@ -4,27 +4,28 @@ import {SerializeError, HELP_URL} from './SerializeError'
 import {MenuItem, MenuItemBuilder, maybeSerializeMenuItem} from './MenuItem'
 import {MenuItemGroup, MenuItemGroupBuilder, maybeSerializeMenuItemGroup} from './MenuItemGroup'
 import {validateId} from './util/validateId'
+import {FixMe} from './types'
 
 export interface Component extends StructureNode {
-  component: Function
+  component: FixMe
   child?: Child
   menuItems: MenuItem[]
   menuItemGroups: MenuItemGroup[]
-  options: {[key: string]: any}
+  options: {[key: string]: unknown}
 }
 
 export interface ComponentInput extends StructureNode {
-  component: Function
+  component: FixMe
   child?: Child
-  options?: {[key: string]: any}
+  options?: {[key: string]: unknown}
   menuItems?: (MenuItem | MenuItemBuilder)[]
   menuItemGroups?: (MenuItemGroup | MenuItemGroupBuilder)[]
 }
 
 export interface BuildableComponent extends Partial<StructureNode> {
-  component?: Function
+  component?: FixMe
   child?: Child
-  options?: {[key: string]: any}
+  options?: {[key: string]: unknown}
   menuItems?: (MenuItem | MenuItemBuilder)[]
   menuItemGroups?: (MenuItemGroup | MenuItemGroupBuilder)[]
 }
@@ -60,7 +61,7 @@ export class ComponentBuilder implements Serializable {
     return this.spec.child
   }
 
-  component(component: Function) {
+  component(component: FixMe) {
     return this.clone({component})
   }
 
@@ -68,7 +69,7 @@ export class ComponentBuilder implements Serializable {
     return this.spec.component
   }
 
-  options(options: {[key: string]: any}) {
+  options(options: {[key: string]: unknown}) {
     return this.clone({options})
   }
 

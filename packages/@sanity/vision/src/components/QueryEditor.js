@@ -2,12 +2,41 @@
 /* eslint-disable import/no-unassigned-import */
 import React from 'react'
 import PropTypes from 'prop-types'
-import {UnControlled as ReactCodeMirror} from 'react-codemirror2'
+import {UnControlled as BaseReactCodeMirror} from 'react-codemirror2'
 import CodeMirror from 'codemirror'
+import styled from 'styled-components'
+import {rem} from '@sanity/ui'
 
 require('codemirror/mode/javascript/javascript')
 require('codemirror/addon/hint/show-hint')
 require('codemirror/addon/edit/closebrackets')
+
+const ReactCodeMirror = styled(BaseReactCodeMirror)`
+  width: 100%;
+  box-sizing: border-box;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+
+  .CodeMirror {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .CodeMirror-sizer {
+    padding-top: ${({theme}) => rem(theme.sanity.space[5])};
+  }
+
+  .CodeMirror-linenumber {
+    padding: 0 3px 0 5px;
+    min-width: 1.5rem;
+    text-align: right;
+    color: var(--card-code-fg-color);
+    white-space: nowrap;
+  }
+`
 
 class QueryEditor extends React.PureComponent {
   constructor(props) {
@@ -56,6 +85,7 @@ class QueryEditor extends React.PureComponent {
       mode: {name: 'javascript', json: true},
       hintOptions: {hint: this.getHint},
       extraKeys: {
+        Tab: false,
         'Ctrl-Space': 'autocomplete',
         'Ctrl-Enter': this.props.onExecute,
       },
@@ -82,7 +112,6 @@ QueryEditor.propTypes = {
   schema: PropTypes.object,
   className: PropTypes.string,
   onHeightChange: PropTypes.func,
-  height: PropTypes.number,
 }
 
 QueryEditor.defaultProps = {

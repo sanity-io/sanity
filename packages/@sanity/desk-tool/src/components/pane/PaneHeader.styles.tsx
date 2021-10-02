@@ -26,6 +26,8 @@ export const Layout = styled(Flex)`
   }
 `
 
+export const TitleBox = styled(Box)``
+
 export const TitleText = styled(Text)`
   cursor: default;
   outline: none;

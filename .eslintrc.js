@@ -45,7 +45,7 @@ module.exports = {
       },
     },
     {
-      files: ['*.test.{js,ts,tsx}'],
+      files: ['./test/jest-setup.js', '*.test.{js,ts,tsx}'],
       env: {jest: true},
     },
   ],
