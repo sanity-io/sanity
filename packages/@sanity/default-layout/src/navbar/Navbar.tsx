@@ -13,9 +13,9 @@ import * as sidecar from 'part:@sanity/default-layout/sidecar?'
 import ToolMenu from 'part:@sanity/default-layout/tool-switcher'
 import styled from 'styled-components'
 import {HAS_SPACES} from '../util/spaces'
-import {Tool} from '../types'
 import {DatasetSelect} from '../datasetSelect'
 import {useDefaultLayoutRouter} from '../useDefaultLayoutRouter'
+import {tools} from '../config'
 import Branding from './branding/Branding'
 import SanityStatusContainer from './studioStatus/SanityStatusContainer'
 import {PresenceMenu, LoginStatus, SearchField} from '.'
@@ -28,7 +28,6 @@ interface Props {
   onUserLogout: () => void
   onSearchOpen: (open: boolean) => void
   searchPortalElement: HTMLDivElement | null
-  tools: Tool[]
 }
 
 const Root = styled(Card)<{$onSearchOpen: boolean}>`
@@ -104,7 +103,6 @@ export const Navbar = memo(function Navbar(props: Props) {
     onUserLogout,
     onSearchOpen,
     searchPortalElement,
-    tools,
   } = props
 
   const [searchOpen, setSearchOpen] = useState<boolean>(false)
@@ -354,7 +352,6 @@ export const Navbar = memo(function Navbar(props: Props) {
       searchPortalElement,
       searchRelatedElements,
       shouldRender,
-      tools,
     ]
   )
 })

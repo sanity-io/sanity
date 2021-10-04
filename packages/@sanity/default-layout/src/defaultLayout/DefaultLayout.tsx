@@ -12,19 +12,13 @@ import {RenderTool} from '../main/RenderTool'
 import {CreateDocumentDialog} from '../createDocumentDialog'
 import {SchemaErrorReporter} from '../schemaErrors/SchemaErrorReporter'
 import {SideMenu} from '../sideMenu'
-import {Tool} from '../types'
 import {Navbar} from '../navbar'
 import {useDefaultLayoutRouter} from '../useDefaultLayoutRouter'
 import {NEW_DOCUMENT_ACTIONS, NEW_DOCUMENT_TYPES} from '../constants'
 import {RootFlex, MainAreaFlex, ToolBox, SidecarBox, PortalDiv} from './styles'
 import {LoadingScreen} from './LoadingScreen'
 
-interface Props {
-  tools: Tool[]
-}
-
-export const DefaultLayout = memo(function DefaultLayout(props: Props) {
-  const {tools} = props
+export const DefaultLayout = memo(function DefaultLayout() {
   const router = useDefaultLayoutRouter()
   const [createMenuIsOpen, setCreateMenuIsOpen] = useState<boolean>(false)
   const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false)
@@ -94,7 +88,6 @@ export const DefaultLayout = memo(function DefaultLayout(props: Props) {
 
         <LegacyLayerProvider zOffset="navbar">
           <Navbar
-            tools={tools}
             createMenuIsOpen={createMenuIsOpen}
             onCreateButtonClick={handleCreateButtonClick}
             onToggleMenu={handleToggleMenu}
@@ -112,7 +105,6 @@ export const DefaultLayout = memo(function DefaultLayout(props: Props) {
             onClose={handleToggleMenu}
             onSignOut={handleLogout}
             onSwitchTool={handleSwitchTool}
-            tools={tools}
             user={currentUser}
           />
         )}
