@@ -3,6 +3,7 @@ import {Path} from '@sanity/types'
 import {Subscription, Subject} from 'rxjs'
 import {distinctUntilChanged} from 'rxjs/operators'
 import {randomKey} from '@sanity/util/content'
+import {createEditor} from 'slate'
 import {compileType} from '../utils/schema'
 import {getPortableTextFeatures} from '../utils/getPortableTextFeatures'
 import {PortableTextBlock, PortableTextFeatures, PortableTextChild} from '../types/portableText'
@@ -15,6 +16,7 @@ import {
   EditableAPI,
   InvalidValueResolution,
   PatchObservable,
+  PortableTextSlateEditor,
 } from '../types/editor'
 import {compactPatches} from '../utils/patches'
 import {validateValue} from '../utils/validateValue'
@@ -22,6 +24,7 @@ import {debugWithName} from '../utils/debug'
 import {PortableTextEditorContext} from './hooks/usePortableTextEditor'
 import {PortableTextEditorSelectionContext} from './hooks/usePortableTextEditorSelection'
 import {PortableTextEditorValueContext} from './hooks/usePortableTextEditorValue'
+import {withPortableText} from './withPortableText'
 
 export const defaultKeyGenerator = () => randomKey(12)
 
@@ -66,6 +69,7 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
     editor: PortableTextEditor,
     element: PortableTextBlock | PortableTextChild
   ) => {
+    // eslint-disable-next-line react/no-find-dom-node
     return editor.editable?.findDOMNode(element)
   }
   static findByPath = (editor: PortableTextEditor, path: Path) => {
@@ -153,6 +157,7 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
   public maxBlocks: number | undefined
   public readOnly: boolean
   public incomingPatches$?: PatchObservable
+  public slateInstance: PortableTextSlateEditor
 
   constructor(props: PortableTextEditorProps) {
     super(props)
@@ -191,6 +196,14 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
         : parseInt(props.maxBlocks.toString(), 10) || undefined
     this.readOnly = props.readOnly || false
     this.state = state
+    this.slateInstance = withPortableText(createEditor(), {
+      portableTextFeatures: this.portableTextFeatures,
+      keyGenerator: this.keyGenerator,
+      change$: this.change$,
+      maxBlocks: this.maxBlocks,
+      incomingPatches$: this.incomingPatches$,
+      readOnly: !!this.props.readOnly,
+    })
   }
 
   componentWillUnmount() {

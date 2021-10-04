@@ -1,6 +1,7 @@
 import {Path} from '@sanity/types'
 import {Subject, Observable} from 'rxjs'
-import {Node as SlateNode, Operation as SlateOperation, Editor as SlateEditor} from 'slate'
+import {Node as SlateNode, Operation as SlateOperation} from 'slate'
+import {ReactEditor} from '@sanity/slate-react'
 import type {Patch} from '../types/patch'
 import {Type} from '../types/schema'
 import {PortableTextBlock, PortableTextChild} from '../types/portableText'
@@ -55,7 +56,7 @@ export interface History {
 
 export type EditorSelectionPoint = {path: Path; offset: number}
 export type EditorSelection = {anchor: EditorSelectionPoint; focus: EditorSelectionPoint} | null
-export interface PortableTextSlateEditor extends SlateEditor {
+export interface PortableTextSlateEditor extends ReactEditor {
   editable: EditableAPI
   history: History
   /**

@@ -199,7 +199,7 @@ export function createWithHotkeys(
             ],
             portableTextFeatures.types.block.name
           )[0]
-          Editor.insertNode(editor, (block as unknown) as Element)
+          Editor.insertNode(editor, block)
           event.preventDefault()
           return
         }
