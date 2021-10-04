@@ -13,7 +13,7 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {Marker} from '@sanity/types'
-import {useLayer} from '@sanity/ui'
+import {Card, useLayer} from '@sanity/ui'
 import {ScrollContainer} from '@sanity/base/components'
 import React, {useMemo, useEffect} from 'react'
 import styled from 'styled-components'
@@ -216,18 +216,20 @@ function PortableTextSanityEditor(props: Props) {
           <ScrollContainer className={scClassNames} ref={setScrollContainerElement}>
             <div className={editorWrapperClassNames}>
               <EditableWrapper className={editorClassNames}>
-                <PortableTextEditable
-                  hotkeys={hotkeys}
-                  onCopy={onCopy}
-                  onPaste={onPaste}
-                  placeholderText={value ? undefined : 'Empty'}
-                  renderAnnotation={renderAnnotation}
-                  renderBlock={renderBlock}
-                  renderChild={renderChild}
-                  renderDecorator={renderDecorator}
-                  selection={initialSelection}
-                  spellCheck
-                />
+                <Card>
+                  <PortableTextEditable
+                    hotkeys={hotkeys}
+                    onCopy={onCopy}
+                    onPaste={onPaste}
+                    placeholderText={value ? undefined : 'Empty'}
+                    renderAnnotation={renderAnnotation}
+                    renderBlock={renderBlock}
+                    renderChild={renderChild}
+                    renderDecorator={renderDecorator}
+                    selection={initialSelection}
+                    spellCheck
+                  />
+                </Card>
               </EditableWrapper>
             </div>
           </ScrollContainer>
