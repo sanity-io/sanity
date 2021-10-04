@@ -1,9 +1,19 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
+import {isEqual} from 'lodash'
 import locationStore from 'part:@sanity/base/location'
 import {Observable, of} from 'rxjs'
-import {map, filter, scan, publishReplay, refCount, tap, catchError} from 'rxjs/operators'
+import {
+  map,
+  filter,
+  scan,
+  publishReplay,
+  refCount,
+  tap,
+  catchError,
+  distinctUntilChanged,
+} from 'rxjs/operators'
 import rootRouter from '../router'
 import getOrderedTools from '../util/getOrderedTools'
 import reconfigureClient from '../util/reconfigureClient'
@@ -141,8 +151,9 @@ export const state: Observable<StateEvent> = locationStore.state.pipe(
   scan(maybeHandleIntent, null),
   filter(Boolean),
   map(maybeRedirectDefaultState),
-  catchError((err) => of({type: 'error', error: err})),
   filter(Boolean),
+  distinctUntilChanged(isEqual),
+  catchError((err) => of({type: 'error', error: err})),
   publishReplay(1),
   refCount()
 )
