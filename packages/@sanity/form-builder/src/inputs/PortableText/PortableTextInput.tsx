@@ -119,6 +119,7 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
 
   // Memoized patch stream
   const patche$: Subject<EditorPatch> = useMemo(() => new Subject(), [])
+  const patchObservable = useMemo(() => patche$.asObservable(), [patche$])
 
   // Handle incoming patches from withPatchSubscriber HOC
   function handleDocumentPatches({
@@ -196,7 +197,7 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
     () => (
       <PortableTextEditor
         ref={ref}
-        incomingPatches$={patche$.asObservable()}
+        incomingPatches$={patchObservable}
         key={`portable-text-editor-${editorId}`}
         onChange={handleEditorChange}
         maxBlocks={undefined} // TODO: from schema?
