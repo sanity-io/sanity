@@ -1,13 +1,12 @@
 import {useRouterState, useRouter} from '@sanity/base/router'
-import {useMemo} from 'react'
+import {useMemo, useCallback} from 'react'
 import {Router} from './types'
 
 export function useDefaultLayoutRouter(): Router {
-  const routerState = useRouterState()
   const {navigate} = useRouter()
-  const tool = routerState?.tool
-  const space = routerState?.space
-  const state = useMemo(() => ({space, tool}), [space, tool])
+  const tool = useRouterState(useCallback((routerState) => routerState?.tool, []))
+  const space = useRouterState(useCallback((routerState) => routerState?.space, []))
+  const state = useMemo(() => ({tool, space}), [tool, space])
 
   return useMemo(() => ({state, navigate}), [navigate, state])
 }
