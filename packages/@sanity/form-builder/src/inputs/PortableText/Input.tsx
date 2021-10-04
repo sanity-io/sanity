@@ -15,7 +15,7 @@ import {
   Type,
 } from '@sanity/portable-text-editor'
 import {Path, isKeySegment, Marker, isKeyedObject} from '@sanity/types'
-import {BoundaryElementProvider, Box, Layer, Portal, PortalProvider} from '@sanity/ui'
+import {BoundaryElementProvider, Box, Text, Layer, Portal, PortalProvider} from '@sanity/ui'
 import {isEqual} from 'lodash'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/components'
 import ActivateOnFocus from '../../components/ActivateOnFocus/ActivateOnFocus'
@@ -32,6 +32,12 @@ import {BlockExtrasWithChangeIndicator} from './BlockExtrasOverlay'
 import {TextBlock} from './Text/TextBlock'
 
 const ROOT_PATH = []
+
+const activateOnFocusMessage = (
+  <Text>
+    <strong>Click to activate</strong>
+  </Text>
+)
 
 type Props = {
   editorId: string
@@ -470,7 +476,7 @@ export default function PortableTextInput(props: Props) {
 
     return (
       <ActivateOnFocus
-        message={<h3 className={styles.activeOnFocusHeading}>Click to activate</h3>}
+        message={activateOnFocusMessage}
         onActivate={handleActivate}
         isOverlayActive={!isActive}
       >
