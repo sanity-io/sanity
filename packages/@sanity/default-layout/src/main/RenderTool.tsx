@@ -4,7 +4,7 @@
 import React, {createElement, memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Box, Card, Container, ErrorBoundary, Heading, Stack, Text} from '@sanity/ui'
 import tools from 'all:part:@sanity/base/tool'
-import {ErrorScreen} from './ErrorScreen'
+import {RenderToolErrorScreen} from './ErrorScreen'
 
 declare const __DEV__: boolean
 
@@ -19,7 +19,7 @@ interface Props {
 export const RenderTool = memo(function RenderTool(props: Props) {
   const {tool: activeToolName} = props
   const activeToolNameRef = useRef(activeToolName)
-
+  const activeTool = tools.find((tool) => tool.name === activeToolName)
   const [state, setState] = useState({error: null, showErrorDetails: __DEV__})
 
   useEffect(() => {
@@ -39,18 +39,14 @@ export const RenderTool = memo(function RenderTool(props: Props) {
     setState((prevState) => ({...prevState, error: null}))
   }, [])
 
-  const activeTool = useMemo(() => {
-    return tools.find((tool) => tool.name === activeToolName)
-  }, [activeToolName])
-
   if (state.error) {
     const {error, info} = state.error
     const {showErrorDetails} = state
 
     return (
-      <ErrorScreen
+      <RenderToolErrorScreen
         activeTool={activeTool}
-        // Some (rare) errors doesn't seem to have any Error instance attached
+        // Some (rare) errors don't seem to have any Error instance attached
         // In these cases, default to an error-like object with a generic message
         error={error || defaultUnknownError}
         info={info}
