@@ -1,5 +1,16 @@
 import {EllipsisVerticalIcon, SelectIcon} from '@sanity/icons'
-import {Box, Button, Card, Container, Stack, Tab, TabList, Text, Tooltip} from '@sanity/ui'
+import {
+  Box,
+  Button,
+  Card,
+  Container,
+  Stack,
+  Tab,
+  TabList,
+  Text,
+  TextInput,
+  Tooltip,
+} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import React, {useMemo, useState} from 'react'
 import {Pane} from '../Pane'
@@ -61,21 +72,35 @@ export default function TabsStory() {
   const [id, setId] = useState(['all'])
 
   const selectTabs = (e, name) => {
+    // when 'all' is clicked, select 'all' and unselect the rest
     if (name == 'all') {
       setId([name])
-    } else {
+    }
+
+    // if other tab than 'all' is clicked, unselect 'all'
+    if (name != 'all') {
       setId((currentId) => currentId.filter((tag) => tag !== 'all'))
     }
 
-    if (id.includes(name)) {
-      if (id.length === 1) {
-        setId(['all'])
-      } else {
-        setId((currentId) => currentId.filter((tag) => tag !== name))
-      }
-    } else if (e.shiftKey) {
+    // if tab that is already selected is clicked and it was the only selected tab,
+    // deselect it and select 'all'
+    if (id.includes(name) && id.length === 1) {
+      setId(['all'])
+    }
+
+    // if tab that is already selected is clicked and it wasn't the only selected tab,
+    // deselect it
+    if (id.includes(name) && id.length > 1) {
+      setId((currentId) => currentId.filter((tag) => tag !== name))
+    }
+
+    // if unselected tab is clicked while holding Shift, select it and keep others selected
+    if (!id.includes(name) && e.shiftKey) {
       setId((currentId) => [...currentId, name])
-    } else {
+    }
+
+    // if unselected tab is clicked while not holding Shift, select it and unselect others
+    if (!id.includes(name) && !e.shiftKey) {
       setId([name])
     }
   }
@@ -106,10 +131,15 @@ export default function TabsStory() {
     )
   }
 
-  const TaggedElement = ({tag, children}) => {
+  const TaggedElement = ({tag, label}) => {
     return (
       <Box hidden={!id.includes('all') && tag.filter((value) => id.includes(value)).length == 0}>
-        {children}
+        <Text size={1} weight="semibold">
+          {label}
+        </Text>
+        <Box marginY={2}>
+          <TextInput fontSize={[2, 2, 3, 4]} padding={[3, 3, 4]} />
+        </Box>
       </Box>
     )
   }
@@ -149,42 +179,36 @@ export default function TabsStory() {
                   <DocumentTab name="fruits" />
                 </TabList>
               </Card>
-              <TaggedElement tag={['apples', 'puppies', 'animals', 'fruits']}>
-                <Text>Apples & puppies</Text>
-              </TaggedElement>
-              <TaggedElement tag={['oranges', 'kitties', 'animals', 'fruits']}>
-                <Text>Oranges & kitties</Text>
-              </TaggedElement>
-              <TaggedElement tag={['apples', 'kitties', 'animals', 'fruits']}>
-                <Text>Apples & kitties</Text>
-              </TaggedElement>
-              <TaggedElement tag={['oranges', 'puppies', 'animals', 'fruits']}>
-                <Text>Oranges & puppies</Text>
-              </TaggedElement>
-              <TaggedElement tag={['apples', 'fruits']}>
-                <Text>Apples</Text>
-              </TaggedElement>
-              <TaggedElement tag={['oranges', 'fruits']}>
-                <Text>Oranges</Text>
-              </TaggedElement>
-              <TaggedElement tag={['kitties', 'animals']}>
-                <Text>Kitties</Text>
-              </TaggedElement>
-              <TaggedElement tag={['puppies', 'animals']}>
-                <Text>Puppies</Text>
-              </TaggedElement>
-              <TaggedElement tag={['puppies', 'kitties', 'animals']}>
-                <Text>Puppies & kitties</Text>
-              </TaggedElement>
-              <TaggedElement tag={['oranges', 'apples', 'fruits']}>
-                <Text>Oranges & apples</Text>
-              </TaggedElement>
-              <TaggedElement tag={['apples', 'puppies', 'animals', 'fruits']}>
-                <Text>Apples & puppies</Text>
-              </TaggedElement>
-              <TaggedElement tag={['oranges', 'kitties', 'animals', 'fruits']}>
-                <Text>Oranges & kitties</Text>
-              </TaggedElement>
+              <TaggedElement
+                tag={['apples', 'puppies', 'animals', 'fruits']}
+                label="Apples & puppies"
+              />
+              <TaggedElement
+                tag={['oranges', 'kitties', 'animals', 'fruits']}
+                label="Oranges & kitties"
+              />
+              <TaggedElement
+                tag={['apples', 'kitties', 'animals', 'fruits']}
+                label="Apples & kitties"
+              />
+              <TaggedElement
+                tag={['oranges', 'puppies', 'animals', 'fruits']}
+                label="Oranges & puppies"
+              />
+              <TaggedElement tag={['apples', 'fruits']} label="Apples" />
+              <TaggedElement tag={['oranges', 'fruits']} label="Oranges" />
+              <TaggedElement tag={['kitties', 'animals']} label="Kitties" />
+              <TaggedElement tag={['puppies', 'animals']} label="Puppies" />
+              <TaggedElement tag={['puppies', 'kitties', 'animals']} label="Puppies & kitties" />
+              <TaggedElement tag={['oranges', 'apples', 'fruits']} label="Oranges & apples" />
+              <TaggedElement
+                tag={['apples', 'puppies', 'animals', 'fruits']}
+                label="Apples & puppies"
+              />
+              <TaggedElement
+                tag={['oranges', 'kitties', 'animals', 'fruits']}
+                label="Oranges & kitties"
+              />
             </Stack>
           </Container>
         </PaneContent>
