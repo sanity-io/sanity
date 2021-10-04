@@ -4,7 +4,6 @@ import React, {useEffect, useMemo} from 'react'
 import {IntentResolver} from '../components/intentResolver'
 import {DeskTool} from '../DeskTool'
 import {getIntentState, setActivePanes} from '../getIntentState'
-import {useUnique} from '../lib/useUnique'
 import {router} from '../router'
 
 export default {
@@ -26,7 +25,7 @@ function canHandleIntent(intentName: string, params: Record<string, string | und
 }
 
 function DeskToolRoot() {
-  const routerState = useUnique(useRouterState())
+  const routerState = useRouterState()
   const {intent, params, payload} = routerState || {}
 
   useEffect(() => {
