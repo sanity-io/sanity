@@ -1,6 +1,6 @@
 import React from 'react'
 import config from 'config:sanity'
-import FullscreenMessageDialog from 'part:@sanity/components/dialogs/fullscreen-message'
+import {Dialog, Stack, Code, Text, Card} from '@sanity/ui'
 
 export default function MissingProjectConfig() {
   const {root, project, plugins} = config
@@ -9,19 +9,21 @@ export default function MissingProjectConfig() {
   const desiredConfig = {root, project, api, plugins}
   const missing = [!projectId && '"projectId"', !dataset && '"dataset"'].filter(Boolean)
   return (
-    <FullscreenMessageDialog title="Project details missing">
-      <p>
-        The <code>sanity.json</code> file in your studio folder seems to be missing the{' '}
-        {missing.join(' and ')} configuration {missing.length > 1 ? 'options ' : 'option '}
-        under the <code>api</code> key.
-      </p>
-      <p>
-        A valid <code>sanity.json</code> file looks something like the following:
-      </p>
-      <pre>
-        <code>{highlightMissing(JSON.stringify(desiredConfig, null, 2))}</code>
-      </pre>
-    </FullscreenMessageDialog>
+    <Dialog id="missing-project-config" header="Project details missing" padding={2} width={1}>
+      <Stack space={4} padding={4}>
+        <Text as="p">
+          The <code>sanity.json</code> file in your studio folder seems to be missing the{' '}
+          {missing.join(' and ')} configuration {missing.length > 1 ? 'options ' : 'option '}
+          under the <code>api</code> key.
+        </Text>
+        <Text as="p">
+          A valid <code>sanity.json</code> file looks something like the following:
+        </Text>
+        <Card tone="transparent" padding={4} radius={2}>
+          <Code>{highlightMissing(JSON.stringify(desiredConfig, null, 2))}</Code>
+        </Card>
+      </Stack>
+    </Dialog>
   )
 }
 
