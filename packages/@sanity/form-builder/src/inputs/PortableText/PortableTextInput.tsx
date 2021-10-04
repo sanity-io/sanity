@@ -220,7 +220,6 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
           hasFocus={hasFocus}
           hotkeys={hotkeys}
           isFullscreen={isFullscreen}
-          key={`portable-text-input-${editorId}`}
           markers={markers}
           onBlur={onBlur}
           onChange={onChange}
@@ -283,7 +282,12 @@ export default (withPatchSubscriber(
           presence={presence}
           changeIndicator={false}
         >
-          <PortableTextInputWithRef {...this.props} ref={this.editorRef} />
+          <PortableTextInputWithRef
+            {...this.props}
+            // NOTE: this should be a temporary fix
+            key={this.props.readOnly ? '$readOnly' : '$editable'}
+            ref={this.editorRef}
+          />
         </FormField>
       )
     }
