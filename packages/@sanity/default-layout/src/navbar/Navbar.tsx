@@ -189,169 +189,153 @@ export const Navbar = memo(function Navbar(props: Props) {
     searchCloseButtonElement,
   ])
 
-  return useMemo(
-    () => (
-      <Root $onSearchOpen={searchOpen} padding={2} scheme="dark">
-        <Flex align="center" justify="space-between">
-          <LeftFlex flex={shouldRender.brandingCenter ? undefined : 1} align="center">
-            {!shouldRender.tools && (
-              <SpacingBox marginRight={1}>
-                <Button
-                  aria-label="Open menu"
-                  icon={MenuIcon}
-                  mode="bleed"
-                  onClick={onToggleMenu}
-                  title="Open menu"
-                />
-              </SpacingBox>
-            )}
+  return (
+    <Root $onSearchOpen={searchOpen} padding={2} scheme="dark">
+      <Flex align="center" justify="space-between">
+        <LeftFlex flex={shouldRender.brandingCenter ? undefined : 1} align="center">
+          {!shouldRender.tools && (
+            <SpacingBox marginRight={1}>
+              <Button
+                aria-label="Open menu"
+                icon={MenuIcon}
+                mode="bleed"
+                onClick={onToggleMenu}
+                title="Open menu"
+              />
+            </SpacingBox>
+          )}
 
-            {!shouldRender.brandingCenter && (
-              <SpacingBox marginRight={1}>
-                <BrandingButton forwardedAs={LinkComponent} mode="bleed">
-                  <Branding projectName={config && config.project.name} />
-                </BrandingButton>
-              </SpacingBox>
-            )}
-
-            {shouldRender.spaces && (
-              <Flex marginRight={2}>
-                <DatasetSelect />
-              </Flex>
-            )}
-
-            <LegacyLayerProvider zOffset="navbarPopover">
-              <Tooltip
-                portal
-                scheme="light"
-                content={
-                  <Box padding={2}>
-                    {createAnyPermission.granted ? (
-                      <Text size={1}>Create new document</Text>
-                    ) : (
-                      <InsufficientPermissionsMessage
-                        currentUser={currentUser}
-                        operationLabel="create any document"
-                      />
-                    )}
-                  </Box>
-                }
-              >
-                <SpacingBox marginRight={shouldRender.brandingCenter ? undefined : 2}>
-                  <Button
-                    aria-label="Create new document"
-                    data-testid="default-layout-global-create-button"
-                    icon={ComposeIcon}
-                    mode="bleed"
-                    onClick={onCreateButtonClick}
-                    disabled={!createAnyPermission.granted}
-                    selected={createMenuIsOpen}
-                  />
-                </SpacingBox>
-              </Tooltip>
-            </LegacyLayerProvider>
-
-            <LegacyLayerProvider zOffset="navbarPopover">
-              {(searchOpen || !shouldRender.searchFullscreen) && (
-                <SearchCard
-                  $fullScreen={shouldRender.searchFullscreen}
-                  flex={1}
-                  padding={shouldRender.searchFullscreen ? 2 : undefined}
-                  scheme={shouldRender.searchFullscreen ? 'light' : undefined}
-                  shadow={shouldRender.searchFullscreen ? 1 : undefined}
-                >
-                  <Flex>
-                    <Box flex={1} marginRight={shouldRender.tools ? undefined : [1, 1, 2]}>
-                      <SearchField
-                        fullScreen={shouldRender.searchFullscreen}
-                        inputElement={setInputElement}
-                        onSearchItemClick={handleToggleSearchOpen}
-                        portalElement={searchPortalElement}
-                        relatedElements={searchRelatedElements}
-                      />
-                    </Box>
-                    {shouldRender.searchFullscreen && (
-                      <Button
-                        icon={CloseIcon}
-                        aria-label="Close search"
-                        onClick={handleToggleSearchOpen}
-                        mode="bleed"
-                        ref={setSearchCloseButtonElement}
-                      />
-                    )}
-                  </Flex>
-                </SearchCard>
-              )}
-            </LegacyLayerProvider>
-
-            {shouldRender.tools && (
-              <Card borderRight paddingRight={1} flex={1} overflow="visible" marginX={2}>
-                <LegacyLayerProvider zOffset="navbarPopover">
-                  <ToolMenu direction="horizontal" tools={tools} />
-                </LegacyLayerProvider>
-              </Card>
-            )}
-          </LeftFlex>
-
-          {shouldRender.brandingCenter && (
-            <CenterBox marginX={1}>
+          {!shouldRender.brandingCenter && (
+            <SpacingBox marginRight={1}>
               <BrandingButton forwardedAs={LinkComponent} mode="bleed">
                 <Branding projectName={config && config.project.name} />
               </BrandingButton>
-            </CenterBox>
+            </SpacingBox>
           )}
 
-          <RightFlex align="center">
-            {shouldRender.statusContainer && (
-              <SpacingBox marginRight={1}>
-                <SanityStatusContainer />
+          {shouldRender.spaces && (
+            <Flex marginRight={2}>
+              <DatasetSelect />
+            </Flex>
+          )}
+
+          <LegacyLayerProvider zOffset="navbarPopover">
+            <Tooltip
+              portal
+              scheme="light"
+              content={
+                <Box padding={2}>
+                  {createAnyPermission.granted ? (
+                    <Text size={1}>Create new document</Text>
+                  ) : (
+                    <InsufficientPermissionsMessage
+                      currentUser={currentUser}
+                      operationLabel="create any document"
+                    />
+                  )}
+                </Box>
+              }
+            >
+              <SpacingBox marginRight={shouldRender.brandingCenter ? undefined : 2}>
+                <Button
+                  aria-label="Create new document"
+                  data-testid="default-layout-global-create-button"
+                  icon={ComposeIcon}
+                  mode="bleed"
+                  onClick={onCreateButtonClick}
+                  disabled={!createAnyPermission.granted}
+                  selected={createMenuIsOpen}
+                />
               </SpacingBox>
-            )}
+            </Tooltip>
+          </LegacyLayerProvider>
 
-            {shouldRender.hints && (
-              <Box marginRight={1}>{sidecar && createElement(sidecar.SidecarToggleButton)}</Box>
-            )}
-
-            <LegacyLayerProvider zOffset="navbarPopover">
-              <SpacingBox marginRight={1}>
-                <PresenceMenu collapse={shouldRender.collapsedPresenceMenu} maxAvatars={4} />
-              </SpacingBox>
-            </LegacyLayerProvider>
-
-            {shouldRender.tools && (
-              <LegacyLayerProvider zOffset="navbarPopover">
-                <Flex align="center">
-                  <LoginStatus onLogout={onUserLogout} />
+          <LegacyLayerProvider zOffset="navbarPopover">
+            {(searchOpen || !shouldRender.searchFullscreen) && (
+              <SearchCard
+                $fullScreen={shouldRender.searchFullscreen}
+                flex={1}
+                padding={shouldRender.searchFullscreen ? 2 : undefined}
+                scheme={shouldRender.searchFullscreen ? 'light' : undefined}
+                shadow={shouldRender.searchFullscreen ? 1 : undefined}
+              >
+                <Flex>
+                  <Box flex={1} marginRight={shouldRender.tools ? undefined : [1, 1, 2]}>
+                    <SearchField
+                      fullScreen={shouldRender.searchFullscreen}
+                      inputElement={setInputElement}
+                      onSearchItemClick={handleToggleSearchOpen}
+                      portalElement={searchPortalElement}
+                      relatedElements={searchRelatedElements}
+                    />
+                  </Box>
+                  {shouldRender.searchFullscreen && (
+                    <Button
+                      icon={CloseIcon}
+                      aria-label="Close search"
+                      onClick={handleToggleSearchOpen}
+                      mode="bleed"
+                      ref={setSearchCloseButtonElement}
+                    />
+                  )}
                 </Flex>
-              </LegacyLayerProvider>
+              </SearchCard>
             )}
+          </LegacyLayerProvider>
 
-            {shouldRender.searchFullscreen && (
-              <Button
-                aria-label="Open search"
-                onClick={handleToggleSearchOpen}
-                icon={SearchIcon}
-                mode="bleed"
-                ref={setSearchOpenButtonElement}
-              />
-            )}
-          </RightFlex>
-        </Flex>
-      </Root>
-    ),
-    [
-      createAnyPermission.granted,
-      createMenuIsOpen,
-      currentUser,
-      handleToggleSearchOpen,
-      LinkComponent,
-      onCreateButtonClick,
-      onToggleMenu,
-      onUserLogout,
-      searchOpen,
-      searchPortalElement,
-      searchRelatedElements,
-      shouldRender,
-    ]
+          {shouldRender.tools && (
+            <Card borderRight paddingRight={1} flex={1} overflow="visible" marginX={2}>
+              <LegacyLayerProvider zOffset="navbarPopover">
+                <ToolMenu direction="horizontal" tools={tools} />
+              </LegacyLayerProvider>
+            </Card>
+          )}
+        </LeftFlex>
+
+        {shouldRender.brandingCenter && (
+          <CenterBox marginX={1}>
+            <BrandingButton forwardedAs={LinkComponent} mode="bleed">
+              <Branding projectName={config && config.project.name} />
+            </BrandingButton>
+          </CenterBox>
+        )}
+
+        <RightFlex align="center">
+          {shouldRender.statusContainer && (
+            <SpacingBox marginRight={1}>
+              <SanityStatusContainer />
+            </SpacingBox>
+          )}
+
+          {shouldRender.hints && (
+            <Box marginRight={1}>{sidecar && createElement(sidecar.SidecarToggleButton)}</Box>
+          )}
+
+          <LegacyLayerProvider zOffset="navbarPopover">
+            <SpacingBox marginRight={1}>
+              <PresenceMenu collapse={shouldRender.collapsedPresenceMenu} maxAvatars={4} />
+            </SpacingBox>
+          </LegacyLayerProvider>
+
+          {shouldRender.tools && (
+            <LegacyLayerProvider zOffset="navbarPopover">
+              <Flex align="center">
+                <LoginStatus onLogout={onUserLogout} />
+              </Flex>
+            </LegacyLayerProvider>
+          )}
+
+          {shouldRender.searchFullscreen && (
+            <Button
+              aria-label="Open search"
+              onClick={handleToggleSearchOpen}
+              icon={SearchIcon}
+              mode="bleed"
+              ref={setSearchOpenButtonElement}
+            />
+          )}
+        </RightFlex>
+      </Flex>
+    </Root>
   )
 })
