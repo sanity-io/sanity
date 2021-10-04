@@ -46,7 +46,7 @@ export const Leaf = (props: LeafProps) => {
   )
   if (leaf._type === portableTextFeatures.types.span.name) {
     const blockElement = children.props.parent
-    const path = [{_key: blockElement._key}, 'children', {_key: leaf._key}]
+    const path = blockElement ? [{_key: blockElement._key}, 'children', {_key: leaf._key}] : []
     const decoratorValues = portableTextFeatures.decorators.map((dec) => dec.value)
     const marks: string[] = uniq(
       (Array.isArray(leaf.marks) ? leaf.marks : []).filter((mark) => decoratorValues.includes(mark))
@@ -121,7 +121,7 @@ export const Leaf = (props: LeafProps) => {
         }
       })
     }
-    if (renderChild) {
+    if (blockElement && renderChild) {
       const child = blockElement.children.find((_child: any) => _child._key === leaf._key) // Ensure object equality
       returnedChildren = renderChild(
         child,
