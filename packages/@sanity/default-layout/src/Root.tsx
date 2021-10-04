@@ -7,7 +7,6 @@ import LoginWrapper from 'part:@sanity/base/login-wrapper?'
 import {RouterProvider} from '@sanity/base/router'
 import AppLoadingScreen from 'part:@sanity/base/app-loading-screen'
 import * as urlStateStore from './datastores/urlState'
-import getOrderedTools from './util/getOrderedTools'
 import rootRouter, {maybeRedirectToBase} from './router'
 import {DefaultLayout} from './defaultLayout'
 import {NotFound} from './main'
@@ -23,7 +22,6 @@ interface State {
 
 function DefaultLayoutRoot() {
   const [state, setState] = useState<State>({})
-  const tools = getOrderedTools()
 
   useEffect(() => {
     return () => {
@@ -78,9 +76,9 @@ function DefaultLayoutRoot() {
           )}
         </NotFound>
       ) : (
-        <DefaultLayout tools={tools} />
+        <DefaultLayout />
       ),
-    [state.isNotFound, state.intent, tools]
+    [state.isNotFound, state.intent]
   )
 
   const handleNavigate = useCallback((url: string, options: any) => {

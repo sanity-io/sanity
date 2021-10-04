@@ -8,8 +8,9 @@ import React, {memo, useEffect, useRef} from 'react'
 import ToolMenu from 'part:@sanity/default-layout/tool-switcher'
 import styled from 'styled-components'
 import {DatasetSelect} from '../datasetSelect'
-import {Tool, User} from '../types'
+import {User} from '../types'
 import {HAS_SPACES} from '../util/spaces'
+import {tools} from '../config'
 
 interface Props {
   activeToolName: string | null
@@ -17,7 +18,6 @@ interface Props {
   onClose: () => void
   onSignOut: () => void
   onSwitchTool: () => void
-  tools: Tool[]
   user: User
 }
 
@@ -54,7 +54,7 @@ const InnerCard = styled(Card)<{$open: boolean}>`
 `
 
 export const SideMenu = memo(function SideMenu(props: Props) {
-  const {activeToolName, isOpen, onClose, onSignOut, onSwitchTool, tools, user} = props
+  const {activeToolName, isOpen, onClose, onSignOut, onSwitchTool, user} = props
   const zIndex = useZIndex()
   const closeButtonRef = useRef<HTMLButtonElement>()
   const tabIndex = isOpen ? 0 : -1
