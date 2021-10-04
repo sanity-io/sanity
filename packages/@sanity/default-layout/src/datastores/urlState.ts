@@ -2,21 +2,29 @@
 ///<reference types="@sanity/types/parts" />
 
 import locationStore from 'part:@sanity/base/location'
-import {Observable} from 'rxjs'
-import {map, filter, scan, publishReplay, refCount, tap} from 'rxjs/operators'
+import {Observable, of} from 'rxjs'
+import {map, filter, scan, publishReplay, refCount, tap, catchError} from 'rxjs/operators'
+import rootRouter from '../router'
 import getOrderedTools from '../util/getOrderedTools'
 import reconfigureClient from '../util/reconfigureClient'
 import {HAS_SPACES, CONFIGURED_SPACES} from '../util/spaces'
-import rootRouter from '../router'
 
-interface StateEvent {
+interface ResolvedStateEvent {
+  type: 'resolved'
   intent: {
     name: string
     params: {[key: string]: string}
   }
   isNotFound: boolean
-  state: any
+  state: Record<string, unknown>
 }
+
+interface ErrorStateEvent {
+  type: 'error'
+  error: Error
+}
+
+type StateEvent = ResolvedStateEvent | ErrorStateEvent
 
 function resolveUrlStateWithDefaultSpace(state) {
   if (!HAS_SPACES || !state || state.space) {
@@ -91,8 +99,8 @@ function resolveIntentState(currentState, intentState) {
 }
 
 function maybeHandleIntent(
-  prevEvent: {type: string; state: {[key: string]: {}}; isNotFound: boolean},
-  currentEvent: {type: string; state: {[key: string]: {}}; isNotFound: boolean}
+  prevEvent: {type: string; state: Record<string, unknown>; isNotFound: boolean},
+  currentEvent: {type: string; state: Record<string, unknown>; isNotFound: boolean}
 ) {
   if (currentEvent && currentEvent.state && currentEvent.state.intent) {
     const redirectState = resolveIntentState(prevEvent ? prevEvent.state : {}, currentEvent.state)
@@ -115,7 +123,7 @@ function decodeUrlState(locationEvent: {type: string}) {
   }
 }
 
-function maybeRedirectDefaultState(event: StateEvent): StateEvent | null {
+function maybeRedirectDefaultState(event: ResolvedStateEvent): StateEvent | null {
   const redirectState = resolveDefaultState(event.state)
   if (redirectState !== event.state) {
     navigate(rootRouter.encode(redirectState), {replace: true})
@@ -124,7 +132,7 @@ function maybeRedirectDefaultState(event: StateEvent): StateEvent | null {
   return event
 }
 
-export function navigate(newUrl: string, options: {replace: boolean}) {
+export function navigate(newUrl: string, options: {replace: boolean}): void {
   locationStore.actions.navigate(newUrl, options)
 }
 
@@ -133,15 +141,21 @@ export const state: Observable<StateEvent> = locationStore.state.pipe(
   scan(maybeHandleIntent, null),
   filter(Boolean),
   map(maybeRedirectDefaultState),
+  catchError((err) => of({type: 'error', error: err})),
   filter(Boolean),
   publishReplay(1),
   refCount()
 )
 
+export function isResolvedEvent(event: StateEvent): event is ResolvedStateEvent {
+  return event.type === 'resolved'
+}
+
 if (HAS_SPACES) {
   // Uglybugly mutation ahead.
   state
     .pipe(
+      filter(isResolvedEvent),
       map((event) => event.state),
       filter(Boolean),
       tap(reconfigureClient)

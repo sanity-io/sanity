@@ -1,8 +1,9 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
+import {Card, Code, Stack, Text} from '@sanity/ui'
 import {isEqual} from 'lodash'
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import LoginWrapper from 'part:@sanity/base/login-wrapper?'
 import {RouterProvider} from '@sanity/base/router'
 import AppLoadingScreen from 'part:@sanity/base/app-loading-screen'
@@ -10,6 +11,7 @@ import * as urlStateStore from './datastores/urlState'
 import rootRouter, {maybeRedirectToBase} from './router'
 import {DefaultLayout} from './defaultLayout'
 import {NotFound} from './main'
+import {ErrorScreen} from './ErrorScreen'
 
 interface State {
   intent?: {
@@ -17,89 +19,84 @@ interface State {
     params: {[key: string]: string}
   }
   urlState?: Record<string, unknown>
-  isNotFound?: boolean
+  isNotFound: boolean
 }
 
 function DefaultLayoutRoot() {
-  const [state, setState] = useState<State>({})
-
-  useEffect(() => {
-    return () => {
-      // reset state on unmount
-      setState({})
-    }
-  }, [])
+  const [state, setState] = useState<State>({isNotFound: false})
+  const [error, setError] = useState<Error | null>(null)
 
   useEffect(maybeRedirectToBase, [])
 
   useEffect(() => {
-    const sub = urlStateStore.state.subscribe({
-      next: (event) => {
-        let urlState = state.urlState
-        let isNotFound = state.isNotFound
-        let intent = state.intent
+    const sub = urlStateStore.state.subscribe((event) => {
+      if (event.type === 'error') {
+        setError(event.error)
+        return
+      }
 
-        if (!isEqual(state.urlState, event.state)) {
-          urlState = event.state
+      setState((prev) => {
+        const next = {
+          urlState: event.state || prev.urlState,
+          isNotFound: event.isNotFound || prev.isNotFound,
+          intent: event.intent || prev.intent,
         }
 
-        if (!isEqual(state.isNotFound, event.isNotFound)) {
-          isNotFound = event.isNotFound
-        }
+        // If you update a State Hook to the same value as the current state,
+        // React will bail out without rendering the children or firing effects.
+        // https://reactjs.org/docs/hooks-reference.html#bailing-out-of-a-state-update
+        if (isEqual(next, prev)) return prev
 
-        if (!isEqual(state.intent, event.intent)) {
-          intent = event.intent
-        }
-
-        const urlStateEqual = state.urlState === urlState
-        const isNotFoundEqual = state.isNotFound === isNotFound
-        const intentEqual = state.intent === intent
-
-        if (!urlStateEqual || !isNotFoundEqual || !intentEqual) {
-          setState({urlState, isNotFound, intent})
-        }
-      },
+        return next
+      })
     })
 
     return () => sub.unsubscribe()
   }, [state])
 
-  const children = useMemo(
-    () =>
-      state.isNotFound ? (
-        <NotFound>
-          {state.intent && (
-            <div>
-              No tool can handle the intent: <strong>{state.intent.name}</strong> with parameters{' '}
-              <pre>{JSON.stringify(state.intent.params)}</pre>
-            </div>
-          )}
-        </NotFound>
-      ) : (
-        <DefaultLayout />
-      ),
-    [state.isNotFound, state.intent]
-  )
-
   const handleNavigate = useCallback((url: string, options: any) => {
     urlStateStore.navigate(url, options)
   }, [])
 
-  const routedChildren = state.urlState && (
+  if (error) {
+    return (
+      <ErrorScreen
+        description={<>Caught an unexpected error while routing:</>}
+        error={error}
+        title="Router error"
+      />
+    )
+  }
+
+  const children = state.urlState && (
     <RouterProvider router={rootRouter} state={state.urlState} onNavigate={handleNavigate}>
-      {children}
+      {state.isNotFound && (
+        <NotFound>
+          {!state.intent && (
+            <Stack space={4}>
+              <Text as="p" muted>
+                Could not find a tool that is configured to handle the{' '}
+                <code>{state.intent?.name || 'test'}</code> intent with parameters:
+              </Text>
+              <Card overflow="auto" padding={3} radius={2} tone="transparent">
+                <Code language="json">{JSON.stringify(state.intent?.params || {})}</Code>
+              </Card>
+            </Stack>
+          )}
+        </NotFound>
+      )}
+
+      {!state.isNotFound && <DefaultLayout />}
     </RouterProvider>
   )
 
   if (LoginWrapper) {
     return (
-      <LoginWrapper LoadingScreen={<AppLoadingScreen text="Logging in" />}>
-        {routedChildren}
-      </LoginWrapper>
+      <LoginWrapper LoadingScreen={<AppLoadingScreen text="Logging in" />}>{children}</LoginWrapper>
     )
   }
 
-  return <>{routedChildren}</>
+  return <>{children}</>
 }
 
 export default DefaultLayoutRoot

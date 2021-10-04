@@ -15,12 +15,11 @@ export const NotFound = (props: NotFoundProps) => {
   return (
     <Card height="fill" paddingX={[5, 5, 7]} paddingY={[5, 5, 6]} sizing="border">
       <Container>
-        <Box marginBottom={5}>
-          <Heading as="h1">Page not found</Heading>
-        </Box>
+        <Heading as="h1">Page not found</Heading>
 
         <Stack space={4} paddingY={4}>
           {props.children && <Box>{props.children}</Box>}
+
           <Box>
             <Text>
               <StateLink state={rootState}>Go to index</StateLink>
