@@ -26,10 +26,10 @@ export function PaneRouterProvider(props: {
 }) {
   const {children, flatIndex, index, params: paramsProp, payload: payloadProp, siblingIndex} = props
   const {navigate, navigateIntent} = useRouter()
-  const routerState = useUnique(useRouterState())
-  const routerPaneGroups: RouterPaneGroup[] = useUnique(
-    useMemo(() => routerState?.panes || [], [routerState?.panes])
-  )
+  const routerState = useRouterState()
+  const routerPaneGroups: RouterPaneGroup[] = useMemo(() => routerState?.panes || [], [
+    routerState?.panes,
+  ])
 
   const groupIndex = index - 1
 

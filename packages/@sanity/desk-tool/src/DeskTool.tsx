@@ -17,7 +17,6 @@ import {
   hasLoading,
   isSaveHotkey,
 } from './helpers'
-import {useUnique} from './lib/useUnique'
 import {DeskToolPane, LoadingPane} from './panes'
 import {RouterPaneGroup, StructureErrorType, StructurePane} from './types'
 import {
@@ -44,12 +43,9 @@ export function DeskTool(props: DeskToolProps) {
   const {push: pushToast} = useToast()
   const {navigate} = useRouter()
   const routerState = useRouterState()
-  // NOTE: Wrapping this value in a `useUnique` is done because the `router.state.panes` is parsed
-  // from the `location.pathname` string, and will generate new objects for all segments, even when
-  // they didn’t change. Adding this prevents a few re-renders.
-  const routerPanes: RouterPaneGroup[] = useUnique(
-    useMemo(() => routerState?.panes || [], [routerState?.panes])
-  )
+  const routerPanes: RouterPaneGroup[] = useMemo(() => routerState?.panes || [], [
+    routerState?.panes,
+  ])
   const [error, setError] = useState<StructureErrorType | null>(null)
   const prevRouterPanesRef = useRef<RouterPaneGroup[] | null>(null)
   const currRouterPanesRef = useRef<RouterPaneGroup[]>(routerPanes)
