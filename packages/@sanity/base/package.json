@@ -17,7 +17,7 @@
   },
   "scripts": {
     "clean": "rimraf lib dest",
-    "coverage": "nyc --report=lcov --report=text _mocha -- test/**/*.test.js",
+    "coverage": "jest --coverage",
     "prepublishOnly": "node scripts/writeRequiredUIVersion.js",
     "test": "jest"
   },
