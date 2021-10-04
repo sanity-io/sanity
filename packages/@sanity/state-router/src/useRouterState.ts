@@ -1,10 +1,13 @@
 import {useContext, useEffect, useState, useRef} from 'react'
+import {identity} from 'lodash'
 import {RouterState} from './components/types'
 import {RouterContext} from './RouterContext'
 
-export const useRouterState = (): RouterState | null => {
+export const useRouterState = <R = RouterState>(
+  selector: (routerState: RouterState) => R = identity
+): R | null => {
   const {channel, getState} = useContext(RouterContext)
-  const [routerState, setState] = useState<RouterState>(getState())
+  const [selectedState, setState] = useState<R>(() => selector(getState()))
 
   // prevents "Can't perform a React state update on an unmounted component."
   const mountedRef = useRef(true)
@@ -15,14 +18,17 @@ export const useRouterState = (): RouterState | null => {
     }
   }, [])
 
+  // reset the state when the `selector` prop changes
+  useEffect(() => setState(selector(getState())), [selector, getState])
+
   useEffect(() => {
     // subscribe() returns an unsubscribe function, so this'll handle unmounting
     return channel.subscribe(() => {
       if (mountedRef.current) {
-        setState(getState())
+        setState(selector(getState()))
       }
     })
-  }, [channel, getState])
+  }, [channel, getState, selector])
 
-  return routerState
+  return selectedState
 }
