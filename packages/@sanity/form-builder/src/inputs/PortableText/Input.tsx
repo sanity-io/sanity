@@ -15,7 +15,15 @@ import {
   Type,
 } from '@sanity/portable-text-editor'
 import {Path, isKeySegment, Marker, isKeyedObject} from '@sanity/types'
-import {BoundaryElementProvider, Box, Text, Layer, Portal, PortalProvider} from '@sanity/ui'
+import {
+  BoundaryElementProvider,
+  Box,
+  Text,
+  Layer,
+  Portal,
+  PortalProvider,
+  usePortal,
+} from '@sanity/ui'
 import {isEqual} from 'lodash'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/components'
 import ActivateOnFocus from '../../components/ActivateOnFocus/ActivateOnFocus'
@@ -84,6 +92,7 @@ export default function PortableTextInput(props: Props) {
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
   const ptFeatures = useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [editor])
+  const portal = usePortal()
 
   // States
   const [isActive, setIsActive] = useState(false)
@@ -510,7 +519,7 @@ export default function PortableTextInput(props: Props) {
       className={classNames(styles.root, hasFocus && styles.focus, readOnly && styles.readOnly)}
       ref={setRootElement}
     >
-      <PortalProvider element={isFullscreen ? null : rootElement}>
+      <PortalProvider element={isFullscreen ? portal.element : rootElement}>
         <Portal>{children}</Portal>
       </PortalProvider>
     </div>
