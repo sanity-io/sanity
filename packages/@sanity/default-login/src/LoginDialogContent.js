@@ -6,7 +6,7 @@ import styled from 'styled-components'
 import {BrandLogo} from './legacyParts'
 import {LoginProviderButton} from './LoginProviderButton'
 
-const BrandLogoWrapper = styled(Box)`
+const BrandLogoWrapper = styled(Flex)`
   svg {
     display: block;
     height: 2rem;
@@ -51,7 +51,7 @@ export default class LoginDialogContent extends React.PureComponent {
       <Box paddingX={4} paddingY={5}>
         <Stack space={4}>
           {BrandLogo && projectName && (
-            <BrandLogoWrapper>
+            <BrandLogoWrapper justify="center">
               <BrandLogo projectName={projectName} />
             </BrandLogoWrapper>
           )}
