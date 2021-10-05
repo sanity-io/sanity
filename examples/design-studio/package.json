@@ -28,6 +28,7 @@
     "@sanity/google-maps-input": "2.20.0",
     "@sanity/icons": "^1.2.1",
     "@sanity/initial-value-templates": "2.20.0",
+    "@sanity/logos": "^1.1.6",
     "@sanity/structure": "2.20.0",
     "@sanity/types": "2.19.0",
     "@sanity/ui": "^0.36.12",
