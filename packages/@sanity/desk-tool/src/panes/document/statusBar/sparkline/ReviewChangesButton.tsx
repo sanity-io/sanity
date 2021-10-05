@@ -1,10 +1,10 @@
 import {useTimeAgo} from '@sanity/base/hooks'
-import {EditIcon, RestoreIcon, SyncIcon} from '@sanity/icons'
+import {EditIcon, SyncIcon} from '@sanity/icons'
 import {useSyncState} from '@sanity/react-hooks'
-import {ButtonProps, Box, Flex, Text} from '@sanity/ui'
+import {ButtonProps, Box, Flex, Text, Stack, Button} from '@sanity/ui'
+import {Tooltip} from 'part:@sanity/components/tooltip'
 import React, {forwardRef} from 'react'
 import {useDocumentPane} from '../../useDocumentPane'
-import {Root, TextBox} from './ReviewChangesButton.styled'
 
 export interface ReviewChangesButtonProps
   extends Omit<ButtonProps, 'mode' | 'onClick' | 'padding' | 'selected' | 'tone' | 'type'> {
@@ -15,43 +15,43 @@ export const ReviewChangesButton = forwardRef(function ReviewChangesButton(
   props: ReviewChangesButtonProps & React.HTMLProps<HTMLButtonElement>,
   ref: React.ForwardedRef<HTMLButtonElement>
 ) {
-  const {lastUpdated, ...restProps} = props
+  const {lastUpdated} = props
+  const lastUpdatedTime = useTimeAgo(lastUpdated || '', {minimal: true})
   const lastUpdatedTimeAgo = useTimeAgo(lastUpdated || '', {minimal: true, agoSuffix: true})
   const {documentId, handleHistoryClose, handleHistoryOpen, changesOpen} = useDocumentPane()
   const syncState = useSyncState(documentId)
 
   return (
-    <Root
-      {...restProps}
-      mode="ghost"
-      onClick={changesOpen ? handleHistoryClose : handleHistoryOpen}
-      padding={3}
-      ref={ref}
-      selected={changesOpen}
-      title="Review changes"
-      tone="caution"
+    <Tooltip
+      content={
+        <Stack padding={3} space={3}>
+          <Text size={1} weight="semibold">
+            Review changes
+          </Text>
+          <Text size={1} muted>
+            Changes saved {lastUpdatedTimeAgo}
+          </Text>
+        </Stack>
+      }
     >
-      <Flex align="center">
-        <Box marginRight={3}>
-          <Text>
-            {syncState.isSyncing ? (
-              <SyncIcon data-icon-enabled="" data-spin="" />
-            ) : (
-              <EditIcon data-icon-enabled="" />
-            )}
-            <RestoreIcon data-icon-hovered="" />
-          </Text>
-        </Box>
-
-        <TextBox flex={1}>
-          <Text size={0} weight="semibold">
-            Changed
-          </Text>
-          <Box marginTop={1}>
-            <Text size={0}>{lastUpdatedTimeAgo || <>&nbsp;</>}</Text>
+      <Button
+        mode="bleed"
+        tone="caution"
+        padding={3}
+        onClick={changesOpen ? handleHistoryClose : handleHistoryOpen}
+        ref={ref}
+        selected={changesOpen}
+        title="Review changes"
+      >
+        <Flex align="center">
+          <Box marginRight={3}>
+            <Text size={3}>{syncState.isSyncing ? <SyncIcon /> : <EditIcon />}</Text>
           </Box>
-        </TextBox>
-      </Flex>
-    </Root>
+          <Text size={1} weight="medium">
+            {lastUpdatedTime || <>&nbsp;</>}
+          </Text>
+        </Flex>
+      </Button>
+    </Tooltip>
   )
 })
