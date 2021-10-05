@@ -22,7 +22,7 @@ const debug = debugWithName('components:DraggableBlock')
 const debugRenders = false
 
 type ElementProps = {
-  children: ReactElement
+  children: React.ReactNode
   element: SlateElement
   readOnly: boolean
 }

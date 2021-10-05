@@ -48,6 +48,7 @@ export const Element: FunctionComponent<ElementProps> = ({
   const blockRef = useRef(null)
   const inlineBlockObjectRef = useRef(null)
   const focused = (selected && editor.selection && Range.isCollapsed(editor.selection)) || false
+  let className
 
   if (typeof element._type !== 'string') {
     throw new Error(`Expected element to have a _type property`)
@@ -146,9 +147,13 @@ export const Element: FunctionComponent<ElementProps> = ({
           blockRef
         )
       : textBlock
+    className = `pt-block pt-text-block pt-text-block-style-${element.style}`
+    if (element.listItem) {
+      className += ` pt-list-item pt-list-item-${element.listItem}`
+    }
     return (
-      <div {...attributes} key={element._key}>
-        <div ref={blockRef}>{renderedBlock}</div>
+      <div ref={blockRef} {...attributes} key={element._key} className={className}>
+        {renderedBlock}
       </div>
     )
   }
@@ -159,6 +164,7 @@ export const Element: FunctionComponent<ElementProps> = ({
   if (debugRenders) {
     debug(`Render ${element._key} (object block)`)
   }
+  className = 'pt-block pt-object-block'
   const block = fromSlateValue(
     [element],
     portableTextFeatures.types.block.name,
@@ -167,27 +173,25 @@ export const Element: FunctionComponent<ElementProps> = ({
   const renderedBlockFromProps =
     renderBlock && renderBlock(block, type, renderAttribs, defaultRender, blockRef)
   return (
-    <div {...attributes} key={element._key}>
+    <div {...attributes} key={element._key} className={className}>
       <DraggableBlock element={element} readOnly={readOnly}>
-        <>
-          {renderedBlockFromProps && (
-            <div ref={blockRef} contentEditable={false}>
-              {renderedBlockFromProps}
-            </div>
-          )}
-          {!renderedBlockFromProps && (
-            <DefaultBlockObject selected={selected}>
-              {defaultRender(
-                fromSlateValue(
-                  [element],
-                  portableTextFeatures.types.block.name,
-                  KEY_TO_VALUE_ELEMENT.get(editor)
-                )[0]
-              )}
-            </DefaultBlockObject>
-          )}
-          {children}
-        </>
+        {renderedBlockFromProps && (
+          <div ref={blockRef} contentEditable={false}>
+            {renderedBlockFromProps}
+          </div>
+        )}
+        {!renderedBlockFromProps && (
+          <DefaultBlockObject selected={selected}>
+            {defaultRender(
+              fromSlateValue(
+                [element],
+                portableTextFeatures.types.block.name,
+                KEY_TO_VALUE_ELEMENT.get(editor)
+              )[0]
+            )}
+          </DefaultBlockObject>
+        )}
+        {children}
       </DraggableBlock>
     </div>
   )
