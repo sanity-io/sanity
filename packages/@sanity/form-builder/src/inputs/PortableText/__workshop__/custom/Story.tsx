@@ -11,7 +11,7 @@ export default function Story() {
   const value = values[selectedValue]
 
   return (
-    <LayerProvider>
+    <LayerProvider zOffset={100}>
       <Card height="fill" padding={4} sizing="border">
         <Flex align="center" height="fill" justify="center">
           <Container width={1}>

@@ -1,5 +1,5 @@
 import {ScrollContainer} from '@sanity/base/components'
-import {Card} from '@sanity/ui'
+import {Card, rem} from '@sanity/ui'
 import styled from 'styled-components'
 import {parentCounterResetCSS} from './Text/TextBlock'
 
@@ -34,6 +34,17 @@ export const Scroller: any = styled(ScrollContainer)`
 export const EditableWrapper = styled(Card)`
   ${parentCounterResetCSS};
 
+  &:not([hidden]) {
+    display: flex;
+  }
+
   min-height: 100%;
   position: relative;
+  flex-direction: column;
+
+  & > div {
+    flex: 1;
+    padding: ${({theme}) => rem(theme.sanity.space[3])};
+    min-height: auto;
+  }
 `
