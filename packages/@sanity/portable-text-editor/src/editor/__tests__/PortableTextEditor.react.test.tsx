@@ -126,41 +126,40 @@ describe('initialization', () => {
     style="outline: none; white-space: pre-wrap; word-wrap: break-word;"
   >
     <div
+      class="pt-block pt-text-block pt-text-block-style-normal"
       data-slate-node="element"
     >
-      <div>
+      <div
+        draggable="false"
+      >
         <div
-          draggable="false"
+          class="sc-bdfBQB jhmysC"
         >
-          <div
-            class="sc-bdfBQB jhmysC"
+          <span
+            data-slate-node="text"
           >
             <span
-              data-slate-node="text"
+              data-slate-leaf="true"
+              style="background-color: inherit;"
             >
-              <span
-                data-slate-leaf="true"
-                style="background-color: inherit;"
-              >
-                <span>
-                  <span
-                    contenteditable="false"
-                    data-slate-placeholder="true"
-                    style="pointer-events: none; display: inline-block; width: 0px; max-width: 100%; white-space: nowrap; opacity: 0.333; user-select: none; font-style: normal; font-weight: normal; text-decoration: none;"
-                  >
-                    Jot something down here
-                  </span>
-                  <span
-                    data-slate-length="0"
-                    data-slate-zero-width="n"
-                  >
-                    ﻿
-                    <br />
-                  </span>
+              <span>
+                <span
+                  contenteditable="false"
+                  data-slate-placeholder="true"
+                  style="pointer-events: none; display: inline-block; width: 0px; max-width: 100%; white-space: nowrap; opacity: 0.333; user-select: none; font-style: normal; font-weight: normal; text-decoration: none;"
+                >
+                  Jot something down here
+                </span>
+                <span
+                  data-slate-length="0"
+                  data-slate-zero-width="n"
+                >
+                  ﻿
+                  <br />
                 </span>
               </span>
             </span>
-          </div>
+          </span>
         </div>
       </div>
     </div>
