@@ -1,5 +1,9 @@
 import React, {useMemo} from 'react'
-import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
+import {
+  PortableTextEditor,
+  usePortableTextEditor,
+  usePortableTextEditorSelection,
+} from '@sanity/portable-text-editor'
 import {CollapseMenu, CollapseMenuButton, CollapseMenuButtonProps} from '@sanity/base/components'
 import {Button} from '@sanity/ui'
 import {EllipsisVerticalIcon} from '@sanity/icons'
@@ -15,8 +19,9 @@ interface Props {
 export default function ActionMenu(props: Props) {
   const {disabled, groups, readOnly, isFullscreen} = props
   const editor = usePortableTextEditor()
-  const focusBlock = useMemo(() => PortableTextEditor.focusBlock(editor), [editor])
-  const focusChild = useMemo(() => PortableTextEditor.focusChild(editor), [editor])
+  const selection = usePortableTextEditorSelection()
+  const focusBlock = useMemo(() => PortableTextEditor.focusBlock(editor), [editor, selection])
+  const focusChild = useMemo(() => PortableTextEditor.focusChild(editor), [editor, selection])
   const ptFeatures = useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [editor])
 
   const isNotText = useMemo(
