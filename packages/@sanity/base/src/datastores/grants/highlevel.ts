@@ -65,9 +65,9 @@ export function canUpdate(id: string, typeName: string) {
           )
         : grantsStore.checkDocumentPermission(
             'update',
-            // note: we check against the published document (if it exist) here since that's the
+            // note: we check against the published document (if it exist) with draft id since that's the
             // document that will be created as new draft when user edits it
-            draft || published || stub(idPair.draftId, typeName)
+            draft || {...published, _id: idPair.draftId} || stub(idPair.draftId, typeName)
           )
     })
   )
