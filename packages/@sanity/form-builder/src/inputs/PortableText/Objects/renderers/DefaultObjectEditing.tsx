@@ -1,23 +1,18 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
-/* eslint-disable react/prop-types */
-
 import React, {useCallback} from 'react'
 import {Path, Marker, SchemaType} from '@sanity/types'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import {PortableTextBlock, Type, PortableTextChild} from '@sanity/portable-text-editor'
-import DefaultDialog from 'part:@sanity/components/dialogs/default'
+import {Box, Dialog} from '@sanity/ui'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {PatchEvent} from '../../../../PatchEvent'
 
-type Props = {
+interface DefaultObjectEditingProps {
   focusPath: Path
   markers: Marker[]
   object: PortableTextBlock | PortableTextChild
   onBlur: () => void
   onChange: (patchEvent: PatchEvent, path: Path) => void
-  onClose: (event: React.SyntheticEvent) => void
+  onClose: () => void
   onFocus: (path: Path) => void
   path: Path
   presence: FormFieldPresence[]
@@ -25,7 +20,7 @@ type Props = {
   type: Type
 }
 
-export function DefaultObjectEditing(props: Props) {
+export function DefaultObjectEditing(props: DefaultObjectEditingProps) {
   const {
     focusPath,
     markers,
@@ -39,35 +34,37 @@ export function DefaultObjectEditing(props: Props) {
     readOnly,
     type,
   } = props
+
   const handleChange = useCallback((patchEvent: PatchEvent): void => onChange(patchEvent, path), [
     onChange,
     path,
   ])
+
   return (
-    <DefaultDialog
-      isOpen
-      // onClickOutside={onClose}
+    <Dialog
+      // @todo
+      id=""
       onClose={onClose}
-      onEscape={onClose}
-      showCloseButton
-      title={type.title}
-      size="medium"
+      header={type.title}
+      width={1}
     >
       <PresenceOverlay margins={[0, 0, 1, 0]}>
-        <FormBuilderInput
-          focusPath={focusPath}
-          level={0}
-          markers={markers}
-          onBlur={onBlur}
-          onChange={handleChange}
-          onFocus={onFocus}
-          path={path}
-          presence={presence}
-          readOnly={readOnly || type.readOnly}
-          type={type as SchemaType}
-          value={object}
-        />
+        <Box padding={4}>
+          <FormBuilderInput
+            focusPath={focusPath}
+            level={0}
+            markers={markers}
+            onBlur={onBlur}
+            onChange={handleChange}
+            onFocus={onFocus}
+            path={path}
+            presence={presence}
+            readOnly={readOnly || type.readOnly}
+            type={type as SchemaType}
+            value={object}
+          />
+        </Box>
       </PresenceOverlay>
-    </DefaultDialog>
+    </Dialog>
   )
 }
