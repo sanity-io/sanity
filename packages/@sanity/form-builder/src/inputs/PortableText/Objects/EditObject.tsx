@@ -91,6 +91,22 @@ export const EditObject = ({
     [editor]
   )
 
+  useEffect(() => {
+    const handleGlobalKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        event.stopPropagation()
+        handleClose()
+      }
+    }
+
+    window.addEventListener('keydown', handleGlobalKeyDown)
+
+    return () => {
+      window.removeEventListener('keydown', handleGlobalKeyDown)
+    }
+  }, [handleClose])
+
   const sendPatches = useCallback(() => {
     if (IS_THROTTLING.get(editor) === true) {
       cancelThrottle()
