@@ -5,6 +5,7 @@ import {ButtonProps, Box, Flex, Text, Stack, Button} from '@sanity/ui'
 import {Tooltip} from 'part:@sanity/components/tooltip'
 import React, {forwardRef} from 'react'
 import {useDocumentPane} from '../../useDocumentPane'
+import {AnimatedSyncIcon} from './AnimatedSyncIcon.styled'
 
 export interface ReviewChangesButtonProps
   extends Omit<ButtonProps, 'mode' | 'onClick' | 'padding' | 'selected' | 'tone' | 'type'> {
@@ -45,7 +46,7 @@ export const ReviewChangesButton = forwardRef(function ReviewChangesButton(
       >
         <Flex align="center">
           <Box marginRight={3}>
-            <Text size={3}>{syncState.isSyncing ? <SyncIcon /> : <EditIcon />}</Text>
+            <Text size={3}>{syncState.isSyncing ? <AnimatedSyncIcon /> : <EditIcon />}</Text>
           </Box>
           <Text size={1} weight="medium">
             {lastUpdatedTime || <>&nbsp;</>}
