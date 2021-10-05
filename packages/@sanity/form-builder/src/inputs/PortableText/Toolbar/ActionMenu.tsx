@@ -20,8 +20,10 @@ export default function ActionMenu(props: Props) {
   const {disabled, groups, readOnly, isFullscreen} = props
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
-  const focusBlock = useMemo(() => PortableTextEditor.focusBlock(editor), [editor, selection])
-  const focusChild = useMemo(() => PortableTextEditor.focusChild(editor), [editor, selection])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const focusBlock = useMemo(() => PortableTextEditor.focusBlock(editor), [editor, selection]) // selection must be an additional dep here
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const focusChild = useMemo(() => PortableTextEditor.focusChild(editor), [editor, selection]) // selection must be an additional dep here
   const ptFeatures = useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [editor])
 
   const isNotText = useMemo(
