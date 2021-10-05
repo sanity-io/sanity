@@ -186,7 +186,6 @@ function PortableTextSanityEditor(props: Props) {
             isFullscreen={isFullscreen}
             hotkeys={hotkeys}
             onFocus={onFocus}
-            renderBlock={renderBlock}
             readOnly={readOnly}
             onToggleFullscreen={onToggleFullscreen}
           />

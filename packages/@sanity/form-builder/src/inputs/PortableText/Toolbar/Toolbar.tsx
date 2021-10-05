@@ -1,6 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {
   HotkeyOptions,
-  RenderBlockFunction,
   usePortableTextEditor,
   usePortableTextEditorSelection,
   Type,
@@ -22,7 +22,6 @@ interface Props {
   hotkeys: HotkeyOptions
   isFullscreen: boolean
   readOnly: boolean
-  renderBlock: RenderBlockFunction
   onFocus: (path: Path) => void
   onToggleFullscreen: () => void
 }
@@ -57,7 +56,7 @@ const SLOW_INITIAL_VALUE_LIMIT = 300
 const preventDefault = (e) => e.preventDefault()
 
 function PTEToolbar(props: Props) {
-  const {hotkeys, isFullscreen, readOnly, onFocus, renderBlock, onToggleFullscreen} = props
+  const {hotkeys, isFullscreen, readOnly, onFocus, onToggleFullscreen} = props
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
   const disabled = !selection
@@ -75,7 +74,7 @@ function PTEToolbar(props: Props) {
           title: 'Resolving initial value…',
         })
       }, SLOW_INITIAL_VALUE_LIMIT)
-      return resolveInitialValueForType((type as any) as SchemaType)
+      return resolveInitialValueForType((type as unknown) as SchemaType)
         .then((value) => {
           if (isSlow) {
             // I found no way to close an existing toast, so this will replace the message in the
