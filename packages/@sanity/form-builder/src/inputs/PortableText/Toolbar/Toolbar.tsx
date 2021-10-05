@@ -138,17 +138,20 @@ function PTEToolbar(props: Props) {
   const actionGroups = useMemo(
     () =>
       editor ? getPTEToolbarActionGroups(editor, disabled, handleInsertAnnotation, hotkeys) : [],
-    [disabled, editor, handleInsertAnnotation, hotkeys]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [disabled, editor, handleInsertAnnotation, hotkeys, selection] // selection must be an additional dep here!
   )
   const actionsLen = actionGroups.reduce((acc, x) => acc + x.actions.length, 0)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const blockStyleSelectProps = useMemo(() => (editor ? getBlockStyleSelectProps(editor) : null), [
     editor,
+    selection, // selection must be an additional dep here!
   ])
 
   const insertMenuItems = useMemo(
     () =>
       editor ? getInsertMenuItems(editor, disabled, handleInsertBlock, handleInsertInline) : [],
-    [disabled, editor, handleInsertBlock, handleInsertInline]
+    [disabled, editor, handleInsertBlock, handleInsertInline, selection] // selection must be an additional dep here!
   )
 
   const showInsertMenu = useMemo(() => insertMenuItems.length > 0, [insertMenuItems])
