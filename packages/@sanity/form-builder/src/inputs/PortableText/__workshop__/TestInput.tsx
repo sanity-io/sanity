@@ -7,15 +7,15 @@ import {applyAll} from '../../../simplePatch'
 import {inputResolver} from './input'
 import {resolvePreviewComponent} from './preview'
 
-const noop = () => undefined
-
-type Props = {
+interface TestInputProps {
+  readOnly?: boolean
   value: any[]
   schema: Schema
   type: PTType
 }
 
-export function TestInput(props: Props) {
+export function TestInput(props: TestInputProps) {
+  const {readOnly = false} = props
   const [value, setValue] = useState<any[]>(props.value)
   const [focusPath, setFocusPath] = useState<Path>([])
   const onFocus = useCallback((path: Path) => {
@@ -34,6 +34,13 @@ export function TestInput(props: Props) {
   const presence = useMemo(() => [], [])
   const markers = useMemo(() => [], [])
   const hotkeys = useMemo(() => ({}), [])
+
+  const patchChannel = useMemo(() => {
+    return {onPatch: () => () => undefined}
+  }, [])
+
+  const subscribe = useCallback(() => () => undefined, [])
+
   useEffect(() => {
     setValue(props.value)
   }, [props.value])
@@ -41,7 +48,7 @@ export function TestInput(props: Props) {
   return (
     <FormBuilderContext
       value={value}
-      patchChannel={{onPatch: noop}}
+      patchChannel={patchChannel}
       schema={props.schema}
       resolveInputComponent={inputResolver}
       resolvePreviewComponent={resolvePreviewComponent}
@@ -55,8 +62,8 @@ export function TestInput(props: Props) {
         onChange={onChange}
         onFocus={onFocus}
         presence={presence}
-        readOnly={false}
-        subscribe={noop}
+        readOnly={readOnly}
+        subscribe={subscribe}
         type={props.type}
         value={value}
       />
