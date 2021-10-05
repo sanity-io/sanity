@@ -39,7 +39,11 @@ async function promptForHook(specified, context) {
   const {prompt, apiClient} = context
   const client = apiClient()
 
-  const hooks = await client.request({uri: '/hooks', json: true})
+  const hooks = await client
+    .clone()
+    .config({apiVersion: '2021-10-04'})
+    .request({uri: '/hooks', json: true})
+
   if (specifiedName) {
     const selected = hooks.filter((hook) => hook.name.toLowerCase() === specifiedName)[0]
     if (!selected) {
