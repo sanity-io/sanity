@@ -33,11 +33,7 @@ import {ExpandedLayer, Root} from './Input.styles'
 
 const ROOT_PATH = []
 
-const activateOnFocusMessage = (
-  <Text>
-    <strong>Click to activate</strong>
-  </Text>
-)
+const activateOnFocusMessage = <Text weight="semibold">Click to activate</Text>
 
 type Props = {
   editorId: string
