@@ -43,19 +43,26 @@ export default function InsertMenu(props: InsertMenuProps) {
     })
   }, [collapseButtonProps, disabled, items, readOnly])
 
-  return (
-    <CollapseMenu
-      gap={1}
-      menuButton={
-        <Button
-          icon={AddIcon}
-          mode="bleed"
-          padding={menuButtonPadding}
-          disabled={disableMenuButton}
-        />
-      }
-    >
-      {children}
-    </CollapseMenu>
+  const menuButton = useMemo(
+    () => (
+      <Button
+        icon={AddIcon}
+        mode="bleed"
+        padding={menuButtonPadding}
+        disabled={disableMenuButton}
+      />
+    ),
+    [disableMenuButton, menuButtonPadding]
   )
+
+  const collapseMenu = useMemo(
+    () => (
+      <CollapseMenu gap={1} menuButton={menuButton}>
+        {children}
+      </CollapseMenu>
+    ),
+    [children, menuButton]
+  )
+
+  return collapseMenu
 }

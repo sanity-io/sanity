@@ -76,19 +76,26 @@ export default function ActionMenu(props: Props) {
     [actions, collapsesButtonProps, disabled, isNotText, readOnly]
   )
 
-  return (
-    <CollapseMenu
-      gap={1}
-      menuButton={
-        <Button
-          icon={EllipsisVerticalIcon}
-          mode="bleed"
-          padding={menuButtonPadding}
-          disabled={disableMenuButton}
-        />
-      }
-    >
-      {children}
-    </CollapseMenu>
+  const menuButton = useMemo(
+    () => (
+      <Button
+        icon={EllipsisVerticalIcon}
+        mode="bleed"
+        padding={menuButtonPadding}
+        disabled={disableMenuButton}
+      />
+    ),
+    [disableMenuButton, menuButtonPadding]
   )
+
+  const collapseMenu = useMemo(
+    () => (
+      <CollapseMenu gap={1} menuButton={menuButton}>
+        {children}
+      </CollapseMenu>
+    ),
+    [children, menuButton]
+  )
+
+  return collapseMenu
 }
