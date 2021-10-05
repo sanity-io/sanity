@@ -197,9 +197,11 @@ export default function PortableTextInput(props: Props) {
   }, [editor])
 
   const handleActivate = useCallback((): void => {
-    setIsActive(true)
-    focus()
-  }, [focus])
+    if (!isActive) {
+      setIsActive(true)
+      focus()
+    }
+  }, [focus, isActive])
 
   const handleFormBuilderEditObjectChange = useCallback(
     (patchEvent: PatchEvent, path: Path): void => {
