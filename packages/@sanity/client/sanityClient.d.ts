@@ -1430,7 +1430,7 @@ export class ObservableSanityClient {
    * @deprecated Use your own request library!
    * @param options Request options
    */
-  request<T = any>(options: RawRequestOptions): Observable<ResponseEvent<T> | ProgressEvent>
+  request<T = any>(options: RawRequestOptions): Observable<T>
 }
 
 export interface SanityClient {
