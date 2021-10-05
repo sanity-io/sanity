@@ -36,6 +36,10 @@ export const ToolBox = styled(Flex)`
 
   @media (min-width: ${({theme}) => theme.sanity.media[0]}px) {
     overflow: auto;
+
+    & > * {
+      min-height: auto;
+    }
   }
 `
 
