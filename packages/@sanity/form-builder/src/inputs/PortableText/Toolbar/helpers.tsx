@@ -52,7 +52,7 @@ function getFormatIcon(
 
 function getPTEFormatActions(
   editor: PortableTextEditor,
-  selection: EditorSelection,
+  disabled: boolean,
   hotkeyOpts: HotkeyOptions
 ): PTEToolbarAction[] {
   const features = PortableTextEditor.getPortableTextFeatures(editor)
@@ -70,7 +70,7 @@ function getPTEFormatActions(
 
     return {
       active: PortableTextEditor.isMarkActive(editor, decorator.value),
-      disabled: !selection || (focusBlock ? features.types.block.name !== focusBlock._type : false),
+      disabled: disabled || (focusBlock ? features.types.block.name !== focusBlock._type : false),
       icon: getFormatIcon(decorator.value, decorator.blockEditor && decorator.blockEditor.icon),
       key: decorator.value,
       handle: (): void => PortableTextEditor.toggleMark(editor, decorator.value),
@@ -106,10 +106,7 @@ function getListIcon(item: PortableTextFeature, active: boolean): React.Componen
   }
 }
 
-function getPTEListActions(
-  editor: PortableTextEditor,
-  selection: EditorSelection
-): PTEToolbarAction[] {
+function getPTEListActions(editor: PortableTextEditor, disabled: boolean): PTEToolbarAction[] {
   const features = PortableTextEditor.getPortableTextFeatures(editor)
   const focusBlock = PortableTextEditor.focusBlock(editor)
 
@@ -118,7 +115,7 @@ function getPTEListActions(
     return {
       active,
       key: listItem.value,
-      disabled: !selection || (focusBlock ? features.types.block.name !== focusBlock._type : false),
+      disabled: disabled || (focusBlock ? features.types.block.name !== focusBlock._type : false),
       icon: getListIcon(listItem, active),
       handle: (): void => PortableTextEditor.toggleList(editor, listItem.value),
       title: listItem.title,
@@ -190,13 +187,13 @@ function getPTEAnnotationActions(
 
 export function getPTEToolbarActionGroups(
   editor: PortableTextEditor,
-  selection: EditorSelection,
+  disabled: boolean,
   onInsertAnnotation: (type: Type) => void,
   hotkeyOpts: HotkeyOptions
 ): PTEToolbarActionGroup[] {
   return [
-    {name: 'format', actions: getPTEFormatActions(editor, selection, hotkeyOpts)},
-    {name: 'list', actions: getPTEListActions(editor, selection)},
+    {name: 'format', actions: getPTEFormatActions(editor, disabled, hotkeyOpts)},
+    {name: 'list', actions: getPTEListActions(editor, disabled)},
     {name: 'annotation', actions: getPTEAnnotationActions(editor, onInsertAnnotation)},
   ]
 }
@@ -245,7 +242,8 @@ function getInsertMenuIcon(
 
 export function getInsertMenuItems(
   editor: PortableTextEditor,
-  selection: EditorSelection,
+  disabled: boolean,
+  // selection: EditorSelection,
   onInsertBlock: (type: Type) => void,
   onInsertInline: (type: Type) => void
 ): BlockItem[] {
@@ -254,7 +252,7 @@ export function getInsertMenuItems(
 
   const blockItems = features.types.blockObjects.map(
     (type, index): BlockItem => ({
-      disabled: !selection,
+      disabled,
       handle: () => onInsertBlock(type),
       icon: getInsertMenuIcon(type, BlockObjectIcon),
       inline: false,
@@ -265,7 +263,7 @@ export function getInsertMenuItems(
 
   const inlineItems = features.types.inlineObjects.map(
     (type, index): BlockItem => ({
-      disabled: !selection || (focusBlock ? focusBlock._type !== features.types.block.name : true),
+      disabled: disabled || (focusBlock ? focusBlock._type !== features.types.block.name : true),
       handle: () => onInsertInline(type),
       icon: getInsertMenuIcon(type, InlineObjectIcon),
       inline: true,

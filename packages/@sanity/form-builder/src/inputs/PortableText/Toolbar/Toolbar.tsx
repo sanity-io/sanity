@@ -137,70 +137,81 @@ function PTEToolbar(props: Props) {
 
   const actionGroups = useMemo(
     () =>
-      editor ? getPTEToolbarActionGroups(editor, selection, handleInsertAnnotation, hotkeys) : [],
-    [editor, selection, handleInsertAnnotation, hotkeys]
+      editor ? getPTEToolbarActionGroups(editor, disabled, handleInsertAnnotation, hotkeys) : [],
+    [disabled, editor, handleInsertAnnotation, hotkeys]
   )
   const actionsLen = actionGroups.reduce((acc, x) => acc + x.actions.length, 0)
-  const blockStyleSelectProps = editor ? getBlockStyleSelectProps(editor) : null
+  const blockStyleSelectProps = useMemo(() => (editor ? getBlockStyleSelectProps(editor) : null), [
+    editor,
+  ])
 
   const insertMenuItems = useMemo(
     () =>
-      editor ? getInsertMenuItems(editor, selection, handleInsertBlock, handleInsertInline) : [],
-    [editor, handleInsertBlock, handleInsertInline, selection]
+      editor ? getInsertMenuItems(editor, disabled, handleInsertBlock, handleInsertInline) : [],
+    [disabled, editor, handleInsertBlock, handleInsertInline]
   )
 
   const showInsertMenu = useMemo(() => insertMenuItems.length > 0, [insertMenuItems])
-  const fullscreenButtonIcon = useMemo(() => (isFullscreen ? CollapseIcon : ExpandIcon), [
-    isFullscreen,
-  ])
-  const fullscreenButtonPadding = useMemo(() => (isFullscreen ? 3 : 2), [isFullscreen])
 
-  return (
-    <RootFlex
-      align="center"
-      // Ensure the editor doesn't lose focus when interacting
-      // with the toolbar (prevent focus click events)
-      onMouseDown={preventDefault}
-      onKeyPress={preventDefault}
-    >
-      <StyleSelectBox padding={1}>
-        <BlockStyleSelect
-          {...blockStyleSelectProps}
-          disabled={disabled}
-          readOnly={readOnly}
-          isFullscreen={isFullscreen}
-        />
-      </StyleSelectBox>
-      {actionsLen > 0 && (
-        <ActionMenuBox flex={1} padding={1} $withMaxWidth={showInsertMenu}>
-          <ActionMenu
+  return useMemo(
+    () => (
+      <RootFlex
+        align="center"
+        // Ensure the editor doesn't lose focus when interacting
+        // with the toolbar (prevent focus click events)
+        onMouseDown={preventDefault}
+        onKeyPress={preventDefault}
+      >
+        <StyleSelectBox padding={1}>
+          <BlockStyleSelect
+            {...blockStyleSelectProps}
             disabled={disabled}
-            groups={actionGroups}
             readOnly={readOnly}
             isFullscreen={isFullscreen}
           />
-        </ActionMenuBox>
-      )}
-      {showInsertMenu && (
-        <InsertMenuBox flex={1} padding={1}>
-          <InsertMenu
-            disabled={disabled}
-            items={insertMenuItems}
-            readOnly={readOnly}
-            isFullscreen={isFullscreen}
-          />
-        </InsertMenuBox>
-      )}
+        </StyleSelectBox>
+        {actionsLen > 0 && (
+          <ActionMenuBox flex={1} padding={1} $withMaxWidth={showInsertMenu}>
+            <ActionMenu
+              disabled={disabled}
+              groups={actionGroups}
+              readOnly={readOnly}
+              isFullscreen={isFullscreen}
+            />
+          </ActionMenuBox>
+        )}
+        {showInsertMenu && (
+          <InsertMenuBox flex={1} padding={1}>
+            <InsertMenu
+              disabled={disabled}
+              items={insertMenuItems}
+              readOnly={readOnly}
+              isFullscreen={isFullscreen}
+            />
+          </InsertMenuBox>
+        )}
 
-      <FullscreenButtonBox padding={1}>
-        <Button
-          padding={fullscreenButtonPadding}
-          icon={fullscreenButtonIcon}
-          mode="bleed"
-          onClick={onToggleFullscreen}
-        />
-      </FullscreenButtonBox>
-    </RootFlex>
+        <FullscreenButtonBox padding={1}>
+          <Button
+            padding={isFullscreen ? 3 : 2}
+            icon={isFullscreen ? CollapseIcon : ExpandIcon}
+            mode="bleed"
+            onClick={onToggleFullscreen}
+          />
+        </FullscreenButtonBox>
+      </RootFlex>
+    ),
+    [
+      actionGroups,
+      actionsLen,
+      blockStyleSelectProps,
+      disabled,
+      insertMenuItems,
+      isFullscreen,
+      onToggleFullscreen,
+      readOnly,
+      showInsertMenu,
+    ]
   )
 }
 
