@@ -1,4 +1,3 @@
-import classNames from 'classnames'
 import {Subject} from 'rxjs'
 import React, {useEffect, useState, useMemo, useCallback} from 'react'
 import {FormFieldPresence} from '@sanity/base/presence'
@@ -15,21 +14,12 @@ import {
   Type,
 } from '@sanity/portable-text-editor'
 import {Path, isKeySegment, Marker, isKeyedObject} from '@sanity/types'
-import {
-  BoundaryElementProvider,
-  Box,
-  Text,
-  Layer,
-  Portal,
-  PortalProvider,
-  usePortal,
-} from '@sanity/ui'
+import {BoundaryElementProvider, Text, Portal, PortalProvider, usePortal} from '@sanity/ui'
 import {isEqual} from 'lodash'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/components'
 import ActivateOnFocus from '../../components/ActivateOnFocus/ActivateOnFocus'
 import PatchEvent from '../../PatchEvent'
 import {EMPTY_ARRAY} from '../../utils/empty'
-import styles from './PortableTextInput.module.css'
 import {BlockObject} from './Objects/BlockObject'
 import {InlineObject} from './Objects/InlineObject'
 import {EditObject} from './Objects/EditObject'
@@ -38,6 +28,8 @@ import {RenderBlockActions, RenderCustomMarkers, ObjectEditData} from './types'
 import PortableTextSanityEditor from './Editor'
 import {BlockExtrasWithChangeIndicator} from './BlockExtrasOverlay'
 import {TextBlock} from './Text/TextBlock'
+
+import {ExpandedLayer, Root} from './Input.styles'
 
 const ROOT_PATH = []
 
@@ -88,7 +80,7 @@ export default function PortableTextInput(props: Props) {
     renderCustomMarkers,
     value,
   } = props
-  const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
+  const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
   const ptFeatures = useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [editor])
@@ -290,7 +282,7 @@ export default function PortableTextInput(props: Props) {
         )
       }
       return (
-        <Box>
+        <div>
           {renderedBlock}
           <BlockExtrasWithChangeIndicator
             attributes={attributes}
@@ -304,7 +296,7 @@ export default function PortableTextInput(props: Props) {
             renderCustomMarkers={renderCustomMarkers}
             value={value}
           />
-        </Box>
+        </div>
       )
     },
     [
@@ -473,55 +465,44 @@ export default function PortableTextInput(props: Props) {
       return (
         <PortalProvider element={portalElement}>
           <BoundaryElementProvider element={scrollContainerElement}>
-            <Layer className={classNames(styles.fullscreenPortal, readOnly && styles.readOnly)}>
+            <ExpandedLayer>
               {ptEditor}
-            </Layer>
-
-            {editObject}
+              {editObject}
+            </ExpandedLayer>
           </BoundaryElementProvider>
         </PortalProvider>
       )
     }
 
     return (
-      <ActivateOnFocus
-        message={activateOnFocusMessage}
-        onActivate={handleActivate}
-        isOverlayActive={!isActive}
-      >
-        <ChangeIndicatorWithProvidedFullPath
-          compareDeep
-          value={value}
-          hasFocus={hasFocus && objectEditData === null}
-          path={ROOT_PATH}
-        >
-          {ptEditor}
-          {editObject}
-        </ChangeIndicatorWithProvidedFullPath>
-      </ActivateOnFocus>
+      <PortalProvider element={portal.element}>
+        {ptEditor}
+        {editObject}
+      </PortalProvider>
     )
-  }, [
-    editObject,
-    handleActivate,
-    hasFocus,
-    isActive,
-    isFullscreen,
-    objectEditData,
-    portalElement,
-    ptEditor,
-    readOnly,
-    scrollContainerElement,
-    value,
-  ])
+  }, [editObject, isFullscreen, portal.element, portalElement, ptEditor, scrollContainerElement])
 
   return (
-    <div
-      className={classNames(styles.root, hasFocus && styles.focus, readOnly && styles.readOnly)}
-      ref={setRootElement}
+    <ActivateOnFocus
+      message={activateOnFocusMessage}
+      onActivate={handleActivate}
+      isOverlayActive={!isActive}
     >
-      <PortalProvider element={isFullscreen ? portal.element : rootElement}>
-        <Portal>{children}</Portal>
-      </PortalProvider>
-    </div>
+      <ChangeIndicatorWithProvidedFullPath
+        compareDeep
+        value={value}
+        hasFocus={hasFocus && objectEditData === null}
+        path={ROOT_PATH}
+      >
+        <Root data-focused={hasFocus ? '' : undefined} data-read-only={readOnly ? '' : undefined}>
+          <div data-wrapper="" ref={setWrapperElement}>
+            <PortalProvider element={isFullscreen ? portal.element : wrapperElement}>
+              <Portal>{children}</Portal>
+            </PortalProvider>
+          </div>
+          <div data-border="" />
+        </Root>
+      </ChangeIndicatorWithProvidedFullPath>
+    </ActivateOnFocus>
   )
 }

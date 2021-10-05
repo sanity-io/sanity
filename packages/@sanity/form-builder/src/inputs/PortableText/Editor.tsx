@@ -13,16 +13,14 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {Marker} from '@sanity/types'
-import {Card, useLayer} from '@sanity/ui'
-import {ScrollContainer} from '@sanity/base/components'
+import {Card, Container, useLayer} from '@sanity/ui'
 import React, {useMemo, useEffect} from 'react'
-import styled from 'styled-components'
 import PatchEvent from '../../PatchEvent'
-import styles from './PortableTextInput.module.css'
 import Toolbar from './Toolbar/Toolbar'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
 import Decorator from './Text/Decorator'
-import {parentCounterResetCSS} from './Text/TextBlock'
+
+import {EditableWrapper, Root, Scroller, ToolbarCard} from './Editor.styles'
 
 type Props = {
   initialSelection?: EditorSelection
@@ -46,10 +44,6 @@ type Props = {
   value: PortableTextBlock[] | undefined
 }
 
-const EditableWrapper = styled.div`
-  ${parentCounterResetCSS};
-`
-
 const renderDecorator: RenderDecoratorFunction = (mark, mType, attributes, defaultRender) => {
   return <Decorator mark={mark}>{defaultRender()}</Decorator>
 }
@@ -58,7 +52,7 @@ function PortableTextSanityEditor(props: Props) {
   const {
     initialSelection,
     isFullscreen,
-    markers,
+    // markers,
     onCopy,
     onFocus,
     onPaste,
@@ -66,7 +60,7 @@ function PortableTextSanityEditor(props: Props) {
     readOnly,
     renderAnnotation,
     renderBlock,
-    renderBlockActions,
+    // renderBlockActions,
     renderChild,
     setPortalElement,
     setScrollContainerElement,
@@ -123,6 +117,7 @@ function PortableTextSanityEditor(props: Props) {
 
   const defaultHotkeys = useMemo(() => {
     const def = {marks: {}}
+
     ptFeatures.decorators.forEach((dec) => {
       switch (dec.value) {
         case 'strong':
@@ -141,6 +136,7 @@ function PortableTextSanityEditor(props: Props) {
         // Nothing
       }
     })
+
     return def
   }, [ptFeatures.decorators])
 
@@ -153,6 +149,7 @@ function PortableTextSanityEditor(props: Props) {
     }),
     [props.hotkeys, defaultHotkeys]
   )
+
   const hotkeys: HotkeyOptions = useMemo(
     () => ({
       ...marksFromProps,
@@ -161,24 +158,7 @@ function PortableTextSanityEditor(props: Props) {
     [marksFromProps, customFromProps]
   )
 
-  const hasMarkers = useMemo(() => markers.length > 0, [markers])
-  const scClassNames = useMemo(
-    () =>
-      [
-        styles.scrollContainer,
-        ...(renderBlockActions || hasMarkers ? [styles.hasBlockExtras] : [styles.hasNoBlockExtras]),
-      ].join(' '),
-    [hasMarkers, renderBlockActions]
-  )
-  const editorWrapperClassNames = useMemo(() => [styles.editorWrapper].join(' '), [])
-  const editorClassNames = useMemo(
-    () =>
-      [
-        styles.editor,
-        ...(renderBlockActions || hasMarkers ? [styles.hasBlockExtras] : [styles.hasNoBlockExtras]),
-      ].join(' '),
-    [hasMarkers, renderBlockActions]
-  )
+  // const hasMarkers = useMemo(() => markers.length > 0, [markers])
 
   useEffect(() => {
     if (!isTopLayer || !isFullscreen) return undefined
@@ -200,8 +180,8 @@ function PortableTextSanityEditor(props: Props) {
 
   const sanityEditor = useMemo(
     () => (
-      <div className={styles.editorBox}>
-        <div className={styles.header}>
+      <Root $fullscreen={isFullscreen} data-testid="pt-editor">
+        <ToolbarCard data-testid="pt-editor__toolbar-card" shadow={1}>
           <Toolbar
             isFullscreen={isFullscreen}
             hotkeys={hotkeys}
@@ -210,36 +190,33 @@ function PortableTextSanityEditor(props: Props) {
             readOnly={readOnly}
             onToggleFullscreen={onToggleFullscreen}
           />
-        </div>
+        </ToolbarCard>
 
-        <div className={styles.editorBoxContent}>
-          <ScrollContainer className={scClassNames} ref={setScrollContainerElement}>
-            <div className={editorWrapperClassNames}>
-              <EditableWrapper className={editorClassNames}>
-                <Card>
-                  <PortableTextEditable
-                    hotkeys={hotkeys}
-                    onCopy={onCopy}
-                    onPaste={onPaste}
-                    placeholderText={value ? undefined : 'Empty'}
-                    renderAnnotation={renderAnnotation}
-                    renderBlock={renderBlock}
-                    renderChild={renderChild}
-                    renderDecorator={renderDecorator}
-                    selection={initialSelection}
-                    spellCheck
-                  />
-                </Card>
+        <Card flex={1} tone="transparent">
+          <Scroller ref={setScrollContainerElement}>
+            <Container padding={isFullscreen ? 2 : 0} sizing="border" width={1}>
+              <EditableWrapper padding={3} shadow={isFullscreen ? 1 : 0} sizing="border">
+                <PortableTextEditable
+                  hotkeys={hotkeys}
+                  onCopy={onCopy}
+                  onPaste={onPaste}
+                  placeholderText={value ? undefined : 'Empty'}
+                  renderAnnotation={renderAnnotation}
+                  renderBlock={renderBlock}
+                  renderChild={renderChild}
+                  renderDecorator={renderDecorator}
+                  selection={initialSelection}
+                  spellCheck
+                />
               </EditableWrapper>
-            </div>
-          </ScrollContainer>
+            </Container>
+          </Scroller>
+
           <div data-portal="" ref={setPortalElement} />
-        </div>
-      </div>
+        </Card>
+      </Root>
     ),
     [
-      editorClassNames,
-      editorWrapperClassNames,
       hotkeys,
       initialSelection,
       isFullscreen,
@@ -251,12 +228,12 @@ function PortableTextSanityEditor(props: Props) {
       renderAnnotation,
       renderBlock,
       renderChild,
-      scClassNames,
       setPortalElement,
       setScrollContainerElement,
       value,
     ]
   )
+
   return sanityEditor
 }
 
