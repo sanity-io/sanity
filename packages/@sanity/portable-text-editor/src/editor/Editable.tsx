@@ -2,7 +2,7 @@ import {Transforms, Node} from 'slate'
 import {isEqual} from 'lodash'
 import isHotkey from 'is-hotkey'
 import {normalizeBlock} from '@sanity/block-tools'
-import React, {useCallback, useMemo, useState, useEffect, useRef} from 'react'
+import React, {useCallback, useMemo, useState, useEffect, useRef, forwardRef} from 'react'
 import {Editable as SlateEditable, Slate, ReactEditor, withReact} from '@sanity/slate-react'
 import {
   EditorSelection,
@@ -30,13 +30,14 @@ import {usePortableTextEditor} from './hooks/usePortableTextEditor'
 import {usePortableTextEditorValue} from './hooks/usePortableTextEditorValue'
 import {PortableTextEditor} from './PortableTextEditor'
 import {createWithEditableAPI, createWithHotkeys, createWithInsertData} from './plugins'
+import {useForwardedRef} from './hooks/useForwardedRef'
 
 const debug = debugWithName('component:Editable')
 
 // Weakmap for testing if we need to update the state value from a new value coming in from props
 const VALUE_TO_SLATE_VALUE: WeakMap<PortableTextBlock[], Node[]> = new WeakMap()
 
-type Props = {
+type EditableProps = {
   hotkeys?: HotkeyOptions
   onBeforeInput?: OnBeforeInputFn
   onPaste?: OnPasteFn
@@ -52,19 +53,28 @@ type Props = {
 
 const SELECT_TOP_DOCUMENT = {anchor: {path: [0, 0], offset: 0}, focus: {path: [0, 0], offset: 0}}
 
-export const PortableTextEditable = (props: Props) => {
+export const PortableTextEditable = forwardRef(function PortableTextEditable(
+  props: EditableProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'onPaste'>,
+  forwardedRef: React.ForwardedRef<HTMLDivElement>
+) {
   const {
     hotkeys,
+    onBeforeInput,
+    onPaste,
+    onCopy,
     placeholderText,
     renderAnnotation,
     renderBlock,
     renderChild,
     renderDecorator,
+    selection: propsSelection,
     spellCheck,
+    ...restProps
   } = props
 
   const portableTextEditor = usePortableTextEditor()
   const value = usePortableTextEditorValue()
+  const ref = useForwardedRef(forwardedRef)
 
   const {change$, isThrottling, keyGenerator, portableTextFeatures, readOnly} = portableTextEditor
 
@@ -233,14 +243,13 @@ export const PortableTextEditable = (props: Props) => {
 
   // Restore selection from props
   useEffect(() => {
-    const pSelection = props.selection
     if (
-      pSelection &&
+      propsSelection &&
       !isThrottling &&
-      !isEqual(pSelection, toPortableTextRange(portableTextEditor.slateInstance))
+      !isEqual(propsSelection, toPortableTextRange(portableTextEditor.slateInstance))
     ) {
-      debug('Selection from props', pSelection)
-      const normalizedSelection = normalizeSelection(pSelection, value)
+      debug('Selection from props', propsSelection)
+      const normalizedSelection = normalizeSelection(propsSelection, value)
       if (normalizedSelection !== null) {
         debug('Normalized selection from props', normalizedSelection)
         const slateRange = toSlateRange(normalizedSelection, portableTextEditor.slateInstance)
@@ -250,19 +259,18 @@ export const PortableTextEditable = (props: Props) => {
         setSelection(SELECT_TOP_DOCUMENT)
       }
     }
-  }, [props.selection])
+  }, [propsSelection])
 
   // Set initial selection from props
   useEffect(() => {
-    if (props.selection) {
-      PortableTextEditor.select(portableTextEditor, props.selection)
+    if (propsSelection) {
+      PortableTextEditor.select(portableTextEditor, propsSelection)
     }
   }, [])
 
   // Handle copy in the editor
   const handleCopy = useCallback(
     (event: React.ClipboardEvent<HTMLDivElement>): void | ReactEditor => {
-      const {onCopy} = props
       if (onCopy) {
         const result = onCopy(event)
         // CopyFn may return something to avoid doing default stuff
@@ -276,14 +284,13 @@ export const PortableTextEditable = (props: Props) => {
         setFragmentData(event.clipboardData, portableTextEditor.slateInstance, portableTextFeatures)
       }
     },
-    [portableTextEditor.slateInstance, portableTextFeatures, props]
+    [onCopy, portableTextEditor.slateInstance, portableTextFeatures]
   )
 
   // Handle pasting in the editor
   const handlePaste = useCallback(
     (event: React.SyntheticEvent): Promise<any> | void => {
       event.persist() // Keep the event through the plugin chain after calling next()
-      const {onPaste} = props
       const _selection = PortableTextEditor.getSelection(portableTextEditor)
       const type = portableTextFeatures.types.portableText
       if (!_selection) {
@@ -339,11 +346,11 @@ export const PortableTextEditable = (props: Props) => {
     },
     [
       change$,
+      onPaste,
       portableTextEditor,
       portableTextFeatures.decorators,
       portableTextFeatures.types.block.name,
       portableTextFeatures.types.portableText,
-      props,
       value,
     ]
   )
@@ -444,19 +451,25 @@ export const PortableTextEditable = (props: Props) => {
   )
 
   useEffect(() => {
-    document.addEventListener('keydown', onSelectStartWithKeys, false)
-    document.addEventListener('keyup', onSelectEndWithKeys, false)
-    document.addEventListener('mousedown', onSelectStart, false)
-    document.addEventListener('mouseup', onSelectEnd, false)
-    document.addEventListener('dragend', onSelectEnd, false)
-    return () => {
-      document.removeEventListener('keydown', onSelectStartWithKeys, false)
-      document.removeEventListener('keyup', onSelectEndWithKeys, false)
-      document.removeEventListener('mousedown', onSelectStart, false)
-      document.removeEventListener('mouseup', onSelectEnd, false)
-      document.removeEventListener('dragend', onSelectEnd, false)
+    if (ref.current) {
+      const currentRef = ref.current
+      currentRef.addEventListener('keydown', onSelectStartWithKeys, false)
+      currentRef.addEventListener('keyup', onSelectEndWithKeys, false)
+      currentRef.addEventListener('mousedown', onSelectStart, false)
+      currentRef.addEventListener('mouseup', onSelectEnd, false)
+      currentRef.addEventListener('dragend', onSelectEnd, false)
+      return () => {
+        currentRef.removeEventListener('keydown', onSelectStartWithKeys, false)
+        currentRef.removeEventListener('keyup', onSelectEndWithKeys, false)
+        currentRef.removeEventListener('mousedown', onSelectStart, false)
+        currentRef.removeEventListener('mouseup', onSelectEnd, false)
+        currentRef.removeEventListener('dragend', onSelectEnd, false)
+      }
     }
-  }, [onSelectEnd, onSelectEndWithKeys, onSelectStart, onSelectStartWithKeys])
+    return () => {
+      // NOOP
+    }
+  }, [ref, onSelectEnd, onSelectEndWithKeys, onSelectStart, onSelectStartWithKeys])
 
   const handleOnFocus = useCallback(() => {
     change$.next({type: 'focus'})
@@ -468,11 +481,11 @@ export const PortableTextEditable = (props: Props) => {
 
   const handleOnBeforeInput = useCallback(
     (event: Event) => {
-      if (props.onBeforeInput) {
-        props.onBeforeInput(event)
+      if (onBeforeInput) {
+        onBeforeInput(event)
       }
     },
-    [props]
+    [onBeforeInput]
   )
 
   const handleKeyDown = portableTextEditor.slateInstance.pteWithHotKeys
@@ -528,8 +541,12 @@ export const PortableTextEditable = (props: Props) => {
   if (!portableTextEditor) {
     return null
   }
-  return slateEditable
-}
+  return (
+    <div ref={ref} {...restProps}>
+      {slateEditable}
+    </div>
+  )
+})
 
 function getValueOrIntitialValue(value: any, initialValue: any) {
   if (Array.isArray(value) && value.length > 0) {
