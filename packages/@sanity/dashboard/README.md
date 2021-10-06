@@ -72,34 +72,47 @@ export default {
 
 ## How to create a widget
 
-Widgets are Sanity plugins which implement the part `part:@sanity/dashboard/widget`. Stay tuned for a complete "Widget Authors Cookbook", but until then, have a look at some sample widgets: E.g. [A document List](https://github.com/sanity-io/dashboard-widget-document-list/tree/master) or [maybe some cats](https://github.com/sanity-io/example-dashboard-widget-cats)?
+Widgets are Sanity plugins that implement the part `part:@sanity/dashboard/widget`. Stay tuned for a complete "Widget Authors Cookbook", but until then, have a look at some sample widgets: E.g. [A document List](https://github.com/sanity-io/dashboard-widget-document-list/tree/master) or [maybe some cats](https://github.com/sanity-io/example-dashboard-widget-cats)?
 
-When writing your widget components, it's recommended to use the styles defined in `./src/widgets.css` for your basic building blocks:
+When writing your widget components, it's recommended to use the `DashboardWidget` component from the Sanity Studio by importing it like so: `import { DashboardWidget } from "@sanity/dashboard";`.
 
+This gives you a typical widget component structure with basic styles, and the option of presenting your content in the header, footer, or body of the widget.
+
+If you need something more flexible you can create your own component.
+
+Setting up the widget with the default setup will give you a basic widget that looks something like this:
+
+
+```js
+<DashboardWidget
+  header="A cat"
+  footer={
+    <Flex direction="column" align="stretch">
+      <Button
+        flex={1}
+        paddingX={2}
+        paddingY={4}
+        mode="bleed"
+        tone="primary"
+        text="Get new cat"
+      />
+    </Flex>
+  }
+>
+  <figure>
+    <img src="https://placekitten.com/300/450" />
+  </figure>
+</DashboardWidget>
 ```
-@import 'part:@sanity/base/theme/variables-style';
 
-.container {
-  composes: container from 'part:@sanity/dashboard/widget-styles';
-}
+### More examples
 
-.containerWithPadding {
-  composes: containerWithPadding from 'part:@sanity/dashboard/widget-styles';
-}
+You can study the source code of these widgets to get a sense of how you can approach fetching of documents, adding configuration, and so on:
 
-.header {
-  composes: header from "part:@sanity/dashboard/widget-styles";
-}
-
-.title {
-  composes: title from 'part:@sanity/dashboard/widget-styles';
-}
-
-.buttonContainer {
-  composes: bottomButtonContainer from 'part:@sanity/dashboard/widget-styles';
-}
-```
-
-Your widget root element should aways be wrapped with the `container` style from `part:@sanity/dashboard/widget-styles`
+- [dashboard-widget-document-list](https://github.com/sanity-io/dashboard-widget-document-list)
+- [dashboard-widget-widget-document-count](https://github.com/sanity-io/example-dashboard-widget-document-count)
+- [dashboard-widget-netlify](https://github.com/sanity-io/sanity-plugin-dashboard-widget-netlify)
 
 ---
+
+
