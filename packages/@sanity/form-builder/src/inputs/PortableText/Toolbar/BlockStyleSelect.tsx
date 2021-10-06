@@ -1,9 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
-import {
-  PortableTextEditor,
-  usePortableTextEditor,
-  usePortableTextEditorSelection,
-} from '@sanity/portable-text-editor'
+import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {Button, Menu, MenuButton, MenuButtonProps, MenuItem, Stack, Text} from '@sanity/ui'
 import {SelectIcon} from '@sanity/icons'
 import styled from 'styled-components'
@@ -17,13 +13,13 @@ import {
   BlockQuote,
   Normal,
 } from '../Text/TextBlock'
+import {useFeatures, useFocusBlock, useSelection} from './hooks'
 import {BlockStyleItem} from './types'
 
-type Props = {
+interface BlockStyleSelectProps {
   disabled: boolean
   readOnly: boolean
   items: BlockStyleItem[]
-  value: BlockStyleItem[]
   isFullscreen?: boolean
 }
 
@@ -60,33 +56,57 @@ const TEXT_STYLE_KEYS = Object.keys(TEXT_STYLE_OPTIONS)
 
 const preventDefault = (event: React.MouseEvent<HTMLButtonElement>) => event.preventDefault()
 
-export default function BlockStyleSelect(props: Props): JSX.Element {
-  const {disabled, items, readOnly, value, isFullscreen} = props
+const emptyStyle: BlockStyleItem = {
+  key: 'style-none',
+  style: null,
+  styleComponent: null,
+  title: 'No style',
+}
+
+export default function BlockStyleSelect(props: BlockStyleSelectProps): JSX.Element {
+  const {disabled, items: itemsProp, readOnly, isFullscreen} = props
   const editor = usePortableTextEditor()
-  const selection = usePortableTextEditorSelection()
+  const features = useFeatures()
+  const focusBlock = useFocusBlock()
+  const selection = useSelection()
   const [changed, setChanged] = useState(false)
 
-  const features = useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [editor])
-  const focusBlock = useMemo(() => selection && PortableTextEditor.focusBlock(editor), [
-    editor,
-    selection,
-  ])
-
-  // @todo: Document what's going on here
+  // @todo: Add a comment about what’s going on here
   const _disabled = useMemo(
     () => (focusBlock ? features.types.block.name !== focusBlock._type : false),
     [features.types.block.name, focusBlock]
   )
 
+  const {activeItems, items} = useMemo(
+    () => {
+      const _activeItems = itemsProp.filter((item) =>
+        PortableTextEditor.hasBlockStyle(editor, item.style)
+      )
+
+      let _items = itemsProp
+
+      if (_activeItems.length === 0 && _items.length > 1) {
+        _items = _items.concat([emptyStyle])
+        _activeItems.push(emptyStyle)
+      }
+
+      return {activeItems: _activeItems, items: _items}
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      editor,
+      itemsProp,
+      // Update active items when `focusBlock` or `selection` changes
+      focusBlock,
+      selection,
+    ]
+  )
+
   const menuButtonText = useMemo(() => {
-    if (value && value.length > 1) {
-      return 'Multiple'
-    }
-    if (value && value.length == 1) {
-      return value[0].title
-    }
-    return 'No style'
-  }, [value])
+    if (activeItems.length > 1) return 'Multiple'
+    if (activeItems.length === 1) return activeItems[0].title
+    return emptyStyle.title
+  }, [activeItems])
 
   const menuButtonPadding = useMemo(() => (isFullscreen ? 3 : 2), [isFullscreen])
 
@@ -102,7 +122,7 @@ export default function BlockStyleSelect(props: Props): JSX.Element {
       PortableTextEditor.focus(editor)
       setChanged(false)
     }
-  }, [value, changed, editor])
+  }, [activeItems, changed, editor])
 
   const handleChange = useCallback(
     (item: BlockStyleItem): void => {
@@ -124,38 +144,49 @@ export default function BlockStyleSelect(props: Props): JSX.Element {
     return <Text>{style}</Text>
   }, [])
 
-  return (
-    <MenuButton
-      popover={MENU_POPOVER_PROPS}
-      id="block-style-select"
-      button={
-        <Stack>
-          <Button
-            disabled={menuButtonDisabled}
-            iconRight={SelectIcon}
-            mode="bleed"
-            onClick={preventDefault}
-            padding={menuButtonPadding}
-            text={menuButtonText}
-          />
-        </Stack>
-      }
-      menu={
-        <Menu>
-          {items.map((item) => {
-            return (
-              <StyledMenuItem
-                key={item.key}
-                pressed={item.active}
-                // eslint-disable-next-line react/jsx-no-bind
-                onClick={() => handleChange(item)}
-              >
-                {renderOption(item.style)}
-              </StyledMenuItem>
-            )
-          })}
-        </Menu>
-      }
-    />
+  return useMemo(
+    () => (
+      <MenuButton
+        popover={MENU_POPOVER_PROPS}
+        id="block-style-select"
+        button={
+          <Stack>
+            <Button
+              disabled={menuButtonDisabled}
+              iconRight={SelectIcon}
+              mode="bleed"
+              onClick={preventDefault}
+              padding={menuButtonPadding}
+              text={menuButtonText}
+            />
+          </Stack>
+        }
+        menu={
+          <Menu>
+            {items.map((item) => {
+              return (
+                <StyledMenuItem
+                  key={item.key}
+                  pressed={activeItems.includes(item)}
+                  // eslint-disable-next-line react/jsx-no-bind
+                  onClick={() => handleChange(item)}
+                >
+                  {renderOption(item.style)}
+                </StyledMenuItem>
+              )
+            })}
+          </Menu>
+        }
+      />
+    ),
+    [
+      activeItems,
+      handleChange,
+      items,
+      menuButtonDisabled,
+      menuButtonPadding,
+      menuButtonText,
+      renderOption,
+    ]
   )
 }

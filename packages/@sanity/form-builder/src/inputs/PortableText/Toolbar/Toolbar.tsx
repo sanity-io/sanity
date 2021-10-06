@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import {
   HotkeyOptions,
   usePortableTextEditor,
@@ -16,7 +15,8 @@ import styled, {css} from 'styled-components'
 import ActionMenu from './ActionMenu'
 import BlockStyleSelect from './BlockStyleSelect'
 import InsertMenu from './InsertMenu'
-import {getBlockStyleSelectProps, getInsertMenuItems, getPTEToolbarActionGroups} from './helpers'
+import {getBlockStyles, getInsertMenuItems} from './helpers'
+import {useActionGroups, useFeatures} from './hooks'
 
 interface Props {
   hotkeys: HotkeyOptions
@@ -57,6 +57,7 @@ const preventDefault = (e) => e.preventDefault()
 
 function PTEToolbar(props: Props) {
   const {hotkeys, isFullscreen, readOnly, onFocus, onToggleFullscreen} = props
+  const features = useFeatures()
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
   const disabled = !selection
@@ -122,35 +123,13 @@ function PTEToolbar(props: Props) {
     [editor, onFocus, resolveInitialValue]
   )
 
-  const handleInsertAnnotation = useCallback(
-    async (type: Type) => {
-      const initialValue = await resolveInitialValue(type)
-
-      const paths = PortableTextEditor.addAnnotation(editor, type, initialValue)
-      if (paths && paths.markDefPath) {
-        onFocus(paths.markDefPath.concat(FOCUS_TERMINATOR))
-      }
-    },
-    [editor, onFocus, resolveInitialValue]
-  )
-
-  const actionGroups = useMemo(
-    () =>
-      editor ? getPTEToolbarActionGroups(editor, disabled, handleInsertAnnotation, hotkeys) : [],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [disabled, editor, handleInsertAnnotation, hotkeys, selection] // selection must be an additional dep here!
-  )
+  const actionGroups = useActionGroups({hotkeys, onFocus, resolveInitialValue})
   const actionsLen = actionGroups.reduce((acc, x) => acc + x.actions.length, 0)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const blockStyleSelectProps = useMemo(() => (editor ? getBlockStyleSelectProps(editor) : null), [
-    editor,
-    selection, // selection must be an additional dep here!
-  ])
+  const blockStyles = useMemo(() => getBlockStyles(features), [features])
 
   const insertMenuItems = useMemo(
-    () =>
-      editor ? getInsertMenuItems(editor, disabled, handleInsertBlock, handleInsertInline) : [],
-    [disabled, editor, handleInsertBlock, handleInsertInline, selection] // selection must be an additional dep here!
+    () => getInsertMenuItems(features, disabled, handleInsertBlock, handleInsertInline),
+    [disabled, features, handleInsertBlock, handleInsertInline]
   )
 
   const showInsertMenu = useMemo(() => insertMenuItems.length > 0, [insertMenuItems])
@@ -166,10 +145,10 @@ function PTEToolbar(props: Props) {
       >
         <StyleSelectBox padding={1}>
           <BlockStyleSelect
-            {...blockStyleSelectProps}
             disabled={disabled}
             readOnly={readOnly}
             isFullscreen={isFullscreen}
+            items={blockStyles}
           />
         </StyleSelectBox>
         {actionsLen > 0 && (
@@ -206,7 +185,7 @@ function PTEToolbar(props: Props) {
     [
       actionGroups,
       actionsLen,
-      blockStyleSelectProps,
+      blockStyles,
       disabled,
       insertMenuItems,
       isFullscreen,

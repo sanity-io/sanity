@@ -3,6 +3,7 @@ import {CollapseMenu, CollapseMenuButton, CollapseMenuButtonProps} from '@sanity
 import {AddIcon} from '@sanity/icons'
 import {Button} from '@sanity/ui'
 import {BlockItem} from './types'
+import {useFeatures, useFocusBlock} from './hooks'
 
 interface InsertMenuProps {
   disabled: boolean
@@ -13,6 +14,8 @@ interface InsertMenuProps {
 
 export default function InsertMenu(props: InsertMenuProps) {
   const {disabled, items, readOnly, isFullscreen} = props
+  const features = useFeatures()
+  const focusBlock = useFocusBlock()
 
   const collapseButtonProps: CollapseMenuButtonProps = useMemo(
     () => ({padding: isFullscreen ? 3 : 2, mode: 'bleed'}),
@@ -32,8 +35,12 @@ export default function InsertMenu(props: InsertMenuProps) {
           aria-label={`Insert ${title}${item.inline ? ' (inline)' : ' (block)'}`}
           buttonProps={collapseButtonProps}
           collapseText={false}
-          disabled={item.disabled || readOnly}
-          icon={item?.icon}
+          disabled={
+            item.disabled ||
+            readOnly ||
+            (focusBlock ? focusBlock._type !== features.types.block.name : true)
+          }
+          icon={item.icon}
           key={item.key}
           onClick={handle}
           text={title}
@@ -41,7 +48,7 @@ export default function InsertMenu(props: InsertMenuProps) {
         />
       )
     })
-  }, [collapseButtonProps, disabled, items, readOnly])
+  }, [collapseButtonProps, disabled, features, focusBlock, items, readOnly])
 
   const menuButton = useMemo(
     () => (
