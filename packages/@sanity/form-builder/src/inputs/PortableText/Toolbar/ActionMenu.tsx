@@ -30,7 +30,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
 
   const actions: Array<PTEToolbarAction & {firstInGroup?: true}> = useMemo(
     () =>
-      groups.reduce((acc, group) => {
+      groups.reduce<Array<PTEToolbarAction & {firstInGroup?: true}>>((acc, group) => {
         return acc.concat(
           group.actions.map(
             // eslint-disable-next-line max-nested-callbacks
