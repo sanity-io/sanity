@@ -23,6 +23,7 @@ function annotationStyle(props: AnnotationStyleProps) {
   const borderStyle = $toneKey === 'primary' ? 'solid' : 'dashed'
 
   return css`
+    position: 'relative'; // Must be relative or backwards selections will become flaky for some reason!
     text-decoration: none;
     display: inline;
     background: ${theme.sanity.color.selectable[$toneKey].enabled.bg};
