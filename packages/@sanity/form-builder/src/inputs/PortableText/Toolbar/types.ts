@@ -20,7 +20,7 @@ export interface PTEToolbarAction {
   type: 'annotation' | 'format' | 'listStyle'
   disabled: boolean
   icon?: React.ComponentType | string
-  handle: () => void
+  handle: (active?: boolean) => void
   hotkeys?: string[]
   key: string
   title: string

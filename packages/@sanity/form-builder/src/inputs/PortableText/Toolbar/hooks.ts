@@ -85,7 +85,25 @@ export function useActiveActionKeys({
 
   return useUnique(
     useMemo(
-      () => actions.filter((a) => PortableTextEditor.isMarkActive(editor, a.key)).map((a) => a.key),
+      () => {
+        const activeAnnotationKeys = PortableTextEditor.activeAnnotations(editor).map(
+          (a) => a._type
+        )
+
+        return actions
+          .filter((a) => {
+            if (a.type === 'annotation') {
+              return activeAnnotationKeys.includes(a.key)
+            }
+
+            if (a.type === 'listStyle') {
+              return PortableTextEditor.hasListStyle(editor, a.key)
+            }
+
+            return PortableTextEditor.isMarkActive(editor, a.key)
+          })
+          .map((a) => a.key)
+      },
       // eslint-disable-next-line react-hooks/exhaustive-deps
       [
         editor,

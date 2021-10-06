@@ -66,8 +66,8 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
             dividerBefore={action.firstInGroup}
             icon={getActionIcon(action, active)}
             key={action.key}
-            // eslint-disable-next-line react/jsx-handler-names
-            onClick={action.handle}
+            // eslint-disable-next-line react/jsx-no-bind
+            onClick={() => action.handle(active)}
             selected={active}
             text={action.title || action.key}
             tooltipProps={{disabled: disabled, placement: 'top'}}

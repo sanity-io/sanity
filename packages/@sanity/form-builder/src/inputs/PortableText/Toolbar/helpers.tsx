@@ -84,20 +84,16 @@ function getPTEAnnotationActions(
   onInsert: (type: Type) => void
 ): PTEToolbarAction[] {
   const features = PortableTextEditor.getPortableTextFeatures(editor)
-  const activeAnnotations = PortableTextEditor.activeAnnotations(editor)
   const focusChild = PortableTextEditor.focusChild(editor)
   const hasText = focusChild && focusChild.text
 
   return features.annotations.map((item) => {
-    const active = !!activeAnnotations.find((an) => an._type === item.type.name)
-
     return {
       type: 'annotation',
-      active,
       disabled: !hasText || !focusChild || PortableTextEditor.isVoid(editor, focusChild),
       icon: getAnnotationIcon(item),
       key: item.value,
-      handle: (): void => {
+      handle: (active: boolean): void => {
         if (active) {
           PortableTextEditor.removeAnnotation(editor, item.type)
           PortableTextEditor.focus(editor)
