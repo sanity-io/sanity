@@ -1,5 +1,19 @@
 import {EllipsisVerticalIcon, SelectIcon} from '@sanity/icons'
-import {Box, Button, Card, Container, Stack, Tab, TabList, Text} from '@sanity/ui'
+import {
+  Box,
+  Button,
+  Card,
+  Checkbox,
+  Container,
+  Flex,
+  Inline,
+  Stack,
+  Tab,
+  TabList,
+  Text,
+  TextArea,
+  TextInput,
+} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import React, {useMemo, useState} from 'react'
 import {Pane} from '../Pane'
@@ -102,24 +116,158 @@ export default function TabsStory() {
                 }}
               >
                 <TabList space={2}>
-                  <DocumentTab name="all" label="all fields" />
-                  <DocumentTab name="apples" />
-                  <DocumentTab name="oranges" />
-                  <DocumentTab name="kitties" />
-                  <DocumentTab name="puppies" />
+                  <DocumentTab name="all" />
+                  <DocumentTab name="editorial" />
+                  <DocumentTab name="seo" />
+                  <DocumentTab name="images" />
                 </TabList>
               </Card>
-              <TaggedElement tag={['apples', 'puppies']}>
-                <Text>Apples & puppies</Text>
+              <TaggedElement tag={['editorial']}>
+                <Text size={1} weight="semibold">
+                  Title
+                </Text>
+                <Box marginY={2}>
+                  <TextInput fontSize={[2, 2, 3, 4]} padding={3} />
+                </Box>
               </TaggedElement>
-              <TaggedElement tag={['oranges', 'kitties']}>
-                <Text>Oranges & kitties</Text>
+              <TaggedElement tag={['seo']}>
+                <Text size={1} weight="semibold">
+                  SEO title
+                </Text>
+                <Box marginY={2}>
+                  <TextInput fontSize={[2, 2, 3, 4]} padding={3} />
+                </Box>
               </TaggedElement>
-              <TaggedElement tag={['apples', 'kitties']}>
-                <Text>Apples & kitties</Text>
+              <TaggedElement tag={[]}>
+                <Text size={1} weight="semibold">
+                  Slug
+                </Text>
+                <Box marginY={2}>
+                  <Flex>
+                    <Box style={{flexGrow: 1}} marginRight={2}>
+                      <TextInput fontSize={[2, 2, 3, 4]} padding={3} />
+                    </Box>
+                    <Button mode="ghost" text="Generate" />
+                  </Flex>
+                </Box>
               </TaggedElement>
-              <TaggedElement tag={['oranges', 'puppies']}>
-                <Text>Oranges & puppies</Text>
+              <TaggedElement tag={['editorial']}>
+                <Text size={1} weight="semibold">
+                  Body
+                </Text>
+                <Box marginY={2}>
+                  <TextArea fontSize={[2, 2, 3, 4]} padding={3} style={{height: 300}} />
+                </Box>
+              </TaggedElement>
+              <TaggedElement tag={['seo', 'editorial']}>
+                <Stack space={2}>
+                  <Text size={1} weight="semibold">
+                    Blurb
+                  </Text>
+                  <Text size={1} muted>
+                    Used also for SEO description
+                  </Text>
+                </Stack>
+                <Box marginY={2}>
+                  <TextArea fontSize={[2, 2, 3, 4]} padding={3} style={{height: 150}} />
+                </Box>
+              </TaggedElement>
+              <TaggedElement tag={['seo']}>
+                <Text size={1} weight="semibold">
+                  Keywords
+                </Text>
+                <Box marginY={2}>
+                  <TextInput fontSize={[2, 2, 3, 4]} padding={3} />
+                </Box>
+              </TaggedElement>
+              <TaggedElement tag={[]}>
+                <Text size={1} weight="semibold">
+                  Categories
+                </Text>
+                <Stack marginY={3} space={2}>
+                  <Flex align="center">
+                    <Checkbox id="checkbox" style={{display: 'block'}} />
+                    <Box flex={1} paddingLeft={3}>
+                      <Text>
+                        <label htmlFor="checkbox">Product</label>
+                      </Text>
+                    </Box>
+                  </Flex>
+                  <Flex align="center">
+                    <Checkbox id="checkbox" style={{display: 'block'}} />
+                    <Box flex={1} paddingLeft={3}>
+                      <Text>
+                        <label htmlFor="checkbox">Comminity</label>
+                      </Text>
+                    </Box>
+                  </Flex>
+                  <Flex align="center">
+                    <Checkbox id="checkbox" style={{display: 'block'}} />
+                    <Box flex={1} paddingLeft={3}>
+                      <Text>
+                        <label htmlFor="checkbox">Guide</label>
+                      </Text>
+                    </Box>
+                  </Flex>
+                  <Flex align="center">
+                    <Checkbox id="checkbox" style={{display: 'block'}} />
+                    <Box flex={1} paddingLeft={3}>
+                      <Text>
+                        <label htmlFor="checkbox">Company</label>
+                      </Text>
+                    </Box>
+                  </Flex>
+                </Stack>
+              </TaggedElement>
+              <TaggedElement tag={['images']}>
+                <Text size={1} weight="semibold">
+                  Main image
+                </Text>
+                <Stack marginY={2}>
+                  <Card
+                    tone="default"
+                    padding={8}
+                    border
+                    style={{background: 'rgb(241, 243, 246)'}}
+                  >
+                    <Text style={{textAlign: 'center'}} weight="semibold">
+                      Drop or paste image
+                    </Text>
+                  </Card>
+                  <Flex marginY={2}>
+                    <Box style={{flexGrow: 1}} marginRight={2}>
+                      <Button text="Upload" style={{width: '100%'}} mode="ghost" />
+                    </Box>
+                    <Box style={{flexGrow: 1}}>
+                      <Button text="Select" style={{width: '100%'}} mode="ghost" />
+                    </Box>
+                  </Flex>
+                </Stack>
+              </TaggedElement>
+              <TaggedElement tag={['images', 'seo']}>
+                <Text size={1} weight="semibold">
+                  SEO image
+                </Text>
+                <Stack marginY={2}>
+                  <Card
+                    tone="default"
+                    padding={8}
+                    border
+                    style={{background: 'rgb(241, 243, 246)'}}
+                  >
+                    <Text style={{textAlign: 'center'}} weight="semibold">
+                      Drop or paste image
+                    </Text>
+                  </Card>
+                  <Flex marginY={2}>
+                    <Box style={{flexGrow: 1}} marginRight={2}>
+                      <Button text="Upload" style={{width: '100%'}} mode="ghost" />
+                    </Box>
+                    <Box style={{flexGrow: 1}}>
+                      <Button text="Select" style={{width: '100%'}} mode="ghost" />
+                    </Box>
+                  </Flex>
+                </Stack>
               </TaggedElement>
             </Stack>
           </Container>
