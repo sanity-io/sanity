@@ -17,7 +17,7 @@ const CustomIconDiv = styled.div`
   transform: scale(0.7);
 `
 
-export default function CustomIcon(props: Props) {
+export function CustomIcon(props: Props) {
   const {icon, active} = props
 
   const inlineStyle = useMemo(
