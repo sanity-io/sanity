@@ -5,20 +5,21 @@ import {
   Type,
   PortableTextEditor,
 } from '@sanity/portable-text-editor'
-import React, {useCallback, useMemo} from 'react'
+import React, {memo, useCallback, useMemo} from 'react'
 import {Path, SchemaType} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {resolveInitialValueForType} from '@sanity/initial-value-templates'
 import {Box, Button, Flex, useToast} from '@sanity/ui'
 import {CollapseIcon, ExpandIcon} from '@sanity/icons'
 import styled, {css} from 'styled-components'
-import ActionMenu from './ActionMenu'
-import BlockStyleSelect from './BlockStyleSelect'
-import InsertMenu from './InsertMenu'
+import {ActionMenu} from './ActionMenu'
+import {BlockStyleSelect} from './BlockStyleSelect'
+import {InsertMenu} from './InsertMenu'
 import {getBlockStyles, getInsertMenuItems} from './helpers'
 import {useActionGroups, useFeatures} from './hooks'
+import {BlockItem, BlockStyleItem, PTEToolbarActionGroup} from './types'
 
-interface Props {
+interface ToolbarProps {
   hotkeys: HotkeyOptions
   isFullscreen: boolean
   readOnly: boolean
@@ -53,9 +54,79 @@ const FullscreenButtonBox = styled(Box)`
 
 const SLOW_INITIAL_VALUE_LIMIT = 300
 
-const preventDefault = (e) => e.preventDefault()
+const preventDefault = (e: React.SyntheticEvent) => e.preventDefault()
 
-function PTEToolbar(props: Props) {
+const InnerToolbar = memo(function InnerToolbar({
+  actionGroups,
+  blockStyles,
+  disabled,
+  insertMenuItems,
+  isFullscreen,
+  onToggleFullscreen,
+  readOnly,
+}: {
+  actionGroups: PTEToolbarActionGroup[]
+  blockStyles: BlockStyleItem[]
+  disabled: boolean
+  insertMenuItems: BlockItem[]
+  isFullscreen: boolean
+  onToggleFullscreen: () => void
+  readOnly: boolean
+}) {
+  const actionsLen = actionGroups.reduce((acc, x) => acc + x.actions.length, 0)
+  const showActionMenu = actionsLen > 0
+  const showInsertMenu = insertMenuItems.length > 0
+
+  return (
+    <RootFlex
+      align="center"
+      // Ensure the editor doesn't lose focus when interacting
+      // with the toolbar (prevent focus click events)
+      onMouseDown={preventDefault}
+      onKeyPress={preventDefault}
+    >
+      <StyleSelectBox padding={1}>
+        <BlockStyleSelect
+          disabled={disabled}
+          readOnly={readOnly}
+          isFullscreen={isFullscreen}
+          items={blockStyles}
+        />
+      </StyleSelectBox>
+      {showActionMenu && (
+        <ActionMenuBox flex={1} padding={1} $withMaxWidth={showInsertMenu}>
+          <ActionMenu
+            disabled={disabled}
+            groups={actionGroups}
+            readOnly={readOnly}
+            isFullscreen={isFullscreen}
+          />
+        </ActionMenuBox>
+      )}
+      {showInsertMenu && (
+        <InsertMenuBox flex={1} padding={1}>
+          <InsertMenu
+            disabled={disabled}
+            items={insertMenuItems}
+            readOnly={readOnly}
+            isFullscreen={isFullscreen}
+          />
+        </InsertMenuBox>
+      )}
+
+      <FullscreenButtonBox padding={1}>
+        <Button
+          padding={isFullscreen ? 3 : 2}
+          icon={isFullscreen ? CollapseIcon : ExpandIcon}
+          mode="bleed"
+          onClick={onToggleFullscreen}
+        />
+      </FullscreenButtonBox>
+    </RootFlex>
+  )
+})
+
+export function Toolbar(props: ToolbarProps) {
   const {hotkeys, isFullscreen, readOnly, onFocus, onToggleFullscreen} = props
   const features = useFeatures()
   const editor = usePortableTextEditor()
@@ -124,7 +195,7 @@ function PTEToolbar(props: Props) {
   )
 
   const actionGroups = useActionGroups({hotkeys, onFocus, resolveInitialValue})
-  const actionsLen = actionGroups.reduce((acc, x) => acc + x.actions.length, 0)
+
   const blockStyles = useMemo(() => getBlockStyles(features), [features])
 
   const insertMenuItems = useMemo(
@@ -132,68 +203,15 @@ function PTEToolbar(props: Props) {
     [disabled, features, handleInsertBlock, handleInsertInline]
   )
 
-  const showInsertMenu = useMemo(() => insertMenuItems.length > 0, [insertMenuItems])
-
-  return useMemo(
-    () => (
-      <RootFlex
-        align="center"
-        // Ensure the editor doesn't lose focus when interacting
-        // with the toolbar (prevent focus click events)
-        onMouseDown={preventDefault}
-        onKeyPress={preventDefault}
-      >
-        <StyleSelectBox padding={1}>
-          <BlockStyleSelect
-            disabled={disabled}
-            readOnly={readOnly}
-            isFullscreen={isFullscreen}
-            items={blockStyles}
-          />
-        </StyleSelectBox>
-        {actionsLen > 0 && (
-          <ActionMenuBox flex={1} padding={1} $withMaxWidth={showInsertMenu}>
-            <ActionMenu
-              disabled={disabled}
-              groups={actionGroups}
-              readOnly={readOnly}
-              isFullscreen={isFullscreen}
-            />
-          </ActionMenuBox>
-        )}
-        {showInsertMenu && (
-          <InsertMenuBox flex={1} padding={1}>
-            <InsertMenu
-              disabled={disabled}
-              items={insertMenuItems}
-              readOnly={readOnly}
-              isFullscreen={isFullscreen}
-            />
-          </InsertMenuBox>
-        )}
-
-        <FullscreenButtonBox padding={1}>
-          <Button
-            padding={isFullscreen ? 3 : 2}
-            icon={isFullscreen ? CollapseIcon : ExpandIcon}
-            mode="bleed"
-            onClick={onToggleFullscreen}
-          />
-        </FullscreenButtonBox>
-      </RootFlex>
-    ),
-    [
-      actionGroups,
-      actionsLen,
-      blockStyles,
-      disabled,
-      insertMenuItems,
-      isFullscreen,
-      onToggleFullscreen,
-      readOnly,
-      showInsertMenu,
-    ]
+  return (
+    <InnerToolbar
+      actionGroups={actionGroups}
+      blockStyles={blockStyles}
+      disabled={disabled}
+      insertMenuItems={insertMenuItems}
+      isFullscreen={isFullscreen}
+      onToggleFullscreen={onToggleFullscreen}
+      readOnly={readOnly}
+    />
   )
 }
-
-export default PTEToolbar

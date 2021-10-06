@@ -1,9 +1,11 @@
-import React, {useMemo} from 'react'
+import React, {memo, useMemo} from 'react'
 import {CollapseMenu, CollapseMenuButton, CollapseMenuButtonProps} from '@sanity/base/components'
 import {AddIcon} from '@sanity/icons'
 import {Button} from '@sanity/ui'
 import {BlockItem} from './types'
 import {useFeatures, useFocusBlock} from './hooks'
+
+const CollapseMenuMemo = memo(CollapseMenu)
 
 interface InsertMenuProps {
   disabled: boolean
@@ -12,7 +14,7 @@ interface InsertMenuProps {
   isFullscreen?: boolean
 }
 
-export default function InsertMenu(props: InsertMenuProps) {
+export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
   const {disabled, items, readOnly, isFullscreen} = props
   const features = useFeatures()
   const focusBlock = useFocusBlock()
@@ -22,8 +24,8 @@ export default function InsertMenu(props: InsertMenuProps) {
     [isFullscreen]
   )
 
-  const menuButtonPadding = useMemo(() => (isFullscreen ? 3 : 2), [isFullscreen])
-  const disableMenuButton = useMemo(() => disabled || readOnly, [disabled, readOnly])
+  // @todo: explain what this does
+  const _disabled = focusBlock ? focusBlock._type !== features.types.block.name : true
 
   const children = useMemo(() => {
     return items.map((item) => {
@@ -35,11 +37,7 @@ export default function InsertMenu(props: InsertMenuProps) {
           aria-label={`Insert ${title}${item.inline ? ' (inline)' : ' (block)'}`}
           buttonProps={collapseButtonProps}
           collapseText={false}
-          disabled={
-            item.disabled ||
-            readOnly ||
-            (focusBlock ? focusBlock._type !== features.types.block.name : true)
-          }
+          disabled={item.disabled || readOnly || _disabled}
           icon={item.icon}
           key={item.key}
           onClick={handle}
@@ -48,28 +46,23 @@ export default function InsertMenu(props: InsertMenuProps) {
         />
       )
     })
-  }, [collapseButtonProps, disabled, features, focusBlock, items, readOnly])
+  }, [_disabled, collapseButtonProps, disabled, items, readOnly])
 
   const menuButton = useMemo(
     () => (
       <Button
         icon={AddIcon}
         mode="bleed"
-        padding={menuButtonPadding}
-        disabled={disableMenuButton}
+        padding={isFullscreen ? 3 : 2}
+        disabled={disabled || readOnly}
       />
     ),
-    [disableMenuButton, menuButtonPadding]
+    [disabled, isFullscreen, readOnly]
   )
 
-  const collapseMenu = useMemo(
-    () => (
-      <CollapseMenu gap={1} menuButton={menuButton}>
-        {children}
-      </CollapseMenu>
-    ),
-    [children, menuButton]
+  return (
+    <CollapseMenuMemo gap={1} menuButton={menuButton}>
+      {children}
+    </CollapseMenuMemo>
   )
-
-  return collapseMenu
-}
+})

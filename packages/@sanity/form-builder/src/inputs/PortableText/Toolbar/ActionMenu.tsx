@@ -1,22 +1,12 @@
-import React, {useMemo} from 'react'
-import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
+import React, {memo, useMemo} from 'react'
 import {CollapseMenu, CollapseMenuButton, CollapseMenuButtonProps} from '@sanity/base/components'
 import {Button} from '@sanity/ui'
-import {
-  BoldIcon,
-  CodeIcon,
-  EllipsisVerticalIcon,
-  ItalicIcon,
-  LinkIcon,
-  OlistIcon,
-  StrikethroughIcon,
-  UnderlineIcon,
-  UnknownIcon,
-  UlistIcon,
-} from '@sanity/icons'
+import {EllipsisVerticalIcon} from '@sanity/icons'
 import {PTEToolbarAction, PTEToolbarActionGroup} from './types'
-import {useFeatures, useFocusBlock, useFocusChild, useSelection} from './hooks'
-import CustomIcon from './CustomIcon'
+import {useActiveActionKeys, useFeatures, useFocusBlock, useFocusChild} from './hooks'
+import {getActionIcon} from './helpers'
+
+const CollapseMenuMemo = memo(CollapseMenu)
 
 interface ActionMenuProps {
   disabled: boolean
@@ -25,47 +15,8 @@ interface ActionMenuProps {
   isFullscreen?: boolean
 }
 
-const annotationIcons = {
-  link: LinkIcon,
-}
-
-const formatIcons = {
-  strong: BoldIcon,
-  em: ItalicIcon,
-  'strike-through': StrikethroughIcon,
-  underline: UnderlineIcon,
-  code: CodeIcon,
-}
-
-const listStyleIcons = {
-  number: OlistIcon,
-  bullet: UlistIcon,
-}
-
-function getActionIcon(action: PTEToolbarAction, active: boolean) {
-  if (action.icon) {
-    if (typeof action.icon === 'string') {
-      return <CustomIcon active={active} icon={action.icon} />
-    }
-
-    return action.icon
-  }
-
-  if (action.type === 'annotation') {
-    return annotationIcons[action.key] || UnknownIcon
-  }
-
-  if (action.type === 'listStyle') {
-    return listStyleIcons[action.key] || UnknownIcon
-  }
-
-  return formatIcons[action.key] || UnknownIcon
-}
-
-export default function ActionMenu(props: ActionMenuProps) {
+export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
   const {disabled, groups, readOnly, isFullscreen} = props
-  const editor = usePortableTextEditor()
-  const selection = useSelection()
   const focusBlock = useFocusBlock()
   const focusChild = useFocusChild()
   const features = useFeatures()
@@ -77,18 +28,23 @@ export default function ActionMenu(props: ActionMenuProps) {
     [focusBlock, focusChild, features.types.block.name, features.types.span.name]
   )
 
-  const actions = useMemo(
+  const actions: Array<PTEToolbarAction & {firstInGroup?: true}> = useMemo(
     () =>
       groups.reduce((acc, group) => {
         return acc.concat(
-          group.actions.map((action: PTEToolbarAction, actionIndex) => {
-            if (actionIndex === 0) return {...action, firstInGroup: true}
-            return action
-          })
+          group.actions.map(
+            // eslint-disable-next-line max-nested-callbacks
+            (action: PTEToolbarAction, actionIndex) => {
+              if (actionIndex === 0) return {...action, firstInGroup: true}
+              return action
+            }
+          )
         )
       }, []),
     [groups]
   )
+
+  const activeKeys = useActiveActionKeys({actions})
 
   const collapsesButtonProps: CollapseMenuButtonProps = useMemo(
     () => ({padding: isFullscreen ? 3 : 2, mode: 'bleed'}),
@@ -101,34 +57,24 @@ export default function ActionMenu(props: ActionMenuProps) {
   const children = useMemo(
     () =>
       actions.map((action) => {
-        const selected = PortableTextEditor.isMarkActive(editor, action.key)
+        const active = activeKeys.includes(action.key)
 
         return (
           <CollapseMenuButton
             disabled={action.disabled || isNotText || readOnly || disabled}
             buttonProps={collapsesButtonProps}
             dividerBefore={action.firstInGroup}
-            icon={getActionIcon(action, selected)}
+            icon={getActionIcon(action, active)}
             key={action.key}
             // eslint-disable-next-line react/jsx-handler-names
             onClick={action.handle}
-            selected={selected}
+            selected={active}
             text={action.title || action.key}
             tooltipProps={{disabled: disabled, placement: 'top'}}
           />
         )
       }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      actions,
-      collapsesButtonProps,
-      disabled,
-      editor,
-      isNotText,
-      readOnly,
-      // This is needed so that active actions update as `selection` changes
-      selection,
-    ]
+    [actions, collapsesButtonProps, disabled, isNotText, readOnly, activeKeys]
   )
 
   const menuButton = useMemo(
@@ -143,14 +89,9 @@ export default function ActionMenu(props: ActionMenuProps) {
     [disableMenuButton, menuButtonPadding]
   )
 
-  const collapseMenu = useMemo(
-    () => (
-      <CollapseMenu gap={1} menuButton={menuButton}>
-        {children}
-      </CollapseMenu>
-    ),
-    [children, menuButton]
+  return (
+    <CollapseMenuMemo gap={1} menuButton={menuButton}>
+      {children}
+    </CollapseMenuMemo>
   )
-
-  return collapseMenu
-}
+})

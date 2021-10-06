@@ -1,4 +1,16 @@
-import {BlockElementIcon, InlineElementIcon} from '@sanity/icons'
+import {
+  BlockElementIcon,
+  BoldIcon,
+  CodeIcon,
+  InlineElementIcon,
+  ItalicIcon,
+  LinkIcon,
+  OlistIcon,
+  StrikethroughIcon,
+  UnderlineIcon,
+  UnknownIcon,
+  UlistIcon,
+} from '@sanity/icons'
 import {
   HotkeyOptions,
   PortableTextEditor,
@@ -7,7 +19,9 @@ import {
   Type,
 } from '@sanity/portable-text-editor'
 import {get} from 'lodash'
+import React from 'react'
 import {BlockItem, BlockStyleItem, PTEToolbarAction, PTEToolbarActionGroup} from './types'
+import {CustomIcon} from './CustomIcon'
 
 function getPTEFormatActions(
   editor: PortableTextEditor,
@@ -158,4 +172,41 @@ export function getInsertMenuItems(
   const filteredBlockItems = blockItems.concat(inlineItems).filter((item) => !item.type?.hidden)
 
   return filteredBlockItems
+}
+
+const annotationIcons = {
+  link: LinkIcon,
+}
+
+const formatIcons = {
+  strong: BoldIcon,
+  em: ItalicIcon,
+  'strike-through': StrikethroughIcon,
+  underline: UnderlineIcon,
+  code: CodeIcon,
+}
+
+const listStyleIcons = {
+  number: OlistIcon,
+  bullet: UlistIcon,
+}
+
+export function getActionIcon(action: PTEToolbarAction, active: boolean) {
+  if (action.icon) {
+    if (typeof action.icon === 'string') {
+      return <CustomIcon active={active} icon={action.icon} />
+    }
+
+    return action.icon
+  }
+
+  if (action.type === 'annotation') {
+    return annotationIcons[action.key] || UnknownIcon
+  }
+
+  if (action.type === 'listStyle') {
+    return listStyleIcons[action.key] || UnknownIcon
+  }
+
+  return formatIcons[action.key] || UnknownIcon
 }

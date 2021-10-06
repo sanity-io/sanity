@@ -13,7 +13,8 @@ import {Path} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {useCallback, useMemo} from 'react'
 import {getPTEToolbarActionGroups} from './helpers'
-import {PTEToolbarActionGroup} from './types'
+import {useUnique} from './lib/useUnique'
+import {BlockStyleItem, PTEToolbarAction, PTEToolbarActionGroup} from './types'
 
 export function useFocusBlock(): PortableTextBlock {
   const editor = usePortableTextEditor()
@@ -71,5 +72,41 @@ export function useActionGroups({
       editor ? getPTEToolbarActionGroups(editor, disabled, handleInsertAnnotation, hotkeys) : [],
 
     [disabled, editor, handleInsertAnnotation, hotkeys]
+  )
+}
+
+export function useActiveActionKeys({
+  actions,
+}: {
+  actions: Array<PTEToolbarAction & {firstInGroup?: true}>
+}): string[] {
+  const editor = usePortableTextEditor()
+  const selection = useSelection()
+
+  return useUnique(
+    useMemo(
+      () => actions.filter((a) => PortableTextEditor.isMarkActive(editor, a.key)).map((a) => a.key),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [
+        editor,
+        // This is needed so that active actions update as `selection` changes
+        selection,
+      ]
+    )
+  )
+}
+
+export function useActiveStyleKeys({items}: {items: BlockStyleItem[]}): string[] {
+  const editor = usePortableTextEditor()
+  const focusBlock = useFocusBlock()
+  const selection = useSelection()
+
+  return useUnique(
+    useMemo(
+      () =>
+        items.filter((i) => PortableTextEditor.hasBlockStyle(editor, i.style)).map((i) => i.style),
+      //  eslint-disable-next-line react-hooks/exhaustive-deps
+      [focusBlock, selection]
+    )
   )
 }
