@@ -1,15 +1,11 @@
-/* eslint-disable react/prop-types */
-import React, {FunctionComponent, useCallback, useMemo} from 'react'
+import {IntentLink} from '@sanity/base/router'
+import {EditIcon, LinkIcon, TrashIcon, EyeOpenIcon, ChevronDownIcon} from '@sanity/icons'
 import {PortableTextBlock, Type} from '@sanity/portable-text-editor'
-import {EditIcon, LinkIcon, TrashIcon, EyeOpenIcon} from '@sanity/icons'
-import {DropDownButton} from '../../../legacyParts'
-
+import {Button, Menu, MenuButton, MenuItem} from '@sanity/ui'
+import React, {useCallback} from 'react'
 import Preview from '../../../Preview'
-import {MenuItem, DropDownMenuItemProps} from './BlockObjectMenuItem'
 
-import styles from './BlockObject.module.css'
-
-type Props = {
+interface BlockObjectPreviewProps {
   type: Type
   value: PortableTextBlock
   readOnly: boolean
@@ -17,75 +13,49 @@ type Props = {
   onClickingDelete: () => void
 }
 
-export const BlockObjectPreview: FunctionComponent<Props> = ({
-  value,
-  type,
-  readOnly,
-  onClickingEdit,
-  onClickingDelete,
-}): JSX.Element => {
-  const menuItems: DropDownMenuItemProps[] = useMemo(() => {
-    const items = []
-    if (value._ref) {
-      items.push({
-        title: 'Go to reference',
-        icon: LinkIcon,
-        intent: 'edit',
-        params: {id: value._ref},
-      })
-    }
-    if (readOnly) {
-      items.push({
-        title: 'View',
-        icon: EyeOpenIcon,
-        name: 'view',
-      })
-    } else {
-      items.push({
-        title: 'Edit',
-        icon: EditIcon,
-        name: 'edit',
-      })
-      items.push({
-        title: 'Delete',
-        icon: TrashIcon,
-        name: 'delete',
-        color: 'danger',
-      })
-    }
-    return items
-  }, [readOnly, value._ref])
+export function BlockObjectPreview(props: BlockObjectPreviewProps) {
+  const {value, type, readOnly, onClickingEdit, onClickingDelete} = props
 
-  const handleHeaderMenuAction = useCallback(
-    (item: DropDownMenuItemProps): void => {
-      if (item.name === 'delete') {
-        onClickingDelete()
-      }
-      if (item.name === 'edit') {
-        onClickingEdit()
-      }
-      if (item.name === 'view') {
-        onClickingEdit()
-      }
-    },
-    [onClickingDelete, onClickingEdit]
+  const ReferenceLink = useCallback(
+    (linkProps: any) => <IntentLink {...linkProps} intent="edit" params={{id: value._ref}} />,
+    [value?._ref]
   )
 
   return (
-    <div className={styles.preview}>
-      <Preview type={type} value={value} layout="block" />
-      <div className={styles.header}>
-        <DropDownButton
-          items={menuItems}
-          kind="simple"
-          onAction={handleHeaderMenuAction}
-          padding="small"
-          placement="bottom-end"
-          renderItem={MenuItem}
-        >
-          {type ? type.title || type.name : 'Unknown'}
-        </DropDownButton>
-      </div>
-    </div>
+    <Preview
+      actions={
+        <MenuButton
+          button={
+            <Button
+              fontSize={1}
+              iconRight={ChevronDownIcon}
+              mode="ghost"
+              text={type ? type.title || type.name : 'Unknown'}
+            />
+          }
+          // @todo
+          id=""
+          menu={
+            <Menu>
+              {value?._ref && <MenuItem as={ReferenceLink} icon={LinkIcon} text="Open reference" />}
+              {readOnly && <MenuItem icon={EyeOpenIcon} onClick={onClickingEdit} text="View" />}
+              {!readOnly && <MenuItem icon={EditIcon} onClick={onClickingEdit} text="Edit" />}
+              {!readOnly && (
+                <MenuItem
+                  icon={TrashIcon}
+                  onClick={onClickingDelete}
+                  text="Delete"
+                  tone="critical"
+                />
+              )}
+            </Menu>
+          }
+          popover={{constrainSize: true, placement: 'bottom-end', portal: true}}
+        />
+      }
+      type={type}
+      value={value}
+      layout="block"
+    />
   )
 }
