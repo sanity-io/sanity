@@ -5,7 +5,7 @@ import FormBuilderContext from '../../../FormBuilderContext'
 import PortableTextInput from '../PortableTextInput'
 import {applyAll} from '../../../simplePatch'
 import {inputResolver} from './input'
-import {resolvePreviewComponent} from './preview'
+import {resolvePreviewComponent} from './resolvePreviewComponent'
 
 interface TestInputProps {
   readOnly?: boolean
