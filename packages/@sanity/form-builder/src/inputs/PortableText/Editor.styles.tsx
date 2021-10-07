@@ -1,7 +1,7 @@
 import {ScrollContainer} from '@sanity/base/components'
 import {Card, rem} from '@sanity/ui'
 import styled from 'styled-components'
-import {parentCounterResetCSS} from './Text/TextBlock'
+import {listCounterCSS} from './Text/TextBlock'
 
 export const Root = styled(Card)<{$fullscreen: boolean}>`
   height: ${({$fullscreen}) => ($fullscreen ? '100%' : '15em')};
@@ -32,7 +32,10 @@ export const Scroller: any = styled(ScrollContainer)`
 `
 
 export const EditableWrapper = styled(Card)`
-  ${parentCounterResetCSS};
+  /**
+  * Add list counter CSS to keep track of the list count
+  */
+  ${listCounterCSS}
 
   & > div > div > div[class~='pt-list-item-bullet'] + div[class~='pt-list-item-number'],
   & > div > div > div[class~='pt-list-item-number'] + div[class~='pt-list-item-bullet'] {
@@ -45,6 +48,13 @@ export const EditableWrapper = styled(Card)`
 
   & > div > div > .pt-list-item + div:not(.pt-list-item) {
     margin-top: ${({theme}) => theme.sanity.space[3]}px;
+  }
+
+  /**
+  * Reset the list count if the item is not a numbered list item
+  */
+  & > div > div > div:not(.pt-list-item-number) {
+    ${listCounterCSS};
   }
 
   &:not([hidden]) {
