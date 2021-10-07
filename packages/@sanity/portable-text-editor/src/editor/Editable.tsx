@@ -15,6 +15,7 @@ import {
   RenderBlockFunction,
   RenderChildFunction,
   RenderDecoratorFunction,
+  ScrollSelectionIntoViewFunction,
 } from '../types/editor'
 import {PortableTextBlock} from '../types/portableText'
 import {HotkeyOptions} from '../types/options'
@@ -47,6 +48,7 @@ type EditableProps = {
   renderBlock?: RenderBlockFunction
   renderChild?: RenderChildFunction
   renderDecorator?: RenderDecoratorFunction
+  scrollSelectionIntoView?: ScrollSelectionIntoViewFunction
   selection?: EditorSelection
   spellCheck?: boolean
 }
@@ -68,6 +70,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     renderChild,
     renderDecorator,
     selection: propsSelection,
+    scrollSelectionIntoView,
     spellCheck,
     ...restProps
   } = props
@@ -489,6 +492,17 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   )
 
   const handleKeyDown = portableTextEditor.slateInstance.pteWithHotKeys
+
+  const scrollSelectionIntoViewToSlate = useMemo(() => {
+    if (!scrollSelectionIntoView) {
+      return undefined // Use Slate default
+    }
+    // Translate to Slate plugin, we're only interested in the domRange anyway
+    return (editor: ReactEditor, domRange: Range) => {
+      scrollSelectionIntoView(portableTextEditor, domRange)
+    }
+  }, [portableTextEditor, scrollSelectionIntoView])
+
   // The editor
   const slateEditable = useMemo(
     () => (
@@ -499,12 +513,12 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         value={getValueOrIntitialValue(stateValue, [placeHolderBlock])}
       >
         <SlateEditable
-          autoFocus={false}
           // decorate={decorate}
-          onDOMBeforeInput={handleOnBeforeInput}
+          autoFocus={false}
           onBlur={handleOnBlur}
           onCopy={handleCopy}
           onCut={handleCut}
+          onDOMBeforeInput={handleOnBeforeInput}
           onFocus={handleOnFocus}
           onKeyDown={handleKeyDown}
           onPaste={handlePaste}
@@ -513,29 +527,31 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
           readOnly={readOnly}
           renderElement={renderElement}
           renderLeaf={renderLeaf}
+          scrollSelectionIntoView={scrollSelectionIntoViewToSlate}
           spellCheck={spellCheck}
         />
       </Slate>
     ),
     [
       handleChange,
-      portableTextEditor,
-      selection,
-      stateValue,
-      placeHolderBlock,
-      handleOnBeforeInput,
-      handleOnBlur,
       handleCopy,
       handleCut,
-      handleOnFocus,
       handleKeyDown,
+      handleOnBeforeInput,
+      handleOnBlur,
+      handleOnFocus,
       handlePaste,
       handleSelect,
+      placeHolderBlock,
       placeholderText,
+      portableTextEditor.slateInstance,
       readOnly,
       renderElement,
       renderLeaf,
+      scrollSelectionIntoViewToSlate,
+      selection,
       spellCheck,
+      stateValue,
     ]
   )
   if (!portableTextEditor) {
