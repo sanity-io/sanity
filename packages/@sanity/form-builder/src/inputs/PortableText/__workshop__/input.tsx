@@ -1,22 +1,33 @@
-/* eslint-disable no-console */
-import React from 'react'
+import {TextArea, Theme} from '@sanity/ui'
+import React, {forwardRef, useImperativeHandle, useRef} from 'react'
+import styled, {css} from 'styled-components'
 import PortableTextInput from '../PortableTextInput'
 
-export class OtherInput extends React.Component {
-  blur() {
-    console.log('other input blur')
-  }
-  focus() {
-    console.log('other input focus')
-  }
-  render() {
-    return <div>Not implemented</div>
-  }
-}
+const DebugTextArea = styled(TextArea)(({theme}: {theme: Theme}) => {
+  return css`
+    font-family: ${theme.sanity.fonts.code.family};
+  `
+})
+
+const DebugInput = forwardRef(function DebugInput(props: any, ref) {
+  const rootRef = useRef<HTMLTextAreaElement | null>(null)
+
+  useImperativeHandle(ref, () => ({
+    blur: () => rootRef.current?.blur(),
+    focus: () => rootRef.current?.focus(),
+  }))
+
+  return (
+    <DebugTextArea padding={3} radius={1} readOnly ref={rootRef} rows={10}>
+      {JSON.stringify(props.value, null, 2)}
+    </DebugTextArea>
+  )
+})
 
 export const inputResolver = (input: any) => {
   if (input.type.name === 'block') {
     return PortableTextInput
   }
-  return OtherInput
+
+  return DebugInput
 }
