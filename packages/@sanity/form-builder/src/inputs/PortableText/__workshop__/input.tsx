@@ -1,22 +1,26 @@
-/* eslint-disable no-console */
-import React from 'react'
+import {Card, Code} from '@sanity/ui'
+import React, {forwardRef, useImperativeHandle} from 'react'
 import PortableTextInput from '../PortableTextInput'
 
-export class OtherInput extends React.Component {
-  blur() {
-    console.log('other input blur')
-  }
-  focus() {
-    console.log('other input focus')
-  }
-  render() {
-    return <div>Not implemented</div>
-  }
-}
+const DebugInput = forwardRef(function DebugInput(props: any, ref) {
+  useImperativeHandle(ref, () => ({
+    // eslint-disable-next-line no-console
+    blur: (...args: unknown[]) => console.log('DebugInput.blur', ...args),
+    // eslint-disable-next-line no-console
+    focus: (...args: unknown[]) => console.log('DebugInput.focus', ...args),
+  }))
+
+  return (
+    <Card overflow="auto" padding={3} radius={2} tone="transparent">
+      <Code language="json">{JSON.stringify(props.value, null, 2)}</Code>
+    </Card>
+  )
+})
 
 export const inputResolver = (input: any) => {
   if (input.type.name === 'block') {
     return PortableTextInput
   }
-  return OtherInput
+
+  return DebugInput
 }
