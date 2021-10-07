@@ -38,12 +38,13 @@
   "dependencies": {
     "@sanity/block-tools": "2.21.5",
     "@sanity/schema": "2.21.5",
-    "@sanity/slate-react": "0.58.7",
+    "@sanity/slate-react": "0.58.8",
     "@sanity/types": "2.21.10",
     "@sanity/util": "2.21.10",
     "debug": "^3.2.7",
     "is-hotkey": "^0.1.6",
     "lodash": "^4.17.15",
+    "scroll-into-view-if-needed": "^2.2.26",
     "slate": "^0.58.4"
   },
   "devDependencies": {
