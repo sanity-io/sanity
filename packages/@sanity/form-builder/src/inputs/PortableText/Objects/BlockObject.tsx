@@ -6,7 +6,7 @@ import {
 } from '@sanity/portable-text-editor'
 import {Path} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
-import {Box, Theme} from '@sanity/ui'
+import {Card, Theme} from '@sanity/ui'
 import React, {useCallback, useMemo, useRef} from 'react'
 import styled, {css} from 'styled-components'
 import {useScrollIntoViewOnFocusWithin} from '../../../hooks/useScrollIntoViewOnFocusWithin'
@@ -25,20 +25,18 @@ interface BlockObjectProps {
   value: PortableTextBlock
 }
 
-const Root = styled(Box)((props: {theme: Theme}) => {
+const Root = styled(Card)((props: {theme: Theme}) => {
   const {color, radius} = props.theme.sanity
 
   return css`
-    background-color: var(--card-bg-color);
     box-shadow: 0 0 0 1px var(--card-border-color);
     border-radius: ${radius[1]}px;
 
-    --card-bg-color: ${color.input.default.enabled.bg};
-    --card-border-color: ${color.input.default.enabled.border};
-
-    @media (hover: hover) {
-      &:hover {
-        --card-border-color: ${color.input.default.hovered.border};
+    &:not([data-focused]):not([data-selected]) {
+      @media (hover: hover) {
+        &:hover {
+          --card-border-color: ${color.input.default.hovered.border};
+        }
       }
     }
 
@@ -51,10 +49,6 @@ const Root = styled(Box)((props: {theme: Theme}) => {
           --card-border-color: ${color.input.invalid.hovered.border};
         }
       }
-    }
-
-    &[data-focused] {
-      --card-border-color: ${color.base.focusRing};
     }
   `
 })
@@ -125,7 +119,9 @@ export function BlockObject(props: BlockObjectProps) {
       marginY={3}
       onDoubleClick={handleClickToOpen}
       overflow="hidden"
+      padding={1}
       ref={elementRef}
+      tone={selected ? 'primary' : undefined}
     >
       <div ref={blockRef}>{blockPreview}</div>
     </Root>
