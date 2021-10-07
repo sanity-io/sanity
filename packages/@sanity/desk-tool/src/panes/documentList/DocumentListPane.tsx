@@ -48,7 +48,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const {defaultOrdering, filter} = options
   const params = useShallowUnique(options.params || EMPTY_RECORD)
   const typeName = useMemo(() => getTypeNameFromSingleTypeFilter(filter, params), [filter, params])
-  const {showIcons = false} = displayOptions
+  const showIcons = displayOptions.showIcons !== false
   const [layout, setLayout] = useDeskToolSetting<Layout>(typeName, 'layout', defaultLayout)
   const [sortOrderRaw, setSortOrder] = useDeskToolSetting<SortOrder>(
     typeName,
