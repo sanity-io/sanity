@@ -72,7 +72,8 @@ export function pluginLegacyParts(partsResolver: any): PluginOption {
           }
 
           if (isMany) {
-            console.log('@todo')
+            // eslint-disable-next-line no-console
+            console.log('@todo: load many parts:', id)
             return DEBUG_MANY_PATH
           }
 
