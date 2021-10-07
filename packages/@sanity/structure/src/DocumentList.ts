@@ -178,7 +178,7 @@ export class DocumentListBuilder extends GenericListBuilder<
       builder.spec.initialValueTemplates = inferInitialValueTemplates(builder.spec)
     }
 
-    if (!this.spec.schemaTypeName) {
+    if (!builder.spec.schemaTypeName) {
       builder.spec.schemaTypeName = inferTypeName(builder.spec)
     }
 
