@@ -79,10 +79,6 @@ export const EditObject = ({
     setObject(_object)
   }, [_object])
 
-  const handleClose = useCallback((): void => {
-    onClose()
-  }, [onClose])
-
   const cancelThrottle = useMemo(
     () =>
       debounce(() => {
@@ -90,22 +86,6 @@ export const EditObject = ({
       }, THROTTLE_MS),
     [editor]
   )
-
-  useEffect(() => {
-    const handleGlobalKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        event.preventDefault()
-        event.stopPropagation()
-        handleClose()
-      }
-    }
-
-    window.addEventListener('keydown', handleGlobalKeyDown)
-
-    return () => {
-      window.removeEventListener('keydown', handleGlobalKeyDown)
-    }
-  }, [handleClose])
 
   const sendPatches = useCallback(() => {
     if (IS_THROTTLING.get(editor) === true) {
@@ -152,7 +132,7 @@ export const EditObject = ({
         object={object}
         onBlur={onBlur}
         onChange={handleChange}
-        onClose={handleClose}
+        onClose={onClose}
         onFocus={onFocus}
         path={formBuilderPath}
         presence={presence}
@@ -163,6 +143,7 @@ export const EditObject = ({
   }
   if (
     editModalLayout === 'popover' ||
+    editModalLayout === 'fold' ||
     (kind === 'annotation' && typeof editModalLayout === 'undefined')
   ) {
     return (
@@ -173,7 +154,7 @@ export const EditObject = ({
         object={object}
         onBlur={onBlur}
         onChange={handleChange}
-        onClose={handleClose}
+        onClose={onClose}
         onFocus={onFocus}
         path={formBuilderPath}
         presence={presence}
@@ -189,7 +170,7 @@ export const EditObject = ({
       object={object}
       onBlur={onBlur}
       onChange={handleChange}
-      onClose={handleClose}
+      onClose={onClose}
       onFocus={onFocus}
       path={formBuilderPath}
       presence={presence}
