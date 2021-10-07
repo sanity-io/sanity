@@ -34,6 +34,7 @@ export type MediaDimensions = {
 }
 
 export interface PreviewProps<LayoutKey = PreviewLayoutKey> {
+  actions?: React.ReactNode | React.FC<{layout: LayoutKey}>
   children?: React.ReactNode
   extendedPreview?: unknown
   isPlaceholder?: boolean
