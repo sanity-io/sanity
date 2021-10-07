@@ -58,14 +58,9 @@ const LEVELS = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 /**
  * This CSS needs to be added to the parent component in order to keep track of the list count
  */
-
-export const parentCounterResetCSS = css(() => {
-  const counters = LEVELS.map((lvl) => createListName(lvl)).join(' ')
-
-  return css`
-    counter-reset: ${counters};
-  `
-})
+export const listCounterCSS = css`
+  counter-reset: ${LEVELS.map((lvl) => createListName(lvl)).join(' ')};
+`
 
 function createListName(level: number) {
   return `pt-list${level}`
@@ -125,16 +120,6 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
       border-radius: ${theme.sanity.radius[1]}px;
     }
 
-    ${$listItem !== 'number' &&
-    css`
-      counter-set: ${createListName(1)} 0;
-    `}
-
-    ${$listItem === 'number' &&
-    css`
-      counter-set: ${createListName($level + 1)} 0;
-    `}
-
     & > div > [data-ui='TextBlock__text'] {
       align-items: center;
       display: flex;
@@ -146,7 +131,11 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
 
       ${$listItem &&
       css`
+        /* Set the count to 0 on new levels */
+        counter-set: ${$listItem === 'number' ? `${createListName($level + 1)} 0` : undefined};
+        /* If the list item is not number, set the counter 0 */
         counter-reset: ${$listItem === 'number' ? undefined : `${counter} 0`};
+        /* Increment counter */
         counter-increment: ${counter};
 
         &:before {
