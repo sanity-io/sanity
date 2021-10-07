@@ -1,4 +1,4 @@
-import React, {FunctionComponent, SyntheticEvent, useCallback, useMemo} from 'react'
+import React, {FunctionComponent, useCallback, useMemo} from 'react'
 import {PortableTextChild, RenderAttributes} from '@sanity/portable-text-editor'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {Path} from '@sanity/types'
@@ -6,21 +6,24 @@ import styled, {css} from 'styled-components'
 import {Theme, ThemeColorToneKey} from '@sanity/ui'
 
 type Props = {
-  value: PortableTextChild
-  children: JSX.Element
   attributes: RenderAttributes
+  children: JSX.Element
   hasError: boolean
+  isEditing: boolean
   onFocus: (path: Path) => void
+  value: PortableTextChild
 }
 
 type AnnotationStyleProps = {
+  isEditing: boolean
   $toneKey?: ThemeColorToneKey
   theme: Theme
 }
 
 function annotationStyle(props: AnnotationStyleProps) {
-  const {$toneKey, theme} = props
+  const {$toneKey, theme, isEditing} = props
   const borderStyle = $toneKey === 'primary' ? 'solid' : 'dashed'
+  const bgColor = isEditing ? theme.sanity.color.selectable[$toneKey].selected.bg : 'none'
 
   return css`
     position: 'relative'; // Must be relative or backwards selections will become flaky for some reason!
@@ -28,7 +31,10 @@ function annotationStyle(props: AnnotationStyleProps) {
     display: inline;
     background: ${theme.sanity.color.selectable[$toneKey].enabled.bg};
     border-bottom: 1px ${borderStyle} ${theme.sanity.color.selectable[$toneKey].enabled.fg};
-    color: ${theme.sanity.color.selectable[$toneKey].enabled.fg};
+    color: ${isEditing
+      ? theme.sanity.color.selectable[$toneKey].enabled.bg
+      : theme.sanity.color.selectable[$toneKey].enabled.fg};
+    background-color: ${bgColor};
 
     @media (hover: hover) {
       &:hover {
@@ -43,11 +49,12 @@ function annotationStyle(props: AnnotationStyleProps) {
 const Root = styled.div<AnnotationStyleProps>(annotationStyle)
 
 export const Annotation: FunctionComponent<Props> = ({
+  attributes,
   children,
   hasError,
-  attributes,
-  value,
+  isEditing,
   onFocus,
+  value,
 }) => {
   const {path} = attributes
 
@@ -56,14 +63,9 @@ export const Annotation: FunctionComponent<Props> = ({
     value._key,
   ])
 
-  const handleOnClick = useCallback(
-    (event: SyntheticEvent<HTMLSpanElement>): void => {
-      event.preventDefault()
-      event.stopPropagation()
-      onFocus(markDefPath.concat(FOCUS_TERMINATOR))
-    },
-    [markDefPath, onFocus]
-  )
+  const handleOnClick = useCallback((): void => {
+    onFocus(markDefPath.concat(FOCUS_TERMINATOR))
+  }, [markDefPath, onFocus])
 
   const isLink = useMemo(() => value?._type === 'link', [value])
 
@@ -78,7 +80,7 @@ export const Annotation: FunctionComponent<Props> = ({
   }, [isLink, hasError])
 
   return (
-    <Root onClick={handleOnClick} $toneKey={toneKey}>
+    <Root onClick={handleOnClick} $toneKey={toneKey} isEditing={isEditing}>
       {children}
     </Root>
   )
