@@ -1,6 +1,6 @@
 {
   "name": "@sanity/structure",
-  "version": "2.21.0",
+  "version": "2.21.1",
   "description": "Build a navigation structure programatically",
   "main": "./lib/index.js",
   "types": "./dist/dts",
