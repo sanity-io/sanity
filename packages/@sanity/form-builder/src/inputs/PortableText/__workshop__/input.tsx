@@ -1,19 +1,26 @@
-import {Card, Code} from '@sanity/ui'
-import React, {forwardRef, useImperativeHandle} from 'react'
+import {TextArea, Theme} from '@sanity/ui'
+import React, {forwardRef, useImperativeHandle, useRef} from 'react'
+import styled, {css} from 'styled-components'
 import PortableTextInput from '../PortableTextInput'
 
+const DebugTextArea = styled(TextArea)(({theme}: {theme: Theme}) => {
+  return css`
+    font-family: ${theme.sanity.fonts.code.family};
+  `
+})
+
 const DebugInput = forwardRef(function DebugInput(props: any, ref) {
+  const rootRef = useRef<HTMLTextAreaElement | null>(null)
+
   useImperativeHandle(ref, () => ({
-    // eslint-disable-next-line no-console
-    blur: (...args: unknown[]) => console.log('DebugInput.blur', ...args),
-    // eslint-disable-next-line no-console
-    focus: (...args: unknown[]) => console.log('DebugInput.focus', ...args),
+    blur: () => rootRef.current?.blur(),
+    focus: () => rootRef.current?.focus(),
   }))
 
   return (
-    <Card overflow="auto" padding={3} radius={2} tone="transparent">
-      <Code language="json">{JSON.stringify(props.value, null, 2)}</Code>
-    </Card>
+    <DebugTextArea padding={3} radius={1} readOnly ref={rootRef} rows={10}>
+      {JSON.stringify(props.value, null, 2)}
+    </DebugTextArea>
   )
 })
 
