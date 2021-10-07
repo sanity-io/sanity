@@ -27,7 +27,6 @@ function annotationStyle(props: AnnotationStyleProps) {
   const toneVariant = isEditing ? 'pressed' : 'enabled'
 
   return css`
-    position: relative; // Must be relative or backwards selections will become flaky for some reason!
     text-decoration: none;
     display: inline;
     background-color: ${theme.sanity.color.selectable[$toneKey][toneVariant].bg};
