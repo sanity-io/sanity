@@ -5,6 +5,7 @@ import {ReactEditor} from '@sanity/slate-react'
 import type {Patch} from '../types/patch'
 import {Type} from '../types/schema'
 import {PortableTextBlock, PortableTextChild} from '../types/portableText'
+import {PortableTextEditor} from '../editor/PortableTextEditor'
 
 export interface EditableAPI {
   activeAnnotations: () => PortableTextBlock[]
@@ -308,3 +309,8 @@ export type RenderDecoratorFunction = (
   defaultRender: () => JSX.Element,
   ref: React.RefObject<HTMLSpanElement>
 ) => JSX.Element
+
+export type ScrollSelectionIntoViewFunction = (
+  editor: PortableTextEditor,
+  domRange: globalThis.Range
+) => void
