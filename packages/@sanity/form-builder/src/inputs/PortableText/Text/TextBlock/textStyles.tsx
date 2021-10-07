@@ -4,15 +4,14 @@ import styled from 'styled-components'
 
 const BlockQuoteBox = styled(Box)`
   position: relative;
-  color: var(--card-muted-fg-color);
 
   &:before {
     content: '';
     display: block;
     position: absolute;
-    top: 0;
+    top: -4px;
     left: 0;
-    bottom: 0;
+    bottom: -4px;
     border-left: 3px solid var(--card-border-color);
   }
 `
@@ -37,6 +36,6 @@ export const Normal = ({children}) => <Text muted>{children}</Text>
 
 export const BlockQuote = ({children}) => (
   <BlockQuoteBox forwardedAs="blockquote" paddingLeft={3}>
-    {children}
+    <Text muted>{children}</Text>
   </BlockQuoteBox>
 )
