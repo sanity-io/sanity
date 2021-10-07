@@ -41,7 +41,7 @@
     "react-dom": "17.0.1"
   },
   "peerDependencies": {
-    "@sanity/base": "^2.19.4",
+    "@sanity/base": "^2.21.0",
     "prop-types": "^15.6 || ^16",
     "react": "^16.9 || ^17",
     "react-dom": "^16.9 || ^17",
