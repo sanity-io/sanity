@@ -1,4 +1,4 @@
-import React, {createElement} from 'react'
+import React from 'react'
 import {Box, Text} from '@sanity/ui'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {MediaDimensions, PreviewProps} from './types'
@@ -14,6 +14,7 @@ const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
 
 export const BlockPreview: React.FunctionComponent<PreviewProps<'block'>> = (props) => {
   const {
+    actions,
     title,
     subtitle,
     description,
@@ -23,9 +24,10 @@ export const BlockPreview: React.FunctionComponent<PreviewProps<'block'>> = (pro
     children,
     extendedPreview,
   } = props
+
   return (
-    <Root>
-      <Header padding={2} align="center">
+    <Root data-testid="block-preview">
+      <Header align="center">
         {media && (
           <MediaWrapper marginRight={3}>
             {typeof media === 'function' &&
@@ -39,7 +41,7 @@ export const BlockPreview: React.FunctionComponent<PreviewProps<'block'>> = (pro
         )}
 
         <ContentWrapper flex={1} paddingY={1}>
-          <Text textOverflow="ellipsis" style={{color: 'inherit'}}>
+          <Text size={1} textOverflow="ellipsis">
             {title && typeof title === 'function' ? title({layout: 'block'}) : title}
             {!title && <>Untitled</>}
           </Text>
@@ -63,6 +65,8 @@ export const BlockPreview: React.FunctionComponent<PreviewProps<'block'>> = (pro
         {status && (
           <Box padding={3}>{typeof status === 'function' ? status({layout: 'block'}) : status}</Box>
         )}
+
+        {actions && <Box>{actions}</Box>}
       </Header>
 
       {children && <Box>{children}</Box>}

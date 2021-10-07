@@ -1,6 +1,10 @@
 import {Box} from '@sanity/ui'
 import styled from 'styled-components'
 
+export const Root = styled(Box)`
+  user-select: none;
+`
+
 export const MediaWrapper = styled(Box)`
   position: relative;
   flex: 1;
@@ -20,15 +24,7 @@ export const MediaWrapper = styled(Box)`
   }
 `
 
-export const Root = styled(Box)`
-  user-select: none;
-  width: 100%;
-`
-
 export const MetadataWrapper = styled(Box)`
-  user-select: none;
-  width: 100%;
-
   ${MediaWrapper} + &:empty {
     display: none;
   }

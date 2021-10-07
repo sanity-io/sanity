@@ -3,8 +3,6 @@ import styled from 'styled-components'
 
 export const Root = styled(Box)`
   user-select: none;
-  position: relative;
-  width: 100%;
 `
 
 export const ContentWrapper = styled(Box)``

@@ -1,5 +1,5 @@
 import React from 'react'
-import {Box, Flex, Heading, Text} from '@sanity/ui'
+import {Box, Flex, Text} from '@sanity/ui'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {MediaDimensions, PreviewProps} from './types'
 import {Root, MediaWrapper, MetadataWrapper} from './blockImagePreview.styled'
@@ -11,19 +11,20 @@ const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   dpr: getDevicePixelRatio(),
 }
 
-// @todo This is to make sure there is the correct amount of spacing below the dropdown in `BlockObjectPreview`. Remove when `BlockObjectPreview` is migrated to Sanity UI.
-const STYLE_HEADING = {marginBottom: '2px'}
-
 export const BlockImagePreview: React.FunctionComponent<PreviewProps<'block'>> = (props) => {
-  const {title, subtitle, description, mediaDimensions, media, children, status} = props
+  const {actions, title, subtitle, description, mediaDimensions, media, children, status} = props
   return (
     <Root>
       {title && (
-        <Box as="header" paddingY={4} paddingX={[3, 4]} marginTop={1}>
-          <Heading textOverflow="ellipsis" size={1} style={STYLE_HEADING}>
-            {title}
-          </Heading>
-        </Box>
+        <Flex>
+          <Box flex={1} padding={4}>
+            <Text textOverflow="ellipsis" size={1}>
+              {title}
+            </Text>
+          </Box>
+
+          {actions && <Box padding={2}>{actions}</Box>}
+        </Flex>
       )}
 
       <Flex justify="center" direction="column">
