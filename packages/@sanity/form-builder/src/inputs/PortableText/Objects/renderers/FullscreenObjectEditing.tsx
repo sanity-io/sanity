@@ -1,8 +1,8 @@
-import {PortableTextBlock, Type, PortableTextChild} from '@sanity/portable-text-editor'
-import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
+import React, {useCallback, useEffect, useState} from 'react'
 import {Path, Marker, SchemaType} from '@sanity/types'
-import {Box, Dialog} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
+import {PortableTextBlock, Type, PortableTextChild} from '@sanity/portable-text-editor'
+import {Box, Dialog, useLayer} from '@sanity/ui'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {PatchEvent} from '../../../../PatchEvent'
 
@@ -20,30 +20,55 @@ interface FullscreenObjectEditingProps {
   type: Type
 }
 
-export function FullscreenObjectEditing({
-  focusPath,
-  markers,
-  object,
-  onBlur,
-  onChange,
-  onClose,
-  onFocus,
-  path,
-  presence,
-  readOnly,
-  type,
-}: FullscreenObjectEditingProps) {
+export function FullscreenObjectEditing(props: FullscreenObjectEditingProps) {
+  const {
+    focusPath,
+    markers,
+    object,
+    onBlur,
+    onChange,
+    onClose,
+    onFocus,
+    path,
+    presence,
+    readOnly,
+    type,
+  } = props
+
   const handleChange = useCallback((patchEvent: PatchEvent): void => onChange(patchEvent, path), [
     onChange,
     path,
   ])
 
+  const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
+
+  const {isTopLayer} = useLayer()
+
+  const handleClose = useCallback(() => {
+    if (isTopLayer) onClose()
+  }, [isTopLayer, onClose])
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === 'Escape') handleClose()
+    },
+    [handleClose]
+  )
+
+  useEffect(() => {
+    if (rootElement) rootElement.addEventListener('keydown', handleKeyDown)
+    return () => {
+      if (rootElement) rootElement.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [handleKeyDown, rootElement])
+
   return (
     <Dialog
-      header={type.title}
-      // @todo
-      id=""
+      id={`pte-edit-object-fullscreen-dialog`}
       onClose={onClose}
+      onClickOutside={onClose}
+      header={type.title}
+      ref={setRootElement}
       width="auto"
     >
       <PresenceOverlay margins={[0, 0, 1, 0]}>

@@ -1,5 +1,3 @@
-/* eslint-disable react/no-unused-prop-types */
-
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import {CloseIcon} from '@sanity/icons'
 import {
@@ -10,23 +8,14 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {Path, Marker, SchemaType} from '@sanity/types'
-import {
-  Box,
-  Button,
-  Flex,
-  Popover,
-  PopoverProps,
-  Text,
-  useClickOutside,
-  useGlobalKeyDown,
-  useLayer,
-} from '@sanity/ui'
-import React, {FunctionComponent, useCallback, useEffect, useState} from 'react'
+import {Box, Button, Flex, Popover, PopoverProps, Text, useClickOutside, useLayer} from '@sanity/ui'
+import React, {useCallback, useEffect, useState} from 'react'
 import styled from 'styled-components'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {PatchEvent} from '../../../../PatchEvent'
 
 interface PopoverObjectEditingProps {
+  // eslint-disable-next-line react/no-unused-prop-types
   editorPath: Path
   focusPath: Path
   markers: Marker[]
@@ -113,18 +102,18 @@ function Content(props: PopoverObjectEditingProps & {rootElement: HTMLDivElement
     type,
   } = props
 
-  const {isTopLayer} = useLayer()
-
   const handleChange = useCallback((patchEvent: PatchEvent): void => onChange(patchEvent, path), [
     onChange,
     path,
   ])
 
+  const {isTopLayer} = useLayer()
+
   const handleClose = useCallback(() => {
     if (isTopLayer) onClose()
   }, [isTopLayer, onClose])
 
-  const handleGlobalKeyDown = useCallback(
+  const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === 'Escape') handleClose()
     },
@@ -133,7 +122,12 @@ function Content(props: PopoverObjectEditingProps & {rootElement: HTMLDivElement
 
   useClickOutside(handleClose, [rootElement])
 
-  useGlobalKeyDown(handleGlobalKeyDown)
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [handleKeyDown])
 
   return (
     <ContentRoot direction="column">
@@ -143,7 +137,7 @@ function Content(props: PopoverObjectEditingProps & {rootElement: HTMLDivElement
             <Text weight="semibold">{type.title}</Text>
           </Box>
 
-          <Button icon={CloseIcon} mode="bleed" onClick={onClose} padding={2} />
+          <Button icon={CloseIcon} mode="bleed" onClick={handleClose} padding={2} />
         </Flex>
       </Header>
       <Box flex={1} overflow="auto">
