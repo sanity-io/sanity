@@ -38,6 +38,9 @@ const debug = debugWithName('component:Editable')
 // Weakmap for testing if we need to update the state value from a new value coming in from props
 const VALUE_TO_SLATE_VALUE: WeakMap<PortableTextBlock[], Node[]> = new WeakMap()
 
+const NOOP = () => {
+  // Nope
+}
 type EditableProps = {
   hotkeys?: HotkeyOptions
   onBeforeInput?: OnBeforeInputFn
@@ -469,9 +472,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         currentRef.removeEventListener('dragend', onSelectEnd, false)
       }
     }
-    return () => {
-      // NOOP
-    }
+    return NOOP
   }, [ref, onSelectEnd, onSelectEndWithKeys, onSelectStart, onSelectStartWithKeys])
 
   const handleOnFocus = useCallback(() => {
@@ -494,10 +495,15 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   const handleKeyDown = portableTextEditor.slateInstance.pteWithHotKeys
 
   const scrollSelectionIntoViewToSlate = useMemo(() => {
-    if (!scrollSelectionIntoView) {
-      return undefined // Use Slate default
+    // Use slate-react default scroll into view
+    if (scrollSelectionIntoView === undefined) {
+      return undefined
     }
-    // Translate to Slate plugin, we're only interested in the domRange anyway
+    // Disable scroll into view totally
+    if (scrollSelectionIntoView === null) {
+      return NOOP
+    }
+    // Translate PortableTextEditor prop fn to Slate plugin fn
     return (editor: ReactEditor, domRange: Range) => {
       scrollSelectionIntoView(portableTextEditor, domRange)
     }
