@@ -29,7 +29,7 @@ export const BlockPreview: React.FunctionComponent<PreviewProps<'block'>> = (pro
     <Root data-testid="block-preview">
       <Header align="center">
         {media && (
-          <MediaWrapper marginRight={3}>
+          <MediaWrapper marginRight={1}>
             {typeof media === 'function' &&
               media({
                 dimensions: mediaDimensions || DEFAULT_MEDIA_DIMENSIONS,

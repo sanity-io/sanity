@@ -12,9 +12,9 @@ export const Header = styled(Flex)`
 `
 
 export const MediaWrapper = styled(Box)`
-  height: calc(2.5rem + 1px);
-  width: calc(2.5rem + 1px);
-  min-width: calc(2.5rem + 1px);
+  height: 33px;
+  width: 33px;
+  min-width: 33px;
   position: relative;
   overflow: hidden;
 
@@ -27,7 +27,8 @@ export const MediaWrapper = styled(Box)`
 
   svg {
     display: block;
-    width: calc(2.5rem + 1px) !important;
-    height: calc(2.5rem + 1px) !important;
+    width: 29px;
+    height: 29px;
+    margin: 2px;
   }
 `
