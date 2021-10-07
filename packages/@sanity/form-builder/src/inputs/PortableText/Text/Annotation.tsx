@@ -22,27 +22,28 @@ type AnnotationStyleProps = {
 
 function annotationStyle(props: AnnotationStyleProps) {
   const {$toneKey, theme, isEditing} = props
+
   const borderStyle = $toneKey === 'primary' ? 'solid' : 'dashed'
-  const bgColor = isEditing ? theme.sanity.color.selectable[$toneKey].selected.bg : 'none'
+  const toneVariant = isEditing ? 'pressed' : 'enabled'
 
   return css`
-    position: 'relative'; // Must be relative or backwards selections will become flaky for some reason!
+    position: relative; // Must be relative or backwards selections will become flaky for some reason!
     text-decoration: none;
     display: inline;
-    background: ${theme.sanity.color.selectable[$toneKey].enabled.bg};
-    border-bottom: 1px ${borderStyle} ${theme.sanity.color.selectable[$toneKey].enabled.fg};
-    color: ${isEditing
-      ? theme.sanity.color.selectable[$toneKey].enabled.bg
-      : theme.sanity.color.selectable[$toneKey].enabled.fg};
-    background-color: ${bgColor};
+    background-color: ${theme.sanity.color.selectable[$toneKey][toneVariant].bg};
+    border-bottom: 1px ${borderStyle} ${theme.sanity.color.selectable[$toneKey][toneVariant].fg};
+    color: ${theme.sanity.color.selectable[$toneKey][toneVariant].fg};
 
-    @media (hover: hover) {
-      &:hover {
-        background: ${theme.sanity.color.selectable[$toneKey].hovered.bg};
-        border-color: ${theme.sanity.color.selectable[$toneKey].hovered.fg};
-        color: ${theme.sanity.color.selectable[$toneKey].hovered.fg};
+    ${!isEditing &&
+    css`
+      @media (hover: hover) {
+        &:hover {
+          background-color: ${theme.sanity.color.selectable[$toneKey].hovered.bg};
+          border-color: ${theme.sanity.color.selectable[$toneKey].hovered.fg};
+          color: ${theme.sanity.color.selectable[$toneKey].hovered.fg};
+        }
       }
-    }
+    `}
   `
 }
 
