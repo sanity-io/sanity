@@ -313,4 +313,4 @@ export type RenderDecoratorFunction = (
 export type ScrollSelectionIntoViewFunction = (
   editor: PortableTextEditor,
   domRange: globalThis.Range
-) => void
+) => void | null
