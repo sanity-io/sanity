@@ -10,7 +10,10 @@ const imageType = {
 const someObject = {
   type: 'object',
   name: 'someObject',
-  fields: [{type: 'string', name: 'color'}],
+  options: {
+    editModal: 'fullscreen',
+  },
+  fields: [{type: 'string', name: 'title'}],
 }
 
 const blockType = {

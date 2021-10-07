@@ -1,6 +1,6 @@
 export const values = {
   empty: undefined,
-  withEmptyImageBlock: [
+  withContent: [
     {
       _type: 'myBlockType',
       _key: 'a',
@@ -20,7 +20,26 @@ export const values = {
       _key: 'b',
       _type: 'blockImage',
     },
+    {
+      _type: 'myBlockType',
+      _key: 'c',
+      style: 'normal',
+      markDefs: [],
+      children: [
+        {
+          _type: 'span',
+          _key: 'c1',
+          text: "Let's test the inline object here ",
+          marks: [],
+        },
+        {
+          _type: 'someObject',
+          _key: 'c2',
+          title: 'The Object',
+        },
+      ],
+    },
   ],
 }
 
-export const valueOptions = {Empty: 'empty', 'Empty image block': 'withEmptyImageBlock'}
+export const valueOptions = {Empty: 'empty', 'With custom content': 'withContent'}
