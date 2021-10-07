@@ -92,12 +92,61 @@ const customPaneExample = S.listItem()
       })
   )
 
+const languages = [
+  {name: 'no', title: 'Norwegian'},
+  {name: 'en', title: 'English'},
+]
+
+const creatableDocumentTypesWithoutPage = [
+  {
+    type: 'author',
+    name: 'Authors',
+  },
+  {
+    type: 'book',
+    name: 'Books',
+  },
+]
+
+const contentListItem = S.listItem()
+  .title('Content')
+  .child(
+    S.list()
+      .title('Country')
+      .items(
+        languages.map((l) =>
+          S.listItem()
+            .id(l.name)
+            .title(l.title)
+            .child(
+              S.list()
+                .title('CMS')
+                .items(
+                  creatableDocumentTypesWithoutPage.map((dt) =>
+                    S.listItem()
+                      .id(dt.type)
+                      .title(dt.name)
+                      .child(
+                        S.documentList()
+                          .id(dt.type)
+                          .title(dt.name)
+                          .schemaType(dt.type)
+                          .filter(`_type == "${dt.type}"`)
+                      )
+                  )
+                )
+            )
+        )
+      )
+  )
+
 export default () =>
   S.list()
     .title('Content')
     .items([
       settingsListItem,
       S.divider(),
+      contentListItem,
       customPaneExample,
       listExample,
       S.divider(),
