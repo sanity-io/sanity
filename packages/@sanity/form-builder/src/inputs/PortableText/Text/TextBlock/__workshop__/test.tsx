@@ -1,5 +1,4 @@
 /* eslint-disable react/style-prop-object */
-
 import {Card, Container, Flex} from '@sanity/ui'
 import {useBoolean} from '@sanity/ui-workshop'
 import React from 'react'
@@ -11,49 +10,65 @@ export default function TestStory() {
   return (
     <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
       <Container width={1}>
-        <Card padding={3} shadow={1}>
+        <Card padding={3} shadow={1} overflow="auto">
           <TextBlock hasError={hasErrors} style="h1">
-            Hello, world
+            Heading 1
           </TextBlock>
+
+          <TextBlock hasError={hasErrors} style="normal">
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
+            has been the industry's standard dummy text ever since the 1500s, when an unknown
+            printer took a galley of type and scrambled it to make a type specimen book.
+          </TextBlock>
+
+          <TextBlock hasError={hasErrors} style="normal" listItem="number" level={1}>
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+          </TextBlock>
+
+          <TextBlock hasError={hasErrors} style="normal" listItem="number" level={2}>
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+          </TextBlock>
+
+          <TextBlock hasError={hasErrors} style="normal" listItem="number" level={3}>
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+          </TextBlock>
+
+          <TextBlock hasError={hasErrors} style="normal" listItem="number" level={3}>
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+          </TextBlock>
+
           <TextBlock hasError={hasErrors} style="h2">
-            Hello, world
+            Heading 2
           </TextBlock>
+
+          <TextBlock hasError={hasErrors} style="normal">
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
+            has been the industry's standard dummy text ever since the 1500s, when an unknown
+            printer took a galley of type and scrambled it to make a type specimen book.
+          </TextBlock>
+
+          <TextBlock hasError={hasErrors} style="normal" listItem="bullet" level={1}>
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+          </TextBlock>
+
+          <TextBlock hasError={hasErrors} style="normal" listItem="bullet" level={2}>
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+          </TextBlock>
+
           <TextBlock hasError={hasErrors} style="h3">
-            Hello, world
-          </TextBlock>
-          <TextBlock hasError={hasErrors} style="h4">
-            Hello, world
-          </TextBlock>
-          <TextBlock hasError={hasErrors} style="h5">
-            Hello, world
-          </TextBlock>
-          <TextBlock hasError={hasErrors} style="h6">
-            Hello, world
+            Heading 3
           </TextBlock>
 
-          <TextBlock>Paragraph</TextBlock>
+          <TextBlock hasError={hasErrors} style="normal">
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
+            has been the industry's standard dummy text ever since the 1500s, when an unknown
+            printer took a galley of type and scrambled it to make a type specimen book.
+          </TextBlock>
+
           <TextBlock hasError={hasErrors} style="blockquote">
-            Blockquote
-          </TextBlock>
-
-          <TextBlock hasError={hasErrors} listItem="bullet">
-            Hello, world
-          </TextBlock>
-          <TextBlock hasError={hasErrors} listItem="bullet">
-            Hello, world
-          </TextBlock>
-          <TextBlock hasError={hasErrors} listItem="bullet">
-            Hello, world
-          </TextBlock>
-
-          <TextBlock hasError={hasErrors} listItem="number">
-            Hello, world
-          </TextBlock>
-          <TextBlock hasError={hasErrors} listItem="number">
-            Hello, world
-          </TextBlock>
-          <TextBlock hasError={hasErrors} listItem="number">
-            Hello, world
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
+            has been the industry's standard dummy text ever since the 1500s, when an unknown
+            printer took a galley of type and scrambled it to make a type specimen book.
           </TextBlock>
         </Card>
       </Container>
