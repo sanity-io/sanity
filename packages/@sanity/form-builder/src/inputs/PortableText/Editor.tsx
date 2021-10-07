@@ -16,6 +16,7 @@ import {Marker} from '@sanity/types'
 import {Card, Container, useLayer} from '@sanity/ui'
 import React, {useMemo, useEffect} from 'react'
 import PatchEvent from '../../PatchEvent'
+import {scrollSelectionIntoView} from './utils/scrollSelectionIntoView'
 import {Toolbar} from './Toolbar/Toolbar'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
 import Decorator from './Text/Decorator'
@@ -204,6 +205,7 @@ function PortableTextSanityEditor(props: Props) {
                   renderBlock={renderBlock}
                   renderChild={renderChild}
                   renderDecorator={renderDecorator}
+                  scrollSelectionIntoView={scrollSelectionIntoView}
                   selection={initialSelection}
                   spellCheck
                 />
