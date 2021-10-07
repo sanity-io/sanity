@@ -34,6 +34,19 @@ export const Scroller: any = styled(ScrollContainer)`
 export const EditableWrapper = styled(Card)`
   ${parentCounterResetCSS};
 
+  & > div > div > div[class~='pt-list-item-bullet'] + div[class~='pt-list-item-number'],
+  & > div > div > div[class~='pt-list-item-number'] + div[class~='pt-list-item-bullet'] {
+    margin-top: ${({theme}) => theme.sanity.space[3]}px;
+  }
+
+  & > div > div > div:not(.pt-list-item) + .pt-list-item {
+    margin-top: ${({theme}) => theme.sanity.space[2]}px;
+  }
+
+  & > div > div > .pt-list-item + div:not(.pt-list-item) {
+    margin-top: ${({theme}) => theme.sanity.space[3]}px;
+  }
+
   &:not([hidden]) {
     display: flex;
   }
