@@ -67,6 +67,11 @@ export default defineConfig({
   ],
   resolve: {
     alias: [
+      {
+        find: '@sanity/base/lib',
+        replacement: path.resolve(MONOREPO_PATH, 'packages/@sanity/base/src'),
+      },
+
       ...monorepoAliases,
       ...cssPartAliases,
 

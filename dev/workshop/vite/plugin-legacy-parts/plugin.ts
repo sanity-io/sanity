@@ -6,7 +6,7 @@ import {PluginOption} from 'vite'
 const ROOT_PATH = path.resolve(__dirname, '../../../..')
 const DEBUG_PART_PATH = path.resolve(__dirname, 'parts/debug.ts')
 const EMPTY_PART_PATH = path.resolve(__dirname, 'parts/empty.ts')
-// const RE_CSS_PART = /(?:'|")(part\:.*)(?:'|")/gm
+const DEBUG_MANY_PATH = path.resolve(__dirname, 'parts/many.ts')
 const RE_CSS_IMPORT_PART = /@import (?:'|")(part:.*)(?:'|");/gm
 
 function isDeprecated(partName: string, source?: string) {
@@ -37,6 +37,13 @@ export function pluginLegacyParts(partsResolver: any): PluginOption {
         id.startsWith('sanity:') ||
         id.startsWith('all:part:')
       ) {
+        const isMany = id.startsWith('all:')
+
+        if (isMany) {
+          // Remove `all:` prefix
+          id = id.slice(4)
+        }
+
         const parts = await partsResolver.load()
         const implementations = parts.implementations[id]
 
@@ -64,7 +71,16 @@ export function pluginLegacyParts(partsResolver: any): PluginOption {
             // console.log(msg)
           }
 
+          if (isMany) {
+            console.log('@todo')
+            return DEBUG_MANY_PATH
+          }
+
           return partPath
+        }
+
+        if (isMany) {
+          return DEBUG_MANY_PATH
         }
 
         if (id.endsWith('?')) {
@@ -82,6 +98,11 @@ export function pluginLegacyParts(partsResolver: any): PluginOption {
     },
 
     transform(src, id) {
+      // if (id.startsWith('all:')) {
+      //   console.log('transform `all:*`', id)
+      //   return `export default []`
+      // }
+
       if (!id.endsWith('.css')) return undefined
 
       // =============================================== //
