@@ -87,9 +87,11 @@ function getBulletMarker(level: number, listItem: 'bullet' | 'number') {
 
 function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
   const {$level, $listItem, $size, $style, theme} = props
-  const {space, fonts} = theme.sanity
+  const {space, fonts, color} = theme.sanity
   const font = fonts[$style]
-  const {fontSize, lineHeight, ascenderHeight} = font.sizes[$size || 2]
+  const _size = $style === 'heading' ? $size + 1 : $size
+
+  const {fontSize, lineHeight, ascenderHeight} = font.sizes[_size || 0]
   const indent = typeof $level === 'number' ? space[4] * $level : undefined
   const bulletMarker = getBulletMarker($level, $listItem)
   const counter = createListName($level)
@@ -98,7 +100,30 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
     --text-bullet-marker: ${$listItem === 'number' ? `${bulletMarker} '.'` : bulletMarker};
     --text-block-indent: ${indent ? rem(space[3] + space[3] + indent) : undefined};
     --text-font-family: ${fonts.text.family};
-    margin-left: var(--text-block-indent);
+
+    &[data-invalid] {
+      --card-muted-fg-color: ${color.muted.critical.enabled.fg};
+      --card-fg-color: ${color.muted.critical.enabled.fg};
+      --card-border-color: ${color.muted.critical.enabled.border};
+    }
+
+    color: var(--card-fg-color);
+
+    & > div {
+      position: relative;
+      padding-left: var(--text-block-indent);
+    }
+
+    &[data-invalid] > div:before {
+      content: '';
+      position: absolute;
+      background-color: ${color.muted.critical.hovered.bg};
+      top: -8px;
+      bottom: -8px;
+      left: -8px;
+      right: -8px;
+      border-radius: ${theme.sanity.radius[1]}px;
+    }
 
     ${$listItem !== 'number' &&
     css`
@@ -110,13 +135,14 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
       counter-set: ${createListName($level + 1)} 0;
     `}
 
-    & > [data-ui='TextBlock__text'] {
+    & > div > [data-ui='TextBlock__text'] {
       align-items: center;
       display: flex;
       overflow-wrap: anywhere;
       position: relative;
       text-transform: none;
       white-space: pre-wrap;
+      font-family: var(--text-font-family);
 
       ${$listItem &&
       css`
@@ -125,17 +151,18 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
 
         &:before {
           content: var(--text-bullet-marker);
-          padding-top: ${$listItem === 'bullet' ? '.1em' : undefined};
-          font-size: ${$listItem === 'bullet' ? '.5em' : '1em'};
           font-family: var(--text-font-family);
           color: var(--card-muted-fg-color);
           position: absolute;
           display: flex;
           justify-content: flex-end;
           align-items: center;
-          left: -${fontSize * 1.5}px;
-          line-height: 1;
+          left: -1rem;
+          transform: translateX(-100%);
           height: ${lineHeight}px;
+          line-height: 1;
+          font-size: ${$listItem === 'bullet' ? fontSize / 2 : fontSize}px;
+          padding-top: ${$listItem === 'bullet' ? '.1em' : undefined};
           top: ${0 - ascenderHeight}px;
         }
       `}
@@ -146,7 +173,7 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
 const Root = styled(Box)<TextBlockStyleProps>(textBlockStyle)
 
 export function TextBlock(props: TextBlockProps): React.ReactElement {
-  const {children, level, listItem, style, blockRef} = props
+  const {children, level, listItem, style, blockRef, hasError} = props
 
   const {$size, $style} = useMemo((): {$size: number; $style: 'text' | 'heading'} => {
     if (HEADER_SIZES_KEYS.includes(style)) {
@@ -218,10 +245,11 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
       data-list-item={listItem}
       data-style={$style}
       data-ui="TextBlock"
+      data-invalid={hasError ? '' : undefined}
       ref={blockRef}
       {...paddingProps}
     >
-      {text}
+      <div>{text}</div>
     </Root>
   )
 }
