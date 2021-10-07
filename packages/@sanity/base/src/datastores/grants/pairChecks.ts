@@ -1,5 +1,5 @@
 import {SanityDocument} from '@sanity/types'
-import {Observable, combineLatest} from 'rxjs'
+import {Observable, combineLatest, of} from 'rxjs'
 
 import {map} from 'rxjs/operators'
 import {PermissionCheckResult} from './types'
@@ -49,7 +49,11 @@ export function checkDeletePermission(snapshots: {
 }): Observable<PermissionCheckResult> {
   return combineLatest([
     grantsStore.checkDocumentPermission('update', snapshots.draft),
-    grantsStore.checkDocumentPermission('update', snapshots.published),
+    // NOTE: most reliable way to check whether the document "exists" is currently to see if it has a `_rev`
+    // If the published document exists, the user *only* need access to delete (update) the draft
+    snapshots.published?._rev
+      ? grantsStore.checkDocumentPermission('update', snapshots.published)
+      : of({granted: true, reason: 'granted'}),
   ]).pipe(
     map(([deleteDraftPermission, deletePublishedPermission]) => {
       const reason = [
