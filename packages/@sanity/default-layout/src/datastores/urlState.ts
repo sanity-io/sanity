@@ -19,8 +19,8 @@ import getOrderedTools from '../util/getOrderedTools'
 import reconfigureClient from '../util/reconfigureClient'
 import {HAS_SPACES, CONFIGURED_SPACES} from '../util/spaces'
 
-interface ResolvedStateEvent {
-  type: 'resolved'
+interface SnapshotStateEvent {
+  type: 'snapshot'
   intent: {
     name: string
     params: {[key: string]: string}
@@ -34,7 +34,7 @@ interface ErrorStateEvent {
   error: Error
 }
 
-type StateEvent = ResolvedStateEvent | ErrorStateEvent
+type StateEvent = SnapshotStateEvent | ErrorStateEvent
 
 function resolveUrlStateWithDefaultSpace(state) {
   if (!HAS_SPACES || !state || state.space) {
@@ -133,7 +133,7 @@ function decodeUrlState(locationEvent: {type: string}) {
   }
 }
 
-function maybeRedirectDefaultState(event: ResolvedStateEvent): StateEvent | null {
+function maybeRedirectDefaultState(event: SnapshotStateEvent): StateEvent | null {
   const redirectState = resolveDefaultState(event.state)
   if (redirectState !== event.state) {
     navigate(rootRouter.encode(redirectState), {replace: true})
@@ -158,15 +158,15 @@ export const state: Observable<StateEvent> = locationStore.state.pipe(
   refCount()
 )
 
-export function isResolvedEvent(event: StateEvent): event is ResolvedStateEvent {
-  return event.type === 'resolved'
+export function isSnapshotEvent(event: StateEvent): event is SnapshotStateEvent {
+  return event.type === 'snapshot'
 }
 
 if (HAS_SPACES) {
   // Uglybugly mutation ahead.
   state
     .pipe(
-      filter(isResolvedEvent),
+      filter(isSnapshotEvent),
       map((event) => event.state),
       filter(Boolean),
       tap(reconfigureClient)
