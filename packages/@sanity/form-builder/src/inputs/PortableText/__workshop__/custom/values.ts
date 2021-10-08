@@ -29,7 +29,7 @@ export const values = {
         {
           _type: 'span',
           _key: 'c1',
-          text: "Let's test the inline object here ",
+          text: "Let's test the inline object ",
           marks: [],
         },
         {
@@ -37,7 +37,17 @@ export const values = {
           _key: 'c2',
           title: 'The Object',
         },
+        {
+          _type: 'span',
+          _key: 'c3',
+          text: " here.",
+          marks: [],
+        },
       ],
+    },
+    {
+      _key: 'd',
+      _type: 'someObject',
     },
   ],
 }
