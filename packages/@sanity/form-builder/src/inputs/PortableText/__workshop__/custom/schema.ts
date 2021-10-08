@@ -16,7 +16,7 @@ const someObject = {
   fields: [{type: 'string', name: 'title'}],
 }
 
-const blockType = {
+export const blockType = {
   type: 'block',
   name: 'myBlockType',
   styles: [
@@ -35,7 +35,7 @@ const blockType = {
 const ptType = {
   type: 'array',
   name: 'body',
-  of: [blockType, imageType],
+  of: [blockType, imageType, someObject],
 }
 
 export const schema = Schema.compile({
