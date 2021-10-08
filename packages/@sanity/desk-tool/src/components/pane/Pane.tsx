@@ -83,13 +83,13 @@ export const Pane = forwardRef(function Pane(
   const contextValue = useMemo(
     () => ({
       collapse: handleCollapse,
-      collapsed,
+      collapsed: layoutCollapsed ? false : collapsed,
       expand: handleExpand,
       index: paneIndex,
       isLast,
       rootElement,
     }),
-    [collapsed, handleCollapse, handleExpand, isLast, paneIndex, rootElement]
+    [collapsed, handleCollapse, handleExpand, isLast, layoutCollapsed, paneIndex, rootElement]
   )
 
   const style = useMemo(

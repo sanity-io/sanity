@@ -27,6 +27,11 @@ interface PaneConfig {
   }
 }
 
+interface PaneState {
+  element?: HTMLElement
+  collapsed?: boolean
+}
+
 /**
  * @beta This API will change. DO NOT USE IN PRODUCTION.
  */
@@ -40,7 +45,7 @@ export function PaneLayout(
   const rootRect = useElementRect(rootElement)
   const [paneConfigs, setPaneConfigs] = useState<PaneConfig[]>([])
   const paneConfigsRef = useRef(paneConfigs)
-  const [collapsedElements, setCollapsedElements] = useState<HTMLElement[]>([])
+  const [paneStates, setPaneStates] = useState<PaneState[]>([])
   const [expandedElement, setExpandedElement] = useState<HTMLElement | null>(null)
   const width = rootRect?.width
   const collapsed = width === undefined || !minWidth ? undefined : width < minWidth
@@ -48,26 +53,54 @@ export function PaneLayout(
   const resizeMapRef = useRef(resizeMap)
   const cacheRef = useRef<Partial<PaneResizeCache>>({})
   const [resizing, setResizing] = useState(false)
+  const panesRef = useRef<PaneData[]>([])
 
-  const collapse = useCallback(
-    (element: HTMLElement) => {
-      setCollapsedElements((v) => {
-        if (!v.includes(element)) return v.concat([element])
-        return v
+  const collapse = useCallback((element: HTMLElement) => {
+    const paneConfig = paneConfigsRef.current.find((c) => c.element === element)
+    const paneIndex = paneConfig ? paneConfigsRef.current.indexOf(paneConfig) : -1
+    const panes = panesRef.current
+
+    setPaneStates(() => {
+      return paneConfigsRef.current.map((p, i) => {
+        return {
+          element: panes[i].element,
+          collapsed: paneIndex === i ? true : panes[i]?.collapsed,
+        }
       })
-
-      if (expandedElement === element) {
-        setExpandedElement(null)
-      }
-    },
-    [expandedElement]
-  )
+    })
+  }, [])
 
   const expand = useCallback((element: HTMLElement) => {
-    setExpandedElement(element)
-    setCollapsedElements((v) => {
-      return v.filter((e) => e !== element)
+    const paneConfig = paneConfigsRef.current.find((c) => c.element === element)
+    const paneIndex = paneConfig ? paneConfigsRef.current.indexOf(paneConfig) : -1
+    const panes = panesRef.current
+
+    setPaneStates(() => {
+      return paneConfigsRef.current.map((p, i) => {
+        if (paneIndex === i) {
+          return {
+            element,
+            collapsed: false,
+          }
+        }
+
+        // left
+        // reset `collapsed` flag of expanded panes
+        if (i < paneIndex) {
+          return {
+            element: panes[i].element,
+            collapsed: panes[i]?.collapsed ? true : undefined,
+          }
+        }
+
+        return {
+          element: panes[i].element,
+          collapsed: panes[i]?.collapsed,
+        }
+      })
     })
+
+    setExpandedElement(element)
   }, [])
 
   const resize = useCallback(
@@ -160,10 +193,18 @@ export function PaneLayout(
       element: HTMLElement,
       opts: {currentMaxWidth?: number; flex?: number; minWidth?: number; maxWidth?: number}
     ) => {
-      let nextPaneConfigs = paneConfigsRef.current.concat([{element, opts}])
+      const paneConfig = {element, opts}
+      let nextPaneConfigs = paneConfigsRef.current.concat([paneConfig])
       _sortPaneConfigs(rootElement, nextPaneConfigs)
       paneConfigsRef.current = nextPaneConfigs
       setPaneConfigs(nextPaneConfigs)
+
+      const paneIndex = nextPaneConfigs.indexOf(paneConfig)
+      const isLast = paneIndex === nextPaneConfigs.length - 1
+
+      if (isLast) {
+        setExpandedElement(element)
+      }
 
       return () => {
         nextPaneConfigs = paneConfigsRef.current.filter((i) => i.element !== element)
@@ -195,32 +236,42 @@ export function PaneLayout(
 
     let remaingWidth = width - collapsedWidth
 
+    // Figure out which panes to collapse:
+    // - if a pane’s minimum width is larger than the remaining width
+    // - if a pane is explictly collapsed by user input
     for (let i = lastIndex; i >= 0; i -= 1) {
       const config = _paneConfigs[i]
       const paneMinWidth = config.opts.minWidth || PANE_DEFAULT_MIN_WIDTH
+      const paneState = paneStates.find((p) => p.element === config.element)
+      const shouldCollapse = paneState?.collapsed === true || paneMinWidth > remaingWidth
 
-      if (paneMinWidth <= remaingWidth && !collapsedElements.includes(config.element)) {
-        remaingWidth -= paneMinWidth - PANE_COLLAPSED_WIDTH
-      } else {
+      if (shouldCollapse) {
         remaingWidth -= PANE_COLLAPSED_WIDTH
         collapsedIndexes.push(i)
+      } else {
+        remaingWidth -= paneMinWidth - PANE_COLLAPSED_WIDTH
       }
     }
 
+    // Collect pane data to provide to each pane
     for (let i = 0; i < len; i += 1) {
       const config = _paneConfigs[i]
       const r = resizeMap.get(config.element)
 
       paneMap.set(config, {
         element: config.element,
-        collapsed: i < lastIndex && collapsedIndexes.includes(i),
+        collapsed: collapsedIndexes.includes(i),
         currentMaxWidth: r?.currentMaxWidth || config.opts.currentMaxWidth || 0,
         flex: r?.flex || config.opts.flex || 1,
       })
     }
 
-    return paneConfigs.map((config) => paneMap.get(config)).filter(Boolean) as PaneData[]
-  }, [collapsedElements, expandedElement, resizeMap, paneConfigs, width])
+    const _panes = paneConfigs.map((config) => paneMap.get(config)).filter(Boolean) as PaneData[]
+
+    panesRef.current = _panes
+
+    return _panes
+  }, [expandedElement, resizeMap, paneConfigs, paneStates, width])
 
   useEffect(() => {
     if (collapsed === undefined) return
