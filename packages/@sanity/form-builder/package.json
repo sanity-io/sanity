@@ -1,6 +1,6 @@
 {
   "name": "@sanity/form-builder",
-  "version": "2.21.1",
+  "version": "2.21.2",
   "description": "Sanity form builder",
   "main": "lib/index.js",
   "scripts": {
@@ -19,7 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "@reach/auto-id": "^0.13.2",
-    "@sanity/base": "2.21.1",
+    "@sanity/base": "2.21.2",
     "@sanity/block-tools": "2.21.0",
     "@sanity/client": "2.21.0",
     "@sanity/color": "^2.1.5",
