@@ -195,7 +195,11 @@ function PortableTextSanityEditor(props: Props) {
         <Card flex={1} tone="transparent">
           <Scroller ref={setScrollContainerElement}>
             <Container padding={isFullscreen ? 2 : 0} sizing="border" width={1}>
-              <EditableWrapper shadow={isFullscreen ? 1 : 0} sizing="border">
+              <EditableWrapper
+                shadow={isFullscreen ? 1 : 0}
+                $isFullscreen={isFullscreen}
+                sizing="border"
+              >
                 <PortableTextEditable
                   hotkeys={hotkeys}
                   onCopy={onCopy}
