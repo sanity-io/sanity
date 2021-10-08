@@ -7,6 +7,7 @@ import {values, valueOptions} from './values'
 
 export default function Story() {
   const readOnly = useBoolean('Read only', false)
+  const withError = useBoolean('With error', false)
   const selectedValue = useSelect('Values', valueOptions) || 'empty'
   const value = values[selectedValue]
 
@@ -15,7 +16,13 @@ export default function Story() {
       <Card height="fill" overflow="hidden" padding={4} sizing="border">
         <Flex align="center" height="fill" justify="center">
           <Container width={1}>
-            <TestInput readOnly={readOnly} value={value} type={portableTextType} schema={schema} />
+            <TestInput
+              readOnly={readOnly}
+              schema={schema}
+              type={portableTextType}
+              value={value}
+              withError={withError}
+            />
           </Container>
         </Flex>
       </Card>
