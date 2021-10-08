@@ -1,7 +1,8 @@
-import React from 'react'
 import {LegacyLayerProvider} from '@sanity/base/components'
-import {Box, Card, Code, Dialog, Inline, Stack, Text} from '@sanity/ui'
-import {TerminalIcon} from '@sanity/icons'
+import {InfoOutlineIcon, ToggleArrowRightIcon} from '@sanity/icons'
+import {Box, Card, Code, Dialog, Flex, Stack, Text} from '@sanity/ui'
+import React from 'react'
+import styled from 'styled-components'
 import {Package} from './types'
 import {VersionsTable} from './VersionsTable'
 
@@ -14,6 +15,20 @@ interface Props {
 }
 
 const upperFirst = (str: string) => `${str.slice(0, 1).toUpperCase()}${str.slice(1)}`
+
+const ShellCode = styled(Code).attrs({language: 'shell'})`
+  & > code:before {
+    content: '$ ';
+  }
+`
+
+const ToggleDetailsIcon = styled(ToggleArrowRightIcon)`
+  transition: transform 150ms;
+
+  details[open] & {
+    transform: rotate(90deg);
+  }
+`
 
 class UpdateNotifierDialog extends React.PureComponent<Props> {
   static defaultProps = {
@@ -31,49 +46,74 @@ class UpdateNotifierDialog extends React.PureComponent<Props> {
     })
 
     return (
-      <Stack space={5}>
+      <Stack space={4}>
         <VersionsTable headings={['Module', 'Installed', 'Latest', 'Importance']} rows={rows} />
 
-        <Stack space={5}>
-          <Text>
-            To upgrade, run the <a href="https://www.sanity.io/docs/reference/cli">Sanity CLI</a>{' '}
-            upgrade command in your project folder from a terminal.
-          </Text>
-
-          <Inline space={3} paddingLeft={2}>
-            <Text muted>
-              <TerminalIcon />
+        <Card padding={4} radius={2} tone="primary">
+          <Flex>
+            <Text size={1}>
+              <InfoOutlineIcon />
             </Text>
-            <Code>sanity upgrade</Code>
-          </Inline>
-        </Stack>
+            <Box flex={1} marginLeft={3}>
+              <Stack space={2}>
+                <Text size={1} weight="semibold">
+                  How to upgrade?
+                </Text>
+                <Text size={1}>
+                  Run the{' '}
+                  <a
+                    href="https://www.sanity.io/docs/reference/cli"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Sanity CLI
+                  </a>{' '}
+                  upgrade command in the Terminal of your project directory:
+                </Text>
+              </Stack>
+              <Box marginTop={4}>
+                <ShellCode>sanity upgrade</ShellCode>
+              </Box>
+            </Box>
+          </Flex>
+        </Card>
       </Stack>
     )
   }
 
   renderContactDeveloper() {
     const {severity} = this.props
-    return (
-      <Stack space={4}>
-        <Text>
-          {severity === 'high' ? (
-            <>
-              This Studio should be updated. Please get in touch with the developers and ask them to
-              upgrade it for you.
-            </>
-          ) : (
-            <>
-              This Studio has available upgrades. Consider getting in touch with the developers and
-              ask them to upgrade it for you.
-            </>
-          )}
-        </Text>
 
-        <Card as="details" paddingTop={4} borderTop>
-          <summary>Developer info</summary>
+    return (
+      <>
+        <Box padding={4}>
+          <Text>
+            {severity === 'high' ? (
+              <>
+                This Studio should be updated. Please get in touch with the developers and ask them
+                to upgrade it for you.
+              </>
+            ) : (
+              <>
+                This Studio has available upgrades. Consider getting in touch with the developers
+                and ask them to upgrade it for you.
+              </>
+            )}
+          </Text>
+        </Box>
+
+        <Card as="details" borderTop padding={4}>
+          <Flex as="summary">
+            <Text>
+              <ToggleDetailsIcon />
+            </Text>
+            <Box flex={1} marginLeft={2}>
+              <Text weight="semibold">Developer info</Text>
+            </Box>
+          </Flex>
           <Box marginTop={4}>{this.renderTable()}</Box>
         </Card>
-      </Stack>
+      </>
     )
   }
 
@@ -91,7 +131,7 @@ class UpdateNotifierDialog extends React.PureComponent<Props> {
           scheme="light"
         >
           {__DEV__ && (
-            <Box paddingY={5} paddingX={4}>
+            <Box padding={4}>
               <Stack space={5}>
                 <Text>
                   This Studio is no longer up to date{' '}
@@ -103,11 +143,7 @@ class UpdateNotifierDialog extends React.PureComponent<Props> {
             </Box>
           )}
 
-          {!__DEV__ && (
-            <Box paddingY={5} paddingX={4}>
-              {this.renderContactDeveloper()}
-            </Box>
-          )}
+          {!__DEV__ && this.renderContactDeveloper()}
         </Dialog>
       </LegacyLayerProvider>
     )

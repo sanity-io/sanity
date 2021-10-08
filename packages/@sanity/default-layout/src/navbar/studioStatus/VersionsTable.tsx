@@ -27,7 +27,7 @@ export function VersionsTable(props: VersionsTableProps) {
   }
 
   return (
-    <Stack space={3} role="table">
+    <Stack space={2} role="table">
       <Flex>
         <Box flex={1}>
           <Text size={1} weight="semibold" role="columnheader" textOverflow="ellipsis">
@@ -48,8 +48,8 @@ export function VersionsTable(props: VersionsTableProps) {
 
       <Box>
         {rows?.map((row) => (
-          <Card key={row.name} display="flex" paddingY={3} paddingX={1} sizing="border" role="row">
-            <Flex gap={2} flex={1}>
+          <Card key={row.name} display="flex" paddingY={2} role="row">
+            <Flex flex={1}>
               <Box flex={1} role="rowheader">
                 <CodeWithTextOverflowEllipsis>{row.name}</CodeWithTextOverflowEllipsis>
               </Box>
