@@ -25,7 +25,7 @@
     <script>
       window.setImmediate = window.setTimeout
       window.onerror = function (err) {
-        console.log('@todo: handle window error:', err)
+        console.error('[main] Uncaught error:', err)
       }
     </script>
   </head>
