@@ -1,17 +1,15 @@
 import {Flex, ToastProvider, PortalProvider} from '@sanity/ui'
-import {useNumber} from '@sanity/ui-workshop'
 import React, {useState, useCallback} from 'react'
 import {PaneLayout} from '../../PaneLayout'
 import {DocumentPane} from './DocumentPane'
 import {ListPane} from './ListPane'
 import {Navbar} from './Navbar'
+import {panes} from './config'
 
 export function SplitPanes() {
-  //  knobs
-  const panes = useNumber('Panes', 5, 'Props') || 0
-
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
   const [layoutCollapsed, setLayoutCollapsed] = useState(false)
+  const [path, setPath] = useState(['root'])
 
   const handleCollapse = useCallback(() => setLayoutCollapsed(true), [])
   const handleExpand = useCallback(() => setLayoutCollapsed(false), [])
@@ -24,25 +22,63 @@ export function SplitPanes() {
           height={layoutCollapsed ? undefined : 'fill'}
           style={{minHeight: '100%'}}
         >
-          <Navbar />
+          <Navbar path={path} setPath={setPath} />
 
-          <PaneLayout
-            flex={1}
-            height={layoutCollapsed ? undefined : 'fill'}
-            minWidth={512}
-            onCollapse={handleCollapse}
+          <DeskTool
+            collapsed={layoutCollapsed}
             onExpand={handleExpand}
-          >
-            {panes > 0 && <ListPane />}
-            {panes > 1 && <ListPane />}
-            {panes > 2 && <ListPane />}
-            {panes > 3 && <ListPane />}
-            {panes > 4 && <DocumentPane />}
-          </PaneLayout>
+            onCollapse={handleCollapse}
+            path={path}
+            setPath={setPath}
+          />
         </Flex>
       </PortalProvider>
 
       <div data-portal="" ref={setPortalElement} style={{outline: '1px solid red'}} />
     </ToastProvider>
+  )
+}
+
+function DeskTool(props: {
+  collapsed: boolean
+  onExpand: () => void
+  onCollapse: () => void
+  path: string[]
+  setPath: React.Dispatch<React.SetStateAction<string[]>>
+}) {
+  const {collapsed, onCollapse, onExpand, path, setPath} = props
+
+  return (
+    <PaneLayout
+      flex={1}
+      height={collapsed ? undefined : 'fill'}
+      minWidth={512}
+      onCollapse={onCollapse}
+      onExpand={onExpand}
+    >
+      {path.map((s, i) => {
+        const key = `${s}-${i}`
+        const pane = panes.find((p) => p.id === s)
+
+        if (!pane) {
+          return <div key={key}>not found: {s}</div>
+        }
+
+        if (pane.type === 'list') {
+          return (
+            <ListPane
+              active={i === path.length - 2}
+              childId={path[i + 1]}
+              index={i}
+              key={key}
+              node={pane}
+              setPath={setPath}
+            />
+          )
+        }
+
+        return <DocumentPane index={i} key={key} node={pane} setPath={setPath} />
+      })}
+    </PaneLayout>
   )
 }

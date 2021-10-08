@@ -1,6 +1,6 @@
 import {LegacyLayerProvider} from '@sanity/base/components'
-import {Box, Card, Text, Layer, useTheme} from '@sanity/ui'
-import React from 'react'
+import {Box, Card, Flex, Text, Layer, useTheme} from '@sanity/ui'
+import React, {useCallback} from 'react'
 import styled from 'styled-components'
 
 const RootCard = styled(Card)`
@@ -12,9 +12,17 @@ const features = {
   inverted: true,
 }
 
-export function Navbar() {
+export function Navbar(props: {
+  path: string[]
+  setPath: React.Dispatch<React.SetStateAction<string[]>>
+}) {
+  const {path, setPath} = props
   const theme = useTheme()
   const {dark} = theme.sanity.color
+
+  const handleHomeClick = useCallback(() => {
+    setPath(path.slice(0, 1))
+  }, [path, setPath])
 
   return (
     <LegacyLayerProvider zOffset="navbar">
@@ -23,9 +31,13 @@ export function Navbar() {
           scheme={features.inverted ? 'dark' : undefined}
           shadow={features.inverted ? (dark ? 1 : 0) : 1}
         >
-          <Box padding={4}>
-            <Text weight="bold">Studio</Text>
-          </Box>
+          <Flex>
+            <Box padding={2}>
+              <Card as="button" onClick={handleHomeClick} padding={3} radius={2}>
+                <Text weight="bold">Studio</Text>
+              </Card>
+            </Box>
+          </Flex>
         </RootCard>
       </Layer>
     </LegacyLayerProvider>
