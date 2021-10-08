@@ -1,4 +1,4 @@
-import {EllipsisVerticalIcon, SelectIcon} from '@sanity/icons'
+import {DocumentIcon, EllipsisVerticalIcon, ImageIcon, LinkIcon, SelectIcon} from '@sanity/icons'
 import {
   Box,
   Button,
@@ -74,15 +74,21 @@ export default function TabsStory() {
 
   const [id, setId] = useState('all')
 
-  const DocumentTab = ({name, label = name}) => {
+  const DocumentTab = ({name, label = name, icon = null}) => {
     return (
-      <Tab
-        aria-controls={`${name}-panel`}
-        id={`${name}-tab`}
-        label={label ? label : name}
-        onClick={() => setId(name)}
-        selected={id === name}
-      />
+      <Box marginBottom={[2, 0]} marginRight={[0, 2]} style={{display: 'flex'}}>
+        <Tab
+          padding={[3, 2]}
+          aria-controls={`${name}-panel`}
+          id={`${name}-tab`}
+          label={label ? label : name}
+          onClick={() => setId(name)}
+          selected={id === name}
+          fontSize={1}
+          icon={icon}
+          style={{width: '100%'}}
+        />
+      </Box>
     )
   }
 
@@ -104,23 +110,14 @@ export default function TabsStory() {
         <PaneContent overflow="auto">
           <Container paddingX={4} paddingY={[4, 4, 5]} sizing="border" width={1}>
             <Stack space={4}>
-              <Card
-                tone="default"
-                borderBottom
-                paddingY={2}
-                style={{
-                  position: 'sticky',
-                  top: 0,
-                  zIndex: 100,
-                  boxShadow: '-3px 0 0 0 white',
-                }}
-              >
-                <TabList space={2}>
-                  <DocumentTab name="all" />
-                  <DocumentTab name="editorial" />
-                  <DocumentTab name="seo" />
-                  <DocumentTab name="images" />
-                </TabList>
+              <Card tone="default" marginBottom={[0, 4]}>
+                <Flex direction={['column', 'row']}>
+                  <DocumentTab name="all" label="All fields" />
+                  <Card borderRight={[false, true]} marginRight={2} />
+                  <DocumentTab name="editorial" label="Editorial" icon={DocumentIcon} />
+                  <DocumentTab name="seo" label="SEO" icon={LinkIcon} />
+                  <DocumentTab name="images" label="Images" icon={ImageIcon} />
+                </Flex>
               </Card>
               <TaggedElement tag={['editorial']}>
                 <Text size={1} weight="semibold">
