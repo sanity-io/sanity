@@ -73,18 +73,21 @@ export const DateTimeInput = React.forwardRef(function DateTimeInput(
           // see https://github.com/sanity-io/design/issues/519
           <LayerProvider zOffset={1000}>
             <Popover
+              constrainSize
               data-testid="date-input-dialog"
               portal
               content={
-                <FocusLock onDeactivation={handleDeactivation}>
-                  <DatePicker
-                    selectTime={selectTime}
-                    timeStep={timeStep}
-                    onKeyUp={handleKeyUp}
-                    value={value}
-                    onChange={onChange}
-                  />
-                </FocusLock>
+                <Box overflow="auto">
+                  <FocusLock onDeactivation={handleDeactivation}>
+                    <DatePicker
+                      selectTime={selectTime}
+                      timeStep={timeStep}
+                      onKeyUp={handleKeyUp}
+                      value={value}
+                      onChange={onChange}
+                    />
+                  </FocusLock>
+                </Box>
               }
               open
               placement="bottom-end"
