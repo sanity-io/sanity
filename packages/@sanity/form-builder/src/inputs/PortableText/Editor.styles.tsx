@@ -1,6 +1,6 @@
 import {ScrollContainer} from '@sanity/base/components'
 import {Card, rem} from '@sanity/ui'
-import styled from 'styled-components'
+import styled, {css} from 'styled-components'
 import {listCounterCSS} from './Text/TextBlock'
 
 export const Root = styled(Card)<{$fullscreen: boolean}>`
@@ -31,10 +31,8 @@ export const Scroller: any = styled(ScrollContainer)`
   }
 `
 
-export const EditableWrapper = styled(Card)`
-  /**
-  * Add list counter CSS to keep track of the list count
-  */
+export const EditableWrapper = styled(Card)<{$isFullscreen: boolean}>`
+  /* Add list counter CSS to keep track of the list count */
   ${listCounterCSS}
 
   & > div > div > div[class~='pt-list-item-bullet'] + div[class~='pt-list-item-number'],
@@ -50,9 +48,7 @@ export const EditableWrapper = styled(Card)`
     margin-top: ${({theme}) => theme.sanity.space[3]}px;
   }
 
-  /**
-  * Reset the list count if the item is not a numbered list item
-  */
+  /* Reset the list count if the item is not a numbered list item */
   & > div > div > div:not(.pt-list-item-number) {
     ${listCounterCSS};
   }
@@ -66,8 +62,31 @@ export const EditableWrapper = styled(Card)`
   flex-direction: column;
 
   & > div {
+    display: flex;
+    flex-direction: column;
     flex: 1;
-    padding: ${({theme}) => rem(theme.sanity.space[3])};
     min-height: auto;
+
+    [data-slate-editor] {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+
+      & > [data-slate-node] {
+        &:first-child {
+          padding-top: ${({theme}) => theme.sanity.space[3]}px;
+        }
+        &:last-child {
+          flex: 1; // This is added in order to make the click-to-focus hit area cover the entire editable area
+          padding-bottom: ${({theme}) => theme.sanity.space[3]}px;
+        }
+
+        ${({$isFullscreen}) =>
+          css`
+            padding-left: ${({theme}) => theme.sanity.space[$isFullscreen ? 5 : 3]}px;
+            padding-right: ${({theme}) => theme.sanity.space[$isFullscreen ? 5 : 3]}px;
+          `}
+      }
+    }
   }
 `
