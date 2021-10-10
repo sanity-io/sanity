@@ -29,6 +29,7 @@ export const blockType = {
     {title: 'H6', value: 'h6'},
     {title: 'Quote', value: 'blockquote'},
   ],
+  annotations: [someObject],
   of: [someObject, imageType],
 }
 
