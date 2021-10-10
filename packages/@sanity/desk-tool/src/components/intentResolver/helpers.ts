@@ -23,14 +23,21 @@ export function removeDraftPrefix(documentId: string): string {
 
 export function useDocumentType(
   documentId: string,
-  specifiedType: string
+  specifiedType?: string
 ): {documentType?: string; isLoaded: boolean} {
+  const isResolved = isResolvedDocumentType(specifiedType)
   const [{documentType, isLoaded}, setDocumentType] = useState<{
     documentType?: string
     isLoaded: boolean
-  }>({isLoaded: false})
+  }>({isLoaded: isResolved, documentType: isResolved ? specifiedType : undefined})
 
   useEffect(() => {
+    if (isResolved) {
+      return () => {
+        // intentional noop
+      }
+    }
+
     const sub = resolveTypeForDocument(documentId, specifiedType).subscribe((typeName) =>
       setDocumentType({documentType: typeName, isLoaded: true})
     )
@@ -41,8 +48,12 @@ export function useDocumentType(
   return {documentType, isLoaded}
 }
 
-function resolveTypeForDocument(id: string, specifiedType: string) {
-  if (specifiedType) {
+function isResolvedDocumentType(specifiedType?: string): boolean {
+  return Boolean(specifiedType && specifiedType !== '*')
+}
+
+function resolveTypeForDocument(id: string, specifiedType?: string) {
+  if (isResolvedDocumentType(specifiedType)) {
     return of(specifiedType)
   }
 
