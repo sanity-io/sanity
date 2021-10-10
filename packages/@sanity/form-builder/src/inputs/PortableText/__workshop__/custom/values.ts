@@ -40,7 +40,7 @@ export const values = {
         {
           _type: 'span',
           _key: 'c3',
-          text: " here.",
+          text: ' here.',
           marks: [],
         },
       ],
@@ -48,6 +48,37 @@ export const values = {
     {
       _key: 'd',
       _type: 'someObject',
+    },
+    {
+      _type: 'myBlockType',
+      _key: 'e',
+      style: 'normal',
+      markDefs: [
+        {
+          _key: 'abc',
+          _type: 'link',
+        },
+      ],
+      children: [
+        {
+          _type: 'span',
+          _key: 'e1',
+          text: 'Can I have ',
+          marks: [],
+        },
+        {
+          _type: 'span',
+          _key: 'e2',
+          text: 'annotation',
+          marks: ['abc'],
+        },
+        {
+          _type: 'span',
+          _key: 'e3',
+          text: ' plz?',
+          marks: [],
+        },
+      ],
     },
   ],
 }
