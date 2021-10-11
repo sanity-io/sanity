@@ -189,7 +189,6 @@ export function DeskTool(props: DeskToolProps) {
       const {
         active,
         childItemId,
-        closable,
         groupIndex,
         itemId,
         key: paneKey,
@@ -217,7 +216,6 @@ export function DeskTool(props: DeskToolProps) {
       return (
         <DeskToolPane
           active={active}
-          closable={closable}
           groupIndex={groupIndex}
           index={paneIndex}
           key={`${pane.type}-${paneIndex}`}

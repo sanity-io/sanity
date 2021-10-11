@@ -4,7 +4,6 @@ export interface BaseDeskToolPaneProps<Pane> {
   itemId: string
   childItemId: string
   isSelected: boolean
-  isClosable: boolean
   isActive: boolean
   pane: Pane
 }

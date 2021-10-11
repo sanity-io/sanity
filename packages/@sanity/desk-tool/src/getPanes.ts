@@ -5,7 +5,6 @@ import {RouterPaneGroup} from './types'
 interface PaneData {
   active: boolean
   childItemId: string | null
-  closable: boolean
   groupIndex: number
   index: number
   itemId: string
@@ -52,7 +51,6 @@ export function getPanes(resolvedPanes: any[], routerPanes: RouterPaneGroup[]): 
         ret.push({
           active: groupIndex === groupsLen - 2,
           childItemId: (nextGroup && nextGroup[0].id) || null,
-          closable: siblingIndex > 0,
           index: paneIndex,
           itemId,
           groupIndex,

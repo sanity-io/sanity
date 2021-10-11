@@ -41,7 +41,7 @@ declare const __DEV__: boolean
 export const DocumentPaneProvider = function DocumentPaneProvider(
   props: {children: React.ReactElement} & DocumentPaneProviderProps
 ) {
-  const {children, index, isClosable: closable, pane, paneKey} = props
+  const {children, index, pane, paneKey} = props
   const paneRouter = usePaneRouter()
   const {features} = useDeskTool()
   const {push: pushToast} = useToast()
@@ -220,7 +220,6 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
       activeViewId,
       badges,
       changesOpen,
-      closable,
       compareValue,
       connectionState,
       displayed,
@@ -264,7 +263,6 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
       activeViewId,
       badges,
       changesOpen,
-      closable,
       compareValue,
       connectionState,
       displayed,
