@@ -8,7 +8,8 @@
   "scripts": {
     "build": "babel src --copy-files --out-dir lib",
     "clean": "rimraf lib dest",
-    "prebuild": "npm run clean"
+    "prebuild": "npm run clean",
+    "test": "jest"
   },
   "engines": {
     "node": ">=12.0.0"

@@ -1,4 +1,5 @@
 const JEST_PROJECTS = [
+  '@sanity/core',
   '@sanity/base',
   '@sanity/block-tools',
   '@sanity/desk-tool',
