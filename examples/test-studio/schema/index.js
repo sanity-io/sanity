@@ -1,152 +1,160 @@
+import schemaTypes from 'all:part:@sanity/base/schema-type'
 import createSchema from 'part:@sanity/base/schema-creator'
 import codeInputType from 'part:@sanity/form-builder/input/code/schema'
-import schemaTypes from 'all:part:@sanity/base/schema-type'
 
-import documentActions from './documentActions'
-import poppers from './poppers'
-import simpleBlock from './simpleBlock'
-import simpleBlockNote from './simpleBlockNote'
-import simpleBlockNoteBody from './simpleBlockNoteBody'
-import simpleBlockNoteUrl from './simpleBlockNoteUrl'
-import book from './book'
-import author from './author'
-import blocks from './blocks'
-import references from './references'
-import images, {myImage} from './images'
-import strings from './strings'
-import radio from './radio'
-import select from './select'
-import emails from './emails'
-import urls from './urls'
-import texts from './texts'
-import objects, {myObject} from './objects'
-import recursiveObjectTest, {recursiveObject} from './recursiveObject'
-import arrays, {topLevelArrayType, topLevelPrimitiveArrayType} from './arrays'
-import files from './files'
-import uploads from './uploads'
-import code from './code'
-import customNumber from './customNumber'
-import localeString from './localeString'
-import color from './color'
-import liveEdit from './liveEdit'
-import recursive from './recursive'
-import recursiveArray from './recursiveArray'
-import recursivePopover from './recursivePopover'
-import numbers from './numbers'
-import booleans from './booleans'
-import datetime from './datetime'
-import slugs from './slugs'
-import spotifyEmbed from './spotifyEmbed'
-import geopoint from './geopoint'
-import fieldsets from './fieldsets'
-import empty from './empty'
-import readOnly from './readOnly'
-import validation, {validationArraySuperType} from './validation'
-import experiment from './experiment'
-import customInputs from './customInputs'
-import notitle from './notitle'
-import typeWithNoToplevelStrings from './typeWithNoToplevelStrings'
+// Test documents with standard inputs
+import arrays, {topLevelArrayType, topLevelPrimitiveArrayType} from './standard/arrays'
+import booleans from './standard/booleans'
+import date from './standard/date'
+import datetime from './standard/datetime'
+import emails from './standard/emails'
+import files from './standard/files'
+import images, {myImage} from './standard/images'
+import numbers from './standard/numbers'
+import objects, {myObject} from './standard/objects'
+import blocks from './standard/portableText/blocks'
+import richTextObject from './standard/portableText/richTextObject'
+import simpleBlock from './standard/portableText/simpleBlock'
+import simpleBlockNote from './standard/portableText/simpleBlockNote'
+import simpleBlockNoteBody from './standard/portableText/simpleBlockNoteBody'
+import simpleBlockNoteUrl from './standard/portableText/simpleBlockNoteUrl'
+import spotifyEmbed from './standard/portableText/spotifyEmbed'
+import references from './standard/references'
+import slugs from './standard/slugs'
+import strings from './standard/strings'
+import texts from './standard/texts'
+import urls from './standard/urls'
 
-import focus from './focus'
-import previewImageUrlTest from './previewImageUrlTest'
-import previewMediaTest from './previewMediaTest'
-import species from './species'
-import date from './date'
-import invalidPreviews from './invalidPreviews'
-import actions from './actions'
-import reservedFieldNames from './reservedFieldNames'
-import button from './button'
-import richTextObject from './richTextObject'
-import mux from './mux'
-import review from './review'
-import gallery from './gallery'
-import presence, {objectWithNestedArray} from './presence'
-import {customBlock, hoistedPt, hoistedPtDocument} from './hoistedPt'
-import {initialValuesTest, superlatives} from './initialValuesTest'
+// Test documents for debugging
+import actions from './debug/actions'
+import button from './debug/button'
+import conditionalFields from './debug/conditionalFields'
+import customInputs from './debug/customInputs'
+import customNumber from './debug/customNumber'
+import documentActions from './debug/documentActions'
+import empty from './debug/empty'
+import experiment from './debug/experiment'
+import fieldsets from './debug/fieldsets'
 import {
   fieldValidationInferReproSharedObject,
   fieldValidationInferReproDoc,
-} from './fieldValidationInferRepro'
-import conditionalFields from './conditionalFields'
-import {previewSelectBugRepro} from './previewSelectBugRepro'
+} from './debug/fieldValidationInferRepro'
+import focus from './debug/focus'
+import gallery from './debug/gallery'
+import {hoistedPt, hoistedPtDocument, customBlock} from './debug/hoistedPt'
+import {initialValuesTest, superlatives} from './debug/initialValuesTest'
+import invalidPreviews from './debug/invalidPreviews'
+import liveEdit from './debug/liveEdit'
+import localeString from './debug/localeString'
+import notitle from './debug/notitle'
+import poppers from './debug/poppers'
+import presence, {objectWithNestedArray} from './debug/presence'
+import previewImageUrlTest from './debug/previewImageUrlTest'
+import previewMediaTest from './debug/previewMediaTest'
+import {previewSelectBugRepro} from './debug/previewSelectBugRepro'
+import radio from './debug/radio'
+import readOnly from './debug/readOnly'
+import recursive from './debug/recursive'
+import recursiveArray from './debug/recursiveArray'
+import recursiveObjectTest, {recursiveObject} from './debug/recursiveObject'
+import recursivePopover from './debug/recursivePopover'
+import reservedFieldNames from './debug/reservedFieldNames'
+import review from './debug/review'
+import select from './debug/select'
+import typeWithNoToplevelStrings from './debug/typeWithNoToplevelStrings'
+import uploads from './debug/uploads'
+import validation, {validationArraySuperType} from './debug/validation'
+
+// Test documents with official plugin inputs
+import code from './plugins/code'
+import color from './plugins/color'
+import geopoint from './plugins/geopoint'
+
+// Test documents with 3rd party plugin inputs
+import mux from './externalPlugins/mux'
+
+// Other documents
+import book from './book'
+import author from './author'
+import species from './species'
 
 export default createSchema({
   name: 'test-examples',
   types: schemaTypes.concat([
-    documentActions,
-    poppers,
-    objectWithNestedArray,
-    book,
-    author,
-    presence,
-    species,
-    initialValuesTest,
-    superlatives,
-    spotifyEmbed,
-    focus,
-    strings,
-    radio,
-    select,
-    emails,
-    urls,
-    texts,
-    numbers,
-    customNumber,
-    booleans,
-    objects,
-    conditionalFields,
-    fieldsets,
-    datetime,
-    date,
-    validationArraySuperType,
-    validation,
     actions,
-    topLevelArrayType,
-    topLevelPrimitiveArrayType,
     arrays,
-    uploads,
-    code,
-    color,
-    liveEdit,
-    images,
-    files,
-    experiment,
-    references,
-    geopoint,
+    author,
     blocks,
-    slugs,
-    customInputs,
-    myImage,
-    localeString,
-    recursive,
-    recursiveArray,
-    recursivePopover,
-    recursiveObjectTest,
-    recursiveObject,
-    myObject,
+    book,
+    booleans,
+    button,
+    code,
     codeInputType,
-    notitle,
-    fieldValidationInferReproSharedObject,
+    color,
+    conditionalFields,
+    customBlock,
+    customInputs,
+    customNumber,
+    date,
+    datetime,
+    documentActions,
+    emails,
+    empty,
+    experiment,
     fieldValidationInferReproDoc,
-    typeWithNoToplevelStrings,
-    reservedFieldNames,
+    fieldValidationInferReproSharedObject,
+    fieldsets,
+    files,
+    focus,
+    gallery,
+    geopoint,
+    hoistedPt,
+    hoistedPtDocument,
+    images,
+    initialValuesTest,
+    invalidPreviews,
+    liveEdit,
+    localeString,
+    mux,
+    myImage,
+    myObject,
+    notitle,
+    numbers,
+    objectWithNestedArray,
+    objects,
+    poppers,
+    presence,
     previewImageUrlTest,
     previewMediaTest,
     previewSelectBugRepro,
-    invalidPreviews,
+    radio,
     readOnly,
-    empty,
-    richTextObject,
-    button,
-    mux,
+    recursive,
+    recursiveArray,
+    recursiveObject,
+    recursiveObjectTest,
+    recursivePopover,
+    references,
+    reservedFieldNames,
     review,
-    gallery,
+    richTextObject,
+    select,
     simpleBlock,
     simpleBlockNote,
     simpleBlockNoteBody,
     simpleBlockNoteUrl,
-    hoistedPtDocument,
-    hoistedPt,
-    customBlock,
+    slugs,
+    species,
+    spotifyEmbed,
+    strings,
+    superlatives,
+    texts,
+    topLevelArrayType,
+    topLevelPrimitiveArrayType,
+    typeWithNoToplevelStrings,
+    uploads,
+    urls,
+    validation,
+    validationArraySuperType,
   ]),
 })

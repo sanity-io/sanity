@@ -1,6 +1,6 @@
 import React from 'react'
 import {MdTextFormat as icon} from 'react-icons/md'
-import {HooksBasedStringInput} from '../components/HooksBasedStringInput'
+import {HooksBasedStringInput} from './components/HooksBasedStringInput'
 
 export default {
   name: 'stringsTest',

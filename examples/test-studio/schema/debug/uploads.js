@@ -1,8 +1,8 @@
 import {PublishIcon} from '@sanity/icons'
 import DefaultAssetSource from 'part:@sanity/form-builder/input/image/asset-source-default'
 import DefaultFileAssetSource from 'part:@sanity/form-builder/input/file/asset-source-default'
-import petsAssetSource from '../parts/assetSources/pets'
-import noopAssetSource from '../parts/assetSources/noop'
+import petsAssetSource from '../../parts/assetSources/pets'
+import noopAssetSource from '../../parts/assetSources/noop'
 
 export default {
   name: 'uploadsTest',

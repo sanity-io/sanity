@@ -7,8 +7,8 @@ import {FieldPresence, PresenceScope} from '@sanity/base/presence'
 import {PatchEvent, set, setIfMissing} from 'part:@sanity/form-builder/patch-event'
 
 export const CustomInputWithDefaultPresence = React.forwardRef(
-  function CustomInputWithDefaultPresence(props, ref) {
-    const {value, type, onFocus, onChange} = props
+  function CustomInputWithDefaultPresence(props: any, ref: React.ForwardedRef<HTMLDivElement>) {
+    const {value, type, onFocus, onChange, presence, readOnly} = props
 
     const handleRootFocus = React.useCallback((event) => {
       if (event.currentTarget.element === ref) onFocus()
@@ -32,9 +32,9 @@ export const CustomInputWithDefaultPresence = React.forwardRef(
                   <div key={cell + row} style={{position: 'relative'}}>
                     <div>
                       <div style={{position: 'absolute', left: -24}}>
-                        <PresenceScope path={path}>
+                        <PresenceScope path={path} readOnly={readOnly}>
                           {/* Show presence items for this particular cell */}
-                          <FieldPresence />
+                          <FieldPresence maxAvatars={3} presence={presence} />
                         </PresenceScope>
                       </div>
                       <input

@@ -1,8 +1,8 @@
 import {MdExtension as icon} from 'react-icons/md'
-import CustomStringInput from '../components/CustomStringInput'
-import CustomMyObjectInput from '../components/CustomMyObjectInput'
-import CustomFontStringInput from '../components/CustomFontStringInput'
-import AuthorReferenceInput from '../components/AuthorReferenceInput'
+import CustomStringInput from './components/CustomStringInput'
+import CustomMyObjectInput from './components/CustomMyObjectInput'
+import CustomFontStringInput from './components/CustomFontStringInput'
+import AuthorReferenceInput from './components/AuthorReferenceInput'
 
 export default {
   name: 'customInputsTest',

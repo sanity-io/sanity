@@ -5,6 +5,7 @@ import React from 'react'
 import {Marker, ObjectSchemaType} from '@sanity/types'
 import {PatchEvent, set, unset} from 'part:@sanity/form-builder/patch-event'
 import {FormField} from '@sanity/base/components'
+import {FormFieldPresence} from '@sanity/base/presence'
 import {Select} from '@sanity/ui'
 
 type Value = {title: string; value: string}
@@ -12,11 +13,11 @@ type Value = {title: string; value: string}
 type Props = {
   type: ObjectSchemaType & {options?: {list?: Value[]}}
   level: number
-  value: Value | null | undefined
-  readOnly: boolean | null
+  value?: Value
+  readOnly?: boolean
   onChange: (patchEvent: unknown) => void
   markers: Marker[]
-  presence: unknown[]
+  presence: FormFieldPresence[]
 }
 
 const EMPTY_ARRAY: Value[] = []
@@ -24,13 +25,13 @@ const EMPTY_ARRAY: Value[] = []
 let objectSelectInputIdx = 0
 export const CustomObjectSelectInput = React.forwardRef(function CustomObjectSelectInput(
   props: Props,
-  forwardedRef: React.ForwardedRef<HTMLSelectElement | HTMLInputElement>
+  forwardedRef: React.ForwardedRef<HTMLSelectElement>
 ) {
   const {value, readOnly, markers, type, level, onChange, presence} = props
   const items = (type.options && type.options.list) || EMPTY_ARRAY
   const validation = markers.filter((marker) => marker.type === 'validation')
   const errors = validation.filter((marker) => marker.level === 'error')
-  const [inputId] = React.useState(() => ++objectSelectInputIdx)
+  const [inputId] = React.useState(() => String(++objectSelectInputIdx))
 
   const handleChange = React.useCallback(
     (evt) => {

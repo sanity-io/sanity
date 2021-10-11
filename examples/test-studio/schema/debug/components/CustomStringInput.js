@@ -8,6 +8,7 @@ export default class CustomStringInput extends React.Component {
     type: PropTypes.object,
     onChange: PropTypes.func,
   }
+
   handleChange = (event) => {
     this.props.onChange(PatchEvent.from(set(event.target.value)))
   }

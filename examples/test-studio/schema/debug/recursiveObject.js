@@ -1,10 +1,7 @@
-import {GoPuzzle as icon} from 'react-icons/go'
-
 export const recursiveObject = {
   type: 'object',
   name: 'recursiveObject',
   title: 'Recursive object',
-  icon,
   options: {collapsible: false, collapsed: false},
   fields: [
     {
