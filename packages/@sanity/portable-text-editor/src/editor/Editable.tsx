@@ -183,35 +183,6 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     [portableTextEditor.slateInstance.selection, selection, stateValue]
   )
 
-  // // Test Slate decorations. Highlight the word 'w00t'
-  // // TODO: remove this and make something useful.
-  // const woot = 'w00t'
-  // const decorate = useCallback(
-  //   ([node, path]) => {
-  //     const ranges: Range[] = []
-
-  //     if (woot && Text.isText(node)) {
-  //       const {text} = node
-  //       const parts = text.split(woot)
-  //       let offset = 0
-
-  //       parts.forEach((part, i) => {
-  //         if (i !== 0) {
-  //           ranges.push({
-  //             anchor: {path, offset: offset - woot.length},
-  //             focus: {path, offset},
-  //             __highlight: true
-  //           })
-  //         }
-
-  //         offset = offset + part.length + woot.length
-  //       })
-  //     }
-  //     return ranges
-  //   },
-  //   [woot]
-  // )
-
   useEffect(() => {
     KEY_TO_SLATE_ELEMENT.set(portableTextEditor.slateInstance, {})
     KEY_TO_VALUE_ELEMENT.set(portableTextEditor.slateInstance, {})
@@ -519,7 +490,6 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         value={getValueOrIntitialValue(stateValue, [placeHolderBlock])}
       >
         <SlateEditable
-          // decorate={decorate}
           autoFocus={false}
           onBlur={handleOnBlur}
           onCopy={handleCopy}
