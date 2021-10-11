@@ -36,7 +36,7 @@ export const blockType = {
 const ptType = {
   type: 'array',
   name: 'body',
-  of: [blockType, imageType, someObject],
+  of: [blockType, someObject, imageType],
 }
 
 export const schema = Schema.compile({

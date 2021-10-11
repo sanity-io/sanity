@@ -1,5 +1,5 @@
 import {Button, Card, Code, ErrorBoundary, Stack} from '@sanity/ui'
-import SanityPreview from 'part:@sanity/base/preview'
+import SanityPreview, {SanityDefaultPreview} from 'part:@sanity/base/preview'
 import React, {useCallback, useState} from 'react'
 
 export const resolvePreviewComponent = () => TestPreview
@@ -26,6 +26,17 @@ function TestPreview(props: any) {
           <Button onClick={handleRetry} text="Retry" />
         </Stack>
       </Card>
+    )
+  }
+
+  // NOTE: Hacky way to preview a block image in the Workshop
+  if (props.type?.type?.name === 'image') {
+    return (
+      <SanityDefaultPreview
+        _renderAsBlockImage
+        layout="block"
+        value={{media: <img src="https://source.unsplash.com/960x960/?tree" />, ...props.value}}
+      />
     )
   }
 
