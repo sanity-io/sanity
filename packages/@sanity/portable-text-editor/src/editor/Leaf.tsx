@@ -136,14 +136,9 @@ export const Leaf = (props: LeafProps) => {
     debug(`Render ${leaf._key} (span)`)
   }
   const key = (leaf._key as string) || keyGenerator()
-  // TODO: remove hightlight stuff as test for decorations
+
   return (
-    <span
-      {...attributes}
-      style={{backgroundColor: leaf.__highlight ? '#ff0' : 'inherit'}}
-      ref={spanRef}
-      key={key}
-    >
+    <span {...attributes} ref={spanRef} key={key}>
       <DraggableChild
         element={leaf}
         readOnly={props.readOnly}
