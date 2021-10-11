@@ -91,6 +91,8 @@ export const getDefaultDocumentNode = ({schemaType}) => {
 
 // opts: {icon?: React.ComponentType, id: string, title: string, types: string[]}
 function _buildTypeGroup(opts) {
+  const supportedIntents = ['create', 'edit']
+
   return S.listItem()
     .title(opts.title)
     .icon(opts.icon)
@@ -110,6 +112,11 @@ function _buildTypeGroup(opts) {
                 .id(typeName)
                 .child(
                   S.documentList()
+                    .canHandleIntent((intentName, params) => {
+                      return (
+                        supportedIntents.includes(intentName) && opts.types.includes(params.type)
+                      )
+                    })
                     .id(typeName)
                     .title(schemaType.title || typeName)
                     .schemaType(typeName)
