@@ -1,6 +1,6 @@
-describe('DatetimeInput date-picker-dialog', () => {
+describe('@sanity/form-builder: DatetimeInput date-picker-dialog', () => {
   beforeEach(() => {
-    cy.visit('/test/desk/datetimeTest%2Ctemplate%3DdatetimeTest;ci-cypress')
+    cy.visit('/test/desk/input-standard;datetimeTest%2Ctemplate%3DdatetimeTest;ci-cypress')
   })
 
   it('should be rendered on top of array input dialog', () => {
