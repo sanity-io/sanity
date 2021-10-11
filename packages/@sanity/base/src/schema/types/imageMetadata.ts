@@ -35,6 +35,12 @@ export default {
       readOnly: true,
     },
     {
+      name: 'blurHash',
+      title: 'BlurHash',
+      type: 'string',
+      readOnly: true,
+    },
+    {
       name: 'hasAlpha',
       title: 'Has alpha channel',
       type: 'boolean',
