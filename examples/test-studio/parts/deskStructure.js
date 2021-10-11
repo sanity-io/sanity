@@ -5,7 +5,7 @@ import EditIcon from 'part:@sanity/base/edit-icon'
 import ImagesIcon from 'part:@sanity/base/images-icon'
 import UsersIcon from 'part:@sanity/base/users-icon'
 import S from '@sanity/desk-tool/structure-builder'
-import JsonDocumentDump from './components/JsonDocumentDump'
+import JsonDocumentDump from '../components/JsonDocumentDump'
 import {DeveloperPreview} from './previews/developer'
 import {DebugPane} from './panes/debug'
 

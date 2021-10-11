@@ -7,10 +7,7 @@ import {getData} from './helpers'
 import styles from './tool.css'
 
 function CSSVariablesTool() {
-  const data = React.useMemo(() => getData(metadata, cssCustomProperties), [
-    metadata,
-    cssCustomProperties,
-  ])
+  const data = React.useMemo(() => getData(metadata, cssCustomProperties), [])
 
   return (
     <div className={styles.root}>

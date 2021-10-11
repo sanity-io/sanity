@@ -1,6 +1,6 @@
 import {ImagesIcon} from '@sanity/icons'
-import petsAssetSource from '../src/assetSources/pets'
-import noopAssetSource from '../src/assetSources/noop'
+import petsAssetSource from '../parts/assetSources/pets'
+import noopAssetSource from '../parts/assetSources/noop'
 
 export const myImage = {
   name: 'myImage',
