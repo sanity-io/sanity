@@ -1,7 +1,14 @@
 /* eslint-disable no-dupe-class-members, @typescript-eslint/no-misused-new */
 import Observable from '@sanity/observable/minimal'
 
-export type AssetMetadataType = 'location' | 'exif' | 'image' | 'palette' | 'lqip' | 'none'
+export type AssetMetadataType =
+  | 'location'
+  | 'exif'
+  | 'image'
+  | 'palette'
+  | 'lqip'
+  | 'blurhash'
+  | 'none'
 export type DatasetAclMode = 'public' | 'private' | 'custom'
 export type ListenVisibility = 'sync' | 'async' | 'query'
 export type ListenEventName = 'mutation' | 'welcome' | 'reconnect'
@@ -737,6 +744,7 @@ export interface SanityImageAssetDocument extends SanityAssetDocument {
     hasAlpha: boolean
     isOpaque: boolean
     lqip?: string
+    blurHash?: string
     dimensions: {
       _type: 'sanity.imageDimensions'
       aspectRatio: number
