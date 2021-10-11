@@ -5,5 +5,6 @@
   "@sanity/storybook": "526dea3b461fda217e7150d12395d0ec639cba0155c05a084b85bcf2c44995a3",
   "@sanity/google-maps-input": "57ae3a403ce6a070b31ec6fa1f3c8339cafa66661eaddba1d4d5ee3cc2197ec2",
   "@sanity/default-login": "6fb6d3800aa71346e1b84d95bbcaa287879456f2922372bb0294e30b968cd37f",
-  "@sanity/form-builder": "b38478227ba5e22c91981da4b53436df22e48ff25238a55a973ed620be5068aa"
+  "@sanity/form-builder": "b38478227ba5e22c91981da4b53436df22e48ff25238a55a973ed620be5068aa",
+  "mux-input": "595f2707bb80b1584160b3e4aa64454d9f89d1c5ce0f40b4de718d02fd1b3744"
 }
