@@ -71,6 +71,7 @@ import color from './plugins/color'
 import geopoint from './plugins/geopoint'
 
 // Test documents with 3rd party plugin inputs
+import markdown from './externalPlugins/markdown'
 import mux from './externalPlugins/mux'
 
 // Other documents
@@ -115,6 +116,7 @@ export default createSchema({
     invalidPreviews,
     liveEdit,
     localeString,
+    markdown,
     mux,
     myImage,
     myObject,

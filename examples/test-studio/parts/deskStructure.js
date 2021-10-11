@@ -74,7 +74,7 @@ const DEBUG_INPUT_TYPES = [
   'validationTest',
 ]
 
-const EXTERNAL_PLUGIN_INPUT_TYPES = ['muxVideoPost']
+const EXTERNAL_PLUGIN_INPUT_TYPES = ['markdownTest', 'muxVideoPost']
 
 // For testing. Bump the timeout to introduce som lag
 const delay = (val, ms = 10) => new Promise((resolve) => setTimeout(resolve, ms, val))
