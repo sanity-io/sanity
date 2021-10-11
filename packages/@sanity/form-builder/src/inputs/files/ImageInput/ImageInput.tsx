@@ -159,7 +159,9 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
   clearUploadStatus() {
     // todo: this is kind of hackish
-    this.props.onChange(PatchEvent.from([unset(['_upload'])]))
+    if (this.props.value?._upload) {
+      this.props.onChange(PatchEvent.from([unset(['_upload'])]))
+    }
   }
 
   cancelUpload() {
