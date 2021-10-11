@@ -253,7 +253,7 @@ export interface FileSchemaType extends ObjectSchemaType {
 export interface ImageSchemaType extends ObjectSchemaType {
   options?: AssetSchemaTypeOptions & {
     hotspot?: boolean
-    metadata?: ('exif' | 'location' | 'lqip' | 'palette')[]
+    metadata?: ('exif' | 'location' | 'lqip' | 'palette' | 'blurhash')[]
     sources?: AssetSource[]
   }
 }
