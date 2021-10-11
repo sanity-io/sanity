@@ -2,7 +2,7 @@
   "name": "test-studio",
   "private": true,
   "version": "2.21.2",
-  "description": "A bloated, ugly Sanity studio with a contrived schema for edge case testing and development",
+  "description": "A Sanity Studio for development and testing.",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
