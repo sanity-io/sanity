@@ -3007,6 +3007,11 @@ Object {
         },
         Object {
           "description": undefined,
+          "fieldName": "uploadId",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
           "fieldName": "url",
           "type": "String",
         },
@@ -3122,6 +3127,11 @@ Object {
           "type": "StringFilter",
         },
         Object {
+          "fieldName": "uploadId",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
           "fieldName": "url",
           "isReference": undefined,
           "type": "StringFilter",
@@ -3206,6 +3216,10 @@ Object {
         },
         Object {
           "fieldName": "title",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "uploadId",
           "type": "SortOrder",
         },
         Object {
@@ -3531,6 +3545,11 @@ Object {
           "type": "String",
         },
         Object {
+          "description": undefined,
+          "fieldName": "blurHash",
+          "type": "String",
+        },
+        Object {
           "fieldName": "dimensions",
           "type": "SanityImageDimensions",
         },
@@ -3576,6 +3595,11 @@ Object {
           "type": "StringFilter",
         },
         Object {
+          "fieldName": "blurHash",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
           "fieldName": "dimensions",
           "isReference": undefined,
           "type": "SanityImageDimensionsFilter",
@@ -3617,6 +3641,10 @@ Object {
         },
         Object {
           "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "blurHash",
           "type": "SortOrder",
         },
         Object {
