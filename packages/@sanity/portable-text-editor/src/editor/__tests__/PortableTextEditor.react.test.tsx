@@ -1,5 +1,5 @@
 /**
- * @jest-environment jsdom
+ * @jest-environment ./test/setup/jsdom.jest.env.ts
  */
 /* eslint-disable no-irregular-whitespace */
 // eslint-disable-next-line import/no-unassigned-import
@@ -116,50 +116,51 @@ describe('initialization', () => {
     expect(onChange).toHaveBeenCalledWith({type: 'value', value: undefined})
     expect(container).toMatchInlineSnapshot(`
 <div>
-  <div
-    contenteditable="true"
-    data-gramm="false"
-    data-slate-editor="true"
-    data-slate-node="value"
-    role="textbox"
-    spellcheck="true"
-    style="outline: none; white-space: pre-wrap; word-wrap: break-word;"
-  >
+  <div>
     <div
-      class="pt-block pt-text-block pt-text-block-style-normal"
-      data-slate-node="element"
+      contenteditable="true"
+      data-gramm="false"
+      data-slate-editor="true"
+      data-slate-node="value"
+      role="textbox"
+      spellcheck="true"
+      style="outline: none; white-space: pre-wrap; word-wrap: break-word;"
     >
       <div
-        draggable="false"
+        class="pt-block pt-text-block pt-text-block-style-normal"
+        data-slate-node="element"
       >
         <div
-          class="sc-bdfBQB jhmysC"
+          draggable="false"
         >
-          <span
-            data-slate-node="text"
+          <div
+            class="sc-bdfBQB jhmysC"
           >
             <span
-              data-slate-leaf="true"
-              style="background-color: inherit;"
+              data-slate-node="text"
             >
-              <span>
-                <span
-                  contenteditable="false"
-                  data-slate-placeholder="true"
-                  style="pointer-events: none; display: inline-block; width: 0px; max-width: 100%; white-space: nowrap; opacity: 0.333; user-select: none; font-style: normal; font-weight: normal; text-decoration: none;"
-                >
-                  Jot something down here
-                </span>
-                <span
-                  data-slate-length="0"
-                  data-slate-zero-width="n"
-                >
-                  ﻿
-                  <br />
+              <span
+                data-slate-leaf="true"
+              >
+                <span>
+                  <span
+                    contenteditable="false"
+                    data-slate-placeholder="true"
+                    style="pointer-events: none; display: inline-block; width: 0px; max-width: 100%; white-space: nowrap; opacity: 0.333; user-select: none; font-style: normal; font-weight: normal; text-decoration: none;"
+                  >
+                    Jot something down here
+                  </span>
+                  <span
+                    data-slate-length="0"
+                    data-slate-zero-width="n"
+                  >
+                    ﻿
+                    <br />
+                  </span>
                 </span>
               </span>
             </span>
-          </span>
+          </div>
         </div>
       </div>
     </div>
