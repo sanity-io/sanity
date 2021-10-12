@@ -1,7 +1,7 @@
-import {Box} from '@sanity/ui'
+import {Box, Flex, Stack} from '@sanity/ui'
 import styled from 'styled-components'
 
-export const Root = styled(Box)`
+export const RootStack = styled(Stack)`
   user-select: none;
 `
 
@@ -24,8 +24,6 @@ export const MediaWrapper = styled(Box)`
   }
 `
 
-export const MetadataWrapper = styled(Box)`
-  ${MediaWrapper} + &:empty {
-    display: none;
-  }
+export const HeaderFlex = styled(Flex)`
+  min-height: 33px;
 `
