@@ -1,24 +1,35 @@
-import {Type as PTType} from '@sanity/portable-text-editor'
+import {PortableTextBlock, Type as PTType} from '@sanity/portable-text-editor'
 import {Marker, Path, Schema} from '@sanity/types'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import FormBuilderContext from '../../../FormBuilderContext'
 import PortableTextInput from '../PortableTextInput'
 import {applyAll} from '../../../simplePatch'
+import {RenderBlockActions} from '../types'
 import {inputResolver} from './input'
 import {resolvePreviewComponent} from './resolvePreviewComponent'
-import {type} from 'os'
 
 interface TestInputProps {
+  markers?: any[]
   readOnly?: boolean
-  value: any[]
+  renderBlockActions?: RenderBlockActions
+  renderCustomMarkers?: (markers: any) => any
   schema: Schema
   type: PTType
+  value: PortableTextBlock[] | undefined
   withError?: boolean
 }
 
 export function TestInput(props: TestInputProps) {
-  const {readOnly = false, withError = false, type} = props
-  const [value, setValue] = useState<any[]>(props.value)
+  const {
+    markers: propsMarkers,
+    readOnly = false,
+    renderBlockActions,
+    renderCustomMarkers,
+    type,
+    value: propsValue,
+    withError = false,
+  } = props
+  const [value, setValue] = useState<any[]>(propsValue)
   const [focusPath, setFocusPath] = useState<Path>([])
   const blockType = useMemo(() => type.of.find((t) => t.type.name === 'block'), [type])
   const onFocus = useCallback((path: Path) => {
@@ -36,19 +47,14 @@ export function TestInput(props: TestInputProps) {
   )
   const presence = useMemo(() => [], [])
   const hotkeys = useMemo(() => ({}), [])
-  const [markers, setMarkers] = useState<Marker[]>([])
+  const [markers, setMarkers] = useState<Marker[]>(propsMarkers || [])
   useEffect(() => {
     if (withError && value) {
       const newMarkers = []
       value.forEach((blk) => {
-        if (blk._type !== blockType.name) {
-          newMarkers.push({
-            type: 'validation',
-            level: 'error',
-            path: [{_key: blk._key}],
-          })
-        } else {
+        if (blk._type === blockType.name) {
           const inline = blk.children.find((child) => child._type !== 'span')
+          const annotation = blk.markDefs[0]
           if (inline) {
             newMarkers.push({
               type: 'validation',
@@ -56,9 +62,7 @@ export function TestInput(props: TestInputProps) {
               path: [{_key: blk._key}, 'children', {_key: inline._key}],
               item: {cloneWithMessage: () => 'There is an error'},
             })
-          }
-          const annotation = blk.markDefs[0]
-          if (annotation) {
+          } else if (annotation) {
             newMarkers.push({
               type: 'validation',
               level: 'error',
@@ -66,14 +70,20 @@ export function TestInput(props: TestInputProps) {
               item: {cloneWithMessage: () => 'There is another error'},
             })
           }
+        } else {
+          newMarkers.push({
+            type: 'validation',
+            level: 'error',
+            path: [{_key: blk._key}],
+          })
         }
       })
       setMarkers(newMarkers)
     }
     if (!withError) {
-      setMarkers([])
+      setMarkers(propsMarkers || [])
     }
-  }, [value, withError])
+  }, [blockType.name, propsMarkers, value, withError])
 
   const patchChannel = useMemo(() => {
     return {onPatch: () => () => undefined}
@@ -103,6 +113,8 @@ export function TestInput(props: TestInputProps) {
         onFocus={onFocus}
         presence={presence}
         readOnly={readOnly}
+        renderBlockActions={renderBlockActions}
+        renderCustomMarkers={renderCustomMarkers}
         subscribe={subscribe}
         type={props.type}
         value={value}
