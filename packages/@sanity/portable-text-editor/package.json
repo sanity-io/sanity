@@ -44,7 +44,6 @@
     "debug": "^3.2.7",
     "is-hotkey": "^0.1.6",
     "lodash": "^4.17.15",
-    "scroll-into-view-if-needed": "^2.2.26",
     "slate": "^0.58.4"
   },
   "devDependencies": {
