@@ -8,3 +8,20 @@ window.console = {
     }
   },
 }
+
+// IntersectionObserver isn't available in the test browser environment
+const mockIntersectionObserver = jest.fn()
+mockIntersectionObserver.mockReturnValue({
+  observe: () => null,
+  unobserve: () => null,
+  disconnect: () => null,
+})
+window.IntersectionObserver = mockIntersectionObserver
+
+// ResizeObserver isn't available in the test browser environment
+const mockResizeObserver = jest.fn()
+mockResizeObserver.mockReturnValue({
+  observe: () => null,
+  unobserve: () => null,
+})
+window.ResizeObserver = mockResizeObserver
