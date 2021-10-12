@@ -21,7 +21,6 @@ export class SerializeError extends Error {
   }
 }
 
-// eslint-disable-next-line no-shadow
 export enum HELP_URL {
   ID_REQUIRED = 'structure-node-id-required',
   TITLE_REQUIRED = 'structure-title-required',

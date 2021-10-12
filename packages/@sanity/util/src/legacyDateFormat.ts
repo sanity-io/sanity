@@ -1,4 +1,4 @@
-/* eslint-disable no-shadow */
+/* eslint-disable @typescript-eslint/no-shadow */
 import moment from 'moment'
 
 export type ParseResult = {isValid: boolean; date?: Date; error?: string} & (

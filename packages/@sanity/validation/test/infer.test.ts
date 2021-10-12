@@ -58,7 +58,7 @@ describe('schema validation inference', () => {
       name: 'fieldValidationInferReproDoc',
       type: 'document',
       title: 'FieldValidationRepro',
-      // eslint-disable-next-line no-shadow
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       validation: (Rule: Rule) =>
         Rule.fields({
           stringField: (fieldRule) => fieldRule.required(),
