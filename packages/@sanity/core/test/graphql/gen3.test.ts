@@ -24,6 +24,8 @@ describe('GraphQL - Generation 3', () => {
     })
 
     const schema = generateSchema(extracted)
+
+    expect(schema.generation).toBe('gen3')
     expect(sortGraphQLSchema(schema)).toMatchSnapshot()
   })
 })
