@@ -73,6 +73,7 @@
     "jest": "^27.1.0",
     "jest-dev-server": "^5.0.3",
     "jest-environment-node": "^27.1.0",
+    "jest-environment-jsdom": "^27.2.0",
     "node-ipc": "^9.0.0",
     "prettier": "2.1.2",
     "puppeteer": "^5.5.0",
