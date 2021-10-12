@@ -2,7 +2,7 @@ import React from 'react'
 import {Box, Text} from '@sanity/ui'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {MediaDimensions, PreviewProps} from './types'
-import {MediaWrapper, Root, Header, ContentWrapper} from './blockPreview.styled'
+import {MediaWrapper, RootStack, Header, ContentWrapper} from './blockPreview.styled'
 
 const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   width: 40,
@@ -26,7 +26,7 @@ export const BlockPreview: React.FunctionComponent<PreviewProps<'block'>> = (pro
   } = props
 
   return (
-    <Root data-testid="block-preview">
+    <RootStack space={1} data-testid="block-preview">
       <Header align="center">
         {media && (
           <MediaWrapper marginRight={1}>
@@ -72,6 +72,6 @@ export const BlockPreview: React.FunctionComponent<PreviewProps<'block'>> = (pro
       {children && <Box>{children}</Box>}
 
       {extendedPreview && <Box>{extendedPreview}</Box>}
-    </Root>
+    </RootStack>
   )
 }
