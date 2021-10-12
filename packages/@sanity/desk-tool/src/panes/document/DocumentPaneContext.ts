@@ -16,7 +16,6 @@ export interface DocumentPaneContextValue {
   actions: DocumentActionDescription[] | null
   badges: DocumentBadgeDescription[] | null
   changesOpen: boolean
-  closable: boolean
   compareValue: Partial<SanityDocument> | null
   connectionState: 'connecting' | 'reconnecting' | 'connected'
   displayed: Partial<SanityDocument> | null

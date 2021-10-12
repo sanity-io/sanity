@@ -29,7 +29,6 @@ export const DocumentPanelHeader = forwardRef(function DocumentPanelHeader(
 ) {
   const {rootElement} = props
   const {
-    closable,
     documentSchema,
     handleMenuAction,
     handlePaneClose,
@@ -43,11 +42,12 @@ export const DocumentPanelHeader = forwardRef(function DocumentPanelHeader(
   } = useDocumentPane()
   const {revTime: rev} = historyController
   const {features} = useDeskTool()
-  const {index} = usePaneRouter()
+  const {index, siblingIndex} = usePaneRouter()
   const contextMenuItems = useMemo(() => menuItems.filter(isMenuButton), [menuItems])
   const [isValidationOpen, setValidationOpen] = React.useState<boolean>(false)
   const showTabs = views.length > 1
   const showVersionMenu = features.reviewChanges || views.length === 1
+  const closable = siblingIndex > 0
 
   const languageMenu = useMemo(
     () => LanguageFilter && <LanguageFilter key="language-menu" schemaType={documentSchema} />,

@@ -11,7 +11,6 @@ import {UserComponentPane} from './userComponent'
 interface DeskToolPaneProps {
   active: boolean
   childItemId: string | null
-  closable: boolean
   groupIndex: number
   index: number
   itemId: string
@@ -42,7 +41,6 @@ export const DeskToolPane = memo(function DeskToolPane(props: DeskToolPaneProps)
   const {
     active,
     childItemId,
-    closable,
     groupIndex,
     index,
     itemId,
@@ -70,7 +68,6 @@ export const DeskToolPane = memo(function DeskToolPane(props: DeskToolPaneProps)
         itemId={itemId}
         isActive={active}
         isSelected={selected}
-        isClosable={closable}
         paneKey={paneKey}
         pane={pane}
       />
