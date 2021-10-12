@@ -32,6 +32,10 @@ const Root = styled(Card)((props: {theme: Theme}) => {
     box-shadow: 0 0 0 1px var(--card-border-color);
     border-radius: ${radius[1]}px;
 
+    &[data-focused] {
+      box-shadow: 0 0 0 1px ${color.selectable.primary.selected.border};
+    }
+
     &:not([data-focused]):not([data-selected]) {
       @media (hover: hover) {
         &:hover {
@@ -110,6 +114,18 @@ export function BlockObject(props: BlockObjectProps) {
     )
   }, [type, value, readOnly, handleDelete, handleEdit])
 
+  const tone = useMemo(() => {
+    if (hasError) {
+      return 'critical'
+    }
+
+    if (selected || focused) {
+      return 'primary'
+    }
+
+    return undefined
+  }, [focused, hasError, selected])
+
   return (
     <Root
       data-focused={focused ? '' : undefined}
@@ -121,7 +137,7 @@ export function BlockObject(props: BlockObjectProps) {
       overflow="hidden"
       padding={1}
       ref={elementRef}
-      tone={selected ? 'primary' : undefined}
+      tone={tone}
     >
       <div ref={blockRef}>{blockPreview}</div>
     </Root>
