@@ -24,7 +24,7 @@ import {
   debounceTime,
   startWith,
 } from 'rxjs/operators'
-import {DocumentPaneOptions} from '../../types'
+import {DocumentPaneOptions} from '../types'
 
 interface InitialValueOptions {
   documentId: string

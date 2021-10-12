@@ -1,7 +1,7 @@
 import {useEffect, useMemo, useState} from 'react'
-import {usePaneRouter} from '../../../../contexts/paneRouter'
-import {useUnique} from '../../../../lib/useUnique'
-import {DocumentPaneOptions} from '../../types'
+import {usePaneRouter} from '../../../contexts/paneRouter'
+import {useUnique} from '../../../utils/useUnique'
+import {DocumentPaneOptions} from '../types'
 import {getInitialValueObservable} from './getInitialValue'
 import {InitialValueState} from './types'
 

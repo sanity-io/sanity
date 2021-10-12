@@ -5,7 +5,7 @@ import {Marker, Path, SanityDocument} from '@sanity/types'
 import {createContext} from 'react'
 import {Controller as HistoryController} from './documentHistory/history/Controller'
 import {Timeline} from './documentHistory/history/Timeline'
-import {InitialValueState} from './lib/initialValue/types'
+import {InitialValueState} from './initialValue/types'
 import {DocumentView, TimelineMode} from './types'
 
 // @todo: provide a TS type for this

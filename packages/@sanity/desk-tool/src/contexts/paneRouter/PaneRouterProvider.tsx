@@ -1,7 +1,6 @@
 import {useRouter, useRouterState} from '@sanity/base/router'
 import {pick, omit, isEqual} from 'lodash'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {useUnique} from '../../lib/useUnique'
 import {RouterPaneGroup, RouterSplitPane} from '../../types'
 import {exclusiveParams} from './constants'
 import {ChildLink} from './ChildLink'
