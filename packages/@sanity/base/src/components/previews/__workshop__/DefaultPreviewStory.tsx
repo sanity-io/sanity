@@ -4,10 +4,11 @@ import {useBoolean, useString} from '@sanity/ui-workshop'
 import React from 'react'
 import {DefaultPreview} from '../defaultPreview'
 
-export default function ExampleStory() {
+export default function DefaultPreviewStory() {
   const title = useString('Title', 'Title', 'Props')
   const subtitle = useString('Subtitle', 'Subtitle', 'Props')
   const selected = useBoolean('Selected', false, 'Props')
+  const withImage = useBoolean('With image', false, 'Props')
 
   return (
     <Card height="fill">
@@ -15,7 +16,13 @@ export default function ExampleStory() {
         <Container width={0}>
           <Card data-as="button" padding={2} radius={3} selected={selected}>
             <DefaultPreview
-              media={<DocumentIcon />}
+              media={
+                withImage ? (
+                  <img src="https://source.unsplash.com/35x35/?abstract" />
+                ) : (
+                  <DocumentIcon />
+                )
+              }
               status={
                 <Text muted size={1}>
                   <EditIcon />
