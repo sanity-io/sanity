@@ -14,6 +14,7 @@ import {
 } from '@sanity/ui'
 import React, {memo, useMemo, useState} from 'react'
 import styled from 'styled-components'
+import {DocumentPaneNode} from '../../types'
 import {useDeskTool} from '../../contexts/deskTool'
 import {usePaneRouter} from '../../contexts/paneRouter'
 import {PaneFooter} from '../../components/pane'
@@ -29,7 +30,9 @@ import {DocumentActionShortcuts} from './keyboardShortcuts'
 import {DocumentStatusBar} from './statusBar'
 import {useDocumentPane} from './useDocumentPane'
 import {DocumentPaneProvider} from './DocumentPaneProvider'
-import {DocumentPaneOptions, DocumentPaneProviderProps} from './types'
+import {DocumentPaneProviderProps} from './types'
+
+type DocumentPaneOptions = DocumentPaneNode['options']
 
 const DIALOG_PROVIDER_POSITION: DialogProviderProps['position'] = [
   // We use the `position: fixed` for dialogs on narrow screens (< 512px).
@@ -82,7 +85,7 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
 
 function usePaneOptions(
   options: DocumentPaneOptions,
-  params: Record<string, string | undefined>
+  params: Record<string, string | undefined> = {}
 ): DocumentPaneOptions {
   return useMemo(() => {
     // The document type is provided, so return

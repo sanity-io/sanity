@@ -2,7 +2,7 @@
 ///<reference types="@sanity/types/parts" />
 
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
-import {MenuItem} from '@sanity/base/__legacy/@sanity/components'
+import {Path, SanityDocument} from '@sanity/types'
 import {unstable_useCheckDocumentPermission as useCheckDocumentPermission} from '@sanity/base/hooks'
 import {
   useConnectionState,
@@ -10,7 +10,7 @@ import {
   useEditState,
   useValidationStatus,
 } from '@sanity/react-hooks'
-import {Path, SanityDocument} from '@sanity/types'
+import {omit} from 'lodash'
 import {useToast} from '@sanity/ui'
 import {fromString as pathFromString, pathFor} from '@sanity/util/paths'
 import isHotkey from 'is-hotkey'
@@ -20,6 +20,7 @@ import resolveDocumentBadges from 'part:@sanity/base/document-badges/resolver'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import schema from 'part:@sanity/base/schema'
 import {useMemoObservable} from 'react-rx'
+import {PaneMenuItem} from '../../types'
 import {useDeskTool} from '../../contexts/deskTool'
 import {usePaneRouter} from '../../contexts/paneRouter'
 import {useUnique} from '../../utils/useUnique'
@@ -33,6 +34,8 @@ import {DocumentPaneProviderProps} from './types'
 import {getPreviewUrl} from './usePreviewUrl'
 
 declare const __DEV__: boolean
+
+const emptyObject = {} as Record<string, string | undefined>
 
 /**
  * @internal
@@ -62,7 +65,7 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
   const badges = useMemo(() => (editState ? resolveDocumentBadges(editState) : null), [editState])
   const markers = useUnique(markersRaw)
   const views = useUnique(viewsProp)
-  const params = paneRouter.params
+  const params = paneRouter.params || emptyObject
   const [focusPath, setFocusPath] = useState<Path>(() =>
     params.path ? pathFromString(params.path) : []
   )
@@ -103,7 +106,7 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
   const permission = useCheckDocumentPermission(documentId, documentType, requiredPermission)
   const inspectOpen = params.inspect === 'on'
   const compareValue: Partial<SanityDocument> | null = changesOpen
-    ? (historyController.sinceAttributes() as any)
+    ? historyController.sinceAttributes()
     : editState?.published || null
   const ready = connectionState === 'connected' && !patch.disabled
   const displayed: Partial<SanityDocument> | null = useMemo(
@@ -160,22 +163,17 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
 
   const toggleInspect = useCallback(
     (toggle = !inspectOpen) => {
-      const {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        inspect, // omit
-        ...restParams
-      } = params
       if (toggle) {
-        paneRouter.setParams({inspect: 'on', ...restParams})
+        paneRouter.setParams({...params, inspect: 'on'})
       } else {
-        paneRouter.setParams(restParams)
+        paneRouter.setParams(omit(params, 'inspect'))
       }
     },
     [inspectOpen, paneRouter, params]
   )
 
   const handleMenuAction = useCallback(
-    (item: MenuItem) => {
+    (item: PaneMenuItem) => {
       if (item.action === 'production-preview') {
         window.open(item.url)
         return true

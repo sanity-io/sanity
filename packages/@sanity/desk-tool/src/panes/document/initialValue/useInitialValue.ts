@@ -1,7 +1,7 @@
 import {useEffect, useMemo, useState} from 'react'
+import {DocumentPaneNode} from '../../../types'
 import {usePaneRouter} from '../../../contexts/paneRouter'
 import {useUnique} from '../../../utils/useUnique'
-import {DocumentPaneOptions} from '../types'
 import {getInitialValueObservable} from './getInitialValue'
 import {InitialValueState} from './types'
 
@@ -10,7 +10,7 @@ import {InitialValueState} from './types'
  */
 export function useInitialValue(
   documentId: string,
-  rawPaneOptions: DocumentPaneOptions
+  rawPaneOptions: DocumentPaneNode['options']
 ): InitialValueState {
   const paneRouter = usePaneRouter()
   const paneParams = useUnique(paneRouter.params)

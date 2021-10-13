@@ -1,10 +1,12 @@
 import {uuid} from '@sanity/uuid'
-import {EMPTY_PARAMS} from './constants'
-import {RouterPaneGroup, RouterSplitPane} from './types'
+import {PaneNode, RouterPanes} from './types'
+import {EMPTY_PARAMS, LOADING_PANE} from './constants'
 
-const state: {activePanes: any[]} = {activePanes: []}
+const state: {
+  activePanes: Array<PaneNode | typeof LOADING_PANE>
+} = {activePanes: []}
 
-export function setActivePanes(panes: any[]): void {
+export function setActivePanes(panes: Array<PaneNode | typeof LOADING_PANE>): void {
   state.activePanes = panes
 }
 
@@ -13,13 +15,11 @@ export function setActivePanes(panes: any[]): void {
  */
 export function getIntentState(
   intentName: string,
-  params: Record<string, string | undefined>,
-  currentState: {panes: RouterPaneGroup[]} | undefined,
+  params: Record<string, string>,
+  currentState: {panes?: RouterPanes} | undefined,
   payload: unknown
-):
-  | {panes: RouterPaneGroup[]}
-  | {intent: string; params: Record<string, string | undefined>; payload: unknown} {
-  const paneSegments = (currentState && currentState.panes) || []
+): {panes: RouterPanes} | {intent: string; params: Record<string, string>; payload: unknown} {
+  const panes = currentState?.panes || []
   const activePanes = state.activePanes || []
   const editDocumentId = params.id || uuid()
   const isTemplate = intentName === 'create' && params.template
@@ -27,16 +27,20 @@ export function getIntentState(
   // Loop through open panes and see if any of them can handle the intent
   for (let i = activePanes.length - 1; i >= 0; i--) {
     const pane = activePanes[i]
-
-    if (pane.canHandleIntent && pane.canHandleIntent(intentName, params, {pane, index: i})) {
-      const paneParams: RouterSplitPane['params'] = isTemplate
-        ? {template: params.template}
-        : EMPTY_PARAMS
-
+    if (
+      typeof pane === 'object' &&
+      pane.canHandleIntent?.(intentName, params, {
+        // @ts-expect-error: this was incorrectly typed as `never`
+        // because TS has trouble with inferred intersections
+        pane,
+        index: i,
+      })
+    ) {
+      const paneParams = isTemplate ? {template: params.template} : EMPTY_PARAMS
       return {
-        panes: paneSegments
+        panes: panes
           .slice(0, i)
-          .concat([[{id: editDocumentId, params: paneParams, payload}]]),
+          .concat([[{id: editDocumentId, params: paneParams, payload}]]) as RouterPanes,
       }
     }
   }

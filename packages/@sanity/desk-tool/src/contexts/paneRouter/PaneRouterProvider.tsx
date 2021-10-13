@@ -1,7 +1,7 @@
 import {useRouter, useRouterState} from '@sanity/base/router'
 import {pick, omit, isEqual} from 'lodash'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {RouterPaneGroup, RouterSplitPane} from '../../types'
+import {RouterPaneGroup, RouterPaneSibling} from '../../types'
 import {exclusiveParams} from './constants'
 import {ChildLink} from './ChildLink'
 import {PaneRouterContext} from './PaneRouterContext'
@@ -55,7 +55,7 @@ export function PaneRouterProvider(props: {
   }, [payloadProp])
 
   const modifyCurrentGroup = useCallback(
-    (modifier: (siblings: RouterPaneGroup, item: RouterSplitPane) => RouterPaneGroup) => {
+    (modifier: (siblings: RouterPaneGroup, item: RouterPaneSibling) => RouterPaneGroup) => {
       const newPanes = routerPaneGroups.slice(0)
 
       const currentGroup = routerPaneGroups[groupIndex] ? routerPaneGroups[groupIndex].slice(0) : []

@@ -1,8 +1,8 @@
 import isHotkey from 'is-hotkey'
 import {merge, of} from 'rxjs'
 import {mapTo, delay} from 'rxjs/operators'
-import {LOADING_PANE} from './constants'
 import {RouterPaneGroup} from './types'
+import {LOADING_PANE} from './constants'
 import {parsePanesSegment, encodePanesSegment} from './utils/parsePanesSegment'
 
 /**

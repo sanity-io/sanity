@@ -1,10 +1,9 @@
 import React, {memo} from 'react'
+import {PaneNode} from '../types'
 import {PaneRouterProvider} from '../contexts/paneRouter'
-import {StructurePane} from '../types'
 import {DocumentPane} from './document'
 import {DocumentListPane} from './documentList'
 import {ListPane} from './list'
-import {BaseDeskToolPaneProps} from './types'
 import {UnknownPane} from './unknown'
 import {UserComponentPane} from './userComponent'
 
@@ -14,7 +13,7 @@ interface DeskToolPaneProps {
   groupIndex: number
   index: number
   itemId: string
-  pane: StructurePane
+  pane: PaneNode
   paneKey: string
   params: Record<string, string>
   payload: unknown
@@ -22,10 +21,7 @@ interface DeskToolPaneProps {
   siblingIndex: number
 }
 
-const paneMap: Record<
-  string,
-  React.ComponentType<BaseDeskToolPaneProps<StructurePane>> | undefined
-> = {
+const paneMap = {
   component: UserComponentPane,
   document: DocumentPane,
   documentList: DocumentListPane,
@@ -69,6 +65,7 @@ export const DeskToolPane = memo(function DeskToolPane(props: DeskToolPaneProps)
         isActive={active}
         isSelected={selected}
         paneKey={paneKey}
+        // @ts-expect-error TS doesn't know how to handle this intersection
         pane={pane}
       />
     </PaneRouterProvider>

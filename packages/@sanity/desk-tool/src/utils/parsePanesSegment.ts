@@ -1,6 +1,6 @@
+import {RouterPaneGroup, RouterPaneSibling} from '../types'
 import {EMPTY_PARAMS} from '../constants'
 import {exclusiveParams} from '../contexts/paneRouter'
-import {RouterPaneGroup, RouterSplitPane} from '../types'
 
 // old: authors;knut,{"template":"diaryEntry"}
 // new: authors;knut,view=diff,eyJyZXYxIjoiYWJjMTIzIiwicmV2MiI6ImRlZjQ1NiJ9|latest-posts
@@ -23,7 +23,7 @@ type Truthy<T> = T extends false
   : T
 const isTruthy = (Boolean as (t: unknown) => boolean) as <T>(t: T) => t is Truthy<T>
 
-function parseChunks(chunks: string[], initial: RouterSplitPane): RouterSplitPane {
+function parseChunks(chunks: string[], initial: RouterPaneSibling): RouterPaneSibling {
   return chunks.reduce(
     (pane, chunk) => {
       if (isParam(chunk)) {
@@ -43,7 +43,7 @@ function parseChunks(chunks: string[], initial: RouterSplitPane): RouterSplitPan
   )
 }
 
-function encodeChunks(pane: RouterSplitPane, index: number, group: RouterPaneGroup): string {
+function encodeChunks(pane: RouterPaneSibling, index: number, group: RouterPaneGroup): string {
   const {payload, params = {}, id} = pane
   const sameAsFirst = index !== 0 && id === group[0].id
   const encodedPayload = typeof payload === 'undefined' ? undefined : btoa(JSON.stringify(payload))
@@ -82,7 +82,7 @@ export function parsePanesSegment(str: string): RouterPaneGroup[] {
           const [id, ...chunks] = segment.split(',')
           return parseChunks(chunks, {id})
         })
-        .map((pane, i, siblings) => (pane.id ? pane : {...pane, id: siblings[0].id}))
+        .map((pane, _i, siblings) => (pane.id ? pane : {...pane, id: siblings[0].id}))
     )
     .filter((group) => group.length > 0)
 }

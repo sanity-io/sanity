@@ -1,25 +1,27 @@
 import React from 'react'
 import {Box, Text} from '@sanity/ui'
 import {Pane, PaneContent, PaneHeader} from '../../components/pane'
-import {BaseDeskToolPaneProps} from '../types'
+import {isRecord} from '../../utils/typePredicates'
 
-type UnknownPaneProps = BaseDeskToolPaneProps<{
-  type: string
-}>
+interface UnknownPaneProps {
+  index: number
+  isSelected: boolean
+  pane: unknown
+}
 
 /**
  * @internal
  */
 export function UnknownPane(props: UnknownPaneProps) {
   const {index, isSelected, pane} = props
-  const {type} = pane
+  const type = (isRecord(pane) && pane.type) || null
 
   return (
     <Pane data-index={index} selected={isSelected}>
       <PaneHeader title="Unknown pane type" />
       <PaneContent>
         <Box padding={4}>
-          {type ? (
+          {typeof type === 'string' ? (
             <Text as="p" muted>
               Structure item of type <code>{type}</code> is not a known entity.
             </Text>

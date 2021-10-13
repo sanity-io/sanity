@@ -1,5 +1,5 @@
-import {MenuItem as MenuItemType} from '@sanity/base/__legacy/@sanity/components'
 import {EarthAmericasIcon, BinaryDocumentIcon, RestoreIcon} from '@sanity/icons'
+import {PaneMenuItem} from '../../types'
 import {DeskToolFeatures} from '../../contexts/deskTool'
 
 interface Params {
@@ -9,7 +9,7 @@ interface Params {
   previewUrl: string | null
 }
 
-const getHistoryMenuItem = (params: Params): MenuItemType | null => {
+const getHistoryMenuItem = (params: Params): PaneMenuItem | null => {
   const {features, hasValue, changesOpen} = params
 
   if (!features.reviewChanges) return null
@@ -22,7 +22,7 @@ const getHistoryMenuItem = (params: Params): MenuItemType | null => {
   }
 }
 
-const getInspectItem = ({hasValue}: Params): MenuItemType => ({
+const getInspectItem = ({hasValue}: Params): PaneMenuItem => ({
   action: 'inspect',
   title: 'Inspect',
   icon: BinaryDocumentIcon,
@@ -30,7 +30,7 @@ const getInspectItem = ({hasValue}: Params): MenuItemType => ({
   shortcut: 'Ctrl+Alt+I',
 })
 
-export const getProductionPreviewItem = ({previewUrl}: Params): MenuItemType | null => {
+export const getProductionPreviewItem = ({previewUrl}: Params): PaneMenuItem | null => {
   if (!previewUrl) {
     return null
   }
@@ -44,10 +44,10 @@ export const getProductionPreviewItem = ({previewUrl}: Params): MenuItemType | n
   }
 }
 
-export const getMenuItems = (params: Params): MenuItemType[] => {
+export const getMenuItems = (params: Params): PaneMenuItem[] => {
   const items = [getProductionPreviewItem, getHistoryMenuItem, getInspectItem]
     .filter(Boolean)
     .map((fn) => fn(params))
 
-  return items.filter((i) => i !== null) as MenuItemType[]
+  return items.filter((i) => i !== null) as PaneMenuItem[]
 }

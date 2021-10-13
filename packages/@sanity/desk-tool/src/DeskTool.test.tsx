@@ -8,10 +8,10 @@ import React, {useEffect, useMemo, useState} from 'react'
 import {RouterProvider, useRouter} from '@sanity/base/router'
 import {LayerProvider, ThemeProvider, studioTheme, ToastProvider, useElementRect} from '@sanity/ui'
 import type {CurrentUser} from '@sanity/types'
+import type {PaneNode, RouterPaneGroup, RouterPaneSiblingContext} from './types'
 import {DeskTool} from './DeskTool'
 import deskTool from './_parts/base-tool'
 import {LOADING_PANE} from './constants'
-import {RouterPaneGroup, RouterSplitPaneContext} from './types'
 
 const isNonNullable = <T,>(t: T): t is NonNullable<T> => t !== null && t !== undefined
 
@@ -115,9 +115,10 @@ function createTestingProvider({initialRouterState = {}}: CreateTestingProviderO
 
   type Navigate = ReturnType<typeof useRouter>['navigate']
   const navigatePromise = createDeferredPromise<Navigate>()
-  const paneChanges$ = new Rx.Subject<RouterPaneGroup[]>()
+  const paneChanges$ = new Rx.Subject<Array<PaneNode | typeof LOADING_PANE>>()
 
-  const handlePaneChange = (panes: RouterPaneGroup[]) => paneChanges$.next(panes)
+  const handlePaneChange = (panes: Array<PaneNode | typeof LOADING_PANE>) =>
+    paneChanges$.next(panes)
 
   async function navigate(state: {panes: RouterPaneGroup[]}, options: {replace: boolean}) {
     const _navigate = await navigatePromise
@@ -126,8 +127,8 @@ function createTestingProvider({initialRouterState = {}}: CreateTestingProviderO
 
   async function resolvedPanes(options: {
     collectChangesOverTime: true
-  }): Promise<{changes: RouterPaneGroup[][]}>
-  async function resolvedPanes(): Promise<RouterPaneGroup[]>
+  }): Promise<{changes: Array<PaneNode | typeof LOADING_PANE>[]}>
+  async function resolvedPanes(): Promise<Array<PaneNode | typeof LOADING_PANE>>
   async function resolvedPanes(options?: {collectChangesOverTime: boolean}) {
     if (options?.collectChangesOverTime) {
       const changes = await paneChanges$
@@ -204,7 +205,7 @@ function createTestingProvider({initialRouterState = {}}: CreateTestingProviderO
   }
 
   const mockChild = jest.requireMock('part:@sanity/desk-tool/structure?')
-    .mockChild as jest.MockedFunction<(...args: [string, RouterSplitPaneContext]) => unknown>
+    .mockChild as jest.MockedFunction<(...args: [string, RouterPaneSiblingContext]) => unknown>
 
   const dynamicChild = (requestedId: string) => ({
     id: requestedId,

@@ -1,29 +1,30 @@
 import {from as observableFrom, Observable, of as observableOf} from 'rxjs'
 import {mergeMap} from 'rxjs/operators'
-import isSubscribable from './isSubscribable'
+import {PaneNode, RouterPaneSiblingContext, PaneChild} from '../types'
+import {isSubscribable, isSerializable} from './typePredicates'
 
 export default function serializeStructure(
-  item: any,
-  context?: any,
-  resolverArgs: any[] = []
-): Observable<any> {
+  child: PaneChild,
+  context: RouterPaneSiblingContext,
+  resolverArgs: [string, RouterPaneSiblingContext]
+): Observable<PaneNode> {
   // Lazy
-  if (typeof item === 'function') {
-    return serializeStructure(item(...resolverArgs), context, resolverArgs)
+  if (typeof child === 'function') {
+    return serializeStructure(child(...resolverArgs), context, resolverArgs)
   }
 
   // Promise/observable returning a function, builder or plain JSON structure
-  if (isSubscribable(item)) {
-    return observableFrom(item).pipe(
+  if (isSubscribable(child)) {
+    return observableFrom(child).pipe(
       mergeMap((val) => serializeStructure(val, context, resolverArgs))
     )
   }
 
   // Builder?
-  if (item && typeof item.serialize === 'function') {
-    return serializeStructure(item.serialize(context))
+  if (isSerializable(child)) {
+    return serializeStructure(child.serialize(context), context, resolverArgs)
   }
 
   // Plain value?
-  return observableOf(item)
+  return observableOf(child as PaneNode)
 }

@@ -1,12 +1,12 @@
 import {DocumentActionDescription, DocumentBadgeDescription} from '@sanity/base'
-import {EditStateFor} from '@sanity/base/_internal'
-import {MenuItem, MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
 import {Marker, Path, SanityDocument} from '@sanity/types'
+import {EditStateFor} from '@sanity/base/_internal'
 import {createContext} from 'react'
+import {PaneView, PaneMenuItem, PaneMenuItemGroup} from '../../types'
 import {Controller as HistoryController} from './documentHistory/history/Controller'
 import {Timeline} from './documentHistory/history/Timeline'
 import {InitialValueState} from './initialValue/types'
-import {DocumentView, TimelineMode} from './types'
+import {TimelineMode} from './types'
 
 // @todo: provide a TS type for this
 type DocumentSchema = any
@@ -31,7 +31,7 @@ export interface DocumentPaneContextValue {
   handleHistoryOpen: () => void
   handleInspectClose: () => void
   handleKeyUp: (event: React.KeyboardEvent<HTMLDivElement>) => void
-  handleMenuAction: (item: MenuItem) => void
+  handleMenuAction: (item: PaneMenuItem) => void
   handlePaneClose: () => void
   handlePaneSplit: () => void
   historyController: HistoryController
@@ -39,8 +39,8 @@ export interface DocumentPaneContextValue {
   initialValue: InitialValueState
   inspectOpen: boolean
   markers: Marker[]
-  menuItems: MenuItem[]
-  menuItemGroups: MenuItemGroup[]
+  menuItems: PaneMenuItem[]
+  menuItemGroups: PaneMenuItemGroup[]
   paneKey: string
   permission: {granted: boolean; reason: string}
   previewUrl: string | null
@@ -52,7 +52,7 @@ export interface DocumentPaneContextValue {
   timelineMode: TimelineMode
   title: string | null
   value: Partial<SanityDocument>
-  views: DocumentView[]
+  views: PaneView[]
 }
 
 export const DocumentPaneContext = createContext<DocumentPaneContextValue | null>(null)

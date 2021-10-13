@@ -1,6 +1,7 @@
 import {omit} from 'lodash'
+import {PaneNode, RouterPaneGroup} from './types'
 import {exclusiveParams} from './contexts/paneRouter'
-import {RouterPaneGroup} from './types'
+import {LOADING_PANE} from './constants'
 
 interface PaneData {
   active: boolean
@@ -9,7 +10,7 @@ interface PaneData {
   index: number
   itemId: string
   key: string
-  pane: any
+  pane: PaneNode | typeof LOADING_PANE
   params: Record<string, string>
   path: string
   payload: unknown
@@ -17,7 +18,11 @@ interface PaneData {
   siblingIndex: number
 }
 
-export function getPanes(resolvedPanes: any[], routerPanes: RouterPaneGroup[]): PaneData[] {
+// eslint-disable-next-line complexity
+export function getPanes(
+  resolvedPanes: Array<PaneNode | typeof LOADING_PANE>,
+  routerPanes: RouterPaneGroup[]
+): PaneData[] {
   let path = ''
   let paneIndex = 0
 
@@ -41,7 +46,7 @@ export function getPanes(resolvedPanes: any[], routerPanes: RouterPaneGroup[]): 
       const pane = resolvedPanes[paneIndex]
 
       if (pane) {
-        path += `;${pane.id || `[${paneIndex}]`}`
+        path += `;${(typeof pane === 'object' && pane.id) || `[${paneIndex}]`}`
 
         const duplicate = siblingIndex > 0 && sibling.id === group[0].id
         const itemId = paneKeys[paneIndex] || 'root'
@@ -54,7 +59,7 @@ export function getPanes(resolvedPanes: any[], routerPanes: RouterPaneGroup[]): 
           index: paneIndex,
           itemId,
           groupIndex,
-          key: `${pane.type || 'unknown'}-${itemId}-${siblingIndex}`,
+          key: `${(typeof pane === 'object' && pane.type) || 'unknown'}-${itemId}-${siblingIndex}`,
           pane,
           params: {...rootParams, ...(sibling.params || {})},
           path,
