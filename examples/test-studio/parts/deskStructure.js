@@ -258,6 +258,8 @@ export default () =>
                     ])
                 ),
 
+              S.documentListItem().id('jrr-tolkien').schemaType('author'),
+
               S.listItem()
                 .title('Deep')
                 .child(

@@ -1,6 +1,6 @@
 import React, {forwardRef, useCallback, useEffect, useMemo, useState} from 'react'
 import {FolderIcon, ChevronRightIcon, DocumentIcon} from '@sanity/icons'
-import {isSanityDocument, SanityDocument, SchemaType} from '@sanity/types'
+import {isSanityDocument, SchemaType} from '@sanity/types'
 import {Card, Text} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
 import {SanityDefaultPreview} from 'part:@sanity/base/preview'
@@ -17,7 +17,7 @@ interface PaneItemProps {
   pressed?: boolean
   selected?: boolean
   title?: string
-  value?: PreviewValue | SanityDocument
+  value?: PreviewValue | {_id: string; _type: string}
   schemaType?: SchemaType
 }
 
