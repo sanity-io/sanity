@@ -135,6 +135,14 @@ export default () =>
     .id('root')
     .title('Content')
     .items([
+      S.listItem()
+        .title('Untitled repro')
+        .child(
+          S.list()
+            .title('Untitled repro')
+            .items([S.documentListItem().id('grrm').schemaType('author')])
+        ),
+
       _buildTypeGroup({
         icon: TerminalIcon,
         id: 'input-debug',
@@ -205,11 +213,13 @@ export default () =>
 
               S.divider(),
 
+              // A "singleton" using a document node with no schema type
+              // This is deprecated and scheduled for removal
               S.documentListItem()
                 .id('foo-bar')
                 .title('Singleton author')
                 .schemaType('author')
-                .child(S.editor().documentId('foo-bar')),
+                .child(S.document().documentId('foo-bar')),
 
               S.divider(),
 
@@ -228,6 +238,7 @@ export default () =>
                   )
                 ),
 
+              // A singleton not using `documentListItem`, eg no built-in preview
               S.listItem()
                 .title('Singleton?')
                 .child(
@@ -240,6 +251,7 @@ export default () =>
                 )
                 .showIcon(false),
 
+              // A "singleton" which overrides the title, and provides a custom child
               S.documentListItem()
                 .id('grrm')
                 .title('GRRM')
@@ -258,6 +270,7 @@ export default () =>
                     ])
                 ),
 
+              // A "singleton" which should use a default preview
               S.documentListItem().id('jrr-tolkien').schemaType('author'),
 
               S.listItem()
