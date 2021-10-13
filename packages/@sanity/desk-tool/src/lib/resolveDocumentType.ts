@@ -1,11 +1,8 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
-
+import documentStore from 'part:@sanity/base/datastore/document'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import {useEffect, useState} from 'react'
-import {of} from 'rxjs'
-import {map} from 'rxjs/operators'
-import {versionedClient as client} from '../../versionedClient'
 
 export function removeDraftPrefix(documentId: string): string {
   const publishedId = getPublishedId(documentId)
@@ -29,7 +26,10 @@ export function useDocumentType(
   const [{documentType, isLoaded}, setDocumentType] = useState<{
     documentType?: string
     isLoaded: boolean
-  }>({isLoaded: isResolved, documentType: isResolved ? specifiedType : undefined})
+  }>({
+    isLoaded: isResolved,
+    documentType: isResolved ? specifiedType : undefined,
+  })
 
   useEffect(() => {
     if (isResolved) {
@@ -38,28 +38,16 @@ export function useDocumentType(
       }
     }
 
-    const sub = resolveTypeForDocument(documentId, specifiedType).subscribe((typeName) =>
-      setDocumentType({documentType: typeName, isLoaded: true})
-    )
+    const sub = documentStore
+      .resolveTypeForDocument(documentId, specifiedType)
+      .subscribe((typeName) => setDocumentType({documentType: typeName, isLoaded: true}))
 
     return () => sub.unsubscribe()
-  })
+  }, [documentId, specifiedType, isResolved])
 
   return {documentType, isLoaded}
 }
 
-function isResolvedDocumentType(specifiedType?: string): boolean {
+function isResolvedDocumentType(specifiedType?: string): specifiedType is string {
   return Boolean(specifiedType && specifiedType !== '*')
-}
-
-function resolveTypeForDocument(id: string, specifiedType?: string) {
-  if (isResolvedDocumentType(specifiedType)) {
-    return of(specifiedType)
-  }
-
-  const query = '*[_id in [$documentId, $draftId]]._type'
-  const documentId = getPublishedId(id)
-  const draftId = `drafts.${documentId}`
-
-  return client.observable.fetch(query, {documentId, draftId}).pipe(map((types) => types[0]))
 }
