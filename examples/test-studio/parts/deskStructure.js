@@ -205,7 +205,11 @@ export default () =>
 
               S.divider(),
 
-              S.documentListItem().id('foo-bar').title('Singleton author').schemaType('author'),
+              S.documentListItem()
+                .id('foo-bar')
+                .title('Singleton author')
+                .schemaType('author')
+                .child(S.editor().documentId('foo-bar')),
 
               S.divider(),
 
