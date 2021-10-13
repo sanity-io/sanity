@@ -40,6 +40,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     initialValue,
     value,
     views,
+    ready,
   } = useDocumentPane()
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const parentPortal = usePortal()
@@ -118,7 +119,11 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                 data-testid="document-panel-scroller"
                 ref={setDocumentScrollElement}
               >
-                <FormView hidden={formViewHidden} key={documentId} margins={margins} />
+                <FormView
+                  hidden={formViewHidden}
+                  key={documentId + (ready ? '_ready' : '_pending')}
+                  margins={margins}
+                />
                 {activeViewNode}
               </Scroller>
 
@@ -137,6 +142,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       layoutCollapsed,
       margins,
       portalElement,
+      ready,
       rootElement,
     ]
   )
