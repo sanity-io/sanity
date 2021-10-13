@@ -4,6 +4,9 @@ describe('@sanity/form-builder: DatetimeInput date-picker-dialog', () => {
   })
 
   it('should be rendered on top of array input dialog', () => {
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(1000)
+
     cy.getField('inArray').within(($field) => {
       cy.contains('Add').scrollIntoView().should('be.visible')
       cy.contains('Add').click()
@@ -24,6 +27,9 @@ describe('@sanity/form-builder: DatetimeInput date-picker-dialog', () => {
   })
 
   it('should be visible when clicking select date', () => {
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(1000)
+
     cy.getField('justDefaults').within(($field) => {
       cy.get('button[data-testid="select-date-button"]').click()
     })
