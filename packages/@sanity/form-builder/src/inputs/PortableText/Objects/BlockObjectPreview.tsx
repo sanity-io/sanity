@@ -25,9 +25,8 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps) {
   const {value, type, readOnly, onClickingEdit, onClickingDelete} = props
   const menuButtonId = useId()
 
-  const ReferenceLink = useMemo(
+  const referenceLink = useMemo(
     () =>
-      // eslint-disable-next-line no-shadow
       forwardRef(function ReferenceLink(linkProps: any, ref: any) {
         return <IntentLink {...linkProps} intent="edit" params={{id: value._ref}} ref={ref} />
       }),
@@ -50,7 +49,7 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps) {
           menu={
             <Menu>
               {value?._ref && (
-                <MenuItem as={ReferenceLink} data-as="a" icon={LinkIcon} text="Open reference" />
+                <MenuItem as={referenceLink} data-as="a" icon={LinkIcon} text="Open reference" />
               )}
               {readOnly && <MenuItem icon={EyeOpenIcon} onClick={onClickingEdit} text="View" />}
               {!readOnly && <MenuItem icon={EditIcon} onClick={onClickingEdit} text="Edit" />}

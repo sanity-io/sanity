@@ -1,30 +1,44 @@
-import React from 'react'
+import React, {useCallback} from 'react'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {MediaDimensions, PreviewProps} from './types'
-import {RootStack, MediaWrapper, HeaderFlex} from './blockImagePreview.styled'
+import {HeaderFlex, MediaCard, RootBox} from './blockImagePreview.styled'
 
 const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   width: 600,
-  height: 600,
+  height: 400,
   fit: 'fillmax',
   dpr: getDevicePixelRatio(),
 }
 
 export const BlockImagePreview: React.FunctionComponent<PreviewProps<'block'>> = (props) => {
-  const {actions, title, subtitle, description, mediaDimensions, media, children, status} = props
+  const {
+    actions,
+    title,
+    subtitle,
+    description,
+    mediaDimensions = DEFAULT_MEDIA_DIMENSIONS,
+    media,
+    children,
+    status,
+  } = props
+
+  const getRatio = useCallback((dimensions: MediaDimensions) => {
+    const {height, width} = dimensions
+
+    return (height / width) * 100
+  }, [])
 
   return (
-    <RootStack space={1}>
-      <HeaderFlex align="center" paddingLeft={2}>
-        <Flex flex={1} align="center" marginRight={4}>
+    <RootBox overflow="hidden">
+      <Stack>
+        <HeaderFlex align="center" paddingLeft={3} paddingRight={1} paddingY={1}>
           <Stack space={2} flex={1}>
             {title && (
-              <Text textOverflow="ellipsis" size={1}>
+              <Text size={1} textOverflow="ellipsis" weight="medium">
                 {title}
               </Text>
             )}
-
             {subtitle && (
               <Text muted size={1} textOverflow="ellipsis">
                 {subtitle}
@@ -32,37 +46,42 @@ export const BlockImagePreview: React.FunctionComponent<PreviewProps<'block'>> =
             )}
           </Stack>
 
-          {status && (
-            <Box marginLeft={4}>
-              {typeof status === 'function' ? status({layout: 'block'}) : status}
-            </Box>
-          )}
-        </Flex>
+          <Flex align="center">
+            {status && (
+              <Box marginX={4}>
+                {typeof status === 'function' ? status({layout: 'block'}) : status}
+              </Box>
+            )}
+            {actions && <div>{actions}</div>}
+          </Flex>
+        </HeaderFlex>
 
-        {actions && <div>{actions}</div>}
-      </HeaderFlex>
-
-      {media && (
-        <MediaWrapper>
+        <MediaCard
+          __unstable_checkered
+          borderTop
+          sizing="border"
+          display="flex"
+          tone="inherit"
+          $ratio={getRatio(mediaDimensions)}
+        >
           {typeof media === 'function' &&
             media({
-              dimensions: mediaDimensions || DEFAULT_MEDIA_DIMENSIONS,
+              dimensions: mediaDimensions,
               layout: 'block',
             })}
           {typeof media === 'string' && <div>{media}</div>}
           {React.isValidElement(media) && media}
-        </MediaWrapper>
-      )}
+        </MediaCard>
+      </Stack>
 
       {description && (
-        <Box padding={2}>
-          <Text muted size={1} textOverflow="ellipsis">
+        <Box paddingX={2} paddingY={3}>
+          <Text muted size={1}>
             {typeof description === 'function' ? description({layout: 'block'}) : description}
           </Text>
         </Box>
       )}
-
       {children && <div>{children}</div>}
-    </RootStack>
+    </RootBox>
   )
 }
