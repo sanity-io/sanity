@@ -1,11 +1,9 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
-import {getDraftId, isDraftId} from 'part:@sanity/base/util/draft-utils'
+import {getDraftId, isDraftId} from '../../util/draftUtils'
 import {versionedClient} from '../../client/versionedClient'
 import {checkoutPair} from './document-pair/checkoutPair'
 import createDeprecatedAPIs from './_createDeprecatedAPIs'
 import {IdPair} from './types'
+import {resolveTypeForDocument} from './resolveTypeForDocument'
 import {listenQuery} from './listenQuery'
 import {editState} from './document-pair/editState'
 import {editOperations} from './document-pair/editOperations'
@@ -26,6 +24,7 @@ export default {
   ...createDeprecatedAPIs(versionedClient), // Todo: can be removed in ~january 2020
   checkoutPair: (idPair: IdPair) => checkoutPair(idPair),
   listenQuery,
+  resolveTypeForDocument,
 
   pair: {
     editState: (publishedId: string, type) => editState(getIdPairFromPublished(publishedId), type),
