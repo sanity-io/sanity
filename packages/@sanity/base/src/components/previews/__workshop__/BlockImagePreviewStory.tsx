@@ -1,4 +1,4 @@
-import {DocumentIcon, EditIcon, EllipsisVerticalIcon} from '@sanity/icons'
+import {EditIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
 import {Card, Container, Flex, MenuButton, Text, Menu, MenuItem, Button} from '@sanity/ui'
 import {useBoolean, useString} from '@sanity/ui-workshop'
 import React from 'react'
@@ -10,6 +10,7 @@ export default function BlockImagePreviewStory() {
   const description = useString('Description', undefined, 'Props')
   const withImage = useBoolean('With image', true, 'Props')
   const withStatus = useBoolean('With status', false, 'Props')
+  const withActions = useBoolean('With actions', true, 'Props')
 
   return (
     <Card height="fill">
@@ -18,23 +19,20 @@ export default function BlockImagePreviewStory() {
           <BlockImagePreview
             description={description}
             actions={
-              <MenuButton
-                id="id"
-                button={<Button icon={EllipsisVerticalIcon} mode="bleed" />}
-                menu={
-                  <Menu>
-                    <MenuItem text="Item 1" />
-                  </Menu>
-                }
-              />
-            }
-            media={
-              withImage ? (
-                <img src="https://source.unsplash.com/600x600/?abstract" />
-              ) : (
-                <DocumentIcon />
+              withActions && (
+                <MenuButton
+                  id="id"
+                  button={<Button icon={EllipsisVerticalIcon} mode="bleed" />}
+                  menu={
+                    <Menu>
+                      <MenuItem text="Edit" icon={EditIcon} />
+                      <MenuItem text="Delete" icon={TrashIcon} tone="critical" />
+                    </Menu>
+                  }
+                />
               )
             }
+            media={withImage && <img src="https://source.unsplash.com/600x600" />}
             status={
               withStatus && (
                 <Text muted size={1}>
