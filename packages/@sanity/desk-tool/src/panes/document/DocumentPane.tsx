@@ -16,6 +16,7 @@ import styled from 'styled-components'
 import {useDeskTool} from '../../contexts/deskTool'
 import {PaneFooter} from '../../components/pane'
 import {usePaneLayout} from '../../components/pane/usePaneLayout'
+import {useDocumentType} from '../../lib/resolveDocumentType'
 import {ErrorPane} from '../error'
 import {ChangesPanel} from './changesPanel'
 import {DocumentPanel} from './documentPanel'
@@ -43,12 +44,43 @@ const StyledChangeConnectorRoot = styled(ChangeConnectorRoot)`
 `
 
 export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProviderProps) {
+  const {id, type} = props.pane.options
+  const {documentType, isLoaded} = useDocumentType(id, type)
+  const providerProps = React.useMemo(
+    () =>
+      isLoaded && documentType && props.pane.options.type !== documentType
+        ? mergeDocumentType(props, documentType)
+        : props,
+    [props, documentType, isLoaded]
+  )
+
+  if (type === '*' && !isLoaded) {
+    return null
+  }
+
+  if (!documentType) {
+    return <div>Error: Document type not defined, and document does not exist</div>
+  }
+
   return (
-    <DocumentPaneProvider {...props}>
+    <DocumentPaneProvider {...providerProps}>
       <InnerDocumentPane />
     </DocumentPaneProvider>
   )
 })
+
+function mergeDocumentType(
+  props: DocumentPaneProviderProps,
+  documentType: string
+): DocumentPaneProviderProps {
+  return {
+    ...props,
+    pane: {
+      ...props.pane,
+      options: {...props.pane.options, type: documentType},
+    },
+  }
+}
 
 function InnerDocumentPane() {
   const {
