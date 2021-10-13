@@ -12,4 +12,9 @@ export default defineScope('base/previews', 'Previews', [
     title: 'BlockImagePreview',
     component: lazy(() => import('./BlockImagePreviewStory')),
   },
+  {
+    name: 'inline-preview',
+    title: 'InlinePreview',
+    component: lazy(() => import('./InlinePreviewStory')),
+  },
 ])
