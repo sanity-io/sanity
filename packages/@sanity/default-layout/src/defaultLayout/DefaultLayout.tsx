@@ -11,10 +11,13 @@ import Sidecar from '../addons/Sidecar'
 import {RenderTool} from '../main/RenderTool'
 import {CreateDocumentDialog} from '../createDocumentDialog'
 import {SchemaErrorReporter} from '../schemaErrors/SchemaErrorReporter'
+import {
+  getNewDocumentModalActions,
+  getNewDocumentModalSchemaTypes,
+} from '../util/getNewDocumentModalActions'
 import {SideMenu} from '../sideMenu'
 import {Navbar} from '../navbar'
 import {useDefaultLayoutRouter} from '../useDefaultLayoutRouter'
-import {NEW_DOCUMENT_ACTIONS, NEW_DOCUMENT_TYPES} from '../constants'
 import {RootFlex, MainAreaFlex, ToolBox, SidecarBox, PortalDiv} from './styles'
 import {LoadingScreen} from './LoadingScreen'
 
@@ -91,7 +94,7 @@ export const DefaultLayout = memo(function DefaultLayout() {
             createMenuIsOpen={createMenuIsOpen}
             onCreateButtonClick={handleCreateButtonClick}
             onToggleMenu={handleToggleMenu}
-            documentTypes={NEW_DOCUMENT_TYPES}
+            documentTypes={getNewDocumentModalSchemaTypes()}
             onUserLogout={handleLogout}
             onSearchOpen={handleSearchOpen}
             searchPortalElement={portalElement}
@@ -135,7 +138,10 @@ export const DefaultLayout = memo(function DefaultLayout() {
 
         {createMenuIsOpen && (
           <LegacyLayerProvider zOffset="navbar">
-            <CreateDocumentDialog onClose={handleActionModalClose} actions={NEW_DOCUMENT_ACTIONS} />
+            <CreateDocumentDialog
+              onClose={handleActionModalClose}
+              actions={getNewDocumentModalActions()}
+            />
           </LegacyLayerProvider>
         )}
 

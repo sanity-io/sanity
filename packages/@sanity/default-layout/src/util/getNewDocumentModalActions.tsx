@@ -7,7 +7,14 @@ import newDocumentStructure from 'part:@sanity/base/new-document-structure?'
 import {getTemplateById} from '@sanity/base/initial-value-templates'
 import S from '@sanity/base/structure-builder'
 
+let cachedModalActions
+let cachedSchemaTypes
+
 export function getNewDocumentModalActions() {
+  if (cachedModalActions) {
+    return cachedModalActions
+  }
+
   let structure = newDocumentStructure
 
   if (structure && !Array.isArray(structure)) {
@@ -31,7 +38,13 @@ export function getNewDocumentModalActions() {
     structure = S.defaultInitialValueTemplateItems()
   }
 
-  return createModalActions(structure)
+  cachedModalActions = createModalActions(structure)
+  cachedSchemaTypes = cachedModalActions.map((action) => action.schemaType)
+  return cachedModalActions
+}
+
+export function getNewDocumentModalSchemaTypes() {
+  return cachedSchemaTypes || (getNewDocumentModalActions() && cachedSchemaTypes)
 }
 
 function createModalActions(structure) {
@@ -63,6 +76,10 @@ function createModalAction(templateItem) {
 
   // Build up an item suited for the "action modal" dialog
   const type = schema.get(tpl.schemaType)
+  if (!type) {
+    throw new Error(`Schema type "${tpl.schemaType}" not declared`)
+  }
+
   const title = item.title || tpl.title
   const description = item.description || tpl.description
   return {
