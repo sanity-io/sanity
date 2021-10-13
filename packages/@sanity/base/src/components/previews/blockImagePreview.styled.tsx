@@ -1,29 +1,32 @@
-import {Box, Flex, Stack} from '@sanity/ui'
+import {Box, Card, Flex} from '@sanity/ui'
 import styled from 'styled-components'
 
-export const RootStack = styled(Stack)`
-  user-select: none;
+export const HeaderFlex = styled(Flex)`
+  box-shadow: 0 0 0 1px var(--card-border-color);
+  min-height: 35px;
 `
 
-export const MediaWrapper = styled(Box)`
+export const MediaCard = styled(Card)<{$ratio: number}>`
+  padding-bottom: ${({$ratio}) => $ratio}%;
   position: relative;
-  flex: 1;
-
-  img {
-    display: block;
-    width: 100%;
-    height: auto;
-    pointer-events: none;
-  }
 
   svg {
-    display: block;
-    width: calc(2.5rem + 1px) !important;
-    height: calc(2.5rem + 1px) !important;
-    margin: 0.5rem;
+    display: none;
+  }
+
+  img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    object-fit: contain;
   }
 `
 
-export const HeaderFlex = styled(Flex)`
-  min-height: 33px;
+export const RootBox = styled(Box)`
+  border-radius: ${({theme}) => theme.sanity.radius[1]}px;
 `
