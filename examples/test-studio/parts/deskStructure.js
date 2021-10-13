@@ -135,6 +135,14 @@ export default () =>
     .id('root')
     .title('Content')
     .items([
+      S.listItem()
+        .title('Untitled repro')
+        .child(
+          S.list()
+            .title('Untitled repro')
+            .items([S.documentListItem().id('grrm').schemaType('author')])
+        ),
+
       _buildTypeGroup({
         icon: TerminalIcon,
         id: 'input-debug',
