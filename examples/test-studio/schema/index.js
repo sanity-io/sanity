@@ -64,6 +64,7 @@ import select from './debug/select'
 import typeWithNoToplevelStrings from './debug/typeWithNoToplevelStrings'
 import uploads from './debug/uploads'
 import validation, {validationArraySuperType} from './debug/validation'
+import {withDocumentTestSchemaType} from './debug/withDocumentTest'
 
 // Test documents with official plugin inputs
 import code from './plugins/code'
@@ -158,5 +159,6 @@ export default createSchema({
     urls,
     validation,
     validationArraySuperType,
+    withDocumentTestSchemaType,
   ]),
 })
