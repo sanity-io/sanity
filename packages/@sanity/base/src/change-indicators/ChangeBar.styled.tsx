@@ -163,14 +163,15 @@ export const ChangeBarWrapper = styled.div(
 
       ${focus &&
       css`
-        ${BadgeOpen}
-
         ${ShapeWrapper} {
           color: var(--card-focus-ring-color);
         }
 
         ${BarWrapper},
         ${TooltipTriggerWrapper} {
+          &:focus-within {
+            ${BadgeOpen}
+          }
           background-color: var(--card-focus-ring-color);
         }
       `}
