@@ -146,12 +146,12 @@ export class DocumentBuilder implements Serializable {
     }
 
     if (!options || !options.type) {
-      throw new SerializeError(
-        'document type (`type`) is required for document nodes',
-        path,
-        id,
-        hint
-      ).withHelpUrl(HELP_URL.DOCUMENT_TYPE_REQUIRED)
+      // eslint-disable-next-line no-console
+      console.log(
+        `⚠️ Structure warning: document type (\`schemaType\`) will be required for document nodes in the near future! At:\n\n${path.join(
+          ' > '
+        )}\n`
+      )
     }
 
     const views = (this.spec.views && this.spec.views.length > 0
@@ -189,10 +189,9 @@ export class DocumentBuilder implements Serializable {
 }
 
 function getDocumentOptions(spec: Partial<DocumentOptions>): DocumentOptions {
-  // Note: We're validating the presence of document ID and type above
   const opts: DocumentOptions = {
     id: spec.id || '',
-    type: spec.type || '',
+    type: spec.type || '*',
   }
 
   if (spec.template) {
