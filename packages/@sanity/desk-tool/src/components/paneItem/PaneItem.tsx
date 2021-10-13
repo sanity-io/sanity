@@ -60,7 +60,7 @@ export function PaneItem(props: PaneItemProps) {
 
   const LinkComponent = useMemo(
     () =>
-      // eslint-disable-next-line no-shadow
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       forwardRef(function LinkComponent(linkProps: any, ref: any) {
         return <ChildLink {...linkProps} childId={id} ref={ref} />
       }),

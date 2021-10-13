@@ -42,6 +42,8 @@ module.exports = {
         '@typescript-eslint/no-dupe-class-members': ['error'],
         'no-unused-vars': 'off',
         '@typescript-eslint/no-unused-vars': ['warn'],
+        'no-shadow': 'off',
+        '@typescript-eslint/no-shadow': ['error'],
       },
     },
     {
