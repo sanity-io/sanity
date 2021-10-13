@@ -10,7 +10,7 @@ import schema from 'part:@sanity/base/schema'
 import {isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
 import filterFieldFn$ from 'part:@sanity/desk-tool/filter-fields-fn?'
 import {FormBuilder} from 'part:@sanity/form-builder'
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {tap} from 'rxjs/operators'
 import {useDocumentPane} from '../../useDocumentPane'
 
@@ -54,7 +54,10 @@ export function FormView(props: FormViewProps) {
   const isNonExistent = !value || !value._id
 
   // Create a patch channel for each document ID
-  const patchChannel = useMemo(() => FormBuilder.createPatchChannel(), [documentId])
+  const patchChannelRef = useRef<any>()
+  if (!patchChannelRef.current) {
+    patchChannelRef.current = FormBuilder.createPatchChannel()
+  }
 
   const readOnly = useMemo(() => {
     return (
@@ -83,13 +86,26 @@ export function FormView(props: FormViewProps) {
   useEffect(() => {
     const sub = documentStore.pair
       .documentEvents(documentId, documentType)
-      .pipe(tap((event) => patchChannel.receiveEvent(event)))
+      .pipe(tap((event) => patchChannelRef.current.receiveEvent(event)))
       .subscribe()
 
     return () => {
       sub.unsubscribe()
     }
-  }, [documentId, documentType, patchChannel])
+  }, [documentId, documentType, patchChannelRef])
+
+  const hasRev = Boolean(value?._rev)
+  useEffect(() => {
+    if (hasRev) {
+      // this is a workaround for an issue that caused the document pushed to withDocument to get
+      // stuck at the first initial value.
+      // This effect is triggered only when the document goes from not having a revision, to getting one
+      // so it will kick in as soon as the document is received from the backend
+      patchChannelRef.current.receiveEvent({type: 'mutation', mutations: [], document: value})
+    }
+    // React to changes in hasRev only
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasRev])
 
   const form = useMemo(() => {
     if (hasTypeMismatch) {
@@ -117,7 +133,7 @@ export function FormView(props: FormViewProps) {
         <Box as="form" onSubmit={preventDefault}>
           <FormBuilder
             schema={schema}
-            patchChannel={patchChannel}
+            patchChannel={patchChannelRef.current}
             value={value}
             compareValue={compareValue}
             type={documentSchema}
@@ -144,7 +160,7 @@ export function FormView(props: FormViewProps) {
     hasTypeMismatch,
     margins,
     markers,
-    patchChannel,
+    patchChannelRef,
     presence,
     readOnly,
     value,

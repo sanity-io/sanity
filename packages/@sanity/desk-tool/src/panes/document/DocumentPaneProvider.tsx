@@ -105,7 +105,7 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
   const compareValue: Partial<SanityDocument> | null = changesOpen
     ? (historyController.sinceAttributes() as any)
     : editState?.published || null
-  const ready = connectionState === 'connected'
+  const ready = connectionState === 'connected' && !patch.disabled
   const displayed: Partial<SanityDocument> | null = useMemo(
     () => {
       return historyController.onOlderRevision() ? historyController.displayed() : value
