@@ -4,11 +4,11 @@ import {getTemplateById} from '@sanity/base/initial-value-templates'
 import React, {useMemo} from 'react'
 import {LOADING_PANE} from '../../constants'
 import {useStructure} from '../../utils/resolvePanes'
+import {removeDraftPrefix, useDocumentType} from '../../lib/resolveDocumentType'
 import {useUnique} from '../../lib/useUnique'
 import {Delay} from '../Delay'
 import {StructureError} from '../StructureError'
 import {Redirect} from './Redirect'
-import {removeDraftPrefix, useDocumentType} from './helpers'
 
 export interface IntentResolverProps {
   intent: string
