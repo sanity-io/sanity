@@ -15,6 +15,7 @@ import {BaseDeskToolPaneProps} from '../types'
 
 interface ListPaneItem {
   id: string
+  _id?: string // Present on document list items but not list items
   icon?: React.ComponentType<any> | false
   type: string
   displayOptions?: {showIcon?: boolean}
@@ -139,6 +140,13 @@ export function ListPane(props: ListPaneProps) {
                   schemaType={item.schemaType}
                   selected={selected}
                   title={item.title}
+                  value={
+                    // If this is a document list item, pass on the ID and type,
+                    // otherwise leave it undefined to use the passed title and gang
+                    item._id && item.schemaType
+                      ? {_id: item._id, _type: item.schemaType.name, title: item.title}
+                      : undefined
+                  }
                 />
               )
             })}
