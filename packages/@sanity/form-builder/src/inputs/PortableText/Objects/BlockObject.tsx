@@ -126,6 +126,14 @@ export function BlockObject(props: BlockObjectProps) {
     return undefined
   }, [focused, hasError, selected])
 
+  const padding = useMemo(() => {
+    if (type?.type?.name === 'image') {
+      return 0
+    }
+
+    return 1
+  }, [type])
+
   return (
     <Root
       data-focused={focused ? '' : undefined}
@@ -135,7 +143,7 @@ export function BlockObject(props: BlockObjectProps) {
       marginY={3}
       onDoubleClick={handleClickToOpen}
       overflow="hidden"
-      padding={1}
+      padding={padding}
       ref={elementRef}
       tone={tone}
     >
