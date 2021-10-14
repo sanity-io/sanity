@@ -14,9 +14,9 @@ import {
 } from '@sanity/portable-text-editor'
 import {Marker} from '@sanity/types'
 import {Card, Container, useLayer} from '@sanity/ui'
-import React, {useMemo, useEffect} from 'react'
+import React, {useMemo, useEffect, useCallback, useState} from 'react'
 import PatchEvent from '../../PatchEvent'
-import {scrollSelectionIntoView} from './utils/scrollSelectionIntoView'
+import {createScrollSelectionIntoView} from './utils/scrollSelectionIntoView'
 import {Toolbar} from './Toolbar/Toolbar'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
 import Decorator from './Text/Decorator'
@@ -179,6 +179,18 @@ function PortableTextSanityEditor(props: Props) {
     }
   }, [isFullscreen, isTopLayer, onToggleFullscreen])
 
+  const [scrollElm, setScrollElm] = useState<HTMLElement | null>(null)
+  const setScrollRef = useCallback(
+    (el: HTMLElement) => {
+      setScrollContainerElement(el) // Props fn
+      setScrollElm(el)
+    },
+    [setScrollContainerElement]
+  )
+  const handleScrollSelectionIntoView = useMemo(() => createScrollSelectionIntoView(scrollElm), [
+    scrollElm,
+  ])
+
   const sanityEditor = useMemo(
     () => (
       <Root $fullscreen={isFullscreen} data-testid="pt-editor">
@@ -193,7 +205,7 @@ function PortableTextSanityEditor(props: Props) {
         </ToolbarCard>
 
         <Card flex={1} tone="transparent">
-          <Scroller ref={setScrollContainerElement}>
+          <Scroller ref={setScrollRef}>
             <Container padding={isFullscreen ? 2 : 0} sizing="border" width={1}>
               <EditableWrapper
                 shadow={isFullscreen ? 1 : 0}
@@ -209,7 +221,7 @@ function PortableTextSanityEditor(props: Props) {
                   renderBlock={renderBlock}
                   renderChild={renderChild}
                   renderDecorator={renderDecorator}
-                  scrollSelectionIntoView={scrollSelectionIntoView}
+                  scrollSelectionIntoView={handleScrollSelectionIntoView}
                   selection={initialSelection}
                   spellCheck
                 />
@@ -222,6 +234,7 @@ function PortableTextSanityEditor(props: Props) {
       </Root>
     ),
     [
+      handleScrollSelectionIntoView,
       hotkeys,
       initialSelection,
       isFullscreen,
@@ -234,7 +247,7 @@ function PortableTextSanityEditor(props: Props) {
       renderBlock,
       renderChild,
       setPortalElement,
-      setScrollContainerElement,
+      setScrollRef,
       value,
     ]
   )
