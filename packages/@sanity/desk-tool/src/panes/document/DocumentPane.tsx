@@ -1,5 +1,6 @@
 import {LegacyLayerProvider, useZIndex} from '@sanity/base/components'
 import {ChangeConnectorRoot} from '@sanity/base/change-indicators'
+import {getTemplateById} from '@sanity/base/initial-value-templates'
 import {
   BoundaryElementProvider,
   Card,
@@ -14,6 +15,7 @@ import {
 import React, {memo, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {useDeskTool} from '../../contexts/deskTool'
+import {usePaneRouter} from '../../contexts/paneRouter'
 import {PaneFooter} from '../../components/pane'
 import {usePaneLayout} from '../../components/pane/usePaneLayout'
 import {useDocumentType} from '../../lib/resolveDocumentType'
@@ -27,7 +29,7 @@ import {DocumentActionShortcuts} from './keyboardShortcuts'
 import {DocumentStatusBar} from './statusBar'
 import {useDocumentPane} from './useDocumentPane'
 import {DocumentPaneProvider} from './DocumentPaneProvider'
-import {DocumentPaneProviderProps} from './types'
+import {DocumentPaneOptions, DocumentPaneProviderProps} from './types'
 
 const DIALOG_PROVIDER_POSITION: DialogProviderProps['position'] = [
   // We use the `position: fixed` for dialogs on narrow screens (< 512px).
@@ -45,17 +47,16 @@ const StyledChangeConnectorRoot = styled(ChangeConnectorRoot)`
 `
 
 export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProviderProps) {
-  const {id, type} = props.pane.options
-  const {documentType, isLoaded} = useDocumentType(id, type)
-  const providerProps = React.useMemo(
-    () =>
-      isLoaded && documentType && props.pane.options.type !== documentType
-        ? mergeDocumentType(props, documentType)
-        : props,
-    [props, documentType, isLoaded]
-  )
+  const paneRouter = usePaneRouter()
+  const options = usePaneOptions(props.pane.options, paneRouter.params)
+  const {documentType, isLoaded} = useDocumentType(options.id, options.type)
+  const providerProps = useMemo(() => {
+    return isLoaded && documentType && options.type !== documentType
+      ? mergeDocumentType(props, options, documentType)
+      : props
+  }, [props, documentType, isLoaded, options])
 
-  if (type === '*' && !isLoaded) {
+  if (options.type === '*' && !isLoaded) {
     return <LoadingPane flex={2.5} minWidth={320} title="Loading document…" />
   }
 
@@ -64,8 +65,8 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
       <ErrorPane flex={2.5} minWidth={320} title={<>The document was not found</>}>
         <Stack space={4}>
           <Text as="p">
-            The document type is not defined, and a document with the <code>{id}</code> identifier
-            could not be found.
+            The document type is not defined, and a document with the <code>{options.id}</code>{' '}
+            identifier could not be found.
           </Text>
         </Stack>
       </ErrorPane>
@@ -79,15 +80,41 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
   )
 })
 
+function usePaneOptions(
+  options: DocumentPaneOptions,
+  params: Record<string, string | undefined>
+): DocumentPaneOptions {
+  return useMemo(() => {
+    // The document type is provided, so return
+    if (options.type && options.type !== '*') {
+      return options
+    }
+
+    // Attempt to derive document type from the template configuration
+    const templateName = options.template || params.template
+    const template = templateName ? getTemplateById(templateName) : undefined
+    const documentType = template?.schemaType
+
+    // No document type was found in a template
+    if (!documentType) {
+      return options
+    }
+
+    // The template provided the document type, so modify the pane’s `options` property
+    return {...options, type: documentType}
+  }, [options, params.template])
+}
+
 function mergeDocumentType(
   props: DocumentPaneProviderProps,
+  options: DocumentPaneOptions,
   documentType: string
 ): DocumentPaneProviderProps {
   return {
     ...props,
     pane: {
       ...props.pane,
-      options: {...props.pane.options, type: documentType},
+      options: {...options, type: documentType},
     },
   }
 }
