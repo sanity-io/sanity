@@ -1,7 +1,7 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import React, {createElement, memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {createElement, memo, useCallback, useEffect, useRef, useState} from 'react'
 import {Box, Card, Container, ErrorBoundary, Heading, Stack, Text} from '@sanity/ui'
 import tools from 'all:part:@sanity/base/tool'
 import {RenderToolErrorScreen} from './ErrorScreen'
@@ -95,5 +95,9 @@ export const RenderTool = memo(function RenderTool(props: Props) {
     )
   }
 
-  return <ErrorBoundary onCatch={handleCatch}>{createElement(activeTool.component)}</ErrorBoundary>
+  return (
+    <ErrorBoundary onCatch={handleCatch}>
+      {createElement(activeTool.component, {tool: props.tool})}
+    </ErrorBoundary>
+  )
 })
