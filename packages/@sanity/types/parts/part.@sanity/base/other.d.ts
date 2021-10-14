@@ -21,7 +21,7 @@ declare module 'all:part:@sanity/base/tool' {
       params: Record<string, any>,
       state: Record<string, any>
     ) => void
-    component?: React.ComponentType
+    component?: React.ComponentType<{tool: string}>
     icon?: React.ComponentType
     getIntentState?: (
       intent: Record<string, any>,
