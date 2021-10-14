@@ -1,18 +1,20 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import React from 'react'
+import React, {memo} from 'react'
 import {Box, Dialog, Text} from '@sanity/ui'
 import {LegacyLayerProvider} from '@sanity/base/components'
 import {DocumentIcon} from '@sanity/icons'
 import CreateDocumentList from 'part:@sanity/components/lists/create-document'
 
-interface Props {
+interface CreateDocumentDialogProps {
   actions: {icon?: React.ComponentType; key: string}[]
   onClose: () => void
 }
 
-export function CreateDocumentDialog(props: Props) {
+export const CreateDocumentDialog = memo(function CreateDocumentDialog(
+  props: CreateDocumentDialogProps
+) {
   const {actions, onClose} = props
 
   return (
@@ -45,4 +47,4 @@ export function CreateDocumentDialog(props: Props) {
       </Dialog>
     </LegacyLayerProvider>
   )
-}
+})

@@ -1,30 +1,27 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react'
-import {Subscription} from 'rxjs'
-import {map} from 'rxjs/operators'
+import React, {useCallback, useEffect, useState} from 'react'
+import {filter, map} from 'rxjs/operators'
 import {Select} from '@sanity/ui'
-import {state as urlState} from '../datastores/urlState'
+import {isSnapshotEvent, state as urlState} from '../datastores/urlState'
 import {CONFIGURED_SPACES} from '../util/spaces'
 import {useDefaultLayoutRouter} from '../useDefaultLayoutRouter'
 
-export function DatasetSelect(props) {
+export function DatasetSelect(props: Omit<React.HTMLProps<HTMLSelectElement>, 'ref'>) {
   const router = useDefaultLayoutRouter()
   const [currentSpace, setCurrentSpace] = useState<{name: string} | null>(null)
-  const currentSpaceSubscription: React.MutableRefObject<Subscription | undefined> = useRef()
-
-  const currentSpace$ = urlState.pipe(
-    map((event) => event.state && event.state.space),
-    map((spaceName) => CONFIGURED_SPACES.find((sp) => sp.name === spaceName))
-  )
 
   useEffect(() => {
-    currentSpaceSubscription.current = currentSpace$.subscribe((space) => {
-      setCurrentSpace(space)
-    })
+    const currentSpace$ = urlState.pipe(
+      filter(isSnapshotEvent),
+      map((event) => event.state && event.state.space),
+      map((spaceName) => CONFIGURED_SPACES.find((sp) => sp.name === spaceName))
+    )
+
+    const sub = currentSpace$.subscribe(setCurrentSpace)
 
     return () => {
-      currentSpaceSubscription.current.unsubscribe()
+      sub.unsubscribe()
     }
-  }, [currentSpace$])
+  }, [])
 
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -36,10 +33,10 @@ export function DatasetSelect(props) {
 
   return (
     <Select
+      {...props}
       onChange={handleChange}
       value={(currentSpace && currentSpace.name) || undefined}
       radius={2}
-      {...props}
     >
       {CONFIGURED_SPACES.map((space) => (
         <option key={space.name} value={space.name}>

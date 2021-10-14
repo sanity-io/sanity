@@ -290,12 +290,13 @@ function extractFromSanitySchema(sanitySchema, extractOptions = {}) {
   function getUnionDefinition(candidates, parent, options = {}) {
     // #1482: When creating union definition do not get caught in recursion loop
     // for types that reference themselves
-    if (unionRecursionGuards.includes(parent)) {
+    const guardPathName = `${typeof parent === 'object' ? parent.name : parent}`
+    if (unionRecursionGuards.includes(guardPathName)) {
       return {}
     }
 
     try {
-      unionRecursionGuards.push(parent)
+      unionRecursionGuards.push(guardPathName)
 
       candidates.forEach((def, i) => {
         if (typeNeedsHoisting(def)) {
@@ -348,7 +349,7 @@ function extractFromSanitySchema(sanitySchema, extractOptions = {}) {
         ? {type: name, references}
         : {type: name, references, inlineObjects}
     } finally {
-      const parentIndex = unionRecursionGuards.indexOf(parent)
+      const parentIndex = unionRecursionGuards.indexOf(guardPathName)
       if (parentIndex !== -1) {
         unionRecursionGuards.splice(parentIndex, 1)
       }

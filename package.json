@@ -49,7 +49,7 @@
     "prettier": "node_modules/.bin/prettier '**/*.{ts,js,tsx,jsx}'",
     "lint-next": "npm run eslint -- `git diff --name-only next --diff-filter ACMRTUXB`",
     "verify-format": "lerna run clean && npm run prettier -- -c",
-    "postinstall": "npm run bootstrap",
+    "postinstall": "node ./scripts/validateMonorepoDependencies.js && npm run bootstrap",
     "vercel-build": "npm run build:js && cd examples/test-studio && npm run build -- -y",
     "type-check": "tsc -b --force",
     "cypress:open": "cypress open --config-file cypress/cypress.json",

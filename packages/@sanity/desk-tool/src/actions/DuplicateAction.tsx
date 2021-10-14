@@ -11,7 +11,7 @@ import {
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
 
 const DISABLED_REASON_TITLE = {
-  NOTHING_TO_DUPLICATE: "This document doesn't yet exist so there's nothing to duplicate",
+  NOTHING_TO_DUPLICATE: 'This document doesn’t yet exist so there‘s nothing to duplicate',
 }
 
 export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete}) => {

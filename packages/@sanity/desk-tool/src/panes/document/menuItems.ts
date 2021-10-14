@@ -4,13 +4,13 @@ import {DeskToolFeatures} from '../../contexts/deskTool'
 
 interface Params {
   features: DeskToolFeatures
-  isHistoryOpen: boolean
+  changesOpen: boolean
   hasValue: boolean
   previewUrl: string | null
 }
 
 const getHistoryMenuItem = (params: Params): MenuItemType | null => {
-  const {features, hasValue, isHistoryOpen} = params
+  const {features, hasValue, changesOpen} = params
 
   if (!features.reviewChanges) return null
 
@@ -18,7 +18,7 @@ const getHistoryMenuItem = (params: Params): MenuItemType | null => {
     action: 'reviewChanges',
     title: 'Review changes',
     icon: RestoreIcon,
-    isDisabled: isHistoryOpen || !hasValue,
+    isDisabled: changesOpen || !hasValue,
   }
 }
 

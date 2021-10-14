@@ -3,13 +3,12 @@
 
 import {DocumentActionDescription} from '@sanity/base'
 import {LegacyLayerProvider} from '@sanity/base/components'
-import {useEditState} from '@sanity/react-hooks'
 import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
-import resolveDocumentActions from 'part:@sanity/base/document-actions/resolver'
 import isHotkey from 'is-hotkey'
 import React, {useCallback, useState} from 'react'
 import {ActionStateDialog} from '../statusBar'
 import {Pane} from '../../../components/pane'
+import {useDocumentPane} from '../useDocumentPane'
 
 export interface KeyboardShortcutResponderProps {
   actionsBoxElement?: HTMLElement | null
@@ -82,24 +81,21 @@ function KeyboardShortcutResponder(
 export interface DocumentActionShortcutsProps {
   actionsBoxElement?: HTMLElement | null
   flex: number
-  id: string
   minWidth: number
-  type: string
   rootRef: React.Ref<HTMLDivElement>
 }
 
 export const DocumentActionShortcuts = React.memo(
   (props: DocumentActionShortcutsProps & React.HTMLProps<HTMLDivElement>) => {
-    const {actionsBoxElement, id, type, children, ...rest} = props
-    const editState = useEditState(id, type)
+    const {actionsBoxElement, children, ...rest} = props
+    const {actions, editState} = useDocumentPane()
     const [activeIndex, setActiveIndex] = useState(-1)
-    const actions = editState ? resolveDocumentActions(editState) : null
 
     const onActionStart = useCallback((idx: number) => {
       setActiveIndex(idx)
     }, [])
 
-    if (!actions) return null
+    if (!editState) return null
 
     return (
       <RenderActionCollectionState

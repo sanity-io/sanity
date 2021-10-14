@@ -8,7 +8,7 @@ import {
 } from '@sanity/base/hooks'
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
 import {TimeAgo} from '../components/TimeAgo'
-import {useDocumentHistory} from '../panes/document/documentHistory'
+import {useDocumentPane} from '../panes/document/useDocumentPane'
 
 const DISABLED_REASON_TITLE = {
   LIVE_EDIT_ENABLED: 'Cannot publish since liveEdit is enabled for this document type',
@@ -36,7 +36,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const {publish}: any = useDocumentOperation(id, type)
   const validationStatus = useValidationStatus(id, type)
   const syncState = useSyncState(id)
-  const {open: historyOpen, historyController} = useDocumentHistory()
+  const {changesOpen, handleHistoryOpen} = useDocumentPane()
   const hasValidationErrors = validationStatus.markers.some((marker) => marker.level === 'error')
   // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
   const [publishScheduled, setPublishScheduled] = useState<boolean>(false)
@@ -71,9 +71,9 @@ export const PublishAction: DocumentActionComponent = (props) => {
   useEffect(() => {
     const didPublish = publishState === 'publishing' && !hasDraft
     if (didPublish) {
-      if (historyController.changesPanelActive()) {
+      if (changesOpen) {
         // Re-open the panel
-        historyOpen()
+        handleHistoryOpen()
       }
     }
     const nextState = didPublish ? 'published' : null
@@ -82,7 +82,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
       setPublishState(nextState)
     }, delay)
     return () => clearTimeout(timer)
-  }, [publishState, hasDraft, historyController, historyOpen])
+  }, [changesOpen, publishState, hasDraft, handleHistoryOpen])
 
   const handle = useCallback(() => {
     if (syncState.isSyncing || validationStatus.isValidating) {

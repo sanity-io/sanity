@@ -6,19 +6,18 @@ import {Delay} from '../../components/Delay'
 import {Pane, PaneContent} from '../../components/pane'
 
 interface LoadingPaneProps {
-  // @todo Re-implement delay for Spinner
-  // eslint-disable-next-line react/no-unused-prop-types
   delay?: number
   flex?: number
   index?: number
-  isSelected?: boolean
   message?: string | ((p: string[]) => string | Observable<string>)
   minWidth?: number
-  path?: string[]
+  path?: string
+  selected?: boolean
   title?: string
   tone?: CardTone
 }
 
+const DELAY = false
 const DEFAULT_MESSAGE = 'Loading…'
 
 const Content = styled(Flex)`
@@ -38,17 +37,17 @@ export function LoadingPane(props: LoadingPaneProps) {
     delay = 300,
     flex,
     index,
-    isSelected,
     message: messageProp,
     minWidth,
-    path = [],
+    path,
+    selected,
     title,
     tone,
   } = props
 
   const resolvedMessage = useMemo(() => {
     if (typeof messageProp === 'function') {
-      return messageProp(path)
+      return messageProp(path ? path.split(';') : [])
     }
 
     return messageProp
@@ -68,37 +67,38 @@ export function LoadingPane(props: LoadingPaneProps) {
     return () => sub.unsubscribe()
   }, [resolvedMessage])
 
-  const [content, setContentElement] = useState<HTMLDivElement | null>(null)
+  const [contentElement, setContentElement] = useState<HTMLDivElement | null>(null)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    if (!content) return undefined
+    if (!contentElement) return undefined
     return _raf2(() => setMounted(true))
-  }, [content])
+  }, [contentElement])
+
+  const content = (
+    <Content
+      align="center"
+      data-mounted={mounted ? '' : undefined}
+      direction="column"
+      height="fill"
+      justify="center"
+      ref={setContentElement}
+    >
+      <Spinner muted />
+
+      {(title || currentMessage) && (
+        <Box marginTop={3}>
+          <Text align="center" muted size={1}>
+            {title || currentMessage}
+          </Text>
+        </Box>
+      )}
+    </Content>
+  )
 
   return (
-    <Pane data-index={index} flex={flex} minWidth={minWidth} selected={isSelected} tone={tone}>
-      <PaneContent>
-        <Delay ms={delay}>
-          <Content
-            align="center"
-            data-mounted={mounted ? '' : undefined}
-            direction="column"
-            height="fill"
-            justify="center"
-            ref={setContentElement}
-          >
-            <Spinner muted />
-            {(title || currentMessage) && (
-              <Box marginTop={3}>
-                <Text align="center" muted size={1}>
-                  {title || currentMessage}
-                </Text>
-              </Box>
-            )}
-          </Content>
-        </Delay>
-      </PaneContent>
+    <Pane data-index={index} flex={flex} minWidth={minWidth} selected={selected} tone={tone}>
+      <PaneContent>{DELAY ? <Delay ms={delay}>{content}</Delay> : content}</PaneContent>
     </Pane>
   )
 }

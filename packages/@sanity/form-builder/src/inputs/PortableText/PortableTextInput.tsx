@@ -119,6 +119,7 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
 
   // Memoized patch stream
   const patche$: Subject<EditorPatch> = useMemo(() => new Subject(), [])
+  const patchObservable = useMemo(() => patche$.asObservable(), [patche$])
 
   // Handle incoming patches from withPatchSubscriber HOC
   function handleDocumentPatches({
@@ -196,7 +197,7 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
     () => (
       <PortableTextEditor
         ref={ref}
-        incomingPatches$={patche$.asObservable()}
+        incomingPatches$={patchObservable}
         key={`portable-text-editor-${editorId}`}
         onChange={handleEditorChange}
         maxBlocks={undefined} // TODO: from schema?
@@ -220,7 +221,6 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
           hasFocus={hasFocus}
           hotkeys={hotkeys}
           isFullscreen={isFullscreen}
-          key={`portable-text-input-${editorId}`}
           markers={markers}
           onBlur={onBlur}
           onChange={onChange}
@@ -283,7 +283,12 @@ export default (withPatchSubscriber(
           presence={presence}
           changeIndicator={false}
         >
-          <PortableTextInputWithRef {...this.props} ref={this.editorRef} />
+          <PortableTextInputWithRef
+            {...this.props}
+            // NOTE: this should be a temporary fix
+            key={this.props.readOnly ? '$readOnly' : '$editable'}
+            ref={this.editorRef}
+          />
         </FormField>
       )
     }

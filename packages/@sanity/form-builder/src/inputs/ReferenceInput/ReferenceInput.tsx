@@ -210,6 +210,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
   )
 
   const placeholder = preview.isLoading ? 'Loading…' : 'Type to search…'
+  const noSnapshotText = value?._ref ? 'Loading…' : ''
   return (
     <FormField
       __unstable_markers={markers}
@@ -313,7 +314,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
                   <IntentButton
                     disabled={!preview.snapshot}
                     icon={LinkIcon}
-                    title={preview.snapshot ? `Open ${preview.snapshot?.title}` : 'Loading…'}
+                    title={preview.snapshot ? `Open ${preview.snapshot?.title}` : noSnapshotText}
                     intent="edit"
                     mode="bleed"
                     padding={2}

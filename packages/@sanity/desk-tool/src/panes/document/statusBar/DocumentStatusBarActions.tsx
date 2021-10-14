@@ -1,31 +1,23 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import React, {useCallback, useMemo, useState} from 'react'
+import React, {memo, useCallback, useMemo, useState} from 'react'
 import {DocumentActionDescription} from '@sanity/base'
-import {EditStateFor} from '@sanity/base/_internal'
-import {useEditState, useConnectionState} from '@sanity/react-hooks'
 import {Box, Flex, Tooltip, Stack, Button, Hotkeys, LayerProvider, Text} from '@sanity/ui'
 import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
-import resolveDocumentActions from 'part:@sanity/base/document-actions/resolver'
 import {HistoryRestoreAction} from '../../../actions/HistoryRestoreAction'
+import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
 import {LEGACY_BUTTON_COLOR_TO_TONE} from './constants'
 
-export interface DocumentStatusBarActionsProps {
+interface DocumentStatusBarActionsInnerProps {
   disabled: boolean
   showMenu: boolean
   states: DocumentActionDescription[]
 }
 
-export interface HistoryStatusBarActionsProps {
-  id: string
-  type: string
-  revision: string
-}
-
-function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsProps) {
+function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps) {
   const {disabled, showMenu, states} = props
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
@@ -35,9 +27,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsProps) {
 
     return (
       <Flex padding={2} style={{maxWidth: 300}} align="center">
-        <Text size={1} muted>
-          {firstActionState.title}
-        </Text>
+        <Text size={1}>{firstActionState.title}</Text>
         {firstActionState.shortcut && (
           <Box marginLeft={firstActionState.title ? 2 : 0}>
             <Hotkeys
@@ -88,17 +78,14 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsProps) {
   )
 }
 
-export function DocumentStatusBarActions(props: {id: string; type: string}) {
-  const {id, type} = props
-  const editState: EditStateFor | null = useEditState(id, type) as any
-  const connectionState = useConnectionState(id, type)
+export const DocumentStatusBarActions = memo(function DocumentStatusBarActions() {
+  const {actions, connectionState, editState} = useDocumentPane()
   const [isMenuOpen, setMenuOpen] = useState(false)
-  const actions = editState ? resolveDocumentActions(editState) : null
   const handleMenuOpen = useCallback(() => setMenuOpen(true), [])
   const handleMenuClose = useCallback(() => setMenuOpen(false), [])
   const handleActionComplete = useCallback(() => setMenuOpen(false), [])
 
-  if (!actions) {
+  if (!actions || !editState) {
     return null
   }
 
@@ -115,26 +102,15 @@ export function DocumentStatusBarActions(props: {id: string; type: string}) {
       disabled={connectionState !== 'connected'}
     />
   )
-}
+})
 
 const historyActions = [HistoryRestoreAction]
 
-export function HistoryStatusBarActions(props: HistoryStatusBarActionsProps) {
-  const {id, revision, type} = props
-  const editState: EditStateFor | null = useEditState(id, type) as any
-  const connectionState = useConnectionState(id, type)
+export const HistoryStatusBarActions = memo(function HistoryStatusBarActions() {
+  const {connectionState, editState, historyController} = useDocumentPane()
+  const revision = historyController.revTime?.id || ''
   const disabled = (editState?.draft || editState?.published || {})._rev === revision
-  const actionProps = useMemo(
-    () => ({
-      ...(editState || {}),
-      revision,
-    }),
-    [editState, revision]
-  )
-
-  if (!editState) {
-    return null
-  }
+  const actionProps = useMemo(() => ({...(editState || {}), revision}), [editState, revision])
 
   return (
     <RenderActionCollectionState
@@ -144,4 +120,4 @@ export function HistoryStatusBarActions(props: HistoryStatusBarActionsProps) {
       disabled={connectionState !== 'connected' || Boolean(disabled)}
     />
   )
-}
+})

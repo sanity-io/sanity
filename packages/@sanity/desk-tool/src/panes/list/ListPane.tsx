@@ -15,6 +15,7 @@ import {BaseDeskToolPaneProps} from '../types'
 
 interface ListPaneItem {
   id: string
+  _id?: string // Present on document list items but not list items
   icon?: React.ComponentType<any> | false
   type: string
   displayOptions?: {showIcon?: boolean}
@@ -44,27 +45,14 @@ const Divider = styled.hr`
  * @internal
  */
 export function ListPane(props: ListPaneProps) {
-  const {childItemId, index, isSelected, isActive, pane, paneKey} = props
+  const {childItemId, index, isActive, isSelected, pane, paneKey} = props
   const {features} = useDeskTool()
   const {collapsed: layoutCollapsed} = usePaneLayout()
+  const {defaultLayout, displayOptions, items, menuItems, menuItemGroups, title} = pane
 
-  const {
-    defaultLayout,
-    displayOptions = {},
-    items = [],
-    menuItems = [],
-    menuItemGroups = [],
-    title,
-  } = pane
+  const paneShowIcons = displayOptions?.showIcons
 
-  const paneShowIcons = displayOptions.showIcons
-
-  const itemIsSelected = useCallback(
-    (item: ListPaneItem) => {
-      return childItemId === item.id
-    },
-    [childItemId]
-  )
+  const itemIsSelected = useCallback((item: ListPaneItem) => childItemId === item.id, [childItemId])
 
   const shouldShowIconForItem = useCallback(
     (item: ListPaneItem): boolean => {
@@ -99,6 +87,7 @@ export function ListPane(props: ListPaneProps) {
 
   const actions = useMemo(
     () =>
+      menuItems &&
       menuItems.length > 0 && (
         <PaneContextMenuButton
           items={menuItems}
@@ -127,28 +116,40 @@ export function ListPane(props: ListPaneProps) {
     () => (
       <PaneContent overflow={layoutCollapsed ? undefined : 'auto'}>
         <Stack padding={2} space={1}>
-          {items.map((item) => {
-            if (item.type === 'divider') {
-              return (
-                <Box key={item.id} paddingY={1}>
-                  <Divider />
-                </Box>
-              )
-            }
+          {items &&
+            items.map((item) => {
+              if (item.type === 'divider') {
+                return (
+                  <Box key={item.id} paddingY={1}>
+                    <Divider />
+                  </Box>
+                )
+              }
 
-            return (
-              <PaneItem
-                icon={shouldShowIconForItem(item) ? item.icon : false}
-                id={item.id}
-                isActive={isActive}
-                isSelected={itemIsSelected(item)}
-                key={item.id}
-                layout={defaultLayout}
-                schemaType={item.schemaType}
-                title={item.title}
-              />
-            )
-          })}
+              const _isSelected = itemIsSelected(item)
+              const pressed = !isActive && _isSelected
+              const selected = isActive && _isSelected
+
+              return (
+                <PaneItem
+                  icon={shouldShowIconForItem(item) ? item.icon : false}
+                  id={item.id}
+                  key={item.id}
+                  layout={defaultLayout}
+                  pressed={pressed}
+                  schemaType={item.schemaType}
+                  selected={selected}
+                  title={item.title}
+                  value={
+                    // If this is a document list item, pass on the ID and type,
+                    // otherwise leave it undefined to use the passed title and gang
+                    item._id && item.schemaType
+                      ? {_id: item._id, _type: item.schemaType.name, title: item.title}
+                      : undefined
+                  }
+                />
+              )
+            })}
         </Stack>
       </PaneContent>
     ),

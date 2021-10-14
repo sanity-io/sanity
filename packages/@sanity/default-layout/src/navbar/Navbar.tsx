@@ -1,7 +1,7 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import React, {createElement, useCallback, useState, useEffect, useMemo} from 'react'
+import React, {createElement, memo, useCallback, useState, useEffect, useMemo} from 'react'
 import {SearchIcon, MenuIcon, ComposeIcon, CloseIcon} from '@sanity/icons'
 import {Button, Card, Tooltip, useMediaIndex, Text, Box, Flex, useGlobalKeyDown} from '@sanity/ui'
 import {InsufficientPermissionsMessage, LegacyLayerProvider} from '@sanity/base/components'
@@ -13,9 +13,9 @@ import * as sidecar from 'part:@sanity/default-layout/sidecar?'
 import ToolMenu from 'part:@sanity/default-layout/tool-switcher'
 import styled from 'styled-components'
 import {HAS_SPACES} from '../util/spaces'
-import {Tool} from '../types'
 import {DatasetSelect} from '../datasetSelect'
 import {useDefaultLayoutRouter} from '../useDefaultLayoutRouter'
+import {tools} from '../config'
 import Branding from './branding/Branding'
 import SanityStatusContainer from './studioStatus/SanityStatusContainer'
 import {PresenceMenu, LoginStatus, SearchField} from '.'
@@ -28,7 +28,6 @@ interface Props {
   onUserLogout: () => void
   onSearchOpen: (open: boolean) => void
   searchPortalElement: HTMLDivElement | null
-  tools: Tool[]
 }
 
 const Root = styled(Card)<{$onSearchOpen: boolean}>`
@@ -52,7 +51,7 @@ const CenterBox = styled(Box)``
 const RightFlex = styled(Flex)``
 
 const SearchCard = styled(Card)<{$fullScreen: boolean}>`
-  min-width: 253px;
+  min-width: ${({$fullScreen}) => ($fullScreen ? undefined : '253px')};
   max-width: ${({$fullScreen}) => ($fullScreen ? undefined : '350px')};
   z-index: 1;
   position: ${({$fullScreen}) => ($fullScreen ? 'absolute' : undefined)};
@@ -95,7 +94,7 @@ const SpacingBox = styled(Box)`
  * ```
  */
 
-export function Navbar(props: Props) {
+export const Navbar = memo(function Navbar(props: Props) {
   const {
     createMenuIsOpen,
     documentTypes,
@@ -104,50 +103,60 @@ export function Navbar(props: Props) {
     onUserLogout,
     onSearchOpen,
     searchPortalElement,
-    tools,
   } = props
 
   const [searchOpen, setSearchOpen] = useState<boolean>(false)
   const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
-  const [searchButtonElement, setSearchButtonElement] = useState<HTMLButtonElement | null>(null)
+  const [searchOpenButtonElement, setSearchOpenButtonElement] = useState<HTMLButtonElement | null>(
+    null
+  )
+  const [
+    searchCloseButtonElement,
+    setSearchCloseButtonElement,
+  ] = useState<HTMLButtonElement | null>(null)
   const {value: currentUser} = useCurrentUser()
   const createAnyPermission = unstable_useCanCreateAnyOf(documentTypes)
   const mediaIndex = useMediaIndex()
   const router = useDefaultLayoutRouter()
 
   const rootState = useMemo(
-    () => (HAS_SPACES && router?.state?.space ? {space: router?.state?.space} : {}),
-    [router]
+    () => (HAS_SPACES && router.state.space ? {space: router.state.space} : {}),
+    [router.state.space]
   )
 
-  const shouldRender = {
-    brandingCenter: mediaIndex <= 1,
-    collapsedPresenceMenu: mediaIndex <= 1,
-    hints: mediaIndex > 1 && sidecar && sidecar.isSidecarEnabled && sidecar.isSidecarEnabled(),
-    loginStatus: mediaIndex > 1,
-    searchFullscreen: mediaIndex <= 1,
-    spaces: HAS_SPACES && mediaIndex >= 3,
-    statusContainer: mediaIndex > 1,
-    tools: mediaIndex >= 3,
-  }
+  const shouldRender = useMemo(
+    () => ({
+      brandingCenter: mediaIndex <= 1,
+      collapsedPresenceMenu: mediaIndex <= 1,
+      hints: mediaIndex > 1 && sidecar && sidecar.isSidecarEnabled && sidecar.isSidecarEnabled(),
+      loginStatus: mediaIndex > 1,
+      searchFullscreen: mediaIndex <= 1,
+      spaces: HAS_SPACES && mediaIndex >= 3,
+      statusContainer: mediaIndex > 1,
+      tools: mediaIndex >= 3,
+    }),
+    [mediaIndex]
+  )
 
   useGlobalKeyDown((e) => {
     if (e.key === 'Escape' && searchOpen) {
       setSearchOpen(false)
-      searchButtonElement?.focus()
+      searchOpenButtonElement?.focus()
     }
   })
 
+  // @todo: explain what this does
   const handleToggleSearchOpen = useCallback(() => {
     setSearchOpen((prev) => {
       if (prev) {
-        searchButtonElement?.focus()
+        searchOpenButtonElement?.focus()
       }
 
       return !prev
     })
-  }, [searchButtonElement])
+  }, [searchOpenButtonElement])
 
+  // @todo: explain what this does
   useEffect(() => {
     if (onSearchOpen && !shouldRender.searchFullscreen) {
       setSearchOpen(false)
@@ -155,13 +164,14 @@ export function Navbar(props: Props) {
     }
   }, [onSearchOpen, shouldRender.searchFullscreen])
 
+  // @todo: explain what this does
   useEffect(() => {
     onSearchOpen(searchOpen)
 
     if (searchOpen) {
       inputElement?.focus()
     }
-  }, [inputElement, searchButtonElement, onSearchOpen, searchOpen])
+  }, [inputElement, searchOpenButtonElement, onSearchOpen, searchOpen])
 
   const LinkComponent = useCallback(
     (linkProps) => {
@@ -170,8 +180,17 @@ export function Navbar(props: Props) {
     [rootState]
   )
 
+  // The HTML elements that are part of the search view (i.e. the "close" button that is visible
+  // when in fullscreen mode on narrow devices) needs to be passed to `<Autocomplete />` so it knows
+  // how to make the search experience work properly for non-sighted users.
+  // Specifically – without passing `relatedElements`, the listbox with results will close when you
+  // TAB to focus the "close" button, and that‘s not a good experience for anyone.
+  const searchRelatedElements = useMemo(() => [searchCloseButtonElement].filter(Boolean), [
+    searchCloseButtonElement,
+  ])
+
   return (
-    <Root padding={2} scheme="dark" $onSearchOpen={searchOpen}>
+    <Root $onSearchOpen={searchOpen} padding={2} scheme="dark">
       <Flex align="center" justify="space-between">
         <LeftFlex flex={shouldRender.brandingCenter ? undefined : 1} align="center">
           {!shouldRender.tools && (
@@ -207,9 +226,7 @@ export function Navbar(props: Props) {
               content={
                 <Box padding={2}>
                   {createAnyPermission.granted ? (
-                    <Text size={1} muted>
-                      Create new document
-                    </Text>
+                    <Text size={1}>Create new document</Text>
                   ) : (
                     <InsufficientPermissionsMessage
                       currentUser={currentUser}
@@ -236,17 +253,20 @@ export function Navbar(props: Props) {
           <LegacyLayerProvider zOffset="navbarPopover">
             {(searchOpen || !shouldRender.searchFullscreen) && (
               <SearchCard
+                $fullScreen={shouldRender.searchFullscreen}
                 flex={1}
                 padding={shouldRender.searchFullscreen ? 2 : undefined}
-                $fullScreen={shouldRender.searchFullscreen}
+                scheme={shouldRender.searchFullscreen ? 'light' : undefined}
+                shadow={shouldRender.searchFullscreen ? 1 : undefined}
               >
-                <Flex flex={1}>
+                <Flex>
                   <Box flex={1} marginRight={shouldRender.tools ? undefined : [1, 1, 2]}>
                     <SearchField
+                      fullScreen={shouldRender.searchFullscreen}
+                      inputElement={setInputElement}
                       onSearchItemClick={handleToggleSearchOpen}
                       portalElement={searchPortalElement}
-                      inputElement={setInputElement}
-                      fullScreen={shouldRender.searchFullscreen}
+                      relatedElements={searchRelatedElements}
                     />
                   </Box>
                   {shouldRender.searchFullscreen && (
@@ -255,6 +275,7 @@ export function Navbar(props: Props) {
                       aria-label="Close search"
                       onClick={handleToggleSearchOpen}
                       mode="bleed"
+                      ref={setSearchCloseButtonElement}
                     />
                   )}
                 </Flex>
@@ -310,11 +331,11 @@ export function Navbar(props: Props) {
               onClick={handleToggleSearchOpen}
               icon={SearchIcon}
               mode="bleed"
-              ref={setSearchButtonElement}
+              ref={setSearchOpenButtonElement}
             />
           )}
         </RightFlex>
       </Flex>
     </Root>
   )
-}
+})

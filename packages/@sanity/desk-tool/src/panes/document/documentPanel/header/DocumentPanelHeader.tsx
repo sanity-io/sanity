@@ -1,13 +1,8 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import {
-  MenuItem as MenuItemType,
-  MenuItemGroup as MenuItemGroupType,
-} from '@sanity/base/__legacy/@sanity/components'
-import {Chunk} from '@sanity/field/diff'
+import {MenuItem as MenuItemType} from '@sanity/base/__legacy/@sanity/components'
 import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
-import {Marker, Path} from '@sanity/types'
 import {Button, Inline} from '@sanity/ui'
 import {negate} from 'lodash'
 import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
@@ -16,27 +11,13 @@ import {PaneHeader, PaneContextMenuButton} from '../../../../components/pane'
 import {useDeskTool} from '../../../../contexts/deskTool'
 import {BackLink, usePaneRouter} from '../../../../contexts/paneRouter'
 import {TimelineMenu} from '../../timeline'
-import {DocumentView} from '../../types'
+import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {ValidationMenu} from './ValidationMenu'
+import {DocumentHeaderTitle} from './DocumentHeaderTitle'
 
 export interface DocumentPanelHeaderProps {
-  activeViewId?: string
-  idPrefix: string
-  isClosable: boolean
-  isHistoryOpen: boolean
-  markers: Marker[]
-  menuItems: MenuItemType[]
-  menuItemGroups: MenuItemGroupType[]
-  onCloseView: () => void
-  onContextMenuAction: (action: MenuItemType) => void
-  onSplitPane?: () => void
-  onSetFormInputFocus: (path: Path) => void
-  rev: Chunk | null
   rootElement: HTMLDivElement | null
-  schemaType: any
-  title: React.ReactNode
-  views: DocumentView[]
 }
 
 const isActionButton = (item: MenuItemType) => Boolean(item.showAsAction)
@@ -46,32 +27,31 @@ export const DocumentPanelHeader = forwardRef(function DocumentPanelHeader(
   props: DocumentPanelHeaderProps,
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
+  const {rootElement} = props
   const {
-    activeViewId,
-    idPrefix,
-    isClosable,
+    documentSchema,
+    handleMenuAction,
+    handlePaneClose,
+    handlePaneSplit,
+    historyController,
     markers,
     menuItems,
     menuItemGroups,
-    onCloseView,
-    onContextMenuAction,
-    onSplitPane,
-    rev,
-    rootElement,
-    schemaType,
-    onSetFormInputFocus,
-    title,
+    ready,
     views,
-  } = props
+  } = useDocumentPane()
+  const {revTime: rev} = historyController
   const {features} = useDeskTool()
-  const {index} = usePaneRouter()
+  const {index, siblingIndex} = usePaneRouter()
   const contextMenuItems = useMemo(() => menuItems.filter(isMenuButton), [menuItems])
   const [isValidationOpen, setValidationOpen] = React.useState<boolean>(false)
   const showTabs = views.length > 1
-  const showVersionMenu = features.reviewChanges || views.length === 1
+  const closable = siblingIndex > 0
+  const showVersionMenu = features.reviewChanges
 
-  const languageMenu = LanguageFilter && (
-    <LanguageFilter key="language-menu" schemaType={schemaType} />
+  const languageMenu = useMemo(
+    () => LanguageFilter && <LanguageFilter key="language-menu" schemaType={documentSchema} />,
+    [documentSchema]
   )
 
   const validationMenu = useMemo(
@@ -81,13 +61,10 @@ export const DocumentPanelHeader = forwardRef(function DocumentPanelHeader(
           boundaryElement={rootElement}
           isOpen={isValidationOpen}
           key="validation-menu"
-          markers={markers}
-          schemaType={schemaType}
-          setFocusPath={onSetFormInputFocus}
           setOpen={setValidationOpen}
         />
       ),
-    [isValidationOpen, markers, onSetFormInputFocus, rootElement, schemaType]
+    [isValidationOpen, markers, rootElement]
   )
 
   const contextMenu = useMemo(
@@ -96,14 +73,14 @@ export const DocumentPanelHeader = forwardRef(function DocumentPanelHeader(
         itemGroups={menuItemGroups}
         items={contextMenuItems}
         key="context-menu"
-        onAction={onContextMenuAction}
+        onAction={handleMenuAction}
       />
     ),
-    [contextMenuItems, menuItemGroups, onContextMenuAction]
+    [contextMenuItems, handleMenuAction, menuItemGroups]
   )
 
   const splitPaneButton = useMemo(() => {
-    if (!features.splitViews || !onSplitPane || views.length <= 1) {
+    if (!features.splitViews || !handlePaneSplit || views.length <= 1) {
       return null
     }
 
@@ -112,14 +89,14 @@ export const DocumentPanelHeader = forwardRef(function DocumentPanelHeader(
         icon={SplitVerticalIcon}
         key="split-pane-button"
         mode="bleed"
-        onClick={onSplitPane}
+        onClick={handlePaneSplit}
         title="Split pane right"
       />
     )
-  }, [features.splitViews, onSplitPane, views.length])
+  }, [features.splitViews, handlePaneSplit, views.length])
 
   const closeViewButton = useMemo(() => {
-    if (!features.splitViews || !onSplitPane || !isClosable) {
+    if (!features.splitViews || !handlePaneSplit || !closable) {
       return null
     }
 
@@ -128,39 +105,46 @@ export const DocumentPanelHeader = forwardRef(function DocumentPanelHeader(
         icon={CloseIcon}
         key="close-view-button"
         mode="bleed"
-        onClick={onCloseView}
+        onClick={handlePaneClose}
         title="Close pane"
       />
     )
-  }, [features.splitViews, isClosable, onCloseView, onSplitPane])
+  }, [closable, features.splitViews, handlePaneClose, handlePaneSplit])
 
-  const tabs = useMemo(
-    () =>
-      showTabs && (
-        <DocumentHeaderTabs activeViewId={activeViewId} idPrefix={idPrefix} views={views} />
-      ),
-    [activeViewId, idPrefix, showTabs, views]
+  const tabs = useMemo(() => showTabs && <DocumentHeaderTabs />, [showTabs])
+
+  const actions = useMemo(
+    () => (
+      <Inline space={1}>
+        {languageMenu}
+        {validationMenu}
+        {contextMenu}
+        {splitPaneButton}
+        {closeViewButton}
+      </Inline>
+    ),
+    [languageMenu, validationMenu, contextMenu, splitPaneButton, closeViewButton]
   )
 
-  return (
-    <PaneHeader
-      actions={
-        <Inline space={1}>
-          {languageMenu}
-          {validationMenu}
-          {contextMenu}
-          {splitPaneButton}
-          {closeViewButton}
-        </Inline>
-      }
-      backButton={
-        features.backButton &&
-        index > 0 && <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" />
-      }
-      ref={ref}
-      subActions={showVersionMenu && <TimelineMenu chunk={rev} mode="rev" />}
-      tabs={tabs}
-      title={title}
-    />
+  const backButton = useMemo(
+    () =>
+      features.backButton &&
+      index > 0 && <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" />,
+    [features.backButton, index]
+  )
+
+  return useMemo(
+    () => (
+      <PaneHeader
+        actions={actions}
+        backButton={backButton}
+        loading={!ready}
+        ref={ref}
+        subActions={showVersionMenu && <TimelineMenu chunk={rev} mode="rev" />}
+        tabs={tabs}
+        title={<DocumentHeaderTitle />}
+      />
+    ),
+    [actions, backButton, ready, ref, rev, showVersionMenu, tabs]
   )
 })

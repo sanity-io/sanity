@@ -8,10 +8,12 @@ import {usePaneLayout} from '../../../usePaneLayout'
 import {DocumentActions} from './DocumentActions'
 
 export function DocumentViewPanel(props: {
+  onBackClick: () => void
   reviewChanges: boolean
+  title: string
   toggleReviewChanges: () => void
 }) {
-  const {reviewChanges, toggleReviewChanges} = props
+  const {onBackClick, reviewChanges, title, toggleReviewChanges} = props
   const {collapsed: layoutCollapsed} = usePaneLayout()
 
   return (
@@ -22,8 +24,10 @@ export function DocumentViewPanel(props: {
       overflow={layoutCollapsed ? undefined : 'hidden'}
     >
       <PaneHeader
-        backButton={layoutCollapsed && <Button icon={ArrowLeftIcon} mode="bleed" />}
-        title="Document"
+        backButton={
+          layoutCollapsed && <Button icon={ArrowLeftIcon} mode="bleed" onClick={onBackClick} />
+        }
+        title={title}
       />
       <PaneContent>
         <Box

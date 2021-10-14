@@ -1,129 +1,325 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import React, {useCallback} from 'react'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import {MenuItem} from '@sanity/base/__legacy/@sanity/components'
+import {unstable_useCheckDocumentPermission as useCheckDocumentPermission} from '@sanity/base/hooks'
 import {
   useConnectionState,
   useDocumentOperation,
   useEditState,
   useValidationStatus,
 } from '@sanity/react-hooks'
-import {SanityDocument} from '@sanity/types'
-import {Card, Code, Stack, Text} from '@sanity/ui'
-import schema from 'part:@sanity/base/schema'
+import {Path, SanityDocument} from '@sanity/types'
+import {useToast} from '@sanity/ui'
+import {fromString as pathFromString, pathFor} from '@sanity/util/paths'
+import isHotkey from 'is-hotkey'
+import {setLocation} from 'part:@sanity/base/datastore/presence'
+import resolveDocumentActions from 'part:@sanity/base/document-actions/resolver'
+import resolveDocumentBadges from 'part:@sanity/base/document-badges/resolver'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import {ErrorPane} from '../error'
-import {LoadingPane} from '../loading'
-import {DocumentHistoryProvider} from './documentHistory'
-import {DocumentPane} from './DocumentPane'
-import {DocumentPaneProviderProps} from './types'
+import schema from 'part:@sanity/base/schema'
+import {useMemoObservable} from 'react-rx'
+import {useDeskTool} from '../../contexts/deskTool'
+import {usePaneRouter} from '../../contexts/paneRouter'
+import {useUnique} from '../../lib/useUnique'
+import {versionedClient} from '../../versionedClient'
+import {createObservableController} from './documentHistory/history/Controller'
+import {Timeline} from './documentHistory/history/Timeline'
+import {DocumentPaneContext, DocumentPaneContextValue} from './DocumentPaneContext'
 import {useInitialValue} from './lib/initialValue'
+import {getMenuItems} from './menuItems'
+import {DocumentPaneProviderProps} from './types'
+import {getPreviewUrl} from './usePreviewUrl'
 
 declare const __DEV__: boolean
 
 /**
  * @internal
  */
+// eslint-disable-next-line complexity, max-statements
 export const DocumentPaneProvider = function DocumentPaneProvider(
-  props: DocumentPaneProviderProps
+  props: {children: React.ReactElement} & DocumentPaneProviderProps
 ) {
-  const {index, isClosable, pane, paneKey} = props
-  const {options, menuItemGroups, title, views} = pane
-  const initialValue = useInitialValue(options.id, pane.options)
+  const {children, index, pane, paneKey} = props
+  const paneRouter = usePaneRouter()
+  const {features} = useDeskTool()
+  const {push: pushToast} = useToast()
+  const {options, menuItemGroups, title = null, views: viewsProp = []} = pane
+  const initialValueRaw = useInitialValue(options.id, pane.options)
+  const initialValue = useUnique(initialValueRaw)
   const documentIdRaw = options.id
   const documentId = getPublishedId(documentIdRaw)
-  const documentTypeName = options.type
-  const {patch}: any = useDocumentOperation(documentId, documentTypeName)
-  const editState: any = useEditState(documentId, documentTypeName)
-  const {markers} = useValidationStatus(documentId, documentTypeName)
-  const connectionState = useConnectionState(documentId, documentTypeName)
-  const schemaType = schema.get(documentTypeName)
+  const documentType = options.type
+  const {patch}: any = useDocumentOperation(documentId, documentType)
+  const editState = useEditState(documentId, documentType)
+  const {markers: markersRaw} = useValidationStatus(documentId, documentType)
+  const connectionState = useConnectionState(documentId, documentType)
+  const documentSchema = schema.get(documentType)
   const value: Partial<SanityDocument> =
     editState?.draft || editState?.published || initialValue.value
+  const actions = useMemo(() => (editState ? resolveDocumentActions(editState) : null), [editState])
+  const badges = useMemo(() => (editState ? resolveDocumentBadges(editState) : null), [editState])
+  const markers = useUnique(markersRaw)
+  const views = useUnique(viewsProp)
+  const params = paneRouter.params
+  const [focusPath, setFocusPath] = useState<Path>(() =>
+    params.path ? pathFromString(params.path) : []
+  )
+  const activeViewId = params.view || (views[0] && views[0].id) || null
+  const timeline = useMemo(() => new Timeline({publishedId: documentId, enableTrace: __DEV__}), [
+    documentId,
+  ])
+  const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')
+  // NOTE: this emits sync so can never be null
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const {historyController} = useMemoObservable(
+    () =>
+      createObservableController({
+        timeline,
+        documentId,
+        client: versionedClient,
+      }),
+    [documentId, timeline]
+  )!
+  /**
+   * @todo: this will now happen on each render, but should be refactored so it happens only when
+   * the `rev`, `since` or `historyController` values change.
+   */
+  historyController.setRange(params.since || null, params.rev || null)
+  const changesOpen = historyController.changesPanelActive()
+  const previewUrl = useMemo(() => getPreviewUrl(historyController, value), [
+    historyController,
+    value,
+  ])
+  const hasValue = Boolean(value)
+  const menuItems = useMemo(() => getMenuItems({features, hasValue, changesOpen, previewUrl}), [
+    features,
+    hasValue,
+    changesOpen,
+    previewUrl,
+  ])
+  const requiredPermission = value?._createdAt ? 'update' : 'create'
+  const permission = useCheckDocumentPermission(documentId, documentType, requiredPermission)
+  const inspectOpen = params.inspect === 'on'
+  const compareValue: Partial<SanityDocument> | null = changesOpen
+    ? (historyController.sinceAttributes() as any)
+    : editState?.published || null
+  const ready = connectionState === 'connected' && !patch.disabled
+  const displayed: Partial<SanityDocument> | null = useMemo(
+    () => {
+      return historyController.onOlderRevision() ? historyController.displayed() : value
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [historyController, params.rev, params.since, value]
+  )
 
-  const onChange = useCallback((patches) => patch.execute(patches, initialValue.value), [
+  const setTimelineRange = useCallback(
+    (newSince: string, newRev: string | null) => {
+      paneRouter.setParams({
+        ...paneRouter.params,
+        since: newSince,
+        rev: newRev || undefined,
+      })
+    },
+    [paneRouter]
+  )
+
+  const handleFocus = useCallback(
+    (nextFocusPath: Path) => {
+      setFocusPath(pathFor(nextFocusPath))
+
+      setLocation([
+        {
+          type: 'document',
+          documentId,
+          path: nextFocusPath,
+          lastActiveAt: new Date().toISOString(),
+        },
+      ])
+    },
+    [documentId, setFocusPath]
+  )
+
+  const handleChange = useCallback((patches) => patch.execute(patches, initialValue.value), [
     patch,
     initialValue.value,
   ])
 
-  if (!schemaType) {
-    return (
-      <ErrorPane
-        {...props}
-        flex={2.5}
-        minWidth={320}
-        title={
-          <>
-            Unknown document type: <code>{documentTypeName}</code>
-          </>
+  const handleHistoryClose = useCallback(() => {
+    paneRouter.setParams({...params, since: undefined})
+  }, [paneRouter, params])
+
+  const handleHistoryOpen = useCallback(() => {
+    paneRouter.setParams({...params, since: '@lastPublished'})
+  }, [paneRouter, params])
+
+  const handlePaneClose = useCallback(() => paneRouter.closeCurrent(), [paneRouter])
+
+  const handlePaneSplit = useCallback(() => paneRouter.duplicateCurrent(), [paneRouter])
+
+  const toggleInspect = useCallback(
+    (toggle = !inspectOpen) => {
+      const {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        inspect, // omit
+        ...restParams
+      } = params
+      if (toggle) {
+        paneRouter.setParams({inspect: 'on', ...restParams})
+      } else {
+        paneRouter.setParams(restParams)
+      }
+    },
+    [inspectOpen, paneRouter, params]
+  )
+
+  const handleMenuAction = useCallback(
+    (item: MenuItem) => {
+      if (item.action === 'production-preview') {
+        window.open(item.url)
+        return true
+      }
+
+      if (item.action === 'inspect') {
+        toggleInspect(true)
+        return true
+      }
+
+      if (item.action === 'reviewChanges') {
+        handleHistoryOpen()
+        return true
+      }
+
+      return false
+    },
+    [handleHistoryOpen, toggleInspect]
+  )
+
+  const handleKeyUp = useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      for (const item of menuItems) {
+        if (item.shortcut) {
+          if (isHotkey(item.shortcut, event)) {
+            event.preventDefault()
+            event.stopPropagation()
+            handleMenuAction(item)
+            return
+          }
         }
-        tone="caution"
-      >
-        <Stack space={4}>
-          {documentTypeName && (
-            <Text as="p">
-              This document has the schema type <code>{documentTypeName}</code>, which is not
-              defined as a type in the local content studio schema.
-            </Text>
-          )}
+      }
+    },
+    [handleMenuAction, menuItems]
+  )
 
-          {!documentTypeName && (
-            <Text as="p">
-              This document does not exist, and no schema type was specified for it.
-            </Text>
-          )}
+  const handleInspectClose = useCallback(() => toggleInspect(false), [toggleInspect])
 
-          {__DEV__ && value && (
-            <>
-              <Text as="p">Here is the JSON representation of the document:</Text>
-              <Card padding={3} overflow="auto" radius={2} shadow={1} tone="inherit">
-                <Code language="json" size={[1, 1, 2]}>
-                  {JSON.stringify(value, null, 2)}
-                </Code>
-              </Card>
-            </>
-          )}
-        </Stack>
-      </ErrorPane>
-    )
-  }
+  const documentPane: DocumentPaneContextValue = useMemo(
+    () => ({
+      actions,
+      activeViewId,
+      badges,
+      changesOpen,
+      compareValue,
+      connectionState,
+      displayed,
+      documentId,
+      documentIdRaw,
+      documentSchema,
+      documentType,
+      editState,
+      focusPath,
+      handleChange,
+      handleFocus,
+      handleHistoryClose,
+      handleHistoryOpen,
+      handleInspectClose,
+      handleKeyUp,
+      handleMenuAction,
+      handlePaneClose,
+      handlePaneSplit,
+      historyController,
+      index,
+      initialValue,
+      inspectOpen,
+      markers,
+      menuItems,
+      menuItemGroups: menuItemGroups || [],
+      paneKey,
+      permission,
+      previewUrl,
+      ready,
+      requiredPermission,
+      setTimelineMode,
+      setTimelineRange,
+      timeline,
+      timelineMode,
+      title,
+      value,
+      views,
+    }),
+    [
+      actions,
+      activeViewId,
+      badges,
+      changesOpen,
+      compareValue,
+      connectionState,
+      displayed,
+      documentId,
+      documentIdRaw,
+      documentType,
+      documentSchema,
+      editState,
+      focusPath,
+      handleChange,
+      handleFocus,
+      handleHistoryClose,
+      handleHistoryOpen,
+      handleInspectClose,
+      handleKeyUp,
+      handleMenuAction,
+      handlePaneClose,
+      handlePaneSplit,
+      historyController,
+      index,
+      initialValue,
+      inspectOpen,
+      markers,
+      menuItems,
+      menuItemGroups,
+      paneKey,
+      permission,
+      previewUrl,
+      ready,
+      requiredPermission,
+      setTimelineMode,
+      setTimelineRange,
+      timeline,
+      timelineMode,
+      title,
+      value,
+      views,
+    ]
+  )
 
-  if (connectionState === 'connecting' || !editState) {
-    return (
-      <LoadingPane {...props} flex={2.5} minWidth={320} title={`Loading ${schemaType.title}…`} />
-    )
-  }
+  useEffect(() => {
+    if (connectionState === 'reconnecting') {
+      pushToast({
+        id: 'desk-tool/reconnecting',
+        status: 'warning',
+        title: <>Connection lost. Reconnecting…</>,
+      })
+    }
+  }, [connectionState, pushToast])
 
-  if (initialValue.error) {
-    return (
-      <ErrorPane flex={2.5} minWidth={320} title="Failed to resolve initial value">
-        <Text as="p">Check developer console for details.</Text>
-      </ErrorPane>
-    )
-  }
+  // Reset `focusPath` when `documentId` or `params.path` changes
+  useEffect(() => {
+    // Reset focus path
+    setFocusPath(params.path ? pathFromString(params.path) : [])
+  }, [documentId, params.path])
 
   return (
-    <DocumentHistoryProvider documentId={documentId} value={value}>
-      <DocumentPane
-        title={title}
-        connectionState={connectionState}
-        documentId={documentId}
-        documentIdRaw={documentIdRaw}
-        documentType={documentTypeName}
-        draft={editState.draft}
-        index={index}
-        initialValue={initialValue.value}
-        isClosable={isClosable}
-        markers={markers}
-        menuItemGroups={menuItemGroups}
-        onChange={onChange}
-        paneKey={paneKey}
-        published={editState.published}
-        schemaType={schemaType}
-        value={value}
-        compareValue={editState.published}
-        views={views}
-      />
-    </DocumentHistoryProvider>
+    <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
   )
 }

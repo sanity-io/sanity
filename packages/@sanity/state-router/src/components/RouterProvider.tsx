@@ -29,6 +29,7 @@ export default class RouterProvider extends React.Component<RouterProviderProps>
 
   constructor(props: RouterProviderProps) {
     super(props)
+
     this._state = props.state
     this.__internalRouter = {
       resolvePathFromState: this.resolvePathFromState,
@@ -46,13 +47,13 @@ export default class RouterProvider extends React.Component<RouterProviderProps>
     onNavigate(url, options)
   }
 
-  navigateState = (nextState: Record<string, any>, options: NavigateOptions = {}): void => {
+  navigateState = (nextState: Record<string, unknown>, options: NavigateOptions = {}): void => {
     this.navigateUrl(this.resolvePathFromState(nextState), options)
   }
 
   getState = () => this._state
 
-  resolvePathFromState = (state: Record<string, any>): string => {
+  resolvePathFromState = (state: Record<string, unknown>): string => {
     return this.props.router.encode(state)
   }
 

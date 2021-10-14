@@ -1,6 +1,6 @@
 import {MenuItem as MenuItemType, MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
 import {InitialValueTemplateItem} from '@sanity/structure'
-import React, {useMemo} from 'react'
+import React, {memo, useMemo} from 'react'
 import {Pane} from '../../components/pane'
 import {useShallowUnique} from '../../lib/useShallowUnique'
 import {useUnique} from '../../lib/useUnique'
@@ -32,7 +32,7 @@ type DocumentListPaneProps = BaseDeskToolPaneProps<{
 /**
  * @internal
  */
-export function DocumentListPane(props: DocumentListPaneProps) {
+export const DocumentListPane = memo(function DocumentListPane(props: DocumentListPaneProps) {
   const {childItemId, index, isActive, isSelected, pane, paneKey} = props
   const {
     defaultLayout = 'default',
@@ -48,7 +48,7 @@ export function DocumentListPane(props: DocumentListPaneProps) {
   const {defaultOrdering, filter} = options
   const params = useShallowUnique(options.params || EMPTY_RECORD)
   const typeName = useMemo(() => getTypeNameFromSingleTypeFilter(filter, params), [filter, params])
-  const {showIcons = false} = displayOptions
+  const showIcons = displayOptions.showIcons !== false
   const [layout, setLayout] = useDeskToolSetting<Layout>(typeName, 'layout', defaultLayout)
   const [sortOrderRaw, setSortOrder] = useDeskToolSetting<SortOrder>(
     typeName,
@@ -78,7 +78,16 @@ export function DocumentListPane(props: DocumentListPaneProps) {
         title={title}
       />
     ),
-    [index, initialValueTemplates, menuItems, menuItemGroups, setLayout, setSortOrder, title]
+    [
+      index,
+      initialValueTemplates,
+      menuItems,
+      menuItemGroups,
+      schemaTypeName,
+      setLayout,
+      setSortOrder,
+      title,
+    ]
   )
 
   const content = useMemo(
@@ -128,4 +137,4 @@ export function DocumentListPane(props: DocumentListPaneProps) {
     ),
     [content, header, index, isSelected, paneKey]
   )
-}
+})

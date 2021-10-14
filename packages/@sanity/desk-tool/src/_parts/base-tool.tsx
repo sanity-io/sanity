@@ -1,50 +1,20 @@
-import {route, useRouterState} from '@sanity/base/router'
+import {useRouterState} from '@sanity/base/router'
 import {MasterDetailIcon} from '@sanity/icons'
-import React, {useEffect} from 'react'
-import {IntentResolver} from '../components/IntentResolver'
-import {DeskTool as DeskToolRoot} from '../DeskTool'
+import React, {useEffect, useMemo} from 'react'
+import {IntentResolver} from '../components/intentResolver'
+import {DeskTool} from '../DeskTool'
 import {getIntentState, setActivePanes} from '../getIntentState'
-import {legacyEditParamsToPath, legacyEditParamsToState, toPath, toState} from '../helpers'
+import {router} from '../router'
 
-function DeskToolPaneStateSyncer() {
-  const routerState = useRouterState()
-  const {intent, params, payload} = routerState || {}
-
-  useEffect(() => {
-    // Set active panes to blank on mount and unmount
-    setActivePanes([])
-    return () => setActivePanes([])
-  }, [])
-
-  return intent ? (
-    <IntentResolver intent={intent} params={params} payload={payload} />
-  ) : (
-    <DeskToolRoot onPaneChange={setActivePanes} />
-  )
+export default {
+  router,
+  canHandleIntent,
+  getIntentState,
+  title: 'Desk',
+  name: 'desk',
+  icon: MasterDetailIcon,
+  component: DeskToolRoot,
 }
-
-const router = route('/', [
-  // "Asynchronous intent resolving" route
-  route.intents('/intent'),
-
-  // Legacy fallback route, will be redirected to new format
-  route('/edit/:type/:editDocumentId', [
-    route({
-      path: '/:params',
-      transform: {params: {toState: legacyEditParamsToState, toPath: legacyEditParamsToPath}},
-    }),
-  ]),
-
-  // The regular path - when the intent can be resolved to a specific pane
-  route({
-    path: '/:panes',
-    // Legacy URLs, used to handle redirects
-    children: [route('/:action', route('/:legacyEditDocumentId'))],
-    transform: {
-      panes: {toState, toPath},
-    },
-  }),
-])
 
 function canHandleIntent(intentName: string, params: Record<string, string | undefined>) {
   return Boolean(
@@ -54,12 +24,23 @@ function canHandleIntent(intentName: string, params: Record<string, string | und
   )
 }
 
-export default {
-  router,
-  canHandleIntent,
-  getIntentState,
-  title: 'Desk',
-  name: 'desk',
-  icon: MasterDetailIcon,
-  component: DeskToolPaneStateSyncer,
+function DeskToolRoot() {
+  const routerState = useRouterState()
+  const {intent, params, payload} = routerState || {}
+
+  useEffect(() => {
+    // Set active panes to blank on mount and unmount
+    setActivePanes([])
+    return () => setActivePanes([])
+  }, [])
+
+  return useMemo(
+    () =>
+      intent ? (
+        <IntentResolver intent={intent} params={params} payload={payload} />
+      ) : (
+        <DeskTool onPaneChange={setActivePanes} />
+      ),
+    [intent, params, payload]
+  )
 }

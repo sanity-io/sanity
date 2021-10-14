@@ -1,32 +1,23 @@
 import {ChangeFieldWrapper} from '@sanity/base/change-indicators'
 import {
   ChangeList,
-  Chunk,
   DiffTooltip,
   DocumentChangeContext,
   DocumentChangeContextInstance,
   NoChanges,
   ObjectDiff,
-  ObjectSchemaType,
 } from '@sanity/field/diff'
 import {UserAvatar, ScrollContainer} from '@sanity/base/components'
 import {CloseIcon} from '@sanity/icons'
 import {AvatarStack, BoundaryElementProvider, Box, Button, Flex} from '@sanity/ui'
 import React, {useRef} from 'react'
 import styled from 'styled-components'
-import {useDocumentHistory} from '../documentHistory'
 import {TimelineMenu} from '../timeline'
 import {PaneContent, PaneHeader} from '../../../components/pane'
 import {usePane} from '../../../components/pane/usePane'
+import {useDocumentPane} from '../useDocumentPane'
 import {LoadingContent} from './content/LoadingContent'
 import {collectLatestAuthorAnnotations} from './helpers'
-
-interface ChangesPanelProps {
-  documentId: string
-  loading: boolean
-  schemaType: ObjectSchemaType
-  since: Chunk | null
-}
 
 const Scroller = styled(ScrollContainer)`
   height: 100%;
@@ -35,23 +26,25 @@ const Scroller = styled(ScrollContainer)`
   scroll-behavior: smooth;
 `
 
-export function ChangesPanel(props: ChangesPanelProps): React.ReactElement | null {
-  const {documentId, loading, since, schemaType} = props
+export function ChangesPanel(): React.ReactElement | null {
+  const {documentId, documentSchema, handleHistoryClose, historyController} = useDocumentPane()
   const {collapsed} = usePane()
   const scrollRef = useRef<HTMLDivElement | null>(null)
-  const {close: closeHistory, historyController} = useDocumentHistory()
+  const historyState = historyController.selectionState
+  const loading = historyState === 'loading'
+  const since = historyController.sinceTime
   const diff: ObjectDiff | null = historyController.currentObjectDiff()
   const isComparingCurrent = !historyController.onOlderRevision()
 
   const documentContext: DocumentChangeContextInstance = React.useMemo(
     () => ({
       documentId,
-      schemaType,
+      schemaType: documentSchema,
       FieldWrapper: ChangeFieldWrapper,
       rootDiff: diff,
       isComparingCurrent,
     }),
-    [documentId, schemaType, diff, isComparingCurrent]
+    [documentId, documentSchema, diff, isComparingCurrent]
   )
 
   const changeAnnotations = React.useMemo(
@@ -78,7 +71,7 @@ export function ChangesPanel(props: ChangesPanelProps): React.ReactElement | nul
           <Button
             icon={CloseIcon}
             mode="bleed"
-            onClick={closeHistory}
+            onClick={handleHistoryClose}
             padding={3}
             title="Hide changes panel"
           />
@@ -108,12 +101,7 @@ export function ChangesPanel(props: ChangesPanelProps): React.ReactElement | nul
         <BoundaryElementProvider element={scrollRef.current}>
           <Scroller data-ui="Scroller" ref={scrollRef}>
             <Box flex={1} padding={4}>
-              <Content
-                diff={diff}
-                documentContext={documentContext}
-                loading={loading}
-                schemaType={schemaType}
-              />
+              <Content diff={diff} documentContext={documentContext} loading={loading} />
             </Box>
           </Scroller>
         </BoundaryElementProvider>
@@ -126,13 +114,13 @@ function Content({
   diff,
   documentContext,
   loading,
-  schemaType,
 }: {
   diff: ObjectDiff | null
   documentContext: DocumentChangeContextInstance
   loading: boolean
-  schemaType: ObjectSchemaType
 }) {
+  const {documentSchema} = useDocumentPane()
+
   if (loading) {
     return <LoadingContent />
   }
@@ -143,7 +131,7 @@ function Content({
 
   return (
     <DocumentChangeContext.Provider value={documentContext}>
-      <ChangeList diff={diff} schemaType={schemaType} />
+      <ChangeList diff={diff} schemaType={documentSchema} />
     </DocumentChangeContext.Provider>
   )
 }

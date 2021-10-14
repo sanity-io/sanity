@@ -145,13 +145,22 @@ export class DocumentBuilder implements Serializable {
       ).withHelpUrl(HELP_URL.DOCUMENT_ID_REQUIRED)
     }
 
+    if (!options || !options.type) {
+      // eslint-disable-next-line no-console
+      console.log(
+        `⚠️ Structure warning: document type (\`schemaType\`) will be required for document nodes in the near future! At:\n\n${path.join(
+          ' > '
+        )}\n`
+      )
+    }
+
     const views = (this.spec.views && this.spec.views.length > 0
       ? this.spec.views
       : [form()]
     ).map((item, i) => maybeSerializeView(item, i, path))
 
     const viewIds = views.map((view) => view.id)
-    const dupes = uniq(viewIds.filter((id, i) => viewIds.includes(id, i + 1)))
+    const dupes = uniq(viewIds.filter((viewId, i) => viewIds.includes(viewId, i + 1)))
     if (dupes.length > 0) {
       throw new SerializeError(
         `document node has views with duplicate IDs: ${dupes.join(',  ')}`,

@@ -2,15 +2,9 @@
 ///<reference types="@sanity/types/parts" />
 
 import React from 'react'
-import schema from 'part:@sanity/base/schema'
 import {PreviewFields} from 'part:@sanity/base/preview'
 import {SanityDocument} from '@sanity/types'
-
-interface DocumentHeaderTitleProps {
-  documentType: string
-  paneTitle?: string
-  value: Partial<SanityDocument> | null
-}
+import {useDocumentPane} from '../../useDocumentPane'
 
 const PREVIEW_FIELDS = ['title']
 
@@ -18,20 +12,23 @@ function renderTitle({title}: SanityDocument) {
   return title ? <>{title}</> : <em>Untitled</em>
 }
 
-export function DocumentHeaderTitle(props: DocumentHeaderTitleProps) {
-  const {documentType, paneTitle, value} = props
-  const type = schema.get(documentType)
+export function DocumentHeaderTitle() {
+  const {connectionState, documentSchema, title, value} = useDocumentPane()
 
-  if (paneTitle) {
-    return <>{paneTitle}</>
+  if (connectionState !== 'connected') {
+    return <></>
+  }
+
+  if (title) {
+    return <>{title}</>
   }
 
   if (!value) {
-    return <>New {type?.title || type?.name}</>
+    return <>New {documentSchema?.title || documentSchema?.name}</>
   }
 
   return (
-    <PreviewFields document={value} layout="inline" type={type} fields={PREVIEW_FIELDS}>
+    <PreviewFields document={value} layout="inline" type={documentSchema} fields={PREVIEW_FIELDS}>
       {renderTitle}
     </PreviewFields>
   )

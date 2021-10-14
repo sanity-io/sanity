@@ -2,6 +2,7 @@ import {useRouter, useRouterState} from '@sanity/base/router'
 import {pick, omit, isEqual} from 'lodash'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useUnique} from '../../lib/useUnique'
+import {RouterPaneGroup, RouterSplitPane} from '../../types'
 import {exclusiveParams} from './constants'
 import {ChildLink} from './ChildLink'
 import {PaneRouterContext} from './PaneRouterContext'
@@ -25,21 +26,21 @@ export function PaneRouterProvider(props: {
 }) {
   const {children, flatIndex, index, params: paramsProp, payload: payloadProp, siblingIndex} = props
   const {navigate, navigateIntent} = useRouter()
-  const routerState = useUnique(useRouterState())
-  const routerPanes = useUnique(useMemo(() => routerState?.panes || [], [routerState?.panes]))
+  const routerState = useRouterState()
+  const routerPaneGroups: RouterPaneGroup[] = useMemo(() => routerState?.panes || [], [
+    routerState?.panes,
+  ])
+
   const groupIndex = index - 1
 
-  //
   const [params, _setParams] = useState(paramsProp)
   const paramsRef = useRef(paramsProp)
 
-  //
   const [payload, _setPayload] = useState(payloadProp)
   const payloadRef = useRef(payloadProp)
 
   // Update params state
   useEffect(() => {
-    // return
     if (!isEqual(paramsRef.current, paramsProp)) {
       paramsRef.current = paramsProp
       _setParams(paramsProp)
@@ -48,30 +49,27 @@ export function PaneRouterProvider(props: {
 
   // Update payload state
   useEffect(() => {
-    // return
     if (!isEqual(payloadRef.current, payloadProp)) {
       payloadRef.current = payloadProp
       _setPayload(payloadProp)
     }
   }, [payloadProp])
 
-  const currentGroup = useMemo(() => {
-    return (routerPanes[groupIndex] || []).slice()
-  }, [groupIndex, routerPanes])
-
   const modifyCurrentGroup = useCallback(
-    (modifier) => {
-      const newPanes = routerPanes.slice()
+    (modifier: (siblings: RouterPaneGroup, item: RouterSplitPane) => RouterPaneGroup) => {
+      const newPanes = routerPaneGroups.slice(0)
+
+      const currentGroup = routerPaneGroups[groupIndex] ? routerPaneGroups[groupIndex].slice(0) : []
 
       newPanes.splice(groupIndex, 1, modifier(currentGroup, currentGroup[siblingIndex]))
 
       const newRouterState = {...(routerState || {}), panes: newPanes}
 
-      navigate(newRouterState)
+      setTimeout(() => navigate(newRouterState), 0)
 
       return newRouterState
     },
-    [currentGroup, groupIndex, navigate, routerPanes, routerState, siblingIndex]
+    [groupIndex, navigate, routerPaneGroups, routerState, siblingIndex]
   )
 
   const setPayload: PaneRouterContextValue['setPayload'] = useCallback(
@@ -97,11 +95,10 @@ export function PaneRouterProvider(props: {
   const setParams: PaneRouterContextValue['setParams'] = useCallback(
     (nextParams, setOptions = {}) => {
       const currParams = paramsRef.current
-      const _nextParams = {...currParams, ...nextParams}
 
-      if (!isEqual(currParams, _nextParams)) {
-        _setParams(_nextParams)
-        paramsRef.current = _nextParams
+      if (!isEqual(currParams, nextParams)) {
+        _setParams(nextParams)
+        paramsRef.current = nextParams
       }
 
       const {recurseIfInherited} = {...DEFAULT_SET_PARAMS_OPTIONS, ...setOptions}
@@ -121,7 +118,7 @@ export function PaneRouterProvider(props: {
         if (recurseIfInherited) {
           const newParamKeys = Object.keys(nextParams)
           const inheritedKeys = Object.keys(paramsProp).filter(
-            (key) => rootParams[key] === paramsProp[key]
+            (key) => rootParams && rootParams[key] === paramsProp[key]
           )
 
           const removedInheritedKeys = inheritedKeys.filter((key) => !nextParams[key])
@@ -139,7 +136,10 @@ export function PaneRouterProvider(props: {
           // If it's a duplicate of the group root, we should only set the parameters
           // that differ from the group root.
           const newParams = Object.keys(nextParams).reduce((siblingParams, key) => {
-            if (exclusiveParams.includes(key) || nextParams[key] !== rootParams[key]) {
+            if (
+              exclusiveParams.includes(key) ||
+              (rootParams && nextParams[key] !== rootParams[key])
+            ) {
               siblingParams[key] = nextParams[key]
             }
 
@@ -173,13 +173,15 @@ export function PaneRouterProvider(props: {
       params,
 
       // Whether or not the pane has any siblings (within the same group)
-      hasGroupSiblings: currentGroup.length > 1,
+      hasGroupSiblings: routerPaneGroups[groupIndex]
+        ? routerPaneGroups[groupIndex].length > 1
+        : false,
 
       // The length of the current group
-      groupLength: currentGroup.length,
+      groupLength: routerPaneGroups[groupIndex] ? routerPaneGroups[groupIndex].length : 0,
 
       // Current router state for the "panes" property
-      routerPanesState: routerPanes,
+      routerPanesState: routerPaneGroups,
 
       // Curried StateLink that passes the correct state automatically
       ChildLink,
@@ -189,7 +191,9 @@ export function PaneRouterProvider(props: {
 
       // Replaces the current pane with a new one
       replaceCurrent: (opts = {}): void => {
-        modifyCurrentGroup(() => [{id: opts.id, payload: opts.payload, params: opts.params}])
+        modifyCurrentGroup(() => [
+          {id: opts.id || '', payload: opts.payload, params: opts.params || {}},
+        ])
       },
 
       // Removes the current pane from the group
@@ -217,10 +221,11 @@ export function PaneRouterProvider(props: {
       setView: (viewId) => {
         const {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          view,
-          ...rest
+          view, // omit
+          ...restParams
         } = paramsRef.current
-        return setParams(viewId ? {...rest, view: viewId} : rest)
+
+        return setParams(viewId ? {...restParams, view: viewId} : restParams)
       },
 
       // Set the parameters for the current pane
@@ -233,14 +238,13 @@ export function PaneRouterProvider(props: {
       navigateIntent,
     }),
     [
-      currentGroup,
       flatIndex,
       groupIndex,
       modifyCurrentGroup,
       navigateIntent,
       params,
       payload,
-      routerPanes,
+      routerPaneGroups,
       setParams,
       setPayload,
       siblingIndex,

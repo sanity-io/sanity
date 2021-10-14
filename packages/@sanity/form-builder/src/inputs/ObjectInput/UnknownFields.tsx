@@ -89,7 +89,6 @@ function UnknownField({
   value,
 }: {
   fieldName: string
-  // eslint-disable-next-line no-shadow
   onUnsetClick: (fieldName: string) => void
   readOnly?: boolean
   value: unknown

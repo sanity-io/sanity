@@ -1,23 +1,12 @@
-/* eslint-disable react/jsx-no-bind */
-/* eslint-disable react/no-multi-comp */
-import React from 'react'
-import PropTypes from 'prop-types'
+import {Box, Flex, Heading, Stack, Text} from '@sanity/ui'
 import config from 'config:sanity'
-import {Button, Stack, Heading, Inline, Flex, Text, Box, Card} from '@sanity/ui'
+import PropTypes from 'prop-types'
+import React from 'react'
 import styled from 'styled-components'
 import {BrandLogo} from './legacyParts'
-import {getProviderLogo} from './util/getProviderLogo'
+import {LoginProviderButton} from './LoginProviderButton'
 
-const ProviderLogoWrapper = styled(Box)`
-  svg,
-  img {
-    border-radius: 50%;
-    height: 1.25em;
-    width: 1.25em;
-  }
-`
-
-const BrandLogoWrapper = styled(Box)`
+const BrandLogoWrapper = styled(Flex)`
   svg {
     display: block;
     height: 2rem;
@@ -28,15 +17,14 @@ const BrandLogoWrapper = styled(Box)`
 
 const projectName = (config.project && config.project.name) || ''
 
-// eslint-disable-next-line react/require-optimization
-export default class LoginDialogContent extends React.Component {
+export default class LoginDialogContent extends React.PureComponent {
   static propTypes = {
     title: PropTypes.node.isRequired,
     description: PropTypes.node,
     // eslint-disable-next-line react/forbid-prop-types
     providers: PropTypes.array,
     onLoginButtonClick: PropTypes.func,
-    SanityLogo: PropTypes.func,
+    SanityLogo: PropTypes.oneOfType([PropTypes.object, PropTypes.node, PropTypes.func]),
   }
 
   static defaultProps = {
@@ -48,6 +36,7 @@ export default class LoginDialogContent extends React.Component {
 
   handleLoginButtonClicked = (provider, event) => {
     const {onLoginButtonClick} = this.props
+
     if (onLoginButtonClick) {
       this.props.onLoginButtonClick(provider, event)
     } else {
@@ -56,55 +45,44 @@ export default class LoginDialogContent extends React.Component {
   }
 
   render() {
-    const {title, description, providers, SanityLogo} = this.props
+    const {title, description, providers = [], SanityLogo} = this.props
+
     return (
       <Box paddingX={4} paddingY={5}>
-        <Stack space={5}>
+        <Stack space={4}>
           {BrandLogo && projectName && (
-            <BrandLogoWrapper>
+            <BrandLogoWrapper justify="center">
               <BrandLogo projectName={projectName} />
             </BrandLogoWrapper>
           )}
           <Stack space={4}>
             {!BrandLogo && projectName && (
-              <Heading align="center" as="h2" size={3}>
+              <Heading align="center" as="h1">
                 {projectName}
               </Heading>
             )}
             {title && (
-              <Text align="center" weight="semibold">
+              <Text align="center" size={1} weight="semibold">
                 {title}
               </Text>
             )}
             {description && (
-              <Text size={1} muted align="center">
+              <Text align="center" muted size={1}>
                 {description}
               </Text>
             )}
           </Stack>
 
           <Stack space={2} as="ul">
-            {providers?.map((provider) => {
-              const ProviderLogo = getProviderLogo(provider)
-              const onLoginClick = this.handleLoginButtonClicked.bind(this, provider)
-              return (
-                <Card key={provider?.name} radius={2} border as="li">
-                  <Button mode="bleed" paddingY={4} onClick={onLoginClick} style={{width: '100%'}}>
-                    <Flex justify="center">
-                      <Inline space={2}>
-                        <ProviderLogoWrapper>
-                          <ProviderLogo />
-                        </ProviderLogoWrapper>
-                        <Box>
-                          <Text>{provider?.title}</Text>
-                        </Box>
-                      </Inline>
-                    </Flex>
-                  </Button>
-                </Card>
-              )
-            })}
+            {providers.map((provider, providerIndex) => (
+              <LoginProviderButton
+                key={provider?.name || providerIndex}
+                onLogin={this.handleLoginButtonClicked}
+                provider={provider}
+              />
+            ))}
           </Stack>
+
           {SanityLogo && (
             <Flex justify="center" marginTop={2}>
               <Text>

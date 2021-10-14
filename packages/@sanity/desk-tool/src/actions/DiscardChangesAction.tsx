@@ -22,7 +22,7 @@ export const DiscardChangesAction: DocumentActionComponent = ({
 }) => {
   const {discardChanges}: any = useDocumentOperation(id, type)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
-  const deleteDraftPermission = useCheckDocumentPermission(id, type, 'delete')
+  const deleteDraftPermission = useCheckDocumentPermission(id, type, 'discardDraft')
   const {value: currentUser} = useCurrentUser()
 
   const handleConfirm = useCallback(() => {

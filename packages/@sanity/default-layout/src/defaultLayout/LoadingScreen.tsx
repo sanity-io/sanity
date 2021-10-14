@@ -35,7 +35,7 @@ export const LoadingScreen = React.forwardRef(function LoadingScreen(
 
   return (
     <Root zOffset={600000} $loaded={loaded} ref={ref}>
-      <AppLoadingScreen text="Restoring Sanity" />
+      <AppLoadingScreen text="Restoring Sanity Studio" />
     </Root>
   )
 })

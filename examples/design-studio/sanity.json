@@ -37,6 +37,10 @@
     {
       "implements": "part:@sanity/base/theme/variables/override-style",
       "path": "parts/theme/dev.css"
+    },
+    {
+      "implements": "part:@sanity/base/brand-logo",
+      "path": "parts/logo"
     }
   ]
 }

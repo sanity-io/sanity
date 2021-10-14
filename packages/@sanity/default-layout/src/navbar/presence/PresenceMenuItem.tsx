@@ -25,7 +25,7 @@ export function PresenceMenuItem({presence}: PresenceListRowProps) {
 
   const LinkComponent = useMemo(
     () =>
-      // eslint-disable-next-line no-shadow
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       forwardRef(function LinkComponent(linkProps, ref: React.ForwardedRef<HTMLAnchorElement>) {
         return (
           <IntentLink

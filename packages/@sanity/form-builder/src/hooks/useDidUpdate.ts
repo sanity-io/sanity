@@ -1,6 +1,3 @@
-/* eslint-disable no-shadow */
-// eslint is giving false positives no-shadow for typed arguments here
-
 import {useEffect} from 'react'
 import {usePrevious} from './usePrevious'
 

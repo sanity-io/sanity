@@ -9,7 +9,7 @@ export default {
 
     let hooks
     try {
-      hooks = await client.request({uri: '/hooks'})
+      hooks = await client.clone().config({apiVersion: '2021-10-04'}).request({uri: '/hooks'})
     } catch (err) {
       throw new Error(`Hook list retrieval failed:\n${err.message}`)
     }
@@ -18,6 +18,15 @@ export default {
       output.print(`Name: ${hook.name}`)
       output.print(`Dataset: ${hook.dataset}`)
       output.print(`URL: ${hook.url}`)
+
+      if (hook.type === 'document') {
+        output.print(`HTTP method: ${hook.httpMethod}`)
+
+        if (hook.description) {
+          output.print(`Description: ${hook.description}`)
+        }
+      }
+
       output.print('')
     })
   },

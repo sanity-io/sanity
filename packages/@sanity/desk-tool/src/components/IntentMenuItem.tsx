@@ -13,7 +13,7 @@ export const IntentMenuItem = forwardRef(function IntentMenuItem(
 
   const Link = useMemo(
     () =>
-      // eslint-disable-next-line no-shadow
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       forwardRef(function Link(
         linkProps: {children: React.ReactNode},
         linkRef: React.ForwardedRef<HTMLAnchorElement>

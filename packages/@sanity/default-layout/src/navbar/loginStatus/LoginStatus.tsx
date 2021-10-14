@@ -9,7 +9,7 @@ interface LoginStatusProps {
 }
 
 const StyledMenu = styled(Menu)`
-  min-width: 120px;
+  min-width: 125px;
 `
 
 const MENU_BUTTON_POPOVER_PROPS: MenuButtonProps['popover'] = {
@@ -36,7 +36,7 @@ export function LoginStatus({onLogout}: LoginStatusProps) {
       id="login-status-menu"
       menu={
         <StyledMenu>
-          <MenuItem text="Sign out" icon={LeaveIcon} onClick={onLogout} />
+          <MenuItem text="Sign out" iconRight={LeaveIcon} onClick={onLogout} />
         </StyledMenu>
       }
       popover={MENU_BUTTON_POPOVER_PROPS}

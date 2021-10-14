@@ -85,14 +85,15 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
     [isLoading]
   )
 
-  // Set up the document listener
+  // Set up the document list listener
   useEffect(() => {
-    setResult(null)
-
     // @todo: explain what this does
     const filterFn = fullList
       ? (queryResult: {result: QueryResult | null}) => Boolean(queryResult.result)
       : () => true
+
+    // Set loading state
+    setResult((r) => (r ? {...r, loading: true} : null))
 
     const queryResults$ = getQueryResults(of({query, params}), {tag: 'desk.document-list'}).pipe(
       filterEvents(filterFn)

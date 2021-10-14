@@ -5,7 +5,7 @@ import {useClickOutside, Button, Popover} from '@sanity/ui'
 import {upperFirst} from 'lodash'
 import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
-import {useDocumentHistory} from '../documentHistory'
+import {useDocumentPane} from '../useDocumentPane'
 import {sinceTimelineProps, revTimelineProps, formatTimelineEventLabel} from './helpers'
 import {Timeline} from './timeline'
 
@@ -35,10 +35,10 @@ const Root = styled(Popover)`
 `
 
 export function TimelineMenu({chunk, mode}: TimelineMenuProps) {
+  const {historyController, setTimelineRange, setTimelineMode, timeline, ready} = useDocumentPane()
   const [open, setOpen] = useState(false)
   const [buttonRef, setButtonRef] = useState<HTMLButtonElement | null>(null)
   const [menuContent, setMenuContent] = useState<HTMLDivElement | null>(null)
-  const {historyController, setRange, setTimelineMode, timeline} = useDocumentHistory()
 
   const handleOpen = () => {
     setTimelineMode(mode)
@@ -61,9 +61,9 @@ export function TimelineMenu({chunk, mode}: TimelineMenuProps) {
       const [sinceId, revId] = historyController.findRangeForNewRev(revChunk)
       setTimelineMode('closed')
       setOpen(false)
-      setRange(sinceId, revId)
+      setTimelineRange(sinceId, revId)
     },
-    [historyController, setRange, setTimelineMode]
+    [historyController, setTimelineMode, setTimelineRange]
   )
 
   const selectSince = useCallback(
@@ -71,9 +71,9 @@ export function TimelineMenu({chunk, mode}: TimelineMenuProps) {
       const [sinceId, revId] = historyController.findRangeForNewSince(sinceChunk)
       setTimelineMode('closed')
       setOpen(false)
-      setRange(sinceId, revId)
+      setTimelineRange(sinceId, revId)
     },
-    [historyController, setRange, setTimelineMode]
+    [historyController, setTimelineMode, setTimelineRange]
   )
 
   const loadMoreHistory = useCallback(
@@ -126,6 +126,7 @@ export function TimelineMenu({chunk, mode}: TimelineMenuProps) {
       referenceElement={buttonRef}
     >
       <Button
+        disabled={!ready}
         mode="bleed"
         fontSize={1}
         padding={2}

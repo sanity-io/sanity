@@ -1,6 +1,6 @@
 {
   "name": "@sanity/core",
-  "version": "2.20.0",
+  "version": "2.21.3",
   "description": "Sanity core bundle, containing required packages for the development and build process",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -8,7 +8,8 @@
   "scripts": {
     "build": "babel src --copy-files --out-dir lib",
     "clean": "rimraf lib dest",
-    "prebuild": "npm run clean"
+    "prebuild": "npm run clean",
+    "test": "jest"
   },
   "engines": {
     "node": ">=12.0.0"
@@ -28,16 +29,16 @@
     "@babel/preset-typescript": "^7.10.4",
     "@babel/register": "^7.7.4",
     "@sanity/eventsource": "2.14.0",
-    "@sanity/export": "2.20.0",
+    "@sanity/export": "2.21.0",
     "@sanity/generate-help-url": "2.18.0",
-    "@sanity/import": "2.20.0",
-    "@sanity/plugin-loader": "2.20.0",
-    "@sanity/resolver": "2.20.0",
-    "@sanity/schema": "2.20.0",
-    "@sanity/server": "2.20.0",
-    "@sanity/util": "2.20.0",
+    "@sanity/import": "2.21.3",
+    "@sanity/plugin-loader": "2.21.3",
+    "@sanity/resolver": "2.21.3",
+    "@sanity/schema": "2.21.0",
+    "@sanity/server": "2.21.3",
+    "@sanity/util": "2.21.3",
     "@sanity/uuid": "^3.0.1",
-    "@sanity/webpack-integration": "2.20.0",
+    "@sanity/webpack-integration": "2.21.3",
     "chalk": "^2.4.2",
     "chokidar": "^3.0.0",
     "configstore": "^5.0.1",
@@ -55,6 +56,7 @@
     "lodash": "^4.17.15",
     "log-symbols": "^2.2.0",
     "oneline": "^1.0.3",
+    "opn": "^5.2.0",
     "path-exists": "^3.0.0",
     "pirates": "^4.0.0",
     "pluralize": "^7.0.0",
@@ -69,7 +71,7 @@
     "yargs": "^16.2.0"
   },
   "devDependencies": {
-    "@sanity/client": "2.19.0",
+    "@sanity/client": "2.21.3",
     "@types/fs-extra": "^7.0.0",
     "@types/inquirer": "^6.0.2",
     "@types/resolve-from": "^4.0.0",

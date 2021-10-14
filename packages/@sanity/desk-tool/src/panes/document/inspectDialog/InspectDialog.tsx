@@ -7,6 +7,7 @@ import {combineLatest, Observable} from 'rxjs'
 import {map} from 'rxjs/operators'
 import {DocTitle} from '../../../components/DocTitle'
 import {deskToolSettings} from '../../../settings'
+import {useDocumentPane} from '../useDocumentPane'
 import {VIEW_MODE_PARSED, VIEW_MODE_RAW, VIEW_MODES} from './constants'
 import {isDocumentWithType, isExpanded, maybeSelectAll, select, toggleExpanded} from './helpers'
 import {JSONInspectorWrapper} from './InspectDialog.styles'
@@ -14,8 +15,6 @@ import {Search} from './Search'
 import {InspectViewMode} from './types'
 
 interface InspectDialogProps {
-  idPrefix: string
-  onClose: () => void
   value: Partial<SanityDocument> | null
 }
 
@@ -41,8 +40,9 @@ function mapReceivedPropsToChildProps(
 }
 
 function InspectDialogComponent(props: InnerInspectDialogProps) {
-  const {idPrefix, onClose, onViewModeChange, value, viewMode} = props
-  const dialogIdPrevix = `${idPrefix}_inspect_`
+  const {onViewModeChange, value, viewMode} = props
+  const {handleInspectClose, paneKey} = useDocumentPane()
+  const dialogIdPrefix = `${paneKey}_inspect_`
 
   const setParsedViewMode = useCallback(() => {
     onViewModeChange(VIEW_MODE_PARSED)
@@ -54,7 +54,7 @@ function InspectDialogComponent(props: InnerInspectDialogProps) {
 
   return (
     <Dialog
-      id={`${dialogIdPrevix}dialog`}
+      id={`${dialogIdPrefix}dialog`}
       header={
         isDocumentWithType(value) ? (
           <>
@@ -67,24 +67,24 @@ function InspectDialogComponent(props: InnerInspectDialogProps) {
           <em>No value</em>
         )
       }
-      onClose={onClose}
+      onClose={handleInspectClose}
       width={3}
     >
       <Flex direction="column" height="fill">
         <Card padding={3} shadow={1} style={{position: 'sticky', bottom: 0, zIndex: 3}}>
           <TabList space={1}>
             <Tab
-              aria-controls={`${dialogIdPrevix}tabpanel`}
+              aria-controls={`${dialogIdPrefix}tabpanel`}
               fontSize={1}
-              id={`${dialogIdPrevix}tab-${VIEW_MODE_PARSED.id}`}
+              id={`${dialogIdPrefix}tab-${VIEW_MODE_PARSED.id}`}
               label={VIEW_MODE_PARSED.title}
               onClick={setParsedViewMode}
               selected={viewMode === VIEW_MODE_PARSED}
             />
             <Tab
-              aria-controls={`${dialogIdPrevix}tabpanel`}
+              aria-controls={`${dialogIdPrefix}tabpanel`}
               fontSize={1}
-              id={`${dialogIdPrevix}tab-${VIEW_MODE_RAW.id}`}
+              id={`${dialogIdPrefix}tab-${VIEW_MODE_RAW.id}`}
               label={VIEW_MODE_RAW.title}
               onClick={setRawViewMode}
               selected={viewMode === VIEW_MODE_RAW}
@@ -93,9 +93,9 @@ function InspectDialogComponent(props: InnerInspectDialogProps) {
         </Card>
 
         <TabPanel
-          aria-labelledby={`${dialogIdPrevix}tab-${viewMode.id}`}
+          aria-labelledby={`${dialogIdPrefix}tab-${viewMode.id}`}
           flex={1}
-          id={`${dialogIdPrevix}tabpanel`}
+          id={`${dialogIdPrefix}tabpanel`}
           overflow="auto"
           padding={4}
           style={{outline: 'none'}}

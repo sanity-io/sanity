@@ -1,6 +1,6 @@
-import React, {forwardRef, useMemo} from 'react'
+import React, {forwardRef, useCallback, useEffect, useMemo, useState} from 'react'
 import {FolderIcon, ChevronRightIcon, DocumentIcon} from '@sanity/icons'
-import {isSanityDocument, SanityDocument, SchemaType} from '@sanity/types'
+import {isSanityDocument, SchemaType} from '@sanity/types'
 import {Card, Text} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
 import {SanityDefaultPreview} from 'part:@sanity/base/preview'
@@ -13,19 +13,20 @@ import {PaneItemPreview} from './PaneItemPreview'
 interface PaneItemProps {
   id: string
   layout?: 'inline' | 'block' | 'default' | 'card' | 'media' | 'detail'
-  isSelected?: boolean
-  isActive?: boolean
   icon?: React.ComponentType<any> | false
+  pressed?: boolean
+  selected?: boolean
   title?: string
-  value?: PreviewValue | SanityDocument
+  value?: PreviewValue | {_id: string; _type: string}
   schemaType?: SchemaType
 }
 
 export function PaneItem(props: PaneItemProps) {
-  const {id, isActive, isSelected, schemaType, layout = 'default', icon, title, value} = props
+  const {icon, id, layout = 'default', pressed, schemaType, selected, title, value} = props
   const {ChildLink} = usePaneRouter()
   const hasSchemaType = Boolean(schemaType && schemaType.name && schema.get(schemaType.name))
   const previewValue = useMemo(() => ({title}), [title])
+  const [clicked, setClicked] = useState(false)
 
   const preview = useMemo(() => {
     if (value && isSanityDocument(value)) {
@@ -59,12 +60,17 @@ export function PaneItem(props: PaneItemProps) {
 
   const LinkComponent = useMemo(
     () =>
-      // eslint-disable-next-line no-shadow
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       forwardRef(function LinkComponent(linkProps: any, ref: any) {
         return <ChildLink {...linkProps} childId={id} ref={ref} />
       }),
     [ChildLink, id]
   )
+
+  const handleClick = useCallback(() => setClicked(true), [])
+
+  // Reset `clicked` state when `selected` prop changes
+  useEffect(() => setClicked(false), [selected])
 
   return useMemo(
     () => (
@@ -75,13 +81,14 @@ export function PaneItem(props: PaneItemProps) {
         data-ui="PaneItem"
         padding={2}
         radius={2}
-        pressed={!isActive && isSelected}
-        selected={isActive && isSelected}
+        onClick={handleClick}
+        pressed={pressed}
+        selected={selected || clicked}
         tone="inherit"
       >
         {preview}
       </Card>
     ),
-    [isActive, isSelected, LinkComponent, preview]
+    [clicked, handleClick, LinkComponent, pressed, preview, selected]
   )
 }

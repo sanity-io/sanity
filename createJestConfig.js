@@ -9,6 +9,7 @@ const jestModuleAliases = {
   'part:@sanity/base/initial-value-templates?': './test/emptyArray',
   'config:sanity': './examples/test-studio/sanity.json',
   'sanity:css-custom-properties': './test/emptyObject',
+  'sanity:versions': './test/mockVersions',
 }
 
 // note: these can contain regex for matching

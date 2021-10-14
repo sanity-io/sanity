@@ -38,77 +38,78 @@
     "@sanity/studio-hints",
     "dashboard-widget-cats",
     "dashboard-widget-document-list",
+    "markdown",
     "mux-input"
   ],
   "parts": [
     {
       "name": "part:@sanity/base/schema",
-      "path": "./schemas/schema"
+      "path": "schema"
     },
     {
       "implements": "part:@sanity/base/schema-type",
-      "path": "src/components/PertEstimateSchema"
+      "path": "parts/pertEstimate/PertEstimateSchema"
     },
     {
       "implements": "part:@sanity/base/tool",
-      "path": "src/test-intent-tool"
+      "path": "parts/tools/test-intent-tool"
     },
     {
       "implements": "part:@sanity/production-preview/resolve-production-url",
-      "path": "src/resolveProductionUrl"
+      "path": "parts/resolveProductionUrl"
     },
     {
       "implements": "part:@sanity/base/document-actions/resolver",
-      "path": "src/resolveDocumentActions"
+      "path": "parts/resolveDocumentActions"
     },
     {
       "implements": "part:@sanity/base/document-badges/resolver",
-      "path": "src/resolveDocumentBadges"
+      "path": "parts/resolveDocumentBadges"
     },
     {
       "implements": "part:@sanity/form-builder/input/array/functions",
-      "path": "src/components/SearchableArrayFunctions"
+      "path": "parts/SearchableArrayFunctions"
     },
     {
       "implements": "part:@sanity/dashboard/config",
-      "path": "src/dashboardConfig"
+      "path": "parts/dashboardConfig"
     },
     {
       "name": "part:@sanity/desk-tool/structure",
-      "path": "src/deskStructure"
+      "path": "parts/deskStructure"
     },
     {
       "implements": "part:@sanity/default-layout/studio-hints-config",
-      "path": "src/studioHintsConfig"
+      "path": "parts/studioHintsConfig"
     },
     {
       "name": "part:@sanity/base/initial-value-templates",
-      "path": "src/templates"
+      "path": "parts/initialValueTemplates"
     },
     {
       "name": "part:@sanity/base/new-document-structure",
-      "path": "src/newDocumentStructure"
+      "path": "parts/newDocumentStructure"
     },
     {
       "name": "part:@sanity/dashboard/widget/test-dummy",
       "implements": "part:@sanity/dashboard/widget",
-      "path": "src/widgets/DummyWidget"
+      "path": "parts/widgets/DummyWidget"
     },
     {
       "implements": "part:@sanity/desk-tool/after-editor-component",
-      "path": "src/components/AfterEditorComponent"
+      "path": "parts/AfterEditorComponent"
     },
     {
       "implements": "part:@sanity/base/tool",
-      "path": "src/tools/css-variables/tool"
+      "path": "parts/tools/css-variables/tool"
     },
     {
       "implements": "part:@sanity/base/tool",
-      "path": "src/tools/test-ui-error/tool"
+      "path": "parts/tools/test-ui-error/tool"
     },
     {
       "implements": "part:@sanity/base/tool",
-      "path": "src/tools/ui-test-bed-tool/tool"
+      "path": "parts/tools/ui-test-bed-tool/tool"
     }
   ],
   "env": {
@@ -121,7 +122,7 @@
       "parts": [
         {
           "implements": "part:@sanity/base/tool",
-          "path": "src/tools/long"
+          "path": "parts/tools/long"
         }
       ]
     }

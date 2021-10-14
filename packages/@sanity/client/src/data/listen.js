@@ -7,6 +7,11 @@ const once = require('../util/once')
 const defaults = require('../util/defaults')
 const encodeQueryString = require('./encodeQueryString')
 
+// Limit is 16K for a _request_, eg including headers. Have to account for an
+// unknown range of headers, but an average EventSource request from Chrome seems
+// to have around 700 bytes of cruft, so let us account for 1.2K to be "safe"
+const MAX_URL_LENGTH = 16000 - 1200
+
 const tokenWarning = [
   'Using token with listeners is not supported in browsers. ',
   `For more info, see ${generateHelpUrl('js-client-listener-tokens-browser')}.`,
@@ -39,6 +44,10 @@ module.exports = function listen(query, params, opts = {}) {
   const qs = encodeQueryString({query, params, options: listenOpts, tag})
 
   const uri = `${url}${this.getDataUrl('listen', qs)}`
+  if (uri.length > MAX_URL_LENGTH) {
+    return new Observable((observer) => observer.error(new Error('Query too large for listener')))
+  }
+
   const listenFor = options.events ? options.events : ['mutation']
   const shouldEmitReconnect = listenFor.indexOf('reconnect') !== -1
 

@@ -16,11 +16,11 @@ const projectId =
 
 export default class LoginWrapper extends React.PureComponent {
   static propTypes = {
-    children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
+    children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
     title: PropTypes.node,
     description: PropTypes.node,
     sanityLogo: PropTypes.node,
-    SanityLogo: PropTypes.func,
+    SanityLogo: PropTypes.oneOfType([PropTypes.object, PropTypes.node, PropTypes.func]),
     LoadingScreen: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   }
 
@@ -118,6 +118,6 @@ export default class LoginWrapper extends React.PureComponent {
       return <UnauthorizedUser user={user} />
     }
 
-    return typeof children === 'function' ? children(user) : children
+    return typeof children === 'function' ? children(user) : <>{children}</>
   }
 }

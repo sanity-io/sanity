@@ -28,6 +28,7 @@ export enum HELP_URL {
   INVALID_LIST_ITEM = 'structure-invalid-list-item',
   COMPONENT_REQUIRED = 'structure-view-component-required',
   DOCUMENT_ID_REQUIRED = 'structure-document-id-required',
+  DOCUMENT_TYPE_REQUIRED = 'structure-document-type-required',
   SCHEMA_TYPE_REQUIRED = 'structure-schema-type-required',
   SCHEMA_TYPE_NOT_FOUND = 'structure-schema-type-not-found',
   LIST_ITEMS_MUST_BE_ARRAY = 'structure-list-items-must-be-array',

@@ -1,5 +1,5 @@
 import styled, {css} from 'styled-components'
-import {Box, Flex} from '@sanity/ui'
+import {Flex} from '@sanity/ui'
 
 export const RootFlex = styled(Flex)<{$isOverlayVisible: boolean}>`
   ${({$isOverlayVisible}) =>
@@ -27,11 +27,19 @@ export const MainAreaFlex = styled(Flex)`
   position: relative;
 `
 
-export const ToolBox = styled(Box)`
+export const ToolBox = styled(Flex)`
   position: relative;
+
+  @media (max-width: ${({theme}) => theme.sanity.media[0] - 1}px) {
+    min-height: 100%;
+  }
 
   @media (min-width: ${({theme}) => theme.sanity.media[0]}px) {
     overflow: auto;
+
+    & > * {
+      min-height: auto;
+    }
   }
 `
 

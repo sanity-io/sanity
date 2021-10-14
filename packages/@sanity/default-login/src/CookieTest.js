@@ -189,7 +189,7 @@ class CookieTest extends PureComponent {
 
 CookieTest.propTypes = {
   sanityLogo: PropTypes.node,
-  SanityLogo: PropTypes.func,
+  SanityLogo: PropTypes.oneOfType([PropTypes.object, PropTypes.node, PropTypes.func]),
 }
 
 export default CookieTest

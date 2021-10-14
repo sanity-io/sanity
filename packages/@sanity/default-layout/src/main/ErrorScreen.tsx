@@ -1,5 +1,5 @@
 import React from 'react'
-import {Card, Code, Container, Stack, Button, Heading, Flex, Text} from '@sanity/ui'
+import {Card, Code, Container, Stack, Button, Heading, Text} from '@sanity/ui'
 import {SyncIcon} from '@sanity/icons'
 import {ErrorAccordion} from './ErrorAccordion'
 
@@ -45,7 +45,7 @@ function formatStack(stack) {
   )
 }
 
-export function ErrorScreen(props: Props) {
+export function RenderToolErrorScreen(props: Props) {
   const {activeTool, error, info, onRetry, showErrorDetails} = props
   const toolName = (activeTool && (activeTool.title || activeTool.name)) || 'active'
 
@@ -58,39 +58,39 @@ export function ErrorScreen(props: Props) {
       overflow="auto"
     >
       <Container>
-        <Stack space={5}>
-          <Heading>
+        <Stack space={4}>
+          <Heading as="h1">
             The <i>{toolName}</i> tool crashed
           </Heading>
-          <Stack space={4}>
-            <Text muted>
-              An uncaught exception in the <i>{toolName}</i> tool caused the Studio to crash.
-            </Text>
-            <Flex>
-              <Button text="Retry" icon={SyncIcon} tone="primary" onClick={onRetry} />
-            </Flex>
-          </Stack>
-          {showErrorDetails && (
-            <>
-              <Stack space={4}>
-                {error.stack ? (
-                  <ErrorAccordion open={__DEV__} title="Stack trace">
-                    <Code size={1}>{formatStack(limitStackLength(getErrorWithStack(error)))}</Code>
-                  </ErrorAccordion>
-                ) : (
-                  <ErrorAccordion open={__DEV__} title="Error">
-                    <Code size={1}>{error.message}</Code>
-                  </ErrorAccordion>
-                )}
-                {info && info.componentStack && (
-                  <ErrorAccordion open={__DEV__} title="Component stack">
-                    <Code size={1}>{info.componentStack.replace(/^\s*\n+/, '')}</Code>
-                  </ErrorAccordion>
-                )}
-              </Stack>
-            </>
-          )}
+
+          <Text as="p" muted>
+            An uncaught exception in the <i>{toolName}</i> tool caused the Studio to crash.
+          </Text>
+
+          <div>
+            <Button text="Retry" icon={SyncIcon} tone="primary" onClick={onRetry} />
+          </div>
         </Stack>
+
+        {showErrorDetails && (
+          <Stack marginTop={5} space={4}>
+            {error.stack ? (
+              <ErrorAccordion open={__DEV__} title="Stack trace">
+                <Code size={1}>{formatStack(limitStackLength(getErrorWithStack(error)))}</Code>
+              </ErrorAccordion>
+            ) : (
+              <ErrorAccordion open={__DEV__} title="Error">
+                <Code size={1}>{error.message}</Code>
+              </ErrorAccordion>
+            )}
+
+            {info && info.componentStack && (
+              <ErrorAccordion open={__DEV__} title="Component stack">
+                <Code size={1}>{info.componentStack.replace(/^\s*\n+/, '')}</Code>
+              </ErrorAccordion>
+            )}
+          </Stack>
+        )}
       </Container>
     </Card>
   )

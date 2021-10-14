@@ -185,3 +185,21 @@ test('[listener] emits channel errors with deep error description', (t) => {
     })
     .catch(t.end)
 })
+
+test('[listener] emits error if request URL is too large', (t) => {
+  testSse(({request, channel}) => {
+    channel.close()
+    process.nextTick(() => channel.close())
+  })
+    .then(({server, client}) => {
+      const pad = '_'.repeat(16000)
+      client.listen(`*{"foo":"${pad}"`).subscribe({
+        error: (err) => {
+          t.equal(err.message, 'Query too large for listener', 'should have passed error message')
+          server.close()
+          t.end()
+        },
+      })
+    })
+    .catch(t.end)
+})

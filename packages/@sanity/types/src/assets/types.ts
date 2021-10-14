@@ -45,6 +45,7 @@ export interface ImageMetadata {
   dimensions: ImageDimensions
   palette?: ImagePalette
   lqip?: string
+  blurHash?: string
   hasAlpha: boolean
   isOpaque: boolean
 }
@@ -122,7 +123,14 @@ export interface AssetSourceComponentProps {
   onSelect: (assetFromSource: AssetFromSource) => void
 }
 
-export type AssetMetadataType = 'location' | 'exif' | 'image' | 'palette' | 'lqip' | 'none'
+export type AssetMetadataType =
+  | 'location'
+  | 'exif'
+  | 'image'
+  | 'palette'
+  | 'lqip'
+  | 'blurhash'
+  | 'none'
 
 export interface AssetSource {
   name: string

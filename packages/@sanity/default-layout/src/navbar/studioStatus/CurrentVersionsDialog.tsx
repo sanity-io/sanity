@@ -39,9 +39,9 @@ class CurrentVersionsDialog extends React.PureComponent<Props> {
           width={1}
           scheme="light"
         >
-          <Box paddingY={5} paddingX={4}>
+          <Box padding={4}>
             <Stack space={5}>
-              <Text>It was built using the latest versions of all packages.</Text>
+              <Text>This Studio was built using the latest versions of all packages.</Text>
               <Card as="details" paddingTop={4} borderTop>
                 <summary>List all installed packages</summary>
                 <Box marginTop={4}>{this.renderTable()}</Box>

@@ -11,16 +11,16 @@ export function ToolMenuCollapse({tools}: {tools: Tool[]}) {
   return useMemo(
     () => (
       <CollapseMenu menuPopoverProps={{scheme: 'light'}} gap={1}>
-        {tools?.map((tool) => {
-          const Link = forwardRef(function Link(props: any, ref) {
+        {tools.map((tool) => {
+          const Link = forwardRef(function Link(props: any, ref: any) {
             return (
               <StateLink
-                ref={ref}
                 {...props}
+                ref={ref}
                 state={{
-                  ...(router?.state || {}),
-                  tool: tool?.name,
-                  [tool?.name]: undefined,
+                  ...router.state,
+                  tool: tool.name,
+                  [tool.name]: undefined,
                 }}
               />
             )
@@ -30,18 +30,18 @@ export function ToolMenuCollapse({tools}: {tools: Tool[]}) {
             <CollapseMenuButton
               // eslint-disable-next-line react/jsx-no-bind
               as={Link}
-              key={tool?.name}
+              key={tool.name}
               data-as="a"
               buttonProps={{mode: 'bleed'}}
               tooltipProps={{scheme: 'light'}}
               text={tool.title}
-              icon={tool?.icon || PlugIcon}
-              selected={router?.state?.tool === tool?.name}
+              icon={tool.icon || PlugIcon}
+              selected={router.state.tool === tool.name}
             />
           )
         })}
       </CollapseMenu>
     ),
-    [router?.state, tools]
+    [router.state, tools]
   )
 }

@@ -46,7 +46,7 @@ export function unstable_useCheckDocumentPermission(
       pipe(
         distinctUntilChanged(shallowEquals),
         debounceTime(10),
-        // eslint-disable-next-line no-shadow
+        // eslint-disable-next-line @typescript-eslint/no-shadow
         switchMap(([id, type, permission]) => {
           if (permission === 'update') {
             return canUpdate(id, type)
