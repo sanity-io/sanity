@@ -18,6 +18,7 @@ import {PaneFooter} from '../../components/pane'
 import {usePaneLayout} from '../../components/pane/usePaneLayout'
 import {useDocumentType} from '../../lib/resolveDocumentType'
 import {ErrorPane} from '../error'
+import {LoadingPane} from '../loading'
 import {ChangesPanel} from './changesPanel'
 import {DocumentPanel} from './documentPanel'
 import {DocumentOperationResults} from './DocumentOperationResults'
@@ -55,11 +56,20 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
   )
 
   if (type === '*' && !isLoaded) {
-    return null
+    return <LoadingPane flex={2.5} minWidth={320} title="Loading document…" />
   }
 
   if (!documentType) {
-    return <div>Error: Document type not defined, and document does not exist</div>
+    return (
+      <ErrorPane flex={2.5} minWidth={320} title={<>The document was not found</>}>
+        <Stack space={4}>
+          <Text as="p">
+            The document type is not defined, and a document with the <code>{id}</code> identifier
+            could not be found.
+          </Text>
+        </Stack>
+      </ErrorPane>
+    )
   }
 
   return (
