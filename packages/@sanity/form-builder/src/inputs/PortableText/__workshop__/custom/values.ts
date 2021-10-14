@@ -83,27 +83,6 @@ export const values = {
     },
     {
       _type: 'myBlockType',
-      _key: 'd',
-      style: 'normal',
-      markDefs: [],
-      children: [
-        {
-          _type: 'span',
-          _key: 'd1',
-          text:
-            "This is a custom portable text block above an empty image block! It's the block below. There should be a nice margin below me?",
-          marks: [],
-        },
-      ],
-    },
-    {
-      _key: 'e',
-      _type: 'someObject',
-      title: 'Some object',
-      subtitle: 'Description',
-    },
-    {
-      _type: 'myBlockType',
       _key: 'f',
       style: 'normal',
       markDefs: [],
@@ -111,6 +90,27 @@ export const values = {
         {
           _type: 'span',
           _key: 'f1',
+          text:
+            "This is a custom portable text block above an empty image block! It's the block below. There should be a nice margin below me?",
+          marks: [],
+        },
+      ],
+    },
+    {
+      _key: 'g',
+      _type: 'someObject',
+      title: 'Some object',
+      subtitle: 'Description',
+    },
+    {
+      _type: 'myBlockType',
+      _key: 'h',
+      style: 'normal',
+      markDefs: [],
+      children: [
+        {
+          _type: 'span',
+          _key: 'h1',
           text:
             "This is a custom portable text block above an empty image block! It's the block below. There should be a nice margin below me?",
           marks: [],
