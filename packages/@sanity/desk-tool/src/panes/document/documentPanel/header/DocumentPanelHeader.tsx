@@ -46,8 +46,8 @@ export const DocumentPanelHeader = forwardRef(function DocumentPanelHeader(
   const contextMenuItems = useMemo(() => menuItems.filter(isMenuButton), [menuItems])
   const [isValidationOpen, setValidationOpen] = React.useState<boolean>(false)
   const showTabs = views.length > 1
-  const showVersionMenu = features.reviewChanges || views.length === 1
   const closable = siblingIndex > 0
+  const showVersionMenu = features.reviewChanges
 
   const languageMenu = useMemo(
     () => LanguageFilter && <LanguageFilter key="language-menu" schemaType={documentSchema} />,
