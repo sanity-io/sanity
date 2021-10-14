@@ -13,6 +13,11 @@ import {DeskToolPaneActionHandler} from '../../types/types'
 import {useDeskToolPaneActions} from '../useDeskToolPaneActions'
 import {Layout, SortOrder} from './types'
 import {CreateMenuButton} from './CreateMenuButton'
+import {getInitialValueObservable} from '../document/lib/initialValue/getInitialValue'
+import {combineLatest, of} from 'rxjs'
+import {useMemoObservable} from 'react-rx'
+import {filter, map, switchMap, tap} from 'rxjs/operators'
+import {canCreate} from '@sanity/base/_internal'
 
 /**
  * Detects whether a menu item is the default create menu item.
@@ -123,14 +128,25 @@ export function DocumentListPaneHeader(props: {
     [handleAction, menuItems, menuItemGroups]
   )
 
+  const createMenuItemPermissions = useMemoObservable(
+    () => resolveInitialValuesFromTemplates(initialValueTemplates),
+    [initialValueTemplates]
+  )
+
   const actions = useMemo(() => {
     let foundCreateButton = false
 
     const actionNodes = actionItems.map((action, actionIndex) => {
-      // Replace the "Create" button when there are multiple initial value templates
+      // Replace the "Create" button when there are multiple initial value resolvedTemplates
       if (createMenuItems.length > 1 && isDefaultCreateActionItem(action, schemaType)) {
         foundCreateButton = true
-        return <CreateMenuButton items={createMenuItems} key={action.key || actionIndex} />
+        return (
+          <CreateMenuButton
+            permissions={createMenuItemPermissions || []}
+            items={createMenuItems}
+            key={action.key || actionIndex}
+          />
+        )
       }
 
       if (action.intent) {
@@ -161,11 +177,15 @@ export function DocumentListPaneHeader(props: {
 
     const createMenuButton =
       foundCreateButton || createMenuItems.length <= 1 ? null : (
-        <CreateMenuButton items={createMenuItems} key="$CreateMenuButton" />
+        <CreateMenuButton
+          permissions={createMenuItemPermissions || []}
+          items={createMenuItems}
+          key="$CreateMenuButton"
+        />
       )
 
     return <Inline space={1}>{[...actionNodes, createMenuButton, contextMenu]}</Inline>
-  }, [actionItems, createMenuItems, contextMenu, schemaType])
+  }, [actionItems, createMenuItems, createMenuItemPermissions, contextMenu, schemaType])
 
   return (
     <PaneHeader
@@ -176,5 +196,28 @@ export function DocumentListPaneHeader(props: {
       }
       title={title}
     />
+  )
+}
+
+function resolveInitialValuesFromTemplates(initialValueTemplates?: InitialValueTemplateItem[]) {
+  if (!initialValueTemplates) {
+    return of([])
+  }
+  return combineLatest(
+    initialValueTemplates.map((template) =>
+      getInitialValueObservable({
+        documentId: 'dummyId',
+        paneOptions: {
+          template: template.templateId,
+          templateParameters: template.parameters,
+          id: template.templateId,
+          type: template.type,
+        },
+      }).pipe(
+        filter((state) => state.type === 'success'),
+        map((state: any) => state.value as {_id?: string; _type: string}),
+        switchMap((document) => canCreate({_id: 'dummy', ...document}))
+      )
+    )
   )
 }

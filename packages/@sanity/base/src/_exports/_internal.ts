@@ -12,3 +12,4 @@ export {remoteSnapshots} from '../datastores/document/document-pair/remoteSnapsh
 export type {EditStateFor} from '../datastores/document/document-pair/editState'
 
 export * from '../actions/utils/types'
+export {canCreate} from '../datastores/grants/highlevel'

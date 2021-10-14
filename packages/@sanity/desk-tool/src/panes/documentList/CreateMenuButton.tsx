@@ -10,9 +10,14 @@ const POPOVER_PROPS: PopoverProps = {
   portal: true,
 }
 
-export function CreateMenuButton(props: {items: PaneMenuItem[]}) {
+export function CreateMenuButton(props: {
+  permissions: {granted: boolean; reason: string}[]
+  items: PaneMenuItem[]
+}) {
   const {items} = props
 
+  // todo: somehow resolve initial value for each of the passed menu items
+  //  and pass those to the permission checker to see if the user has access to create any of them
   return (
     <MenuButton
       button={<Button icon={ComposeIcon} mode="bleed" padding={3} />}
@@ -27,7 +32,9 @@ export function CreateMenuButton(props: {items: PaneMenuItem[]}) {
               icon={createItem.icon}
               intent={createItem.intent!}
               key={createItemIndex}
-              text={createItem.title}
+              text={`${createItem.title} ${
+                permissions[createItemIndex]?.granted ? 'Granted!' : 'No access'
+              }`}
             />
           ))}
         </Menu>
