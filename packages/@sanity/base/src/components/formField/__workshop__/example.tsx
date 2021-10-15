@@ -2,7 +2,7 @@ import type {ValidationMarker} from '@sanity/types'
 import {Card, Code, Container, Flex, LayerProvider, TextInput} from '@sanity/ui'
 import {useBoolean, useNumber, useString} from '@sanity/ui-workshop'
 import React, {useCallback, useMemo, useState} from 'react'
-import {ChangeBar} from '../../../change-indicators/ChangeBar'
+import {ElementWithChangeBar} from '../../../change-indicators/ElementWithChangeBar'
 import type {FormFieldPresence} from '../../../presence'
 import {useCurrentUser} from '../../../_exports/hooks'
 import {FormField} from '../FormField'
@@ -71,9 +71,9 @@ export default function ExampleStory() {
             title={title}
             description={description}
           >
-            <ChangeBar isChanged={isChanged} hasFocus={focused}>
+            <ElementWithChangeBar isChanged={isChanged} hasFocus={focused}>
               <TextInput id={inputId} onBlur={handleBlur} onFocus={handleFocus} />
-            </ChangeBar>
+            </ElementWithChangeBar>
           </FormField>
         </LayerProvider>
 

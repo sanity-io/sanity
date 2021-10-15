@@ -3,12 +3,12 @@ import {ConnectorContext} from './ConnectorContext'
 import {
   ChangeBarWrapper,
   FieldWrapper,
-  HitAreaButton,
-  TooltipTriggerWrapper,
-  BarWrapper,
-} from './ChangeBar.styled'
+  ChangeBar,
+  ChangeBarMarker,
+  ChangeBarButton,
+} from './ElementWithChangeBar.styled'
 
-export function ChangeBar(props: {
+export function ElementWithChangeBar(props: {
   children: React.ReactNode
   hasFocus: boolean
   isChanged: boolean
@@ -22,13 +22,13 @@ export function ChangeBar(props: {
   const handleMouseEnter = useCallback(() => setHover(true), [])
   const handleMouseLeave = useCallback(() => setHover(false), [])
 
-  const tooltip = useMemo(
+  const changeBar = useMemo(
     () =>
       disabled ? null : (
-        <TooltipTriggerWrapper data-testid="change-bar__tooltip-wrapper">
-          <BarWrapper />
+        <ChangeBar data-testid="change-bar__tooltip-wrapper">
+          <ChangeBarMarker />
 
-          <HitAreaButton
+          <ChangeBarButton
             aria-label="Review changes"
             onClick={isReviewChangesOpen ? undefined : onOpenReviewChanges}
             onMouseEnter={handleMouseEnter}
@@ -36,7 +36,7 @@ export function ChangeBar(props: {
             tabIndex={isReviewChangesOpen || !isChanged ? -1 : 0}
             type="button"
           />
-        </TooltipTriggerWrapper>
+        </ChangeBar>
       ),
     [
       handleMouseEnter,
@@ -58,7 +58,7 @@ export function ChangeBar(props: {
       disabled={disabled}
     >
       <FieldWrapper data-testid="change-bar__field-wrapper">{children}</FieldWrapper>
-      {tooltip}
+      {changeBar}
     </ChangeBarWrapper>
   )
 }
