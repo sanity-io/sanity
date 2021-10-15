@@ -17,12 +17,9 @@ import {DebugRect, ConnectorPath, InteractivePath, RightBarWrapper} from './Conn
 interface Props {
   from: {rect: Rect; bounds: Rect}
   to: {rect: Rect; bounds: Rect}
-  hovered: boolean
-  revertHovered: boolean
-  focused: boolean
 }
 
-export function Connector({from, to, hovered, focused, revertHovered}: Props) {
+export function Connector({from, to}: Props) {
   const line = mapConnectorToLine({from, to})
 
   // If both ends of the connector are out of bounds, then do not render
@@ -36,17 +33,8 @@ export function Connector({from, to, hovered, focused, revertHovered}: Props) {
     <>
       <InteractivePath d={linePathDescription} strokeWidth={INTERACTIVE_STROKE_WIDTH} />
 
-      <ConnectorPath
-        focused={focused}
-        revertedHovered={revertHovered}
-        hovered={hovered && !focused && !revertHovered}
-        d={linePathDescription}
-        strokeWidth={STROKE_WIDTH}
-      />
+      <ConnectorPath d={linePathDescription} strokeWidth={STROKE_WIDTH} />
       <RightBarWrapper
-        focused={focused}
-        revertedHovered={revertHovered}
-        hovered={hovered && !focused && !revertHovered}
         top={to.rect.top}
         left={to.rect.left}
         height={to.rect.height}
@@ -56,9 +44,6 @@ export function Connector({from, to, hovered, focused, revertHovered}: Props) {
 
       {line.from.isAbove && (
         <ConnectorPath
-          focused={focused}
-          revertedHovered={revertHovered}
-          hovered={hovered && !focused && !revertHovered}
           d={arrowPath(
             line.from.left + ARROW_MARGIN_X,
             line.from.bounds.top - ARROW_THRESHOLD + ARROW_MARGIN_Y,
@@ -70,9 +55,6 @@ export function Connector({from, to, hovered, focused, revertHovered}: Props) {
 
       {line.from.isBelow && (
         <ConnectorPath
-          focused={focused}
-          revertedHovered={revertHovered}
-          hovered={hovered && !focused && !revertHovered}
           d={arrowPath(
             line.from.left + ARROW_MARGIN_X,
             line.from.bounds.top + line.from.bounds.height + ARROW_THRESHOLD - ARROW_MARGIN_Y,
@@ -84,9 +66,6 @@ export function Connector({from, to, hovered, focused, revertHovered}: Props) {
 
       {line.to.isAbove && (
         <ConnectorPath
-          focused={focused}
-          revertedHovered={revertHovered}
-          hovered={hovered && !focused && !revertHovered}
           d={arrowPath(
             line.to.bounds.left + ARROW_MARGIN_X,
             line.to.bounds.top - ARROW_THRESHOLD + ARROW_MARGIN_Y,
@@ -98,9 +77,6 @@ export function Connector({from, to, hovered, focused, revertHovered}: Props) {
 
       {line.to.isBelow && (
         <ConnectorPath
-          focused={focused}
-          revertedHovered={revertHovered}
-          hovered={hovered && !focused && !revertHovered}
           d={arrowPath(
             line.to.bounds.left + ARROW_MARGIN_X,
             line.to.bounds.top + line.to.bounds.height + ARROW_THRESHOLD - ARROW_MARGIN_Y,

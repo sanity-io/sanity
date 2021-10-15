@@ -3,9 +3,6 @@ import styled, {css} from 'styled-components'
 import {ClampedRect} from './ClampedRect'
 
 interface PathProps {
-  focused: boolean
-  revertedHovered: boolean
-  hovered: boolean
   theme: Theme
 }
 
