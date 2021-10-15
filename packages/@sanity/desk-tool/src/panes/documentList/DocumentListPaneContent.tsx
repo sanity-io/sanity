@@ -55,7 +55,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   } = props
 
   const {collapsed: layoutCollapsed} = usePaneLayout()
-  const {collapsed} = usePane()
+  const {collapsed, index} = usePane()
   const [shouldRender, setShouldRender] = useState(false)
 
   useEffect(() => {
@@ -161,6 +161,8 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
             items={items}
             renderItem={renderItem}
             onChange={onListChange}
+            // prevents bug when panes won't render if first rendered while collapsed
+            key={`${index}-${collapsed}`}
           />
         )}
 
@@ -191,6 +193,8 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     onRetry,
     renderItem,
     shouldRender,
+    collapsed,
+    index,
   ])
 
   return <PaneContent overflow={layoutCollapsed ? undefined : 'auto'}>{content}</PaneContent>
