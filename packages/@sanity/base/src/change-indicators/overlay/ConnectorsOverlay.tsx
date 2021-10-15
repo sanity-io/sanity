@@ -97,7 +97,7 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
   const allReportedValues = useReportedValues()
   const byId = useMemo(() => new Map(allReportedValues), [allReportedValues])
 
-  const [{connectors, isHoverConnector}, setState] = useState<State>(() =>
+  const [{connectors}, setState] = useState<State>(() =>
     getState(allReportedValues, hovered, byId, rootElement)
   )
 
@@ -115,7 +115,7 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
   return (
     <ScrollMonitor onScroll={handleScrollOrResize}>
       <SvgWrapper style={{zIndex: visibleConnectors[0] && visibleConnectors[0].field.zIndex}}>
-        {visibleConnectors.map(({field, change, hasFocus, hasHover, hasRevertHover}) => {
+        {visibleConnectors.map(({field, change}) => {
           if (!change) {
             return null
           }
@@ -124,13 +124,9 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
             <ConnectorGroup
               field={field}
               change={change}
-              hasFocus={hasFocus}
-              hasHover={hasHover}
-              hasRevertHover={hasRevertHover}
               key={field.id}
               onSetFocus={onSetFocus}
               setHovered={setHovered}
-              isHoverConnector={isHoverConnector}
             />
           )
         })}
@@ -142,25 +138,12 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
 interface ConnectorGroupProps {
   field: TrackedChange & {id: string; rect: Rect; bounds: Rect}
   change: TrackedChange & {id: string; rect: Rect; bounds: Rect}
-  hasFocus: boolean
-  hasHover: boolean
-  hasRevertHover: boolean
   setHovered: (id: string | null) => void
   onSetFocus: (nextFocusPath: Path) => void
-  isHoverConnector: boolean
 }
 
 function ConnectorGroup(props: ConnectorGroupProps) {
-  const {
-    change,
-    field,
-    hasFocus,
-    hasHover,
-    hasRevertHover,
-    onSetFocus,
-    setHovered,
-    isHoverConnector,
-  } = props
+  const {change, field, onSetFocus, setHovered} = props
 
   const onConnectorClick = useCallback(() => {
     scrollIntoView(field)
@@ -186,9 +169,6 @@ function ConnectorGroup(props: ConnectorGroupProps) {
             bounds: field.bounds,
           }}
           to={{rect: change.rect, bounds: change.bounds}}
-          focused={hasFocus}
-          hovered={hasHover || isHoverConnector}
-          revertHovered={hasRevertHover}
         />
       </g>
 
