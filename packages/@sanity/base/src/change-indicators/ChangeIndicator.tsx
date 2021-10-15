@@ -5,7 +5,7 @@ import * as PathUtils from '@sanity/util/paths'
 import {Path} from '@sanity/types'
 import {useReporter} from './tracker'
 import {ChangeIndicatorContext} from './ChangeIndicatorContext'
-import {ChangeBar} from './ChangeBar'
+import {ElementWithChangeBar} from './ElementWithChangeBar'
 
 const EMPTY_PATH: Path = []
 
@@ -59,9 +59,9 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
 
   return (
     <div ref={ref} className={className} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-      <ChangeBar hasFocus={hasFocus} isChanged={isChanged} disabled={disabled}>
+      <ElementWithChangeBar hasFocus={hasFocus} isChanged={isChanged} disabled={disabled}>
         {children}
-      </ChangeBar>
+      </ElementWithChangeBar>
     </div>
   )
 })

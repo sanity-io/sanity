@@ -13,15 +13,15 @@ interface RootProps {
   disabled: boolean
 }
 
-const animationSpeed = 150
+const animationSpeed = 250
 
-export const TooltipTriggerWrapper = styled.div`
+export const ChangeBar = styled.div`
   position: relative;
   opacity: 1;
   transition: opacity 100ms;
 `
 
-export const BarWrapper = styled.div(({theme}: ThemeContext) => {
+export const ChangeBarMarker = styled.div(({theme}: ThemeContext) => {
   /* these colours aren't freely available on the current theme */
   const notSelectedColor = theme.sanity.color.spot.yellow
   const screenMedium = theme.sanity.media[0]
@@ -41,29 +41,7 @@ export const BarWrapper = styled.div(({theme}: ThemeContext) => {
   `
 })
 
-export const BadgeWrapper = styled.div(({theme}: ThemeContext) => {
-  const maxScreenMedium = theme.sanity.media[0] - 1
-
-  return css`
-    position: absolute;
-    top: -8px;
-    left: -4px;
-    width: 19px;
-    height: calc(100% + 16px);
-    border-radius: 9.5px;
-    opacity: 0;
-    transition: opacity ${animationSpeed}ms;
-    z-index: 12;
-    pointer-events: none;
-
-    @media (max-width: ${maxScreenMedium}px) {
-      /* hide on mobile */
-      display: none;
-    }
-  `
-})
-
-export const HitAreaButton = styled.button(({theme}: ThemeContext) => {
+export const ChangeBarButton = styled.button(({theme}: ThemeContext) => {
   /* these colours aren't freely available on the current theme */
   const notSelectedColor = theme.sanity.color.spot.yellow
 
@@ -111,68 +89,42 @@ export const HitAreaButton = styled.button(({theme}: ThemeContext) => {
   `
 })
 
-/* for when the shape and icon need to appear on the page */
-const BadgeOpen = css`
-  ${BadgeWrapper} {
-    opacity: 0.2;
-    transition: opacity ${animationSpeed}ms;
-  }
-`
-
-export const ChangeBarWrapper = styled.div(
-  ({
-    // focus,
-    hover,
-    changed,
-    disabled,
-    isReviewChangeOpen,
-  }: RootProps) => {
-    if (disabled)
-      return css`
-        ${TooltipTriggerWrapper} {
-          display: none;
-        }
-      `
-
+export const ChangeBarWrapper = styled.div(({changed, disabled, isReviewChangeOpen}: RootProps) => {
+  if (disabled)
     return css`
-      display: flex;
-      position: relative;
-
-      @media (hover: hover) {
-        &:hover {
-          z-index: 10;
-        }
+      ${ChangeBar} {
+        display: none;
       }
-
-      /* on hover */
-
-      ${hover &&
-      css`
-        ${BadgeOpen}
-      `}
-
-      /* when field changed */
-
-    ${!changed &&
-      css`
-        ${TooltipTriggerWrapper} {
-          opacity: 0;
-          pointer-events: none;
-        }
-      `}
-
-      /* when review change is open */
-
-      ${isReviewChangeOpen &&
-      css`
-        ${BadgeWrapper} {
-          opacity: 0;
-          pointer-events: none;
-        }
-      `}
     `
-  }
-)
+
+  return css`
+    display: flex;
+    position: relative;
+
+    @media (hover: hover) {
+      &:hover {
+        z-index: 10;
+      }
+    }
+
+    /* hide when field is not changed */
+    ${!changed &&
+    css`
+      ${ChangeBar} {
+        opacity: 0;
+        pointer-events: none;
+      }
+    `}
+
+    /* hide hover effect when review changes is open */
+    ${isReviewChangeOpen &&
+    css`
+      ${ChangeBarButton} {
+        opacity: 0;
+      }
+    `}
+  `
+})
 
 export const FieldWrapper = styled.div`
   flex-grow: 1;
