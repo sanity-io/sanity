@@ -176,7 +176,15 @@ function ConnectorGroup(props: ConnectorGroupProps) {
     <>
       <g onClick={onConnectorClick} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
         <Connector
-          from={{rect: field.rect, bounds: field.bounds}}
+          from={{
+            rect: {
+              left: field.rect.left + 2,
+              top: field.rect.top,
+              height: field.rect.height,
+              width: field.rect.width,
+            },
+            bounds: field.bounds,
+          }}
           to={{rect: change.rect, bounds: change.bounds}}
           focused={hasFocus}
           hovered={hasHover || isHoverConnector}
