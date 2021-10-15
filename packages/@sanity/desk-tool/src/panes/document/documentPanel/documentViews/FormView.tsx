@@ -3,7 +3,7 @@
 
 import {useDocumentPresence} from '@sanity/base/hooks'
 import {PresenceOverlay} from '@sanity/base/presence'
-import {Box, Container, Text} from '@sanity/ui'
+import {Box, Container, Flex, Spinner, Text} from '@sanity/ui'
 import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-component'
 import documentStore from 'part:@sanity/base/datastore/document'
 import schema from 'part:@sanity/base/schema'
@@ -13,6 +13,7 @@ import {FormBuilder} from 'part:@sanity/form-builder'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {tap} from 'rxjs/operators'
 import {useDocumentPane} from '../../useDocumentPane'
+import {Delay} from '../../../../components/Delay'
 
 interface FormViewProps {
   hidden: boolean
@@ -131,21 +132,35 @@ export function FormView(props: FormViewProps) {
     return (
       <PresenceOverlay margins={margins}>
         <Box as="form" onSubmit={preventDefault}>
-          <FormBuilder
-            schema={schema}
-            patchChannel={patchChannelRef.current}
-            value={value}
-            compareValue={compareValue}
-            type={documentSchema}
-            presence={presence}
-            filterField={filterField}
-            readOnly={readOnly}
-            onBlur={handleBlur}
-            onFocus={handleFocus}
-            focusPath={focusPath}
-            onChange={readOnly ? noop : handleChange}
-            markers={markers}
-          />
+          {ready ? (
+            <FormBuilder
+              schema={schema}
+              patchChannel={patchChannelRef.current}
+              value={value}
+              compareValue={compareValue}
+              type={documentSchema}
+              presence={presence}
+              filterField={filterField}
+              readOnly={readOnly}
+              onBlur={handleBlur}
+              onFocus={handleFocus}
+              focusPath={focusPath}
+              onChange={readOnly ? noop : handleChange}
+              markers={markers}
+            />
+          ) : (
+            <Delay ms={300}>
+              <Flex align="center" direction="column" height="fill" justify="center">
+                <Spinner muted />
+
+                <Box marginTop={3}>
+                  <Text align="center" muted size={1}>
+                    Loading document
+                  </Text>
+                </Box>
+              </Flex>
+            </Delay>
+          )}
         </Box>
       </PresenceOverlay>
     )
