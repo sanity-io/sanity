@@ -1,6 +1,7 @@
 import React, {useMemo} from 'react'
 import {Box, rem, ResponsivePaddingProps, Theme} from '@sanity/ui'
 import styled, {css} from 'styled-components'
+import {hues} from '@sanity/color'
 import {
   BlockQuote,
   Heading1,
@@ -16,6 +17,7 @@ export interface TextBlockProps {
   blockRef?: React.RefObject<HTMLDivElement>
   children: React.ReactNode
   hasError?: boolean
+  hasMarker?: boolean
   level?: number
   listItem?: 'bullet' | 'number'
   style?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal' | 'blockquote'
@@ -91,33 +93,37 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
   const bulletMarker = getBulletMarker($level, $listItem)
   const counter = createListName($level)
 
+  const overlay = css`
+    content: '';
+    position: absolute;
+    top: -4px;
+    bottom: -4px;
+    left: -4px;
+    right: -4px;
+    border-radius: ${theme.sanity.radius[2]}px;
+  `
+
   return css`
     --text-bullet-marker: ${$listItem === 'number' ? `${bulletMarker} '.'` : bulletMarker};
     --text-block-indent: ${indent ? rem(space[3] + space[3] + indent) : undefined};
     --text-font-family: ${fonts.text.family};
-
-    &[data-invalid] {
-      --card-muted-fg-color: ${color.muted.critical.enabled.fg};
-      --card-fg-color: ${color.muted.critical.enabled.fg};
-      --card-border-color: ${color.muted.critical.enabled.border};
-    }
-
-    color: var(--card-fg-color);
 
     & > div {
       position: relative;
       padding-left: var(--text-block-indent);
     }
 
-    &[data-invalid] > div:before {
-      content: '';
-      position: absolute;
-      background-color: ${color.muted.critical.hovered.bg};
-      top: -8px;
-      bottom: -8px;
-      left: -8px;
-      right: -8px;
-      border-radius: ${theme.sanity.radius[1]}px;
+    &[data-markers] > div:before {
+      ${overlay}
+      background-color: ${hues.purple[50].hex};
+    }
+
+    &[data-invalid] {
+      --card-border-color: ${color.muted.critical.enabled.border};
+      & > div:before {
+        ${overlay}
+        background-color: ${color.muted.critical.hovered.bg};
+      }
     }
 
     & > div > [data-ui='TextBlock__text'] {
@@ -162,7 +168,7 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
 const Root = styled(Box)<TextBlockStyleProps>(textBlockStyle)
 
 export function TextBlock(props: TextBlockProps): React.ReactElement {
-  const {children, level, listItem, style, blockRef, hasError} = props
+  const {children, level, listItem, style, blockRef, hasError, hasMarker} = props
 
   const {$size, $style} = useMemo((): {$size: number; $style: 'text' | 'heading'} => {
     if (HEADER_SIZES_KEYS.includes(style)) {
@@ -235,6 +241,7 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
       data-style={$style}
       data-ui="TextBlock"
       data-invalid={hasError ? '' : undefined}
+      data-markers={hasMarker ? '' : undefined}
       ref={blockRef}
       {...paddingProps}
     >
