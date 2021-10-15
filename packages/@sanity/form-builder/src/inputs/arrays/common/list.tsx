@@ -31,9 +31,9 @@ export function List(props: ListProps) {
 
   if (isGrid) {
     return isSortable ? (
-      <SortableGrid columns={[2, 3, 4]} gap={1} onSortEnd={onSortEnd} {...rest} />
+      <SortableGrid columns={[2, 3, 4]} gap={2} onSortEnd={onSortEnd} {...rest} />
     ) : (
-      <Grid columns={[2, 3, 4]} gap={1} {...rest} />
+      <Grid columns={[2, 3, 4]} gap={2} {...rest} />
     )
   }
 
