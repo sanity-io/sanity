@@ -34,7 +34,7 @@ export function FormView(props: FormViewProps) {
   const {hidden, margins} = props
   const {
     compareValue,
-    displayed,
+    value,
     documentId,
     documentSchema,
     documentType,
@@ -49,7 +49,7 @@ export function FormView(props: FormViewProps) {
   const presence = useDocumentPresence(documentId)
   const {revTime: rev} = historyController
   const [{filterField}, setState] = useState<FormViewState>(INITIAL_STATE)
-  const value = useMemo(() => (ready ? displayed : null), [displayed, ready])
+
   const hasTypeMismatch = value !== null && value._type !== documentSchema.name
   const isNonExistent = !value || !value._id
 
