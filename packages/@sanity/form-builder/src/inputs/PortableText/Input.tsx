@@ -236,6 +236,10 @@ export default function PortableTextInput(props: Props) {
       attributes: RenderAttributes,
       defaultRender: (b: PortableTextBlock) => JSX.Element
     ) => {
+      let renderedBlock
+      const isTextBlock = block._type === textBlockTypeName
+      const blockRef: React.RefObject<HTMLDivElement> = React.createRef()
+
       const hasError =
         markers.filter(
           (marker) =>
@@ -244,14 +248,22 @@ export default function PortableTextInput(props: Props) {
             marker.type === 'validation' &&
             marker.level === 'error'
         ).length > 0
-      let renderedBlock
-      const isTextBlock = block._type === textBlockTypeName
-      const blockRef: React.RefObject<HTMLDivElement> = React.createRef()
+
+      const hasMarker =
+        markers.filter(
+          (marker) =>
+            isKeySegment(marker.path[0]) &&
+            marker.path[0]._key === block._key &&
+            marker.type !== 'validation' &&
+            marker.level !== 'error'
+        ).length > 0
+
       if (isTextBlock) {
         renderedBlock = (
           <TextBlock
             blockRef={blockRef}
             hasError={hasError}
+            hasMarker={hasMarker}
             level={block.level}
             listItem={block.listItem}
             style={block.style}
@@ -267,6 +279,7 @@ export default function PortableTextInput(props: Props) {
             editor={editor}
             focusPath={focusPath || EMPTY_ARRAY}
             hasError={hasError}
+            hasMarker={hasMarker}
             onFocus={onFocus}
             readOnly={readOnly}
             type={blockType}
