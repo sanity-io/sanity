@@ -16,72 +16,45 @@ export const DebugRect = styled.rect`
   stroke-linecap: round;
 `
 
-export const ConnectorPath = styled.path(
-  ({focused, revertedHovered, hovered, theme}: PathProps) => {
-    /* these colours aren't freely available on the current theme */
-    const hoveredColor = theme.sanity.color.spot.yellow
+export const ConnectorPath = styled.path(({theme}: PathProps) => {
+  /* these colours aren't freely available on the current theme */
+  const strokeColor = theme.sanity.color.spot.yellow
 
-    return css`
-      fill: none;
-      pointer-events: none;
-      stroke-linecap: round;
-      stroke-linejoin: round;
+  return css`
+    fill: none;
+    pointer-events: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke: ${strokeColor};
+  `
+})
 
-      ${focused &&
-      css`
-        stroke: var(--card-focus-ring-color);
-      `}
+export const InteractivePath = styled.path(({theme}: PathProps) => {
+  /* these colours aren't freely available on the current theme */
+  const strokeColor = theme.sanity.color.spot.yellow
 
-      ${revertedHovered &&
-      css`
-        stroke: var(--card-accent-fg-color);
-      `}
+  return css`
+    fill: none;
+    pointer-events: stroke;
+    stroke: ${strokeColor};
+    cursor: pointer;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0;
 
-    ${hovered &&
-      css`
-        stroke: ${hoveredColor};
-      `}
-    `
-  }
-)
+    &:hover {
+      opacity: 0.2;
+    }
+  `
+})
 
-export const InteractivePath = styled.path`
-  fill: none;
-  pointer-events: stroke;
-  stroke: var(--card-focus-ring-color);
-  cursor: pointer;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  opacity: 0;
+export const RightBarWrapper = styled(ClampedRect)(({theme}: PathProps) => {
+  /* these colours aren't freely available on the current theme */
+  const strokeColor = theme.sanity.color.spot.yellow
 
-  &:hover {
-    opacity: 0.1;
-  }
-`
-
-export const RightBarWrapper = styled(ClampedRect)(
-  ({focused, revertedHovered, hovered, theme}: PathProps) => {
-    /* these colours aren't freely available on the current theme */
-    const hoveredColor = theme.sanity.color.spot.yellow
-
-    return css`
-      stroke: none;
-      pointer-events: none;
-
-      ${focused &&
-      css`
-        fill: var(--card-focus-ring-color);
-      `}
-
-      ${revertedHovered &&
-      css`
-        fill: var(--card-accent-fg-color);
-      `}
-
-    ${hovered &&
-      css`
-        fill: ${hoveredColor};
-      `}
-    `
-  }
-)
+  return css`
+    stroke: none;
+    pointer-events: none;
+    fill: ${strokeColor};
+  `
+})
