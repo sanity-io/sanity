@@ -312,7 +312,6 @@ export function BlockObject(props: BlockObjectProps) {
             value={block}
             hasFocus={focused}
             path={blockPath}
-            withBadge={false}
           />
         </ChangeIndicatorWrapper>
       )}

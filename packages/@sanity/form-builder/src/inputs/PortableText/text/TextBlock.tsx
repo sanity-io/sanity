@@ -182,7 +182,6 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
                 value={block}
                 hasFocus={focused}
                 path={blockPath}
-                withBadge={false}
               />
             </ChangeIndicatorWrapper>
           )}
