@@ -7,6 +7,7 @@ import {
 import {Path} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {Card, Theme} from '@sanity/ui'
+import {hues} from '@sanity/color'
 import React, {useCallback, useMemo, useRef} from 'react'
 import styled, {css} from 'styled-components'
 import {useScrollIntoViewOnFocusWithin} from '../../../hooks/useScrollIntoViewOnFocusWithin'
@@ -18,6 +19,7 @@ interface BlockObjectProps {
   blockRef?: React.RefObject<HTMLDivElement>
   editor: PortableTextEditor
   hasError: boolean
+  hasMarker?: boolean
   onFocus: (path: Path) => void
   focusPath: Path
   readOnly: boolean
@@ -28,9 +30,23 @@ interface BlockObjectProps {
 const Root = styled(Card)((props: {theme: Theme}) => {
   const {color, radius} = props.theme.sanity
 
+  const overlay = css`
+    pointer-events: none;
+    content: '';
+    position: absolute;
+    top: -4px;
+    bottom: -4px;
+    left: -4px;
+    right: -4px;
+    border-radius: ${radius[2]}px;
+    mix-blend-mode: multiply;
+  `
+
   return css`
     box-shadow: 0 0 0 1px var(--card-border-color);
     border-radius: ${radius[1]}px;
+    pointer-events: all;
+    position: relative;
 
     &[data-focused] {
       box-shadow: 0 0 0 1px ${color.selectable.primary.selected.border};
@@ -44,9 +60,18 @@ const Root = styled(Card)((props: {theme: Theme}) => {
       }
     }
 
+    &[data-markers] {
+      &:after {
+        ${overlay}
+        background-color: ${hues.purple[50].hex};
+      }
+    }
+
     &[data-invalid] {
-      --card-bg-color: ${color.input.invalid.enabled.bg};
-      --card-border-color: ${color.input.invalid.enabled.border};
+      &:after {
+        ${overlay}
+        background-color: ${color.input.invalid.enabled.bg};
+      }
 
       @media (hover: hover) {
         &:hover {
@@ -64,6 +89,7 @@ export function BlockObject(props: BlockObjectProps) {
     editor,
     focusPath,
     hasError,
+    hasMarker,
     onFocus,
     readOnly,
     type,
@@ -115,16 +141,12 @@ export function BlockObject(props: BlockObjectProps) {
   }, [type, value, readOnly, handleDelete, handleEdit])
 
   const tone = useMemo(() => {
-    if (hasError) {
-      return 'critical'
-    }
-
     if (selected || focused) {
       return 'primary'
     }
 
-    return undefined
-  }, [focused, hasError, selected])
+    return 'default'
+  }, [focused, selected])
 
   const padding = useMemo(() => {
     if (type?.type?.name === 'image') {
@@ -139,10 +161,10 @@ export function BlockObject(props: BlockObjectProps) {
       data-focused={focused ? '' : undefined}
       data-invalid={hasError ? '' : undefined}
       data-selected={selected ? '' : undefined}
+      data-markers={hasMarker ? '' : undefined}
       data-testid="pte-block-object"
       marginY={3}
       onDoubleClick={handleClickToOpen}
-      overflow="hidden"
       padding={padding}
       ref={elementRef}
       tone={tone}
