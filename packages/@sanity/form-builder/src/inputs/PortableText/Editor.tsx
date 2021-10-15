@@ -13,7 +13,15 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {Marker} from '@sanity/types'
-import {Card, Container, useLayer} from '@sanity/ui'
+import {
+  BoundaryElementProvider,
+  Card,
+  Container,
+  PortalProvider,
+  useBoundaryElement,
+  useLayer,
+  usePortal,
+} from '@sanity/ui'
 import React, {useMemo, useEffect, useCallback, useState} from 'react'
 import PatchEvent from '../../PatchEvent'
 import {createScrollSelectionIntoView} from './utils/scrollSelectionIntoView'
@@ -41,7 +49,7 @@ type Props = {
   renderChild: RenderChildFunction
   renderCustomMarkers?: RenderCustomMarkers
   setPortalElement?: (el: HTMLDivElement | null) => void
-  setScrollContainerElement: (el: HTMLElement | null) => void
+  toolbarPortalElement?: HTMLElement
   value: PortableTextBlock[] | undefined
 }
 
@@ -64,13 +72,15 @@ function PortableTextSanityEditor(props: Props) {
     // renderBlockActions,
     renderChild,
     setPortalElement,
-    setScrollContainerElement,
+    toolbarPortalElement,
     value,
   } = props
 
   const editor = usePortableTextEditor()
   const ptFeatures = useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [editor])
   const {isTopLayer} = useLayer()
+  const {element: boundaryElement} = useBoundaryElement()
+  const portal = usePortal()
 
   // TODO: Enable when we agree upon the hotkey for opening edit object interface when block object is focused
   //
@@ -179,52 +189,50 @@ function PortableTextSanityEditor(props: Props) {
     }
   }, [isFullscreen, isTopLayer, onToggleFullscreen])
 
-  const [scrollElm, setScrollElm] = useState<HTMLElement | null>(null)
-  const setScrollRef = useCallback(
-    (el: HTMLElement) => {
-      setScrollContainerElement(el) // Props fn
-      setScrollElm(el)
-    },
-    [setScrollContainerElement]
+  const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
+  const handleScrollSelectionIntoView = useMemo(
+    () => createScrollSelectionIntoView(scrollElement),
+    [scrollElement]
   )
-  const handleScrollSelectionIntoView = useMemo(() => createScrollSelectionIntoView(scrollElm), [
-    scrollElm,
-  ])
 
   const sanityEditor = useMemo(
     () => (
       <Root $fullscreen={isFullscreen} data-testid="pt-editor">
         <ToolbarCard data-testid="pt-editor__toolbar-card" shadow={1}>
-          <Toolbar
-            isFullscreen={isFullscreen}
-            hotkeys={hotkeys}
-            onFocus={onFocus}
-            readOnly={readOnly}
-            onToggleFullscreen={onToggleFullscreen}
-          />
+          <PortalProvider element={toolbarPortalElement || portal.element}>
+            <Toolbar
+              isFullscreen={isFullscreen}
+              hotkeys={hotkeys}
+              onFocus={onFocus}
+              readOnly={readOnly}
+              onToggleFullscreen={onToggleFullscreen}
+            />
+          </PortalProvider>
         </ToolbarCard>
 
         <Card flex={1} tone="transparent">
-          <Scroller ref={setScrollRef}>
+          <Scroller ref={setScrollElement}>
             <Container padding={isFullscreen ? 2 : 0} sizing="border" width={1}>
               <EditableWrapper
                 shadow={isFullscreen ? 1 : 0}
                 $isFullscreen={isFullscreen}
                 sizing="border"
               >
-                <PortableTextEditable
-                  hotkeys={hotkeys}
-                  onCopy={onCopy}
-                  onPaste={onPaste}
-                  placeholderText={value ? undefined : 'Empty'}
-                  renderAnnotation={renderAnnotation}
-                  renderBlock={renderBlock}
-                  renderChild={renderChild}
-                  renderDecorator={renderDecorator}
-                  scrollSelectionIntoView={handleScrollSelectionIntoView}
-                  selection={initialSelection}
-                  spellCheck
-                />
+                <BoundaryElementProvider element={isFullscreen ? scrollElement : boundaryElement}>
+                  <PortableTextEditable
+                    hotkeys={hotkeys}
+                    onCopy={onCopy}
+                    onPaste={onPaste}
+                    placeholderText={value ? undefined : 'Empty'}
+                    renderAnnotation={renderAnnotation}
+                    renderBlock={renderBlock}
+                    renderChild={renderChild}
+                    renderDecorator={renderDecorator}
+                    scrollSelectionIntoView={handleScrollSelectionIntoView}
+                    selection={initialSelection}
+                    spellCheck
+                  />
+                </BoundaryElementProvider>
               </EditableWrapper>
             </Container>
           </Scroller>
@@ -234,6 +242,7 @@ function PortableTextSanityEditor(props: Props) {
       </Root>
     ),
     [
+      boundaryElement,
       handleScrollSelectionIntoView,
       hotkeys,
       initialSelection,
@@ -246,8 +255,8 @@ function PortableTextSanityEditor(props: Props) {
       renderAnnotation,
       renderBlock,
       renderChild,
+      scrollElement,
       setPortalElement,
-      setScrollRef,
       value,
     ]
   )

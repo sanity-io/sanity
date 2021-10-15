@@ -15,7 +15,7 @@ import {
   EditorSelection,
 } from '@sanity/portable-text-editor'
 import {Path, isKeySegment, Marker, isKeyedObject} from '@sanity/types'
-import {BoundaryElementProvider, Text, Portal, PortalProvider, usePortal} from '@sanity/ui'
+import {Portal, PortalProvider, Text, usePortal} from '@sanity/ui'
 import {isEqual} from 'lodash'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/components'
 import ActivateOnFocus from '../../components/ActivateOnFocus/ActivateOnFocus'
@@ -26,7 +26,7 @@ import {InlineObject} from './Objects/InlineObject'
 import {EditObject} from './Objects/EditObject'
 import {Annotation} from './Text/Annotation'
 import {RenderBlockActions, RenderCustomMarkers, ObjectEditData} from './types'
-import PortableTextSanityEditor from './Editor'
+import Editor from './Editor'
 import {BlockExtrasWithChangeIndicator} from './BlockExtrasOverlay'
 import {TextBlock} from './Text/TextBlock'
 import {ExpandedLayer, Root} from './Input.styles'
@@ -373,11 +373,10 @@ export default function PortableTextInput(props: Props) {
   }, [editor, focus, returnToSelection])
 
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
-  const [scrollContainerElement, setScrollContainerElement] = useState<HTMLElement | null>(null)
 
   const ptEditor = useMemo(
     () => (
-      <PortableTextSanityEditor
+      <Editor
         hotkeys={hotkeys}
         initialSelection={initialSelection}
         isFullscreen={isFullscreen}
@@ -396,23 +395,24 @@ export default function PortableTextInput(props: Props) {
         renderChild={renderChild}
         renderCustomMarkers={renderCustomMarkers}
         setPortalElement={setPortalElement}
-        setScrollContainerElement={setScrollContainerElement}
+        toolbarPortalElement={isFullscreen ? undefined : portal.element}
         value={value}
       />
     ),
     [
+      editorId,
+      handleToggleFullscreen,
       hotkeys,
       initialSelection,
+      isActive,
       isFullscreen,
-      editorId,
       markers,
       onBlur,
       onFocus,
       onChange,
       onCopy,
       onPaste,
-      handleToggleFullscreen,
-      isActive,
+      portal.element,
       readOnly,
       renderAnnotation,
       renderBlock,
@@ -455,23 +455,21 @@ export default function PortableTextInput(props: Props) {
     if (isFullscreen) {
       return (
         <PortalProvider element={portalElement}>
-          <BoundaryElementProvider element={scrollContainerElement}>
-            <ExpandedLayer>
-              {ptEditor}
-              {editObject}
-            </ExpandedLayer>
-          </BoundaryElementProvider>
+          <ExpandedLayer>
+            {ptEditor}
+            {editObject}
+          </ExpandedLayer>
         </PortalProvider>
       )
     }
 
     return (
-      <PortalProvider element={portal.element}>
+      <>
         {ptEditor}
         {editObject}
-      </PortalProvider>
+      </>
     )
-  }, [editObject, isFullscreen, portal.element, portalElement, ptEditor, scrollContainerElement])
+  }, [editObject, isFullscreen, portalElement, ptEditor])
 
   return (
     <ActivateOnFocus
