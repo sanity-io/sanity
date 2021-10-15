@@ -33,19 +33,12 @@ export function ElementWithChangeBar(props: {
             onClick={isReviewChangesOpen ? undefined : onOpenReviewChanges}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            tabIndex={isReviewChangesOpen || !isChanged ? -1 : 0}
+            tabIndex={-1}
             type="button"
           />
         </ChangeBar>
       ),
-    [
-      handleMouseEnter,
-      handleMouseLeave,
-      isReviewChangesOpen,
-      onOpenReviewChanges,
-      isChanged,
-      disabled,
-    ]
+    [handleMouseEnter, handleMouseLeave, isReviewChangesOpen, onOpenReviewChanges, disabled]
   )
 
   return (
