@@ -70,11 +70,11 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
             onClick={() => action.handle(active)}
             selected={active}
             text={action.title || action.key}
-            tooltipProps={{disabled: disabled, placement: 'top'}}
+            tooltipProps={{disabled: disabled, placement: isFullscreen ? 'bottom' : 'top'}}
           />
         )
       }),
-    [actions, collapsesButtonProps, disabled, isNotText, readOnly, activeKeys]
+    [actions, collapsesButtonProps, disabled, isFullscreen, isNotText, readOnly, activeKeys]
   )
 
   const menuButton = useMemo(

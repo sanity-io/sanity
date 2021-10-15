@@ -42,11 +42,15 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
           key={item.key}
           onClick={handle}
           text={title}
-          tooltipProps={{disabled: disabled, placement: 'top', text: `Insert ${title}`}}
+          tooltipProps={{
+            disabled: disabled,
+            placement: isFullscreen ? 'bottom' : 'top',
+            text: `Insert ${title}`,
+          }}
         />
       )
     })
-  }, [_disabled, collapseButtonProps, disabled, items, readOnly])
+  }, [_disabled, collapseButtonProps, disabled, isFullscreen, items, readOnly])
 
   const menuButton = useMemo(
     () => (
