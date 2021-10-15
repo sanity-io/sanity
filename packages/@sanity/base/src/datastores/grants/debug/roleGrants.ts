@@ -14,6 +14,7 @@ const DEBUG_ROLE_GRANTS_MAP: Record<ExampleRoleName, Grant[]> = {
 
   // custom
   restricted: grants.restricted,
+  requiresApproval: grants.requiresApproval,
 
   // legacy
   read: grants.viewer,
