@@ -1,15 +1,11 @@
 import React, {useCallback, useMemo, useState} from 'react'
 import {ConnectorContext} from './ConnectorContext'
-
 import {
   ChangeBarWrapper,
   FieldWrapper,
+  HitAreaButton,
   TooltipTriggerWrapper,
   BarWrapper,
-  BadgeWrapper,
-  ShapeWrapper,
-  EditIconWrapper,
-  HitAreaButton,
 } from './ChangeBar.styled'
 
 export function ChangeBar(props: {
@@ -17,9 +13,8 @@ export function ChangeBar(props: {
   hasFocus: boolean
   isChanged: boolean
   disabled?: boolean
-  withBadge?: boolean
 }) {
-  const {children, hasFocus, isChanged, disabled, withBadge = true} = props
+  const {children, hasFocus, isChanged, disabled} = props
 
   const [hover, setHover] = useState(false)
   const {onOpenReviewChanges, isReviewChangesOpen} = React.useContext(ConnectorContext)
@@ -32,13 +27,6 @@ export function ChangeBar(props: {
       disabled ? null : (
         <TooltipTriggerWrapper data-testid="change-bar__tooltip-wrapper">
           <BarWrapper />
-
-          {withBadge && (
-            <BadgeWrapper>
-              <ShapeWrapper />
-              <EditIconWrapper />
-            </BadgeWrapper>
-          )}
 
           <HitAreaButton
             aria-label="Review changes"
@@ -57,7 +45,6 @@ export function ChangeBar(props: {
       onOpenReviewChanges,
       isChanged,
       disabled,
-      withBadge,
     ]
   )
 
