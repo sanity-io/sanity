@@ -3,7 +3,7 @@
 
 import {WarningOutlineIcon} from '@sanity/icons'
 import {SanityDocument, SchemaType} from '@sanity/types'
-import {assignWith, truncate} from 'lodash'
+import {assignWith} from 'lodash'
 import {observeForPreview} from 'part:@sanity/base/preview'
 import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import React from 'react'

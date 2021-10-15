@@ -49,7 +49,7 @@ export function PublishStatus(props: PublishStatusProps) {
         >
           <Flex align="center">
             <Box marginRight={3}>
-              <Text size={3}>
+              <Text size={2}>
                 {liveEdit && <PlayIcon />}
                 {!liveEdit && <PublishIcon />}
               </Text>

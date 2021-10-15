@@ -1,5 +1,5 @@
 import {useTimeAgo} from '@sanity/base/hooks'
-import {EditIcon, SyncIcon} from '@sanity/icons'
+import {EditIcon} from '@sanity/icons'
 import {useSyncState} from '@sanity/react-hooks'
 import {ButtonProps, Box, Flex, Text, Stack, Button} from '@sanity/ui'
 import {Tooltip} from 'part:@sanity/components/tooltip'
@@ -36,17 +36,17 @@ export const ReviewChangesButton = forwardRef(function ReviewChangesButton(
       }
     >
       <Button
+        aria-label="Review changes"
         mode="bleed"
         tone="caution"
         padding={3}
         onClick={changesOpen ? handleHistoryClose : handleHistoryOpen}
         ref={ref}
         selected={changesOpen}
-        title="Review changes"
       >
         <Flex align="center">
           <Box marginRight={3}>
-            <Text size={3}>{syncState.isSyncing ? <AnimatedSyncIcon /> : <EditIcon />}</Text>
+            <Text size={2}>{syncState.isSyncing ? <AnimatedSyncIcon /> : <EditIcon />}</Text>
           </Box>
           <Text size={1} weight="medium">
             {lastUpdatedTime || <>&nbsp;</>}
