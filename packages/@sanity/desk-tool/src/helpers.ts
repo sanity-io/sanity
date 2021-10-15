@@ -1,14 +1,15 @@
 import isHotkey from 'is-hotkey'
-import {merge, of} from 'rxjs'
+import {Observable, merge, of} from 'rxjs'
 import {mapTo, delay} from 'rxjs/operators'
-import {RouterPaneGroup} from './types'
+import {RouterPaneGroup, PaneNode} from './types'
 import {LOADING_PANE} from './constants'
 import {parsePanesSegment, encodePanesSegment} from './utils/parsePanesSegment'
 
 /**
  * @internal
  */
-export const hasLoading = (panes: any) => panes.some((item) => item === LOADING_PANE)
+export const hasLoading = (panes: Array<PaneNode | typeof LOADING_PANE>): boolean =>
+  panes.some((item) => item === LOADING_PANE)
 
 /**
  * @internal
@@ -61,10 +62,26 @@ export function getPaneDiffIndex(nextPanes: any, prevPanes: any): [number, numbe
   return undefined
 }
 
+interface GetIntentRouteParamsOptions {
+  id: string
+  type?: string
+  templateName?: string
+  payloadParams?: Record<string, unknown>
+}
+
 /**
  * @internal
  */
-export function getIntentRouteParams({id, type, payloadParams, templateName}) {
+export function getIntentRouteParams({
+  id,
+  type,
+  payloadParams,
+  templateName,
+}: GetIntentRouteParamsOptions): {
+  intent: 'edit'
+  params: {id: string; type?: string; templateName?: string}
+  payload: Record<string, unknown> | undefined
+} {
   return {
     intent: 'edit',
     params: {
@@ -72,14 +89,14 @@ export function getIntentRouteParams({id, type, payloadParams, templateName}) {
       ...(type ? {type} : {}),
       ...(templateName ? {template: templateName} : {}),
     },
-    payload: Object.keys(payloadParams).length > 0 ? payloadParams : undefined,
+    payload: Object.keys(payloadParams || {}).length > 0 ? payloadParams : undefined,
   }
 }
 
 /**
  * @internal
  */
-export function getWaitMessages(path) {
+export function getWaitMessages(path: string[]): Observable<string> {
   const thresholds = [
     {ms: 300, message: 'Loading…'},
     {ms: 5000, message: 'Still loading…'},
@@ -120,7 +137,7 @@ export function toPath(panes: RouterPaneGroup[]): string {
 /**
  * @internal
  */
-export function legacyEditParamsToState(params) {
+export function legacyEditParamsToState(params: string): Record<string, unknown> {
   try {
     return JSON.parse(decodeURIComponent(params))
   } catch (err) {
@@ -133,6 +150,6 @@ export function legacyEditParamsToState(params) {
 /**
  * @internal
  */
-export function legacyEditParamsToPath(params: Record<string, unknown>) {
+export function legacyEditParamsToPath(params: Record<string, unknown>): string {
   return JSON.stringify(params)
 }

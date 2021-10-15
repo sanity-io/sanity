@@ -13,7 +13,7 @@ import {useDocumentList} from './useDocumentList'
 
 type DocumentListPaneProps = BaseDeskToolPaneProps<'documentList'>
 
-const emptyArray = []
+const emptyArray: never[] = []
 
 /**
  * @internal

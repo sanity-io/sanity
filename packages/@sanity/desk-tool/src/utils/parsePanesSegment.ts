@@ -114,7 +114,7 @@ export function parseOldPanesSegment(str: string): RouterPaneGroup[] {
   return [chunks]
 }
 
-function tryParsePayload(json) {
+function tryParsePayload(json: string) {
   try {
     return JSON.parse(json)
   } catch (err) {
@@ -124,6 +124,6 @@ function tryParsePayload(json) {
   }
 }
 
-function tryParseBase64Payload(data) {
+function tryParseBase64Payload(data: string) {
   return data ? tryParsePayload(atob(data)) : undefined
 }

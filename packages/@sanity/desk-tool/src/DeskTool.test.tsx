@@ -59,7 +59,7 @@ jest.mock('@sanity/ui', () => {
 })
 
 jest.mock('part:@sanity/desk-tool/structure?', () => {
-  const mockChild = jest.fn((requestedId: string) => ({
+  const mockChild: unknown = jest.fn((requestedId: string) => ({
     id: requestedId,
     child: mockChild,
   }))
@@ -456,7 +456,8 @@ describe('DeskTool', () => {
         },
       })
 
-      const dynamicChild = jest.fn((...args: unknown[]) => ({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const dynamicChild: any = jest.fn((...args: unknown[]) => ({
         id: args[0],
         child: dynamicChild,
         args,

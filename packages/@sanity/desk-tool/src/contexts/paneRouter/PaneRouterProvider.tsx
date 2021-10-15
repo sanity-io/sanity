@@ -134,16 +134,19 @@ export function PaneRouterProvider(props: {
         } else {
           // If it's a duplicate of the group root, we should only set the parameters
           // that differ from the group root.
-          const newParams = Object.keys(nextParams).reduce((siblingParams, key) => {
-            if (
-              exclusiveParams.includes(key) ||
-              (rootParams && nextParams[key] !== rootParams[key])
-            ) {
-              siblingParams[key] = nextParams[key]
-            }
+          const newParams = Object.keys(nextParams).reduce<Record<string, string | undefined>>(
+            (siblingParams, key) => {
+              if (
+                exclusiveParams.includes(key) ||
+                (rootParams && nextParams[key] !== rootParams[key])
+              ) {
+                siblingParams[key] = nextParams[key]
+              }
 
-            return siblingParams
-          }, {})
+              return siblingParams
+            },
+            {}
+          )
 
           newGroup[siblingIndex] = {...item, params: newParams}
         }

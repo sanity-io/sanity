@@ -405,13 +405,13 @@ export const setStructureResolveError = (err: StructureErrorType): void => {
 }
 
 function isStructure(structure: unknown): structure is UnresolvedPaneNode {
+  if (typeof structure === 'function') return true
+  if (!isRecord(structure)) return false
   return (
-    isRecord(structure) &&
-    (typeof structure === 'function' ||
-      typeof structure.serialize !== 'function' ||
-      typeof structure.then !== 'function' ||
-      typeof structure.subscribe !== 'function' ||
-      typeof structure.type !== 'string')
+    typeof structure.serialize !== 'function' ||
+    typeof structure.then !== 'function' ||
+    typeof structure.subscribe !== 'function' ||
+    typeof structure.type !== 'string'
   )
 }
 
