@@ -4,6 +4,10 @@ import {InitialValueTemplateItem, StructureBuilder as S} from '@sanity/structure
 import {Box, Button, Inline, Text, Tooltip} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
 import React, {useCallback, useMemo} from 'react'
+import {combineLatest, of} from 'rxjs'
+import {useMemoObservable} from 'react-rx'
+import {filter, map, switchMap, tap} from 'rxjs/operators'
+import {canCreate} from '@sanity/base/_internal'
 import {PaneMenuItem, PaneMenuItemGroup} from '../../types'
 import {IntentButton} from '../../components/IntentButton'
 import {PaneContextMenuButton, PaneHeader, usePane} from '../../components/pane'
@@ -11,13 +15,9 @@ import {useDeskTool} from '../../contexts/deskTool'
 import {BackLink} from '../../contexts/paneRouter'
 import {DeskToolPaneActionHandler} from '../../types/types'
 import {useDeskToolPaneActions} from '../useDeskToolPaneActions'
+import {getInitialValueObservable} from '../document/lib/initialValue/getInitialValue'
 import {Layout, SortOrder} from './types'
 import {CreateMenuButton} from './CreateMenuButton'
-import {getInitialValueObservable} from '../document/lib/initialValue/getInitialValue'
-import {combineLatest, of} from 'rxjs'
-import {useMemoObservable} from 'react-rx'
-import {filter, map, switchMap, tap} from 'rxjs/operators'
-import {canCreate} from '@sanity/base/_internal'
 
 /**
  * Detects whether a menu item is the default create menu item.
@@ -150,24 +150,32 @@ export function DocumentListPaneHeader(props: {
       }
 
       if (action.intent) {
+        // when it's single action
+        const permission = createMenuItemPermissions || []
+        const granted = permission.length > 0 ? permission[0].granted : true
+        const reason = permission.length > 0 ? permission[0].reason : ''
+
         return (
           <Tooltip
             content={
               <Box padding={2}>
-                <Text size={1}>{action.title}</Text>
+                <Text size={1}>{granted ? action.title : reason}</Text>
               </Box>
             }
             disabled={!action.title}
             key={action.key || actionIndex}
             placement="bottom"
           >
-            <IntentButton
-              aria-label={String(action.title)}
-              icon={action.icon || UnknownIcon}
-              intent={action.intent}
-              key={action.key || actionIndex}
-              mode="bleed"
-            />
+            <div>
+              <IntentButton
+                disabled={!granted}
+                aria-label={String(action.title)}
+                icon={action.icon || UnknownIcon}
+                intent={action.intent}
+                key={action.key || actionIndex}
+                mode="bleed"
+              />
+            </div>
           </Tooltip>
         )
       }
