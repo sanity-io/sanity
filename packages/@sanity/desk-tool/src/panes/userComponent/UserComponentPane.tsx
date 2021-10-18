@@ -1,5 +1,4 @@
 import React, {createElement, isValidElement, useRef} from 'react'
-import {MenuItem, MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
 import {isValidElementType} from 'react-is'
 import {Pane} from '../../components/pane'
 import {usePaneRouter} from '../../contexts/paneRouter'
@@ -7,29 +6,29 @@ import {BaseDeskToolPaneProps} from '../types'
 import {DeskToolPaneActionHandler} from '../../types'
 import {UserComponentPaneHeader} from './UserComponentPaneHeader'
 
-type UserComponentPaneProps = BaseDeskToolPaneProps<{
-  id: string
-  type: 'component'
-  component: React.ComponentType | React.ReactNode
-  menuItems?: MenuItem[]
-  menuItemGroups?: MenuItemGroup[]
-  options: Record<string, unknown>
-  title: string
-}>
+type UserComponentPaneProps = BaseDeskToolPaneProps<'component'>
 
 /**
  * @internal
  */
 export function UserComponentPane(props: UserComponentPaneProps) {
-  const {index, isSelected, pane, ...restProps} = props
+  const {index, pane, ...restProps} = props
   const {params} = usePaneRouter()
-  const {component, menuItems, menuItemGroups, title = '', type, ...restPane} = pane
+  const {
+    component,
+    menuItems,
+    menuItemGroups,
+    title = '',
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    type: _unused,
+    ...restPane
+  } = pane
   const userComponent = useRef<{
     actionHandlers?: Record<string, DeskToolPaneActionHandler>
   } | null>(null)
 
   return (
-    <Pane data-index={index} minWidth={320} selected={isSelected}>
+    <Pane data-index={index} minWidth={320} selected={restProps.isSelected}>
       <UserComponentPaneHeader
         actionHandlers={userComponent.current?.actionHandlers}
         index={index}

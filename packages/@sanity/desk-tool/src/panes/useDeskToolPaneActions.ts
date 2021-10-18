@@ -1,15 +1,15 @@
-import {MenuItem as MenuItemType} from '@sanity/base/__legacy/@sanity/components'
 import {useMemo} from 'react'
+import {PaneMenuItem} from '../types'
 
 export function useDeskToolPaneActions(props: {
   collapsed: boolean
-  menuItems?: MenuItemType[]
-}): {actionItems: MenuItemType[]; menuItems: MenuItemType[]} {
+  menuItems?: PaneMenuItem[]
+}): {actionItems: PaneMenuItem[]; menuItems: PaneMenuItem[]} {
   const {collapsed, menuItems: menuItemsProp} = props
 
   return useMemo(() => {
-    const actionItems: MenuItemType[] = []
-    const menuItems: MenuItemType[] = []
+    const actionItems: PaneMenuItem[] = []
+    const menuItems: PaneMenuItem[] = []
 
     if (!menuItemsProp) {
       return {actionItems, menuItems}

@@ -45,7 +45,7 @@
     "@sanity/uuid": "^3.0.1",
     "hashlru": "^2.1.0",
     "is-hotkey": "^0.1.6",
-    "leven": "^2.1.0",
+    "leven": "^3.1.0",
     "lodash": "^4.17.15",
     "mendoza": "^2.1.1",
     "react-is": "^17.0.2",

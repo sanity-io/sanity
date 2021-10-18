@@ -4,10 +4,11 @@ import {getTemplateById} from '@sanity/base/initial-value-templates'
 import React, {useMemo} from 'react'
 import {LOADING_PANE} from '../../constants'
 import {useStructure} from '../../utils/resolvePanes'
-import {removeDraftPrefix, useDocumentType} from '../../lib/resolveDocumentType'
-import {useUnique} from '../../lib/useUnique'
+import {removeDraftPrefix, useDocumentType} from '../../utils/resolveDocumentType'
+import {useUnique} from '../../utils/useUnique'
 import {Delay} from '../Delay'
 import {StructureError} from '../StructureError'
+import {RouterPanes} from '../../types'
 import {Redirect} from './Redirect'
 
 export interface IntentResolverProps {
@@ -36,16 +37,20 @@ export const IntentResolver = React.memo(function IntentResolver({
   const otherParams = useUnique(otherParamsNonUnique)
   const documentId = id || FALLBACK_ID
   const {documentType, isLoaded} = useDocumentType(documentId, specifiedSchemaType)
-  const paneSegments = useMemo(
-    () =>
-      documentType
-        ? [
-            [{id: documentType, params: otherParams}],
-            [{id: documentId, params: otherParams, payload}],
-          ]
-        : undefined,
-    [documentId, documentType, otherParams, payload]
-  )
+  const paneSegments = useMemo((): RouterPanes | undefined => {
+    if (!documentType) return undefined
+
+    const filteredParams = Object.fromEntries(
+      Object.entries(otherParams).filter(
+        (entry): entry is [string, string] => typeof entry[1] === 'string'
+      )
+    )
+
+    return [
+      [{id: documentType, params: filteredParams}],
+      [{id: documentId, params: filteredParams, payload}],
+    ]
+  }, [documentId, documentType, otherParams, payload])
 
   const {structure, error} = useStructure(paneSegments, {silent: true})
   const isLoading = Boolean(!structure || structure.some((item) => item === LOADING_PANE))
@@ -56,11 +61,14 @@ export const IntentResolver = React.memo(function IntentResolver({
     if (isLoading) return null
     if (!paneSegments) return null
 
-    const lastChild = structure[structure.length - 1] || {}
+    const lastChild = structure?.[structure.length - 1]
     const lastGroup = paneSegments[paneSegments.length - 1]
     const lastSibling = lastGroup[lastGroup.length - 1]
     const terminatesInDocument =
-      lastChild.type === 'document' && lastChild.options.id === documentId
+      lastChild &&
+      typeof lastChild === 'object' &&
+      lastChild.type === 'document' &&
+      lastChild.options.id === documentId
     const {template: isTemplateCreate, ..._otherParams} = otherParams
     const template: any = isTemplateCreate && getTemplateById(otherParams.template as any)
     const type = (template && template.schemaType) || documentType
@@ -71,11 +79,22 @@ export const IntentResolver = React.memo(function IntentResolver({
       ? paneSegments
           .slice(0, -1)
           .concat([lastGroup.slice(0, -1).concat({...lastSibling, id: newDocumentId})])
-      : [[{id: `__edit__${newDocumentId}`, params: fallbackParameters, payload}]]
+      : ([[{id: `__edit__${newDocumentId}`, params: fallbackParameters, payload}]] as RouterPanes)
   }, [documentId, documentType, error, isLoading, otherParams, paneSegments, payload, structure])
 
   const nonDocumentTypePanes = useMemo(
-    () => [[{id: `__edit__${id || uuid()}`, params: otherParams}]],
+    (): RouterPanes => [
+      [
+        {
+          id: `__edit__${id || uuid()}`,
+          params: Object.fromEntries(
+            Object.entries(otherParams).filter(
+              (entry): entry is [string, string] => typeof entry[1] === 'string'
+            )
+          ),
+        },
+      ],
+    ],
     [id, otherParams]
   )
 

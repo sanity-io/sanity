@@ -40,7 +40,7 @@ export function useDocumentType(
 
     const sub = documentStore
       .resolveTypeForDocument(documentId, specifiedType)
-      .subscribe((typeName) => setDocumentType({documentType: typeName, isLoaded: true}))
+      .subscribe((typeName: string) => setDocumentType({documentType: typeName, isLoaded: true}))
 
     return () => sub.unsubscribe()
   }, [documentId, specifiedType, isResolved])

@@ -14,7 +14,7 @@ function getStream(response: Response): ReadableStream<StreamResult> {
     throw new Error('Failed to read body from response')
   }
 
-  let reader
+  let reader: ReadableStreamDefaultReader<Uint8Array>
   let cancelled = false
 
   return new ReadableStream<TransactionLogEvent>({
@@ -25,7 +25,9 @@ function getStream(response: Response): ReadableStream<StreamResult> {
 
       reader
         .read()
-        .then(function processResult(result) {
+        .then(function processResult(
+          result: ReadableStreamDefaultReadResult<Uint8Array>
+        ): void | Promise<void> {
           if (result.done) {
             if (cancelled) {
               return

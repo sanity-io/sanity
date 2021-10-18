@@ -5,6 +5,7 @@ import React, {useState, useEffect, useCallback, useMemo, useRef} from 'react'
 import {Observable, interval, of} from 'rxjs'
 import {map, switchMap, distinctUntilChanged, debounce} from 'rxjs/operators'
 import styled from 'styled-components'
+import {PaneNode, RouterPanes, StructureErrorType, UnresolvedPaneNode} from './types'
 import {PaneLayout} from './components/pane'
 import {StructureError} from './components/StructureError'
 import {LOADING_PANE} from './constants'
@@ -18,7 +19,6 @@ import {
   isSaveHotkey,
 } from './helpers'
 import {DeskToolPane, LoadingPane} from './panes'
-import {RouterPaneGroup, StructureErrorType, StructurePane} from './types'
 import {
   resolvePanes,
   loadStructure,
@@ -27,7 +27,7 @@ import {
 } from './utils/resolvePanes'
 
 interface DeskToolProps {
-  onPaneChange: (panes: StructurePane[]) => void
+  onPaneChange: (panes: Array<PaneNode | typeof LOADING_PANE>) => void
 }
 
 const StyledPaneLayout = styled(PaneLayout)`
@@ -43,17 +43,15 @@ export function DeskTool(props: DeskToolProps) {
   const {push: pushToast} = useToast()
   const {navigate} = useRouter()
   const routerState = useRouterState()
-  const routerPanes: RouterPaneGroup[] = useMemo(() => routerState?.panes || [], [
-    routerState?.panes,
-  ])
+  const routerPanes: RouterPanes = useMemo(() => routerState?.panes || [], [routerState?.panes])
   const [error, setError] = useState<StructureErrorType | null>(null)
-  const prevRouterPanesRef = useRef<RouterPaneGroup[] | null>(null)
-  const currRouterPanesRef = useRef<RouterPaneGroup[]>(routerPanes)
+  const prevRouterPanesRef = useRef<RouterPanes | null>(null)
+  const currRouterPanesRef = useRef<RouterPanes>(routerPanes)
   const [layoutCollapsed, setLayoutCollapsed] = useState(false)
-  const [resolvedPanes, setResolvedPanes] = useState<StructurePane[]>([])
+  const [resolvedPanes, setResolvedPanes] = useState<Array<PaneNode | typeof LOADING_PANE>>([])
   const resolvedPanesRef = useRef(resolvedPanes)
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
-  const structure$Ref = useRef<Observable<any> | null>(null)
+  const structure$Ref = useRef<Observable<UnresolvedPaneNode> | null>(null)
 
   const {action, legacyEditDocumentId, type: schemaType, editDocumentId, params = {}} =
     routerState || {}

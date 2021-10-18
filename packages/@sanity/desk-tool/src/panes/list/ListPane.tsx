@@ -1,38 +1,15 @@
 import React, {useCallback, useMemo} from 'react'
-import {SchemaType} from '@sanity/types'
 import {Box, Button, Stack} from '@sanity/ui'
-import {
-  MenuItem as MenuItemType,
-  MenuItemGroup as MenuItemGroupType,
-} from '@sanity/base/__legacy/@sanity/components'
 import styled from 'styled-components'
 import {ArrowLeftIcon} from '@sanity/icons'
+import {PaneListItem, PaneMenuItem} from '../../types'
 import {PaneContextMenuButton, Pane, PaneContent, PaneHeader, usePaneLayout} from '../../components'
 import {PaneItem} from '../../components/paneItem'
 import {useDeskTool} from '../../contexts/deskTool'
 import {BackLink} from '../../contexts/paneRouter'
 import {BaseDeskToolPaneProps} from '../types'
 
-interface ListPaneItem {
-  id: string
-  _id?: string // Present on document list items but not list items
-  icon?: React.ComponentType<any> | false
-  type: string
-  displayOptions?: {showIcon?: boolean}
-  schemaType?: SchemaType
-  title?: string
-}
-
-type ListPaneProps = BaseDeskToolPaneProps<{
-  defaultLayout?: 'inline' | 'block' | 'default' | 'card' | 'media' | 'detail'
-  displayOptions?: {
-    showIcons?: boolean
-  }
-  items?: ListPaneItem[]
-  menuItems?: MenuItemType[]
-  menuItemGroups?: MenuItemGroupType[]
-  title: string
-}>
+type ListPaneProps = BaseDeskToolPaneProps<'list'>
 
 const Divider = styled.hr`
   background-color: var(--card-border-color);
@@ -52,10 +29,10 @@ export function ListPane(props: ListPaneProps) {
 
   const paneShowIcons = displayOptions?.showIcons
 
-  const itemIsSelected = useCallback((item: ListPaneItem) => childItemId === item.id, [childItemId])
+  const itemIsSelected = useCallback((item: PaneListItem) => childItemId === item.id, [childItemId])
 
   const shouldShowIconForItem = useCallback(
-    (item: ListPaneItem): boolean => {
+    (item: PaneListItem): boolean => {
       const itemShowIcon = item.displayOptions?.showIcon
 
       // Specific true/false on item should have presedence over list setting
@@ -69,7 +46,7 @@ export function ListPane(props: ListPaneProps) {
     [paneShowIcons]
   )
 
-  const handleAction = useCallback((item: MenuItemType) => {
+  const handleAction = useCallback((item: PaneMenuItem) => {
     if (typeof item.action === 'function') {
       item.action(item.params)
       return
@@ -117,10 +94,11 @@ export function ListPane(props: ListPaneProps) {
       <PaneContent overflow={layoutCollapsed ? undefined : 'auto'}>
         <Stack padding={2} space={1}>
           {items &&
-            items.map((item) => {
+            items.map((item, itemIndex) => {
               if (item.type === 'divider') {
                 return (
-                  <Box key={item.id} paddingY={1}>
+                  // eslint-disable-next-line react/no-array-index-key
+                  <Box key={`divider-${itemIndex}`} paddingY={1}>
                     <Divider />
                   </Box>
                 )

@@ -1,9 +1,14 @@
 import {useRouter} from '@sanity/base/router'
 import {Box, Card, Flex, Spinner, Text} from '@sanity/ui'
 import React, {useEffect} from 'react'
+import {RouterPanes} from '../../types'
 import {Delay} from '../Delay'
 
-export function Redirect({panes}) {
+interface RedirectProps {
+  panes: RouterPanes
+}
+
+export function Redirect({panes}: RedirectProps) {
   const router = useRouter()
 
   useEffect(() => {

@@ -69,7 +69,10 @@ export const DiscardChangesAction: DocumentActionComponent = ({
     color: 'danger',
     icon: ResetIcon,
     disabled: Boolean(discardChanges.disabled),
-    title: (discardChanges.disabled && DISABLED_REASON_TITLE[discardChanges.disabled]) || '',
+    title:
+      (discardChanges.disabled &&
+        DISABLED_REASON_TITLE[discardChanges.disabled as keyof typeof DISABLED_REASON_TITLE]) ||
+      '',
     label: 'Discard changes',
     onHandle: handle,
     dialog,

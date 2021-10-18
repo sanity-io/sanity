@@ -1,6 +1,14 @@
 import {DocumentActionConfirmDialogProps} from '@sanity/base'
-import {useClickOutside} from '@sanity/base/__legacy/@sanity/components'
-import {Box, Button, Flex, Grid, Popover, useGlobalKeyDown, useLayer} from '@sanity/ui'
+import {
+  Box,
+  Button,
+  Flex,
+  Grid,
+  Popover,
+  useClickOutside,
+  useGlobalKeyDown,
+  useLayer,
+} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import {LEGACY_DIALOG_TO_UI_COLOR, POPOVER_FALLBACK_PLACEMENTS} from './constants'
 

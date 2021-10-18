@@ -3,14 +3,10 @@ import {SerializeError} from '@sanity/structure'
 import {Box, Card, Code, Container, Heading, Label, Stack, Text} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
+import {StructureErrorType} from '../types'
 
 export interface StructureErrorProps {
-  error: {
-    message: string
-    stack: string
-    path?: Array<string | number>
-    helpId?: string
-  }
+  error: StructureErrorType
 }
 
 const PathSegment = styled.span`

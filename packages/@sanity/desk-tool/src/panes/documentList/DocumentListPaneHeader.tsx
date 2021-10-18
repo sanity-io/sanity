@@ -1,10 +1,10 @@
-import {MenuItem as MenuItemType, MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
+import {SchemaType} from '@sanity/types'
 import {ArrowLeftIcon, UnknownIcon} from '@sanity/icons'
 import {InitialValueTemplateItem, StructureBuilder as S} from '@sanity/structure'
-import {SchemaType} from '@sanity/types'
 import {Box, Button, Inline, Text, Tooltip} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
 import React, {useCallback, useMemo} from 'react'
+import {PaneMenuItem, PaneMenuItemGroup} from '../../types'
 import {IntentButton} from '../../components/IntentButton'
 import {PaneContextMenuButton, PaneHeader, usePane} from '../../components/pane'
 import {useDeskTool} from '../../contexts/deskTool'
@@ -25,7 +25,7 @@ import {CreateMenuButton} from './CreateMenuButton'
  *
  * @todo: remove this when `menuItems` are correctly provided.
  */
-function isDefaultCreateActionItem(actionItem: MenuItemType, schemaType: SchemaType | null) {
+function isDefaultCreateActionItem(actionItem: PaneMenuItem, schemaType: SchemaType | null) {
   const intent = actionItem.intent
   const intentParams: any = typeof intent?.params === 'object' ? intent.params : {}
 
@@ -44,8 +44,8 @@ function isDefaultCreateActionItem(actionItem: MenuItemType, schemaType: SchemaT
 export function DocumentListPaneHeader(props: {
   index: number
   initialValueTemplates?: InitialValueTemplateItem[]
-  menuItems?: MenuItemType[]
-  menuItemGroups?: MenuItemGroup[]
+  menuItems?: PaneMenuItem[]
+  menuItemGroups?: PaneMenuItemGroup[]
   schemaTypeName?: string
   setLayout: (layout: Layout) => void
   setSortOrder: (sortOrder: SortOrder) => void
@@ -78,7 +78,7 @@ export function DocumentListPaneHeader(props: {
   )
 
   const handleAction = useCallback(
-    (item: MenuItemType) => {
+    (item: PaneMenuItem) => {
       const handler =
         // eslint-disable-next-line no-nested-ternary
         typeof item.action === 'function'
@@ -97,7 +97,7 @@ export function DocumentListPaneHeader(props: {
     [actionHandlers]
   )
 
-  const createMenuItems: MenuItemType[] = useMemo(
+  const createMenuItems: PaneMenuItem[] = useMemo(
     () =>
       initialValueTemplates
         ? (S.menuItemsFromInitialValueTemplateItems(initialValueTemplates) as any)

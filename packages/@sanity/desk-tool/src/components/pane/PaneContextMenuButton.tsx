@@ -1,22 +1,19 @@
 import {useId} from '@reach/auto-id'
-import {
-  MenuItem as MenuItemType,
-  MenuItemGroup as MenuItemGroupType,
-} from '@sanity/base/__legacy/@sanity/components'
 import {EllipsisVerticalIcon} from '@sanity/icons'
 import {Box, Button, Label, Menu, MenuButton, MenuDivider, MenuItem, PopoverProps} from '@sanity/ui'
 import React, {Fragment, useCallback, useMemo} from 'react'
+import {PaneMenuItem, PaneMenuItemGroup} from '../../types'
 
 interface DocumentPanelContextMenuProps {
-  items: MenuItemType[]
-  itemGroups?: MenuItemGroupType[]
-  onAction: (action: MenuItemType) => void
+  items: PaneMenuItem[]
+  itemGroups?: PaneMenuItemGroup[]
+  onAction: (action: PaneMenuItem) => void
 }
 
 interface MenuItemGroup {
   id: string
   title?: React.ReactNode
-  items: MenuItemType[]
+  items: PaneMenuItem[]
 }
 
 const CONTEXT_MENU_POPOVER_PROPS: PopoverProps = {
@@ -84,8 +81,8 @@ export function PaneContextMenuButton(props: DocumentPanelContextMenuProps) {
 }
 
 function PaneContextMenuItem(props: {
-  item: MenuItemType
-  onAction: (action: MenuItemType) => void
+  item: PaneMenuItem
+  onAction: (action: PaneMenuItem) => void
 }) {
   const {item, onAction} = props
 

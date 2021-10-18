@@ -48,7 +48,10 @@ export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete})
     icon: CopyIcon,
     disabled: Boolean(isDuplicating || duplicate.disabled),
     label: isDuplicating ? 'Duplicating…' : 'Duplicate',
-    title: (duplicate.disabled && DISABLED_REASON_TITLE[duplicate.disabled]) || '',
+    title:
+      (duplicate.disabled &&
+        DISABLED_REASON_TITLE[duplicate.disabled as keyof typeof DISABLED_REASON_TITLE]) ||
+      '',
     onHandle: handle,
   }
 }

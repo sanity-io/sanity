@@ -24,11 +24,11 @@ import {
   debounceTime,
   startWith,
 } from 'rxjs/operators'
-import {DocumentPaneOptions} from '../../types'
+import {DocumentPaneNode} from '../../../types'
 
 interface InitialValueOptions {
   documentId: string
-  paneOptions: DocumentPaneOptions
+  paneOptions: DocumentPaneNode['options']
   panePayload?: unknown
   urlTemplate?: string
 }

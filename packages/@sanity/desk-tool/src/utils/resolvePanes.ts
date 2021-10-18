@@ -1,15 +1,65 @@
 import {useEffect, useState} from 'react'
 import shallowEquals from 'shallow-equals'
-import {Observable, defer, throwError, from, of as observableOf, Subscription, Observer} from 'rxjs'
+import {
+  Subscribable,
+  Observable,
+  defer,
+  throwError,
+  from,
+  of as observableOf,
+  Subscription,
+  Observer,
+} from 'rxjs'
 import {map, switchMap, distinctUntilChanged} from 'rxjs/operators'
 import leven from 'leven'
 import generateHelpUrl from '@sanity/generate-help-url'
+import {
+  PaneNode,
+  PaneChild,
+  RouterPanes,
+  DocumentPaneNode,
+  UnresolvedPaneNode,
+  RouterPaneSibling,
+  RouterPaneSiblingContext,
+  StructureErrorType,
+} from '../types'
 import {LOADING_PANE} from '../constants'
 import {defaultStructure} from '../defaultStructure'
-import {StructurePane, RouterPaneGroup, RouterSplitPaneContext} from '../types'
-import isSubscribable from './isSubscribable'
+import {isRecord, isSubscribable} from './typePredicates'
 import validateStructure from './validateStructure'
 import serializeStructure from './serializeStructure'
+
+type ArgType<T> = T extends (...args: infer U) => unknown ? U : never
+
+type FallbackEditorChild = (
+  documentId: string,
+  context: RouterPaneSiblingContext,
+  options: {params: Record<string, string | undefined>; payload: unknown}
+) => DocumentPaneNode
+
+const fallbackEditorChild: FallbackEditorChild = (nodeId, _, {params, payload}) => {
+  const id = nodeId.replace(/^__edit__/, '')
+  const {template, type} = params
+
+  if (!type) {
+    throw new Error(
+      `Document type for document with ID ${id} was not provided in the router params.`
+    )
+  }
+
+  const documentPane: DocumentPaneNode = {
+    id: 'editor',
+    type: 'document',
+    title: 'Editor',
+    options: {
+      id,
+      template,
+      type,
+      templateParameters: payload as Record<string, unknown>,
+    },
+  }
+  return documentPane
+}
 
 const KNOWN_STRUCTURE_EXPORTS = ['getDefaultDocumentNode']
 
@@ -17,7 +67,7 @@ declare global {
   const __DEV__: boolean
 }
 
-let prevStructureError = null
+let prevStructureError: StructureErrorType | null = null
 if (__DEV__) {
   if (module.hot && module.hot.data) {
     prevStructureError = module.hot.data.prevError
@@ -31,54 +81,55 @@ if (__DEV__) {
 }
 
 export function resolvePanes(
-  structure,
-  paneGroups,
-  prevStructure,
-  fromIndex,
+  pane: UnresolvedPaneNode,
+  paneGroups: RouterPanes,
+  previousPanes: Array<PaneNode | typeof LOADING_PANE>,
+  fromIndex: [number, number],
   options: {silent?: boolean} = {}
-): Observable<StructurePane[]> {
-  const waitStructure = isSubscribable(structure) ? from(structure) : observableOf(structure)
-  return waitStructure.pipe(
-    switchMap((struct) =>
-      resolveForStructure(struct, paneGroups, prevStructure, fromIndex, options)
+): Observable<Array<PaneNode | typeof LOADING_PANE>> {
+  const pane$ = isSubscribable(pane) ? from(pane) : observableOf(pane as PaneNode)
+
+  return pane$.pipe(
+    switchMap((resolvedPane) =>
+      resolveForStructure(resolvedPane, paneGroups, previousPanes, fromIndex, options)
     )
   )
 }
 
 function getInitialPanes(
-  prevStructure: RouterPaneGroup[] | null,
+  previousPanes: Array<typeof LOADING_PANE | PaneNode> | null,
   numPanes: number,
   fromIndex: number
-): Array<typeof LOADING_PANE | StructurePane> {
+) {
   const allLoading = new Array(numPanes).fill(LOADING_PANE) as typeof LOADING_PANE[]
-  if (!prevStructure) {
+  if (!previousPanes) {
     return allLoading
   }
 
-  const remains = prevStructure.slice(0, fromIndex) as Array<typeof LOADING_PANE | StructurePane>
+  const remains = previousPanes.slice(0, fromIndex)
   return remains.concat(allLoading.slice(fromIndex))
 }
 
-function sumPaneSegments(paneGroups: RouterPaneGroup[]) {
+function sumPaneSegments(paneGroups: RouterPanes) {
   return paneGroups.reduce<number>((count, curr) => count + curr.length, 0)
 }
 
 function resolveForStructure(
-  structure,
-  paneGroups,
-  prevStructure,
+  structure: PaneNode,
+  paneGroups: RouterPanes,
+  prevStructure: Array<PaneNode | typeof LOADING_PANE>,
   fromIndex: [number, number],
   options: {silent?: boolean} = {}
-): Observable<StructurePane[]> {
-  return Observable.create((subscriber: Observer<StructurePane[]>) => {
+): Observable<Array<PaneNode | typeof LOADING_PANE>> {
+  return Observable.create((observer: Observer<Array<PaneNode | typeof LOADING_PANE>>) => {
     try {
       validateStructure(structure)
     } catch (err) {
-      subscriber.error(err)
+      observer.error(err)
       return unsubscribe
     }
 
-    const paneSegments = [[{id: structure.id}]]
+    const paneSegments = ([[{id: structure.id}]] as RouterPanes)
       .concat(paneGroups)
       .filter((pair) => pair && pair.length > 0)
 
@@ -88,24 +139,24 @@ function resolveForStructure(
     const subscriptions: Subscription[] = []
 
     // Start with all-loading (or previous structure) state
-    subscriber.next(panes)
+    observer.next(panes)
 
     const resolveFrom = Math.max(0, panes.indexOf(LOADING_PANE))
     const resolveFromIndex = findSegmentGroupIndexForPaneAtIndex(resolveFrom)
 
     // Start resolving pane-by-pane
-    resolve(resolveFromIndex, fromSplitIndex || 0)
+    resolve(resolveFromIndex || 0, fromSplitIndex || 0)
 
     return unsubscribe
 
-    function resolve(index, splitIndex) {
+    function resolve(index: number, splitIndex: number) {
       if (index > paneSegments.length - 1) {
         return
       }
 
       const parent = index === 0 ? null : findParentForSegmentIndex(index - 1)
       const path = paneSegments.slice(0, index + 1).map((segment) => segment[0].id)
-      const context: RouterSplitPaneContext = {parent, index, splitIndex, path}
+      const context: RouterPaneSiblingContext = {parent, index, splitIndex, path}
 
       if (index === 0) {
         const {id} = paneSegments[index][splitIndex]
@@ -121,23 +172,43 @@ function resolveForStructure(
       for (let i = splitIndex; i < siblings.length; i++) {
         const {id} = siblings[i]
         const isFallbackEditor = index === 1 && id.startsWith('__edit__')
-        const child = isFallbackEditor ? resolveFallbackEditor : parent.child
+        const child = isFallbackEditor ? fallbackEditorChild : parent.child
         const resolverArgs = getResolverArgumentsForSibling(siblings[i], context, isFallbackEditor)
         subscribeForUpdates(child, index, i, context, resolverArgs)
       }
     }
 
-    function getResolverArgumentsForSibling(sibling, context, isFallbackEditor) {
-      const {id, params, payload} = sibling
-      return isFallbackEditor ? [id, context, {params, payload}] : [id, context]
+    function getResolverArgumentsForSibling(
+      sibling: RouterPaneSibling,
+      context: RouterPaneSiblingContext,
+      isFallbackEditor: boolean
+    ) {
+      const {id, params = {}, payload} = sibling
+
+      if (isFallbackEditor) {
+        const args: ArgType<FallbackEditorChild> = [id, context, {params, payload}]
+        return args
+      }
+
+      return [id, context] as const
     }
 
-    function subscribeForUpdates(pane, index, splitIndex, context, resolverArgs) {
-      const source = serializeStructure(pane, context, resolverArgs)
+    function subscribeForUpdates(
+      pane: PaneChild | FallbackEditorChild,
+      groupIndex: number,
+      splitIndex: number,
+      context: RouterPaneSiblingContext,
+      resolverArgs: ReturnType<typeof getResolverArgumentsForSibling>
+    ) {
+      const source = serializeStructure(
+        pane as PaneChild,
+        context,
+        resolverArgs as [string, RouterPaneSiblingContext]
+      )
       subscriptions.push(
         source.subscribe(
-          (result) => emit(result, index, splitIndex),
-          (error) => subscriber.error(error)
+          (result) => emit(result, groupIndex, splitIndex),
+          (error) => observer.error(error)
         )
       )
     }
@@ -157,7 +228,7 @@ function resolveForStructure(
       return null
     }
 
-    function findFlatIndexForPane(index, splitIndex) {
+    function findFlatIndexForPane(index: number, splitIndex: number) {
       if (index === 0) {
         return splitIndex
       }
@@ -176,10 +247,10 @@ function resolveForStructure(
 
     function findParentForSegmentIndex(index: number) {
       const parentGroupIndex = findSegmentGroupIndexForPaneAtIndex(index)
-      return parentGroupIndex === null ? null : panes[parentGroupIndex]
+      return parentGroupIndex === null ? null : (panes[parentGroupIndex] as PaneNode)
     }
 
-    function emit(pane, index, splitIndex) {
+    function emit(pane: PaneNode, index: number, splitIndex: number) {
       if (typeof pane === 'undefined' && !options.silent) {
         // eslint-disable-next-line no-console
         console.warn(
@@ -191,7 +262,7 @@ function resolveForStructure(
       }
 
       if (maybeReplacePane(pane, index, splitIndex)) {
-        subscriber.next(panes) // eslint-disable-line callback-return
+        observer.next(panes) // eslint-disable-line callback-return
       }
 
       if (splitIndex === 0) {
@@ -199,9 +270,11 @@ function resolveForStructure(
       }
     }
 
-    function maybeReplacePane(pane, index, splitIndex) {
+    function maybeReplacePane(pane: PaneNode, index: number, splitIndex: number) {
       // `panes` are flat: so we need to figure out the correct index based on the groups
       const flatIndex = findFlatIndexForPane(index, splitIndex)
+      if (flatIndex === null) return false
+
       if (panes[flatIndex] === pane || shallowEquals(panes[flatIndex], pane)) {
         return false
       }
@@ -216,17 +289,6 @@ function resolveForStructure(
       return true
     }
 
-    function resolveFallbackEditor(nodeId, context, {params, payload}) {
-      const id = nodeId.replace(/^__edit__/, '')
-      const {template, type} = params
-
-      return {
-        id: 'editor',
-        type: 'document',
-        options: {id, template, type, templateParameters: payload},
-      }
-    }
-
     function unsubscribe() {
       while (subscriptions.length) {
         const sub = subscriptions.pop()
@@ -236,16 +298,23 @@ function resolveForStructure(
   })
 }
 
-export const maybeSerialize = (structure) =>
-  structure && typeof structure.serialize === 'function'
-    ? structure.serialize({path: []})
+export const maybeSerialize = (
+  structure: UnresolvedPaneNode
+): PaneNode | Subscribable<PaneNode> | PromiseLike<PaneNode> =>
+  structure && 'serialize' in structure
+    ? structure.serialize({
+        parent: null,
+        path: [],
+        index: 0,
+        splitIndex: 0,
+      })
     : structure
 
 // We are lazy-requiring/resolving the structure inside of a function in order to catch errors
 // on the root-level of the module. Any loading errors will be caught and emitted as errors
 // eslint-disable-next-line complexity
-export const loadStructure = () => {
-  let structure
+export const loadStructure = (): Observable<UnresolvedPaneNode> => {
+  let structure: UnresolvedPaneNode
   try {
     const mod = require('part:@sanity/desk-tool/structure?') || defaultStructure
     structure = mod && mod.__esModule ? mod.default : mod
@@ -278,14 +347,30 @@ export const loadStructure = () => {
     )
   }
 
+  const rootContext: RouterPaneSiblingContext = {
+    parent: null,
+    splitIndex: 0,
+    path: [],
+    index: 0,
+  }
+
   // Defer to catch immediately thrown errors on serialization
-  return defer(() => serializeStructure(structure))
+  return defer(() => serializeStructure(structure, rootContext, ['root', rootContext]))
 }
 
-export const useStructure = (segments, options = {}) => {
+export const useStructure = (
+  segments: RouterPanes | undefined,
+  options = {}
+): {
+  structure: Array<PaneNode | typeof LOADING_PANE> | undefined
+  error: StructureErrorType | undefined
+} => {
   const hasSegments = Boolean(segments)
   const numSegments = sumPaneSegments(segments || [])
-  const [{structure, error}, setStructure] = useState<any>({structure: null, error: null})
+  const [{structure, error}, setStructure] = useState<{
+    structure?: Array<PaneNode | typeof LOADING_PANE>
+    error?: StructureErrorType
+  }>({})
 
   // @todo This leads to deep update loops unless we serialize paneSegments
   // @todo We should try to memoize/prevent this without resorting to JSON.stringify
@@ -300,7 +385,7 @@ export const useStructure = (segments, options = {}) => {
         distinctUntilChanged(),
         map(maybeSerialize),
         switchMap((newStructure) =>
-          resolvePanes(newStructure, segments, structure, [0, 0], options)
+          resolvePanes(newStructure, segments || [], structure || [], [0, 0], options)
         )
       )
       .subscribe(
@@ -309,27 +394,28 @@ export const useStructure = (segments, options = {}) => {
       )
 
     return () => subscription.unsubscribe()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(segments)])
 
   return {structure, error}
 }
 
-export const setStructureResolveError = (err) => {
+export const setStructureResolveError = (err: StructureErrorType): void => {
   prevStructureError = err
 }
 
-function isStructure(structure) {
+function isStructure(structure: unknown): structure is UnresolvedPaneNode {
+  if (typeof structure === 'function') return true
+  if (!isRecord(structure)) return false
   return (
-    structure &&
-    (typeof structure === 'function' ||
-      typeof structure.serialize !== 'function' ||
-      typeof structure.then !== 'function' ||
-      typeof structure.subscribe !== 'function' ||
-      typeof structure.type !== 'string')
+    typeof structure.serialize !== 'function' ||
+    typeof structure.then !== 'function' ||
+    typeof structure.subscribe !== 'function' ||
+    typeof structure.type !== 'string'
   )
 }
 
-function warnOnUnknownExports(mod) {
+function warnOnUnknownExports(mod: Record<string, unknown>) {
   if (!mod) {
     return
   }

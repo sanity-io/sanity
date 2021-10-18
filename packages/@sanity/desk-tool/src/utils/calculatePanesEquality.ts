@@ -1,9 +1,9 @@
 import {isEqual} from 'lodash'
-import {RouterPaneGroup} from '../types'
+import {RouterPanes} from '../types'
 
 export const calculatePanesEquality = (
-  prev: RouterPaneGroup[] = [],
-  next: RouterPaneGroup[] = []
+  prev: RouterPanes = [],
+  next: RouterPanes = []
 ): {ids: boolean; params: boolean} => {
   if (prev === next) {
     return {ids: true, params: true}

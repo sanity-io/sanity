@@ -16,7 +16,10 @@ const DISABLED_REASON_TITLE = {
   NO_CHANGES: 'No unpublished changes',
 }
 
-function getDisabledReason(reason, publishedAt) {
+function getDisabledReason(
+  reason: keyof typeof DISABLED_REASON_TITLE,
+  publishedAt: string | undefined
+) {
   if (reason === 'ALREADY_PUBLISHED' && publishedAt) {
     return (
       <>

@@ -1,8 +1,7 @@
 import {useRouter, useRouterState} from '@sanity/base/router'
 import {pick, omit, isEqual} from 'lodash'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {useUnique} from '../../lib/useUnique'
-import {RouterPaneGroup, RouterSplitPane} from '../../types'
+import {RouterPaneGroup, RouterPaneSibling} from '../../types'
 import {exclusiveParams} from './constants'
 import {ChildLink} from './ChildLink'
 import {PaneRouterContext} from './PaneRouterContext'
@@ -56,7 +55,7 @@ export function PaneRouterProvider(props: {
   }, [payloadProp])
 
   const modifyCurrentGroup = useCallback(
-    (modifier: (siblings: RouterPaneGroup, item: RouterSplitPane) => RouterPaneGroup) => {
+    (modifier: (siblings: RouterPaneGroup, item: RouterPaneSibling) => RouterPaneGroup) => {
       const newPanes = routerPaneGroups.slice(0)
 
       const currentGroup = routerPaneGroups[groupIndex] ? routerPaneGroups[groupIndex].slice(0) : []
@@ -135,16 +134,19 @@ export function PaneRouterProvider(props: {
         } else {
           // If it's a duplicate of the group root, we should only set the parameters
           // that differ from the group root.
-          const newParams = Object.keys(nextParams).reduce((siblingParams, key) => {
-            if (
-              exclusiveParams.includes(key) ||
-              (rootParams && nextParams[key] !== rootParams[key])
-            ) {
-              siblingParams[key] = nextParams[key]
-            }
+          const newParams = Object.keys(nextParams).reduce<Record<string, string | undefined>>(
+            (siblingParams, key) => {
+              if (
+                exclusiveParams.includes(key) ||
+                (rootParams && nextParams[key] !== rootParams[key])
+              ) {
+                siblingParams[key] = nextParams[key]
+              }
 
-            return siblingParams
-          }, {})
+              return siblingParams
+            },
+            {}
+          )
 
           newGroup[siblingIndex] = {...item, params: newParams}
         }
