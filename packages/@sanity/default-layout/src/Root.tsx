@@ -39,7 +39,7 @@ function DefaultLayoutRoot() {
         const next = {
           urlState: event.state || prev.urlState,
           isNotFound: event.isNotFound || prev.isNotFound,
-          intent: event.intent || prev.intent,
+          intent: event.type === 'snapshot' ? event.intent || prev.intent : prev.intent,
         }
 
         // If you update a State Hook to the same value as the current state,
