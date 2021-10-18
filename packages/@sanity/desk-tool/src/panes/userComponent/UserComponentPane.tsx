@@ -40,6 +40,11 @@ export function UserComponentPane(props: UserComponentPaneProps) {
 
       {isValidElementType(component) &&
         createElement(component, {
+          // this forces a re-render when the router panes change. note: in
+          // theory, this shouldn't be necessary and the downstream user
+          // component could internally handle these updates, but this was done
+          // to preserve older desk tool behavior
+          key: `${restProps.itemId}-${restProps.childItemId}`,
           ...restProps,
           ...restPane,
           ref: userComponent,
