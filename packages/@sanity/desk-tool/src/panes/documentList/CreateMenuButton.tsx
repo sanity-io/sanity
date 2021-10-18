@@ -29,12 +29,15 @@ export function CreateMenuButton(props: {
           </Box>
           {items.map((createItem, createItemIndex) => (
             <IntentMenuItem
+              disabled={!permissions[createItemIndex]?.granted}
               icon={createItem.icon}
               intent={createItem.intent!}
               key={createItemIndex}
-              text={`${createItem.title} ${
-                permissions[createItemIndex]?.granted ? 'Granted!' : 'No access'
-              }`}
+              text={
+                permissions[createItemIndex]?.granted
+                  ? createItem.title
+                  : permissions[createItemIndex]?.reason
+              }
             />
           ))}
         </Menu>
