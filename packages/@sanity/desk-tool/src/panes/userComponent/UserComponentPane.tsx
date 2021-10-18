@@ -5,6 +5,7 @@ import {usePaneRouter} from '../../contexts/paneRouter'
 import {BaseDeskToolPaneProps} from '../types'
 import {DeskToolPaneActionHandler} from '../../types'
 import {UserComponentPaneHeader} from './UserComponentPaneHeader'
+import {UserComponentPaneContent} from './UserComponentPaneContent'
 
 type UserComponentPaneProps = BaseDeskToolPaneProps<'component'>
 
@@ -36,22 +37,23 @@ export function UserComponentPane(props: UserComponentPaneProps) {
         menuItemGroups={menuItemGroups}
         title={title}
       />
+      <UserComponentPaneContent>
+        {isValidElementType(component) &&
+          createElement(component, {
+            // this forces a re-render when the router panes change. note: in
+            // theory, this shouldn't be necessary and the downstream user
+            // component could internally handle these updates, but this was done
+            // to preserve older desk tool behavior
+            key: `${restProps.itemId}-${restProps.childItemId}`,
+            ...restProps,
+            ...restPane,
+            ref: userComponent,
+            // NOTE: this is for backwards compatibility (<= 2.20.0)
+            urlParams: params,
+          })}
 
-      {isValidElementType(component) &&
-        createElement(component, {
-          // this forces a re-render when the router panes change. note: in
-          // theory, this shouldn't be necessary and the downstream user
-          // component could internally handle these updates, but this was done
-          // to preserve older desk tool behavior
-          key: `${restProps.itemId}-${restProps.childItemId}`,
-          ...restProps,
-          ...restPane,
-          ref: userComponent,
-          // NOTE: this is for backwards compatibility (<= 2.20.0)
-          urlParams: params,
-        })}
-
-      {isValidElement(component) && component}
+        {isValidElement(component) && component}
+      </UserComponentPaneContent>
     </Pane>
   )
 }
