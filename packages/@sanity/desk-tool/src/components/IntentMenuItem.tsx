@@ -1,12 +1,12 @@
 import {IntentLink} from '@sanity/base/router'
-import {MenuItem, MenuItemProps} from '@sanity/ui'
-import React, {forwardRef, useMemo} from 'react'
+import {MenuItem} from '@sanity/ui'
+import React, {forwardRef, useMemo, ComponentProps} from 'react'
 import {PaneMenuItem} from '../types'
 
 type RouterIntent = NonNullable<PaneMenuItem['intent']>
 
 export const IntentMenuItem = forwardRef(function IntentMenuItem(
-  props: {intent: RouterIntent; disabled: boolean} & Omit<MenuItemProps, 'as' | 'href'>,
+  props: {intent: RouterIntent} & Omit<ComponentProps<typeof MenuItem>, 'as' | 'href'>,
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
   const {intent, ...restProps} = props
