@@ -1,3 +1,6 @@
+// definitions derived from here:
+// https://github.com/Lapple/react-json-inspector/tree/0b556535ba474f1c7241b678c6821d8bbf8060da
+// TODO: remove this package dependency or fork it
 declare module 'react-json-inspector' {
   export interface SearchBarProps {
     onChange: (query: string) => void

@@ -255,6 +255,7 @@ export type PaneNode =
   | ListPaneNode
 
 interface Serializable<T> {
+  // TODO: unify this context with `SerializeOptions`
   serialize(context: RouterPaneSiblingContext): T
 }
 
