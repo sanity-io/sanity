@@ -37,8 +37,8 @@ export const IntentResolver = React.memo(function IntentResolver({
   const otherParams = useUnique(otherParamsNonUnique)
   const documentId = id || FALLBACK_ID
   const {documentType, isLoaded} = useDocumentType(documentId, specifiedSchemaType)
-  const paneSegments = useMemo((): RouterPanes => {
-    if (!documentType) return []
+  const paneSegments = useMemo((): RouterPanes | undefined => {
+    if (!documentType) return undefined
 
     const filteredParams = Object.fromEntries(
       Object.entries(otherParams).filter(
