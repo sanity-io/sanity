@@ -1,6 +1,6 @@
 {
   "name": "@sanity/structure",
-  "version": "2.21.4",
+  "version": "2.21.5",
   "description": "Build a navigation structure programatically",
   "main": "./lib/index.js",
   "types": "./dist/dts",
@@ -28,7 +28,7 @@
   "dependencies": {
     "@sanity/client": "2.21.3",
     "@sanity/icons": "^1.2.1",
-    "@sanity/initial-value-templates": "2.21.4",
+    "@sanity/initial-value-templates": "2.21.5",
     "@types/lodash": "^4.14.149",
     "@types/memoize-one": "^3.1.1",
     "lodash": "^4.17.15",
