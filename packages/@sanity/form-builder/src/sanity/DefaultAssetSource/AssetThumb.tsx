@@ -1,5 +1,5 @@
 import type {Subscription} from 'rxjs'
-import React, {useState, useEffect, useRef} from 'react'
+import React, {useState, useEffect, useRef, useCallback} from 'react'
 import styled from 'styled-components'
 import {Button, useToast} from '@sanity/ui'
 import {Asset as AssetType} from '@sanity/types'
@@ -75,36 +75,39 @@ const AssetThumb = (props: AssetProps) => {
     }
   }, [])
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = useCallback(() => {
     setShowDeleteDialog(true)
-  }
+  }, [setShowDeleteDialog])
 
-  const handleDialogClose = () => {
+  const handleDialogClose = useCallback(() => {
     setShowUsageDialog(false)
     setShowDeleteDialog(false)
-  }
+  }, [setShowUsageDialog, setShowDeleteDialog])
 
-  const handleToggleUsageDialog = () => {
+  const handleToggleUsageDialog = useCallback(() => {
     setShowUsageDialog(true)
-  }
+  }, [setShowUsageDialog])
 
-  const handleDeleteError = (error) => {
-    toast.push({
-      closable: true,
-      status: 'error',
-      title: 'Image could not be deleted',
-      description: error.message,
-    })
-  }
+  const handleDeleteError = useCallback(
+    (error) => {
+      toast.push({
+        closable: true,
+        status: 'error',
+        title: 'Image could not be deleted',
+        description: error.message,
+      })
+    },
+    [toast]
+  )
 
-  const handleDeleteSuccess = () => {
+  const handleDeleteSuccess = useCallback(() => {
     toast.push({
       status: 'success',
       title: 'Image was deleted',
     })
-  }
+  }, [toast])
 
-  const handleDeleteAsset = () => {
+  const handleDeleteAsset = useCallback(() => {
     setIsDeleting(true)
 
     deleteRef$.current = versionedClient.observable.delete(asset._id).subscribe({
@@ -121,21 +124,30 @@ const AssetThumb = (props: AssetProps) => {
         console.error('Could not delete asset', err)
       },
     })
-  }
+  }, [asset._id, handleDeleteError, handleDeleteSuccess, onDeleteFinished])
 
-  const handleMenuAction = (action: AssetMenuAction) => {
-    if (action.type === 'delete') {
-      handleConfirmDelete()
-    }
+  const handleMenuAction = useCallback(
+    (action: AssetMenuAction) => {
+      if (action.type === 'delete') {
+        handleConfirmDelete()
+      }
 
-    if (action.type === 'showUsage') {
-      handleToggleUsageDialog()
-    }
-  }
+      if (action.type === 'showUsage') {
+        handleToggleUsageDialog()
+      }
+    },
+    [handleConfirmDelete, handleToggleUsageDialog]
+  )
 
   // const {asset, onClick, onKeyPress, isSelected} = props
   const {originalFilename, _id, url} = asset
   const imgH = 200 * Math.max(1, DPI)
+
+  // Mead can't convert gifs, so we might end up with large gifs that will cause the source window to use a lot of CPU
+  // We instead force them to display as jpgs
+  const imageUrl = url.includes('.gif')
+    ? `${url}?h=${imgH}&fit=max&fm=jpg`
+    : `${url}?h=${imgH}&fit=max`
 
   return (
     <Root>
@@ -150,12 +162,7 @@ const AssetThumb = (props: AssetProps) => {
         style={{padding: 2}}
       >
         <Container>
-          <Image
-            alt={originalFilename}
-            src={`${url}?h=${imgH}&fit=max`}
-            onClick={onClick}
-            data-id={_id}
-          />
+          <Image alt={originalFilename} src={imageUrl} onClick={onClick} data-id={_id} />
           {isDeleting && <FullscreenSpinner />}
         </Container>
       </Button>
@@ -175,4 +182,4 @@ const AssetThumb = (props: AssetProps) => {
   )
 }
 
-export default AssetThumb
+export default React.memo(AssetThumb)
