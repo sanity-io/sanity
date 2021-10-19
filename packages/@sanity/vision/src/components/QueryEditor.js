@@ -80,6 +80,7 @@ class QueryEditor extends React.PureComponent {
 
   render() {
     const options = {
+      theme: 'default CodeMirror-vision',
       lineNumbers: true,
       tabSize: 2,
       mode: {name: 'javascript', json: true},
