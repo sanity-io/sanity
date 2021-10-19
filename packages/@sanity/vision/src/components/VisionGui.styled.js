@@ -1,4 +1,4 @@
-import styled, {css} from 'styled-components'
+import styled, {css, createGlobalStyle} from 'styled-components'
 import {Button, Card, Box, Flex, Label, rem} from '@sanity/ui'
 
 export const Root = styled(Card)`
@@ -64,6 +64,24 @@ export const Root = styled(Card)`
   .CodeMirror-line,
   pre.CodeMirror-line {
     padding-left: ${({theme}) => rem(theme.sanity.space[3])};
+  }
+`
+
+export const GlobalCodeMirrorStyle = createGlobalStyle`
+  // This is for the autocomplete menu when you do ctrl-space in in the Query editor
+  .CodeMirror-hints.CodeMirror-vision {
+    z-index: 20;
+    font-family: ${({theme}) => theme.sanity.fonts.code.family};
+    font-size: ${({theme}) => rem(theme.sanity.fonts.code.sizes[1].fontSize)};
+    padding: ${({theme}) => rem(theme.sanity.space[2])};
+  }
+
+  .CodeMirror-hint {
+    padding: ${({theme}) => `${rem(theme.sanity.space[1])} ${rem(theme.sanity.space[1])}`};
+  }
+
+  .CodeMirror-hint-active {
+    background-color: var(--card-bg-color);
   }
 `
 
