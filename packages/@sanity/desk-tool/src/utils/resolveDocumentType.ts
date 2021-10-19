@@ -31,11 +31,18 @@ export function useDocumentType(
     documentType: isResolved ? specifiedType : undefined,
   })
 
+  // Reset documentType when documentId changes
+  useEffect(() => {
+    setDocumentType({
+      isLoaded: isResolved,
+      documentType: isResolved ? specifiedType : undefined,
+    })
+  }, [documentId, isResolved, specifiedType])
+
+  // Load the documentType from Content Lake
   useEffect(() => {
     if (isResolved) {
-      return () => {
-        // intentional noop
-      }
+      return undefined
     }
 
     const sub = documentStore
