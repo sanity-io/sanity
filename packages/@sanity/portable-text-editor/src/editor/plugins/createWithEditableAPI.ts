@@ -427,31 +427,6 @@ export function createWithEditableAPI(
                   }
                 })
               }
-              // Merge similar adjecent spans
-              if (changed) {
-                // eslint-disable-next-line max-depth
-                for (const [node] of Array.from(
-                  Editor.nodes(editor, {
-                    at: Editor.range(editor, [selection.anchor.path[0]], [selection.focus.path[0]]),
-                    match: Text.isText,
-                  })
-                ).reverse()) {
-                  const [parent] = Editor.node(editor, SlatePath.parent(path))
-                  // eslint-disable-next-line max-depth
-                  if (Editor.isBlock(editor, parent)) {
-                    const nextPath = [path[0], path[1] + 1]
-                    const nextTextNode = parent.children[nextPath[1]]
-                    // eslint-disable-next-line max-depth
-                    if (
-                      nextTextNode &&
-                      typeof nextTextNode.text === 'string' &&
-                      isEqual(nextTextNode.marks, node.marks)
-                    ) {
-                      Transforms.mergeNodes(editor, {at: nextPath, voids: true})
-                    }
-                  }
-                }
-              }
             }
             if (changed) {
               editor.onChange()
