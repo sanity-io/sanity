@@ -177,6 +177,7 @@ export function FormView(props: FormViewProps) {
     markers,
     patchChannelRef,
     presence,
+    ready,
     readOnly,
     value,
   ])
