@@ -4,13 +4,13 @@ import {Text, Spinner, Flex} from '@sanity/ui'
 import {Timeline as TimelineModel} from '../documentHistory/history/Timeline'
 import {TimelineItem} from './timelineItem'
 import {TimelineItemState} from './types'
-import {Root, StackWrapper, MenuWrapper} from './timeline.styled'
+import {Root, StackWrapper, MenuWrapper, TimelineVirtualList} from './timeline.styled'
+import {useObserveElement} from './helpers'
 
 interface TimelineProps {
   timeline: TimelineModel
   onSelect: (chunk: Chunk) => void
   onLoadMore: (state: boolean) => void
-
   /** Are the chunks above the topSelection enabled? */
   disabledBeforeSelection?: boolean
   /** The first chunk of the selection. */
@@ -18,9 +18,6 @@ interface TimelineProps {
   /** The final chunk of the selection. */
   bottomSelection: Chunk
 }
-
-// Must be a positive number
-const LOAD_MORE_OFFSET = 20
 
 export const Timeline = ({
   timeline,
@@ -30,32 +27,70 @@ export const Timeline = ({
   onSelect,
   onLoadMore,
 }: TimelineProps) => {
-  const rootRef = useRef<HTMLDivElement | null>(null)
-  const listRef = useRef<HTMLOListElement | null>(null)
+  const [listElement, setListElement] = useState<HTMLDivElement | null>(null)
   const [loadingElement, setLoadingElement] = useState<HTMLDivElement | null>(null)
+  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false)
+  const state = useRef<TimelineItemState>(disabledBeforeSelection ? 'disabled' : 'enabled')
 
-  let state: TimelineItemState = disabledBeforeSelection ? 'disabled' : 'enabled'
-
-  const checkIfLoadIsNeeded = useCallback(() => {
-    const rootEl = rootRef.current
-
-    if (loadingElement && rootEl) {
-      const {offsetHeight, scrollTop} = rootEl
-      const bottomPosition = offsetHeight + scrollTop + LOAD_MORE_OFFSET
-      const isVisible = loadingElement.offsetTop < bottomPosition
-
-      if (isVisible) {
-        // @todo: find out why, for some reason, it won't load without RAF wrapper
-        requestAnimationFrame(() => onLoadMore(isVisible))
+  const handleLoadMore = useCallback(
+    (entry) => {
+      if (entry[0]?.isIntersecting && !isLoadingMore) {
+        onLoadMore(true)
+        setIsLoadingMore(true)
       }
-    }
-  }, [onLoadMore, loadingElement])
+    },
+    [isLoadingMore, onLoadMore]
+  )
 
-  // Load whenever it's needed
-  useEffect(checkIfLoadIsNeeded, [checkIfLoadIsNeeded])
+  // Load more data when the loadingElement is visible (when you have scrolled to the bottom)
+  useObserveElement({
+    element: loadingElement,
+    options: {root: listElement},
+    callback: handleLoadMore,
+  })
+
+  useEffect(() => {
+    setIsLoadingMore(false)
+  }, [timeline])
+
+  const renderItem = useCallback(
+    (chunk: Chunk) => {
+      const isSelectionTop = topSelection === chunk
+      const isSelectionBottom = bottomSelection === chunk
+
+      if (isSelectionTop) {
+        state.current = 'withinSelection'
+      }
+
+      if (isSelectionBottom) {
+        state.current = 'active'
+      }
+
+      const item = (
+        <TimelineItem
+          chunk={chunk}
+          isSelectionBottom={isSelectionBottom}
+          isSelectionTop={isSelectionTop}
+          key={chunk.id}
+          state={state.current}
+          onSelect={onSelect}
+          type={chunk.type}
+          timestamp={chunk.endTimestamp}
+        />
+      )
+
+      // Flip it back to normal after we've rendered the active one.
+      if (state.current === 'active') {
+        state.current = 'enabled'
+      }
+
+      return item
+    },
+    [bottomSelection, onSelect, topSelection]
+  )
 
   return (
-    <Root ref={rootRef as any} onScroll={checkIfLoadIsNeeded} data-ui="timeline">
+    <Root data-ui="Timeline">
       {timeline.chunkCount === 0 && (
         <StackWrapper padding={3} space={3}>
           <Text size={1} weight="semibold">
@@ -69,49 +104,19 @@ export const Timeline = ({
       )}
 
       {timeline.chunkCount > 0 && (
-        <MenuWrapper ref={listRef} padding={1} space={0}>
-          {timeline.mapChunks((chunk) => {
-            const isSelectionTop = topSelection === chunk
-            const isSelectionBottom = bottomSelection === chunk
+        <MenuWrapper ref={setListElement} padding={1} space={0}>
+          <TimelineVirtualList
+            items={timeline.mapChunks((chunk) => chunk)}
+            renderItem={renderItem}
+          />
 
-            if (isSelectionTop) {
-              state = 'withinSelection'
-            }
-
-            if (isSelectionBottom) {
-              state = 'selected'
-            }
-
-            const item = (
-              <TimelineItem
-                chunk={chunk}
-                isSelectionBottom={isSelectionBottom}
-                isSelectionTop={isSelectionTop}
-                key={chunk.id}
-                state={state}
-                onSelect={onSelect}
-                type={chunk.type}
-                timestamp={chunk.endTimestamp}
-              />
-            )
-
-            // Flip it back to normal after we've rendered the active one.
-            if (state === 'selected') {
-              state = 'enabled'
-            }
-
-            return item
-          })}
+          {!timeline.reachedEarliestEntry && (
+            <Flex align="center" justify="center" padding={4} ref={setLoadingElement}>
+              <Spinner muted />
+            </Flex>
+          )}
         </MenuWrapper>
-      )}
-
-      {!timeline.reachedEarliestEntry && (
-        <Flex align="center" justify="center" padding={4} ref={setLoadingElement}>
-          <Spinner muted />
-        </Flex>
       )}
     </Root>
   )
 }
-
-Timeline.displayName = 'Timeline'
