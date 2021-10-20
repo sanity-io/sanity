@@ -1,5 +1,6 @@
 import S from '@sanity/desk-tool/structure-builder'
-import {EarthGlobeIcon, PlugIcon, TerminalIcon} from '@sanity/icons'
+import {EarthGlobeIcon, PlugIcon, TagIcon, TerminalIcon} from '@sanity/icons'
+import {orderableDocumentListDeskItem} from '@sanity/orderable-document-list'
 import React from 'react'
 import schema from 'part:@sanity/base/schema'
 
@@ -40,7 +41,13 @@ const STANDARD_PORTABLE_TEXT_INPUT_TYPES = [
   'simpleBlock',
 ]
 
-const PLUGIN_INPUT_TYPES = ['codeTest', 'colorTest', 'geopointTest']
+const PLUGIN_INPUT_TYPES = [
+  'codeTest',
+  'colorTest',
+  'geopointTest',
+  'orderableCategory',
+  'orderableTag',
+]
 
 const DEBUG_INPUT_TYPES = [
   'actionsTest',
@@ -371,6 +378,28 @@ export default () =>
               S.divider(),
 
               S.documentTypeListItem('sanity.imageAsset').title('Images').icon(ImagesIcon),
+            ])
+        ),
+
+      S.listItem()
+        .icon(PlugIcon)
+        .id('plugin')
+        .title('Plugin panes')
+        .child(
+          S.list()
+            .id('plugin')
+            .title('Plugin panes')
+            .items([
+              orderableDocumentListDeskItem({
+                type: 'orderableCategory',
+                icon: TagIcon,
+                title: 'Category (orderable)',
+              }),
+              orderableDocumentListDeskItem({
+                type: 'orderableTag',
+                icon: TagIcon,
+                title: 'Tag (orderable)',
+              }),
             ])
         ),
 
