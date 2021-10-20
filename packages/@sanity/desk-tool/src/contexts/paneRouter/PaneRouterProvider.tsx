@@ -1,6 +1,7 @@
 import {useRouter, useRouterState} from '@sanity/base/router'
 import {omit} from 'lodash'
 import React, {useCallback, useMemo} from 'react'
+import {toString as pathToString} from '@sanity/util/paths'
 import {RouterPaneGroup, RouterPaneSibling} from '../../types'
 import {ChildLink} from './ChildLink'
 import {BackLink} from './BackLink'
@@ -77,7 +78,7 @@ export function PaneRouterProvider(props: {
       navigate({
         panes: [
           ...routerPaneGroups.slice(0, groupIndex + 1),
-          [{id, params: {parentRefPath, type}}],
+          [{id, params: {parentRefPath: pathToString(parentRefPath), type}}],
         ],
       })
     },
