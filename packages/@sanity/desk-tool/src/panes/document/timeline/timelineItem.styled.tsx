@@ -1,4 +1,4 @@
-import {Text, Box, MenuItem, Theme, Flex} from '@sanity/ui'
+import {Text, MenuItem, Theme, Flex} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {TimelineItemState} from './types'
 
@@ -12,103 +12,98 @@ export interface TimelineItemProps {
   isHovered: boolean
 }
 
-export const IconWrapper = styled(Flex)(({theme}: IconWrapperProps) => {
-  const borderColor = theme.sanity.color.base.skeleton?.from
-
+export const StyledMenuItem = styled(MenuItem)(({theme}: {theme: Theme}) => {
   return css`
-    --timeline-hairline-width: 1px;
-    position: relative;
-    z-index: 2;
-    margin: 0;
-    padding: 0;
-
-    &::before {
-      position: absolute;
-      content: '';
-      height: 100%;
-      width: var(--timeline-hairline-width);
-      background: ${borderColor};
-      top: 0;
-      left: calc((100% - var(--timeline-hairline-width)) / 2);
-      z-index: 1;
-    }
-  `
-})
-
-export const Root = styled(MenuItem)(({state = 'enabled', isHovered, theme}: TimelineItemProps) => {
-  const {color} = theme.sanity
-
-  const selectedState = color.button.default.primary.enabled
-  return css`
-    position: relative;
-    min-width: 244px;
-
-    ${state === 'selected' &&
-    css`
-      --card-bg-color: ${selectedState.bg};
-      --card-fg-color: ${selectedState.fg};
-      --card-muted-fg-color: ${selectedState.muted};
-      --card-border-color: ${selectedState.bg};
-      &:not([data-selection-bottom='true']) {
+    &:not([data-selection-bottom='true'][data-selection-top='true']) {
+      &[data-selection-top='true'] {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+      &[data-selection-bottom='true'] {
         border-top-left-radius: 0;
         border-top-right-radius: 0;
       }
-    `}
+    }
 
-    ${state === 'withinSelection' &&
-    css`
-      border-bottom-left-radius: 0;
-      border-bottom-right-radius: 0;
-      box-shadow: 0px 3px 0px 0px var(--card-bg-color);
-      &:not([data-selection-top='true']) {
+    &:not([data-selection-top='true']) {
+      &[data-selection-within='true'] {
         border-radius: 0;
       }
+    }
 
-      ${IconWrapper} {
-        &::before {
-          background: var(--card-hairline-soft-color);
+    &:not([disabled], [data-selected]) {
+      &[data-active='true'] {
+        --card-fg-color: ${theme.sanity.color.selectable?.primary.selected.fg};
+        --card-bg-color: ${theme.sanity.color.selectable?.primary.selected.bg};
+        --card-muted-fg-color: ${theme.sanity.color.selectable?.primary.selected.muted.fg};
+      }
+
+      &:not([data-active='true']) {
+        &[data-selection-within='true'],
+        &[data-selection-top='true'],
+        &[data-selection-bottom='true'] {
+          --card-fg-color: ${theme.sanity.color.selectable?.primary.pressed.fg};
+          --card-bg-color: ${theme.sanity.color.selectable?.primary.pressed.bg};
+          --card-muted-fg-color: ${theme.sanity.color.selectable?.primary.pressed.muted.fg};
+          --card-border-color: ${theme.sanity.color.selectable?.primary.pressed.border};
         }
       }
-    `}
 
-      ${state === 'disabled' &&
-    css`
-      [data-ui='Avatar'] {
-        opacity: 0.2;
+      &:not([data-active='true'], [data-selection-within='true'], [data-selection-top='true'], [data-selection-bottom='true']) {
+        &[data-type='editDraft'],
+        &[data-type='editLive'] {
+          --card-fg-color: ${theme.sanity.color.selectable?.caution.enabled.fg};
+        }
+
+        &[data-type='unpublish'],
+        &[data-type='discardDraft'],
+        &[data-type='delete'] {
+          --card-fg-color: ${theme.sanity.color.selectable?.critical.enabled.fg};
+        }
+
+        &[data-type='initial'],
+        &[data-type='create'],
+        &[data-type='withinSelection'] {
+          --card-fg-color: ${theme.sanity.color.selectable?.primary.enabled.fg};
+        }
+
+        &[data-type='publish'] {
+          --card-fg-color: ${theme.sanity.color.selectable?.positive.enabled.fg};
+        }
       }
-    `}
-
-    // line styling 👇
-      &:first-child ${IconWrapper}::before {
-      height: 50%;
-      top: unset;
-      bottom: 0;
-    }
-
-    &:last-child ${IconWrapper}::before {
-      height: 50%;
-    }
-
-    ${(isHovered || state === 'selected') &&
-    css`
-      ${IconWrapper}::before {
-        background: transparent;
-      }
-    `}
-
-    // Remove timeline lines when using the keyboard to navigate timeline items
-    &:focus ${IconWrapper}::before {
-      background: transparent;
     }
   `
 })
 
-export const IconBox = styled(Box)`
-  background: var(--card-bg-color);
-  border-radius: 50px;
-  position: relative;
-  z-index: 2;
-`
+export const IconTimelineFlex = styled(Flex)(() => {
+  const line = css`
+    content: '';
+    position: absolute;
+    height: 6px;
+    width: 1px;
+    left: 50%;
+    z-index: 1;
+  `
+
+  return css`
+    position: relative;
+    height: 40px;
+
+    &:not([data-hidden='true']) {
+      &:after {
+        ${line};
+        top: 0;
+        background-color: var(--card-border-color);
+      }
+
+      &:before {
+        ${line};
+        bottom: 0;
+        background-color: var(--card-border-color);
+      }
+    }
+  `
+})
 
 export const EventLabel = styled(Text)`
   text-transform: capitalize;

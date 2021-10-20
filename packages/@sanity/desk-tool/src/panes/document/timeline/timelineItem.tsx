@@ -1,89 +1,65 @@
-import React, {useCallback, createElement, useState} from 'react'
+import React, {useCallback, createElement, useMemo} from 'react'
 import {useTimeAgo} from '@sanity/base/hooks'
 import {Chunk, ChunkType} from '@sanity/field/diff'
-import {Box, Flex, Stack, Text, ButtonTone} from '@sanity/ui'
+import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {formatTimelineEventLabel, getTimelineEventIconComponent} from './helpers'
 import {TimelineItemState} from './types'
 import {UserAvatarStack} from './userAvatarStack'
+import {EventLabel, StyledMenuItem, IconTimelineFlex} from './timelineItem.styled'
 
-import {EventLabel, IconBox, IconWrapper, Root} from './timelineItem.styled'
+export const TimelineItem = React.memo(
+  (props: {
+    isSelectionBottom: boolean
+    isSelectionTop: boolean
+    state: TimelineItemState
+    onSelect: (chunk: Chunk) => void
+    chunk: Chunk
+    timestamp: string
+    type: ChunkType
+  }) => {
+    const {isSelectionBottom, isSelectionTop, state, onSelect, timestamp, chunk, type} = props
+    const iconComponent = getTimelineEventIconComponent(type)
+    const authorUserIds = Array.from(chunk.authors)
+    const timeAgo = useTimeAgo(timestamp, {minimal: true})
 
-const TIMELINE_ITEM_EVENT_TONE: Record<ChunkType | 'withinSelection', ButtonTone> = {
-  initial: 'primary',
-  create: 'primary',
-  publish: 'positive',
-  editLive: 'caution',
-  editDraft: 'caution',
-  unpublish: 'critical',
-  discardDraft: 'critical',
-  delete: 'critical',
-  withinSelection: 'primary',
-}
+    const eventLabel = useMemo(() => formatTimelineEventLabel(type) || <code>{type}</code>, [type])
 
-export function TimelineItem(props: {
-  isSelectionBottom: boolean
-  isSelectionTop: boolean
-  state: TimelineItemState
-  onSelect: (chunk: Chunk) => void
-  chunk: Chunk
-  timestamp: string
-  type: ChunkType
-}) {
-  const {isSelectionBottom, isSelectionTop, state, onSelect, timestamp, chunk, type} = props
-  const iconComponent = getTimelineEventIconComponent(type)
-  const authorUserIds = Array.from(chunk.authors)
-  const timeAgo = useTimeAgo(timestamp, {minimal: true})
+    const handleClick = useCallback(
+      (evt: React.MouseEvent<HTMLDivElement>) => {
+        evt.preventDefault()
+        evt.stopPropagation()
+        onSelect(chunk)
+      },
+      [onSelect, chunk]
+    )
 
-  const isSelected = state === 'selected'
-  const isWithinSelection = state === 'withinSelection'
-
-  const [isHovered, setHovered] = useState(false)
-
-  const handleClick = useCallback(
-    (evt: React.MouseEvent<HTMLDivElement>) => {
-      evt.preventDefault()
-      evt.stopPropagation()
-      onSelect(chunk)
-    },
-    [onSelect, chunk]
-  )
-
-  return (
-    <Root
-      data-ui="timelineItem"
-      radius={2}
-      data-chunk-id={chunk.id}
-      paddingY={0}
-      paddingX={2}
-      tone={
-        isHovered || isSelected || isWithinSelection ? 'default' : TIMELINE_ITEM_EVENT_TONE[type]
-      }
-      pressed={isWithinSelection}
-      state={state}
-      selected={isSelected}
-      isHovered={isHovered}
-      disabled={state === 'disabled'}
-      data-selection-bottom={isSelectionBottom}
-      data-selection-top={isSelectionTop}
-      onClick={handleClick}
-    >
-      <div
-        // eslint-disable-next-line react/jsx-no-bind
-        onMouseEnter={() => setHovered(true)}
-        // eslint-disable-next-line react/jsx-no-bind
-        onMouseLeave={() => setHovered(false)}
+    return (
+      <StyledMenuItem
+        data-type={type}
+        disabled={state === 'disabled'}
+        onClick={handleClick}
+        paddingX={2}
+        paddingY={0}
+        selected={state === 'active'}
+        data-active={state === 'active'}
+        data-selection-top={isSelectionTop}
+        data-selection-bottom={isSelectionBottom}
+        data-selection-within={state === 'withinSelection'}
+        data-testid="timeline-item"
       >
-        <Flex align="stretch">
-          <IconWrapper align="center">
-            <IconBox padding={2}>
-              <Text size={2}>{iconComponent && createElement(iconComponent)}</Text>
-            </IconBox>
-          </IconWrapper>
-
-          <Stack space={2} margin={2}>
+        <Flex align="center" height="fill" flex={1}>
+          <IconTimelineFlex
+            align="center"
+            paddingX={2}
+            data-hidden={state === 'active'}
+            data-ui="IconTimelineFlex"
+          >
+            <Text>{iconComponent && createElement(iconComponent)}</Text>
+          </IconTimelineFlex>
+          <Stack space={2} paddingY={2} marginLeft={2}>
             <Box>
               <EventLabel size={1} weight="medium">
-                {formatTimelineEventLabel(type) || <code>{type}</code>}
+                {eventLabel}
               </EventLabel>
             </Box>
             <Text size={0} muted>
@@ -94,7 +70,7 @@ export function TimelineItem(props: {
             <UserAvatarStack maxLength={3} userIds={authorUserIds} />
           </Flex>
         </Flex>
-      </div>
-    </Root>
-  )
-}
+      </StyledMenuItem>
+    )
+  }
+)
