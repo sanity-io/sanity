@@ -1,6 +1,6 @@
-describe('@sanity/desk-tool: header permissions', () => {
-  it('is active if user has permissions', () => {
-    cy.visit('/test/desk/custom;deep;book')
+describe('@sanity/desk-tool: test which header permissions exist', () => {
+  it('when the user is admin: the create button is active', () => {
+    cy.visit('/test/desk/custom;deep;book#_debug_roles=administrator')
 
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000)
@@ -8,7 +8,7 @@ describe('@sanity/desk-tool: header permissions', () => {
     cy.get('[data-testid=action-intent-button]').should('not.have.attr', 'disabled')
   })
 
-  it('are disabled if user is restricted (read only)', () => {
+  it('when the user is restricted (read only): the create button is disabled', () => {
     cy.visit('/test/desk/custom;deep;book#_debug_roles=restricted')
 
     // eslint-disable-next-line cypress/no-unnecessary-waiting
@@ -17,7 +17,7 @@ describe('@sanity/desk-tool: header permissions', () => {
     cy.get('[data-testid=action-intent-button]').should('have.attr', 'disabled')
   })
 
-  it('have only one action enabled because of the requiresApproval role based on schema property', () => {
+  it('when the user is requiresApproval (based on schema property): from the list of create (tooltip) only the last action is enabled', () => {
     cy.visit('/test/desk/author#_debug_roles=requiresApproval')
 
     // eslint-disable-next-line cypress/no-unnecessary-waiting
