@@ -168,6 +168,7 @@ export function DocumentListPaneHeader(props: {
           >
             <div>
               <IntentButton
+                data-cy="action-intent-button"
                 disabled={!granted}
                 aria-label={String(action.title)}
                 icon={action.icon || UnknownIcon}
