@@ -15,7 +15,7 @@ import {useDeskTool} from '../../contexts/deskTool'
 import {BackLink} from '../../contexts/paneRouter'
 import {DeskToolPaneActionHandler} from '../../types/types'
 import {useDeskToolPaneActions} from '../useDeskToolPaneActions'
-import {getInitialValueObservable} from '../document/lib/initialValue/getInitialValue'
+import {getInitialValueObservable} from '../document/initialValue/getInitialValue'
 import {Layout, SortOrder} from './types'
 import {CreateMenuButton} from './CreateMenuButton'
 
