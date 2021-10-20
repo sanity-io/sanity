@@ -16,8 +16,6 @@ export function CreateMenuButton(props: {
 }) {
   const {items, permissions} = props
 
-  // todo: somehow resolve initial value for each of the passed menu items
-  //  and pass those to the permission checker to see if the user has access to create any of them
   return (
     <MenuButton
       button={<Button icon={ComposeIcon} mode="bleed" padding={3} />}
