@@ -69,11 +69,11 @@ export const ChangeBarButton = styled.button(({theme}: ThemeContext) => {
     &:after {
       content: '';
       width: 16px;
-      height: calc(100% + 16px);
+      height: calc(100% + 14px);
       display: block;
       position: absolute;
-      top: -8px;
-      left: -4px;
+      top: -7px;
+      left: -5px;
       border-radius: 16px;
       background: ${notSelectedColor};
     }
