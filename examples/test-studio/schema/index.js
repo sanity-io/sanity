@@ -70,6 +70,8 @@ import {withDocumentTestSchemaType} from './debug/withDocumentTest'
 import code from './plugins/code'
 import color from './plugins/color'
 import geopoint from './plugins/geopoint'
+import {orderableCategoryDocumentType} from './plugins/orderableCategory'
+import {orderableTagDocumentType} from './plugins/orderableTag'
 
 // Test documents with 3rd party plugin inputs
 import markdown from './externalPlugins/markdown'
@@ -125,6 +127,8 @@ export default createSchema({
     numbers,
     objectWithNestedArray,
     objects,
+    orderableCategoryDocumentType,
+    orderableTagDocumentType,
     poppers,
     presence,
     previewImageUrlTest,
