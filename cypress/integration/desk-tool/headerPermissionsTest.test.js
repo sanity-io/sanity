@@ -5,7 +5,7 @@ describe('@sanity/desk-tool: header permissions', () => {
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000)
 
-    cy.get('[data-cy=action-intent-button]').should('not.have.attr', 'disabled')
+    cy.get('[data-testid=action-intent-button]').should('not.have.attr', 'disabled')
   })
 
   it('are disabled if user is restricted (read only)', () => {
@@ -14,6 +14,6 @@ describe('@sanity/desk-tool: header permissions', () => {
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000)
 
-    cy.get('[data-cy=action-intent-button]').should('have.attr', 'disabled')
+    cy.get('[data-testid=action-intent-button]').should('have.attr', 'disabled')
   })
 })

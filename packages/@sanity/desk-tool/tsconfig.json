@@ -1,6 +1,6 @@
 {
   "extends": "../../../tsconfig",
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "../../../cypress/integration/form-builder/_e2eTest.js"],
   "compilerOptions": {
     "composite": true,
     "rootDir": "./src",
