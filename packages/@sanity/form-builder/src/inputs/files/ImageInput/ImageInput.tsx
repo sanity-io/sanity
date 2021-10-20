@@ -657,7 +657,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                 onFilesOut={this.handleFilesOut}
                 onFocus={this.handleFileTargetFocus}
                 onBlur={this.handleFileTargetBlur}
-                tone="transparent"
+                tone="default"
               >
                 <RatioBox ratio={3 / 2} padding={1}>
                   <Flex align="center" justify="center">
@@ -678,8 +678,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
               </FileTarget>
             </ChangeIndicatorForFieldPath>
             <Grid
-              gap={1}
-              marginTop={3}
+              gap={2}
+              marginTop={2}
               style={{gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))'}}
             >
               {!readOnly && directUploads && (

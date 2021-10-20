@@ -1,9 +1,12 @@
 import {Box} from '@sanity/ui'
 import styled from 'styled-components'
 
-export const RatioBox = styled(Box)<{ratio?: number}>`
+export const RatioBox = styled(Box)<{ratio?: number; maxHeight?: number}>`
   position: relative;
-  padding-bottom: calc(${({ratio = 3 / 2}) => 1 / ratio} * 100%);
+  padding-bottom: min(
+    calc(${({ratio = 3 / 2}) => 1 / ratio} * 100%),
+    ${({maxHeight = '40vh'}) => maxHeight}
+  );
 
   & > div {
     position: absolute;

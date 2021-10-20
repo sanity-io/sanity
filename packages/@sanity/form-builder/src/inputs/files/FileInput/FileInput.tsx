@@ -563,7 +563,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                   onFilesOut={this.handleFilesOut}
                   onFocus={this.handleFileTargetFocus}
                   onBlur={this.handleFileTargetBlur}
-                  tone="transparent"
+                  tone="default"
                 >
                   <AssetBackground>
                     <Container padding={3} sizing="border" width={0}>
@@ -586,8 +586,8 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
             </ChangeIndicatorCompareValueProvider>
 
             <Grid
-              gap={1}
-              marginTop={3}
+              gap={2}
+              marginTop={2}
               style={{gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))'}}
             >
               {!readOnly && directUploads && (
