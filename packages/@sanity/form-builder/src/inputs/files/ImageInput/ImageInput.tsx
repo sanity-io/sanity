@@ -4,6 +4,7 @@ import {FormFieldSet, ImperativeToast} from '@sanity/base/components'
 import {
   Box,
   Button,
+  Card,
   Dialog,
   Flex,
   Grid,
@@ -662,7 +663,11 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                 <RatioBox ratio={3 / 2} padding={1}>
                   <Flex align="center" justify="center">
                     {value?._upload && this.renderUploadState(value._upload)}
-                    {!value?._upload && value?.asset && this.renderAsset()}
+                    {!value?._upload && value?.asset && (
+                      <Card __unstable_checkered style={{height: '100%', width: '100%'}}>
+                        {this.renderAsset()}
+                      </Card>
+                    )}
                     {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
                     {!value?._upload && !readOnly && hoveringFiles.length > 0 && (
                       <Overlay>
