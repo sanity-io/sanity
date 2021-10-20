@@ -1,9 +1,9 @@
 import {useTimeAgo} from '@sanity/base/hooks'
 import {Chunk} from '@sanity/field/diff'
 import {SelectIcon} from '@sanity/icons'
-import {useClickOutside, Button, Popover} from '@sanity/ui'
+import {useClickOutside, Button, Popover, useGlobalKeyDown} from '@sanity/ui'
 import {upperFirst} from 'lodash'
-import React, {useCallback, useState} from 'react'
+import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {useDocumentPane} from '../useDocumentPane'
 import {sinceTimelineProps, revTimelineProps, formatTimelineEventLabel} from './helpers'
@@ -40,10 +40,10 @@ export function TimelineMenu({chunk, mode}: TimelineMenuProps) {
   const [buttonRef, setButtonRef] = useState<HTMLButtonElement | null>(null)
   const [menuContent, setMenuContent] = useState<HTMLDivElement | null>(null)
 
-  const handleOpen = () => {
+  const handleOpen = useCallback(() => {
     setTimelineMode(mode)
     setOpen(true)
-  }
+  }, [mode, setTimelineMode])
 
   const handleClose = useCallback(() => {
     setTimelineMode('closed')
@@ -55,6 +55,12 @@ export function TimelineMenu({chunk, mode}: TimelineMenuProps) {
   }, [handleClose])
 
   useClickOutside(handleClickOutside, [menuContent, buttonRef])
+  useGlobalKeyDown((e) => {
+    if (e.key === 'Escape' && open) {
+      handleClose()
+      buttonRef?.focus()
+    }
+  })
 
   const selectRev = useCallback(
     (revChunk: Chunk) => {
@@ -105,16 +111,27 @@ export function TimelineMenu({chunk, mode}: TimelineMenuProps) {
 
   const timeAgo = useTimeAgo(chunk?.endTimestamp || '', {agoSuffix: true})
 
-  const revLabel = chunk
-    ? `${upperFirst(formatTimelineEventLabel(chunk.type))} ${timeAgo}`
-    : 'Current version'
+  const revLabel = useMemo(
+    () =>
+      chunk ? `${upperFirst(formatTimelineEventLabel(chunk.type))} ${timeAgo}` : 'Current version',
+    [chunk, timeAgo]
+  )
 
-  const sinceLabel = chunk
-    ? `Since ${formatTimelineEventLabel(chunk.type)} ${timeAgo}`
-    : 'Since unknown version'
+  const sinceLabel = useMemo(
+    () =>
+      chunk ? `Since ${formatTimelineEventLabel(chunk.type)} ${timeAgo}` : 'Since unknown version',
+    [chunk, timeAgo]
+  )
 
-  const openLabel = mode === 'rev' ? 'Select version' : 'Review changes since'
-  const buttonLabel = mode === 'rev' ? revLabel : sinceLabel
+  const openLabel = useMemo(() => (mode === 'rev' ? 'Select version' : 'Review changes since'), [
+    mode,
+  ])
+
+  const buttonLabel = useMemo(() => (mode === 'rev' ? revLabel : sinceLabel), [
+    mode,
+    revLabel,
+    sinceLabel,
+  ])
 
   return (
     <Root
