@@ -93,7 +93,7 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
         media={metadataBoxBreakpoints}
         style={metadataBoxStyle}
       >
-        {!liveEdit && (
+        {!liveEdit && changed && (
           <>
             <ReviewChangesBadgeBox>
               <IconBadge icon={EditIcon} muted tone="caution" />

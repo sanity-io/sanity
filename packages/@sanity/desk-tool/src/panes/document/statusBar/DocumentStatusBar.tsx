@@ -21,7 +21,7 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
 
   return useMemo(
     () => (
-      <Box paddingLeft={3} paddingRight={[3, 4]} paddingY={[3, 3]}>
+      <Box paddingLeft={2} paddingRight={[2, 3]} paddingY={2}>
         <Flex align="center">
           <Box flex={[1, 2]}>{badges && <DocumentSparkline />}</Box>
 
