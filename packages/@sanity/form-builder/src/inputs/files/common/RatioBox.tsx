@@ -1,7 +1,7 @@
 import {Box} from '@sanity/ui'
 import styled from 'styled-components'
 
-export const RatioBox = styled(Box)<{ratio?: number; maxHeight?: number}>`
+export const RatioBox = styled(Box)<{ratio?: number; maxHeight?: string}>`
   position: relative;
   padding-bottom: min(
     calc(${({ratio = 3 / 2}) => 1 / ratio} * 100%),

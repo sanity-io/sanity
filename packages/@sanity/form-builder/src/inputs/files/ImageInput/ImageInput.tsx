@@ -660,7 +660,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                 onBlur={this.handleFileTargetBlur}
                 tone="default"
               >
-                <RatioBox ratio={3 / 2} padding={1}>
+                <RatioBox ratio={3 / 2} maxHeight="30vh" padding={1}>
                   <Flex align="center" justify="center">
                     {value?._upload && this.renderUploadState(value._upload)}
                     {!value?._upload && value?.asset && (
