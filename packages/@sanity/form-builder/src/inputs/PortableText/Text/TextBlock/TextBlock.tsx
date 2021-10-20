@@ -108,6 +108,8 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
     --text-block-indent: ${indent ? rem(space[3] + space[3] + indent) : undefined};
     --text-font-family: ${fonts.text.family};
 
+    mix-blend-mode: ${color.dark ? 'screen' : 'multiply'};
+
     & > div {
       position: relative;
       padding-left: var(--text-block-indent);
@@ -115,7 +117,7 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
 
     &[data-markers] > div:before {
       ${overlay}
-      background-color: ${hues.purple[50].hex};
+      background-color: ${color.dark ? hues.purple[950].hex : hues.purple[50].hex};
     }
 
     &[data-invalid] {
