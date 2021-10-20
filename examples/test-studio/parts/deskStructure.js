@@ -207,7 +207,7 @@ export default () =>
                   S.component(DebugPane)
                     .id('component2')
                     .title('Component pane #2')
-                    .options({no: 1})
+                    .options({no: 2})
                     .menuItems([S.menuItem().title('Test 1').action('test-1').showAsAction(true)])
                 ),
 

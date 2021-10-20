@@ -2,7 +2,9 @@ import {usePaneRouter} from '@sanity/desk-tool'
 import {Card, Code, Stack, Text} from '@sanity/ui'
 import React from 'react'
 
-export function DebugPane() {
+export function DebugPane(props: any) {
+  const {childItemId, id, isActive, isSelected, itemId, options, paneKey, urlParams} = props
+
   const paneRouter = usePaneRouter()
 
   const {
@@ -21,12 +23,24 @@ export function DebugPane() {
       <Code language="json">
         {JSON.stringify(
           {
-            groupIndex,
-            hasGroupSiblings,
-            index,
-            params,
-            payload,
-            siblingIndex,
+            paneRouter: {
+              groupIndex,
+              hasGroupSiblings,
+              index,
+              params,
+              payload,
+              siblingIndex,
+            },
+            props: {
+              childItemId,
+              id,
+              isActive,
+              isSelected,
+              itemId,
+              options,
+              paneKey,
+              urlParams,
+            },
           },
           null,
           2
