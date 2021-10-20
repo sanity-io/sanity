@@ -3,9 +3,12 @@
 
 import React, {memo} from 'react'
 import {Box, Dialog, Text} from '@sanity/ui'
-import {LegacyLayerProvider} from '@sanity/base/components'
+import {
+  CreateDocumentList,
+  CreateDocumentPreviewItem,
+  LegacyLayerProvider,
+} from '@sanity/base/components'
 import {DocumentIcon} from '@sanity/icons'
-import CreateDocumentList from 'part:@sanity/components/lists/create-document'
 
 interface CreateDocumentDialogProps {
   actions: {icon?: React.ComponentType; key: string}[]
@@ -30,11 +33,14 @@ export const CreateDocumentDialog = memo(function CreateDocumentDialog(
         <Box padding={3}>
           {actions.length > 0 ? (
             <CreateDocumentList
-              items={actions.map((action) => ({
-                ...action,
-                icon: action.icon || <DocumentIcon />,
-                onClick: onClose,
-              }))}
+              items={actions.map(
+                (action) =>
+                  ({
+                    ...action,
+                    icon: action.icon || <DocumentIcon />,
+                    onClick: onClose,
+                  } as CreateDocumentPreviewItem)
+              )}
             />
           ) : (
             <Box paddingY={5}>
