@@ -18,7 +18,14 @@ export function CreateMenuButton(props: {
 
   return (
     <MenuButton
-      button={<Button icon={ComposeIcon} mode="bleed" padding={3} />}
+      button={
+        <Button
+          data-testid="multi-action-intent-button"
+          icon={ComposeIcon}
+          mode="bleed"
+          padding={3}
+        />
+      }
       id="create-menu"
       menu={
         <Menu>
@@ -27,6 +34,7 @@ export function CreateMenuButton(props: {
           </Box>
           {items.map((createItem, createItemIndex) => (
             <IntentMenuItem
+              data-testid={`action-intent-button-${createItemIndex}`}
               disabled={!permissions[createItemIndex]?.granted}
               icon={createItem.icon}
               intent={createItem.intent!}
