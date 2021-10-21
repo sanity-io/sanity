@@ -1,15 +1,16 @@
 import {Box, Card, Flex, Spinner, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
+import {useDocumentType} from '@sanity/base/hooks'
 import {getTemplateById} from '@sanity/base/initial-value-templates'
 import React, {useMemo} from 'react'
 import {LOADING_PANE} from '../../constants'
 import {useStructure} from '../../utils/resolvePanes'
-import {removeDraftPrefix, useDocumentType} from '../../utils/resolveDocumentType'
 import {useUnique} from '../../utils/useUnique'
 import {Delay} from '../Delay'
 import {StructureError} from '../StructureError'
 import {RouterPanes} from '../../types'
 import {Redirect} from './Redirect'
+import {removeDraftPrefix} from './utils'
 
 export interface IntentResolverProps {
   intent: string

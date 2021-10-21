@@ -39,5 +39,5 @@ export const editState = memoize(
       refCount()
     )
   },
-  (idPair) => idPair.publishedId
+  (idPair, typeName) => idPair.publishedId + typeName
 )
