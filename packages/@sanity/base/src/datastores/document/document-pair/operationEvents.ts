@@ -1,6 +1,4 @@
 import {defer, asyncScheduler, merge, Observable, of, Subject} from 'rxjs'
-import {OperationImpl, OperationsAPI} from './operations'
-import {IdPair} from '../types'
 import {
   catchError,
   filter,
@@ -14,6 +12,9 @@ import {
   tap,
   throttleTime,
 } from 'rxjs/operators'
+import {IdPair} from '../types'
+import {memoize} from '../utils/createMemoizer'
+import {OperationImpl, OperationsAPI} from './operations'
 import {operationArgs} from './operationArgs'
 import {del} from './operations/delete'
 import {publish} from './operations/publish'
@@ -23,7 +24,6 @@ import {discardChanges} from './operations/discardChanges'
 import {unpublish} from './operations/unpublish'
 import {duplicate} from './operations/duplicate'
 import {restore} from './operations/restore'
-import {memoize} from '../utils/createMemoizer'
 import {consistencyStatus} from './consistencyStatus'
 
 interface ExecuteArgs {
@@ -51,12 +51,12 @@ const operationImpls: {[name: string]: OperationImpl<any>} = {
 
 const execute = (
   operationName: keyof typeof operationImpls,
-  operationArgs,
+  operationArguments,
   extraArgs
 ): Observable<any> => {
   const operation = operationImpls[operationName]
   return defer(() =>
-    merge(of(null), maybeObservable(operation.execute(operationArgs, ...extraArgs)))
+    merge(of(null), maybeObservable(operation.execute(operationArguments, ...extraArgs)))
   ).pipe(last())
 }
 
@@ -67,7 +67,7 @@ export function emitOperation(
   idPair: IdPair,
   typeName: string,
   extraArgs: any[]
-) {
+): void {
   operationCalls$.next({operationName, idPair, typeName, extraArgs})
 }
 
@@ -87,36 +87,48 @@ export interface OperationSuccess {
   id: string
 }
 
-const results$ = operationCalls$.pipe(
+interface IntermediarySuccess {
+  type: 'success'
+  args: ExecuteArgs
+}
+
+interface IntermediaryError {
+  type: 'error'
+  args: ExecuteArgs
+  error: any
+}
+
+const results$: Observable<IntermediarySuccess | IntermediaryError> = operationCalls$.pipe(
   groupBy((op) => op.idPair.publishedId),
-  mergeMap((groups$) => {
-    return groups$.pipe(
+  mergeMap((groups$) =>
+    groups$.pipe(
       // although it might look like a but, dropping pending async operations here is actually a feature
       // E.g. if the user types `publish` which is async and then starts patching (sync) then the publish
       // should be cancelled
-      switchMap((args) => {
-        return operationArgs(args.idPair, args.typeName).pipe(
+      switchMap((args) =>
+        operationArgs(args.idPair, args.typeName).pipe(
           take(1),
-          switchMap((operationArgs) => {
+          switchMap((operationArguments) => {
             const requiresConsistency = REQUIRES_CONSISTENCY.includes(args.operationName)
             if (requiresConsistency) {
-              operationArgs.published.commit()
-              operationArgs.draft.commit()
+              operationArguments.published.commit()
+              operationArguments.draft.commit()
             }
             const isConsistent$ = consistencyStatus(args.idPair, args.typeName).pipe(
               filter(Boolean)
             )
             const ready$ = requiresConsistency ? isConsistent$.pipe(take(1)) : of(null)
             return ready$.pipe(
-              mergeMap(() => execute(args.operationName, operationArgs, args.extraArgs))
+              // eslint-disable-next-line max-nested-callbacks
+              mergeMap(() => execute(args.operationName, operationArguments, args.extraArgs))
             )
           }),
-          map(() => ({type: 'success', args})),
-          catchError((err) => of({type: 'error', args, error: err}))
+          map((): IntermediarySuccess => ({type: 'success', args})),
+          catchError((err): Observable<IntermediaryError> => of({type: 'error', args, error: err}))
         )
-      })
+      )
     )
-  }),
+  ),
   share()
 )
 
@@ -133,14 +145,14 @@ const autoCommit$ = results$.pipe(
 autoCommit$.subscribe()
 
 export const operationEvents = memoize(
-  (idPair: IdPair, typeName: string) =>
+  (idPair: IdPair /*, typeName: string */) =>
     results$.pipe(
       filter((result) => result.args.idPair.publishedId === idPair.publishedId),
-      map((result: any): OperationSuccess | OperationError => {
-        const {operationName, idPair} = result.args
+      map((result): OperationSuccess | OperationError => {
+        const {operationName, idPair: documentIds} = result.args
         return result.type === 'success'
-          ? {type: 'success', op: operationName, id: idPair.publishedId}
-          : {type: 'error', op: operationName, id: idPair.publishedId, error: result.error}
+          ? {type: 'success', op: operationName, id: documentIds.publishedId}
+          : {type: 'error', op: operationName, id: documentIds.publishedId, error: result.error}
       })
     ),
   (idPair, typeName) => idPair.publishedId + typeName
