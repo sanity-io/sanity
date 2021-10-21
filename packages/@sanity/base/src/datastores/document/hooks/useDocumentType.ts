@@ -1,21 +1,24 @@
 import {useEffect, useMemo, useState} from 'react'
 import {getPublishedId} from '../../../util/draftUtils'
 import documentStore from '../document-store'
+import type {ResolveDocumentTypeOptions} from '../resolveTypeForDocument'
 
 export interface DocumentTypeResolveState {
   isLoaded: boolean
   documentType: string | undefined
 }
 
-const IS_LOADING_STATE: DocumentTypeResolveState = {
+const LOADING_STATE: DocumentTypeResolveState = {
   isLoaded: false,
   documentType: undefined,
 }
 
 export function useDocumentType(
   documentId: string,
-  specifiedType?: string
+  specifiedType?: string,
+  options?: ResolveDocumentTypeOptions
 ): DocumentTypeResolveState {
+  const client = options?.client
   const publishedId = getPublishedId(documentId)
   const isResolved = isResolvedDocumentType(specifiedType)
 
@@ -31,12 +34,12 @@ export function useDocumentType(
   // For consistency (between different document ids/types), we're setting the sync resolved
   // state here as well, but it isn't strictly necessary for correct rendering.
   const [resolvedState, setDocumentType] = useState<DocumentTypeResolveState>(
-    isResolved ? SYNC_RESOLVED_STATE : IS_LOADING_STATE
+    isResolved ? SYNC_RESOLVED_STATE : LOADING_STATE
   )
 
-  // Reset documentType when documentId changes. Note that we're using referentially stable
-  // IS_LOADING_STATE in order to prevent double rendering on initial load.
-  useEffect(() => setDocumentType(IS_LOADING_STATE), [publishedId, specifiedType])
+  // Reset documentType when documentId changes. Note that we're using the referentially
+  // stable LOADING_STATE in order to prevent double rendering on initial load.
+  useEffect(() => setDocumentType(LOADING_STATE), [publishedId, specifiedType])
 
   // Load the documentType from Content Lake, unless we're already in a resolved state
   useEffect(() => {
@@ -45,11 +48,11 @@ export function useDocumentType(
     }
 
     const sub = documentStore
-      .resolveTypeForDocument(publishedId, specifiedType)
+      .resolveTypeForDocument(publishedId, specifiedType, {client})
       .subscribe((documentType: string) => setDocumentType({documentType, isLoaded: true}))
 
     return () => sub.unsubscribe()
-  }, [publishedId, specifiedType, isResolved])
+  }, [publishedId, specifiedType, isResolved, client])
 
   return isResolved
     ? // `isResolved` is only true when we're _synchronously_ resolved
