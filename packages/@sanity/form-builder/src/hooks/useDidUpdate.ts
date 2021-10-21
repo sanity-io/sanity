@@ -1,4 +1,5 @@
-import {useEffect} from 'react'
+import {useEffect, useRef} from 'react'
+import shallowEquals from 'shallow-equals'
 import {usePrevious} from './usePrevious'
 
 /**
@@ -14,16 +15,25 @@ import {usePrevious} from './usePrevious'
  * @param current The value you want to respond to changes in
  * @param didUpdate Callback to run when the value changes
  */
-export function useDidUpdate<T>(current: T, didUpdate: (previous: T, current: T) => void): void
 export function useDidUpdate<T>(
   current: T,
-  didUpdate: (previous: T, current: T | undefined) => void
+  didUpdate: (previous: T, current: T) => void,
+  compare?: (previous: T, current: T) => boolean
+): void
+export function useDidUpdate<T>(
+  current: T,
+  didUpdate: (previous: T, current: T | undefined) => void,
+  compare: (previous: T, current: T) => boolean = shallowEquals
 ): void {
   const previous = usePrevious<T>(current)
-
+  const initial = useRef<boolean>(true)
   useEffect(() => {
-    if (previous !== current) {
+    if (initial.current) {
+      initial.current = false
+      return
+    }
+    if (!compare(previous, current)) {
       didUpdate(previous, current)
     }
-  }, [didUpdate, current, previous])
+  }, [didUpdate, current, previous, compare])
 }
