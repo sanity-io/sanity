@@ -13,10 +13,10 @@ const IS_LOADING_STATE: DocumentTypeResolveState = {
 }
 
 export function useDocumentType(
-  rawDocumentId: string,
+  documentId: string,
   specifiedType?: string
 ): DocumentTypeResolveState {
-  const documentId = getPublishedId(rawDocumentId)
+  const publishedId = getPublishedId(documentId)
   const isResolved = isResolvedDocumentType(specifiedType)
 
   // Memoize what a synchronously resolved state looks like (eg specified type is present),
@@ -36,7 +36,7 @@ export function useDocumentType(
 
   // Reset documentType when documentId changes. Note that we're using referentially stable
   // IS_LOADING_STATE in order to prevent double rendering on initial load.
-  useEffect(() => setDocumentType(IS_LOADING_STATE), [documentId, specifiedType])
+  useEffect(() => setDocumentType(IS_LOADING_STATE), [publishedId, specifiedType])
 
   // Load the documentType from Content Lake, unless we're already in a resolved state
   useEffect(() => {
@@ -45,11 +45,11 @@ export function useDocumentType(
     }
 
     const sub = documentStore
-      .resolveTypeForDocument(documentId, specifiedType)
+      .resolveTypeForDocument(publishedId, specifiedType)
       .subscribe((documentType: string) => setDocumentType({documentType, isLoaded: true}))
 
     return () => sub.unsubscribe()
-  }, [documentId, specifiedType, isResolved])
+  }, [publishedId, specifiedType, isResolved])
 
   return isResolved
     ? // `isResolved` is only true when we're _synchronously_ resolved
