@@ -12,7 +12,8 @@ declare const _default: {
       type: any
     ) => import('rxjs').Observable<import('./document-pair/operations').OperationsAPI>
     documentEvents: (
-      publishedId: string
+      publishedId: string,
+      type: string
     ) => import('rxjs').Observable<
       | (import('./buffered-doc/types').DocumentRebaseEvent & {
           version: 'published' | 'draft'

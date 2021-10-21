@@ -1,6 +1,7 @@
 import {IdPair} from '../types'
 export declare function documentEvents(
-  idPair: IdPair
+  idPair: IdPair,
+  type: string
 ): import('rxjs').Observable<
   | (import('../buffered-doc/types').DocumentRebaseEvent & {
       version: 'published' | 'draft'
