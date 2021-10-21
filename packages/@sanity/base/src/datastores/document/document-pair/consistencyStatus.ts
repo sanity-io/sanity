@@ -1,8 +1,8 @@
 import {combineLatest} from 'rxjs'
 import {distinctUntilChanged, map, publishReplay, refCount, switchMap} from 'rxjs/operators'
+import {memoize} from '../utils/createMemoizer'
 import {IdPair} from '../types'
 import {memoizedPair} from './memoizedPair'
-import {memoize} from '../utils/createMemoizer'
 
 // A stream of all events related to either published or draft, each event comes with a 'target'
 // that specifies which version (draft|published) the event is about
