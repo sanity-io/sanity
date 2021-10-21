@@ -19,5 +19,6 @@
     {"path": "../base"},
     {"path": "../util"},
     {"path": "../portable-text-editor"},
+    {"path": "../state-router"}
   ]
 }
