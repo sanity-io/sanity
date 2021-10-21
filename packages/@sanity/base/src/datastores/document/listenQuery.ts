@@ -4,7 +4,7 @@ import {exhaustMapToWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import {getVersionedClient} from '../../client/versionedClient'
 import {ReconnectEvent, WelcomeEvent, MutationEvent} from './types'
 
-type Params = Record<string, string>
+type Params = Record<string, string | number | boolean | string[]>
 
 export interface ListenQueryOptions {
   tag?: string

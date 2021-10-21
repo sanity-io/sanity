@@ -21,7 +21,6 @@ import client from 'part:@sanity/base/client'
 import {WithReferringDocuments} from 'part:@sanity/base/with-referring-documents'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import {List, Item} from 'part:@sanity/components/lists/default'
-import {createWeightedSearch} from 'part:@sanity/base/search/weighted'
 import SanityPreview, {observePaths, observeForPreview} from 'part:@sanity/base/preview'
 import ImageLoader from 'part:@sanity/components/utilities/image-loader'
 import {MenuButton} from 'part:@sanity/components/menu-button'
@@ -65,7 +64,6 @@ export {
   DefaultDialog,
   List,
   Item,
-  createWeightedSearch,
   observeForPreview,
   ImageLoader,
   SanityPreview,
