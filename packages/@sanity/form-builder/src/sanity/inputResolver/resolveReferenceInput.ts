@@ -1,5 +1,5 @@
 import {once} from 'lodash'
-import ReferenceInput from '../inputs/SanityReferenceInput'
+import ReferenceInput from '../inputs/reference/SanityReferenceInput'
 
 /* eslint-disable no-console */
 const warnInputTypeNotSupported = once(() =>
