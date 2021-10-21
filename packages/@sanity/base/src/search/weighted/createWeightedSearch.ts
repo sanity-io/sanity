@@ -5,8 +5,8 @@ import type {Observable} from 'rxjs'
 import {compact, toLower, flatten, uniq, flow, sortBy, union} from 'lodash'
 import {map} from 'rxjs/operators'
 import {joinPath} from '../../util/searchUtils'
-import {removeDupes} from '../../util/draftUtils'
 import {tokenize} from '../common/tokenize'
+import {listenQuery} from '../../datastores/document/listenQuery'
 import {applyWeights} from './applyWeights'
 import {WeightedHit, WeightedSearchOptions, SearchOptions, SearchPath, SearchHit} from './types'
 
@@ -27,7 +27,7 @@ export function createWeightedSearch(
   types: ObjectSchemaType[],
   client: SanityClient,
   options: WeightedSearchOptions = {}
-): (query: string) => Observable<WeightedHit[]> {
+): (query: string, opts?: SearchOptions) => Observable<WeightedHit[]> {
   const {filter, params, tag} = options
   const searchSpec = types.map((type) => ({
     typeName: type.name,
@@ -65,22 +65,18 @@ export function createWeightedSearch(
     const selection = selections.length > 0 ? `...select(${selections.join(',\n')})` : ''
     const query = `*[${filters.join('&&')}][0...$__limit]{_type, _id, ${selection}}`
 
-    return client.observable
-      .fetch(
-        query,
-        {
-          ...toGroqParams(terms),
-          __types: searchSpec.map((spec) => spec.typeName),
-          __limit: 1000,
-          ...(params || {}),
-        },
-        {tag}
-      )
-      .pipe(
-        map(removeDupes),
-        map((hits: SearchHit[]) => applyWeights(searchSpec, hits, terms)),
-        map((hits) => sortBy(hits, (hit) => -hit.score)),
-        map((hits) => hits.slice(0, 100))
-      )
+    return listenQuery(
+      query,
+      {
+        ...toGroqParams(terms),
+        __types: searchSpec.map((spec) => spec.typeName),
+        __limit: searchOpts.limit ?? 1000,
+        ...(params || {}),
+      },
+      {tag}
+    ).pipe(
+      map((hits: SearchHit[]) => applyWeights(searchSpec, hits, terms)),
+      map((hits) => sortBy(hits, (hit) => -hit.score))
+    )
   }
 }

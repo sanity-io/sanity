@@ -70,6 +70,7 @@
     "@testing-library/user-event": "^13.0.16",
     "@types/diff-match-patch": "^1.0.32",
     "@types/react-is": "^17.0.1",
+    "@sanity/state-router": "2.21.10",
     "prop-types": "^15.6.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",

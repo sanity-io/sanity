@@ -20,6 +20,7 @@ export interface SearchSpec {
  */
 export interface SearchHit {
   _type: string
+  _id: string
   [key: string]: unknown
 }
 
@@ -53,4 +54,5 @@ export interface WeightedSearchOptions {
 
 export interface SearchOptions {
   includeDrafts?: boolean
+  limit?: number
 }
