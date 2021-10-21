@@ -10,5 +10,5 @@ export const memoizedPair = memoize(
       subscriber.next(checkoutPair(idPair))
     }).pipe(publishReplay(1), refCount())
   },
-  (idPair) => idPair.publishedId
+  (idPair, typeName) => idPair.publishedId + typeName
 )
