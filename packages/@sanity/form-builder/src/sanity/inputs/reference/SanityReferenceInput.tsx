@@ -1,7 +1,8 @@
-import React, {ForwardedRef, forwardRef, useCallback, useRef} from 'react'
+import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
 
 import {
   Marker,
+  ObjectSchemaType,
   Path,
   Reference,
   ReferenceFilterSearchOptions,
@@ -9,15 +10,18 @@ import {
   ReferenceSchemaType,
   SanityDocument,
 } from '@sanity/types'
+import * as PathUtils from '@sanity/util/paths'
 import {get} from '@sanity/util/paths'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
-import {ReferenceInput} from '../../inputs/ReferenceInput'
-import PatchEvent from '../../PatchEvent'
-import withValuePath from '../../utils/withValuePath'
-import withDocument from '../../utils/withDocument'
-import * as adapter from './client-adapters/reference'
+import withValuePath from '../../../utils/withValuePath'
+import withDocument from '../../../utils/withDocument'
+import {useReferenceInputOptions} from '../../contexts/ReferenceInputOptions'
+import {ReferenceInput} from '../../../inputs/ReferenceInput'
+import PatchEvent from '../../../PatchEvent'
+import * as adapter from '../client-adapters/reference'
+import {ReferencePreview} from './ReferencePreview'
 
 // eslint-disable-next-line require-await
 async function resolveUserDefinedFilter(
@@ -79,8 +83,11 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
   ref: ForwardedRef<HTMLInputElement>
 ) {
   const {getValuePath, type, document} = props
+  const {EditReferenceLinkComponent, onEditReference, activePath} = useReferenceInputOptions()
 
   const documentRef = useValueRef(document)
+
+  const valuePath = useMemo(getValuePath, [getValuePath])
 
   const handleSearch = useCallback(
     (searchString: string) =>
@@ -104,17 +111,42 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
     [documentRef, getValuePath, type]
   )
 
-  const getPreviewSnapshot = useCallback(
-    (value: Reference) => adapter.getPreviewSnapshot(value, type),
-    [type]
+  const EditReferenceLink = useMemo(
+    () =>
+      forwardRef(function EditReferenceLink_(
+        _props: ComponentProps<typeof EditReferenceLinkComponent>,
+        forwardedRef: ForwardedRef<'a'>
+      ) {
+        return (
+          <EditReferenceLinkComponent {..._props} ref={forwardedRef} parentRefPath={valuePath} />
+        )
+      }),
+    [EditReferenceLinkComponent, valuePath]
   )
+
+  const handleEditReference = useCallback(
+    (id: string, schemaType: ObjectSchemaType) => {
+      onEditReference({
+        parentRefPath: valuePath,
+        id,
+        type: schemaType.name,
+      })
+    },
+    [onEditReference, valuePath]
+  )
+
+  const selectedState = PathUtils.startsWith(valuePath, activePath.path) ? activePath.state : 'none'
 
   return (
     <ReferenceInput
       {...props}
       onSearch={handleSearch}
-      getPreviewSnapshot={getPreviewSnapshot}
+      getReferenceInfo={adapter.getReferenceInfo}
       ref={ref}
+      selectedState={selectedState}
+      previewComponent={ReferencePreview}
+      editReferenceLinkComponent={EditReferenceLink}
+      onEditReference={handleEditReference}
     />
   )
 })

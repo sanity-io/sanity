@@ -2,6 +2,7 @@ import observeFields from './observeFields'
 import {createPathObserver} from './createPathObserver'
 import {createPreviewObserver} from './createPreviewObserver'
 
+export {observeDocumentTypeFromId} from './observeDocumentTypeFromId'
 export {default} from './components/SanityPreview'
 export {default as SanityDefaultPreview} from './components/SanityDefaultPreview'
 export {default as PreviewFields} from './components/PreviewFields'
