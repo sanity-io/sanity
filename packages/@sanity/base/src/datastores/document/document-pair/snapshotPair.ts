@@ -56,8 +56,8 @@ interface SnapshotPair {
 }
 
 export const snapshotPair = memoize(
-  (idPair: IdPair) => {
-    return memoizedPair(idPair).pipe(
+  (idPair: IdPair, typeName: string) => {
+    return memoizedPair(idPair, typeName).pipe(
       map(
         ({published, draft}): SnapshotPair => {
           return {
@@ -70,5 +70,5 @@ export const snapshotPair = memoize(
       refCount()
     )
   },
-  (idPair) => idPair.publishedId
+  (idPair, typeName) => idPair.publishedId + typeName
 )

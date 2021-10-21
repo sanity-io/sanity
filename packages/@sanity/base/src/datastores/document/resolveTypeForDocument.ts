@@ -4,8 +4,9 @@ import {map} from 'rxjs/operators'
 import {getPublishedId, getDraftId} from '../../util/draftUtils'
 import {versionedClient} from '../../client/versionedClient'
 
-export function resolveTypeForDocument(id: string, specifiedType?: string): Observable<string> {
-  if (isResolvedDocumentType(specifiedType)) {
+export function resolveTypeForDocument(id: string, specifiedType = '*'): Observable<string> {
+  // if is resolved document type
+  if (specifiedType && specifiedType !== '*') {
     return of(specifiedType)
   }
 
@@ -16,8 +17,4 @@ export function resolveTypeForDocument(id: string, specifiedType?: string): Obse
   return versionedClient.observable
     .fetch(query, {documentId, draftId})
     .pipe(map((types) => types[0]))
-}
-
-function isResolvedDocumentType(specifiedType?: string): specifiedType is string {
-  return Boolean(specifiedType && specifiedType !== '*')
 }
