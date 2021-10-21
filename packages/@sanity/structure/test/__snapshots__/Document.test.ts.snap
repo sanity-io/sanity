@@ -2,7 +2,7 @@
 
 exports[`builds document node through constructor 1`] = `
 Object {
-  "child": undefined,
+  "child": [Function],
   "id": "foo",
   "options": Object {
     "id": "docId",
@@ -25,7 +25,7 @@ Object {
 
 exports[`can construct using builder (alt) 1`] = `
 Object {
-  "child": undefined,
+  "child": [Function],
   "id": "yeah",
   "options": Object {
     "id": "wow",
@@ -69,7 +69,7 @@ Object {
 
 exports[`can construct with schema type instead of schema type name 1`] = `
 Object {
-  "child": undefined,
+  "child": [Function],
   "id": "yeah",
   "options": Object {
     "id": "wow",

@@ -2,9 +2,11 @@ import {Path} from '../paths'
 import {SanityDocument} from '../documents'
 
 export interface Reference {
+  _type: string
   _ref: string
   _key?: string
   _weak?: boolean
+  _strengthenOnPublish?: {type: string}
 }
 
 export interface WeakReference extends Reference {

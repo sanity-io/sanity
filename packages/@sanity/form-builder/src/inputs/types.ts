@@ -28,7 +28,7 @@ export type Props<
   type: S
   level: number
   value: T | null | undefined
-  readOnly: boolean | null
+  readOnly?: boolean | null
   onChange: (patchEvent: PatchEvent) => void
   // Note: we should allow implementors of custom inputs to forward the passed onFocus to native element's onFocus handler,
   // but use Path consistently on internal inputs
