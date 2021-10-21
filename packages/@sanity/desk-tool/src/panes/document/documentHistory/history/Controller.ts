@@ -15,6 +15,7 @@ export type Options = {
   timeline: Timeline
   client: SanityClient
   documentId: string
+  documentType: string
   handler: (err: Error | null, controller: Controller) => void
 }
 
@@ -335,10 +336,13 @@ export function createObservableController(
         }
       },
     })
-    return remoteSnapshots({
-      publishedId: options.documentId,
-      draftId: `drafts.${options.documentId}`,
-    }).subscribe((ev) => {
+    return remoteSnapshots(
+      {
+        publishedId: options.documentId,
+        draftId: `drafts.${options.documentId}`,
+      },
+      options.documentType
+    ).subscribe((ev) => {
       controller.handleRemoteMutation(ev)
     })
   })

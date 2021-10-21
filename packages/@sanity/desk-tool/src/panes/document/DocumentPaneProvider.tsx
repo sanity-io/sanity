@@ -81,9 +81,10 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
       createObservableController({
         timeline,
         documentId,
+        documentType,
         client: versionedClient,
       }),
-    [documentId, timeline]
+    [timeline, documentId, documentType, timeline, versionedClient]
   )!
   /**
    * @todo: this will now happen on each render, but should be refactored so it happens only when

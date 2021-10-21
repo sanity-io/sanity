@@ -5,10 +5,10 @@ import {memoize} from '../utils/createMemoizer'
 import {memoizedPair} from './memoizedPair'
 
 export const remoteSnapshots = memoize(
-  (idPair: IdPair) => {
-    return memoizedPair(idPair).pipe(
+  (idPair: IdPair, typeName) => {
+    return memoizedPair(idPair, typeName).pipe(
       switchMap(({published, draft}) => merge(published.remoteSnapshot$, draft.remoteSnapshot$))
     )
   },
-  (idPair) => idPair.publishedId
+  (idPair, typeName) => idPair.publishedId + typeName
 )

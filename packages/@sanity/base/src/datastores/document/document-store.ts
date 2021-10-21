@@ -27,19 +27,21 @@ export default {
   resolveTypeForDocument,
 
   pair: {
-    editState: (publishedId: string, type) => editState(getIdPairFromPublished(publishedId), type),
+    editState: (publishedId: string, type: string) => editState(getIdPairFromPublished(publishedId), type),
 
-    editOperations: (publishedId: string, type) =>
+    editOperations: (publishedId: string, type: string) =>
       editOperations(getIdPairFromPublished(publishedId), type),
 
-    documentEvents: (publishedId: string) => documentEvents(getIdPairFromPublished(publishedId)),
+    documentEvents: (publishedId: string, type: string) =>
+      documentEvents(getIdPairFromPublished(publishedId), type),
 
-    validation: (publishedId: string, typeName: string) =>
-      validation(getIdPairFromPublished(publishedId), typeName),
+    validation: (publishedId: string, type: string) =>
+      validation(getIdPairFromPublished(publishedId), type),
 
-    operationEvents: (publishedId, type) =>
+    operationEvents: (publishedId, type: string) =>
       operationEvents(getIdPairFromPublished(publishedId), type),
 
-    consistencyStatus: (publishedId) => consistencyStatus(getIdPairFromPublished(publishedId)),
+    consistencyStatus: (publishedId, type: string) =>
+      consistencyStatus(getIdPairFromPublished(publishedId), type),
   },
 }

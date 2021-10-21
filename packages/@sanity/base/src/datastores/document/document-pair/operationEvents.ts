@@ -103,7 +103,9 @@ const results$ = operationCalls$.pipe(
               operationArgs.published.commit()
               operationArgs.draft.commit()
             }
-            const isConsistent$ = consistencyStatus(args.idPair).pipe(filter(Boolean))
+            const isConsistent$ = consistencyStatus(args.idPair, args.typeName).pipe(
+              filter(Boolean)
+            )
             const ready$ = requiresConsistency ? isConsistent$.pipe(take(1)) : of(null)
             return ready$.pipe(
               mergeMap(() => execute(args.operationName, operationArgs, args.extraArgs))
@@ -141,5 +143,5 @@ export const operationEvents = memoize(
           : {type: 'error', op: operationName, id: idPair.publishedId, error: result.error}
       })
     ),
-  (idPair) => idPair.publishedId
+  (idPair, typeName) => idPair.publishedId + typeName
 )
