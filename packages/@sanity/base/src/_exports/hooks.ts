@@ -1,5 +1,6 @@
 export {useDocumentPresence, useGlobalPresence} from '../datastores/presence/hooks'
 export {useUser, useCurrentUser} from '../datastores/user/hooks'
+export {useDocumentType} from '../datastores/document/hooks'
 export {
   // eslint-disable-next-line camelcase
   unstable_useCheckDocumentPermission,
