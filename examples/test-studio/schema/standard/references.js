@@ -8,6 +8,13 @@ export default {
   icon,
   fields: [
     {name: 'title', type: 'string'},
+    {name: 'selfRef', type: 'reference', to: {type: 'referenceTest'}},
+    {
+      title: 'Reference to book or author',
+      name: 'multiTypeRef',
+      type: 'reference',
+      to: [{type: 'book'}, {type: 'author'}],
+    },
     {
       title: 'Book with decade filter',
       description: 'Reference will only search for books within given decade',
@@ -53,7 +60,6 @@ export default {
         },
       ],
     },
-    {name: 'selfRef', type: 'reference', to: {type: 'referenceTest'}},
     {
       name: 'invalidFilter',
       title: 'Invalid filter',
@@ -98,12 +104,6 @@ export default {
       type: 'reference',
       weak: true,
       to: {type: 'author'},
-    },
-    {
-      title: 'Reference to book or author',
-      name: 'multiTypeRef',
-      type: 'reference',
-      to: [{type: 'book'}, {type: 'author'}],
     },
     {
       name: 'array',
