@@ -53,8 +53,7 @@ describe('toPath', () => {
     expect(decodeURIComponent(path)).toBe('level1,a=1,b=2|,a=differentParams|,;level2')
   })
 
-  // this fails
-  it.skip('is the inverse of toState', () => {
+  it('is the inverse of toState', () => {
     const input = [
       [
         {id: 'level1', params: {a: '1', b: '2'}, payload: {a: 'b'}},
@@ -62,7 +61,7 @@ describe('toPath', () => {
         {id: 'level1', params: {a: '1', b: '2'}, payload: {a: 'changed'}},
         {id: 'level1', params: {a: '1', b: '2'}, payload: {a: 'b'}},
       ],
-      [{id: 'level2'}],
+      [{id: 'level2', params: {}, payload: undefined}],
     ]
     const path = toPath(input)
     const state = toState(path)
@@ -113,8 +112,7 @@ describe('toState', () => {
     ])
   })
 
-  // this fails
-  it.skip('returns the first ID of the first split pane considering different params and payloads', () => {
+  it('returns the first ID of the first split pane considering different params and payloads', () => {
     const input = `level1,a=1,b=2,eyJhIjoiYiJ9|,a=differentParams|,`
     const state = toState(input)
 
