@@ -110,12 +110,11 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
     ? historyController.sinceAttributes()
     : editState?.published || null
   const ready = connectionState === 'connected' && editState.ready
+  const viewOlderVersion = historyController.onOlderRevision()
   const displayed: Partial<SanityDocument> | null = useMemo(
-    () => {
-      return historyController.onOlderRevision() ? historyController.displayed() : value
-    },
+    () => (viewOlderVersion ? historyController.displayed() : value),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [historyController, params.rev, params.since, value]
+    [historyController, params.rev, params.since, value, viewOlderVersion]
   )
 
   const setTimelineRange = useCallback(
