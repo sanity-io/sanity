@@ -1,1 +1,1 @@
-export type TimelineItemState = 'enabled' | 'disabled' | 'withinSelection' | 'selected'
+export type TimelineItemState = 'enabled' | 'disabled' | 'withinSelection' | 'active'
