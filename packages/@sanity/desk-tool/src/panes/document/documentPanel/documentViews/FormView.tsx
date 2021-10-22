@@ -35,7 +35,7 @@ export function FormView(props: FormViewProps) {
   const {hidden, margins} = props
   const {
     compareValue,
-    value,
+    displayed: value,
     documentId,
     documentSchema,
     documentType,
