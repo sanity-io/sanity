@@ -5,7 +5,6 @@ import {SanityDocument, SchemaType} from '@sanity/types'
 import {resolveInitialValueForType} from '@sanity/initial-value-templates'
 import {map, mergeMap, switchMap} from 'rxjs/operators'
 import {combineLatest, from} from 'rxjs'
-import schema from 'part:@sanity/base/schema'
 import {getDraftId, isDraftId} from 'part:@sanity/base/util/draft-utils'
 
 import {snapshotPair} from '../document/document-pair/snapshotPair'
@@ -14,6 +13,8 @@ import {checkDeletePermission, checkPublishPermission, checkUnpublishPermission}
 import grantsStore from './'
 
 function getSchemaType(typeName: string): SchemaType {
+  const schemaMod = require('part:@sanity/base/schema')
+  const schema = schemaMod.default || schemaMod
   const type = schema.get(typeName)
   if (!type) {
     throw new Error(`No such schema type: ${typeName}`)
