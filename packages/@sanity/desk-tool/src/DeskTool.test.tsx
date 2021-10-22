@@ -292,7 +292,11 @@ describe('DeskTool', () => {
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {
         // intentionally empty
       })
-      const {TestingProvider, navigate, resolvedPanes, mockChild} = createTestingProvider()
+      const {TestingProvider, resolvedPanes, mockChild} = createTestingProvider({
+        initialRouterState: {
+          panes: [[{id: 'level1'}], [{id: 'level2'}], [{id: 'noChild'}]],
+        },
+      })
 
       const dynamicChild = (id: string) =>
         id === 'noChild'
@@ -307,13 +311,6 @@ describe('DeskTool', () => {
       await act(async () => {
         render(<TestingProvider />)
 
-        // TODO: using `navigate` results in different (unwanted)
-        // behavior when compared to initial router state
-        await navigate(
-          {panes: [[{id: 'level1'}], [{id: 'level2'}], [{id: 'noChild'}]]},
-          {replace: true}
-        )
-
         const {changes} = await resolvedPanes({collectChangesOverTime: true})
         expect(changes).toMatchObject([
           [{id: 'root'}, LOADING_PANE, LOADING_PANE, LOADING_PANE],
@@ -326,11 +323,9 @@ describe('DeskTool', () => {
       })
 
       expect(consoleSpy).toHaveBeenCalledTimes(1)
-      expect(consoleSpy.mock.calls[0]).toEqual([
-        'Pane at index %d returned no child %s - see %s',
-        3,
-        '',
-        'https://docs.sanity.io/help/structure-item-returned-no-child',
+      expect(consoleSpy.mock.calls[0]).toMatchObject([
+        'Pane resolution error at index 3: Pane returned no child - see https://docs.sanity.io/help/structure-item-returned-no-child',
+        {message: 'Pane returned no child'},
       ])
       consoleSpy.mockRestore()
     })
@@ -353,8 +348,6 @@ describe('DeskTool', () => {
           {id: 'level3'},
         ])
 
-        // TODO: using `navigate` results in different (unwanted)
-        // behavior when compared to initial router state
         await navigate(
           {panes: [[{id: 'level1'}], [{id: 'level2Alt'}], [{id: 'level3Alt'}]]},
           {replace: true}
@@ -388,8 +381,6 @@ describe('DeskTool', () => {
           {id: 'level3'},
         ])
 
-        // TODO: using `navigate` results in different (unwanted)
-        // behavior when compared to initial router state
         await navigate(
           // removing levels
           {panes: [[{id: 'level1'}]]},
@@ -443,15 +434,15 @@ describe('DeskTool', () => {
       const {TestingProvider, resolvedPanes, mockChild} = createTestingProvider({
         initialRouterState: {
           panes: [
+            [{id: 'level1'}, {id: 'level1SplitView'}],
             [
-              {id: 'level1'},
+              {id: 'level2'},
               {
-                id: '__edit__level1FallbackEditor',
+                id: '__edit__level2FallbackEditor',
                 params: {template: 'myTemplate', type: 'myType'},
                 payload: {foo: 'bar'},
               },
             ],
-            [{id: 'level2'}, {id: 'level2SplitView'}],
           ],
         },
       })
@@ -482,40 +473,41 @@ describe('DeskTool', () => {
             ],
           },
           {
-            id: 'editor',
-            type: 'document',
-            options: {
-              id: 'level1FallbackEditor',
-              template: 'myTemplate',
-              type: 'myType',
-              templateParameters: {foo: 'bar'},
-            },
+            id: 'level1SplitView',
+            args: [
+              'level1SplitView',
+              {
+                parent: {id: 'root'},
+                path: ['root', 'level1SplitView'],
+                index: 2,
+                splitIndex: 1,
+              },
+            ],
           },
           {
             id: 'level2',
             args: [
               'level2',
               {
-                parent: {id: 'level1'},
-                path: ['root', 'level1', 'level2'],
-                index: 2,
+                id: 'level2',
+                index: 3,
+                params: {},
+                parent: {id: 'level1SplitView'},
+                path: ['root', 'level1SplitView', 'level2'],
+                payload: undefined,
                 splitIndex: 0,
               },
             ],
           },
           {
-            id: 'level2SplitView',
-            args: [
-              'level2SplitView',
-              {
-                parent: {id: 'level1'},
-                // TODO: i would expect this path to end with `level2SplitView`
-                path: ['root', 'level1', 'level2'],
-                index: 2,
-                // TODO: i would expect this split index to be `1`
-                splitIndex: 0,
-              },
-            ],
+            id: 'editor',
+            type: 'document',
+            options: {
+              id: 'level2FallbackEditor',
+              template: 'myTemplate',
+              type: 'myType',
+              templateParameters: {foo: 'bar'},
+            },
           },
         ])
 
@@ -525,8 +517,10 @@ describe('DeskTool', () => {
     })
 
     it('takes in observables for each structure children that emit over time', async () => {
-      const {TestingProvider, resolvedPanes, mockChild, navigate} = createTestingProvider({
-        initialRouterState: {},
+      const {TestingProvider, resolvedPanes, mockChild} = createTestingProvider({
+        initialRouterState: {
+          panes: [[{id: 'observableChild'}], [{id: 'next'}], [{id: 'leaf'}]],
+        },
       })
 
       const dynamicChild = (id: string) => {
@@ -550,13 +544,6 @@ describe('DeskTool', () => {
       await act(async () => {
         render(<TestingProvider />)
 
-        // TODO: using `navigate` results in different (unwanted)
-        // behavior when compared to initial router state
-        await navigate(
-          {panes: [[{id: 'observableChild'}], [{id: 'next'}], [{id: 'leaf'}]]},
-          {replace: true}
-        )
-
         const {changes} = await resolvedPanes({collectChangesOverTime: true})
 
         expect(changes).toMatchObject([
@@ -566,7 +553,9 @@ describe('DeskTool', () => {
           [{id: 'root'}, {id: 'observableChild1'}, {id: 'nextFromObservable1'}, {id: 'leaf'}],
           [{id: 'root'}, {id: 'observableChild2'}, {id: 'nextFromObservable1'}, {id: 'leaf'}],
           [{id: 'root'}, {id: 'observableChild2'}, {id: 'nextFromObservable2'}, {id: 'leaf'}],
+          [{id: 'root'}, {id: 'observableChild2'}, {id: 'nextFromObservable2'}, {id: 'leaf'}],
           [{id: 'root'}, {id: 'observableChild3'}, {id: 'nextFromObservable2'}, {id: 'leaf'}],
+          [{id: 'root'}, {id: 'observableChild3'}, {id: 'nextFromObservable3'}, {id: 'leaf'}],
           [{id: 'root'}, {id: 'observableChild3'}, {id: 'nextFromObservable3'}, {id: 'leaf'}],
         ])
       })

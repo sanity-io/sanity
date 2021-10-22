@@ -30,8 +30,6 @@ export function getIntentState(
     if (
       typeof pane === 'object' &&
       pane.canHandleIntent?.(intentName, params, {
-        // @ts-expect-error: this was incorrectly typed as `never`
-        // because TS has trouble with inferred intersections
         pane,
         index: i,
       })

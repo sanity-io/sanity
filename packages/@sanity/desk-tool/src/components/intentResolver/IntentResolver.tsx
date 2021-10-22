@@ -1,24 +1,17 @@
 import {Box, Card, Flex, Spinner, Text} from '@sanity/ui'
-import {uuid} from '@sanity/uuid'
-import {useDocumentType} from '@sanity/base/hooks'
-import {getTemplateById} from '@sanity/base/initial-value-templates'
-import React, {useMemo} from 'react'
-import {LOADING_PANE} from '../../constants'
-import {useStructure} from '../../utils/resolvePanes'
+import React, {useEffect, useState} from 'react'
+import {RouterPanes} from '../../types'
+import {resolveIntent} from '../../useResolvedPanes'
 import {useUnique} from '../../utils/useUnique'
 import {Delay} from '../Delay'
-import {StructureError} from '../StructureError'
-import {RouterPanes} from '../../types'
 import {Redirect} from './Redirect'
-import {removeDraftPrefix} from './utils'
+import {ensureDocumentIdAndType} from './utils'
 
 export interface IntentResolverProps {
   intent: string
-  params: {type: string; id: string; [key: string]: unknown}
+  params: {type: string; id: string; [key: string]: string | undefined}
   payload: unknown
 }
-
-const FALLBACK_ID = '__fallback__'
 
 /**
  *
@@ -30,116 +23,42 @@ const FALLBACK_ID = '__fallback__'
  *   - Yes: Resolves to "<typeName>;<documentId>"
  *   - No : Resolves to fallback edit pane (context-less)
  */
-export const IntentResolver = React.memo(function IntentResolver({
-  params,
-  payload,
-}: IntentResolverProps) {
-  const {type: specifiedSchemaType, id, ...otherParamsNonUnique} = params || {}
-  const otherParams = useUnique(otherParamsNonUnique)
-  const documentId = id || FALLBACK_ID
-  const {documentType, isLoaded} = useDocumentType(documentId, specifiedSchemaType)
-  const paneSegments = useMemo((): RouterPanes | undefined => {
-    if (!documentType) return undefined
+export function IntentResolver(props: IntentResolverProps) {
+  const {intent} = props
+  const params = useUnique(props.params || {})
+  const payload = useUnique(props.payload)
+  const [nextRouterPanes, setNextRouterPanes] = useState<RouterPanes | null>(null)
+  const [error, setError] = useState<unknown>(null)
 
-    const filteredParams = Object.fromEntries(
-      Object.entries(otherParams).filter(
-        (entry): entry is [string, string] => typeof entry[1] === 'string'
-      )
-    )
+  useEffect(() => {
+    async function getNextRouterPanes() {
+      const {id, type} = await ensureDocumentIdAndType(params.id, params.type)
 
-    return [
-      [{id: documentType, params: filteredParams}],
-      [{id: documentId, params: filteredParams, payload}],
-    ]
-  }, [documentId, documentType, otherParams, payload])
-
-  const {structure, error} = useStructure(paneSegments, {silent: true})
-  const isLoading = Boolean(!structure || structure.some((item) => item === LOADING_PANE))
-
-  const panes = useMemo(() => {
-    if (error) return null
-    if (!documentType) return null
-    if (isLoading) return null
-    if (!paneSegments) return null
-
-    const lastChild = structure?.[structure.length - 1]
-    const lastGroup = paneSegments[paneSegments.length - 1]
-    const lastSibling = lastGroup[lastGroup.length - 1]
-    const terminatesInDocument =
-      lastChild &&
-      typeof lastChild === 'object' &&
-      lastChild.type === 'document' &&
-      lastChild.options.id === documentId
-    const {template: isTemplateCreate, ..._otherParams} = otherParams
-    const template: any = isTemplateCreate && getTemplateById(otherParams.template as any)
-    const type = (template && template.schemaType) || documentType
-    const fallbackParameters = {..._otherParams, type, template: otherParams.template}
-    const newDocumentId = documentId === FALLBACK_ID ? uuid() : removeDraftPrefix(documentId)
-
-    return terminatesInDocument
-      ? paneSegments
-          .slice(0, -1)
-          .concat([lastGroup.slice(0, -1).concat({...lastSibling, id: newDocumentId})])
-      : ([[{id: `__edit__${newDocumentId}`, params: fallbackParameters, payload}]] as RouterPanes)
-  }, [documentId, documentType, error, isLoading, otherParams, paneSegments, payload, structure])
-
-  const nonDocumentTypePanes = useMemo(
-    (): RouterPanes => [
-      [
-        {
-          id: `__edit__${id || uuid()}`,
-          params: Object.fromEntries(
-            Object.entries(otherParams).filter(
-              (entry): entry is [string, string] => typeof entry[1] === 'string'
-            )
-          ),
-        },
-      ],
-    ],
-    [id, otherParams]
-  )
-
-  if (error) {
-    return <StructureError error={error} />
-  }
-
-  if (!documentType) {
-    if (isLoaded) {
-      return <Redirect panes={nonDocumentTypePanes} />
+      return resolveIntent({
+        intent,
+        params: {...params, id, type},
+        payload,
+      })
     }
 
-    return (
-      <Card height="fill">
-        <Delay ms={300}>
-          <Flex align="center" direction="column" height="fill" justify="center">
-            <Spinner muted />
-            <Box marginTop={3}>
-              <Text align="center" muted size={1}>
-                Resolving document type…
-              </Text>
-            </Box>
-          </Flex>
-        </Delay>
-      </Card>
-    )
-  }
+    getNextRouterPanes().then(setNextRouterPanes).catch(setError)
+  }, [intent, params, payload])
 
-  if (isLoading) {
-    return (
-      <Card height="fill">
-        <Delay ms={300}>
-          <Flex align="center" direction="column" height="fill" justify="center">
-            <Spinner muted />
-            <Box marginTop={3}>
-              <Text muted size={1}>
-                Resolving structure…
-              </Text>
-            </Box>
-          </Flex>
-        </Delay>
-      </Card>
-    )
-  }
+  if (error) throw error
+  if (nextRouterPanes) return <Redirect panes={nextRouterPanes} />
 
-  return panes ? <Redirect panes={panes} /> : null
-})
+  return (
+    <Card height="fill">
+      <Delay ms={300}>
+        <Flex align="center" direction="column" height="fill" justify="center">
+          <Spinner muted />
+          <Box marginTop={3}>
+            <Text align="center" muted size={1}>
+              Loading…
+            </Text>
+          </Box>
+        </Flex>
+      </Delay>
+    </Card>
+  )
+}

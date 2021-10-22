@@ -1,13 +1,6 @@
 import {Subscribable} from 'rxjs'
 import {SchemaType, SanityDocument} from '@sanity/types'
 
-export interface StructureErrorType {
-  helpId?: string
-  message: string
-  path?: Array<string | number>
-  stack: string
-}
-
 export interface PreviewValue {
   id?: string
   subtitle?: React.ReactNode
@@ -82,10 +75,13 @@ export interface RouterPaneSibling {
  * @see RouterPanes
  */
 export interface RouterPaneSiblingContext {
+  id: string
   parent: PaneNode | null
   index: number
   splitIndex: number
   path: string[]
+  params: Record<string, string | undefined>
+  payload: unknown
   // used in structure builder
   serializeOptions?: {
     path: (string | number)[]
@@ -141,10 +137,10 @@ interface BaseResolvedPaneNode<T extends PaneNode['type']> {
   menuItemGroups?: PaneMenuItemGroup[]
   canHandleIntent?: (
     intentName: string,
-    params: Record<string, string>,
-    options: {pane: Extract<PaneNode, {type: T}>; index: number}
+    params: Record<string, string | undefined>,
+    options: {pane: PaneNode; index: number}
   ) => boolean
-  child?: PaneChild
+  child?: UnresolvedPaneNode
 }
 
 export interface CustomComponentPaneNode<
@@ -254,20 +250,16 @@ export type PaneNode =
   | DocumentListPaneNode
   | ListPaneNode
 
-interface Serializable<T> {
+export type SerializablePaneNode = {
   // TODO: unify this context with `SerializeOptions`
-  serialize(context: RouterPaneSiblingContext): T
+  serialize(context: RouterPaneSiblingContext): UnresolvedPaneNode
 }
 
-export type PaneChild =
-  | ((id: string, context: RouterPaneSiblingContext) => PaneChild)
-  | Serializable<PaneChild>
-  | Subscribable<PaneChild>
-  | PromiseLike<PaneChild>
-  | PaneNode
+export type PaneNodeResolver = (id: string, context: RouterPaneSiblingContext) => UnresolvedPaneNode
 
 export type UnresolvedPaneNode =
-  | Subscribable<PaneNode>
-  | PromiseLike<PaneNode>
-  | Serializable<PaneNode>
+  | PaneNodeResolver
+  | SerializablePaneNode
+  | Subscribable<UnresolvedPaneNode>
+  | PromiseLike<UnresolvedPaneNode>
   | PaneNode

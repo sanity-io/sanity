@@ -1,7 +1,9 @@
 import {useRouterState} from '@sanity/base/router'
 import {MasterDetailIcon} from '@sanity/icons'
-import React, {useEffect, useMemo} from 'react'
+import React, {useEffect} from 'react'
+import {ErrorBoundary} from 'react-error-boundary'
 import {IntentResolver} from '../components/intentResolver'
+import {StructureError} from '../components/StructureError'
 import {DeskTool} from '../DeskTool'
 import {getIntentState, setActivePanes} from '../getIntentState'
 import {router} from '../router'
@@ -34,13 +36,11 @@ function DeskToolRoot() {
     return () => setActivePanes([])
   }, [])
 
-  return useMemo(
-    () =>
-      intent ? (
-        <IntentResolver intent={intent} params={params} payload={payload} />
-      ) : (
-        <DeskTool onPaneChange={setActivePanes} />
-      ),
-    [intent, params, payload]
+  return intent ? (
+    <IntentResolver intent={intent} params={params} payload={payload} />
+  ) : (
+    <ErrorBoundary FallbackComponent={StructureError}>
+      <DeskTool onPaneChange={setActivePanes} />
+    </ErrorBoundary>
   )
 }

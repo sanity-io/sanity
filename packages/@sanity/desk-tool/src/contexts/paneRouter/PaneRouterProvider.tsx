@@ -2,11 +2,12 @@ import {useRouter, useRouterState} from '@sanity/base/router'
 import {pick, omit, isEqual} from 'lodash'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {RouterPaneGroup, RouterPaneSibling} from '../../types'
-import {exclusiveParams} from './constants'
 import {ChildLink} from './ChildLink'
 import {PaneRouterContext} from './PaneRouterContext'
 import {ParameterizedLink} from './ParameterizedLink'
 import {PaneRouterContextValue, SetParamsOptions} from './types'
+
+const emptyArray: never[] = []
 
 const DEFAULT_SET_PARAMS_OPTIONS: SetParamsOptions = {
   recurseIfInherited: false,
@@ -26,7 +27,7 @@ export function PaneRouterProvider(props: {
   const {children, flatIndex, index, params: paramsProp, payload: payloadProp, siblingIndex} = props
   const {navigate, navigateIntent} = useRouter()
   const routerState = useRouterState()
-  const routerPaneGroups: RouterPaneGroup[] = useMemo(() => routerState?.panes || [], [
+  const routerPaneGroups: RouterPaneGroup[] = useMemo(() => routerState?.panes || emptyArray, [
     routerState?.panes,
   ])
 
@@ -136,10 +137,7 @@ export function PaneRouterProvider(props: {
           // that differ from the group root.
           const newParams = Object.keys(nextParams).reduce<Record<string, string | undefined>>(
             (siblingParams, key) => {
-              if (
-                exclusiveParams.includes(key) ||
-                (rootParams && nextParams[key] !== rootParams[key])
-              ) {
+              if (rootParams && nextParams[key] !== rootParams[key]) {
                 siblingParams[key] = nextParams[key]
               }
 
