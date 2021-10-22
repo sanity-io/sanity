@@ -22,7 +22,7 @@ import {
   useLayer,
   usePortal,
 } from '@sanity/ui'
-import React, {useMemo, useEffect, useCallback, useState} from 'react'
+import React, {useMemo, useEffect, useState} from 'react'
 import PatchEvent from '../../PatchEvent'
 import {createScrollSelectionIntoView} from './utils/scrollSelectionIntoView'
 import {Toolbar} from './Toolbar/Toolbar'
@@ -251,12 +251,14 @@ function PortableTextSanityEditor(props: Props) {
       onFocus,
       onPaste,
       onToggleFullscreen,
+      portal.element,
       readOnly,
       renderAnnotation,
       renderBlock,
       renderChild,
       scrollElement,
       setPortalElement,
+      toolbarPortalElement,
       value,
     ]
   )
