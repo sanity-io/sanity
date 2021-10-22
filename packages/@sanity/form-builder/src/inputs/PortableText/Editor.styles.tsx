@@ -1,5 +1,5 @@
 import {ScrollContainer} from '@sanity/base/components'
-import {Card, rem} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {listCounterCSS} from './Text/TextBlock'
 
@@ -17,7 +17,6 @@ export const ToolbarCard = styled(Card)`
   z-index: 10;
   line-height: 0;
 `
-
 export const Scroller: any = styled(ScrollContainer)`
   position: relative;
   overflow: auto;
