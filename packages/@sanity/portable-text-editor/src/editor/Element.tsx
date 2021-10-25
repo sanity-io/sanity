@@ -2,7 +2,7 @@ import React, {ReactElement, FunctionComponent, useRef} from 'react'
 import {Element as SlateElement, Editor, Range} from 'slate'
 import {Path} from '@sanity/types'
 import {useSelected, useEditor, ReactEditor} from '@sanity/slate-react'
-import {PortableTextFeatures} from '../types/portableText'
+import {PortableTextBlock, PortableTextFeatures} from '../types/portableText'
 import {RenderAttributes, RenderBlockFunction, RenderChildFunction} from '../types/editor'
 import {fromSlateValue} from '../utils/values'
 import {debugWithName} from '../utils/debug'
@@ -29,7 +29,7 @@ type ElementProps = {
 
 const inlineBlockStyle = {display: 'inline-block'}
 
-const defaultRender = (value: any) => {
+const defaultRender = (value: PortableTextBlock) => {
   return <Object value={value} />
 }
 
@@ -45,7 +45,7 @@ export const Element: FunctionComponent<ElementProps> = ({
 }) => {
   const editor = useEditor()
   const selected = useSelected()
-  const blockRef = useRef(null)
+  const blockRef = useRef<HTMLDivElement | null>(null)
   const inlineBlockObjectRef = useRef(null)
   const focused = (selected && editor.selection && Range.isCollapsed(editor.selection)) || false
   let className
@@ -134,7 +134,12 @@ export const Element: FunctionComponent<ElementProps> = ({
       renderAttribs.level = element.level as number
     }
     const textBlock = (
-      <TextBlock element={element} portableTextFeatures={portableTextFeatures} readOnly={readOnly}>
+      <TextBlock
+        blockRef={blockRef}
+        element={element}
+        portableTextFeatures={portableTextFeatures}
+        readOnly={readOnly}
+      >
         {children}
       </TextBlock>
     )
@@ -172,9 +177,10 @@ export const Element: FunctionComponent<ElementProps> = ({
   )[0]
   const renderedBlockFromProps =
     renderBlock && renderBlock(block, type, renderAttribs, defaultRender, blockRef)
+
   return (
     <div {...attributes} key={element._key} className={className}>
-      <DraggableBlock element={element} readOnly={readOnly}>
+      <DraggableBlock element={element} readOnly={readOnly} blockRef={blockRef}>
         {renderedBlockFromProps && (
           <div ref={blockRef} contentEditable={false}>
             {renderedBlockFromProps}

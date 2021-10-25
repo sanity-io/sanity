@@ -1,11 +1,11 @@
 import React, {
-  ReactElement,
   FunctionComponent,
   useState,
   useRef,
   useMemo,
   useCallback,
   DragEvent,
+  useEffect,
 } from 'react'
 import {Element as SlateElement, Transforms, Path, Editor} from 'slate'
 import {ReactEditor, useEditor} from '@sanity/slate-react'
@@ -25,34 +25,39 @@ type ElementProps = {
   children: React.ReactNode
   element: SlateElement
   readOnly: boolean
+  blockRef: React.MutableRefObject<HTMLDivElement | null>
 }
 
-function useForceUpdate() {
-  const [, setValue] = useState(0)
-  // eslint-disable-next-line no-param-reassign
-  return () => setValue((value) => ++value)
-}
-
-export const DraggableBlock: FunctionComponent<ElementProps> = ({children, element, readOnly}) => {
+export const DraggableBlock: FunctionComponent<ElementProps> = ({
+  children,
+  element,
+  readOnly,
+  blockRef,
+}) => {
   const editor = useEditor()
   const dragGhostRef: React.MutableRefObject<undefined | HTMLElement> = useRef()
-  const forceUpdate = useForceUpdate()
   const [isDragOver, setIsDragOver] = useState(false)
   const isVoid = useMemo(() => Editor.isVoid(editor, element), [editor, element])
   const isInline = useMemo(() => Editor.isInline(editor, element), [editor, element])
+
+  const [blockElement, setBlockElement] = useState<HTMLElement | null>(null)
+
+  useEffect(
+    () => setBlockElement(blockRef ? blockRef.current : ReactEditor.toDOMNode(editor, element)),
+    [editor, element, blockRef]
+  )
 
   // Note: this is called not for the dragging block, but for the targets when the block is dragged over them
   const handleDragOver = useCallback(
     (event: DragEvent) => {
       const isMyDragOver = IS_DRAGGING_BLOCK_ELEMENT.get(editor)
       // debug('Drag over', isMyDragOver)
-      if (!isMyDragOver) {
+      if (!isMyDragOver || !blockElement) {
         return
       }
       event.preventDefault()
       event.dataTransfer.dropEffect = 'move'
       IS_DRAGGING_ELEMENT_TARGET.set(editor, element)
-      const blockElement = ReactEditor.toDOMNode(editor, element)
       const elementRect = blockElement.getBoundingClientRect()
       const offset = elementRect.top
       const height = elementRect.height
@@ -72,10 +77,9 @@ export const DraggableBlock: FunctionComponent<ElementProps> = ({children, eleme
         event.dataTransfer.dropEffect = 'none'
         return
       }
-      forceUpdate()
       setIsDragOver(true)
     },
-    [editor, element, forceUpdate]
+    [blockElement, editor, element]
   )
 
   // Note: this is called not for the dragging block, but for the targets when the block is dragged over them
@@ -183,12 +187,9 @@ export const DraggableBlock: FunctionComponent<ElementProps> = ({children, eleme
         event.dataTransfer.setData('application/portable-text', 'something')
         event.dataTransfer.effectAllowed = 'move'
       }
-      // Specify dragImage so that single elements in the preview will not be the drag image,
-      // but always the whole block preview itself.
-      // Also clone it so that it will not be visually clipped by scroll-containers etc.
-      const _element = event.currentTarget
-      if (_element && _element instanceof HTMLElement) {
-        const dragGhost = _element.cloneNode(true) as HTMLElement
+      // Clone blockElement so that it will not be visually clipped by scroll-containers etc.
+      if (blockElement && blockElement instanceof HTMLElement) {
+        const dragGhost = blockElement.cloneNode(true) as HTMLElement
         dragGhostRef.current = dragGhost
         dragGhost.style.width = `${element.clientWidth}px`
         dragGhost.style.height = `${element.clientHeight}px`
@@ -197,7 +198,7 @@ export const DraggableBlock: FunctionComponent<ElementProps> = ({children, eleme
         dragGhost.style.left = '-99999px'
         if (document.body) {
           document.body.appendChild(dragGhost)
-          const rect = _element.getBoundingClientRect()
+          const rect = blockElement.getBoundingClientRect()
           const x = event.clientX - rect.left
           const y = event.clientY - rect.top
           dragGhost.style.width = `${rect.width}px`
@@ -207,7 +208,7 @@ export const DraggableBlock: FunctionComponent<ElementProps> = ({children, eleme
       }
       handleDrag(event)
     },
-    [editor, element.clientHeight, element.clientWidth, handleDrag, isInline, isVoid]
+    [blockElement, editor, element.clientHeight, element.clientWidth, handleDrag, isInline, isVoid]
   )
   if (readOnly) {
     return <>{children}</>
