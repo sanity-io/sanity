@@ -5,7 +5,7 @@ import {map} from 'rxjs/operators'
 import {LOADING_PANE} from '../constants'
 import {RouterPanes, PaneNode, RouterPaneGroup} from '../types'
 import {createResolvedPaneNodeStream} from './createResolvedPaneNodeStream'
-import {loadStructure} from './helpers'
+import {loadStructure} from './loadStructure'
 
 interface PaneData {
   active: boolean

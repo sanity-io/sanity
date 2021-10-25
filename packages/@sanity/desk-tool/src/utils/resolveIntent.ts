@@ -3,14 +3,10 @@ import {omit} from 'lodash'
 import {Observable} from 'rxjs'
 import {first} from 'rxjs/operators'
 import {PaneNode, RouterPanes, RouterPaneSiblingContext, UnresolvedPaneNode} from '../types'
-import {
-  assignId,
-  createPaneResolver,
-  hashContext,
-  loadStructure,
-  memoBind,
-  PaneResolverMiddleware,
-} from './helpers'
+import {assignId} from './assignId'
+import {createPaneResolver, PaneResolverMiddleware} from './createPaneResolver'
+import {loadStructure} from './loadStructure'
+import {memoBind} from './memoBind'
 
 interface NodeContext {
   unresolvedPane: UnresolvedPaneNode | undefined
@@ -48,7 +44,7 @@ export async function resolveIntent(options: ResolveIntentOptions): Promise<Rout
 
   // this is a simple version of the memoizer in `createResolvedPaneNodeStream`
   const memoize: PaneResolverMiddleware = (nextFn) => (unresolvedPane, context, flatIndex) => {
-    const key = unresolvedPane && `${assignId(unresolvedPane)}-${hashContext(context)}`
+    const key = unresolvedPane && `${assignId(unresolvedPane)}-${context.path.join('__')}`
     const cachedResolvedPane = key && resolvedPaneCache.get(key)
     if (cachedResolvedPane) return cachedResolvedPane
 

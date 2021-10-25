@@ -9,18 +9,77 @@ import {
   RouterPaneSibling,
   PaneNodeResolver,
   UnresolvedPaneNode,
+  DocumentPaneNode,
 } from '../types'
-import {
-  assignId,
-  fallbackEditorChild,
-  hashContext,
-  hashResolvedPaneMeta,
-  memoBind,
-  createPaneResolver,
-  PaneResolver,
-  PaneResolutionError,
-  PaneResolverMiddleware,
-} from './helpers'
+import {assignId} from './assignId'
+import {createPaneResolver, PaneResolver, PaneResolverMiddleware} from './createPaneResolver'
+import {memoBind} from './memoBind'
+import {PaneResolutionError} from './PaneResolutionError'
+
+/**
+ * the fallback editor child that is implicitly inserted into the structure tree
+ * if the id starts with `__edit__`
+ */
+const fallbackEditorChild: PaneNodeResolver = (nodeId, context) => {
+  const id = nodeId.replace(/^__edit__/, '')
+  const {params, payload} = context
+  const {type, template} = params
+
+  if (!type) {
+    throw new Error(
+      `Document type for document with ID ${id} was not provided in the router params.`
+    )
+  }
+
+  const documentPane: DocumentPaneNode = {
+    id: 'editor',
+    type: 'document',
+    title: 'Editor',
+    options: {
+      id,
+      template,
+      type,
+      templateParameters: payload as Record<string, unknown>,
+    },
+  }
+  return documentPane
+}
+
+/**
+ * takes in a `RouterPaneSiblingContext` and returns a normalized string
+ * representation that can be used for comparisons
+ */
+function hashContext(context: RouterPaneSiblingContext): string {
+  return `contextHash(${JSON.stringify({
+    id: context.id,
+    parentId: parent && assignId(parent),
+    path: context.path,
+    index: context.index,
+    splitIndex: context.splitIndex,
+    serializeOptionsIndex: context.serializeOptions?.index,
+    serializeOptionsPath: context.serializeOptions?.path,
+  })})`
+}
+
+/**
+ * takes in `ResolvedPaneMeta` and returns a normalized string representation
+ * that can be used for comparisons
+ */
+const hashResolvedPaneMeta = (meta: ResolvedPaneMeta): string => {
+  const normalized = {
+    type: meta.type,
+    id: meta.routerPaneSibling.id,
+    params: meta.routerPaneSibling.params || {},
+    payload: meta.routerPaneSibling.payload || null,
+    flatIndex: meta.flatIndex,
+    groupIndex: meta.groupIndex,
+    siblingIndex: meta.siblingIndex,
+    path: meta.path,
+    paneNode: meta.type === 'resolvedMeta' ? assignId(meta.paneNode) : null,
+  }
+
+  return `metaHash(${JSON.stringify(normalized)})`
+}
 
 /**
  * Represents one flattened "router pane", including the source group and
@@ -200,8 +259,6 @@ function resolvePaneTree({
     )
   } catch (e) {
     if (e instanceof PaneResolutionError) {
-      // TODO: this may be more useful as some sort of toast for better
-      // editors visibility in production environments
       if (e.context) {
         console.warn(
           `Pane resolution error at index ${e.context.index}${

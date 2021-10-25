@@ -2,7 +2,7 @@ import {SerializeError} from '@sanity/structure'
 import {PaneNode, UnresolvedPaneNode} from '../types'
 import S from '../structure-builder'
 import {resolveIntent} from './resolveIntent'
-import {PaneResolutionError} from './helpers'
+import {PaneResolutionError} from './PaneResolutionError'
 
 jest.mock('part:@sanity/base/schema', () => {
   const createSchema = jest.requireActual('part:@sanity/base/schema-creator')

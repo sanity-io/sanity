@@ -5,7 +5,7 @@ import {Box, Button, Card, Code, Container, Heading, Label, Stack, Text} from '@
 import React, {useCallback} from 'react'
 import styled from 'styled-components'
 import {SyncIcon} from '@sanity/icons'
-import {PaneResolutionError} from '../useResolvedPanes'
+import {PaneResolutionError} from '../utils/PaneResolutionError'
 
 const PathSegment = styled.span`
   &:not(:last-child)::after {

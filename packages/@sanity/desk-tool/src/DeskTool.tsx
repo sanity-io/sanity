@@ -7,7 +7,7 @@ import {PaneNode} from './types'
 import {PaneLayout} from './components/pane'
 import {LOADING_PANE} from './constants'
 import {DeskToolProvider} from './contexts/deskTool'
-import {useResolvedPanes} from './useResolvedPanes'
+import {useResolvedPanes} from './utils/useResolvedPanes'
 import {getIntentRouteParams, getWaitMessages, isSaveHotkey} from './helpers'
 import {DeskToolPane, LoadingPane} from './panes'
 

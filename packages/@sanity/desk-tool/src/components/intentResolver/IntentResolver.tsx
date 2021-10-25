@@ -1,7 +1,7 @@
 import {Box, Card, Flex, Spinner, Text} from '@sanity/ui'
 import React, {useEffect, useState} from 'react'
 import {RouterPanes} from '../../types'
-import {resolveIntent} from '../../useResolvedPanes'
+import {resolveIntent} from '../../utils/resolveIntent'
 import {useUnique} from '../../utils/useUnique'
 import {Delay} from '../Delay'
 import {Redirect} from './Redirect'
