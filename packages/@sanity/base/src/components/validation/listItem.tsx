@@ -50,7 +50,7 @@ export function ListItem(props: ValidationListItemProps) {
     </Flex>
   )
   return (
-    <MenuItem padding={1} onClick={handleClick} radius={3} tone={tone}>
+    <MenuItem padding={1} onClick={handleClick} radius={2} tone={tone}>
       <Box padding={2}>{children}</Box>
     </MenuItem>
   )
