@@ -1,3 +1,17 @@
+function extractTextFromBlocks(blocks) {
+  if (!blocks) {
+    return ''
+  }
+  return blocks
+    .map((block) => {
+      return block.children
+        .filter((child) => child._type === 'span')
+        .map((span) => span.text)
+        .join('')
+    })
+    .join('')
+}
+
 export default {
   name: 'simpleBlock',
   title: 'Simple block',
@@ -35,6 +49,11 @@ export default {
               to: {type: 'author'},
             },
           ],
+          validation: (Rule) =>
+            Rule.custom((block) => {
+              const text = extractTextFromBlocks([block])
+              return text.length < 10 ? 'Please write a longer paragraph.' : true
+            }),
         },
         {type: 'image', name: 'image'},
         {
