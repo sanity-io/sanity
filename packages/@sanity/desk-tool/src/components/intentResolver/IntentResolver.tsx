@@ -14,14 +14,8 @@ export interface IntentResolverProps {
 }
 
 /**
- *
- * This is a *very naive* implementation of an intent resolver:
- * - If type is missing from params, it'll try to resolve from document
- * - It manually builds a pane segment path: "<typeName>;<documentId>"
- * - Tries to resolve that to a structure
- * - Checks if the last pane segment is an editor, and if so; is it the right type/id?
- *   - Yes: Resolves to "<typeName>;<documentId>"
- *   - No : Resolves to fallback edit pane (context-less)
+ * A component that receives an intent from props and redirects to the resolved
+ * intent location (while showing a loading spinner during the process)
  */
 export function IntentResolver(props: IntentResolverProps) {
   const {intent} = props
@@ -31,6 +25,8 @@ export function IntentResolver(props: IntentResolverProps) {
   const [error, setError] = useState<unknown>(null)
 
   useEffect(() => {
+    const cancelledRef = {current: false}
+
     async function getNextRouterPanes() {
       const {id, type} = await ensureDocumentIdAndType(params.id, params.type)
 
@@ -41,10 +37,23 @@ export function IntentResolver(props: IntentResolverProps) {
       })
     }
 
-    getNextRouterPanes().then(setNextRouterPanes).catch(setError)
+    getNextRouterPanes()
+      .then((result) => {
+        if (!cancelledRef.current) {
+          setNextRouterPanes(result)
+        }
+      })
+      .catch(setError)
+
+    return () => {
+      cancelledRef.current = true
+    }
   }, [intent, params, payload])
 
+  // throwing here bubbles the error up to the error boundary inside of the
+  // `DeskToolRoot` component
   if (error) throw error
+
   if (nextRouterPanes) return <Redirect panes={nextRouterPanes} />
 
   return (

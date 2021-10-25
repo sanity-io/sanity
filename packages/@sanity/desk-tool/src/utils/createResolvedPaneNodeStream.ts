@@ -293,7 +293,7 @@ export function createResolvedPaneNodeStream({
     resolvePane: () => NEVER,
   },
 }: CreateResolvedPaneNodeStreamOptions): Observable<ResolvedPaneMeta[]> {
-  const resolvedNodeStream = routerPanesStream.pipe(
+  const resolvedPanes$ = routerPanesStream.pipe(
     // add in implicit "root" router pane
     map((rawRouterPanes) => [[{id: 'root'}], ...rawRouterPanes]),
     // create flattened router panes
@@ -390,7 +390,7 @@ export function createResolvedPaneNodeStream({
   // after we've created a stream of `ResolvedPaneMeta[]`, we need to clean up
   // the results to remove unwanted loading panes and prevent unnecessary
   // emissions
-  return resolvedNodeStream.pipe(
+  return resolvedPanes$.pipe(
     // this diffs the previous emission with the current one. if there is a new
     // loading pane at the same position where a previous pane already had a
     // resolved value (looking at the IDs to compare), then return the previous

@@ -1,14 +1,12 @@
 import {Observable, of as observableOf, from as observableFrom, Subscribable} from 'rxjs'
 import {switchMap} from 'rxjs/operators'
 import {PaneNode, RouterPaneSiblingContext, UnresolvedPaneNode} from '../types'
+import {isRecord} from './isRecord'
 import {PaneResolutionError} from './PaneResolutionError'
 
 interface Serializable {
   serialize: (...args: never[]) => unknown
 }
-
-const isRecord = (thing: unknown): thing is Record<string, unknown> =>
-  !!thing && typeof thing === 'object' && !Array.isArray(thing)
 
 const isSubscribable = (thing: unknown): thing is Subscribable<unknown> | PromiseLike<unknown> => {
   if (!isRecord(thing)) return false
@@ -23,10 +21,6 @@ const isSerializable = (thing: unknown): thing is Serializable => {
 /**
  * The signature of the function used to take an `UnresolvedPaneNode` and turn
  * it into an `Observable<PaneNode>`.
- *
- * Note: the implementation of this function is memoized
- *
- * @see createResolvedPaneNodeStream look for `wrapFn`
  */
 export type PaneResolver = (
   unresolvedPane: UnresolvedPaneNode | undefined,
@@ -49,7 +43,7 @@ const rethrowWithPaneResolutionErrors: PaneResolverMiddleware = (next) => (
       throw e
     }
 
-    // anything, wrap with `PaneResolutionError` and set the underlying
+    // anything else, wrap with `PaneResolutionError` and set the underlying
     // error as a the `cause`
     throw new PaneResolutionError({
       message: typeof e?.message === 'string' ? e.message : '',

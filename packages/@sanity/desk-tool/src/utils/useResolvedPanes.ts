@@ -23,7 +23,7 @@ interface PaneData {
 }
 
 interface Panes {
-  paneData: PaneData[]
+  paneDataItems: PaneData[]
   routerPanes: RouterPanes
   resolvedPanes: (PaneNode | typeof LOADING_PANE)[]
 }
@@ -31,7 +31,7 @@ interface Panes {
 export function useResolvedPanes(): Panes {
   const router = useContext(RouterContext)
   const [data, setData] = useState<Panes>({
-    paneData: [],
+    paneDataItems: [],
     resolvedPanes: [],
     routerPanes: [],
   })
@@ -51,57 +51,57 @@ export function useResolvedPanes(): Panes {
       return unsubscribe
     }).pipe(map((routerState) => (routerState?.panes || []) as RouterPanes))
 
-    const subscription = createResolvedPaneNodeStream({
+    const resolvedPanes$ = createResolvedPaneNodeStream({
       rootPaneNode: loadStructure(),
       routerPanesStream: routerPanes$,
-    })
-      .pipe(
-        map((resolvedPanes) => {
-          const routerPanes = resolvedPanes.reduce<RouterPanes>((acc, next) => {
-            const currentGroup = acc[next.groupIndex] || []
-            currentGroup[next.siblingIndex] = next.routerPaneSibling
-            acc[next.groupIndex] = currentGroup
-            return acc
-          }, [])
+    }).pipe(
+      map((resolvedPanes) => {
+        const routerPanes = resolvedPanes.reduce<RouterPanes>((acc, next) => {
+          const currentGroup = acc[next.groupIndex] || []
+          currentGroup[next.siblingIndex] = next.routerPaneSibling
+          acc[next.groupIndex] = currentGroup
+          return acc
+        }, [])
 
-          const groupsLen = routerPanes.length
+        const groupsLen = routerPanes.length
 
-          const paneData = resolvedPanes.map((pane) => {
-            const {groupIndex, flatIndex, siblingIndex, routerPaneSibling, path} = pane
-            const itemId = routerPaneSibling.id
-            const nextGroup = routerPanes[groupIndex + 1] as RouterPaneGroup | undefined
+        const paneDataItems = resolvedPanes.map((pane) => {
+          const {groupIndex, flatIndex, siblingIndex, routerPaneSibling, path} = pane
+          const itemId = routerPaneSibling.id
+          const nextGroup = routerPanes[groupIndex + 1] as RouterPaneGroup | undefined
 
-            const paneDataItem: PaneData = {
-              active: groupIndex === groupsLen - 2,
-              childItemId: nextGroup?.[0].id ?? null,
-              index: flatIndex,
-              itemId: routerPaneSibling.id,
-              groupIndex,
-              key: `${
-                pane.type === 'loading' ? 'unknown' : pane.paneNode.id
-              }-${itemId}-${siblingIndex}`,
-              pane: pane.type === 'loading' ? LOADING_PANE : pane.paneNode,
-              params: routerPaneSibling.params as Record<string, string>,
-              path: path.join(';'),
-              payload: routerPaneSibling.payload,
-              selected: flatIndex === resolvedPanes.length - 1,
-              siblingIndex,
-            }
-
-            return paneDataItem
-          })
-
-          return {
-            paneData,
-            routerPanes,
-            resolvedPanes: paneData.map((pane) => pane.pane),
+          const paneDataItem: PaneData = {
+            active: groupIndex === groupsLen - 2,
+            childItemId: nextGroup?.[0].id ?? null,
+            index: flatIndex,
+            itemId: routerPaneSibling.id,
+            groupIndex,
+            key: `${
+              pane.type === 'loading' ? 'unknown' : pane.paneNode.id
+            }-${itemId}-${siblingIndex}`,
+            pane: pane.type === 'loading' ? LOADING_PANE : pane.paneNode,
+            params: routerPaneSibling.params || {},
+            path: path.join(';'),
+            payload: routerPaneSibling.payload,
+            selected: flatIndex === resolvedPanes.length - 1,
+            siblingIndex,
           }
+
+          return paneDataItem
         })
-      )
-      .subscribe({
-        next: (result) => setData(result),
-        error: (e) => setError(e),
+
+        return {
+          paneDataItems,
+          routerPanes,
+          resolvedPanes: paneDataItems.map((pane) => pane.pane),
+        }
       })
+    )
+
+    const subscription = resolvedPanes$.subscribe({
+      next: (result) => setData(result),
+      error: (e) => setError(e),
+    })
 
     return () => subscription.unsubscribe()
   }, [router])

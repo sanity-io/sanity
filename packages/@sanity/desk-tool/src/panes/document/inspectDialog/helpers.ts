@@ -1,8 +1,6 @@
 import {SanityDocument} from '@sanity/types'
 import HLRU from 'hashlru'
-
-const isRecord = (thing: unknown): thing is Record<string, unknown> =>
-  !!thing && typeof thing === 'object' && !Array.isArray(thing)
+import {isRecord} from '../../../utils/isRecord'
 
 const lru = HLRU(1000)
 

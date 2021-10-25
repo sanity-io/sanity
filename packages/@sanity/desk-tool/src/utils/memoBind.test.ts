@@ -2,7 +2,7 @@ import {memoBind} from './memoBind'
 
 describe('memoBind', () => {
   it('takes in an object and a method key and binds the object to the `this` value of the method', () => {
-    class IHateClasses {
+    class ExampleClass {
       data = 'example'
 
       aPrototype() {
@@ -10,14 +10,14 @@ describe('memoBind', () => {
       }
     }
 
-    const instance = new IHateClasses()
+    const instance = new ExampleClass()
     const bound = memoBind(instance, 'aPrototype')
 
     expect(bound()).toBe('example')
   })
 
   it('memoizes the bindings against the method names and instances', () => {
-    class IHateClasses {
+    class ExampleClass {
       data = 'example'
 
       aPrototype() {
@@ -25,12 +25,12 @@ describe('memoBind', () => {
       }
     }
 
-    const instanceA = new IHateClasses()
+    const instanceA = new ExampleClass()
     const boundA1 = memoBind(instanceA, 'aPrototype')
     const boundA2 = memoBind(instanceA, 'aPrototype')
     expect(boundA1).toBe(boundA2)
 
-    const instanceB = new IHateClasses()
+    const instanceB = new ExampleClass()
     const boundB1 = memoBind(instanceB, 'aPrototype')
     const boundB2 = memoBind(instanceB, 'aPrototype')
     expect(boundB1).toBe(boundB2)

@@ -26,7 +26,7 @@ export function memoBind(obj: Record<string, unknown>, methodKey: string): Funct
     )
   }
 
-  const bound = (...args: never[]) => method.call(obj, ...args)
+  const bound = method.bind(obj)
   boundMethods.set(methodKey, bound)
   bindCache.set(obj, boundMethods)
 

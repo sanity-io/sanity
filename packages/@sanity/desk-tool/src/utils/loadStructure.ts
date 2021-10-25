@@ -1,9 +1,7 @@
 import leven from 'leven'
 import {UnresolvedPaneNode} from '../types'
 import {defaultStructure} from '../defaultStructure'
-
-const isRecord = (thing: unknown): thing is Record<string, unknown> =>
-  !!thing && typeof thing === 'object' && !Array.isArray(thing)
+import {isRecord} from './isRecord'
 
 const KNOWN_STRUCTURE_EXPORTS = ['getDefaultDocumentNode']
 

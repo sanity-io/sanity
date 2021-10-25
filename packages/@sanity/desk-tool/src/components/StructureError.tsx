@@ -1,5 +1,4 @@
 import generateHelpUrl from '@sanity/generate-help-url'
-import {FallbackProps} from 'react-error-boundary'
 import {SerializeError} from '@sanity/structure'
 import {Box, Button, Card, Code, Container, Heading, Label, Stack, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
@@ -28,7 +27,11 @@ function formatStack(stack: string) {
   )
 }
 
-export function StructureError({error}: FallbackProps) {
+interface StructureErrorProps {
+  error: Error
+}
+
+export function StructureError({error}: StructureErrorProps) {
   if (!(error instanceof PaneResolutionError)) {
     throw error
   }

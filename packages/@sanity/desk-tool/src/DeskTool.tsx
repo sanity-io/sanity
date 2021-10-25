@@ -26,7 +26,7 @@ const StyledPaneLayout = styled(PaneLayout)`
 export const DeskTool = memo(({onPaneChange}: DeskToolProps) => {
   const {push: pushToast} = useToast()
   const {navigate, getState} = useRouter()
-  const {paneData, resolvedPanes, routerPanes} = useResolvedPanes()
+  const {paneDataItems, resolvedPanes, routerPanes} = useResolvedPanes()
 
   const [layoutCollapsed, setLayoutCollapsed] = useState(false)
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
@@ -35,6 +35,9 @@ export const DeskTool = memo(({onPaneChange}: DeskToolProps) => {
   const handleRootExpand = useCallback(() => setLayoutCollapsed(false), [])
 
   useEffect(() => {
+    // we check for length before emitting here to skip the initial empty array
+    // state from the `useResolvedPanes` hook. there should always be a root
+    // pane emitted on subsequent emissions
     if (resolvedPanes.length) {
       onPaneChange(resolvedPanes)
     }
@@ -114,7 +117,7 @@ export const DeskTool = memo(({onPaneChange}: DeskToolProps) => {
           onCollapse={handleRootCollapse}
           onExpand={handleRootExpand}
         >
-          {paneData.map(
+          {paneDataItems.map(
             ({
               active,
               childItemId,

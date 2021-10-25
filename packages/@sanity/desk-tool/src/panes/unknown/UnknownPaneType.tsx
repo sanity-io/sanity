@@ -1,9 +1,7 @@
 import React from 'react'
 import {Box, Text} from '@sanity/ui'
 import {Pane, PaneContent, PaneHeader} from '../../components/pane'
-
-const isRecord = (thing: unknown): thing is Record<string, unknown> =>
-  !!thing && typeof thing === 'object' && !Array.isArray(thing)
+import {isRecord} from '../../utils/isRecord'
 
 interface UnknownPaneProps {
   index: number
