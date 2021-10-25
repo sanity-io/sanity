@@ -206,6 +206,17 @@ export default () =>
                       S.menuItem().title('Test 1').action('test-1').showAsAction(true),
                       S.menuItem().title('Test 2').action('test-2'), //.showAsAction(true),
                     ])
+                    .child(
+                      S.component(DebugPane)
+                        .id('component1-1')
+                        .title('Component pane #1.1')
+                        .options({no: 1})
+                        .menuItems([
+                          S.menuItem().title('Test 1').action('test-1').showAsAction(true),
+                          S.menuItem().title('Test 2').action('test-2'), //.showAsAction(true),
+                        ])
+                        .child(S.document().documentId('component1-1-child').schemaType('author'))
+                    )
                 ),
               S.listItem()
                 .id('component2')
@@ -216,6 +227,7 @@ export default () =>
                     .title('Component pane #2')
                     .options({no: 2})
                     .menuItems([S.menuItem().title('Test 1').action('test-1').showAsAction(true)])
+                    .child(S.document().documentId('component2-child').schemaType('author'))
                 ),
 
               S.divider(),
