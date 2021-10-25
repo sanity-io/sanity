@@ -30,7 +30,7 @@
     "moment": "^2.19.1",
     "query-string": "^4.3.2",
     "react-codemirror2": "^6.0.0",
-    "react-json-view": "^1.19.1",
+    "react-json-view": "^1.21.3",
     "react-spinner": "^0.2.6",
     "react-split-pane": "^0.1.84"
   },
