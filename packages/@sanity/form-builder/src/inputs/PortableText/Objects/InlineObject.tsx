@@ -20,25 +20,31 @@ type Props = {
   value: PortableTextChild
 }
 
-interface RootCardProps {
-  $readOnly: boolean
-}
-
-function rootStyle(props: RootCardProps & {theme: Theme}) {
-  const {$readOnly, theme} = props
+function rootStyle({theme}: {theme: Theme}) {
   const {color, radius} = theme.sanity
 
   return css`
-    line-height: 1;
+    line-height: 0;
     border-radius: ${radius[2]}px;
-    padding: 1px;
+    padding: 2px;
     box-sizing: border-box;
-    max-width: calc(120px + 7ch);
-    cursor: ${$readOnly ? 'default' : undefined};
-    box-shadow: 0 0 0 1px var(--card-border-color);
+    box-shadow: inset 0 0 0 1px var(--card-border-color);
+    height: calc(1em + 3px);
+    margin: 1px 0;
+
+    &:not([hidden]) {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: top;
+    }
+
+    &[data-ready-only] {
+      cursor: default;
+    }
 
     &[data-focused] {
-      box-shadow: 0 0 0 1px ${color.selectable.primary.selected.border};
+      box-shadow: inset 0 0 0 1px ${color.selectable.primary.selected.border};
+      color: ${color.selectable.primary.pressed.fg};
     }
 
     &:not([data-focused]):not([data-selected]) {
@@ -62,7 +68,12 @@ function rootStyle(props: RootCardProps & {theme: Theme}) {
   `
 }
 
-const Root = styled(Card)<RootCardProps>(rootStyle)
+const Root = styled(Card)(rootStyle)
+
+const PreviewSpan = styled.span`
+  display: block;
+  max-width: calc(5em + 80px); // @todo: find an appropriate value
+`
 
 export const InlineObject: FunctionComponent<Props> = ({
   attributes: {focused, selected, path},
@@ -101,12 +112,11 @@ export const InlineObject: FunctionComponent<Props> = ({
 
   const preview = useMemo(
     () => (
-      <span>
-        <Preview type={type} value={value} layout="inline" />
-        {isEmpty && !readOnly && 'Click to edit'}
-      </span>
+      <PreviewSpan>
+        <Preview type={type} value={value} fallbackTitle="Click to edit" layout="inline" />
+      </PreviewSpan>
     ),
-    [isEmpty, readOnly, type, value]
+    [type, value]
   )
 
   const markersToolTip = useMemo(
@@ -133,9 +143,10 @@ export const InlineObject: FunctionComponent<Props> = ({
         data-focused={focused || undefined}
         data-invalid={hasError || undefined}
         data-selected={selected || undefined}
+        data-read-only={readOnly || undefined}
         tone={tone}
         onClick={handleOpen}
-        $readOnly={readOnly}
+        forwardedAs="span"
       >
         {markersToolTip || preview}
       </Root>
