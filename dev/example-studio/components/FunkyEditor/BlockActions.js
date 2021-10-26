@@ -1,7 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-
-import styles from './BlockActions.css'
+import {Button} from '@sanity/ui'
+import {BellIcon} from '@sanity/icons'
+// import styles from './BlockActions.css'
 
 export default class FunkyBlockActions extends React.Component {
   static propTypes = {
@@ -27,9 +28,14 @@ export default class FunkyBlockActions extends React.Component {
 
   render() {
     return (
-      <div className={styles.root} onClick={this.handleClick}>
-        Ping
-      </div>
+      <Button
+        icon={BellIcon}
+        fontSize={1}
+        padding={2}
+        onClick={this.handleClick}
+        aria-label="Ping"
+        mode="bleed"
+      />
     )
   }
 }
