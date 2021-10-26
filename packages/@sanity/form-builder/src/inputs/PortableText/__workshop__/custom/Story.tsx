@@ -1,4 +1,4 @@
-import {Box, Card, Container, Flex, LayerProvider, Text} from '@sanity/ui'
+import {Box, Button, Card, Container, Flex, LayerProvider, Text} from '@sanity/ui'
 import React from 'react'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import {CommentIcon, AddIcon} from '@sanity/icons'
@@ -32,7 +32,7 @@ function renderBlockActions({block, insert}) {
   const handleClick = () => insert(dupBlock)
   return (
     <div>
-      <AddIcon onClick={handleClick} />
+      <Button fontSize={1} icon={AddIcon} onClick={handleClick} padding={2} mode={'ghost'} />
     </div>
   )
 }
