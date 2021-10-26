@@ -1,5 +1,4 @@
 import observeFields from './observeFields'
-import resolveRefType from './utils/resolveRefType'
 import {createPathObserver} from './createPathObserver'
 import {createPreviewObserver} from './createPreviewObserver'
 
@@ -10,9 +9,8 @@ export {default as SanityPreview} from './components/SanityPreview'
 export {default as PreviewSubscriber} from './components/PreviewSubscriber'
 export {default as WithVisibility} from './components/WithVisibility'
 
-export {observeDocumentTypeForId} from './utils/resolveRefType'
 export {getPreviewPaths} from './utils/getPreviewPaths'
 export {default as prepareForPreview} from './utils/prepareForPreview'
 
 export const observePaths = createPathObserver(observeFields)
-export const observeForPreview = createPreviewObserver(observePaths, resolveRefType)
+export const observeForPreview = createPreviewObserver(observePaths)
