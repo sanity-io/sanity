@@ -1,8 +1,8 @@
 import React from 'react'
 import imageUrlBuilder from '@sanity/image-url'
 import {ImageUrlFitMode, SanityDocument} from '@sanity/types'
+import {DocumentIcon} from '@sanity/icons'
 import {assetUrlBuilder} from '../../assets'
-import FileIcon from '../../components/icons/File'
 import {versionedClient} from '../../client/versionedClient'
 import {
   DefaultPreview,
@@ -110,7 +110,7 @@ export default class SanityDefaultPreview extends React.PureComponent<SanityDefa
 
   renderIcon = () => {
     const {icon} = this.props
-    const Icon = icon || FileIcon
+    const Icon = icon || DocumentIcon
     return Icon && <Icon className="sanity-studio__preview-fallback-icon" />
   }
 
