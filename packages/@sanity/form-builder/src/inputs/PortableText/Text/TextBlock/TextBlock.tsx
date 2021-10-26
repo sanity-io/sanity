@@ -258,7 +258,7 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
     hasErrors || (hasMarkers && renderCustomMarkers) ? (
       <Tooltip
         placement="top"
-        boundaryElement={blockRef.current}
+        boundaryElement={blockRef?.current}
         portal
         content={
           <Stack space={3} padding={2} style={{maxWidth: 250}}>
