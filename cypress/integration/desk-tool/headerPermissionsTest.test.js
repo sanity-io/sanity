@@ -2,17 +2,11 @@ describe('@sanity/desk-tool: when a single action exists on the header, which pe
   it('when the user is admin: the create button is active', () => {
     cy.visit('/test/desk/custom;deep;book#_debug_roles=administrator')
 
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(1000)
-
     cy.get('[data-testid=action-intent-button]').should('not.have.attr', 'disabled')
   })
 
   it('when the user is restricted (read only): the create button is disabled', () => {
     cy.visit('/test/desk/custom;deep;book#_debug_roles=restricted')
-
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(1000)
 
     cy.get('[data-testid=action-intent-button]').should('have.attr', 'disabled')
   })
@@ -21,9 +15,6 @@ describe('@sanity/desk-tool: when a single action exists on the header, which pe
 describe('@sanity/desk-tool: when multiple actions exist on the header, which permissions exist', () => {
   it('when the user is admin: all actions are enabled', () => {
     cy.visit('/test/desk/author#_debug_roles=requiresApproval')
-
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(1000)
 
     cy.get('[data-testid=multi-action-intent-button]').click()
 
@@ -35,9 +26,6 @@ describe('@sanity/desk-tool: when multiple actions exist on the header, which pe
   it('when the user is requiresApproval (based on schema property): only the last action is enabled', () => {
     cy.visit('/test/desk/author#_debug_roles=requiresApproval')
 
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(1000)
-
     cy.get('[data-testid=multi-action-intent-button]').click()
 
     cy.get('[data-testid=action-intent-button-0').should('have.attr', 'disabled')
@@ -47,9 +35,6 @@ describe('@sanity/desk-tool: when multiple actions exist on the header, which pe
 
   it('when the user is restricted (read only): all the actions are disabled', () => {
     cy.visit('/test/desk/author#_debug_roles=restricted')
-
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(1000)
 
     cy.get('[data-testid=multi-action-intent-button]').click()
 
