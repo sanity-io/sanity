@@ -1,3 +1,4 @@
+import {omit} from 'lodash'
 import {RouterPanes, RouterPaneGroup, RouterPaneSibling} from '../types'
 import {EMPTY_PARAMS} from '../constants'
 
@@ -8,6 +9,7 @@ const panePattern = /^([.a-z0-9_-]+),?({.*?})?(?:(;|$))/i
 const isParam = (str: string) => /^[a-z0-9]+=[^=]+/i.test(str)
 const isPayload = (str: string) =>
   /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(str)
+const exclusiveParams = ['view', 'since', 'rev']
 
 type Truthy<T> = T extends false
   ? never
@@ -57,7 +59,7 @@ function encodeChunks(pane: RouterPaneSibling, index: number, group: RouterPaneG
 
       // omit the value if it's the same as the value from the first sibling
       const valueFromFirstSibling = firstSibling.params?.[key]
-      if (value === valueFromFirstSibling) return false
+      if (value === valueFromFirstSibling && !exclusiveParams.includes(key)) return false
       return true
     })
     .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
@@ -88,7 +90,7 @@ export function parsePanesSegment(str: string): RouterPanes {
           ...firstSibling,
           ...sibling,
           id: sibling.id || firstSibling.id,
-          params: {...firstSibling.params, ...sibling.params},
+          params: {...omit(firstSibling.params, exclusiveParams), ...sibling.params},
           payload: sibling.payload || firstSibling.payload,
         })),
       ]

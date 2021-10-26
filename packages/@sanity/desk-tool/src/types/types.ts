@@ -23,7 +23,8 @@ export type DeskToolPaneActionHandler = (params: any, scope?: unknown) => void
  *   by `|`.
  * - Each item pane can contain it's own parameters and payloads
  * - Per item pane in each group, if not specified separately, the ID, params,
- *   and payload will be inherited from the first item pane in the pane group.
+ *   and payload will be inherited from the first item pane in the pane group
+ *   (unless it's an `exclusiveParam`)
  *
  * E.g. `/desk/books;book-123|,view=preview` will parse to:
  *
