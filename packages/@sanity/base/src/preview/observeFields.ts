@@ -21,9 +21,9 @@ import {
 } from 'rxjs/operators'
 import {difference, flatten} from 'lodash'
 import {versionedClient} from '../client/versionedClient'
-import debounceCollect from './utils/debounceCollect'
+import {debounceCollect} from './utils/debounceCollect'
 import {combineSelections, reassemble, toGradientQuery} from './utils/optimizeQuery'
-import {FieldName, Id, Selection} from './types'
+import {FieldName, Id, Path, Selection} from './types'
 import {INCLUDE_FIELDS} from './constants'
 import hasEqualFields from './utils/hasEqualFields'
 import isUniqueBy from './utils/isUniqueBy'
@@ -88,7 +88,7 @@ function fetchAllDocumentPaths(selections: Selection[]) {
 const fetchDocumentPathsFast = debounceCollect(fetchAllDocumentPaths, 100)
 const fetchDocumentPathsSlow = debounceCollect(fetchAllDocumentPaths, 1000)
 
-function listenFields(id: Id, fields: FieldName[]) {
+function listenFields(id: Id, fields: Path[]) {
   return listen(id).pipe(
     switchMap((event: any) => {
       if (event.type === 'welcome' || event.visibility === 'query') {
