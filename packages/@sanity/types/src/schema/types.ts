@@ -1,5 +1,5 @@
 // Note: INCOMPLETE, but it's a start
-import React from 'react'
+import type {ReactNode, ComponentType} from 'react'
 import {Rule} from '../validation'
 import {ReferenceOptions} from '../reference'
 import {AssetSource} from '../assets'
@@ -15,10 +15,10 @@ export interface Schema {
 }
 
 export interface PreviewValue {
-  title?: string
-  subtitle?: string
-  description?: string
-  media?: string
+  title?: ReactNode
+  subtitle?: ReactNode
+  description?: ReactNode
+  media?: ReactNode
 }
 
 export interface PrepareViewOptions {
@@ -85,7 +85,7 @@ export interface BaseSchemaType {
   type?: SchemaType
   readOnly?: boolean
   liveEdit?: boolean
-  icon?: React.ComponentType
+  icon?: ComponentType
   initialValue?: InitialValueProperty
   options?: Record<string, any>
 
@@ -294,7 +294,7 @@ export interface CollapseOptions {
 
 export interface ReferenceSchemaType extends ObjectSchemaType {
   jsonType: 'object'
-  to: SchemaType[]
+  to: ObjectSchemaType[]
   weak?: boolean
   options?: ReferenceOptions
 }
