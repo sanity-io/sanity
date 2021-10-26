@@ -1,28 +1,40 @@
-import styled from 'styled-components'
+import {Theme} from '@sanity/ui'
+import styled, {css} from 'styled-components'
 
-export const RootDiv = styled.div`
+export const RootSpan = styled.span`
   display: inline-flex;
   align-items: center;
-  vertical-align: bottom;
-  line-height: 1;
+  vertical-align: top;
   max-width: 100%;
+  height: 15px;
 `
 
 export const MediaDiv = styled.div`
+  position: relative;
   display: inline-block;
-  vertical-align: bottom;
-  width: 1em;
-
-  &:empty {
-    display: none;
-  }
+  width: calc(1em - 1px);
+  height: calc(1em - 1px);
 
   & img {
-    width: 1em;
-    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
     border-radius: ${({theme}) => theme.sanity.radius[1]}px;
     margin-right: ${({theme}) => theme.sanity.space[1]}px;
+  }
+
+  & img + span {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    box-shadow: inset 0 0 0 1px var(--card-fg-color);
+    opacity: 0.2;
+    border-radius: ${({theme}) => theme.sanity.radius[1]}px;
   }
 
   & svg {
@@ -37,32 +49,27 @@ export const MediaDiv = styled.div`
   }
 `
 
-export const TextSpan = styled.div`
-  font-size: calc(14 / 16 * 1em);
-  font-weight: ${({theme}) => theme.sanity.fonts.text.weights.medium};
-  overflow: hidden;
-  padding: 0.1em;
-  margin: -0.1em;
-  display: inline-flex;
-  align-items: center;
+export const TextSpan = styled.span(({theme}: {theme: Theme}) => {
+  const textFont = theme.sanity.fonts.text
+  const textSize = textFont.sizes[1]
 
-  & > div {
-    display: inline-block;
-    width: 100%;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    padding: 0.1em;
-    margin: -0.1em;
+  return css`
+    font-size: calc(${textSize.fontSize} / 16 * 1em);
+    font-weight: ${textFont.weights.medium};
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    height: 9px;
+    line-height: ${textSize.lineHeight / textSize.fontSize};
+    padding-left: 0.25em;
+    padding-right: 0.25em;
+    min-width: 0;
 
     span {
-      margin-left: 0.25em;
-      margin-right: 0.25em;
-      vertical-align: top;
-
-      &:empty {
-        display: none;
-      }
+      display: block;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
-  }
-`
+  `
+})
