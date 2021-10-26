@@ -1,16 +1,20 @@
-import React, {FunctionComponent, useCallback, useMemo} from 'react'
+import React, {FunctionComponent, useCallback, useMemo, useRef} from 'react'
 import {PortableTextChild, RenderAttributes} from '@sanity/portable-text-editor'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
-import {Path} from '@sanity/types'
+import {Marker, Path} from '@sanity/types'
 import styled, {css} from 'styled-components'
-import {Theme, ThemeColorToneKey} from '@sanity/ui'
+import {Theme, ThemeColorToneKey, Tooltip, Stack} from '@sanity/ui'
+import Markers from '../legacyParts/Markers'
+import {RenderCustomMarkers} from '../types'
 
 type Props = {
   attributes: RenderAttributes
   children: JSX.Element
   hasError: boolean
   isEditing: boolean
+  markers: Marker[]
   onFocus: (path: Path) => void
+  renderCustomMarkers: RenderCustomMarkers
   value: PortableTextChild
 }
 
@@ -53,15 +57,37 @@ export const Annotation: FunctionComponent<Props> = ({
   children,
   hasError,
   isEditing,
+  markers,
   onFocus,
+  renderCustomMarkers,
   value,
 }) => {
   const {path} = attributes
+  const annotationRef = useRef()
 
   const markDefPath = useMemo(() => [...path.slice(0, 1), 'markDefs', {_key: value._key}], [
     path,
     value._key,
   ])
+
+  const markersToolTip = useMemo(
+    () =>
+      markers.length > 0 ? (
+        <Tooltip
+          placement="top"
+          boundaryElement={annotationRef.current}
+          portal
+          content={
+            <Stack space={3} padding={2} style={{maxWidth: 250}}>
+              <Markers markers={markers} renderCustomMarkers={renderCustomMarkers} />
+            </Stack>
+          }
+        >
+          <span>{children}</span>
+        </Tooltip>
+      ) : undefined,
+    [children, markers, renderCustomMarkers]
+  )
 
   const handleOnClick = useCallback((): void => {
     onFocus(markDefPath.concat(FOCUS_TERMINATOR))
@@ -80,8 +106,13 @@ export const Annotation: FunctionComponent<Props> = ({
   }, [isLink, hasError])
 
   return (
-    <Root onClick={handleOnClick} $toneKey={toneKey} isEditing={isEditing}>
-      {children}
+    <Root
+      onDoubleClick={handleOnClick}
+      $toneKey={toneKey}
+      isEditing={isEditing}
+      ref={annotationRef}
+    >
+      {markersToolTip || children}
     </Root>
   )
 }

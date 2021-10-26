@@ -4,25 +4,28 @@ import {
   Type,
   RenderAttributes,
 } from '@sanity/portable-text-editor'
-import {Path} from '@sanity/types'
+import {isKeySegment, Marker, Path} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
-import {Card, Theme} from '@sanity/ui'
+import {Card, Theme, Tooltip, Stack} from '@sanity/ui'
 import {hues} from '@sanity/color'
 import React, {useCallback, useMemo, useRef} from 'react'
 import styled, {css} from 'styled-components'
 import {useScrollIntoViewOnFocusWithin} from '../../../hooks/useScrollIntoViewOnFocusWithin'
 import {hasFocusWithinPath} from '../../../utils/focusUtils'
+import {RenderBlockActions, RenderCustomMarkers} from '../types'
+import Markers from '../legacyParts/Markers'
 import {BlockObjectPreview} from './BlockObjectPreview'
 
 interface BlockObjectProps {
   attributes: RenderAttributes
   blockRef?: React.RefObject<HTMLDivElement>
   editor: PortableTextEditor
-  hasError: boolean
-  hasMarker?: boolean
+  markers: Marker[]
   onFocus: (path: Path) => void
   focusPath: Path
   readOnly: boolean
+  renderBlockActions?: RenderBlockActions
+  renderCustomMarkers?: RenderCustomMarkers
   type: Type
   value: PortableTextBlock
 }
@@ -88,10 +91,11 @@ export function BlockObject(props: BlockObjectProps) {
     blockRef,
     editor,
     focusPath,
-    hasError,
-    hasMarker,
+    markers,
     onFocus,
     readOnly,
+    renderBlockActions,
+    renderCustomMarkers,
     type,
     value,
   } = props
@@ -156,12 +160,42 @@ export function BlockObject(props: BlockObjectProps) {
     return 1
   }, [type])
 
+  // These are marker that is only for the block level (things further up, like annotations and inline objects are dealt with in their respective components)
+  const blockMarkers = useMemo(
+    () =>
+      markers.filter(
+        (marker) => isKeySegment(marker.path[0]) && marker.path[0]._key === value._key
+      ),
+    [value._key, markers]
+  )
+
+  const errorMarkers = useMemo(
+    () => blockMarkers.filter((marker) => marker.type === 'validation' && marker.level === 'error'),
+    [blockMarkers]
+  )
+  const hasMarkers = blockMarkers.length > 0
+  const hasErrors = errorMarkers.length > 0
+  const markersToolTip =
+    hasErrors || (hasMarkers && renderCustomMarkers) ? (
+      <Tooltip
+        placement="top"
+        portal
+        content={
+          <Stack space={3} padding={2} style={{maxWidth: 250}}>
+            <Markers markers={markers} renderCustomMarkers={renderCustomMarkers} />
+          </Stack>
+        }
+      >
+        <div>{blockPreview}</div>
+      </Tooltip>
+    ) : undefined
+
   return (
     <Root
-      data-focused={focused ? '' : undefined}
-      data-invalid={hasError ? '' : undefined}
-      data-selected={selected ? '' : undefined}
-      data-markers={hasMarker ? '' : undefined}
+      data-focused={focused || undefined}
+      data-invalid={hasErrors || undefined}
+      data-selected={selected || undefined}
+      data-markers={hasMarkers || undefined}
       data-testid="pte-block-object"
       marginY={3}
       onDoubleClick={handleClickToOpen}
@@ -169,7 +203,7 @@ export function BlockObject(props: BlockObjectProps) {
       ref={elementRef}
       tone={tone}
     >
-      <div ref={blockRef}>{blockPreview}</div>
+      <div ref={blockRef}>{markersToolTip || blockPreview}</div>
     </Root>
   )
 }

@@ -1,55 +1,55 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import React from 'react'
-import ValidationStatus from 'part:@sanity/components/validation/status'
+import React, {useMemo} from 'react'
 import CustomMarkers from 'part:@sanity/form-builder/input/block-editor/block-markers-custom-default'
-import {Path, Marker, isValidationMarker} from '@sanity/types'
+import {Marker, isValidationMarker} from '@sanity/types'
+import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {InfoOutlineIcon} from '@sanity/icons'
 import {RenderCustomMarkers} from '../types'
-import styles from './Markers.module.css'
 
 type Props = {
   markers: Marker[]
-  onFocus: (path: Path) => void
   renderCustomMarkers?: RenderCustomMarkers
 }
-export default class Markers extends React.PureComponent<Props> {
-  static defaultProps = {
-    markers: [],
-    renderCustomMarkers: null,
+export default function Markers(props: Props) {
+  const {markers, renderCustomMarkers} = props
+
+  const customMarkersForBlock = useMemo(
+    () => markers.filter((marker) => !isValidationMarker(marker)),
+    [markers]
+  )
+  const validationMarkersForBlock = useMemo(
+    () => markers.filter((marker) => isValidationMarker(marker)),
+    [markers]
+  )
+  if (markers.length === 0) {
+    return null
   }
-  handleValidationMarkerClick = (event: React.MouseEvent<HTMLDivElement>): void => {
-    event.preventDefault()
-    event.stopPropagation()
-    const {onFocus, markers} = this.props
-    const validationMarkers = markers.filter(isValidationMarker)
-    onFocus(validationMarkers[0].path)
-  }
-  handleCancelEvent = (event: React.MouseEvent<HTMLDivElement>): void => {
-    event.preventDefault()
-    event.stopPropagation()
-  }
-  render(): JSX.Element {
-    const {markers, renderCustomMarkers} = this.props
-    if (markers.length === 0) {
-      return null
-    }
-    const customMarkers = markers.filter((mrkr) => !isValidationMarker(mrkr))
-    const validationMarkers = markers.filter(isValidationMarker)
-    return (
-      <div onClick={this.handleCancelEvent} className={styles.root}>
-        {validationMarkers.length > 0 && (
-          <div className={styles.markerGroup} onClick={this.handleValidationMarkerClick}>
-            <ValidationStatus markers={validationMarkers} />
-          </div>
-        )}
-        {customMarkers.length > 0 && (
-          <div className={styles.markerGroup} onClick={this.handleCancelEvent}>
-            {renderCustomMarkers && renderCustomMarkers(customMarkers)}
+  return (
+    <Stack>
+      {validationMarkersForBlock.length > 0 &&
+        validationMarkersForBlock.map(({item}, index) => (
+          // eslint-disable-next-line react/no-array-index-key
+          <Flex key={`validationItem-${index}`}>
+            <Box marginRight={2}>
+              <Text size={1} accent>
+                <InfoOutlineIcon />
+              </Text>
+            </Box>
+            <Box>
+              <Text size={1}>{item?.message || 'Error'}</Text>
+            </Box>
+          </Flex>
+        ))}
+      {customMarkersForBlock.length > 0 && (
+        <Stack>
+          <Box marginTop={validationMarkersForBlock.length > 0 ? 3 : 0}>
+            {renderCustomMarkers && renderCustomMarkers(customMarkersForBlock)}
             {!renderCustomMarkers && <CustomMarkers markers={markers} />}
-          </div>
-        )}
-      </div>
-    )
-  }
+          </Box>
+        </Stack>
+      )}
+    </Stack>
+  )
 }

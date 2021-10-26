@@ -1,7 +1,11 @@
 import React, {useMemo} from 'react'
-import {Box, rem, ResponsivePaddingProps, Theme} from '@sanity/ui'
+import {Box, rem, ResponsivePaddingProps, Stack, Theme, Tooltip} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {hues} from '@sanity/color'
+import {isKeySegment, Marker} from '@sanity/types'
+import {PortableTextBlock} from '@sanity/portable-text-editor'
+import {RenderBlockActions, RenderCustomMarkers} from '../../types'
+import Markers from '../../legacyParts/Markers'
 import {
   BlockQuote,
   Heading1,
@@ -16,11 +20,10 @@ import {
 export interface TextBlockProps {
   blockRef?: React.RefObject<HTMLDivElement>
   children: React.ReactNode
-  hasError?: boolean
-  hasMarker?: boolean
-  level?: number
-  listItem?: 'bullet' | 'number'
-  style?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal' | 'blockquote'
+  markers: Marker[]
+  renderBlockActions?: RenderBlockActions
+  renderCustomMarkers?: RenderCustomMarkers
+  value: PortableTextBlock
 }
 interface TextBlockStyleProps {
   $level?: number
@@ -170,21 +173,40 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
 const Root = styled(Box)<TextBlockStyleProps>(textBlockStyle)
 
 export function TextBlock(props: TextBlockProps): React.ReactElement {
-  const {children, level, listItem, style, blockRef, hasError, hasMarker} = props
+  const {blockRef, children, markers, renderCustomMarkers, value} = props
+
+  // These are marker that is only for the block level (things further up, like annotations and inline objects are dealt with in their respective components)
+  const blockMarkers = useMemo(
+    () =>
+      markers.filter(
+        (marker) =>
+          marker.path.length === 1 &&
+          isKeySegment(marker.path[0]) &&
+          marker.path[0]._key === value._key
+      ),
+    [value._key, markers]
+  )
+
+  const errorMarkers = useMemo(
+    () => blockMarkers.filter((marker) => marker.type === 'validation' && marker.level === 'error'),
+    [blockMarkers]
+  )
+  const hasMarkers = blockMarkers.length > 0
+  const hasErrors = errorMarkers.length > 0
 
   const {$size, $style} = useMemo((): {$size: number; $style: 'text' | 'heading'} => {
-    if (HEADER_SIZES_KEYS.includes(style)) {
-      return {$style: 'heading', $size: HEADER_SIZES[style]}
+    if (HEADER_SIZES_KEYS.includes(value.style)) {
+      return {$style: 'heading', $size: HEADER_SIZES[value.style]}
     }
 
     return {$size: 2, $style: 'text'}
-  }, [style])
+  }, [value])
 
   const text = useMemo(() => {
-    const hasTextStyle = TEXT_STYLES_KEYS.includes(style)
+    const hasTextStyle = TEXT_STYLES_KEYS.includes(value.style)
 
     if (hasTextStyle) {
-      const TextComponent = TEXT_STYLES[style]
+      const TextComponent = TEXT_STYLES[value.style]
 
       return (
         <div data-ui="TextBlock__text">
@@ -194,14 +216,14 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
     }
 
     return <div data-ui="TextBlock__text">{children}</div>
-  }, [style, children])
+  }, [value.style, children])
 
   const paddingProps: ResponsivePaddingProps = useMemo(() => {
-    if (listItem) {
+    if (value.listItem) {
       return {paddingY: 2}
     }
 
-    switch (style) {
+    switch (value.style) {
       case 'h1': {
         return {paddingTop: 5, paddingBottom: 4}
       }
@@ -230,24 +252,40 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
         return {paddingY: 2}
       }
     }
-  }, [listItem, style])
+  }, [value])
+
+  const markersToolTip =
+    hasErrors || (hasMarkers && renderCustomMarkers) ? (
+      <Tooltip
+        placement="top"
+        boundaryElement={blockRef.current}
+        portal
+        content={
+          <Stack space={3} padding={2} style={{maxWidth: 250}}>
+            <Markers markers={markers} renderCustomMarkers={renderCustomMarkers} />
+          </Stack>
+        }
+      >
+        {text}
+      </Tooltip>
+    ) : undefined
 
   return (
     <Root
-      $level={level}
-      $listItem={listItem}
+      $level={value.level}
+      $listItem={value.listItem}
       $size={$size}
       $style={$style}
-      data-level={level}
-      data-list-item={listItem}
+      data-invalid={hasErrors || undefined}
+      data-level={value.level}
+      data-list-item={value.listItem}
+      data-markers={hasMarkers || undefined}
       data-style={$style}
       data-ui="TextBlock"
-      data-invalid={hasError ? '' : undefined}
-      data-markers={hasMarker ? '' : undefined}
       ref={blockRef}
       {...paddingProps}
     >
-      <div>{text}</div>
+      <div>{markersToolTip || text}</div>
     </Root>
   )
 }

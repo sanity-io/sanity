@@ -27,7 +27,6 @@ import {EditObject} from './Objects/EditObject'
 import {Annotation} from './Text/Annotation'
 import {RenderBlockActions, RenderCustomMarkers, ObjectEditData} from './types'
 import Editor from './Editor'
-import {BlockExtrasWithChangeIndicator} from './BlockExtrasOverlay'
 import {TextBlock} from './Text/TextBlock'
 import {ExpandedLayer, Root} from './Input.styles'
 
@@ -239,34 +238,17 @@ export default function PortableTextInput(props: Props) {
       let renderedBlock
       const isTextBlock = block._type === textBlockTypeName
       const blockRef: React.RefObject<HTMLDivElement> = React.createRef()
-
-      const hasError =
-        markers.filter(
-          (marker) =>
-            isKeySegment(marker.path[0]) &&
-            marker.path[0]._key === block._key &&
-            marker.type === 'validation' &&
-            marker.level === 'error'
-        ).length > 0
-
-      const hasMarker =
-        markers.filter(
-          (marker) =>
-            isKeySegment(marker.path[0]) &&
-            marker.path[0]._key === block._key &&
-            marker.type !== 'validation' &&
-            marker.level !== 'error'
-        ).length > 0
-
+      const blockMarkers = markers.filter(
+        (marker) => isKeySegment(marker.path[0]) && marker.path[0]._key === block._key
+      )
       if (isTextBlock) {
         renderedBlock = (
           <TextBlock
             blockRef={blockRef}
-            hasError={hasError}
-            hasMarker={hasMarker}
-            level={block.level}
-            listItem={block.listItem}
-            style={block.style}
+            markers={blockMarkers}
+            renderBlockActions={renderBlockActions}
+            renderCustomMarkers={renderCustomMarkers}
+            value={block}
           >
             {defaultRender(block)}
           </TextBlock>
@@ -278,85 +260,62 @@ export default function PortableTextInput(props: Props) {
             blockRef={blockRef}
             editor={editor}
             focusPath={focusPath || EMPTY_ARRAY}
-            hasError={hasError}
-            hasMarker={hasMarker}
+            markers={blockMarkers}
             onFocus={onFocus}
             readOnly={readOnly}
+            renderBlockActions={renderBlockActions}
+            renderCustomMarkers={renderCustomMarkers}
             type={blockType}
             value={block}
           />
         )
       }
-      return (
-        <div>
-          {renderedBlock}
-          <BlockExtrasWithChangeIndicator
-            attributes={attributes}
-            block={block}
-            blockRef={blockRef}
-            isFullscreen={isFullscreen}
-            markers={markers}
-            onChange={onChange}
-            onFocus={onFocus}
-            renderBlockActions={readOnly ? undefined : renderBlockActions}
-            renderCustomMarkers={renderCustomMarkers}
-            value={value}
-          />
-        </div>
-      )
+      return renderedBlock
     },
     [
       editor,
       focusPath,
-      isFullscreen,
       markers,
-      onChange,
       onFocus,
       readOnly,
       renderBlockActions,
       renderCustomMarkers,
       textBlockTypeName,
-      value,
     ]
   )
 
   const renderChild = useCallback(
-    (child, childType, attributes, defaultRender) => {
+    (child, childType, attributes, defaultRender, childRef) => {
       const isSpan = child._type === spanTypeName
       if (isSpan) {
         return defaultRender(child)
       }
-      const hasError =
-        markers.filter(
-          (marker) =>
-            isKeySegment(marker.path[2]) &&
-            marker.path[2]._key === child._key &&
-            marker.type === 'validation' &&
-            marker.level === 'error'
-        ).length > 0
+      const childMarkers = markers.filter(
+        (marker) => isKeySegment(marker.path[2]) && marker.path[2]._key === child._key
+      )
       return (
         <InlineObject
           attributes={attributes}
-          hasError={hasError}
+          markers={childMarkers}
           onFocus={onFocus}
           readOnly={readOnly}
+          renderCustomMarkers={renderCustomMarkers}
           type={childType}
           value={child}
         />
       )
     },
-    [markers, onFocus, spanTypeName, readOnly]
+    [spanTypeName, markers, onFocus, readOnly, renderCustomMarkers]
   )
 
   const renderAnnotation = useCallback(
     (annotation, annotationType, attributes, defaultRender) => {
+      const annotationMarkers = markers.filter(
+        (marker) => isKeySegment(marker.path[2]) && marker.path[2]._key === annotation._key
+      )
       const hasError =
-        markers.filter(
-          (marker) =>
-            isKeySegment(marker.path[2]) &&
-            marker.path[2]._key === annotation._key &&
-            marker.type === 'validation' &&
-            marker.level === 'error'
+        annotationMarkers.filter(
+          (marker) => marker.type === 'validation' && marker.level === 'error'
         ).length > 0
       const segment = objectEditData?.formBuilderPath.slice(-1)[0]
       const isEditing = isKeySegment(segment) && segment._key === annotation._key
@@ -365,6 +324,8 @@ export default function PortableTextInput(props: Props) {
           attributes={attributes}
           hasError={hasError}
           onFocus={onFocus}
+          markers={annotationMarkers}
+          renderCustomMarkers={renderCustomMarkers}
           value={annotation}
           isEditing={isEditing}
         >
@@ -372,7 +333,7 @@ export default function PortableTextInput(props: Props) {
         </Annotation>
       )
     },
-    [objectEditData, markers, onFocus]
+    [markers, objectEditData?.formBuilderPath, onFocus, renderCustomMarkers]
   )
 
   const handleEditObjectClose = useCallback(() => {
