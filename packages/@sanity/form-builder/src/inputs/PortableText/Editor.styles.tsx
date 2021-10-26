@@ -17,7 +17,8 @@ export const ToolbarCard = styled(Card)`
   z-index: 10;
   line-height: 0;
 `
-export const Scroller: any = styled(ScrollContainer)`
+
+export const Scroller = styled(ScrollContainer)`
   position: relative;
   overflow: auto;
   height: 100%;
