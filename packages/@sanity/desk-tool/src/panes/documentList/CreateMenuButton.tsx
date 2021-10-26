@@ -39,9 +39,10 @@ export function CreateMenuButton(props: {
               icon={createItem.icon}
               intent={createItem.intent!}
               key={createItemIndex}
-              text={
+              text={createItem.title}
+              title={
                 permissions[createItemIndex]?.granted
-                  ? createItem.title
+                  ? undefined
                   : permissions[createItemIndex]?.reason
               }
             />
