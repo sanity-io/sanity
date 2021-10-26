@@ -235,57 +235,62 @@ export default function PortableTextInput(props: Props) {
       attributes: RenderAttributes,
       defaultRender: (b: PortableTextBlock) => JSX.Element
     ) => {
-      let renderedBlock
       const isTextBlock = block._type === textBlockTypeName
       const blockRef: React.RefObject<HTMLDivElement> = React.createRef()
       const blockMarkers = markers.filter(
         (marker) => isKeySegment(marker.path[0]) && marker.path[0]._key === block._key
       )
       if (isTextBlock) {
-        renderedBlock = (
+        return (
           <TextBlock
+            attributes={attributes}
+            block={block}
             blockRef={blockRef}
             markers={blockMarkers}
+            onChange={onChange}
+            readOnly={readOnly}
             renderBlockActions={renderBlockActions}
             renderCustomMarkers={renderCustomMarkers}
-            value={block}
+            value={value}
           >
             {defaultRender(block)}
           </TextBlock>
         )
-      } else {
-        renderedBlock = (
-          <BlockObject
-            attributes={attributes}
-            blockRef={blockRef}
-            editor={editor}
-            focusPath={focusPath || EMPTY_ARRAY}
-            markers={blockMarkers}
-            onFocus={onFocus}
-            readOnly={readOnly}
-            renderBlockActions={renderBlockActions}
-            renderCustomMarkers={renderCustomMarkers}
-            type={blockType}
-            value={block}
-          />
-        )
       }
-      return renderedBlock
+      return (
+        <BlockObject
+          attributes={attributes}
+          block={block}
+          blockRef={blockRef}
+          editor={editor}
+          focusPath={focusPath || EMPTY_ARRAY}
+          markers={blockMarkers}
+          onChange={onChange}
+          onFocus={onFocus}
+          readOnly={readOnly}
+          renderBlockActions={renderBlockActions}
+          renderCustomMarkers={renderCustomMarkers}
+          type={blockType}
+          value={value}
+        />
+      )
     },
     [
       editor,
       focusPath,
       markers,
+      onChange,
       onFocus,
       readOnly,
       renderBlockActions,
       renderCustomMarkers,
       textBlockTypeName,
+      value,
     ]
   )
 
   const renderChild = useCallback(
-    (child, childType, attributes, defaultRender, childRef) => {
+    (child, childType, attributes, defaultRender) => {
       const isSpan = child._type === spanTypeName
       if (isSpan) {
         return defaultRender(child)
