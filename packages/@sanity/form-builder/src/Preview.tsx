@@ -7,6 +7,7 @@ type PreviewProps = {
   layout?: string
   value?: any
   type: any
+  fallbackTitle?: React.ReactNode
 }
 export default class Preview extends React.PureComponent<PreviewProps> {
   static contextTypes = {
