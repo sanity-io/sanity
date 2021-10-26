@@ -1,4 +1,4 @@
-import {SchemaType} from '@sanity/types'
+import {PreviewValue, SchemaType} from '@sanity/types'
 import React from 'react'
 import {withPropsStream} from 'react-props-stream'
 import shallowEquals from 'shallow-equals'
@@ -14,7 +14,6 @@ import {
 import {concat, of, Observable} from 'rxjs'
 import {observeForPreview} from '../'
 import {FieldName, SortOrdering} from '../types'
-import {PreparedValue} from '../prepareForPreview'
 
 function isNonNullable<T>(value: T): value is NonNullable<T> {
   return value !== null && value !== undefined
@@ -79,7 +78,7 @@ const connect = (props$: Observable<OuterProps>): Observable<ReceivedProps> => {
 }
 
 type ReceivedProps = {
-  snapshot: PreparedValue | null
+  snapshot: PreviewValue | null
   type: SchemaType
   isLoading: boolean
   error?: Error

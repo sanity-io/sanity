@@ -80,7 +80,7 @@ function observePaths(value: Value, paths: Path[], observeFields: ObserveFieldsF
       if (tails.length === 0) {
         res[head] = value[head]
       } else {
-        res[head] = observePaths(value[head], tails, observeFields)
+        res[head] = observePaths(value[head] as Record<string, unknown>, tails, observeFields)
       }
       return res
     },
