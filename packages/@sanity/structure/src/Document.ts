@@ -1,4 +1,6 @@
 import {uniq, camelCase} from 'lodash'
+import {getTemplateById} from '@sanity/initial-value-templates'
+import {ChildResolver} from './ChildResolver'
 import {SerializeOptions, Serializable, Child, DocumentNode, EditorNode} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {SchemaType} from './parts/Schema'
@@ -9,7 +11,15 @@ import {
   getUserDefinedDefaultDocumentBuilder,
   DocumentFragmentResolveOptions,
 } from './userDefinedStructure'
-import {getTemplateById} from '@sanity/initial-value-templates'
+
+const resolveDocumentChild: ChildResolver = (itemId, {params}) => {
+  const {parentRefPath, type} = params
+
+  // TODO: consider this case
+  if (!parentRefPath || !type) return undefined
+
+  return new DocumentBuilder().id(itemId).schemaType(type)
+}
 
 interface DocumentOptions {
   id: string
@@ -172,7 +182,7 @@ export class DocumentBuilder implements Serializable {
 
     return {
       ...this.spec,
-      child: this.spec.child,
+      child: this.spec.child || resolveDocumentChild,
       id: validateId(id, path, index),
       type: 'document',
       options: getDocumentOptions(options),

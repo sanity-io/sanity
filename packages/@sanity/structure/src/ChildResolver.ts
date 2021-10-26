@@ -1,11 +1,13 @@
-import {CollectionBuilder, Collection, SerializePath, SerializeOptions} from './StructureNodes'
+import {CollectionBuilder, Collection, SerializeOptions} from './StructureNodes'
 import {FixMe} from './types'
 
+// TODO: unify with the RouterSplitPaneContext
 export interface ChildResolverOptions {
+  parent: unknown
   index: number
-  parent: Collection
-  parentPath?: SerializePath
-  parameters?: {[key: string]: any}
+  splitIndex: number
+  path: string[]
+  params: Record<string, string | undefined>
   serializeOptions?: SerializeOptions
 }
 
