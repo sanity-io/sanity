@@ -2,10 +2,26 @@ import React from 'react'
 import styled from 'styled-components'
 import {Flex, Text} from '@sanity/ui'
 import {WarningOutlineIcon, AccessDeniedIcon} from '@sanity/icons'
-import {PreparedValue} from './prepareForPreview'
+import {PreviewValue} from '@sanity/types'
+import {AvailabilityReason} from './types'
 
 export const INCLUDE_FIELDS_QUERY = ['_id', '_rev', '_type']
 export const INCLUDE_FIELDS = [...INCLUDE_FIELDS_QUERY, '_key']
+
+export const AVAILABILITY_READABLE = {
+  available: true,
+  reason: AvailabilityReason.READABLE,
+} as const
+
+export const AVAILABILITY_PERMISSION_DENIED = {
+  available: false,
+  reason: AvailabilityReason.PERMISSION_DENIED,
+} as const
+
+export const AVAILABILITY_NOT_FOUND = {
+  available: false,
+  reason: AvailabilityReason.NOT_FOUND,
+} as const
 
 // NOTE: have to use color inherit to make it work correctly with the
 // `isSelected` state in the list pane
@@ -23,7 +39,7 @@ function IconWrapper({children}: {children: React.ReactNode}) {
 
 export class InsufficientPermissionsError extends Error {}
 
-export const INVALID_PREVIEW_FALLBACK: PreparedValue = {
+export const INVALID_PREVIEW_FALLBACK: PreviewValue = {
   // The `<small>` element is used for more compatibility
   // with the different downstream preview components.
   title: <small>Invalid preview config</small>,
@@ -33,17 +49,15 @@ export const INVALID_PREVIEW_FALLBACK: PreparedValue = {
       <WarningOutlineIcon />
     </IconWrapper>
   ),
-  _internalMeta: {type: 'invalid_preview'},
 }
 
-export const INSUFFICIENT_PERMISSIONS_FALLBACK: PreparedValue = {
+export const INSUFFICIENT_PERMISSIONS_FALLBACK: PreviewValue = {
   // The `<small>` element is used for more compatibility
   // with the different downstream preview components.
-  title: <small>Insufficient permissions to access this reference</small>,
+  title: 'Insufficient permissions to access this reference',
   media: (
     <IconWrapper>
       <AccessDeniedIcon />
     </IconWrapper>
   ),
-  _internalMeta: {type: 'insufficient_permissions'},
 }
