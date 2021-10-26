@@ -2,19 +2,22 @@
 import React, {FunctionComponent, useCallback, useMemo} from 'react'
 import {isEqual} from 'lodash'
 import {PortableTextChild, Type, RenderAttributes} from '@sanity/portable-text-editor'
-import {Path} from '@sanity/types'
+import {Marker, Path} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import styled, {css} from 'styled-components'
-import {Card, Theme} from '@sanity/ui'
+import {Card, Stack, Theme, Tooltip} from '@sanity/ui'
 import Preview from '../../../Preview'
+import Markers from '../legacyParts/Markers'
+import {RenderCustomMarkers} from '../types'
 
 type Props = {
-  value: PortableTextChild
-  type: Type
   attributes: RenderAttributes
-  readOnly: boolean
-  hasError: boolean
+  markers: Marker[]
   onFocus: (path: Path) => void
+  readOnly: boolean
+  renderCustomMarkers: RenderCustomMarkers
+  type: Type
+  value: PortableTextChild
 }
 
 interface RootCardProps {
@@ -63,9 +66,10 @@ const Root = styled(Card)<RootCardProps>(rootStyle)
 
 export const InlineObject: FunctionComponent<Props> = ({
   attributes: {focused, selected, path},
-  hasError,
+  markers,
   onFocus,
   readOnly,
+  renderCustomMarkers,
   type,
   value,
 }) => {
@@ -76,6 +80,12 @@ export const InlineObject: FunctionComponent<Props> = ({
   }, [focused, onFocus, path])
 
   const isEmpty = useMemo(() => !value || isEqual(Object.keys(value), ['_key', '_type']), [value])
+  const hasError = useMemo(
+    () =>
+      markers.filter((marker) => marker.type === 'validation' && marker.level === 'error').length >
+      0,
+    [markers]
+  )
 
   const tone = useMemo(() => {
     if (hasError) {
@@ -89,20 +99,47 @@ export const InlineObject: FunctionComponent<Props> = ({
     return undefined
   }, [focused, hasError, selected])
 
+  const preview = useMemo(
+    () => (
+      <span>
+        <Preview type={type} value={value} layout="inline" />
+        {isEmpty && !readOnly && 'Click to edit'}
+      </span>
+    ),
+    [isEmpty, readOnly, type, value]
+  )
+
+  const markersToolTip = useMemo(
+    () =>
+      markers.length > 0 ? (
+        <Tooltip
+          placement="top"
+          portal
+          content={
+            <Stack space={3} padding={2} style={{maxWidth: 250}}>
+              <Markers markers={markers} renderCustomMarkers={renderCustomMarkers} />
+            </Stack>
+          }
+        >
+          {preview}
+        </Tooltip>
+      ) : undefined,
+    [markers, preview, renderCustomMarkers]
+  )
+
   return useMemo(
     () => (
       <Root
-        data-focused={focused ? '' : undefined}
-        data-invalid={hasError ? '' : undefined}
-        data-selected={selected ? '' : undefined}
+        data-focused={focused || undefined}
+        data-invalid={hasError || undefined}
+        data-selected={selected || undefined}
         tone={tone}
         onClick={handleOpen}
         $readOnly={readOnly}
       >
-        <Preview type={type} value={value} layout="inline" />
-        {isEmpty && !readOnly && <span>Click to edit</span>}
+        {markersToolTip || preview}
       </Root>
     ),
-    [focused, handleOpen, hasError, isEmpty, readOnly, selected, tone, type, value]
+    [focused, handleOpen, hasError, markersToolTip, preview, readOnly, selected, tone]
   )
 }
