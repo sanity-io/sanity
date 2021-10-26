@@ -2,9 +2,9 @@ const VALID_ASSET_TYPES = ['image', 'file']
 const VALID_INSERT_LOCATIONS = ['before', 'after', 'replace']
 
 exports.dataset = (name) => {
-  if (!/^(~[a-z0-9]{1}[-\w]{0,25}|[a-z0-9]{1}[-\w]{0,19})$/.test(name)) {
+  if (!/^(~[a-z0-9]{1}[-\w]{0,63}|[a-z0-9]{1}[-\w]{0,63})$/.test(name)) {
     throw new Error(
-      'Datasets can only contain lowercase characters, numbers, underscores and dashes, and start with tilde, and be maximum 20 characters'
+      'Datasets can only contain lowercase characters, numbers, underscores and dashes, and start with tilde, and be maximum 64 characters'
     )
   }
 }
