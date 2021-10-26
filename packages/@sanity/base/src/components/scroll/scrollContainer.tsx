@@ -2,7 +2,7 @@ import React from 'react'
 import createPubSub from 'nano-pubsub'
 import {ScrollContext} from './scrollContext'
 
-interface ScrollContainerProps<T extends React.ElementType>
+export interface ScrollContainerProps<T extends React.ElementType>
   extends Omit<React.HTMLProps<T>, 'as' | 'onScroll'> {
   as?: React.ElementType | keyof JSX.IntrinsicElements
   onScroll?: (event: Event) => () => void
