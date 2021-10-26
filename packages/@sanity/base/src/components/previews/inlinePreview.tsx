@@ -1,7 +1,7 @@
-import React from 'react'
+import React, {useMemo} from 'react'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {MediaDimensions, PreviewProps} from './types'
-import {RootDiv, MediaDiv, TextSpan} from './inlinePreview.styled'
+import {RootSpan, MediaDiv, TextSpan} from './inlinePreview.styled'
 
 const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   width: 32,
@@ -14,22 +14,28 @@ const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
 export const InlinePreview: React.FunctionComponent<PreviewProps<'inline'>> = (props) => {
   const {title, media, mediaDimensions = DEFAULT_MEDIA_DIMENSIONS} = props
 
+  const _media = useMemo(() => {
+    if (typeof media === 'function') {
+      return media({
+        dimensions: mediaDimensions,
+        layout: 'inline',
+      })
+    }
+
+    return media
+  }, [media, mediaDimensions])
+
   return (
-    <RootDiv>
-      <MediaDiv>
-        {typeof media === 'function' &&
-          media({
-            dimensions: mediaDimensions,
-            layout: 'inline',
-          })}
-        {typeof media !== 'function' && media}
-        {React.isValidElement(media) && media}
-      </MediaDiv>
-      <TextSpan forwardedAs="span">
-        <div>
-          <span>{title}</span>
-        </div>
+    <RootSpan data-testid="inline-preview">
+      {_media && (
+        <MediaDiv data-testid="inline-preview-media">
+          {_media}
+          <span />
+        </MediaDiv>
+      )}
+      <TextSpan data-testid="inline-preview-title">
+        <span>{title || 'Untitled'}</span>
       </TextSpan>
-    </RootDiv>
+    </RootSpan>
   )
 }
