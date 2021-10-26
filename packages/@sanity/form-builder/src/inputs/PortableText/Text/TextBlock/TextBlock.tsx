@@ -1,11 +1,13 @@
 import React, {useMemo} from 'react'
-import {Box, rem, ResponsivePaddingProps, Stack, Theme, Tooltip} from '@sanity/ui'
+import {Box, Flex, rem, ResponsivePaddingProps, Stack, Theme, Tooltip} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {hues} from '@sanity/color'
 import {isKeySegment, Marker} from '@sanity/types'
-import {PortableTextBlock} from '@sanity/portable-text-editor'
+import {PortableTextBlock, RenderAttributes} from '@sanity/portable-text-editor'
 import {RenderBlockActions, RenderCustomMarkers} from '../../types'
 import Markers from '../../legacyParts/Markers'
+import PatchEvent from '../../../../PatchEvent'
+import {BlockActions} from '../../BlockActions'
 import {
   BlockQuote,
   Heading1,
@@ -18,12 +20,16 @@ import {
 } from './textStyles'
 
 export interface TextBlockProps {
+  attributes: RenderAttributes
+  block: PortableTextBlock
   blockRef?: React.RefObject<HTMLDivElement>
   children: React.ReactNode
   markers: Marker[]
+  onChange: (event: PatchEvent) => void
+  readOnly: boolean
   renderBlockActions?: RenderBlockActions
   renderCustomMarkers?: RenderCustomMarkers
-  value: PortableTextBlock
+  value: PortableTextBlock[] | undefined
 }
 interface TextBlockStyleProps {
   $level?: number
@@ -59,6 +65,11 @@ const BULLET_MARKERS = ['●', '○', '■']
 const NUMBER_FORMATS = ['number', 'lower-alpha', 'lower-roman']
 
 const LEVELS = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+const preventDefault = (event) => {
+  event.preventDefault()
+  event.stopPropagation()
+}
 
 /**
  * This CSS needs to be added to the parent component in order to keep track of the list count
@@ -170,10 +181,22 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
   `
 }
 
-const Root = styled(Box)<TextBlockStyleProps>(textBlockStyle)
+const Root = styled(Flex)<TextBlockStyleProps>(textBlockStyle)
 
 export function TextBlock(props: TextBlockProps): React.ReactElement {
-  const {blockRef, children, markers, renderCustomMarkers, value} = props
+  const {
+    attributes,
+    block,
+    blockRef,
+    children,
+    markers,
+    onChange,
+    readOnly,
+    renderBlockActions,
+    renderCustomMarkers,
+    value,
+  } = props
+  const {focused} = attributes
 
   // These are marker that is only for the block level (things further up, like annotations and inline objects are dealt with in their respective components)
   const blockMarkers = useMemo(
@@ -182,9 +205,9 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
         (marker) =>
           marker.path.length === 1 &&
           isKeySegment(marker.path[0]) &&
-          marker.path[0]._key === value._key
+          marker.path[0]._key === block._key
       ),
-    [value._key, markers]
+    [block._key, markers]
   )
 
   const errorMarkers = useMemo(
@@ -195,18 +218,18 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
   const hasErrors = errorMarkers.length > 0
 
   const {$size, $style} = useMemo((): {$size: number; $style: 'text' | 'heading'} => {
-    if (HEADER_SIZES_KEYS.includes(value.style)) {
-      return {$style: 'heading', $size: HEADER_SIZES[value.style]}
+    if (HEADER_SIZES_KEYS.includes(block.style)) {
+      return {$style: 'heading', $size: HEADER_SIZES[block.style]}
     }
 
     return {$size: 2, $style: 'text'}
-  }, [value])
+  }, [block])
 
   const text = useMemo(() => {
-    const hasTextStyle = TEXT_STYLES_KEYS.includes(value.style)
+    const hasTextStyle = TEXT_STYLES_KEYS.includes(block.style)
 
     if (hasTextStyle) {
-      const TextComponent = TEXT_STYLES[value.style]
+      const TextComponent = TEXT_STYLES[block.style]
 
       return (
         <div data-ui="TextBlock__text">
@@ -216,14 +239,14 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
     }
 
     return <div data-ui="TextBlock__text">{children}</div>
-  }, [value.style, children])
+  }, [block.style, children])
 
   const paddingProps: ResponsivePaddingProps = useMemo(() => {
-    if (value.listItem) {
+    if (block.listItem) {
       return {paddingY: 2}
     }
 
-    switch (value.style) {
+    switch (block.style) {
       case 'h1': {
         return {paddingTop: 5, paddingBottom: 4}
       }
@@ -252,40 +275,53 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
         return {paddingY: 2}
       }
     }
-  }, [value])
+  }, [block])
 
-  const markersToolTip =
-    hasErrors || (hasMarkers && renderCustomMarkers) ? (
-      <Tooltip
-        placement="top"
-        boundaryElement={blockRef?.current}
-        portal
-        content={
-          <Stack space={3} padding={2} style={{maxWidth: 250}}>
-            <Markers markers={markers} renderCustomMarkers={renderCustomMarkers} />
-          </Stack>
-        }
-      >
-        {text}
-      </Tooltip>
-    ) : undefined
+  const markersToolTip = useMemo(
+    () =>
+      hasErrors || (hasMarkers && renderCustomMarkers) ? (
+        <Tooltip
+          placement="top"
+          boundaryElement={blockRef?.current}
+          portal
+          content={
+            <Stack space={3} padding={2} style={{maxWidth: 250}}>
+              <Markers markers={markers} renderCustomMarkers={renderCustomMarkers} />
+            </Stack>
+          }
+        >
+          {text}
+        </Tooltip>
+      ) : undefined,
+    [blockRef, hasErrors, hasMarkers, markers, renderCustomMarkers, text]
+  )
 
   return (
     <Root
-      $level={value.level}
-      $listItem={value.listItem}
+      $level={block.level}
+      $listItem={block.listItem}
       $size={$size}
       $style={$style}
       data-invalid={hasErrors || undefined}
-      data-level={value.level}
-      data-list-item={value.listItem}
+      data-level={block.level}
+      data-list-item={block.listItem}
       data-markers={hasMarkers || undefined}
       data-style={$style}
       data-ui="TextBlock"
       ref={blockRef}
       {...paddingProps}
     >
-      <div>{markersToolTip || text}</div>
+      <div style={{flex: 1}}>{markersToolTip || text}</div>
+      {value && focused && !readOnly && renderBlockActions && (
+        <div style={{width: 25, height: 11}}>
+          <BlockActions
+            onChange={onChange}
+            block={block}
+            value={value}
+            renderBlockActions={renderBlockActions}
+          />
+        </div>
+      )}
     </Root>
   )
 }

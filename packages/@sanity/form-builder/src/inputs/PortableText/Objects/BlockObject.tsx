@@ -14,20 +14,24 @@ import {useScrollIntoViewOnFocusWithin} from '../../../hooks/useScrollIntoViewOn
 import {hasFocusWithinPath} from '../../../utils/focusUtils'
 import {RenderBlockActions, RenderCustomMarkers} from '../types'
 import Markers from '../legacyParts/Markers'
+import PatchEvent from '../../../PatchEvent'
+import {BlockActions} from '../BlockActions'
 import {BlockObjectPreview} from './BlockObjectPreview'
 
 interface BlockObjectProps {
   attributes: RenderAttributes
+  block: PortableTextBlock
   blockRef?: React.RefObject<HTMLDivElement>
   editor: PortableTextEditor
   markers: Marker[]
+  onChange: (event: PatchEvent) => void
   onFocus: (path: Path) => void
   focusPath: Path
   readOnly: boolean
   renderBlockActions?: RenderBlockActions
   renderCustomMarkers?: RenderCustomMarkers
   type: Type
-  value: PortableTextBlock
+  value: PortableTextBlock[] | undefined
 }
 
 const Root = styled(Card)((props: {theme: Theme}) => {
@@ -88,10 +92,12 @@ const Root = styled(Card)((props: {theme: Theme}) => {
 export function BlockObject(props: BlockObjectProps) {
   const {
     attributes: {focused, selected, path},
+    block,
     blockRef,
     editor,
     focusPath,
     markers,
+    onChange,
     onFocus,
     readOnly,
     renderBlockActions,
@@ -101,7 +107,7 @@ export function BlockObject(props: BlockObjectProps) {
   } = props
   const elementRef = useRef<HTMLDivElement>()
 
-  useScrollIntoViewOnFocusWithin(elementRef, hasFocusWithinPath(focusPath, value))
+  useScrollIntoViewOnFocusWithin(elementRef, hasFocusWithinPath(focusPath, block))
 
   const handleClickToOpen = useCallback(
     (event: React.MouseEvent<HTMLDivElement>): void => {
@@ -136,13 +142,13 @@ export function BlockObject(props: BlockObjectProps) {
     return (
       <BlockObjectPreview
         type={type}
-        value={value}
+        value={block}
         readOnly={readOnly}
         onClickingDelete={handleDelete}
         onClickingEdit={handleEdit}
       />
     )
-  }, [type, value, readOnly, handleDelete, handleEdit])
+  }, [type, block, readOnly, handleDelete, handleEdit])
 
   const tone = useMemo(() => {
     if (selected || focused) {
@@ -164,9 +170,9 @@ export function BlockObject(props: BlockObjectProps) {
   const blockMarkers = useMemo(
     () =>
       markers.filter(
-        (marker) => isKeySegment(marker.path[0]) && marker.path[0]._key === value._key
+        (marker) => isKeySegment(marker.path[0]) && marker.path[0]._key === block._key
       ),
-    [value._key, markers]
+    [block._key, markers]
   )
 
   const errorMarkers = useMemo(
@@ -175,20 +181,23 @@ export function BlockObject(props: BlockObjectProps) {
   )
   const hasMarkers = blockMarkers.length > 0
   const hasErrors = errorMarkers.length > 0
-  const markersToolTip =
-    hasErrors || (hasMarkers && renderCustomMarkers) ? (
-      <Tooltip
-        placement="top"
-        portal
-        content={
-          <Stack space={3} padding={2} style={{maxWidth: 250}}>
-            <Markers markers={markers} renderCustomMarkers={renderCustomMarkers} />
-          </Stack>
-        }
-      >
-        <div>{blockPreview}</div>
-      </Tooltip>
-    ) : undefined
+  const markersToolTip = useMemo(
+    () =>
+      hasErrors || (hasMarkers && renderCustomMarkers) ? (
+        <Tooltip
+          placement="top"
+          portal
+          content={
+            <Stack space={3} padding={2} style={{maxWidth: 250}}>
+              <Markers markers={markers} renderCustomMarkers={renderCustomMarkers} />
+            </Stack>
+          }
+        >
+          <div>{blockPreview}</div>
+        </Tooltip>
+      ) : undefined,
+    [blockPreview, hasErrors, hasMarkers, markers, renderCustomMarkers]
+  )
 
   return (
     <Root
@@ -204,6 +213,14 @@ export function BlockObject(props: BlockObjectProps) {
       tone={tone}
     >
       <div ref={blockRef}>{markersToolTip || blockPreview}</div>
+      {focused && !readOnly && renderBlockActions && (
+        <BlockActions
+          onChange={onChange}
+          block={block}
+          value={value}
+          renderBlockActions={renderBlockActions}
+        />
+      )}
     </Root>
   )
 }
