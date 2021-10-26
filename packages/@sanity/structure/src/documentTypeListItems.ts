@@ -10,6 +10,7 @@ import {DocumentTypeListBuilder, DocumentTypeListInput} from './DocumentTypeList
 import {defaultIntentChecker} from './Intent'
 import {getDefaultDocumentNode} from './Document'
 import {isList} from './List'
+import {Collection} from './StructureNodes'
 
 const ListIcon = getListIcon()
 const DetailsIcon = getDetailsIcon()
@@ -40,7 +41,8 @@ export function getDocumentTypeListItem(typeName: string, sanitySchema?: Schema)
     .id(typeName)
     .title(title)
     .schemaType(type)
-    .child((id, {parent}) => {
+    .child((id, context) => {
+      const parent = context.parent as Collection
       const parentItem = isList(parent)
         ? (parent.items.find((item) => item.id === id) as ListItem)
         : null
