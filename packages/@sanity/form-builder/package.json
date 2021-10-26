@@ -42,7 +42,7 @@
     "exif-component": "^1.0.1",
     "get-random-values": "^1.2.2",
     "lodash": "^4.17.15",
-    "nano-pubsub": "^2.0.0",
+    "nano-pubsub": "^2.0.1",
     "pretty-bytes": "^4.0.2",
     "pretty-ms": "^7.0.1",
     "react-fast-compare": "^3.2.0",

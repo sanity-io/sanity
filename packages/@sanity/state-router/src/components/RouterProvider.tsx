@@ -2,6 +2,7 @@ import {isEqual} from 'lodash'
 import React from 'react'
 import PropTypes from 'prop-types'
 import {unstable_batchedUpdates as batchedUpdates} from 'react-dom'
+import pubsub from 'nano-pubsub'
 import {Router} from '../types'
 import {RouterContext} from '../RouterContext'
 import {
@@ -17,29 +18,6 @@ type RouterProviderProps = {
   router: Router
   state: RouterState
   children: React.ReactNode
-}
-
-// TODO: delete this when this is merged:
-// https://github.com/bjoerge/nano-pubsub/pull/9
-function pubSub<T>() {
-  const listeners = new Map<unknown, (t: T) => void>()
-
-  return {
-    publish: (message: T) => {
-      for (const listener of listeners.values()) {
-        listener(message)
-      }
-    },
-
-    subscribe: (listener: (message: T) => void) => {
-      const symbol = Symbol('SubscriberSymbol')
-      listeners.set(symbol, listener)
-
-      return () => {
-        listeners.delete(symbol)
-      }
-    },
-  }
 }
 
 export default class RouterProvider extends React.Component<RouterProviderProps> {
@@ -61,7 +39,7 @@ export default class RouterProvider extends React.Component<RouterProviderProps>
       navigate: this.navigateState,
       navigateIntent: this.navigateIntent,
       getState: this.getState,
-      channel: pubSub<RouterState>(),
+      channel: pubsub<RouterState>(),
     }
   }
 
