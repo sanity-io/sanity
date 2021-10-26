@@ -12,7 +12,12 @@ const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
 }
 
 export const InlinePreview: React.FunctionComponent<PreviewProps<'inline'>> = (props) => {
-  const {title, media, mediaDimensions = DEFAULT_MEDIA_DIMENSIONS} = props
+  const {
+    title,
+    fallbackTitle = 'Untitled',
+    media,
+    mediaDimensions = DEFAULT_MEDIA_DIMENSIONS,
+  } = props
 
   const _media = useMemo(() => {
     if (typeof media === 'function') {
@@ -34,7 +39,7 @@ export const InlinePreview: React.FunctionComponent<PreviewProps<'inline'>> = (p
         </MediaDiv>
       )}
       <TextSpan data-testid="inline-preview-title">
-        <span>{title || 'Untitled'}</span>
+        <span>{title || fallbackTitle}</span>
       </TextSpan>
     </RootSpan>
   )
