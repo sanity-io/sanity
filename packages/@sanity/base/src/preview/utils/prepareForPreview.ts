@@ -1,33 +1,18 @@
-import {isTitledListValue, SchemaType, TitledListValue} from '@sanity/types'
+import {isTitledListValue, PreviewValue, SchemaType, TitledListValue} from '@sanity/types'
 import {debounce, flatten, get, isPlainObject, pick, uniqBy} from 'lodash'
-import {INVALID_PREVIEW_FALLBACK} from './constants'
-import {isPortableTextArray, extractTextFromBlocks} from './utils/portableText'
-import {PrepareViewOptions} from './types'
-import {keysOf} from './utils/keysOf'
+import {INVALID_PREVIEW_FALLBACK} from '../constants'
+import {isPortableTextArray, extractTextFromBlocks} from '../utils/portableText'
+import {PrepareViewOptions} from '../types'
+import {keysOf} from './keysOf'
 
-const PRESERVE_KEYS = ['_id', '_type', '_upload']
+const PRESERVE_KEYS = ['_id', '_type', '_upload', '_createdAt', '_updatedAt']
 const EMPTY = []
 
 type SelectedValue = Record<string, unknown>
 
-// TODO: unify types with `@sanity/form-builder`
-// see `PreviewSnapshot` in `usePreviewSnapshot`
-export type PreparedValue = {
-  title?: React.ReactNode
-  subtitle?: React.ReactNode
-  description?: React.ReactNode
-  media?: React.ReactNode
-  /**
-   * optional object used to attach meta data to the prepared result.
-   * currently used to add a flag for the invalid preview error fallback and
-   * insufficient permissions fallback
-   */
-  _internalMeta?: {type?: string}
-}
-
 export type PrepareInvocationResult = {
   selectedValue?: SelectedValue
-  returnValue: null | PreparedValue | SelectedValue
+  returnValue: null | PreviewValue | SelectedValue
   errors: Error[]
 }
 
@@ -221,7 +206,7 @@ export function invokePrepare(
   }
 }
 
-function withErrors(result, type, selectedValue): PreparedValue {
+function withErrors(result, type, selectedValue): PreviewValue {
   result.errors.forEach((error) => errorCollector.add(type, selectedValue, error))
   reportErrors()
 
@@ -259,7 +244,7 @@ export default function prepareForPreview(
   rawValue: unknown,
   type: SchemaType,
   viewOptions: PrepareViewOptions = {}
-): PreparedValue {
+): PreviewValue {
   const hasCustomPrepare = typeof type.preview?.prepare === 'function'
   const selection = type.preview?.select || {}
   const targetKeys = Object.keys(selection)

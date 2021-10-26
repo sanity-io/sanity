@@ -1,15 +1,21 @@
 import {of as observableOf, Observable} from 'rxjs'
 import {map, switchMap, catchError} from 'rxjs/operators'
-import {isReferenceSchemaType, ReferenceSchemaType, SchemaType} from '@sanity/types'
-import prepareForPreview, {invokePrepare, PreparedValue} from './prepareForPreview'
+import {isReferenceSchemaType, PreviewValue, ReferenceSchemaType, SchemaType} from '@sanity/types'
+import {isPlainObject} from 'lodash'
+import prepareForPreview, {invokePrepare} from './utils/prepareForPreview'
 import {Reference, PrepareViewOptions, Path} from './types'
 import {INSUFFICIENT_PERMISSIONS_FALLBACK, InsufficientPermissionsError} from './constants'
+import {getPreviewPaths} from './utils/getPreviewPaths'
 
 const INSUFFICIENT_PERMISSIONS = Symbol('INSUFFICIENT_PERMISSIONS')
 
 export interface PreparedSnapshot {
   type?: SchemaType
-  snapshot: null | PreparedValue
+  snapshot: null | PreviewValue
+}
+
+export function isRecord(value: unknown): value is Record<string, unknown> {
+  return isPlainObject(value)
 }
 
 // Takes a value and its type and prepares a snapshot for it that can be passed to a preview component
@@ -21,7 +27,7 @@ export function createPreviewObserver(
   ) => Observable<SchemaType | undefined>
 ) {
   return function observeForPreview(
-    value: any,
+    value: Reference,
     type: SchemaType,
     viewOptions?: PrepareViewOptions
   ): Observable<PreparedSnapshot> {
@@ -58,9 +64,8 @@ export function createPreviewObserver(
       )
     }
 
-    const selection = type.preview?.select
-    if (selection) {
-      const paths = Object.keys(selection).map((key) => (selection[key] as string).split('.'))
+    const paths = getPreviewPaths(type)
+    if (paths) {
       return observePaths(value, paths).pipe(
         map((snapshot) => ({
           type: type,
@@ -76,9 +81,7 @@ export function createPreviewObserver(
     return observableOf({
       type,
       snapshot:
-        value && typeof value === 'object'
-          ? invokePrepare(type, value, viewOptions).returnValue
-          : null,
+        value && isRecord(value) ? invokePrepare(type, value, viewOptions).returnValue : null,
     })
   }
 }

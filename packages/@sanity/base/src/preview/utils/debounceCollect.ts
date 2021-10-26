@@ -1,14 +1,21 @@
 import {Observable} from 'rxjs'
 
-// Takes a observable returning function and returns a debounced function that
-// collects arguments until wait time has passed without receiving new calls.
+// Takes a observable returning function and returns a debounced function that, when called
+// collects its passed arguments until wait time has passed without receiving new calls.
 // When wait period is over, calls the original function with the collected arguments
-
-export default function debounceCollect(fn, wait) {
+export function debounceCollect<Fn extends (...args: any[]) => Observable<any[]>>(
+  fn: Fn,
+  wait: number
+): Fn extends (collectedArgs: [...infer TArgs][]) => Observable<(infer TReturnValue)[]>
+  ? (...args: TArgs) => Observable<TReturnValue[]>
+  : Fn extends (collectedArgs: (infer TArgs)[]) => Observable<(infer TReturnValue)[]>
+  ? (arg: TArgs) => Observable<TReturnValue>
+  : never
+export function debounceCollect(fn, wait: number) {
   let timer
   let queue = {}
   let idx = 0
-  return function (...args) {
+  return function debounced(...args) {
     return new Observable((obs) => {
       clearTimeout(timer)
       timer = setTimeout(flush, wait)
