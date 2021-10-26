@@ -16,6 +16,21 @@ const someObject = {
   fields: [{type: 'string', name: 'title'}],
 }
 
+function extractTextFromBlocks(blocks) {
+  if (!blocks) {
+    return ''
+  }
+  return blocks
+    .filter((val) => val._type === 'block')
+    .map((block) => {
+      return block.children
+        .filter((child) => child._type === 'span')
+        .map((span) => span.text)
+        .join('')
+    })
+    .join('')
+}
+
 export const blockType = {
   type: 'block',
   name: 'myBlockType',
@@ -31,6 +46,12 @@ export const blockType = {
   ],
   annotations: [someObject],
   of: [someObject, imageType],
+  validation: (Rule) =>
+    Rule.custom((block) => {
+      const length = extractTextFromBlocks([block]).length
+      console.log('HEY', length)
+      return length < 10 ? 'Please write a longer paragraph.' : false
+    }).error(),
 }
 
 const ptType = {

@@ -1,5 +1,5 @@
 import {PortableTextBlock, Type as PTType} from '@sanity/portable-text-editor'
-import {Marker, Path, Schema} from '@sanity/types'
+import {Path, Schema} from '@sanity/types'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import FormBuilderContext from '../../../FormBuilderContext'
 import PortableTextInput from '../PortableTextInput'
@@ -17,6 +17,7 @@ interface TestInputProps {
   type: PTType
   value: PortableTextBlock[] | undefined
   withError?: boolean
+  withCustomMarkers?: boolean
 }
 
 export function TestInput(props: TestInputProps) {
@@ -28,6 +29,7 @@ export function TestInput(props: TestInputProps) {
     type,
     value: propsValue,
     withError = false,
+    withCustomMarkers = false,
   } = props
   const [value, setValue] = useState<any[]>(propsValue)
   const [focusPath, setFocusPath] = useState<Path>([])
@@ -47,43 +49,84 @@ export function TestInput(props: TestInputProps) {
   )
   const presence = useMemo(() => [], [])
   const hotkeys = useMemo(() => ({}), [])
-  const [markers, setMarkers] = useState<Marker[]>(propsMarkers || [])
+  const [markers, setMarkers] = useState<any[]>(propsMarkers || [])
+
   useEffect(() => {
-    if (withError && value) {
-      const newMarkers = []
+    if (value) {
+      const newMarkers = [...(propsMarkers || [])]
       value.forEach((blk) => {
         if (blk._type === blockType.name) {
           const inline = blk.children.find((child) => child._type !== 'span')
           const annotation = blk.markDefs[0]
           if (inline) {
-            newMarkers.push({
-              type: 'validation',
-              level: 'error',
-              path: [{_key: blk._key}, 'children', {_key: inline._key}],
-              item: {cloneWithMessage: () => 'There is an error'},
-            })
+            if (withError) {
+              newMarkers.push({
+                type: 'validation',
+                level: 'error',
+                path: [{_key: blk._key}, 'children', {_key: inline._key}],
+                item: {message: 'There is an error with this inline object'},
+              })
+            }
+            if (withCustomMarkers) {
+              newMarkers.push({
+                type: 'customMarkerTest',
+                path: [{_key: blk._key}, 'children', {_key: inline._key}],
+              })
+            }
           } else if (annotation) {
-            newMarkers.push({
-              type: 'validation',
-              level: 'error',
-              path: [{_key: blk._key}, 'markDefs', {_key: annotation._key}],
-              item: {cloneWithMessage: () => 'There is another error'},
-            })
+            if (withError) {
+              newMarkers.push({
+                type: 'validation',
+                level: 'error',
+                path: [{_key: blk._key}, 'markDefs', {_key: annotation._key}],
+                item: {message: 'There an error with this annotation'},
+              })
+            }
+            if (withCustomMarkers) {
+              newMarkers.push({
+                type: 'customMarkerTest',
+                path: [{_key: blk._key}, 'markDefs', {_key: annotation._key}],
+              })
+            }
+          } else {
+            if (withError) {
+              newMarkers.push({
+                type: 'validation',
+                level: 'error',
+                path: [{_key: blk._key}],
+                item: {message: 'There is an error with this textblock'},
+              })
+            }
+            if (withCustomMarkers) {
+              newMarkers.push({
+                type: 'customMarkerTest',
+                path: [{_key: blk._key}],
+              })
+            }
           }
         } else {
-          newMarkers.push({
-            type: 'validation',
-            level: 'error',
-            path: [{_key: blk._key}],
-          })
+          if (withError) {
+            newMarkers.push({
+              type: 'validation',
+              level: 'error',
+              path: [{_key: blk._key}, 'title'],
+              item: {message: 'There is an error with this object block'},
+            })
+          }
+          if (withCustomMarkers) {
+            newMarkers.push({
+              type: 'customMarkerTest',
+              path: [{_key: blk._key}],
+            })
+          }
         }
       })
       setMarkers(newMarkers)
     }
-    if (!withError) {
+    if (!withError && !withCustomMarkers) {
       setMarkers(propsMarkers || [])
     }
-  }, [blockType.name, propsMarkers, value, withError])
+  }, [blockType.name, propsMarkers, value, withCustomMarkers, withError])
 
   const patchChannel = useMemo(() => {
     return {onPatch: () => () => undefined}
