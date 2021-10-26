@@ -27,7 +27,7 @@ export const IntentMenuItem = forwardRef(function IntentMenuItem(
 
   const hoverTitle = props.text?.toString()
   return props.disabled ? (
-    <MenuItem {...restProps} title={hoverTitle} as="a" data-as="as" aria-disabled="true" />
+    <MenuItem {...restProps} title={hoverTitle} as="a" data-as="a" aria-disabled="true" />
   ) : (
     <MenuItem {...restProps} title={hoverTitle} as={Link} data-as="a" ref={ref} />
   )
