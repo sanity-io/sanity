@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import {Flex, Text} from '@sanity/ui'
-import {WarningOutlineIcon, AccessDeniedIcon} from '@sanity/icons'
+import {WarningOutlineIcon} from '@sanity/icons'
 import {PreviewValue} from '@sanity/types'
 import {AvailabilityReason} from './types'
 
@@ -37,8 +37,6 @@ function IconWrapper({children}: {children: React.ReactNode}) {
   )
 }
 
-export class InsufficientPermissionsError extends Error {}
-
 export const INVALID_PREVIEW_FALLBACK: PreviewValue = {
   // The `<small>` element is used for more compatibility
   // with the different downstream preview components.
@@ -47,17 +45,6 @@ export const INVALID_PREVIEW_FALLBACK: PreviewValue = {
   media: (
     <IconWrapper>
       <WarningOutlineIcon />
-    </IconWrapper>
-  ),
-}
-
-export const INSUFFICIENT_PERMISSIONS_FALLBACK: PreviewValue = {
-  // The `<small>` element is used for more compatibility
-  // with the different downstream preview components.
-  title: 'Insufficient permissions to access this reference',
-  media: (
-    <IconWrapper>
-      <AccessDeniedIcon />
     </IconWrapper>
   ),
 }
