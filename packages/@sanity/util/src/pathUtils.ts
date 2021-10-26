@@ -14,6 +14,8 @@ const EMPTY_PATH: Path = []
 
 export const FOCUS_TERMINATOR = '$'
 
+export function get<R>(obj: unknown, path: Path | string): R | undefined
+export function get<R>(obj: unknown, path: Path | string, defaultValue: R): R
 export function get(obj: unknown, path: Path | string, defaultVal?: unknown): unknown {
   const select = typeof path === 'string' ? fromString(path) : path
   if (!Array.isArray(select)) {
