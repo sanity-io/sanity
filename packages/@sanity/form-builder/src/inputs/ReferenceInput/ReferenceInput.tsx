@@ -605,7 +605,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
                       />
                     )}
                   </Card>
-                  <Inline paddingRight={1}>
+                  <Inline paddingX={1}>
                     <MenuButton
                       button={<Button padding={3} mode="bleed" icon={EllipsisVerticalIcon} />}
                       id={`${inputId}-menuButton`}
