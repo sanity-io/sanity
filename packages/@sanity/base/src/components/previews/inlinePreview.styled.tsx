@@ -14,6 +14,7 @@ export const MediaDiv = styled.div`
   display: inline-block;
   width: calc(1em - 1px);
   height: calc(1em - 1px);
+  min-width: calc(1em - 1px);
 
   & img {
     position: absolute;
