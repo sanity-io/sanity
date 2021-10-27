@@ -3,6 +3,8 @@ import {omit} from 'lodash'
 import React, {useCallback, useMemo} from 'react'
 import {RouterPaneGroup, RouterPaneSibling} from '../../types'
 import {ChildLink} from './ChildLink'
+import {BackLink} from './BackLink'
+import {ReferenceChildLink} from './ReferenceChildLink'
 import {PaneRouterContext} from './PaneRouterContext'
 import {ParameterizedLink} from './ParameterizedLink'
 import {PaneRouterContextValue} from './types'
@@ -70,6 +72,18 @@ export function PaneRouterProvider(props: {
     [modifyCurrentGroup, siblingIndex]
   )
 
+  const handleEditReference: PaneRouterContextValue['handleEditReference'] = useCallback(
+    ({id, parentRefPath, type}) => {
+      navigate({
+        panes: [
+          ...routerPaneGroups.slice(0, groupIndex + 1),
+          [{id, params: {parentRefPath, type}}],
+        ],
+      })
+    },
+    [groupIndex, navigate, routerPaneGroups]
+  )
+
   const ctx: PaneRouterContextValue = useMemo(
     () => ({
       // Zero-based index (position) of pane, visually
@@ -100,6 +114,16 @@ export function PaneRouterProvider(props: {
 
       // Curried StateLink that passes the correct state automatically
       ChildLink,
+
+      // Curried StateLink that pops off the last pane group
+      BackLink,
+
+      // A specialized `ChildLink` that takes in the needed props to open a
+      // referenced document to the right
+      ReferenceChildLink,
+
+      // Similar to `ReferenceChildLink` expect without the wrapping component
+      handleEditReference,
 
       // Curried StateLink that passed the correct state, but merges params/payload
       ParameterizedLink,
@@ -153,6 +177,7 @@ export function PaneRouterProvider(props: {
     [
       flatIndex,
       groupIndex,
+      handleEditReference,
       modifyCurrentGroup,
       navigateIntent,
       params,
