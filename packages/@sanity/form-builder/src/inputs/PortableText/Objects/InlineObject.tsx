@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, {FunctionComponent, useCallback, useMemo} from 'react'
-import {isEqual} from 'lodash'
+import {hues} from '@sanity/color'
 import {PortableTextChild, Type, RenderAttributes} from '@sanity/portable-text-editor'
 import {Marker, Path} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
@@ -55,6 +55,10 @@ function rootStyle({theme}: {theme: Theme}) {
       }
     }
 
+    &[data-markers] {
+      --card-bg-color: ${color.dark ? hues.purple[950].hex : hues.purple[50].hex};
+    }
+
     &[data-invalid] {
       --card-bg-color: ${color.input.invalid.enabled.bg};
       --card-border-color: ${color.input.invalid.enabled.border};
@@ -72,7 +76,11 @@ const Root = styled(Card)(rootStyle)
 
 const PreviewSpan = styled.span`
   display: block;
-  max-width: calc(5em + 80px); // @todo: find an appropriate value
+  max-width: calc(5em + 80px);
+`
+
+const TooltipStack = styled(Stack)`
+  max-width: 250px;
 `
 
 export const InlineObject: FunctionComponent<Props> = ({
@@ -90,13 +98,14 @@ export const InlineObject: FunctionComponent<Props> = ({
     }
   }, [focused, onFocus, path])
 
-  const isEmpty = useMemo(() => !value || isEqual(Object.keys(value), ['_key', '_type']), [value])
   const hasError = useMemo(
     () =>
       markers.filter((marker) => marker.type === 'validation' && marker.level === 'error').length >
       0,
     [markers]
   )
+
+  const hasMarkers = markers.length > 0
 
   const tone = useMemo(() => {
     if (hasError) {
@@ -126,9 +135,9 @@ export const InlineObject: FunctionComponent<Props> = ({
           placement="top"
           portal
           content={
-            <Stack space={3} padding={2} style={{maxWidth: 250}}>
+            <TooltipStack space={3} padding={2}>
               <Markers markers={markers} renderCustomMarkers={renderCustomMarkers} />
-            </Stack>
+            </TooltipStack>
           }
         >
           {preview}
@@ -144,6 +153,7 @@ export const InlineObject: FunctionComponent<Props> = ({
         data-invalid={hasError || undefined}
         data-selected={selected || undefined}
         data-read-only={readOnly || undefined}
+        data-markers={hasMarkers || undefined}
         tone={tone}
         onClick={handleOpen}
         forwardedAs="span"
@@ -151,6 +161,6 @@ export const InlineObject: FunctionComponent<Props> = ({
         {markersToolTip || preview}
       </Root>
     ),
-    [focused, handleOpen, hasError, markersToolTip, preview, readOnly, selected, tone]
+    [focused, handleOpen, hasError, hasMarkers, markersToolTip, preview, readOnly, selected, tone]
   )
 }
