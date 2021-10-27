@@ -9,6 +9,7 @@ import {useDocumentPane} from '../useDocumentPane'
 import {DocumentPanelHeader} from './header'
 import {FormView} from './documentViews'
 import {PermissionCheckBanner} from './PermissionCheckBanner'
+import {ReferenceChangedBanner} from './ReferenceChangedBanner'
 
 interface DocumentPanelProps {
   footerHeight: number | null
@@ -113,6 +114,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
           <PortalProvider element={portalElement}>
             <BoundaryElementProvider element={documentScrollElement}>
               {activeView.type === 'form' && <PermissionCheckBanner />}
+              <ReferenceChangedBanner />
 
               <Scroller
                 $disabled={layoutCollapsed || false}
