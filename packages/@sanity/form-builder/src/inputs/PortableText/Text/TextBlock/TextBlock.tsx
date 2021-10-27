@@ -68,6 +68,8 @@ const NUMBER_FORMATS = ['number', 'lower-alpha', 'lower-roman']
 
 const LEVELS = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
+const noUserSelectStyle: React.CSSProperties = {userSelect: 'none'}
+
 /**
  * This CSS needs to be added to the parent component in order to keep track of the list count
  */
@@ -369,29 +371,30 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
             <Box data-ui="TextBlock_inner">{markersToolTip || text}</Box>
           </TextRoot>
         </Box>
-
-        {renderBlockActions && (
-          <BlockActionsOuter marginRight={1}>
-            <BlockActionsInner>
-              {value && focused && !readOnly && (
-                <BlockActions
-                  onChange={onChange}
-                  block={block}
-                  value={value}
-                  renderBlockActions={renderBlockActions}
-                />
-              )}
-            </BlockActionsInner>
-          </BlockActionsOuter>
-        )}
-        {isFullscreen && (
-          <StyledChangeIndicatorWithProvidedFullPath
-            compareDeep
-            value={block}
-            hasFocus={focused}
-            path={[{_key: block._key}]}
-          />
-        )}
+        <div style={noUserSelectStyle} contentEditable={false}>
+          {renderBlockActions && (
+            <BlockActionsOuter marginRight={1}>
+              <BlockActionsInner>
+                {value && focused && !readOnly && (
+                  <BlockActions
+                    onChange={onChange}
+                    block={block}
+                    value={value}
+                    renderBlockActions={renderBlockActions}
+                  />
+                )}
+              </BlockActionsInner>
+            </BlockActionsOuter>
+          )}
+          {isFullscreen && (
+            <StyledChangeIndicatorWithProvidedFullPath
+              compareDeep
+              value={block}
+              hasFocus={focused}
+              path={[{_key: block._key}]}
+            />
+          )}
+        </div>
       </InnerFlex>
     </Box>
   )
