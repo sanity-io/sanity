@@ -9,7 +9,7 @@ import React, {forwardRef, useMemo} from 'react'
 import {PaneMenuItem} from '../../../../types'
 import {PaneHeader, PaneContextMenuButton} from '../../../../components/pane'
 import {useDeskTool} from '../../../../contexts/deskTool'
-import {BackLink, usePaneRouter} from '../../../../contexts/paneRouter'
+import {usePaneRouter} from '../../../../contexts/paneRouter'
 import {TimelineMenu} from '../../timeline'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
@@ -42,11 +42,10 @@ export const DocumentPanelHeader = forwardRef(function DocumentPanelHeader(
   } = useDocumentPane()
   const {revTime: rev} = historyController
   const {features} = useDeskTool()
-  const {index, siblingIndex} = usePaneRouter()
+  const {index, BackLink, siblingIndex, hasGroupSiblings} = usePaneRouter()
   const contextMenuItems = useMemo(() => menuItems.filter(isMenuButton), [menuItems])
   const [isValidationOpen, setValidationOpen] = React.useState<boolean>(false)
   const showTabs = views.length > 1
-  const closable = siblingIndex > 0
   const showVersionMenu = features.reviewChanges
 
   const languageMenu = useMemo(
@@ -96,20 +95,38 @@ export const DocumentPanelHeader = forwardRef(function DocumentPanelHeader(
   }, [features.splitViews, handlePaneSplit, views.length])
 
   const closeViewButton = useMemo(() => {
-    if (!features.splitViews || !handlePaneSplit || !closable) {
-      return null
+    if (features.splitViews && handlePaneSplit && hasGroupSiblings) {
+      return (
+        <Button
+          icon={CloseIcon}
+          key="close-view-button"
+          mode="bleed"
+          onClick={handlePaneClose}
+          title="Close split pane"
+        />
+      )
     }
 
-    return (
-      <Button
-        icon={CloseIcon}
-        key="close-view-button"
-        mode="bleed"
-        onClick={handlePaneClose}
-        title="Close pane"
-      />
-    )
-  }, [closable, features.splitViews, handlePaneClose, handlePaneSplit])
+    if (!features.backButton) {
+      return (
+        <Button
+          icon={CloseIcon}
+          key="close-view-button"
+          mode="bleed"
+          title="Close pane group"
+          as={BackLink}
+        />
+      )
+    }
+    return null
+  }, [
+    BackLink,
+    features.backButton,
+    features.splitViews,
+    handlePaneClose,
+    handlePaneSplit,
+    hasGroupSiblings,
+  ])
 
   const tabs = useMemo(() => showTabs && <DocumentHeaderTabs />, [showTabs])
 

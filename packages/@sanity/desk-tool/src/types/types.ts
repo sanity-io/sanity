@@ -70,7 +70,7 @@ export interface RouterPaneSibling {
   payload?: unknown
 }
 
-// TODO: unify this with the structure builder types
+// TODO: unify this with the structure builder ChildResolver type
 /**
  * Passed as the second argument to the item of resolving pane children
  *
