@@ -1,9 +1,10 @@
 import React, {useMemo} from 'react'
-import {Flex, rem, ResponsivePaddingProps, Stack, Theme, Tooltip} from '@sanity/ui'
+import {Box, Flex, rem, ResponsivePaddingProps, Stack, Theme, Tooltip} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {hues} from '@sanity/color'
 import {isKeySegment, Marker} from '@sanity/types'
 import {PortableTextBlock, RenderAttributes} from '@sanity/portable-text-editor'
+import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/change-indicators'
 import {RenderBlockActions, RenderCustomMarkers} from '../../types'
 import Markers from '../../legacyParts/Markers'
 import PatchEvent from '../../../../PatchEvent'
@@ -24,6 +25,7 @@ export interface TextBlockProps {
   block: PortableTextBlock
   blockRef?: React.RefObject<HTMLDivElement>
   children: React.ReactNode
+  isFullscreen?: boolean
   markers: Marker[]
   onChange: (event: PatchEvent) => void
   readOnly: boolean
@@ -118,10 +120,12 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
     --text-font-family: ${fonts.text.family};
 
     mix-blend-mode: ${color.dark ? 'screen' : 'multiply'};
+    position: relative;
 
-    & > div {
+    & > [data-ui='TextBlock_inner'] {
       position: relative;
       padding-left: var(--text-block-indent);
+      flex: 1;
     }
 
     &[data-markers] > div:before {
@@ -176,7 +180,40 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
   `
 }
 
-const Root = styled(Flex)<TextBlockStyleProps>(textBlockStyle)
+const TextRoot = styled(Flex)<TextBlockStyleProps>(textBlockStyle)
+
+const InnerFlex = styled(Flex)`
+  position: relative;
+`
+
+const StyledChangeIndicatorWithProvidedFullPath = styled(ChangeIndicatorWithProvidedFullPath)(
+  ({theme}: {theme: Theme}) => {
+    const {space} = theme.sanity
+
+    return css`
+      width: 1px;
+      position: absolute;
+      right: -1px;
+      top: -${space[1]}px;
+      bottom: -${space[1]}px;
+
+      & > div {
+        height: 100%;
+      }
+    `
+  }
+)
+
+const BlockActionsOuter = styled(Box)`
+  width: 25px;
+  position: relative;
+`
+
+const BlockActionsInner = styled(Flex)`
+  position: absolute;
+  right: 0;
+  top: -7px;
+`
 
 export function TextBlock(props: TextBlockProps): React.ReactElement {
   const {
@@ -184,6 +221,7 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
     block,
     blockRef,
     children,
+    isFullscreen,
     markers,
     onChange,
     readOnly,
@@ -236,7 +274,7 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
     return <div data-ui="TextBlock__text">{children}</div>
   }, [block.style, children])
 
-  const paddingProps: ResponsivePaddingProps = useMemo(() => {
+  const outerPaddingProps: ResponsivePaddingProps = useMemo(() => {
     if (block.listItem) {
       return {paddingY: 2}
     }
@@ -272,6 +310,25 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
     }
   }, [block])
 
+  const innerPaddingProps: ResponsivePaddingProps = useMemo(() => {
+    if (isFullscreen && !renderBlockActions) {
+      return {paddingX: 5}
+    }
+
+    if (isFullscreen && renderBlockActions) {
+      return {paddingLeft: 5, paddingRight: 2}
+    }
+
+    if (renderBlockActions) {
+      return {
+        paddingLeft: 3,
+        paddingRight: 2,
+      }
+    }
+
+    return {paddingX: 3}
+  }, [isFullscreen, renderBlockActions])
+
   const markersToolTip = useMemo(
     () =>
       hasErrors || (hasMarkers && renderCustomMarkers) ? (
@@ -288,35 +345,54 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
           {text}
         </Tooltip>
       ) : undefined,
-    [blockRef, hasErrors, hasMarkers, markers, renderCustomMarkers, text]
+    [blockMarkers, blockRef, hasErrors, hasMarkers, renderCustomMarkers, text]
   )
 
   return (
-    <Root
-      $level={block.level}
-      $listItem={block.listItem}
-      $size={$size}
-      $style={$style}
-      data-invalid={hasErrors || undefined}
-      data-level={block.level}
-      data-list-item={block.listItem}
-      data-markers={hasMarkers || undefined}
-      data-style={$style}
-      data-ui="TextBlock"
-      ref={blockRef}
-      {...paddingProps}
-    >
-      <div style={{flex: 1}}>{markersToolTip || text}</div>
-      {value && focused && !readOnly && renderBlockActions && (
-        <div style={{width: 25, height: 11}}>
-          <BlockActions
-            onChange={onChange}
-            block={block}
-            value={value}
-            renderBlockActions={renderBlockActions}
+    <Box {...outerPaddingProps}>
+      <InnerFlex>
+        <Box flex={1} {...innerPaddingProps}>
+          <TextRoot
+            $level={block.level}
+            $listItem={block.listItem}
+            $size={$size}
+            $style={$style}
+            data-invalid={hasErrors || undefined}
+            data-level={block.level}
+            data-list-item={block.listItem}
+            data-markers={hasMarkers || undefined}
+            data-style={$style}
+            data-ui="TextBlock"
+            ref={blockRef}
+            flex={1}
+          >
+            <Box data-ui="TextBlock_inner">{markersToolTip || text}</Box>
+          </TextRoot>
+        </Box>
+
+        {renderBlockActions && (
+          <BlockActionsOuter marginRight={1}>
+            <BlockActionsInner>
+              {value && focused && !readOnly && (
+                <BlockActions
+                  onChange={onChange}
+                  block={block}
+                  value={value}
+                  renderBlockActions={renderBlockActions}
+                />
+              )}
+            </BlockActionsInner>
+          </BlockActionsOuter>
+        )}
+        {isFullscreen && (
+          <StyledChangeIndicatorWithProvidedFullPath
+            compareDeep
+            value={block}
+            hasFocus={focused}
+            path={[{_key: block._key}]}
           />
-        </div>
-      )}
-    </Root>
+        )}
+      </InnerFlex>
+    </Box>
   )
 }
