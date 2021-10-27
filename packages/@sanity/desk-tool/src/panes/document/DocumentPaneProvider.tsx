@@ -3,7 +3,11 @@
 
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {Path, SanityDocument} from '@sanity/types'
-import {unstable_useCheckDocumentPermission as useCheckDocumentPermission} from '@sanity/base/hooks'
+import {
+  unstable_useCheckDocumentPermission as useCheckDocumentPermission,
+  // eslint-disable-next-line camelcase
+  useCheckDocumentPermission_temp,
+} from '@sanity/base/hooks'
 import {
   useConnectionState,
   useDocumentOperation,
@@ -105,6 +109,10 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
   ])
   const requiredPermission = value?._createdAt ? 'update' : 'create'
   const permission = useCheckDocumentPermission(documentId, documentType, requiredPermission)
+
+  const permission2 = useCheckDocumentPermission_temp(value, requiredPermission)
+  console.log(permission2)
+
   const inspectOpen = params.inspect === 'on'
   const compareValue: Partial<SanityDocument> | null = changesOpen
     ? historyController.sinceAttributes()

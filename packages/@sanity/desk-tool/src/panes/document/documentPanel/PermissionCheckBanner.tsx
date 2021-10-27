@@ -20,6 +20,7 @@ export function PermissionCheckBanner() {
     ', '
   )
 
+  if (!permission) return null
   if (permission.granted) return null
 
   return (

@@ -6,6 +6,8 @@ export {
   unstable_useCheckDocumentPermission,
   // eslint-disable-next-line camelcase
   unstable_useCanCreateAnyOf,
+  // eslint-disable-next-line camelcase
+  useCheckDocumentPermission_temp,
 } from '../datastores/grants/hooks'
 export {useUserColor} from '../user-color/hooks'
 export {useTimeAgo} from '../time/useTimeAgo'
