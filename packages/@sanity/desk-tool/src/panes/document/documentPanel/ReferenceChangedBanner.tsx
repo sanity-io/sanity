@@ -1,6 +1,6 @@
 import React, {memo, useCallback, useMemo} from 'react'
 import {Box, Button, Card, Container, Flex, Text} from '@sanity/ui'
-import {WarningOutlineIcon} from '@sanity/icons'
+import {WarningOutlineIcon, SyncIcon, CloseIcon} from '@sanity/icons'
 import styled from 'styled-components'
 import {fromString as pathFromString, get as pathGet} from '@sanity/util/paths'
 import {KeyedSegment, Reference} from '@sanity/types'
@@ -20,6 +20,14 @@ import {RouterPaneGroup} from '../../../types'
 const Root = styled(Card)`
   position: relative;
   z-index: 50;
+`
+
+const TextOneLine = styled(Text)`
+  & > * {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
 `
 
 interface ParentReferenceInfo {
@@ -109,48 +117,40 @@ export const ReferenceChangedBanner = memo(() => {
           {parentRef.result?.refValue ? (
             <>
               <Box flex={1} marginLeft={3}>
-                <Text size={1}>This reference has changed since you opened it.</Text>
+                <TextOneLine title="This reference has changed since you opened it." size={1}>
+                  This reference has changed since you opened it.
+                </TextOneLine>
               </Box>
-              <Button
-                onClick={handleReloadReference}
-                // TODO: this is not the right size
-                // icon={
-                //   <Text size={1}>
-                //     <SyncIcon />
-                //   </Text>
-                // }
-                size={1}
-                padding={2}
-                marginHeight={0}
-                mode="ghost"
-              >
-                <Text weight="semibold" size={1}>
-                  Reload reference
-                </Text>
-              </Button>
+              <Box marginLeft={3}>
+                <Button
+                  onClick={handleReloadReference}
+                  icon={SyncIcon}
+                  fontSize={1}
+                  mode="ghost"
+                  padding={2}
+                  space={2}
+                  text="Reload reference"
+                />
+              </Box>
             </>
           ) : (
             <>
               <Box flex={1} marginLeft={3}>
-                <Text size={1}>This reference has been removed since you opened it.</Text>
+                <TextOneLine title="This reference has been removed since you opened it." size={1}>
+                  This reference has been removed since you opened it.
+                </TextOneLine>
               </Box>
-              <Button
-                as={BackLink}
-                // TODO: this is not the right size
-                // icon={
-                //   <Text size={1}>
-                //     <SyncIcon />
-                //   </Text>
-                // }
-                size={1}
-                padding={2}
-                marginHeight={0}
-                mode="ghost"
-              >
-                <Text weight="semibold" size={1}>
-                  Close reference
-                </Text>
-              </Button>
+              <Box marginLeft={3}>
+                <Button
+                  as={BackLink}
+                  icon={CloseIcon}
+                  fontSize={1}
+                  mode="ghost"
+                  padding={2}
+                  space={2}
+                  text="Close reference"
+                />
+              </Box>
             </>
           )}
         </Flex>
