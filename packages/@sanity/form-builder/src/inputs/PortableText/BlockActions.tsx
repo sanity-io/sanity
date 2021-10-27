@@ -15,7 +15,7 @@ type BlockActionsProps = {
   value: PortableTextBlock[] | undefined
 }
 
-const noSelectStyle: React.CSSProperties = {userSelect: 'none'}
+const noSelectStyle: React.CSSProperties = {userSelect: 'none', display: 'flex'}
 
 export function BlockActions(props: BlockActionsProps) {
   const editor = usePortableTextEditor()
@@ -27,16 +27,14 @@ export function BlockActions(props: BlockActionsProps) {
 
   const blockActions = useMemo(() => {
     if (renderBlockActions) {
-      const RenderComponent = renderBlockActions
-      return (
-        <RenderComponent
-          block={block}
-          value={value}
-          set={createBlockActionPatchFn('set', block, onChange, decoratorValues)}
-          unset={createBlockActionPatchFn('unset', block, onChange, decoratorValues) as () => void}
-          insert={createBlockActionPatchFn('insert', block, onChange, decoratorValues)}
-        />
-      )
+      const blockActionProps = {
+        block,
+        value,
+        set: createBlockActionPatchFn('set', block, onChange, decoratorValues),
+        unset: createBlockActionPatchFn('unset', block, onChange, decoratorValues) as () => void,
+        insert: createBlockActionPatchFn('insert', block, onChange, decoratorValues),
+      }
+      return renderBlockActions(blockActionProps)
     }
     return undefined
   }, [renderBlockActions, block, value, onChange, decoratorValues])
@@ -45,6 +43,10 @@ export function BlockActions(props: BlockActionsProps) {
   const handleClick = useCallback(() => {
     PortableTextEditor.blur(editor)
   }, [editor])
+
+  if (!blockActions) {
+    return null
+  }
 
   return (
     <div
