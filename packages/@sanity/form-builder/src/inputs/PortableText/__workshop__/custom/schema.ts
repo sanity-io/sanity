@@ -49,7 +49,6 @@ export const blockType = {
   validation: (Rule) =>
     Rule.custom((block) => {
       const length = extractTextFromBlocks([block]).length
-      console.log('HEY', length)
       return length < 10 ? 'Please write a longer paragraph.' : false
     }).error(),
 }
