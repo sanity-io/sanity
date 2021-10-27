@@ -12,13 +12,21 @@ import {
   DocumentFragmentResolveOptions,
 } from './userDefinedStructure'
 
-const resolveDocumentChild: ChildResolver = (itemId, {params}) => {
+const resolveDocumentChild: ChildResolver = (itemId, {params, path}) => {
   const {parentRefPath, type} = params
 
-  // TODO: consider this case
-  if (!parentRefPath || !type) return undefined
+  const parentPath = path.slice(0, path.length - 1)
+  const currentSegment = path[path.length - 1]
 
-  return new DocumentBuilder().id(itemId).schemaType(type)
+  if (!parentRefPath || !type) {
+    throw new SerializeError(
+      `Invalid link. To open a nested reference, your link must contain \`parentRefPath\` and \`type\`.`,
+      parentPath,
+      currentSegment
+    )
+  }
+
+  return getDefaultDocumentNode({documentId: itemId, schemaType: type})
 }
 
 interface DocumentOptions {
