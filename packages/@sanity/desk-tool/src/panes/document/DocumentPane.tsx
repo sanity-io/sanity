@@ -15,6 +15,10 @@ import {
 } from '@sanity/ui'
 import React, {memo, useMemo, useState} from 'react'
 import styled from 'styled-components'
+import {fromString as pathFromString} from '@sanity/util/paths'
+// eslint-disable-next-line camelcase
+import {Unstable_ReferenceInputOptionsProvider} from '@sanity/form-builder/_internal'
+import {Path} from '@sanity/types'
 import {DocumentPaneNode} from '../../types'
 import {useDeskTool} from '../../contexts/deskTool'
 import {usePaneRouter} from '../../contexts/paneRouter'
@@ -65,7 +69,25 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
       : props
   }, [props, documentType, isLoaded, options])
 
-  const innerDocumentPane = useMemo(() => <InnerDocumentPane />, [])
+  const {ReferenceChildLink, handleEditReference, groupIndex, routerPanesState} = paneRouter
+  const childParams = routerPanesState[groupIndex + 1]?.[0].params || {}
+  const routerPanesStateLength = routerPanesState.length
+  const {parentRefPath} = childParams
+
+  const activePath: {path: Path; state: 'selected' | 'pressed' | 'none'} = useMemo(() => {
+    return parentRefPath
+      ? {
+          path: pathFromString(parentRefPath),
+          state:
+            // eslint-disable-next-line no-nested-ternary
+            groupIndex >= routerPanesStateLength - 1
+              ? 'none'
+              : groupIndex >= routerPanesStateLength - 2
+              ? 'selected'
+              : 'pressed',
+        }
+      : {path: [], state: 'none'}
+  }, [parentRefPath, groupIndex, routerPanesStateLength])
 
   if (options.type === '*' && !isLoaded) {
     return (
@@ -91,7 +113,20 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
     )
   }
 
-  return <DocumentPaneProvider {...providerProps}>{innerDocumentPane}</DocumentPaneProvider>
+  return (
+    <DocumentPaneProvider {...providerProps}>
+      {/* NOTE: this is a temporary location for this provider until we */}
+      {/* stabilize the reference input options formally in the form builder */}
+      {/* eslint-disable-next-line react/jsx-pascal-case */}
+      <Unstable_ReferenceInputOptionsProvider
+        EditReferenceLinkComponent={ReferenceChildLink}
+        onEditReference={handleEditReference}
+        activePath={activePath}
+      >
+        <InnerDocumentPane />
+      </Unstable_ReferenceInputOptionsProvider>
+    </DocumentPaneProvider>
+  )
 })
 
 function usePaneOptions(

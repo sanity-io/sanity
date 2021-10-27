@@ -9,7 +9,7 @@ import React, {memo, forwardRef, useMemo} from 'react'
 import {PaneMenuItem} from '../../../../types'
 import {PaneHeader, PaneContextMenuButton} from '../../../../components/pane'
 import {useDeskTool} from '../../../../contexts/deskTool'
-import {BackLink, usePaneRouter} from '../../../../contexts/paneRouter'
+import {usePaneRouter} from '../../../../contexts/paneRouter'
 import {TimelineMenu} from '../../timeline'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
@@ -39,12 +39,31 @@ export const DocumentPanelHeader = memo(
     } = useDocumentPane()
     const {revTime: rev} = historyController
     const {features} = useDeskTool()
-    const {index, siblingIndex} = usePaneRouter()
+    const {index, BackLink, hasGroupSiblings} = usePaneRouter()
     const contextMenuItems = useMemo(() => menuItems.filter(isMenuButton), [menuItems])
     const [isValidationOpen, setValidationOpen] = React.useState<boolean>(false)
     const showTabs = views.length > 1
-    const closable = siblingIndex > 0
     const showVersionMenu = features.reviewChanges
+
+    // there are three kinds of buttons possible:
+    //
+    // 1. split pane - creates a new split pane
+    // 2. close split pane — closes the current split pane
+    // 3. close pane group — closes the current pane group
+
+    // show the split pane button if they're enabled and there is more than one
+    // view available to use to create a split view
+    const showSplitPaneButton = features.splitViews && handlePaneSplit && views.length > 1
+
+    // show the split pane button close button if the split button is showing
+    // and there is more than one split pane open (aka has-siblings)
+    const showSplitPaneCloseButton = showSplitPaneButton && hasGroupSiblings
+
+    // show the pane group close button if the `showSplitPaneCloseButton` is
+    // _not_ showing (the split pane button replaces the group close button)
+    // and if the back button is not showing (the back button and the close
+    // button) do the same thing and shouldn't be shown at the same time)
+    const showPaneGroupCloseButton = !showSplitPaneCloseButton && !features.backButton
 
     return (
       <PaneHeader
@@ -77,7 +96,7 @@ export const DocumentPanelHeader = memo(
               onAction={handleMenuAction}
             />
 
-            {!features.splitViews || !handlePaneSplit || views.length <= 1 ? null : (
+            {showSplitPaneButton && (
               <Button
                 icon={SplitVerticalIcon}
                 key="split-pane-button"
@@ -87,13 +106,23 @@ export const DocumentPanelHeader = memo(
               />
             )}
 
-            {!features.splitViews || !handlePaneSplit || !closable ? null : (
+            {showSplitPaneCloseButton && (
               <Button
                 icon={CloseIcon}
                 key="close-view-button"
                 mode="bleed"
                 onClick={handlePaneClose}
-                title="Close pane"
+                title="Close split pane"
+              />
+            )}
+
+            {showPaneGroupCloseButton && (
+              <Button
+                icon={CloseIcon}
+                key="close-view-button"
+                mode="bleed"
+                title="Close pane group"
+                as={BackLink}
               />
             )}
           </Inline>
