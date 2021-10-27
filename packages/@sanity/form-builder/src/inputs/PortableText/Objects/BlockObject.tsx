@@ -6,10 +6,11 @@ import {
 } from '@sanity/portable-text-editor'
 import {isKeySegment, Marker, Path} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
-import {Card, Theme, Tooltip, Stack} from '@sanity/ui'
+import {Card, Theme, Tooltip, Stack, Flex, Box, ResponsivePaddingProps} from '@sanity/ui'
 import {hues} from '@sanity/color'
 import React, {useCallback, useMemo, useRef} from 'react'
 import styled, {css} from 'styled-components'
+import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/change-indicators'
 import {useScrollIntoViewOnFocusWithin} from '../../../hooks/useScrollIntoViewOnFocusWithin'
 import {hasFocusWithinPath} from '../../../utils/focusUtils'
 import {RenderBlockActions, RenderCustomMarkers} from '../types'
@@ -24,6 +25,7 @@ interface BlockObjectProps {
   blockRef?: React.RefObject<HTMLDivElement>
   editor: PortableTextEditor
   markers: Marker[]
+  isFullscreen?: boolean
   onChange: (event: PatchEvent) => void
   onFocus: (path: Path) => void
   focusPath: Path
@@ -89,6 +91,38 @@ const Root = styled(Card)((props: {theme: Theme}) => {
   `
 })
 
+const StyledChangeIndicatorWithProvidedFullPath = styled(ChangeIndicatorWithProvidedFullPath)(
+  ({theme}: {theme: Theme}) => {
+    const {space} = theme.sanity
+
+    return css`
+      width: 1px;
+      position: absolute;
+      right: -1px;
+      top: -${space[1]}px;
+      bottom: -${space[1]}px;
+
+      & > div {
+        height: 100%;
+      }
+    `
+  }
+)
+
+const InnerFlex = styled(Flex)`
+  position: relative;
+`
+
+const BlockActionsOuter = styled(Box)`
+  width: 25px;
+  position: relative;
+`
+
+const BlockActionsInner = styled(Flex)`
+  position: absolute;
+  right: 0;
+`
+
 export function BlockObject(props: BlockObjectProps) {
   const {
     attributes: {focused, selected, path},
@@ -96,6 +130,7 @@ export function BlockObject(props: BlockObjectProps) {
     blockRef,
     editor,
     focusPath,
+    isFullscreen,
     markers,
     onChange,
     onFocus,
@@ -166,6 +201,25 @@ export function BlockObject(props: BlockObjectProps) {
     return 1
   }, [type])
 
+  const innerPaddingProps: ResponsivePaddingProps = useMemo(() => {
+    if (isFullscreen && !renderBlockActions) {
+      return {paddingX: 5}
+    }
+
+    if (isFullscreen && renderBlockActions) {
+      return {paddingLeft: 5, paddingRight: 2}
+    }
+
+    if (renderBlockActions) {
+      return {
+        paddingLeft: 3,
+        paddingRight: 2,
+      }
+    }
+
+    return {paddingX: 3}
+  }, [isFullscreen, renderBlockActions])
+
   // These are marker that is only for the block level (things further up, like annotations and inline objects are dealt with in their respective components)
   const blockMarkers = useMemo(
     () =>
@@ -200,27 +254,45 @@ export function BlockObject(props: BlockObjectProps) {
   )
 
   return (
-    <Root
-      data-focused={focused || undefined}
-      data-invalid={hasErrors || undefined}
-      data-selected={selected || undefined}
-      data-markers={hasMarkers || undefined}
-      data-testid="pte-block-object"
-      marginY={3}
-      onDoubleClick={handleClickToOpen}
-      padding={padding}
-      ref={elementRef}
-      tone={tone}
-    >
-      <div ref={blockRef}>{markersToolTip || blockPreview}</div>
-      {focused && !readOnly && renderBlockActions && (
-        <BlockActions
-          onChange={onChange}
-          block={block}
-          value={value}
-          renderBlockActions={renderBlockActions}
+    <InnerFlex marginY={3}>
+      <Flex flex={1} {...innerPaddingProps}>
+        <Root
+          data-focused={focused || undefined}
+          data-invalid={hasErrors || undefined}
+          data-selected={selected || undefined}
+          data-markers={hasMarkers || undefined}
+          data-testid="pte-block-object"
+          onDoubleClick={handleClickToOpen}
+          ref={elementRef}
+          tone={tone}
+          padding={padding}
+          flex={1}
+        >
+          <div ref={blockRef}>{markersToolTip || blockPreview}</div>
+        </Root>
+      </Flex>
+      {renderBlockActions && (
+        <BlockActionsOuter marginRight={1}>
+          <BlockActionsInner>
+            {value && focused && !readOnly && (
+              <BlockActions
+                onChange={onChange}
+                block={block}
+                value={value}
+                renderBlockActions={renderBlockActions}
+              />
+            )}
+          </BlockActionsInner>
+        </BlockActionsOuter>
+      )}
+      {isFullscreen && (
+        <StyledChangeIndicatorWithProvidedFullPath
+          compareDeep
+          value={block}
+          hasFocus={focused}
+          path={[{_key: block._key}]}
         />
       )}
-    </Root>
+    </InnerFlex>
   )
 }
