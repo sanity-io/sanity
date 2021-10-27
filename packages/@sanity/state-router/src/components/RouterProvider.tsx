@@ -1,6 +1,7 @@
 import {isEqual} from 'lodash'
 import React from 'react'
 import PropTypes from 'prop-types'
+import {unstable_batchedUpdates as batchedUpdates} from 'react-dom'
 import pubsub from 'nano-pubsub'
 import {Router} from '../types'
 import {RouterContext} from '../RouterContext'
@@ -76,13 +77,16 @@ export default class RouterProvider extends React.Component<RouterProviderProps>
     }
   }
 
-  // eslint-disable-next-line camelcase
-  UNSAFE_componentWillReceiveProps(nextProps: RouterProviderProps) {
-    if (!isEqual(this._state, nextProps.state)) {
-      this._state = nextProps.state
+  componentDidUpdate() {
+    const {state} = this.props
+
+    if (!isEqual(this._state, state)) {
+      this._state = state
 
       setTimeout(() => {
-        this.__internalRouter.channel.publish(nextProps.state)
+        batchedUpdates(() => {
+          this.__internalRouter.channel.publish(state)
+        })
       }, 0)
     }
   }

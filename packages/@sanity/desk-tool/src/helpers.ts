@@ -1,66 +1,15 @@
 import isHotkey from 'is-hotkey'
 import {Observable, merge, of} from 'rxjs'
 import {mapTo, delay} from 'rxjs/operators'
-import {RouterPaneGroup, PaneNode} from './types'
-import {LOADING_PANE} from './constants'
+import {RouterPaneGroup} from './types'
 import {parsePanesSegment, encodePanesSegment} from './utils/parsePanesSegment'
 
-/**
- * @internal
- */
-export const hasLoading = (panes: Array<PaneNode | typeof LOADING_PANE>): boolean =>
-  panes.some((item) => item === LOADING_PANE)
+declare const __DEV__: boolean
 
 /**
  * @internal
  */
 export const isSaveHotkey: (event: KeyboardEvent) => boolean = isHotkey('mod+s')
-
-/**
- * @internal
- */
-export function getPaneDiffIndex(nextPanes: any, prevPanes: any): [number, number] | undefined {
-  if (!nextPanes.length) {
-    return [0, 0]
-  }
-
-  const maxPanes = Math.max(nextPanes.length, prevPanes.length)
-  for (let index = 0; index < maxPanes; index++) {
-    const nextGroup = nextPanes[index]
-    const prevGroup = prevPanes[index]
-
-    // Whole group is now invalid
-    if (!prevGroup || !nextGroup) {
-      return [index, 0]
-    }
-
-    // Less panes than previously? Resolve whole group
-    if (prevGroup.length > nextGroup.length) {
-      return [index, 0]
-    }
-
-    /* eslint-disable max-depth */
-    // Iterate over siblings
-    for (let splitIndex = 0; splitIndex < nextGroup.length; splitIndex++) {
-      const nextSibling = nextGroup[splitIndex]
-      const prevSibling = prevGroup[splitIndex]
-
-      // Didn't have a sibling here previously, diff from here!
-      if (!prevSibling) {
-        return [index, splitIndex]
-      }
-
-      // Does the ID differ from the previous?
-      if (nextSibling.id !== prevSibling.id) {
-        return [index, splitIndex]
-      }
-    }
-    /* eslint-enable max-depth */
-  }
-
-  // "No diff"
-  return undefined
-}
 
 interface GetIntentRouteParamsOptions {
   id: string

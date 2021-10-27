@@ -1,16 +1,13 @@
 import {useRouter, useRouterState} from '@sanity/base/router'
-import {pick, omit, isEqual} from 'lodash'
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {omit} from 'lodash'
+import React, {useCallback, useMemo} from 'react'
 import {RouterPaneGroup, RouterPaneSibling} from '../../types'
-import {exclusiveParams} from './constants'
 import {ChildLink} from './ChildLink'
 import {PaneRouterContext} from './PaneRouterContext'
 import {ParameterizedLink} from './ParameterizedLink'
-import {PaneRouterContextValue, SetParamsOptions} from './types'
+import {PaneRouterContextValue} from './types'
 
-const DEFAULT_SET_PARAMS_OPTIONS: SetParamsOptions = {
-  recurseIfInherited: false,
-}
+const emptyArray: never[] = []
 
 /**
  * @internal
@@ -23,138 +20,54 @@ export function PaneRouterProvider(props: {
   payload: unknown
   siblingIndex: number
 }) {
-  const {children, flatIndex, index, params: paramsProp, payload: payloadProp, siblingIndex} = props
+  const {children, flatIndex, index, params, payload, siblingIndex} = props
   const {navigate, navigateIntent} = useRouter()
   const routerState = useRouterState()
-  const routerPaneGroups: RouterPaneGroup[] = useMemo(() => routerState?.panes || [], [
+  const routerPaneGroups: RouterPaneGroup[] = useMemo(() => routerState?.panes || emptyArray, [
     routerState?.panes,
   ])
 
   const groupIndex = index - 1
 
-  const [params, _setParams] = useState(paramsProp)
-  const paramsRef = useRef(paramsProp)
-
-  const [payload, _setPayload] = useState(payloadProp)
-  const payloadRef = useRef(payloadProp)
-
-  // Update params state
-  useEffect(() => {
-    if (!isEqual(paramsRef.current, paramsProp)) {
-      paramsRef.current = paramsProp
-      _setParams(paramsProp)
-    }
-  }, [paramsProp])
-
-  // Update payload state
-  useEffect(() => {
-    if (!isEqual(payloadRef.current, payloadProp)) {
-      payloadRef.current = payloadProp
-      _setPayload(payloadProp)
-    }
-  }, [payloadProp])
-
   const modifyCurrentGroup = useCallback(
     (modifier: (siblings: RouterPaneGroup, item: RouterPaneSibling) => RouterPaneGroup) => {
-      const newPanes = routerPaneGroups.slice(0)
+      const currentGroup = routerPaneGroups[groupIndex] || []
+      const currentItem = currentGroup[siblingIndex]
+      const nextGroup = modifier(currentGroup, currentItem)
+      const nextPanes = [
+        ...routerPaneGroups.slice(0, groupIndex),
+        nextGroup,
+        ...routerPaneGroups.slice(groupIndex + 1),
+      ]
+      const nextRouterState = {...(routerState || {}), panes: nextPanes}
 
-      const currentGroup = routerPaneGroups[groupIndex] ? routerPaneGroups[groupIndex].slice(0) : []
+      setTimeout(() => navigate(nextRouterState), 0)
 
-      newPanes.splice(groupIndex, 1, modifier(currentGroup, currentGroup[siblingIndex]))
-
-      const newRouterState = {...(routerState || {}), panes: newPanes}
-
-      setTimeout(() => navigate(newRouterState), 0)
-
-      return newRouterState
+      return nextRouterState
     },
     [groupIndex, navigate, routerPaneGroups, routerState, siblingIndex]
   )
 
   const setPayload: PaneRouterContextValue['setPayload'] = useCallback(
     (nextPayload) => {
-      const currPayload = payloadRef.current
-
-      if (!isEqual(currPayload, nextPayload)) {
-        _setPayload(nextPayload)
-        payloadRef.current = nextPayload
-      }
-
-      modifyCurrentGroup((siblings, item) => {
-        const newGroup = siblings.slice()
-
-        newGroup[siblingIndex] = {...item, payload: nextPayload}
-
-        return newGroup
-      })
+      modifyCurrentGroup((siblings, item) => [
+        ...siblings.slice(0, siblingIndex),
+        {...item, payload: nextPayload},
+        ...siblings.slice(siblingIndex + 1),
+      ])
     },
     [modifyCurrentGroup, siblingIndex]
   )
 
   const setParams: PaneRouterContextValue['setParams'] = useCallback(
-    (nextParams, setOptions = {}) => {
-      const currParams = paramsRef.current
-
-      if (!isEqual(currParams, nextParams)) {
-        _setParams(nextParams)
-        paramsRef.current = nextParams
-      }
-
-      const {recurseIfInherited} = {...DEFAULT_SET_PARAMS_OPTIONS, ...setOptions}
-
-      modifyCurrentGroup((siblings, item) => {
-        const isGroupRoot = siblingIndex === 0
-        const isDuplicate = !isGroupRoot && item.id === siblings[0].id
-        const newGroup = siblings.slice()
-
-        if (!isDuplicate) {
-          newGroup[siblingIndex] = {...item, params: nextParams}
-          return newGroup
-        }
-
-        const rootParams = siblings[0].params
-
-        if (recurseIfInherited) {
-          const newParamKeys = Object.keys(nextParams)
-          const inheritedKeys = Object.keys(paramsProp).filter(
-            (key) => rootParams && rootParams[key] === paramsProp[key]
-          )
-
-          const removedInheritedKeys = inheritedKeys.filter((key) => !nextParams[key])
-          const remainingInheritedKeys = newParamKeys.filter((key) => inheritedKeys.includes(key))
-          const exclusiveKeys = newParamKeys.filter((key) => !inheritedKeys.includes(key))
-          const exclusive = pick(nextParams, exclusiveKeys)
-          const inherited = {
-            ...omit(rootParams, removedInheritedKeys),
-            ...pick(nextParams, remainingInheritedKeys),
-          }
-
-          newGroup[0] = {...item, params: inherited}
-          newGroup[siblingIndex] = {...item, params: exclusive}
-        } else {
-          // If it's a duplicate of the group root, we should only set the parameters
-          // that differ from the group root.
-          const newParams = Object.keys(nextParams).reduce<Record<string, string | undefined>>(
-            (siblingParams, key) => {
-              if (
-                exclusiveParams.includes(key) ||
-                (rootParams && nextParams[key] !== rootParams[key])
-              ) {
-                siblingParams[key] = nextParams[key]
-              }
-
-              return siblingParams
-            },
-            {}
-          )
-
-          newGroup[siblingIndex] = {...item, params: newParams}
-        }
-
-        return newGroup
-      })
+    (nextParams) => {
+      modifyCurrentGroup((siblings, item) => [
+        ...siblings.slice(0, siblingIndex),
+        {...item, params: nextParams},
+        ...siblings.slice(siblingIndex + 1),
+      ])
     },
-    [modifyCurrentGroup, paramsProp, siblingIndex]
+    [modifyCurrentGroup, siblingIndex]
   )
 
   const ctx: PaneRouterContextValue = useMemo(
@@ -207,26 +120,24 @@ export function PaneRouterProvider(props: {
 
       // Duplicate the current pane, with optional overrides for payload, parameters
       duplicateCurrent: (options): void => {
-        // const {payload, params} = options || {}
         modifyCurrentGroup((siblings, item) => {
-          const newGroup = siblings.slice()
-          newGroup.splice(siblingIndex + 1, 0, {
+          const duplicatedItem = {
             ...item,
             payload: options?.payload || item.payload,
             params: options?.params || item.params,
-          })
-          return newGroup
+          }
+
+          return [
+            ...siblings.slice(0, siblingIndex),
+            duplicatedItem,
+            ...siblings.slice(siblingIndex),
+          ]
         })
       },
 
       // Set the view for the current pane
       setView: (viewId) => {
-        const {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          view, // omit
-          ...restParams
-        } = paramsRef.current
-
+        const restParams = omit(params, 'view')
         return setParams(viewId ? {...restParams, view: viewId} : restParams)
       },
 

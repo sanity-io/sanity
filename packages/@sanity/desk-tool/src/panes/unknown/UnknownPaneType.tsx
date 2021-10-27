@@ -1,7 +1,7 @@
 import React from 'react'
 import {Box, Text} from '@sanity/ui'
 import {Pane, PaneContent, PaneHeader} from '../../components/pane'
-import {isRecord} from '../../utils/typePredicates'
+import {isRecord} from '../../utils/isRecord'
 
 interface UnknownPaneProps {
   index: number

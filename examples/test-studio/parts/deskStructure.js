@@ -121,9 +121,7 @@ function _buildTypeGroup(opts) {
                 .child(
                   S.documentList()
                     .canHandleIntent((intentName, params) => {
-                      return (
-                        supportedIntents.includes(intentName) && opts.types.includes(params.type)
-                      )
+                      return supportedIntents.includes(intentName) && typeName === params.type
                     })
                     .id(typeName)
                     .title(schemaType.title || typeName)
