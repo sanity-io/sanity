@@ -9,12 +9,12 @@ interface RedirectProps {
 }
 
 export function Redirect({panes}: RedirectProps) {
-  const router = useRouter()
+  const {navigate} = useRouter()
 
   useEffect(() => {
     // Navigates to passed router panes state on mount
-    router.navigate({panes}, {replace: true})
-  })
+    navigate({panes}, {replace: true})
+  }, [navigate, panes])
 
   return (
     <Card height="fill">

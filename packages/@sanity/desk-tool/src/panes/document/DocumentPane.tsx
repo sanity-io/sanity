@@ -32,6 +32,8 @@ import {useDocumentPane} from './useDocumentPane'
 import {DocumentPaneProvider} from './DocumentPaneProvider'
 import {DocumentPaneProviderProps} from './types'
 
+declare const __DEV__: boolean
+
 type DocumentPaneOptions = DocumentPaneNode['options']
 
 const DIALOG_PROVIDER_POSITION: DialogProviderProps['position'] = [

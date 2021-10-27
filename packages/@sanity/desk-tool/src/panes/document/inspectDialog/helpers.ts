@@ -1,6 +1,6 @@
 import {SanityDocument} from '@sanity/types'
 import HLRU from 'hashlru'
-import {isRecord} from '../../../utils/typePredicates'
+import {isRecord} from '../../../utils/isRecord'
 
 const lru = HLRU(1000)
 

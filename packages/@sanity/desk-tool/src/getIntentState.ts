@@ -11,6 +11,9 @@ export function setActivePanes(panes: Array<PaneNode | typeof LOADING_PANE>): vo
 }
 
 /**
+ * This function looks at the _active panes_ to resolve an intent. this type of
+ * intent resolution is faster and does not cause the panes to reset
+ *
  * @internal
  */
 export function getIntentState(
@@ -27,16 +30,21 @@ export function getIntentState(
   // Loop through open panes and see if any of them can handle the intent
   for (let i = activePanes.length - 1; i >= 0; i--) {
     const pane = activePanes[i]
+
+    if (typeof pane !== 'object') continue
+
     if (
-      typeof pane === 'object' &&
+      // if the pane can handle the intent
       pane.canHandleIntent?.(intentName, params, {
-        // @ts-expect-error: this was incorrectly typed as `never`
-        // because TS has trouble with inferred intersections
         pane,
         index: i,
-      })
+      }) ||
+      // OR
+      // the pane is a documentList with a matching schemaTypeName
+      (pane.type === 'documentList' && pane.schemaTypeName === params.type)
     ) {
       const paneParams = isTemplate ? {template: params.template} : EMPTY_PARAMS
+
       return {
         panes: panes
           .slice(0, i)
