@@ -68,35 +68,34 @@ function handlePaste(input) {
   return undefined
 }
 
-export default class FunkyEditor extends React.Component {
-  static propTypes = {
-    type: PropTypes.shape({
-      title: PropTypes.string,
-    }).isRequired,
-    level: PropTypes.number,
-    value: PropTypes.array,
-    markers: PropTypes.array,
-    onChange: PropTypes.func.isRequired,
-  }
-
-  render() {
-    const {markers, value} = this.props
-    return (
-      <div>
-        <BlockEditor
-          {...this.props}
-          onPaste={handlePaste}
-          renderBlockActions={BlockActions}
-          renderCustomMarkers={CustomMarkers}
-          markers={markers.concat([
-            {type: 'customMarkerTest', path: value && value[0] ? [{_key: value[0]._key}] : []},
-          ])}
-        />
-        <p>
-          Your funkyness is <strong>{extractTextFromBlocks(this.props.value).length}</strong>{' '}
-          characters long
-        </p>
-      </div>
-    )
-  }
+const FunkyEditor = (props) => {
+  const {markers, value} = props
+  return (
+    <div>
+      <BlockEditor
+        {...props}
+        onPaste={handlePaste}
+        renderBlockActions={BlockActions}
+        renderCustomMarkers={CustomMarkers}
+        markers={markers.concat([
+          {type: 'customMarkerTest', path: value && value[0] ? [{_key: value[0]._key}] : []},
+        ])}
+      />
+      <p>
+        Text length: <strong>{extractTextFromBlocks(props.value).length}</strong> characters
+      </p>
+    </div>
+  )
 }
+
+FunkyEditor.propTypes = {
+  type: PropTypes.shape({
+    title: PropTypes.string,
+  }).isRequired,
+  level: PropTypes.number,
+  value: PropTypes.arrayOf(PropTypes.any),
+  markers: PropTypes.arrayOf(PropTypes.any),
+  onChange: PropTypes.func.isRequired,
+}
+
+export default FunkyEditor
