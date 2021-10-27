@@ -8,10 +8,10 @@ import {schema, portableTextType} from './schema'
 import {values, valueOptions} from './values'
 
 function renderCustomMarkers(markers) {
-  return markers.map((marker, index) => {
+  return markers.map((marker) => {
     if (marker.type === 'customMarkerTest') {
       return (
-        <Box key={`marker-${index}`}>
+        <Box key={`marker-${marker.type}-${JSON.stringify(marker.path)}`}>
           <Flex>
             <Text size={1}>
               <CommentIcon /> Two comments
@@ -28,6 +28,9 @@ function renderBlockActions({block, insert}) {
   const dupBlock = {
     ...block,
     _key: keyGenerator(),
+  }
+  if (dupBlock.children) {
+    dupBlock.children = dupBlock.children.map((c) => ({...c, _key: keyGenerator()}))
   }
   const handleClick = () => insert(dupBlock)
   return (
