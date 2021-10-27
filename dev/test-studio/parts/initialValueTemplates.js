@@ -21,4 +21,12 @@ export default [
       author: {_type: 'reference', _ref: params.authorId},
     }),
   }),
+
+  T.template({
+    id: 'author-unlocked',
+    title: 'Author unlocked',
+    description: `An unlocked author`,
+    schemaType: 'author',
+    value: (params) => ({locked: false}),
+  }),
 ]
