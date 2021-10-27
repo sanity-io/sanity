@@ -1,5 +1,5 @@
 import {Box, CardTone, Flex, Spinner, Text, _raf2} from '@sanity/ui'
-import React, {useMemo, useState, useEffect} from 'react'
+import React, {memo, useMemo, useState, useEffect} from 'react'
 import {Observable} from 'rxjs'
 import styled from 'styled-components'
 import {Delay} from '../../components/Delay'
@@ -32,7 +32,7 @@ const Content = styled(Flex)`
 /**
  * @internal
  */
-export function LoadingPane(props: LoadingPaneProps) {
+export const LoadingPane = memo((props: LoadingPaneProps) => {
   const {
     delay = 300,
     flex,
@@ -101,4 +101,6 @@ export function LoadingPane(props: LoadingPaneProps) {
       <PaneContent>{DELAY ? <Delay ms={delay}>{content}</Delay> : content}</PaneContent>
     </Pane>
   )
-}
+})
+
+LoadingPane.displayName = 'LoadingPane'
