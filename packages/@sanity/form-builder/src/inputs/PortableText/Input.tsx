@@ -52,6 +52,7 @@ type Props = {
   readOnly: boolean | null
   renderBlockActions?: RenderBlockActions
   renderCustomMarkers?: RenderCustomMarkers
+  rootPortalElement: HTMLElement | null
   value: PortableTextBlock[] | undefined
 }
 
@@ -73,6 +74,7 @@ export default function PortableTextInput(props: Props) {
     readOnly,
     renderBlockActions,
     renderCustomMarkers,
+    rootPortalElement,
     value,
   } = props
   const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
@@ -242,48 +244,57 @@ export default function PortableTextInput(props: Props) {
       )
       if (isTextBlock) {
         return (
-          <TextBlock
+          <PortalProvider element={rootPortalElement}>
+            <TextBlock
+              attributes={attributes}
+              block={block}
+              blockRef={blockRef}
+              isFullscreen={isFullscreen}
+              markers={blockMarkers}
+              onChange={onChange}
+              readOnly={readOnly}
+              renderBlockActions={renderBlockActions}
+              renderCustomMarkers={renderCustomMarkers}
+              value={value}
+            >
+              {defaultRender(block)}
+            </TextBlock>
+          </PortalProvider>
+        )
+      }
+
+      return (
+        <PortalProvider element={rootPortalElement}>
+          <BlockObject
             attributes={attributes}
             block={block}
             blockRef={blockRef}
+            editor={editor}
+            focusPath={focusPath || EMPTY_ARRAY}
+            isFullscreen={isFullscreen}
             markers={blockMarkers}
             onChange={onChange}
+            onFocus={onFocus}
             readOnly={readOnly}
             renderBlockActions={renderBlockActions}
             renderCustomMarkers={renderCustomMarkers}
+            type={blockType}
             value={value}
-          >
-            {defaultRender(block)}
-          </TextBlock>
-        )
-      }
-      return (
-        <BlockObject
-          attributes={attributes}
-          block={block}
-          blockRef={blockRef}
-          editor={editor}
-          focusPath={focusPath || EMPTY_ARRAY}
-          markers={blockMarkers}
-          onChange={onChange}
-          onFocus={onFocus}
-          readOnly={readOnly}
-          renderBlockActions={renderBlockActions}
-          renderCustomMarkers={renderCustomMarkers}
-          type={blockType}
-          value={value}
-        />
+          />
+        </PortalProvider>
       )
     },
     [
       editor,
       focusPath,
+      isFullscreen,
       markers,
       onChange,
       onFocus,
       readOnly,
       renderBlockActions,
       renderCustomMarkers,
+      rootPortalElement,
       textBlockTypeName,
       value,
     ]
