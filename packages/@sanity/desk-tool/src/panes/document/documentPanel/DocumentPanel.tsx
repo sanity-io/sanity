@@ -11,6 +11,7 @@ import {useDocumentPane} from '../useDocumentPane'
 import {DocumentPanelHeader} from './header'
 import {FormView} from './documentViews'
 import {PermissionCheckBanner} from './PermissionCheckBanner'
+import {ReferenceChangedBanner} from './ReferenceChangedBanner'
 
 function getSchemaType(typeName: string): SchemaType | null {
   const schemaMod = require('part:@sanity/base/schema')
@@ -131,10 +132,13 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
         <PortalProvider element={portalElement}>
           <BoundaryElementProvider element={documentScrollElement}>
             {activeView.type === 'form' && !isPermissionsLoading && ready && (
-              <PermissionCheckBanner
-                granted={Boolean(permissions?.granted)}
-                requiredPermission={requiredPermission}
-              />
+              <>
+                <PermissionCheckBanner
+                  granted={Boolean(permissions?.granted)}
+                  requiredPermission={requiredPermission}
+                />
+                <ReferenceChangedBanner />
+              </>
             )}
 
             <Scroller
