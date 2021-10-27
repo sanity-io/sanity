@@ -80,12 +80,6 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean}>`
           flex: 1; // This is added in order to make the click-to-focus hit area cover the entire editable area
           padding-bottom: ${({theme}) => theme.sanity.space[3]}px;
         }
-
-        ${({$isFullscreen}) =>
-          css`
-            padding-left: ${({theme}) => theme.sanity.space[$isFullscreen ? 5 : 3]}px;
-            padding-right: ${({theme}) => theme.sanity.space[$isFullscreen ? 5 : 3]}px;
-          `}
       }
     }
   }
