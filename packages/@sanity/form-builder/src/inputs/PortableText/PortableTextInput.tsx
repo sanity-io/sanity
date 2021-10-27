@@ -14,7 +14,7 @@ import {
   HotkeyOptions,
 } from '@sanity/portable-text-editor'
 import {Subject} from 'rxjs'
-import {Box, Text, useToast} from '@sanity/ui'
+import {Box, Text, usePortal, useToast} from '@sanity/ui'
 import PatchEvent from '../../PatchEvent'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {Patch} from '../../patch/types'
@@ -83,6 +83,7 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
   const [isFullscreen, setIsFullscreen] = useState(false)
 
   const toast = useToast()
+  const portal = usePortal()
 
   const editorId = useMemo(() => uniqueId('PortableTextInputRoot'), [])
   // Memoized patch stream
@@ -196,6 +197,7 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
           readOnly={readOnly}
           renderBlockActions={renderBlockActions}
           renderCustomMarkers={renderCustomMarkers}
+          rootPortalElement={portal.element}
           value={value}
         />
       </PortableTextEditor>
