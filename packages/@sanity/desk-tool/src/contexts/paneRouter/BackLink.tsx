@@ -1,10 +1,7 @@
 import {StateLink} from '@sanity/base/router'
 import React, {forwardRef, useContext, useMemo} from 'react'
 import {PaneRouterContext} from './PaneRouterContext'
-
-interface BackLinkProps {
-  children?: React.ReactNode
-}
+import {BackLinkProps} from './types'
 
 /**
  * @internal
@@ -18,4 +15,4 @@ export const BackLink = forwardRef(function BackLink(
   const state = useMemo(() => ({panes}), [panes])
 
   return <StateLink {...props} ref={ref} state={state} />
-})
+}) as React.ComponentType<BackLinkProps>
