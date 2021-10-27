@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react'
-import {Box, Flex, rem, ResponsivePaddingProps, Stack, Theme, Tooltip} from '@sanity/ui'
+import {Flex, rem, ResponsivePaddingProps, Stack, Theme, Tooltip} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {hues} from '@sanity/color'
 import {isKeySegment, Marker} from '@sanity/types'
@@ -65,11 +65,6 @@ const BULLET_MARKERS = ['●', '○', '■']
 const NUMBER_FORMATS = ['number', 'lower-alpha', 'lower-roman']
 
 const LEVELS = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-
-const preventDefault = (event) => {
-  event.preventDefault()
-  event.stopPropagation()
-}
 
 /**
  * This CSS needs to be added to the parent component in order to keep track of the list count
@@ -286,7 +281,7 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
           portal
           content={
             <Stack space={3} padding={2} style={{maxWidth: 250}}>
-              <Markers markers={markers} renderCustomMarkers={renderCustomMarkers} />
+              <Markers markers={blockMarkers} renderCustomMarkers={renderCustomMarkers} />
             </Stack>
           }
         >

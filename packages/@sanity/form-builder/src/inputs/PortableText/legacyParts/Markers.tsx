@@ -32,7 +32,10 @@ export default function Markers(props: Props) {
         validationMarkersForBlock.map(({item}, index) => (
           // eslint-disable-next-line react/no-array-index-key
           <Flex key={`validationItem-${index}`}>
-            <Box marginRight={2}>
+            <Box
+              marginRight={2}
+              marginBottom={index + 1 === validationMarkersForBlock.length ? 0 : 2}
+            >
               <Text size={1} accent>
                 <InfoOutlineIcon />
               </Text>
@@ -43,12 +46,10 @@ export default function Markers(props: Props) {
           </Flex>
         ))}
       {customMarkersForBlock.length > 0 && (
-        <Stack>
-          <Box marginTop={validationMarkersForBlock.length > 0 ? 3 : 0}>
-            {renderCustomMarkers && renderCustomMarkers(customMarkersForBlock)}
-            {!renderCustomMarkers && <CustomMarkers markers={markers} />}
-          </Box>
-        </Stack>
+        <Box marginTop={validationMarkersForBlock.length > 0 ? 3 : 0}>
+          {renderCustomMarkers && renderCustomMarkers(customMarkersForBlock)}
+          {!renderCustomMarkers && <CustomMarkers markers={markers} />}
+        </Box>
       )}
     </Stack>
   )
