@@ -42,7 +42,9 @@ export const ReferenceChangedBanner = memo(() => {
   const {params, groupIndex, routerPanesState, replaceCurrent, BackLink} = usePaneRouter()
   const routerReferenceId = routerPanesState[groupIndex]?.[0].id
   const parentGroup = routerPanesState[groupIndex - 1] as RouterPaneGroup | undefined
-  const parentId = parentGroup?.[0].id
+  const parentSibling = parentGroup?.[0]
+  const parentId = parentSibling?.id
+  const parentHasRev = !!parentSibling?.params?.rev
   const parentRefPath = useMemo(() => {
     return (params?.parentRefPath && pathFromString(params.parentRefPath)) || null
   }, [params?.parentRefPath])
@@ -91,6 +93,9 @@ export const ReferenceChangedBanner = memo(() => {
       replaceCurrent({id: parentRef.result.refValue, params: params as Record<string, string>})
     }
   }, [parentRef.loading, parentRef.result, replaceCurrent, params])
+
+  // this will be true if viewing history, in that case, hide this banner
+  if (parentHasRev) return null
 
   if (
     parentRef.loading ||
