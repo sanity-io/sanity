@@ -123,6 +123,10 @@ const BlockActionsInner = styled(Flex)`
   right: 0;
 `
 
+const TooltipStack = styled(Stack)`
+  max-width: 250px;
+`
+
 export function BlockObject(props: BlockObjectProps) {
   const {
     attributes: {focused, selected, path},
@@ -242,9 +246,9 @@ export function BlockObject(props: BlockObjectProps) {
           placement="top"
           portal
           content={
-            <Stack space={3} padding={2} style={{maxWidth: 250}}>
+            <TooltipStack space={3} padding={2}>
               <Markers markers={markers} renderCustomMarkers={renderCustomMarkers} />
-            </Stack>
+            </TooltipStack>
           }
         >
           <div>{blockPreview}</div>
