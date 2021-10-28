@@ -1,3 +1,9 @@
+// nominal/opaque type hack
+type Opaque<T, K> = T & {__opaqueId__: K}
+
+export type DraftId = Opaque<string, 'draftId'>
+export type PublishedId = Opaque<string, 'publishedId'>
+
 export const DRAFTS_FOLDER = 'drafts'
 const DRAFTS_PREFIX = `${DRAFTS_FOLDER}.`
 
@@ -5,20 +11,27 @@ export function isDraft(document) {
   return isDraftId(document._id)
 }
 
-export function isDraftId(id) {
+export function isDraftId(id: string): id is DraftId {
   return id.startsWith(DRAFTS_PREFIX)
 }
 
-export function isPublishedId(id) {
+export function getIdPair(id: string): {draftId: DraftId; publishedId: PublishedId} {
+  return {
+    draftId: getDraftId(id),
+    publishedId: getPublishedId(id),
+  }
+}
+
+export function isPublishedId(id): id is PublishedId {
   return !isDraftId(id)
 }
 
-export function getDraftId(id) {
-  return isDraftId(id) ? id : DRAFTS_PREFIX + id
+export function getDraftId(id: string): DraftId {
+  return isDraftId(id) ? id : ((DRAFTS_PREFIX + id) as DraftId)
 }
 
-export function getPublishedId(id) {
-  return isDraftId(id) ? id.slice(DRAFTS_PREFIX.length) : id
+export function getPublishedId(id: string): PublishedId {
+  return (isDraftId(id) ? id.slice(DRAFTS_PREFIX.length) : id) as PublishedId
 }
 
 export function createDraftFrom(document) {
@@ -42,18 +55,29 @@ export function createPublishedFrom(document) {
   }
 }
 
-// Takes a list of documents and collates draft/published pairs into single entries
-// {id: <published id>, draft?: <draft document>, published?: <published document>}
-export function collate(documents) {
+/**
+ * Takes a list of documents and collates draft/published pairs into single entries
+ * {id: <published id>, draft?: <draft document>, published?: <published document>}
+ * Note: because Map is ordered by insertion key the resulting array will be ordered by whichever
+ * version appeared first
+ */
+export interface CollatedHit<T extends {_id: string} = {_id: string}> {
+  id: string
+  type: string
+  draft?: T
+  published?: T
+}
+
+export function collate<T extends {_id: string; _type: string}>(documents: T[]): CollatedHit<T>[] {
   const byId = documents.reduce((res, doc) => {
-    const id = getPublishedId(doc._id)
-    let entry = res.get(id)
+    const publishedId = getPublishedId(doc._id)
+    let entry = res.get(publishedId)
     if (!entry) {
-      entry = {id}
-      res.set(id, entry)
+      entry = {id: publishedId, type: doc._type, published: undefined, draft: undefined}
+      res.set(publishedId, entry)
     }
 
-    entry[id === doc._id ? 'published' : 'draft'] = doc
+    entry[publishedId === doc._id ? 'published' : 'draft'] = doc
     return res
   }, new Map())
 
