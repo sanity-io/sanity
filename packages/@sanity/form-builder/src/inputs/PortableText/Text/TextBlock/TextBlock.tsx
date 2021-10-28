@@ -117,7 +117,6 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
   `
 
   return css`
-    --text-bullet-marker: ${$listItem === 'number' ? `${bulletMarker} '.'` : bulletMarker};
     --text-block-indent: ${indent ? rem(space[3] + space[3] + indent) : undefined};
     --text-font-family: ${fonts.text.family};
 
@@ -143,6 +142,14 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
       }
     }
 
+    &[data-list-item='number'] {
+      counter-increment: ${counter};
+    }
+
+    &[data-list-item='bullet'] {
+      counter-reset: ${counter};
+    }
+
     & > div > [data-ui='TextBlock__text'] {
       align-items: center;
       display: flex;
@@ -154,15 +161,19 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
 
       ${$listItem &&
       css`
-        /* Set the count to 0 on new levels */
-        counter-set: ${$listItem === 'number' ? `${createListName($level + 1)} 0` : undefined};
-        /* If the list item is not number, set the counter 0 */
-        counter-reset: ${$listItem === 'number' ? undefined : `${counter} 0`};
-        /* Increment counter */
-        counter-increment: ${counter};
-
         &:before {
-          content: var(--text-bullet-marker);
+          ${$listItem === 'number' &&
+          css`
+            counter-set: ${createListName($level + 1)} 0;
+            content: ${`counter(${counter})`} '.';
+            content: ${getBulletMarker($level, 'number')};
+          `}
+
+          ${$listItem === 'bullet' &&
+          css`
+            content: ${getBulletMarker($level, 'bullet')};
+          `}
+
           font-family: var(--text-font-family);
           position: absolute;
           display: flex;
@@ -214,6 +225,10 @@ const BlockActionsInner = styled(Flex)`
   position: absolute;
   right: 0;
   top: -7px;
+`
+
+const TooltipStack = styled(Stack)`
+  max-width: 250px;
 `
 
 export function TextBlock(props: TextBlockProps): React.ReactElement {
@@ -338,9 +353,9 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
           boundaryElement={blockRef?.current}
           portal
           content={
-            <Stack space={3} padding={2} style={{maxWidth: 250}}>
+            <TooltipStack space={3} padding={2}>
               <Markers markers={blockMarkers} renderCustomMarkers={renderCustomMarkers} />
-            </Stack>
+            </TooltipStack>
           }
         >
           {text}
