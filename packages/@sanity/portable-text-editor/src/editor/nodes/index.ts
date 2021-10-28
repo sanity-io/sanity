@@ -1,20 +1,5 @@
 import styled from 'styled-components'
 
-export const DraggableBlockWrapper = styled.div`
-  border-top: ${(props: {isDraggingOverTop: boolean; isDraggingOverBottom: boolean}) => {
-    if (props.isDraggingOverTop) {
-      return '1px solid black'
-    }
-    return '1px solid transparent'
-  }};
-  border-bottom: ${(props) => {
-    if (props.isDraggingOverBottom) {
-      return '1px solid black'
-    }
-    return '1px solid transparent'
-  }};
-`
-
 export const DefaultBlockObject = styled.div`
   user-select: none;
   border: ${(props: {selected: boolean}) => {
@@ -75,7 +60,7 @@ export const DefaultListItem = styled.div<ListItemProps>`
   &.pt-list-item-number {
     counter-increment: ${(props: {listLevel: number}) =>
       getCounterIncrementForListLevel(props.listLevel)};
-    counter-rest: ${(props: {listLevel: number}) => getCounterResetForListLevel(props.listLevel)};
+    counter-reset: ${(props: {listLevel: number}) => getCounterResetForListLevel(props.listLevel)};
   }
   & + :not(.pt-list-item-number) {
     counter-reset: listItemNumber;
