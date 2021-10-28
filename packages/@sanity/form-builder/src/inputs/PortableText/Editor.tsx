@@ -15,8 +15,8 @@ import {
 import {Marker} from '@sanity/types'
 import {
   BoundaryElementProvider,
+  Box,
   Card,
-  Container,
   PortalProvider,
   useBoundaryElement,
   useLayer,
@@ -29,7 +29,7 @@ import {Toolbar} from './Toolbar/Toolbar'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
 import Decorator from './Text/Decorator'
 
-import {EditableWrapper, Root, Scroller, ToolbarCard} from './Editor.styles'
+import {EditableContainer, EditableWrapper, Root, Scroller, ToolbarCard} from './Editor.styles'
 
 type Props = {
   initialSelection?: EditorSelection
@@ -212,12 +212,8 @@ function PortableTextSanityEditor(props: Props) {
 
         <Card flex={1} tone="transparent">
           <Scroller ref={setScrollElement}>
-            <Container padding={isFullscreen ? 2 : 0} sizing="border" width={1}>
-              <EditableWrapper
-                shadow={isFullscreen ? 1 : 0}
-                $isFullscreen={isFullscreen}
-                sizing="border"
-              >
+            <EditableContainer padding={isFullscreen ? 2 : 0} sizing="border" width={1}>
+              <EditableWrapper shadow={isFullscreen ? 1 : 0} $isFullscreen={isFullscreen}>
                 <BoundaryElementProvider element={isFullscreen ? scrollElement : boundaryElement}>
                   <PortableTextEditable
                     hotkeys={hotkeys}
@@ -234,7 +230,7 @@ function PortableTextSanityEditor(props: Props) {
                   />
                 </BoundaryElementProvider>
               </EditableWrapper>
-            </Container>
+            </EditableContainer>
           </Scroller>
 
           <div data-portal="" ref={setPortalElement} />

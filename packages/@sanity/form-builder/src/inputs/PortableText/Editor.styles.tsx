@@ -1,5 +1,5 @@
 import {ScrollContainer} from '@sanity/base/components'
-import {Card} from '@sanity/ui'
+import {Card, Container} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {listCounterCSS} from './Text/TextBlock'
 
@@ -29,6 +29,11 @@ export const Scroller = styled(ScrollContainer)`
     flex: 1;
     min-height: auto;
   }
+`
+
+export const EditableContainer = styled(Container)`
+  /* @todo: calculate from theme */
+  max-width: 728px;
 `
 
 export const EditableWrapper = styled(Card)<{$isFullscreen: boolean}>`
