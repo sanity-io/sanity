@@ -16,26 +16,46 @@ const BlockQuoteBox = styled(Box)`
   }
 `
 
-export const Heading1 = ({children}) => <Heading size={5}>{children}</Heading>
-
-export const Heading2 = ({children}) => <Heading size={4}>{children}</Heading>
-
-export const Heading3 = ({children}) => <Heading size={3}>{children}</Heading>
-
-export const Heading4 = ({children}) => <Heading size={2}>{children}</Heading>
-
-export const Heading5 = ({children}) => <Heading size={1}>{children}</Heading>
-
-export const Heading6 = ({children}) => (
-  <Heading muted size={0}>
+export const Heading1 = ({children}) => (
+  <Heading as="h1" size={5}>
     {children}
   </Heading>
 )
 
-export const Normal = ({children}) => <Text>{children}</Text>
+export const Heading2 = ({children}) => (
+  <Heading as="h2" size={4}>
+    {children}
+  </Heading>
+)
+
+export const Heading3 = ({children}) => (
+  <Heading as="h3" size={3}>
+    {children}
+  </Heading>
+)
+
+export const Heading4 = ({children}) => (
+  <Heading as="h4" size={2}>
+    {children}
+  </Heading>
+)
+
+export const Heading5 = ({children}) => (
+  <Heading as="h5" size={1}>
+    {children}
+  </Heading>
+)
+
+export const Heading6 = ({children}) => (
+  <Heading as="h6" muted size={0}>
+    {children}
+  </Heading>
+)
+
+export const Normal = ({children}) => <Text as="p">{children}</Text>
 
 export const BlockQuote = ({children}) => (
   <BlockQuoteBox forwardedAs="blockquote" paddingLeft={3}>
-    <Text>{children}</Text>
+    <Text as="p">{children}</Text>
   </BlockQuoteBox>
 )
