@@ -6,6 +6,7 @@ import styled, {css} from 'styled-components'
 import {Theme, ThemeColorToneKey, Tooltip, Stack} from '@sanity/ui'
 import Markers from '../legacyParts/Markers'
 import {RenderCustomMarkers} from '../types'
+import {hues} from '@sanity/color'
 
 type Props = {
   attributes: RenderAttributes
@@ -27,15 +28,26 @@ type AnnotationStyleProps = {
 function annotationStyle(props: AnnotationStyleProps) {
   const {$toneKey, theme, isEditing} = props
 
-  const borderStyle = $toneKey === 'primary' ? 'solid' : 'dashed'
   const toneVariant = isEditing ? 'pressed' : 'enabled'
 
   return css`
     text-decoration: none;
     display: inline;
     background-color: ${theme.sanity.color.selectable[$toneKey][toneVariant].bg};
-    border-bottom: 1px ${borderStyle} ${theme.sanity.color.selectable[$toneKey][toneVariant].fg};
+    border-bottom: 1px dashed ${theme.sanity.color.selectable[$toneKey][toneVariant].fg};
     color: ${theme.sanity.color.selectable[$toneKey][toneVariant].fg};
+
+    &[data-link] {
+      border-bottom: 1px solid ${theme.sanity.color.selectable[$toneKey][toneVariant].fg};
+    }
+
+    &[data-markers] {
+      background-color: ${theme.sanity.color.dark ? hues.purple[950].hex : hues.purple[50].hex};
+    }
+
+    &[data-error] {
+      background-color: ${theme.sanity.color.muted.critical.hovered.bg};
+    }
 
     ${!isEditing &&
     css`
@@ -49,6 +61,10 @@ function annotationStyle(props: AnnotationStyleProps) {
     `}
   `
 }
+
+const TooltipStack = styled(Stack)`
+  max-width: 250px;
+`
 
 const Root = styled.div<AnnotationStyleProps>(annotationStyle)
 
@@ -78,9 +94,9 @@ export const Annotation: FunctionComponent<Props> = ({
           boundaryElement={annotationRef.current}
           portal
           content={
-            <Stack space={3} padding={2} style={{maxWidth: 250}}>
+            <TooltipStack space={3} padding={2}>
               <Markers markers={markers} renderCustomMarkers={renderCustomMarkers} />
-            </Stack>
+            </TooltipStack>
           }
         >
           <span>{children}</span>
@@ -111,6 +127,9 @@ export const Annotation: FunctionComponent<Props> = ({
       $toneKey={toneKey}
       isEditing={isEditing}
       ref={annotationRef}
+      data-link={isLink ? '' : undefined}
+      data-error={hasError ? '' : undefined}
+      data-markers={markers.length > 0 ? '' : undefined}
     >
       {markersToolTip || children}
     </Root>
