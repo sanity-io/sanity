@@ -19,8 +19,14 @@ export const ReviewChangesButton = forwardRef(function ReviewChangesButton(
   const {lastUpdated} = props
   const lastUpdatedTime = useTimeAgo(lastUpdated || '', {minimal: true})
   const lastUpdatedTimeAgo = useTimeAgo(lastUpdated || '', {minimal: true, agoSuffix: true})
-  const {documentId, handleHistoryClose, handleHistoryOpen, changesOpen} = useDocumentPane()
-  const syncState = useSyncState(documentId)
+  const {
+    documentId,
+    documentType,
+    handleHistoryClose,
+    handleHistoryOpen,
+    changesOpen,
+  } = useDocumentPane()
+  const syncState = useSyncState(documentId, documentType)
 
   return (
     <Tooltip
