@@ -7,6 +7,17 @@ const imageType = {
   name: 'blockImage',
 }
 
+const linkType = {
+  type: 'object',
+  name: 'link',
+  fields: [
+    {
+      type: 'string',
+      name: 'href',
+    },
+  ],
+}
+
 const someObject = {
   type: 'object',
   name: 'someObject',
@@ -44,7 +55,9 @@ export const blockType = {
     {title: 'H6', value: 'h6'},
     {title: 'Quote', value: 'blockquote'},
   ],
-  annotations: [someObject],
+  marks: {
+    annotations: [someObject, linkType],
+  },
   of: [someObject, imageType],
   validation: (Rule) =>
     Rule.custom((block) => {
