@@ -108,10 +108,9 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
     previewUrl,
   ])
   const requiredPermission = value?._createdAt ? 'update' : 'create'
-  const permission = useCheckDocumentPermission(documentId, documentType, requiredPermission)
+  const permission_old = useCheckDocumentPermission(documentId, documentType, requiredPermission)
 
-  const permission2 = useCheckDocumentPermission_temp(value, requiredPermission)
-  console.log(permission2)
+  const permission = useCheckDocumentPermission_temp(value, requiredPermission)
 
   const inspectOpen = params.inspect === 'on'
   const compareValue: Partial<SanityDocument> | null = changesOpen
