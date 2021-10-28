@@ -53,6 +53,7 @@ export const ItemCell = React.forwardRef(function ItemCell(
           ref={focusRef}
           onKeyPress={onKeyPress}
           onFocus={onFocus}
+          __unstable_focusRing
         >
           <Preview layout="media" value={value} type={type} />
         </Card>
