@@ -17,6 +17,14 @@ type BlockActionsProps = {
 
 const noSelectStyle: React.CSSProperties = {userSelect: 'none', display: 'flex'}
 
+function isClassComponent(component) {
+  return typeof component === 'function' && !!component.prototype?.isReactComponent
+}
+
+function isFunctionComponent(component) {
+  return typeof component === 'function' && String(component).includes('return React.createElement')
+}
+
 export function BlockActions(props: BlockActionsProps) {
   const editor = usePortableTextEditor()
   const {block, onChange, renderBlockActions, value} = props
@@ -34,6 +42,11 @@ export function BlockActions(props: BlockActionsProps) {
         unset: createBlockActionPatchFn('unset', block, onChange, decoratorValues) as () => void,
         insert: createBlockActionPatchFn('insert', block, onChange, decoratorValues),
       }
+      // Support returning a class component for renderBlockActions (to keep backward compatability as it was possible before)
+      if (isClassComponent(renderBlockActions) || isFunctionComponent(renderBlockActions)) {
+        const RenderComponent = renderBlockActions
+        return <RenderComponent {...blockActionProps} />
+      }
       return renderBlockActions(blockActionProps)
     }
     return undefined
@@ -44,6 +57,8 @@ export function BlockActions(props: BlockActionsProps) {
     PortableTextEditor.blur(editor)
   }, [editor])
 
+  // Don't render anything if the renderBlockActions function returns null.
+  // Note that if renderBlockComponent is a React class, this will never be the case.
   if (!blockActions) {
     return null
   }
