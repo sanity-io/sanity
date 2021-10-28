@@ -9,7 +9,7 @@ import React, {memo, useCallback, useMemo} from 'react'
 import {Path, SchemaType} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {resolveInitialValueForType} from '@sanity/initial-value-templates'
-import {Box, Button, Flex, useToast} from '@sanity/ui'
+import {Box, Button, Flex, Hotkeys, Text, Tooltip, useToast} from '@sanity/ui'
 import {CollapseIcon, ExpandIcon} from '@sanity/icons'
 import styled, {css} from 'styled-components'
 import {ActionMenu} from './ActionMenu'
@@ -55,6 +55,9 @@ const FullscreenButtonBox = styled(Box)`
 const SLOW_INITIAL_VALUE_LIMIT = 300
 
 const preventDefault = (e: React.SyntheticEvent) => e.preventDefault()
+
+const IS_MAC =
+  typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.platform)
 
 const InnerToolbar = memo(function InnerToolbar({
   actionGroups,
@@ -115,12 +118,27 @@ const InnerToolbar = memo(function InnerToolbar({
       )}
 
       <FullscreenButtonBox padding={1}>
-        <Button
-          padding={isFullscreen ? 3 : 2}
-          icon={isFullscreen ? CollapseIcon : ExpandIcon}
-          mode="bleed"
-          onClick={onToggleFullscreen}
-        />
+        <Tooltip
+          content={
+            <Flex>
+              <Box flex={1} padding={2}>
+                <Text size={1}>Open in fullscreen</Text>
+              </Box>
+              <Box padding={1}>
+                <Hotkeys keys={[`${IS_MAC ? 'Cmd' : 'Ctrl'}`, 'Enter']} />
+              </Box>
+            </Flex>
+          }
+          placement="top"
+          portal
+        >
+          <Button
+            padding={isFullscreen ? 3 : 2}
+            icon={isFullscreen ? CollapseIcon : ExpandIcon}
+            mode="bleed"
+            onClick={onToggleFullscreen}
+          />
+        </Tooltip>
       </FullscreenButtonBox>
     </RootFlex>
   )
