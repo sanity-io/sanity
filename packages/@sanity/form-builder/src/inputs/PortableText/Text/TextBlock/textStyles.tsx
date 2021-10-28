@@ -32,10 +32,10 @@ export const Heading6 = ({children}) => (
   </Heading>
 )
 
-export const Normal = ({children}) => <Text muted>{children}</Text>
+export const Normal = ({children}) => <Text>{children}</Text>
 
 export const BlockQuote = ({children}) => (
   <BlockQuoteBox forwardedAs="blockquote" paddingLeft={3}>
-    <Text muted>{children}</Text>
+    <Text>{children}</Text>
   </BlockQuoteBox>
 )

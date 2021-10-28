@@ -164,7 +164,6 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
         &:before {
           content: var(--text-bullet-marker);
           font-family: var(--text-font-family);
-          color: var(--card-muted-fg-color);
           position: absolute;
           display: flex;
           justify-content: flex-end;
