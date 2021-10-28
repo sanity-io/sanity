@@ -134,12 +134,7 @@ export const Element: FunctionComponent<ElementProps> = ({
       renderAttribs.level = element.level as number
     }
     const textBlock = (
-      <TextBlock
-        blockRef={blockRef}
-        element={element}
-        portableTextFeatures={portableTextFeatures}
-        readOnly={readOnly}
-      >
+      <TextBlock element={element} portableTextFeatures={portableTextFeatures}>
         {children}
       </TextBlock>
     )
@@ -157,8 +152,10 @@ export const Element: FunctionComponent<ElementProps> = ({
       className += ` pt-list-item pt-list-item-${element.listItem}`
     }
     return (
-      <div ref={blockRef} {...attributes} key={element._key} className={className}>
-        {renderedBlock}
+      <div {...attributes} key={element._key} className={className}>
+        <DraggableBlock element={element} readOnly={readOnly} blockRef={blockRef}>
+          <div ref={blockRef}>{renderedBlock}</div>
+        </DraggableBlock>
       </div>
     )
   }

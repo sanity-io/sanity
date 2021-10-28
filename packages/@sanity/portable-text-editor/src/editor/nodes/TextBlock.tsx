@@ -1,18 +1,15 @@
 import React from 'react'
 import {Element} from 'slate'
 import {PortableTextFeatures} from '../../types/portableText'
-import {DraggableBlock} from '../DraggableBlock'
 import {DefaultListItem, DefaultListItemInner} from '.'
 
 type Props = {
-  blockRef: React.MutableRefObject<HTMLDivElement | null>
   children: JSX.Element
   element: Element
   portableTextFeatures: PortableTextFeatures
-  readOnly: boolean
 }
 export default function TextBlock(props: Props) {
-  const {blockRef, portableTextFeatures, children, element, readOnly} = props
+  const {portableTextFeatures, children, element} = props
   const style = typeof element.style === 'string' ? element.style : 'normal'
   // Should we render a custom style?
   // TODO: Look into this API. This is legacy support for older Sanity Studio versions via the type
@@ -37,11 +34,9 @@ export default function TextBlock(props: Props) {
     )
   }
   return (
-    <DraggableBlock element={element} readOnly={readOnly} blockRef={blockRef}>
-      <>
-        {!CustomStyle && renderedBlock}
-        {CustomStyle && <CustomStyle style={style}>{renderedBlock}</CustomStyle>}
-      </>
-    </DraggableBlock>
+    <>
+      {!CustomStyle && renderedBlock}
+      {CustomStyle && <CustomStyle style={style}>{renderedBlock}</CustomStyle>}
+    </>
   )
 }

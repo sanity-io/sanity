@@ -16,7 +16,6 @@ import {
   IS_DRAGGING,
   IS_DRAGGING_BLOCK_TARGET_POSITION,
 } from '../utils/weakMaps'
-import {DraggableBlockWrapper} from './nodes'
 
 const debug = debugWithName('components:DraggableBlock')
 const debugRenders = false
@@ -51,7 +50,7 @@ export const DraggableBlock: FunctionComponent<ElementProps> = ({
   const handleDragOver = useCallback(
     (event: DragEvent) => {
       const isMyDragOver = IS_DRAGGING_BLOCK_ELEMENT.get(editor)
-      // debug('Drag over', isMyDragOver)
+      // debug('Drag over', blockElement)
       if (!isMyDragOver || !blockElement) {
         return
       }
@@ -188,28 +187,64 @@ export const DraggableBlock: FunctionComponent<ElementProps> = ({
         event.dataTransfer.effectAllowed = 'move'
       }
       // Clone blockElement so that it will not be visually clipped by scroll-containers etc.
+      // The application that uses the portable-text-editor may indicate the element used as
+      // drag ghost by adding a truthy data attribute 'data-pt-drag-ghost-element' to a HTML element.
       if (blockElement && blockElement instanceof HTMLElement) {
-        const dragGhost = blockElement.cloneNode(true) as HTMLElement
-        dragGhostRef.current = dragGhost
-        dragGhost.style.width = `${element.clientWidth}px`
-        dragGhost.style.height = `${element.clientHeight}px`
-        dragGhost.style.position = 'absolute'
-        dragGhost.style.top = '-99999px'
-        dragGhost.style.left = '-99999px'
+        let dragGhost = blockElement.cloneNode(true) as HTMLElement
+        const customGhost = dragGhost.querySelector('[data-pt-drag-ghost-element]')
+        if (customGhost) {
+          dragGhost = customGhost as HTMLElement
+        }
         if (document.body) {
+          dragGhostRef.current = dragGhost
+          dragGhost.style.position = 'absolute'
           document.body.appendChild(dragGhost)
           const rect = blockElement.getBoundingClientRect()
           const x = event.clientX - rect.left
           const y = event.clientY - rect.top
-          dragGhost.style.width = `${rect.width}px`
-          dragGhost.style.height = `${rect.height}px`
+          dragGhost.style.width = `${rect.width / 3}px`
+          dragGhost.style.height = `${rect.height / 3}px`
           event.dataTransfer.setDragImage(dragGhost, x, y)
         }
       }
       handleDrag(event)
     },
-    [blockElement, editor, element.clientHeight, element.clientWidth, handleDrag, isInline, isVoid]
+    [blockElement, editor, handleDrag, isInline, isVoid]
   )
+
+  const isDraggingOverFirstBlock =
+    isDragOver && editor.children[0] === IS_DRAGGING_ELEMENT_TARGET.get(editor)
+  const isDraggingOverLastBlock =
+    isDragOver &&
+    editor.children[editor.children.length - 1] === IS_DRAGGING_ELEMENT_TARGET.get(editor)
+  const dragPosition = IS_DRAGGING_BLOCK_TARGET_POSITION.get(editor)
+
+  const isDraggingOverTop =
+    isDraggingOverFirstBlock ||
+    (isDragOver && !isDraggingOverFirstBlock && !isDraggingOverLastBlock && dragPosition === 'top')
+  const isDraggingOverBottom =
+    isDraggingOverLastBlock ||
+    (isDragOver &&
+      !isDraggingOverFirstBlock &&
+      !isDraggingOverLastBlock &&
+      dragPosition === 'bottom')
+
+  const dropIndicator = useMemo(
+    () => (
+      <div
+        className="pt-drop-indicator"
+        style={{
+          position: 'absolute',
+          width: '100%',
+          height: 1,
+          borderBottom: '1px solid black',
+          zIndex: 5,
+        }}
+      />
+    ),
+    []
+  )
+
   if (readOnly) {
     return <>{children}</>
   }
@@ -217,12 +252,7 @@ export const DraggableBlock: FunctionComponent<ElementProps> = ({
   if (debugRenders) {
     debug('render')
   }
-  const isDraggingOverFirstBlock =
-    isDragOver && editor.children[0] === IS_DRAGGING_ELEMENT_TARGET.get(editor)
-  const isDraggingOverLastBlock =
-    isDragOver &&
-    editor.children[editor.children.length - 1] === IS_DRAGGING_ELEMENT_TARGET.get(editor)
-  const dragPosition = IS_DRAGGING_BLOCK_TARGET_POSITION.get(editor)
+
   return (
     <div
       draggable={isVoid}
@@ -233,24 +263,9 @@ export const DraggableBlock: FunctionComponent<ElementProps> = ({
       onDragEnd={handleDragEnd}
       onDrop={handleDrop}
     >
-      <DraggableBlockWrapper
-        isDraggingOverTop={
-          isDraggingOverFirstBlock ||
-          (isDragOver &&
-            !isDraggingOverFirstBlock &&
-            !isDraggingOverLastBlock &&
-            dragPosition === 'top')
-        }
-        isDraggingOverBottom={
-          isDraggingOverLastBlock ||
-          (isDragOver &&
-            !isDraggingOverFirstBlock &&
-            !isDraggingOverLastBlock &&
-            dragPosition === 'bottom')
-        }
-      >
-        {children}
-      </DraggableBlockWrapper>
+      {isDraggingOverTop && dropIndicator}
+      {children}
+      {isDraggingOverBottom && dropIndicator}
     </div>
   )
 }
