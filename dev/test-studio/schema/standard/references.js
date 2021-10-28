@@ -15,6 +15,7 @@ export default {
       type: 'reference',
       to: [{type: 'book'}, {type: 'author'}],
     },
+    {name: 'liveEditedDocument', type: 'reference', to: {type: 'thesis'}},
     {
       title: 'Book with decade filter',
       description: 'Reference will only search for books within given decade',
