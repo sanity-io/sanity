@@ -1,6 +1,6 @@
 import {ScrollContainer} from '@sanity/base/components'
 import {Card, Container} from '@sanity/ui'
-import styled, {css} from 'styled-components'
+import styled from 'styled-components'
 import {listCounterCSS} from './Text/TextBlock'
 
 export const Root = styled(Card)<{$fullscreen: boolean}>`
@@ -47,6 +47,13 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean}>`
 
   & > div > div > div:not(.pt-list-item) + .pt-list-item {
     margin-top: ${({theme}) => theme.sanity.space[2]}px;
+  }
+
+  .pt-drop-indicator {
+    border: 1px solid var(--card-focus-ring-color) !important;
+    height: 0px !important;
+    border-radius: 1px;
+    opacity: 0.6;
   }
 
   & > div > div > .pt-list-item + div:not(.pt-list-item) {
