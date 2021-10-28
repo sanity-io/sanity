@@ -126,6 +126,12 @@ const BlockActionsInner = styled(Flex)`
 const TooltipStack = styled(Stack)`
   max-width: 250px;
 `
+const BlockPreview = styled(Box)((props: {theme: Theme}) => {
+  const color = props.theme.sanity.color.input
+  return css`
+    background-color: ${color.default.enabled.bg};
+  `
+})
 
 export function BlockObject(props: BlockObjectProps) {
   const {
@@ -266,13 +272,14 @@ export function BlockObject(props: BlockObjectProps) {
           data-selected={selected || undefined}
           data-markers={hasMarkers || undefined}
           data-testid="pte-block-object"
+          data-pt-drag-ghost-element
           onDoubleClick={handleClickToOpen}
           ref={elementRef}
           tone={tone}
           padding={padding}
           flex={1}
         >
-          <div ref={blockRef}>{markersToolTip || blockPreview}</div>
+          <BlockPreview ref={blockRef}>{markersToolTip || blockPreview}</BlockPreview>
         </Root>
       </Flex>
       {renderBlockActions && (

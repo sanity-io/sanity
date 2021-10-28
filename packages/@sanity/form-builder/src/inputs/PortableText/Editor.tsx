@@ -15,7 +15,6 @@ import {
 import {Marker} from '@sanity/types'
 import {
   BoundaryElementProvider,
-  Box,
   Card,
   PortalProvider,
   useBoundaryElement,
