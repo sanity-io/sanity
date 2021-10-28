@@ -59,6 +59,10 @@ export const values = {
           _key: 'abc',
           _type: 'link',
         },
+        {
+          _key: 'abcd',
+          _type: 'someObject',
+        },
       ],
       children: [
         {
@@ -70,12 +74,24 @@ export const values = {
         {
           _type: 'span',
           _key: 'e2',
-          text: 'annotation',
+          text: 'link',
           marks: ['abc'],
         },
         {
           _type: 'span',
+          _key: 'e2',
+          text: ' ',
+          marks: [],
+        },
+        {
+          _type: 'span',
           _key: 'e3',
+          text: 'someObject',
+          marks: ['abcd'],
+        },
+        {
+          _type: 'span',
+          _key: 'e4',
           text: ' plz?',
           marks: [],
         },
