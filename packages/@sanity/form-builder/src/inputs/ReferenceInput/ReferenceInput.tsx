@@ -443,7 +443,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
           </Alert>
         ) : (
           !isReferenceInfoLoading &&
-          value &&
+          value?._ref &&
           !refDocumentExists &&
           !weakWarningOverride && (
             <Alert
