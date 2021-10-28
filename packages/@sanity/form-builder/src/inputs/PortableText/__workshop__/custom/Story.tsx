@@ -35,7 +35,7 @@ function renderBlockActions({block, insert}) {
   const handleClick = () => insert(dupBlock)
   return (
     <div>
-      <Button fontSize={1} icon={AddIcon} onClick={handleClick} padding={2} mode={'ghost'} />
+      <Button fontSize={1} icon={AddIcon} onClick={handleClick} padding={2} mode="bleed" />
     </div>
   )
 }
