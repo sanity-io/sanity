@@ -12,11 +12,11 @@ interface SyncState {
 const SYNCING = {isSyncing: true}
 const NOT_SYNCING = {isSyncing: false}
 
-export function useSyncState(publishedDocId: string): SyncState {
+export function useSyncState(publishedDocId: string, documentType: string): SyncState {
   return useMemoObservable<SyncState>(
     () =>
       documentStore.pair
-        .consistencyStatus(publishedDocId)
+        .consistencyStatus(publishedDocId, documentType)
         .pipe(map((isConsistent) => (isConsistent ? NOT_SYNCING : SYNCING))),
     [publishedDocId],
     NOT_SYNCING
