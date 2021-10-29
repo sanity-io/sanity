@@ -103,7 +103,6 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
 
   const {fontSize, lineHeight, ascenderHeight} = font.sizes[_size || 0]
   const indent = typeof $level === 'number' ? space[4] * $level : undefined
-  const bulletMarker = getBulletMarker($level, $listItem)
   const counter = createListName($level)
 
   const overlay = css`
@@ -143,6 +142,7 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
     }
 
     &[data-list-item='number'] {
+      counter-set: ${createListName($level + 1)} 0;
       counter-increment: ${counter};
     }
 
@@ -164,9 +164,8 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
         &:before {
           ${$listItem === 'number' &&
           css`
-            counter-set: ${createListName($level + 1)} 0;
             content: ${`counter(${counter})`} '.';
-            content: ${getBulletMarker($level, 'number')};
+            content: ${getBulletMarker($level, 'number')} '.';
           `}
 
           ${$listItem === 'bullet' &&
