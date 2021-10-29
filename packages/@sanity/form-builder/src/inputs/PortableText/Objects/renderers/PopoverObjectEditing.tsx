@@ -79,7 +79,7 @@ export function PopoverObjectEditing(props: PopoverObjectEditingProps) {
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
       placement="bottom"
       open
-      portal
+      portal="default"
       ref={setRootElement}
       referenceElement={refElement}
     />

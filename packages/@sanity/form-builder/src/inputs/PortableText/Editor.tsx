@@ -13,14 +13,7 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {Marker} from '@sanity/types'
-import {
-  BoundaryElementProvider,
-  Card,
-  PortalProvider,
-  useBoundaryElement,
-  useLayer,
-  usePortal,
-} from '@sanity/ui'
+import {BoundaryElementProvider, Card, useBoundaryElement, useLayer, usePortal} from '@sanity/ui'
 import React, {useMemo, useEffect, useState} from 'react'
 import PatchEvent from '../../PatchEvent'
 import {createScrollSelectionIntoView} from './utils/scrollSelectionIntoView'
@@ -48,7 +41,6 @@ type Props = {
   renderChild: RenderChildFunction
   renderCustomMarkers?: RenderCustomMarkers
   setPortalElement?: (el: HTMLDivElement | null) => void
-  toolbarPortalElement?: HTMLElement
   value: PortableTextBlock[] | undefined
 }
 
@@ -71,7 +63,6 @@ function PortableTextSanityEditor(props: Props) {
     // renderBlockActions,
     renderChild,
     setPortalElement,
-    toolbarPortalElement,
     value,
   } = props
 
@@ -79,7 +70,6 @@ function PortableTextSanityEditor(props: Props) {
   const ptFeatures = useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [editor])
   const {isTopLayer} = useLayer()
   const {element: boundaryElement} = useBoundaryElement()
-  const portal = usePortal()
 
   // TODO: Enable when we agree upon the hotkey for opening edit object interface when block object is focused
   //
@@ -198,15 +188,13 @@ function PortableTextSanityEditor(props: Props) {
     () => (
       <Root $fullscreen={isFullscreen} data-testid="pt-editor">
         <ToolbarCard data-testid="pt-editor__toolbar-card" shadow={1}>
-          <PortalProvider element={toolbarPortalElement || portal.element}>
-            <Toolbar
-              isFullscreen={isFullscreen}
-              hotkeys={hotkeys}
-              onFocus={onFocus}
-              readOnly={readOnly}
-              onToggleFullscreen={onToggleFullscreen}
-            />
-          </PortalProvider>
+          <Toolbar
+            isFullscreen={isFullscreen}
+            hotkeys={hotkeys}
+            onFocus={onFocus}
+            readOnly={readOnly}
+            onToggleFullscreen={onToggleFullscreen}
+          />
         </ToolbarCard>
 
         <Card flex={1} tone="transparent">
@@ -246,14 +234,12 @@ function PortableTextSanityEditor(props: Props) {
       onFocus,
       onPaste,
       onToggleFullscreen,
-      portal.element,
       readOnly,
       renderAnnotation,
       renderBlock,
       renderChild,
       scrollElement,
       setPortalElement,
-      toolbarPortalElement,
       value,
     ]
   )

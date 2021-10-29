@@ -17,7 +17,7 @@ interface BlockObjectPreviewProps {
 const POPOVER_PROPS: MenuButtonProps['popover'] = {
   constrainSize: true,
   placement: 'bottom',
-  portal: true,
+  portal: 'default',
   tone: 'default',
 }
 

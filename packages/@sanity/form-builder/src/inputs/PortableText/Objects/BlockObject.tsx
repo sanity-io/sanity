@@ -250,7 +250,7 @@ export function BlockObject(props: BlockObjectProps) {
       hasErrors || (hasMarkers && renderCustomMarkers) ? (
         <Tooltip
           placement="top"
-          portal
+          portal="editor"
           content={
             <TooltipStack space={3} padding={2}>
               <Markers markers={markers} renderCustomMarkers={renderCustomMarkers} />

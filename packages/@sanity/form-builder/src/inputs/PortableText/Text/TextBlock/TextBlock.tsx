@@ -351,7 +351,7 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
         <Tooltip
           placement="top"
           boundaryElement={blockRef?.current}
-          portal
+          portal="editor"
           content={
             <TooltipStack space={3} padding={2}>
               <Markers markers={blockMarkers} renderCustomMarkers={renderCustomMarkers} />

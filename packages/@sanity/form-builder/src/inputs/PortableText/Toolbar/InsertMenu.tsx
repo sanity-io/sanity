@@ -45,6 +45,7 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
           tooltipProps={{
             disabled: disabled,
             placement: isFullscreen ? 'bottom' : 'top',
+            portal: 'default',
             text: `Insert ${title}`,
           }}
         />
