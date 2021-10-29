@@ -33,6 +33,10 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps) {
     [value?._ref]
   )
 
+  const fallbackTitle = useMemo(() => (type.name === 'image' ? 'No image selected' : 'Undefined'), [
+    type.name,
+  ])
+
   return (
     <Preview
       actions={
@@ -67,6 +71,7 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps) {
         />
       }
       type={type}
+      fallbackTitle={fallbackTitle}
       value={value}
       layout="block"
     />
