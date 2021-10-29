@@ -203,15 +203,11 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
       </PortableTextEditor>
     ),
     [
-      ref,
-      patchObservable,
       editorId,
-      handleEditorChange,
-      readOnly,
-      type,
-      value,
-      focusSkipperButton,
       focusPath,
+      focusSkipperButton,
+      handleEditorChange,
+      handleToggleFullscreen,
       hasFocus,
       hotkeys,
       isFullscreen,
@@ -221,12 +217,16 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
       onCopy,
       onFocus,
       onPaste,
-      handleToggleFullscreen,
       patches$,
+      patchObservable,
+      portal.element,
       presence,
+      readOnly,
+      ref,
       renderBlockActions,
       renderCustomMarkers,
-      portal.element,
+      type,
+      value,
     ]
   )
 
