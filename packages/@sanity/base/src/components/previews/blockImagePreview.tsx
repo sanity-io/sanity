@@ -17,6 +17,7 @@ export const BlockImagePreview: React.FunctionComponent<PreviewProps<'block'>> =
     title,
     subtitle,
     description,
+    fallbackTitle = 'Undefined',
     mediaDimensions = DEFAULT_MEDIA_DIMENSIONS,
     media,
     children,
@@ -34,11 +35,9 @@ export const BlockImagePreview: React.FunctionComponent<PreviewProps<'block'>> =
       <Stack>
         <HeaderFlex align="center" paddingLeft={3} paddingRight={1} paddingY={1}>
           <Stack space={2} flex={1}>
-            {title && (
-              <Text size={1} textOverflow="ellipsis" weight="medium">
-                {title}
-              </Text>
-            )}
+            <Text size={1} textOverflow="ellipsis" weight="medium">
+              {title || fallbackTitle}
+            </Text>
             {subtitle && (
               <Text muted size={1} textOverflow="ellipsis">
                 {subtitle}
