@@ -12,4 +12,9 @@ export default defineScope('form-builder/inputs/pte', 'Portable Text Editor', [
     title: 'Custom Schema',
     component: lazy(() => import('./custom/Story')),
   },
+  {
+    name: 'list-counter',
+    title: 'List counter',
+    component: lazy(() => import('./listCounter')),
+  },
 ])
