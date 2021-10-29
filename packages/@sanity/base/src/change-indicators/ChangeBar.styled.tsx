@@ -66,8 +66,9 @@ export const BadgeWrapper = styled.div(({theme}: ThemeContext) => {
     height: 19px;
     border-radius: 9.5px;
     transform: translate3d(-0.5px, -10px, 0) scale(0, 1);
-
     transition: transform ${animationSpeed}ms, opacity ${animationSpeed}ms;
+    z-index: 12;
+    pointer-events: none;
 
     @media (max-width: ${maxScreenMedium}px) {
       /* hide on mobile */
