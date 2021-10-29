@@ -32,8 +32,8 @@ export default function RenderPreviewSnapshot(props: Props) {
     (isReferenceSchemaType(type) && type.to.find((t) => t.name === typeName)?.icon) || type.icon
 
   const preview = (
-    <PreviewComponent // Render media always until we have schema functionality for determining if there is media
-      media={() => undefined}
+    <PreviewComponent
+      media={icon}
       {...rest}
       value={snapshot}
       icon={icon}
