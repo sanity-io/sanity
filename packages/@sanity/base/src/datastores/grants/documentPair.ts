@@ -4,14 +4,13 @@
 ///<reference types="@sanity/types/parts" />
 
 import {SanityDocument, SchemaType} from '@sanity/types'
-import {mergeMap, switchMap, tap} from 'rxjs/operators'
+import {mergeMap, switchMap} from 'rxjs/operators'
 import {combineLatest} from 'rxjs'
 import schema from 'part:@sanity/base/schema'
-import {getDraftId} from 'part:@sanity/base/util/draft-utils'
 
 import {snapshotPair} from '../document/document-pair/snapshotPair'
 import {IdPair} from '../document/types'
-import {getPublishedId} from '../../util/draftUtils'
+import {getPublishedId, getDraftId} from '../../util/draftUtils'
 import {checkDeletePermission, checkPublishPermission, checkUnpublishPermission} from './pairChecks'
 import grantsStore from '.'
 
@@ -60,13 +59,9 @@ export function canDelete(document: Partial<SanityDocument>) {
 }
 
 export function canPublish(document: Partial<SanityDocument>) {
-  const idPair = getIdPairFromPublished(document._id)
-  return snapshotPair(idPair).pipe(
-    mergeMap((pair) => combineLatest([pair.draft.snapshots$, pair.published.snapshots$])),
-    switchMap(([draft, published]) => {
-      return checkPublishPermission({draft, published})
-    })
-  )
+  const published = {...document, _id: getPublishedId(document._id)}
+  const draft = {...document, _id: getDraftId(document._id)}
+  return checkPublishPermission({published, draft})
 }
 
 export function canUnpublish(document: Partial<SanityDocument>) {

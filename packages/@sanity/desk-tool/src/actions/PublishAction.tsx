@@ -1,9 +1,10 @@
 import {DocumentActionComponent} from '@sanity/base'
 import {useSyncState, useDocumentOperation, useValidationStatus} from '@sanity/react-hooks'
 import {CheckmarkIcon, PublishIcon} from '@sanity/icons'
-import React, {useCallback, useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {
-  unstable_useCheckDocumentPermission as useCheckDocumentPermission,
+  // eslint-disable-next-line camelcase
+  useCheckDocumentPermission_temp,
   useCurrentUser,
 } from '@sanity/base/hooks'
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
@@ -44,7 +45,12 @@ export const PublishAction: DocumentActionComponent = (props) => {
   // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
   const [publishScheduled, setPublishScheduled] = useState<boolean>(false)
   const isNeitherSyncingNorValidating = !syncState.isSyncing && !validationStatus.isValidating
-  const publishPermission = useCheckDocumentPermission(id, type, 'publish')
+  const emptyDoc = useMemo(() => ({_id: id, _type: type}), [id, type])
+  const publishPermission = useCheckDocumentPermission_temp(
+    draft || published || emptyDoc,
+    'publish'
+  )
+
   const {value: currentUser} = useCurrentUser()
 
   // eslint-disable-next-line no-nested-ternary
@@ -105,7 +111,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
     }
   }
 
-  if (!publishPermission.granted) {
+  if (!publishPermission?.granted) {
     return {
       color: 'success',
       label: 'Publish',
