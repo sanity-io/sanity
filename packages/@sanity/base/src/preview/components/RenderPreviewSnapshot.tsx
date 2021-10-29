@@ -17,11 +17,12 @@ type Props = {
   snapshot: any
   type: SchemaType
   isLive: boolean
+  isLoading: boolean
   layout: string
 }
 
 export default function RenderPreviewSnapshot(props: Props) {
-  const {snapshot, type, isLive, layout, ...rest} = props
+  const {snapshot, type, isLive, isLoading, layout, ...rest} = props
   const PreviewComponent = resolvePreview(type)
 
   // TODO: Bjoerge: Check for image type with "is()"
@@ -37,7 +38,7 @@ export default function RenderPreviewSnapshot(props: Props) {
       value={snapshot}
       icon={icon}
       layout={layout}
-      isPlaceholder={!snapshot}
+      isPlaceholder={isLoading}
       _renderAsBlockImage={renderAsBlockImage}
     />
   )
