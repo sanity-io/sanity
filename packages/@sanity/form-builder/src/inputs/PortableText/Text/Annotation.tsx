@@ -92,7 +92,7 @@ export const Annotation: FunctionComponent<Props> = ({
         <Tooltip
           placement="top"
           boundaryElement={annotationRef.current}
-          portal
+          portal="editor"
           content={
             <TooltipStack space={3} padding={2}>
               <Markers markers={markers} renderCustomMarkers={renderCustomMarkers} />

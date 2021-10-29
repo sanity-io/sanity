@@ -68,6 +68,7 @@ export function FullscreenObjectEditing(props: FullscreenObjectEditingProps) {
       onClose={onClose}
       onClickOutside={onClose}
       header={type.title}
+      portal="default"
       ref={setRootElement}
       width="auto"
     >

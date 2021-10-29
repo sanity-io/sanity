@@ -68,6 +68,7 @@ export function DefaultObjectEditing(props: DefaultObjectEditingProps) {
       onClose={onClose}
       onClickOutside={onClose}
       header={type.title}
+      portal="default"
       ref={setRootElement}
       width={1}
     >

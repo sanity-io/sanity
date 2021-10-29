@@ -34,9 +34,9 @@ const StyledMenuItem = styled(MenuItem)`
 `
 
 const MENU_POPOVER_PROPS: MenuButtonProps['popover'] = {
-  portal: true,
   constrainSize: true,
   placement: 'bottom-start',
+  portal: 'default',
 }
 
 const TEXT_STYLE_OPTIONS = {

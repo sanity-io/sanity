@@ -52,7 +52,6 @@ type Props = {
   readOnly: boolean | null
   renderBlockActions?: RenderBlockActions
   renderCustomMarkers?: RenderCustomMarkers
-  rootPortalElement: HTMLElement | null
   value: PortableTextBlock[] | undefined
 }
 
@@ -74,7 +73,6 @@ export default function PortableTextInput(props: Props) {
     readOnly,
     renderBlockActions,
     renderCustomMarkers,
-    rootPortalElement,
     value,
   } = props
   const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
@@ -244,44 +242,40 @@ export default function PortableTextInput(props: Props) {
       )
       if (isTextBlock) {
         return (
-          <PortalProvider element={rootPortalElement}>
-            <TextBlock
-              attributes={attributes}
-              block={block}
-              blockRef={blockRef}
-              isFullscreen={isFullscreen}
-              markers={blockMarkers}
-              onChange={onChange}
-              readOnly={readOnly}
-              renderBlockActions={renderBlockActions}
-              renderCustomMarkers={renderCustomMarkers}
-              value={value}
-            >
-              {defaultRender(block)}
-            </TextBlock>
-          </PortalProvider>
+          <TextBlock
+            attributes={attributes}
+            block={block}
+            blockRef={blockRef}
+            isFullscreen={isFullscreen}
+            markers={blockMarkers}
+            onChange={onChange}
+            readOnly={readOnly}
+            renderBlockActions={renderBlockActions}
+            renderCustomMarkers={renderCustomMarkers}
+            value={value}
+          >
+            {defaultRender(block)}
+          </TextBlock>
         )
       }
 
       return (
-        <PortalProvider element={rootPortalElement}>
-          <BlockObject
-            attributes={attributes}
-            block={block}
-            blockRef={blockRef}
-            editor={editor}
-            focusPath={focusPath || EMPTY_ARRAY}
-            isFullscreen={isFullscreen}
-            markers={blockMarkers}
-            onChange={onChange}
-            onFocus={onFocus}
-            readOnly={readOnly}
-            renderBlockActions={renderBlockActions}
-            renderCustomMarkers={renderCustomMarkers}
-            type={blockType}
-            value={value}
-          />
-        </PortalProvider>
+        <BlockObject
+          attributes={attributes}
+          block={block}
+          blockRef={blockRef}
+          editor={editor}
+          focusPath={focusPath || EMPTY_ARRAY}
+          isFullscreen={isFullscreen}
+          markers={blockMarkers}
+          onChange={onChange}
+          onFocus={onFocus}
+          readOnly={readOnly}
+          renderBlockActions={renderBlockActions}
+          renderCustomMarkers={renderCustomMarkers}
+          type={blockType}
+          value={value}
+        />
       )
     },
     [
@@ -294,7 +288,6 @@ export default function PortableTextInput(props: Props) {
       readOnly,
       renderBlockActions,
       renderCustomMarkers,
-      rootPortalElement,
       textBlockTypeName,
       value,
     ]
@@ -385,7 +378,6 @@ export default function PortableTextInput(props: Props) {
         renderChild={renderChild}
         renderCustomMarkers={renderCustomMarkers}
         setPortalElement={setPortalElement}
-        toolbarPortalElement={isFullscreen ? undefined : portal.element}
         value={value}
       />
     ),
@@ -402,7 +394,6 @@ export default function PortableTextInput(props: Props) {
       onChange,
       onCopy,
       onPaste,
-      portal.element,
       readOnly,
       renderAnnotation,
       renderBlock,
@@ -444,12 +435,10 @@ export default function PortableTextInput(props: Props) {
   const children = useMemo(() => {
     if (isFullscreen) {
       return (
-        <PortalProvider element={portalElement}>
-          <ExpandedLayer>
-            {ptEditor}
-            {editObject}
-          </ExpandedLayer>
-        </PortalProvider>
+        <ExpandedLayer>
+          {ptEditor}
+          {editObject}
+        </ExpandedLayer>
       )
     }
 
@@ -459,29 +448,36 @@ export default function PortableTextInput(props: Props) {
         {editObject}
       </>
     )
-  }, [editObject, isFullscreen, portalElement, ptEditor])
+  }, [editObject, isFullscreen, ptEditor])
 
   return (
-    <ActivateOnFocus
-      message={activateOnFocusMessage}
-      onActivate={handleActivate}
-      isOverlayActive={!isActive}
+    <PortalProvider
+      __unstable_elements={{
+        collapsed: wrapperElement,
+        default: portal.element,
+        editor: portalElement,
+        expanded: portal.element,
+      }}
     >
-      <ChangeIndicatorWithProvidedFullPath
-        compareDeep
-        value={value}
-        hasFocus={hasFocus && objectEditData === null}
-        path={ROOT_PATH}
+      <ActivateOnFocus
+        message={activateOnFocusMessage}
+        onActivate={handleActivate}
+        isOverlayActive={!isActive}
       >
-        <Root data-focused={hasFocus ? '' : undefined} data-read-only={readOnly ? '' : undefined}>
-          <div data-wrapper="" ref={setWrapperElement}>
-            <PortalProvider element={isFullscreen ? portal.element : wrapperElement}>
-              <Portal>{children}</Portal>
-            </PortalProvider>
-          </div>
-          <div data-border="" />
-        </Root>
-      </ChangeIndicatorWithProvidedFullPath>
-    </ActivateOnFocus>
+        <ChangeIndicatorWithProvidedFullPath
+          compareDeep
+          value={value}
+          hasFocus={hasFocus && objectEditData === null}
+          path={ROOT_PATH}
+        >
+          <Root data-focused={hasFocus ? '' : undefined} data-read-only={readOnly ? '' : undefined}>
+            <div data-wrapper="" ref={setWrapperElement}>
+              <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>{children}</Portal>
+            </div>
+            <div data-border="" />
+          </Root>
+        </ChangeIndicatorWithProvidedFullPath>
+      </ActivateOnFocus>
+    </PortalProvider>
   )
 }

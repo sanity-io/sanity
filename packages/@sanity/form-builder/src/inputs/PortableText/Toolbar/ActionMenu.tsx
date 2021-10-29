@@ -70,7 +70,11 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
             onClick={() => action.handle(active)}
             selected={active}
             text={action.title || action.key}
-            tooltipProps={{disabled: disabled, placement: isFullscreen ? 'bottom' : 'top'}}
+            tooltipProps={{
+              disabled: disabled,
+              placement: isFullscreen ? 'bottom' : 'top',
+              portal: 'default',
+            }}
           />
         )
       }),

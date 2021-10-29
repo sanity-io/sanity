@@ -96,6 +96,7 @@ const InnerToolbar = memo(function InnerToolbar({
           items={blockStyles}
         />
       </StyleSelectBox>
+
       {showActionMenu && (
         <ActionMenuBox flex={1} padding={1} $withMaxWidth={showInsertMenu}>
           <ActionMenu
@@ -106,6 +107,7 @@ const InnerToolbar = memo(function InnerToolbar({
           />
         </ActionMenuBox>
       )}
+
       {showInsertMenu && (
         <InsertMenuBox flex={1} padding={1}>
           <InsertMenu
@@ -130,7 +132,7 @@ const InnerToolbar = memo(function InnerToolbar({
             </Flex>
           }
           placement="top"
-          portal
+          portal="default"
         >
           <Button
             padding={isFullscreen ? 3 : 2}
