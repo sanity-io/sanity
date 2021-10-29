@@ -155,7 +155,7 @@ export function BlockObject(props: BlockObjectProps) {
   useScrollIntoViewOnFocusWithin(elementRef, hasFocusWithinPath(focusPath, block))
 
   const handleClickToOpen = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>): void => {
+    (event: React.MouseEvent<HTMLDivElement>) => {
       if (focused) {
         event.preventDefault()
         event.stopPropagation()
@@ -167,21 +167,18 @@ export function BlockObject(props: BlockObjectProps) {
     [focused, onFocus, path]
   )
 
-  const handleEdit = useCallback((): void => {
+  const handleEdit = useCallback(() => {
     onFocus(path.concat(FOCUS_TERMINATOR))
   }, [onFocus, path])
 
-  const handleDelete = useCallback(
-    () => (): void => {
-      PortableTextEditor.delete(
-        editor,
-        {focus: {path, offset: 0}, anchor: {path, offset: 0}},
-        {mode: 'block'}
-      )
-      PortableTextEditor.focus(editor)
-    },
-    [editor, path]
-  )
+  const handleDelete = useCallback(() => {
+    PortableTextEditor.delete(
+      editor,
+      {focus: {path, offset: 0}, anchor: {path, offset: 0}},
+      {mode: 'block'}
+    )
+    PortableTextEditor.focus(editor)
+  }, [editor, path])
 
   const blockPreview = useMemo(() => {
     return (
