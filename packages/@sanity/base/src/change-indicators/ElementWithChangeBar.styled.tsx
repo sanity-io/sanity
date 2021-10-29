@@ -33,7 +33,7 @@ export const ChangeBarMarker = styled.div(({theme}: ThemeContext) => {
     width: 2px;
     bottom: 0;
     background-color: ${notSelectedColor};
-    border-radius: 2px;
+    border-radius: 1px;
 
     @media (min-width: ${screenMedium}px) {
       display: unset;
