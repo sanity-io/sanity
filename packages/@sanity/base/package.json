@@ -57,7 +57,7 @@
     "@sanity/structure": "2.21.7",
     "@sanity/transaction-collator": "2.21.0",
     "@sanity/types": "2.21.7",
-    "@sanity/ui": "^0.36.12",
+    "@sanity/ui": "^0.36.13",
     "@sanity/util": "2.21.7",
     "@sanity/validation": "2.21.7",
     "boundless-arrow-key-navigation": "^1.1.0",
@@ -98,7 +98,7 @@
     "use-device-pixel-ratio": "^1.1.0"
   },
   "devDependencies": {
-    "@sanity/ui-workshop": "^0.3.4",
+    "@sanity/ui-workshop": "^0.3.5",
     "@testing-library/react-hooks": "^7.0.2",
     "@types/element-resize-detector": "1.1.2",
     "@types/raf": "^3.4.0",
