@@ -31,7 +31,7 @@
     "@sanity/portable-text-editor": "2.21.7",
     "@sanity/schema": "2.21.5",
     "@sanity/types": "2.21.7",
-    "@sanity/ui": "^0.36.12",
+    "@sanity/ui": "^0.36.13",
     "@sanity/util": "2.21.7",
     "@sanity/uuid": "^3.0.1",
     "attr-accept": "^1.1.0",
@@ -56,7 +56,7 @@
     "speakingurl": "^13.0.0"
   },
   "devDependencies": {
-    "@sanity/ui-workshop": "^0.3.4",
+    "@sanity/ui-workshop": "^0.3.5",
     "@testing-library/jest-dom": "^5.11.10",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^13.0.16",

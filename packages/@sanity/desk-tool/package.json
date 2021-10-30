@@ -40,7 +40,7 @@
     "@sanity/react-hooks": "2.21.7",
     "@sanity/structure": "2.21.7",
     "@sanity/types": "2.21.7",
-    "@sanity/ui": "^0.36.12",
+    "@sanity/ui": "^0.36.13",
     "@sanity/util": "2.21.7",
     "@sanity/uuid": "^3.0.1",
     "hashlru": "^2.1.0",
@@ -58,7 +58,7 @@
   },
   "devDependencies": {
     "@sanity/base": "2.21.7",
-    "@sanity/ui-workshop": "^0.3.4",
+    "@sanity/ui-workshop": "^0.3.5",
     "@testing-library/react": "^11.2.5",
     "@types/is-hotkey": "^0.1.3",
     "@types/shallow-equals": "^1.0.0",

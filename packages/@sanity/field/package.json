@@ -45,14 +45,14 @@
     "@sanity/image-url": "^1.0.1",
     "@sanity/react-hooks": "2.21.7",
     "@sanity/types": "2.21.7",
-    "@sanity/ui": "^0.36.12",
+    "@sanity/ui": "^0.36.13",
     "@sanity/util": "2.21.7",
     "diff-match-patch": "^1.0.4",
     "lodash": "^4.17.15",
     "sanity-diff-patch": "^1.0.9"
   },
   "devDependencies": {
-    "@sanity/ui-workshop": "^0.3.4",
+    "@sanity/ui-workshop": "^0.3.5",
     "react": "17.0.1",
     "rimraf": "^2.7.1"
   },
