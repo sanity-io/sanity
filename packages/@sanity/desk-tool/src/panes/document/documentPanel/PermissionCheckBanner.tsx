@@ -24,7 +24,7 @@ export function PermissionCheckBanner() {
   if (permission.granted) return null
 
   return (
-    <Root shadow={1} tone="transparent">
+    <Root data-testid="permission-check-banner" shadow={1} tone="transparent">
       <Container paddingX={4} paddingY={3} sizing="border" width={1}>
         <Flex align="flex-start">
           <Text size={1}>

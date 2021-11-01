@@ -146,6 +146,7 @@ export function DocumentListPaneHeader(props: {
             placement="bottom"
           >
             <IntentButton
+              data-testid="action-intent-button"
               aria-label={String(action.title)}
               icon={action.icon || UnknownIcon}
               intent={action.intent}
