@@ -1,4 +1,4 @@
-describe('@sanity/desk-tool: banner permissions on update (existing documents)', () => {
+describe('@sanity/desk-tool: banner permissions on update', () => {
   it('as an administrator user, the permission banner will not be visible (has permissions)', () => {
     cy.visit(
       '/test/desk/input-standard;booleansTest;1053af2f-84af-49a1-b42b-e2156470bb77%2Ctemplate%3DbooleansTest#_debug_roles=administrator'
