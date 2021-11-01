@@ -34,6 +34,10 @@
         window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = window.parent.__REACT_DEVTOOLS_GLOBAL_HOOK__
       }
     </script>
+    <script>
+      // For legacy sanity support
+      window.__DEV__ = true
+    </script>
     <script type="module" src="/frame/main.tsx"></script>
   </body>
 </html>
