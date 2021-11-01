@@ -122,11 +122,11 @@ const InnerToolbar = memo(function InnerToolbar({
       <FullscreenButtonBox padding={1}>
         <Tooltip
           content={
-            <Flex>
-              <Box flex={1} padding={2}>
-                <Text size={1}>Open in fullscreen</Text>
+            <Flex align="center" padding={1}>
+              <Box flex={1} paddingX={1}>
+                <Text size={1}>{`${isFullscreen ? 'Collapse' : 'Expand'} editor`}</Text>
               </Box>
-              <Box padding={1}>
+              <Box marginLeft={1}>
                 <Hotkeys keys={[`${IS_MAC ? 'Cmd' : 'Ctrl'}`, 'Enter']} />
               </Box>
             </Flex>
