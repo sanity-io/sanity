@@ -1,7 +1,6 @@
 import {TextArea, Theme} from '@sanity/ui'
-import React, {forwardRef, useImperativeHandle, useRef} from 'react'
+import React, {forwardRef, useCallback, useImperativeHandle, useRef} from 'react'
 import styled, {css} from 'styled-components'
-import PortableTextInput from '../PortableTextInput'
 
 const DebugTextArea = styled(TextArea)(({theme}: {theme: Theme}) => {
   return css`
@@ -10,6 +9,10 @@ const DebugTextArea = styled(TextArea)(({theme}: {theme: Theme}) => {
 })
 
 const DebugInput = forwardRef(function DebugInput(props: any, ref) {
+  // console.log('DebugInput', props)
+
+  const {onBlur, onChange, onFocus, readOnly} = props
+
   const rootRef = useRef<HTMLTextAreaElement | null>(null)
 
   useImperativeHandle(ref, () => ({
@@ -17,22 +20,31 @@ const DebugInput = forwardRef(function DebugInput(props: any, ref) {
     focus: () => rootRef.current?.focus(),
   }))
 
+  const handleChange = useCallback(() => {
+    onChange([{type: 'set', path: [], value: {}}])
+  }, [onChange])
+
   return (
     <DebugTextArea
+      onBlur={onBlur}
+      onChange={handleChange}
+      onFocus={onFocus}
       padding={3}
       radius={1}
-      readOnly
+      readOnly={readOnly}
       ref={rootRef}
-      rows={10}
+      rows={100}
       value={JSON.stringify(props.value, null, 2)}
     />
   )
 })
 
-export const inputResolver = (input: any) => {
-  if (input.type.name === 'block') {
-    return PortableTextInput
-  }
-
+export const resolveInputComponent = () => {
   return DebugInput
+}
+
+export const resolvePreviewComponent = () => {
+  return function PreviewAny() {
+    return <div>preview</div>
+  }
 }

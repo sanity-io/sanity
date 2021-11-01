@@ -17,4 +17,9 @@ export default defineScope('form-builder/inputs/pte', 'Portable Text Editor', [
     title: 'List counter',
     component: lazy(() => import('./listCounter')),
   },
+  {
+    name: 'edit-objects',
+    title: 'Edit objects',
+    component: lazy(() => import('./editObjects')),
+  },
 ])
