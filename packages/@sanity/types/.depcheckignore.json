@@ -14,6 +14,7 @@
     "@juggle/resize-observer",
     "nano-pubsub",
     "@sanity/ui",
-    "@sanity/state-router"
+    "@sanity/state-router",
+    "memfs"
   ]
 }
