@@ -131,7 +131,7 @@ const InnerToolbar = memo(function InnerToolbar({
               </Box>
             </Flex>
           }
-          placement="top"
+          placement={isFullscreen ? 'bottom' : 'top'}
           portal="default"
         >
           <Button
