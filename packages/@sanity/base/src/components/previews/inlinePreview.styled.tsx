@@ -9,7 +9,7 @@ export const RootSpan = styled.span`
   height: 15px;
 `
 
-export const MediaDiv = styled.div`
+export const MediaSpan = styled.span`
   position: relative;
   display: inline-block;
   width: calc(1em - 1px);

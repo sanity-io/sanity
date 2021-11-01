@@ -1,7 +1,7 @@
 import React, {useMemo} from 'react'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {MediaDimensions, PreviewProps} from './types'
-import {RootSpan, MediaDiv, TextSpan} from './inlinePreview.styled'
+import {RootSpan, MediaSpan, TextSpan} from './inlinePreview.styled'
 
 const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   width: 32,
@@ -33,10 +33,10 @@ export const InlinePreview: React.FunctionComponent<PreviewProps<'inline'>> = (p
   return (
     <RootSpan data-testid="inline-preview">
       {_media && (
-        <MediaDiv data-testid="inline-preview-media">
+        <MediaSpan data-testid="inline-preview-media">
           {_media}
           <span />
-        </MediaDiv>
+        </MediaSpan>
       )}
       <TextSpan data-testid="inline-preview-title">
         <span>{title || fallbackTitle}</span>
