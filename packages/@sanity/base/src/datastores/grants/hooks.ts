@@ -5,12 +5,15 @@ import shallowEquals from 'shallow-equals'
 import {pipe} from 'rxjs'
 import {useObservable, useAsObservable, useMemoObservable} from 'react-rx'
 import {
+  // eslint-disable-next-line camelcase
   canCreateType as old_canCreateType,
   canCreateAnyOf,
   canDelete,
   canDiscardDraft,
+  // eslint-disable-next-line camelcase
   canPublish as old_canPublish,
   canUnpublish,
+  // eslint-disable-next-line camelcase
   canUpdate as old_canUpdate,
 } from './highlevel'
 
