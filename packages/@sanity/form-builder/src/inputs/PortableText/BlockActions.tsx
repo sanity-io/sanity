@@ -12,7 +12,6 @@ type BlockActionsProps = {
   block: PortableTextBlock
   onChange: (event: PatchEvent) => void
   renderBlockActions?: RenderBlockActions
-  value: PortableTextBlock[] | undefined
 }
 
 const noSelectStyle: React.CSSProperties = {userSelect: 'none', display: 'flex'}
@@ -27,7 +26,7 @@ function isFunctionComponent(component) {
 
 export function BlockActions(props: BlockActionsProps) {
   const editor = usePortableTextEditor()
-  const {block, onChange, renderBlockActions, value} = props
+  const {block, onChange, renderBlockActions} = props
   const decoratorValues = useMemo(
     () => PortableTextEditor.getPortableTextFeatures(editor).decorators.map((d) => d.value),
     [editor]
@@ -37,7 +36,7 @@ export function BlockActions(props: BlockActionsProps) {
     if (renderBlockActions) {
       const blockActionProps = {
         block,
-        value,
+        value: PortableTextEditor.getValue(editor),
         set: createBlockActionPatchFn('set', block, onChange, decoratorValues),
         unset: createBlockActionPatchFn('unset', block, onChange, decoratorValues) as () => void,
         insert: createBlockActionPatchFn('insert', block, onChange, decoratorValues),
@@ -50,7 +49,7 @@ export function BlockActions(props: BlockActionsProps) {
       return renderBlockActions(blockActionProps)
     }
     return undefined
-  }, [renderBlockActions, block, value, onChange, decoratorValues])
+  }, [renderBlockActions, block, editor, onChange, decoratorValues])
 
   // Take focus away from the editor so dealing with block actions doesn't interfere with the editor focus
   const handleClick = useCallback(() => {
