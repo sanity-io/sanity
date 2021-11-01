@@ -149,7 +149,7 @@ export const Element: FunctionComponent<ElementProps> = ({
       : textBlock
     className = `pt-block pt-text-block pt-text-block-style-${element.style}`
     if (element.listItem) {
-      className += ` pt-list-item pt-list-item-${element.listItem}`
+      className += ` pt-list-item pt-list-item-${element.listItem} pt-list-item-level-${element.level}`
     }
     return (
       <div {...attributes} key={element._key} className={className}>
