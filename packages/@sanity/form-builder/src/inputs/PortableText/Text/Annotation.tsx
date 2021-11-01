@@ -66,7 +66,7 @@ const TooltipStack = styled(Stack)`
   max-width: 250px;
 `
 
-const Root = styled.div<AnnotationStyleProps>(annotationStyle)
+const Root = styled.span<AnnotationStyleProps>(annotationStyle)
 
 export const Annotation: FunctionComponent<Props> = ({
   attributes,
