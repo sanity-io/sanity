@@ -52,6 +52,7 @@ export function ActionMenuButton(props: ActionMenuButtonProps) {
         id={`${idPrefix}-action-menu`}
         button={
           <Button
+            data-testid="action-menu-button"
             aria-label="Open document actions"
             disabled={disabled}
             icon={ChevronDownIcon}
@@ -110,6 +111,7 @@ function ActionMenuListItem(props: ActionMenuListItemProps) {
 
   return (
     <MenuItem
+      data-testid={`action-${actionState.label}`}
       disabled={disabled || Boolean(actionState.disabled)}
       onClick={handleClick}
       padding={0}
