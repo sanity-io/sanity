@@ -5,8 +5,6 @@ import {PaneMenuItem} from '../types'
 
 type RouterIntent = NonNullable<PaneMenuItem['intent']>
 
-const MenuItemDisabledStyle = {cursor: 'not-allowed', opacity: '0.5'}
-
 export const IntentMenuItem = forwardRef(function IntentMenuItem(
   props: {intent: RouterIntent} & Omit<ComponentProps<typeof MenuItem>, 'as' | 'href'>,
   ref: React.ForwardedRef<HTMLDivElement>
@@ -40,10 +38,10 @@ export const IntentMenuItem = forwardRef(function IntentMenuItem(
         <MenuItem
           {...restProps}
           as="a"
+          data-disabled
           title={undefined}
           data-as="a"
           aria-disabled="true"
-          style={MenuItemDisabledStyle}
         />
       </div>
     </Tooltip>
