@@ -38,7 +38,6 @@ function mockBrowserEnvironment(basePath) {
   const domCleanup = jsdomGlobal(jsdomDefaultHtml, {url: 'http://localhost:3333/'})
   const windowCleanup = () => global.window.close()
   const globalCleanup = provideFakeGlobals()
-  const contextCleanup = requireContext.register()
   const cleanupFileLoader = pirates.addHook(
     (code, filename) => `module.exports = ${JSON.stringify(filename)}`,
     {
@@ -49,13 +48,14 @@ function mockBrowserEnvironment(basePath) {
 
   registerBabelLoader(basePath)
   pluginLoader({basePath, stubCss: true})
+  const contextCleanup = requireContext.register()
 
   return function cleanupBrowserEnvironment() {
     cleanupFileLoader()
-    contextCleanup()
     globalCleanup()
     windowCleanup()
     domCleanup()
+    contextCleanup()
   }
 }
 
