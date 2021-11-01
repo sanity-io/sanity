@@ -86,8 +86,7 @@
     "@types/resolve-from": "^4.0.0",
     "@types/semver": "^6.2.3",
     "chalk": "^2.4.2",
-    "inquirer": "^6.0.0",
-    "memfs": "^3.3.0"
+    "inquirer": "^6.0.0"
   },
   "repository": {
     "type": "git",
