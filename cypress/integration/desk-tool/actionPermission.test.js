@@ -33,7 +33,7 @@ describe('@sanity/desk-tool: publish permission', () => {
 
     // as the publish button works right now, unless changes are made to the document once opened, the button will always be disaled
     // this is expected behaviour for now.
-    cy.get('input', {wait: 4000}).eq(1).type(' ')
+    cy.get('input').eq(1).type(' ')
 
     cy.get('[data-testid=action-Publish]').should('not.have.attr', 'disabled')
   })
@@ -122,5 +122,46 @@ describe('@sanity/desk-tool: delete permission', () => {
 
     cy.get('[data-testid=action-menu-button').click()
     cy.get('[data-testid=action-Delete]').should('have.attr', 'disabled')
+  })
+})
+
+describe('@sanity/desk-tool: unpublish permission', () => {
+  it('as an administrator user, the unpublish button will be active', () => {
+    cy.visit(
+      '/test/desk/input-standard;booleansTest;1053af2f-84af-49a1-b42b-e2156470bb77%2Ctemplate%3DbooleansTest#_debug_roles=administrator'
+    )
+
+    cy.get('[data-testid=action-menu-button').click()
+    cy.get('[data-testid=action-Unpublish]').should('not.have.attr', 'disabled')
+  })
+
+  it('as an restricted user, the unpublish button will be disabled', () => {
+    cy.visit(
+      '/test/desk/input-standard;booleansTest;1053af2f-84af-49a1-b42b-e2156470bb77%2Ctemplate%3DbooleansTest#_debug_roles=restricted'
+    )
+
+    cy.get('[data-testid=action-menu-button').click()
+    cy.get('[data-testid=action-Unpublish]').should('have.attr', 'disabled')
+  })
+
+  it('as a requiresApproval user on an approved published document, the unpublish button will be active', () => {
+    cy.visit(
+      '/test/desk/author;914bcbf4-9ead-4be1-b797-8d2995c50380%2Ctemplate%3Dauthor-unlocked#_debug_roles=requiresApproval'
+    )
+
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(4500)
+
+    cy.get('[data-testid=action-menu-button').click()
+    cy.get('[data-testid=action-Unpublish]').should('not.have.attr', 'disabled')
+  })
+
+  it('as a requiresApproval user on a non-approved document, the unpublish button will be disabled', () => {
+    cy.visit(
+      '/test/desk/input-standard;booleansTest;1053af2f-84af-49a1-b42b-e2156470bb77%2Ctemplate%3DbooleansTest#_debug_roles=requiresApproval'
+    )
+
+    cy.get('[data-testid=action-menu-button').click()
+    cy.get('[data-testid=action-Unpublish]').should('have.attr', 'disabled')
   })
 })
