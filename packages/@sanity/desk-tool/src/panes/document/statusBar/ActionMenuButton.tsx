@@ -111,7 +111,7 @@ function ActionMenuListItem(props: ActionMenuListItemProps) {
 
   return (
     <MenuItem
-      data-testid={`action-${actionState.label}`}
+      data-testid={`action-${actionState.label.replace(' ', '')}`}
       disabled={disabled || Boolean(actionState.disabled)}
       onClick={handleClick}
       padding={0}
