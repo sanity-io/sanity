@@ -20,7 +20,6 @@ import {isEqual} from 'lodash'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/components'
 import ActivateOnFocus from '../../components/ActivateOnFocus/ActivateOnFocus'
 import PatchEvent from '../../PatchEvent'
-import {EMPTY_ARRAY} from '../../utils/empty'
 import {BlockObject} from './Objects/BlockObject'
 import {InlineObject} from './Objects/InlineObject'
 import {EditObject} from './Objects/EditObject'
@@ -252,7 +251,6 @@ export default function PortableTextInput(props: Props) {
             readOnly={readOnly}
             renderBlockActions={renderBlockActions}
             renderCustomMarkers={renderCustomMarkers}
-            value={value}
           >
             {defaultRender(block)}
           </TextBlock>
@@ -265,7 +263,6 @@ export default function PortableTextInput(props: Props) {
           block={block}
           blockRef={blockRef}
           editor={editor}
-          focusPath={focusPath || EMPTY_ARRAY}
           isFullscreen={isFullscreen}
           markers={blockMarkers}
           onChange={onChange}
@@ -274,13 +271,11 @@ export default function PortableTextInput(props: Props) {
           renderBlockActions={renderBlockActions}
           renderCustomMarkers={renderCustomMarkers}
           type={blockType}
-          value={value}
         />
       )
     },
     [
       editor,
-      focusPath,
       isFullscreen,
       markers,
       onChange,
@@ -289,7 +284,6 @@ export default function PortableTextInput(props: Props) {
       renderBlockActions,
       renderCustomMarkers,
       textBlockTypeName,
-      value,
     ]
   )
 

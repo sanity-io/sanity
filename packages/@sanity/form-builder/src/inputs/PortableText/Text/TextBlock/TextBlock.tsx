@@ -31,7 +31,6 @@ export interface TextBlockProps {
   readOnly: boolean
   renderBlockActions?: RenderBlockActions
   renderCustomMarkers?: RenderCustomMarkers
-  value: PortableTextBlock[] | undefined
 }
 interface TextBlockStyleProps {
   $level?: number
@@ -210,7 +209,6 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
     readOnly,
     renderBlockActions,
     renderCustomMarkers,
-    value,
   } = props
   const {focused} = attributes
 
@@ -375,11 +373,10 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
           {renderBlockActions && (
             <BlockActionsOuter marginRight={1}>
               <BlockActionsInner>
-                {value && focused && !readOnly && (
+                {focused && !readOnly && (
                   <BlockActions
                     onChange={onChange}
                     block={block}
-                    value={value}
                     renderBlockActions={renderBlockActions}
                   />
                 )}

@@ -11,8 +11,6 @@ import {hues} from '@sanity/color'
 import React, {useCallback, useMemo, useRef} from 'react'
 import styled, {css} from 'styled-components'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/change-indicators'
-import {useScrollIntoViewOnFocusWithin} from '../../../hooks/useScrollIntoViewOnFocusWithin'
-import {hasFocusWithinPath} from '../../../utils/focusUtils'
 import {RenderBlockActions, RenderCustomMarkers} from '../types'
 import Markers from '../legacyParts/Markers'
 import PatchEvent from '../../../PatchEvent'
@@ -28,12 +26,10 @@ interface BlockObjectProps {
   isFullscreen?: boolean
   onChange: (event: PatchEvent) => void
   onFocus: (path: Path) => void
-  focusPath: Path
   readOnly: boolean
   renderBlockActions?: RenderBlockActions
   renderCustomMarkers?: RenderCustomMarkers
   type: Type
-  value: PortableTextBlock[] | undefined
 }
 
 const Root = styled(Card)((props: {theme: Theme}) => {
@@ -139,7 +135,6 @@ export function BlockObject(props: BlockObjectProps) {
     block,
     blockRef,
     editor,
-    focusPath,
     isFullscreen,
     markers,
     onChange,
@@ -148,11 +143,8 @@ export function BlockObject(props: BlockObjectProps) {
     renderBlockActions,
     renderCustomMarkers,
     type,
-    value,
   } = props
   const elementRef = useRef<HTMLDivElement>()
-
-  useScrollIntoViewOnFocusWithin(elementRef, hasFocusWithinPath(focusPath, block))
 
   const handleClickToOpen = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
@@ -282,11 +274,10 @@ export function BlockObject(props: BlockObjectProps) {
       {renderBlockActions && (
         <BlockActionsOuter marginRight={1}>
           <BlockActionsInner>
-            {value && focused && !readOnly && (
+            {block && focused && !readOnly && (
               <BlockActions
                 onChange={onChange}
                 block={block}
-                value={value}
                 renderBlockActions={renderBlockActions}
               />
             )}
