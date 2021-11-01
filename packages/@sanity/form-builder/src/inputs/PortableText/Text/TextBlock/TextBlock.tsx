@@ -75,12 +75,8 @@ export function createListName(level: number) {
 }
 
 function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
-  const {$level, $listItem, $size, $style, theme} = props
+  const {$level, $listItem, theme} = props
   const {space, fonts, color} = theme.sanity
-  const font = fonts[$style]
-  const _size = $style === 'heading' ? $size + 1 : $size
-
-  const {fontSize, lineHeight, ascenderHeight} = font.sizes[_size || 0]
   const indent = typeof $level === 'number' ? space[4] * $level : undefined
 
   const overlay = css`
@@ -119,44 +115,39 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
       }
     }
 
-    & > div > [data-ui='TextBlock__text'] {
-      align-items: center;
-      display: flex;
+    & > div > div > [data-ui='TextBlock__text'] {
       overflow-wrap: anywhere;
-      position: relative;
       text-transform: none;
       white-space: pre-wrap;
       font-family: var(--text-font-family);
+      flex: 1;
+    }
 
-      ${$listItem &&
+    & > div > div > div > [data-list-prefix] {
+      margin-right: 1rem;
+
+      ${$listItem === 'number' &&
       css`
-        &:before {
-          ${$listItem === 'number' &&
-          css`
-            content: ${`counter(${createListName($level)})`} '.';
-            content: ${`counter(${createListName($level)}, ${
-                NUMBER_FORMATS[($level - 1) % NUMBER_FORMATS.length]
-              })`}
-              '.';
-          `}
+        font-variant-numeric: tabular-nums;
+        & > span:before {
+          content: ${`counter(${createListName($level)})`} '.';
+          content: ${`counter(${createListName($level)}, ${
+              NUMBER_FORMATS[($level - 1) % NUMBER_FORMATS.length]
+            })`}
+            '.';
+        }
+      `}
 
-          ${$listItem === 'bullet' &&
-          css`
+      ${$listItem === 'bullet' &&
+      css`
+        & > span {
+          position: relative;
+          top: -0.1875em;
+
+          &:before {
             content: '${BULLET_MARKERS[($level - 1) % BULLET_MARKERS.length]}';
-          `}
-
-          font-family: var(--text-font-family);
-          position: absolute;
-          display: flex;
-          justify-content: flex-end;
-          align-items: center;
-          left: -1rem;
-          transform: translateX(-100%);
-          height: ${lineHeight}px;
-          line-height: 1;
-          font-size: ${$listItem === 'bullet' ? fontSize / 2 : fontSize}px;
-          padding-top: ${$listItem === 'bullet' ? '.1em' : undefined};
-          top: ${0 - ascenderHeight}px;
+            font-size: 0.46666em;
+          }
         }
       `}
     }
@@ -167,6 +158,11 @@ const TextRoot = styled(Flex)<TextBlockStyleProps>(textBlockStyle)
 
 const InnerFlex = styled(Flex)`
   position: relative;
+`
+
+const ListPrefixWrap = styled.div`
+  user-select: none;
+  white-space: nowrap;
 `
 
 const StyledChangeIndicatorWithProvidedFullPath = styled(ChangeIndicatorWithProvidedFullPath)(
@@ -247,19 +243,38 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
 
   const text = useMemo(() => {
     const hasTextStyle = TEXT_STYLES_KEYS.includes(block.style)
+    const TextComponent = TEXT_STYLES[hasTextStyle ? block?.style : 'normal']
 
     if (hasTextStyle) {
-      const TextComponent = TEXT_STYLES[block.style]
-
       return (
-        <div data-ui="TextBlock__text">
-          <TextComponent>{children}</TextComponent>
-        </div>
+        <Flex align="flex-start">
+          {block.listItem && (
+            <ListPrefixWrap contentEditable={false}>
+              <TextComponent as="span" data-list-prefix />
+            </ListPrefixWrap>
+          )}
+          <div data-ui="TextBlock__text">
+            <TextComponent as="span">{children}</TextComponent>
+          </div>
+        </Flex>
+      )
+    }
+
+    if (block.listItem) {
+      return (
+        <Flex align="flex-start">
+          {block.listItem && (
+            <ListPrefixWrap contentEditable={false}>
+              <TextComponent data-list-prefix />
+            </ListPrefixWrap>
+          )}
+          <div data-ui="TextBlock__text">{children}</div>
+        </Flex>
       )
     }
 
     return <div data-ui="TextBlock__text">{children}</div>
-  }, [block.style, children])
+  }, [block.style, block.listItem, children])
 
   const outerPaddingProps: ResponsivePaddingProps = useMemo(() => {
     if (block.listItem) {
