@@ -66,33 +66,12 @@ const HEADER_SIZES_KEYS = Object.keys(HEADER_SIZES)
 const BULLET_MARKERS = ['●', '○', '■']
 const NUMBER_FORMATS = ['number', 'lower-alpha', 'lower-roman']
 
-const LEVELS = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+export const LEVELS = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 const noUserSelectStyle: React.CSSProperties = {userSelect: 'none'}
 
-/**
- * This CSS needs to be added to the parent component in order to keep track of the list count
- */
-export const listCounterCSS = css`
-  counter-reset: ${LEVELS.map((lvl) => createListName(lvl)).join(' ')};
-`
-
-function createListName(level: number) {
-  return `pt-list${level}`
-}
-
-function getBulletMarker(level: number, listItem: 'bullet' | 'number') {
-  if (listItem === 'bullet' && typeof level === 'number') {
-    return `'${BULLET_MARKERS[(level - 1) % BULLET_MARKERS.length]}'`
-  }
-
-  if (listItem === 'number' && typeof level === 'number') {
-    return `counter(${createListName(level)}, ${
-      NUMBER_FORMATS[(level - 1) % NUMBER_FORMATS.length]
-    })`
-  }
-
-  return undefined
+export function createListName(level: number) {
+  return `list-level-${level}`
 }
 
 function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
@@ -103,7 +82,6 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
 
   const {fontSize, lineHeight, ascenderHeight} = font.sizes[_size || 0]
   const indent = typeof $level === 'number' ? space[4] * $level : undefined
-  const counter = createListName($level)
 
   const overlay = css`
     content: '';
@@ -141,15 +119,6 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
       }
     }
 
-    &[data-list-item='number'] {
-      counter-set: ${createListName($level + 1)} 0;
-      counter-increment: ${counter};
-    }
-
-    &[data-list-item='bullet'] {
-      counter-reset: ${counter};
-    }
-
     & > div > [data-ui='TextBlock__text'] {
       align-items: center;
       display: flex;
@@ -164,13 +133,16 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
         &:before {
           ${$listItem === 'number' &&
           css`
-            content: ${`counter(${counter})`} '.';
-            content: ${getBulletMarker($level, 'number')} '.';
+            content: ${`counter(${createListName($level)})`} '.';
+            content: ${`counter(${createListName($level)}, ${
+                NUMBER_FORMATS[($level - 1) % NUMBER_FORMATS.length]
+              })`}
+              '.';
           `}
 
           ${$listItem === 'bullet' &&
           css`
-            content: ${getBulletMarker($level, 'bullet')};
+            content: '${BULLET_MARKERS[($level - 1) % BULLET_MARKERS.length]}';
           `}
 
           font-family: var(--text-font-family);
