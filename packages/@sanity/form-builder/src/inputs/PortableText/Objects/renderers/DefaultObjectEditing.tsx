@@ -1,4 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react'
+import {useId} from '@reach/auto-id'
 import {Path, Marker, SchemaType} from '@sanity/types'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import {PortableTextBlock, Type, PortableTextChild} from '@sanity/portable-text-editor'
@@ -35,6 +36,8 @@ export function DefaultObjectEditing(props: DefaultObjectEditingProps) {
     type,
   } = props
 
+  const dialogId = useId()
+
   const handleChange = useCallback((patchEvent: PatchEvent): void => onChange(patchEvent, path), [
     onChange,
     path,
@@ -64,7 +67,7 @@ export function DefaultObjectEditing(props: DefaultObjectEditingProps) {
 
   return (
     <Dialog
-      id={`pte-edit-object-default-dialog`}
+      id={dialogId || ''}
       onClose={onClose}
       onClickOutside={onClose}
       header={type.title}
