@@ -1,12 +1,29 @@
-import React, {FunctionComponent, useCallback, useMemo, useRef} from 'react'
-import {PortableTextChild, RenderAttributes} from '@sanity/portable-text-editor'
+import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {
+  PortableTextChild,
+  PortableTextEditor,
+  RenderAttributes,
+  Type,
+  usePortableTextEditor,
+} from '@sanity/portable-text-editor'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {Marker, Path} from '@sanity/types'
 import styled, {css} from 'styled-components'
-import {Theme, ThemeColorToneKey, Tooltip, Stack} from '@sanity/ui'
+import {
+  Theme,
+  ThemeColorToneKey,
+  Tooltip,
+  Stack,
+  Popover,
+  Box,
+  Inline,
+  Button,
+  useClickOutside,
+} from '@sanity/ui'
+import {hues} from '@sanity/color'
+import {EditIcon, TrashIcon} from '@sanity/icons'
 import Markers from '../legacyParts/Markers'
 import {RenderCustomMarkers} from '../types'
-import {hues} from '@sanity/color'
 
 type Props = {
   attributes: RenderAttributes
@@ -16,6 +33,7 @@ type Props = {
   markers: Marker[]
   onFocus: (path: Path) => void
   renderCustomMarkers: RenderCustomMarkers
+  type: Type
   value: PortableTextChild
 }
 
@@ -76,15 +94,21 @@ export const Annotation: FunctionComponent<Props> = ({
   markers,
   onFocus,
   renderCustomMarkers,
+  type,
   value,
 }) => {
   const {path} = attributes
-  const annotationRef = useRef()
+  const annotationRef = useRef<HTMLElement>(null)
+  const [textElement, setTextElement] = useState(null)
+  const [open, setOpen] = useState(false)
+  const editor = usePortableTextEditor()
 
   const markDefPath = useMemo(() => [...path.slice(0, 1), 'markDefs', {_key: value._key}], [
     path,
     value._key,
   ])
+
+  const text = useMemo(() => <span ref={setTextElement}>{children}</span>, [children])
 
   const markersToolTip = useMemo(
     () =>
@@ -99,15 +123,25 @@ export const Annotation: FunctionComponent<Props> = ({
             </TooltipStack>
           }
         >
-          <span>{children}</span>
+          {text}
         </Tooltip>
       ) : undefined,
-    [children, markers, renderCustomMarkers]
+    [markers, renderCustomMarkers, text]
   )
 
-  const handleOnClick = useCallback((): void => {
+  const handleEditClick = useCallback((): void => {
     onFocus(markDefPath.concat(FOCUS_TERMINATOR))
   }, [markDefPath, onFocus])
+
+  const handleRemoveClick = useCallback(
+    (e): void => {
+      e.preventDefault()
+      e.stopPropagation()
+      PortableTextEditor.removeAnnotation(editor, type)
+      PortableTextEditor.focus(editor)
+    },
+    [editor, type]
+  )
 
   const isLink = useMemo(() => value?._type === 'link', [value])
 
@@ -121,9 +155,29 @@ export const Annotation: FunctionComponent<Props> = ({
     return 'default'
   }, [isLink, hasError])
 
+  useEffect(() => {
+    if (!textElement) return undefined
+    function handleSelectionChange() {
+      const selection = window.getSelection()
+      const {anchorNode, focusNode} = selection
+      if (annotationRef.current.contains(anchorNode) && annotationRef.current.contains(focusNode)) {
+        setOpen(true)
+      }
+    }
+    document.addEventListener('selectionchange', handleSelectionChange)
+    return () => {
+      document.removeEventListener('selectionchange', handleSelectionChange)
+    }
+  }, [textElement])
+
+  const [popoverContent, setPopoverContent] = useState(null)
+  const handleSetCloseState = useCallback(() => {
+    setOpen(false)
+  }, [])
+  useClickOutside(handleSetCloseState, [popoverContent])
+
   return (
     <Root
-      onDoubleClick={handleOnClick}
       $toneKey={toneKey}
       isEditing={isEditing}
       ref={annotationRef}
@@ -131,7 +185,29 @@ export const Annotation: FunctionComponent<Props> = ({
       data-error={hasError ? '' : undefined}
       data-markers={markers.length > 0 ? '' : undefined}
     >
-      {markersToolTip || children}
+      {markersToolTip || text}
+      <Popover
+        content={
+          <Box padding={1} ref={setPopoverContent}>
+            <Inline space={1}>
+              <Button icon={EditIcon} mode="bleed" padding={2} onClick={handleEditClick} />
+              <Button
+                icon={TrashIcon}
+                mode="bleed"
+                padding={2}
+                tone="critical"
+                onClick={handleRemoveClick}
+              />
+            </Inline>
+          </Box>
+        }
+        constrainSize
+        open={open}
+        placement="top"
+        portal="default"
+        referenceElement={annotationRef.current}
+        scheme="dark"
+      />
     </Root>
   )
 }

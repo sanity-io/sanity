@@ -330,6 +330,7 @@ export default function PortableTextInput(props: Props) {
           markers={annotationMarkers}
           renderCustomMarkers={renderCustomMarkers}
           value={annotation}
+          type={annotationType}
           isEditing={isEditing}
         >
           {defaultRender()}
