@@ -509,9 +509,15 @@ class VisionGui extends React.PureComponent {
           </Grid>
         </Header>
         <SplitpaneContainer flex={1}>
-          <SplitPane split="vertical" minSize={150} defaultSize={400}>
+          <SplitPane split="vertical" minSize={280} defaultSize={400} maxSize={-400}>
             <Box height="stretch" flex={1}>
-              <SplitPane split="horizontal" defaultSize={'50%'}>
+              <SplitPane
+                split="horizontal"
+                defaultSize={'50%'}
+                minSize={160}
+                maxSize={-300}
+                primary="second"
+              >
                 <InputContainer display="flex" ref={this._queryEditorContainer}>
                   <Card flex={1}>
                     <InputBackgroundContainerLeft>
