@@ -1,17 +1,18 @@
 /* eslint-disable react/no-find-dom-node */
+
 import React, {useState, useEffect, useMemo, useLayoutEffect, useCallback} from 'react'
 import {isKeySegment, Path, Marker} from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {
+  compactPatches,
   PortableTextBlock,
   PortableTextChild,
-  Type,
   PortableTextEditor,
-  compactPatches,
+  PortableTextFeatures,
+  Type,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {get, debounce} from 'lodash'
-
 import {applyAll} from '../../../simplePatch'
 import {ModalType} from '../../arrays/ArrayOfObjectsInput/types'
 import {PatchEvent} from '../../../PatchEvent'
@@ -38,7 +39,6 @@ interface Props {
   value: PortableTextBlock[] | undefined
 }
 
-// eslint-disable-next-line complexity
 export const EditObject = ({
   focusPath,
   markers,
@@ -141,6 +141,7 @@ export const EditObject = ({
       />
     )
   }
+
   if (
     editModalLayout === 'popover' ||
     editModalLayout === 'fold' ||
@@ -163,6 +164,7 @@ export const EditObject = ({
       />
     )
   }
+
   return (
     <DefaultObjectEditing
       focusPath={focusPath}
@@ -181,9 +183,9 @@ export const EditObject = ({
 }
 
 function findObjectAndType(
-  objectEditData,
-  value,
-  ptFeatures
+  objectEditData: ObjectEditData,
+  value: PortableTextBlock[] | undefined,
+  ptFeatures: PortableTextFeatures
 ): [PortableTextChild | undefined, Type | undefined] {
   if (!objectEditData) {
     return [undefined, undefined]
@@ -229,7 +231,8 @@ function findObjectAndType(
         }
         break
       default:
-      // Nothing
+        // Nothing
+        break
     }
   }
   return [object, type]
