@@ -13,6 +13,7 @@ import React, {useCallback, useEffect, useState} from 'react'
 import styled from 'styled-components'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {PatchEvent} from '../../../../PatchEvent'
+import {debugElement} from './debug'
 
 interface PopoverObjectEditingProps {
   // eslint-disable-next-line react/no-unused-prop-types
@@ -51,12 +52,17 @@ const Header = styled(Box)`
   box-shadow: 0 1px 0 var(--card-shadow-outline-color);
   position: relative;
   z-index: 10;
+  min-height: auto;
 `
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
-function getEditorElement(editor: PortableTextEditor, editorPath: Path) {
-  const [editorObject] = PortableTextEditor.findByPath(editor, editorPath)
+function getEditorElement(editor: PortableTextEditor, editorPath: Path): HTMLElement | undefined {
+  const [editorObject] = PortableTextEditor.findByPath(editor, editorPath) || []
+
+  if (!editorObject) {
+    return undefined
+  }
 
   // eslint-disable-next-line react/no-find-dom-node
   return PortableTextEditor.findDOMNode(editor, editorObject) as HTMLElement
@@ -81,7 +87,7 @@ export function PopoverObjectEditing(props: PopoverObjectEditingProps) {
       open
       portal="default"
       ref={setRootElement}
-      referenceElement={refElement}
+      referenceElement={refElement || (debugElement as any)}
     />
   )
 }
