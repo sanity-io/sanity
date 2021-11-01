@@ -73,6 +73,9 @@ describe('@sanity/desk-tool: duplicate permission', () => {
       '/test/desk/author;914bcbf4-9ead-4be1-b797-8d2995c50380%2Ctemplate%3Dauthor-unlocked#_debug_roles=requiresApproval'
     )
 
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(4500)
+
     cy.get('[data-testid=action-menu-button').click()
     cy.get('[data-testid=action-Duplicate]').should('not.have.attr', 'disabled')
   })
@@ -110,6 +113,9 @@ describe('@sanity/desk-tool: delete permission', () => {
     cy.visit(
       '/test/desk/author;914bcbf4-9ead-4be1-b797-8d2995c50380%2Ctemplate%3Dauthor-unlocked#_debug_roles=requiresApproval'
     )
+
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(4500)
 
     cy.get('[data-testid=action-menu-button').click()
     cy.get('[data-testid=action-Delete]').should('not.have.attr', 'disabled')
