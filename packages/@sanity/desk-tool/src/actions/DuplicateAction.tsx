@@ -4,12 +4,7 @@ import {uuid} from '@sanity/uuid'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import {useRouter} from '@sanity/base/router'
 import React, {useCallback, useMemo, useState} from 'react'
-import {
-  unstable_useCheckDocumentPermission as useCheckDocumentPermission,
-  useCurrentUser,
-  // eslint-disable-next-line camelcase
-  useCheckDocumentPermission_temp,
-} from '@sanity/base/hooks'
+import {useCurrentUser, useCheckDocumentPermissions} from '@sanity/base/hooks'
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
 
 const DISABLED_REASON_TITLE = {
@@ -27,7 +22,7 @@ export const DuplicateAction: DocumentActionComponent = ({
   const router = useRouter()
   const [isDuplicating, setDuplicating] = useState(false)
   const emptyDoc = useMemo(() => ({_id: 'dummy-id', _type: type}), [type])
-  const createPermission = useCheckDocumentPermission_temp(draft || published || emptyDoc, 'create')
+  const createPermission = useCheckDocumentPermissions(draft || published || emptyDoc, 'create')
 
   const {value: currentUser} = useCurrentUser()
 

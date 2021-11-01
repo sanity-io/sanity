@@ -5,23 +5,16 @@ import shallowEquals from 'shallow-equals'
 import {pipe} from 'rxjs'
 import {useObservable, useAsObservable, useMemoObservable} from 'react-rx'
 import {
-  canCreateType,
+  canCreateType as old_canCreateType,
   canCreateAnyOf,
   canDelete,
   canDiscardDraft,
-  canPublish,
+  canPublish as old_canPublish,
   canUnpublish,
-  canUpdate,
+  canUpdate as old_canUpdate,
 } from './highlevel'
 
-import {
-  canCreateType as canCreateType2,
-  canDelete as canDelete2,
-  canDiscardDraft as canDiscardDraft2,
-  canPublish as canPublish2,
-  canUnpublish as canUnpublish2,
-  canUpdate as canUpdate2,
-} from './documentPair'
+import {canCreateType, canPublish, canUpdate} from './documentPair'
 
 const INITIAL = {granted: true, reason: '<pending>'}
 
@@ -41,29 +34,22 @@ export function unstable_useCanCreateAnyOf(typeNames: string[]) {
     INITIAL
   )
 }
-// eslint-disable-next-line camelcase
-export function useCheckDocumentPermission_temp(
+
+// this is the new hook to check for permissions. It only needs the document and does not resolve the initial value templates
+export function useCheckDocumentPermissions(
   document: Partial<SanityDocument>,
   permission: 'update' | 'create' | 'delete' | 'publish' | 'unpublish' | 'discardDraft'
 ) {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   return useMemoObservable(() => {
     if (permission === 'update') {
-      return canUpdate2(document)
+      return canUpdate(document)
     }
     if (permission === 'create') {
-      return canCreateType2(document)
+      return canCreateType(document)
     }
     if (permission === 'publish') {
-      return canPublish2(document)
-    }
-    if (permission === 'delete') {
-      return canDelete2(document)
-    }
-    if (permission === 'unpublish') {
-      return canUnpublish2(document)
-    }
-    if (permission === 'discardDraft') {
-      return canDiscardDraft2(document)
+      return canPublish(document)
     }
     throw new Error(`Unknown permission: "${permission}"`)
   }, [document, permission])
@@ -86,13 +72,13 @@ export function unstable_useCheckDocumentPermission(
         // eslint-disable-next-line @typescript-eslint/no-shadow
         switchMap(([id, type, permission]) => {
           if (permission === 'update') {
-            return canUpdate(id, type)
+            return old_canUpdate(id, type)
           }
           if (permission === 'create') {
-            return canCreateType(id, type)
+            return old_canCreateType(id, type)
           }
           if (permission === 'publish') {
-            return canPublish(id, type)
+            return old_canPublish(id, type)
           }
           if (permission === 'delete') {
             return canDelete(id, type)

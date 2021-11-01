@@ -2,11 +2,7 @@ import {DocumentActionComponent} from '@sanity/base'
 import {useSyncState, useDocumentOperation, useValidationStatus} from '@sanity/react-hooks'
 import {CheckmarkIcon, PublishIcon} from '@sanity/icons'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
-import {
-  // eslint-disable-next-line camelcase
-  useCheckDocumentPermission_temp,
-  useCurrentUser,
-} from '@sanity/base/hooks'
+import {useCurrentUser, useCheckDocumentPermissions} from '@sanity/base/hooks'
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
 import {TimeAgo} from '../components/TimeAgo'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
@@ -46,10 +42,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const [publishScheduled, setPublishScheduled] = useState<boolean>(false)
   const isNeitherSyncingNorValidating = !syncState.isSyncing && !validationStatus.isValidating
   const emptyDoc = useMemo(() => ({_id: id, _type: type}), [id, type])
-  const publishPermission = useCheckDocumentPermission_temp(
-    draft || published || emptyDoc,
-    'publish'
-  )
+  const publishPermission = useCheckDocumentPermissions(draft || published || emptyDoc, 'publish')
 
   const {value: currentUser} = useCurrentUser()
 
