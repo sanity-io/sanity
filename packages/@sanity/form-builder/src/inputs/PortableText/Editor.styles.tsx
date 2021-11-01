@@ -1,7 +1,7 @@
 import {ScrollContainer} from '@sanity/base/components'
 import {Card, Container, rem} from '@sanity/ui'
-import styled from 'styled-components'
-import {listCounterCSS} from './Text/TextBlock'
+import styled, {css} from 'styled-components'
+import {createListName, LEVELS} from './Text/TextBlock'
 
 export const Root = styled(Card)<{$fullscreen: boolean}>`
   height: ${({$fullscreen}) => ($fullscreen ? '100%' : '15em')};
@@ -37,17 +37,38 @@ export const EditableContainer = styled(Container)`
 `
 
 export const EditableWrapper = styled(Card)<{$isFullscreen: boolean}>`
-  /* Add list counter CSS to keep track of the list count */
-  ${listCounterCSS}
+  counter-reset: ${LEVELS.map((l) => createListName(l)).join(' ')};
+
+  ${LEVELS.map((l) => {
+    return css`
+      & ${`[class~='pt-list-item-level-${l}']`}[class~='pt-list-item-number'] {
+        counter-increment: ${createListName(l)};
+      }
+    `
+  })}
 
   & > div > div > div[class~='pt-list-item-bullet'] + div[class~='pt-list-item-number'],
   & > div > div > div[class~='pt-list-item-number'] + div[class~='pt-list-item-bullet'] {
     margin-top: ${({theme}) => theme.sanity.space[3]}px;
+    counter-reset: ${LEVELS.map((l) => createListName(l)).join(' ')};
   }
 
-  & > div > div > div:not(.pt-list-item) + .pt-list-item {
+  & > div > div > div:not([class~='pt-list-item']) + [class~='pt-list-item'] {
     margin-top: ${({theme}) => theme.sanity.space[2]}px;
   }
+
+  /* Reset the list count if the element is not a numbered list item */
+  & > div > div > div:not([class~='pt-list-item-number']) {
+    counter-reset: ${LEVELS.map((l) => createListName(l)).join(' ')};
+  }
+
+  ${LEVELS.slice(1).map((l) => {
+    return css`
+      & > div > div > ${`.pt-list-item-level-${l}`} + ${`.pt-list-item-level-${l - 1}`} {
+        counter-reset: ${createListName(l)};
+      }
+    `
+  })}
 
   .pt-drop-indicator {
     border: 1px solid var(--card-focus-ring-color) !important;
@@ -70,11 +91,6 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean}>`
 
   & > div > div > .pt-list-item + div:not(.pt-list-item) {
     margin-top: ${({theme}) => theme.sanity.space[3]}px;
-  }
-
-  /* Reset the list count if the item is not a numbered list item */
-  & > div > div > div:not(.pt-list-item-number) {
-    ${listCounterCSS};
   }
 
   &:not([hidden]) {
