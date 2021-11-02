@@ -29,8 +29,6 @@ function getPTEFormatActions(
   hotkeyOpts: HotkeyOptions
 ): PTEToolbarAction[] {
   const features = PortableTextEditor.getPortableTextFeatures(editor)
-  const focusBlock = PortableTextEditor.focusBlock(editor)
-
   return features.decorators.map((decorator) => {
     const shortCutKey = Object.keys(hotkeyOpts.marks).find(
       (key) => hotkeyOpts.marks[key] === decorator.value
@@ -43,7 +41,7 @@ function getPTEFormatActions(
 
     return {
       type: 'format',
-      disabled: disabled || (focusBlock ? features.types.block.name !== focusBlock._type : false),
+      disabled: disabled,
       icon: decorator.blockEditor?.icon,
       key: decorator.value,
       handle: (): void => PortableTextEditor.toggleMark(editor, decorator.value),
@@ -55,13 +53,11 @@ function getPTEFormatActions(
 
 function getPTEListActions(editor: PortableTextEditor, disabled: boolean): PTEToolbarAction[] {
   const features = PortableTextEditor.getPortableTextFeatures(editor)
-  const focusBlock = PortableTextEditor.focusBlock(editor)
-
   return features.lists.map((listItem: PortableTextFeature) => {
     return {
       type: 'listStyle',
       key: listItem.value,
-      disabled: disabled || (focusBlock ? features.types.block.name !== focusBlock._type : false),
+      disabled: disabled,
       icon: listItem.blockEditor?.icon,
       handle: (): void => PortableTextEditor.toggleList(editor, listItem.value),
       title: listItem.title,
@@ -81,16 +77,16 @@ function getAnnotationIcon(item: PortableTextFeature): React.ComponentType | str
 
 function getPTEAnnotationActions(
   editor: PortableTextEditor,
+  disabled: boolean,
   onInsert: (type: Type) => void
 ): PTEToolbarAction[] {
   const features = PortableTextEditor.getPortableTextFeatures(editor)
   const focusChild = PortableTextEditor.focusChild(editor)
   const hasText = focusChild && focusChild.text
-
   return features.annotations.map((item) => {
     return {
       type: 'annotation',
-      disabled: !hasText || !focusChild || PortableTextEditor.isVoid(editor, focusChild),
+      disabled: !hasText || disabled,
       icon: getAnnotationIcon(item),
       key: item.value,
       handle: (active: boolean): void => {
@@ -115,7 +111,7 @@ export function getPTEToolbarActionGroups(
   return [
     {name: 'format', actions: getPTEFormatActions(editor, disabled, hotkeyOpts)},
     {name: 'list', actions: getPTEListActions(editor, disabled)},
-    {name: 'annotation', actions: getPTEAnnotationActions(editor, onInsertAnnotation)},
+    {name: 'annotation', actions: getPTEAnnotationActions(editor, disabled, onInsertAnnotation)},
   ]
 }
 
