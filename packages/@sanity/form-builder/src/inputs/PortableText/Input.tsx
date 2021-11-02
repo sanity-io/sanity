@@ -88,6 +88,7 @@ export default function PortableTextInput(props: Props) {
   ] = useState(null)
   const [initialSelection, setInitialSelection] = useState(undefined)
   const [returnToSelection, setReturnToSelection] = useState<EditorSelection>(null) // The selection to return to after closing the edit object interface
+  const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
 
   // Respond to focusPath changes
   useEffect(() => {
@@ -336,12 +337,13 @@ export default function PortableTextInput(props: Props) {
           value={annotation}
           type={annotationType}
           isEditing={isEditing}
+          scrollElement={scrollElement}
         >
           {defaultRender()}
         </Annotation>
       )
     },
-    [markers, objectEditData?.formBuilderPath, onFocus, renderCustomMarkers]
+    [markers, objectEditData?.formBuilderPath, onFocus, renderCustomMarkers, scrollElement]
   )
 
   const handleEditObjectClose = useCallback(() => {
@@ -378,21 +380,23 @@ export default function PortableTextInput(props: Props) {
         renderCustomMarkers={renderCustomMarkers}
         setPortalElement={setPortalElement}
         value={value}
+        scrollElement={scrollElement}
+        setScrollElement={setScrollElement}
       />
     ),
     [
-      editorId,
-      handleToggleFullscreen,
       hotkeys,
       initialSelection,
-      isActive,
       isFullscreen,
+      editorId,
       markers,
       onBlur,
       onFocus,
       onChange,
       onCopy,
       onPaste,
+      handleToggleFullscreen,
+      isActive,
       readOnly,
       renderAnnotation,
       renderBlock,
@@ -400,6 +404,7 @@ export default function PortableTextInput(props: Props) {
       renderChild,
       renderCustomMarkers,
       value,
+      scrollElement,
     ]
   )
 
