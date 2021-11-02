@@ -13,8 +13,8 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {Marker} from '@sanity/types'
-import {BoundaryElementProvider, Card, useBoundaryElement, useLayer, usePortal} from '@sanity/ui'
-import React, {useMemo, useEffect, useState} from 'react'
+import {BoundaryElementProvider, Card, useBoundaryElement, useLayer} from '@sanity/ui'
+import React, {useMemo, useEffect} from 'react'
 import PatchEvent from '../../PatchEvent'
 import {createScrollSelectionIntoView} from './utils/scrollSelectionIntoView'
 import {Toolbar} from './Toolbar/Toolbar'
@@ -40,7 +40,9 @@ type Props = {
   renderBlockActions?: RenderBlockActions
   renderChild: RenderChildFunction
   renderCustomMarkers?: RenderCustomMarkers
+  scrollElement: HTMLElement
   setPortalElement?: (el: HTMLDivElement | null) => void
+  setScrollElement: (element: HTMLElement) => void
   value: PortableTextBlock[] | undefined
 }
 
@@ -64,6 +66,8 @@ function PortableTextSanityEditor(props: Props) {
     renderChild,
     setPortalElement,
     value,
+    scrollElement,
+    setScrollElement,
   } = props
 
   const editor = usePortableTextEditor()
@@ -178,7 +182,6 @@ function PortableTextSanityEditor(props: Props) {
     }
   }, [isFullscreen, isTopLayer, onToggleFullscreen])
 
-  const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
   const handleScrollSelectionIntoView = useMemo(
     () => createScrollSelectionIntoView(scrollElement),
     [scrollElement]
@@ -240,6 +243,7 @@ function PortableTextSanityEditor(props: Props) {
       renderChild,
       scrollElement,
       setPortalElement,
+      setScrollElement,
       value,
     ]
   )
