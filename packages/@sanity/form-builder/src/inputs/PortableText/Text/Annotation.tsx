@@ -18,7 +18,9 @@ import {
   Box,
   Inline,
   Button,
-  useClickOutside,
+  useGlobalKeyDown,
+  Text,
+  useTheme,
 } from '@sanity/ui'
 import {hues} from '@sanity/color'
 import {EditIcon, TrashIcon} from '@sanity/icons'
@@ -35,6 +37,7 @@ type Props = {
   renderCustomMarkers: RenderCustomMarkers
   type: Type
   value: PortableTextChild
+  scrollElement: HTMLElement
 }
 
 type AnnotationStyleProps = {
@@ -94,21 +97,128 @@ export const Annotation: FunctionComponent<Props> = ({
   markers,
   onFocus,
   renderCustomMarkers,
+  scrollElement,
   type,
   value,
 }) => {
   const {path} = attributes
   const annotationRef = useRef<HTMLElement>(null)
-  const [textElement, setTextElement] = useState(null)
-  const [open, setOpen] = useState(false)
   const editor = usePortableTextEditor()
-
   const markDefPath = useMemo(() => [...path.slice(0, 1), 'markDefs', {_key: value._key}], [
     path,
     value._key,
   ])
+  const {sanity} = useTheme()
 
-  const text = useMemo(() => <span ref={setTextElement}>{children}</span>, [children])
+  // -------------- Popover ------------- //
+  const [textElement, setTextElement] = useState<HTMLSpanElement | null>(null)
+  const [open, setOpen] = useState<boolean>(false)
+  const [cursorRect, setCursorRect] = useState<DOMRect | null>(null)
+  const [selection, setSelection] = useState(null)
+  const isClosingRef = useRef<boolean>(false)
+  const rangeRef = useRef<Range | null>(null)
+
+  // This is a "virtual element" (supported by Popper.js)
+  const cursorElement = useMemo(() => {
+    if (!cursorRect) {
+      return null
+    }
+
+    return {
+      getBoundingClientRect: () => {
+        return cursorRect
+      },
+    }
+  }, [cursorRect])
+
+  useEffect(() => {
+    if (!open) {
+      return undefined
+    }
+
+    const handleScroll = () => {
+      if (rangeRef.current) {
+        setCursorRect(rangeRef.current.getBoundingClientRect())
+      }
+    }
+
+    scrollElement.addEventListener('scroll', handleScroll, {passive: true})
+
+    return () => {
+      scrollElement.addEventListener('scroll', handleScroll)
+    }
+  }, [open, scrollElement])
+
+  // Close floating toolbar on Escape
+  useGlobalKeyDown(
+    useCallback(
+      (event) => {
+        if (event.key === 'Escape' && open) {
+          setOpen(false)
+        }
+      },
+      [open]
+    )
+  )
+
+  // Detect selection changes
+  useEffect(() => {
+    function handleSelectionChange() {
+      if (!textElement) return
+      const winSelection = window.getSelection()
+      const {anchorNode, anchorOffset, focusNode, focusOffset} = winSelection
+
+      setSelection({
+        anchorNode,
+        anchorOffset,
+        focusNode,
+        focusOffset,
+      })
+    }
+
+    document.addEventListener('selectionchange', handleSelectionChange, {passive: true})
+
+    return () => {
+      document.removeEventListener('selectionchange', handleSelectionChange)
+    }
+  }, [textElement])
+
+  // Open popover when selection is within annotations
+  useEffect(() => {
+    if (!selection) return
+    if (isClosingRef.current) return
+
+    const {anchorNode, focusNode} = selection
+
+    const annotationElement = annotationRef.current
+
+    if (annotationElement && annotationElement.contains(anchorNode) && anchorNode === focusNode) {
+      const range = window.getSelection().getRangeAt(0)
+      const rect = range.getBoundingClientRect()
+      rangeRef.current = range
+
+      if (rect) {
+        setCursorRect(rect)
+        setOpen(true)
+      }
+    } else {
+      setOpen(false)
+      setCursorRect(null)
+      rangeRef.current = null
+    }
+  }, [selection])
+  // -------------- End popover ------------- //
+
+  const text = useMemo(
+    () => (
+      <span ref={setTextElement} data-annotation="">
+        {children}
+      </span>
+    ),
+    [children]
+  )
+
+  const popoverScheme = useMemo(() => (sanity.color.dark ? 'light' : 'dark'), [sanity.color.dark])
 
   const markersToolTip = useMemo(
     () =>
@@ -130,6 +240,7 @@ export const Annotation: FunctionComponent<Props> = ({
   )
 
   const handleEditClick = useCallback((): void => {
+    setOpen(false)
     onFocus(markDefPath.concat(FOCUS_TERMINATOR))
   }, [markDefPath, onFocus])
 
@@ -137,6 +248,7 @@ export const Annotation: FunctionComponent<Props> = ({
     (e): void => {
       e.preventDefault()
       e.stopPropagation()
+      setOpen(false)
       PortableTextEditor.removeAnnotation(editor, type)
       PortableTextEditor.focus(editor)
     },
@@ -155,27 +267,6 @@ export const Annotation: FunctionComponent<Props> = ({
     return 'default'
   }, [isLink, hasError])
 
-  useEffect(() => {
-    if (!textElement) return undefined
-    function handleSelectionChange() {
-      const selection = window.getSelection()
-      const {anchorNode, focusNode} = selection
-      if (annotationRef.current.contains(anchorNode) && annotationRef.current.contains(focusNode)) {
-        setOpen(true)
-      }
-    }
-    document.addEventListener('selectionchange', handleSelectionChange)
-    return () => {
-      document.removeEventListener('selectionchange', handleSelectionChange)
-    }
-  }, [textElement])
-
-  const [popoverContent, setPopoverContent] = useState(null)
-  const handleSetCloseState = useCallback(() => {
-    setOpen(false)
-  }, [])
-  useClickOutside(handleSetCloseState, [popoverContent])
-
   return (
     <Root
       $toneKey={toneKey}
@@ -188,25 +279,30 @@ export const Annotation: FunctionComponent<Props> = ({
       {markersToolTip || text}
       <Popover
         content={
-          <Box padding={1} ref={setPopoverContent}>
+          <Box padding={1}>
             <Inline space={1}>
-              <Button icon={EditIcon} mode="bleed" padding={2} onClick={handleEditClick} />
+              <Box padding={2}>
+                <Text weight="semibold" size={1}>
+                  {type?.title || type.name}
+                </Text>
+              </Box>
+              <Button icon={EditIcon} mode="bleed" onClick={handleEditClick} padding={2} />
               <Button
                 icon={TrashIcon}
                 mode="bleed"
                 padding={2}
-                tone="critical"
                 onClick={handleRemoveClick}
+                tone="critical"
               />
             </Inline>
           </Box>
         }
         constrainSize
-        open={open}
+        open={cursorElement && open}
         placement="top"
-        portal="default"
-        referenceElement={annotationRef.current}
-        scheme="dark"
+        scheme={popoverScheme}
+        portal="editor"
+        referenceElement={cursorElement as any}
       />
     </Root>
   )
