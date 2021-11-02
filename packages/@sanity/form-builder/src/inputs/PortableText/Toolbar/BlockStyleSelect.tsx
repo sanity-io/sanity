@@ -22,7 +22,6 @@ interface BlockStyleSelectProps {
   disabled: boolean
   readOnly: boolean
   items: BlockStyleItem[]
-  isFullscreen?: boolean
 }
 
 const StyledMenuItem = styled(MenuItem)`
@@ -68,7 +67,7 @@ const emptyStyle: BlockStyleItem = {
 export const BlockStyleSelect = memo(function BlockStyleSelect(
   props: BlockStyleSelectProps
 ): JSX.Element {
-  const {disabled, items: itemsProp, readOnly, isFullscreen} = props
+  const {disabled, items: itemsProp, readOnly} = props
   const editor = usePortableTextEditor()
   const features = useFeatures()
   const focusBlock = useFocusBlock()
@@ -134,12 +133,12 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
           iconRight={SelectIcon}
           mode="bleed"
           onClick={preventDefault}
-          padding={isFullscreen ? 3 : 2}
+          padding={2}
           text={menuButtonText}
         />
       </Stack>
     ),
-    [_disabled, disabled, isFullscreen, menuButtonText, readOnly]
+    [_disabled, disabled, menuButtonText, readOnly]
   )
 
   const menu = useMemo(

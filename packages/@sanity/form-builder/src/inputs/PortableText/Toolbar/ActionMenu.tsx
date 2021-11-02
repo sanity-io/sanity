@@ -47,12 +47,11 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
   const activeKeys = useActiveActionKeys({actions})
 
   const collapsesButtonProps: CollapseMenuButtonProps = useMemo(
-    () => ({padding: isFullscreen ? 3 : 2, mode: 'bleed'}),
-    [isFullscreen]
+    () => ({padding: 2, mode: 'bleed'}),
+    []
   )
 
-  const menuButtonPadding = useMemo(() => (isFullscreen ? 3 : 2), [isFullscreen])
-  const disableMenuButton = useMemo(() => disabled || readOnly, [disabled, readOnly])
+  const disableMenuButton = disabled || readOnly
 
   const children = useMemo(
     () =>
@@ -83,14 +82,9 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
 
   const menuButton = useMemo(
     () => (
-      <Button
-        icon={EllipsisVerticalIcon}
-        mode="bleed"
-        padding={menuButtonPadding}
-        disabled={disableMenuButton}
-      />
+      <Button icon={EllipsisVerticalIcon} mode="bleed" padding={2} disabled={disableMenuButton} />
     ),
-    [disableMenuButton, menuButtonPadding]
+    [disableMenuButton]
   )
 
   return (

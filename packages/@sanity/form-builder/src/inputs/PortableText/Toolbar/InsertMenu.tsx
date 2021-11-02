@@ -20,8 +20,8 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
   const focusBlock = useFocusBlock()
 
   const collapseButtonProps: CollapseMenuButtonProps = useMemo(
-    () => ({padding: isFullscreen ? 3 : 2, mode: 'bleed'}),
-    [isFullscreen]
+    () => ({padding: 2, mode: 'bleed'}),
+    []
   )
 
   // @todo: explain what this does
@@ -43,7 +43,7 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
           onClick={handle}
           text={title}
           tooltipProps={{
-            disabled: disabled,
+            disabled,
             placement: isFullscreen ? 'bottom' : 'top',
             portal: 'default',
             text: `Insert ${title}`,
@@ -54,15 +54,8 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
   }, [_disabled, collapseButtonProps, disabled, isFullscreen, items, readOnly])
 
   const menuButton = useMemo(
-    () => (
-      <Button
-        icon={AddIcon}
-        mode="bleed"
-        padding={isFullscreen ? 3 : 2}
-        disabled={disabled || readOnly}
-      />
-    ),
-    [disabled, isFullscreen, readOnly]
+    () => <Button icon={AddIcon} mode="bleed" padding={2} disabled={disabled || readOnly} />,
+    [disabled, readOnly]
   )
 
   return (
