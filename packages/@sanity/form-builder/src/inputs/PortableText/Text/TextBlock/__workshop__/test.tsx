@@ -46,7 +46,7 @@ export default function TestStory() {
   const onChange = noop
   const attributes = {focused: false, selected: false, path: []}
   const readOnly = false
-  const value = []
+  // const value = []
   return (
     <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
       <Container width={1}>
@@ -57,7 +57,7 @@ export default function TestStory() {
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
-            value={value}
+            // value={value}
           >
             Heading 1
           </TextBlock>
@@ -68,7 +68,7 @@ export default function TestStory() {
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
-            value={value}
+            // value={value}
           >
             Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
             has been the industry's standard dummy text ever since the 1500s, when an unknown
@@ -81,7 +81,7 @@ export default function TestStory() {
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
-            value={value}
+            // value={value}
           >
             Lorem Ipsum is simply dummy text of the printing and typesetting industry.
           </TextBlock>
@@ -91,7 +91,7 @@ export default function TestStory() {
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
-            value={value}
+            // value={value}
           >
             Lorem Ipsum is simply dummy text of the printing and typesetting industry.
           </TextBlock>
@@ -102,7 +102,7 @@ export default function TestStory() {
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
-            value={value}
+            // value={value}
           >
             Lorem Ipsum is simply dummy text of the printing and typesetting industry.
           </TextBlock>
@@ -113,7 +113,7 @@ export default function TestStory() {
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
-            value={value}
+            // value={value}
           >
             Lorem Ipsum is simply dummy text of the printing and typesetting industry.
           </TextBlock>
@@ -124,7 +124,7 @@ export default function TestStory() {
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
-            value={value}
+            // value={value}
           >
             Heading 2
           </TextBlock>
@@ -135,7 +135,7 @@ export default function TestStory() {
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
-            value={value}
+            // value={value}
           >
             Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
             has been the industry's standard dummy text ever since the 1500s, when an unknown
@@ -148,7 +148,7 @@ export default function TestStory() {
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
-            value={value}
+            // value={value}
           >
             Lorem Ipsum is simply dummy text of the printing and typesetting industry.
           </TextBlock>
@@ -159,7 +159,7 @@ export default function TestStory() {
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
-            value={value}
+            // value={value}
           >
             Lorem Ipsum is simply dummy text of the printing and typesetting industry.
           </TextBlock>
@@ -170,7 +170,7 @@ export default function TestStory() {
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
-            value={value}
+            // value={value}
           >
             Heading 3
           </TextBlock>
@@ -181,7 +181,7 @@ export default function TestStory() {
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
-            value={value}
+            // value={value}
           >
             Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
             has been the industry's standard dummy text ever since the 1500s, when an unknown
@@ -194,7 +194,7 @@ export default function TestStory() {
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
-            value={value}
+            // value={value}
           >
             Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
             has been the industry's standard dummy text ever since the 1500s, when an unknown
