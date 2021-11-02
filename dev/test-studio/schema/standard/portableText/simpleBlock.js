@@ -52,7 +52,7 @@ export default {
           validation: (Rule) =>
             Rule.custom((block) => {
               const text = extractTextFromBlocks([block])
-              return text.length < 10 ? 'Please write a longer paragraph.' : true
+              return text.length === 1 ? 'Please write a longer paragraph.' : true
             }),
         },
         {type: 'image', name: 'image'},
