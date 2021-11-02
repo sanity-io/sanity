@@ -1,6 +1,6 @@
 {
   "name": "@sanity/default-login",
-  "version": "2.21.7",
+  "version": "2.21.9",
   "description": "Lets the user log in to Sanity.",
   "main": "./lib/index.js",
   "types": "./dist/dts",
