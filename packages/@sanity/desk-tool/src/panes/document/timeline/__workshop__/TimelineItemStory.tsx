@@ -77,6 +77,8 @@ export default function TimelineItemStory() {
                       draftState: 'present',
                       publishedState: 'present',
                     }}
+                    topSelectionIndex={isSelectionTop}
+                    bottomSelectionIndex={isSelectionBottom}
                     isSelectionTop={index === isSelectionTop && withinSelection}
                     isSelectionBottom={index === isSelectionBottom && withinSelection}
                     state={getState(index) as any}
