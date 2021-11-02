@@ -3,4 +3,5 @@ module.exports = {
   clean: require('./clean'),
   moviedb: require('./moviedb'),
   ecommerce: require('./ecommerce'),
+  shopify: require('./shopify'),
 }
