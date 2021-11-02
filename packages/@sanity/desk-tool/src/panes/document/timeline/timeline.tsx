@@ -76,6 +76,8 @@ export const Timeline = ({
           onSelect={onSelect}
           type={chunk.type}
           timestamp={chunk.endTimestamp}
+          topSelectionIndex={topSelection.index}
+          bottomSelectionIndex={bottomSelection.index}
         />
       )
 
