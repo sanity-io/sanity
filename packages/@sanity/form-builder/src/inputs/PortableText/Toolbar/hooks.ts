@@ -71,7 +71,7 @@ export function useActionGroups({
     () =>
       editor ? getPTEToolbarActionGroups(editor, disabled, handleInsertAnnotation, hotkeys) : [],
 
-    [disabled, editor, handleInsertAnnotation, hotkeys]
+    [disabled, editor, handleInsertAnnotation, hotkeys, selection] // Selection must be part of the dep. here!
   )
 }
 
