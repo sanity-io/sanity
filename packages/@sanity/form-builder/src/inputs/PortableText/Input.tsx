@@ -91,6 +91,10 @@ export default function PortableTextInput(props: Props) {
 
   // Respond to focusPath changes
   useEffect(() => {
+    // Wait until the editor is properly initialized
+    if (!editor.editable) {
+      return
+    }
     if (focusPath && objectEditData === null) {
       // Test if this focus path is the same as we got selected already.
       // If it is, just return or the editor will just try to refocus which
