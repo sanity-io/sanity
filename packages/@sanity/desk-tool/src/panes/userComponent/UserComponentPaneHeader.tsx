@@ -1,19 +1,18 @@
 import React, {useCallback, useMemo} from 'react'
-import {MenuItem, MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
 import {ArrowLeftIcon, UnknownIcon} from '@sanity/icons'
 import {Box, Button, Inline, Text, Tooltip} from '@sanity/ui'
+import {PaneMenuItem, PaneMenuItemGroup, DeskToolPaneActionHandler} from '../../types'
 import {IntentButton} from '../../components/IntentButton'
 import {PaneContextMenuButton, PaneHeader, usePane} from '../../components/pane'
 import {useDeskTool} from '../../contexts/deskTool'
 import {BackLink} from '../../contexts/paneRouter'
-import {DeskToolPaneActionHandler} from '../../types'
 import {useDeskToolPaneActions} from '../useDeskToolPaneActions'
 
 interface UserComponentPaneHeaderProps {
   actionHandlers?: Record<string, DeskToolPaneActionHandler>
   index: number
-  menuItems?: MenuItem[]
-  menuItemGroups?: MenuItemGroup[]
+  menuItems?: PaneMenuItem[]
+  menuItemGroups?: PaneMenuItemGroup[]
   title: string
 }
 
@@ -23,8 +22,8 @@ export function UserComponentPaneHeader(props: UserComponentPaneHeaderProps) {
   const {features} = useDeskTool()
 
   const handleAction = useCallback(
-    (item: MenuItem) => {
-      let handler: MenuItem['action'] | null = null
+    (item: PaneMenuItem) => {
+      let handler: PaneMenuItem['action'] | null = null
 
       if (typeof item.action === 'function') {
         handler = item.action

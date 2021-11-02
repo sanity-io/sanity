@@ -1,9 +1,4 @@
-export interface SetParamsOptions {
-  recurseIfInherited?: boolean
-}
-
-export type PaneSegment = {id: string; payload?: unknown; params?: Record<string, unknown>}
-export type RouterPanesState = Array<PaneSegment[]>
+import {RouterPanes, RouterPaneSibling} from '../../types'
 
 export interface PaneRouterContextValue {
   /**
@@ -29,7 +24,7 @@ export interface PaneRouterContextValue {
   /**
    * Params of the current pane
    */
-  params: Record<string, string | undefined>
+  params?: RouterPaneSibling['params']
 
   /**
    * Whether or not the pane has any siblings (within the same group)
@@ -44,7 +39,7 @@ export interface PaneRouterContextValue {
   /**
    * Current router state for the "panes" property
    */
-  routerPanesState: RouterPanesState
+  routerPanesState: RouterPanes
 
   /**
    * Curried StateLink that passes the correct state automatically
@@ -79,7 +74,7 @@ export interface PaneRouterContextValue {
   /**
    * Set the parameters for the current pane
    */
-  setParams: (params: Record<string, string | undefined>, options?: SetParamsOptions) => void
+  setParams: (params: Record<string, string | undefined>) => void
 
   /**
    * Set the payload for the current pane

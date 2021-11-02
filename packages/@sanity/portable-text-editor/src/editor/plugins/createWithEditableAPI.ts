@@ -389,73 +389,50 @@ export function createWithEditableAPI(
               selection = editor.selection
             }
           }
-          if (selection && Range.isExpanded(selection)) {
-            // Split the span first
-            Transforms.setNodes(editor, {}, {match: Text.isText, split: true})
-            selection = editor.selection
-            if (!selection) {
-              return
-            }
-            // Everything in the selection which has marks
-            const spans = Editor.nodes(editor, {
-              at: selection,
-              match: (node) =>
-                Text.isText(node) &&
-                node.marks !== undefined &&
-                Array.isArray(node.marks) &&
-                node.marks.length > 0,
-            })
-            for (const [span, path] of spans) {
-              const [block] = Editor.node(editor, path, {depth: 1})
-              if (block && Array.isArray(block.markDefs)) {
-                // eslint-disable-next-line no-loop-func
-                block.markDefs.forEach((def) => {
-                  if (
-                    def._type === type.name &&
-                    span.marks &&
-                    Array.isArray(span.marks) &&
-                    span.marks.includes(def._key)
-                  ) {
-                    Transforms.setNodes(
-                      editor,
-                      {
-                        marks: [...(span.marks || []).filter((mark) => mark !== def._key)],
-                      },
-                      {at: path, voids: false, split: false}
-                    )
-                    changed = true
-                  }
-                })
+          // Do this without normalization or span references will be unstable!
+          Editor.withoutNormalizing(editor, () => {
+            if (selection && Range.isExpanded(selection)) {
+              // Split the span first
+              Transforms.setNodes(editor, {}, {match: Text.isText, split: true})
+              selection = editor.selection
+              if (!selection) {
+                return
               }
-              // Merge similar adjecent spans
-              if (changed) {
-                // eslint-disable-next-line max-depth
-                for (const [node] of Array.from(
-                  Editor.nodes(editor, {
-                    at: Editor.range(editor, [selection.anchor.path[0]], [selection.focus.path[0]]),
-                    match: Text.isText,
-                  })
-                ).reverse()) {
-                  const [parent] = Editor.node(editor, SlatePath.parent(path))
-                  // eslint-disable-next-line max-depth
-                  if (Editor.isBlock(editor, parent)) {
-                    const nextPath = [path[0], path[1] + 1]
-                    const nextTextNode = parent.children[nextPath[1]]
-                    // eslint-disable-next-line max-depth
-                    if (
-                      nextTextNode &&
-                      typeof nextTextNode.text === 'string' &&
-                      isEqual(nextTextNode.marks, node.marks)
-                    ) {
-                      Transforms.mergeNodes(editor, {at: nextPath, voids: true})
-                    }
-                  }
+              // Everything in the selection which has marks
+              const spans = [
+                ...Editor.nodes(editor, {
+                  at: selection,
+                  match: (node) =>
+                    Text.isText(node) &&
+                    node.marks !== undefined &&
+                    Array.isArray(node.marks) &&
+                    node.marks.length > 0,
+                }),
+              ]
+              spans.forEach(([span, path]) => {
+                const [block] = Editor.node(editor, path, {depth: 1})
+                if (block && Array.isArray(block.markDefs)) {
+                  block.markDefs
+                    .filter((def) => def._type === type.name)
+                    .forEach((def) => {
+                      if (Array.isArray(span.marks) && span.marks.includes(def._key)) {
+                        const newMarks = [...(span.marks || []).filter((mark) => mark !== def._key)]
+                        Transforms.setNodes(
+                          editor,
+                          {
+                            marks: newMarks,
+                          },
+                          {at: path, voids: false, split: false}
+                        )
+                      }
+                      changed = true
+                    })
                 }
-              }
+              })
             }
-            if (changed) {
-              editor.onChange()
-            }
+          })
+          if (changed) {
+            editor.onChange()
           }
         }
       },

@@ -3,7 +3,7 @@
 
 import {useDocumentPresence} from '@sanity/base/hooks'
 import {PresenceOverlay} from '@sanity/base/presence'
-import {Box, Container, Text} from '@sanity/ui'
+import {Box, Container, Flex, Spinner, Text} from '@sanity/ui'
 import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-component'
 import documentStore from 'part:@sanity/base/datastore/document'
 import schema from 'part:@sanity/base/schema'
@@ -13,6 +13,7 @@ import {FormBuilder} from 'part:@sanity/form-builder'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {tap} from 'rxjs/operators'
 import {useDocumentPane} from '../../useDocumentPane'
+import {Delay} from '../../../../components/Delay'
 
 interface FormViewProps {
   hidden: boolean
@@ -34,7 +35,7 @@ export function FormView(props: FormViewProps) {
   const {hidden, margins} = props
   const {
     compareValue,
-    displayed,
+    displayed: value,
     documentId,
     documentSchema,
     documentType,
@@ -49,7 +50,7 @@ export function FormView(props: FormViewProps) {
   const presence = useDocumentPresence(documentId)
   const {revTime: rev} = historyController
   const [{filterField}, setState] = useState<FormViewState>(INITIAL_STATE)
-  const value = useMemo(() => (ready ? displayed : null), [displayed, ready])
+
   const hasTypeMismatch = value !== null && value._type !== documentSchema.name
   const isNonExistent = !value || !value._id
 
@@ -131,21 +132,35 @@ export function FormView(props: FormViewProps) {
     return (
       <PresenceOverlay margins={margins}>
         <Box as="form" onSubmit={preventDefault}>
-          <FormBuilder
-            schema={schema}
-            patchChannel={patchChannelRef.current}
-            value={value}
-            compareValue={compareValue}
-            type={documentSchema}
-            presence={presence}
-            filterField={filterField}
-            readOnly={readOnly}
-            onBlur={handleBlur}
-            onFocus={handleFocus}
-            focusPath={focusPath}
-            onChange={readOnly ? noop : handleChange}
-            markers={markers}
-          />
+          {ready ? (
+            <FormBuilder
+              schema={schema}
+              patchChannel={patchChannelRef.current}
+              value={value}
+              compareValue={compareValue}
+              type={documentSchema}
+              presence={presence}
+              filterField={filterField}
+              readOnly={readOnly}
+              onBlur={handleBlur}
+              onFocus={handleFocus}
+              focusPath={focusPath}
+              onChange={readOnly ? noop : handleChange}
+              markers={markers}
+            />
+          ) : (
+            <Delay ms={300}>
+              <Flex align="center" direction="column" height="fill" justify="center">
+                <Spinner muted />
+
+                <Box marginTop={3}>
+                  <Text align="center" muted size={1}>
+                    Loading document
+                  </Text>
+                </Box>
+              </Flex>
+            </Delay>
+          )}
         </Box>
       </PresenceOverlay>
     )
@@ -162,6 +177,7 @@ export function FormView(props: FormViewProps) {
     markers,
     patchChannelRef,
     presence,
+    ready,
     readOnly,
     value,
   ])

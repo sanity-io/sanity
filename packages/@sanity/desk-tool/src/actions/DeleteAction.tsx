@@ -57,7 +57,10 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, publishe
     color: 'danger',
     icon: TrashIcon,
     disabled: isDeleting || Boolean(deleteOp.disabled),
-    title: (deleteOp.disabled && DISABLED_REASON_TITLE[deleteOp.disabled]) || '',
+    title:
+      (deleteOp.disabled &&
+        DISABLED_REASON_TITLE[deleteOp.disabled as keyof typeof DISABLED_REASON_TITLE]) ||
+      '',
     label: isDeleting ? 'Deleting…' : 'Delete',
     shortcut: 'Ctrl+Alt+D',
     onHandle: handle,

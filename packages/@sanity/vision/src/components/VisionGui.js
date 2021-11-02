@@ -48,6 +48,7 @@ import {
   TimingsFooter,
   TimingsCard,
   TimingsTextContainer,
+  GlobalCodeMirrorStyle,
 } from './VisionGui.styled'
 
 /* eslint-disable import/no-unassigned-import, import/no-unresolved */
@@ -429,6 +430,7 @@ class VisionGui extends React.PureComponent {
         sizing="border"
         overflow="hidden"
       >
+        <GlobalCodeMirrorStyle />
         <Header paddingX={3} paddingY={2}>
           <Grid columns={12}>
             {/* Dataset selector */}

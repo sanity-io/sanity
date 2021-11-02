@@ -1,5 +1,6 @@
 import S from '@sanity/desk-tool/structure-builder'
-import {EarthGlobeIcon, PlugIcon, TerminalIcon} from '@sanity/icons'
+import {EarthGlobeIcon, PlugIcon, TagIcon, TerminalIcon} from '@sanity/icons'
+import {orderableDocumentListDeskItem} from '@sanity/orderable-document-list'
 import React from 'react'
 import schema from 'part:@sanity/base/schema'
 
@@ -40,7 +41,13 @@ const STANDARD_PORTABLE_TEXT_INPUT_TYPES = [
   'simpleBlock',
 ]
 
-const PLUGIN_INPUT_TYPES = ['codeTest', 'colorTest', 'geopointTest']
+const PLUGIN_INPUT_TYPES = [
+  'codeTest',
+  'colorTest',
+  'geopointTest',
+  'orderableCategory',
+  'orderableTag',
+]
 
 const DEBUG_INPUT_TYPES = [
   'actionsTest',
@@ -114,9 +121,7 @@ function _buildTypeGroup(opts) {
                 .child(
                   S.documentList()
                     .canHandleIntent((intentName, params) => {
-                      return (
-                        supportedIntents.includes(intentName) && opts.types.includes(params.type)
-                      )
+                      return supportedIntents.includes(intentName) && typeName === params.type
                     })
                     .id(typeName)
                     .title(schemaType.title || typeName)
@@ -199,6 +204,17 @@ export default () =>
                       S.menuItem().title('Test 1').action('test-1').showAsAction(true),
                       S.menuItem().title('Test 2').action('test-2'), //.showAsAction(true),
                     ])
+                    .child(
+                      S.component(DebugPane)
+                        .id('component1-1')
+                        .title('Component pane #1.1')
+                        .options({no: 1})
+                        .menuItems([
+                          S.menuItem().title('Test 1').action('test-1').showAsAction(true),
+                          S.menuItem().title('Test 2').action('test-2'), //.showAsAction(true),
+                        ])
+                        .child(S.document().documentId('component1-1-child').schemaType('author'))
+                    )
                 ),
               S.listItem()
                 .id('component2')
@@ -207,8 +223,9 @@ export default () =>
                   S.component(DebugPane)
                     .id('component2')
                     .title('Component pane #2')
-                    .options({no: 1})
+                    .options({no: 2})
                     .menuItems([S.menuItem().title('Test 1').action('test-1').showAsAction(true)])
+                    .child(S.document().documentId('component2-child').schemaType('author'))
                 ),
 
               S.divider(),
@@ -371,6 +388,28 @@ export default () =>
               S.divider(),
 
               S.documentTypeListItem('sanity.imageAsset').title('Images').icon(ImagesIcon),
+            ])
+        ),
+
+      S.listItem()
+        .icon(PlugIcon)
+        .id('plugin')
+        .title('Plugin panes')
+        .child(
+          S.list()
+            .id('plugin')
+            .title('Plugin panes')
+            .items([
+              orderableDocumentListDeskItem({
+                type: 'orderableCategory',
+                icon: TagIcon,
+                title: 'Category (orderable)',
+              }),
+              orderableDocumentListDeskItem({
+                type: 'orderableTag',
+                icon: TagIcon,
+                title: 'Tag (orderable)',
+              }),
             ])
         ),
 

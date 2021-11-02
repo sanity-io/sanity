@@ -9,8 +9,10 @@ import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import React from 'react'
 import {combineLatest, Observable, of} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
+import {Inline} from '@sanity/ui'
 import {PreviewValue} from '../../types'
 import {DraftStatus} from '../DraftStatus'
+import {PublishedStatus} from '../PublishedStatus'
 import {NotPublishedStatus} from '../NotPublishedStatus'
 import {PaneItemPreviewState} from './types'
 
@@ -20,6 +22,19 @@ export const getStatusIndicator = (
   draft?: SanityDocument | null,
   published?: SanityDocument | null
 ) => {
+  if (published && draft) {
+    return (
+      <Inline space={4}>
+        <PublishedStatus />
+        <DraftStatus />
+      </Inline>
+    )
+  }
+
+  if (published) {
+    return PublishedStatus
+  }
+
   if (draft) {
     return DraftStatus
   }

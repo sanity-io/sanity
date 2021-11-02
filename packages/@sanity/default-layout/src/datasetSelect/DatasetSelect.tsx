@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react'
 import {filter, map} from 'rxjs/operators'
 import {Select} from '@sanity/ui'
-import {isSnapshotEvent, state as urlState} from '../datastores/urlState'
+import {isStateUpdateEvent, state as urlState} from '../datastores/urlState'
 import {CONFIGURED_SPACES} from '../util/spaces'
 import {useDefaultLayoutRouter} from '../useDefaultLayoutRouter'
 
@@ -11,7 +11,7 @@ export function DatasetSelect(props: Omit<React.HTMLProps<HTMLSelectElement>, 'r
 
   useEffect(() => {
     const currentSpace$ = urlState.pipe(
-      filter(isSnapshotEvent),
+      filter(isStateUpdateEvent),
       map((event) => event.state && event.state.space),
       map((spaceName) => CONFIGURED_SPACES.find((sp) => sp.name === spaceName))
     )

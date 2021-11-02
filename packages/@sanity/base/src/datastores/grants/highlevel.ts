@@ -55,7 +55,7 @@ function stub(id: string, type: string): Partial<SanityDocument> {
 export function canUpdate(id: string, typeName: string) {
   const type = getSchemaType(typeName)
   const idPair = getIdPairFromPublished(id)
-  return snapshotPair(idPair).pipe(
+  return snapshotPair(idPair, typeName).pipe(
     mergeMap((pair) => combineLatest([pair.draft.snapshots$, pair.published.snapshots$])),
     switchMap(([draft, published]) => {
       return type.liveEdit
@@ -76,7 +76,7 @@ export function canUpdate(id: string, typeName: string) {
 export function canDelete(id: string, typeName: string) {
   const type = getSchemaType(typeName)
   const idPair = getIdPairFromPublished(id)
-  return snapshotPair(idPair).pipe(
+  return snapshotPair(idPair, typeName).pipe(
     mergeMap((pair) => combineLatest([pair.draft.snapshots$, pair.published.snapshots$])),
     map(([draft, published]) => [
       draft || stub(idPair.draftId, typeName),
@@ -92,7 +92,7 @@ export function canDelete(id: string, typeName: string) {
 
 export function canPublish(id: string, typeName: string) {
   const idPair = getIdPairFromPublished(id)
-  return snapshotPair(idPair).pipe(
+  return snapshotPair(idPair, typeName).pipe(
     mergeMap((pair) => combineLatest([pair.draft.snapshots$, pair.published.snapshots$])),
     map(([draft, published]) => [
       draft || stub(idPair.draftId, typeName),
@@ -106,7 +106,7 @@ export function canPublish(id: string, typeName: string) {
 
 export function canUnpublish(id: string, typeName: string) {
   const idPair = getIdPairFromPublished(id)
-  return snapshotPair(idPair).pipe(
+  return snapshotPair(idPair, typeName).pipe(
     mergeMap((pair) => combineLatest([pair.draft.snapshots$, pair.published.snapshots$])),
     map(([draft, published]) => [
       draft || stub(idPair.draftId, typeName),
@@ -120,7 +120,7 @@ export function canUnpublish(id: string, typeName: string) {
 
 export function canDiscardDraft(id: string, typeName: string) {
   const idPair = getIdPairFromPublished(id)
-  return snapshotPair(idPair).pipe(
+  return snapshotPair(idPair, typeName).pipe(
     mergeMap((pair) => pair.draft.snapshots$),
     map((draft) => draft || stub(idPair.draftId, typeName)),
     switchMap((draft) => grantsStore.checkDocumentPermission('update', draft))

@@ -1,7 +1,7 @@
-import {MenuItem as MenuItemType} from '@sanity/base/__legacy/@sanity/components'
 import {ComposeIcon} from '@sanity/icons'
 import {Box, Button, Label, Menu, MenuButton, PopoverProps} from '@sanity/ui'
 import React from 'react'
+import {PaneMenuItem} from '../../types'
 import {IntentMenuItem} from '../../components/IntentMenuItem'
 
 const POPOVER_PROPS: PopoverProps = {
@@ -10,7 +10,7 @@ const POPOVER_PROPS: PopoverProps = {
   portal: true,
 }
 
-export function CreateMenuButton(props: {items: MenuItemType[]}) {
+export function CreateMenuButton(props: {items: PaneMenuItem[]}) {
   const {items} = props
 
   return (

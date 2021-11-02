@@ -1,12 +1,12 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import {MenuItem as MenuItemType} from '@sanity/base/__legacy/@sanity/components'
 import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
 import {Button, Inline} from '@sanity/ui'
 import {negate} from 'lodash'
 import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
 import React, {forwardRef, useMemo} from 'react'
+import {PaneMenuItem} from '../../../../types'
 import {PaneHeader, PaneContextMenuButton} from '../../../../components/pane'
 import {useDeskTool} from '../../../../contexts/deskTool'
 import {BackLink, usePaneRouter} from '../../../../contexts/paneRouter'
@@ -20,7 +20,7 @@ export interface DocumentPanelHeaderProps {
   rootElement: HTMLDivElement | null
 }
 
-const isActionButton = (item: MenuItemType) => Boolean(item.showAsAction)
+const isActionButton = (item: PaneMenuItem) => Boolean(item.showAsAction)
 const isMenuButton = negate(isActionButton)
 
 export const DocumentPanelHeader = forwardRef(function DocumentPanelHeader(

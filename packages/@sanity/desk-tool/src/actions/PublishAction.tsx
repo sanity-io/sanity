@@ -16,7 +16,10 @@ const DISABLED_REASON_TITLE = {
   NO_CHANGES: 'No unpublished changes',
 }
 
-function getDisabledReason(reason, publishedAt) {
+function getDisabledReason(
+  reason: keyof typeof DISABLED_REASON_TITLE,
+  publishedAt: string | undefined
+) {
   if (reason === 'ALREADY_PUBLISHED' && publishedAt) {
     return (
       <>
@@ -35,7 +38,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const [publishState, setPublishState] = useState<'publishing' | 'published' | null>(null)
   const {publish}: any = useDocumentOperation(id, type)
   const validationStatus = useValidationStatus(id, type)
-  const syncState = useSyncState(id)
+  const syncState = useSyncState(id, type)
   const {changesOpen, handleHistoryOpen} = useDocumentPane()
   const hasValidationErrors = validationStatus.markers.some((marker) => marker.level === 'error')
   // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed

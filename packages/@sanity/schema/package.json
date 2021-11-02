@@ -1,6 +1,6 @@
 {
   "name": "@sanity/schema",
-  "version": "2.21.0",
+  "version": "2.21.5",
   "description": "",
   "main": "./lib/_exports/index.js",
   "types": "index.d.ts",
@@ -33,7 +33,7 @@
     "@sanity/generate-help-url": "2.18.0",
     "arrify": "^1.0.1",
     "humanize-list": "^1.0.1",
-    "leven": "^2.1.0",
+    "leven": "^3.1.0",
     "lodash": "^4.17.15",
     "object-inspect": "^1.6.0"
   },

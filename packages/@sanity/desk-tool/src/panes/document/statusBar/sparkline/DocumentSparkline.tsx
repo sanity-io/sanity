@@ -1,7 +1,7 @@
 import {EditIcon} from '@sanity/icons'
 import {Box, Flex, useElementRect} from '@sanity/ui'
 import React, {useEffect, useMemo, useState, useRef, memo} from 'react'
-import {raf2} from '../../../../lib/raf'
+import {raf2} from '../../../../utils/raf'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentBadges} from './DocumentBadges'
 import {ReviewChangesButton} from './ReviewChangesButton'
@@ -93,7 +93,7 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
         media={metadataBoxBreakpoints}
         style={metadataBoxStyle}
       >
-        {!liveEdit && (
+        {!liveEdit && changed && (
           <>
             <ReviewChangesBadgeBox>
               <IconBadge icon={EditIcon} muted tone="caution" />

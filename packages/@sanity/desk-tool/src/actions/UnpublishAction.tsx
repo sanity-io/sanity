@@ -110,7 +110,9 @@ export const UnpublishAction: DocumentActionComponent = ({
     icon: UnpublishIcon,
     disabled: Boolean(unpublish.disabled),
     label: 'Unpublish',
-    title: unpublish.disabled ? DISABLED_REASON_TITLE[unpublish.disabled] : '',
+    title: unpublish.disabled
+      ? DISABLED_REASON_TITLE[unpublish.disabled as keyof typeof DISABLED_REASON_TITLE]
+      : '',
     onHandle: () => setConfirmDialogOpen(true),
     dialog,
   }

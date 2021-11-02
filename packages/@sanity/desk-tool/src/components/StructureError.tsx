@@ -1,17 +1,10 @@
 import generateHelpUrl from '@sanity/generate-help-url'
 import {SerializeError} from '@sanity/structure'
-import {Box, Card, Code, Container, Heading, Label, Stack, Text} from '@sanity/ui'
-import React from 'react'
+import {Box, Button, Card, Code, Container, Heading, Label, Stack, Text} from '@sanity/ui'
+import React, {useCallback} from 'react'
 import styled from 'styled-components'
-
-export interface StructureErrorProps {
-  error: {
-    message: string
-    stack: string
-    path?: Array<string | number>
-    helpId?: string
-  }
-}
+import {SyncIcon} from '@sanity/icons'
+import {PaneResolutionError} from '../utils/PaneResolutionError'
 
 const PathSegment = styled.span`
   &:not(:last-child)::after {
@@ -34,14 +27,29 @@ function formatStack(stack: string) {
   )
 }
 
-export function StructureError(props: StructureErrorProps) {
-  const {path = [], helpId, message, stack} = props.error
+interface StructureErrorProps {
+  error: Error
+}
+
+export function StructureError({error}: StructureErrorProps) {
+  if (!(error instanceof PaneResolutionError)) {
+    throw error
+  }
+  const {cause} = error
 
   // Serialize errors are well-formatted and should be readable, in these cases a stack trace is
   // usually not helpful. Build errors in dev (with HMR) usually also contains a bunch of garbage
   // instead of an actual error message, so make sure we show the message in these cases as well
+  const stack = cause?.stack || error.stack
   const showStack =
-    !(props.error instanceof SerializeError) && !message.includes('Module build failed:')
+    stack && !(cause instanceof SerializeError) && !error.message.includes('Module build failed:')
+
+  const path = cause instanceof SerializeError ? cause.path : []
+  const helpId = (cause instanceof SerializeError && cause.helpId) || error.helpId
+
+  const handleReload = useCallback(() => {
+    window.location.reload()
+  }, [])
 
   return (
     <Card height="fill" overflow="auto" padding={4} sizing="border" tone="critical">
@@ -53,8 +61,11 @@ export function StructureError(props: StructureErrorProps) {
             <Stack space={2}>
               <Label>Structure path</Label>
               <Code>
-                {path.map((segment, i) => (
-                  <PathSegment key={i}>{segment}</PathSegment>
+                {/* TODO: it seems like the path is off by one and includes */}
+                {/* `root` twice  */}
+                {path.slice(1).map((segment, i) => (
+                  // eslint-disable-next-line react/no-array-index-key
+                  <PathSegment key={`${segment}-${i}`}>{segment}</PathSegment>
                 ))}
               </Code>
             </Stack>
@@ -62,7 +73,7 @@ export function StructureError(props: StructureErrorProps) {
 
           <Stack marginTop={4} space={2}>
             <Label>Error</Label>
-            <Code>{showStack ? formatStack(stack) : message}</Code>
+            <Code>{showStack ? formatStack(stack) : error.message}</Code>
           </Stack>
 
           {helpId && (
@@ -74,6 +85,10 @@ export function StructureError(props: StructureErrorProps) {
               </Text>
             </Box>
           )}
+
+          <Box marginTop={4}>
+            <Button text="Reload" icon={SyncIcon} tone="primary" onClick={handleReload} />
+          </Box>
         </Card>
       </Container>
     </Card>

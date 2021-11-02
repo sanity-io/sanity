@@ -29,12 +29,18 @@ interface SnapshotStateEvent {
   state: Record<string, unknown>
 }
 
+interface StateChangeEvent {
+  type: 'change'
+  state: Record<string, unknown>
+  isNotFound: boolean
+}
+
 interface ErrorStateEvent {
   type: 'error'
   error: Error
 }
 
-type StateEvent = SnapshotStateEvent | ErrorStateEvent
+type StateEvent = SnapshotStateEvent | ErrorStateEvent | StateChangeEvent
 
 function resolveUrlStateWithDefaultSpace(state) {
   if (!HAS_SPACES || !state || state.space) {
@@ -158,15 +164,17 @@ export const state: Observable<StateEvent> = locationStore.state.pipe(
   refCount()
 )
 
-export function isSnapshotEvent(event: StateEvent): event is SnapshotStateEvent {
-  return event.type === 'snapshot'
+export function isStateUpdateEvent(
+  event: StateEvent
+): event is SnapshotStateEvent | StateChangeEvent {
+  return event.type === 'snapshot' || event.type === 'change'
 }
 
 if (HAS_SPACES) {
   // Uglybugly mutation ahead.
   state
     .pipe(
-      filter(isSnapshotEvent),
+      filter(isStateUpdateEvent),
       map((event) => event.state),
       filter(Boolean),
       tap(reconfigureClient)

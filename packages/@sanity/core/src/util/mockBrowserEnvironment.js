@@ -4,6 +4,12 @@ const pluginLoader = require('@sanity/plugin-loader')
 const requireContext = require('./requireContext')
 const registerBabelLoader = require('./registerBabelLoader')
 
+const jsdomDefaultHtml = `<!doctype html>
+<html>
+  <head><meta charset="utf-8"></head>
+  <body></body>
+</html>`
+
 const getFakeGlobals = () => ({
   __DEV__: false,
   requestAnimationFrame: (cb) => setTimeout(cb, 0),
@@ -29,10 +35,9 @@ function provideFakeGlobals() {
 }
 
 function mockBrowserEnvironment(basePath) {
-  const domCleanup = jsdomGlobal()
+  const domCleanup = jsdomGlobal(jsdomDefaultHtml, {url: 'http://localhost:3333/'})
   const windowCleanup = () => global.window.close()
   const globalCleanup = provideFakeGlobals()
-  const contextCleanup = requireContext.register()
   const cleanupFileLoader = pirates.addHook(
     (code, filename) => `module.exports = ${JSON.stringify(filename)}`,
     {
@@ -43,13 +48,14 @@ function mockBrowserEnvironment(basePath) {
 
   registerBabelLoader(basePath)
   pluginLoader({basePath, stubCss: true})
+  const contextCleanup = requireContext.register()
 
   return function cleanupBrowserEnvironment() {
     cleanupFileLoader()
-    contextCleanup()
     globalCleanup()
     windowCleanup()
     domCleanup()
+    contextCleanup()
   }
 }
 

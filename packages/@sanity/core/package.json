@@ -1,10 +1,18 @@
 {
   "name": "@sanity/core",
-  "version": "2.21.3",
+  "version": "2.21.8",
   "description": "Sanity core bundle, containing required packages for the development and build process",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
+  "//": "the typesVersion config below is a workaround for TypeScript's lack of support for package exports",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/dts/_exports/*"
+      ]
+    }
+  },
   "scripts": {
     "build": "babel src --copy-files --out-dir lib",
     "clean": "rimraf lib dest",
@@ -31,14 +39,14 @@
     "@sanity/eventsource": "2.14.0",
     "@sanity/export": "2.21.0",
     "@sanity/generate-help-url": "2.18.0",
-    "@sanity/import": "2.21.3",
-    "@sanity/plugin-loader": "2.21.3",
-    "@sanity/resolver": "2.21.3",
-    "@sanity/schema": "2.21.0",
-    "@sanity/server": "2.21.3",
-    "@sanity/util": "2.21.3",
+    "@sanity/import": "2.21.7",
+    "@sanity/plugin-loader": "2.21.7",
+    "@sanity/resolver": "2.21.7",
+    "@sanity/schema": "2.21.5",
+    "@sanity/server": "2.21.7",
+    "@sanity/util": "2.21.7",
     "@sanity/uuid": "^3.0.1",
-    "@sanity/webpack-integration": "2.21.3",
+    "@sanity/webpack-integration": "2.21.7",
     "chalk": "^2.4.2",
     "chokidar": "^3.0.0",
     "configstore": "^5.0.1",
@@ -71,9 +79,10 @@
     "yargs": "^16.2.0"
   },
   "devDependencies": {
-    "@sanity/client": "2.21.3",
+    "@sanity/client": "2.21.7",
     "@types/fs-extra": "^7.0.0",
     "@types/inquirer": "^6.0.2",
+    "@types/klaw-sync": "^6.0.1",
     "@types/resolve-from": "^4.0.0",
     "@types/semver": "^6.2.3",
     "chalk": "^2.4.2",

@@ -1,15 +1,20 @@
 import {useRouter} from '@sanity/base/router'
 import {Box, Card, Flex, Spinner, Text} from '@sanity/ui'
 import React, {useEffect} from 'react'
+import {RouterPanes} from '../../types'
 import {Delay} from '../Delay'
 
-export function Redirect({panes}) {
-  const router = useRouter()
+interface RedirectProps {
+  panes: RouterPanes
+}
+
+export function Redirect({panes}: RedirectProps) {
+  const {navigate} = useRouter()
 
   useEffect(() => {
     // Navigates to passed router panes state on mount
-    router.navigate({panes}, {replace: true})
-  })
+    navigate({panes}, {replace: true})
+  }, [navigate, panes])
 
   return (
     <Card height="fill">

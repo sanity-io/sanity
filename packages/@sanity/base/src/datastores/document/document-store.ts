@@ -1,16 +1,20 @@
+import type {Observable} from 'rxjs'
 import {getDraftId, isDraftId} from '../../util/draftUtils'
 import {versionedClient} from '../../client/versionedClient'
+import type {DocumentVersionEvent, Pair} from './document-pair/checkoutPair'
 import {checkoutPair} from './document-pair/checkoutPair'
 import createDeprecatedAPIs from './_createDeprecatedAPIs'
-import {IdPair} from './types'
+import type {IdPair} from './types'
 import {resolveTypeForDocument} from './resolveTypeForDocument'
 import {listenQuery} from './listenQuery'
-import {editState} from './document-pair/editState'
+import {editState, EditStateFor} from './document-pair/editState'
 import {editOperations} from './document-pair/editOperations'
 import {documentEvents} from './document-pair/documentEvents'
-import {validation} from './document-pair/validation'
+import {validation, ValidationStatus} from './document-pair/validation'
 import {operationEvents} from './document-pair/operationEvents'
 import {consistencyStatus} from './document-pair/consistencyStatus'
+import type {OperationError, OperationSuccess} from './document-pair/operationEvents'
+import type {OperationsAPI} from './document-pair/operations'
 
 function getIdPairFromPublished(publishedId: string): IdPair {
   if (isDraftId(publishedId)) {
@@ -22,24 +26,30 @@ function getIdPairFromPublished(publishedId: string): IdPair {
 
 export default {
   ...createDeprecatedAPIs(versionedClient), // Todo: can be removed in ~january 2020
-  checkoutPair: (idPair: IdPair) => checkoutPair(idPair),
+  checkoutPair: (idPair: IdPair): Pair => checkoutPair(idPair),
   listenQuery,
   resolveTypeForDocument,
 
   pair: {
-    editState: (publishedId: string, type) => editState(getIdPairFromPublished(publishedId), type),
+    editState: (publishedId: string, type: string): Observable<EditStateFor> =>
+      editState(getIdPairFromPublished(publishedId), type),
 
-    editOperations: (publishedId: string, type) =>
+    editOperations: (publishedId: string, type: string): Observable<OperationsAPI> =>
       editOperations(getIdPairFromPublished(publishedId), type),
 
-    documentEvents: (publishedId: string) => documentEvents(getIdPairFromPublished(publishedId)),
+    documentEvents: (publishedId: string, type: string): Observable<DocumentVersionEvent> =>
+      documentEvents(getIdPairFromPublished(publishedId), type),
 
-    validation: (publishedId: string, typeName: string) =>
-      validation(getIdPairFromPublished(publishedId), typeName),
+    validation: (publishedId: string, type: string): Observable<ValidationStatus> =>
+      validation(getIdPairFromPublished(publishedId), type),
 
-    operationEvents: (publishedId, type) =>
+    operationEvents: (
+      publishedId: string,
+      type: string
+    ): Observable<OperationSuccess | OperationError> =>
       operationEvents(getIdPairFromPublished(publishedId), type),
 
-    consistencyStatus: (publishedId) => consistencyStatus(getIdPairFromPublished(publishedId)),
+    consistencyStatus: (publishedId: string, type: string): Observable<boolean> =>
+      consistencyStatus(getIdPairFromPublished(publishedId), type),
   },
 }

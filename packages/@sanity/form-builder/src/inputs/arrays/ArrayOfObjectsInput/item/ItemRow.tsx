@@ -53,6 +53,7 @@ export const ItemRow = React.forwardRef(function RegularItem(
             ref={focusRef}
             onKeyPress={onKeyPress}
             onFocus={onFocus}
+            __unstable_focusRing
           >
             <Preview layout="default" value={value} type={type} />
           </Card>

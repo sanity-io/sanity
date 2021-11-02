@@ -1,70 +1,36 @@
 import isHotkey from 'is-hotkey'
-import {merge, of} from 'rxjs'
+import {Observable, merge, of} from 'rxjs'
 import {mapTo, delay} from 'rxjs/operators'
-import {LOADING_PANE} from './constants'
 import {RouterPaneGroup} from './types'
 import {parsePanesSegment, encodePanesSegment} from './utils/parsePanesSegment'
 
-/**
- * @internal
- */
-export const hasLoading = (panes: any) => panes.some((item) => item === LOADING_PANE)
+declare const __DEV__: boolean
 
 /**
  * @internal
  */
 export const isSaveHotkey: (event: KeyboardEvent) => boolean = isHotkey('mod+s')
 
-/**
- * @internal
- */
-export function getPaneDiffIndex(nextPanes: any, prevPanes: any): [number, number] | undefined {
-  if (!nextPanes.length) {
-    return [0, 0]
-  }
-
-  const maxPanes = Math.max(nextPanes.length, prevPanes.length)
-  for (let index = 0; index < maxPanes; index++) {
-    const nextGroup = nextPanes[index]
-    const prevGroup = prevPanes[index]
-
-    // Whole group is now invalid
-    if (!prevGroup || !nextGroup) {
-      return [index, 0]
-    }
-
-    // Less panes than previously? Resolve whole group
-    if (prevGroup.length > nextGroup.length) {
-      return [index, 0]
-    }
-
-    /* eslint-disable max-depth */
-    // Iterate over siblings
-    for (let splitIndex = 0; splitIndex < nextGroup.length; splitIndex++) {
-      const nextSibling = nextGroup[splitIndex]
-      const prevSibling = prevGroup[splitIndex]
-
-      // Didn't have a sibling here previously, diff from here!
-      if (!prevSibling) {
-        return [index, splitIndex]
-      }
-
-      // Does the ID differ from the previous?
-      if (nextSibling.id !== prevSibling.id) {
-        return [index, splitIndex]
-      }
-    }
-    /* eslint-enable max-depth */
-  }
-
-  // "No diff"
-  return undefined
+interface GetIntentRouteParamsOptions {
+  id: string
+  type?: string
+  templateName?: string
+  payloadParams?: Record<string, unknown>
 }
 
 /**
  * @internal
  */
-export function getIntentRouteParams({id, type, payloadParams, templateName}) {
+export function getIntentRouteParams({
+  id,
+  type,
+  payloadParams,
+  templateName,
+}: GetIntentRouteParamsOptions): {
+  intent: 'edit'
+  params: {id: string; type?: string; templateName?: string}
+  payload: Record<string, unknown> | undefined
+} {
   return {
     intent: 'edit',
     params: {
@@ -72,14 +38,14 @@ export function getIntentRouteParams({id, type, payloadParams, templateName}) {
       ...(type ? {type} : {}),
       ...(templateName ? {template: templateName} : {}),
     },
-    payload: Object.keys(payloadParams).length > 0 ? payloadParams : undefined,
+    payload: Object.keys(payloadParams || {}).length > 0 ? payloadParams : undefined,
   }
 }
 
 /**
  * @internal
  */
-export function getWaitMessages(path) {
+export function getWaitMessages(path: string[]): Observable<string> {
   const thresholds = [
     {ms: 300, message: 'Loading…'},
     {ms: 5000, message: 'Still loading…'},
@@ -120,7 +86,7 @@ export function toPath(panes: RouterPaneGroup[]): string {
 /**
  * @internal
  */
-export function legacyEditParamsToState(params) {
+export function legacyEditParamsToState(params: string): Record<string, unknown> {
   try {
     return JSON.parse(decodeURIComponent(params))
   } catch (err) {
@@ -133,6 +99,6 @@ export function legacyEditParamsToState(params) {
 /**
  * @internal
  */
-export function legacyEditParamsToPath(params: Record<string, unknown>) {
+export function legacyEditParamsToPath(params: Record<string, unknown>): string {
   return JSON.stringify(params)
 }

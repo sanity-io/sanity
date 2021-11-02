@@ -1,7 +1,9 @@
 import {IntentLink} from '@sanity/base/router'
 import {Button, ButtonProps} from '@sanity/ui'
 import React, {forwardRef, useMemo} from 'react'
-import {RouterIntent} from '../types'
+import {PaneMenuItem} from '../types'
+
+type RouterIntent = NonNullable<PaneMenuItem['intent']>
 
 export const IntentButton = forwardRef(function IntentButton(
   props: {intent: RouterIntent} & Omit<ButtonProps, 'as' | 'href' | 'type'>,

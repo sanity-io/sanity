@@ -1,33 +1,19 @@
-import {MenuItem as MenuItemType, MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
-import {InitialValueTemplateItem} from '@sanity/structure'
 import React, {memo, useMemo} from 'react'
 import {Pane} from '../../components/pane'
-import {useShallowUnique} from '../../lib/useShallowUnique'
-import {useUnique} from '../../lib/useUnique'
+import {useShallowUnique} from '../../utils/useShallowUnique'
+import {useUnique} from '../../utils/useUnique'
 import {useDeskToolSetting} from '../../settings'
 import {BaseDeskToolPaneProps} from '../types'
 import {DEFAULT_ORDERING, EMPTY_RECORD} from './constants'
 import {getTypeNameFromSingleTypeFilter, isSimpleTypeFilter} from './helpers'
 import {DocumentListPaneContent} from './DocumentListPaneContent'
 import {DocumentListPaneHeader} from './DocumentListPaneHeader'
-import {Layout, SortOrder, SortOrderBy} from './types'
+import {Layout, SortOrder} from './types'
 import {useDocumentList} from './useDocumentList'
 
-type DocumentListPaneProps = BaseDeskToolPaneProps<{
-  childItemId: string
-  displayOptions?: {showIcons?: boolean}
-  defaultLayout?: Layout
-  menuItems?: MenuItemType[]
-  menuItemGroups?: MenuItemGroup[]
-  initialValueTemplates?: InitialValueTemplateItem[]
-  options: {
-    filter: string
-    defaultOrdering: SortOrderBy[]
-    params?: Record<string, unknown>
-  }
-  schemaTypeName?: string
-  title: string
-}>
+type DocumentListPaneProps = BaseDeskToolPaneProps<'documentList'>
+
+const emptyArray: never[] = []
 
 /**
  * @internal
@@ -36,8 +22,8 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const {childItemId, index, isActive, isSelected, pane, paneKey} = props
   const {
     defaultLayout = 'default',
-    displayOptions = {},
-    initialValueTemplates,
+    displayOptions,
+    initialValueTemplates = emptyArray,
     menuItems,
     menuItemGroups,
     options,
@@ -45,10 +31,10 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     title,
   } = pane
 
-  const {defaultOrdering, filter} = options
+  const {defaultOrdering = emptyArray, filter} = options
   const params = useShallowUnique(options.params || EMPTY_RECORD)
   const typeName = useMemo(() => getTypeNameFromSingleTypeFilter(filter, params), [filter, params])
-  const showIcons = displayOptions.showIcons !== false
+  const showIcons = displayOptions?.showIcons !== false
   const [layout, setLayout] = useDeskToolSetting<Layout>(typeName, 'layout', defaultLayout)
   const [sortOrderRaw, setSortOrder] = useDeskToolSetting<SortOrder>(
     typeName,
