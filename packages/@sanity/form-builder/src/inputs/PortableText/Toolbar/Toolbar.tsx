@@ -88,17 +88,12 @@ const InnerToolbar = memo(function InnerToolbar({
       onMouseDown={preventDefault}
       onKeyPress={preventDefault}
     >
-      <StyleSelectBox padding={1}>
-        <BlockStyleSelect
-          disabled={disabled}
-          readOnly={readOnly}
-          isFullscreen={isFullscreen}
-          items={blockStyles}
-        />
+      <StyleSelectBox padding={isFullscreen ? 2 : 1}>
+        <BlockStyleSelect disabled={disabled} readOnly={readOnly} items={blockStyles} />
       </StyleSelectBox>
 
       {showActionMenu && (
-        <ActionMenuBox flex={1} padding={1} $withMaxWidth={showInsertMenu}>
+        <ActionMenuBox flex={1} padding={isFullscreen ? 2 : 1} $withMaxWidth={showInsertMenu}>
           <ActionMenu
             disabled={disabled}
             groups={actionGroups}
@@ -109,7 +104,7 @@ const InnerToolbar = memo(function InnerToolbar({
       )}
 
       {showInsertMenu && (
-        <InsertMenuBox flex={1} padding={1}>
+        <InsertMenuBox flex={1} padding={isFullscreen ? 2 : 1}>
           <InsertMenu
             disabled={disabled}
             items={insertMenuItems}
@@ -119,7 +114,7 @@ const InnerToolbar = memo(function InnerToolbar({
         </InsertMenuBox>
       )}
 
-      <FullscreenButtonBox padding={1}>
+      <FullscreenButtonBox padding={isFullscreen ? 2 : 1}>
         <Tooltip
           content={
             <Flex align="center" padding={1}>
@@ -135,7 +130,7 @@ const InnerToolbar = memo(function InnerToolbar({
           portal="default"
         >
           <Button
-            padding={isFullscreen ? 3 : 2}
+            padding={2}
             icon={isFullscreen ? CollapseIcon : ExpandIcon}
             mode="bleed"
             onClick={onToggleFullscreen}
