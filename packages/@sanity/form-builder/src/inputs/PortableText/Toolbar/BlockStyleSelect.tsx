@@ -25,10 +25,12 @@ interface BlockStyleSelectProps {
 }
 
 const StyledMenuItem = styled(MenuItem)`
-  * {
-    margin: 0;
-    color: inherit;
-    border-color: inherit;
+  // Change the border color variable used by BlockQuote
+  // to make the border visible when the MenuItem is selected
+  &[data-selected] {
+    [data-option='blockquote'] {
+      --card-border-color: var(--card-muted-fg-color);
+    }
   }
 `
 
@@ -46,7 +48,7 @@ const TEXT_STYLE_OPTIONS = {
   h5: <Heading5>Heading 5</Heading5>,
   h6: <Heading6>Heading 6</Heading6>,
   normal: <Normal>Normal</Normal>,
-  blockquote: <BlockQuote>Quote</BlockQuote>,
+  blockquote: <BlockQuote data-option="blockquote">Quote</BlockQuote>,
 }
 
 const TEXT_STYLE_KEYS = Object.keys(TEXT_STYLE_OPTIONS)
