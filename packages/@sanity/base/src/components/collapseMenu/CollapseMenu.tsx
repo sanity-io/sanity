@@ -78,6 +78,9 @@ export function CollapseMenu(props: CollapseMenuProps) {
 
   const [rootBoxElement, setRootBoxElement] = useState<HTMLDivElement | null>(null)
   const [innerFlexElement, setInnerFlexElement] = useState<HTMLDivElement | null>(null)
+  const [collapsedInnerFlexElement, setCollapsedInnerFlexElement] = useState<HTMLDivElement | null>(
+    null
+  )
   const [collapsed, setCollapsed] = useState<boolean>(true)
   const [menuOptions, setMenuOptions] = useState<ReactElement[] | []>([])
   const rootBoxRect = useElementRect(rootBoxElement)
@@ -210,7 +213,13 @@ export function CollapseMenu(props: CollapseMenuProps) {
       </InnerFlex>
 
       {/* Collapsed row, visible when there is not enough space to show text on buttons */}
-      <InnerFlex align="center" gap={gap} $hide={!collapsed} aria-hidden={!collapsed}>
+      <InnerFlex
+        align="center"
+        gap={gap}
+        $hide={!collapsed}
+        aria-hidden={!collapsed}
+        ref={setCollapsedInnerFlexElement}
+      >
         <Flex gap={gap} as="ul">
           {childrenArray.map((child, index) => {
             if (child.type !== CollapseMenuButton) {
@@ -238,6 +247,7 @@ export function CollapseMenu(props: CollapseMenuProps) {
                 key={child.key}
                 threshold={1}
                 rootMargin="0px 2px 0px 0px"
+                root={collapsedInnerFlexElement}
               >
                 {({ref, inView}) => (
                   <OptionBox ref={ref} as="li" $inView={inView && collapsed}>
@@ -249,9 +259,7 @@ export function CollapseMenu(props: CollapseMenuProps) {
                         {...tooltipProps}
                         content={
                           <Box padding={2} sizing="border">
-                            <Text size={1} muted>
-                              {tooltipProps?.text || text}
-                            </Text>
+                            <Text size={1}>{tooltipProps?.text || text}</Text>
                           </Box>
                         }
                       >
