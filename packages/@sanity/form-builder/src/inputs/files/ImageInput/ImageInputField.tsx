@@ -3,8 +3,8 @@ import * as PathUtils from '@sanity/util/paths'
 import {Marker, ObjectField, Path} from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
 import PatchEvent from '../../../PatchEvent'
-import {ConditionalField} from '../../common/ConditionalField'
 import {FormBuilderInput} from '../../../FormBuilderInput'
+import {ConditionalHiddenField} from '../../common/ConditionalHiddenField'
 
 interface ImageInputFieldProps {
   field: ObjectField
@@ -33,7 +33,7 @@ export function ImageInputField(props: ImageInputFieldProps) {
   )
 
   return (
-    <ConditionalField
+    <ConditionalHiddenField
       parent={props.parentValue}
       value={props.value}
       hidden={props.field.type.hidden}
@@ -44,6 +44,6 @@ export function ImageInputField(props: ImageInputFieldProps) {
         path={PathUtils.pathFor([field.name])}
         onChange={handleChange}
       />
-    </ConditionalField>
+    </ConditionalHiddenField>
   )
 }
