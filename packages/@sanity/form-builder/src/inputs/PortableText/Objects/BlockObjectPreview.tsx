@@ -33,9 +33,10 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps) {
     [value?._ref]
   )
 
-  const fallbackTitle = useMemo(() => (type.name === 'image' ? 'No image selected' : 'Undefined'), [
-    type.name,
-  ])
+  // The fallback title shows when there's no `title` property provided to the preview
+  // - If it’s an image object, then we want to show that "No image is selected"
+  // - If it’s an image object, and the value exists, we want to show that title is "Undefined".
+  const fallbackTitle = !value && type.name === 'image' ? 'No image selected' : 'Undefined'
 
   return (
     <Preview
