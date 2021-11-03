@@ -33,6 +33,7 @@ function TestPreview(props: any) {
   if (props.type?.type?.name === 'image') {
     return (
       <SanityDefaultPreview
+        {...props}
         _renderAsBlockImage
         layout="block"
         value={{media: <img src="https://source.unsplash.com/960x960/?tree" />, ...props.value}}
