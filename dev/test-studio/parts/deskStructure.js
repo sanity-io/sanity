@@ -36,6 +36,7 @@ const STANDARD_INPUT_TYPES = [
 ]
 
 const STANDARD_PORTABLE_TEXT_INPUT_TYPES = [
+  'pt_allTheBellsAndWhistles',
   'blocksTest',
   // 'richTextObject',
   'simpleBlock',
