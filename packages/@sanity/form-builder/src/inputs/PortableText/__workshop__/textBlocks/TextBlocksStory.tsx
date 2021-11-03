@@ -1,8 +1,9 @@
 /* eslint-disable react/style-prop-object */
-import {Card, Container, Flex} from '@sanity/ui'
-import {useBoolean} from '@sanity/ui-workshop'
-import React from 'react'
-import {TextBlock} from '../TextBlock'
+
+import {Box, Card, Container} from '@sanity/ui'
+import {useAction, useBoolean} from '@sanity/ui-workshop'
+import React, {useMemo} from 'react'
+import {TextBlock} from '../../Text/TextBlock/TextBlock'
 
 const errorMarker = {
   type: 'validation',
@@ -10,6 +11,7 @@ const errorMarker = {
   path: [{_key: 'a'}],
   item: {message: 'There is an error with this text block'},
 }
+
 const customMarker = {
   type: 'test',
   path: [{_key: 'a'}],
@@ -32,32 +34,27 @@ const blockBase = {
   ],
 }
 
-const noop = () => {
-  // nothing
-}
-
-export default function TestStory() {
+export function TextBlocksStory() {
   const hasErrors = useBoolean('Has errors', false)
   const hasMarkers = useBoolean('Has markers', false)
-  const markers = [
-    ...(hasErrors ? [errorMarker] : []),
-    ...(hasMarkers ? [customMarker] : []),
-  ] as any
-  const onChange = noop
-  const attributes = {focused: false, selected: false, path: []}
+  const markers = useMemo(
+    () => [...(hasErrors ? [errorMarker] : []), ...(hasMarkers ? [customMarker] : [])] as any,
+    [hasErrors, hasMarkers]
+  )
+  const onChange = useAction('onChange')
+  const attributes = useMemo(() => ({focused: false, selected: false, path: []}), [])
   const readOnly = false
-  // const value = []
+
   return (
-    <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
+    <Box padding={4}>
       <Container width={1}>
-        <Card padding={3} shadow={1} overflow="auto">
+        <Card padding={3} shadow={1} overflow="auto" style={{maxHeight: '100%'}}>
           <TextBlock
             markers={markers}
             block={{...blockBase, style: 'h1'}}
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
-            // value={value}
           >
             Heading 1
           </TextBlock>
@@ -68,7 +65,6 @@ export default function TestStory() {
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
-            // value={value}
           >
             Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
             has been the industry's standard dummy text ever since the 1500s, when an unknown
@@ -81,17 +77,16 @@ export default function TestStory() {
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
-            // value={value}
           >
             Lorem Ipsum is simply dummy text of the printing and typesetting industry.
           </TextBlock>
+
           <TextBlock
             markers={markers}
             block={{...blockBase, style: 'normal', listItem: 'number', level: 1}}
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
-            // value={value}
           >
             Lorem Ipsum is simply dummy text of the printing and typesetting industry.
           </TextBlock>
@@ -102,7 +97,6 @@ export default function TestStory() {
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
-            // value={value}
           >
             Lorem Ipsum is simply dummy text of the printing and typesetting industry.
           </TextBlock>
@@ -113,7 +107,6 @@ export default function TestStory() {
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
-            // value={value}
           >
             Lorem Ipsum is simply dummy text of the printing and typesetting industry.
           </TextBlock>
@@ -124,7 +117,6 @@ export default function TestStory() {
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
-            // value={value}
           >
             Heading 2
           </TextBlock>
@@ -135,7 +127,6 @@ export default function TestStory() {
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
-            // value={value}
           >
             Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
             has been the industry's standard dummy text ever since the 1500s, when an unknown
@@ -148,7 +139,6 @@ export default function TestStory() {
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
-            // value={value}
           >
             Lorem Ipsum is simply dummy text of the printing and typesetting industry.
           </TextBlock>
@@ -159,7 +149,6 @@ export default function TestStory() {
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
-            // value={value}
           >
             Lorem Ipsum is simply dummy text of the printing and typesetting industry.
           </TextBlock>
@@ -170,7 +159,6 @@ export default function TestStory() {
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
-            // value={value}
           >
             Heading 3
           </TextBlock>
@@ -181,7 +169,6 @@ export default function TestStory() {
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
-            // value={value}
           >
             Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
             has been the industry's standard dummy text ever since the 1500s, when an unknown
@@ -194,7 +181,6 @@ export default function TestStory() {
             onChange={onChange}
             attributes={attributes}
             readOnly={readOnly}
-            // value={value}
           >
             Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
             has been the industry's standard dummy text ever since the 1500s, when an unknown
@@ -202,6 +188,6 @@ export default function TestStory() {
           </TextBlock>
         </Card>
       </Container>
-    </Flex>
+    </Box>
   )
 }

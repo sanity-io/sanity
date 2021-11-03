@@ -1,7 +1,7 @@
 import {TextArea, Theme} from '@sanity/ui'
 import React, {forwardRef, useImperativeHandle, useRef} from 'react'
 import styled, {css} from 'styled-components'
-import PortableTextInput from '../PortableTextInput'
+import PortableTextInput from '../../PortableTextInput'
 
 const DebugTextArea = styled(TextArea)(({theme}: {theme: Theme}) => {
   return css`

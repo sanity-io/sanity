@@ -3,7 +3,7 @@ import React from 'react'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import {CommentIcon, AddIcon} from '@sanity/icons'
 import {keyGenerator} from '@sanity/portable-text-editor'
-import {TestInput} from '../TestInput'
+import {TestInput} from '../_common/TestInput'
 import {schema, portableTextType} from './schema'
 import {values, valueOptions} from './values'
 

@@ -6,7 +6,7 @@ import React from 'react'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import Schema from '@sanity/schema'
 import {PortableTextInputProps} from '../../PortableTextInput'
-import {TestInput} from '../../__workshop__/TestInput'
+import {TestInput} from '../../__workshop__/_common/TestInput'
 import {portableTextType} from './schema'
 
 const schema = Schema.compile({
