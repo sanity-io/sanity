@@ -22,8 +22,8 @@ Use it in your schema types:
     {
       name: 'exampleUsage',
       title: 'Example usage',
-      type: 'code'
-    }
+      type: 'code',
+    },
   ]
 }
 ```
@@ -68,6 +68,42 @@ Note that the above only works if you import and use the `all:part:@sanity/base/
   code: 'const foo = "bar"\nconsole.log(foo.toUpperCase())\n// BAR'
 }
 ```
+
+## Example usage in frontend (React)
+
+You can use any syntax highlighter you want - but not all of them might support highlighted lines or the syntax you've defined.
+
+As outlined above, the actual code is stored in a `code` property, so if your schema has a field called `codeExample` of type `code`, the property you'd want to pass to the highlighter would be `codeExample.code`.
+
+Here's an example using [react-refractor](https://github.com/rexxars/react-refractor):
+
+```jsx
+import React from 'react'
+import Refractor from 'react-refractor'
+import js from 'refractor/lang/javascript'
+
+Refractor.registerLanguage(js)
+
+export function Code(props) {
+  return (
+    <Refractor
+      // In this example, `props` is the value of a `code` field
+      language={props.language}
+      value={props.code}
+      markers={props.highlightedLines}
+    />
+  )
+}
+
+export default Code
+```
+
+Other syntax highlighters include:
+
+- [react-lowlight](https://github.com/rexxars/react-lowlight)
+- [react-syntax-highlighter](https://github.com/react-syntax-highlighter/react-syntax-highlighter)
+- [highlight.js](https://github.com/highlightjs/highlight.js)
+- [prism](https://github.com/PrismJS/prism)
 
 ## License
 
