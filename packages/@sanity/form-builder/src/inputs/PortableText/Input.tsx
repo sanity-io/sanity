@@ -40,7 +40,6 @@ type Props = {
   hotkeys: HotkeyOptions
   isFullscreen: boolean
   markers: Marker[]
-  onBlur: () => void
   onChange: (event: PatchEvent) => void
   onCopy?: OnCopyFn
   onFocus: (path: Path) => void
@@ -62,7 +61,6 @@ export default function PortableTextInput(props: Props) {
     hotkeys,
     isFullscreen,
     markers,
-    onBlur,
     onChange,
     onCopy,
     onFocus,
@@ -87,7 +85,6 @@ export default function PortableTextInput(props: Props) {
     (data: ObjectEditData) => void
   ] = useState(null)
   const [initialSelection, setInitialSelection] = useState(undefined)
-  const [returnToSelection, setReturnToSelection] = useState<EditorSelection>(null) // The selection to return to after closing the edit object interface
   const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
 
   // Respond to focusPath changes
@@ -100,7 +97,10 @@ export default function PortableTextInput(props: Props) {
       // Test if this focus path is the same as we got selected already.
       // If it is, just return or the editor will just try to refocus which
       // interferes with tab-navigation etc.
-      const sameSelection = selection && isEqual(selection.focus.path, focusPath)
+      const sameSelection =
+        selection &&
+        isEqual(selection.focus.path, focusPath) &&
+        isEqual(selection.focus.path, selection.anchor.path)
       if (sameSelection) {
         return
       }
@@ -115,7 +115,7 @@ export default function PortableTextInput(props: Props) {
           const point = {path: focusPath, offset: 0}
           PortableTextEditor.select(editor, {focus: point, anchor: point})
         }
-      } else if (isAnnotation && !returnToSelection) {
+      } else if (isAnnotation) {
         const block = (PortableTextEditor.getValue(editor) || []).find(
           (blk) => blk._key === blockSegment._key
         )
@@ -130,9 +130,9 @@ export default function PortableTextInput(props: Props) {
             setObjectEditData({
               editorPath: spanPath,
               formBuilderPath: focusPath.slice(0, 3),
+              returnToSelection: selection,
               kind: 'annotation',
             })
-            setReturnToSelection(selection)
           }
         }
         return
@@ -154,12 +154,16 @@ export default function PortableTextInput(props: Props) {
             anchor: {path, offset: 0},
           })
           // Make it go to selection first, then load  the editing interface
-          setObjectEditData({editorPath: path, formBuilderPath: path, kind})
-          setReturnToSelection(selection)
+          setObjectEditData({
+            editorPath: path,
+            formBuilderPath: path,
+            kind,
+            returnToSelection: selection,
+          })
         }
       }
     }
-  }, [editor, focusPath, hasFocus, objectEditData, selection, returnToSelection])
+  }, [editor, focusPath, hasFocus, objectEditData, selection])
 
   // Set as active whenever we have focus inside the editor.
   useEffect(() => {
@@ -167,22 +171,6 @@ export default function PortableTextInput(props: Props) {
       setIsActive(true)
     }
   }, [hasFocus])
-
-  // Update the FormBuilder focusPath as we get a new selection from the editor
-  // This will also set presence on that path
-  useEffect(() => {
-    // If no focusPath return
-    if (typeof focusPath === 'undefined') {
-      return
-    }
-    if (
-      selection &&
-      isEqual(selection.focus.path, selection.anchor.path) && // Important, or (backwards) selections will bork!
-      !isEqual(focusPath, selection.focus.path) // Only if different than before
-    ) {
-      onFocus(selection.focus.path)
-    }
-  }, [focusPath, objectEditData, onFocus, selection, returnToSelection])
 
   const handleToggleFullscreen = useCallback(() => {
     setInitialSelection(PortableTextEditor.getSelection(editor))
@@ -218,11 +206,11 @@ export default function PortableTextInput(props: Props) {
 
   const handleEditObjectFormBuilderFocus = useCallback(
     (nextPath: Path): void => {
-      if (objectEditData && nextPath && !returnToSelection) {
+      if (objectEditData && nextPath) {
         onFocus(nextPath)
       }
     },
-    [objectEditData, returnToSelection, onFocus]
+    [objectEditData, onFocus]
   )
 
   const handleEditObjectFormBuilderBlur = useCallback(() => {
@@ -347,14 +335,15 @@ export default function PortableTextInput(props: Props) {
   )
 
   const handleEditObjectClose = useCallback(() => {
+    const sel = objectEditData?.returnToSelection || selection
     setObjectEditData(null)
-    if (returnToSelection) {
-      PortableTextEditor.select(editor, returnToSelection)
+    if (sel) {
+      onFocus(sel.focus.path)
+      PortableTextEditor.select(editor, sel)
     } else {
-      focus()
+      PortableTextEditor.focus(editor)
     }
-    setReturnToSelection(null)
-  }, [editor, focus, returnToSelection])
+  }, [editor, objectEditData?.returnToSelection, onFocus, selection])
 
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
 
@@ -366,7 +355,6 @@ export default function PortableTextInput(props: Props) {
         isFullscreen={isFullscreen}
         key={`editor-${editorId}`}
         markers={markers}
-        onBlur={onBlur}
         onFocus={onFocus}
         onFormBuilderChange={onChange}
         onCopy={onCopy}
@@ -390,7 +378,6 @@ export default function PortableTextInput(props: Props) {
       isFullscreen,
       editorId,
       markers,
-      onBlur,
       onFocus,
       onChange,
       onCopy,

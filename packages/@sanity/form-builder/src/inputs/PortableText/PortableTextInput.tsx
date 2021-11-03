@@ -1,4 +1,4 @@
-import {uniqueId} from 'lodash'
+import {isEqual, uniqueId} from 'lodash'
 import {FormField} from '@sanity/base/components'
 import React, {useEffect, useState, useMemo, useCallback} from 'react'
 import {Marker, Path} from '@sanity/types'
@@ -126,11 +126,23 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
             onChange(PatchEvent.from(change.patches))
           })
           break
+        case 'selection':
+          if (
+            change.selection &&
+            isEqual(change.selection.focus.path, change.selection.anchor.path) && // Important, or (backwards) selections will bork!
+            !isEqual(focusPath, change.selection.focus.path) // Only if different than before
+          ) {
+            setTimeout(() => {
+              onFocus(change.selection.focus.path)
+            }, 0) // Do this in the next tick or we might end up tracking it
+          }
+          break
         case 'focus':
           setHasFocus(true)
           break
         case 'blur':
           setHasFocus(false)
+          onBlur()
           break
         case 'undo':
         case 'redo':
@@ -148,7 +160,7 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
         default:
       }
     },
-    [onChange, toast]
+    [focusPath, onBlur, onChange, onFocus, toast]
   )
 
   const focusSkipperButton = useMemo(() => {
@@ -185,7 +197,6 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
           hotkeys={hotkeys}
           isFullscreen={isFullscreen}
           markers={markers}
-          onBlur={onBlur}
           onChange={onChange}
           onCopy={onCopy}
           onFocus={onFocus}
@@ -210,7 +221,6 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
       hotkeys,
       isFullscreen,
       markers,
-      onBlur,
       onChange,
       onCopy,
       onFocus,

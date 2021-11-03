@@ -28,7 +28,6 @@ type Props = {
   isFullscreen: boolean
   markers: Array<Marker>
   hotkeys: HotkeyOptions
-  onBlur: () => void
   onCopy?: OnCopyFn
   onFocus: (Path) => void
   onFormBuilderChange: (change: PatchEvent) => void
@@ -54,7 +53,6 @@ function PortableTextSanityEditor(props: Props) {
   const {
     initialSelection,
     isFullscreen,
-    // markers,
     onCopy,
     onFocus,
     onPaste,
@@ -62,12 +60,11 @@ function PortableTextSanityEditor(props: Props) {
     readOnly,
     renderAnnotation,
     renderBlock,
-    // renderBlockActions,
     renderChild,
-    setPortalElement,
-    value,
     scrollElement,
+    setPortalElement,
     setScrollElement,
+    value,
   } = props
 
   const editor = usePortableTextEditor()
