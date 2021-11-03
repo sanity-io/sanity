@@ -32,13 +32,15 @@ export function TestInput(props: TestInputProps) {
     withCustomMarkers = false,
   } = props
   const [value, setValue] = useState<any[]>(propsValue)
-  const [focusPath, setFocusPath] = useState<Path>([])
+  const [focusPath, setFocusPath] = useState<Path>(undefined)
   const blockType = useMemo(() => type.of.find((t) => t.type.name === 'block'), [type])
   const onFocus = useCallback((path: Path) => {
+    // console.log('onFocus', path)
     setFocusPath(path)
   }, [])
   const onBlur = useCallback(() => {
-    setFocusPath([])
+    // console.log('onBlur')
+    setFocusPath(undefined)
   }, [])
   const onChange = useCallback(
     (event) => {
@@ -146,6 +148,19 @@ export function TestInput(props: TestInputProps) {
       resolveInputComponent={inputResolver}
       resolvePreviewComponent={resolvePreviewComponent}
     >
+      {/* <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          zIndex: 999,
+          background: 'white',
+          padding: 10,
+          left: 0,
+          border: '1px solid red',
+        }}
+      >
+        <pre>{JSON.stringify(focusPath, null, 2)}</pre>
+      </div> */}
       <PortableTextInput
         focusPath={focusPath}
         hotkeys={hotkeys}
