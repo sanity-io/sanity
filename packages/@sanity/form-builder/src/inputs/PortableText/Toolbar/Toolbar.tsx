@@ -5,11 +5,11 @@ import {
   Type,
   PortableTextEditor,
 } from '@sanity/portable-text-editor'
-import React, {memo, useCallback, useMemo} from 'react'
+import React, {memo, useCallback, useMemo, useState} from 'react'
 import {Path, SchemaType} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {resolveInitialValueForType} from '@sanity/initial-value-templates'
-import {Box, Button, Flex, Hotkeys, Text, Tooltip, useToast} from '@sanity/ui'
+import {Box, Button, Flex, Hotkeys, Text, Tooltip, useElementRect, useToast} from '@sanity/ui'
 import {CollapseIcon, ExpandIcon} from '@sanity/icons'
 import styled, {css} from 'styled-components'
 import {ActionMenu} from './ActionMenu'
@@ -33,6 +33,9 @@ const RootFlex = styled(Flex)`
 
 const StyleSelectBox = styled(Box)`
   min-width: 8em;
+`
+
+const StyleSelectFlex = styled(Flex)`
   border-right: 1px solid var(--card-border-color);
 `
 
@@ -79,6 +82,10 @@ const InnerToolbar = memo(function InnerToolbar({
   const actionsLen = actionGroups.reduce((acc, x) => acc + x.actions.length, 0)
   const showActionMenu = actionsLen > 0
   const showInsertMenu = insertMenuItems.length > 0
+  const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
+  const rootElementRect = useElementRect(rootElement)
+
+  const collapsed = rootElementRect ? rootElementRect?.width < 400 : false
 
   return (
     <RootFlex
@@ -87,15 +94,23 @@ const InnerToolbar = memo(function InnerToolbar({
       // with the toolbar (prevent focus click events)
       onMouseDown={preventDefault}
       onKeyPress={preventDefault}
+      ref={setRootElement}
     >
-      <StyleSelectBox padding={isFullscreen ? 2 : 1}>
-        <BlockStyleSelect disabled={disabled} readOnly={readOnly} items={blockStyles} />
-      </StyleSelectBox>
+      <StyleSelectFlex flex={collapsed ? 1 : undefined}>
+        <StyleSelectBox padding={isFullscreen ? 2 : 1}>
+          <BlockStyleSelect disabled={disabled} readOnly={readOnly} items={blockStyles} />
+        </StyleSelectBox>
+      </StyleSelectFlex>
 
       {showActionMenu && (
-        <ActionMenuBox flex={1} padding={isFullscreen ? 2 : 1} $withMaxWidth={showInsertMenu}>
+        <ActionMenuBox
+          flex={collapsed ? undefined : 1}
+          padding={isFullscreen ? 2 : 1}
+          $withMaxWidth={showInsertMenu}
+        >
           <ActionMenu
             disabled={disabled}
+            collapsed={collapsed}
             groups={actionGroups}
             readOnly={readOnly}
             isFullscreen={isFullscreen}
@@ -104,9 +119,10 @@ const InnerToolbar = memo(function InnerToolbar({
       )}
 
       {showInsertMenu && (
-        <InsertMenuBox flex={1} padding={isFullscreen ? 2 : 1}>
+        <InsertMenuBox flex={collapsed ? undefined : 1} padding={isFullscreen ? 2 : 1}>
           <InsertMenu
             disabled={disabled}
+            collapsed={collapsed}
             items={insertMenuItems}
             readOnly={readOnly}
             isFullscreen={isFullscreen}
