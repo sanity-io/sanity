@@ -167,6 +167,12 @@ export const DraggableBlock: FunctionComponent<ElementProps> = ({
       IS_DRAGGING.set(editor, true)
       IS_DRAGGING_BLOCK_ELEMENT.set(editor, element)
       event.stopPropagation() // Stop propagation so that leafs don't get this and take focus/selection!
+
+      const target = event.target
+
+      if (target instanceof HTMLElement) {
+        target.style.opacity = '1'
+      }
     },
     [editor, element, isVoid]
   )
@@ -195,15 +201,20 @@ export const DraggableBlock: FunctionComponent<ElementProps> = ({
         if (customGhost) {
           dragGhost = customGhost as HTMLElement
         }
+
+        // Set the `data-dragged` attribute so the consumer can style the element while it’s dragged
+        dragGhost.setAttribute('data-dragged', '')
+
         if (document.body) {
           dragGhostRef.current = dragGhost
           dragGhost.style.position = 'absolute'
+          dragGhost.style.boxSizing = 'border-box'
           document.body.appendChild(dragGhost)
           const rect = blockElement.getBoundingClientRect()
           const x = event.clientX - rect.left
           const y = event.clientY - rect.top
-          dragGhost.style.width = `${rect.width / 3}px`
-          dragGhost.style.height = `${rect.height / 3}px`
+          dragGhost.style.width = `${rect.width}px`
+          dragGhost.style.height = `${rect.height}px`
           event.dataTransfer.setDragImage(dragGhost, x, y)
         }
       }
@@ -237,7 +248,7 @@ export const DraggableBlock: FunctionComponent<ElementProps> = ({
           position: 'absolute',
           width: '100%',
           height: 1,
-          borderBottom: '1px solid black',
+          borderBottom: '1px solid currentColor',
           zIndex: 5,
         }}
       />
