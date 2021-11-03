@@ -15,16 +15,27 @@ export default {
       description: 'Is published?',
     },
     {
+      name: 'readOnlyIfTitleIsReadOnly',
+      type: 'string',
+      description: 'This will be read only if the document title contains the string `read only`',
+      readOnly: ({document}) => {
+        return Boolean(document.title && document.title.includes('read only'))
+      },
+    },
+    {
       name: 'fieldWithObjectType',
       title: 'Field of object type',
       type: 'object',
-      description:
-        'This is a field of (anonymous, inline) object type. Values here should never get a `_type` property',
+      description: 'Becomes read-only if the title includes read only',
+      readOnly: ({document}) => {
+        return Boolean(document.title && document.title.includes('read only'))
+      },
       fields: [
         {
           name: 'field1',
           type: 'string',
           description: 'Try typing "hide field 2" here',
+          readOnly: true,
         },
         {
           name: 'field2',
@@ -45,12 +56,44 @@ export default {
           hidden: ({document}) => document.isPublished,
         },
         {
+          name: 'readOnlyIfPublished',
+          type: 'string',
+          description: 'This will be read only if the document is published',
+          readOnly: ({document}) => document.isPublished,
+        },
+        {
+          name: 'readOnlyIfTitleIsReadOnly',
+          type: 'string',
+          description:
+            'This will be read only if the document title contains the string `read only`',
+          readOnly: ({document}) => {
+            return Boolean(document.title && document.title.toLowerCase().includes('read only'))
+          },
+        },
+        {
           name: 'field3',
           type: 'string',
           description: 'This will be hidden if its value becomes "hideme"',
           hidden: ({value}) => value === 'hideme',
         },
       ],
+    },
+    {
+      name: 'arrayReadOnly',
+      type: 'array',
+      of: [{type: 'string'}, {type: 'number'}],
+      readOnly: true,
+    },
+    {
+      name: 'imageReadOnly',
+      type: 'image',
+      readOnly: ({document}) => Boolean(document?.isPublished),
+    },
+    {
+      name: 'fileReadOnly',
+      type: 'file',
+      readOnly: ({document}) =>
+        Boolean(document.title && document.title.toLowerCase().includes('read only')),
     },
   ],
 }
