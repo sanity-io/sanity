@@ -20,6 +20,7 @@ export default function CollapseMenuStory() {
   const collapseText = useBoolean('Collapse text', true)
   const customMenuButton = useBoolean('Custom menu button', false)
   const gap = useSelect('Gap', GAP_OPTIONS, 1)
+  const collapsed = useBoolean('Collapsed', false)
 
   const handleSelect = useCallback((id: string) => {
     setSelected(id)
@@ -33,7 +34,7 @@ export default function CollapseMenuStory() {
   return (
     <Container padding={4} width={4} sizing="border">
       <Card shadow={1} padding={1} radius={3}>
-        <CollapseMenu gap={gap} menuButton={menuButton}>
+        <CollapseMenu gap={gap} menuButton={menuButton} collapsed={collapsed}>
           <CollapseMenuButton
             buttonProps={{mode: 'bleed'}}
             collapseText={collapseText}
