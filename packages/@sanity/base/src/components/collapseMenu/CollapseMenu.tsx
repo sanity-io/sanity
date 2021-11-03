@@ -32,6 +32,7 @@ interface CollapseMenuProps {
   menuButton?: ReactElement<HTMLButtonElement>
   menuPopoverProps?: PopoverProps
   onMenuVisible?: (visible: boolean) => void
+  collapsed?: boolean
 }
 
 const RootBox = styled(Box)<{$hide?: boolean}>`
@@ -73,8 +74,68 @@ const OptionBox = styled(Box)<{$inView: boolean}>`
   pointer-events: ${({$inView}) => ($inView ? 'inherit' : 'none')};
 `
 
+function MenuCollapse({
+  menuButton,
+  popoverProps,
+  options,
+}: {
+  menuButton: ReactElement<HTMLButtonElement>
+  popoverProps: PopoverProps
+  options: ReactElement[]
+}) {
+  return (
+    <MenuButton
+      button={menuButton}
+      id="collapse-menu"
+      popover={popoverProps}
+      menu={
+        <Menu>
+          {options.map((child, index) => {
+            const {
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              buttonProps,
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              collapseText,
+              dividerBefore,
+              icon,
+              menuItemProps = {},
+              selected,
+              text,
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              tooltipProps,
+              ...restProps
+            } = child.props as CollapseMenuItemProps
+
+            return (
+              <Fragment key={child.key}>
+                {dividerBefore && index !== 0 && <MenuDivider />}
+                <MenuItem
+                  {...restProps}
+                  icon={icon}
+                  text={text}
+                  fontSize={2}
+                  radius={2}
+                  {...menuItemProps}
+                  pressed={selected}
+                />
+              </Fragment>
+            )
+          })}
+        </Menu>
+      }
+    />
+  )
+}
+
 export function CollapseMenu(props: CollapseMenuProps) {
-  const {children, menuButton, gap = 1, onMenuVisible, menuPopoverProps} = props
+  const {
+    children,
+    menuButton,
+    gap = 1,
+    onMenuVisible,
+    menuPopoverProps,
+    collapsed: shouldCollapse,
+  } = props
 
   const [rootBoxElement, setRootBoxElement] = useState<HTMLDivElement | null>(null)
   const [innerFlexElement, setInnerFlexElement] = useState<HTMLDivElement | null>(null)
@@ -166,6 +227,19 @@ export function CollapseMenu(props: CollapseMenuProps) {
     },
     [menuOptionsArray]
   )
+
+  /**
+   * Return the collapsed menu
+   */
+  if (shouldCollapse) {
+    return (
+      <MenuCollapse
+        options={childrenArray}
+        menuButton={menuButtonToRender}
+        popoverProps={popoverProps}
+      />
+    )
+  }
 
   return (
     <RootBox ref={setRootBoxElement} display="flex" data-ui="CollapseMenu" sizing="border">
@@ -287,45 +361,10 @@ export function CollapseMenu(props: CollapseMenuProps) {
 
       {/* Menu displaying the options that is outside of RootBox in collapsed state  */}
       {menuIsVisible && (
-        <MenuButton
-          button={menuButtonToRender}
-          id="collapse-menu"
-          popover={popoverProps}
-          menu={
-            <Menu>
-              {menuOptionsArray.map((child, index) => {
-                const {
-                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                  buttonProps,
-                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                  collapseText,
-                  dividerBefore,
-                  icon,
-                  menuItemProps = {},
-                  selected,
-                  text,
-                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                  tooltipProps,
-                  ...restProps
-                } = child.props as CollapseMenuItemProps
-
-                return (
-                  <Fragment key={child.key}>
-                    {dividerBefore && index !== 0 && <MenuDivider />}
-                    <MenuItem
-                      {...restProps}
-                      icon={icon}
-                      text={text}
-                      fontSize={2}
-                      radius={2}
-                      {...menuItemProps}
-                      pressed={selected}
-                    />
-                  </Fragment>
-                )
-              })}
-            </Menu>
-          }
+        <MenuCollapse
+          options={menuOptionsArray}
+          menuButton={menuButtonToRender}
+          popoverProps={popoverProps}
         />
       )}
     </RootBox>
