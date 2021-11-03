@@ -1,12 +1,14 @@
 import React, {memo, useMemo} from 'react'
 import {CollapseMenu, CollapseMenuButton, CollapseMenuButtonProps} from '@sanity/base/components'
-import {Button} from '@sanity/ui'
+import {Button, PopoverProps} from '@sanity/ui'
 import {EllipsisVerticalIcon} from '@sanity/icons'
 import {PTEToolbarAction, PTEToolbarActionGroup} from './types'
 import {useActiveActionKeys, useFeatures, useFocusBlock, useFocusChild} from './hooks'
 import {getActionIcon} from './helpers'
 
 const CollapseMenuMemo = memo(CollapseMenu)
+
+const MENU_POPOVER_PROPS: PopoverProps = {constrainSize: true}
 
 interface ActionMenuProps {
   disabled: boolean
@@ -88,7 +90,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
   )
 
   return (
-    <CollapseMenuMemo gap={1} menuButton={menuButton}>
+    <CollapseMenuMemo gap={1} menuButton={menuButton} menuPopoverProps={MENU_POPOVER_PROPS}>
       {children}
     </CollapseMenuMemo>
   )
