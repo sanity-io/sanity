@@ -7,6 +7,7 @@ import {
   Path,
   SingleFieldSet,
   Fieldset,
+  ConditionalProperty,
 } from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {FormFieldSet} from '@sanity/base/components'
@@ -42,7 +43,7 @@ export interface Props {
   focusPath?: Path
   markers?: Marker[]
   level?: number
-  readOnly?: boolean
+  readOnly?: ConditionalProperty
   isRoot?: boolean
   filterField?: (...args: any[]) => any
   presence: FormFieldPresence[]
@@ -213,14 +214,7 @@ export const ObjectInput = memo(
         return null
       }
 
-      return (
-        <UnknownFields
-          readOnly={readOnly}
-          fieldNames={unknownFields}
-          value={value}
-          onChange={onChange}
-        />
-      )
+      return <UnknownFields fieldNames={unknownFields} value={value} onChange={onChange} />
     }, [onChange, readOnly, type.fields, value])
 
     const renderAllFields = useCallback(() => {
