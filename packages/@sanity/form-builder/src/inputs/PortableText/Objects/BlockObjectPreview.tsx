@@ -1,7 +1,7 @@
 import {IntentLink} from '@sanity/base/router'
 import {EditIcon, LinkIcon, TrashIcon, EyeOpenIcon, EllipsisVerticalIcon} from '@sanity/icons'
 import {PortableTextBlock, Type} from '@sanity/portable-text-editor'
-import {Button, Menu, MenuButton, MenuButtonProps, MenuItem} from '@sanity/ui'
+import {Box, Button, Flex, Menu, MenuButton, MenuButtonProps, MenuItem} from '@sanity/ui'
 import React, {forwardRef, useMemo} from 'react'
 import {useId} from '@reach/auto-id'
 import Preview from '../../../Preview'
@@ -24,6 +24,8 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
 export function BlockObjectPreview(props: BlockObjectPreviewProps) {
   const {value, type, readOnly, onClickingEdit, onClickingDelete} = props
   const menuButtonId = useId()
+  const isCustomPreviewComponent = Boolean(type.preview?.component)
+  const layout = 'block'
 
   const referenceLink = useMemo(
     () =>
@@ -38,43 +40,46 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps) {
   // - If it’s an image object, and the value exists, we want to show that title is "Undefined".
   const fallbackTitle = !value && type.name === 'image' ? 'No image selected' : 'Undefined'
 
+  const actions = (
+    <MenuButton
+      button={
+        <Button fontSize={1} iconRight={EllipsisVerticalIcon} mode="bleed" aria-label="Open menu" />
+      }
+      id={menuButtonId}
+      menu={
+        <Menu>
+          {value?._ref && (
+            <MenuItem as={referenceLink} data-as="a" icon={LinkIcon} text="Open reference" />
+          )}
+          {readOnly && <MenuItem icon={EyeOpenIcon} onClick={onClickingEdit} text="View" />}
+          {!readOnly && <MenuItem icon={EditIcon} onClick={onClickingEdit} text="Edit" />}
+          {!readOnly && (
+            <MenuItem icon={TrashIcon} onClick={onClickingDelete} text="Delete" tone="critical" />
+          )}
+        </Menu>
+      }
+      popover={POPOVER_PROPS}
+    />
+  )
+
+  if (isCustomPreviewComponent) {
+    return (
+      <Flex>
+        <Box flex={1}>
+          <Preview type={type} fallbackTitle={fallbackTitle} value={value} layout={layout} />
+        </Box>
+        <Box marginLeft={1}>{actions}</Box>
+      </Flex>
+    )
+  }
+
   return (
     <Preview
-      actions={
-        <MenuButton
-          button={
-            <Button
-              fontSize={1}
-              iconRight={EllipsisVerticalIcon}
-              mode="bleed"
-              aria-label="Open menu"
-            />
-          }
-          id={menuButtonId}
-          menu={
-            <Menu>
-              {value?._ref && (
-                <MenuItem as={referenceLink} data-as="a" icon={LinkIcon} text="Open reference" />
-              )}
-              {readOnly && <MenuItem icon={EyeOpenIcon} onClick={onClickingEdit} text="View" />}
-              {!readOnly && <MenuItem icon={EditIcon} onClick={onClickingEdit} text="Edit" />}
-              {!readOnly && (
-                <MenuItem
-                  icon={TrashIcon}
-                  onClick={onClickingDelete}
-                  text="Delete"
-                  tone="critical"
-                />
-              )}
-            </Menu>
-          }
-          popover={POPOVER_PROPS}
-        />
-      }
+      actions={actions}
       type={type}
       fallbackTitle={fallbackTitle}
       value={value}
-      layout="block"
+      layout={layout}
     />
   )
 }
