@@ -1,6 +1,13 @@
 import React, {useMemo} from 'react'
 import shallowEquals from 'shallow-equals'
-import {Marker, ObjectField, ObjectSchemaTypeWithOptions, Path, SchemaType} from '@sanity/types'
+import {
+  ConditionalProperty,
+  Marker,
+  ObjectField,
+  ObjectSchemaTypeWithOptions,
+  Path,
+  SchemaType,
+} from '@sanity/types'
 import {ChangeIndicatorProvider} from '@sanity/base/change-indicators'
 import * as PathUtils from '@sanity/util/paths'
 import generateHelpUrl from '@sanity/generate-help-url'
@@ -8,6 +15,7 @@ import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/presence
 import PatchEvent from './PatchEvent'
 import {emptyArray} from './utils/empty'
 import {Props as InputProps} from './inputs/types'
+import {ConditionalReadOnlyField} from './inputs/common/ConditionalReadOnlyField'
 
 const EMPTY_MARKERS: Marker[] = emptyArray()
 const EMPTY_PATH: Path = emptyArray()
@@ -20,7 +28,8 @@ interface FormBuilderInputProps {
   onChange: (event: PatchEvent) => void
   onFocus: (path: Path) => void
   onBlur: () => void
-  readOnly?: boolean
+  readOnly?: ConditionalProperty
+  parent?: Record<string, unknown> | undefined
   presence?: FormFieldPresence[]
   focusPath: Path
   markers: Marker[]
@@ -153,8 +162,7 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
 
   handleChange = (patchEvent: PatchEvent) => {
     const {type, onChange} = this.props
-
-    if (type.readOnly) {
+    if (typeof type.readOnly === 'boolean' && type.readOnly) {
       return
     }
 
@@ -205,7 +213,7 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
   }
 
   render() {
-    const {type} = this.props
+    const {type, readOnly, parent, value} = this.props
     const InputComponent = this.resolveInputComponent(type)
 
     if (!InputComponent) {
@@ -213,6 +221,27 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
         <div tabIndex={0} ref={this.setInput}>
           No input resolved for type {type.name ? JSON.stringify(type.name) : '<unknown type>'}
         </div>
+      )
+    }
+
+    if (typeof readOnly === 'function' || typeof type.readOnly === 'function') {
+      return (
+        <ConditionalReadOnlyField
+          parent={parent}
+          value={value}
+          readOnly={readOnly ?? type.readOnly}
+        >
+          <FormBuilderInputInner
+            {...this.props}
+            childFocusPath={this.getChildFocusPath()}
+            context={this.context}
+            component={InputComponent}
+            onBlur={this.handleBlur}
+            onChange={this.handleChange}
+            onFocus={this.handleFocus}
+            setInput={this.setInput}
+          />
+        </ConditionalReadOnlyField>
       )
     }
 
@@ -290,7 +319,7 @@ function FormBuilderInputInner(props: FormBuilderInputInnerProps) {
       isRoot,
       value,
       compareValue: childCompareValue,
-      readOnly: readOnly || type.readOnly,
+      readOnly: readOnly ?? type.readOnly,
       markers: childMarkers.length === 0 ? EMPTY_MARKERS : childMarkers,
       type,
       presence: childPresenceInfo,
