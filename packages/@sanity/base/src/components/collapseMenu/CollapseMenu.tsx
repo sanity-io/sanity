@@ -170,7 +170,13 @@ export function CollapseMenu(props: CollapseMenuProps) {
   return (
     <RootBox ref={setRootBoxElement} display="flex" data-ui="CollapseMenu" sizing="border">
       {/* Expanded row, visible when there is enough space to show text on buttons */}
-      <InnerFlex align="center" ref={setInnerFlexElement} $hide={collapsed} aria-hidden={collapsed}>
+      <InnerFlex
+        align="center"
+        ref={setInnerFlexElement}
+        $hide={collapsed}
+        aria-hidden={collapsed}
+        data-testid="inner-flex-expanded"
+      >
         <Flex as="ul" gap={gap}>
           {childrenArray.map((child, index) => {
             const {
@@ -190,8 +196,8 @@ export function CollapseMenu(props: CollapseMenuProps) {
                 {showDivider && <CollapseMenuDivider />}
                 <Tooltip
                   portal
-                  disabled
                   {...tooltipProps}
+                  disabled={tooltipProps?.disabled || !tooltipProps?.text}
                   content={
                     <Box padding={2} sizing="border">
                       <Text size={1} muted>
@@ -219,6 +225,7 @@ export function CollapseMenu(props: CollapseMenuProps) {
         $hide={!collapsed}
         aria-hidden={!collapsed}
         ref={setCollapsedInnerFlexElement}
+        data-testid="inner-flex-collapsed"
       >
         <Flex gap={gap} as="ul">
           {childrenArray.map((child, index) => {
