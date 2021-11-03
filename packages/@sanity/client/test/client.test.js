@@ -822,6 +822,20 @@ test('delete() can use request tag', (t) => {
     .then(() => t.end())
 })
 
+test('delete() can use query with params', (t) => {
+  const query = '*[_type == "beer" && title == $beerName]'
+  const params = {beerName: 'Headroom Double IPA'}
+  const expectedBody = {mutations: [{delete: {query: query, params: params}}]}
+  nock(projectHost())
+    .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=sync', expectedBody)
+    .reply(200, {transactionId: 'abc123'})
+
+  getClient()
+    .delete({query: query, params: params})
+    .catch(t.ifError)
+    .then(() => t.end())
+})
+
 test('delete() can be told not to return documents', (t) => {
   const expectedBody = {mutations: [{delete: {id: 'abc123'}}]}
   nock(projectHost())
@@ -996,8 +1010,18 @@ test('patch() can take an array of IDs', (t) => {
 })
 
 test('patch() can take a query', (t) => {
-  const patch = getClient().patch({query: 'beerfiesta.beer'}).inc({count: 1}).serialize()
-  t.deepEqual(patch, {query: 'beerfiesta.beer', inc: {count: 1}})
+  const patch = getClient().patch({query: '*[_type == "beer]'}).inc({count: 1}).serialize()
+  t.deepEqual(patch, {query: '*[_type == "beer]', inc: {count: 1}})
+  t.end()
+})
+
+test('patch() can take a query and params', (t) => {
+  const patch = getClient()
+    .patch({query: '*[_type == $type]', params: {type: 'beer'}})
+    .inc({count: 1})
+    .serialize()
+
+  t.deepEqual(patch, {query: '*[_type == $type]', params: {type: 'beer'}, inc: {count: 1}})
   t.end()
 })
 

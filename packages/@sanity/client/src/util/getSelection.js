@@ -4,7 +4,7 @@ module.exports = function getSelection(sel) {
   }
 
   if (sel && sel.query) {
-    return {query: sel.query}
+    return 'params' in sel ? {query: sel.query, params: sel.params} : {query: sel.query}
   }
 
   const selectionOpts = [
