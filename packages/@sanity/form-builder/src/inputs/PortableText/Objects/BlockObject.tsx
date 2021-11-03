@@ -158,22 +158,13 @@ export function BlockObject(props: BlockObjectProps) {
   } = props
   const elementRef = useRef<HTMLDivElement>()
 
-  const handleClickToOpen = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
-      if (focused) {
-        event.preventDefault()
-        event.stopPropagation()
-        onFocus(path.concat(FOCUS_TERMINATOR))
-      } else {
-        onFocus(path)
-      }
-    },
-    [focused, onFocus, path]
-  )
-
   const handleEdit = useCallback(() => {
     onFocus(path.concat(FOCUS_TERMINATOR))
   }, [onFocus, path])
+
+  const handleClickToOpen = useCallback(() => {
+    handleEdit()
+  }, [handleEdit])
 
   const handleDelete = useCallback(() => {
     PortableTextEditor.delete(
