@@ -46,11 +46,7 @@ const TEXT_STYLE_OPTIONS = {
   h5: <Heading5>Heading 5</Heading5>,
   h6: <Heading6>Heading 6</Heading6>,
   normal: <Normal>Normal</Normal>,
-  blockquote: (
-    <BlockQuote>
-      <Text>Quote</Text>
-    </BlockQuote>
-  ),
+  blockquote: <BlockQuote>Quote</BlockQuote>,
 }
 
 const TEXT_STYLE_KEYS = Object.keys(TEXT_STYLE_OPTIONS)
