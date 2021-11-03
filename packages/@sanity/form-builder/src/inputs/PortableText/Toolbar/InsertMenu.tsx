@@ -1,11 +1,13 @@
 import React, {memo, useMemo} from 'react'
 import {CollapseMenu, CollapseMenuButton, CollapseMenuButtonProps} from '@sanity/base/components'
 import {AddIcon} from '@sanity/icons'
-import {Button} from '@sanity/ui'
+import {Button, PopoverProps} from '@sanity/ui'
 import {BlockItem} from './types'
 import {useFeatures, useFocusBlock} from './hooks'
 
 const CollapseMenuMemo = memo(CollapseMenu)
+
+const MENU_POPOVER_PROPS: PopoverProps = {constrainSize: true}
 
 interface InsertMenuProps {
   disabled: boolean
@@ -59,7 +61,7 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
   )
 
   return (
-    <CollapseMenuMemo gap={1} menuButton={menuButton}>
+    <CollapseMenuMemo gap={1} menuButton={menuButton} menuPopoverProps={MENU_POPOVER_PROPS}>
       {children}
     </CollapseMenuMemo>
   )
