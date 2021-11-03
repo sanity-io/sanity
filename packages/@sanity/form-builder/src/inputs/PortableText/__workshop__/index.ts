@@ -5,12 +5,12 @@ export default defineScope('form-builder/inputs/portable-text', 'PortableTextInp
   {
     name: 'default',
     title: 'Default Schema',
-    component: lazy(() => import('./default/Story')),
+    component: lazy(() => import('./defaultSchema/Story')),
   },
   {
     name: 'custom',
     title: 'Custom Schema',
-    component: lazy(() => import('./custom/Story')),
+    component: lazy(() => import('./customSchema/Story')),
   },
   {
     name: 'list-counter',
