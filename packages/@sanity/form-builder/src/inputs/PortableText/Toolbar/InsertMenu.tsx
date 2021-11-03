@@ -14,10 +14,11 @@ interface InsertMenuProps {
   items: BlockItem[]
   readOnly: boolean
   isFullscreen?: boolean
+  collapsed?: boolean
 }
 
 export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
-  const {disabled, items, readOnly, isFullscreen} = props
+  const {disabled, items, readOnly, isFullscreen, collapsed} = props
   const features = useFeatures()
   const focusBlock = useFocusBlock()
 
@@ -61,7 +62,12 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
   )
 
   return (
-    <CollapseMenuMemo gap={1} menuButton={menuButton} menuPopoverProps={MENU_POPOVER_PROPS}>
+    <CollapseMenuMemo
+      gap={1}
+      menuButton={menuButton}
+      menuPopoverProps={MENU_POPOVER_PROPS}
+      collapsed={collapsed}
+    >
       {children}
     </CollapseMenuMemo>
   )
