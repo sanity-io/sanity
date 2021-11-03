@@ -1,7 +1,7 @@
 import {Card, Container, Flex, LayerProvider} from '@sanity/ui'
 import React from 'react'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
-import {TestInput} from '../TestInput'
+import {TestInput} from '../_common/TestInput'
 import {schema, portableTextType} from './schema'
 import {values, valueOptions} from './values'
 

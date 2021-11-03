@@ -1,7 +1,7 @@
 import {defineScope} from '@sanity/ui-workshop'
 import {lazy} from 'react'
 
-export default defineScope('form-builder/inputs/pte', 'Portable Text Editor', [
+export default defineScope('form-builder/inputs/portable-text', 'PortableTextInput', [
   {
     name: 'default',
     title: 'Default Schema',
@@ -21,5 +21,10 @@ export default defineScope('form-builder/inputs/pte', 'Portable Text Editor', [
     name: 'edit-objects',
     title: 'Edit objects',
     component: lazy(() => import('./editObjects')),
+  },
+  {
+    name: 'text-blocks',
+    title: 'Text blocks',
+    component: lazy(() => import('./textBlocks')),
   },
 ])

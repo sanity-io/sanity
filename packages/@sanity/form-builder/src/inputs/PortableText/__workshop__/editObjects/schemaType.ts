@@ -1,6 +1,6 @@
 import Schema from '@sanity/schema'
 import schemaTypes from 'all:part:@sanity/base/schema-type'
-import {baseTypes} from '../baseTypes'
+import {baseTypes} from '../_common/baseTypes'
 
 const linkType = {
   type: 'object',
