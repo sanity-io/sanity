@@ -12,6 +12,7 @@ import files from './standard/files'
 import images, {myImage} from './standard/images'
 import numbers from './standard/numbers'
 import objects, {myObject} from './standard/objects'
+import {ptAllTheBellsAndWhistlesType} from './standard/portableText/allTheBellsAndWhistles'
 import blocks from './standard/portableText/blocks'
 import richTextObject from './standard/portableText/richTextObject'
 import simpleBlock from './standard/portableText/simpleBlock'
@@ -134,6 +135,7 @@ export default createSchema({
     previewImageUrlTest,
     previewMediaTest,
     previewSelectBugRepro,
+    ptAllTheBellsAndWhistlesType,
     radio,
     readOnly,
     recursive,
