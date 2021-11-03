@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react'
-import {Box, Flex, rem, ResponsivePaddingProps, Stack, Theme, Tooltip} from '@sanity/ui'
+import {Box, Flex, ResponsivePaddingProps, Stack, Theme, Tooltip} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {hues} from '@sanity/color'
 import {isKeySegment, Marker} from '@sanity/types'
@@ -75,8 +75,7 @@ export function createListName(level: number) {
 
 function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
   const {$level, $listItem, theme} = props
-  const {space, fonts, color} = theme.sanity
-  const indent = typeof $level === 'number' ? space[4] * $level : undefined
+  const {fonts, color} = theme.sanity
 
   const overlay = css`
     content: '';
@@ -89,15 +88,11 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
   `
 
   return css`
-    --text-block-indent: ${indent ? rem(space[3] + space[3] + indent) : undefined};
-    --text-font-family: ${fonts.text.family};
-
     mix-blend-mode: ${color.dark ? 'screen' : 'multiply'};
     position: relative;
 
     & > [data-ui='TextBlock_inner'] {
       position: relative;
-      padding-left: var(--text-block-indent);
       flex: 1;
     }
 
@@ -118,12 +113,16 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
       overflow-wrap: anywhere;
       text-transform: none;
       white-space: pre-wrap;
-      font-family: var(--text-font-family);
+      font-family: ${fonts.text.family};
       flex: 1;
     }
 
     & > div > div > div > [data-list-prefix] {
-      margin-right: 1rem;
+      position: absolute;
+      margin-left: -4.5rem;
+      width: 3.75rem;
+      text-align: right;
+      box-sizing: border-box;
 
       ${$listItem === 'number' &&
       css`
@@ -197,6 +196,16 @@ const TooltipStack = styled(Stack)`
   max-width: 250px;
 `
 
+const TextFlex = styled(Flex)<{$level?: number}>`
+  position: relative;
+
+  ${({$level}) =>
+    $level &&
+    css`
+      padding-left: ${$level * 32}px;
+    `}
+`
+
 export function TextBlock(props: TextBlockProps): React.ReactElement {
   const {
     attributes,
@@ -245,7 +254,7 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
 
     if (hasTextStyle) {
       return (
-        <Flex align="flex-start">
+        <TextFlex align="flex-start" $level={block?.level}>
           {block.listItem && (
             <ListPrefixWrap contentEditable={false}>
               <TextComponent as="span" data-list-prefix />
@@ -254,25 +263,25 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
           <div data-ui="TextBlock__text">
             <TextComponent>{children}</TextComponent>
           </div>
-        </Flex>
+        </TextFlex>
       )
     }
 
     if (block.listItem) {
       return (
-        <Flex align="flex-start">
+        <TextFlex align="flex-start" $level={block?.level}>
           {block.listItem && (
             <ListPrefixWrap contentEditable={false}>
               <TextComponent data-list-prefix />
             </ListPrefixWrap>
           )}
           <div data-ui="TextBlock__text">{children}</div>
-        </Flex>
+        </TextFlex>
       )
     }
 
     return <div data-ui="TextBlock__text">{children}</div>
-  }, [block.style, block.listItem, children])
+  }, [block.style, block.listItem, block.level, children])
 
   const outerPaddingProps: ResponsivePaddingProps = useMemo(() => {
     if (block.listItem) {
