@@ -101,17 +101,29 @@ const StyledChangeIndicatorWithProvidedFullPath = styled(ChangeIndicatorWithProv
       & > div {
         height: 100%;
       }
+
+      [data-dragged] & {
+        visibility: hidden;
+      }
     `
   }
 )
 
 const InnerFlex = styled(Flex)`
   position: relative;
+
+  [data-dragged] > & {
+    opacity: 0.5;
+  }
 `
 
 const BlockActionsOuter = styled(Box)`
   width: 25px;
   position: relative;
+
+  [data-dragged] & {
+    visibility: hidden;
+  }
 `
 
 const BlockActionsInner = styled(Flex)`
@@ -261,7 +273,7 @@ export function BlockObject(props: BlockObjectProps) {
           data-selected={selected || undefined}
           data-markers={hasMarkers || undefined}
           data-testid="pte-block-object"
-          data-pt-drag-ghost-element
+          // data-pt-drag-ghost-element
           onDoubleClick={handleClickToOpen}
           ref={elementRef}
           tone={tone}
