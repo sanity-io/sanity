@@ -46,6 +46,7 @@ export const ObjectInputField = forwardRef(function ObjectInputField(
     filterField,
     compareValue,
     presence,
+    parent,
   } = props
 
   const handleChange = useCallback(
@@ -77,13 +78,13 @@ export const ObjectInputField = forwardRef(function ObjectInputField(
         path={fieldPath}
         onFocus={onFocus}
         onBlur={onBlur}
-        readOnly={readOnly || field.type.readOnly}
         focusPath={focusPath}
         filterField={filterField}
         markers={markers}
         compareValue={compareValue}
         level={level}
         presence={presence}
+        parent={parent}
         ref={forwardedRef}
       />
     )
@@ -119,8 +120,19 @@ export const ObjectInputField = forwardRef(function ObjectInputField(
     )
   }
 
+  // console.log({
+  //   field: field.type.title,
+  //   readOnlyProp: readOnly || field.type.readOnly,
+  //   type: typeof (readOnly || field.type.readOnly),
+  // })
+
   return (
-    <ConditionalField parent={props.parent} value={value} hidden={field.type.hidden}>
+    <ConditionalField
+      parent={props.parent}
+      value={value}
+      hidden={field.type.hidden}
+      readOnly={readOnly || field.type.readOnly}
+    >
       {children}
     </ConditionalField>
   )

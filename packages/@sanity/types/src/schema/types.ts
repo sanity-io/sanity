@@ -34,15 +34,15 @@ export type SortOrdering = {
   }
 }
 
-export interface HiddenOptionCallbackContext {
+export interface ConditionalOptionCallbackContext {
   parent?: Record<string, unknown>
   document: SanityDocument
   currentUser: Omit<CurrentUser, 'role'>
   value: unknown
 }
 
-export type HiddenOption = boolean | HiddenOptionCallback
-export type HiddenOptionCallback = (context: HiddenOptionCallbackContext) => boolean
+export type ConditionalOption = boolean | ConditionalOptionCallback
+export type ConditionalOptionCallback = (context: ConditionalOptionCallbackContext) => boolean
 
 export type InitialValueParams = Record<string, unknown>
 export type InitialValueResolver<T> = (params?: InitialValueParams) => Promise<T> | T
@@ -83,14 +83,12 @@ export interface BaseSchemaType {
   title?: string
   description?: string
   type?: SchemaType
-  readOnly?: boolean
   liveEdit?: boolean
+  readOnly?: boolean | ConditionalOptionCallback
   icon?: React.ComponentType
   initialValue?: InitialValueProperty
   options?: Record<string, any>
-
   validation?: SchemaValidationValue
-
   preview?: {
     select?: PreviewValue
     prepare: (
@@ -177,7 +175,10 @@ export interface SlugSchemaType extends BaseSchemaType {
   options?: SlugOptions
 }
 
-export type ObjectFieldType<T extends SchemaType = SchemaType> = T & {hidden?: HiddenOption}
+export type ObjectFieldType<T extends SchemaType = SchemaType> = T & {
+  hidden?: ConditionalOption
+  readOnly?: ConditionalOption
+}
 
 export interface ObjectField<T extends SchemaType = SchemaType> {
   name: string

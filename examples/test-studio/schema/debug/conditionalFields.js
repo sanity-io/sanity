@@ -15,6 +15,14 @@ export default {
       description: 'Is published?',
     },
     {
+      name: 'readOnlyIfTitleIsReadOnly',
+      type: 'string',
+      description: 'This will be read only if the document title contains the string `read only`',
+      readOnly: ({document}) => {
+        return Boolean(document.title && document.title.includes('read only'))
+      },
+    },
+    {
       name: 'fieldWithObjectType',
       title: 'Field of object type',
       type: 'object',
@@ -43,6 +51,21 @@ export default {
           type: 'string',
           description: 'This will be hidden if the document is published',
           hidden: ({document}) => document.isPublished,
+        },
+        {
+          name: 'readOnlyIfPublished',
+          type: 'string',
+          description: 'This will be read only if the document is published',
+          readOnly: ({document}) => document.isPublished,
+        },
+        {
+          name: 'readOnlyIfTitleIsReadOnly',
+          type: 'string',
+          description:
+            'This will be read only if the document title contains the string `read only`',
+          readOnly: ({document}) => {
+            return Boolean(document.title && document.title.toLowerCase().includes('read only'))
+          },
         },
         {
           name: 'field3',
