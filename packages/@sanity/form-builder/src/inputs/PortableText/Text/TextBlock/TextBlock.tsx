@@ -252,7 +252,7 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
             </ListPrefixWrap>
           )}
           <div data-ui="TextBlock__text">
-            <TextComponent as="span">{children}</TextComponent>
+            <TextComponent>{children}</TextComponent>
           </div>
         </Flex>
       )
