@@ -3,8 +3,8 @@ import * as PathUtils from '@sanity/util/paths'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {Marker, ObjectField, Path} from '@sanity/types'
 import PatchEvent from '../../../PatchEvent'
-import {ConditionalField} from '../../common/ConditionalField'
 import {FormBuilderInput} from '../../../FormBuilderInput'
+import {ConditionalHiddenField} from '../../common/ConditionalHiddenField'
 
 interface FileInputFieldProps {
   field: ObjectField
@@ -33,7 +33,7 @@ export function FileInputField(props: FileInputFieldProps) {
   )
 
   return (
-    <ConditionalField
+    <ConditionalHiddenField
       parent={props.parentValue}
       value={props.value}
       hidden={props.field.type.hidden}
@@ -44,6 +44,6 @@ export function FileInputField(props: FileInputFieldProps) {
         path={PathUtils.pathFor([field.name])}
         onChange={handleChange}
       />
-    </ConditionalField>
+    </ConditionalHiddenField>
   )
 }
