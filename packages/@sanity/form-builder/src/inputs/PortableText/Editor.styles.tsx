@@ -102,10 +102,10 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean}>`
   flex-direction: column;
 
   & > div {
-    display: flex;
+    /* display: flex;
     flex-direction: column;
     flex: 1;
-    min-height: auto;
+    min-height: auto; */
 
     [data-slate-editor] {
       display: flex;
