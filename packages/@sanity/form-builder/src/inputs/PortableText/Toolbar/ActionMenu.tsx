@@ -15,10 +15,11 @@ interface ActionMenuProps {
   groups: PTEToolbarActionGroup[]
   readOnly: boolean
   isFullscreen?: boolean
+  collapsed?: boolean
 }
 
 export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
-  const {disabled, groups, readOnly, isFullscreen} = props
+  const {disabled, groups, readOnly, isFullscreen, collapsed} = props
   const focusBlock = useFocusBlock()
   const focusChild = useFocusChild()
   const features = useFeatures()
@@ -90,7 +91,12 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
   )
 
   return (
-    <CollapseMenuMemo gap={1} menuButton={menuButton} menuPopoverProps={MENU_POPOVER_PROPS}>
+    <CollapseMenuMemo
+      gap={1}
+      menuButton={menuButton}
+      menuPopoverProps={MENU_POPOVER_PROPS}
+      collapsed={collapsed}
+    >
       {children}
     </CollapseMenuMemo>
   )
