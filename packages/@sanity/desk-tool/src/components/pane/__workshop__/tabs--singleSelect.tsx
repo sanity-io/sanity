@@ -6,7 +6,6 @@ import {
   Checkbox,
   Container,
   Flex,
-  Inline,
   Stack,
   Tab,
   TabList,
