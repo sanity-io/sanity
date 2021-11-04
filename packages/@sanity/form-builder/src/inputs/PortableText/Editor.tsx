@@ -13,7 +13,7 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {Marker} from '@sanity/types'
-import {BoundaryElementProvider, Card, useBoundaryElement, useLayer} from '@sanity/ui'
+import {BoundaryElementProvider, useBoundaryElement, useLayer} from '@sanity/ui'
 import React, {useMemo, useEffect} from 'react'
 import PatchEvent from '../../PatchEvent'
 import {createScrollSelectionIntoView} from './utils/scrollSelectionIntoView'
@@ -29,7 +29,7 @@ import {
   ToolbarCard,
 } from './Editor.styles'
 
-type Props = {
+interface PortableTextSanityEditorProps {
   initialSelection?: EditorSelection
   isFullscreen: boolean
   markers: Array<Marker>
@@ -55,7 +55,7 @@ const renderDecorator: RenderDecoratorFunction = (mark, mType, attributes, defau
   return <Decorator mark={mark}>{defaultRender()}</Decorator>
 }
 
-function PortableTextSanityEditor(props: Props) {
+function PortableTextSanityEditor(props: PortableTextSanityEditorProps) {
   const {
     initialSelection,
     isFullscreen,
