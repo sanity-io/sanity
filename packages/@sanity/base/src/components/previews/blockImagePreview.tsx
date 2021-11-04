@@ -17,7 +17,7 @@ export const BlockImagePreview: React.FunctionComponent<PreviewProps<'block'>> =
     title,
     subtitle,
     description,
-    fallbackTitle = 'Undefined',
+    fallbackTitle = 'Untitled',
     mediaDimensions = DEFAULT_MEDIA_DIMENSIONS,
     media,
     children,
