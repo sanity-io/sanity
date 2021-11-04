@@ -19,6 +19,22 @@ export const ToolbarCard = styled(Card)`
 `
 
 export const EditableCard = styled(Card)`
+  position: relative;
+  overflow: hidden;
+
+  & > [data-portal] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+
+    & > * {
+      pointer-events: initial;
+    }
+  }
+
   &::selection,
   *::selection {
     background-color: transparent;
@@ -125,7 +141,7 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean}>`
 
         &:last-child {
           padding-bottom: ${({$isFullscreen, theme}) =>
-            theme.sanity.space[$isFullscreen ? 5 : 3]}px;
+            theme.sanity.space[$isFullscreen ? 9 : 5]}px;
         }
       }
     }
