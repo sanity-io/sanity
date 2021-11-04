@@ -6,7 +6,7 @@ import {
 } from '@sanity/portable-text-editor'
 import {isKeySegment, Marker, Path} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
-import {Card, Theme, Tooltip, Stack, Flex, Box, ResponsivePaddingProps} from '@sanity/ui'
+import {Card, Theme, Tooltip, Flex, Box, ResponsivePaddingProps} from '@sanity/ui'
 import {hues} from '@sanity/color'
 import React, {useCallback, useMemo, useRef} from 'react'
 import styled, {css} from 'styled-components'
@@ -78,6 +78,19 @@ const Root = styled(Card)((props: {theme: Theme}) => {
       }
     }
 
+    &[data-warning] {
+      &:after {
+        ${overlay}
+        background-color: ${color.muted.caution.hovered.bg};
+      }
+
+      @media (hover: hover) {
+        &:hover {
+          --card-border-color: ${color.muted.caution.hovered.border};
+        }
+      }
+    }
+
     &[data-invalid] {
       &:after {
         ${overlay}
@@ -137,7 +150,7 @@ const BlockActionsInner = styled(Flex)`
   right: 0;
 `
 
-const TooltipStack = styled(Stack)`
+const TooltipBox = styled(Box)`
   max-width: 250px;
 `
 const BlockPreview = styled(Box)((props: {theme: Theme}) => {
@@ -241,24 +254,33 @@ export function BlockObject(props: BlockObjectProps) {
     () => blockMarkers.filter((marker) => marker.type === 'validation' && marker.level === 'error'),
     [blockMarkers]
   )
+
+  const warningMarkers = useMemo(
+    () =>
+      blockMarkers.filter((marker) => marker.type === 'validation' && marker.level === 'warning'),
+    [blockMarkers]
+  )
+
   const hasMarkers = blockMarkers.length > 0
   const hasErrors = errorMarkers.length > 0
+  const hasWarnings = warningMarkers.length > 0
+
   const markersToolTip = useMemo(
     () =>
-      hasErrors || (hasMarkers && renderCustomMarkers) ? (
+      hasErrors || hasWarnings || (hasMarkers && renderCustomMarkers) ? (
         <Tooltip
           placement="top"
           portal="editor"
           content={
-            <TooltipStack space={3} padding={2}>
+            <TooltipBox padding={2}>
               <Markers markers={markers} renderCustomMarkers={renderCustomMarkers} />
-            </TooltipStack>
+            </TooltipBox>
           }
         >
           <div>{blockPreview}</div>
         </Tooltip>
       ) : undefined,
-    [blockPreview, hasErrors, hasMarkers, markers, renderCustomMarkers]
+    [blockPreview, hasErrors, hasWarnings, hasMarkers, markers, renderCustomMarkers]
   )
 
   const isImagePreview = useMemo(() => type?.type?.name === 'image', [type?.type?.name])
@@ -271,6 +293,7 @@ export function BlockObject(props: BlockObjectProps) {
           data-invalid={hasErrors || undefined}
           data-selected={selected || undefined}
           data-markers={hasMarkers || undefined}
+          data-warning={hasWarnings || undefined}
           data-testid="pte-block-object"
           data-image-preview={isImagePreview ? '' : undefined}
           // data-pt-drag-ghost-element
