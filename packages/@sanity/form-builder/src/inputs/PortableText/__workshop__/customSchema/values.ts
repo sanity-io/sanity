@@ -1,6 +1,26 @@
+import {keyGenerator as createKey} from '@sanity/portable-text-editor'
+import {words} from './words'
+
+export const valueOptions = {
+  Empty: 'empty',
+  'Custom content': 'withCustomContent',
+  'Large content': 'withLargeContent',
+}
+
+function genText(numWords?: number) {
+  const wordsArr = Array.from(new Array(numWords || Math.floor(Math.random() * 100)))
+
+  return wordsArr.map(randomWord).join(' ')
+}
+
+function randomWord() {
+  return words[Math.floor(Math.random() * words.length)] || 'nihil'
+}
+
 export const values = {
   empty: undefined,
-  withContent: [
+
+  withCustomContent: [
     {
       _type: 'myBlockType',
       _key: 'a',
@@ -134,6 +154,19 @@ export const values = {
       ],
     },
   ],
-}
 
-export const valueOptions = {Empty: 'empty', 'With custom content': 'withContent'}
+  withLargeContent: Array.from(new Array(500)).map(() => ({
+    _type: 'myBlockType',
+    _key: createKey(),
+    style: 'normal',
+    markDefs: [],
+    children: [
+      {
+        _type: 'span',
+        _key: createKey(),
+        text: genText(),
+        marks: [],
+      },
+    ],
+  })),
+}

@@ -7,6 +7,7 @@ import {applyAll} from '../../../../simplePatch'
 import {RenderBlockActions} from '../../types'
 import {inputResolver} from './input'
 import {resolvePreviewComponent} from './resolvePreviewComponent'
+import {useUnique} from '../../Toolbar/lib/useUnique'
 
 interface TestInputProps {
   markers?: any[]
@@ -34,24 +35,24 @@ export function TestInput(props: TestInputProps) {
   const [value, setValue] = useState<any[]>(propsValue)
   const [focusPath, setFocusPath] = useState<Path>(undefined)
   const blockType = useMemo(() => type.of.find((t) => t.type.name === 'block'), [type])
+  const presence = useMemo(() => [], [])
+  const hotkeys = useMemo(() => ({}), [])
+  const [markers, setMarkers] = useState<any[]>(propsMarkers || [])
+  const uniqMarkers = useUnique(markers)
+
   const onFocus = useCallback((path: Path) => {
     // console.log('onFocus', path)
     setFocusPath(path)
   }, [])
+
   const onBlur = useCallback(() => {
     // console.log('onBlur')
     setFocusPath(undefined)
   }, [])
-  const onChange = useCallback(
-    (event) => {
-      const newValue = applyAll(value, event.patches)
-      setValue(newValue)
-    },
-    [value]
-  )
-  const presence = useMemo(() => [], [])
-  const hotkeys = useMemo(() => ({}), [])
-  const [markers, setMarkers] = useState<any[]>(propsMarkers || [])
+
+  const onChange = useCallback((event) => {
+    setValue((prevValue) => applyAll(prevValue, event.patches))
+  }, [])
 
   useEffect(() => {
     if (value) {
@@ -165,7 +166,7 @@ export function TestInput(props: TestInputProps) {
         focusPath={focusPath}
         hotkeys={hotkeys}
         level={1}
-        markers={markers}
+        markers={uniqMarkers}
         onBlur={onBlur}
         onChange={onChange}
         onFocus={onFocus}
