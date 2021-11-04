@@ -98,7 +98,7 @@ const InnerToolbar = memo(function InnerToolbar({
     >
       <StyleSelectFlex flex={collapsed ? 1 : undefined}>
         <StyleSelectBox padding={isFullscreen ? 2 : 1}>
-          <BlockStyleSelect disabled={disabled} readOnly={readOnly} items={blockStyles} />
+          <BlockStyleSelect disabled={readOnly || disabled} items={blockStyles} />
         </StyleSelectBox>
       </StyleSelectFlex>
 
