@@ -74,7 +74,7 @@ export const ObjectFieldSet = forwardRef(function ObjectFieldSet(
     }
   }, [fieldNames, focusPath])
 
-  return (
+  return fieldset.hidden ? null : (
     <FormFieldSet
       {...rest}
       key={fieldset.name}

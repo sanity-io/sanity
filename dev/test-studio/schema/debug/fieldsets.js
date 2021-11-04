@@ -20,6 +20,7 @@ export default {
       name: 'settings',
       title: 'Settings',
       options: {columns: 2},
+      hidden: true,
     },
   ],
   fields: [

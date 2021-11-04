@@ -279,6 +279,7 @@ export interface MultiFieldSet {
     columns?: number
   }
   fields: ObjectField[]
+  hidden?: HiddenOption
 }
 
 export type Fieldset = SingleFieldSet | MultiFieldSet
