@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react'
-import {Box, Flex, ResponsivePaddingProps, Stack, Theme, Tooltip} from '@sanity/ui'
+import {Box, Flex, ResponsivePaddingProps, Theme, Tooltip} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {hues} from '@sanity/color'
 import {isKeySegment, Marker} from '@sanity/types'
@@ -101,6 +101,14 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
       background-color: ${color.dark ? hues.purple[950].hex : hues.purple[50].hex};
     }
 
+    &[data-warning] {
+      --card-border-color: ${color.muted.caution.enabled.border};
+      & > div:before {
+        ${overlay}
+        background-color: ${color.muted.caution.hovered.bg};
+      }
+    }
+
     &[data-invalid] {
       --card-border-color: ${color.muted.critical.enabled.border};
       & > div:before {
@@ -195,7 +203,7 @@ const BlockActionsInner = styled(Flex)`
   top: -7px;
 `
 
-const TooltipStack = styled(Stack)`
+const TooltipBox = styled(Box)`
   max-width: 250px;
 `
 
@@ -240,8 +248,15 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
     () => blockMarkers.filter((marker) => marker.type === 'validation' && marker.level === 'error'),
     [blockMarkers]
   )
+  const warningMarkers = useMemo(
+    () =>
+      blockMarkers.filter((marker) => marker.type === 'validation' && marker.level === 'warning'),
+    [blockMarkers]
+  )
+
   const hasMarkers = blockMarkers.length > 0
   const hasErrors = errorMarkers.length > 0
+  const hasWarning = warningMarkers.length > 0
 
   const {$size, $style} = useMemo((): {$size: number; $style: 'text' | 'heading'} => {
     if (HEADER_SIZES_KEYS.includes(block.style)) {
@@ -343,21 +358,21 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
 
   const markersToolTip = useMemo(
     () =>
-      hasErrors || (hasMarkers && renderCustomMarkers) ? (
+      hasErrors || hasWarning || (hasMarkers && renderCustomMarkers) ? (
         <Tooltip
           placement="top"
           boundaryElement={blockRef?.current}
           portal="editor"
           content={
-            <TooltipStack space={3} padding={2}>
+            <TooltipBox padding={2}>
               <Markers markers={blockMarkers} renderCustomMarkers={renderCustomMarkers} />
-            </TooltipStack>
+            </TooltipBox>
           }
         >
           {text}
         </Tooltip>
       ) : undefined,
-    [blockMarkers, blockRef, hasErrors, hasMarkers, renderCustomMarkers, text]
+    [blockMarkers, blockRef, hasErrors, hasWarning, hasMarkers, renderCustomMarkers, text]
   )
 
   return (
@@ -370,6 +385,7 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
             $size={$size}
             $style={$style}
             data-invalid={hasErrors || undefined}
+            data-warning={hasWarning || undefined}
             data-level={block.level}
             data-list-item={block.listItem}
             data-markers={hasMarkers || undefined}
