@@ -139,9 +139,6 @@ export function CollapseMenu(props: CollapseMenuProps) {
 
   const [rootBoxElement, setRootBoxElement] = useState<HTMLDivElement | null>(null)
   const [innerFlexElement, setInnerFlexElement] = useState<HTMLDivElement | null>(null)
-  const [collapsedInnerFlexElement, setCollapsedInnerFlexElement] = useState<HTMLDivElement | null>(
-    null
-  )
   const [collapsed, setCollapsed] = useState<boolean>(true)
   const [menuOptions, setMenuOptions] = useState<ReactElement[] | []>([])
   const rootBoxRect = useElementRect(rootBoxElement)
@@ -242,7 +239,7 @@ export function CollapseMenu(props: CollapseMenuProps) {
   }
 
   return (
-    <RootBox ref={setRootBoxElement} display="flex" data-ui="CollapseMenu" sizing="border">
+    <RootBox ref={setRootBoxElement} display="flex" data-ui="CollapseMenu">
       {/* Expanded row, visible when there is enough space to show text on buttons */}
       <InnerFlex
         align="center"
@@ -298,7 +295,6 @@ export function CollapseMenu(props: CollapseMenuProps) {
         gap={gap}
         $hide={!collapsed}
         aria-hidden={!collapsed}
-        ref={setCollapsedInnerFlexElement}
         data-testid="inner-flex-collapsed"
       >
         <Flex gap={gap} as="ul">
@@ -327,8 +323,8 @@ export function CollapseMenu(props: CollapseMenuProps) {
                 onChange={(inView) => handleInViewChange({inView, child})}
                 key={child.key}
                 threshold={1}
-                rootMargin="0px 2px 0px 0px"
-                root={collapsedInnerFlexElement}
+                rootMargin="1px"
+                root={rootBoxElement}
               >
                 {({ref, inView}) => (
                   <OptionBox ref={ref} as="li" $inView={inView && collapsed}>
