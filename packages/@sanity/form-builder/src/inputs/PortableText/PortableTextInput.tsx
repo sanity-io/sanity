@@ -266,7 +266,7 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
 
 // An outer React Component with blur and focus class methods for the form-builder to call
 export default (withPatchSubscriber(
-  class PortableTextInputWithFocusAndBlur extends React.Component<
+  class PortableTextInputWithFocusAndBlur extends React.PureComponent<
     PortableTextInputProps & {children: React.ReactNode}
   > {
     editorRef: React.RefObject<PortableTextEditor> = React.createRef()
