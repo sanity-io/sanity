@@ -1,23 +1,46 @@
-import {Button} from '@sanity/ui'
-import React from 'react'
-import {AddIcon} from '@sanity/icons'
+import {Box, Button, Text, Tooltip} from '@sanity/ui'
+import React, {memo, useCallback} from 'react'
+import {CopyIcon} from '@sanity/icons'
 import {keyGenerator} from '@sanity/portable-text-editor'
 
-export function renderBlockActions({block, insert}) {
-  const dupBlock = {
-    ...block,
-    _key: keyGenerator(),
-  }
+const BlockActions = memo(function BlockActions(props: {block: any; insert: any}) {
+  const {block, insert} = props
 
-  if (dupBlock.children) {
-    dupBlock.children = dupBlock.children.map((c) => ({...c, _key: keyGenerator()}))
-  }
+  const handleDuplicate = useCallback(() => {
+    const dupBlock = {
+      ...block,
+      _key: keyGenerator(),
+    }
 
-  const handleClick = () => insert(dupBlock)
+    if (dupBlock.children) {
+      dupBlock.children = dupBlock.children.map((c) => ({...c, _key: keyGenerator()}))
+    }
+
+    insert(dupBlock)
+  }, [block, insert])
 
   return (
-    <div>
-      <Button fontSize={1} icon={AddIcon} onClick={handleClick} padding={2} mode="bleed" />
-    </div>
+    <Tooltip
+      content={
+        <Box padding={2}>
+          <Text size={1}>Duplicate</Text>
+        </Box>
+      }
+      placement="right"
+      portal="default"
+    >
+      <Button
+        aria-label="Duplicate"
+        fontSize={1}
+        icon={CopyIcon}
+        onClick={handleDuplicate}
+        padding={2}
+        mode="bleed"
+      />
+    </Tooltip>
   )
+})
+
+export function renderBlockActions({block, insert}) {
+  return <BlockActions block={block} insert={insert} />
 }
