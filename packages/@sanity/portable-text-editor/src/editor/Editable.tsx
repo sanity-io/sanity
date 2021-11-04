@@ -133,9 +133,11 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       KEY_TO_SLATE_ELEMENT.get(portableTextEditor.slateInstance)
     )
   )
+  const stateValueRef = useRef(stateValue)
 
   // Track selection state
   const [selection, setSelection] = useState(portableTextEditor.slateInstance.selection)
+  const selectionRef = useRef(selection)
   const [isSelecting, setIsSelecting] = useState(false)
 
   const renderElement = useCallback(
@@ -173,14 +175,19 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
 
   const handleChange = useCallback(
     (val: Node[]) => {
-      if (val !== stateValue) {
+      const nextSelection = portableTextEditor.slateInstance.selection
+
+      if (val !== stateValueRef.current) {
         setStateValue(val)
+        stateValueRef.current = val
       }
-      if (portableTextEditor.slateInstance.selection !== selection) {
-        setSelection(portableTextEditor.slateInstance.selection)
+
+      if (nextSelection !== selectionRef.current) {
+        setSelection(nextSelection)
+        selectionRef.current = nextSelection
       }
     },
-    [portableTextEditor.slateInstance.selection, selection, stateValue]
+    [portableTextEditor]
   )
 
   useEffect(() => {
@@ -213,6 +220,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         KEY_TO_SLATE_ELEMENT.get(portableTextEditor.slateInstance)
       )
       setStateValue(slateValueFromProps)
+      stateValueRef.current = slateValueFromProps
       VALUE_TO_SLATE_VALUE.set(value || [], slateValueFromProps)
       change$.next({type: 'value', value})
     }
@@ -231,9 +239,11 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         debug('Normalized selection from props', normalizedSelection)
         const slateRange = toSlateRange(normalizedSelection, portableTextEditor.slateInstance)
         setSelection(slateRange)
+        selectionRef.current = slateRange
       } else if (stateValue) {
         debug('Selecting top document')
         setSelection(SELECT_TOP_DOCUMENT)
+        selectionRef.current = SELECT_TOP_DOCUMENT
       }
     }
   }, [propsSelection])
@@ -321,15 +331,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
           })
       }
     },
-    [
-      change$,
-      onPaste,
-      portableTextEditor,
-      portableTextFeatures.decorators,
-      portableTextFeatures.types.block.name,
-      portableTextFeatures.types.portableText,
-      value,
-    ]
+    [change$, onPaste, portableTextEditor, portableTextFeatures, value]
   )
 
   // There's a bug in Slate atm regarding void nodes not being deleted. Seems related
