@@ -10,6 +10,7 @@ import {renderBlockActions} from './blockActions'
 export default function Story() {
   const readOnly = useBoolean('Read only', false)
   const withError = useBoolean('With error', false)
+  const withWarning = useBoolean('With warning', false)
   const withCustomMarkers = useBoolean('With custom markers', false)
   const selectedValue = useSelect('Values', valueOptions) || 'empty'
   const value = values[selectedValue]
@@ -25,6 +26,7 @@ export default function Story() {
               type={portableTextType}
               value={value}
               withError={withError}
+              withWarning={withWarning}
               withCustomMarkers={withCustomMarkers}
               renderCustomMarkers={renderCustomMarkers}
               renderBlockActions={renderBlockActions}

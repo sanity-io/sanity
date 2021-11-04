@@ -8,6 +8,7 @@ import {values, valueOptions} from './values'
 export default function Story() {
   const readOnly = useBoolean('Read only', false)
   const withError = useBoolean('With error', false)
+  const withWarning = useBoolean('With warning', false)
   const selectedValue = useSelect('Values', valueOptions) || 'empty'
   const value = values[selectedValue]
 
@@ -22,6 +23,7 @@ export default function Story() {
               type={portableTextType}
               value={value}
               withError={withError}
+              withWarning={withWarning}
             />
           </Container>
         </Flex>

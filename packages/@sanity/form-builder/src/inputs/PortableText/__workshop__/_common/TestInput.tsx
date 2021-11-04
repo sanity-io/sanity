@@ -5,9 +5,9 @@ import FormBuilderContext from '../../../../FormBuilderContext'
 import PortableTextInput from '../../PortableTextInput'
 import {applyAll} from '../../../../simplePatch'
 import {RenderBlockActions} from '../../types'
+import {useUnique} from '../../Toolbar/lib/useUnique'
 import {inputResolver} from './input'
 import {resolvePreviewComponent} from './resolvePreviewComponent'
-import {useUnique} from '../../Toolbar/lib/useUnique'
 
 interface TestInputProps {
   markers?: any[]
@@ -18,6 +18,7 @@ interface TestInputProps {
   type: PTType
   value: PortableTextBlock[] | undefined
   withError?: boolean
+  withWarning?: boolean
   withCustomMarkers?: boolean
 }
 
@@ -30,6 +31,7 @@ export function TestInput(props: TestInputProps) {
     type,
     value: propsValue,
     withError = false,
+    withWarning = false,
     withCustomMarkers = false,
   } = props
   const [value, setValue] = useState<any[]>(propsValue)
@@ -70,6 +72,14 @@ export function TestInput(props: TestInputProps) {
                 item: {message: 'There is an error with this inline object'},
               })
             }
+            if (withWarning) {
+              newMarkers.push({
+                type: 'validation',
+                level: 'warning',
+                path: [{_key: blk._key}, 'children', {_key: inline._key}],
+                item: {message: 'This is a warning'},
+              })
+            }
             if (withCustomMarkers) {
               newMarkers.push({
                 type: 'customMarkerTest',
@@ -85,6 +95,14 @@ export function TestInput(props: TestInputProps) {
                 item: {message: 'There an error with this annotation'},
               })
             }
+            if (withWarning) {
+              newMarkers.push({
+                type: 'validation',
+                level: 'warning',
+                path: [{_key: blk._key}, 'markDefs', {_key: annotation._key}],
+                item: {message: 'This is a warning'},
+              })
+            }
             if (withCustomMarkers) {
               newMarkers.push({
                 type: 'customMarkerTest',
@@ -98,6 +116,14 @@ export function TestInput(props: TestInputProps) {
                 level: 'error',
                 path: [{_key: blk._key}],
                 item: {message: 'There is an error with this textblock'},
+              })
+            }
+            if (withWarning) {
+              newMarkers.push({
+                type: 'validation',
+                level: 'warning',
+                path: [{_key: blk._key}],
+                item: {message: 'This is a warning'},
               })
             }
             if (withCustomMarkers) {
@@ -116,6 +142,14 @@ export function TestInput(props: TestInputProps) {
               item: {message: 'There is an error with this object block'},
             })
           }
+          if (withWarning) {
+            newMarkers.push({
+              type: 'validation',
+              level: 'warning',
+              path: [{_key: blk._key}, 'title'],
+              item: {message: 'This is a warning'},
+            })
+          }
           if (withCustomMarkers) {
             newMarkers.push({
               type: 'customMarkerTest',
@@ -126,10 +160,10 @@ export function TestInput(props: TestInputProps) {
       })
       setMarkers(newMarkers)
     }
-    if (!withError && !withCustomMarkers) {
+    if (!withError && !withCustomMarkers && !withWarning) {
       setMarkers(propsMarkers || [])
     }
-  }, [blockType.name, propsMarkers, value, withCustomMarkers, withError])
+  }, [blockType.name, propsMarkers, value, withCustomMarkers, withError, withWarning])
 
   const patchChannel = useMemo(() => {
     return {onPatch: () => () => undefined}
