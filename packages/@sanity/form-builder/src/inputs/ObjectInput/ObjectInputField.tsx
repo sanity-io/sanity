@@ -2,11 +2,11 @@ import React, {ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
 import {FormFieldSet} from '@sanity/base/components'
 import {resolveTypeName} from '@sanity/util/content'
 import {FormFieldPresence} from '@sanity/base/presence'
-import {Marker, ObjectFieldType, Path, SchemaType} from '@sanity/types'
+import {ConditionalProperty, Marker, ObjectFieldType, Path, SchemaType} from '@sanity/types'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import {InvalidValueInput} from '../InvalidValueInput'
 import PatchEvent from '../../PatchEvent'
-import {ConditionalField} from '../common/ConditionalField'
+import {ConditionalHiddenField} from '../common/ConditionalHiddenField'
 
 interface FieldType {
   name: string
@@ -22,7 +22,7 @@ interface FieldProps {
   onBlur: () => void
   focusPath?: Path
   filterField?: (type: SchemaType) => boolean
-  readOnly?: boolean
+  readOnly?: ConditionalProperty
   markers?: Marker[]
   level: number
   presence?: FormFieldPresence[]
@@ -35,7 +35,6 @@ export const ObjectInputField = forwardRef(function ObjectInputField(
 ) {
   const {
     value,
-    readOnly,
     field,
     level,
     onChange,
@@ -47,15 +46,18 @@ export const ObjectInputField = forwardRef(function ObjectInputField(
     compareValue,
     presence,
     parent,
+    readOnly,
   } = props
 
   const handleChange = useCallback(
     (event) => {
-      if (!field.type.readOnly) {
-        onChange(event, field)
+      const isReadOnly = readOnly ?? field.type.readOnly
+      if (typeof isReadOnly === 'boolean' && isReadOnly) {
+        return
       }
+      onChange(event, field)
     },
-    [onChange, field]
+    [readOnly, field, onChange]
   )
 
   const fieldPath = useMemo(() => [field.name], [field.name])
@@ -86,6 +88,7 @@ export const ObjectInputField = forwardRef(function ObjectInputField(
         presence={presence}
         parent={parent}
         ref={forwardedRef}
+        readOnly={readOnly || field.type.readOnly}
       />
     )
   }, [
@@ -102,8 +105,8 @@ export const ObjectInputField = forwardRef(function ObjectInputField(
     onBlur,
     onFocus,
     presence,
-    readOnly,
     value,
+    readOnly,
   ])
 
   if (!isValueCompatible) {
@@ -120,21 +123,10 @@ export const ObjectInputField = forwardRef(function ObjectInputField(
     )
   }
 
-  // console.log({
-  //   field: field.type.title,
-  //   readOnlyProp: readOnly || field.type.readOnly,
-  //   type: typeof (readOnly || field.type.readOnly),
-  // })
-
   return (
-    <ConditionalField
-      parent={props.parent}
-      value={value}
-      hidden={field.type.hidden}
-      readOnly={readOnly || field.type.readOnly}
-    >
+    <ConditionalHiddenField parent={props.parent} value={value} hidden={field.type.hidden}>
       {children}
-    </ConditionalField>
+    </ConditionalHiddenField>
   )
 })
 

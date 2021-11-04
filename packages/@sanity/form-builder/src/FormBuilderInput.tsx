@@ -1,6 +1,13 @@
 import React, {useMemo} from 'react'
 import shallowEquals from 'shallow-equals'
-import {Marker, ObjectField, ObjectSchemaTypeWithOptions, Path, SchemaType} from '@sanity/types'
+import {
+  ConditionalProperty,
+  Marker,
+  ObjectField,
+  ObjectSchemaTypeWithOptions,
+  Path,
+  SchemaType,
+} from '@sanity/types'
 import {ChangeIndicatorProvider} from '@sanity/base/change-indicators'
 import * as PathUtils from '@sanity/util/paths'
 import generateHelpUrl from '@sanity/generate-help-url'
@@ -8,7 +15,7 @@ import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/presence
 import PatchEvent from './PatchEvent'
 import {emptyArray} from './utils/empty'
 import {Props as InputProps} from './inputs/types'
-import {PropertyCallbackField} from './inputs/common/PropertyCallbackField'
+import {ConditionalReadOnlyField} from './inputs/common/ConditionalReadOnlyField'
 
 const EMPTY_MARKERS: Marker[] = emptyArray()
 const EMPTY_PATH: Path = emptyArray()
@@ -21,7 +28,7 @@ interface FormBuilderInputProps {
   onChange: (event: PatchEvent) => void
   onFocus: (path: Path) => void
   onBlur: () => void
-  readOnly?: boolean
+  readOnly?: ConditionalProperty
   parent?: Record<string, unknown> | undefined
   presence?: FormFieldPresence[]
   focusPath: Path
@@ -155,8 +162,7 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
 
   handleChange = (patchEvent: PatchEvent) => {
     const {type, onChange} = this.props
-
-    if (type.readOnly) {
+    if (typeof type.readOnly === 'boolean' && type.readOnly) {
       return
     }
 
@@ -220,11 +226,10 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
 
     if (typeof readOnly === 'function' || typeof type.readOnly === 'function') {
       return (
-        <PropertyCallbackField
+        <ConditionalReadOnlyField
           parent={parent}
           value={value}
-          checkProperty={readOnly ?? type.readOnly}
-          checkPropertyKey="readOnly"
+          readOnly={readOnly ?? type.readOnly}
         >
           <FormBuilderInputInner
             {...this.props}
@@ -236,7 +241,7 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
             onFocus={this.handleFocus}
             setInput={this.setInput}
           />
-        </PropertyCallbackField>
+        </ConditionalReadOnlyField>
       )
     }
 
