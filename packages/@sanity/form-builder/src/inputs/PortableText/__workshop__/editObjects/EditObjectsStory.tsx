@@ -96,6 +96,7 @@ export function EditObjectsStory() {
       editorPath,
       formBuilderPath: focusPath,
       kind: kind as any,
+      returnToSelection: null,
     }),
     [editorPath, focusPath, kind]
   )
