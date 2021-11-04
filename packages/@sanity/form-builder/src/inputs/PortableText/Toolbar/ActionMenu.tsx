@@ -13,23 +13,19 @@ const MENU_POPOVER_PROPS: PopoverProps = {constrainSize: true}
 interface ActionMenuProps {
   disabled: boolean
   groups: PTEToolbarActionGroup[]
-  readOnly: boolean
   isFullscreen?: boolean
   collapsed?: boolean
 }
 
 export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
-  const {disabled, groups, readOnly, isFullscreen, collapsed} = props
+  const {disabled: disabledProp, groups, isFullscreen, collapsed} = props
   const focusBlock = useFocusBlock()
-  const focusChild = useFocusChild()
   const features = useFeatures()
+  const isVoidBlock = focusBlock?._type !== features.types.block.name
+  const isEmptyTextBlock =
+    !isVoidBlock && focusBlock?.children.length === 1 && focusBlock?.children[0].text === ''
 
-  const isNotText = useMemo(
-    () =>
-      (focusBlock && focusBlock._type !== features.types.block.name) ||
-      (focusChild && focusChild._type !== features.types.span.name),
-    [focusBlock, focusChild, features.types.block.name, features.types.span.name]
-  )
+  const disabled = disabledProp || isVoidBlock
 
   const actions: Array<PTEToolbarAction & {firstInGroup?: true}> = useMemo(
     () =>
@@ -54,16 +50,14 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
     []
   )
 
-  const disableMenuButton = disabled || readOnly
-
   const children = useMemo(
     () =>
       actions.map((action) => {
         const active = activeKeys.includes(action.key)
-
+        const annotationDisabled = action.type === 'annotation' && isEmptyTextBlock
         return (
           <CollapseMenuButton
-            disabled={action.disabled || isNotText || readOnly || disabled}
+            disabled={disabled || annotationDisabled}
             buttonProps={collapsesButtonProps}
             dividerBefore={action.firstInGroup}
             icon={getActionIcon(action, active)}
@@ -73,21 +67,19 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
             selected={active}
             text={action.title || action.key}
             tooltipProps={{
-              disabled: disabled,
+              disabled: disabled || annotationDisabled,
               placement: isFullscreen ? 'bottom' : 'top',
               portal: 'default',
             }}
           />
         )
       }),
-    [actions, collapsesButtonProps, disabled, isFullscreen, isNotText, readOnly, activeKeys]
+    [actions, activeKeys, isEmptyTextBlock, disabled, collapsesButtonProps, isFullscreen]
   )
 
   const menuButton = useMemo(
-    () => (
-      <Button icon={EllipsisVerticalIcon} mode="bleed" padding={2} disabled={disableMenuButton} />
-    ),
-    [disableMenuButton]
+    () => <Button icon={EllipsisVerticalIcon} mode="bleed" padding={2} disabled={disabled} />,
+    [disabled]
   )
 
   return (

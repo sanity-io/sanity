@@ -46,14 +46,14 @@ export function useActionGroups({
   hotkeys,
   onFocus,
   resolveInitialValue,
+  disabled,
 }: {
   hotkeys: HotkeyOptions
   onFocus: (path: Path) => void
   resolveInitialValue: (type: Type) => any
+  disabled: boolean
 }): PTEToolbarActionGroup[] {
   const editor = usePortableTextEditor()
-  const selection = usePortableTextEditorSelection()
-  const disabled = !selection
 
   const handleInsertAnnotation = useCallback(
     async (type: Type) => {
