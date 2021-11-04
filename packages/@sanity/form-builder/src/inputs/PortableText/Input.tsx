@@ -1,5 +1,5 @@
 import {Subject} from 'rxjs'
-import React, {useEffect, useState, useMemo, useCallback} from 'react'
+import React, {useEffect, useState, useMemo, useCallback, useRef} from 'react'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {
   OnCopyFn,
@@ -86,6 +86,7 @@ export default function PortableTextInput(props: Props) {
   ] = useState(null)
   const [initialSelection, setInitialSelection] = useState(undefined)
   const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
+  const handledFocusPath = useRef(null)
 
   // Respond to focusPath changes
   useEffect(() => {
@@ -93,6 +94,13 @@ export default function PortableTextInput(props: Props) {
     if (!editor.editable) {
       return
     }
+
+    // Make sure to only handle the same focusPath once
+    if (handledFocusPath.current === focusPath) {
+      return
+    }
+    handledFocusPath.current = focusPath
+
     if (focusPath && objectEditData === null) {
       // Test if this focus path is the same as we got selected already.
       // If it is, just return or the editor will just try to refocus which
