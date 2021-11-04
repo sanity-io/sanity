@@ -53,6 +53,12 @@ const Root = styled(Card)((props: {theme: Theme}) => {
     pointer-events: all;
     position: relative;
 
+    &:not([data-image-preview]) {
+      height: 51px;
+      display: flex;
+      align-items: center;
+    }
+
     &[data-focused] {
       box-shadow: 0 0 0 1px ${color.selectable.primary.selected.border};
     }
@@ -195,12 +201,12 @@ export function BlockObject(props: BlockObjectProps) {
     return 'default'
   }, [focused, selected])
 
-  const padding = useMemo(() => {
+  const padding: ResponsivePaddingProps = useMemo(() => {
     if (type?.type?.name === 'image') {
-      return 0
+      return {padding: 0}
     }
 
-    return 1
+    return {paddingLeft: 2, paddingRight: 1}
   }, [type])
 
   const innerPaddingProps: ResponsivePaddingProps = useMemo(() => {
@@ -255,6 +261,8 @@ export function BlockObject(props: BlockObjectProps) {
     [blockPreview, hasErrors, hasMarkers, markers, renderCustomMarkers]
   )
 
+  const isImagePreview = useMemo(() => type?.type?.name === 'image', [type?.type?.name])
+
   return (
     <InnerFlex marginY={3}>
       <Flex flex={1} {...innerPaddingProps}>
@@ -264,14 +272,17 @@ export function BlockObject(props: BlockObjectProps) {
           data-selected={selected || undefined}
           data-markers={hasMarkers || undefined}
           data-testid="pte-block-object"
+          data-image-preview={isImagePreview ? '' : undefined}
           // data-pt-drag-ghost-element
           onDoubleClick={handleClickToOpen}
           ref={elementRef}
           tone={tone}
-          padding={padding}
+          {...padding}
           flex={1}
         >
-          <BlockPreview ref={blockRef}>{markersToolTip || blockPreview}</BlockPreview>
+          <Box flex={1}>
+            <BlockPreview ref={blockRef}>{markersToolTip || blockPreview}</BlockPreview>
+          </Box>
         </Root>
       </Flex>
       {renderBlockActions && (
