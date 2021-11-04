@@ -12,7 +12,6 @@ import {
   HotkeyOptions,
   RenderAttributes,
   Type,
-  EditorSelection,
 } from '@sanity/portable-text-editor'
 import {Path, isKeySegment, Marker, isKeyedObject} from '@sanity/types'
 import {Portal, PortalProvider, Text, usePortal} from '@sanity/ui'
@@ -455,15 +454,18 @@ export default function PortableTextInput(props: Props) {
     )
   }, [editObject, isFullscreen, ptEditor])
 
+  const portalElements = useMemo(
+    () => ({
+      collapsed: wrapperElement,
+      default: portal.element,
+      editor: portalElement,
+      expanded: portal.element,
+    }),
+    [portal.element, portalElement, wrapperElement]
+  )
+
   return (
-    <PortalProvider
-      __unstable_elements={{
-        collapsed: wrapperElement,
-        default: portal.element,
-        editor: portalElement,
-        expanded: portal.element,
-      }}
-    >
+    <PortalProvider __unstable_elements={portalElements}>
       <ActivateOnFocus
         message={activateOnFocusMessage}
         onActivate={handleActivate}
