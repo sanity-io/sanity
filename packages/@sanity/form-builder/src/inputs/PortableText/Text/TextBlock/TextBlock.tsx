@@ -115,6 +115,9 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
       white-space: pre-wrap;
       font-family: ${fonts.text.family};
       flex: 1;
+      *::selection {
+        background-color: ${color.selectable.primary.pressed.bg};
+      }
     }
 
     & > div > div > div > [data-list-prefix] {
