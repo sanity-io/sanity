@@ -313,8 +313,6 @@ export default function PortableTextInput(props: Props) {
         annotationMarkers.filter(
           (marker) => marker.type === 'validation' && marker.level === 'error'
         ).length > 0
-      const segment = objectEditData?.formBuilderPath.slice(-1)[0]
-      const isEditing = isKeySegment(segment) && segment._key === annotation._key
       return (
         <Annotation
           attributes={attributes}
@@ -324,14 +322,13 @@ export default function PortableTextInput(props: Props) {
           renderCustomMarkers={renderCustomMarkers}
           value={annotation}
           type={annotationType}
-          isEditing={isEditing}
           scrollElement={scrollElement}
         >
           {defaultRender()}
         </Annotation>
       )
     },
-    [markers, objectEditData?.formBuilderPath, onFocus, renderCustomMarkers, scrollElement]
+    [markers, onFocus, renderCustomMarkers, scrollElement]
   )
 
   const handleEditObjectClose = useCallback(() => {

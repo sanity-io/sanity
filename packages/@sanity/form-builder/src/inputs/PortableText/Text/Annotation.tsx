@@ -31,7 +31,6 @@ type Props = {
   attributes: RenderAttributes
   children: JSX.Element
   hasError: boolean
-  isEditing: boolean
   markers: Marker[]
   onFocus: (path: Path) => void
   renderCustomMarkers: RenderCustomMarkers
@@ -41,25 +40,22 @@ type Props = {
 }
 
 type AnnotationStyleProps = {
-  isEditing: boolean
   $toneKey?: ThemeColorToneKey
   theme: Theme
 }
 
 function annotationStyle(props: AnnotationStyleProps) {
-  const {$toneKey, theme, isEditing} = props
-
-  const toneVariant = isEditing ? 'pressed' : 'enabled'
+  const {$toneKey, theme} = props
 
   return css`
     text-decoration: none;
     display: inline;
-    background-color: ${theme.sanity.color.selectable[$toneKey][toneVariant].bg};
-    border-bottom: 1px dashed ${theme.sanity.color.selectable[$toneKey][toneVariant].fg};
-    color: ${theme.sanity.color.selectable[$toneKey][toneVariant].fg};
+    background-color: ${theme.sanity.color.selectable[$toneKey].enabled.bg};
+    border-bottom: 1px dashed ${theme.sanity.color.selectable[$toneKey].enabled.fg};
+    color: ${theme.sanity.color.selectable[$toneKey].enabled.fg};
 
     &[data-link] {
-      border-bottom: 1px solid ${theme.sanity.color.selectable[$toneKey][toneVariant].fg};
+      border-bottom: 1px solid ${theme.sanity.color.selectable[$toneKey].enabled.fg};
     }
 
     &[data-markers] {
@@ -69,17 +65,6 @@ function annotationStyle(props: AnnotationStyleProps) {
     &[data-error] {
       background-color: ${theme.sanity.color.muted.critical.hovered.bg};
     }
-
-    ${!isEditing &&
-    css`
-      @media (hover: hover) {
-        &:hover {
-          background-color: ${theme.sanity.color.selectable[$toneKey].hovered.bg};
-          border-color: ${theme.sanity.color.selectable[$toneKey].hovered.fg};
-          color: ${theme.sanity.color.selectable[$toneKey].hovered.fg};
-        }
-      }
-    `}
   `
 }
 
@@ -93,7 +78,6 @@ export const Annotation: FunctionComponent<Props> = ({
   attributes,
   children,
   hasError,
-  isEditing,
   markers,
   onFocus,
   renderCustomMarkers,
@@ -270,7 +254,6 @@ export const Annotation: FunctionComponent<Props> = ({
   return (
     <Root
       $toneKey={toneKey}
-      isEditing={isEditing}
       ref={annotationRef}
       data-link={isLink ? '' : undefined}
       data-error={hasError ? '' : undefined}
