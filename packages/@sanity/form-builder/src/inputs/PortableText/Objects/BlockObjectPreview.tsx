@@ -35,11 +35,6 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps) {
     [value?._ref]
   )
 
-  // The fallback title shows when there's no `title` property provided to the preview
-  // - If it’s an image object, then we want to show that "No image is selected"
-  // - If it’s an image object, and the value exists, we want to show that title is "Undefined".
-  const fallbackTitle = !value && type.name === 'image' ? 'No image selected' : 'Undefined'
-
   const actions = (
     <MenuButton
       button={
@@ -66,20 +61,12 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps) {
     return (
       <Flex>
         <Box flex={1}>
-          <Preview type={type} fallbackTitle={fallbackTitle} value={value} layout={layout} />
+          <Preview type={type} value={value} layout={layout} />
         </Box>
         <Box marginLeft={1}>{actions}</Box>
       </Flex>
     )
   }
 
-  return (
-    <Preview
-      actions={actions}
-      type={type}
-      fallbackTitle={fallbackTitle}
-      value={value}
-      layout={layout}
-    />
-  )
+  return <Preview actions={actions} type={type} value={value} layout={layout} />
 }
