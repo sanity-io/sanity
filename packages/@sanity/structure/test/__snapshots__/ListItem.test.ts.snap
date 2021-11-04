@@ -114,6 +114,18 @@ Object {
 }
 `;
 
+exports[`builds list with id and title (no string) 1`] = `
+Object {
+  "child": undefined,
+  "id": "id",
+  "schemaType": undefined,
+  "title": [Function],
+  "type": "listItem",
+}
+`;
+
 exports[`throws if no id is set 1`] = `"\`id\` is required for list items"`;
+
+exports[`throws if no id is set and title is not a string 1`] = `"\`id\` is required for list items"`;
 
 exports[`throws if no title is set 1`] = `"\`title\` is required for list items"`;

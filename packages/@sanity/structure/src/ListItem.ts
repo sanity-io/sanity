@@ -23,9 +23,11 @@ interface ListItemDisplayOptions {
   showIcon?: boolean
 }
 
+type ReactTitle = React.ReactNode | React.FC<{layout: 'default'}>
+
 export interface ListItemInput {
   id: string
-  title?: string
+  title?: string | ReactTitle
   icon?: FixMe
   child?: ListItemChild
   displayOptions?: ListItemDisplayOptions
@@ -35,7 +37,7 @@ export interface ListItemInput {
 export interface ListItem {
   id: string
   type: string
-  title?: string
+  title?: string | ReactTitle
   icon?: FixMe
   child?: ListItemChild
   displayOptions?: ListItemDisplayOptions
@@ -44,7 +46,7 @@ export interface ListItem {
 
 export interface UnserializedListItem {
   id: string
-  title: string
+  title: string | ReactTitle
   icon?: FixMe
   child?: UnserializedListItemChild
   displayOptions?: ListItemDisplayOptions
@@ -68,8 +70,11 @@ export class ListItemBuilder implements Serializable {
     return this.spec.id
   }
 
-  title(title: string) {
-    return this.clone({title, id: this.spec.id || camelCase(title)})
+  title(title: string | ReactTitle) {
+    return this.clone({
+      title,
+      ...(typeof title === 'string' && {id: this.spec.id || camelCase(title)}),
+    })
   }
 
   getTitle() {
@@ -120,7 +125,7 @@ export class ListItemBuilder implements Serializable {
       ).withHelpUrl(HELP_URL.ID_REQUIRED)
     }
 
-    if (!options.titleIsOptional && (typeof title !== 'string' || !title)) {
+    if (!options.titleIsOptional && !title) {
       throw new SerializeError('`title` is required for list items', options.path, id).withHelpUrl(
         HELP_URL.TITLE_REQUIRED
       )

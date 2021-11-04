@@ -1,5 +1,7 @@
 import {StructureBuilder as S} from '../src'
 
+const component = () => null
+
 test('builds list items with only ID and title', () => {
   expect(S.listItem({id: 'foo', title: 'Foo'}).serialize()).toMatchSnapshot()
 })
@@ -16,6 +18,14 @@ test('infers ID from title if not specified', () => {
 
 test('throws if no title is set', () => {
   expect(() => S.listItem().id('foo').serialize()).toThrowErrorMatchingSnapshot()
+})
+
+test('throws if no id is set and title is not a string', () => {
+  expect(() => S.listItem().title(component).serialize()).toThrowErrorMatchingSnapshot()
+})
+
+test('builds list with id and title (no string)', () => {
+  expect(S.listItem().title(component).id('id').serialize()).toMatchSnapshot()
 })
 
 test('builds list items with ID and title through setters', () => {

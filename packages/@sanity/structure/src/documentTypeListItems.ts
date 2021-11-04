@@ -46,7 +46,7 @@ export function getDocumentTypeListItem(typeName: string, sanitySchema?: Schema)
         : null
 
       let list = getDocumentTypeList(typeName, schema)
-      if (parentItem && parentItem.title) {
+      if (parentItem && parentItem.title && typeof parentItem.title === 'string') {
         list = list.title(parentItem.title)
       }
 
