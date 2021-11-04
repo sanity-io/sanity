@@ -219,6 +219,7 @@ export default function PortableTextInput(props: Props) {
 
   const spanTypeName = useMemo(() => ptFeatures.types.span.name, [ptFeatures])
   const textBlockTypeName = useMemo(() => ptFeatures.types.block.name, [ptFeatures])
+  const isEmptyValue = value === undefined
 
   const renderBlock = useCallback(
     (
@@ -242,8 +243,8 @@ export default function PortableTextInput(props: Props) {
             markers={blockMarkers}
             onChange={onChange}
             readOnly={readOnly}
-            renderBlockActions={renderBlockActions}
-            renderCustomMarkers={renderCustomMarkers}
+            renderBlockActions={isEmptyValue ? undefined : renderBlockActions}
+            renderCustomMarkers={isEmptyValue ? undefined : renderCustomMarkers}
           >
             {defaultRender(block)}
           </TextBlock>
@@ -261,14 +262,15 @@ export default function PortableTextInput(props: Props) {
           onChange={onChange}
           onFocus={onFocus}
           readOnly={readOnly}
-          renderBlockActions={renderBlockActions}
-          renderCustomMarkers={renderCustomMarkers}
+          renderBlockActions={isEmptyValue ? undefined : renderBlockActions}
+          renderCustomMarkers={isEmptyValue ? undefined : renderCustomMarkers}
           type={blockType}
         />
       )
     },
     [
       editor,
+      isEmptyValue,
       isFullscreen,
       markers,
       onChange,
