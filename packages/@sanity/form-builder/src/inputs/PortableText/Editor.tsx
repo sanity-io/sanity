@@ -29,7 +29,7 @@ import {
   ToolbarCard,
 } from './Editor.styles'
 
-interface PortableTextSanityEditorProps {
+interface EditorProps {
   initialSelection?: EditorSelection
   isFullscreen: boolean
   markers: Array<Marker>
@@ -55,7 +55,7 @@ const renderDecorator: RenderDecoratorFunction = (mark, mType, attributes, defau
   return <Decorator mark={mark}>{defaultRender()}</Decorator>
 }
 
-function PortableTextSanityEditor(props: PortableTextSanityEditorProps) {
+export function Editor(props: EditorProps) {
   const {
     initialSelection,
     isFullscreen,
@@ -253,5 +253,3 @@ function PortableTextSanityEditor(props: PortableTextSanityEditorProps) {
 
   return sanityEditor
 }
-
-export default PortableTextSanityEditor
