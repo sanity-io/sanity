@@ -1,5 +1,5 @@
 import {useLayer} from '@sanity/ui'
-import React, {memo, ReactNode, useMemo} from 'react'
+import React, {memo, useContext, useMemo} from 'react'
 import deepCompare from 'react-fast-compare'
 import * as PathUtils from '@sanity/util/paths'
 import {Path} from '@sanity/types'
@@ -134,16 +134,17 @@ interface CoreProps {
   children?: React.ReactNode
 }
 
-export const CoreChangeIndicator = ({
-  className,
-  disabled,
-  fullPath,
-  value,
-  compareValue,
-  hasFocus,
-  compareDeep,
-  children,
-}: CoreProps) => {
+export function CoreChangeIndicator(props: CoreProps) {
+  const {
+    className,
+    disabled,
+    fullPath,
+    value,
+    compareValue,
+    hasFocus,
+    compareDeep,
+    children,
+  } = props
   // todo: lazy compare debounced (possibly with intersection observer)
   const isChanged =
     (canCompareShallow(value, compareValue) && value !== compareValue) ||
@@ -162,21 +163,15 @@ export const CoreChangeIndicator = ({
   )
 }
 
-export const ChangeIndicatorForFieldPath = ({
-  className,
-  disabled,
-  path,
-  hasFocus,
-  isChanged,
-  children,
-}: {
+export function ChangeIndicatorForFieldPath(props: {
   path: Path
   isChanged: boolean
-  children: ReactNode
+  children: React.ReactNode
   className?: string
   disabled?: boolean
   hasFocus?: boolean
-}) => {
+}) {
+  const {className, disabled, path, hasFocus, isChanged, children} = props
   const parentContext = React.useContext(ChangeIndicatorContext)
 
   const fullPath = React.useMemo(() => PathUtils.pathFor(parentContext.fullPath.concat(path)), [
@@ -207,15 +202,10 @@ interface ChangeIndicatorWithProvidedFullPathProps {
   children?: React.ReactNode
 }
 
-export const ChangeIndicatorWithProvidedFullPath = ({
-  className,
-  disabled,
-  path,
-  value,
-  hasFocus,
-  compareDeep,
-  children,
-}: ChangeIndicatorWithProvidedFullPathProps) => {
+export function ChangeIndicatorWithProvidedFullPath(
+  props: ChangeIndicatorWithProvidedFullPathProps
+) {
+  const {className, disabled, path, value, hasFocus, compareDeep, children} = props
   const parentContext = React.useContext(ChangeIndicatorContext)
 
   const fullPath = React.useMemo(() => PathUtils.pathFor(parentContext.fullPath.concat(path)), [
@@ -245,39 +235,34 @@ export interface ChangeIndicatorContextProvidedProps {
   disabled?: boolean
 }
 
-export const ChangeIndicatorCompareValueProvider = (props: {
+export function ChangeIndicatorCompareValueProvider(props: {
   value: unknown
   compareValue: unknown
   children: React.ReactNode
-}) => {
-  const parentContext = React.useContext(ChangeIndicatorContext)
+}) {
+  const {children, compareValue, value} = props
+  const parentContext = useContext(ChangeIndicatorContext)
 
-  const contextValue = React.useMemo(() => {
+  const contextValue = useMemo(() => {
     return {
-      value: props.value,
-      compareValue: props.compareValue,
+      value,
+      compareValue,
       focusPath: parentContext.focusPath || EMPTY_PATH,
       path: parentContext.path,
       fullPath: parentContext.fullPath,
     }
-  }, [
-    parentContext.focusPath,
-    parentContext.path,
-    parentContext.fullPath,
-    props.value,
-    props.compareValue,
-  ])
+  }, [parentContext.focusPath, parentContext.path, parentContext.fullPath, value, compareValue])
 
   return (
     <ChangeIndicatorContext.Provider value={contextValue}>
-      {props.children}
+      {children}
     </ChangeIndicatorContext.Provider>
   )
 }
 
-export const ContextProvidedChangeIndicator = (
+export function ContextProvidedChangeIndicator(
   props: ChangeIndicatorContextProvidedProps
-): React.ReactElement => {
+): React.ReactElement {
   const {children, className, compareDeep, disabled} = props
   const context = React.useContext(ChangeIndicatorContext)
   const {value, compareValue, path, focusPath, fullPath} = context
