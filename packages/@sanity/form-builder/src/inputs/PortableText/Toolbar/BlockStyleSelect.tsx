@@ -20,7 +20,6 @@ const MenuButtonMemo = memo(MenuButton)
 
 interface BlockStyleSelectProps {
   disabled: boolean
-  readOnly: boolean
   items: BlockStyleItem[]
 }
 
@@ -65,15 +64,16 @@ const emptyStyle: BlockStyleItem = {
 export const BlockStyleSelect = memo(function BlockStyleSelect(
   props: BlockStyleSelectProps
 ): JSX.Element {
-  const {disabled, items: itemsProp, readOnly} = props
+  const {disabled, items: itemsProp} = props
   const editor = usePortableTextEditor()
   const features = useFeatures()
   const focusBlock = useFocusBlock()
   const [changed, setChanged] = useState(false)
 
-  // @todo: Explain what this does
-  const _disabled = focusBlock ? features.types.block.name !== focusBlock._type : false
+  const _disabled =
+    disabled || (focusBlock ? features.types.block.name !== focusBlock._type : false)
 
+  // @todo: Explain what this does
   const activeKeys = useActiveStyleKeys({items: itemsProp})
 
   const {activeItems, items} = useMemo(() => {
@@ -127,7 +127,7 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
     () => (
       <Stack>
         <Button
-          disabled={_disabled || readOnly || disabled}
+          disabled={_disabled}
           iconRight={SelectIcon}
           mode="bleed"
           onClick={preventDefault}
@@ -136,19 +136,19 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
         />
       </Stack>
     ),
-    [_disabled, disabled, menuButtonText, readOnly]
+    [_disabled, menuButtonText]
   )
 
   const menu = useMemo(
     () => (
-      <Menu>
+      <Menu disabled={_disabled}>
         {items.map((item) => {
           return (
             <StyledMenuItem
               key={item.key}
               pressed={activeItems.includes(item)}
               // eslint-disable-next-line react/jsx-no-bind
-              onClick={() => handleChange(item)}
+              onClick={_disabled ? undefined : () => handleChange(item)}
             >
               {renderOption(item.style)}
             </StyledMenuItem>
@@ -156,7 +156,7 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
         })}
       </Menu>
     ),
-    [activeItems, handleChange, items, renderOption]
+    [_disabled, activeItems, handleChange, items, renderOption]
   )
 
   return (
