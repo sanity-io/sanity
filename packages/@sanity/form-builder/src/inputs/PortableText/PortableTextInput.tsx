@@ -129,7 +129,7 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
         case 'selection':
           if (
             change.selection &&
-            isEqual(change.selection.focus.path, change.selection.anchor.path) && // Important, or (backwards) selections will bork!
+            change.selection.focus.path &&
             !isEqual(focusPath, change.selection.focus.path) // Only if different than before
           ) {
             setTimeout(() => {
