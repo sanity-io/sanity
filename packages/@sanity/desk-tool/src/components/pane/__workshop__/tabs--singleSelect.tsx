@@ -76,7 +76,7 @@ export default function TabsStory() {
 
   const DocumentTab = ({name, label = name, icon = null}) => {
     return (
-      <Box marginBottom={2} marginRight={2} style={{display: 'flex'}}>
+      <Box marginBottom={1} marginRight={1} style={{display: 'flex'}}>
         <Tab
           padding={2}
           aria-controls={`${name}-panel`}
