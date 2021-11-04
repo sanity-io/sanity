@@ -12,8 +12,8 @@ import {
 import {Path} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {useCallback, useMemo} from 'react'
+import {useUnique} from '../utils/useUnique'
 import {getPTEToolbarActionGroups} from './helpers'
-import {useUnique} from './lib/useUnique'
 import {BlockStyleItem, PTEToolbarAction, PTEToolbarActionGroup} from './types'
 
 export function useFocusBlock(): PortableTextBlock {

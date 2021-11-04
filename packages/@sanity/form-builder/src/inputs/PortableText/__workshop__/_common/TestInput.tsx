@@ -5,7 +5,7 @@ import FormBuilderContext from '../../../../FormBuilderContext'
 import PortableTextInput from '../../PortableTextInput'
 import {applyAll} from '../../../../simplePatch'
 import {RenderBlockActions} from '../../types'
-import {useUnique} from '../../Toolbar/lib/useUnique'
+import {useUnique} from '../../utils/useUnique'
 import {inputResolver} from './input'
 import {resolvePreviewComponent} from './resolvePreviewComponent'
 

@@ -17,9 +17,9 @@ import {BoundaryElementProvider, useBoundaryElement, useLayer} from '@sanity/ui'
 import React, {useMemo, useEffect} from 'react'
 import PatchEvent from '../../PatchEvent'
 import {createScrollSelectionIntoView} from './utils/scrollSelectionIntoView'
-import {Toolbar} from './Toolbar/Toolbar'
+import {Toolbar} from './toolbar'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
-import Decorator from './Text/Decorator'
+import {Decorator} from './text'
 import {
   EditableCard,
   EditableContainer,
