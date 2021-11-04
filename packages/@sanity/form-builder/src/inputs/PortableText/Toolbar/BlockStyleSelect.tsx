@@ -125,16 +125,15 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
 
   const button = useMemo(
     () => (
-      <Stack>
-        <Button
-          disabled={_disabled}
-          iconRight={SelectIcon}
-          mode="bleed"
-          onClick={preventDefault}
-          padding={2}
-          text={menuButtonText}
-        />
-      </Stack>
+      <Button
+        disabled={_disabled}
+        iconRight={SelectIcon}
+        mode="bleed"
+        onClick={preventDefault}
+        padding={2}
+        style={{width: '100%'}} // Make it fill the h space
+        text={menuButtonText}
+      />
     ),
     [_disabled, menuButtonText]
   )
