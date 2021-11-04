@@ -4,14 +4,36 @@
 import React, {useMemo} from 'react'
 import CustomMarkers from 'part:@sanity/form-builder/input/block-editor/block-markers-custom-default'
 import {Marker, isValidationMarker} from '@sanity/types'
-import {Box, Flex, Stack, Text} from '@sanity/ui'
-import {InfoOutlineIcon} from '@sanity/icons'
+import {Box, Flex, Stack, Text, Theme} from '@sanity/ui'
+import {InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
+import styled, {css} from 'styled-components'
 import {RenderCustomMarkers} from '../types'
 
 type Props = {
   markers: Marker[]
   renderCustomMarkers?: RenderCustomMarkers
 }
+
+const getIcon = (level) => {
+  if (level === 'warning') {
+    return <WarningOutlineIcon />
+  }
+
+  return <InfoOutlineIcon />
+}
+
+const IconText = styled(Text)(({theme}: {theme: Theme}) => {
+  return css`
+    &[data-warning] {
+      color: ${theme.sanity.color.muted.caution.enabled.fg};
+    }
+
+    &[data-error] {
+      color: ${theme.sanity.color.muted.critical.enabled.fg};
+    }
+  `
+})
+
 export default function Markers(props: Props) {
   const {markers, renderCustomMarkers} = props
 
@@ -26,19 +48,24 @@ export default function Markers(props: Props) {
   if (markers.length === 0) {
     return null
   }
+
   return (
-    <Stack>
+    <Stack space={1}>
       {validationMarkersForBlock.length > 0 &&
-        validationMarkersForBlock.map(({item}, index) => (
+        validationMarkersForBlock.map(({item, level}, index) => (
           // eslint-disable-next-line react/no-array-index-key
           <Flex key={`validationItem-${index}`}>
             <Box
               marginRight={2}
               marginBottom={index + 1 === validationMarkersForBlock.length ? 0 : 2}
             >
-              <Text size={1} accent>
-                <InfoOutlineIcon />
-              </Text>
+              <IconText
+                size={1}
+                data-error={level === 'error' ? '' : undefined}
+                data-warning={level === 'warning' ? '' : undefined}
+              >
+                {getIcon(level)}
+              </IconText>
             </Box>
             <Box>
               <Text size={1}>{item?.message || 'Error'}</Text>
