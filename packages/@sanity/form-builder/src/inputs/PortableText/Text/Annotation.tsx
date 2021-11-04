@@ -13,7 +13,6 @@ import {
   Theme,
   ThemeColorToneKey,
   Tooltip,
-  Stack,
   Popover,
   Box,
   Inline,
@@ -31,6 +30,7 @@ type Props = {
   attributes: RenderAttributes
   children: JSX.Element
   hasError: boolean
+  hasWarning: boolean
   markers: Marker[]
   onFocus: (path: Path) => void
   renderCustomMarkers: RenderCustomMarkers
@@ -62,13 +62,17 @@ function annotationStyle(props: AnnotationStyleProps) {
       background-color: ${theme.sanity.color.dark ? hues.purple[950].hex : hues.purple[50].hex};
     }
 
+    &[data-warning] {
+      background-color: ${theme.sanity.color.muted.caution.hovered.bg};
+    }
+
     &[data-error] {
       background-color: ${theme.sanity.color.muted.critical.hovered.bg};
     }
   `
 }
 
-const TooltipStack = styled(Stack)`
+const TooltipBox = styled(Box)`
   max-width: 250px;
 `
 
@@ -78,6 +82,7 @@ export const Annotation: FunctionComponent<Props> = ({
   attributes,
   children,
   hasError,
+  hasWarning,
   markers,
   onFocus,
   renderCustomMarkers,
@@ -212,9 +217,9 @@ export const Annotation: FunctionComponent<Props> = ({
           boundaryElement={annotationRef.current}
           portal="editor"
           content={
-            <TooltipStack space={3} padding={2}>
+            <TooltipBox padding={2}>
               <Markers markers={markers} renderCustomMarkers={renderCustomMarkers} />
-            </TooltipStack>
+            </TooltipBox>
           }
         >
           {text}
@@ -245,11 +250,16 @@ export const Annotation: FunctionComponent<Props> = ({
     if (hasError) {
       return 'critical'
     }
+
+    if (hasWarning) {
+      return 'caution'
+    }
+
     if (isLink) {
       return 'primary'
     }
     return 'default'
-  }, [isLink, hasError])
+  }, [isLink, hasError, hasWarning])
 
   return (
     <Root
@@ -257,6 +267,7 @@ export const Annotation: FunctionComponent<Props> = ({
       ref={annotationRef}
       data-link={isLink ? '' : undefined}
       data-error={hasError ? '' : undefined}
+      data-warning={hasWarning ? '' : undefined}
       data-markers={markers.length > 0 ? '' : undefined}
     >
       {markersToolTip || text}
