@@ -1,4 +1,4 @@
-import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   PortableTextChild,
   PortableTextEditor,
@@ -10,15 +10,16 @@ import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {Marker, Path} from '@sanity/types'
 import styled, {css} from 'styled-components'
 import {
+  Box,
+  Button,
+  Inline,
+  Popover,
+  PopoverProps,
+  Text,
   Theme,
   ThemeColorToneKey,
   Tooltip,
-  Popover,
-  Box,
-  Inline,
-  Button,
   useGlobalKeyDown,
-  Text,
   useTheme,
 } from '@sanity/ui'
 import {hues} from '@sanity/color'
@@ -26,7 +27,7 @@ import {EditIcon, TrashIcon} from '@sanity/icons'
 import Markers from '../legacyParts/Markers'
 import {RenderCustomMarkers} from '../types'
 
-type Props = {
+interface AnnotationProps {
   attributes: RenderAttributes
   children: JSX.Element
   hasError: boolean
@@ -39,64 +40,65 @@ type Props = {
   scrollElement: HTMLElement
 }
 
-type AnnotationStyleProps = {
-  $toneKey?: ThemeColorToneKey
-  theme: Theme
-}
+const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
-function annotationStyle(props: AnnotationStyleProps) {
-  const {$toneKey, theme} = props
+const Root = styled.span<{$toneKey?: ThemeColorToneKey}>(
+  (props: {$toneKey?: ThemeColorToneKey; theme: Theme}) => {
+    const {$toneKey, theme} = props
 
-  return css`
-    text-decoration: none;
-    display: inline;
-    background-color: ${theme.sanity.color.selectable[$toneKey].enabled.bg};
-    border-bottom: 1px dashed ${theme.sanity.color.selectable[$toneKey].enabled.fg};
-    color: ${theme.sanity.color.selectable[$toneKey].enabled.fg};
+    return css`
+      text-decoration: none;
+      display: inline;
+      background-color: ${theme.sanity.color.selectable[$toneKey].enabled.bg};
+      border-bottom: 1px dashed ${theme.sanity.color.selectable[$toneKey].enabled.fg};
+      color: ${theme.sanity.color.selectable[$toneKey].enabled.fg};
 
-    &[data-link] {
-      border-bottom: 1px solid ${theme.sanity.color.selectable[$toneKey].enabled.fg};
-    }
+      &[data-link] {
+        border-bottom: 1px solid ${theme.sanity.color.selectable[$toneKey].enabled.fg};
+      }
 
-    &[data-markers] {
-      background-color: ${theme.sanity.color.dark ? hues.purple[950].hex : hues.purple[50].hex};
-    }
+      &[data-markers] {
+        background-color: ${theme.sanity.color.dark ? hues.purple[950].hex : hues.purple[50].hex};
+      }
 
-    &[data-warning] {
-      background-color: ${theme.sanity.color.muted.caution.hovered.bg};
-    }
+      &[data-warning] {
+        background-color: ${theme.sanity.color.muted.caution.hovered.bg};
+      }
 
-    &[data-error] {
-      background-color: ${theme.sanity.color.muted.critical.hovered.bg};
-    }
-  `
-}
+      &[data-error] {
+        background-color: ${theme.sanity.color.muted.critical.hovered.bg};
+      }
+    `
+  }
+)
 
 const TooltipBox = styled(Box)`
   max-width: 250px;
 `
 
-const Root = styled.span<AnnotationStyleProps>(annotationStyle)
+const ToolbarPopover = styled(Popover)`
+  &[data-popper-reference-hidden='true'] {
+    display: none !important;
+  }
+`
 
-export const Annotation: FunctionComponent<Props> = ({
-  attributes,
-  children,
-  hasError,
-  hasWarning,
-  markers,
-  onFocus,
-  renderCustomMarkers,
-  scrollElement,
-  type,
-  value,
-}) => {
+export function Annotation(props: AnnotationProps) {
+  const {
+    attributes,
+    children,
+    hasError,
+    hasWarning,
+    markers,
+    onFocus,
+    renderCustomMarkers,
+    scrollElement,
+    type,
+    value,
+  } = props
   const {path} = attributes
   const annotationRef = useRef<HTMLElement>(null)
   const editor = usePortableTextEditor()
-  const markDefPath = useMemo(() => [...path.slice(0, 1), 'markDefs', {_key: value._key}], [
-    path,
-    value._key,
-  ])
+  const markDefPath = useMemo(() => [path[0], 'markDefs', {_key: value._key}], [path, value._key])
   const {sanity} = useTheme()
 
   // -------------- Popover ------------- //
@@ -134,7 +136,7 @@ export const Annotation: FunctionComponent<Props> = ({
     scrollElement.addEventListener('scroll', handleScroll, {passive: true})
 
     return () => {
-      scrollElement.addEventListener('scroll', handleScroll)
+      scrollElement.removeEventListener('scroll', handleScroll)
     }
   }, [open, scrollElement])
 
@@ -184,6 +186,7 @@ export const Annotation: FunctionComponent<Props> = ({
     if (annotationElement && annotationElement.contains(anchorNode) && anchorNode === focusNode) {
       const range = window.getSelection().getRangeAt(0)
       const rect = range.getBoundingClientRect()
+
       rangeRef.current = range
 
       if (rect) {
@@ -271,7 +274,9 @@ export const Annotation: FunctionComponent<Props> = ({
       data-markers={markers.length > 0 ? '' : undefined}
     >
       {markersToolTip || text}
-      <Popover
+      <ToolbarPopover
+        boundaryElement={scrollElement}
+        constrainSize
         content={
           <Box padding={1}>
             <Inline space={1}>
@@ -291,12 +296,12 @@ export const Annotation: FunctionComponent<Props> = ({
             </Inline>
           </Box>
         }
-        constrainSize
+        fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
         open={cursorElement && open}
         placement="top"
-        scheme={popoverScheme}
         portal="editor"
-        referenceElement={cursorElement as any}
+        referenceElement={cursorElement as HTMLElement}
+        scheme={popoverScheme}
       />
     </Root>
   )
