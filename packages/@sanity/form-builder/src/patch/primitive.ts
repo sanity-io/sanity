@@ -24,9 +24,7 @@ const SUPPORTED_PATCH_TYPES = Object.keys(OPERATIONS)
 export default function apply(value, patch) {
   if (!SUPPORTED_PATCH_TYPES.includes(patch.type)) {
     throw new Error(
-      `Received patch of unsupported type: "${JSON.stringify(
-        patch.type
-      )}" for primitives. This is most likely a bug.`
+      `Received patch of unsupported type "${patch.type}" for primitives. This is most likely a bug.`
     )
   }
 
