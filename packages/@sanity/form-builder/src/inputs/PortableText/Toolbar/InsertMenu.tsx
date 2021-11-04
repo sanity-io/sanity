@@ -12,13 +12,12 @@ const MENU_POPOVER_PROPS: PopoverProps = {constrainSize: true}
 interface InsertMenuProps {
   disabled: boolean
   items: BlockItem[]
-  readOnly: boolean
   isFullscreen?: boolean
   collapsed?: boolean
 }
 
 export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
-  const {disabled, items, readOnly, isFullscreen, collapsed} = props
+  const {disabled, items, isFullscreen, collapsed} = props
   const features = useFeatures()
   const focusBlock = useFocusBlock()
 
@@ -26,9 +25,7 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
     () => ({padding: 2, mode: 'bleed'}),
     []
   )
-
-  // @todo: explain what this does
-  const _disabled = focusBlock ? focusBlock._type !== features.types.block.name : true
+  const isVoidFocus = focusBlock && focusBlock._type !== features.types.block.name
 
   const children = useMemo(() => {
     return items.map((item) => {
@@ -40,7 +37,7 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
           aria-label={`Insert ${title}${item.inline ? ' (inline)' : ' (block)'}`}
           buttonProps={collapseButtonProps}
           collapseText={false}
-          disabled={item.disabled || readOnly || _disabled}
+          disabled={disabled || (isVoidFocus && item.inline === true)}
           icon={item.icon}
           key={item.key}
           onClick={handle}
@@ -54,11 +51,11 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
         />
       )
     })
-  }, [_disabled, collapseButtonProps, disabled, isFullscreen, items, readOnly])
+  }, [items, collapseButtonProps, disabled, isVoidFocus, isFullscreen])
 
   const menuButton = useMemo(
-    () => <Button icon={AddIcon} mode="bleed" padding={2} disabled={disabled || readOnly} />,
-    [disabled, readOnly]
+    () => <Button icon={AddIcon} mode="bleed" padding={2} disabled={disabled} />,
+    [disabled]
   )
 
   return (

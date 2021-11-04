@@ -140,7 +140,6 @@ export function getInsertMenuItems(
 ): BlockItem[] {
   const blockItems = features.types.blockObjects.map(
     (type, index): BlockItem => ({
-      disabled,
       handle: () => onInsertBlock(type),
       icon: getInsertMenuIcon(type, BlockElementIcon),
       inline: false,
@@ -151,7 +150,6 @@ export function getInsertMenuItems(
 
   const inlineItems = features.types.inlineObjects.map(
     (type, index): BlockItem => ({
-      disabled,
       handle: () => onInsertInline(type),
       icon: getInsertMenuIcon(type, InlineElementIcon),
       inline: true,

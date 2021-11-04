@@ -98,7 +98,7 @@ const InnerToolbar = memo(function InnerToolbar({
     >
       <StyleSelectFlex flex={collapsed ? 1 : undefined}>
         <StyleSelectBox padding={isFullscreen ? 2 : 1}>
-          <BlockStyleSelect disabled={readOnly || disabled} items={blockStyles} />
+          <BlockStyleSelect disabled={disabled} items={blockStyles} />
         </StyleSelectBox>
       </StyleSelectFlex>
 
@@ -112,7 +112,6 @@ const InnerToolbar = memo(function InnerToolbar({
             disabled={disabled}
             collapsed={collapsed}
             groups={actionGroups}
-            readOnly={readOnly}
             isFullscreen={isFullscreen}
           />
         </ActionMenuBox>
@@ -124,7 +123,6 @@ const InnerToolbar = memo(function InnerToolbar({
             disabled={disabled}
             collapsed={collapsed}
             items={insertMenuItems}
-            readOnly={readOnly}
             isFullscreen={isFullscreen}
           />
         </InsertMenuBox>
@@ -225,7 +223,7 @@ export function Toolbar(props: ToolbarProps) {
     [editor, onFocus, resolveInitialValue]
   )
 
-  const actionGroups = useActionGroups({hotkeys, onFocus, resolveInitialValue})
+  const actionGroups = useActionGroups({hotkeys, onFocus, resolveInitialValue, disabled: true})
 
   const blockStyles = useMemo(() => getBlockStyles(features), [features])
 

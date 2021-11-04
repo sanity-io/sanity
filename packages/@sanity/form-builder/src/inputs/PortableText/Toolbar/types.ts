@@ -1,7 +1,6 @@
 import {Type} from '@sanity/portable-text-editor'
 
 export interface BlockItem {
-  disabled: boolean
   handle: () => void
   icon: React.ComponentType
   inline: boolean
