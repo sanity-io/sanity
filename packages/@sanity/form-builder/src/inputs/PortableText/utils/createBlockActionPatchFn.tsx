@@ -6,7 +6,7 @@ type UnsetFunction = () => void
 type SetFunction = (args0: PortableTextBlock) => void
 type InsertFunction = (args0: PortableTextBlock | PortableTextBlock[]) => void
 
-export default function createBlockActionPatchFn(
+export function createBlockActionPatchFn(
   type: string,
   block: PortableTextBlock,
   onPatch: (event: PatchEvent) => void,

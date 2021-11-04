@@ -24,14 +24,14 @@ import {InlineObject} from './object/InlineObject'
 import {EditObject} from './object/EditObject'
 import {Annotation, TextBlock} from './text'
 import {RenderBlockActions, RenderCustomMarkers, ObjectEditData} from './types'
-import Editor from './Editor'
+import {Editor} from './Editor'
 import {ExpandedLayer, Root} from './Input.styles'
 
 const ROOT_PATH = []
 
 const activateOnFocusMessage = <Text weight="semibold">Click to activate</Text>
 
-type Props = {
+interface InputProps {
   editorId: string
   focusPath: Path
   hasFocus: boolean
@@ -51,7 +51,7 @@ type Props = {
   value: PortableTextBlock[] | undefined
 }
 
-export default function PortableTextInput(props: Props) {
+export function Input(props: InputProps) {
   const {
     editorId,
     focusPath,

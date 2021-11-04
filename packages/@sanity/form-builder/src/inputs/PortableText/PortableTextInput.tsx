@@ -19,9 +19,9 @@ import PatchEvent from '../../PatchEvent'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {Patch} from '../../patch/types'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
-import Input from './Input'
+import {Input} from './Input'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
-import VisibleOnFocusButton from './VisibleOnFocusButton'
+import {VisibleOnFocusButton} from './VisibleOnFocusButton'
 
 export type PatchWithOrigin = Patch & {
   origin: 'local' | 'remote' | 'internal'
@@ -265,7 +265,7 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
 })
 
 // An outer React Component with blur and focus class methods for the form-builder to call
-export default (withPatchSubscriber(
+export const PortableTextInput = (withPatchSubscriber(
   class PortableTextInputWithFocusAndBlur extends React.PureComponent<
     PortableTextInputProps & {children: React.ReactNode}
   > {

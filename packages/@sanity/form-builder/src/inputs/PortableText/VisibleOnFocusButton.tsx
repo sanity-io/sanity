@@ -21,7 +21,7 @@ type Props = {
   onClick: () => void
   style: CSSProperties
 }
-export default function VisibleOnFocusButton({children, onClick, style}: Props) {
+export function VisibleOnFocusButton({children, onClick, style}: Props) {
   const {zIndex} = useLayer()
   const zIndexStyle = useMemo(() => ({zIndex: zIndex + 3, ...style}), [zIndex, style])
   const handleClick = useCallback(() => {
