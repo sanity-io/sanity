@@ -76,9 +76,9 @@ export default function TabsStory() {
 
   const DocumentTab = ({name, label = name, icon = null}) => {
     return (
-      <Box marginBottom={[2, 0]} marginRight={[0, 2]} style={{display: 'flex'}}>
+      <Box marginBottom={2} marginRight={2} style={{display: 'flex'}}>
         <Tab
-          padding={[3, 2]}
+          padding={2}
           aria-controls={`${name}-panel`}
           id={`${name}-tab`}
           label={label ? label : name}
@@ -108,12 +108,11 @@ export default function TabsStory() {
           title={<>Header</>}
         />
         <PaneContent overflow="auto">
-          <Container paddingX={4} paddingY={[4, 4, 5]} sizing="border" width={1}>
+          <Container padding={4} paddingY={[4, 4, 5]} sizing="border" width={1}>
             <Stack space={4}>
               <Card tone="default" marginBottom={[0, 4]}>
-                <Flex direction={['column', 'row']}>
+                <Flex style={{flexWrap: 'wrap'}}>
                   <DocumentTab name="all" label="All fields" />
-                  <Card borderRight={[false, true]} marginRight={2} />
                   <DocumentTab name="editorial" label="Editorial" icon={DocumentIcon} />
                   <DocumentTab name="seo" label="SEO" icon={LinkIcon} />
                   <DocumentTab name="images" label="Images" icon={ImageIcon} />
