@@ -20,8 +20,14 @@ import {createScrollSelectionIntoView} from './utils/scrollSelectionIntoView'
 import {Toolbar} from './Toolbar/Toolbar'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
 import Decorator from './Text/Decorator'
-
-import {EditableContainer, EditableWrapper, Root, Scroller, ToolbarCard} from './Editor.styles'
+import {
+  EditableCard,
+  EditableContainer,
+  EditableWrapper,
+  Root,
+  Scroller,
+  ToolbarCard,
+} from './Editor.styles'
 
 type Props = {
   initialSelection?: EditorSelection
@@ -197,7 +203,7 @@ function PortableTextSanityEditor(props: Props) {
           />
         </ToolbarCard>
 
-        <Card flex={1} tone="transparent">
+        <EditableCard flex={1} tone="transparent">
           <Scroller ref={setScrollElement}>
             <EditableContainer padding={isFullscreen ? 2 : 0} sizing="border" width={1}>
               <EditableWrapper shadow={isFullscreen ? 1 : 0} $isFullscreen={isFullscreen}>
@@ -221,7 +227,7 @@ function PortableTextSanityEditor(props: Props) {
           </Scroller>
 
           <div data-portal="" ref={setPortalElement} />
-        </Card>
+        </EditableCard>
       </Root>
     ),
     [
