@@ -323,10 +323,17 @@ export default function PortableTextInput(props: Props) {
         annotationMarkers.filter(
           (marker) => marker.type === 'validation' && marker.level === 'error'
         ).length > 0
+
+      const hasWarning =
+        annotationMarkers.filter(
+          (marker) => marker.type === 'validation' && marker.level === 'warning'
+        ).length > 0
+
       return (
         <Annotation
           attributes={attributes}
           hasError={hasError}
+          hasWarning={hasWarning}
           onFocus={onFocus}
           markers={annotationMarkers}
           renderCustomMarkers={renderCustomMarkers}
