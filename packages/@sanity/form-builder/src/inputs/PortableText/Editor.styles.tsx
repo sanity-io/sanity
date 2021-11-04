@@ -39,6 +39,10 @@ export const EditableContainer = styled(Container)`
 export const EditableWrapper = styled(Card)<{$isFullscreen: boolean}>`
   counter-reset: ${LEVELS.map((l) => createListName(l)).join(' ')};
 
+  *::selection {
+    background-color: transparent;
+  }
+
   ${LEVELS.map((l) => {
     return css`
       & ${`[class~='pt-list-item-level-${l}']`}[class~='pt-list-item-number'] {
