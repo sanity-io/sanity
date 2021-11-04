@@ -18,6 +18,13 @@ export const ToolbarCard = styled(Card)`
   line-height: 0;
 `
 
+export const EditableCard = styled(Card)`
+  &::selection,
+  *::selection {
+    background-color: transparent;
+  }
+`
+
 export const Scroller = styled(ScrollContainer)`
   position: relative;
   overflow: auto;
@@ -38,10 +45,6 @@ export const EditableContainer = styled(Container)`
 
 export const EditableWrapper = styled(Card)<{$isFullscreen: boolean}>`
   counter-reset: ${LEVELS.map((l) => createListName(l)).join(' ')};
-
-  *::selection {
-    background-color: transparent;
-  }
 
   ${LEVELS.map((l) => {
     return css`
