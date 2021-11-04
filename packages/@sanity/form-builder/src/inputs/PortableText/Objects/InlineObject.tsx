@@ -5,7 +5,7 @@ import {PortableTextChild, Type, RenderAttributes} from '@sanity/portable-text-e
 import {Marker, Path} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import styled, {css} from 'styled-components'
-import {Card, Stack, Theme, Tooltip} from '@sanity/ui'
+import {Box, Card, Theme, Tooltip} from '@sanity/ui'
 import Preview from '../../../Preview'
 import Markers from '../legacyParts/Markers'
 import {RenderCustomMarkers} from '../types'
@@ -59,6 +59,16 @@ function rootStyle({theme}: {theme: Theme}) {
       --card-bg-color: ${color.dark ? hues.purple[950].hex : hues.purple[50].hex};
     }
 
+    &[data-warning] {
+      --card-bg-color: ${color.muted.caution.hovered.bg};
+
+      @media (hover: hover) {
+        &:hover {
+          --card-border-color: ${color.muted.caution.hovered.border};
+        }
+      }
+    }
+
     &[data-invalid] {
       --card-bg-color: ${color.input.invalid.enabled.bg};
       --card-border-color: ${color.input.invalid.enabled.border};
@@ -79,7 +89,7 @@ const PreviewSpan = styled.span`
   max-width: calc(5em + 80px);
 `
 
-const TooltipStack = styled(Stack)`
+const TooltipBox = styled(Box)`
   max-width: 250px;
 `
 
@@ -105,6 +115,13 @@ export const InlineObject: FunctionComponent<Props> = ({
     [markers]
   )
 
+  const hasWarning = useMemo(
+    () =>
+      markers.filter((marker) => marker.type === 'validation' && marker.level === 'warning')
+        .length > 0,
+    [markers]
+  )
+
   const hasMarkers = markers.length > 0
 
   const tone = useMemo(() => {
@@ -112,12 +129,16 @@ export const InlineObject: FunctionComponent<Props> = ({
       return 'critical'
     }
 
+    if (hasWarning) {
+      return 'caution'
+    }
+
     if (selected || focused) {
       return 'primary'
     }
 
     return undefined
-  }, [focused, hasError, selected])
+  }, [focused, hasError, hasWarning, selected])
 
   const preview = useMemo(
     () => (
@@ -135,9 +156,9 @@ export const InlineObject: FunctionComponent<Props> = ({
           placement="top"
           portal="editor"
           content={
-            <TooltipStack space={3} padding={2}>
+            <TooltipBox padding={2}>
               <Markers markers={markers} renderCustomMarkers={renderCustomMarkers} />
-            </TooltipStack>
+            </TooltipBox>
           }
         >
           {preview}
@@ -151,6 +172,7 @@ export const InlineObject: FunctionComponent<Props> = ({
       <Root
         data-focused={focused || undefined}
         data-invalid={hasError || undefined}
+        data-warning={hasWarning || undefined}
         data-selected={selected || undefined}
         data-read-only={readOnly || undefined}
         data-markers={hasMarkers || undefined}
@@ -161,6 +183,17 @@ export const InlineObject: FunctionComponent<Props> = ({
         {markersToolTip || preview}
       </Root>
     ),
-    [focused, handleOpen, hasError, hasMarkers, markersToolTip, preview, readOnly, selected, tone]
+    [
+      focused,
+      handleOpen,
+      hasError,
+      hasWarning,
+      hasMarkers,
+      markersToolTip,
+      preview,
+      readOnly,
+      selected,
+      tone,
+    ]
   )
 }
