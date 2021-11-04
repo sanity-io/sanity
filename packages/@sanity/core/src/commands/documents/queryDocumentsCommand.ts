@@ -7,7 +7,7 @@ Run a query against the projects configured dataset
 Options
   --pretty colorized JSON output
   --dataset NAME to override dataset
-  --api-version API version to use (defaults to \`v1\`)
+  --apiVersion API version to use (defaults to \`v1\`)
 
 Examples
   # Fetch 5 documents of type "movie"
@@ -45,7 +45,7 @@ export default {
     }
 
     if (!apiVersion) {
-      output.warn(chalk.yellow('--api-version not specified, using `v1`'))
+      output.warn(chalk.yellow('--apiVersion not specified, using `v1`'))
     }
 
     const baseClient = apiClient().clone()
