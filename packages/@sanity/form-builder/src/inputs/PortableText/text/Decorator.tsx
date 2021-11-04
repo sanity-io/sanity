@@ -17,7 +17,7 @@ const Root = styled.span`
 /**
  * @todo: Consider adding `data-mark` to all return paths
  */
-export default function Decorator(props: DecoratorProps) {
+export function Decorator(props: DecoratorProps) {
   const {mark, children} = props
 
   if (mark === 'em') {

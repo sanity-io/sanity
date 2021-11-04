@@ -1,9 +1,7 @@
-/* eslint-disable react/style-prop-object */
-
 import {Box, Card, Container} from '@sanity/ui'
 import {useAction, useBoolean} from '@sanity/ui-workshop'
 import React, {useMemo} from 'react'
-import {TextBlock} from '../../Text/TextBlock/TextBlock'
+import {TextBlock} from '../../text'
 
 const errorMarker = {
   type: 'validation',
@@ -37,8 +35,8 @@ const blockBase = {
 export function TextBlocksStory() {
   const hasErrors = useBoolean('Has errors', false)
   const hasMarkers = useBoolean('Has markers', false)
-  const markers = useMemo(
-    () => [...(hasErrors ? [errorMarker] : []), ...(hasMarkers ? [customMarker] : [])] as any,
+  const markers: any = useMemo(
+    () => [...(hasErrors ? [errorMarker] : []), ...(hasMarkers ? [customMarker] : [])],
     [hasErrors, hasMarkers]
   )
   const onChange = useAction('onChange')

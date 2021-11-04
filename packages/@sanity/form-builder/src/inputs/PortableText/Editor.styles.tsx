@@ -1,7 +1,7 @@
 import {ScrollContainer} from '@sanity/base/components'
 import {Card, Container, rem} from '@sanity/ui'
 import styled, {css} from 'styled-components'
-import {createListName, LEVELS} from './Text/TextBlock'
+import {createListName, LEVELS} from './text'
 
 export const Root = styled(Card)<{$fullscreen: boolean}>`
   height: ${({$fullscreen}) => ($fullscreen ? '100%' : '15em')};

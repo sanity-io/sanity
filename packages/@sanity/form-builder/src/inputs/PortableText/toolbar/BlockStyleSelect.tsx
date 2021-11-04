@@ -1,6 +1,6 @@
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
-import {Button, Menu, MenuButton, MenuButtonProps, MenuItem, Stack, Text} from '@sanity/ui'
+import {Button, Menu, MenuButton, MenuButtonProps, MenuItem, Text} from '@sanity/ui'
 import {SelectIcon} from '@sanity/icons'
 import styled from 'styled-components'
 import {
@@ -12,7 +12,7 @@ import {
   Heading6,
   BlockQuote,
   Normal,
-} from '../Text/TextBlock'
+} from '../text/textStyles'
 import {useActiveStyleKeys, useFeatures, useFocusBlock} from './hooks'
 import {BlockStyleItem} from './types'
 

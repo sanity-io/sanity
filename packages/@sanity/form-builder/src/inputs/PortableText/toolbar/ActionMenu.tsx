@@ -3,7 +3,7 @@ import {CollapseMenu, CollapseMenuButton, CollapseMenuButtonProps} from '@sanity
 import {Button, PopoverProps} from '@sanity/ui'
 import {EllipsisVerticalIcon} from '@sanity/icons'
 import {PTEToolbarAction, PTEToolbarActionGroup} from './types'
-import {useActiveActionKeys, useFeatures, useFocusBlock, useFocusChild} from './hooks'
+import {useActiveActionKeys, useFeatures, useFocusBlock} from './hooks'
 import {getActionIcon} from './helpers'
 
 const CollapseMenuMemo = memo(CollapseMenu)
