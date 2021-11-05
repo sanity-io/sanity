@@ -61,26 +61,23 @@ const Overlay = styled(Flex)`
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: ${(props) => (props.hover ? 'rgba(255, 255, 255, 0.5)' : '')};
+  backdrop-filter: ${({drag}) => (drag ? 'blur(10px)' : '')};
+  background-color: ${(props) =>
+    props.drag
+      ? `${props.theme.sanity.color.base.bg}${
+          props.theme.sanity.color.base.bg.length === 4 ? '8' : '88'
+        }`
+      : ''};
 `
-
-const HoverOverlay = styled(Box)`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(255, 0, 0, 0.5);
-`
-
 export default function CompactImage(props) {
   const hasImage = useBoolean('Image', false, 'Props')
-  const hover = useBoolean('Hover with file', false, 'Props')
+  const drag = useBoolean('Drag file', false, 'Props')
   const assetSources = useBoolean('Asset sources', false, 'Props')
+  const padImage = useBoolean('Pad image', false, 'Props')
 
   return (
     <Container width={1}>
-      <Stack space={2} marginTop={6}>
+      <Stack space={2} marginTop={6} paddingX={[3, 3, 0, 0]}>
         <Text weight="semibold" size={1}>
           Image input
         </Text>
@@ -88,13 +85,16 @@ export default function CompactImage(props) {
           <RatioBox>
             {hasImage && (
               <>
-                <Card padding={0} tone="transparent" sizing="border">
+                <Card padding={padImage ? 3 : 0} tone="transparent" sizing="border">
                   <img src={'https://picsum.photos/1200/900'} />
                 </Card>
-                <Overlay justify="flex-end" padding={3} hover={hover}>
-                  {hover && (
-                    <Flex align="center" justify="center" style={{position: 'absolute', top: 0, left: 0, bottom: 0, right: 0}}>
-                      <Text>Drop file here to upload</Text>
+                <Overlay justify="flex-end" padding={3} drag={drag}>
+                  {drag && (
+                    <Flex direction="column" align="center" justify="center" style={{position: 'absolute', top: 0, left: 0, bottom: 0, right: 0}}>
+                      <Box marginBottom={3}>
+                        <Heading><ImageIcon /></Heading>
+                      </Box>
+                      <Text size={1}>Drop file to upload</Text>
                     </Flex>
                   )}
                   <Inline space={1}>
@@ -121,32 +121,28 @@ export default function CompactImage(props) {
                     <MenuButton
                       id="image-menu"
                       button={<Button icon={EllipsisVerticalIcon} mode="ghost" />}
+                      portal
                       menu={
                         <Menu>
                           <MenuItem icon={UploadIcon} text="Upload" />
                           {!assetSources && <MenuItem icon={SearchIcon} text="Browse" />}
                           {assetSources && (
-                            <MenuGroup icon={SearchIcon} text="Browse">
+                            <MenuGroup text="Browse">
                               <MenuItem icon={ImageIcon} text="Media" />
                               <MenuItem icon={ImageIcon} text="Unsplash" />
                             </MenuGroup>
                           )}
                           <MenuDivider />
-                          <MenuItem
-                            icon={TrashIcon}
-                            text="Remove"
-                            tone="critical"
-                            onClick={() => setHasImage(false)}
-                          />
+                          <MenuItem icon={TrashIcon} text="Remove" tone="critical" />
                         </Menu>
                       }
                     />
                   </Inline>
                 </Overlay>
-                {/* {hover && (
+                {/* {drag && (
                   <HoverOverlay>
                     <Card tone="transparent" height="stretch" padding={4}>
-                      <Text>Hover!</Text>
+                      <Text>drag!</Text>
                     </Card>
                   </HoverOverlay>
                 )} */}
@@ -159,11 +155,11 @@ export default function CompactImage(props) {
                     <Card padding={4} radius={2}>
                       <Stack space={3}>
                         <Flex justify="center">
-                          <Heading size={3} muted>
+                          <Text size={4} muted>
                             <ImageIcon />
-                          </Heading>
+                          </Text>
                         </Flex>
-                        <Text muted>Drag or paste image here</Text>
+                        <Text size={1} muted>Drag or paste image here</Text>
                       </Stack>
                     </Card>
                   </Flex>
@@ -178,6 +174,7 @@ export default function CompactImage(props) {
                     {!assetSources && <Button text="Browse media" mode="ghost" icon={SearchIcon} />}
                     {assetSources && (
                       <MenuButton
+                        id="asset-source-menubutton"
                         button={
                           <Button
                             text="Browse"
@@ -193,7 +190,6 @@ export default function CompactImage(props) {
                           </Menu>
                         }
                         portal
-                        placement="left"
                       />
                     )}
                   </Inline>
