@@ -24,7 +24,7 @@ import {
 } from '@sanity/ui'
 import {hues} from '@sanity/color'
 import {EditIcon, TrashIcon} from '@sanity/icons'
-import Markers from '../legacyParts/Markers'
+import Markers from '../_legacyDefaultParts/Markers'
 import {RenderCustomMarkers} from '../types'
 
 interface AnnotationProps {

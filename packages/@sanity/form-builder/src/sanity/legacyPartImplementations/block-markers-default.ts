@@ -1,1 +1,1 @@
-export {default} from '../../inputs/PortableText/legacyParts/Markers'
+export {default} from '../../inputs/PortableText/_legacyDefaultParts/Markers'
