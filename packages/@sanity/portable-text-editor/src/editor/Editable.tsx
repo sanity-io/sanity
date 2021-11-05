@@ -224,7 +224,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       VALUE_TO_SLATE_VALUE.set(value || [], slateValueFromProps)
       change$.next({type: 'value', value})
     }
-  }, [value, isSelecting, isThrottling])
+  }, [value, isSelecting, isThrottling, portableTextEditor.slateInstance])
 
   // Restore selection from props
   useEffect(() => {
@@ -331,7 +331,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
           })
       }
     },
-    [change$, onPaste, portableTextEditor, portableTextFeatures, value]
+    [change$, onPaste, portableTextEditor.slateInstance, portableTextFeatures, value]
   )
 
   // There's a bug in Slate atm regarding void nodes not being deleted. Seems related
