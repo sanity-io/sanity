@@ -359,99 +359,48 @@ export function Input(props: InputProps) {
 
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
 
-  const ptEditor = useMemo(
-    () => (
-      <Editor
-        hotkeys={hotkeys}
-        initialSelection={initialSelection}
-        isFullscreen={isFullscreen}
-        key={`editor-${editorId}`}
-        markers={markers}
-        onFocus={onFocus}
-        onFormBuilderChange={onChange}
-        onCopy={onCopy}
-        onPaste={onPaste}
-        onToggleFullscreen={handleToggleFullscreen}
-        readOnly={isActive === false || readOnly}
-        renderAnnotation={renderAnnotation}
-        renderBlock={renderBlock}
-        renderBlockActions={renderBlockActions}
-        renderChild={renderChild}
-        renderCustomMarkers={renderCustomMarkers}
-        setPortalElement={setPortalElement}
-        value={value}
-        scrollElement={scrollElement}
-        setScrollElement={setScrollElement}
-      />
-    ),
-    [
-      hotkeys,
-      initialSelection,
-      isFullscreen,
-      editorId,
-      markers,
-      onFocus,
-      onChange,
-      onCopy,
-      onPaste,
-      handleToggleFullscreen,
-      isActive,
-      readOnly,
-      renderAnnotation,
-      renderBlock,
-      renderBlockActions,
-      renderChild,
-      renderCustomMarkers,
-      value,
-      scrollElement,
-    ]
+  const editorNode = (
+    <Editor
+      hotkeys={hotkeys}
+      initialSelection={initialSelection}
+      isFullscreen={isFullscreen}
+      key={`editor-${editorId}`}
+      onFocus={onFocus}
+      onCopy={onCopy}
+      onPaste={onPaste}
+      onToggleFullscreen={handleToggleFullscreen}
+      readOnly={isActive === false || readOnly}
+      renderAnnotation={renderAnnotation}
+      renderBlock={renderBlock}
+      renderChild={renderChild}
+      setPortalElement={setPortalElement}
+      value={value}
+      scrollElement={scrollElement}
+      setScrollElement={setScrollElement}
+    />
   )
 
-  const editObject = useMemo(() => {
-    return (
-      <EditObject
-        focusPath={focusPath}
-        objectEditData={objectEditData}
-        markers={markers} // TODO: filter relevant
-        onBlur={handleEditObjectFormBuilderBlur}
-        onChange={handleFormBuilderEditObjectChange}
-        onClose={handleEditObjectClose}
-        onFocus={handleEditObjectFormBuilderFocus}
-        readOnly={readOnly}
-        presence={presence}
-        value={value}
-      />
-    )
-  }, [
-    focusPath,
-    objectEditData,
-    markers,
-    handleEditObjectFormBuilderBlur,
-    handleFormBuilderEditObjectChange,
-    handleEditObjectClose,
-    handleEditObjectFormBuilderFocus,
-    readOnly,
-    presence,
-    value,
-  ])
+  const editObjectNode = (
+    <EditObject
+      focusPath={focusPath}
+      objectEditData={objectEditData}
+      markers={markers} // TODO: filter relevant
+      onBlur={handleEditObjectFormBuilderBlur}
+      onChange={handleFormBuilderEditObjectChange}
+      onClose={handleEditObjectClose}
+      onFocus={handleEditObjectFormBuilderFocus}
+      readOnly={readOnly}
+      presence={presence}
+      value={value}
+    />
+  )
 
-  const children = useMemo(() => {
-    if (isFullscreen) {
-      return (
-        <ExpandedLayer>
-          {ptEditor}
-          {editObject}
-        </ExpandedLayer>
-      )
-    }
-
-    return (
-      <>
-        {ptEditor}
-        {editObject}
-      </>
-    )
-  }, [editObject, isFullscreen, ptEditor])
+  const children = (
+    <>
+      {editorNode}
+      {editObjectNode}
+    </>
+  )
 
   const portalElements = useMemo(
     () => ({
@@ -478,7 +427,9 @@ export function Input(props: InputProps) {
         >
           <Root data-focused={hasFocus ? '' : undefined} data-read-only={readOnly ? '' : undefined}>
             <div data-wrapper="" ref={setWrapperElement}>
-              <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>{children}</Portal>
+              <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
+                {isFullscreen ? <ExpandedLayer>{children}</ExpandedLayer> : children}
+              </Portal>
             </div>
             <div data-border="" />
           </Root>
