@@ -59,7 +59,9 @@ function getPTEListActions(editor: PortableTextEditor, disabled: boolean): PTETo
       key: listItem.value,
       disabled: disabled,
       icon: listItem.blockEditor?.icon,
-      handle: (): void => PortableTextEditor.toggleList(editor, listItem.value),
+      handle: (): void => {
+        PortableTextEditor.toggleList(editor, listItem.value)
+      },
       title: listItem.title,
     }
   })
