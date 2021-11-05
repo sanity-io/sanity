@@ -7,12 +7,12 @@ export interface CreateDocumentPreviewItem {
   key: string
   title?: string
   subtitle?: string
-  icon?: React.ComponentType<unknown>
+  icon?: React.ElementType | React.ReactElement
   onClick?: () => void
 }
 
 interface CreateDocumentListProps {
-  items: CreateDocumentPreviewItem[]
+  items: Array<React.ComponentProps<typeof CreateDocumentPreview> & {key: string}>
 }
 
 const List = styled.ul`
