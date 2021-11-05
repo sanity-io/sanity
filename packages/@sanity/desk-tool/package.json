@@ -40,7 +40,7 @@
     "@sanity/react-hooks": "2.21.9",
     "@sanity/structure": "2.21.7",
     "@sanity/types": "2.21.7",
-    "@sanity/ui": "^0.36.13",
+    "@sanity/ui": "^0.36.14",
     "@sanity/util": "2.21.7",
     "@sanity/uuid": "^3.0.1",
     "hashlru": "^2.1.0",
