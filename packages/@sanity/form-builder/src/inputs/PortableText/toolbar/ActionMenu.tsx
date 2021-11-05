@@ -1,7 +1,8 @@
-import React, {memo, useMemo} from 'react'
+import React, {memo, useCallback, useMemo} from 'react'
 import {CollapseMenu, CollapseMenuButton, CollapseMenuButtonProps} from '@sanity/base/components'
 import {Button, PopoverProps} from '@sanity/ui'
 import {EllipsisVerticalIcon} from '@sanity/icons'
+import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {PTEToolbarAction, PTEToolbarActionGroup} from './types'
 import {useActiveActionKeys, useFeatures, useFocusBlock} from './hooks'
 import {getActionIcon} from './helpers'
@@ -50,11 +51,25 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
     []
   )
 
+  const editor = usePortableTextEditor()
+
+  // The Sanity-UI collapsed menu item will set focus which is not prevented,
+  // so re-focus the editor before calling the action
+  const handleCollapsedActionClick = useCallback(
+    (action, active) => {
+      setTimeout(() => {
+        PortableTextEditor.focus(editor)
+        action.handle(active)
+      }, 0)
+    },
+    [editor]
+  )
+
   const children = useMemo(
     () =>
       actions.map((action) => {
-        const active = activeKeys.includes(action.key)
         const annotationDisabled = action.type === 'annotation' && isEmptyTextBlock
+        const active = activeKeys.includes(action.key)
         return (
           <CollapseMenuButton
             disabled={disabled || annotationDisabled}
@@ -62,8 +77,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
             dividerBefore={action.firstInGroup}
             icon={getActionIcon(action, active)}
             key={action.key}
-            // eslint-disable-next-line react/jsx-no-bind
-            onClick={() => action.handle(active)}
+            onClick={() => handleCollapsedActionClick(action, active)}
             selected={active}
             text={action.title || action.key}
             tooltipProps={{
@@ -74,7 +88,15 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
           />
         )
       }),
-    [actions, activeKeys, isEmptyTextBlock, disabled, collapsesButtonProps, isFullscreen]
+    [
+      actions,
+      activeKeys,
+      collapsesButtonProps,
+      disabled,
+      handleCollapsedActionClick,
+      isEmptyTextBlock,
+      isFullscreen,
+    ]
   )
 
   const menuButton = useMemo(
