@@ -31,14 +31,36 @@ import {
   UploadIcon,
 } from '@sanity/icons'
 import styled from 'styled-components'
+import {Resizable} from 're-resizable'
 
-const RatioBox = styled(Box)`
-  position: relative;
-  padding-bottom: min(calc(${({ratio = 3 / 2}) => 1 / ratio} * 100%), 30vh);
+const Resize = styled(Resizable)`
   width: 100%;
   overflow: hidden;
 
-  & > div:first-child {
+  & > [data-container] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+
+  & img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+`
+
+const RatioBox = styled(Box)`
+  position: relative;
+  padding-bottom: 30vh; //min(calc(${({ratio = 3 / 2}) => 1 / ratio} * 100%), 30vh);
+  width: 100%;
+  overflow: hidden;
+
+  & > div[data-image-container] {
     position: absolute;
     top: 0;
     left: 0;
@@ -82,10 +104,10 @@ export default function CompactImage(props) {
           Image input
         </Text>
         <Card border style={{borderStyle: hasImage ? 'solid' : 'dashed'}}>
-          <RatioBox>
+          <Resize defaultSize={{height: '30vh'}}>
             {hasImage && (
               <>
-                <Card padding={padImage ? 3 : 0} tone="transparent" sizing="border">
+                <Card data-container padding={padImage ? 3 : 0} tone="transparent" sizing="border">
                   <img src={'https://picsum.photos/1200/900'} />
                 </Card>
                 <Overlay justify="flex-end" padding={3} drag={drag}>
@@ -149,7 +171,7 @@ export default function CompactImage(props) {
               </>
             )}
             {!hasImage && (
-              <Box>
+              <Box data-container>
                 <Stack space={3}>
                   <Flex justify="center">
                     <Card padding={4} radius={2}>
@@ -196,7 +218,7 @@ export default function CompactImage(props) {
                 </Stack>
               </Box>
             )}
-          </RatioBox>
+          </Resize>
         </Card>
       </Stack>
     </Container>
