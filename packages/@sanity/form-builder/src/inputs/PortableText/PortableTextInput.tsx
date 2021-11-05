@@ -163,18 +163,10 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
     [focusPath, onBlur, onChange, onFocus, toast]
   )
 
-  const focusSkipperButton = useMemo(() => {
-    const handleFocusSkipperClicked = () => {
-      if (ref.current) {
-        PortableTextEditor.focus(ref.current)
-      }
+  const handleFocusSkipperClick = useCallback(() => {
+    if (ref.current) {
+      PortableTextEditor.focus(ref.current)
     }
-    return (
-      // eslint-disable-next-line react/jsx-no-bind
-      <VisibleOnFocusButton onClick={handleFocusSkipperClicked} style={{position: 'absolute'}}>
-        <Text>Jump to editor</Text>
-      </VisibleOnFocusButton>
-    )
   }, [ref])
 
   const editorInput = useMemo(
@@ -189,7 +181,12 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
         type={type}
         value={value}
       >
-        {!readOnly && focusSkipperButton}
+        {!readOnly && (
+          <VisibleOnFocusButton onClick={handleFocusSkipperClick}>
+            <Text>Go to content</Text>
+          </VisibleOnFocusButton>
+        )}
+
         <Input
           editorId={editorId}
           focusPath={focusPath}
@@ -214,8 +211,8 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
     [
       editorId,
       focusPath,
-      focusSkipperButton,
       handleEditorChange,
+      handleFocusSkipperClick,
       handleToggleFullscreen,
       hasFocus,
       hotkeys,
