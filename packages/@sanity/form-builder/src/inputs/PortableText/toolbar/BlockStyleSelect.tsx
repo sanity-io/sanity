@@ -40,14 +40,14 @@ const MENU_POPOVER_PROPS: MenuButtonProps['popover'] = {
 }
 
 const TEXT_STYLE_OPTIONS = {
-  h1: <Heading1>Heading 1</Heading1>,
-  h2: <Heading2>Heading 2</Heading2>,
-  h3: <Heading3>Heading 3</Heading3>,
-  h4: <Heading4>Heading 4</Heading4>,
-  h5: <Heading5>Heading 5</Heading5>,
-  h6: <Heading6>Heading 6</Heading6>,
-  normal: <Normal>Normal</Normal>,
-  blockquote: <BlockQuote data-option="blockquote">Quote</BlockQuote>,
+  h1: (title) => <Heading1>{title}</Heading1>,
+  h2: (title) => <Heading2>{title}</Heading2>,
+  h3: (title) => <Heading3>{title}</Heading3>,
+  h4: (title) => <Heading4>{title}</Heading4>,
+  h5: (title) => <Heading5>{title}</Heading5>,
+  h6: (title) => <Heading6>{title}</Heading6>,
+  normal: (title) => <Normal>{title}</Normal>,
+  blockquote: (title) => <BlockQuote data-option="blockquote">{title}</BlockQuote>,
 }
 
 const TEXT_STYLE_KEYS = Object.keys(TEXT_STYLE_OPTIONS)
@@ -113,14 +113,14 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
     [editor, focusBlock]
   )
 
-  const renderOption = useCallback((style: string) => {
+  const renderOption = useCallback((style: string, title: string) => {
     const hasTextStyle = TEXT_STYLE_KEYS.includes(style)
 
     if (hasTextStyle) {
-      return TEXT_STYLE_OPTIONS[style]
+      return TEXT_STYLE_OPTIONS[style](title)
     }
 
-    return <Text>{style}</Text>
+    return <Text>{title}</Text>
   }, [])
 
   const button = useMemo(
@@ -149,7 +149,7 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
               // eslint-disable-next-line react/jsx-no-bind
               onClick={_disabled ? undefined : () => handleChange(item)}
             >
-              {renderOption(item.style)}
+              {renderOption(item.style, item?.title || item.style)}
             </StyledMenuItem>
           )
         })}
