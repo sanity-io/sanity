@@ -1,9 +1,19 @@
 // Render a fieldset inside the object input
-import React, {ForwardedRef, forwardRef, useMemo} from 'react'
+import React, {ForwardedRef, forwardRef, useMemo, useRef} from 'react'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {FormFieldSet, FormFieldSetProps} from '@sanity/base/components'
-import {Marker, MultiFieldSet, Path} from '@sanity/types'
+import {
+  Marker,
+  MultiFieldSet,
+  Path,
+  HiddenOptionCallbackContext,
+  HiddenOptionCallback,
+  SanityDocument,
+  CurrentUser,
+} from '@sanity/types'
+import {useCurrentUser} from '@sanity/base/hooks'
 import {EMPTY_ARRAY} from '../../utils/empty'
+import withDocument from '../../utils/withDocument'
 import {getCollapsedWithDefaults} from './utils'
 
 interface Props extends Omit<FormFieldSetProps, 'onFocus'> {
@@ -13,6 +23,7 @@ interface Props extends Omit<FormFieldSetProps, 'onFocus'> {
   level: number
   presence: FormFieldPresence[]
   markers: Marker[]
+  fieldValues: Record<string, unknown>
 }
 
 /**
@@ -23,7 +34,17 @@ export const ObjectFieldSet = forwardRef(function ObjectFieldSet(
   props: Props,
   forwardedRef: ForwardedRef<HTMLDivElement>
 ) {
-  const {fieldset, focusPath, children, level, presence, markers, onFocus, ...rest} = props
+  const {
+    fieldset,
+    focusPath,
+    children,
+    level,
+    presence,
+    markers,
+    onFocus,
+    fieldValues,
+    ...rest
+  } = props
   const columns = fieldset.options && fieldset.options.columns
 
   const collapsibleOpts = getCollapsedWithDefaults(fieldset.options, level)
@@ -74,7 +95,93 @@ export const ObjectFieldSet = forwardRef(function ObjectFieldSet(
     }
   }, [fieldNames, focusPath])
 
-  return fieldset.hidden ? null : (
+  function isThenable(value: any) {
+    return typeof value?.then === 'function'
+  }
+
+  function omitDeprecatedRole(user: CurrentUser): Omit<CurrentUser, 'role'> {
+    const {role, ...propsA} = user
+    return propsA
+  }
+
+  function useCheckCondition(
+    hidden: HiddenOptionCallback,
+    {document, currentUser, value}: HiddenOptionCallbackContext
+  ) {
+    const didWarn = useRef(false)
+    return useMemo(() => {
+      let result = false
+      try {
+        result = hidden({
+          document,
+          currentUser,
+          value,
+        })
+      } catch (err) {
+        console.error(`An error occurred while checking if field should be hidden: ${err.message}`)
+        return false
+      }
+      if (isThenable(result) && !didWarn.current) {
+        console.warn(
+          'The hidden option is either a promise or a promise returning function. Async callbacks for `hidden` option is not currently supported.'
+        )
+        return false
+      }
+      return result
+    }, [hidden, document, value, currentUser])
+  }
+
+  const ConditionalFieldWithDocument = withDocument(
+    forwardRef(function ConditionalFieldWithDocument(
+      propsB: {document: SanityDocument; value: unknown; hidden: HiddenOptionCallback},
+      ref /* ignore ref as there's no place to put it */
+    ) {
+      const {document, value, hidden} = propsB
+
+      const {value: currentUser} = useCurrentUser()
+      const shouldHide = useCheckCondition(hidden, {
+        currentUser: omitDeprecatedRole(currentUser),
+        document,
+        value,
+      })
+
+      return (
+        <>
+          {shouldHide ? null : (
+            <FormFieldSet
+              {...rest}
+              key={fieldset.name}
+              title={fieldset.title}
+              description={fieldset.description}
+              level={level + 1}
+              columns={columns}
+              collapsible={collapsibleOpts.collapsible}
+              collapsed={isCollapsed}
+              onToggle={handleToggleFieldset}
+              __unstable_presence={isCollapsed ? childPresence : EMPTY_ARRAY}
+              __unstable_changeIndicator={false}
+              __unstable_markers={childMarkers}
+              ref={isCollapsed ? forwardedRef : null}
+            >
+              {children}
+            </FormFieldSet>
+          )}
+        </>
+      )
+    })
+  )
+
+  if (typeof fieldset.hidden === 'function') {
+    const object = {}
+    fieldset.fields.forEach((field) => {
+      object[field.name] = fieldValues[field.name]
+    })
+
+    return <ConditionalFieldWithDocument {...fieldset} value={object} hidden={fieldset.hidden} />
+  } else if (fieldset.hidden === true) {
+    return null
+  }
+  return (
     <FormFieldSet
       {...rest}
       key={fieldset.name}
