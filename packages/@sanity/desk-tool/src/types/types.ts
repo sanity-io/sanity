@@ -1,5 +1,6 @@
 import {Subscribable} from 'rxjs'
 import {SchemaType, SanityDocument} from '@sanity/types'
+import {InitialValueTemplateItem} from '@sanity/structure'
 
 export interface PreviewValue {
   id?: string
@@ -196,16 +197,6 @@ export interface DocumentPaneNode extends BaseResolvedPaneNode<'document'> {
     templateParameters?: Record<string, unknown>
   }
   views?: PaneView[]
-}
-
-// TODO: good candidate to be moved somewhere else
-export type InitialValueTemplateItem = {
-  type: 'initialValueTemplateItem'
-  id: string
-  templateId: string
-  title?: string
-  description?: string
-  parameters?: {[key: string]: any}
 }
 
 export interface DocumentListPaneNode extends BaseResolvedPaneNode<'documentList'> {
