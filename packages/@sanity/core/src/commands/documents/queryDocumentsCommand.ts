@@ -11,6 +11,10 @@ Options
   --dataset NAME to override dataset
   --api-version API version to use (defaults to \`v1\`)
 
+Environment variables
+  \`SANITY_CLI_QUERY_API_VERSION\` - will use the defined API version,
+  unless \`--api-version\` is specified.
+
 Examples
   # Fetch 5 documents of type "movie"
   sanity documents query '*[_type == "movie"][0..4]'
@@ -72,8 +76,10 @@ export default {
 }
 
 function parseCliFlags(args: CliCommandArguments<CliQueryCommandFlags>) {
+  // eslint-disable-next-line no-process-env
+  const defaultApiVersion = process.env.SANITY_CLI_QUERY_API_VERSION
   return yargs(hideBin(args.argv || process.argv).slice(2))
     .option('pretty', {type: 'boolean', default: false})
     .option('dataset', {type: 'string'})
-    .option('api-version', {type: 'string'}).argv
+    .option('api-version', {type: 'string', default: defaultApiVersion}).argv
 }
