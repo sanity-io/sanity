@@ -36,6 +36,7 @@ import {Resizable} from 're-resizable'
 const Resize = styled(Resizable)`
   width: 100%;
   overflow: hidden;
+  resize: vertical;
 
   & > [data-container] {
     position: absolute;
@@ -60,7 +61,7 @@ const RatioBox = styled(Box)`
   width: 100%;
   overflow: hidden;
 
-  & > div[data-image-container] {
+  & > div[data-container] {
     position: absolute;
     top: 0;
     left: 0;
@@ -104,7 +105,7 @@ export default function CompactImage(props) {
           Image input
         </Text>
         <Card border style={{borderStyle: hasImage ? 'solid' : 'dashed'}}>
-          <Resize defaultSize={{height: '30vh'}}>
+          <Resize direction="vertical" defaultSize={{height: '30vh'}}>
             {hasImage && (
               <>
                 <Card data-container padding={padImage ? 3 : 0} tone="transparent" sizing="border">
