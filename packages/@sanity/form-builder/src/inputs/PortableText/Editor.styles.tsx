@@ -128,11 +128,14 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean}>`
   & > div {
     height: 100%;
 
-    [data-slate-editor] {
+    [data-slate-editor='true'] {
       display: flex;
       flex-direction: column;
       flex: 1;
       min-height: 100%;
+
+      /* Prevent iOS from showing a selection toolbar */
+      -webkit-user-modify: read-write-plaintext-only;
 
       .pt-block {
         &:first-child {
