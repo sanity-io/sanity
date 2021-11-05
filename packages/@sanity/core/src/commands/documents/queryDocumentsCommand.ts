@@ -1,3 +1,5 @@
+import yargs from 'yargs/yargs'
+import {hideBin} from 'yargs/helpers'
 import colorizeJson from '../../util/colorizeJson'
 import type {CliCommandArguments, CliCommandContext} from '../../types'
 
@@ -7,7 +9,7 @@ Run a query against the projects configured dataset
 Options
   --pretty colorized JSON output
   --dataset NAME to override dataset
-  --apiVersion API version to use (defaults to \`v1\`)
+  --api-version API version to use (defaults to \`v1\`)
 
 Examples
   # Fetch 5 documents of type "movie"
@@ -36,8 +38,9 @@ export default {
     args: CliCommandArguments<CliQueryCommandFlags>,
     context: CliCommandContext
   ): Promise<void> => {
+    // Reparsing arguments for improved control of flags
+    const {pretty, dataset, 'api-version': apiVersion} = parseCliFlags(args)
     const {apiClient, output, chalk} = context
-    const {pretty, dataset, apiVersion} = args.extOptions
     const [query] = args.argsWithoutOptions
 
     if (!query) {
@@ -45,7 +48,7 @@ export default {
     }
 
     if (!apiVersion) {
-      output.warn(chalk.yellow('--apiVersion not specified, using `v1`'))
+      output.warn(chalk.yellow('--api-version not specified, using `v1`'))
     }
 
     const baseClient = apiClient().clone()
@@ -66,4 +69,11 @@ export default {
       throw new Error(`Failed to run query:\n${err.message}`)
     }
   },
+}
+
+function parseCliFlags(args: CliCommandArguments<CliQueryCommandFlags>) {
+  return yargs(hideBin(args.argv || process.argv).slice(2))
+    .option('pretty', {type: 'boolean', default: false})
+    .option('dataset', {type: 'string'})
+    .option('api-version', {type: 'string'}).argv
 }
