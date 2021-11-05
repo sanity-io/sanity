@@ -10,8 +10,7 @@ const formatters = {
 }
 
 function colorize(input, chalk) {
-  const data = typeof input === 'string' ? JSON.parse(input) : input
-  const json = JSON.stringify(data, null, 2)
+  const json = JSON.stringify(input, null, 2)
 
   return tokenize(json)
     .map((token, i, arr) => {
@@ -27,7 +26,7 @@ function colorize(input, chalk) {
 
       return token
     })
-    .map((token, i) => {
+    .map((token) => {
       const formatter = chalk[formatters[token.type]] || identity
       return formatter(token.raw)
     })
