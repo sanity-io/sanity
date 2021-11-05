@@ -119,11 +119,6 @@
       "path": "sanity/legacyPartImplementations/block-markers-default"
     },
     {
-      "name": "part:@sanity/form-builder/input/block-editor/block-extras-default",
-      "implements": "part:@sanity/form-builder/input/block-editor/block-extras",
-      "path": "sanity/legacyPartImplementations/block-extras-default"
-    },
-    {
       "name": "part:@sanity/form-builder/input/block-editor/block-markers-custom-default",
       "implements": "part:@sanity/form-builder/input/block-editor/block-markers-custom",
       "path": "sanity/legacyPartImplementations/block-markers-custom-default"

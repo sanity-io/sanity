@@ -16,7 +16,6 @@ import schema from 'part:@sanity/base/schema'
 import {useRouter, IntentLink} from '@sanity/base/router'
 import SearchableSelect from 'part:@sanity/components/selects/searchable'
 import CustomMarkers from 'part:@sanity/form-builder/input/block-editor/block-markers-custom-default'
-import BlockExtras from 'part:@sanity/form-builder/input/block-editor/block-extras'
 import Markers from 'part:@sanity/form-builder/input/block-editor/block-markers'
 import client from 'part:@sanity/base/client'
 import {WithReferringDocuments} from 'part:@sanity/base/with-referring-documents'
@@ -60,7 +59,6 @@ export {
   IntentLink,
   SearchableSelect,
   CustomMarkers,
-  BlockExtras,
   Markers,
   client,
   WithReferringDocuments,

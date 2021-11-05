@@ -7,7 +7,7 @@ import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import styled, {css} from 'styled-components'
 import {Box, Card, Theme, Tooltip} from '@sanity/ui'
 import Preview from '../../../Preview'
-import Markers from '../legacyParts/Markers'
+import {Markers} from '../../../legacyParts'
 import {RenderCustomMarkers} from '../types'
 
 type Props = {
