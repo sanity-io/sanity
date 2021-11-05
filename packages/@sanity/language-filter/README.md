@@ -8,9 +8,12 @@ A Sanity plugin that supports filtering localized fields by language
 
 > sanity install @sanity/language-filter
 
+Installing with `sanity install` updates your `sanity.json` to include this plugin. If installing with npm or yarn, ensure your `plugins` array includes `@sanity/language-filter`.
+
 ### Add config file
 
 In order to know what languages are supported, this plugin needs to be set up with a config file that exports a few options.
+
 This config file needs to implement the part `part:@sanity/language-filter/config`, by adding the following lines to the `parts`-section of your `sanity.json`
 
 ```json
