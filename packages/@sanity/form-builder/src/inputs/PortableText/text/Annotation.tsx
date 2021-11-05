@@ -218,14 +218,14 @@ export function Annotation(props: AnnotationProps) {
         <Tooltip
           placement="top"
           boundaryElement={annotationRef.current}
-          portal="editor"
+          portal="default"
           content={
             <TooltipBox padding={2}>
               <Markers markers={markers} renderCustomMarkers={renderCustomMarkers} />
             </TooltipBox>
           }
         >
-          {text}
+          <span>{text}</span>
         </Tooltip>
       ) : undefined,
     [markers, renderCustomMarkers, text]
