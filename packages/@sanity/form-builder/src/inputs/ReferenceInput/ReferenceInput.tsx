@@ -12,7 +12,6 @@ import React, {
 } from 'react'
 import {isValidationErrorMarker, Marker, Path, Reference, ReferenceSchemaType} from '@sanity/types'
 import {
-  AddIcon,
   CloseIcon as ClearIcon,
   EllipsisVerticalIcon,
   LaunchIcon as OpenInNewTabIcon,
@@ -52,13 +51,14 @@ import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {PreviewComponentType, ReferenceInfo, SearchFunction, SearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {useReferenceInfo} from './useReferenceInfo'
+import {CreateNewButton, NewReferenceOptions} from './CreateNewButton'
 
 const INITIAL_SEARCH_STATE: SearchState = {
   hits: [],
   isLoading: false,
 }
 
-export interface Props {
+export interface ReferenceInputProps {
   value?: Reference
   type: ReferenceSchemaType
   markers: Marker[]
@@ -71,7 +71,7 @@ export interface Props {
   onBlur?: () => void
   selectedState?: 'selected' | 'pressed' | 'none'
   editReferenceLinkComponent: React.ComponentType
-  onEditReference: (id: string, type: ReferenceSchemaType) => void
+  onEditReference: (id: string, type: NewReferenceOptions) => void
   getReferenceInfo: (id: string, type: ReferenceSchemaType) => Observable<ReferenceInfo>
   previewComponent: PreviewComponentType
   onChange: (event: PatchEvent) => void
@@ -93,7 +93,7 @@ const WorkaroundForHeightIssue = styled.div`
 
 const REF_PATH = ['_ref']
 export const ReferenceInput = forwardRef(function ReferenceInput(
-  props: Props,
+  props: ReferenceInputProps,
   forwardedRef: ForwardedRef<HTMLInputElement>
 ) {
   const {
@@ -120,23 +120,28 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
 
   const [searchMode, setSearchMode] = useState(false)
 
-  const handleCreateNew = (refType) => {
-    const id = uuid()
+  const handleCreateNew = useCallback(
+    ({templateType, templateId, templateParams}: NewReferenceOptions) => {
+      const id = uuid()
 
-    const patches = [
-      setIfMissing({}),
-      set(type.name, ['_type']),
-      set(id, ['_ref']),
-      set(true, ['_weak']),
-      !type.weak && set({type: refType.name}, ['_strengthenOnPublish']),
-    ].filter(Boolean)
+      const patches = [
+        setIfMissing({}),
+        set(type.name, ['_type']),
+        set(id, ['_ref']),
+        set(true, ['_weak']),
+        // conditionally set `_strengthenOnPublish` if weak is false
+        !('weak' in templateType && templateType.weak) &&
+          set({type: templateType.name}, ['_strengthenOnPublish']),
+      ].filter(Boolean)
 
-    onChange(PatchEvent.from(patches))
+      onChange(PatchEvent.from(patches))
 
-    setSearchMode(false)
+      setSearchMode(false)
 
-    onEditReference(id, refType)
-  }
+      onEditReference(id, {templateId, templateParams, templateType})
+    },
+    [onChange, onEditReference, type.name]
+  )
 
   const handleClear = useCallback(() => {
     // note: we can't simply unset here because the value might be in an array and that would cause
@@ -307,14 +312,9 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
 
   const rootRef = useRef()
 
-  const handleCreateButtonKeyDown = useCallback(
-    (e) => {
-      if (e.key === 'Escape') {
-        ref.current?.focus()
-      }
-    },
-    [ref]
-  )
+  const handleCancel = useCallback(() => {
+    ref.current?.focus()
+  }, [ref])
 
   const renderOption = useCallback(
     (option) => {
@@ -495,45 +495,12 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
                 </ChangeIndicatorForFieldPath>
               </Box>
               {!readOnly && (
-                <Box marginLeft={2}>
-                  <Inline space={2}>
-                    {type.to.length > 1 ? (
-                      <MenuButton
-                        button={
-                          <Button
-                            text="Create new…"
-                            mode="ghost"
-                            icon={AddIcon}
-                            onKeyDown={handleCreateButtonKeyDown}
-                          />
-                        }
-                        id={`${inputId}-selectTypeMenuButton`}
-                        menu={
-                          <Menu>
-                            {type.to.map((toType) => (
-                              <MenuItem
-                                key={toType.name}
-                                text={toType.title}
-                                icon={toType.icon}
-                                onClick={() => handleCreateNew(toType)}
-                              />
-                            ))}
-                          </Menu>
-                        }
-                        placement="right"
-                        popover={{portal: true, tone: 'default'}}
-                      />
-                    ) : (
-                      <Button
-                        text="Create new"
-                        mode="ghost"
-                        onKeyDown={handleCreateButtonKeyDown}
-                        onClick={() => handleCreateNew(type.to[0])}
-                        icon={AddIcon}
-                      />
-                    )}
-                  </Inline>
-                </Box>
+                <CreateNewButton
+                  onCancel={handleCancel}
+                  inputId={inputId}
+                  type={type}
+                  onCreateNew={handleCreateNew}
+                />
               )}
             </Flex>
           </Card>

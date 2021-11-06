@@ -16,7 +16,9 @@ export interface ReferenceChildLinkProps {
   documentId: string
   documentType: string
   parentRefPath: Path
-  children: React.ReactNode
+  children?: React.ReactNode
+  template?: string
+  templateParams?: unknown
 }
 
 export interface ParameterizedLinkProps {
@@ -84,7 +86,13 @@ export interface PaneRouterContextValue {
   /**
    * Similar to `ReferenceChildLink` expect without the wrapping component
    */
-  handleEditReference: (options: {id: string; type: string; parentRefPath: Path}) => void
+  handleEditReference: (options: {
+    documentId: string
+    documentType: string
+    parentRefPath: Path
+    template?: string
+    templateParams?: unknown
+  }) => void
 
   /**
    * Curried StateLink that passed the correct state, but merges params/payload

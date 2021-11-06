@@ -1,5 +1,6 @@
-import React, {ComponentType, createContext, HTMLProps, useContext, useMemo} from 'react'
+import React, {createContext, useContext, useMemo} from 'react'
 import {Path} from '@sanity/types'
+import type {NewDocumentOption} from '@sanity/base/_internal'
 
 const Context = createContext<ReferenceInputOptions>({})
 
@@ -8,17 +9,14 @@ const Context = createContext<ReferenceInputOptions>({})
  * @internal
  */
 export interface EditReferenceOptions {
-  id: string
-  parentRefPath: Path
-  type: string
-}
-
-export interface EditReferenceLinkComponentProps {
   documentId: string
   documentType: string
   parentRefPath: Path
-  children: React.ReactNode
+  template?: string
+  templateParams?: unknown
 }
+
+export type EditReferenceLinkComponentProps = EditReferenceOptions & React.HTMLProps<Element>
 
 /**
  * unstable
@@ -34,13 +32,16 @@ export interface ReferenceInputOptions {
    * A specialized `EditReferenceLinkComponent` component that takes in the needed props to open a
    * referenced document to the right
    */
-  EditReferenceLinkComponent?: ComponentType<
-    Omit<HTMLProps<'a'>, 'children'> & EditReferenceLinkComponentProps
-  >
+  EditReferenceLinkComponent?: React.ComponentType<EditReferenceLinkComponentProps>
   /**
    * Similar to `ReferenceChildLink` expect without the wrapping component
    */
   onEditReference?: (options: EditReferenceOptions) => void
+
+  /**
+   * Used to create new documents from the "create new" button
+   */
+  newDocumentOptions?: NewDocumentOption[]
 }
 
 /**
@@ -58,15 +59,22 @@ export function useReferenceInputOptions() {
 export function ReferenceInputOptionsProvider(
   props: ReferenceInputOptions & {children: React.ReactNode}
 ) {
-  const {children, activePath, EditReferenceLinkComponent, onEditReference} = props
+  const {
+    children,
+    activePath,
+    newDocumentOptions,
+    EditReferenceLinkComponent,
+    onEditReference,
+  } = props
 
   const contextValue = useMemo(
     () => ({
       activePath,
+      newDocumentOptions,
       EditReferenceLinkComponent,
       onEditReference,
     }),
-    [activePath, EditReferenceLinkComponent, onEditReference]
+    [activePath, newDocumentOptions, EditReferenceLinkComponent, onEditReference]
   )
 
   return <Context.Provider value={contextValue}>{children}</Context.Provider>

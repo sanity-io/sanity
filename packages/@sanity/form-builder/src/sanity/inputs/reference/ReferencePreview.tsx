@@ -31,26 +31,26 @@ export function ReferencePreview(props: {
 
   const theme = useRootTheme()
 
-  const stub = {
-    _id: referenceInfo.draft.availability.available
+  const stub = refType && {
+    _id: referenceInfo?.draft?.availability.available
       ? getDraftId(referenceInfo.id)
-      : referenceInfo.id,
+      : referenceInfo?.id || 'dummy-id',
     _type: refType.name,
   }
 
   return (
     <Flex align="center">
       <Box flex={1}>
-        <Preview type={refType} value={stub} layout={layout} />
+        {stub && <Preview key={stub._id} type={refType} value={stub} layout={layout} />}
       </Box>
       <Box marginLeft={4} marginRight={2}>
         <Inline space={4}>
           {showTypeLabel && (
             <Label size={1} muted>
-              {refType.title}
+              {refType?.title}
             </Label>
           )}
-          {referenceInfo?.published.preview && (
+          {referenceInfo?.published?.preview && (
             <Tooltip
               content={
                 <Box padding={2}>
@@ -69,7 +69,7 @@ export function ReferencePreview(props: {
               </TextWithTone>
             </Tooltip>
           )}
-          {referenceInfo?.draft.preview && (
+          {referenceInfo?.draft?.preview && (
             <Tooltip
               content={
                 <Box padding={2}>

@@ -17,8 +17,9 @@ import React, {memo, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {fromString as pathFromString} from '@sanity/util/paths'
 // eslint-disable-next-line camelcase
-import {Unstable_ReferenceInputOptionsProvider} from '@sanity/form-builder/_internal'
+import {Unstable_ReferenceInputOptionsProvider as ReferenceInputOptionsProvider} from '@sanity/form-builder/_internal'
 import {Path} from '@sanity/types'
+import {getNewDocumentOptions} from '@sanity/base/_internal'
 import {DocumentPaneNode} from '../../types'
 import {useDeskTool} from '../../contexts/deskTool'
 import {usePaneRouter} from '../../contexts/paneRouter'
@@ -64,6 +65,7 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
       ? mergeDocumentType(props, options, documentType)
       : props
   }, [props, documentType, isLoaded, options])
+  const newDocumentOptions = useMemo(getNewDocumentOptions, [])
 
   const {ReferenceChildLink, handleEditReference, groupIndex, routerPanesState} = paneRouter
   const childParams = routerPanesState[groupIndex + 1]?.[0].params || {}
@@ -106,14 +108,14 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
     <DocumentPaneProvider {...providerProps}>
       {/* NOTE: this is a temporary location for this provider until we */}
       {/* stabilize the reference input options formally in the form builder */}
-      {/* eslint-disable-next-line react/jsx-pascal-case */}
-      <Unstable_ReferenceInputOptionsProvider
+      <ReferenceInputOptionsProvider
         EditReferenceLinkComponent={ReferenceChildLink}
         onEditReference={handleEditReference}
         activePath={activePath}
+        newDocumentOptions={newDocumentOptions}
       >
         <InnerDocumentPane />
-      </Unstable_ReferenceInputOptionsProvider>
+      </ReferenceInputOptionsProvider>
     </DocumentPaneProvider>
   )
 })

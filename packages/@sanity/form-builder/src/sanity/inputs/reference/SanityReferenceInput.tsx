@@ -2,7 +2,6 @@ import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, u
 
 import {
   Marker,
-  ObjectSchemaType,
   Path,
   Reference,
   ReferenceFilterSearchOptions,
@@ -18,7 +17,7 @@ import {catchError, mergeMap} from 'rxjs/operators'
 import withValuePath from '../../../utils/withValuePath'
 import withDocument from '../../../utils/withDocument'
 import {useReferenceInputOptions} from '../../contexts/ReferenceInputOptions'
-import {ReferenceInput} from '../../../inputs/ReferenceInput'
+import {ReferenceInput, ReferenceInputProps} from '../../../inputs/ReferenceInput'
 import PatchEvent from '../../../PatchEvent'
 import * as adapter from '../client-adapters/reference'
 import {ReferencePreview} from './ReferencePreview'
@@ -115,7 +114,7 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
     () =>
       forwardRef(function EditReferenceLink_(
         _props: ComponentProps<typeof EditReferenceLinkComponent>,
-        forwardedRef: ForwardedRef<'a'>
+        forwardedRef: ForwardedRef<HTMLElement>
       ) {
         return (
           <EditReferenceLinkComponent {..._props} ref={forwardedRef} parentRefPath={valuePath} />
@@ -124,12 +123,14 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
     [EditReferenceLinkComponent, valuePath]
   )
 
-  const handleEditReference = useCallback(
-    (id: string, schemaType: ObjectSchemaType) => {
+  const handleEditReference: ReferenceInputProps['onEditReference'] = useCallback(
+    (id, {templateId, templateParams, templateType}) => {
       onEditReference({
         parentRefPath: valuePath,
-        id,
-        type: schemaType.name,
+        documentId: id,
+        documentType: templateType.name,
+        template: templateId,
+        templateParams,
       })
     },
     [onEditReference, valuePath]
