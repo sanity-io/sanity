@@ -30,14 +30,18 @@ export const CreateDocumentDialog = memo(function CreateDocumentDialog(
         <Box padding={3}>
           {newDocumentOptions.length > 0 ? (
             <CreateDocumentList
-              items={newDocumentOptions.map((option) => ({
-                key: option.key,
-                ...option.preview,
-                icon: option.preview.icon || <DocumentIcon />,
-                onClick: onClose,
-                params: option.intent.params[0],
-                templateParams: option.item.parameters,
-              }))}
+              items={newDocumentOptions.map(
+                ({key, title, description, subtitle, icon, item, template}) => ({
+                  key,
+                  description,
+                  title,
+                  subtitle,
+                  icon: icon || <DocumentIcon />,
+                  onClick: onClose,
+                  params: {type: template.schemaType, template: template.id},
+                  templateParams: item.parameters,
+                })
+              )}
             />
           ) : (
             <Box paddingY={5}>
