@@ -6,8 +6,8 @@ import {isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
 import {SchemaType} from '@sanity/types'
 import {isObject} from 'lodash'
 import {getTemplateById} from '@sanity/initial-value-templates'
-import S from '../_exports/structure-builder'
 import type {InitialValueTemplateItem} from '@sanity/structure'
+import S from '../_exports/structure-builder'
 
 const isRecord = isObject as (value: unknown) => value is Record<string, unknown>
 const isInitialValueTemplateItem = (
@@ -21,23 +21,6 @@ const getDefaultModule = <T>(mod: {__esModule?: boolean; default: T} | T) =>
 
 type Template = NonNullable<ReturnType<typeof getTemplateById>>
 
-interface NewDocumentPreview {
-  title: string
-  description?: string
-  subtitle?: string
-  icon?: React.ElementType | React.ReactElement
-}
-
-interface NewDocumentIntent {
-  intent: 'create'
-  params: [
-    // router params
-    {type: string; template: string},
-    // router payload
-    InitialValueTemplateItem['parameters']
-  ]
-}
-
 /**
  * The result of parsing the `new-document-structure` against the registered
  * initial value templates.
@@ -48,6 +31,11 @@ export interface NewDocumentOption {
    */
   key: string
 
+  title: string
+  description?: string
+  subtitle?: string
+  icon?: React.ElementType | React.ReactElement
+
   /**
    * the matching template
    */
@@ -57,16 +45,10 @@ export interface NewDocumentOption {
    * option
    */
   item: InitialValueTemplateItem
-
   /**
-   * a pre-made intent ready to pass to intent links
+   * A type that matches the `template.schemaType`
    */
-  intent: NewDocumentIntent
-
-  /**
-   * a set of display values to show to the user
-   */
-  preview: NewDocumentPreview
+  type: SchemaType
 }
 
 /**
@@ -165,20 +147,17 @@ function createNewDocumentOptions(structure: InitialValueTemplateItem[]) {
         const title = item.title || template.title
         const newDocumentOption: NewDocumentOption = {
           key: item.id,
-          intent: {
-            intent: 'create',
-            params: [{template: template.id, type: template.schemaType}, item.parameters],
-          },
-          preview: {
-            title,
-            description: item.description || template.description,
-            // Don't show the type name as subtitle if it's the same as the template name
-            subtitle: type.title === title ? undefined : type.title,
-            // Prioritize icon from initial value template item
-            icon: item.icon || template.icon || type.icon,
-          },
+
+          title,
+          description: item.description || template.description,
+          // Don't show the type name as subtitle if it's the same as the template name
+          subtitle: type.title === title ? undefined : type.title,
+          // Prioritize icon from initial value template item
+          icon: item.icon || template.icon || type.icon,
+
           template,
           item,
+          type,
         }
 
         return newDocumentOption

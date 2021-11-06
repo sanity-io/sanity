@@ -71,12 +71,8 @@ describe('getNewDocumentOptions', () => {
       newDocumentStructure: (S) => [S.initialValueTemplateItem('author-developer')],
     })
 
-    expect(newDocumentOptions).toEqual([
+    expect(newDocumentOptions).toMatchObject([
       {
-        intent: {
-          intent: 'create',
-          params: [{template: 'author-developer', type: 'author'}, undefined],
-        },
         item: {
           id: 'author-developer',
           parameters: undefined,
@@ -84,12 +80,10 @@ describe('getNewDocumentOptions', () => {
           type: 'initialValueTemplateItem',
         },
         key: 'author-developer',
-        preview: {
-          description: undefined,
-          icon: undefined,
-          subtitle: 'Author',
-          title: 'Developer',
-        },
+        description: undefined,
+        icon: undefined,
+        subtitle: 'Author',
+        title: 'Developer',
         template: {
           description: undefined,
           icon: undefined,
@@ -98,6 +92,9 @@ describe('getNewDocumentOptions', () => {
           schemaType: 'author',
           title: 'Developer',
           value: {role: 'developer'},
+        },
+        type: {
+          name: 'author',
         },
       },
     ])
