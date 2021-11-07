@@ -1,4 +1,7 @@
-import {useDocumentType} from '@sanity/base/hooks'
+import {
+  useDocumentType,
+  unstable_useFilteredCreatableTypes as useFilteredCreatableTypes,
+} from '@sanity/base/hooks'
 import {LegacyLayerProvider, useZIndex} from '@sanity/base/components'
 import {ChangeConnectorRoot} from '@sanity/base/change-indicators'
 import {getTemplateById} from '@sanity/base/initial-value-templates'
@@ -16,7 +19,6 @@ import {
 import React, {memo, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {fromString as pathFromString} from '@sanity/util/paths'
-// eslint-disable-next-line camelcase
 import {Unstable_ReferenceInputOptionsProvider as ReferenceInputOptionsProvider} from '@sanity/form-builder/_internal'
 import {Path} from '@sanity/types'
 import {getNewDocumentOptions} from '@sanity/base/_internal'
@@ -113,6 +115,7 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
         onEditReference={handleEditReference}
         activePath={activePath}
         newDocumentOptions={newDocumentOptions}
+        useFilteredCreatableTypes={useFilteredCreatableTypes}
       >
         <InnerDocumentPane />
       </ReferenceInputOptionsProvider>

@@ -1,7 +1,7 @@
-import {debounceTime, distinctUntilChanged, switchMap} from 'rxjs/operators'
+import {debounceTime, distinctUntilChanged, map, switchMap} from 'rxjs/operators'
 
 import shallowEquals from 'shallow-equals'
-import {pipe} from 'rxjs'
+import {combineLatest, pipe} from 'rxjs'
 import {useObservable, useAsObservable} from 'react-rx'
 import {
   canCreateType,
@@ -15,11 +15,43 @@ import {
 
 const INITIAL = {granted: true, reason: '<pending>'}
 
-// eslint-disable-next-line camelcase
-export function unstable_useCanCreateAnyOf(typeNames: string[]) {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+/**
+ * unstable
+ * @internal
+ */
+function useFilteredCreatableTypes(
+  typeNames: string[]
+): Array<{typeName: string; granted: boolean; reason: string}> | null {
   return useObservable(
-    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useAsObservable(
+      typeNames,
+      pipe(
+        distinctUntilChanged(shallowEquals),
+        debounceTime(10),
+        switchMap((types) =>
+          combineLatest(
+            types.map((type) =>
+              canCreateType('dummy-id', type).pipe(
+                map((result) => ({
+                  ...result,
+                  typeName: type,
+                }))
+              )
+            )
+          )
+        )
+      )
+    ),
+    null
+  )
+}
+
+/**
+ * unstable
+ * @internal
+ */
+function useCanCreateAnyOf(typeNames: string[]): {granted: boolean; reason: string} {
+  return useObservable(
     useAsObservable(
       typeNames,
       pipe(
@@ -32,15 +64,16 @@ export function unstable_useCanCreateAnyOf(typeNames: string[]) {
   )
 }
 
-// eslint-disable-next-line camelcase
-export function unstable_useCheckDocumentPermission(
+/**
+ * unstable
+ * @internal
+ */
+function useCheckDocumentPermission(
   id: string,
   type: string,
   permission: 'update' | 'create' | 'delete' | 'publish' | 'unpublish' | 'discardDraft'
-) {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+): {granted: boolean; reason: string} {
   return useObservable(
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     useAsObservable(
       [id, type, permission] as const,
       pipe(
@@ -73,3 +106,11 @@ export function unstable_useCheckDocumentPermission(
     INITIAL
   )
 }
+
+/* eslint-disable camelcase */
+export {
+  useFilteredCreatableTypes as unstable_useFilteredCreatableTypes,
+  useCheckDocumentPermission as unstable_useCheckDocumentPermission,
+  useCanCreateAnyOf as unstable_useCanCreateAnyOf,
+}
+/* eslint-enable camelcase */

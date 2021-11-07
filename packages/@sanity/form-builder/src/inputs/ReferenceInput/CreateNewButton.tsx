@@ -28,7 +28,7 @@ export const CreateNewButton = memo(
       [onCancel]
     )
 
-    const {newDocumentOptions} = useReferenceInputOptions()
+    const {newDocumentOptions, useFilteredCreatableTypes} = useReferenceInputOptions()
 
     const filteredDocumentOptions = useMemo(() => {
       if (!newDocumentOptions) return null
@@ -36,6 +36,18 @@ export const CreateNewButton = memo(
       const schemaTypes = new Set(type.to.map((toType) => toType.name))
       return newDocumentOptions.filter((option) => schemaTypes.has(option.template.schemaType))
     }, [newDocumentOptions, type.to])
+
+    const uniqueTypes = useMemo(() => {
+      return Array.from(new Set(filteredDocumentOptions.map(({template}) => template.schemaType)))
+    }, [filteredDocumentOptions])
+    const permissions = useFilteredCreatableTypes(uniqueTypes)
+    const allowedTypes = useMemo(() => {
+      return new Set(
+        (permissions || [])
+          .filter((permission) => permission.granted)
+          .map((permission) => permission.typeName)
+      )
+    }, [permissions])
 
     // don't render the create button if no new-document options are allowed
     if (!filteredDocumentOptions) return null
@@ -51,6 +63,7 @@ export const CreateNewButton = memo(
               title={`Create new ${firstOption.title}`}
               onKeyDown={handleCreateButtonKeyDown}
               icon={AddIcon}
+              disabled={!allowedTypes.has(firstOption.type.name)}
               // eslint-disable-next-line react/jsx-no-bind
               onClick={() => {
                 onCreateNew({
@@ -78,6 +91,7 @@ export const CreateNewButton = memo(
                       key={option.key}
                       text={option.title}
                       icon={option.icon}
+                      disabled={!allowedTypes.has(option.type.name)}
                       // eslint-disable-next-line react/jsx-no-bind
                       onClick={() =>
                         onCreateNew({

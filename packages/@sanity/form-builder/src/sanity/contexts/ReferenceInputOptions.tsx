@@ -1,6 +1,7 @@
 import React, {createContext, useContext, useMemo} from 'react'
 import {Path} from '@sanity/types'
 import type {NewDocumentOption} from '@sanity/base/_internal'
+import {unstable_useFilteredCreatableTypes as useFilteredCreatableTypes} from '@sanity/base/hooks'
 
 const Context = createContext<ReferenceInputOptions>({})
 
@@ -42,6 +43,8 @@ export interface ReferenceInputOptions {
    * Used to create new documents from the "create new" button
    */
   newDocumentOptions?: NewDocumentOption[]
+
+  useFilteredCreatableTypes?: typeof useFilteredCreatableTypes
 }
 
 /**
@@ -73,6 +76,7 @@ export function ReferenceInputOptionsProvider(
       newDocumentOptions,
       EditReferenceLinkComponent,
       onEditReference,
+      useFilteredCreatableTypes,
     }),
     [activePath, newDocumentOptions, EditReferenceLinkComponent, onEditReference]
   )
