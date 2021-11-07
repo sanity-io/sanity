@@ -77,6 +77,7 @@ export interface ReferenceInputProps {
   onChange: (event: PatchEvent) => void
   level: number
   presence: FormFieldPresence[]
+  disableCreateButton?: boolean
 }
 
 const NO_FILTER = () => true
@@ -114,6 +115,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
     compareValue,
     getReferenceInfo,
     previewComponent: PreviewComponent,
+    disableCreateButton,
   } = props
 
   const [searchState, setSearchState] = useState<SearchState>(INITIAL_SEARCH_STATE)
@@ -494,7 +496,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
                   </WorkaroundForHeightIssue>
                 </ChangeIndicatorForFieldPath>
               </Box>
-              {!readOnly && (
+              {!readOnly && !disableCreateButton && (
                 <CreateNewButton
                   onCancel={handleCancel}
                   inputId={inputId}

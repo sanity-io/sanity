@@ -148,6 +148,7 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
       previewComponent={ReferencePreview}
       editReferenceLinkComponent={EditReferenceLink}
       onEditReference={handleEditReference}
+      disableCreateButton={Boolean(type.liveEdit)}
     />
   )
 })
