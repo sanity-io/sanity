@@ -40,8 +40,12 @@ export function getIntentState(
         index: i,
       }) ||
       // OR
-      // the pane is a documentList with a matching schemaTypeName
-      (pane.type === 'documentList' && pane.schemaTypeName === params.type)
+      // if the resolved pane is a document list
+      (pane.type === 'documentList' &&
+        // and the schema type matches
+        pane.schemaTypeName === params.type &&
+        // and the filter is the default filter
+        pane.options.filter === '_type == $type')
     ) {
       const paneParams = isTemplate ? {template: params.template} : EMPTY_PARAMS
 

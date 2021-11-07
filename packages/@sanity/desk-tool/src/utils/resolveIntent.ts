@@ -117,8 +117,12 @@ export async function resolveIntent(options: ResolveIntentOptions): Promise<Rout
         [{id: targetId, params: otherParams, payload}],
       ]
     } else if (
-      // if the resolved pane is a document list and the schema type matches
-      (resolvedPane.type === 'documentList' && resolvedPane.schemaTypeName === schemaTypeName) ||
+      // if the resolved pane is a document list
+      (resolvedPane.type === 'documentList' &&
+        // and the schema type matches
+        resolvedPane.schemaTypeName === schemaTypeName &&
+        // and the filter is the default filter
+        resolvedPane.options.filter === '_type == $type') ||
       // OR
       // if the pane can handle the intent
       resolvedPane.canHandleIntent?.(intent, params, {
