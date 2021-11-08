@@ -27,10 +27,9 @@ function rootStyle({theme}: {theme: Theme}) {
     line-height: 0;
     border-radius: ${radius[2]}px;
     padding: 2px;
-    box-sizing: border-box;
     box-shadow: inset 0 0 0 1px var(--card-border-color);
-    height: calc(1em + 3px);
-    margin: 1px 0;
+    height: calc(1em - 1px);
+    margin-top: 0.0625em;
 
     &:not([hidden]) {
       display: inline-flex;
@@ -87,6 +86,13 @@ const Root = styled(Card)(rootStyle)
 const PreviewSpan = styled.span`
   display: block;
   max-width: calc(5em + 80px);
+  position: relative;
+  z-index: 100;
+
+  & > * {
+    user-select: none;
+    pointer-events: none;
+  }
 `
 
 const TooltipBox = styled(Box)`
@@ -180,7 +186,7 @@ export const InlineObject: FunctionComponent<Props> = ({
         onClick={handleOpen}
         forwardedAs="span"
       >
-        {markersToolTip || preview}
+        <span>{markersToolTip || preview}</span>
       </Root>
     ),
     [
