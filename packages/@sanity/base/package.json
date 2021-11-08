@@ -100,6 +100,7 @@
   "devDependencies": {
     "@sanity/ui-workshop": "^0.3.5",
     "@testing-library/react-hooks": "^7.0.2",
+    "@testing-library/jest-dom": "^5.11.10",
     "@types/element-resize-detector": "1.1.2",
     "@types/raf": "^3.4.0",
     "@types/refractor": "^3.0.0",
