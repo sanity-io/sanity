@@ -491,6 +491,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         <MenuButton
           id={`${this._inputId}_assetImageButton`}
           button={<Button mode="ghost" text="Select…" icon={SearchIcon} />}
+          data-testid="image-input-select-button"
           menu={
             <Menu>
               {assetSources.map((assetSource) => {
@@ -516,6 +517,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         onClick={() => this.handleSelectImageFromAssetSource(assetSources[0])}
         mode="ghost"
         text="Select"
+        data-testid="image-input-select-button"
       />
     )
   }
@@ -637,6 +639,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
           description={type.description}
           level={fieldGroups.highlighted.length > 0 ? level : 0}
           __unstable_changeIndicator={false}
+          readOnly={Boolean(readOnly)}
         >
           <div>
             <ChangeIndicatorForFieldPath
@@ -689,6 +692,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                   onSelect={this.handleSelectFiles}
                   accept={accept}
                   text="Upload"
+                  data-testid="image-input-upload-button"
                 />
               )}
 
@@ -710,6 +714,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                   icon={TrashIcon}
                   onClick={this.handleRemoveButtonClick}
                   text="Remove"
+                  data-testid="image-input-remove-button"
                 />
               )}
             </Grid>
