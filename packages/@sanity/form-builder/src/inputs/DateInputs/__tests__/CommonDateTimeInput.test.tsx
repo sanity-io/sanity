@@ -66,13 +66,7 @@ function renderInput() {
 // Note: for the tests to be deterministic we need this to ensure tests are run in a predefined timezone
 // see globalSetup in jest config for details about how this is set up
 test('timezone for the test environment should be set to America/Los_Angeles', () => {
-  const timezoneOffset = new Date().getTimezoneOffset()
-  expect(
-    // this is true during DST
-    timezoneOffset === 420 ||
-      // this is true with no DST
-      timezoneOffset === 480
-  ).toBe(true)
+  expect(Intl.DateTimeFormat().resolvedOptions().timeZone).toBe('America/Los_Angeles')
 })
 
 test('does not emit onChange after invalid value has been typed', () => {
