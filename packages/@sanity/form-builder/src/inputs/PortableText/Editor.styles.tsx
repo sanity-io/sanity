@@ -134,9 +134,6 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean}>`
       flex: 1;
       min-height: 100%;
 
-      /* Prevent iOS from showing a selection toolbar */
-      -webkit-user-modify: read-write-plaintext-only;
-
       .pt-block {
         &:first-child {
           padding-top: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 5 : 3]}px;
