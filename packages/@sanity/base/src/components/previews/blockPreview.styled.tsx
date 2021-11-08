@@ -1,9 +1,5 @@
-import {Box, Flex, Stack} from '@sanity/ui'
+import {Box, Flex} from '@sanity/ui'
 import styled from 'styled-components'
-
-export const RootStack = styled(Stack)`
-  user-select: none;
-`
 
 export const ContentWrapper = styled(Box)``
 

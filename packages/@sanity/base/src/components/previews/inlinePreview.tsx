@@ -38,8 +38,8 @@ export const InlinePreview: React.FunctionComponent<PreviewProps<'inline'>> = (p
           <span />
         </MediaSpan>
       )}
-      <TextSpan data-testid="inline-preview-title">
-        <span>{title || fallbackTitle}</span>
+      <TextSpan data-testid="inline-preview-title" size={1}>
+        {title || fallbackTitle}
       </TextSpan>
     </RootSpan>
   )
