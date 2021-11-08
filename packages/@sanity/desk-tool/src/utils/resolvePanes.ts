@@ -24,7 +24,7 @@ import {
   StructureErrorType,
 } from '../types'
 import {LOADING_PANE} from '../constants'
-import {defaultStructure} from '../defaultStructure'
+import {defaultStructure, defaultDocument} from '../defaultStructure'
 import {isRecord, isSubscribable} from './typePredicates'
 import validateStructure from './validateStructure'
 import serializeStructure from './serializeStructure'
@@ -47,18 +47,21 @@ const fallbackEditorChild: FallbackEditorChild = (nodeId, _, {params, payload}) 
     )
   }
 
-  const documentPane: DocumentPaneNode = {
-    id: 'editor',
-    type: 'document',
-    title: 'Editor',
-    options: {
-      id,
+  let defaultDocumentBuilder = defaultDocument({
+    schemaType: type,
+    documentId: id,
+  })
+
+  defaultDocumentBuilder = defaultDocumentBuilder.id('editor').title('Editor')
+
+  if (template) {
+    defaultDocumentBuilder = defaultDocumentBuilder.initialValueTemplate(
       template,
-      type,
-      templateParameters: payload as Record<string, unknown>,
-    },
+      payload as {[key: string]: any}
+    )
   }
-  return documentPane
+
+  return defaultDocumentBuilder.serialize() as DocumentPaneNode
 }
 
 const KNOWN_STRUCTURE_EXPORTS = ['getDefaultDocumentNode']

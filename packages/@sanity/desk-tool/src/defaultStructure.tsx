@@ -17,3 +17,5 @@ export function defaultStructure() {
 
   return pane
 }
+
+export const defaultDocument = Structure.defaultDocument

@@ -64,11 +64,15 @@ jest.mock('part:@sanity/desk-tool/structure?', () => {
     child: mockChild,
   }))
 
+  const {StructureBuilder} = jest.requireActual('@sanity/structure')
+  const mockDefaultDocumentNode: unknown = jest.fn(() => StructureBuilder.document())
+
   const module = {
     default: Promise.resolve({
       id: 'root',
       child: mockChild,
     }),
+    getDefaultDocumentNode: mockDefaultDocumentNode,
   }
 
   // this gets around the "Unknown structure export" warning
@@ -80,6 +84,12 @@ jest.mock('part:@sanity/desk-tool/structure?', () => {
 
   Object.defineProperty(module, 'mockChild', {
     value: mockChild,
+    enumerable: false,
+    configurable: false,
+  })
+
+  Object.defineProperty(module, 'mockDefaultDocumentNode', {
+    value: mockDefaultDocumentNode,
     enumerable: false,
     configurable: false,
   })
@@ -164,7 +174,7 @@ function createTestingProvider({initialRouterState = {}}: CreateTestingProviderO
 
   function TestingProvider() {
     const [state, setState] = useState(initialRouterState)
-    const location$ = useMemo(() => {
+    const handleNavigate = useMemo(() => {
       const locationSubject = new Rx.Subject<string>()
 
       locationSubject
@@ -176,18 +186,11 @@ function createTestingProvider({initialRouterState = {}}: CreateTestingProviderO
         )
         .subscribe((e) => setState(e))
 
-      return locationSubject
+      return locationSubject.next.bind(locationSubject)
     }, [])
 
-    const handleNavigate = location$.next.bind(location$)
-
     return (
-      <RouterProvider
-        router={deskTool.router}
-        state={state}
-        // eslint-disable-next-line react/jsx-no-bind
-        onNavigate={handleNavigate}
-      >
+      <RouterProvider router={deskTool.router} state={state} onNavigate={handleNavigate}>
         <ThemeProvider scheme="light" theme={studioTheme}>
           <ToastProvider>
             <LayerProvider>
@@ -204,8 +207,14 @@ function createTestingProvider({initialRouterState = {}}: CreateTestingProviderO
     )
   }
 
-  const mockChild = jest.requireMock('part:@sanity/desk-tool/structure?')
-    .mockChild as jest.MockedFunction<(...args: [string, RouterPaneSiblingContext]) => unknown>
+  const {mockChild, mockDefaultDocumentNode} = jest.requireMock(
+    'part:@sanity/desk-tool/structure?'
+  ) as {
+    mockChild: jest.MockedFunction<(...args: [string, RouterPaneSiblingContext]) => unknown>
+    mockDefaultDocumentNode: jest.MockedFunction<
+      (...args: [string, RouterPaneSiblingContext]) => unknown
+    >
+  }
 
   const dynamicChild = (requestedId: string) => ({
     id: requestedId,
@@ -213,7 +222,7 @@ function createTestingProvider({initialRouterState = {}}: CreateTestingProviderO
   })
   mockChild.mockImplementation(dynamicChild)
 
-  return {TestingProvider, navigate, resolvedPanes, mockChild}
+  return {TestingProvider, navigate, resolvedPanes, mockChild, mockDefaultDocumentNode}
 }
 
 describe('DeskTool', () => {
@@ -404,7 +413,7 @@ describe('DeskTool', () => {
     })
 
     it('works with the fallback editor', async () => {
-      const {TestingProvider, resolvedPanes} = createTestingProvider({
+      const {TestingProvider, resolvedPanes, mockDefaultDocumentNode} = createTestingProvider({
         initialRouterState: {
           panes: [
             [
@@ -436,91 +445,11 @@ describe('DeskTool', () => {
           },
           type: 'document',
         })
-      })
-    })
 
-    it('passes the correct arguments to the structure child/items', async () => {
-      const {TestingProvider, resolvedPanes, mockChild} = createTestingProvider({
-        initialRouterState: {
-          panes: [
-            [
-              {id: 'level1'},
-              {
-                id: '__edit__level1FallbackEditor',
-                params: {template: 'myTemplate', type: 'myType'},
-                payload: {foo: 'bar'},
-              },
-            ],
-            [{id: 'level2'}, {id: 'level2SplitView'}],
-          ],
-        },
-      })
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const dynamicChild: any = jest.fn((...args: unknown[]) => ({
-        id: args[0],
-        child: dynamicChild,
-        args,
-      }))
-      mockChild.mockImplementation(dynamicChild)
-
-      await act(async () => {
-        render(<TestingProvider />)
-
-        await expect(resolvedPanes()).resolves.toMatchObject([
-          {id: 'root'},
-          {
-            id: 'level1',
-            args: [
-              'level1',
-              {
-                parent: {id: 'root'},
-                path: ['root', 'level1'],
-                index: 1,
-                splitIndex: 0,
-              },
-            ],
-          },
-          {
-            id: 'editor',
-            type: 'document',
-            options: {
-              id: 'level1FallbackEditor',
-              template: 'myTemplate',
-              type: 'myType',
-              templateParameters: {foo: 'bar'},
-            },
-          },
-          {
-            id: 'level2',
-            args: [
-              'level2',
-              {
-                parent: {id: 'level1'},
-                path: ['root', 'level1', 'level2'],
-                index: 2,
-                splitIndex: 0,
-              },
-            ],
-          },
-          {
-            id: 'level2SplitView',
-            args: [
-              'level2SplitView',
-              {
-                parent: {id: 'level1'},
-                // TODO: i would expect this path to end with `level2SplitView`
-                path: ['root', 'level1', 'level2'],
-                index: 2,
-                // TODO: i would expect this split index to be `1`
-                splitIndex: 0,
-              },
-            ],
-          },
+        expect(mockDefaultDocumentNode).toHaveBeenCalledTimes(1)
+        expect(mockDefaultDocumentNode.mock.calls).toEqual([
+          [{documentId: 'myDocument', schemaType: 'myType'}],
         ])
-
-        // note: the fallback editor doesn't call the dynamicChild
-        expect(dynamicChild).toHaveBeenCalledTimes(3)
       })
     })
 
