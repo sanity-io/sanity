@@ -4,7 +4,6 @@ import {useSyncState} from '@sanity/react-hooks'
 import {ButtonProps, Box, Flex, Text, Stack, Button} from '@sanity/ui'
 import {Tooltip} from 'part:@sanity/components/tooltip'
 import React, {forwardRef, useRef, useEffect, useState} from 'react'
-import { clearTimeout } from 'timers'
 import {useDocumentPane} from '../../useDocumentPane'
 import {AnimatedSyncIcon} from './AnimatedSyncIcon.styled'
 
@@ -29,7 +28,7 @@ export const ReviewChangesButton = forwardRef(function ReviewChangesButton(
   } = useDocumentPane()
   const syncState = useSyncState(documentId, documentType)
   const [displayState, setDisplayState] = useState('changes')
-  const [firstUpdate, setFirstUpdate] = useState(false)
+  const [firstUpdate, setFirstUpdate] = useState(true)
   const savedTimer = useRef(null)
   const changesTimer = useRef(null)
 
@@ -41,7 +40,10 @@ export const ReviewChangesButton = forwardRef(function ReviewChangesButton(
     } else if (!firstUpdate) {
       setFirstUpdate(false)
       savedTimer.current = setTimeout(() => setDisplayState('saved'), 1500)
-      changesTimer.current = setTimeout(() => setDisplayState('changes'), 15000)
+      changesTimer.current = setTimeout(() => setDisplayState('changes'), 10000)
+    }
+    if (firstUpdate) {
+      setFirstUpdate(false)
     }
   }, [syncState])
 
