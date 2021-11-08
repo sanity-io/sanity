@@ -47,8 +47,6 @@ const NUMBER_FORMATS = ['number', 'lower-alpha', 'lower-roman']
 
 export const LEVELS = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-const noUserSelectStyle: React.CSSProperties = {userSelect: 'none'}
-
 export function createListName(level: number) {
   return `list-level-${level}`
 }
@@ -157,6 +155,7 @@ const ListPrefixWrap = styled.div`
 const BlockActionsOuter = styled(Box)`
   width: 25px;
   position: relative;
+  user-select: none;
 `
 
 const BlockActionsInner = styled(Flex)`
@@ -190,6 +189,7 @@ const ChangeIndicatorWrapper = styled.div(({theme}: {theme: Theme}) => {
     bottom: -${space[1]}px;
     overflow-x: hidden;
     padding-left: ${space[1]}px;
+    user-select: none;
   `
 })
 
@@ -381,7 +381,13 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
             <Box data-testid="text-block__inner">{markersToolTip || text}</Box>
           </TextRoot>
         </Box>
-        <div style={noUserSelectStyle} contentEditable={false}>
+        <div
+          contentEditable={false}
+          // NOTE: it’s important that this element does not have the `user-select: none` CSS
+          // property, because that will not work in Safari (breaks `Cmd+A`).
+          // It seems Safari does not allow defining `user-select` on an element which also has
+          // the `contenteditable="false"` attribute.
+        >
           {renderBlockActions && (
             <BlockActionsOuter marginRight={1}>
               <BlockActionsInner>
