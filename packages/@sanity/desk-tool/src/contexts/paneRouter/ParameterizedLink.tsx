@@ -1,5 +1,6 @@
 import {StateLink} from '@sanity/base/router'
 import React, {forwardRef, useContext, useMemo} from 'react'
+import {useUnique} from '../../utils/useUnique'
 import {PaneRouterContext} from './PaneRouterContext'
 
 interface ParameterizedLinkProps {
@@ -15,26 +16,35 @@ export const ParameterizedLink = forwardRef(function ParameterizedLink(
   props: ParameterizedLinkProps,
   ref: React.ForwardedRef<HTMLAnchorElement>
 ) {
-  const {params: newParams, payload: newPayload, ...rest} = props
-  const {routerPanesState} = useContext(PaneRouterContext)
+  const {routerPanesState: currentPanes, groupIndex, siblingIndex} = useContext(PaneRouterContext)
+  const {params, payload, ...rest} = props
+  const nextParams = useUnique(params)
+  const nextPayload = useUnique(payload)
 
-  const panes = routerPanesState.map((group, i) => {
-    if (i !== routerPanesState.length - 1) {
-      return group
+  const nextState = useMemo(() => {
+    const currentGroup = currentPanes[groupIndex]
+    const currentSibling = currentGroup[siblingIndex]
+
+    const nextSibling = {
+      ...currentSibling,
+      params: nextParams ?? currentSibling.params,
+      payload: nextPayload ?? currentSibling.payload,
     }
 
-    const pane = group[0]
-    return [
-      {
-        ...pane,
-        params: newParams || pane.params,
-        payload: newPayload || pane.payload,
-      },
-      ...group.slice(1),
+    const nextGroup = [
+      ...currentGroup.slice(0, siblingIndex),
+      nextSibling,
+      ...currentGroup.slice(siblingIndex + 1),
     ]
-  })
 
-  const state = useMemo(() => ({panes}), [panes])
+    const nextPanes = [
+      ...currentPanes.slice(0, groupIndex),
+      nextGroup,
+      ...currentPanes.slice(groupIndex + 1),
+    ]
 
-  return <StateLink ref={ref} {...rest} state={state} />
+    return {panes: nextPanes}
+  }, [currentPanes, groupIndex, nextParams, nextPayload, siblingIndex])
+
+  return <StateLink ref={ref} {...rest} state={nextState} />
 })

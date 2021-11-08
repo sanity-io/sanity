@@ -1,6 +1,6 @@
-import {RouterPaneGroup, RouterPaneSibling} from '../types'
+import {omit} from 'lodash'
+import {RouterPanes, RouterPaneGroup, RouterPaneSibling} from '../types'
 import {EMPTY_PARAMS} from '../constants'
-import {exclusiveParams} from '../contexts/paneRouter'
 
 // old: authors;knut,{"template":"diaryEntry"}
 // new: authors;knut,view=diff,eyJyZXYxIjoiYWJjMTIzIiwicmV2MiI6ImRlZjQ1NiJ9|latest-posts
@@ -9,6 +9,7 @@ const panePattern = /^([.a-z0-9_-]+),?({.*?})?(?:(;|$))/i
 const isParam = (str: string) => /^[a-z0-9]+=[^=]+/i.test(str)
 const isPayload = (str: string) =>
   /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(str)
+const exclusiveParams = ['view', 'since', 'rev']
 
 type Truthy<T> = T extends false
   ? never
@@ -29,7 +30,7 @@ function parseChunks(chunks: string[], initial: RouterPaneSibling): RouterPaneSi
       if (isParam(chunk)) {
         const key = chunk.slice(0, chunk.indexOf('='))
         const value = chunk.slice(key.length + 1)
-        pane.params = {...pane.params, [key]: value}
+        pane.params = {...pane.params, [decodeURIComponent(key)]: decodeURIComponent(value)}
       } else if (isPayload(chunk)) {
         pane.payload = tryParseBase64Payload(chunk)
       } else {
@@ -45,21 +46,23 @@ function parseChunks(chunks: string[], initial: RouterPaneSibling): RouterPaneSi
 
 function encodeChunks(pane: RouterPaneSibling, index: number, group: RouterPaneGroup): string {
   const {payload, params = {}, id} = pane
-  const sameAsFirst = index !== 0 && id === group[0].id
+  const [firstSibling] = group
+  const paneIsFirstSibling = pane === firstSibling
+  const sameAsFirst = index !== 0 && id === firstSibling.id
   const encodedPayload = typeof payload === 'undefined' ? undefined : btoa(JSON.stringify(payload))
 
-  const encodedParams = Object.keys(params).reduce<string[]>((pairs, key) => {
-    if (
-      sameAsFirst &&
-      index !== 0 &&
-      !exclusiveParams.includes(key) &&
-      group[0].params?.[key] === params[key]
-    ) {
-      return pairs
-    }
+  const encodedParams = Object.entries(params)
+    .filter((entry): entry is [string, string] => {
+      const [key, value] = entry
+      if (!value) return false
+      if (paneIsFirstSibling) return true
 
-    return params[key] ? [...pairs, `${key}=${params[key]}`] : pairs
-  }, [])
+      // omit the value if it's the same as the value from the first sibling
+      const valueFromFirstSibling = firstSibling.params?.[key]
+      if (value === valueFromFirstSibling && !exclusiveParams.includes(key)) return false
+      return true
+    })
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
 
   return (
     [sameAsFirst ? '' : id]
@@ -68,33 +71,41 @@ function encodeChunks(pane: RouterPaneSibling, index: number, group: RouterPaneG
   )
 }
 
-export function parsePanesSegment(str: string): RouterPaneGroup[] {
+export function parsePanesSegment(str: string): RouterPanes {
   if (str.indexOf(',{') !== -1) {
     return parseOldPanesSegment(str)
   }
 
   return str
     .split(';')
-    .map((group) =>
-      group
-        .split('|')
-        .map((segment) => {
-          const [id, ...chunks] = segment.split(',')
-          return parseChunks(chunks, {id})
-        })
-        .map((pane, _i, siblings) => (pane.id ? pane : {...pane, id: siblings[0].id}))
-    )
+    .map((group) => {
+      const [firstSibling, ...restOfSiblings] = group.split('|').map((segment) => {
+        const [id, ...chunks] = segment.split(',')
+        return parseChunks(chunks, {id})
+      })
+
+      return [
+        firstSibling,
+        ...restOfSiblings.map((sibling) => ({
+          ...firstSibling,
+          ...sibling,
+          id: sibling.id || firstSibling.id,
+          params: {...omit(firstSibling.params, exclusiveParams), ...sibling.params},
+          payload: sibling.payload || firstSibling.payload,
+        })),
+      ]
+    })
     .filter((group) => group.length > 0)
 }
 
-export function encodePanesSegment(panes: RouterPaneGroup[]): string {
+export function encodePanesSegment(panes: RouterPanes): string {
   return (panes || [])
     .map((group) => group.map(encodeChunks).join('|'))
     .map(encodeURIComponent)
     .join(';')
 }
 
-export function parseOldPanesSegment(str: string): RouterPaneGroup[] {
+export function parseOldPanesSegment(str: string): RouterPanes {
   const chunks: RouterPaneGroup = []
 
   let buffer = str
