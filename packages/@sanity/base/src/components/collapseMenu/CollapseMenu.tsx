@@ -28,11 +28,13 @@ import {CollapseMenuDivider, CollapseMenuButton, CollapseMenuItemProps} from '.'
 
 interface CollapseMenuProps {
   children: React.ReactNode
+  collapsed?: boolean
   gap?: number | number[]
   menuButton?: ReactElement<HTMLButtonElement>
   menuPopoverProps?: PopoverProps
+  onMenuClose?: () => void
   onMenuVisible?: (visible: boolean) => void
-  collapsed?: boolean
+  disableRestoreFocusOnClose?: boolean
 }
 
 const RootBox = styled(Box)<{$hide?: boolean}>`
@@ -78,16 +80,28 @@ function MenuCollapse({
   menuButton,
   popoverProps,
   options,
+  disableRestoreFocusOnClose,
+  onClose,
 }: {
   menuButton: ReactElement<HTMLButtonElement>
   popoverProps: PopoverProps
   options: ReactElement[]
+  disableRestoreFocusOnClose?: boolean
+  onClose: () => void
 }) {
+  const handleClose = useCallback(() => {
+    if (onClose) {
+      onClose()
+    }
+  }, [onClose])
+
   return (
     <MenuButton
       button={menuButton}
       id="collapse-menu"
       popover={popoverProps}
+      __unstable_disableRestoreFocusOnClose={disableRestoreFocusOnClose}
+      onClose={handleClose}
       menu={
         <Menu>
           {options.map((child, index) => {
@@ -130,11 +144,13 @@ function MenuCollapse({
 export function CollapseMenu(props: CollapseMenuProps) {
   const {
     children,
-    menuButton,
-    gap = 1,
-    onMenuVisible,
-    menuPopoverProps,
     collapsed: shouldCollapse,
+    gap = 1,
+    menuButton,
+    menuPopoverProps,
+    onMenuClose,
+    onMenuVisible,
+    disableRestoreFocusOnClose = false,
   } = props
 
   const [rootBoxElement, setRootBoxElement] = useState<HTMLDivElement | null>(null)
@@ -181,6 +197,12 @@ export function CollapseMenu(props: CollapseMenuProps) {
     collapsed,
     menuOptionsArray.length,
   ])
+
+  const handleMenuClose = useCallback(() => {
+    if (onMenuClose) {
+      onMenuClose()
+    }
+  }, [onMenuClose])
 
   useEffect(() => {
     if (onMenuVisible) {
@@ -234,6 +256,8 @@ export function CollapseMenu(props: CollapseMenuProps) {
         options={childrenArray}
         menuButton={menuButtonToRender}
         popoverProps={popoverProps}
+        disableRestoreFocusOnClose={disableRestoreFocusOnClose}
+        onClose={handleMenuClose}
       />
     )
   }
@@ -361,6 +385,8 @@ export function CollapseMenu(props: CollapseMenuProps) {
           options={menuOptionsArray}
           menuButton={menuButtonToRender}
           popoverProps={popoverProps}
+          disableRestoreFocusOnClose={disableRestoreFocusOnClose}
+          onClose={handleMenuClose}
         />
       )}
     </RootBox>
