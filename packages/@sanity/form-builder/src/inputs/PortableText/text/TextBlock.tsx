@@ -154,24 +154,6 @@ const ListPrefixWrap = styled.div`
   white-space: nowrap;
 `
 
-const StyledChangeIndicatorWithProvidedFullPath = styled(ChangeIndicatorWithProvidedFullPath)(
-  ({theme}: {theme: Theme}) => {
-    const {space} = theme.sanity
-
-    return css`
-      width: 1px;
-      position: absolute;
-      right: -1px;
-      top: -${space[1]}px;
-      bottom: -${space[1]}px;
-
-      & > div {
-        height: 100%;
-      }
-    `
-  }
-)
-
 const BlockActionsOuter = styled(Box)`
   width: 25px;
   position: relative;
@@ -195,6 +177,29 @@ const TextFlex = styled(Flex)<{$level?: number}>`
     css`
       padding-left: ${$level * 32}px;
     `}
+`
+
+const ChangeIndicatorWrapper = styled.div(({theme}: {theme: Theme}) => {
+  const {space} = theme.sanity
+
+  return css`
+    position: absolute;
+    width: ${space[2]}px;
+    right: -${space[2]}px;
+    top: -${space[1]}px;
+    bottom: -${space[1]}px;
+    overflow-x: hidden;
+    padding-left: ${space[1]}px;
+  `
+})
+
+const StyledChangeIndicatorWithProvidedFullPath = styled(ChangeIndicatorWithProvidedFullPath)`
+  width: 1px;
+  height: 100%;
+
+  & > div {
+    height: 100%;
+  }
 `
 
 export function TextBlock(props: TextBlockProps): React.ReactElement {
@@ -391,12 +396,15 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
             </BlockActionsOuter>
           )}
           {isFullscreen && (
-            <StyledChangeIndicatorWithProvidedFullPath
-              compareDeep
-              value={block}
-              hasFocus={focused}
-              path={[{_key: block._key}]}
-            />
+            <ChangeIndicatorWrapper>
+              <StyledChangeIndicatorWithProvidedFullPath
+                compareDeep
+                value={block}
+                hasFocus={focused}
+                path={[{_key: block._key}]}
+                withBadge={false}
+              />
+            </ChangeIndicatorWrapper>
           )}
         </div>
       </InnerFlex>

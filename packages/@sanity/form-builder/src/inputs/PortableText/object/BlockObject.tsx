@@ -106,27 +106,32 @@ const Root = styled(Card)((props: {theme: Theme}) => {
   `
 })
 
-const StyledChangeIndicatorWithProvidedFullPath = styled(ChangeIndicatorWithProvidedFullPath)(
-  ({theme}: {theme: Theme}) => {
-    const {space} = theme.sanity
+const ChangeIndicatorWrapper = styled.div(({theme}: {theme: Theme}) => {
+  const {space} = theme.sanity
 
-    return css`
-      width: 1px;
-      position: absolute;
-      right: -1px;
-      top: -${space[1]}px;
-      bottom: -${space[1]}px;
+  return css`
+    position: absolute;
+    width: ${space[2]}px;
+    right: -${space[2]}px;
+    top: -${space[1]}px;
+    bottom: -${space[1]}px;
+    overflow-x: hidden;
+    padding-left: ${space[1]}px;
 
-      & > div {
-        height: 100%;
-      }
+    [data-dragged] & {
+      visibility: hidden;
+    }
+  `
+})
 
-      [data-dragged] & {
-        visibility: hidden;
-      }
-    `
+const StyledChangeIndicatorWithProvidedFullPath = styled(ChangeIndicatorWithProvidedFullPath)`
+  width: 1px;
+  height: 100%;
+
+  & > div {
+    height: 100%;
   }
-)
+`
 
 const InnerFlex = styled(Flex)`
   position: relative;
@@ -322,12 +327,15 @@ export function BlockObject(props: BlockObjectProps) {
         </BlockActionsOuter>
       )}
       {isFullscreen && (
-        <StyledChangeIndicatorWithProvidedFullPath
-          compareDeep
-          value={block}
-          hasFocus={focused}
-          path={[{_key: block._key}]}
-        />
+        <ChangeIndicatorWrapper>
+          <StyledChangeIndicatorWithProvidedFullPath
+            compareDeep
+            value={block}
+            hasFocus={focused}
+            path={[{_key: block._key}]}
+            withBadge={false}
+          />
+        </ChangeIndicatorWrapper>
       )}
     </InnerFlex>
   )
