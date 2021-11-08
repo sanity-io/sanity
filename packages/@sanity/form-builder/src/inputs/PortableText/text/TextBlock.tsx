@@ -9,16 +9,7 @@ import {Markers} from '../../../legacyParts'
 import {RenderBlockActions, RenderCustomMarkers} from '../types'
 import PatchEvent from '../../../PatchEvent'
 import {BlockActions} from '../BlockActions'
-import {
-  BlockQuote,
-  Heading1,
-  Heading2,
-  Heading3,
-  Heading4,
-  Heading5,
-  Heading6,
-  Normal,
-} from './textStyles'
+import {TEXT_STYLES} from './textStyles'
 
 export interface TextBlockProps {
   attributes: RenderAttributes
@@ -32,22 +23,11 @@ export interface TextBlockProps {
   renderBlockActions?: RenderBlockActions
   renderCustomMarkers?: RenderCustomMarkers
 }
+
 interface TextBlockStyleProps {
   $level?: number
   $listItem?: 'bullet' | 'number'
   $size: number
-  $style: 'heading' | 'text'
-}
-
-export const TEXT_STYLES = {
-  h1: Heading1,
-  h2: Heading2,
-  h3: Heading3,
-  h4: Heading4,
-  h5: Heading5,
-  h6: Heading6,
-  normal: Normal,
-  blockquote: BlockQuote,
 }
 
 const HEADER_SIZES: {[key: string]: number | undefined} = {
@@ -275,7 +255,7 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
         <TextFlex align="flex-start" $level={block?.level}>
           {block.listItem && (
             <ListPrefixWrap contentEditable={false}>
-              <TextComponent as="span" data-list-prefix />
+              <TextComponent data-list-prefix />
             </ListPrefixWrap>
           )}
           <div data-ui="TextBlock__text">
@@ -383,18 +363,17 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
             $level={block.level}
             $listItem={block.listItem}
             $size={$size}
-            $style={$style}
             data-invalid={hasErrors || undefined}
             data-warning={hasWarning || undefined}
             data-level={block.level}
             data-list-item={block.listItem}
             data-markers={hasMarkers || undefined}
             data-style={$style}
-            data-ui="TextBlock"
+            data-testid="text-block"
             ref={blockRef}
             flex={1}
           >
-            <Box data-ui="TextBlock_inner">{markersToolTip || text}</Box>
+            <Box data-testid="text-block__inner">{markersToolTip || text}</Box>
           </TextRoot>
         </Box>
         <div style={noUserSelectStyle} contentEditable={false}>

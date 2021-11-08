@@ -72,7 +72,7 @@ const Root = styled.span<{$toneKey?: ThemeColorToneKey}>(
   }
 )
 
-const TooltipBox = styled(Box)`
+const TooltipBox = styled(Box).attrs({forwardedAs: 'span'})`
   max-width: 250px;
 `
 
