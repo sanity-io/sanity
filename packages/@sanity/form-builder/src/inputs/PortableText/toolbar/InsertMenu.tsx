@@ -19,32 +19,24 @@ interface InsertMenuProps {
 
 export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
   const {disabled, items, isFullscreen, collapsed} = props
-  const editor = usePortableTextEditor()
   const features = useFeatures()
   const focusBlock = useFocusBlock()
+  const editor = usePortableTextEditor()
 
   const collapseButtonProps: CollapseMenuButtonProps = useMemo(
     () => ({padding: 2, mode: 'bleed'}),
     []
   )
+
   const isVoidFocus = focusBlock && focusBlock._type !== features.types.block.name
 
-  // The Sanity-UI collapsed menu item will set focus which is not prevented,
-  // so re-focus the editor before calling the action
-  const handleCollapsedActionClick = useCallback(
-    (handle) => {
-      setTimeout(() => {
-        PortableTextEditor.focus(editor)
-        handle()
-      }, 0)
-    },
-    [editor]
-  )
+  const handleMenuClose = useCallback(() => {
+    PortableTextEditor.focus(editor)
+  }, [editor])
 
   const children = useMemo(() => {
     return items.map((item) => {
       const title = item.type.title || item.type.type.name
-      const {handle} = item
 
       return (
         <CollapseMenuButton
@@ -55,7 +47,7 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
           icon={item.icon}
           key={item.key}
           // eslint-disable-next-line react/jsx-no-bind
-          onClick={() => handleCollapsedActionClick(handle)}
+          onClick={() => item.handle()}
           text={title}
           tooltipProps={{
             disabled,
@@ -66,7 +58,7 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
         />
       )
     })
-  }, [items, collapseButtonProps, disabled, isVoidFocus, isFullscreen, handleCollapsedActionClick])
+  }, [items, collapseButtonProps, disabled, isVoidFocus, isFullscreen])
 
   const menuButton = useMemo(
     () => <Button icon={AddIcon} mode="bleed" padding={2} disabled={disabled} />,
@@ -75,10 +67,12 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
 
   return (
     <CollapseMenuMemo
+      collapsed={collapsed}
       gap={1}
       menuButton={menuButton}
       menuPopoverProps={MENU_POPOVER_PROPS}
-      collapsed={collapsed}
+      onMenuClose={handleMenuClose}
+      disableRestoreFocusOnClose
     >
       {children}
     </CollapseMenuMemo>
