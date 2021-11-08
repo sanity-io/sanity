@@ -22,6 +22,8 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
   const {disabled: disabledProp, groups, isFullscreen, collapsed} = props
   const focusBlock = useFocusBlock()
   const features = useFeatures()
+  const editor = usePortableTextEditor()
+
   const isVoidBlock = focusBlock?._type !== features.types.block.name
   const isEmptyTextBlock =
     !isVoidBlock && focusBlock?.children.length === 1 && focusBlock?.children[0].text === ''
@@ -51,19 +53,9 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
     []
   )
 
-  const editor = usePortableTextEditor()
-
-  // The Sanity-UI collapsed menu item will set focus which is not prevented,
-  // so re-focus the editor before calling the action
-  const handleCollapsedActionClick = useCallback(
-    (action, active) => {
-      setTimeout(() => {
-        PortableTextEditor.focus(editor)
-        action.handle(active)
-      }, 0)
-    },
-    [editor]
-  )
+  const handleMenuClose = useCallback(() => {
+    PortableTextEditor.focus(editor)
+  }, [editor])
 
   const children = useMemo(
     () =>
@@ -77,7 +69,8 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
             dividerBefore={action.firstInGroup}
             icon={getActionIcon(action, active)}
             key={action.key}
-            onClick={() => handleCollapsedActionClick(action, active)}
+            // eslint-disable-next-line react/jsx-no-bind
+            onClick={() => action.handle(active)}
             selected={active}
             text={action.title || action.key}
             tooltipProps={{
@@ -88,15 +81,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
           />
         )
       }),
-    [
-      actions,
-      activeKeys,
-      collapsesButtonProps,
-      disabled,
-      handleCollapsedActionClick,
-      isEmptyTextBlock,
-      isFullscreen,
-    ]
+    [actions, activeKeys, collapsesButtonProps, disabled, isEmptyTextBlock, isFullscreen]
   )
 
   const menuButton = useMemo(
@@ -106,10 +91,12 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
 
   return (
     <CollapseMenuMemo
+      collapsed={collapsed}
       gap={1}
       menuButton={menuButton}
       menuPopoverProps={MENU_POPOVER_PROPS}
-      collapsed={collapsed}
+      onMenuClose={handleMenuClose}
+      disableRestoreFocusOnClose
     >
       {children}
     </CollapseMenuMemo>
