@@ -127,7 +127,7 @@ export const ObjectInput = memo(
     )
 
     const renderField = React.useCallback(
-      (field: ObjectField, fieldLevel: number, index: number) => {
+      (field: ObjectField, fieldLevel: number, index: number, isFieldsetReadOnly?: boolean) => {
         const fieldValue = value?.[field.name]
         if (!filterField(type, field)) {
           return null
@@ -147,7 +147,7 @@ export const ObjectInput = memo(
             focusPath={focusPath}
             level={fieldLevel}
             presence={presence}
-            readOnly={readOnly}
+            readOnly={readOnly || isFieldsetReadOnly}
             filterField={filterField}
             ref={index === 0 ? forwardedRef : null}
           />
@@ -176,7 +176,7 @@ export const ObjectInput = memo(
       }
       return type.fieldsets.map((fieldset, fieldsetIndex) => {
         return isSingleFieldset(fieldset) ? (
-          renderField(fieldset.field, level + 1, fieldsetIndex)
+          renderField(fieldset.field, level + 1, fieldsetIndex, fieldset.readOnly)
         ) : (
           <ObjectFieldSet
             key={`fieldset-${(fieldset as MultiFieldSet).name}`}
@@ -193,7 +193,7 @@ export const ObjectInput = memo(
               // lazy render children
               // eslint-disable-next-line max-nested-callbacks
               fieldset.fields.map((field, fieldIndex) =>
-                renderField(field, level + 2, fieldsetIndex + fieldIndex)
+                renderField(field, level + 2, fieldsetIndex + fieldIndex, fieldset.readOnly)
               )
             }
           </ObjectFieldSet>

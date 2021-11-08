@@ -126,7 +126,7 @@ export const ObjectType = {
 function createFieldsets(typeDef, fields) {
   const fieldsetsDef = typeDef.fieldsets || []
   const fieldsets = fieldsetsDef.map((fieldset) => {
-    const {name, title, description, options, hidden} = fieldset
+    const {name, title, description, options, hidden, readOnly} = fieldset
     return {
       name,
       title,
@@ -134,6 +134,7 @@ function createFieldsets(typeDef, fields) {
       options,
       fields: [],
       hidden,
+      readOnly,
     }
   })
 
