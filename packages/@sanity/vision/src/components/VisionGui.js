@@ -5,19 +5,7 @@ import queryString from 'query-string'
 import SplitPane from 'react-split-pane'
 import {PlayIcon, StopIcon, CopyIcon} from '@sanity/icons'
 import isHotkey from 'is-hotkey'
-import {
-  Flex,
-  Card,
-  Stack,
-  Box,
-  Hotkeys,
-  Label,
-  Select,
-  Text,
-  TextInput,
-  Tooltip,
-  Grid,
-} from '@sanity/ui'
+import {Flex, Card, Stack, Box, Hotkeys, Select, Text, TextInput, Tooltip, Grid} from '@sanity/ui'
 import studioClient from 'part:@sanity/base/client'
 import {FormFieldValidationStatus} from '@sanity/base/components'
 import {storeState, getState} from '../util/localState'
@@ -39,6 +27,7 @@ import {
   InputBackgroundContainer,
   InputBackgroundContainerLeft,
   InputContainer,
+  StyledLabel,
   ResultOuterContainer,
   ResultInnerContainer,
   ResultContainer,
@@ -437,7 +426,7 @@ class VisionGui extends React.PureComponent {
             <Box padding={1} column={2}>
               <Stack>
                 <Card paddingY={2}>
-                  <Label>Dataset</Label>
+                  <StyledLabel>Dataset</StyledLabel>
                 </Card>
                 <Select value={dataset} onChange={this.handleChangeDataset}>
                   {datasets.map((ds) => (
@@ -451,7 +440,7 @@ class VisionGui extends React.PureComponent {
             <Box padding={1} column={2}>
               <Stack>
                 <Card paddingY={2}>
-                  <Label>API version</Label>
+                  <StyledLabel>API version</StyledLabel>
                 </Card>
                 <Select
                   value={customApiVersion ? 'other' : apiVersion}
@@ -472,7 +461,7 @@ class VisionGui extends React.PureComponent {
               <Box padding={1} column={2}>
                 <Stack>
                   <Card paddingY={2}>
-                    <Label>Custom API version</Label>
+                    <StyledLabel>Custom API version</StyledLabel>
                   </Card>
 
                   <TextInput
@@ -489,10 +478,10 @@ class VisionGui extends React.PureComponent {
               <Box padding={1} flex={1} column={customApiVersion ? 6 : 8}>
                 <Stack>
                   <Card paddingY={2}>
-                    <Label>
+                    <StyledLabel>
                       Query URL&nbsp;
                       <QueryCopyLink onClick={handleCopyUrl}>[copy]</QueryCopyLink>
-                    </Label>
+                    </StyledLabel>
                   </Card>
                   <TextInput
                     readOnly
@@ -522,7 +511,7 @@ class VisionGui extends React.PureComponent {
                   <Card flex={1}>
                     <InputBackgroundContainerLeft>
                       <Flex marginLeft={3}>
-                        <Label muted>Query</Label>
+                        <StyledLabel muted>Query</StyledLabel>
                       </Flex>
                     </InputBackgroundContainerLeft>
                     <QueryEditor
@@ -537,7 +526,7 @@ class VisionGui extends React.PureComponent {
                   <Card flex={1} tone={validParams ? 'default' : 'critical'}>
                     <InputBackgroundContainerLeft>
                       <Flex marginLeft={3}>
-                        <Label muted>Params</Label>
+                        <StyledLabel muted>Params</StyledLabel>
                         {paramValidationMarkers.length > 0 && (
                           <Box marginLeft={2}>
                             <FormFieldValidationStatus
@@ -619,7 +608,7 @@ class VisionGui extends React.PureComponent {
                   <Result padding={3} paddingTop={5} overflow="auto" $isInvalid={error}>
                     <InputBackgroundContainer>
                       <Box marginLeft={3}>
-                        <Label muted>Result</Label>
+                        <StyledLabel muted>Result</StyledLabel>
                       </Box>
                     </InputBackgroundContainer>
                     {queryInProgress && (
