@@ -35,7 +35,7 @@ function renderInput(props: Partial<Props> = {}) {
 // Note: for the tests to be deterministic we need this to ensure tests are run in a predefined timezone
 // see globalSetup in jest config for details about how this is set up
 test('timezone for the test environment should be set to America/Los_Angeles', () => {
-  expect(new Date().getTimezoneOffset()).toBe(420)
+  expect(Intl.DateTimeFormat().resolvedOptions().timeZone).toBe('America/Los_Angeles')
 })
 
 test('does not emit onChange after invalid value has been typed', () => {
