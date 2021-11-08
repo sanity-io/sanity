@@ -13,6 +13,11 @@ import {DefaultLayout} from './defaultLayout'
 import {NotFound} from './main'
 import {ErrorScreen} from './ErrorScreen'
 
+const NormalizedLoginWrapper = (props: {children: React.ReactNode}) => {
+  if (!LoginWrapper) return props.children as JSX.Element
+  return <LoginWrapper LoadingScreen={<AppLoadingScreen text="Logging in" />} {...props} />
+}
+
 interface State {
   intent?: {
     name: string
@@ -52,7 +57,7 @@ function DefaultLayoutRoot() {
     })
 
     return () => sub.unsubscribe()
-  }, [state])
+  }, [])
 
   const handleNavigate = useCallback((url: string, options: any) => {
     urlStateStore.navigate(url, options)
@@ -68,35 +73,31 @@ function DefaultLayoutRoot() {
     )
   }
 
-  const children = state.urlState && (
-    <RouterProvider router={rootRouter} state={state.urlState} onNavigate={handleNavigate}>
-      {state.isNotFound && (
-        <NotFound>
-          {!state.intent && (
-            <Stack space={4}>
-              <Text as="p" muted>
-                Could not find a tool that is configured to handle the{' '}
-                <code>{state.intent?.name || 'test'}</code> intent with parameters:
-              </Text>
-              <Card overflow="auto" padding={3} radius={2} tone="transparent">
-                <Code language="json">{JSON.stringify(state.intent?.params || {})}</Code>
-              </Card>
-            </Stack>
+  return (
+    <NormalizedLoginWrapper>
+      {state.urlState && (
+        <RouterProvider router={rootRouter} state={state.urlState} onNavigate={handleNavigate}>
+          {state.isNotFound && (
+            <NotFound>
+              {!state.intent && (
+                <Stack space={4}>
+                  <Text as="p" muted>
+                    Could not find a tool that is configured to handle the{' '}
+                    <code>{state.intent?.name || 'test'}</code> intent with parameters:
+                  </Text>
+                  <Card overflow="auto" padding={3} radius={2} tone="transparent">
+                    <Code language="json">{JSON.stringify(state.intent?.params || {})}</Code>
+                  </Card>
+                </Stack>
+              )}
+            </NotFound>
           )}
-        </NotFound>
+
+          {!state.isNotFound && <DefaultLayout />}
+        </RouterProvider>
       )}
-
-      {!state.isNotFound && <DefaultLayout />}
-    </RouterProvider>
+    </NormalizedLoginWrapper>
   )
-
-  if (LoginWrapper) {
-    return (
-      <LoginWrapper LoadingScreen={<AppLoadingScreen text="Logging in" />}>{children}</LoginWrapper>
-    )
-  }
-
-  return <>{children}</>
 }
 
 export default DefaultLayoutRoot

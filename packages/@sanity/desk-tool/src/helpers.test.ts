@@ -38,23 +38,26 @@ describe('toPath', () => {
     expect(decodeURIComponent(path)).toBe('level1|differentId|,;level2')
   })
 
-  it('(per pane group) omits duplicate params if same as the first split view', () => {
+  it('(per pane group) omits duplicate params if same as the first split view (if not exclusiveParams)', () => {
     const input = [
       [
-        {id: 'level1', params: {a: '1', b: '2'}},
+        {id: 'level1', params: {a: '1', b: '2', view: 'preview'}},
         {id: 'level1', params: {a: 'differentParams', b: '2'}},
-        {id: 'level1', params: {a: '1', b: '2'}},
+        {id: 'level1', params: {a: '1', b: '2', view: 'mobile'}},
       ],
       [{id: 'level2'}],
     ]
     const path = toPath(input)
 
-    expect(path).toBe('level1%2Ca%3D1%2Cb%3D2%7C%2Ca%3DdifferentParams%7C%2C;level2')
-    expect(decodeURIComponent(path)).toBe('level1,a=1,b=2|,a=differentParams|,;level2')
+    expect(path).toBe(
+      'level1%2Ca%3D1%2Cb%3D2%2Cview%3Dpreview%7C%2Ca%3DdifferentParams%7C%2Cview%3Dmobile;level2'
+    )
+    expect(decodeURIComponent(path)).toBe(
+      'level1,a=1,b=2,view=preview|,a=differentParams|,view=mobile;level2'
+    )
   })
 
-  // this fails
-  it.skip('is the inverse of toState', () => {
+  it('is the inverse of toState', () => {
     const input = [
       [
         {id: 'level1', params: {a: '1', b: '2'}, payload: {a: 'b'}},
@@ -62,7 +65,7 @@ describe('toPath', () => {
         {id: 'level1', params: {a: '1', b: '2'}, payload: {a: 'changed'}},
         {id: 'level1', params: {a: '1', b: '2'}, payload: {a: 'b'}},
       ],
-      [{id: 'level2'}],
+      [{id: 'level2', params: {}, payload: undefined}],
     ]
     const path = toPath(input)
     const state = toState(path)
@@ -113,14 +116,13 @@ describe('toState', () => {
     ])
   })
 
-  // this fails
-  it.skip('returns the first ID of the first split pane considering different params and payloads', () => {
-    const input = `level1,a=1,b=2,eyJhIjoiYiJ9|,a=differentParams|,`
+  it('returns the first ID of the first split pane considering different params, exclusiveParams, and payloads', () => {
+    const input = `level1,a=1,b=2,view=preview,eyJhIjoiYiJ9|,a=differentParams|,`
     const state = toState(input)
 
     expect(state).toEqual([
       [
-        {id: 'level1', params: {a: '1', b: '2'}, payload: {a: 'b'}},
+        {id: 'level1', params: {a: '1', b: '2', view: 'preview'}, payload: {a: 'b'}},
         {id: 'level1', params: {a: 'differentParams', b: '2'}, payload: {a: 'b'}},
         {id: 'level1', params: {a: '1', b: '2'}, payload: {a: 'b'}},
       ],
