@@ -34,9 +34,7 @@ export function ChangeBar(props: {
         <Tooltip
           content={
             <Box padding={2}>
-              <Text muted size={1}>
-                Review changes
-              </Text>
+              <Text size={1}>Review changes</Text>
             </Box>
           }
           disabled={!isChanged || isReviewChangesOpen}

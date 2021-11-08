@@ -123,7 +123,7 @@ export const HitAreaButton = styled.button`
   cursor: pointer;
   pointer-events: all;
   left: -0.25rem;
-  width: 1.25rem;
+  width: 1rem;
 
   &:focus {
     border: 0;
