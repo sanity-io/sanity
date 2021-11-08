@@ -6,8 +6,8 @@ import {
   Marker,
   MultiFieldSet,
   Path,
-  HiddenOptionCallbackContext,
-  HiddenOptionCallback,
+  ConditionalPropertyCallbackContext,
+  ConditionalPropertyCallback,
   SanityDocument,
   CurrentUser,
 } from '@sanity/types'
@@ -105,8 +105,8 @@ export const ObjectFieldSet = forwardRef(function ObjectFieldSet(
   }
 
   function useCheckCondition(
-    hidden: HiddenOptionCallback,
-    {document, currentUser, value}: HiddenOptionCallbackContext
+    hidden: ConditionalPropertyCallback,
+    {document, currentUser, value}: ConditionalPropertyCallbackContext
   ) {
     const didWarn = useRef(false)
     return useMemo(() => {
@@ -133,7 +133,7 @@ export const ObjectFieldSet = forwardRef(function ObjectFieldSet(
 
   const ConditionalFieldWithDocument = withDocument(
     forwardRef(function ConditionalFieldWithDocument(
-      propsB: {document: SanityDocument; value: unknown; hidden: HiddenOptionCallback},
+      propsB: {document: SanityDocument; value: unknown; hidden: ConditionalPropertyCallback},
       ref /* ignore ref as there's no place to put it */
     ) {
       const {document, value, hidden} = propsB
