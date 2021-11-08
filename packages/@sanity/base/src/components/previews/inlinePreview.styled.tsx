@@ -1,4 +1,4 @@
-import {Theme} from '@sanity/ui'
+import {Text, Theme} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 
 export const RootSpan = styled.span`
@@ -6,7 +6,6 @@ export const RootSpan = styled.span`
   align-items: center;
   vertical-align: top;
   max-width: 100%;
-  height: 15px;
 `
 
 export const MediaSpan = styled.span`
@@ -50,7 +49,7 @@ export const MediaSpan = styled.span`
   }
 `
 
-export const TextSpan = styled.span(({theme}: {theme: Theme}) => {
+export const TextSpan = styled(Text).attrs({forwardedAs: 'span'})(({theme}: {theme: Theme}) => {
   const textFont = theme.sanity.fonts.text
   const textSize = textFont.sizes[1]
 
@@ -58,15 +57,14 @@ export const TextSpan = styled.span(({theme}: {theme: Theme}) => {
     font-size: calc(${textSize.fontSize} / 16 * 1em);
     font-weight: ${textFont.weights.medium};
     box-sizing: border-box;
-    display: inline-flex;
-    align-items: center;
-    height: 9px;
+    display: inline-block;
+    vertical-align: top;
     line-height: ${textSize.lineHeight / textSize.fontSize};
-    padding-left: 0.25em;
-    padding-right: 0.25em;
+    padding-left: 0.5em;
+    padding-right: calc(0.5em - 2px);
     min-width: 0;
 
-    span {
+    & > span {
       display: block;
       white-space: nowrap;
       text-overflow: ellipsis;

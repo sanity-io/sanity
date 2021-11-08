@@ -34,7 +34,7 @@ export const BlockImagePreview: React.FunctionComponent<PreviewProps<'block'>> =
     <RootBox overflow="hidden">
       <Stack>
         <HeaderFlex align="center" paddingLeft={3} paddingRight={1} paddingY={1}>
-          <Stack space={2} flex={1}>
+          <Stack space={1} flex={1}>
             <Text size={1} textOverflow="ellipsis" weight="medium">
               {title || fallbackTitle}
             </Text>

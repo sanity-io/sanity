@@ -138,7 +138,7 @@ export const DefaultPreview = (props: DefaultPreviewProps) => {
         </Stack>
 
         {status && (
-          <Box padding={3} className={styles.status}>
+          <Box padding={3} paddingRight={1} className={styles.status}>
             {typeof status === 'function' ? status({layout: 'default'}) : status}
           </Box>
         )}
