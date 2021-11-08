@@ -31,7 +31,7 @@
     "@sanity/portable-text-editor": "2.21.9",
     "@sanity/schema": "2.21.5",
     "@sanity/types": "2.21.7",
-    "@sanity/ui": "^0.36.14",
+    "@sanity/ui": "^0.36.15",
     "@sanity/util": "2.21.7",
     "@sanity/uuid": "^3.0.1",
     "attr-accept": "^1.1.0",

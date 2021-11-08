@@ -19,7 +19,7 @@
   ],
   "dependencies": {
     "@sanity/icons": "^1.2.1",
-    "@sanity/ui": "^0.36.14",
+    "@sanity/ui": "^0.36.15",
     "lodash": "^4.17.15",
     "react-color": "^2.13.8"
   },

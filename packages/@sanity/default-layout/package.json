@@ -35,7 +35,7 @@
     "@sanity/client": "2.21.7",
     "@sanity/generate-help-url": "2.18.0",
     "@sanity/icons": "^1.2.1",
-    "@sanity/ui": "^0.36.14",
+    "@sanity/ui": "^0.36.15",
     "@sanity/util": "2.21.7",
     "lodash": "^4.17.15",
     "react-rx": "^1.0.0-beta.6",
