@@ -53,12 +53,6 @@ const Root = styled(Card)((props: {theme: Theme}) => {
     pointer-events: all;
     position: relative;
 
-    &:not([data-image-preview]) {
-      height: 51px;
-      display: flex;
-      align-items: center;
-    }
-
     &[data-focused] {
       box-shadow: 0 0 0 1px ${color.selectable.primary.selected.border};
     }
@@ -219,14 +213,6 @@ export function BlockObject(props: BlockObjectProps) {
     return 'default'
   }, [focused, selected])
 
-  const padding: ResponsivePaddingProps = useMemo(() => {
-    if (type?.type?.name === 'image') {
-      return {padding: 0}
-    }
-
-    return {paddingLeft: 2, paddingRight: 1}
-  }, [type])
-
   const innerPaddingProps: ResponsivePaddingProps = useMemo(() => {
     if (isFullscreen && !renderBlockActions) {
       return {paddingX: 5}
@@ -301,18 +287,16 @@ export function BlockObject(props: BlockObjectProps) {
           data-warning={hasWarnings || undefined}
           data-testid="pte-block-object"
           data-image-preview={isImagePreview ? '' : undefined}
-          // data-pt-drag-ghost-element
+          flex={1}
           onDoubleClick={handleClickToOpen}
+          padding={isImagePreview ? 0 : 1}
           ref={elementRef}
           tone={tone}
-          {...padding}
-          flex={1}
         >
-          <Box flex={1}>
-            <BlockPreview ref={blockRef}>{markersToolTip || blockPreview}</BlockPreview>
-          </Box>
+          <BlockPreview ref={blockRef}>{markersToolTip || blockPreview}</BlockPreview>
         </Root>
       </Flex>
+
       {renderBlockActions && (
         <BlockActionsOuter marginRight={1}>
           <BlockActionsInner>
@@ -326,6 +310,7 @@ export function BlockObject(props: BlockObjectProps) {
           </BlockActionsInner>
         </BlockActionsOuter>
       )}
+
       {isFullscreen && (
         <ChangeIndicatorWrapper>
           <StyledChangeIndicatorWithProvidedFullPath
