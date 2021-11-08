@@ -111,7 +111,7 @@ export const ShapeWrapper = styled(Shape)(({theme}: ThemeContext) => {
   `
 })
 
-export const ButtonWrapper = styled.button`
+export const HitAreaButton = styled.button`
   appearance: none;
   border: 0;
   outline: 0;
@@ -122,15 +122,16 @@ export const ButtonWrapper = styled.button`
   height: 100%;
   cursor: pointer;
   pointer-events: all;
-  left: calc(0 - 0.25rem);
-  width: calc(0.25rem + 1rem);
+  left: -0.25rem;
+  width: 1.25rem;
 
   &:focus {
     border: 0;
     outline: 0;
   }
 `
-/* for when the shape and icon need to appear on the page */
+
+// For when the shape and icon need to appear on the page
 const BadgeOpen = css`
   ${BadgeWrapper} {
     transform: translate3d(-0.5px, -10px, 0) scale(1);
@@ -161,7 +162,6 @@ export const ChangeBarWrapper = styled.div(
       }
 
       /* on focus */
-
       ${focus &&
       css`
         ${ShapeWrapper} {

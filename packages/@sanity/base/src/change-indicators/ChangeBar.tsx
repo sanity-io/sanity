@@ -10,7 +10,7 @@ import {
   BadgeWrapper,
   ShapeWrapper,
   EditIconWrapper,
-  ButtonWrapper,
+  HitAreaButton,
 } from './ChangeBar.styled'
 
 export function ChangeBar(props: {
@@ -18,8 +18,9 @@ export function ChangeBar(props: {
   hasFocus: boolean
   isChanged: boolean
   disabled?: boolean
+  withBadge?: boolean
 }) {
-  const {children, hasFocus, isChanged, disabled} = props
+  const {children, hasFocus, isChanged, disabled, withBadge = true} = props
 
   const [hover, setHover] = useState(false)
   const {onOpenReviewChanges, isReviewChangesOpen} = React.useContext(ConnectorContext)
@@ -42,21 +43,23 @@ export function ChangeBar(props: {
           placement="top"
           portal
         >
-          <TooltipTriggerWrapper>
+          <TooltipTriggerWrapper data-testid="change-bar__tooltip-wrapper">
             <BarWrapper />
 
-            <BadgeWrapper>
-              <ShapeWrapper />
-              <EditIconWrapper />
-            </BadgeWrapper>
+            {withBadge && (
+              <BadgeWrapper>
+                <ShapeWrapper />
+                <EditIconWrapper />
+              </BadgeWrapper>
+            )}
 
-            <ButtonWrapper
-              tabIndex={isReviewChangesOpen || !isChanged ? -1 : 0}
-              type="button"
+            <HitAreaButton
               aria-label="Review changes"
               onClick={isReviewChangesOpen ? undefined : onOpenReviewChanges}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
+              tabIndex={isReviewChangesOpen || !isChanged ? -1 : 0}
+              type="button"
             />
           </TooltipTriggerWrapper>
         </Tooltip>
@@ -68,18 +71,20 @@ export function ChangeBar(props: {
       onOpenReviewChanges,
       isChanged,
       disabled,
+      withBadge,
     ]
   )
 
   return (
     <ChangeBarWrapper
+      data-testid="change-bar"
       focus={hasFocus}
       hover={hover}
       changed={isChanged}
       isReviewChangeOpen={isReviewChangesOpen}
       disabled={disabled}
     >
-      <FieldWrapper>{children}</FieldWrapper>
+      <FieldWrapper data-testid="change-bar__field-wrapper">{children}</FieldWrapper>
       {tooltip}
     </ChangeBarWrapper>
   )

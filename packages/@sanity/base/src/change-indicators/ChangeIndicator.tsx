@@ -34,9 +34,10 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
     hasFocus: boolean
     fullPath: Path
     disabled?: boolean
+    withBadge?: boolean
   }
 ) {
-  const {children, className, fullPath, hasFocus, isChanged, disabled} = props
+  const {children, className, fullPath, hasFocus, isChanged, disabled, withBadge} = props
   const layer = useLayer()
   const [hasHover, setHover] = React.useState(false)
   const onMouseEnter = React.useCallback(() => setHover(true), [])
@@ -59,7 +60,12 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
 
   return (
     <div ref={ref} className={className} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-      <ChangeBar hasFocus={hasFocus} isChanged={isChanged} disabled={disabled}>
+      <ChangeBar
+        hasFocus={hasFocus}
+        isChanged={isChanged}
+        disabled={disabled}
+        withBadge={withBadge}
+      >
         {children}
       </ChangeBar>
     </div>
@@ -132,6 +138,7 @@ interface CoreProps {
   hasFocus: boolean
   compareValue: unknown
   children?: React.ReactNode
+  withBadge?: boolean
 }
 
 export function CoreChangeIndicator(props: CoreProps) {
@@ -144,6 +151,7 @@ export function CoreChangeIndicator(props: CoreProps) {
     hasFocus,
     compareDeep,
     children,
+    withBadge,
   } = props
   // todo: lazy compare debounced (possibly with intersection observer)
   const isChanged =
@@ -157,6 +165,7 @@ export function CoreChangeIndicator(props: CoreProps) {
       fullPath={fullPath}
       hasFocus={hasFocus}
       disabled={disabled}
+      withBadge={withBadge}
     >
       {children}
     </ChangeBarWrapper>
@@ -200,12 +209,13 @@ interface ChangeIndicatorWithProvidedFullPathProps {
   hasFocus: boolean
   compareDeep?: boolean
   children?: React.ReactNode
+  withBadge?: boolean
 }
 
 export function ChangeIndicatorWithProvidedFullPath(
   props: ChangeIndicatorWithProvidedFullPathProps
 ) {
-  const {className, disabled, path, value, hasFocus, compareDeep, children} = props
+  const {className, disabled, path, value, hasFocus, compareDeep, children, withBadge} = props
   const parentContext = React.useContext(ChangeIndicatorContext)
 
   const fullPath = React.useMemo(() => PathUtils.pathFor(parentContext.fullPath.concat(path)), [
@@ -222,6 +232,7 @@ export function ChangeIndicatorWithProvidedFullPath(
       hasFocus={hasFocus}
       fullPath={fullPath}
       compareDeep={compareDeep}
+      withBadge={withBadge}
     >
       {children}
     </CoreChangeIndicator>
