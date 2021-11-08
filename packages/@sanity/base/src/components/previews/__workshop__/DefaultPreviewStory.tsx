@@ -14,7 +14,7 @@ export default function DefaultPreviewStory() {
     <Card height="fill">
       <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
         <Container width={0}>
-          <Card data-as="button" padding={2} radius={3} selected={selected}>
+          <Card data-as="button" padding={2} radius={2} selected={selected}>
             <DefaultPreview
               media={
                 withImage ? (
@@ -24,7 +24,7 @@ export default function DefaultPreviewStory() {
                 )
               }
               status={
-                <Text muted size={1}>
+                <Text muted>
                   <EditIcon />
                 </Text>
               }
