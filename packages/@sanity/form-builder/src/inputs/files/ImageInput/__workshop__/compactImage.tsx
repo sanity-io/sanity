@@ -32,6 +32,7 @@ import {
 } from '@sanity/icons'
 import styled from 'styled-components'
 import {Resizable} from 're-resizable'
+import { min } from 'lodash'
 
 const Resize = styled(Resizable)`
   width: 100%;
@@ -57,7 +58,7 @@ const Resize = styled(Resizable)`
 
 const RatioBox = styled(Box)`
   position: relative;
-  padding-bottom: 30vh; //min(calc(${({ratio = 3 / 2}) => 1 / ratio} * 100%), 30vh);
+  padding-bottom: min(200px, 30vh); //min(calc(${({ratio = 3 / 2}) => 1 / ratio} * 100%), 30vh);
   width: 100%;
   overflow: hidden;
 
@@ -105,7 +106,7 @@ export default function CompactImage(props) {
           Image input
         </Text>
         <Card border style={{borderStyle: hasImage ? 'solid' : 'dashed'}}>
-          <Resize direction="vertical" defaultSize={{height: '30vh'}}>
+          <Resize direction="vertical" defaultSize={{height: '30vh'}} minHeight={200}>
             {hasImage && (
               <>
                 <Card data-container padding={padImage ? 3 : 0} tone="transparent" sizing="border">
@@ -113,9 +114,16 @@ export default function CompactImage(props) {
                 </Card>
                 <Overlay justify="flex-end" padding={3} drag={drag}>
                   {drag && (
-                    <Flex direction="column" align="center" justify="center" style={{position: 'absolute', top: 0, left: 0, bottom: 0, right: 0}}>
+                    <Flex
+                      direction="column"
+                      align="center"
+                      justify="center"
+                      style={{position: 'absolute', top: 0, left: 0, bottom: 0, right: 0}}
+                    >
                       <Box marginBottom={3}>
-                        <Heading><ImageIcon /></Heading>
+                        <Heading>
+                          <ImageIcon />
+                        </Heading>
                       </Box>
                       <Text size={1}>Drop file to upload</Text>
                     </Flex>
