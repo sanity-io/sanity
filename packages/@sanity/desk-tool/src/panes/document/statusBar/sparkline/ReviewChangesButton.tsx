@@ -1,9 +1,10 @@
 import {useTimeAgo} from '@sanity/base/hooks'
-import {EditIcon} from '@sanity/icons'
+import {CheckmarkCircleIcon, CheckmarkIcon, EditIcon} from '@sanity/icons'
 import {useSyncState} from '@sanity/react-hooks'
 import {ButtonProps, Box, Flex, Text, Stack, Button} from '@sanity/ui'
 import {Tooltip} from 'part:@sanity/components/tooltip'
-import React, {forwardRef} from 'react'
+import React, {forwardRef, useRef, useEffect, useState} from 'react'
+import { clearTimeout } from 'timers'
 import {useDocumentPane} from '../../useDocumentPane'
 import {AnimatedSyncIcon} from './AnimatedSyncIcon.styled'
 
@@ -27,6 +28,22 @@ export const ReviewChangesButton = forwardRef(function ReviewChangesButton(
     changesOpen,
   } = useDocumentPane()
   const syncState = useSyncState(documentId, documentType)
+  const [displayState, setDisplayState] = useState('changes')
+  const [firstUpdate, setFirstUpdate] = useState(false)
+  const savedTimer = useRef(null)
+  const changesTimer = useRef(null)
+
+  useEffect(() => {
+    if (syncState.isSyncing) {
+      setDisplayState('syncing')
+      clearInterval(savedTimer.current)
+      clearInterval(changesTimer.current)
+    } else if (!firstUpdate) {
+      setFirstUpdate(false)
+      savedTimer.current = setTimeout(() => setDisplayState('saved'), 1500)
+      changesTimer.current = setTimeout(() => setDisplayState('changes'), 15000)
+    }
+  }, [syncState])
 
   return (
     <Tooltip
@@ -52,10 +69,16 @@ export const ReviewChangesButton = forwardRef(function ReviewChangesButton(
       >
         <Flex align="center">
           <Box marginRight={3}>
-            <Text size={2}>{syncState.isSyncing ? <AnimatedSyncIcon /> : <EditIcon />}</Text>
+            <Text size={2}>
+              {displayState === 'changes' && <EditIcon />}
+              {displayState === 'syncing' && <AnimatedSyncIcon />}
+              {displayState === 'saved' && <CheckmarkIcon />}
+            </Text>
           </Box>
           <Text size={1} weight="medium">
-            {lastUpdatedTime || <>&nbsp;</>}
+            {displayState === 'changes' && (lastUpdatedTime || <>&nbsp;</>)}
+            {displayState === 'saved' && 'saved'}
+            {displayState === 'syncing' && 'saving...'}
           </Text>
         </Flex>
       </Button>
