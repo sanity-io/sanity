@@ -48,6 +48,7 @@
     "leven": "^3.1.0",
     "lodash": "^4.17.15",
     "mendoza": "^2.1.1",
+    "nanoid": "^3.1.30",
     "react-is": "^17.0.2",
     "react-json-inspector": "^7.1.1",
     "react-props-stream": "^1.0.0",
