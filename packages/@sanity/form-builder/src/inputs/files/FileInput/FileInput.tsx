@@ -301,6 +301,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
         <MenuButton
           id={`${this._inputId}_assetFileButton`}
           button={<Button mode="ghost" text="Select…" icon={SearchIcon} />}
+          data-testid="file-input-select-button"
           menu={
             <Menu>
               {assetSources.map((assetSource) => {
@@ -326,6 +327,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
         onClick={() => this.handleSelectFileFromAssetSource(assetSources[0])}
         mode="ghost"
         text="Select"
+        data-testid="file-input-select-button"
       />
     )
   }
@@ -597,6 +599,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                   icon={UploadIcon}
                   accept={accept}
                   text="Upload file"
+                  data-testid="file-input-upload-button"
                 />
               )}
 
@@ -618,6 +621,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                   onClick={this.handleRemoveButtonClick}
                   text="Remove file"
                   tone="critical"
+                  data-testid="file-input-remove-button"
                 />
               )}
             </Grid>
