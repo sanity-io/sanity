@@ -15,13 +15,12 @@ export default {
       name: 'settings',
       title: 'Settings',
       options: {columns: 2},
-      hidden: ({value, currentUser}) =>
-        currentUser.roles.some((r) => r.name === 'administrator') && value.x === 332,
+      hidden: false,
     },
     {
       name: 'single',
       title: 'Single',
-      hidden: true,
+      hidden: false,
     },
   ],
   fields: [
