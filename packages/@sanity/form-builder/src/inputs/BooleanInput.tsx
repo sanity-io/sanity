@@ -56,6 +56,7 @@ const BooleanInput = React.forwardRef(function BooleanInput(
               indeterminate={indeterminate}
               checked={checked}
               style={{margin: -4}}
+              disabled={readOnly}
             />
           </ZeroLineHeightBox>
           <Box flex={1} paddingY={3}>
