@@ -156,6 +156,12 @@ const BlockActionsOuter = styled(Box)`
   width: 25px;
   position: relative;
   user-select: none;
+  // Without this, select all (CMD-A) will not work properly
+  // when the editor is in non-fullscreen mode.
+  &:before {
+    content: ' ';
+    font-size: 0;
+  }
 `
 
 const BlockActionsInner = styled(Flex)`
