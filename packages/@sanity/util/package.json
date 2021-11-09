@@ -45,14 +45,12 @@
     "dotenv": "^8.2.0",
     "fs-extra": "^7.0.0",
     "get-random-values": "^1.2.2",
-    "klaw-sync": "^4.0.0",
     "lodash": "^4.17.15",
     "moment": "^2.19.1",
     "resolve-from": "^4.0.0"
   },
   "devDependencies": {
     "@types/moment": "^2.13.0",
-    "@types/klaw-sync": "^6.0.1",
     "rimraf": "^2.7.1"
   }
 }
