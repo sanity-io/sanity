@@ -1,5 +1,5 @@
 import {ScrollContainer} from '@sanity/base/components'
-import {Card, Container} from '@sanity/ui'
+import {Card, Container, rem} from '@sanity/ui'
 import styled from 'styled-components'
 import {listCounterCSS} from './Text/TextBlock'
 
@@ -53,7 +53,19 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean}>`
     border: 1px solid var(--card-focus-ring-color) !important;
     height: 0px !important;
     border-radius: 1px;
-    opacity: 0.6;
+    left: calc(
+      ${({$isFullscreen, theme}) =>
+          $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} - 1px
+    );
+    right: calc(
+      ${({$isFullscreen, theme}) =>
+          $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} - 1px
+    );
+    width: calc(
+      100% -
+        ${({$isFullscreen, theme}) =>
+          $isFullscreen ? rem(theme.sanity.space[5] * 2) : rem(theme.sanity.space[3] * 2)} + 2px
+    ) !important;
   }
 
   & > div > div > .pt-list-item + div:not(.pt-list-item) {
