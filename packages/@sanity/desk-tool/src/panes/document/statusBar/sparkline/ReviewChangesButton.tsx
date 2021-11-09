@@ -63,7 +63,7 @@ export const ReviewChangesButton = forwardRef(function ReviewChangesButton(
       <Button
         aria-label="Review changes"
         mode="bleed"
-        tone="caution"
+        tone={displayState === 'saved' ? 'positive' : 'caution'}
         padding={3}
         onClick={changesOpen ? handleHistoryClose : handleHistoryOpen}
         ref={ref}
