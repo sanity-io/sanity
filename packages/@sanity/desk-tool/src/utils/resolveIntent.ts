@@ -8,7 +8,7 @@ import {createPaneResolver, PaneResolverMiddleware} from './createPaneResolver'
 import {loadStructure} from './loadStructure'
 import {memoBind} from './memoBind'
 
-interface NodeContext {
+interface TraverseOptions {
   unresolvedPane: UnresolvedPaneNode | undefined
   intent: string
   params: {type: string; id: string; [key: string]: string | undefined}
@@ -17,6 +17,7 @@ interface NodeContext {
   path: string[]
   currentId: string
   flatIndex: number
+  levelIndex: number
 }
 
 export interface ResolveIntentOptions {
@@ -65,36 +66,20 @@ export async function resolveIntent(options: ResolveIntentOptions): Promise<Rout
     ],
   ]
 
-  const queue: string[] = ['']
-  const visited = new Map<string, NodeContext>().set('', {
-    currentId: 'root',
-    flatIndex: 0,
-    intent: options.intent,
-    params: options.params,
-    parent: null,
-    path: [],
-    payload: options.payload,
-    unresolvedPane: options.rootPaneNode || loadStructure(),
-  })
-
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    const key = queue.shift()
-    // if this occurs, then we've exhausted the whole tree
-    if (key === undefined) return fallbackEditorPanes
-
-    const {
-      currentId,
-      flatIndex,
-      intent,
-      params,
-      parent,
-      path,
-      payload,
-      unresolvedPane,
-    } = visited.get(key) as NodeContext
-
-    if (!unresolvedPane) continue
+  async function traverse({
+    currentId,
+    flatIndex,
+    intent,
+    params,
+    parent,
+    path,
+    payload,
+    unresolvedPane,
+    levelIndex,
+  }: TraverseOptions): Promise<
+    Array<{panes: RouterPanes; depthIndex: number; levelIndex: number}>
+  > {
+    if (!unresolvedPane) return []
 
     const {id: targetId, type: schemaTypeName, ...otherParams} = params
     const context: RouterPaneSiblingContext = {
@@ -110,54 +95,104 @@ export async function resolveIntent(options: ResolveIntentOptions): Promise<Rout
       .pipe(first())
       .toPromise()
 
-    // if the resolved pane is a document pane and the pane's ID matches
+    // if the resolved pane is a document pane and the pane's ID matches then
+    // resolve the intent to the current path
     if (resolvedPane.type === 'document' && resolvedPane.id === targetId) {
       return [
-        ...path.slice(0, path.length - 1).map((i) => [{id: i}]),
-        [{id: targetId, params: otherParams, payload}],
+        {
+          panes: [
+            ...path.slice(0, path.length - 1).map((i) => [{id: i}]),
+            [{id: targetId, params: otherParams, payload}],
+          ],
+          depthIndex: path.length,
+          levelIndex,
+        },
       ]
-    } else if (
-      // if the resolved pane is a document list and the schema type matches
-      (resolvedPane.type === 'documentList' && resolvedPane.schemaTypeName === schemaTypeName) ||
-      // OR
-      // if the pane can handle the intent
+    }
+
+    // NOTE: if you update this logic, please also update the similar handler in
+    // `getIntentState.ts`
+    if (
+      // if the resolve pane's `canHandleIntent` returns true, then resolve
       resolvedPane.canHandleIntent?.(intent, params, {
         pane: resolvedPane,
         index: flatIndex,
-      })
+      }) ||
+      // if the pane's `canHandleIntent` did not return true, then match against
+      // this default case. we will resolve the intent if:
+      (resolvedPane.type === 'documentList' &&
+        // 1. the schema type matches (this required for the document to render)
+        resolvedPane.schemaTypeName === schemaTypeName &&
+        // 2. the filter is the default filter.
+        //
+        // NOTE: this case is to prevent false positive matches where the user
+        // has configured a more specific filter for a particular type. In that
+        // case, the user can implement their own `canHandleIntent` function
+        resolvedPane.options.filter === '_type == $type')
     ) {
       return [
-        // map the current path to router panes
-        ...path.map((id) => [{id}]),
-        // then augment with the intents IDs and params
-        [{id: params.id, params: otherParams, payload}],
+        {
+          panes: [
+            // map the current path to router panes
+            ...path.map((id) => [{id}]),
+            // then augment with the intents IDs and params
+            [{id: params.id, params: otherParams, payload}],
+          ],
+          depthIndex: path.length,
+          levelIndex,
+        },
       ]
-    } else if (resolvedPane.type === 'list' && resolvedPane.child && resolvedPane.items) {
-      for (const item of resolvedPane.items) {
-        if (item.type === 'divider') continue
-
-        const nextPath = [...path, item.id]
-        const nextKey = nextPath.join('__')
-
-        if (!visited.has(nextKey)) {
-          const nextValue: NodeContext = {
-            currentId: item._id || item.id,
-            flatIndex: flatIndex + 1,
-            intent,
-            params,
-            parent: resolvedPane,
-            path: nextPath,
-            payload,
-            unresolvedPane:
-              typeof resolvedPane.child === 'function'
-                ? memoBind(resolvedPane, 'child')
-                : resolvedPane.child,
-          }
-
-          visited.set(nextKey, nextValue)
-          queue.push(nextKey)
-        }
-      }
     }
+
+    if (resolvedPane.type === 'list' && resolvedPane.child && resolvedPane.items) {
+      return (
+        await Promise.all(
+          resolvedPane.items.map((item, nextLevelIndex) => {
+            if (item.type === 'divider') return Promise.resolve([])
+
+            return traverse({
+              currentId: item._id || item.id,
+              flatIndex: flatIndex + 1,
+              intent,
+              params,
+              parent: resolvedPane,
+              path: [...path, item.id],
+              payload,
+              unresolvedPane:
+                typeof resolvedPane.child === 'function'
+                  ? memoBind(resolvedPane, 'child')
+                  : resolvedPane.child,
+              levelIndex: nextLevelIndex,
+            })
+          })
+        )
+      ).flat()
+    }
+
+    return []
   }
+
+  const matchingPanes = await traverse({
+    currentId: 'root',
+    flatIndex: 0,
+    levelIndex: 0,
+    intent: options.intent,
+    params: options.params,
+    parent: null,
+    path: [],
+    payload: options.payload,
+    unresolvedPane: options.rootPaneNode || loadStructure(),
+  })
+
+  const closestPaneToRoot = matchingPanes.sort((a, b) => {
+    // break ties with the level index
+    if (a.depthIndex === b.depthIndex) return a.levelIndex - b.levelIndex
+    return a.depthIndex - b.depthIndex
+  })[0]
+
+  if (closestPaneToRoot) {
+    return closestPaneToRoot.panes
+  }
+
+  return fallbackEditorPanes
 }
