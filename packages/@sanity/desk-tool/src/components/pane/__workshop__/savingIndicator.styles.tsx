@@ -79,6 +79,8 @@ export const Checkmark = styled.path`
   stroke-dashoffset: 30;
   transition: 0.5s;
   &[data-state='saved'] {
+    transition: 1s;
+    transition-delay: 0.5s;
     stroke-dashoffset: 20;
   }
 `
