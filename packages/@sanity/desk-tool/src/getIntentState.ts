@@ -33,18 +33,16 @@ export function getIntentState(
 
     if (typeof pane !== 'object') continue
 
+    // NOTE: if you update this logic, please also update the similar handler in
+    // `resolveIntent.ts`
     if (
-      // if the pane can handle the intent
       pane.canHandleIntent?.(intentName, params, {
         pane,
         index: i,
       }) ||
-      // OR
-      // if the resolved pane is a document list
+      // see `resolveIntent.ts` for more info
       (pane.type === 'documentList' &&
-        // and the schema type matches
         pane.schemaTypeName === params.type &&
-        // and the filter is the default filter
         pane.options.filter === '_type == $type')
     ) {
       const paneParams = isTemplate ? {template: params.template} : EMPTY_PARAMS

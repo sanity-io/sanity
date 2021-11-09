@@ -95,7 +95,8 @@ export async function resolveIntent(options: ResolveIntentOptions): Promise<Rout
       .pipe(first())
       .toPromise()
 
-    // if the resolved pane is a document pane and the pane's ID matches
+    // if the resolved pane is a document pane and the pane's ID matches then
+    // resolve the intent to the current path
     if (resolvedPane.type === 'document' && resolvedPane.id === targetId) {
       return [
         {
@@ -109,19 +110,25 @@ export async function resolveIntent(options: ResolveIntentOptions): Promise<Rout
       ]
     }
 
+    // NOTE: if you update this logic, please also update the similar handler in
+    // `getIntentState.ts`
     if (
-      // if the resolved pane is a document list
-      (resolvedPane.type === 'documentList' &&
-        // and the schema type matches
-        resolvedPane.schemaTypeName === schemaTypeName &&
-        // and the filter is the default filter
-        resolvedPane.options.filter === '_type == $type') ||
-      // OR
-      // if the pane can handle the intent
+      // if the resolve pane's `canHandleIntent` returns true, then resolve
       resolvedPane.canHandleIntent?.(intent, params, {
         pane: resolvedPane,
         index: flatIndex,
-      })
+      }) ||
+      // if the pane's `canHandleIntent` did not return true, then match against
+      // this default case. we will resolve the intent if:
+      (resolvedPane.type === 'documentList' &&
+        // 1. the schema type matches (this required for the document to render)
+        resolvedPane.schemaTypeName === schemaTypeName &&
+        // 2. the filter is the default filter.
+        //
+        // NOTE: this case is to prevent false positive matches where the user
+        // has configured a more specific filter for a particular type. In that
+        // case, the user can implement their own `canHandleIntent` function
+        resolvedPane.options.filter === '_type == $type')
     ) {
       return [
         {
