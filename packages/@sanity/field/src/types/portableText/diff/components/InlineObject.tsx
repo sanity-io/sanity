@@ -3,9 +3,8 @@
 
 import {FOCUS_TERMINATOR, toString} from '@sanity/util/paths'
 import {isKeySegment, Path} from '@sanity/types'
-import {Card, Flex, Label, useClickOutside, useLayer} from '@sanity/ui'
+import {Card, Flex, Label, Popover, useClickOutside, useLayer} from '@sanity/ui'
 import SanityPreview from 'part:@sanity/base/preview'
-import {Popover} from 'part:@sanity/components/popover'
 import React, {useCallback, useState, useEffect} from 'react'
 import {ConnectorContext, useReportedValues} from '@sanity/base/change-indicators'
 import styled from 'styled-components'
@@ -147,7 +146,7 @@ function InlineObjectWithDiff({
       border
       radius={2}
     >
-      <Popover content={popoverContent} layer open={open} portal>
+      <Popover content={popoverContent} open={open} portal>
         <PreviewContainer>
           <DiffTooltip annotations={annotations} description={`${diff.action} inline object`}>
             <InlineBox>
