@@ -1,6 +1,6 @@
 {
   "name": "@sanity/dashboard",
-  "version": "2.21.9",
+  "version": "2.21.10",
   "description": "Tool for rendering dashboard widgets",
   "main": "./lib/DashboardTool.js",
   "types": "./dist/dts",
@@ -22,13 +22,13 @@
   "dependencies": {
     "@sanity/icons": "^1.2.1",
     "@sanity/image-url": "^1.0.1",
-    "@sanity/types": "2.21.7",
+    "@sanity/types": "2.21.10",
     "@sanity/ui": "^0.36.15",
     "lodash": "^4.17.15",
     "rxjs": "^6.5.3"
   },
   "devDependencies": {
-    "@sanity/base": "2.21.9",
+    "@sanity/base": "2.21.10",
     "prop-types": "^15.6.0",
     "rimraf": "^2.7.1"
   },
