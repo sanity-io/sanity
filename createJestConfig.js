@@ -7,7 +7,7 @@ const jestModuleAliases = {
   'part:@sanity/base/schema': './test/mockSchema',
   'part:@sanity/base/client': './test/mockClient',
   'part:@sanity/base/initial-value-templates?': './test/emptyArray',
-  'config:sanity': './examples/test-studio/sanity.json',
+  'config:sanity': './dev/test-studio/sanity.json',
   'sanity:css-custom-properties': './test/emptyObject',
   'sanity:versions': './test/mockVersions',
 }

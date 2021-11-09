@@ -87,7 +87,7 @@ if (!githubWorkspace && !skipDelete) {
 
   // Test `sanity build` command in test studio with all customizations
   spawn(process.argv[0], [binPath, 'build', '-y'], {
-    cwd: path.join(basePath, 'examples', 'test-studio'),
+    cwd: path.join(basePath, 'dev', 'test-studio'),
     stdio: 'inherit',
   })
 

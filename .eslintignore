@@ -1,3 +1,5 @@
+/dev/*/node_modules
+/dev/*/dist
 /examples/*/node_modules
 /examples/*/dist
 /packages/*/node_modules
