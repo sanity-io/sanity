@@ -128,7 +128,7 @@ describe('resolveIntent', () => {
     ])
   })
 
-  it('returns the shallowest match (breadth first search)', async () => {
+  it('returns the shallowest match', async () => {
     const rootPaneNode = S.list()
       .title('Content')
       .items([
