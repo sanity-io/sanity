@@ -493,6 +493,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       >
         <SlateEditable
           autoFocus={false}
+          className="pt-editable"
           onBlur={handleOnBlur}
           onCopy={handleCopy}
           onCut={handleCut}

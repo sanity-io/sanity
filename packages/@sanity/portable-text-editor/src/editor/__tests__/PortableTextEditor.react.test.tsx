@@ -118,6 +118,7 @@ describe('initialization', () => {
       <div>
         <div>
           <div
+            class="pt-editable"
             contenteditable="true"
             data-gramm="false"
             data-slate-editor="true"
@@ -133,9 +134,7 @@ describe('initialization', () => {
               <div
                 draggable="false"
               >
-                <div
-                  class="sc-bdvvtL fLrjKP"
-                >
+                <div>
                   <span
                     data-slate-node="text"
                   >
