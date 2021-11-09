@@ -4,8 +4,8 @@ import {FormFieldPresence} from '@sanity/base/presence'
 import {FormFieldSet, FormFieldSetProps} from '@sanity/base/components'
 import {Marker, MultiFieldSet, Path} from '@sanity/types'
 import {EMPTY_ARRAY} from '../../utils/empty'
+import {ConditionalField} from '../common/ConditionalField'
 import {getCollapsedWithDefaults} from './utils'
-import {ConditionalFieldWithDocument} from './Temporary_ConditionalFieldWithDocument'
 
 interface Props extends Omit<FormFieldSetProps, 'onFocus'> {
   fieldset: MultiFieldSet
@@ -115,13 +115,9 @@ export const ObjectFieldSet = forwardRef(function ObjectFieldSet(
     })
 
     return (
-      <ConditionalFieldWithDocument
-        {...fieldset}
-        value={fieldSetValuesObject}
-        hidden={fieldset.hidden}
-      >
+      <ConditionalField {...fieldset} value={fieldSetValuesObject} hidden={fieldset.hidden}>
         {renderFieldSet()}
-      </ConditionalFieldWithDocument>
+      </ConditionalField>
     )
   } else if (fieldset.hidden === true) {
     return null
