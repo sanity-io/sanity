@@ -22,4 +22,9 @@ export default defineScope('desk-tool/pane', 'Pane', [
     title: 'Resize',
     component: lazy(() => import('./resize')),
   },
+  {
+    name: 'savingIndicator',
+    title: 'Saving Indicator',
+    component: lazy(() => import('./savingIndicator')),
+  },
 ])
