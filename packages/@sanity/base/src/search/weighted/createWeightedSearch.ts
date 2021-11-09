@@ -6,7 +6,6 @@ import {compact, toLower, flatten, uniq, flow, sortBy, union} from 'lodash'
 import {map} from 'rxjs/operators'
 import {joinPath} from '../../util/searchUtils'
 import {tokenize} from '../common/tokenize'
-import {listenQuery} from '../../datastores/document/listenQuery'
 import {applyWeights} from './applyWeights'
 import {WeightedHit, WeightedSearchOptions, SearchOptions, SearchPath, SearchHit} from './types'
 
@@ -65,18 +64,20 @@ export function createWeightedSearch(
     const selection = selections.length > 0 ? `...select(${selections.join(',\n')})` : ''
     const query = `*[${filters.join('&&')}][0...$__limit]{_type, _id, ${selection}}`
 
-    return listenQuery(
-      query,
-      {
-        ...toGroqParams(terms),
-        __types: searchSpec.map((spec) => spec.typeName),
-        __limit: searchOpts.limit ?? 1000,
-        ...(params || {}),
-      },
-      {tag}
-    ).pipe(
-      map((hits: SearchHit[]) => applyWeights(searchSpec, hits, terms)),
-      map((hits) => sortBy(hits, (hit) => -hit.score))
-    )
+    return client.observable
+      .fetch(
+        query,
+        {
+          ...toGroqParams(terms),
+          __types: searchSpec.map((spec) => spec.typeName),
+          __limit: searchOpts.limit ?? 1000,
+          ...(params || {}),
+        },
+        {tag}
+      )
+      .pipe(
+        map((hits: SearchHit[]) => applyWeights(searchSpec, hits, terms)),
+        map((hits) => sortBy(hits, (hit) => -hit.score))
+      )
   }
 }
