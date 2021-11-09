@@ -1,10 +1,7 @@
-import {GoMicroscope as icon} from 'react-icons/go'
-
 export default {
   name: 'proteinTest',
   title: 'Protein Test',
   type: 'document',
-  icon,
   fields: [
     {
       name: 'title',

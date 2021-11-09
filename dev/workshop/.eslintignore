@@ -1,2 +1,4 @@
-/dist
-/public
+__legacy/parts.js
+dist
+public
+src/scopes.js
