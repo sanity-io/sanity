@@ -1,7 +1,6 @@
 const pirates = require('pirates')
 const jsdomGlobal = require('jsdom-global')
 const pluginLoader = require('@sanity/plugin-loader')
-const requireContext = require('./requireContext')
 const registerBabelLoader = require('./registerBabelLoader')
 
 const jsdomDefaultHtml = `<!doctype html>
@@ -48,14 +47,12 @@ function mockBrowserEnvironment(basePath) {
 
   registerBabelLoader(basePath)
   pluginLoader({basePath, stubCss: true})
-  const contextCleanup = requireContext.register()
 
   return function cleanupBrowserEnvironment() {
     cleanupFileLoader()
     globalCleanup()
     windowCleanup()
     domCleanup()
-    contextCleanup()
   }
 }
 
