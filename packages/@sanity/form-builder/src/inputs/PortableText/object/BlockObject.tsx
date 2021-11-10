@@ -205,13 +205,7 @@ export function BlockObject(props: BlockObjectProps) {
     )
   }, [type, block, readOnly, handleDelete, handleEdit])
 
-  const tone = useMemo(() => {
-    if (selected || focused) {
-      return 'primary'
-    }
-
-    return 'default'
-  }, [focused, selected])
+  const tone = selected || focused ? 'primary' : 'default'
 
   const innerPaddingProps: ResponsivePaddingProps = useMemo(() => {
     if (isFullscreen && !renderBlockActions) {
@@ -274,7 +268,9 @@ export function BlockObject(props: BlockObjectProps) {
     [blockPreview, hasErrors, hasWarnings, hasMarkers, markers, renderCustomMarkers]
   )
 
-  const isImagePreview = useMemo(() => type?.type?.name === 'image', [type?.type?.name])
+  const isImagePreview = type?.type?.name === 'image'
+
+  const blockPath = useMemo(() => [{_key: block._key}], [block._key])
 
   return (
     <InnerFlex marginY={3}>
@@ -317,7 +313,7 @@ export function BlockObject(props: BlockObjectProps) {
             compareDeep
             value={block}
             hasFocus={focused}
-            path={[{_key: block._key}]}
+            path={blockPath}
             withBadge={false}
           />
         </ChangeIndicatorWrapper>
