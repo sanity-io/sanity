@@ -115,7 +115,12 @@ export const ObjectFieldSet = forwardRef(function ObjectFieldSet(
     })
 
     return (
-      <ConditionalField {...fieldset} value={fieldSetValuesObject} hidden={fieldset.hidden}>
+      <ConditionalField
+        {...fieldset}
+        parent={fieldValues}
+        value={fieldSetValuesObject}
+        hidden={fieldset.hidden}
+      >
         {renderFieldSet()}
       </ConditionalField>
     )

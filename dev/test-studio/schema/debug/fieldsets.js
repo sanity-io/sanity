@@ -15,7 +15,6 @@ export default {
       name: 'settings',
       title: 'Settings',
       options: {columns: 2},
-      hidden: false,
       readOnly: true,
     },
     {
