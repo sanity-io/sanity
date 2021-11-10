@@ -140,7 +140,11 @@ export const ObjectInput = memo(
         }
 
         return (
-          <ConditionalReadOnlyField value={value} readOnly={readOnly || isFieldsetReadOnly}>
+          <ConditionalReadOnlyField
+            value={value}
+            parent={value}
+            readOnly={readOnly || isFieldsetReadOnly}
+          >
             <ObjectInputField
               parent={value}
               key={`field-${field.name}`}
