@@ -20,6 +20,7 @@ import {ObjectInputField} from './ObjectInputField'
 import {UnknownFields} from './UnknownFields'
 import {ObjectFieldSet} from './ObjectFieldSet'
 import {getCollapsedWithDefaults} from './utils'
+import {ConditionalReadOnlyField} from '../common/ConditionalReadOnlyField'
 
 const EMPTY_MARKERS: Marker[] = EMPTY_ARRAY
 const EMPTY_PRESENCE: FormFieldPresence[] = EMPTY_ARRAY
@@ -127,30 +128,36 @@ export const ObjectInput = memo(
     )
 
     const renderField = React.useCallback(
-      (field: ObjectField, fieldLevel: number, index: number, isFieldsetReadOnly?: boolean) => {
+      (
+        field: ObjectField,
+        fieldLevel: number,
+        index: number,
+        isFieldsetReadOnly?: ConditionalProperty
+      ) => {
         const fieldValue = value?.[field.name]
         if (!filterField(type, field)) {
           return null
         }
 
         return (
-          <ObjectInputField
-            parent={value}
-            key={`field-${field.name}`}
-            field={field}
-            value={fieldValue}
-            onChange={handleFieldChange}
-            onFocus={onFocus}
-            onBlur={onBlur}
-            compareValue={compareValue}
-            markers={markers}
-            focusPath={focusPath}
-            level={fieldLevel}
-            presence={presence}
-            readOnly={readOnly || isFieldsetReadOnly}
-            filterField={filterField}
-            ref={index === 0 ? forwardedRef : null}
-          />
+          <ConditionalReadOnlyField value={value} readOnly={readOnly || isFieldsetReadOnly}>
+            <ObjectInputField
+              parent={value}
+              key={`field-${field.name}`}
+              field={field}
+              value={fieldValue}
+              onChange={handleFieldChange}
+              onFocus={onFocus}
+              onBlur={onBlur}
+              compareValue={compareValue}
+              markers={markers}
+              focusPath={focusPath}
+              level={fieldLevel}
+              presence={presence}
+              filterField={filterField}
+              ref={index === 0 ? forwardedRef : null}
+            />
+          </ConditionalReadOnlyField>
         )
       },
       [
