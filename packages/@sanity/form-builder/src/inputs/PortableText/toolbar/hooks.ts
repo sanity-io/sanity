@@ -58,8 +58,8 @@ export function useActionGroups({
   const handleInsertAnnotation = useCallback(
     async (type: Type) => {
       const initialValue = await resolveInitialValue(type)
-
       const paths = PortableTextEditor.addAnnotation(editor, type, initialValue)
+
       if (paths && paths.markDefPath) {
         onFocus(paths.markDefPath.concat(FOCUS_TERMINATOR))
       }
@@ -70,16 +70,7 @@ export function useActionGroups({
   return useMemo(
     () =>
       editor ? getPTEToolbarActionGroups(editor, disabled, handleInsertAnnotation, hotkeys) : [],
-
-    [
-      disabled,
-      editor,
-      handleInsertAnnotation,
-      hotkeys,
-
-      // Selection must be part of the dep. here!
-      // selection,
-    ]
+    [disabled, editor, handleInsertAnnotation, hotkeys]
   )
 }
 
@@ -132,7 +123,11 @@ export function useActiveStyleKeys({items}: {items: BlockStyleItem[]}): string[]
       () =>
         items.filter((i) => PortableTextEditor.hasBlockStyle(editor, i.style)).map((i) => i.style),
       //  eslint-disable-next-line react-hooks/exhaustive-deps
-      [focusBlock, selection]
+      [
+        focusBlock,
+        // This is needed so that active styles update as `selection` changes
+        selection,
+      ]
     )
   )
 }
