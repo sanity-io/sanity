@@ -16,7 +16,6 @@ import {
   Tooltip,
   Flex,
   MenuDivider,
-  rgba,
   Dialog,
 } from '@sanity/ui'
 import {
@@ -34,12 +33,11 @@ import {
 } from '@sanity/icons'
 import styled from 'styled-components'
 import {Resizable} from 're-resizable'
-import { min } from 'lodash'
 
 const Resize = styled(Resizable)`
   width: 100%;
   overflow: hidden;
-  resize: vertical;
+  resize: ${({enable}) => (enable ? 'vertical' : 'initial')};
 
   & > [data-container] {
     position: absolute;
@@ -95,7 +93,7 @@ const Overlay = styled(Flex)`
         }`
       : ''};
 `
-export default function CompactImage(props) {
+export default function CompactImage() {
   const hasImage = useBoolean('Image', false, 'Props')
   const drag = useBoolean('Drag file', false, 'Props')
   const assetSources = useBoolean('Asset sources', false, 'Props')
@@ -110,10 +108,20 @@ export default function CompactImage(props) {
             Image input
           </Text>
           <Card border style={{borderStyle: hasImage ? 'solid' : 'dashed'}}>
-            <Resize direction="vertical" defaultSize={{height: '30vh'}} minHeight={200}>
+            <Resize
+              direction="vertical"
+              defaultSize={{height: '30vh'}}
+              minHeight={200}
+              enable={hasImage}
+            >
               {hasImage && (
                 <>
-                  <Card data-container padding={padImage ? 3 : 0} tone="transparent" sizing="border">
+                  <Card
+                    data-container
+                    padding={padImage ? 3 : 0}
+                    tone="transparent"
+                    sizing="border"
+                  >
                     <img src={'https://source.unsplash.com/random'} />
                   </Card>
                   <Overlay justify="flex-end" padding={3} drag={drag}>
@@ -132,7 +140,7 @@ export default function CompactImage(props) {
                         <Text size={1}>Drop file to upload</Text>
                       </Flex>
                     )}
-                    <Inline space={1}>
+                    <Inline data-buttons space={1}>
                       <Tooltip
                         content={
                           <Box padding={2}>
@@ -159,15 +167,6 @@ export default function CompactImage(props) {
                           onClick={() => setShowExpandDialog(true)}
                         />
                       </Tooltip>
-                      {/* <Tooltip
-                        content={(
-                          <Box padding={2}>
-                            <Text muted size={1}>Remove image</Text>
-                          </Box>
-                        )}
-                      >
-                        <Button mode="ghost" icon={TrashIcon} tone="critical" onClick={() => setHasImage(false)}/>
-                      </Tooltip> */}
                       <MenuButton
                         id="image-menu"
                         button={<Button icon={EllipsisVerticalIcon} mode="ghost" />}
@@ -189,13 +188,6 @@ export default function CompactImage(props) {
                       />
                     </Inline>
                   </Overlay>
-                  {/* {drag && (
-                    <HoverOverlay>
-                      <Card tone="transparent" height="stretch" padding={4}>
-                        <Text>drag!</Text>
-                      </Card>
-                    </HoverOverlay>
-                  )} */}
                 </>
               )}
               {!hasImage && (
@@ -209,19 +201,23 @@ export default function CompactImage(props) {
                               <ImageIcon />
                             </Text>
                           </Flex>
-                          <Text size={1} muted>Drag or paste image here</Text>
+                          <Text size={1} muted>
+                            Drag or paste image here
+                          </Text>
                         </Stack>
                       </Card>
                     </Flex>
 
-                    <Inline space={1}>
+                    <Inline data-buttons space={1}>
                       <Button
                         onClick={() => setHasImage(true)}
                         text="Upload"
                         mode="ghost"
                         icon={UploadIcon}
                       />
-                      {!assetSources && <Button text="Browse media" mode="ghost" icon={SearchIcon} />}
+                      {!assetSources && (
+                        <Button text="Browse media" mode="ghost" icon={SearchIcon} />
+                      )}
                       {assetSources && (
                         <MenuButton
                           id="asset-source-menubutton"
@@ -259,9 +255,12 @@ export default function CompactImage(props) {
           onClose={() => setShowExpandDialog(false)}
           style={{maxHeight: '100%'}}
         >
-          <Card tone="transparent" padding={4} style={{height: 'calc(100% - 2.5rem)'}}>
+          <Card tone="transparent" padding={4} style={{height: 'calc(100% -'}}>
             <Flex height="fill" align="center" justify="center">
-              <img src="https://source.unsplash.com/random" style={{objectFit:'contain', maxWidth: '100%', maxHeight: '100%'}} />
+              <img
+                src="https://source.unsplash.com/random"
+                style={{objectFit: 'contain', maxWidth: '100%', maxHeight: '100%'}}
+              />
             </Flex>
           </Card>
         </Dialog>
