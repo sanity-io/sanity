@@ -14,6 +14,7 @@ interface Props extends Omit<FormFieldSetProps, 'onFocus'> {
   level: number
   presence: FormFieldPresence[]
   markers: Marker[]
+  fieldSetParent: Record<string, unknown> | undefined
   fieldValues: Record<string, unknown>
 }
 
@@ -34,6 +35,7 @@ export const ObjectFieldSet = forwardRef(function ObjectFieldSet(
     markers,
     onFocus,
     fieldValues,
+    fieldSetParent,
     ...rest
   } = props
   const columns = fieldset.options && fieldset.options.columns
@@ -117,7 +119,7 @@ export const ObjectFieldSet = forwardRef(function ObjectFieldSet(
     return (
       <ConditionalField
         {...fieldset}
-        parent={fieldValues}
+        parent={fieldSetParent}
         value={fieldSetValuesObject}
         hidden={fieldset.hidden}
       >
