@@ -124,7 +124,18 @@ export function buildFieldsetChangeList(
 
     const fieldPath = path.concat([field.name])
     const fieldTitlePath = fieldSetTitlePath.concat([field.type.title || field.name])
-    changes.push(...buildChangeList(field.type, fieldDiff, fieldPath, fieldTitlePath, context))
+    changes.push(
+      ...buildChangeList(
+        {
+          readOnly: isFieldSetReadOnly,
+          ...field.type,
+        },
+        fieldDiff,
+        fieldPath,
+        fieldTitlePath,
+        context
+      )
+    )
   }
 
   if (changes.length < 2) {
