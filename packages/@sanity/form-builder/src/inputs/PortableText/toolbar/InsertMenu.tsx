@@ -9,6 +9,7 @@ import {useFeatures, useFocusBlock} from './hooks'
 const CollapseMenuMemo = memo(CollapseMenu)
 
 const MENU_POPOVER_PROPS: PopoverProps = {constrainSize: true}
+const COLLAPSE_BUTTON_PROPS: CollapseMenuButtonProps = {padding: 2, mode: 'bleed'}
 
 interface InsertMenuProps {
   disabled: boolean
@@ -23,11 +24,6 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
   const focusBlock = useFocusBlock()
   const editor = usePortableTextEditor()
 
-  const collapseButtonProps: CollapseMenuButtonProps = useMemo(
-    () => ({padding: 2, mode: 'bleed'}),
-    []
-  )
-
   const isVoidFocus = focusBlock && focusBlock._type !== features.types.block.name
 
   const handleMenuClose = useCallback(() => {
@@ -41,7 +37,7 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
       return (
         <CollapseMenuButton
           aria-label={`Insert ${title}${item.inline ? ' (inline)' : ' (block)'}`}
-          buttonProps={collapseButtonProps}
+          buttonProps={COLLAPSE_BUTTON_PROPS}
           collapseText={false}
           disabled={disabled || (isVoidFocus && item.inline === true)}
           icon={item.icon}
@@ -58,7 +54,7 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
         />
       )
     })
-  }, [items, collapseButtonProps, disabled, isVoidFocus, isFullscreen])
+  }, [items, disabled, isVoidFocus, isFullscreen])
 
   const menuButton = useMemo(
     () => <Button icon={AddIcon} mode="bleed" padding={2} disabled={disabled} />,
