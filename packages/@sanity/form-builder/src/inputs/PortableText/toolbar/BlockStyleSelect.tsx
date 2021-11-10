@@ -33,6 +33,10 @@ const StyledMenuItem = styled(MenuItem)`
   }
 `
 
+const StyledButton = styled(Button)`
+  width: 100%;
+`
+
 const MENU_POPOVER_PROPS: MenuButtonProps['popover'] = {
   constrainSize: true,
   placement: 'bottom-start',
@@ -115,9 +119,10 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
 
   const renderOption = useCallback((style: string, title: string) => {
     const hasTextStyle = TEXT_STYLE_KEYS.includes(style)
+    const renderStyle = TEXT_STYLE_OPTIONS[style]
 
     if (hasTextStyle) {
-      return TEXT_STYLE_OPTIONS[style](title)
+      return renderStyle(title)
     }
 
     return <Text>{title}</Text>
@@ -125,13 +130,12 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
 
   const button = useMemo(
     () => (
-      <Button
+      <StyledButton
         disabled={_disabled}
         iconRight={SelectIcon}
         mode="bleed"
         onClick={preventDefault}
         padding={2}
-        style={{width: '100%'}} // Make it fill the h space
         text={menuButtonText}
       />
     ),
