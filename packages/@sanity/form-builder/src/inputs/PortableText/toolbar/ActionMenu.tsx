@@ -10,6 +10,7 @@ import {getActionIcon} from './helpers'
 const CollapseMenuMemo = memo(CollapseMenu)
 
 const MENU_POPOVER_PROPS: PopoverProps = {constrainSize: true}
+const COLLAPSE_BUTTON_PROPS: CollapseMenuButtonProps = {padding: 2, mode: 'bleed'}
 
 interface ActionMenuProps {
   disabled: boolean
@@ -48,11 +49,6 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
 
   const activeKeys = useActiveActionKeys({actions})
 
-  const collapsesButtonProps: CollapseMenuButtonProps = useMemo(
-    () => ({padding: 2, mode: 'bleed'}),
-    []
-  )
-
   const handleMenuClose = useCallback(() => {
     PortableTextEditor.focus(editor)
   }, [editor])
@@ -65,7 +61,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
         return (
           <CollapseMenuButton
             disabled={disabled || annotationDisabled}
-            buttonProps={collapsesButtonProps}
+            buttonProps={COLLAPSE_BUTTON_PROPS}
             dividerBefore={action.firstInGroup}
             icon={getActionIcon(action, active)}
             key={action.key}
@@ -81,7 +77,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
           />
         )
       }),
-    [actions, activeKeys, collapsesButtonProps, disabled, isEmptyTextBlock, isFullscreen]
+    [actions, activeKeys, disabled, isEmptyTextBlock, isFullscreen]
   )
 
   const menuButton = useMemo(
