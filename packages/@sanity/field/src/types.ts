@@ -191,6 +191,7 @@ export interface GroupChangeNode {
   path: Path
   titlePath: ChangeTitlePath
   schemaType?: SchemaType
+  readOnly?: boolean
 }
 
 export interface FieldChangeNode {
