@@ -17,7 +17,7 @@ export default {
           type: 'block',
           marks: {
             annotations: [
-              {type: 'object', name: 'link', fields: [{type: 'string', name: 'url'}]},
+              {type: 'object', name: 'link', fields: [{type: 'string', name: 'href'}]},
               {type: 'object', name: 'test', fields: [{type: 'string', name: 'mystring'}]},
             ],
           },
