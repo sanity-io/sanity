@@ -210,7 +210,7 @@ export function Annotation(props: AnnotationProps) {
     [children]
   )
 
-  const popoverScheme = useMemo(() => (sanity.color.dark ? 'light' : 'dark'), [sanity.color.dark])
+  const popoverScheme = sanity.color.dark ? 'light' : 'dark'
 
   const markersToolTip = useMemo(
     () =>
@@ -247,7 +247,7 @@ export function Annotation(props: AnnotationProps) {
     [editor, type]
   )
 
-  const isLink = useMemo(() => value?._type === 'link', [value])
+  const isLink = value?._type === 'link'
 
   const toneKey = useMemo(() => {
     if (hasError) {
