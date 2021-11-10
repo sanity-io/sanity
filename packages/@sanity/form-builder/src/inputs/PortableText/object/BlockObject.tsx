@@ -33,16 +33,16 @@ interface BlockObjectProps {
 }
 
 const Root = styled(Card)((props: {theme: Theme}) => {
-  const {color, radius} = props.theme.sanity
+  const {color, radius, space} = props.theme.sanity
 
   const overlay = css`
     pointer-events: none;
     content: '';
     position: absolute;
-    top: -4px;
-    bottom: -4px;
-    left: -4px;
-    right: -4px;
+    top: -${space[1]}px;
+    bottom: -${space[1]}px;
+    left: -${space[1]}px;
+    right: -${space[1]}px;
     border-radius: ${radius[2]}px;
     mix-blend-mode: ${color.dark ? 'screen' : 'multiply'};
   `
