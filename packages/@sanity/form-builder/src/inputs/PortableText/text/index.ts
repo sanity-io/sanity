@@ -1,4 +1,5 @@
 export * from './Annotation'
+export * from './AnnotationToolbarPopover'
 export * from './Decorator'
 export * from './TextBlock'
 export * from './textStyles'
