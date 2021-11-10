@@ -128,12 +128,13 @@ describe('Portable Text Editor Block Extras', () => {
     }
     await waitFor(() => expect(queryByTestId('custom-marker-test')).toBeTruthy())
   })
-  // test('block actions', async () => {
-  //   const {queryByTestId, findByText} = renderInput()
-  //   const block = await findByText('Lorem ipsum dolor sit amet', {exact: false})
-  //   if (block) {
-  //     fireEvent.click(block)
-  //   }
-  //   await waitFor(() => expect(queryByTestId('block-action-test')).toBeTruthy())
-  // })
+
+  test.skip('block actions', async () => {
+    const {queryByTestId, findByText} = renderInput()
+    const block = await findByText('Lorem ipsum dolor sit amet', {exact: false})
+    if (block) {
+      fireEvent.click(block)
+    }
+    await waitFor(() => expect(queryByTestId('block-action-test')).toBeTruthy())
+  })
 })
