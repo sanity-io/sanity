@@ -4,6 +4,7 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import React, {useCallback, useMemo} from 'react'
+import styled from 'styled-components'
 import PatchEvent from '../../PatchEvent'
 import {createBlockActionPatchFn} from './utils/createBlockActionPatchFn'
 import {RenderBlockActions} from './types'
@@ -14,7 +15,10 @@ type BlockActionsProps = {
   renderBlockActions?: RenderBlockActions
 }
 
-const noSelectStyle: React.CSSProperties = {userSelect: 'none', display: 'flex'}
+const Root = styled.div`
+  user-select: none;
+  display: flex;
+`
 
 function isClassComponent(component) {
   return typeof component === 'function' && !!component.prototype?.isReactComponent
@@ -63,13 +67,8 @@ export function BlockActions(props: BlockActionsProps) {
   }
 
   return (
-    <div
-      style={noSelectStyle}
-      contentEditable={false}
-      onKeyDown={handleClick}
-      onMouseDown={handleClick}
-    >
+    <Root contentEditable={false} onKeyDown={handleClick} onMouseDown={handleClick}>
       {blockActions}
-    </div>
+    </Root>
   )
 }
