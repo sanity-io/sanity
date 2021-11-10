@@ -60,62 +60,6 @@ export const EditableContainer = styled(Container)`
 `
 
 export const EditableWrapper = styled(Card)<{$isFullscreen: boolean}>`
-  counter-reset: ${LEVELS.map((l) => createListName(l)).join(' ')};
-
-  ${LEVELS.map((l) => {
-    return css`
-      & ${`[class~='pt-list-item-level-${l}']`}[class~='pt-list-item-number'] {
-        counter-increment: ${createListName(l)};
-      }
-    `
-  })}
-
-  & > div > div > div[class~='pt-list-item-bullet'] + div[class~='pt-list-item-number'],
-  & > div > div > div[class~='pt-list-item-number'] + div[class~='pt-list-item-bullet'] {
-    margin-top: ${({theme}) => theme.sanity.space[3]}px;
-    counter-reset: ${LEVELS.map((l) => createListName(l)).join(' ')};
-  }
-
-  & > div > div > div:not([class~='pt-list-item']) + [class~='pt-list-item'] {
-    margin-top: ${({theme}) => theme.sanity.space[2]}px;
-  }
-
-  /* Reset the list count if the element is not a numbered list item */
-  & > div > div > div:not([class~='pt-list-item-number']) {
-    counter-reset: ${LEVELS.map((l) => createListName(l)).join(' ')};
-  }
-
-  ${LEVELS.slice(1).map((l) => {
-    return css`
-      & ${`.pt-list-item-level-${l}`} + ${`.pt-list-item-level-${l - 1}`} {
-        counter-reset: ${createListName(l)};
-      }
-    `
-  })}
-
-  .pt-drop-indicator {
-    border: 1px solid var(--card-focus-ring-color) !important;
-    height: 0px !important;
-    border-radius: 1px;
-    left: calc(
-      ${({$isFullscreen, theme}) =>
-          $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} - 1px
-    );
-    right: calc(
-      ${({$isFullscreen, theme}) =>
-          $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} - 1px
-    );
-    width: calc(
-      100% -
-        ${({$isFullscreen, theme}) =>
-          $isFullscreen ? rem(theme.sanity.space[5] * 2) : rem(theme.sanity.space[3] * 2)} + 2px
-    ) !important;
-  }
-
-  & > div > div > .pt-list-item + div:not(.pt-list-item) {
-    margin-top: ${({theme}) => theme.sanity.space[3]}px;
-  }
-
   &:not([hidden]) {
     display: flex;
   }
@@ -124,25 +68,79 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean}>`
   position: relative;
   flex-direction: column;
   height: 100%;
+  counter-reset: ${LEVELS.map((l) => createListName(l)).join(' ')};
 
   & > div {
     height: 100%;
+  }
 
-    .pt-editable {
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      min-height: 100%;
+  & .pt-editable {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 100%;
 
-      .pt-block {
-        &:first-child {
-          padding-top: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 5 : 3]}px;
+    ${LEVELS.map((l) => {
+      return css`
+        & > .pt-list-item-number[class~='pt-list-item-level-${l}'] {
+          counter-increment: ${createListName(l)};
         }
+      `
+    })}
 
-        &:last-child {
-          padding-bottom: ${({$isFullscreen, theme}) =>
-            theme.sanity.space[$isFullscreen ? 9 : 5]}px;
+    & > .pt-list-item-bullet + .pt-list-item-number,
+    & > .pt-list-item-number + .pt-list-item-bullet {
+      margin-top: ${({theme}) => theme.sanity.space[3]}px;
+      counter-reset: ${LEVELS.map((l) => createListName(l)).join(' ')};
+    }
+
+    & > :not(.pt-list-item) + .pt-list-item {
+      margin-top: ${({theme}) => theme.sanity.space[2]}px;
+    }
+
+    /* Reset the list count if the element is not a numbered list item */
+    & > :not(.pt-list-item-number) {
+      counter-reset: ${LEVELS.map((l) => createListName(l)).join(' ')};
+    }
+
+    ${LEVELS.slice(1).map((l) => {
+      return css`
+        & > .pt-list-item-level-${l} + .pt-list-item-level-${l - 1} {
+          counter-reset: ${createListName(l)};
         }
+      `
+    })}
+
+    & > .pt-drop-indicator {
+      border: 1px solid var(--card-focus-ring-color) !important;
+      height: 0px !important;
+      border-radius: 1px;
+      left: calc(
+        ${({$isFullscreen, theme}) =>
+            $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} - 1px
+      );
+      right: calc(
+        ${({$isFullscreen, theme}) =>
+            $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} - 1px
+      );
+      width: calc(
+        100% -
+          ${({$isFullscreen, theme}) =>
+            $isFullscreen ? rem(theme.sanity.space[5] * 2) : rem(theme.sanity.space[3] * 2)} + 2px
+      ) !important;
+    }
+
+    & > .pt-list-item + :not(.pt-list-item) {
+      margin-top: ${({theme}) => theme.sanity.space[3]}px;
+    }
+
+    & > .pt-block {
+      &:first-child {
+        padding-top: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 5 : 3]}px;
+      }
+
+      &:last-child {
+        padding-bottom: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 9 : 5]}px;
       }
     }
   }
