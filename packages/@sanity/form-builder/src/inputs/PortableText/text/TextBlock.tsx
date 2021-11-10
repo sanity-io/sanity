@@ -31,11 +31,11 @@ interface TextBlockStyleProps {
 }
 
 const HEADER_SIZES: {[key: string]: number | undefined} = {
-  h1: 4,
-  h2: 3,
-  h3: 2,
-  h4: 1,
-  h5: 0,
+  h1: 5,
+  h2: 4,
+  h3: 3,
+  h4: 2,
+  h5: 1,
   h6: 0,
 }
 
