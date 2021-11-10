@@ -87,7 +87,7 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean}>`
 
   ${LEVELS.slice(1).map((l) => {
     return css`
-      & > div > div > ${`.pt-list-item-level-${l}`} + ${`.pt-list-item-level-${l - 1}`} {
+      & ${`.pt-list-item-level-${l}`} + ${`.pt-list-item-level-${l - 1}`} {
         counter-reset: ${createListName(l)};
       }
     `
