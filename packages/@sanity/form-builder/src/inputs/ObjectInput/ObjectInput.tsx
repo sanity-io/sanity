@@ -132,7 +132,8 @@ export const ObjectInput = memo(
         field: ObjectField,
         fieldLevel: number,
         index: number,
-        isFieldsetReadOnly?: ConditionalProperty
+        isFieldsetReadOnly?: ConditionalProperty,
+        fieldSetValues?: Record<string, unknown>
       ) => {
         const fieldValue = value?.[field.name]
         if (!filterField(type, field)) {
@@ -141,7 +142,7 @@ export const ObjectInput = memo(
 
         return (
           <ConditionalReadOnlyField
-            value={value}
+            value={fieldSetValues}
             parent={value}
             readOnly={readOnly || isFieldsetReadOnly}
           >
@@ -186,9 +187,16 @@ export const ObjectInput = memo(
         return (type.fields || []).map((field, index) => renderField(field, level + 1, index))
       }
       return type.fieldsets.map((fieldset, fieldsetIndex) => {
-        return isSingleFieldset(fieldset) ? (
-          renderField(fieldset.field, level + 1, fieldsetIndex, fieldset.readOnly)
-        ) : (
+        if (isSingleFieldset(fieldset)) {
+          return renderField(fieldset.field, level + 1, fieldsetIndex, fieldset.readOnly)
+        }
+        const fieldSetValuesObject = {}
+        // eslint-disable-next-line max-nested-callbacks
+        fieldset.fields.forEach((field) => {
+          fieldSetValuesObject[field.name] = value[field.name]
+        })
+
+        return (
           <ObjectFieldSet
             key={`fieldset-${(fieldset as MultiFieldSet).name}`}
             data-testid={`fieldset-${(fieldset as MultiFieldSet).name}`}
@@ -198,19 +206,36 @@ export const ObjectInput = memo(
             level={level + 1}
             presence={presence}
             markers={markers}
-            fieldValues={value}
+            fieldSetParent={value}
+            fieldValues={fieldSetValuesObject}
           >
             {() =>
               // lazy render children
               // eslint-disable-next-line max-nested-callbacks
               fieldset.fields.map((field, fieldIndex) =>
-                renderField(field, level + 2, fieldsetIndex + fieldIndex, fieldset.readOnly)
+                renderField(
+                  field,
+                  level + 2,
+                  fieldsetIndex + fieldIndex,
+                  fieldset.readOnly,
+                  fieldSetValuesObject
+                )
               )
             }
           </ObjectFieldSet>
         )
       })
-    }, [focusPath, level, markers, onFocus, presence, renderField, type.fields, type.fieldsets])
+    }, [
+      focusPath,
+      level,
+      markers,
+      onFocus,
+      presence,
+      renderField,
+      type.fields,
+      type.fieldsets,
+      value,
+    ])
 
     const renderUnknownFields = useCallback(() => {
       if (!type.fields) {
