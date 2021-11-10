@@ -4,7 +4,7 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import React, {useCallback, useMemo} from 'react'
-import PatchEvent from '../../../PatchEvent'
+import PatchEvent from '../../PatchEvent'
 import {createBlockActionPatchFn} from './utils/createBlockActionPatchFn'
 import {RenderBlockActions} from './types'
 
