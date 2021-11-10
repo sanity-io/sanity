@@ -31,6 +31,7 @@ export default async function initSanity(args, context) {
   const unattended = cliFlags.y || cliFlags.yes
   const print = unattended ? noop : output.print
   const specifiedOutputPath = cliFlags['output-path']
+  const intendedPlan = cliFlags['project-plan']
   let reconfigure = cliFlags.reconfigure
   let defaultConfig = cliFlags['dataset-default']
   let showDefaultConfigPrompt = !defaultConfig
@@ -335,7 +336,10 @@ export default async function initSanity(args, context) {
     if (isUsersFirstProject) {
       debug('No projects found for user, prompting for name')
       const projectName = await prompt.single({message: 'Project name'})
-      return createProject(apiClient, {displayName: projectName}).then((response) => ({
+      return createProject(apiClient, {
+        displayName: projectName,
+        subscription: {planId: intendedPlan},
+      }).then((response) => ({
         ...response,
         isFirstProject: isUsersFirstProject,
       }))
@@ -365,6 +369,7 @@ export default async function initSanity(args, context) {
           message: 'Your project name:',
           default: 'My Sanity Project',
         }),
+        subscription: {planId: intendedPlan},
       }).then((response) => ({
         ...response,
         isFirstProject: isUsersFirstProject,
@@ -595,6 +600,7 @@ export default async function initSanity(args, context) {
       debug('--create-project specified, creating a new project')
       const createdProject = await createProject(apiClient, {
         displayName: createProjectName.trim(),
+        subscription: {planId: intendedPlan},
       })
       debug('Project with ID %s created', createdProject.projectId)
 
