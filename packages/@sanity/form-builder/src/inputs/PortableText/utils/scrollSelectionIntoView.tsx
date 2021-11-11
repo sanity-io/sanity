@@ -9,6 +9,7 @@ export function createScrollSelectionIntoView(scrollElement: HTMLElement) {
       if (!leafEl) {
         return
       }
+      const originalGetBoundingClientRect = leafEl.getBoundingClientRect
       leafEl.getBoundingClientRect = domRange.getBoundingClientRect.bind(domRange)
       let voidOffset = 0
       let voidIsVisible = false
@@ -49,7 +50,9 @@ export function createScrollSelectionIntoView(scrollElement: HTMLElement) {
         block: voidOffset ? 'start' : 'center',
         inline: 'nearest',
       })
-      delete leafEl.getBoundingClientRect
+
+      // restore original method
+      leafEl.getBoundingClientRect = originalGetBoundingClientRect
     }
   }
 }
