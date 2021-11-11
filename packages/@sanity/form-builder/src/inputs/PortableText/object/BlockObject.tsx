@@ -250,47 +250,44 @@ export function BlockObject(props: BlockObjectProps) {
   const hasErrors = errorMarkers.length > 0
   const hasWarnings = warningMarkers.length > 0
 
-  const markersToolTip = useMemo(
-    () =>
-      hasErrors || hasWarnings || (hasMarkers && renderCustomMarkers) ? (
-        <Tooltip
-          placement="top"
-          portal="editor"
-          content={
-            <TooltipBox padding={2}>
-              <Markers markers={markers} renderCustomMarkers={renderCustomMarkers} />
-            </TooltipBox>
-          }
-        >
-          <div>{blockPreview}</div>
-        </Tooltip>
-      ) : undefined,
-    [blockPreview, hasErrors, hasWarnings, hasMarkers, markers, renderCustomMarkers]
-  )
-
   const isImagePreview = type?.type?.name === 'image'
 
   const blockPath = useMemo(() => [{_key: block._key}], [block._key])
 
+  const tooltipEnabled = hasErrors || hasWarnings || Boolean(hasMarkers && renderCustomMarkers)
+
   return (
     <InnerFlex marginY={3}>
       <Flex flex={1} {...innerPaddingProps}>
-        <Root
-          data-focused={focused || undefined}
-          data-invalid={hasErrors || undefined}
-          data-selected={selected || undefined}
-          data-markers={hasMarkers || undefined}
-          data-warning={hasWarnings || undefined}
-          data-testid="pte-block-object"
-          data-image-preview={isImagePreview ? '' : undefined}
-          flex={1}
-          onDoubleClick={handleClickToOpen}
-          padding={isImagePreview ? 0 : 1}
-          ref={elementRef}
-          tone={tone}
+        <Tooltip
+          placement="top"
+          portal="editor"
+          disabled={!tooltipEnabled}
+          content={
+            tooltipEnabled && (
+              <TooltipBox padding={2}>
+                <Markers markers={markers} renderCustomMarkers={renderCustomMarkers} />
+              </TooltipBox>
+            )
+          }
         >
-          <BlockPreview ref={blockRef}>{markersToolTip || blockPreview}</BlockPreview>
-        </Root>
+          <Root
+            data-focused={focused || undefined}
+            data-invalid={hasErrors || undefined}
+            data-selected={selected || undefined}
+            data-markers={hasMarkers || undefined}
+            data-warning={hasWarnings || undefined}
+            data-testid="pte-block-object"
+            data-image-preview={isImagePreview ? '' : undefined}
+            flex={1}
+            onDoubleClick={handleClickToOpen}
+            padding={isImagePreview ? 0 : 1}
+            ref={elementRef}
+            tone={tone}
+          >
+            <BlockPreview ref={blockRef}>{blockPreview}</BlockPreview>
+          </Root>
+        </Tooltip>
       </Flex>
 
       {renderBlockActions && (
