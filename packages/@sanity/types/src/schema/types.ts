@@ -41,7 +41,7 @@ export interface ConditionalPropertyCallbackContext {
 }
 
 export type ConditionalPropertyCallback = (context: ConditionalPropertyCallbackContext) => boolean
-export type ConditionalProperty = boolean | ConditionalPropertyCallback
+export type ConditionalProperty = boolean | ConditionalPropertyCallback | undefined
 
 export type InitialValueParams = Record<string, unknown>
 export type InitialValueResolver<T> = (params?: InitialValueParams) => Promise<T> | T
@@ -84,6 +84,7 @@ export interface BaseSchemaType {
   type?: SchemaType
   liveEdit?: boolean
   readOnly?: ConditionalProperty
+  hidden?: ConditionalProperty
   icon?: React.ComponentType
   initialValue?: InitialValueProperty
   options?: Record<string, any>
