@@ -25,11 +25,12 @@ export function ElementWithChangeBar(props: {
   const changeBar = useMemo(
     () =>
       disabled ? null : (
-        <ChangeBar data-testid="change-bar__tooltip-wrapper">
-          <ChangeBarMarker />
+        <ChangeBar data-testid="change-bar">
+          <ChangeBarMarker data-testid="change-bar__marker" />
 
           <ChangeBarButton
             aria-label="Review changes"
+            data-testid="change-bar__button"
             onClick={isReviewChangesOpen ? undefined : onOpenReviewChanges}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
@@ -43,7 +44,7 @@ export function ElementWithChangeBar(props: {
 
   return (
     <ChangeBarWrapper
-      data-testid="change-bar"
+      data-testid="change-bar-wrapper"
       focus={hasFocus}
       hover={hover}
       changed={isChanged}
