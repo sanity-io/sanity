@@ -1,7 +1,10 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import {useDocumentPresence} from '@sanity/base/hooks'
+import {
+  useDocumentPresence,
+  unstable_useConditionalProperty as useConditionalProperty,
+} from '@sanity/base/hooks'
 import {PresenceOverlay} from '@sanity/base/presence'
 import {Box, Container, Flex, Spinner, Text} from '@sanity/ui'
 import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-component'
@@ -12,6 +15,7 @@ import filterFieldFn$ from 'part:@sanity/desk-tool/filter-fields-fn?'
 import {FormBuilder} from 'part:@sanity/form-builder'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {tap} from 'rxjs/operators'
+import {SanityDocument} from '@sanity/client'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Delay} from '../../../../components/Delay'
 
@@ -60,15 +64,23 @@ export function FormView(props: FormViewProps) {
     patchChannelRef.current = FormBuilder.createPatchChannel()
   }
 
-  const readOnly = useMemo(() => {
+  const readOnly = useConditionalProperty({
+    document: value as SanityDocument,
+    value,
+    checkProperty: documentSchema.readOnly,
+    checkPropertyKey: 'readOnly',
+  })
+
+  const isReadOnly = useMemo(() => {
     return (
       !ready ||
       rev !== null ||
       !granted ||
       !isActionEnabled(documentSchema, 'update') ||
-      (isNonExistent && !isActionEnabled(documentSchema, 'create'))
+      (isNonExistent && !isActionEnabled(documentSchema, 'create')) ||
+      readOnly
     )
-  }, [documentSchema, isNonExistent, granted, ready, rev])
+  }, [documentSchema, isNonExistent, granted, ready, rev, readOnly])
 
   useEffect(() => {
     if (!filterFieldFn$) return undefined
@@ -141,11 +153,11 @@ export function FormView(props: FormViewProps) {
               type={documentSchema}
               presence={presence}
               filterField={filterField}
-              readOnly={readOnly}
+              readOnly={isReadOnly}
               onBlur={handleBlur}
               onFocus={handleFocus}
               focusPath={focusPath}
-              onChange={readOnly ? noop : handleChange}
+              onChange={isReadOnly ? noop : handleChange}
               markers={markers}
             />
           ) : (
@@ -178,7 +190,7 @@ export function FormView(props: FormViewProps) {
     patchChannelRef,
     presence,
     ready,
-    readOnly,
+    isReadOnly,
     value,
   ])
 
