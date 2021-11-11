@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {useDocumentOperation} from '@sanity/react-hooks'
-import React, {useCallback, useContext, useState} from 'react'
+import React, {useCallback, useContext, useMemo, useState} from 'react'
 import {unstable_useDocumentPairPermissions as useDocumentPairPermissions} from '@sanity/base/hooks'
 import {Box, Stack, Button, Grid, Text, useClickOutside} from '@sanity/ui'
 import {undoChange} from '../changes/undoChange'
@@ -13,14 +14,14 @@ import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 import {ChangeResolver} from './ChangeResolver'
 import {DocumentChangeContext} from './DocumentChangeContext'
 import {RevertChangesButton} from './RevertChangesButton'
-
 import {ChangeListWrapper, GroupChangeContainer, PopoverWrapper} from './GroupChange.styled'
 
 export function GroupChange({
   change: group,
   readOnly,
+  hidden,
   ...restProps
-}: {change: GroupChangeNode; readOnly?: boolean} & React.HTMLAttributes<
+}: {change: GroupChangeNode; readOnly?: boolean; hidden?: boolean} & React.HTMLAttributes<
   HTMLDivElement
 >): React.ReactElement | null {
   const {titlePath, changes, path: groupPath} = group
@@ -68,60 +69,60 @@ export function GroupChange({
     },
     [hoverRef]
   )
-  const content = (
-    <Stack
-      space={1}
-      as={GroupChangeContainer}
-      data-revert-group-hover={isHoveringRevert ? '' : undefined}
-      data-portable-text={isPortableText ? '' : undefined}
-      data-revert-all-groups-hover={
-        restProps['data-revert-all-changes-hover'] === '' ? '' : undefined
-      }
-    >
-      <Stack as={ChangeListWrapper} space={5}>
-        {changes.map((change) => (
-          <ChangeResolver
-            key={change.key}
-            change={change}
-            readOnly={readOnly || group?.schemaType?.readOnly}
-          />
-        ))}
-      </Stack>
-      {isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
-        <PopoverWrapper
-          content={
+
+  const content = useMemo(
+    () => (
+      <Stack
+        space={1}
+        as={GroupChangeContainer}
+        data-revert-group-hover={isHoveringRevert ? '' : undefined}
+        data-portable-text={isPortableText ? '' : undefined}
+        data-revert-all-groups-hover={
+          restProps['data-revert-all-changes-hover'] === '' ? '' : undefined
+        }
+      >
+        <Stack as={ChangeListWrapper} space={5}>
+          {changes.map((change) => (
+            <ChangeResolver key={change.key} change={change} readOnly={readOnly} hidden={hidden} />
+          ))}
+        </Stack>
+        {isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
+          <PopoverWrapper
+            content={
+              <Box>
+                Are you sure you want to revert the changes?
+                <Grid columns={2} gap={2} marginTop={2}>
+                  <Button mode="ghost" onClick={closeRevertChangesConfirmDialog}>
+                    <Text align="center">Cancel</Text>
+                  </Button>
+                  <Button tone="critical" onClick={handleRevertChanges}>
+                    <Text align="center">Revert change</Text>
+                  </Button>
+                </Grid>
+              </Box>
+            }
+            portal
+            padding={4}
+            placement={'left'}
+            open={confirmRevertOpen}
+            ref={setRevertButtonElement}
+          >
             <Box>
-              Are you sure you want to revert the changes?
-              <Grid columns={2} gap={2} marginTop={2}>
-                <Button mode="ghost" onClick={closeRevertChangesConfirmDialog}>
-                  <Text align="center">Cancel</Text>
-                </Button>
-                <Button tone="critical" onClick={handleRevertChanges}>
-                  <Text align="center">Revert change</Text>
-                </Button>
-              </Grid>
+              <RevertChangesButton
+                onClick={handleRevertChangesConfirm}
+                ref={setRevertButtonRef}
+                selected={confirmRevertOpen}
+                disabled={readOnly}
+              />
             </Box>
-          }
-          portal
-          padding={4}
-          placement={'left'}
-          open={confirmRevertOpen}
-          ref={setRevertButtonElement}
-        >
-          <Box>
-            <RevertChangesButton
-              onClick={handleRevertChangesConfirm}
-              ref={setRevertButtonRef}
-              selected={confirmRevertOpen}
-              disabled={group?.schemaType?.readOnly || readOnly}
-            />
-          </Box>
-        </PopoverWrapper>
-      )}
-    </Stack>
+          </PopoverWrapper>
+        )}
+      </Stack>
+    ),
+    [readOnly, hidden, confirmRevertOpen, isPermissionsLoading, permissions]
   )
 
-  return (group?.schemaType as any)?.hidden ? null : (
+  return hidden ? null : (
     <Stack space={1} {...restProps}>
       <ChangeBreadcrumb titlePath={titlePath} />
       {isNestedInDiff || !FieldWrapper ? (
