@@ -10,7 +10,7 @@ import Preview from '../../../Preview'
 import {Markers} from '../../../legacyParts'
 import {RenderCustomMarkers} from '../types'
 
-type Props = {
+interface InlineObjectProps {
   attributes: RenderAttributes
   markers: Marker[]
   onFocus: (path: Path) => void
@@ -87,7 +87,6 @@ const PreviewSpan = styled.span`
   display: block;
   max-width: calc(5em + 80px);
   position: relative;
-  z-index: 100;
 
   & > * {
     user-select: none;
@@ -99,7 +98,7 @@ const TooltipBox = styled(Box)`
   max-width: 250px;
 `
 
-export const InlineObject: FunctionComponent<Props> = ({
+export const InlineObject: FunctionComponent<InlineObjectProps> = ({
   attributes: {focused, selected, path},
   markers,
   onFocus,
