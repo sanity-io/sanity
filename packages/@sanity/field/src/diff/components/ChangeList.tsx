@@ -4,7 +4,7 @@ import {RevertIcon} from '@sanity/icons'
 import React, {useState} from 'react'
 import {
   unstable_useCheckDocumentPermission as useCheckDocumentPermission,
-  useResolveConditionalProperty,
+  unstable_useConditionalProperty as useConditionalProperty,
 } from '@sanity/base/hooks'
 import {SanityDocument} from '@sanity/client'
 import {ObjectDiff, ObjectSchemaType, ChangeNode, OperationsAPI} from '../../types'
@@ -31,7 +31,7 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
   const [confirmRevertAllOpen, setConfirmRevertAllOpen] = React.useState(false)
   const [confirmRevertAllHover, setConfirmRevertAllHover] = React.useState(false)
 
-  const isReadOnly = useResolveConditionalProperty({
+  const isReadOnly = useConditionalProperty({
     document: value as SanityDocument,
     value: undefined,
     checkProperty: schemaType.readOnly,

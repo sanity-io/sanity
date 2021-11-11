@@ -1,7 +1,10 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import {useDocumentPresence, useResolveConditionalProperty} from '@sanity/base/hooks'
+import {
+  useDocumentPresence,
+  unstable_useConditionalProperty as useConditionalProperty,
+} from '@sanity/base/hooks'
 import {PresenceOverlay} from '@sanity/base/presence'
 import {Box, Container, Flex, Spinner, Text} from '@sanity/ui'
 import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-component'
@@ -61,7 +64,7 @@ export function FormView(props: FormViewProps) {
     patchChannelRef.current = FormBuilder.createPatchChannel()
   }
 
-  const resolvedReadOnly = useResolveConditionalProperty({
+  const resolvedReadOnly = useConditionalProperty({
     document: value as SanityDocument,
     value: undefined,
     checkProperty: documentSchema.readOnly,

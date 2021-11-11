@@ -1,4 +1,4 @@
-import {useResolveConditionalProperty} from '@sanity/base/hooks'
+import {unstable_useConditionalProperty as useConditionalProperty} from '@sanity/base/hooks'
 import {ConditionalProperty, SanityDocument} from '@sanity/types'
 import React from 'react'
 
@@ -12,7 +12,7 @@ type Props = {
 }
 
 export function ConditionalPropertyResolver({callback, ...props}: Props) {
-  const isTruthy = useResolveConditionalProperty({
+  const isTruthy = useConditionalProperty({
     ...props,
   })
   return <>{callback(isTruthy)}</>

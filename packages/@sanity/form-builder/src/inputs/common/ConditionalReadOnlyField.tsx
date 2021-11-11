@@ -1,7 +1,7 @@
 import React, {forwardRef} from 'react'
 import {ConditionalProperty} from '@sanity/types'
 import {SanityDocument} from '@sanity/client'
-import {useResolveConditionalProperty} from '@sanity/base/hooks'
+import {unstable_useConditionalProperty as useConditionalProperty} from '@sanity/base/hooks'
 import withDocument from '../../utils/withDocument'
 
 type Props = {
@@ -25,7 +25,7 @@ const ConditionalReadOnlyWithDocument = withDocument(
     ref /* ignore ref as there's no place to put it */
   ) {
     const {readOnly, value, parent, document, children} = props
-    const isReadOnly = useResolveConditionalProperty({
+    const isReadOnly = useConditionalProperty({
       checkProperty: readOnly,
       checkPropertyKey: 'readOnly',
       value,

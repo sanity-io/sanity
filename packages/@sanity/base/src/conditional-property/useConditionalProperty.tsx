@@ -1,6 +1,14 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import {SanityDocument, ConditionalProperty} from '@sanity/types'
 import {useCurrentUser} from '../_exports/hooks'
 import {omitDeprecatedRole, useCheckCondition} from './utils'
+
+/**
+ * Resolve a callback function to a boolean using the passed arguments
+ *
+ * @beta This API will change. DO NOT USE IN PRODUCTION.
+ * @internal Not a stable API yet
+ */
 
 export interface ConditionalPropertyProps {
   parent?: Record<string, unknown> | undefined
@@ -10,7 +18,8 @@ export interface ConditionalPropertyProps {
   checkPropertyKey: string
 }
 
-export const useResolveConditionalProperty = (props: ConditionalPropertyProps) => {
+// eslint-disable-next-line camelcase
+export const unstable_useConditionalProperty = (props: ConditionalPropertyProps) => {
   const {document, parent, value, checkProperty, checkPropertyKey} = props
 
   const {value: currentUser} = useCurrentUser()

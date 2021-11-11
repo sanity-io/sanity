@@ -1,4 +1,4 @@
-import {useResolveConditionalProperty} from '@sanity/base/hooks'
+import {unstable_useConditionalProperty as useConditionalProperty} from '@sanity/base/hooks'
 import {ConditionalProperty, SanityDocument} from '@sanity/types/src'
 import * as React from 'react'
 import {ChangeNode} from '../../types'
@@ -95,7 +95,7 @@ const ConditionalHiddenChange = ({
   document,
   ...props
 }: Props & {hidden?: ConditionalProperty; children: React.ReactElement}) => {
-  const isHidden = useResolveConditionalProperty({
+  const isHidden = useConditionalProperty({
     ...props,
     document: document as SanityDocument,
     checkProperty: hidden,
@@ -109,7 +109,7 @@ const ConditionalReadOnlyChange = ({
   document,
   ...props
 }: Props & {readOnly?: ConditionalProperty; children: React.ReactElement}) => {
-  const isReadOnly = useResolveConditionalProperty({
+  const isReadOnly = useConditionalProperty({
     ...props,
     document: document as SanityDocument,
     checkProperty: readOnly,
