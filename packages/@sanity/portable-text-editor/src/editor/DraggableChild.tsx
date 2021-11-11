@@ -74,6 +74,13 @@ export const DraggableChild: FunctionComponent<ElementProps> = ({
       throw new Error(`Cannot resolve a Slate range from a DOM event: ${event}`)
     }
 
+    if (domRange.commonAncestorContainer) {
+      const hasDomNode = ReactEditor.hasDOMNode(editor, domRange.commonAncestorContainer)
+      if (!hasDomNode) {
+        return
+      }
+    }
+
     // Resolve a Slate range from the DOM range.
     const range = ReactEditor.toSlateRange(editor, domRange)
     if (range) {
