@@ -2,7 +2,11 @@ import {useDocumentOperation} from '@sanity/react-hooks'
 import {Button, Box, Card, Grid, Stack, Text, useClickOutside} from '@sanity/ui'
 import {RevertIcon} from '@sanity/icons'
 import React, {useState} from 'react'
-import {unstable_useDocumentPairPermissions as useDocumentPairPermissions} from '@sanity/base/hooks'
+import {
+  unstable_useDocumentPairPermissions as useDocumentPairPermissions,
+  unstable_useConditionalProperty as useConditionalProperty,
+} from '@sanity/base/hooks'
+import {SanityDocument} from '@sanity/client'
 import {ObjectDiff, ObjectSchemaType, ChangeNode, OperationsAPI} from '../../types'
 import {DiffContext} from '../contexts/DiffContext'
 import {buildObjectChangeList} from '../changes/buildChangeList'
@@ -20,12 +24,19 @@ interface Props {
 }
 
 export function ChangeList({diff, fields, schemaType}: Props): React.ReactElement | null {
-  const {documentId, isComparingCurrent} = React.useContext(DocumentChangeContext)
+  const {documentId, isComparingCurrent, value} = React.useContext(DocumentChangeContext)
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
   const {path} = React.useContext(DiffContext)
   const isRoot = path.length === 0
   const [confirmRevertAllOpen, setConfirmRevertAllOpen] = React.useState(false)
   const [confirmRevertAllHover, setConfirmRevertAllHover] = React.useState(false)
+
+  const isReadOnly = useConditionalProperty({
+    document: value as SanityDocument,
+    value: undefined,
+    checkProperty: schemaType.readOnly,
+    checkPropertyKey: 'readOnly',
+  })
 
   if (schemaType.jsonType !== 'object') {
     throw new Error(`Only object schema types are allowed in ChangeList`)
@@ -88,7 +99,7 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
               change={change}
               key={change.key}
               data-revert-all-changes-hover={confirmRevertAllHover ? '' : undefined}
-              readOnly={schemaType.readOnly}
+              readOnly={isReadOnly}
             />
           ))}
         </Stack>
@@ -123,7 +134,7 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
                 onClick={handleRevertAllChangesClick}
                 onMouseEnter={handleRevertAllChangesMouseEnter}
                 onMouseLeave={handleRevertAllChangesMouseLeave}
-                disabled={schemaType?.readOnly}
+                disabled={isReadOnly}
               />
             </Stack>
           </PopoverWrapper>
