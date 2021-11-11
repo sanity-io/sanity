@@ -1,7 +1,6 @@
 import {
   ArraySchemaType,
   BooleanSchemaType,
-  ConditionalProperty,
   Marker,
   NumberSchemaType,
   ObjectSchemaType,
@@ -30,7 +29,7 @@ export type Props<
   level: number
   value: T | null | undefined
   onChange: (patchEvent: PatchEvent) => void
-  readOnly?: ConditionalProperty
+  readOnly?: boolean
   // Note: we should allow implementors of custom inputs to forward the passed onFocus to native element's onFocus handler,
   // but use Path consistently on internal inputs
   onFocus: (path?: Path | React.FocusEvent<any>) => void

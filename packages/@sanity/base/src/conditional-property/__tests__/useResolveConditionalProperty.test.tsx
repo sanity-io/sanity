@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-unassigned-import
 import '@testing-library/jest-dom/extend-expect'
 import {renderHook} from '@testing-library/react-hooks'
-import {useResolveConditionalProperty} from '..'
+import {unstable_useConditionalProperty as useConditionalProperty} from '..'
 
 /* 
   @TODO
@@ -33,7 +33,7 @@ const callbackFn = jest.fn(() => true)
 describe('Conditional property resolver', () => {
   it('calls callback function', () => {
     renderHook(() =>
-      useResolveConditionalProperty({
+      useConditionalProperty({
         checkProperty: callbackFn,
         ...DEFAULT_PROPS,
       })
@@ -63,7 +63,7 @@ describe('Conditional property resolver', () => {
 
   it('resolves callback to true', () => {
     const {result} = renderHook(() =>
-      useResolveConditionalProperty({
+      useConditionalProperty({
         // eslint-disable-next-line max-nested-callbacks
         checkProperty: jest.fn(() => true),
         ...DEFAULT_PROPS,
@@ -74,7 +74,7 @@ describe('Conditional property resolver', () => {
 
   it('returns false with callback that returns false', () => {
     const {result} = renderHook(() =>
-      useResolveConditionalProperty({
+      useConditionalProperty({
         // eslint-disable-next-line max-nested-callbacks
         checkProperty: jest.fn(() => false),
         ...DEFAULT_PROPS,
@@ -85,7 +85,7 @@ describe('Conditional property resolver', () => {
 
   it('returns false if document title does not match', () => {
     const {result} = renderHook(() =>
-      useResolveConditionalProperty({
+      useConditionalProperty({
         // eslint-disable-next-line max-nested-callbacks
         checkProperty: jest.fn(({document}) => document?.title !== 'Hello world'),
         ...DEFAULT_PROPS,
@@ -96,7 +96,7 @@ describe('Conditional property resolver', () => {
 
   it('returns true if document is published', () => {
     const {result} = renderHook(() =>
-      useResolveConditionalProperty({
+      useConditionalProperty({
         // eslint-disable-next-line max-nested-callbacks
         checkProperty: jest.fn(({document}) => Boolean(document?.isPublished)),
         ...DEFAULT_PROPS,
@@ -107,7 +107,7 @@ describe('Conditional property resolver', () => {
 
   it('returns undefined because callback returns undefined', () => {
     const {result} = renderHook(() =>
-      useResolveConditionalProperty({
+      useConditionalProperty({
         // eslint-disable-next-line max-nested-callbacks
         checkProperty: jest.fn(() => undefined),
         ...DEFAULT_PROPS,
@@ -118,7 +118,7 @@ describe('Conditional property resolver', () => {
 
   it('returns true because value matches', () => {
     const {result} = renderHook(() =>
-      useResolveConditionalProperty({
+      useConditionalProperty({
         // eslint-disable-next-line max-nested-callbacks
         checkProperty: jest.fn(({value}) => value === 'test value'),
         ...DEFAULT_PROPS,
@@ -130,7 +130,7 @@ describe('Conditional property resolver', () => {
 
   it('returns false because value does not match', () => {
     const {result} = renderHook(() =>
-      useResolveConditionalProperty({
+      useConditionalProperty({
         // eslint-disable-next-line max-nested-callbacks
         checkProperty: jest.fn(({value}) => value === 'test'),
         ...DEFAULT_PROPS,
