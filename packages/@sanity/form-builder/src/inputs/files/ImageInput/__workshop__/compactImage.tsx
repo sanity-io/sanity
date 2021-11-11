@@ -267,16 +267,16 @@ export default function CompactImage() {
               </RatioBox>
             </Card>
           </Stack>
-{/*
-          <Stack space={3}>
+
+          {/* <Stack space={3}>
             <Text weight="semibold" size={1}>
               Even more compact
             </Text>
             <Card>
               <Button text="Select image" icon={SearchIcon} mode="ghost" />
             </Card>
-          </Stack>
-        </Stack> */}
+          </Stack> */}
+        </Stack>
       </Container>
       {showExpandDialog && (
         <Dialog
