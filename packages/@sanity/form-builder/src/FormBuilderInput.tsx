@@ -213,7 +213,9 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
   }
 
   render() {
-    const {type, readOnly, parent, value} = this.props
+    const {type, parent, value} = this.props
+    // Separate readOnly in order to resolve it to a boolean type
+    const {readOnly, ...restProps} = this.props
     const InputComponent = this.resolveInputComponent(type)
 
     if (!InputComponent) {
@@ -232,7 +234,7 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
           readOnly={readOnly ?? type.readOnly}
         >
           <FormBuilderInputInner
-            {...this.props}
+            {...restProps}
             childFocusPath={this.getChildFocusPath()}
             context={this.context}
             component={InputComponent}
@@ -247,7 +249,8 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
 
     return (
       <FormBuilderInputInner
-        {...this.props}
+        {...restProps}
+        readOnly={readOnly}
         childFocusPath={this.getChildFocusPath()}
         context={this.context}
         component={InputComponent}
@@ -265,6 +268,7 @@ interface FormBuilderInputInnerProps extends FormBuilderInputProps {
   component: React.ComponentType<InputProps>
   context: Context
   setInput: (component: FormBuilderInput | HTMLDivElement | null) => void
+  readOnly?: boolean
 }
 
 function FormBuilderInputInner(props: FormBuilderInputInnerProps) {
@@ -319,7 +323,7 @@ function FormBuilderInputInner(props: FormBuilderInputInnerProps) {
       isRoot,
       value,
       compareValue: childCompareValue,
-      readOnly: readOnly ?? type.readOnly,
+      readOnly,
       markers: childMarkers.length === 0 ? EMPTY_MARKERS : childMarkers,
       type,
       presence: childPresenceInfo,
