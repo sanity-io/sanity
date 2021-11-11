@@ -249,7 +249,7 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
 
   const hasMarkers = blockMarkers.length > 0
   const hasErrors = errorMarkers.length > 0
-  const hasWarning = warningMarkers.length > 0
+  const hasWarnings = warningMarkers.length > 0
 
   const {$size, $style} = useMemo((): {$size: number; $style: 'text' | 'heading'} => {
     if (HEADER_SIZES_KEYS.includes(block.style)) {
@@ -349,45 +349,42 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
     return {paddingX: 3}
   }, [isFullscreen, renderBlockActions])
 
-  const markersToolTip = useMemo(
-    () =>
-      hasErrors || hasWarning || (hasMarkers && renderCustomMarkers) ? (
-        <Tooltip
-          placement="top"
-          boundaryElement={blockRef?.current}
-          portal="editor"
-          content={
-            <TooltipBox padding={2}>
-              <Markers markers={blockMarkers} renderCustomMarkers={renderCustomMarkers} />
-            </TooltipBox>
-          }
-        >
-          {text}
-        </Tooltip>
-      ) : undefined,
-    [blockMarkers, blockRef, hasErrors, hasWarning, hasMarkers, renderCustomMarkers, text]
-  )
+  const tooltipEnabled = hasErrors || hasWarnings || Boolean(hasMarkers && renderCustomMarkers)
 
   return (
     <Box {...outerPaddingProps}>
       <InnerFlex>
         <Box flex={1} {...innerPaddingProps}>
-          <TextRoot
-            $level={block.level}
-            $listItem={block.listItem}
-            $size={$size}
-            data-invalid={hasErrors || undefined}
-            data-warning={hasWarning || undefined}
-            data-level={block.level}
-            data-list-item={block.listItem}
-            data-markers={hasMarkers || undefined}
-            data-style={$style}
-            data-testid="text-block"
-            ref={blockRef}
-            flex={1}
+          <Tooltip
+            placement="top"
+            boundaryElement={blockRef?.current}
+            portal="editor"
+            disabled={!tooltipEnabled}
+            content={
+              tooltipEnabled && (
+                <TooltipBox padding={2}>
+                  <Markers markers={blockMarkers} renderCustomMarkers={renderCustomMarkers} />
+                </TooltipBox>
+              )
+            }
           >
-            <Box data-testid="text-block__inner">{markersToolTip || text}</Box>
-          </TextRoot>
+            <TextRoot
+              $level={block.level}
+              $listItem={block.listItem}
+              $size={$size}
+              data-invalid={hasErrors || undefined}
+              data-warning={hasWarnings || undefined}
+              data-level={block.level}
+              data-list-item={block.listItem}
+              data-markers={hasMarkers || undefined}
+              data-style={$style}
+              data-testid="text-block"
+              ref={blockRef}
+              flex={1}
+            >
+              <Box data-testid="text-block__inner">{text}</Box>
+            </TextRoot>
+          </Tooltip>
         </Box>
         <div
           contentEditable={false}
