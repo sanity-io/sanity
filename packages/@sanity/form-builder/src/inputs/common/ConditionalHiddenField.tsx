@@ -1,5 +1,5 @@
 import React, {forwardRef} from 'react'
-import {useResolveConditionalProperty} from '@sanity/base/hooks'
+import {unstable_useConditionalProperty as useConditionalProperty} from '@sanity/base/hooks'
 import {ConditionalProperty} from '@sanity/types'
 import {SanityDocument} from '@sanity/client'
 import withDocument from '../../utils/withDocument'
@@ -25,7 +25,7 @@ const ConditionalHiddenWithDocument = withDocument(
     ref /* ignore ref as there's no place to put it */
   ) {
     const {hidden, value, parent, document, children} = props
-    const isHidden = useResolveConditionalProperty({
+    const isHidden = useConditionalProperty({
       checkProperty: hidden,
       checkPropertyKey: 'hidden',
       value,

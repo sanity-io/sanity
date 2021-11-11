@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {useDocumentOperation} from '@sanity/react-hooks'
-import React, {useCallback, useContext, useState} from 'react'
+import React, {useCallback, useContext, useMemo, useState} from 'react'
 import {unstable_useCheckDocumentPermission as useCheckDocumentPermission} from '@sanity/base/hooks'
 import {Stack, Box, Button, Text, Grid, useClickOutside} from '@sanity/ui'
 import {undoChange} from '../changes/undoChange'
@@ -17,9 +18,12 @@ import {FieldChangeContainer, DiffBorder, PopoverWrapper} from './FieldChange.st
 
 export function FieldChange({
   change,
+  hidden,
   readOnly,
   ...restProps
-}: {change: FieldChangeNode; readOnly?: boolean} & React.HTMLAttributes<HTMLDivElement>) {
+}: {change: FieldChangeNode; readOnly?: boolean; hidden?: boolean} & React.HTMLAttributes<
+  HTMLDivElement
+>) {
   const DiffComponent = change.diffComponent || FallbackDiff
   const {
     documentId,
@@ -27,6 +31,7 @@ export function FieldChange({
     rootDiff,
     isComparingCurrent,
     FieldWrapper = React.Fragment,
+    value,
   } = useContext(DocumentChangeContext)
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
   const [confirmRevertOpen, setConfirmRevertOpen] = React.useState(false)
@@ -57,61 +62,65 @@ export function FieldChange({
 
   useClickOutside(() => setConfirmRevertOpen(false), [revertButtonElement])
 
-  return change.schemaType.hidden === true ? null : (
-    <Stack space={1} as={FieldChangeContainer} {...restProps}>
-      {change.showHeader && <ChangeBreadcrumb change={change} titlePath={change.titlePath} />}
-      <FieldWrapper path={change.path} hasHover={revertHovered}>
-        <DiffInspectWrapper
-          change={change}
-          as={DiffBorder}
-          data-revert-field-hover={revertHovered ? '' : undefined}
-          data-error={change.error ? '' : undefined}
-          data-revert-all-hover
-        >
-          {change.error ? (
-            <ValueError error={change.error} />
-          ) : (
-            <DiffErrorBoundary>
-              <DiffContext.Provider value={{path: change.path}}>
-                <DiffComponent diff={change.diff} schemaType={change.schemaType as any} />
-              </DiffContext.Provider>
-            </DiffErrorBoundary>
-          )}
-          {isComparingCurrent && updatePermission.granted && (
-            <PopoverWrapper
-              content={
-                <Box padding={3} sizing="border">
-                  Are you sure you want to revert the changes?
-                  <Grid columns={2} gap={2} marginTop={2}>
-                    <Button mode="ghost" onClick={closeRevertChangesConfirmDialog}>
-                      <Text align="center">Cancel</Text>
-                    </Button>
-                    <Button tone="critical" onClick={handleRevertChanges}>
-                      <Text align="center">Revert change</Text>
-                    </Button>
-                  </Grid>
-                </Box>
-              }
-              open={confirmRevertOpen}
-              portal
-              placement="left"
-              ref={setRevertButtonElement}
+  const content = useMemo(
+    () =>
+      hidden ? null : (
+        <Stack space={1} as={FieldChangeContainer} {...restProps}>
+          {change.showHeader && <ChangeBreadcrumb change={change} titlePath={change.titlePath} />}
+          <FieldWrapper path={change.path} hasHover={revertHovered}>
+            <DiffInspectWrapper
+              change={change}
+              as={DiffBorder}
+              data-revert-field-hover={revertHovered ? '' : undefined}
+              data-error={change.error ? '' : undefined}
+              data-revert-all-hover
             >
-              <Box flex={1}>
-                <RevertChangesButton
-                  onClick={handleRevertChangesConfirm}
-                  onMouseEnter={handleRevertButtonMouseEnter}
-                  onMouseLeave={handleRevertButtonMouseLeave}
-                  selected={confirmRevertOpen}
-                  disabled={
-                    readOnly || change?.parentSchema?.readOnly || change.schemaType.readOnly
+              {change.error ? (
+                <ValueError error={change.error} />
+              ) : (
+                <DiffErrorBoundary>
+                  <DiffContext.Provider value={{path: change.path}}>
+                    <DiffComponent diff={change.diff} schemaType={change.schemaType as any} />
+                  </DiffContext.Provider>
+                </DiffErrorBoundary>
+              )}
+              {isComparingCurrent && updatePermission.granted && (
+                <PopoverWrapper
+                  content={
+                    <Box padding={3} sizing="border">
+                      Are you sure you want to revert the changes?
+                      <Grid columns={2} gap={2} marginTop={2}>
+                        <Button mode="ghost" onClick={closeRevertChangesConfirmDialog}>
+                          <Text align="center">Cancel</Text>
+                        </Button>
+                        <Button tone="critical" onClick={handleRevertChanges}>
+                          <Text align="center">Revert change</Text>
+                        </Button>
+                      </Grid>
+                    </Box>
                   }
-                />
-              </Box>
-            </PopoverWrapper>
-          )}
-        </DiffInspectWrapper>
-      </FieldWrapper>
-    </Stack>
+                  open={confirmRevertOpen}
+                  portal
+                  placement="left"
+                  ref={setRevertButtonElement}
+                >
+                  <Box flex={1}>
+                    <RevertChangesButton
+                      onClick={handleRevertChangesConfirm}
+                      onMouseEnter={handleRevertButtonMouseEnter}
+                      onMouseLeave={handleRevertButtonMouseLeave}
+                      selected={confirmRevertOpen}
+                      disabled={readOnly}
+                    />
+                  </Box>
+                </PopoverWrapper>
+              )}
+            </DiffInspectWrapper>
+          </FieldWrapper>
+        </Stack>
+      ),
+    [hidden, readOnly, confirmRevertOpen]
   )
+
+  return content
 }
