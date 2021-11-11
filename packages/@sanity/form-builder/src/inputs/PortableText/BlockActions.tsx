@@ -9,7 +9,7 @@ import PatchEvent from '../../PatchEvent'
 import {createBlockActionPatchFn} from './utils/createBlockActionPatchFn'
 import {RenderBlockActions} from './types'
 
-type BlockActionsProps = {
+interface BlockActionsProps {
   block: PortableTextBlock
   onChange: (event: PatchEvent) => void
   renderBlockActions?: RenderBlockActions
