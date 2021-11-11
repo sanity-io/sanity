@@ -1,7 +1,7 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import {useDocumentPresence} from '@sanity/base/hooks'
+import {useDocumentPresence, useResolveConditionalProperty} from '@sanity/base/hooks'
 import {PresenceOverlay} from '@sanity/base/presence'
 import {Box, Container, Flex, Spinner, Text} from '@sanity/ui'
 import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-component'
@@ -12,6 +12,7 @@ import filterFieldFn$ from 'part:@sanity/desk-tool/filter-fields-fn?'
 import {FormBuilder} from 'part:@sanity/form-builder'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {tap} from 'rxjs/operators'
+import {SanityDocument} from '@sanity/client'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Delay} from '../../../../components/Delay'
 
@@ -60,15 +61,23 @@ export function FormView(props: FormViewProps) {
     patchChannelRef.current = FormBuilder.createPatchChannel()
   }
 
+  const resolvedReadOnly = useResolveConditionalProperty({
+    document: value as SanityDocument,
+    value: undefined,
+    checkProperty: documentSchema.readOnly,
+    checkPropertyKey: 'readOnly',
+  })
+
   const readOnly = useMemo(() => {
     return (
       !ready ||
       rev !== null ||
       !permission.granted ||
       !isActionEnabled(documentSchema, 'update') ||
-      (isNonExistent && !isActionEnabled(documentSchema, 'create'))
+      (isNonExistent && !isActionEnabled(documentSchema, 'create')) ||
+      resolvedReadOnly
     )
-  }, [documentSchema, isNonExistent, permission, ready, rev])
+  }, [documentSchema, isNonExistent, permission, ready, rev, resolvedReadOnly])
 
   useEffect(() => {
     if (!filterFieldFn$) return undefined
@@ -141,7 +150,7 @@ export function FormView(props: FormViewProps) {
               type={documentSchema}
               presence={presence}
               filterField={filterField}
-              readOnly={readOnly}
+              readOnly={resolvedReadOnly}
               onBlur={handleBlur}
               onFocus={handleFocus}
               focusPath={focusPath}

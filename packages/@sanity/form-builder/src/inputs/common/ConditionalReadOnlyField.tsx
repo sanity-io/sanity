@@ -15,7 +15,7 @@ export const ConditionalReadOnlyField = ({readOnly, ...rest}: Props) => {
   return typeof readOnly === 'function' ? (
     <ConditionalReadOnlyWithDocument {...rest} readOnly={readOnly} />
   ) : (
-    <>{rest.children}</>
+    <>{mappedChildren({children: rest.children, childProps: {readOnly: readOnly}})}</>
   )
 }
 

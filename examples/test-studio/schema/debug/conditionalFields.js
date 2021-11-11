@@ -2,7 +2,7 @@ export default {
   name: 'conditionalFieldsTest',
   type: 'document',
   title: 'Conditional fields',
-
+  readOnly: () => false,
   fields: [
     {
       name: 'title',
@@ -13,6 +13,7 @@ export default {
       name: 'isPublished',
       type: 'boolean',
       description: 'Is published?',
+      // readOnly: () => true,
     },
     {
       name: 'readOnlyIfTitleIsReadOnly',
@@ -30,6 +31,7 @@ export default {
       readOnly: ({document}) => {
         return Boolean(document.title && document.title.includes('read only'))
       },
+      hidden: () => false,
       fields: [
         {
           name: 'field1',
@@ -53,7 +55,7 @@ export default {
           name: 'hiddenIfPublished',
           type: 'string',
           description: 'This will be hidden if the document is published',
-          hidden: ({document}) => document.isPublished,
+          hidden: ({document}) => Boolean(document.isPublished),
         },
         {
           name: 'readOnlyIfPublished',
@@ -74,7 +76,7 @@ export default {
           name: 'field3',
           type: 'string',
           description: 'This will be hidden if its value becomes "hideme"',
-          hidden: ({value}) => value === 'hideme',
+          hidden: ({value}) => value === 'hid',
         },
       ],
     },
