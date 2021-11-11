@@ -95,7 +95,7 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
       }
     }
 
-    & > div > div > [data-ui='TextBlock__text'] {
+    & [data-ui='TextBlock__text'] {
       overflow-wrap: anywhere;
       text-transform: none;
       white-space: pre-wrap;
@@ -106,7 +106,7 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
       }
     }
 
-    & > div > div > div > [data-list-prefix] {
+    & [data-list-prefix] {
       position: absolute;
       margin-left: -4.5rem;
       width: 3.75rem;
