@@ -12,4 +12,5 @@ export {useUserColor} from '../user-color/hooks'
 export {useTimeAgo} from '../time/useTimeAgo'
 export {useDocumentValues} from '../datastores/document/useDocumentValues'
 export {useModuleStatus} from '../module-status'
-export {useResolveConditionalProperty} from '../conditional-property'
+// eslint-disable-next-line camelcase
+export {unstable_useConditionalProperty} from '../conditional-property'
