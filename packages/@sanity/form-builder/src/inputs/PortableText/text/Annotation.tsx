@@ -7,7 +7,7 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
-import {Marker, Path} from '@sanity/types'
+import {isValidationMarker, Marker, Path} from '@sanity/types'
 import styled, {css} from 'styled-components'
 import {Box, Theme, ThemeColorToneKey, Tooltip} from '@sanity/ui'
 import {hues} from '@sanity/color'
@@ -43,7 +43,7 @@ const Root = styled.span<{$toneKey?: ThemeColorToneKey}>(
         border-bottom: 1px solid ${theme.sanity.color.selectable[$toneKey].enabled.fg};
       }
 
-      &[data-markers] {
+      &[data-custom-markers] {
         background-color: ${theme.sanity.color.dark ? hues.purple[950].hex : hues.purple[50].hex};
       }
 
@@ -140,6 +140,8 @@ export function Annotation(props: AnnotationProps) {
     return 'default'
   }, [isLink, hasError, hasWarning])
 
+  const hasCustomMarkers = markers.filter((m) => !isValidationMarker(m)).length > 0
+
   return (
     <Root
       $toneKey={toneKey}
@@ -147,7 +149,7 @@ export function Annotation(props: AnnotationProps) {
       data-link={isLink ? '' : undefined}
       data-error={hasError ? '' : undefined}
       data-warning={hasWarning ? '' : undefined}
-      data-markers={markers.length > 0 ? '' : undefined}
+      data-custom-markers={hasCustomMarkers ? '' : undefined}
     >
       {markersToolTip || text}
 
