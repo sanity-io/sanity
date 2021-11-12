@@ -111,7 +111,21 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean}>`
       `
     })}
 
-    & > .pt-drop-indicator {
+    & > .pt-list-item + :not(.pt-list-item) {
+      margin-top: ${({theme}) => theme.sanity.space[3]}px;
+    }
+
+    & > .pt-block {
+      &:first-child {
+        padding-top: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 5 : 3]}px;
+      }
+
+      &:last-child {
+        padding-bottom: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 9 : 5]}px;
+      }
+    }
+
+    .pt-drop-indicator {
       border: 1px solid var(--card-focus-ring-color) !important;
       height: 0px !important;
       border-radius: 1px;
@@ -128,20 +142,6 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean}>`
           ${({$isFullscreen, theme}) =>
             $isFullscreen ? rem(theme.sanity.space[5] * 2) : rem(theme.sanity.space[3] * 2)} + 2px
       ) !important;
-    }
-
-    & > .pt-list-item + :not(.pt-list-item) {
-      margin-top: ${({theme}) => theme.sanity.space[3]}px;
-    }
-
-    & > .pt-block {
-      &:first-child {
-        padding-top: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 5 : 3]}px;
-      }
-
-      &:last-child {
-        padding-bottom: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 9 : 5]}px;
-      }
     }
   }
 `
