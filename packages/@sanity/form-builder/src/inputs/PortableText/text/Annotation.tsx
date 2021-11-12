@@ -114,9 +114,10 @@ export function Annotation(props: AnnotationProps) {
   }, [markDefPath, onFocus])
 
   const handleRemoveClick = useCallback(
-    (e): void => {
-      e.preventDefault()
-      e.stopPropagation()
+    (event: React.MouseEvent<HTMLButtonElement>): void => {
+      event.preventDefault()
+      event.stopPropagation()
+
       PortableTextEditor.removeAnnotation(editor, type)
       PortableTextEditor.focus(editor)
     },
