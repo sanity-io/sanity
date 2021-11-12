@@ -15,7 +15,7 @@ import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/presence
 import PatchEvent from './PatchEvent'
 import {emptyArray} from './utils/empty'
 import {Props as InputProps} from './inputs/types'
-import {ConditionalReadOnlyField} from './inputs/common/ConditionalReadOnlyField'
+import {ConditionalReadOnlyField} from './inputs/common'
 
 const EMPTY_MARKERS: Marker[] = emptyArray()
 const EMPTY_PATH: Path = emptyArray()

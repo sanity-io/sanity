@@ -11,7 +11,7 @@ import {omitDeprecatedRole, useCheckCondition} from './utils'
  */
 
 export interface ConditionalPropertyProps {
-  parent?: Record<string, unknown> | undefined
+  parent?: unknown
   value: unknown
   document: SanityDocument
   checkProperty: ConditionalProperty
