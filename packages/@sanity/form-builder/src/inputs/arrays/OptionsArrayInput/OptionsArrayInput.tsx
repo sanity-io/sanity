@@ -9,6 +9,7 @@ import PatchEvent, {set, unset} from '../../../PatchEvent'
 import Preview from '../../../Preview'
 import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
 import {Item, List} from '../common/list'
+import {ConditionalReadOnlyField} from '../../common'
 import {resolveValueWithLegacyOptionsSupport, isLegacyOptionsItem} from './legacyOptionsSupport'
 
 type Focusable = {focus: () => void}
@@ -129,31 +130,36 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
             return (
               <Item index={index} isGrid={isGrid} key={index}>
                 <Flex align="center" as="label" muted={disabled}>
-                  <Checkbox
-                    disabled={disabled}
-                    readOnly={Boolean(readOnly || optionType?.readOnly)}
-                    checked={checked}
-                    onChange={(e) => this.handleChange(e.currentTarget.checked, option)}
-                    onFocus={() => this.handleFocus(index)}
-                    onBlur={onBlur}
-                  />
-                  {optionType &&
-                    (isTitled ? (
-                      <Box padding={2}>
-                        <Text>{option.title}</Text>
-                      </Box>
-                    ) : (
-                      <Box marginLeft={2}>
-                        <Preview
-                          layout="grid"
-                          type={optionType}
-                          value={resolveValueWithLegacyOptionsSupport(option)}
-                        />
-                      </Box>
-                    ))}
-                  {!optionType && (
-                    <ItemWithMissingType value={option} onFocus={() => onFocus([])} />
-                  )}
+                  <ConditionalReadOnlyField
+                    readOnly={readOnly || optionType?.readOnly}
+                    parent={value}
+                    value={checked}
+                  >
+                    <Checkbox
+                      disabled={disabled}
+                      checked={checked}
+                      onChange={(e) => this.handleChange(e.currentTarget.checked, option)}
+                      onFocus={() => this.handleFocus(index)}
+                      onBlur={onBlur}
+                    />
+                    {optionType &&
+                      (isTitled ? (
+                        <Box padding={2}>
+                          <Text>{option.title}</Text>
+                        </Box>
+                      ) : (
+                        <Box marginLeft={2}>
+                          <Preview
+                            layout="grid"
+                            type={optionType}
+                            value={resolveValueWithLegacyOptionsSupport(option)}
+                          />
+                        </Box>
+                      ))}
+                    {!optionType && (
+                      <ItemWithMissingType value={option} onFocus={() => onFocus([])} />
+                    )}
+                  </ConditionalReadOnlyField>
                 </Flex>
               </Item>
             )

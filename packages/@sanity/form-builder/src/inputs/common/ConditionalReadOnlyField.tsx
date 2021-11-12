@@ -5,7 +5,7 @@ import {unstable_useConditionalProperty as useConditionalProperty} from '@sanity
 import withDocument from '../../utils/withDocument'
 
 type Props = {
-  parent?: Record<string, unknown> | undefined
+  parent?: unknown
   value: unknown
   children?: React.ReactNode
   readOnly?: ConditionalProperty
