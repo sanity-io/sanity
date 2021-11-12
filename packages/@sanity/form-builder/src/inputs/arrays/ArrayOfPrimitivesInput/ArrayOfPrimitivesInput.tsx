@@ -9,6 +9,7 @@ import {resolveTypeName} from '@sanity/util/content'
 import {PatchEvent, set, unset} from '../../../PatchEvent'
 import {Item, List} from '../common/list'
 import ArrayFunctions from '../common/ArrayFunctions'
+import {ConditionalReadOnlyField} from '../../common'
 import getEmptyValue from './getEmptyValue'
 import {ItemRow} from './ItemRow'
 
@@ -40,7 +41,7 @@ export interface Props {
   onBlur: () => void
   focusPath: Path
   ArrayFunctionsImpl: typeof ArrayFunctions
-  readOnly: boolean | null
+  readOnly?: boolean
   markers: Marker[]
   presence: FormFieldPresence[]
 }
@@ -181,24 +182,30 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
                 return (
                   // eslint-disable-next-line react/no-array-index-key
                   <Item key={index} index={index} isSortable={isSortable}>
-                    <ItemRow
-                      level={level + 1}
-                      index={index}
+                    <ConditionalReadOnlyField
+                      readOnly={readOnly || this.getMemberType(resolveTypeName(item))?.readOnly}
                       value={item}
-                      compareValue={compareValue}
-                      readOnly={readOnly}
-                      markers={filteredMarkers.length === 0 ? NO_MARKERS : filteredMarkers}
-                      isSortable={isSortable}
-                      type={this.getMemberType(resolveTypeName(item))}
-                      focusPath={focusPath}
-                      onFocus={onFocus}
-                      onBlur={onBlur}
-                      onEnterKey={this.handleItemEnterKey}
-                      onEscapeKey={this.handleItemEscapeKey}
-                      onChange={this.handleItemChange}
-                      onRemove={this.handleRemoveItem}
-                      presence={childPresence}
-                    />
+                      parent={value}
+                    >
+                      <ItemRow
+                        level={level + 1}
+                        index={index}
+                        value={item}
+                        compareValue={compareValue}
+                        readOnly={readOnly}
+                        markers={filteredMarkers.length === 0 ? NO_MARKERS : filteredMarkers}
+                        isSortable={isSortable}
+                        type={this.getMemberType(resolveTypeName(item))}
+                        focusPath={focusPath}
+                        onFocus={onFocus}
+                        onBlur={onBlur}
+                        onEnterKey={this.handleItemEnterKey}
+                        onEscapeKey={this.handleItemEscapeKey}
+                        onChange={this.handleItemChange}
+                        onRemove={this.handleRemoveItem}
+                        presence={childPresence}
+                      />
+                    </ConditionalReadOnlyField>
                   </Item>
                 )
               })}

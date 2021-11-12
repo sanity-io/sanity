@@ -26,7 +26,7 @@ type Props = {
   value: string | number | boolean
   compareValue?: (string | number | boolean)[]
   isSortable: boolean
-  readOnly: boolean | null
+  readOnly?: boolean | null
   level: number
   presence: FormFieldPresence[]
 }
@@ -117,7 +117,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
               onFocus={onFocus}
               onBlur={onBlur}
               type={type}
-              readOnly={Boolean(readOnly || type.readOnly)}
+              readOnly={readOnly}
               level={level}
               presence={presence}
               onKeyUp={handleKeyUp}

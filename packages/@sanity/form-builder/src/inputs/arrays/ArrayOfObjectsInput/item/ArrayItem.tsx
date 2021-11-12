@@ -95,7 +95,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayInputListItemProps)
   )
 
   const options = type.options || {}
-  const isSortable = !readOnly && !type.readOnly && options.sortable !== false
+  const isSortable = !readOnly && options.sortable !== false
 
   const isEditing = hasFocusWithinPath(focusPath, value)
 
@@ -161,7 +161,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayInputListItemProps)
           type={itemType}
           dialogType={type?.options?.editModal || 'dialog'}
           value={value}
-          readOnly={readOnly || itemType.readOnly || false}
+          readOnly={readOnly}
           presence={itemPresence}
           compareValue={compareValue}
         />
