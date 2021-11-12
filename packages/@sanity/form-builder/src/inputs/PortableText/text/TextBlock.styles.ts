@@ -119,11 +119,26 @@ export const BlockActionsOuter = styled(Box)`
   }
 `
 
-export const BlockActionsInner = styled(Flex)`
-  position: absolute;
-  right: 0;
-  top: -7px;
-`
+export const BlockActionsInner = styled(Flex)(({theme}: {theme: Theme}) => {
+  const {fonts, space} = theme.sanity
+  const textSize1 = fonts.text.sizes[1]
+  const textSize2 = fonts.text.sizes[2]
+  const capHeight1 = textSize1.lineHeight - textSize1.ascenderHeight - textSize1.descenderHeight
+  const capHeight2 = textSize2.lineHeight - textSize2.ascenderHeight - textSize2.descenderHeight
+  const buttonHeight = capHeight1 + space[2] + space[2]
+
+  // This calculates the following:
+  // > var buttonHeight = 25px
+  // > var capHeight2 = 11px
+  // > 0 - (buttonHeight - capHeight2) / 2 = -7px
+  const negativeTop = 0 - (buttonHeight - capHeight2) / 2
+
+  return css`
+    position: absolute;
+    right: 0;
+    top: ${negativeTop}px;
+  `
+})
 
 export const TooltipBox = styled(Box)`
   max-width: 250px;
