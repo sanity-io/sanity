@@ -1,12 +1,12 @@
 import {IntentLink} from '@sanity/base/router'
-import {MenuItem, MenuItemProps} from '@sanity/ui'
-import React, {forwardRef, useMemo} from 'react'
+import {MenuItem, Box, Tooltip, Text} from '@sanity/ui'
+import React, {forwardRef, useMemo, ComponentProps} from 'react'
 import {PaneMenuItem} from '../types'
 
 type RouterIntent = NonNullable<PaneMenuItem['intent']>
 
 export const IntentMenuItem = forwardRef(function IntentMenuItem(
-  props: {intent: RouterIntent} & Omit<MenuItemProps, 'as' | 'href'>,
+  props: {intent: RouterIntent} & Omit<ComponentProps<typeof MenuItem>, 'as' | 'href'>,
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
   const {intent, ...restProps} = props
@@ -24,6 +24,28 @@ export const IntentMenuItem = forwardRef(function IntentMenuItem(
       }),
     [intentType, params]
   )
-
-  return <MenuItem {...restProps} as={Link} data-as="a" ref={ref} />
+  return props.disabled ? (
+    <Tooltip
+      content={
+        <Box padding={2}>
+          <Text size={1}>{props.title}</Text>
+        </Box>
+      }
+      placement="top"
+      portal
+    >
+      <div>
+        <MenuItem
+          {...restProps}
+          as="a"
+          data-disabled
+          title={undefined}
+          data-as="a"
+          aria-disabled="true"
+        />
+      </div>
+    </Tooltip>
+  ) : (
+    <MenuItem {...restProps} as={Link} data-as="a" ref={ref} />
+  )
 })

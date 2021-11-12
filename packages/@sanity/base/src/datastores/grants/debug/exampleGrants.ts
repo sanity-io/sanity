@@ -39,6 +39,13 @@ export const viewer: Grant[] = [
   },
 ]
 
+export const requiresApproval: Grant[] = [
+  {
+    filter: '!locked',
+    permissions: ['read', 'create', 'update'],
+  },
+]
+
 export const restricted: Grant[] = [
   {
     filter: '_id in path("drafts.**") && _type in ["stringsTest", "book", "author"]',

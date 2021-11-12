@@ -10,12 +10,22 @@ const POPOVER_PROPS: PopoverProps = {
   portal: true,
 }
 
-export function CreateMenuButton(props: {items: PaneMenuItem[]}) {
-  const {items} = props
+export function CreateMenuButton(props: {
+  permissions: {granted: boolean; reason: string}[]
+  items: PaneMenuItem[]
+}) {
+  const {items, permissions} = props
 
   return (
     <MenuButton
-      button={<Button icon={ComposeIcon} mode="bleed" padding={3} />}
+      button={
+        <Button
+          data-testid="multi-action-intent-button"
+          icon={ComposeIcon}
+          mode="bleed"
+          padding={3}
+        />
+      }
       id="create-menu"
       menu={
         <Menu>
@@ -24,10 +34,17 @@ export function CreateMenuButton(props: {items: PaneMenuItem[]}) {
           </Box>
           {items.map((createItem, createItemIndex) => (
             <IntentMenuItem
+              data-testid={`action-intent-button-${createItemIndex}`}
+              disabled={!permissions[createItemIndex]?.granted}
               icon={createItem.icon}
               intent={createItem.intent!}
               key={createItemIndex}
               text={createItem.title}
+              title={
+                permissions[createItemIndex]?.granted
+                  ? undefined
+                  : permissions[createItemIndex]?.reason
+              }
             />
           ))}
         </Menu>

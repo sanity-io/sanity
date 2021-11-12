@@ -12,6 +12,14 @@ export default [
   }),
 
   T.template({
+    id: 'author-unlocked',
+    title: 'Author unlocked',
+    description: `An unlocked author`,
+    schemaType: 'author',
+    value: (params) => ({locked: false}),
+  }),
+
+  T.template({
     id: 'book-by-author',
     title: 'Book by author',
     description: 'Book by a specific author',

@@ -4,6 +4,10 @@ import {InitialValueTemplateItem, StructureBuilder as S} from '@sanity/structure
 import {Box, Button, Inline, Text, Tooltip} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
 import React, {useCallback, useMemo} from 'react'
+import {combineLatest, of} from 'rxjs'
+import {useMemoObservable} from 'react-rx'
+import {filter, map, switchMap} from 'rxjs/operators'
+import {canCreate} from '@sanity/base/_internal'
 import {PaneMenuItem, PaneMenuItemGroup} from '../../types'
 import {IntentButton} from '../../components/IntentButton'
 import {PaneContextMenuButton, PaneHeader, usePane} from '../../components/pane'
@@ -11,6 +15,7 @@ import {useDeskTool} from '../../contexts/deskTool'
 import {BackLink} from '../../contexts/paneRouter'
 import {DeskToolPaneActionHandler} from '../../types/types'
 import {useDeskToolPaneActions} from '../useDeskToolPaneActions'
+import {getInitialValueObservable} from '../document/initialValue/getInitialValue'
 import {Layout, SortOrder} from './types'
 import {CreateMenuButton} from './CreateMenuButton'
 
@@ -123,35 +128,55 @@ export function DocumentListPaneHeader(props: {
     [handleAction, menuItems, menuItemGroups]
   )
 
+  const createMenuItemPermissions = useMemoObservable(
+    () => resolveInitialValuesFromTemplates(initialValueTemplates),
+    [initialValueTemplates]
+  )
+
   const actions = useMemo(() => {
     let foundCreateButton = false
 
     const actionNodes = actionItems.map((action, actionIndex) => {
-      // Replace the "Create" button when there are multiple initial value templates
+      // Replace the "Create" button when there are multiple initial value resolvedTemplates
       if (createMenuItems.length > 1 && isDefaultCreateActionItem(action, schemaType)) {
         foundCreateButton = true
-        return <CreateMenuButton items={createMenuItems} key={action.key || actionIndex} />
+        return (
+          <CreateMenuButton
+            permissions={createMenuItemPermissions || []}
+            items={createMenuItems}
+            key={action.key || actionIndex}
+          />
+        )
       }
 
       if (action.intent) {
+        // when it's single action
+        const permission = createMenuItemPermissions || []
+        const granted = permission.length > 0 ? permission[0].granted : true
+        const reason = permission.length > 0 ? permission[0].reason : ''
+
         return (
           <Tooltip
             content={
               <Box padding={2}>
-                <Text size={1}>{action.title}</Text>
+                <Text size={1}>{granted ? action.title : reason}</Text>
               </Box>
             }
             disabled={!action.title}
             key={action.key || actionIndex}
             placement="bottom"
           >
-            <IntentButton
-              aria-label={String(action.title)}
-              icon={action.icon || UnknownIcon}
-              intent={action.intent}
-              key={action.key || actionIndex}
-              mode="bleed"
-            />
+            <div>
+              <IntentButton
+                data-testid="action-intent-button"
+                disabled={!granted}
+                aria-label={String(action.title)}
+                icon={action.icon || UnknownIcon}
+                intent={action.intent}
+                key={action.key || actionIndex}
+                mode="bleed"
+              />
+            </div>
           </Tooltip>
         )
       }
@@ -161,11 +186,15 @@ export function DocumentListPaneHeader(props: {
 
     const createMenuButton =
       foundCreateButton || createMenuItems.length <= 1 ? null : (
-        <CreateMenuButton items={createMenuItems} key="$CreateMenuButton" />
+        <CreateMenuButton
+          permissions={createMenuItemPermissions || []}
+          items={createMenuItems}
+          key="$CreateMenuButton"
+        />
       )
 
     return <Inline space={1}>{[...actionNodes, createMenuButton, contextMenu]}</Inline>
-  }, [actionItems, createMenuItems, contextMenu, schemaType])
+  }, [actionItems, createMenuItems, createMenuItemPermissions, contextMenu, schemaType])
 
   return (
     <PaneHeader
@@ -176,5 +205,28 @@ export function DocumentListPaneHeader(props: {
       }
       title={title}
     />
+  )
+}
+
+function resolveInitialValuesFromTemplates(initialValueTemplates?: InitialValueTemplateItem[]) {
+  if (!initialValueTemplates) {
+    return of([])
+  }
+  return combineLatest(
+    initialValueTemplates.map((template) =>
+      getInitialValueObservable({
+        documentId: 'dummyId',
+        paneOptions: {
+          template: template.templateId,
+          templateParameters: template.parameters,
+          id: template.templateId,
+          type: template.type,
+        },
+      }).pipe(
+        filter((state) => state.type === 'success'),
+        map((state: any) => state.value as {_id?: string; _type: string}),
+        switchMap((document) => canCreate({_id: 'dummy', ...document}))
+      )
+    )
   )
 }
