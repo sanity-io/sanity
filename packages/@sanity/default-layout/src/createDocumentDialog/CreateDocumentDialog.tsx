@@ -3,22 +3,19 @@
 
 import React, {memo} from 'react'
 import {Box, Dialog, Text} from '@sanity/ui'
-import {
-  CreateDocumentList,
-  CreateDocumentPreviewItem,
-  LegacyLayerProvider,
-} from '@sanity/base/components'
+import {CreateDocumentList, LegacyLayerProvider} from '@sanity/base/components'
+import {NewDocumentOption} from '@sanity/base/_internal'
 import {DocumentIcon} from '@sanity/icons'
 
 interface CreateDocumentDialogProps {
-  actions: {icon?: React.ComponentType; key: string}[]
+  newDocumentOptions: NewDocumentOption[]
   onClose: () => void
 }
 
 export const CreateDocumentDialog = memo(function CreateDocumentDialog(
   props: CreateDocumentDialogProps
 ) {
-  const {actions, onClose} = props
+  const {newDocumentOptions, onClose} = props
 
   return (
     <LegacyLayerProvider zOffset="navbarDialog">
@@ -31,15 +28,19 @@ export const CreateDocumentDialog = memo(function CreateDocumentDialog(
         header="Create new document"
       >
         <Box padding={3}>
-          {actions.length > 0 ? (
+          {newDocumentOptions.length > 0 ? (
             <CreateDocumentList
-              items={actions.map(
-                (action) =>
-                  ({
-                    ...action,
-                    icon: action.icon || <DocumentIcon />,
-                    onClick: onClose,
-                  } as CreateDocumentPreviewItem)
+              items={newDocumentOptions.map(
+                ({key, title, description, subtitle, icon, item, template}) => ({
+                  key,
+                  description,
+                  title,
+                  subtitle,
+                  icon: icon || <DocumentIcon />,
+                  onClick: onClose,
+                  params: {type: template.schemaType, template: template.id},
+                  templateParams: item.parameters,
+                })
               )}
             />
           ) : (

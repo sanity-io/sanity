@@ -95,7 +95,7 @@ function resolveIntentState(currentState, intentState) {
       tool.canHandleIntent(intent, params, currentState[tool.name])
   )
 
-  if (matchingTool) {
+  if (matchingTool?.getIntentState) {
     const toolState = matchingTool.getIntentState(
       intent,
       params,

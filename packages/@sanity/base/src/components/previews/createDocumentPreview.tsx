@@ -1,5 +1,5 @@
 import React from 'react'
-import {Box, Flex, Stack, Text, Tooltip, Button} from '@sanity/ui'
+import {Box, Flex, Stack, Text, Tooltip} from '@sanity/ui'
 import styled from 'styled-components'
 import {unstable_useCheckDocumentPermission as useCheckDocumentPermission} from '../../datastores/grants/hooks'
 import {useCurrentUser} from '../../datastores/user/hooks'
@@ -12,10 +12,9 @@ interface CreateDocumentPreviewProps {
   subtitle?: React.ReactNode | React.FunctionComponent<{layout: 'default'}>
   description?: React.ReactNode | React.FunctionComponent<unknown>
   media?: React.ReactNode | React.FunctionComponent<unknown>
-  icon?: React.ComponentType<unknown>
+  icon?: React.ElementType | React.ReactElement
   isPlaceholder?: boolean
   params?: {
-    intent: 'create'
     type: string
     template?: string
   }

@@ -102,10 +102,10 @@ export function DocumentListPaneHeader(props: {
     [actionHandlers]
   )
 
-  const createMenuItems: PaneMenuItem[] = useMemo(
+  const createMenuItems = useMemo(
     () =>
       initialValueTemplates
-        ? (S.menuItemsFromInitialValueTemplateItems(initialValueTemplates) as any)
+        ? (S.menuItemsFromInitialValueTemplateItems(initialValueTemplates) as PaneMenuItem[])
         : [],
     [initialValueTemplates]
   )

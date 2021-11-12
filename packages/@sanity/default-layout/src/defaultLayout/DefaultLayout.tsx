@@ -11,10 +11,7 @@ import Sidecar from '../addons/Sidecar'
 import {RenderTool} from '../main/RenderTool'
 import {CreateDocumentDialog} from '../createDocumentDialog'
 import {SchemaErrorReporter} from '../schemaErrors/SchemaErrorReporter'
-import {
-  getNewDocumentModalActions,
-  getNewDocumentModalSchemaTypes,
-} from '../util/getNewDocumentModalActions'
+import {newDocumentConfig} from '../util/newDocumentConfig'
 import {SideMenu} from '../sideMenu'
 import {Navbar} from '../navbar'
 import {useDefaultLayoutRouter} from '../useDefaultLayoutRouter'
@@ -94,7 +91,7 @@ export const DefaultLayout = memo(function DefaultLayout() {
             createMenuIsOpen={createMenuIsOpen}
             onCreateButtonClick={handleCreateButtonClick}
             onToggleMenu={handleToggleMenu}
-            documentTypes={getNewDocumentModalSchemaTypes()}
+            documentTypes={newDocumentConfig.schemaTypes}
             onUserLogout={handleLogout}
             onSearchOpen={handleSearchOpen}
             searchPortalElement={portalElement}
@@ -140,7 +137,7 @@ export const DefaultLayout = memo(function DefaultLayout() {
           <LegacyLayerProvider zOffset="navbar">
             <CreateDocumentDialog
               onClose={handleActionModalClose}
-              actions={getNewDocumentModalActions()}
+              newDocumentOptions={newDocumentConfig.newDocumentOptions}
             />
           </LegacyLayerProvider>
         )}
