@@ -1,7 +1,7 @@
 import {ScrollContainer} from '@sanity/base/components'
 import {Card, Container, rem} from '@sanity/ui'
 import styled, {css} from 'styled-components'
-import {createListName, LEVELS} from './text'
+import {createListName, TEXT_LEVELS} from './text'
 
 export const Root = styled(Card)<{$fullscreen: boolean}>`
   height: ${({$fullscreen}) => ($fullscreen ? '100%' : '15em')};
@@ -68,7 +68,7 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean}>`
   position: relative;
   flex-direction: column;
   height: 100%;
-  counter-reset: ${LEVELS.map((l) => createListName(l)).join(' ')};
+  counter-reset: ${TEXT_LEVELS.map((l) => createListName(l)).join(' ')};
 
   & > div {
     height: 100%;
@@ -80,7 +80,7 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean}>`
     flex: 1;
     min-height: 100%;
 
-    ${LEVELS.map((l) => {
+    ${TEXT_LEVELS.map((l) => {
       return css`
         & > .pt-list-item-number[class~='pt-list-item-level-${l}'] {
           counter-increment: ${createListName(l)};
@@ -91,7 +91,7 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean}>`
     & > .pt-list-item-bullet + .pt-list-item-number,
     & > .pt-list-item-number + .pt-list-item-bullet {
       margin-top: ${({theme}) => theme.sanity.space[3]}px;
-      counter-reset: ${LEVELS.map((l) => createListName(l)).join(' ')};
+      counter-reset: ${TEXT_LEVELS.map((l) => createListName(l)).join(' ')};
     }
 
     & > :not(.pt-list-item) + .pt-list-item {
@@ -100,10 +100,10 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean}>`
 
     /* Reset the list count if the element is not a numbered list item */
     & > :not(.pt-list-item-number) {
-      counter-reset: ${LEVELS.map((l) => createListName(l)).join(' ')};
+      counter-reset: ${TEXT_LEVELS.map((l) => createListName(l)).join(' ')};
     }
 
-    ${LEVELS.slice(1).map((l) => {
+    ${TEXT_LEVELS.slice(1).map((l) => {
       return css`
         & > .pt-list-item-level-${l} + .pt-list-item-level-${l - 1} {
           counter-reset: ${createListName(l)};
@@ -125,10 +125,12 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean}>`
       }
     }
 
-    .pt-drop-indicator {
+    & .pt-drop-indicator {
+      pointer-events: none;
       border: 1px solid var(--card-focus-ring-color) !important;
       height: 0px !important;
       border-radius: 1px;
+      margin-top: -3px;
       left: calc(
         ${({$isFullscreen, theme}) =>
             $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} - 1px

@@ -209,17 +209,18 @@ export function BlockObject(props: BlockObjectProps) {
 
   const innerPaddingProps: ResponsivePaddingProps = useMemo(() => {
     if (isFullscreen && !renderBlockActions) {
-      return {paddingX: 5}
+      return {paddingX: 5, paddingBottom: 1}
     }
 
     if (isFullscreen && renderBlockActions) {
-      return {paddingLeft: 5, paddingRight: 2}
+      return {paddingLeft: 5, paddingRight: 2, paddingBottom: 1}
     }
 
     if (renderBlockActions) {
       return {
         paddingLeft: 3,
         paddingRight: 2,
+        paddingBottom: 1,
       }
     }
 

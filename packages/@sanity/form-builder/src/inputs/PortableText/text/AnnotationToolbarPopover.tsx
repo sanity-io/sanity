@@ -17,6 +17,7 @@ const ToolbarPopover = styled(Popover)`
     display: none !important;
   }
 `
+
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
 interface AnnotationToolbarPopoverProps {
@@ -27,7 +28,7 @@ interface AnnotationToolbarPopoverProps {
   annotationElement: HTMLElement
   textElement: HTMLElement
   onEdit: () => void
-  onDelete: (e) => void
+  onDelete: (event: React.MouseEvent<HTMLButtonElement>) => void
   title: string
 }
 
