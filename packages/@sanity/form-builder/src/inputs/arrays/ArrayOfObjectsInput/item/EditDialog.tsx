@@ -20,7 +20,7 @@ type Props = {
   onClose: () => void
   filterField: () => any
   referenceElement: null | HTMLElement
-  readOnly: boolean | null
+  readOnly?: boolean
   focusPath: Path
   presence: FormFieldPresence[]
 }
@@ -60,7 +60,7 @@ export function EditDialog(props: Props) {
       onBlur={onBlur}
       compareValue={compareValue}
       focusPath={focusPath}
-      readOnly={readOnly || type.readOnly || false}
+      readOnly={readOnly || false}
       markers={childMarkers}
       path={[{_key: value._key}]}
       filterField={filterField}
