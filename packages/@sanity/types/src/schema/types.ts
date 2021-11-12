@@ -33,9 +33,8 @@ export type SortOrdering = {
     direction: 'asc' | 'desc'
   }
 }
-
 export interface ConditionalPropertyCallbackContext {
-  parent?: Record<string, unknown>
+  parent?: unknown
   document: SanityDocument
   currentUser: Omit<CurrentUser, 'role'>
   value: unknown

@@ -24,6 +24,7 @@ import {Item, List} from '../common/list'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import ArrayFunctions from '../common/ArrayFunctions'
 import {applyAll} from '../../../patch/applyPatch'
+import {ConditionalReadOnlyField} from '../../common'
 import {ArrayItem} from './item'
 import {ArrayMember} from './types'
 import {uploadTarget} from './uploadTarget/uploadTarget'
@@ -173,10 +174,6 @@ export class ArrayInput extends React.Component<Props> {
     if (!memberType) {
       // eslint-disable-next-line no-console
       console.log('Could not find member type of item ', item)
-      return
-    }
-
-    if (memberType.readOnly) {
       return
     }
 
@@ -401,22 +398,28 @@ export class ArrayInput extends React.Component<Props> {
                       isGrid={isGrid}
                       index={index}
                     >
-                      <ArrayItem
-                        compareValue={compareValue}
-                        filterField={filterField}
-                        focusPath={focusPath}
-                        itemKey={item._key}
-                        index={index}
-                        markers={markers}
-                        onBlur={onBlur}
-                        onChange={this.handleItemChange}
-                        onFocus={onFocus}
-                        onRemove={this.handleRemoveItem}
-                        presence={presence}
-                        readOnly={readOnly || hasMissingKeys}
-                        type={type}
+                      <ConditionalReadOnlyField
+                        readOnly={readOnly || this.getMemberTypeOfItem(item)?.readOnly}
                         value={item}
-                      />
+                        parent={value}
+                      >
+                        <ArrayItem
+                          compareValue={compareValue}
+                          filterField={filterField}
+                          focusPath={focusPath}
+                          itemKey={item._key}
+                          index={index}
+                          markers={markers}
+                          onBlur={onBlur}
+                          onChange={this.handleItemChange}
+                          onFocus={onFocus}
+                          onRemove={this.handleRemoveItem}
+                          presence={presence}
+                          readOnly={readOnly || hasMissingKeys}
+                          type={type}
+                          value={item}
+                        />
+                      </ConditionalReadOnlyField>
                     </Item>
                   )
                 })}
