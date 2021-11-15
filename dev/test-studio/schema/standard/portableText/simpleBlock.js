@@ -12,6 +12,25 @@ function extractTextFromBlocks(blocks) {
     .join('')
 }
 
+const linkType = {
+  type: 'object',
+  name: 'link',
+  fields: [
+    {
+      type: 'string',
+      name: 'href',
+      validation: (Rule) => Rule.uri({scheme: ['http', 'https']}),
+    },
+  ],
+  validation: (Rule) => Rule.required(),
+}
+
+const myStringType = {
+  type: 'object',
+  name: 'test',
+  fields: [{type: 'string', name: 'mystring', validation: (Rule) => Rule.required()}],
+}
+
 export default {
   name: 'simpleBlock',
   title: 'Simple block',
@@ -30,18 +49,11 @@ export default {
         {
           type: 'block',
           marks: {
-            annotations: [
-              {type: 'object', name: 'link', fields: [{type: 'string', name: 'href'}]},
-              {type: 'object', name: 'test', fields: [{type: 'string', name: 'mystring'}]},
-            ],
+            annotations: [linkType, myStringType],
           },
           of: [
             {type: 'image', name: 'image'},
-            {
-              type: 'object',
-              name: 'test',
-              fields: [{type: 'string', name: 'mystring', validation: (Rule) => Rule.required()}],
-            },
+            myStringType,
             {
               type: 'reference',
               name: 'strongAuthorRef',
@@ -56,11 +68,7 @@ export default {
             }),
         },
         {type: 'image', name: 'image'},
-        {
-          type: 'object',
-          name: 'test',
-          fields: [{type: 'string', name: 'mystring', validation: (Rule) => Rule.required()}],
-        },
+        myStringType,
       ],
     },
     {
