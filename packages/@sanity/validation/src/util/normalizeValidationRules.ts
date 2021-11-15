@@ -1,6 +1,5 @@
 import {SchemaType, Rule, RuleTypeConstraint} from '@sanity/types'
 import RuleClass from '../Rule'
-import {blockValidator} from '../validators/blockValidator'
 import {slugValidator} from '../validators/slugValidator'
 
 const ruleConstraintTypes: {[P in Lowercase<RuleTypeConstraint>]: true} = {
@@ -54,7 +53,6 @@ function baseRuleReducer(inputRule: Rule, type: SchemaType) {
   if (type.name === 'slug') return baseRule.custom(slugValidator)
   if (type.name === 'reference') return baseRule.reference()
   if (type.name === 'email') return baseRule.email()
-  if (type.name === 'block') return baseRule.block(blockValidator)
   return baseRule
 }
 

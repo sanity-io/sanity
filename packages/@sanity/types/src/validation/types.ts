@@ -2,6 +2,7 @@ import {Path} from '../paths'
 import {SchemaType, SchemaValidationValue} from '../schema'
 import {SanityDocument} from '../documents'
 import {ValidationMarker} from '../markers'
+import {Block} from '../portableText'
 
 export type RuleTypeConstraint = 'Array' | 'Boolean' | 'Date' | 'Number' | 'Object' | 'String'
 export type FieldRules = {[fieldKey: string]: SchemaValidationValue}
@@ -132,6 +133,9 @@ export interface Rule {
   }): Rule
   unique(): Rule
   reference(): Rule
+  /**
+   * @deprecated use `Rule.custom` instead
+   */
   block(blockValidators: BlockValidator): Rule
   fields(rules: FieldRules): Rule
   assetRequired(): Rule
@@ -156,7 +160,6 @@ export type RuleSpec =
   | {flag: 'lessThan'; constraint: number}
   | {flag: 'greaterThan'; constraint: number}
   | {flag: 'stringCasing'; constraint: 'uppercase' | 'lowercase'}
-  | {flag: 'block'; constraint: BlockValidator}
   | {flag: 'assetRequired'; constraint: {assetType: 'Asset' | 'Image' | 'File'}}
   | {
       flag: 'regex'
@@ -290,11 +293,12 @@ export type CustomValidator<T = unknown> = (
   context: ValidationContext
 ) => CustomValidatorResult | Promise<CustomValidatorResult>
 
+/**
+ * @deprecated use `Rule.custom` instead
+ * @see CustomValidator
+ */
 export type BlockValidator = (
-  // eslint-disable-next-line no-warning-comments
-  // TODO (eventually): add the type of block here
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  block: any,
+  block: Block,
   options: ValidationContext
 ) =>
   | ValidationError[]
