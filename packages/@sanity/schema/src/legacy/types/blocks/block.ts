@@ -44,6 +44,7 @@ export const BlockType = {
     const stylesField = createStylesField(styles)
     const listsField = createListsField(lists)
 
+    // NOTE: if you update this please also update `BlockSchemaType` in`@sanity/types`
     const fields = [spansField, stylesField, listsField].concat(subTypeDef.fields || [])
 
     const parsed = Object.assign(pick(BLOCK_CORE, INHERITED_FIELDS), rest, {

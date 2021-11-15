@@ -166,10 +166,70 @@ export interface ArraySchemaType<V = unknown> extends BaseSchemaType {
   }
 }
 
+// Note: this would ideally be a type parameter in `ArraySchemaType` however
+// adding one conflicts with the existing definition.
+type ArraySchemaTypeOf<TSchemaType extends ArraySchemaType['of'][number]> = Omit<
+  ArraySchemaType,
+  'of'
+> & {of: TSchemaType[]}
+
+/**
+ * A specific `ObjectField` for `marks` in `SpanSchemaType`
+ * @see SpanSchemaType
+ */
+export type MarksObjectField = {name: 'marks'} & ObjectField<ArraySchemaTypeOf<StringSchemaType>>
+
+/**
+ * A specific `ObjectField` for `text` in `SpanSchemaType`
+ * @see SpanSchemaType
+ */
+export type TextObjectField = {name: 'text'} & ObjectField<TextSchemaType>
+
+/**
+ * A specific `ObjectField` for `style` in `BlockSchemaType`
+ * @see BlockSchemaType
+ */
+export type StyleObjectField = {name: 'style'} & ObjectField<StringSchemaType>
+
+/**
+ * A specific `ObjectField` for `list` in `BlockSchemaType`
+ * @see BlockSchemaType
+ */
+export type ListObjectField = {name: 'list'} & ObjectField<StringSchemaType>
+
+/**
+ * A specific `ObjectField` for span `children` in `BlockSchemaType`
+ * @see BlockSchemaType
+ */
+export type SpanChildrenObjectField = {name: 'children'} & ObjectField<ArraySchemaType>
+
+/**
+ * Represents the compiled schema shape for `span`s for portable text.
+ *
+ * Note: this does _not_ represent the schema definition shape.
+ */
+export interface SpanSchemaType extends Omit<ObjectSchemaType, 'fields'> {
+  annotations: SchemaType[]
+  decorators: TitledListValue<string>[]
+  // the first field will always be the `marks` field and the second will
+  // always be the `text` field
+  fields: [MarksObjectField, TextObjectField]
+}
+
+/**
+ * Represents the compiled schema shape for `block`s for portable text.
+ *
+ * Note: this does _not_ represent the schema definition shape.
+ */
 export interface BlockSchemaType extends ObjectSchemaType {
-  jsonType: 'object'
-  name: 'block'
-  of?: SchemaType[]
+  fields: [
+    // the first 3 field are always span children, styles, and lists
+    SpanChildrenObjectField,
+    StyleObjectField,
+    ListObjectField,
+    // then it could be any additional fields the user could add
+    ...ObjectField[]
+  ]
 }
 
 export interface SlugSchemaType extends BaseSchemaType {
