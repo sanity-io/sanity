@@ -1,3 +1,5 @@
+import {isBlock, isSpan} from '@sanity/types'
+
 type Span = {
   _type: 'span'
   _key: string
@@ -12,14 +14,6 @@ type Block = {
   _key: string
   children: Span[]
   markDefs: MarkDef[]
-}
-
-function isBlock(block: Block): block is Block {
-  return block && Array.isArray(block.markDefs) && Array.isArray(block.children)
-}
-
-function isSpan(span: Span): span is Span {
-  return span && span._type === 'span' && typeof span.text === 'string'
 }
 
 export function isPortableTextArray(blocks: any): blocks is Block[] {
