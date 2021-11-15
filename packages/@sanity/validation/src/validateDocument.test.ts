@@ -1,6 +1,6 @@
 /// <reference types="@sanity/types/parts" />
 
-import {Rule, SchemaType, SanityDocument, Schema, ArraySchemaType} from '@sanity/types'
+import {Rule, SchemaType, SanityDocument, Schema, ArraySchemaType, Block} from '@sanity/types'
 import createSchema from 'part:@sanity/base/schema-creator'
 import validateDocument, {resolveTypeForArrayItem, validateItem} from './validateDocument'
 import convertToValidationMarker from './util/convertToValidationMarker'
@@ -149,14 +149,17 @@ describe('validateItem', () => {
             },
           ],
         },
-        {name: 'registeredString', type: 'string', validation},
+        {name: 'registeredString', title: 'Registered String', type: 'string', validation},
         {
+          title: 'Registered Object Field',
           name: 'registeredObjectField',
           type: 'object',
           fields: [{name: 'foo', type: 'string', validation}],
         },
       ],
     })
+    // ensures there are no schema formatting issues
+    expect(schema._validation).toHaveLength(0)
 
     await expect(
       validateItem({
@@ -228,6 +231,9 @@ describe('validateItem', () => {
       ],
     })
 
+    // ensures there are no schema formatting issues
+    expect(schema._validation).toHaveLength(0)
+
     await expect(
       validateItem({
         document: undefined,
@@ -252,23 +258,240 @@ describe('validateItem', () => {
     ])
   })
 
+  it('runs nested validation for markDefs', async () => {
+    const linkValidationSpy = jest.fn(() => true as const)
+    const internalLinkSpy = jest.fn(() => 'mock invalid response')
+
+    const schema = createSchema({
+      types: [
+        {
+          name: 'post',
+          title: 'Post',
+          type: 'document',
+          fields: [
+            {name: 'title', type: 'string'},
+            {name: 'body', type: 'string'},
+          ],
+        },
+        {
+          name: 'registeredEditor',
+          type: 'object',
+          title: 'Registered Editor',
+          fields: [
+            {
+              name: 'editor',
+              type: 'array',
+              of: [
+                {
+                  type: 'block',
+                  marks: {
+                    annotations: [
+                      {
+                        name: 'exampleAnnotation',
+                        type: 'object',
+                        fields: [{name: 'value', type: 'string'}],
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        {
+          name: 'blockTest',
+          type: 'document',
+          title: 'blockTest',
+          fields: [
+            {
+              name: 'content',
+              title: 'Content',
+              type: 'array',
+              of: [
+                {
+                  type: 'block',
+                  marks: {
+                    annotations: [
+                      {
+                        name: 'link',
+                        type: 'object',
+                        title: 'link',
+                        fields: [{name: 'url', type: 'url'}],
+                        validation: (rule: Rule) => rule.custom(linkValidationSpy),
+                      },
+                      {
+                        name: 'internalLink',
+                        type: 'object',
+                        title: 'Internal link',
+                        fields: [{name: 'reference', type: 'reference', to: [{type: 'post'}]}],
+                        validation: (rule: Rule) => rule.custom(internalLinkSpy),
+                      },
+                      {name: 'nestedEditor', type: 'registeredEditor'},
+                    ],
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    })
+
+    expect(schema._validation).toHaveLength(0)
+
+    const nestedBlock: Block = {
+      _type: 'block',
+      _key: 'nested-block-key',
+      children: [
+        {
+          _key: 'some-key',
+          _type: 'span',
+          text: 'hey',
+          marks: ['example-annotation-key'],
+        },
+      ],
+      markDefs: [
+        {
+          _type: 'exampleAnnotation',
+          _key: 'example-annotation-key',
+          value: 5,
+        },
+      ],
+      style: 'normal',
+    }
+
+    const block: Block = {
+      _key: 'block-key',
+      _type: 'block',
+      children: [
+        {
+          _key: 'child-0',
+          _type: 'span',
+          marks: ['0', '1', '2'],
+          text: 'hey',
+        },
+      ],
+      markDefs: [
+        {
+          _key: '0',
+          _type: 'link',
+          url: 'https://example.com',
+        },
+        {
+          _key: '1',
+          _type: 'internalLink',
+          _ref: 'post-id',
+        },
+        {
+          _key: '2',
+          _type: 'nestedEditor',
+          editor: [nestedBlock],
+        },
+      ],
+      style: 'normal',
+    }
+
+    const document: SanityDocument = {
+      _id: 'mock-id',
+      _type: 'blockTest',
+      _createdAt: '2021-11-15T21:06:41.812Z',
+      _rev: 'example-ref',
+      _updatedAt: '2021-11-15T21:06:41.812Z',
+      content: [block],
+    }
+
+    const result = await validateItem({
+      document: document,
+      parent: undefined,
+      path: [],
+      type: schema.get('blockTest'),
+      value: document,
+    })
+
+    expect(result).toMatchObject([
+      {
+        item: {message: 'mock invalid response', paths: []},
+        level: 'error',
+        path: ['content', {_key: 'block-key'}, 'markDefs', {_key: '1'}],
+        type: 'validation',
+      },
+      // this tests for nested markDef validation
+      {
+        item: {
+          message: 'Expected type "String", got "Number"',
+          paths: [],
+        },
+        level: 'error',
+        path: [
+          'content',
+          {_key: 'block-key'},
+          'markDefs',
+          {_key: '2'},
+          'editor',
+          {_key: 'nested-block-key'},
+          'markDefs',
+          {_key: 'example-annotation-key'},
+          'value',
+        ],
+        type: 'validation',
+      },
+    ])
+
+    expect(linkValidationSpy.mock.calls).toMatchObject([
+      [
+        {
+          _key: '0',
+          _type: 'link',
+          url: 'https://example.com',
+        },
+        {
+          document: {_id: 'mock-id'},
+          parent: {_key: 'block-key'},
+          path: ['content', {_key: 'block-key'}, 'markDefs', {_key: '0'}],
+          type: {name: 'link'},
+        },
+      ],
+    ])
+
+    expect(internalLinkSpy.mock.calls).toMatchObject([
+      [
+        {
+          _key: '1',
+          _ref: 'post-id',
+          _type: 'internalLink',
+        },
+        {
+          document: {_id: 'mock-id'},
+          parent: {_key: 'block-key'},
+          path: ['content', {_key: 'block-key'}, 'markDefs', {_key: '1'}],
+          type: {name: 'internalLink'},
+        },
+      ],
+    ])
+  })
+
   it('resolves an array item type if there is just one type', async () => {
     const schema = createSchema({
       types: [
         {
           name: 'values',
+          title: 'Values',
           type: 'array',
           // note that there is only one type available
           of: [{type: 'arrayItem'}],
           validation: (rule: Rule) => rule.required(),
         },
         {
+          title: 'Array Item',
           name: 'arrayItem',
           type: 'object',
           fields: [{name: 'title', type: 'string'}],
         },
       ],
     })
+
+    // ensures there are no schema formatting issues
+    expect(schema._validation).toHaveLength(0)
 
     const values = [
       {
@@ -305,6 +528,7 @@ describe('validateItem', () => {
         {
           name: 'root',
           type: 'object',
+          title: 'Root',
           fields: [
             {
               name: 'level1Object',
@@ -340,6 +564,10 @@ describe('validateItem', () => {
         },
       ],
     })
+
+    // ensures there are no schema formatting issues
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((schema as any)._validation).toHaveLength(0)
 
     const value = {
       level1Object: {level3String: 'a string'},

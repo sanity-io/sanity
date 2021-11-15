@@ -6,6 +6,9 @@ import {
   ValidationMarker,
   isKeyedObject,
   isTypedObject,
+  isBlock,
+  isBlockSchemaType,
+  isSpanSchemaType,
 } from '@sanity/types'
 import {uniqBy} from 'lodash'
 import typeString from './util/typeString'
@@ -180,9 +183,39 @@ export async function validateItem({
     )
   }
 
+  // markDefs also do no run nested validation if the parent object is undefined
+  // for a similar reason to arrays
+  const shouldRunNestedValidationForMarkDefs =
+    isBlock(value) && value.markDefs.length && isBlockSchemaType(type)
+
+  if (shouldRunNestedValidationForMarkDefs) {
+    const [spanChildrenField] = type.fields
+    const spanType = spanChildrenField.type.of.find(isSpanSchemaType)
+
+    const annotations = (spanType?.annotations || []).reduce<Map<string, SchemaType>>(
+      (map, annotationType) => {
+        map.set(annotationType.name, annotationType)
+        return map
+      },
+      new Map()
+    )
+
+    nestedChecks = nestedChecks.concat(
+      value.markDefs.map((markDef) =>
+        validateItem({
+          ...restOfContext,
+          parent: value,
+          value: markDef,
+          path: path.concat(['markDefs', {_key: markDef._key}]),
+          type: annotations.get(markDef._type),
+        })
+      )
+    )
+  }
+
   const results = (await Promise.all([...selfChecks, ...nestedChecks])).flat()
 
-  // run `dedupeValidationMarkers` if `_fieldRules` are present because they can
+  // run `uniqBy` if `_fieldRules` are present because they can
   // cause repeat markers
   if (rules.some((rule) => rule._fieldRules)) {
     return uniqBy(results, (rule) => JSON.stringify(rule))
