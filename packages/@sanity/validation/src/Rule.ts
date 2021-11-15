@@ -4,13 +4,13 @@ import {
   RuleClass,
   CustomValidator,
   RuleSpecConstraint,
-  BlockValidator,
   FieldRules,
   ValidationContext,
   RuleSpec,
   ValidationMarker,
   RuleTypeConstraint,
   Validator,
+  Block,
 } from '@sanity/types'
 import {cloneDeep, get} from 'lodash'
 import ValidationErrorClass from './ValidationError'
@@ -219,6 +219,13 @@ const Rule: RuleClass = class Rule implements IRule {
     return this.cloneWithRules([{flag: 'custom', constraint: fn as CustomValidator}])
   }
 
+  /**
+   * @deprecated use `Rule.custom` instead
+   */
+  block(fn: CustomValidator<Block>): Rule {
+    return this.cloneWithRules([{flag: 'custom', constraint: fn as CustomValidator}])
+  }
+
   min(len: number): Rule {
     return this.cloneWithRules([{flag: 'min', constraint: len}])
   }
@@ -334,10 +341,6 @@ const Rule: RuleClass = class Rule implements IRule {
   // Objects only
   reference(): Rule {
     return this.cloneWithRules([{flag: 'reference'}])
-  }
-
-  block(blockValidator: BlockValidator): Rule {
-    return this.cloneWithRules([{flag: 'block', constraint: blockValidator}])
   }
 
   fields(rules: FieldRules): Rule {

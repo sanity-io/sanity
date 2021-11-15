@@ -32,15 +32,6 @@ const objectValidators: Validators = {
     return true
   },
 
-  block: async (validateBlock, value, message, context) => {
-    const result = await validateBlock(value, context)
-    if (typeof result === 'string') {
-      return message || result
-    }
-
-    return result
-  },
-
   assetRequired: (flag, value, message) => {
     if (!value || !value.asset || !value.asset._ref) {
       const assetType = flag.assetType || 'Asset'
