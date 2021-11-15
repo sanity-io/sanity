@@ -43,6 +43,7 @@ export const SpanType = {
 
     const {annotations = [], marks = []} = subTypeDef
 
+    // NOTE: if you update this please also update `SpanSchemaType` in`@sanity/types`
     const fields = [MARKS_FIELD, TEXT_FIELD]
 
     const parsed = Object.assign(pick(SPAN_CORE, INHERITED_FIELDS), subTypeDef, {
