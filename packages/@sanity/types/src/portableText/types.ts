@@ -1,8 +1,8 @@
-export interface Block<O = Span> {
+export interface Block<TChild = Span> {
   _type: 'block'
   _key: string
   style: string
-  children: O[]
+  children: TChild[]
   markDefs: MarkDefinition[]
 }
 
