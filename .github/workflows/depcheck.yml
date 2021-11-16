@@ -25,14 +25,14 @@ jobs:
       - name: Install npm dependencies
         env:
           PUPPETEER_SKIP_DOWNLOAD: 'true'
-        run: npm install
+        run: yarn install
 
       # Required for import lint rules to work - packages pointing to ex
       # `lib/index.js`, where `src/index.ts` gets compiled to `lib/index.js`
       - name: Build modules
         id: buildResolver
-        run: npx gulp js
+        run: yarn gulp js
 
       - name: Check for unused or missing dependencies
         id: depcheck
-        run: npm run depcheck
+        run: yarn depcheck

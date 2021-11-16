@@ -37,19 +37,19 @@ jobs:
       - name: Install npm dependencies
         env:
           CYPRESS_INSTALL_BINARY: '0'
-        run: npm install
+        run: yarn install
 
       - name: Test individual modules
         run: npx jest && lerna run --scope groq --scope '@sanity/{client,generate-help-url,plugin-loader}' test
 
       - name: Build modules
-        run: npm run build
+        run: yarn build
 
       - name: Build CLI
         run: |
           # Build CLI to a single file
           cd packages/@sanity/cli
-          npm run pack
+          yarn pack
 
       - name: Test CLI
         working-directory: ${{ env.GITHUB_WORKSPACE }}

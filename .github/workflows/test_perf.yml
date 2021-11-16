@@ -28,10 +28,10 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
       - name: Install npm dependencies
-        run: npm install
+        run: yarn install
 
       - name: Run perf tests
-        run: npm run test-perf
+        run: yarn test-perf
         env:
           PERF_STUDIO_SANITY_WRITE_TOKEN: ${{ secrets.PERF_STUDIO_SANITY_WRITE_TOKEN }}
           PERF_TEST_SANITY_SESSION_TOKEN: ${{ secrets.PERF_TEST_SANITY_SESSION_TOKEN }}

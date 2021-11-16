@@ -26,13 +26,13 @@ jobs:
         env:
          PUPPETEER_SKIP_DOWNLOAD: 'true'
          CYPRESS_INSTALL_BINARY: '0'
-        run: npm install
+        run: yarn install
 
       # Required for import lint rules to work - packages pointing to ex
       # `lib/index.js`, where `src/index.ts` gets compiled to `lib/index.js`
       - name: Build modules
         id: buildModules
-        run: npm run build
+        run: yarn build
 
       - name: Lint changed files
         id: listChangedFiles
@@ -57,7 +57,7 @@ jobs:
 
           for FILE_NAME in $CHANGED_JS_FILES
           do
-            npm run eslint -- $FILE_NAME
+            yarn eslint -- $FILE_NAME
           done
 
       - name: Notify Slack about build failure
