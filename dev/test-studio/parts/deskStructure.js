@@ -40,6 +40,7 @@ const STANDARD_PORTABLE_TEXT_INPUT_TYPES = [
   'blocksTest',
   // 'richTextObject',
   'simpleBlock',
+  'documentWithHoistedPt',
 ]
 
 const PLUGIN_INPUT_TYPES = [
