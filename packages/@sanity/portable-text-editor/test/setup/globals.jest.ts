@@ -1,3 +1,4 @@
+import {KeyInput} from 'puppeteer'
 import {EditorSelection, PortableTextBlock} from '../../src'
 
 export default {}
@@ -10,7 +11,7 @@ type Editor = {
   getSelection: () => Promise<EditorSelection | null>
   getValue: () => Promise<Value>
   insertText: (text: string) => Promise<void>
-  pressKey: (keyName: string, times?: number) => Promise<void>
+  pressKey: (keyName: KeyInput, times?: number) => Promise<void>
   setSelection: (selection: EditorSelection | null) => Promise<void>
   testId: string
 }

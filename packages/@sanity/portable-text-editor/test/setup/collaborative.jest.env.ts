@@ -1,5 +1,5 @@
 import NodeEnvironment from 'jest-environment-node'
-import puppeteer from 'puppeteer'
+import puppeteer, {KeyInput} from 'puppeteer'
 import ipc from 'node-ipc'
 import {isEqual} from 'lodash'
 import {EditorSelection, PortableTextBlock} from '../../src'
@@ -73,8 +73,8 @@ export default class CollaborationEnvironment extends NodeEnvironment {
 
   public async teardown(): Promise<void> {
     await super.teardown()
-    this._browserA.close()
-    this._browserB.close()
+    this._browserA?.close()
+    this._browserB?.close()
     ipc.disconnect('socketServer')
   }
 
@@ -169,7 +169,7 @@ export default class CollaborationEnvironment extends NodeEnvironment {
                 }),
               ])
             },
-            pressKey: async (keyName: string, times?: number) => {
+            pressKey: async (keyName: KeyInput, times?: number) => {
               await editableHandle.focus()
               const pressKey = async () => {
                 await editableHandle.press(keyName)

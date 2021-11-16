@@ -20,3 +20,5 @@ node_modules
 # Dependency of opn module
 /bin/xdg-open
 dist
+
+/*.tgz

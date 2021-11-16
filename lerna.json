@@ -1,11 +1,6 @@
 {
-  "hoist": true,
-  "concurrency": 8,
-  "ci": false,
-  "npmClient": "npm",
-  "npmClientArgs": [
-    "--no-package-lock"
-  ],
+  "npmClient": "yarn",
+  "useWorkspaces": true,
   "packages": [
     "dev/*",
     "examples/*",

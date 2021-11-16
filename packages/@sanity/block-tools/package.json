@@ -7,7 +7,7 @@
   "scripts": {
     "clean": "rimraf lib dest",
     "compile": "babel src --copy-files --out-dir lib",
-    "compile:watch": "npm run compile -- --watch",
+    "compile:watch": "run-s compile --watch",
     "test": "NODE_ENV=test jest",
     "coverage": "NODE_ENV=test jest --coverage"
   },
