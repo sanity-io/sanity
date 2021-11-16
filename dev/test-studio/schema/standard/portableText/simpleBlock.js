@@ -19,10 +19,9 @@ const linkType = {
     {
       type: 'string',
       name: 'href',
-      validation: (Rule) => Rule.uri({scheme: ['http', 'https']}),
+      validation: (Rule) => Rule.uri({scheme: ['http', 'https']}).required(),
     },
   ],
-  validation: (Rule) => Rule.required(),
 }
 
 const myStringType = {
