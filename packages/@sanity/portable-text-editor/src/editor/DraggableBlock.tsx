@@ -208,6 +208,7 @@ export const DraggableBlock: FunctionComponent<ElementProps> = ({
         if (document.body) {
           dragGhostRef.current = dragGhost
           dragGhost.style.position = 'absolute'
+          dragGhost.style.left = '-99999px'
           dragGhost.style.boxSizing = 'border-box'
           document.body.appendChild(dragGhost)
           const rect = blockElement.getBoundingClientRect()
