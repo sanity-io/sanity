@@ -283,7 +283,7 @@ export interface ValidationError {
    * value.
    */
   paths?: Path[]
-  cloneWithMessage(message: string): ValidationError
+  cloneWithMessage?(message: string): ValidationError
 }
 
 export type CustomValidatorResult = true | string | ValidationError
