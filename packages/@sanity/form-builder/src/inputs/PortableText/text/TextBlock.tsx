@@ -83,7 +83,7 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
   const blockPath = useMemo(() => [{_key: blockKey}], [blockKey])
 
   const text = useMemo(() => {
-    const TextStyle = TEXT_STYLES[block.style || 'normal']
+    const TextStyle = TEXT_STYLES[block.style] || TEXT_STYLES.normal
 
     return (
       <TextFlex align="flex-start" $level={block?.level}>
