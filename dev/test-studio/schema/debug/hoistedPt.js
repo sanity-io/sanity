@@ -1,19 +1,35 @@
+const linkType = {
+  type: 'object',
+  name: 'link',
+  fields: [
+    {
+      type: 'string',
+      name: 'href',
+      validation: (Rule) => Rule.uri({scheme: ['http', 'https']}),
+    },
+  ],
+  validation: (Rule) => Rule.required(),
+}
+
+const myStringType = {
+  type: 'object',
+  name: 'test',
+  fields: [{type: 'string', name: 'mystring', validation: (Rule) => Rule.required()}],
+}
+
 export const customBlock = {
   name: 'customHoistedBlock',
   type: 'block',
   title: 'A named custom block',
   marks: {
-    annotations: [
-      {type: 'object', name: 'link', fields: [{type: 'string', name: 'url'}]},
-      {type: 'object', name: 'test', fields: [{type: 'string', name: 'mystring'}]},
-    ],
+    annotations: [linkType, myStringType],
   },
   of: [
     {type: 'image'},
     {
       type: 'object',
       name: 'test',
-      fields: [{type: 'string', name: 'mystring', validation: (Rule) => Rule.required()}],
+      fields: [myStringType],
     },
     {
       type: 'reference',
