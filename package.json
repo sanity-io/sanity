@@ -24,7 +24,7 @@
     "publish-current-branch": "RELEASE_TAG=`git rev-parse --abbrev-ref HEAD | sed 's/\\//\\_/g'` yarn publish-tag",
     "publish-tag": "RELEASE_TAG=\"${RELEASE_TAG:-canary}\"; yarn build && lerna publish --canary --force-publish --no-git-tag-version --dist-tag=$RELEASE_TAG --preid=$RELEASE_TAG --exact",
     "package": "run-s package-yarn package-cli",
-    "package-cli": "yarn --cwd packages/@sanity/cli pack",
+    "package-cli": "yarn --cwd packages/@sanity/cli build:pack",
     "package-yarn": "yarn --cwd packages/@sanity/cli package-yarn",
     "init": "lerna clean --yes && run-s bootstrap build",
     "deploy-test": "yarn build && cd dev/test-studio && sanity deploy",

@@ -7,10 +7,10 @@
     "sanity": "./bin/sanity"
   },
   "scripts": {
-    "build": "run-s build:lib package-yarn pack",
+    "build": "run-s build:lib package-yarn build:pack",
     "build:lib": "babel src --copy-files --out-dir lib",
     "clean": "rimraf lib dest",
-    "pack": "node scripts/pack.js",
+    "build:pack": "node scripts/pack.js",
     "package-yarn": "node -r @babel/register src/scripts/package-yarn.js",
     "prebuild": "yarn clean",
     "prepublishOnly": "yarn build"
