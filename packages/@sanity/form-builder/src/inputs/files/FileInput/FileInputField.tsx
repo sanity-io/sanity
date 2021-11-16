@@ -1,10 +1,10 @@
 import React from 'react'
 import * as PathUtils from '@sanity/util/paths'
 import {FormFieldPresence} from '@sanity/base/presence'
-import {Marker, ObjectField, Path} from '@sanity/types'
+import {ConditionalProperty, Marker, ObjectField, Path} from '@sanity/types'
 import PatchEvent from '../../../PatchEvent'
 import {FormBuilderInput} from '../../../FormBuilderInput'
-import {ConditionalHiddenField} from '../../common/ConditionalHiddenField'
+import {ConditionalHiddenField, ConditionalReadOnlyField} from '../../common'
 
 interface FileInputFieldProps {
   field: ObjectField
@@ -14,7 +14,7 @@ interface FileInputFieldProps {
   parentValue: Record<string, unknown>
   onBlur: () => void
   onFocus: (path: Path) => void
-  readOnly: boolean
+  readOnly: ConditionalProperty
   focusPath: Path
   compareValue: any
   markers: Marker[]
@@ -38,12 +38,14 @@ export function FileInputField(props: FileInputFieldProps) {
       value={props.value}
       hidden={props.field.type.hidden}
     >
-      <FormBuilderInput
-        {...restProps}
-        type={field.type}
-        path={PathUtils.pathFor([field.name])}
-        onChange={handleChange}
-      />
+      <ConditionalReadOnlyField readOnly={props.readOnly} value={props.value}>
+        <FormBuilderInput
+          {...restProps}
+          type={field.type}
+          path={PathUtils.pathFor([field.name])}
+          onChange={handleChange}
+        />
+      </ConditionalReadOnlyField>
     </ConditionalHiddenField>
   )
 }
