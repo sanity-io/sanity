@@ -462,7 +462,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
         onFocus={onFocus}
         compareValue={compareValue}
         onBlur={onBlur}
-        readOnly={Boolean(readOnly || field.type.readOnly)}
+        readOnly={readOnly || field.type.readOnly}
         focusPath={focusPath}
         level={level}
         presence={presence}
