@@ -1,6 +1,6 @@
 {
   "name": "@sanity/portable-text-editor",
-  "version": "2.21.10",
+  "version": "2.22.0",
   "description": "Portable Text Editor made in React",
   "main": "./lib/index.js",
   "types": "./dist/dts/index.d.ts",
@@ -36,11 +36,11 @@
     "access": "public"
   },
   "dependencies": {
-    "@sanity/block-tools": "2.21.5",
-    "@sanity/schema": "2.21.5",
+    "@sanity/block-tools": "2.22.0",
+    "@sanity/schema": "2.22.0",
     "@sanity/slate-react": "0.58.8",
-    "@sanity/types": "2.21.10",
-    "@sanity/util": "2.21.10",
+    "@sanity/types": "2.22.0",
+    "@sanity/util": "2.22.0",
     "debug": "^3.2.7",
     "is-hotkey": "^0.1.6",
     "lodash": "^4.17.15",
@@ -71,8 +71,8 @@
     "express-ws": "^5.0.2",
     "jest": "^27.1.0",
     "jest-dev-server": "^5.0.3",
-    "jest-environment-node": "^27.1.0",
     "jest-environment-jsdom": "^27.2.0",
+    "jest-environment-node": "^27.1.0",
     "node-ipc": "^9.0.0",
     "prettier": "2.1.2",
     "puppeteer": "^11.0.0",
