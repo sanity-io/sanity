@@ -23,7 +23,7 @@ export default function SavingIndicatorStory() {
     setDocumentState('saving')
     setTimeout(() => {
       setDocumentState('saved')
-    }, 2000)
+    }, 2500)
     setTimeout(() => {
       setDocumentState('default')
     }, 5000)

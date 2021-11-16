@@ -21,24 +21,18 @@ const sync = keyframes`
   }
 `
 const bounce = keyframes`
-  0% {
-    transform: scale(1);
-  }
-  25% {
-    transform: scale(1.1);
-  }
-  50% {
-    transform: scale(0.9);
-  }
-  100% {
-    transform: scale(1);
-  }
+  0% { transform: scale(1); }
+  20% { transform: scale(0.95) }
+  40% { transform: scale(1.25) }
+  60% { transform: scale(0.9) }
+  80% { transform: scale(1.1) }
+  100% { transform: scale(1); }
 `
 
 export const Saving = styled.g`
-  animation: ${sync} 2.5s infinite;
+  animation: ${sync} 1s infinite;
   transform-origin: center;
-  animation-timing-function: linear;
+  animation-timing-function: cubic-bezier(0.44, 0.31, 0.59, 0.75);
 `
 
 export const Circle = styled.path`
