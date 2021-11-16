@@ -7,7 +7,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 export function isBlock(value: unknown): value is Block {
   return (
     isRecord(value) &&
-    value._type === 'block' &&
+    typeof value._type === 'string' && // block types can be named, so expect anything here.
     typeof value.style === 'string' &&
     Array.isArray(value.children) &&
     Array.isArray(value.markDefs)
