@@ -1,5 +1,5 @@
 export interface Block<TChild = Span> {
-  _type: 'block'
+  _type: string
   _key: string
   style: string
   children: TChild[]
