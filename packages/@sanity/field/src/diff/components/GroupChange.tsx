@@ -115,7 +115,7 @@ export function GroupChange({
         )}
       </Stack>
     ),
-    [readOnly, hidden]
+    [readOnly, hidden, confirmRevertOpen]
   )
 
   return hidden ? null : (
