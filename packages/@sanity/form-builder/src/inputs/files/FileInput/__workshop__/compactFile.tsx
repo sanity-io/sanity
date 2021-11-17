@@ -12,6 +12,7 @@ import {
   Menu,
   MenuItem,
   MenuDivider,
+  Label,
 } from '@sanity/ui'
 import {
   BinaryDocumentIcon,
@@ -91,7 +92,14 @@ export default function CompactFile() {
                     button={<Button icon={EllipsisVerticalIcon} mode="bleed" />}
                     menu={
                       <Menu>
-                        <MenuItem text="Replace" icon={SyncIcon} />
+                        <Box padding={2}>
+                          <Label muted size={1}>
+                            Replace
+                          </Label>
+                        </Box>
+                        <MenuItem text="Select" icon={SearchIcon} />
+                        <MenuItem text="Upload" icon={UploadIcon} />
+                        <MenuDivider />
                         <MenuItem text="Download file" icon={DownloadIcon} />
                         <MenuDivider />
                         <MenuItem text="Clear field" icon={ResetIcon} tone="critical" />
