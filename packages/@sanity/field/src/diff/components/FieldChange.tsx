@@ -119,7 +119,7 @@ export function FieldChange({
           </FieldWrapper>
         </Stack>
       ),
-    [hidden, readOnly]
+    [hidden, readOnly, confirmRevertOpen]
   )
 
   return content
