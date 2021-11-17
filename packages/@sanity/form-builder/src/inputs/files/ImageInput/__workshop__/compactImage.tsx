@@ -18,6 +18,10 @@ import {
   MenuDivider,
   Dialog,
   Label,
+  Code,
+  rgba,
+  TextInput,
+  TextArea,
 } from '@sanity/ui'
 import {
   ChevronDownIcon,
@@ -67,8 +71,8 @@ const RatioBox = styled(Box)`
   min-height: 10rem;
   max-height: ${({maxHeight}) => maxHeight};
   width: 100%;
-  overflow: hidden;
   resize: ${({enableResize}) => (enableResize ? 'vertical' : 'initial')};
+  overflow: hidden;
 
   & > div[data-container] {
     position: absolute;
@@ -94,56 +98,104 @@ const Overlay = styled(Flex)`
   right: 0;
   bottom: 0;
   backdrop-filter: ${({drag}) => (drag ? 'blur(10px)' : '')};
-  background-color: ${(props) =>
-    props.drag
-      ? `${props.theme.sanity.color.base.bg}${
-          props.theme.sanity.color.base.bg.length === 4 ? '8' : '88'
-        }`
-      : ''};
+  background-color: ${({theme, drag}) => (drag ? rgba(theme.sanity.color.base.bg, 0.5) : 'transparent')};
 `
+
+const UploadCircle = styled(Box)`
+  width: 35px;
+  height: 35px;
+  border: 5px solid var(--card-focus-ring-color);
+  border-radius: 50%;
+`
+
+const ResizeHandle = styled(Card)`
+  position: absolute;
+  bottom: -0.5rem;
+  left: 0;
+  right: 0;
+  height: 1rem;
+  background-color: transparent;
+
+  &:hover {
+    background-color: ${({theme}) => rgba(theme.sanity.color.base.fg, 0.1)};
+    cursor: ns-resize;
+  }
+`
+const MAX_HEIGHT = '15rem'
+
 export default function CompactImage() {
   const imageContainer = useRef()
   const hasImage = useBoolean('Image', false, 'Props')
   const readOnly = useBoolean('Read only', false, 'Props')
   const drag = useBoolean('Drag file', false, 'Props')
+  const uploading = useBoolean('Uploading', false, 'Props')
   const assetSources = useBoolean('Asset sources', false, 'Props')
   const [showExpandDialog, setShowExpandDialog] = useState(false)
-  const [maxHeight, setMaxHeight] = useState('30rem')
+  const [maxHeight, setMaxHeight] = useState(MAX_HEIGHT)
+  const hasDetails = useBoolean('Has details', true, 'Props')
+  const firstResize = useRef(true)
 
-  const ro = new ResizeObserver(() => {
-    setMaxHeight('unset')
-  })
-
+  // Remove max height when resizing to allow user to extend max height
   useEffect(() => {
+    const ro = new ResizeObserver(() => {
+      if (!firstResize.current && hasImage) {
+        setMaxHeight('unset')
+      }
+
+      if (firstResize.current) {
+        firstResize.current = false
+      }
+    })
     ro.observe(imageContainer.current)
-  }, [])
+    return () => ro.disconnect()
+  }, [hasImage  ])
 
   useEffect(() => {
     if (!hasImage && imageContainer.current) {
+      setMaxHeight(MAX_HEIGHT)
       imageContainer.current.style.height = '30vh'
-      setMaxHeight('30rem')
     }
   }, [hasImage])
+
+
   return (
     <>
       <Container width={1}>
         <Stack space={6} marginTop={6}>
-          <Stack space={2} paddingX={[3, 3, 0, 0]}>
+          <Stack space={3}>
+            <Text size={1} weight="semibold">Title</Text>
+            <TextInput />
+          </Stack>
+          <Stack space={3} paddingX={[3, 3, 0, 0]}>
             <Text weight="semibold" size={1}>
               Image input
             </Text>
             <Card border style={{borderStyle: hasImage ? 'solid' : 'dashed'}}>
               <RatioBox
                 ref={imageContainer}
-                maxHeight={maxHeight}
+                // maxHeight={maxHeight}
                 minHeight={200}
                 enableResize={hasImage}
+                style={{maxHeight: maxHeight, height: '30vh'}}
                 // onResize={handleResize}
               >
-                {hasImage && (
+                {uploading && (
+                  <Card tone="transparent" height="fill">
+                    <Flex align="center" justify="center" height="fill" direction="column" gap={4}>
+                      <UploadCircle />
+                      <Inline space={2}>
+                        <Text size={1}>Uploading</Text>
+                        <Code size={1}>some-file-name.jpg</Code>
+                      </Inline>
+                      <Button fontSize={1} text="Cancel upload" mode="ghost" tone="critical" />
+                    </Flex>
+                  </Card>
+                )}
+
+                {hasImage && !uploading && (
                   <>
                     <Card data-container tone="transparent" sizing="border">
-                      <img src={'https://source.unsplash.com/random'} />
+                      <img src={'https://source.unsplash.com/random/featured?moon'} />
                     </Card>
                     <Overlay justify="flex-end" padding={3} drag={drag && !readOnly}>
                       {drag && !readOnly && (
@@ -162,17 +214,19 @@ export default function CompactImage() {
                         </Flex>
                       )}
                       <Inline data-buttons space={1}>
-                        <Tooltip
-                          content={
-                            <Box padding={2}>
-                              <Text muted size={1}>
-                                Edit details
-                              </Text>
-                            </Box>
-                          }
-                        >
-                          <Button mode="ghost" icon={EditIcon} disabled={readOnly} />
-                        </Tooltip>
+                        {hasDetails && (
+                          <Tooltip
+                            content={
+                              <Box padding={2}>
+                                <Text muted size={1}>
+                                  Edit details
+                                </Text>
+                              </Box>
+                            }
+                          >
+                            <Button mode="ghost" icon={EditIcon} disabled={readOnly} />
+                          </Tooltip>
+                        )}
                         <MenuButton
                           id="image-menu"
                           button={
@@ -182,9 +236,8 @@ export default function CompactImage() {
                           menu={
                             <Menu>
                               <Card padding={2}>
-                                <Label muted>Replace</Label>
+                                <Label muted size={1}>Replace</Label>
                               </Card>
-                              <MenuItem icon={UploadIcon} text="Upload" />
                               {!assetSources && <MenuItem icon={SearchIcon} text="Browse" />}
                               {assetSources && (
                                 <MenuGroup text="Browse">
@@ -192,6 +245,7 @@ export default function CompactImage() {
                                   <MenuItem icon={ImageIcon} text="Unsplash" />
                                 </MenuGroup>
                               )}
+                              <MenuItem icon={UploadIcon} text="Upload" />
                               <MenuDivider />
                               <MenuItem icon={ResetIcon} text="Clear field" tone="critical" />
                             </Menu>
@@ -201,34 +255,27 @@ export default function CompactImage() {
                     </Overlay>
                   </>
                 )}
-                {!hasImage && (
-                  <Box data-container>
+                {!hasImage && !uploading && (
+                  <Card data-container tone={drag ? 'transparent' : 'default'}>
                     <Stack space={3}>
                       {!readOnly && (
                         <Flex justify="center">
-                          <Card marginBottom={[2, 2, 4, 4]} radius={2}>
+                          <Box marginBottom={[2, 2, 4, 4]}>
                             <Stack space={3}>
                               <Flex justify="center">
-                                <Text size={4} muted>
+                                <Text size={4} muted={!drag}>
                                   <ImageIcon />
                                 </Text>
                               </Flex>
-                              <Text size={1} muted>
+                              <Text size={1} muted={!drag}>
                                 Drag or paste image here
                               </Text>
                             </Stack>
-                          </Card>
+                          </Box>
                         </Flex>
                       )}
 
                       <Inline data-buttons space={1}>
-                        <Button
-                          text="Upload"
-                          mode="ghost"
-                          icon={UploadIcon}
-                          disabled={readOnly}
-                          fontSize={1}
-                        />
                         {!assetSources && (
                           <Button
                             text="Browse media"
@@ -260,12 +307,24 @@ export default function CompactImage() {
                             portal
                           />
                         )}
+                        <Button
+                          text="Upload"
+                          mode="ghost"
+                          icon={UploadIcon}
+                          disabled={readOnly}
+                          fontSize={1}
+                        />
                       </Inline>
                     </Stack>
-                  </Box>
+                  </Card>
                 )}
+                {/* <ResizeHandle radius={1} /> */}
               </RatioBox>
             </Card>
+          </Stack>
+          <Stack space={3}>
+            <Text size={1} weight="semibold">Another field</Text>
+            <TextArea />
           </Stack>
 
           {/* <Stack space={3}>
