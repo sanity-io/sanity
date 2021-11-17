@@ -40,25 +40,27 @@ describe('Conditional property resolver', () => {
     )
     expect(callbackFn).toBeCalled()
     expect(callbackFn.mock.calls).toMatchInlineSnapshot(`
-      Array [
-        Array [
-          Object {
-            "currentUser": null,
-            "document": Object {
-              "_createdAt": "2021-11-04T15:41:48Z",
-              "_id": "drafts.10053a07-8647-4ebd-9d1d-33a512d30d3a",
-              "_rev": "5hb8s6-k75-ip4-4bq-5ztbf3fbx",
-              "_type": "conditionalFieldsTest",
-              "_updatedAt": "2021-11-05T12:34:29Z",
-              "isPublished": true,
-              "title": "Hello world",
-            },
-            "parent": undefined,
-            "value": undefined,
-          },
-        ],
-      ]
-    `)
+Array [
+  Array [
+    Object {
+      "currentUser": null,
+      "document": Object {
+        "_createdAt": "2021-11-04T15:41:48Z",
+        "_id": "drafts.10053a07-8647-4ebd-9d1d-33a512d30d3a",
+        "_rev": "5hb8s6-k75-ip4-4bq-5ztbf3fbx",
+        "_type": "conditionalFieldsTest",
+        "_updatedAt": "2021-11-05T12:34:29Z",
+        "isPublished": true,
+        "title": "Hello world",
+      },
+      "parent": Object {
+        "parentTest": "hello",
+      },
+      "value": undefined,
+    },
+  ],
+]
+`)
   })
 
   it('resolves callback to true', () => {

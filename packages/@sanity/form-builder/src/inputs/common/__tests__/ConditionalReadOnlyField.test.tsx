@@ -9,20 +9,12 @@ import FormBuilder from '../../../sanity/SanityFormBuilder'
 
 const callbackFn = jest.fn(() => true)
 const readOnlyCallbackFn = jest.fn((b) => b)
-const hiddenCallbackFn = jest.fn((b) => b)
 
 const readOnlyCallbackFnDocumentTrue = jest.fn(({document}) =>
   Boolean(document?.readOnlyTestTitle === 'read only')
 )
 const readOnlyCallbackFnDocumentFalse = jest.fn(({document}) =>
   Boolean(document?.readOnlyTestTitle !== 'read only')
-)
-
-const hiddenCallbackFnDocumentTrue = jest.fn(({document}) =>
-  Boolean(document?.hiddenTestTitle === 'hide me')
-)
-const hiddenCallbackFnDocumentFalse = jest.fn(({document}) =>
-  Boolean(document?.hiddenTestTitle !== 'hide me')
 )
 
 // Empty schema to pass to the context
