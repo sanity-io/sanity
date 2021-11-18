@@ -1,6 +1,6 @@
 {
   "name": "@sanity/desk-tool",
-  "version": "2.22.1",
+  "version": "2.22.2",
   "description": "Tool for managing all sorts of content in a structured manner",
   "main": "./lib/_exports/index.js",
   "types": "index.d.ts",
@@ -34,7 +34,7 @@
     "@sanity/data-aspects": "2.18.0",
     "@sanity/diff": "2.20.0",
     "@sanity/field": "2.22.0",
-    "@sanity/form-builder": "2.22.1",
+    "@sanity/form-builder": "2.22.2",
     "@sanity/generate-help-url": "2.18.0",
     "@sanity/icons": "^1.2.1",
     "@sanity/react-hooks": "2.22.0",

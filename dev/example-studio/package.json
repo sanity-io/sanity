@@ -1,7 +1,7 @@
 {
   "name": "example-studio",
   "private": true,
-  "version": "2.22.1",
+  "version": "2.22.2",
   "description": "A sanity studio with instructional examples and useful patterns",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
@@ -25,7 +25,7 @@
     "@sanity/core": "2.22.0",
     "@sanity/default-layout": "2.22.0",
     "@sanity/default-login": "2.22.0",
-    "@sanity/desk-tool": "2.22.1",
+    "@sanity/desk-tool": "2.22.2",
     "@sanity/icons": "^1.2.1",
     "@sanity/language-filter": "2.22.0",
     "@sanity/ui": "^0.36.15",

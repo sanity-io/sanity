@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "design-studio",
-  "version": "2.22.1",
+  "version": "2.22.2",
   "description": "Sanity Design Studio",
   "main": "package.json",
   "author": "Sanity.io <hello@sanity.io>",
@@ -24,7 +24,7 @@
     "@sanity/core": "2.22.0",
     "@sanity/default-layout": "2.22.0",
     "@sanity/default-login": "2.22.0",
-    "@sanity/desk-tool": "2.22.1",
+    "@sanity/desk-tool": "2.22.2",
     "@sanity/google-maps-input": "2.22.0",
     "@sanity/icons": "^1.2.1",
     "@sanity/initial-value-templates": "2.22.0",
