@@ -33,7 +33,8 @@ interface PopoverObjectEditingProps {
 
 const Root = styled(Popover)`
   &[data-popper-reference-hidden='true'] {
-    display: none;
+    visibility: hidden;
+    pointer-events: none;
   }
 
   & > div {
