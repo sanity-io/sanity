@@ -11,6 +11,7 @@ import React, {
 } from 'react'
 import {
   isValidationErrorMarker,
+  isValidationMarker,
   Marker,
   ObjectSchemaType,
   Path,
@@ -21,17 +22,18 @@ import {
   AddIcon,
   EllipsisVerticalIcon,
   LaunchIcon as OpenInNewTabIcon,
-  ResetIcon as ClearIcon,
   SyncIcon as ReplaceIcon,
+  TrashIcon,
 } from '@sanity/icons'
 import {concat, Observable, of} from 'rxjs'
-import {useId} from '@reach/auto-id'
 import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 import {
   Autocomplete,
+  Badge,
   Box,
   Button,
   Card,
+  CardTone,
   Flex,
   Inline,
   Menu,
@@ -40,20 +42,25 @@ import {
   MenuItem,
   Stack,
   Text,
+  Tooltip,
   useForwardedRef,
   useToast,
 } from '@sanity/ui'
-import {ChangeIndicatorForFieldPath, FormField, IntentLink} from '@sanity/base/components'
-import {FormFieldPresence} from '@sanity/base/presence'
+import {FormField, FormFieldValidationStatus, IntentLink} from '@sanity/base/components'
+import {FieldPresence, FormFieldPresence} from '@sanity/base/presence'
 import {getPublishedId} from '@sanity/base/_internal'
 import {useObservableCallback} from 'react-rx'
 import {uuid} from '@sanity/uuid'
+import {useId} from '@reach/auto-id'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 
 import {isNonNullable} from '../../utils/isNonNullable'
 import {AlertStrip} from '../../AlertStrip'
+import {RowWrapper} from '../arrays/ArrayOfObjectsInput/item/components/RowWrapper'
+import {DragHandle} from '../arrays/common/DragHandle'
+import {PartialPick} from '../../utils/util-types'
 import {ReferenceInfo, SearchFunction, SearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {useReferenceInfo} from './useReferenceInfo'
@@ -66,7 +73,7 @@ const INITIAL_SEARCH_STATE: SearchState = {
 }
 
 export interface Props {
-  value?: Reference
+  value: OptionalRef
   type: ReferenceSchemaType
   markers: Marker[]
   suffix?: ReactNode
@@ -74,6 +81,7 @@ export interface Props {
   readOnly?: boolean
   onSearch: SearchFunction
   compareValue?: Reference
+  isSortable: boolean
   onFocus?: (path: Path) => void
   onBlur?: () => void
   selectedState?: 'selected' | 'pressed' | 'none'
@@ -81,8 +89,8 @@ export interface Props {
   onEditReference: (id: string, type: ObjectSchemaType) => void
   getReferenceInfo: (id: string, type: ReferenceSchemaType) => Observable<ReferenceInfo>
   onChange: (event: PatchEvent) => void
-  level: number
   presence: FormFieldPresence[]
+  level: number
 }
 
 const NO_FILTER = () => true
@@ -91,27 +99,34 @@ function nonNullable<T>(v: T): v is NonNullable<T> {
   return v !== null
 }
 
-const REF_PATH = ['_ref']
-export const ReferenceInput = forwardRef(function ReferenceInput(
+const dragHandle = <DragHandle paddingX={1} paddingY={3} />
+
+type OptionalRef = PartialPick<Reference, '_ref'>
+
+function valueHasRef<T extends {_ref?: string}>(value: T): value is T & {_ref: string} {
+  return typeof value._ref === 'string'
+}
+
+export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
   props: Props,
   forwardedRef: ForwardedRef<HTMLInputElement>
 ) {
   const {
     type,
     value,
-    level,
     markers,
     readOnly,
     onSearch,
     onChange,
-    presence,
     focusPath = EMPTY_ARRAY,
     onFocus,
+    presence,
+    isSortable,
+    level,
     onBlur,
     selectedState,
     editReferenceLinkComponent: EditReferenceLink,
     onEditReference,
-    compareValue,
     getReferenceInfo,
   } = props
 
@@ -181,14 +196,21 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
     [onFocus]
   )
 
+  const handleCancelEdit = useCallback(() => {
+    if (!value?._ref) {
+      onChange(PatchEvent.from(unset()))
+    }
+    onFocus?.([])
+  }, [onChange, onFocus, value?._ref])
+
   const handleAutocompleteKeyDown = useCallback(
     (event) => {
       // escape
       if (event.keyCode === 27) {
-        onFocus?.([])
+        handleCancelEdit()
       }
     },
-    [onFocus]
+    [handleCancelEdit]
   )
 
   const getReferenceInfoMemo = useCallback((id) => getReferenceInfo(id, type), [
@@ -200,10 +222,10 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
 
   const refTypeName = loadableReferenceInfo.result?.type || value?._strengthenOnPublish?.type
 
-  const refType = refTypeName ? type.to.find((toType) => toType.name === refTypeName) : null
+  const refType = refTypeName ? type.to.find((toType) => toType.name === refTypeName) : undefined
 
   const ref = useForwardedRef(forwardedRef)
-  const hasFocusAtRef = focusPath.length === 1 && focusPath[0] === '_ref'
+  const hasFocusAtRef = focusPath.length === 1 && (focusPath[0] === '_ref' || focusPath[0] === '$')
 
   useDidUpdate({hasFocusAt: hasFocusAtRef, ref: value?._ref}, (prev, current) => {
     const refUpdated = prev.ref !== current.ref
@@ -219,8 +241,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
   const weakIs = value?._weak ? 'weak' : 'strong'
   const weakShouldBe = type.weak === true ? 'weak' : 'strong'
 
-  const hasRef = Boolean(value?._ref)
-
+  const hasRef = valueHasRef(value)
   // If the reference value is marked with _strengthenOnPublish,
   // we allow weak references if the reference points to a document that has a draft but not a published
   // In all other cases we should display a "weak mismatch" warning
@@ -233,7 +254,8 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
 
   const {push} = useToast()
 
-  const errors = useMemo(() => markers.filter(isValidationErrorMarker), [markers])
+  const validation = useMemo(() => markers.filter(isValidationMarker), [markers])
+  const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
 
   const pressed = selectedState === 'pressed'
   const selected = selectedState === 'selected'
@@ -245,6 +267,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
     },
     [onFocus, ref]
   )
+
   const handleAutocompleteFocus = useCallback(
     (event) => {
       if (onFocus && event.currentTarget === ref.current) {
@@ -340,54 +363,71 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
   const preview =
     loadableReferenceInfo.result?.preview.draft || loadableReferenceInfo.result?.preview.published
 
-  const isEditing = hasFocusAtRef || !value?._ref
+  const isEditing = hasFocusAtRef
+
   return (
-    <FormField
-      __unstable_markers={markers}
-      __unstable_presence={presence}
-      __unstable_changeIndicator={false}
-      inputId={inputId}
-      title={type.title}
-      level={level}
-      description={type.description}
+    <RowWrapper
+      radius={2}
+      padding={1}
+      tone={
+        (isEditing
+          ? ' default'
+          : readOnly
+          ? 'transparent'
+          : loadableReferenceInfo.error || errors.length > 0
+          ? 'critical'
+          : showWeakRefMismatch
+          ? 'caution'
+          : 'default') as CardTone
+      }
     >
-      <Stack space={1} marginY={isEditing ? 2 : 0}>
-        <ChangeIndicatorForFieldPath
-          path={REF_PATH}
-          hasFocus={focusPath?.[0] === '_ref'}
-          isChanged={value?._ref !== compareValue?._ref}
-        >
-          {isEditing ? (
-            <Flex align="center">
-              <Box flex={2}>
-                <AutocompleteHeightFix>
-                  <Autocomplete
-                    data-testid="autocomplete"
-                    loading={searchState.isLoading}
-                    ref={ref}
-                    id={inputId || ''}
-                    options={searchState.hits.map((hit) => ({
-                      value: hit.id,
-                      hit: hit,
-                    }))}
-                    onFocus={handleAutocompleteFocus}
-                    onBlur={onBlur}
-                    radius={1}
-                    placeholder="Type to search"
-                    onKeyDown={handleAutocompleteKeyDown}
-                    readOnly={readOnly}
-                    disabled={loadableReferenceInfo.isLoading}
-                    onQueryChange={handleQueryChange}
-                    onChange={handleChange}
-                    filterOption={NO_FILTER}
-                    renderOption={renderOption}
-                    openButton={{onClick: handleAutocompleteOpenButtonClick}}
-                  />
-                </AutocompleteHeightFix>
-              </Box>
-              {!readOnly && (
-                <Box marginLeft={1}>
-                  <Inline space={2}>
+      <Flex align="center">
+        {!isEditing && isSortable && !readOnly && (
+          <Card className="dragHandle" tone="inherit" marginRight={1}>
+            {dragHandle}
+          </Card>
+        )}
+
+        {isEditing ? (
+          <Box flex={1} padding={1}>
+            <FormField
+              __unstable_markers={markers}
+              __unstable_presence={presence}
+              __unstable_changeIndicator={false}
+              inputId={inputId}
+              title={type.title}
+              level={level}
+              description={type.description}
+            >
+              <Flex direction={['column', 'column', 'row', 'row']}>
+                <Card flex={1}>
+                  <AutocompleteHeightFix>
+                    <Autocomplete
+                      data-testid="autocomplete"
+                      loading={searchState.isLoading}
+                      ref={ref}
+                      id={inputId || ''}
+                      options={searchState.hits.map((hit) => ({
+                        value: hit.id,
+                        hit: hit,
+                      }))}
+                      onFocus={handleAutocompleteFocus}
+                      onBlur={onBlur}
+                      radius={1}
+                      placeholder="Type to search"
+                      onKeyDown={handleAutocompleteKeyDown}
+                      readOnly={readOnly}
+                      disabled={loadableReferenceInfo.isLoading}
+                      onQueryChange={handleQueryChange}
+                      onChange={handleChange}
+                      filterOption={NO_FILTER}
+                      renderOption={renderOption}
+                      openButton={{onClick: handleAutocompleteOpenButtonClick}}
+                    />
+                  </AutocompleteHeightFix>
+                </Card>
+                {!readOnly && (
+                  <Stack marginLeft={[0, 0, 1]} marginY={[1, 1, 0]}>
                     {type.to.length > 1 ? (
                       <MenuButton
                         button={
@@ -416,138 +456,177 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
                       />
                     ) : (
                       <Button
-                        text="Create new"
                         mode="ghost"
                         onKeyDown={handleCreateButtonKeyDown}
                         onClick={() => handleCreateNew(type.to[0])}
                         icon={AddIcon}
+                        text="Create new"
                       />
                     )}
-                  </Inline>
-                </Box>
-              )}
-            </Flex>
-          ) : (
-            <>
-              <Card
-                padding={0}
-                border
-                radius={1}
-                tone={
-                  readOnly
-                    ? 'transparent'
-                    : loadableReferenceInfo.error || errors.length > 0
-                    ? 'critical'
-                    : 'default'
-                }
-              >
-                <Flex align="center" padding={1}>
-                  <Card
-                    flex={1}
-                    padding={1}
-                    paddingRight={3}
-                    radius={2}
-                    as={EditReferenceLink}
-                    //@ts-expect-error issue with styled components "as" polymorphism
-                    documentId={value?._ref}
-                    documentType={refType?.name}
-                    data-as="a"
-                    tone={selected ? 'default' : 'inherit'}
-                    __unstable_focusRing
-                    tabIndex={0}
-                    selected={selected}
-                    pressed={pressed}
-                    onKeyPress={handlePreviewKeyPress}
-                    onFocus={handleFocus}
-                    data-selected={selected ? true : undefined}
-                    data-pressed={pressed ? true : undefined}
-                    ref={ref}
-                  >
-                    <PreviewReferenceValue
-                      value={value}
-                      referenceInfo={loadableReferenceInfo}
-                      type={type}
-                      selected={selected}
-                    />
-                  </Card>
-                  <Inline paddingX={1}>
-                    <MenuButton
-                      button={<Button padding={2} mode="bleed" icon={EllipsisVerticalIcon} />}
-                      id={`${inputId}-menuButton`}
-                      menu={
-                        <Menu>
-                          {!readOnly && (
-                            <>
-                              <MenuItem
-                                text="Clear"
-                                tone="critical"
-                                icon={ClearIcon}
-                                onClick={handleClear}
-                              />
-                              <MenuItem
-                                text="Replace"
-                                icon={ReplaceIcon}
-                                onClick={() => {
-                                  onFocus?.(['_ref'])
-                                }}
-                              />
-                              <MenuDivider />
-                            </>
-                          )}
-
-                          <MenuItem
-                            as={OpenLink}
-                            data-as="a"
-                            text="Open in new tab"
-                            icon={OpenInNewTabIcon}
-                          />
-                        </Menu>
-                      }
-                      placement="right"
-                      popover={{portal: true, tone: 'default'}}
-                    />
-                  </Inline>
-                </Flex>
-                {showWeakRefMismatch && (
-                  <AlertStrip
-                    padding={1}
-                    title="Reference strength mismatch"
-                    status="warning"
-                    data-testid="alert-reference-strength-mismatch"
-                  >
-                    <Stack space={3}>
-                      <Text as="p" muted size={1}>
-                        This reference is <em>{weakIs}</em>, but according to the current schema it
-                        should be <em>{weakShouldBe}.</em>
-                      </Text>
-
-                      <Text as="p" muted size={1}>
-                        {type.weak ? (
-                          <>
-                            It will not be possible to delete the "{preview?.title}"-document
-                            without first removing this reference.
-                          </>
-                        ) : (
-                          <>
-                            This makes it possible to delete the "{preview?.title}"-document without
-                            first deleting this reference, leaving this field referencing a
-                            nonexisting document.
-                          </>
-                        )}
-                      </Text>
-                      <Button
-                        onClick={handleFixStrengthMismatch}
-                        text={<>Convert to {weakShouldBe} reference</>}
-                        tone="caution"
-                      />
-                    </Stack>
-                  </AlertStrip>
+                  </Stack>
                 )}
-              </Card>
-            </>
-          )}
-        </ChangeIndicatorForFieldPath>
-      </Stack>
-    </FormField>
+              </Flex>
+            </FormField>
+          </Box>
+        ) : (
+          <Box flex={1}>
+            <Flex align="center">
+              {hasRef ? (
+                <Card
+                  flex={1}
+                  padding={1}
+                  paddingRight={3}
+                  radius={2}
+                  as={EditReferenceLink}
+                  //@ts-expect-error issue with styled components "as" polymorphism
+                  documentId={value?._ref}
+                  documentType={refType?.name}
+                  data-as="a"
+                  tone={selected ? 'default' : 'inherit'}
+                  __unstable_focusRing
+                  tabIndex={0}
+                  selected={selected}
+                  pressed={pressed}
+                  onKeyPress={handlePreviewKeyPress}
+                  onFocus={handleFocus}
+                  data-selected={selected ? true : undefined}
+                  data-pressed={pressed ? true : undefined}
+                  ref={ref}
+                >
+                  <PreviewReferenceValue
+                    value={value}
+                    referenceInfo={loadableReferenceInfo}
+                    type={type}
+                    selected={selected}
+                  />
+                </Card>
+              ) : (
+                <Card
+                  flex={1}
+                  padding={3}
+                  marginRight={1}
+                  radius={2}
+                  tone="inherit"
+                  as="button"
+                  __unstable_focusRing
+                  tabIndex={0}
+                  onClick={() => onFocus?.(['_ref'])}
+                  ref={ref}
+                >
+                  <Box marginY={1}>
+                    <Text muted>Empty reference</Text>
+                  </Box>
+                </Card>
+              )}
+              <Inline>
+                {!readOnly && presence.length > 0 && (
+                  <Box marginLeft={1}>
+                    <FieldPresence presence={presence} maxAvatars={1} />
+                  </Box>
+                )}
+                {validation.length > 0 && (
+                  <Box marginLeft={1} paddingX={1} paddingY={3}>
+                    <FormFieldValidationStatus __unstable_markers={validation} />
+                  </Box>
+                )}
+                {!value._key && (
+                  <Box marginLeft={1}>
+                    <Tooltip
+                      content={
+                        <Box padding={2}>
+                          <Text muted size={1}>
+                            This item is missing the required <code>_key</code> property.
+                          </Text>
+                        </Box>
+                      }
+                      placement="top"
+                    >
+                      <Badge mode="outline" tone="caution">
+                        Missing key
+                      </Badge>
+                    </Tooltip>
+                  </Box>
+                )}
+              </Inline>
+            </Flex>
+          </Box>
+        )}
+        {!isEditing && (
+          <Box marginLeft={1}>
+            <MenuButton
+              button={<Button paddingY={3} paddingX={2} mode="bleed" icon={EllipsisVerticalIcon} />}
+              id={`${inputId}-menuButton`}
+              menu={
+                <Menu>
+                  {!readOnly && (
+                    <>
+                      <MenuItem
+                        text="Remove"
+                        tone="critical"
+                        icon={TrashIcon}
+                        onClick={handleClear}
+                      />
+                      <MenuItem
+                        text="Replace"
+                        icon={ReplaceIcon}
+                        onClick={() => {
+                          onFocus?.(['_ref'])
+                        }}
+                      />
+                    </>
+                  )}
+                  {!readOnly && hasRef && <MenuDivider />}
+                  {hasRef && (
+                    <MenuItem
+                      as={OpenLink}
+                      data-as="a"
+                      text="Open in new tab"
+                      icon={OpenInNewTabIcon}
+                    />
+                  )}
+                </Menu>
+              }
+              placement="right"
+              popover={{portal: true, tone: 'default'}}
+            />
+          </Box>
+        )}
+      </Flex>
+
+      {showWeakRefMismatch && (
+        <AlertStrip
+          padding={1}
+          title="Reference strength mismatch"
+          status="warning"
+          data-testid="alert-reference-strength-mismatch"
+        >
+          <Stack space={3}>
+            <Text as="p" muted size={1}>
+              This reference is <em>{weakIs}</em>, but according to the current schema it should be{' '}
+              <em>{weakShouldBe}.</em>
+            </Text>
+
+            <Text as="p" muted size={1}>
+              {type.weak ? (
+                <>
+                  It will not be possible to delete the "{preview?.title}"-document without first
+                  removing this reference.
+                </>
+              ) : (
+                <>
+                  This makes it possible to delete the "{preview?.title}"-document without first
+                  deleting this reference, leaving this field referencing a nonexisting document.
+                </>
+              )}
+            </Text>
+            <Button
+              onClick={handleFixStrengthMismatch}
+              text={<>Convert to {weakShouldBe} reference</>}
+              tone="caution"
+            />
+          </Stack>
+        </AlertStrip>
+      )}
+    </RowWrapper>
   )
 })

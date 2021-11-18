@@ -1,5 +1,5 @@
 import {ToggleArrowRightIcon} from '@sanity/icons'
-import {Box, Flex, Text} from '@sanity/ui'
+import {Box, Flex, Inline, Text} from '@sanity/ui'
 import React, {useCallback, useEffect, useState} from 'react'
 import styled from 'styled-components'
 
@@ -13,6 +13,7 @@ interface DetailsProps {
   marginBottom?: number | number[]
   marginLeft?: number | number[]
   open?: boolean
+  icon?: React.ReactNode
   title?: React.ReactNode
 }
 
@@ -28,6 +29,10 @@ const HeaderButton = styled.button`
   margin: 0;
   padding: 0;
   outline: none;
+`
+
+const ToggleArrow = styled(ToggleArrowRightIcon)<{open: boolean}>`
+  transform: ${(props) => (props.open ? 'rotate(90deg)' : '')};
 `
 
 const Header = styled(Flex)`
@@ -46,7 +51,7 @@ const IconBox = styled(Box)`
 `
 
 export function Details(props: DetailsProps) {
-  const {children, open: openProp, title = 'Details', ...restProps} = props
+  const {children, open: openProp, icon, title = 'Details', ...restProps} = props
   const [open, setOpen] = useState(openProp || false)
 
   const handleToggle = useCallback(() => setOpen((v) => !v), [])
@@ -57,17 +62,19 @@ export function Details(props: DetailsProps) {
     <Box {...restProps}>
       <HeaderButton type="button" onClick={handleToggle}>
         <Header align="center">
-          <IconBox data-open={open ? '' : undefined}>
-            <Text size={1}>
-              <ToggleArrowRightIcon />
-            </Text>
-          </IconBox>
-
-          <Box flex={1} marginLeft={1}>
-            <Text size={1} weight="medium">
-              {title}
-            </Text>
-          </Box>
+          <Inline>
+            <IconBox data-open={open ? '' : undefined}>
+              <Text size={1}>
+                <ToggleArrow open={open} />
+              </Text>
+            </IconBox>
+            {icon && <Box marginLeft={1}>{icon}</Box>}
+            <Box flex={1} marginLeft={1}>
+              <Text size={1} weight="medium">
+                {title}
+              </Text>
+            </Box>
+          </Inline>
         </Header>
       </HeaderButton>
 

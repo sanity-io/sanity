@@ -1,29 +1,35 @@
-import {LinkIcon} from '@sanity/icons'
 import {FieldPresence} from '@sanity/base/presence'
 import React from 'react'
-import {Badge, Box, Card, Flex, Tooltip, Text} from '@sanity/ui'
-import {FormFieldValidationStatus, IntentButton} from '@sanity/base/components'
-import styled from 'styled-components'
+import {
+  Badge,
+  Box,
+  Button,
+  Card,
+  CardTone,
+  Flex,
+  Menu,
+  MenuButton,
+  MenuItem,
+  Text,
+  Tooltip,
+} from '@sanity/ui'
+import {EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
+import {FormFieldValidationStatus} from '@sanity/base/components'
+import {useId} from '@reach/auto-id'
 import Preview from '../../../../Preview'
-import {ConfirmDeleteButton} from '../ConfirmDeleteButton'
+
 import {DragHandle} from '../../common/DragHandle'
 import {ItemWithMissingType} from './ItemWithMissingType'
 import {ItemLayoutProps} from './ItemLayoutProps'
+import {RowWrapper} from './components/RowWrapper'
 
-const dragHandle = <DragHandle paddingX={2} paddingY={3} />
+const dragHandle = <DragHandle paddingX={1} paddingY={3} />
 
-const Root = styled(Card)`
-  transition: 250ms border-color;
-  &[aria-selected='true'] {
-    border-color: var(--card-focus-ring-color);
-  }
-`
-
-export const ItemRow = React.forwardRef(function RegularItem(
+export const RowItem = React.forwardRef(function RegularItem(
   props: ItemLayoutProps,
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
-  const focusRef = React.useRef()
+  const focusRef = React.useRef<HTMLDivElement | null>(null)
   const {
     isSortable,
     value,
@@ -38,16 +44,40 @@ export const ItemRow = React.forwardRef(function RegularItem(
     ...rest
   } = props
 
+  const hasErrors = validation.some((v) => v.level === 'error')
+  const hasWarnings = validation.some((v) => v.level === 'warning')
+
+  const id = useId()
   return (
-    <Root {...rest} border radius={1} padding={1} ref={ref}>
+    <RowWrapper
+      {...rest}
+      ref={ref}
+      radius={2}
+      padding={1}
+      tone={
+        (readOnly
+          ? 'transparent'
+          : hasErrors
+          ? 'critical'
+          : hasWarnings
+          ? 'caution'
+          : 'default') as CardTone
+      }
+    >
       <Flex align="center">
-        {isSortable && <Box marginRight={1}>{dragHandle}</Box>}
+        {isSortable && (
+          <Card className="dragHandle" tone="inherit" marginRight={1}>
+            {dragHandle}
+          </Card>
+        )}
 
         {type ? (
           <Card
             as="button"
             type="button"
+            tone="inherit"
             radius={2}
+            padding={1}
             flex={1}
             onClick={onClick}
             ref={focusRef}
@@ -55,7 +85,11 @@ export const ItemRow = React.forwardRef(function RegularItem(
             onFocus={onFocus}
             __unstable_focusRing
           >
-            <Preview layout="default" value={value} type={type} />
+            <Preview
+              layout={type.options?.layout === 'grid' ? 'media' : 'default'}
+              value={value}
+              type={type}
+            />
           </Card>
         ) : (
           <Box flex={1}>
@@ -69,7 +103,6 @@ export const ItemRow = React.forwardRef(function RegularItem(
               <FieldPresence presence={presence} maxAvatars={1} />
             </Box>
           )}
-
           {validation.length > 0 && (
             <Box marginLeft={1} paddingX={1} paddingY={3}>
               <FormFieldValidationStatus
@@ -78,18 +111,21 @@ export const ItemRow = React.forwardRef(function RegularItem(
               />
             </Box>
           )}
-
-          {value._ref && (
-            <Box marginLeft={1}>
-              <IntentButton icon={LinkIcon} intent="edit" mode="bleed" params={{id: value._ref}} />
-            </Box>
-          )}
-
-          {!readOnly && onRemove && (
-            <Box marginLeft={1}>
-              <ConfirmDeleteButton placement="left" title="Remove item" onConfirm={onRemove} />
-            </Box>
-          )}
+          <MenuButton
+            button={<Button padding={2} mode="bleed" icon={EllipsisVerticalIcon} />}
+            id={`${id}-menuButton`}
+            menu={
+              <Menu>
+                {!readOnly && (
+                  <>
+                    <MenuItem text="Remove" tone="critical" icon={TrashIcon} onClick={onRemove} />
+                  </>
+                )}
+              </Menu>
+            }
+            placement="right"
+            popover={{portal: true, tone: 'default'}}
+          />
           {!value._key && (
             <Box marginLeft={1}>
               <Tooltip
@@ -110,6 +146,6 @@ export const ItemRow = React.forwardRef(function RegularItem(
           )}
         </Flex>
       </Flex>
-    </Root>
+    </RowWrapper>
   )
 })
