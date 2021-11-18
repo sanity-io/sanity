@@ -18,7 +18,7 @@ export function useScrollIntoViewOnFocusWithin(
     hasFocusWithin,
     useCallback(
       (hadFocus, hasFocus) => {
-        if (!hadFocus && hasFocus) {
+        if (elementRef.current && !hadFocus && hasFocus) {
           scrollIntoView(elementRef.current, SCROLL_OPTIONS)
         }
       },

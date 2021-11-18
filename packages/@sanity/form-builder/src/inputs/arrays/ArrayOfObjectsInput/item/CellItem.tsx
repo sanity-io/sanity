@@ -1,8 +1,8 @@
-import {LinkIcon, WarningOutlineIcon} from '@sanity/icons'
+import {WarningOutlineIcon} from '@sanity/icons'
 import {FieldPresence} from '@sanity/base/presence'
 import React from 'react'
-import {Badge, Box, Card, Flex, Tooltip, Text} from '@sanity/ui'
-import {FormFieldValidationStatus, IntentButton} from '@sanity/base/components'
+import {Badge, Box, Card, Flex, Text, Tooltip} from '@sanity/ui'
+import {FormFieldValidationStatus} from '@sanity/base/components'
 import styled from 'styled-components'
 import Preview from '../../../../Preview'
 import {ConfirmDeleteButton} from '../ConfirmDeleteButton'
@@ -20,7 +20,7 @@ const Root = styled(Card)`
   }
 `
 
-export const ItemCell = React.forwardRef(function ItemCell(
+export const CellItem = React.forwardRef(function ItemCell(
   props: ItemLayoutProps,
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
@@ -40,7 +40,7 @@ export const ItemCell = React.forwardRef(function ItemCell(
   } = props
 
   return (
-    <Root {...rest} border radius={1} padding={1} ref={ref}>
+    <Root {...rest} radius={1} padding={1} ref={ref} border>
       {/* Preview */}
       {type ? (
         <Card
@@ -83,13 +83,6 @@ export const ItemCell = React.forwardRef(function ItemCell(
               placement="bottom"
               __unstable_showSummary={!value._ref}
             />
-          </Box>
-        )}
-
-        {/* Edit button */}
-        {value._ref && (
-          <Box>
-            <IntentButton icon={LinkIcon} intent="edit" params={{id: value._ref}} />
           </Box>
         )}
 

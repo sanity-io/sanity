@@ -25,6 +25,7 @@ interface FormBuilderInputProps {
   focusPath: Path
   markers: Marker[]
   compareValue?: unknown
+  inputComponent?: React.ComponentType<InputProps>
   level: number
   isRoot?: boolean
   path: Path
@@ -111,7 +112,8 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
   }
 
   resolveInputComponent(type: SchemaType) {
-    return this.context.formBuilder.resolveInputComponent(type)
+    const {inputComponent} = this.props
+    return inputComponent ?? this.context.formBuilder.resolveInputComponent(type)
   }
 
   setInput = (component: FormBuilderInput | HTMLDivElement | null) => {
@@ -280,7 +282,8 @@ function FormBuilderInputInner(props: FormBuilderInputInnerProps) {
       .map((marker) => ({...marker, path: PathUtils.trimChildPath(path, marker.path)}))
   }, [isRoot, markers, path])
 
-  const isLeaf = childFocusPath.length === 0 || childFocusPath[0] === PathUtils.FOCUS_TERMINATOR
+  const isLeaf = type.jsonType !== 'object' && type.jsonType !== 'array'
+
   const childCompareValue = PathUtils.get(compareValue, path)
 
   const inputProps: InputProps = useMemo(
