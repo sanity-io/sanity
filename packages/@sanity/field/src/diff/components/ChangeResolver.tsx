@@ -1,22 +1,20 @@
 import {unstable_useConditionalProperty as useConditionalProperty} from '@sanity/base/hooks'
 import {ConditionalProperty, SanityDocument} from '@sanity/types/src'
-import * as React from 'react'
+import React, {cloneElement, useContext} from 'react'
 import {ChangeNode} from '../../types'
 import {DocumentChangeContext} from './DocumentChangeContext'
 import {FieldChange} from './FieldChange'
 import {GroupChange} from './GroupChange'
 
-export function ChangeResolver({
-  change,
-  hidden,
-  readOnly,
-  ...restProps
-}: {
+interface ChangeResolverProps {
   change: ChangeNode
   readOnly?: ConditionalProperty
-  hidden?: ConditionalProperty | boolean
-} & React.HTMLAttributes<HTMLDivElement>) {
-  const {value} = React.useContext(DocumentChangeContext)
+  hidden?: ConditionalProperty
+}
+
+export function ChangeResolver(props: ChangeResolverProps) {
+  const {change, hidden, readOnly, ...restProps} = props
+  const {value} = useContext(DocumentChangeContext)
 
   if (change.type === 'field') {
     // Resolve the readOnly property if it's a function
@@ -33,7 +31,11 @@ export function ChangeResolver({
           value={change.diff.toValue}
           {...restProps}
         >
-          <FieldChange change={change} {...restProps} hidden={hidden} />
+          <FieldChange
+            change={change}
+            {...restProps}
+            // hidden={hidden} /** @todo: check if this value is needed */
+          />
         </ConditionalReadOnlyChange>
       </ConditionalHiddenChange>
     )
@@ -41,6 +43,7 @@ export function ChangeResolver({
 
   if (change.type === 'group') {
     // Resolve the group's readOnly property if it's a function
+
     return (
       <ConditionalHiddenChange
         hidden={hidden || change?.schemaType?.hidden}
@@ -95,5 +98,5 @@ const ConditionalReadOnlyChange = ({
     checkPropertyKey: 'readOnly',
   })
 
-  return React.cloneElement(props.children, {readOnly: isReadOnly})
+  return cloneElement(props.children, {readOnly: isReadOnly})
 }
