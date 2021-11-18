@@ -8,12 +8,33 @@ export default {
   icon,
   fields: [
     {name: 'title', type: 'string'},
-    {name: 'selfRef', type: 'reference', to: {type: 'referenceTest'}},
+    {
+      name: 'selfRef',
+      title: 'Reference to self',
+      type: 'reference',
+      description: 'Some description',
+      to: {type: 'referenceTest'},
+    },
     {
       title: 'Reference to book or author',
       name: 'multiTypeRef',
       type: 'reference',
       to: [{type: 'book'}, {type: 'author'}],
+    },
+    {
+      name: 'array',
+      type: 'array',
+      title: 'Array of refs and inline objects',
+      of: [
+        {type: 'empty', title: 'Inline object'},
+        {type: 'book', title: 'Inline book'},
+        {
+          type: 'reference',
+          title: 'Reference to either "species" or "empty" document',
+          description: 'Some description',
+          to: [{type: 'species'}, {type: 'empty'}],
+        },
+      ],
     },
     {name: 'liveEditedDocument', type: 'reference', to: {type: 'thesis'}},
     {
@@ -107,7 +128,7 @@ export default {
       to: {type: 'author'},
     },
     {
-      name: 'array',
+      name: 'arrayOfCustomReferences',
       type: 'array',
       of: [
         {
