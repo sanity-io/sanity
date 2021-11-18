@@ -113,8 +113,6 @@ export function buildFieldsetChangeList(
   const {fields, name, title, readOnly, hidden} = fieldSet
   const {fieldFilter, ...context} = diffContext
 
-  console.log(fieldSet)
-
   const fieldSetHidden = hidden
   const fieldsetReadOnly = readOnly
 
@@ -155,7 +153,8 @@ export function buildFieldsetChangeList(
       path,
       titlePath: fieldSetTitlePath,
       changes: reduceTitlePaths(changes, fieldSetTitlePath.length),
-      readOnly: fieldsetReadOnly /** @todo: Figure out how this should be handled. */,
+      readOnly: fieldsetReadOnly,
+      hidden: fieldSetHidden,
     },
   ]
 }
