@@ -7,7 +7,12 @@ import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 
 function strengthenOnPublish(obj: unknown) {
   if (isReference(obj)) {
-    if (obj._strengthenOnPublish) return omit(obj, ['_strengthenOnPublish', '_weak'])
+    if (obj._strengthenOnPublish) {
+      return omit(
+        obj,
+        ['_strengthenOnPublish'].concat(obj._strengthenOnPublish.weak ? [] : ['_weak'])
+      )
+    }
     return obj
   }
   if (typeof obj !== 'object' || !obj) return obj
