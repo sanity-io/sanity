@@ -6,7 +6,7 @@ export interface Reference {
   _ref: string
   _key?: string
   _weak?: boolean
-  _strengthenOnPublish?: {type: string}
+  _strengthenOnPublish?: {type: string; weak: boolean}
 }
 
 export interface WeakReference extends Reference {
