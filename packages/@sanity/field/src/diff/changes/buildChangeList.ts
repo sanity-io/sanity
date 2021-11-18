@@ -110,12 +110,14 @@ export function buildFieldsetChangeList(
   titlePath: ChangeTitlePath,
   diffContext: DiffContext & {fieldFilter?: string[]} = {}
 ): ChangeNode[] {
-  const {fields, name, title, readOnly} = fieldSet
+  const {fields, name, title, readOnly, hidden} = fieldSet
   const {fieldFilter, ...context} = diffContext
+
+  const fieldSetHidden = hidden
+  const fieldsetReadOnly = readOnly
 
   const fieldSetTitlePath = titlePath.concat([title || name])
   const changes: ChangeNode[] = []
-  const isFieldSetReadOnly = !!readOnly
 
   for (const field of fields) {
     const fieldDiff = diff.fields[field.name]
@@ -128,7 +130,8 @@ export function buildFieldsetChangeList(
     changes.push(
       ...buildChangeList(
         {
-          readOnly: isFieldSetReadOnly,
+          readOnly: fieldsetReadOnly,
+          hidden: fieldSetHidden,
           ...field.type,
         },
         fieldDiff,
@@ -150,7 +153,8 @@ export function buildFieldsetChangeList(
       path,
       titlePath: fieldSetTitlePath,
       changes: reduceTitlePaths(changes, fieldSetTitlePath.length),
-      readOnly: isFieldSetReadOnly,
+      readOnly: fieldsetReadOnly,
+      hidden: fieldSetHidden,
     },
   ]
 }
