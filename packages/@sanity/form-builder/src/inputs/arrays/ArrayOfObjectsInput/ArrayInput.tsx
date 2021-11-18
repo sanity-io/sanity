@@ -11,7 +11,7 @@ import {
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {isPlainObject} from 'lodash'
 import {FormFieldSet, ImperativeToast} from '@sanity/base/components'
-import {Button, Stack, Text, Spinner, Flex, Card, Box, ToastParams} from '@sanity/ui'
+import {Box, Button, Card, Flex, Spinner, Stack, Text, ToastParams} from '@sanity/ui'
 import React from 'react'
 import {map} from 'rxjs/operators'
 import {Subscription} from 'rxjs'
@@ -26,7 +26,7 @@ import ArrayFunctions from '../common/ArrayFunctions'
 import {applyAll} from '../../../patch/applyPatch'
 import {ConditionalReadOnlyField} from '../../common'
 import {ArrayItem} from './item'
-import {ArrayMember} from './types'
+import type {ArrayMember, ReferenceItemComponentType} from './types'
 import {uploadTarget} from './uploadTarget/uploadTarget'
 
 declare const __DEV__: boolean
@@ -63,6 +63,7 @@ export interface Props {
   onBlur: () => void
   focusPath: Path
   readOnly: boolean
+  ReferenceItemComponent: ReferenceItemComponentType
   filterField: () => any
   ArrayFunctionsImpl: typeof ArrayFunctions
   resolveUploader?: (type: SchemaType, file: FileLike) => Uploader | null
@@ -130,12 +131,19 @@ export class ArrayInput extends React.Component<Props> {
     this.removeItem(item)
   }
 
-  handleFocus = () => {
-    this.props.onFocus([])
+  handleFocus = (event) => {
+    // We want to handle focus when the array input *itself* element receives
+    // focus, not when a child element receives focus, but React has decided
+    // to let focus bubble, so this workaround is needed
+    // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
+    if (event.currentTarget === event.target && event.currentTarget === this._focusArea) {
+      this.props.onFocus([])
+    }
   }
 
   handleFocusItem = (item: ArrayMember) => {
     this.props.onFocus([{_key: item._key}, FOCUS_TERMINATOR])
+    // this.props.onFocus([{_key: item._key}, item._type === 'reference' ? '_ref' : FOCUS_TERMINATOR])
   }
 
   removeItem(item: ArrayMember) {
@@ -183,6 +191,7 @@ export class ArrayInput extends React.Component<Props> {
       event.prefixAll({_key: key}).prepend(item._key ? [] : set(key, [value.indexOf(item), '_key']))
     )
   }
+
   handleSortEnd = (event: {newIndex: number; oldIndex: number}) => {
     const {value, onChange} = this.props
     const item = value[event.oldIndex]
@@ -280,6 +289,7 @@ export class ArrayInput extends React.Component<Props> {
       onFocus,
       compareValue,
       filterField,
+      ReferenceItemComponent,
       ArrayFunctionsImpl,
     } = this.props
 
@@ -389,53 +399,56 @@ export class ArrayInput extends React.Component<Props> {
 
           <Stack data-ui="ArrayInput__content" space={3}>
             {(value?.length > 0 || isResolvingInitialValue) && (
-              <List onSortEnd={this.handleSortEnd} isSortable={isSortable} isGrid={isGrid}>
-                {value.map((item, index) => {
-                  return (
-                    <Item
-                      key={item._key || index}
-                      isSortable={isSortable}
-                      isGrid={isGrid}
-                      index={index}
-                    >
-                      <ConditionalReadOnlyField
-                        readOnly={readOnly || this.getMemberTypeOfItem(item)?.readOnly}
-                        value={item}
-                        parent={value}
+              <Card shadow={isGrid ? 0 : 1} radius={1} paddingY={1}>
+                <List onSortEnd={this.handleSortEnd} isSortable={isSortable} isGrid={isGrid}>
+                  {value.map((item, index) => {
+                    return (
+                      <Item
+                        key={item._key || index}
+                        isSortable={isSortable}
+                        isGrid={isGrid}
+                        index={index}
                       >
-                        <ArrayItem
-                          compareValue={compareValue}
-                          filterField={filterField}
-                          focusPath={focusPath}
-                          itemKey={item._key}
-                          index={index}
-                          markers={markers}
-                          onBlur={onBlur}
-                          onChange={this.handleItemChange}
-                          onFocus={onFocus}
-                          onRemove={this.handleRemoveItem}
-                          presence={presence}
-                          readOnly={readOnly || hasMissingKeys}
-                          type={type}
+                        <ConditionalReadOnlyField
+                          readOnly={readOnly || this.getMemberTypeOfItem(item)?.readOnly}
                           value={item}
-                        />
-                      </ConditionalReadOnlyField>
+                          parent={value}
+                        >
+                          <ArrayItem
+                            compareValue={compareValue}
+                            filterField={filterField}
+                            focusPath={focusPath}
+                            itemKey={item._key}
+                            index={index}
+                            markers={markers}
+                            ReferenceItemComponent={ReferenceItemComponent}
+                            onBlur={onBlur}
+                            onChange={this.handleItemChange}
+                            onFocus={onFocus}
+                            onRemove={this.handleRemoveItem}
+                            presence={presence}
+                            readOnly={readOnly || hasMissingKeys}
+                            type={type}
+                            value={item}
+                          />
+                        </ConditionalReadOnlyField>
+                      </Item>
+                    )
+                  })}
+                  {isResolvingInitialValue && (
+                    <Item isGrid={isGrid} index={-1}>
+                      <Card radius={1} padding={1}>
+                        <Flex align="center" justify="center" padding={3}>
+                          <Box marginX={3}>
+                            <Spinner muted />
+                          </Box>
+                          <Text>Resolving initial value…</Text>
+                        </Flex>
+                      </Card>
                     </Item>
-                  )
-                })}
-                {isResolvingInitialValue && (
-                  <Item isGrid={isGrid} index={-1}>
-                    <Card border radius={1} padding={1}>
-                      <Flex align="center" justify="center" padding={3}>
-                        <Box marginX={3}>
-                          <Spinner muted />
-                        </Box>
-                        <Text>Resolving initial value…</Text>
-                      </Flex>
-                    </Card>
-                  </Item>
-                )}
-              </List>
+                  )}
+                </List>
+              </Card>
             )}
 
             <ArrayFunctionsImpl

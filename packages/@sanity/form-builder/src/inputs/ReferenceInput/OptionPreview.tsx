@@ -4,8 +4,9 @@ import {ReferenceSchemaType} from '@sanity/types'
 import {Stack, TextSkeleton} from '@sanity/ui'
 import {Observable} from 'rxjs'
 import {Alert} from '../../components/Alert'
-import {PreviewComponentType, ReferenceInfo} from './types'
+import {ReferenceInfo} from './types'
 import {useReferenceInfo} from './useReferenceInfo'
+import {ReferencePreview} from './ReferencePreview'
 
 /**
  * Used to preview a referenced type
@@ -17,9 +18,7 @@ export function OptionPreview(props: {
   id: string
   type: ReferenceSchemaType
   getReferenceInfo: (id: string) => Observable<ReferenceInfo>
-  previewComponent: PreviewComponentType
 }) {
-  const {previewComponent: PreviewComponent} = props
   const {isLoading, result: referenceInfo, error} = useReferenceInfo(
     props.id,
     props.getReferenceInfo
@@ -33,6 +32,7 @@ export function OptionPreview(props: {
       </Stack>
     )
   }
+
   if (error) {
     return (
       <Stack space={2} padding={1}>
@@ -41,21 +41,37 @@ export function OptionPreview(props: {
     )
   }
 
-  if (
-    referenceInfo.draft.availability.reason === 'PERMISSION_DENIED' &&
-    referenceInfo.published.availability.reason === 'PERMISSION_DENIED'
-  ) {
+  if (!referenceInfo) {
+    return null
+  }
+
+  if (referenceInfo.availability.reason === 'PERMISSION_DENIED') {
     return (
       <Stack space={2} padding={1}>
         Insufficient permissions to view this document
       </Stack>
     )
   }
+
+  const refType = props.type.to.find((toType) => toType.name === referenceInfo.type)
+  if (!refType) {
+    return (
+      <Stack space={2} padding={1}>
+        Search returned a type that's not valid for this reference: "${referenceInfo.type}"
+      </Stack>
+    )
+  }
   return (
-    <PreviewComponent
-      referenceInfo={referenceInfo}
-      refType={props.type.to.find((toType) => toType.name === referenceInfo.type)}
-      showTypeLabel={props.type.to.length > 1}
-    />
+    referenceInfo &&
+    refType && (
+      <ReferencePreview
+        id={referenceInfo.id}
+        availability={referenceInfo.availability}
+        preview={referenceInfo.preview}
+        refType={refType}
+        showTypeLabel={props.type.to.length > 1}
+        layout="default"
+      />
+    )
   )
 }
