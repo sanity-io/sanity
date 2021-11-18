@@ -20,7 +20,7 @@ import withDocument from '../../../utils/withDocument'
 import {useReferenceInputOptions} from '../../contexts/ReferenceInputOptions'
 import PatchEvent from '../../../PatchEvent'
 import * as adapter from '../client-adapters/reference'
-import {ReferenceInput} from '../../../inputs/ReferenceInput/ReferenceInput'
+import {ArrayItemReferenceInput} from '../../../inputs/ReferenceInput/ArrayItemReferenceInput'
 
 // eslint-disable-next-line require-await
 async function resolveUserDefinedFilter(
@@ -45,12 +45,13 @@ async function resolveUserDefinedFilter(
 }
 
 export type Props = {
-  value?: Reference
+  value: Reference
   compareValue?: Reference
   type: ReferenceSchemaType
   markers: Marker[]
   focusPath: Path
   readOnly?: boolean
+  isSortable: boolean
   onFocus: (path: Path) => void
   onChange: (event: PatchEvent) => void
   level: number
@@ -139,7 +140,7 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
     : 'none'
 
   return (
-    <ReferenceInput
+    <ArrayItemReferenceInput
       {...props}
       onSearch={handleSearch}
       getReferenceInfo={adapter.getReferenceInfo}

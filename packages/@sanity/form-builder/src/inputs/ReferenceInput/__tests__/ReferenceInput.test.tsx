@@ -5,19 +5,17 @@ import {RouterProvider} from '@sanity/state-router/components'
 import {route} from '@sanity/state-router'
 import React, {forwardRef, useImperativeHandle} from 'react'
 import Schema from '@sanity/schema'
-import {LayerProvider, ThemeProvider, studioTheme, ToastProvider} from '@sanity/ui'
+import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {of} from 'rxjs'
 import {noop} from 'lodash'
 
 import {AvailabilityReason} from '@sanity/base/_internal'
 import {Reference} from '@sanity/types'
-import {ReferenceInput, Props} from '../ReferenceInput'
+import {Props, ReferenceInput} from '../ReferenceInput'
 import {DocumentPreview, ReferenceInfo} from '../types'
-
-type PartialExcept<T, K extends keyof T> = Partial<T> & Pick<T, K>
+import {PartialExcept} from '../../../utils/util-types'
 
 const EMPTY_SEARCH = () => of([])
-const Preview = (props: unknown) => <div>Preview {JSON.stringify(props)}</div>
 
 const AVAILABLE = {
   available: true,
@@ -57,7 +55,6 @@ function ReferenceInputTester(props: PartialExcept<Props, 'type' | 'getReference
               focusPath={[]}
               presence={[]}
               onSearch={EMPTY_SEARCH}
-              previewComponent={Preview}
               editReferenceLinkComponent={StubComponent}
               onEditReference={noop}
               {...props}
@@ -105,8 +102,8 @@ describe('if schema type is a strong reference', () => {
         referenceInfo={{
           id: 'someActor',
           type: 'actorReference',
-          published: {availability: UNAVAILABLE_NOT_FOUND, preview: undefined},
-          draft: {availability: UNAVAILABLE_NOT_FOUND, preview: undefined},
+          availability: UNAVAILABLE_NOT_FOUND,
+          preview: {published: undefined, draft: undefined},
         }}
       />
     )
@@ -125,8 +122,11 @@ describe('if schema type is a strong reference', () => {
         referenceInfo={{
           id: 'someActor',
           type: 'actorReference',
-          published: {availability: UNAVAILABLE_NOT_FOUND, preview: undefined},
-          draft: {availability: AVAILABLE, preview: DRAFT_PREVIEW as DocumentPreview},
+          availability: AVAILABLE,
+          preview: {
+            published: undefined,
+            draft: DRAFT_PREVIEW as DocumentPreview,
+          },
         }}
       />
     )
@@ -140,8 +140,11 @@ describe('if schema type is a strong reference', () => {
         referenceInfo={{
           id: 'someActor',
           type: 'actorReference',
-          published: {availability: AVAILABLE, preview: undefined},
-          draft: {availability: AVAILABLE, preview: DRAFT_PREVIEW as DocumentPreview},
+          availability: AVAILABLE,
+          preview: {
+            published: undefined,
+            draft: DRAFT_PREVIEW as DocumentPreview,
+          },
         }}
       />
     )
@@ -158,13 +161,10 @@ describe('if schema type is a weak reference', () => {
         referenceInfo={{
           id: 'someActor',
           type: 'actorReference',
-          published: {
-            availability: UNAVAILABLE_NOT_FOUND,
-            preview: PUBLISHED_PREVIEW as DocumentPreview,
-          },
-          draft: {
-            availability: UNAVAILABLE_NOT_FOUND,
-            preview: DRAFT_PREVIEW as DocumentPreview,
+          availability: UNAVAILABLE_NOT_FOUND,
+          preview: {
+            published: PUBLISHED_PREVIEW as DocumentPreview,
+            draft: DRAFT_PREVIEW as DocumentPreview,
           },
         }}
       />
