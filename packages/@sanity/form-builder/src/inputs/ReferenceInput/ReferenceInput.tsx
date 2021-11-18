@@ -125,7 +125,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
       set(type.name, ['_type']),
       set(id, ['_ref']),
       set(true, ['_weak']),
-      set({type: refType.name}, ['_strengthenOnPublish']),
+      set({type: refType.name, weak: type.weak}, ['_strengthenOnPublish']),
     ].filter(isNonNullable)
 
     onChange(PatchEvent.from(patches))
@@ -153,16 +153,16 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
         setIfMissing({}),
         set(type.name, ['_type']),
         set(getPublishedId(id), ['_ref']),
-        hit.published ? unset(['_weak']) : set(true, ['_weak']),
+        hit.published && !type.weak ? unset(['_weak']) : set(true, ['_weak']),
         hit.published
           ? unset(['_strengthenOnPublish'])
-          : set({type: hit?.type}, ['_strengthenOnPublish']),
+          : set({type: hit?.type, weak: type.weak}, ['_strengthenOnPublish']),
       ].filter(isNonNullable)
 
       onChange(PatchEvent.from(patches))
       onFocus?.([])
     },
-    [searchState.hits, type.name, onChange, onFocus]
+    [searchState.hits, type.name, type.weak, onChange, onFocus]
   )
 
   const handleClear = useCallback(() => {
