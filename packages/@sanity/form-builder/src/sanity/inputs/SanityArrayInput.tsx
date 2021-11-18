@@ -14,6 +14,7 @@ import {
 } from '../../inputs/arrays/ArrayOfPrimitivesInput'
 import * as is from '../../utils/is'
 import {FileLike} from '../uploads/types'
+import SanityArrayItemReferenceInput from './reference/SanityArrayItemReferenceInput'
 
 const arrayResolveUploader = (type: SchemaType, file: FileLike) => {
   const SUPPORT_DIRECT_IMAGE_UPLOADS = formBuilderConfig?.images?.directUploads
@@ -35,6 +36,7 @@ export const SanityArrayInput = forwardRef(function SanityArrayInput(
     <ArrayInput
       {...props}
       ref={ref}
+      ReferenceItemComponent={SanityArrayItemReferenceInput}
       resolveUploader={arrayResolveUploader}
       resolveInitialValue={resolveInitialValueForType}
       ArrayFunctionsImpl={ArrayFunctions}
