@@ -4,6 +4,7 @@
 import {FormFieldPresence} from '@sanity/base/presence'
 import {Marker, Path, Schema, SchemaType} from '@sanity/types'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
+import {render} from '@testing-library/react'
 import React from 'react'
 import {FormBuilder} from '../../sanity/legacyPartImplementations/form-builder'
 
@@ -44,6 +45,31 @@ export const DEFAULT_PROPS = {
   focusPath: [],
 }
 
+// Use this to test specific inputs rendered in the form-builder
+export function inputTester(document, type, schema, testId?: string) {
+  const onFocus = jest.fn()
+  const onBlur = jest.fn()
+  const onChange = jest.fn()
+
+  const {queryByTestId} = render(
+    <FormBuilderTester
+      {...DEFAULT_PROPS}
+      schema={schema}
+      value={document}
+      type={type}
+      onChange={onChange}
+      onFocus={onFocus}
+      onBlur={onBlur}
+    />
+  )
+
+  const inputContainer = queryByTestId(testId)
+
+  return {onChange, onFocus, onBlur, inputContainer}
+}
+
+// Use this in your test to get full control when testing the form builder
+// the default props are available in DEFAULT_props
 export const FormBuilderTester = React.forwardRef(function FormBuilderTester(
   props: FormBuilderProps,
   ref

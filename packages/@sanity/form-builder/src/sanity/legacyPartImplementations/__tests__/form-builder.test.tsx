@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-unassigned-import
 import '@testing-library/jest-dom/extend-expect'
 import React from 'react'
-import {render, within} from '@testing-library/react'
+import {render} from '@testing-library/react'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import Schema from '@sanity/schema'
 import {FormBuilder} from '../form-builder'
@@ -266,128 +266,111 @@ describe('Form builder callback function', () => {
     `)
   })
 })
+// todo: move tests to the individual input components
+// describe('String input fields with readOnly', () => {
+//   it('makes field read-only with boolean', () => {
+//     const {queryByTestId} = render(<FormBuilderTester />)
+//     expect(queryByTestId('input-isReadOnly').querySelector('input')).toHaveAttribute('readonly')
+//   })
 
-describe('String input fields with readOnly', () => {
-  it('makes field read-only with boolean', () => {
-    const {queryByTestId} = render(<FormBuilderTester />)
-    expect(queryByTestId('input-isReadOnly').querySelector('input')).toHaveAttribute('readonly')
-  })
+//   it('makes field read-only with callback', () => {
+//     const {queryByTestId} = render(<FormBuilderTester />)
+//     expect(queryByTestId('input-isReadOnlyCallback').querySelector('input')).toHaveAttribute(
+//       'readonly'
+//     )
+//   })
 
-  it('makes field read-only with callback', () => {
-    const {queryByTestId} = render(<FormBuilderTester />)
-    expect(queryByTestId('input-isReadOnlyCallback').querySelector('input')).toHaveAttribute(
-      'readonly'
-    )
-  })
+//   it('makes field read-only with callback using document value', () => {
+//     const {queryByTestId} = render(<FormBuilderTester />)
+//     expect(queryByTestId('input-isReadOnlyWithDocument').querySelector('input')).toHaveAttribute(
+//       'readonly'
+//     )
+//   })
 
-  it('makes field read-only with callback using document value', () => {
-    const {queryByTestId} = render(<FormBuilderTester />)
-    expect(queryByTestId('input-isReadOnlyWithDocument').querySelector('input')).toHaveAttribute(
-      'readonly'
-    )
-  })
+//   it('makes field not read-only with callback', () => {
+//     const {queryByTestId} = render(<FormBuilderTester />)
+//     expect(queryByTestId('input-isNotReadOnlyCallback').querySelector('input')).not.toHaveAttribute(
+//       'readonly'
+//     )
+//   })
 
-  it('makes field not read-only with boolean', () => {
-    const {queryByTestId} = render(<FormBuilderTester />)
-    expect(queryByTestId('input-isNotReadOnly').querySelector('input')).not.toHaveAttribute(
-      'readonly'
-    )
-  })
+//   it('makes field not read-only with callback using document value', () => {
+//     const {queryByTestId} = render(<FormBuilderTester />)
+//     expect(
+//       queryByTestId('input-isNotReadOnlyWithDocument').querySelector('input')
+//     ).not.toHaveAttribute('readonly')
+//   })
+// })
 
-  it('makes field not read-only with callback', () => {
-    const {queryByTestId} = render(<FormBuilderTester />)
-    expect(queryByTestId('input-isNotReadOnlyCallback').querySelector('input')).not.toHaveAttribute(
-      'readonly'
-    )
-  })
+// describe('String input fields with hidden', () => {
+//   it('hides field using boolean', () => {
+//     const {queryByTestId} = render(<FormBuilderTester />)
+//     expect(queryByTestId('input-isHidden')).toBeNull()
+//   })
 
-  it('makes field not read-only with callback using document value', () => {
-    const {queryByTestId} = render(<FormBuilderTester />)
-    expect(
-      queryByTestId('input-isNotReadOnlyWithDocument').querySelector('input')
-    ).not.toHaveAttribute('readonly')
-  })
-})
+//   it('hides field using callback', () => {
+//     const {queryByTestId} = render(<FormBuilderTester />)
+//     expect(queryByTestId('input-isHiddenCallback')).toBeNull()
+//     expect(queryByTestId('input-isNotHiddenCallback')).toBeDefined()
+//   })
 
-describe('String input fields with hidden', () => {
-  it('hides field using boolean', () => {
-    const {queryByTestId} = render(<FormBuilderTester />)
-    expect(queryByTestId('input-isHidden')).toBeNull()
-  })
+//   it('hides field using callback with document values', () => {
+//     const {queryByTestId} = render(<FormBuilderTester />)
+//     expect(queryByTestId('input-isHiddenWithDocument')).toBeNull()
+//   })
 
-  it('hides field using callback', () => {
-    const {queryByTestId} = render(<FormBuilderTester />)
-    expect(queryByTestId('input-isHiddenCallback')).toBeNull()
-    expect(queryByTestId('input-isNotHiddenCallback')).toBeDefined()
-  })
+//   it('shows field using boolean', () => {
+//     const {queryByTestId} = render(<FormBuilderTester />)
+//     expect(queryByTestId('input-isNotHidden')).toBeDefined()
+//   })
 
-  it('hides field using callback with document values', () => {
-    const {queryByTestId} = render(<FormBuilderTester />)
-    expect(queryByTestId('input-isHiddenWithDocument')).toBeNull()
-  })
+//   it('shows field using callback', () => {
+//     const {queryByTestId} = render(<FormBuilderTester />)
+//     expect(queryByTestId('input-isNotHiddenCallback')).toBeDefined()
+//   })
 
-  it('shows field using boolean', () => {
-    const {queryByTestId} = render(<FormBuilderTester />)
-    expect(queryByTestId('input-isNotHidden')).toBeDefined()
-  })
+//   it('shows field using callback with document values', () => {
+//     const {queryByTestId} = render(<FormBuilderTester />)
+//     expect(queryByTestId('input-isNotHiddenWithDocument')).toBeDefined()
+//   })
+// })
 
-  it('shows field using callback', () => {
-    const {queryByTestId} = render(<FormBuilderTester />)
-    expect(queryByTestId('input-isNotHiddenCallback')).toBeDefined()
-  })
+// describe('Image fields with readOnly', () => {
+//   it('makes empty image field read-only', () => {
+//     const {queryByTestId} = render(<FormBuilderTester />)
+//     const {getByText} = within(queryByTestId('input-readOnlyImage'))
+//     expect(getByText('This field is read-only')).toBeDefined()
+//   })
+//   it(`hides populated image field's upload, remove, and select buttons`, () => {
+//     const {queryByTestId} = render(<FormBuilderTester />)
+//     expect(
+//       within(queryByTestId('input-readOnlyImage')).queryByTestId('image-input-upload-button')
+//     ).toBeNull()
+//     expect(
+//       within(queryByTestId('input-readOnlyImage')).queryByTestId('image-input-select-button')
+//     ).toBeNull()
+//     expect(
+//       within(queryByTestId('input-readOnlyImage')).queryByTestId('image-input-remove-button')
+//     ).toBeNull()
+//   })
+// })
 
-  it('shows field using callback with document values', () => {
-    const {queryByTestId} = render(<FormBuilderTester />)
-    expect(queryByTestId('input-isNotHiddenWithDocument')).toBeDefined()
-  })
-})
-
-describe('Boolean fields with readOnly', () => {
-  it('makes boolean field read-only', () => {
-    const {queryByTestId} = render(<FormBuilderTester />)
-    expect(queryByTestId('input-readOnlyBoolean').querySelector('input')).toBeDisabled()
-    expect(queryByTestId('input-readOnlyBoolean').querySelector('input')).toHaveAttribute(
-      'data-read-only'
-    )
-  })
-})
-
-describe('Image fields with readOnly', () => {
-  it('makes empty image field read-only', () => {
-    const {queryByTestId} = render(<FormBuilderTester />)
-    const {getByText} = within(queryByTestId('input-readOnlyImage'))
-    expect(getByText('This field is read-only')).toBeDefined()
-  })
-  it(`hides populated image field's upload, remove, and select buttons`, () => {
-    const {queryByTestId} = render(<FormBuilderTester />)
-    expect(
-      within(queryByTestId('input-readOnlyImage')).queryByTestId('image-input-upload-button')
-    ).toBeNull()
-    expect(
-      within(queryByTestId('input-readOnlyImage')).queryByTestId('image-input-select-button')
-    ).toBeNull()
-    expect(
-      within(queryByTestId('input-readOnlyImage')).queryByTestId('image-input-remove-button')
-    ).toBeNull()
-  })
-})
-
-describe('File fields with readOnly', () => {
-  it('makes empty file field read-only', () => {
-    const {queryByTestId} = render(<FormBuilderTester />)
-    const {getByText} = within(queryByTestId('input-readOnlyFile'))
-    expect(getByText('This field is read-only')).toBeDefined()
-  })
-  it(`hides populated file field's upload, remove, and select buttons`, () => {
-    const {queryByTestId} = render(<FormBuilderTester />)
-    expect(
-      within(queryByTestId('input-readOnlyFile')).queryByTestId('file-input-upload-button')
-    ).toBeNull()
-    expect(
-      within(queryByTestId('input-readOnlyFile')).queryByTestId('file-input-select-button')
-    ).toBeNull()
-    expect(
-      within(queryByTestId('input-readOnlyFile')).queryByTestId('file-input-remove-button')
-    ).toBeNull()
-  })
-})
+// describe('File fields with readOnly', () => {
+//   it('makes empty file field read-only', () => {
+//     const {queryByTestId} = render(<FormBuilderTester />)
+//     const {getByText} = within(queryByTestId('input-readOnlyFile'))
+//     expect(getByText('This field is read-only')).toBeDefined()
+//   })
+//   it(`hides populated file field's upload, remove, and select buttons`, () => {
+//     const {queryByTestId} = render(<FormBuilderTester />)
+//     expect(
+//       within(queryByTestId('input-readOnlyFile')).queryByTestId('file-input-upload-button')
+//     ).toBeNull()
+//     expect(
+//       within(queryByTestId('input-readOnlyFile')).queryByTestId('file-input-select-button')
+//     ).toBeNull()
+//     expect(
+//       within(queryByTestId('input-readOnlyFile')).queryByTestId('file-input-remove-button')
+//     ).toBeNull()
+//   })
+// })
