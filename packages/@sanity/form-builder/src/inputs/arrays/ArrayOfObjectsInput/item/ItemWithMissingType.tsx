@@ -3,7 +3,7 @@ import React from 'react'
 import {BulbOutlineIcon, UnknownIcon} from '@sanity/icons'
 import {resolveTypeName} from '@sanity/util/content'
 
-type Props = {value: any; onFocus?: () => void}
+type Props = {value: any; onFocus?: (event: React.FocusEvent) => void}
 export function ItemWithMissingType(props: Props) {
   const {value, onFocus} = props
   const [showDetails, setShowDetails] = React.useState(false)

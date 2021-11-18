@@ -70,7 +70,6 @@ export function sortableGrid<Props>(Component: React.ComponentType<Props>) {
     keyCodes: KEYCODES,
     axis: 'xy',
     lockAxis: 'xy',
-    distance: 1,
     useDragHandle: true,
     shouldCancelStart,
   })

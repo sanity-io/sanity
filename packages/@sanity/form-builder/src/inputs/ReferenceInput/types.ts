@@ -1,18 +1,24 @@
 import {Observable} from 'rxjs'
-import React from 'react'
-import {ObjectSchemaType, PreviewValue} from '@sanity/types'
+import React, {ReactNode} from 'react'
+import {
+  Marker,
+  ObjectSchemaType,
+  Path,
+  PreviewValue,
+  Reference,
+  ReferenceSchemaType,
+} from '@sanity/types'
 import {DocumentAvailability} from '@sanity/base/_internal'
+import {FormFieldPresence} from '@sanity/base/presence'
+import PatchEvent from '../../PatchEvent'
 
 export interface ReferenceInfo {
   id: string
   type: string | undefined
-  draft: {
-    availability: DocumentAvailability
-    preview: DocumentPreview
-  }
-  published: {
-    availability: DocumentAvailability
-    preview: DocumentPreview
+  availability: DocumentAvailability
+  preview: {
+    draft: DocumentPreview | undefined
+    published: DocumentPreview | undefined
   }
 }
 
@@ -21,14 +27,6 @@ export interface DocumentPreview extends PreviewValue {
   _type: string
   _createdAt: string
   _updatedAt: string
-}
-
-export type DocumentMetadata = {
-  /**
-   * null if current user doesn't have access to determine existence
-   */
-  exists: boolean | null
-  readable: boolean
 }
 
 export interface SearchState {
@@ -57,4 +55,26 @@ export interface SearchHit {
   type: string
   draft: undefined | {_id: string; _type: string}
   published: undefined | {_id: string; _type: string}
+}
+
+export interface BaseInputProps {
+  value?: Reference
+  type: ReferenceSchemaType
+  markers: Marker[]
+  id?: string
+  suffix?: ReactNode
+  focusPath: Path
+  readOnly?: boolean
+  onSearch: SearchFunction
+  compareValue?: Reference
+  onFocus?: (path: Path) => void
+  onBlur?: () => void
+  selectedState?: 'selected' | 'pressed' | 'none'
+  editReferenceLinkComponent: React.ComponentType
+  onEditReference: (id: string, type: ObjectSchemaType) => void
+  getReferenceInfo: (id: string, type: ReferenceSchemaType) => Observable<ReferenceInfo>
+  previewComponent: PreviewComponentType
+  onChange: (event: PatchEvent) => void
+  level: number
+  presence: FormFieldPresence[]
 }
