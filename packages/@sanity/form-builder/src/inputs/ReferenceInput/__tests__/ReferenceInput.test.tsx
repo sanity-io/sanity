@@ -70,6 +70,7 @@ function ReferenceInfoTester(
   props: Partial<Omit<Props, 'getReferenceInfo' | 'type'>> & {
     referenceInfo: ReferenceInfo
     typeIsWeakRef?: boolean
+    isEditing?: boolean
     value: Reference
   }
 ) {
@@ -84,7 +85,7 @@ function ReferenceInfoTester(
     <ReferenceInputTester
       getReferenceInfo={(id: string) => of(props.referenceInfo)}
       onSearch={EMPTY_SEARCH}
-      focusPath={['_ref']}
+      focusPath={props.isEditing ? ['_ref'] : []}
       type={schema.get('actorReference')}
       value={props.value}
     />
@@ -95,21 +96,6 @@ const PUBLISHED_PREVIEW = {title: 'Actor (published)', description: ''}
 const DRAFT_PREVIEW = {title: 'Actor (draft)', description: ''}
 
 describe('if schema type is a strong reference', () => {
-  test("the UI shows a warning if the referenced document doesn't exist in either draft or published form", () => {
-    const {getByTestId} = render(
-      <ReferenceInfoTester
-        value={{_type: 'reference', _ref: 'someActor'}}
-        referenceInfo={{
-          id: 'someActor',
-          type: 'actorReference',
-          availability: UNAVAILABLE_NOT_FOUND,
-          preview: {published: undefined, draft: undefined},
-        }}
-      />
-    )
-    expect(getByTestId('alert-nonexistent-document')).toBeInTheDocument()
-  })
-
   test('the UI does *NOT* show a warning if the draft exist and the reference value is weak and has a _strengthenOnPublish flag', () => {
     const {getByTestId, queryByTestId} = render(
       <ReferenceInfoTester
@@ -170,5 +156,24 @@ describe('if schema type is a weak reference', () => {
       />
     )
     expect(getByTestId('alert-nonexistent-document')).toBeInTheDocument()
+  })
+
+  test('a warning is visible if the reference value is strong while the schema says it should be weak', () => {
+    const {getByTestId} = render(
+      <ReferenceInfoTester
+        typeIsWeakRef
+        value={{_type: 'reference', _ref: 'someActor'}}
+        referenceInfo={{
+          id: 'someActor',
+          type: 'actorReference',
+          availability: AVAILABLE,
+          preview: {
+            published: PUBLISHED_PREVIEW as DocumentPreview,
+            draft: DRAFT_PREVIEW as DocumentPreview,
+          },
+        }}
+      />
+    )
+    expect(getByTestId('alert-reference-strength-mismatch')).toBeInTheDocument()
   })
 })
