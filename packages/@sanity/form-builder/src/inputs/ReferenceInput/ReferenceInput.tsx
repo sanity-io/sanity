@@ -54,6 +54,7 @@ import {useDidUpdate} from '../../hooks/useDidUpdate'
 
 import {isNonNullable} from '../../utils/isNonNullable'
 import {AlertStrip} from '../../AlertStrip'
+import {Alert} from '../../components/Alert'
 import {ReferenceInfo, SearchFunction, SearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {useReferenceInfo} from './useReferenceInfo'
@@ -340,6 +341,11 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
   const preview =
     loadableReferenceInfo.result?.preview.draft || loadableReferenceInfo.result?.preview.published
 
+  const isWeakRefToNonexistent =
+    loadableReferenceInfo?.result?.availability?.reason === 'NOT_FOUND' &&
+    !value._strengthenOnPublish &&
+    value._weak
+
   const isEditing = hasFocusAtRef || !value?._ref
   return (
     <FormField
@@ -352,201 +358,224 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
       description={type.description}
     >
       <Stack space={1} marginY={isEditing ? 2 : 0}>
-        <ChangeIndicatorForFieldPath
-          path={REF_PATH}
-          hasFocus={focusPath?.[0] === '_ref'}
-          isChanged={value?._ref !== compareValue?._ref}
-        >
-          {isEditing ? (
-            <Flex align="center">
-              <Box flex={2}>
-                <AutocompleteHeightFix>
-                  <Autocomplete
-                    data-testid="autocomplete"
-                    loading={searchState.isLoading}
-                    ref={ref}
-                    id={inputId || ''}
-                    options={searchState.hits.map((hit) => ({
-                      value: hit.id,
-                      hit: hit,
-                    }))}
-                    onFocus={handleAutocompleteFocus}
-                    onBlur={onBlur}
-                    radius={1}
-                    placeholder="Type to search"
-                    onKeyDown={handleAutocompleteKeyDown}
-                    readOnly={readOnly}
-                    disabled={loadableReferenceInfo.isLoading}
-                    onQueryChange={handleQueryChange}
-                    onChange={handleChange}
-                    filterOption={NO_FILTER}
-                    renderOption={renderOption}
-                    openButton={{onClick: handleAutocompleteOpenButtonClick}}
-                  />
-                </AutocompleteHeightFix>
-              </Box>
-              {!readOnly && (
-                <Box marginLeft={1}>
-                  <Inline space={2}>
-                    {type.to.length > 1 ? (
-                      <MenuButton
-                        button={
-                          <Button
-                            text="Create new…"
-                            mode="ghost"
-                            icon={AddIcon}
-                            onKeyDown={handleCreateButtonKeyDown}
-                          />
-                        }
-                        id={`${inputId}-selectTypeMenuButton`}
-                        menu={
-                          <Menu>
-                            {type.to.map((toType) => (
-                              <MenuItem
-                                key={toType.name}
-                                text={toType.title}
-                                icon={toType.icon}
-                                onClick={() => handleCreateNew(toType)}
-                              />
-                            ))}
-                          </Menu>
-                        }
-                        placement="right"
-                        popover={{portal: true, tone: 'default'}}
-                      />
-                    ) : (
-                      <Button
-                        text="Create new"
-                        mode="ghost"
-                        onKeyDown={handleCreateButtonKeyDown}
-                        onClick={() => handleCreateNew(type.to[0])}
-                        icon={AddIcon}
-                      />
-                    )}
-                  </Inline>
-                </Box>
-              )}
-            </Flex>
-          ) : (
-            <>
-              <Card
-                padding={0}
-                border
-                radius={1}
-                tone={
-                  readOnly
-                    ? 'transparent'
-                    : loadableReferenceInfo.error || errors.length > 0
-                    ? 'critical'
-                    : 'default'
+        {isEditing || isWeakRefToNonexistent ? (
+          <Stack space={2}>
+            {isWeakRefToNonexistent ? (
+              <Alert
+                data-testid="alert-nonexistent-document"
+                title="Nonexistent document reference"
+                suffix={
+                  <Stack padding={2}>
+                    <Button text="Clear" onClick={handleClear} />
+                  </Stack>
                 }
               >
-                <Flex align="center" padding={1}>
-                  <Card
-                    flex={1}
-                    padding={1}
-                    paddingRight={3}
-                    radius={2}
-                    as={EditReferenceLink}
-                    //@ts-expect-error issue with styled components "as" polymorphism
-                    documentId={value?._ref}
-                    documentType={refType?.name}
-                    data-as="a"
-                    tone={selected ? 'default' : 'inherit'}
-                    __unstable_focusRing
-                    tabIndex={0}
+                <Text size={1}>
+                  This field is currently referencing a document that doesn't exist (ID:
+                  <code>{value._ref}</code>). You can either remove the reference or replace it with
+                  another document.
+                </Text>
+              </Alert>
+            ) : null}
+            <ChangeIndicatorForFieldPath
+              path={REF_PATH}
+              hasFocus={focusPath?.[0] === '_ref'}
+              isChanged={value?._ref !== compareValue?._ref}
+            >
+              <Flex align="center">
+                <Box flex={2}>
+                  <AutocompleteHeightFix>
+                    <Autocomplete
+                      data-testid="autocomplete"
+                      loading={searchState.isLoading}
+                      ref={ref}
+                      id={inputId || ''}
+                      options={searchState.hits.map((hit) => ({
+                        value: hit.id,
+                        hit: hit,
+                      }))}
+                      onFocus={handleAutocompleteFocus}
+                      onBlur={onBlur}
+                      radius={1}
+                      placeholder="Type to search"
+                      onKeyDown={handleAutocompleteKeyDown}
+                      readOnly={readOnly}
+                      disabled={loadableReferenceInfo.isLoading}
+                      onQueryChange={handleQueryChange}
+                      onChange={handleChange}
+                      filterOption={NO_FILTER}
+                      renderOption={renderOption}
+                      openButton={{onClick: handleAutocompleteOpenButtonClick}}
+                    />
+                  </AutocompleteHeightFix>
+                </Box>
+                {!readOnly && (
+                  <Box marginLeft={1}>
+                    <Inline space={2}>
+                      {type.to.length > 1 ? (
+                        <MenuButton
+                          button={
+                            <Button
+                              text="Create new…"
+                              mode="ghost"
+                              icon={AddIcon}
+                              onKeyDown={handleCreateButtonKeyDown}
+                            />
+                          }
+                          id={`${inputId}-selectTypeMenuButton`}
+                          menu={
+                            <Menu>
+                              {type.to.map((toType) => (
+                                <MenuItem
+                                  key={toType.name}
+                                  text={toType.title}
+                                  icon={toType.icon}
+                                  onClick={() => handleCreateNew(toType)}
+                                />
+                              ))}
+                            </Menu>
+                          }
+                          placement="right"
+                          popover={{portal: true, tone: 'default'}}
+                        />
+                      ) : (
+                        <Button
+                          text="Create new"
+                          mode="ghost"
+                          onKeyDown={handleCreateButtonKeyDown}
+                          onClick={() => handleCreateNew(type.to[0])}
+                          icon={AddIcon}
+                        />
+                      )}
+                    </Inline>
+                  </Box>
+                )}
+              </Flex>
+            </ChangeIndicatorForFieldPath>
+          </Stack>
+        ) : (
+          <ChangeIndicatorForFieldPath
+            path={REF_PATH}
+            hasFocus={focusPath?.[0] === '_ref'}
+            isChanged={value?._ref !== compareValue?._ref}
+          >
+            <Card
+              padding={0}
+              border
+              radius={1}
+              tone={
+                readOnly
+                  ? 'transparent'
+                  : loadableReferenceInfo.error || errors.length > 0
+                  ? 'critical'
+                  : 'default'
+              }
+            >
+              <Flex align="center" padding={1}>
+                <Card
+                  flex={1}
+                  padding={1}
+                  paddingRight={3}
+                  radius={2}
+                  as={EditReferenceLink}
+                  //@ts-expect-error issue with styled components "as" polymorphism
+                  documentId={value?._ref}
+                  documentType={refType?.name}
+                  data-as="a"
+                  tone={selected ? 'default' : 'inherit'}
+                  __unstable_focusRing
+                  tabIndex={0}
+                  selected={selected}
+                  pressed={pressed}
+                  onKeyPress={handlePreviewKeyPress}
+                  onFocus={handleFocus}
+                  data-selected={selected ? true : undefined}
+                  data-pressed={pressed ? true : undefined}
+                  ref={ref}
+                >
+                  <PreviewReferenceValue
+                    value={value}
+                    referenceInfo={loadableReferenceInfo}
+                    type={type}
                     selected={selected}
-                    pressed={pressed}
-                    onKeyPress={handlePreviewKeyPress}
-                    onFocus={handleFocus}
-                    data-selected={selected ? true : undefined}
-                    data-pressed={pressed ? true : undefined}
-                    ref={ref}
-                  >
-                    <PreviewReferenceValue
-                      value={value}
-                      referenceInfo={loadableReferenceInfo}
-                      type={type}
-                      selected={selected}
-                    />
-                  </Card>
-                  <Inline paddingX={1}>
-                    <MenuButton
-                      button={<Button padding={2} mode="bleed" icon={EllipsisVerticalIcon} />}
-                      id={`${inputId}-menuButton`}
-                      menu={
-                        <Menu>
-                          {!readOnly && (
-                            <>
-                              <MenuItem
-                                text="Clear"
-                                tone="critical"
-                                icon={ClearIcon}
-                                onClick={handleClear}
-                              />
-                              <MenuItem
-                                text="Replace"
-                                icon={ReplaceIcon}
-                                onClick={() => {
-                                  onFocus?.(['_ref'])
-                                }}
-                              />
-                              <MenuDivider />
-                            </>
-                          )}
-
-                          <MenuItem
-                            as={OpenLink}
-                            data-as="a"
-                            text="Open in new tab"
-                            icon={OpenInNewTabIcon}
-                          />
-                        </Menu>
-                      }
-                      placement="right"
-                      popover={{portal: true, tone: 'default'}}
-                    />
-                  </Inline>
-                </Flex>
-                {showWeakRefMismatch && (
-                  <AlertStrip
-                    padding={1}
-                    title="Reference strength mismatch"
-                    status="warning"
-                    data-testid="alert-reference-strength-mismatch"
-                  >
-                    <Stack space={3}>
-                      <Text as="p" muted size={1}>
-                        This reference is <em>{weakIs}</em>, but according to the current schema it
-                        should be <em>{weakShouldBe}.</em>
-                      </Text>
-
-                      <Text as="p" muted size={1}>
-                        {type.weak ? (
+                  />
+                </Card>
+                <Inline paddingX={1}>
+                  <MenuButton
+                    button={<Button padding={2} mode="bleed" icon={EllipsisVerticalIcon} />}
+                    id={`${inputId}-menuButton`}
+                    menu={
+                      <Menu>
+                        {!readOnly && (
                           <>
-                            It will not be possible to delete the "{preview?.title}"-document
-                            without first removing this reference.
-                          </>
-                        ) : (
-                          <>
-                            This makes it possible to delete the "{preview?.title}"-document without
-                            first deleting this reference, leaving this field referencing a
-                            nonexisting document.
+                            <MenuItem
+                              text="Clear"
+                              tone="critical"
+                              icon={ClearIcon}
+                              onClick={handleClear}
+                            />
+                            <MenuItem
+                              text="Replace"
+                              icon={ReplaceIcon}
+                              onClick={() => {
+                                onFocus?.(['_ref'])
+                              }}
+                            />
+                            <MenuDivider />
                           </>
                         )}
-                      </Text>
-                      <Button
-                        onClick={handleFixStrengthMismatch}
-                        text={<>Convert to {weakShouldBe} reference</>}
-                        tone="caution"
-                      />
-                    </Stack>
-                  </AlertStrip>
-                )}
-              </Card>
-            </>
-          )}
-        </ChangeIndicatorForFieldPath>
+
+                        <MenuItem
+                          as={OpenLink}
+                          data-as="a"
+                          text="Open in new tab"
+                          icon={OpenInNewTabIcon}
+                        />
+                      </Menu>
+                    }
+                    placement="right"
+                    popover={{portal: true, tone: 'default'}}
+                  />
+                </Inline>
+              </Flex>
+              {showWeakRefMismatch && (
+                <AlertStrip
+                  padding={1}
+                  title="Reference strength mismatch"
+                  status="warning"
+                  data-testid="alert-reference-strength-mismatch"
+                >
+                  <Stack space={3}>
+                    <Text as="p" muted size={1}>
+                      This reference is <em>{weakIs}</em>, but according to the current schema it
+                      should be <em>{weakShouldBe}.</em>
+                    </Text>
+
+                    <Text as="p" muted size={1}>
+                      {type.weak ? (
+                        <>
+                          It will not be possible to delete the "{preview?.title}"-document without
+                          first removing this reference.
+                        </>
+                      ) : (
+                        <>
+                          This makes it possible to delete the "{preview?.title}"-document without
+                          first deleting this reference, leaving this field referencing a
+                          nonexisting document.
+                        </>
+                      )}
+                    </Text>
+                    <Button
+                      onClick={handleFixStrengthMismatch}
+                      text={<>Convert to {weakShouldBe} reference</>}
+                      tone="caution"
+                    />
+                  </Stack>
+                </AlertStrip>
+              )}
+            </Card>
+          </ChangeIndicatorForFieldPath>
+        )}
       </Stack>
     </FormField>
   )
