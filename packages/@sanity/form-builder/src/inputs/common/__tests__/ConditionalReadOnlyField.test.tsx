@@ -79,8 +79,8 @@ const ConditionalFieldsTester = React.forwardRef(function ConditionalFieldsTeste
   )
 })
 
-describe('Conditional Fields', () => {
-  it('readOnly and hidden callback function gets called', () => {
+describe('Conditional Read Only Callback', () => {
+  it('readOnly callback function gets called', () => {
     render(<ConditionalFieldsTester readOnly={callbackFn} />)
     expect(callbackFn).toBeCalled()
     expect(callbackFn.mock.calls).toMatchInlineSnapshot(`
