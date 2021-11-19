@@ -1,7 +1,9 @@
 import {BoundaryElementProvider, Flex, PortalProvider, usePortal, useElementRect} from '@sanity/ui'
 import React, {createElement, useEffect, useMemo, useRef, useState} from 'react'
 import {ScrollContainer} from '@sanity/base/components'
+import {unstable_useDocumentValuePermissions as useDocumentValuePermissions} from '@sanity/base/hooks'
 import styled, {css} from 'styled-components'
+import {SchemaType} from '@sanity/types'
 import {PaneContent} from '../../../components/pane'
 import {usePaneLayout} from '../../../components/pane/usePaneLayout'
 import {useDeskTool} from '../../../contexts/deskTool'
@@ -9,6 +11,14 @@ import {useDocumentPane} from '../useDocumentPane'
 import {DocumentPanelHeader} from './header'
 import {FormView} from './documentViews'
 import {PermissionCheckBanner} from './PermissionCheckBanner'
+
+function getSchemaType(typeName: string): SchemaType | null {
+  const schemaMod = require('part:@sanity/base/schema')
+  const schema = schemaMod.default || schemaMod
+  const type = schema.get(typeName)
+  if (!type) return null
+  return type
+}
 
 interface DocumentPanelProps {
   footerHeight: number | null
@@ -37,10 +47,10 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     documentId,
     documentSchema,
     editState,
-    initialValue,
     value,
     views,
     ready,
+    documentType,
   } = useDocumentPane()
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const parentPortal = usePortal()
@@ -49,6 +59,16 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const headerRect = useElementRect(headerElement)
   const portalRef = useRef<HTMLDivElement | null>(null)
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
+
+  const requiredPermission = value._createdAt ? 'update' : 'create'
+  const liveEdit = useMemo(() => Boolean(getSchemaType(documentType)?.liveEdit), [documentType])
+  const docPermissionsInput = useMemo(() => {
+    return {...value, _id: liveEdit ? 'dummy-id' : 'drafts.dummy-id'}
+  }, [liveEdit, value])
+  const permissions = useDocumentValuePermissions({
+    document: docPermissionsInput,
+    permission: requiredPermission,
+  })
 
   const activeView = useMemo(
     () => views.find((view) => view.id === activeViewId) || views[0] || {type: 'form'},
@@ -78,7 +98,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       createElement(activeView.component, {
         document: {
           draft: editState?.draft || null,
-          displayed: displayed || value || initialValue,
+          displayed: displayed || value,
           historical: displayed,
           published: editState?.published || null,
         },
@@ -93,7 +113,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       documentSchema,
       editState?.draft,
       editState?.published,
-      initialValue,
       value,
     ]
   )
@@ -104,46 +123,38 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     documentScrollElement.scrollTo(0, 0)
   }, [documentId, documentScrollElement])
 
-  return useMemo(
-    () => (
-      <Flex direction="column" flex={2} overflow={layoutCollapsed ? undefined : 'hidden'}>
-        <DocumentPanelHeader rootElement={rootElement} ref={setHeaderElement} />
+  return (
+    <Flex direction="column" flex={2} overflow={layoutCollapsed ? undefined : 'hidden'}>
+      <DocumentPanelHeader rootElement={rootElement} ref={setHeaderElement} />
 
-        <PaneContent>
-          <PortalProvider element={portalElement}>
-            <BoundaryElementProvider element={documentScrollElement}>
-              {activeView.type === 'form' && <PermissionCheckBanner />}
+      <PaneContent>
+        <PortalProvider element={portalElement}>
+          <BoundaryElementProvider element={documentScrollElement}>
+            {activeView.type === 'form' && !permissions.isLoading && ready && (
+              <PermissionCheckBanner
+                granted={!!permissions.value?.granted}
+                requiredPermission={requiredPermission}
+              />
+            )}
 
-              <Scroller
-                $disabled={layoutCollapsed || false}
-                data-testid="document-panel-scroller"
-                ref={setDocumentScrollElement}
-              >
-                <FormView
-                  hidden={formViewHidden}
-                  key={documentId + (ready ? '_ready' : '_pending')}
-                  margins={margins}
-                />
-                {activeViewNode}
-              </Scroller>
+            <Scroller
+              $disabled={layoutCollapsed || false}
+              data-testid="document-panel-scroller"
+              ref={setDocumentScrollElement}
+            >
+              <FormView
+                hidden={formViewHidden}
+                key={documentId + (ready ? '_ready' : '_pending')}
+                margins={margins}
+                granted={!!permissions.value?.granted}
+              />
+              {activeViewNode}
+            </Scroller>
 
-              <div data-testid="document-panel-portal" ref={portalRef} />
-            </BoundaryElementProvider>
-          </PortalProvider>
-        </PaneContent>
-      </Flex>
-    ),
-    [
-      activeView.type,
-      activeViewNode,
-      documentId,
-      documentScrollElement,
-      formViewHidden,
-      layoutCollapsed,
-      margins,
-      portalElement,
-      ready,
-      rootElement,
-    ]
+            <div data-testid="document-panel-portal" ref={portalRef} />
+          </BoundaryElementProvider>
+        </PortalProvider>
+      </PaneContent>
+    </Flex>
   )
 }

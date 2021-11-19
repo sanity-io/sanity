@@ -1,10 +1,11 @@
 import {useId} from '@reach/auto-id'
+import {IntentLink} from '@sanity/base/router'
 import {EllipsisVerticalIcon} from '@sanity/icons'
 import {Box, Button, Label, Menu, MenuButton, MenuDivider, MenuItem, PopoverProps} from '@sanity/ui'
-import React, {Fragment, useCallback, useMemo} from 'react'
+import React, {forwardRef, Fragment, useCallback, useMemo} from 'react'
 import {PaneMenuItem, PaneMenuItemGroup} from '../../types'
 
-interface DocumentPanelContextMenuProps {
+interface PaneContextMenuButtonProps {
   items: PaneMenuItem[]
   itemGroups?: PaneMenuItemGroup[]
   onAction: (action: PaneMenuItem) => void
@@ -25,7 +26,7 @@ const CONTEXT_MENU_POPOVER_PROPS: PopoverProps = {
 /**
  * @beta This API will change. DO NOT USE IN PRODUCTION.
  */
-export function PaneContextMenuButton(props: DocumentPanelContextMenuProps) {
+export function PaneContextMenuButton(props: PaneContextMenuButtonProps) {
   const {items, itemGroups, onAction} = props
   const id = useId() || ''
 
@@ -68,7 +69,12 @@ export function PaneContextMenuButton(props: DocumentPanelContextMenuProps) {
                 </Box>
               )}
               {group.items.map((item, itemIndex) => (
-                <PaneContextMenuItem item={item} key={item.key || itemIndex} onAction={onAction} />
+                <PaneContextMenuItem
+                  item={item}
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={`${itemIndex}-${item.title}`}
+                  onAction={onAction}
+                />
               ))}
             </Fragment>
           ))}
@@ -96,5 +102,29 @@ function PaneContextMenuItem(props: {
     return item.shortcut.split('+')
   }, [item])
 
-  return <MenuItem hotkeys={hotkeys} icon={item.icon} onClick={handleClick} text={item.title} />
+  const IntentButtonOrActionButton = forwardRef((linkProps, linkRef: React.ForwardedRef<never>) =>
+    item.intent ? (
+      <IntentLink
+        {...linkProps}
+        intent={item.intent.type}
+        params={item.intent.params}
+        ref={linkRef}
+      />
+    ) : (
+      <button type="button" {...linkProps} />
+    )
+  )
+
+  IntentButtonOrActionButton.displayName = 'Link'
+
+  return (
+    <MenuItem
+      as={IntentButtonOrActionButton}
+      data-as={item.intent ? 'a' : 'button'}
+      hotkeys={hotkeys}
+      icon={item.icon}
+      onClick={handleClick}
+      text={item.title}
+    />
+  )
 }

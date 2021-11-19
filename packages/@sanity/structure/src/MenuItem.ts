@@ -18,7 +18,17 @@ export function maybeSerializeMenuItem(
   return item instanceof MenuItemBuilder ? item.serialize({path, index}) : item
 }
 
+/**
+ * @deprecated
+ *
+ * this option is unused. provide `true` instead of an object
+ */
 type ShowAsAction = {
+  /**
+   * @deprecated
+   *
+   * this option is unused. provide `true` instead of an object
+   */
   whenCollapsed: boolean
 }
 
@@ -32,7 +42,7 @@ export interface MenuItem {
   group?: string
   icon?: FixMe
   params?: ParamsType
-  showAsAction?: boolean | ShowAsAction
+  showAsAction?: boolean
 }
 
 export type PartialMenuItem = Partial<MenuItem>
@@ -92,8 +102,8 @@ export class MenuItemBuilder implements Serializable {
     return this.spec.params
   }
 
-  showAsAction(showAsAction: boolean | ShowAsAction): MenuItemBuilder {
-    return this.clone({showAsAction})
+  showAsAction(showAsAction: boolean | ShowAsAction = true): MenuItemBuilder {
+    return this.clone({showAsAction: Boolean(showAsAction)})
   }
 
   getShowAsAction() {

@@ -1,6 +1,6 @@
 import {Subscribable} from 'rxjs'
 import {SchemaType, SanityDocument} from '@sanity/types'
-import {InitialValueTemplateItem} from '@sanity/structure'
+import {InitialValueTemplateItem, StructureBuilder} from '@sanity/structure'
 
 export interface PreviewValue {
   id?: string
@@ -92,37 +92,17 @@ export interface RouterPaneSiblingContext {
   }
 }
 
-// TODO: unify these types with `@sanity/state-router/src/components/types.ts`
-type BaseIntentParams = {
-  type?: string
-  id?: string
-  template?: string
-  /**
-   * `path` is for presence
-   */
-  path?: string
-}
-type JsonParams = Record<string, unknown>
-type IntentParams = BaseIntentParams | [BaseIntentParams, JsonParams]
-type Intent = {type: string; params?: IntentParams}
+type MenuItem = ReturnType<ReturnType<typeof StructureBuilder.menuItem>['serialize']>
 
 /**
  * Represents what can be passed into `menuItems` inside of desk-tool panes
  *
  * @see BaseResolvedPaneNode
  */
-export interface PaneMenuItem {
-  action?: string | ((params: Record<string, string> | undefined, scope?: unknown) => void)
-  danger?: boolean
-  group?: string
-  icon?: React.ComponentType<{className?: string}>
-  intent?: Intent
+export interface PaneMenuItem extends MenuItem {
+  // TODO: these would be great options in the `MenuItemBuilder`
+  // currently, they are only used in the `DocumentPaneProvider`
   isDisabled?: boolean
-  key?: string
-  title: React.ReactNode
-  params?: Record<string, string>
-  showAsAction?: boolean | {whenCollapsed: boolean}
-  url?: string
   shortcut?: string
 }
 

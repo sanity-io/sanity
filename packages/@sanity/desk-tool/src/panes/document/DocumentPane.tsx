@@ -55,11 +55,14 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
   const paneRouter = usePaneRouter()
   const options = usePaneOptions(props.pane.options, paneRouter.params)
   const {documentType, isLoaded} = useDocumentType(options.id, options.type)
+
   const providerProps = useMemo(() => {
     return isLoaded && documentType && options.type !== documentType
       ? mergeDocumentType(props, options, documentType)
       : props
   }, [props, documentType, isLoaded, options])
+
+  const innerDocumentPane = useMemo(() => <InnerDocumentPane />, [])
 
   if (options.type === '*' && !isLoaded) {
     return <LoadingPane flex={2.5} minWidth={320} title="Loading document…" />
@@ -78,11 +81,7 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
     )
   }
 
-  return (
-    <DocumentPaneProvider {...providerProps}>
-      <InnerDocumentPane />
-    </DocumentPaneProvider>
-  )
+  return <DocumentPaneProvider {...providerProps}>{innerDocumentPane}</DocumentPaneProvider>
 })
 
 function usePaneOptions(
@@ -133,7 +132,6 @@ function InnerDocumentPane() {
     handleFocus,
     handleHistoryOpen,
     handleKeyUp,
-    initialValue,
     inspectOpen,
     value,
   } = useDocumentPane()
@@ -163,10 +161,10 @@ function InnerDocumentPane() {
   const inspectDialog = useMemo(
     () => (
       <LegacyLayerProvider zOffset="fullscreen">
-        {inspectOpen && <InspectDialog value={displayed || initialValue.value} />}
+        {inspectOpen && <InspectDialog value={displayed || value} />}
       </LegacyLayerProvider>
     ),
-    [displayed, initialValue.value, inspectOpen]
+    [displayed, value, inspectOpen]
   )
 
   const changesPanel = useMemo(() => {
@@ -222,14 +220,6 @@ function InnerDocumentPane() {
       )
     }
 
-    if (initialValue.error) {
-      return (
-        <ErrorPane flex={2.5} minWidth={320} title="Failed to resolve initial value">
-          <Text as="p">Check developer console for details.</Text>
-        </ErrorPane>
-      )
-    }
-
     return (
       <>
         <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
@@ -258,7 +248,6 @@ function InnerDocumentPane() {
     footer,
     handleFocus,
     handleHistoryOpen,
-    initialValue.error,
     inspectDialog,
     layoutCollapsed,
     value,

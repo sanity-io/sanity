@@ -5,7 +5,6 @@ import {createContext} from 'react'
 import {PaneView, PaneMenuItem, PaneMenuItemGroup} from '../../types'
 import {Controller as HistoryController} from './documentHistory/history/Controller'
 import {Timeline} from './documentHistory/history/Timeline'
-import {InitialValueState} from './initialValue/types'
 import {TimelineMode} from './types'
 
 // @todo: provide a TS type for this
@@ -36,16 +35,13 @@ export interface DocumentPaneContextValue {
   handlePaneSplit: () => void
   historyController: HistoryController
   index: number
-  initialValue: InitialValueState
   inspectOpen: boolean
   markers: Marker[]
   menuItems: PaneMenuItem[]
   menuItemGroups: PaneMenuItemGroup[]
   paneKey: string
-  permission: {granted: boolean; reason: string}
   previewUrl: string | null
   ready: boolean
-  requiredPermission: 'create' | 'update'
   setTimelineMode: (mode: TimelineMode) => void
   setTimelineRange(since: string | null, rev: string | null): void
   timeline: Timeline

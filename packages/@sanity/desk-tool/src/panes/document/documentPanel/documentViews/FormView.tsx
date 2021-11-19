@@ -16,6 +16,7 @@ import {useDocumentPane} from '../../useDocumentPane'
 import {Delay} from '../../../../components/Delay'
 
 interface FormViewProps {
+  granted: boolean
   hidden: boolean
   margins: [number, number, number, number]
 }
@@ -32,7 +33,7 @@ const preventDefault = (ev: React.FormEvent) => ev.preventDefault()
 const noop = () => undefined
 
 export function FormView(props: FormViewProps) {
-  const {hidden, margins} = props
+  const {hidden, margins, granted} = props
   const {
     compareValue,
     displayed: value,
@@ -44,7 +45,6 @@ export function FormView(props: FormViewProps) {
     handleFocus,
     historyController,
     markers,
-    permission,
     ready,
   } = useDocumentPane()
   const presence = useDocumentPresence(documentId)
@@ -64,11 +64,11 @@ export function FormView(props: FormViewProps) {
     return (
       !ready ||
       rev !== null ||
-      !permission.granted ||
+      !granted ||
       !isActionEnabled(documentSchema, 'update') ||
       (isNonExistent && !isActionEnabled(documentSchema, 'create'))
     )
-  }, [documentSchema, isNonExistent, permission, ready, rev])
+  }, [documentSchema, isNonExistent, granted, ready, rev])
 
   useEffect(() => {
     if (!filterFieldFn$) return undefined
