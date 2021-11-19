@@ -14,6 +14,9 @@ export interface Intent {
 }
 
 type ShowAsAction = {
+  /**
+   * @deprecated
+   */
   whenCollapsed: boolean
 }
 

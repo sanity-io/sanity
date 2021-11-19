@@ -3,16 +3,19 @@ import React from 'react'
 import styled from 'styled-components'
 import {CreateDocumentPreview} from '../previews'
 
+/**
+ * @deprecated
+ */
 export interface CreateDocumentPreviewItem {
   key: string
   title?: string
   subtitle?: string
-  icon?: React.ElementType | React.ReactElement
+  icon?: React.ComponentType<unknown>
   onClick?: () => void
 }
 
 interface CreateDocumentListProps {
-  items: Array<React.ComponentProps<typeof CreateDocumentPreview> & {key: string}>
+  items: CreateDocumentPreviewItem[]
 }
 
 const List = styled.ul`
@@ -21,6 +24,9 @@ const List = styled.ul`
   grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
 `
 
+/**
+ * @deprecated
+ */
 export function CreateDocumentList(props: CreateDocumentListProps) {
   const {items = []} = props
 

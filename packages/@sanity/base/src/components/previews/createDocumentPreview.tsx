@@ -1,9 +1,6 @@
 import React from 'react'
-import {Box, Flex, Stack, Text, Tooltip} from '@sanity/ui'
+import {Box, Flex, Stack, Text} from '@sanity/ui'
 import styled from 'styled-components'
-import {unstable_useCheckDocumentPermission as useCheckDocumentPermission} from '../../datastores/grants/hooks'
-import {useCurrentUser} from '../../datastores/user/hooks'
-import {InsufficientPermissionsMessage} from '../InsufficientPermissionsMessage'
 import {IntentButton} from '../IntentButton'
 import {MediaDimensions} from './types'
 
@@ -12,9 +9,10 @@ interface CreateDocumentPreviewProps {
   subtitle?: React.ReactNode | React.FunctionComponent<{layout: 'default'}>
   description?: React.ReactNode | React.FunctionComponent<unknown>
   media?: React.ReactNode | React.FunctionComponent<unknown>
-  icon?: React.ElementType | React.ReactElement
+  icon?: React.ComponentType<unknown>
   isPlaceholder?: boolean
   params?: {
+    intent: 'create'
     type: string
     template?: string
   }
@@ -50,6 +48,9 @@ const Root = styled(Box)`
   }
 `
 
+/**
+ * @deprecated
+ */
 export function CreateDocumentPreview(props: CreateDocumentPreviewProps) {
   const {
     title = 'Untitled',
@@ -61,10 +62,6 @@ export function CreateDocumentPreview(props: CreateDocumentPreviewProps) {
     params,
     templateParams,
   } = props
-
-  const {value: currentUser} = useCurrentUser()
-
-  const createPermission = useCheckDocumentPermission('dummy-id', params.type, 'create')
 
   if (isPlaceholder || !params) {
     return (
@@ -114,7 +111,7 @@ export function CreateDocumentPreview(props: CreateDocumentPreviewProps) {
     </Root>
   )
 
-  return createPermission.granted ? (
+  return (
     <IntentButton
       intent="create"
       params={[params, templateParams]}
@@ -126,18 +123,5 @@ export function CreateDocumentPreview(props: CreateDocumentPreviewProps) {
     >
       {content}
     </IntentButton>
-  ) : (
-    <Tooltip
-      content={
-        <Box padding={2} style={{maxWidth: 300}}>
-          <InsufficientPermissionsMessage
-            currentUser={currentUser}
-            operationLabel="create this document"
-          />
-        </Box>
-      }
-    >
-      <div>{content}</div>
-    </Tooltip>
   )
 }
