@@ -7,6 +7,7 @@ import {SchemaType} from '@sanity/types'
 import {isObject} from 'lodash'
 import {getTemplateById} from '@sanity/initial-value-templates'
 import type {InitialValueTemplateItem} from '@sanity/structure'
+import {DocumentIcon} from '@sanity/icons'
 import S from '../_exports/structure-builder'
 
 const isRecord = isObject as (value: unknown) => value is Record<string, unknown>
@@ -19,36 +20,33 @@ const quote = (str: string | undefined) => (str && str.length > 0 ? ` "${str}"` 
 const getDefaultModule = <T>(mod: {__esModule?: boolean; default: T} | T) =>
   isRecord(mod) && '__esModule' in mod ? mod.default : mod
 
+function computeOnce<T extends () => unknown>(fn: T): T {
+  let cached: unknown
+
+  return (() => {
+    if (cached) return cached
+    cached = fn()
+    return cached
+  }) as T
+}
+
 type Template = NonNullable<ReturnType<typeof getTemplateById>>
 
 /**
  * The result of parsing the `new-document-structure` against the registered
  * initial value templates.
  */
-export interface NewDocumentOption {
-  /**
-   * a unique key for this option
-   */
-  key: string
-
-  title: string
-  description?: string
+export interface NewDocumentOption extends InitialValueTemplateItem {
   subtitle?: string
-  icon?: React.ElementType | React.ReactElement
 
   /**
    * the matching template
    */
   template: Template
   /**
-   * the array item in the new-document structure that was used to create this
-   * option
-   */
-  item: InitialValueTemplateItem
-  /**
    * A type that matches the `template.schemaType`
    */
-  type: SchemaType
+  schemaType: SchemaType
 }
 
 /**
@@ -63,7 +61,10 @@ export interface NewDocumentOption {
  * inside of the array the `new-document-structure` exports (or the default
  * value array from the structure builder)
  */
-export function getNewDocumentOptions(): NewDocumentOption[] {
+const getNewDocumentOptionsOnce = computeOnce(getNewDocumentOptions)
+export {getNewDocumentOptionsOnce as getNewDocumentOptions}
+
+function getNewDocumentOptions(): NewDocumentOption[] {
   // this has to be deferred/lazy-loaded due to some weird dependency orderings
   const newDocumentStructure = getDefaultModule(
     require('part:@sanity/base/new-document-structure?')
@@ -139,25 +140,23 @@ function createNewDocumentOptions(structure: InitialValueTemplateItem[]) {
         }
 
         // Build up an item suited for the "action modal" dialog
-        const type = schema.get(template.schemaType) as SchemaType
-        if (!type) {
+        const schemaType = schema.get(template.schemaType) as SchemaType
+        if (!schemaType) {
           throw new Error(`Schema type "${template.schemaType}" not declared`)
         }
 
         const title = item.title || template.title
         const newDocumentOption: NewDocumentOption = {
-          key: item.id,
-
+          ...item,
           title,
           description: item.description || template.description,
           // Don't show the type name as subtitle if it's the same as the template name
-          subtitle: type.title === title ? undefined : type.title,
+          subtitle: schemaType.title === title ? undefined : schemaType.title,
           // Prioritize icon from initial value template item
-          icon: item.icon || template.icon || type.icon,
+          icon: item.icon || template.icon || schemaType.icon || DocumentIcon,
 
           template,
-          item,
-          type,
+          schemaType,
         }
 
         return newDocumentOption
@@ -174,9 +173,9 @@ function createNewDocumentOptions(structure: InitialValueTemplateItem[]) {
         return canCreate
       })
       // Don't include templates that have defined parameters but no parameters are provided for the template item
-      .filter(({template, item}) => {
+      .filter(({template, parameters}) => {
         const hasMissingParams =
-          !item.parameters && template.parameters && template.parameters.length > 0
+          !parameters && template.parameters && template.parameters.length > 0
 
         if (hasMissingParams) {
           console.error(

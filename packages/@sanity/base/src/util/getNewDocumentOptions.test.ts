@@ -1,4 +1,3 @@
-// import {SchemaType} from '@sanity/types'
 import type {StructureBuilder} from '@sanity/structure'
 import type {TemplateBuilder} from '@sanity/initial-value-templates'
 
@@ -73,29 +72,19 @@ describe('getNewDocumentOptions', () => {
 
     expect(newDocumentOptions).toMatchObject([
       {
-        item: {
-          id: 'author-developer',
-          parameters: undefined,
-          templateId: 'author-developer',
-          type: 'initialValueTemplateItem',
-        },
-        key: 'author-developer',
-        description: undefined,
-        icon: undefined,
+        icon: {},
+        id: 'author-developer',
+        schemaType: {name: 'author'},
         subtitle: 'Author',
-        title: 'Developer',
         template: {
-          description: undefined,
-          icon: undefined,
           id: 'author-developer',
-          parameters: undefined,
           schemaType: 'author',
           title: 'Developer',
           value: {role: 'developer'},
         },
-        type: {
-          name: 'author',
-        },
+        templateId: 'author-developer',
+        title: 'Developer',
+        type: 'initialValueTemplateItem',
       },
     ])
   })
