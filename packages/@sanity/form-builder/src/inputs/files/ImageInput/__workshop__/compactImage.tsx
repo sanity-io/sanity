@@ -163,8 +163,13 @@ export default function CompactImage() {
       <Container width={1}>
         <Stack space={6} marginTop={6}>
           <Stack space={3}>
-            <Text size={1} weight="semibold">Title</Text>
-            <TextInput />
+            <Text size={1} weight="semibold">Slug</Text>
+            <Flex gap={1}>
+              <Box flex={1}>
+                <TextInput />
+              </Box>
+              <Button fontSize={1} mode="ghost" text="Generate" />
+            </Flex>
           </Stack>
           <Stack space={3} paddingX={[3, 3, 0, 0]}>
             <Text weight="semibold" size={1}>
@@ -207,7 +212,7 @@ export default function CompactImage() {
                         >
                           <Box marginBottom={3}>
                             <Heading>
-                              <ImageIcon />
+                              <UploadIcon />
                             </Heading>
                           </Box>
                           <Text size={1}>Drop file to upload</Text>
@@ -230,7 +235,11 @@ export default function CompactImage() {
                         <MenuButton
                           id="image-menu"
                           button={
-                            <Button icon={EllipsisVerticalIcon} mode="ghost" disabled={readOnly} />
+                            <Button
+                              icon={EllipsisVerticalIcon}
+                              mode="ghost"
+                              disabled={readOnly}
+                            />
                           }
                           portal
                           menu={
@@ -257,14 +266,14 @@ export default function CompactImage() {
                 )}
                 {!hasImage && !uploading && (
                   <Card data-container tone={drag ? 'transparent' : 'default'}>
-                    <Stack space={3}>
+                    <Stack space={1}>
                       {!readOnly && (
                         <Flex justify="center">
                           <Box marginBottom={[2, 2, 4, 4]}>
                             <Stack space={3}>
                               <Flex justify="center">
                                 <Text size={4} muted={!drag}>
-                                  <ImageIcon />
+                                  <UploadIcon />
                                 </Text>
                               </Flex>
                               <Text size={1} muted={!drag}>
