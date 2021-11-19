@@ -402,7 +402,7 @@ export class ArrayInput extends React.Component<Props> {
 
           <Stack data-ui="ArrayInput__content" space={3}>
             {(value?.length > 0 || isResolvingInitialValue) && (
-              <Card shadow={isGrid ? 0 : 1} radius={1} paddingY={1}>
+              <Card border={!isGrid} radius={1} paddingY={1}>
                 <List onSortEnd={this.handleSortEnd} isSortable={isSortable} isGrid={isGrid}>
                   {value.map((item, index) => {
                     return (
