@@ -6,12 +6,15 @@ import {SearchIcon, MenuIcon, ComposeIcon, CloseIcon} from '@sanity/icons'
 import {Button, Card, Tooltip, useMediaIndex, Text, Box, Flex, useGlobalKeyDown} from '@sanity/ui'
 import {InsufficientPermissionsMessage, LegacyLayerProvider} from '@sanity/base/components'
 import {StateLink} from '@sanity/base/router'
-// eslint-disable-next-line camelcase
-import {unstable_useCanCreateAnyOf, useCurrentUser} from '@sanity/base/hooks'
+import {
+  useCurrentUser,
+  unstable_useTemplatePermissions as useTemplatePermissions,
+} from '@sanity/base/hooks'
 import config from 'config:sanity'
 import * as sidecar from 'part:@sanity/default-layout/sidecar?'
 import ToolMenu from 'part:@sanity/default-layout/tool-switcher'
 import styled from 'styled-components'
+import {getNewDocumentOptions} from '@sanity/base/_internal'
 import {HAS_SPACES} from '../util/spaces'
 import {DatasetSelect} from '../datasetSelect'
 import {useDefaultLayoutRouter} from '../useDefaultLayoutRouter'
@@ -20,9 +23,9 @@ import Branding from './branding/Branding'
 import SanityStatusContainer from './studioStatus/SanityStatusContainer'
 import {PresenceMenu, LoginStatus, SearchField} from '.'
 
-interface Props {
+interface NavbarProps {
+  templatePermissions: ReturnType<typeof useTemplatePermissions>
   createMenuIsOpen: boolean
-  documentTypes: string[]
   onCreateButtonClick: () => void
   onToggleMenu: () => void
   onUserLogout: () => void
@@ -67,6 +70,8 @@ const SpacingBox = styled(Box)`
   }
 `
 
+const newDocumentOptions = getNewDocumentOptions()
+
 /**
  * `Navbar` is the main navigation of Studio apps.
  *
@@ -94,15 +99,15 @@ const SpacingBox = styled(Box)`
  * ```
  */
 
-export const Navbar = memo(function Navbar(props: Props) {
+export const Navbar = memo(function Navbar(props: NavbarProps) {
   const {
     createMenuIsOpen,
-    documentTypes,
     onCreateButtonClick,
     onToggleMenu,
     onUserLogout,
     onSearchOpen,
     searchPortalElement,
+    templatePermissions,
   } = props
 
   const [searchOpen, setSearchOpen] = useState<boolean>(false)
@@ -115,9 +120,14 @@ export const Navbar = memo(function Navbar(props: Props) {
     setSearchCloseButtonElement,
   ] = useState<HTMLButtonElement | null>(null)
   const {value: currentUser} = useCurrentUser()
-  const createAnyPermission = unstable_useCanCreateAnyOf(documentTypes)
   const mediaIndex = useMediaIndex()
   const router = useDefaultLayoutRouter()
+
+  const canCreateSome = useMemo(() => {
+    if (templatePermissions.isLoading) return false
+
+    return newDocumentOptions.some((option) => templatePermissions.value[option.id].granted)
+  }, [templatePermissions])
 
   const rootState = useMemo(
     () => (HAS_SPACES && router.state.space ? {space: router.state.space} : {}),
@@ -225,7 +235,7 @@ export const Navbar = memo(function Navbar(props: Props) {
               scheme="light"
               content={
                 <Box padding={2}>
-                  {createAnyPermission.granted ? (
+                  {canCreateSome ? (
                     <Text size={1}>Create new document</Text>
                   ) : (
                     <InsufficientPermissionsMessage
@@ -243,7 +253,7 @@ export const Navbar = memo(function Navbar(props: Props) {
                   icon={ComposeIcon}
                   mode="bleed"
                   onClick={onCreateButtonClick}
-                  disabled={!createAnyPermission.granted}
+                  disabled={!canCreateSome}
                   selected={createMenuIsOpen}
                 />
               </SpacingBox>

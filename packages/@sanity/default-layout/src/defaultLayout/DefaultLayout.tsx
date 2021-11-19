@@ -6,17 +6,22 @@ import {RouteScope} from '@sanity/base/router'
 import absolutes from 'all:part:@sanity/base/absolutes'
 import userStore from 'part:@sanity/base/user'
 import {LegacyLayerProvider} from '@sanity/base/components'
-import {useCurrentUser} from '@sanity/base/hooks'
+import {
+  useCurrentUser,
+  unstable_useTemplatePermissions as useTemplatePermissions,
+} from '@sanity/base/hooks'
+import {getNewDocumentOptions} from '@sanity/base/_internal'
 import Sidecar from '../addons/Sidecar'
 import {RenderTool} from '../main/RenderTool'
 import {CreateDocumentDialog} from '../createDocumentDialog'
 import {SchemaErrorReporter} from '../schemaErrors/SchemaErrorReporter'
-import {newDocumentConfig} from '../util/newDocumentConfig'
 import {SideMenu} from '../sideMenu'
 import {Navbar} from '../navbar'
 import {useDefaultLayoutRouter} from '../useDefaultLayoutRouter'
 import {RootFlex, MainAreaFlex, ToolBox, SidecarBox, PortalDiv} from './styles'
 import {LoadingScreen} from './LoadingScreen'
+
+const newDocumentOptions = getNewDocumentOptions()
 
 export const DefaultLayout = memo(function DefaultLayout() {
   const router = useDefaultLayoutRouter()
@@ -28,6 +33,8 @@ export const DefaultLayout = memo(function DefaultLayout() {
   const [loadingScreenElement, setLoadingScreenElement] = useState<HTMLDivElement | null>(null)
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
   const {value: currentUser} = useCurrentUser()
+
+  const templatePermissions = useTemplatePermissions(newDocumentOptions)
 
   useEffect(() => {
     if (!loaded) {
@@ -88,10 +95,10 @@ export const DefaultLayout = memo(function DefaultLayout() {
 
         <LegacyLayerProvider zOffset="navbar">
           <Navbar
+            templatePermissions={templatePermissions}
             createMenuIsOpen={createMenuIsOpen}
             onCreateButtonClick={handleCreateButtonClick}
             onToggleMenu={handleToggleMenu}
-            documentTypes={newDocumentConfig.schemaTypes}
             onUserLogout={handleLogout}
             onSearchOpen={handleSearchOpen}
             searchPortalElement={portalElement}
@@ -136,8 +143,8 @@ export const DefaultLayout = memo(function DefaultLayout() {
         {createMenuIsOpen && (
           <LegacyLayerProvider zOffset="navbar">
             <CreateDocumentDialog
+              templatePermissions={templatePermissions}
               onClose={handleActionModalClose}
-              newDocumentOptions={newDocumentConfig.newDocumentOptions}
             />
           </LegacyLayerProvider>
         )}
