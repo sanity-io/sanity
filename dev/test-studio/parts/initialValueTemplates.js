@@ -8,15 +8,16 @@ export default [
     title: 'Developer',
     description: `Selects the role "Developer" for you, so you don't have to`,
     schemaType: 'author',
-    value: (params) => ({role: 'developer'}),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    value: (_params) => ({role: 'developer'}),
   }),
 
   T.template({
     id: 'author-unlocked',
     title: 'Author unlocked',
-    description: `An unlocked author`,
+    description: 'An unlocked author',
     schemaType: 'author',
-    value: (params) => ({locked: false}),
+    value: {locked: false},
   }),
 
   T.template({
@@ -28,13 +29,5 @@ export default [
     value: (params) => ({
       author: {_type: 'reference', _ref: params.authorId},
     }),
-  }),
-
-  T.template({
-    id: 'author-unlocked',
-    title: 'Author unlocked',
-    description: `An unlocked author`,
-    schemaType: 'author',
-    value: (params) => ({locked: false}),
   }),
 ]

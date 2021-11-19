@@ -1,5 +1,5 @@
 import S from '@sanity/desk-tool/structure-builder'
-import {EarthGlobeIcon, PlugIcon, TagIcon, TerminalIcon} from '@sanity/icons'
+import {EarthGlobeIcon, PlugIcon, TagIcon, TerminalIcon, RocketIcon} from '@sanity/icons'
 import {orderableDocumentListDeskItem} from '@sanity/orderable-document-list'
 import React from 'react'
 import schema from 'part:@sanity/base/schema'
@@ -203,8 +203,26 @@ export default () =>
                     .title('Component pane #1')
                     .options({no: 1})
                     .menuItems([
-                      S.menuItem().title('Test 1').action('test-1').showAsAction(true),
-                      S.menuItem().title('Test 2').action('test-2'), //.showAsAction(true),
+                      S.menuItem()
+                        .title('Test 1')
+                        // eslint-disable-next-line no-alert
+                        .action(() => alert('you clicked!'))
+                        .showAsAction(true),
+                      S.menuItem()
+                        .title('Test Edit Intent (as action)')
+                        .intent({
+                          type: 'edit',
+                          params: {id: 'grrm', type: 'author'},
+                        })
+                        .icon(RocketIcon)
+                        .showAsAction(),
+                      S.menuItem().title('Should warn in console').action('shouldWarn'),
+                      S.menuItem()
+                        .title('Test Edit Intent (in menu)')
+                        .intent({
+                          type: 'edit',
+                          params: {id: 'foo-bar', type: 'author'},
+                        }),
                     ])
                     .child(
                       S.component(DebugPane)
