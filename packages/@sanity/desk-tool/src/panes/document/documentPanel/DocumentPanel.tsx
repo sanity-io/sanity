@@ -65,7 +65,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const docPermissionsInput = useMemo(() => {
     return {...value, _id: liveEdit ? 'dummy-id' : 'drafts.dummy-id'}
   }, [liveEdit, value])
-  const permissions = useDocumentValuePermissions({
+  const [permissions, isPermissionsLoading] = useDocumentValuePermissions({
     document: docPermissionsInput,
     permission: requiredPermission,
   })
@@ -130,9 +130,9 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       <PaneContent>
         <PortalProvider element={portalElement}>
           <BoundaryElementProvider element={documentScrollElement}>
-            {activeView.type === 'form' && !permissions.isLoading && ready && (
+            {activeView.type === 'form' && !isPermissionsLoading && ready && (
               <PermissionCheckBanner
-                granted={!!permissions.value?.granted}
+                granted={Boolean(permissions?.granted)}
                 requiredPermission={requiredPermission}
               />
             )}
@@ -146,7 +146,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                 hidden={formViewHidden}
                 key={documentId + (ready ? '_ready' : '_pending')}
                 margins={margins}
-                granted={!!permissions.value?.granted}
+                granted={Boolean(permissions?.granted)}
               />
               {activeViewNode}
             </Scroller>

@@ -2,7 +2,7 @@ import {useDocumentOperation} from '@sanity/react-hooks'
 import {Button, Box, Card, Grid, Stack, Text, useClickOutside} from '@sanity/ui'
 import {RevertIcon} from '@sanity/icons'
 import React, {useState} from 'react'
-import {unstable_useDocumentPermissions as useDocumentPermissions} from '@sanity/base/hooks'
+import {unstable_useDocumentPairPermissions as useDocumentPairPermissions} from '@sanity/base/hooks'
 import {ObjectDiff, ObjectSchemaType, ChangeNode, OperationsAPI} from '../../types'
 import {DiffContext} from '../contexts/DiffContext'
 import {buildObjectChangeList} from '../changes/buildChangeList'
@@ -31,7 +31,7 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
     throw new Error(`Only object schema types are allowed in ChangeList`)
   }
 
-  const permissions = useDocumentPermissions({
+  const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id: documentId,
     type: schemaType.name,
     permission: 'update',
@@ -93,7 +93,7 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
           ))}
         </Stack>
 
-        {showFooter && isComparingCurrent && !permissions.isLoading && permissions.value?.granted && (
+        {showFooter && isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
           <PopoverWrapper
             content={
               <Box>

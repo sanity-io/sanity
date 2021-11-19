@@ -23,8 +23,11 @@ import Branding from './branding/Branding'
 import SanityStatusContainer from './studioStatus/SanityStatusContainer'
 import {PresenceMenu, LoginStatus, SearchField} from '.'
 
+type TemplatePermissions = ReturnType<typeof useTemplatePermissions>[0]
+
 interface NavbarProps {
-  templatePermissions: ReturnType<typeof useTemplatePermissions>
+  templatePermissions: TemplatePermissions
+  isTemplatePermissionsLoading: boolean
   createMenuIsOpen: boolean
   onCreateButtonClick: () => void
   onToggleMenu: () => void
@@ -108,6 +111,7 @@ export const Navbar = memo(function Navbar(props: NavbarProps) {
     onSearchOpen,
     searchPortalElement,
     templatePermissions,
+    isTemplatePermissionsLoading,
   } = props
 
   const [searchOpen, setSearchOpen] = useState<boolean>(false)
@@ -124,10 +128,10 @@ export const Navbar = memo(function Navbar(props: NavbarProps) {
   const router = useDefaultLayoutRouter()
 
   const canCreateSome = useMemo(() => {
-    if (templatePermissions.isLoading) return false
+    if (isTemplatePermissionsLoading) return false
 
-    return newDocumentOptions.some((option) => templatePermissions.value[option.id].granted)
-  }, [templatePermissions])
+    return newDocumentOptions.some((option) => templatePermissions[option.id].granted)
+  }, [templatePermissions, isTemplatePermissionsLoading])
 
   const rootState = useMemo(
     () => (HAS_SPACES && router.state.space ? {space: router.state.space} : {}),

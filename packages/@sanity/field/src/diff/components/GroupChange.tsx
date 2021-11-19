@@ -1,6 +1,6 @@
 import {useDocumentOperation} from '@sanity/react-hooks'
 import React, {useCallback, useContext, useState} from 'react'
-import {unstable_useDocumentPermissions as useDocumentPermissions} from '@sanity/base/hooks'
+import {unstable_useDocumentPairPermissions as useDocumentPairPermissions} from '@sanity/base/hooks'
 import {Box, Stack, Button, Grid, Text, useClickOutside} from '@sanity/ui'
 import {undoChange} from '../changes/undoChange'
 import {isFieldChange} from '../helpers'
@@ -39,7 +39,7 @@ export function GroupChange({
   const [confirmRevertOpen, setConfirmRevertOpen] = useState(false)
   const [revertButtonElement, setRevertButtonElement] = useState<HTMLDivElement | null>(null)
 
-  const permissions = useDocumentPermissions({
+  const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id: documentId,
     type: schemaType.name,
     permission: 'update',
@@ -87,7 +87,7 @@ export function GroupChange({
           />
         ))}
       </Stack>
-      {isComparingCurrent && !permissions.isLoading && permissions.value?.granted && (
+      {isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
         <PopoverWrapper
           content={
             <Box>

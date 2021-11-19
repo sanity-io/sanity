@@ -1,6 +1,6 @@
 import {getTemplateById} from '@sanity/base/initial-value-templates'
 import {ComposeIcon} from '@sanity/icons'
-import {InitialValueTemplateItem} from '@sanity/structure/src'
+import {InitialValueTemplateItem} from '@sanity/structure'
 import React, {useMemo, forwardRef} from 'react'
 import {unstable_useTemplatePermissions as useTemplatePermissions} from '@sanity/base/hooks'
 import {Box, Button, Label, Menu, MenuButton, MenuItem, PopoverProps} from '@sanity/ui'
@@ -32,17 +32,19 @@ interface PaneHeaderCreateButtonProps {
 }
 
 export function PaneHeaderCreateButton({initialValueTemplateItems}: PaneHeaderCreateButtonProps) {
-  const templatePermissions = useTemplatePermissions(initialValueTemplateItems)
+  const [templatePermissions, isTemplatePermissionsLoading] = useTemplatePermissions(
+    initialValueTemplateItems
+  )
   const nothingGranted = useMemo(() => {
     return (
-      !templatePermissions.isLoading &&
-      Object.values(templatePermissions?.value || {}).every((value) => !value.granted)
+      !isTemplatePermissionsLoading &&
+      Object.values(templatePermissions || {}).every((value) => !value.granted)
     )
-  }, [templatePermissions])
+  }, [isTemplatePermissionsLoading, templatePermissions])
 
   if (nothingGranted) {
     return (
-      <InsufficientPermissionsMessageTooltip reveal loading={templatePermissions.isLoading}>
+      <InsufficientPermissionsMessageTooltip reveal loading={isTemplatePermissionsLoading}>
         <Button aria-label="Insufficient permissions" icon={ComposeIcon} mode="bleed" disabled />
       </InsufficientPermissionsMessageTooltip>
     )
@@ -50,7 +52,7 @@ export function PaneHeaderCreateButton({initialValueTemplateItems}: PaneHeaderCr
 
   if (initialValueTemplateItems.length === 1) {
     const firstItem = initialValueTemplateItems[0]
-    const permissions = templatePermissions.value?.[firstItem.templateId]
+    const permissions = templatePermissions?.[firstItem.templateId]
     const disabled = !permissions?.granted
     const intent = getIntent(firstItem)
     if (!intent) return null
@@ -58,7 +60,7 @@ export function PaneHeaderCreateButton({initialValueTemplateItems}: PaneHeaderCr
     return (
       <InsufficientPermissionsMessageTooltip
         reveal={disabled}
-        loading={templatePermissions.isLoading}
+        loading={isTemplatePermissionsLoading}
       >
         <IntentButton
           aria-label={firstItem.title}
@@ -82,7 +84,7 @@ export function PaneHeaderCreateButton({initialValueTemplateItems}: PaneHeaderCr
           </Box>
 
           {initialValueTemplateItems.map((item) => {
-            const permissions = templatePermissions.value?.[item.templateId]
+            const permissions = templatePermissions?.[item.templateId]
             const disabled = !permissions?.granted
             const intent = getIntent(item)
             const template = getTemplateById(item.templateId)
@@ -107,7 +109,7 @@ export function PaneHeaderCreateButton({initialValueTemplateItems}: PaneHeaderCr
               <InsufficientPermissionsMessageTooltip
                 key={item.id}
                 reveal={disabled}
-                loading={templatePermissions.isLoading}
+                loading={isTemplatePermissionsLoading}
               >
                 <MenuItem
                   as={Link}

@@ -1,6 +1,6 @@
 import {useDocumentOperation} from '@sanity/react-hooks'
 import React, {useCallback, useContext, useState} from 'react'
-import {unstable_useDocumentPermissions as useDocumentPermissions} from '@sanity/base/hooks'
+import {unstable_useDocumentPairPermissions as useDocumentPairPermissions} from '@sanity/base/hooks'
 import {Stack, Box, Button, Text, Grid, useClickOutside} from '@sanity/ui'
 import {undoChange} from '../changes/undoChange'
 import {DiffContext} from '../contexts/DiffContext'
@@ -33,7 +33,7 @@ export function FieldChange({
   const [revertHovered, setRevertHovered] = useState(false)
   const [revertButtonElement, setRevertButtonElement] = useState<HTMLDivElement | null>(null)
 
-  const permissions = useDocumentPermissions({
+  const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id: documentId,
     type: schemaType.name,
     permission: 'update',
@@ -81,7 +81,7 @@ export function FieldChange({
               </DiffContext.Provider>
             </DiffErrorBoundary>
           )}
-          {isComparingCurrent && !permissions.isLoading && permissions.value?.granted && (
+          {isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
             <PopoverWrapper
               content={
                 <Box padding={3} sizing="border">

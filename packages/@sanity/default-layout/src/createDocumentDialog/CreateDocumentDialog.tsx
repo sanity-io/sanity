@@ -19,15 +19,18 @@ const List = styled.ul`
   grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
 `
 
+type TemplatePermissions = ReturnType<typeof useTemplatePermissions>[0]
+
 interface CreateDocumentDialogProps {
   onClose: () => void
-  templatePermissions: ReturnType<typeof useTemplatePermissions>
+  templatePermissions: TemplatePermissions
+  isTemplatePermissionsLoading: boolean
 }
 
 const newDocumentOptions = getNewDocumentOptions()
 
 export const CreateDocumentDialog = memo(
-  ({templatePermissions, onClose}: CreateDocumentDialogProps) => {
+  ({templatePermissions, isTemplatePermissionsLoading, onClose}: CreateDocumentDialogProps) => {
     // note: this hook is called once in this component and passed via props for
     // performance reasons
     const {value: currentUser} = useCurrentUser()
@@ -43,7 +46,7 @@ export const CreateDocumentDialog = memo(
         <Grid gap={3} as={List}>
           {newDocumentOptions.map((item) => {
             const granted = Boolean(
-              !templatePermissions.isLoading && templatePermissions.value?.[item.id]?.granted
+              !isTemplatePermissionsLoading && templatePermissions?.[item.id]?.granted
             )
 
             return (

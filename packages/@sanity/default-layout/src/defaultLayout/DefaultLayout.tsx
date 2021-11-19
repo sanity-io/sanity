@@ -34,7 +34,9 @@ export const DefaultLayout = memo(function DefaultLayout() {
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
   const {value: currentUser} = useCurrentUser()
 
-  const templatePermissions = useTemplatePermissions(newDocumentOptions)
+  const [templatePermissions, isTemplatePermissionsLoading] = useTemplatePermissions(
+    newDocumentOptions
+  )
 
   useEffect(() => {
     if (!loaded) {
@@ -96,6 +98,7 @@ export const DefaultLayout = memo(function DefaultLayout() {
         <LegacyLayerProvider zOffset="navbar">
           <Navbar
             templatePermissions={templatePermissions}
+            isTemplatePermissionsLoading={isTemplatePermissionsLoading}
             createMenuIsOpen={createMenuIsOpen}
             onCreateButtonClick={handleCreateButtonClick}
             onToggleMenu={handleToggleMenu}
@@ -144,6 +147,7 @@ export const DefaultLayout = memo(function DefaultLayout() {
           <LegacyLayerProvider zOffset="navbar">
             <CreateDocumentDialog
               templatePermissions={templatePermissions}
+              isTemplatePermissionsLoading={isTemplatePermissionsLoading}
               onClose={handleActionModalClose}
             />
           </LegacyLayerProvider>
