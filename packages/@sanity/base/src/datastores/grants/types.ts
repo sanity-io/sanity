@@ -1,11 +1,11 @@
 import {SanityDocument} from '@sanity/types'
 import type {Observable} from 'rxjs'
 
-export type DocumentPermissionName = 'read' | 'create' | 'update' | 'history' | 'editHistory'
+export type DocumentValuePermission = 'read' | 'create' | 'update' | 'history' | 'editHistory'
 
 export interface Grant {
   filter: string
-  permissions: DocumentPermissionName[]
+  permissions: DocumentValuePermission[]
 }
 
 export interface PermissionCheckResult {
@@ -15,7 +15,7 @@ export interface PermissionCheckResult {
 
 export interface GrantsStore {
   checkDocumentPermission(
-    checkPermissionName: DocumentPermissionName,
+    checkPermissionName: DocumentValuePermission,
     document: Partial<SanityDocument>
   ): Observable<PermissionCheckResult>
 }

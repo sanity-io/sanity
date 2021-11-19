@@ -3,15 +3,16 @@
 
 import {defer, of} from 'rxjs'
 
-import {mergeMap, publishReplay, switchMap} from 'rxjs/operators'
+import {distinctUntilChanged, mergeMap, publishReplay, switchMap} from 'rxjs/operators'
 import {evaluate, parse} from 'groq-js'
 import {SanityDocument} from '@sanity/types'
 import {refCountDelay} from 'rxjs-etc/operators'
 import sanityClient from 'part:@sanity/base/client'
+import shallowEquals from 'shallow-equals'
 import userStore from '../user'
 import {
   GrantsStore,
-  DocumentPermissionName,
+  DocumentValuePermission,
   Grant,
   PermissionCheckResult,
   EvaluationParams,
@@ -74,9 +75,10 @@ export function createGrantsStore(): GrantsStore {
   )
 
   return {
-    checkDocumentPermission(permission: DocumentPermissionName, document: SanityDocument) {
+    checkDocumentPermission(permission: DocumentValuePermission, document: SanityDocument) {
       return currentUserDatasetGrants.pipe(
-        switchMap((grants) => grantsPermissionOn(grants, permission, document))
+        switchMap((grants) => grantsPermissionOn(grants, permission, document)),
+        distinctUntilChanged(shallowEquals)
       )
     },
   }
@@ -91,7 +93,7 @@ export function createGrantsStore(): GrantsStore {
  */
 async function grantsPermissionOn(
   grants: Grant[],
-  permission: DocumentPermissionName,
+  permission: DocumentValuePermission,
   document: SanityDocument
 ): Promise<PermissionCheckResult> {
   if (!grants.length) {
