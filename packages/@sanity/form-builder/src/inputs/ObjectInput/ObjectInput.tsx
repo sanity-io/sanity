@@ -16,11 +16,11 @@ import {Grid} from '@sanity/ui'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import {applyAll} from '../../patch/applyPatch'
 import {EMPTY_ARRAY} from '../../utils/empty'
+import {ConditionalReadOnlyField} from '../common/ConditionalReadOnlyField'
 import {ObjectInputField} from './ObjectInputField'
 import {UnknownFields} from './UnknownFields'
 import {ObjectFieldSet} from './ObjectFieldSet'
 import {getCollapsedWithDefaults} from './utils'
-import {ConditionalReadOnlyField} from '../common/ConditionalReadOnlyField'
 
 const EMPTY_MARKERS: Marker[] = EMPTY_ARRAY
 const EMPTY_PRESENCE: FormFieldPresence[] = EMPTY_ARRAY
@@ -145,10 +145,10 @@ export const ObjectInput = memo(
             value={fieldSetValues}
             parent={value}
             readOnly={readOnly || isFieldsetReadOnly}
+            key={`field-${field.name}`}
           >
             <ObjectInputField
               parent={value}
-              key={`field-${field.name}`}
               field={field}
               value={fieldValue}
               onChange={handleFieldChange}
@@ -193,7 +193,9 @@ export const ObjectInput = memo(
         const fieldSetValuesObject = {}
         // eslint-disable-next-line max-nested-callbacks
         fieldset.fields.forEach((field) => {
-          fieldSetValuesObject[field.name] = value[field.name]
+          if (value) {
+            fieldSetValuesObject[field.name] = value[field.name]
+          }
         })
 
         return (
@@ -252,7 +254,7 @@ export const ObjectInput = memo(
       }
 
       return <UnknownFields fieldNames={unknownFields} value={value} onChange={onChange} />
-    }, [onChange, readOnly, type.fields, value])
+    }, [onChange, type.fields, value])
 
     const renderAllFields = useCallback(() => {
       return (
