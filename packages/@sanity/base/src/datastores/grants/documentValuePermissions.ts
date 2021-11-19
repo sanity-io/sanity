@@ -1,5 +1,5 @@
 import {Observable} from 'rxjs'
-import {createLoadableHook} from '../../util/useLoadable'
+import {createHookFromObservableFactory} from '../../util/createHookFromObservableFactory'
 import {DocumentValuePermission, PermissionCheckResult} from './types'
 import grantsStore from './createGrantsStore'
 
@@ -17,7 +17,7 @@ function getDocumentValuePermissions({
   return checkDocumentPermission(permission, document)
 }
 
-const useDocumentValuePermissions = createLoadableHook(getDocumentValuePermissions)
+const useDocumentValuePermissions = createHookFromObservableFactory(getDocumentValuePermissions)
 
 export {
   /* eslint-disable camelcase */

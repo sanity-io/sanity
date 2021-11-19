@@ -3,7 +3,7 @@ import {InitialValueTemplateItem} from '@sanity/structure'
 import {combineLatest, from, Observable} from 'rxjs'
 import {switchMap, map} from 'rxjs/operators'
 import {Schema} from '@sanity/types'
-import {createLoadableHook} from '../../util/useLoadable'
+import {createHookFromObservableFactory} from '../../util/createHookFromObservableFactory'
 import {PermissionCheckResult} from './types'
 import grantsStore from './createGrantsStore'
 
@@ -80,7 +80,9 @@ function getTemplatePermissions(
   )
 }
 
-const useTemplatePermissions = createLoadableHook(getTemplatePermissions)
+const useTemplatePermissions = createHookFromObservableFactory(getTemplatePermissions, {
+  initialValue: {},
+})
 
 export {
   /* eslint-disable camelcase */

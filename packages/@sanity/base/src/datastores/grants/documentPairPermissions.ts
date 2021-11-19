@@ -2,8 +2,8 @@
 import {SanityDocument, SchemaType} from '@sanity/types'
 import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import {Observable, combineLatest} from 'rxjs'
-import {switchMap, map, tap} from 'rxjs/operators'
-import {createLoadableHook} from '../../util/useLoadable'
+import {switchMap, map} from 'rxjs/operators'
+import {createHookFromObservableFactory} from '../../util/createHookFromObservableFactory'
 import {snapshotPair} from '../document/document-pair/snapshotPair'
 import {PermissionCheckResult} from './types'
 import grantsStore from './createGrantsStore'
@@ -27,7 +27,6 @@ interface PairPermissionsOptions {
   liveEdit: boolean
 }
 
-// TODO: liveEdit
 function getPairPermissions({
   permission,
   draft,
@@ -123,7 +122,7 @@ export interface DocumentPermissionsOptions {
   permission: DocumentPermission
 }
 
-function getDocumentPermissions({
+function getDocumentPairPermissions({
   id,
   type,
   permission,
@@ -170,11 +169,11 @@ function getDocumentPermissions({
   )
 }
 
-const useDocumentPermissions = createLoadableHook(getDocumentPermissions)
+const useDocumentPairPermissions = createHookFromObservableFactory(getDocumentPairPermissions)
 
 export {
   /* eslint-disable camelcase */
-  getDocumentPermissions as unstable_getDocumentPermissions,
-  useDocumentPermissions as unstable_useDocumentPermissions,
+  getDocumentPairPermissions as unstable_getDocumentPairPermissions,
+  useDocumentPairPermissions as unstable_useDocumentPairPermissions,
   /* eslint-enable camelcase */
 }

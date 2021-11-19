@@ -3,10 +3,10 @@ export {useUser, useCurrentUser} from '../datastores/user/hooks'
 export {useDocumentType} from '../datastores/document/hooks'
 /* eslint-disable camelcase */
 export {
-  unstable_getDocumentPermissions,
+  unstable_getDocumentPairPermissions,
   unstable_getDocumentValuePermissions,
   unstable_getTemplatePermissions,
-  unstable_useDocumentPermissions,
+  unstable_useDocumentPairPermissions,
   unstable_useDocumentValuePermissions,
   unstable_useTemplatePermissions,
 } from '../datastores/grants'
