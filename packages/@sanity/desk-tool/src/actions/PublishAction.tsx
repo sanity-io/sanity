@@ -1,8 +1,11 @@
 import {DocumentActionComponent} from '@sanity/base'
 import {useSyncState, useDocumentOperation, useValidationStatus} from '@sanity/react-hooks'
 import {CheckmarkIcon, PublishIcon} from '@sanity/icons'
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
-import {useCurrentUser, useCheckDocumentPermissions} from '@sanity/base/hooks'
+import React, {useCallback, useEffect, useState} from 'react'
+import {
+  useCurrentUser,
+  unstable_useDocumentPermissions as useDocumentPermissions,
+} from '@sanity/base/hooks'
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
 import {TimeAgo} from '../components/TimeAgo'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
@@ -41,8 +44,11 @@ export const PublishAction: DocumentActionComponent = (props) => {
   // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
   const [publishScheduled, setPublishScheduled] = useState<boolean>(false)
   const isNeitherSyncingNorValidating = !syncState.isSyncing && !validationStatus.isValidating
-  const emptyDoc = useMemo(() => ({_id: id, _type: type}), [id, type])
-  const publishPermission = useCheckDocumentPermissions(draft || published || emptyDoc, 'publish')
+  const permissions = useDocumentPermissions({
+    id,
+    type,
+    permission: 'publish',
+  })
 
   const {value: currentUser} = useCurrentUser()
 
@@ -104,7 +110,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
     }
   }
 
-  if (!publishPermission?.granted) {
+  if (!permissions.isLoading && !permissions.value?.granted) {
     return {
       color: 'success',
       label: 'Publish',
@@ -127,7 +133,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
   )
 
   return {
-    disabled,
+    disabled: disabled || permissions.isLoading,
     color: 'success',
     label:
       // eslint-disable-next-line no-nested-ternary

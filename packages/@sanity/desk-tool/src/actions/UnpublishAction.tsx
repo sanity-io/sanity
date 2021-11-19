@@ -3,7 +3,7 @@ import {useDocumentOperation} from '@sanity/react-hooks'
 import {UnpublishIcon} from '@sanity/icons'
 import React, {useCallback, useMemo, useState} from 'react'
 import {
-  unstable_useCheckDocumentPermission as useCheckDocumentPermission,
+  unstable_useDocumentPermissions as useDocumentPermissions,
   useCurrentUser,
 } from '@sanity/base/hooks'
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
@@ -25,7 +25,11 @@ export const UnpublishAction: DocumentActionComponent = ({
   const [error, setError] = useState<Error | null>(null)
   const [didUnpublish, setDidUnpublish] = useState(false)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
-  const unpublishPermission = useCheckDocumentPermission(id, type, 'unpublish')
+  const permissions = useDocumentPermissions({
+    id,
+    type,
+    permission: 'unpublish',
+  })
   const {value: currentUser} = useCurrentUser()
 
   const handleCancel = useCallback(() => {
@@ -86,7 +90,11 @@ export const UnpublishAction: DocumentActionComponent = ({
     published,
   ])
 
-  if (!unpublishPermission.granted) {
+  if (liveEdit) {
+    return null
+  }
+
+  if (!permissions.isLoading && !permissions.value?.granted) {
     return {
       color: 'danger',
       icon: UnpublishIcon,
@@ -101,14 +109,10 @@ export const UnpublishAction: DocumentActionComponent = ({
     }
   }
 
-  if (liveEdit) {
-    return null
-  }
-
   return {
     color: 'danger',
     icon: UnpublishIcon,
-    disabled: Boolean(unpublish.disabled),
+    disabled: Boolean(unpublish.disabled) || permissions.isLoading,
     label: 'Unpublish',
     title: unpublish.disabled
       ? DISABLED_REASON_TITLE[unpublish.disabled as keyof typeof DISABLED_REASON_TITLE]

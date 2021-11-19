@@ -3,26 +3,26 @@ import {CopyIcon} from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import {useRouter} from '@sanity/base/router'
-import React, {useCallback, useMemo, useState} from 'react'
-import {useCurrentUser, useCheckDocumentPermissions} from '@sanity/base/hooks'
+import React, {useCallback, useState} from 'react'
+import {
+  unstable_useDocumentPermissions as useDocumentPermissions,
+  useCurrentUser,
+} from '@sanity/base/hooks'
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
 
 const DISABLED_REASON_TITLE = {
   NOTHING_TO_DUPLICATE: 'This document doesn’t yet exist so there‘s nothing to duplicate',
 }
 
-export const DuplicateAction: DocumentActionComponent = ({
-  id,
-  type,
-  onComplete,
-  draft,
-  published,
-}) => {
+export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete}) => {
   const {duplicate}: any = useDocumentOperation(id, type)
   const router = useRouter()
   const [isDuplicating, setDuplicating] = useState(false)
-  const emptyDoc = useMemo(() => ({_id: 'dummy-id', _type: type}), [type])
-  const createPermission = useCheckDocumentPermissions(draft || published || emptyDoc, 'create')
+  const permissions = useDocumentPermissions({
+    id,
+    type,
+    permission: 'duplicate',
+  })
 
   const {value: currentUser} = useCurrentUser()
 
@@ -35,7 +35,7 @@ export const DuplicateAction: DocumentActionComponent = ({
     onComplete()
   }, [duplicate, onComplete, router, type])
 
-  if (!createPermission?.granted) {
+  if (!permissions.isLoading && !permissions.value?.granted) {
     return {
       icon: CopyIcon,
       disabled: true,
@@ -51,7 +51,7 @@ export const DuplicateAction: DocumentActionComponent = ({
 
   return {
     icon: CopyIcon,
-    disabled: Boolean(isDuplicating || duplicate.disabled),
+    disabled: isDuplicating || Boolean(duplicate.disabled) || permissions.isLoading,
     label: isDuplicating ? 'Duplicating…' : 'Duplicate',
     title:
       (duplicate.disabled &&
