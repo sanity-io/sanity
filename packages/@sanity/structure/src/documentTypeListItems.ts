@@ -7,7 +7,6 @@ import {DEFAULT_SELECTED_ORDERING_OPTION} from './Sort'
 import {DocumentListBuilder} from './DocumentList'
 import {ListItemBuilder, ListItem} from './ListItem'
 import {DocumentTypeListBuilder, DocumentTypeListInput} from './DocumentTypeList'
-import {defaultIntentChecker} from './Intent'
 import {getDefaultDocumentNode} from './Document'
 import {isList} from './List'
 
@@ -92,7 +91,6 @@ export function getDocumentTypeList(
       spec.child ||
         ((documentId: string) => getDefaultDocumentNode({schemaType: typeName, documentId}))
     )
-    .canHandleIntent(spec.canHandleIntent || defaultIntentChecker)
     .menuItems(
       spec.menuItems || [
         // Create new (from action button) will be added in serialization step of GenericList
