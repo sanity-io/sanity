@@ -1,4 +1,4 @@
-import {PathSegment} from '@sanity/types/src'
+import {PathSegment} from '@sanity/types'
 import {findIndex} from 'lodash'
 import applyPatch from './applyPatch'
 import insert from './arrayInsert'
