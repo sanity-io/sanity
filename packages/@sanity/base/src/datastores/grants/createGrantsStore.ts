@@ -3,7 +3,7 @@
 
 import {defer, of} from 'rxjs'
 
-import {distinctUntilChanged, mergeMap, publishReplay, switchMap} from 'rxjs/operators'
+import {distinctUntilChanged, publishReplay, switchMap} from 'rxjs/operators'
 import {evaluate, parse} from 'groq-js'
 import {SanityDocument} from '@sanity/types'
 import {refCountDelay} from 'rxjs-etc/operators'
@@ -61,7 +61,7 @@ async function matchesFilter(filter: string, document: SanityDocument) {
 
 export function createGrantsStore(): GrantsStore {
   const datasetGrants$ = defer(() => of(client.config())).pipe(
-    mergeMap(({projectId, dataset}) => {
+    switchMap(({projectId, dataset}) => {
       if (!projectId || !dataset) {
         throw new Error('Missing projectId or dataset')
       }
@@ -94,8 +94,13 @@ export function createGrantsStore(): GrantsStore {
 async function grantsPermissionOn(
   grants: Grant[],
   permission: DocumentValuePermission,
-  document: SanityDocument
+  document: SanityDocument | null
 ): Promise<PermissionCheckResult> {
+  if (!document) {
+    // we say it's granted if null due to initial states
+    return {granted: true, reason: 'Null document, nothing to check'}
+  }
+
   if (!grants.length) {
     return {granted: false, reason: 'No document grants'}
   }
@@ -115,5 +120,3 @@ async function grantsPermissionOn(
     reason: foundMatch ? `Matching grant` : `No matching grants found`,
   }
 }
-
-export default createGrantsStore()

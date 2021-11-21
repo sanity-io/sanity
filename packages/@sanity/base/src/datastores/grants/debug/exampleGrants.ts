@@ -1,3 +1,5 @@
+// NOTE: these example grants are used in other test files.
+// if you change this file, check to see if other files need to be updated too
 import {Grant} from '../types'
 
 export const administrator: Grant[] = [

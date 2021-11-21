@@ -1,13 +1,11 @@
 import {getTemplateById, resolveInitialValue} from '@sanity/initial-value-templates'
 import {InitialValueTemplateItem} from '@sanity/structure'
-import {combineLatest, from, Observable} from 'rxjs'
+import {Observable, combineLatest, from, of} from 'rxjs'
 import {switchMap, map} from 'rxjs/operators'
 import {Schema} from '@sanity/types'
 import {createHookFromObservableFactory} from '../../util/createHookFromObservableFactory'
 import {PermissionCheckResult} from './types'
-import grantsStore from './createGrantsStore'
-
-const {checkDocumentPermission} = grantsStore
+import {unstable_getDocumentValuePermissions as getDocumentValuePermissions} from './documentValuePermissions'
 
 type Template = ReturnType<typeof getTemplateById>
 
@@ -21,24 +19,32 @@ export interface TemplatePermissionsResult<TInitialValue = Record<string, unknow
   template: Template
 }
 
+type Serializable<T> = {serialize(): T}
+
+function serialize<T>(item: T | Serializable<T>): T {
+  if (item && 'serialize' in item) return serialize(item.serialize())
+  return item as T
+}
+
 function getTemplatePermissions(
-  initialValueTemplateItems: InitialValueTemplateItem[]
+  initialValueTemplateItems: Array<
+    InitialValueTemplateItem | Serializable<InitialValueTemplateItem>
+  >
 ): Observable<Record<string, TemplatePermissionsResult<Record<string, unknown>>>> {
   // this has to be deferred/lazy-loaded due to some weird dependency orderings
   const schemaMod = require('part:@sanity/base/schema')
   const schema: Schema = schemaMod.default || schemaMod
 
+  if (!initialValueTemplateItems?.length) return of({})
+
   return combineLatest(
     initialValueTemplateItems
+      .map(serialize)
       .map(async (item) => {
         const template = getTemplateById(item.templateId)
         const resolvedInitialValue = await resolveInitialValue(schema, template, item.parameters)
 
-        return {
-          template,
-          item,
-          resolvedInitialValue,
-        }
+        return {template, item, resolvedInitialValue}
       })
       .map((promise) =>
         from(promise).pipe(
@@ -46,9 +52,12 @@ function getTemplatePermissions(
             const schemaType = schema.get(template.schemaType)
             const liveEdit = schemaType?.liveEdit
 
-            return checkDocumentPermission('create', {
-              _id: liveEdit ? 'dummy-id' : 'drafts.dummy-id',
-              ...resolvedInitialValue,
+            return getDocumentValuePermissions({
+              permission: 'create',
+              document: {
+                _id: liveEdit ? 'dummy-id' : 'drafts.dummy-id',
+                ...resolvedInitialValue,
+              },
             }).pipe(
               map(({granted, reason}) => {
                 const title = item.title || template.title
