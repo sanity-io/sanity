@@ -287,4 +287,220 @@ describe('resolveIntent', () => {
 
     expect(caught).toBe(true)
   })
+
+  it('skips a searching a list if disableNestedIntentResolution is set', async () => {
+    const rootPaneNode = S.list()
+      .title('Content')
+      .items([
+        S.listItem()
+          .title('Nested List 1')
+          .child(
+            S.list()
+              .title('Nested List Disabled')
+              .items([S.documentTypeListItem('book')])
+              .disableNestedIntentResolution()
+          ),
+        S.listItem()
+          .title('Nested List 2')
+          .child(
+            S.list()
+              .title('Nested List Enabled')
+              .items([S.documentTypeListItem('book')])
+          ),
+      ]) as UnresolvedPaneNode
+
+    const routerPanes = await resolveIntent({
+      intent: 'edit',
+      params: {id: 'book123', type: 'book'},
+      payload: undefined,
+      rootPaneNode,
+    })
+
+    expect(routerPanes).toMatchObject([
+      // notice how it's list 2 instead of 1
+      [{id: 'nestedList2'}],
+      [{id: 'book'}],
+      [{id: 'book123'}],
+    ])
+  })
+
+  it('skips a searching a list and logs a warning if it has more than maxBranches', async () => {
+    const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {
+      // intentionally blank
+    })
+
+    const maxBranches = 5
+
+    const rootPaneNode = S.list()
+      .title('Content')
+      .items(
+        Array.from({length: 10}).map((_, i) =>
+          S.listItem()
+            .title(`Nested List ${i}`)
+            .child(
+              S.list()
+                .title('Nested List')
+                .items([S.documentTypeListItem('book')])
+            )
+        )
+      ) as UnresolvedPaneNode
+
+    const routerPanes = await resolveIntent({
+      intent: 'edit',
+      params: {id: 'book123', type: 'book'},
+      payload: undefined,
+      rootPaneNode,
+      maxBranches,
+    })
+
+    expect(routerPanes).toMatchObject(
+      // the fallback editor
+      [[{id: '__edit__book123'}]]
+    )
+
+    expect(consoleSpy.mock.calls).toEqual([
+      [
+        'Tried to resolve an intent within a pane that has over 5 items. ' +
+          'This is unsupported at this time. To disable this warning call ' +
+          '`S.list().disableNestedIntentResolution()` from list `content`',
+      ],
+    ])
+    consoleSpy.mockRestore()
+  })
+
+  it('skips resolving a list item if it exceeds the maxPaneTimeout', async () => {
+    const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {
+      // intentionally blank
+    })
+
+    const maxPaneTimeout = 100
+
+    const rootPaneNode = S.list()
+      .title('Content')
+      .items([
+        S.listItem()
+          .title('Nested List To Skip')
+          .child(async () => {
+            // wait double the timeout so it always times out
+            await new Promise((resolve) => setTimeout(resolve, maxPaneTimeout * 2))
+
+            return S.list()
+              .title('Nested List')
+              .items([S.documentTypeListItem('book')])
+          }),
+        S.listItem()
+          .title('Nested List No Timeout')
+          .child(
+            S.list()
+              .title('Nested List')
+              .items([S.documentTypeListItem('book')])
+          ),
+      ]) as UnresolvedPaneNode
+
+    const routerPanes = await resolveIntent({
+      intent: 'edit',
+      params: {id: 'book123', type: 'book'},
+      payload: undefined,
+      rootPaneNode,
+      maxPaneTimeout,
+    })
+
+    expect(routerPanes).toMatchObject([
+      // notice it skipped the first
+      [{id: 'nestedListNoTimeout'}],
+      [{id: 'book'}],
+      [{id: 'book123'}],
+    ])
+
+    expect(consoleSpy.mock.calls).toEqual([
+      [
+        'Pane `nestedListToSkip` at nestedListToSkip was skipped while resolving the intent because it took longer than 100ms.',
+      ],
+    ])
+    consoleSpy.mockRestore()
+  })
+
+  it('skips resolving a list item if throws while resolving', async () => {
+    const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {
+      // intentionally blank
+    })
+
+    const rootPaneNode = S.list()
+      .title('Content')
+      .items([
+        S.listItem()
+          .title('Nested List To Skip')
+          .child(() => {
+            throw new Error('skipped')
+          }),
+        S.listItem()
+          .title('Nested List No Throw')
+          .child(
+            S.list()
+              .title('Nested List')
+              .items([S.documentTypeListItem('book')])
+          ),
+      ]) as UnresolvedPaneNode
+
+    const routerPanes = await resolveIntent({
+      intent: 'edit',
+      params: {id: 'book123', type: 'book'},
+      payload: undefined,
+      rootPaneNode,
+    })
+
+    expect(routerPanes).toMatchObject([
+      // notice it skipped the first
+      [{id: 'nestedListNoThrow'}],
+      [{id: 'book'}],
+      [{id: 'book123'}],
+    ])
+
+    expect(consoleSpy.mock.calls).toMatchObject([
+      [
+        'Pane `nestedListToSkip` at nestedListToSkip threw while resolving the intent',
+        {message: 'skipped'},
+      ],
+    ])
+    consoleSpy.mockRestore()
+  })
+
+  it('returns the fallback editor if the maxTimeout is exceeded', async () => {
+    const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {
+      // intentionally blank
+    })
+
+    const rootPaneNode = S.list()
+      .title('Content')
+      .items([
+        S.listItem()
+          .title('Never resolves')
+          .child(
+            () =>
+              new Promise(() => {
+                // never resolves
+              })
+          ),
+      ]) as UnresolvedPaneNode
+
+    const routerPanes = await resolveIntent({
+      intent: 'edit',
+      params: {id: 'book123', type: 'book'},
+      payload: undefined,
+      rootPaneNode,
+      maxTimeout: 100,
+    })
+
+    // the fallback editor
+    expect(routerPanes).toMatchObject([[{id: '__edit__book123'}]])
+
+    expect(consoleSpy.mock.calls).toEqual([
+      [
+        'Intent resolver took longer than 100ms to resolve and timed out. ' +
+          'This may be due a large or infinitely recursive structure. ' +
+          'Falling back to the fallback editor…',
+      ],
+    ])
+    consoleSpy.mockRestore()
+  })
 })

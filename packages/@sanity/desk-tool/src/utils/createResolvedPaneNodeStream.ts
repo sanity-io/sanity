@@ -176,6 +176,7 @@ function resolvePaneTree({
     id: current.routerPaneSibling.id,
     splitIndex: current.siblingIndex,
     parent,
+    source: 'panes',
     path: [...path, current.routerPaneSibling.id],
     index: current.flatIndex,
     params: current.routerPaneSibling.params || {},
