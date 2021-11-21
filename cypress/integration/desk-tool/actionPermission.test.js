@@ -7,8 +7,8 @@ describe('@sanity/desk-tool: publish permission', () => {
     // as the publish button works right now, unless changes are made to the document once opened, the button will always be disaled
     // this is expected behaviour for now.
 
-    cy.get('#21').click({force: true})
-    cy.get('#21').click({force: true})
+    cy.get('[data-testid=input-switchTest] input[type=checkbox]').click({force: true})
+    cy.get('[data-testid=input-switchTest] input[type=checkbox]').click({force: true})
 
     cy.get('[data-testid=action-Publish]').should('not.have.attr', 'disabled')
   })

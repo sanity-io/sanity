@@ -45,7 +45,13 @@ export function PaneHeaderCreateButton({initialValueTemplateItems}: PaneHeaderCr
   if (nothingGranted) {
     return (
       <InsufficientPermissionsMessageTooltip reveal loading={isTemplatePermissionsLoading}>
-        <Button aria-label="Insufficient permissions" icon={ComposeIcon} mode="bleed" disabled />
+        <Button
+          aria-label="Insufficient permissions"
+          icon={ComposeIcon}
+          mode="bleed"
+          disabled
+          data-testid="action-intent-button"
+        />
       </InsufficientPermissionsMessageTooltip>
     )
   }
@@ -68,6 +74,7 @@ export function PaneHeaderCreateButton({initialValueTemplateItems}: PaneHeaderCr
           intent={intent}
           mode="bleed"
           disabled={disabled}
+          data-testid="action-intent-button"
         />
       </InsufficientPermissionsMessageTooltip>
     )
@@ -75,7 +82,14 @@ export function PaneHeaderCreateButton({initialValueTemplateItems}: PaneHeaderCr
 
   return (
     <MenuButton
-      button={<Button icon={ComposeIcon} mode="bleed" padding={3} />}
+      button={
+        <Button
+          icon={ComposeIcon}
+          mode="bleed"
+          padding={3}
+          data-testid="multi-action-intent-button"
+        />
+      }
       id="create-menu"
       menu={
         <Menu>
@@ -83,7 +97,7 @@ export function PaneHeaderCreateButton({initialValueTemplateItems}: PaneHeaderCr
             <Label muted>Create</Label>
           </Box>
 
-          {initialValueTemplateItems.map((item) => {
+          {initialValueTemplateItems.map((item, itemIndex) => {
             const permissions = templatePermissions?.[item.templateId]
             const disabled = !permissions?.granted
             const intent = getIntent(item)
@@ -117,6 +131,7 @@ export function PaneHeaderCreateButton({initialValueTemplateItems}: PaneHeaderCr
                   text={item.title || template.title}
                   aria-label={disabled ? 'Insufficient permissions' : item.title || template.title}
                   disabled={disabled}
+                  data-testid={`action-intent-button-${itemIndex}`}
                 />
               </InsufficientPermissionsMessageTooltip>
             )
