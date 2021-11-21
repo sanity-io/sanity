@@ -17,6 +17,10 @@ export type InitialValueTemplateItem = {
   parameters?: {[key: string]: any}
   type: 'initialValueTemplateItem'
   icon?: React.ElementType | React.ReactElement
+  /**
+   * @experimental
+   */
+  initialDocumentId?: string
 }
 
 export class InitialValueTemplateItemBuilder implements Serializable {

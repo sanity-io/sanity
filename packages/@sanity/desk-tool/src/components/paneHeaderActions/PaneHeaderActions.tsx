@@ -97,17 +97,21 @@ export const PaneHeaderActions = memo(
           // the template doesn't exist then the action might be disabled
           if (!template) return null
 
+          const initialDocumentId = intentParams.id
+
           return {
             item,
             template,
             templateParams,
             menuItemIndex,
+            initialDocumentId,
           }
         })
         .filter(isNonNullable)
-        .map(({item, template, menuItemIndex, templateParams}) => {
+        .map(({initialDocumentId, item, template, menuItemIndex, templateParams}) => {
           const initialValueTemplateItem: InitialValueTemplateItem = {
             id: `menuItem${menuItemIndex}`,
+            initialDocumentId,
             templateId: template.id,
             type: 'initialValueTemplateItem',
             title: item.title || template.title,
@@ -121,9 +125,10 @@ export const PaneHeaderActions = memo(
     }, [menuItems])
 
     const combinedInitialValueTemplates = useMemo(() => {
+      // this de-dupes create actions
       return uniqBy(
         [...initialValueTemplateItemFromMenuItems, ...initialValueTemplateItemsFromStructure],
-        (item) => hashObject([item.templateId, item.parameters])
+        (item) => hashObject([item.initialDocumentId, item.templateId, item.parameters])
       )
     }, [initialValueTemplateItemFromMenuItems, initialValueTemplateItemsFromStructure])
 

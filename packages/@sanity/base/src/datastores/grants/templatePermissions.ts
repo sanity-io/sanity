@@ -4,6 +4,7 @@ import {Observable, combineLatest, from, of} from 'rxjs'
 import {switchMap, map} from 'rxjs/operators'
 import {Schema} from '@sanity/types'
 import {createHookFromObservableFactory} from '../../util/createHookFromObservableFactory'
+import {getDraftId, getPublishedId} from '../../util/draftUtils'
 import {PermissionCheckResult} from './types'
 import {unstable_getDocumentValuePermissions as getDocumentValuePermissions} from './documentValuePermissions'
 
@@ -51,11 +52,12 @@ function getTemplatePermissions(
           switchMap(({item, resolvedInitialValue, template}) => {
             const schemaType = schema.get(template.schemaType)
             const liveEdit = schemaType?.liveEdit
+            const {initialDocumentId = 'dummy-id'} = item
 
             return getDocumentValuePermissions({
               permission: 'create',
               document: {
-                _id: liveEdit ? 'dummy-id' : 'drafts.dummy-id',
+                _id: liveEdit ? getPublishedId(initialDocumentId) : getDraftId(initialDocumentId),
                 ...resolvedInitialValue,
               },
             }).pipe(

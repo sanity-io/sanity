@@ -19,11 +19,15 @@ const getIntent = (item: InitialValueTemplateItem): Intent | null => {
   const typeName = getTemplateById(item.id)?.schemaType
   if (!typeName) return null
 
+  const baseParams = {
+    template: item.templateId,
+    type: typeName,
+    id: item.initialDocumentId,
+  }
+
   return {
     type: 'create',
-    params: item.parameters
-      ? [{template: item.templateId, type: typeName}, item.parameters]
-      : {template: item.templateId, type: typeName},
+    params: item.parameters ? [baseParams, item.parameters] : baseParams,
   }
 }
 
@@ -35,6 +39,7 @@ export function PaneHeaderCreateButton({initialValueTemplateItems}: PaneHeaderCr
   const [templatePermissions, isTemplatePermissionsLoading] = useTemplatePermissions(
     initialValueTemplateItems
   )
+
   const nothingGranted = useMemo(() => {
     return (
       !isTemplatePermissionsLoading &&
@@ -58,7 +63,7 @@ export function PaneHeaderCreateButton({initialValueTemplateItems}: PaneHeaderCr
 
   if (initialValueTemplateItems.length === 1) {
     const firstItem = initialValueTemplateItems[0]
-    const permissions = templatePermissions?.[firstItem.templateId]
+    const permissions = templatePermissions?.[firstItem.id]
     const disabled = !permissions?.granted
     const intent = getIntent(firstItem)
     if (!intent) return null
@@ -98,7 +103,7 @@ export function PaneHeaderCreateButton({initialValueTemplateItems}: PaneHeaderCr
           </Box>
 
           {initialValueTemplateItems.map((item, itemIndex) => {
-            const permissions = templatePermissions?.[item.templateId]
+            const permissions = templatePermissions?.[item.id]
             const disabled = !permissions?.granted
             const intent = getIntent(item)
             const template = getTemplateById(item.templateId)

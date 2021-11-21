@@ -3,6 +3,7 @@ import {EarthGlobeIcon, PlugIcon, TagIcon, TerminalIcon, RocketIcon} from '@sani
 import {orderableDocumentListDeskItem} from '@sanity/orderable-document-list'
 import React from 'react'
 import schema from 'part:@sanity/base/schema'
+import {uuid} from '@sanity/uuid'
 
 // Icons
 import RefreshIcon from 'part:@sanity/base/sync-icon'
@@ -203,6 +204,18 @@ export default () =>
                     .title('Component pane #1')
                     .options({no: 1})
                     .menuItems([
+                      S.menuItem()
+                        .title('From Menu Item Create Intent')
+                        .intent({
+                          type: 'create',
+                          params: {type: 'author', id: `special.${uuid()}`},
+                        }),
+                      S.menuItem()
+                        .title('Also Menu Item Create Intent')
+                        .intent({
+                          type: 'create',
+                          params: {type: 'author', id: uuid()},
+                        }),
                       S.menuItem()
                         .title('Test 1')
                         // eslint-disable-next-line no-alert
