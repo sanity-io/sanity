@@ -84,6 +84,13 @@ export interface RouterPaneSiblingContext {
   path: string[]
   params: Record<string, string | undefined>
   payload: unknown
+  /**
+   * Denotes where this context item was created.
+   *
+   * - `source: 'intent'` - denotes this context came from the intent resolver
+   * - `source: 'panes'` - denotes this context came from pane navigation
+   */
+  source: 'intent' | 'panes'
   // used in structure builder
   serializeOptions?: {
     path: (string | number)[]
@@ -220,6 +227,15 @@ export interface ListPaneNode extends BaseResolvedPaneNode<'list'> {
   defaultLayout?: 'inline' | 'block' | 'default' | 'card' | 'media' | 'detail'
   displayOptions?: {showIcons?: boolean}
   items?: Array<PaneListItem | PaneListItemDivider>
+
+  /**
+   * Disables the intent resolver from searching this list's items when
+   * resolving an intent.
+   *
+   * @see resolveIntent
+   * @see List from `@sanity/structure`
+   */
+  disableNestedIntentResolution?: boolean
 }
 
 export type PaneNode =

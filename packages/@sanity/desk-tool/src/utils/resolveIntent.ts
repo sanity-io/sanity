@@ -1,4 +1,5 @@
 /* eslint-disable complexity */
+import {SerializeError} from '@sanity/structure'
 import {omit} from 'lodash'
 import {Observable} from 'rxjs'
 import {first} from 'rxjs/operators'
@@ -7,6 +8,14 @@ import {assignId} from './assignId'
 import {createPaneResolver, PaneResolverMiddleware} from './createPaneResolver'
 import {loadStructure} from './loadStructure'
 import {memoBind} from './memoBind'
+import {PaneResolutionError} from './PaneResolutionError'
+
+const DEFAULT_MAX_BRANCHES = 100
+const DEFAULT_MAX_PANE_TIMEOUT = 5 * 1000
+const DEFAULT_MAX_TIMEOUT = 30 * 1000
+
+const timer = (milliseconds: number) =>
+  new Promise<'TIMER'>((resolve) => setTimeout(() => resolve('TIMER'), milliseconds))
 
 interface TraverseOptions {
   unresolvedPane: UnresolvedPaneNode | undefined
@@ -25,6 +34,28 @@ export interface ResolveIntentOptions {
   intent: string
   params: {type: string; id: string; [key: string]: string | undefined}
   payload: unknown
+  /**
+   * Overrides the default amount of max branches
+   *
+   * Allows specifying the max amount of items a list can have before the pane
+   * resolver will skip it and log a warning.
+   */
+  maxBranches?: number
+  /**
+   * Overrides the default max pane timeout
+   *
+   * Allows specifying the max amount of time in milliseconds allotted before
+   * the intent resolver skips trying to resolve the pane and logs a warning.
+   */
+  maxPaneTimeout?: number
+  /**
+   * Overrides the default max timeout
+   *
+   * Allows specifying the overall max amount of time in milliseconds before the
+   * intent resolver times out and returns the fallback editor and logs a
+   * warning.
+   */
+  maxTimeout?: number
 }
 
 /**
@@ -36,12 +67,18 @@ export interface ResolveIntentOptions {
  * 2. the `PaneNode` is of type `documentList` and the `schemaTypeName` matches
  * 3. the `PaneNode`'s `canHandleIntent` method returns true
  *
- * If a `PaneNode` of type `list` is found, it will be searched for a match.
+ * If a `PaneNode` of type `list` is found, it will be searched for a match
+ * (unless `disableNestedIntentResolution` is true)
  *
  * @see PaneNode
  */
 export async function resolveIntent(options: ResolveIntentOptions): Promise<RouterPanes> {
   const resolvedPaneCache = new Map<string, Observable<PaneNode>>()
+  const {
+    maxBranches = DEFAULT_MAX_BRANCHES,
+    maxPaneTimeout = DEFAULT_MAX_PANE_TIMEOUT,
+    maxTimeout = DEFAULT_MAX_TIMEOUT,
+  } = options
 
   // this is a simple version of the memoizer in `createResolvedPaneNodeStream`
   const memoize: PaneResolverMiddleware = (nextFn) => (unresolvedPane, context, flatIndex) => {
@@ -81,19 +118,45 @@ export async function resolveIntent(options: ResolveIntentOptions): Promise<Rout
   > {
     if (!unresolvedPane) return []
 
-    const {id: targetId, type: schemaTypeName, ...otherParams} = params
+    const {id: targetId} = params
+    const otherParams = omit(params, ['id', 'type'])
     const context: RouterPaneSiblingContext = {
       id: currentId,
       splitIndex: 0,
       parent,
+      source: 'intent',
       path,
       index: flatIndex,
       params: {},
       payload: undefined,
     }
-    const resolvedPane = await resolvePane(unresolvedPane, context, flatIndex)
-      .pipe(first())
-      .toPromise()
+
+    let promiseResult
+
+    try {
+      promiseResult = await Promise.race([
+        resolvePane(unresolvedPane, context, flatIndex).pipe(first()).toPromise(),
+        timer(maxPaneTimeout),
+      ])
+    } catch (e) {
+      if (e instanceof PaneResolutionError && e.cause instanceof SerializeError) throw e
+
+      console.warn(`Pane \`${currentId}\` at ${path.join('.')} threw while resolving the intent`, e)
+
+      return []
+    }
+
+    const resolvedPane = promiseResult
+
+    if (resolvedPane === 'TIMER') {
+      console.warn(
+        `Pane \`${currentId}\` at ${path.join(
+          '.'
+        )} was skipped while resolving the intent because it took longer than ${maxPaneTimeout}ms.`
+      )
+
+      return []
+    }
 
     // if the resolved pane is a document pane and the pane's ID matches then
     // resolve the intent to the current path
@@ -110,26 +173,7 @@ export async function resolveIntent(options: ResolveIntentOptions): Promise<Rout
       ]
     }
 
-    // NOTE: if you update this logic, please also update the similar handler in
-    // `getIntentState.ts`
-    if (
-      // if the resolve pane's `canHandleIntent` returns true, then resolve
-      resolvedPane.canHandleIntent?.(intent, params, {
-        pane: resolvedPane,
-        index: flatIndex,
-      }) ||
-      // if the pane's `canHandleIntent` did not return true, then match against
-      // this default case. we will resolve the intent if:
-      (resolvedPane.type === 'documentList' &&
-        // 1. the schema type matches (this required for the document to render)
-        resolvedPane.schemaTypeName === schemaTypeName &&
-        // 2. the filter is the default filter.
-        //
-        // NOTE: this case is to prevent false positive matches where the user
-        // has configured a more specific filter for a particular type. In that
-        // case, the user can implement their own `canHandleIntent` function
-        resolvedPane.options.filter === '_type == $type')
-    ) {
+    if (resolvedPane.canHandleIntent?.(intent, params, {pane: resolvedPane, index: flatIndex})) {
       return [
         {
           panes: [
@@ -144,7 +188,24 @@ export async function resolveIntent(options: ResolveIntentOptions): Promise<Rout
       ]
     }
 
-    if (resolvedPane.type === 'list' && resolvedPane.child && resolvedPane.items) {
+    if (
+      resolvedPane.type === 'list' &&
+      resolvedPane.child &&
+      resolvedPane.items &&
+      !resolvedPane.disableNestedIntentResolution
+    ) {
+      if (resolvedPane.items.length > maxBranches) {
+        console.warn(
+          `Tried to resolve an intent within a pane that has over ${maxBranches} ` +
+            'items. This is unsupported at this time. ' +
+            'To disable this warning call `S.list().disableNestedIntentResolution()` ' +
+            `from list \`${resolvedPane.id}\`${
+              context.path.join('.') ? ` at ${context.path.join('.')}` : ''
+            }`
+        )
+        return []
+      }
+
       return (
         await Promise.all(
           resolvedPane.items.map((item, nextLevelIndex) => {
@@ -172,17 +233,29 @@ export async function resolveIntent(options: ResolveIntentOptions): Promise<Rout
     return []
   }
 
-  const matchingPanes = await traverse({
-    currentId: 'root',
-    flatIndex: 0,
-    levelIndex: 0,
-    intent: options.intent,
-    params: options.params,
-    parent: null,
-    path: [],
-    payload: options.payload,
-    unresolvedPane: options.rootPaneNode || loadStructure(),
-  })
+  const matchingPanes = await Promise.race([
+    traverse({
+      currentId: 'root',
+      flatIndex: 0,
+      levelIndex: 0,
+      intent: options.intent,
+      params: options.params,
+      parent: null,
+      path: [],
+      payload: options.payload,
+      unresolvedPane: options.rootPaneNode || loadStructure(),
+    }),
+    timer(maxTimeout),
+  ])
+
+  if (matchingPanes === 'TIMER') {
+    console.warn(
+      `Intent resolver took longer than ${maxTimeout}ms to resolve and timed out. ` +
+        'This may be due a large or infinitely recursive structure. ' +
+        'Falling back to the fallback editor…'
+    )
+    return fallbackEditorPanes
+  }
 
   const closestPaneToRoot = matchingPanes.sort((a, b) => {
     // break ties with the level index
