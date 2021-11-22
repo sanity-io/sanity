@@ -139,8 +139,11 @@ export interface DocumentPermissionsOptions {
   permission: DocumentPermission
 }
 
-// if a document doesn't exist and a permission depends on that document,
-// the permission will return as true
+/**
+ * The observable version of `useDocumentPairPermissions`
+ *
+ * @see useDocumentPairPermissions
+ */
 function getDocumentPairPermissions({
   id,
   type,
@@ -190,6 +193,28 @@ function getDocumentPairPermissions({
   )
 }
 
+/**
+ * Gets document pair permissions based on a document ID and a type.
+ *
+ * This permissions API is a high-level permissions API that is draft-model
+ * aware. In order to determine whether or not the user has the given
+ * permission, both the draft and published documents are pulled and run through
+ * all of the user's grants. If any pre or post conditions fail a permissions
+ * checks, the operations will not be granted.
+ *
+ * The operations this hook accepts are only relevant to document pairs. E.g.
+ * `'create'` is not included as an operation because it's not possible to tell
+ * if a document can be created by only using the initial ID and type because an
+ * initial template value may not have a matching grant (e.g. locked-document
+ * pattern `!locked`). In contrast, the operation `'duplicate'` is supported
+ * because the draft value of the document can be live queried and checked for
+ * matching grants.
+ *
+ * Note: for live-edit documents, non-applicable operations (e.g. publish) will
+ * return as true.
+ *
+ * @see useDocumentValuePermissions
+ */
 const useDocumentPairPermissions = createHookFromObservableFactory(getDocumentPairPermissions)
 
 export {

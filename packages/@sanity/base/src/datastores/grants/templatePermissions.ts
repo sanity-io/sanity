@@ -27,6 +27,9 @@ function serialize<T>(item: T | Serializable<T>): T {
   return item as T
 }
 
+/**
+ * The observable version of `useTemplatePermissions`
+ */
 function getTemplatePermissions(
   initialValueTemplateItems: Array<
     InitialValueTemplateItem | Serializable<InitialValueTemplateItem>
@@ -91,6 +94,21 @@ function getTemplatePermissions(
   )
 }
 
+/**
+ * Takes in an array of initial template values and returns an object of
+ * `TemplatePermissionsResult` keyed by the IDs of the initial template values
+ * given.
+ *
+ * The `TemplatePermissionsResult` is an object that contains a `granted`
+ * boolean per key and can be used to determine if a user has the ability to
+ * create documents using the given initial value template items.
+ *
+ * For each initial template value item, the corresponding template is found and
+ * resolved against the parameters in each the initial template value item. The
+ * resolved value is then run through the document-value permissions. If there
+ * are any matching grants for the resolved initial template value, the
+ * `TemplatePermissionsResult` will include `granted: true`.
+ */
 const useTemplatePermissions = createHookFromObservableFactory(getTemplatePermissions, {
   initialValue: {},
 })
