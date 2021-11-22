@@ -29,6 +29,8 @@ export type ReferenceFilterResolver = (options: {
   parentPath: Path
 }) => ReferenceFilterSearchOptions | Promise<ReferenceFilterSearchOptions>
 
-export type ReferenceOptions =
+type FilterOptions =
   | {filter: ReferenceFilterResolver}
   | {filter: string; filterParams?: Record<string, unknown>}
+
+export type ReferenceOptions = {disableNew: boolean} & FilterOptions
