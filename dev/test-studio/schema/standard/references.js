@@ -83,6 +83,28 @@ export default {
       ],
     },
     {
+      name: 'arrayWithDisableCreateNew',
+      type: 'array',
+      title: 'Array of refs with disabled create button',
+      of: [
+        {
+          type: 'reference',
+          title: 'Reference to either "species" or "empty" document',
+          description: 'Some description',
+          options: {disableNew: true},
+          to: [{type: 'species'}, {type: 'empty'}],
+        },
+      ],
+    },
+    {
+      name: 'referenceWithDisabledCreateNew',
+      type: 'reference',
+      title: 'Reference to either "species" or "empty" document with disabled create button',
+      description: 'Some description',
+      options: {disableNew: true},
+      to: [{type: 'species'}, {type: 'empty'}],
+    },
+    {
       name: 'invalidFilter',
       title: 'Invalid filter',
       description: 'This will error when trying to search for anything',
