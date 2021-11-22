@@ -94,6 +94,8 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
 
   const valuePath = useMemo(getValuePath, [getValuePath])
 
+  const disableNew = type.options?.disableNew === true
+
   const handleSearch = useCallback(
     (searchString: string) =>
       from(resolveUserDefinedFilter(type.options, documentRef.current, getValuePath())).pipe(
@@ -146,6 +148,9 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
     : 'none'
 
   const createOptions = useMemo(() => {
+    if (disableNew) {
+      return []
+    }
     return (
       initialValueTemplateItems
         // eslint-disable-next-line max-nested-callbacks
@@ -162,7 +167,7 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
           permission: {granted: item.granted, reason: item.reason},
         }))
     )
-  }, [initialValueTemplateItems, type.to])
+  }, [disableNew, initialValueTemplateItems, type.to])
 
   return (
     <ArrayItemReferenceInput
