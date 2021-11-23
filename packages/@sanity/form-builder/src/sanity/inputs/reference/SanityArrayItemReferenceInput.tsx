@@ -2,7 +2,6 @@ import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, u
 
 import {
   Marker,
-  ObjectSchemaType,
   Path,
   Reference,
   ReferenceFilterSearchOptions,
