@@ -9,11 +9,15 @@ type ReactHook<TArgs extends unknown[], TResult> = (...args: TArgs) => TResult
 
 interface CreateHookFromObservableFactoryOptions<T, TArgs extends unknown[]> {
   /**
-   *
+   * Optionally provide an initial value that will show up initially if the
+   * observable resolves asynchronously. Prevents `undefined` as the initial
+   * value.
    */
   initialValue: T
   /**
-   *
+   * Optionally provide a comparison function passed into `distinctUntilEqual`
+   * used for args comparison. The default function shallowly compares each
+   * argument.
    */
   argsAreEqual?: (prev: TArgs, next: TArgs) => boolean
 }
@@ -42,10 +46,15 @@ export function createHookFromObservableFactory<T, TArgs extends unknown[]>(
 ): ReactHook<TArgs, LoadingTuple<T | undefined>>
 
 /**
+ * A function that will create a hook from a function that returns an
+ * observable. The parameters of the hook will be the parameters of the function
+ * and the return of the hook will be a loading tuple with the value of the
+ * observable at the first index and a boolean with the loading state as the
+ * second index.
  *
- * @param observableFactory
- * @param options
- * @returns
+ * The loading state will become true as soon as new incoming args are given and
+ * will flip to false when the observable from the function emits the next
+ * value.
  */
 export function createHookFromObservableFactory<T, TArgs extends unknown[]>(
   observableFactory: (...args: TArgs) => Observable<T>,
