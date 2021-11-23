@@ -111,15 +111,13 @@ describe('getDocumentPairPermissions', () => {
 
 describe('getPairPermission', () => {
   it("disallows `delete` if either the published or draft can't be deleted", async () => {
-    const documentPair = {
-      draft: {_id: 'drafts.book-id', _type: 'book'},
-      published: {_id: 'book-id', _type: 'book'},
-    }
-
     const getContributorPairPermissions = setupTest({
       grants: exampleGrants.contributor,
       liveEdit: false,
-      documentPair,
+      documentPair: {
+        draft: {_id: 'drafts.book-id', _type: 'book'},
+        published: {_id: 'book-id', _type: 'book'},
+      },
     })
 
     await expect(
@@ -134,11 +132,16 @@ describe('getPairPermission', () => {
         'Unable to delete:\n' +
         '\tnot allowed to delete published document: No matching grants found',
     })
+  })
 
+  it('allows `delete` if both the published and draft can be deleted', async () => {
     const getAdminPairPermissions = setupTest({
       grants: exampleGrants.administrator,
       liveEdit: false,
-      documentPair,
+      documentPair: {
+        draft: {_id: 'drafts.book-id', _type: 'book'},
+        published: {_id: 'book-id', _type: 'book'},
+      },
     })
 
     await expect(
@@ -151,15 +154,13 @@ describe('getPairPermission', () => {
   })
 
   it("disallows `discardDraft` if the draft can't be deleted", async () => {
-    const documentPair = {
-      draft: {_id: 'drafts.book-id', _type: 'book'},
-      published: {_id: 'book-id', _type: 'book'},
-    }
-
     const getContributorPairPermissions = setupTest({
       grants: exampleGrants.viewer,
       liveEdit: false,
-      documentPair,
+      documentPair: {
+        draft: {_id: 'drafts.book-id', _type: 'book'},
+        published: {_id: 'book-id', _type: 'book'},
+      },
     })
 
     await expect(
@@ -173,11 +174,16 @@ describe('getPairPermission', () => {
       reason:
         'Unable to discardDraft:\n\tnot allowed to delete draft document: No matching grants found',
     })
+  })
 
+  it('allows `discardDraft` if the draft can be deleted', async () => {
     const getAdminPairPermissions = setupTest({
       grants: exampleGrants.administrator,
       liveEdit: false,
-      documentPair,
+      documentPair: {
+        draft: {_id: 'drafts.book-id', _type: 'book'},
+        published: {_id: 'book-id', _type: 'book'},
+      },
     })
 
     await expect(
@@ -190,15 +196,13 @@ describe('getPairPermission', () => {
   })
 
   it("disallows `publish` if the draft can't be deleted or if a published can't be created from the draft", async () => {
-    const documentPair = {
-      draft: {_id: 'drafts.book-id', _type: 'book', locked: false},
-      published: {_id: 'book-id', _type: 'book', locked: true},
-    }
-
     const getRequiresApprovalPairPermissions = setupTest({
       grants: exampleGrants.requiresApproval,
       liveEdit: false,
-      documentPair,
+      documentPair: {
+        draft: {_id: 'drafts.book-id', _type: 'book', locked: false},
+        published: {_id: 'book-id', _type: 'book', locked: true},
+      },
     })
 
     await expect(
@@ -213,11 +217,16 @@ describe('getPairPermission', () => {
         'Unable to publish:\n' +
         '\tnot allowed to update published document at its current state: No matching grants found',
     })
+  })
 
+  it('allows `publish` if the draft can be deleted and the published can be created from the draft', async () => {
     const getAdminPairPermissions = setupTest({
       grants: exampleGrants.administrator,
       liveEdit: false,
-      documentPair,
+      documentPair: {
+        draft: {_id: 'drafts.book-id', _type: 'book', locked: false},
+        published: {_id: 'book-id', _type: 'book', locked: true},
+      },
     })
 
     await expect(
@@ -230,15 +239,13 @@ describe('getPairPermission', () => {
   })
 
   it("disallows `unpublish` if the published can't be deleted or if a draft can't be created from the published", async () => {
-    const documentPair = {
-      draft: {_id: 'drafts.book-id', _type: 'book', locked: true},
-      published: {_id: 'book-id', _type: 'book', locked: false},
-    }
-
     const getRequiresApprovalPairPermissions = setupTest({
       grants: exampleGrants.requiresApproval,
       liveEdit: false,
-      documentPair,
+      documentPair: {
+        draft: {_id: 'drafts.book-id', _type: 'book', locked: true},
+        published: {_id: 'book-id', _type: 'book', locked: false},
+      },
     })
 
     await expect(
@@ -253,11 +260,16 @@ describe('getPairPermission', () => {
         'Unable to unpublish:\n' +
         '\tnot allowed to update draft document at its current state: No matching grants found',
     })
+  })
 
+  it('allows `unpublish` if the published can be deleted or if a draft can be created from the published', async () => {
     const getAdminPairPermissions = setupTest({
       grants: exampleGrants.administrator,
       liveEdit: false,
-      documentPair,
+      documentPair: {
+        draft: {_id: 'drafts.book-id', _type: 'book', locked: true},
+        published: {_id: 'book-id', _type: 'book', locked: false},
+      },
     })
 
     await expect(
@@ -270,15 +282,13 @@ describe('getPairPermission', () => {
   })
 
   it("disallows `update` if the draft can't be updated", async () => {
-    const documentPair = {
-      draft: {_id: 'drafts.book-id', _type: 'book', locked: true},
-      published: {_id: 'book-id', _type: 'book', locked: false},
-    }
-
     const getRequiresApprovalPairPermissions = setupTest({
       grants: exampleGrants.requiresApproval,
       liveEdit: false,
-      documentPair,
+      documentPair: {
+        draft: {_id: 'drafts.book-id', _type: 'book', locked: true},
+        published: {_id: 'book-id', _type: 'book', locked: false},
+      },
     })
 
     await expect(
@@ -291,11 +301,16 @@ describe('getPairPermission', () => {
       granted: false,
       reason: 'Unable to update:\n\tnot allowed to update draft document: No matching grants found',
     })
+  })
 
+  it('allows `update` if the draft can be updated', async () => {
     const getAdminPairPermissions = setupTest({
       grants: exampleGrants.administrator,
       liveEdit: false,
-      documentPair,
+      documentPair: {
+        draft: {_id: 'drafts.book-id', _type: 'book', locked: true},
+        published: {_id: 'book-id', _type: 'book', locked: false},
+      },
     })
 
     await expect(
@@ -308,15 +323,13 @@ describe('getPairPermission', () => {
   })
 
   it("disallows `duplicate` if a new document can't be created with the contents of the draft", async () => {
-    const documentPair = {
-      draft: {_id: 'drafts.book-id', _type: 'book', locked: true},
-      published: {_id: 'book-id', _type: 'book', locked: false},
-    }
-
     const getRequiresApprovalPairPermissions = setupTest({
       grants: exampleGrants.requiresApproval,
       liveEdit: false,
-      documentPair,
+      documentPair: {
+        draft: {_id: 'drafts.book-id', _type: 'book', locked: true},
+        published: {_id: 'book-id', _type: 'book', locked: false},
+      },
     })
 
     await expect(
@@ -331,11 +344,16 @@ describe('getPairPermission', () => {
         'Unable to duplicate:\n' +
         '\tnot allowed to create new draft document from existing draft: No matching grants found',
     })
+  })
 
+  it('allows `duplicate` if a new document can be created with the contents of the draft', async () => {
     const getAdminPairPermissions = setupTest({
       grants: exampleGrants.administrator,
       liveEdit: false,
-      documentPair,
+      documentPair: {
+        draft: {_id: 'drafts.book-id', _type: 'book', locked: true},
+        published: {_id: 'book-id', _type: 'book', locked: false},
+      },
     })
 
     await expect(
@@ -350,15 +368,13 @@ describe('getPairPermission', () => {
 
 describe('getPairPermission (live-edit)', () => {
   it('returns granted for non-applicable operations', async () => {
-    const documentPair = {
-      draft: null,
-      published: {_id: 'book-id', _type: 'book'},
-    }
-
     const getDocumentPairPermissions = setupTest({
       grants: exampleGrants.viewer,
       liveEdit: true,
-      documentPair,
+      documentPair: {
+        draft: null,
+        published: {_id: 'book-id', _type: 'book'},
+      },
     })
 
     await expect(
@@ -373,15 +389,13 @@ describe('getPairPermission (live-edit)', () => {
   })
 
   it("disallows `delete` if the published can't be deleted", async () => {
-    const documentPair = {
-      draft: null,
-      published: {_id: 'book-id', _type: 'book'},
-    }
-
     const getContributorPairPermissions = setupTest({
       grants: exampleGrants.contributor,
       liveEdit: true,
-      documentPair,
+      documentPair: {
+        draft: null,
+        published: {_id: 'book-id', _type: 'book'},
+      },
     })
 
     await expect(
@@ -396,15 +410,20 @@ describe('getPairPermission (live-edit)', () => {
         'Unable to delete:\n' +
         '\tnot allowed to delete published document (live-edit): No matching grants found',
     })
+  })
 
-    const getAdminPairPermissions = setupTest({
+  it('allows `delete` if the published can be deleted', async () => {
+    const getContributorPairPermissions = setupTest({
       grants: exampleGrants.administrator,
-      liveEdit: false,
-      documentPair,
+      liveEdit: true,
+      documentPair: {
+        draft: null,
+        published: {_id: 'book-id', _type: 'book'},
+      },
     })
 
     await expect(
-      getAdminPairPermissions({
+      getContributorPairPermissions({
         id: 'book-id',
         permission: 'delete',
         type: 'book',
@@ -413,15 +432,13 @@ describe('getPairPermission (live-edit)', () => {
   })
 
   it("disallows `update` if the published can't be updated", async () => {
-    const documentPair = {
-      draft: null,
-      published: {_id: 'book-id', _type: 'book', locked: true},
-    }
-
     const getRequiresApprovalPairPermissions = setupTest({
       grants: exampleGrants.requiresApproval,
       liveEdit: true,
-      documentPair,
+      documentPair: {
+        draft: null,
+        published: {_id: 'book-id', _type: 'book', locked: true},
+      },
     })
 
     await expect(
@@ -435,11 +452,16 @@ describe('getPairPermission (live-edit)', () => {
       reason:
         'Unable to update:\n\tnot allowed to update published document (live-edit): No matching grants found',
     })
+  })
 
+  it('allows `update` if the published can be updated', async () => {
     const getAdminPairPermissions = setupTest({
       grants: exampleGrants.administrator,
-      liveEdit: false,
-      documentPair,
+      liveEdit: true,
+      documentPair: {
+        draft: null,
+        published: {_id: 'book-id', _type: 'book'},
+      },
     })
 
     await expect(
@@ -452,15 +474,13 @@ describe('getPairPermission (live-edit)', () => {
   })
 
   it("disallows `duplicate` if a new document can't be created with the contents of the publish", async () => {
-    const documentPair = {
-      draft: null,
-      published: {_id: 'book-id', _type: 'book', locked: true},
-    }
-
     const getRequiresApprovalPairPermissions = setupTest({
       grants: exampleGrants.requiresApproval,
       liveEdit: true,
-      documentPair,
+      documentPair: {
+        draft: null,
+        published: {_id: 'book-id', _type: 'book', locked: true},
+      },
     })
 
     await expect(
@@ -475,11 +495,16 @@ describe('getPairPermission (live-edit)', () => {
         'Unable to duplicate:\n' +
         '\tnot allowed to create new published document from existing document (live-edit): No matching grants found',
     })
+  })
 
+  it('allows `duplicate` if a new document can be created with the contents of the published', async () => {
     const getAdminPairPermissions = setupTest({
       grants: exampleGrants.administrator,
-      liveEdit: false,
-      documentPair,
+      liveEdit: true,
+      documentPair: {
+        draft: null,
+        published: {_id: 'book-id', _type: 'book', locked: true},
+      },
     })
 
     await expect(
