@@ -7,6 +7,7 @@ import {
   ObjectSchemaTypeWithOptions,
   Path,
   SchemaType,
+  ObjectSchemaType,
 } from '@sanity/types'
 import {ChangeIndicatorProvider} from '@sanity/base/change-indicators'
 import * as PathUtils from '@sanity/util/paths'
@@ -16,6 +17,7 @@ import PatchEvent from './PatchEvent'
 import {emptyArray} from './utils/empty'
 import {Props as InputProps} from './inputs/types'
 import {ConditionalReadOnlyField} from './inputs/common'
+import {FilterGroupTabs} from './fieldGroups/FilterGroupTabs'
 
 const EMPTY_MARKERS: Marker[] = emptyArray()
 const EMPTY_PATH: Path = emptyArray()
@@ -215,10 +217,12 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
   }
 
   render() {
-    const {type, parent, value} = this.props
+    const {type, level, parent, value} = this.props
     // Separate readOnly in order to resolve it to a boolean type
     const {readOnly, ...restProps} = this.props
     const InputComponent = this.resolveInputComponent(type)
+    const groupType = type as ObjectSchemaType
+    const hasGroups = typeof groupType.groups === 'object' && groupType.groups.length > 0
 
     if (!InputComponent) {
       return (
@@ -250,17 +254,20 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
     }
 
     return (
-      <FormBuilderInputInner
-        {...restProps}
-        readOnly={readOnly}
-        childFocusPath={this.getChildFocusPath()}
-        context={this.context}
-        component={InputComponent}
-        onBlur={this.handleBlur}
-        onChange={this.handleChange}
-        onFocus={this.handleFocus}
-        setInput={this.setInput}
-      />
+      <>
+        {level === 0 && hasGroups && <FilterGroupTabs type={type} />}
+        <FormBuilderInputInner
+          {...restProps}
+          readOnly={readOnly}
+          childFocusPath={this.getChildFocusPath()}
+          context={this.context}
+          component={InputComponent}
+          onBlur={this.handleBlur}
+          onChange={this.handleChange}
+          onFocus={this.handleFocus}
+          setInput={this.setInput}
+        />
+      </>
     )
   }
 }

@@ -1,8 +1,9 @@
-import {pick, toPath, keyBy, startCase, isPlainObject} from 'lodash'
+import {pick, toPath, keyBy, startCase, isPlainObject, castArray, flatMap} from 'lodash'
 import createPreviewGetter from '../preview/createPreviewGetter'
 import guessOrderingConfig from '../ordering/guessOrderingConfig'
 import resolveSearchConfig from '../resolveSearchConfig'
 import {lazyGetter} from './utils'
+
 import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
 
 const OVERRIDABLE_FIELDS = [
@@ -55,10 +56,11 @@ export const ObjectType = {
       options: options,
       orderings: subTypeDef.orderings || guessOrderingConfig(subTypeDef),
       fields: subTypeDef.fields.map((fieldDef) => {
-        const {name, fieldset, ...rest} = fieldDef
+        const {name, fieldset, group, ...rest} = fieldDef
 
         const compiledField = {
           name,
+          group,
           fieldset,
         }
 
@@ -73,6 +75,10 @@ export const ObjectType = {
 
     lazyGetter(parsed, 'fieldsets', () => {
       return createFieldsets(subTypeDef, parsed.fields)
+    })
+
+    lazyGetter(parsed, 'groups', () => {
+      return createFieldsGroups(subTypeDef, parsed.fields)
     })
 
     lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef))
@@ -156,4 +162,51 @@ function createFieldsets(typeDef, fields) {
       return {single: true, field}
     })
     .filter(Boolean)
+}
+
+function createFieldsGroups(typeDef, fields) {
+  const groupsDef = typeDef.groups || []
+  const groups = groupsDef.map((group) => {
+    const {name, title, description, icon, isDefault, readOnly} = group
+    return {
+      name,
+      title,
+      description,
+      icon,
+      readOnly,
+      isDefault,
+      fields: [],
+    }
+  })
+
+  const groupsByName = keyBy(groups, 'name')
+
+  fields
+    .map((field) => {
+      if (field.group) {
+        const fieldGroups = castArray(field.group)
+
+        if (fieldGroups.length > 0) {
+          fieldGroups.forEach((fieldGroupName) => {
+            const currentGroup = groupsByName[fieldGroupName]
+
+            if (!currentGroup) {
+              throw new Error(
+                `Field group '${fieldGroupName}' is not defined in schema for type '${typeDef.name}'`
+              )
+            }
+
+            currentGroup.fields.push(field)
+          })
+        }
+
+        // Return the fieldset if its the first time we encounter a field in this fieldset
+        return groups
+        // return fieldGroups.groups.length === 1 ? fieldGroups : null
+      }
+      return {single: true, field}
+    })
+    .filter(Boolean)
+
+  return flatMap(groupsByName).filter((group) => group.fields.length > 0)
 }
