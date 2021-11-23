@@ -177,13 +177,13 @@ function getDocumentPairPermissions({
       if (!pairPermissions.length) return of({granted: true, reason: ''})
 
       return combineLatest(pairPermissions).pipe(
-        map((results) => {
-          const granted = results.every((i) => i.granted)
+        map((permissionResults) => {
+          const granted = permissionResults.every((permissionResult) => permissionResult.granted)
           const reason = granted
             ? ''
-            : `Unable to ${permission}:\n\t${results
-                .filter((i) => !i.granted)
-                .map((i) => i.reason)
+            : `Unable to ${permission}:\n\t${permissionResults
+                .filter((permissionResult) => !permissionResult.granted)
+                .map((permissionResult) => permissionResult.reason)
                 .join('\n\t')}`
 
           return {granted, reason}
