@@ -23,6 +23,7 @@ export interface EditReferenceLinkComponentProps {
   documentId: string
   documentType: string
   parentRefPath: Path
+  template?: TemplateOption
   children: React.ReactNode
 }
 
