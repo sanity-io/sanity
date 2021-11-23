@@ -50,7 +50,8 @@ export const requiresApproval: Grant[] = [
 
 export const restricted: Grant[] = [
   {
-    filter: '_id in path("drafts.**") && _type in ["stringsTest", "book", "author"]',
+    filter:
+      '_id in path("drafts.**") && _type in ["stringsTest", "book", "author", "referenceTest"]',
     permissions: ['read', 'create', 'history', 'update'],
   },
   {
