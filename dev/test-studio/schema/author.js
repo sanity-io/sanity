@@ -105,6 +105,12 @@ export default {
       type: 'reference',
       to: {type: 'species'},
     },
+    {
+      name: 'locked',
+      title: 'Locked',
+      description: 'Used for testing the "locked" permissions pattern',
+      type: 'boolean',
+    },
   ],
 
   initialValue: () => ({
