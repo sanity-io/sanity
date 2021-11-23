@@ -22,12 +22,18 @@ const DisabledButtonWrapper = styled.div`
   height: 100%;
 `
 
-const BLOCK_STYLE = {
-  display: 'flex',
-  height: '100%',
-  width: '100%',
-  alignItems: 'flex-start',
-}
+const StyledIntentButton = styled(IntentButton)`
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: flex-start;
+`
+const StyledButton = styled(Button)`
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: flex-start;
+`
 
 interface CreateDocumentItemProps extends NewDocumentOption {
   granted: boolean
@@ -86,17 +92,16 @@ export function CreateDocumentItem({
 
   if (granted) {
     return (
-      <IntentButton
+      <StyledIntentButton
         intent="create"
         params={[{type: template.schemaType}, parameters]}
         title={subtitle ? `Create new ${title} (${subtitle})` : `Create new ${title}`}
         onClick={onClick}
-        style={BLOCK_STYLE}
         mode="ghost"
         fontSize={2}
       >
         {content}
-      </IntentButton>
+      </StyledIntentButton>
     )
   }
 
@@ -112,9 +117,9 @@ export function CreateDocumentItem({
       }
     >
       <DisabledButtonWrapper>
-        <Button aria-label="insufficient permissions" mode="ghost" disabled style={BLOCK_STYLE}>
+        <StyledButton aria-label="insufficient permissions" mode="ghost" disabled>
           {content}
-        </Button>
+        </StyledButton>
       </DisabledButtonWrapper>
     </Tooltip>
   )
