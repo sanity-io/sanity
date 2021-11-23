@@ -55,6 +55,7 @@ function ReferenceInputTester(props: PartialExcept<Props, 'type' | 'getReference
               focusPath={[]}
               presence={[]}
               onSearch={EMPTY_SEARCH}
+              createOptions={[]}
               editReferenceLinkComponent={StubComponent}
               onEditReference={noop}
               {...props}
