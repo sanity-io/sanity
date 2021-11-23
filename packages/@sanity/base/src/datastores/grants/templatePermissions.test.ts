@@ -67,8 +67,8 @@ describe('getTemplatePermissions', () => {
       .pipe(first())
       .toPromise()
 
-    await expect(permissions).resolves.toEqual({
-      'author-developer-locked': {
+    await expect(permissions).resolves.toEqual([
+      {
         description: undefined,
         granted: false,
         icon: undefined,
@@ -90,7 +90,7 @@ describe('getTemplatePermissions', () => {
         title: 'Developer',
         type: 'initialValueTemplateItem',
       },
-      'author-developer-unlocked': {
+      {
         description: undefined,
         granted: true,
         icon: undefined,
@@ -112,6 +112,6 @@ describe('getTemplatePermissions', () => {
         title: 'Developer',
         type: 'initialValueTemplateItem',
       },
-    })
+    ])
   })
 })

@@ -6,15 +6,12 @@ import {SearchIcon, MenuIcon, ComposeIcon, CloseIcon} from '@sanity/icons'
 import {Button, Card, Tooltip, useMediaIndex, Text, Box, Flex, useGlobalKeyDown} from '@sanity/ui'
 import {InsufficientPermissionsMessage, LegacyLayerProvider} from '@sanity/base/components'
 import {StateLink} from '@sanity/base/router'
-import {
-  useCurrentUser,
-  unstable_useTemplatePermissions as useTemplatePermissions,
-} from '@sanity/base/hooks'
+import {useCurrentUser} from '@sanity/base/hooks'
 import config from 'config:sanity'
 import * as sidecar from 'part:@sanity/default-layout/sidecar?'
 import ToolMenu from 'part:@sanity/default-layout/tool-switcher'
 import styled from 'styled-components'
-import {getNewDocumentOptions} from '@sanity/base/_internal'
+import {TemplatePermissionsResult} from '@sanity/base/_internal'
 import {HAS_SPACES} from '../util/spaces'
 import {DatasetSelect} from '../datasetSelect'
 import {useDefaultLayoutRouter} from '../useDefaultLayoutRouter'
@@ -23,10 +20,8 @@ import Branding from './branding/Branding'
 import SanityStatusContainer from './studioStatus/SanityStatusContainer'
 import {PresenceMenu, LoginStatus, SearchField} from '.'
 
-type TemplatePermissions = ReturnType<typeof useTemplatePermissions>[0]
-
 interface NavbarProps {
-  templatePermissions: TemplatePermissions
+  templatePermissions: TemplatePermissionsResult[] | undefined
   isTemplatePermissionsLoading: boolean
   createMenuIsOpen: boolean
   onCreateButtonClick: () => void
@@ -72,8 +67,6 @@ const SpacingBox = styled(Box)`
     margin: 0;
   }
 `
-
-const newDocumentOptions = getNewDocumentOptions()
 
 /**
  * `Navbar` is the main navigation of Studio apps.
@@ -130,7 +123,7 @@ export const Navbar = memo(function Navbar(props: NavbarProps) {
   const canCreateSome = useMemo(() => {
     if (isTemplatePermissionsLoading) return false
 
-    return newDocumentOptions.some((option) => templatePermissions[option.id].granted)
+    return templatePermissions.some((permission) => permission.granted)
   }, [templatePermissions, isTemplatePermissionsLoading])
 
   const rootState = useMemo(

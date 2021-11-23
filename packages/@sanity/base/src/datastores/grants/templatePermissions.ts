@@ -34,12 +34,12 @@ function getTemplatePermissions(
   initialValueTemplateItems: Array<
     InitialValueTemplateItem | Serializable<InitialValueTemplateItem>
   >
-): Observable<Record<string, TemplatePermissionsResult<Record<string, unknown>>>> {
+): Observable<Array<TemplatePermissionsResult<Record<string, unknown>>>> {
   // this has to be deferred/lazy-loaded due to some weird dependency orderings
   const schemaMod = require('part:@sanity/base/schema')
   const schema: Schema = schemaMod.default || schemaMod
 
-  if (!initialValueTemplateItems?.length) return of({})
+  if (!initialValueTemplateItems?.length) return of([])
 
   return combineLatest(
     initialValueTemplateItems
@@ -84,13 +84,6 @@ function getTemplatePermissions(
           })
         )
       )
-  ).pipe(
-    map((results) =>
-      results.reduce<Record<string, TemplatePermissionsResult>>((acc, next) => {
-        acc[next.id] = next
-        return acc
-      }, {})
-    )
   )
 }
 
@@ -109,9 +102,7 @@ function getTemplatePermissions(
  * are any matching grants for the resolved initial template value, the
  * `TemplatePermissionsResult` will include `granted: true`.
  */
-const useTemplatePermissions = createHookFromObservableFactory(getTemplatePermissions, {
-  initialValue: {},
-})
+const useTemplatePermissions = createHookFromObservableFactory(getTemplatePermissions)
 
 export {
   /* eslint-disable camelcase */

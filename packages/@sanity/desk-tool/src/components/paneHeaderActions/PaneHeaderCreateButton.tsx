@@ -3,6 +3,7 @@ import {ComposeIcon} from '@sanity/icons'
 import {InitialValueTemplateItem} from '@sanity/structure'
 import React, {useMemo, forwardRef} from 'react'
 import {unstable_useTemplatePermissions as useTemplatePermissions} from '@sanity/base/hooks'
+import {TemplatePermissionsResult} from '@sanity/base/_internal'
 import {Box, Button, Label, Menu, MenuButton, MenuItem, PopoverProps} from '@sanity/ui'
 import {IntentLink} from '@sanity/base/router'
 import {IntentButton} from '../IntentButton'
@@ -43,9 +44,20 @@ export function PaneHeaderCreateButton({initialValueTemplateItems}: PaneHeaderCr
   const nothingGranted = useMemo(() => {
     return (
       !isTemplatePermissionsLoading &&
-      Object.values(templatePermissions || {}).every((value) => !value.granted)
+      templatePermissions?.every((permission) => !permission.granted)
     )
   }, [isTemplatePermissionsLoading, templatePermissions])
+
+  const permissionsById = useMemo(() => {
+    if (!templatePermissions) return {}
+    return templatePermissions.reduce<Record<string, TemplatePermissionsResult | undefined>>(
+      (acc, permission) => {
+        acc[permission.id] = permission
+        return acc
+      },
+      {}
+    )
+  }, [templatePermissions])
 
   if (nothingGranted) {
     return (
@@ -63,7 +75,7 @@ export function PaneHeaderCreateButton({initialValueTemplateItems}: PaneHeaderCr
 
   if (initialValueTemplateItems.length === 1) {
     const firstItem = initialValueTemplateItems[0]
-    const permissions = templatePermissions?.[firstItem.id]
+    const permissions = permissionsById[firstItem.id]
     const disabled = !permissions?.granted
     const intent = getIntent(firstItem)
     if (!intent) return null
@@ -103,7 +115,7 @@ export function PaneHeaderCreateButton({initialValueTemplateItems}: PaneHeaderCr
           </Box>
 
           {initialValueTemplateItems.map((item, itemIndex) => {
-            const permissions = templatePermissions?.[item.id]
+            const permissions = permissionsById[item.id]
             const disabled = !permissions?.granted
             const intent = getIntent(item)
             const template = getTemplateById(item.templateId)
