@@ -26,12 +26,18 @@ export function InsufficientPermissionsMessage(props: InsufficientPermissionsMes
       </Inline>
       <Inline marginTop={4}>
         <Text size={1}>
-          Your role{plural && 's'}{' '}
-          {join(
-            roles.map((r) => <code key={r.name}>{r.title}</code>),
-            ', '
-          )}{' '}
-          do{plural || 'es'} not have permissions to {operationLabel}
+          {roles.length === 0 ? (
+            <>You have no role that grants you permission to {operationLabel}</>
+          ) : (
+            <>
+              Your role{plural && 's'}{' '}
+              {join(
+                roles.map((r) => <code key={r.name}>{r.title}</code>),
+                ', '
+              )}{' '}
+              do{plural || 'es'} not have permissions to {operationLabel}
+            </>
+          )}
         </Text>
       </Inline>
     </Box>
