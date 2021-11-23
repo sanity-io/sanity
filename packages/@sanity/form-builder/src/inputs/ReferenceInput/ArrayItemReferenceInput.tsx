@@ -66,6 +66,7 @@ import {OptionPreview} from './OptionPreview'
 import {useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {AutocompleteHeightFix} from './utils/AutocompleteHeightFix'
+import {CreateButton} from './CreateButton'
 
 const INITIAL_SEARCH_STATE: SearchState = {
   hits: [],
@@ -433,43 +434,12 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
                 {!readOnly && createOptions.length > 0 && (
                   <Box marginLeft={1}>
                     <Inline space={2}>
-                      {createOptions.length > 1 ? (
-                        <MenuButton
-                          button={
-                            <Button
-                              text="Create new…"
-                              mode="ghost"
-                              icon={AddIcon}
-                              onKeyDown={handleCreateButtonKeyDown}
-                            />
-                          }
-                          id={`${inputId}-selectTypeMenuButton`}
-                          menu={
-                            <Menu>
-                              {createOptions.map((createOption) => (
-                                <MenuItem
-                                  key={createOption.id}
-                                  text={createOption.title}
-                                  disabled={!createOption.permission.granted}
-                                  icon={createOption.icon}
-                                  onClick={() => handleCreateNew(createOption)}
-                                />
-                              ))}
-                            </Menu>
-                          }
-                          placement="right"
-                          popover={{portal: true, tone: 'default'}}
-                        />
-                      ) : (
-                        <Button
-                          text="Create new"
-                          mode="ghost"
-                          disabled={!createOptions[0].permission.granted}
-                          onKeyDown={handleCreateButtonKeyDown}
-                          onClick={() => handleCreateNew(createOptions[0])}
-                          icon={AddIcon}
-                        />
-                      )}
+                      <CreateButton
+                        id={`${inputId}-selectTypeMenuButton`}
+                        createOptions={createOptions}
+                        onCreate={handleCreateNew}
+                        onKeyDown={handleCreateButtonKeyDown}
+                      />
                     </Inline>
                   </Box>
                 )}
