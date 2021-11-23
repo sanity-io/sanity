@@ -77,15 +77,16 @@ export default class RouterProvider extends React.Component<RouterProviderProps>
     }
   }
 
-  componentDidUpdate() {
-    const {state} = this.props
+  componentDidUpdate(prevProps) {
+    const {state: currentState} = this.props
+    const {state: prevState} = prevProps
 
-    if (!isEqual(this._state, state)) {
-      this._state = state
+    if (!isEqual(currentState, prevState)) {
+      this._state = currentState
 
       setTimeout(() => {
         batchedUpdates(() => {
-          this.__internalRouter.channel.publish(state)
+          this.__internalRouter.channel.publish(currentState)
         })
       }, 0)
     }
