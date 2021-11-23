@@ -12,5 +12,6 @@ export type {DocumentRemoteMutationEvent} from '../datastores/document/buffered-
 export {remoteSnapshots} from '../datastores/document/document-pair/remoteSnapshots'
 
 export type {EditStateFor} from '../datastores/document/document-pair/editState'
+export type {TemplatePermissionsResult} from '../datastores/grants'
 
 export * from '../actions/utils/types'
