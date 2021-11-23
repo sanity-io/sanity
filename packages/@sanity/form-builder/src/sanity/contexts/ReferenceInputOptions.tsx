@@ -1,16 +1,22 @@
 import React, {ComponentType, createContext, HTMLProps, useContext, useMemo} from 'react'
 import {Path} from '@sanity/types'
+import type {TemplatePermissionsResult} from '@sanity/base/_internal'
 
 const Context = createContext<ReferenceInputOptions>({})
 
+export interface TemplateOption {
+  id: string
+  params?: Record<string, string | number | boolean>
+}
 /**
  * unstable
  * @internal
  */
 export interface EditReferenceOptions {
   id: string
-  parentRefPath: Path
   type: string
+  parentRefPath: Path
+  template: TemplateOption
 }
 
 export interface EditReferenceLinkComponentProps {
@@ -37,6 +43,9 @@ export interface ReferenceInputOptions {
   EditReferenceLinkComponent?: ComponentType<
     Omit<HTMLProps<'a'>, 'children'> & EditReferenceLinkComponentProps
   >
+
+  initialValueTemplateItems?: TemplatePermissionsResult[]
+
   /**
    * Similar to `ReferenceChildLink` expect without the wrapping component
    */
@@ -58,15 +67,22 @@ export function useReferenceInputOptions() {
 export function ReferenceInputOptionsProvider(
   props: ReferenceInputOptions & {children: React.ReactNode}
 ) {
-  const {children, activePath, EditReferenceLinkComponent, onEditReference} = props
+  const {
+    children,
+    activePath,
+    EditReferenceLinkComponent,
+    onEditReference,
+    initialValueTemplateItems,
+  } = props
 
   const contextValue = useMemo(
     () => ({
       activePath,
       EditReferenceLinkComponent,
       onEditReference,
+      initialValueTemplateItems,
     }),
-    [activePath, EditReferenceLinkComponent, onEditReference]
+    [activePath, EditReferenceLinkComponent, onEditReference, initialValueTemplateItems]
   )
 
   return <Context.Provider value={contextValue}>{children}</Context.Provider>
