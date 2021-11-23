@@ -55,10 +55,11 @@ export const ObjectType = {
       options: options,
       orderings: subTypeDef.orderings || guessOrderingConfig(subTypeDef),
       fields: subTypeDef.fields.map((fieldDef) => {
-        const {name, fieldset, ...rest} = fieldDef
+        const {name, fieldset, group, ...rest} = fieldDef
 
         const compiledField = {
           name,
+          group,
           fieldset,
         }
 

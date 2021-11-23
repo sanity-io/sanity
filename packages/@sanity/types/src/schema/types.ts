@@ -243,12 +243,22 @@ export type ObjectFieldType<T extends SchemaType = SchemaType> = T & {
 export interface ObjectField<T extends SchemaType = SchemaType> {
   name: string
   fieldset?: string
+  group?: string | string[]
   type: ObjectFieldType<T>
+}
+export interface FieldGroup {
+  name: string
+  icon?: React.ComponentType
+  title?: string
+  description?: string
+  readOnly?: boolean
+  isDefault?: boolean
 }
 
 export interface ObjectSchemaType extends BaseSchemaType {
   jsonType: 'object'
   fields: ObjectField[]
+  groups?: FieldGroup[]
   fieldsets?: Fieldset[]
   initialValue?: InitialValueProperty<Record<string, unknown>>
 
