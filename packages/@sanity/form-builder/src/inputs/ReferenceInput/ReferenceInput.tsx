@@ -321,18 +321,22 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
         restProps: ComponentProps<typeof IntentLink>,
         _ref: ForwardedRef<HTMLAnchorElement>
       ) {
+        const template = (value?._strengthenOnPublish || {}).template
         return (
           <IntentLink
             {...restProps}
             intent="edit"
-            params={{id: value?._ref, type: refType?.name}}
+            params={[
+              {id: value?._ref, type: refType?.name, template: template?.id},
+              {params: template?.params},
+            ]}
             target="_blank"
             rel="noopener noreferrer"
             ref={_ref}
           />
         )
       }),
-    [refType?.name, value?._ref]
+    [refType?.name, value?._ref, value?._strengthenOnPublish]
   )
 
   const preview =

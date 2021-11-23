@@ -6,7 +6,11 @@ export interface Reference {
   _ref: string
   _key?: string
   _weak?: boolean
-  _strengthenOnPublish?: {type: string; weak?: boolean}
+  _strengthenOnPublish?: {
+    type: string
+    weak?: boolean
+    template?: {id: string; params: Record<string, string | number | boolean>}
+  }
 }
 
 export interface WeakReference extends Reference {
