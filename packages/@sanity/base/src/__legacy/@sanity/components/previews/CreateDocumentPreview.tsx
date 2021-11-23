@@ -2,14 +2,9 @@
 ///<reference types="@sanity/types/parts" />
 
 import React from 'react'
-import {Box, Tooltip} from '@sanity/ui'
 import {IntentLink} from '../../../../router'
 import {MediaDimensions} from '../types'
-import {InsufficientPermissionsMessage} from '../../../../components'
 
-import {useCurrentUser} from '../../../../datastores/user/hooks'
-// eslint-disable-next-line camelcase
-import {unstable_useCheckDocumentPermission} from '../../../../datastores/grants/hooks'
 import styles from './CreateDocumentPreview.css'
 
 interface CreateDocumentPreviewProps {
@@ -36,6 +31,9 @@ const DEFAULT_MEDIA_DIMENSION: MediaDimensions = {
   fit: 'crop',
 }
 
+/**
+ * @deprecated
+ */
 export default function CreateDocumentPreview(props: CreateDocumentPreviewProps) {
   const {
     title = 'Untitled',
@@ -47,10 +45,6 @@ export default function CreateDocumentPreview(props: CreateDocumentPreviewProps)
     params,
     templateParams,
   } = props
-
-  const {value: currentUser} = useCurrentUser()
-
-  const createPermission = unstable_useCheckDocumentPermission('dummy-id', params.type, 'create')
 
   if (isPlaceholder || !params) {
     return (
@@ -88,7 +82,7 @@ export default function CreateDocumentPreview(props: CreateDocumentPreviewProps)
     </>
   )
 
-  return createPermission.granted ? (
+  return (
     <IntentLink
       intent="create"
       params={[params, templateParams]}
@@ -98,18 +92,5 @@ export default function CreateDocumentPreview(props: CreateDocumentPreviewProps)
     >
       {content}
     </IntentLink>
-  ) : (
-    <Tooltip
-      content={
-        <Box padding={2} style={{maxWidth: 300}}>
-          <InsufficientPermissionsMessage
-            currentUser={currentUser}
-            operationLabel="create this document"
-          />
-        </Box>
-      }
-    >
-      <div className={styles.disabledRoot}>{content}</div>
-    </Tooltip>
   )
 }

@@ -5,7 +5,7 @@ import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
 import {Button, Inline} from '@sanity/ui'
 import {negate} from 'lodash'
 import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
-import React, {forwardRef, useMemo} from 'react'
+import React, {memo, forwardRef, useMemo} from 'react'
 import {PaneMenuItem} from '../../../../types'
 import {PaneHeader, PaneContextMenuButton} from '../../../../components/pane'
 import {useDeskTool} from '../../../../contexts/deskTool'
@@ -23,128 +23,84 @@ export interface DocumentPanelHeaderProps {
 const isActionButton = (item: PaneMenuItem) => Boolean(item.showAsAction)
 const isMenuButton = negate(isActionButton)
 
-export const DocumentPanelHeader = forwardRef(function DocumentPanelHeader(
-  props: DocumentPanelHeaderProps,
-  ref: React.ForwardedRef<HTMLDivElement>
-) {
-  const {rootElement} = props
-  const {
-    documentSchema,
-    handleMenuAction,
-    handlePaneClose,
-    handlePaneSplit,
-    historyController,
-    markers,
-    menuItems,
-    menuItemGroups,
-    ready,
-    views,
-  } = useDocumentPane()
-  const {revTime: rev} = historyController
-  const {features} = useDeskTool()
-  const {index, siblingIndex} = usePaneRouter()
-  const contextMenuItems = useMemo(() => menuItems.filter(isMenuButton), [menuItems])
-  const [isValidationOpen, setValidationOpen] = React.useState<boolean>(false)
-  const showTabs = views.length > 1
-  const closable = siblingIndex > 0
-  const showVersionMenu = features.reviewChanges
-
-  const languageMenu = useMemo(
-    () => LanguageFilter && <LanguageFilter key="language-menu" schemaType={documentSchema} />,
-    [documentSchema]
-  )
-
-  const validationMenu = useMemo(
-    () =>
-      markers.length > 0 && (
-        <ValidationMenu
-          boundaryElement={rootElement}
-          isOpen={isValidationOpen}
-          key="validation-menu"
-          setOpen={setValidationOpen}
-        />
-      ),
-    [isValidationOpen, markers, rootElement]
-  )
-
-  const contextMenu = useMemo(
-    () => (
-      <PaneContextMenuButton
-        itemGroups={menuItemGroups}
-        items={contextMenuItems}
-        key="context-menu"
-        onAction={handleMenuAction}
-      />
-    ),
-    [contextMenuItems, handleMenuAction, menuItemGroups]
-  )
-
-  const splitPaneButton = useMemo(() => {
-    if (!features.splitViews || !handlePaneSplit || views.length <= 1) {
-      return null
-    }
+export const DocumentPanelHeader = memo(
+  forwardRef(({rootElement}: DocumentPanelHeaderProps, ref: React.ForwardedRef<HTMLDivElement>) => {
+    const {
+      documentSchema,
+      handleMenuAction,
+      handlePaneClose,
+      handlePaneSplit,
+      historyController,
+      markers,
+      menuItems,
+      menuItemGroups,
+      ready,
+      views,
+    } = useDocumentPane()
+    const {revTime: rev} = historyController
+    const {features} = useDeskTool()
+    const {index, siblingIndex} = usePaneRouter()
+    const contextMenuItems = useMemo(() => menuItems.filter(isMenuButton), [menuItems])
+    const [isValidationOpen, setValidationOpen] = React.useState<boolean>(false)
+    const showTabs = views.length > 1
+    const closable = siblingIndex > 0
+    const showVersionMenu = features.reviewChanges
 
     return (
-      <Button
-        icon={SplitVerticalIcon}
-        key="split-pane-button"
-        mode="bleed"
-        onClick={handlePaneSplit}
-        title="Split pane right"
-      />
-    )
-  }, [features.splitViews, handlePaneSplit, views.length])
-
-  const closeViewButton = useMemo(() => {
-    if (!features.splitViews || !handlePaneSplit || !closable) {
-      return null
-    }
-
-    return (
-      <Button
-        icon={CloseIcon}
-        key="close-view-button"
-        mode="bleed"
-        onClick={handlePaneClose}
-        title="Close pane"
-      />
-    )
-  }, [closable, features.splitViews, handlePaneClose, handlePaneSplit])
-
-  const tabs = useMemo(() => showTabs && <DocumentHeaderTabs />, [showTabs])
-
-  const actions = useMemo(
-    () => (
-      <Inline space={1}>
-        {languageMenu}
-        {validationMenu}
-        {contextMenu}
-        {splitPaneButton}
-        {closeViewButton}
-      </Inline>
-    ),
-    [languageMenu, validationMenu, contextMenu, splitPaneButton, closeViewButton]
-  )
-
-  const backButton = useMemo(
-    () =>
-      features.backButton &&
-      index > 0 && <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" />,
-    [features.backButton, index]
-  )
-
-  return useMemo(
-    () => (
       <PaneHeader
-        actions={actions}
-        backButton={backButton}
-        loading={!ready}
         ref={ref}
-        subActions={showVersionMenu && <TimelineMenu chunk={rev} mode="rev" />}
-        tabs={tabs}
+        loading={!ready}
         title={<DocumentHeaderTitle />}
+        tabs={showTabs && <DocumentHeaderTabs />}
+        backButton={
+          features.backButton &&
+          index > 0 && <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" />
+        }
+        subActions={showVersionMenu && <TimelineMenu chunk={rev} mode="rev" />}
+        actions={
+          <Inline space={1}>
+            {LanguageFilter && <LanguageFilter key="language-menu" schemaType={documentSchema} />}
+
+            {markers.length > 0 && (
+              <ValidationMenu
+                boundaryElement={rootElement}
+                isOpen={isValidationOpen}
+                key="validation-menu"
+                setOpen={setValidationOpen}
+              />
+            )}
+
+            <PaneContextMenuButton
+              itemGroups={menuItemGroups}
+              items={contextMenuItems}
+              key="context-menu"
+              onAction={handleMenuAction}
+            />
+
+            {!features.splitViews || !handlePaneSplit || views.length <= 1 ? null : (
+              <Button
+                icon={SplitVerticalIcon}
+                key="split-pane-button"
+                mode="bleed"
+                onClick={handlePaneSplit}
+                title="Split pane right"
+              />
+            )}
+
+            {!features.splitViews || !handlePaneSplit || !closable ? null : (
+              <Button
+                icon={CloseIcon}
+                key="close-view-button"
+                mode="bleed"
+                onClick={handlePaneClose}
+                title="Close pane"
+              />
+            )}
+          </Inline>
+        }
       />
-    ),
-    [actions, backButton, ready, ref, rev, showVersionMenu, tabs]
-  )
-})
+    )
+  })
+)
+
+DocumentPanelHeader.displayName = 'DocumentPanelHeader'

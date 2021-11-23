@@ -3,8 +3,8 @@ import {useSyncState, useDocumentOperation, useValidationStatus} from '@sanity/r
 import {CheckmarkIcon, PublishIcon} from '@sanity/icons'
 import React, {useCallback, useEffect, useState} from 'react'
 import {
-  unstable_useCheckDocumentPermission as useCheckDocumentPermission,
   useCurrentUser,
+  unstable_useDocumentPairPermissions as useDocumentPairPermissions,
 } from '@sanity/base/hooks'
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
 import {TimeAgo} from '../components/TimeAgo'
@@ -44,7 +44,12 @@ export const PublishAction: DocumentActionComponent = (props) => {
   // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
   const [publishScheduled, setPublishScheduled] = useState<boolean>(false)
   const isNeitherSyncingNorValidating = !syncState.isSyncing && !validationStatus.isValidating
-  const publishPermission = useCheckDocumentPermission(id, type, 'publish')
+  const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
+    id,
+    type,
+    permission: 'publish',
+  })
+
   const {value: currentUser} = useCurrentUser()
 
   // eslint-disable-next-line no-nested-ternary
@@ -105,7 +110,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
     }
   }
 
-  if (!publishPermission.granted) {
+  if (!isPermissionsLoading && !permissions?.granted) {
     return {
       color: 'success',
       label: 'Publish',
@@ -128,7 +133,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
   )
 
   return {
-    disabled,
+    disabled: disabled || isPermissionsLoading,
     color: 'success',
     label:
       // eslint-disable-next-line no-nested-ternary

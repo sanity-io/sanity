@@ -1,11 +1,9 @@
-import {getTemplateById} from '@sanity/initial-value-templates'
-import {camelCase, pickBy} from 'lodash'
-import {getPlusIcon} from './parts/Icon'
-import {StructureNode, SerializeOptions, Serializable, Child, SerializePath} from './StructureNodes'
+import {camelCase} from 'lodash'
+import {StructureNode, SerializeOptions, Serializable, Child} from './StructureNodes'
 import {Layout, layoutOptions} from './Layout'
 import {MenuItem, MenuItemBuilder, maybeSerializeMenuItem} from './MenuItem'
 import {MenuItemGroup, MenuItemGroupBuilder, maybeSerializeMenuItemGroup} from './MenuItemGroup'
-import {IntentChecker, Intent, IntentParams, defaultIntentChecker} from './Intent'
+import {IntentChecker, defaultIntentChecker} from './Intent'
 import {SerializeError} from './SerializeError'
 import {
   InitialValueTemplateItem,
@@ -166,72 +164,18 @@ export abstract class GenericListBuilder<L extends BuildableGenericList, Concret
       canHandleIntent: this.spec.canHandleIntent || shallowIntentChecker,
       displayOptions: this.spec.displayOptions,
       initialValueTemplates,
-      menuItems: menuItemsWithCreateIntents(this.spec, {path, initialValueTemplates}),
+      menuItems: (this.spec.menuItems || []).map((item, i) =>
+        maybeSerializeMenuItem(item, i, path)
+      ),
       menuItemGroups: (this.spec.menuItemGroups || []).map((item, i) =>
         maybeSerializeMenuItemGroup(item, i, path)
       ),
     }
   }
 
-  clone(withSpec?: object) {
+  // eslint-disable-next-line @typescript-eslint/ban-types, @typescript-eslint/no-unused-vars
+  clone(_withSpec?: object): ConcreteImpl {
     const builder = new (this.constructor as {new (): ConcreteImpl})()
     return builder
-  }
-}
-
-function menuItemsWithCreateIntents(
-  list: BuildableGenericList,
-  options: {path: SerializePath; initialValueTemplates?: InitialValueTemplateItem[]}
-): MenuItem[] {
-  const {path, initialValueTemplates = []} = options
-  const items = (list.menuItems || []).map((item, i) => maybeSerializeMenuItem(item, i, path))
-  const hasCreate = items.some((menuItem) => menuItem.intent && menuItem.intent.type === 'create')
-  const hasTemplates = initialValueTemplates.length > 0
-  if (hasCreate || !hasTemplates) {
-    return items
-  }
-
-  const PlusIcon = getPlusIcon()
-
-  const loneTemplate =
-    initialValueTemplates.length === 1 &&
-    maybeSerializeInitialValueTemplateItem(initialValueTemplates[0], 0, path)
-
-  const actionButton = new MenuItemBuilder()
-    .title('Create new')
-    .icon(PlusIcon)
-    .showAsAction({whenCollapsed: true})
-
-  if (loneTemplate) {
-    // If we have a single create item, link to that template directly.
-    // Otherwise we'll want to select from a menu
-
-    // Action button
-    const template = getTemplateById(loneTemplate.templateId)
-    const templateTitle = template && template.title
-    items.unshift(
-      actionButton
-        .title(`Create new ${loneTemplate.title || templateTitle || ''}`)
-        .intent(getCreateIntent(loneTemplate))
-        .serialize()
-    )
-  } else {
-    // More than one item, so we'll want that dropdown of choices
-    items.unshift(actionButton.action('toggleTemplateSelectionMenu').serialize())
-  }
-
-  return items
-}
-
-function getCreateIntent(templateItem: InitialValueTemplateItem): Intent {
-  const tpl = getTemplateById(templateItem.templateId)
-  const params = pickBy({type: tpl && tpl.schemaType, template: templateItem.templateId}, Boolean)
-  const intentParams: IntentParams = templateItem.parameters
-    ? [params, templateItem.parameters]
-    : params
-
-  return {
-    type: 'create',
-    params: intentParams,
   }
 }

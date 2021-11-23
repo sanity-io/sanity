@@ -3,7 +3,7 @@ import {useDocumentOperation} from '@sanity/react-hooks'
 import {ResetIcon} from '@sanity/icons'
 import React, {useCallback, useMemo, useState} from 'react'
 import {
-  unstable_useCheckDocumentPermission as useCheckDocumentPermission,
+  unstable_useDocumentPairPermissions as useDocumentPairPermissions,
   useCurrentUser,
 } from '@sanity/base/hooks'
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
@@ -22,7 +22,11 @@ export const DiscardChangesAction: DocumentActionComponent = ({
 }) => {
   const {discardChanges}: any = useDocumentOperation(id, type)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
-  const deleteDraftPermission = useCheckDocumentPermission(id, type, 'discardDraft')
+  const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
+    id,
+    type,
+    permission: 'discardDraft',
+  })
   const {value: currentUser} = useCurrentUser()
 
   const handleConfirm = useCallback(() => {
@@ -50,7 +54,7 @@ export const DiscardChangesAction: DocumentActionComponent = ({
     return null
   }
 
-  if (!deleteDraftPermission.granted) {
+  if (!isPermissionsLoading && !permissions?.granted) {
     return {
       color: 'danger',
       icon: ResetIcon,
@@ -68,7 +72,7 @@ export const DiscardChangesAction: DocumentActionComponent = ({
   return {
     color: 'danger',
     icon: ResetIcon,
-    disabled: Boolean(discardChanges.disabled),
+    disabled: Boolean(discardChanges.disabled) || isPermissionsLoading,
     title:
       (discardChanges.disabled &&
         DISABLED_REASON_TITLE[discardChanges.disabled as keyof typeof DISABLED_REASON_TITLE]) ||

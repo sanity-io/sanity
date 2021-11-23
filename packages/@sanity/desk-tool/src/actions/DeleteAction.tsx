@@ -3,7 +3,7 @@ import {TrashIcon} from '@sanity/icons'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import React, {useCallback, useState} from 'react'
 import {
-  unstable_useCheckDocumentPermission as useCheckDocumentPermission,
+  unstable_useDocumentPairPermissions as useDocumentPairPermissions,
   useCurrentUser,
 } from '@sanity/base/hooks'
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
@@ -34,11 +34,15 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, publishe
     setConfirmDialogOpen(true)
   }, [])
 
-  const deletePermission = useCheckDocumentPermission(id, type, 'delete')
+  const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
+    id,
+    type,
+    permission: 'delete',
+  })
 
   const {value: currentUser} = useCurrentUser()
 
-  if (!deletePermission.granted) {
+  if (!isPermissionsLoading && !permissions?.granted) {
     return {
       color: 'danger',
       icon: TrashIcon,
@@ -56,7 +60,7 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, publishe
   return {
     color: 'danger',
     icon: TrashIcon,
-    disabled: isDeleting || Boolean(deleteOp.disabled),
+    disabled: isDeleting || Boolean(deleteOp.disabled) || isPermissionsLoading,
     title:
       (deleteOp.disabled &&
         DISABLED_REASON_TITLE[deleteOp.disabled as keyof typeof DISABLED_REASON_TITLE]) ||

@@ -10,6 +10,7 @@ export const exampleRoles: Record<string, Role> = {
 
   // custom
   restricted: {name: 'restricted', title: 'Restricted'},
+  requiresApproval: {name: 'requiresApproval', title: 'Requires approval'},
 
   // legacy
   read: {name: 'read', title: 'Read'},

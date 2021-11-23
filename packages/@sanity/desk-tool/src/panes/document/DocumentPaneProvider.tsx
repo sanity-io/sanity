@@ -1,9 +1,8 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import React, {memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {Path, SanityDocument} from '@sanity/types'
-import {unstable_useCheckDocumentPermission as useCheckDocumentPermission} from '@sanity/base/hooks'
 import {
   useConnectionState,
   useDocumentOperation,
@@ -37,19 +36,18 @@ declare const __DEV__: boolean
 
 const emptyObject = {} as Record<string, string | undefined>
 
+type Props = {children: React.ReactElement} & DocumentPaneProviderProps
+
 /**
  * @internal
  */
 // eslint-disable-next-line complexity, max-statements
-export const DocumentPaneProvider = function DocumentPaneProvider(
-  props: {children: React.ReactElement} & DocumentPaneProviderProps
-) {
-  const {children, index, pane, paneKey} = props
+export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Props) => {
   const paneRouter = usePaneRouter()
   const {features} = useDeskTool()
   const {push: pushToast} = useToast()
   const {options, menuItemGroups, title = null, views: viewsProp = []} = pane
-  const initialValueRaw = useInitialValue(options.id, pane.options)
+  const initialValueRaw = useInitialValue(options.id, options)
   const initialValue = useUnique(initialValueRaw)
   const documentIdRaw = options.id
   const documentId = getPublishedId(documentIdRaw)
@@ -103,8 +101,6 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
     changesOpen,
     previewUrl,
   ])
-  const requiredPermission = value?._createdAt ? 'update' : 'create'
-  const permission = useCheckDocumentPermission(documentId, documentType, requiredPermission)
   const inspectOpen = params.inspect === 'on'
   const compareValue: Partial<SanityDocument> | null = changesOpen
     ? historyController.sinceAttributes()
@@ -174,8 +170,8 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
 
   const handleMenuAction = useCallback(
     (item: PaneMenuItem) => {
-      if (item.action === 'production-preview') {
-        window.open(item.url)
+      if (item.action === 'production-preview' && previewUrl) {
+        window.open(previewUrl)
         return true
       }
 
@@ -191,7 +187,7 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
 
       return false
     },
-    [handleHistoryOpen, toggleInspect]
+    [handleHistoryOpen, previewUrl, toggleInspect]
   )
 
   const handleKeyUp = useCallback(
@@ -212,94 +208,46 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
 
   const handleInspectClose = useCallback(() => toggleInspect(false), [toggleInspect])
 
-  const documentPane: DocumentPaneContextValue = useMemo(
-    () => ({
-      actions,
-      activeViewId,
-      badges,
-      changesOpen,
-      compareValue,
-      connectionState,
-      displayed,
-      documentId,
-      documentIdRaw,
-      documentSchema,
-      documentType,
-      editState,
-      focusPath,
-      handleChange,
-      handleFocus,
-      handleHistoryClose,
-      handleHistoryOpen,
-      handleInspectClose,
-      handleKeyUp,
-      handleMenuAction,
-      handlePaneClose,
-      handlePaneSplit,
-      historyController,
-      index,
-      initialValue,
-      inspectOpen,
-      markers,
-      menuItems,
-      menuItemGroups: menuItemGroups || [],
-      paneKey,
-      permission,
-      previewUrl,
-      ready,
-      requiredPermission,
-      setTimelineMode,
-      setTimelineRange,
-      timeline,
-      timelineMode,
-      title,
-      value,
-      views,
-    }),
-    [
-      actions,
-      activeViewId,
-      badges,
-      changesOpen,
-      compareValue,
-      connectionState,
-      displayed,
-      documentId,
-      documentIdRaw,
-      documentType,
-      documentSchema,
-      editState,
-      focusPath,
-      handleChange,
-      handleFocus,
-      handleHistoryClose,
-      handleHistoryOpen,
-      handleInspectClose,
-      handleKeyUp,
-      handleMenuAction,
-      handlePaneClose,
-      handlePaneSplit,
-      historyController,
-      index,
-      initialValue,
-      inspectOpen,
-      markers,
-      menuItems,
-      menuItemGroups,
-      paneKey,
-      permission,
-      previewUrl,
-      ready,
-      requiredPermission,
-      setTimelineMode,
-      setTimelineRange,
-      timeline,
-      timelineMode,
-      title,
-      value,
-      views,
-    ]
-  )
+  const documentPane: DocumentPaneContextValue = {
+    actions,
+    activeViewId,
+    badges,
+    changesOpen,
+    compareValue,
+    connectionState,
+    displayed,
+    documentId,
+    documentIdRaw,
+    documentSchema,
+    documentType,
+    editState,
+    focusPath,
+    handleChange,
+    handleFocus,
+    handleHistoryClose,
+    handleHistoryOpen,
+    handleInspectClose,
+    handleKeyUp,
+    handleMenuAction,
+    handlePaneClose,
+    handlePaneSplit,
+    historyController,
+    index,
+    inspectOpen,
+    markers,
+    menuItems,
+    menuItemGroups: menuItemGroups || [],
+    paneKey,
+    previewUrl,
+    ready,
+    setTimelineMode,
+    setTimelineRange,
+    timeline,
+    timelineMode,
+    title,
+    value,
+    views,
+  }
 
   useEffect(() => {
     if (connectionState === 'reconnecting') {
@@ -320,4 +268,6 @@ export const DocumentPaneProvider = function DocumentPaneProvider(
   return (
     <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
   )
-}
+})
+
+DocumentPaneProvider.displayName = 'DocumentPaneProvider'

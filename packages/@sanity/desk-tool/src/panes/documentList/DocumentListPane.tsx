@@ -27,7 +27,6 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     menuItems,
     menuItemGroups,
     options,
-    schemaTypeName,
     title,
   } = pane
 
@@ -51,33 +50,25 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     sortOrder,
   })
 
-  const header = useMemo(
-    () => (
+  return (
+    <Pane
+      currentMaxWidth={350}
+      data-index={index}
+      data-pane-key={paneKey}
+      maxWidth={640}
+      minWidth={320}
+      selected={isSelected}
+    >
       <DocumentListPaneHeader
         index={index}
         initialValueTemplates={initialValueTemplates}
         menuItems={menuItems}
         menuItemGroups={menuItemGroups}
-        schemaTypeName={schemaTypeName}
         setLayout={setLayout}
         setSortOrder={setSortOrder}
         title={title}
       />
-    ),
-    [
-      index,
-      initialValueTemplates,
-      menuItems,
-      menuItemGroups,
-      schemaTypeName,
-      setLayout,
-      setSortOrder,
-      title,
-    ]
-  )
 
-  const content = useMemo(
-    () => (
       <DocumentListPaneContent
         childItemId={childItemId}
         error={error}
@@ -91,36 +82,6 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
         onRetry={onRetry}
         showIcons={showIcons}
       />
-    ),
-    [
-      childItemId,
-      error,
-      filterIsSimpleTypeContraint,
-      fullList,
-      isActive,
-      isLoading,
-      items,
-      layout,
-      handleListChange,
-      onRetry,
-      showIcons,
-    ]
-  )
-
-  return useMemo(
-    () => (
-      <Pane
-        currentMaxWidth={350}
-        data-index={index}
-        data-pane-key={paneKey}
-        maxWidth={640}
-        minWidth={320}
-        selected={isSelected}
-      >
-        {header}
-        {content}
-      </Pane>
-    ),
-    [content, header, index, isSelected, paneKey]
+    </Pane>
   )
 })

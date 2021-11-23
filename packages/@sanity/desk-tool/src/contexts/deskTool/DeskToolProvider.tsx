@@ -12,20 +12,18 @@ export function DeskToolProvider({
   children?: React.ReactNode
   layoutCollapsed: boolean
 }): React.ReactElement {
-  const features = useMemo(
+  const contextValue: DeskToolContextValue = useMemo(
     () => ({
-      backButton: layoutCollapsed,
-      reviewChanges: !layoutCollapsed,
-      splitPanes: !layoutCollapsed,
-      splitViews: !layoutCollapsed,
+      features: {
+        backButton: layoutCollapsed,
+        reviewChanges: !layoutCollapsed,
+        splitPanes: !layoutCollapsed,
+        splitViews: !layoutCollapsed,
+      },
+      layoutCollapsed,
     }),
     [layoutCollapsed]
   )
-
-  const contextValue: DeskToolContextValue = useMemo(() => ({features, layoutCollapsed}), [
-    features,
-    layoutCollapsed,
-  ])
 
   return <DeskToolContext.Provider value={contextValue}>{children}</DeskToolContext.Provider>
 }

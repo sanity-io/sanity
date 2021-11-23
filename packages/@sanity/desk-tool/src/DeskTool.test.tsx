@@ -45,6 +45,19 @@ jest.mock('part:@sanity/base/schema', () => {
   })
 })
 
+jest.mock('@sanity/base/hooks', () => {
+  const baseHooks = jest.requireActual('@sanity/base/hooks')
+
+  return {
+    ...baseHooks,
+    /* eslint-disable camelcase */
+    unstable_useDocumentPairPermissions: () => [{granted: true, reason: ''}, false],
+    unstable_useDocumentValuePermissions: () => [{granted: true, reason: ''}, false],
+    unstable_useTemplatePermissions: () => [{}, false],
+    /* eslint-enable camelcase */
+  }
+})
+
 jest.mock('part:@sanity/base/grants', () => {
   const {of} = jest.requireActual('rxjs') as typeof import('rxjs')
   return {

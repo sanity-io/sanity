@@ -4,10 +4,10 @@ import {isActionEnabled} from './parts/documentActionUtils'
 import {getDefaultSchema, Schema} from './parts/Schema'
 import {HELP_URL} from './SerializeError'
 import {Serializable, SerializeOptions, SerializePath} from './StructureNodes'
-import {SerializeError, StructureBuilder} from '.'
 import {MenuItemBuilder, MenuItem} from './MenuItem'
 import {getPlusIcon} from './parts/Icon'
 import {IntentParams} from './Intent'
+import {SerializeError, StructureBuilder} from '.'
 
 export type InitialValueTemplateItem = {
   id: string
@@ -16,6 +16,11 @@ export type InitialValueTemplateItem = {
   description?: string
   parameters?: {[key: string]: any}
   type: 'initialValueTemplateItem'
+  icon?: React.ElementType | React.ReactElement
+  /**
+   * @experimental
+   */
+  initialDocumentId?: string
 }
 
 export class InitialValueTemplateItemBuilder implements Serializable {

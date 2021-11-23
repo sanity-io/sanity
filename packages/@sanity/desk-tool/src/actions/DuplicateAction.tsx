@@ -5,7 +5,7 @@ import {useDocumentOperation} from '@sanity/react-hooks'
 import {useRouter} from '@sanity/base/router'
 import React, {useCallback, useState} from 'react'
 import {
-  unstable_useCheckDocumentPermission as useCheckDocumentPermission,
+  unstable_useDocumentPairPermissions as useDocumentPairPermissions,
   useCurrentUser,
 } from '@sanity/base/hooks'
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
@@ -18,7 +18,12 @@ export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete})
   const {duplicate}: any = useDocumentOperation(id, type)
   const router = useRouter()
   const [isDuplicating, setDuplicating] = useState(false)
-  const createPermission = useCheckDocumentPermission('dummy-id', type, 'create')
+  const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
+    id,
+    type,
+    permission: 'duplicate',
+  })
+
   const {value: currentUser} = useCurrentUser()
 
   const handle = useCallback(() => {
@@ -30,7 +35,7 @@ export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete})
     onComplete()
   }, [duplicate, onComplete, router, type])
 
-  if (!createPermission.granted) {
+  if (!isPermissionsLoading && !permissions?.granted) {
     return {
       icon: CopyIcon,
       disabled: true,
@@ -46,7 +51,7 @@ export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete})
 
   return {
     icon: CopyIcon,
-    disabled: Boolean(isDuplicating || duplicate.disabled),
+    disabled: isDuplicating || Boolean(duplicate.disabled) || isPermissionsLoading,
     label: isDuplicating ? 'Duplicating…' : 'Duplicate',
     title:
       (duplicate.disabled &&

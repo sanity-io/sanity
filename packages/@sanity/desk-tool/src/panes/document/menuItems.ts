@@ -39,7 +39,6 @@ export const getProductionPreviewItem = ({previewUrl}: Params): PaneMenuItem | n
     action: 'production-preview',
     title: 'Open preview',
     icon: EarthAmericasIcon,
-    url: previewUrl,
     shortcut: 'Ctrl+Alt+O',
   }
 }

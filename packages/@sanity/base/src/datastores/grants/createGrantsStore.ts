@@ -3,15 +3,16 @@
 
 import {defer, of} from 'rxjs'
 
-import {mergeMap, publishReplay, switchMap} from 'rxjs/operators'
+import {distinctUntilChanged, publishReplay, switchMap} from 'rxjs/operators'
 import {evaluate, parse} from 'groq-js'
 import {SanityDocument} from '@sanity/types'
 import {refCountDelay} from 'rxjs-etc/operators'
 import sanityClient from 'part:@sanity/base/client'
+import shallowEquals from 'shallow-equals'
 import userStore from '../user'
 import {
   GrantsStore,
-  DocumentPermissionName,
+  DocumentValuePermission,
   Grant,
   PermissionCheckResult,
   EvaluationParams,
@@ -60,7 +61,7 @@ async function matchesFilter(filter: string, document: SanityDocument) {
 
 export function createGrantsStore(): GrantsStore {
   const datasetGrants$ = defer(() => of(client.config())).pipe(
-    mergeMap(({projectId, dataset}) => {
+    switchMap(({projectId, dataset}) => {
       if (!projectId || !dataset) {
         throw new Error('Missing projectId or dataset')
       }
@@ -74,9 +75,10 @@ export function createGrantsStore(): GrantsStore {
   )
 
   return {
-    checkDocumentPermission(permission: DocumentPermissionName, document: SanityDocument) {
+    checkDocumentPermission(permission: DocumentValuePermission, document: SanityDocument) {
       return currentUserDatasetGrants.pipe(
-        switchMap((grants) => grantsPermissionOn(grants, permission, document))
+        switchMap((grants) => grantsPermissionOn(grants, permission, document)),
+        distinctUntilChanged(shallowEquals)
       )
     },
   }
@@ -91,9 +93,14 @@ export function createGrantsStore(): GrantsStore {
  */
 async function grantsPermissionOn(
   grants: Grant[],
-  permission: DocumentPermissionName,
-  document: SanityDocument
+  permission: DocumentValuePermission,
+  document: SanityDocument | null
 ): Promise<PermissionCheckResult> {
+  if (!document) {
+    // we say it's granted if null due to initial states
+    return {granted: true, reason: 'Null document, nothing to check'}
+  }
+
   if (!grants.length) {
     return {granted: false, reason: 'No document grants'}
   }
@@ -113,5 +120,3 @@ async function grantsPermissionOn(
     reason: foundMatch ? `Matching grant` : `No matching grants found`,
   }
 }
-
-export default createGrantsStore()
