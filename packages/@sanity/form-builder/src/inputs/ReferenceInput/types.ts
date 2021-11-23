@@ -38,7 +38,7 @@ export type ReferenceParams = Record<string, string | number | boolean>
 export interface CreateOption {
   id: string
   title: string
-  icon?: React.ReactNode
+  icon?: React.ReactNode | React.ComponentType
   type: string
   template: ReferenceTemplate
   permission: {
