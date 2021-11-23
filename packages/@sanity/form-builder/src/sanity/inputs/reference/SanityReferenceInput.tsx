@@ -2,7 +2,6 @@ import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, u
 
 import {
   Marker,
-  ObjectSchemaType,
   Path,
   Reference,
   ReferenceFilterSearchOptions,
@@ -21,6 +20,7 @@ import {useReferenceInputOptions} from '../../contexts/ReferenceInputOptions'
 import PatchEvent from '../../../PatchEvent'
 import * as adapter from '../client-adapters/reference'
 import {ReferenceInput} from '../../../inputs/ReferenceInput/ReferenceInput'
+import {EditReferenceEvent} from '../../../inputs/ReferenceInput/types'
 
 // eslint-disable-next-line require-await
 async function resolveUserDefinedFilter(
@@ -82,7 +82,12 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
   ref: ForwardedRef<HTMLInputElement>
 ) {
   const {getValuePath, type, document} = props
-  const {EditReferenceLinkComponent, onEditReference, activePath} = useReferenceInputOptions()
+  const {
+    EditReferenceLinkComponent,
+    onEditReference,
+    activePath,
+    initialValueTemplateItems,
+  } = useReferenceInputOptions()
 
   const documentRef = useValueRef(document)
 
@@ -124,11 +129,12 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
   )
 
   const handleEditReference = useCallback(
-    (id: string, schemaType: ObjectSchemaType) => {
+    (event: EditReferenceEvent) => {
       onEditReference?.({
         parentRefPath: valuePath,
-        id,
-        type: schemaType.name,
+        id: event.id,
+        type: event.type,
+        template: event.template,
       })
     },
     [onEditReference, valuePath]
@@ -138,6 +144,25 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
     ? activePath?.state
     : 'none'
 
+  const createOptions = useMemo(() => {
+    return (
+      initialValueTemplateItems
+        // eslint-disable-next-line max-nested-callbacks
+        .filter((i) => type.to.some((refType) => refType.name === i.template.schemaType))
+        .map((item) => ({
+          id: item.id,
+          title: item.title || `${item.template.schemaType} from template ${item.template.id}`,
+          type: item.template.schemaType,
+          icon: item.icon,
+          template: {
+            id: item.template.id,
+            params: item.parameters,
+          },
+          permission: {granted: item.granted, reason: item.reason},
+        }))
+    )
+  }, [initialValueTemplateItems, type.to])
+
   return (
     <ReferenceInput
       {...props}
@@ -146,6 +171,7 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
       ref={ref}
       selectedState={selectedState}
       editReferenceLinkComponent={EditReferenceLink}
+      createOptions={createOptions}
       onEditReference={handleEditReference}
     />
   )

@@ -25,6 +25,13 @@ export interface ParameterizedLinkProps {
   payload?: unknown
 }
 
+interface EditReferenceOptions {
+  parentRefPath: Path
+  id: string
+  type: string
+  template: {id: string; params?: Record<string, string | number | boolean>}
+}
+
 export interface PaneRouterContextValue {
   /**
    * Zero-based index (position) of pane, visually
@@ -85,7 +92,7 @@ export interface PaneRouterContextValue {
   /**
    * Similar to `ReferenceChildLink` expect without the wrapping component
    */
-  handleEditReference: (options: {id: string; type: string; parentRefPath: Path}) => void
+  handleEditReference: (options: EditReferenceOptions) => void
 
   /**
    * Curried StateLink that passed the correct state, but merges params/payload

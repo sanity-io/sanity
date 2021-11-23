@@ -1,4 +1,5 @@
-import {useDocumentType} from '@sanity/base/hooks'
+// eslint-disable-next-line camelcase
+import {unstable_useTemplatePermissions, useDocumentType} from '@sanity/base/hooks'
 import {LegacyLayerProvider, useZIndex} from '@sanity/base/components'
 import {ChangeConnectorRoot} from '@sanity/base/change-indicators'
 import {getTemplateById} from '@sanity/base/initial-value-templates'
@@ -19,6 +20,7 @@ import {fromString as pathFromString} from '@sanity/util/paths'
 // eslint-disable-next-line camelcase
 import {Unstable_ReferenceInputOptionsProvider} from '@sanity/form-builder/_internal'
 import {Path} from '@sanity/types'
+import {getNewDocumentOptions} from '@sanity/base/_internal'
 import {DocumentPaneNode} from '../../types'
 import {useDeskTool} from '../../contexts/deskTool'
 import {usePaneRouter} from '../../contexts/paneRouter'
@@ -59,6 +61,8 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
   const paneRouter = usePaneRouter()
   const options = usePaneOptions(props.pane.options, paneRouter.params)
   const {documentType, isLoaded} = useDocumentType(options.id, options.type)
+  const newDocumentOptions = getNewDocumentOptions()
+  const [templates, isTemplatesLoading] = unstable_useTemplatePermissions(newDocumentOptions)
 
   const providerProps = useMemo(() => {
     return isLoaded && documentType && options.type !== documentType
@@ -111,6 +115,7 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
       <Unstable_ReferenceInputOptionsProvider
         EditReferenceLinkComponent={ReferenceChildLink}
         onEditReference={handleEditReference}
+        initialValueTemplateItems={templates}
         activePath={activePath}
       >
         <InnerDocumentPane />
