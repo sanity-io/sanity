@@ -61,7 +61,7 @@ import {AlertStrip} from '../../AlertStrip'
 import {RowWrapper} from '../arrays/ArrayOfObjectsInput/item/components/RowWrapper'
 import {DragHandle} from '../arrays/common/DragHandle'
 import {PartialPick} from '../../utils/util-types'
-import {ReferenceInfo, SearchFunction, SearchState} from './types'
+import {CreateOption, EditReferenceEvent, ReferenceInfo, SearchFunction, SearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
@@ -80,13 +80,14 @@ export interface Props {
   focusPath: Path
   readOnly?: boolean
   onSearch: SearchFunction
+  createOptions: CreateOption[]
+  onEditReference: (event: EditReferenceEvent) => void
   compareValue?: Reference
   isSortable: boolean
   onFocus?: (path: Path) => void
   onBlur?: () => void
   selectedState?: 'selected' | 'pressed' | 'none'
   editReferenceLinkComponent: React.ComponentType
-  onEditReference: (id: string, type: ObjectSchemaType) => void
   getReferenceInfo: (id: string, type: ReferenceSchemaType) => Observable<ReferenceInfo>
   onChange: (event: PatchEvent) => void
   presence: FormFieldPresence[]
@@ -121,6 +122,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
     focusPath = EMPTY_ARRAY,
     onFocus,
     presence,
+    createOptions,
     isSortable,
     level,
     onBlur,
@@ -132,7 +134,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
 
   const [searchState, setSearchState] = useState<SearchState>(INITIAL_SEARCH_STATE)
 
-  const handleCreateNew = (refType: ObjectSchemaType) => {
+  const handleCreateNew = (option: CreateOption) => {
     const id = uuid()
 
     const patches = [
@@ -140,12 +142,14 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
       set(type.name, ['_type']),
       set(id, ['_ref']),
       set(true, ['_weak']),
-      set({type: refType.name, weak: type.weak}, ['_strengthenOnPublish']),
+      set({type: option.type, weak: type.weak, template: option.template}, [
+        '_strengthenOnPublish',
+      ]),
     ].filter(isNonNullable)
 
     onChange(PatchEvent.from(patches))
 
-    onEditReference(id, refType)
+    onEditReference({id, type: option.type, template: option.template})
     onFocus?.([])
   }
 
@@ -426,44 +430,48 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
                     />
                   </AutocompleteHeightFix>
                 </Card>
-                {!readOnly && (
-                  <Stack marginLeft={[0, 0, 1]} marginY={[1, 1, 0]}>
-                    {type.to.length > 1 ? (
-                      <MenuButton
-                        button={
-                          <Button
-                            text="Create new…"
-                            mode="ghost"
-                            icon={AddIcon}
-                            onKeyDown={handleCreateButtonKeyDown}
-                          />
-                        }
-                        id={`${inputId}-selectTypeMenuButton`}
-                        menu={
-                          <Menu>
-                            {type.to.map((toType) => (
-                              <MenuItem
-                                key={toType.name}
-                                text={toType.title}
-                                icon={toType.icon}
-                                onClick={() => handleCreateNew(toType)}
-                              />
-                            ))}
-                          </Menu>
-                        }
-                        placement="right"
-                        popover={{portal: true, tone: 'default'}}
-                      />
-                    ) : (
-                      <Button
-                        mode="ghost"
-                        onKeyDown={handleCreateButtonKeyDown}
-                        onClick={() => handleCreateNew(type.to[0])}
-                        icon={AddIcon}
-                        text="Create new"
-                      />
-                    )}
-                  </Stack>
+                {!readOnly && createOptions.length > 0 && (
+                  <Box marginLeft={1}>
+                    <Inline space={2}>
+                      {createOptions.length > 1 ? (
+                        <MenuButton
+                          button={
+                            <Button
+                              text="Create new…"
+                              mode="ghost"
+                              icon={AddIcon}
+                              onKeyDown={handleCreateButtonKeyDown}
+                            />
+                          }
+                          id={`${inputId}-selectTypeMenuButton`}
+                          menu={
+                            <Menu>
+                              {createOptions.map((createOption) => (
+                                <MenuItem
+                                  key={createOption.id}
+                                  text={createOption.title}
+                                  disabled={!createOption.permission.granted}
+                                  icon={createOption.icon}
+                                  onClick={() => handleCreateNew(createOption)}
+                                />
+                              ))}
+                            </Menu>
+                          }
+                          placement="right"
+                          popover={{portal: true, tone: 'default'}}
+                        />
+                      ) : (
+                        <Button
+                          text="Create new"
+                          mode="ghost"
+                          disabled={!createOptions[0].permission.granted}
+                          onKeyDown={handleCreateButtonKeyDown}
+                          onClick={() => handleCreateNew(createOptions[0])}
+                          icon={AddIcon}
+                        />
+                      )}
+                    </Inline>
+                  </Box>
                 )}
               </Flex>
             </FormField>

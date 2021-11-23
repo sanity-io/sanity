@@ -22,6 +22,31 @@ export interface ReferenceInfo {
   }
 }
 
+export interface ReferenceTemplate {
+  id: string
+  params?: ReferenceParams
+}
+
+export interface EditReferenceEvent {
+  id: string
+  type: string
+  template: ReferenceTemplate
+}
+
+export type ReferenceParams = Record<string, string | number | boolean>
+
+export interface CreateOption {
+  id: string
+  title: string
+  icon?: React.ReactNode | React.ComponentType
+  type: string
+  template: ReferenceTemplate
+  permission: {
+    granted: boolean
+    reason: string
+  }
+}
+
 export interface DocumentPreview extends PreviewValue {
   _id: string
   _type: string

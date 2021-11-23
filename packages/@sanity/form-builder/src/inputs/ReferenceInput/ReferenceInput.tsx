@@ -9,14 +9,7 @@ import React, {
   useMemo,
   useState,
 } from 'react'
-import {
-  isValidationErrorMarker,
-  Marker,
-  ObjectSchemaType,
-  Path,
-  Reference,
-  ReferenceSchemaType,
-} from '@sanity/types'
+import {isValidationErrorMarker, Marker, Path, Reference, ReferenceSchemaType} from '@sanity/types'
 import {
   AddIcon,
   EllipsisVerticalIcon,
@@ -55,7 +48,7 @@ import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {isNonNullable} from '../../utils/isNonNullable'
 import {AlertStrip} from '../../AlertStrip'
 import {Alert} from '../../components/Alert'
-import {ReferenceInfo, SearchFunction, SearchState} from './types'
+import {CreateOption, EditReferenceEvent, ReferenceInfo, SearchFunction, SearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
@@ -74,12 +67,13 @@ export interface Props {
   focusPath: Path
   readOnly?: boolean
   onSearch: SearchFunction
+  createOptions: CreateOption[]
+  onEditReference: (event: EditReferenceEvent) => void
   compareValue?: Reference
   onFocus?: (path: Path) => void
   onBlur?: () => void
   selectedState?: 'selected' | 'pressed' | 'none'
   editReferenceLinkComponent: React.ComponentType
-  onEditReference: (id: string, type: ObjectSchemaType) => void
   getReferenceInfo: (id: string, type: ReferenceSchemaType) => Observable<ReferenceInfo>
   onChange: (event: PatchEvent) => void
   level: number
@@ -112,13 +106,14 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
     selectedState,
     editReferenceLinkComponent: EditReferenceLink,
     onEditReference,
+    createOptions,
     compareValue,
     getReferenceInfo,
   } = props
 
   const [searchState, setSearchState] = useState<SearchState>(INITIAL_SEARCH_STATE)
 
-  const handleCreateNew = (refType: ObjectSchemaType) => {
+  const handleCreateNew = (option: CreateOption) => {
     const id = uuid()
 
     const patches = [
@@ -126,12 +121,14 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
       set(type.name, ['_type']),
       set(id, ['_ref']),
       set(true, ['_weak']),
-      set({type: refType.name, weak: type.weak}, ['_strengthenOnPublish']),
+      set({type: option.type, weak: type.weak, template: option.template}, [
+        '_strengthenOnPublish',
+      ]),
     ].filter(isNonNullable)
 
     onChange(PatchEvent.from(patches))
 
-    onEditReference(id, refType)
+    onEditReference({id, type: option.type, template: option.template})
     onFocus?.([])
   }
 
@@ -409,10 +406,10 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
                     />
                   </AutocompleteHeightFix>
                 </Box>
-                {!readOnly && (
+                {!readOnly && createOptions.length > 0 && (
                   <Box marginLeft={1}>
                     <Inline space={2}>
-                      {type.to.length > 1 ? (
+                      {createOptions.length > 1 ? (
                         <MenuButton
                           button={
                             <Button
@@ -425,12 +422,13 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
                           id={`${inputId}-selectTypeMenuButton`}
                           menu={
                             <Menu>
-                              {type.to.map((toType) => (
+                              {createOptions.map((createOption) => (
                                 <MenuItem
-                                  key={toType.name}
-                                  text={toType.title}
-                                  icon={toType.icon}
-                                  onClick={() => handleCreateNew(toType)}
+                                  key={createOption.id}
+                                  text={createOption.title}
+                                  disabled={!createOption.permission.granted}
+                                  icon={createOption.icon}
+                                  onClick={() => handleCreateNew(createOption)}
                                 />
                               ))}
                             </Menu>
@@ -442,8 +440,9 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
                         <Button
                           text="Create new"
                           mode="ghost"
+                          disabled={!createOptions[0].permission.granted}
                           onKeyDown={handleCreateButtonKeyDown}
-                          onClick={() => handleCreateNew(type.to[0])}
+                          onClick={() => handleCreateNew(createOptions[0])}
                           icon={AddIcon}
                         />
                       )}
