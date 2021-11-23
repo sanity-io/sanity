@@ -1,5 +1,5 @@
 import {UnknownIcon} from '@sanity/icons'
-import {InitialValueTemplateItem, StructureBuilder as S} from '@sanity/structure'
+import {InitialValueTemplateItem} from '@sanity/structure'
 import {Box, Button, Inline, Text, Tooltip} from '@sanity/ui'
 import React, {memo, useCallback, useMemo} from 'react'
 import {partition, uniqBy} from 'lodash'

@@ -1,4 +1,3 @@
-import schema from 'part:@sanity/base/schema'
 import {first} from 'rxjs/operators'
 import {Grant} from './types'
 import * as exampleGrants from './debug/exampleGrants'

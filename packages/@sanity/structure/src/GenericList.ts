@@ -1,5 +1,5 @@
 import {camelCase} from 'lodash'
-import {StructureNode, SerializeOptions, Serializable, Child, SerializePath} from './StructureNodes'
+import {StructureNode, SerializeOptions, Serializable, Child} from './StructureNodes'
 import {Layout, layoutOptions} from './Layout'
 import {MenuItem, MenuItemBuilder, maybeSerializeMenuItem} from './MenuItem'
 import {MenuItemGroup, MenuItemGroupBuilder, maybeSerializeMenuItemGroup} from './MenuItemGroup'
