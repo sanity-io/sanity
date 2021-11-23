@@ -140,7 +140,7 @@ export function ReferencePreview(props: {
                         Edited <TimeAgo time={preview.draft?._updatedAt} />
                       </>
                     ) : (
-                      <>All edits are published</>
+                      <>No unpublished edits</>
                     )}
                   </Text>
                 </Box>
