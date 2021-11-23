@@ -10,7 +10,6 @@ import {
   BuildableGenericList,
   GenericList,
   GenericListInput,
-  shallowIntentChecker,
 } from './GenericList'
 
 const getArgType = (thing: ListItem) => {
@@ -30,14 +29,14 @@ const isListItem = (item: ListItem | Divider): item is ListItem => {
 }
 
 const defaultCanHandleIntent: IntentChecker = (intentName: string, params, context) => {
+  if (intentName !== 'create' && intentName !== 'edit') return false
+
   const pane = context.pane as List
   const items = pane.items || []
-  return (
-    items
-      .filter(isDocumentListItem)
-      .some((item) => item.schemaType.name === params.type && item._id === params.id) ||
-    shallowIntentChecker(intentName, params, context)
-  )
+
+  return items
+    .filter(isDocumentListItem)
+    .some((item) => item.schemaType.name === params.type && item._id === params.id)
 }
 
 const resolveChildForItem: ChildResolver = (itemId: string, options: ChildResolverOptions) => {
@@ -85,6 +84,11 @@ function isPromise<T>(thing: any): thing is Promise<T> {
 
 export interface List extends GenericList {
   items: (ListItem | Divider)[]
+  /**
+   * Disables the intent resolver from searching this list's items when
+   * resolving an intent.
+   */
+  disableNestedIntentResolution: boolean
 }
 
 export interface ListInput extends GenericListInput {
@@ -93,6 +97,11 @@ export interface ListInput extends GenericListInput {
 
 export interface BuildableList extends BuildableGenericList {
   items?: (ListItem | ListItemBuilder | Divider)[]
+  /**
+   * Disables the intent resolver from searching this list's items when
+   * resolving an intent.
+   */
+  disableNestedIntentResolution?: boolean
 }
 
 export function isList(list: Collection): list is List {
@@ -108,11 +117,19 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
     this.initialValueTemplatesSpecified = Boolean(spec && spec.initialValueTemplates)
   }
 
-  items(items: (ListItemBuilder | ListItem | Divider)[]): ListBuilder {
+  disableNestedIntentResolution(disableNestedIntentResolution = true): ListBuilder {
+    return this.clone({disableNestedIntentResolution})
+  }
+
+  getDisableNestedIntentResolution(): BuildableList['disableNestedIntentResolution'] {
+    return this.spec.disableNestedIntentResolution
+  }
+
+  items(items: BuildableList['items']): ListBuilder {
     return this.clone({items})
   }
 
-  getItems() {
+  getItems(): BuildableList['items'] {
     return this.spec.items
   }
 
@@ -155,10 +172,12 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
       canHandleIntent: this.spec.canHandleIntent || defaultCanHandleIntent,
       child: this.spec.child || resolveChildForItem,
       items: serializedItems,
+      disableNestedIntentResolution: Boolean(this.spec.disableNestedIntentResolution),
     }
   }
+  ƒ
 
-  clone(withSpec?: BuildableList) {
+  clone(withSpec?: BuildableList): ListBuilder {
     const builder = new ListBuilder()
     builder.spec = {...this.spec, ...(withSpec || {})}
     return builder

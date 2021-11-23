@@ -1,6 +1,5 @@
 import {DocumentListBuilder, DocumentListInput, PartialDocumentList} from './DocumentList'
 import {Child} from './StructureNodes'
-import {DEFAULT_INTENT_HANDLER} from './Intent'
 import {GenericListInput} from './GenericList'
 import {SchemaType} from './parts/Schema'
 
@@ -17,7 +16,7 @@ export class DocumentTypeListBuilder extends DocumentListBuilder {
   }
 
   child(child: Child) {
-    return this.cloneWithoutDefaultIntentHandler({child})
+    return this.clone({child})
   }
 
   clone(withSpec?: PartialDocumentList): DocumentTypeListBuilder {
@@ -27,18 +26,10 @@ export class DocumentTypeListBuilder extends DocumentListBuilder {
     return builder
   }
 
+  /**
+   * @deprecated
+   */
   cloneWithoutDefaultIntentHandler(withSpec?: PartialDocumentList): DocumentTypeListBuilder {
-    const parent = super.clone(withSpec)
-    const builder = new DocumentTypeListBuilder()
-    const canHandleIntent = this.spec.canHandleIntent
-    const shouldOverride = canHandleIntent && canHandleIntent.identity === DEFAULT_INTENT_HANDLER
-    const override = shouldOverride ? {canHandleIntent: undefined} : {}
-    builder.spec = {
-      ...parent.getSpec(),
-      ...this.spec,
-      ...(withSpec || {}),
-      ...override,
-    }
-    return builder
+    return this.clone(withSpec)
   }
 }

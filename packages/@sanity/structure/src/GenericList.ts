@@ -16,10 +16,6 @@ function noChildResolver() {
   return undefined
 }
 
-export const shallowIntentChecker: IntentChecker = (intentName, params, {pane, index}): boolean => {
-  return index <= 1 && defaultIntentChecker(intentName, params, {pane, index})
-}
-
 export interface ListDisplayOptions {
   showIcons?: boolean
 }
@@ -161,7 +157,7 @@ export abstract class GenericListBuilder<L extends BuildableGenericList, Concret
       type: 'genericList',
       defaultLayout,
       child: this.spec.child || noChildResolver,
-      canHandleIntent: this.spec.canHandleIntent || shallowIntentChecker,
+      canHandleIntent: this.spec.canHandleIntent || defaultIntentChecker,
       displayOptions: this.spec.displayOptions,
       initialValueTemplates,
       menuItems: (this.spec.menuItems || []).map((item, i) =>

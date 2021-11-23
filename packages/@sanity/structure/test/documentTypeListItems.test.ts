@@ -1,8 +1,8 @@
 import {StructureBuilder as S} from '../src'
 import {getDefaultSchema} from '../src/parts/Schema'
-import serializeStructure from './util/serializeStructure'
 import {ChildResolver} from '../src/ChildResolver'
 import {DocumentTypeListBuilder} from '../src/DocumentTypeList'
+import serializeStructure from './util/serializeStructure'
 
 const nope = () => 'NOPE'
 const editor = {
@@ -77,9 +77,8 @@ test('manually assigned canHandleIntent should not be overriden', () => {
   const modified = list.canHandleIntent(alwaysFalse)
   const ctx = {pane: list.serialize(), index: 0}
 
-  // Test default handler
-  const defHandler = list.getCanHandleIntent() || nope
-  expect(defHandler('create', {type: 'author'}, ctx)).toBe(true)
+  // Test that there is nothing set by default
+  expect(list.getCanHandleIntent()).toBe(undefined)
 
   // Test modified handler
   const modHandler = modified.getCanHandleIntent() || nope
