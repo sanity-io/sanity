@@ -17,6 +17,7 @@ export interface ReferenceChildLinkProps {
   documentId: string
   documentType: string
   parentRefPath: Path
+  template?: {id: string; params?: Record<string, string | number | boolean>}
   children: React.ReactNode
 }
 

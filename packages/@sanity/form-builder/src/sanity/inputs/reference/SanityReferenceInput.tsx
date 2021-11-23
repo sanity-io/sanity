@@ -115,6 +115,7 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
     [documentRef, getValuePath, type]
   )
 
+  const template = props.value?._strengthenOnPublish?.template
   const EditReferenceLink = useMemo(
     () =>
       forwardRef(function EditReferenceLink_(
@@ -122,10 +123,15 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
         forwardedRef: ForwardedRef<'a'>
       ) {
         return EditReferenceLinkComponent ? (
-          <EditReferenceLinkComponent {..._props} ref={forwardedRef} parentRefPath={valuePath} />
+          <EditReferenceLinkComponent
+            {..._props}
+            ref={forwardedRef}
+            parentRefPath={valuePath}
+            template={template}
+          />
         ) : null
       }),
-    [EditReferenceLinkComponent, valuePath]
+    [EditReferenceLinkComponent, valuePath, template]
   )
 
   const handleEditReference = useCallback(
@@ -146,7 +152,7 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
 
   const createOptions = useMemo(() => {
     return (
-      initialValueTemplateItems
+      (initialValueTemplateItems || [])
         // eslint-disable-next-line max-nested-callbacks
         .filter((i) => type.to.some((refType) => refType.name === i.template.schemaType))
         .map((item) => ({
