@@ -25,6 +25,7 @@ module.exports = {
   ],
   rules: {
     'import/no-extraneous-dependencies': 'off', // because of parts
+    camelcase: ['error', {allow: ['^unstable_', '^Unstable_']}],
     'import/no-unresolved': ['error', {ignore: ['.*:.*']}], // because of parts
     'prettier/prettier': 'error',
     'sort-imports': 'off', // prefer import/order
