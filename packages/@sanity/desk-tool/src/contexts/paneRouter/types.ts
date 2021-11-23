@@ -1,3 +1,4 @@
+import type React from 'react'
 import {RouterPanes, RouterPaneSibling} from '../../types'
 
 export interface PaneRouterContextValue {
