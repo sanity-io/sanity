@@ -1,4 +1,3 @@
-// eslint-disable-next-line camelcase
 import {unstable_useTemplatePermissions, useDocumentType} from '@sanity/base/hooks'
 import {LegacyLayerProvider, useZIndex} from '@sanity/base/components'
 import {ChangeConnectorRoot} from '@sanity/base/change-indicators'
@@ -17,7 +16,6 @@ import {
 import React, {memo, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {fromString as pathFromString} from '@sanity/util/paths'
-// eslint-disable-next-line camelcase
 import {Unstable_ReferenceInputOptionsProvider} from '@sanity/form-builder/_internal'
 import {Path} from '@sanity/types'
 import {getNewDocumentOptions} from '@sanity/base/_internal'
