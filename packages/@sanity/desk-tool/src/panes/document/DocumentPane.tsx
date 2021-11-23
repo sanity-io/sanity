@@ -46,7 +46,7 @@ const DIALOG_PROVIDER_POSITION: DialogProviderProps['position'] = [
 const StyledChangeConnectorRoot = styled(ChangeConnectorRoot)`
   flex: 2;
   display: flex;
-  direction: column;
+  flex-direction: column;
   min-width: 0;
   height: 100%;
 `
