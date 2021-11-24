@@ -18,7 +18,6 @@ import {
   BinaryDocumentIcon,
   DocumentIcon,
   DownloadIcon,
-  EditIcon,
   EllipsisVerticalIcon,
   ResetIcon,
   SearchIcon,
@@ -44,68 +43,68 @@ export default function CompactFile() {
       <Stack space={6}>
         {/* Alt 0. */}
         <Stack space={3} marginTop={6}>
-            <Text weight="semibold" size={1}>
-              Alternative 0
-            </Text>
-            <Card
-              border
-              padding={3}
-              tone={hasFile ? 'default' : 'default'}
-              style={{
-                position: 'relative',
-                borderStyle: hasFile ? 'solid' : 'dashed',
-              }}
-            >
-              {!hasFile && (
-                <Flex align="center" justify="space-between" gap={3}>
-                  <Inline space={2}>
-                    <Button fontSize={1} text="Select" icon={SearchIcon} mode="ghost" />
-                    <Button fontSize={1} text="Upload" icon={UploadIcon} mode="ghost" />
-                  </Inline>
-                  <Flex align="center" gap={2} flex={1}>
-                    <Text size={1} muted>
-                      <UploadIcon />
-                    </Text>
-                    <Text size={1} muted>
-                      Paste or drag file here
-                    </Text>
-                  </Flex>
+          <Text weight="semibold" size={1}>
+            Alternative 0
+          </Text>
+          <Card
+            border
+            padding={3}
+            tone={hasFile ? 'default' : 'default'}
+            style={{
+              position: 'relative',
+              borderStyle: hasFile ? 'solid' : 'dashed',
+            }}
+          >
+            {!hasFile && (
+              <Flex align="center" justify="space-between" gap={3}>
+                <Inline space={2}>
+                  <Button fontSize={1} text="Select" icon={SearchIcon} mode="ghost" />
+                  <Button fontSize={1} text="Upload" icon={UploadIcon} mode="ghost" />
+                </Inline>
+                <Flex align="center" gap={2} flex={1}>
+                  <Text size={1} muted>
+                    <UploadIcon />
+                  </Text>
+                  <Text size={1} muted>
+                    Paste or drag file here
+                  </Text>
                 </Flex>
-              )}
-              {hasFile && (
-                <Flex align="center" justify="space-between">
-                  <Inline space={3} flex={1}>
-                    <Text muted>
-                      <BinaryDocumentIcon />
-                    </Text>
-                    <Text size={2} muted>
-                      document-file-name.pdf
-                    </Text>
-                  </Inline>
-                  <Box>
-                    <MenuButton
-                      id="compact-file-menu-button"
-                      button={<Button icon={EllipsisVerticalIcon} mode="bleed" />}
-                      menu={
-                        <Menu>
-                          <Box padding={2}>
-                            <Label muted size={1}>
-                              Replace
-                            </Label>
-                          </Box>
-                          <MenuItem text="Select" icon={SearchIcon} />
-                          <MenuItem text="Upload" icon={UploadIcon} />
-                          <MenuDivider />
-                          <MenuItem text="Download file" icon={DownloadIcon} />
-                          <MenuDivider />
-                          <MenuItem text="Clear field" icon={ResetIcon} tone="critical" />
-                        </Menu>
-                      }
-                    />
-                  </Box>
-                </Flex>
-              )}
-            </Card>
+              </Flex>
+            )}
+            {hasFile && (
+              <Flex align="center" justify="space-between">
+                <Inline space={3} flex={1}>
+                  <Text muted>
+                    <BinaryDocumentIcon />
+                  </Text>
+                  <Text size={2} muted>
+                    document-file-name.pdf
+                  </Text>
+                </Inline>
+                <Box>
+                  <MenuButton
+                    id="compact-file-menu-button"
+                    button={<Button icon={EllipsisVerticalIcon} mode="bleed" />}
+                    menu={
+                      <Menu>
+                        <Box padding={2}>
+                          <Label muted size={1}>
+                            Replace
+                          </Label>
+                        </Box>
+                        <MenuItem text="Select" icon={SearchIcon} />
+                        <MenuItem text="Upload" icon={UploadIcon} />
+                        <MenuDivider />
+                        <MenuItem text="Download file" icon={DownloadIcon} />
+                        <MenuDivider />
+                        <MenuItem text="Clear field" icon={ResetIcon} tone="critical" />
+                      </Menu>
+                    }
+                  />
+                </Box>
+              </Flex>
+            )}
+          </Card>
         </Stack>
 
         {/* Alt 1. */}
