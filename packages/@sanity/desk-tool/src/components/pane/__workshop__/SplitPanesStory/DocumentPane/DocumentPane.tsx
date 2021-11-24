@@ -26,7 +26,12 @@ export function DocumentPane(props: {
   }, [index, setPath])
 
   return (
-    <Pane data-index={index} flex={2.5} minWidth={reviewChanges ? 320 + 320 : 320}>
+    <Pane
+      currentMinWidth={reviewChanges ? 600 + 320 : 600}
+      data-index={index}
+      flex={2.5}
+      minWidth={reviewChanges ? 320 + 320 : 320}
+    >
       <Flex flex={1} height="fill">
         <DocumentViewPanel
           onBackClick={handleBackClick}
