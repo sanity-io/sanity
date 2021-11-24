@@ -1,30 +1,22 @@
 import {CardProps, useElementRect} from '@sanity/ui'
 import React, {useMemo, useCallback, useState, useEffect, useRef} from 'react'
 import {PaneLayoutContext} from './PaneLayoutContext'
-import {_calcPaneResize, _sortPaneConfigs} from './_helpers'
+import {_calcPaneResize, _sortPaneConfigs} from './helpers'
 import {PANE_COLLAPSED_WIDTH, PANE_DEFAULT_MIN_WIDTH} from './constants'
-import {PaneData, PaneResizeCache} from './types'
+import {
+  PaneConfig,
+  PaneConfigOpts,
+  PaneData,
+  PaneLayoutContextValue,
+  PaneResizeCache,
+  PaneResizeData,
+} from './types'
 import {Root} from './PaneLayout.styles'
 
 interface PaneLayoutProps {
   minWidth?: number
   onCollapse?: () => void
   onExpand?: () => void
-}
-
-interface PaneResizeData {
-  currentMaxWidth: number
-  flex: number
-}
-
-interface PaneConfig {
-  element: HTMLElement
-  opts: {
-    currentMaxWidth?: number
-    flex?: number
-    minWidth?: number
-    maxWidth?: number
-  }
 }
 
 interface PaneState {
@@ -146,8 +138,17 @@ export function PaneLayout(
           deltaX
         )
 
-        _resizeMap.set(leftPane.element, {currentMaxWidth: leftW, flex: leftFlex})
-        _resizeMap.set(rightPane.element, {currentMaxWidth: rightW, flex: rightFlex})
+        _resizeMap.set(leftPane.element, {
+          currentMinWidth: leftW,
+          currentMaxWidth: leftW,
+          flex: leftFlex,
+        })
+
+        _resizeMap.set(rightPane.element, {
+          currentMinWidth: rightW,
+          currentMaxWidth: rightW,
+          flex: rightFlex,
+        })
 
         resizeMapRef.current = _resizeMap
 
@@ -168,8 +169,9 @@ export function PaneLayout(
                 ...p,
                 opts: {
                   ...p.opts,
-                  currentMaxWidth: r?.currentMaxWidth || p.opts.currentMaxWidth,
-                  flex: r?.flex || p.opts.flex,
+                  currentMinWidth: r?.currentMinWidth ?? p.opts.currentMinWidth,
+                  currentMaxWidth: r?.currentMaxWidth ?? p.opts.currentMaxWidth,
+                  flex: r?.flex ?? p.opts.flex,
                 },
               }
             }
@@ -189,14 +191,15 @@ export function PaneLayout(
   )
 
   const mount = useCallback(
-    (
-      element: HTMLElement,
-      opts: {currentMaxWidth?: number; flex?: number; minWidth?: number; maxWidth?: number}
-    ) => {
+    (element: HTMLElement, opts: PaneConfigOpts) => {
       const paneConfig = {element, opts}
+
       let nextPaneConfigs = paneConfigsRef.current.concat([paneConfig])
+
       _sortPaneConfigs(rootElement, nextPaneConfigs)
+
       paneConfigsRef.current = nextPaneConfigs
+
       setPaneConfigs(nextPaneConfigs)
 
       const paneIndex = nextPaneConfigs.indexOf(paneConfig)
@@ -241,7 +244,8 @@ export function PaneLayout(
     // - if a pane is explictly collapsed by user input
     for (let i = lastIndex; i >= 0; i -= 1) {
       const config = _paneConfigs[i]
-      const paneMinWidth = config.opts.minWidth || PANE_DEFAULT_MIN_WIDTH
+      const paneMinWidth =
+        config.opts.currentMinWidth || config.opts.minWidth || PANE_DEFAULT_MIN_WIDTH
       const paneState = paneStates.find((p) => p.element === config.element)
       const shouldCollapse = paneState?.collapsed === true || paneMinWidth > remaingWidth
 
@@ -261,6 +265,7 @@ export function PaneLayout(
       paneMap.set(config, {
         element: config.element,
         collapsed: collapsedIndexes.includes(i),
+        currentMinWidth: r?.currentMinWidth || config.opts.currentMinWidth || Infinity,
         currentMaxWidth: r?.currentMaxWidth || config.opts.currentMaxWidth || 0,
         flex: r?.flex || config.opts.flex || 1,
       })
@@ -279,7 +284,7 @@ export function PaneLayout(
     if (!collapsed && onExpand) onExpand()
   }, [collapsed, onCollapse, onExpand])
 
-  const contextValue = useMemo(
+  const contextValue: PaneLayoutContextValue = useMemo(
     () => ({
       collapse,
       collapsed,

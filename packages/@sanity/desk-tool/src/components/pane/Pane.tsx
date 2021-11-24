@@ -1,14 +1,15 @@
 import {LegacyLayerProvider} from '@sanity/base/components'
-import {useForwardedRef, Card, CardProps, Flex, BoundaryElementProvider} from '@sanity/ui'
+import {BoundaryElementProvider, Card, CardProps, Code, Flex, useForwardedRef} from '@sanity/ui'
 import React, {forwardRef, useMemo, useState, useCallback, useEffect} from 'react'
 import styled from 'styled-components'
-import {PANE_COLLAPSED_WIDTH, PANE_DEFAULT_MIN_WIDTH} from './constants'
+import {PANE_COLLAPSED_WIDTH, PANE_DEBUG, PANE_DEFAULT_MIN_WIDTH} from './constants'
 import {PaneContext} from './PaneContext'
 import {PaneDivider} from './PaneDivider'
 import {usePaneLayout} from './usePaneLayout'
 
 interface PaneProps {
   children?: React.ReactNode
+  currentMinWidth?: number
   currentMaxWidth?: number
   flex?: number
   minWidth?: number
@@ -29,12 +30,13 @@ const Root = styled(Card)`
  */
 export const Pane = forwardRef(function Pane(
   props: PaneProps &
-    Omit<CardProps, 'as' | 'height'> &
-    Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height'>,
+    Omit<CardProps, 'as' | 'height' | 'overflow'> &
+    Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'hidden' | 'style'>,
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
   const {
     children,
+    currentMinWidth: currentMinWidthProp,
     currentMaxWidth: currentMaxWidthProp,
     flex: flexProp = 1,
     minWidth,
@@ -49,7 +51,8 @@ export const Pane = forwardRef(function Pane(
   const isLast = paneIndex === panes.length - 1
   const collapsed = pane?.collapsed || false
   const forwardedRef = useForwardedRef(ref)
-  const flex = pane?.flex || flexProp
+  const flex = pane?.flex ?? flexProp
+  const currentMinWidth = pane?.currentMinWidth || currentMinWidthProp
   const currentMaxWidth = pane?.currentMaxWidth || currentMaxWidthProp
 
   const setRef = useCallback(
@@ -63,12 +66,13 @@ export const Pane = forwardRef(function Pane(
   useEffect(() => {
     if (!rootElement) return undefined
     return mount(rootElement, {
+      currentMinWidth: currentMinWidthProp,
       currentMaxWidth: currentMaxWidthProp,
       flex: flexProp,
       minWidth,
       maxWidth,
     })
-  }, [currentMaxWidthProp, flexProp, minWidth, maxWidth, mount, rootElement])
+  }, [currentMinWidthProp, currentMaxWidthProp, flexProp, minWidth, maxWidth, mount, rootElement])
 
   const handleCollapse = useCallback(() => {
     if (!rootElement) return
@@ -98,7 +102,11 @@ export const Pane = forwardRef(function Pane(
         ? {flex: 1}
         : {
             flex,
-            minWidth: collapsed ? PANE_COLLAPSED_WIDTH : minWidth || PANE_DEFAULT_MIN_WIDTH,
+            minWidth: collapsed
+              ? PANE_COLLAPSED_WIDTH
+              : (currentMinWidth === Infinity ? 'none' : currentMinWidth) ||
+                minWidth ||
+                PANE_DEFAULT_MIN_WIDTH,
             // eslint-disable-next-line no-nested-ternary
             maxWidth: collapsed
               ? PANE_COLLAPSED_WIDTH
@@ -109,7 +117,7 @@ export const Pane = forwardRef(function Pane(
               ? undefined
               : currentMaxWidth,
           },
-    [collapsed, currentMaxWidth, flex, isLast, layoutCollapsed, minWidth, maxWidth]
+    [collapsed, currentMinWidth, currentMaxWidth, flex, isLast, layoutCollapsed, minWidth, maxWidth]
   )
 
   const hidden = layoutCollapsed && !isLast
@@ -141,6 +149,20 @@ export const Pane = forwardRef(function Pane(
             ref={setRef}
             style={style}
           >
+            {PANE_DEBUG && (
+              <Card padding={4} tone="caution">
+                <Code size={1}>
+                  {[
+                    `flex=${flex}`,
+                    `minWidth=${minWidth}`,
+                    `maxWidth=${maxWidth}`,
+                    `currentMinWidth=${pane?.currentMinWidth}`,
+                    `currentMaxWidth=${pane?.currentMaxWidth}`,
+                  ].join('\n')}
+                </Code>
+              </Card>
+            )}
+
             <BoundaryElementProvider element={rootElement}>
               {!hidden && (
                 <Flex direction="column" height="fill">
