@@ -1,5 +1,33 @@
 import {motion, useAnimation} from 'framer-motion'
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
+import styled, {keyframes} from 'styled-components'
+
+const rotateAnimation = keyframes`
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+`
+
+const SyncIcon = styled.g`
+  transition: opacity 200ms;
+  /* animation-name: ${rotateAnimation}; */
+  animation-duration: 1000ms;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  transform-origin: 'center';
+`
+
+const Root = styled.svg`
+  transition: opacity 200ms;
+  animation-name: ${({rotate}) => (rotate ? rotateAnimation : 'unset')};
+  animation-duration: 1000ms;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  transform-origin: 'center';
+`
 
 const Circle = (props) => (
   <motion.circle
@@ -30,13 +58,18 @@ const EditIcon = (props) => (
   <motion.path d="M15 7L18 10M6 19L7 15L17 5L20 8L10 18L6 19Z" animate={props.controls} />
 )
 
-export function AnimatedIcons(props) {
+interface AnimatedIconsProps {
+  currentState: 'syncing' | 'synced' | 'changed'
+}
+
+export function AnimatedIcons(props: AnimatedIconsProps) {
   const {currentState} = props
   const circleControls = useAnimation()
   const checkmarkControls = useAnimation()
   const arrowsControls = useAnimation()
   const syncIconControls = useAnimation()
   const editIconControls = useAnimation()
+  const [rotate, setRotate] = useState(false)
 
   const startSyncAnimation = async () => {
     // Stop any ongoing animations
@@ -69,14 +102,18 @@ export function AnimatedIcons(props) {
     })
 
     // Rotate syncIcon
-    syncIconControls.start({
-      rotate: [0, 360],
-      transition: {
-        duration: 1,
-        repeat: Infinity,
-        type: 'spring',
-      },
-    })
+    setRotate(true)
+    // syncIconControls.set({
+
+    // })
+    // syncIconControls.start({
+    //   rotate: [0, 360],
+    //   transition: {
+    //     duration: 1,
+    //     repeat: Infinity,
+    //     type: 'spring',
+    //   },
+    // })
   }
 
   const startSyncedAnimation = async () => {
@@ -93,10 +130,11 @@ export function AnimatedIcons(props) {
     })
 
     // Stop rotating syncIcon and reset any rotation
-    syncIconControls.stop()
-    syncIconControls.set({
-      rotate: 0,
-    })
+    setRotate(false)
+    // syncIconControls.stop()
+    // syncIconControls.set({
+    //   rotate: 0,
+    // })
 
     // Bounce the circle
     circleControls.set({
@@ -174,7 +212,7 @@ export function AnimatedIcons(props) {
   }, [currentState])
 
   return (
-    <motion.svg
+    <Root
       width="25"
       height="25"
       viewBox="0 0 25 25"
@@ -183,13 +221,14 @@ export function AnimatedIcons(props) {
       stroke="currentColor"
       strokeWidth="1.2"
       className="default"
+      rotate={rotate}
     >
-      <motion.g animate={syncIconControls}>
+      <SyncIcon>
         <Circle controls={circleControls} />
         <Arrows controls={arrowsControls} />
         <Checkmark controls={checkmarkControls} />
-      </motion.g>
+      </SyncIcon>
       <EditIcon controls={editIconControls} />
-    </motion.svg>
+    </Root>
   )
 }
