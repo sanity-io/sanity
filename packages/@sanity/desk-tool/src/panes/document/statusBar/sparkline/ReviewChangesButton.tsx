@@ -1,11 +1,12 @@
 import {useTimeAgo} from '@sanity/base/hooks'
-import {CheckmarkCircleIcon, CheckmarkIcon, EditIcon} from '@sanity/icons'
+import {EditIcon} from '@sanity/icons'
 import {useSyncState} from '@sanity/react-hooks'
 import {ButtonProps, Box, Flex, Text, Stack, Button} from '@sanity/ui'
 import {Tooltip} from 'part:@sanity/components/tooltip'
-import React, {forwardRef, useRef, useEffect, useState} from 'react'
+import React, {forwardRef, useRef, useState, useEffect} from 'react'
 import {useDocumentPane} from '../../useDocumentPane'
-import {AnimatedSyncIcon} from './AnimatedSyncIcon.styled'
+import {AnimatedIcons} from './AnimatedIcons'
+// import {AnimatedSyncIcon} from './AnimatedSyncIcon.styled'
 
 export interface ReviewChangesButtonProps
   extends Omit<ButtonProps, 'mode' | 'onClick' | 'padding' | 'selected' | 'tone' | 'type'> {
@@ -27,25 +28,38 @@ export const ReviewChangesButton = forwardRef(function ReviewChangesButton(
     changesOpen,
   } = useDocumentPane()
   const syncState = useSyncState(documentId, documentType)
-  const [displayState, setDisplayState] = useState('changes')
-  const [firstUpdate, setFirstUpdate] = useState(true)
-  const savedTimer = useRef(null)
-  const changesTimer = useRef(null)
+  const [currentState, setCurrentState] = useState('syncing')
+  const savedTimer = useRef()
+  const changesTimer = useRef()
 
   useEffect(() => {
-    if (syncState.isSyncing) {
-      setDisplayState('syncing')
+    if (syncState.isSyncing && currentState !== 'init') {
+      setCurrentState('syncing')
       clearInterval(savedTimer.current)
       clearInterval(changesTimer.current)
-    } else if (!firstUpdate) {
-      setFirstUpdate(false)
-      savedTimer.current = setTimeout(() => setDisplayState('saved'), 1500)
-      changesTimer.current = setTimeout(() => setDisplayState('changes'), 10000)
     }
-    if (firstUpdate) {
-      setFirstUpdate(false)
+
+    if (!syncState.isSyncing && currentState !== 'init') {
+      savedTimer.current = setTimeout(() => setCurrentState('synced'), 1500)
+      changesTimer.current = setTimeout(() => setCurrentState('changed'), 5000)
+    }
+
+    if (currentState === 'init') {
+      setCurrentState('')
     }
   }, [syncState])
+
+  const stateToTone = {
+    syncing: 'default',
+    synced: 'positive',
+    changed: 'caution',
+  }
+
+  const stateToText = {
+    syncing: 'Saving...',
+    synced: 'Saved',
+    changed: lastUpdatedTime,
+  }
 
   return (
     <Tooltip
@@ -63,25 +77,19 @@ export const ReviewChangesButton = forwardRef(function ReviewChangesButton(
       <Button
         aria-label="Review changes"
         mode="bleed"
-        tone={displayState === 'saved' ? 'positive' : 'caution'}
-        padding={3}
+        tone={stateToTone[currentState] || 'caution'}
+        padding={2}
         onClick={changesOpen ? handleHistoryClose : handleHistoryOpen}
         ref={ref}
         selected={changesOpen}
       >
         <Flex align="center">
-          <Box marginRight={3}>
-            <Text size={2}>
-              {displayState === 'changes' && <EditIcon />}
-              {displayState === 'syncing' && <AnimatedSyncIcon />}
-              {displayState === 'saved' && <CheckmarkIcon />}
+          <AnimatedIcons currentState={currentState} />
+          <Box marginLeft={2}>
+            <Text size={1} weight="medium">
+              {stateToText[currentState] || lastUpdatedTime}
             </Text>
           </Box>
-          <Text size={1} weight="medium">
-            {displayState === 'changes' && (lastUpdatedTime || <>&nbsp;</>)}
-            {displayState === 'saved' && 'saved'}
-            {displayState === 'syncing' && 'saving...'}
-          </Text>
         </Flex>
       </Button>
     </Tooltip>
