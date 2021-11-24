@@ -1,5 +1,6 @@
 import {Flex, ToastProvider, PortalProvider} from '@sanity/ui'
 import React, {useState, useCallback} from 'react'
+import {useBoolean} from '@sanity/ui-workshop'
 import {PaneLayout} from '../../PaneLayout'
 import {DocumentPane} from './DocumentPane'
 import {ListPane} from './ListPane'
@@ -7,6 +8,7 @@ import {Navbar} from './Navbar'
 import {panes} from './config'
 
 export function SplitPanesStory() {
+  const debug = useBoolean('Debug', false) || false
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
   const [layoutCollapsed, setLayoutCollapsed] = useState(false)
   const [path, setPath] = useState(['root'])
