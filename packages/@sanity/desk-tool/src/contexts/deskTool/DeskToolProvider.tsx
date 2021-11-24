@@ -5,24 +5,28 @@ import {DeskToolContextValue} from './types'
 /**
  * @internal
  */
-export function DeskToolProvider({
-  children,
-  layoutCollapsed,
-}: {
+export function DeskToolProvider(props: {
   children?: React.ReactNode
   layoutCollapsed: boolean
 }): React.ReactElement {
-  const contextValue: DeskToolContextValue = useMemo(
+  const {children, layoutCollapsed} = props
+
+  const features = useMemo(
     () => ({
-      features: {
-        backButton: layoutCollapsed,
-        reviewChanges: !layoutCollapsed,
-        splitPanes: !layoutCollapsed,
-        splitViews: !layoutCollapsed,
-      },
-      layoutCollapsed,
+      backButton: layoutCollapsed,
+      reviewChanges: !layoutCollapsed,
+      splitPanes: !layoutCollapsed,
+      splitViews: !layoutCollapsed,
     }),
     [layoutCollapsed]
+  )
+
+  const contextValue: DeskToolContextValue = useMemo(
+    () => ({
+      features,
+      layoutCollapsed,
+    }),
+    [features, layoutCollapsed]
   )
 
   return <DeskToolContext.Provider value={contextValue}>{children}</DeskToolContext.Provider>

@@ -1,6 +1,11 @@
 /**
  * @internal
  */
+export const PANE_DEBUG = false
+
+/**
+ * @internal
+ */
 export const PANE_COLLAPSED_WIDTH = 51
 
 /**
