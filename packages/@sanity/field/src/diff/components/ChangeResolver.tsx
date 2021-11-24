@@ -57,7 +57,11 @@ export function ChangeResolver(props: ChangeResolverProps) {
           value={undefined}
           {...restProps}
         >
-          <GroupChange change={change} {...restProps} />
+          <GroupChange
+            change={change}
+            {...restProps}
+            data-testid={`group-change-${change.fieldsetName}`}
+          />
         </ConditionalReadOnlyChange>
       </ConditionalHiddenChange>
     )
