@@ -253,7 +253,7 @@ export interface FieldGroup {
   description?: string
   readOnly?: boolean
   isDefault?: boolean
-  fields: ObjectField[]
+  fields?: ObjectField[]
 }
 
 export interface ObjectSchemaType extends BaseSchemaType {
