@@ -1,25 +1,23 @@
 import React, {useMemo} from 'react'
 import shallowEquals from 'shallow-equals'
 import {
-  FieldGroup,
   ConditionalProperty,
   Marker,
   ObjectField,
   ObjectSchemaTypeWithOptions,
   Path,
   SchemaType,
+  ObjectSchemaType,
 } from '@sanity/types'
 import {ChangeIndicatorProvider} from '@sanity/base/change-indicators'
 import * as PathUtils from '@sanity/util/paths'
 import generateHelpUrl from '@sanity/generate-help-url'
 import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/presence'
-import {Card, Tab, TabList} from '@sanity/ui'
-// import {EditIcon, EyeClosedIcon, EyeOpenIcon, PreviewIcon} from '@sanity/icons'
 import PatchEvent from './PatchEvent'
 import {emptyArray} from './utils/empty'
 import {Props as InputProps} from './inputs/types'
 import {ConditionalReadOnlyField} from './inputs/common'
-import {setSelectedTabName} from './fieldGroups/datastore'
+import {FilterGroupTabs} from './fieldGroups/FilterGroupTabs'
 
 const EMPTY_MARKERS: Marker[] = emptyArray()
 const EMPTY_PATH: Path = emptyArray()
@@ -46,10 +44,6 @@ interface FormBuilderInputProps {
   onKeyPress?: (ev: React.KeyboardEvent) => void
 }
 
-interface FieldGroupsTabsProps {
-  type: SchemaType
-}
-
 interface Context {
   presence?: FormFieldPresence[]
   formBuilder: any
@@ -61,46 +55,6 @@ const ENABLE_CONTEXT = () => undefined
 
 function getDisplayName(component: React.ComponentType) {
   return component.displayName || component.name || 'Unknown'
-}
-
-function FilterGroupTabs(props: FieldGroupsTabsProps) {
-  const {type} = props
-  const [id, setId] = React.useState('all-fields')
-  const filterGroups: FieldGroup[] = [
-    {
-      name: 'all-fields',
-      title: 'All Fields',
-    },
-    ...(type.groups || []),
-  ]
-
-  React.useEffect(() => {
-    setSelectedTabName(id)
-  }, [id])
-
-  return (
-    <Card paddingBottom={4} data-testid="field-groups">
-      <TabList space={2}>
-        {filterGroups.map((group) => {
-          const {name, title, icon} = group
-
-          return (
-            <Tab
-              data-testid={`group-${name}`}
-              key={`${name}-tab`}
-              id={`${name}-tab`}
-              icon={icon}
-              size={1}
-              aria-controls={`${name}-panel`}
-              label={title || name}
-              onClick={() => setId(name)}
-              selected={id === name}
-            />
-          )
-        })}
-      </TabList>
-    </Card>
-  )
 }
 
 export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
@@ -265,7 +219,8 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
     // Separate readOnly in order to resolve it to a boolean type
     const {readOnly, ...restProps} = this.props
     const InputComponent = this.resolveInputComponent(type)
-    const hasGroups = typeof type.groups === 'object'
+    const groupType = type as ObjectSchemaType
+    const hasGroups = typeof groupType.groups === 'object' && groupType.groups.length > 0
 
     if (!InputComponent) {
       return (
