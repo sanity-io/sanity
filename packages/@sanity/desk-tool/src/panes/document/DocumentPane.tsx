@@ -44,11 +44,10 @@ const DIALOG_PROVIDER_POSITION: DialogProviderProps['position'] = [
 ]
 
 const StyledChangeConnectorRoot = styled(ChangeConnectorRoot)`
-  flex: 2;
+  flex: 1;
   display: flex;
-  direction: column;
+  min-height: 0;
   min-width: 0;
-  height: 100%;
 `
 
 export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProviderProps) {
@@ -223,8 +222,9 @@ function InnerDocumentPane() {
     return (
       <>
         <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
-          <Flex flex={1} height={layoutCollapsed ? undefined : 'fill'}>
+          <Flex direction="column" flex={1} height={layoutCollapsed ? undefined : 'fill'}>
             <StyledChangeConnectorRoot
+              data-testid="change-connector-root"
               isReviewChangesOpen={changesOpen}
               onOpenReviewChanges={handleHistoryOpen}
               onSetFocus={handleFocus}
