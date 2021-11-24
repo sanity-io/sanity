@@ -1,7 +1,6 @@
 import React, {ComponentProps, ForwardedRef, forwardRef, RefObject, useCallback} from 'react'
-import {Autocomplete, Popover} from '@sanity/ui'
+import {Autocomplete, Box, Popover, Text} from '@sanity/ui'
 import styled from 'styled-components'
-import {AutocompleteHeightFix} from './utils/AutocompleteHeightFix'
 
 const StyledPopover = styled(Popover)`
   width: 100%;
