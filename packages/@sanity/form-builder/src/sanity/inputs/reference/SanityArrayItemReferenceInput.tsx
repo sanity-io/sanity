@@ -152,7 +152,7 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
       return []
     }
     return (
-      initialValueTemplateItems
+      (initialValueTemplateItems || [])
         // eslint-disable-next-line max-nested-callbacks
         .filter((i) => type.to.some((refType) => refType.name === i.template.schemaType))
         .map((item) => ({
