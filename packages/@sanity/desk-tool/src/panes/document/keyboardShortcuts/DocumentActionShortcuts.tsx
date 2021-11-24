@@ -13,6 +13,7 @@ import {useDocumentPane} from '../useDocumentPane'
 export interface KeyboardShortcutResponderProps {
   actionsBoxElement?: HTMLElement | null
   activeIndex: number
+  currentMinWidth?: number
   flex: number
   minWidth: number
   onActionStart: (index: number) => void
@@ -80,6 +81,8 @@ function KeyboardShortcutResponder(
 
 export interface DocumentActionShortcutsProps {
   actionsBoxElement?: HTMLElement | null
+  currentMinWidth?: number
+  debug?: boolean
   flex: number
   minWidth: number
   rootRef: React.Ref<HTMLDivElement>
