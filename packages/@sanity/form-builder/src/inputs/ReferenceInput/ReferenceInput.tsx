@@ -20,7 +20,6 @@ import {concat, Observable, of} from 'rxjs'
 import {useId} from '@reach/auto-id'
 import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 import {
-  Autocomplete,
   Box,
   Button,
   Card,
@@ -53,6 +52,7 @@ import {useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {AutocompleteHeightFix} from './utils/AutocompleteHeightFix'
 import {CreateButton} from './CreateButton'
+import {ReferenceAutocomplete} from './ReferenceAutocomplete'
 
 const INITIAL_SEARCH_STATE: SearchState = {
   hits: [],
@@ -385,30 +385,28 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
             >
               <Flex align="center">
                 <Box flex={2}>
-                  <AutocompleteHeightFix>
-                    <Autocomplete
-                      data-testid="autocomplete"
-                      loading={searchState.isLoading}
-                      ref={ref}
-                      id={inputId || ''}
-                      options={searchState.hits.map((hit) => ({
-                        value: hit.id,
-                        hit: hit,
-                      }))}
-                      onFocus={handleAutocompleteFocus}
-                      onBlur={onBlur}
-                      radius={1}
-                      placeholder="Type to search"
-                      onKeyDown={handleAutocompleteKeyDown}
-                      readOnly={readOnly}
-                      disabled={loadableReferenceInfo.isLoading}
-                      onQueryChange={handleQueryChange}
-                      onChange={handleChange}
-                      filterOption={NO_FILTER}
-                      renderOption={renderOption}
-                      openButton={{onClick: handleAutocompleteOpenButtonClick}}
-                    />
-                  </AutocompleteHeightFix>
+                  <ReferenceAutocomplete
+                    data-testid="autocomplete"
+                    loading={searchState.isLoading}
+                    ref={ref}
+                    id={inputId || ''}
+                    options={searchState.hits.map((hit) => ({
+                      value: hit.id,
+                      hit: hit,
+                    }))}
+                    onFocus={handleAutocompleteFocus}
+                    onBlur={onBlur}
+                    radius={1}
+                    placeholder="Type to search"
+                    onKeyDown={handleAutocompleteKeyDown}
+                    readOnly={readOnly}
+                    disabled={loadableReferenceInfo.isLoading}
+                    onQueryChange={handleQueryChange}
+                    onChange={handleChange}
+                    filterOption={NO_FILTER}
+                    renderOption={renderOption}
+                    openButton={{onClick: handleAutocompleteOpenButtonClick}}
+                  />
                 </Box>
                 {!readOnly && createOptions.length > 0 && (
                   <Box marginLeft={1}>

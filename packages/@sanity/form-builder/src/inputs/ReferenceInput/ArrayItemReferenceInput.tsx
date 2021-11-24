@@ -67,6 +67,7 @@ import {useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {AutocompleteHeightFix} from './utils/AutocompleteHeightFix'
 import {CreateButton} from './CreateButton'
+import {ReferenceAutocomplete} from './ReferenceAutocomplete'
 
 const INITIAL_SEARCH_STATE: SearchState = {
   hits: [],
@@ -406,30 +407,28 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
             >
               <Flex direction={['column', 'column', 'row', 'row']}>
                 <Card flex={1}>
-                  <AutocompleteHeightFix>
-                    <Autocomplete
-                      data-testid="autocomplete"
-                      loading={searchState.isLoading}
-                      ref={ref}
-                      id={inputId || ''}
-                      options={searchState.hits.map((hit) => ({
-                        value: hit.id,
-                        hit: hit,
-                      }))}
-                      onFocus={handleAutocompleteFocus}
-                      onBlur={onBlur}
-                      radius={1}
-                      placeholder="Type to search"
-                      onKeyDown={handleAutocompleteKeyDown}
-                      readOnly={readOnly}
-                      disabled={loadableReferenceInfo.isLoading}
-                      onQueryChange={handleQueryChange}
-                      onChange={handleChange}
-                      filterOption={NO_FILTER}
-                      renderOption={renderOption}
-                      openButton={{onClick: handleAutocompleteOpenButtonClick}}
-                    />
-                  </AutocompleteHeightFix>
+                  <ReferenceAutocomplete
+                    data-testid="autocomplete"
+                    loading={searchState.isLoading}
+                    ref={ref}
+                    id={inputId || ''}
+                    options={searchState.hits.map((hit) => ({
+                      value: hit.id,
+                      hit: hit,
+                    }))}
+                    onFocus={handleAutocompleteFocus}
+                    onBlur={onBlur}
+                    radius={1}
+                    placeholder="Type to search"
+                    onKeyDown={handleAutocompleteKeyDown}
+                    readOnly={readOnly}
+                    disabled={loadableReferenceInfo.isLoading}
+                    onQueryChange={handleQueryChange}
+                    onChange={handleChange}
+                    filterOption={NO_FILTER}
+                    renderOption={renderOption}
+                    openButton={{onClick: handleAutocompleteOpenButtonClick}}
+                  />
                 </Card>
                 {!readOnly && createOptions.length > 0 && (
                   <Box marginLeft={1}>

@@ -1,0 +1,37 @@
+import React, {ComponentProps, ForwardedRef, forwardRef, RefObject, useRef} from 'react'
+import {Autocomplete, Popover} from '@sanity/ui'
+import styled from 'styled-components'
+import {AutocompleteHeightFix} from './utils/AutocompleteHeightFix'
+
+const StyledPopover = styled(Popover)`
+  width: 100%;
+  & > div {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+`
+
+export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
+  props: ComponentProps<typeof Autocomplete> & {popoverRef?: RefObject<HTMLDivElement>},
+  ref: ForwardedRef<HTMLInputElement>
+) {
+  return (
+    <AutocompleteHeightFix>
+      <Autocomplete
+        {...props}
+        ref={ref}
+        renderPopover={({content, hidden, inputElement}) => (
+          <StyledPopover
+            placement="bottom-start"
+            arrow={false}
+            constrainSize
+            content={content}
+            open={!props.loading && !hidden}
+            ref={props.popoverRef}
+            referenceElement={inputElement}
+          />
+        )}
+      />
+    </AutocompleteHeightFix>
+  )
+})
