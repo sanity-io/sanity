@@ -10,27 +10,27 @@ const StyledPopover = styled(Popover)`
   }
 `
 
+const MARGINS: [number, number, number, number] = [-2, 0, 0, 0]
+
 export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
   props: ComponentProps<typeof Autocomplete> & {popoverRef?: RefObject<HTMLDivElement>},
   ref: ForwardedRef<HTMLInputElement>
 ) {
+  const hasHits = props.options.length > 0
   const renderPopover = useCallback(
     ({content, hidden, inputElement}) => (
       <StyledPopover
+        __unstable_margins={MARGINS}
         placement="bottom-start"
         arrow={false}
         constrainSize
         content={content}
-        open={!props.loading && !hidden}
+        open={hasHits && !props.loading && !hidden}
         ref={props.popoverRef}
         referenceElement={inputElement}
       />
     ),
-    [props.loading, props.popoverRef]
+    [props.loading, hasHits, props.popoverRef]
   )
-  return (
-    <AutocompleteHeightFix>
-      <Autocomplete {...props} ref={ref} renderPopover={renderPopover} />
-    </AutocompleteHeightFix>
-  )
+  return <Autocomplete {...props} ref={ref} renderPopover={renderPopover} />
 })
