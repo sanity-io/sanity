@@ -22,6 +22,7 @@ import {
   rgba,
   TextInput,
   TextArea,
+  studioTheme,
 } from '@sanity/ui'
 import {
   ChevronDownIcon,
@@ -68,7 +69,7 @@ const RatioBox = styled(Box)`
   /* padding-bottom: min(200px, 30vh); //min(calc(${({ratio = 3 / 2}) =>
     1 / ratio} * 100%), 30vh); */
   height: 30vh;
-  min-height: 10rem;
+  min-height: 3.75rem;
   max-height: ${({maxHeight}) => maxHeight};
   width: 100%;
   resize: ${({enableResize}) => (enableResize ? 'vertical' : 'initial')};
@@ -98,7 +99,9 @@ const Overlay = styled(Flex)`
   right: 0;
   bottom: 0;
   backdrop-filter: ${({drag}) => (drag ? 'blur(10px)' : '')};
-  background-color: ${({theme, drag}) => (drag ? rgba(theme.sanity.color.base.bg, 0.5) : 'transparent')};
+  color: ${studioTheme.color.light.primary.card.enabled.fg};
+  background-color: ${({theme, drag}) =>
+    drag ? rgba(studioTheme.color.light.primary.card.enabled.bg, 0.8) : 'transparent'};
 `
 
 const UploadCircle = styled(Box)`
@@ -123,6 +126,10 @@ const ResizeHandle = styled(Card)`
 `
 const MAX_HEIGHT = '15rem'
 
+const ProgressBar = styled(Card)`
+  background-color: ${({theme}) => theme.sanity.color.spot.blue};
+`
+
 export default function CompactImage() {
   const imageContainer = useRef()
   const hasImage = useBoolean('Image', false, 'Props')
@@ -140,6 +147,7 @@ export default function CompactImage() {
     const ro = new ResizeObserver(() => {
       if (!firstResize.current && hasImage) {
         setMaxHeight('unset')
+        window.localStorage.setItem('imageHeight', imageContainer.current.offsetHeight)
       }
 
       if (firstResize.current) {
@@ -148,22 +156,28 @@ export default function CompactImage() {
     })
     ro.observe(imageContainer.current)
     return () => ro.disconnect()
-  }, [hasImage  ])
+  }, [hasImage])
 
   useEffect(() => {
     if (!hasImage && imageContainer.current) {
       setMaxHeight(MAX_HEIGHT)
-      imageContainer.current.style.height = '30vh'
+      imageContainer.current.style.height = '10rem'
+    }
+
+    if (hasImage) {
+      const storedHeight = window.localStorage.getItem('imageHeight')
+      imageContainer.current.style.height = storedHeight ? `${storedHeight}px` : '30vh'
     }
   }, [hasImage])
-
 
   return (
     <>
       <Container width={1}>
         <Stack space={6} marginTop={6}>
           <Stack space={3}>
-            <Text size={1} weight="semibold">Slug</Text>
+            <Text size={1} weight="semibold">
+              Slug
+            </Text>
             <Flex gap={1}>
               <Box flex={1}>
                 <TextInput />
@@ -171,27 +185,63 @@ export default function CompactImage() {
               <Button fontSize={1} mode="ghost" text="Generate" />
             </Flex>
           </Stack>
+          <Stack space={3}>
+            <Text weight="semibold" size={1}>
+              Very compact default mode
+            </Text>
+            <Card
+              border
+              padding={3}
+              style={{
+                borderStyle: 'dashed',
+              }}
+            >
+              <Flex align="center" justify="space-between" gap={3}>
+                <Inline space={2}>
+                  <Button fontSize={1} text="Select" icon={SearchIcon} mode="ghost" />
+                  <Button fontSize={1} text="Upload" icon={UploadIcon} mode="ghost" />
+                </Inline>
+                <Flex align="center" gap={2} flex={1}>
+                  <Text size={1} muted>
+                    <UploadIcon />
+                  </Text>
+                  <Text size={1} muted>
+                    Paste or drag image here
+                  </Text>
+                </Flex>
+              </Flex>
+            </Card>
+          </Stack>
           <Stack space={3} paddingX={[3, 3, 0, 0]}>
             <Text weight="semibold" size={1}>
               Image input
             </Text>
-            <Card border style={{borderStyle: hasImage ? 'solid' : 'dashed'}}>
+            <Card
+              border
+              style={{borderStyle: hasImage || uploading || drag ? 'solid' : 'dashed'}}
+              tabIndex={0}
+              tone={drag ? 'primary' : 'default'}
+            >
               <RatioBox
                 ref={imageContainer}
                 // maxHeight={maxHeight}
-                minHeight={200}
                 enableResize={hasImage}
-                style={{maxHeight: maxHeight, height: '30vh'}}
+                style={{maxHeight}}
                 // onResize={handleResize}
               >
                 {uploading && (
                   <Card tone="transparent" height="fill">
-                    <Flex align="center" justify="center" height="fill" direction="column" gap={4}>
-                      <UploadCircle />
+                    <Flex align="center" justify="center" height="fill" direction="column" gap={2}>
                       <Inline space={2}>
                         <Text size={1}>Uploading</Text>
                         <Code size={1}>some-file-name.jpg</Code>
                       </Inline>
+                      <Card marginBottom={3} style={{width: '50%', position: 'relative',}} radius={5} shadow={1}>
+                        <ProgressBar
+                          radius={5}
+                          style={{height: '0.5rem', width: '50%'}}
+                        />
+                      </Card>
                       <Button fontSize={1} text="Cancel upload" mode="ghost" tone="critical" />
                     </Flex>
                   </Card>
@@ -200,9 +250,9 @@ export default function CompactImage() {
                 {hasImage && !uploading && (
                   <>
                     <Card data-container tone="transparent" sizing="border">
-                      <img src={'https://source.unsplash.com/random/featured?moon'} />
+                      <img src={'https://source.unsplash.com/random?moon'} />
                     </Card>
-                    <Overlay justify="flex-end" padding={3} drag={drag && !readOnly}>
+                    <Overlay justify="flex-end" padding={3} drag={drag && !readOnly} hasImage={hasImage}>
                       {drag && !readOnly && (
                         <Flex
                           direction="column"
@@ -235,17 +285,15 @@ export default function CompactImage() {
                         <MenuButton
                           id="image-menu"
                           button={
-                            <Button
-                              icon={EllipsisVerticalIcon}
-                              mode="ghost"
-                              disabled={readOnly}
-                            />
+                            <Button icon={EllipsisVerticalIcon} mode="ghost" disabled={readOnly} />
                           }
                           portal
                           menu={
                             <Menu>
                               <Card padding={2}>
-                                <Label muted size={1}>Replace</Label>
+                                <Label muted size={1}>
+                                  Replace
+                                </Label>
                               </Card>
                               {!assetSources && <MenuItem icon={SearchIcon} text="Browse" />}
                               {assetSources && (
@@ -265,21 +313,14 @@ export default function CompactImage() {
                   </>
                 )}
                 {!hasImage && !uploading && (
-                  <Card data-container tone={drag ? 'transparent' : 'default'}>
-                    <Stack space={1}>
+                  <Card data-container tone={drag ? 'primary' : 'default'}>
+                    <Stack space={0}>
                       {!readOnly && (
                         <Flex justify="center">
                           <Box marginBottom={[2, 2, 4, 4]}>
-                            <Stack space={3}>
-                              <Flex justify="center">
-                                <Text size={4} muted={!drag}>
-                                  <UploadIcon />
-                                </Text>
-                              </Flex>
-                              <Text size={1} muted={!drag}>
-                                Drag or paste image here
-                              </Text>
-                            </Stack>
+                            <Text size={1} muted={!drag}>
+                              <UploadIcon /> &nbsp; Drag or paste image here
+                            </Text>
                           </Box>
                         </Flex>
                       )}
@@ -332,7 +373,9 @@ export default function CompactImage() {
             </Card>
           </Stack>
           <Stack space={3}>
-            <Text size={1} weight="semibold">Another field</Text>
+            <Text size={1} weight="semibold">
+              Another field
+            </Text>
             <TextArea />
           </Stack>
 
