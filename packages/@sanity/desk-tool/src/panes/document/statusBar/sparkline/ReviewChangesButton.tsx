@@ -3,9 +3,10 @@ import {EditIcon} from '@sanity/icons'
 import {useSyncState} from '@sanity/react-hooks'
 import {ButtonProps, Box, Flex, Text, Stack, Button} from '@sanity/ui'
 import {Tooltip} from 'part:@sanity/components/tooltip'
-import React, {forwardRef} from 'react'
+import React, {forwardRef, useRef, useState, useEffect} from 'react'
 import {useDocumentPane} from '../../useDocumentPane'
-import {AnimatedSyncIcon} from './AnimatedSyncIcon.styled'
+import {AnimatedIcons} from './AnimatedIcons'
+// import {AnimatedSyncIcon} from './AnimatedSyncIcon.styled'
 
 export interface ReviewChangesButtonProps
   extends Omit<ButtonProps, 'mode' | 'onClick' | 'padding' | 'selected' | 'tone' | 'type'> {
@@ -27,6 +28,53 @@ export const ReviewChangesButton = forwardRef(function ReviewChangesButton(
     changesOpen,
   } = useDocumentPane()
   const syncState = useSyncState(documentId, documentType)
+  const [currentState, setCurrentState] = useState('init')
+  const savedTimer = useRef()
+  const changesTimer = useRef()
+
+  // useEffect(() => {
+  //   if (syncState.isSyncing && currentState !== 'init') {
+  //     setCurrentState('syncing')
+  //     const syncedTimer = setTimeout(() => setCurrentState('synced'), 1000)
+  //     const moreTimeTimer = setTimeout(() => setCurrentState('changed'), 5000)
+  //     return () => {
+  //       clearTimeout(syncedTimer)
+  //       clearTimeout(moreTimeTimer)
+  //     }
+  //   } else if (currentState === 'init') {
+  //     setCurrentState('')
+  //   }
+  // }, [syncState])
+
+  useEffect(() => {
+    console.log(lastUpdatedTime)
+    if (syncState.isSyncing && currentState !== 'init') {
+      setCurrentState('syncing')
+      clearInterval(savedTimer.current)
+      clearInterval(changesTimer.current)
+    }
+
+    if (!syncState.isSyncing && currentState !== 'init') {
+      savedTimer.current = setTimeout(() => setCurrentState('synced'), 1500)
+      changesTimer.current = setTimeout(() => setCurrentState('changed'), 5000)
+    }
+
+    if (currentState === 'init') {
+      setCurrentState('')
+    }
+  }, [syncState])
+
+  const stateToTone = {
+    syncing: 'default',
+    synced: 'positive',
+    changed: 'caution',
+  }
+
+  const stateToText = {
+    syncing: 'Saving...',
+    synced: 'Saved',
+    changed: lastUpdatedTime
+  }
 
   return (
     <Tooltip
@@ -44,19 +92,19 @@ export const ReviewChangesButton = forwardRef(function ReviewChangesButton(
       <Button
         aria-label="Review changes"
         mode="bleed"
-        tone="caution"
-        padding={3}
+        tone={stateToTone[currentState] || 'caution'}
+        padding={2}
         onClick={changesOpen ? handleHistoryClose : handleHistoryOpen}
         ref={ref}
         selected={changesOpen}
       >
         <Flex align="center">
-          <Box marginRight={3}>
-            <Text size={2}>{syncState.isSyncing ? <AnimatedSyncIcon /> : <EditIcon />}</Text>
+          <AnimatedIcons currentState={currentState} />
+          <Box marginLeft={2}>
+            <Text size={1} weight="medium">
+              {stateToText[currentState] || lastUpdatedTime}
+            </Text>
           </Box>
-          <Text size={1} weight="medium">
-            {lastUpdatedTime || <>&nbsp;</>}
-          </Text>
         </Flex>
       </Button>
     </Tooltip>
