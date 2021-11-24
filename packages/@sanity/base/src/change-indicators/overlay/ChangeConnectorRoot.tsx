@@ -19,6 +19,7 @@ function EnabledChangeConnectorRoot({
   onSetFocus,
   isReviewChangesOpen,
   onOpenReviewChanges,
+  ...restProps
 }: EnabledChangeConnectorRootProps) {
   const [rootElement, setRootElement] = React.useState<HTMLDivElement | null>()
 
@@ -34,7 +35,7 @@ function EnabledChangeConnectorRoot({
   return (
     <ConnectorContext.Provider value={contextValue}>
       <Tracker>
-        <ScrollContainer ref={setRootElement} className={className}>
+        <ScrollContainer {...restProps} ref={setRootElement} className={className}>
           {children}
           {rootElement && <ConnectorsOverlay rootElement={rootElement} onSetFocus={onSetFocus} />}
         </ScrollContainer>
