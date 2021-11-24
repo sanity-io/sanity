@@ -150,6 +150,7 @@ export function buildFieldsetChangeList(
     {
       type: 'group',
       key: pathToString(path) || 'root',
+      fieldsetName: name,
       path,
       titlePath: fieldSetTitlePath,
       changes: reduceTitlePaths(changes, fieldSetTitlePath.length),
