@@ -36,6 +36,10 @@ declare const __DEV__: boolean
 
 type DocumentPaneOptions = DocumentPaneNode['options']
 
+const DOCUMENT_PANEL_MIN_WIDTH = 320
+const DOCUMENT_PANEL_INITIAL_MIN_WIDTH = 600
+const CHANGES_PANEL_MIN_WIDTH = 320
+
 const DIALOG_PROVIDER_POSITION: DialogProviderProps['position'] = [
   // We use the `position: fixed` for dialogs on narrow screens (< 512px).
   'fixed',
@@ -254,12 +258,21 @@ function InnerDocumentPane() {
     zOffsets.portal,
   ])
 
+  const currentMinWidth = changesOpen
+    ? DOCUMENT_PANEL_INITIAL_MIN_WIDTH + CHANGES_PANEL_MIN_WIDTH
+    : DOCUMENT_PANEL_INITIAL_MIN_WIDTH
+
+  const minWidth = changesOpen
+    ? DOCUMENT_PANEL_MIN_WIDTH + CHANGES_PANEL_MIN_WIDTH
+    : DOCUMENT_PANEL_MIN_WIDTH
+
   return (
     <DocumentActionShortcuts
       actionsBoxElement={actionsBoxElement}
+      currentMinWidth={currentMinWidth}
       data-testid="document-pane"
       flex={2.5}
-      minWidth={changesOpen ? 640 : 320}
+      minWidth={minWidth}
       onKeyUp={handleKeyUp}
       rootRef={setRootElement}
     >

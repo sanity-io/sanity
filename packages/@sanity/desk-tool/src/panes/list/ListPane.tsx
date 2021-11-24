@@ -21,7 +21,8 @@ const Divider = styled.hr`
 /**
  * @internal
  */
-export function ListPane({childItemId, index, isActive, isSelected, pane, paneKey}: ListPaneProps) {
+export function ListPane(props: ListPaneProps) {
+  const {childItemId, index, isActive, isSelected, pane, paneKey} = props
   const {features} = useDeskTool()
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {defaultLayout, displayOptions, items, menuItems, menuItemGroups, title} = pane
