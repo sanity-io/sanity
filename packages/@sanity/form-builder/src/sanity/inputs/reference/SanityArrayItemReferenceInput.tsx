@@ -118,6 +118,7 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
     [documentRef, getValuePath, type]
   )
 
+  const template = props.value?._strengthenOnPublish?.template
   const EditReferenceLink = useMemo(
     () =>
       forwardRef(function EditReferenceLink_(
@@ -125,10 +126,15 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
         forwardedRef: ForwardedRef<'a'>
       ) {
         return EditReferenceLinkComponent ? (
-          <EditReferenceLinkComponent {..._props} ref={forwardedRef} parentRefPath={valuePath} />
+          <EditReferenceLinkComponent
+            {..._props}
+            ref={forwardedRef}
+            parentRefPath={valuePath}
+            template={template}
+          />
         ) : null
       }),
-    [EditReferenceLinkComponent, valuePath]
+    [EditReferenceLinkComponent, valuePath, template]
   )
 
   const handleEditReference = useCallback(

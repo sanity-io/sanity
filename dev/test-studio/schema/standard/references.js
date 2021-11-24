@@ -30,9 +30,9 @@ export default {
         {type: 'book', title: 'Inline book'},
         {
           type: 'reference',
-          title: 'Reference to either "species" or "empty" document',
+          title: 'Reference to either "species", "empty" or "book"',
           description: 'Some description',
-          to: [{type: 'species'}, {type: 'empty'}],
+          to: [{type: 'species'}, {type: 'empty'}, {type: 'book'}],
         },
       ],
     },
