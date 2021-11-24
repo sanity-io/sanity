@@ -6,7 +6,7 @@ import {ListPane} from './ListPane'
 import {Navbar} from './Navbar'
 import {panes} from './config'
 
-export function SplitPanes() {
+export function SplitPanesStory() {
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
   const [layoutCollapsed, setLayoutCollapsed] = useState(false)
   const [path, setPath] = useState(['root'])

@@ -5,21 +5,21 @@ export default defineScope('desk-tool/pane', 'Pane', [
   {
     name: 'example',
     title: 'Example',
-    component: lazy(() => import('./example')),
+    component: lazy(() => import('./ExampleStory')),
   },
   {
     name: 'split-panes',
     title: 'Split panes',
-    component: lazy(() => import('./SplitPanes')),
+    component: lazy(() => import('./SplitPanesStory')),
   },
   {
     name: 'change-connectors',
     title: 'Change connectors',
-    component: lazy(() => import('./changeConnectors')),
+    component: lazy(() => import('./ChangeConnectorsStory')),
   },
   {
     name: 'resize',
     title: 'Resize',
-    component: lazy(() => import('./resize')),
+    component: lazy(() => import('./ResizeStory')),
   },
 ])
