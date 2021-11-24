@@ -55,15 +55,22 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
     (event) => {
       const nextInputValue = event.currentTarget.value
       const result = nextInputValue === '' ? null : parseInputValue(nextInputValue)
+
       if (result === null) {
         onChange(null)
+
+        // If the field value is undefined and we are clearing the invalid value
+        // the above useEffect won't trigger, so we do some extra clean up here
+        if (typeof value === 'undefined' && localValue) {
+          setLocalValue(null)
+        }
       } else if (result.isValid) {
         onChange(serialize(result.date))
       } else {
         setLocalValue(nextInputValue)
       }
     },
-    [serialize, onChange, parseInputValue]
+    [localValue, serialize, onChange, parseInputValue]
   )
 
   const handleDatePickerChange = React.useCallback(

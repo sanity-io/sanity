@@ -66,6 +66,7 @@ export const LazyTextInput = React.forwardRef(function LazyTextInput(
   return (
     <TextInput
       {...rest}
+      data-testid="date-input"
       ref={forwardedRef}
       value={inputValue === undefined ? value : inputValue}
       onChange={handleChange}
