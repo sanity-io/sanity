@@ -2,7 +2,7 @@
 /* eslint-disable max-nested-callbacks,no-nested-ternary */
 import React, {ComponentProps} from 'react'
 import {AddIcon} from '@sanity/icons'
-import {Box, Button, Menu, MenuButton, MenuItem, Text, Tooltip} from '@sanity/ui'
+import {Box, Button, Inline, Menu, MenuButton, MenuItem, Text, Tooltip} from '@sanity/ui'
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
 import {CreateOption} from './types'
 
@@ -17,6 +17,8 @@ function ConditionalTooltip(props: ComponentProps<typeof Tooltip> & {enabled: bo
   return enabled ? <Tooltip {...rest} /> : props.children
 }
 
+const INLINE_BLOCK_STYLE = {display: 'inline-flex'}
+
 export function CreateButton(props: Props) {
   const {createOptions, onCreate, id, ...rest} = props
 
@@ -30,7 +32,8 @@ export function CreateButton(props: Props) {
           </Box>
         }
       >
-        <div>
+        {/* this wrapper div is needed because disabled button doesn't trigger mouse events */}
+        <div style={INLINE_BLOCK_STYLE}>
           <Button text="Create new" mode="ghost" disabled icon={AddIcon} />
         </div>
       </Tooltip>
@@ -54,6 +57,7 @@ export function CreateButton(props: Props) {
               }
               portal
             >
+              {/* this wrapper div is needed because disabled button doesn't trigger mouse events */}
               <div>
                 <MenuItem
                   disabled={!createOption.permission.granted}
