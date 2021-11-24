@@ -66,6 +66,7 @@ import typeWithNoToplevelStrings from './debug/typeWithNoToplevelStrings'
 import uploads from './debug/uploads'
 import validation, {validationArraySuperType} from './debug/validation'
 import {withDocumentTestSchemaType} from './debug/withDocumentTest'
+import fieldGroups from './debug/fieldGroups'
 
 // Test documents with official plugin inputs
 import code from './plugins/code'
@@ -82,6 +83,7 @@ import mux from './externalPlugins/mux'
 import book from './book'
 import author from './author'
 import species from './species'
+import fieldGroupsDefault from './debug/fieldGroupsDefault'
 
 // CI documents
 import conditionalFieldset from './ci/conditionalFieldset'
@@ -172,5 +174,7 @@ export default createSchema({
     validationArraySuperType,
     validationTest,
     withDocumentTestSchemaType,
+    fieldGroups,
+    fieldGroupsDefault,
   ]),
 })

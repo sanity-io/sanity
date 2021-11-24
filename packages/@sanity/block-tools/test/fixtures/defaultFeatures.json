@@ -108,6 +108,7 @@
             }
           }
         ],
+        "groups": [],
         "preview": {
           "select": {
             "href": "href"
@@ -263,6 +264,7 @@
                             }
                           }
                         ],
+                        "groups": [],
                         "preview": {
                           "select": {
                             "href": "href"
@@ -530,6 +532,7 @@
               }
             }
           ],
+          "groups": [],
           "preview": {
             "select": {
               "title": "language"
@@ -639,6 +642,7 @@
               }
             }
           ],
+          "groups": [],
           "preview": {
             "select": {
               "href": "href"
@@ -824,6 +828,7 @@
             }
           }
         ],
+        "groups": [],
         "preview": {
           "select": {
             "title": "language"
