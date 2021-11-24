@@ -66,6 +66,7 @@ import typeWithNoToplevelStrings from './debug/typeWithNoToplevelStrings'
 import uploads from './debug/uploads'
 import validation, {validationArraySuperType} from './debug/validation'
 import {withDocumentTestSchemaType} from './debug/withDocumentTest'
+import fieldGroups from './debug/fieldGroups'
 
 // Test documents with official plugin inputs
 import code from './plugins/code'
@@ -170,5 +171,6 @@ export default createSchema({
     validation,
     validationArraySuperType,
     withDocumentTestSchemaType,
+    fieldGroups,
   ]),
 })
