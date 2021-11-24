@@ -194,6 +194,7 @@ export interface GroupChangeNode {
   schemaType?: SchemaType
   readOnly?: ConditionalProperty
   hidden?: ConditionalProperty
+  fieldsetName?: string
 }
 
 export interface FieldChangeNode {
