@@ -13,13 +13,11 @@ import {
   isValidationErrorMarker,
   isValidationMarker,
   Marker,
-  ObjectSchemaType,
   Path,
   Reference,
   ReferenceSchemaType,
 } from '@sanity/types'
 import {
-  AddIcon,
   EllipsisVerticalIcon,
   LaunchIcon as OpenInNewTabIcon,
   SyncIcon as ReplaceIcon,
