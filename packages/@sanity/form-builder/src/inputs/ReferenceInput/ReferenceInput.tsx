@@ -50,9 +50,9 @@ import {CreateOption, EditReferenceEvent, ReferenceInfo, SearchFunction, SearchS
 import {OptionPreview} from './OptionPreview'
 import {useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
-import {AutocompleteHeightFix} from './utils/AutocompleteHeightFix'
 import {CreateButton} from './CreateButton'
 import {ReferenceAutocomplete} from './ReferenceAutocomplete'
+import {AutocompleteContainer} from './AutocompleteContainer'
 
 const INITIAL_SEARCH_STATE: SearchState = {
   hits: [],
@@ -381,44 +381,38 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
               hasFocus={focusPath?.[0] === '_ref'}
               isChanged={value?._ref !== compareValue?._ref}
             >
-              <Flex align="center">
-                <Box flex={2}>
-                  <ReferenceAutocomplete
-                    data-testid="autocomplete"
-                    loading={searchState.isLoading}
-                    ref={ref}
-                    id={inputId || ''}
-                    options={searchState.hits.map((hit) => ({
-                      value: hit.id,
-                      hit: hit,
-                    }))}
-                    onFocus={handleAutocompleteFocus}
-                    onBlur={onBlur}
-                    radius={1}
-                    placeholder="Type to search"
-                    onKeyDown={handleAutocompleteKeyDown}
-                    readOnly={readOnly}
-                    disabled={loadableReferenceInfo.isLoading}
-                    onQueryChange={handleQueryChange}
-                    onChange={handleChange}
-                    filterOption={NO_FILTER}
-                    renderOption={renderOption}
-                    openButton={{onClick: handleAutocompleteOpenButtonClick}}
-                  />
-                </Box>
+              <AutocompleteContainer>
+                <ReferenceAutocomplete
+                  data-testid="autocomplete"
+                  loading={searchState.isLoading}
+                  ref={ref}
+                  id={inputId || ''}
+                  options={searchState.hits.map((hit) => ({
+                    value: hit.id,
+                    hit: hit,
+                  }))}
+                  onFocus={handleAutocompleteFocus}
+                  onBlur={onBlur}
+                  radius={1}
+                  placeholder="Type to search"
+                  onKeyDown={handleAutocompleteKeyDown}
+                  readOnly={readOnly}
+                  disabled={loadableReferenceInfo.isLoading}
+                  onQueryChange={handleQueryChange}
+                  onChange={handleChange}
+                  filterOption={NO_FILTER}
+                  renderOption={renderOption}
+                  openButton={{onClick: handleAutocompleteOpenButtonClick}}
+                />
                 {!readOnly && createOptions.length > 0 && (
-                  <Box marginLeft={1}>
-                    <Inline space={2}>
-                      <CreateButton
-                        id={`${inputId}-selectTypeMenuButton`}
-                        createOptions={createOptions}
-                        onCreate={handleCreateNew}
-                        onKeyDown={handleCreateButtonKeyDown}
-                      />
-                    </Inline>
-                  </Box>
+                  <CreateButton
+                    id={`${inputId}-selectTypeMenuButton`}
+                    createOptions={createOptions}
+                    onCreate={handleCreateNew}
+                    onKeyDown={handleCreateButtonKeyDown}
+                  />
                 )}
-              </Flex>
+              </AutocompleteContainer>
             </ChangeIndicatorForFieldPath>
           </Stack>
         ) : (
