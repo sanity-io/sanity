@@ -67,6 +67,7 @@ import {CreateButton} from './CreateButton'
 import {ReferenceAutocomplete} from './ReferenceAutocomplete'
 import {AutocompleteContainer} from './AutocompleteContainer'
 import {useOnClickOutside} from './utils/useOnClickOutside'
+import styled from 'styled-components'
 
 const INITIAL_SEARCH_STATE: SearchState = {
   hits: [],
@@ -94,6 +95,18 @@ export interface Props {
   presence: FormFieldPresence[]
   level: number
 }
+
+const OptionCard = styled(Card)`
+  /* TextWithTone uses its own logic to set color, and we therefore need 
+  to override this logic in order to set the correct color in different states */
+  &[data-selected],
+  &[data-pressed],
+  &:active {
+    [data-ui='TextWithTone'] {
+      color: inherit;
+    }
+  }
+`
 
 const NO_FILTER = () => true
 
@@ -463,13 +476,12 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
           <Box flex={1}>
             <Flex align="center">
               {hasRef ? (
-                <Card
+                <OptionCard
                   flex={1}
                   padding={1}
                   paddingRight={3}
                   radius={2}
-                  as={EditReferenceLink}
-                  //@ts-expect-error issue with styled components "as" polymorphism
+                  forwardedAs={EditReferenceLink as any}
                   documentId={value?._ref}
                   documentType={refType?.name}
                   data-as="a"
@@ -490,7 +502,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
                     type={type}
                     selected={selected}
                   />
-                </Card>
+                </OptionCard>
               ) : (
                 <Card
                   flex={1}
