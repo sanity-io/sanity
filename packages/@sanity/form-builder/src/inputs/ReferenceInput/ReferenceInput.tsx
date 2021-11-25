@@ -38,6 +38,7 @@ import {ChangeIndicatorForFieldPath, FormField, IntentLink} from '@sanity/base/c
 import {getPublishedId} from '@sanity/base/_internal'
 import {useObservableCallback} from 'react-rx'
 import {uuid} from '@sanity/uuid'
+import styled from 'styled-components'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
@@ -68,6 +69,18 @@ const NO_FILTER = () => true
 function nonNullable<T>(v: T): v is NonNullable<T> {
   return v !== null
 }
+
+const OptionCard = styled(Card)`
+  /* TextWithTone uses its own logic to set color, and we therefore need
+  to override this logic in order to set the correct color in different states */
+  &[data-selected],
+  &[data-pressed],
+  &:active {
+    [data-ui='TextWithTone'] {
+      color: inherit;
+    }
+  }
+`
 
 const REF_PATH = ['_ref']
 export const ReferenceInput = forwardRef(function ReferenceInput(
@@ -297,11 +310,11 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
     (option) => {
       const id = option.hit.draft?._id || option.hit.published?._id
       return (
-        <Card as="button" type="button" radius={2}>
+        <OptionCard forwardedAs="button" type="button" radius={2}>
           <Box paddingX={3} paddingY={1}>
             <OptionPreview type={type} id={id} getReferenceInfo={getReferenceInfoMemo} />
           </Box>
-        </Card>
+        </OptionCard>
       )
     },
     [type, getReferenceInfoMemo]
@@ -446,13 +459,12 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
               }
             >
               <Flex align="center" padding={1}>
-                <Card
+                <OptionCard
                   flex={1}
                   padding={1}
                   paddingRight={3}
                   radius={2}
-                  as={EditReferenceLink}
-                  //@ts-expect-error issue with styled components "as" polymorphism
+                  forwardedAs={EditReferenceLink}
                   documentId={value?._ref}
                   documentType={refType?.name}
                   data-as="a"
@@ -473,7 +485,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
                     type={type}
                     selected={selected}
                   />
-                </Card>
+                </OptionCard>
                 <Inline paddingX={1}>
                   <MenuButton
                     button={<Button padding={2} mode="bleed" icon={EllipsisVerticalIcon} />}
