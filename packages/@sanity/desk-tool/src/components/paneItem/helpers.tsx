@@ -13,7 +13,6 @@ import {Inline} from '@sanity/ui'
 import {PreviewValue} from '../../types'
 import {DraftStatus} from '../DraftStatus'
 import {PublishedStatus} from '../PublishedStatus'
-import {NotPublishedStatus} from '../NotPublishedStatus'
 import {PaneItemPreviewState} from './types'
 
 export const isLiveEditEnabled = (schemaType: any) => schemaType.liveEdit === true
@@ -22,24 +21,12 @@ export const getStatusIndicator = (
   draft?: SanityDocument | null,
   published?: SanityDocument | null
 ) => {
-  if (published && draft) {
-    return (
-      <Inline space={4}>
-        <PublishedStatus />
-        <DraftStatus />
-      </Inline>
-    )
-  }
-
-  if (published) {
-    return PublishedStatus
-  }
-
-  if (draft) {
-    return DraftStatus
-  }
-
-  return published ? null : NotPublishedStatus
+  return (
+    <Inline space={4}>
+      <PublishedStatus document={published} />
+      <DraftStatus document={draft} />
+    </Inline>
+  )
 }
 
 export const getMissingDocumentFallback = (item: SanityDocument): PreviewValue => ({
