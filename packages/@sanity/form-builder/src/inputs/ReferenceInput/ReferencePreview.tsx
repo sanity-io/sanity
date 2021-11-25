@@ -4,10 +4,10 @@ import {ObjectSchemaType} from '@sanity/types'
 import {DocumentAvailability} from '@sanity/base/_internal'
 import {Box, Flex, Inline, Label, Text, Tooltip, useRootTheme} from '@sanity/ui'
 import {AccessDeniedIcon, EditIcon, HelpCircleIcon, PublishIcon} from '@sanity/icons'
+import {TextWithTone} from '@sanity/base/components'
 import Preview from '../../Preview'
 import {DocumentPreview} from './types'
 import {TimeAgo} from './utils/TimeAgo'
-import {TextWithTone} from './TextWithTone'
 
 function UnavailableMessage(props: {icon: ComponentType; children: ReactNode; title: ReactNode}) {
   const Icon = props.icon
@@ -46,12 +46,6 @@ export function ReferencePreview(props: {
   refType: ObjectSchemaType
   layout: string
   showTypeLabel: boolean
-
-  // this provides us with a workaround for an issue with css modules (https://github.com/thysultan/stylis.js/issues/272)
-  // the workaround is to write a `data-selected` prop on the <TextWithTone> component and use that instead of not()
-  // When the upstream issue is fixed, removing this prop (and usage sites) should make things just work again
-  // eslint-disable-next-line camelcase
-  __workaround_selected?: boolean
 }) {
   const {layout, refType, showTypeLabel, availability, preview, id} = props
 
@@ -100,7 +94,7 @@ export function ReferencePreview(props: {
                   )
                 }
               >
-                <TextWithTone $tone="default" size={2}>
+                <TextWithTone tone="default">
                   <HelpCircleIcon />
                 </TextWithTone>
               </Tooltip>
@@ -122,9 +116,9 @@ export function ReferencePreview(props: {
             }
           >
             <TextWithTone
-              $tone={theme.tone === 'default' ? 'positive' : 'default'}
+              tone={theme.tone === 'default' ? 'positive' : 'default'}
               size={1}
-              data-selected={props.__workaround_selected ? '' : undefined}
+              dimmed={!preview.published}
               muted={!preview.published}
             >
               <PublishIcon />
@@ -147,10 +141,10 @@ export function ReferencePreview(props: {
               }
             >
               <TextWithTone
-                $tone={theme.tone === 'default' ? 'caution' : 'default'}
+                tone={theme.tone === 'default' ? 'caution' : 'default'}
                 size={1}
+                dimmed={!preview.draft}
                 muted={!preview.draft}
-                data-selected={props.__workaround_selected ? '' : undefined}
               >
                 <EditIcon />
               </TextWithTone>
