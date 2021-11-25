@@ -18,12 +18,23 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
 ) {
   const hasHits = props.options.length > 0
   const renderPopover = useCallback(
-    ({content, hidden, inputElement}) => (
+    (
+      {
+        content,
+        hidden,
+        inputElement,
+      }: {
+        content: React.ReactElement | null
+        hidden: boolean
+        inputElement: HTMLInputElement | null
+      },
+      contentRef: React.Ref<HTMLDivElement>
+    ) => (
       <StyledPopover
         placement="bottom-start"
         arrow={false}
         constrainSize
-        content={content}
+        content={<div ref={contentRef}>{content}</div>}
         open={hasHits && !props.loading && !hidden}
         ref={props.portalRef}
         portal
