@@ -72,7 +72,6 @@ export function PreviewReferenceValue(props: {
       refType={refType}
       id={value._ref}
       showTypeLabel={showTypeLabel}
-      __workaround_selected={selected}
       layout="default"
     />
   )
