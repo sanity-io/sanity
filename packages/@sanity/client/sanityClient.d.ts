@@ -553,7 +553,7 @@ export interface RequestOptions {
 }
 
 type BaseMutationOptions = RequestOptions & {
-  visibility?: 'sync' | 'async' | 'defer'
+  visibility?: 'sync' | 'async' | 'deferred'
   returnDocuments?: boolean
   returnFirst?: boolean
 }
