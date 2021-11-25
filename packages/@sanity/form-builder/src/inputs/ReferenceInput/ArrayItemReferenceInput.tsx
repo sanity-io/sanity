@@ -7,6 +7,7 @@ import React, {
   ReactNode,
   useCallback,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 import {
@@ -65,6 +66,7 @@ import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {CreateButton} from './CreateButton'
 import {ReferenceAutocomplete} from './ReferenceAutocomplete'
 import {AutocompleteContainer} from './AutocompleteContainer'
+import {useOnClickOutside} from './utils/useOnClickOutside'
 
 const INITIAL_SEARCH_STATE: SearchState = {
   hits: [],
@@ -230,9 +232,9 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
 
   const refType = refTypeName ? type.to.find((toType) => toType.name === refTypeName) : undefined
 
-  const ref = useForwardedRef(forwardedRef)
+  // --- focus handling
   const hasFocusAtRef = focusPath.length === 1 && (focusPath[0] === '_ref' || focusPath[0] === '$')
-
+  const focusElementRef = useForwardedRef(forwardedRef)
   useDidUpdate({hasFocusAt: hasFocusAtRef, ref: value?._ref}, (prev, current) => {
     const refUpdated = prev.ref !== current.ref
     const focusAtUpdated = prev.hasFocusAt !== current.hasFocusAt
@@ -240,10 +242,9 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
     if ((focusAtUpdated || refUpdated) && current.hasFocusAt) {
       // if search mode changed and we're having focus always ensure the
       // ref element gets focus
-      ref.current?.focus()
+      focusElementRef.current?.focus()
     }
   })
-
   const weakIs = value?._weak ? 'weak' : 'strong'
   const weakShouldBe = type.weak === true ? 'weak' : 'strong'
 
@@ -267,20 +268,20 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
   const selected = selectedState === 'selected'
   const handleFocus = useCallback(
     (event) => {
-      if (onFocus && event.currentTarget === ref.current) {
+      if (onFocus && event.currentTarget === focusElementRef.current) {
         onFocus([])
       }
     },
-    [onFocus, ref]
+    [onFocus, focusElementRef]
   )
 
   const handleAutocompleteFocus = useCallback(
     (event) => {
-      if (onFocus && event.currentTarget === ref.current) {
+      if (onFocus && event.currentTarget === focusElementRef.current) {
         onFocus(['_ref'])
       }
     },
-    [onFocus, ref]
+    [onFocus, focusElementRef]
   )
 
   const handleQueryChange = useObservableCallback((inputValue$: Observable<string | null>) => {
@@ -325,10 +326,10 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
   const handleCreateButtonKeyDown = useCallback(
     (e) => {
       if (e.key === 'Escape') {
-        ref.current?.focus()
+        focusElementRef.current?.focus()
       }
     },
-    [ref]
+    [focusElementRef]
   )
 
   const renderOption = useCallback(
@@ -375,6 +376,19 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
 
   const isEditing = hasFocusAtRef
 
+  // --- click outside handling
+  const clickOutsideBoundaryRef = useRef<HTMLDivElement>()
+  const autocompletePortalRef = useRef<HTMLDivElement>()
+  const createButtonMenuPortalRef = useRef<HTMLDivElement>()
+  useOnClickOutside(
+    [clickOutsideBoundaryRef, autocompletePortalRef, createButtonMenuPortalRef],
+    () => {
+      if (isEditing) {
+        handleCancelEdit()
+      }
+    }
+  )
+
   return (
     <RowWrapper
       radius={2}
@@ -399,7 +413,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
         )}
 
         {isEditing ? (
-          <Box flex={1} padding={1}>
+          <Box flex={1} padding={1} ref={clickOutsideBoundaryRef}>
             <FormField
               __unstable_markers={markers}
               __unstable_presence={presence}
@@ -413,7 +427,8 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
                 <ReferenceAutocomplete
                   data-testid="autocomplete"
                   loading={searchState.isLoading}
-                  ref={ref}
+                  portalRef={autocompletePortalRef}
+                  ref={focusElementRef}
                   id={inputId || ''}
                   options={searchState.hits.map((hit) => ({
                     value: hit.id,
@@ -434,6 +449,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
                 />
                 {!readOnly && createOptions.length > 0 && (
                   <CreateButton
+                    menuRef={createButtonMenuPortalRef}
                     id={`${inputId}-selectTypeMenuButton`}
                     createOptions={createOptions}
                     onCreate={handleCreateNew}
@@ -466,7 +482,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
                   onFocus={handleFocus}
                   data-selected={selected ? true : undefined}
                   data-pressed={pressed ? true : undefined}
-                  ref={ref}
+                  ref={focusElementRef}
                 >
                   <PreviewReferenceValue
                     value={value}
@@ -486,7 +502,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
                   __unstable_focusRing
                   tabIndex={0}
                   onClick={() => onFocus?.(['_ref'])}
-                  ref={ref}
+                  ref={focusElementRef}
                 >
                   <Box marginY={1}>
                     <Text muted>Empty reference</Text>

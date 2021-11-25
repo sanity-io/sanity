@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 /* eslint-disable max-nested-callbacks,no-nested-ternary */
-import React, {ComponentProps} from 'react'
+import React, {ComponentProps, MutableRefObject} from 'react'
 import {AddIcon} from '@sanity/icons'
 import {Box, Button, Inline, Menu, MenuButton, MenuItem, Text, Tooltip} from '@sanity/ui'
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
@@ -9,6 +9,7 @@ import {CreateOption} from './types'
 interface Props extends ComponentProps<typeof Button> {
   id: string
   createOptions: CreateOption[]
+  menuRef: MutableRefObject<HTMLDivElement>
   onCreate: (option: CreateOption) => void
 }
 
@@ -46,7 +47,7 @@ export function CreateButton(props: Props) {
       button={<Button {...rest} text="Create new…" mode="ghost" icon={AddIcon} />}
       id={id}
       menu={
-        <Menu>
+        <Menu ref={props.menuRef}>
           {createOptions.map((createOption) => (
             <ConditionalTooltip
               enabled={!createOption.permission.granted}
