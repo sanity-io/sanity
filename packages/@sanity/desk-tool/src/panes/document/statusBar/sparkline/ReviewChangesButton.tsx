@@ -49,6 +49,7 @@ export const ReviewChangesButton = forwardRef(function ReviewChangesButton(
         onClick={changesOpen ? handleHistoryClose : handleHistoryOpen}
         ref={ref}
         selected={changesOpen}
+        data-testid="review-changes-button"
       >
         <Flex align="center">
           <Box marginRight={3}>

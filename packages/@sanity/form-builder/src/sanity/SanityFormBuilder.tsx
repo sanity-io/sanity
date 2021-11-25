@@ -26,6 +26,7 @@ type Props = {
   autoFocus: boolean
   focusPath: Path
   presence: FormFieldPresence[]
+  changesOpen?: boolean
 }
 
 const EMPTY = []
@@ -64,6 +65,7 @@ export default class SanityFormBuilder extends React.Component<Props> {
       filterField,
       compareValue,
       presence,
+      changesOpen,
     } = this.props
     return (
       <SanityFormBuilderContext value={value} schema={schema} patchChannel={patchChannel}>
@@ -83,6 +85,7 @@ export default class SanityFormBuilder extends React.Component<Props> {
           ref={this.setInput}
           path={EMPTY}
           presence={presence}
+          changesOpen={changesOpen}
         />
       </SanityFormBuilderContext>
     )
