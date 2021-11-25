@@ -380,8 +380,8 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
   useOnClickOutside(
     [clickOutsideBoundaryRef, autocompletePortalRef, createButtonMenuPortalRef],
     () => {
-      if (hasFocusAtRef) {
-        onFocus?.([])
+      if (isEditing) {
+        handleCancelEdit()
       }
     }
   )
