@@ -25,7 +25,9 @@ function DeveloperPreview(props) {
 
         <Stack space={3}>
           <Label>Displayed document</Label>
-          <Code language="json">{JSON.stringify(displayed, null, 2)}</Code>
+          <Code language="json" size={1}>
+            {JSON.stringify(displayed, null, 2)}
+          </Code>
         </Stack>
       </Stack>
     </Card>
