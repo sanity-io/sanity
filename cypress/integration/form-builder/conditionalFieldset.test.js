@@ -1,12 +1,26 @@
 /* eslint-disable cypress/no-unnecessary-waiting */
 import sanityClient from '@sanity/client'
 
+let testDocumentId = ''
 const testSanityClient = sanityClient({
   projectId: 'ppsg7ml5',
   dataset: 'test',
   token: Cypress.env('SANITY_SESSION_TOKEN'),
   useCdn: false,
 })
+
+function setUpSuite() {
+  cy.login()
+
+  testSanityClient.create(doc).then((res) => {
+    testDocumentId = res._id
+    cy.visit(`/test/desk/input-ci;conditionalFieldset;${res._id}%2Csince%3D%40lastPublished`)
+  })
+}
+
+function tearDownSuite() {
+  testSanityClient.delete(testDocumentId)
+}
 
 const doc = {
   _type: 'conditionalFieldset',
@@ -42,15 +56,8 @@ const doc = {
 }
 
 describe('@sanity/field: Multi fieldset and review changes', () => {
-  let testDocumentId = ''
-
   before(() => {
-    cy.login()
-
-    testSanityClient.create(doc).then((res) => {
-      testDocumentId = res._id
-      cy.visit(`/test/desk/input-ci;conditionalFieldset;${res._id}%2Csince%3D%40lastPublished`)
-    })
+    setUpSuite()
   })
 
   beforeEach(() => {
@@ -184,20 +191,13 @@ describe('@sanity/field: Multi fieldset and review changes', () => {
   })
 
   after(() => {
-    testSanityClient.delete(testDocumentId)
+    tearDownSuite()
   })
 })
 
 describe('@sanity/field: Single fieldset and review changes', () => {
-  let testDocumentId = ''
-
   before(() => {
-    cy.login()
-
-    testSanityClient.create(doc).then((res) => {
-      testDocumentId = res._id
-      cy.visit(`/test/desk/input-ci;conditionalFieldset;${res._id}%2Csince%3D%40lastPublished`)
-    })
+    setUpSuite()
   })
 
   beforeEach(() => {
@@ -311,6 +311,6 @@ describe('@sanity/field: Single fieldset and review changes', () => {
   })
 
   after(() => {
-    testSanityClient.delete(testDocumentId)
+    tearDownSuite()
   })
 })
