@@ -15,6 +15,7 @@ export interface KeyboardShortcutResponderProps {
   activeIndex: number
   currentMinWidth?: number
   flex: number
+  id: string
   minWidth: number
   onActionStart: (index: number) => void
   rootRef: React.Ref<HTMLDivElement>
@@ -28,6 +29,7 @@ function KeyboardShortcutResponder(
     actionsBoxElement,
     activeIndex,
     children,
+    id,
     onActionStart,
     onKeyDown,
     rootRef,
@@ -67,7 +69,7 @@ function KeyboardShortcutResponder(
   )
 
   return (
-    <Pane onKeyDown={handleKeyDown} tabIndex={-1} {...rest} ref={rootRef}>
+    <Pane id={id} onKeyDown={handleKeyDown} tabIndex={-1} {...rest} ref={rootRef}>
       {children}
 
       {activeAction && activeAction.dialog && (

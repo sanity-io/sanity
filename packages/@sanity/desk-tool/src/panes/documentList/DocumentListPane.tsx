@@ -51,14 +51,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   })
 
   return (
-    <Pane
-      currentMaxWidth={350}
-      data-index={index}
-      data-pane-key={paneKey}
-      maxWidth={640}
-      minWidth={320}
-      selected={isSelected}
-    >
+    <Pane currentMaxWidth={350} id={paneKey} maxWidth={640} minWidth={320} selected={isSelected}>
       <DocumentListPaneHeader
         index={index}
         initialValueTemplates={initialValueTemplates}

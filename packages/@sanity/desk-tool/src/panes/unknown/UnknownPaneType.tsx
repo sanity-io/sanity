@@ -4,20 +4,20 @@ import {Pane, PaneContent, PaneHeader} from '../../components/pane'
 import {isRecord} from '../../utils/isRecord'
 
 interface UnknownPaneProps {
-  index: number
   isSelected: boolean
   pane: unknown
+  paneKey: string
 }
 
 /**
  * @internal
  */
 export function UnknownPane(props: UnknownPaneProps) {
-  const {index, isSelected, pane} = props
+  const {isSelected, pane, paneKey} = props
   const type = (isRecord(pane) && pane.type) || null
 
   return (
-    <Pane data-index={index} selected={isSelected}>
+    <Pane id={paneKey} selected={isSelected}>
       <PaneHeader title="Unknown pane type" />
       <PaneContent>
         <Box padding={4}>
