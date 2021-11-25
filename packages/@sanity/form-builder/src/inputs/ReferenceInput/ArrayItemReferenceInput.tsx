@@ -365,7 +365,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
           />
         )
       }),
-    [refType?.name, value?._ref]
+    [refType?.name, value?._ref, value?._strengthenOnPublish]
   )
 
   const preview =
