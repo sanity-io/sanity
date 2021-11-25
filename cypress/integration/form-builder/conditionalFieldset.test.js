@@ -1,6 +1,13 @@
 /* eslint-disable cypress/no-unnecessary-waiting */
 import sanityClient from '@sanity/client'
 
+const testSanityClient = sanityClient({
+  projectId: 'ppsg7ml5',
+  dataset: 'test',
+  token: Cypress.env('SANITY_SESSION_TOKEN'),
+  useCdn: false,
+})
+
 const doc = {
   _type: 'conditionalFieldset',
   title: 'Conditional fieldset [Cypress]',
@@ -36,19 +43,11 @@ const doc = {
 
 describe('@sanity/field: Multi fieldset and review changes', () => {
   let testDocumentId = ''
-  let sc
 
   before(() => {
     cy.login()
 
-    sc = sanityClient({
-      projectId: 'ppsg7ml5',
-      dataset: 'test',
-      token: Cypress.env('SANITY_SESSION_TOKEN'),
-      useCdn: false,
-    })
-
-    sc.create(doc).then((res) => {
+    testSanityClient.create(doc).then((res) => {
       testDocumentId = res._id
       cy.visit(`/test/desk/input-ci;conditionalFieldset;${res._id}%2Csince%3D%40lastPublished`)
     })
@@ -185,25 +184,17 @@ describe('@sanity/field: Multi fieldset and review changes', () => {
   })
 
   after(() => {
-    sc.delete(testDocumentId)
+    testSanityClient.delete(testDocumentId)
   })
 })
 
 describe('@sanity/field: Single fieldset and review changes', () => {
   let testDocumentId = ''
-  let sc
 
   before(() => {
     cy.login()
 
-    sc = sanityClient({
-      projectId: 'ppsg7ml5',
-      dataset: 'test',
-      token: Cypress.env('SANITY_SESSION_TOKEN'),
-      useCdn: false,
-    })
-
-    sc.create(doc).then((res) => {
+    testSanityClient.create(doc).then((res) => {
       testDocumentId = res._id
       cy.visit(`/test/desk/input-ci;conditionalFieldset;${res._id}%2Csince%3D%40lastPublished`)
     })
@@ -320,6 +311,6 @@ describe('@sanity/field: Single fieldset and review changes', () => {
   })
 
   after(() => {
-    sc.delete(testDocumentId)
+    testSanityClient.delete(testDocumentId)
   })
 })
