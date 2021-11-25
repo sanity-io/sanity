@@ -59,8 +59,8 @@ assign(SanityClient.prototype, {
     return this.clone().config(newConfig)
   },
 
-  getUrl(uri, canUseCdn = false) {
-    const base = canUseCdn ? this.clientConfig.cdnUrl : this.clientConfig.url
+  getUrl(uri, useCdn = false) {
+    const base = useCdn ? this.clientConfig.cdnUrl : this.clientConfig.url
     return `${base}/${uri.replace(/^\//, '')}`
   },
 
@@ -70,10 +70,15 @@ assign(SanityClient.prototype, {
 
   _requestObservable(options) {
     const uri = options.url || options.uri
+
+    // If the `canUseCdn`-option is not set we detect it automatically based on the method + URL.
+    // Only the /data endpoint is currently available through API-CDN.
     const canUseCdn =
-      this.clientConfig.useCdn &&
-      ['GET', 'HEAD'].indexOf(options.method || 'GET') >= 0 &&
-      uri.indexOf('/data/') === 0
+      typeof options.canUseCdn === 'undefined'
+        ? ['GET', 'HEAD'].indexOf(options.method || 'GET') >= 0 && uri.indexOf('/data/') === 0
+        : options.canUseCdn
+
+    const useCdn = this.clientConfig.useCdn && canUseCdn
 
     const tag =
       options.tag && this.clientConfig.requestTagPrefix
@@ -87,7 +92,7 @@ assign(SanityClient.prototype, {
     const reqOptions = getRequestOptions(
       this.clientConfig,
       assign({}, options, {
-        url: this.getUrl(uri, canUseCdn),
+        url: this.getUrl(uri, useCdn),
       })
     )
 

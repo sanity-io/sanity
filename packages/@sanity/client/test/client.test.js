@@ -963,7 +963,6 @@ test('uses POST for long queries', (t) => {
 })
 
 test('uses POST for long queries, but puts request tag as query param', (t) => {
-  // Please dont ever do this. Just... don't.
   const clause = []
   const params = {}
   for (let i = 1866; i <= 2016; i++) {
@@ -985,6 +984,37 @@ test('uses POST for long queries, but puts request tag as query param', (t) => {
 
   getClient()
     .fetch(query, params, {tag: 'myapp.silly-query'})
+    .then((res) => {
+      t.equal(res.length, 1, 'length should match')
+      t.equal(res[0].rating, 5, 'data should match')
+    })
+    .catch(t.ifError)
+    .then(t.end)
+})
+
+test('uses POST for long queries also towards CDN', (t) => {
+  const client = sanityClient({projectId: 'abc123', dataset: 'foo', useCdn: true})
+
+  const clause = []
+  const params = {}
+  for (let i = 1866; i <= 2016; i++) {
+    clause.push(`title == $beerName${i}`)
+    params[`beerName${i}`] = `some beer ${i}`
+  }
+
+  const query = `*[_type == "beer" && (${clause.join(' || ')})]`
+
+  nock('https://abc123.apicdn.sanity.io')
+    .filteringRequestBody(/.*/, '*')
+    .post('/v1/data/query/foo', '*')
+    .reply(200, {
+      ms: 123,
+      q: query,
+      result: [{_id: 'njgNkngskjg', rating: 5}],
+    })
+
+  client
+    .fetch(query, params)
     .then((res) => {
       t.equal(res.length, 1, 'length should match')
       t.equal(res[0].rating, 5, 'data should match')

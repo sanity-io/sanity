@@ -120,6 +120,7 @@ module.exports = {
 
   _dataRequest(endpoint, body, options = {}) {
     const isMutation = endpoint === 'mutate'
+    const isQuery = endpoint === 'query'
 
     // Check if the query string is within a configured threshold,
     // in which case we can use GET. Otherwise, use POST.
@@ -140,6 +141,7 @@ module.exports = {
       timeout,
       token,
       tag,
+      canUseCdn: isQuery,
     }
 
     return this._requestObservable(reqOptions).pipe(
