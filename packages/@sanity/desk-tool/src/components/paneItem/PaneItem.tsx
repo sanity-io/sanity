@@ -4,6 +4,7 @@ import {isSanityDocument, SchemaType} from '@sanity/types'
 import {Card, Text} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
 import {SanityDefaultPreview} from 'part:@sanity/base/preview'
+import styled from 'styled-components'
 import {getIconWithFallback} from '../../utils/getIconWithFallback'
 import {MissingSchemaType} from '../MissingSchemaType'
 import {usePaneRouter} from '../../contexts/paneRouter'
@@ -20,6 +21,18 @@ interface PaneItemProps {
   value?: PreviewValue | {_id: string; _type: string}
   schemaType?: SchemaType
 }
+
+const PaneItemCard = styled(Card)`
+  /* TextWithTone uses its own logic to set color, and we therefore need 
+  to override this logic in order to set the correct color in different states */
+  &[data-selected],
+  &[data-pressed],
+  &:active {
+    [data-ui='TextWithTone'] {
+      color: inherit;
+    }
+  }
+`
 
 export function PaneItem(props: PaneItemProps) {
   const {icon, id, layout = 'default', pressed, schemaType, selected, title, value} = props
@@ -74,9 +87,9 @@ export function PaneItem(props: PaneItemProps) {
 
   return useMemo(
     () => (
-      <Card
+      <PaneItemCard
         __unstable_focusRing
-        as={LinkComponent}
+        forwardedAs={LinkComponent}
         data-as="a"
         data-ui="PaneItem"
         padding={2}
@@ -87,7 +100,7 @@ export function PaneItem(props: PaneItemProps) {
         tone="inherit"
       >
         {preview}
-      </Card>
+      </PaneItemCard>
     ),
     [clicked, handleClick, LinkComponent, pressed, preview, selected]
   )
