@@ -1,6 +1,6 @@
 import {Grid, Theme} from '@sanity/ui'
 import styled, {css} from 'styled-components'
-import React from 'react'
+import React, {ForwardedRef, forwardRef} from 'react'
 import type {ReactNode} from 'react'
 
 const Root = styled(Grid)((props: {theme: Theme}) => {
@@ -14,6 +14,15 @@ const Root = styled(Grid)((props: {theme: Theme}) => {
     }
   `
 })
-export function AutocompleteContainer(props: {children: ReactNode}) {
-  return <Root gap={1}>{props.children}</Root>
-}
+export const AutocompleteContainer = forwardRef(function AutocompleteContainer(
+  props: {
+    children: ReactNode
+  },
+  ref: ForwardedRef<HTMLDivElement>
+) {
+  return (
+    <Root gap={1} ref={ref}>
+      {props.children}
+    </Root>
+  )
+})

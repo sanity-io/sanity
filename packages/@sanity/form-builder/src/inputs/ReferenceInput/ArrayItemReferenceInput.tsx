@@ -386,6 +386,8 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
     }
   )
 
+  const autocompletePopoverReferenceElementRef = useRef()
+
   return (
     <RowWrapper
       radius={2}
@@ -420,7 +422,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
               level={level}
               description={type.description}
             >
-              <AutocompleteContainer>
+              <AutocompleteContainer ref={autocompletePopoverReferenceElementRef}>
                 <ReferenceAutocomplete
                   data-testid="autocomplete"
                   loading={searchState.isLoading}
@@ -440,6 +442,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
                   disabled={loadableReferenceInfo.isLoading}
                   onQueryChange={handleQueryChange}
                   onChange={handleChange}
+                  referenceElement={autocompletePopoverReferenceElementRef.current}
                   filterOption={NO_FILTER}
                   renderOption={renderOption}
                   openButton={{onClick: handleAutocompleteOpenButtonClick}}

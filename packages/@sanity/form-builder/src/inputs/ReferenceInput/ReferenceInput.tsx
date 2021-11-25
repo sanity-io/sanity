@@ -199,6 +199,8 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
   const refTypeName = loadableReferenceInfo.result?.type || value?._strengthenOnPublish?.type
   const refType = refTypeName ? type.to.find((toType) => toType.name === refTypeName) : null
 
+  const autocompletePopoverReferenceElementRef = useRef()
+
   // --- focus handling
   const hasFocusAtRef = focusPath.length === 1 && focusPath[0] === '_ref'
   const focusElementRef = useForwardedRef(forwardedRef)
@@ -396,11 +398,12 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
               hasFocus={focusPath?.[0] === '_ref'}
               isChanged={value?._ref !== compareValue?._ref}
             >
-              <AutocompleteContainer>
+              <AutocompleteContainer ref={autocompletePopoverReferenceElementRef}>
                 <ReferenceAutocomplete
                   data-testid="autocomplete"
                   loading={searchState.isLoading}
                   ref={focusElementRef}
+                  referenceElement={autocompletePopoverReferenceElementRef.current}
                   portalRef={autocompletePortalRef}
                   id={inputId || ''}
                   options={searchState.hits.map((hit) => ({
