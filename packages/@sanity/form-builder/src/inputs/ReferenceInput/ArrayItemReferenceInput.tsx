@@ -182,7 +182,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
       onChange(PatchEvent.from(patches))
       onFocus?.([])
     },
-    [searchState.hits, type.name, onChange, onFocus]
+    [searchState.hits, type.name, type.weak, onChange, onFocus]
   )
 
   const handleClear = useCallback(() => {
