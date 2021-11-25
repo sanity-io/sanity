@@ -6,25 +6,30 @@ import {setSelectedTabName} from './datastore'
 
 interface FieldGroupsTabsProps {
   type: SchemaType
+  disabled?: boolean
 }
 
 export function FilterGroupTabs(props: FieldGroupsTabsProps) {
-  const {type} = props
+  const {type, disabled} = props
   const groupType = type as ObjectSchemaType
   const [id, setId] = React.useState('all-fields')
   const filterGroups: FieldGroup[] = useMemo(() => {
     return [
       {
         name: 'all-fields',
-        title: 'All Fields',
+        title: 'All fields',
       },
       ...(groupType.groups || []),
     ]
   }, [groupType.groups])
 
   useEffect(() => {
+    if (disabled) {
+      setSelectedTabName('all-fields')
+      return
+    }
     setSelectedTabName(id)
-  }, [id])
+  }, [id, disabled])
 
   useEffect(() => {
     const defaultTabName = defaultTo(
@@ -54,6 +59,7 @@ export function FilterGroupTabs(props: FieldGroupsTabsProps) {
               label={title || name}
               onClick={() => setId(name)}
               selected={id === name}
+              disabled={disabled}
             />
           )
         })}

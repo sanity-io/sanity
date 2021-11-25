@@ -33,4 +33,13 @@ describe('@sanity/form-builder: field groups', () => {
     cy.get(el('input-field3')).should('not.exist')
     cy.get(el('input-field4')).should('be.visible')
   })
+
+  it('should disable groups when opening changes panel, and switch to all fields', () => {
+    cy.visit('/test/desk/input-debug;fieldGroups;c04d9594-b242-44ed-8da0-f6b5ff93f312')
+    cy.get(el('group-group1')).click()
+    cy.get(el('review-changes-button')).click()
+    cy.get(el('group-all-fields')).should('have.attr', 'aria-selected', 'true')
+    cy.get(el('group-group1')).should('have.attr', 'disabled')
+    cy.get(el('group-group2')).should('have.attr', 'disabled')
+  })
 })
