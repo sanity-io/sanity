@@ -18,7 +18,6 @@ export const Root = styled(Layer)`
 `
 
 export const Layout = styled(Flex)`
-  transition: transform 200ms;
   transform-origin: calc(51px / 2);
 
   [data-collapsed] > div > & {

@@ -1,6 +1,6 @@
 import {LegacyLayerProvider} from '@sanity/base/components'
 import {useElementRect, Box, Card, Flex, LayerProvider} from '@sanity/ui'
-import React, {useMemo, useState, useCallback, useEffect, useRef, forwardRef} from 'react'
+import React, {useMemo, useCallback, forwardRef} from 'react'
 import {usePane} from './usePane'
 import {Layout, Root, TabsBox, TitleBox, TitleTextSkeleton, TitleText} from './PaneHeader.styles'
 
@@ -22,23 +22,13 @@ export const PaneHeader = forwardRef(function PaneHeader(
 ) {
   const {collapse, collapsed, expand, rootElement: paneElement} = usePane()
   const paneRect = useElementRect(paneElement || null)
-  const collapsedRef = useRef(collapsed)
-  const [actionsVisible, setActionsVisible] = useState(!collapsed)
 
-  useEffect(() => {
-    collapsedRef.current = collapsed
-    if (!collapsed) return
-    setActionsVisible(false)
-  }, [collapsed])
-
-  const layoutStyle = useMemo(() => {
-    return {width: collapsed ? paneRect?.height || window.innerHeight : undefined}
-  }, [collapsed, paneRect])
-
-  const handleTransitionEnd = useCallback(() => {
-    if (collapsedRef.current) return
-    setActionsVisible(true)
-  }, [])
+  const layoutStyle = useMemo(
+    () => ({
+      width: collapsed ? paneRect?.height || window.innerHeight : undefined,
+    }),
+    [collapsed, paneRect]
+  )
 
   const handleTitleClick = useCallback(() => {
     if (collapsed) return
@@ -56,7 +46,6 @@ export const PaneHeader = forwardRef(function PaneHeader(
         <LegacyLayerProvider zOffset="paneHeader">
           <Card data-collapsed={collapsed ? '' : undefined} tone="inherit">
             <Layout
-              onTransitionEnd={handleTransitionEnd}
               onClick={handleLayoutClick}
               padding={2}
               paddingBottom={tabs || subActions ? 1 : 2}
@@ -80,7 +69,7 @@ export const PaneHeader = forwardRef(function PaneHeader(
               </TitleBox>
 
               {actions && (
-                <Box hidden={!actionsVisible} paddingLeft={1}>
+                <Box hidden={collapsed} paddingLeft={1}>
                   <LegacyLayerProvider zOffset="paneHeader">{actions}</LegacyLayerProvider>
                 </Box>
               )}
