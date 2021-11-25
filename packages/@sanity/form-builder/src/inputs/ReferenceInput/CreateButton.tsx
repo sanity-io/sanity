@@ -18,6 +18,7 @@ function ConditionalTooltip(props: ComponentProps<typeof Tooltip> & {enabled: bo
 }
 
 const INLINE_BLOCK_STYLE = {display: 'inline-flex'}
+const FULL_WIDTH = {width: '100%'}
 
 export function CreateButton(props: Props) {
   const {createOptions, onCreate, id, ...rest} = props
@@ -34,7 +35,7 @@ export function CreateButton(props: Props) {
       >
         {/* this wrapper div is needed because disabled button doesn't trigger mouse events */}
         <div style={INLINE_BLOCK_STYLE}>
-          <Button text="Create new" mode="ghost" disabled icon={AddIcon} />
+          <Button text="Create new" mode="ghost" disabled icon={AddIcon} style={FULL_WIDTH} />
         </div>
       </Tooltip>
     )
