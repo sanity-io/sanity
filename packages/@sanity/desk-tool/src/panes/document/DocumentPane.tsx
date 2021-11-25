@@ -68,12 +68,19 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
   const innerDocumentPane = useMemo(() => <InnerDocumentPane />, [])
 
   if (options.type === '*' && !isLoaded) {
-    return <LoadingPane flex={2.5} minWidth={320} title="Loading document…" />
+    return (
+      <LoadingPane flex={2.5} minWidth={320} paneKey={props.paneKey} title="Loading document…" />
+    )
   }
 
   if (!documentType) {
     return (
-      <ErrorPane flex={2.5} minWidth={320} title={<>The document was not found</>}>
+      <ErrorPane
+        flex={2.5}
+        minWidth={320}
+        paneKey={props.paneKey}
+        title={<>The document was not found</>}
+      >
         <Stack space={4}>
           <Text as="p">
             The document type is not defined, and a document with the <code>{options.id}</code>{' '}
@@ -136,6 +143,7 @@ function InnerDocumentPane() {
     handleHistoryOpen,
     handleKeyUp,
     inspectOpen,
+    paneKey,
     value,
   } = useDocumentPane()
   const {features} = useDeskTool()
@@ -187,6 +195,7 @@ function InnerDocumentPane() {
         <ErrorPane
           flex={2.5}
           minWidth={320}
+          paneKey={paneKey}
           title={
             <>
               Unknown document type: <code>{documentType}</code>
@@ -254,6 +263,7 @@ function InnerDocumentPane() {
     handleHistoryOpen,
     inspectDialog,
     layoutCollapsed,
+    paneKey,
     value,
     zOffsets.portal,
   ])
@@ -272,6 +282,7 @@ function InnerDocumentPane() {
       currentMinWidth={currentMinWidth}
       data-testid="document-pane"
       flex={2.5}
+      id={paneKey}
       minWidth={minWidth}
       onKeyUp={handleKeyUp}
       rootRef={setRootElement}

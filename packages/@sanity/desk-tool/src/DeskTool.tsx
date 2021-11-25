@@ -135,8 +135,8 @@ export const DeskTool = memo(({onPaneChange}: DeskToolProps) => {
               <Fragment key={`${pane === LOADING_PANE ? 'loading' : pane.type}-${paneIndex}`}>
                 {pane === LOADING_PANE ? (
                   <LoadingPane
+                    paneKey={paneKey}
                     path={path}
-                    index={paneIndex}
                     message={getWaitMessages}
                     selected={selected}
                   />

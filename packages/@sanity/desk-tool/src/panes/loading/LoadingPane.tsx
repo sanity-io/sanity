@@ -8,9 +8,9 @@ import {Pane, PaneContent} from '../../components/pane'
 interface LoadingPaneProps {
   delay?: number
   flex?: number
-  index?: number
   message?: string | ((p: string[]) => string | Observable<string>)
   minWidth?: number
+  paneKey: string
   path?: string
   selected?: boolean
   title?: string
@@ -36,9 +36,9 @@ export const LoadingPane = memo((props: LoadingPaneProps) => {
   const {
     delay = 300,
     flex,
-    index,
     message: messageProp,
     minWidth,
+    paneKey,
     path,
     selected,
     title,
@@ -97,7 +97,7 @@ export const LoadingPane = memo((props: LoadingPaneProps) => {
   )
 
   return (
-    <Pane data-index={index} flex={flex} minWidth={minWidth} selected={selected} tone={tone}>
+    <Pane flex={flex} id={paneKey} minWidth={minWidth} selected={selected} tone={tone}>
       <PaneContent>{DELAY ? <Delay ms={delay}>{content}</Delay> : content}</PaneContent>
     </Pane>
   )

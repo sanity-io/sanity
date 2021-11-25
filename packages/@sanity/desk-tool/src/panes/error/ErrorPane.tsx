@@ -9,13 +9,14 @@ export function ErrorPane(props: {
   children?: React.ReactNode
   flex?: number
   minWidth?: number
+  paneKey: string
   title?: React.ReactNode
   tone?: CardTone
 }) {
-  const {children, flex, minWidth, title = 'Error', tone = 'critical'} = props
+  const {children, flex, minWidth, paneKey, title = 'Error', tone = 'critical'} = props
 
   return (
-    <Pane flex={flex} minWidth={minWidth} tone={tone}>
+    <Pane flex={flex} id={paneKey} minWidth={minWidth} tone={tone}>
       <PaneHeader title={title} />
       <PaneContent overflow="auto">
         <Box paddingX={4} paddingY={5}>

@@ -13,7 +13,7 @@ type UserComponentPaneProps = BaseDeskToolPaneProps<'component'>
  * @internal
  */
 export function UserComponentPane(props: UserComponentPaneProps) {
-  const {index, pane, ...restProps} = props
+  const {index, pane, paneKey, ...restProps} = props
   const {params} = usePaneRouter()
   const {
     component,
@@ -29,7 +29,7 @@ export function UserComponentPane(props: UserComponentPaneProps) {
   } | null>(null)
 
   return (
-    <Pane data-index={index} minWidth={320} selected={restProps.isSelected}>
+    <Pane id={paneKey} minWidth={320} selected={restProps.isSelected}>
       <UserComponentPaneHeader
         actionHandlers={userComponent.current?.actionHandlers}
         index={index}
