@@ -166,9 +166,10 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
   )
 
   const handleClear = useCallback(() => {
-    // note: we can't simply unset here because the value might be in an array and that would cause
-    // the item to be removed, and as a consequence the edit dialog will be closed
-    onChange(PatchEvent.from(unset()))
+    // note: we can't simply unset the whole value here because the we might be
+    // in an array and unsetting it would cause the item to be removed, and as a
+    // side effect close the edit dialog
+    onChange(PatchEvent.from(unset(['_ref'])))
   }, [onChange])
 
   const handlePreviewKeyPress = useCallback(
