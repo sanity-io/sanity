@@ -12,6 +12,7 @@ interface PaneProps {
   currentMinWidth?: number
   currentMaxWidth?: number
   flex?: number
+  id: string
   minWidth?: number
   maxWidth?: number
   selected?: boolean
@@ -28,10 +29,11 @@ const Root = styled(Card)`
 /**
  * @beta This API will change. DO NOT USE IN PRODUCTION.
  */
+// eslint-disable-next-line complexity
 export const Pane = forwardRef(function Pane(
   props: PaneProps &
     Omit<CardProps, 'as' | 'height' | 'overflow'> &
-    Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'hidden' | 'style'>,
+    Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'hidden' | 'id' | 'style'>,
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
   const {
@@ -39,21 +41,32 @@ export const Pane = forwardRef(function Pane(
     currentMinWidth: currentMinWidthProp,
     currentMaxWidth: currentMaxWidthProp,
     flex: flexProp = 1,
-    minWidth,
-    maxWidth,
+    id,
+    minWidth: minWidthProp,
+    maxWidth: maxWidthProp,
     selected = false,
     ...restProps
   } = props
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
-  const {collapse, collapsed: layoutCollapsed, expand, mount, panes} = usePaneLayout()
+  const {
+    collapse,
+    collapsed: layoutCollapsed,
+    expand,
+    expandedElement,
+    mount,
+    panes,
+  } = usePaneLayout()
   const pane = panes.find((p) => p.element === rootElement)
   const paneIndex = pane && panes.indexOf(pane)
+  const nextPane = typeof paneIndex === 'number' ? panes[paneIndex + 1] : undefined
   const isLast = paneIndex === panes.length - 1
-  const collapsed = pane?.collapsed || false
+  const expanded = expandedElement === rootElement
+  const collapsed = layoutCollapsed ? false : pane?.collapsed || false
+  const nextCollapsed = nextPane?.collapsed || false
   const forwardedRef = useForwardedRef(ref)
   const flex = pane?.flex ?? flexProp
-  const currentMinWidth = pane?.currentMinWidth || currentMinWidthProp
-  const currentMaxWidth = pane?.currentMaxWidth || currentMaxWidthProp
+  const currentMinWidth = pane?.currentMinWidth ?? currentMinWidthProp
+  const currentMaxWidth = pane?.currentMaxWidth ?? currentMaxWidthProp
 
   const setRef = useCallback(
     (refValue: HTMLDivElement | null) => {
@@ -69,10 +82,20 @@ export const Pane = forwardRef(function Pane(
       currentMinWidth: currentMinWidthProp,
       currentMaxWidth: currentMaxWidthProp,
       flex: flexProp,
-      minWidth,
-      maxWidth,
+      id,
+      minWidth: minWidthProp,
+      maxWidth: maxWidthProp,
     })
-  }, [currentMinWidthProp, currentMaxWidthProp, flexProp, minWidth, maxWidth, mount, rootElement])
+  }, [
+    currentMinWidthProp,
+    currentMaxWidthProp,
+    flexProp,
+    id,
+    minWidthProp,
+    maxWidthProp,
+    mount,
+    rootElement,
+  ])
 
   const handleCollapse = useCallback(() => {
     if (!rootElement) return
@@ -96,29 +119,41 @@ export const Pane = forwardRef(function Pane(
     [collapsed, handleCollapse, handleExpand, isLast, layoutCollapsed, paneIndex, rootElement]
   )
 
-  const style = useMemo(
-    () =>
-      layoutCollapsed
-        ? {flex: 1}
-        : {
-            flex,
-            minWidth: collapsed
-              ? PANE_COLLAPSED_WIDTH
-              : (currentMinWidth === Infinity ? 'none' : currentMinWidth) ||
-                minWidth ||
-                PANE_DEFAULT_MIN_WIDTH,
-            // eslint-disable-next-line no-nested-ternary
-            maxWidth: collapsed
-              ? PANE_COLLAPSED_WIDTH
-              : // eslint-disable-next-line no-nested-ternary
-              maxWidth
-              ? Math.min(currentMaxWidth || maxWidth, maxWidth || currentMaxWidth!)
-              : isLast
-              ? undefined
-              : currentMaxWidth,
-          },
-    [collapsed, currentMinWidth, currentMaxWidth, flex, isLast, layoutCollapsed, minWidth, maxWidth]
-  )
+  const minWidth = useMemo(() => {
+    if (layoutCollapsed) {
+      return undefined
+    }
+
+    if (collapsed) return PANE_COLLAPSED_WIDTH
+
+    if (currentMinWidth === 0) {
+      return minWidthProp || PANE_DEFAULT_MIN_WIDTH
+    }
+
+    if (isLast) {
+      return minWidthProp || PANE_DEFAULT_MIN_WIDTH
+    }
+
+    return currentMinWidth || minWidthProp || PANE_DEFAULT_MIN_WIDTH
+  }, [collapsed, currentMinWidth, isLast, layoutCollapsed, minWidthProp])
+
+  const maxWidth = useMemo(() => {
+    if (collapsed) return PANE_COLLAPSED_WIDTH
+
+    if (layoutCollapsed && isLast) {
+      return undefined
+    }
+
+    if (isLast) {
+      if (maxWidthProp) {
+        return currentMaxWidth ?? maxWidthProp
+      }
+
+      return undefined
+    }
+
+    return currentMaxWidth ?? maxWidthProp
+  }, [collapsed, currentMaxWidth, isLast, layoutCollapsed, maxWidthProp])
 
   const hidden = layoutCollapsed && !isLast
 
@@ -127,10 +162,19 @@ export const Pane = forwardRef(function Pane(
       !isLast &&
       !layoutCollapsed && (
         <LegacyLayerProvider zOffset="paneResizer">
-          <PaneDivider disabled={collapsed} element={rootElement} />
+          <PaneDivider disabled={collapsed || nextCollapsed} element={rootElement} />
         </LegacyLayerProvider>
       ),
-    [collapsed, isLast, layoutCollapsed, rootElement]
+    [collapsed, isLast, layoutCollapsed, nextCollapsed, rootElement]
+  )
+
+  const style = useMemo(
+    () => ({
+      flex,
+      minWidth,
+      maxWidth: maxWidth === Infinity ? undefined : maxWidth,
+    }),
+    [flex, minWidth, maxWidth]
   )
 
   return (
@@ -141,6 +185,7 @@ export const Pane = forwardRef(function Pane(
             data-testid="pane"
             tone="inherit"
             hidden={hidden}
+            id={id}
             overflow={layoutCollapsed ? undefined : 'hidden'}
             {...restProps}
             data-pane-collapsed={collapsed ? '' : undefined}
@@ -150,14 +195,16 @@ export const Pane = forwardRef(function Pane(
             style={style}
           >
             {PANE_DEBUG && (
-              <Card padding={4} tone="caution">
+              <Card padding={4} tone={expanded ? 'primary' : 'caution'}>
                 <Code size={1}>
                   {[
+                    `#${paneIndex}`,
+                    `collapsed=${collapsed}`,
+                    `currentMinWidth=${currentMinWidth}`,
+                    `currentMaxWidth=${currentMaxWidth}`,
                     `flex=${flex}`,
                     `minWidth=${minWidth}`,
                     `maxWidth=${maxWidth}`,
-                    `currentMinWidth=${pane?.currentMinWidth}`,
-                    `currentMaxWidth=${pane?.currentMaxWidth}`,
                   ].join('\n')}
                 </Code>
               </Card>

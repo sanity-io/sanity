@@ -1,4 +1,4 @@
-import {PaneConfig, PaneResizeCache} from '../types'
+import {PaneConfigOpts, PaneResizeCache} from '../types'
 import {_calcPaneResize} from './_calcPaneResize'
 
 describe('@sanity/desk-tool/components/pane', () => {
@@ -9,14 +9,17 @@ describe('@sanity/desk-tool/components/pane', () => {
         right: {element: null as any, flex: 1, width: 250},
       }
 
-      const leftPane: PaneConfig = {
-        element: null as any,
-        opts: {flex: 1, minWidth: 100, maxWidth: 500},
+      const leftPane: PaneConfigOpts = {
+        flex: 1,
+        id: 'left',
+        minWidth: 100,
+        maxWidth: 500,
       }
 
-      const rightPane: PaneConfig = {
-        element: null as any,
-        opts: {flex: 1, minWidth: 100},
+      const rightPane: PaneConfigOpts = {
+        flex: 1,
+        id: 'right',
+        minWidth: 100,
       }
 
       // move resizer to left

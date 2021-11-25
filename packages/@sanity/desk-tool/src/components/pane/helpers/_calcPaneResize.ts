@@ -1,10 +1,10 @@
 import {PANE_DEFAULT_MIN_WIDTH} from '../constants'
-import {PaneConfig, PaneResizeCache} from '../types'
+import {PaneConfigOpts, PaneResizeCache} from '../types'
 
 export function _calcPaneResize(
   cache: PaneResizeCache,
-  left: PaneConfig,
-  right: PaneConfig,
+  left: PaneConfigOpts,
+  right: PaneConfigOpts,
   deltaX: number
 ): {leftFlex: number; leftW: number; rightFlex: number; rightW: number} {
   const sum = {
@@ -12,11 +12,11 @@ export function _calcPaneResize(
     width: cache.left.width + cache.right.width,
   }
 
-  const leftMinWidth = left.opts.minWidth ?? PANE_DEFAULT_MIN_WIDTH
-  const rightMinWidth = right.opts.minWidth ?? PANE_DEFAULT_MIN_WIDTH
+  const leftMinWidth = left.minWidth ?? PANE_DEFAULT_MIN_WIDTH
+  const rightMinWidth = right.minWidth ?? PANE_DEFAULT_MIN_WIDTH
 
-  const leftMaxWidth = Math.min(left.opts.maxWidth || Infinity, sum.width - rightMinWidth)
-  const rightMaxWidth = Math.min(right.opts.maxWidth || Infinity, sum.width - leftMinWidth)
+  const leftMaxWidth = Math.min(left.maxWidth || Infinity, sum.width - rightMinWidth)
+  const rightMaxWidth = Math.min(right.maxWidth || Infinity, sum.width - leftMinWidth)
 
   // Get min. delta X
   let minDeltaX = leftMinWidth - cache.left.width
