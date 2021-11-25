@@ -1,5 +1,5 @@
-import React, {ComponentProps, ForwardedRef, forwardRef, RefObject, useCallback} from 'react'
-import {Autocomplete, Box, Popover, Text} from '@sanity/ui'
+import React, {ComponentProps, ForwardedRef, forwardRef, MutableRefObject, useCallback} from 'react'
+import {Autocomplete, Popover} from '@sanity/ui'
 import styled from 'styled-components'
 
 const StyledPopover = styled(Popover)`
@@ -13,7 +13,7 @@ const StyledPopover = styled(Popover)`
 const MARGINS: [number, number, number, number] = [-2, 0, 0, 0]
 
 export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
-  props: ComponentProps<typeof Autocomplete> & {popoverRef?: RefObject<HTMLDivElement>},
+  props: ComponentProps<typeof Autocomplete> & {portalRef?: MutableRefObject<HTMLDivElement>},
   ref: ForwardedRef<HTMLInputElement>
 ) {
   const hasHits = props.options.length > 0
@@ -26,11 +26,11 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
         constrainSize
         content={content}
         open={hasHits && !props.loading && !hidden}
-        ref={props.popoverRef}
+        ref={props.portalRef}
         referenceElement={inputElement}
       />
     ),
-    [props.loading, hasHits, props.popoverRef]
+    [props.loading, hasHits, props.portalRef]
   )
   return <Autocomplete {...props} ref={ref} renderPopover={renderPopover} />
 })
