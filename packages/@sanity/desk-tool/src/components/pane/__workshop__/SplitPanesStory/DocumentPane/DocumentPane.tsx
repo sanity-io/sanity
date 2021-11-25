@@ -28,8 +28,8 @@ export function DocumentPane(props: {
   return (
     <Pane
       currentMinWidth={reviewChanges ? 600 + 320 : 600}
-      data-index={index}
       flex={2.5}
+      id={String(index)}
       minWidth={reviewChanges ? 320 + 320 : 320}
     >
       <Flex flex={1} height="fill">

@@ -82,7 +82,7 @@ export default function ChangeConnectorsStory() {
                 onCollapse={handleLayoutCollapse}
                 onExpand={handleLayoutExpand}
               >
-                <Pane>
+                <Pane id="document-panel">
                   <PaneHeader title="Document" />
                   <PaneContent ref={setdocumentContentElement}>
                     <BoundaryElementProvider element={documentContentElement}>
@@ -163,7 +163,7 @@ export default function ChangeConnectorsStory() {
                 </Pane>
 
                 {reviewChanges && (
-                  <Pane>
+                  <Pane id="review-changes-panel">
                     <PaneHeader
                       actions={
                         <Button icon={CloseIcon} mode="bleed" onClick={closeReviewChanges} />
