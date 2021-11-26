@@ -16,6 +16,6 @@ interface BaseMarker {
 
 export interface ValidationMarker extends BaseMarker {
   type: 'validation'
-  level: 'error' | 'warning'
+  level: 'error' | 'warning' | 'info'
   item: ValidationError
 }
