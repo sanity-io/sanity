@@ -45,8 +45,8 @@ export function FilterGroupTabs(props: FieldGroupsTabsProps) {
   return (
     <Card paddingBottom={4} data-testid="field-groups">
       <TabList space={2}>
-        {filterGroups.map((group) => {
-          const {name, title, icon} = group
+        {filterGroups.map((group, i) => {
+          const {name, title, icon, isDefault} = group
 
           return (
             <Tab
@@ -60,6 +60,7 @@ export function FilterGroupTabs(props: FieldGroupsTabsProps) {
               onClick={() => setId(name)}
               selected={id === name}
               disabled={disabled}
+              autoFocus={id === name || isDefault}
             />
           )
         })}
