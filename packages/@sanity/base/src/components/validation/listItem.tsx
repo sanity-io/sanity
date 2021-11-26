@@ -1,7 +1,7 @@
 import {Marker, Path} from '@sanity/types'
-import React, {useCallback} from 'react'
-import {WarningOutlineIcon, ErrorOutlineIcon} from '@sanity/icons'
-import {Box, Text, MenuItem, Stack, Flex} from '@sanity/ui'
+import React, {useCallback, useMemo} from 'react'
+import {WarningOutlineIcon, ErrorOutlineIcon, InfoOutlineIcon} from '@sanity/icons'
+import {Box, Text, MenuItem, Stack, Flex, ButtonTone} from '@sanity/ui'
 import styled from 'styled-components'
 
 interface ValidationListItemProps {
@@ -15,10 +15,14 @@ const StyledText = styled(Text)`
   white-space: initial;
 `
 
+const MENU_ITEM_TONES: Record<'error' | 'warning' | 'info', ButtonTone> = {
+  error: 'critical',
+  warning: 'caution',
+  info: 'primary',
+}
+
 export function ListItem(props: ValidationListItemProps) {
   const {marker, onClick, path, truncate} = props
-
-  const tone = marker.level === 'warning' ? 'caution' : 'critical'
 
   const handleClick = useCallback(() => {
     if (onClick) {
@@ -26,12 +30,15 @@ export function ListItem(props: ValidationListItemProps) {
     }
   }, [marker.path, onClick])
 
+  const menuItemTone = MENU_ITEM_TONES[marker?.level] || undefined
+
   const children = (
     <Flex>
       <Box>
         <Text size={1}>
           {marker.level === 'error' && <ErrorOutlineIcon />}
           {marker.level === 'warning' && <WarningOutlineIcon />}
+          {marker.level === 'info' && <InfoOutlineIcon />}
         </Text>
       </Box>
 
@@ -50,7 +57,7 @@ export function ListItem(props: ValidationListItemProps) {
     </Flex>
   )
   return (
-    <MenuItem padding={1} onClick={handleClick} radius={2} tone={tone}>
+    <MenuItem padding={1} onClick={handleClick} radius={2} tone={menuItemTone}>
       <Box padding={2}>{children}</Box>
     </MenuItem>
   )
