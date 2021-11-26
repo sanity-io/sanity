@@ -45,7 +45,7 @@ export interface Rule {
    * @internal
    * @deprecated internal use only
    */
-  _level: 'error' | 'warning' | undefined
+  _level: 'error' | 'warning' | 'info' | undefined
   /**
    * @internal
    * @deprecated internal use only
