@@ -32,10 +32,12 @@ const UNAVAILABLE_PERMISSION_DENIED = {
 
 const infinityNoop = new Proxy(() => infinityNoop, {get: () => infinityNoop})
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const StubComponent = forwardRef((_: any, ref) => {
-  useImperativeHandle(ref, () => infinityNoop, [])
-  return null
-})
+const StubComponent = forwardRef(
+  ({documentId, documentType}: {documentId: string; documentType: string}, ref) => {
+    useImperativeHandle(ref, () => infinityNoop, [])
+    return null
+  }
+)
 StubComponent.displayName = 'StubComponent'
 
 function ReferenceInputTester(props: PartialExcept<Props, 'type' | 'getReferenceInfo'>) {
