@@ -76,22 +76,22 @@ export interface SearchHit {
 }
 
 export interface BaseInputProps {
-  value?: Reference
   type: ReferenceSchemaType
   markers: Marker[]
   id?: string
   suffix?: ReactNode
   focusPath: Path
   readOnly?: boolean
+  liveEdit: boolean
   onSearch: SearchFunction
   compareValue?: Reference
   onFocus?: (path: Path) => void
   onBlur?: () => void
   selectedState?: 'selected' | 'pressed' | 'none'
-  editReferenceLinkComponent: React.ComponentType
-  onEditReference: (id: string, type: ObjectSchemaType) => void
+  createOptions: CreateOption[]
+  editReferenceLinkComponent: React.ComponentType<{documentId: string; documentType: string}>
+  onEditReference: (event: EditReferenceEvent) => void
   getReferenceInfo: (id: string, type: ReferenceSchemaType) => Observable<ReferenceInfo>
-  previewComponent: PreviewComponentType
   onChange: (event: PatchEvent) => void
   level: number
   presence: FormFieldPresence[]

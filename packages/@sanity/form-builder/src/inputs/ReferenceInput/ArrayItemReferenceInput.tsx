@@ -4,20 +4,12 @@ import React, {
   ComponentProps,
   ForwardedRef,
   forwardRef,
-  ReactNode,
   useCallback,
   useMemo,
   useRef,
   useState,
 } from 'react'
-import {
-  isValidationErrorMarker,
-  isValidationMarker,
-  Marker,
-  Path,
-  Reference,
-  ReferenceSchemaType,
-} from '@sanity/types'
+import {isValidationErrorMarker, isValidationMarker, Reference} from '@sanity/types'
 import {
   EllipsisVerticalIcon,
   LaunchIcon as OpenInNewTabIcon,
@@ -45,7 +37,7 @@ import {
   useToast,
 } from '@sanity/ui'
 import {FormField, FormFieldValidationStatus, IntentLink} from '@sanity/base/components'
-import {FieldPresence, FormFieldPresence} from '@sanity/base/presence'
+import {FieldPresence} from '@sanity/base/presence'
 import {getPublishedId} from '@sanity/base/_internal'
 import {useObservableCallback} from 'react-rx'
 import {uuid} from '@sanity/uuid'
@@ -58,8 +50,7 @@ import {isNonNullable} from '../../utils/isNonNullable'
 import {AlertStrip} from '../../AlertStrip'
 import {RowWrapper} from '../arrays/ArrayOfObjectsInput/item/components/RowWrapper'
 import {DragHandle} from '../arrays/common/DragHandle'
-import {PartialPick} from '../../utils/util-types'
-import {CreateOption, EditReferenceEvent, ReferenceInfo, SearchFunction, SearchState} from './types'
+import {BaseInputProps, CreateOption, SearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
@@ -73,33 +64,12 @@ const INITIAL_SEARCH_STATE: SearchState = {
   isLoading: false,
 }
 
-export interface Props {
+export interface Props extends BaseInputProps {
   value: OptionalRef
-  type: ReferenceSchemaType
-  markers: Marker[]
-  suffix?: ReactNode
-  focusPath: Path
-  readOnly?: boolean
-  onSearch: SearchFunction
-  createOptions: CreateOption[]
-  onEditReference: (event: EditReferenceEvent) => void
-  compareValue?: Reference
   isSortable: boolean
-  onFocus?: (path: Path) => void
-  onBlur?: () => void
-  selectedState?: 'selected' | 'pressed' | 'none'
-  editReferenceLinkComponent: React.ComponentType
-  getReferenceInfo: (id: string, type: ReferenceSchemaType) => Observable<ReferenceInfo>
-  onChange: (event: PatchEvent) => void
-  presence: FormFieldPresence[]
-  level: number
 }
 
 const NO_FILTER = () => true
-
-function nonNullable<T>(v: T): v is NonNullable<T> {
-  return v !== null
-}
 
 const dragHandle = <DragHandle paddingX={1} paddingY={3} />
 
