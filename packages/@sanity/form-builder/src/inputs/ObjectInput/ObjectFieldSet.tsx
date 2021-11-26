@@ -88,46 +88,32 @@ export const ObjectFieldSet = forwardRef(function ObjectFieldSet(
     }
   }, [fieldNames, focusPath])
 
-  const renderFieldSet = () => {
-    return (
-      <FormFieldSet
-        {...rest}
-        key={fieldset.name}
-        title={fieldset.title}
-        description={fieldset.description}
-        level={level + 1}
-        columns={columns}
-        collapsible={collapsibleOpts.collapsible}
-        collapsed={isCollapsed}
-        onToggle={handleToggleFieldset}
-        __unstable_presence={isCollapsed ? childPresence : EMPTY_ARRAY}
-        __unstable_changeIndicator={false}
-        __unstable_markers={childMarkers}
-        ref={isCollapsed ? forwardedRef : null}
-      >
-        {children}
-      </FormFieldSet>
-    )
-  }
-
-  if (typeof fieldset.hidden === 'function') {
-    const fieldSetValuesObject = {}
-    fieldset.fields.forEach((field) => {
-      fieldSetValuesObject[field.name] = fieldValues[field.name]
-    })
-
-    return (
-      <ConditionalHiddenField
-        {...fieldset}
-        parent={fieldSetParent}
-        value={fieldSetValuesObject}
-        hidden={fieldset.hidden}
-      >
-        {renderFieldSet()}
-      </ConditionalHiddenField>
-    )
-  } else if (fieldset.hidden === true) {
-    return null
-  }
-  return renderFieldSet()
+  return (
+    <ConditionalHiddenField
+      {...fieldset}
+      parent={fieldSetParent}
+      value={fieldValues}
+      hidden={fieldset.hidden}
+    >
+      {
+        <FormFieldSet
+          {...rest}
+          key={fieldset.name}
+          title={fieldset.title}
+          description={fieldset.description}
+          level={level + 1}
+          columns={columns}
+          collapsible={collapsibleOpts.collapsible}
+          collapsed={isCollapsed}
+          onToggle={handleToggleFieldset}
+          __unstable_presence={isCollapsed ? childPresence : EMPTY_ARRAY}
+          __unstable_changeIndicator={false}
+          __unstable_markers={childMarkers}
+          ref={isCollapsed ? forwardedRef : null}
+        >
+          {children}
+        </FormFieldSet>
+      }
+    </ConditionalHiddenField>
+  )
 })
