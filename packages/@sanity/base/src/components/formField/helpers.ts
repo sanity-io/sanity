@@ -6,7 +6,7 @@ export function markersToValidationList(markers: ValidationMarker[]): FormFieldV
 
   return validationMarkers.map((marker) => {
     return {
-      type: marker.level === 'error' ? 'error' : 'warning',
+      type: marker.level,
       label: marker.item.message,
     }
   })
