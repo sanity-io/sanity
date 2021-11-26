@@ -1,13 +1,6 @@
-/* eslint-disable cypress/no-unnecessary-waiting */
-import sanityClient from '@sanity/client'
+import testSanityClient from '../../helpers/sanityClientSetUp'
 
 let testDocumentId = ''
-const testSanityClient = sanityClient({
-  projectId: 'ppsg7ml5',
-  dataset: 'test',
-  token: Cypress.env('SANITY_SESSION_TOKEN'),
-  useCdn: false,
-})
 
 function setUpSuite() {
   cy.login()
