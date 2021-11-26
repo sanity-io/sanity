@@ -31,11 +31,7 @@ export function ChangeResolver(props: ChangeResolverProps) {
           value={change.diff.toValue}
           {...restProps}
         >
-          <FieldChange
-            change={change}
-            {...restProps}
-            // hidden={hidden} /** @todo: check if this value is needed */
-          />
+          <FieldChange change={change} {...restProps} />
         </ConditionalReadOnlyChange>
       </ConditionalHiddenChange>
     )
