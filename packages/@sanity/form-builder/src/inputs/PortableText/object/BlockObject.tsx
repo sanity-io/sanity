@@ -106,10 +106,9 @@ const ChangeIndicatorWrapper = styled.div(({theme}: {theme: Theme}) => {
   return css`
     position: absolute;
     width: ${space[2]}px;
-    right: -${space[2]}px;
+    right: 0;
     top: -${space[1]}px;
     bottom: -${space[1]}px;
-    overflow-x: hidden;
     padding-left: ${space[1]}px;
 
     [data-dragged] & {
@@ -312,7 +311,6 @@ export function BlockObject(props: BlockObjectProps) {
             value={block}
             hasFocus={focused}
             path={blockPath}
-            withBadge={false}
           />
         </ChangeIndicatorWrapper>
       )}
