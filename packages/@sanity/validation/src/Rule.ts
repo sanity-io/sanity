@@ -83,7 +83,7 @@ const Rule: RuleClass = class Rule implements IRule {
   })
 
   _type: RuleTypeConstraint | undefined = undefined
-  _level: 'error' | 'warning' | undefined = undefined
+  _level: 'error' | 'warning' | 'info' | undefined = undefined
   _required: 'required' | 'optional' | undefined = undefined
   _typeDef: SchemaType | undefined = undefined
   _message: string | undefined = undefined
@@ -114,6 +114,13 @@ const Rule: RuleClass = class Rule implements IRule {
   warning(message?: string): Rule {
     const rule = this.clone()
     rule._level = 'warning'
+    rule._message = message || undefined
+    return rule
+  }
+
+  info(message?: string): Rule {
+    const rule = this.clone()
+    rule._level = 'info'
     rule._message = message || undefined
     return rule
   }
