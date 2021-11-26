@@ -5,6 +5,7 @@ import {
   Marker,
   isValidationErrorMarker,
   isValidationWarningMarker,
+  isValidationInfoMarker,
 } from '@sanity/types'
 import {Container} from '@sanity/ui'
 import {ListItem} from './listItem'
@@ -23,6 +24,7 @@ export function ValidationList(props: ValidationListProps) {
 
   const errors = markers.filter(isValidationErrorMarker)
   const warnings = markers.filter(isValidationWarningMarker)
+  const info = markers.filter(isValidationInfoMarker)
 
   const handleClick = useCallback(
     (path: Path = []) => {
@@ -41,32 +43,44 @@ export function ValidationList(props: ValidationListProps) {
 
   const hasErrors = errors.length > 0
   const hasWarnings = warnings.length > 0
+  const hasInfo = info.length > 0
 
-  if (!hasErrors && !hasWarnings) {
+  if (!hasErrors && !hasWarnings && !hasInfo) {
     return null
   }
 
   return (
     <Container width={0} data-kind={kind}>
       {hasErrors &&
-        errors.map((error, i) => (
+        errors.map((_error, i) => (
           <ListItem
             // eslint-disable-next-line react/no-array-index-key
             key={i}
             truncate={truncate}
-            path={resolvePathTitle(error.path)}
-            marker={error}
+            path={resolvePathTitle(_error.path)}
+            marker={_error}
             onClick={handleClick}
           />
         ))}
       {hasWarnings &&
-        warnings.map((warning, i) => (
+        warnings.map((_warning, i) => (
           <ListItem
             // eslint-disable-next-line react/no-array-index-key
             key={i}
             truncate={truncate}
-            path={resolvePathTitle(warning.path)}
-            marker={warning}
+            path={resolvePathTitle(_warning.path)}
+            marker={_warning}
+            onClick={handleClick}
+          />
+        ))}
+      {hasInfo &&
+        info.map((_info, i) => (
+          <ListItem
+            // eslint-disable-next-line react/no-array-index-key
+            key={i}
+            truncate={truncate}
+            path={resolvePathTitle(_info.path)}
+            marker={_info}
             onClick={handleClick}
           />
         ))}
