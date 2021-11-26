@@ -94,6 +94,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
     value,
     markers,
     readOnly,
+    liveEdit,
     onSearch,
     onChange,
     focusPath = EMPTY_ARRAY,
@@ -228,6 +229,17 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
 
   const handleFixStrengthMismatch = useCallback(() => {
     onChange(PatchEvent.from(type.weak === true ? set(true, ['_weak']) : unset(['_weak'])))
+  }, [onChange, type])
+
+  const referenceExists = hasRef && loadableReferenceInfo.result?.preview?.published?._id
+
+  const handleRemoveStrengthenOnPublish = useCallback(() => {
+    onChange(
+      PatchEvent.from([
+        type.weak === true ? set(true, ['_weak']) : unset(['_weak']),
+        unset(['_strengthenOnPublish']),
+      ])
+    )
   }, [onChange, type])
 
   const {push} = useToast()
@@ -556,7 +568,27 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
           </Box>
         )}
       </Flex>
-
+      {liveEdit && referenceExists && value._strengthenOnPublish && (
+        <AlertStrip
+          padding={1}
+          title={type.weak ? 'Finalize reference' : 'Convert to strong reference'}
+          status="info"
+          data-testid="alert-reference-published"
+        >
+          <Stack space={3}>
+            <Text as="p" muted size={1}>
+              <strong>{loadableReferenceInfo.result.preview.published.title}</strong> is published
+              and this reference should now be{' '}
+              {type.weak ? <>finalized</> : <>converted to a strong reference</>}.
+            </Text>
+            <Button
+              onClick={handleRemoveStrengthenOnPublish}
+              text={<>Convert to strong reference</>}
+              tone="positive"
+            />
+          </Stack>
+        </AlertStrip>
+      )}
       {showWeakRefMismatch && (
         <AlertStrip
           padding={1}
