@@ -8,4 +8,12 @@ interface FormFieldValidationError {
   label: string
 }
 
-export type FormFieldValidation = FormFieldValidationWarning | FormFieldValidationError
+interface FormFieldValidationInfo {
+  type: 'info'
+  label: string
+}
+
+export type FormFieldValidation =
+  | FormFieldValidationWarning
+  | FormFieldValidationError
+  | FormFieldValidationInfo
