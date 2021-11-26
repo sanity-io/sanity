@@ -38,7 +38,6 @@ import {ChangeIndicatorForFieldPath, FormField, IntentLink} from '@sanity/base/c
 import {getPublishedId} from '@sanity/base/_internal'
 import {useObservableCallback} from 'react-rx'
 import {uuid} from '@sanity/uuid'
-import styled from 'styled-components'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
@@ -54,6 +53,7 @@ import {CreateButton} from './CreateButton'
 import {ReferenceAutocomplete} from './ReferenceAutocomplete'
 import {AutocompleteContainer} from './AutocompleteContainer'
 import {useOnClickOutside} from './utils/useOnClickOutside'
+import {PreviewCard} from './PreviewCard'
 
 const INITIAL_SEARCH_STATE: SearchState = {
   hits: [],
@@ -69,18 +69,6 @@ const NO_FILTER = () => true
 function nonNullable<T>(v: T): v is NonNullable<T> {
   return v !== null
 }
-
-const OptionCard = styled(Card)`
-  /* TextWithTone uses its own logic to set color, and we therefore need
-  to override this logic in order to set the correct color in different states */
-  &[data-selected],
-  &[data-pressed],
-  &:active {
-    [data-ui='TextWithTone'] {
-      color: inherit;
-    }
-  }
-`
 
 const REF_PATH = ['_ref']
 export const ReferenceInput = forwardRef(function ReferenceInput(
@@ -310,11 +298,11 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
     (option) => {
       const id = option.hit.draft?._id || option.hit.published?._id
       return (
-        <OptionCard forwardedAs="button" type="button" radius={2}>
+        <PreviewCard forwardedAs="button" type="button" radius={2}>
           <Box paddingX={3} paddingY={1}>
             <OptionPreview type={type} id={id} getReferenceInfo={getReferenceInfoMemo} />
           </Box>
-        </OptionCard>
+        </PreviewCard>
       )
     },
     [type, getReferenceInfoMemo]
@@ -459,7 +447,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
               }
             >
               <Flex align="center" padding={1}>
-                <OptionCard
+                <PreviewCard
                   flex={1}
                   padding={1}
                   paddingRight={3}
@@ -485,7 +473,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
                     type={type}
                     selected={selected}
                   />
-                </OptionCard>
+                </PreviewCard>
                 <Inline paddingX={1}>
                   <MenuButton
                     button={<Button padding={2} mode="bleed" icon={EllipsisVerticalIcon} />}
