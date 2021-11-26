@@ -15,3 +15,9 @@ export function isValidationWarningMarker(
 ): marker is ValidationMarker & {level: 'warning'} {
   return isValidationMarker(marker) && marker.level === 'warning'
 }
+
+export function isValidationInfoMarker(
+  marker: Marker
+): marker is ValidationMarker & {level: 'info'} {
+  return isValidationMarker(marker) && marker.level === 'info'
+}
