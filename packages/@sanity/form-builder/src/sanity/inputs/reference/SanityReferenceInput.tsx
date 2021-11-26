@@ -21,6 +21,7 @@ import PatchEvent from '../../../PatchEvent'
 import * as adapter from '../client-adapters/reference'
 import {ReferenceInput} from '../../../inputs/ReferenceInput/ReferenceInput'
 import {EditReferenceEvent} from '../../../inputs/ReferenceInput/types'
+import {schema} from '../../../legacyParts'
 
 // eslint-disable-next-line require-await
 async function resolveUserDefinedFilter(
@@ -90,6 +91,12 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
   } = useReferenceInputOptions()
 
   const documentRef = useValueRef(document)
+
+  const documentTypeName = documentRef.current?._type
+
+  const isDocumentLiveEdit = useMemo(() => {
+    return schema.get(documentTypeName).liveEdit === true
+  }, [documentTypeName])
 
   const valuePath = useMemo(getValuePath, [getValuePath])
 
@@ -178,6 +185,7 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
     <ReferenceInput
       {...props}
       onSearch={handleSearch}
+      liveEdit={isDocumentLiveEdit}
       getReferenceInfo={adapter.getReferenceInfo}
       ref={ref}
       selectedState={selectedState}

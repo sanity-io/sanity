@@ -54,6 +54,7 @@ function ReferenceInputTester(props: PartialExcept<Props, 'type' | 'getReference
               onChange={onChange}
               markers={[]}
               level={0}
+              liveEdit={false}
               focusPath={[]}
               presence={[]}
               onSearch={EMPTY_SEARCH}

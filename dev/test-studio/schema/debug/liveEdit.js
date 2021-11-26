@@ -27,6 +27,12 @@ export default {
       to: {type: 'author', title: 'Author'},
     },
     {
+      name: 'reference',
+      title: 'Array of references',
+      type: 'array',
+      of: [{type: 'reference', to: {type: 'author', title: 'Author'}}],
+    },
+    {
       name: 'coverImage',
       title: 'Cover Image',
       type: 'image',
