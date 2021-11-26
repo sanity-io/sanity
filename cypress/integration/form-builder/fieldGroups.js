@@ -16,7 +16,7 @@ describe('@sanity/form-builder: field groups', () => {
       .should('have.attr', 'aria-selected', 'true')
   })
 
-  it('should filter field based on selected group', () => {
+  it('should filter field based on active group', () => {
     cy.visit('/test/desk/input-debug;fieldGroups;c04d9594-b242-44ed-8da0-f6b5ff93f312')
 
     // Click on Group 1
@@ -34,12 +34,17 @@ describe('@sanity/form-builder: field groups', () => {
     cy.get(el('input-field4')).should('be.visible')
   })
 
-  it('should disable groups when opening changes panel, and switch to all fields', () => {
+  it('should disable groups when opening changes panel and show all fields', () => {
     cy.visit('/test/desk/input-debug;fieldGroups;c04d9594-b242-44ed-8da0-f6b5ff93f312')
     cy.get(el('group-group1')).click()
     cy.get(el('review-changes-button')).click()
-    cy.get(el('group-all-fields')).should('have.attr', 'aria-selected', 'true')
+    cy.get(el('group-all-fields')).should('have.attr', 'disabled')
     cy.get(el('group-group1')).should('have.attr', 'disabled')
     cy.get(el('group-group2')).should('have.attr', 'disabled')
+  })
+
+  it('should filter fields by default group on initial render and show group as active', () => {
+    cy.visit('/test/desk/input-debug;fieldGroupsDefault;f61b9762-3519-43f2-acc3-97ee709e2131')
+    cy.get(el('group-group2')).should('have.attr', 'aria-selected', 'true')
   })
 })

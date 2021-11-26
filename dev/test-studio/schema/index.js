@@ -83,6 +83,7 @@ import mux from './externalPlugins/mux'
 import book from './book'
 import author from './author'
 import species from './species'
+import fieldGroupsDefault from './debug/fieldGroupsDefault'
 
 // CI documents
 import conditionalFieldset from './ci/conditionalFieldset'
@@ -172,5 +173,6 @@ export default createSchema({
     validationArraySuperType,
     withDocumentTestSchemaType,
     fieldGroups,
+    fieldGroupsDefault,
   ]),
 })
