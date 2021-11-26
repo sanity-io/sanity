@@ -5,21 +5,22 @@ import {usePane} from './usePane'
 import {Layout, Root, TabsBox, TitleBox, TitleTextSkeleton, TitleText} from './PaneHeader.styles'
 
 interface PaneHeaderProps {
+  actions?: React.ReactNode
   backButton?: React.ReactNode
   loading?: boolean
   subActions?: React.ReactNode
   tabs?: React.ReactNode
   title: React.ReactNode
-  actions?: React.ReactNode
 }
 
 /**
  * @beta This API will change. DO NOT USE IN PRODUCTION.
  */
 export const PaneHeader = forwardRef(function PaneHeader(
-  {actions, backButton, loading, subActions, tabs, title}: PaneHeaderProps,
+  props: PaneHeaderProps,
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
+  const {actions, backButton, loading, subActions, tabs, title} = props
   const {collapse, collapsed, expand, rootElement: paneElement} = usePane()
   const paneRect = useElementRect(paneElement || null)
 
