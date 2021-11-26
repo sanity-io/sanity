@@ -18,7 +18,7 @@ export default function convertToValidationMarker(
     | ValidationError[]
     | ValidationErrorLike
     | ValidationErrorLike[],
-  level: 'error' | 'warning' | undefined,
+  level: 'error' | 'warning' | 'info' | undefined,
   context: ValidationContext
 ): ValidationMarker[] {
   if (validatorResult === true) return []
