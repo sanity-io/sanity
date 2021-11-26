@@ -97,6 +97,7 @@ export interface Rule {
   valueOfField: (path: string | string[]) => {type: symbol; path: string | string[]}
   error(message?: string): Rule
   warning(message?: string): Rule
+  info(message?: string): Rule
   reset(): this
   isRequired(): boolean
   clone(): Rule
