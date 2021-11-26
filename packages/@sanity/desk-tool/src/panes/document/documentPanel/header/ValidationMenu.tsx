@@ -1,6 +1,11 @@
 import {useId} from '@reach/auto-id'
 import {ValidationList} from '@sanity/base/components'
 import {ErrorOutlineIcon} from '@sanity/icons'
+import {
+  isValidationInfoMarker,
+  isValidationWarningMarker,
+  isValidationErrorMarker,
+} from '@sanity/types'
 import {Button, Menu, MenuButton} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
 import {useDocumentPane} from '../../useDocumentPane'
@@ -20,21 +25,28 @@ export function ValidationMenu(props: ValidationMenuProps) {
     [markers]
   )
 
-  const validationErrorMarkers = useMemo(
-    () => validationMarkers.filter((marker) => marker.level === 'error'),
+  const validationErrorMarkers = useMemo(() => validationMarkers.filter(isValidationErrorMarker), [
+    validationMarkers,
+  ])
+
+  const validationWarningMarkers = useMemo(
+    () => validationMarkers.filter(isValidationWarningMarker),
     [validationMarkers]
   )
 
-  const validationWarningwarnings = useMemo(
-    () => validationMarkers.filter((marker) => marker.level === 'warning'),
-    [validationMarkers]
-  )
+  const validationInfoMarkers = useMemo(() => validationMarkers.filter(isValidationInfoMarker), [
+    validationMarkers,
+  ])
 
   const id = useId()
 
   const handleClose = useCallback(() => setOpen(false), [setOpen])
 
-  if (validationErrorMarkers.length === 0 && validationWarningwarnings.length === 0) {
+  if (
+    validationErrorMarkers.length === 0 &&
+    validationWarningMarkers.length === 0 &&
+    validationInfoMarkers.length === 0
+  ) {
     return null
   }
 
