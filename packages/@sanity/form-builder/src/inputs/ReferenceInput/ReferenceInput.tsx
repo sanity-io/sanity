@@ -81,6 +81,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
     level,
     markers,
     readOnly,
+    liveEdit,
     onSearch,
     onChange,
     presence,
@@ -512,6 +513,27 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
                   />
                 </Inline>
               </Flex>
+              {liveEdit && referenceExists && value._strengthenOnPublish && (
+                <AlertStrip
+                  padding={1}
+                  title={type.weak ? 'Finalize reference' : 'Convert to strong reference'}
+                  status="info"
+                  data-testid="alert-reference-published"
+                >
+                  <Stack space={3}>
+                    <Text as="p" muted size={1}>
+                      <strong>{loadableReferenceInfo.result.preview.published.title}</strong> is
+                      published and this reference should now be{' '}
+                      {type.weak ? <>finalized</> : <>converted to a strong reference</>}.
+                    </Text>
+                    <Button
+                      onClick={handleRemoveStrengthenOnPublish}
+                      text={<>Convert to strong reference</>}
+                      tone="positive"
+                    />
+                  </Stack>
+                </AlertStrip>
+              )}
               {showWeakRefMismatch && (
                 <AlertStrip
                   padding={1}
