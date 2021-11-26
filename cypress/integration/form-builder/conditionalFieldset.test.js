@@ -74,13 +74,13 @@ describe('@sanity/field: Multi fieldset and review changes', () => {
     cy.get('[data-testid="fieldset-multiHiddenBooleanTrue"]').should('not.exist')
   })
 
-  //Hidden callback false
-  it('when the hidden callback returns false, the fieldset is rendered', () => {
+  //Hidden callback (document) false
+  it('when the hidden callback (document) returns false, the fieldset is rendered', () => {
     cy.get('[data-testid="fieldset-multiHiddenCallbackFalse"]').should('be.visible')
   })
 
-  //Hidden callback true
-  it('when the hidden callback returns true, the fieldset is not rendered', () => {
+  //Hidden callback (document) true
+  it('when the hidden callback (document) returns true, the fieldset is not rendered', () => {
     cy.get('[data-testid="fieldset-multiHiddenCallbackTrue"]').should('not.exist')
   })
 
@@ -98,19 +98,36 @@ describe('@sanity/field: Multi fieldset and review changes', () => {
       .should('have.attr', 'readonly')
   })
 
-  //Read only callback false
-  it('when the readOnly callback returns false, the fieldset is enabled', () => {
+  //Read only callback (document) false
+  it('when the readOnly callback (document) returns false, the fieldset is enabled', () => {
     cy.get('[data-testid="fieldset-multiReadOnlyCallbackFalse"]')
       .find('input')
       .should('not.have.attr', 'readonly')
   })
 
-  //Read only callback true
-  it('when the readOnly callback returns true, the fieldset is disabled', () => {
+  //Read only callback (document) true
+  it('when the readOnly callback (document) returns true, the fieldset is disabled', () => {
     cy.get('[data-testid="fieldset-multiReadOnlyCallbackTrue"]')
       .find('input')
       .should('have.attr', 'readonly')
   })
+
+  // eslint-disable-next-line no-warning-comments
+  /* @TODO
+  - when readOnly callback (parent) returns false, the fieldset is not disabled
+  - when readOnly callback (parent) returns false, the fieldset is not disabled
+  - when readOnly callback (parent) returns true, the fieldset is disabled
+  - when readOnly callback (currentUser) returns false, the fieldset is not disabled
+  - when readOnly callback (currentUser) returns true, the fieldset is disabled
+  - when readOnly callback (value) returns false, the fieldset is not disabled
+  - when readOnly callback (value) returns true, the fieldset is disabled
+  - when hidden callback (parent) returns true, the fieldset is not rendered
+  - when hidden callback (parent) returns false, the fieldset is rendered
+  - when hidden callback (currentUser) returns false, the fieldset is rendered
+  - when hidden callback (currentUser) returns true, the fieldset is not rendered
+  - when hidden callback (value) returns false, the fieldset is rendered
+  - when hidden callback (value) returns true, the fieldset is not rendered
+  */
 
   /* --- Review Changes --- */
 
@@ -124,13 +141,13 @@ describe('@sanity/field: Multi fieldset and review changes', () => {
     cy.get('[data-testid="group-change-multiHiddenBooleanTrue"]').should('not.exist')
   })
 
-  //Hidden callback false
-  it('when the hidden callback returns false, the review change for fieldset is rendered', () => {
+  //Hidden callback (document) false
+  it('when the hidden callback (document) returns false, the review change for fieldset is rendered', () => {
     cy.get('[data-testid="group-change-multiHiddenCallbackFalse"]').should('be.visible')
   })
 
-  //Hidden callback true
-  it('when the hidden callback returns true, the review change for fieldset is not rendered', () => {
+  //Hidden callback (document) true
+  it('when the hidden callback (document) returns true, the review change for fieldset is not rendered', () => {
     cy.get('[data-testid="group-change-multiHiddenCallbackTrue"]').should('not.exist')
   })
 
@@ -162,8 +179,8 @@ describe('@sanity/field: Multi fieldset and review changes', () => {
     )
   })
 
-  //Read only callback false
-  it('when the readOnly callback returns false, the review change for fieldset is enabled', () => {
+  //Read only callback (document) false
+  it('when the readOnly callback (document) returns false, the review change for fieldset is enabled', () => {
     cy.get('[data-testid="group-change-revert-button-multiReadOnlyCallbackFalse"]').should(
       'not.be.disabled'
     )
@@ -176,8 +193,8 @@ describe('@sanity/field: Multi fieldset and review changes', () => {
     )
   })
 
-  //Read only callback true
-  it('when the readOnly callback returns true, the review change for fieldset is disabled', () => {
+  //Read only callback (document) true
+  it('when the readOnly callback (document) returns true, the review change for fieldset is disabled', () => {
     cy.get('[data-testid="group-change-revert-button-multiReadOnlyCallbackTrue"]').should(
       'be.disabled'
     )
@@ -189,6 +206,23 @@ describe('@sanity/field: Multi fieldset and review changes', () => {
       'be.disabled'
     )
   })
+
+  // eslint-disable-next-line no-warning-comments
+  /* @TODO
+  
+  - when readOnly callback (parent) returns false, the review change for fieldset is not disabled
+  - when readOnly callback (parent) returns true, the review change for fieldset is disabled
+  - when readOnly callback (currentUser) returns false, the review change for fieldset is not disabled
+  - when readOnly callback (currentUser) returns true, the review change for fieldset is disabled
+  - when readOnly callback (value) returns false, the review change for fieldset is not disabled
+  - when readOnly callback (value) returns true, the review change for fieldset is disabled
+  - when hidden callback (parent) returns true, the review change for fieldset is not rendered
+  - when hidden callback (parent) returns false, the review change for fieldset is rendered
+  - when hidden callback (currentUser) returns false, the review change for fieldset is rendered
+  - when hidden callback (currentUser) returns true, the review change for fieldset is not rendered
+  - when hidden callback (value) returns false, the review change for fieldset is rendered
+  - when hidden callback (value) returns true, the review change for fieldset is not rendered'
+  */
 
   after(() => {
     tearDownSuite()
@@ -214,13 +248,13 @@ describe('@sanity/field: Single fieldset and review changes', () => {
     cy.get('[data-testid="fieldset-singleHiddenBooleanTrue"]').should('not.exist')
   })
 
-  //Hidden callback false
-  it('when hidden callback returns false, the fieldset is rendered', () => {
+  //Hidden callback (document) false
+  it('when hidden callback (document) returns false, the fieldset is rendered', () => {
     cy.get('[data-testid="fieldset-singleHiddenCallbackFalse"]').should('be.visible')
   })
 
-  //Hidden callback true
-  it('when hidden callback returns true, the fieldset is not rendered', () => {
+  //Hidden callback (document) true
+  it('when hidden callback (document) returns true, the fieldset is not rendered', () => {
     cy.get('[data-testid="fieldset-singleHiddenCallbackTrue"]').should('not.exist')
   })
 
@@ -238,19 +272,36 @@ describe('@sanity/field: Single fieldset and review changes', () => {
       .should('have.attr', 'readonly')
   })
 
-  //Read only callback false
-  it('when readOnly callback returns false, the fieldset is not disabled', () => {
+  //Read only callback (document) false
+  it('when readOnly callback (document) returns false, the fieldset is not disabled', () => {
     cy.get('[data-testid="fieldset-singleReadOnlyCallbackFalse"]')
       .find('input')
       .should('not.have.attr', 'readonly')
   })
 
-  //Read only callback true
-  it('when readOnly callback returns true, the fieldset is disabled', () => {
+  //Read only callback (document) true
+  it('when readOnly callback (document) returns true, the fieldset is disabled', () => {
     cy.get('[data-testid="fieldset-singleReadOnlyCallbackTrue"]')
       .find('input')
       .should('have.attr', 'readonly')
   })
+
+  // eslint-disable-next-line no-warning-comments
+  /* @TODO
+  - when readOnly callback (parent) returns false, the fieldset is not disabled
+  - when readOnly callback (parent) returns false, the fieldset is not disabled
+  - when readOnly callback (parent) returns true, the fieldset is disabled
+  - when readOnly callback (currentUser) returns false, the fieldset is not disabled
+  - when readOnly callback (currentUser) returns true, the fieldset is disabled
+  - when readOnly callback (value) returns false, the fieldset is not disabled
+  - when readOnly callback (value) returns true, the fieldset is disabled
+  - when hidden callback (parent) returns true, the fieldset is not rendered
+  - when hidden callback (parent) returns false, the fieldset is rendered
+  - when hidden callback (currentUser) returns false, the fieldset is rendered
+  - when hidden callback (currentUser) returns true, the fieldset is not rendered
+  - when hidden callback (value) returns false, the fieldset is rendered
+  - when hidden callback (value) returns true, the fieldset is not rendered
+  */
 
   /* --- Review Changes --- */
 
@@ -268,15 +319,15 @@ describe('@sanity/field: Single fieldset and review changes', () => {
     )
   })
 
-  //Hidden callback false
-  it('when hidden callback returns false, the review change for fieldset is rendered', () => {
+  //Hidden callback (document) false
+  it('when hidden callback (document) returns false, the review change for fieldset is rendered', () => {
     cy.get('[data-testid="single-change-revert-button-singleHiddenCallbackFalse1"').should(
       'be.visible'
     )
   })
 
-  //Hidden callback true
-  it('when hidden callback returns true, the review change for fieldset is not rendered', () => {
+  //Hidden callback (document) true
+  it('when hidden callback (document) returns true, the review change for fieldset is not rendered', () => {
     cy.get('[data-testid="single-change-revert-button-singleHiddenCallbackTrue1"').should(
       'not.exist'
     )
@@ -296,19 +347,36 @@ describe('@sanity/field: Single fieldset and review changes', () => {
     )
   })
 
-  //Read only callback false
-  it('when readOnly callback returns false, the review change for fieldset is not disabled', () => {
+  //Read only callback (document) false
+  it('when readOnly callback (document) (document) returns false, the review change for fieldset is not disabled', () => {
     cy.get('[data-testid="single-change-revert-button-singleReadOnlyCallbackFalse1"').should(
       'not.be.disabled'
     )
   })
 
-  //Read only callback true
-  it('when readOnly callback returns true, the review change for fieldset is disabled', () => {
+  //Read only callback (document) true
+  it('when readOnly callback (document) returns true, the review change for fieldset is disabled', () => {
     cy.get('[data-testid="single-change-revert-button-singleReadOnlyCallbackTrue1"').should(
       'be.disabled'
     )
   })
+
+  // eslint-disable-next-line no-warning-comments
+  /* @TODO
+  
+  - when readOnly callback (parent) returns false, the review change for fieldset is not disabled
+  - when readOnly callback (parent) returns true, the review change for fieldset is disabled
+  - when readOnly callback (currentUser) returns false, the review change for fieldset is not disabled
+  - when readOnly callback (currentUser) returns true, the review change for fieldset is disabled
+  - when readOnly callback (value) returns false, the review change for fieldset is not disabled
+  - when readOnly callback (value) returns true, the review change for fieldset is disabled
+  - when hidden callback (parent) returns true, the review change for fieldset is not rendered
+  - when hidden callback (parent) returns false, the review change for fieldset is rendered
+  - when hidden callback (currentUser) returns false, the review change for fieldset is rendered
+  - when hidden callback (currentUser) returns true, the review change for fieldset is not rendered
+  - when hidden callback (value) returns false, the review change for fieldset is rendered
+  - when hidden callback (value) returns true, the review change for fieldset is not rendered'
+  */
 
   after(() => {
     tearDownSuite()
