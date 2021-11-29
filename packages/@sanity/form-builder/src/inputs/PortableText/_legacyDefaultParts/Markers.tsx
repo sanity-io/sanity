@@ -21,6 +21,10 @@ const getIcon = (level) => {
 
 const IconText = styled(Text)(({theme}: {theme: Theme}) => {
   return css`
+    &[data-info] {
+      color: ${theme.sanity.color.muted.primary.enabled.fg};
+    }
+
     &[data-warning] {
       color: ${theme.sanity.color.muted.caution.enabled.fg};
     }
@@ -60,6 +64,7 @@ export default function Markers(props: Props) {
                 size={1}
                 data-error={level === 'error' ? '' : undefined}
                 data-warning={level === 'warning' ? '' : undefined}
+                data-info={level === 'info' ? '' : undefined}
               >
                 {getIcon(level)}
               </IconText>
