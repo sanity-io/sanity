@@ -5,7 +5,17 @@ import {isJSONTypeOf} from '../utils/isJSONTypeOf'
 
 const getTypeOf = (thing) => (Array.isArray(thing) ? 'array' : typeof thing)
 const quote = (str) => `"${str}"`
-const allowedKeys = ['type', 'styles', 'marks', 'lists', 'of', 'title', 'name', 'validation']
+const allowedKeys = [
+  'lists',
+  'marks',
+  'name',
+  'of',
+  'options',
+  'styles',
+  'title',
+  'type',
+  'validation',
+]
 const allowedMarkKeys = ['decorators', 'annotations']
 const allowedStyleKeys = ['title', 'value', 'blockEditor']
 const allowedDecoratorKeys = ['title', 'value', 'blockEditor', 'icon']
