@@ -86,6 +86,16 @@ export function Input(props: InputProps) {
   const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
   const handledFocusPath = useRef(null)
 
+  const textBlockSpellCheck = useMemo(() => {
+    // Chrome 96. has serious perf. issues with spellchecking
+    // https://bugs.chromium.org/p/chromium/issues/detail?id=1271918
+    // TODO: check up on the status of this.
+    const spellCheckOption = editor.portableTextFeatures.types.block.options?.spellCheck
+    const isChrome96 =
+      typeof navigator === 'undefined' ? false : /Chrome\/96/.test(navigator.userAgent)
+    return spellCheckOption === undefined && isChrome96 === true ? false : spellCheckOption
+  }, [editor])
+
   // Respond to focusPath changes
   useEffect(() => {
     // Wait until the editor is properly initialized
@@ -249,6 +259,7 @@ export function Input(props: InputProps) {
             markers={blockMarkers}
             onChange={onChange}
             readOnly={readOnly}
+            spellCheck={textBlockSpellCheck}
             renderBlockActions={isEmptyValue ? undefined : renderBlockActions}
             renderCustomMarkers={isEmptyValue ? undefined : renderCustomMarkers}
           >
