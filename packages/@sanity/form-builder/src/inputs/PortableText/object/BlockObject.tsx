@@ -246,15 +246,21 @@ export function BlockObject(props: BlockObjectProps) {
     [blockMarkers]
   )
 
-  const hasMarkers = blockMarkers.length > 0
+  const infoMarkers = useMemo(
+    () => blockMarkers.filter((marker) => marker.type === 'validation' && marker.level === 'info'),
+    [blockMarkers]
+  )
+
+  const hasMarkers = Boolean(blockMarkers.length > 0 && renderCustomMarkers)
   const hasErrors = errorMarkers.length > 0
   const hasWarnings = warningMarkers.length > 0
+  const hasInfo = infoMarkers.length > 0
 
   const isImagePreview = type?.type?.name === 'image'
 
   const blockPath = useMemo(() => [{_key: block._key}], [block._key])
 
-  const tooltipEnabled = hasErrors || hasWarnings || Boolean(hasMarkers && renderCustomMarkers)
+  const tooltipEnabled = hasErrors || hasWarnings || hasInfo || hasMarkers
 
   return (
     <InnerFlex marginY={3}>
@@ -272,11 +278,11 @@ export function BlockObject(props: BlockObjectProps) {
           }
         >
           <Root
-            data-focused={focused || undefined}
-            data-invalid={hasErrors || undefined}
-            data-selected={selected || undefined}
-            data-markers={hasMarkers || undefined}
-            data-warning={hasWarnings || undefined}
+            data-focused={focused ? '' : undefined}
+            data-invalid={hasErrors ? '' : undefined}
+            data-selected={selected ? '' : undefined}
+            data-markers={hasMarkers ? '' : undefined}
+            data-warning={hasWarnings ? '' : undefined}
             data-testid="pte-block-object"
             data-image-preview={isImagePreview ? '' : undefined}
             flex={1}
