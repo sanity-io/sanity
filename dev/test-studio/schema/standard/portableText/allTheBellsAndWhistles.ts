@@ -1,5 +1,7 @@
 import {BellIcon, ImageIcon, InfoOutlineIcon} from '@sanity/icons'
+import {Rule} from '@sanity/types'
 import {InfoBoxPreview} from './InfoBoxPreview'
+import {LinkAnnotationInput} from './LinkAnnotationInput'
 
 export const ptAllTheBellsAndWhistlesType = {
   type: 'document',
@@ -22,10 +24,54 @@ export const ptAllTheBellsAndWhistlesType = {
           name: 'block',
           title: 'Block',
           // styles: [{title: 'Normal', value: 'normal'}],
-          // marks: {
-          //   decorators: [{title: 'Strong', value: 'strong'}],
-          //   annotations: []
-          // },
+          marks: {
+            // decorators: [{title: 'Strong', value: 'strong'}],
+            annotations: [
+              {
+                type: 'object',
+                name: 'link',
+                title: 'Link',
+                inputComponent: LinkAnnotationInput,
+                // options: {
+                //   editModal: 'dialog',
+                // },
+                fields: [
+                  {
+                    type: 'url',
+                    name: 'href',
+                    title: 'URL',
+                    validation: (rule: Rule) =>
+                      rule
+                        .custom((url: string, context: any) => {
+                          if (!url && !context.parent.reference) {
+                            return 'Inline Link: Requires a reference or URL'
+                          }
+
+                          return true
+                        })
+                        .uri({
+                          scheme: ['http', 'https', 'mailto', 'tel'],
+                          allowRelative: true,
+                        }),
+                  },
+                  {
+                    title: 'Linked Book',
+                    name: 'reference',
+                    type: 'reference',
+                    to: [{type: 'book'}],
+                    description: '',
+                  },
+                  {
+                    type: 'boolean',
+                    name: 'newTab',
+                    title: 'Open in new tab?',
+                    description: 'Will open the link in a new tab when checked.',
+                    initialValue: false,
+                  },
+                ],
+              },
+            ],
+          },
         },
 
         {
@@ -109,14 +155,14 @@ export const ptAllTheBellsAndWhistlesType = {
               name: 'title',
               title: 'Title',
               type: 'string',
-              validation: (Rule) => Rule.required().warning('Should have a title'),
+              validation: (rule: Rule) => rule.required().warning('Should have a title'),
             },
             {
               title: 'Box Content',
               name: 'body',
               type: 'array',
               of: [{type: 'block'}],
-              validation: (Rule) => Rule.required().error('Must have content'),
+              validation: (rule: Rule) => rule.required().error('Must have content'),
             },
           ],
           preview: {

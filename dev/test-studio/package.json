@@ -37,6 +37,7 @@
     "@sanity/studio-hints": "2.21.10",
     "@sanity/types": "2.22.0",
     "@sanity/ui": "^0.36.15",
+    "@sanity/util": "2.22.0",
     "@sanity/uuid": "^3.0.1",
     "@sanity/vision": "2.22.0",
     "@turf/helpers": "^6.0.1",
