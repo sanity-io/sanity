@@ -31,6 +31,7 @@ interface TextBlockProps {
   readOnly: boolean
   renderBlockActions?: RenderBlockActions
   renderCustomMarkers?: RenderCustomMarkers
+  spellCheck?: boolean
 }
 
 export function TextBlock(props: TextBlockProps): React.ReactElement {
@@ -45,6 +46,7 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
     readOnly,
     renderBlockActions,
     renderCustomMarkers,
+    spellCheck,
   } = props
 
   const {focused} = attributes
@@ -148,6 +150,7 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
               data-list-item={block.listItem}
               data-custom-markers={hasCustomMarkers ? '' : undefined}
               data-testid="text-block__text"
+              spellCheck={spellCheck}
               ref={blockRef}
             >
               {text}

@@ -203,7 +203,6 @@ export function Editor(props: EditorProps) {
                   renderDecorator={renderDecorator}
                   scrollSelectionIntoView={handleScrollSelectionIntoView}
                   selection={initialSelection}
-                  spellCheck
                 />
               </BoundaryElementProvider>
             </EditableWrapper>
