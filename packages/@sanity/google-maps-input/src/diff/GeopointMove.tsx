@@ -1,9 +1,9 @@
 import * as React from 'react'
 import {useUserColor} from '@sanity/base/user-color'
-import {ObjectDiff} from '@sanity/field/diff'
+import type {ObjectDiff} from '@sanity/field/diff'
 import {Marker} from '../map/Marker'
 import {Arrow} from '../map/Arrow'
-import {Geopoint} from '../types'
+import type {Geopoint} from '../types'
 
 interface Props {
   api: typeof window.google.maps

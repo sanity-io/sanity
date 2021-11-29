@@ -1,16 +1,5 @@
-import {
-  BehaviorSubject,
-  concat,
-  defer,
-  EMPTY,
-  from,
-  fromEvent,
-  merge,
-  NEVER,
-  Observable,
-  of,
-  timer,
-} from 'rxjs'
+import type {Observable} from 'rxjs'
+import {BehaviorSubject, concat, defer, EMPTY, from, fromEvent, merge, NEVER, of, timer} from 'rxjs'
 
 import {
   auditTime,
@@ -31,12 +20,12 @@ import {
 import {flatten, groupBy, omit, uniq} from 'lodash'
 import {nanoid} from 'nanoid'
 
-import {User} from '@sanity/types'
+import type {User} from '@sanity/types'
 import userStore from '../user'
 
 import {bifur} from '../../client/bifur'
 import {connectionStatus$} from '../connection-status/connection-status-store'
-import {
+import type {
   DisconnectEvent,
   RollCallEvent,
   StateEvent,
@@ -44,7 +33,13 @@ import {
 } from './message-transports/transport'
 import {mock$} from './mock-events'
 import {createBifurTransport} from './message-transports/bifurTransport'
-import {DocumentPresence, GlobalPresence, PresenceLocation, Session, UserSessionPair} from './types'
+import type {
+  DocumentPresence,
+  GlobalPresence,
+  PresenceLocation,
+  Session,
+  UserSessionPair,
+} from './types'
 
 const KEY = 'presence_session_id'
 const generate = () => nanoid(16)

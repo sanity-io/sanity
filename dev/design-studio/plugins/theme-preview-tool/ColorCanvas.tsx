@@ -1,11 +1,5 @@
-import {
-  Box,
-  Card,
+import type {
   CardTone,
-  Flex,
-  Grid,
-  Stack,
-  Text,
   ThemeColor,
   ThemeColorButton,
   ThemeColorButtonState,
@@ -13,14 +7,13 @@ import {
   ThemeColorButtonTones,
   ThemeColorMuted,
   ThemeColorMutedTone,
-  ThemeColorProvider,
   ThemeColorScheme,
   ThemeColorSelectable,
   ThemeColorSelectableStates,
   ThemeColorSolid,
   ThemeColorSolidTone,
-  useRootTheme,
 } from '@sanity/ui'
+import {Box, Card, Flex, Grid, Stack, Text, ThemeColorProvider, useRootTheme} from '@sanity/ui'
 import React, {createContext, useContext, useMemo} from 'react'
 
 interface Features {

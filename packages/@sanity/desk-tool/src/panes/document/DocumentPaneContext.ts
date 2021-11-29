@@ -1,11 +1,11 @@
-import {DocumentActionDescription, DocumentBadgeDescription} from '@sanity/base'
-import {Marker, Path, SanityDocument} from '@sanity/types'
-import {EditStateFor} from '@sanity/base/_internal'
+import type {DocumentActionDescription, DocumentBadgeDescription} from '@sanity/base'
+import type {Marker, Path, SanityDocument} from '@sanity/types'
+import type {EditStateFor} from '@sanity/base/_internal'
 import {createContext} from 'react'
-import {PaneView, PaneMenuItem, PaneMenuItemGroup} from '../../types'
-import {Controller as HistoryController} from './documentHistory/history/Controller'
-import {Timeline} from './documentHistory/history/Timeline'
-import {TimelineMode} from './types'
+import type {PaneView, PaneMenuItem, PaneMenuItemGroup} from '../../types'
+import type {Controller as HistoryController} from './documentHistory/history/Controller'
+import type {Timeline} from './documentHistory/history/Timeline'
+import type {TimelineMode} from './types'
 
 // @todo: provide a TS type for this
 type DocumentSchema = any

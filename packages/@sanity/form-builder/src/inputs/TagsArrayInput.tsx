@@ -3,7 +3,7 @@ import {FormField} from '@sanity/base/components'
 import {useId} from '@reach/auto-id'
 import {TagInput} from '../components/tagInput'
 import PatchEvent, {set, unset} from '../PatchEvent'
-import {Props} from './types'
+import type {Props} from './types'
 
 export const TagsArrayInput = forwardRef(function TagsArrayInput(
   props: Props<string[]>,

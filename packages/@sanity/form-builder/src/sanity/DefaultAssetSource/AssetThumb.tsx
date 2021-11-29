@@ -2,13 +2,13 @@ import type {Subscription} from 'rxjs'
 import React, {useState, useEffect, useRef, useCallback} from 'react'
 import styled from 'styled-components'
 import {Button, useToast} from '@sanity/ui'
-import {Asset as AssetType} from '@sanity/types'
+import type {Asset as AssetType} from '@sanity/types'
 import {FullscreenSpinner} from '../../components/FullscreenSpinner'
 import {versionedClient} from '../versionedClient'
 import {Checkerboard} from '../../components/Checkerboard'
 import {AssetUsageDialog} from './AssetUsageDialog'
 import {AssetMenu} from './AssetMenu'
-import {AssetMenuAction} from './types'
+import type {AssetMenuAction} from './types'
 
 interface AssetProps {
   asset?: AssetType

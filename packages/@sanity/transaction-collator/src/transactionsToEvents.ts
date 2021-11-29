@@ -1,5 +1,5 @@
 import {isEqual, uniq} from 'lodash'
-import {EventType, HistoryEvent, Transaction, Mutation} from './types'
+import type {EventType, HistoryEvent, Transaction, Mutation} from './types'
 import {ndjsonToArray} from './utils/ndjsonToArray'
 
 const EDIT_EVENT_TIME_TRESHHOLD_MS = 1000 * 60 * 5 // 5 minutes

@@ -1,5 +1,5 @@
 import {defer, from} from 'rxjs'
-import {StateEvent} from './message-transports/transport'
+import type {StateEvent} from './message-transports/transport'
 import {map, shareReplay} from 'rxjs/operators'
 import {sample} from 'lodash'
 

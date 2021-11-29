@@ -1,16 +1,17 @@
-import {Diff} from '@sanity/diff'
-import {Chunk, Annotation} from '@sanity/field/diff'
+import type {Diff} from '@sanity/diff'
+import type {Chunk, Annotation} from '@sanity/field/diff'
 import {applyPatch, incremental} from 'mendoza'
-import {
+import type {
   Transaction,
   TransactionLogEvent,
   DocumentRemoteMutationVersionEvent,
   CombinedDocument,
 } from './types'
-import {diffValue, Meta} from './diffValue'
+import type {Meta} from './diffValue'
+import {diffValue} from './diffValue'
 import {TwoEndedArray} from './TwoEndedArray'
 import {mergeChunk, chunkFromTransaction} from './chunker'
-import {TraceEvent} from './replay'
+import type {TraceEvent} from './replay'
 import {getAttrs} from './utils'
 
 export type ParsedTimeRef = Chunk | 'loading' | 'invalid'

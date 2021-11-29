@@ -1,5 +1,5 @@
-import {SanityDocument} from '@sanity/types'
-import React from 'react'
+import type {SanityDocument} from '@sanity/types'
+import type React from 'react'
 
 export type LegacyDocumentActionColor = 'primary' | 'success' | 'warning' | 'danger'
 

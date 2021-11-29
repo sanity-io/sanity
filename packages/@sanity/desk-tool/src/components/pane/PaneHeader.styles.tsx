@@ -1,4 +1,5 @@
-import {Box, Flex, Layer, rgba, TextSkeleton, Text, Theme} from '@sanity/ui'
+import type {Theme} from '@sanity/ui'
+import {Box, Flex, Layer, rgba, TextSkeleton, Text} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 
 export const Root = styled(Layer)`

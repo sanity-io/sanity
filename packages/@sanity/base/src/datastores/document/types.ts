@@ -1,6 +1,6 @@
-import {SanityDocument} from '@sanity/types'
-import {MutationPayload} from './buffered-doc/types'
-import {DocumentVersionSnapshots} from './document-pair/snapshotPair'
+import type {SanityDocument} from '@sanity/types'
+import type {MutationPayload} from './buffered-doc/types'
+import type {DocumentVersionSnapshots} from './document-pair/snapshotPair'
 
 export {SanityClient} from '@sanity/client'
 export type {MutationPayload as Mutation}

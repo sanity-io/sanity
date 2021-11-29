@@ -1,8 +1,9 @@
-import {defer, partition, merge, of, throwError, asyncScheduler, Observable} from 'rxjs'
+import type {Observable} from 'rxjs'
+import {defer, partition, merge, of, throwError, asyncScheduler} from 'rxjs'
 import {mergeMap, throttleTime, share, take} from 'rxjs/operators'
 import {exhaustMapToWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import {getVersionedClient} from '../../client/versionedClient'
-import {ReconnectEvent, WelcomeEvent, MutationEvent} from './types'
+import type {ReconnectEvent, WelcomeEvent, MutationEvent} from './types'
 
 type Params = Record<string, string>
 

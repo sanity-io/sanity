@@ -8,7 +8,13 @@ import {joinPath} from '../../util/searchUtils'
 import {removeDupes} from '../../util/draftUtils'
 import {tokenize} from '../common/tokenize'
 import {applyWeights} from './applyWeights'
-import {WeightedHit, WeightedSearchOptions, SearchOptions, SearchPath, SearchHit} from './types'
+import type {
+  WeightedHit,
+  WeightedSearchOptions,
+  SearchOptions,
+  SearchPath,
+  SearchHit,
+} from './types'
 
 const combinePaths = flow([flatten, union, compact])
 

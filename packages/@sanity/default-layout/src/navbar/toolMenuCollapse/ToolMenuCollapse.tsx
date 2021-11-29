@@ -2,7 +2,7 @@ import {PlugIcon} from '@sanity/icons'
 import {StateLink} from '@sanity/base/router'
 import React, {forwardRef, useMemo} from 'react'
 import {CollapseMenu, CollapseMenuButton} from '@sanity/base/components'
-import {Tool} from '../../types'
+import type {Tool} from '../../types'
 import {useDefaultLayoutRouter} from '../../useDefaultLayoutRouter'
 
 export function ToolMenuCollapse({tools}: {tools: Tool[]}) {

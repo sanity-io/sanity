@@ -1,7 +1,8 @@
 import {Observable} from 'rxjs'
 import {shareReplay} from 'rxjs/operators'
-import {hues, ColorHueKey, COLOR_HUES} from '@sanity/color'
-import {UserColorHue, UserColorManager, UserColor, UserId} from './types'
+import type {ColorHueKey} from '@sanity/color'
+import {hues, COLOR_HUES} from '@sanity/color'
+import type {UserColorHue, UserColorManager, UserColor, UserId} from './types'
 
 export interface UserColorManagerOptions {
   anonymousColor?: UserColor

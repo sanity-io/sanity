@@ -1,5 +1,6 @@
 import {useToast} from '@sanity/ui'
-import React, {forwardRef, useImperativeHandle} from 'react'
+import type React from 'react'
+import {forwardRef, useImperativeHandle} from 'react'
 
 export interface ToastParams {
   closable?: boolean

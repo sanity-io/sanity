@@ -1,9 +1,9 @@
-import {VirtualListChangeOpts} from '@sanity/ui'
+import type {VirtualListChangeOpts} from '@sanity/ui'
 import {getQueryResults} from 'part:@sanity/base/query-container'
 import {useEffect, useState, useCallback, useMemo, useRef} from 'react'
 import {of} from 'rxjs'
 import {filter as filterEvents} from 'rxjs/operators'
-import {DocumentListPaneItem, QueryResult, SortOrder, SortOrderBy} from './types'
+import type {DocumentListPaneItem, QueryResult, SortOrder, SortOrderBy} from './types'
 import {removePublishedWithDrafts, toOrderClause} from './helpers'
 import {DEFAULT_ORDERING, FULL_LIST_LIMIT, PARTIAL_PAGE_LIMIT} from './constants'
 

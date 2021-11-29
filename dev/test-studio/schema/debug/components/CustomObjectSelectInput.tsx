@@ -2,10 +2,10 @@
 ///<reference types="@sanity/types/parts" />
 
 import React from 'react'
-import {Marker, ObjectSchemaType} from '@sanity/types'
+import type {Marker, ObjectSchemaType} from '@sanity/types'
 import {PatchEvent, set, unset} from 'part:@sanity/form-builder/patch-event'
 import {FormField} from '@sanity/base/components'
-import {FormFieldPresence} from '@sanity/base/presence'
+import type {FormFieldPresence} from '@sanity/base/presence'
 import {Select} from '@sanity/ui'
 
 type Value = {title: string; value: string}

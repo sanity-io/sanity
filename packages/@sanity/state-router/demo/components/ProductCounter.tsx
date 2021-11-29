@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {HOCRouter} from '../../src/components/types'
+import type {HOCRouter} from '../../src/components/types'
 import withRouterHOC from '../../src/components/withRouterHOC'
 
 type Props = {

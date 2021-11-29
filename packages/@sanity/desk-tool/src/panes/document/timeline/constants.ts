@@ -1,7 +1,7 @@
+import type {IconComponent} from '@sanity/icons'
 import {
   TrashIcon,
   EditIcon,
-  IconComponent,
   PublishIcon,
   UnpublishIcon,
   CloseIcon,

@@ -1,10 +1,12 @@
 import {LegacyLayerProvider, UserAvatar} from '@sanity/base/components'
 import {useUser, useTimeAgo} from '@sanity/base/hooks'
-import {Path} from '@sanity/types'
+import type {Path} from '@sanity/types'
 import React from 'react'
-import {Tooltip, TooltipProps, Text, Stack, Flex, Inline, Label} from '@sanity/ui'
-import {Diff, getAnnotationAtPath} from '../../diff'
-import {AnnotationDetails} from '../../types'
+import type {TooltipProps} from '@sanity/ui'
+import {Tooltip, Text, Stack, Flex, Inline, Label} from '@sanity/ui'
+import type {Diff} from '../../diff'
+import {getAnnotationAtPath} from '../../diff'
+import type {AnnotationDetails} from '../../types'
 import {useAnnotationColor} from '../annotations'
 
 interface DiffTooltipProps extends TooltipProps {

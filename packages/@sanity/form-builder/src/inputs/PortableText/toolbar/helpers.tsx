@@ -11,16 +11,16 @@ import {
   UnknownIcon,
   UlistIcon,
 } from '@sanity/icons'
-import {
+import type {
   HotkeyOptions,
-  PortableTextEditor,
   PortableTextFeature,
   PortableTextFeatures,
   Type,
 } from '@sanity/portable-text-editor'
+import {PortableTextEditor} from '@sanity/portable-text-editor'
 import {get} from 'lodash'
 import React from 'react'
-import {BlockItem, BlockStyleItem, PTEToolbarAction, PTEToolbarActionGroup} from './types'
+import type {BlockItem, BlockStyleItem, PTEToolbarAction, PTEToolbarActionGroup} from './types'
 import {CustomIcon} from './CustomIcon'
 
 function getPTEFormatActions(

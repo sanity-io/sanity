@@ -2,7 +2,7 @@
 ///<reference types="@sanity/types/parts" />
 
 import {WarningOutlineIcon} from '@sanity/icons'
-import {SanityDocument} from '@sanity/types'
+import type {SanityDocument} from '@sanity/types'
 import React from 'react'
 import {SanityDefaultPreview} from 'part:@sanity/base/preview'
 

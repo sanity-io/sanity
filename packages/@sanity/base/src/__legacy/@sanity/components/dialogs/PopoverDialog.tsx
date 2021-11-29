@@ -14,8 +14,8 @@ import {Popover} from 'part:@sanity/components/popover'
 import React, {useCallback, useEffect, useState} from 'react'
 import {ScrollContainer} from '../../../../components/scroll'
 import {useClickOutside} from '../hooks'
-import {Placement} from '../types'
-import {DialogAction} from './types'
+import type {Placement} from '../types'
+import type {DialogAction} from './types'
 
 interface PopoverDialogChildrenProps {
   actions?: DialogAction[]

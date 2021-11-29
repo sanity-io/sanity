@@ -1,11 +1,12 @@
 import {getTemplateById, resolveInitialValue} from '@sanity/initial-value-templates'
-import {InitialValueTemplateItem} from '@sanity/structure'
-import {Observable, combineLatest, from, of} from 'rxjs'
+import type {InitialValueTemplateItem} from '@sanity/structure'
+import type {Observable} from 'rxjs'
+import {combineLatest, from, of} from 'rxjs'
 import {switchMap, map} from 'rxjs/operators'
-import {Schema} from '@sanity/types'
+import type {Schema} from '@sanity/types'
 import {createHookFromObservableFactory} from '../../util/createHookFromObservableFactory'
 import {getDraftId, getPublishedId} from '../../util/draftUtils'
-import {PermissionCheckResult} from './types'
+import type {PermissionCheckResult} from './types'
 import {unstable_getDocumentValuePermissions as getDocumentValuePermissions} from './documentValuePermissions'
 
 type Template = ReturnType<typeof getTemplateById>

@@ -1,13 +1,14 @@
 import React, {forwardRef, useCallback, useEffect, useMemo, useState} from 'react'
 import {FolderIcon, ChevronRightIcon, DocumentIcon} from '@sanity/icons'
-import {isSanityDocument, SchemaType} from '@sanity/types'
+import type {SchemaType} from '@sanity/types'
+import {isSanityDocument} from '@sanity/types'
 import {Card, Text} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
 import {SanityDefaultPreview} from 'part:@sanity/base/preview'
 import {getIconWithFallback} from '../../utils/getIconWithFallback'
 import {MissingSchemaType} from '../MissingSchemaType'
 import {usePaneRouter} from '../../contexts/paneRouter'
-import {PreviewValue} from '../../types'
+import type {PreviewValue} from '../../types'
 import {PaneItemPreview} from './PaneItemPreview'
 
 interface PaneItemProps {

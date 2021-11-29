@@ -1,4 +1,4 @@
-import {Node, MatchResult} from '../src/types'
+import type {Node, MatchResult} from '../src/types'
 import findMatchingNodes from '../src/findMatchingNodes'
 
 const node: Node = {

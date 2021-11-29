@@ -1,5 +1,6 @@
 import React from 'react'
-import {DiffComponent, DiffFromTo, NumberDiff} from '../../../diff'
+import type {DiffComponent, NumberDiff} from '../../../diff'
+import {DiffFromTo} from '../../../diff'
 import {NumberPreview} from '../preview/NumberPreview'
 
 export const NumberFieldDiff: DiffComponent<NumberDiff> = ({diff, schemaType}) => {

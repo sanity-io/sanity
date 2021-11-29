@@ -1,4 +1,5 @@
-import {Button, Card, Text, ButtonProps, ButtonTone, ThemeColorToneKey} from '@sanity/ui'
+import type {ButtonProps, ButtonTone, ThemeColorToneKey} from '@sanity/ui'
+import {Button, Card, Text} from '@sanity/ui'
 import React from 'react'
 import styled, {css} from 'styled-components'
 

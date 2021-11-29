@@ -1,4 +1,4 @@
-import {Node, MatchResult} from './types'
+import type {Node, MatchResult} from './types'
 import {difference, intersection, pick} from 'lodash'
 import arrayify from './utils/arrayify'
 

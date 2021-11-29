@@ -11,13 +11,15 @@ import {
   scan,
   switchMap,
 } from 'rxjs/operators'
-import {concat, from, Observable, of, timer} from 'rxjs'
+import type {Observable} from 'rxjs'
+import {concat, from, of, timer} from 'rxjs'
 import schema from 'part:@sanity/base/schema'
 import {validateDocument} from '@sanity/validation'
-import {Marker} from '@sanity/types'
+import type {Marker} from '@sanity/types'
 import {memoize} from '../utils/createMemoizer'
-import {IdPair} from '../types'
-import {editState, EditStateFor} from './editState'
+import type {IdPair} from '../types'
+import type {EditStateFor} from './editState'
+import {editState} from './editState'
 
 function getValidationMarkers(draft, published): Observable<Marker[]> {
   const doc = draft || published

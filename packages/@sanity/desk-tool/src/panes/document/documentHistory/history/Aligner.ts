@@ -1,7 +1,7 @@
-import {SanityDocument} from '@sanity/types'
+import type {SanityDocument} from '@sanity/types'
 import {applyPatch} from 'mendoza'
-import {Timeline} from './Timeline'
-import {
+import type {Timeline} from './Timeline'
+import type {
   RemoteSnapshotVersionEvent,
   TransactionLogEvent,
   DocumentRemoteMutationVersionEvent,

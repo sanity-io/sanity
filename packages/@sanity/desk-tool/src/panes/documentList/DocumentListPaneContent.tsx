@@ -2,6 +2,7 @@
 ///<reference types="@sanity/types/parts" />
 
 import {SyncIcon} from '@sanity/icons'
+import type {VirtualListChangeOpts} from '@sanity/ui'
 import {
   Box,
   Button,
@@ -13,7 +14,6 @@ import {
   Stack,
   Text,
   VirtualList,
-  VirtualListChangeOpts,
 } from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
@@ -21,7 +21,7 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {Delay} from '../../components/Delay'
 import {PaneContent, usePane, usePaneLayout} from '../../components/pane'
 import {PaneItem} from '../../components/paneItem'
-import {DocumentListPaneItem, Layout} from './types'
+import type {DocumentListPaneItem, Layout} from './types'
 import {getDocumentKey} from './helpers'
 import {FULL_LIST_LIMIT} from './constants'
 

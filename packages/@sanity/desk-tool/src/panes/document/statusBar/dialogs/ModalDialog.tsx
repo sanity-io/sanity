@@ -1,5 +1,5 @@
 import {useId} from '@reach/auto-id'
-import {DocumentActionModalDialogProps} from '@sanity/base'
+import type {DocumentActionModalDialogProps} from '@sanity/base'
 import {LegacyLayerProvider} from '@sanity/base/components'
 import {Box, Dialog} from '@sanity/ui'
 import React from 'react'

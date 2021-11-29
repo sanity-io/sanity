@@ -1,4 +1,5 @@
-import {Button, Theme} from '@sanity/ui'
+import type {Theme} from '@sanity/ui'
+import {Button} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {focusRingStyle} from '../../../../components/withFocusRing/helpers'
 

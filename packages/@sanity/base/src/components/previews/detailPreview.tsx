@@ -1,7 +1,7 @@
 import React from 'react'
 import {Box, Stack, Text, Skeleton, TextSkeleton, useTheme} from '@sanity/ui'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
-import {MediaDimensions, PreviewProps} from './types'
+import type {MediaDimensions, PreviewProps} from './types'
 import {
   Root,
   Top,

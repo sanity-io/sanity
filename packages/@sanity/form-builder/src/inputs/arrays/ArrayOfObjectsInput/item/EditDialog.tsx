@@ -1,11 +1,12 @@
-import {Marker, Path, SchemaType} from '@sanity/types'
+import type {Marker, Path, SchemaType} from '@sanity/types'
 import React, {useMemo} from 'react'
 import {Box, Dialog, Layer} from '@sanity/ui'
-import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
+import type {FormFieldPresence} from '@sanity/base/presence'
+import {PresenceOverlay} from '@sanity/base/presence'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {PopoverDialog} from '../../../../transitional/PopoverDialog'
-import {ArrayMember} from '../types'
-import PatchEvent from '../../../../PatchEvent'
+import type {ArrayMember} from '../types'
+import type PatchEvent from '../../../../PatchEvent'
 import {isEmpty} from './helpers'
 
 type Props = {

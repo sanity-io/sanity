@@ -1,9 +1,11 @@
-import {
+import type {
   SanityDocument,
   Schema,
   SchemaType,
   ValidationContext,
   ValidationMarker,
+} from '@sanity/types'
+import {
   isKeyedObject,
   isTypedObject,
   isBlock,

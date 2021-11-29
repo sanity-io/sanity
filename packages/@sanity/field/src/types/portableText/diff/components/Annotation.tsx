@@ -1,19 +1,14 @@
 import {useClickOutside, Label, Popover, Flex} from '@sanity/ui'
 import {toString} from '@sanity/util/paths'
-import {isKeySegment, Path} from '@sanity/types'
+import type {Path} from '@sanity/types'
+import {isKeySegment} from '@sanity/types'
 import React, {useCallback, useEffect, useState} from 'react'
 import {ConnectorContext, useReportedValues} from '@sanity/base/change-indicators'
 import styled from 'styled-components'
 import {ChevronDownIcon} from '@sanity/icons'
-import {
-  ChangeList,
-  DiffContext,
-  DiffTooltip,
-  ObjectDiff,
-  ObjectSchemaType,
-  useDiffAnnotationColor,
-} from '../../../../diff'
-import {PortableTextChild} from '../types'
+import type {ObjectDiff, ObjectSchemaType} from '../../../../diff'
+import {ChangeList, DiffContext, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
+import type {PortableTextChild} from '../types'
 import {isEmptyObject} from '../helpers'
 import {InlineBox, InlineText, PopoverContainer, PreviewContainer} from './styledComponents'
 

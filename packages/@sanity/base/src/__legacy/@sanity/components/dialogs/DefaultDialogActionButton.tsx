@@ -3,7 +3,7 @@
 
 import React, {useCallback} from 'react'
 import Button from 'part:@sanity/components/buttons/default'
-import {DialogAction} from './types'
+import type {DialogAction} from './types'
 
 export function DefaultDialogActionButton(props: {
   action: DialogAction

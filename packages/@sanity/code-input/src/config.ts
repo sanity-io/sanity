@@ -1,4 +1,4 @@
-import {CodeInputLanguage} from './types'
+import type {CodeInputLanguage} from './types'
 
 // NOTE: MAKE SURE THESE ALIGN WITH IMPORTS IN ./editorSupport
 export const SUPPORTED_LANGUAGES: CodeInputLanguage[] = [

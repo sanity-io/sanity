@@ -1,5 +1,5 @@
 import {versionedClient} from '../../../../client/versionedClient'
-import {OperationArgs} from '../../types'
+import type {OperationArgs} from '../../types'
 
 export const discardChanges = {
   disabled: ({snapshots}: OperationArgs) => {

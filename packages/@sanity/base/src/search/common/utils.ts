@@ -1,4 +1,4 @@
-import {ObjectSchemaType, Schema, SchemaType} from '@sanity/types'
+import type {ObjectSchemaType, Schema, SchemaType} from '@sanity/types'
 
 const isDocumentType = (type: SchemaType): type is ObjectSchemaType =>
   type.type && type.type.name === 'document'

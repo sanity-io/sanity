@@ -1,6 +1,6 @@
-import React from 'react'
+import type React from 'react'
 import withRouterHOC from './withRouterHOC'
-import {HOCRouter} from './types'
+import type {HOCRouter} from './types'
 
 type Props = {
   router: HOCRouter

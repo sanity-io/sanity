@@ -1,4 +1,4 @@
-import {ObjectSchemaType} from '@sanity/field/diff'
+import type {ObjectSchemaType} from '@sanity/field/diff'
 
 export interface LatLng {
   lat: number

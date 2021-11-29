@@ -1,8 +1,8 @@
 import oneline from 'oneline'
 import {isPlainObject} from 'lodash'
 import {randomKey, toString as pathToString} from '@sanity/util/paths'
-import {Template} from './Template'
-import {TemplateParameter} from './TemplateParameters'
+import type {Template} from './Template'
+import type {TemplateParameter} from './TemplateParameters'
 import {getDefaultSchema} from './parts/Schema'
 
 export {validateInitialObjectValue, validateTemplates}

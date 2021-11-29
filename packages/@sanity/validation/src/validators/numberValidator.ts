@@ -1,4 +1,4 @@
-import {Validators} from '@sanity/types'
+import type {Validators} from '@sanity/types'
 import genericValidator from './genericValidator'
 
 const precisionRx = /(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/

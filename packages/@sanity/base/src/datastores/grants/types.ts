@@ -1,4 +1,4 @@
-import {SanityDocument} from '@sanity/types'
+import type {SanityDocument} from '@sanity/types'
 import type {Observable} from 'rxjs'
 
 export type DocumentValuePermission = 'read' | 'create' | 'update' | 'history' | 'editHistory'

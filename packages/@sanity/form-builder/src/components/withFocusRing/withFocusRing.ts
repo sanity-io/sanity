@@ -1,6 +1,7 @@
 import styled, {css} from 'styled-components'
-import {rem, Theme} from '@sanity/ui'
-import {ComponentType} from 'react'
+import type {Theme} from '@sanity/ui'
+import {rem} from '@sanity/ui'
+import type {ComponentType} from 'react'
 import {focusRingBorderStyle, focusRingStyle} from './helpers'
 
 export function withFocusRing<Props>(component: ComponentType<Props>) {

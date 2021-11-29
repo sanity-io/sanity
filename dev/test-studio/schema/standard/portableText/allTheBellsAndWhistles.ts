@@ -1,5 +1,5 @@
 import {BellIcon, ImageIcon, InfoOutlineIcon} from '@sanity/icons'
-import {Rule} from '@sanity/types'
+import type {Rule} from '@sanity/types'
 import {InfoBoxPreview} from './InfoBoxPreview'
 import {LinkAnnotationInput} from './LinkAnnotationInput'
 

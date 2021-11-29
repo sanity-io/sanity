@@ -1,4 +1,4 @@
-import {Schema, SchemaType} from '@sanity/types'
+import type {Schema, SchemaType} from '@sanity/types'
 import normalizeValidationRules from './util/normalizeValidationRules'
 
 function traverse(typeDef: SchemaType, visited: Set<SchemaType>) {

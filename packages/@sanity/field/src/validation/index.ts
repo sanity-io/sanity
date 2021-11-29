@@ -1,4 +1,4 @@
-import {SchemaType, ObjectSchemaType} from '../diff'
+import type {SchemaType, ObjectSchemaType} from '../diff'
 
 export interface FieldValueError {
   message: string

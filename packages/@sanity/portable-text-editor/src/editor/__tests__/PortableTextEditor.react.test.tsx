@@ -5,14 +5,16 @@
 // eslint-disable-next-line import/no-unassigned-import
 import '@testing-library/jest-dom/extend-expect'
 import {render} from '@testing-library/react'
-import React, {ForwardedRef, forwardRef} from 'react'
+import type {ForwardedRef} from 'react'
+import React, {forwardRef} from 'react'
 
 import Schema from '@sanity/schema'
-import {PortableTextEditor, PortableTextEditorProps} from '../PortableTextEditor'
-import {RawType} from '../../types/schema'
+import type {PortableTextEditorProps} from '../PortableTextEditor'
+import {PortableTextEditor} from '../PortableTextEditor'
+import type {RawType} from '../../types/schema'
 import {PortableTextEditable} from '../Editable'
-import {PortableTextBlock} from '../../types/portableText'
-import {EditorSelection} from '../..'
+import type {PortableTextBlock} from '../../types/portableText'
+import type {EditorSelection} from '../..'
 
 const imageType: RawType = {
   type: 'image',

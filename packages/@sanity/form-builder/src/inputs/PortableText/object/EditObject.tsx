@@ -1,23 +1,26 @@
 /* eslint-disable react/no-find-dom-node */
 
 import React, {useState, useEffect, useMemo, useLayoutEffect, useCallback} from 'react'
-import {isKeySegment, Path, Marker} from '@sanity/types'
-import {FormFieldPresence} from '@sanity/base/presence'
-import {
-  compactPatches,
+import type {Path, Marker} from '@sanity/types'
+import {isKeySegment} from '@sanity/types'
+import type {FormFieldPresence} from '@sanity/base/presence'
+import type {
   PortableTextBlock,
   PortableTextChild,
-  PortableTextEditor,
   PortableTextFeatures,
   Type,
+} from '@sanity/portable-text-editor'
+import {
+  compactPatches,
+  PortableTextEditor,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {get, debounce} from 'lodash'
 import {applyAll} from '../../../simplePatch'
-import {ModalType} from '../../arrays/ArrayOfObjectsInput/types'
+import type {ModalType} from '../../arrays/ArrayOfObjectsInput/types'
 import {PatchEvent} from '../../../PatchEvent'
-import {ObjectEditData} from '../types'
-import {Patch} from '../../../patch/types'
+import type {ObjectEditData} from '../types'
+import type {Patch} from '../../../patch/types'
 import {DefaultObjectEditing} from './renderers/DefaultObjectEditing'
 import {PopoverObjectEditing} from './renderers/PopoverObjectEditing'
 import {FullscreenObjectEditing} from './renderers/FullscreenObjectEditing'

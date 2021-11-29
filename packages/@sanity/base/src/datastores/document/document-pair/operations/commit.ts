@@ -1,4 +1,4 @@
-import {OperationArgs} from '../../types'
+import type {OperationArgs} from '../../types'
 import {merge} from 'rxjs'
 
 export const commit = {

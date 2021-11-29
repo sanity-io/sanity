@@ -1,5 +1,5 @@
 import {createContext} from 'react'
-import {ZIndexContextValue} from './types'
+import type {ZIndexContextValue} from './types'
 import {defaults} from './defaults'
 
 /**

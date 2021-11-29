@@ -2,10 +2,8 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Text, Box, Card, Code} from '@sanity/ui'
 import styled from 'styled-components'
-import {Subject} from 'rxjs'
-import {
-  PortableTextEditor,
-  PortableTextEditable,
+import type {Subject} from 'rxjs'
+import type {
   RenderDecoratorFunction,
   EditorChange,
   RenderBlockFunction,
@@ -15,6 +13,7 @@ import {
   PortableTextBlock,
   Patch,
 } from '../../../src'
+import {PortableTextEditor, PortableTextEditable} from '../../../src'
 import {createKeyGenerator} from '../keyGenerator'
 import {portableTextType} from '../schema'
 

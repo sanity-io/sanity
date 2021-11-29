@@ -1,5 +1,6 @@
 import {compact} from 'lodash'
-import {Expression, Matcher} from '../jsonpath'
+import type {Expression} from '../jsonpath'
+import {Matcher} from '../jsonpath'
 import PlainProbe from './PlainProbe'
 
 export default function extract(path: string, value: Object): Array<any> {

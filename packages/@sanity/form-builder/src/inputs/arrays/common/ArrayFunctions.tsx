@@ -1,9 +1,11 @@
-import {ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
+import type {ArraySchemaType} from '@sanity/types'
+import {isReferenceSchemaType} from '@sanity/types'
 import {AddIcon} from '@sanity/icons'
-import React, {ReactNode, useMemo} from 'react'
+import type {ReactNode} from 'react'
+import React, {useMemo} from 'react'
 import {Button, Grid, Menu, MenuButton, MenuItem} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
-import PatchEvent from '../../../PatchEvent'
+import type PatchEvent from '../../../PatchEvent'
 
 // These are the props any implementation of the ArrayFunctions part will receive
 export interface ArrayFunctionsProps<SchemaType extends ArraySchemaType, MemberType> {

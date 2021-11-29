@@ -1,11 +1,12 @@
 import React, {useCallback, useEffect, useState} from 'react'
 import {useId} from '@reach/auto-id'
-import {Path, Marker, SchemaType} from '@sanity/types'
-import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
-import {PortableTextBlock, Type, PortableTextChild} from '@sanity/portable-text-editor'
+import type {Path, Marker, SchemaType} from '@sanity/types'
+import type {FormFieldPresence} from '@sanity/base/presence'
+import {PresenceOverlay} from '@sanity/base/presence'
+import type {PortableTextBlock, Type, PortableTextChild} from '@sanity/portable-text-editor'
 import {Box, Dialog, useLayer} from '@sanity/ui'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
-import {PatchEvent} from '../../../../PatchEvent'
+import type {PatchEvent} from '../../../../PatchEvent'
 
 interface DefaultObjectEditingProps {
   focusPath: Path

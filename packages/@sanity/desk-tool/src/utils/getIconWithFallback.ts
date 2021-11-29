@@ -1,5 +1,5 @@
-import {SchemaType} from '@sanity/types'
-import React from 'react'
+import type {SchemaType} from '@sanity/types'
+import type React from 'react'
 
 /**
  * Return `false` if we explicitly disable the icon.

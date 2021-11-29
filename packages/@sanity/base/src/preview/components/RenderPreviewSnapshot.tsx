@@ -1,5 +1,6 @@
 import React from 'react'
-import {isReferenceSchemaType, SchemaType} from '@sanity/types'
+import type {SchemaType} from '@sanity/types'
+import {isReferenceSchemaType} from '@sanity/types'
 import {get} from 'lodash'
 import {previewResolver as customResolver} from '../../legacyParts'
 import SanityDefaultPreview from './SanityDefaultPreview'

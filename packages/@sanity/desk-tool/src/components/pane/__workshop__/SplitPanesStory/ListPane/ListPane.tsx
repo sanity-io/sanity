@@ -5,7 +5,7 @@ import {usePaneLayout} from '../../../usePaneLayout'
 import {Pane} from '../../../Pane'
 import {PaneContent} from '../../../PaneContent'
 import {PaneHeader} from '../../../PaneHeader'
-import {ListPaneNode} from '../types'
+import type {ListPaneNode} from '../types'
 
 export function ListPane(props: {
   active: boolean

@@ -1,5 +1,5 @@
 import {set, unset, setIfMissing} from '../../patch/patches'
-import {UploadEvent} from './types'
+import type {UploadEvent} from './types'
 import {UPLOAD_STATUS_KEY} from './constants'
 
 const UNSET_UPLOAD_PATCH = unset([UPLOAD_STATUS_KEY])

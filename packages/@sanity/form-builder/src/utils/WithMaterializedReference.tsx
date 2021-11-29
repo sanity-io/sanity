@@ -1,6 +1,6 @@
 import React from 'react'
-import {Observable} from 'rxjs'
-import {Reference} from '@sanity/types'
+import type {Observable} from 'rxjs'
+import type {Reference} from '@sanity/types'
 import WithMaterializedDocument from './WithMaterializedDocument'
 
 type Props = {

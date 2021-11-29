@@ -3,8 +3,8 @@
 
 import React, {useRef, useEffect, useState} from 'react'
 import config from 'part:@sanity/language-filter/config'
-import {SchemaType} from '@sanity/types'
-import {Subscription} from 'rxjs'
+import type {SchemaType} from '@sanity/types'
+import type {Subscription} from 'rxjs'
 import {selectedLanguages$, setLangs} from './datastore'
 import SelectLanguage from './SelectLanguage'
 

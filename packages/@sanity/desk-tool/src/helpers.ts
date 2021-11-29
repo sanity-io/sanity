@@ -1,7 +1,8 @@
 import isHotkey from 'is-hotkey'
-import {Observable, merge, of} from 'rxjs'
+import type {Observable} from 'rxjs'
+import {merge, of} from 'rxjs'
 import {mapTo, delay} from 'rxjs/operators'
-import {RouterPaneGroup} from './types'
+import type {RouterPaneGroup} from './types'
 import {parsePanesSegment, encodePanesSegment} from './utils/parsePanesSegment'
 
 declare const __DEV__: boolean

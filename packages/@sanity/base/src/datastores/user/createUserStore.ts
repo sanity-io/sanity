@@ -1,7 +1,8 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import {Observable, of, from, merge, defer, concat} from 'rxjs'
+import type {Observable} from 'rxjs'
+import {of, from, merge, defer, concat} from 'rxjs'
 import {catchError, map, mergeMap, mapTo, switchMap, shareReplay, tap, take} from 'rxjs/operators'
 import raf from 'raf'
 import DataLoader from 'dataloader'
@@ -9,10 +10,10 @@ import authenticationFetcher from 'part:@sanity/base/authentication-fetcher'
 import {observableCallback} from 'observable-callback'
 import generateHelpUrl from '@sanity/generate-help-url'
 import sanityClient from 'part:@sanity/base/client'
-import {User, CurrentUser} from '@sanity/types'
+import type {User, CurrentUser} from '@sanity/types'
 import {debugRolesParam$} from '../debugParams'
 import {getDebugRolesByNames} from '../grants/debug'
-import {UserStore, CurrentUserSnapshot} from './types'
+import type {UserStore, CurrentUserSnapshot} from './types'
 
 const client = sanityClient.withConfig({apiVersion: '2021-06-07'})
 

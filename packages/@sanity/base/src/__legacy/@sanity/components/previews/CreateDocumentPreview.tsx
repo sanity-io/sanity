@@ -3,7 +3,7 @@
 
 import React from 'react'
 import {IntentLink} from '../../../../router'
-import {MediaDimensions} from '../types'
+import type {MediaDimensions} from '../types'
 
 import styles from './CreateDocumentPreview.css'
 

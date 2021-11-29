@@ -1,24 +1,24 @@
 import {isEqual, uniqueId} from 'lodash'
 import {FormField} from '@sanity/base/components'
 import React, {useEffect, useState, useMemo, useCallback} from 'react'
-import {Marker, Path} from '@sanity/types'
-import {FormFieldPresence} from '@sanity/base/presence'
-import {
+import type {Marker, Path} from '@sanity/types'
+import type {FormFieldPresence} from '@sanity/base/presence'
+import type {
   EditorChange,
   OnCopyFn,
   OnPasteFn,
   Patch as EditorPatch,
   PortableTextBlock,
-  PortableTextEditor,
   Type,
   HotkeyOptions,
 } from '@sanity/portable-text-editor'
+import {PortableTextEditor} from '@sanity/portable-text-editor'
 import {Subject} from 'rxjs'
 import {Box, Text, useToast} from '@sanity/ui'
 import PatchEvent from '../../PatchEvent'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
-import {Patch} from '../../patch/types'
-import {RenderBlockActions, RenderCustomMarkers} from './types'
+import type {Patch} from '../../patch/types'
+import type {RenderBlockActions, RenderCustomMarkers} from './types'
 import {Input} from './Input'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {VisibleOnFocusButton} from './VisibleOnFocusButton'

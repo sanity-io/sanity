@@ -1,12 +1,5 @@
-import {
-  IndexTuple,
-  isIndexSegment,
-  isIndexTuple,
-  isKeySegment,
-  KeyedSegment,
-  Path,
-  PathSegment,
-} from '@sanity/types'
+import type {IndexTuple, KeyedSegment, Path, PathSegment} from '@sanity/types'
+import {isIndexSegment, isIndexTuple, isKeySegment} from '@sanity/types'
 
 const rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g
 const reKeySegment = /_key\s*==\s*['"](.*)['"]/

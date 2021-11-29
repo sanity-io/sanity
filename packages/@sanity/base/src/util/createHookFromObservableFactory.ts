@@ -1,5 +1,6 @@
 import {useAsObservable, useObservable} from 'react-rx'
-import {concat, Observable, of} from 'rxjs'
+import type {Observable} from 'rxjs'
+import {concat, of} from 'rxjs'
 import {catchError, distinctUntilChanged, map, scan, switchMap} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
 

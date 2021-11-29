@@ -1,4 +1,4 @@
-import {Validators} from '@sanity/types'
+import type {Validators} from '@sanity/types'
 import formatDate from 'date-fns/format'
 import genericValidator from './genericValidator'
 

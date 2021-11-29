@@ -1,4 +1,4 @@
-import {Node, MatchResult} from './types'
+import type {Node, MatchResult} from './types'
 import findMatchingNodes from './findMatchingNodes'
 import {flatten} from 'lodash'
 import {debug} from './utils/debug'

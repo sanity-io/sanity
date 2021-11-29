@@ -1,7 +1,6 @@
-import {Path} from '@sanity/types'
+import type {Path} from '@sanity/types'
 import {omitBy, isUndefined} from 'lodash'
-import {
-  Editor,
+import type {
   MoveNodeOperation,
   InsertTextOperation,
   RemoveTextOperation,
@@ -11,10 +10,15 @@ import {
   RemoveNodeOperation,
   MergeNodeOperation,
 } from 'slate'
+import {Editor} from 'slate'
 import {set, insert, unset, diffMatchPatch, setIfMissing} from '../patch/PatchEvent'
-import {PortableTextFeatures, PortableTextBlock, PortableTextChild} from '../types/portableText'
+import type {
+  PortableTextFeatures,
+  PortableTextBlock,
+  PortableTextChild,
+} from '../types/portableText'
 import type {Patch, InsertPosition} from '../types/patch'
-import {PatchFunctions} from '../editor/plugins/createWithPatches'
+import type {PatchFunctions} from '../editor/plugins/createWithPatches'
 import {fromSlateValue} from './values'
 import {debugWithName} from './debug'
 

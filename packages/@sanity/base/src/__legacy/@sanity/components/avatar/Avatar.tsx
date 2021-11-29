@@ -1,6 +1,6 @@
 import {useId} from '@reach/auto-id'
 import React, {useCallback, useEffect, useState} from 'react'
-import {AvatarPosition, AvatarStatus, AvatarSize} from './types'
+import type {AvatarPosition, AvatarStatus, AvatarSize} from './types'
 
 import styles from './Avatar.css'
 

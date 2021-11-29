@@ -1,4 +1,4 @@
-import {PaneNode} from '../types'
+import type {PaneNode} from '../types'
 
 export interface BaseDeskToolPaneProps<T extends PaneNode['type']> {
   paneKey: string

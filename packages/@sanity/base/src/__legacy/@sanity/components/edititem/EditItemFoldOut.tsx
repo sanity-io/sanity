@@ -1,7 +1,7 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import {Modifier} from '@popperjs/core'
+import type {Modifier} from '@popperjs/core'
 import {Layer, useLayer} from '@sanity/ui'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import DefaultButton from 'part:@sanity/components/buttons/default'

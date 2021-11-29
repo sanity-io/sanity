@@ -2,8 +2,9 @@
 /* eslint-disable complexity */
 import * as DMP from 'diff-match-patch'
 import {debounce, isEqual} from 'lodash'
-import {Subject} from 'rxjs'
-import {Editor, Operation, Transforms, Path, Node, Range} from 'slate'
+import type {Subject} from 'rxjs'
+import type {Operation, Node, Range} from 'slate'
+import {Editor, Transforms, Path} from 'slate'
 import {setIfMissing, unset} from '../../patch/PatchEvent'
 import type {Patch} from '../../types/patch'
 
@@ -13,8 +14,8 @@ import {
   findBlockAndIndexFromPath,
   findChildAndIndexFromPath,
 } from '../../utils/values'
-import {PortableTextBlock, PortableTextFeatures} from '../../types/portableText'
-import {EditorChange, PatchObservable, PortableTextSlateEditor} from '../../types/editor'
+import type {PortableTextBlock, PortableTextFeatures} from '../../types/portableText'
+import type {EditorChange, PatchObservable, PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
 import {createPatchToOperations} from '../../utils/patchToOperations'
 import {PATCHING, withoutPatching, isPatching} from '../../utils/withoutPatching'

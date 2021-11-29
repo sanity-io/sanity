@@ -1,17 +1,13 @@
 import {find} from 'lodash'
-import {SerializePath, SerializeOptions, Divider, Collection} from './StructureNodes'
-import {ChildResolverOptions, ChildResolver} from './ChildResolver'
+import type {SerializePath, SerializeOptions, Divider, Collection} from './StructureNodes'
+import type {ChildResolverOptions, ChildResolver} from './ChildResolver'
 import {SerializeError, HELP_URL} from './SerializeError'
-import {ListItem, ListItemBuilder} from './ListItem'
-import {IntentChecker} from './Intent'
+import type {ListItem} from './ListItem'
+import {ListItemBuilder} from './ListItem'
+import type {IntentChecker} from './Intent'
 import {isDocumentListItem} from './DocumentListItem'
-import {
-  GenericListBuilder,
-  BuildableGenericList,
-  GenericList,
-  GenericListInput,
-  shallowIntentChecker,
-} from './GenericList'
+import type {BuildableGenericList, GenericList, GenericListInput} from './GenericList'
+import {GenericListBuilder, shallowIntentChecker} from './GenericList'
 
 const getArgType = (thing: ListItem) => {
   if (thing instanceof ListBuilder) {

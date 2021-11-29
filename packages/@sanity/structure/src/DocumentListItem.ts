@@ -1,7 +1,8 @@
-import {SerializeOptions} from './StructureNodes'
-import {Partial} from './Partial'
-import {ListItemBuilder, ListItem, UnserializedListItem, ListItemInput} from './ListItem'
-import {SchemaType} from './parts/Schema'
+import type {SerializeOptions} from './StructureNodes'
+import type {Partial} from './Partial'
+import type {ListItem, UnserializedListItem, ListItemInput} from './ListItem'
+import {ListItemBuilder} from './ListItem'
+import type {SchemaType} from './parts/Schema'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {DocumentBuilder, getDefaultDocumentNode} from './Document'
 

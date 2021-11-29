@@ -4,7 +4,7 @@
 
 // eslint-disable-next-line import/no-unassigned-import
 import '../setup/globals.jest'
-import {PortableTextBlock} from '../../src'
+import type {PortableTextBlock} from '../../src'
 
 const initialValue: PortableTextBlock[] | undefined = [
   {

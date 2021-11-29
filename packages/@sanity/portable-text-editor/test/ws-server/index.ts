@@ -4,7 +4,7 @@ import express from 'express'
 import expressWS from 'express-ws'
 import {Subject} from 'rxjs'
 import {applyAll} from '../../src/patch/applyPatch'
-import {PortableTextBlock} from '../../src'
+import type {PortableTextBlock} from '../../src'
 
 const expressApp = express()
 const {app} = expressWS(expressApp)

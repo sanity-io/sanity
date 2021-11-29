@@ -1,6 +1,6 @@
 import {debounce} from 'lodash'
 import createPubsub from 'nano-pubsub'
-import {Reported} from './index'
+import type {Reported} from './index'
 
 export function createStore<Value>() {
   const reportedValues = new Map<string, Value>()

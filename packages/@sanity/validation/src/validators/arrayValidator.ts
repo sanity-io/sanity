@@ -1,4 +1,4 @@
-import {Path, PathSegment, Validators} from '@sanity/types'
+import type {Path, PathSegment, Validators} from '@sanity/types'
 import deepEquals from '../util/deepEquals'
 import ValidationErrorClass from '../ValidationError'
 import genericValidator from './genericValidator'

@@ -5,9 +5,9 @@ import {useLayer} from '@sanity/ui'
 import Button from 'part:@sanity/components/buttons/default'
 import {Popover} from 'part:@sanity/components/popover'
 import React, {forwardRef, useCallback, useEffect, useState} from 'react'
-import {ButtonProps} from '../buttons'
+import type {ButtonProps} from '../buttons'
 import {useClickOutside} from '../hooks'
-import {Placement} from '../types'
+import type {Placement} from '../types'
 
 interface MenuButtonProps {
   boundaryElement?: HTMLElement | null

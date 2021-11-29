@@ -1,7 +1,7 @@
-import {Subject} from 'rxjs'
+import type {Subject} from 'rxjs'
 import {Editor, Transforms, Element, Path} from 'slate'
-import {PortableTextFeatures} from '../../types/portableText'
-import {EditorChange, PortableTextSlateEditor} from '../../types/editor'
+import type {PortableTextFeatures} from '../../types/portableText'
+import type {EditorChange, PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
 import {toPortableTextRange} from '../../utils/ranges'
 

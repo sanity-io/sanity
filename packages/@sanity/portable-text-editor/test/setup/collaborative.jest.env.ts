@@ -2,7 +2,7 @@ import NodeEnvironment from 'jest-environment-node'
 import puppeteer from 'puppeteer'
 import ipc from 'node-ipc'
 import {isEqual} from 'lodash'
-import {EditorSelection, PortableTextBlock} from '../../src'
+import type {EditorSelection, PortableTextBlock} from '../../src'
 import {normalizeSelection} from '../../src/utils/selection'
 
 ipc.config.id = 'collaborative-jest-environment-ipc-client'

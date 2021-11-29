@@ -1,4 +1,4 @@
-import {Schema} from '@sanity/types'
+import type {Schema} from '@sanity/types'
 import inferFromSchemaType from './inferFromSchemaType'
 
 // Note: Mutates schema. Refactor when @sanity/schema supports middlewares

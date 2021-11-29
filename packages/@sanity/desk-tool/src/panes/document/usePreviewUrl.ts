@@ -1,9 +1,9 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import {SanityDocument} from '@sanity/types'
+import type {SanityDocument} from '@sanity/types'
 import resolveProductionPreviewUrl from 'part:@sanity/transitional/production-preview/resolve-production-url?'
-import {Controller as HistoryController} from './documentHistory/history/Controller'
+import type {Controller as HistoryController} from './documentHistory/history/Controller'
 
 export function getPreviewUrl(
   historyController: HistoryController,

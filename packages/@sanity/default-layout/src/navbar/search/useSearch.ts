@@ -13,9 +13,10 @@ import {
   scan,
   mergeMapTo,
 } from 'rxjs/operators'
-import {concat, EMPTY, Observable, of, timer} from 'rxjs'
+import type {Observable} from 'rxjs'
+import {concat, EMPTY, of, timer} from 'rxjs'
 import search from 'part:@sanity/base/search'
-import {SearchHit, SearchState} from './types'
+import type {SearchHit, SearchState} from './types'
 
 type SearchFunction = (query: string) => Observable<SearchHit[]>
 

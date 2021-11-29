@@ -1,11 +1,11 @@
 import React, {useMemo} from 'react'
-import {NumberSchemaType} from '@sanity/types'
+import type {NumberSchemaType} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {FormField} from '@sanity/base/components'
 import {getValidationRule} from '../utils/getValidationRule'
 import PatchEvent, {set, unset} from '../PatchEvent'
-import {Props} from './types'
+import type {Props} from './types'
 
 const NumberInput = React.forwardRef(function NumberInput(
   props: Props<number, NumberSchemaType>,

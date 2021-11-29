@@ -3,7 +3,7 @@
 
 import React, {forwardRef} from 'react'
 import Button from 'part:@sanity/components/buttons/default'
-import {ButtonProps} from '../buttons/types'
+import type {ButtonProps} from '../buttons/types'
 
 // @todo: give a deprecation warning?
 // import styles from 'part:@sanity/components/toggles/button-style'

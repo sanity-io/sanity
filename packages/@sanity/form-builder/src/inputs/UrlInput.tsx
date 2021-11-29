@@ -1,11 +1,11 @@
 import React, {useMemo} from 'react'
-import {StringSchemaType} from '@sanity/types'
+import type {StringSchemaType} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {FormField} from '@sanity/base/components'
 import PatchEvent, {set, unset} from '../PatchEvent'
 import {getValidationRule} from '../utils/getValidationRule'
-import {Props} from './types'
+import type {Props} from './types'
 
 const UrlInput = React.forwardRef(function UrlInput(
   props: Props<string, StringSchemaType>,

@@ -1,7 +1,8 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import React, {SyntheticEvent} from 'react'
+import type {SyntheticEvent} from 'react'
+import React from 'react'
 import {useDocumentValues} from '@sanity/base/hooks'
 import {getImageDimensions, isDefaultCrop, isDefaultHotspot} from '@sanity/asset-utils'
 import imageUrlBuilder from '@sanity/image-url'
@@ -13,7 +14,7 @@ import {versionedClient} from '../../../versionedClient'
 import {MetaInfo} from '../../../diff'
 import {getDeviceDpr, simpleHash} from './helpers'
 import {HotspotCropSVG} from './HotspotCropSVG'
-import {ImagePreviewProps, MinimalAsset} from './types'
+import type {ImagePreviewProps, MinimalAsset} from './types'
 
 const ASSET_FIELDS = ['originalFilename']
 const imageBuilder = imageUrlBuilder(versionedClient)

@@ -1,9 +1,11 @@
-import {CardProps, useElementRect} from '@sanity/ui'
+import type {CardProps} from '@sanity/ui'
+import {useElementRect} from '@sanity/ui'
 import React, {useMemo, useState, useEffect} from 'react'
 import {PaneLayoutContext} from './PaneLayoutContext'
-import {PaneLayoutContextValue} from './types'
+import type {PaneLayoutContextValue} from './types'
 import {Root} from './PaneLayout.styles'
-import {createPaneLayoutController, PaneLayoutState} from './paneLayoutController'
+import type {PaneLayoutState} from './paneLayoutController'
+import {createPaneLayoutController} from './paneLayoutController'
 
 /**
  * @beta This API will change. DO NOT USE IN PRODUCTION.

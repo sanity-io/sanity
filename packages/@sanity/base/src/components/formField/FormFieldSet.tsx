@@ -1,11 +1,14 @@
 /* eslint-disable camelcase */
 
-import {Marker} from '@sanity/types'
-import {Box, Flex, Grid, rem, Stack, Text, Theme, useForwardedRef} from '@sanity/ui'
+import type {Marker} from '@sanity/types'
+import type {Theme} from '@sanity/ui'
+import {Box, Flex, Grid, rem, Stack, Text, useForwardedRef} from '@sanity/ui'
 import React, {forwardRef, useState, useCallback, useEffect, useMemo} from 'react'
 import styled, {css} from 'styled-components'
-import {ChangeIndicator, ChangeIndicatorContextProvidedProps} from '../../change-indicators'
-import {FieldPresence, FormFieldPresence} from '../../presence'
+import type {ChangeIndicatorContextProvidedProps} from '../../change-indicators'
+import {ChangeIndicator} from '../../change-indicators'
+import type {FormFieldPresence} from '../../presence'
+import {FieldPresence} from '../../presence'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
 import {markersToValidationList} from './helpers'

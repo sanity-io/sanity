@@ -1,5 +1,5 @@
 import React from 'react'
-import {TextInput} from '@sanity/ui'
+import type {TextInput} from '@sanity/ui'
 import {LazyTextInput} from '../LazyTextInput'
 
 type Props = Omit<React.ComponentProps<typeof TextInput>, 'onChange' | 'value'> & {

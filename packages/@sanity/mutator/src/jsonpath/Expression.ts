@@ -3,7 +3,7 @@
 import descend from './descend'
 import toPath from './toPath'
 import parse from './parse'
-import {Probe} from './Descender'
+import type {Probe} from './Descender'
 
 export type Expr = any
 export type Range = {

@@ -1,6 +1,6 @@
 import React, {useMemo} from 'react'
 
-import {DiffComponent, ObjectDiff, ObjectSchemaType} from '../../../diff'
+import type {DiffComponent, ObjectDiff, ObjectSchemaType} from '../../../diff'
 import PortableText from './components/PortableText'
 import {createPortableTextDiff} from './helpers'
 

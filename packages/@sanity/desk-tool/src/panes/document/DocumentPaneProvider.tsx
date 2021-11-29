@@ -2,7 +2,7 @@
 ///<reference types="@sanity/types/parts" />
 
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react'
-import {Path, SanityDocument} from '@sanity/types'
+import type {Path, SanityDocument} from '@sanity/types'
 import {
   useConnectionState,
   useDocumentOperation,
@@ -19,17 +19,18 @@ import resolveDocumentBadges from 'part:@sanity/base/document-badges/resolver'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import schema from 'part:@sanity/base/schema'
 import {useMemoObservable} from 'react-rx'
-import {PaneMenuItem} from '../../types'
+import type {PaneMenuItem} from '../../types'
 import {useDeskTool} from '../../contexts/deskTool'
 import {usePaneRouter} from '../../contexts/paneRouter'
 import {useUnique} from '../../utils/useUnique'
 import {versionedClient} from '../../versionedClient'
 import {createObservableController} from './documentHistory/history/Controller'
 import {Timeline} from './documentHistory/history/Timeline'
-import {DocumentPaneContext, DocumentPaneContextValue} from './DocumentPaneContext'
+import type {DocumentPaneContextValue} from './DocumentPaneContext'
+import {DocumentPaneContext} from './DocumentPaneContext'
 import {useInitialValue} from './initialValue'
 import {getMenuItems} from './menuItems'
-import {DocumentPaneProviderProps} from './types'
+import type {DocumentPaneProviderProps} from './types'
 import {getPreviewUrl} from './usePreviewUrl'
 
 declare const __DEV__: boolean

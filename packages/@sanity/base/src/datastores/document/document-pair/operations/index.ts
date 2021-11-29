@@ -7,7 +7,7 @@ import {unpublish} from './unpublish'
 import {duplicate} from './duplicate'
 import {restore} from './restore'
 
-import {OperationArgs} from '../../types'
+import type {OperationArgs} from '../../types'
 import {emitOperation} from '../operationEvents'
 
 /* Ok, this became a bit messy - sorry

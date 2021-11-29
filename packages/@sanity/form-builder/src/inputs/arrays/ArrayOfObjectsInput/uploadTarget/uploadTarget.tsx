@@ -1,15 +1,16 @@
 import {Box, Flex, Text, useToast} from '@sanity/ui'
 import React from 'react'
-import {SchemaType} from '@sanity/types'
+import type {SchemaType} from '@sanity/types'
 import {sortBy} from 'lodash'
 import styled from 'styled-components'
-import {
+import type {
   FileLike,
   ResolvedUploader,
   Uploader,
   UploaderResolver,
 } from '../../../../sanity/uploads/types'
-import {FileInfo, fileTarget} from '../../../common/fileTarget'
+import type {FileInfo} from '../../../common/fileTarget'
+import {fileTarget} from '../../../common/fileTarget'
 import {DropMessage} from '../../../files/common/DropMessage'
 import {Overlay} from './styles'
 

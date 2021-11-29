@@ -1,7 +1,7 @@
 import React from 'react'
 import {LinkIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
 import {Button, Menu, MenuItem, MenuButton} from '@sanity/ui'
-import {AssetMenuAction} from './types'
+import type {AssetMenuAction} from './types'
 
 export function AssetMenu({
   isSelected,

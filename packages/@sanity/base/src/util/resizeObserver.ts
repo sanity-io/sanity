@@ -1,5 +1,7 @@
-import {ResizeObserver as Polyfill, ResizeObserverEntry} from '@juggle/resize-observer'
-import createPubSub, {Subscriber} from 'nano-pubsub'
+import type {ResizeObserverEntry} from '@juggle/resize-observer'
+import {ResizeObserver as Polyfill} from '@juggle/resize-observer'
+import type {Subscriber} from 'nano-pubsub'
+import createPubSub from 'nano-pubsub'
 
 const ResizeObserver: typeof Polyfill = (window as any).ResizeObserver || Polyfill
 

@@ -4,7 +4,7 @@ import {
   DIFF_EQUAL,
   DIFF_INSERT,
 } from 'diff-match-patch'
-import {StringDiffSegment, StringDiff, StringInput, DiffOptions} from '../types'
+import type {StringDiffSegment, StringDiff, StringInput, DiffOptions} from '../types'
 import {replaceProperty} from '../helpers'
 
 const dmp = new DiffMatchPatch()

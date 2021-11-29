@@ -1,5 +1,6 @@
-import {PartialDocumentList, getTypeNamesFromFilter} from './DocumentList'
-import {StructureNode} from './StructureNodes'
+import type {PartialDocumentList} from './DocumentList'
+import {getTypeNamesFromFilter} from './DocumentList'
+import type {StructureNode} from './StructureNodes'
 
 type JsonParams = {[key: string]: any}
 
@@ -24,7 +25,7 @@ export interface IntentChecker {
     params: {[key: string]: any},
     context: {pane: StructureNode; index: number}
   ): boolean
-  identity?: Symbol
+  identity?: symbol
 }
 
 export const defaultIntentChecker: IntentChecker = (intentName, params, {pane}): boolean => {

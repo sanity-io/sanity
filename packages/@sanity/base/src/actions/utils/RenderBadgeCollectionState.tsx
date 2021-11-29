@@ -1,6 +1,6 @@
 import React from 'react'
-import {DocumentBadgeComponent, DocumentBadgeDescription} from '../../badges/types'
-import {EditStateFor} from '../../datastores/document/document-pair/editState'
+import type {DocumentBadgeComponent, DocumentBadgeDescription} from '../../badges/types'
+import type {EditStateFor} from '../../datastores/document/document-pair/editState'
 import {GetHookCollectionState} from './GetHookCollectionState'
 
 interface RenderBadgeCollectionProps {

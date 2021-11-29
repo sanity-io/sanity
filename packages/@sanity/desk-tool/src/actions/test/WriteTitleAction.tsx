@@ -1,4 +1,4 @@
-import {DocumentActionComponent} from '@sanity/base'
+import type {DocumentActionComponent} from '@sanity/base'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import {useCallback} from 'react'
 

@@ -1,6 +1,7 @@
-import {from as observableFrom, of as observableOf, Observable, ObservableInput} from 'rxjs'
+import type {Observable, ObservableInput} from 'rxjs'
+import {from as observableFrom, of as observableOf} from 'rxjs'
 import {mergeMap} from 'rxjs/operators'
-import {StructureNode, Builder, CollectionBuilder, Child} from '../../src/StructureNodes'
+import type {StructureNode, Builder, CollectionBuilder, Child} from '../../src/StructureNodes'
 
 type SerializableStructureNode =
   | StructureNode

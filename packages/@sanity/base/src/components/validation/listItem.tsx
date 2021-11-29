@@ -1,4 +1,4 @@
-import {Marker, Path} from '@sanity/types'
+import type {Marker, Path} from '@sanity/types'
 import React, {useCallback} from 'react'
 import {WarningOutlineIcon, ErrorOutlineIcon} from '@sanity/icons'
 import {Box, Text, MenuItem, Stack, Flex} from '@sanity/ui'

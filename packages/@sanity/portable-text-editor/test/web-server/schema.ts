@@ -1,4 +1,4 @@
-import {RawType} from '../../src/types/schema'
+import type {RawType} from '../../src/types/schema'
 
 export const imageType: RawType = {
   type: 'image',

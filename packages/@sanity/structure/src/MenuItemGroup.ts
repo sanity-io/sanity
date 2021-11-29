@@ -1,4 +1,4 @@
-import {SerializeOptions, Serializable, SerializePath} from './StructureNodes'
+import type {SerializeOptions, Serializable, SerializePath} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
 
 export function maybeSerializeMenuItemGroup(

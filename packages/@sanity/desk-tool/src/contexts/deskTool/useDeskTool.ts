@@ -1,6 +1,6 @@
 import {useContext} from 'react'
 import {DeskToolContext} from './DeskToolContext'
-import {DeskToolContextValue} from './types'
+import type {DeskToolContextValue} from './types'
 
 /**
  * @internal

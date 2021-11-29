@@ -1,13 +1,14 @@
+import type {ReactElement} from 'react'
 import React, {
   useState,
   useEffect,
   useCallback,
   useMemo,
-  ReactElement,
   Children,
   cloneElement,
   Fragment,
 } from 'react'
+import type {PopoverProps} from '@sanity/ui'
 import {
   Box,
   Button,
@@ -18,13 +19,13 @@ import {
   Text,
   Tooltip,
   useElementRect,
-  PopoverProps,
   MenuDivider,
 } from '@sanity/ui'
 import {InView} from 'react-intersection-observer'
 import {EllipsisVerticalIcon} from '@sanity/icons'
 import styled from 'styled-components'
-import {CollapseMenuDivider, CollapseMenuButton, CollapseMenuItemProps} from '.'
+import type {CollapseMenuItemProps} from '.'
+import {CollapseMenuDivider, CollapseMenuButton} from '.'
 
 interface CollapseMenuProps {
   children: React.ReactNode

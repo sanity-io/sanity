@@ -4,7 +4,7 @@ import {PackageIcon} from '@sanity/icons'
 import {StatusButton} from '../components'
 import CurrentVersionsDialog from './CurrentVersionsDialog'
 import UpdateNotifierDialog from './UpdateNotifierDialog'
-import {Package, Severity} from './types'
+import type {Package, Severity} from './types'
 
 interface Props {
   isSupported: boolean

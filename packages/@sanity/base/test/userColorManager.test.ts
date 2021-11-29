@@ -1,7 +1,9 @@
 /* eslint-disable max-nested-callbacks */
 
-import {Observable, BehaviorSubject} from 'rxjs'
-import {UserColor, createUserColorManager, UserColorManagerOptions} from '../src/user-color'
+import type {Observable} from 'rxjs'
+import {BehaviorSubject} from 'rxjs'
+import type {UserColor, UserColorManagerOptions} from '../src/user-color'
+import {createUserColorManager} from '../src/user-color'
 
 jest.mock('part:@sanity/base/user', () => {
   return jest.createMockFromModule('part:@sanity/base/user')

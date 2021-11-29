@@ -1,26 +1,15 @@
 /* eslint-disable import/no-unresolved */
 
 import {FormFieldSet, ImperativeToast} from '@sanity/base/components'
-import {
-  Box,
-  Button,
-  Dialog,
-  Flex,
-  Grid,
-  Menu,
-  MenuButton,
-  MenuItem,
-  Stack,
-  Text,
-  ToastParams,
-} from '@sanity/ui'
+import type {ToastParams} from '@sanity/ui'
+import {Box, Button, Dialog, Flex, Grid, Menu, MenuButton, MenuItem, Stack, Text} from '@sanity/ui'
 import {get, groupBy, uniqueId} from 'lodash'
-import {Observable, Subscription} from 'rxjs'
+import type {Observable, Subscription} from 'rxjs'
 import {ChangeIndicatorForFieldPath} from '@sanity/base/change-indicators'
 import {EditIcon, EyeOpenIcon, ImageIcon, SearchIcon, TrashIcon, UploadIcon} from '@sanity/icons'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
 import ImageTool from '@sanity/imagetool'
-import {
+import type {
   Asset as AssetDocument,
   AssetFromSource,
   Image as BaseImage,
@@ -33,9 +22,10 @@ import {
 } from '@sanity/types'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
+import type {FormFieldPresence} from '@sanity/base/presence'
+import {PresenceOverlay} from '@sanity/base/presence'
 import deepCompare from 'react-fast-compare'
-import {
+import type {
   ResolvedUploader,
   Uploader,
   UploaderResolver,
@@ -47,7 +37,7 @@ import UploadPlaceholder from '../common/UploadPlaceholder'
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
 import {FileInputButton} from '../common/FileInputButton/FileInputButton'
 import {FileTarget, Overlay} from '../common/styles'
-import {InternalAssetSource, UploadState} from '../types'
+import type {InternalAssetSource, UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
 import {RatioBox} from '../common/RatioBox'
 import {EMPTY_ARRAY} from '../../../utils/empty'

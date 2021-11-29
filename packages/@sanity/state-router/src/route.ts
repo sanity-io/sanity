@@ -1,4 +1,4 @@
-import {Transform, Router, RouteChildren} from './types'
+import type {Transform, Router, RouteChildren} from './types'
 
 import parseRoute from './parseRoute'
 import resolveStateFromPath from './resolveStateFromPath'

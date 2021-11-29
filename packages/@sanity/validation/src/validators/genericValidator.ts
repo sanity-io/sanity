@@ -1,4 +1,4 @@
-import {ValidationMarker, Validators} from '@sanity/types'
+import type {ValidationMarker, Validators} from '@sanity/types'
 import typeString from '../util/typeString'
 import deepEquals from '../util/deepEquals'
 import pathToString from '../util/pathToString'

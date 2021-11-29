@@ -1,9 +1,9 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import {SanityDocument} from '@sanity/types'
+import type {SanityDocument} from '@sanity/types'
 import {collate, getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import {DocumentListPaneItem, SortOrderBy} from './types'
+import type {DocumentListPaneItem, SortOrderBy} from './types'
 
 export function getDocumentKey(value: DocumentListPaneItem, index: number): string {
   return value._id ? getPublishedId(value._id) : `item-${index}`

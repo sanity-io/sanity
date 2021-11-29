@@ -2,13 +2,13 @@
 ///<reference types="@sanity/types/parts" />
 
 import classNames from 'classnames'
-import {Modifier} from '@popperjs/core'
+import type {Modifier} from '@popperjs/core'
 import {Layer, useLayer} from '@sanity/ui'
 import React, {forwardRef, useCallback, useEffect, useState} from 'react'
 import {usePopper} from 'react-popper'
 import {Portal} from 'part:@sanity/components/portal'
 import {useClickOutside} from '../hooks'
-import {Placement} from '../types'
+import type {Placement} from '../types'
 
 import styles from './Poppable.css'
 

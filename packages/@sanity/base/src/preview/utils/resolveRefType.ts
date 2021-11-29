@@ -1,6 +1,7 @@
-import {from as observableFrom, Observable} from 'rxjs'
+import type {Observable} from 'rxjs'
+import {from as observableFrom} from 'rxjs'
 import {map} from 'rxjs/operators'
-import {Reference, ReferenceSchemaType, SchemaType} from '@sanity/types'
+import type {Reference, ReferenceSchemaType, SchemaType} from '@sanity/types'
 import {versionedClient} from '../../client/versionedClient'
 import {InsufficientPermissionsError} from '../constants'
 

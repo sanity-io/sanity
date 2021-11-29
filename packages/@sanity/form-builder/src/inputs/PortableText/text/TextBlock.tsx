@@ -1,11 +1,13 @@
-import {PortableTextBlock, RenderAttributes} from '@sanity/portable-text-editor'
-import {isKeySegment, isValidationMarker, Marker} from '@sanity/types'
-import {Box, ResponsivePaddingProps, Tooltip} from '@sanity/ui'
+import type {PortableTextBlock, RenderAttributes} from '@sanity/portable-text-editor'
+import type {Marker} from '@sanity/types'
+import {isKeySegment, isValidationMarker} from '@sanity/types'
+import type {ResponsivePaddingProps} from '@sanity/ui'
+import {Box, Tooltip} from '@sanity/ui'
 import React, {useMemo} from 'react'
 import {Markers} from '../../../legacyParts'
-import PatchEvent from '../../../PatchEvent'
+import type PatchEvent from '../../../PatchEvent'
 import {BlockActions} from '../BlockActions'
-import {RenderBlockActions, RenderCustomMarkers} from '../types'
+import type {RenderBlockActions, RenderCustomMarkers} from '../types'
 import {TEXT_STYLE_PADDING} from './constants'
 import {
   BlockActionsInner,

@@ -4,7 +4,7 @@
 import {LegacyLayerProvider} from '@sanity/base/components'
 import {Layer} from '@sanity/ui'
 import React from 'react'
-import {Subscription} from 'rxjs'
+import type {Subscription} from 'rxjs'
 import * as sidecar from 'part:@sanity/default-layout/sidecar?'
 import {isSidecarOpenSetting} from 'part:@sanity/default-layout/sidecar-datastore'
 import styled, {css} from 'styled-components'

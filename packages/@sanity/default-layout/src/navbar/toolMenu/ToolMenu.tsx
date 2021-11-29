@@ -2,7 +2,7 @@ import {StateLink} from '@sanity/base/router'
 import React, {useMemo} from 'react'
 import {Button, Stack} from '@sanity/ui'
 import {PlugIcon} from '@sanity/icons'
-import {Tool} from '../../types'
+import type {Tool} from '../../types'
 import {useDefaultLayoutRouter} from '../../useDefaultLayoutRouter'
 
 interface Props {

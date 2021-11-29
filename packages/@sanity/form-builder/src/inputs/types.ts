@@ -1,4 +1,4 @@
-import {
+import type {
   ArraySchemaType,
   BooleanSchemaType,
   Marker,
@@ -8,8 +8,8 @@ import {
   SchemaType,
   StringSchemaType,
 } from '@sanity/types'
-import {FormFieldPresence} from '@sanity/base/presence'
-import PatchEvent from '../PatchEvent'
+import type {FormFieldPresence} from '@sanity/base/presence'
+import type PatchEvent from '../PatchEvent'
 
 export type Props<
   T = any,

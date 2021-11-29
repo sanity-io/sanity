@@ -1,4 +1,5 @@
-import {Text, TextProps} from '@sanity/ui'
+import type {TextProps} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import React, {useMemo} from 'react'
 import {ArrowRightIcon, ArrowDownIcon} from '@sanity/icons'
 

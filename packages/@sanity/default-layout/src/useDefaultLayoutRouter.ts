@@ -1,6 +1,6 @@
 import {useRouterState, useRouter} from '@sanity/base/router'
 import {useMemo, useCallback} from 'react'
-import {Router} from './types'
+import type {Router} from './types'
 
 export function useDefaultLayoutRouter(): Router {
   const {navigate} = useRouter()

@@ -1,5 +1,6 @@
 import {ErrorBoundary, ThemeProvider, usePrefersDark} from '@sanity/ui'
-import {Workshop, WorkshopLocation} from '@sanity/ui-workshop'
+import type {WorkshopLocation} from '@sanity/ui-workshop'
+import {Workshop} from '@sanity/ui-workshop'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import ReactDOM from 'react-dom'
 import Refractor from 'react-refractor'

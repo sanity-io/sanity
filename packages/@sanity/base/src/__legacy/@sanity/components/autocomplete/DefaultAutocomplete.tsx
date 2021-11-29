@@ -7,7 +7,7 @@ import FormField from 'part:@sanity/components/formfields/default'
 import {List} from 'part:@sanity/components/lists/default'
 import TextInput from 'part:@sanity/components/textinputs/default'
 import React from 'react'
-import {AutocompleteSuggestionItem} from './types'
+import type {AutocompleteSuggestionItem} from './types'
 
 interface DefaultAutocompleteProps {
   id?: string

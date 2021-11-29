@@ -1,5 +1,6 @@
-import {isValidationMarker, ValidationMarker} from '@sanity/types'
-import {FormFieldValidation} from './types'
+import type {ValidationMarker} from '@sanity/types'
+import {isValidationMarker} from '@sanity/types'
+import type {FormFieldValidation} from './types'
 
 export function markersToValidationList(markers: ValidationMarker[]): FormFieldValidation[] {
   const validationMarkers = markers.filter(isValidationMarker)

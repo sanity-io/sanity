@@ -4,7 +4,7 @@ import {getMinutes, setMinutes, parseISO} from 'date-fns'
 import {format, parse} from '@sanity/util/legacyDateFormat'
 import PatchEvent, {set, unset} from '../../PatchEvent'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
-import {CommonProps, ParseResult} from './types'
+import type {CommonProps, ParseResult} from './types'
 import {isValidDate} from './utils'
 
 type ParsedOptions = {

@@ -5,7 +5,7 @@ import {partition} from 'lodash'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import React from 'react'
 import {DefaultDialogActionButton} from './DefaultDialogActionButton'
-import {DialogAction} from './types'
+import type {DialogAction} from './types'
 
 export function DefaultDialogActions(props: {
   actions: DialogAction[]

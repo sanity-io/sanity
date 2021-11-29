@@ -1,5 +1,5 @@
-import {ComponentType} from 'react'
-import {AssetSource, AssetSourceComponentProps} from '@sanity/types'
+import type {ComponentType} from 'react'
+import type {AssetSource, AssetSourceComponentProps} from '@sanity/types'
 
 export interface UploadState {
   progress: number

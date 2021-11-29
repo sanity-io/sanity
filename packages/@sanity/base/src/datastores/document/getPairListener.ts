@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import type {SanityDocument} from '@sanity/types'
-import {defer, of as observableOf, Observable} from 'rxjs'
+import type {Observable} from 'rxjs'
+import {defer, of as observableOf} from 'rxjs'
 import {concatMap, map} from 'rxjs/operators'
 import type {IdPair, MutationEvent, ReconnectEvent, SanityClient, WelcomeEvent} from './types'
 

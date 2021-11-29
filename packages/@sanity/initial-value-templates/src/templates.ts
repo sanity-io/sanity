@@ -1,8 +1,8 @@
 /* eslint-disable import/prefer-default-export */
 import T from './builder'
 import {validateTemplates} from './validate'
-import {Template, TemplateBuilder} from './Template'
-import {Schema} from './parts/Schema'
+import type {Template, TemplateBuilder} from './Template'
+import type {Schema} from './parts/Schema'
 import {isBuilder} from './resolve'
 
 interface CommonJsEsStub {

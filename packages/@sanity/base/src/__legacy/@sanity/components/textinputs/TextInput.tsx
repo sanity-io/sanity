@@ -5,7 +5,7 @@ import classNames from 'classnames'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import defaultStyles from 'part:@sanity/components/textinputs/default-style'
 import React from 'react'
-import {DefaultTextInputProps} from './types'
+import type {DefaultTextInputProps} from './types'
 
 // @todo: refactor to functional component
 export default class DefaultTextInput extends React.PureComponent<DefaultTextInputProps> {

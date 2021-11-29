@@ -6,7 +6,7 @@ import {format, parse} from 'date-fns'
 import React from 'react'
 
 import {LayerProvider, ThemeProvider, studioTheme} from '@sanity/ui'
-import {ParseResult} from '../types'
+import type {ParseResult} from '../types'
 import {CommonDateTimeInput} from '../CommonDateTimeInput'
 import {isValidDate} from '../utils'
 

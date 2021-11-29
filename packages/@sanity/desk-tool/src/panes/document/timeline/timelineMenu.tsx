@@ -1,5 +1,5 @@
 import {useTimeAgo} from '@sanity/base/hooks'
-import {Chunk} from '@sanity/field/diff'
+import type {Chunk} from '@sanity/field/diff'
 import {SelectIcon} from '@sanity/icons'
 import {useClickOutside, Button, Popover} from '@sanity/ui'
 import {upperFirst} from 'lodash'

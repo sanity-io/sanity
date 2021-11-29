@@ -1,5 +1,5 @@
 import {DocumentBuilder} from './Document'
-import {DocumentNode} from './StructureNodes'
+import type {DocumentNode} from './StructureNodes'
 import {getUserDefinedStructure} from './parts/userStructure'
 
 export interface DocumentFragmentResolveOptions {

@@ -1,12 +1,6 @@
 import {ChangeFieldWrapper} from '@sanity/base/change-indicators'
-import {
-  ChangeList,
-  DiffTooltip,
-  DocumentChangeContext,
-  DocumentChangeContextInstance,
-  NoChanges,
-  ObjectDiff,
-} from '@sanity/field/diff'
+import type {DocumentChangeContextInstance, ObjectDiff} from '@sanity/field/diff'
+import {ChangeList, DiffTooltip, DocumentChangeContext, NoChanges} from '@sanity/field/diff'
 import {UserAvatar, ScrollContainer} from '@sanity/base/components'
 import {CloseIcon} from '@sanity/icons'
 import {AvatarStack, BoundaryElementProvider, Box, Button, Flex} from '@sanity/ui'

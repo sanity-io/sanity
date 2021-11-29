@@ -1,4 +1,4 @@
-import {SchemaType, Rule, RuleTypeConstraint} from '@sanity/types'
+import type {SchemaType, Rule, RuleTypeConstraint} from '@sanity/types'
 import RuleClass from '../Rule'
 import {slugValidator} from '../validators/slugValidator'
 

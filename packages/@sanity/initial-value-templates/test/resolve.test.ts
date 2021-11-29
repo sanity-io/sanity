@@ -1,6 +1,6 @@
 import {omit} from 'lodash'
 import {resolveInitialValue, TemplateBuilder as T} from '../src'
-import {Template} from '../src/Template'
+import type {Template} from '../src/Template'
 import {getDefaultSchema} from '../src/parts/Schema'
 
 const schema = getDefaultSchema()

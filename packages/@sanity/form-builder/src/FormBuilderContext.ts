@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import pubsub from 'nano-pubsub'
-import {Schema, SchemaType} from '@sanity/types'
+import type {Schema, SchemaType} from '@sanity/types'
 import type {Patch} from './patch/types'
 import {fallbackInputs} from './fallbackInputs'
 

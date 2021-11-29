@@ -1,11 +1,12 @@
-import React, {ForwardedRef, useMemo} from 'react'
+import type {ForwardedRef} from 'react'
+import React, {useMemo} from 'react'
 import {useId} from '@reach/auto-id'
 import {FormField} from '@sanity/base/components'
-import {TextSchemaType} from '@sanity/types'
+import type {TextSchemaType} from '@sanity/types'
 import {TextArea} from '@sanity/ui'
 import styled from 'styled-components'
 import PatchEvent, {set, unset} from '../PatchEvent'
-import {Props} from './types'
+import type {Props} from './types'
 
 const StyledTextArea = styled(TextArea)`
   &[data-as='textarea'] {

@@ -1,6 +1,6 @@
-import {SchemaType} from '@sanity/types'
+import type {SchemaType} from '@sanity/types'
 import React from 'react'
-import {SortOrdering} from '../types'
+import type {SortOrdering} from '../types'
 import WithVisibility from './WithVisibility'
 import ObserveForPreview from './ObserveForPreview'
 

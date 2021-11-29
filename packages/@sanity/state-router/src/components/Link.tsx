@@ -1,4 +1,5 @@
-import React, {ForwardedRef, forwardRef, MouseEvent, useCallback, useContext} from 'react'
+import type {ForwardedRef, MouseEvent} from 'react'
+import React, {forwardRef, useCallback, useContext} from 'react'
 import {RouterContext} from '../RouterContext'
 
 function isLeftClickEvent(event: MouseEvent) {

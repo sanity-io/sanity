@@ -1,4 +1,4 @@
-import {ClientConfig, SanityClient} from '@sanity/client'
+import type {ClientConfig, SanityClient} from '@sanity/client'
 import getDefaultModule from './getDefaultModule'
 
 type StudioClient = SanityClient & {withConfig: (config: Partial<ClientConfig>) => SanityClient}

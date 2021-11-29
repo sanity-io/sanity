@@ -4,7 +4,7 @@ import {unstable_useDocumentPairPermissions as useDocumentPairPermissions} from 
 import {Stack, Box, Button, Text, Grid, useClickOutside} from '@sanity/ui'
 import {undoChange} from '../changes/undoChange'
 import {DiffContext} from '../contexts/DiffContext'
-import {FieldChangeNode, OperationsAPI} from '../../types'
+import type {FieldChangeNode, OperationsAPI} from '../../types'
 import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 import {DiffErrorBoundary} from './DiffErrorBoundary'
 import {DiffInspectWrapper} from './DiffInspectWrapper'

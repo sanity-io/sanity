@@ -1,7 +1,8 @@
-import {SerializeOptions} from '../StructureNodes'
+import type {SerializeOptions} from '../StructureNodes'
 import {SerializeError, HELP_URL} from '../SerializeError'
-import {FixMe} from '../types'
-import {View, GenericViewBuilder} from './View'
+import type {FixMe} from '../types'
+import type {View} from './View'
+import {GenericViewBuilder} from './View'
 
 export interface ComponentView extends View {
   component: FixMe

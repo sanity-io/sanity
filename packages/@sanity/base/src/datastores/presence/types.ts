@@ -1,4 +1,4 @@
-import {Path, User} from '@sanity/types'
+import type {Path, User} from '@sanity/types'
 
 export type Status = 'online' | 'editing' | 'inactive'
 

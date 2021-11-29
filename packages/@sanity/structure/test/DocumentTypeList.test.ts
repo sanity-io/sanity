@@ -1,5 +1,6 @@
 import {StructureBuilder as S} from '../src'
-import {getDefaultSchema, SchemaType} from '../src/parts/Schema'
+import type {SchemaType} from '../src/parts/Schema'
+import {getDefaultSchema} from '../src/parts/Schema'
 import serializeStructure from './util/serializeStructure'
 
 test('builds document type lists with only required properties', () => {

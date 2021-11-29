@@ -1,5 +1,5 @@
 import React from 'react'
-import {LatLng} from '../types'
+import type {LatLng} from '../types'
 import {latLngAreEqual} from './util'
 import {MapContainer} from './Map.styles'
 

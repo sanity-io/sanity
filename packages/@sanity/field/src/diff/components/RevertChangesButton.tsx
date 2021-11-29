@@ -1,6 +1,7 @@
 import React, {forwardRef} from 'react'
 import {RevertIcon} from '@sanity/icons'
-import {Button, ButtonProps} from '@sanity/ui'
+import type {ButtonProps} from '@sanity/ui'
+import {Button} from '@sanity/ui'
 import styled from 'styled-components'
 
 const RevertButton = styled.button`

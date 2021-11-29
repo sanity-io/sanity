@@ -1,6 +1,6 @@
 import React, {Fragment} from 'react'
 import {Box, Flex, Text} from '@sanity/ui'
-import {ChangeTitlePath, FieldChangeNode} from '../../types'
+import type {ChangeTitlePath, FieldChangeNode} from '../../types'
 import {ChangeTitleSegment} from './ChangeTitleSegment'
 
 export function ChangeBreadcrumb({

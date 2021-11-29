@@ -1,5 +1,5 @@
 import React from 'react'
-import {DocumentActionDescription, DocumentActionProps} from './types'
+import type {DocumentActionDescription, DocumentActionProps} from './types'
 import {GetHookCollectionState} from './GetHookCollectionState'
 
 interface Action<Args, Description> {

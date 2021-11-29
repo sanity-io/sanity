@@ -2,8 +2,9 @@
 
 import React, {memo} from 'react'
 import {Box, Flex} from '@sanity/ui'
-import {Marker} from '@sanity/types'
-import {FieldPresence, FormFieldPresence} from '../../presence'
+import type {Marker} from '@sanity/types'
+import type {FormFieldPresence} from '../../presence'
+import {FieldPresence} from '../../presence'
 import {FormFieldHeaderText} from './FormFieldHeaderText'
 
 export interface FormFieldHeaderProps {

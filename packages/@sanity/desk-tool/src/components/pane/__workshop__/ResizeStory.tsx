@@ -4,9 +4,10 @@ import styled from 'styled-components'
 import {usePaneLayout} from '../usePaneLayout'
 import {PaneDivider} from '../PaneDivider'
 import {PaneLayoutContext} from '../PaneLayoutContext'
-import {PaneLayoutContextValue} from '../types'
+import type {PaneLayoutContextValue} from '../types'
 import {PANE_COLLAPSED_WIDTH, PANE_DEFAULT_MIN_WIDTH} from '../constants'
-import {createPaneLayoutController, PaneLayoutState} from '../paneLayoutController'
+import type {PaneLayoutState} from '../paneLayoutController'
+import {createPaneLayoutController} from '../paneLayoutController'
 
 const PaneLayoutRoot = styled(Flex)`
   &[data-resizing] {

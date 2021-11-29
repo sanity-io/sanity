@@ -1,19 +1,19 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import React, {ForwardedRef, forwardRef} from 'react'
+import type {ForwardedRef} from 'react'
+import React, {forwardRef} from 'react'
 import formBuilderConfig from 'config:@sanity/form-builder'
 import ArrayFunctions from 'part:@sanity/form-builder/input/array/functions'
 import {resolveInitialValueForType} from '@sanity/initial-value-templates'
-import {SchemaType} from '@sanity/types'
+import type {SchemaType} from '@sanity/types'
 import resolveUploader from '../uploads/resolveUploader'
-import ArrayInput, {Props} from '../../inputs/arrays/ArrayOfObjectsInput'
-import {
-  ArrayOfPrimitivesInput,
-  Props as PrimitiveArrayInputProps,
-} from '../../inputs/arrays/ArrayOfPrimitivesInput'
+import type {Props} from '../../inputs/arrays/ArrayOfObjectsInput'
+import ArrayInput from '../../inputs/arrays/ArrayOfObjectsInput'
+import type {Props as PrimitiveArrayInputProps} from '../../inputs/arrays/ArrayOfPrimitivesInput'
+import {ArrayOfPrimitivesInput} from '../../inputs/arrays/ArrayOfPrimitivesInput'
 import * as is from '../../utils/is'
-import {FileLike} from '../uploads/types'
+import type {FileLike} from '../uploads/types'
 
 const arrayResolveUploader = (type: SchemaType, file: FileLike) => {
   const SUPPORT_DIRECT_IMAGE_UPLOADS = formBuilderConfig?.images?.directUploads

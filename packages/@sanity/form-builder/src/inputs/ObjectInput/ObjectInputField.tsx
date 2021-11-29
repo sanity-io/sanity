@@ -1,11 +1,12 @@
-import React, {ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
+import type {ForwardedRef} from 'react'
+import React, {forwardRef, useCallback, useMemo} from 'react'
 import {FormFieldSet} from '@sanity/base/components'
 import {resolveTypeName} from '@sanity/util/content'
-import {FormFieldPresence} from '@sanity/base/presence'
-import {Marker, ObjectFieldType, Path, SchemaType} from '@sanity/types'
+import type {FormFieldPresence} from '@sanity/base/presence'
+import type {Marker, ObjectFieldType, Path, SchemaType} from '@sanity/types'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import {InvalidValueInput} from '../InvalidValueInput'
-import PatchEvent from '../../PatchEvent'
+import type PatchEvent from '../../PatchEvent'
 import {ConditionalField} from '../common/ConditionalField'
 
 interface FieldType {

@@ -1,6 +1,7 @@
 import React from 'react'
 import {UserAvatar} from '@sanity/base/components'
-import {Button, MenuItem, Menu, MenuButton, Flex, Box, Text, MenuButtonProps} from '@sanity/ui'
+import type {MenuButtonProps} from '@sanity/ui'
+import {Button, MenuItem, Menu, MenuButton, Flex, Box, Text} from '@sanity/ui'
 import {ChevronDownIcon, LeaveIcon} from '@sanity/icons'
 import styled from 'styled-components'
 

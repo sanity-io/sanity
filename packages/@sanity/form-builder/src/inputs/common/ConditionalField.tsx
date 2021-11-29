@@ -1,5 +1,5 @@
 import React, {forwardRef, useMemo, useRef} from 'react'
-import {
+import type {
   HiddenOption,
   HiddenOptionCallbackContext,
   HiddenOptionCallback,

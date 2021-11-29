@@ -1,5 +1,5 @@
 import {createContext} from 'react'
-import {DeskToolContextValue} from './types'
+import type {DeskToolContextValue} from './types'
 
 /**
  * @internal

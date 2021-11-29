@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {Box, rem, Text} from '@sanity/ui'
 import styled from 'styled-components'
-import {FromToIndex, Annotation, FieldChangeNode} from '../../types'
+import type {FromToIndex, Annotation, FieldChangeNode} from '../../types'
 import {getAnnotationAtPath} from '../annotations'
 import {DiffCard} from './DiffCard'
 

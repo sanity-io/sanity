@@ -3,7 +3,8 @@
 
 import classNames from 'classnames'
 import styles from 'part:@sanity/components/buttons/button-grid-style'
-import React, {FunctionComponent} from 'react'
+import type {FunctionComponent} from 'react'
+import React from 'react'
 import {childrenToElementArray} from '../helpers'
 
 interface ButtonGridProps extends React.HTMLProps<HTMLDivElement> {

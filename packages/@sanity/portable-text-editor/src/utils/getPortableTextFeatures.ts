@@ -1,5 +1,5 @@
-import {PortableTextFeatures} from '../types/portableText'
-import {PortableTextType, Type} from '../types/schema'
+import type {PortableTextFeatures} from '../types/portableText'
+import type {PortableTextType, Type} from '../types/schema'
 
 export function getPortableTextFeatures(portabletextType: PortableTextType): PortableTextFeatures {
   if (!portabletextType) {

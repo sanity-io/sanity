@@ -1,4 +1,4 @@
-import {Node} from './types'
+import type {Node} from './types'
 import {debug} from './utils/debug'
 import arrayify from './utils/arrayify'
 

@@ -1,5 +1,5 @@
 import {first} from 'rxjs/operators'
-import {Grant} from './types'
+import type {Grant} from './types'
 import * as exampleGrants from './debug/exampleGrants'
 
 interface TestOptions {

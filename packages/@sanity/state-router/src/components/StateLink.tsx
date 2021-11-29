@@ -1,4 +1,5 @@
-import React, {ForwardedRef, forwardRef, useContext} from 'react'
+import type {ForwardedRef} from 'react'
+import React, {forwardRef, useContext} from 'react'
 import {RouterContext} from '../RouterContext'
 import Link from './Link'
 

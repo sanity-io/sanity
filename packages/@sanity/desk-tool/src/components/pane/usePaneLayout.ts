@@ -1,6 +1,6 @@
 import {useContext} from 'react'
 import {PaneLayoutContext} from './PaneLayoutContext'
-import {PaneLayoutContextValue} from './types'
+import type {PaneLayoutContextValue} from './types'
 
 /**
  * @beta This API will change. DO NOT USE IN PRODUCTION.

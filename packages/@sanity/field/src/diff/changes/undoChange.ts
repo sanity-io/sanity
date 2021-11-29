@@ -1,4 +1,5 @@
-import {isIndexSegment, isKeyedObject, isKeySegment, isTypedObject, Path} from '@sanity/types'
+import type {Path} from '@sanity/types'
+import {isIndexSegment, isKeyedObject, isKeySegment, isTypedObject} from '@sanity/types'
 import {diffItem} from 'sanity-diff-patch'
 import {
   findIndex,
@@ -7,7 +8,7 @@ import {
   isEmptyObject,
   pathToString,
 } from '../../paths'
-import {
+import type {
   ArrayDiff,
   ChangeNode,
   Diff,

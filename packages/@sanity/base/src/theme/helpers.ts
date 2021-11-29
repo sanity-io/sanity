@@ -1,6 +1,6 @@
 import {parseColor, rgbToHex, screen, multiply} from '@sanity/ui'
 import {getLuminance, mix, parseToRgb, rgb} from 'polished'
-import {Tints} from './types'
+import type {Tints} from './types'
 
 /**
  * @internal

@@ -1,4 +1,4 @@
-import {DiffComponentResolver} from '@sanity/field/diff'
+import type {DiffComponentResolver} from '@sanity/field/diff'
 import {GeopointFieldDiff} from './GeopointFieldDiff'
 import {GeopointArrayDiff} from './GeopointArrayDiff'
 

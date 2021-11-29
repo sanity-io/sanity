@@ -1,4 +1,4 @@
-import {LatLng} from '../types'
+import type {LatLng} from '../types'
 
 export function latLngAreEqual(
   latLng1: LatLng | google.maps.LatLng,

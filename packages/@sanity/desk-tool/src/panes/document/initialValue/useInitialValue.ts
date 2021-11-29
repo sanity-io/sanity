@@ -1,9 +1,9 @@
 import {useEffect, useMemo, useState} from 'react'
-import {DocumentPaneNode} from '../../../types'
+import type {DocumentPaneNode} from '../../../types'
 import {usePaneRouter} from '../../../contexts/paneRouter'
 import {useUnique} from '../../../utils/useUnique'
 import {getInitialValueObservable} from './getInitialValue'
-import {InitialValueState} from './types'
+import type {InitialValueState} from './types'
 
 /**
  * @internal

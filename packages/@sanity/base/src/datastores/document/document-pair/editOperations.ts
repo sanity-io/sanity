@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import {concat, merge, Observable, of, EMPTY} from 'rxjs'
+import type {Observable} from 'rxjs'
+import {concat, merge, of, EMPTY} from 'rxjs'
 import {map, publishReplay, refCount, mergeMapTo} from 'rxjs/operators'
-import {IdPair} from '../types'
+import type {IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
-import {createOperationsAPI, GUARDED, OperationsAPI} from './operations'
+import type {OperationsAPI} from './operations'
+import {createOperationsAPI, GUARDED} from './operations'
 import {operationArgs} from './operationArgs'
 import {operationEvents} from './operationEvents'
 

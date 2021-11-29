@@ -1,6 +1,7 @@
-import {Observable, of as observableOf, from as observableFrom, Subscribable} from 'rxjs'
+import type {Observable, Subscribable} from 'rxjs'
+import {of as observableOf, from as observableFrom} from 'rxjs'
 import {switchMap} from 'rxjs/operators'
-import {PaneNode, RouterPaneSiblingContext, UnresolvedPaneNode} from '../types'
+import type {PaneNode, RouterPaneSiblingContext, UnresolvedPaneNode} from '../types'
 import {isRecord} from './isRecord'
 import {PaneResolutionError} from './PaneResolutionError'
 

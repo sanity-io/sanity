@@ -1,18 +1,16 @@
 /* eslint-disable react/prop-types */
 
 import React, {forwardRef, useCallback} from 'react'
-import {
-  SortableContainer,
+import type {
   // eslint-disable-next-line import/named
   SortableContainerProps,
-  SortableElement,
-  SortableHandle,
   // eslint-disable-next-line import/named
   SortEvent,
   // eslint-disable-next-line import/named
   SortStart,
 } from 'react-sortable-hoc'
-import {
+import {SortableContainer, SortableElement, SortableHandle} from 'react-sortable-hoc'
+import type {
   DragHandleComponent,
   ItemComponent,
   ListComponent,

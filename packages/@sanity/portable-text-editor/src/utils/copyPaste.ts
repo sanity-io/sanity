@@ -1,7 +1,7 @@
 import {Range, Editor, Node as SlateNode} from 'slate'
 import {ReactEditor} from '@sanity/slate-react'
 import {fromSlateValue} from '../utils/values'
-import {PortableTextFeatures} from '../types/portableText'
+import type {PortableTextFeatures} from '../types/portableText'
 import {KEY_TO_VALUE_ELEMENT} from './weakMaps'
 
 type DOMNode = globalThis.Node

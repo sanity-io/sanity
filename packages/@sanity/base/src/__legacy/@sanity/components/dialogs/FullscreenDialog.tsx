@@ -13,7 +13,7 @@ import styles from 'part:@sanity/components/dialogs/fullscreen-style'
 import React, {useCallback, useEffect, useState} from 'react'
 import {LegacyLayerProvider, ScrollContainer} from '../../../../components'
 import {useClickOutside} from '../hooks'
-import {DialogAction} from './types'
+import type {DialogAction} from './types'
 
 interface FullScreenDialogProps {
   cardClassName?: string

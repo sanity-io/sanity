@@ -3,7 +3,7 @@ import {format, parse} from '@sanity/util/legacyDateFormat'
 import PatchEvent, {set, unset} from '../../PatchEvent'
 
 import {CommonDateTimeInput} from './CommonDateTimeInput'
-import {CommonProps} from './types'
+import type {CommonProps} from './types'
 
 type ParsedOptions = {
   dateFormat: string

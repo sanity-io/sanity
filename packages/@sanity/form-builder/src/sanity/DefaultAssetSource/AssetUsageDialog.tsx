@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import {TrashIcon} from '@sanity/icons'
 import {Box, Dialog, Grid, Button, Stack} from '@sanity/ui'
-import {Asset as AssetType, SanityDocument} from '@sanity/types'
+import type {Asset as AssetType, SanityDocument} from '@sanity/types'
 import {WithReferringDocuments} from '../../legacyParts'
 
 import {SpinnerWithText} from '../../components/SpinnerWithText'

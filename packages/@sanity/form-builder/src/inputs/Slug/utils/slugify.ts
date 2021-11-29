@@ -1,4 +1,4 @@
-import {SlugSchemaType} from '@sanity/types'
+import type {SlugSchemaType} from '@sanity/types'
 import speakingurl from 'speakingurl'
 
 // Fallback slugify function if not defined in field options

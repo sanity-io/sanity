@@ -1,9 +1,9 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import {ComponentType} from 'react'
+import type {ComponentType} from 'react'
 import diffResolvers from 'all:part:@sanity/base/diff-resolver'
-import {
+import type {
   ArraySchemaType,
   Diff,
   DiffComponent,

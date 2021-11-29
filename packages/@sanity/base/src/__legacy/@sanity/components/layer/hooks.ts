@@ -1,5 +1,6 @@
 import {useContext} from 'react'
-import {LayerContext, LayerContextValue} from './LayerContext'
+import type {LayerContextValue} from './LayerContext'
+import {LayerContext} from './LayerContext'
 
 const DEFAULT_LAYER_VALUE: LayerContextValue = {
   depth: 0,

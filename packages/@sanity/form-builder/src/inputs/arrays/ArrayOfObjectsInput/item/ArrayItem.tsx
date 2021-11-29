@@ -1,12 +1,13 @@
 /* eslint-disable import/no-unresolved */
 
 import {ChangeIndicatorScope, ContextProvidedChangeIndicator} from '@sanity/base/change-indicators'
-import {ArraySchemaType, isValidationMarker, Marker, Path} from '@sanity/types'
-import {FormFieldPresence} from '@sanity/base/presence'
+import type {ArraySchemaType, Marker, Path} from '@sanity/types'
+import {isValidationMarker} from '@sanity/types'
+import type {FormFieldPresence} from '@sanity/base/presence'
 import React, {memo, useCallback, useMemo, useRef} from 'react'
 import {FOCUS_TERMINATOR, pathFor, startsWith} from '@sanity/util/paths'
-import PatchEvent from '../../../../PatchEvent'
-import {ArrayMember} from '../types'
+import type PatchEvent from '../../../../PatchEvent'
+import type {ArrayMember} from '../types'
 import {EMPTY_ARRAY} from '../../../../utils/empty'
 import {hasFocusWithinPath} from '../../../../utils/focusUtils'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'

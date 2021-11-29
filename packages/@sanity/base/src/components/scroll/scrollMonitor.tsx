@@ -1,6 +1,6 @@
 import React from 'react'
 import {useOnScroll} from './hooks'
-import {ScrollEventHandler} from './types'
+import type {ScrollEventHandler} from './types'
 
 interface ScrollMonitorProps {
   onScroll: ScrollEventHandler

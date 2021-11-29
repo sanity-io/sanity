@@ -8,7 +8,7 @@ import Preview from '../../../../Preview'
 import {ConfirmDeleteButton} from '../ConfirmDeleteButton'
 import {DragHandle} from '../../common/DragHandle'
 import {ItemWithMissingType} from './ItemWithMissingType'
-import {ItemLayoutProps} from './ItemLayoutProps'
+import type {ItemLayoutProps} from './ItemLayoutProps'
 
 const dragHandle = <DragHandle paddingX={2} paddingY={3} />
 

@@ -1,6 +1,7 @@
 /* eslint-disable import/named */
 
-import styled, {DefaultTheme, StyledComponent} from 'styled-components'
+import type {DefaultTheme, StyledComponent} from 'styled-components'
+import styled from 'styled-components'
 
 export const AssetBackground: StyledComponent<'div', DefaultTheme> = styled.div`
   display: flex;

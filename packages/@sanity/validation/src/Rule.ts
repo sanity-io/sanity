@@ -1,4 +1,4 @@
-import {
+import type {
   SchemaType,
   Rule as IRule,
   RuleClass,

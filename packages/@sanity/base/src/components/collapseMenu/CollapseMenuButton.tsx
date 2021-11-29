@@ -1,5 +1,6 @@
 import React from 'react'
-import {Button, ButtonProps, ButtonTone, MenuItemProps, TooltipProps} from '@sanity/ui'
+import type {ButtonProps, ButtonTone, MenuItemProps, TooltipProps} from '@sanity/ui'
+import {Button} from '@sanity/ui'
 
 export type CollapseMenuButtonProps = Omit<ButtonProps, 'selected' | 'text' | 'icon' | 'iconRight'>
 

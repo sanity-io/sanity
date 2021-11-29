@@ -1,18 +1,15 @@
 import {getParameterlessTemplatesBySchemaType} from '@sanity/initial-value-templates'
-import {SchemaType, getDefaultSchema} from './parts/Schema'
+import type {SchemaType} from './parts/Schema'
+import {getDefaultSchema} from './parts/Schema'
 import {isActionEnabled} from './parts/documentActionUtils'
 import {structureClient} from './parts/Client'
-import {SortItem} from './Sort'
+import type {SortItem} from './Sort'
 import {SerializeError, HELP_URL} from './SerializeError'
-import {SerializeOptions, Child} from './StructureNodes'
-import {ChildResolver, ChildResolverOptions, ItemChild} from './ChildResolver'
-import {InitialValueTemplateItem} from './InitialValueTemplateItem'
-import {
-  GenericListBuilder,
-  BuildableGenericList,
-  GenericList,
-  GenericListInput,
-} from './GenericList'
+import type {SerializeOptions, Child} from './StructureNodes'
+import type {ChildResolver, ChildResolverOptions, ItemChild} from './ChildResolver'
+import type {InitialValueTemplateItem} from './InitialValueTemplateItem'
+import type {BuildableGenericList, GenericList, GenericListInput} from './GenericList'
+import {GenericListBuilder} from './GenericList'
 import {DocumentBuilder, getDefaultDocumentNode} from './Document'
 
 const resolveTypeForDocument = (id: string): Promise<string | undefined> => {

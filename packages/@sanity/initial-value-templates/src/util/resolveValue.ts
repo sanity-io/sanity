@@ -1,4 +1,4 @@
-import {InitialValueParams, InitialValueProperty, InitialValueResolver} from '@sanity/types'
+import type {InitialValueParams, InitialValueProperty, InitialValueResolver} from '@sanity/types'
 
 // returns the "resolved" value from an initial value property (e.g. type.initialValue)
 export async function resolveValue<InitialValue>(

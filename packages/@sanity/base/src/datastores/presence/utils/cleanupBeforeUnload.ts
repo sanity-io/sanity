@@ -1,4 +1,5 @@
-import {MonoTypeOperatorFunction, Observable} from 'rxjs'
+import type {MonoTypeOperatorFunction} from 'rxjs'
+import {Observable} from 'rxjs'
 
 export function doBeforeUnload<T>(cleanup): MonoTypeOperatorFunction<T> {
   return (input$) =>

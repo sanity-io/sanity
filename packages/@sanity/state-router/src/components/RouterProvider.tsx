@@ -3,9 +3,9 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {unstable_batchedUpdates as batchedUpdates} from 'react-dom'
 import pubsub from 'nano-pubsub'
-import {Router} from '../types'
+import type {Router} from '../types'
 import {RouterContext} from '../RouterContext'
-import {
+import type {
   InternalRouter,
   NavigateOptions,
   RouterProviderContext,

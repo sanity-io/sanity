@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import {IntentButton, InsufficientPermissionsMessage} from '@sanity/base/components'
-import {NewDocumentOption} from '@sanity/base/_internal'
+import type {NewDocumentOption} from '@sanity/base/_internal'
 import {Box, Flex, Stack, Tooltip, Text, Button} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'

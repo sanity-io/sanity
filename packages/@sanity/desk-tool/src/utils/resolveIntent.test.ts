@@ -1,5 +1,5 @@
 import {SerializeError} from '@sanity/structure'
-import {PaneNode, UnresolvedPaneNode} from '../types'
+import type {PaneNode, UnresolvedPaneNode} from '../types'
 import S from '../structure-builder'
 import {resolveIntent} from './resolveIntent'
 import {PaneResolutionError} from './PaneResolutionError'

@@ -1,6 +1,6 @@
 import {merge} from 'rxjs'
 import {switchMap} from 'rxjs/operators'
-import {IdPair} from '../types'
+import type {IdPair} from '../types'
 import {memoizedPair} from './memoizedPair'
 
 // A stream of all events related to either published or draft, each event comes with a 'target'

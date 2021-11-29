@@ -1,4 +1,4 @@
-import {WorkshopScope} from '@sanity/ui-workshop'
+import type {WorkshopScope} from '@sanity/ui-workshop'
 
 const scopes: WorkshopScope[]
 

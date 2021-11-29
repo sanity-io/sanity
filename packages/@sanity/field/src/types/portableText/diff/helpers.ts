@@ -1,16 +1,16 @@
 import {flatten, isEqual, orderBy} from 'lodash'
-import {Block, ObjectField, SchemaType} from '@sanity/types'
+import type {Block, ObjectField, SchemaType} from '@sanity/types'
 import {
   diff_match_patch as DiffMatchPatch,
   DIFF_DELETE,
   DIFF_EQUAL,
   DIFF_INSERT,
 } from 'diff-match-patch'
-import {ArrayDiff, ObjectDiff, StringDiffSegment} from '../../../diff'
-import {ObjectSchemaType, ArraySchemaType} from '../../../types'
+import type {ArrayDiff, ObjectDiff, StringDiffSegment} from '../../../diff'
+import type {ObjectSchemaType, ArraySchemaType} from '../../../types'
 import * as TextSymbols from './symbols'
 
-import {
+import type {
   InlineSymbolMap,
   MarkSymbolMap,
   PortableTextBlock,

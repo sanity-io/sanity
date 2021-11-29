@@ -1,5 +1,5 @@
-import {Ordering} from '../Sort'
-import {FixMe} from '../types'
+import type {Ordering} from '../Sort'
+import type {FixMe} from '../types'
 import getDefaultModule from './getDefaultModule'
 
 interface Schema {

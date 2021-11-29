@@ -3,7 +3,7 @@
 
 import cssCustomProperties from 'sanity:css-custom-properties'
 import {defaults} from './defaults'
-import {ZIndexContextValue} from './types'
+import type {ZIndexContextValue} from './types'
 
 /**
  * @internal

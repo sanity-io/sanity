@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import {SanityDocument} from '@sanity/types'
+import type {SanityDocument} from '@sanity/types'
 
 function getDisplayName(component) {
   return component.displayName || component.name || '<Anonymous>'

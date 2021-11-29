@@ -10,7 +10,7 @@ import {
 } from '../constants'
 import {arrowPath, generateConnectorPath} from './connectorPath'
 import {mapConnectorToLine} from './mapConnectorToLine'
-import {Rect} from './types'
+import type {Rect} from './types'
 
 import {DebugRect, ConnectorPath, InteractivePath, RightBarWrapper} from './Connector.styled'
 

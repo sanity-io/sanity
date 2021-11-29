@@ -4,10 +4,8 @@
 import React, {memo} from 'react'
 import {Box, Dialog, Grid, Text} from '@sanity/ui'
 import {LegacyLayerProvider} from '@sanity/base/components'
-import {
-  unstable_useTemplatePermissions as useTemplatePermissions,
-  useCurrentUser,
-} from '@sanity/base/hooks'
+import type {unstable_useTemplatePermissions as useTemplatePermissions} from '@sanity/base/hooks'
+import {useCurrentUser} from '@sanity/base/hooks'
 import {getNewDocumentOptions} from '@sanity/base/_internal'
 import styled from 'styled-components'
 import {CreateDocumentItem} from './CreateDocumentItem'

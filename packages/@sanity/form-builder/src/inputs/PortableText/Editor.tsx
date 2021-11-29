@@ -1,7 +1,6 @@
-import {
+import type {
   HotkeyOptions,
   PortableTextBlock,
-  PortableTextEditable,
   RenderAnnotationFunction,
   RenderBlockFunction,
   RenderChildFunction,
@@ -9,10 +8,13 @@ import {
   EditorSelection,
   OnPasteFn,
   OnCopyFn,
+} from '@sanity/portable-text-editor'
+import {
+  PortableTextEditable,
   PortableTextEditor,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
-import {Path} from '@sanity/types'
+import type {Path} from '@sanity/types'
 import {BoundaryElementProvider, useBoundaryElement, useLayer} from '@sanity/ui'
 import React, {useMemo, useEffect} from 'react'
 import {createScrollSelectionIntoView} from './utils/scrollSelectionIntoView'

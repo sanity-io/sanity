@@ -3,21 +3,20 @@
 
 import Preview from 'part:@sanity/base/preview'
 import {useUserColorManager} from '@sanity/base/user-color'
-import {isKeyedObject, TypedObject} from '@sanity/types'
+import type {TypedObject} from '@sanity/types'
+import {isKeyedObject} from '@sanity/types'
 import React from 'react'
 import {Box, Flex} from '@sanity/ui'
-import {
+import type {
   Annotation,
   ArrayDiff,
   ArraySchemaType,
   Diff,
   DiffComponent,
-  DiffTooltip,
-  FromToArrow,
-  getAnnotationColor,
   ItemDiff,
   SchemaType,
 } from '../../../diff'
+import {DiffTooltip, FromToArrow, getAnnotationColor} from '../../../diff'
 import {Checkbox} from '../../boolean/preview'
 import {isEqual} from '../util/arrayUtils'
 

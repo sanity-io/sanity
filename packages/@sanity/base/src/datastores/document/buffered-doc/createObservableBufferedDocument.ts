@@ -1,5 +1,6 @@
 import {BufferedDocument, Mutation} from '@sanity/mutator'
-import {BehaviorSubject, EMPTY, merge, Observable, Subject} from 'rxjs'
+import type {Observable} from 'rxjs'
+import {BehaviorSubject, EMPTY, merge, Subject} from 'rxjs'
 import {
   distinctUntilChanged,
   filter,
@@ -14,8 +15,8 @@ import {
   tap,
   withLatestFrom,
 } from 'rxjs/operators'
-import {ListenerEvent, MutationEvent} from '../getPairListener'
-import {
+import type {ListenerEvent, MutationEvent} from '../getPairListener'
+import type {
   CommitFunction,
   DocumentMutationEvent,
   DocumentRebaseEvent,

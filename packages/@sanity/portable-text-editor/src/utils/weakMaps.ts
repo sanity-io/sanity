@@ -1,4 +1,4 @@
-import {Editor, Element, Range} from 'slate'
+import type {Editor, Element, Range} from 'slate'
 
 /**
  * Dragging

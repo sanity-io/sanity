@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react'
-import {Reference} from '@sanity/types'
+import type {Reference} from '@sanity/types'
 import {tap} from 'rxjs/operators'
-import {Observable} from 'rxjs'
+import type {Observable} from 'rxjs'
 
 type SnapshotState = {
   isLoading: boolean

@@ -2,7 +2,7 @@ import React from 'react'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import styled from 'styled-components'
 import {IntentButton} from '../IntentButton'
-import {MediaDimensions} from './types'
+import type {MediaDimensions} from './types'
 
 interface CreateDocumentPreviewProps {
   title?: React.ReactNode | React.FunctionComponent<unknown>

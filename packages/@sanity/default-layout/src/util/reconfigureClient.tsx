@@ -2,7 +2,8 @@
 ///<reference types="@sanity/types/parts" />
 
 import client from 'part:@sanity/base/client'
-import {CONFIGURED_SPACES, ApiConfig} from './spaces'
+import type {ApiConfig} from './spaces'
+import {CONFIGURED_SPACES} from './spaces'
 
 type StudioClient = {
   config(newConfig?: ApiConfig, silenceConfigWarning?: boolean): unknown

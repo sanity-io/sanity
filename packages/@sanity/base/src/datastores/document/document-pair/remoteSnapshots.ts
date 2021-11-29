@@ -1,6 +1,6 @@
 import {merge} from 'rxjs'
 import {switchMap} from 'rxjs/operators'
-import {IdPair} from '../types'
+import type {IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {memoizedPair} from './memoizedPair'
 

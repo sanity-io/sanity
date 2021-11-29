@@ -1,7 +1,7 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import {SanityDocument} from '@sanity/types'
+import type {SanityDocument} from '@sanity/types'
 import React from 'react'
 import {WithReferringDocuments} from 'part:@sanity/base/with-referring-documents'
 

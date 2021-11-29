@@ -4,7 +4,7 @@ import InsertPatch from './InsertPatch'
 import SetIfMissingPatch from './SetIfMissingPatch'
 import UnsetPatch from './UnsetPatch'
 import DiffMatchPatch from './DiffMatchPatch'
-import {Patch} from './Patcher'
+import type {Patch} from './Patcher'
 
 // Parses a Gradient patch into our own personal patch implementations
 export default function parse(patch: any): Patch[] {

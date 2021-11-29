@@ -1,12 +1,11 @@
+import type {HotkeyOptions, Type} from '@sanity/portable-text-editor'
 import {
-  HotkeyOptions,
   usePortableTextEditor,
   usePortableTextEditorSelection,
-  Type,
   PortableTextEditor,
 } from '@sanity/portable-text-editor'
 import React, {memo, useCallback, useMemo, useState} from 'react'
-import {Path, SchemaType} from '@sanity/types'
+import type {Path, SchemaType} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {resolveInitialValueForType} from '@sanity/initial-value-templates'
 import {Box, Button, Flex, Hotkeys, Text, Tooltip, useElementRect, useToast} from '@sanity/ui'
@@ -17,7 +16,7 @@ import {BlockStyleSelect} from './BlockStyleSelect'
 import {InsertMenu} from './InsertMenu'
 import {getBlockStyles, getInsertMenuItems} from './helpers'
 import {useActionGroups, useFeatures} from './hooks'
-import {BlockItem, BlockStyleItem, PTEToolbarActionGroup} from './types'
+import type {BlockItem, BlockStyleItem, PTEToolbarActionGroup} from './types'
 
 interface ToolbarProps {
   hotkeys: HotkeyOptions

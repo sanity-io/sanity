@@ -1,14 +1,6 @@
 import React, {useState, useRef, useMemo, useEffect, useCallback} from 'react'
-import {
-  Box,
-  Button,
-  Inline,
-  Popover,
-  PopoverProps,
-  Text,
-  useGlobalKeyDown,
-  useTheme,
-} from '@sanity/ui'
+import type {PopoverProps} from '@sanity/ui'
+import {Box, Button, Inline, Popover, Text, useGlobalKeyDown, useTheme} from '@sanity/ui'
 import styled from 'styled-components'
 import {EditIcon, TrashIcon} from '@sanity/icons'
 

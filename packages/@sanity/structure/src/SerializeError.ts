@@ -1,4 +1,4 @@
-import {SerializePath} from './StructureNodes'
+import type {SerializePath} from './StructureNodes'
 
 export class SerializeError extends Error {
   public readonly path: SerializePath

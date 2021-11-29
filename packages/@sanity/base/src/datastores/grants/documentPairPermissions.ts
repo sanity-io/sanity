@@ -1,11 +1,12 @@
 /* eslint-disable max-nested-callbacks */
-import {SanityDocument, SchemaType} from '@sanity/types'
+import type {SanityDocument, SchemaType} from '@sanity/types'
 import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import {Observable, combineLatest, of} from 'rxjs'
+import type {Observable} from 'rxjs'
+import {combineLatest, of} from 'rxjs'
 import {switchMap, map} from 'rxjs/operators'
 import {createHookFromObservableFactory} from '../../util/createHookFromObservableFactory'
 import {snapshotPair} from '../document/document-pair/snapshotPair'
-import {PermissionCheckResult} from './types'
+import type {PermissionCheckResult} from './types'
 import grantsStore from './grantsStore'
 
 const {checkDocumentPermission} = grantsStore

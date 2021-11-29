@@ -1,7 +1,8 @@
-import {IdPair} from '../types'
+import type {IdPair} from '../types'
 import {Observable} from 'rxjs'
 import {memoize} from '../utils/createMemoizer'
-import {checkoutPair, Pair} from './checkoutPair'
+import type {Pair} from './checkoutPair'
+import {checkoutPair} from './checkoutPair'
 import {publishReplay, refCount} from 'rxjs/operators'
 
 export const memoizedPair = memoize(

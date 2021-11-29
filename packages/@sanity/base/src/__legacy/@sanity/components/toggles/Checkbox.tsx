@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useRef} from 'react'
 import {useId} from '@reach/auto-id'
-import {Marker} from '@sanity/types'
+import type {Marker} from '@sanity/types'
 import styles from './Checkbox.css'
 import sharedStyles from './shared.css'
 

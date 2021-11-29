@@ -1,7 +1,7 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import {Marker, Path} from '@sanity/types'
+import type {Marker, Path} from '@sanity/types'
 import classNames from 'classnames'
 import React, {useRef, useEffect, useCallback} from 'react'
 import ErrorOutlineIcon from 'part:@sanity/base/error-outline-icon'

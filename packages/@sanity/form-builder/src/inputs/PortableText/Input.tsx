@@ -1,29 +1,32 @@
-import {Subject} from 'rxjs'
+import type {Subject} from 'rxjs'
 import React, {useEffect, useState, useMemo, useCallback, useRef} from 'react'
-import {FormFieldPresence} from '@sanity/base/presence'
-import {
+import type {FormFieldPresence} from '@sanity/base/presence'
+import type {
   OnCopyFn,
   OnPasteFn,
   Patch as EditorPatch,
   PortableTextBlock,
-  PortableTextEditor,
-  usePortableTextEditor,
-  usePortableTextEditorSelection,
   HotkeyOptions,
   RenderAttributes,
   Type,
 } from '@sanity/portable-text-editor'
-import {Path, isKeySegment, Marker, isKeyedObject} from '@sanity/types'
+import {
+  PortableTextEditor,
+  usePortableTextEditor,
+  usePortableTextEditorSelection,
+} from '@sanity/portable-text-editor'
+import type {Path, Marker} from '@sanity/types'
+import {isKeySegment, isKeyedObject} from '@sanity/types'
 import {Portal, PortalProvider, Text, usePortal} from '@sanity/ui'
 import {isEqual} from 'lodash'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/components'
 import ActivateOnFocus from '../../components/ActivateOnFocus/ActivateOnFocus'
-import PatchEvent from '../../PatchEvent'
+import type PatchEvent from '../../PatchEvent'
 import {BlockObject} from './object/BlockObject'
 import {InlineObject} from './object/InlineObject'
 import {EditObject} from './object/EditObject'
 import {Annotation, TextBlock} from './text'
-import {RenderBlockActions, RenderCustomMarkers, ObjectEditData} from './types'
+import type {RenderBlockActions, RenderCustomMarkers, ObjectEditData} from './types'
 import {Editor} from './Editor'
 import {ExpandedLayer, Root} from './Input.styles'
 

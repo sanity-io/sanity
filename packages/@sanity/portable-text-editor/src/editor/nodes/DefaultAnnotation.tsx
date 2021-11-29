@@ -1,5 +1,5 @@
 import React, {useCallback} from 'react'
-import {PortableTextBlock} from '../../types/portableText'
+import type {PortableTextBlock} from '../../types/portableText'
 
 type Props = {
   annotation: PortableTextBlock

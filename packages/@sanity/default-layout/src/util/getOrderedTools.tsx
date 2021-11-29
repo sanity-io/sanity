@@ -3,7 +3,7 @@
 
 import pluginConfig from 'config:@sanity/default-layout'
 import tools from 'all:part:@sanity/base/tool'
-import {Tool} from '../types'
+import type {Tool} from '../types'
 
 export default function getOrderedTools(): Tool[] {
   const config = pluginConfig.toolSwitcher || {}

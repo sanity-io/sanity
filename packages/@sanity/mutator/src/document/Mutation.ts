@@ -1,7 +1,7 @@
 import {Patcher} from '../patch'
 import luid from './luid'
 import debug from './debug'
-import {Doc, Mut} from './types'
+import type {Doc, Mut} from './types'
 
 // A mutation describing a number of operations on a single document
 // This should be considered an immutable structure. Mutations are compiled
@@ -13,7 +13,7 @@ export type MutationParams = {
   previousRev?: string
   resultRev?: string
   mutations: Array<Mut>
-  timestamp?: String
+  timestamp?: string
   effects?: {apply: unknown; revert: unknown}
 }
 

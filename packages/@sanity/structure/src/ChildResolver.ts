@@ -1,5 +1,5 @@
-import {CollectionBuilder, Collection, SerializePath, SerializeOptions} from './StructureNodes'
-import {FixMe} from './types'
+import type {CollectionBuilder, Collection, SerializePath, SerializeOptions} from './StructureNodes'
+import type {FixMe} from './types'
 
 export interface ChildResolverOptions {
   index: number

@@ -5,7 +5,7 @@ import classNames from 'classnames'
 import React from 'react'
 import {IntentLink} from '../../../../router'
 import styles from 'part:@sanity/components/menus/default-style'
-import {MenuItem as MenuItemType} from './types'
+import type {MenuItem as MenuItemType} from './types'
 
 interface DefaultMenuItemProps {
   isFocused?: boolean

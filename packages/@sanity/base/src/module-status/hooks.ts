@@ -1,6 +1,7 @@
-import {LoadableState, useLoadable} from '../util/useLoadable'
+import type {LoadableState} from '../util/useLoadable'
+import {useLoadable} from '../util/useLoadable'
 import {checkModuleStatus} from './moduleStatus'
-import {CheckModuleVersionsOptions, ModuleStatusResponse} from './types'
+import type {CheckModuleVersionsOptions, ModuleStatusResponse} from './types'
 
 /**
  * Retrieve whether or not the installed (or passed) `@sanity`-modules are up

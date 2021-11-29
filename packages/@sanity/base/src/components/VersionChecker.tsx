@@ -2,7 +2,8 @@ import React from 'react'
 import semverCompare from 'semver-compare'
 import FullscreenMessageDialog from '../__legacy/@sanity/components/dialogs/FullscreenMessageDialog'
 import {sanityModuleVersions} from '../legacyParts'
-import {checkModuleStatus, useModuleStatus, VersionsResponse} from '../module-status'
+import type {VersionsResponse} from '../module-status'
+import {checkModuleStatus, useModuleStatus} from '../module-status'
 
 /**
  * @note This _shouldn't_ be in use anywhere, but lets keep it around until we can be sure

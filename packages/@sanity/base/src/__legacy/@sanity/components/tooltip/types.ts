@@ -1,4 +1,4 @@
-import {Placement} from '../types'
+import type {Placement} from '../types'
 
 export type TooltipPlacement = Placement
 

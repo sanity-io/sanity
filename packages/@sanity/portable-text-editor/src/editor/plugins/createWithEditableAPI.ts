@@ -1,23 +1,19 @@
-import {
-  Text,
-  Range,
-  Transforms,
-  Editor,
-  Path as SlatePath,
-  Element as SlateElement,
-  Operation,
-  Node,
-} from 'slate'
+import type {Element as SlateElement, Operation, Node} from 'slate'
+import {Text, Range, Transforms, Editor, Path as SlatePath} from 'slate'
 import {isEqual} from 'lodash'
-import {Path} from '@sanity/types'
+import type {Path} from '@sanity/types'
 import {ReactEditor} from '@sanity/slate-react'
-import {DOMNode} from '@sanity/slate-react/dist/utils/dom'
-import {Type} from '../../types/schema'
-import {PortableTextBlock, PortableTextChild, PortableTextFeatures} from '../../types/portableText'
-import {EditorSelection, PortableTextSlateEditor} from '../../types/editor'
+import type {DOMNode} from '@sanity/slate-react/dist/utils/dom'
+import type {Type} from '../../types/schema'
+import type {
+  PortableTextBlock,
+  PortableTextChild,
+  PortableTextFeatures,
+} from '../../types/portableText'
+import type {EditorSelection, PortableTextSlateEditor} from '../../types/editor'
 import {toSlateValue, fromSlateValue, isEqualToEmptyEditor} from '../../utils/values'
 import {toSlateRange, toPortableTextRange} from '../../utils/ranges'
-import {PortableTextEditor} from '../PortableTextEditor'
+import type {PortableTextEditor} from '../PortableTextEditor'
 
 import {debugWithName} from '../../utils/debug'
 import {KEY_TO_VALUE_ELEMENT} from '../../utils/weakMaps'

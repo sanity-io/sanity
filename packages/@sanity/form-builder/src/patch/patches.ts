@@ -1,5 +1,5 @@
-import {Path, PathSegment} from '@sanity/types'
-import {
+import type {Path, PathSegment} from '@sanity/types'
+import type {
   SetIfMissingPatch,
   InsertPatch,
   InsertPosition,

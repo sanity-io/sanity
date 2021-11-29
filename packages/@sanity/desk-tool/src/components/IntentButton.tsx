@@ -1,7 +1,7 @@
 import {IntentLink} from '@sanity/base/router'
 import {Button} from '@sanity/ui'
 import React, {forwardRef, useMemo} from 'react'
-import {PaneMenuItem} from '../types'
+import type {PaneMenuItem} from '../types'
 
 type RouterIntent = NonNullable<PaneMenuItem['intent']>
 

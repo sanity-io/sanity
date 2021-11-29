@@ -1,8 +1,10 @@
-import {Box, BoxProps, Card, Code, Label, Stack} from '@sanity/ui'
+import type {BoxProps} from '@sanity/ui'
+import {Box, Card, Code, Label, Stack} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef, useState} from 'react'
-import styled, {DefaultTheme, StyledComponent} from 'styled-components'
+import type {DefaultTheme, StyledComponent} from 'styled-components'
+import styled from 'styled-components'
 import {pathToString} from '../../paths'
-import {FieldChangeNode} from '../../types'
+import type {FieldChangeNode} from '../../types'
 import {FromToArrow} from './FromToArrow'
 
 interface Props extends BoxProps {

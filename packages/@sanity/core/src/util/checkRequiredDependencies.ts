@@ -1,6 +1,7 @@
 import path from 'path'
 import execa from 'execa'
-import semver, {SemVer} from 'semver'
+import type {SemVer} from 'semver'
+import semver from 'semver'
 import resolveFrom from 'resolve-from'
 import {readJSON, access} from 'fs-extra'
 import oneline from 'oneline'

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {TrackerContext} from './types'
+import type {TrackerContext} from './types'
 
 export type ReporterHook<Payload> = (
   id: string | null,

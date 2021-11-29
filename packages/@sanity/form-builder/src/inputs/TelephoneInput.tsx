@@ -1,10 +1,10 @@
 import React, {useMemo} from 'react'
-import {StringSchemaType} from '@sanity/types'
+import type {StringSchemaType} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {FormField} from '@sanity/base/components'
 import PatchEvent, {set, unset} from '../PatchEvent'
-import {Props} from './types'
+import type {Props} from './types'
 
 const TelephoneInput = React.forwardRef(function TelephoneInput(
   props: Props<string, StringSchemaType>,

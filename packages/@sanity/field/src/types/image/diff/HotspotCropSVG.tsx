@@ -1,6 +1,7 @@
-import {Image, ImageCrop, ImageHotspot} from '@sanity/types'
+import type {Image, ImageCrop, ImageHotspot} from '@sanity/types'
 import React from 'react'
-import {DiffTooltip, ObjectDiff, useDiffAnnotationColor} from '../../../diff'
+import type {ObjectDiff} from '../../../diff'
+import {DiffTooltip, useDiffAnnotationColor} from '../../../diff'
 import {hexToRgba} from './helpers'
 
 interface HotspotCropSVGProps {

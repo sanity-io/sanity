@@ -1,12 +1,6 @@
 import React, {useMemo} from 'react'
-import {
-  Path,
-  SanityDocument,
-  SlugParent,
-  SlugSchemaType,
-  Marker,
-  isValidationErrorMarker,
-} from '@sanity/types'
+import type {Path, SanityDocument, SlugParent, SlugSchemaType, Marker} from '@sanity/types'
+import {isValidationErrorMarker} from '@sanity/types'
 import {ChangeIndicatorCompareValueProvider} from '@sanity/base/change-indicators'
 import * as PathUtils from '@sanity/util/paths'
 import {TextInput, Button, Flex, Box, Card, Stack} from '@sanity/ui'

@@ -1,13 +1,10 @@
-import {
-  PortableTextEditor,
-  PortableTextBlock,
-  usePortableTextEditor,
-} from '@sanity/portable-text-editor'
+import type {PortableTextBlock} from '@sanity/portable-text-editor'
+import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import React, {useCallback, useMemo} from 'react'
 import styled from 'styled-components'
-import PatchEvent from '../../PatchEvent'
+import type PatchEvent from '../../PatchEvent'
 import {createBlockActionPatchFn} from './utils/createBlockActionPatchFn'
-import {RenderBlockActions} from './types'
+import type {RenderBlockActions} from './types'
 
 interface BlockActionsProps {
   block: PortableTextBlock

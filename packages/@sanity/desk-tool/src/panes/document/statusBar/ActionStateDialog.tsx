@@ -1,5 +1,5 @@
 import {useId} from '@reach/auto-id'
-import {DocumentActionDialogProps} from '@sanity/base'
+import type {DocumentActionDialogProps} from '@sanity/base'
 import {Box, Dialog} from '@sanity/ui'
 import React from 'react'
 import {ConfirmDialog} from './dialogs/ConfirmDialog'

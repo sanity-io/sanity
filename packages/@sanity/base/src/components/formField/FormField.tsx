@@ -1,10 +1,11 @@
 /* eslint-disable camelcase */
 
-import {Marker} from '@sanity/types'
+import type {Marker} from '@sanity/types'
 import {Stack} from '@sanity/ui'
 import React, {memo} from 'react'
-import {ChangeIndicator, ChangeIndicatorContextProvidedProps} from '../../change-indicators'
-import {FormFieldPresence} from '../../presence'
+import type {ChangeIndicatorContextProvidedProps} from '../../change-indicators'
+import {ChangeIndicator} from '../../change-indicators'
+import type {FormFieldPresence} from '../../presence'
 import {FormFieldHeader} from './FormFieldHeader'
 
 export interface FormFieldProps {

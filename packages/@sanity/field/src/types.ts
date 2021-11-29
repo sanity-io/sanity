@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import {
+import type {
   Path,
   Block,
   Reference,
@@ -13,8 +13,8 @@ import {
   StringSchemaType as BaseStringSchemaType,
   ObjectFieldType,
 } from '@sanity/types'
-import {ComponentType} from 'react'
-import {
+import type {ComponentType} from 'react'
+import type {
   // Base diffs
   ArrayDiff as AgnosticArrayDiff,
   BooleanDiff as AgnosticBooleanDiff,
@@ -29,7 +29,7 @@ import {
   StringSegmentChanged as AgnosticStringSegmentChanged,
   StringSegmentUnchanged as AgnosticStringSegmentUnchanged,
 } from '@sanity/diff'
-import {FieldValueError} from './validation'
+import type {FieldValueError} from './validation'
 
 /**
  * History timeline / chunking

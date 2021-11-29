@@ -1,7 +1,8 @@
 import {isEqual} from 'lodash'
-import {Node, Element} from 'slate'
-import {PathSegment} from '@sanity/types'
-import {
+import type {Node} from 'slate'
+import {Element} from 'slate'
+import type {PathSegment} from '@sanity/types'
+import type {
   PortableTextBlock,
   PortableTextChild,
   PortableTextFeatures,

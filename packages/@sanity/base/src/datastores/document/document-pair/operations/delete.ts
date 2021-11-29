@@ -1,5 +1,5 @@
 import {versionedClient} from '../../../../client/versionedClient'
-import {OperationArgs} from '../../types'
+import type {OperationArgs} from '../../types'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 
 export const del = {

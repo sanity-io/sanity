@@ -1,6 +1,6 @@
 /// <reference types="@sanity/types/parts" />
 
-import {Rule, SchemaType, SanityDocument, Schema, ArraySchemaType, Block} from '@sanity/types'
+import type {Rule, SchemaType, SanityDocument, Schema, ArraySchemaType, Block} from '@sanity/types'
 import createSchema from 'part:@sanity/base/schema-creator'
 import validateDocument, {resolveTypeForArrayItem, validateItem} from './validateDocument'
 import convertToValidationMarker from './util/convertToValidationMarker'

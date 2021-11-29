@@ -1,8 +1,8 @@
 import {Box} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
-import {Slug} from '@sanity/types'
-import {PreviewComponent} from '../../../preview/types'
+import type {Slug} from '@sanity/types'
+import type {PreviewComponent} from '../../../preview/types'
 
 const SlugWrapper = styled.div`
   display: inline-block;

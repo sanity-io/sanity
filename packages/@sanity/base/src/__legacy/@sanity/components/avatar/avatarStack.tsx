@@ -2,7 +2,7 @@ import classNames from 'classnames'
 import React, {cloneElement} from 'react'
 import {childrenToElementArray} from '../helpers'
 import {AvatarCounter} from './avatarCounter'
-import {AvatarSize} from './types'
+import type {AvatarSize} from './types'
 
 import styles from './avatarStack.css'
 

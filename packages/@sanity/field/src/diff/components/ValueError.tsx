@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {Text, Box, Card, Flex} from '@sanity/ui'
 import {ErrorOutlineIcon} from '@sanity/icons'
-import {FieldValueError} from '../../validation'
+import type {FieldValueError} from '../../validation'
 
 export function ValueError({error}: {error: FieldValueError}) {
   return (

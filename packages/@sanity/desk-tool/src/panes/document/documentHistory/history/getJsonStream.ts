@@ -1,4 +1,4 @@
-import {TransactionLogEvent} from './types'
+import type {TransactionLogEvent} from './types'
 
 type StreamResult = TransactionLogEvent | {error: {description?: string; type: string}}
 

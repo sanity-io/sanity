@@ -1,4 +1,4 @@
-import {DocumentActionComponent} from '@sanity/base'
+import type {DocumentActionComponent} from '@sanity/base'
 import {CheckmarkCircleIcon, CloseCircleIcon} from '@sanity/icons'
 import {Button, Text, useToast} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'

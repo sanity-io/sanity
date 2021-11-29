@@ -1,7 +1,7 @@
 // This is transitional in order to track usage of the PopoverDialog part from within the form-builder package
 // At some point we should offer a PopoverDialog component, either as a part of the future sanity studio components library or @sanity/ui
 import React from 'react'
-import {Placement} from '@sanity/ui'
+import type {Placement} from '@sanity/ui'
 import {PopoverDialogPart} from '../legacyParts'
 
 type Props = {

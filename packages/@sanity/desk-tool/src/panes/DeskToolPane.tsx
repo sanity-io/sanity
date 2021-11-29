@@ -1,6 +1,6 @@
 import React, {memo} from 'react'
 import {isEqual} from 'lodash'
-import {PaneNode} from '../types'
+import type {PaneNode} from '../types'
 import {PaneRouterProvider} from '../contexts/paneRouter'
 import {DocumentPane} from './document'
 import {DocumentListPane} from './documentList'

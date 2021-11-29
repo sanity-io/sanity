@@ -1,8 +1,8 @@
 import {mergeMap, map, catchError} from 'rxjs/operators'
 import {Observable, of as observableOf} from 'rxjs'
-import {FileAsset, ImageAsset} from '@sanity/types'
+import type {FileAsset, ImageAsset} from '@sanity/types'
 import {withMaxConcurrency} from '../../utils/withMaxConcurrency'
-import {UploadOptions} from '../../uploads/types'
+import type {UploadOptions} from '../../uploads/types'
 import {observePaths} from '../../../legacyParts'
 import {versionedClient} from '../../versionedClient'
 

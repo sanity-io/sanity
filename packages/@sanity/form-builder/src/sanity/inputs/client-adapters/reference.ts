@@ -1,6 +1,6 @@
 import {map} from 'rxjs/operators'
-import {ReferenceFilterSearchOptions, ReferenceSchemaType} from '@sanity/types'
-import {Observable} from 'rxjs'
+import type {ReferenceFilterSearchOptions, ReferenceSchemaType} from '@sanity/types'
+import type {Observable} from 'rxjs'
 import {createWeightedSearch, observeForPreview} from '../../../legacyParts'
 import {searchClient} from '../../versionedClient'
 

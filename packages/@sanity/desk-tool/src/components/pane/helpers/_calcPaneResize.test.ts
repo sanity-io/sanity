@@ -1,4 +1,4 @@
-import {PaneConfigOpts, PaneResizeCache} from '../types'
+import type {PaneConfigOpts, PaneResizeCache} from '../types'
 import {_calcPaneResize} from './_calcPaneResize'
 
 describe('@sanity/desk-tool/components/pane', () => {

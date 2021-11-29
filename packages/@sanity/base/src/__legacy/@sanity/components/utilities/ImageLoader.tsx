@@ -1,5 +1,5 @@
 import React from 'react'
-import {Subscription} from 'rxjs'
+import type {Subscription} from 'rxjs'
 import {loadImage} from './loadImage'
 
 interface ImageLoaderProps {

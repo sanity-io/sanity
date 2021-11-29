@@ -1,10 +1,12 @@
 import React, {useMemo} from 'react'
-import {Marker, isValidationMarker} from '@sanity/types'
-import {Box, Flex, Stack, Text, Theme} from '@sanity/ui'
+import type {Marker} from '@sanity/types'
+import {isValidationMarker} from '@sanity/types'
+import type {Theme} from '@sanity/ui'
+import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import styled, {css} from 'styled-components'
 import {CustomMarkers} from '../../../legacyParts'
-import {RenderCustomMarkers} from '../types'
+import type {RenderCustomMarkers} from '../types'
 
 type Props = {
   markers: Marker[]

@@ -1,6 +1,6 @@
 import {identity} from 'lodash'
 import {useContext, useEffect, useState} from 'react'
-import {RouterState} from './components/types'
+import type {RouterState} from './components/types'
 import {RouterContext} from './RouterContext'
 
 export function useRouterState<R = RouterState>(selector: (routerState: RouterState) => R): R

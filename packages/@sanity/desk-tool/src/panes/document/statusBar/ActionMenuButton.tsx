@@ -1,19 +1,9 @@
 import {useId} from '@reach/auto-id'
-import {DocumentActionDescription} from '@sanity/base'
+import type {DocumentActionDescription} from '@sanity/base'
 import {LegacyLayerProvider} from '@sanity/base/components'
 import {ChevronDownIcon} from '@sanity/icons'
-import {
-  Box,
-  Button,
-  Flex,
-  Hotkeys,
-  Menu,
-  MenuButton,
-  MenuItem,
-  PopoverProps,
-  Text,
-  Tooltip,
-} from '@sanity/ui'
+import type {PopoverProps} from '@sanity/ui'
+import {Box, Button, Flex, Hotkeys, Menu, MenuButton, MenuItem, Text, Tooltip} from '@sanity/ui'
 import React, {createElement, isValidElement, useCallback, useRef, useState, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
 import {ActionStateDialog} from './ActionStateDialog'

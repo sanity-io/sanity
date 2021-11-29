@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {HOCRouter} from '../../src/components/types'
+import type {HOCRouter} from '../../src/components/types'
 import {StateLink, Link, RouteScope, withRouterHOC} from '../../src/components'
 import Product from './Product'
 import User from './User'

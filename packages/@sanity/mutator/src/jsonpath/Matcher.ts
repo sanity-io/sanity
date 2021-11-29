@@ -1,5 +1,6 @@
 import parse from './parse'
-import Descender, {Probe} from './Descender'
+import type {Probe} from './Descender'
+import Descender from './Descender'
 import Expression from './Expression'
 
 type Result = {

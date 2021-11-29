@@ -1,6 +1,6 @@
 import {flatten, get} from 'lodash'
 import {error} from './validation/createValidationResult'
-import {TypeWithProblems} from './typedefs'
+import type {TypeWithProblems} from './typedefs'
 
 function createTypeWithMembersProblemsAccessor(
   memberPropertyName,

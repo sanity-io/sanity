@@ -1,6 +1,6 @@
 import React from 'react'
-import {Marker, Path, Schema, SchemaType} from '@sanity/types'
-import {FormFieldPresence} from '@sanity/base/presence'
+import type {Marker, Path, Schema, SchemaType} from '@sanity/types'
+import type {FormFieldPresence} from '@sanity/base/presence'
 import {FormBuilderInput} from '../FormBuilderInput'
 import SanityFormBuilderContext from './SanityFormBuilderContext'
 import * as gradientPatchAdapter from './utils/gradientPatchAdapter'

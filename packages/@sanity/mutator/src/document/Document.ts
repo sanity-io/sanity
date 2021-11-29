@@ -14,7 +14,7 @@ import {isEqual} from 'lodash'
 import Mutation from './Mutation'
 
 import debug from './debug'
-import {Doc} from './types'
+import type {Doc} from './types'
 
 type SubmissionResponder = {
   success: Function

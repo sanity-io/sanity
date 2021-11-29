@@ -7,7 +7,7 @@ import Document from './Document'
 import Mutation from './Mutation'
 import SquashingBuffer from './SquashingBuffer'
 import debug from './debug'
-import {Doc} from './types'
+import type {Doc} from './types'
 
 const ONE_MINUTE = 1000 * 60
 

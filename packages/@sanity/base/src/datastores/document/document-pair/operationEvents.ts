@@ -1,4 +1,5 @@
-import {defer, asyncScheduler, merge, Observable, of, Subject} from 'rxjs'
+import type {Observable} from 'rxjs'
+import {defer, asyncScheduler, merge, of, Subject} from 'rxjs'
 import {
   catchError,
   filter,
@@ -12,9 +13,9 @@ import {
   tap,
   throttleTime,
 } from 'rxjs/operators'
-import {IdPair} from '../types'
+import type {IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
-import {OperationImpl, OperationsAPI} from './operations'
+import type {OperationImpl, OperationsAPI} from './operations'
 import {operationArgs} from './operationArgs'
 import {del} from './operations/delete'
 import {publish} from './operations/publish'

@@ -1,9 +1,11 @@
-import React, {ReactElement} from 'react'
+import type {ReactElement} from 'react'
+import React from 'react'
 import {startCase, uniq, xor} from 'lodash'
-import {ArrayDiff, DiffCard, ObjectDiff, StringDiff, StringDiffSegment} from '../../../../diff'
+import type {ArrayDiff, ObjectDiff, StringDiff, StringDiffSegment} from '../../../../diff'
+import {DiffCard} from '../../../../diff'
 
-import {ObjectSchemaType, SchemaType} from '../../../../types'
-import {PortableTextBlock, PortableTextChild, PortableTextDiff, SpanTypeSchema} from '../types'
+import type {ObjectSchemaType, SchemaType} from '../../../../types'
+import type {PortableTextBlock, PortableTextChild, PortableTextDiff, SpanTypeSchema} from '../types'
 
 import * as TextSymbols from '../symbols'
 

@@ -1,4 +1,5 @@
-import {Block, isBlock, isSpan} from '@sanity/types'
+import type {Block} from '@sanity/types'
+import {isBlock, isSpan} from '@sanity/types'
 
 export function isPortableTextArray(blocks: unknown): blocks is Block[] {
   return Array.isArray(blocks) && (blocks.length === 0 || blocks.some(isBlock))

@@ -1,4 +1,4 @@
-import {DocumentActionComponent} from '@sanity/base'
+import type {DocumentActionComponent} from '@sanity/base'
 import {TrashIcon} from '@sanity/icons'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import React, {useCallback, useState} from 'react'

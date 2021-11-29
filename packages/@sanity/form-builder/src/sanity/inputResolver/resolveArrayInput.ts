@@ -1,11 +1,11 @@
-import {ComponentType} from 'react'
-import {ArraySchemaType} from '@sanity/types'
+import type {ComponentType} from 'react'
+import type {ArraySchemaType} from '@sanity/types'
 import * as is from '../../utils/is'
 import OptionsArray from '../../inputs/arrays/OptionsArrayInput'
 import {PortableTextInput} from '../../inputs/PortableText/PortableTextInput'
 import {TagsArrayInput} from '../../inputs/TagsArrayInput'
 import {SanityArrayInput, SanityArrayOfPrimitivesInput} from '../inputs/SanityArrayInput'
-import {Props} from '../../inputs/types'
+import type {Props} from '../../inputs/types'
 
 const PRIMITIVES = ['string', 'number', 'boolean']
 

@@ -1,6 +1,6 @@
 import React from 'react'
-import {Element} from 'slate'
-import {PortableTextFeatures} from '../../types/portableText'
+import type {Element} from 'slate'
+import type {PortableTextFeatures} from '../../types/portableText'
 import {DefaultListItem, DefaultListItemInner} from '.'
 
 type Props = {

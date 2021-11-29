@@ -1,5 +1,5 @@
 import {normalizeBlock} from '@sanity/block-tools'
-import {PortableTextBlock} from '@sanity/portable-text-editor'
+import type {PortableTextBlock} from '@sanity/portable-text-editor'
 import PatchEvent, {insert, unset, set} from '../../../PatchEvent'
 
 type UnsetFunction = () => void

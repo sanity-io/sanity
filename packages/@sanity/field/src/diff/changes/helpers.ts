@@ -1,5 +1,5 @@
-import {Path, PathSegment} from '@sanity/types'
-import {ChangeNode, FieldChangeNode} from '../../types'
+import type {Path, PathSegment} from '@sanity/types'
+import type {ChangeNode, FieldChangeNode} from '../../types'
 import {getItemKey} from '../../paths'
 
 const isAddedAction = (change: ChangeNode): boolean => {

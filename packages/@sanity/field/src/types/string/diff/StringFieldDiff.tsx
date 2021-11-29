@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
-import {DiffComponent, DiffFromTo, DiffString, StringDiff} from '../../../diff'
+import type {DiffComponent, StringDiff} from '../../../diff'
+import {DiffFromTo, DiffString} from '../../../diff'
 import {StringPreview} from '../preview/StringPreview'
 
 const StringWrapper = styled.div`

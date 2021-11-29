@@ -1,4 +1,4 @@
-import {DiffComponent, DiffComponentOptions} from '../../types'
+import type {DiffComponent, DiffComponentOptions} from '../../types'
 import {BooleanFieldDiff} from '../../types/boolean/diff'
 import {FileFieldDiff} from '../../types/file/diff'
 import {ImageFieldDiff} from '../../types/image/diff'

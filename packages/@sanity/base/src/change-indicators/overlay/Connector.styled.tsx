@@ -1,4 +1,4 @@
-import {Theme} from '@sanity/ui'
+import type {Theme} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {ClampedRect} from './ClampedRect'
 

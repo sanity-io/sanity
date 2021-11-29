@@ -1,8 +1,11 @@
-import {isKeySegment, Path} from '@sanity/types'
-import React, {SyntheticEvent, useCallback} from 'react'
+import type {Path} from '@sanity/types'
+import {isKeySegment} from '@sanity/types'
+import type {SyntheticEvent} from 'react'
+import React, {useCallback} from 'react'
 import {ConnectorContext} from '@sanity/base/change-indicators'
 import {startCase} from 'lodash'
-import {DiffCard, DiffContext, ObjectDiff, StringDiff, StringDiffSegment} from '../../../../diff'
+import type {ObjectDiff, StringDiff, StringDiffSegment} from '../../../../diff'
+import {DiffCard, DiffContext} from '../../../../diff'
 import {InlineBox} from './styledComponents'
 
 interface TextProps {

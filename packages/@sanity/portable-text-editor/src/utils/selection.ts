@@ -1,6 +1,6 @@
 import {isEqual} from 'lodash'
-import {PortableTextBlock} from '../types/portableText'
-import {EditorSelection, EditorSelectionPoint} from '../types/editor'
+import type {PortableTextBlock} from '../types/portableText'
+import type {EditorSelection, EditorSelectionPoint} from '../types/editor'
 
 export function normalizePoint(
   point: EditorSelectionPoint,

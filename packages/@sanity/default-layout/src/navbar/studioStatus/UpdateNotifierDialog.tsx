@@ -3,7 +3,7 @@ import {InfoOutlineIcon, ToggleArrowRightIcon} from '@sanity/icons'
 import {Box, Card, Code, Dialog, Flex, Stack, Text} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
-import {Package} from './types'
+import type {Package} from './types'
 import {VersionsTable} from './VersionsTable'
 
 declare const __DEV__: boolean

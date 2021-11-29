@@ -1,4 +1,4 @@
-import {DocumentActionComponent} from '@sanity/base'
+import type {DocumentActionComponent} from '@sanity/base'
 import {PublishAction} from '../actions/PublishAction'
 import {DiscardChangesAction} from '../actions/DiscardChangesAction'
 import {UnpublishAction} from '../actions/UnpublishAction'

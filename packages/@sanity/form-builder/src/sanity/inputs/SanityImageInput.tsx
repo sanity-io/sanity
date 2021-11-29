@@ -1,5 +1,5 @@
 import React from 'react'
-import {AssetSource} from '@sanity/types'
+import type {AssetSource} from '@sanity/types'
 import ImageInput from '../../inputs/files/ImageInput'
 import resolveUploader from '../uploads/resolveUploader'
 import {

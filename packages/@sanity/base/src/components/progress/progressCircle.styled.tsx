@@ -1,6 +1,6 @@
 import {Box, Flex} from '@sanity/ui'
 import styled, {css, keyframes} from 'styled-components'
-import {ProgressCircleProps} from './progressCircle'
+import type {ProgressCircleProps} from './progressCircle'
 
 type StatusProps = Pick<ProgressCircleProps, 'isComplete'> & {
   isHundredPercent?: boolean

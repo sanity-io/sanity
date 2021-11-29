@@ -3,7 +3,7 @@ import {validateFields, validateField} from './object'
 
 export default (typeDef, visitorContext) => {
   const problems = []
-  let fields = typeDef.fields
+  const fields = typeDef.fields
 
   if (fields) {
     problems.push(...validateFields(fields, {allowEmpty: true}))

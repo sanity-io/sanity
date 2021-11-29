@@ -3,7 +3,7 @@
 
 import React from 'react'
 import {PreviewFields} from 'part:@sanity/base/preview'
-import {SanityDocument} from '@sanity/types'
+import type {SanityDocument} from '@sanity/types'
 import {useDocumentPane} from '../../useDocumentPane'
 
 const PREVIEW_FIELDS = ['title']

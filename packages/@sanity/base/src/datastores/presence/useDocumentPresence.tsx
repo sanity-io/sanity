@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react'
-import {DocumentPresence} from './types'
+import type {DocumentPresence} from './types'
 import {documentPresence} from './presence-store'
 
 export function useDocumentPresence(documentId): DocumentPresence[] {

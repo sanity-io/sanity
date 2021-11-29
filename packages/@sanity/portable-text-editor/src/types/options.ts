@@ -1,7 +1,7 @@
-import {Subject} from 'rxjs'
-import {PortableTextFeatures} from '../types/portableText'
-import {EditorChange, PatchObservable} from '../types/editor'
-import {PortableTextEditor} from '../editor/PortableTextEditor'
+import type {Subject} from 'rxjs'
+import type {PortableTextFeatures} from '../types/portableText'
+import type {EditorChange, PatchObservable} from '../types/editor'
+import type {PortableTextEditor} from '../editor/PortableTextEditor'
 
 export type createEditorOptions = {
   portableTextFeatures: PortableTextFeatures

@@ -1,5 +1,6 @@
 import {LegacyLayerProvider} from '@sanity/base/components'
-import {BoundaryElementProvider, Card, CardProps, Code, Flex, useForwardedRef} from '@sanity/ui'
+import type {CardProps} from '@sanity/ui'
+import {BoundaryElementProvider, Card, Code, Flex, useForwardedRef} from '@sanity/ui'
 import React, {forwardRef, useMemo, useState, useCallback, useEffect} from 'react'
 import styled from 'styled-components'
 import {PANE_COLLAPSED_WIDTH, PANE_DEBUG, PANE_DEFAULT_MIN_WIDTH} from './constants'

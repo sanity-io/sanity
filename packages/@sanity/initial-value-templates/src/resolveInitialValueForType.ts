@@ -1,13 +1,7 @@
 import {isEmpty, resolveTypeName} from '@sanity/util/content'
 
-import {
-  ArraySchemaType,
-  InitialValueParams,
-  isArraySchemaType,
-  isObjectSchemaType,
-  ObjectSchemaType,
-  SchemaType,
-} from '@sanity/types'
+import type {ArraySchemaType, InitialValueParams, ObjectSchemaType, SchemaType} from '@sanity/types'
+import {isArraySchemaType, isObjectSchemaType} from '@sanity/types'
 
 import {randomKey} from '@sanity/util/paths'
 import deepAssign from './util/deepAssign'

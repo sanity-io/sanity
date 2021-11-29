@@ -1,6 +1,7 @@
-import {Text, Box, MenuItem, Theme, Flex} from '@sanity/ui'
+import type {Theme} from '@sanity/ui'
+import {Text, Box, MenuItem, Flex} from '@sanity/ui'
 import styled, {css} from 'styled-components'
-import {TimelineItemState} from './types'
+import type {TimelineItemState} from './types'
 
 export interface IconWrapperProps {
   theme: Theme

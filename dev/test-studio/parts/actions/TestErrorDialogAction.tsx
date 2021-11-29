@@ -1,4 +1,4 @@
-import {DocumentActionComponent} from '@sanity/base'
+import type {DocumentActionComponent} from '@sanity/base'
 import {ErrorOutlineIcon} from '@sanity/icons'
 import React, {useCallback, useState} from 'react'
 

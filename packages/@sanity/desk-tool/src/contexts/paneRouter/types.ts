@@ -1,4 +1,4 @@
-import {RouterPanes, RouterPaneSibling} from '../../types'
+import type {RouterPanes, RouterPaneSibling} from '../../types'
 
 export interface PaneRouterContextValue {
   /**

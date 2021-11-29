@@ -2,9 +2,9 @@
 ///<reference types="@sanity/types/parts" />
 
 import React, {useCallback, useEffect, useImperativeHandle, useRef} from 'react'
-import {FormFieldPresence} from '@sanity/base/presence'
+import type {FormFieldPresence} from '@sanity/base/presence'
 import {FormField, FormFieldSet} from '@sanity/base/components'
-import {Path, Marker} from '@sanity/types'
+import type {Path, Marker} from '@sanity/types'
 import {Card, Select, TextInput} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {ChangeIndicatorProvider} from '@sanity/base/change-indicators'
@@ -14,7 +14,7 @@ import {get, has} from 'lodash'
 import styled from 'styled-components'
 import {useId} from '@reach/auto-id'
 import createHighlightMarkers, {highlightMarkersCSS} from './createHighlightMarkers'
-import {CodeInputType, CodeInputValue} from './types'
+import type {CodeInputType, CodeInputValue} from './types'
 /* eslint-disable-next-line import/no-unassigned-import */
 import './editorSupport'
 

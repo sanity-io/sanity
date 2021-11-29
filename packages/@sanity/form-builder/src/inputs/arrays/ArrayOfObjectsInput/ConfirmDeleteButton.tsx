@@ -1,6 +1,7 @@
 import React from 'react'
 import {TrashIcon} from '@sanity/icons'
-import {Button, Menu, MenuButton, MenuItem, Placement} from '@sanity/ui'
+import type {Placement} from '@sanity/ui'
+import {Button, Menu, MenuButton, MenuItem} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 
 export function ConfirmDeleteButton(props: {

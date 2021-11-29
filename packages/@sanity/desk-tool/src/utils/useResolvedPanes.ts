@@ -3,7 +3,7 @@ import {useEffect, useState, useContext} from 'react'
 import {Observable} from 'rxjs'
 import {map} from 'rxjs/operators'
 import {LOADING_PANE} from '../constants'
-import {RouterPanes, PaneNode, RouterPaneGroup} from '../types'
+import type {RouterPanes, PaneNode, RouterPaneGroup} from '../types'
 import {createResolvedPaneNodeStream} from './createResolvedPaneNodeStream'
 import {loadStructure} from './loadStructure'
 

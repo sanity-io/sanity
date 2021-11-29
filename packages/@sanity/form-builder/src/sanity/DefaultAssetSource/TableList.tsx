@@ -1,6 +1,6 @@
 import React from 'react'
 import {Box, Card, Flex, Grid, Label, Spinner, Stack, useMediaIndex} from '@sanity/ui'
-import {Asset as AssetType} from '@sanity/types'
+import type {Asset as AssetType} from '@sanity/types'
 import AssetRow from './AssetRow'
 
 interface Props {

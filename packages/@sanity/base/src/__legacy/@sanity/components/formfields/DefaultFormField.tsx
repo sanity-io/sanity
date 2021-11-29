@@ -3,12 +3,14 @@
 
 import React from 'react'
 import classNames from 'classnames'
-import {Marker} from '@sanity/types'
+import type {Marker} from '@sanity/types'
 import styles from 'part:@sanity/components/formfields/default-style'
 import DefaultLabel from 'part:@sanity/components/labels/default'
 import ValidationStatus from 'part:@sanity/components/validation/status'
-import {FieldPresence, FormFieldPresence} from '../../../../presence'
-import {ChangeIndicator, ChangeIndicatorContextProvidedProps} from '../../../../change-indicators'
+import type {FormFieldPresence} from '../../../../presence'
+import {FieldPresence} from '../../../../presence'
+import type {ChangeIndicatorContextProvidedProps} from '../../../../change-indicators'
+import {ChangeIndicator} from '../../../../change-indicators'
 import FieldStatus from '../fieldsets/FieldStatus'
 
 const EMPTY_MARKERS = []

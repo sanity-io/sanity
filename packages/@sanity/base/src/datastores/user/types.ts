@@ -1,4 +1,4 @@
-import {User, CurrentUser} from '@sanity/types'
+import type {User, CurrentUser} from '@sanity/types'
 import type {Observable} from 'rxjs'
 
 export interface CurrentUserError {

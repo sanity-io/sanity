@@ -1,10 +1,13 @@
-import {merge, Observable} from 'rxjs'
+import type {Observable} from 'rxjs'
+import {merge} from 'rxjs'
 import {filter, map, share} from 'rxjs/operators'
 import {versionedClient} from '../../../client/versionedClient'
-import {getPairListener, ListenerEvent} from '../getPairListener'
-import {BufferedDocumentEvent, createBufferedDocument} from '../buffered-doc/createBufferedDocument'
-import {IdPair, Mutation, ReconnectEvent} from '../types'
-import {RemoteSnapshotEvent} from '../buffered-doc/types'
+import type {ListenerEvent} from '../getPairListener'
+import {getPairListener} from '../getPairListener'
+import type {BufferedDocumentEvent} from '../buffered-doc/createBufferedDocument'
+import {createBufferedDocument} from '../buffered-doc/createBufferedDocument'
+import type {IdPair, Mutation, ReconnectEvent} from '../types'
+import type {RemoteSnapshotEvent} from '../buffered-doc/types'
 
 const isEventForDocId = (id: string) => (event: ListenerEvent): boolean =>
   event.type !== 'reconnect' && event.documentId === id

@@ -1,4 +1,5 @@
-import {TextArea, Theme} from '@sanity/ui'
+import type {Theme} from '@sanity/ui'
+import {TextArea} from '@sanity/ui'
 import React, {forwardRef, useCallback, useImperativeHandle, useRef} from 'react'
 import styled, {css} from 'styled-components'
 

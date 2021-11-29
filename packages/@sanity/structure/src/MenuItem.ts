@@ -1,12 +1,14 @@
 import {getExtendedProjection} from './util/getExtendedProjection'
-import {SchemaType, getDefaultSchema} from './parts/Schema'
+import type {SchemaType} from './parts/Schema'
+import {getDefaultSchema} from './parts/Schema'
 import {getSortIcon} from './parts/Icon'
-import {Intent} from './Intent'
-import {Partial} from './Partial'
-import {SortItem, Ordering, DEFAULT_ORDERING_OPTIONS} from './Sort'
-import {SerializeOptions, Serializable, SerializePath} from './StructureNodes'
+import type {Intent} from './Intent'
+import type {Partial} from './Partial'
+import type {SortItem, Ordering} from './Sort'
+import {DEFAULT_ORDERING_OPTIONS} from './Sort'
+import type {SerializeOptions, Serializable, SerializePath} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
-import {FixMe} from './types'
+import type {FixMe} from './types'
 
 const SortIcon = getSortIcon()
 

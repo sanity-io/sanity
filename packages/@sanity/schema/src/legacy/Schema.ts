@@ -1,5 +1,5 @@
 import * as types from './types'
-import {SchemaDef} from '../sanity/typedefs'
+import type {SchemaDef} from '../sanity/typedefs'
 
 function compileRegistry(schemaDef) {
   const registry = Object.assign(Object.create(null), types)

@@ -1,6 +1,6 @@
 import {useContext} from 'react'
 import {PaneContext} from './PaneContext'
-import {PaneContextValue} from './types'
+import type {PaneContextValue} from './types'
 
 /**
  * @beta This API will change. DO NOT USE IN PRODUCTION.

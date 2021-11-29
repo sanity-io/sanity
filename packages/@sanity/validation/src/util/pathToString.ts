@@ -1,4 +1,5 @@
-import {Path, isKeyedObject} from '@sanity/types'
+import type {Path} from '@sanity/types'
+import {isKeyedObject} from '@sanity/types'
 
 export default function pathToString(path: Path | undefined = []): string {
   return path.reduce<string>((target, segment, i) => {

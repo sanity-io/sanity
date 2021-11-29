@@ -1,5 +1,5 @@
 import {omit} from 'lodash'
-import {RouterPanes, RouterPaneGroup, RouterPaneSibling} from '../types'
+import type {RouterPanes, RouterPaneGroup, RouterPaneSibling} from '../types'
 import {EMPTY_PARAMS} from '../constants'
 
 // old: authors;knut,{"template":"diaryEntry"}

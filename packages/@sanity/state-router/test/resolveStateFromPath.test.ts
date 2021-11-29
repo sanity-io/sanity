@@ -1,4 +1,4 @@
-import {Node} from '../src/types'
+import type {Node} from '../src/types'
 import resolveStateFromPath from '../src/resolveStateFromPath'
 
 const node: Node = {

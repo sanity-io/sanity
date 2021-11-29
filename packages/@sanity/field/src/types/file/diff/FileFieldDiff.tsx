@@ -5,18 +5,11 @@ import FileIcon from 'part:@sanity/base/file-icon'
 import React, {useMemo} from 'react'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import styled from 'styled-components'
-import {
-  DiffComponent,
-  DiffCard,
-  DiffTooltip,
-  FromTo,
-  MetaInfo,
-  ChangeList,
-  ObjectDiff,
-} from '../../../diff'
+import type {DiffComponent, ObjectDiff} from '../../../diff'
+import {DiffCard, DiffTooltip, FromTo, MetaInfo, ChangeList} from '../../../diff'
 import {useRefValue} from '../../../diff/hooks'
 import {getSizeDiff} from './helpers'
-import {File, FileAsset} from './types'
+import type {File, FileAsset} from './types'
 
 const SizeDiff = styled.div`
   ${({theme}) => `

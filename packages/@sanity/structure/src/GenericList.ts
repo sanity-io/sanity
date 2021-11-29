@@ -1,15 +1,19 @@
 import {camelCase} from 'lodash'
-import {StructureNode, SerializeOptions, Serializable, Child} from './StructureNodes'
-import {Layout, layoutOptions} from './Layout'
-import {MenuItem, MenuItemBuilder, maybeSerializeMenuItem} from './MenuItem'
-import {MenuItemGroup, MenuItemGroupBuilder, maybeSerializeMenuItemGroup} from './MenuItemGroup'
-import {IntentChecker, defaultIntentChecker} from './Intent'
+import type {StructureNode, SerializeOptions, Serializable, Child} from './StructureNodes'
+import type {Layout} from './Layout'
+import {layoutOptions} from './Layout'
+import type {MenuItem, MenuItemBuilder} from './MenuItem'
+import {maybeSerializeMenuItem} from './MenuItem'
+import type {MenuItemGroup, MenuItemGroupBuilder} from './MenuItemGroup'
+import {maybeSerializeMenuItemGroup} from './MenuItemGroup'
+import type {IntentChecker} from './Intent'
+import {defaultIntentChecker} from './Intent'
 import {SerializeError} from './SerializeError'
-import {
+import type {
   InitialValueTemplateItem,
   InitialValueTemplateItemBuilder,
-  maybeSerializeInitialValueTemplateItem,
 } from './InitialValueTemplateItem'
+import {maybeSerializeInitialValueTemplateItem} from './InitialValueTemplateItem'
 import {validateId} from './util/validateId'
 
 function noChildResolver() {

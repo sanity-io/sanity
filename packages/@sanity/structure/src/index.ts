@@ -1,32 +1,34 @@
 import {uniqueId} from 'lodash'
-import {SchemaType} from './parts/Schema'
-import {ListBuilder, ListInput} from './List'
+import type {SchemaType} from './parts/Schema'
+import type {ListInput} from './List'
+import {ListBuilder} from './List'
 import {
   getDocumentTypeListItems,
   getDocumentTypeListItem,
   getDocumentTypeList,
 } from './documentTypeListItems'
-import {
-  MenuItemBuilder,
-  MenuItem,
-  getOrderingMenuItemsForSchemaType,
-  getOrderingMenuItem,
-} from './MenuItem'
-import {ListItemBuilder, ListItemInput} from './ListItem'
-import {MenuItemGroup, MenuItemGroupBuilder} from './MenuItemGroup'
-import {DocumentListBuilder, DocumentListInput} from './DocumentList'
-import {Divider} from './StructureNodes'
+import type {MenuItem} from './MenuItem'
+import {MenuItemBuilder, getOrderingMenuItemsForSchemaType, getOrderingMenuItem} from './MenuItem'
+import type {ListItemInput} from './ListItem'
+import {ListItemBuilder} from './ListItem'
+import type {MenuItemGroup} from './MenuItemGroup'
+import {MenuItemGroupBuilder} from './MenuItemGroup'
+import type {DocumentListInput} from './DocumentList'
+import {DocumentListBuilder} from './DocumentList'
+import type {Divider} from './StructureNodes'
 import {SerializeError} from './SerializeError'
+import type {PartialDocumentNode} from './Document'
 import {
   DocumentBuilder,
-  PartialDocumentNode,
   documentFromEditor,
   documentFromEditorWithInitialValue,
   getDefaultDocumentNode,
 } from './Document'
-import {ComponentInput, ComponentBuilder} from './Component'
-import {DocumentListItemBuilder, DocumentListItemInput} from './DocumentListItem'
-import {Ordering} from './Sort'
+import type {ComponentInput} from './Component'
+import {ComponentBuilder} from './Component'
+import type {DocumentListItemInput} from './DocumentListItem'
+import {DocumentListItemBuilder} from './DocumentListItem'
+import type {Ordering} from './Sort'
 import * as views from './views'
 import {
   InitialValueTemplateItemBuilder,

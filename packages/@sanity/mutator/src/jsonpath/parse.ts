@@ -1,7 +1,7 @@
 // Converts a string into an abstract syntax tree representation
 
 import tokenize from './tokenize'
-import {Expr} from './Expression'
+import type {Expr} from './Expression'
 
 // TODO: Support '*'
 

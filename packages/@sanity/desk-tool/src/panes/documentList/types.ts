@@ -1,4 +1,4 @@
-import {SanityDocument} from '@sanity/types'
+import type {SanityDocument} from '@sanity/types'
 
 export interface DocumentListPaneItem extends SanityDocument {
   hasPublished: boolean

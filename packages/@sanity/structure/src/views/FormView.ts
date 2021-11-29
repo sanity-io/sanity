@@ -1,7 +1,8 @@
-import {View, GenericViewBuilder} from './View'
-import {SerializeOptions} from '../StructureNodes'
+import type {View} from './View'
+import {GenericViewBuilder} from './View'
+import type {SerializeOptions} from '../StructureNodes'
 
-export interface FormView extends View {}
+export type FormView = View
 
 export class FormViewBuilder extends GenericViewBuilder<Partial<View>, FormViewBuilder> {
   protected spec: Partial<FormView>

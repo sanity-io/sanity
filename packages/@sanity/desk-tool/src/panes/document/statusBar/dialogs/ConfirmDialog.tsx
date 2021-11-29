@@ -1,4 +1,4 @@
-import {DocumentActionConfirmDialogProps} from '@sanity/base'
+import type {DocumentActionConfirmDialogProps} from '@sanity/base'
 import {
   Box,
   Button,

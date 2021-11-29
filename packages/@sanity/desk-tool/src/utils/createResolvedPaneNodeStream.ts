@@ -1,8 +1,9 @@
-import {Observable, NEVER, of as observableOf, concat} from 'rxjs'
+import type {Observable} from 'rxjs'
+import {NEVER, of as observableOf, concat} from 'rxjs'
 import {switchMap, map, scan, distinctUntilChanged, pairwise, startWith} from 'rxjs/operators'
 import {isEqual} from 'lodash'
 import generateHelpUrl from '@sanity/generate-help-url'
-import {
+import type {
   PaneNode,
   RouterPaneSiblingContext,
   RouterPanes,
@@ -13,7 +14,8 @@ import {
 } from '../types'
 import {defaultDocument} from '../defaultStructure'
 import {assignId} from './assignId'
-import {createPaneResolver, PaneResolver, PaneResolverMiddleware} from './createPaneResolver'
+import type {PaneResolver, PaneResolverMiddleware} from './createPaneResolver'
+import {createPaneResolver} from './createPaneResolver'
 import {memoBind} from './memoBind'
 import {PaneResolutionError} from './PaneResolutionError'
 

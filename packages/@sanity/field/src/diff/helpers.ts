@@ -1,4 +1,4 @@
-import {ChangeNode, Diff, FieldChangeNode, GroupChangeNode, ItemDiff} from '../types'
+import type {ChangeNode, Diff, FieldChangeNode, GroupChangeNode, ItemDiff} from '../types'
 
 export function getChangeVerb(diff: Diff): 'Added' | 'Removed' | 'Changed' {
   const hadPrevValue = hasValue(diff.fromValue)

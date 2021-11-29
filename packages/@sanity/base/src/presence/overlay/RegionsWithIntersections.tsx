@@ -6,7 +6,11 @@ import {
   INTERSECTION_ELEMENT_PADDING,
   INTERSECTION_THRESHOLDS,
 } from '../constants'
-import {ReportedRegionWithRect, RegionWithIntersectionDetails, FieldPresenceData} from '../types'
+import type {
+  ReportedRegionWithRect,
+  RegionWithIntersectionDetails,
+  FieldPresenceData,
+} from '../types'
 import {createIntersectionObserver} from './intersectionObserver'
 
 import {

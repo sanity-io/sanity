@@ -1,6 +1,7 @@
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/change-indicators'
 import {hues} from '@sanity/color'
-import {Box, Flex, Theme} from '@sanity/ui'
+import type {Theme} from '@sanity/ui'
+import {Box, Flex} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {TEXT_BULLET_MARKERS, TEXT_NUMBER_FORMATS} from './constants'
 import {createListName} from './helpers'

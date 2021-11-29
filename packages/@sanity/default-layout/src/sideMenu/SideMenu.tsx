@@ -8,7 +8,7 @@ import React, {memo, useEffect, useRef} from 'react'
 import ToolMenu from 'part:@sanity/default-layout/tool-switcher'
 import styled from 'styled-components'
 import {DatasetSelect} from '../datasetSelect'
-import {User} from '../types'
+import type {User} from '../types'
 import {HAS_SPACES} from '../util/spaces'
 import {tools} from '../config'
 

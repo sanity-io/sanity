@@ -1,11 +1,11 @@
 // Note: INCOMPLETE, but it's a start
-import React from 'react'
-import {Rule} from '../validation'
-import {ReferenceOptions} from '../reference'
-import {AssetSource} from '../assets'
-import {SlugOptions} from '../slug'
-import {SanityDocument} from '../documents'
-import {CurrentUser} from '../user'
+import type React from 'react'
+import type {Rule} from '../validation'
+import type {ReferenceOptions} from '../reference'
+import type {AssetSource} from '../assets'
+import type {SlugOptions} from '../slug'
+import type {SanityDocument} from '../documents'
+import type {CurrentUser} from '../user'
 
 export interface Schema {
   name: string

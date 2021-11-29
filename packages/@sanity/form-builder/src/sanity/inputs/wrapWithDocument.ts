@@ -1,4 +1,4 @@
-import {AssetSource, AssetSourceComponentProps} from '@sanity/types'
+import type {AssetSource, AssetSourceComponentProps} from '@sanity/types'
 import type {ComponentType} from 'react'
 import withDocument from '../../utils/withDocument'
 

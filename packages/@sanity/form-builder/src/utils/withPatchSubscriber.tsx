@@ -3,7 +3,7 @@ import React from 'react'
 
 import shallowEquals from 'shallow-equals'
 import {get, find} from 'lodash'
-import {Patch} from '../patch/types'
+import type {Patch} from '../patch/types'
 
 function isSegmentEqual(segment1, segment2) {
   const segment1Type = typeof segment1

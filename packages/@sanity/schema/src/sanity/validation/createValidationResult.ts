@@ -1,4 +1,4 @@
-import {Severity, ValidationResult} from '../typedefs'
+import type {Severity, ValidationResult} from '../typedefs'
 
 // Temporary solution to ensure we have a central registry over used helpIds
 export const HELP_IDS = {

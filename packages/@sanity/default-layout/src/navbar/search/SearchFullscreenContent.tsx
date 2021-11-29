@@ -1,4 +1,5 @@
-import {Card, CardProps, Portal} from '@sanity/ui'
+import type {CardProps} from '@sanity/ui'
+import {Card, Portal} from '@sanity/ui'
 import React, {forwardRef} from 'react'
 import styled from 'styled-components'
 

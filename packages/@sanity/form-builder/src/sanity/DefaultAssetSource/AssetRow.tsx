@@ -5,11 +5,11 @@ import {Button, Box, Card, Flex, Stack, Label, Text, Tooltip, Grid, useToast} fr
 import {DocumentIcon, ChevronUpIcon, ChevronDownIcon, LinkIcon, TrashIcon} from '@sanity/icons'
 import {useTimeAgo} from '@sanity/base/hooks'
 import prettyBytes from 'pretty-bytes'
-import {Asset as AssetType} from '@sanity/types'
+import type {Asset as AssetType} from '@sanity/types'
 import {versionedClient} from '../versionedClient'
 import {AssetUsageDialog} from './AssetUsageDialog'
 import {AssetMenu} from './AssetMenu'
-import {AssetMenuAction} from './types'
+import type {AssetMenuAction} from './types'
 import {formatMimeType} from './utils/mimeType'
 
 interface RowProps {

@@ -1,8 +1,9 @@
-import {Path} from '@sanity/types'
+import type {Path} from '@sanity/types'
 import React, {forwardRef} from 'react'
 import {Card, rem} from '@sanity/ui'
 import styled from 'styled-components'
-import {Annotation, Diff, getAnnotationAtPath} from '../../diff'
+import type {Annotation, Diff} from '../../diff'
+import {getAnnotationAtPath} from '../../diff'
 import {useAnnotationColor} from '../annotations'
 import {DiffTooltip} from './DiffTooltip'
 

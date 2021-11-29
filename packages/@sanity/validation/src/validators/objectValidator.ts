@@ -1,4 +1,4 @@
-import {Validators} from '@sanity/types'
+import type {Validators} from '@sanity/types'
 import genericValidator from './genericValidator'
 
 const metaKeys = ['_key', '_type', '_weak']

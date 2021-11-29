@@ -1,8 +1,8 @@
-import {SchemaType} from '@sanity/types'
+import type {SchemaType} from '@sanity/types'
 import accept from 'attr-accept'
 import * as is from '../../utils/is'
 import uploaders from './uploaders'
-import {FileLike, Uploader} from './types'
+import type {FileLike, Uploader} from './types'
 
 export default function resolveUploader(type: SchemaType, file: FileLike): Uploader | null {
   return uploaders.find((uploader) => {

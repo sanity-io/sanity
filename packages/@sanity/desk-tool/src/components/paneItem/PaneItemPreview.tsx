@@ -1,12 +1,12 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import {SanityDocument, SchemaType} from '@sanity/types'
+import type {SanityDocument, SchemaType} from '@sanity/types'
 import {SanityDefaultPreview} from 'part:@sanity/base/preview'
 import React from 'react'
-import {Subscription} from 'rxjs'
+import type {Subscription} from 'rxjs'
 import {getPreviewStateObservable, getStatusIndicator, getValueWithFallback} from './helpers'
-import {PaneItemPreviewState} from './types'
+import type {PaneItemPreviewState} from './types'
 
 export interface PaneItemPreviewProps {
   icon: React.ComponentType<any> | false

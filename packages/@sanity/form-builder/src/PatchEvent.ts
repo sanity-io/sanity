@@ -1,5 +1,5 @@
 import {flatten} from 'lodash'
-import {PathSegment} from '@sanity/types'
+import type {PathSegment} from '@sanity/types'
 import {prefixPath, set, unset, setIfMissing, insert, inc, dec} from './patch/patches'
 import type {Patch} from './patch/types'
 

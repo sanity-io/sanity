@@ -1,7 +1,11 @@
 import {flatten, isObject, uniq} from 'lodash'
 import {set, unset, insert} from '../patch/PatchEvent'
-import {PortableTextBlock, PortableTextChild, PortableTextFeatures} from '../types/portableText'
-import {InvalidValueResolution} from '../types/editor'
+import type {
+  PortableTextBlock,
+  PortableTextChild,
+  PortableTextFeatures,
+} from '../types/portableText'
+import type {InvalidValueResolution} from '../types/editor'
 
 export function validateValue(
   value: PortableTextBlock[] | undefined,

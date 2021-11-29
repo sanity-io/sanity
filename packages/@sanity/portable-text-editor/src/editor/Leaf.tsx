@@ -1,9 +1,11 @@
-import React, {ReactElement, useCallback} from 'react'
-import {Element, Range} from 'slate'
+import type {ReactElement} from 'react'
+import React, {useCallback} from 'react'
+import type {Element} from 'slate'
+import {Range} from 'slate'
 import {useSelected, useEditor} from '@sanity/slate-react'
 import {uniq} from 'lodash'
-import {PortableTextFeatures} from '../types/portableText'
-import {
+import type {PortableTextFeatures} from '../types/portableText'
+import type {
   RenderChildFunction,
   RenderDecoratorFunction,
   RenderAnnotationFunction,

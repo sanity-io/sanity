@@ -1,5 +1,6 @@
 import React from 'react'
-import {Tooltip, Placement, Box, Flex} from '@sanity/ui'
+import type {Placement} from '@sanity/ui'
+import {Tooltip, Box, Flex} from '@sanity/ui'
 import {UserAvatar} from '../components/UserAvatar'
 import type {FormFieldPresence} from './types'
 

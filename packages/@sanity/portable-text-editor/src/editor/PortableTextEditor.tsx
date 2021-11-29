@@ -1,15 +1,20 @@
 import React from 'react'
-import {Path} from '@sanity/types'
-import {Subscription, Subject} from 'rxjs'
+import type {Path} from '@sanity/types'
+import type {Subscription} from 'rxjs'
+import {Subject} from 'rxjs'
 import {distinctUntilChanged} from 'rxjs/operators'
 import {randomKey} from '@sanity/util/content'
 import {createEditor} from 'slate'
 import {compileType} from '../utils/schema'
 import {getPortableTextFeatures} from '../utils/getPortableTextFeatures'
-import {PortableTextBlock, PortableTextFeatures, PortableTextChild} from '../types/portableText'
-import {Type, RawType as RawSchemaType, PortableTextType} from '../types/schema'
+import type {
+  PortableTextBlock,
+  PortableTextFeatures,
+  PortableTextChild,
+} from '../types/portableText'
+import type {Type, RawType as RawSchemaType, PortableTextType} from '../types/schema'
 import type {Patch} from '../types/patch'
-import {
+import type {
   EditorSelection,
   EditorChange,
   EditorChanges,

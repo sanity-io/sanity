@@ -16,7 +16,7 @@ import React from 'react'
 import {IntentLink} from '../../../../router'
 import {ScrollContainer} from '../../../../components/scroll'
 import {childrenToElementArray} from '../helpers'
-import {MenuItem, MenuItemGroup} from '../menus/types'
+import type {MenuItem, MenuItemGroup} from '../menus/types'
 import Styleable from '../utilities/Styleable'
 
 import {LegacyLayerProvider} from '../../../../components'

@@ -1,4 +1,4 @@
-import {BoxOverflow} from '@sanity/ui'
+import type {BoxOverflow} from '@sanity/ui'
 import React, {forwardRef} from 'react'
 import {usePane} from './usePane'
 import {usePaneLayout} from './usePaneLayout'

@@ -1,5 +1,5 @@
-import {InitialValueProperty, SchemaType} from '@sanity/types'
-import {TemplateParameter} from './TemplateParameters'
+import type {InitialValueProperty, SchemaType} from '@sanity/types'
+import type {TemplateParameter} from './TemplateParameters'
 
 export interface Template {
   id: string

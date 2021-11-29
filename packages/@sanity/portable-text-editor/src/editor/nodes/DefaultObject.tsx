@@ -1,5 +1,5 @@
 import React from 'react'
-import {PortableTextBlock, PortableTextChild} from '../../types/portableText'
+import type {PortableTextBlock, PortableTextChild} from '../../types/portableText'
 
 type Props = {
   value: PortableTextBlock | PortableTextChild

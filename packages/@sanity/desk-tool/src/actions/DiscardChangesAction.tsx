@@ -1,4 +1,4 @@
-import {DocumentActionComponent, DocumentActionDialogProps} from '@sanity/base'
+import type {DocumentActionComponent, DocumentActionDialogProps} from '@sanity/base'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import {ResetIcon} from '@sanity/icons'
 import React, {useCallback, useMemo, useState} from 'react'

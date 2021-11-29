@@ -1,6 +1,7 @@
 import React, {memo, useContext} from 'react'
 import {sortBy, uniqBy} from 'lodash'
-import {AvatarCounter, AvatarPosition} from '@sanity/ui'
+import type {AvatarPosition} from '@sanity/ui'
+import {AvatarCounter} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {UserAvatar} from '../components/UserAvatar'
 import {
@@ -13,7 +14,7 @@ import {splitRight} from './utils'
 import {FlexWrapper, InnerBox} from './FieldPresence.styled'
 import {FormFieldPresenceContext} from './context'
 import {PresenceTooltip} from './PresenceTooltip'
-import {FormFieldPresence} from './types'
+import type {FormFieldPresence} from './types'
 import {useReporter} from './overlay/tracker'
 
 export interface FieldPresenceProps {

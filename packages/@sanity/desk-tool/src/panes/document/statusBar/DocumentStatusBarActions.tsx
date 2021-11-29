@@ -2,7 +2,7 @@
 ///<reference types="@sanity/types/parts" />
 
 import React, {memo, useCallback, useMemo, useState} from 'react'
-import {DocumentActionDescription} from '@sanity/base'
+import type {DocumentActionDescription} from '@sanity/base'
 import {Box, Flex, Tooltip, Stack, Button, Hotkeys, LayerProvider, Text} from '@sanity/ui'
 import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
 import {HistoryRestoreAction} from '../../../actions/HistoryRestoreAction'

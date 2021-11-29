@@ -1,11 +1,6 @@
 import React, {useCallback} from 'react'
-import {
-  ObjectSchemaType,
-  Path,
-  Marker,
-  isValidationErrorMarker,
-  isValidationWarningMarker,
-} from '@sanity/types'
+import type {ObjectSchemaType, Path, Marker} from '@sanity/types'
+import {isValidationErrorMarker, isValidationWarningMarker} from '@sanity/types'
 import ValidationListItem from './ValidationListItem'
 
 import styles from './ValidationList.css'

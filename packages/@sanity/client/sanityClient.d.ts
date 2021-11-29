@@ -1,5 +1,5 @@
 /* eslint-disable no-dupe-class-members, @typescript-eslint/no-misused-new */
-import Observable from '@sanity/observable/minimal'
+import type Observable from '@sanity/observable/minimal'
 
 export type AssetMetadataType =
   | 'location'

@@ -1,4 +1,4 @@
-import {ObjectSchemaTypeWithOptions} from '@sanity/types'
+import type {ObjectSchemaTypeWithOptions} from '@sanity/types'
 
 interface CollapsibleOptions {
   collapsible: boolean

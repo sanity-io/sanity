@@ -9,11 +9,12 @@ import {
   getTemplatesBySchemaType,
   resolveInitialValue,
 } from '@sanity/base/initial-value-templates'
-import {SanityDocument} from '@sanity/types'
+import type {SanityDocument} from '@sanity/types'
 import {observePaths} from 'part:@sanity/base/preview'
 import schema from 'part:@sanity/base/schema'
 import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import {from, merge, Observable, of} from 'rxjs'
+import type {Observable} from 'rxjs'
+import {from, merge, of} from 'rxjs'
 import {
   map,
   switchMap,
@@ -24,7 +25,7 @@ import {
   debounceTime,
   startWith,
 } from 'rxjs/operators'
-import {DocumentPaneNode} from '../../../types'
+import type {DocumentPaneNode} from '../../../types'
 
 interface InitialValueOptions {
   documentId: string

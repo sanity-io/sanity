@@ -3,7 +3,8 @@
 
 import {isEqual} from 'lodash'
 import locationStore from 'part:@sanity/base/location'
-import {Observable, of} from 'rxjs'
+import type {Observable} from 'rxjs'
+import {of} from 'rxjs'
 import {
   map,
   filter,

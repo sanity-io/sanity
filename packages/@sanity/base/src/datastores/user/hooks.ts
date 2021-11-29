@@ -4,8 +4,9 @@
 import userStore from 'part:@sanity/base/user'
 
 import {useMemo} from 'react'
-import {CurrentUser, User} from '@sanity/types'
-import {LoadableState, useLoadable} from '../../util/useLoadable'
+import type {CurrentUser, User} from '@sanity/types'
+import type {LoadableState} from '../../util/useLoadable'
+import {useLoadable} from '../../util/useLoadable'
 
 export function useUser(userId: string): LoadableState<User | undefined> {
   return useLoadable(useMemo(() => userStore.observable.getUser(userId), [userId]))

@@ -1,5 +1,5 @@
 import styled, {css} from 'styled-components'
-import {Theme} from '@sanity/ui'
+import type {Theme} from '@sanity/ui'
 
 interface ThemeContext {
   theme: Theme

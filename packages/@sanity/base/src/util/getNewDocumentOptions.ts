@@ -3,7 +3,7 @@
 
 import schema from 'part:@sanity/base/schema'
 import {isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
-import {SchemaType} from '@sanity/types'
+import type {SchemaType} from '@sanity/types'
 import {isObject} from 'lodash'
 import {getTemplateById} from '@sanity/initial-value-templates'
 import type {InitialValueTemplateItem} from '@sanity/structure'

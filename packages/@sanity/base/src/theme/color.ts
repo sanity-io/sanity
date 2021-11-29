@@ -3,7 +3,7 @@ import {createColorTheme, rgba} from '@sanity/ui'
 import {_multiply, _screen, _isDark} from './helpers'
 import {legacyPalette} from './legacyPalette'
 import {legacyTones} from './legacyTones'
-import {Tints} from './types'
+import type {Tints} from './types'
 
 const NEUTRAL_TONES = ['default', 'transparent']
 

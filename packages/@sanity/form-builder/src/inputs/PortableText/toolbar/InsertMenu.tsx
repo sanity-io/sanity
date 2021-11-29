@@ -1,9 +1,11 @@
 import React, {memo, useCallback, useMemo} from 'react'
-import {CollapseMenu, CollapseMenuButton, CollapseMenuButtonProps} from '@sanity/base/components'
+import type {CollapseMenuButtonProps} from '@sanity/base/components'
+import {CollapseMenu, CollapseMenuButton} from '@sanity/base/components'
 import {AddIcon} from '@sanity/icons'
-import {Button, PopoverProps} from '@sanity/ui'
+import type {PopoverProps} from '@sanity/ui'
+import {Button} from '@sanity/ui'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
-import {BlockItem} from './types'
+import type {BlockItem} from './types'
 import {useFeatures, useFocusBlock} from './hooks'
 
 const CollapseMenuMemo = memo(CollapseMenu)

@@ -1,10 +1,12 @@
 import type {SanityClient} from '@sanity/client'
-import {of, Observable, asyncScheduler} from 'rxjs'
+import type {Observable} from 'rxjs'
+import {of, asyncScheduler} from 'rxjs'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import {act} from 'react-dom/test-utils'
 import basePkg from '../package.json'
-import {checkModuleStatus, useModuleStatus, VersionsResponse} from '../src/module-status'
+import type {VersionsResponse} from '../src/module-status'
+import {checkModuleStatus, useModuleStatus} from '../src/module-status'
 
 const defaults = {isSupported: true, isUpToDate: true, outdated: []}
 

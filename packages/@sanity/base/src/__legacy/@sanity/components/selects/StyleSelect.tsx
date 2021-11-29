@@ -3,7 +3,7 @@
 
 /* eslint-disable complexity */
 
-import {Modifier} from '@popperjs/core'
+import type {Modifier} from '@popperjs/core'
 import classNames from 'classnames'
 import React from 'react'
 import ArrowKeyNavigation from 'boundless-arrow-key-navigation/build'

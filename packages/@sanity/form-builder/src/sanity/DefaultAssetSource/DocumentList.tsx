@@ -1,6 +1,6 @@
 import React, {useCallback} from 'react'
 import {Card, Text, Flex} from '@sanity/ui'
-import {Asset as AssetType, SanityDocument} from '@sanity/types'
+import type {Asset as AssetType, SanityDocument} from '@sanity/types'
 import Preview from 'part:@sanity/base/preview'
 import {IntentLink} from '@sanity/base/components'
 import {schema} from '../../legacyParts'

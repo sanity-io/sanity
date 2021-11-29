@@ -4,7 +4,8 @@
 
 import {bifur} from '../../client/bifur'
 import {map, mergeMapTo, startWith, take, takeUntil} from 'rxjs/operators'
-import {concat, fromEvent, merge, NEVER, Observable, of, throwError, timer} from 'rxjs'
+import type {Observable} from 'rxjs'
+import {concat, fromEvent, merge, NEVER, of, throwError, timer} from 'rxjs'
 import {catchWithCount} from './utils/catchWithCount'
 import {observableCallback} from 'observable-callback'
 

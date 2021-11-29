@@ -1,5 +1,5 @@
 import {createContext, useContext} from 'react'
-import {PortableTextBlock} from '../../types/portableText'
+import type {PortableTextBlock} from '../../types/portableText'
 
 /**
  * A React context for sharing the editor value.

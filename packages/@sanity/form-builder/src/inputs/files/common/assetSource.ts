@@ -1,6 +1,6 @@
-import {AssetFromSource, FileSchemaType} from '@sanity/types'
+import type {AssetFromSource, FileSchemaType} from '@sanity/types'
 import PatchEvent, {set, setIfMissing, unset} from '../../../PatchEvent'
-import {Uploader, UploaderResolver, UploadOptions} from '../../../sanity/uploads/types'
+import type {Uploader, UploaderResolver, UploadOptions} from '../../../sanity/uploads/types'
 import {base64ToFile, urlToFile} from '../ImageInput/utils/image'
 import {get} from 'lodash'
 

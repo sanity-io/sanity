@@ -1,8 +1,8 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import {DocumentActionComponent} from '@sanity/base'
-import {EditStateFor} from '@sanity/base/_internal'
+import type {DocumentActionComponent} from '@sanity/base'
+import type {EditStateFor} from '@sanity/base/_internal'
 import schema from 'part:@sanity/base/schema'
 import {isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
 import {PublishAction} from '../actions/PublishAction'

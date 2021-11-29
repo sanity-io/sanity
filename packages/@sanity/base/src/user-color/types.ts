@@ -1,5 +1,5 @@
-import {ColorHueKey, ColorTints} from '@sanity/color'
-import {Observable} from 'rxjs'
+import type {ColorHueKey, ColorTints} from '@sanity/color'
+import type {Observable} from 'rxjs'
 
 // For better readability
 export type HexColor = string

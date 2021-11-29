@@ -1,18 +1,15 @@
-import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
+import type {FormFieldPresence} from '@sanity/base/presence'
+import {PresenceOverlay} from '@sanity/base/presence'
 import {CloseIcon} from '@sanity/icons'
-import {
-  PortableTextBlock,
-  PortableTextChild,
-  PortableTextEditor,
-  Type,
-  usePortableTextEditor,
-} from '@sanity/portable-text-editor'
-import {Path, Marker, SchemaType} from '@sanity/types'
-import {Box, Button, Flex, Popover, PopoverProps, Text, useClickOutside, useLayer} from '@sanity/ui'
+import type {PortableTextBlock, PortableTextChild, Type} from '@sanity/portable-text-editor'
+import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
+import type {Path, Marker, SchemaType} from '@sanity/types'
+import type {PopoverProps} from '@sanity/ui'
+import {Box, Button, Flex, Popover, Text, useClickOutside, useLayer} from '@sanity/ui'
 import React, {useCallback, useEffect, useState} from 'react'
 import styled from 'styled-components'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
-import {PatchEvent} from '../../../../PatchEvent'
+import type {PatchEvent} from '../../../../PatchEvent'
 import {debugElement} from './debug'
 
 interface PopoverObjectEditingProps {

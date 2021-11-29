@@ -1,8 +1,9 @@
 import * as React from 'react'
-import {TrackerContext} from './types'
-import {createUseReporter, IsEqualFunction} from './createUseReporter'
+import type {TrackerContext} from './types'
+import type {IsEqualFunction} from './createUseReporter'
+import {createUseReporter} from './createUseReporter'
 import {createStore} from './createStore'
-import {Reported} from './index'
+import type {Reported} from './index'
 
 // Todo: consider memozing individual functions or move the context assertion/guard to a separate step.
 let didWarn = false

@@ -1,6 +1,6 @@
-import {Subscribable} from 'rxjs'
-import {SchemaType, SanityDocument} from '@sanity/types'
-import {InitialValueTemplateItem, StructureBuilder} from '@sanity/structure'
+import type {Subscribable} from 'rxjs'
+import type {SchemaType, SanityDocument} from '@sanity/types'
+import type {InitialValueTemplateItem, StructureBuilder} from '@sanity/structure'
 
 export interface PreviewValue {
   id?: string

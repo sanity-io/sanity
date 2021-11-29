@@ -1,4 +1,4 @@
-import {EditStateFor} from '../datastores/document/document-pair/editState'
+import type {EditStateFor} from '../datastores/document/document-pair/editState'
 
 export interface DocumentBadgeDescription {
   title?: string

@@ -1,4 +1,4 @@
-import {EditorSelection, PortableTextBlock} from '../../src'
+import type {EditorSelection, PortableTextBlock} from '../../src'
 
 export default {}
 

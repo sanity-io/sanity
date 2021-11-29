@@ -1,10 +1,11 @@
-import {Transforms, Node} from 'slate'
+import type {Node} from 'slate'
+import {Transforms} from 'slate'
 import {isEqual} from 'lodash'
 import isHotkey from 'is-hotkey'
 import {normalizeBlock} from '@sanity/block-tools'
 import React, {useCallback, useMemo, useState, useEffect, useRef, forwardRef} from 'react'
 import {Editable as SlateEditable, Slate, ReactEditor, withReact} from '@sanity/slate-react'
-import {
+import type {
   EditorSelection,
   OnBeforeInputFn,
   OnCopyFn,
@@ -17,8 +18,8 @@ import {
   RenderDecoratorFunction,
   ScrollSelectionIntoViewFunction,
 } from '../types/editor'
-import {PortableTextBlock} from '../types/portableText'
-import {HotkeyOptions} from '../types/options'
+import type {PortableTextBlock} from '../types/portableText'
+import type {HotkeyOptions} from '../types/options'
 import {toSlateValue} from '../utils/values'
 import {hasEditableTarget, setFragmentData} from '../utils/copyPaste'
 import {normalizeSelection} from '../utils/selection'

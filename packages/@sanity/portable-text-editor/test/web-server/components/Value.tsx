@@ -1,6 +1,6 @@
 import React from 'react'
 import {Card, Heading, Code, Box} from '@sanity/ui'
-import {PortableTextBlock} from '../../../src/index'
+import type {PortableTextBlock} from '../../../src/index'
 
 type Props = {value: PortableTextBlock[] | undefined; revId: string}
 

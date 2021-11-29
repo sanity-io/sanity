@@ -1,5 +1,5 @@
 import React from 'react'
-import {AvatarSize} from './types'
+import type {AvatarSize} from './types'
 
 import styles from './avatarCounter.css'
 

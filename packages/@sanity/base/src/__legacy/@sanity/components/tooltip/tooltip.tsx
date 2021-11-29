@@ -9,7 +9,7 @@ import {usePopper} from 'react-popper'
 import {LegacyLayerProvider} from '../../../../components'
 import {TooltipArrow} from './tooltipArrow'
 import {useTooltip} from './hooks'
-import {TooltipPlacement} from './types'
+import type {TooltipPlacement} from './types'
 
 import styles from './tooltip.css'
 

@@ -1,15 +1,16 @@
 import {camelCase} from 'lodash'
-import {SerializeOptions, Serializable, Collection, CollectionBuilder} from './StructureNodes'
-import {getDefaultSchema, SchemaType} from './parts/Schema'
-import {ChildResolver} from './ChildResolver'
+import type {SerializeOptions, Serializable, Collection, CollectionBuilder} from './StructureNodes'
+import type {SchemaType} from './parts/Schema'
+import {getDefaultSchema} from './parts/Schema'
+import type {ChildResolver} from './ChildResolver'
 import {DocumentListBuilder} from './DocumentList'
 import {SerializeError, HELP_URL} from './SerializeError'
-import {Partial} from './Partial'
+import type {Partial} from './Partial'
 import {ListBuilder} from './List'
 import {DocumentBuilder} from './Document'
 import {ComponentBuilder} from './Component'
 import {validateId} from './util/validateId'
-import {FixMe} from './types'
+import type {FixMe} from './types'
 
 type UnserializedListItemChild = Collection | CollectionBuilder | ChildResolver
 

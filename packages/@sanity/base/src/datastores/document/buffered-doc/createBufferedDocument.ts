@@ -1,6 +1,6 @@
 import {createObservableBufferedDocument} from './createObservableBufferedDocument'
-import {Observable} from 'rxjs'
-import {
+import type {Observable} from 'rxjs'
+import type {
   CommitFunction,
   CommittedEvent,
   DocumentMutationEvent,
@@ -8,8 +8,8 @@ import {
   SnapshotEvent,
   RemoteSnapshotEvent,
 } from './types'
-import {ListenerEvent} from '../getPairListener'
-import {Mutation} from '../types'
+import type {ListenerEvent} from '../getPairListener'
+import type {Mutation} from '../types'
 
 export type BufferedDocumentEvent =
   | SnapshotEvent

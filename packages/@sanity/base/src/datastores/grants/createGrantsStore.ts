@@ -5,12 +5,12 @@ import {defer, of} from 'rxjs'
 
 import {distinctUntilChanged, publishReplay, switchMap} from 'rxjs/operators'
 import {evaluate, parse} from 'groq-js'
-import {SanityDocument} from '@sanity/types'
+import type {SanityDocument} from '@sanity/types'
 import {refCountDelay} from 'rxjs-etc/operators'
 import sanityClient from 'part:@sanity/base/client'
 import shallowEquals from 'shallow-equals'
 import userStore from '../user'
-import {
+import type {
   GrantsStore,
   DocumentValuePermission,
   Grant,

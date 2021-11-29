@@ -1,11 +1,12 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import {Observable, Subject} from 'rxjs'
+import type {Observable} from 'rxjs'
+import {Subject} from 'rxjs'
 import {map, publishReplay, refCount, startWith, tap} from 'rxjs/operators'
 import config from 'part:@sanity/language-filter/config'
 import {intersection, union} from 'lodash'
-import {ObjectField, SchemaType} from '@sanity/types'
+import type {ObjectField, SchemaType} from '@sanity/types'
 
 export type SelectedLanguages = string[]
 interface SupportedLanguage {

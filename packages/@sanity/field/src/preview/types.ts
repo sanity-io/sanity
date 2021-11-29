@@ -1,7 +1,7 @@
-import {ComponentType} from 'react'
-import {Reference} from '@sanity/types'
-import {UserColor} from '@sanity/base/user-color'
-import {
+import type {ComponentType} from 'react'
+import type {Reference} from '@sanity/types'
+import type {UserColor} from '@sanity/base/user-color'
+import type {
   ArraySchemaType,
   BooleanSchemaType,
   StringSchemaType,

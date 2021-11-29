@@ -1,6 +1,8 @@
 import {useMemo} from 'react'
-import {Observable, of} from 'rxjs'
-import {LoadableState, useLoadable} from '../../util/useLoadable'
+import type {Observable} from 'rxjs'
+import {of} from 'rxjs'
+import type {LoadableState} from '../../util/useLoadable'
+import {useLoadable} from '../../util/useLoadable'
 import {observePaths} from '../../preview'
 
 export function useDocumentValues<T = Record<string, unknown>>(

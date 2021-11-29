@@ -6,7 +6,7 @@ import orient from './orient'
 // https://github.com/benmosher/eslint-plugin-import/issues/921
 // https://github.com/gajus/eslint-plugin-flowtype/issues/260
 // eslint-disable-next-line import/named
-import {Orientation} from './orient'
+import type {Orientation} from './orient'
 
 function loadImage(url: string): Observable<HTMLImageElement> {
   /* global window */

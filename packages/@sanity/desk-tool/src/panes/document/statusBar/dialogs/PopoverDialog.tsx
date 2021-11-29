@@ -1,4 +1,4 @@
-import {DocumentActionPopoverDialogProps} from '@sanity/base'
+import type {DocumentActionPopoverDialogProps} from '@sanity/base'
 import {Popover, useClickOutside, useGlobalKeyDown, useLayer} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import {POPOVER_FALLBACK_PLACEMENTS} from './constants'

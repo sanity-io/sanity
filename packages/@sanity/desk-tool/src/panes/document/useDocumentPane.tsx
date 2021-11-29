@@ -1,5 +1,6 @@
 import {useContext} from 'react'
-import {DocumentPaneContext, DocumentPaneContextValue} from './DocumentPaneContext'
+import type {DocumentPaneContextValue} from './DocumentPaneContext'
+import {DocumentPaneContext} from './DocumentPaneContext'
 
 export function useDocumentPane(): DocumentPaneContextValue {
   const documentPane = useContext(DocumentPaneContext)

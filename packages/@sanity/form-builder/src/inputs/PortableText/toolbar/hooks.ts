@@ -1,20 +1,22 @@
-import {
+import type {
   EditorSelectionPoint,
   HotkeyOptions,
   PortableTextBlock,
   PortableTextChild,
-  PortableTextEditor,
   PortableTextFeatures,
   Type,
+} from '@sanity/portable-text-editor'
+import {
+  PortableTextEditor,
   usePortableTextEditor,
   usePortableTextEditorSelection,
 } from '@sanity/portable-text-editor'
-import {Path} from '@sanity/types'
+import type {Path} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {useCallback, useMemo} from 'react'
 import {useUnique} from '../utils/useUnique'
 import {getPTEToolbarActionGroups} from './helpers'
-import {BlockStyleItem, PTEToolbarAction, PTEToolbarActionGroup} from './types'
+import type {BlockStyleItem, PTEToolbarAction, PTEToolbarActionGroup} from './types'
 
 export function useFocusBlock(): PortableTextBlock {
   const editor = usePortableTextEditor()

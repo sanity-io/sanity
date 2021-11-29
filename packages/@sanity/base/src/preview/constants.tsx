@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import {Flex, Text} from '@sanity/ui'
 import {WarningOutlineIcon, AccessDeniedIcon} from '@sanity/icons'
-import {PreparedValue} from './prepareForPreview'
+import type {PreparedValue} from './prepareForPreview'
 
 export const INCLUDE_FIELDS_QUERY = ['_id', '_rev', '_type']
 export const INCLUDE_FIELDS = [...INCLUDE_FIELDS_QUERY, '_key']

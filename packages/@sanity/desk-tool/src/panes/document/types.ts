@@ -1,4 +1,4 @@
-import {BaseDeskToolPaneProps} from '../types'
+import type {BaseDeskToolPaneProps} from '../types'
 
 export type TimelineMode = 'since' | 'rev' | 'closed'
 

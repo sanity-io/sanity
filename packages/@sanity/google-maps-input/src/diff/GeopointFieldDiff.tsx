@@ -1,14 +1,9 @@
 import * as React from 'react'
-import {
-  DiffComponent,
-  ObjectDiff,
-  DiffProps as GenericDiffProps,
-  DiffTooltip,
-  getAnnotationAtPath,
-} from '@sanity/field/diff'
+import type {DiffComponent, ObjectDiff, DiffProps as GenericDiffProps} from '@sanity/field/diff'
+import {DiffTooltip, getAnnotationAtPath} from '@sanity/field/diff'
 import {GoogleMapsLoadProxy} from '../loader/GoogleMapsLoadProxy'
 import {GoogleMap} from '../map/Map'
-import {Geopoint} from '../types'
+import type {Geopoint} from '../types'
 import {GeopointMove} from './GeopointMove'
 import {RootContainer} from './GeopointFieldDiff.styles'
 

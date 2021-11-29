@@ -1,13 +1,7 @@
-import React, {
-  FunctionComponent,
-  useState,
-  useRef,
-  useMemo,
-  useCallback,
-  DragEvent,
-  useEffect,
-} from 'react'
-import {Element as SlateElement, Transforms, Path, Editor} from 'slate'
+import type {FunctionComponent, DragEvent} from 'react'
+import React, {useState, useRef, useMemo, useCallback, useEffect} from 'react'
+import type {Element as SlateElement} from 'slate'
+import {Transforms, Path, Editor} from 'slate'
 import {ReactEditor, useEditor} from '@sanity/slate-react'
 import {debugWithName} from '../utils/debug'
 import {

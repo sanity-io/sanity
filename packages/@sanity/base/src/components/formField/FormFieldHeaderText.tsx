@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 
-import {isValidationMarker, Marker} from '@sanity/types'
+import type {Marker} from '@sanity/types'
+import {isValidationMarker} from '@sanity/types'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import React, {memo, useMemo} from 'react'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'

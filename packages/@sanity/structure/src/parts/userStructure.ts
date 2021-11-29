@@ -1,6 +1,6 @@
-import {DocumentBuilder} from '../Document'
-import {DocumentNode} from '../StructureNodes'
-import {DocumentFragmentResolveOptions} from '../userDefinedStructure'
+import type {DocumentBuilder} from '../Document'
+import type {DocumentNode} from '../StructureNodes'
+import type {DocumentFragmentResolveOptions} from '../userDefinedStructure'
 
 interface UserDefinedStructure {
   getDefaultDocumentNode?: (

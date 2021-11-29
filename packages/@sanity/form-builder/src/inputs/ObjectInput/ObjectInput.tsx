@@ -1,5 +1,6 @@
-import React, {ForwardedRef, forwardRef, memo, useCallback} from 'react'
-import {
+import type {ForwardedRef} from 'react'
+import React, {forwardRef, memo, useCallback} from 'react'
+import type {
   Marker,
   MultiFieldSet,
   ObjectField,
@@ -8,7 +9,7 @@ import {
   SingleFieldSet,
   Fieldset,
 } from '@sanity/types'
-import {FormFieldPresence} from '@sanity/base/presence'
+import type {FormFieldPresence} from '@sanity/base/presence'
 import {FormFieldSet} from '@sanity/base/components'
 
 import {Grid} from '@sanity/ui'

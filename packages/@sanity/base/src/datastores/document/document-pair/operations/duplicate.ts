@@ -1,6 +1,6 @@
 import {omit} from 'lodash'
 import {versionedClient} from '../../../../client/versionedClient'
-import {OperationArgs} from '../../types'
+import type {OperationArgs} from '../../types'
 import {getDraftId} from '../../../../util/draftUtils'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 

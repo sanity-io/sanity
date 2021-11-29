@@ -1,4 +1,4 @@
-import {DocumentActionComponent} from '@sanity/base'
+import type {DocumentActionComponent} from '@sanity/base'
 import {useEffect, useState} from 'react'
 
 export const FOO: DocumentActionComponent = () => {

@@ -1,4 +1,4 @@
-import {Input} from '../types'
+import type {Input} from '../types'
 import ArrayWrapper from './array'
 import ObjectWrapper from './object'
 import StringWrapper from './string'

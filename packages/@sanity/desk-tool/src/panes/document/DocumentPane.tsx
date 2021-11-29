@@ -2,12 +2,12 @@ import {useDocumentType} from '@sanity/base/hooks'
 import {LegacyLayerProvider, useZIndex} from '@sanity/base/components'
 import {ChangeConnectorRoot} from '@sanity/base/change-indicators'
 import {getTemplateById} from '@sanity/base/initial-value-templates'
+import type {DialogProviderProps} from '@sanity/ui'
 import {
   BoundaryElementProvider,
   Card,
   Code,
   DialogProvider,
-  DialogProviderProps,
   Flex,
   Stack,
   Text,
@@ -15,7 +15,7 @@ import {
 } from '@sanity/ui'
 import React, {memo, useMemo, useState} from 'react'
 import styled from 'styled-components'
-import {DocumentPaneNode} from '../../types'
+import type {DocumentPaneNode} from '../../types'
 import {useDeskTool} from '../../contexts/deskTool'
 import {usePaneRouter} from '../../contexts/paneRouter'
 import {PaneFooter} from '../../components/pane'
@@ -30,7 +30,7 @@ import {DocumentActionShortcuts} from './keyboardShortcuts'
 import {DocumentStatusBar} from './statusBar'
 import {useDocumentPane} from './useDocumentPane'
 import {DocumentPaneProvider} from './DocumentPaneProvider'
-import {DocumentPaneProviderProps} from './types'
+import type {DocumentPaneProviderProps} from './types'
 
 declare const __DEV__: boolean
 

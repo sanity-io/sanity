@@ -1,9 +1,10 @@
 import React, {useCallback, createElement, useState} from 'react'
 import {useTimeAgo} from '@sanity/base/hooks'
-import {Chunk, ChunkType} from '@sanity/field/diff'
-import {Box, Flex, Stack, Text, ButtonTone} from '@sanity/ui'
+import type {Chunk, ChunkType} from '@sanity/field/diff'
+import type {ButtonTone} from '@sanity/ui'
+import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {formatTimelineEventLabel, getTimelineEventIconComponent} from './helpers'
-import {TimelineItemState} from './types'
+import type {TimelineItemState} from './types'
 import {UserAvatarStack} from './userAvatarStack'
 
 import {EventLabel, IconBox, IconWrapper, Root} from './timelineItem.styled'

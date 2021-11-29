@@ -1,4 +1,5 @@
-import {Popover, PopoverProps} from '@sanity/ui'
+import type {PopoverProps} from '@sanity/ui'
+import {Popover} from '@sanity/ui'
 import React, {forwardRef} from 'react'
 import styled from 'styled-components'
 

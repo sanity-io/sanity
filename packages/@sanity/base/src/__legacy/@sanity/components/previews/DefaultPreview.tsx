@@ -6,7 +6,7 @@ import classNames from 'classnames'
 import defaultStyles from 'part:@sanity/components/previews/default-style'
 import React from 'react'
 import Styleable from '../utilities/Styleable'
-import {MediaDimensions} from '../types'
+import type {MediaDimensions} from '../types'
 
 interface DefaultPreviewProps {
   title?: React.ReactNode | React.FC<{layout: 'default'}>

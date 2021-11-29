@@ -1,9 +1,10 @@
 import {isObject, uniq} from 'lodash'
-import {Observable, of as observableOf} from 'rxjs'
+import type {Observable} from 'rxjs'
+import {of as observableOf} from 'rxjs'
 import {switchMap} from 'rxjs/operators'
 import props from './utils/props'
 
-import {FieldName, Id, Path, Reference, Document, Value} from './types'
+import type {FieldName, Id, Path, Reference, Document, Value} from './types'
 
 function isReference(value: Reference | Document | Record<string, any>): value is Reference {
   return '_ref' in value

@@ -10,7 +10,7 @@ import enhanceWithClickOutside from 'react-click-outside'
 import classNames from 'classnames'
 import {withRouterHOC} from '../../../../router'
 import DefaultMenuItem from './DefaultMenuItem'
-import {MenuItemGroup as MenuItemGroupType, MenuItem as MenuItemType} from './types'
+import type {MenuItemGroup as MenuItemGroupType, MenuItem as MenuItemType} from './types'
 
 interface DefaultMenuProps {
   id?: string

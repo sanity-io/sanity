@@ -2,19 +2,20 @@
 ///<reference types="@sanity/types/parts" />
 
 import {WarningOutlineIcon} from '@sanity/icons'
-import {SanityDocument, SchemaType} from '@sanity/types'
+import type {SanityDocument, SchemaType} from '@sanity/types'
 import {assignWith} from 'lodash'
 import {observeForPreview} from 'part:@sanity/base/preview'
 import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import React from 'react'
-import {combineLatest, Observable, of} from 'rxjs'
+import type {Observable} from 'rxjs'
+import {combineLatest, of} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
 import {Inline} from '@sanity/ui'
-import {PreviewValue} from '../../types'
+import type {PreviewValue} from '../../types'
 import {DraftStatus} from '../DraftStatus'
 import {PublishedStatus} from '../PublishedStatus'
 import {NotPublishedStatus} from '../NotPublishedStatus'
-import {PaneItemPreviewState} from './types'
+import type {PaneItemPreviewState} from './types'
 
 export const isLiveEditEnabled = (schemaType: any) => schemaType.liveEdit === true
 

@@ -11,7 +11,7 @@ import {
   SLIDE_RIGHT_THRESHOLD_BOTTOM,
   SLIDE_RIGHT_THRESHOLD_TOP,
 } from '../constants'
-import {
+import type {
   FieldPresenceData,
   Rect,
   ReportedRegionWithRect,
@@ -20,7 +20,8 @@ import {
 import {FieldPresenceInner} from '../FieldPresence'
 
 import {RegionsWithIntersections} from './RegionsWithIntersections'
-import {ReportedPresenceData, useReportedValues} from './tracker'
+import type {ReportedPresenceData} from './tracker'
+import {useReportedValues} from './tracker'
 
 const ITEM_TRANSITION: React.CSSProperties = {
   transitionProperty: 'transform',

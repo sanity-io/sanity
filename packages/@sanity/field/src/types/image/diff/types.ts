@@ -1,5 +1,5 @@
-import {Image, ImageHotspot, ImageCrop, ImageDimensions} from '@sanity/types'
-import {ObjectDiff} from '../../../diff'
+import type {Image, ImageHotspot, ImageCrop, ImageDimensions} from '@sanity/types'
+import type {ObjectDiff} from '../../../diff'
 
 export interface ImagePreviewProps {
   id: string

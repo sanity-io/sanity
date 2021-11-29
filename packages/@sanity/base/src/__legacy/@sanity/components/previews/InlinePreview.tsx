@@ -3,7 +3,7 @@
 
 import styles from 'part:@sanity/components/previews/inline-style'
 import React from 'react'
-import {MediaDimensions} from '../types'
+import type {MediaDimensions} from '../types'
 
 interface InlinePreviewProps {
   title?: React.ReactNode | React.FC<{layout: 'inline'}>

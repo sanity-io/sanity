@@ -1,13 +1,5 @@
-import {
-  combineLatest,
-  concat,
-  defer,
-  EMPTY,
-  from,
-  merge,
-  Observable,
-  of as observableOf,
-} from 'rxjs'
+import type {Observable} from 'rxjs'
+import {combineLatest, concat, defer, EMPTY, from, merge, of as observableOf} from 'rxjs'
 import {
   distinctUntilChanged,
   filter,
@@ -23,7 +15,7 @@ import {difference, flatten} from 'lodash'
 import {versionedClient} from '../client/versionedClient'
 import debounceCollect from './utils/debounceCollect'
 import {combineSelections, reassemble, toGradientQuery} from './utils/optimizeQuery'
-import {FieldName, Id, Selection} from './types'
+import type {FieldName, Id, Selection} from './types'
 import {INCLUDE_FIELDS} from './constants'
 import hasEqualFields from './utils/hasEqualFields'
 import isUniqueBy from './utils/isUniqueBy'

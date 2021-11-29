@@ -1,7 +1,7 @@
-import {Editor} from 'slate'
+import type {Editor} from 'slate'
 import {createOperationToPatches} from '../utils/operationToPatches'
-import {createEditorOptions} from '../types/options'
-import {PortableTextSlateEditor} from '../types/editor'
+import type {createEditorOptions} from '../types/options'
+import type {PortableTextSlateEditor} from '../types/editor'
 import {debugWithName} from '../utils/debug'
 import {
   createWithObjectKeys,

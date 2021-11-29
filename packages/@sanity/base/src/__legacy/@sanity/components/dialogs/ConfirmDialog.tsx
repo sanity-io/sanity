@@ -4,7 +4,7 @@
 import React from 'react'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import styles from './ConfirmDialog.css'
-import {DialogAction, DialogColor} from './types'
+import type {DialogAction, DialogColor} from './types'
 
 interface ConfirmDialogProps {
   cancelButtonText?: string

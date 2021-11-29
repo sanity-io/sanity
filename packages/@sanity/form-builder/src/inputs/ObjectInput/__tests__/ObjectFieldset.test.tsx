@@ -2,12 +2,14 @@
 import '@testing-library/jest-dom/extend-expect'
 import {render} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import React, {ForwardedRef, forwardRef} from 'react'
+import type {ForwardedRef} from 'react'
+import React, {forwardRef} from 'react'
 
 import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
 import Schema from '@sanity/schema'
-import {SchemaType} from '@sanity/types'
-import {ObjectInput, Props} from '../ObjectInput'
+import type {SchemaType} from '@sanity/types'
+import type {Props} from '../ObjectInput'
+import {ObjectInput} from '../ObjectInput'
 import FormBuilderContext from '../../../FormBuilderContext'
 import is from '../../../utils/is'
 

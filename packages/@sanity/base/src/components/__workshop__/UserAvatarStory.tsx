@@ -1,4 +1,5 @@
-import {AvatarSize, Flex} from '@sanity/ui'
+import type {AvatarSize} from '@sanity/ui'
+import {Flex} from '@sanity/ui'
 import {useSelect} from '@sanity/ui-workshop'
 import React from 'react'
 import {UserAvatar} from '../UserAvatar'

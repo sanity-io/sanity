@@ -1,7 +1,7 @@
 import path from 'path'
 import resolve from 'resolve'
 import chalk from 'chalk'
-import {PluginOption} from 'vite'
+import type {PluginOption} from 'vite'
 
 const ROOT_PATH = path.resolve(__dirname, '../../../..')
 const DEBUG_PART_PATH = path.resolve(__dirname, 'parts/debug.ts')

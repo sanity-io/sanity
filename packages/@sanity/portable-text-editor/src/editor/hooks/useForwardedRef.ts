@@ -1,4 +1,5 @@
-import React, {useRef, useLayoutEffect, useEffect} from 'react'
+import type React from 'react'
+import {useRef, useLayoutEffect, useEffect} from 'react'
 
 const useIsomorphicEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
 

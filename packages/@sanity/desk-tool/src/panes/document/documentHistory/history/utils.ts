@@ -1,5 +1,5 @@
-import {Annotation} from '@sanity/field/diff'
-import {CombinedDocument} from './types'
+import type {Annotation} from '@sanity/field/diff'
+import type {CombinedDocument} from './types'
 
 export function isSameAnnotation(a: Annotation, b: Annotation): boolean {
   if (a && b) {

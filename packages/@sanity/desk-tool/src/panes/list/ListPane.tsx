@@ -2,12 +2,12 @@ import React from 'react'
 import {Box, Button, Stack} from '@sanity/ui'
 import styled from 'styled-components'
 import {ArrowLeftIcon} from '@sanity/icons'
-import {PaneListItem} from '../../types'
+import type {PaneListItem} from '../../types'
 import {Pane, PaneContent, PaneHeader, usePaneLayout, PaneHeaderActions} from '../../components'
 import {PaneItem} from '../../components/paneItem'
 import {useDeskTool} from '../../contexts/deskTool'
 import {BackLink} from '../../contexts/paneRouter'
-import {BaseDeskToolPaneProps} from '../types'
+import type {BaseDeskToolPaneProps} from '../types'
 
 type ListPaneProps = BaseDeskToolPaneProps<'list'>
 

@@ -1,4 +1,4 @@
-import {SchemaType} from '@sanity/types'
+import type {SchemaType} from '@sanity/types'
 import React from 'react'
 import PreviewSubscriber from './PreviewSubscriber'
 

@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import {combineLatest, Observable} from 'rxjs'
+import type {Observable} from 'rxjs'
+import {combineLatest} from 'rxjs'
 import {map, publishReplay, refCount, switchMap} from 'rxjs/operators'
 import {snapshotPair} from './snapshotPair'
-import {IdPair, OperationArgs} from '../types'
+import type {IdPair, OperationArgs} from '../types'
 import {memoize} from '../utils/createMemoizer'
 
 export const operationArgs = memoize(

@@ -1,6 +1,7 @@
 import {useRouterState} from '@sanity/base/router'
 import {MasterDetailIcon} from '@sanity/icons'
-import {ErrorBoundary, ErrorBoundaryProps} from '@sanity/ui'
+import type {ErrorBoundaryProps} from '@sanity/ui'
+import {ErrorBoundary} from '@sanity/ui'
 import React, {useCallback, useEffect, useState} from 'react'
 import {IntentResolver} from '../components/intentResolver'
 import {StructureError} from '../components/StructureError'

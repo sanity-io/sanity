@@ -1,5 +1,5 @@
-import {Marker} from '@sanity/types'
-import {FormFieldPresence} from '@sanity/base/presence'
+import type {Marker} from '@sanity/types'
+import type {FormFieldPresence} from '@sanity/base/presence'
 
 export type ParseResult = {isValid: boolean; date?: Date; error?: string} & (
   | {isValid: true; date: Date}

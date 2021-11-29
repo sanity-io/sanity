@@ -1,8 +1,8 @@
 import React from 'react'
 import * as PathUtils from '@sanity/util/paths'
-import {Marker, ObjectField, Path} from '@sanity/types'
-import {FormFieldPresence} from '@sanity/base/presence'
-import PatchEvent from '../../../PatchEvent'
+import type {Marker, ObjectField, Path} from '@sanity/types'
+import type {FormFieldPresence} from '@sanity/base/presence'
+import type PatchEvent from '../../../PatchEvent'
 import {ConditionalField} from '../../common/ConditionalField'
 import {FormBuilderInput} from '../../../FormBuilderInput'
 

@@ -4,7 +4,7 @@ import {useAction, useBoolean, useSelect} from '@sanity/ui-workshop'
 import React, {useMemo} from 'react'
 import FormBuilderContext from '../../../../FormBuilderContext'
 import {EditObject} from '../../object'
-import {ObjectEditData} from '../../types'
+import type {ObjectEditData} from '../../types'
 import {resolveInputComponent, resolvePreviewComponent} from './formBuilder'
 import {schema, schemaType} from './schemaType'
 

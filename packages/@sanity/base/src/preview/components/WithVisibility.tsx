@@ -1,5 +1,6 @@
 import React from 'react'
-import {defer, concat, of as observableOf, Subscription} from 'rxjs'
+import type {Subscription} from 'rxjs'
+import {defer, concat, of as observableOf} from 'rxjs'
 
 import {
   map,

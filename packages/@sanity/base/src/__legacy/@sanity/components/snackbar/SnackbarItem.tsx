@@ -9,7 +9,7 @@ import ErrorIcon from 'part:@sanity/base/error-icon'
 import InfoIcon from 'part:@sanity/base/info-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import styles from './SnackbarItem.css'
-import {SnackbarAction} from './types'
+import type {SnackbarAction} from './types'
 
 export interface SnackbarItemProps {
   action?: SnackbarAction

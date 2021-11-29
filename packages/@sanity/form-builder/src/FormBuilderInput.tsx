@@ -1,13 +1,20 @@
 import React, {useMemo} from 'react'
 import shallowEquals from 'shallow-equals'
-import {Marker, ObjectField, ObjectSchemaTypeWithOptions, Path, SchemaType} from '@sanity/types'
+import type {
+  Marker,
+  ObjectField,
+  ObjectSchemaTypeWithOptions,
+  Path,
+  SchemaType,
+} from '@sanity/types'
 import {ChangeIndicatorProvider} from '@sanity/base/change-indicators'
 import * as PathUtils from '@sanity/util/paths'
 import generateHelpUrl from '@sanity/generate-help-url'
-import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/presence'
-import PatchEvent from './PatchEvent'
+import type {FormFieldPresence} from '@sanity/base/presence'
+import {FormFieldPresenceContext} from '@sanity/base/presence'
+import type PatchEvent from './PatchEvent'
 import {emptyArray} from './utils/empty'
-import {Props as InputProps} from './inputs/types'
+import type {Props as InputProps} from './inputs/types'
 
 const EMPTY_MARKERS: Marker[] = emptyArray()
 const EMPTY_PATH: Path = emptyArray()

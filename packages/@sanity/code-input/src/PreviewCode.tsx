@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import {Box} from '@sanity/ui'
 import {SUPPORTED_LANGUAGES, LANGUAGE_ALIASES, ACE_EDITOR_PROPS, ACE_SET_OPTIONS} from './config'
 import createHighlightMarkers from './createHighlightMarkers'
-import {CodeInputType, CodeInputValue} from './types'
+import type {CodeInputType, CodeInputValue} from './types'
 /* eslint-disable-next-line import/no-unassigned-import */
 import './editorSupport'
 

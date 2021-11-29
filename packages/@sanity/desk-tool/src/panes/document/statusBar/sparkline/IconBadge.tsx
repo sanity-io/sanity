@@ -1,7 +1,8 @@
-import {IconComponent} from '@sanity/icons'
+import type {IconComponent} from '@sanity/icons'
 import styled, {css} from 'styled-components'
 import React, {createElement, memo} from 'react'
-import {Text, Theme} from '@sanity/ui'
+import type {Theme} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 
 export type IconBadgeTone = 'positive' | 'caution' | 'critical'
 

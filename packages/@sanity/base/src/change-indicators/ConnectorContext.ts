@@ -1,5 +1,5 @@
 import {createContext} from 'react'
-import {Path} from '@sanity/types'
+import type {Path} from '@sanity/types'
 
 export interface ConnectorContextValue {
   isReviewChangesOpen: boolean

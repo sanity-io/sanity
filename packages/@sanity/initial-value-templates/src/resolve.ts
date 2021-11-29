@@ -1,5 +1,5 @@
-import {Schema} from '@sanity/types'
-import {Template, TemplateBuilder} from './Template'
+import type {Schema} from '@sanity/types'
+import type {Template, TemplateBuilder} from './Template'
 import {validateInitialObjectValue} from './validate'
 import deepAssign from './util/deepAssign'
 import {resolveInitialValueForType} from './resolveInitialValueForType'

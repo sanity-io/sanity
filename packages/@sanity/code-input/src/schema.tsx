@@ -1,7 +1,8 @@
 import React from 'react'
 import {CodeBlockIcon} from '@sanity/icons'
 import CodeInput from './CodeInput'
-import PreviewCode, {PreviewCodeProps} from './PreviewCode'
+import type {PreviewCodeProps} from './PreviewCode'
+import PreviewCode from './PreviewCode'
 import {getMedia} from './getMedia'
 
 const Preview = (props: PreviewCodeProps) => {

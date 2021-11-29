@@ -1,5 +1,5 @@
 import leven from 'leven'
-import {UnresolvedPaneNode} from '../types'
+import type {UnresolvedPaneNode} from '../types'
 import {defaultStructure} from '../defaultStructure'
 import {isRecord} from './isRecord'
 

@@ -1,14 +1,19 @@
 import {uniq, camelCase} from 'lodash'
-import {SerializeOptions, Serializable, Child, DocumentNode, EditorNode} from './StructureNodes'
+import type {
+  SerializeOptions,
+  Serializable,
+  Child,
+  DocumentNode,
+  EditorNode,
+} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
-import {SchemaType} from './parts/Schema'
+import type {SchemaType} from './parts/Schema'
 import {validateId} from './util/validateId'
-import {View, ViewBuilder, maybeSerializeView} from './views/View'
+import type {View, ViewBuilder} from './views/View'
+import {maybeSerializeView} from './views/View'
 import {form} from './views'
-import {
-  getUserDefinedDefaultDocumentBuilder,
-  DocumentFragmentResolveOptions,
-} from './userDefinedStructure'
+import type {DocumentFragmentResolveOptions} from './userDefinedStructure'
+import {getUserDefinedDefaultDocumentBuilder} from './userDefinedStructure'
 import {getTemplateById} from '@sanity/initial-value-templates'
 
 interface DocumentOptions {

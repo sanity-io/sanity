@@ -1,11 +1,12 @@
 import React, {useMemo, useCallback, forwardRef} from 'react'
 import {capitalize} from 'lodash'
 import {useId} from '@reach/auto-id'
-import {isTitledListValue, TitledListValue} from '@sanity/types'
+import type {TitledListValue} from '@sanity/types'
+import {isTitledListValue} from '@sanity/types'
 import {Inline, Stack, Card, Text, Select, Flex, Radio, Box} from '@sanity/ui'
 import {FormField} from '@sanity/base/components'
 import PatchEvent, {set, unset} from '../PatchEvent'
-import {Props} from './types'
+import type {Props} from './types'
 
 function toSelectItem(
   option: TitledListValue<string | number> | string | number

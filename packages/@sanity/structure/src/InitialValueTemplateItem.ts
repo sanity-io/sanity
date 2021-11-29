@@ -1,12 +1,14 @@
 import {pickBy} from 'lodash'
 import {getTemplates, getTemplateById} from '@sanity/initial-value-templates'
 import {isActionEnabled} from './parts/documentActionUtils'
-import {getDefaultSchema, Schema} from './parts/Schema'
+import type {Schema} from './parts/Schema'
+import {getDefaultSchema} from './parts/Schema'
 import {HELP_URL} from './SerializeError'
-import {Serializable, SerializeOptions, SerializePath} from './StructureNodes'
-import {MenuItemBuilder, MenuItem} from './MenuItem'
+import type {Serializable, SerializeOptions, SerializePath} from './StructureNodes'
+import type {MenuItem} from './MenuItem'
+import {MenuItemBuilder} from './MenuItem'
 import {getPlusIcon} from './parts/Icon'
-import {IntentParams} from './Intent'
+import type {IntentParams} from './Intent'
 import {SerializeError, StructureBuilder} from '.'
 
 export type InitialValueTemplateItem = {

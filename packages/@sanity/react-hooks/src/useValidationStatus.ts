@@ -1,7 +1,7 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import {Marker} from '@sanity/types'
+import type {Marker} from '@sanity/types'
 import documentStore from 'part:@sanity/base/datastore/document'
 import {useMemoObservable} from 'react-rx'
 

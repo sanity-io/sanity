@@ -6,7 +6,7 @@ import {
   ScrollContainer,
 } from '@sanity/base/components'
 import {AddIcon, CloseIcon, RestoreIcon} from '@sanity/icons'
-import {Path} from '@sanity/types'
+import type {Path} from '@sanity/types'
 import {
   BoundaryElementProvider,
   Box,

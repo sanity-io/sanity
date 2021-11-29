@@ -1,4 +1,4 @@
-import {Type} from '@sanity/portable-text-editor'
+import type {Type} from '@sanity/portable-text-editor'
 
 export interface BlockItem {
   handle: () => void

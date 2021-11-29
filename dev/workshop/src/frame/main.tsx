@@ -1,4 +1,5 @@
-import {ErrorBoundary, ThemeColorSchemeKey, ThemeProvider} from '@sanity/ui'
+import type {ThemeColorSchemeKey} from '@sanity/ui'
+import {ErrorBoundary, ThemeProvider} from '@sanity/ui'
 import {WorkshopFrame} from '@sanity/ui-workshop'
 import React, {useCallback, useState} from 'react'
 import ReactDOM from 'react-dom'

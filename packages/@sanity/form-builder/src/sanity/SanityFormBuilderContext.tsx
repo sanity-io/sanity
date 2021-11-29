@@ -1,6 +1,6 @@
 // Default wiring for FormBuilderContext when used as a sanity part
 import React from 'react'
-import {Schema} from '@sanity/types'
+import type {Schema} from '@sanity/types'
 import {SanityPreview} from '../legacyParts'
 import FormBuilderContext from '../FormBuilderContext'
 import inputResolver from './inputResolver/inputResolver'

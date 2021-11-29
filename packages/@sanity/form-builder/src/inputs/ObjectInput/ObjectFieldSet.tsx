@@ -1,8 +1,10 @@
 // Render a fieldset inside the object input
-import React, {ForwardedRef, forwardRef, useMemo} from 'react'
-import {FormFieldPresence} from '@sanity/base/presence'
-import {FormFieldSet, FormFieldSetProps} from '@sanity/base/components'
-import {Marker, MultiFieldSet, Path} from '@sanity/types'
+import type {ForwardedRef} from 'react'
+import React, {forwardRef, useMemo} from 'react'
+import type {FormFieldPresence} from '@sanity/base/presence'
+import type {FormFieldSetProps} from '@sanity/base/components'
+import {FormFieldSet} from '@sanity/base/components'
+import type {Marker, MultiFieldSet, Path} from '@sanity/types'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {getCollapsedWithDefaults} from './utils'
 

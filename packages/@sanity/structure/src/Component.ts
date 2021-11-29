@@ -1,10 +1,12 @@
 import {camelCase} from 'lodash'
-import {SerializeOptions, StructureNode, Serializable, Child} from './StructureNodes'
+import type {SerializeOptions, StructureNode, Serializable, Child} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
-import {MenuItem, MenuItemBuilder, maybeSerializeMenuItem} from './MenuItem'
-import {MenuItemGroup, MenuItemGroupBuilder, maybeSerializeMenuItemGroup} from './MenuItemGroup'
+import type {MenuItem, MenuItemBuilder} from './MenuItem'
+import {maybeSerializeMenuItem} from './MenuItem'
+import type {MenuItemGroup, MenuItemGroupBuilder} from './MenuItemGroup'
+import {maybeSerializeMenuItemGroup} from './MenuItemGroup'
 import {validateId} from './util/validateId'
-import {FixMe} from './types'
+import type {FixMe} from './types'
 
 export interface Component extends StructureNode {
   component: FixMe

@@ -1,8 +1,8 @@
 import {StructureBuilder as S} from '../src'
 import {getDefaultSchema} from '../src/parts/Schema'
 import serializeStructure from './util/serializeStructure'
-import {ChildResolver} from '../src/ChildResolver'
-import {DocumentTypeListBuilder} from '../src/DocumentTypeList'
+import type {ChildResolver} from '../src/ChildResolver'
+import type {DocumentTypeListBuilder} from '../src/DocumentTypeList'
 
 const nope = () => 'NOPE'
 const editor = {

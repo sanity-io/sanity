@@ -1,4 +1,4 @@
-import {SchemaType, ImageUrlFitMode} from '@sanity/types'
+import type {SchemaType, ImageUrlFitMode} from '@sanity/types'
 
 export type Id = string
 

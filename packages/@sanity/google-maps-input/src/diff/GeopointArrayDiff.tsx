@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {
+import type {
   ArrayDiff,
   ObjectDiff,
   Diff,
@@ -8,7 +8,7 @@ import {
 } from '@sanity/field/diff'
 import {GoogleMapsLoadProxy} from '../loader/GoogleMapsLoadProxy'
 import {GoogleMap} from '../map/Map'
-import {Geopoint} from '../types'
+import type {Geopoint} from '../types'
 import {GeopointMove} from './GeopointMove'
 import {RootContainer} from './GeopointFieldDiff.styles'
 

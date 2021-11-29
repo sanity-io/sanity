@@ -1,7 +1,9 @@
 import {isEqual} from 'lodash'
-import {Editor, Point, Path as SlatePath, Element, Node} from 'slate'
-import {isKeySegment, Path} from '@sanity/types'
-import {EditorSelectionPoint} from '../types/editor'
+import type {Point, Path as SlatePath, Node} from 'slate'
+import {Editor, Element} from 'slate'
+import type {Path} from '@sanity/types'
+import {isKeySegment} from '@sanity/types'
+import type {EditorSelectionPoint} from '../types/editor'
 
 export function createKeyedPath(point: Point, editor: Editor): Path | null {
   const blockPath = [point.path[0]]

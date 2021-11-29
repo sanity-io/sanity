@@ -8,7 +8,7 @@ import elementResizeDetectorMaker from 'element-resize-detector'
 import {debounce, truncate} from 'lodash'
 import styles from 'part:@sanity/components/previews/card-style'
 import React from 'react'
-import {MediaDimensions} from '../types'
+import type {MediaDimensions} from '../types'
 
 interface CardPreviewProps {
   title?: React.ReactNode | React.FC<unknown>

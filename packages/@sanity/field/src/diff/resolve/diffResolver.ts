@@ -2,7 +2,7 @@ import {ArrayOfOptionsFieldDiff} from '../../types/array/diff'
 import {DatetimeFieldDiff} from '../../types/datetime/diff'
 import {UrlFieldDiff} from '../../types/url/diff'
 import {SlugFieldDiff} from '../../types/slug/diff'
-import {DiffComponentResolver} from '../../types'
+import type {DiffComponentResolver} from '../../types'
 
 export const diffResolver: DiffComponentResolver = function diffResolver({schemaType}) {
   // datetime or date

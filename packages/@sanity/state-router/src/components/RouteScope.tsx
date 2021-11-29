@@ -3,7 +3,7 @@ import React from 'react'
 import isEmpty from '../utils/isEmpty'
 
 import {RouterContext} from '../RouterContext'
-import {InternalRouter, NavigateOptions, RouterProviderContext} from './types'
+import type {InternalRouter, NavigateOptions, RouterProviderContext} from './types'
 
 function addScope(
   routerState: Record<string, any>,

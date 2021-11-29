@@ -2,13 +2,13 @@
 /* eslint-disable complexity */
 import {Editor, Transforms, Path, Range, Element} from 'slate'
 import isHotkey from 'is-hotkey'
-import {ReactEditor} from '@sanity/slate-react'
-import {PortableTextFeatures} from '../../types/portableText'
-import {PortableTextSlateEditor} from '../../types/editor'
-import {HotkeyOptions} from '../../types/options'
+import type {ReactEditor} from '@sanity/slate-react'
+import type {PortableTextFeatures} from '../../types/portableText'
+import type {PortableTextSlateEditor} from '../../types/editor'
+import type {HotkeyOptions} from '../../types/options'
 import {debugWithName} from '../../utils/debug'
 import {toSlateValue} from '../../utils/values'
-import {PortableTextEditor} from '../PortableTextEditor'
+import type {PortableTextEditor} from '../PortableTextEditor'
 
 const debug = debugWithName('plugin:withHotKeys')
 

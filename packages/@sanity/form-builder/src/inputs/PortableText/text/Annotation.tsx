@@ -1,18 +1,15 @@
 import React, {useCallback, useMemo, useRef, useState} from 'react'
-import {
-  PortableTextChild,
-  PortableTextEditor,
-  RenderAttributes,
-  Type,
-  usePortableTextEditor,
-} from '@sanity/portable-text-editor'
+import type {PortableTextChild, RenderAttributes, Type} from '@sanity/portable-text-editor'
+import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
-import {isValidationMarker, Marker, Path} from '@sanity/types'
+import type {Marker, Path} from '@sanity/types'
+import {isValidationMarker} from '@sanity/types'
 import styled, {css} from 'styled-components'
-import {Box, Theme, ThemeColorToneKey, Tooltip} from '@sanity/ui'
+import type {Theme, ThemeColorToneKey} from '@sanity/ui'
+import {Box, Tooltip} from '@sanity/ui'
 import {hues} from '@sanity/color'
 import Markers from '../_legacyDefaultParts/Markers'
-import {RenderCustomMarkers} from '../types'
+import type {RenderCustomMarkers} from '../types'
 import {AnnotationToolbarPopover} from './'
 
 interface AnnotationProps {

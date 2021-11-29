@@ -1,7 +1,7 @@
-import {Element, Operation, InsertNodeOperation} from 'slate'
-import {PortableTextFeatures} from '../../types/portableText'
+import type {Element, Operation, InsertNodeOperation} from 'slate'
+import type {PortableTextFeatures} from '../../types/portableText'
 import {debugWithName} from '../../utils/debug'
-import {PortableTextSlateEditor} from '../../types/editor'
+import type {PortableTextSlateEditor} from '../../types/editor'
 
 const debug = debugWithName('plugin:withSchemaTypes')
 /**

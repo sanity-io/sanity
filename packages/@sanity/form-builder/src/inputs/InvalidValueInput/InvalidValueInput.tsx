@@ -3,7 +3,8 @@ import React, {forwardRef, useCallback, useImperativeHandle, useMemo} from 'reac
 import {Alert} from '../../components/Alert'
 import {Details} from '../../components/Details'
 import PatchEvent, {set, unset} from '../../PatchEvent'
-import CONVERTERS, {ValueConverter} from './converters'
+import type {ValueConverter} from './converters'
+import CONVERTERS from './converters'
 import {UntypedValueInput} from './UntypedValueInput'
 
 declare const __DEV__: boolean

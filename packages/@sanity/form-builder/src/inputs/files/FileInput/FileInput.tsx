@@ -2,10 +2,10 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import {Observable, Subscription} from 'rxjs'
+import type {Observable, Subscription} from 'rxjs'
 import {get, partition, uniqueId} from 'lodash'
 import {FormFieldSet, ImperativeToast} from '@sanity/base/components'
-import {
+import type {
   Asset as AssetDocument,
   AssetFromSource,
   File as BaseFile,
@@ -29,6 +29,7 @@ import {
   TrashIcon,
   UploadIcon,
 } from '@sanity/icons'
+import type {ToastParams} from '@sanity/ui'
 import {
   Box,
   Button,
@@ -42,16 +43,17 @@ import {
   Stack,
   Text,
   Tooltip,
-  ToastParams,
 } from '@sanity/ui'
-import {PresenceOverlay, FormFieldPresence} from '@sanity/base/presence'
+import type {FormFieldPresence} from '@sanity/base/presence'
+import {PresenceOverlay} from '@sanity/base/presence'
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
-import {Uploader, UploaderResolver, UploadOptions} from '../../../sanity/uploads/types'
+import type {Uploader, UploaderResolver, UploadOptions} from '../../../sanity/uploads/types'
 import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import {FileInputButton} from '../common/FileInputButton/FileInputButton'
-import {FileTarget, FileInfo, Overlay} from '../common/styles'
-import {InternalAssetSource, UploadState} from '../types'
+import type {FileInfo} from '../common/styles'
+import {FileTarget, Overlay} from '../common/styles'
+import type {InternalAssetSource, UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
 import {DropMessage} from '../common/DropMessage'
 import {handleSelectAssetFromSource} from '../common/assetSource'

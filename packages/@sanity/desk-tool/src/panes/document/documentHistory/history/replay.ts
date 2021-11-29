@@ -1,4 +1,4 @@
-import {DocumentRemoteMutationVersionEvent, TransactionLogEvent} from './types'
+import type {DocumentRemoteMutationVersionEvent, TransactionLogEvent} from './types'
 import {Timeline} from './Timeline'
 
 export type TraceEvent =

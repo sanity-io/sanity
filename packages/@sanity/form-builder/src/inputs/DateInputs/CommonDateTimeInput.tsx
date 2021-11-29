@@ -1,11 +1,11 @@
 /* eslint-disable no-nested-ternary */
 import React, {useEffect} from 'react'
 import {FormField} from '@sanity/base/components'
-import {Marker} from '@sanity/types'
+import type {Marker} from '@sanity/types'
 import {useId} from '@reach/auto-id'
 import {useForwardedRef, TextInput} from '@sanity/ui'
 import {DateTimeInput} from './base/DateTimeInput'
-import {CommonProps, ParseResult} from './types'
+import type {CommonProps, ParseResult} from './types'
 
 type Props = CommonProps & {
   title: string

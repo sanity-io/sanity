@@ -3,7 +3,7 @@
 
 import React from 'react'
 import styles from 'part:@sanity/components/previews/block-image-style'
-import {MediaDimensions} from '../types'
+import type {MediaDimensions} from '../types'
 
 type BlockImagePreviewStatusComponent = React.FunctionComponent<{
   layout: 'default'

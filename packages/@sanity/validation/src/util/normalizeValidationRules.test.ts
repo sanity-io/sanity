@@ -1,4 +1,4 @@
-import {NumberSchemaType, SchemaType, StringSchemaType} from '@sanity/types'
+import type {NumberSchemaType, SchemaType, StringSchemaType} from '@sanity/types'
 import RuleClass from '../Rule'
 import normalizeValidationRules from './normalizeValidationRules'
 

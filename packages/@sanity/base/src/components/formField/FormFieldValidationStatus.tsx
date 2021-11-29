@@ -2,17 +2,13 @@
 
 import {hues} from '@sanity/color'
 import {ErrorOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
-import {
-  isValidationErrorMarker,
-  isValidationMarker,
-  isValidationWarningMarker,
-  Marker,
-  ValidationMarker,
-} from '@sanity/types'
-import {Box, Flex, Placement, Stack, Text, Tooltip} from '@sanity/ui'
+import type {Marker, ValidationMarker} from '@sanity/types'
+import {isValidationErrorMarker, isValidationMarker, isValidationWarningMarker} from '@sanity/types'
+import type {Placement} from '@sanity/ui'
+import {Box, Flex, Stack, Text, Tooltip} from '@sanity/ui'
 import React, {createElement} from 'react'
 import {markersToValidationList} from './helpers'
-import {FormFieldValidation} from './types'
+import type {FormFieldValidation} from './types'
 
 export interface FormFieldValidationStatusProps {
   /**

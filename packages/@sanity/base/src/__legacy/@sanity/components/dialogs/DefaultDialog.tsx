@@ -13,7 +13,7 @@ import React, {useCallback, useEffect, useState} from 'react'
 import {LegacyLayerProvider, ScrollContainer} from '../../../../components'
 import {useClickOutside} from '../hooks'
 import {DefaultDialogActions} from './DefaultDialogActions'
-import {DialogAction, DialogColor} from './types'
+import type {DialogAction, DialogColor} from './types'
 
 interface DefaultDialogProps {
   actions?: DialogAction[]

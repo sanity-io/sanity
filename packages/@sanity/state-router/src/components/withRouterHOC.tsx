@@ -1,6 +1,7 @@
-import React, {ComponentType} from 'react'
+import type {ComponentType} from 'react'
+import React from 'react'
 import internalRouterContextTypeCheck from './internalRouterContextTypeCheck'
-import {HOCRouter, InternalRouter} from './types'
+import type {HOCRouter, InternalRouter} from './types'
 
 const NO_CONTEXT_STATE = {
   state: {},

@@ -1,4 +1,5 @@
-import {Box, Flex, rem, Text, Theme} from '@sanity/ui'
+import type {Theme} from '@sanity/ui'
+import {Box, Flex, rem, Text} from '@sanity/ui'
 import React, {memo} from 'react'
 import {ToggleArrowRightIcon} from '@sanity/icons'
 import styled, {css} from 'styled-components'

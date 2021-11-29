@@ -1,6 +1,8 @@
-import {SchemaType} from '@sanity/types'
-import {Template, TemplateBuilder} from './Template'
-import {Schema, getDefaultSchema} from './parts/Schema'
+import type {SchemaType} from '@sanity/types'
+import type {Template} from './Template'
+import {TemplateBuilder} from './Template'
+import type {Schema} from './parts/Schema'
+import {getDefaultSchema} from './parts/Schema'
 
 function defaultTemplateForType(
   schemaType: string | SchemaType,

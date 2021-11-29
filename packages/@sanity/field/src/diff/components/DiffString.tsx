@@ -1,7 +1,7 @@
 import {Text, Card, rem} from '@sanity/ui'
 import * as React from 'react'
 import styled from 'styled-components'
-import {StringDiffSegment, StringDiff} from '../../types'
+import type {StringDiffSegment, StringDiff} from '../../types'
 import {DiffCard} from './DiffCard'
 
 const RoundedCard = styled.span`

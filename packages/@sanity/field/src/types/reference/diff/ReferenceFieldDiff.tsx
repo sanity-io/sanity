@@ -1,5 +1,6 @@
 import React from 'react'
-import {DiffComponent, DiffFromTo, ReferenceDiff} from '../../../diff'
+import type {DiffComponent, ReferenceDiff} from '../../../diff'
+import {DiffFromTo} from '../../../diff'
 import {ReferencePreview} from '../preview/ReferencePreview'
 
 export const ReferenceFieldDiff: DiffComponent<ReferenceDiff> = ({diff, schemaType}) => {

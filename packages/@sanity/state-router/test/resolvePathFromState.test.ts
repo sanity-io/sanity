@@ -1,5 +1,5 @@
 import route from '../src/route'
-import {Router} from '../src/types'
+import type {Router} from '../src/types'
 import resolvePathFromState from '../src/resolvePathFromState'
 
 test('resolves empty state to fixed base path', () => {

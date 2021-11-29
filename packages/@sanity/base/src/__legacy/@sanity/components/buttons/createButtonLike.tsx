@@ -5,7 +5,7 @@ import classNames from 'classnames'
 import styles from 'part:@sanity/components/buttons/default-style'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import React from 'react'
-import {ButtonComponent, ButtonProps} from './types'
+import type {ButtonComponent, ButtonProps} from './types'
 
 interface ButtonComponentOpts {
   displayName: string

@@ -1,12 +1,10 @@
 import {LegacyLayerProvider} from '@sanity/base/components'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Button, Card, Dialog, Flex, Grid, Spinner, Text} from '@sanity/ui'
-import {SanityDocument} from '@sanity/types'
+import type {SanityDocument} from '@sanity/types'
 import React from 'react'
-import {
-  enhanceWithReferringDocuments,
-  WithReferringDocumentsProps,
-} from './enhanceWithReferringDocuments'
+import type {WithReferringDocumentsProps} from './enhanceWithReferringDocuments'
+import {enhanceWithReferringDocuments} from './enhanceWithReferringDocuments'
 import {DocTitle} from './DocTitle'
 import {ReferringDocumentsList} from './ReferringDocumentsList'
 

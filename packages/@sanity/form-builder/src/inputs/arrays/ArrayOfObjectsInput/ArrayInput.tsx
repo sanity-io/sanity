@@ -1,31 +1,25 @@
-import {FormFieldPresence} from '@sanity/base/presence'
-import {
-  ArraySchemaType,
-  isKeySegment,
-  isObjectSchemaType,
-  Marker,
-  ObjectSchemaType,
-  Path,
-  SchemaType,
-} from '@sanity/types'
+import type {FormFieldPresence} from '@sanity/base/presence'
+import type {ArraySchemaType, Marker, ObjectSchemaType, Path, SchemaType} from '@sanity/types'
+import {isKeySegment, isObjectSchemaType} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {isPlainObject} from 'lodash'
 import {FormFieldSet, ImperativeToast} from '@sanity/base/components'
-import {Button, Stack, Text, Spinner, Flex, Card, Box, ToastParams} from '@sanity/ui'
+import type {ToastParams} from '@sanity/ui'
+import {Button, Stack, Text, Spinner, Flex, Card, Box} from '@sanity/ui'
 import React from 'react'
 import {map} from 'rxjs/operators'
-import {Subscription} from 'rxjs'
+import type {Subscription} from 'rxjs'
 import {randomKey, resolveTypeName} from '@sanity/util/content'
 import {insert, PatchEvent, set, setIfMissing, unset} from '../../../PatchEvent'
-import {FileLike, Uploader, UploadEvent} from '../../../sanity/uploads/types'
+import type {FileLike, Uploader, UploadEvent} from '../../../sanity/uploads/types'
 import {Alert} from '../../../components/Alert'
 import {Details} from '../../../components/Details'
 import {Item, List} from '../common/list'
 import {EMPTY_ARRAY} from '../../../utils/empty'
-import ArrayFunctions from '../common/ArrayFunctions'
+import type ArrayFunctions from '../common/ArrayFunctions'
 import {applyAll} from '../../../patch/applyPatch'
 import {ArrayItem} from './item'
-import {ArrayMember} from './types'
+import type {ArrayMember} from './types'
 import {uploadTarget} from './uploadTarget/uploadTarget'
 
 declare const __DEV__: boolean

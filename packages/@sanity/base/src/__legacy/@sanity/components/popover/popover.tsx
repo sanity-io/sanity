@@ -4,7 +4,7 @@ import React, {cloneElement, forwardRef, useCallback, useEffect, useState} from 
 import {usePopper} from 'react-popper'
 import maxSize from 'popper-max-size-modifier'
 import {useBoundaryElement} from '../boundaryElement'
-import {Placement} from '../types'
+import type {Placement} from '../types'
 import {LegacyLayerProvider} from '../../../../components'
 import {PopoverArrow} from './popoverArrow'
 

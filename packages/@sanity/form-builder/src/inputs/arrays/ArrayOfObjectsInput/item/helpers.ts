@@ -1,4 +1,4 @@
-import {ArraySchemaType, SchemaType} from '@sanity/types'
+import type {ArraySchemaType, SchemaType} from '@sanity/types'
 import {resolveTypeName} from '@sanity/util/content'
 import {IGNORE_KEYS} from './constants'
 

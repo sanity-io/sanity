@@ -1,11 +1,11 @@
-import {Path} from '@sanity/types'
-import {Subject, Observable} from 'rxjs'
-import {Node as SlateNode, Operation as SlateOperation} from 'slate'
-import {ReactEditor} from '@sanity/slate-react'
+import type {Path} from '@sanity/types'
+import type {Subject, Observable} from 'rxjs'
+import type {Node as SlateNode, Operation as SlateOperation} from 'slate'
+import type {ReactEditor} from '@sanity/slate-react'
 import type {Patch} from '../types/patch'
-import {Type} from '../types/schema'
-import {PortableTextBlock, PortableTextChild} from '../types/portableText'
-import {PortableTextEditor} from '../editor/PortableTextEditor'
+import type {Type} from '../types/schema'
+import type {PortableTextBlock, PortableTextChild} from '../types/portableText'
+import type {PortableTextEditor} from '../editor/PortableTextEditor'
 
 export interface EditableAPI {
   activeAnnotations: () => PortableTextBlock[]

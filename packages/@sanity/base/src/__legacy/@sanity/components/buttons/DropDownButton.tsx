@@ -8,8 +8,8 @@ import {MenuButton} from 'part:@sanity/components/menu-button'
 import ChevronDownIcon from 'part:@sanity/base/angle-down-icon'
 import {List, Item} from 'part:@sanity/components/lists/default'
 import React, {createElement, forwardRef, useCallback, useEffect, useRef, useState} from 'react'
-import {Placement} from '../types'
-import {ButtonProps} from './types'
+import type {Placement} from '../types'
+import type {ButtonProps} from './types'
 
 interface DropdownItem {
   title: string

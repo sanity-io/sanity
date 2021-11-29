@@ -1,19 +1,17 @@
-import {
-  PortableTextEditor,
-  PortableTextBlock,
-  Type,
-  RenderAttributes,
-} from '@sanity/portable-text-editor'
-import {isKeySegment, Marker, Path} from '@sanity/types'
+import type {PortableTextBlock, Type, RenderAttributes} from '@sanity/portable-text-editor'
+import {PortableTextEditor} from '@sanity/portable-text-editor'
+import type {Marker, Path} from '@sanity/types'
+import {isKeySegment} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
-import {Card, Theme, Tooltip, Flex, Box, ResponsivePaddingProps} from '@sanity/ui'
+import type {Theme, ResponsivePaddingProps} from '@sanity/ui'
+import {Card, Tooltip, Flex, Box} from '@sanity/ui'
 import {hues} from '@sanity/color'
 import React, {useCallback, useMemo, useRef} from 'react'
 import styled, {css} from 'styled-components'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/change-indicators'
-import {RenderBlockActions, RenderCustomMarkers} from '../types'
+import type {RenderBlockActions, RenderCustomMarkers} from '../types'
 import {Markers} from '../../../legacyParts'
-import PatchEvent from '../../../PatchEvent'
+import type PatchEvent from '../../../PatchEvent'
 import {BlockActions} from '../BlockActions'
 import {BlockObjectPreview} from './BlockObjectPreview'
 

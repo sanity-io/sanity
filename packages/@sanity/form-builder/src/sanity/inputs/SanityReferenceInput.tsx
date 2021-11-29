@@ -1,6 +1,7 @@
-import React, {ForwardedRef, forwardRef, useCallback, useRef} from 'react'
+import type {ForwardedRef} from 'react'
+import React, {forwardRef, useCallback, useRef} from 'react'
 
-import {
+import type {
   Marker,
   Path,
   Reference,
@@ -10,11 +11,11 @@ import {
   SanityDocument,
 } from '@sanity/types'
 import {get} from '@sanity/util/paths'
-import {FormFieldPresence} from '@sanity/base/presence'
+import type {FormFieldPresence} from '@sanity/base/presence'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 import {ReferenceInput} from '../../inputs/ReferenceInput'
-import PatchEvent from '../../PatchEvent'
+import type PatchEvent from '../../PatchEvent'
 import withValuePath from '../../utils/withValuePath'
 import withDocument from '../../utils/withDocument'
 import * as adapter from './client-adapters/reference'

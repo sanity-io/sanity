@@ -1,8 +1,9 @@
-import {isTitledListValue, SchemaType, TitledListValue} from '@sanity/types'
+import type {SchemaType, TitledListValue} from '@sanity/types'
+import {isTitledListValue} from '@sanity/types'
 import {debounce, flatten, get, isPlainObject, pick, uniqBy} from 'lodash'
 import {INVALID_PREVIEW_FALLBACK} from './constants'
 import {isPortableTextArray, extractTextFromBlocks} from './utils/portableText'
-import {PrepareViewOptions} from './types'
+import type {PrepareViewOptions} from './types'
 import {keysOf} from './utils/keysOf'
 
 const PRESERVE_KEYS = ['_id', '_type', '_upload']

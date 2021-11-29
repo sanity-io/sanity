@@ -1,6 +1,6 @@
-import React from 'react'
-import {Reference} from '../reference'
-import {SanityDocument} from '../documents'
+import type React from 'react'
+import type {Reference} from '../reference'
+import type {SanityDocument} from '../documents'
 
 export interface File {
   [key: string]: unknown // We allow meta-fields on file

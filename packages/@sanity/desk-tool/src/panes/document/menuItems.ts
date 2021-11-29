@@ -1,6 +1,6 @@
 import {EarthAmericasIcon, BinaryDocumentIcon, RestoreIcon} from '@sanity/icons'
-import {PaneMenuItem} from '../../types'
-import {DeskToolFeatures} from '../../contexts/deskTool'
+import type {PaneMenuItem} from '../../types'
+import type {DeskToolFeatures} from '../../contexts/deskTool'
 
 interface Params {
   features: DeskToolFeatures

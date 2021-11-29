@@ -1,9 +1,10 @@
 import {useId} from '@reach/auto-id'
 import {IntentLink} from '@sanity/base/router'
 import {EllipsisVerticalIcon} from '@sanity/icons'
-import {Box, Button, Label, Menu, MenuButton, MenuDivider, MenuItem, PopoverProps} from '@sanity/ui'
+import type {PopoverProps} from '@sanity/ui'
+import {Box, Button, Label, Menu, MenuButton, MenuDivider, MenuItem} from '@sanity/ui'
 import React, {forwardRef, Fragment, useCallback, useMemo} from 'react'
-import {PaneMenuItem, PaneMenuItemGroup} from '../../types'
+import type {PaneMenuItem, PaneMenuItemGroup} from '../../types'
 
 interface PaneContextMenuButtonProps {
   items: PaneMenuItem[]

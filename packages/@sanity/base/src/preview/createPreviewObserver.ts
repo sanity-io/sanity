@@ -1,8 +1,11 @@
-import {of as observableOf, Observable} from 'rxjs'
+import type {Observable} from 'rxjs'
+import {of as observableOf} from 'rxjs'
 import {map, switchMap, catchError} from 'rxjs/operators'
-import {isReferenceSchemaType, ReferenceSchemaType, SchemaType} from '@sanity/types'
-import prepareForPreview, {invokePrepare, PreparedValue} from './prepareForPreview'
-import {Reference, PrepareViewOptions, Path} from './types'
+import type {ReferenceSchemaType, SchemaType} from '@sanity/types'
+import {isReferenceSchemaType} from '@sanity/types'
+import type {PreparedValue} from './prepareForPreview'
+import prepareForPreview, {invokePrepare} from './prepareForPreview'
+import type {Reference, PrepareViewOptions, Path} from './types'
 import {INSUFFICIENT_PERMISSIONS_FALLBACK, InsufficientPermissionsError} from './constants'
 
 const INSUFFICIENT_PERMISSIONS = Symbol('INSUFFICIENT_PERMISSIONS')

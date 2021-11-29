@@ -1,6 +1,7 @@
-import {Observable} from 'rxjs'
+import type {Observable} from 'rxjs'
 import {createHookFromObservableFactory} from '../../util/createHookFromObservableFactory'
-import {DocumentValuePermission, PermissionCheckResult} from './types'
+import type {PermissionCheckResult} from './types'
+import {DocumentValuePermission} from './types'
 import grantsStore from './grantsStore'
 
 export interface DocumentValuePermissionsOptions {

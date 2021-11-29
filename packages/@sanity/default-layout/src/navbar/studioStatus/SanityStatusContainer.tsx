@@ -1,7 +1,7 @@
 import React, {useCallback, useState} from 'react'
 import {useCurrentUser, useModuleStatus} from '@sanity/base/hooks'
 import SanityStatus from '../studioStatus/SanityStatus'
-import {Severity} from './types'
+import type {Severity} from './types'
 
 const levels: Severity[] = ['low', 'medium', 'high']
 

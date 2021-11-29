@@ -1,4 +1,5 @@
-import {Avatar, AvatarPosition, AvatarSize, AvatarStatus, Box, Text, Tooltip} from '@sanity/ui'
+import type {AvatarPosition, AvatarSize, AvatarStatus} from '@sanity/ui'
+import {Avatar, Box, Text, Tooltip} from '@sanity/ui'
 import React, {useState} from 'react'
 import type {User} from '@sanity/types'
 import {useUserColor} from '../user-color'

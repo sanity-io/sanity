@@ -1,9 +1,9 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react'
-import {Chunk} from '@sanity/field/diff'
+import type {Chunk} from '@sanity/field/diff'
 import {Text, Spinner, Flex} from '@sanity/ui'
-import {Timeline as TimelineModel} from '../documentHistory/history/Timeline'
+import type {Timeline as TimelineModel} from '../documentHistory/history/Timeline'
 import {TimelineItem} from './timelineItem'
-import {TimelineItemState} from './types'
+import type {TimelineItemState} from './types'
 import {Root, StackWrapper, MenuWrapper} from './timeline.styled'
 
 interface TimelineProps {

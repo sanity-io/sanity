@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import {SnackbarAction} from './types'
+import type {SnackbarAction} from './types'
 
 interface DefaultSnackbarProps {
   kind?: 'info' | 'warning' | 'error' | 'success'

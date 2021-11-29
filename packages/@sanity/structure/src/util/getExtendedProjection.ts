@@ -1,5 +1,5 @@
-import {SchemaType} from '../parts/Schema'
-import {SortItem} from '../Sort'
+import type {SchemaType} from '../parts/Schema'
+import type {SortItem} from '../Sort'
 
 const IMPLICIT_FIELDS = ['_id', '_type', '_createdAt', '_updatedAt', '_rev']
 

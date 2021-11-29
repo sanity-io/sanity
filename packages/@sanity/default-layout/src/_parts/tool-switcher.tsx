@@ -3,7 +3,7 @@
  */
 
 import React from 'react'
-import {Tool} from '../types'
+import type {Tool} from '../types'
 import VerticalToolMenu from '../navbar/toolMenu/ToolMenu'
 import {ToolMenuCollapse as HorizontalToolMenu} from '../navbar/toolMenuCollapse'
 

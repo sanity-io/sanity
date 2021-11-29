@@ -1,4 +1,4 @@
-import {Path, PathSegment} from '@sanity/types'
+import type {Path, PathSegment} from '@sanity/types'
 import * as DMP from 'diff-match-patch'
 
 import type {

@@ -1,5 +1,6 @@
 import React from 'react'
-import {DiffComponent, DiffFromTo, StringDiff} from '../../../diff'
+import type {DiffComponent, StringDiff} from '../../../diff'
+import {DiffFromTo} from '../../../diff'
 import {StringPreview} from '../../string/preview'
 
 export const UrlFieldDiff: DiffComponent<StringDiff> = ({diff, schemaType}) => {

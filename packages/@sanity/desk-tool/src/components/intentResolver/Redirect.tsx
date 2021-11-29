@@ -1,7 +1,7 @@
 import {useRouter} from '@sanity/base/router'
 import {Box, Card, Flex, Spinner, Text} from '@sanity/ui'
 import React, {useEffect} from 'react'
-import {RouterPanes} from '../../types'
+import type {RouterPanes} from '../../types'
 import {Delay} from '../Delay'
 
 interface RedirectProps {

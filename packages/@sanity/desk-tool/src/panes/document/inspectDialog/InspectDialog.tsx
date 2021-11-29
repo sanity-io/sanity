@@ -1,9 +1,10 @@
-import {SanityDocument} from '@sanity/types'
+import type {SanityDocument} from '@sanity/types'
 import {Card, Code, Dialog, Flex, Tab, TabList, TabPanel} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import JSONInspector from 'react-json-inspector'
 import {withPropsStream} from 'react-props-stream'
-import {combineLatest, Observable} from 'rxjs'
+import type {Observable} from 'rxjs'
+import {combineLatest} from 'rxjs'
 import {map} from 'rxjs/operators'
 import {DocTitle} from '../../../components/DocTitle'
 import {deskToolSettings} from '../../../settings'
@@ -12,7 +13,7 @@ import {VIEW_MODE_PARSED, VIEW_MODE_RAW, VIEW_MODES} from './constants'
 import {isDocumentWithType, isExpanded, maybeSelectAll, select, toggleExpanded} from './helpers'
 import {JSONInspectorWrapper} from './InspectDialog.styles'
 import {Search} from './Search'
-import {InspectViewMode} from './types'
+import type {InspectViewMode} from './types'
 
 interface InspectDialogProps {
   value: Partial<SanityDocument> | null

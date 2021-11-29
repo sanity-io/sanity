@@ -1,7 +1,7 @@
 import React, {useCallback} from 'react'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
-import {MediaDimensions, PreviewProps} from './types'
+import type {MediaDimensions, PreviewProps} from './types'
 import {HeaderFlex, MediaCard, RootBox} from './blockImagePreview.styled'
 
 const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {

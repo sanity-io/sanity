@@ -1,4 +1,4 @@
-import {PubSub} from 'nano-pubsub'
+import type {PubSub} from 'nano-pubsub'
 
 export type NavigateOptions = {
   replace?: boolean

@@ -4,7 +4,7 @@
 import styles from 'part:@sanity/components/previews/media-style'
 import ProgressCircle from 'part:@sanity/components/progress/circle'
 import React from 'react'
-import {MediaDimensions} from '../types'
+import type {MediaDimensions} from '../types'
 
 interface MediaPreviewProps {
   title?: string

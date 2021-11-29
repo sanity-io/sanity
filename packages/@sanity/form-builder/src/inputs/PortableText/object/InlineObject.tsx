@@ -1,14 +1,16 @@
 /* eslint-disable react/prop-types */
-import React, {FunctionComponent, useCallback, useMemo} from 'react'
+import type {FunctionComponent} from 'react'
+import React, {useCallback, useMemo} from 'react'
 import {hues} from '@sanity/color'
-import {PortableTextChild, Type, RenderAttributes} from '@sanity/portable-text-editor'
-import {Marker, Path} from '@sanity/types'
+import type {PortableTextChild, Type, RenderAttributes} from '@sanity/portable-text-editor'
+import type {Marker, Path} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import styled, {css} from 'styled-components'
-import {Box, Card, Theme, Tooltip} from '@sanity/ui'
+import type {Theme} from '@sanity/ui'
+import {Box, Card, Tooltip} from '@sanity/ui'
 import Preview from '../../../Preview'
 import {Markers} from '../../../legacyParts'
-import {RenderCustomMarkers} from '../types'
+import type {RenderCustomMarkers} from '../types'
 
 interface InlineObjectProps {
   attributes: RenderAttributes

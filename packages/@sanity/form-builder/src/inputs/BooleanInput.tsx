@@ -4,13 +4,13 @@ import React, {useCallback} from 'react'
 import styled from 'styled-components'
 import {useId} from '@reach/auto-id'
 import {Box, Card, Checkbox, Flex, Switch} from '@sanity/ui'
-import {BooleanSchemaType} from '@sanity/types'
+import type {BooleanSchemaType} from '@sanity/types'
 import {FormFieldHeaderText} from '@sanity/base/components'
 import {FieldStatus} from '@sanity/base/_internal'
 import {ChangeIndicator} from '@sanity/base/change-indicators'
 import {FieldPresence} from '@sanity/base/presence'
 import PatchEvent, {set} from '../PatchEvent'
-import {Props} from './types'
+import type {Props} from './types'
 
 const CenterAlignedBox = styled(Box)`
   align-self: center;

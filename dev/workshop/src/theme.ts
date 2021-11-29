@@ -1,5 +1,6 @@
 // import {theme} from '@sanity/base'
-import {RootTheme, studioTheme as defaults} from '@sanity/ui'
+import type {RootTheme} from '@sanity/ui'
+import {studioTheme as defaults} from '@sanity/ui'
 
 // @todo: use the same theme object as the Studio
 export const theme: RootTheme = {

@@ -1,14 +1,6 @@
 import {ChevronDownIcon, PublishIcon} from '@sanity/icons'
-import {
-  Button,
-  Flex,
-  Menu,
-  MenuButton,
-  MenuButtonProps,
-  MenuItem,
-  Stack,
-  useToast,
-} from '@sanity/ui'
+import type {MenuButtonProps} from '@sanity/ui'
+import {Button, Flex, Menu, MenuButton, MenuItem, Stack, useToast} from '@sanity/ui'
 import React, {useCallback} from 'react'
 
 const MENU_BUTTON_POPOVER_PROPS: MenuButtonProps['popover'] = {

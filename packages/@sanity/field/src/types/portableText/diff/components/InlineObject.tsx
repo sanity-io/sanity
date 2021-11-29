@@ -2,22 +2,17 @@
 ///<reference types="@sanity/types/parts" />
 
 import {FOCUS_TERMINATOR, toString} from '@sanity/util/paths'
-import {isKeySegment, Path} from '@sanity/types'
+import type {Path} from '@sanity/types'
+import {isKeySegment} from '@sanity/types'
 import {Card, Flex, Label, Popover, useClickOutside, useLayer} from '@sanity/ui'
 import SanityPreview from 'part:@sanity/base/preview'
 import React, {useCallback, useState, useEffect} from 'react'
 import {ConnectorContext, useReportedValues} from '@sanity/base/change-indicators'
 import styled from 'styled-components'
 import {ChevronDownIcon} from '@sanity/icons'
-import {
-  ChangeList,
-  DiffContext,
-  DiffTooltip,
-  ObjectDiff,
-  ObjectSchemaType,
-  useDiffAnnotationColor,
-} from '../../../../diff'
-import {PortableTextChild} from '../types'
+import type {ObjectDiff, ObjectSchemaType} from '../../../../diff'
+import {ChangeList, DiffContext, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
+import type {PortableTextChild} from '../types'
 import {isEmptyObject} from '../helpers'
 import {InlineBox, InlineText, PopoverContainer, PreviewContainer} from './styledComponents'
 

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import {Observable, Subscription} from 'rxjs'
+import type {Observable, Subscription} from 'rxjs'
 
 type Props = {
   documentId: string

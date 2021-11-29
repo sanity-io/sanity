@@ -1,5 +1,6 @@
 import {UserAvatar} from '@sanity/base/components'
 import {useGlobalPresence} from '@sanity/base/hooks'
+import type {MenuButtonProps} from '@sanity/ui'
 import {
   Card,
   AvatarStack,
@@ -11,7 +12,6 @@ import {
   Text,
   Box,
   Stack,
-  MenuButtonProps,
 } from '@sanity/ui'
 import {CogIcon, UsersIcon} from '@sanity/icons'
 import React, {useMemo} from 'react'

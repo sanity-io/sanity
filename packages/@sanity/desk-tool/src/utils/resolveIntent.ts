@@ -1,10 +1,11 @@
 /* eslint-disable complexity */
 import {omit} from 'lodash'
-import {Observable} from 'rxjs'
+import type {Observable} from 'rxjs'
 import {first} from 'rxjs/operators'
-import {PaneNode, RouterPanes, RouterPaneSiblingContext, UnresolvedPaneNode} from '../types'
+import type {PaneNode, RouterPanes, RouterPaneSiblingContext, UnresolvedPaneNode} from '../types'
 import {assignId} from './assignId'
-import {createPaneResolver, PaneResolverMiddleware} from './createPaneResolver'
+import type {PaneResolverMiddleware} from './createPaneResolver'
+import {createPaneResolver} from './createPaneResolver'
 import {loadStructure} from './loadStructure'
 import {memoBind} from './memoBind'
 

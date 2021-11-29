@@ -1,4 +1,4 @@
-import {DocumentBadgeComponent} from '@sanity/base'
+import type {DocumentBadgeComponent} from '@sanity/base'
 import {LiveEditBadge} from '../badges/LiveEditBadge'
 
 // @todo: remove these 2 exports (should not be used)

@@ -1,5 +1,5 @@
 import {words, uniq, compact, union, intersection, keyBy, toLower} from 'lodash'
-import {SearchHit, WeightedHit, SearchSpec} from './types'
+import type {SearchHit, WeightedHit, SearchSpec} from './types'
 
 // takes a set of terms and a value and returns a [score, story] pair where score is a value between 0, 1 and story is the explanation
 export const calculateScore = (searchTerms: string[], value: string): [number, string] => {

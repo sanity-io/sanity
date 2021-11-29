@@ -1,8 +1,9 @@
-import {DocumentListBuilder, DocumentListInput, PartialDocumentList} from './DocumentList'
-import {Child} from './StructureNodes'
+import type {DocumentListInput, PartialDocumentList} from './DocumentList'
+import {DocumentListBuilder} from './DocumentList'
+import type {Child} from './StructureNodes'
 import {DEFAULT_INTENT_HANDLER} from './Intent'
-import {GenericListInput} from './GenericList'
-import {SchemaType} from './parts/Schema'
+import type {GenericListInput} from './GenericList'
+import type {SchemaType} from './parts/Schema'
 
 export interface DocumentTypeListInput extends Partial<GenericListInput> {
   schemaType: SchemaType | string

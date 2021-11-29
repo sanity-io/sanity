@@ -1,9 +1,9 @@
-import {Path, MultiFieldSet, ObjectField} from '@sanity/types'
+import type {Path, MultiFieldSet, ObjectField} from '@sanity/types'
 import {pathToString, pathsAreEqual, getItemKeySegment} from '../../paths'
 import {getValueError} from '../../validation'
 import {getArrayDiffItemType} from '../../schema/helpers'
 import {hasPTMemberType} from '../../types/portableText/diff/helpers'
-import {
+import type {
   ArrayDiff,
   ArraySchemaType,
   ChangeNode,

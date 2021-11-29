@@ -6,7 +6,8 @@ import React from 'react'
 
 import {LayerProvider, ThemeProvider, studioTheme} from '@sanity/ui'
 
-import {DateTimeInput, Props} from '../DateTimeInput'
+import type {Props} from '../DateTimeInput'
+import {DateTimeInput} from '../DateTimeInput'
 
 function renderInput(props: Partial<Props> = {}) {
   const onFocus = jest.fn()

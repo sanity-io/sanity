@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import {createBrowserHistory as createHistory} from 'history'
 import route from '../src/route'
 import RouterProvider from '../src/components/RouterProvider'
-import {Router} from '../src/types'
+import type {Router} from '../src/types'
 import NotFound from './components/NotFound'
 import Main from './components/Main'
 

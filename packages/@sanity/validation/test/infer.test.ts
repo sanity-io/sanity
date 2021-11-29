@@ -1,7 +1,7 @@
 /// <reference types="@sanity/types/parts" />
 
 import Schema from '@sanity/schema'
-import {ObjectSchemaType, Rule, SanityDocument} from '@sanity/types'
+import type {ObjectSchemaType, Rule, SanityDocument} from '@sanity/types'
 import createSchema from 'part:@sanity/base/schema-creator'
 import client from 'part:@sanity/base/client'
 import inferFromSchema from '../src/inferFromSchema'

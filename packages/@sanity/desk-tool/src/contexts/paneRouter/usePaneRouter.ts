@@ -1,6 +1,6 @@
 import {useContext} from 'react'
 import {PaneRouterContext} from './PaneRouterContext'
-import {PaneRouterContextValue} from './types'
+import type {PaneRouterContextValue} from './types'
 
 /**
  * @public

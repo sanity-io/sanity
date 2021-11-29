@@ -1,4 +1,5 @@
-import {Observable, of, OperatorFunction} from 'rxjs'
+import type {Observable, OperatorFunction} from 'rxjs'
+import {of} from 'rxjs'
 import {useMemoObservable} from 'react-rx'
 import {catchError, map} from 'rxjs/operators'
 

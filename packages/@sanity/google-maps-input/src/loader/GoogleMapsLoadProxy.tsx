@@ -1,6 +1,7 @@
 import React from 'react'
-import {Subscription} from 'rxjs'
-import {loadGoogleMapsApi, GoogleLoadState} from './loadGoogleMapsApi'
+import type {Subscription} from 'rxjs'
+import type {GoogleLoadState} from './loadGoogleMapsApi'
+import {loadGoogleMapsApi} from './loadGoogleMapsApi'
 import {LoadError} from './LoadError'
 
 interface LoadProps {

@@ -3,7 +3,7 @@ import extractWithPath from '../jsonpath/extractWithPath'
 import arrayToJSONMatchPath from '../jsonpath/arrayToJSONMatchPath'
 import Mutation from './Mutation'
 import debug from './debug'
-import {Doc, Mut} from './types'
+import type {Doc, Mut} from './types'
 
 // Implements a buffer for mutations that incrementally optimises the mutations by eliminating set-operations that
 // overwrite earlier set-operations, and rewrite set-operations that change strings into other strings into diffMatchPatch

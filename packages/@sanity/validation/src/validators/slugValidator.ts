@@ -1,4 +1,5 @@
-import {SlugIsUniqueValidator, Path, CustomValidator, isKeyedObject} from '@sanity/types'
+import type {SlugIsUniqueValidator, Path, CustomValidator} from '@sanity/types'
+import {isKeyedObject} from '@sanity/types'
 import {memoize} from 'lodash'
 import getClient from '../getClient'
 

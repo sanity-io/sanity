@@ -1,6 +1,6 @@
 import React from 'react'
 import imageUrlBuilder from '@sanity/image-url'
-import {ImageUrlFitMode, SanityDocument} from '@sanity/types'
+import type {ImageUrlFitMode, SanityDocument} from '@sanity/types'
 import {DocumentIcon} from '@sanity/icons'
 import {assetUrlBuilder} from '../../assets'
 import {versionedClient} from '../../client/versionedClient'
@@ -12,7 +12,7 @@ import {
   InlinePreview,
   MediaPreview,
 } from '../../components/previews'
-import {
+import type {
   PreviewComponent as PreviewComponentType,
   PreviewProps,
 } from '../../components/previews/types'

@@ -2,7 +2,7 @@ import React from 'react'
 import {SearchInput} from '../map/SearchInput'
 import {GoogleMap} from '../map/Map'
 import {Marker} from '../map/Marker'
-import {LatLng, Geopoint} from '../types'
+import type {LatLng, Geopoint} from '../types'
 
 const fallbackLatLng: LatLng = {lat: 40.7058254, lng: -74.1180863}
 

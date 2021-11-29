@@ -1,5 +1,5 @@
-import {Editor, Range} from 'slate'
-import {EditorSelection, EditorSelectionPoint} from '../types/editor'
+import type {Editor, Range} from 'slate'
+import type {EditorSelection, EditorSelectionPoint} from '../types/editor'
 import {createArrayedPath, createKeyedPath} from './paths'
 
 export function toPortableTextRange(editor: Editor): EditorSelection {
