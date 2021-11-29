@@ -34,10 +34,18 @@ export default {
       })
     },
   },
+  groups: [
+    {
+      name: 'settings',
+      title: 'Settings',
+      isDefault: true,
+    },
+  ],
   fields: [
     {
       name: 'title',
       title: 'Title',
+      group: ['settings'],
       type: 'localeString',
     },
     {
@@ -86,6 +94,7 @@ export default {
     {
       name: 'tags',
       title: 'tags',
+      group: ['settings'],
       type: 'array',
       options: {
         layout: 'tags',

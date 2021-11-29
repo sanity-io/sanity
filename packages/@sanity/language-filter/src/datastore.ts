@@ -63,7 +63,8 @@ const filterField = config.filterField || defaultFilterField
 
 export const filterFn$ = selectedLanguages$.pipe(
   map((langs) => {
-    return (enclosingType: SchemaType, field: ObjectField) =>
-      filterField(enclosingType, field, langs)
+    return (enclosingType: SchemaType, field: ObjectField) => {
+      return filterField(enclosingType, field, langs)
+    }
   })
 )
