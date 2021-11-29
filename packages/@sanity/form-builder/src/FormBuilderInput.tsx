@@ -217,8 +217,16 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
     return PathUtils.trimChildPath(path, focusPath)
   }
 
+  handleTabChange = (newFocusPath) => {
+    const {path, onFocus, focusPath} = this.props
+
+    // console.log('tab change, reset focus')
+
+    onFocus([newFocusPath])
+  }
+
   render() {
-    const {type, level, parent, value, changesOpen} = this.props
+    const {type, level, parent, focusPath, value, changesOpen} = this.props
     // Separate readOnly in order to resolve it to a boolean type
     const {readOnly, ...restProps} = this.props
     const InputComponent = this.resolveInputComponent(type)
@@ -259,7 +267,14 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
 
     return (
       <>
-        {level === 0 && hasGroups && <FilterGroupTabs type={type} disabled={changesOpen} />}
+        {level === 0 && hasGroups && (
+          <FilterGroupTabs
+            onChange={this.handleTabChange}
+            focusPath={focusPath}
+            type={type}
+            disabled={changesOpen}
+          />
+        )}
         <FormBuilderInputInner
           {...restProps}
           readOnly={readOnly}

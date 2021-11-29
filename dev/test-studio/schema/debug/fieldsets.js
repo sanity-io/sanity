@@ -1,4 +1,4 @@
-import {BlockquoteIcon, CogIcon} from '@sanity/icons'
+import {BlockquoteIcon, CogIcon, EyeClosedIcon} from '@sanity/icons'
 
 export default {
   name: 'fieldsetsTest',
@@ -10,6 +10,12 @@ export default {
       title: 'Settings',
       isDefault: true,
       icon: CogIcon,
+    },
+    {
+      name: 'without-validation-error',
+      title: 'Without Validation Error',
+      isDefault: true,
+      icon: EyeClosedIcon,
     },
   ],
   icon: BlockquoteIcon,
@@ -72,6 +78,12 @@ export default {
           options: {collapsible: true, collapsed: true},
         },
       ],
+      groups: [
+        {
+          name: 'instagram',
+          title: 'Instagram',
+        },
+      ],
       fields: [
         {
           name: 'name',
@@ -90,6 +102,7 @@ export default {
           title: 'Instagram',
           type: 'string',
           fieldset: 'social',
+          group: ['instagram'],
         },
         {
           name: 'facebook',
@@ -124,8 +137,9 @@ export default {
     {
       name: 'settingsBoolean',
       title: 'Settings Boolean',
+      description: 'Belongs into multiple field groups',
       type: 'boolean',
-      group: ['settings'],
+      group: ['settings', 'without-validation-error'],
     },
     {
       name: 'recursive',

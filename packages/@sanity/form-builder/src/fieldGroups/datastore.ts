@@ -6,14 +6,13 @@ import {map, publishReplay, refCount, startWith, tap, take} from 'rxjs/operators
 import {ObjectField, SchemaType} from '@sanity/types'
 import {castArray} from 'lodash'
 
-export type SelectedTabName = string
-
+const DEFAULT_TAB = 'all-fields'
 const onSelect$ = new Subject<SelectedTabName>()
 
+export type SelectedTabName = string
+
 export const setSelectedTabName = (name: SelectedTabName) => onSelect$.next(name)
-
-const DEFAULT_TAB = 'all-fields'
-
+export const resetSelectedTab = () => onSelect$.next(DEFAULT_TAB)
 export const selectedTab$ = onSelect$.pipe(startWith(DEFAULT_TAB), publishReplay(1), refCount())
 
 const defaultFilterField = (enclosingType: SchemaType, field: ObjectField, selectedTab: string) =>
@@ -25,9 +24,11 @@ const filterField = defaultFilterField
 
 export const filterFn$ = selectedTab$.pipe(
   // eslint-disable-next-line no-console
-  tap(console.log),
+  // tap(console.log),
   map((tabId) => {
     return (enclosingType: SchemaType, field: ObjectField) => {
+      // eslint-disable-next-line no-console
+      console.log({enclosingType}, enclosingType.type.name, enclosingType.name)
       // Make sure we only filter on document level fields
       if (enclosingType.type.name !== 'document') {
         return true

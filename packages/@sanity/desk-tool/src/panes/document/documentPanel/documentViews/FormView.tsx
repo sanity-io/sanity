@@ -11,11 +11,14 @@ import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-compo
 import documentStore from 'part:@sanity/base/datastore/document'
 import schema from 'part:@sanity/base/schema'
 import {isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
-import filterFieldFn$ from 'part:@sanity/desk-tool/filter-fields-fn?'
+import allFilterFieldFn$ from 'all:part:@sanity/desk-tool/filter-fields-fn?'
 import {FormBuilder} from 'part:@sanity/form-builder'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {tap} from 'rxjs/operators'
+import {combineLatest} from 'rxjs'
 import {SanityDocument} from '@sanity/client'
+import {map, every} from 'lodash'
+import {ObjectField, ObjectSchemaTypeWithOptions} from '@sanity/types'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Delay} from '../../../../components/Delay'
 
@@ -26,7 +29,7 @@ interface FormViewProps {
 }
 
 interface FormViewState {
-  filterField: () => boolean
+  filterField: (type: ObjectSchemaTypeWithOptions, field: ObjectField) => boolean
 }
 
 const INITIAL_STATE: FormViewState = {
@@ -54,7 +57,7 @@ export function FormView(props: FormViewProps) {
   } = useDocumentPane()
   const presence = useDocumentPresence(documentId)
   const {revTime: rev} = historyController
-  const [{filterField}, setState] = useState<FormViewState>(INITIAL_STATE)
+  const [{filterField}, setFilterField] = useState<FormViewState>(INITIAL_STATE)
 
   const hasTypeMismatch = value !== null && value._type !== documentSchema.name
   const isNonExistent = !value || !value._id
@@ -83,12 +86,24 @@ export function FormView(props: FormViewProps) {
     )
   }, [documentSchema, isNonExistent, granted, ready, rev, readOnly])
 
-  useEffect(() => {
-    if (!filterFieldFn$) return undefined
+  const filterFieldCallbacks = useCallback((allFieldFilters) => {
+    return (filterType: ObjectSchemaTypeWithOptions, field: ObjectField) => {
+      return every(
+        map(allFieldFilters, (filterFn: any) => filterFn(filterType, field)),
+        Boolean
+      )
+    }
+  }, [])
 
-    const sub = filterFieldFn$.subscribe((nextFilterField: any) =>
-      setState({filterField: nextFilterField})
-    )
+  useEffect(() => {
+    if (!allFilterFieldFn$) return undefined
+
+    const sub = combineLatest(allFilterFieldFn$).subscribe((nextFieldFilters: any) => {
+      // Combine into one method that proxies onto multiple filter field functions
+      const filterCallback = filterFieldCallbacks(nextFieldFilters)
+
+      setFilterField({filterField: filterCallback})
+    })
 
     return () => sub.unsubscribe()
   }, [])
