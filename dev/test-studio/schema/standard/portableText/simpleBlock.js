@@ -65,6 +65,9 @@ export default {
               const text = extractTextFromBlocks([block])
               return text.length === 1 ? 'Please write a longer paragraph.' : true
             }),
+          options: {
+            spellCheck: true,
+          },
         },
         {type: 'image', name: 'image'},
         myStringType,
