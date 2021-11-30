@@ -46,16 +46,26 @@ jest.mock('part:@sanity/base/schema', () => {
 })
 
 jest.mock('@sanity/base/hooks', () => {
-  const baseHooks = jest.requireActual('@sanity/base/hooks')
+  const actualModule = jest.requireActual('@sanity/base/hooks')
 
-  return {
-    ...baseHooks,
-    /* eslint-disable camelcase */
-    unstable_useDocumentPairPermissions: () => [{granted: true, reason: ''}, false],
-    unstable_useDocumentValuePermissions: () => [{granted: true, reason: ''}, false],
-    unstable_useTemplatePermissions: () => [{}, false],
-    /* eslint-enable camelcase */
-  }
+  return new Proxy(actualModule, {
+    get: (target, property) => {
+      switch (property) {
+        case 'unstable_useDocumentPairPermissions': {
+          return jest.fn(() => [{granted: true, reason: ''}, false])
+        }
+        case 'unstable_useDocumentValuePermissions': {
+          return jest.fn(() => [{granted: true, reason: ''}, false])
+        }
+        case 'unstable_useTemplatePermissions': {
+          return jest.fn(() => [{}, false])
+        }
+        default: {
+          return target[property]
+        }
+      }
+    },
+  })
 })
 
 jest.mock('part:@sanity/base/grants', () => {
