@@ -67,6 +67,8 @@ import uploads from './debug/uploads'
 import validation, {validationArraySuperType} from './debug/validation'
 import {withDocumentTestSchemaType} from './debug/withDocumentTest'
 import fieldGroups from './debug/fieldGroups'
+import fieldGroupsDefault from './debug/fieldGroupsDefault'
+import fieldGroupsMany from './debug/fieldGroupsMany'
 
 // Test documents with official plugin inputs
 import code from './plugins/code'
@@ -83,7 +85,6 @@ import mux from './externalPlugins/mux'
 import book from './book'
 import author from './author'
 import species from './species'
-import fieldGroupsDefault from './debug/fieldGroupsDefault'
 
 // CI documents
 import conditionalFieldset from './ci/conditionalFieldset'
@@ -176,5 +177,6 @@ export default createSchema({
     withDocumentTestSchemaType,
     fieldGroups,
     fieldGroupsDefault,
+    fieldGroupsMany,
   ]),
 })

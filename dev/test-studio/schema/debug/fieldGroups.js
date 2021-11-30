@@ -2,6 +2,7 @@ import {CogIcon} from '@sanity/icons'
 
 export default {
   name: 'fieldGroups',
+  title: 'Basic groups',
   type: 'document',
   groups: [
     {
@@ -12,6 +13,11 @@ export default {
     {
       name: 'group2',
       title: 'Group 2',
+    },
+    {
+      name: 'group3',
+      title:
+        'Group 3 - with a very long name. How will it behave? It should not overflow the pane, but wrap.',
     },
   ],
   fields: [
@@ -34,5 +40,6 @@ export default {
         },
       ],
     },
+    {name: 'field5', type: 'string', group: 'group3'},
   ],
 }
