@@ -1,4 +1,4 @@
-import {Card, Grid} from '@sanity/ui'
+import {Card, Grid, Theme} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
 import {MOVING_ITEM_CLASS_NAME, sortableGrid, sortableItem, sortableList} from './sortable'
@@ -6,6 +6,24 @@ import {MOVING_ITEM_CLASS_NAME, sortableGrid, sortableItem, sortableList} from '
 const ListItem = styled(Card)`
   &.${MOVING_ITEM_CLASS_NAME} {
     z-index: 10000;
+    border-radius: ${({theme}) => theme.sanity.radius[2]}px;
+    box-shadow: 0 0 0 0, 0 8px 17px 2px var(--card-shadow-umbra-color),
+      0 3px 14px 2px var(--card-shadow-penumbra-color),
+      0 5px 5px -3px var(--card-shadow-ambient-color);
+
+    // Used inside CellItem
+    [data-ui='DragHandleCard'] {
+      opacity: 1;
+    }
+
+    [data-ui='DragHandleButton'] {
+      background-color: ${({theme}: {theme: Theme}) =>
+        theme.sanity.color.button.bleed.primary.pressed.bg};
+      color: ${({theme}: {theme: Theme}) => theme.sanity.color.button.bleed.primary.pressed.fg};
+      [data-ui='Text'] {
+        color: inherit;
+      }
+    }
   }
 `
 const GridItem = ListItem
@@ -28,9 +46,9 @@ export function List(props: ListProps) {
 
   if (isGrid) {
     return isSortable ? (
-      <SortableGrid columns={[2, 3, 4]} gap={2} onSortEnd={onSortEnd} {...rest} />
+      <SortableGrid columns={[2, 3, 4]} gap={3} onSortEnd={onSortEnd} {...rest} />
     ) : (
-      <Grid columns={[2, 3, 4]} gap={2} {...rest} />
+      <Grid columns={[2, 3, 4]} gap={3} {...rest} />
     )
   }
 
