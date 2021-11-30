@@ -11,17 +11,15 @@ export function Default(props) {
       tone={drag ? 'primary' : 'default'}
       padding={4}
       border
-      style={{borderStyle: 'dashed'}}
+      style={{borderStyle: drag ? 'solid' : 'dashed'}}
     >
-      <Stack space={0}>
+      <Stack space={4}>
         {!readOnly && (
           <Flex justify="center">
-            <Box marginBottom={4}>
-              <Text size={1} muted={!drag}>
-                <ImageIcon /> &nbsp;
-                {drag ? 'Drop image here' : 'Drag or paste image here'}
-              </Text>
-            </Box>
+            <Text size={1} muted={!drag}>
+              <ImageIcon /> &nbsp;
+              {drag ? 'Drop image here' : 'Drag or paste image here'}
+            </Text>
           </Flex>
         )}
 
