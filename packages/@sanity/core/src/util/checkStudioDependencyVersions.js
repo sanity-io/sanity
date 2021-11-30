@@ -7,8 +7,8 @@ const {generateHelpUrl} = require('@sanity/generate-help-url')
 // NOTE: when doing changes here, also remember to update versions in help docs at
 // https://admin.sanity.io/desk/docs;helpArticle;upgrade-packages
 const PACKAGES = [
-  {name: 'react', supported: ['^16.9', '^17'], deprecatedBelow: null},
-  {name: 'react-dom', supported: ['^16.9', '^17'], deprecatedBelow: null},
+  {name: 'react', supported: ['^17'], deprecatedBelow: null},
+  {name: 'react-dom', supported: ['^17'], deprecatedBelow: null},
 ]
 
 module.exports = (workDir) => {
