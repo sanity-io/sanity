@@ -49,4 +49,4 @@ export {
   useDocumentValuePermissions as unstable_useDocumentValuePermissions,
   /* eslint-enable camelcase */
 }
-export {DocumentValuePermission}
+export type {DocumentValuePermission}
