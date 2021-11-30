@@ -18,6 +18,7 @@ import {
   BinaryDocumentIcon,
   DocumentIcon,
   DownloadIcon,
+  EditIcon,
   EllipsisVerticalIcon,
   ResetIcon,
   SearchIcon,
@@ -39,8 +40,8 @@ export default function CompactFile() {
   const hasFile = useBoolean('File', false, 'Props')
 
   return (
-    <Container width={1} padding={[3, 3, 0, 0]}>
-      <Stack space={6}>
+    <Container width={[0, 1, 1]}>
+      <Stack space={6} marginX={[2, 2, 0]}>
         {/* Alt 0. */}
         <Stack space={3} marginTop={6}>
           <Text weight="semibold" size={1}>
@@ -49,21 +50,27 @@ export default function CompactFile() {
           <Card
             border
             padding={3}
-            tone={hasFile ? 'default' : 'default'}
+            tone={hasFile ? 'transparent' : 'default'}
             style={{
               position: 'relative',
               borderStyle: hasFile ? 'solid' : 'dashed',
             }}
           >
             {!hasFile && (
-              <Flex align="center" justify="space-between" gap={3}>
+              <Flex
+                align="center"
+                justify="space-between"
+                gap={[4, 4, 3]}
+                direction={['column-reverse', 'column-reverse', 'row']}
+                paddingY={[2, 2, 0]}
+              >
                 <Inline space={2}>
-                  <Button fontSize={1} text="Select" icon={SearchIcon} mode="ghost" />
-                  <Button fontSize={1} text="Upload" icon={UploadIcon} mode="ghost" />
+                  <Button fontSize={2} text="Select" icon={SearchIcon} mode="ghost" />
+                  <Button fontSize={2} text="Upload" icon={UploadIcon} mode="ghost" />
                 </Inline>
-                <Flex align="center" gap={2} flex={1}>
+                <Flex align="center" justify="center" gap={2} flex={1}>
                   <Text size={1} muted>
-                    <UploadIcon />
+                    <BinaryDocumentIcon />
                   </Text>
                   <Text size={1} muted>
                     Paste or drag file here
@@ -82,25 +89,32 @@ export default function CompactFile() {
                   </Text>
                 </Inline>
                 <Box>
-                  <MenuButton
-                    id="compact-file-menu-button"
-                    button={<Button icon={EllipsisVerticalIcon} mode="bleed" />}
-                    menu={
-                      <Menu>
-                        <Box padding={2}>
-                          <Label muted size={1}>
-                            Replace
-                          </Label>
-                        </Box>
-                        <MenuItem text="Select" icon={SearchIcon} />
-                        <MenuItem text="Upload" icon={UploadIcon} />
-                        <MenuDivider />
-                        <MenuItem text="Download file" icon={DownloadIcon} />
-                        <MenuDivider />
-                        <MenuItem text="Clear field" icon={ResetIcon} tone="critical" />
-                      </Menu>
-                    }
-                  />
+                  <Inline space={2}>
+                    <Card>
+                      <Button mode="ghost" icon={EditIcon} />
+                    </Card>
+                    <Card>
+                      <MenuButton
+                        id="compact-file-menu-button"
+                        button={<Button icon={EllipsisVerticalIcon} mode="ghost" />}
+                        menu={
+                          <Menu>
+                            <Box padding={2}>
+                              <Label muted size={1}>
+                                Replace
+                              </Label>
+                            </Box>
+                            <MenuItem text="Select" icon={SearchIcon} />
+                            <MenuItem text="Upload" icon={UploadIcon} />
+                            <MenuDivider />
+                            <MenuItem text="Download file" icon={DownloadIcon} />
+                            <MenuDivider />
+                            <MenuItem text="Clear field" icon={ResetIcon} tone="critical" />
+                          </Menu>
+                        }
+                      />
+                    </Card>
+                  </Inline>
                 </Box>
               </Flex>
             )}
@@ -124,8 +138,8 @@ export default function CompactFile() {
             {!hasFile && (
               <Flex align="center" justify="space-between" gap={2}>
                 <Inline space={2}>
-                  <Button fontSize={1} text="Select" icon={SearchIcon} mode="ghost" />
-                  <Button fontSize={1} text="Upload" icon={UploadIcon} mode="ghost" />
+                  <Button fontSize={2} text="Select" icon={SearchIcon} mode="ghost" />
+                  <Button fontSize={2} text="Upload" icon={UploadIcon} mode="ghost" />
                 </Inline>
                 <Card flex={1} border padding={3} radius={2} style={{borderStyle: 'dashed'}}>
                   <Text size={1} muted>
@@ -147,7 +161,7 @@ export default function CompactFile() {
                 <Box>
                   <MenuButton
                     id="compact-file-menu-button"
-                    button={<Button icon={EllipsisVerticalIcon} mode="bleed" />}
+                    button={<Button icon={EllipsisVerticalIcon} mode="ghost" />}
                     menu={
                       <Menu>
                         <Box padding={2}>
@@ -204,8 +218,8 @@ export default function CompactFile() {
                     </Flex>
                   </Stack>
                   <Inline space={2}>
-                    <Button fontSize={1} text="Select" icon={SearchIcon} mode="ghost" />
-                    <Button fontSize={1} text="Upload" icon={UploadIcon} mode="ghost" />
+                    <Button fontSize={2} text="Select" icon={SearchIcon} mode="ghost" />
+                    <Button fontSize={2} text="Upload" icon={UploadIcon} mode="ghost" />
                   </Inline>
                 </Stack>
               </Flex>
@@ -259,7 +273,7 @@ export default function CompactFile() {
           <Card border={hasFile} padding={hasFile ? 3 : 0} tone={hasFile ? 'default' : 'default'}>
             <Flex height="fill" align="center" justify="space-between">
               {!hasFile && (
-                <Button fontSize={1} text="Select or upload file" icon={SearchIcon} mode="ghost" />
+                <Button fontSize={2} text="Select or upload file" icon={SearchIcon} mode="ghost" />
               )}
               {hasFile && (
                 <>
