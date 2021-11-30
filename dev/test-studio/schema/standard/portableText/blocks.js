@@ -48,6 +48,30 @@ export default {
           to: {type: 'book'},
           title: 'Reference to book',
         },
+        {
+          type: 'object',
+          name: 'objectWithNestedArray',
+          title: 'An object with nested array',
+          fields: [
+            {
+              name: 'title',
+              type: 'string',
+            },
+            {
+              name: 'array',
+              type: 'array',
+              of: [
+                {
+                  type: 'object',
+                  fields: [
+                    {type: 'string', name: 'title'},
+                    {type: 'reference', name: 'author', to: [{type: 'author'}]},
+                  ],
+                },
+              ],
+            },
+          ],
+        },
         {type: 'author', title: 'Embedded author'},
         {type: 'code', title: 'Code'},
         {
