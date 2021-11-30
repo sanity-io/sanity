@@ -5,7 +5,8 @@ export {default as FieldStatus} from '../__legacy/@sanity/components/fieldsets/F
 
 export {resizeObserver} from '../util/resizeObserver'
 
-export {getNewDocumentOptions, NewDocumentOption} from '../util/getNewDocumentOptions'
+export {getNewDocumentOptions} from '../util/getNewDocumentOptions'
+export type {NewDocumentOption} from '../util/getNewDocumentOptions'
 
 export type {RemoteSnapshotVersionEvent} from '../datastores/document/document-pair/checkoutPair'
 export type {DocumentRemoteMutationEvent} from '../datastores/document/buffered-doc/types'
