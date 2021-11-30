@@ -1,6 +1,6 @@
 {
   "name": "@sanity/portable-text-editor",
-  "version": "2.22.0",
+  "version": "2.22.3",
   "description": "Portable Text Editor made in React",
   "main": "./lib/index.js",
   "types": "./dist/dts/index.d.ts",
@@ -36,11 +36,11 @@
     "access": "public"
   },
   "dependencies": {
-    "@sanity/block-tools": "2.22.0",
-    "@sanity/schema": "2.22.0",
+    "@sanity/block-tools": "2.22.3",
+    "@sanity/schema": "2.22.3",
     "@sanity/slate-react": "0.58.8",
-    "@sanity/types": "2.22.0",
-    "@sanity/util": "2.22.0",
+    "@sanity/types": "2.22.3",
+    "@sanity/util": "2.22.3",
     "debug": "^3.2.7",
     "is-hotkey": "^0.1.6",
     "lodash": "^4.17.15",

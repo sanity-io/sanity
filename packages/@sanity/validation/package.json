@@ -1,6 +1,6 @@
 {
   "name": "@sanity/validation",
-  "version": "2.22.0",
+  "version": "2.22.3",
   "description": "Validation and warning infrastructure for Sanity projects",
   "main": "./lib/index.js",
   "types": "./dist/dts",
@@ -32,8 +32,8 @@
     "directory": "packages/@sanity/validation"
   },
   "devDependencies": {
-    "@sanity/client": "2.21.10",
-    "@sanity/schema": "2.22.0"
+    "@sanity/client": "2.22.3",
+    "@sanity/schema": "2.22.3"
   },
   "peerDependencies": {
     "@sanity/client": "^2.0.0"
@@ -44,7 +44,7 @@
     }
   },
   "dependencies": {
-    "@sanity/types": "2.22.0",
+    "@sanity/types": "2.22.3",
     "date-fns": "^2.16.1",
     "lodash": "^4.17.15"
   }

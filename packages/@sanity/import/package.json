@@ -1,6 +1,6 @@
 {
   "name": "@sanity/import",
-  "version": "2.21.10",
+  "version": "2.22.3",
   "description": "Import documents to a Sanity dataset",
   "main": "lib/import.js",
   "engines": {
@@ -46,7 +46,7 @@
     "whatwg-url": "^7.0.0"
   },
   "devDependencies": {
-    "@sanity/client": "2.21.10",
+    "@sanity/client": "2.22.3",
     "get-it": "^5.0.3",
     "nock": "^9.0.5",
     "rimraf": "^2.7.1"
