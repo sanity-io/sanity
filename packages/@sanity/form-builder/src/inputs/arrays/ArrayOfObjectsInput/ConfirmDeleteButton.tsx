@@ -1,5 +1,5 @@
 import React from 'react'
-import {TrashIcon} from '@sanity/icons'
+import {EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
 import {Button, Menu, MenuButton, MenuItem, Placement} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 
@@ -14,21 +14,15 @@ export function ConfirmDeleteButton(props: {
 
   return (
     <MenuButton
-      button={<Button icon={TrashIcon} mode="bleed" disabled={disabled} />}
+      button={<Button icon={EllipsisVerticalIcon} mode="bleed" padding={2} disabled={disabled} />}
       id={id || ''}
+      popover={{scheme: 'light', tone: 'default', portal: true}}
       menu={
         <Menu>
-          <MenuItem
-            color="danger"
-            icon={TrashIcon}
-            onClick={onConfirm}
-            text={props.title}
-            tone="critical"
-          />
+          <MenuItem icon={TrashIcon} onClick={onConfirm} text={props.title} tone="critical" />
         </Menu>
       }
       placement={placement}
-      portal={false}
     />
   )
 }
