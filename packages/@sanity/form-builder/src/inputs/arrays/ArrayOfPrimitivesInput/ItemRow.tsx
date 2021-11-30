@@ -1,8 +1,14 @@
 import {FieldPresence, FormFieldPresence} from '@sanity/base/presence'
-import React, {useCallback} from 'react'
-import {Box, Card, Flex} from '@sanity/ui'
+import React, {useCallback, useMemo} from 'react'
+import {Box, Card, CardTone, Flex} from '@sanity/ui'
 import {FormFieldValidationStatus} from '@sanity/base/components'
-import {Marker, Path, SchemaType} from '@sanity/types'
+import {
+  Marker,
+  Path,
+  SchemaType,
+  isValidationErrorMarker,
+  isValidationWarningMarker,
+} from '@sanity/types'
 import {DragHandle} from '../common/DragHandle'
 import PatchEvent, {set} from '../../../PatchEvent'
 import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
@@ -10,7 +16,7 @@ import {FormBuilderInput} from '../../../FormBuilderInput'
 import {ConfirmDeleteButton} from '../ArrayOfObjectsInput/ConfirmDeleteButton'
 import getEmptyValue from './getEmptyValue'
 
-const dragHandle = <DragHandle paddingX={2} paddingY={3} />
+const dragHandle = <DragHandle paddingX={1} paddingY={3} />
 
 type Props = {
   type?: SchemaType
@@ -54,6 +60,12 @@ export const ItemRow = React.forwardRef(function ItemRow(
     readOnly,
     presence,
   } = props
+
+  const hasError = markers.filter(isValidationErrorMarker).length > 0
+  const hasWarning = markers.filter(isValidationWarningMarker).length > 0
+
+  const showValidationStatus = !readOnly && markers.length > 0 && !type?.title
+  const showPresence = !type?.title && !readOnly && presence.length > 0
 
   const handleRemove = useCallback(() => {
     onRemove(index)
@@ -100,55 +112,66 @@ export const ItemRow = React.forwardRef(function ItemRow(
 
   const handleMissingTypeFocus = useCallback(() => onFocus([]), [onFocus])
 
-  return (
-    <Card border radius={1} padding={1} ref={ref}>
-      <Flex align="center">
-        {isSortable && <Box marginRight={1}>{dragHandle}</Box>}
+  const tone = useMemo(() => {
+    if (hasError) {
+      return 'critical'
+    }
+    if (hasWarning) {
+      return 'caution'
+    }
 
+    return undefined
+  }, [hasError, hasWarning])
+
+  return (
+    <Card tone={tone} radius={2} paddingX={1} paddingY={2}>
+      <Flex align={type ? 'flex-end' : 'center'} ref={ref}>
         {type ? (
-          <Card radius={1} flex={1} marginRight={2}>
-            <FormBuilderInput
-              ref={focusRef}
-              value={value}
-              path={[index]}
-              compareValue={compareValue}
-              markers={markers}
-              focusPath={focusPath}
-              onFocus={onFocus}
-              onBlur={onBlur}
-              type={type}
-              readOnly={readOnly}
-              level={level}
-              presence={presence}
-              onKeyUp={handleKeyUp}
-              onKeyPress={handleKeyPress}
-              onChange={handleChange}
-            />
-          </Card>
+          <Flex align="flex-end" flex={1}>
+            {isSortable && <Box marginRight={1}>{dragHandle}</Box>}
+
+            <Box flex={1} marginRight={2}>
+              <FormBuilderInput
+                ref={focusRef}
+                value={value}
+                path={[index]}
+                compareValue={compareValue}
+                markers={markers}
+                focusPath={focusPath}
+                onFocus={onFocus}
+                onBlur={onBlur}
+                type={type}
+                readOnly={Boolean(readOnly || type.readOnly)}
+                level={level}
+                presence={presence}
+                onKeyUp={handleKeyUp}
+                onKeyPress={handleKeyPress}
+                onChange={handleChange}
+              />
+            </Box>
+          </Flex>
         ) : (
           <Box flex={1}>
             <ItemWithMissingType value={value} onFocus={handleMissingTypeFocus} />
           </Box>
         )}
 
-        <Flex align="center">
-          {!readOnly && markers.length > 0 && (
-            <Box marginLeft={2}>
+        <Flex align="center" marginLeft={2}>
+          {showValidationStatus && (
+            <Box marginRight={3}>
               <FormFieldValidationStatus __unstable_markers={markers} />
             </Box>
           )}
 
-          {!type?.title && (
+          {showPresence && (
             // if title is set on type, presence avatars will be shown in the input' formfield instead
-            <Box marginLeft={3} style={{minWidth: '1.5em'}}>
-              {!readOnly && presence.length > 0 && (
-                <FieldPresence presence={presence} maxAvatars={1} />
-              )}
+            <Box marginRight={1}>
+              <FieldPresence presence={presence} maxAvatars={1} />
             </Box>
           )}
 
           {!readOnly && onRemove && (
-            <Box marginLeft={1}>
+            <Box paddingY={1}>
               <ConfirmDeleteButton placement="left" title="Remove item" onConfirm={handleRemove} />
             </Box>
           )}
