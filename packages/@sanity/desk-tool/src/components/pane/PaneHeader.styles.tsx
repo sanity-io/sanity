@@ -37,18 +37,20 @@ export const TitleText = styled(Text)`
   outline: none;
 `
 
+const TABS_SCROLL_PADDING = 100
+
 export const TabsBox = styled(Box)(({theme}: {theme: Theme}) => {
-  const {color} = theme.sanity
+  const {color, space} = theme.sanity
 
   return css`
-    margin: -3px 0 -3px -12px;
+    margin: -${space[2]}px 0 -${space[2]}px -${space[3]}px;
     overflow: hidden;
     position: relative;
 
     & > div {
       white-space: nowrap;
-      padding: 3px 0 103px 12px;
-      margin-bottom: -100px;
+      padding: ${space[2]}px 0 calc(${TABS_SCROLL_PADDING}px + ${space[2]}px) ${space[3]}px;
+      margin-bottom: ${0 - TABS_SCROLL_PADDING}px;
       overflow: auto;
 
       /* right padding */
@@ -58,7 +60,7 @@ export const TabsBox = styled(Box)(({theme}: {theme: Theme}) => {
         top: 0;
         right: 0;
         bottom: 0;
-        width: 12px;
+        width: ${space[3]}px;
         height: 1px;
       }
     }
@@ -72,7 +74,7 @@ export const TabsBox = styled(Box)(({theme}: {theme: Theme}) => {
       right: 0;
       bottom: 0;
       background: linear-gradient(to right, ${rgba(color.base.bg, 0)}, var(--card-bg-color));
-      width: 12px;
+      width: ${space[3]}px;
       pointer-events: none;
     }
   `
