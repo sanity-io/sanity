@@ -55,6 +55,7 @@
                   }
                 }
               ],
+              "groups": [],
               "preview": {"select": {"title": "name"}}
             },
             "name": "author",
@@ -90,6 +91,7 @@
                 }
               }
             ],
+            "groups": [],
             "preview": {"select": {"title": "name"}},
             "__experimental_search": [
               {"weight": 1, "path": ["_id"]},
@@ -237,6 +239,7 @@
                                     }
                                   }
                                 ],
+                                "groups": [],
                                 "preview": {"select": {"title": "name"}}
                               },
                               "name": "author",
@@ -280,6 +283,7 @@
                                   }
                                 }
                               ],
+                              "groups": [],
                               "preview": {"select": {"title": "name"}},
                               "__experimental_search": [
                                 {"weight": 1, "path": ["_id"]},
@@ -452,6 +456,7 @@
                                   }
                                 }
                               ],
+                              "groups": [],
                               "preview": {"select": {"title": "name"}}
                             },
                             "name": "author",
@@ -491,6 +496,7 @@
                                 }
                               }
                             ],
+                            "groups": [],
                             "preview": {"select": {"title": "name"}},
                             "__experimental_search": [
                               {"weight": 1, "path": ["_id"]},
@@ -645,6 +651,7 @@
                     }
                   }
                 ],
+                "groups": [],
                 "preview": {"select": {"title": "name"}}
               },
               "name": "author",
@@ -680,6 +687,7 @@
                   }
                 }
               ],
+              "groups": [],
               "preview": {"select": {"title": "name"}},
               "__experimental_search": [
                 {"weight": 1, "path": ["_id"]},
