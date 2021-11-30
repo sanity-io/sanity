@@ -2,6 +2,7 @@ import {CogIcon} from '@sanity/icons'
 
 export default {
   name: 'fieldGroupsDefault',
+  title: 'With default group',
   type: 'document',
   groups: [
     {
