@@ -64,6 +64,7 @@
     "@babel/preset-typescript": "^7.10.4",
     "@babel/register": "^7.7.4",
     "@babel/runtime": "7.12.13",
+    "@sanity/client": "^2.21.10",
     "@types/jest": "^27.0.1",
     "@types/node": "^14.14.22",
     "@types/react": "^17.0.0",

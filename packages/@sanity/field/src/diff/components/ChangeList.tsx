@@ -99,7 +99,8 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
               change={change}
               key={change.key}
               data-revert-all-changes-hover={confirmRevertAllHover ? '' : undefined}
-              readOnly={isReadOnly}
+              readOnly={isReadOnly || change?.readOnly}
+              hidden={change?.hidden}
             />
           ))}
         </Stack>
@@ -110,12 +111,8 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
               <Box>
                 Are you sure you want to revert all {changes.length} changes?
                 <Grid columns={2} gap={2} marginTop={2}>
-                  <Button mode="ghost" onClick={closeRevertAllChangesConfirmDialog}>
-                    <Text align="center">Cancel</Text>
-                  </Button>
-                  <Button tone="critical" onClick={revertAllChanges}>
-                    <Text align="center">Revert all</Text>
-                  </Button>
+                  <Button mode="ghost" text="Cancel" onClick={closeRevertAllChangesConfirmDialog} />
+                  <Button tone="critical" text="Revert all" onClick={revertAllChanges} />
                 </Grid>
               </Box>
             }
