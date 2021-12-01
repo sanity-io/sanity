@@ -1,28 +1,30 @@
-import React, {useCallback, useEffect, useMemo, useRef} from 'react'
+import React, {MutableRefObject, useCallback, useEffect, useMemo, useRef} from 'react'
 import {FieldGroup, ObjectSchemaType, Path, SchemaType} from '@sanity/types'
 import {Card, Tab, TabList} from '@sanity/ui'
 import {find, defaultTo, map} from 'lodash'
 import {map as map$, publishReplay, refCount, startWith, tap, take} from 'rxjs/operators'
 import {pipe, Subscription} from 'rxjs'
 import {ConditionalHiddenField, ConditionalReadOnlyField} from '../inputs/common'
-import {setSelectedTabName, selectedTab$, resetSelectedTab} from './datastore'
+import {setSelectedTabName, selectedTab$, resetSelectedTab, DEFAULT_TAB} from './datastore'
 
 interface FieldGroupsTabsProps {
   type: SchemaType
   disabled?: boolean
-  onChange?: (focusPath?: string) => void
+  onChange?: (focusPath?: Path) => void
   focusPath?: Path
 }
 
 export function FilterGroupTabs(props: FieldGroupsTabsProps) {
+  const isChangingTabRef = useRef<boolean>(false)
+  const tabsRefs = useRef([])
   const tabSubscription$ = useRef<Subscription>()
   const {type, disabled, focusPath, onChange} = props
   const groupType = type as ObjectSchemaType
-  const [id, setId] = React.useState('all-fields')
+  const [id, setId] = React.useState(DEFAULT_TAB)
   const filterGroups: FieldGroup[] = useMemo(() => {
     return [
       {
-        name: 'all-fields',
+        name: DEFAULT_TAB,
         title: 'All fields',
         fields: groupType.fields,
       },
@@ -30,51 +32,116 @@ export function FilterGroupTabs(props: FieldGroupsTabsProps) {
     ]
   }, [groupType.groups])
 
-  const focusedFieldGroupPaths = useMemo(() => {
+  const getFocusedFieldGroupPaths = (checkId?: string) => {
     const fieldsNames =
       defaultTo(
-        find(filterGroups, (fieldGroup) => fieldGroup.name === id),
+        find(filterGroups, (fieldGroup) => fieldGroup.name === (checkId || id)),
         filterGroups[0]
       )?.fields || []
 
     return map(fieldsNames || [], 'name')
-  }, [filterGroups, id])
+  }
+  // }, [filterGroups, id])
 
-  const setNewId = useCallback((name: string) => {
-    setSelectedTabName(name)
+  // console.log(filterGroups)
+
+  const setNewId = useCallback(
+    (name: string) => {
+      setIsChangingTabs()
+      setSelectedTabName(name)
+    },
+    [setSelectedTabName]
+  )
+
+  const setFocusPath = useCallback(
+    (newFocusPath?: Path) => {
+      // PathUtils.isEqual(focusPath, nextFocusPath)
+      if (!onChange) {
+        return
+      }
+
+      if (!newFocusPath) {
+        onChange([])
+
+        return
+      }
+
+      onChange(newFocusPath)
+    },
+    [onChange]
+  )
+
+  const setLocalId = useCallback((newTabId: string) => {
+    setId(newTabId)
   }, [])
 
-  // useEffect(() => {
-  //   const [firstFocusPath] = focusPath || []
+  const handleClick = useCallback(
+    (newTabId: string) => {
+      setIsChangingTabs()
+      // Restore focus path to trigger focus path
+      setFocusPath()
 
-  //   console.log({firstFocusPath, id, focusedFieldGroupPaths})
+      setLocalId(newTabId)
+      setNewId(newTabId)
+    },
+    [setNewId]
+  )
 
-  //   if (
-  //     firstFocusPath &&
-  //     !focusedFieldGroupPaths.includes(firstFocusPath.toString()) &&
-  //     id !== 'all-fields'
-  //   ) {
-  //     setNewId('all-fields')
-  //   }
+  const setIsChangingTabs = (newValue = true) => {
+    if (isChangingTabRef.current !== newValue) {
+      isChangingTabRef.current = newValue
+    }
+  }
 
-  //   // @todo Check if focus path is not part of current ids
-  // }, [focusPath])
+  // Handle when focus path changes and we are not displaying the focus path requested in the currently selected tab
+  useEffect(() => {
+    let [firstFocusPath] = focusPath || []
+
+    if (Array.isArray(firstFocusPath)) {
+      firstFocusPath = firstFocusPath?.[0]
+    }
+
+    // Reset back to All fields when
+    // 1) focus path changes
+    // 2) fhe first segment is not in the list of current fields showing
+    if (
+      firstFocusPath &&
+      !getFocusedFieldGroupPaths(id).includes(firstFocusPath.toString()) &&
+      id !== DEFAULT_TAB &&
+      !isChangingTabRef.current
+    ) {
+      const beforeFocusPath = focusPath
+      console.log({focused: getFocusedFieldGroupPaths(id), id})
+      // console.log('changing focus state', focusPath)
+      // @todo Reset before switching?
+      setIsChangingTabs()
+      setFocusPath()
+      setLocalId(DEFAULT_TAB)
+      resetSelectedTab()
+
+      // @todo Restore focus path to trigger focus path
+      setFocusPath(Array.isArray(beforeFocusPath) ? beforeFocusPath[0] : beforeFocusPath)
+      setIsChangingTabs(false)
+    }
+  }, [focusPath])
 
   // Set local id from subscription change
 
+  // Handle Review Changes or other states that requires the field group tabs to be disabled
   useEffect(() => {
     if (disabled) {
-      setSelectedTabName('all-fields')
+      setSelectedTabName(DEFAULT_TAB)
     } else {
       setSelectedTabName(id)
     }
   }, [disabled])
 
+  // Setup subscriber to field group select listener
   useEffect(() => {
     tabSubscription$.current = selectedTab$.subscribe((newTabId) => {
-      if (id !== newTabId) {
-        setId(newTabId)
-      }
+      // console.log({id, newTabId})
+      setLocalId(newTabId)
+      setIsChangingTabs(false)
     })
 
     return () => {
@@ -102,18 +169,7 @@ export function FilterGroupTabs(props: FieldGroupsTabsProps) {
   //   }
   // }, [id])
 
-  // useEffect(() => {
-  //   resetSelectedTab()
-  // }, [focusPath])
-
-  const handleClick = useCallback(
-    (newTabId: string) => {
-      setId(newTabId)
-      setNewId(newTabId)
-    },
-    [setNewId]
-  )
-
+  // Set default tab selected when filter groups changes
   useEffect(() => {
     const defaultTabName = defaultTo(
       find(filterGroups, (fieldGroup) => fieldGroup.isDefault),
@@ -121,9 +177,8 @@ export function FilterGroupTabs(props: FieldGroupsTabsProps) {
     ).name
 
     if (id !== defaultTabName) {
+      setId(defaultTabName)
       setNewId(defaultTabName)
-      // console.log('set to default tab id', defaultTabName)
-      // setId(defaultTabName)
     }
   }, [filterGroups])
 
