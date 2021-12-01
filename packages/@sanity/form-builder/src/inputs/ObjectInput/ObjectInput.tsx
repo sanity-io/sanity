@@ -16,6 +16,7 @@ import {Grid} from '@sanity/ui'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import {applyAll} from '../../patch/applyPatch'
 import {EMPTY_ARRAY} from '../../utils/empty'
+import {ConditionalReadOnlyField} from '../common/ConditionalReadOnlyField'
 import {ObjectInputField} from './ObjectInputField'
 import {UnknownFields} from './UnknownFields'
 import {ObjectFieldSet} from './ObjectFieldSet'
@@ -127,30 +128,41 @@ export const ObjectInput = memo(
     )
 
     const renderField = React.useCallback(
-      (field: ObjectField, fieldLevel: number, index: number) => {
+      (
+        field: ObjectField,
+        fieldLevel: number,
+        index: number,
+        isFieldsetReadOnly?: ConditionalProperty,
+        fieldSetValues?: Record<string, unknown>
+      ) => {
         const fieldValue = value?.[field.name]
         if (!filterField(type, field)) {
           return null
         }
 
         return (
-          <ObjectInputField
+          <ConditionalReadOnlyField
+            value={fieldSetValues}
             parent={value}
+            readOnly={readOnly || isFieldsetReadOnly}
             key={`field-${field.name}`}
-            field={field}
-            value={fieldValue}
-            onChange={handleFieldChange}
-            onFocus={onFocus}
-            onBlur={onBlur}
-            compareValue={compareValue}
-            markers={markers}
-            focusPath={focusPath}
-            level={fieldLevel}
-            presence={presence}
-            readOnly={readOnly}
-            filterField={filterField}
-            ref={index === 0 ? forwardedRef : null}
-          />
+          >
+            <ObjectInputField
+              parent={value}
+              field={field}
+              value={fieldValue}
+              onChange={handleFieldChange}
+              onFocus={onFocus}
+              onBlur={onBlur}
+              compareValue={compareValue}
+              markers={markers}
+              focusPath={focusPath}
+              level={fieldLevel}
+              presence={presence}
+              filterField={filterField}
+              ref={index === 0 ? forwardedRef : null}
+            />
+          </ConditionalReadOnlyField>
         )
       },
       [
@@ -175,9 +187,18 @@ export const ObjectInput = memo(
         return (type.fields || []).map((field, index) => renderField(field, level + 1, index))
       }
       return type.fieldsets.map((fieldset, fieldsetIndex) => {
-        return isSingleFieldset(fieldset) ? (
-          renderField(fieldset.field, level + 1, fieldsetIndex)
-        ) : (
+        if (isSingleFieldset(fieldset)) {
+          return renderField(fieldset.field, level + 1, fieldsetIndex, fieldset.readOnly)
+        }
+        const fieldSetValuesObject = {}
+        // eslint-disable-next-line max-nested-callbacks
+        fieldset.fields.forEach((field) => {
+          if (value) {
+            fieldSetValuesObject[field.name] = value[field.name]
+          }
+        })
+
+        return (
           <ObjectFieldSet
             key={`fieldset-${(fieldset as MultiFieldSet).name}`}
             data-testid={`fieldset-${(fieldset as MultiFieldSet).name}`}
@@ -187,18 +208,36 @@ export const ObjectInput = memo(
             level={level + 1}
             presence={presence}
             markers={markers}
+            fieldSetParent={value}
+            fieldValues={fieldSetValuesObject}
           >
             {() =>
               // lazy render children
               // eslint-disable-next-line max-nested-callbacks
               fieldset.fields.map((field, fieldIndex) =>
-                renderField(field, level + 2, fieldsetIndex + fieldIndex)
+                renderField(
+                  field,
+                  level + 2,
+                  fieldsetIndex + fieldIndex,
+                  fieldset.readOnly,
+                  fieldSetValuesObject
+                )
               )
             }
           </ObjectFieldSet>
         )
       })
-    }, [focusPath, level, markers, onFocus, presence, renderField, type.fields, type.fieldsets])
+    }, [
+      focusPath,
+      level,
+      markers,
+      onFocus,
+      presence,
+      renderField,
+      type.fields,
+      type.fieldsets,
+      value,
+    ])
 
     const renderUnknownFields = useCallback(() => {
       if (!type.fields) {
@@ -215,7 +254,7 @@ export const ObjectInput = memo(
       }
 
       return <UnknownFields fieldNames={unknownFields} value={value} onChange={onChange} />
-    }, [onChange, readOnly, type.fields, value])
+    }, [onChange, type.fields, value])
 
     const renderAllFields = useCallback(() => {
       return (

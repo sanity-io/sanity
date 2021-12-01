@@ -12,6 +12,7 @@ import {
   ObjectSchemaType as BaseObjectSchemaType,
   StringSchemaType as BaseStringSchemaType,
   ObjectFieldType,
+  ConditionalProperty,
 } from '@sanity/types'
 import {ComponentType} from 'react'
 import {
@@ -191,6 +192,9 @@ export interface GroupChangeNode {
   path: Path
   titlePath: ChangeTitlePath
   schemaType?: SchemaType
+  readOnly?: ConditionalProperty
+  hidden?: ConditionalProperty
+  fieldsetName?: string
 }
 
 export interface FieldChangeNode {
@@ -207,6 +211,8 @@ export interface FieldChangeNode {
   showIndex: boolean
   diffComponent?: DiffComponent
   parentSchema?: ArraySchemaType | ObjectSchemaType
+  readOnly?: ConditionalProperty
+  hidden?: ConditionalProperty
 }
 
 export type ChangeNode = GroupChangeNode | FieldChangeNode

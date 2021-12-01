@@ -16,14 +16,13 @@ import {ValueError} from './ValueError'
 
 import {FieldChangeContainer, DiffBorder, PopoverWrapper} from './FieldChange.styled'
 
-export function FieldChange({
-  change,
-  hidden,
-  readOnly,
-  ...restProps
-}: {change: FieldChangeNode; readOnly?: boolean; hidden?: boolean} & React.HTMLAttributes<
-  HTMLDivElement
->) {
+export function FieldChange(
+  props: {change: FieldChangeNode; readOnly?: boolean; hidden?: boolean} & React.HTMLAttributes<
+    HTMLDivElement
+  >
+) {
+  const {change, hidden, readOnly, ...restProps} = props
+
   const DiffComponent = change.diffComponent || FallbackDiff
   const {
     documentId,
@@ -115,6 +114,7 @@ export function FieldChange({
                       onMouseLeave={handleRevertButtonMouseLeave}
                       selected={confirmRevertOpen}
                       disabled={readOnly}
+                      data-testid={`single-change-revert-button-${change?.key}`}
                     />
                   </Box>
                 </PopoverWrapper>
