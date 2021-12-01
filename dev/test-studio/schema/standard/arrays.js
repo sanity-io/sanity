@@ -424,6 +424,11 @@ export default {
           type: 'author',
         },
         {
+          title: 'Reference to author',
+          type: 'reference',
+          to: [{type: 'author'}],
+        },
+        {
           title: 'An image',
           type: 'image',
         },
