@@ -169,7 +169,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayInputListItemProps)
       />
     )
 
-    return isReference ? (
+    return isReference && !isGrid ? (
       form
     ) : (
       <EditPortal
@@ -232,7 +232,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayInputListItemProps)
           )}
         </ContextProvidedChangeIndicator>
       </ChangeIndicatorScope>
-      {isEditing && !isReference && editForm}
+      {isEditing && (!isReference || isGrid) ? editForm : null}
     </>
   )
 })
