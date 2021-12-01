@@ -13,7 +13,7 @@ import React, {memo, useCallback, useMemo, useRef} from 'react'
 import {FOCUS_TERMINATOR, pathFor, startsWith} from '@sanity/util/paths'
 import {Box} from '@sanity/ui'
 import PatchEvent from '../../../../PatchEvent'
-import {ArrayMember, ReferenceItemComponentType} from '../types'
+import {ArrayMember, InsertEvent, ReferenceItemComponentType} from '../types'
 import {EMPTY_ARRAY} from '../../../../utils/empty'
 import {hasFocusWithinPath} from '../../../../utils/focusUtils'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
@@ -32,6 +32,7 @@ interface ArrayInputListItemProps {
   itemKey: string | undefined
   layout?: 'media' | 'default'
   onRemove: (value: ArrayMember) => void
+  onInsert: (event: InsertEvent) => void
   onChange: (event: PatchEvent, value: ArrayMember) => void
   onFocus: (path: Path) => void
   onBlur: () => void
@@ -55,6 +56,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayInputListItemProps)
     onFocus,
     onChange,
     onRemove,
+    onInsert,
     onBlur,
     filterField,
     compareValue,
@@ -84,6 +86,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayInputListItemProps)
     },
     [emitFocus]
   )
+
   const handleEditOpen = useCallback(() => emitFocus([FOCUS_TERMINATOR]), [emitFocus])
   const handleEditClose = useCallback(() => {
     if (isEmpty(value)) {
@@ -190,6 +193,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayInputListItemProps)
     handleChange,
     handleEditClose,
     isEditing,
+    isGrid,
     isReference,
     isSortable,
     itemMarkers,
@@ -209,9 +213,11 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayInputListItemProps)
       value={value}
       readOnly={readOnly}
       type={itemType}
+      insertableTypes={type.of}
       presence={isEditing ? EMPTY_ARRAY : itemPresence}
       validation={scopedValidation}
       isSortable={isSortable}
+      onInsert={onInsert}
       onFocus={handleItemElementFocus}
       onClick={itemType ? handleEditOpen : undefined}
       onRemove={handleRemove}

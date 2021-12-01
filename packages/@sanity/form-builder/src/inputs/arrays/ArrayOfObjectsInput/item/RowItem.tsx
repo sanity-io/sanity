@@ -10,21 +10,34 @@ import {
   Flex,
   Menu,
   MenuButton,
+  MenuGroup,
   MenuItem,
   Text,
   Tooltip,
 } from '@sanity/ui'
-import {EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
+import {
+  CopyIcon as DuplicateIcon,
+  EllipsisVerticalIcon,
+  TrashIcon,
+  InsertAboveIcon,
+  InsertBelowIcon,
+} from '@sanity/icons'
 import {FormFieldValidationStatus} from '@sanity/base/components'
 import {useId} from '@reach/auto-id'
+import {SchemaType} from '@sanity/types'
 import Preview from '../../../../Preview'
 
 import {DragHandle} from '../../common/DragHandle'
+import randomKey from '../../common/randomKey'
+import {createProtoValue} from '../ArrayInput'
 import {ItemWithMissingType} from './ItemWithMissingType'
 import {ItemLayoutProps} from './ItemLayoutProps'
 import {RowWrapper} from './components/RowWrapper'
 
 const dragHandle = <DragHandle paddingX={1} paddingY={3} />
+
+const POSITIONS = ['before', 'after'] as const
+const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 
 export const RowItem = React.forwardRef(function RegularItem(
   props: ItemLayoutProps,
@@ -40,6 +53,8 @@ export const RowItem = React.forwardRef(function RegularItem(
     type,
     readOnly,
     presence,
+    onInsert,
+    insertableTypes,
     onRemove,
     validation,
     ...rest
@@ -47,6 +62,25 @@ export const RowItem = React.forwardRef(function RegularItem(
 
   const hasErrors = validation.some((v) => v.level === 'error')
   const hasWarnings = validation.some((v) => v.level === 'warning')
+
+  const handleDuplicate = () => {
+    const key = randomKey()
+    onInsert({
+      item: {...value, _key: key},
+      position: 'after',
+      path: [{_key: value._key}],
+      edit: false,
+    })
+  }
+
+  const handleInsert = (pos: 'before' | 'after', insertType: SchemaType) => {
+    const key = randomKey()
+    onInsert({
+      item: {...createProtoValue(insertType), _key: key},
+      position: pos,
+      path: [{_key: value._key}],
+    })
+  }
 
   const id = useId()
   return (
@@ -120,12 +154,43 @@ export const RowItem = React.forwardRef(function RegularItem(
                 {!readOnly && (
                   <>
                     <MenuItem text="Remove" tone="critical" icon={TrashIcon} onClick={onRemove} />
+                    <MenuItem text="Duplicate" icon={DuplicateIcon} onClick={handleDuplicate} />
+                    {POSITIONS.map((pos) => {
+                      const icon = pos === 'before' ? InsertAboveIcon : InsertBelowIcon
+                      const text = `Add item ${pos}`
+                      if (insertableTypes.length === 1) {
+                        return (
+                          <MenuItem
+                            key={pos}
+                            text={text}
+                            icon={icon}
+                            onClick={() => handleInsert(pos, insertableTypes[0])}
+                          />
+                        )
+                      }
+                      return (
+                        <MenuGroup
+                          text={text}
+                          key={pos}
+                          popover={{...MENU_POPOVER_PROPS, placement: 'left'}}
+                        >
+                          {insertableTypes.map((insertableType) => (
+                            <MenuItem
+                              key={insertableType.name}
+                              icon={insertableType.icon}
+                              text={insertableType.title}
+                              onClick={() => handleInsert(pos, insertableType)}
+                            />
+                          ))}
+                        </MenuGroup>
+                      )
+                    })}
                   </>
                 )}
               </Menu>
             }
             placement="right"
-            popover={{portal: true, tone: 'default'}}
+            popover={MENU_POPOVER_PROPS}
           />
           {!value._key && (
             <Box marginLeft={1}>

@@ -48,10 +48,17 @@ export const ItemForm = forwardRef(function ItemForm(props: Props, ref: Forwarde
             givenProps: InputProps,
             inputRef: ForwardedRef<{focus: () => void}>
           ) {
-            return <ReferenceItemComponent {...givenProps} isSortable={isSortable} ref={inputRef} />
+            return (
+              <ReferenceItemComponent
+                {...givenProps}
+                isSortable={isSortable}
+                onChange={props.onChange}
+                ref={inputRef}
+              />
+            )
           })
         : undefined,
-    [ReferenceItemComponent, isReference, isSortable]
+    [ReferenceItemComponent, isReference, isSortable, props.onChange]
   )
 
   return (

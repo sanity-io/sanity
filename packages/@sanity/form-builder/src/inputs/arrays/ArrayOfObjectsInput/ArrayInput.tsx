@@ -26,7 +26,7 @@ import ArrayFunctions from '../common/ArrayFunctions'
 import {applyAll} from '../../../patch/applyPatch'
 import {ConditionalReadOnlyField} from '../../common'
 import {ArrayItem} from './item'
-import type {ArrayMember, ReferenceItemComponentType} from './types'
+import type {ArrayMember, InsertEvent, InsertPosition, ReferenceItemComponentType} from './types'
 import {uploadTarget} from './uploadTarget/uploadTarget'
 
 declare const __DEV__: boolean
@@ -41,7 +41,7 @@ function getUploadTargetFieldset() {
   return UploadTargetFieldsetMemo
 }
 
-function createProtoValue(type: SchemaType): ArrayMember {
+export function createProtoValue(type: SchemaType): ArrayMember {
   if (!isObjectSchemaType(type)) {
     throw new Error(
       `Invalid item type: "${type.type}". Default array input can only contain objects (for now)`
@@ -88,29 +88,33 @@ export class ArrayInput extends React.Component<Props> {
     isResolvingInitialValue: false,
   }
 
-  insert = (itemValue: ArrayMember, position: 'before' | 'after', atIndex: number) => {
+  insert = (item: ArrayMember, position: 'before' | 'after', path: Path) => {
     const {onChange} = this.props
-
-    onChange(PatchEvent.from(setIfMissing([]), insert([itemValue], position, [atIndex])))
+    onChange(PatchEvent.from(setIfMissing([]), insert([item], position, path)))
   }
 
   handlePrepend = (value: ArrayMember) => {
-    this.insert(value, 'before', 0)
-    this.handleFocusItem(value)
+    this.insert(value, 'before', [0])
+    this.openItem(value._key)
+  }
+  handleAppend = (value: ArrayMember) => {
+    this.insert(value, 'after', [-1])
+    this.openItem(value._key)
   }
 
-  handleAppend = (value: ArrayMember) => {
+  handleInsert = (event: InsertEvent) => {
     const {resolveInitialValue} = this.props
     this.setState({isResolvingInitialValue: true})
-    const memberType = this.getMemberTypeOfItem(value)
+    const memberType = this.getMemberTypeOfItem(event.item)
     const resolvedInitialValue = resolveInitialValue
-      ? resolveInitialValue(memberType as ObjectSchemaType, value)
+      ? resolveInitialValue(memberType as ObjectSchemaType, event.item)
       : Promise.resolve({})
+
     resolvedInitialValue
+      .then((initial) => ({...event.item, ...initial}))
       .then(
-        (initial) => {
-          this.insert({...value, ...initial}, 'after', -1)
-          this.handleFocusItem(value)
+        (value) => {
+          this.insert(value, event.position, event.path)
         },
         (error) => {
           this.toast?.push({
@@ -118,12 +122,14 @@ export class ArrayInput extends React.Component<Props> {
             description: `Unable to resolve initial value for type: ${memberType.name}: ${error.message}.`,
             status: 'error',
           })
-          this.insert(value, 'after', -1)
-          this.handleFocusItem(value)
+          this.insert(event.item, event.position, event.path)
         }
       )
       .finally(() => {
         this.setState({isResolvingInitialValue: false})
+        if (event.edit !== false) {
+          this.openItem(event.item._key)
+        }
       })
   }
 
@@ -141,9 +147,8 @@ export class ArrayInput extends React.Component<Props> {
     }
   }
 
-  handleFocusItem = (item: ArrayMember) => {
-    this.props.onFocus([{_key: item._key}, FOCUS_TERMINATOR])
-    // this.props.onFocus([{_key: item._key}, item._type === 'reference' ? '_ref' : FOCUS_TERMINATOR])
+  openItem = (key: string) => {
+    this.props.onFocus([{_key: key}, FOCUS_TERMINATOR])
   }
 
   removeItem(item: ArrayMember) {
@@ -258,7 +263,7 @@ export class ArrayInput extends React.Component<Props> {
     const item = createProtoValue(type)
     const key = item._key
 
-    this.insert(item, 'after', -1)
+    this.insert(item, 'after', [-1])
 
     const events$ = uploader
       .upload(file, type)
@@ -272,6 +277,10 @@ export class ArrayInput extends React.Component<Props> {
       ...this.uploadSubscriptions,
       [key]: events$.subscribe(onChange),
     }
+  }
+
+  handleFocusItem = (item: ArrayMember) => {
+    this.openItem(item._key)
   }
 
   render() {
@@ -426,6 +435,7 @@ export class ArrayInput extends React.Component<Props> {
                             onChange={this.handleItemChange}
                             onFocus={onFocus}
                             onRemove={this.handleRemoveItem}
+                            onInsert={this.handleInsert}
                             presence={presence}
                             readOnly={readOnly || hasMissingKeys}
                             type={type}

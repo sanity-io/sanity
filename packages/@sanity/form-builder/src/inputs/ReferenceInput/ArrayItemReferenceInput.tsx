@@ -15,6 +15,9 @@ import {
   LaunchIcon as OpenInNewTabIcon,
   SyncIcon as ReplaceIcon,
   TrashIcon,
+  CopyIcon as DuplicateIcon,
+  InsertAboveIcon,
+  InsertBelowIcon,
 } from '@sanity/icons'
 import {concat, Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
@@ -69,6 +72,7 @@ const INITIAL_SEARCH_STATE: SearchState = {
 export interface Props extends BaseInputProps {
   value: OptionalRef
   isSortable: boolean
+  onInsert: (position: 'above' | 'below', value: Reference) => void
 }
 
 const NO_FILTER = () => true
@@ -549,6 +553,21 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
                         icon={ReplaceIcon}
                         onClick={() => {
                           onFocus?.(['_ref'])
+                        }}
+                      />
+                      <MenuItem text="Duplicate" icon={DuplicateIcon} onClick={() => {}} />
+                      <MenuItem
+                        text="Add item above"
+                        icon={InsertAboveIcon}
+                        onClick={() => {
+                          alert('add item below')
+                        }}
+                      />
+                      <MenuItem
+                        text="Add item below"
+                        icon={InsertBelowIcon}
+                        onClick={() => {
+                          alert('add item below')
                         }}
                       />
                     </>

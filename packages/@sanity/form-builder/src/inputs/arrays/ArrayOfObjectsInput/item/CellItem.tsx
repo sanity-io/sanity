@@ -1,12 +1,35 @@
-import {WarningOutlineIcon} from '@sanity/icons'
+import {
+  CopyIcon as DuplicateIcon,
+  EllipsisVerticalIcon,
+  InsertAboveIcon,
+  InsertBelowIcon,
+  TrashIcon,
+  WarningOutlineIcon,
+} from '@sanity/icons'
+/* eslint-disable no-nested-ternary */
 import {FieldPresence} from '@sanity/base/presence'
 import React from 'react'
-import {Badge, Box, Card, Flex, Text, Tooltip} from '@sanity/ui'
+import {
+  Badge,
+  Box,
+  Button,
+  Card,
+  Flex,
+  Menu,
+  MenuButton,
+  MenuGroup,
+  MenuItem,
+  Text,
+  Tooltip,
+} from '@sanity/ui'
 import {FormFieldValidationStatus} from '@sanity/base/components'
 import styled from 'styled-components'
+import {SchemaType} from '@sanity/types'
+import {useId} from '@reach/auto-id'
 import Preview from '../../../../Preview'
-import {ConfirmDeleteButton} from '../ConfirmDeleteButton'
 import {DragHandle} from '../../common/DragHandle'
+import randomKey from '../../common/randomKey'
+import {createProtoValue} from '../ArrayInput'
 import {ItemWithMissingType} from './ItemWithMissingType'
 import {ItemLayoutProps} from './ItemLayoutProps'
 
@@ -20,6 +43,9 @@ const Root = styled(Card)`
   }
 `
 
+const POSITIONS = ['before', 'after'] as const
+const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
+
 export const CellItem = React.forwardRef(function ItemCell(
   props: ItemLayoutProps,
   ref: React.ForwardedRef<HTMLDivElement>
@@ -31,6 +57,8 @@ export const CellItem = React.forwardRef(function ItemCell(
     onClick,
     onKeyPress,
     onFocus,
+    onInsert,
+    insertableTypes,
     type,
     readOnly,
     presence,
@@ -38,6 +66,27 @@ export const CellItem = React.forwardRef(function ItemCell(
     validation,
     ...rest
   } = props
+
+  const handleDuplicate = () => {
+    const key = randomKey()
+    onInsert({
+      item: {...value, _key: key},
+      position: 'after',
+      path: [{_key: value._key}],
+      edit: false,
+    })
+  }
+
+  const handleInsert = (pos: 'before' | 'after', insertType: SchemaType) => {
+    const key = randomKey()
+    onInsert({
+      item: {...createProtoValue(insertType), _key: key},
+      position: pos,
+      path: [{_key: value._key}],
+    })
+  }
+
+  const id = useId()
 
   return (
     <Root {...rest} radius={1} padding={1} ref={ref} border>
@@ -103,13 +152,51 @@ export const CellItem = React.forwardRef(function ItemCell(
           </Tooltip>
         )}
 
-        {/* Delete button */}
+        {/* Menu */}
         <Box>
-          <ConfirmDeleteButton
-            disabled={readOnly || !onRemove}
-            onConfirm={onRemove}
-            placement="bottom"
-            title="Remove item"
+          <MenuButton
+            button={<Button padding={2} mode="bleed" icon={EllipsisVerticalIcon} />}
+            id={`${id}-menuButton`}
+            menu={
+              <Menu>
+                {!readOnly && (
+                  <>
+                    <MenuItem text="Remove" tone="critical" icon={TrashIcon} onClick={onRemove} />
+                    <MenuItem text="Duplicate" icon={DuplicateIcon} onClick={handleDuplicate} />
+                    {POSITIONS.map((pos) => {
+                      const icon = pos === 'before' ? InsertAboveIcon : InsertBelowIcon
+                      const text = `Add item ${pos}`
+                      if (insertableTypes.length === 1) {
+                        return (
+                          <MenuItem
+                            key={pos}
+                            text={text}
+                            icon={icon}
+                            onClick={() => handleInsert(pos, insertableTypes[0])}
+                          />
+                        )
+                      }
+                      return (
+                        <MenuGroup
+                          text={text}
+                          key={pos}
+                          popover={{...MENU_POPOVER_PROPS, placement: 'left'}}
+                        >
+                          {insertableTypes.map((insertableType) => (
+                            <MenuItem
+                              key={insertableType.name}
+                              icon={insertableType.icon}
+                              text={insertableType.title}
+                              onClick={() => handleInsert(pos, insertableType)}
+                            />
+                          ))}
+                        </MenuGroup>
+                      )
+                    })}
+                  </>
+                )}
+              </Menu>
+            }
           />
         </Box>
       </Flex>
