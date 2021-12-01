@@ -268,6 +268,8 @@ export interface ObjectSchemaTypeWithOptions extends ObjectSchemaType {
 export interface SingleFieldSet {
   single: true
   field: ObjectField
+  hidden?: ConditionalProperty
+  readOnly?: ConditionalProperty
 }
 
 export interface MultiFieldSet {
@@ -279,6 +281,8 @@ export interface MultiFieldSet {
     columns?: number
   }
   fields: ObjectField[]
+  hidden?: ConditionalProperty
+  readOnly?: ConditionalProperty
 }
 
 export type Fieldset = SingleFieldSet | MultiFieldSet

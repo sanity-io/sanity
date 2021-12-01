@@ -4,6 +4,7 @@ import {FormFieldPresence} from '@sanity/base/presence'
 import {FormFieldSet, FormFieldSetProps} from '@sanity/base/components'
 import {Marker, MultiFieldSet, Path} from '@sanity/types'
 import {EMPTY_ARRAY} from '../../utils/empty'
+import {ConditionalHiddenField} from '../common/ConditionalHiddenField'
 import {getCollapsedWithDefaults} from './utils'
 
 interface Props extends Omit<FormFieldSetProps, 'onFocus'> {
@@ -13,6 +14,8 @@ interface Props extends Omit<FormFieldSetProps, 'onFocus'> {
   level: number
   presence: FormFieldPresence[]
   markers: Marker[]
+  fieldSetParent: Record<string, unknown> | undefined
+  fieldValues: Record<string, unknown>
 }
 
 /**
@@ -23,7 +26,18 @@ export const ObjectFieldSet = forwardRef(function ObjectFieldSet(
   props: Props,
   forwardedRef: ForwardedRef<HTMLDivElement>
 ) {
-  const {fieldset, focusPath, children, level, presence, markers, onFocus, ...rest} = props
+  const {
+    fieldset,
+    focusPath,
+    children,
+    level,
+    presence,
+    markers,
+    onFocus,
+    fieldValues,
+    fieldSetParent,
+    ...rest
+  } = props
   const columns = fieldset.options && fieldset.options.columns
 
   const collapsibleOpts = getCollapsedWithDefaults(fieldset.options, level)
@@ -75,22 +89,31 @@ export const ObjectFieldSet = forwardRef(function ObjectFieldSet(
   }, [fieldNames, focusPath])
 
   return (
-    <FormFieldSet
-      {...rest}
-      key={fieldset.name}
-      title={fieldset.title}
-      description={fieldset.description}
-      level={level + 1}
-      columns={columns}
-      collapsible={collapsibleOpts.collapsible}
-      collapsed={isCollapsed}
-      onToggle={handleToggleFieldset}
-      __unstable_presence={isCollapsed ? childPresence : EMPTY_ARRAY}
-      __unstable_changeIndicator={false}
-      __unstable_markers={childMarkers}
-      ref={isCollapsed ? forwardedRef : null}
+    <ConditionalHiddenField
+      {...fieldset}
+      parent={fieldSetParent}
+      value={fieldValues}
+      hidden={fieldset.hidden}
     >
-      {children}
-    </FormFieldSet>
+      {
+        <FormFieldSet
+          {...rest}
+          key={fieldset.name}
+          title={fieldset.title}
+          description={fieldset.description}
+          level={level + 1}
+          columns={columns}
+          collapsible={collapsibleOpts.collapsible}
+          collapsed={isCollapsed}
+          onToggle={handleToggleFieldset}
+          __unstable_presence={isCollapsed ? childPresence : EMPTY_ARRAY}
+          __unstable_changeIndicator={false}
+          __unstable_markers={childMarkers}
+          ref={isCollapsed ? forwardedRef : null}
+        >
+          {children}
+        </FormFieldSet>
+      }
+    </ConditionalHiddenField>
   )
 })
