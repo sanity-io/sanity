@@ -240,7 +240,7 @@ describe('validation', () => {
       {publishedId: 'example-id', draftId: 'drafts.example-id'},
       'movie'
     )
-      .pipe(buffer(timer(100)))
+      .pipe(buffer(timer(500)))
       .toPromise()
 
     // simulate first emission from validation listener
