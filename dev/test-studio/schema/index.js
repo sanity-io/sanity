@@ -83,6 +83,9 @@ import book from './book'
 import author from './author'
 import species from './species'
 
+// CI documents
+import conditionalFieldset from './ci/conditionalFieldset'
+
 export default createSchema({
   name: 'test-examples',
   types: schemaTypes.concat([
@@ -97,6 +100,7 @@ export default createSchema({
     codeInputType,
     color,
     conditionalFields,
+    conditionalFieldset,
     customBlock,
     customInputs,
     customNumber,
