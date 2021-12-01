@@ -4,7 +4,10 @@ declare module 'all:part:@sanity/base/absolutes' {
 }
 
 declare module 'all:part:@sanity/base/component'
-declare module 'all:part:@sanity/desk-tool/filter-fields-fn?'
+declare module 'all:part:@sanity/desk-tool/filter-fields-fn?' {
+  declare const filterFields: Observable[]
+  export default filterFields
+}
 
 declare module 'all:part:@sanity/base/diff-resolver' {
   type DiffComponent = React.ComponentType<unknown>

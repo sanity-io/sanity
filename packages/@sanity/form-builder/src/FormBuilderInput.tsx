@@ -220,8 +220,6 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
   handleTabChange = (newFocusPath) => {
     const {path, onFocus, focusPath} = this.props
 
-    // console.log('tab change, reset focus')
-
     onFocus([newFocusPath])
   }
 
