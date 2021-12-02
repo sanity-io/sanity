@@ -7,7 +7,6 @@ import {
   ObjectSchemaTypeWithOptions,
   Path,
   SchemaType,
-  ObjectSchemaType,
 } from '@sanity/types'
 import {ChangeIndicatorProvider} from '@sanity/base/change-indicators'
 import * as PathUtils from '@sanity/util/paths'
@@ -17,7 +16,6 @@ import PatchEvent from './PatchEvent'
 import {emptyArray} from './utils/empty'
 import {Props as InputProps} from './inputs/types'
 import {ConditionalReadOnlyField} from './inputs/common'
-import {FilterGroupTabs} from './fieldGroups/FilterGroupTabs'
 
 const EMPTY_MARKERS: Marker[] = emptyArray()
 const EMPTY_PATH: Path = emptyArray()
@@ -218,18 +216,16 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
   }
 
   handleTabChange = (newFocusPath) => {
-    const {path, onFocus, focusPath} = this.props
+    const {onFocus} = this.props
 
     onFocus([newFocusPath])
   }
 
   render() {
-    const {type, level, parent, focusPath, value, changesOpen} = this.props
+    const {type, parent, value} = this.props
     // Separate readOnly in order to resolve it to a boolean type
     const {readOnly, ...restProps} = this.props
     const InputComponent = this.resolveInputComponent(type)
-    const groupType = type as ObjectSchemaType
-    const hasGroups = typeof groupType.groups === 'object' && groupType.groups.length > 0
 
     if (!InputComponent) {
       return (
@@ -242,7 +238,6 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
     if (typeof readOnly === 'function' || typeof type.readOnly === 'function') {
       return (
         <>
-          {level === 0 && hasGroups && <FilterGroupTabs type={type} disabled={changesOpen} />}
           <ConditionalReadOnlyField
             parent={parent}
             value={value}
@@ -264,27 +259,17 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
     }
 
     return (
-      <>
-        {level === 0 && hasGroups && (
-          <FilterGroupTabs
-            onChange={this.handleTabChange}
-            focusPath={focusPath}
-            type={type}
-            disabled={changesOpen}
-          />
-        )}
-        <FormBuilderInputInner
-          {...restProps}
-          readOnly={readOnly}
-          childFocusPath={this.getChildFocusPath()}
-          context={this.context}
-          component={InputComponent}
-          onBlur={this.handleBlur}
-          onChange={this.handleChange}
-          onFocus={this.handleFocus}
-          setInput={this.setInput}
-        />
-      </>
+      <FormBuilderInputInner
+        {...restProps}
+        readOnly={readOnly}
+        childFocusPath={this.getChildFocusPath()}
+        context={this.context}
+        component={InputComponent}
+        onBlur={this.handleBlur}
+        onChange={this.handleChange}
+        onFocus={this.handleFocus}
+        setInput={this.setInput}
+      />
     )
   }
 }

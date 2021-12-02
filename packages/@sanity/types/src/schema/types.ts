@@ -253,7 +253,7 @@ export interface FieldGroup {
   description?: string
   readOnly?: ConditionalProperty
   hidden?: ConditionalProperty
-  isDefault?: boolean
+  default?: boolean
   fields?: ObjectField[]
 }
 

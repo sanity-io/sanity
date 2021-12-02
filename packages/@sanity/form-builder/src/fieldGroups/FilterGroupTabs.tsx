@@ -172,7 +172,7 @@ export function FilterGroupTabs(props: FieldGroupsTabsProps) {
   // Set default tab selected when filter groups changes
   useEffect(() => {
     const defaultTabName = defaultTo(
-      find(filterGroups, (fieldGroup) => fieldGroup.isDefault),
+      find(filterGroups, (fieldGroup) => fieldGroup.default),
       filterGroups[0]
     ).name
 
@@ -200,7 +200,7 @@ export function FilterGroupTabs(props: FieldGroupsTabsProps) {
                     data-testid={`group-${name}`}
                     id={`${name}-tab`}
                     disabled={disabled}
-                    autoFocus={id === name || group.isDefault}
+                    autoFocus={id === name || group.default}
                     onClick={() => handleClick(name)}
                     selected={id === name}
                     {...group}
