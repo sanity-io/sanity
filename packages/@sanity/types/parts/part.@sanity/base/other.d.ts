@@ -9,6 +9,11 @@ declare module 'all:part:@sanity/desk-tool/filter-fields-fn?' {
   export default filterFields
 }
 
+declare module 'part:@sanity/desk-tool/filter-fields-fn?' {
+  declare const filterField: Observable
+  export default filterField
+}
+
 declare module 'all:part:@sanity/base/diff-resolver' {
   type DiffComponent = React.ComponentType<unknown>
   type DiffResolver = (schemaType: unknown) => DiffComponent | undefined

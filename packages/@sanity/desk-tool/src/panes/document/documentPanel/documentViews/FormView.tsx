@@ -11,7 +11,7 @@ import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-compo
 import documentStore from 'part:@sanity/base/datastore/document'
 import schema from 'part:@sanity/base/schema'
 import {isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
-import allFilterFieldFn$ from 'all:part:@sanity/desk-tool/filter-fields-fn?'
+import filterFieldFn$ from 'part:@sanity/desk-tool/filter-fields-fn?'
 import {FormBuilder} from 'part:@sanity/form-builder'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {shareReplay, tap} from 'rxjs/operators'
@@ -86,23 +86,12 @@ export function FormView(props: FormViewProps) {
     )
   }, [documentSchema, isNonExistent, granted, ready, rev, readOnly])
 
-  const filterFieldCallbacks = (allFieldFilters: any[]) => {
-    return (filterType: ObjectSchemaTypeWithOptions, field: ObjectField) => {
-      return allFieldFilters.every((filterFn: any) => filterFn(filterType, field))
-    }
-  }
-
   useEffect(() => {
-    if (!allFilterFieldFn$) return undefined
+    if (!filterFieldFn$) return undefined
 
-    const sub = combineLatest(allFilterFieldFn$)
-      // .pipe(shareReplay({bufferSize: 1, refCount: true}))
-      .subscribe((nextFieldFilters) => {
-        // Combine into one method that proxies onto multiple filter field functions
-        const filterCallback = filterFieldCallbacks(nextFieldFilters)
-
-        setFilterField({filterField: filterCallback})
-      })
+    const sub = filterFieldFn$.subscribe((nextFieldFilter: any) => {
+      setFilterField({filterField: nextFieldFilter})
+    })
 
     return () => sub.unsubscribe()
   }, [])

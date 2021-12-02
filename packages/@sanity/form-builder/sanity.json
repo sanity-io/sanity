@@ -132,10 +132,6 @@
       "name": "part:@sanity/form-builder/input/file/asset-source-default",
       "implements": "part:@sanity/form-builder/input/file/asset-source",
       "path": "sanity/legacyPartImplementations/file-asset-source-default"
-    },
-    {
-      "implements": "part:@sanity/desk-tool/filter-fields-fn",
-      "path": "fieldGroups/filter-fields"
     }
   ]
 }
