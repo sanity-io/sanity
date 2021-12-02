@@ -60,6 +60,7 @@
     "@sanity/base": "2.22.3",
     "@sanity/ui-workshop": "^0.3.5",
     "@testing-library/react": "^11.2.5",
+    "@testing-library/jest-dom": "^5.11.10",
     "@types/is-hotkey": "^0.1.3",
     "@types/shallow-equals": "^1.0.0",
     "@types/webpack-env": "^1.16.2",
