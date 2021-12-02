@@ -2,7 +2,7 @@ import React from 'react'
 import {get} from 'lodash'
 import {startsWith} from '@sanity/util/paths'
 import {ArraySchemaType, Marker, Path, SchemaType} from '@sanity/types'
-import {Stack} from '@sanity/ui'
+import {Card, Stack} from '@sanity/ui'
 import {FormFieldSet} from '@sanity/base/components'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {resolveTypeName} from '@sanity/util/content'
@@ -173,45 +173,52 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
         __unstable_markers={markers}
       >
         <Stack space={3}>
-          {value && value.length > 0 && (
-            <List onSortEnd={this.handleSortEnd} isSortable={isSortable}>
-              {value.map((item, index) => {
-                const filteredMarkers = markers.filter((marker) => startsWith([index], marker.path))
-                const childPresence = presence.filter((pItem) => startsWith([index], pItem.path))
+          <Stack space={1}>
+            {value && value.length > 0 && (
+              <Card padding={1} border>
+                <List onSortEnd={this.handleSortEnd} isSortable={isSortable}>
+                  {value.map((item, index) => {
+                    const filteredMarkers = markers.filter((marker) =>
+                      startsWith([index], marker.path)
+                    )
+                    const childPresence = presence.filter((pItem) =>
+                      startsWith([index], pItem.path)
+                    )
 
-                return (
-                  // eslint-disable-next-line react/no-array-index-key
-                  <Item key={index} index={index} isSortable={isSortable}>
-                    <ConditionalReadOnlyField
-                      readOnly={readOnly || this.getMemberType(resolveTypeName(item))?.readOnly}
-                      value={item}
-                      parent={value}
-                    >
-                      <ItemRow
-                        level={level + 1}
-                        index={index}
-                        value={item}
-                        compareValue={compareValue}
-                        readOnly={readOnly}
-                        markers={filteredMarkers.length === 0 ? NO_MARKERS : filteredMarkers}
-                        isSortable={isSortable}
-                        type={this.getMemberType(resolveTypeName(item))}
-                        focusPath={focusPath}
-                        onFocus={onFocus}
-                        onBlur={onBlur}
-                        onEnterKey={this.handleItemEnterKey}
-                        onEscapeKey={this.handleItemEscapeKey}
-                        onChange={this.handleItemChange}
-                        onRemove={this.handleRemoveItem}
-                        presence={childPresence}
-                      />
-                    </ConditionalReadOnlyField>
-                  </Item>
-                )
-              })}
-            </List>
-          )}
-
+                    return (
+                      // eslint-disable-next-line react/no-array-index-key
+                      <Item key={index} index={index} isSortable={isSortable}>
+                        <ConditionalReadOnlyField
+                          readOnly={readOnly || this.getMemberType(resolveTypeName(item))?.readOnly}
+                          value={item}
+                          parent={value}
+                        >
+                          <ItemRow
+                            level={level + 1}
+                            index={index}
+                            value={item}
+                            compareValue={compareValue}
+                            readOnly={readOnly}
+                            markers={filteredMarkers.length === 0 ? NO_MARKERS : filteredMarkers}
+                            isSortable={isSortable}
+                            type={this.getMemberType(resolveTypeName(item))}
+                            focusPath={focusPath}
+                            onFocus={onFocus}
+                            onBlur={onBlur}
+                            onEnterKey={this.handleItemEnterKey}
+                            onEscapeKey={this.handleItemEscapeKey}
+                            onChange={this.handleItemChange}
+                            onRemove={this.handleRemoveItem}
+                            presence={childPresence}
+                          />
+                        </ConditionalReadOnlyField>
+                      </Item>
+                    )
+                  })}
+                </List>
+              </Card>
+            )}
+          </Stack>
           <ArrayFunctionsImpl<Primitive>
             type={type}
             value={value}
