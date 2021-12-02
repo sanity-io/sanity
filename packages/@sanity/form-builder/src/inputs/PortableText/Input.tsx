@@ -296,6 +296,7 @@ export function Input(props: InputProps) {
       renderBlockActions,
       renderCustomMarkers,
       textBlockTypeName,
+      textBlockSpellCheck,
     ]
   )
 
