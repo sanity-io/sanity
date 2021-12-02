@@ -1,15 +1,13 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import React, {memo} from 'react'
+import React, {memo, useMemo} from 'react'
 import {Box, Dialog, Grid, Text} from '@sanity/ui'
 import {LegacyLayerProvider} from '@sanity/base/components'
-import {
-  unstable_useTemplatePermissions as useTemplatePermissions,
-  useCurrentUser,
-} from '@sanity/base/hooks'
-import {getNewDocumentOptions} from '@sanity/base/_internal'
+import {useCurrentUser} from '@sanity/base/hooks'
+import {getNewDocumentOptions, TemplatePermissionsResult} from '@sanity/base/_internal'
 import styled from 'styled-components'
+import {keyBy} from 'lodash'
 import {CreateDocumentItem} from './CreateDocumentItem'
 
 const List = styled.ul`
@@ -18,11 +16,9 @@ const List = styled.ul`
   grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
 `
 
-type TemplatePermissions = ReturnType<typeof useTemplatePermissions>[0]
-
 interface CreateDocumentDialogProps {
   onClose: () => void
-  templatePermissions: TemplatePermissions
+  templatePermissions: TemplatePermissionsResult[]
   isTemplatePermissionsLoading: boolean
 }
 
@@ -30,10 +26,10 @@ const newDocumentOptions = getNewDocumentOptions()
 
 export const CreateDocumentDialog = memo(
   ({templatePermissions, isTemplatePermissionsLoading, onClose}: CreateDocumentDialogProps) => {
+    const keyedPermissions = useMemo(() => keyBy(templatePermissions, 'id'), [templatePermissions])
     // note: this hook is called once in this component and passed via props for
     // performance reasons
     const {value: currentUser} = useCurrentUser()
-
     const content =
       newDocumentOptions.length <= 0 ? (
         <Box paddingY={5}>
@@ -45,7 +41,7 @@ export const CreateDocumentDialog = memo(
         <Grid gap={3} as={List}>
           {newDocumentOptions.map((item) => {
             const granted = Boolean(
-              !isTemplatePermissionsLoading && templatePermissions?.[item.id]?.granted
+              !isTemplatePermissionsLoading && keyedPermissions[item.id]?.granted
             )
 
             return (
