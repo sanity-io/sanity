@@ -38,9 +38,13 @@ export interface CliOutputter {
   spinner(...args: any[]): any
 }
 
+export type SinglePrompt =
+  | (Omit<DistinctQuestion, 'name'> & {type: 'list'; choices: string[]})
+  | (Omit<DistinctQuestion, 'name'> & {type: 'confirm'})
+
 export type CliPrompter = typeof prompt & {
   Separator: typeof Separator
-  single: <T = string>(question: Omit<DistinctQuestion, 'name'> & {choices: string[]}) => Promise<T>
+  single: <T = string>(question: SinglePrompt) => Promise<T>
 }
 
 export type CliApiClient = (options?: {

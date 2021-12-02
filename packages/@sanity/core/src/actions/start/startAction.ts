@@ -19,8 +19,6 @@ export default async function startSanityDevServer(
   const flags = args.extOptions
   const {output, workDir} = context
 
-  // await ensureProjectConfig(context)
-
   timers.start('checkStudioDependencyVersions')
   await checkStudioDependencyVersions(workDir)
   timers.end('checkStudioDependencyVersions')

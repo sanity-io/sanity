@@ -15,6 +15,6 @@ export default {
   name: 'build',
   signature: '[OUTPUT_DIR]',
   description: 'Builds the current Sanity configuration to a static bundle',
-  action: lazyRequire(require.resolve('../../actions/build')),
+  action: lazyRequire(require.resolve('../../actions/build/buildAction')),
   helpText,
 }
