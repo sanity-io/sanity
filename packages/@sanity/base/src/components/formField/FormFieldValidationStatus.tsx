@@ -25,6 +25,7 @@ export interface FormFieldValidationStatusProps {
   __unstable_showSummary?: boolean
   fontSize?: number | number
   placement?: Placement
+  portal?: boolean
 }
 
 export function FormFieldValidationStatus(props: FormFieldValidationStatusProps) {
@@ -33,6 +34,7 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
     __unstable_showSummary: showSummary,
     fontSize,
     placement = 'top',
+    portal,
   } = props
   const validationMarkers = markers.filter(isValidationMarker)
   const validation = markersToValidationList(validationMarkers)
@@ -57,6 +59,7 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
           )}
         </Stack>
       }
+      portal={portal}
       placement={placement}
       fallbackPlacements={['bottom', 'right', 'left']}
     >
