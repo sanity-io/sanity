@@ -92,10 +92,10 @@ export function EditDialog(props: Props) {
         onClose={onClose}
         referenceElement={referenceElement}
         placement="bottom"
-        boundaryElement={boundaryElement.element}
         fallbackPlacements={['top', 'bottom']}
         preventOverflow
         title={title}
+        boundaryElement={boundaryElement.element}
       >
         <PresenceOverlay margins={[0, 0, 1, 0]}>{content}</PresenceOverlay>
       </PopoverDialog>

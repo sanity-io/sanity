@@ -18,7 +18,6 @@ import {Placement} from '../types'
 import {DialogAction} from './types'
 
 interface PopoverDialogChildrenProps {
-  boundaryElement?: HTMLElement
   actions?: DialogAction[]
   children: React.ReactNode
   onAction?: (action: DialogAction) => void
