@@ -190,6 +190,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayInputListItemProps)
     handleChange,
     handleEditClose,
     isEditing,
+    isGrid,
     isReference,
     isSortable,
     itemMarkers,
