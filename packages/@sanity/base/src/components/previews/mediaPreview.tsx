@@ -13,7 +13,9 @@ const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   dpr: getDevicePixelRatio(),
 }
 
-export const MediaPreview: React.FunctionComponent<PreviewProps<'media'>> = (props) => {
+export const MediaPreview: React.FunctionComponent<
+  PreviewProps<'media'> & {withRadius?: boolean; withBorder?: boolean}
+> = (props) => {
   const {
     title,
     media,
@@ -21,6 +23,9 @@ export const MediaPreview: React.FunctionComponent<PreviewProps<'media'>> = (pro
     children,
     isPlaceholder,
     progress,
+    withRadius = true,
+    withBorder = true,
+    ...rest
   } = props
   const aspect = mediaDimensions?.aspect || DEFAULT_MEDIA_DIMENSIONS.aspect!
   const STYLES_PADDER = {
@@ -36,10 +41,20 @@ export const MediaPreview: React.FunctionComponent<PreviewProps<'media'>> = (pro
   }
 
   return (
-    <Root overflow="hidden" flex={1} title={typeof title === 'string' ? title : undefined}>
+    <Root
+      overflow="hidden"
+      flex={1}
+      title={typeof title === 'string' ? title : undefined}
+      {...rest}
+    >
       <div style={STYLES_PADDER} />
 
-      <MediaWrapper align="center" justify="center">
+      <MediaWrapper
+        align="center"
+        justify="center"
+        $withBorder={withBorder}
+        $withRadius={withRadius}
+      >
         {typeof media === 'undefined' && <Box>{title}</Box>}
         {typeof media === 'function' &&
           media({
