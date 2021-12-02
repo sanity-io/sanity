@@ -10,5 +10,5 @@
     "allowJs": true,
     "jsx": "react"
   },
-  "references": []
+  "references": [{"path": "../server"}]
 }
