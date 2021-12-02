@@ -20,7 +20,7 @@ export const ConditionalReadOnlyField = ({readOnly, ...rest}: Props) => {
 }
 
 const ConditionalReadOnlyWithDocument = withDocument(
-  forwardRef(function ConditionalHiddenWithDocument(
+  forwardRef(function ConditionalReadOnlyWithDocument(
     props: Props & {document: SanityDocument},
     ref /* ignore ref as there's no place to put it */
   ) {
