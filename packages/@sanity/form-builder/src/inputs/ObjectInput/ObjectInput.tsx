@@ -13,7 +13,7 @@ import {
 import {FormFieldPresence} from '@sanity/base/presence'
 import {FormFieldSet} from '@sanity/base/components'
 import {Card, Grid, Tab, TabList} from '@sanity/ui'
-import {castArray} from 'lodash'
+import {castArray, find, defaultTo} from 'lodash'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import {applyAll} from '../../patch/applyPatch'
 import {EMPTY_ARRAY} from '../../utils/empty'
@@ -26,6 +26,7 @@ import {getCollapsedWithDefaults} from './utils'
 const EMPTY_MARKERS: Marker[] = EMPTY_ARRAY
 const EMPTY_PRESENCE: FormFieldPresence[] = EMPTY_ARRAY
 const EMPTY_PATH: Path = EMPTY_ARRAY
+const DEFAULT_FIELD_GROUP_NAME = 'all-fields'
 
 function isSingleFieldset(fieldset: Fieldset): fieldset is SingleFieldSet {
   return Boolean(fieldset.single)
@@ -81,11 +82,37 @@ export const ObjectInput = memo(
       filterField = DEFAULT_FILTER_FIELD,
     } = props
 
-    const [selectedTabName, setSelectedTabName] = useState('all-fields')
+    const filterGroups: FieldGroup[] = React.useMemo(() => {
+      if (!type.groups || type.groups.length === 0) {
+        return []
+      }
+
+      return [
+        {
+          name: DEFAULT_FIELD_GROUP_NAME,
+          title: 'All fields',
+          fields: type.fields,
+        },
+        ...(type.groups || []),
+      ]
+    }, [type.groups, type.fields])
+    const defaultFieldGroupName = React.useMemo(() => {
+      if (filterGroups.length === 0) {
+        return DEFAULT_FIELD_GROUP_NAME
+      }
+
+      return (
+        defaultTo(
+          find(filterGroups, (fieldGroup) => fieldGroup.default),
+          filterGroups?.[0]
+        )?.name || DEFAULT_FIELD_GROUP_NAME
+      )
+    }, [filterGroups])
+    const [selectedFieldGroupName, setSelectedFieldGroupName] = useState(DEFAULT_FIELD_GROUP_NAME)
     const handleSelectTab = useCallback((tabName: string) => {
-      setSelectedTabName(tabName)
+      setSelectedFieldGroupName(tabName)
     }, [])
-    const hasGroups = typeof type.groups === 'object' && type.groups.length > 0
+    const hasGroups = filterGroups.length > 0
 
     const handleFieldChange = React.useCallback(
       (fieldEvent: PatchEvent, field: ObjectField) => {
@@ -189,12 +216,12 @@ export const ObjectInput = memo(
     )
 
     const fieldGroupPredictive = (fieldToCheck) =>
-      fieldToCheck.group && castArray(fieldToCheck.group).includes(selectedTabName)
+      fieldToCheck.group && castArray(fieldToCheck.group).includes(selectedFieldGroupName)
 
     const renderFields = useCallback(
       (fields = type.fields) => {
         let fieldsToRender = fields
-        if (hasGroups && selectedTabName !== 'all-fields') {
+        if (hasGroups && selectedFieldGroupName !== DEFAULT_FIELD_GROUP_NAME) {
           fieldsToRender = type.fields.filter(fieldGroupPredictive)
         }
 
@@ -205,7 +232,7 @@ export const ObjectInput = memo(
 
         return type.fieldsets
           .filter((fieldset) => {
-            if (selectedTabName === 'all-fields') {
+            if (selectedFieldGroupName === DEFAULT_FIELD_GROUP_NAME) {
               return true
             }
 
@@ -253,7 +280,7 @@ export const ObjectInput = memo(
                   fieldset.fields
                     .filter(
                       (fieldsetField) =>
-                        selectedTabName === 'all-fields' || fieldGroupPredictive(fieldsetField)
+                        selectedFieldGroupName === DEFAULT_FIELD_GROUP_NAME || fieldGroupPredictive(fieldsetField)
                     )
                     .map((field, fieldIndex) =>
                       renderField(
@@ -273,7 +300,7 @@ export const ObjectInput = memo(
         type.fields,
         type.fieldsets,
         hasGroups,
-        selectedTabName,
+        selectedFieldGroupName,
         fieldGroupPredictive,
         renderField,
         level,
@@ -309,7 +336,7 @@ export const ObjectInput = memo(
           {renderUnknownFields()}
         </>
       )
-    }, [renderFields, renderUnknownFields, selectedTabName, hasGroups])
+    }, [renderFields, renderUnknownFields, selectedFieldGroupName, hasGroups])
 
     const collapsibleOpts = getCollapsedWithDefaults(type.options, level)
 
@@ -332,8 +359,15 @@ export const ObjectInput = memo(
       const hasFocusWithin = focusPath.length > 0
       if (hasFocusWithin) {
         setCollapsed(false)
+        setSelectedFieldGroupName(DEFAULT_FIELD_GROUP_NAME)
       }
     }, [focusPath])
+
+    React.useEffect(() => {
+      if (defaultFieldGroupName !== DEFAULT_FIELD_GROUP_NAME) {
+        setSelectedFieldGroupName(defaultFieldGroupName)
+      }
+    }, [defaultFieldGroupName])
 
     const columns = type.options && type.options.columns
 
@@ -346,22 +380,13 @@ export const ObjectInput = memo(
         )
       }
 
-      const filterGroups: FieldGroup[] = [
-        {
-          name: 'all-fields',
-          title: 'All fields',
-          fields: type.fields,
-        },
-        ...(type.groups || []),
-      ]
-
       return (
         <>
           <Card marginBottom={3} data-testid="field-groups">
             <TabList space={2}>
               {filterGroups
                 .map((group, groupIndex) => {
-                  const {name, title, icon, isDefault, fields} = group
+                  const {name, title, icon, fields} = group
 
                   if (!fields || fields.length === 0) {
                     return null
@@ -379,7 +404,7 @@ export const ObjectInput = memo(
                       // eslint-disable-next-line react/jsx-no-bind
                       onClick={() => handleSelectTab(name)}
                       autoFocus={level === 0 && groupIndex === 0}
-                      selected={selectedTabName === name}
+                      selected={selectedFieldGroupName === name}
                     />
                   )
                 })
@@ -400,7 +425,7 @@ export const ObjectInput = memo(
       columns,
       renderAllFields,
       level,
-      selectedTabName,
+      selectedFieldGroupName,
       handleSelectTab,
     ])
 

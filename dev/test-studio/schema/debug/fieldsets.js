@@ -8,7 +8,7 @@ export default {
     {
       name: 'group1',
       title: 'Group 1',
-      isDefault: true,
+      default: true,
       icon: CogIcon,
     },
     {

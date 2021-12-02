@@ -38,7 +38,7 @@ export default {
     {
       name: 'settings',
       title: 'Settings',
-      isDefault: true,
+      default: true,
     },
   ],
   fields: [
