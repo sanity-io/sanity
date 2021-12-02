@@ -1,8 +1,0 @@
-@import 'part:deeper/css';
-
-:root {
-  --plain: #f00baa;
-  --scoped-reference: var(--plain);
-  --imported-reference: var(--from-deeper);
-  --root-composed-from-deeper-non-part: color(var(--deeper-composed-from-non-part) alpha(15%));
-}

@@ -1,9 +1,0 @@
-.something {
-  composes: base from 'part:date/base-style';
-  color: #333;
-}
-
-.zebra {
-  background: #000;
-  color: #fff;
-}
