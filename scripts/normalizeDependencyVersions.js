@@ -137,7 +137,7 @@ if (fixablePackages.length > 0) {
   console.log(
     [
       'Updated version ranges for %d packages,',
-      'you might want to run "npm run bootstrap"',
+      'you might want to run "yarn bootstrap"',
       'and run some tests before pushing changes',
     ].join(' '),
     fixablePackages.length

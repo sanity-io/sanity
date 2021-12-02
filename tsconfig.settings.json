@@ -5,7 +5,6 @@
     "lib": ["dom", "es2020"],
     "declaration": true,
     "declarationMap": true,
-    "emitDeclarationOnly": true,
     "sourceMap": true,
     "removeComments": false,
     "preserveConstEnums": true,
@@ -13,6 +12,33 @@
     "esModuleInterop": true,
     "useUnknownInCatchVariables": false,
     "strict": true,
-    "skipLibCheck": true
-  }
+    "skipLibCheck": true,
+    "isolatedModules": true
+  },
+  "references": [
+    {"path": "./packages/@sanity/base"},
+    {"path": "./packages/@sanity/block-tools"},
+    {"path": "./packages/@sanity/code-input"},
+    {"path": "./packages/@sanity/core"},
+    {"path": "./packages/@sanity/default-layout"},
+    {"path": "./packages/@sanity/desk-tool"},
+    {"path": "./packages/@sanity/diff"},
+    {"path": "./packages/@sanity/field"},
+    {"path": "./packages/@sanity/form-builder"},
+    {"path": "./packages/@sanity/google-maps-input"},
+    {"path": "./packages/@sanity/imagetool"},
+    {"path": "./packages/@sanity/initial-value-templates"},
+    {"path": "./packages/@sanity/language-filter"},
+    {"path": "./packages/@sanity/mutator"},
+    {"path": "./packages/@sanity/portable-text-editor"},
+    {"path": "./packages/@sanity/react-hooks"},
+    {"path": "./packages/@sanity/schema"},
+    {"path": "./packages/@sanity/server"},
+    {"path": "./packages/@sanity/state-router"},
+    {"path": "./packages/@sanity/structure"},
+    {"path": "./packages/@sanity/transaction-collator"},
+    {"path": "./packages/@sanity/types"},
+    {"path": "./packages/@sanity/util"},
+    {"path": "./packages/@sanity/validation"}
+  ]
 }

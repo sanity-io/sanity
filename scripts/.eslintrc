@@ -1,5 +1,9 @@
 {
   "rules": {
-    "@typescript-eslint/no-var-requires": "off"
+    "@typescript-eslint/no-var-requires": "off",
+    "import/no-dynamic-require": "off",
+    "no-console": "off",
+    "no-sync": "off",
+    "no-process-exit": "off"
   }
 }

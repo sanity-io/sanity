@@ -3,9 +3,6 @@ logs
 *.log
 npm-debug.log*
 
-# TypeScript incremental build information
-tsconfig.tsbuildinfo
-
 # Runtime data
 pids
 *.pid
@@ -43,9 +40,13 @@ jspm_packages
 .DS_Store
 
 # VS Code settings
-.vscode
+/.vscode
 
 # Lockfiles
-package-lock.json
+/package-lock.json
 
-.env
+# Environment files
+/.env
+
+# TypeScript
+/tsconfig.tsbuildinfo
