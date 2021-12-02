@@ -168,15 +168,15 @@ function createFieldsets(typeDef, fields) {
 function createFieldsGroups(typeDef, fields) {
   const groupsDef = typeDef.groups || []
   const groups = groupsDef.map((group) => {
-    const {name, title, description, icon, isDefault, readOnly, hidden} = group
+    const {name, title, description, icon, readOnly, hidden} = group
     return {
       name,
       title,
       description,
       icon,
       readOnly,
+      default: group.default,
       hidden,
-      isDefault,
       fields: [],
     }
   })
