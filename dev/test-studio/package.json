@@ -1,7 +1,7 @@
 {
   "name": "test-studio",
   "private": true,
-  "version": "2.22.3",
+  "version": "2.22.4",
   "description": "A Sanity Studio for development and testing.",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
@@ -26,7 +26,7 @@
     "@sanity/color-input": "2.22.3",
     "@sanity/core": "2.22.3",
     "@sanity/dashboard": "2.22.3",
-    "@sanity/default-layout": "2.22.3",
+    "@sanity/default-layout": "2.22.4",
     "@sanity/default-login": "2.22.3",
     "@sanity/desk-tool": "2.22.3",
     "@sanity/google-maps-input": "2.22.3",

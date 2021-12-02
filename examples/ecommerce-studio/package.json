@@ -1,7 +1,7 @@
 {
   "name": "ecommerce-studio",
   "private": true,
-  "version": "2.22.3",
+  "version": "2.22.4",
   "description": "",
   "main": "package.json",
   "author": "Sanity.io <hello@sanity.io>",
@@ -22,7 +22,7 @@
     "@sanity/base": "2.22.3",
     "@sanity/cli": "2.22.3",
     "@sanity/core": "2.22.3",
-    "@sanity/default-layout": "2.22.3",
+    "@sanity/default-layout": "2.22.4",
     "@sanity/default-login": "2.22.3",
     "@sanity/desk-tool": "2.22.3",
     "@sanity/form-builder": "2.22.3",
