@@ -8,6 +8,8 @@ type PreviewProps = {
   value?: any
   type: any
   fallbackTitle?: React.ReactNode
+  withRadius?: boolean
+  withBorder?: boolean
 }
 export default class Preview extends React.PureComponent<PreviewProps> {
   static contextTypes = {
