@@ -1,14 +1,23 @@
 import {Box, Flex, rem} from '@sanity/ui'
-import styled from 'styled-components'
+import styled, {css} from 'styled-components'
 
-export const MediaWrapper = styled(Flex)`
+export const MediaWrapper = styled(Flex)<{$withBorder: boolean; $withRadius: boolean}>`
   position: absolute !important;
   left: 0;
   top: 0;
   right: 0;
   bottom: 0;
   background-color: var(--card-hairline-hard-color);
-  border-radius: ${({theme}) => rem(theme.sanity.radius[2])};
+
+  ${({$withRadius}) =>
+    $withRadius &&
+    css`
+      border-radius: ${({theme}) => rem(theme.sanity.radius[2])}px;
+    `}
+
+  [data-sanity-icon] {
+    font-size: 2.5rem;
+  }
 
   img {
     display: block;
@@ -24,8 +33,13 @@ export const MediaWrapper = styled(Flex)`
     top: 0;
     right: 0;
     bottom: 0;
-    box-shadow: inset 0 0 0 1px var(--card-shadow-umbra-color);
-    border-radius: ${({theme}) => rem(theme.sanity.radius[2])};
+    border-radius: inherit;
+
+    ${({$withBorder}) =>
+      $withBorder &&
+      css`
+        box-shadow: inset 0 0 0 1px var(--card-shadow-umbra-color);
+      `}
   }
 `
 

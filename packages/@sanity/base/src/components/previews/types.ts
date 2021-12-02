@@ -51,6 +51,8 @@ export interface PreviewProps<LayoutKey = PreviewLayoutKey> {
   title?: React.ReactNode | React.FC<{layout: LayoutKey}>
   subtitle?: React.ReactNode | React.FC<{layout: LayoutKey}>
   description?: React.ReactNode | React.FC<{layout: LayoutKey}>
+  withRadius?: boolean
+  withShadow?: boolean
 }
 
 export type PreviewComponent = React.ComponentType<PreviewProps>
