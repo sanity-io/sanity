@@ -282,6 +282,7 @@ export interface SingleFieldSet {
   field: ObjectField
   hidden?: ConditionalProperty
   readOnly?: ConditionalProperty
+  group?: string | string[]
 }
 
 export interface MultiFieldSet {
@@ -289,6 +290,7 @@ export interface MultiFieldSet {
   title?: string
   description?: string
   single?: false
+  group?: string | string[]
   options?: CollapseOptions & {
     columns?: number
   }

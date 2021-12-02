@@ -6,15 +6,14 @@ export default {
   title: 'Fieldsets test',
   groups: [
     {
-      name: 'settings',
-      title: 'Settings',
+      name: 'group1',
+      title: 'Group 1',
       isDefault: true,
       icon: CogIcon,
     },
     {
-      name: 'without-validation-error',
-      title: 'Without Validation Error',
-      isDefault: true,
+      name: 'group2',
+      title: 'Group 2',
       icon: EyeClosedIcon,
     },
   ],
@@ -28,6 +27,7 @@ export default {
     {
       name: 'settings',
       title: 'Settings',
+      group: ['group1'],
       options: {columns: 2},
       readOnly: true,
     },
@@ -35,6 +35,10 @@ export default {
       name: 'single',
       title: 'Single',
       hidden: false,
+    },
+    {
+      name: 'recursive',
+      title: 'Recursive Fieldset',
     },
   ],
   fields: [
@@ -61,16 +65,16 @@ export default {
       name: 'x',
       title: 'X position',
       fieldset: 'settings',
-      group: 'settings',
+      group: 'group1',
       validation: (Rule) => Rule.required(),
     },
     {type: 'number', name: 'y', title: 'Y position', fieldset: 'settings'},
     {type: 'number', name: 'width', title: 'Width', fieldset: 'settings'},
-    {type: 'number', name: 'height', title: 'Height', fieldset: 'settings', group: ['settings']},
+    {type: 'number', name: 'height', title: 'Height', fieldset: 'settings', group: ['group1']},
     {
       name: 'person',
       type: 'object',
-      group: ['settings'],
+      group: ['group1'],
       fieldsets: [
         {
           name: 'social',
@@ -118,8 +122,35 @@ export default {
       type: 'object',
       description:
         'This is a field of (anonymous, inline) object type. Values here should never get a `_type` property',
+      groups: [
+        {
+          name: 'group1',
+          title: 'Group 1',
+          icon: CogIcon,
+        },
+        {
+          name: 'group2',
+          title: 'Group 2',
+          icon: EyeClosedIcon,
+        },
+      ],
       fields: [
         {name: 'field1', type: 'string', description: 'This is a string field'},
+        {
+          name: 'topLevelPrimitiveArrayType',
+          group: ['group1'],
+          type: 'array',
+          of: [
+            {
+              type: 'string',
+              title: 'A string',
+            },
+            {
+              type: 'number',
+              title: 'A number',
+            },
+          ],
+        },
         {
           name: 'field2',
           type: 'myObject',
@@ -132,14 +163,14 @@ export default {
       name: 'settingsName',
       title: 'Settings ',
       type: 'string',
-      group: ['settings'],
+      group: ['group1'],
     },
     {
       name: 'settingsBoolean',
       title: 'Settings Boolean',
       description: 'Belongs into multiple field groups',
       type: 'boolean',
-      group: ['settings', 'without-validation-error'],
+      group: ['group1', 'group2'],
     },
     {
       name: 'recursive',

@@ -30,6 +30,8 @@ export const filterFn$ = selectedTab$.pipe(
         return true
       }
 
+      return true
+
       return filterField(enclosingType, field, tabId)
     }
   })

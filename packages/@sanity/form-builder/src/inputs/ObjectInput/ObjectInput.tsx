@@ -1,4 +1,4 @@
-import React, {ForwardedRef, forwardRef, memo, useCallback} from 'react'
+import React, {ForwardedRef, forwardRef, memo, useCallback, useState} from 'react'
 import {
   Marker,
   MultiFieldSet,
@@ -8,11 +8,12 @@ import {
   SingleFieldSet,
   Fieldset,
   ConditionalProperty,
+  FieldGroup,
 } from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {FormFieldSet} from '@sanity/base/components'
-
-import {Grid} from '@sanity/ui'
+import {Card, Grid, Tab, TabList} from '@sanity/ui'
+import {castArray} from 'lodash'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import {applyAll} from '../../patch/applyPatch'
 import {EMPTY_ARRAY} from '../../utils/empty'
@@ -79,6 +80,12 @@ export const ObjectInput = memo(
       compareValue,
       filterField = DEFAULT_FILTER_FIELD,
     } = props
+
+    const [selectedTabName, setSelectedTabName] = useState('all-fields')
+    const handleSelectTab = useCallback((tabName: string) => {
+      setSelectedTabName(tabName)
+    }, [])
+    const hasGroups = typeof type.groups === 'object' && type.groups.length > 0
 
     const handleFieldChange = React.useCallback(
       (fieldEvent: PatchEvent, field: ObjectField) => {
@@ -181,63 +188,102 @@ export const ObjectInput = memo(
       ]
     )
 
-    const renderFields = useCallback(() => {
-      if (!type.fieldsets) {
-        // this is a fallback for schema types that are not parsed to be objects, but still has jsonType == 'object'
-        return (type.fields || []).map((field, index) => renderField(field, level + 1, index))
-      }
-      return type.fieldsets.map((fieldset, fieldsetIndex) => {
-        if (isSingleFieldset(fieldset)) {
-          return renderField(fieldset.field, level + 1, fieldsetIndex, fieldset.readOnly)
-        }
-        const fieldSetValuesObject = {}
-        // eslint-disable-next-line max-nested-callbacks
-        fieldset.fields.forEach((field) => {
-          if (value) {
-            fieldSetValuesObject[field.name] = value[field.name]
-          }
-        })
+    const fieldGroupPredictive = (fieldToCheck) =>
+      fieldToCheck.group && castArray(fieldToCheck.group).includes(selectedTabName)
 
-        return (
-          <ObjectFieldSet
-            key={`fieldset-${(fieldset as MultiFieldSet).name}`}
-            data-testid={`fieldset-${(fieldset as MultiFieldSet).name}`}
-            fieldset={fieldset as MultiFieldSet}
-            focusPath={focusPath}
-            onFocus={onFocus}
-            level={level + 1}
-            presence={presence}
-            markers={markers}
-            fieldSetParent={value}
-            fieldValues={fieldSetValuesObject}
-          >
-            {() =>
-              // lazy render children
-              // eslint-disable-next-line max-nested-callbacks
-              fieldset.fields.map((field, fieldIndex) =>
-                renderField(
-                  field,
-                  level + 2,
-                  fieldsetIndex + fieldIndex,
-                  fieldset.readOnly,
-                  fieldSetValuesObject
-                )
-              )
+    const renderFields = useCallback(
+      (fields = type.fields) => {
+        let fieldsToRender = fields
+        if (hasGroups && selectedTabName !== 'all-fields') {
+          fieldsToRender = type.fields.filter(fieldGroupPredictive)
+        }
+
+        if (!type.fieldsets) {
+          // this is a fallback for schema types that are not parsed to be objects, but still has jsonType == 'object'
+          return (fieldsToRender || []).map((field, index) => renderField(field, level + 1, index))
+        }
+
+        return type.fieldsets
+          .filter((fieldset) => {
+            if (selectedTabName === 'all-fields') {
+              return true
             }
-          </ObjectFieldSet>
-        )
-      })
-    }, [
-      focusPath,
-      level,
-      markers,
-      onFocus,
-      presence,
-      renderField,
-      type.fields,
-      type.fieldsets,
-      value,
-    ])
+
+            const hasFieldsetGroups = fieldGroupPredictive(fieldset)
+
+            if (fieldset.single === true) {
+              const fieldBelongsToGroup = fieldGroupPredictive(fieldset.field)
+
+              return hasFieldsetGroups || fieldBelongsToGroup
+            }
+
+            const hasGroupFields =
+              hasFieldsetGroups || (!fieldset.single && fieldset.fields.some(fieldGroupPredictive))
+
+            return hasGroupFields
+          })
+          .map((fieldset, fieldsetIndex) => {
+            if (isSingleFieldset(fieldset)) {
+              return renderField(fieldset.field, level + 1, fieldsetIndex, fieldset.readOnly)
+            }
+            const fieldSetValuesObject = {}
+            // eslint-disable-next-line max-nested-callbacks
+            fieldset.fields.forEach((field) => {
+              if (value) {
+                fieldSetValuesObject[field.name] = value[field.name]
+              }
+            })
+
+            return (
+              <ObjectFieldSet
+                key={`fieldset-${(fieldset as MultiFieldSet).name}`}
+                data-testid={`fieldset-${(fieldset as MultiFieldSet).name}`}
+                fieldset={fieldset as MultiFieldSet}
+                focusPath={focusPath}
+                onFocus={onFocus}
+                level={level + 1}
+                presence={presence}
+                markers={markers}
+                fieldSetParent={value}
+                fieldValues={fieldSetValuesObject}
+              >
+                {() =>
+                  // lazy render children
+                  // eslint-disable-next-line max-nested-callbacks
+                  fieldset.fields
+                    .filter(
+                      (fieldsetField) =>
+                        selectedTabName === 'all-fields' || fieldGroupPredictive(fieldsetField)
+                    )
+                    .map((field, fieldIndex) =>
+                      renderField(
+                        field,
+                        level + 2,
+                        fieldsetIndex + fieldIndex,
+                        fieldset.readOnly,
+                        fieldSetValuesObject
+                      )
+                    )
+                }
+              </ObjectFieldSet>
+            )
+          })
+      },
+      [
+        type.fields,
+        type.fieldsets,
+        hasGroups,
+        selectedTabName,
+        fieldGroupPredictive,
+        renderField,
+        level,
+        focusPath,
+        onFocus,
+        presence,
+        markers,
+        value,
+      ]
+    )
 
     const renderUnknownFields = useCallback(() => {
       if (!type.fields) {
@@ -263,7 +309,7 @@ export const ObjectInput = memo(
           {renderUnknownFields()}
         </>
       )
-    }, [renderFields, renderUnknownFields])
+    }, [renderFields, renderUnknownFields, selectedTabName, hasGroups])
 
     const collapsibleOpts = getCollapsedWithDefaults(type.options, level)
 
@@ -290,14 +336,78 @@ export const ObjectInput = memo(
     }, [focusPath])
 
     const columns = type.options && type.options.columns
+
+    const renderFieldGroups = useCallback(() => {
+      if (!type.groups || type.groups.length === 0) {
+        return (
+          <Grid columns={columns} gapX={4} gapY={5}>
+            {renderAllFields()}
+          </Grid>
+        )
+      }
+
+      const filterGroups: FieldGroup[] = [
+        {
+          name: 'all-fields',
+          title: 'All fields',
+          fields: type.fields,
+        },
+        ...(type.groups || []),
+      ]
+
+      return (
+        <>
+          <Card marginBottom={3} data-testid="field-groups">
+            <TabList space={2}>
+              {filterGroups
+                .map((group, groupIndex) => {
+                  const {name, title, icon, isDefault, fields} = group
+
+                  if (!fields || fields.length === 0) {
+                    return null
+                  }
+
+                  return (
+                    <Tab
+                      data-testid={`group-${name}`}
+                      key={`${name}-tab`}
+                      id={`${name}-tab`}
+                      icon={icon}
+                      size={1}
+                      aria-controls={`${name}-panel`}
+                      label={title || name}
+                      // eslint-disable-next-line react/jsx-no-bind
+                      onClick={() => handleSelectTab(name)}
+                      autoFocus={level === 0 && groupIndex === 0}
+                      selected={selectedTabName === name}
+                    />
+                  )
+                })
+                .filter(Boolean)}
+            </TabList>
+
+            <Card paddingTop={4}>
+              <Grid columns={columns} gapX={4} gapY={5}>
+                {renderAllFields()}
+              </Grid>
+            </Card>
+          </Card>
+        </>
+      )
+    }, [
+      type.groups,
+      type.fields,
+      columns,
+      renderAllFields,
+      level,
+      selectedTabName,
+      handleSelectTab,
+    ])
+
     if (level === 0) {
       // We don't want to render the fields wrapped in a fieldset if nesting level is 0
       // (e.g. when the object input is used as the root element in a form or a dialog)
-      return (
-        <Grid columns={columns} gapX={4} gapY={5}>
-          {renderAllFields()}
-        </Grid>
-      )
+      return <>{renderFieldGroups()}</>
     }
 
     return (
@@ -314,7 +424,7 @@ export const ObjectInput = memo(
         __unstable_markers={isCollapsed ? markers : EMPTY_ARRAY}
         __unstable_changeIndicator={false}
       >
-        {renderAllFields}
+        {renderFieldGroups()}
       </FormFieldSet>
     )
   })
