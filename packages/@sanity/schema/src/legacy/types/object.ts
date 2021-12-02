@@ -132,12 +132,13 @@ export const ObjectType = {
 function createFieldsets(typeDef, fields) {
   const fieldsetsDef = typeDef.fieldsets || []
   const fieldsets = fieldsetsDef.map((fieldset) => {
-    const {name, title, description, options, hidden, readOnly} = fieldset
+    const {name, title, description, options, group, hidden, readOnly} = fieldset
     return {
       name,
       title,
       description,
       options,
+      group,
       fields: [],
       hidden,
       readOnly,
@@ -185,15 +186,17 @@ function createFieldsGroups(typeDef, fields) {
   fields
     .map((field) => {
       if (field.group) {
-        const fieldGroups = castArray(field.group)
+        const fieldGroupNames = castArray(field.group)
 
-        if (fieldGroups.length > 0) {
-          fieldGroups.forEach((fieldGroupName) => {
+        if (fieldGroupNames.length > 0) {
+          fieldGroupNames.forEach((fieldGroupName) => {
             const currentGroup = groupsByName[fieldGroupName]
 
             if (!currentGroup) {
               throw new Error(
-                `Field group '${fieldGroupName}' is not defined in schema for type '${typeDef.name}'`
+                `Field group '${fieldGroupName}' is not defined in schema for type '${
+                  typeDef.name ? startCase(typeDef.name) : typeDef.title ?? ``
+                }'`
               )
             }
 
