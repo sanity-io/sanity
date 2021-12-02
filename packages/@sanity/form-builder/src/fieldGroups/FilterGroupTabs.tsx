@@ -4,6 +4,7 @@ import {Card, Tab, TabList} from '@sanity/ui'
 import {find, defaultTo, map} from 'lodash'
 import {map as map$, publishReplay, refCount, startWith, tap, take} from 'rxjs/operators'
 import {pipe, Subscription} from 'rxjs'
+import {ConditionalHiddenField, ConditionalReadOnlyField} from '../inputs/common'
 import {setSelectedTabName, selectedTab$, resetSelectedTab} from './datastore'
 
 interface FieldGroupsTabsProps {
@@ -39,14 +40,9 @@ export function FilterGroupTabs(props: FieldGroupsTabsProps) {
     return map(fieldsNames || [], 'name')
   }, [filterGroups, id])
 
-  // console.log(filterGroups)
-
-  const setNewId = useCallback(
-    (name: string) => {
-      setSelectedTabName(name)
-    },
-    [setSelectedTabName]
-  )
+  const setNewId = useCallback((name: string) => {
+    setSelectedTabName(name)
+  }, [])
 
   // useEffect(() => {
   //   const [firstFocusPath] = focusPath || []
@@ -131,29 +127,52 @@ export function FilterGroupTabs(props: FieldGroupsTabsProps) {
     }
   }, [filterGroups])
 
-  return (
-    <Card paddingBottom={4} data-testid="field-groups">
-      <TabList space={2}>
-        {filterGroups.map((group, i) => {
-          const {name, title, icon, isDefault} = group
-
-          return (
-            <Tab
-              data-testid={`group-${name}`}
-              key={`${name}-tab`}
-              id={`${name}-tab`}
-              icon={icon}
-              size={1}
-              aria-controls={`${name}-panel`}
-              label={title || name}
-              onClick={() => handleClick(name)}
-              selected={id === name}
-              disabled={disabled}
-              autoFocus={id === name || isDefault}
-            />
-          )
-        })}
-      </TabList>
-    </Card>
+  const tabs = useMemo(
+    () => (
+      <Card paddingBottom={4} data-testid="field-groups">
+        <TabList space={2}>
+          {filterGroups.map((group, i) => {
+            const {name, readOnly, hidden}: FieldGroup = group
+            return (
+              <ConditionalHiddenField
+                value={group}
+                hidden={hidden}
+                parent={filterGroups}
+                key={`${name}-tab`}
+              >
+                <ConditionalReadOnlyField value={group} readOnly={readOnly} parent={filterGroups}>
+                  <GroupTab
+                    data-testid={`group-${name}`}
+                    id={`${name}-tab`}
+                    disabled={disabled}
+                    autoFocus={id === name || group.isDefault}
+                    onClick={() => handleClick(name)}
+                    selected={id === name}
+                    {...group}
+                  />
+                </ConditionalReadOnlyField>
+              </ConditionalHiddenField>
+            )
+          })}
+        </TabList>
+      </Card>
+    ),
+    [disabled, filterGroups, handleClick, id]
   )
+
+  return tabs
 }
+
+const GroupTab = ({readOnly, name, icon, title, disabled, ...rest}) => (
+  <Tab
+    data-testid={`group-${name}`}
+    id={`${name}-tab`}
+    icon={icon}
+    size={1}
+    aria-controls={`${name}-panel`}
+    label={title || name}
+    title={title || name}
+    disabled={disabled || readOnly}
+    {...rest}
+  />
+)
