@@ -14,6 +14,7 @@ import {FormFieldPresence} from '@sanity/base/presence'
 import {FormFieldSet} from '@sanity/base/components'
 import {Card, Grid, Tab, TabList} from '@sanity/ui'
 import {castArray, find, defaultTo} from 'lodash'
+import {useId} from '@reach/auto-id'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import {applyAll} from '../../patch/applyPatch'
 import {EMPTY_ARRAY} from '../../utils/empty'
@@ -82,6 +83,7 @@ export const ObjectInput = memo(
       filterField = DEFAULT_FILTER_FIELD,
     } = props
 
+    const inputId = useId()
     const filterGroups: FieldGroup[] = React.useMemo(() => {
       if (!type.groups || type.groups.length === 0) {
         return []
@@ -280,7 +282,8 @@ export const ObjectInput = memo(
                   fieldset.fields
                     .filter(
                       (fieldsetField) =>
-                        selectedFieldGroupName === DEFAULT_FIELD_GROUP_NAME || fieldGroupPredictive(fieldsetField)
+                        selectedFieldGroupName === DEFAULT_FIELD_GROUP_NAME ||
+                        fieldGroupPredictive(fieldsetField)
                     )
                     .map((field, fieldIndex) =>
                       renderField(
@@ -359,20 +362,60 @@ export const ObjectInput = memo(
       const hasFocusWithin = focusPath.length > 0
       if (hasFocusWithin) {
         setCollapsed(false)
-        setSelectedFieldGroupName(DEFAULT_FIELD_GROUP_NAME)
+
+        // Restore to default field group if focus path changes
+        if (selectedFieldGroupName !== DEFAULT_FIELD_GROUP_NAME) {
+          setSelectedFieldGroupName(DEFAULT_FIELD_GROUP_NAME)
+        }
       }
     }, [focusPath])
 
     React.useEffect(() => {
-      if (defaultFieldGroupName !== DEFAULT_FIELD_GROUP_NAME) {
+      if (
+        defaultFieldGroupName !== DEFAULT_FIELD_GROUP_NAME &&
+        selectedFieldGroupName !== defaultFieldGroupName
+      ) {
         setSelectedFieldGroupName(defaultFieldGroupName)
       }
     }, [defaultFieldGroupName])
 
     const columns = type.options && type.options.columns
+    const fieldGroupTabs = React.useMemo(() => {
+      if (!hasGroups) {
+        return null
+      }
+
+      return (
+        <TabList space={2}>
+          {filterGroups
+            .map((group, groupIndex) => {
+              const {name, title, icon, fields} = group
+
+              if (!fields || fields.length === 0) {
+                return null
+              }
+
+              return (
+                <GroupTab
+                  key={`${inputId}-${name}-tab`}
+                  ariaControls={`${inputId}-field-group-fields`}
+                  icon={icon}
+                  // eslint-disable-next-line react/jsx-no-bind
+                  onClick={() => handleSelectTab(name)}
+                  autoFocus={level === 0 && groupIndex === 0}
+                  selected={selectedFieldGroupName === name}
+                  title={title}
+                  {...group}
+                />
+              )
+            })
+            .filter(Boolean)}
+        </TabList>
+      )
+    }, [filterGroups, handleSelectTab, hasGroups, inputId, level, selectedFieldGroupName])
 
     const renderFieldGroups = useCallback(() => {
-      if (!type.groups || type.groups.length === 0) {
+      if (!hasGroups) {
         return (
           <Grid columns={columns} gapX={4} gapY={5}>
             {renderAllFields()}
@@ -383,36 +426,9 @@ export const ObjectInput = memo(
       return (
         <>
           <Card marginBottom={3} data-testid="field-groups">
-            <TabList space={2}>
-              {filterGroups
-                .map((group, groupIndex) => {
-                  const {name, title, icon, fields} = group
-
-                  if (!fields || fields.length === 0) {
-                    return null
-                  }
-
-                  return (
-                    <Tab
-                      data-testid={`group-${name}`}
-                      key={`${name}-tab`}
-                      id={`${name}-tab`}
-                      icon={icon}
-                      size={1}
-                      aria-controls={`${name}-panel`}
-                      label={title || name}
-                      // eslint-disable-next-line react/jsx-no-bind
-                      onClick={() => handleSelectTab(name)}
-                      autoFocus={level === 0 && groupIndex === 0}
-                      selected={selectedFieldGroupName === name}
-                    />
-                  )
-                })
-                .filter(Boolean)}
-            </TabList>
-
+            {fieldGroupTabs}
             <Card paddingTop={4}>
-              <Grid columns={columns} gapX={4} gapY={5}>
+              <Grid columns={columns} gapX={4} gapY={5} id={`${inputId}-field-group-fields`}>
                 {renderAllFields()}
               </Grid>
             </Card>
@@ -453,4 +469,17 @@ export const ObjectInput = memo(
       </FormFieldSet>
     )
   })
+)
+
+const GroupTab = ({name, icon, title, ariaControls, ...rest}) => (
+  <Tab
+    data-testid={`group-${name}`}
+    id={`${name}-tab`}
+    icon={icon}
+    size={1}
+    label={title || name}
+    title={title || name}
+    aria-controls={ariaControls}
+    {...rest}
+  />
 )
