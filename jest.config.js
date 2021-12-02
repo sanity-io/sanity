@@ -16,8 +16,6 @@ const JEST_PROJECTS = [
   '@sanity/transaction-collator',
   '@sanity/util',
   '@sanity/validation',
-  '@sanity/resolver',
-  '@sanity/webpack-integration',
 ]
 
 /** @type {import('@jest/types').Config.InitialOptions} */
