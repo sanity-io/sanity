@@ -12,21 +12,20 @@ import {
   Type,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
-import {get, debounce} from 'lodash'
+import {debounce} from 'lodash'
 import {applyAll} from '../../../simplePatch'
-import {ModalType} from '../../arrays/ArrayOfObjectsInput/types'
 import {PatchEvent} from '../../../PatchEvent'
 import {ObjectEditData} from '../types'
 import {Patch} from '../../../patch/types'
 import {DefaultObjectEditing} from './renderers/DefaultObjectEditing'
 import {PopoverObjectEditing} from './renderers/PopoverObjectEditing'
-import {FullscreenObjectEditing} from './renderers/FullscreenObjectEditing'
+import {getModalOption} from './helpers'
 
 const PATCHES: WeakMap<PortableTextEditor, Patch[]> = new WeakMap()
 const IS_THROTTLING: WeakMap<PortableTextEditor, boolean> = new WeakMap()
 const THROTTLE_MS = 300
 
-interface Props {
+export interface EditObjectProps {
   focusPath: Path
   markers: Marker[]
   objectEditData: ObjectEditData
@@ -39,18 +38,19 @@ interface Props {
   value: PortableTextBlock[] | undefined
 }
 
-export const EditObject = ({
-  focusPath,
-  markers,
-  objectEditData,
-  onBlur,
-  onChange,
-  onClose,
-  onFocus,
-  presence,
-  readOnly,
-  value,
-}: Props) => {
+export const EditObject = (props: EditObjectProps) => {
+  const {
+    focusPath,
+    markers,
+    objectEditData,
+    onBlur,
+    onChange,
+    onClose,
+    onFocus,
+    presence,
+    readOnly,
+    value,
+  } = props
   const editor = usePortableTextEditor()
   const ptFeatures = useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [editor])
   const [_object, type] = useMemo(() => findObjectAndType(objectEditData, value, ptFeatures), [
@@ -62,7 +62,7 @@ export const EditObject = ({
   const [timeoutInstance, setTimeoutInstance] = useState(undefined)
   const formBuilderPath = objectEditData && objectEditData.formBuilderPath
   const kind = objectEditData && objectEditData.kind
-  const editModalLayout: ModalType = get(type, 'options.editModal')
+  const modalOption = useMemo(() => getModalOption({type}), [type])
 
   // Initialize weakmaps on mount, and send patches on unmount
   useEffect(() => {
@@ -124,28 +124,9 @@ export const EditObject = ({
     return null
   }
 
-  if (editModalLayout === 'fullscreen') {
-    return (
-      <FullscreenObjectEditing
-        focusPath={focusPath}
-        markers={markers}
-        object={object}
-        onBlur={onBlur}
-        onChange={handleChange}
-        onClose={onClose}
-        onFocus={onFocus}
-        path={formBuilderPath}
-        presence={presence}
-        readOnly={readOnly}
-        type={type}
-      />
-    )
-  }
-
   if (
-    editModalLayout === 'popover' ||
-    editModalLayout === 'fold' ||
-    (kind === 'annotation' && typeof editModalLayout === 'undefined')
+    modalOption.type === 'popover' ||
+    (kind === 'annotation' && typeof modalOption.type === 'undefined')
   ) {
     return (
       <PopoverObjectEditing
@@ -161,6 +142,7 @@ export const EditObject = ({
         presence={presence}
         readOnly={readOnly}
         type={type}
+        width={modalOption.width}
       />
     )
   }
@@ -178,6 +160,7 @@ export const EditObject = ({
       presence={presence}
       readOnly={readOnly}
       type={type}
+      width={modalOption.width}
     />
   )
 }
