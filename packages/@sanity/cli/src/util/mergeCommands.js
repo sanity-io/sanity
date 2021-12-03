@@ -2,7 +2,7 @@ import {find} from 'lodash'
 import semver from 'semver'
 import chalk from 'chalk'
 import {version} from '../../package.json'
-import dynamicRequire from './dynamicRequire'
+import {dynamicRequire} from './dynamicRequire'
 import getUpgradeCommand from './getUpgradeCommand'
 
 export default (baseCommands, corePath, options = {}) => {

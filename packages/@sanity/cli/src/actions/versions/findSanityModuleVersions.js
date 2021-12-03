@@ -3,7 +3,7 @@ import promiseProps from 'promise-props-recursive'
 import semver from 'semver'
 import semverCompare from 'semver-compare'
 import getLatestVersion from 'get-latest-version'
-import dynamicRequire from '../../util/dynamicRequire'
+import {dynamicRequire} from '../../util/dynamicRequire'
 import getLocalVersion from '../../util/getLocalVersion'
 import pkg from '../../../package.json'
 

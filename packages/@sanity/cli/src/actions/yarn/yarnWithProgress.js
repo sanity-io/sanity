@@ -6,7 +6,7 @@ import split2 from 'split2'
 import chalk from 'chalk'
 import Gauge from 'gauge'
 import {noop, throttle} from 'lodash'
-import dynamicRequire from '../../util/dynamicRequire'
+import {dynamicRequire} from '../../util/dynamicRequire'
 
 const useProgress = process.stderr && process.stderr.isTTY && !process.env.CI
 const isBundled = typeof __SANITY_IS_BUNDLED__ !== 'undefined'

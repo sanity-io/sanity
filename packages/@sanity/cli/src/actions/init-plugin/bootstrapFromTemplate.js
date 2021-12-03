@@ -7,7 +7,7 @@ const decompress = require('decompress')
 const resolveFrom = require('resolve-from')
 const validateNpmPackageName = require('validate-npm-package-name')
 const {pathTools} = require('@sanity/util')
-const dynamicRequire = require('../../util/dynamicRequire')
+const {dynamicRequire} = require('../../util/dynamicRequire')
 const pkg = require('../../../package.json')
 const debug = require('../../debug')
 
