@@ -1,4 +1,5 @@
 import Schema from '@sanity/schema'
+import {Rule} from '@sanity/types'
 import schemaTypes from 'all:part:@sanity/base/schema-type'
 import {baseTypes} from '../_common/baseTypes'
 
@@ -18,11 +19,26 @@ const linkType = {
   ],
 }
 
+const someAnnotationType = {
+  type: 'object',
+  name: 'someAnnotation',
+  options: {
+    modal: {
+      size: 'medium',
+    },
+  },
+  fields: [{type: 'string', name: 'title'}],
+}
+
 const someObject = {
   type: 'object',
   name: 'someObject',
   options: {
-    editModal: 'fullscreen',
+    // editModal: 'fullscreen',
+    modal: {
+      type: 'dialog',
+      size: 'full',
+    },
   },
   fields: [{type: 'string', name: 'title'}],
 }
@@ -56,14 +72,16 @@ export const blockType = {
     {title: 'Quotation', value: 'blockquote'},
   ],
   marks: {
-    annotations: [someObject, linkType],
+    annotations: [someAnnotationType, linkType],
   },
   of: [someObject, imageType],
-  validation: (Rule) =>
-    Rule.custom((block) => {
-      const length = extractTextFromBlocks([block]).length
-      return length < 10 ? 'Please write a longer paragraph.' : false
-    }).error(),
+  validation: (rule: Rule) =>
+    rule
+      .custom((block) => {
+        const length = extractTextFromBlocks([block]).length
+        return length < 10 ? 'Please write a longer paragraph.' : null
+      })
+      .error(),
 }
 
 const ptType = {
