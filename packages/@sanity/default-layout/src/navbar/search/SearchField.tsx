@@ -117,7 +117,7 @@ export function SearchField(props: SearchFieldProps) {
               <Box padding={4}>
                 <Flex align="center" height="fill" justify="center">
                   <StyledText align="center" muted>
-                    No results for <strong>‘{searchString}’</strong>
+                    No results for <strong>“{searchString}”</strong>
                   </StyledText>
                 </Flex>
               </Box>
