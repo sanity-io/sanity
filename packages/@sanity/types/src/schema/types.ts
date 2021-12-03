@@ -251,7 +251,6 @@ export interface FieldGroup {
   icon?: React.ComponentType
   title?: string
   description?: string
-  readOnly?: ConditionalProperty
   hidden?: ConditionalProperty
   default?: boolean
   fields?: ObjectField[]

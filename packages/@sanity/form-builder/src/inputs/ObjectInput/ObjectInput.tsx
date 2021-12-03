@@ -1,4 +1,4 @@
-import React, {ForwardedRef, forwardRef, memo, useCallback, useState} from 'react'
+import React, {ForwardedRef, forwardRef, memo, useCallback, useEffect, useState} from 'react'
 import {
   Marker,
   MultiFieldSet,
@@ -19,6 +19,8 @@ import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import {applyAll} from '../../patch/applyPatch'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {ConditionalReadOnlyField} from '../common/ConditionalReadOnlyField'
+import {ConditionalHiddenGroup} from '../common/ConditionalHiddenGroup'
+import {usePrevious} from '../../hooks/usePrevious'
 import {ObjectInputField} from './ObjectInputField'
 import {UnknownFields} from './UnknownFields'
 import {ObjectFieldSet} from './ObjectFieldSet'
