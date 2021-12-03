@@ -81,7 +81,7 @@ export const values = {
         },
         {
           _key: 'abcd',
-          _type: 'someObject',
+          _type: 'someAnnotation',
         },
       ],
       children: [
@@ -99,19 +99,19 @@ export const values = {
         },
         {
           _type: 'span',
-          _key: 'e2',
+          _key: 'e3',
           text: ' ',
           marks: [],
         },
         {
           _type: 'span',
-          _key: 'e3',
-          text: 'someObject',
+          _key: 'e4',
+          text: 'someAnnotation',
           marks: ['abcd'],
         },
         {
           _type: 'span',
-          _key: 'e4',
+          _key: 'e5',
           text: ' plz?',
           marks: [],
         },
