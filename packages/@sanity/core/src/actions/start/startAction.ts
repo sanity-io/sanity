@@ -1,6 +1,6 @@
 import path from 'path'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore This may not yet be built.
+// @ts-ignore The `@sanity/server` may not be built yet.
 import {DevServerOptions, startDevServer} from '@sanity/server'
 import type {BuildConfig} from '@sanity/types'
 import {getTimer} from '../../util/timing'
