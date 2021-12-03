@@ -8,12 +8,26 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {Path, Marker, SchemaType} from '@sanity/types'
-import {Box, Button, Flex, Popover, PopoverProps, Text, useClickOutside, useLayer} from '@sanity/ui'
-import React, {useCallback, useEffect, useState} from 'react'
+import {
+  Box,
+  Button,
+  Container,
+  Flex,
+  Popover,
+  PopoverProps,
+  Text,
+  useBoundaryElement,
+  useClickOutside,
+  useElementRect,
+  useLayer,
+} from '@sanity/ui'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {PatchEvent} from '../../../../PatchEvent'
+import {POPOVER_WIDTH_TO_UI_WIDTH} from './constants'
 import {debugElement} from './debug'
+import {ModalWidth} from './types'
 
 interface PopoverObjectEditingProps {
   // eslint-disable-next-line react/no-unused-prop-types
@@ -29,9 +43,10 @@ interface PopoverObjectEditingProps {
   presence: FormFieldPresence[]
   readOnly: boolean
   type: Type
+  width?: ModalWidth
 }
 
-const Root = styled(Popover)`
+const RootPopover = styled(Popover)`
   &[data-popper-reference-hidden='true'] {
     visibility: hidden;
     pointer-events: none;
@@ -42,13 +57,20 @@ const Root = styled(Popover)`
   }
 `
 
-const ContentRoot = styled(Flex)`
-  overflow: hidden;
-  width: calc(100vw - 16px);
-  max-width: 320px;
+const ContentContainer = styled(Container)`
+  &:not([hidden]) {
+    display: flex;
+  }
+  direction: column;
 `
 
-const Header = styled(Box)`
+const ContentScrollerBox = styled(Box)`
+  /* Prevent overflow caused by change indicator */
+  overflow-x: hidden;
+  overflow-y: auto;
+`
+
+const ContentHeaderBox = styled(Box)`
   background-color: var(--card-bg-color);
   box-shadow: 0 1px 0 var(--card-shadow-outline-color);
   position: relative;
@@ -70,22 +92,32 @@ function getEditorElement(editor: PortableTextEditor, editorPath: Path): HTMLEle
 }
 
 export function PopoverObjectEditing(props: PopoverObjectEditingProps) {
-  const {editorPath, object} = props
+  const {editorPath, object, width} = props
   const editor = usePortableTextEditor()
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const [refElement, setRefElement] = useState(() => getEditorElement(editor, editorPath))
+  const boundaryElement = useBoundaryElement()
+  const boundaryElementRect = useElementRect(boundaryElement.element)
 
   useEffect(() => {
     setRefElement(getEditorElement(editor, editorPath))
   }, [editor, editorPath, object])
 
+  const contentStyle: React.CSSProperties = useMemo(
+    () => ({
+      opacity: boundaryElementRect ? undefined : 0,
+      width: boundaryElementRect ? `${boundaryElementRect.width - 16}px` : undefined,
+    }),
+    [boundaryElementRect]
+  )
+
   return (
-    <Root
+    <RootPopover
       constrainSize
-      content={<Content {...props} rootElement={rootElement} />}
+      content={<Content {...props} rootElement={rootElement} style={contentStyle} width={width} />}
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
       placement="bottom"
-      open
+      open={Boolean(refElement)}
       portal="default"
       ref={setRootElement}
       referenceElement={refElement || (debugElement as any)}
@@ -93,7 +125,12 @@ export function PopoverObjectEditing(props: PopoverObjectEditingProps) {
   )
 }
 
-function Content(props: PopoverObjectEditingProps & {rootElement: HTMLDivElement | null}) {
+function Content(
+  props: PopoverObjectEditingProps & {
+    rootElement: HTMLDivElement | null
+    style: React.CSSProperties
+  }
+) {
   const {
     focusPath,
     markers,
@@ -106,15 +143,16 @@ function Content(props: PopoverObjectEditingProps & {rootElement: HTMLDivElement
     presence,
     readOnly,
     rootElement,
+    style,
     type,
+    width = 'small',
   } = props
+  const {isTopLayer} = useLayer()
 
   const handleChange = useCallback((patchEvent: PatchEvent): void => onChange(patchEvent, path), [
     onChange,
     path,
   ])
-
-  const {isTopLayer} = useLayer()
 
   const handleClose = useCallback(() => {
     if (isTopLayer) onClose()
@@ -137,35 +175,37 @@ function Content(props: PopoverObjectEditingProps & {rootElement: HTMLDivElement
   }, [handleKeyDown])
 
   return (
-    <ContentRoot direction="column">
-      <Header padding={1}>
-        <Flex align="center">
-          <Box flex={1} padding={2}>
-            <Text weight="semibold">{type.title}</Text>
-          </Box>
+    <ContentContainer style={style} width={POPOVER_WIDTH_TO_UI_WIDTH[width]}>
+      <Flex direction="column" flex={1}>
+        <ContentHeaderBox padding={1}>
+          <Flex align="center">
+            <Box flex={1} padding={2}>
+              <Text weight="semibold">{type.title}</Text>
+            </Box>
 
-          <Button icon={CloseIcon} mode="bleed" onClick={handleClose} padding={2} />
-        </Flex>
-      </Header>
-      <Box flex={1} overflow="auto">
-        <PresenceOverlay margins={[0, 0, 1, 0]}>
-          <Box padding={3}>
-            <FormBuilderInput
-              focusPath={focusPath}
-              level={0}
-              markers={markers}
-              onBlur={onBlur}
-              onChange={handleChange}
-              onFocus={onFocus}
-              path={path}
-              presence={presence}
-              readOnly={readOnly || type.readOnly}
-              type={type as SchemaType}
-              value={object}
-            />
-          </Box>
-        </PresenceOverlay>
-      </Box>
-    </ContentRoot>
+            <Button icon={CloseIcon} mode="bleed" onClick={handleClose} padding={2} />
+          </Flex>
+        </ContentHeaderBox>
+        <ContentScrollerBox flex={1}>
+          <PresenceOverlay margins={[0, 0, 1, 0]}>
+            <Box padding={3}>
+              <FormBuilderInput
+                focusPath={focusPath}
+                level={0}
+                markers={markers}
+                onBlur={onBlur}
+                onChange={handleChange}
+                onFocus={onFocus}
+                path={path}
+                presence={presence}
+                readOnly={readOnly || type.readOnly}
+                type={type as SchemaType}
+                value={object}
+              />
+            </Box>
+          </PresenceOverlay>
+        </ContentScrollerBox>
+      </Flex>
+    </ContentContainer>
   )
 }
