@@ -12,7 +12,7 @@ import {
 } from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {FormFieldSet} from '@sanity/base/components'
-import {Card, Grid, Tab, TabList} from '@sanity/ui'
+import {Card, Grid, TabList} from '@sanity/ui'
 import {castArray, find, defaultTo} from 'lodash'
 import {useId} from '@reach/auto-id'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
@@ -23,6 +23,8 @@ import {ObjectInputField} from './ObjectInputField'
 import {UnknownFields} from './UnknownFields'
 import {ObjectFieldSet} from './ObjectFieldSet'
 import {getCollapsedWithDefaults} from './utils'
+import {GroupTab} from './GroupTab'
+import {FieldGroupTabs} from './FieldGroupTabs'
 
 const EMPTY_MARKERS: Marker[] = EMPTY_ARRAY
 const EMPTY_PRESENCE: FormFieldPresence[] = EMPTY_ARRAY
@@ -217,103 +219,103 @@ export const ObjectInput = memo(
       ]
     )
 
-    const fieldGroupPredictive = (fieldToCheck) =>
-      fieldToCheck.group && castArray(fieldToCheck.group).includes(selectedFieldGroupName)
-
-    const renderFields = useCallback(
-      (fields = type.fields) => {
-        let fieldsToRender = fields
-        if (hasGroups && selectedFieldGroupName !== DEFAULT_FIELD_GROUP_NAME) {
-          fieldsToRender = type.fields.filter(fieldGroupPredictive)
-        }
-
-        if (!type.fieldsets) {
-          // this is a fallback for schema types that are not parsed to be objects, but still has jsonType == 'object'
-          return (fieldsToRender || []).map((field, index) => renderField(field, level + 1, index))
-        }
-
-        return type.fieldsets
-          .filter((fieldset) => {
-            if (selectedFieldGroupName === DEFAULT_FIELD_GROUP_NAME) {
-              return true
-            }
-
-            const hasFieldsetGroups = fieldGroupPredictive(fieldset)
-
-            if (fieldset.single === true) {
-              const fieldBelongsToGroup = fieldGroupPredictive(fieldset.field)
-
-              return hasFieldsetGroups || fieldBelongsToGroup
-            }
-
-            const hasGroupFields =
-              hasFieldsetGroups || (!fieldset.single && fieldset.fields.some(fieldGroupPredictive))
-
-            return hasGroupFields
-          })
-          .map((fieldset, fieldsetIndex) => {
-            if (isSingleFieldset(fieldset)) {
-              return renderField(fieldset.field, level + 1, fieldsetIndex, fieldset.readOnly)
-            }
-            const fieldSetValuesObject = {}
-            // eslint-disable-next-line max-nested-callbacks
-            fieldset.fields.forEach((field) => {
-              if (value) {
-                fieldSetValuesObject[field.name] = value[field.name]
-              }
-            })
-
-            return (
-              <ObjectFieldSet
-                key={`fieldset-${(fieldset as MultiFieldSet).name}`}
-                data-testid={`fieldset-${(fieldset as MultiFieldSet).name}`}
-                fieldset={fieldset as MultiFieldSet}
-                focusPath={focusPath}
-                onFocus={onFocus}
-                level={level + 1}
-                presence={presence}
-                markers={markers}
-                fieldSetParent={value}
-                fieldValues={fieldSetValuesObject}
-              >
-                {() =>
-                  // lazy render children
-                  // eslint-disable-next-line max-nested-callbacks
-                  fieldset.fields
-                    .filter(
-                      (fieldsetField) =>
-                        selectedFieldGroupName === DEFAULT_FIELD_GROUP_NAME ||
-                        fieldGroupPredictive(fieldsetField)
-                    )
-                    .map((field, fieldIndex) =>
-                      renderField(
-                        field,
-                        level + 2,
-                        fieldsetIndex + fieldIndex,
-                        fieldset.readOnly,
-                        fieldSetValuesObject
-                      )
-                    )
-                }
-              </ObjectFieldSet>
-            )
-          })
-      },
-      [
-        type.fields,
-        type.fieldsets,
-        hasGroups,
-        selectedFieldGroupName,
-        fieldGroupPredictive,
-        renderField,
-        level,
-        focusPath,
-        onFocus,
-        presence,
-        markers,
-        value,
-      ]
+    const fieldGroupPredictive = useCallback(
+      (fieldToCheck) =>
+        !hasGroups ||
+        selectedFieldGroupName === DEFAULT_FIELD_GROUP_NAME ||
+        (fieldToCheck.group && castArray(fieldToCheck.group).includes(selectedFieldGroupName)),
+      [selectedFieldGroupName]
     )
+
+    const fieldsForTypeAndGroup = React.useMemo(() => {
+      return type.fields.filter(fieldGroupPredictive)
+    }, [fieldGroupPredictive, type.fields])
+
+    const fieldSetsForGroup = React.useMemo(() => {
+      return type.fieldsets.filter((fieldset) => {
+        if (selectedFieldGroupName === DEFAULT_FIELD_GROUP_NAME) {
+          return true
+        }
+
+        const hasFieldsetGroups = fieldGroupPredictive(fieldset)
+
+        if (fieldset.single === true) {
+          const fieldBelongsToGroup = fieldGroupPredictive(fieldset.field)
+
+          return hasFieldsetGroups || fieldBelongsToGroup
+        }
+
+        const hasGroupFields =
+          hasFieldsetGroups || (!fieldset.single && fieldset.fields.some(fieldGroupPredictive))
+
+        return hasGroupFields
+      })
+    }, [fieldGroupPredictive, selectedFieldGroupName, type.fieldsets])
+
+    const renderFields = useCallback(() => {
+      if (!type.fieldsets) {
+        // this is a fallback for schema types that are not parsed to be objects, but still has jsonType == 'object'
+        return (fieldsForTypeAndGroup || []).map((field, index) =>
+          renderField(field, level + 1, index)
+        )
+      }
+
+      return fieldSetsForGroup.map((fieldset, fieldsetIndex) => {
+        if (isSingleFieldset(fieldset)) {
+          return renderField(fieldset.field, level + 1, fieldsetIndex, fieldset.readOnly)
+        }
+        const fieldSetValuesObject = {}
+        // eslint-disable-next-line max-nested-callbacks
+        fieldset.fields.forEach((field) => {
+          if (value) {
+            fieldSetValuesObject[field.name] = value[field.name]
+          }
+        })
+
+        return (
+          <ObjectFieldSet
+            key={`fieldset-${(fieldset as MultiFieldSet).name}`}
+            data-testid={`fieldset-${(fieldset as MultiFieldSet).name}`}
+            fieldset={fieldset as MultiFieldSet}
+            focusPath={focusPath}
+            onFocus={onFocus}
+            level={level + 1}
+            presence={presence}
+            markers={markers}
+            fieldSetParent={value}
+            fieldValues={fieldSetValuesObject}
+          >
+            {() =>
+              // lazy render children
+              fieldset.fields
+                .filter(fieldGroupPredictive)
+                // eslint-disable-next-line max-nested-callbacks
+                .map((field, fieldIndex) =>
+                  renderField(
+                    field,
+                    level + 2,
+                    fieldsetIndex + fieldIndex,
+                    fieldset.readOnly,
+                    fieldSetValuesObject
+                  )
+                )
+            }
+          </ObjectFieldSet>
+        )
+      })
+    }, [
+      type.fieldsets,
+      fieldSetsForGroup,
+      fieldsForTypeAndGroup,
+      renderField,
+      level,
+      focusPath,
+      onFocus,
+      presence,
+      markers,
+      value,
+      fieldGroupPredictive,
+    ])
 
     const renderUnknownFields = useCallback(() => {
       if (!type.fields) {
@@ -339,7 +341,7 @@ export const ObjectInput = memo(
           {renderUnknownFields()}
         </>
       )
-    }, [renderFields, renderUnknownFields, selectedFieldGroupName, hasGroups])
+    }, [renderFields, renderUnknownFields])
 
     const collapsibleOpts = getCollapsedWithDefaults(type.options, level)
 
@@ -380,39 +382,6 @@ export const ObjectInput = memo(
     }, [defaultFieldGroupName])
 
     const columns = type.options && type.options.columns
-    const fieldGroupTabs = React.useMemo(() => {
-      if (!hasGroups) {
-        return null
-      }
-
-      return (
-        <TabList space={2}>
-          {filterGroups
-            .map((group, groupIndex) => {
-              const {name, title, icon, fields} = group
-
-              if (!fields || fields.length === 0) {
-                return null
-              }
-
-              return (
-                <GroupTab
-                  key={`${inputId}-${name}-tab`}
-                  ariaControls={`${inputId}-field-group-fields`}
-                  icon={icon}
-                  // eslint-disable-next-line react/jsx-no-bind
-                  onClick={() => handleSelectTab(name)}
-                  autoFocus={level === 0 && groupIndex === 0}
-                  selected={selectedFieldGroupName === name}
-                  title={title}
-                  {...group}
-                />
-              )
-            })
-            .filter(Boolean)}
-        </TabList>
-      )
-    }, [filterGroups, handleSelectTab, hasGroups, inputId, level, selectedFieldGroupName])
 
     const renderFieldGroups = useCallback(() => {
       if (!hasGroups) {
@@ -426,7 +395,12 @@ export const ObjectInput = memo(
       return (
         <>
           <Card marginBottom={3} data-testid="field-groups">
-            {fieldGroupTabs}
+            <FieldGroupTabs
+              inputId={inputId}
+              onClick={handleSelectTab}
+              selectedName={selectedFieldGroupName}
+              groups={filterGroups}
+            />
             <Card paddingTop={4}>
               <Grid columns={columns} gapX={4} gapY={5} id={`${inputId}-field-group-fields`}>
                 {renderAllFields()}
@@ -469,17 +443,4 @@ export const ObjectInput = memo(
       </FormFieldSet>
     )
   })
-)
-
-const GroupTab = ({name, icon, title, ariaControls, ...rest}) => (
-  <Tab
-    data-testid={`group-${name}`}
-    id={`${name}-tab`}
-    icon={icon}
-    size={1}
-    label={title || name}
-    title={title || name}
-    aria-controls={ariaControls}
-    {...rest}
-  />
 )
