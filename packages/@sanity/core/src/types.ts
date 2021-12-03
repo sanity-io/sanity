@@ -5,6 +5,7 @@
  * approach - but until then this serves as a partial typing helper
  */
 import type {ChildProcessWithoutNullStreams} from 'child_process'
+import type {BuildConfig} from '@sanity/types'
 import type {SanityClient} from '@sanity/client'
 import type {prompt, Separator, DistinctQuestion} from 'inquirer'
 import type chalk from 'chalk'
@@ -22,6 +23,8 @@ export interface CliCommandContext {
   prompt: CliPrompter
   apiClient: CliApiClient
   yarn: CliBundledYarn
+  buildConfig?: BuildConfig
+  buildConfigPath?: string
   cliRoot: string
   workDir: string
   corePath: string
@@ -41,6 +44,7 @@ export interface CliOutputter {
 export type SinglePrompt =
   | (Omit<DistinctQuestion, 'name'> & {type: 'list'; choices: string[]})
   | (Omit<DistinctQuestion, 'name'> & {type: 'confirm'})
+  | (Omit<DistinctQuestion, 'name'> & {type: 'input'})
 
 export type CliPrompter = typeof prompt & {
   Separator: typeof Separator

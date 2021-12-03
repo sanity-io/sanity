@@ -5,7 +5,6 @@ const {hideBin} = require('yargs/helpers')
 const oneline = require('oneline')
 const debug = require('../../debug').default
 const getUrlHeaders = require('../../util/getUrlHeaders')
-const {tryInitializePluginConfigs} = require('../config/reinitializePluginConfigs')
 const getSanitySchema = require('./getSanitySchema')
 const extractFromSanitySchema = require('./extractFromSanitySchema')
 const SchemaError = require('./SchemaError')
@@ -32,8 +31,6 @@ module.exports = async function deployApiActions(args, context) {
   const flags = parseCliFlags(args)
 
   const {apiClient, workDir, output, prompt, chalk} = context
-
-  await tryInitializePluginConfigs({workDir, output, env: 'production'})
 
   let spinner
   const {force, tag, playground, nonNullDocumentFields, dryRun} = flags

@@ -1,4 +1,9 @@
-export default async (args, context) => {
+import type {CliCommandArguments, CliCommandContext} from '../../types'
+
+export default async function undeployStudio(
+  args: CliCommandArguments<Record<string, never>>,
+  context: CliCommandContext
+): Promise<void> {
   const {apiClient, chalk, output, prompt} = context
 
   const client = apiClient({
@@ -8,8 +13,8 @@ export default async (args, context) => {
 
   // Check that the project has a studio hostname
   let spinner = output.spinner('Checking project info').start()
-  const project = await client.projects.getById(client.config().projectId)
-  const studioHost = project && (project.studioHost || project.studioHost)
+  const project = await client.projects.getById(client.config().projectId as string)
+  const studioHost = project && project.studioHost
   spinner.succeed()
 
   if (!studioHost) {

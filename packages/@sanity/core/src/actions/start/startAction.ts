@@ -1,10 +1,11 @@
 import path from 'path'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore This may not yet be built.
 import {DevServerOptions, startDevServer} from '@sanity/server'
-import {getTimer, TimeMeasurer} from '../../util/timing'
+import {getTimer} from '../../util/timing'
 import type {CliCommandArguments, CliCommandContext} from '../../types'
 import checkStudioDependencyVersions from '../../util/checkStudioDependencyVersions'
 import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
-import {getBuildConfig} from './getBuildConfig'
 
 interface StartDevServerCommandFlags {
   host?: string
@@ -17,7 +18,7 @@ export default async function startSanityDevServer(
 ): Promise<void> {
   const timers = getTimer()
   const flags = args.extOptions
-  const {output, workDir} = context
+  const {output, workDir, buildConfig} = context
 
   timers.start('checkStudioDependencyVersions')
   await checkStudioDependencyVersions(workDir)
@@ -31,7 +32,7 @@ export default async function startSanityDevServer(
 
   // Try to load build configuration from sanity.build.(js|ts)
   const configSpinner = output.spinner('Checking configuration files...')
-  const config = await getDevServerConfig({flags, workDir, timers})
+  const config = getDevServerConfig({flags, workDir, buildConfig})
   configSpinner.succeed()
 
   try {
@@ -48,41 +49,33 @@ export default async function startSanityDevServer(
  * - Environment variables
  * - User build config
  * - Default configuration
- *
- * @internal Exported for testing purposes only
  */
-export async function getDevServerConfig({
+function getDevServerConfig({
   flags,
   workDir,
-  timers,
+  buildConfig,
 }: {
   flags: StartDevServerCommandFlags
   workDir: string
-  timers: TimeMeasurer
-}): Promise<DevServerOptions> {
-  timers.start('getBuildConfig')
-  const buildConfig = (await getBuildConfig()) || {}
-  timers.end('getBuildConfig')
-
+  buildConfig?: BuildConfig
+}): DevServerOptions {
   // Order of preference: CLI flags, environment variables, user build config, default config
   const env = process.env // eslint-disable-line no-process-env
 
   const httpHost =
-    flags.host || env.SANITY_STUDIO_SERVER_HOSTNAME || buildConfig.server?.hostname || '127.0.0.1'
+    flags.host || env.SANITY_STUDIO_SERVER_HOSTNAME || buildConfig?.server?.hostname || '127.0.0.1'
 
   const httpPort = toInt(
-    flags.port || env.SANITY_STUDIO_SERVER_PORT || buildConfig.server?.port,
+    flags.port || env.SANITY_STUDIO_SERVER_PORT || buildConfig?.server?.port,
     3333
   )
 
-  const basePath = env.SANITY_STUDIO_BASEPATH || buildConfig.project?.basePath
-  const projectName = buildConfig.project?.name
+  const basePath = env.SANITY_STUDIO_BASEPATH || buildConfig?.project?.basePath
 
   return {
     cwd: workDir,
     httpPort,
     httpHost,
-    projectName,
     basePath,
     staticPath: path.join(workDir, 'static'),
   }

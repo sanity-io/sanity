@@ -10,7 +10,7 @@ import {getTimer} from '../../util/timing'
 
 const rimraf = promisify(rimrafCallback)
 
-interface BuildSanityStudioCommandFlags {
+export interface BuildSanityStudioCommandFlags {
   yes?: boolean
   y?: boolean
   minify?: boolean
@@ -19,11 +19,10 @@ interface BuildSanityStudioCommandFlags {
 }
 
 export default async function buildSanityStudio(
-  args: CliCommandArguments<BuildSanityStudioCommandFlags> & {overrides?: {basePath?: string}},
+  args: CliCommandArguments<BuildSanityStudioCommandFlags>,
   context: CliCommandContext
 ): Promise<{didCompile: boolean}> {
   const timer = getTimer()
-  const overrides = args.overrides || {}
   const {output, prompt, workDir} = context
   const flags: BuildSanityStudioCommandFlags = {
     minify: true,

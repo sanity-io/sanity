@@ -31,10 +31,9 @@ module.exports = async function execScript(args, context) {
   }
 
   const babel = require.resolve('./babel')
-  const loader = require.resolve('./pluginLoader')
   const browserEnvPath = require.resolve('./registerBrowserEnv')
   const configClientPath = require.resolve('./configClient')
-  const baseArgs = mockBrowserEnv ? ['-r', browserEnvPath] : ['-r', babel, '-r', loader]
+  const baseArgs = mockBrowserEnv ? ['-r', browserEnvPath] : ['-r', babel]
 
   const nodeArgs = baseArgs
     .concat(withUserToken ? ['-r', configClientPath] : [])

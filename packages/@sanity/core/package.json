@@ -34,8 +34,6 @@
     "@sanity/export": "2.29.3",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/import": "2.29.3",
-    "@sanity/plugin-loader": "2.29.5",
-    "@sanity/resolver": "2.29.5",
     "@sanity/schema": "2.29.3",
     "@sanity/server": "2.29.5",
     "@sanity/util": "2.29.5",

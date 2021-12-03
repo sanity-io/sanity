@@ -1,20 +1,29 @@
 import path from 'path'
 import zlib from 'zlib'
-import fse from 'fs-extra'
+import fs from 'fs/promises'
 import tar from 'tar-fs'
-import lazyRequire from '@sanity/util/lib/lazyRequire'
+import type {SanityClient} from '@sanity/client'
+import type {CliCommandArguments, CliCommandContext} from '../../types'
+import buildSanityStudio, {BuildSanityStudioCommandFlags} from '../build/buildAction'
 
-export default async (args, context) => {
+interface DeployStudioActionFlags extends BuildSanityStudioCommandFlags {
+  build?: boolean
+}
+
+export default async function deployStudio(
+  args: CliCommandArguments<DeployStudioActionFlags>,
+  context: CliCommandContext
+): Promise<void> {
   const {apiClient, workDir, chalk, output, prompt} = context
-  const flags = Object.assign({build: true}, args.extOptions)
-  const sourceDir = path.resolve(
-    process.cwd(),
-    args.argsWithoutOptions[0] || path.join(workDir, 'dist')
-  )
+  const flags = {build: true, ...args.extOptions}
+  const destFolder = args.argsWithoutOptions[0]
+  const sourceDir = path.resolve(process.cwd(), destFolder || path.join(workDir, 'dist'))
 
-  if (args.argsWithoutOptions[0] === 'graphql') {
+  if (destFolder === 'graphql') {
     throw new Error('Did you mean `sanity graphql deploy`?')
-  } else if (args.argsWithoutOptions[0]) {
+  }
+
+  if (destFolder) {
     let relativeOutput = path.relative(process.cwd(), sourceDir)
     if (relativeOutput[0] !== '.') {
       relativeOutput = `./${relativeOutput}`
@@ -44,8 +53,8 @@ export default async (args, context) => {
 
   // Check that the project has a studio hostname
   let spinner = output.spinner('Checking project info').start()
-  const project = await client.projects.getById(client.config().projectId)
-  let studioHostname = project && (project.studioHostname || project.studioHost)
+  const project = await client.projects.getById(client.config().projectId as string)
+  let studioHostname = project && project.studioHost
   spinner.succeed()
 
   if (!studioHostname) {
@@ -64,11 +73,10 @@ export default async (args, context) => {
   // Always build the project, unless --no-build is passed
   const shouldBuild = flags.build
   if (shouldBuild) {
-    const overrides = {project: {basePath: undefined}}
-    const buildStaticAssets = lazyRequire(require.resolve('../build/buildStaticAssets'))
-    const buildArgs = [args.argsWithoutOptions[0]].filter(Boolean)
-    const {didCompile} = await buildStaticAssets(
-      {extOptions: flags, argsWithoutOptions: buildArgs, overrides},
+    // @todo Ensure base path is always default (blank) when building for sanity.studio
+    const buildArgs = [destFolder].filter(Boolean)
+    const {didCompile} = await buildSanityStudio(
+      {...args, extOptions: flags, argsWithoutOptions: buildArgs},
       context
     )
 
@@ -111,9 +119,9 @@ export default async (args, context) => {
   }
 }
 
-async function dirIsEmptyOrNonExistent(sourceDir) {
+async function dirIsEmptyOrNonExistent(sourceDir: string): Promise<boolean> {
   try {
-    const stats = await fse.stat(sourceDir)
+    const stats = await fs.stat(sourceDir)
     if (!stats.isDirectory()) {
       throw new Error(`Directory ${sourceDir} is not a directory`)
     }
@@ -125,13 +133,13 @@ async function dirIsEmptyOrNonExistent(sourceDir) {
     throw err
   }
 
-  const content = await fse.readdir(sourceDir)
+  const content = await fs.readdir(sourceDir)
   return content.length === 0
 }
 
-async function checkDir(sourceDir) {
+async function checkDir(sourceDir: string) {
   try {
-    const stats = await fse.stat(sourceDir)
+    const stats = await fs.stat(sourceDir)
     if (!stats.isDirectory()) {
       throw new Error(`Directory ${sourceDir} is not a directory`)
     }
@@ -142,7 +150,7 @@ async function checkDir(sourceDir) {
   }
 
   try {
-    await fse.stat(path.join(sourceDir, 'index.html'))
+    await fs.stat(path.join(sourceDir, 'index.html'))
   } catch (err) {
     const error =
       err.code === 'ENOENT'
@@ -159,7 +167,7 @@ async function checkDir(sourceDir) {
   }
 }
 
-function validateHostname(value, client) {
+async function validateHostname(value: string, client: SanityClient): Promise<boolean | string> {
   const projectId = client.config().projectId
   const uri = `/projects/${projectId}`
   const studioHost = value || ''
@@ -170,13 +178,13 @@ function validateHostname(value, client) {
   }
 
   // Check that the hostname is not already taken
-  return client
-    .request({uri, method: 'PATCH', body: {studioHost}})
-    .then(() => true)
-    .catch((error) => {
-      if (error?.response?.body?.message) {
-        return error.response.body.message
-      }
-      throw error
-    })
+  try {
+    await client.request({uri, method: 'PATCH', body: {studioHost}})
+    return true
+  } catch (error) {
+    if (error?.response?.body?.message) {
+      return error.response.body.message
+    }
+    throw error
+  }
 }
