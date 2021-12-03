@@ -275,7 +275,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
         concat(
           of({isLoading: true}),
           onSearch(searchString).pipe(
-            map((hits) => ({hits, isLoading: false})),
+            map((hits) => ({hits, isLoading: false, searchString})),
             catchError((error) => {
               push({
                 title: 'Reference search failed',
@@ -427,6 +427,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
                   readOnly={readOnly}
                   disabled={loadableReferenceInfo.isLoading}
                   onQueryChange={handleQueryChange}
+                  searchString={searchState.searchString}
                   onChange={handleChange}
                   referenceElement={autocompletePopoverReferenceElementRef.current}
                   filterOption={NO_FILTER}
