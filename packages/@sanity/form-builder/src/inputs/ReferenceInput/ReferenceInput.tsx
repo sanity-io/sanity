@@ -255,7 +255,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
         concat(
           of({isLoading: true}),
           onSearch(searchString).pipe(
-            map((hits) => ({hits, isLoading: false})),
+            map((hits) => ({hits, searchString, isLoading: false})),
             catchError((error) => {
               push({
                 title: 'Reference search failed',
@@ -412,6 +412,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
                   readOnly={readOnly}
                   disabled={loadableReferenceInfo.isLoading}
                   onQueryChange={handleQueryChange}
+                  searchString={searchState.searchString}
                   onChange={handleChange}
                   filterOption={NO_FILTER}
                   renderOption={renderOption}

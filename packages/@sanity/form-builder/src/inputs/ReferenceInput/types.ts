@@ -56,6 +56,7 @@ export interface DocumentPreview extends PreviewValue {
 
 export interface SearchState {
   hits: SearchHit[]
+  searchString?: string
   isLoading: boolean
 }
 
