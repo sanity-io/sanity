@@ -1,6 +1,6 @@
 {
   "extends": "../../../tsconfig.settings",
-  "include": ["src"],
+  "include": ["./src/"],
   "compilerOptions": {
     "composite": true,
     "declarationDir": "./lib/dts/",

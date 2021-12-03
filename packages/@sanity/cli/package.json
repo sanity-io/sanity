@@ -39,6 +39,9 @@
     "url": "https://github.com/sanity-io/sanity/issues"
   },
   "homepage": "https://www.sanity.io/",
+  "dependencies": {
+    "esbuild-register": "^3.2.0"
+  },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.16.0",
     "@babel/preset-env": "^7.16.4",
