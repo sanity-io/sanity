@@ -64,10 +64,6 @@ export default function CompactFile() {
                 direction={['column-reverse', 'column-reverse', 'row']}
                 paddingY={[2, 2, 0]}
               >
-                <Inline space={2}>
-                  <Button fontSize={2} text="Select" icon={SearchIcon} mode="ghost" />
-                  <Button fontSize={2} text="Upload" icon={UploadIcon} mode="ghost" />
-                </Inline>
                 <Flex align="center" justify="center" gap={2} flex={1}>
                   <Text size={1} muted>
                     <BinaryDocumentIcon />
@@ -76,6 +72,10 @@ export default function CompactFile() {
                     Paste or drag file here
                   </Text>
                 </Flex>
+                <Inline space={2}>
+                  <Button fontSize={2} text="Select" icon={SearchIcon} mode="ghost" />
+                  <Button fontSize={2} text="Upload" icon={UploadIcon} mode="ghost" />
+                </Inline>
               </Flex>
             )}
             {hasFile && (
@@ -128,7 +128,9 @@ export default function CompactFile() {
           </Text>
           <Card
             border={hasFile}
-            padding={hasFile ? 3 : 0}
+            paddingLeft={hasFile ? 4 : 0}
+            paddingRight={hasFile ? 3 : 0}
+            paddingY={hasFile ? 3 : 0}
             tone={hasFile ? 'default' : 'default'}
             style={{
               position: 'relative',
@@ -137,15 +139,15 @@ export default function CompactFile() {
           >
             {!hasFile && (
               <Flex align="center" justify="space-between" gap={2}>
-                <Inline space={2}>
-                  <Button fontSize={2} text="Select" icon={SearchIcon} mode="ghost" />
-                  <Button fontSize={2} text="Upload" icon={UploadIcon} mode="ghost" />
-                </Inline>
                 <Card flex={1} border padding={3} radius={2} style={{borderStyle: 'dashed'}}>
                   <Text size={1} muted>
                     <UploadIcon /> &nbsp; Paste or drag file here
                   </Text>
                 </Card>
+                <Inline space={2}>
+                  <Button fontSize={2} text="Select" icon={SearchIcon} mode="ghost" />
+                  <Button fontSize={2} text="Upload" icon={UploadIcon} mode="ghost" />
+                </Inline>
               </Flex>
             )}
             {hasFile && (
@@ -161,7 +163,7 @@ export default function CompactFile() {
                 <Box>
                   <MenuButton
                     id="compact-file-menu-button"
-                    button={<Button icon={EllipsisVerticalIcon} mode="ghost" />}
+                    button={<Button icon={EllipsisVerticalIcon} mode="bleed" />}
                     menu={
                       <Menu>
                         <Box padding={2}>
