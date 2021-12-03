@@ -22,6 +22,13 @@ const linkType = {
       validation: (Rule) => Rule.uri({scheme: ['http', 'https']}).required(),
     },
   ],
+  options: {
+    modal: {
+      // The `modal` option also supports a `type` property and can be: 'popover' | 'dialog'
+      // type: 'popover',
+      width: 'medium',
+    },
+  },
 }
 
 const myStringType = {
@@ -69,7 +76,18 @@ export default {
             spellCheck: true,
           },
         },
-        {type: 'image', name: 'image'},
+        {
+          type: 'image',
+          name: 'image',
+          options: {
+            modal: {
+              // The default `type` of object blocks is 'dialog'
+              // type: 'dialog',
+              // The default `width` of object blocks is 'medium'
+              // width: 'small',
+            },
+          },
+        },
         myStringType,
       ],
     },
