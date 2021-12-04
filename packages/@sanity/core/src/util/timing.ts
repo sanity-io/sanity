@@ -1,3 +1,5 @@
+import {performance} from 'perf_hooks'
+
 export interface TimeMeasurer {
   start: (name: string) => void
   end: (name: string) => number
