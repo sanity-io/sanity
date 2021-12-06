@@ -16,7 +16,6 @@
     "type-check": "tsc -b"
   },
   "dependencies": {
-    "@sanity/icons": "^1.2.1",
     "@sanity/ui": "^0.36.15",
     "@sanity/ui-workshop": "^0.3.5",
     "qs": "^6.10.1",
