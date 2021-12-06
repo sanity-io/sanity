@@ -1,6 +1,7 @@
 import {useCallback, useLayoutEffect, useRef, useState} from 'react'
 import {catchError, concatMap, map, startWith, tap} from 'rxjs/operators'
 import {Observable, of, Subscription} from 'rxjs'
+import {useMemoObservable} from 'react-rx'
 import {usePrevious} from '../../hooks/usePrevious'
 import {ReferenceInfo} from './types'
 
@@ -32,19 +33,15 @@ export function useReferenceInfo(
   id: string | undefined,
   getReferenceInfo: GetReferenceInfo
 ): Loadable<ReferenceInfo> {
-  const [state, setState] = useState<Loadable<ReferenceInfo>>(INITIAL_LOADING_STATE)
   const [retryAttempt, setRetryAttempt] = useState<number>(0)
 
   const retry = useCallback(() => {
     setRetryAttempt((current) => current + 1)
   }, [])
 
-  const subscription = useRef<Subscription>()
-  // eslint-disable-next-line consistent-return
-  useLayoutEffect(() => {
-    subscription.current?.unsubscribe()
-    subscription.current = of(id)
-      .pipe(
+  const referenceInfo = useMemoObservable(
+    () =>
+      of(id).pipe(
         concatMap((refId: string | undefined) =>
           refId
             ? getReferenceInfo(refId).pipe(
@@ -64,19 +61,17 @@ export function useReferenceInfo(
                 })
               )
             : of(EMPTY_STATE)
-        ),
-        tap((nextState: Loadable<ReferenceInfo>) => setState(nextState))
-      )
-      .subscribe()
-    return () => {
-      subscription.current?.unsubscribe()
-    }
-  }, [retryAttempt, getReferenceInfo, id, retry])
+        )
+      ),
+    [retryAttempt, getReferenceInfo, id, retry],
+    INITIAL_LOADING_STATE
+  )
 
-  const prevId = usePrevious(id)
-  if (id !== prevId) {
+  // workaround for a "bug" with useMemoObservable that doesn't
+  // return the initial value upon resubscription
+  const previousId = usePrevious(id, id)
+  if (previousId !== id) {
     return INITIAL_LOADING_STATE
   }
-
-  return state
+  return referenceInfo
 }
