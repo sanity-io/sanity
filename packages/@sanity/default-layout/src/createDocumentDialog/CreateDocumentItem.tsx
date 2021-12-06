@@ -94,7 +94,7 @@ export function CreateDocumentItem({
     return (
       <StyledIntentButton
         intent="create"
-        params={[{type: template.schemaType}, parameters]}
+        params={[{type: template.schemaType, template: template.id}, parameters]}
         title={subtitle ? `Create new ${title} (${subtitle})` : `Create new ${title}`}
         onClick={onClick}
         mode="ghost"
