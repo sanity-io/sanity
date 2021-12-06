@@ -570,6 +570,25 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
                   </Stack>
                 </AlertStrip>
               )}
+              {loadableReferenceInfo.error && (
+                <AlertStrip
+                  padding={1}
+                  title="Unable to load reference metadata"
+                  status="warning"
+                  data-testid="alert-reference-info-failed"
+                >
+                  <Stack space={3}>
+                    <Text as="p" muted size={1}>
+                      Error: {loadableReferenceInfo.error.message}
+                    </Text>
+                    <Button
+                      onClick={loadableReferenceInfo.retry!}
+                      text={<>Retry</>}
+                      tone="primary"
+                    />
+                  </Stack>
+                </AlertStrip>
+              )}
             </Card>
           </ChangeIndicatorForFieldPath>
         )}
