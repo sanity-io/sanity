@@ -157,7 +157,7 @@ export function search(
   options: ReferenceFilterSearchOptions
 ): Observable<SearchHit[]> {
   const searchWeighted = createWeightedSearch(type.to, searchClient, options)
-  return searchWeighted(textTerm, {includeDrafts: true}).pipe(
+  return searchWeighted(textTerm, {includeDrafts: true, limit: 50}).pipe(
     map((results) => results.map((result) => result.hit)),
     map(collate),
     map((collated) => collated.slice(0, 50)),
