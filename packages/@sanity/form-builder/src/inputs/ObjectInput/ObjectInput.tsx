@@ -115,6 +115,15 @@ export const ObjectInput = memo(
       )
     }, [filterGroups])
     const [selectedFieldGroupName, setSelectedFieldGroupName] = useState(DEFAULT_FIELD_GROUP_NAME)
+    const fieldGroupRootFocusPaths = React.useMemo(() => {
+      if (filterGroups.length === 0) {
+        return type.fields.map((field) => field.name)
+      }
+
+      return (
+        find(filterGroups, (fieldGroup) => fieldGroup.name === selectedFieldGroupName)?.fields || []
+      ).map((field) => field.name)
+    }, [filterGroups, selectedFieldGroupName, type.fields])
     const handleSelectTab = useCallback((tabName: string) => {
       setSelectedFieldGroupName(tabName)
     }, [])
@@ -367,8 +376,13 @@ export const ObjectInput = memo(
       if (hasFocusWithin) {
         setCollapsed(false)
 
-        // Restore to default field group if focus path changes
-        if (selectedFieldGroupName !== DEFAULT_FIELD_GROUP_NAME) {
+        // Restore to default field group if focus path changes and the root focus path is not
+        // available in this field group
+        if (
+          selectedFieldGroupName !== DEFAULT_FIELD_GROUP_NAME &&
+          typeof focusPath?.[0] === 'string' &&
+          !fieldGroupRootFocusPaths.includes(focusPath?.[0])
+        ) {
           setSelectedFieldGroupName(DEFAULT_FIELD_GROUP_NAME)
         }
       }
