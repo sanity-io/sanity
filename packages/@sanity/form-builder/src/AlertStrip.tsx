@@ -6,7 +6,6 @@ import {Details} from './components/Details'
 interface AlertProps extends Omit<ComponentProps<typeof Card>, 'title'> {
   title: React.ReactNode
   status?: 'warning' | 'error' | 'info'
-  suffix?: React.ReactNode
 }
 
 const STATUS_TONES = {
@@ -22,7 +21,7 @@ const STATUS_ICONS = {
 }
 
 export function AlertStrip(props: AlertProps) {
-  const {children, status = 'warning', suffix, title, ...rest} = props
+  const {children, status = 'warning', title, ...rest} = props
 
   return (
     <Card radius={2} tone={STATUS_TONES[status]} {...rest} data-ui="Alert">
@@ -30,11 +29,9 @@ export function AlertStrip(props: AlertProps) {
         {children && (
           <Box flex={1}>
             <Details icon={STATUS_ICONS[status]} title={title}>
-              {children && (
-                <Box marginLeft={3} marginTop={3}>
-                  {children}
-                </Box>
-              )}
+              <Box marginLeft={3} marginTop={3}>
+                {children}
+              </Box>
             </Details>
           </Box>
         )}

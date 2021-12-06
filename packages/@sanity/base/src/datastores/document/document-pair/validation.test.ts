@@ -5,13 +5,12 @@ import type {EditStateFor} from './editState'
 
 type VersionedClient = typeof import('../../../client/versionedClient').versionedClient
 type Validation = typeof import('./validation').validation
-type ObservePaths = typeof import('../../../preview').observePaths
+type ObserveDocumentPairAvailability = typeof import('../../../preview/availability').observeDocumentPairAvailability
 
 let mockVersionedClient: VersionedClient
-let mockObserverPaths: ObservePaths
 let validation: Validation
 let mockEditStateSubject: Subject<EditStateFor>
-let mockObservePaths: jest.MockedFunction<ObservePaths>
+let mockObserveDocumentPairAvailability: jest.MockedFunction<ObserveDocumentPairAvailability>
 
 // setup tests that are independent on the module level.
 // each test run shares no state.
@@ -43,9 +42,11 @@ beforeEach(() => {
   }))
 
   // observe paths mock
-  mockObservePaths = jest.fn((() => new Observable()) as ObservePaths)
-  jest.mock('../../../preview', () => ({
-    observePaths: mockObservePaths,
+  mockObserveDocumentPairAvailability = jest.fn(
+    (() => new Observable()) as ObserveDocumentPairAvailability
+  )
+  jest.mock('../../../preview/availability', () => ({
+    observeDocumentPairAvailability: mockObserveDocumentPairAvailability,
   }))
 
   // edit state mock
@@ -179,12 +180,11 @@ describe('validation', () => {
 
     const subject = new Subject()
 
-    mockObservePaths.mockImplementation(((id: string) =>
+    mockObserveDocumentPairAvailability.mockImplementation(((() =>
       concat(
-        //
-        of({_id: id, _rev: 'exists'}),
-        subject.pipe(mapTo(null))
-      )) as ObservePaths)
+        of({published: {available: true}}),
+        subject.pipe(mapTo({published: {available: false}}))
+      )) as unknown) as ObserveDocumentPairAvailability)
 
     // simulate first emission from validation listener
     mockEditStateSubject.next({
@@ -206,8 +206,10 @@ describe('validation', () => {
     })
     await doneValidating()
 
-    mockObservePaths.mockImplementation(((id: string) =>
-      id === 'example-ref-id' ? of(null) : of({_id: id, _rev: 'exists'})) as ObservePaths)
+    mockObserveDocumentPairAvailability.mockImplementation(((id: string) =>
+      id === 'example-ref-id'
+        ? of({published: {available: false}})
+        : of({published: {available: true}})) as ObserveDocumentPairAvailability)
     subject.next()
 
     await doneValidating()

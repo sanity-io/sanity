@@ -1,4 +1,7 @@
-import {unstable_useTemplatePermissions, useDocumentType} from '@sanity/base/hooks'
+import {
+  unstable_useTemplatePermissions as useUnstableTemplatePermissions,
+  useDocumentType,
+} from '@sanity/base/hooks'
 import {LegacyLayerProvider, useZIndex} from '@sanity/base/components'
 import {ChangeConnectorRoot} from '@sanity/base/change-indicators'
 import {getTemplateById} from '@sanity/base/initial-value-templates'
@@ -61,9 +64,11 @@ const StyledChangeConnectorRoot = styled(ChangeConnectorRoot)`
 export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProviderProps) {
   const paneRouter = usePaneRouter()
   const options = usePaneOptions(props.pane.options, paneRouter.params)
-  const {documentType, isLoaded} = useDocumentType(options.id, options.type)
-  const newDocumentOptions = getNewDocumentOptions()
-  const [templates, isTemplatesLoading] = unstable_useTemplatePermissions(newDocumentOptions)
+  const {documentType, isLoaded: isDocumentLoaded} = useDocumentType(options.id, options.type)
+  const [templatePermissions, isTemplatePermissionsLoading] = useUnstableTemplatePermissions(
+    getNewDocumentOptions()
+  )
+  const isLoaded = isDocumentLoaded && isTemplatePermissionsLoading
 
   const providerProps = useMemo(() => {
     return isLoaded && documentType && options.type !== documentType
@@ -123,7 +128,7 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
       <Unstable_ReferenceInputOptionsProvider
         EditReferenceLinkComponent={ReferenceChildLink}
         onEditReference={handleEditReference}
-        initialValueTemplateItems={templates}
+        initialValueTemplateItems={templatePermissions}
         activePath={activePath}
       >
         <InnerDocumentPane />

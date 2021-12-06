@@ -21,7 +21,7 @@ import {Marker, ValidationContext, isReference} from '@sanity/types'
 import reduceJSON from 'json-reduce'
 import {memoize} from '../utils/createMemoizer'
 import {IdPair} from '../types'
-import {observePaths} from '../../../preview'
+import {observeDocumentPairAvailability} from '../../../preview/availability'
 import {editState} from './editState'
 
 export interface ValidationStatus {
@@ -47,7 +47,7 @@ function findReferenceIds(obj: any): Set<string> {
 type GetDocumentExists = NonNullable<ValidationContext['getDocumentExists']>
 
 const listenDocumentExists = (id: string): Observable<boolean> =>
-  observePaths(id, ['_rev']).pipe(map((snapshot) => Boolean(snapshot?._rev)))
+  observeDocumentPairAvailability(id).pipe(map(({published}) => published.available))
 
 const getDocumentExists: GetDocumentExists = ({id}) =>
   listenDocumentExists(id).pipe(first()).toPromise()

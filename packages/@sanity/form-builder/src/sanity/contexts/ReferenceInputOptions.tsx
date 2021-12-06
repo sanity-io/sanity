@@ -48,7 +48,7 @@ export interface ReferenceInputOptions {
   initialValueTemplateItems?: TemplatePermissionsResult[]
 
   /**
-   * Similar to `ReferenceChildLink` expect without the wrapping component
+   * Similar to `EditReferenceChildLink` expect without the wrapping component
    */
   onEditReference?: (options: EditReferenceOptions) => void
 }

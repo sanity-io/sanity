@@ -13,14 +13,14 @@ import {
 } from './userDefinedStructure'
 
 const resolveDocumentChild: ChildResolver = (itemId, {params, path}) => {
-  const {parentRefPath, type} = params
+  const {type} = params
 
   const parentPath = path.slice(0, path.length - 1)
   const currentSegment = path[path.length - 1]
 
-  if (!parentRefPath || !type) {
+  if (!type) {
     throw new SerializeError(
-      `Invalid link. To open a nested reference, your link must contain \`parentRefPath\` and \`type\`.`,
+      `Invalid link. Your link must contain a \`type\`.`,
       parentPath,
       currentSegment
     )
