@@ -50,6 +50,8 @@ export interface WeightedSearchOptions {
   filter?: string
   params?: Record<string, unknown>
   tag?: string
+  /* only return unique documents (e.g. not both draft and published) */
+  unique?: boolean
 }
 
 export interface SearchOptions {

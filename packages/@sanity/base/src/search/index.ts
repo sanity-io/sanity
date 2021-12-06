@@ -12,5 +12,6 @@ const searchClient = versionedClient.withConfig({
 })
 
 export default createWeightedSearch(getSearchableTypes(schema), searchClient, {
+  unique: true,
   tag: 'search.global',
 })

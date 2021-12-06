@@ -3,9 +3,10 @@ import type {SanityClient} from '@sanity/client'
 import type {ObjectSchemaType} from '@sanity/types'
 import type {Observable} from 'rxjs'
 import {compact, toLower, flatten, uniq, flow, sortBy, union} from 'lodash'
-import {map} from 'rxjs/operators'
+import {map, tap} from 'rxjs/operators'
 import {joinPath} from '../../util/searchUtils'
 import {tokenize} from '../common/tokenize'
+import {removeDupes} from '../../util/draftUtils'
 import {applyWeights} from './applyWeights'
 import {WeightedHit, WeightedSearchOptions, SearchOptions, SearchPath, SearchHit} from './types'
 
@@ -70,12 +71,13 @@ export function createWeightedSearch(
         {
           ...toGroqParams(terms),
           __types: searchSpec.map((spec) => spec.typeName),
-          __limit: searchOpts.limit ?? 1000,
+          __limit: searchOpts.limit ?? 100,
           ...(params || {}),
         },
         {tag}
       )
       .pipe(
+        options.unique ? map(removeDupes) : tap(),
         map((hits: SearchHit[]) => applyWeights(searchSpec, hits, terms)),
         map((hits) => sortBy(hits, (hit) => -hit.score))
       )
