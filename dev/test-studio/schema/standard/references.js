@@ -97,6 +97,19 @@ export default {
       ],
     },
     {
+      name: 'portableTextWithReferences',
+      type: 'array',
+      of: [
+        {type: 'block'},
+        {
+          type: 'reference',
+          title: 'Author',
+          to: [{type: 'author'}],
+        },
+        {type: 'empty'},
+      ],
+    },
+    {
       name: 'referenceWithDisabledCreateNew',
       type: 'reference',
       title: 'Reference to either "species" or "empty" document with disabled create button',
