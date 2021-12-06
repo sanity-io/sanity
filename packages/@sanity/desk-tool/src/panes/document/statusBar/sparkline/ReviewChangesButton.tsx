@@ -29,6 +29,7 @@ export const ReviewChangesButton = forwardRef(function ReviewChangesButton(
 
   return (
     <Tooltip
+      portal
       content={
         <Stack padding={3} space={3}>
           <Text size={1} weight="semibold">
