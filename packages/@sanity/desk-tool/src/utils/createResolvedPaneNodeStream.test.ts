@@ -567,4 +567,68 @@ describe('createResolvedPaneNodeStream', () => {
       ],
     ])
   })
+
+  it('wraps observables with publishReplay(1) so new subscribers get previous emissions', async () => {
+    // the following child emulates an observable that emits once and does not
+    // emit again. this is to test the behavior of publishReplay(1) i.e.
+    // remissions when new subscribers subscribe
+    const observableChild = Rx.defer(() =>
+      Rx.of<PaneNode>({
+        type: 'component',
+        id: 'child',
+        component: () => null,
+        title: 'Child',
+        child: (id) => ({
+          id,
+          type: 'component',
+          title: id,
+          component: () => null,
+        }),
+      })
+    )
+
+    const rootPaneNode: PaneNode = {
+      type: 'component',
+      id: 'root',
+      component: () => null,
+      title: 'Root',
+      child: () => observableChild,
+    }
+
+    const resolvedPanes$ = createResolvedPaneNodeStream({
+      rootPaneNode,
+      routerPanesStream: Rx.of(
+        [[{id: 'parent'}], [{id: 'foo'}]],
+        [[{id: 'parent'}], [{id: 'bar'}]]
+      ),
+    })
+
+    await expect(collectEmissionsOverTime(resolvedPanes$)).resolves.toMatchObject([
+      [
+        {flatIndex: 0, paneNode: {id: 'root'}, type: 'resolvedMeta'},
+        {flatIndex: 1, paneNode: null, type: 'loading'},
+        {flatIndex: 2, paneNode: null, type: 'loading'},
+      ],
+      [
+        {flatIndex: 0, paneNode: {id: 'root'}, type: 'resolvedMeta'},
+        {flatIndex: 1, paneNode: {id: 'child'}, type: 'resolvedMeta'},
+        {flatIndex: 2, paneNode: null, type: 'loading'},
+      ],
+      [
+        {flatIndex: 0, paneNode: {id: 'root'}, type: 'resolvedMeta'},
+        {flatIndex: 1, paneNode: {id: 'child'}, type: 'resolvedMeta'},
+        {flatIndex: 2, paneNode: {id: 'foo'}, type: 'resolvedMeta'},
+      ],
+      [
+        {flatIndex: 0, paneNode: {id: 'root'}, type: 'resolvedMeta'},
+        {flatIndex: 1, paneNode: {id: 'child'}, type: 'resolvedMeta'},
+        {flatIndex: 2, paneNode: null, type: 'loading'},
+      ],
+      [
+        {flatIndex: 0, paneNode: {id: 'root'}, type: 'resolvedMeta'},
+        {flatIndex: 1, paneNode: {id: 'child'}, type: 'resolvedMeta'},
+        {flatIndex: 2, paneNode: {id: 'bar'}, type: 'resolvedMeta'},
+      ],
+    ])
+  })
 })
