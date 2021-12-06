@@ -1,6 +1,6 @@
 {
   "name": "@sanity/default-layout",
-  "version": "2.22.4",
+  "version": "2.22.5",
   "description": "The default layout components for Sanity",
   "main": "./lib/default-layout.js",
   "types": "./dist/dts",
