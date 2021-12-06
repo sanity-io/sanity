@@ -63,7 +63,7 @@ export default defineConfig({
     pluginCanonicalModules(['@sanity/ui', 'react', 'react-dom', 'styled-components']),
     pluginWorkshopScopes(),
     viteCommonjs({
-      include: ['@sanity/eventsource'],
+      include: ['@sanity/eventsource', '@sanity/structure'],
     }),
   ],
   resolve: {
