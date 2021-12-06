@@ -3,6 +3,7 @@ import {Box, Flex, useElementRect} from '@sanity/ui'
 import React, {useEffect, useMemo, useState, useRef, memo} from 'react'
 import {raf2} from '../../../../utils/raf'
 import {useDocumentPane} from '../../useDocumentPane'
+import {ContainerQuery} from '../ContainerQuery'
 import {DocumentBadges} from './DocumentBadges'
 import {ReviewChangesButton} from './ReviewChangesButton'
 import {IconBadge} from './IconBadge'
@@ -53,6 +54,9 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
     return undefined
   }, [loaded, transition])
 
+  const [shouldCollapseChange, setShowCollapseChange] = useState(false)
+  const [shouldCollapsePublish, setShowCollapsePublish] = useState(false)
+
   const metadataBoxStyle = useMemo(
     () =>
       ({
@@ -79,10 +83,11 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
             lastPublished={lastPublished}
             lastUpdated={lastUpdated}
             liveEdit={liveEdit}
+            collapseText={shouldCollapsePublish}
           />
         </Box>
       ),
-    [lastPublished, lastUpdated, liveEdit, published, showingRevision]
+    [lastPublished, lastUpdated, liveEdit, published, showingRevision, shouldCollapsePublish]
   )
 
   const metadata = useMemo(
@@ -104,6 +109,7 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
                 disabled={showingRevision}
                 lastUpdated={lastUpdated}
                 ref={setReviewChangesButtonElement}
+                collapseText={shouldCollapseChange}
               />
             </ReviewChangesButtonBox>
           </>
@@ -122,13 +128,23 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
       metadataBoxStyle,
       showingRevision,
       transition,
+      shouldCollapseChange,
     ]
   )
 
   return (
-    <Flex align="center" data-ui="DocumentSparkline">
-      {publishStatus}
-      {metadata}
-    </Flex>
+    <ContainerQuery>
+      {({width}) => {
+        setShowCollapseChange(width < 180)
+        setShowCollapsePublish(width < 160)
+
+        return (
+          <Flex align="center" data-ui="DocumentSparkline">
+            {publishStatus}
+            {metadata}
+          </Flex>
+        )
+      }}
+    </ContainerQuery>
   )
 })

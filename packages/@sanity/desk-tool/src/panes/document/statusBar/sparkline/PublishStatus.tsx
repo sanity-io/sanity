@@ -12,6 +12,7 @@ interface PublishStatusProps {
   lastPublished?: string
   lastUpdated?: string
   liveEdit: boolean
+  collapseText?: boolean
 }
 
 const Root = styled(Flex)`
@@ -19,7 +20,7 @@ const Root = styled(Flex)`
 `
 
 export function PublishStatus(props: PublishStatusProps) {
-  const {disabled, lastPublished, lastUpdated, liveEdit} = props
+  const {disabled, lastPublished, lastUpdated, liveEdit, collapseText} = props
 
   const lastPublishedTimeAgo = useTimeAgo(lastPublished || '', {minimal: true, agoSuffix: true})
   const lastPublishedTime = useTimeAgo(lastPublished || '', {minimal: true})
@@ -55,10 +56,12 @@ export function PublishStatus(props: PublishStatusProps) {
                 {!liveEdit && <PublishIcon />}
               </Text>
             </Box>
-            <Text size={1} weight="medium">
-              {liveEdit && <>{lastUpdated ? lastUpdatedTime : lastPublishedTime}</>}
-              {!liveEdit && lastPublishedTime}
-            </Text>
+            {!collapseText && (
+              <Text size={1} weight="medium">
+                {liveEdit && <>{lastUpdated ? lastUpdatedTime : lastPublishedTime}</>}
+                {!liveEdit && lastPublishedTime}
+              </Text>
+            )}
           </Flex>
         </Button>
       </Tooltip>

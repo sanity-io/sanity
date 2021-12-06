@@ -9,13 +9,14 @@ import {AnimatedSyncIcon} from './AnimatedSyncIcon.styled'
 export interface ReviewChangesButtonProps
   extends Omit<ButtonProps, 'mode' | 'onClick' | 'padding' | 'selected' | 'tone' | 'type'> {
   lastUpdated?: string
+  collapseText?: boolean
 }
 
 export const ReviewChangesButton = forwardRef(function ReviewChangesButton(
   props: ReviewChangesButtonProps & React.HTMLProps<HTMLButtonElement>,
   ref: React.ForwardedRef<HTMLButtonElement>
 ) {
-  const {lastUpdated} = props
+  const {lastUpdated, collapseText} = props
   const lastUpdatedTime = useTimeAgo(lastUpdated || '', {minimal: true})
   const lastUpdatedTimeAgo = useTimeAgo(lastUpdated || '', {minimal: true, agoSuffix: true})
   const {
@@ -54,9 +55,11 @@ export const ReviewChangesButton = forwardRef(function ReviewChangesButton(
           <Box marginRight={3}>
             <Text size={2}>{syncState.isSyncing ? <AnimatedSyncIcon /> : <EditIcon />}</Text>
           </Box>
-          <Text size={1} weight="medium">
-            {lastUpdatedTime || <>&nbsp;</>}
-          </Text>
+          {!collapseText && (
+            <Text size={1} weight="medium">
+              {lastUpdatedTime || <>&nbsp;</>}
+            </Text>
+          )}
         </Flex>
       </Button>
     </Tooltip>
