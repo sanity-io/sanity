@@ -135,7 +135,7 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
   return (
     <ContainerQuery>
       {({width}) => {
-        setShowCollapseChange(width < 180)
+        setShowCollapseChange(width < 200)
         setShowCollapsePublish(width < 160)
 
         return (
