@@ -1,9 +1,9 @@
 import {EditIcon} from '@sanity/icons'
 import {Box, Flex, useElementRect} from '@sanity/ui'
 import React, {useEffect, useMemo, useState, useRef, memo} from 'react'
+import {ElementContainerQuery} from '@sanity/base/components'
 import {raf2} from '../../../../utils/raf'
 import {useDocumentPane} from '../../useDocumentPane'
-import {ContainerQuery} from '../ContainerQuery'
 import {DocumentBadges} from './DocumentBadges'
 import {ReviewChangesButton} from './ReviewChangesButton'
 import {IconBadge} from './IconBadge'
@@ -133,7 +133,7 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
   )
 
   return (
-    <ContainerQuery>
+    <ElementContainerQuery>
       {({width}) => {
         setShowCollapseChange(width < 200)
         setShowCollapsePublish(width < 160)
@@ -145,6 +145,6 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
           </Flex>
         )
       }}
-    </ContainerQuery>
+    </ElementContainerQuery>
   )
 })
