@@ -99,6 +99,7 @@ export function CreateDocumentItem({
         onClick={onClick}
         mode="ghost"
         fontSize={2}
+        data-testid={`create-document-item-${template.id}`}
       >
         {content}
       </StyledIntentButton>
