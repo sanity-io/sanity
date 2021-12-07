@@ -25,8 +25,7 @@ import {ObjectInputField} from './ObjectInputField'
 import {UnknownFields} from './UnknownFields'
 import {ObjectFieldSet} from './ObjectFieldSet'
 import {getCollapsedWithDefaults} from './utils'
-import {GroupTab} from './GroupTab'
-import {FieldGroupTabs} from './FieldGroupTabs'
+import {FieldGroupTabs} from './fieldGroups'
 
 const EMPTY_MARKERS: Marker[] = EMPTY_ARRAY
 const EMPTY_PRESENCE: FormFieldPresence[] = EMPTY_ARRAY
