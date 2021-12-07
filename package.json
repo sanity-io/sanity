@@ -10,7 +10,7 @@
     "build": "gulp clean && gulp build && npm run package",
     "build:cli": "gulp build:cli",
     "build:js": "gulp js",
-    "clean": "lerna clean && gulp clean",
+    "clean": "lerna clean && gulp clean && rimraf node_modules",
     "publish": "npm run build && lerna publish --exact",
     "publish-canary": "RELEASE_TAG=canary npm run publish-tag",
     "publish-current-branch": "RELEASE_TAG=`git rev-parse --abbrev-ref HEAD | sed 's/\\//\\_/g'` npm run publish-tag",
