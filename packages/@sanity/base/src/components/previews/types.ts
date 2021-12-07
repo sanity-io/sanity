@@ -11,8 +11,7 @@ export type FieldName = string
 
 export type Path = FieldName[]
 export type Selection = [Id, FieldName[]]
-export {PrepareViewOptions} from '@sanity/types'
-export {SortOrdering} from '@sanity/types'
+export type {PrepareViewOptions, SortOrdering} from '@sanity/types'
 
 export type PreviewConfig = {
   select: {

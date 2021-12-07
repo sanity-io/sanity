@@ -1,7 +1,6 @@
 import {Reference} from '@sanity/types'
 
-export {PrepareViewOptions} from '@sanity/types'
-export {SortOrdering} from '@sanity/types'
+export type {SortOrdering, PrepareViewOptions} from '@sanity/types'
 
 export type Id = string
 

@@ -5,7 +5,7 @@ import shallowEquals from 'shallow-equals'
 import {keyBy} from 'lodash'
 import {getDraftId, getPublishedId} from '../util/draftUtils'
 import {versionedClient} from '../client/versionedClient'
-import {DocumentAvailability, DraftsModelDocumentAvailability} from './types'
+import type {DocumentAvailability, DraftsModelDocumentAvailability} from './types'
 import {debounceCollect} from './utils/debounceCollect'
 import {
   AVAILABILITY_NOT_FOUND,
