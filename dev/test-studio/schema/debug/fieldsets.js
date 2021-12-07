@@ -55,6 +55,12 @@ export default {
       readOnly: true,
     },
     {
+      title: 'Reference to another fieldset test',
+      name: 'singleTypeRef',
+      type: 'reference',
+      to: [{type: 'fieldsetsTest'}],
+    },
+    {
       name: 'single',
       type: 'string',
       title: 'Single',
