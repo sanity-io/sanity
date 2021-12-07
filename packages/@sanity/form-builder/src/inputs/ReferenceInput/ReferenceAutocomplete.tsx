@@ -35,10 +35,14 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
         content,
         hidden,
         inputElement,
+        onMouseEnter,
+        onMouseLeave,
       }: {
         content: React.ReactElement | null
         hidden: boolean
         inputElement: HTMLInputElement | null
+        onMouseEnter: () => void
+        onMouseLeave: () => void
       },
       contentRef: React.Ref<HTMLDivElement>
     ) => (
@@ -46,6 +50,8 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
         placement="bottom-start"
         arrow={false}
         constrainSize
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
         content={
           <div ref={contentRef}>
             {hasResults ? (
