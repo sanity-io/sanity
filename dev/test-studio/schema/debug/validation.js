@@ -71,6 +71,12 @@ export default {
       },
     },
     {
+      type: 'string',
+      name: 'infoValidation',
+      title: 'Info validation',
+      validation: (rule) => rule.min(8).info('This is an information validation message'),
+    },
+    {
       name: 'myUrlField',
       type: 'url',
       title: 'Plain url',
