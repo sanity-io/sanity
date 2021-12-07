@@ -1,28 +1,45 @@
-import {Grid, Theme} from '@sanity/ui'
-import styled, {css} from 'styled-components'
-import React, {ForwardedRef, forwardRef} from 'react'
+import {Grid, useElementRect, Stack, useForwardedRef} from '@sanity/ui'
 import type {ReactNode} from 'react'
+import React, {ForwardedRef, forwardRef, useCallback, useState} from 'react'
+import styled from 'styled-components'
 
-const Root = styled(Grid)((props: {theme: Theme}) => {
-  const {media} = props.theme.sanity
-  return css`
-    @media screen and (min-width: ${media[0]}px) {
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    }
-    @media screen and (min-width: ${media[1]}px) {
-      grid-template-columns: 1fr min-content;
-    }
-  `
-})
+const GridLayout = styled(Grid)`
+  grid-template-columns: 1fr min-content;
+`
+
 export const AutocompleteContainer = forwardRef(function AutocompleteContainer(
   props: {
     children: ReactNode
   },
-  ref: ForwardedRef<HTMLDivElement>
+  forwardedRef: ForwardedRef<HTMLDivElement>
 ) {
+  const ref = useForwardedRef(forwardedRef)
+
+  const [rootElement, setRootElement] = useState<HTMLDivElement>(ref.current)
+
+  const handleNewRef = useCallback(
+    (element: HTMLDivElement) => {
+      // there's a bit of "double bookkeeping" here, since useElementRef and useForwardedRef doesn't compose all that well
+      // (useElementRect requires the state to be updated whenever the element change)
+      ref.current = element
+      setRootElement(element)
+    },
+    [ref]
+  )
+
+  const inputWrapperRect = useElementRect(rootElement)
+  const isNarrow = inputWrapperRect?.width < 480
+
+  if (isNarrow) {
+    return (
+      <Stack ref={handleNewRef} space={1}>
+        {props.children}
+      </Stack>
+    )
+  }
   return (
-    <Root gap={1} ref={ref}>
+    <GridLayout ref={handleNewRef} gap={1}>
       {props.children}
-    </Root>
+    </GridLayout>
   )
 })
