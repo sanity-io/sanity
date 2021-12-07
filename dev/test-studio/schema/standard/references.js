@@ -100,7 +100,30 @@ export default {
       name: 'portableTextWithReferences',
       type: 'array',
       of: [
-        {type: 'block'},
+        {
+          type: 'block',
+          marks: {
+            decorators: [
+              {title: 'Strong', value: 'strong'},
+              {title: 'Emphasis', value: 'em'},
+            ],
+            annotations: [
+              {
+                name: 'Author',
+                title: 'Author reference',
+                type: 'reference',
+                to: [{type: 'author'}],
+              },
+            ],
+          },
+          of: [
+            {
+              type: 'reference',
+              title: 'Author reference',
+              to: [{type: 'author'}],
+            },
+          ],
+        },
         {
           type: 'reference',
           title: 'Author',
