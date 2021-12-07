@@ -132,6 +132,11 @@ module.exports = async function deployApiActions(args, context) {
     spinner.succeed()
     output.print('GraphQL API deployed to:')
     output.print(client.getUrl(response.location.replace(/^\/(v1|v\d{4}-\d{2}-\d{2})\//, '/')))
+
+    // Because of side effects when loading the schema, we can end up in situations where
+    // the API has been successfully deployed, but some timer or other handle is keeping
+    // the process from naturally exiting.
+    process.exit(0)
   } catch (err) {
     spinner.fail()
     throw err
