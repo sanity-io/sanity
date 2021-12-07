@@ -2,7 +2,7 @@ import {isTitledListValue, PreviewValue, SchemaType, TitledListValue} from '@san
 import {debounce, flatten, get, isPlainObject, pick, uniqBy} from 'lodash'
 import {INVALID_PREVIEW_FALLBACK} from '../constants'
 import {isPortableTextArray, extractTextFromBlocks} from '../utils/portableText'
-import {PrepareViewOptions} from '../types'
+import type {PrepareViewOptions} from '../types'
 import {keysOf} from './keysOf'
 
 const PRESERVE_KEYS = ['_id', '_type', '_upload', '_createdAt', '_updatedAt']

@@ -11,7 +11,8 @@ export {observePathsDocumentPair as unstable_observePathsDocumentPair} from '../
 // eslint-disable-next-line camelcase
 export {observeDocumentPairAvailability as unstable_observeDocumentPairAvailability} from '../preview/availability'
 
-export {DocumentAvailability, AvailabilityReason} from '../preview/types'
+export type {DocumentAvailability} from '../preview/types'
+export {AvailabilityReason} from '../preview/types'
 
 export {createWeightedSearch} from '../search/weighted/createWeightedSearch'
 export type {WeightedHit} from '../search/weighted/types'

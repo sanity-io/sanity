@@ -3,7 +3,7 @@ import {map, switchMap} from 'rxjs/operators'
 import {isReferenceSchemaType, PreviewValue, SchemaType} from '@sanity/types'
 import {isPlainObject} from 'lodash'
 import prepareForPreview, {invokePrepare} from './utils/prepareForPreview'
-import {Path, PrepareViewOptions, Reference} from './types'
+import type {Path, PrepareViewOptions, Reference} from './types'
 import {getPreviewPaths} from './utils/getPreviewPaths'
 import {observeDocumentTypeFromId} from './observeDocumentTypeFromId'
 
