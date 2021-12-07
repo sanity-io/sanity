@@ -13,7 +13,7 @@ import {
 } from 'rxjs/operators'
 import {concat, of, Observable} from 'rxjs'
 import {observeForPreview} from '../'
-import {FieldName, SortOrdering} from '../types'
+import type {FieldName, SortOrdering} from '../types'
 
 function isNonNullable<T>(value: T): value is NonNullable<T> {
   return value !== null && value !== undefined
