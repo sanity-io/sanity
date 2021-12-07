@@ -269,8 +269,8 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
 
   const handleQueryChange = useObservableCallback((inputValue$: Observable<string | null>) => {
     return inputValue$.pipe(
-      distinctUntilChanged(),
       filter(isNonNullable),
+      distinctUntilChanged(),
       switchMap((searchString) =>
         concat(
           of({isLoading: true}),

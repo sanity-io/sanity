@@ -249,8 +249,8 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
 
   const handleQueryChange = useObservableCallback((inputValue$: Observable<string | null>) => {
     return inputValue$.pipe(
-      distinctUntilChanged(),
       filter(nonNullable),
+      distinctUntilChanged(),
       switchMap((searchString) =>
         concat(
           of({isLoading: true}),
