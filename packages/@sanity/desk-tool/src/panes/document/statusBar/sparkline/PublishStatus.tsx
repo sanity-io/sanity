@@ -50,7 +50,7 @@ export function PublishStatus(props: PublishStatusProps) {
           disabled={disabled}
         >
           <Flex align="center">
-            <Box marginRight={3}>
+            <Box marginRight={collapseText ? 1 : 3}>
               <Text size={2}>
                 {liveEdit && <PlayIcon />}
                 {!liveEdit && <PublishIcon />}

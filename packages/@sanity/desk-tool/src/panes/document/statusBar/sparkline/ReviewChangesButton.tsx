@@ -52,7 +52,7 @@ export const ReviewChangesButton = forwardRef(function ReviewChangesButton(
         selected={changesOpen}
       >
         <Flex align="center">
-          <Box marginRight={3}>
+          <Box marginRight={collapseText ? 1 : 3}>
             <Text size={2}>{syncState.isSyncing ? <AnimatedSyncIcon /> : <EditIcon />}</Text>
           </Box>
           {!collapseText && (
