@@ -44,6 +44,12 @@ describe('generics', () => {
     expect(result).toMatchSnapshot()
   })
 
+  test('can customize info messages', async () => {
+    const result = await Rule.string().info('Dude it should probably be a string').validate(123)
+
+    expect(result).toMatchSnapshot()
+  })
+
   test('can merge rules', async () => {
     const rule = new Rule().required()
     const stringRule = Rule.string().min(5)

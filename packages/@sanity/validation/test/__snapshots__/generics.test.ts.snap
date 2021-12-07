@@ -16,6 +16,22 @@ Array [
 ]
 `;
 
+exports[`generics can customize info messages 1`] = `
+Array [
+  Object {
+    "item": ValidationError {
+      "children": undefined,
+      "message": "Dude it should probably be a string",
+      "operation": undefined,
+      "paths": Array [],
+    },
+    "level": "info",
+    "path": Array [],
+    "type": "validation",
+  },
+]
+`;
+
 exports[`generics can customize warning messages 1`] = `
 Array [
   Object {
