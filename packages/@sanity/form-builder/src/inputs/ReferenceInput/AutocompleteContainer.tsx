@@ -1,4 +1,4 @@
-import {Grid, useElementRect, useForwardedRef} from '@sanity/ui'
+import {Grid, useElementRect} from '@sanity/ui'
 import React, {ReactNode, ForwardedRef, forwardRef, useCallback, useState} from 'react'
 import styled, {css} from 'styled-components'
 
@@ -20,18 +20,16 @@ export const AutocompleteContainer = forwardRef(function AutocompleteContainer(
   },
   forwardedRef: ForwardedRef<HTMLDivElement>
 ) {
-  const ref = useForwardedRef(forwardedRef)
-
-  const [rootElement, setRootElement] = useState<HTMLDivElement>(ref.current)
+  const [rootElement, setRootElement] = useState<HTMLDivElement>()
 
   const handleNewRef = useCallback(
     (element: HTMLDivElement) => {
-      // there's a bit of "double bookkeeping" here, since useElementRef and useForwardedRef doesn't compose all that well
-      // (useElementRect requires the state to be updated whenever the element change)
-      ref.current = element
+      // there's a bit of "double bookkeeping" here. since useElementRect needs to re-run whenever the ref updates,
+      // and thus we need to keep it in the state
+      setForwardedRef(forwardedRef, element)
       setRootElement(element)
     },
-    [ref]
+    [forwardedRef]
   )
 
   const inputWrapperRect = useElementRect(rootElement)
@@ -42,3 +40,11 @@ export const AutocompleteContainer = forwardRef(function AutocompleteContainer(
     </Root>
   )
 })
+
+function setForwardedRef<T>(ref: ForwardedRef<T>, instance: T) {
+  if (typeof ref === 'function') {
+    ref(instance)
+  } else {
+    ref.current = instance
+  }
+}
