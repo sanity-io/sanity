@@ -610,7 +610,13 @@ class VisionGui extends React.PureComponent {
                   tone={error ? 'critical' : 'default'}
                   $isInvalid={error}
                 >
-                  <Result padding={3} paddingTop={5} overflow="auto" $isInvalid={error}>
+                  <Result
+                    padding={3}
+                    paddingTop={5}
+                    sizing="border"
+                    overflow="auto"
+                    $isInvalid={error}
+                  >
                     <InputBackgroundContainer>
                       <Box marginLeft={3}>
                         <Label muted>Result</Label>
