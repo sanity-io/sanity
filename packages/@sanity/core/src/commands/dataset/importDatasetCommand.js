@@ -1,5 +1,6 @@
 import path from 'path'
-import simpleGet from 'simple-get'
+import getIt from 'get-it'
+import {promise} from 'get-it/middleware'
 import fse from 'fs-extra'
 import sanityImport from '@sanity/import'
 import padStart from 'lodash/padStart'
@@ -264,9 +265,8 @@ function getPercentage(opts) {
 }
 
 function getUrlStream(url) {
-  return new Promise((resolve, reject) => {
-    simpleGet(url, (err, res) => (err ? reject(err) : resolve(res)))
-  })
+  const request = getIt([promise({onlyBody: true})])
+  return request({url, stream: true})
 }
 
 function printWarnings(warnings, output) {

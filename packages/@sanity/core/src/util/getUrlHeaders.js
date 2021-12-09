@@ -1,33 +1,28 @@
-const simpleGet = require('simple-get')
+const getIt = require('get-it')
+const {promise} = require('get-it/middleware')
+
 const pkg = require('../../package.json')
 
-module.exports = (url, headers = {}) =>
-  new Promise((resolve, reject) => {
-    simpleGet(
-      {
-        url,
-        method: 'HEAD',
-        followRedirects: false,
-        headers: {
-          'User-Agent': `${pkg.name} ${pkg.version}`,
-          ...headers,
-        },
-      },
-      (err, res) => {
-        if (err) {
-          reject(err)
-          return
-        }
+const request = getIt([promise()])
 
-        if (res.statusCode >= 400) {
-          const error = new Error(`Request returned HTTP ${res.statusCode}`)
-          error.statusCode = res.statusCode
-          reject(error)
-          return
-        }
-
-        res.resume()
-        resolve(res.headers)
-      }
-    )
+module.exports = async (url, headers = {}) => {
+  const response = await request({
+    url,
+    stream: true,
+    maxRedirects: 0,
+    method: 'HEAD',
+    headers: {
+      'User-Agent': `${pkg.name} ${pkg.version}`,
+      ...headers,
+    },
   })
+
+  if (response.statusCode >= 400) {
+    const error = new Error(`Request returned HTTP ${response.statusCode}`)
+    error.statusCode = response.statusCode
+    throw error
+  }
+
+  response.body.resume()
+  return response.headers
+}
