@@ -44,6 +44,7 @@ export default {
   signature: '[FILE | FOLDER | URL] [TARGET_DATASET]',
   description: 'Import documents to given dataset from ndjson file',
   helpText,
+  // eslint-disable-next-line max-statements
   action: async (args, context) => {
     const {apiClient, output, chalk, fromInitCommand} = context
 
@@ -68,6 +69,7 @@ export default {
 
     const isUrl = /^https?:\/\//i.test(file)
     let inputStream
+    let assetsBase
     let sourceIsFolder = false
 
     if (isUrl) {
@@ -81,7 +83,12 @@ export default {
       }
 
       sourceIsFolder = fileStats.isDirectory()
-      inputStream = sourceIsFolder ? sourceFile : await fse.createReadStream(sourceFile)
+      if (sourceIsFolder) {
+        inputStream = sourceFile
+      } else {
+        assetsBase = path.dirname(sourceFile)
+        inputStream = await fse.createReadStream(sourceFile)
+      }
     }
 
     const importClient = client.clone().config({dataset: targetDataset})
@@ -154,6 +161,7 @@ export default {
     try {
       const {numDocs, warnings} = await sanityImport(inputStream, {
         client: importClient,
+        assetsBase,
         operation,
         onProgress,
         allowFailingAssets,
