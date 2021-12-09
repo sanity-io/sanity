@@ -24,8 +24,8 @@ jobs:
 
       - name: Install npm dependencies
         env:
-         PUPPETEER_SKIP_DOWNLOAD: 'true'
-         CYPRESS_INSTALL_BINARY: '0'
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
+          CYPRESS_INSTALL_BINARY: '0'
         run: npm install
 
       # Required for import lint rules to work - packages pointing to ex
@@ -52,13 +52,15 @@ jobs:
             printf "\nThese files have changed in $GITHUB_SHA:\n$CHANGED_FILES\n"
           fi
 
-          # Don't include files like LICENSE and css files
-          CHANGED_JS_FILES=$(echo "$CHANGED_FILES" | sed -e '/^.\+\(mjs\|tsx\|jsx\|js\|ts\)$/!d')
+          # Don't include files like LICENSE, md, etc
+          FILES_TO_LINT=$(echo "$CHANGED_FILES" | sed -e '/^.\+\(js\|ts\tsx\|css\)$/!d')
 
-          for FILE_NAME in $CHANGED_JS_FILES
+          for FILE_NAME in $FILES_TO_LINT
           do
             # if you pass a direct filename to eslint, you don't need to specify extensions
             npx eslint $FILE_NAME
+            # stylelint will infer which parser to use based on the file type
+            npx stylelint $FILE_NAME
           done
 
       - name: Notify Slack about build failure

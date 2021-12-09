@@ -1,4 +1,13 @@
 {
   "extends": ["stylelint-prettier/recommended"],
-  "ignoreFiles": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"]
+  "plugins": ["stylelint-prettier"],
+  "rules": {
+    "prettier/prettier": true
+  },
+  "overrides": [
+    {
+      "files": ["**/*.{js,ts,tsx}"],
+      "customSyntax": "@stylelint/postcss-css-in-js"
+    }
+  ]
 }

@@ -1,7 +1,8 @@
-/node_modules/
-/packages/*/node_modules
-/packages/@sanity/*/node_modules
-/packages/*/dist
-/packages/@sanity/*/dist
-/packages/*/lib
-/packages/@sanity/*/lib
+**/node_modules
+**/lib
+**/dist
+**/coverage
+**/bin
+/packages/@sanity/webpack-integration/test/fixtures
+/packages/@sanity/types/parts/part.@sanity/components/build-snapshot
+/packages/@sanity/block-tools/test/tests/HtmlDeserializer
