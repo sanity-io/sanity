@@ -32,6 +32,7 @@
     "debug": "^3.2.7",
     "file-url": "^2.0.2",
     "fs-extra": "^7.0.0",
+    "get-it": "^5.2.1",
     "get-uri": "^2.0.2",
     "globby": "^10.0.0",
     "gunzip-maybe": "^1.4.1",
@@ -47,7 +48,6 @@
   },
   "devDependencies": {
     "@sanity/client": "2.23.0",
-    "get-it": "^5.2.1",
     "nock": "^9.0.5",
     "rimraf": "^2.7.1"
   },

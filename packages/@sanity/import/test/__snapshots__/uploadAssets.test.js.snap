@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`fails if asset download fails 1`] = `
-[Error: Error while fetching asset from "http://127.0.0.1:49999/img.gif":
+[Error: Failed to download image @ http://127.0.0.1:49999/img.gif:
 connect ECONNREFUSED 127.0.0.1:49999]
 `;
 
