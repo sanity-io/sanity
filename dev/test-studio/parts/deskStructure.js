@@ -85,7 +85,7 @@ const DEBUG_INPUT_TYPES = [
   'withDocumentTest',
 ]
 
-const CI_INPUT_TYPES = ['conditionalFieldset']
+const CI_INPUT_TYPES = ['conditionalFieldset', 'validationCI']
 
 const EXTERNAL_PLUGIN_INPUT_TYPES = ['markdownTest', 'muxVideoPost']
 
