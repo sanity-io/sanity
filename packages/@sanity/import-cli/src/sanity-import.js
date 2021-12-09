@@ -3,7 +3,8 @@
 /* eslint-disable id-length, no-console, no-process-env */
 const fs = require('fs')
 const ora = require('ora')
-const get = require('simple-get')
+const getIt = require('get-it')
+const {promise} = require('get-it/middleware')
 const meow = require('meow')
 const prettyMs = require('pretty-ms')
 const sanityClient = require('@sanity/client')
@@ -198,21 +199,19 @@ function getStream() {
 }
 
 function getUriStream(uri) {
-  return new Promise((resolve, reject) => {
-    get(uri, (err, res) => {
-      if (err) {
-        reject(new Error(`Error fetching source:\n${err.message}`))
-        return
-      }
-
+  const get = getIt([promise()])
+  return get({url: uri, stream: true}).then(
+    (res) => {
       if (res.statusCode !== 200) {
-        reject(new Error(`Error fetching source: HTTP ${res.statusCode}`))
-        return
+        throw new Error(`Error fetching source: HTTP ${res.statusCode}`)
       }
 
-      resolve(res)
-    })
-  })
+      return res.body
+    },
+    (err) => {
+      throw new Error(`Error fetching source:\n${err.message}`)
+    }
+  )
 }
 
 function onProgress(opts) {

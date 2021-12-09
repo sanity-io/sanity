@@ -27,10 +27,10 @@
   "dependencies": {
     "@sanity/client": "2.23.0",
     "@sanity/import": "2.23.0",
+    "get-it": "^5.2.1",
     "meow": "^9.0.0",
     "ora": "^5.4.1",
-    "pretty-ms": "^7.0.1",
-    "simple-get": "^4.0.0"
+    "pretty-ms": "^7.0.1"
   },
   "devDependencies": {
     "rimraf": "^2.7.1"
