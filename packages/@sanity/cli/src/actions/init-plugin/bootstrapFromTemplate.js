@@ -1,7 +1,8 @@
 const path = require('path')
 const semver = require('semver')
 const fse = require('fs-extra')
-const simpleGet = require('simple-get')
+const getIt = require('get-it')
+const promise = require('get-it/lib-node/middleware/promise')
 const decompress = require('decompress')
 const resolveFrom = require('resolve-from')
 const validateNpmPackageName = require('validate-npm-package-name')
@@ -11,6 +12,7 @@ const pkg = require('../../../package.json')
 const debug = require('../../debug')
 
 const {absolutify, pathIsEmpty} = pathTools
+const request = getIt([promise()])
 
 module.exports = async (context, url) => {
   const {prompt, workDir} = context
@@ -144,21 +146,13 @@ async function validateEmptyPath(dir) {
 }
 
 function getZip(url) {
-  return new Promise((resolve, reject) => {
-    simpleGet.concat(url, (err, res, data) => {
-      if (err) {
-        reject(err)
-        return
-      }
+  return request({url, rawBody: true}).then((res) => {
+    if (res.statusCode > 299) {
+      const httpErr = ['HTTP', res.statusCode, res.statusMessage].filter(Boolean).join(' ')
+      throw new Error(`${httpErr} trying to download ${url}`)
+    }
 
-      if (res.statusCode > 299) {
-        const httpErr = ['HTTP', res.statusCode, res.statusMessage].filter(Boolean).join(' ')
-        reject(new Error(`${httpErr} trying to download ${url}`))
-        return
-      }
-
-      resolve(decompress(data))
-    })
+    return decompress(res.body)
   })
 }
 
