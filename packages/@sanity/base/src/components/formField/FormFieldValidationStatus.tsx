@@ -35,9 +35,9 @@ const VALIDATION_COLORS: Record<'error' | 'warning' | 'info', string> = {
 }
 
 const VALIDATION_ICONS: Record<'error' | 'warning' | 'info', React.ReactElement> = {
-  error: <ErrorOutlineIcon />,
-  warning: <WarningOutlineIcon />,
-  info: <InfoOutlineIcon />,
+  error: <ErrorOutlineIcon data-testid="input-validation-icon-error" />,
+  warning: <WarningOutlineIcon data-testid="input-validation-icon-warning" />,
+  info: <InfoOutlineIcon data-testid="input-validation-icon-info" />,
 }
 
 export function FormFieldValidationStatus(props: FormFieldValidationStatusProps) {
