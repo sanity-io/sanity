@@ -2,6 +2,7 @@
 
 /* eslint-disable id-length, no-console, no-process-env */
 const fs = require('fs')
+const path = require('path')
 const ora = require('ora')
 const getIt = require('get-it')
 const {promise} = require('get-it/middleware')
@@ -155,6 +156,7 @@ getStream()
       allowAssetsInDifferentDataset,
       assetConcurrency,
       replaceAssets,
+      assetsBase: getAssetsBase(),
     })
   )
   .then(({numDocs, warnings}) => {
@@ -196,6 +198,20 @@ function getStream() {
   }
 
   return Promise.resolve(source === '-' ? process.stdin : fs.createReadStream(source))
+}
+
+function getAssetsBase() {
+  if (/^https:\/\//i.test(source) || source === '-') {
+    return undefined
+  }
+
+  try {
+    const fileStats = fs.statSync(source)
+    const sourceIsFolder = fileStats.isDirectory()
+    return sourceIsFolder ? source : path.dirname(source)
+  } catch {
+    return undefined
+  }
 }
 
 function getUriStream(uri) {
