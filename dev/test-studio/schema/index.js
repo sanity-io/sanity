@@ -85,6 +85,7 @@ import species from './species'
 
 // CI documents
 import conditionalFieldset from './ci/conditionalFieldset'
+import validationTest from './ci/validationCI'
 
 export default createSchema({
   name: 'test-examples',
@@ -169,6 +170,7 @@ export default createSchema({
     urls,
     validation,
     validationArraySuperType,
+    validationTest,
     withDocumentTestSchemaType,
   ]),
 })
