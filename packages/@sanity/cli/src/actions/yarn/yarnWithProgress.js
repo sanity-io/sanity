@@ -44,6 +44,8 @@ export default function yarnWithProgress(args, options = {}) {
     '--json',
     '--non-interactive',
     '--ignore-engines',
+    '--network-timeout',
+    '60000',
     '--registry',
     'https://registry.npmjs.org',
   ])
