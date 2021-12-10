@@ -6,7 +6,29 @@ import {fileTarget} from '../../common/fileTarget'
 
 export type {FileInfo} from '../../common/fileTarget'
 
-export const FileTarget = fileTarget(Card)
+export const CardFileTarget = styled(Card)((props: {readOnly: boolean}) => {
+  const readOnly = props.readOnly
+  return `
+  border-style: dashed !important;
+
+  ${
+    readOnly &&
+    `
+    &::after {
+    background: var(--card-skeleton-color-to);
+    content: '';
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    }
+  `
+  }
+`
+})
+
+export const FileTarget = fileTarget(CardFileTarget)
 
 export const Overlay: StyledComponent<'div', DefaultTheme> = styled.div`
   position: absolute;
