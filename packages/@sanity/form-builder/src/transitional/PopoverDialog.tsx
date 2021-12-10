@@ -5,6 +5,7 @@ import {Placement} from '@sanity/ui'
 import {PopoverDialogPart} from '../legacyParts'
 
 type Props = {
+  boundaryElement?: HTMLElement | null
   onClose: () => void
   referenceElement?: HTMLElement | null
   children?: React.ReactNode
@@ -18,6 +19,7 @@ type Props = {
 }
 
 export function PopoverDialog({
+  boundaryElement,
   children,
   onClose,
   placement,
@@ -42,6 +44,7 @@ export function PopoverDialog({
       size={size}
       depth={depth}
       portal={portal}
+      boundaryElement={boundaryElement}
     >
       {children}
     </PopoverDialogPart>
