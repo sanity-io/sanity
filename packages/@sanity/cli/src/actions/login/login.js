@@ -11,7 +11,12 @@ import canLaunchBrowser from '../../util/canLaunchBrowser'
 export default async function login(args, context) {
   const {prompt, output, apiClient} = context
   const {sso, experimental} = args.extOptions
-  const client = apiClient({requireUser: false, requireProject: false})
+
+  // _Potentially_ already authed client
+  const authedClient = apiClient({requireUser: false, requireProject: false})
+
+  // Explicitly tell _this_ client not to use a token
+  const client = authedClient.clone().config({token: undefined})
 
   // Get the desired authentication provider
   const provider = await getProvider({client, sso, experimental, output, prompt})
