@@ -31,7 +31,7 @@ import {
 } from '../../../sanity/uploads/types'
 import {ImageToolInput} from '../ImageToolInput'
 import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
-import UploadPlaceholder from '../common/UploadPlaceholder'
+import UploadImagePlaceholder from '../common/UploadImagePlaceholder'
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
 import {FileTarget, Overlay} from '../common/styles'
 import {InternalAssetSource, UploadState} from '../types'
@@ -500,7 +500,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
     // Single asset source (just a normal button)
     return (
-      <UploadPlaceholder
+      <UploadImagePlaceholder
         fileType="image"
         onBrowse={() => this.handleSelectImageFromAssetSource(assetSources[0])}
         onUpload={this.handleSelectFiles}
