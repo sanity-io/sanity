@@ -15,7 +15,7 @@ export default {
       name: 'group2',
       title: 'Group 2',
       readOnly: ({document}) => document.field2 === 'readonly',
-      isDefault: true,
+      default: true,
     },
   ],
   fields: [

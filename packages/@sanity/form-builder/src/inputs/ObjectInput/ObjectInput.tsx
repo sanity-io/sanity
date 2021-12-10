@@ -113,7 +113,7 @@ export const ObjectInput = memo(
         )?.name || DEFAULT_FIELD_GROUP_NAME
       )
     }, [filterGroups])
-    const [selectedFieldGroupName, setSelectedFieldGroupName] = useState(DEFAULT_FIELD_GROUP_NAME)
+    const [selectedFieldGroupName, setSelectedFieldGroupName] = useState(defaultFieldGroupName)
     const fieldGroupRootFocusPaths = React.useMemo(() => {
       if (filterGroups.length === 0) {
         return type.fields.map((field) => field.name)
