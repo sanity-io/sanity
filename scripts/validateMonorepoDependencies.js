@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
-const readPackages = require('./utils/readPackages')
 const path = require('path')
 const chalk = require('chalk')
+const readPackages = require('./utils/readPackages')
 
 function getMismatches(pkg, monorepoPackages) {
   const pkgDeps = {...pkg.content.dependencies, ...pkg.content.devDependencies}
@@ -12,9 +12,10 @@ function getMismatches(pkg, monorepoPackages) {
       if (!monorepoPackage || expectedVersion === monorepoPackage.content.version) {
         return null
       }
+      const devDependencies = pkg.content.devDependencies || {}
       return {
         name: depName,
-        dev: Boolean(pkg.content.devDependencies[depName]),
+        dev: Boolean(devDependencies[depName]),
         expected: expectedVersion,
         actual: monorepoPackage.content.version,
       }
