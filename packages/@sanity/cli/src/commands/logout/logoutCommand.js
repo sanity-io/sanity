@@ -5,59 +5,33 @@ export default {
   name: 'logout',
   signature: 'logout',
   description: 'Logs out of the Sanity.io session',
-  async action(args, {output, prompt, apiClient}) {
+  async action(args, {output, apiClient}) {
     const cfg = getUserConfig()
 
     const token = cfg.get('authToken')
-    const type = cfg.get('authType')
     if (!token) {
       output.print(chalk.red('No login credentials found'))
       return
     }
 
-    if (token && type !== 'provisional') {
-      logout(cfg)
-      return
-    }
+    const client = apiClient({requireUser: false, requireProject: false})
+    try {
+      await client.request({uri: '/auth/logout', method: 'POST'})
+    } catch (err) {
+      const statusCode = err && err.response && err.response.statusCode
 
-    if (type === 'provisional') {
-      output.print(
-        chalk.yellow.inverse('[WARN]') +
-          chalk.yellow(' You are currently logged in as a temporary user!')
-      )
-      output.print(
-        chalk.yellow("Logging out will make it super hard to claim your beautiful project :'(")
-      )
-    }
-
-    const confirm = await prompt.single({
-      type: 'confirm',
-      message: 'Are you sure you want to log out?',
-      default: false,
-    })
-
-    if (!confirm) {
-      output.print(chalk.red('Aborted'))
-      return
-    }
-
-    logout(cfg)
-
-    async function logout() {
-      const client = apiClient({requireUser: false, requireProject: false})
-      if (token) {
-        try {
-          await client.request({uri: '/auth/logout', method: 'POST'})
-        } catch (err) {
-          output.error(chalk.red(`Failed to communicate with the Sanity API:\n${err.message}`))
-          return
-        }
+      // In the case of session timeouts or missing sessions, we'll get a 401
+      // This is an acceptable situation seen from a logout perspective - all we
+      // need to do in this case is clear the session from the view of the CLI
+      if (statusCode !== 401) {
+        output.error(chalk.red(`Failed to communicate with the Sanity API:\n${err.message}`))
+        return
       }
-
-      cfg.delete('authType')
-      cfg.delete('authToken')
-
-      output.print(chalk.green('Logged out'))
     }
+
+    cfg.delete('authType')
+    cfg.delete('authToken')
+
+    output.print(chalk.green('Logged out'))
   },
 }
