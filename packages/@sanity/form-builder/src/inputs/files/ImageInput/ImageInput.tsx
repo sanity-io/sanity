@@ -1,23 +1,11 @@
 /* eslint-disable import/no-unresolved */
 
 import {FormFieldSet, ImperativeToast} from '@sanity/base/components'
-import {
-  Box,
-  Button,
-  Dialog,
-  Flex,
-  Grid,
-  Menu,
-  MenuButton,
-  MenuItem,
-  Stack,
-  Text,
-  ToastParams,
-} from '@sanity/ui'
+import {Box, Button, Dialog, Menu, MenuButton, MenuItem, Stack, Text, ToastParams} from '@sanity/ui'
 import {get, groupBy, uniqueId} from 'lodash'
 import {Observable, Subscription} from 'rxjs'
 import {ChangeIndicatorForFieldPath} from '@sanity/base/change-indicators'
-import {EditIcon, EyeOpenIcon, ImageIcon, SearchIcon, TrashIcon, UploadIcon} from '@sanity/icons'
+import {ImageIcon, SearchIcon} from '@sanity/icons'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
 import ImageTool from '@sanity/imagetool'
 import {
@@ -45,11 +33,9 @@ import {ImageToolInput} from '../ImageToolInput'
 import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
-import {FileInputButton} from '../common/FileInputButton/FileInputButton'
 import {FileTarget, Overlay} from '../common/styles'
 import {InternalAssetSource, UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
-import {RatioBox} from '../common/RatioBox'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import {DropMessage} from '../common/DropMessage'
 import {handleSelectAssetFromSource} from '../common/assetSource'
@@ -76,6 +62,8 @@ export type Props = {
   markers: Marker[]
   presence: FormFieldPresence[]
 }
+
+const cardBorder = {borderStyle: 'dashed'}
 
 const getDevicePixelRatio = () => {
   if (typeof window === 'undefined' || !window.devicePixelRatio) {
@@ -458,13 +446,17 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderUploadPlaceholder() {
-    const {readOnly} = this.props
+    const {readOnly, assetSources} = this.props
     return readOnly ? (
       <Text align="center" muted>
         This field is read-only
       </Text>
     ) : (
-      <UploadPlaceholder fileType="image" />
+      <UploadPlaceholder
+        fileType="image"
+        onBrowse={() => this.handleSelectImageFromAssetSource(assetSources[0])}
+        onUpload={this.handleSelectFiles}
+      />
     )
   }
 
@@ -509,17 +501,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         />
       )
     }
-
-    // Single asset source (just a normal button)
-    return (
-      <Button
-        icon={SearchIcon}
-        onClick={() => this.handleSelectImageFromAssetSource(assetSources[0])}
-        mode="ghost"
-        text="Select"
-        data-testid="image-input-select-button"
-      />
-    )
   }
 
   renderAssetSource() {
@@ -652,7 +633,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
             >
               <FileTarget
                 tabIndex={readOnly ? undefined : 0}
-                shadow={1}
                 disabled={readOnly === true}
                 ref={this.setFocusElement}
                 onFiles={this.handleSelectFiles}
@@ -660,64 +640,25 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                 onFilesOut={this.handleFilesOut}
                 onFocus={this.handleFileTargetFocus}
                 onBlur={this.handleFileTargetBlur}
-                tone="transparent"
+                border
+                padding={5}
+                tone={value?._upload && value?.asset ? 'transparent' : 'default'}
+                style={cardBorder}
               >
-                <RatioBox ratio={3 / 2} padding={1}>
-                  <Flex align="center" justify="center">
-                    {value?._upload && this.renderUploadState(value._upload)}
-                    {!value?._upload && value?.asset && this.renderAsset()}
-                    {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
-                    {!value?._upload && !readOnly && hoveringFiles.length > 0 && (
-                      <Overlay>
-                        <DropMessage
-                          hoveringFiles={hoveringFiles}
-                          resolveUploader={resolveUploader}
-                          types={[type]}
-                        />
-                      </Overlay>
-                    )}
-                  </Flex>
-                </RatioBox>
+                {value?._upload && this.renderUploadState(value._upload)}
+                {!value?._upload && value?.asset && this.renderAsset()}
+                {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
+                {!value?._upload && !readOnly && hoveringFiles.length > 0 && (
+                  <Overlay>
+                    <DropMessage
+                      hoveringFiles={hoveringFiles}
+                      resolveUploader={resolveUploader}
+                      types={[type]}
+                    />
+                  </Overlay>
+                )}
               </FileTarget>
             </ChangeIndicatorForFieldPath>
-            <Grid
-              gap={1}
-              marginTop={3}
-              style={{gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))'}}
-            >
-              {!readOnly && directUploads && (
-                <FileInputButton
-                  icon={UploadIcon}
-                  mode="ghost"
-                  onSelect={this.handleSelectFiles}
-                  accept={accept}
-                  text="Upload"
-                  data-testid="image-input-upload-button"
-                />
-              )}
-
-              {!readOnly && this.renderSelectImageButton()}
-
-              {showAdvancedEditButton && (
-                <Button
-                  icon={readOnly ? EyeOpenIcon : EditIcon}
-                  mode="ghost"
-                  onClick={this.handleOpenDialog}
-                  text={readOnly ? 'View details' : 'Edit details'}
-                />
-              )}
-
-              {value?.asset && !readOnly && (
-                <Button
-                  tone="critical"
-                  mode="ghost"
-                  icon={TrashIcon}
-                  onClick={this.handleRemoveButtonClick}
-                  text="Remove"
-                  data-testid="image-input-remove-button"
-                />
-              )}
-            </Grid>
           </div>
 
           {this.renderFields(fieldGroups.highlighted)}

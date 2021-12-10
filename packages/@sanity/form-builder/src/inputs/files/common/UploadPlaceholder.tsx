@@ -1,49 +1,53 @@
-import React from 'react'
-import {ClipboardImageIcon, UploadIcon} from '@sanity/icons'
-import {Box, Flex, Heading, Text} from '@sanity/ui'
-import styled from 'styled-components'
-import {FileTarget} from './styles'
+import React, {MouseEventHandler} from 'react'
+import {UploadIcon, SearchIcon, BinaryDocumentIcon, ImageIcon} from '@sanity/icons'
+import {Flex, Text, Button, Inline, Stack} from '@sanity/ui'
+import {get} from 'lodash'
+import {FileInputButton} from '../common/FileInputButton/FileInputButton'
 
 type UploadPlaceholderProps = {
   fileType?: string
+  onUpload?: (files: File[]) => void
+  onBrowse?: MouseEventHandler<HTMLButtonElement>
 }
 
-const ClipboardBox = styled(Box)<{canPaste?: boolean}>`
-  opacity: 0.25;
-  ${FileTarget}:focus & {
-    opacity: 1;
-  }
-  transition-property: opacity;
-  transition-duration: 100ms;
-`
-
-export default React.memo(function UploadPlaceholder({fileType = 'file'}: UploadPlaceholderProps) {
+export default React.memo(function UploadImagePlaceholder({
+  fileType = 'file',
+  onBrowse,
+  onUpload,
+}: UploadPlaceholderProps) {
+  const accept = get(fileType, 'options.accept', 'image/*')
   return (
     <Flex height="fill" align="center" justify="center">
-      <Box marginX={2}>
-        <Box>
-          <Box>
-            <Heading align="center" size={5}>
-              <UploadIcon />
-            </Heading>
-          </Box>
-          <Box marginTop={4}>
-            <Text weight="bold">Drop {fileType}</Text>
-          </Box>
-        </Box>
-      </Box>
-      <ClipboardBox marginX={2}>
-        <Box>
-          <Box>
-            <Heading align="center" size={5}>
-              <ClipboardImageIcon />
-            </Heading>
-          </Box>
-          <Box marginTop={4}>
-            <Text weight="bold">Paste {fileType}</Text>
-          </Box>
-        </Box>
-      </ClipboardBox>
+      <Stack space={4}>
+        <Stack space={3}>
+          <Flex justify="center">
+            <Text muted>{fileType === 'file' ? <BinaryDocumentIcon /> : <ImageIcon />}</Text>
+          </Flex>
+          <Flex justify="center">
+            <Text size={1} muted>
+              Drag or paste {fileType} here
+            </Text>
+          </Flex>
+        </Stack>
+        <Inline space={2}>
+          <FileInputButton
+            icon={UploadIcon}
+            mode="ghost"
+            onSelect={onUpload}
+            accept={accept}
+            text="Upload"
+            data-testid="image-input-upload-button"
+          />
+          <Button
+            fontSize={2}
+            text="Browse"
+            icon={SearchIcon}
+            mode="ghost"
+            onClick={onBrowse}
+            data-testid="image-input-select-button"
+          />
+        </Inline>
+      </Stack>
     </Flex>
   )
 })
