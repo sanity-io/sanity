@@ -48,7 +48,7 @@ import {PresenceOverlay, FormFieldPresence} from '@sanity/base/presence'
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
 import {Uploader, UploaderResolver, UploadOptions} from '../../../sanity/uploads/types'
 import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
-import UploadPlaceholder from '../common/UploadPlaceholder'
+import UploadFilePlaceholder from '../common/UploadFilePlaceholder'
 import {FileInputButton} from '../common/FileInputButton/FileInputButton'
 import {FileTarget, FileInfo, Overlay} from '../common/styles'
 import {InternalAssetSource, UploadState} from '../types'
@@ -87,6 +87,8 @@ export type Props = {
   markers: Marker[]
   presence: FormFieldPresence[]
 }
+
+const cardBorder = {borderStyle: 'dashed'}
 
 const HIDDEN_FIELDS = ['asset']
 
@@ -290,7 +292,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     )
   }
 
-  renderSelectFileButton() {
+  renderBrowserFileButton() {
     const {assetSources} = this.props
     if (!assetSources?.length) {
       return null
@@ -322,12 +324,9 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
 
     // Single asset source (just a normal button)
     return (
-      <Button
-        icon={SearchIcon}
-        onClick={() => this.handleSelectFileFromAssetSource(assetSources[0])}
-        mode="ghost"
-        text="Select"
-        data-testid="file-input-select-button"
+      <UploadFilePlaceholder
+        onBrowse={() => this.handleSelectFileFromAssetSource(assetSources[0])}
+        onUpload={this.handleSelectFiles}
       />
     )
   }
@@ -490,7 +489,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
         This field is read-only
       </Text>
     ) : (
-      <UploadPlaceholder />
+      this.renderBrowserFileButton()
     )
   }
 
@@ -529,7 +528,6 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       type.fields.filter((field) => !HIDDEN_FIELDS.includes(field.name)),
       'type.options.isHighlighted'
     )
-    const accept = get(type, 'options.accept', '')
 
     // Whoever is present at the asset field is who we show on the field itself
     const assetFieldPresence = presence.filter((item) => item.path[0] === 'asset')
@@ -565,66 +563,26 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                   onFilesOut={this.handleFilesOut}
                   onFocus={this.handleFileTargetFocus}
                   onBlur={this.handleFileTargetBlur}
-                  tone="transparent"
+                  border
+                  padding={4}
+                  tone={value?._upload && value?.asset ? 'transparent' : 'default'}
+                  style={cardBorder}
                 >
-                  <AssetBackground>
-                    <Container padding={3} sizing="border" width={0}>
-                      {value?._upload && this.renderUploadState(value._upload)}
-                      {!value?._upload && value?.asset && this.renderAsset()}
-                      {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
-                      {!value?._upload && !readOnly && hoveringFiles.length > 0 && (
-                        <Overlay>
-                          <DropMessage
-                            hoveringFiles={hoveringFiles}
-                            resolveUploader={resolveUploader}
-                            types={[type]}
-                          />
-                        </Overlay>
-                      )}
-                    </Container>
-                  </AssetBackground>
+                  {value?._upload && this.renderUploadState(value._upload)}
+                  {!value?._upload && value?.asset && this.renderAsset()}
+                  {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
+                  {!value?._upload && !readOnly && hoveringFiles.length > 0 && (
+                    <Overlay>
+                      <DropMessage
+                        hoveringFiles={hoveringFiles}
+                        resolveUploader={resolveUploader}
+                        types={[type]}
+                      />
+                    </Overlay>
+                  )}
                 </FileTarget>
               </ChangeIndicatorWithProvidedFullPath>
             </ChangeIndicatorCompareValueProvider>
-
-            <Grid
-              gap={1}
-              marginTop={3}
-              style={{gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))'}}
-            >
-              {!readOnly && directUploads && (
-                <FileInputButton
-                  onSelect={this.handleSelectFiles}
-                  mode="ghost"
-                  icon={UploadIcon}
-                  accept={accept}
-                  text="Upload file"
-                  data-testid="file-input-upload-button"
-                />
-              )}
-
-              {!readOnly && this.renderSelectFileButton()}
-
-              {value && otherFields.length > 0 && (
-                <Button
-                  icon={readOnly ? EyeOpenIcon : EditIcon}
-                  mode="ghost"
-                  onClick={this.handleStartAdvancedEdit}
-                  text={readOnly ? 'View details' : 'Edit details'}
-                />
-              )}
-
-              {!readOnly && value?.asset && (
-                <Button
-                  icon={TrashIcon}
-                  mode="ghost"
-                  onClick={this.handleRemoveButtonClick}
-                  text="Remove file"
-                  tone="critical"
-                  data-testid="file-input-remove-button"
-                />
-              )}
-            </Grid>
           </div>
 
           {highlightedFields.length > 0 && this.renderFields(highlightedFields)}
