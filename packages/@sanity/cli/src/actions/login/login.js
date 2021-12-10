@@ -166,7 +166,7 @@ async function getProvider({output, client, sso, experimental, prompt}) {
 }
 
 async function getSSOProvider({client, prompt, slug}) {
-  const providers = await client.withConfig({apiVersion: 'X'}).request({
+  const providers = await client.withConfig({apiVersion: '2021-10-01'}).request({
     uri: `/auth/organizations/by-slug/${slug}/providers`,
   })
 
