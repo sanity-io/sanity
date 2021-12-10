@@ -292,45 +292,6 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     )
   }
 
-  renderBrowserFileButton() {
-    const {assetSources} = this.props
-    if (!assetSources?.length) {
-      return null
-    }
-    // If multiple asset sources render a dropdown
-    if (assetSources.length > 1) {
-      return (
-        <MenuButton
-          id={`${this._inputId}_assetFileButton`}
-          button={<Button mode="ghost" text="Select…" icon={SearchIcon} />}
-          data-testid="file-input-select-button"
-          menu={
-            <Menu>
-              {assetSources.map((assetSource) => {
-                return (
-                  <MenuItem
-                    key={assetSource.name}
-                    text={assetSource.title}
-                    onClick={() => this.handleSelectFileFromAssetSource(assetSource)}
-                    icon={assetSource.icon || ImageIcon}
-                  />
-                )
-              })}
-            </Menu>
-          }
-        />
-      )
-    }
-
-    // Single asset source (just a normal button)
-    return (
-      <UploadFilePlaceholder
-        onBrowse={() => this.handleSelectFileFromAssetSource(assetSources[0])}
-        onUpload={this.handleSelectFiles}
-      />
-    )
-  }
-
   renderAssetSource() {
     const {selectedAssetSource} = this.state
     const {value, materialize} = this.props
@@ -482,14 +443,42 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   renderUploadPlaceholder() {
-    const {readOnly} = this.props
+    const {assetSources, readOnly} = this.props
+    if (!assetSources?.length) {
+      return null
+    }
+    // If multiple asset sources render a dropdown
+    if (assetSources.length > 1 && !readOnly) {
+      return (
+        <MenuButton
+          id={`${this._inputId}_assetFileButton`}
+          button={<Button mode="ghost" text="Select…" icon={SearchIcon} />}
+          data-testid="file-input-select-button"
+          menu={
+            <Menu>
+              {assetSources.map((assetSource) => {
+                return (
+                  <MenuItem
+                    key={assetSource.name}
+                    text={assetSource.title}
+                    onClick={() => this.handleSelectFileFromAssetSource(assetSource)}
+                    icon={assetSource.icon || ImageIcon}
+                  />
+                )
+              })}
+            </Menu>
+          }
+        />
+      )
+    }
 
-    return readOnly ? (
-      <Text align="center" muted>
-        This field is read-only
-      </Text>
-    ) : (
-      this.renderBrowserFileButton()
+    // Single asset source (just a normal button)
+    return (
+      <UploadFilePlaceholder
+        onBrowse={() => this.handleSelectFileFromAssetSource(assetSources[0])}
+        onUpload={this.handleSelectFiles}
+        readOnly={readOnly}
+      />
     )
   }
 
@@ -567,6 +556,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                   padding={4}
                   tone={value?._upload && value?.asset ? 'transparent' : 'default'}
                   style={cardBorder}
+                  readOnly={readOnly}
                 >
                   {value?._upload && this.renderUploadState(value._upload)}
                   {!value?._upload && value?.asset && this.renderAsset()}
