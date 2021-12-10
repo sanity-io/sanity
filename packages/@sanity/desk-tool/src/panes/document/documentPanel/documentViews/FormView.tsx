@@ -197,6 +197,7 @@ export function FormView(props: FormViewProps) {
     ready,
     isReadOnly,
     value,
+    changesOpen,
   ])
 
   const after = useMemo(

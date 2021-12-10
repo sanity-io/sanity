@@ -1,7 +1,8 @@
-import React, {useCallback} from 'react'
+import React, {useCallback, useEffect} from 'react'
 import {ElementQuery, Select, TabList} from '@sanity/ui'
 import {FieldGroup} from '@sanity/types/src'
 import styled from 'styled-components'
+import {useReviewChanges} from '../../../sanity/contexts'
 import {GroupTab, GroupOption} from './Group'
 
 interface FieldGroupTabsProps {
@@ -10,6 +11,7 @@ interface FieldGroupTabsProps {
   title?: string
   selectedName?: string
   onClick?: (name: string) => void
+  disabled?: boolean
 }
 
 const Root = styled(ElementQuery)`
@@ -30,7 +32,7 @@ const Root = styled(ElementQuery)`
 `
 
 /* For medium to large screens, use TabList and Tab from Sanity UI  */
-const GroupTabs = ({inputId, groups, onClick, selectedName}: FieldGroupTabsProps) => (
+const GroupTabs = ({inputId, groups, onClick, selectedName, disabled}: FieldGroupTabsProps) => (
   <TabList space={2} data-testid="field-group-tabs">
     {groups
       .map((group) => {
@@ -44,9 +46,10 @@ const GroupTabs = ({inputId, groups, onClick, selectedName}: FieldGroupTabsProps
             key={`${inputId}-${group.name}-tab`}
             aria-controls={`${inputId}-field-group-fields`}
             onClick={onClick}
-            selected={selectedName === group.name}
+            selected={selectedName === group.name ?? group.default}
             autoFocus={selectedName === group.name}
             parent={groups}
+            disabled={disabled}
             {...restGroup}
           />
         )
@@ -56,12 +59,18 @@ const GroupTabs = ({inputId, groups, onClick, selectedName}: FieldGroupTabsProps
 )
 
 /* For small screens, use Select from Sanity UI  */
-const GroupSelect = ({groups, inputId, onClick, selectedName}: FieldGroupTabsProps) => {
+const GroupSelect = ({
+  groups,
+  inputId,
+  onSelect,
+  selectedName,
+  disabled,
+}: Omit<FieldGroupTabsProps, 'onClick'> & {onSelect: (name: string) => void}) => {
   const handleSelect = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
-      onClick(event.currentTarget.value)
+      onSelect(event.currentTarget.value)
     },
-    [onClick]
+    [onSelect]
   )
 
   return (
@@ -72,6 +81,8 @@ const GroupSelect = ({groups, inputId, onClick, selectedName}: FieldGroupTabsPro
       data-testid="field-group-select"
       aria-label="Field groups"
       autoFocus
+      disabled={disabled}
+      value={selectedName}
     >
       {groups.map((group) => {
         // Separate hidden in order to resolve it to a boolean type
@@ -95,11 +106,29 @@ const GroupSelect = ({groups, inputId, onClick, selectedName}: FieldGroupTabsPro
   )
 }
 
-export const FieldGroupTabs = React.memo(function FieldGroupTabs(props: FieldGroupTabsProps) {
+export const FieldGroupTabs = React.memo(function FieldGroupTabs({
+  onClick,
+  ...props
+}: FieldGroupTabsProps) {
+  const {changesOpen} = useReviewChanges()
+
+  const handleClick = useCallback(
+    (groupName) => {
+      onClick(groupName)
+    },
+    [onClick]
+  )
+
+  useEffect(() => {
+    if (changesOpen) {
+      handleClick('all-fields')
+    }
+  }, [changesOpen, handleClick])
+
   return (
     <Root data-testid="field-group-root">
-      <GroupTabs {...props} />
-      <GroupSelect {...props} />
+      <GroupTabs {...props} disabled={changesOpen} onClick={handleClick} />
+      <GroupSelect {...props} disabled={changesOpen} onSelect={handleClick} />
     </Root>
   )
 })

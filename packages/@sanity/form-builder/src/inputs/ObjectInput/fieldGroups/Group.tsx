@@ -9,13 +9,14 @@ interface GroupType extends FieldGroup {
   selected: boolean
   parent: unknown
   'aria-controls': string
+  disabled?: boolean
 }
 
 export const GroupTab = forwardRef(function GroupTab(
   props: GroupType,
   ref: React.Ref<HTMLButtonElement>
 ) {
-  const {name, title, ...rest} = props
+  const {name, title} = props
   // Separate props for resolving conditional hidden groups
   const {onClick, parent, hidden, ...group} = props
 
@@ -37,7 +38,7 @@ export const GroupTab = forwardRef(function GroupTab(
 
   return (
     <Tab
-      data-testid={`group-${name}`}
+      data-testid={`group-tab-${name}`}
       size={1}
       id={`${name}-tab`}
       label={title || name}
@@ -68,7 +69,7 @@ export const GroupOption = (props: Omit<GroupType, 'onClick' | 'autofocus'>) => 
       value={name}
       id={`${name}-tab`}
       aria-controls={rest['aria-controls']}
-      data-testid={`group-${name}`}
+      data-testid={`group-select-${name}`}
       aria-selected={selected ? 'true' : 'false'}
     >
       {title || name}

@@ -41,7 +41,6 @@ interface FormBuilderInputProps {
   filterField?: (type: ObjectSchemaTypeWithOptions, field: ObjectField) => boolean
   onKeyUp?: (ev: React.KeyboardEvent) => void
   onKeyPress?: (ev: React.KeyboardEvent) => void
-  changesOpen?: boolean
 }
 
 interface Context {
