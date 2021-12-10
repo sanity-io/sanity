@@ -63,8 +63,6 @@ export type Props = {
   presence: FormFieldPresence[]
 }
 
-const cardBorder = {borderStyle: 'dashed'}
-
 const getDevicePixelRatio = () => {
   if (typeof window === 'undefined' || !window.devicePixelRatio) {
     return 1
@@ -446,35 +444,12 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderUploadPlaceholder() {
-    const {readOnly} = this.props
-    return readOnly ? (
-      <Text align="center" muted>
-        This field is read-only
-      </Text>
-    ) : (
-      this.renderBrowserImageButton()
-    )
-  }
-
-  renderUploadState(uploadState: UploadState) {
-    const {isUploading} = this.state
-
-    return (
-      <UploadProgress
-        uploadState={uploadState}
-        onCancel={isUploading ? this.handleCancelUpload : undefined}
-        onClearStale={this.handleClearUploadState}
-      />
-    )
-  }
-
-  renderBrowserImageButton() {
-    const {assetSources} = this.props
+    const {assetSources, readOnly} = this.props
     if (!assetSources?.length) {
       return null
     }
     // If multiple asset sources render a dropdown
-    if (assetSources.length > 1) {
+    if (assetSources.length > 1 && !readOnly) {
       return (
         <MenuButton
           id={`${this._inputId}_assetImageButton`}
@@ -501,8 +476,21 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     // Single asset source (just a normal button)
     return (
       <UploadImagePlaceholder
+        readOnly={readOnly}
         onBrowse={() => this.handleSelectImageFromAssetSource(assetSources[0])}
         onUpload={this.handleSelectFiles}
+      />
+    )
+  }
+
+  renderUploadState(uploadState: UploadState) {
+    const {isUploading} = this.state
+
+    return (
+      <UploadProgress
+        uploadState={uploadState}
+        onCancel={isUploading ? this.handleCancelUpload : undefined}
+        onClearStale={this.handleClearUploadState}
       />
     )
   }
@@ -645,9 +633,9 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                 onFocus={this.handleFileTargetFocus}
                 onBlur={this.handleFileTargetBlur}
                 border
+                readOnly={readOnly}
                 padding={5}
                 tone={value?._upload && value?.asset ? 'transparent' : 'default'}
-                style={cardBorder}
               >
                 {value?._upload && this.renderUploadState(value._upload)}
                 {!value?._upload && value?.asset && this.renderAsset()}
