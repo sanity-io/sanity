@@ -3,9 +3,9 @@ import path from 'path'
 import fse from 'fs-extra'
 import simpleGet from 'simple-get'
 
-const version = '1.22.10'
+const version = '1.22.17'
 const baseUrl = 'https://github.com/yarnpkg/yarn/releases/download'
-const bundleUrl = `${baseUrl}/v${version}/yarn-legacy-${version}.js`
+const bundleUrl = `${baseUrl}/v${version}/yarn-${version}.js`
 const licenseUrl = 'https://raw.githubusercontent.com/yarnpkg/yarn/master/LICENSE'
 const destination = path.join(__dirname, '..', '..', 'vendor', 'yarn')
 const writeFlags = {encoding: 'utf8', mode: 0o755}
