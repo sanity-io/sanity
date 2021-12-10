@@ -446,17 +446,13 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderUploadPlaceholder() {
-    const {readOnly, assetSources} = this.props
+    const {readOnly} = this.props
     return readOnly ? (
       <Text align="center" muted>
         This field is read-only
       </Text>
     ) : (
-      <UploadPlaceholder
-        fileType="image"
-        onBrowse={() => this.handleSelectImageFromAssetSource(assetSources[0])}
-        onUpload={this.handleSelectFiles}
-      />
+      this.renderBrowserImageButton()
     )
   }
 
@@ -472,7 +468,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     )
   }
 
-  renderSelectImageButton() {
+  renderBrowserImageButton() {
     const {assetSources} = this.props
     if (!assetSources?.length) {
       return null
@@ -501,6 +497,13 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         />
       )
     }
+    return (
+      <UploadPlaceholder
+        fileType="image"
+        onBrowse={() => this.handleSelectImageFromAssetSource(assetSources[0])}
+        onUpload={this.handleSelectFiles}
+      />
+    )
   }
 
   renderAssetSource() {
