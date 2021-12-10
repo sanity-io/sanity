@@ -14,6 +14,7 @@ export default async function login(args, context) {
 
   // _Potentially_ already authed client
   const authedClient = apiClient({requireUser: false, requireProject: false})
+  const hasExistingToken = Boolean(authedClient.config().token)
 
   // Explicitly tell _this_ client not to use a token
   const client = authedClient.clone().config({token: undefined})
@@ -64,6 +65,16 @@ export default async function login(args, context) {
     authToken: authToken,
     authType: 'normal',
   })
+
+  // If we had a session previously, attempt to clear it
+  if (hasExistingToken) {
+    await authedClient.request({uri: '/auth/logout', method: 'POST'}).catch((err) => {
+      const statusCode = err && err.response && err.response.statusCode
+      if (statusCode !== 401) {
+        output.warn('[warn] Failed to log out existing session')
+      }
+    })
+  }
 
   output.print(chalk.green('Login successful'))
 }
