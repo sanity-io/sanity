@@ -501,7 +501,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     // Single asset source (just a normal button)
     return (
       <UploadImagePlaceholder
-        fileType="image"
         onBrowse={() => this.handleSelectImageFromAssetSource(assetSources[0])}
         onUpload={this.handleSelectFiles}
       />
