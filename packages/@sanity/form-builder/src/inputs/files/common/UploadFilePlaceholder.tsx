@@ -24,18 +24,14 @@ export default React.memo(function UploadImagePlaceholder({
       direction={['column-reverse', 'column-reverse', 'row']}
       paddingY={[0, 2, 2]}
     >
-      <Inline space={2}>
-        <Flex justify="center">
-          <Text muted>
-            <Text muted>{readOnly ? <ReadOnlyIcon /> : <BinaryDocumentIcon />}</Text>
-          </Text>
-        </Flex>
-        <Flex justify="center">
-          <Text size={1} muted>
-            {readOnly ? 'Read only' : 'Drag or paste file here'}
-          </Text>
-        </Flex>
-      </Inline>
+      <Flex align="center" justify="center" gap={2} flex={1}>
+        <Text size={1} muted>
+          {readOnly ? <ReadOnlyIcon /> : <BinaryDocumentIcon />}
+        </Text>
+        <Text size={1} muted>
+          {readOnly ? 'Read only' : 'Drag or paste file here'}
+        </Text>
+      </Flex>
       <Inline space={2}>
         <FileInputButton
           icon={UploadIcon}
