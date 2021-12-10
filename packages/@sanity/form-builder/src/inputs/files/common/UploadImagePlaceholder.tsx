@@ -1,31 +1,31 @@
 import React, {MouseEventHandler} from 'react'
-import {UploadIcon, SearchIcon, BinaryDocumentIcon, ImageIcon} from '@sanity/icons'
+import {UploadIcon, SearchIcon, ImageIcon} from '@sanity/icons'
 import {Flex, Text, Button, Inline, Stack} from '@sanity/ui'
 import {get} from 'lodash'
 import {FileInputButton} from '../common/FileInputButton/FileInputButton'
 
 type UploadPlaceholderProps = {
-  fileType?: string
   onUpload?: (files: File[]) => void
   onBrowse?: MouseEventHandler<HTMLButtonElement>
 }
 
 export default React.memo(function UploadImagePlaceholder({
-  fileType = 'file',
   onBrowse,
   onUpload,
 }: UploadPlaceholderProps) {
-  const accept = get(fileType, 'options.accept', 'image/*')
+  const accept = get('image', 'options.accept', 'image/*')
   return (
     <Flex height="fill" align="center" justify="center">
       <Stack space={4}>
         <Stack space={3}>
           <Flex justify="center">
-            <Text muted>{fileType === 'file' ? <BinaryDocumentIcon /> : <ImageIcon />}</Text>
+            <Text muted>
+              <ImageIcon />
+            </Text>
           </Flex>
           <Flex justify="center">
             <Text size={1} muted>
-              Drag or paste {fileType} here
+              Drag or paste image here
             </Text>
           </Flex>
         </Stack>
