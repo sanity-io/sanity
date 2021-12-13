@@ -2,7 +2,6 @@
 
 import path from 'path'
 import type {BuildConfig} from '@sanity/types'
-// @ts-ignore This may not yet be built.
 import {DevServerOptions, startDevServer} from '@sanity/server'
 import {getTimer} from '../../util/timing'
 import type {CliCommandArguments, CliCommandContext} from '../../types'
@@ -72,7 +71,7 @@ function getDevServerConfig({
     3333
   )
 
-  const basePath = env.SANITY_STUDIO_BASEPATH || buildConfig?.project?.basePath
+  const basePath = env.SANITY_STUDIO_BASEPATH || buildConfig?.project?.basePath || '/'
 
   return {
     cwd: workDir,

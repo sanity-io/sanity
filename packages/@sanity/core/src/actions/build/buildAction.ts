@@ -2,8 +2,6 @@ import path from 'path'
 import {promisify} from 'util'
 import chalk from 'chalk'
 import rimrafCallback from 'rimraf'
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
 import {buildStaticFiles, ChunkModule, ChunkStats} from '@sanity/server'
 import type {CliCommandArguments, CliCommandContext} from '../../types'
 import checkStudioDependencyVersions from '../../util/checkStudioDependencyVersions'
@@ -25,7 +23,7 @@ export default async function buildSanityStudio(
   context: CliCommandContext
 ): Promise<{didCompile: boolean}> {
   const timer = getTimer()
-  const {output, prompt, workDir} = context
+  const {output, prompt, workDir, buildConfig} = context
   const flags: BuildSanityStudioCommandFlags = {
     minify: true,
     stats: false,
@@ -80,7 +78,8 @@ export default async function buildSanityStudio(
     timer.start('bundleStudio')
     const bundle = await buildStaticFiles({
       cwd: workDir,
-      outDir: outputDir,
+      outputDir,
+      basePath: buildConfig?.project?.basePath || '/',
       sourceMap: Boolean(flags['source-maps']),
       minify: Boolean(flags.minify),
     })
