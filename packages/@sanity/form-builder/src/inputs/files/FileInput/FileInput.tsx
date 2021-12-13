@@ -55,6 +55,7 @@ import {InternalAssetSource, UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
 import {DropMessage} from '../common/DropMessage'
 import {handleSelectAssetFromSource} from '../common/assetSource'
+import resolveUploader from '../../../sanity/uploads/resolveUploader'
 import {AssetBackground} from './styles'
 import {FileInputField} from './FileInputField'
 
@@ -443,10 +444,15 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   renderUploadPlaceholder() {
-    const {assetSources, readOnly} = this.props
+    const {assetSources, readOnly, type} = this.props
+    const {hoveringFiles} = this.state
     if (!assetSources?.length) {
       return null
     }
+
+    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
+    const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
+
     // If multiple asset sources render a dropdown
     if (assetSources.length > 1 && !readOnly) {
       return (
@@ -478,6 +484,10 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
         onBrowse={() => this.handleSelectFileFromAssetSource(assetSources[0])}
         onUpload={this.handleSelectFiles}
         readOnly={readOnly}
+        hoveringFiles={hoveringFiles}
+        acceptedFiles={acceptedFiles}
+        rejectedFilesCount={rejectedFilesCount}
+        type="file"
       />
     )
   }
@@ -521,6 +531,22 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     // Whoever is present at the asset field is who we show on the field itself
     const assetFieldPresence = presence.filter((item) => item.path[0] === 'asset')
 
+    function getFileTone() {
+      const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
+      const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
+
+      if (hoveringFiles) {
+        if (rejectedFilesCount > 0) {
+          return 'critical'
+        }
+      }
+
+      if (!value?._upload && !readOnly && hoveringFiles.length > 0) {
+        return 'primary'
+      }
+      return value?._upload && value?.asset ? 'transparent' : 'default'
+    }
+
     return (
       <>
         <ImperativeToast ref={this.setToast} />
@@ -554,22 +580,13 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                   onBlur={this.handleFileTargetBlur}
                   border
                   padding={4}
-                  tone={value?._upload && value?.asset ? 'transparent' : 'default'}
+                  tone={getFileTone()}
                   style={cardBorder}
                   readOnly={readOnly}
                 >
                   {value?._upload && this.renderUploadState(value._upload)}
                   {!value?._upload && value?.asset && this.renderAsset()}
                   {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
-                  {!value?._upload && !readOnly && hoveringFiles.length > 0 && (
-                    <Overlay>
-                      <DropMessage
-                        hoveringFiles={hoveringFiles}
-                        resolveUploader={resolveUploader}
-                        types={[type]}
-                      />
-                    </Overlay>
-                  )}
                 </FileTarget>
               </ChangeIndicatorWithProvidedFullPath>
             </ChangeIndicatorCompareValueProvider>

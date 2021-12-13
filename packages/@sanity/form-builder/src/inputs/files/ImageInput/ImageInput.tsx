@@ -487,7 +487,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         hoveringFiles={hoveringFiles}
         acceptedFiles={acceptedFiles}
         rejectedFilesCount={rejectedFilesCount}
-        types={[type]}
+        type="image"
       />
     )
   }
