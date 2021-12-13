@@ -2,7 +2,6 @@ import React, {MouseEventHandler} from 'react'
 import {UploadIcon, SearchIcon} from '@sanity/icons'
 import {Flex, Button, Inline, Stack} from '@sanity/ui'
 import {get} from 'lodash'
-import {SchemaType} from '@sanity/types'
 import {FileInputButton} from '../common/FileInputButton/FileInputButton'
 import {FileLike, UploaderResolver} from '../../../sanity/uploads/types'
 import {PlaceholderText} from './PlaceholderText'
@@ -11,7 +10,7 @@ type UploadPlaceholderProps = {
   onUpload?: (files: File[]) => void
   onBrowse?: MouseEventHandler<HTMLButtonElement>
   readOnly?: boolean | null
-  types: SchemaType[]
+  type: string
   hoveringFiles: FileLike[]
 
   acceptedFiles: FileLike[]
@@ -25,19 +24,21 @@ export default React.memo(function UploadImagePlaceholder({
   hoveringFiles,
   acceptedFiles,
   rejectedFilesCount,
-  types,
+  type,
 }: UploadPlaceholderProps) {
   const accept = get('image', 'options.accept', 'image/*')
   return (
     <Flex height="fill" align="center" justify="center">
       <Stack space={4}>
-        <PlaceholderText
-          readOnly={readOnly}
-          hoveringFiles={hoveringFiles}
-          acceptedFiles={acceptedFiles}
-          rejectedFilesCount={rejectedFilesCount}
-          types={types}
-        />
+        <Stack space={3}>
+          <PlaceholderText
+            readOnly={readOnly}
+            hoveringFiles={hoveringFiles}
+            acceptedFiles={acceptedFiles}
+            rejectedFilesCount={rejectedFilesCount}
+            type={type}
+          />
+        </Stack>
         <Inline space={2}>
           <FileInputButton
             icon={UploadIcon}
