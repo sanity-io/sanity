@@ -1,34 +1,43 @@
 import React, {MouseEventHandler} from 'react'
-import {UploadIcon, SearchIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
-import {Flex, Text, Button, Inline, Stack} from '@sanity/ui'
+import {UploadIcon, SearchIcon} from '@sanity/icons'
+import {Flex, Button, Inline, Stack} from '@sanity/ui'
 import {get} from 'lodash'
+import {SchemaType} from '@sanity/types'
 import {FileInputButton} from '../common/FileInputButton/FileInputButton'
+import {FileLike, UploaderResolver} from '../../../sanity/uploads/types'
+import {PlaceholderText} from './PlaceholderText'
 
 type UploadPlaceholderProps = {
   onUpload?: (files: File[]) => void
   onBrowse?: MouseEventHandler<HTMLButtonElement>
   readOnly?: boolean | null
+  types: SchemaType[]
+  hoveringFiles: FileLike[]
+
+  acceptedFiles: FileLike[]
+  rejectedFilesCount: number
 }
 
 export default React.memo(function UploadImagePlaceholder({
   onBrowse,
   onUpload,
   readOnly,
+  hoveringFiles,
+  acceptedFiles,
+  rejectedFilesCount,
+  types,
 }: UploadPlaceholderProps) {
   const accept = get('image', 'options.accept', 'image/*')
   return (
     <Flex height="fill" align="center" justify="center">
       <Stack space={4}>
-        <Stack space={3}>
-          <Flex justify="center">
-            <Text muted>{readOnly ? <ReadOnlyIcon /> : <ImageIcon />}</Text>
-          </Flex>
-          <Flex justify="center">
-            <Text size={1} muted>
-              {readOnly ? 'Read only' : 'Drag or paste image here'}
-            </Text>
-          </Flex>
-        </Stack>
+        <PlaceholderText
+          readOnly={readOnly}
+          hoveringFiles={hoveringFiles}
+          acceptedFiles={acceptedFiles}
+          rejectedFilesCount={rejectedFilesCount}
+          types={types}
+        />
         <Inline space={2}>
           <FileInputButton
             icon={UploadIcon}
