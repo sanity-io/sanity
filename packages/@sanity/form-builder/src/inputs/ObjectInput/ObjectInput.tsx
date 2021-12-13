@@ -1,4 +1,4 @@
-import React, {ForwardedRef, forwardRef, memo, useCallback, useEffect, useState} from 'react'
+import React, {ForwardedRef, forwardRef, memo, useCallback, useState} from 'react'
 import {
   Marker,
   MultiFieldSet,
@@ -12,15 +12,13 @@ import {
 } from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {FormFieldSet} from '@sanity/base/components'
-import {Card, Grid, TabList} from '@sanity/ui'
+import {Card, Grid} from '@sanity/ui'
 import {castArray, find, defaultTo} from 'lodash'
 import {useId} from '@reach/auto-id'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import {applyAll} from '../../patch/applyPatch'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {ConditionalReadOnlyField} from '../common/ConditionalReadOnlyField'
-import {ConditionalHiddenGroup} from '../common/ConditionalHiddenGroup'
-import {usePrevious} from '../../hooks/usePrevious'
 import {ObjectInputField} from './ObjectInputField'
 import {UnknownFields} from './UnknownFields'
 import {ObjectFieldSet} from './ObjectFieldSet'
