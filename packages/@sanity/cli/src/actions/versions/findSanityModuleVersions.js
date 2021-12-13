@@ -1,5 +1,4 @@
 import path from 'path'
-import {values} from 'lodash'
 import promiseProps from 'promise-props-recursive'
 import semverCompare from 'semver-compare'
 import getLatestVersion from 'get-latest-version'
@@ -8,39 +7,49 @@ import getLocalVersion from '../../util/getLocalVersion'
 import pkg from '../../../package.json'
 
 /*
- * Some packages can introduce errors when updating. For example with Sanity UI
- * we are at the moment dependant upon the version of @sanity/ui that
- * @sanity/base imports to be the only version used since all imports of UI
- * need to use the same context.
+ * The `sanity upgrade` command should only be responsible for upgrading the
+ * _studio_ related dependencies. Modules like @sanity/block-content-to-react
+ * shouldn't be upgraded using the same tag/range as the other studio modules.
  *
- * Put them in this array to make sure the upgrade script doesn't upgrade
- * them.
+ * We don't have a guaranteed list of the "studio modules", so instead we
+ * explicitly exclude certain modules from being upgraded.
  */
-const PACKAGES_TO_EXCLUDE = ['@sanity/ui']
+const PACKAGES_TO_EXCLUDE = [
+  '@sanity/ui',
+  '@sanity/icons',
+  '@sanity/logos',
+  '@sanity/block-content-to-react',
+  '@sanity/block-content-to-html',
+  '@sanity/block-tools',
+]
 
 const defaultOptions = {
   includeCli: true,
 }
 
-export default async (context, target, opts = {}) => {
+export default async function findSanityModuleVersions(context, opts = {}) {
   const {spinner} = context.output
-  const options = Object.assign({}, defaultOptions, opts)
+  const options = {...defaultOptions, ...opts}
+  const {target, includeCli} = options
 
+  // Declared @sanity modules and their wanted version ranges in package.json
   const sanityModules = filterSanityModules(getLocalManifest(context.workDir))
-  const resolveOpts = {includeCli: options.includeCli, target}
+
+  // Figure out the latest versions which match the wanted range
+  const resolveOpts = {includeCli, target}
   const spin = spinner('Resolving latest versions').start()
   const versions = await promiseProps(
     buildPackageArray(sanityModules, context.workDir, resolveOpts)
   )
 
-  const packages = values(versions)
+  const packages = Object.values(versions)
   spin.stop()
 
   return packages.map((mod) => {
     mod.needsUpdate =
       target === 'latest'
         ? semverCompare(mod.version, mod.latest) === -1
-        : mod.version !== mod.latest
+        : mod.installed !== mod.latestInRange
     return mod
   })
 }
@@ -54,46 +63,58 @@ function getLocalManifest(workDir) {
 }
 
 function filterSanityModules(manifest) {
-  const dependencies = Object.assign(
-    {},
-    manifest.dependencies || {},
-    manifest.devDependencies || {}
-  )
+  const dependencies = {
+    ...manifest.dependencies,
+    ...manifest.devDependencies,
+  }
 
-  const sanityDeps = Object.keys(dependencies)
-    .filter((mod) => mod.indexOf('@sanity/') === 0)
+  return Object.keys(dependencies)
+    .filter((mod) => mod.startsWith('@sanity/'))
     .filter((mod) => !PACKAGES_TO_EXCLUDE.includes(mod))
     .sort()
-
-  return sanityDeps.reduce((versions, dependency) => {
-    const version = dependencies[dependency]
-    versions[dependency] = version.indexOf('^') === 0 ? 'latest' : version
-    return versions
-  }, {})
+    .reduce((versions, dependency) => {
+      versions[dependency] = dependencies[dependency]
+      return versions
+    }, {})
 }
 
 function buildPackageArray(packages, workDir, options = {}) {
   const {includeCli, target} = options
 
-  const initial = []
+  const modules = []
   if (includeCli) {
-    initial.push({
+    const [cliMajor] = pkg.version.split('.')
+    const latest = tryFindLatestVersion(pkg.name, target || `^${cliMajor}`)
+    modules.push({
       name: pkg.name,
-      version: pkg.version,
-      latest: tryFindLatestVersion(pkg.name, target),
+      installed: pkg.version,
+      latest: latest.then((versions) => versions.latest),
+      latestInRange: latest.then((versions) => versions.latestInRange),
+      isPinned: false,
     })
   }
 
-  return Object.keys(packages).reduce((result, pkgName) => {
-    result.push({
-      name: pkgName,
-      version: getLocalVersion(pkgName, workDir) || '???',
-      latest: tryFindLatestVersion(pkgName, target),
-    })
-    return result
-  }, initial)
+  return [
+    ...modules,
+    ...Object.keys(packages).map((pkgName) => {
+      const latest = tryFindLatestVersion(pkgName, target || packages[pkgName] || 'latest')
+      return {
+        name: pkgName,
+        installed: getLocalVersion(pkgName, workDir) || '<missing>',
+        latest: latest.then((versions) => versions.latest),
+        latestInRange: latest.then((versions) => versions.latestInRange),
+        isPinned: isPinnedVersion(packages[pkgName]),
+      }
+    }),
+  ]
 }
 
-function tryFindLatestVersion(pkgName, range = 'latest') {
-  return getLatestVersion(pkgName, range).catch(() => 'unknown')
+function tryFindLatestVersion(pkgName, range) {
+  return getLatestVersion(pkgName, {range, includeLatest: true})
+    .then(({latest, inRange}) => ({latest, latestInRange: inRange}))
+    .catch(() => ({latest: 'unknown', latestInRange: 'unknown'}))
+}
+
+function isPinnedVersion(version) {
+  return /^\d+\.\d+\.\d+/.test(version)
 }

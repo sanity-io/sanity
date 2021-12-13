@@ -107,7 +107,7 @@ async function gatherInfo(context) {
     Object.assign(
       {
         project: gatherProjectInfo(context, baseInfo),
-        versions: findSanityModuleVersions(context),
+        versions: findSanityModuleVersions(context, {target: 'latest'}),
       },
       baseInfo
     )
