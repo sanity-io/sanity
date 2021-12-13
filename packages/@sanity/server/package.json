@@ -3,7 +3,7 @@
   "version": "2.29.5",
   "description": "Webserver dedicated to serving Sanity, allowing a smooth development experience",
   "main": "lib/index.js",
-  "types": "dist/dts/index.d.ts",
+  "types": "lib/dts/index.d.ts",
   "scripts": {
     "build": "../../../bin/pkg-utils transpile --target node",
     "clean": "rimraf lib dest",
