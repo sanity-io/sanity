@@ -84,6 +84,7 @@ export const PaneHeader = forwardRef(function PaneHeader(
                 paddingRight={2}
                 paddingBottom={2}
                 paddingLeft={3}
+                overflow="auto"
               >
                 <TabsBox flex={1} marginRight={subActions ? 3 : 0}>
                   <div>{tabs}</div>
