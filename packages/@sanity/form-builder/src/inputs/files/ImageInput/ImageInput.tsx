@@ -444,10 +444,15 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderUploadPlaceholder() {
-    const {assetSources, readOnly} = this.props
+    const {assetSources, readOnly, resolveUploader, type} = this.props
+    const {hoveringFiles} = this.state
     if (!assetSources?.length) {
       return null
     }
+
+    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
+    const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
+
     // If multiple asset sources render a dropdown
     if (assetSources.length > 1 && !readOnly) {
       return (
@@ -479,6 +484,10 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         readOnly={readOnly}
         onBrowse={() => this.handleSelectImageFromAssetSource(assetSources[0])}
         onUpload={this.handleSelectFiles}
+        hoveringFiles={hoveringFiles}
+        acceptedFiles={acceptedFiles}
+        rejectedFilesCount={rejectedFilesCount}
+        types={[type]}
       />
     )
   }
@@ -584,8 +593,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     } = this.props
     const {hoveringFiles, selectedAssetSource} = this.state
 
-    const accept = get(type, 'options.accept', 'image/*')
-
     const fieldGroups = this.getGroupedFields(type)
 
     // Get presence items for people who are either at the asset field, or at fields shown behind the dialog
@@ -600,6 +607,22 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     const isDialogOpen =
       focusPath.length > 0 &&
       fieldGroups.dialog.concat(fieldGroups.imagetool).some((field) => focusPath[0] === field.name)
+
+    function getFileTone() {
+      const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
+      const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
+
+      if (hoveringFiles) {
+        if (rejectedFilesCount > 0) {
+          return 'critical'
+        }
+      }
+
+      if (!value?._upload && !readOnly && hoveringFiles.length > 0) {
+        return 'primary'
+      }
+      return value?._upload && value?.asset ? 'transparent' : 'default'
+    }
 
     return (
       <>
@@ -635,20 +658,11 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                 border
                 readOnly={readOnly}
                 padding={5}
-                tone={value?._upload && value?.asset ? 'transparent' : 'default'}
+                tone={getFileTone()}
               >
                 {value?._upload && this.renderUploadState(value._upload)}
                 {!value?._upload && value?.asset && this.renderAsset()}
                 {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
-                {!value?._upload && !readOnly && hoveringFiles.length > 0 && (
-                  <Overlay>
-                    <DropMessage
-                      hoveringFiles={hoveringFiles}
-                      resolveUploader={resolveUploader}
-                      types={[type]}
-                    />
-                  </Overlay>
-                )}
               </FileTarget>
             </ChangeIndicatorForFieldPath>
           </div>
