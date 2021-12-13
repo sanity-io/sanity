@@ -1,19 +1,18 @@
 import path from 'path'
 import {readFile} from 'fs/promises'
 import {promisify} from 'util'
-import viteReact from '@vitejs/plugin-react'
 import chalk from 'chalk'
 import express from 'express'
 import {createServer} from 'vite'
-import {getAliases} from './getAliases'
+import {getViteConfig} from './getViteConfig'
 
 export interface DevServerOptions {
   cwd: string
+  basePath: string
   staticPath: string
 
   httpPort: number
   httpHost: string
-  basePath?: string
   projectName?: string
 }
 
@@ -22,27 +21,21 @@ export interface DevServer {
 }
 
 export async function startDevServer(options: DevServerOptions): Promise<DevServer> {
-  const {cwd, httpPort, httpHost, basePath = '', staticPath} = options
+  const {cwd, httpPort, httpHost, basePath: base, staticPath} = options
   const startTime = performance.now()
-  const app = express()
-  const staticBasePath = basePath ? `${basePath.replace(/\/+$/, '')}/static` : '/static'
 
-  const vite = await createServer({
-    build: {
-      outDir: path.resolve(cwd, 'public'),
-    },
-    configFile: false,
+  const viteConfig = await getViteConfig({
+    basePath: base || '/',
+    cwd,
     mode: 'development',
-    plugins: [viteReact({})],
-    envPrefix: 'SANITY_STUDIO_',
-    root: cwd,
-    server: {middlewareMode: 'ssr'},
-    resolve: {
-      alias: await getAliases(cwd),
-    },
   })
 
+  const basePath = viteConfig.base
+  const staticBasePath = `${basePath}static`
+
+  const vite = await createServer(viteConfig)
   const info = vite.config.logger.info
+  const app = express()
 
   // Use vite's connect instance as middleware
   app.use(vite.middlewares)
@@ -57,6 +50,12 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     // Static requests for files that does not exist should give 404
     if (url.startsWith(staticBasePath)) {
       res.status(404).send('File not found')
+      return
+    }
+
+    // If the user has defined a base path, make sure we redirect to it
+    if (!url.startsWith(basePath) && url === '/') {
+      res.redirect(302, basePath)
       return
     }
 

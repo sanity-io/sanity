@@ -1,7 +1,6 @@
 import path from 'path'
-import viteReact from '@vitejs/plugin-react'
 import {build} from 'vite'
-import {getAliases} from './getAliases'
+import {getViteConfig} from './getViteConfig'
 
 export interface ChunkModule {
   name: string
@@ -14,7 +13,8 @@ export interface ChunkStats {
 }
 export interface StaticBuildOptions {
   cwd: string
-  outDir: string
+  basePath: string
+  outputDir: string
   minify?: boolean
   profile?: boolean
   sourceMap?: boolean
@@ -23,29 +23,20 @@ export interface StaticBuildOptions {
 export async function buildStaticFiles(
   options: StaticBuildOptions
 ): Promise<{chunks: ChunkStats[]}> {
-  const {cwd, outDir, profile, sourceMap = false, minify = true} = options
+  const {cwd, outputDir, sourceMap = false, minify = true, basePath} = options
 
-  const bundle = await build({
-    build: {
-      outDir,
-      assetsDir: 'static',
-      sourcemap: sourceMap,
-      minify: minify ? 'esbuild' : false,
-      emptyOutDir: false, // Rely on CLI to do this
-      rollupOptions: {
-        perf: profile,
-        input: {
-          main: path.resolve(__dirname, '../src/app/index.html'),
-        },
-      },
-    },
-    configFile: false,
-    logLevel: 'silent',
+  const viteConfig = await getViteConfig({
+    cwd,
+    basePath,
+    outputDir,
+    minify,
+    sourceMap,
     mode: 'production',
-    plugins: [viteReact()],
-    resolve: {alias: await getAliases(cwd)},
-    root: path.resolve(__dirname, '../src/app'),
   })
+
+  const bundle = await build(viteConfig)
+
+  // @todo copy files
 
   // For typescript only - this shouldn't ever be the case given we're not watching
   if (Array.isArray(bundle) || !('output' in bundle)) {
