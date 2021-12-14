@@ -1,24 +1,14 @@
-import {BinaryDocumentIcon, EllipsisVerticalIcon, ImageIcon} from '@sanity/icons'
-import React, {JSXElementConstructor, ReactElement, useCallback, useState} from 'react'
+import {BinaryDocumentIcon, EllipsisHorizontalIcon, EllipsisVerticalIcon} from '@sanity/icons'
+import React, {JSXElementConstructor, ReactElement} from 'react'
 import {FileAsset} from '@sanity/types'
 
-import {
-  Box,
-  Button,
-  Container,
-  Dialog,
-  Flex,
-  Grid,
-  Menu,
-  MenuButton,
-  MenuItem,
-  Stack,
-  Text,
-  Tooltip,
-  ToastParams,
-  Popover,
-  useClickOutside,
-} from '@sanity/ui'
+import styled from 'styled-components'
+
+import {Button, Flex, MenuButton, Text} from '@sanity/ui'
+
+const ButtonContainer = styled(Button)`
+  z-index: 100;
+`
 
 type Props = {
   children: ReactElement<any, string | JSXElementConstructor<any>>
@@ -47,10 +37,10 @@ export default function WithMaterializedReference(props: Props) {
       </Flex>
 
       <MenuButton
-        button={<EllipsisVerticalIcon />}
+        button={<ButtonContainer icon={EllipsisVerticalIcon} mode="bleed" />}
         id="menu-button-example"
         menu={children}
-        placement="right"
+        placement="left"
         popover={{portal: true}}
       />
     </Flex>
