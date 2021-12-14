@@ -15,9 +15,10 @@ import {Box} from '@sanity/ui'
 import PatchEvent from '../../../../PatchEvent'
 import {ArrayMember, ReferenceItemComponentType} from '../types'
 import {EMPTY_ARRAY} from '../../../../utils/empty'
-import {hasFocusWithinPath} from '../../../../utils/focusUtils'
+import {hasFocusAtPath, hasFocusWithinPath} from '../../../../utils/focusUtils'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
 import {EditPortal} from '../../../../EditPortal'
+import {useDidUpdate} from '../../../../hooks/useDidUpdate'
 import {getItemType, isEmpty} from './helpers'
 import {ItemForm} from './ItemForm'
 import {RowItem} from './RowItem'
@@ -65,6 +66,13 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayInputListItemProps)
 
   const hasFocusWithin = hasFocusWithinPath(props.focusPath, props.value)
   useScrollIntoViewOnFocusWithin(innerElementRef, hasFocusWithin)
+
+  useDidUpdate(hasFocusAtPath(props.focusPath, props.value), (hadFocus, hasFocus) => {
+    if (!hadFocus && hasFocus && innerElementRef.current) {
+      // Note: if editing an inline item, focus is handled by the item input itself and no ref is being set
+      innerElementRef.current.focus()
+    }
+  })
 
   const itemPath = useMemo(() => pathFor([itemKey ? {_key: itemKey} : index]), [index, itemKey])
 
