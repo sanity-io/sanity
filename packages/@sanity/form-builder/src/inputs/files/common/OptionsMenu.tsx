@@ -33,7 +33,7 @@ export function OptionsMenu(props: Props) {
         text="Upload"
         data-testid="file-input-upload-button"
         disabled={readOnly}
-        noBorder
+        fromMenu
       />
       <MenuItem icon={SearchIcon} text="Browse" onClick={onBrowse} disabled={readOnly} />
       <MenuDivider />
