@@ -59,6 +59,7 @@ import {UploadProgress} from '../common/UploadProgress'
 import {DropMessage} from '../common/DropMessage'
 import {handleSelectAssetFromSource} from '../common/assetSource'
 import resolveUploader from '../../../sanity/uploads/resolveUploader'
+import {OptionsMenu} from '../common/OptionsMenu'
 import {AssetBackground} from './styles'
 import {FileInputField} from './FileInputField'
 import FileContent from './FileContent'
@@ -398,50 +399,14 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       <WithMaterializedReference reference={value!.asset} materialize={materialize}>
         {(assetDocument: FileAsset) => (
           <FileContent assetDocument={assetDocument}>
-            <Menu>
-              <Box marginTop={2} marginBottom={1} marginLeft={2}>
-                <Text size={1} muted>
-                  Replace
-                </Text>
-              </Box>
-              <FileInputButton
-                icon={UploadIcon}
-                mode="ghost"
-                onSelect={this.handleSelectFiles}
-                accept={accept}
-                text="Upload"
-                data-testid="file-input-upload-button"
-                disabled={readOnly}
-                noBorder
-              />
-              <MenuItem
-                icon={SearchIcon}
-                text="Browse"
-                onClick={() => this.handleSelectFileFromAssetSource(assetSources[0])}
-              />
-              <MenuDivider />
-              <MenuItem
-                as="a"
-                icon={DownloadIcon}
-                text="Download file"
-                href={`${assetDocument.url}?dl`}
-              />
-              <MenuItem
-                icon={ClipboardIcon}
-                text="Copy URL"
-                onClick={() => {
-                  navigator.clipboard.writeText(assetDocument.url)
-                }}
-              />
-
-              <MenuDivider />
-              <MenuItem
-                tone="critical"
-                icon={ResetIcon}
-                text="Clear field"
-                onClick={this.handleRemoveButtonClick}
-              />
-            </Menu>
+            <OptionsMenu
+              onUpload={this.handleSelectFiles}
+              onBrowse={() => this.handleSelectFileFromAssetSource(assetSources[0])}
+              onReset={this.handleRemoveButtonClick}
+              assetDocument={assetDocument}
+              readOnly={readOnly}
+              accept={accept}
+            />
           </FileContent>
         )}
       </WithMaterializedReference>
