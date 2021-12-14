@@ -399,7 +399,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
         {(assetDocument: FileAsset) => (
           <FileContent assetDocument={assetDocument}>
             <Menu>
-              <Box marginTop={2} marginLeft={2}>
+              <Box marginTop={2} marginBottom={1} marginLeft={2}>
                 <Text size={1} muted>
                   Replace
                 </Text>
@@ -425,6 +425,13 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                 icon={DownloadIcon}
                 text="Download file"
                 href={`${assetDocument.url}?dl`}
+              />
+              <MenuItem
+                icon={ClipboardIcon}
+                text="Copy URL"
+                onClick={() => {
+                  navigator.clipboard.writeText(assetDocument.url)
+                }}
               />
 
               <MenuDivider />
