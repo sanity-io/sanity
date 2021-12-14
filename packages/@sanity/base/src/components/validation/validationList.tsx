@@ -38,6 +38,16 @@ export function ValidationList(props: ValidationListProps) {
     const fields = documentType && documentType.fields
     const field = fields && fields.find((curr) => curr.name === path[0])
 
+    if (field && field.type.jsonType === 'object' && path.length > 1) {
+      const subField = field.type.fields.find((curr) => curr.name === path[1])
+      const titlePaths = [
+        (field && field.type.title) || '',
+        (subField && subField.type.title) || '',
+      ]
+
+      return titlePaths.join(' > ')
+    }
+
     return (field && field.type.title) || ''
   }
 
