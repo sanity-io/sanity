@@ -280,11 +280,13 @@ export const ObjectInput = memo(
           }
         })
 
+        const fieldsetFields = fieldset.fields.filter(fieldGroupPredictive)
+
         return (
           <ObjectFieldSet
             key={`fieldset-${(fieldset as MultiFieldSet).name}`}
             data-testid={`fieldset-${(fieldset as MultiFieldSet).name}`}
-            fieldset={fieldset as MultiFieldSet}
+            fieldset={{...fieldset, fields: fieldsetFields} as MultiFieldSet}
             focusPath={focusPath}
             onFocus={onFocus}
             level={level + 1}
@@ -295,8 +297,7 @@ export const ObjectInput = memo(
           >
             {() =>
               // lazy render children
-              fieldset.fields
-                .filter(fieldGroupPredictive)
+              fieldsetFields
                 // eslint-disable-next-line max-nested-callbacks
                 .map((field, fieldIndex) =>
                   renderField(
