@@ -40,7 +40,6 @@ export default function WithMaterializedReference(props: Props) {
         button={<ButtonContainer icon={EllipsisVerticalIcon} mode="bleed" />}
         id="menu-button-example"
         menu={children}
-        placement="left"
         popover={{portal: true}}
       />
     </Flex>
