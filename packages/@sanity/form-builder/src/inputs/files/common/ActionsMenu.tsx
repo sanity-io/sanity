@@ -15,7 +15,7 @@ interface Props {
   accept: string
 }
 
-export function OptionsMenu(props: Props) {
+export function ActionsMenu(props: Props) {
   const {onUpload, onBrowse, onReset, readOnly, assetDocument, accept} = props
 
   return (

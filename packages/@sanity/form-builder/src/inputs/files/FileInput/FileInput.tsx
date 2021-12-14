@@ -59,7 +59,7 @@ import {UploadProgress} from '../common/UploadProgress'
 import {DropMessage} from '../common/DropMessage'
 import {handleSelectAssetFromSource} from '../common/assetSource'
 import resolveUploader from '../../../sanity/uploads/resolveUploader'
-import {OptionsMenu} from '../common/OptionsMenu'
+import {ActionsMenu} from '../common/ActionsMenu'
 import {AssetBackground} from './styles'
 import {FileInputField} from './FileInputField'
 import FileContent from './FileContent'
@@ -399,7 +399,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       <WithMaterializedReference reference={value!.asset} materialize={materialize}>
         {(assetDocument: FileAsset) => (
           <FileContent assetDocument={assetDocument}>
-            <OptionsMenu
+            <ActionsMenu
               onUpload={this.handleSelectFiles}
               onBrowse={() => this.handleSelectFileFromAssetSource(assetSources[0])}
               onReset={this.handleRemoveButtonClick}
