@@ -2,7 +2,7 @@ import {get} from 'lodash'
 import React, {MouseEventHandler} from 'react'
 
 import {SearchIcon, UploadIcon, ClipboardIcon, ResetIcon, DownloadIcon} from '@sanity/icons'
-import {Text, Menu, Box, MenuItem, MenuDivider} from '@sanity/ui'
+import {Text, Menu, Box, MenuItem, MenuDivider, Label} from '@sanity/ui'
 import {FileAsset} from '@sanity/types/src'
 import {FileInputButton} from './FileInputButton/FileInputButton'
 
@@ -20,10 +20,10 @@ export function OptionsMenu(props: Props) {
 
   return (
     <Menu>
-      <Box marginTop={2} marginBottom={1} marginLeft={2}>
-        <Text size={1} muted>
+      <Box padding={2}>
+        <Label muted size={1}>
           Replace
-        </Text>
+        </Label>
       </Box>
       <FileInputButton
         icon={UploadIcon}
