@@ -82,7 +82,7 @@ export async function getViteConfig(options: ViteOptions): Promise<SanityViteCon
       fs: {strict: false},
       middlewareMode: 'ssr',
     },
-    // logLevel: 'silent',
+    logLevel: mode === 'production' ? 'silent' : undefined,
     resolve: {
       alias: await getAliases({cwd, isMonorepo}),
     },
