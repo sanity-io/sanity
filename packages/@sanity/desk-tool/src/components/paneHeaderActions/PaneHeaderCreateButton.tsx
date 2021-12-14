@@ -17,7 +17,7 @@ const POPOVER_PROPS: PopoverProps = {
 type Intent = React.ComponentProps<typeof IntentButton>['intent']
 
 const getIntent = (item: InitialValueTemplateItem): Intent | null => {
-  const typeName = getTemplateById(item.id)?.schemaType
+  const typeName = getTemplateById(item.templateId)?.schemaType
   if (!typeName) return null
 
   const baseParams = {
