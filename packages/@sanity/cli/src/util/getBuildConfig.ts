@@ -17,7 +17,7 @@
 import path from 'path'
 import {stat} from 'fs/promises'
 import {register} from 'esbuild-register/dist/node'
-import {BuildConfig} from '@sanity/types'
+import type {BuildConfig} from '@sanity/types'
 import {dynamicRequire} from './dynamicRequire'
 
 if (typeof process.send === 'function') {
