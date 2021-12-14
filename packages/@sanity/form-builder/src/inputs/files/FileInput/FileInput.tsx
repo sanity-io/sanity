@@ -43,6 +43,7 @@ import {
   Text,
   Tooltip,
   ToastParams,
+  MenuDivider,
 } from '@sanity/ui'
 import {PresenceOverlay, FormFieldPresence} from '@sanity/base/presence'
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
@@ -58,6 +59,7 @@ import {handleSelectAssetFromSource} from '../common/assetSource'
 import resolveUploader from '../../../sanity/uploads/resolveUploader'
 import {AssetBackground} from './styles'
 import {FileInputField} from './FileInputField'
+import FileContent from './FileContent'
 
 type Field = {
   name: string
@@ -232,55 +234,6 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     })
   }
 
-  renderMaterializedAsset = (assetDocument: FileAsset) => {
-    const showTooltip = (assetDocument?.originalFilename || '').length > 12
-    return (
-      <Stack space={3}>
-        <Flex align="center" justify="center">
-          <Box>
-            <Text size={4}>
-              <BinaryDocumentIcon />
-            </Text>
-          </Box>
-          <Box marginLeft={3}>
-            {showTooltip && (
-              <Tooltip
-                content={
-                  <Box padding={2}>
-                    <Text muted size={1}>
-                      {assetDocument.originalFilename}
-                    </Text>
-                  </Box>
-                }
-                fallbackPlacements={['right', 'left']}
-                placement="top"
-                portal
-              >
-                <Text textOverflow="ellipsis" weight="medium">
-                  {assetDocument.originalFilename}
-                </Text>
-              </Tooltip>
-            )}
-            {!showTooltip && (
-              <Text textOverflow="ellipsis" weight="medium">
-                {assetDocument.originalFilename}
-              </Text>
-            )}
-          </Box>
-        </Flex>
-
-        <Button
-          as="a"
-          fontSize={1}
-          href={`${assetDocument.url}?dl`}
-          icon={DownloadIcon}
-          mode="ghost"
-          text="Download file"
-        />
-      </Stack>
-    )
-  }
-
   renderUploadState(uploadState: UploadState) {
     const {isUploading} = this.state
 
@@ -435,10 +388,31 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   renderAsset() {
-    const {value, materialize} = this.props
+    const {value, materialize, type, readOnly} = this.props
+
+    const accept = get(type, 'options.accept', '')
+
     return (
       <WithMaterializedReference reference={value!.asset} materialize={materialize}>
-        {this.renderMaterializedAsset}
+        {(assetDocument: FileAsset) => (
+          <FileContent assetDocument={assetDocument}>
+            <Menu>
+              <FileInputButton
+                icon={UploadIcon}
+                mode="ghost"
+                onSelect={this.handleSelectFiles}
+                accept={accept}
+                text="Upload"
+                data-testid="file-input-upload-button"
+                disabled={readOnly}
+                noBorder
+              />
+              <MenuItem icon={SearchIcon} text="Option 2" />
+              <MenuDivider />
+              <MenuItem text="Option 3" />
+            </Menu>
+          </FileContent>
+        )}
       </WithMaterializedReference>
     )
   }
