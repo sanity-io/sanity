@@ -1,7 +1,7 @@
 /* eslint-disable no-process-env, no-sync */
 
 import path from 'path'
-import {viteCommonjs} from '@originjs/vite-plugin-commonjs'
+import {viteCommonjs, esbuildCommonjs} from '@originjs/vite-plugin-commonjs'
 import reactRefresh from '@vitejs/plugin-react-refresh'
 import {defineConfig} from 'vite'
 import {pluginCanonicalModules} from './vite/plugin-canonical-modules'
@@ -53,9 +53,16 @@ export default defineConfig({
     },
     // sourcemap: true,
   },
+
   define: {
     // __DEV__: JSON.stringify(true),
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+  },
+  optimizeDeps: {
+    include: ['@sanity/form-builder'],
+    esbuildOptions: {
+      plugins: [esbuildCommonjs(['@sanity/form-builder'])],
+    },
   },
   plugins: [
     reactRefresh(),
@@ -63,7 +70,7 @@ export default defineConfig({
     pluginCanonicalModules(['@sanity/ui', 'react', 'react-dom', 'styled-components']),
     pluginWorkshopScopes(),
     viteCommonjs({
-      include: ['@sanity/eventsource', '@sanity/structure'],
+      include: ['@sanity/eventsource', '@sanity/structure', '@sanity/form-builder'],
     }),
   ],
   resolve: {

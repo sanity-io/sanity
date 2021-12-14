@@ -68,7 +68,7 @@ function resolveTypeVariants(type) {
 export default function resolveInputComponent(type) {
   const customResolver = getCustomResolver()
 
-  const custom = customResolver && customResolver(type)
+  const custom = typeof customResolver === 'function' && customResolver(type)
   if (custom) {
     return custom
   }
