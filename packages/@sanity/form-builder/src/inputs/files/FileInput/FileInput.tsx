@@ -388,7 +388,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   renderAsset() {
-    const {value, materialize, type, readOnly} = this.props
+    const {value, materialize, type, readOnly, assetSources} = this.props
 
     const accept = get(type, 'options.accept', '')
 
@@ -397,6 +397,11 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
         {(assetDocument: FileAsset) => (
           <FileContent assetDocument={assetDocument}>
             <Menu>
+              <Box marginTop={2} marginLeft={2}>
+                <Text size={1} muted>
+                  Replace
+                </Text>
+              </Box>
               <FileInputButton
                 icon={UploadIcon}
                 mode="ghost"
@@ -407,7 +412,11 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                 disabled={readOnly}
                 noBorder
               />
-              <MenuItem icon={SearchIcon} text="Option 2" />
+              <MenuItem
+                icon={SearchIcon}
+                text="Browse"
+                onClick={() => this.handleSelectFileFromAssetSource(assetSources[0])}
+              />
               <MenuDivider />
               <MenuItem text="Option 3" />
             </Menu>
