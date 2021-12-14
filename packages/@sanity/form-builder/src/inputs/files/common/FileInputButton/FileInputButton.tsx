@@ -10,7 +10,7 @@ export interface FileInputButtonProps extends ButtonProps {
   multiple?: boolean
   onSelect?: (files: File[]) => void
   disabled?: boolean
-  noBorder?: boolean
+  fromMenu?: boolean
 }
 
 export const FileInputButton = React.forwardRef(function FileInputButton(
@@ -31,7 +31,7 @@ export const FileInputButton = React.forwardRef(function FileInputButton(
     textAlign,
     text,
     disabled,
-    noBorder,
+    fromMenu,
     ...rest
   } = props
   const id = useId(idProp)
@@ -87,7 +87,7 @@ export const FileInputButton = React.forwardRef(function FileInputButton(
     />
   )
 
-  return noBorder ? (
+  return fromMenu ? (
     <FileMenuItem icon={icon} text={text} disabled={disabled} paddingBottom={0}>
       {/* Visibly hidden input */}
       {invisibleInput}
