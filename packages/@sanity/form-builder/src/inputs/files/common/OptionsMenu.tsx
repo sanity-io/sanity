@@ -35,7 +35,7 @@ export function OptionsMenu(props: Props) {
         disabled={readOnly}
         noBorder
       />
-      <MenuItem icon={SearchIcon} text="Browse" onClick={onBrowse} />
+      <MenuItem icon={SearchIcon} text="Browse" onClick={onBrowse} disabled={readOnly} />
       <MenuDivider />
       <MenuItem as="a" icon={DownloadIcon} text="Download file" href={`${assetDocument.url}?dl`} />
       <MenuItem
@@ -47,7 +47,13 @@ export function OptionsMenu(props: Props) {
       />
 
       <MenuDivider />
-      <MenuItem tone="critical" icon={ResetIcon} text="Clear field" onClick={onReset} />
+      <MenuItem
+        tone="critical"
+        icon={ResetIcon}
+        text="Clear field"
+        onClick={onReset}
+        disabled={readOnly}
+      />
     </Menu>
   )
 }
