@@ -418,7 +418,12 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                 onClick={() => this.handleSelectFileFromAssetSource(assetSources[0])}
               />
               <MenuDivider />
-              <MenuItem text="Option 3" />
+              <MenuItem
+                as="a"
+                icon={DownloadIcon}
+                text="Download file"
+                href={`${assetDocument.url}?dl`}
+              />
             </Menu>
           </FileContent>
         )}
