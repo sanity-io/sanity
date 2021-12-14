@@ -71,7 +71,7 @@ export const FileInputButton = React.forwardRef(function FileInputButton(
   )
 
   return (
-    <FileButton {...rest} htmlFor={id} padding={0}>
+    <FileButton {...rest} htmlFor={id} padding={0} fontSize={2} mode="ghost" disabled={disabled}>
       {content}
 
       {/* Visibly hidden input */}
@@ -84,7 +84,7 @@ export const FileInputButton = React.forwardRef(function FileInputButton(
         ref={forwardedRef}
         type="file"
         value=""
-        tabIndex={disabled ? -1 : 0}
+        tabIndex={-1}
       />
     </FileButton>
   )
