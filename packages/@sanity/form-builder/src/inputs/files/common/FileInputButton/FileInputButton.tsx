@@ -10,6 +10,7 @@ export interface FileInputButtonProps extends ButtonProps {
   multiple?: boolean
   onSelect?: (files: File[]) => void
   disabled?: boolean
+  noBorder?: boolean
 }
 
 export const FileInputButton = React.forwardRef(function FileInputButton(
@@ -30,6 +31,7 @@ export const FileInputButton = React.forwardRef(function FileInputButton(
     textAlign,
     text,
     disabled,
+    noBorder,
     ...rest
   } = props
   const id = useId(idProp)
@@ -45,7 +47,7 @@ export const FileInputButton = React.forwardRef(function FileInputButton(
   )
 
   const content = (
-    <Flex align="center" justify="center" padding={padding}>
+    <Flex align={noBorder ? null : 'center'} justify={noBorder ? null : 'center'} padding={padding}>
       {/* Icon */}
       {icon && (
         <Box marginRight={text ? space : undefined}>
@@ -71,7 +73,15 @@ export const FileInputButton = React.forwardRef(function FileInputButton(
   )
 
   return (
-    <FileButton {...rest} htmlFor={id} padding={0} fontSize={2} mode="ghost" disabled={disabled}>
+    <FileButton
+      {...rest}
+      htmlFor={id}
+      padding={0}
+      fontSize={2}
+      mode="ghost"
+      disabled={disabled}
+      noBorder={noBorder}
+    >
       {content}
 
       {/* Visibly hidden input */}
