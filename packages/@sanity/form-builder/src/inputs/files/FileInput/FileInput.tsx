@@ -21,10 +21,12 @@ import {
 } from '@sanity/base/change-indicators'
 import {
   BinaryDocumentIcon,
+  ClipboardIcon,
   DownloadIcon,
   EditIcon,
   EyeOpenIcon,
   ImageIcon,
+  ResetIcon,
   SearchIcon,
   TrashIcon,
   UploadIcon,
@@ -423,6 +425,14 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                 icon={DownloadIcon}
                 text="Download file"
                 href={`${assetDocument.url}?dl`}
+              />
+
+              <MenuDivider />
+              <MenuItem
+                tone="critical"
+                icon={ResetIcon}
+                text="Clear field"
+                onClick={this.handleRemoveButtonClick}
               />
             </Menu>
           </FileContent>
