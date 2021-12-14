@@ -113,7 +113,7 @@ export default function CompactImage() {
               <Button fontSize={2} mode="ghost" text="Generate" />
             </Flex>
           </Stack>
-          <Stack space={3}>
+          {/* <Stack space={3}>
             <Text weight="semibold" size={1}>
               Very compact default mode
             </Text>
@@ -125,10 +125,6 @@ export default function CompactImage() {
               }}
             >
               <Flex align="center" justify="space-between" gap={3}>
-                <Inline space={2}>
-                  <Button fontSize={2} text="Select" icon={SearchIcon} mode="ghost" />
-                  <Button fontSize={2} text="Upload" icon={UploadIcon} mode="ghost" />
-                </Inline>
                 <Flex align="center" justify="center" gap={2} flex={1}>
                   <Text size={1} muted>
                     <ImageIcon />
@@ -137,22 +133,26 @@ export default function CompactImage() {
                     Paste or drag image here
                   </Text>
                 </Flex>
+                <Inline space={2}>
+                  <Button fontSize={2} text="Select" icon={SearchIcon} mode="ghost" />
+                  <Button fontSize={2} text="Upload" icon={UploadIcon} mode="ghost" />
+                </Inline>
               </Flex>
             </Card>
-          </Stack>
+          </Stack> */}
           <Stack space={3} paddingX={[3, 3, 0, 0]}>
             <Text weight="semibold" size={1}>
               Image input
             </Text>
 
             {!hasImage && !uploading && (
-              <Default drag={drag} assetSource={assetSources} readOnly={readOnly} />
+              <Default drag={drag} assetSources={assetSources} readOnly={readOnly} />
             )}
 
             {hasImage && !uploading && (
               <HasImage
                 drag={drag}
-                assetSource={assetSources}
+                assetSources={assetSources}
                 hasDetails={hasDetails}
                 readOnly={readOnly}
               />

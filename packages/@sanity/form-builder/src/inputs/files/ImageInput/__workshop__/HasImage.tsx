@@ -5,6 +5,8 @@ import {
   ImageIcon,
   UploadIcon,
   ResetIcon,
+  DownloadIcon,
+  ClipboardIcon,
 } from '@sanity/icons'
 import {
   Card,
@@ -162,7 +164,7 @@ export function HasImage(props) {
             )}
             <MenuButton
               id="image-menu"
-              button={<Button icon={EllipsisVerticalIcon} mode="ghost" disabled={readOnly} />}
+              button={<Button icon={EllipsisVerticalIcon} mode="ghost" />}
               portal
               menu={
                 <Menu>
@@ -171,16 +173,19 @@ export function HasImage(props) {
                       Replace
                     </Label>
                   </Card>
-                  {!assetSources && <MenuItem icon={SearchIcon} text="Browse" />}
+                  {!assetSources && <MenuItem icon={SearchIcon} text="Browse" disabled={readOnly} />}
                   {assetSources && (
-                    <MenuGroup text="Browse">
+                    <MenuGroup text="Browse"  disabled={readOnly} >
                       <MenuItem icon={ImageIcon} text="Media" />
                       <MenuItem icon={ImageIcon} text="Unsplash" />
                     </MenuGroup>
                   )}
-                  <MenuItem icon={UploadIcon} text="Upload" />
+                  <MenuItem icon={UploadIcon} text="Upload"  disabled={readOnly} />
                   <MenuDivider />
-                  <MenuItem icon={ResetIcon} text="Clear field" tone="critical" />
+                    <MenuItem icon={DownloadIcon} text="Download image" />
+                    <MenuItem icon={ClipboardIcon} text="Copy URL" />
+                  <MenuDivider />
+                  <MenuItem icon={ResetIcon} text="Clear field" tone="critical"  disabled={readOnly} />
                 </Menu>
               }
             />
