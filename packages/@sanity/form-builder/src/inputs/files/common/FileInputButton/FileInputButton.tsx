@@ -2,7 +2,7 @@ import React, {createElement, isValidElement} from 'react'
 import {isValidElementType} from 'react-is'
 import {useId} from '@reach/auto-id'
 import {Box, ButtonProps, Flex, Text, useTheme} from '@sanity/ui'
-import {FileButton} from './styles'
+import {FileButton, FileMenuItem} from './styles'
 
 export interface FileInputButtonProps extends ButtonProps {
   accept?: string
@@ -47,7 +47,7 @@ export const FileInputButton = React.forwardRef(function FileInputButton(
   )
 
   const content = (
-    <Flex align={noBorder ? null : 'center'} justify={noBorder ? null : 'center'} padding={padding}>
+    <Flex align="center" justify="center" padding={padding}>
       {/* Icon */}
       {icon && (
         <Box marginRight={text ? space : undefined}>
@@ -72,31 +72,32 @@ export const FileInputButton = React.forwardRef(function FileInputButton(
     </Flex>
   )
 
-  return (
-    <FileButton
-      {...rest}
-      htmlFor={id}
-      padding={0}
-      fontSize={2}
-      mode="ghost"
+  const invisibleInput = (
+    <input
+      accept={accept}
+      capture={capture}
+      id={id}
+      multiple={multiple}
+      onChange={handleChange}
+      ref={forwardedRef}
+      type="file"
+      value=""
+      tabIndex={-1}
       disabled={disabled}
-      noBorder={noBorder}
-    >
+    />
+  )
+
+  return noBorder ? (
+    <FileMenuItem icon={icon} text={text} disabled={disabled} paddingBottom={0}>
+      {/* Visibly hidden input */}
+      {invisibleInput}
+    </FileMenuItem>
+  ) : (
+    <FileButton {...rest} htmlFor={id} padding={0} fontSize={2} mode="ghost" disabled={disabled}>
       {content}
 
       {/* Visibly hidden input */}
-      <input
-        accept={accept}
-        capture={capture}
-        id={id}
-        multiple={multiple}
-        onChange={handleChange}
-        ref={forwardedRef}
-        type="file"
-        value=""
-        tabIndex={-1}
-        disabled={disabled}
-      />
+      {invisibleInput}
     </FileButton>
   )
 })
