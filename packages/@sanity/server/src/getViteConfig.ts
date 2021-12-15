@@ -6,6 +6,8 @@ import {isSanityMonorepo} from './isSanityMonorepo'
 import {DEFAULT_CANONICAL_MODULES, DEFAULT_COMMONJS_MODULES} from './constants'
 import {viteCanonicalModules} from './vite/plugin-canonical-modules'
 import {viteSanityStudio, resolveEntryModulePath} from './vite/plugin-sanity-studio'
+import {getAliases} from './aliases'
+
 export interface ViteOptions {
   /**
    * Root path of the studio/sanity app
@@ -53,7 +55,7 @@ export async function getViteConfig(options: ViteOptions): Promise<SanityViteCon
   const studioRootPath = cwd
   const basePath = normalizeBasePath(rawBasePath)
   const isMonorepo = await isSanityMonorepo(cwd)
-  const aliases = await getAliases({isMonorepo})
+  const aliases = getAliases({isMonorepo})
   const viteConfig: SanityViteConfig = {
     base: basePath,
     build: {
@@ -125,29 +127,6 @@ export async function getViteConfig(options: ViteOptions): Promise<SanityViteCon
   }
 
   return viteConfig
-}
-
-/**
- * Returns an object of aliases for vite to use
- *
- * @internal
- */
-function getAliases(opts: {isMonorepo: boolean}): Record<string, string> {
-  const {isMonorepo} = opts
-
-  if (!isMonorepo) {
-    return {}
-  }
-
-  // Load monorepo aliases (if the current Studio is located within the sanity monorepo)
-  const devAliases: Record<string, string> = require('../../../../dev/aliases')
-  const monorepoAliases = Object.fromEntries(
-    Object.entries(devAliases).map(([key, modulePath]) => {
-      return [key, path.resolve(__dirname, '../../../..', modulePath)]
-    })
-  )
-
-  return monorepoAliases
 }
 
 /**

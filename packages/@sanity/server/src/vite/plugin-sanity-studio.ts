@@ -2,6 +2,7 @@ import type {ConfigEnv, Plugin} from 'vite'
 import resolveFrom from 'resolve-from'
 import {getSanityStudioConfigPath} from '../sanityConfig'
 import {renderDocument} from '../renderDocument'
+import {isSanityMonorepo} from '../isSanityMonorepo'
 
 const basePattern = /@sanity[/\\]base/
 const entryPattern = /studioEntry\.(js|ts)x?$/
@@ -96,10 +97,13 @@ export function viteSanityStudio({cwd, basePath}: SanityStudioVitePluginOptions)
         return
       }
 
+      const isMonorepo = await isSanityMonorepo(cwd)
+
       this.emitFile({
         type: 'asset',
         fileName: 'index.html',
         source: await renderDocument({
+          isMonorepo,
           studioRootPath: cwd,
           props: {entryPath: `${basePath}${this.getFileName(entryChunkRef)}`},
         }),

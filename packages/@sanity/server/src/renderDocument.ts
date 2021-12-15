@@ -10,14 +10,14 @@ import path from 'path'
 import {Worker, parentPort, workerData, isMainThread} from 'worker_threads'
 import {createElement} from 'react'
 import {renderToString} from 'react-dom/server'
-import {Document as DefaultDocument} from '@sanity/base'
-import {register} from 'esbuild-register/dist/node'
+import {getAliases} from './aliases'
 
 const defaultProps = {
   entryPath: '/$SANITY_STUDIO_ENTRY$',
 }
 
 export function renderDocument(options: {
+  isMonorepo: boolean
   studioRootPath: string
   props?: {entryPath?: string}
 }): Promise<string> {
@@ -25,6 +25,7 @@ export function renderDocument(options: {
     const worker = new Worker(__filename, {
       workerData: options,
     })
+
     worker.on('message', (msg) => {
       if (msg.type === 'warn') {
         console.warn(msg.message)
@@ -58,6 +59,7 @@ function renderDocumentFromWorkerData() {
     throw new Error('Must be used as a Worker with a valid options object in worker data')
   }
 
+  const isMonorepo = workerData.isMonorepo
   const studioRootPath = workerData.studioRootPath
   const props = workerData.props
 
@@ -71,9 +73,14 @@ function renderDocumentFromWorkerData() {
     return
   }
 
-  register({
-    target: `node${process.version.slice(1)}`,
-  })
+  // Require hook #1
+  // Alias monorepo modules
+  require('module-alias').addAliases(getAliases({isMonorepo}))
+
+  // Require hook #2
+  // Use `esbuild` to allow JSX/TypeScript and modern JS features
+  // eslint-disable-next-line import/no-unassigned-import
+  require('esbuild-register/register')
 
   const Document = getDocumentComponent(studioRootPath)
   const result = renderToString(createElement(Document, {...defaultProps, ...props}))
@@ -83,6 +90,7 @@ function renderDocumentFromWorkerData() {
 }
 
 function getDocumentComponent(studioRootPath: string) {
+  const {Document: DefaultDocument} = require('@sanity/base')
   const userDefined = tryLoadDocumentComponent(studioRootPath)
 
   if (userDefined) {

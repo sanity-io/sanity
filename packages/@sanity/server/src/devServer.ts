@@ -5,6 +5,7 @@ import {createServer} from 'vite'
 import {getViteConfig} from './getViteConfig'
 import {renderDocument} from './renderDocument'
 import {debug} from './debug'
+import {isSanityMonorepo} from './isSanityMonorepo'
 
 export interface DevServerOptions {
   cwd: string
@@ -23,6 +24,8 @@ export interface DevServer {
 export async function startDevServer(options: DevServerOptions): Promise<DevServer> {
   const {cwd, httpPort, httpHost, basePath: base, staticPath} = options
   const startTime = performance.now()
+
+  const isMonorepo = await isSanityMonorepo(cwd)
 
   debug('Resolving vite config')
   const viteConfig = await getViteConfig({
@@ -62,7 +65,7 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     }
 
     try {
-      const template = await renderDocument({studioRootPath: cwd})
+      const template = await renderDocument({isMonorepo, studioRootPath: cwd})
       const html = await vite.transformIndexHtml(url, template)
       res.status(200).type('html').end(html)
     } catch (e) {

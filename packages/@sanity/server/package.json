@@ -40,6 +40,7 @@
     "debug": "^3.2.7",
     "express": "^4.17.1",
     "esbuild-register": "^3.2.0",
+    "module-alias": "^2.2.2",
     "read-pkg-up": "^7.0.1",
     "resolve-from": "^5.0.0",
     "vite": "^2.7.2"
