@@ -20,7 +20,8 @@ export interface BuildSanityStudioCommandFlags {
 
 export default async function buildSanityStudio(
   args: CliCommandArguments<BuildSanityStudioCommandFlags>,
-  context: CliCommandContext
+  context: CliCommandContext,
+  overrides?: {basePath?: string}
 ): Promise<{didCompile: boolean}> {
   const timer = getTimer()
   const {output, prompt, workDir, buildConfig} = context
@@ -79,7 +80,7 @@ export default async function buildSanityStudio(
     const bundle = await buildStaticFiles({
       cwd: workDir,
       outputDir,
-      basePath: buildConfig?.project?.basePath || '/',
+      basePath: overrides?.basePath || buildConfig?.project?.basePath || '/',
       sourceMap: Boolean(flags['source-maps']),
       minify: Boolean(flags.minify),
     })

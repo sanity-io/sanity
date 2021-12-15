@@ -73,11 +73,11 @@ export default async function deployStudio(
   // Always build the project, unless --no-build is passed
   const shouldBuild = flags.build
   if (shouldBuild) {
-    // @todo Ensure base path is always default (blank) when building for sanity.studio
     const buildArgs = [destFolder].filter(Boolean)
     const {didCompile} = await buildSanityStudio(
       {...args, extOptions: flags, argsWithoutOptions: buildArgs},
-      context
+      context,
+      {basePath: '/'}
     )
 
     if (!didCompile) {
