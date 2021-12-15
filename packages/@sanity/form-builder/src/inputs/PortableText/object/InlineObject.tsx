@@ -87,11 +87,6 @@ const PreviewSpan = styled.span`
   display: block;
   max-width: calc(5em + 80px);
   position: relative;
-
-  & > * {
-    user-select: none;
-    pointer-events: none;
-  }
 `
 
 const TooltipBox = styled(Box)`
@@ -184,6 +179,7 @@ export const InlineObject: FunctionComponent<InlineObjectProps> = ({
         tone={tone}
         onClick={handleOpen}
         forwardedAs="span"
+        contentEditable={false}
       >
         <span>{markersToolTip || preview}</span>
       </Root>

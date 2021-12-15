@@ -197,10 +197,8 @@ export function Input(props: InputProps) {
   }, [hasFocus])
 
   const handleToggleFullscreen = useCallback(() => {
-    setInitialSelection(PortableTextEditor.getSelection(editor))
     onToggleFullscreen()
-    PortableTextEditor.focus(editor)
-  }, [editor, onToggleFullscreen])
+  }, [onToggleFullscreen])
 
   const focus = useCallback((): void => {
     PortableTextEditor.focus(editor)
