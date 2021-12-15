@@ -28,7 +28,7 @@ import {
 import {PortableTextBlock} from '../types/portableText'
 import {HotkeyOptions} from '../types/options'
 import {toSlateValue} from '../utils/values'
-import {hasEditableTarget, setFragmentData} from '../utils/copyPaste'
+import {hasEditableTarget} from '../utils/copyPaste'
 import {normalizeSelection} from '../utils/selection'
 import {toPortableTextRange, toSlateRange} from '../utils/ranges'
 import {debugWithName} from '../utils/debug'
@@ -242,7 +242,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // Only initial
 
-  // Handle copy event in the editor
+  // Handle from props onCopy function
   const handleCopy = useCallback(
     (event: React.ClipboardEvent<HTMLDivElement>): void | ReactEditor => {
       if (onCopy) {
@@ -250,15 +250,10 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         // CopyFn may return something to avoid doing default stuff
         if (result !== undefined) {
           event.preventDefault()
-          return
         }
       }
-      if (hasEditableTarget(slateEditor, event.target)) {
-        // Set Portable Text on the clipboard
-        setFragmentData(event.clipboardData, slateEditor, portableTextFeatures)
-      }
     },
-    [onCopy, slateEditor, portableTextFeatures]
+    [onCopy]
   )
 
   // Handle pasting in the editor

@@ -18,7 +18,8 @@ export function createWithInsertData(
   keyGenerator: () => string
 ) {
   return function withInsertData(editor: PortableTextSlateEditor): PortableTextSlateEditor {
-    editor.getFragment = () => {
+    const {setFragmentData: originalSetFragmentData} = editor
+    editor.setFragmentData = (data: DataTransfer, originEvent?: 'drag' | 'copy' | 'cut') => {
       debug('Get fragment data')
       if (editor.selection) {
         const fragment = Node.fragment(editor, editor.selection).map((node) => {
@@ -54,6 +55,13 @@ export function createWithInsertData(
           }
           return nodeWithNewKeys
         })
+        originalSetFragmentData(data, originEvent)
+        debug('Putting PortableText on clipboard')
+        const portableText = fromSlateValue(
+          Node.fragment(editor, editor.selection),
+          portableTextFeatures.types.block.name
+        )
+        data.setData('application/x-portable-text', JSON.stringify(portableText))
         return fragment
       }
       return []
