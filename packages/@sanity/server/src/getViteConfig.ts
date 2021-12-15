@@ -75,6 +75,7 @@ export async function getViteConfig(options: ViteOptions): Promise<SanityViteCon
       viteSanityStudio({
         basePath,
         cwd,
+        isMonorepo,
       }),
       viteCanonicalModules({
         ids: DEFAULT_CANONICAL_MODULES,
@@ -120,7 +121,7 @@ export async function getViteConfig(options: ViteOptions): Promise<SanityViteCon
       rollupOptions: {
         perf: true,
         input: {
-          main: resolveEntryModulePath(studioRootPath),
+          main: resolveEntryModulePath({cwd: studioRootPath, isMonorepo}),
         },
       },
     }

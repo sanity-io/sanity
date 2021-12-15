@@ -2,7 +2,6 @@ import type {ConfigEnv, Plugin} from 'vite'
 import resolveFrom from 'resolve-from'
 import {getSanityStudioConfigPath} from '../sanityConfig'
 import {renderDocument} from '../renderDocument'
-import {isSanityMonorepo} from '../isSanityMonorepo'
 
 const basePattern = /@sanity[/\\]base/
 const entryPattern = /studioEntry\.(js|ts)x?$/
@@ -12,6 +11,7 @@ const configModuleId = '$SANITY_STUDIO_CONFIG$'
 export interface SanityStudioVitePluginOptions {
   cwd: string
   basePath: string
+  isMonorepo: boolean
 }
 
 /**
@@ -40,7 +40,11 @@ export interface SanityStudioVitePluginOptions {
  *
  * @internal
  */
-export function viteSanityStudio({cwd, basePath}: SanityStudioVitePluginOptions): Plugin {
+export function viteSanityStudio({
+  cwd,
+  basePath,
+  isMonorepo,
+}: SanityStudioVitePluginOptions): Plugin {
   let runCommand: ConfigEnv['command']
   let entryChunkRef: string
 
@@ -62,7 +66,7 @@ export function viteSanityStudio({cwd, basePath}: SanityStudioVitePluginOptions)
     resolveId(source, importer = '') {
       // Only allow loading entry chunk from index.html
       if (source.endsWith(`/${entryModuleId}`) && importer.endsWith('/index.html')) {
-        return resolveEntryModulePath(cwd)
+        return resolveEntryModulePath({cwd, isMonorepo})
       }
 
       // Only allow resolving config module from entry
@@ -84,7 +88,7 @@ export function viteSanityStudio({cwd, basePath}: SanityStudioVitePluginOptions)
 
       entryChunkRef = this.emitFile({
         type: 'chunk',
-        id: resolveEntryModulePath(cwd),
+        id: resolveEntryModulePath({cwd, isMonorepo}),
         name: 'studioEntry',
       })
     },
@@ -96,8 +100,6 @@ export function viteSanityStudio({cwd, basePath}: SanityStudioVitePluginOptions)
       if (runCommand !== 'build') {
         return
       }
-
-      const isMonorepo = await isSanityMonorepo(cwd)
 
       this.emitFile({
         type: 'asset',
@@ -117,6 +119,10 @@ export function viteSanityStudio({cwd, basePath}: SanityStudioVitePluginOptions)
  *
  * @internal
  */
-export function resolveEntryModulePath(studioRootPath: string): string {
-  return resolveFrom(studioRootPath, '@sanity/base/studioEntry')
+export function resolveEntryModulePath(opts: {cwd: string; isMonorepo: boolean}): string {
+  if (opts.isMonorepo) {
+    return resolveFrom(opts.cwd, '@sanity/base/src/_exports/studioEntry')
+  }
+
+  return resolveFrom(opts.cwd, '@sanity/base/studioEntry')
 }
