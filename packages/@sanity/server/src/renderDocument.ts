@@ -13,6 +13,10 @@ import {renderToString} from 'react-dom/server'
 import {Document as DefaultDocument} from '@sanity/base'
 import {register} from 'esbuild-register/dist/node'
 
+const defaultProps = {
+  entryPath: '/$SANITY_STUDIO_ENTRY$',
+}
+
 export function renderDocument(options: {
   studioRootPath: string
   props?: {entryPath?: string}
@@ -72,7 +76,7 @@ function renderDocumentFromWorkerData() {
   })
 
   const Document = getDocumentComponent(studioRootPath)
-  const result = renderToString(createElement(Document, props || {}))
+  const result = renderToString(createElement(Document, {...defaultProps, ...props}))
   const html = `<!DOCTYPE html>${result}`
 
   parentPort.postMessage({type: 'result', html})
