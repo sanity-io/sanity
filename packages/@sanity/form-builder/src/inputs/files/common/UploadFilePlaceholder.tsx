@@ -26,7 +26,7 @@ export default React.memo(function UploadImagePlaceholder({
   acceptedFiles,
   rejectedFilesCount,
 }: UploadPlaceholderProps) {
-  const accept = get('file', 'options.accept', 'image/*')
+  const accept = get(type, 'options.accept', '')
   return (
     <Flex
       align="center"
