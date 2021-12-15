@@ -1,4 +1,4 @@
-import {Button} from '@sanity/ui'
+import {Button, useLayer} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
 
@@ -7,9 +7,9 @@ interface VisibleOnFocusButtonProps {
   onClick: () => void
 }
 
-const Root = styled(Button)`
+const Root = styled(Button)<{$zIndex: number}>`
   position: absolute;
-  z-index: 3;
+  z-index: ${({$zIndex}) => $zIndex};
   margin: 1px;
 
   &:not(:focus) {
@@ -22,9 +22,9 @@ const Root = styled(Button)`
 
 export function VisibleOnFocusButton(props: VisibleOnFocusButtonProps) {
   const {children, onClick} = props
-
+  const {zIndex} = useLayer()
   return (
-    <Root mode="ghost" onClick={onClick}>
+    <Root mode="ghost" onClick={onClick} $zIndex={zIndex + 1}>
       {children}
     </Root>
   )
