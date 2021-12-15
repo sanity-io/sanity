@@ -33,13 +33,14 @@ import {ImageToolInput} from '../ImageToolInput'
 import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
 import UploadImagePlaceholder from '../common/UploadImagePlaceholder'
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
-import {FileTarget, Overlay} from '../common/styles'
+import {FileTarget} from '../common/styles'
 import {InternalAssetSource, UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
 import {EMPTY_ARRAY} from '../../../utils/empty'
-import {DropMessage} from '../common/DropMessage'
 import {handleSelectAssetFromSource} from '../common/assetSource'
+import {ActionsMenu} from '../common/ActionsMenu'
 import {ImageInputField} from './ImageInputField'
+import {ImageActionsMenu} from './ImageActionsMenu'
 
 export interface Image extends Partial<BaseImage> {
   _upload?: UploadState
@@ -435,10 +436,29 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderAsset() {
-    const {value, materialize} = this.props
+    const {value, materialize, readOnly, assetSources} = this.props
+
+    const accept = get('image', 'options.accept', 'image/*')
+
     return (
       <WithMaterializedReference reference={value!.asset} materialize={materialize}>
-        {this.renderMaterializedAsset}
+        {(fileAsset) => {
+          return (
+            <>
+              <ImageActionsMenu onEdit={this.handleOpenDialog}>
+                <ActionsMenu
+                  onUpload={this.handleSelectFiles}
+                  onBrowse={() => this.handleSelectImageFromAssetSource(assetSources[0])}
+                  onReset={this.handleRemoveButtonClick}
+                  assetDocument={fileAsset}
+                  readOnly={readOnly}
+                  accept={accept}
+                />
+              </ImageActionsMenu>
+              {this.renderMaterializedAsset(fileAsset)}
+            </>
+          )
+        }}
       </WithMaterializedReference>
     )
   }
