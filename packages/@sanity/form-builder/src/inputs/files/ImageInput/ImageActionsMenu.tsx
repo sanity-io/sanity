@@ -7,14 +7,15 @@ import {MenuActionsWrapper, ButtonContainer} from './ImageActionsMenu.styled'
 interface Props {
   children: ReactElement<any, string | JSXElementConstructor<any>>
   onEdit: MouseEventHandler<HTMLButtonElement>
+  showEdit: boolean
 }
 
 export function ImageActionsMenu(props: Props) {
-  const {onEdit, children} = props
+  const {onEdit, children, showEdit} = props
 
   return (
     <MenuActionsWrapper data-buttons space={1} padding={2}>
-      <ButtonContainer icon={EditIcon} mode="ghost" onClick={onEdit} />
+      {showEdit && <ButtonContainer icon={EditIcon} mode="ghost" onClick={onEdit} />}
       <MenuButton
         button={<ButtonContainer icon={EllipsisVerticalIcon} mode="ghost" />}
         id="menu-button-example"
