@@ -6,7 +6,7 @@ import {get, groupBy, uniqueId} from 'lodash'
 import {Observable, Subscription} from 'rxjs'
 import {ChangeIndicatorForFieldPath} from '@sanity/base/change-indicators'
 import {ImageIcon, SearchIcon} from '@sanity/icons'
-import HotspotImage from '@sanity/imagetool/HotspotImage'
+//import HotspotImage from '@sanity/imagetool/HotspotImage'
 import ImageTool from '@sanity/imagetool'
 import {
   Asset as AssetDocument,
@@ -39,6 +39,7 @@ import {UploadProgress} from '../common/UploadProgress'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import {handleSelectAssetFromSource} from '../common/assetSource'
 import {ActionsMenu} from '../common/ActionsMenu'
+import {HotspotImage} from './HotSpotImage'
 import {ImageInputField} from './ImageInputField'
 import {ImageActionsMenu} from './ImageActionsMenu'
 
@@ -383,16 +384,14 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderMaterializedAsset = (assetDocument: ImageAsset) => {
-    const {value = {}} = this.props
-    const constrainedSrc = this.getConstrainedImageSrc(assetDocument)
-    const srcAspectRatio = get(assetDocument, 'metadata.dimensions.aspectRatio')
-    return typeof srcAspectRatio === 'undefined' ? null : (
+    const {value = {}, readOnly} = this.props
+    const {hoveringFiles} = this.state
+    console.log(!value?._upload && !readOnly && hoveringFiles.length > 0)
+    return (
       <HotspotImage
-        aspectRatio="auto"
-        src={constrainedSrc}
-        srcAspectRatio={srcAspectRatio}
-        hotspot={value.hotspot}
-        crop={value.crop}
+        id={this._inputId}
+        drag={!value?._upload && !readOnly && hoveringFiles.length > 0}
+        assetDocument={assetDocument}
       />
     )
   }
@@ -667,24 +666,27 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                 this.hasChangeInFields(fieldGroups.imageToolAndDialog)
               }
             >
-              <FileTarget
-                tabIndex={readOnly ? undefined : 0}
-                disabled={readOnly === true}
-                ref={this.setFocusElement}
-                onFiles={this.handleSelectFiles}
-                onFilesOver={this.handleFilesOver}
-                onFilesOut={this.handleFilesOut}
-                onFocus={this.handleFileTargetFocus}
-                onBlur={this.handleFileTargetBlur}
-                border
-                readOnly={readOnly}
-                padding={5}
-                tone={getFileTone()}
-              >
-                {value?._upload && this.renderUploadState(value._upload)}
-                {!value?._upload && value?.asset && this.renderAsset()}
-                {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
-              </FileTarget>
+              {!(!value?._upload && value?.asset) && (
+                <FileTarget
+                  tabIndex={readOnly ? undefined : 0}
+                  disabled={readOnly === true}
+                  ref={this.setFocusElement}
+                  onFiles={this.handleSelectFiles}
+                  onFilesOver={this.handleFilesOver}
+                  onFilesOut={this.handleFilesOut}
+                  onFocus={this.handleFileTargetFocus}
+                  onBlur={this.handleFileTargetBlur}
+                  border
+                  readOnly={readOnly}
+                  padding={5}
+                  tone={getFileTone()}
+                >
+                  {value?._upload && this.renderUploadState(value._upload)}
+                  {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
+                </FileTarget>
+              )}
+
+              {!value?._upload && value?.asset && this.renderAsset()}
             </ChangeIndicatorForFieldPath>
           </div>
 
