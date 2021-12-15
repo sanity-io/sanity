@@ -51,6 +51,7 @@ export interface SanityViteConfig extends InlineConfig {
 export async function getViteConfig(options: ViteOptions): Promise<SanityViteConfig> {
   const {cwd, mode, outputDir, sourceMap, minify, basePath = '/'} = options
   const isMonorepo = await isSanityMonorepo(cwd)
+
   const viteConfig: SanityViteConfig = {
     base: normalizeBasePath(basePath),
     build: {
@@ -93,6 +94,20 @@ export async function getViteConfig(options: ViteOptions): Promise<SanityViteCon
       assetsDir: 'static',
       minify: minify ? 'esbuild' : false,
       emptyOutDir: false, // Rely on CLI to do this
+
+      // NOTE: when the Studio is running within the monorepo, some packages which contain CommonJS
+      // is located outside of `node_modules`. To work around this, we configure the `include`
+      // option for Rollup’s CommonJS plugin here.
+      commonjsOptions: isMonorepo
+        ? {
+            include: [
+              /node_modules/,
+              ...DEFAULT_COMMONJS_MODULES.map((id) => {
+                return new RegExp(`${id.replace(/\//g, '\\/')}`)
+              }),
+            ],
+          }
+        : undefined,
       rollupOptions: {
         perf: true,
         input: {
