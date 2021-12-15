@@ -9,10 +9,28 @@ const debug = debugWithName('plugin:withSchemaTypes')
  *
  */
 export function createWithSchemaTypes(portableTextFeatures: PortableTextFeatures) {
-  return function withSchemaTypes(editor: PortableTextSlateEditor) {
+  return function withSchemaTypes(editor: PortableTextSlateEditor): PortableTextSlateEditor {
+    editor.isTextBlock = (value: any): value is TextBlock => {
+      return (
+        !editor.isVoid(value) &&
+        'markDefs' in value &&
+        'style' in value &&
+        'children' in value &&
+        '_type' in value &&
+        portableTextFeatures.types.block.name === value._type
+      )
+    }
+    editor.isListBlock = (value: any): value is ListItem => {
+      return Boolean(
+        editor.isTextBlock(value) &&
+          'listItem' in value &&
+          'level' in value &&
+          value.listItem &&
+          Number.isInteger(value.level)
+      )
+    }
     editor.isVoid = (element: Element): boolean => {
       return (
-        typeof element._type === 'string' &&
         portableTextFeatures.types.block.name !== element._type &&
         (portableTextFeatures.types.blockObjects.map((obj) => obj.name).includes(element._type) ||
           portableTextFeatures.types.inlineObjects.map((obj) => obj.name).includes(element._type))

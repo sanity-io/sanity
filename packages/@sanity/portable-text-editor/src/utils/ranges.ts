@@ -1,29 +1,31 @@
-import {Editor, Range} from 'slate'
+import {BaseRange, Editor, Range} from 'slate'
 import {EditorSelection, EditorSelectionPoint} from '../types/editor'
 import {createArrayedPath, createKeyedPath} from './paths'
 
-export function toPortableTextRange(editor: Editor): EditorSelection {
-  if (!editor.selection) {
-    return editor.selection
+export function toPortableTextRange(
+  editor: Editor,
+  range: BaseRange | Partial<BaseRange> | null
+): EditorSelection {
+  if (!range) {
+    return null
   }
   let anchor: EditorSelectionPoint | null = null
   let focus: EditorSelectionPoint | null = null
-  const anchorPath = createKeyedPath(editor.selection.anchor, editor)
-  if (anchorPath) {
+  const anchorPath = range.anchor && createKeyedPath(range.anchor, editor)
+  if (anchorPath && range.anchor) {
     anchor = {
       path: anchorPath,
-      offset: editor.selection.anchor.offset,
+      offset: range.anchor.offset,
     }
   }
-  const focusPath = createKeyedPath(editor.selection.focus, editor)
-  if (focusPath) {
+  const focusPath = range.focus && createKeyedPath(range.focus, editor)
+  if (focusPath && range.focus) {
     focus = {
       path: focusPath,
-      offset: editor.selection.focus.offset,
+      offset: range.focus.offset,
     }
   }
-  const range = anchor && focus ? {anchor, focus} : null
-  return range
+  return anchor && focus ? {anchor, focus} : null
 }
 
 export function toSlateRange(selection: EditorSelection, editor: Editor): Range | null {

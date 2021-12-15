@@ -90,7 +90,7 @@ export function createWithPortableTextBlockStyle(
       })
       // Emit a new selection here (though it might be the same).
       // Toolbars and similar on the outside may rely on selection changes to update themselves.
-      change$.next({type: 'selection', selection: toPortableTextRange(editor)})
+      change$.next({type: 'selection', selection: toPortableTextRange(editor, editor.selection)})
       editor.onChange()
     }
     return editor
