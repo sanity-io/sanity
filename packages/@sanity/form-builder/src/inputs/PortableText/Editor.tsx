@@ -14,7 +14,7 @@ import {
 } from '@sanity/portable-text-editor'
 import {Path} from '@sanity/types'
 import {BoundaryElementProvider, useBoundaryElement, useLayer} from '@sanity/ui'
-import React, {useMemo, useEffect} from 'react'
+import React, {useMemo, useEffect, useCallback, useRef} from 'react'
 import {createScrollSelectionIntoView} from './utils/scrollSelectionIntoView'
 import {Toolbar} from './toolbar'
 import {Decorator} from './text'
@@ -175,8 +175,47 @@ export function Editor(props: EditorProps) {
     [scrollElement]
   )
 
+  const editorRef = useRef<HTMLDivElement>()
+
+  const editable = useMemo(
+    () => (
+      <PortableTextEditable
+        ref={editorRef}
+        hotkeys={hotkeys}
+        onCopy={onCopy}
+        onPaste={onPaste}
+        placeholderText={value ? undefined : 'Empty'}
+        renderAnnotation={renderAnnotation}
+        renderBlock={renderBlock}
+        renderChild={renderChild}
+        renderDecorator={renderDecorator}
+        scrollSelectionIntoView={handleScrollSelectionIntoView}
+        selection={initialSelection}
+      />
+    ),
+    [
+      handleScrollSelectionIntoView,
+      hotkeys,
+      initialSelection,
+      onCopy,
+      onPaste,
+      renderAnnotation,
+      renderBlock,
+      renderChild,
+      value,
+    ]
+  )
+
+  // Keep the editor focused even though we are clicking on the background or the toolbar of the editor.
+  const keepFocused = useCallback((event: React.SyntheticEvent) => {
+    if (event.target instanceof Node && !editorRef.current.contains(event.target)) {
+      event.preventDefault()
+      event.stopPropagation()
+    }
+  }, [])
+
   return (
-    <Root $fullscreen={isFullscreen} data-testid="pt-editor">
+    <Root $fullscreen={isFullscreen} data-testid="pt-editor" onMouseDown={keepFocused}>
       <ToolbarCard data-testid="pt-editor__toolbar-card" shadow={1}>
         <Toolbar
           isFullscreen={isFullscreen}
@@ -190,20 +229,13 @@ export function Editor(props: EditorProps) {
       <EditableCard flex={1} tone="transparent">
         <Scroller ref={setScrollElement}>
           <EditableContainer padding={isFullscreen ? 2 : 0} sizing="border" width={1}>
-            <EditableWrapper shadow={isFullscreen ? 1 : 0} $isFullscreen={isFullscreen}>
+            <EditableWrapper
+              shadow={isFullscreen ? 1 : 0}
+              $isFullscreen={isFullscreen}
+              $readOnly={readOnly}
+            >
               <BoundaryElementProvider element={isFullscreen ? scrollElement : boundaryElement}>
-                <PortableTextEditable
-                  hotkeys={hotkeys}
-                  onCopy={onCopy}
-                  onPaste={onPaste}
-                  placeholderText={value ? undefined : 'Empty'}
-                  renderAnnotation={renderAnnotation}
-                  renderBlock={renderBlock}
-                  renderChild={renderChild}
-                  renderDecorator={renderDecorator}
-                  scrollSelectionIntoView={handleScrollSelectionIntoView}
-                  selection={initialSelection}
-                />
+                {editable}
               </BoundaryElementProvider>
             </EditableWrapper>
           </EditableContainer>

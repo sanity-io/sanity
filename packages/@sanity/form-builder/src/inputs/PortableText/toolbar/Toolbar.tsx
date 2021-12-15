@@ -54,8 +54,6 @@ const FullscreenButtonBox = styled(Box)`
 
 const SLOW_INITIAL_VALUE_LIMIT = 300
 
-const preventDefault = (e: React.SyntheticEvent) => e.preventDefault()
-
 const IS_MAC =
   typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.platform)
 
@@ -66,7 +64,6 @@ const InnerToolbar = memo(function InnerToolbar({
   insertMenuItems,
   isFullscreen,
   onToggleFullscreen,
-  readOnly,
 }: {
   actionGroups: PTEToolbarActionGroup[]
   blockStyles: BlockStyleItem[]
@@ -74,7 +71,6 @@ const InnerToolbar = memo(function InnerToolbar({
   insertMenuItems: BlockItem[]
   isFullscreen: boolean
   onToggleFullscreen: () => void
-  readOnly: boolean
 }) {
   const actionsLen = actionGroups.reduce((acc, x) => acc + x.actions.length, 0)
   const showActionMenu = actionsLen > 0
@@ -85,14 +81,7 @@ const InnerToolbar = memo(function InnerToolbar({
   const collapsed = rootElementRect ? rootElementRect?.width < 400 : false
 
   return (
-    <RootFlex
-      align="center"
-      // Ensure the editor doesn't lose focus when interacting
-      // with the toolbar (prevent focus click events)
-      onMouseDown={preventDefault}
-      onKeyPress={preventDefault}
-      ref={setRootElement}
-    >
+    <RootFlex align="center" ref={setRootElement}>
       <StyleSelectFlex flex={collapsed ? 1 : undefined}>
         <StyleSelectBox padding={isFullscreen ? 2 : 1}>
           <BlockStyleSelect disabled={disabled} items={blockStyles} />
@@ -238,7 +227,6 @@ export function Toolbar(props: ToolbarProps) {
       insertMenuItems={insertMenuItems}
       isFullscreen={isFullscreen}
       onToggleFullscreen={onToggleFullscreen}
-      readOnly={readOnly}
     />
   )
 }
