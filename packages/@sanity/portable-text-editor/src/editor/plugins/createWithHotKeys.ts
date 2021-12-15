@@ -175,6 +175,17 @@ export function createWithHotkeys(
           }
           return
         }
+
+        // Enter from another style than the first (default one)
+        if (
+          editor.isTextBlock(focusBlock) &&
+          focusBlock.style &&
+          focusBlock.style !== portableTextFeatures.styles[0].value
+        ) {
+          Editor.insertNode(editor, createDefaultBlock())
+          event.preventDefault()
+          return
+        }
         // Block object enter key
         if (focusBlock && Editor.isVoid(editor, focusBlock)) {
           Editor.insertNode(editor, createDefaultBlock())
