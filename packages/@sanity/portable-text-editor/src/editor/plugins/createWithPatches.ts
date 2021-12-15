@@ -73,7 +73,8 @@ export function createWithPatches(
     if (incomingPatches$) {
       incomingPatches$.subscribe((patch: Patch) => {
         previousChildrenOnPatch = previousChildren
-        debug('Handling incoming patch', patch.type)
+        debug(`Handling incoming patch ${JSON.stringify(patch)}`)
+        debug(`Selection is ${JSON.stringify(editor.selection)}`)
         if (isThrottling) {
           withoutPatching(editor, () => {
             if (patchToOperations(editor, patch)) {
@@ -83,7 +84,7 @@ export function createWithPatches(
             }
           })
         } else {
-          debug('Adjusting selection for patch', patch.type)
+          debug(`Adjusting selection for patch ${patch.type}`)
           adjustSelection(editor, patch, previousChildrenOnPatch, portableTextFeatures)
         }
       })
@@ -112,7 +113,6 @@ export function createWithPatches(
       if (editorWasEmpty && operation.type !== 'set_selection') {
         patches = [setIfMissing(previousChildren, [])]
       }
-
       switch (operation.type) {
         case 'insert_text':
           patches = [...patches, ...insertTextPatch(editor, operation, previousChildren)]
@@ -158,36 +158,6 @@ export function createWithPatches(
           ),
         })
       }
-
-      // // TODO: extract this to a test
-      // if (debug && !isEqualToEmptyEditor(editor.children, portableTextFeatures)) {
-      //   const appliedValue = applyAll(
-      //     fromSlateValue(previousChildren, portableTextFeatures.types.block.name),
-      //     patches
-      //   )
-
-      //   if (
-      //     !isEqual(
-      //       appliedValue,
-      //       fromSlateValue(editor.children, portableTextFeatures.types.block.name)
-      //     )
-      //   ) {
-      //     debug(
-      //       'toSlateValue',
-      //       JSON.stringify(
-      //         toSlateValue(appliedValue, portableTextFeatures.types.block.name),
-      //         null,
-      //         2
-      //       )
-      //     )
-      //     debug('operation', JSON.stringify(operation, null, 2))
-      //     debug('beforeValue', JSON.stringify(previousChildren, null, 2))
-      //     debug('afterValue', JSON.stringify(editor.children, null, 2))
-      //     debug('appliedValue', JSON.stringify(appliedValue, null, 2))
-      //     debug('patches', JSON.stringify(patches, null, 2))
-      //     debugger
-      //   }
-      // }
 
       if (patches.length > 0) {
         // Signal throttling
