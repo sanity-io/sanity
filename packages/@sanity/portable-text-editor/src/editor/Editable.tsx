@@ -1,4 +1,4 @@
-import {Transforms, Node} from 'slate'
+import {Descendant, Transforms} from 'slate'
 import {isEqual} from 'lodash'
 import isHotkey from 'is-hotkey'
 import {normalizeBlock} from '@sanity/block-tools'
@@ -28,7 +28,6 @@ import {
 import {PortableTextBlock} from '../types/portableText'
 import {HotkeyOptions} from '../types/options'
 import {toSlateValue} from '../utils/values'
-import {hasEditableTarget} from '../utils/copyPaste'
 import {normalizeSelection} from '../utils/selection'
 import {toPortableTextRange, toSlateRange} from '../utils/ranges'
 import {debugWithName} from '../utils/debug'
@@ -44,11 +43,27 @@ import {useForwardedRef} from './hooks/useForwardedRef'
 const debug = debugWithName('component:Editable')
 
 // Weakmap for testing if we need to update the state value from a new value coming in from props
-const VALUE_TO_SLATE_VALUE: WeakMap<PortableTextBlock[], Node[]> = new WeakMap()
+const VALUE_TO_SLATE_VALUE: WeakMap<PortableTextBlock[], Descendant[]> = new WeakMap()
 
 const NOOP = () => {
   // Nope
 }
+type DOMNode = globalThis.Node
+
+const isDOMNode = (value: unknown): value is DOMNode => {
+  return value instanceof Node
+}
+
+/**
+ * Check if the target is editable and in the editor.
+ */
+export const hasEditableTarget = (
+  editor: ReactEditor,
+  target: EventTarget | null
+): target is DOMNode => {
+  return isDOMNode(target) && ReactEditor.hasDOMNode(editor, target, {editable: true})
+}
+
 type EditableProps = {
   hotkeys?: HotkeyOptions
   onBeforeInput?: OnBeforeInputFn
