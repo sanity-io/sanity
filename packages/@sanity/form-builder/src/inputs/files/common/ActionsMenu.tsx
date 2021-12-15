@@ -1,8 +1,8 @@
 import {get} from 'lodash'
-import React, {MouseEventHandler} from 'react'
+import React, {MouseEventHandler, useCallback} from 'react'
 
 import {SearchIcon, UploadIcon, ClipboardIcon, ResetIcon, DownloadIcon} from '@sanity/icons'
-import {Text, Menu, Box, MenuItem, MenuDivider, Label} from '@sanity/ui'
+import {Text, Menu, Box, MenuItem, MenuDivider, Label, useToast} from '@sanity/ui'
 import {FileAsset} from '@sanity/types/src'
 import {FileInputButton} from './FileInputButton/FileInputButton'
 
@@ -17,6 +17,13 @@ interface Props {
 
 export function ActionsMenu(props: Props) {
   const {onUpload, onBrowse, onReset, readOnly, assetDocument, accept} = props
+
+  const {push: pushToast} = useToast()
+
+  const handleCopyURL = useCallback(() => {
+    navigator.clipboard.writeText(assetDocument.url)
+    pushToast({closable: true, title: 'The url is copied to the clipboard'})
+  }, [pushToast, assetDocument])
 
   return (
     <Menu>
@@ -38,13 +45,7 @@ export function ActionsMenu(props: Props) {
       <MenuItem icon={SearchIcon} text="Browse" onClick={onBrowse} disabled={readOnly} />
       <MenuDivider />
       <MenuItem as="a" icon={DownloadIcon} text="Download file" href={`${assetDocument.url}?dl`} />
-      <MenuItem
-        icon={ClipboardIcon}
-        text="Copy URL"
-        onClick={() => {
-          navigator.clipboard.writeText(assetDocument.url)
-        }}
-      />
+      <MenuItem icon={ClipboardIcon} text="Copy URL" onClick={handleCopyURL} />
 
       <MenuDivider />
       <MenuItem
