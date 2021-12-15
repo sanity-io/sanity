@@ -1,8 +1,8 @@
-import {Node, Range, Element} from 'slate'
+import {Node, Element, Transforms, Editor} from 'slate'
 import {htmlToBlocks, normalizeBlock} from '@sanity/block-tools'
 import {PortableTextFeatures, PortableTextBlock} from '../../types/portableText'
 import {EditorChanges, PortableTextSlateEditor} from '../../types/editor'
-import {fromSlateValue, toSlateValue, isEqualToEmptyEditor} from '../../utils/values'
+import {fromSlateValue, toSlateValue} from '../../utils/values'
 import {validateValue} from '../../utils/validateValue'
 import {debugWithName} from '../../utils/debug'
 
@@ -81,9 +81,6 @@ export function createWithInsertData(
       //   }
       // }
 
-      const originalSelection = {...editor.selection}
-      const isBackward = Range.isBackward(editor.selection)
-
       if (slateFragment || html || text) {
         let portableText: PortableTextBlock[]
         let fragment: Node[]
@@ -94,12 +91,11 @@ export function createWithInsertData(
           const decoded = decodeURIComponent(window.atob(slateFragment))
           fragment = JSON.parse(decoded) as Node[]
           portableText = fromSlateValue(fragment, portableTextFeatures.types.block.name)
-          insertedType = 'Slate Fragment'
+          insertedType = 'fragment'
         } else if (html) {
-          // HTML (TODO: get rid of @sanity/block-tools)
           portableText = htmlToBlocks(html, portableTextFeatures.types.portableText)
             // Ensure it has keys
-            .map((block: any) =>
+            .map((block: PortableTextBlock) =>
               normalizeBlock(block, {blockTypeName: portableTextFeatures.types.block.name})
             )
           fragment = (toSlateValue(
@@ -141,67 +137,22 @@ export function createWithInsertData(
           return
         }
 
-        let insertAtPath = editor.selection[isBackward ? 'focus' : 'anchor'].path.slice(0, 1)
-        debug(`Inserting ${insertedType} fragment at ${JSON.stringify(insertAtPath)}`, fragment)
+        debug(`Inserting ${insertedType} fragment at ${JSON.stringify(editor.selection)}`)
         const [focusBlock] = Editor.node(editor, editor.selection, {depth: 1})
-        const focusIsVoid = Editor.isVoid(editor, focusBlock)
-        if (focusIsVoid) {
-          // Insert at path below the void block as we can't insert *into* it.
-          insertAtPath = [insertAtPath[0] + 1]
+        if (editor.isTextBlock(focusBlock) && editor.isTextBlock(fragment[0])) {
+          debug('Mixing markDefs of focusBlock and frament[0] block')
+          const {markDefs} = focusBlock
+          // As the first block will be inserted into another block (potentially), mix those markDefs
+          Transforms.setNodes(
+            editor,
+            {
+              markDefs: [...fragment[0].markDefs, ...markDefs],
+            },
+            {at: editor.selection}
+          )
         }
-        fragment.forEach((blk, blkIndex) => {
-          const {markDefs} = blk
-          if (fragment[0] === blk && !focusIsVoid) {
-            const isVoid = Editor.isVoid(editor, fragment[0])
-            const isEmptyText = isEqualToEmptyEditor([focusBlock], portableTextFeatures)
-            if (isEmptyText && isVoid) {
-              Transforms.insertFragment(editor, [blk], {
-                at: insertAtPath,
-              })
-              Transforms.removeNodes(editor, {at: insertAtPath})
-              if (fragment.length === 1) {
-                Transforms.setSelection(editor, {
-                  focus: {path: insertAtPath, offset: 0},
-                  anchor: {path: insertAtPath, offset: 0},
-                })
-              }
-            } else {
-              Transforms.insertFragment(editor, [blk])
-            }
-            if (!focusIsVoid && !isVoid) {
-              // As the first block will be inserted into another block (potentially), mix those markDefs
-              Transforms.setNodes(
-                editor,
-                {
-                  markDefs: [
-                    ...(Array.isArray(focusBlock.markDefs) ? focusBlock.markDefs : []),
-                    ...(Array.isArray(markDefs) ? markDefs : []),
-                  ],
-                },
-                {at: insertAtPath}
-              )
-              // If the focus block is not empty, use the style from the block.
-              if (
-                isEmptyText ||
-                (originalSelection.anchor.path[0] === 0 &&
-                  originalSelection.anchor.path[1] === 0 &&
-                  originalSelection.anchor.offset === 0)
-              ) {
-                Transforms.setNodes(editor, {style: blk.style}, {at: insertAtPath})
-              } else {
-                Transforms.setNodes(editor, {style: focusBlock.style}, {at: insertAtPath})
-              }
-            }
-          } else {
-            if (blkIndex === 1) {
-              Transforms.splitNodes(editor)
-            }
-            Transforms.insertNodes(editor, [blk], {at: insertAtPath, select: true})
-          }
-          insertAtPath = [insertAtPath[0] + 1]
-        })
+        editor.insertFragment(fragment)
         change$.next({type: 'loading', isLoading: false})
-        editor.onChange()
         return
       }
       change$.next({type: 'loading', isLoading: false})
