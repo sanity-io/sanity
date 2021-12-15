@@ -295,23 +295,19 @@ export function BlockObject(props: BlockObjectProps) {
           </Root>
         </Tooltip>
       </Flex>
-
-      {renderBlockActions && (
-        <BlockActionsOuter marginRight={1}>
-          <BlockActionsInner>
-            {block && focused && !readOnly && (
-              <BlockActions
-                onChange={onChange}
-                block={block}
-                renderBlockActions={renderBlockActions}
-              />
-            )}
-          </BlockActionsInner>
-        </BlockActionsOuter>
-      )}
-
+      <BlockActionsOuter marginRight={1} contentEditable={false}>
+        <BlockActionsInner>
+          {renderBlockActions && block && focused && !readOnly && (
+            <BlockActions
+              onChange={onChange}
+              block={block}
+              renderBlockActions={renderBlockActions}
+            />
+          )}
+        </BlockActionsInner>
+      </BlockActionsOuter>
       {isFullscreen && (
-        <ChangeIndicatorWrapper>
+        <ChangeIndicatorWrapper contentEditable={false}>
           <StyledChangeIndicatorWithProvidedFullPath
             compareDeep
             value={block}

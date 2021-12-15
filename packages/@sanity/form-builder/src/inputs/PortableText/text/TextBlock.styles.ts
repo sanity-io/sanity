@@ -109,14 +109,7 @@ export const BlockActionsOuter = styled(Box)`
   line-height: 0;
   width: 25px;
   position: relative;
-  user-select: none;
-
-  /* Without this, select all (CMD-A) will not work properly */
-  /* when the editor is in non-fullscreen mode. */
-  &:before {
-    content: ' ';
-    font-size: 0;
-  }
+  user-select: none; // Important for not messing up "select all" (in Chrome)
 `
 
 export const BlockActionsInner = styled(Flex)(({theme}: {theme: Theme}) => {
