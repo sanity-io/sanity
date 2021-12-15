@@ -1,8 +1,9 @@
 import path from 'path'
+import viteReact from '@vitejs/plugin-react'
 import readPkgUp from 'read-pkg-up'
 import resolveFrom from 'resolve-from'
-import viteReact from '@vitejs/plugin-react'
 import type {InlineConfig} from 'vite'
+import {isSanityMonorepo} from './isSanityMonorepo'
 
 export interface ViteOptions {
   /**
@@ -48,6 +49,7 @@ export interface SanityViteConfig extends InlineConfig {
  */
 export async function getViteConfig(options: ViteOptions): Promise<SanityViteConfig> {
   const {cwd, mode, outputDir, sourceMap, minify, basePath = '/'} = options
+  const isMonorepo = await isSanityMonorepo(cwd)
   const viteConfig: SanityViteConfig = {
     base: normalizeBasePath(basePath),
     build: {
@@ -62,7 +64,7 @@ export async function getViteConfig(options: ViteOptions): Promise<SanityViteCon
     server: {middlewareMode: 'ssr'},
     logLevel: 'silent',
     resolve: {
-      alias: await getAliases(cwd),
+      alias: await getAliases({cwd, isMonorepo}),
     },
   }
 
@@ -96,7 +98,20 @@ export async function getViteConfig(options: ViteOptions): Promise<SanityViteCon
  *
  * @todo Figure out a non-alias(?) way to spawn up the studio and the config
  */
-async function getAliases(cwd: string): Promise<Record<string, string>> {
+async function getAliases(opts: {
+  cwd: string
+  isMonorepo: boolean
+}): Promise<Record<string, string>> {
+  const {cwd, isMonorepo} = opts
+
+  // Load monorepo aliases (if the current Studio is located within the sanity monorepo)
+  const devAliases: Record<string, string> = isMonorepo ? require('../../../../dev/aliases') : {}
+  const monorepoAliases = Object.fromEntries(
+    Object.entries(devAliases).map(([key, modulePath]) => {
+      return [key, path.resolve(__dirname, '../../../..', modulePath)]
+    })
+  )
+
   const [reactPath, reactDomPath, styledComponentsPath] = await Promise.all([
     getModulePath('react', cwd),
     getModulePath('react-dom', cwd),
@@ -106,7 +121,7 @@ async function getAliases(cwd: string): Promise<Record<string, string>> {
   return {
     $config: path.resolve(cwd, 'sanity.config.ts'),
     react: reactPath,
-    '@sanity/base': path.resolve(__dirname, '../../base/src/_exports'),
+    ...monorepoAliases,
     '/$studio': path.resolve(__dirname, '../src/app/main.tsx'),
     'react/jsx-dev-runtime': `${reactPath}/jsx-dev-runtime`,
     'styled-components': styledComponentsPath,
