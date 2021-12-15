@@ -1,10 +1,10 @@
-import path from 'path'
-import {readFile} from 'fs/promises'
 import {promisify} from 'util'
 import chalk from 'chalk'
 import express from 'express'
 import {createServer} from 'vite'
 import {getViteConfig} from './getViteConfig'
+import {renderDocument} from './renderDocument'
+import {debug} from './debug'
 
 export interface DevServerOptions {
   cwd: string
@@ -24,6 +24,7 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
   const {cwd, httpPort, httpHost, basePath: base, staticPath} = options
   const startTime = performance.now()
 
+  debug('Resolving vite config')
   const viteConfig = await getViteConfig({
     basePath: base || '/',
     cwd,
@@ -33,6 +34,7 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
   const basePath = viteConfig.base
   const staticBasePath = `${basePath}static`
 
+  debug('Creating vite server')
   const vite = await createServer(viteConfig)
   const info = vite.config.logger.info
   const app = express()
@@ -60,9 +62,8 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     }
 
     try {
-      const template = await readFile(path.join(__dirname, 'app', 'index.html'), 'utf-8')
-      const vited = await vite.transformIndexHtml(url, template)
-      const html = transformIndexHtml(vited, options)
+      const template = await renderDocument({studioRootPath: cwd})
+      const html = await vite.transformIndexHtml(url, template)
       res.status(200).type('html').end(html)
     } catch (e) {
       // If an error is caught, let Vite fix the stracktrace so it maps back to
@@ -74,8 +75,10 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
   })
 
   return new Promise((resolve, reject) => {
+    debug('Starting HTTP server')
     const server = app
       .listen(httpPort, httpHost, () => {
+        debug('Dev server listening')
         const startupDuration = performance.now() - startTime
         info(
           `Sanity Studio ` +
@@ -89,17 +92,9 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
 
         resolve({close})
       })
-      .on('error', reject)
+      .on('error', (err) => {
+        debug(`Failed to start server: ${err.message}`)
+        reject(err)
+      })
   })
-}
-
-function transformIndexHtml(template: string, options: DevServerOptions): string {
-  if (!options.projectName) {
-    return template
-  }
-
-  return template.replace(
-    `<title>Sanity Studio</title>`,
-    `<title>${options.projectName} – Sanity</title>`
-  )
 }
