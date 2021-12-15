@@ -34,6 +34,26 @@ export function createWithHotkeys(
 ): (editor: PortableTextSlateEditor & ReactEditor) => any {
   const reservedHotkeys = ['enter', 'tab', 'shift', 'delete', 'end']
   const activeHotkeys = hotkeysFromOptions || DEFAULT_HOTKEYS // TODO: Merge where possible? A union?
+  const createDefaultBlock = () =>
+    toSlateValue(
+      [
+        {
+          _type: portableTextFeatures.types.block.name,
+          _key: keyGenerator(),
+          style: 'normal',
+          markDefs: [],
+          children: [
+            {
+              _type: 'span',
+              _key: keyGenerator(),
+              text: '',
+              marks: [],
+            },
+          ],
+        },
+      ],
+      portableTextFeatures.types.block.name
+    )[0]
   return function withHotKeys(editor: PortableTextSlateEditor & ReactEditor) {
     editor.pteWithHotKeys = (event: React.KeyboardEvent<HTMLDivElement>): void => {
       // Wire up custom marks hotkeys
@@ -149,7 +169,7 @@ export function createWithHotkeys(
           // Just ignore
         }
         // List item enter key
-        if (focusBlock && focusBlock.listItem) {
+        if (editor.isListBlock(focusBlock)) {
           if (editor.pteEndList()) {
             event.preventDefault()
           }
@@ -157,26 +177,7 @@ export function createWithHotkeys(
         }
         // Block object enter key
         if (focusBlock && Editor.isVoid(editor, focusBlock)) {
-          const block = toSlateValue(
-            [
-              {
-                _type: portableTextFeatures.types.block.name,
-                _key: keyGenerator(),
-                style: 'normal',
-                markDefs: [],
-                children: [
-                  {
-                    _type: 'span',
-                    _key: keyGenerator(),
-                    text: '',
-                    marks: [],
-                  },
-                ],
-              },
-            ],
-            portableTextFeatures.types.block.name
-          )[0]
-          Editor.insertNode(editor, block)
+          Editor.insertNode(editor, createDefaultBlock())
           event.preventDefault()
           return
         }
