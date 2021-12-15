@@ -9,7 +9,7 @@ const debug = debugWithName('plugin:withUtils')
  *
  */
 export function createWithUtils(portableTextFeatures: PortableTextFeatures) {
-  return function withUtils(editor: PortableTextSlateEditor) {
+  return function withUtils(editor: PortableTextSlateEditor): PortableTextSlateEditor {
     // Expands the the selection to wrap around the word the focus is at
     editor.pteExpandToWord = () => {
       const {selection} = editor

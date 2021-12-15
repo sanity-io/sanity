@@ -1,6 +1,6 @@
 import React, {ReactElement, useCallback} from 'react'
-import {Element, Range} from 'slate'
-import {useSelected, useEditor} from '@sanity/slate-react'
+import {Element, Range, Text} from 'slate'
+import {useSelected, useSlateStatic} from '@sanity/slate-react'
 import {uniq} from 'lodash'
 import {PortableTextFeatures} from '../types/portableText'
 import {
@@ -28,7 +28,7 @@ type LeafProps = {
 }
 
 export const Leaf = (props: LeafProps) => {
-  const editor = useEditor()
+  const editor = useSlateStatic()
   const selected = useSelected()
   const {attributes, children, leaf, portableTextFeatures, keyGenerator, renderChild} = props
   const spanRef = React.useRef(null)
@@ -44,7 +44,7 @@ export const Leaf = (props: LeafProps) => {
     },
     [focused]
   )
-  if (leaf._type === portableTextFeatures.types.span.name) {
+  if (Text.isText(leaf) && leaf._type === portableTextFeatures.types.span.name) {
     const blockElement = children.props.parent
     const path = blockElement ? [{_key: blockElement._key}, 'children', {_key: leaf._key}] : []
     const decoratorValues = portableTextFeatures.decorators.map((dec) => dec.value)
@@ -135,7 +135,7 @@ export const Leaf = (props: LeafProps) => {
   if (debugRenders) {
     debug(`Render ${leaf._key} (span)`)
   }
-  const key = (leaf._key as string) || keyGenerator()
+  const key = leaf._key || keyGenerator()
 
   return (
     <span {...attributes} ref={spanRef} key={key}>

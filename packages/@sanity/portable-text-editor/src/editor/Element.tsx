@@ -1,7 +1,7 @@
 import React, {ReactElement, FunctionComponent, useRef} from 'react'
 import {Element as SlateElement, Editor, Range} from 'slate'
 import {Path} from '@sanity/types'
-import {useSelected, useEditor, ReactEditor} from '@sanity/slate-react'
+import {useSelected, useSlateStatic, ReactEditor} from '@sanity/slate-react'
 import {PortableTextBlock, PortableTextFeatures} from '../types/portableText'
 import {RenderAttributes, RenderBlockFunction, RenderChildFunction} from '../types/editor'
 import {fromSlateValue} from '../utils/values'
@@ -33,6 +33,7 @@ const defaultRender = (value: PortableTextBlock) => {
   return <Object value={value} />
 }
 
+// eslint-disable-next-line max-statements
 export const Element: FunctionComponent<ElementProps> = ({
   attributes,
   children,
@@ -43,7 +44,7 @@ export const Element: FunctionComponent<ElementProps> = ({
   renderBlock,
   renderChild,
 }) => {
-  const editor = useEditor()
+  const editor = useSlateStatic()
   const selected = useSelected()
   const blockRef = useRef<HTMLDivElement | null>(null)
   const inlineBlockObjectRef = useRef(null)
@@ -68,7 +69,7 @@ export const Element: FunctionComponent<ElementProps> = ({
     if (!type) {
       throw new Error('Could not find type for inline block element')
     }
-    if (block && typeof block._key === 'string') {
+    if (SlateElement.isElement(block)) {
       const elmPath: Path = [{_key: block._key}, 'children', {_key: element._key}]
       if (debugRenders) {
         debug(`Render ${element._key} (inline object)`)
@@ -121,24 +122,31 @@ export const Element: FunctionComponent<ElementProps> = ({
   // If not inline, it's either a block (text) or a block object (non-text)
   // NOTE: text blocks aren't draggable with DraggableBlock (yet?)
   if (element._type === portableTextFeatures.types.block.name) {
+    className = `pt-block pt-text-block`
+    const isListItem = 'listItem' in element
+    const hasStyle = 'style' in element
     if (debugRenders) {
       debug(`Render ${element._key} (text block)`)
     }
-    if (typeof element.style === 'string') {
-      renderAttribs.style = (element.style as string) || 'normal'
+    if (hasStyle) {
+      renderAttribs.style = element.style || 'normal'
+      className = `pt-block pt-text-block pt-text-block-style-${element.style}`
     }
-    if (element.listItem) {
-      renderAttribs.listItem = element.listItem as string
-    }
-    if (element.listItem && Number.isInteger(element.level)) {
-      renderAttribs.level = element.level as number
+    if (isListItem) {
+      renderAttribs.listItem = element.listItem
+      if (Number.isInteger(element.level)) {
+        renderAttribs.level = element.level
+      } else {
+        element.level = 1
+      }
+      className += ` pt-list-item pt-list-item-${element.listItem} pt-list-item-level-${element.level}`
     }
     const textBlock = (
-      <TextBlock element={element} portableTextFeatures={portableTextFeatures}>
+      <TextBlock block={element} portableTextFeatures={portableTextFeatures}>
         {children}
       </TextBlock>
     )
-    const renderedBlock = renderBlock
+    const propsOrDefaultRendered = renderBlock
       ? renderBlock(
           fromSlateValue([element], element._type, KEY_TO_VALUE_ELEMENT.get(editor))[0],
           portableTextFeatures.types.block,
@@ -154,7 +162,7 @@ export const Element: FunctionComponent<ElementProps> = ({
     return (
       <div {...attributes} key={element._key} className={className}>
         <DraggableBlock element={element} readOnly={readOnly} blockRef={blockRef}>
-          <div ref={blockRef}>{renderedBlock}</div>
+          <div ref={blockRef}>{propsOrDefaultRendered}</div>
         </DraggableBlock>
       </div>
     )

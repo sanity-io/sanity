@@ -1,5 +1,4 @@
-import {Transforms, Node, Editor, Range} from 'slate'
-import {ReactEditor} from '@sanity/slate-react'
+import {Node, Range, Element} from 'slate'
 import {htmlToBlocks, normalizeBlock} from '@sanity/block-tools'
 import {PortableTextFeatures, PortableTextBlock} from '../../types/portableText'
 import {EditorChanges, PortableTextSlateEditor} from '../../types/editor'
@@ -18,19 +17,14 @@ export function createWithInsertData(
   portableTextFeatures: PortableTextFeatures,
   keyGenerator: () => string
 ) {
-  return function withInsertData(editor: PortableTextSlateEditor & ReactEditor) {
-    const {setFragmentData} = editor
-    editor.setFragmentData = (data: DataTransfer) => {
-      debug('Set fragment data')
-      setFragmentData(data)
-    }
+  return function withInsertData(editor: PortableTextSlateEditor): PortableTextSlateEditor {
     editor.getFragment = () => {
       debug('Get fragment data')
       if (editor.selection) {
         const fragment = Node.fragment(editor, editor.selection).map((node) => {
-          const newNode = {...node}
+          const newNode: Element = {...(node as Element)}
           // Ensure the copy has new keys
-          if (newNode.markDefs && Array.isArray(newNode.markDefs)) {
+          if (editor.isTextBlock(newNode)) {
             newNode.markDefs = newNode.markDefs.map((def) => {
               const oldKey = def._key
               const newKey = keyGenerator()
@@ -39,10 +33,11 @@ export function createWithInsertData(
                   child._type === portableTextFeatures.types.span.name
                     ? {
                         ...child,
-                        marks: child.marks.includes(oldKey)
-                          ? // eslint-disable-next-line max-nested-callbacks
-                            [...child.marks].filter((mark) => mark !== oldKey).concat(newKey)
-                          : child.marks,
+                        marks:
+                          child.marks && child.marks.includes(oldKey)
+                            ? // eslint-disable-next-line max-nested-callbacks
+                              [...child.marks].filter((mark) => mark !== oldKey).concat(newKey)
+                            : child.marks,
                       }
                     : child
                 )
@@ -50,7 +45,7 @@ export function createWithInsertData(
               return {...def, _key: newKey}
             })
           }
-          const nodeWithNewKeys = {...newNode, _key: keyGenerator()} as Node
+          const nodeWithNewKeys = {...newNode, _key: keyGenerator()} as Element
           if (Array.isArray(nodeWithNewKeys.children)) {
             nodeWithNewKeys.children = nodeWithNewKeys.children.map((child) => ({
               ...child,

@@ -1,3 +1,4 @@
+import {Node, Descendant} from 'slate'
 import {fromSlateValue, toSlateValue} from '../values'
 
 describe('toSlateValue', () => {

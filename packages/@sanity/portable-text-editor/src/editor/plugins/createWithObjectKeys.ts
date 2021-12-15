@@ -1,4 +1,4 @@
-import {Element, Transforms, Node} from 'slate'
+import {Element, Transforms, Node, Editor} from 'slate'
 import {PortableTextFeatures} from '../../types/portableText'
 import {PortableTextSlateEditor} from '../../types/editor'
 
@@ -10,7 +10,7 @@ export function createWithObjectKeys(
   portableTextFeatures: PortableTextFeatures,
   keyGenerator: () => string
 ) {
-  return function withKeys(editor: PortableTextSlateEditor) {
+  return function withKeys(editor: PortableTextSlateEditor): PortableTextSlateEditor {
     const {apply, normalizeNode} = editor
     editor.apply = (operation) => {
       if (operation.type === 'split_node') {
@@ -18,7 +18,9 @@ export function createWithObjectKeys(
       }
       if (operation.type === 'insert_node') {
         // Must be given a new key or adding/removing marks while typing gets in trouble (duped keys)!
-        operation.node = {...operation.node, _key: keyGenerator()}
+        if (!Editor.isEditor(operation.node)) {
+          operation.node = {...operation.node, _key: keyGenerator()}
+        }
       }
       apply(operation)
     }

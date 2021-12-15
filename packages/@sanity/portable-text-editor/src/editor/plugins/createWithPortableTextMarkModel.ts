@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 /**
  *
  * This plugin will change Slate's default marks model (every prop is a mark) with the Portable Text model (marks is an array of strings on prop .marks).
@@ -17,9 +18,8 @@ const debug = debugWithName('plugin:withPortableTextMarkModel')
 
 export function createWithPortableTextMarkModel(
   portableTextFeatures: PortableTextFeatures,
-  keyGenerator: () => string,
   change$: Subject<EditorChange>
-) {
+): (editor: PortableTextSlateEditor) => PortableTextSlateEditor {
   return function withPortableTextMarkModel(editor: PortableTextSlateEditor) {
     const {apply, normalizeNode} = editor
     const decorators = portableTextFeatures.decorators.map((t) => t.value)
@@ -27,34 +27,36 @@ export function createWithPortableTextMarkModel(
     // Extend Slate's default normalization. Merge spans with same set of .marks when doing merge_node operations, and clean up markDefs / marks
     editor.normalizeNode = (nodeEntry) => {
       normalizeNode(nodeEntry)
+      if (
+        editor.operations.some((op) =>
+          [
+            'insert_node',
+            'insert_text',
+            'merge_node',
+            'remove_node',
+            'remove_text',
+            'set_node',
+          ].includes(op.type)
+        )
+      ) {
+        mergeSpans(editor)
+      }
       const [node, path] = nodeEntry
-      const isBlock = node._type === portableTextFeatures.types.block.name
-      const isSpan = node._type === portableTextFeatures.types.span.name
-      if (isSpan) {
+      const isSpan = Text.isText(node) && node._type === portableTextFeatures.types.span.name
+      const isTextBlock = editor.isTextBlock(node)
+      if (isSpan && Text.isText(node)) {
         if (!node.marks) {
           debug('Adding .marks to span node')
           Transforms.setNodes(editor, {marks: []}, {at: path})
           editor.onChange()
-        }
-        if (
-          editor.operations.some((op) =>
-            [
-              'insert_node',
-              'insert_text',
-              'merge_node',
-              'remove_node',
-              'remove_text',
-              'set_node',
-            ].includes(op.type)
-          )
-        ) {
-          mergeSpans(editor)
         }
         for (const op of editor.operations) {
           // Make sure markDefs are copied over when merging two blocks.
           if (
             op.type === 'merge_node' &&
             op.path.length === 1 &&
+            Element.isElementProps(op.properties) &&
+            'markDefs' in op.properties &&
             op.properties._type === portableTextFeatures.types.block.name &&
             Array.isArray(op.properties.markDefs) &&
             op.properties.markDefs.length > 0 &&
@@ -62,7 +64,7 @@ export function createWithPortableTextMarkModel(
           ) {
             const [targetBlock, targetPath] = Editor.node(editor, [op.path[0] - 1])
             debug(`Copying markDefs over to merged block`, op)
-            if (targetBlock) {
+            if (editor.isTextBlock(targetBlock)) {
               const oldDefs = (Array.isArray(targetBlock.markDefs) && targetBlock.markDefs) || []
               Transforms.setNodes(
                 editor,
@@ -76,14 +78,16 @@ export function createWithPortableTextMarkModel(
           if (
             op.type === 'split_node' &&
             op.path.length === 1 &&
+            Element.isElementProps(op.properties) &&
             op.properties._type === portableTextFeatures.types.block.name &&
+            'markDefs' in op.properties &&
             Array.isArray(op.properties.markDefs) &&
             op.properties.markDefs.length > 0 &&
             op.path[0] + 1 < editor.children.length
           ) {
             const [targetBlock, targetPath] = Editor.node(editor, [op.path[0] + 1])
             debug(`Copying markDefs over to split block`, op)
-            if (targetBlock) {
+            if (editor.isTextBlock(targetBlock)) {
               const oldDefs = (Array.isArray(targetBlock.markDefs) && targetBlock.markDefs) || []
               Transforms.setNodes(
                 editor,
@@ -98,13 +102,14 @@ export function createWithPortableTextMarkModel(
             op.type === 'split_node' &&
             op.path.length === 2 &&
             op.properties._type === portableTextFeatures.types.span.name &&
+            'marks' in op.properties &&
             Array.isArray(op.properties.marks) &&
             op.properties.marks.length > 0 &&
             op.path[0] + 1 < editor.children.length
           ) {
             const [child, childPath] = Editor.node(editor, [op.path[0] + 1, 0])
             if (
-              child &&
+              Text.isText(child) &&
               child.text === '' &&
               Array.isArray(child.marks) &&
               child.marks.length > 0
@@ -122,7 +127,7 @@ export function createWithPortableTextMarkModel(
       }
       // Check consistency of markDefs
       if (
-        isBlock &&
+        isTextBlock &&
         editor.operations.some((op) =>
           ['split_node', 'remove_node', 'remove_text', 'merge_node'].includes(op.type)
         )
@@ -149,9 +154,7 @@ export function createWithPortableTextMarkModel(
             })
           )[0] || [undefined]
           if (
-            node &&
-            node.text &&
-            typeof node.text === 'string' &&
+            Text.isText(node) &&
             node.text.length === selection.focus.offset &&
             Array.isArray(node.marks) &&
             node.marks.length > 0
@@ -213,7 +216,7 @@ export function createWithPortableTextMarkModel(
             ...(Editor.marks(editor) || {}),
             marks: [...existingMarks, mark],
           }
-          editor.marks = marks
+          editor.marks = marks as Text
         }
         editor.onChange()
       }
@@ -248,7 +251,7 @@ export function createWithPortableTextMarkModel(
             ...(Editor.marks(editor) || {}),
             marks: existingMarks.filter((eMark) => eMark !== mark),
           }
-          editor.marks = marks
+          editor.marks = marks as Text
         }
         editor.onChange()
       }
@@ -310,12 +313,7 @@ export function createWithPortableTextMarkModel(
         const nextPath = [path[0], path[1] + 1]
         if (Editor.isBlock(editor, parent)) {
           const nextNode = parent.children[nextPath[1]]
-          if (
-            node._type === 'span' &&
-            nextNode &&
-            nextNode._type === 'span' &&
-            isEqual(nextNode.marks, node.marks)
-          ) {
+          if (Text.isText(node) && Text.isText(nextNode) && isEqual(nextNode.marks, node.marks)) {
             debug('Merging spans')
             Transforms.mergeNodes(editor, {at: nextPath, voids: true})
             editor.onChange()
@@ -337,7 +335,7 @@ export function createWithPortableTextMarkModel(
         match: (n) => n._type === portableTextFeatures.types.block.name,
       })
       for (const [block, path] of blocks) {
-        if (Array.isArray(block.markDefs) && Element.isElement(block)) {
+        if (editor.isTextBlock(block)) {
           const newMarkDefs = block.markDefs.filter((def) => {
             return block.children.find((child) => {
               return Array.isArray(child.marks) && child.marks.includes(def._key)

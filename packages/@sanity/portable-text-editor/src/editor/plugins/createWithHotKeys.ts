@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 /* eslint-disable complexity */
-import {Editor, Transforms, Path, Range, Element} from 'slate'
+import {Editor, Transforms, Path, Range} from 'slate'
 import isHotkey from 'is-hotkey'
 import {ReactEditor} from '@sanity/slate-react'
 import {PortableTextFeatures} from '../../types/portableText'
@@ -24,7 +24,6 @@ const DEFAULT_HOTKEYS: HotkeyOptions = {
 
 /**
  * This plugin takes care of all hotkeys in the editor
- * TODO: move a lot of these out the their respective plugins
  *
  */
 export function createWithHotkeys(

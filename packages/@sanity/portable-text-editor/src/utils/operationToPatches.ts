@@ -1,5 +1,5 @@
 import {Path} from '@sanity/types'
-import {omitBy, isUndefined} from 'lodash'
+import {omitBy, isUndefined, get} from 'lodash'
 import {
   Editor,
   MoveNodeOperation,
@@ -10,6 +10,7 @@ import {
   SplitNodeOperation,
   RemoveNodeOperation,
   MergeNodeOperation,
+  Text,
 } from 'slate'
 import {set, insert, unset, diffMatchPatch, setIfMissing} from '../patch/PatchEvent'
 import {PortableTextFeatures, PortableTextBlock, PortableTextChild} from '../types/portableText'
@@ -49,7 +50,7 @@ export function createOperationToPatches(
     if (typeof block._key !== 'string') {
       throw new Error('Expected block to have a _key')
     }
-    const child = block && Array.isArray(block.children) && block.children[operation.path[1]]
+    const child = editor.isTextBlock(block) && block.children[operation.path[1]]
     if (!child) {
       throw new Error('Could not find child')
     }
@@ -76,7 +77,7 @@ export function createOperationToPatches(
     if (typeof block._key !== 'string') {
       throw new Error('Expected block to have a _key')
     }
-    const child = block && Array.isArray(block.children) && block.children[operation.path[1]]
+    const child = editor.isTextBlock(block) && block.children[operation.path[1]]
     if (!child) {
       throw new Error('Could not find child')
     }
@@ -107,21 +108,15 @@ export function createOperationToPatches(
       ]
     } else if (operation.path.length === 2) {
       const block = editor.children[operation.path[0]]
-      if (Editor.isBlock(editor, block) && typeof block._key === 'string') {
+      if (editor.isTextBlock(block)) {
         const child = block.children[operation.path[1]]
-        if (child && typeof child._key === 'string') {
+        if (child) {
           const blockKey = block._key
           const childKey = child._key
           const patches: Patch[] = []
-          Object.keys(operation.newProperties).forEach((key) => {
-            patches.push(
-              set(operation.newProperties[key], [
-                {_key: blockKey},
-                'children',
-                {_key: childKey},
-                key,
-              ])
-            )
+          Object.keys(operation.newProperties).forEach((keyName) => {
+            const val = get(operation.newProperties, keyName)
+            patches.push(set(val, [{_key: blockKey}, 'children', {_key: childKey}, keyName]))
           })
           return patches
         }
@@ -229,16 +224,19 @@ export function createOperationToPatches(
     }
     if (operation.path.length === 2) {
       const splitSpan = splitBlock.children[operation.path[1]]
-      if (typeof splitSpan._key !== 'string') {
-        throw new Error('Span is missing _key')
+      if (splitSpan && Text.isText(splitSpan)) {
+        const targetSpans = splitBlock.children.slice(operation.path[1] + 1, operation.path[1] + 2)
+        patches.push(
+          insert(targetSpans, 'after', [
+            {_key: splitBlock._key},
+            'children',
+            {_key: splitSpan._key},
+          ])
+        )
+        patches.push(
+          set(splitSpan.text, [{_key: splitBlock._key}, 'children', {_key: splitSpan._key}, 'text'])
+        )
       }
-      const targetSpans = splitBlock.children.slice(operation.path[1] + 1, operation.path[1] + 2)
-      patches.push(
-        insert(targetSpans, 'after', [{_key: splitBlock._key}, 'children', {_key: splitSpan._key}])
-      )
-      patches.push(
-        set(splitSpan.text, [{_key: splitBlock._key}, 'children', {_key: splitSpan._key}, 'text'])
-      )
       return patches
     }
     return patches
@@ -295,18 +293,14 @@ export function createOperationToPatches(
       if (!Editor.isBlock(editor, targetBlock)) {
         throw new Error('Block expected')
       }
-      if (typeof targetBlock._key !== 'string') {
-        throw new Error('Expected block to have a _key')
-      }
       const targetSpan = targetBlock.children[operation.path[1] - 1]
-      if (typeof targetSpan._key !== 'string') {
-        throw new Error('Expected span to have a _key')
+      if (Text.isText(targetSpan)) {
+        // Set the merged span with it's new value
+        patches.push(
+          set(targetSpan.text, [{_key: block._key}, 'children', {_key: targetSpan._key}, 'text'])
+        )
+        patches.push(unset([{_key: block._key}, 'children', {_key: mergedSpan._key}]))
       }
-      // Set the merged span with it's new value
-      patches.push(
-        set(targetSpan.text, [{_key: block._key}, 'children', {_key: targetSpan._key}, 'text'])
-      )
-      patches.push(unset([{_key: block._key}, 'children', {_key: mergedSpan._key}]))
     } else {
       throw new Error(`Unexpected path encountered: ${JSON.stringify(operation.path)}`)
     }

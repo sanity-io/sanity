@@ -1,6 +1,6 @@
 import React, {ReactElement, FunctionComponent, useRef, useMemo} from 'react'
 import {Element as SlateElement, Transforms, Editor} from 'slate'
-import {ReactEditor, useEditor} from '@sanity/slate-react'
+import {ReactEditor, useSlateStatic} from '@sanity/slate-react'
 import {debugWithName} from '../utils/debug'
 import {IS_DRAGGING, IS_DRAGGING_ELEMENT_RANGE, IS_DRAGGING_CHILD_ELEMENT} from '../utils/weakMaps'
 
@@ -29,7 +29,7 @@ export const DraggableChild: FunctionComponent<ElementProps> = ({
   spanType,
   keyGenerator,
 }) => {
-  const editor = useEditor()
+  const editor = useSlateStatic()
   const dragGhostRef: React.MutableRefObject<undefined | HTMLElement> = useRef()
   const isInline = useMemo(() => Editor.isInline(editor, element), [])
   const isVoid = useMemo(() => Editor.isVoid(editor, element), [])
@@ -82,7 +82,10 @@ export const DraggableChild: FunctionComponent<ElementProps> = ({
     }
 
     // Resolve a Slate range from the DOM range.
-    const range = ReactEditor.toSlateRange(editor, domRange)
+    const range = ReactEditor.toSlateRange(editor, domRange, {
+      exactMatch: false,
+      suppressThrow: false,
+    })
     if (range) {
       IS_DRAGGING_ELEMENT_RANGE.set(editor, range)
       Transforms.select(editor, range)
@@ -105,7 +108,7 @@ export const DraggableChild: FunctionComponent<ElementProps> = ({
       Transforms.insertNodes(editor, dupedElement, {at: range, select: true})
       Transforms.removeNodes(editor, {
         at: [],
-        match: (n) => n._key === element._key,
+        match: (n) => SlateElement.isElement(n) && n._key === element._key,
         mode: 'lowest',
       })
       editor.onChange()

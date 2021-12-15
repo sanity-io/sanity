@@ -3,7 +3,7 @@
 import * as DMP from 'diff-match-patch'
 import {debounce, isEqual} from 'lodash'
 import {Subject} from 'rxjs'
-import {Editor, Operation, Transforms, Path, Node, Range} from 'slate'
+import {Editor, Operation, Path, Node, Text as SlateText, Element as SlateElement} from 'slate'
 import {setIfMissing, unset} from '../../patch/PatchEvent'
 import type {Patch} from '../../types/patch'
 
@@ -40,7 +40,6 @@ export type PatchFunctions = {
   splitNodePatch: PatchFn
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function createWithPatches(
   {
     insertNodePatch,
@@ -356,7 +355,12 @@ function adjustSelection(
       isEqual(selection.anchor.path[0], blockIndex) &&
       isEqual(selection.focus.path[0], blockIndex)
         ? block.children
-            .map((child) => child._type === portableTextFeatures.types.span.name && child.text)
+            .map(
+              (child) =>
+                SlateText.isText(child) &&
+                child._type === portableTextFeatures.types.span.name &&
+                child.text
+            )
             .filter(Boolean)
             .join('').length + 1
         : 0
