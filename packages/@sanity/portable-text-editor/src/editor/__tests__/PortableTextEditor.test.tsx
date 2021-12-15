@@ -4,8 +4,9 @@
 /* eslint-disable no-irregular-whitespace */
 // eslint-disable-next-line import/no-unassigned-import
 import '@testing-library/jest-dom/extend-expect'
+import {act} from 'react-dom/test-utils'
 import {render} from '@testing-library/react'
-import React, {ForwardedRef, forwardRef} from 'react'
+import React, {ForwardedRef, forwardRef, useCallback, useEffect, useState} from 'react'
 
 import Schema from '@sanity/schema'
 import {PortableTextEditor, PortableTextEditorProps} from '../PortableTextEditor'
@@ -59,7 +60,9 @@ const helloBlock: PortableTextBlock = {
   children: [{_key: '567', _type: 'span', text: 'Hello', marks: []}],
 }
 
-const PortableTextEditorTester = forwardRef(function PortableTextEditorTester(
+let key = 0
+
+export const PortableTextEditorTester = forwardRef(function PortableTextEditorTester(
   props: Partial<
     Omit<PortableTextEditorProps, 'type' | 'onChange | value' | 'selection' | 'placeholderText'>
   > & {
@@ -71,30 +74,30 @@ const PortableTextEditorTester = forwardRef(function PortableTextEditorTester(
   },
   ref: ForwardedRef<PortableTextEditor>
 ) {
+  useEffect(() => {
+    key = 0
+  })
+  const _keyGenerator = useCallback(() => {
+    key++
+    return `${key}`
+  }, [])
   return (
     <PortableTextEditor
       type={props.type}
       onChange={props.onChange || jest.fn()}
       value={props.value || undefined}
+      keyGenerator={_keyGenerator}
       ref={ref}
-      // keyGenerator={keyGenerator}
-      // readOnly={false}
     >
       <PortableTextEditable
-        // onBeforeInput={handleOnBeforeInput}
         selection={props.selection || undefined}
         placeholderText={props.placeholderText || 'Type here'}
-        // hotkeys={HOTKEYS}
-        // renderBlock={renderBlock}
-        // renderDecorator={renderDecorator}
-        // renderChild={renderChild}
-        spellCheck
       />
     </PortableTextEditor>
   )
 })
 
-const bodyType = schema.get('body')
+export const type = schema.get('body')
 
 describe('initialization', () => {
   it('receives initial onChange events and has custom placeholder text', () => {
@@ -105,27 +108,28 @@ describe('initialization', () => {
         onChange={onChange}
         placeholderText="Jot something down here"
         ref={editorRef}
-        type={bodyType}
+        type={type}
         value={undefined}
       />
     )
 
     expect(editorRef.current).not.toBe(null)
     expect(onChange).toHaveBeenCalledWith({type: 'ready'})
-    expect(onChange).toHaveBeenCalledWith({type: 'selection', selection: null})
     expect(onChange).toHaveBeenCalledWith({type: 'value', value: undefined})
     expect(container).toMatchInlineSnapshot(`
       <div>
         <div>
           <div
+            autocapitalize="false"
+            autocorrect="false"
             class="pt-editable"
             contenteditable="true"
-            data-gramm="false"
             data-slate-editor="true"
             data-slate-node="value"
             role="textbox"
-            spellcheck="true"
-            style="outline: none; white-space: pre-wrap; word-wrap: break-word;"
+            spellcheck="false"
+            style="position: relative; outline: none; white-space: pre-wrap; word-wrap: break-word; min-height: 0px;"
+            zindex="-1"
           >
             <div
               class="pt-block pt-text-block pt-text-block-style-normal"
@@ -145,7 +149,7 @@ describe('initialization', () => {
                         <span
                           contenteditable="false"
                           data-slate-placeholder="true"
-                          style="pointer-events: none; display: inline-block; width: 0px; max-width: 100%; white-space: nowrap; opacity: 0.333; user-select: none; font-style: normal; font-weight: normal; text-decoration: none;"
+                          style="position: absolute; pointer-events: none; width: 100%; max-width: 100%; display: block; opacity: 0.333; user-select: none; text-decoration: none;"
                         >
                           Jot something down here
                         </span>
@@ -170,10 +174,10 @@ describe('initialization', () => {
   it('takes value from props', () => {
     const initialValue = [helloBlock]
     const onChange = jest.fn()
-    render(<PortableTextEditorTester onChange={onChange} type={bodyType} value={initialValue} />)
+    render(<PortableTextEditorTester onChange={onChange} type={type} value={initialValue} />)
     expect(onChange).toHaveBeenCalledWith({type: 'value', value: initialValue})
   })
-  it('takes selection from props', () => {
+  it('takes initial selection from props', () => {
     const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
     const initialValue = [helloBlock]
     const initialSelection: EditorSelection = {
@@ -186,7 +190,7 @@ describe('initialization', () => {
         onChange={onChange}
         ref={editorRef}
         selection={initialSelection}
-        type={bodyType}
+        type={type}
         value={initialValue}
       />
     )
@@ -196,141 +200,47 @@ describe('initialization', () => {
     PortableTextEditor.focus(editorRef.current)
     expect(PortableTextEditor.getSelection(editorRef.current)).toEqual(initialSelection)
   })
-})
 
-describe('normalization', () => {
-  it('merges adjacent spans correctly when removing annotations', () => {
+  it('updates editor selection from new prop', () => {
     const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
-    const initialValue = [
-      {
-        _key: '5fc57af23597',
-        _type: 'myTestBlockType',
-        children: [
-          {
-            _key: 'be1c67c6971a',
-            _type: 'span',
-            marks: [],
-            text: 'This is a ',
-          },
-          {
-            _key: '11c8c9f783a8',
-            _type: 'span',
-            marks: ['fde1fd54b544'],
-            text: 'link',
-          },
-          {
-            _key: '576c748e0cd2',
-            _type: 'span',
-            marks: [],
-            text: ', this is ',
-          },
-          {
-            _key: 'f3d73d3833bf',
-            _type: 'span',
-            marks: ['7b6d3d5de30c'],
-            text: 'another',
-          },
-          {
-            _key: '73b01f13c2ec',
-            _type: 'span',
-            marks: [],
-            text: ', and this is ',
-          },
-          {
-            _key: '13eb0d467c82',
-            _type: 'span',
-            marks: ['93a1d24eade0'],
-            text: 'a third',
-          },
-        ],
-        markDefs: [
-          {
-            _key: 'fde1fd54b544',
-            _type: 'link',
-            url: '1',
-          },
-          {
-            _key: '7b6d3d5de30c',
-            _type: 'link',
-            url: '2',
-          },
-          {
-            _key: '93a1d24eade0',
-            _type: 'link',
-            url: '3',
-          },
-        ],
-        style: 'normal',
-      },
-    ]
+    const initialValue = [helloBlock]
+    const initialSelection: EditorSelection = null
+    const newSelection: EditorSelection = {
+      anchor: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 0},
+      focus: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 0},
+    }
     const onChange = jest.fn()
-    render(
+    const {rerender} = render(
       <PortableTextEditorTester
         onChange={onChange}
         ref={editorRef}
-        type={bodyType}
+        selection={initialSelection}
+        type={type}
         value={initialValue}
       />
     )
     if (!editorRef.current) {
       throw new Error('No editor')
     }
-    PortableTextEditor.focus(editorRef.current)
-    PortableTextEditor.select(editorRef.current, {
-      focus: {path: [{_key: '5fc57af23597'}, 'children', {_key: '11c8c9f783a8'}], offset: 4},
-      anchor: {path: [{_key: '5fc57af23597'}, 'children', {_key: '11c8c9f783a8'}], offset: 0},
+    act(() => {
+      if (editorRef.current) {
+        PortableTextEditor.focus(editorRef.current)
+        expect(PortableTextEditor.getSelection(editorRef.current)).toEqual(initialSelection)
+      }
     })
-    const linkType = PortableTextEditor.getPortableTextFeatures(editorRef.current).annotations.find(
-      (a) => a.type.name === 'link'
-    )?.type
-    if (!linkType) {
-      throw new Error('No link type found')
-    }
-    PortableTextEditor.removeAnnotation(editorRef.current, linkType)
-    expect(PortableTextEditor.getValue(editorRef.current)).toEqual([
-      {
-        _key: '5fc57af23597',
-        _type: 'myTestBlockType',
-        children: [
-          {
-            _key: 'be1c67c6971a',
-            _type: 'span',
-            marks: [],
-            text: 'This is a link, this is ',
-          },
-          {
-            _key: 'f3d73d3833bf',
-            _type: 'span',
-            marks: ['7b6d3d5de30c'],
-            text: 'another',
-          },
-          {
-            _key: '73b01f13c2ec',
-            _type: 'span',
-            marks: [],
-            text: ', and this is ',
-          },
-          {
-            _key: '13eb0d467c82',
-            _type: 'span',
-            marks: ['93a1d24eade0'],
-            text: 'a third',
-          },
-        ],
-        markDefs: [
-          {
-            _key: '7b6d3d5de30c',
-            _type: 'link',
-            url: '2',
-          },
-          {
-            _key: '93a1d24eade0',
-            _type: 'link',
-            url: '3',
-          },
-        ],
-        style: 'normal',
-      },
-    ])
+    rerender(
+      <PortableTextEditorTester
+        onChange={onChange}
+        ref={editorRef}
+        selection={newSelection}
+        type={type}
+        value={initialValue}
+      />
+    )
+    act(() => {
+      if (editorRef.current) {
+        expect(PortableTextEditor.getSelection(editorRef.current)).toEqual(newSelection)
+      }
+    })
   })
 })
