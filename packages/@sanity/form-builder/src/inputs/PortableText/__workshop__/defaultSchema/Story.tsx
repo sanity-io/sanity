@@ -14,7 +14,7 @@ export default function Story() {
 
   return (
     <LayerProvider zOffset={100}>
-      <Card height="fill" overflow="hidden" padding={4} sizing="border">
+      <Card height="fill" padding={4} sizing="border">
         <Flex align="center" height="fill" justify="center">
           <Container width={1}>
             <TestInput
