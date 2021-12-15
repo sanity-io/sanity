@@ -2,45 +2,50 @@ import {Heading, Text} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
 
+// Without this container, editing with Android breaks due to how Text is styled via responsiveFont in @sanity/ui
+const TextContainer = styled('div')`
+  display: block;
+`
+
 export const Normal = ({children, ...rest}) => (
-  <Text as="p" data-testid="text-style--normal" {...rest}>
-    {children}
+  <Text data-testid="text-style--normal" {...rest}>
+    <TextContainer>{children}</TextContainer>
   </Text>
 )
 
 export const Heading1 = ({children, ...rest}) => (
   <Heading as="h1" data-testid="text-style--h1" size={5} {...rest}>
-    {children}
+    <TextContainer>{children}</TextContainer>
   </Heading>
 )
 
 export const Heading2 = ({children, ...rest}) => (
   <Heading as="h2" data-testid="text-style--h2" size={4} {...rest}>
-    {children}
+    <TextContainer>{children}</TextContainer>
   </Heading>
 )
 
 export const Heading3 = ({children, ...rest}) => (
   <Heading as="h3" data-testid="text-style--h3" size={3} {...rest}>
-    {children}
+    <TextContainer>{children}</TextContainer>
   </Heading>
 )
 
 export const Heading4 = ({children, ...rest}) => (
   <Heading as="h4" data-testid="text-style--h4" size={2} {...rest}>
-    {children}
+    <TextContainer>{children}</TextContainer>
   </Heading>
 )
 
 export const Heading5 = ({children, ...rest}) => (
   <Heading as="h5" data-testid="text-style--h5" size={1} {...rest}>
-    {children}
+    <TextContainer>{children}</TextContainer>
   </Heading>
 )
 
 export const Heading6 = ({children, ...rest}) => (
   <Heading as="h6" data-testid="text-style--h6" size={0} {...rest}>
-    {children}
+    <TextContainer>{children}</TextContainer>
   </Heading>
 )
 
