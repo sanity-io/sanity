@@ -79,17 +79,6 @@ export function createWithHotkeys(
       const isBackspace = isHotkey('backspace', event.nativeEvent)
       const isDelete = isHotkey('delete', event.nativeEvent)
 
-      // Handle inline objects delete and backspace (not implemented in Slate)
-      // TODO: implement cut for inline objects (preferably in Slate)
-      if ((isDelete || isBackspace) && editor.selection && Range.isCollapsed(editor.selection)) {
-        const [focusChild] = Editor.node(editor, editor.selection.focus, {depth: 2})
-        if (Editor.isVoid(editor, focusChild) && Editor.isInline(editor, focusChild)) {
-          Transforms.delete(editor, {at: editor.selection, voids: false, hanging: true})
-          Transforms.collapse(editor)
-          editor.onChange()
-        }
-      }
-
       // Disallow deleting void blocks by backspace from another line.
       // Otherwise it's so easy to delete the void block above when trying to delete text on
       // the line below or above
@@ -142,17 +131,6 @@ export function createWithHotkeys(
           editor.onChange()
           return
         }
-      }
-
-      // There's a bug in Slate atm regarding void nodes not being deleted if it is the last block.
-      // Seems related to 'hanging: true'. 2020/05/26
-      if ((isDelete || isBackspace) && editor.selection && Range.isExpanded(editor.selection)) {
-        event.preventDefault()
-        event.stopPropagation()
-        Transforms.delete(editor, {at: editor.selection, voids: false, hanging: true})
-        Transforms.collapse(editor)
-        editor.onChange()
-        return
       }
 
       // Tab for lists
