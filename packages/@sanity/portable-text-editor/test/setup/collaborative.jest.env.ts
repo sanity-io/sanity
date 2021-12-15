@@ -1,5 +1,5 @@
 import NodeEnvironment from 'jest-environment-node'
-import puppeteer from 'puppeteer'
+import puppeteer, {KeyInput} from 'puppeteer'
 import ipc from 'node-ipc'
 import {isEqual} from 'lodash'
 import {EditorSelection, PortableTextBlock} from '../../src'
@@ -15,6 +15,10 @@ const WEB_SERVER_ROOT_URL = 'http://localhost:3000'
 // const DEBUG = 'sanity-pte:*'
 // eslint-disable-next-line no-process-env
 const DEBUG = process.env.DEBUG || false
+
+// Wait this long for selections and a new doc revision to appear on the clients
+const SELECTION_TIMEOUT_MS = 150 // This will also be an indicator of the performance in the editor. Set it as low as possible without breaking the tests.
+const REVISION_TIMEOUT_MS = 800 // 800 seems to be the limit for the doc patching to go full circle (increase this if tests starts to time out)
 
 let testId: string
 
@@ -121,10 +125,12 @@ export default class CollaborationEnvironment extends NodeEnvironment {
               'payload',
               JSON.stringify({type: 'revId', revId, testId, editorId})
             )
-            await page.waitForSelector(`code[data-rev-id="${revId}"]`)
-            await delay(250) // Give selection time to catch up in the editor after a new value so that it's ready to test afterwards
+            await page.waitForSelector(`code[data-rev-id="${revId}"]`, {
+              timeout: REVISION_TIMEOUT_MS,
+            })
           }
           const getSelection = async (): Promise<EditorSelection | null> => {
+            await delay(SELECTION_TIMEOUT_MS) // Give the editor a chance to catch up first
             const selection = await selectionHandle.evaluate((node) =>
               node.innerText ? JSON.parse(node.innerText) : null
             )
@@ -132,9 +138,11 @@ export default class CollaborationEnvironment extends NodeEnvironment {
           }
           const waitForNewSelection = async (selectionChangeFn: () => Promise<void>) => {
             const oldSelection = await getSelection()
-            await selectionChangeFn()
             const dataVal = oldSelection ? JSON.stringify(oldSelection) : 'null'
-            await page.waitForSelector(`code[data-selection]:not([data-selection='${dataVal}'])`)
+            selectionChangeFn() // Don't await this
+            await page.waitForSelector(`code[data-selection]:not([data-selection='${dataVal}'])`, {
+              timeout: SELECTION_TIMEOUT_MS,
+            })
           }
 
           const waitForSelection = async (selection: EditorSelection) => {
@@ -143,7 +151,9 @@ export default class CollaborationEnvironment extends NodeEnvironment {
             )
             const normalized = normalizeSelection(selection, value)
             const dataVal = JSON.stringify(normalized)
-            await page.waitForSelector(`code[data-selection='${dataVal}']`)
+            await page.waitForSelector(`code[data-selection='${dataVal}']`, {
+              timeout: SELECTION_TIMEOUT_MS,
+            })
           }
           return {
             testId,
@@ -169,7 +179,7 @@ export default class CollaborationEnvironment extends NodeEnvironment {
                 }),
               ])
             },
-            pressKey: async (keyName: string, times?: number) => {
+            pressKey: async (keyName: KeyInput, times?: number) => {
               await editableHandle.focus()
               const pressKey = async () => {
                 await editableHandle.press(keyName)
@@ -197,13 +207,21 @@ export default class CollaborationEnvironment extends NodeEnvironment {
                     'End',
                   ].includes(keyName)
                 ) {
-                  await waitForNewSelection(() => pressKey())
+                  await waitForNewSelection(pressKey)
                 } else {
                   // Unknown keys, test needs should be covered by the above cases.
                   console.warn(`Key ${keyName} not accounted for`)
                   await pressKey()
                 }
               }
+            },
+            toggleMark: async () => {
+              await page.keyboard.down('Control')
+              await page.keyboard.down('b')
+
+              await page.keyboard.up('b')
+              await page.keyboard.up('Control')
+              await waitForRevision()
             },
             focus: async () => {
               await editableHandle.focus()
