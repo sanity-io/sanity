@@ -286,7 +286,7 @@ export function createWithPortableTextMarkModel(
         debug(`Add mark '${mark}'`)
         Editor.addMark(editor, mark, true)
       }
-      const newSelection = toPortableTextRange(editor)
+      const newSelection = toPortableTextRange(editor, editor.selection)
       if (newSelection) {
         // Emit a new selection here (though it might be the same).
         // This is for toolbars etc that listens to selection changes to update themselves.

@@ -219,7 +219,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     if (
       propsSelection &&
       !isThrottling &&
-      !isEqual(propsSelection, toPortableTextRange(slateEditor))
+      !isEqual(propsSelection, toPortableTextRange(slateEditor, slateEditor.selection))
     ) {
       debug(`Selection from props ${JSON.stringify(propsSelection)}`)
       const normalizedSelection = normalizeSelection(propsSelection, value)

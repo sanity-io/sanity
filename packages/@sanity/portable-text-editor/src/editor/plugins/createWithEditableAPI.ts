@@ -158,7 +158,7 @@ export function createWithEditableAPI(
         const child = block.children[0]
         Editor.insertNode(editor, child as Node)
         editor.onChange()
-        return toPortableTextRange(editor)?.focus.path || []
+        return toPortableTextRange(editor, editor.selection)?.focus.path || []
       },
       insertBlock: (type: Type, value?: {[prop: string]: any}): Path => {
         if (!editor.selection) {
@@ -176,7 +176,7 @@ export function createWithEditableAPI(
         )[0] as unknown) as Node
         Editor.insertNode(editor, block)
         editor.onChange()
-        return toPortableTextRange(editor)?.focus.path || []
+        return toPortableTextRange(editor, editor.selection)?.focus.path || []
       },
       hasBlockStyle: (style: string): boolean => {
         try {
@@ -323,7 +323,7 @@ export function createWithEditableAPI(
                 })
                 Editor.normalize(editor)
                 editor.onChange()
-                const newSelection = toPortableTextRange(editor)
+                const newSelection = toPortableTextRange(editor, editor.selection)
                 // eslint-disable-next-line max-depth
                 if (newSelection && typeof block._key === 'string') {
                   // Insert an empty string to continue writing non-annotated text
@@ -427,7 +427,7 @@ export function createWithEditableAPI(
         }
       },
       getSelection: () => {
-        return toPortableTextRange(editor)
+        return toPortableTextRange(editor, editor.selection)
       },
       getValue: () => {
         return fromSlateValue(
