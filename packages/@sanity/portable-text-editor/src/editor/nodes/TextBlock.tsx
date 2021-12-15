@@ -22,11 +22,11 @@ export default function TextBlock(props: Props) {
   }
 
   let renderedBlock = children
-  if (element.listItem) {
+  if ('listItem' in block && block.listItem) {
     renderedBlock = (
       <DefaultListItem
-        listStyle={(element.listItem as string) || 'bullet'}
-        listLevel={(element.level as number) || 0}
+        listStyle={block.listItem || portableTextFeatures.lists[0].value}
+        listLevel={block.level || 0}
       >
         <DefaultListItemInner>{renderedBlock}</DefaultListItemInner>
       </DefaultListItem>
