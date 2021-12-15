@@ -8,7 +8,7 @@ import React, {
   useEffect,
 } from 'react'
 import {Element as SlateElement, Transforms, Path, Editor} from 'slate'
-import {ReactEditor, useEditor} from '@sanity/slate-react'
+import {ReactEditor, useSlateStatic} from '@sanity/slate-react'
 import {debugWithName} from '../utils/debug'
 import {
   IS_DRAGGING_ELEMENT_TARGET,
@@ -33,7 +33,7 @@ export const DraggableBlock: FunctionComponent<ElementProps> = ({
   readOnly,
   blockRef,
 }) => {
-  const editor = useEditor()
+  const editor = useSlateStatic()
   const dragGhostRef: React.MutableRefObject<undefined | HTMLElement> = useRef()
   const [isDragOver, setIsDragOver] = useState(false)
   const isVoid = useMemo(() => Editor.isVoid(editor, element), [editor, element])

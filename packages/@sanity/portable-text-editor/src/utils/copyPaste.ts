@@ -1,15 +1,11 @@
-import {Range, Editor, Node as SlateNode} from 'slate'
+import {Editor, Node as SlateNode, Element} from 'slate'
 import {ReactEditor} from '@sanity/slate-react'
 import {fromSlateValue} from '../utils/values'
 import {PortableTextFeatures} from '../types/portableText'
+import {PortableTextSlateEditor} from '..'
 import {KEY_TO_VALUE_ELEMENT} from './weakMaps'
 
 type DOMNode = globalThis.Node
-type DOMText = globalThis.Text
-
-const isDOMText = (value: any): value is DOMText => {
-  return isDOMNode(value) && value.nodeType === 3
-}
 
 const isDOMNode = (value: any): value is DOMNode => {
   return value instanceof Node

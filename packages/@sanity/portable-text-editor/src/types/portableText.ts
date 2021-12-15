@@ -7,11 +7,19 @@ export type PortableTextBlock = {
   [other: string]: any
 }
 
-export type TextBlock = {
+export interface TextBlock {
   _type: string
   _key: string
   children: PortableTextChild[]
   markDefs: MarkDef[]
+  listItem?: string
+  style?: string
+  level?: number
+}
+
+export interface ListItem extends TextBlock {
+  listItem: string
+  level: number
 }
 
 export type TextSpan = {

@@ -1,10 +1,10 @@
 import {Path} from '@sanity/types'
 import {Subject, Observable} from 'rxjs'
-import {Node as SlateNode, Operation as SlateOperation} from 'slate'
+import {Node as SlateNode, Operation as SlateOperation, Element} from 'slate'
 import {ReactEditor} from '@sanity/slate-react'
 import type {Patch} from '../types/patch'
 import {Type} from '../types/schema'
-import {PortableTextBlock, PortableTextChild} from '../types/portableText'
+import {PortableTextBlock, PortableTextChild, TextBlock, ListItem} from '../types/portableText'
 import {PortableTextEditor} from '../editor/PortableTextEditor'
 
 export interface EditableAPI {
@@ -58,8 +58,13 @@ export interface History {
 export type EditorSelectionPoint = {path: Path; offset: number}
 export type EditorSelection = {anchor: EditorSelectionPoint; focus: EditorSelectionPoint} | null
 export interface PortableTextSlateEditor extends ReactEditor {
+  _key: 'editor'
+  _type: 'editor'
   editable: EditableAPI
   history: History
+  isTextBlock: (value: any) => value is TextBlock
+  isListBlock: (value: any) => value is ListItem
+
   /**
    * Increments selected list items levels, or decrements them if @reverse is true.
    *

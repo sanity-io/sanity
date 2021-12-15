@@ -543,8 +543,8 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   )
 })
 
-function getValueOrIntitialValue(value: any, initialValue: any) {
-  if (Array.isArray(value) && value.length > 0) {
+function getValueOrInitialValue(value: unknown, initialValue: PortableTextBlock[]) {
+  if (value && Array.isArray(value) && value.length > 0) {
     return value
   }
   return initialValue
