@@ -1,7 +1,7 @@
 /* eslint-disable no-console, no-process-exit, no-sync */
 // eslint-disable-next-line import/no-unassigned-import
 import path from 'path'
-import {promise as fs} from 'fs'
+import fs from 'fs/promises'
 import chalk from 'chalk'
 import dotenv from 'dotenv'
 import neatStack from 'neat-stack'
