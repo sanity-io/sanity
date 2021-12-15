@@ -2,7 +2,15 @@ import {Transforms, Node} from 'slate'
 import {isEqual} from 'lodash'
 import isHotkey from 'is-hotkey'
 import {normalizeBlock} from '@sanity/block-tools'
-import React, {useCallback, useMemo, useState, useEffect, useRef, forwardRef} from 'react'
+import React, {
+  useCallback,
+  useMemo,
+  useState,
+  useEffect,
+  useRef,
+  forwardRef,
+  useLayoutEffect,
+} from 'react'
 import {Editable as SlateEditable, Slate, ReactEditor, withReact} from '@sanity/slate-react'
 import {
   EditorSelection,
@@ -24,7 +32,7 @@ import {hasEditableTarget, setFragmentData} from '../utils/copyPaste'
 import {normalizeSelection} from '../utils/selection'
 import {toPortableTextRange, toSlateRange} from '../utils/ranges'
 import {debugWithName} from '../utils/debug'
-import {KEY_TO_SLATE_ELEMENT, KEY_TO_VALUE_ELEMENT} from '../utils/weakMaps'
+import {KEY_TO_SLATE_ELEMENT} from '../utils/weakMaps'
 import {Leaf} from './Leaf'
 import {Element} from './Element'
 import {usePortableTextEditor} from './hooks/usePortableTextEditor'
@@ -56,8 +64,6 @@ type EditableProps = {
   spellCheck?: boolean
 }
 
-const SELECT_TOP_DOCUMENT = {anchor: {path: [0, 0], offset: 0}, focus: {path: [0, 0], offset: 0}}
-
 export const PortableTextEditable = forwardRef(function PortableTextEditable(
   props: EditableProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'onPaste'>,
   forwardedRef: React.ForwardedRef<HTMLDivElement>
@@ -81,6 +87,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   const portableTextEditor = usePortableTextEditor()
   const value = usePortableTextEditorValue()
   const ref = useForwardedRef(forwardedRef)
+  const slateEditor = portableTextEditor.slateInstance
 
   const {change$, isThrottling, keyGenerator, portableTextFeatures, readOnly} = portableTextEditor
 
@@ -102,6 +109,17 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     [portableTextFeatures.types.block.name, keyGenerator]
   )
 
+  const initialValue = useMemo(
+    () =>
+      toSlateValue(
+        getValueOrInitialValue(value, [placeHolderBlock]),
+        portableTextFeatures.types.block.name,
+        KEY_TO_SLATE_ELEMENT.get(slateEditor)
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [placeHolderBlock, slateEditor, portableTextFeatures.types.block.name] // Note that 'value' is deliberately left out here.
+  )
+
   // React/UI-spesific plugins
   const withInsertData = useMemo(
     () => createWithInsertData(change$, portableTextFeatures, keyGenerator),
@@ -119,40 +137,27 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   )
 
   // Update the Slate instance's plugins which are dependent on props for Editable
-  useMemo(
-    () => withHotKeys(withInsertData(withEditableAPI(withReact(portableTextEditor.slateInstance)))),
-    [portableTextEditor.slateInstance, withEditableAPI, withHotKeys, withInsertData]
-  )
+  useMemo(() => withHotKeys(withInsertData(withEditableAPI(withReact(slateEditor)))), [
+    slateEditor,
+    withEditableAPI,
+    withHotKeys,
+    withInsertData,
+  ])
 
-  // Track editor value
-  const [stateValue, setStateValue] = useState(
-    // Default value
-    toSlateValue(
-      getValueOrIntitialValue(value, [placeHolderBlock]),
-      portableTextFeatures.types.block.name,
-      KEY_TO_SLATE_ELEMENT.get(portableTextEditor.slateInstance)
-    )
-  )
-  const stateValueRef = useRef(stateValue)
-
-  // Track selection state
-  const [selection, setSelection] = useState(portableTextEditor.slateInstance.selection)
-  const selectionRef = useRef(selection)
+  // Track selection (action) state
   const [isSelecting, setIsSelecting] = useState(false)
 
   const renderElement = useCallback(
-    (eProps) => {
-      return (
-        <Element
-          {...eProps}
-          keyGenerator={keyGenerator}
-          portableTextFeatures={portableTextFeatures}
-          readOnly={readOnly}
-          renderBlock={renderBlock}
-          renderChild={renderChild}
-        />
-      )
-    },
+    (eProps) => (
+      <Element
+        {...eProps}
+        keyGenerator={keyGenerator}
+        portableTextFeatures={portableTextFeatures}
+        readOnly={readOnly}
+        renderBlock={renderBlock}
+        renderChild={renderChild}
+      />
+    ),
     [keyGenerator, portableTextFeatures, readOnly, renderBlock, renderChild]
   )
 
@@ -173,34 +178,8 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     [portableTextFeatures, keyGenerator, renderAnnotation, renderChild, renderDecorator, readOnly]
   )
 
-  const handleChange = useCallback(
-    (val: Node[]) => {
-      const nextSelection = portableTextEditor.slateInstance.selection
-
-      if (val !== stateValueRef.current) {
-        setStateValue(val)
-        stateValueRef.current = val
-      }
-
-      if (nextSelection !== selectionRef.current) {
-        setSelection(nextSelection)
-        selectionRef.current = nextSelection
-      }
-    },
-    [portableTextEditor]
-  )
-
-  useEffect(() => {
-    KEY_TO_SLATE_ELEMENT.set(portableTextEditor.slateInstance, {})
-    KEY_TO_VALUE_ELEMENT.set(portableTextEditor.slateInstance, {})
-    return () => {
-      KEY_TO_SLATE_ELEMENT.delete(portableTextEditor.slateInstance)
-      KEY_TO_VALUE_ELEMENT.delete(portableTextEditor.slateInstance)
-    }
-  }, [portableTextEditor.slateInstance])
-
   // Restore value from props
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (isThrottling) {
       debug('Not setting value from props (throttling)')
       return
@@ -210,52 +189,60 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       return
     }
     const fromMap = VALUE_TO_SLATE_VALUE.get(value || [])
-    if (fromMap === stateValue) {
+    if (fromMap === slateEditor.children) {
       debug('Value in sync, not updating value from props')
     } else {
-      debug('Setting value from props')
+      debug(`Setting value from props`)
       const slateValueFromProps = toSlateValue(
-        value,
+        getValueOrInitialValue(value, [placeHolderBlock]),
         portableTextFeatures.types.block.name,
-        KEY_TO_SLATE_ELEMENT.get(portableTextEditor.slateInstance)
+        KEY_TO_SLATE_ELEMENT.get(slateEditor)
       )
-      setStateValue(slateValueFromProps)
-      stateValueRef.current = slateValueFromProps
+      slateEditor.children = slateValueFromProps
       VALUE_TO_SLATE_VALUE.set(value || [], slateValueFromProps)
       change$.next({type: 'value', value})
+      // Signal changed after this tick (this is really important to let plugins catch up first!)
+      setTimeout(() => slateEditor.onChange())
     }
-  }, [value, isSelecting, isThrottling, portableTextEditor.slateInstance])
+  }, [
+    change$,
+    isSelecting,
+    isThrottling,
+    placeHolderBlock,
+    slateEditor,
+    portableTextFeatures.types.block.name,
+    value,
+  ])
 
   // Restore selection from props
   useEffect(() => {
     if (
       propsSelection &&
       !isThrottling &&
-      !isEqual(propsSelection, toPortableTextRange(portableTextEditor.slateInstance))
+      !isEqual(propsSelection, toPortableTextRange(slateEditor))
     ) {
-      debug('Selection from props', propsSelection)
+      debug(`Selection from props ${JSON.stringify(propsSelection)}`)
       const normalizedSelection = normalizeSelection(propsSelection, value)
       if (normalizedSelection !== null) {
-        debug('Normalized selection from props', normalizedSelection)
-        const slateRange = toSlateRange(normalizedSelection, portableTextEditor.slateInstance)
-        setSelection(slateRange)
-        selectionRef.current = slateRange
-      } else if (stateValue) {
-        debug('Selecting top document')
-        setSelection(SELECT_TOP_DOCUMENT)
-        selectionRef.current = SELECT_TOP_DOCUMENT
+        debug(`Normalized selection from props ${JSON.stringify(normalizedSelection)}`)
+        const slateRange = toSlateRange(normalizedSelection, slateEditor)
+        if (slateRange) {
+          Transforms.select(slateEditor, slateRange)
+        }
       }
     }
-  }, [propsSelection])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slateEditor, propsSelection]) // Note that 'isThrottling' and 'value' is deliberately left out here.
 
   // Set initial selection from props
   useEffect(() => {
     if (propsSelection) {
       PortableTextEditor.select(portableTextEditor, propsSelection)
     }
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Only initial
 
-  // Handle copy in the editor
+  // Handle copy event in the editor
   const handleCopy = useCallback(
     (event: React.ClipboardEvent<HTMLDivElement>): void | ReactEditor => {
       if (onCopy) {
@@ -266,17 +253,17 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
           return
         }
       }
-      if (hasEditableTarget(portableTextEditor.slateInstance, event.target)) {
+      if (hasEditableTarget(slateEditor, event.target)) {
         // Set Portable Text on the clipboard
-        setFragmentData(event.clipboardData, portableTextEditor.slateInstance, portableTextFeatures)
+        setFragmentData(event.clipboardData, slateEditor, portableTextFeatures)
       }
     },
-    [onCopy, portableTextEditor.slateInstance, portableTextFeatures]
+    [onCopy, slateEditor, portableTextFeatures]
   )
 
   // Handle pasting in the editor
   const handlePaste = useCallback(
-    (event: React.SyntheticEvent): Promise<any> | void => {
+    (event: React.SyntheticEvent): Promise<void> | void => {
       event.persist() // Keep the event through the plugin chain after calling next()
       const _selection = PortableTextEditor.getSelection(portableTextEditor)
       const type = portableTextFeatures.types.portableText
@@ -317,9 +304,9 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
               )
               const encoded = window.btoa(encodeURIComponent(stringToEncode))
               dataTransfer.setData('application/x-slate-fragment', encoded)
-              portableTextEditor.slateInstance.insertData(dataTransfer)
+              slateEditor.insertData(dataTransfer)
               change$.next({type: 'loading', isLoading: false})
-              portableTextEditor.slateInstance.onChange()
+              slateEditor.onChange()
               return
             }
             console.warn('Your onPaste function returned something unexpected:', result)
@@ -331,68 +318,19 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
           })
       }
     },
-    [change$, onPaste, portableTextEditor.slateInstance, portableTextFeatures, value]
+    [change$, onPaste, portableTextEditor, portableTextFeatures, slateEditor, value]
   )
 
-  // There's a bug in Slate atm regarding void nodes not being deleted. Seems related
-  // to 'hanging: true' and 'voids: false'. 2020/05/26
-  const handleCut = useCallback(
-    (event: React.ClipboardEvent<HTMLDivElement>): void | ReactEditor => {
-      event.preventDefault()
-      event.stopPropagation()
-      if (portableTextEditor.slateInstance.selection) {
-        ReactEditor.setFragmentData(portableTextEditor.slateInstance, event.clipboardData)
-        Transforms.delete(portableTextEditor.slateInstance, {
-          at: portableTextEditor.slateInstance.selection,
-          voids: false,
-          hanging: true,
-        })
-        Transforms.collapse(portableTextEditor.slateInstance)
-        portableTextEditor.slateInstance.onChange()
-      }
-      return portableTextEditor.slateInstance
-    },
-    [portableTextEditor.slateInstance]
-  )
-
-  // Emit selection after a selection is made
-  const emitSelection = useCallback(() => {
-    try {
-      const newSelection = toPortableTextRange(portableTextEditor.slateInstance)
-      // debug('Emitting new selection', JSON.stringify(newSelection))
-      change$.next({type: 'selection', selection: newSelection})
-    } catch (err) {
-      change$.next({type: 'selection', selection: null})
-    }
-  }, [change$, portableTextEditor])
-  const handleSelect = useCallback(() => {
-    if (isThrottling) {
-      return
-    }
-    emitSelection()
-  }, [emitSelection, isThrottling])
-  useEffect(() => {
-    if (isThrottling) {
-      return
-    }
-    emitSelection()
-  }, [emitSelection, isThrottling])
-
-  useEffect(() => {
-    emitSelection()
-  }, [emitSelection, selection])
-
-  // Make sure that when the user is actively selecting something, we don't update the editor or selections will be broken
   const _isSelecting = useRef(false)
   const onSelectStart = useCallback(
-    (event: any) => {
-      if (ReactEditor.hasDOMNode(portableTextEditor.slateInstance, event.target)) {
+    (event: KeyboardEvent | MouseEvent) => {
+      if (hasEditableTarget(slateEditor, event.target)) {
         debug('Start selecting')
         _isSelecting.current = true
         setTimeout(() => setIsSelecting(true))
       }
     },
-    [portableTextEditor]
+    [slateEditor]
   )
   const onSelectEnd = useCallback(() => {
     if (_isSelecting.current) {
@@ -430,23 +368,23 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   )
 
   useEffect(() => {
-    if (ref.current) {
+    if (ref.current && !readOnly) {
       const currentRef = ref.current
       currentRef.addEventListener('keydown', onSelectStartWithKeys, false)
       currentRef.addEventListener('keyup', onSelectEndWithKeys, false)
       currentRef.addEventListener('mousedown', onSelectStart, false)
-      currentRef.addEventListener('mouseup', onSelectEnd, false)
+      window.addEventListener('mouseup', onSelectEnd, false) // Must be on window, or we might not catch it if the pointer is another place at the time.
       currentRef.addEventListener('dragend', onSelectEnd, false)
       return () => {
         currentRef.removeEventListener('keydown', onSelectStartWithKeys, false)
         currentRef.removeEventListener('keyup', onSelectEndWithKeys, false)
         currentRef.removeEventListener('mousedown', onSelectStart, false)
-        currentRef.removeEventListener('mouseup', onSelectEnd, false)
+        window.removeEventListener('mouseup', onSelectEnd, false)
         currentRef.removeEventListener('dragend', onSelectEnd, false)
       }
     }
     return NOOP
-  }, [ref, onSelectEnd, onSelectEndWithKeys, onSelectStart, onSelectStartWithKeys])
+  }, [ref, onSelectEnd, onSelectEndWithKeys, onSelectStart, onSelectStartWithKeys, readOnly])
 
   const handleOnFocus = useCallback(() => {
     change$.next({type: 'focus'})
@@ -465,7 +403,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     [onBeforeInput]
   )
 
-  const handleKeyDown = portableTextEditor.slateInstance.pteWithHotKeys
+  const handleKeyDown = slateEditor.pteWithHotKeys
 
   const scrollSelectionIntoViewToSlate = useMemo(() => {
     // Use slate-react default scroll into view
@@ -485,23 +423,16 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   // The editor
   const slateEditable = useMemo(
     () => (
-      <Slate
-        onChange={handleChange}
-        editor={portableTextEditor.slateInstance}
-        selection={selection}
-        value={getValueOrIntitialValue(stateValue, [placeHolderBlock])}
-      >
+      <Slate onChange={NOOP} editor={slateEditor} value={initialValue}>
         <SlateEditable
           autoFocus={false}
           className="pt-editable"
           onBlur={handleOnBlur}
           onCopy={handleCopy}
-          onCut={handleCut}
           onDOMBeforeInput={handleOnBeforeInput}
           onFocus={handleOnFocus}
           onKeyDown={handleKeyDown}
           onPaste={handlePaste}
-          onSelect={handleSelect}
           placeholder={placeholderText}
           readOnly={readOnly}
           renderElement={renderElement}
@@ -512,25 +443,20 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       </Slate>
     ),
     [
-      handleChange,
       handleCopy,
-      handleCut,
       handleKeyDown,
       handleOnBeforeInput,
       handleOnBlur,
       handleOnFocus,
       handlePaste,
-      handleSelect,
-      placeHolderBlock,
+      initialValue,
       placeholderText,
-      portableTextEditor.slateInstance,
+      slateEditor,
       readOnly,
       renderElement,
       renderLeaf,
       scrollSelectionIntoViewToSlate,
-      selection,
       spellCheck,
-      stateValue,
     ]
   )
   if (!portableTextEditor) {
