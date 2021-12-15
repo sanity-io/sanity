@@ -189,21 +189,21 @@ function adjustSelection(
   patch: Patch,
   previousChildren: (Node | Partial<Node>)[],
   portableTextFeatures: PortableTextFeatures
-): Range | null {
+): void {
   const selection = editor.selection
   if (selection === null) {
     debug('No selection, not adjusting selection')
-    return null
+    return
   }
   // Text patches on same line
   if (patch.type === 'diffMatchPatch') {
     const [block, blockIndex] = findBlockAndIndexFromPath(patch.path[0], editor.children)
     if (!block) {
-      return null
+      return
     }
     const [child, childIndex] = findChildAndIndexFromPath(patch.path[2], block)
     if (!child) {
-      return null
+      return
     }
     const onSameBlock =
       selection.focus.path[0] === blockIndex && selection.focus.path[1] === childIndex
@@ -244,7 +244,7 @@ function adjustSelection(
           newSelection.anchor = {...selection.anchor}
           newSelection.anchor.offset += distance
           newSelection.focus.offset += distance
-          Transforms.select(editor, newSelection)
+          editor.selection = newSelection
         }
         // TODO: account for intersecting selections!
       }
@@ -315,7 +315,7 @@ function adjustSelection(
       (Path.isBefore(selection.anchor.path, [blockIndex]) &&
         Path.isBefore(selection.focus.path, [blockIndex]))
     ) {
-      return null
+      return
     }
 
     const isTextBlock = block._type === portableTextFeatures.types.block.name
@@ -360,7 +360,7 @@ function adjustSelection(
     }
     if (!isEqual(newSelection, selection)) {
       debug('adjusting selection for unset block')
-      Transforms.select(editor, newSelection)
+      editor.selection = newSelection
     }
   }
 
@@ -368,7 +368,7 @@ function adjustSelection(
   if (patch.type === 'insert' && patch.path.length === 1) {
     const [block, blockIndex] = findBlockAndIndexFromPath(patch.path[0], editor.children)
     if (!block || typeof blockIndex === 'undefined') {
-      return null
+      return
     }
     const newSelection = {...selection}
     if (Path.isAfter(selection.anchor.path, [blockIndex])) {
@@ -387,7 +387,7 @@ function adjustSelection(
     }
     if (!isEqual(newSelection, selection)) {
       debug('adjusting selection for insert block')
-      Transforms.select(editor, newSelection)
+      editor.selection = newSelection
     }
   }
 
@@ -395,28 +395,30 @@ function adjustSelection(
   if (patch.type === 'insert' && patch.path.length === 3) {
     const [block, blockIndex] = findBlockAndIndexFromPath(patch.path[0], editor.children)
     if (!block || typeof blockIndex === 'undefined') {
-      return null
+      return
     }
     const [child, childIndex] = findChildAndIndexFromPath(patch.path[2], block)
     if (!child) {
-      return null
+      return
     }
     if (selection.focus.path[0] === blockIndex && selection.focus.path[1] === childIndex) {
       const nextIndex = childIndex + patch.items.length
-      const blockChildren = editor.children[blockIndex].children as Node[]
+      const iBlock = editor.children[blockIndex]
+      const blockChildren = SlateElement.isElement(iBlock) && (iBlock.children as Node[])
       const nextBlock = editor.children[blockIndex + 1]
       const item = patch.items[0] as PortableTextBlock
+      const nextChild = blockChildren && blockChildren[nextIndex]
       const isSplitOperation =
-        !blockChildren[nextIndex] &&
+        !nextChild &&
         Editor.isBlock(editor, nextBlock) &&
         nextBlock.children &&
         nextBlock.children[0] &&
         typeof nextBlock.children[0]._key === 'string' &&
         isEqual(nextBlock.children[0]._key, item._key)
       const [node] = Editor.node(editor, selection)
-      const nodeText = node.text as Text
+      const nodeText = SlateText.isText(node) && node.text
       if (!nodeText) {
-        return null
+        return
       }
       if (selection.focus.offset >= nodeText.length) {
         if (!isSplitOperation) {
@@ -427,7 +429,7 @@ function adjustSelection(
           newSelection.anchor.offset = nodeText.length - newSelection.anchor.offset
           newSelection.focus.path = Path.next(newSelection.focus.path)
           newSelection.focus.offset = nodeText.length - newSelection.focus.offset
-          Transforms.select(editor, newSelection)
+          editor.selection = newSelection
         } else if (selection.focus.offset >= nodeText.length) {
           debug('adjusting selection for split node')
           const newSelection = {...selection}
@@ -437,13 +439,9 @@ function adjustSelection(
           newSelection.anchor.offset = selection.anchor.offset - nodeText.length || 0
           newSelection.focus.path = [blockIndex + 1, 0]
           newSelection.focus.offset = selection.focus.offset - nodeText.length || 0
-          Transforms.select(editor, newSelection)
+          editor.selection = newSelection
         }
       }
     }
   }
-  if (editor.selection && editor.selection !== selection) {
-    return editor.selection
-  }
-  return null
 }
