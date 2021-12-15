@@ -17,12 +17,6 @@ export function createWithPortableTextLists(portableTextFeatures: PortableTextFe
         debug(`Add list item '${listItemStyle}'`)
         editor.pteSetListItem(listItemStyle)
       }
-      const newSelection = toPortableTextRange(editor)
-      if (newSelection !== undefined) {
-        // Emit a new selection here (though it might be the same).
-        // This is for toolbars etc that listens to selection changes to update themselves.
-        change$.next({type: 'selection', selection: newSelection})
-      }
     }
 
     editor.pteUnsetListItem = (listItemStyle: string) => {
@@ -37,14 +31,18 @@ export function createWithPortableTextLists(portableTextFeatures: PortableTextFe
         }),
       ]
       selectedBlocks.forEach(([node, path]) => {
-        const {listItem, level, ...rest} = node
-        debug(`Unsetting list '${listItemStyle}'`)
-        Transforms.setNodes(editor, {...rest, listItem: undefined, level: undefined}, {at: path})
+        if (editor.isListBlock(node)) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const {listItem, level, ...rest} = node
+          const newNode = {
+            ...rest,
+            listItem: undefined,
+            level: undefined,
+          } as PortableTextBlock
+          debug(`Unsetting list '${listItemStyle}'`)
+          Transforms.setNodes(editor, newNode, {at: path})
+        }
       })
-      // Emit a new selection here (though it might be the same).
-      // This is for toolbars etc that listens to selection changes to update themselves.
-      change$.next({type: 'selection', selection: toPortableTextRange(editor)})
-      editor.onChange()
     }
 
     editor.pteSetListItem = (listItemStyle: string) => {
@@ -92,10 +90,11 @@ export function createWithPortableTextLists(portableTextFeatures: PortableTextFe
         return false
       }
       selectedBlocks.forEach(([node, path]) => {
-        debug('Unset list')
-        Transforms.setNodes(editor, {...node, level: undefined, listItem: undefined}, {at: path})
+        if (Element.isElement(node)) {
+          debug('Unset list')
+          Transforms.setNodes(editor, {...node, level: undefined, listItem: undefined}, {at: path})
+        }
       })
-      change$.next({type: 'selection', selection: toPortableTextRange(editor)})
       return true // Note: we are exiting the plugin chain by not returning editor (or hotkey plugin 'enter' will fire)
     }
 
