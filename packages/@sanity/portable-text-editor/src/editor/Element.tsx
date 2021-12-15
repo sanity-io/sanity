@@ -75,7 +75,9 @@ export const Element: FunctionComponent<ElementProps> = ({
         debug(`Render ${element._key} (inline object)`)
       }
       return (
-        <span {...attributes} style={inlineBlockStyle}>
+        <span {...attributes}>
+          {/* Note that children must follow immediately or cut and selections will not work properly in Chrome. */}
+          {children}
           <DraggableChild
             element={element}
             readOnly={readOnly}
@@ -83,6 +85,7 @@ export const Element: FunctionComponent<ElementProps> = ({
             keyGenerator={keyGenerator}
           >
             <span
+              className="pt-inline-object"
               ref={inlineBlockObjectRef}
               key={element._key}
               style={inlineBlockStyle}
@@ -108,7 +111,6 @@ export const Element: FunctionComponent<ElementProps> = ({
                     KEY_TO_VALUE_ELEMENT.get(editor)
                   )[0]
                 )}
-              {children}
             </span>
           </DraggableChild>
         </span>
@@ -155,10 +157,6 @@ export const Element: FunctionComponent<ElementProps> = ({
           blockRef
         )
       : textBlock
-    className = `pt-block pt-text-block pt-text-block-style-${element.style}`
-    if (element.listItem) {
-      className += ` pt-list-item pt-list-item-${element.listItem} pt-list-item-level-${element.level}`
-    }
     return (
       <div {...attributes} key={element._key} className={className}>
         <DraggableBlock element={element} readOnly={readOnly} blockRef={blockRef}>
@@ -182,9 +180,9 @@ export const Element: FunctionComponent<ElementProps> = ({
   )[0]
   const renderedBlockFromProps =
     renderBlock && renderBlock(block, type, renderAttribs, defaultRender, blockRef)
-
   return (
     <div {...attributes} key={element._key} className={className}>
+      {children}
       <DraggableBlock element={element} readOnly={readOnly} blockRef={blockRef}>
         {renderedBlockFromProps && (
           <div ref={blockRef} contentEditable={false}>
@@ -202,7 +200,6 @@ export const Element: FunctionComponent<ElementProps> = ({
             )}
           </DefaultBlockObject>
         )}
-        {children}
       </DraggableBlock>
     </div>
   )
