@@ -6,6 +6,7 @@ import {debugWithName} from '../utils/debug'
 import {
   createWithObjectKeys,
   createWithPortableTextMarkModel,
+  createWithPortableTextSelections,
   createWithSchemaTypes,
   createWithPatches,
   createWithMaxBlocks,
@@ -57,13 +58,16 @@ export const withPortableText = <T extends Editor>(
   const withPortableTextMarkModel = createWithPortableTextMarkModel(portableTextFeatures, change$)
   const withPortableTextBlockStyle = createWithPortableTextBlockStyle(portableTextFeatures, change$)
   const withUtils = createWithUtils(portableTextFeatures)
+  const withPortableTextSelections = createWithPortableTextSelections(change$)
 
-  return withPatches(
-    withUndoRedo(
-      withUtils(
-        withPortableTextBlockStyle(
-          withPortableTextLists(
-            withPortableTextMarkModel(withObjectKeys(withScemaTypes(withMaxBlocks(e))))
+  return withPortableTextSelections(
+    withPatches(
+      withUndoRedo(
+        withUtils(
+          withPortableTextBlockStyle(
+            withPortableTextLists(
+              withPortableTextMarkModel(withObjectKeys(withScemaTypes(withMaxBlocks(e))))
+            )
           )
         )
       )
