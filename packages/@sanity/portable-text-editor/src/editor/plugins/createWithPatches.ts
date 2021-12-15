@@ -253,52 +253,62 @@ function adjustSelection(
 
   // Unset patches on children within a block
   if (patch.type === 'unset' && patch.path.length === 3) {
-    const [block, blockIndex] = findBlockAndIndexFromPath(patch.path[0], previousChildren)
-    if (!block) {
+    const [oldBlock, oldBlockIndex] = findBlockAndIndexFromPath(patch.path[0], previousChildren)
+    if (!oldBlock) {
       debug('No block found trying to adjust for unset child')
-      return null
+      return
     }
-    const [, childIndex] = findChildAndIndexFromPath(patch.path[2], block)
-    if (selection.focus.path[0] === blockIndex && selection.focus.path[2] >= childIndex) {
+    const [, childIndex] = findChildAndIndexFromPath(patch.path[2], oldBlock)
+    if (
+      selection.focus.path[0] === oldBlockIndex &&
+      selection.focus.path[1] >= childIndex &&
+      childIndex > -1
+    ) {
       const prevIndexOrLastIndex =
-        childIndex === -1 || block.children.length === 1 ? block.children.length - 1 : childIndex
-      const prevText = block.children[prevIndexOrLastIndex].text as Text
+        childIndex === -1 || oldBlock.children.length === 1
+          ? oldBlock.children.length - 1
+          : childIndex
+      const prevOrLastChild = oldBlock.children[prevIndexOrLastIndex]
+      const prevText = (SlateText.isText(prevOrLastChild) && prevOrLastChild.text) || ''
       const newSelection = {...selection}
-      if (Path.endsAt(selection.anchor.path, [blockIndex, prevIndexOrLastIndex])) {
+      const beforePrevOrLast = oldBlock.children[Math.max(0, prevIndexOrLastIndex - 1)]
+      const textBeforePrevOrLast = SlateText.isText(beforePrevOrLast) ? beforePrevOrLast.text : ''
+      const textBefore = SlateText.isText(beforePrevOrLast) ? beforePrevOrLast.text : ''
+      if (
+        Path.isAfter(selection.anchor.path, [oldBlockIndex, prevIndexOrLastIndex]) ||
+        Path.endsAt(selection.anchor.path, [oldBlockIndex, prevIndexOrLastIndex])
+      ) {
         newSelection.anchor = {...selection.anchor}
         newSelection.anchor.path = [
           newSelection.anchor.path[0],
           Math.max(0, prevIndexOrLastIndex - 1),
         ]
-        const textBefore = ((block.children[prevIndexOrLastIndex - 1] &&
-          block.children[prevIndexOrLastIndex - 1].text) ||
-          '') as Text
-        newSelection.anchor.offset = textBefore.length
+        newSelection.anchor.offset = textBefore.length + textBeforePrevOrLast.length
       }
-      if (Path.endsAt(selection.focus.path, [blockIndex, prevIndexOrLastIndex])) {
+      if (
+        Path.isAfter(selection.focus.path, [oldBlockIndex, prevIndexOrLastIndex]) ||
+        Path.endsAt(selection.focus.path, [oldBlockIndex, prevIndexOrLastIndex])
+      ) {
         newSelection.focus = {...selection.focus}
         newSelection.focus.path = [
           newSelection.focus.path[0],
           Math.max(0, prevIndexOrLastIndex - 1),
         ]
-        const textBefore = ((block.children[prevIndexOrLastIndex - 1] &&
-          block.children[Math.max(0, prevIndexOrLastIndex - 1)].text) ||
-          '') as Text
-        newSelection.focus.offset = textBefore.length + prevText.length
+        newSelection.focus.offset = textBefore.length + textBeforePrevOrLast.length
       }
-      if (Path.isAfter(selection.anchor.path, [blockIndex, prevIndexOrLastIndex])) {
+      if (Path.isAfter(selection.anchor.path, [oldBlockIndex, prevIndexOrLastIndex])) {
         newSelection.anchor = {...selection.anchor}
-        newSelection.anchor.path = [newSelection.anchor.path[0], prevIndexOrLastIndex]
+        newSelection.anchor.path = [oldBlockIndex, prevIndexOrLastIndex]
         newSelection.anchor.offset = selection.anchor.offset + prevText.length
       }
-      if (Path.isAfter(selection.focus.path, [blockIndex, prevIndexOrLastIndex])) {
-        newSelection.focus = {...selection.anchor}
-        newSelection.anchor.path = [newSelection.anchor.path[0], prevIndexOrLastIndex]
-        newSelection.anchor.offset = selection.anchor.offset + prevText.length
+      if (Path.isAfter(selection.focus.path, [oldBlockIndex, prevIndexOrLastIndex])) {
+        newSelection.focus = {...selection.focus}
+        newSelection.focus.path = [oldBlockIndex, prevIndexOrLastIndex]
+        newSelection.focus.offset = selection.focus.offset + prevText.length
       }
       if (!isEqual(newSelection, selection)) {
-        debug('adjusting selection for unset block child', newSelection)
-        Transforms.select(editor, newSelection)
+        debug('adjusting selection for unset block child', JSON.stringify(newSelection))
+        editor.selection = newSelection
       }
     }
   }
