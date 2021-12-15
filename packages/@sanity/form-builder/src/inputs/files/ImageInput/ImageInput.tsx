@@ -436,16 +436,20 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderAsset() {
-    const {value, materialize, readOnly, assetSources} = this.props
+    const {value, materialize, readOnly, assetSources, type} = this.props
 
     const accept = get('image', 'options.accept', 'image/*')
+
+    const fieldGroups = this.getGroupedFields(type)
+    const showAdvancedEditButton =
+      value && (fieldGroups.dialog.length > 0 || (value?.asset && this.isImageToolEnabled()))
 
     return (
       <WithMaterializedReference reference={value!.asset} materialize={materialize}>
         {(fileAsset) => {
           return (
             <>
-              <ImageActionsMenu onEdit={this.handleOpenDialog}>
+              <ImageActionsMenu onEdit={this.handleOpenDialog} showEdit={showAdvancedEditButton}>
                 <ActionsMenu
                   onUpload={this.handleSelectFiles}
                   onBrowse={() => this.handleSelectImageFromAssetSource(assetSources[0])}
@@ -621,9 +625,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         item.path[0] === 'asset' ||
         fieldGroups.imageToolAndDialog.some((field) => item.path[0] === field.name)
     )
-    const showAdvancedEditButton =
-      value && (fieldGroups.dialog.length > 0 || (value?.asset && this.isImageToolEnabled()))
-
     const isDialogOpen =
       focusPath.length > 0 &&
       fieldGroups.dialog.concat(fieldGroups.imagetool).some((field) => focusPath[0] === field.name)
