@@ -647,6 +647,11 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       if (!value?._upload && !readOnly && hoveringFiles.length > 0) {
         return 'primary'
       }
+
+      if (readOnly) {
+        return 'transparent'
+      }
+
       return value?._upload && value?.asset ? 'transparent' : 'default'
     }
 
@@ -682,6 +687,10 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                 onBlur={this.handleFileTargetBlur}
                 border={!(!value?._upload && value?.asset)}
                 padding={!value?._upload && value?.asset ? 0 : 5}
+                style={{
+                  borderStyle:
+                    !value?._upload && !readOnly && hoveringFiles.length > 0 ? 'solid' : 'dashed',
+                }}
                 tone={getFileTone()}
               >
                 {value?._upload && this.renderUploadState(value._upload)}
