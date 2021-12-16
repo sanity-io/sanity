@@ -14,7 +14,14 @@ import {
   Type,
 } from '@sanity/portable-text-editor'
 import {Path, isKeySegment, Marker, isKeyedObject} from '@sanity/types'
-import {Portal, PortalProvider, Text, usePortal} from '@sanity/ui'
+import {
+  BoundaryElementProvider,
+  Portal,
+  PortalProvider,
+  Text,
+  useBoundaryElement,
+  usePortal,
+} from '@sanity/ui'
 import {isEqual} from 'lodash'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/components'
 import ActivateOnFocus from '../../components/ActivateOnFocus/ActivateOnFocus'
@@ -75,6 +82,7 @@ export function Input(props: InputProps) {
   const selection = usePortableTextEditorSelection()
   const ptFeatures = useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [editor])
   const portal = usePortal()
+  const {element: boundaryElement} = useBoundaryElement()
 
   // States
   const [isActive, setIsActive] = useState(false)
@@ -393,18 +401,20 @@ export function Input(props: InputProps) {
   )
 
   const editObjectNode = (
-    <EditObject
-      focusPath={focusPath}
-      objectEditData={objectEditData}
-      markers={markers} // TODO: filter relevant
-      onBlur={handleEditObjectFormBuilderBlur}
-      onChange={handleFormBuilderEditObjectChange}
-      onClose={handleEditObjectClose}
-      onFocus={handleEditObjectFormBuilderFocus}
-      readOnly={readOnly}
-      presence={presence}
-      value={value}
-    />
+    <BoundaryElementProvider element={isFullscreen ? scrollElement : boundaryElement}>
+      <EditObject
+        focusPath={focusPath}
+        objectEditData={objectEditData}
+        markers={markers} // TODO: filter relevant
+        onBlur={handleEditObjectFormBuilderBlur}
+        onChange={handleFormBuilderEditObjectChange}
+        onClose={handleEditObjectClose}
+        onFocus={handleEditObjectFormBuilderFocus}
+        readOnly={readOnly}
+        presence={presence}
+        value={value}
+      />
+    </BoundaryElementProvider>
   )
 
   const children = (
