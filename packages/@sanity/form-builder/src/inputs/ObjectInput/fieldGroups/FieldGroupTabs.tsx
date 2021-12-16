@@ -8,6 +8,7 @@ import {GroupTab, GroupOption} from './Group'
 interface FieldGroupTabsProps {
   inputId: string
   groups: FieldGroup[]
+  shouldAutoFocus?: boolean
   title?: string
   selectedName?: string
   onClick?: (name: string) => void
@@ -39,6 +40,7 @@ const GroupTabs = ({
   groups,
   onClick,
   selectedName,
+  shouldAutoFocus = true,
   onStateChange,
   disabled,
 }: FieldGroupTabsProps) => (
@@ -57,7 +59,7 @@ const GroupTabs = ({
             onClick={onClick}
             selected={selectedName === group.name ?? group.default}
             onStateChange={onStateChange}
-            autoFocus={selectedName === group.name}
+            autoFocus={selectedName === group.name && shouldAutoFocus}
             parent={groups}
             disabled={disabled}
             {...restGroup}
@@ -74,6 +76,7 @@ const GroupSelect = ({
   inputId,
   onSelect,
   selectedName,
+  shouldAutoFocus = true,
   onStateChange,
   disabled,
 }: Omit<FieldGroupTabsProps, 'onClick'> & {onSelect: (name: string) => void}) => {
@@ -91,7 +94,7 @@ const GroupSelect = ({
       muted
       data-testid="field-group-select"
       aria-label="Field groups"
-      autoFocus
+      autoFocus={shouldAutoFocus}
       disabled={disabled}
       value={selectedName}
     >

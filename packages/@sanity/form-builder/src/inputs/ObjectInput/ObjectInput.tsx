@@ -425,6 +425,7 @@ export const ObjectInput = memo(
               onGroupsStateChange={handleAllGroupsHidden}
               selectedName={selectedFieldGroupName}
               groups={filterGroups}
+              shouldAutoFocus={focusPath.length === 0}
             />
             <Card paddingTop={4}>
               <Grid columns={columns} gapX={4} gapY={5} id={`${inputId}-field-group-fields`}>
