@@ -16,7 +16,7 @@ interface Props {
 export function HotspotImage(props: Props) {
   const {id, drag, readOnly, assetDocument, isRejected} = props
   const imageContainer = useRef()
-  const storedHeight = window.localStorage.getItem(`imageHeight_${id}`)
+  const [storedHeight, setStoredHeight] = useState(window.localStorage.getItem(`imageHeight_${id}`))
   const [tone, setTone] = useState('default' as CardTone)
 
   useEffect(() => {
@@ -24,6 +24,7 @@ export function HotspotImage(props: Props) {
       const storageHeight = window.localStorage.getItem(`imageHeight_${id}`)
 
       if (storageHeight) {
+        setStoredHeight(storedHeight)
         window.localStorage.setItem(`imageHeight_${id}`, mutations[0].contentRect.height)
       } else {
         window.localStorage.setItem(`imageHeight_${id}`, storageHeight)
@@ -39,7 +40,7 @@ export function HotspotImage(props: Props) {
 
       return observer.disconnect()
     }
-  }, [id])
+  })
 
   useEffect(() => {
     const acceptTone = isRejected || readOnly ? 'critical' : 'primary'
