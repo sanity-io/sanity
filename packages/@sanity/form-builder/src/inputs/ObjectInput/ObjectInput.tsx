@@ -112,6 +112,7 @@ export const ObjectInput = memo(
       )
     }, [filterGroups])
     const [selectedFieldGroupName, setSelectedFieldGroupName] = useState(defaultFieldGroupName)
+    const [isAllGroupsHidden, setIsAllGroupsHidden] = useState(false)
     const fieldGroupRootFocusPaths = React.useMemo(() => {
       if (filterGroups.length === 0) {
         return type.fields.map((field) => field.name)
@@ -123,6 +124,9 @@ export const ObjectInput = memo(
     }, [filterGroups, selectedFieldGroupName, type.fields])
     const handleSelectTab = useCallback((tabName: string) => {
       setSelectedFieldGroupName(tabName)
+    }, [])
+    const handleAllGroupsHidden = useCallback((hidden: boolean) => {
+      setIsAllGroupsHidden(hidden)
     }, [])
     const hasGroups = filterGroups.length > 0
 
@@ -395,6 +399,12 @@ export const ObjectInput = memo(
       }
     }, [defaultFieldGroupName])
 
+    React.useEffect(() => {
+      if (selectedFieldGroupName !== DEFAULT_FIELD_GROUP_NAME && isAllGroupsHidden) {
+        setSelectedFieldGroupName(DEFAULT_FIELD_GROUP_NAME)
+      }
+    }, [isAllGroupsHidden, selectedFieldGroupName])
+
     const columns = type.options && type.options.columns
 
     const renderFieldGroups = useCallback(() => {
@@ -412,6 +422,7 @@ export const ObjectInput = memo(
             <FieldGroupTabs
               inputId={inputId}
               onClick={handleSelectTab}
+              onGroupsStateChange={handleAllGroupsHidden}
               selectedName={selectedFieldGroupName}
               groups={filterGroups}
             />

@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect} from 'react'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {ElementQuery, Select, TabList} from '@sanity/ui'
 import {FieldGroup} from '@sanity/types/src'
 import styled from 'styled-components'
@@ -11,6 +11,8 @@ interface FieldGroupTabsProps {
   title?: string
   selectedName?: string
   onClick?: (name: string) => void
+  onStateChange?: (name: string, hidden: boolean) => void
+  onGroupsStateChange?: (hidden: boolean) => void
   disabled?: boolean
 }
 
@@ -32,7 +34,14 @@ const Root = styled(ElementQuery)`
 `
 
 /* For medium to large screens, use TabList and Tab from Sanity UI  */
-const GroupTabs = ({inputId, groups, onClick, selectedName, disabled}: FieldGroupTabsProps) => (
+const GroupTabs = ({
+  inputId,
+  groups,
+  onClick,
+  selectedName,
+  onStateChange,
+  disabled,
+}: FieldGroupTabsProps) => (
   <TabList space={2} data-testid="field-group-tabs">
     {groups
       .map((group) => {
@@ -47,6 +56,7 @@ const GroupTabs = ({inputId, groups, onClick, selectedName, disabled}: FieldGrou
             aria-controls={`${inputId}-field-group-fields`}
             onClick={onClick}
             selected={selectedName === group.name ?? group.default}
+            onStateChange={onStateChange}
             autoFocus={selectedName === group.name}
             parent={groups}
             disabled={disabled}
@@ -64,6 +74,7 @@ const GroupSelect = ({
   inputId,
   onSelect,
   selectedName,
+  onStateChange,
   disabled,
 }: Omit<FieldGroupTabsProps, 'onClick'> & {onSelect: (name: string) => void}) => {
   const handleSelect = useCallback(
@@ -98,6 +109,7 @@ const GroupSelect = ({
             aria-controls={`${inputId}-field-group-fields`}
             selected={selectedName === group.name}
             parent={groups}
+            onStateChange={onStateChange}
             {...restGroup}
           />
         )
@@ -111,6 +123,7 @@ export const FieldGroupTabs = React.memo(function FieldGroupTabs({
   ...props
 }: FieldGroupTabsProps) {
   const {changesOpen} = useReviewChanges()
+  const {groups, onGroupsStateChange} = props
 
   const handleClick = useCallback(
     (groupName) => {
@@ -125,10 +138,53 @@ export const FieldGroupTabs = React.memo(function FieldGroupTabs({
     }
   }, [changesOpen, handleClick])
 
+  const [hiddenGroups, setHiddenGroups] = useState([])
+  const isAllGroupsHidden = useMemo(() => {
+    return groups.filter((group) => !hiddenGroups.includes(group.name)).length < 2
+  }, [hiddenGroups, groups])
+  const handleGroupStateChange = useCallback((name: string, hidden: boolean) => {
+    setHiddenGroups((currentHiddenGroups) => {
+      const newHiddenGroups = [...(currentHiddenGroups || [])]
+      // eslint-disable-next-line max-nested-callbacks
+      const index = newHiddenGroups.findIndex((v: string) => v === name)
+      const isAlreadyHidden = index > -1
+
+      if (hidden && !isAlreadyHidden) {
+        newHiddenGroups.push(name)
+
+        return newHiddenGroups
+      }
+
+      if (!hidden && isAlreadyHidden) {
+        newHiddenGroups.splice(index, 1)
+
+        return newHiddenGroups
+      }
+
+      return currentHiddenGroups
+    })
+  }, [])
+
+  useEffect(() => {
+    if (onGroupsStateChange) {
+      onGroupsStateChange(isAllGroupsHidden)
+    }
+  }, [isAllGroupsHidden, onGroupsStateChange])
+
   return (
-    <Root data-testid="field-group-root">
-      <GroupTabs {...props} disabled={changesOpen} onClick={handleClick} />
-      <GroupSelect {...props} disabled={changesOpen} onSelect={handleClick} />
+    <Root data-testid="field-group-root" hidden={isAllGroupsHidden}>
+      <GroupTabs
+        {...props}
+        disabled={changesOpen}
+        onClick={handleClick}
+        onStateChange={handleGroupStateChange}
+      />
+      <GroupSelect
+        {...props}
+        disabled={changesOpen}
+        onSelect={handleClick}
+        onStateChange={handleGroupStateChange}
+      />
     </Root>
   )
 })

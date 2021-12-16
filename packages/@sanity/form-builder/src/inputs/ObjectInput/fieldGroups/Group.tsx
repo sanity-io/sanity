@@ -1,4 +1,4 @@
-import React, {forwardRef} from 'react'
+import React, {forwardRef, useEffect} from 'react'
 import {Tab} from '@sanity/ui'
 import {FieldGroup} from '@sanity/types/src'
 import {unstable_useConditionalProperty as useConditionalProperty} from '@sanity/base/hooks'
@@ -7,6 +7,7 @@ interface GroupType extends FieldGroup {
   onClick: (string) => void
   autoFocus?: boolean
   selected: boolean
+  onStateChange?: (name: string, hidden: boolean) => void
   parent: unknown
   'aria-controls': string
   disabled?: boolean
@@ -18,7 +19,7 @@ export const GroupTab = forwardRef(function GroupTab(
 ) {
   const {name, title} = props
   // Separate props for resolving conditional hidden groups
-  const {onClick, parent, hidden, ...group} = props
+  const {onClick, onStateChange, parent, hidden, ...group} = props
 
   const isHidden = useConditionalProperty({
     checkProperty: hidden,
@@ -31,6 +32,10 @@ export const GroupTab = forwardRef(function GroupTab(
   const handleClick = React.useCallback(() => {
     onClick(name)
   }, [name, onClick])
+
+  useEffect(() => {
+    onStateChange(name, Boolean(isHidden))
+  }, [isHidden, name, onStateChange])
 
   if (isHidden) {
     return null
@@ -53,13 +58,18 @@ export const GroupTab = forwardRef(function GroupTab(
 export const GroupOption = (props: Omit<GroupType, 'onClick' | 'autofocus'>) => {
   const {name, title, ...rest} = props
   // Separate props for resolving conditional hidden groups
-  const {autoFocus, selected, hidden, parent, ...group} = props
+  const {autoFocus, selected, hidden, parent, onStateChange, ...group} = props
   const isHidden = useConditionalProperty({
     checkProperty: hidden,
     checkPropertyKey: 'hidden',
     value: group,
     parent,
   })
+
+  useEffect(() => {
+    onStateChange(name, Boolean(isHidden))
+  }, [isHidden, name, onStateChange])
+
   if (isHidden) {
     return null
   }
