@@ -73,7 +73,6 @@ export function DefaultObjectEditing(props: DefaultObjectEditingProps) {
     <Dialog
       id={dialogId || ''}
       onClose={onClose}
-      onClickOutside={onClose}
       header={type.title}
       portal="default"
       ref={setRootElement}
