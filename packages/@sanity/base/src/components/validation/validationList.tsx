@@ -50,7 +50,7 @@ export function ValidationList(props: ValidationListProps) {
   }
 
   return (
-    <Container width={0} data-kind={kind}>
+    <Container width={0} data-kind={kind} data-testid="validation-list">
       {hasErrors &&
         errors.map((_error, i) => (
           <ListItem

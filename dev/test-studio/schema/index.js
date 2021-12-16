@@ -69,6 +69,7 @@ import {withDocumentTestSchemaType} from './debug/withDocumentTest'
 import fieldGroups from './debug/fieldGroups'
 import fieldGroupsDefault from './debug/fieldGroupsDefault'
 import fieldGroupsMany from './debug/fieldGroupsMany'
+import fieldGroupsWithValidation from './debug/fieldGroupsWithValidation'
 
 // Test documents with official plugin inputs
 import code from './plugins/code'
@@ -178,5 +179,6 @@ export default createSchema({
     fieldGroups,
     fieldGroupsDefault,
     fieldGroupsMany,
+    fieldGroupsWithValidation,
   ]),
 })

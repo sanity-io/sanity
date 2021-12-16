@@ -143,17 +143,67 @@ describe('@sanity/form-builder: field groups on mobile', () => {
 })
 
 describe('@sanity/form-builder: field groups with validation markers', () => {
+  const VALIDATION_DOCUMENT_URI =
+    '/test/desk/input-debug;field-groups;fieldGroupsWithValidation;713f9e6d-06ad-4b2b-b164-bc8cd6d52553'
+
+  beforeEach(() => {
+    cy.viewport(2000, 2500)
+  })
+
+  commonTests()
+
   it('switches group and scrolls to field when clicking validation error that is not in active group', () => {
-    // todo
-    // navigate to group without validation error
-    // open validation menu
-    // click on validation error that is not in current group
-    // expect field with the validation error you clicked is visible and gets focused
+    cy.visit(VALIDATION_DOCUMENT_URI)
+    cy.get(el('group-tab-all-fields')).type('{rightarrow}')
+    cy.get(el('group-tab-group1'))
+      .click()
+      .should('have.attr', 'aria-selected', 'true')
+      .should('be.focused')
+    cy.get(el('input-field1')).should('be.visible')
+    cy.get(el('input-field2')).should('not.exist')
+    cy.get(el('input-field3')).should('be.visible')
+    cy.get(el('input-field4')).should('be.visible')
+    cy.get(el('input-fieldGroup')).should('be.visible')
+    cy.get(el('validation-list-button'))
+      .trigger('click')
+      .should('have.attr', 'aria-expanded', 'true')
+    cy.get(el('validation-list')).get('[data-ui="MenuItem"]').eq(0).trigger('click')
+    cy.get(el('group-tab-all-fields')).should('have.attr', 'aria-selected', 'true')
+    cy.get(el('input-field2')).should('be.visible')
+    cy.get(el('input-field2')).get('input').should('be.focused')
+  })
+
+  it('stays in group and scrolls to field when clicking validation error that is in active group', () => {
+    cy.visit(VALIDATION_DOCUMENT_URI)
+    cy.get(el('group-tab-group2'))
+      .click()
+      .should('have.attr', 'aria-selected', 'true')
+      .should('be.focused')
+    cy.get(el('input-field2')).should('be.visible')
+    cy.get(el('validation-list-button'))
+      .trigger('click')
+      .should('have.attr', 'aria-expanded', 'true')
+    cy.get(el('validation-list')).get('[data-ui="MenuItem"]').eq(0).trigger('click')
+    cy.get(el('group-tab-group2')).should('have.attr', 'aria-selected', 'true')
+    cy.get(el('input-field2')).should('be.visible')
+    cy.get(el('input-field2')).get('input').should('be.focused')
   })
 })
 
 describe('@sanity/form-builder: field groups with presence', () => {
+  const VALIDATION_DOCUMENT_WITH_DEFAULT_GROUP_URI =
+    '/test/desk/input-debug;field-groups;fieldGroupsDefault;f61b9762-3519-43f2-acc3-97ee709e2131'
+
+  beforeEach(() => {
+    cy.viewport(2000, 2500)
+  })
+
+  commonTests()
+
   it('navigates to document and focuses on correct field when clicking someones presence marker', () => {
-    // todo
+    cy.visit(`${VALIDATION_DOCUMENT_WITH_DEFAULT_GROUP_URI}%2Cpath%3Dfield3`)
+    cy.get(el('group-tab-all-fields')).should('have.attr', 'aria-selected', 'true')
+    cy.get(el('input-field3')).should('be.visible')
+    cy.get(el('input-field3')).get('input').should('be.focused')
   })
 })

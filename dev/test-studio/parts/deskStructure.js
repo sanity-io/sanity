@@ -94,7 +94,12 @@ const DEBUG_INPUT_TYPES = [
 ]
 
 const CI_INPUT_TYPES = ['conditionalFieldset', 'validationCI']
-const FIELD_GROUP_TYPES = ['fieldGroups', 'fieldGroupsDefault', 'fieldGroupsMany']
+const FIELD_GROUP_TYPES = [
+  'fieldGroups',
+  'fieldGroupsDefault',
+  'fieldGroupsMany',
+  'fieldGroupsWithValidation',
+]
 
 const EXTERNAL_PLUGIN_INPUT_TYPES = ['markdownTest', 'muxVideoPost']
 
