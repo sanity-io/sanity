@@ -267,7 +267,7 @@ export function createWithPortableTextMarkModel(
     }
 
     editor.pteIsMarkActive = (mark: string): boolean => {
-      if (!editor.selection) {
+      if (!editor.selection || editor.selection.focus.path.length < 2) {
         return false
       }
       let existingMarks =
