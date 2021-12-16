@@ -148,6 +148,7 @@ function Content(
     width = 'small',
   } = props
   const {isTopLayer} = useLayer()
+  const {element: boundaryElement} = useBoundaryElement()
 
   const handleChange = useCallback((patchEvent: PatchEvent): void => onChange(patchEvent, path), [
     onChange,
@@ -165,7 +166,7 @@ function Content(
     [handleClose]
   )
 
-  useClickOutside(handleClose, [rootElement])
+  useClickOutside(handleClose, [rootElement], boundaryElement)
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown)
