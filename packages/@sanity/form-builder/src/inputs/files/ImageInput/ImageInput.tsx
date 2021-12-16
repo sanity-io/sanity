@@ -39,6 +39,7 @@ import {UploadProgress} from '../common/UploadProgress'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import {handleSelectAssetFromSource} from '../common/assetSource'
 import {ActionsMenu} from '../common/ActionsMenu'
+import resolveUploader from '../../../sanity/uploads/resolveUploader'
 import {HotspotImage} from './HotSpotImage'
 import {ImageInputField} from './ImageInputField'
 import {ImageActionsMenu} from './ImageActionsMenu'
@@ -384,14 +385,19 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderMaterializedAsset = (assetDocument: ImageAsset) => {
-    const {value = {}, readOnly} = this.props
+    const {value = {}, readOnly, type} = this.props
     const {hoveringFiles} = this.state
-    console.log(!value?._upload && !readOnly && hoveringFiles.length > 0)
+
+    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
+    const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
+
     return (
       <HotspotImage
         id={this._inputId}
-        drag={!value?._upload && !readOnly && hoveringFiles.length > 0}
+        drag={!value?._upload && hoveringFiles.length > 0}
         assetDocument={assetDocument}
+        isRejected={rejectedFilesCount > 0}
+        readOnly={readOnly}
       />
     )
   }
@@ -655,7 +661,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
           description={type.description}
           level={fieldGroups.highlighted.length > 0 ? level : 0}
           __unstable_changeIndicator={false}
-          readOnly={Boolean(readOnly)}
         >
           <div>
             <ChangeIndicatorForFieldPath
@@ -666,27 +671,23 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                 this.hasChangeInFields(fieldGroups.imageToolAndDialog)
               }
             >
-              {!(!value?._upload && value?.asset) && (
-                <FileTarget
-                  tabIndex={readOnly ? undefined : 0}
-                  disabled={readOnly === true}
-                  ref={this.setFocusElement}
-                  onFiles={this.handleSelectFiles}
-                  onFilesOver={this.handleFilesOver}
-                  onFilesOut={this.handleFilesOut}
-                  onFocus={this.handleFileTargetFocus}
-                  onBlur={this.handleFileTargetBlur}
-                  border
-                  readOnly={readOnly}
-                  padding={5}
-                  tone={getFileTone()}
-                >
-                  {value?._upload && this.renderUploadState(value._upload)}
-                  {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
-                </FileTarget>
-              )}
-
-              {!value?._upload && value?.asset && this.renderAsset()}
+              <FileTarget
+                tabIndex={readOnly ? undefined : 0}
+                disabled={false}
+                ref={this.setFocusElement}
+                onFiles={this.handleSelectFiles}
+                onFilesOver={this.handleFilesOver}
+                onFilesOut={this.handleFilesOut}
+                onFocus={this.handleFileTargetFocus}
+                onBlur={this.handleFileTargetBlur}
+                border={!(!value?._upload && value?.asset)}
+                padding={!value?._upload && value?.asset ? 0 : 5}
+                tone={getFileTone()}
+              >
+                {value?._upload && this.renderUploadState(value._upload)}
+                {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
+                {!value?._upload && value?.asset && this.renderAsset()}
+              </FileTarget>
             </ChangeIndicatorForFieldPath>
           </div>
 

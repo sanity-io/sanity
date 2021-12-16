@@ -32,9 +32,9 @@ export const Overlay = styled(Flex)`
   right: 0;
   bottom: 0;
   backdrop-filter: ${({drag}) => (drag ? 'blur(10px)' : '')};
-  color: ${studioTheme.color.light.primary.card.enabled.fg};
-  background-color: ${({theme, drag}) =>
-    drag ? rgba(studioTheme.color.light.primary.card.enabled.bg, 0.8) : 'transparent'};
+  color: ${({tone}) => (tone ? studioTheme.color.light[tone].card.enabled.fg : '')};
+  background-color: ${({tone, drag}) =>
+    drag ? rgba(studioTheme.color.light[tone].card.enabled.bg, 0.8) : 'transparent'};
 `
 
 export const MAX_HEIGHT = '15rem'

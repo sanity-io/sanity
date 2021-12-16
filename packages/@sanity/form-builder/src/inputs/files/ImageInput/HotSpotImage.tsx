@@ -1,8 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react'
 
-import {ImageIcon} from '@sanity/icons'
-import {Card, Flex, studioTheme, rgba, Box, Heading, Text} from '@sanity/ui'
-import styled from 'styled-components'
+import {AccessDeniedIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
+import {Card, Flex, Box, Heading, Text, CardTone} from '@sanity/ui'
 import {ImageAsset} from '@sanity/types/src'
 import {RatioBox, Overlay, MAX_HEIGHT} from './HotSpotImage.styled'
 
@@ -11,12 +10,14 @@ interface Props {
   readOnly?: boolean | null
   drag: boolean
   assetDocument: ImageAsset
+  isRejected: boolean
 }
 
 export function HotspotImage(props: Props) {
-  const {id, drag, readOnly, assetDocument} = props
+  const {id, drag, readOnly, assetDocument, isRejected} = props
   const imageContainer = useRef()
   const storedHeight = window.localStorage.getItem(`imageHeight_${id}`)
+  const [tone, setTone] = useState('default' as CardTone)
 
   useEffect(() => {
     const observer = new ResizeObserver(function (mutations) {
@@ -38,24 +39,52 @@ export function HotspotImage(props: Props) {
 
       return observer.disconnect()
     }
-  }, [])
+  }, [id])
+
+  useEffect(() => {
+    const acceptTone = isRejected || readOnly ? 'critical' : 'primary'
+    setTone(drag ? acceptTone : 'default')
+
+    return undefined
+  }, [drag, isRejected, readOnly, tone])
+
+  function HoverIcon() {
+    if (isRejected) {
+      return <AccessDeniedIcon />
+    }
+    if (readOnly) {
+      return <ReadOnlyIcon />
+    }
+    return <ImageIcon />
+  }
+
+  function HoverText() {
+    let message = 'Drop image to upload'
+    if (isRejected) {
+      message = 'Can’t upload this file here'
+    }
+    if (readOnly) {
+      message = 'This field is read only'
+    }
+
+    return <Text size={1}>{message}</Text>
+  }
 
   return (
-    <Card border tabIndex={0} tone={drag ? 'primary' : 'default'}>
+    <Card border tabIndex={0} tone={tone}>
       <RatioBox
         ref={imageContainer}
         style={{
           maxHeight: storedHeight ? 'unset' : MAX_HEIGHT,
           height: storedHeight ? `${storedHeight}px` : '30vh',
         }}
-        //onResize={handleResize}
         paddingY={5}
       >
         <Card data-container tone="transparent" sizing="border">
           <img src={assetDocument.url} />
         </Card>
-        <Overlay justify="flex-end" padding={3} drag={drag && !readOnly}>
-          {drag && !readOnly && (
+        <Overlay justify="flex-end" padding={3} tone={tone} drag={drag}>
+          {drag && (
             <Flex
               direction="column"
               align="center"
@@ -64,10 +93,10 @@ export function HotspotImage(props: Props) {
             >
               <Box marginBottom={3}>
                 <Heading>
-                  <ImageIcon />
+                  <HoverIcon />
                 </Heading>
               </Box>
-              <Text size={1}>Drop image to upload</Text>
+              <HoverText />
             </Flex>
           )}
         </Overlay>
