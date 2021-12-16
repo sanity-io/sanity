@@ -1,8 +1,8 @@
 /* eslint-disable max-nested-callbacks */
-import {combineLatest, defer, Observable, of} from 'rxjs'
-import {distinctUntilChanged, map, switchMap} from 'rxjs/operators'
+import {combineLatest, defer, from, Observable, of} from 'rxjs'
+import {distinctUntilChanged, map, mergeMap, switchMap} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
-import {keyBy} from 'lodash'
+import {chunk, flatten, keyBy} from 'lodash'
 import {getDraftId, getPublishedId} from '../util/draftUtils'
 import {versionedClient} from '../client/versionedClient'
 import type {DocumentAvailability, DraftsModelDocumentAvailability} from './types'
@@ -59,8 +59,17 @@ function observeDocumentAvailability(id: string): Observable<DocumentAvailabilit
 }
 
 const fetchDocumentReadability = debounceCollect(function fetchDocumentReadability(
-  ids: string[]
+  args: string[][]
 ): Observable<DocumentAvailability[]> {
+  const uniqueIds = [...new Set(flatten(args))]
+  return from(chunk(uniqueIds, 300)).pipe(
+    mergeMap(fetchDocumentReadabilityChunked, 10),
+    map((res) => args.map(([id]) => res[uniqueIds.indexOf(id)]))
+  )
+},
+1)
+
+function fetchDocumentReadabilityChunked(ids: string[]): Observable<DocumentAvailability[]> {
   return defer(() => {
     const requestOptions = {
       uri: versionedClient.getDataUrl('doc', ids.join(',')),
@@ -89,5 +98,4 @@ const fetchDocumentReadability = debounceCollect(function fetchDocumentReadabili
       })
     )
   })
-},
-0)
+}
