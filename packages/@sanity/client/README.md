@@ -273,12 +273,16 @@ const reviewsToRemove = ['reviews[0]', 'reviews[_key=="abc123"]']
 client.patch('bike-123').unset(reviewsToRemove).commit()
 ```
 
-### Delete a document
+### Delete documents
+
+A single document can be deleted by specifying a document ID:
+
+`client.delete(docId)`
 
 ```js
 client
   .delete('bike-123')
-  .then((res) => {
+  .then(() => {
     console.log('Bike deleted')
   })
   .catch((err) => {
@@ -286,9 +290,35 @@ client
   })
 ```
 
-`client.delete(docId)`
+One or more documents can be deleted by specifying a GROQ query (and optionally, `params`):
 
-Delete a document. Parameter is a document ID.
+`client.delete({ query: "GROQ query", params: { key: value } })`
+
+```js
+// Without params
+
+client
+  .delete({ query: '*[_type == "bike"][0]' })
+  .then(() => {
+    console.log('The document matching *[_type == "bike"][0] was deleted')
+  })
+  .catch((err) => {
+    console.error('Delete failed: ', err.message)
+  })
+```
+
+```js
+// With params
+
+client
+  .delete({ query: '*[_type == $type][0..1]', params: { type: 'bike' } })
+  .then(() => {
+    console.log('The documents matching *[_type == "bike"][0..1] was deleted')
+  })
+  .catch((err) => {
+    console.error('Delete failed: ', err.message)
+  })
+```
 
 ### Multiple mutations in a transaction
 
