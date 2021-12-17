@@ -3,7 +3,15 @@
 import * as DMP from 'diff-match-patch'
 import {debounce, isEqual} from 'lodash'
 import {Subject} from 'rxjs'
-import {Editor, Operation, Path, Node, Text as SlateText, Element as SlateElement} from 'slate'
+import {
+  Editor,
+  Element as SlateElement,
+  Node,
+  Operation,
+  Path,
+  Text as SlateText,
+  Transforms,
+} from 'slate'
 import {setIfMissing, unset} from '../../patch/PatchEvent'
 import type {Patch} from '../../types/patch'
 
@@ -27,7 +35,11 @@ const dmp = new DMP.diff_match_patch()
 
 const THROTTLE_EDITOR_MS = 500
 
-type PatchFn = (editor: Editor, operation: any, previousChildren: any) => Patch[]
+type PatchFn = (
+  editor: Editor,
+  operation: Operation,
+  previousChildren: (Node | Partial<Node>)[]
+) => Patch[]
 
 export type PatchFunctions = {
   insertNodePatch: PatchFn
@@ -195,6 +207,7 @@ function adjustSelection(
     debug('No selection, not adjusting selection')
     return
   }
+  let newSelection = selection
   // Text patches on same line
   if (patch.type === 'diffMatchPatch') {
     const [block, blockIndex] = findBlockAndIndexFromPath(patch.path[0], editor.children)
@@ -239,12 +252,11 @@ function adjustSelection(
           //     testString
           //   })}`
           // )
-          const newSelection = {...selection}
+          newSelection = {...selection}
           newSelection.focus = {...selection.focus}
           newSelection.anchor = {...selection.anchor}
           newSelection.anchor.offset += distance
           newSelection.focus.offset += distance
-          editor.selection = newSelection
         }
         // TODO: account for intersecting selections!
       }
@@ -270,7 +282,7 @@ function adjustSelection(
           : childIndex
       const prevOrLastChild = oldBlock.children[prevIndexOrLastIndex]
       const prevText = (SlateText.isText(prevOrLastChild) && prevOrLastChild.text) || ''
-      const newSelection = {...selection}
+      newSelection = {...selection}
       const beforePrevOrLast = oldBlock.children[Math.max(0, prevIndexOrLastIndex - 1)]
       const textBeforePrevOrLast = SlateText.isText(beforePrevOrLast) ? beforePrevOrLast.text : ''
       const textBefore = SlateText.isText(beforePrevOrLast) ? beforePrevOrLast.text : ''
@@ -307,8 +319,7 @@ function adjustSelection(
         newSelection.focus.offset = selection.focus.offset + prevText.length
       }
       if (!isEqual(newSelection, selection)) {
-        debug('adjusting selection for unset block child', JSON.stringify(newSelection))
-        editor.selection = newSelection
+        debug('adjusting selection for unset block child')
       }
     }
   }
@@ -351,7 +362,7 @@ function adjustSelection(
     ) {
       blockIndex = Math.max(0, selection.focus.path[0] - 1)
     }
-    const newSelection = {...selection}
+    newSelection = {...selection}
     if (Path.isAfter(selection.anchor.path, [blockIndex])) {
       newSelection.anchor = {...newSelection.anchor}
       newSelection.anchor.path = [
@@ -370,7 +381,6 @@ function adjustSelection(
     }
     if (!isEqual(newSelection, selection)) {
       debug('adjusting selection for unset block')
-      editor.selection = newSelection
     }
   }
 
@@ -380,7 +390,7 @@ function adjustSelection(
     if (!block || typeof blockIndex === 'undefined') {
       return
     }
-    const newSelection = {...selection}
+    newSelection = {...selection}
     if (Path.isAfter(selection.anchor.path, [blockIndex])) {
       newSelection.anchor = {...selection.anchor}
       newSelection.anchor.path = [
@@ -397,7 +407,6 @@ function adjustSelection(
     }
     if (!isEqual(newSelection, selection)) {
       debug('adjusting selection for insert block')
-      editor.selection = newSelection
     }
   }
 
@@ -432,7 +441,7 @@ function adjustSelection(
       }
       if (selection.focus.offset >= nodeText.length) {
         if (!isSplitOperation) {
-          const newSelection = {...selection}
+          newSelection = {...selection}
           newSelection.focus = {...selection.focus}
           newSelection.anchor = {...selection.anchor}
           newSelection.anchor.path = Path.next(newSelection.anchor.path)
@@ -442,7 +451,7 @@ function adjustSelection(
           editor.selection = newSelection
         } else if (selection.focus.offset >= nodeText.length) {
           debug('adjusting selection for split node')
-          const newSelection = {...selection}
+          newSelection = {...selection}
           newSelection.focus = {...selection.focus}
           newSelection.anchor = {...selection.anchor}
           newSelection.anchor.path = [blockIndex + 1, 0]
@@ -452,6 +461,15 @@ function adjustSelection(
           editor.selection = newSelection
         }
       }
+      if (!isEqual(newSelection, selection)) {
+        debug('adjusting selection for unset block child')
+      }
     }
   }
+  if (isEqual(newSelection, selection)) {
+    debug('Selection is the same, not adjusting')
+    return
+  }
+  editor.selection = newSelection // Important: set the state here immediately without a transform!
+  Transforms.select(editor, newSelection) // Do a transform too so that we keep history on this change.
 }
