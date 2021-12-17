@@ -37,6 +37,12 @@ const doc = {
   singleReadOnlyCallbackTrue1: 'Lorem',
 }
 
+const waitForReviewChanges = () => {
+  // Sometimes it takes a while for Review Changes to appear when loading the page.
+  // This prevents the test from failing randomly
+  cy.get('[data-testid="review-changes-pane"]', {timeout: 10000}).should('be.visible')
+}
+
 describe('@sanity/field: Multi fieldset and review changes', () => {
   before(async () => {
     await testSanityClient.createOrReplace(doc)
@@ -45,6 +51,7 @@ describe('@sanity/field: Multi fieldset and review changes', () => {
   beforeEach(() => {
     cy.viewport(2000, 3500)
     cy.visit(testLocation)
+    waitForReviewChanges()
   })
 
   // Hidden boolean false
@@ -216,6 +223,7 @@ describe('@sanity/field: Single fieldset and review changes', () => {
   beforeEach(() => {
     cy.viewport(2000, 3500)
     cy.visit(testLocation)
+    waitForReviewChanges()
   })
 
   // Hidden boolean false

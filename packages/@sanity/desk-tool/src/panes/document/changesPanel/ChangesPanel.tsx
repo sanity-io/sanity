@@ -72,6 +72,7 @@ export function ChangesPanel(): React.ReactElement | null {
         overflow: 'hidden',
         minWidth: 320,
       }}
+      data-testid="review-changes-pane"
     >
       <PaneHeader
         actions={
