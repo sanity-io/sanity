@@ -30,7 +30,7 @@ export default class PreviewSubscriber extends React.Component<Props> {
         {({result, error, isLoading}) =>
           children({
             ...props,
-            snapshot: result.snapshot || value,
+            snapshot: result.snapshot,
             isLoading,
             isLive: true,
             error,
