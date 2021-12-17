@@ -149,6 +149,15 @@ function getDocumentPairPermissions({
   type,
   permission,
 }: DocumentPermissionsOptions): Observable<PermissionCheckResult> {
+  // this case was added to fix a crash that would occur if the `schemaType` was
+  // omitted from `S.documentList()`
+  //
+  // see `resolveTypeForDocument` which returns `'*'` if no type is provided
+  // https://github.com/sanity-io/sanity/blob/4d49b83a987d5097064d567f75d21b268a410cbf/packages/%40sanity/base/src/datastores/document/resolveTypeForDocument.ts#L7
+  if (type === '*') {
+    return of({granted: false, reason: 'Type specified was `*`'})
+  }
+
   const liveEdit = Boolean(getSchemaType(type).liveEdit)
 
   return snapshotPair({draftId: getDraftId(id), publishedId: getPublishedId(id)}, type).pipe(
