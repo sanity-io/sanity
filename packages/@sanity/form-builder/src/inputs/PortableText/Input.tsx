@@ -12,8 +12,9 @@ import {
   HotkeyOptions,
   RenderAttributes,
   Type,
+  EditorSelection,
 } from '@sanity/portable-text-editor'
-import {Path, isKeySegment, Marker, isKeyedObject} from '@sanity/types'
+import {Path, isKeySegment, Marker, isKeyedObject, KeyedSegment} from '@sanity/types'
 import {
   BoundaryElementProvider,
   Portal,
@@ -24,6 +25,7 @@ import {
 } from '@sanity/ui'
 import {isEqual} from 'lodash'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/components'
+import scrollIntoView from 'scroll-into-view-if-needed'
 import ActivateOnFocus from '../../components/ActivateOnFocus/ActivateOnFocus'
 import PatchEvent from '../../PatchEvent'
 import {BlockObject} from './object/BlockObject'
@@ -77,22 +79,36 @@ export function Input(props: InputProps) {
     renderCustomMarkers,
     value,
   } = props
-  const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
-  const editor = usePortableTextEditor()
-  const selection = usePortableTextEditorSelection()
-  const ptFeatures = useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [editor])
-  const portal = usePortal()
-  const {element: boundaryElement} = useBoundaryElement()
 
-  // States
+  const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
   const [isActive, setIsActive] = useState(false)
+  const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
   const [objectEditData, setObjectEditData]: [
     ObjectEditData,
     (data: ObjectEditData) => void
   ] = useState(null)
-  const [initialSelection, setInitialSelection] = useState(undefined)
-  const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
-  const handledFocusPath = useRef(null)
+
+  const editor = usePortableTextEditor()
+
+  const selection = usePortableTextEditorSelection()
+
+  const portal = usePortal()
+
+  const {element: boundaryElement} = useBoundaryElement()
+
+  const ptFeatures = useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [editor])
+
+  const initialSelection = useMemo(
+    (): EditorSelection =>
+      focusPath && focusPath.length > 0
+        ? {
+            anchor: {path: focusPath, offset: 0},
+            focus: {path: focusPath, offset: 0},
+          }
+        : null,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [] // Empty!
+  )
 
   const textBlockSpellCheck = useMemo(() => {
     // Chrome 96. has serious perf. issues with spellchecking
@@ -104,90 +120,101 @@ export function Input(props: InputProps) {
     return spellCheckOption === undefined && isChrome96 === true ? false : spellCheckOption
   }, [editor])
 
-  // Respond to focusPath changes
+  const childEditorElementRef = useRef<HTMLSpanElement | undefined>()
+  const blockElementRef = useRef<HTMLDivElement | undefined>()
+
+  // Special case to scroll annotated text into view inside the editor when they display their editing interface
+  // Special because the focusPath is not on the editable item (the annotated text)
   useEffect(() => {
-    // Wait until the editor is properly initialized
-    if (!editor.editable) {
+    if (childEditorElementRef.current && objectEditData && objectEditData.kind === 'annotation') {
+      scrollIntoView(childEditorElementRef.current, {
+        boundary: scrollElement,
+        scrollMode: 'if-needed',
+      })
+    }
+  }, [childEditorElementRef, objectEditData, scrollElement])
+
+  // The editor responds to focusPath and should select and show the right stuff when that changes.
+  useEffect(() => {
+    if (!focusPath) {
+      setObjectEditData(null)
       return
     }
-
-    // Make sure to only handle the same focusPath once
-    if (handledFocusPath.current === focusPath) {
-      return
+    // Set the ActivateOnFocus component active state if not done already
+    const focusWithInContent = focusPath.length > 0
+    if (focusWithInContent && !isActive) {
+      setIsActive(true)
     }
-    handledFocusPath.current = focusPath
 
-    if (focusPath && objectEditData === null) {
-      // Test if this focus path is the same as we got selected already.
-      // If it is, just return or the editor will just try to refocus which
-      // interferes with tab-navigation etc.
-      const sameSelection =
-        selection &&
-        isEqual(selection.focus.path, focusPath) &&
-        isEqual(selection.focus.path, selection.anchor.path)
-      if (sameSelection) {
-        return
-      }
-      const blockSegment = isKeySegment(focusPath[0]) && focusPath[0]
-      const isBlockOnly = blockSegment && focusPath.length === 1
-      const isChild = blockSegment && focusPath[1] === 'children' && isKeyedObject(focusPath[2])
-      const isChildOnly = isChild && focusPath.length === 3
-      const isAnnotation = blockSegment && focusPath[1] === 'markDefs'
-      if ((isBlockOnly || isChildOnly) && !hasFocus) {
-        const [node] = PortableTextEditor.findByPath(editor, focusPath)
-        if (node) {
-          const point = {path: focusPath, offset: 0}
-          PortableTextEditor.select(editor, {focus: point, anchor: point})
-        }
-      } else if (isAnnotation) {
-        const block = (PortableTextEditor.getValue(editor) || []).find(
-          (blk) => blk._key === blockSegment._key
+    const sameSelection = selection && isEqual(selection.focus.path, focusPath)
+    const blockSegment = isKeySegment(focusPath[0]) ? focusPath[0] : undefined
+    const isChild = blockSegment && focusPath[1] === 'children' && isKeyedObject(focusPath[2])
+    const isBlockRootFocus = blockSegment && focusPath.length === 1
+    const isChildRootFocus = isChild && focusPath.length === 3
+    const isAnnotation = blockSegment && focusPath[1] === 'markDefs'
+
+    // Handle focusPath pointing to a annotated span
+    if (isAnnotation && !sameSelection) {
+      const [node] = PortableTextEditor.findByPath(editor, focusPath.slice(0, 1))
+      const block = node ? (node as PortableTextBlock) : undefined
+      const markDefSegment =
+        block &&
+        PortableTextEditor.isVoid(editor, block) === false &&
+        (focusPath[2] as KeyedSegment)
+      if (markDefSegment) {
+        const span = block.children.find(
+          (child) => Array.isArray(child.marks) && child.marks.includes(markDefSegment._key)
         )
-        const markDefSegment = focusPath[2]
-        if (block && isKeySegment(markDefSegment)) {
-          const span = block.children.find(
-            (child) => Array.isArray(child.marks) && child.marks.includes(markDefSegment._key)
-          )
-          if (span) {
-            const spanPath = [blockSegment, 'children', {_key: span._key}]
-            setIsActive(true)
-            setObjectEditData({
-              editorPath: spanPath,
-              formBuilderPath: focusPath.slice(0, 3),
-              returnToSelection: selection,
-              kind: 'annotation',
-            })
-          }
-        }
-        return
-      }
-      // Block focus paths
-      if (focusPath && ((isChild && focusPath.length > 3) || (!isChild && focusPath.length > 1))) {
-        let kind: 'annotation' | 'blockObject' | 'inlineObject' = 'blockObject'
-        let path = focusPath.slice(0, 1)
-        if (isChild) {
-          kind = 'inlineObject'
-          path = path.concat(focusPath.slice(1, 3))
-        }
-        const [node] = PortableTextEditor.findByPath(editor, path)
-        // Only if it actually exists
-        if (node) {
-          setIsActive(true)
-          PortableTextEditor.select(editor, {
-            focus: {path, offset: 0},
-            anchor: {path, offset: 0},
-          })
-          // Make it go to selection first, then load  the editing interface
+        if (span) {
+          const spanPath = [blockSegment, 'children', {_key: span._key}] as Path
           setObjectEditData({
-            editorPath: path,
-            formBuilderPath: path,
-            kind,
+            editorPath: spanPath,
+            formBuilderPath: focusPath.slice(0, 3),
             returnToSelection: selection,
+            kind: 'annotation',
+            editorHTMLElementRef: childEditorElementRef,
           })
+          return
         }
       }
     }
-  }, [editor, focusPath, hasFocus, objectEditData, selection])
+
+    // Handle focusPath pointing to block objects or inline objects
+    if (focusPath && ((isChild && focusPath.length > 3) || (!isChild && focusPath.length > 1))) {
+      let kind: 'annotation' | 'blockObject' | 'inlineObject' = 'blockObject'
+      let path = focusPath.slice(0, 1)
+      if (isChild) {
+        kind = 'inlineObject'
+        path = path.concat(focusPath.slice(1, 3))
+      }
+      const [node] = PortableTextEditor.findByPath(editor, path)
+      // Only if it actually exists
+      if (node) {
+        setObjectEditData({
+          editorPath: path,
+          formBuilderPath: path,
+          kind,
+          returnToSelection: selection,
+          editorHTMLElementRef: blockElementRef,
+        })
+        return
+      }
+    }
+
+    // If we don't need to edit any object data, just select the thing in the editable.
+    if (!sameSelection && (isBlockRootFocus || isChildRootFocus)) {
+      const [blockOrChild] = PortableTextEditor.findByPath(editor, focusPath)
+      if (blockOrChild) {
+        const point = {path: focusPath, offset: 0}
+        PortableTextEditor.select(editor, {focus: point, anchor: point})
+        setObjectEditData(null)
+        return
+      }
+    }
+    childEditorElementRef.current = null
+    blockElementRef.current = null
+    setObjectEditData(null)
+  }, [editor, focusPath, isActive, selection])
 
   // Set as active whenever we have focus inside the editor.
   useEffect(() => {
@@ -226,22 +253,34 @@ export function Input(props: InputProps) {
     [onChange, props.patches$]
   )
 
+  const spanTypeName = useMemo(() => ptFeatures.types.span.name, [ptFeatures])
+  const textBlockTypeName = useMemo(() => ptFeatures.types.block.name, [ptFeatures])
+  const isEmptyValue = value === undefined
+
+  const editObjectDataKey = useMemo(() => {
+    const last = objectEditData?.editorPath.slice(-1)[0]
+    if (last && isKeySegment(last)) {
+      return last._key
+    }
+    return null
+  }, [objectEditData?.editorPath])
+
   const handleEditObjectFormBuilderFocus = useCallback(
     (nextPath: Path): void => {
-      if (objectEditData && nextPath) {
+      if (nextPath) {
         onFocus(nextPath)
       }
+      // Blur if we are editing some object
+      if (editObjectDataKey) {
+        PortableTextEditor.blur(editor)
+      }
     },
-    [objectEditData, onFocus]
+    [editor, editObjectDataKey, onFocus]
   )
 
   const handleEditObjectFormBuilderBlur = useCallback(() => {
     // noop
   }, [])
-
-  const spanTypeName = useMemo(() => ptFeatures.types.span.name, [ptFeatures])
-  const textBlockTypeName = useMemo(() => ptFeatures.types.block.name, [ptFeatures])
-  const isEmptyValue = value === undefined
 
   const renderBlock = useCallback(
     (
@@ -273,7 +312,7 @@ export function Input(props: InputProps) {
           </TextBlock>
         )
       }
-
+      const useblockElementRef = block._key === editObjectDataKey
       return (
         <BlockObject
           attributes={attributes}
@@ -285,6 +324,7 @@ export function Input(props: InputProps) {
           onChange={onChange}
           onFocus={onFocus}
           readOnly={readOnly}
+          ref={useblockElementRef ? blockElementRef : undefined}
           renderBlockActions={isEmptyValue ? undefined : renderBlockActions}
           renderCustomMarkers={isEmptyValue ? undefined : renderCustomMarkers}
           type={blockType}
@@ -292,6 +332,7 @@ export function Input(props: InputProps) {
       )
     },
     [
+      editObjectDataKey,
       editor,
       isEmptyValue,
       isFullscreen,
@@ -301,8 +342,8 @@ export function Input(props: InputProps) {
       readOnly,
       renderBlockActions,
       renderCustomMarkers,
-      textBlockTypeName,
       textBlockSpellCheck,
+      textBlockTypeName,
     ]
   )
 
@@ -310,24 +351,29 @@ export function Input(props: InputProps) {
     (child, childType, attributes, defaultRender) => {
       const isSpan = child._type === spanTypeName
       if (isSpan) {
-        return defaultRender(child)
+        const useChildRef = child._key === editObjectDataKey
+        return (
+          <span ref={useChildRef ? childEditorElementRef : undefined}>{defaultRender(child)}</span>
+        )
       }
       const childMarkers = markers.filter(
         (marker) => isKeySegment(marker.path[2]) && marker.path[2]._key === child._key
       )
+      const useblockElementRef = child._key === editObjectDataKey
       return (
         <InlineObject
           attributes={attributes}
           markers={childMarkers}
           onFocus={onFocus}
           readOnly={readOnly}
+          ref={useblockElementRef ? blockElementRef : undefined}
           renderCustomMarkers={renderCustomMarkers}
           type={childType}
           value={child}
         />
       )
     },
-    [spanTypeName, markers, onFocus, readOnly, renderCustomMarkers]
+    [editObjectDataKey, markers, onFocus, readOnly, renderCustomMarkers, spanTypeName]
   )
 
   const renderAnnotation = useCallback(
@@ -339,12 +385,10 @@ export function Input(props: InputProps) {
         annotationMarkers.filter(
           (marker) => marker.type === 'validation' && marker.level === 'error'
         ).length > 0
-
       const hasWarning =
         annotationMarkers.filter(
           (marker) => marker.type === 'validation' && marker.level === 'warning'
         ).length > 0
-
       return (
         <Annotation
           attributes={attributes}
@@ -361,19 +405,24 @@ export function Input(props: InputProps) {
         </Annotation>
       )
     },
-    [markers, onFocus, renderCustomMarkers, scrollElement]
+    [onFocus, markers, renderCustomMarkers, scrollElement]
   )
 
   const handleEditObjectClose = useCallback(() => {
-    const sel = objectEditData?.returnToSelection || selection
+    let sel: EditorSelection
+    if (objectEditData.kind === 'annotation') {
+      sel = objectEditData?.returnToSelection || selection
+    } else {
+      const point = {path: objectEditData.editorPath, offset: 0}
+      sel = {focus: point, anchor: point}
+    }
     setObjectEditData(null)
     if (sel) {
-      onFocus(sel.focus.path)
       PortableTextEditor.select(editor, sel)
     } else {
       PortableTextEditor.focus(editor)
     }
-  }, [editor, objectEditData?.returnToSelection, onFocus, selection])
+  }, [editor, objectEditData, selection])
 
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
 

@@ -158,7 +158,10 @@ const BlockPreview = styled(Box)((props: {theme: Theme}) => {
   `
 })
 
-export function BlockObject(props: BlockObjectProps) {
+export const BlockObject = React.forwardRef(function BlockObject(
+  props: BlockObjectProps,
+  forwardedRef: React.ForwardedRef<HTMLDivElement>
+) {
   const {
     attributes: {focused, selected, path},
     block,
@@ -263,7 +266,7 @@ export function BlockObject(props: BlockObjectProps) {
   const tooltipEnabled = hasErrors || hasWarnings || hasInfo || hasMarkers
 
   return (
-    <InnerFlex marginY={3}>
+    <InnerFlex marginY={3} ref={forwardedRef}>
       <Flex flex={1} {...innerPaddingProps}>
         <Tooltip
           placement="top"
@@ -318,4 +321,4 @@ export function BlockObject(props: BlockObjectProps) {
       )}
     </InnerFlex>
   )
-}
+})

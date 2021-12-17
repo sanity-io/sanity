@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useRef, useState} from 'react'
+import React, {SyntheticEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {
   PortableTextChild,
   PortableTextEditor,
@@ -62,7 +62,10 @@ const TooltipBox = styled(Box).attrs({forwardedAs: 'span'})`
   max-width: 250px;
 `
 
-export function Annotation(props: AnnotationProps) {
+export const Annotation = React.forwardRef(function Annotation(
+  props: AnnotationProps,
+  forwardedRef: React.ForwardedRef<HTMLSpanElement>
+) {
   const {
     attributes,
     children,
@@ -109,15 +112,20 @@ export function Annotation(props: AnnotationProps) {
     [markers, renderCustomMarkers, text]
   )
 
-  const handleEditClick = useCallback((): void => {
-    onFocus(markDefPath.concat(FOCUS_TERMINATOR))
-  }, [markDefPath, onFocus])
+  const handleEditClick = useCallback(
+    (event: SyntheticEvent): void => {
+      event.preventDefault()
+      event.stopPropagation()
+      PortableTextEditor.blur(editor)
+      onFocus(markDefPath.concat(FOCUS_TERMINATOR))
+    },
+    [editor, markDefPath, onFocus]
+  )
 
   const handleRemoveClick = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>): void => {
       event.preventDefault()
       event.stopPropagation()
-
       PortableTextEditor.removeAnnotation(editor, type)
       PortableTextEditor.focus(editor)
     },
@@ -152,7 +160,7 @@ export function Annotation(props: AnnotationProps) {
       data-warning={hasWarning ? '' : undefined}
       data-custom-markers={hasCustomMarkers ? '' : undefined}
     >
-      {markersToolTip || text}
+      <span ref={forwardedRef}>{markersToolTip || text}</span>
 
       <AnnotationToolbarPopover
         textElement={textElement}
@@ -164,4 +172,4 @@ export function Annotation(props: AnnotationProps) {
       />
     </Root>
   )
-}
+})

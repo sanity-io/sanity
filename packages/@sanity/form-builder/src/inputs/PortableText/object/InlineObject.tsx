@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, {FunctionComponent, useCallback, useMemo} from 'react'
+import React, {useCallback, useMemo} from 'react'
 import {hues} from '@sanity/color'
 import {PortableTextChild, Type, RenderAttributes} from '@sanity/portable-text-editor'
 import {Marker, Path} from '@sanity/types'
@@ -93,15 +93,19 @@ const TooltipBox = styled(Box)`
   max-width: 250px;
 `
 
-export const InlineObject: FunctionComponent<InlineObjectProps> = ({
-  attributes: {focused, selected, path},
-  markers,
-  onFocus,
-  readOnly,
-  renderCustomMarkers,
-  type,
-  value,
-}) => {
+export const InlineObject = React.forwardRef(function InlineObject(
+  props: InlineObjectProps,
+  forwardedRef: React.ForwardedRef<HTMLDivElement>
+) {
+  const {
+    attributes: {focused, selected, path},
+    markers,
+    onFocus,
+    readOnly,
+    renderCustomMarkers,
+    type,
+    value,
+  } = props
   const handleOpen = useCallback((): void => {
     if (focused) {
       onFocus(path.concat(FOCUS_TERMINATOR))
@@ -180,16 +184,18 @@ export const InlineObject: FunctionComponent<InlineObjectProps> = ({
         onClick={handleOpen}
         forwardedAs="span"
         contentEditable={false}
+        ref={forwardedRef}
       >
         <span>{markersToolTip || preview}</span>
       </Root>
     ),
     [
       focused,
+      forwardedRef,
       handleOpen,
       hasError,
-      hasWarning,
       hasMarkers,
+      hasWarning,
       markersToolTip,
       preview,
       readOnly,
@@ -197,4 +203,4 @@ export const InlineObject: FunctionComponent<InlineObjectProps> = ({
       tone,
     ]
   )
-}
+})

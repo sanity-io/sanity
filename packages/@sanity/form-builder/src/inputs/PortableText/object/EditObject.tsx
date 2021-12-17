@@ -53,12 +53,11 @@ export const EditObject = (props: EditObjectProps) => {
   } = props
   const editor = usePortableTextEditor()
   const ptFeatures = useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [editor])
-  const [_object, type] = useMemo(() => findObjectAndType(objectEditData, value, ptFeatures), [
-    objectEditData,
-    ptFeatures,
-    value,
-  ])
-  const [object, setObject] = useState(_object)
+  const [objectFromValue, type] = useMemo(
+    () => findObjectAndType(objectEditData, value, ptFeatures),
+    [objectEditData, ptFeatures, value]
+  )
+  const [object, setObject] = useState(objectFromValue)
   const [timeoutInstance, setTimeoutInstance] = useState(undefined)
   const formBuilderPath = objectEditData && objectEditData.formBuilderPath
   const kind = objectEditData && objectEditData.kind
@@ -76,8 +75,8 @@ export const EditObject = (props: EditObjectProps) => {
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useLayoutEffect(() => {
-    setObject(_object)
-  }, [_object])
+    setObject(objectFromValue)
+  }, [objectFromValue])
 
   const cancelThrottle = useMemo(
     () =>
@@ -131,6 +130,7 @@ export const EditObject = (props: EditObjectProps) => {
     return (
       <PopoverObjectEditing
         focusPath={focusPath}
+        editorHTMLElementRef={objectEditData.editorHTMLElementRef}
         editorPath={objectEditData.editorPath}
         markers={markers}
         object={object}
