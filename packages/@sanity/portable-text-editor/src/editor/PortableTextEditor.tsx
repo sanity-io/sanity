@@ -54,7 +54,7 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
   static addAnnotation = (
     editor: PortableTextEditor,
     type: Type,
-    value?: {[prop: string]: any}
+    value?: {[prop: string]: unknown}
   ): {spanPath: Path; markDefPath: Path} | undefined => editor.editable?.addAnnotation(type, value)
   static blur = (editor: PortableTextEditor): void => {
     debug('Host blurred')
@@ -109,7 +109,7 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
   static insertChild = (
     editor: PortableTextEditor,
     type: Type,
-    value?: {[prop: string]: any}
+    value?: {[prop: string]: unknown}
   ): Path | undefined => {
     debug(`Host inserting child`)
     return editor.editable?.insertChild(type, value)
@@ -117,7 +117,7 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
   static insertBlock = (
     editor: PortableTextEditor,
     type: Type,
-    value?: {[prop: string]: any}
+    value?: {[prop: string]: unknown}
   ): Path | undefined => {
     return editor.editable?.insertBlock(type, value)
   }
