@@ -51,7 +51,24 @@ export default defineConfig({
         frame: path.resolve(__dirname, 'src/frame/index.html'),
       },
     },
-    // sourcemap: true,
+    // - vite uses rollup to bundle the built version of the workshop
+    // - vite also includes the commonjs plugin by default in order to transform
+    //   the commonjs module in `node_modules`
+    // - these options here are forwarded directly to the commonjs rollup plugin
+    //   and includes overrides that make the commonjs plugin run outside of
+    //   `node_modules` and for typescript files as well
+    //
+    // see here:
+    // https://github.com/vitejs/vite/blob/aab303f7bd333307c77363259f97a310762c4848/packages/vite/src/node/build.ts#L265-L269
+    commonjsOptions: {
+      transformMixedEsModules: true,
+      extensions: ['.js', '.cjs', '.ts', '.tsx'],
+      // this include is empty to override the default `include`
+      include: [],
+      // https://github.com/rollup/plugins/tree/master/packages/commonjs/#dynamicrequiretargets
+      dynamicRequireTargets: ['part:@sanity/base/util/document-action-utils'],
+    },
+    sourcemap: true,
   },
 
   define: {
