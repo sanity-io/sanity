@@ -149,7 +149,7 @@ export function HasImage(props) {
             </Flex>
           )}
           <Inline data-buttons space={1}>
-            {hasDetails && (
+            {hasDetails && !drag && (
               <Tooltip
                 content={
                   <Box padding={2}>
@@ -159,36 +159,38 @@ export function HasImage(props) {
                   </Box>
                 }
               >
-                <Button mode="ghost" icon={EditIcon} disabled={readOnly} />
+                <Button mode="ghost" icon={EditIcon} />
               </Tooltip>
             )}
-            <MenuButton
-              id="image-menu"
-              button={<Button icon={EllipsisVerticalIcon} mode="ghost" />}
-              portal
-              menu={
-                <Menu>
-                  <Card padding={2}>
-                    <Label muted size={1}>
-                      Replace
-                    </Label>
-                  </Card>
-                  {!assetSources && <MenuItem icon={SearchIcon} text="Browse" disabled={readOnly} />}
-                  {assetSources && (
-                    <MenuGroup text="Browse"  disabled={readOnly} >
-                      <MenuItem icon={ImageIcon} text="Media" />
-                      <MenuItem icon={ImageIcon} text="Unsplash" />
-                    </MenuGroup>
-                  )}
-                  <MenuItem icon={UploadIcon} text="Upload"  disabled={readOnly} />
-                  <MenuDivider />
-                    <MenuItem icon={DownloadIcon} text="Download image" />
-                    <MenuItem icon={ClipboardIcon} text="Copy URL" />
-                  <MenuDivider />
-                  <MenuItem icon={ResetIcon} text="Clear field" tone="critical"  disabled={readOnly} />
-                </Menu>
-              }
-            />
+            {!drag && (
+              <MenuButton
+                id="image-menu"
+                button={<Button icon={EllipsisVerticalIcon} mode="ghost" />}
+                portal
+                menu={
+                  <Menu>
+                    <Card padding={2}>
+                      <Label muted size={1}>
+                        Replace
+                      </Label>
+                    </Card>
+                    {!assetSources && <MenuItem icon={SearchIcon} text="Browse" disabled={readOnly} />}
+                    {assetSources && (
+                      <MenuGroup text="Browse"  disabled={readOnly} >
+                        <MenuItem icon={ImageIcon} text="Media" />
+                        <MenuItem icon={ImageIcon} text="Unsplash" />
+                      </MenuGroup>
+                    )}
+                    <MenuItem icon={UploadIcon} text="Upload"  disabled={readOnly} />
+                    <MenuDivider />
+                      <MenuItem icon={DownloadIcon} text="Download image" />
+                      <MenuItem icon={ClipboardIcon} text="Copy URL" />
+                    <MenuDivider />
+                    <MenuItem icon={ResetIcon} text="Clear field" tone="critical"  disabled={readOnly} />
+                  </Menu>
+                }
+              />
+            )}
           </Inline>
         </Overlay>
       </RatioBox>

@@ -1,4 +1,3 @@
-import React from 'react'
 import {
   Container,
   Stack,
@@ -23,6 +22,7 @@ import {
   DownloadIcon,
   EditIcon,
   EllipsisVerticalIcon,
+  ReadOnlyIcon,
   ResetIcon,
   SearchIcon,
   SyncIcon,
@@ -31,6 +31,7 @@ import {
 import {useBoolean} from '@sanity/ui-workshop'
 import styled from 'styled-components'
 import {useState} from 'react'
+import React from 'react'
 
 const Overlay = styled(Flex)`
   position: absolute;
@@ -66,21 +67,33 @@ export default function CompactFile() {
               <Flex
                 align="center"
                 justify="space-between"
-                gap={[4, 4, 3]}
-                direction={['column-reverse', 'column-reverse', 'row']}
+                gap={4}
+                direction={['column', 'column', 'row']}
                 paddingY={[2, 2, 0]}
               >
                 <Flex align="center" justify="center" gap={2} flex={1}>
                   <Text size={1} muted>
-                    <BinaryDocumentIcon />
+                    {readOnly ? <ReadOnlyIcon /> : <BinaryDocumentIcon />}
                   </Text>
                   <Text size={1} muted>
-                    Paste or drag file here
+                    {readOnly ? 'Read only' : 'Paste or drag file here'}
                   </Text>
                 </Flex>
                 <Inline space={2}>
-                  <Button fontSize={2} text="Select" icon={SearchIcon} mode="ghost" />
-                  <Button fontSize={2} text="Upload" icon={UploadIcon} mode="ghost" />
+                  <Button
+                    fontSize={2}
+                    text="Select"
+                    icon={SearchIcon}
+                    mode="ghost"
+                    disabled={readOnly}
+                  />
+                  <Button
+                    fontSize={2}
+                    text="Upload"
+                    icon={UploadIcon}
+                    mode="ghost"
+                    disabled={readOnly}
+                  />
                 </Inline>
               </Flex>
             )}
@@ -332,7 +345,9 @@ export default function CompactFile() {
         <Dialog header="Edit" onClose={() => setDialogOpen(false)}>
           <Box padding={4}>
             <Stack space={2}>
-              <Text size={1} weight="semibold">Title</Text>
+              <Text size={1} weight="semibold">
+                Title
+              </Text>
               <TextInput />
             </Stack>
           </Box>

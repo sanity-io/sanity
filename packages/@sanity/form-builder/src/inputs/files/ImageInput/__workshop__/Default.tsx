@@ -1,20 +1,32 @@
-import {SearchIcon, ChevronDownIcon, FolderIcon, ImageIcon, UploadIcon, ReadOnlyIcon} from '@sanity/icons'
+import {
+  SearchIcon,
+  ChevronDownIcon,
+  FolderIcon,
+  ImageIcon,
+  UploadIcon,
+  ReadOnlyIcon,
+} from '@sanity/icons'
 import {Card, Stack, Text, Flex, Box, Button, Menu, MenuItem, MenuButton} from '@sanity/ui'
 import React from 'react'
 
 export function Default(props) {
   const {drag, readOnly, assetSources} = props
-
   return (
     <Card
       data-container
       tone={drag ? 'primary' : readOnly ? 'transparent' : 'default'}
-      padding={4}
+      padding={[4, 4, 3]}
       border
       style={{borderStyle: drag ? 'solid' : 'dashed'}}
     >
-      <Stack space={4}>
-        <Flex justify="center">
+      <Flex
+        space={4}
+        align="center"
+        justify="space-between"
+        direction={['column', 'column', 'row']}
+        gap={4}
+      >
+        <Flex justify="center" flex={1}>
           <Text size={1} muted={!drag}>
             {readOnly ? <ReadOnlyIcon /> : <ImageIcon />} &nbsp;
             {readOnly ? 'Read only' : drag ? 'Drop image here' : 'Drag or paste image here'}
@@ -61,7 +73,7 @@ export function Default(props) {
             fontSize={2}
           />
         </Flex>
-      </Stack>
+      </Flex>
     </Card>
   )
 }

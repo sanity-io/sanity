@@ -38,6 +38,7 @@ import {
   SyncIcon,
   TrashIcon,
   UploadIcon,
+  WarningOutlineIcon,
 } from '@sanity/icons'
 import styled from 'styled-components'
 import {Resizable} from 're-resizable'
@@ -96,7 +97,9 @@ export default function CompactImage() {
   const uploading = useBoolean('Uploading', false, 'Props')
   const assetSources = useBoolean('Asset sources', false, 'Props')
   const [showExpandDialog, setShowExpandDialog] = useState(false)
+  const [dialogOpen, setDialogOpen] = useState(false)
   const hasDetails = useBoolean('Has details', true, 'Props')
+  const uploadError = useBoolean('Upload error', false, 'Props')
 
   return (
     <>
@@ -144,9 +147,34 @@ export default function CompactImage() {
             <Text weight="semibold" size={1}>
               Image input
             </Text>
-
+            {uploadError && (
+              <Card tone="caution" padding={4} border radius={2}>
+                <Flex gap={4} marginBottom={4}>
+                  <Box>
+                    <Text size={1}>
+                      <WarningOutlineIcon />
+                    </Text>
+                  </Box>
+                  <Stack space={3}>
+                    <Text size={1} weight="semibold">
+                      Incomplete upload
+                    </Text>
+                    <Text size={1}>
+                      An upload has made no progress in the last 6m and likely got interrupted. You
+                      can safely clear the incomplete upload and try uploading again.
+                    </Text>
+                  </Stack>
+                </Flex>
+                <Button icon={ResetIcon} text="Clear upload" mode="ghost" style={{width: '100%'}} />
+              </Card>
+            )}
             {!hasImage && !uploading && (
-              <Default drag={drag} assetSources={assetSources} readOnly={readOnly} />
+              <Default
+                drag={drag}
+                assetSources={assetSources}
+                readOnly={readOnly}
+                uploadError={uploadError}
+              />
             )}
 
             {hasImage && !uploading && (
