@@ -43,13 +43,12 @@ export function TestInput(props: TestInputProps) {
   const uniqMarkers = useUnique(markers)
 
   const onFocus = useCallback((path: Path) => {
-    // console.log('onFocus', path)
+    console.log('FormBuilder onFocus called', path)
     setFocusPath(path)
   }, [])
 
   const onBlur = useCallback(() => {
-    // console.log('onBlur')
-    setFocusPath(undefined)
+    console.log('FormBuilder onBlur called')
   }, [])
 
   const onChange = useCallback((event) => {
