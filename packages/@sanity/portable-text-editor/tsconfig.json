@@ -6,7 +6,7 @@
     "rootDir": "./src",
     "outDir": "./dist/dts",
     "jsx": "react",
-    "types": ["jest", "puppeteer"]
+    "types": ["jest", "puppeteer", "node"]
   },
   "references": [
     {"path": "../block-tools"},
