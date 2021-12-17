@@ -147,7 +147,7 @@ export function Toolbar(props: ToolbarProps) {
   const features = useFeatures()
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
-  const disabled = !selection
+  const disabled = readOnly || !selection
 
   const {push} = useToast()
 
