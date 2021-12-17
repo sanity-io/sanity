@@ -3,7 +3,12 @@ import {Path} from '@sanity/types'
 import {ReactEditor} from '@sanity/slate-react'
 import {DOMNode} from '@sanity/slate-react/dist/utils/dom'
 import {Type} from '../../types/schema'
-import {PortableTextBlock, PortableTextChild, PortableTextFeatures} from '../../types/portableText'
+import {
+  PortableTextBlock,
+  PortableTextChild,
+  PortableTextFeatures,
+  TextBlock,
+} from '../../types/portableText'
 import {EditorSelection, PortableTextSlateEditor} from '../../types/editor'
 import {toSlateValue, fromSlateValue} from '../../utils/values'
 import {toSlateRange, toPortableTextRange} from '../../utils/ranges'
@@ -22,6 +27,11 @@ export function createWithEditableAPI(
   return function withEditableAPI(editor: PortableTextSlateEditor): PortableTextSlateEditor {
     portableTextEditor.setEditable({
       focus: (): void => {
+        // Make a selection if missing
+        if (!editor.selection) {
+          const point = {path: [0, 0], offset: 0}
+          Transforms.select(editor, {focus: point, anchor: point})
+        }
         ReactEditor.focus(editor)
       },
       blur: (): void => {
