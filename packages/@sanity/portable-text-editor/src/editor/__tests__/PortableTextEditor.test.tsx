@@ -6,7 +6,7 @@
 import '@testing-library/jest-dom/extend-expect'
 import {act} from 'react-dom/test-utils'
 import {render} from '@testing-library/react'
-import React, {ForwardedRef, forwardRef, useCallback, useEffect, useState} from 'react'
+import React, {ForwardedRef, forwardRef, useCallback, useEffect} from 'react'
 
 import Schema from '@sanity/schema'
 import {PortableTextEditor, PortableTextEditorProps} from '../PortableTextEditor'
@@ -181,8 +181,8 @@ describe('initialization', () => {
     const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
     const initialValue = [helloBlock]
     const initialSelection: EditorSelection = {
-      anchor: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 0},
-      focus: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 0},
+      anchor: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 2},
+      focus: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 2},
     }
     const onChange = jest.fn()
     render(
@@ -204,10 +204,13 @@ describe('initialization', () => {
   it('updates editor selection from new prop', () => {
     const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
     const initialValue = [helloBlock]
-    const initialSelection: EditorSelection = null
-    const newSelection: EditorSelection = {
+    const initialSelection: EditorSelection = {
       anchor: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 0},
       focus: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 0},
+    }
+    const newSelection: EditorSelection = {
+      anchor: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 0},
+      focus: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 3},
     }
     const onChange = jest.fn()
     const {rerender} = render(
