@@ -140,6 +140,8 @@ export function isEqualToEmptyEditor(
       children.length === 1 &&
       Element.isElement(children[0]) &&
       children[0]._type === portableTextFeatures.types.block.name &&
+      'style' in children[0] &&
+      children[0].style === portableTextFeatures.styles[0].value &&
       Array.isArray(children[0].children) &&
       children[0].children.length === 1 &&
       Text.isText(children[0].children[0]) &&

@@ -110,7 +110,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     () => ({
       _type: portableTextFeatures.types.block.name,
       _key: keyGenerator(),
-      style: 'normal',
+      style: portableTextFeatures.styles[0].value,
       markDefs: [],
       children: [
         {
