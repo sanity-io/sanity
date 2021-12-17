@@ -4,12 +4,23 @@ import * as DMP from 'diff-match-patch'
 import {debounce, isEqual} from 'lodash'
 import {Subject} from 'rxjs'
 import {
+  Descendant,
   Editor,
   Element as SlateElement,
+  InsertNodeOperation,
+  InsertTextOperation,
+  MergeNodeOperation,
+  MoveNodeOperation,
   Node,
+  NodeOperation,
   Operation,
   Path,
+  RemoveNodeOperation,
+  RemoveTextOperation,
+  SetNodeOperation,
+  SplitNodeOperation,
   Text as SlateText,
+  TextOperation,
   Transforms,
 } from 'slate'
 import {setIfMissing, unset} from '../../patch/PatchEvent'
@@ -36,20 +47,52 @@ const dmp = new DMP.diff_match_patch()
 const THROTTLE_EDITOR_MS = 500
 
 type PatchFn = (
-  editor: Editor,
+  editor: PortableTextSlateEditor,
   operation: Operation,
-  previousChildren: (Node | Partial<Node>)[]
+  previousChildren: Descendant[]
 ) => Patch[]
 
 export type PatchFunctions = {
-  insertNodePatch: PatchFn
-  insertTextPatch: PatchFn
-  mergeNodePatch: PatchFn
-  moveNodePatch: PatchFn
-  removeNodePatch: PatchFn
-  removeTextPatch: PatchFn
-  setNodePatch: PatchFn
-  splitNodePatch: PatchFn
+  insertNodePatch: (
+    editor: PortableTextSlateEditor,
+    operation: InsertNodeOperation,
+    previousChildren: Descendant[]
+  ) => Patch[]
+  insertTextPatch: (
+    editor: PortableTextSlateEditor,
+    operation: InsertTextOperation,
+    previousChildren: Descendant[]
+  ) => Patch[]
+  mergeNodePatch: (
+    editor: PortableTextSlateEditor,
+    operation: MergeNodeOperation,
+    previousChildren: Descendant[]
+  ) => Patch[]
+  moveNodePatch: (
+    editor: PortableTextSlateEditor,
+    operation: MoveNodeOperation,
+    previousChildren: Descendant[]
+  ) => Patch[]
+  removeNodePatch: (
+    editor: PortableTextSlateEditor,
+    operation: RemoveNodeOperation,
+    previousChildren: Descendant[]
+  ) => Patch[]
+  removeTextPatch: (
+    editor: PortableTextSlateEditor,
+    operation: RemoveTextOperation,
+    previousChildren: Descendant[]
+  ) => Patch[]
+  setNodePatch: (
+    editor: PortableTextSlateEditor,
+    operation: SetNodeOperation,
+    previousChildren: Descendant[]
+  ) => Patch[]
+  splitNodePatch: (
+    editor: PortableTextSlateEditor,
+    operation: SplitNodeOperation,
+    previousChildren: Descendant[]
+  ) => Patch[]
 }
 
 export function createWithPatches(
@@ -68,8 +111,8 @@ export function createWithPatches(
   incomingPatches$?: PatchObservable
 ): (editor: PortableTextSlateEditor) => PortableTextSlateEditor {
   const patchToOperations = createPatchToOperations(portableTextFeatures)
-  let previousChildren: (Node | Partial<Node>)[]
-  let previousChildrenOnPatch: (Node | Partial<Node>)[]
+  let previousChildren: Descendant[]
+  let previousChildrenOnPatch: Descendant[]
   let isThrottling = false
   return function withPatches(editor: PortableTextSlateEditor) {
     PATCHING.set(editor, true)

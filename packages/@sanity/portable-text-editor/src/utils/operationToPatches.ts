@@ -11,6 +11,7 @@ import {
   RemoveNodeOperation,
   MergeNodeOperation,
   Text,
+  Descendant,
 } from 'slate'
 import {set, insert, unset, diffMatchPatch, setIfMissing} from '../patch/PatchEvent'
 import {PortableTextFeatures, PortableTextBlock, PortableTextChild} from '../types/portableText'
@@ -131,7 +132,7 @@ export function createOperationToPatches(
   function insertNodePatch(
     editor: Editor,
     operation: InsertNodeOperation,
-    beforeValue: (Node | Partial<Node>)[]
+    beforeValue: Descendant[]
   ): Patch[] {
     const block = beforeValue[operation.path[0]] as PortableTextBlock
     if (operation.path.length === 1) {
