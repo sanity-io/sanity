@@ -1,6 +1,7 @@
+import {uuid} from '@sanity/uuid'
 import testSanityClient from '../../helpers/sanityClientSetUp'
 
-const testDocumentId = 'conditional-fieldset-test'
+const testDocumentId = `conditional-fieldset-test-${uuid()}`
 const testLocation = `/test/desk/input-ci;conditionalFieldset;${testDocumentId}%2Csince%3D%40lastPublished`
 
 const doc = {
