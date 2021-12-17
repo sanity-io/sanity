@@ -121,7 +121,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         },
       ],
     }),
-    [portableTextFeatures.types.block.name, keyGenerator]
+    [portableTextFeatures, keyGenerator]
   )
 
   const initialValue = useMemo(
@@ -215,17 +215,19 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       )
       slateEditor.children = slateValueFromProps
       VALUE_TO_SLATE_VALUE.set(value || [], slateValueFromProps)
-      change$.next({type: 'value', value})
       // Signal changed after this tick (this is really important to let plugins catch up first!)
-      setTimeout(() => slateEditor.onChange())
+      setTimeout(() => {
+        slateEditor.onChange()
+      })
     }
+    change$.next({type: 'value', value})
   }, [
     change$,
     isSelecting,
     isThrottling,
     placeHolderBlock,
-    slateEditor,
     portableTextFeatures.types.block.name,
+    slateEditor,
     value,
   ])
 
