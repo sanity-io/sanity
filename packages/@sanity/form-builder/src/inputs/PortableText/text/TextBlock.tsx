@@ -157,27 +157,38 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
             </TextRoot>
           </Tooltip>
         </Box>
-        <BlockActionsOuter marginRight={1} contentEditable={false}>
-          <BlockActionsInner>
-            {focused && !readOnly && (
-              <BlockActions
-                onChange={onChange}
-                block={block}
-                renderBlockActions={renderBlockActions}
+
+        <div
+          contentEditable={false}
+          // NOTE: it’s important that this element does not have the `user-select: none` CSS
+          // property, because that will not work in Safari (breaks `Cmd+A`).
+          // It seems Safari does not allow defining `user-select` on an element which also has
+          // the `contenteditable="false"` attribute.
+        >
+          {renderBlockActions && (
+            <BlockActionsOuter marginRight={1}>
+              <BlockActionsInner>
+                {focused && !readOnly && (
+                  <BlockActions
+                    onChange={onChange}
+                    block={block}
+                    renderBlockActions={renderBlockActions}
+                  />
+                )}
+              </BlockActionsInner>
+            </BlockActionsOuter>
+          )}
+          {isFullscreen && (
+            <ChangeIndicatorWrapper>
+              <StyledChangeIndicatorWithProvidedFullPath
+                compareDeep
+                value={block}
+                hasFocus={focused}
+                path={blockPath}
               />
-            )}
-          </BlockActionsInner>
-        </BlockActionsOuter>
-        {isFullscreen && (
-          <ChangeIndicatorWrapper contentEditable={false}>
-            <StyledChangeIndicatorWithProvidedFullPath
-              compareDeep
-              value={block}
-              hasFocus={focused}
-              path={blockPath}
-            />
-          </ChangeIndicatorWrapper>
-        )}
+            </ChangeIndicatorWrapper>
+          )}
+        </div>
       </TextBlockFlexWrapper>
     </Box>
   )
