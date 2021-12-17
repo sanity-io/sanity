@@ -44,7 +44,7 @@ export const withPortableText = <T extends Editor>(
   } = options
   const operationToPatches = createOperationToPatches(portableTextFeatures)
   const withObjectKeys = createWithObjectKeys(portableTextFeatures, keyGenerator)
-  const withScemaTypes = createWithSchemaTypes(portableTextFeatures)
+  const withSchemaTypes = createWithSchemaTypes(portableTextFeatures)
   const withPatches = readOnly
     ? disablePlugin('withPatches')
     : createWithPatches(operationToPatches, change$, portableTextFeatures, incomingPatches$)
@@ -60,13 +60,16 @@ export const withPortableText = <T extends Editor>(
   const withUtils = createWithUtils(portableTextFeatures)
   const withPortableTextSelections = createWithPortableTextSelections(change$)
 
+  // Ordering is important here, selection dealing last, data manipulation in the middle and core model stuff first.
   return withPortableTextSelections(
-    withPatches(
-      withUndoRedo(
-        withUtils(
-          withPortableTextBlockStyle(
+    withUndoRedo(
+      withPatches(
+        withMaxBlocks(
+          withUtils(
             withPortableTextLists(
-              withPortableTextMarkModel(withObjectKeys(withScemaTypes(withMaxBlocks(e))))
+              withPortableTextBlockStyle(
+                withPortableTextMarkModel(withObjectKeys(withSchemaTypes(e)))
+              )
             )
           )
         )
