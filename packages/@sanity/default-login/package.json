@@ -1,6 +1,6 @@
 {
   "name": "@sanity/default-login",
-  "version": "2.23.1",
+  "version": "2.23.2",
   "description": "Lets the user log in to Sanity.",
   "main": "./lib/index.js",
   "types": "./dist/dts",
@@ -26,7 +26,7 @@
     "rxjs": "^6.5.3"
   },
   "devDependencies": {
-    "@sanity/types": "2.23.1",
+    "@sanity/types": "2.23.2",
     "rimraf": "^2.7.1"
   },
   "peerDependencies": {
