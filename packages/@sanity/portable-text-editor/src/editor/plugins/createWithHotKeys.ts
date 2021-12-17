@@ -182,9 +182,13 @@ export function createWithHotkeys(
           focusBlock.style &&
           focusBlock.style !== portableTextFeatures.styles[0].value
         ) {
-          Editor.insertNode(editor, createDefaultBlock())
-          event.preventDefault()
-          return
+          const [, end] = Range.edges(editor.selection)
+          const endAtEndOfNode = Editor.isEnd(editor, end, end.path)
+          if (endAtEndOfNode) {
+            Editor.insertNode(editor, createDefaultBlock())
+            event.preventDefault()
+            return
+          }
         }
         // Block object enter key
         if (focusBlock && Editor.isVoid(editor, focusBlock)) {
