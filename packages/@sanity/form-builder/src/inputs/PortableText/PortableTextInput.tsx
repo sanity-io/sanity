@@ -1,6 +1,6 @@
 import {isEqual, uniqueId} from 'lodash'
 import {FormField} from '@sanity/base/components'
-import React, {useEffect, useState, useMemo, useCallback} from 'react'
+import React, {useEffect, useState, useMemo, useCallback, useRef} from 'react'
 import {Marker, Path} from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {
@@ -15,6 +15,7 @@ import {
 } from '@sanity/portable-text-editor'
 import {Subject} from 'rxjs'
 import {Box, Text, useToast} from '@sanity/ui'
+import scrollIntoView from 'scroll-into-view-if-needed'
 import PatchEvent from '../../PatchEvent'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {Patch} from '../../patch/types'
@@ -22,6 +23,40 @@ import {RenderBlockActions, RenderCustomMarkers} from './types'
 import {Input} from './Input'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {VisibleOnFocusButton} from './VisibleOnFocusButton'
+
+// An outer React PureComponent Class purely to satisfy the form-builder's need for 'blur' and 'focus' class methods.
+export const PortableTextInput = (withPatchSubscriber(
+  class PortableTextInput extends React.PureComponent<
+    PortableTextInputProps & {children: React.ReactNode}
+  > {
+    editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+    focus() {
+      if (this.editorRef.current) {
+        this.props.onFocus([])
+      }
+    }
+    blur() {
+      if (this.editorRef.current) {
+        PortableTextEditor.blur(this.editorRef.current)
+      }
+    }
+    render() {
+      const {type, level, markers, presence} = this.props
+      return (
+        <FormField
+          __unstable_changeIndicator={false}
+          __unstable_markers={markers}
+          __unstable_presence={presence}
+          description={type.description}
+          level={level}
+          title={type.title}
+        >
+          <PortableTextInputController {...this.props} ref={this.editorRef} />
+        </FormField>
+      )
+    }
+  }
+) as React.ComponentType) as React.ComponentType<PortableTextInputProps>
 
 export type PatchWithOrigin = Patch & {
   origin: 'local' | 'remote' | 'internal'
@@ -55,7 +90,7 @@ export type PortableTextInputProps = {
   value: PortableTextBlock[] | undefined
 }
 
-const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
+const PortableTextInputController = React.forwardRef(function PortableTextInputController(
   props: Omit<PortableTextInputProps, 'level'>,
   ref: React.RefObject<PortableTextEditor>
 ) {
@@ -88,6 +123,8 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
   // Memoized patch stream
   const patches$: Subject<EditorPatch> = useMemo(() => new Subject(), [])
   const patchObservable = useMemo(() => patches$.asObservable(), [patches$])
+
+  const innerElementRef = useRef(null)
 
   const handleToggleFullscreen = useCallback(() => setIsFullscreen(!isFullscreen), [isFullscreen])
 
@@ -132,12 +169,13 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
             change.selection.focus.path &&
             !isEqual(focusPath, change.selection.focus.path) // Only if different than before
           ) {
-            setTimeout(() => {
-              onFocus(change.selection.focus.path)
-            }, 0) // Do this in the next tick or we might end up tracking it
+            onFocus(change.selection.focus.path)
           }
           break
         case 'focus':
+          onFocus(
+            ref.current ? PortableTextEditor.getSelection(ref.current)?.focus.path : undefined
+          )
           setHasFocus(true)
           break
         case 'blur':
@@ -160,7 +198,7 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
         default:
       }
     },
-    [focusPath, onBlur, onChange, onFocus, toast]
+    [focusPath, onBlur, onChange, onFocus, ref, toast]
   )
 
   const handleFocusSkipperClick = useCallback(() => {
@@ -253,49 +291,19 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
     return null
   }, [handleEditorChange, handleIgnoreValidation, invalidValue])
 
+  // Scroll to the field if we have focus and needed
+  useEffect(() => {
+    if (focusPath && focusPath.length > 0 && innerElementRef.current) {
+      scrollIntoView(innerElementRef.current, {
+        scrollMode: 'if-needed',
+      })
+    }
+  }, [focusPath, value])
+
   return (
-    <>
+    <div ref={innerElementRef}>
       {!ignoreValidationError && respondToInvalidContent}
       {(!invalidValue || ignoreValidationError) && editorInput}
-    </>
+    </div>
   )
 })
-
-// An outer React Component with blur and focus class methods for the form-builder to call
-export const PortableTextInput = (withPatchSubscriber(
-  class PortableTextInputWithFocusAndBlur extends React.PureComponent<
-    PortableTextInputProps & {children: React.ReactNode}
-  > {
-    editorRef: React.RefObject<PortableTextEditor> = React.createRef()
-    focus() {
-      if (this.editorRef.current) {
-        PortableTextEditor.focus(this.editorRef.current)
-      }
-    }
-    blur() {
-      if (this.editorRef.current) {
-        PortableTextEditor.blur(this.editorRef.current)
-      }
-    }
-    render() {
-      const {type, level, markers, presence} = this.props
-      return (
-        <FormField
-          __unstable_changeIndicator={false}
-          __unstable_markers={markers}
-          __unstable_presence={presence}
-          description={type.description}
-          level={level}
-          title={type.title}
-        >
-          <PortableTextInputWithRef
-            {...this.props}
-            // NOTE: this should be a temporary fix
-            key={this.props.readOnly ? '$readOnly' : '$editable'}
-            ref={this.editorRef}
-          />
-        </FormField>
-      )
-    }
-  }
-) as React.ComponentType) as React.ComponentType<PortableTextInputProps>

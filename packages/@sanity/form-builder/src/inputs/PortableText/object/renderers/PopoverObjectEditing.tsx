@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unused-prop-types */
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import {CloseIcon} from '@sanity/icons'
 import {
@@ -30,8 +31,8 @@ import {debugElement} from './debug'
 import {ModalWidth} from './types'
 
 interface PopoverObjectEditingProps {
-  // eslint-disable-next-line react/no-unused-prop-types
   editorPath: Path
+  editorHTMLElementRef: React.MutableRefObject<HTMLElement>
   focusPath: Path
   markers: Marker[]
   object: PortableTextBlock | PortableTextChild
@@ -80,28 +81,12 @@ const ContentHeaderBox = styled(Box)`
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
-function getEditorElement(editor: PortableTextEditor, editorPath: Path): HTMLElement | undefined {
-  const [editorObject] = PortableTextEditor.findByPath(editor, editorPath) || []
-
-  if (!editorObject) {
-    return undefined
-  }
-
-  // eslint-disable-next-line react/no-find-dom-node
-  return PortableTextEditor.findDOMNode(editor, editorObject) as HTMLElement
-}
-
 export function PopoverObjectEditing(props: PopoverObjectEditingProps) {
-  const {editorPath, object, width} = props
-  const editor = usePortableTextEditor()
+  const {width, editorHTMLElementRef} = props
+  const refElement = editorHTMLElementRef.current
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
-  const [refElement, setRefElement] = useState(() => getEditorElement(editor, editorPath))
   const boundaryElement = useBoundaryElement()
   const boundaryElementRect = useElementRect(boundaryElement.element)
-
-  useEffect(() => {
-    setRefElement(getEditorElement(editor, editorPath))
-  }, [editor, editorPath, object])
 
   const contentStyle: React.CSSProperties = useMemo(
     () => ({
@@ -117,7 +102,7 @@ export function PopoverObjectEditing(props: PopoverObjectEditingProps) {
       content={<Content {...props} rootElement={rootElement} style={contentStyle} width={width} />}
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
       placement="bottom"
-      open={Boolean(refElement)}
+      open
       portal="default"
       ref={setRootElement}
       referenceElement={refElement || (debugElement as any)}

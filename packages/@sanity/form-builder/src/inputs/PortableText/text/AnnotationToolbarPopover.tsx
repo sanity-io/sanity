@@ -27,7 +27,7 @@ interface AnnotationToolbarPopoverProps {
   scrollElement: HTMLElement
   annotationElement: HTMLElement
   textElement: HTMLElement
-  onEdit: () => void
+  onEdit: (event: React.MouseEvent<HTMLButtonElement>) => void
   onDelete: (event: React.MouseEvent<HTMLButtonElement>) => void
   title: string
 }
