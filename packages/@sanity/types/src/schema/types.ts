@@ -33,13 +33,15 @@ export interface PrepareViewOptions {
   ordering?: SortOrdering
 }
 
+export interface SortOrderingItem {
+  field: string
+  direction: 'asc' | 'desc'
+}
+
 export type SortOrdering = {
   title: string
   name: string
-  by: {
-    field: string
-    direction: 'asc' | 'desc'
-  }
+  by: SortOrderingItem[]
 }
 export interface ConditionalPropertyCallbackContext {
   parent?: unknown
@@ -264,7 +266,12 @@ export interface ObjectSchemaType extends BaseSchemaType {
   // Note: `path` is a string in the _specification_, but converted to a
   // string array in the schema normalization/compilation step
   // eslint-disable-next-line camelcase
-  __experimental_search: {path: string[]; weight: number; mapWith?: string}[]
+  __experimental_search?: {path: string[]; weight: number; mapWith?: string}[]
+
+  /**
+   * @beta
+   */
+  orderings?: SortOrdering[]
 }
 
 export interface ObjectSchemaTypeWithOptions extends ObjectSchemaType {
@@ -339,3 +346,4 @@ export type SchemaType =
   | NumberSchemaType
   | ObjectSchemaType
   | StringSchemaType
+  | ReferenceSchemaType
