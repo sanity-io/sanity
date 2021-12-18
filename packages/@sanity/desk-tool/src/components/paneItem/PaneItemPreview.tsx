@@ -1,20 +1,21 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
-import {DocumentPreviewPresence, DocumentPresence} from '@sanity/base/presence'
 import {SanityDocument, SchemaType} from '@sanity/types'
-import {Inline} from '@sanity/ui'
-import {SanityDefaultPreview} from 'part:@sanity/base/preview'
-import React from 'react'
+import {PreviewLayoutKey} from '@sanity/base/components'
+import {DocumentPresence, DocumentPreviewPresence} from '@sanity/base/presence'
+import {DocumentPreviewStore, SanityDefaultPreview} from '@sanity/base/preview'
+import React, {isValidElement} from 'react'
 import {Subscription} from 'rxjs'
-import {DraftStatus} from '../DraftStatus'
+import {isNumber} from 'lodash'
+import {Inline} from '@sanity/ui'
+import {isRecord, isString} from '../../helpers'
 import {PublishedStatus} from '../PublishedStatus'
+import {DraftStatus} from '../DraftStatus'
 import {getPreviewStateObservable, getValueWithFallback} from './helpers'
 import {PaneItemPreviewState} from './types'
 
 export interface PaneItemPreviewProps {
-  icon: React.ComponentType<any> | false
-  layout: 'inline' | 'block' | 'default' | 'card' | 'media' | 'detail'
+  documentPreviewStore: DocumentPreviewStore
+  icon: React.ComponentType | false
+  layout: PreviewLayoutKey
   presence?: DocumentPresence[]
   schemaType: SchemaType
   value: SanityDocument
@@ -29,19 +30,28 @@ export class PaneItemPreview extends React.Component<PaneItemPreviewProps, PaneI
     super(props)
 
     const {value, schemaType} = props
-    const {title} = value
+    // const {title} = value
+    const title =
+      (isRecord(value.title) && isValidElement(value.title)) ||
+      isString(value.title) ||
+      isNumber(value.title)
+        ? value.title
+        : null
 
     let sync = true
 
-    this.subscription = getPreviewStateObservable(schemaType, value._id, title).subscribe(
-      (state) => {
-        if (sync) {
-          this.state = state
-        } else {
-          this.setState(state)
-        }
+    this.subscription = getPreviewStateObservable(
+      props.documentPreviewStore,
+      schemaType,
+      value._id,
+      title
+    ).subscribe((state) => {
+      if (sync) {
+        this.state = state
+      } else {
+        this.setState(state)
       }
-    )
+    })
 
     sync = false
   }

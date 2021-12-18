@@ -18,6 +18,7 @@ import {
 import schema from 'part:@sanity/base/schema'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import {SanityDocument} from '@sanity/types'
 import {Delay} from '../../components/Delay'
 import {PaneContent, usePane, usePaneLayout} from '../../components/pane'
 import {PaneItem} from '../../components/paneItem'
@@ -71,7 +72,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   }, [collapsed])
 
   const renderItem = useCallback(
-    (item) => {
+    (item: SanityDocument) => {
       const publishedId = getPublishedId(item._id)
       const isSelected = childItemId === publishedId
       const pressed = !isActive && isSelected

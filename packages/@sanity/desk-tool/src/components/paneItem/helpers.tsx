@@ -1,18 +1,14 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
+import {getDraftId, getPublishedId} from '@sanity/base/_internal'
+import {DocumentPreviewStore, PreviewValue} from '@sanity/base/preview'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {SanityDocument, SchemaType} from '@sanity/types'
 import {assignWith} from 'lodash'
-import {observeForPreview} from 'part:@sanity/base/preview'
-import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import React from 'react'
 import {combineLatest, Observable, of} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
-import {PreviewValue} from '../../types'
 import {PaneItemPreviewState} from './types'
 
-export const isLiveEditEnabled = (schemaType: any) => schemaType.liveEdit === true
+export const isLiveEditEnabled = (schemaType: SchemaType) => schemaType.liveEdit === true
 
 export const getMissingDocumentFallback = (item: SanityDocument): PreviewValue => ({
   title: (
@@ -34,8 +30,8 @@ export const getValueWithFallback = ({
   published,
 }: {
   value: SanityDocument
-  draft?: SanityDocument | null
-  published?: SanityDocument | null
+  draft?: Partial<SanityDocument> | PreviewValue | null
+  published?: Partial<SanityDocument> | PreviewValue | null
 }): PreviewValue | SanityDocument => {
   const snapshot = draft || published
 
@@ -49,21 +45,28 @@ export const getValueWithFallback = ({
 }
 
 export function getPreviewStateObservable(
+  documentPreviewStore: DocumentPreviewStore,
   schemaType: SchemaType,
   documentId: string,
-  title: unknown
+  title: React.ReactNode
 ): Observable<PaneItemPreviewState> {
   const draft$ = isLiveEditEnabled(schemaType)
     ? of({snapshot: null})
-    : observeForPreview({_id: getDraftId(documentId)}, schemaType)
+    : documentPreviewStore.observeForPreview(
+        {_type: 'reference', _ref: getDraftId(documentId)},
+        schemaType
+      )
 
-  const published$ = observeForPreview({_id: getPublishedId(documentId)}, schemaType)
+  const published$ = documentPreviewStore.observeForPreview(
+    {_type: 'reference', _ref: getPublishedId(documentId)},
+    schemaType
+  )
 
   return combineLatest([draft$, published$]).pipe(
     map(([draft, published]) => ({
-      draft: draft.snapshot ? {title, ...(draft.snapshot as any)} : null,
+      draft: draft.snapshot ? {title, ...(draft.snapshot || {})} : null,
       isLoading: false,
-      published: published.snapshot ? {title, ...(published.snapshot as any)} : null,
+      published: published.snapshot ? {title, ...(published.snapshot || {})} : null,
     })),
     startWith({draft: null, isLoading: true, published: null})
   )

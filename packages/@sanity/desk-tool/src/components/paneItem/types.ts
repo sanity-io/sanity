@@ -1,7 +1,7 @@
-import {SanityDocument} from '@sanity/types'
+import {PreviewValue, SanityDocument} from '@sanity/types'
 
 export interface PaneItemPreviewState {
   isLoading?: boolean
-  draft?: SanityDocument | null
-  published?: SanityDocument | null
+  draft?: PreviewValue | Partial<SanityDocument> | null
+  published?: PreviewValue | Partial<SanityDocument> | null
 }

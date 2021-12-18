@@ -1,15 +1,14 @@
-import React, {forwardRef, useCallback, useEffect, useMemo, useState} from 'react'
-import {FolderIcon, ChevronRightIcon, DocumentIcon} from '@sanity/icons'
-import {isSanityDocument, SchemaType} from '@sanity/types'
-import {Text} from '@sanity/ui'
-import schema from 'part:@sanity/base/schema'
-import {SanityDefaultPreview} from 'part:@sanity/base/preview'
+import {useConfig, useDatastores} from '@sanity/base'
 import {PreviewCard} from '@sanity/base/components'
 import {useDocumentPresence} from '@sanity/base/hooks'
+import {PreviewValue, SanityDefaultPreview} from '@sanity/base/preview'
+import {FolderIcon, ChevronRightIcon, DocumentIcon} from '@sanity/icons'
+import {isSanityDocument, SanityDocument, SchemaType} from '@sanity/types'
+import {Text} from '@sanity/ui'
+import React, {forwardRef, useCallback, useEffect, useMemo, useState} from 'react'
 import {getIconWithFallback} from '../../utils/getIconWithFallback'
 import {MissingSchemaType} from '../MissingSchemaType'
 import {usePaneRouter} from '../../contexts/paneRouter'
-import {PreviewValue} from '../../types'
 import {PaneItemPreview} from './PaneItemPreview'
 
 interface PaneItemProps {
@@ -19,12 +18,14 @@ interface PaneItemProps {
   pressed?: boolean
   selected?: boolean
   title?: string
-  value?: PreviewValue | {_id: string; _type: string}
+  value?: PreviewValue | SanityDocument
   schemaType?: SchemaType
 }
 
 export function PaneItem(props: PaneItemProps) {
   const {icon, id, layout = 'default', pressed, schemaType, selected, title, value} = props
+  const {schema} = useConfig()
+  const {documentPreviewStore} = useDatastores()
   const {ChildLink} = usePaneRouter()
   const documentPresence = useDocumentPresence(id)
   const hasSchemaType = Boolean(schemaType && schemaType.name && schema.get(schemaType.name))
@@ -39,6 +40,7 @@ export function PaneItem(props: PaneItemProps) {
 
       return (
         <PaneItemPreview
+          documentPreviewStore={documentPreviewStore}
           icon={getIconWithFallback(icon, schemaType, DocumentIcon)}
           layout={layout}
           schemaType={schemaType}
@@ -60,7 +62,16 @@ export function PaneItem(props: PaneItemProps) {
         value={previewValue}
       />
     )
-  }, [hasSchemaType, icon, layout, previewValue, schemaType, value, documentPresence])
+  }, [
+    documentPreviewStore,
+    hasSchemaType,
+    icon,
+    layout,
+    previewValue,
+    schemaType,
+    value,
+    documentPresence,
+  ])
 
   const LinkComponent = useMemo(
     () =>

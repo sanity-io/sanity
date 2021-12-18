@@ -2,17 +2,6 @@ import {Subscribable} from 'rxjs'
 import {SchemaType, SanityDocument} from '@sanity/types'
 import {InitialValueTemplateItem, StructureBuilder} from '@sanity/structure'
 
-export interface PreviewValue {
-  id?: string
-  subtitle?: React.ReactNode
-  title?: React.ReactNode
-  media?: React.ReactNode | React.ComponentType
-  icon?: boolean
-  type?: string
-  displayOptions?: {showIcon?: boolean}
-  schemaType?: {name?: string}
-}
-
 export type DeskToolPaneActionHandler = (params: any, scope?: unknown) => void
 
 /**
