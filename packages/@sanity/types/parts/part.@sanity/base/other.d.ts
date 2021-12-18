@@ -193,7 +193,7 @@ declare module 'part:@sanity/base/preview' {
     fields?: string[]
     value: any
     children?: (props: any) => React.ComponentType
-    layout: 'default' | 'card' | 'media' | 'detail' | 'inline' | 'block'
+    layout: PreviewLayoutKey
   }>
 
   type previewObserver = (
