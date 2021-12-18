@@ -52,7 +52,9 @@ export interface SerializeOptions {
 }
 
 export interface Serializable {
-  serialize(options: SerializeOptions): {}
+  serialize(options: SerializeOptions): {
+    // @todo
+  }
 }
 
 export type Collection = List | DocumentList | EditorNode | DocumentNode | Component

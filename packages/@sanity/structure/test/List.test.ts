@@ -1,26 +1,38 @@
 import {flatten} from 'lodash'
-import {StructureBuilder as S} from '../src'
-import serializeStructure from './util/serializeStructure'
+import {createStructureBuilder} from '../src'
+import {serializeStructure} from './util/serializeStructure'
+import {schema} from './mocks/schema'
+
+// @todo: Mock the Sanity client here?
+const client = {} as any
 
 const noop = () => {
   /* intentional noop */
 }
 
 test('builds lists with only required props', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(S.list({id: 'foo', title: 'Foo'}).serialize()).toMatchSnapshot()
 })
 
 test('throws if no id is set', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(() => S.list().serialize()).toThrowErrorMatchingSnapshot()
 })
 
 test('builds lists with ID and title through setters', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.list({id: 'books', title: 'Books'}).id('authors').title('Authors').serialize()
   ).toMatchSnapshot()
 })
 
 test('builds lists with specific items', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.list()
       .id('books')
@@ -30,6 +42,8 @@ test('builds lists with specific items', () => {
 })
 
 test('builds lists where items are specified using builder', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.list()
       .id('books')
@@ -39,6 +53,8 @@ test('builds lists where items are specified using builder', () => {
 })
 
 test('enforces unique IDs', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(() =>
     S.list()
       .id('books')
@@ -48,6 +64,8 @@ test('enforces unique IDs', () => {
 })
 
 test('enforces unique IDs (more than one dupe, caps max items)', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(() =>
     S.list()
       .id('books')
@@ -64,10 +82,14 @@ test('enforces unique IDs (more than one dupe, caps max items)', () => {
 })
 
 test('builds lists with layout', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(S.list().id('books').defaultLayout('card').serialize()).toMatchSnapshot()
 })
 
 test('default child resolver can resolve directly to node', (done) => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   const item = {
     id: 'asoiaf-wow',
     title: 'The Winds of Winter',
@@ -77,14 +99,19 @@ test('default child resolver can resolve directly to node', (done) => {
 
   const list = S.list().id('books').items([item]).serialize()
 
+  const resolverContext = {structureBuilder: S, client} as any
   const context = {parent: list, index: 0}
-  serializeStructure(list.child, context, [item.id, context]).subscribe((child) => {
-    expect(child).toEqual(item.child)
-    done()
-  })
+  serializeStructure(list.child, context, [resolverContext, item.id, context]).subscribe(
+    (child) => {
+      expect(child).toEqual(item.child)
+      done()
+    }
+  )
 })
 
 test('default child resolver can resolve through promise', (done) => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   const child = {id: 'editor', type: 'document', options: {id: 'wow', type: 'book'}}
   const item = {
     id: 'asoiaf-wow',
@@ -96,13 +123,18 @@ test('default child resolver can resolve through promise', (done) => {
   const list = S.list().id('books').items([item]).serialize()
 
   const context = {parent: list, index: 0}
-  serializeStructure(list.child, context, [item.id, context]).subscribe((itemChild) => {
-    expect(itemChild).toEqual(child)
-    done()
-  })
+  const resolverContext = {structureBuilder: S, client} as any
+  serializeStructure(list.child, context, [resolverContext, item.id, context]).subscribe(
+    (itemChild) => {
+      expect(itemChild).toEqual(child)
+      done()
+    }
+  )
 })
 
 test('can provide custom child resolver', (done) => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   const list = S.list()
     .id('books')
     .items([{id: 'today', title: 'Today', type: 'listItem'}])
@@ -113,28 +145,38 @@ test('can provide custom child resolver', (done) => {
     }))
     .serialize()
 
+  const resolverContext = {structureBuilder: S, client} as any
   const context = {parent: list, index: 0}
-  serializeStructure(list.child, context, ['today', context]).subscribe((child) => {
-    expect(child).toHaveProperty('options.id', new Date().toISOString().slice(0, 10))
-    done()
-  })
+  serializeStructure(list.child, context, [resolverContext, 'today', context]).subscribe(
+    (child) => {
+      expect(child).toHaveProperty('options.id', new Date().toISOString().slice(0, 10))
+      done()
+    }
+  )
 })
 
 test('can resolve undefined child', (done) => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   const list = S.list()
     .id('books')
     .items([{id: 'today', title: 'Today', type: 'listItem'}])
     .child(() => undefined)
     .serialize()
 
+  const resolverContext = {structureBuilder: S, client} as any
   const context = {parent: list, index: 0}
-  serializeStructure(list.child, context, ['today', context]).subscribe((child) => {
-    expect(child).toBeUndefined()
-    done()
-  })
+  serializeStructure(list.child, context, [resolverContext, 'today', context]).subscribe(
+    (child) => {
+      expect(child).toBeUndefined()
+      done()
+    }
+  )
 })
 
 test('can set menu items', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.list()
       .id('yeah')
@@ -144,6 +186,8 @@ test('can set menu items', () => {
 })
 
 test('can set menu items with builder', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.list()
       .id('yeah')
@@ -153,6 +197,8 @@ test('can set menu items with builder', () => {
 })
 
 test('can set menu item groups', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.list()
       .id('yeah')
@@ -163,6 +209,8 @@ test('can set menu item groups', () => {
 })
 
 test('can set menu items groups with builder', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.list()
       .id('yeah')
@@ -173,6 +221,8 @@ test('can set menu items groups with builder', () => {
 })
 
 test('can set intent handler check', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   const handler = () => false
   expect(S.list().id('yeah').canHandleIntent(handler).serialize()).toMatchObject({
     canHandleIntent: handler,
@@ -180,6 +230,8 @@ test('can set intent handler check', () => {
 })
 
 test('can disable icons from being displayed', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   const list = S.list().title('Blåmuggost').showIcons(false)
 
   expect(list.serialize()).toMatchObject({
@@ -191,6 +243,8 @@ test('can disable icons from being displayed', () => {
 })
 
 test('builder is immutable', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   const original = S.list()
   expect(original.id('foo')).not.toBe(original)
   expect(original.title('foo')).not.toBe(original)
@@ -203,6 +257,8 @@ test('builder is immutable', () => {
 })
 
 test('getters work', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   const original = S.list()
   expect(original.id('foo').getId()).toEqual('foo')
   expect(original.title('foo').getTitle()).toEqual('foo')

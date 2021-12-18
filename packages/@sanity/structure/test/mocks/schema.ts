@@ -1,13 +1,30 @@
-const types = {
-  author: author(),
-  post: post(),
+import SchemaBuilder from '@sanity/schema'
+import {Schema, SchemaType} from '@sanity/types'
+
+const types = [
+  author(),
+  post(),
+  {type: 'object', name: 'slug'},
+  {type: 'object', name: 'sanity.imageAsset'},
+  {type: 'object', name: 'sanity.imageCrop'},
+  {type: 'object', name: 'sanity.imageHotspot'},
+]
+
+const compiledSchema = SchemaBuilder.compile({
+  name: 'blog',
+  types,
+})
+
+const compiledTypes: Record<string, SchemaType | undefined> = {
+  author: compiledSchema.get('author'),
+  post: compiledSchema.get('post'),
 }
 
-module.exports = {
+export const schema = {
   name: 'blog',
-  get: (typeName) => types[typeName],
-  getTypeNames: () => Object.keys(types),
-}
+  get: (typeName) => compiledTypes[typeName],
+  getTypeNames: () => Object.keys(compiledTypes),
+} as Schema
 
 function author() {
   return {

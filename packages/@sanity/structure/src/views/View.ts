@@ -1,9 +1,7 @@
 import {kebabCase} from 'lodash'
 import {Serializable, SerializeOptions, SerializePath} from '../StructureNodes'
-import {SerializeError} from '..'
-import {HELP_URL} from '../SerializeError'
+import {HELP_URL, SerializeError} from '../SerializeError'
 import {validateId} from '../util/validateId'
-import {FixMe} from '../types'
 import {ComponentViewBuilder} from './ComponentView'
 import {FormViewBuilder} from './FormView'
 
@@ -11,34 +9,35 @@ export interface View {
   type: string
   id: string
   title: string
-  icon?: FixMe
+  icon?: React.ComponentType
 }
 
 export abstract class GenericViewBuilder<L extends Partial<View>, ConcreteImpl>
-  implements Serializable {
+  implements Serializable
+{
   protected spec: L = {} as L
 
-  id(id: string) {
+  id(id: string): ConcreteImpl {
     return this.clone({id})
   }
 
-  getId() {
+  getId(): string | undefined {
     return this.spec.id
   }
 
-  title(title: string) {
+  title(title: string): ConcreteImpl {
     return this.clone({title, id: this.spec.id || kebabCase(title)})
   }
 
-  getTitle() {
+  getTitle(): string | undefined {
     return this.spec.title
   }
 
-  icon(icon: FixMe) {
+  icon(icon: React.ComponentType): ConcreteImpl {
     return this.clone({icon})
   }
 
-  getIcon() {
+  getIcon(): React.ComponentType | undefined {
     return this.spec.icon
   }
 
@@ -68,9 +67,8 @@ export abstract class GenericViewBuilder<L extends Partial<View>, ConcreteImpl>
     }
   }
 
-  clone(withSpec?: Partial<View>) {
-    const builder = new (this.constructor as {new (): ConcreteImpl})()
-    return builder
+  clone(_withSpec?: Partial<View>): ConcreteImpl {
+    return new (this.constructor as {new (): ConcreteImpl})()
   }
 }
 

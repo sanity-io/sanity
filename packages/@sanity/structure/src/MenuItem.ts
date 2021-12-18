@@ -1,14 +1,10 @@
+import {Schema, SchemaType, SortOrdering, SortOrderingItem} from '@sanity/types'
+import {SortIcon} from '@sanity/icons'
 import {getExtendedProjection} from './util/getExtendedProjection'
-import {SchemaType, getDefaultSchema} from './parts/Schema'
-import {getSortIcon} from './parts/Icon'
 import {Intent} from './Intent'
-import {Partial} from './Partial'
-import {SortItem, Ordering, DEFAULT_ORDERING_OPTIONS} from './Sort'
+import {DEFAULT_ORDERING_OPTIONS} from './Sort'
 import {SerializeOptions, Serializable, SerializePath} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
-import {FixMe} from './types'
-
-const SortIcon = getSortIcon()
 
 export function maybeSerializeMenuItem(
   item: MenuItem | MenuItemBuilder,
@@ -40,7 +36,7 @@ export interface MenuItem {
   action?: ActionType
   intent?: Intent
   group?: string
-  icon?: FixMe
+  icon?: React.ComponentType
   params?: ParamsType
   showAsAction?: boolean
 }
@@ -58,7 +54,7 @@ export class MenuItemBuilder implements Serializable {
     return this.clone({action})
   }
 
-  getAction() {
+  getAction(): ActionType | undefined {
     return this.spec.action
   }
 
@@ -66,7 +62,7 @@ export class MenuItemBuilder implements Serializable {
     return this.clone({intent})
   }
 
-  getIntent() {
+  getIntent(): Intent | undefined {
     return this.spec.intent
   }
 
@@ -74,7 +70,7 @@ export class MenuItemBuilder implements Serializable {
     return this.clone({title})
   }
 
-  getTitle() {
+  getTitle(): string | undefined {
     return this.spec.title
   }
 
@@ -82,15 +78,15 @@ export class MenuItemBuilder implements Serializable {
     return this.clone({group})
   }
 
-  getGroup() {
+  getGroup(): string | undefined {
     return this.spec.group
   }
 
-  icon(icon: FixMe): MenuItemBuilder {
+  icon(icon: React.ComponentType): MenuItemBuilder {
     return this.clone({icon})
   }
 
-  getIcon() {
+  getIcon(): React.ComponentType | undefined {
     return this.spec.icon
   }
 
@@ -98,7 +94,7 @@ export class MenuItemBuilder implements Serializable {
     return this.clone({params})
   }
 
-  getParams() {
+  getParams(): ParamsType | undefined {
     return this.spec.params
   }
 
@@ -106,7 +102,7 @@ export class MenuItemBuilder implements Serializable {
     return this.clone({showAsAction: Boolean(showAsAction)})
   }
 
-  getShowAsAction() {
+  getShowAsAction(): boolean | undefined {
     return this.spec.showAsAction
   }
 
@@ -152,11 +148,14 @@ export class MenuItemBuilder implements Serializable {
 
 export interface SortMenuItem extends MenuItem {
   params: {
-    by: SortItem[]
+    by: SortOrderingItem[]
   }
 }
 
-export function getOrderingMenuItem(ordering: Ordering, extendedProjection?: string) {
+export function getOrderingMenuItem(
+  ordering: SortOrdering,
+  extendedProjection?: string
+): MenuItemBuilder {
   return new MenuItemBuilder()
     .group('sorting')
     .title(`Sort by ${ordering.title}`)
@@ -165,16 +164,18 @@ export function getOrderingMenuItem(ordering: Ordering, extendedProjection?: str
     .params({by: ordering.by, extendedProjection})
 }
 
-export function getOrderingMenuItemsForSchemaType(typeName: SchemaType | string) {
-  const type = typeof typeName === 'string' ? getDefaultSchema().get(typeName) : typeName
+export function getOrderingMenuItemsForSchemaType(
+  schema: Schema,
+  typeName: SchemaType | string
+): MenuItemBuilder[] {
+  const type = typeof typeName === 'string' ? schema.get(typeName) : typeName
   if (!type) {
     return []
   }
 
-  return (type.orderings
-    ? type.orderings.concat(DEFAULT_ORDERING_OPTIONS)
-    : DEFAULT_ORDERING_OPTIONS
-  ).map((ordering: Ordering) =>
-    getOrderingMenuItem(ordering, getExtendedProjection(type, ordering.by))
-  )
+  return (
+    type && 'orderings' in type
+      ? type.orderings?.concat(DEFAULT_ORDERING_OPTIONS) || []
+      : DEFAULT_ORDERING_OPTIONS
+  ).map((ordering) => getOrderingMenuItem(ordering, getExtendedProjection(type, ordering.by)))
 }

@@ -1,4 +1,5 @@
 import {find} from 'lodash'
+import {SanityClient} from '@sanity/client'
 import {SerializePath, SerializeOptions, Divider, Collection} from './StructureNodes'
 import {ChildResolverOptions, ChildResolver} from './ChildResolver'
 import {SerializeError, HELP_URL} from './SerializeError'
@@ -12,6 +13,7 @@ import {
   GenericListInput,
   shallowIntentChecker,
 } from './GenericList'
+import {StructureBuilder} from './types'
 
 const getArgType = (thing: ListItem) => {
   if (thing instanceof ListBuilder) {
@@ -32,6 +34,7 @@ const isListItem = (item: ListItem | Divider): item is ListItem => {
 const defaultCanHandleIntent: IntentChecker = (intentName: string, params, context) => {
   const pane = context.pane as List
   const items = pane.items || []
+
   return (
     items
       .filter(isDocumentListItem)
@@ -40,8 +43,13 @@ const defaultCanHandleIntent: IntentChecker = (intentName: string, params, conte
   )
 }
 
-const resolveChildForItem: ChildResolver = (itemId: string, options: ChildResolverOptions) => {
+const resolveChildForItem: ChildResolver = (context, itemId, options) => {
   const parentItem = options.parent as List
+
+  if (!parentItem) {
+    throw new Error('missing parent item')
+  }
+
   const items = parentItem.items.filter(isListItem)
   const target = (items.find((item) => item.id === itemId) || {child: undefined}).child
 
@@ -49,7 +57,7 @@ const resolveChildForItem: ChildResolver = (itemId: string, options: ChildResolv
     return target
   }
 
-  return typeof target === 'function' ? target(itemId, options) : target
+  return typeof target === 'function' ? target(context, itemId, options) : target
 }
 
 function maybeSerializeListItem(

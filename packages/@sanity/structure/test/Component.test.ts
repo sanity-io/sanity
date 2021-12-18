@@ -1,4 +1,8 @@
-import {StructureBuilder as S} from '../src'
+import {createStructureBuilder} from '../src'
+import {schema} from './mocks/schema'
+
+// @todo: Mock the Sanity client here?
+const client = {} as any
 
 const noop = () => null
 const component = () => null
@@ -6,6 +10,8 @@ const options = {foo: 'bar'}
 const childResolver = () => undefined
 
 test('builds component node through constructor', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.component({
       id: 'foo',
@@ -18,26 +24,36 @@ test('builds component node through constructor', () => {
 })
 
 test('builds component node through alt. constructor', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(S.component(component).id('foo').child(childResolver).serialize()).toMatchSnapshot()
 })
 
 test('throws on missing id', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(() => S.component().serialize()).toThrowError(/`id` is required/)
 })
 
 test('infers ID from title if not specified', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(S.component().title('Hei der').getId()).toEqual('heiDer')
   expect(S.component().id('zing').title('Hei der').getId()).toEqual('zing')
   expect(S.component().title('Hei der').id('blah').getId()).toEqual('blah')
 })
 
 test('throws on missing component', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(() => S.component().id('id').title('title').serialize()).toThrowError(
     /`component` is required/
   )
 })
 
 test('can construct using builder', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.component()
       .id('yeah')
@@ -50,6 +66,8 @@ test('can construct using builder', () => {
 })
 
 test('can set menu items', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.component()
       .id('yeah')
@@ -60,6 +78,8 @@ test('can set menu items', () => {
 })
 
 test('can set menu items with builder', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.component()
       .id('yeah')
@@ -70,6 +90,8 @@ test('can set menu items with builder', () => {
 })
 
 test('can set menu item groups', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.component()
       .id('yeah')
@@ -81,6 +103,8 @@ test('can set menu item groups', () => {
 })
 
 test('can set menu items groups with builder', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.component()
       .id('yeah')
@@ -92,6 +116,8 @@ test('can set menu items groups with builder', () => {
 })
 
 test('builder is immutable', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   const original = S.component()
   expect(original.id('foo')).not.toBe(original)
   expect(original.title('foo')).not.toBe(original)
@@ -103,6 +129,8 @@ test('builder is immutable', () => {
 })
 
 test('getters work', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   const original = S.component()
   expect(original.id('foo').getId()).toEqual('foo')
   expect(original.title('bar').getTitle()).toEqual('bar')

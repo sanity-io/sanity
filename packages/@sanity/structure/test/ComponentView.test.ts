@@ -1,28 +1,44 @@
-import {StructureBuilder as S} from '../src'
+import {createStructureBuilder} from '../src'
+import {schema} from './mocks/schema'
+
+// @todo: Mock the Sanity client here?
+const client = {} as any
 
 test('throws on missing id', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(() => S.view.component().serialize()).toThrowError(/`id` is required/)
 })
 
 test('throws on missing title', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(() => S.view.component().id('foo').serialize()).toThrowError(/`title` is required/)
 })
 
 test('throws on invalid id', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(() => S.view.component().id('foo bar').title('Foo bar').serialize()).toThrowError(
     'Structure node id cannot contain character " "'
   )
 })
 
 test('infers id from title if not set', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(S.view.component().title('Foo bar').getId()).toEqual('foo-bar')
 })
 
 test('does not infer id from title if already set', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(S.view.component().id('default-thing').title('Foo bar').getId()).toEqual('default-thing')
 })
 
 test('builds component view through component constructor', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.view
       .component(() => null)
@@ -34,6 +50,8 @@ test('builds component view through component constructor', () => {
 })
 
 test('can override component set through constructor', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   const original = () => null
   const changed = () => null
   const builder = S.view.component(original).id('custom').title('Custom').component(changed)
@@ -43,6 +61,8 @@ test('can override component set through constructor', () => {
 })
 
 test('builder is immutable', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   const original = S.view.component()
   expect(original.id('foo')).not.toBe(original)
   expect(original.title('foo')).not.toBe(original)
@@ -52,6 +72,8 @@ test('builder is immutable', () => {
 })
 
 test('getters work', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   const original = S.view.component()
   const icon = () => null
   const component = () => null

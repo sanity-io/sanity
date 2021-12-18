@@ -58,11 +58,12 @@ export interface GenericListInput extends StructureNode {
 }
 
 export abstract class GenericListBuilder<L extends BuildableGenericList, ConcreteImpl>
-  implements Serializable {
+  implements Serializable
+{
   protected initialValueTemplatesSpecified = false
   protected spec: L = {} as L
 
-  id(id: string) {
+  id(id: string): ConcreteImpl {
     return this.clone({id})
   }
 
@@ -70,7 +71,7 @@ export abstract class GenericListBuilder<L extends BuildableGenericList, Concret
     return this.spec.id
   }
 
-  title(title: string) {
+  title(title: string): ConcreteImpl {
     return this.clone({title, id: this.spec.id || camelCase(title)})
   }
 
@@ -78,7 +79,7 @@ export abstract class GenericListBuilder<L extends BuildableGenericList, Concret
     return this.spec.title
   }
 
-  defaultLayout(defaultLayout: Layout) {
+  defaultLayout(defaultLayout: Layout): ConcreteImpl {
     return this.clone({defaultLayout})
   }
 
@@ -86,7 +87,7 @@ export abstract class GenericListBuilder<L extends BuildableGenericList, Concret
     return this.spec.defaultLayout
   }
 
-  menuItems(menuItems: (MenuItem | MenuItemBuilder)[]) {
+  menuItems(menuItems: (MenuItem | MenuItemBuilder)[] | undefined): ConcreteImpl {
     return this.clone({menuItems})
   }
 
@@ -94,7 +95,7 @@ export abstract class GenericListBuilder<L extends BuildableGenericList, Concret
     return this.spec.menuItems
   }
 
-  menuItemGroups(menuItemGroups: (MenuItemGroup | MenuItemGroupBuilder)[]) {
+  menuItemGroups(menuItemGroups: (MenuItemGroup | MenuItemGroupBuilder)[]): ConcreteImpl {
     return this.clone({menuItemGroups})
   }
 
@@ -102,7 +103,7 @@ export abstract class GenericListBuilder<L extends BuildableGenericList, Concret
     return this.spec.menuItemGroups
   }
 
-  child(child: Child) {
+  child(child: Child): ConcreteImpl {
     return this.clone({child})
   }
 
@@ -110,7 +111,7 @@ export abstract class GenericListBuilder<L extends BuildableGenericList, Concret
     return this.spec.child
   }
 
-  canHandleIntent(canHandleIntent: IntentChecker) {
+  canHandleIntent(canHandleIntent: IntentChecker): ConcreteImpl {
     return this.clone({canHandleIntent})
   }
 
@@ -118,7 +119,7 @@ export abstract class GenericListBuilder<L extends BuildableGenericList, Concret
     return this.spec.canHandleIntent
   }
 
-  showIcons(enabled: boolean) {
+  showIcons(enabled: boolean): ConcreteImpl {
     return this.clone({
       displayOptions: {...(this.spec.displayOptions || {}), showIcons: enabled},
     })
@@ -128,9 +129,17 @@ export abstract class GenericListBuilder<L extends BuildableGenericList, Concret
     return this.spec.displayOptions ? this.spec.displayOptions.showIcons : undefined
   }
 
-  initialValueTemplates(templates: InitialValueTemplateItem | InitialValueTemplateItem[]) {
+  initialValueTemplates(
+    templates:
+      | InitialValueTemplateItem
+      | InitialValueTemplateItemBuilder
+      | Array<InitialValueTemplateItem | InitialValueTemplateItemBuilder>
+  ): ConcreteImpl {
     this.initialValueTemplatesSpecified = true
-    return this.clone({initialValueTemplates: Array.isArray(templates) ? templates : [templates]})
+
+    return this.clone({
+      initialValueTemplates: Array.isArray(templates) ? templates : [templates],
+    })
   }
 
   getInitialValueTemplates() {
@@ -173,9 +182,8 @@ export abstract class GenericListBuilder<L extends BuildableGenericList, Concret
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-types, @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/ban-types
   clone(_withSpec?: object): ConcreteImpl {
-    const builder = new (this.constructor as {new (): ConcreteImpl})()
-    return builder
+    return new (this.constructor as {new (): ConcreteImpl})()
   }
 }

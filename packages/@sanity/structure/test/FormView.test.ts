@@ -1,10 +1,18 @@
-import {StructureBuilder as S} from '../src'
+import {createStructureBuilder} from '../src'
+import {schema} from './mocks/schema'
+
+// @todo: Mock the Sanity client here?
+const client = {} as any
 
 test('builds form view through constructor, with defaults', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(S.view.form().serialize()).toMatchSnapshot()
 })
 
 test('can override defaults', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.view
       .form()
@@ -16,6 +24,8 @@ test('can override defaults', () => {
 })
 
 test('builder is immutable', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   const original = S.view.form()
   expect(original.id('foo')).not.toBe(original)
   expect(original.title('foo')).not.toBe(original)
@@ -23,6 +33,8 @@ test('builder is immutable', () => {
 })
 
 test('getters work', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   const original = S.view.form()
   const icon = () => null
 

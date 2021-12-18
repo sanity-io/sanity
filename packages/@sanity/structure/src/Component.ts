@@ -4,10 +4,10 @@ import {SerializeError, HELP_URL} from './SerializeError'
 import {MenuItem, MenuItemBuilder, maybeSerializeMenuItem} from './MenuItem'
 import {MenuItemGroup, MenuItemGroupBuilder, maybeSerializeMenuItemGroup} from './MenuItemGroup'
 import {validateId} from './util/validateId'
-import {FixMe} from './types'
+import {UserComponent} from './types'
 
 export interface Component extends StructureNode {
-  component: FixMe
+  component: UserComponent
   child?: Child
   menuItems: MenuItem[]
   menuItemGroups: MenuItemGroup[]
@@ -15,7 +15,7 @@ export interface Component extends StructureNode {
 }
 
 export interface ComponentInput extends StructureNode {
-  component: FixMe
+  component: UserComponent
   child?: Child
   options?: {[key: string]: unknown}
   menuItems?: (MenuItem | MenuItemBuilder)[]
@@ -23,7 +23,7 @@ export interface ComponentInput extends StructureNode {
 }
 
 export interface BuildableComponent extends Partial<StructureNode> {
-  component?: FixMe
+  component?: UserComponent
   child?: Child
   options?: {[key: string]: unknown}
   menuItems?: (MenuItem | MenuItemBuilder)[]
@@ -37,59 +37,59 @@ export class ComponentBuilder implements Serializable {
     this.spec = {options: {}, ...(spec ? spec : {})}
   }
 
-  id(id: string) {
+  id(id: string): ComponentBuilder {
     return this.clone({id})
   }
 
-  getId() {
+  getId(): string | undefined {
     return this.spec.id
   }
 
-  title(title: string) {
+  title(title: string): ComponentBuilder {
     return this.clone({title, id: this.spec.id || camelCase(title)})
   }
 
-  getTitle() {
+  getTitle(): string | undefined {
     return this.spec.title
   }
 
-  child(child: Child) {
+  child(child: Child): ComponentBuilder {
     return this.clone({child})
   }
 
-  getChild() {
+  getChild(): Child | undefined {
     return this.spec.child
   }
 
-  component(component: FixMe) {
+  component(component: UserComponent): ComponentBuilder {
     return this.clone({component})
   }
 
-  getComponent() {
+  getComponent(): UserComponent | undefined {
     return this.spec.component
   }
 
-  options(options: {[key: string]: unknown}) {
+  options(options: {[key: string]: unknown}): ComponentBuilder {
     return this.clone({options})
   }
 
-  getOptions() {
+  getOptions(): Record<string, unknown> {
     return this.spec.options || {}
   }
 
-  menuItems(menuItems: (MenuItem | MenuItemBuilder)[]) {
+  menuItems(menuItems: (MenuItem | MenuItemBuilder)[]): ComponentBuilder {
     return this.clone({menuItems})
   }
 
-  getMenuItems() {
+  getMenuItems(): Array<MenuItem | MenuItemBuilder> | undefined {
     return this.spec.menuItems
   }
 
-  menuItemGroups(menuItemGroups: (MenuItemGroup | MenuItemGroupBuilder)[]) {
+  menuItemGroups(menuItemGroups: (MenuItemGroup | MenuItemGroupBuilder)[]): ComponentBuilder {
     return this.clone({menuItemGroups})
   }
 
-  getMenuItemGroups() {
+  getMenuItemGroups(): Array<MenuItemGroup | MenuItemGroupBuilder> | undefined {
     return this.spec.menuItemGroups
   }
 

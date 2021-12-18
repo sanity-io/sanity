@@ -1,7 +1,5 @@
-import memoizeOne from 'memoize-one'
-import {Schema, getDefaultSchema, SchemaType} from './parts/Schema'
-import {dataAspects, DataAspectsResolver} from './parts/DataAspects'
-import {getListIcon, getDetailsIcon} from './parts/Icon'
+import {SplitHorizontalIcon, StackCompactIcon} from '@sanity/icons'
+import {SchemaType} from '@sanity/types'
 import {MenuItemBuilder, getOrderingMenuItemsForSchemaType} from './MenuItem'
 import {DEFAULT_SELECTED_ORDERING_OPTION} from './Sort'
 import {DocumentListBuilder} from './DocumentList'
@@ -11,43 +9,41 @@ import {defaultIntentChecker} from './Intent'
 import {getDefaultDocumentNode} from './Document'
 import {isList} from './List'
 import {Collection} from './StructureNodes'
-
-const ListIcon = getListIcon()
-const DetailsIcon = getDetailsIcon()
-
-const getDataAspectsForSchema: (schema: Schema) => DataAspectsResolver = memoizeOne(dataAspects)
+import {getSchemaTypes} from './helpers'
+import {ChildResolverContext} from './ChildResolver'
 
 function shouldShowIcon(schemaType: SchemaType): boolean {
   const preview = schemaType.preview
   return Boolean(preview && (preview.prepare || (preview.select && preview.select.media)))
 }
 
-export function getDocumentTypeListItems(schema?: Schema): ListItemBuilder[] {
-  const resolver = getDataAspectsForSchema(schema || getDefaultSchema())
-  const types = resolver.getDocumentTypes()
-  return types.map((typeName) => getDocumentTypeListItem(typeName, schema))
+export function getDocumentTypeListItems(context: ChildResolverContext): ListItemBuilder[] {
+  const schemaTypes = getSchemaTypes(context.schema)
+
+  return schemaTypes.map((typeName) => getDocumentTypeListItem(context, typeName))
 }
 
-export function getDocumentTypeListItem(typeName: string, sanitySchema?: Schema): ListItemBuilder {
-  const schema = sanitySchema || getDefaultSchema()
-  const type = schema.get(typeName)
+export function getDocumentTypeListItem(
+  context: ChildResolverContext,
+  typeName: string
+): ListItemBuilder {
+  const type = context.schema.get(typeName)
+
   if (!type) {
     throw new Error(`Schema type with name "${typeName}" not found`)
   }
 
-  const resolver = getDataAspectsForSchema(schema)
-  const title = resolver.getDisplayName(typeName)
-  return new ListItemBuilder()
+  return new ListItemBuilder(context.schema)
     .id(typeName)
-    .title(title)
+    .title(type.title || type.name || 'Untitled')
     .schemaType(type)
-    .child((id, context) => {
-      const parent = context.parent as Collection
+    .child((_context, id, __context) => {
+      const parent = __context.parent as Collection
       const parentItem = isList(parent)
         ? (parent.items.find((item) => item.id === id) as ListItem)
         : null
 
-      let list = getDocumentTypeList(typeName, schema)
+      let list = getDocumentTypeList(_context, typeName)
       if (parentItem && parentItem.title) {
         list = list.title(parentItem.title)
       }
@@ -57,27 +53,26 @@ export function getDocumentTypeListItem(typeName: string, sanitySchema?: Schema)
 }
 
 export function getDocumentTypeList(
-  typeNameOrSpec: string | DocumentTypeListInput,
-  sanitySchema?: Schema
+  context: ChildResolverContext,
+  // schema: Schema,
+  // templates: Template[],
+  typeNameOrSpec: string | DocumentTypeListInput
 ): DocumentListBuilder {
   const schemaType = typeof typeNameOrSpec === 'string' ? typeNameOrSpec : typeNameOrSpec.schemaType
   const typeName = typeof schemaType === 'string' ? schemaType : schemaType.name
   const spec: DocumentTypeListInput =
     typeof typeNameOrSpec === 'string' ? {schemaType} : typeNameOrSpec
 
-  const schema = sanitySchema || getDefaultSchema()
-  const type = schema.get(typeName)
+  const type = context.schema.get(typeName)
   if (!type) {
     throw new Error(`Schema type with name "${typeName}" not found`)
   }
 
-  const resolver = getDataAspectsForSchema(schema)
-  const title = resolver.getDisplayName(typeName)
   const showIcons = shouldShowIcon(type)
 
-  return new DocumentTypeListBuilder()
+  return new DocumentTypeListBuilder(context.schema, context.templates)
     .id(spec.id || typeName)
-    .title(spec.title || title)
+    .title(spec.title || type.title || type.name || 'Untitled')
     .filter('_type == $type')
     .params({type: typeName})
     .schemaType(type)
@@ -92,7 +87,8 @@ export function getDocumentTypeList(
     )
     .child(
       spec.child ||
-        ((documentId: string) => getDefaultDocumentNode({schemaType: typeName, documentId}))
+        ((_context, documentId) =>
+          getDefaultDocumentNode(_context, {schemaType: typeName, documentId}))
     )
     .canHandleIntent(spec.canHandleIntent || defaultIntentChecker)
     .menuItems(
@@ -100,20 +96,20 @@ export function getDocumentTypeList(
         // Create new (from action button) will be added in serialization step of GenericList
 
         // Sort by <Y>
-        ...getOrderingMenuItemsForSchemaType(type),
+        ...getOrderingMenuItemsForSchemaType(context.schema, type),
 
         // Display as <Z>
         new MenuItemBuilder()
           .group('layout')
           .title('Compact view')
-          .icon(ListIcon)
+          .icon(StackCompactIcon)
           .action('setLayout')
           .params({layout: 'default'}),
 
         new MenuItemBuilder()
           .group('layout')
           .title('Detailed view')
-          .icon(DetailsIcon)
+          .icon(SplitHorizontalIcon)
           .action('setLayout')
           .params({layout: 'detail'}),
 

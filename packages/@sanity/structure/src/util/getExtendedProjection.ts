@@ -1,5 +1,4 @@
-import {SchemaType} from '../parts/Schema'
-import {SortItem} from '../Sort'
+import {SchemaType, SortOrderingItem} from '@sanity/types'
 
 const IMPLICIT_FIELDS = ['_id', '_type', '_createdAt', '_updatedAt', '_rev']
 
@@ -7,7 +6,7 @@ const IMPLICIT_FIELDS = ['_id', '_type', '_createdAt', '_updatedAt', '_rev']
 function joinReferences(schemaType: SchemaType, path: string[]): string {
   const [head, ...tail] = path
 
-  if (!schemaType.fields) {
+  if (!('fields' in schemaType)) {
     return ''
   }
 
@@ -25,7 +24,7 @@ function joinReferences(schemaType: SchemaType, path: string[]): string {
     return ''
   }
 
-  if (schemaField.type.name === 'reference' && schemaField.type.to) {
+  if (schemaField.type.name === 'reference' && 'to' in schemaField.type) {
     const refTypes = schemaField.type.to
     return `${head}->{${refTypes.map((refType) => joinReferences(refType, tail)).join(',')}}`
   }
@@ -35,6 +34,6 @@ function joinReferences(schemaType: SchemaType, path: string[]): string {
   return tail.length > 0 ? `${head}${tailWrapper}` : head
 }
 
-export function getExtendedProjection(schemaType: SchemaType, orderBy: SortItem[]): string {
+export function getExtendedProjection(schemaType: SchemaType, orderBy: SortOrderingItem[]): string {
   return orderBy.map((ordering) => joinReferences(schemaType, ordering.field.split('.'))).join(', ')
 }

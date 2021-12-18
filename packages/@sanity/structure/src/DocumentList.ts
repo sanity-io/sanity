@@ -1,11 +1,10 @@
-import {getParameterlessTemplatesBySchemaType} from '@sanity/initial-value-templates'
-import {SchemaType, getDefaultSchema} from './parts/Schema'
-import {isActionEnabled} from './parts/documentActionUtils'
-import {structureClient} from './parts/Client'
-import {SortItem} from './Sort'
+import {getParameterlessTemplatesBySchemaType, Template} from '@sanity/initial-value-templates'
+import {isActionEnabled} from '@sanity/schema/_internal'
+import {Schema, SchemaType, SortOrderingItem} from '@sanity/types'
+import {SanityClient} from '@sanity/client'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {SerializeOptions, Child} from './StructureNodes'
-import {ChildResolver, ChildResolverOptions, ItemChild} from './ChildResolver'
+import {ChildResolver, ChildResolverContext, ChildResolverOptions, ItemChild} from './ChildResolver'
 import {InitialValueTemplateItem} from './InitialValueTemplateItem'
 import {
   GenericListBuilder,
@@ -15,17 +14,21 @@ import {
 } from './GenericList'
 import {DocumentBuilder, getDefaultDocumentNode} from './Document'
 
-const resolveTypeForDocument = (id: string): Promise<string | undefined> => {
+const resolveTypeForDocument = async (
+  client: SanityClient,
+  id: string
+): Promise<string | undefined> => {
   const query = '*[_id in [$documentId, $draftId]]._type'
   const documentId = id.replace(/^drafts\./, '')
   const draftId = `drafts.${documentId}`
-  return structureClient
-    .fetch(query, {documentId, draftId}, {tag: 'structure.resolve-type'})
-    .then((types) => types[0])
+
+  const types = await client.fetch(query, {documentId, draftId}, {tag: 'structure.resolve-type'})
+
+  return types[0]
 }
 
 const validateFilter = (spec: PartialDocumentList, options: SerializeOptions) => {
-  const filter = spec.options!.filter.trim()
+  const filter = spec.options?.filter.trim() || ''
 
   if (['*', '{'].includes(filter[0])) {
     throw new SerializeError(
@@ -40,14 +43,18 @@ const validateFilter = (spec: PartialDocumentList, options: SerializeOptions) =>
 }
 
 const resolveDocumentChildForItem: ChildResolver = (
+  context: ChildResolverContext,
   itemId: string,
   options: ChildResolverOptions
 ): ItemChild | Promise<ItemChild> | undefined => {
   const parentItem = options.parent as DocumentList
-  const type = parentItem.schemaTypeName || resolveTypeForDocument(itemId)
+  const type = parentItem.schemaTypeName || resolveTypeForDocument(context.client, itemId)
   return Promise.resolve(type).then((schemaType) =>
     schemaType
-      ? getDefaultDocumentNode({schemaType, documentId: itemId})
+      ? getDefaultDocumentNode(context, {
+          schemaType,
+          documentId: itemId,
+        })
       : new DocumentBuilder().id('editor').documentId(itemId).schemaType('')
   )
 }
@@ -71,7 +78,7 @@ interface DocumentListOptions {
   filter: string
   params?: {[key: string]: any}
   apiVersion?: string
-  defaultOrdering?: SortItem[]
+  defaultOrdering?: SortOrderingItem[]
 }
 
 export class DocumentListBuilder extends GenericListBuilder<
@@ -79,9 +86,13 @@ export class DocumentListBuilder extends GenericListBuilder<
   DocumentListBuilder
 > {
   protected spec: PartialDocumentList
+  protected schema: Schema
+  protected templates: Template[]
 
-  constructor(spec?: DocumentListInput) {
+  constructor(schema: Schema, templates: Template[], spec?: DocumentListInput) {
     super()
+    this.schema = schema
+    this.templates = templates
     this.spec = spec ? spec : {}
     this.initialValueTemplatesSpecified = Boolean(spec && spec.initialValueTemplates)
   }
@@ -121,7 +132,7 @@ export class DocumentListBuilder extends GenericListBuilder<
     return this.spec.options?.params
   }
 
-  defaultOrdering(ordering: SortItem[]): DocumentListBuilder {
+  defaultOrdering(ordering: SortOrderingItem[]): DocumentListBuilder {
     if (!Array.isArray(ordering)) {
       throw new Error('`defaultOrdering` must be an array of order clauses')
     }
@@ -131,7 +142,7 @@ export class DocumentListBuilder extends GenericListBuilder<
     })
   }
 
-  getDefaultOrdering(): SortItem[] | undefined {
+  getDefaultOrdering(): SortOrderingItem[] | undefined {
     return this.spec.options?.defaultOrdering
   }
 
@@ -171,11 +182,15 @@ export class DocumentListBuilder extends GenericListBuilder<
   }
 
   clone(withSpec?: PartialDocumentList): DocumentListBuilder {
-    const builder = new DocumentListBuilder()
+    const builder = new DocumentListBuilder(this.schema, this.templates)
     builder.spec = {...this.spec, ...(withSpec || {})}
 
     if (!this.initialValueTemplatesSpecified) {
-      builder.spec.initialValueTemplates = inferInitialValueTemplates(builder.spec)
+      builder.spec.initialValueTemplates = inferInitialValueTemplates(
+        this.schema,
+        this.templates,
+        builder.spec
+      )
     }
 
     if (!builder.spec.schemaTypeName) {
@@ -191,9 +206,10 @@ export class DocumentListBuilder extends GenericListBuilder<
 }
 
 function inferInitialValueTemplates(
+  schema: Schema,
+  templates: Template[],
   spec: PartialDocumentList
 ): InitialValueTemplateItem[] | undefined {
-  const schema = getDefaultSchema()
   const {schemaTypeName, options} = spec
   const {filter, params} = options || {filter: '', params: {}}
   const typeNames = schemaTypeName ? [schemaTypeName] : getTypeNamesFromFilter(filter, params)
@@ -205,12 +221,20 @@ function inferInitialValueTemplates(
   const templateItems: InitialValueTemplateItem[] = []
   return typeNames.reduce((items, typeName) => {
     const schemaType = schema.get(typeName)
+
+    if (!schemaType) {
+      // @todo
+      // throw new Error(`no schema type: "${typeName}"`)
+
+      return items
+    }
+
     if (!isActionEnabled(schemaType, 'create')) {
       return items
     }
 
     return items.concat(
-      getParameterlessTemplatesBySchemaType(typeName).map(
+      getParameterlessTemplatesBySchemaType(schema, templates, typeName).map(
         (tpl): InitialValueTemplateItem => ({
           type: 'initialValueTemplateItem',
           id: tpl.id,
@@ -246,7 +270,8 @@ function getTypeNamesFromEqualityFilter(
   filter: string,
   params: {[key: string]: any} = {}
 ): string[] {
-  const pattern = /\b_type\s*==\s*(['"].*?['"]|\$.*?(?:\s|$))|\B(['"].*?['"]|\$.*?(?:\s|$))\s*==\s*_type/g
+  const pattern =
+    /\b_type\s*==\s*(['"].*?['"]|\$.*?(?:\s|$))|\B(['"].*?['"]|\$.*?(?:\s|$))\s*==\s*_type/g
   const matches: string[] = []
   let match
   while ((match = pattern.exec(filter)) !== null) {

@@ -24,7 +24,7 @@ export interface IntentChecker {
     params: {[key: string]: any},
     context: {pane: StructureNode; index: number}
   ): boolean
-  identity?: Symbol
+  identity?: symbol
 }
 
 export const defaultIntentChecker: IntentChecker = (intentName, params, {pane}): boolean => {

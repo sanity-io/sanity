@@ -1,5 +1,6 @@
 import {from as observableFrom, of as observableOf, Observable, ObservableInput} from 'rxjs'
 import {mergeMap} from 'rxjs/operators'
+import {ChildResolverContext} from '../../src'
 import {StructureNode, Builder, CollectionBuilder, Child} from '../../src/StructureNodes'
 
 type SerializableStructureNode =
@@ -34,15 +35,15 @@ const isResolver = (thing: SerializableStructureNode): thing is StructureResolve
   return typeof thing === 'function'
 }
 
-export default function serializeStructure(
+export function serializeStructure(
   item: SerializableStructureNode,
-  context?: any,
-  resolverArgs: any[] = []
+  context: any,
+  resolverArgs: [resolverContext: ChildResolverContext, itemId: string, options: any]
 ): Observable<StructureNode> {
   // Lazy
   if (isResolver(item)) {
-    const [itemId, options] = resolverArgs
-    return serializeStructure(item(itemId, options), context, resolverArgs)
+    // const [S, client, itemId, options] = resolverArgs
+    return serializeStructure(item(...resolverArgs), context, resolverArgs)
   }
 
   // Promise/observable returning a function, builder or plain JSON structure

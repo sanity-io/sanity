@@ -1,8 +1,11 @@
-import {StructureBuilder as S} from '../src'
-import {getDefaultSchema} from '../src/parts/Schema'
-import serializeStructure from './util/serializeStructure'
+import {createStructureBuilder} from '../src'
 import {ChildResolver} from '../src/ChildResolver'
 import {DocumentTypeListBuilder} from '../src/DocumentTypeList'
+import {serializeStructure} from './util/serializeStructure'
+import {schema} from './mocks/schema'
+
+// @todo: Mock the Sanity client here?
+const client = {} as any
 
 const nope = () => 'NOPE'
 const editor = {
@@ -12,32 +15,40 @@ const editor = {
     id: 'grrm',
   },
 }
-const defaultSchema = getDefaultSchema()
 
 test('generates correct document type list items from global schema', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(S.documentTypeListItems()).toMatchSnapshot()
 })
 
 test('generates correct document type list items from given schema', () => {
-  expect(S.documentTypeListItems(defaultSchema)).toMatchSnapshot()
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
+  expect(S.documentTypeListItems()).toMatchSnapshot()
 })
 
 test('generates correct document type list item for specific type', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(S.documentTypeListItem('author')).toMatchSnapshot()
-  expect(S.documentTypeListItem('author', defaultSchema)).toMatchSnapshot()
+  expect(S.documentTypeListItem('author')).toMatchSnapshot()
 })
 
 test('generated canHandleIntent responds to edit/create on document type', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   const listItems = S.documentTypeListItems().map((item) => item.serialize())
   expect(listItems).toHaveLength(2)
   expect(listItems[0]).toMatchObject({id: 'author', title: 'Author'})
   expect(listItems[0]).toHaveProperty('child')
 
   const childResolver = listItems[0].child as ChildResolver
-  const childBuilder = childResolver('author', {
+  const resolverContext = {client, schema, structureBuilder: S, templates: []} as any
+  const childBuilder = childResolver(resolverContext, 'author', {
     index: 0,
     parent: S.list().id('foo').items(listItems).serialize(),
-  }) as DocumentTypeListBuilder
+  } as any) as DocumentTypeListBuilder
 
   const child = childBuilder.serialize()
   expect(child).toHaveProperty('canHandleIntent')
@@ -49,29 +60,36 @@ test('generated canHandleIntent responds to edit/create on document type', () =>
 })
 
 test('generated document panes responds with correct editor child', (done) => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   const listItems = S.documentTypeListItems().map((item) => item.serialize())
   expect(listItems).toHaveLength(2)
   expect(listItems[0]).toMatchObject({id: 'author', title: 'Author'})
   expect(listItems[0]).toHaveProperty('child')
 
   const childResolver = listItems[0].child as ChildResolver
-  const childBuilder = childResolver('author', {
+  const resolverContext = {client, schema, structureBuilder: S, templates: []} as any
+  const childBuilder = childResolver(resolverContext, 'author', {
     index: 0,
     parent: S.list().id('foo').items(listItems).serialize(),
-  }) as DocumentTypeListBuilder
+  } as any) as DocumentTypeListBuilder
 
   const authorsList = childBuilder.serialize()
   expect(authorsList).toHaveProperty('canHandleIntent')
 
   const context = {parent: listItems[0], index: 0}
-  serializeStructure(authorsList.child, context, ['grrm', context]).subscribe((itemChild) => {
-    expect(itemChild).toMatchObject(editor)
+  serializeStructure(authorsList.child, context, [resolverContext, 'grrm', context]).subscribe(
+    (itemChild) => {
+      expect(itemChild).toMatchObject(editor)
 
-    done()
-  })
+      done()
+    }
+  )
 })
 
 test('manually assigned canHandleIntent should not be overriden', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   const alwaysFalse = () => false
   const list = S.documentTypeList('author')
   const modified = list.canHandleIntent(alwaysFalse)

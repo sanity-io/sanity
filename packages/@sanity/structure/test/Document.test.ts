@@ -1,7 +1,12 @@
-import {StructureBuilder as S} from '../src'
-import {getDefaultSchema, SchemaType} from '../src/parts/Schema'
+import {createStructureBuilder} from '../src'
+import {schema} from './mocks/schema'
+
+// @todo: Mock the Sanity client here?
+const client = {} as any
 
 test('builds document node through constructor', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.document({
       id: 'foo',
@@ -17,10 +22,14 @@ test('builds document node through constructor', () => {
 })
 
 test('throws on missing id', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(() => S.document().schemaType('book').serialize()).toThrowError(/`id` is required/)
 })
 
 test('reuses pane ID if document ID is not set', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(S.document().id('id').schemaType('book').serialize()).toMatchObject({
     id: 'id',
     options: {id: 'id'},
@@ -28,16 +37,16 @@ test('reuses pane ID if document ID is not set', () => {
 })
 
 test('can construct with schema type instead of schema type name', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
-    S.document()
-      .schemaType(getDefaultSchema().get('post') as SchemaType)
-      .id('yeah')
-      .documentId('wow')
-      .serialize()
+    S.document().schemaType(schema.get('post')!).id('yeah').documentId('wow').serialize()
   ).toMatchSnapshot()
 })
 
 test('can construct using builder', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.document()
       .id('yeah')
@@ -50,12 +59,16 @@ test('can construct using builder', () => {
 })
 
 test('can construct using builder (alt)', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.document().schemaType('book').id('yeah').documentId('wow').views([]).serialize()
   ).toMatchSnapshot()
 })
 
 test('builder is immutable', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   const original = S.document()
   expect(original.id('foo')).not.toBe(original)
   expect(original.views([])).not.toBe(original)
@@ -66,6 +79,8 @@ test('builder is immutable', () => {
 })
 
 test('throws on duplicate view ids', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(() =>
     S.document()
       .id('got')
@@ -76,6 +91,8 @@ test('throws on duplicate view ids', () => {
 })
 
 test('getters work', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   const original = S.document()
   const child = () => S.documentTypeList('post')
   const views = [S.view.form()]

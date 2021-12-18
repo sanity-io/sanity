@@ -1,8 +1,13 @@
-import {StructureBuilder as S} from '../src'
-import {getDefaultSchema, SchemaType} from '../src/parts/Schema'
-import serializeStructure from './util/serializeStructure'
+import {createStructureBuilder} from '../src'
+import {serializeStructure} from './util/serializeStructure'
+import {schema} from './mocks/schema'
+
+// @todo: Mock the Sanity client here?
+const client = {} as any
 
 test('builds document type lists with only required properties', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.documentTypeList({
       id: 'custom-id',
@@ -15,6 +20,8 @@ test('builds document type lists with only required properties', () => {
 })
 
 test('builds document type lists with schema type as string', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.documentTypeList('author').serialize({
       path: [],
@@ -23,17 +30,21 @@ test('builds document type lists with schema type as string', () => {
 })
 
 test('builds document type lists with schema type name + schema', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
-    S.documentTypeList('author', getDefaultSchema()).serialize({
+    S.documentTypeList('author').serialize({
       path: [],
     })
   ).toMatchSnapshot()
 })
 
 test('builds document type lists with schema type instance', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.documentTypeList({
-      schemaType: getDefaultSchema().get('author') as SchemaType,
+      schemaType: schema.get('author')!,
     }).serialize({
       path: [],
     })
@@ -41,12 +52,16 @@ test('builds document type lists with schema type instance', () => {
 })
 
 test('throws if no filter is set', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(() =>
     S.documentTypeList('author').id('foo').filter('').serialize()
   ).toThrowErrorMatchingSnapshot()
 })
 
 test('defaults to modern api version ', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(S.documentTypeList('author').serialize()).toHaveProperty(
     'options.apiVersion',
     '2021-06-07'
@@ -54,12 +69,16 @@ test('defaults to modern api version ', () => {
 })
 
 test('defaults to api version v1 if custom filter is specified', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.documentTypeList('author').filter('_type == $type && custom == "prop"').serialize()
   ).toHaveProperty('options.apiVersion', '1')
 })
 
 test('builds document type lists through setters', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.documentTypeList('author')
       .id('authors')
@@ -73,6 +92,8 @@ test('builds document type lists through setters', () => {
 })
 
 test('builds document type lists through setters (alt order)', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.documentTypeList('author')
       .defaultOrdering([{field: 'title', direction: 'desc'}])
@@ -85,6 +106,8 @@ test('builds document type lists through setters (alt order)', () => {
 })
 
 test('builds document type lists through setters (alt order #2)', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.documentTypeList('author')
       .params({type: 'author'})
@@ -97,30 +120,38 @@ test('builds document type lists through setters (alt order #2)', () => {
 })
 
 test('default child resolver resolves to editor', (done) => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   const list = S.documentTypeList('author').serialize()
 
+  const resolverContext = {structureBuilder: S, client} as any
   const context = {parent: list, index: 1}
-  serializeStructure(list.child, context, ['asoiaf-wow', context]).subscribe((child) => {
-    expect(child).toMatchObject({
-      id: 'documentEditor',
-      type: 'document',
-      options: {
-        id: 'asoiaf-wow',
-        type: 'author',
-      },
-      views: [
-        {
-          id: 'editor',
-          title: 'Editor',
-          type: 'form',
+
+  serializeStructure(list.child, context, [resolverContext, 'asoiaf-wow', context]).subscribe(
+    (child) => {
+      expect(child).toMatchObject({
+        id: 'documentEditor',
+        type: 'document',
+        options: {
+          id: 'asoiaf-wow',
+          type: 'author',
         },
-      ],
-    })
-    done()
-  })
+        views: [
+          {
+            id: 'editor',
+            title: 'Editor',
+            type: 'form',
+          },
+        ],
+      })
+      done()
+    }
+  )
 })
 
 test('builder is immutable', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   const original = S.documentTypeList('author')
   expect(original.id('foo')).not.toBe(original)
   expect(original.title('foo')).not.toBe(original)
@@ -136,6 +167,8 @@ test('builder is immutable', () => {
 })
 
 test('getters work', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   const original = S.documentTypeList('author')
   const child = () => undefined
   const canHandleIntent = () => false
@@ -157,6 +190,8 @@ test('getters work', () => {
 })
 
 test('can disable icons from being displayed', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   const list = S.documentTypeList('author')
     .id('blamuggost')
     .title('Blåmuggost')

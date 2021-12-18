@@ -1,7 +1,13 @@
-import {StructureBuilder as S} from '../src'
-import serializeStructure from './util/serializeStructure'
+import {createStructureBuilder} from '../src'
+import {serializeStructure} from './util/serializeStructure'
+import {schema} from './mocks/schema'
+
+// @todo: Mock the Sanity client here?
+const client = {} as any
 
 test('builds document lists with only required properties', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.documentList({id: 'foo', title: 'Foo', options: {filter: '_type == "book"'}}).serialize({
       path: [],
@@ -10,20 +16,28 @@ test('builds document lists with only required properties', () => {
 })
 
 test('throws if no id is set', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(() => S.documentList().serialize()).toThrowErrorMatchingSnapshot()
 })
 
 test('infers ID from title if not specified', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(S.documentList().title('Hei der').getId()).toEqual('heiDer')
   expect(S.documentList().id('zing').title('Hei der').getId()).toEqual('zing')
   expect(S.documentList().title('Hei der').id('blah').getId()).toEqual('blah')
 })
 
 test('throws if no filter is set', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(() => S.documentList().id('foo').serialize()).toThrowErrorMatchingSnapshot()
 })
 
 test('builds document lists through setters', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.documentList()
       .id('books')
@@ -37,6 +51,8 @@ test('builds document lists through setters', () => {
 })
 
 test('builds document lists through setters (alt order)', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.documentList()
       .defaultOrdering([{field: 'title', direction: 'desc'}])
@@ -49,6 +65,8 @@ test('builds document lists through setters (alt order)', () => {
 })
 
 test('builds document lists through setters (alt order #2)', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.documentList()
       .params({type: 'book'})
@@ -61,6 +79,8 @@ test('builds document lists through setters (alt order #2)', () => {
 })
 
 test('builds document lists with custom api version', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   expect(
     S.documentList()
       .id('pets')
@@ -75,6 +95,8 @@ test('builds document lists with custom api version', () => {
 })
 
 test('default child resolver resolves to editor', (done) => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   const list = S.documentList()
     .id('books')
     .title('Books')
@@ -82,29 +104,34 @@ test('default child resolver resolves to editor', (done) => {
     .params({type: 'book'})
     .serialize()
 
+  const resolverContext = {structureBuilder: S, client} as any
   const context = {parent: list, index: 1}
-  serializeStructure(list.child, context, ['asoiaf-wow', context]).subscribe((child) => {
-    expect(child).toMatchObject({
-      id: 'documentEditor',
-      type: 'document',
-      options: {
-        id: 'asoiaf-wow',
-        type: 'book',
-      },
-      views: [
-        {
-          id: 'editor',
-          title: 'Editor',
-          type: 'form',
-          icon: undefined,
+  serializeStructure(list.child, context, [resolverContext, 'asoiaf-wow', context]).subscribe(
+    (child) => {
+      expect(child).toMatchObject({
+        id: 'documentEditor',
+        type: 'document',
+        options: {
+          id: 'asoiaf-wow',
+          type: 'book',
         },
-      ],
-    })
-    done()
-  })
+        views: [
+          {
+            id: 'editor',
+            title: 'Editor',
+            type: 'form',
+            icon: undefined,
+          },
+        ],
+      })
+      done()
+    }
+  )
 })
 
 test('builder is immutable', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   const original = S.documentList()
   expect(original.id('foo')).not.toBe(original)
   expect(original.title('foo')).not.toBe(original)
@@ -121,6 +148,8 @@ test('builder is immutable', () => {
 })
 
 test('getters work', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   const original = S.documentList()
   const child = () => undefined
   const canHandleIntent = () => false
@@ -143,6 +172,8 @@ test('getters work', () => {
 })
 
 test('can disable icons from being displayed', () => {
+  const S = createStructureBuilder({client, initialValueTemplates: [], schema})
+
   const list = S.documentList().title('Blåmuggost').filter('_type == "bluecheese"').showIcons(false)
 
   expect(list.serialize()).toMatchObject({

@@ -35,6 +35,24 @@ Object {
       "params": Object {
         "by": Array [
           Object {
+            "direction": "asc",
+            "field": "name",
+          },
+        ],
+        "extendedProjection": "name",
+      },
+      "title": "Sort by Name",
+    },
+    Object {
+      "action": "setSortOrder",
+      "group": "sorting",
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
+      "params": Object {
+        "by": Array [
+          Object {
             "direction": "desc",
             "field": "_updatedAt",
           },
@@ -130,6 +148,24 @@ Object {
     },
   ],
   "menuItems": Array [
+    Object {
+      "action": "setSortOrder",
+      "group": "sorting",
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
+      "params": Object {
+        "by": Array [
+          Object {
+            "direction": "asc",
+            "field": "name",
+          },
+        ],
+        "extendedProjection": "name",
+      },
+      "title": "Sort by Name",
+    },
     Object {
       "action": "setSortOrder",
       "group": "sorting",
@@ -245,6 +281,24 @@ Object {
       "params": Object {
         "by": Array [
           Object {
+            "direction": "asc",
+            "field": "name",
+          },
+        ],
+        "extendedProjection": "name",
+      },
+      "title": "Sort by Name",
+    },
+    Object {
+      "action": "setSortOrder",
+      "group": "sorting",
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
+      "params": Object {
+        "by": Array [
+          Object {
             "direction": "desc",
             "field": "_updatedAt",
           },
@@ -340,6 +394,24 @@ Object {
     },
   ],
   "menuItems": Array [
+    Object {
+      "action": "setSortOrder",
+      "group": "sorting",
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
+      "params": Object {
+        "by": Array [
+          Object {
+            "direction": "asc",
+            "field": "name",
+          },
+        ],
+        "extendedProjection": "name",
+      },
+      "title": "Sort by Name",
+    },
     Object {
       "action": "setSortOrder",
       "group": "sorting",
@@ -455,6 +527,24 @@ Object {
       "params": Object {
         "by": Array [
           Object {
+            "direction": "asc",
+            "field": "name",
+          },
+        ],
+        "extendedProjection": "name",
+      },
+      "title": "Sort by Name",
+    },
+    Object {
+      "action": "setSortOrder",
+      "group": "sorting",
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
+      "params": Object {
+        "by": Array [
+          Object {
             "direction": "desc",
             "field": "_updatedAt",
           },
@@ -560,6 +650,24 @@ Object {
       "params": Object {
         "by": Array [
           Object {
+            "direction": "asc",
+            "field": "name",
+          },
+        ],
+        "extendedProjection": "name",
+      },
+      "title": "Sort by Name",
+    },
+    Object {
+      "action": "setSortOrder",
+      "group": "sorting",
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
+      "params": Object {
+        "by": Array [
+          Object {
             "direction": "desc",
             "field": "_updatedAt",
           },
@@ -655,6 +763,24 @@ Object {
     },
   ],
   "menuItems": Array [
+    Object {
+      "action": "setSortOrder",
+      "group": "sorting",
+      "icon": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "render": [Function],
+      },
+      "params": Object {
+        "by": Array [
+          Object {
+            "direction": "asc",
+            "field": "name",
+          },
+        ],
+        "extendedProjection": "name",
+      },
+      "title": "Sort by Name",
+    },
     Object {
       "action": "setSortOrder",
       "group": "sorting",

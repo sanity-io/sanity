@@ -1,13 +1,13 @@
+import {AddIcon} from '@sanity/icons'
+import {getTemplateById, Template} from '@sanity/initial-value-templates'
+import {isActionEnabled} from '@sanity/schema/_internal'
+import {Schema} from '@sanity/types'
 import {pickBy} from 'lodash'
-import {getTemplates, getTemplateById} from '@sanity/initial-value-templates'
-import {isActionEnabled} from './parts/documentActionUtils'
-import {getDefaultSchema, Schema} from './parts/Schema'
-import {HELP_URL} from './SerializeError'
-import {Serializable, SerializeOptions, SerializePath} from './StructureNodes'
 import {MenuItemBuilder, MenuItem} from './MenuItem'
-import {getPlusIcon} from './parts/Icon'
 import {IntentParams} from './Intent'
-import {SerializeError, StructureBuilder} from '.'
+import {StructureBuilder} from './types'
+import {HELP_URL, SerializeError} from './SerializeError'
+import {Serializable, SerializeOptions, SerializePath} from './StructureNodes'
 
 export type InitialValueTemplateItem = {
   id: string
@@ -46,7 +46,7 @@ export class InitialValueTemplateItemBuilder implements Serializable {
     return this.spec.title
   }
 
-  description(description: string) {
+  description(description: string): InitialValueTemplateItemBuilder {
     return this.clone({description})
   }
 
@@ -57,6 +57,7 @@ export class InitialValueTemplateItemBuilder implements Serializable {
   templateId(templateId: string): InitialValueTemplateItemBuilder {
     // Let's try to be a bit helpful and assign an ID from template ID if none is specified
     const paneId = this.spec.id || templateId
+
     return this.clone({
       id: paneId,
       templateId,
@@ -67,7 +68,7 @@ export class InitialValueTemplateItemBuilder implements Serializable {
     return this.spec.templateId
   }
 
-  parameters(parameters: {[key: string]: any}) {
+  parameters(parameters: {[key: string]: any}): InitialValueTemplateItemBuilder {
     return this.clone({parameters})
   }
 
@@ -77,6 +78,7 @@ export class InitialValueTemplateItemBuilder implements Serializable {
 
   serialize({path = [], index, hint}: SerializeOptions = {path: []}): InitialValueTemplateItem {
     const {id, templateId} = this.spec
+
     if (typeof id !== 'string' || !id) {
       throw new SerializeError(
         '`id` is required for initial value template item nodes',
@@ -95,29 +97,38 @@ export class InitialValueTemplateItemBuilder implements Serializable {
       ).withHelpUrl(HELP_URL.ID_REQUIRED)
     }
 
-    return {
-      ...this.spec,
-      id,
-      templateId,
-      type: 'initialValueTemplateItem',
-    }
+    return {...this.spec, id, templateId, type: 'initialValueTemplateItem'}
   }
 
-  clone(withSpec: Partial<InitialValueTemplateItem> = {}) {
+  clone(withSpec: Partial<InitialValueTemplateItem> = {}): InitialValueTemplateItemBuilder {
     const builder = new InitialValueTemplateItemBuilder()
+
     builder.spec = {...this.spec, ...withSpec}
+
     return builder
   }
 }
 
 export function defaultInitialValueTemplateItems(
-  schema: Schema = getDefaultSchema()
+  builder: StructureBuilder,
+  schema: Schema,
+  initialValueTemplates: Template[]
 ): InitialValueTemplateItemBuilder[] {
-  const templates = getTemplates()
+  const templates = initialValueTemplates
     // Don't list templates that require parameters
     .filter((tpl) => !tpl.parameters || tpl.parameters.length === 0)
     // Don't list templates that we can't create
-    .filter((tpl) => isActionEnabled(schema.get(tpl.schemaType), 'create'))
+    .filter((tpl) => {
+      const schemaType = schema.get(tpl.schemaType)
+
+      if (!schemaType) {
+        // @todo: throw error
+        // throw new Error(`no schema type: "${tpl.schemaType}"`)
+        return false
+      }
+
+      return isActionEnabled(schemaType, 'create')
+    })
 
   // Sort templates by their schema type, in order or definition
   const typeNames = schema.getTypeNames()
@@ -126,7 +137,7 @@ export function defaultInitialValueTemplateItems(
   )
 
   // Create actual template items out of the templates
-  return ordered.map((tpl) => StructureBuilder.initialValueTemplateItem(tpl.id))
+  return ordered.map((tpl) => builder.initialValueTemplateItem(tpl.id))
 }
 
 export function maybeSerializeInitialValueTemplateItem(
@@ -138,22 +149,21 @@ export function maybeSerializeInitialValueTemplateItem(
 }
 
 export function menuItemsFromInitialValueTemplateItems(
+  schema: Schema,
+  initialValueTemplates: Template[],
   templateItems: InitialValueTemplateItem[]
 ): MenuItem[] {
   return templateItems.map((item) => {
-    const tpl = getTemplateById(item.templateId)
+    const tpl = getTemplateById(schema, initialValueTemplates, item.templateId)
     const title = item.title || (tpl && tpl.title) || 'Create new'
     const params = pickBy({type: tpl && tpl.schemaType, template: item.templateId}, Boolean)
     const intentParams: IntentParams = item.parameters ? [params, item.parameters] : params
-    const schema = tpl && getDefaultSchema().get(tpl.schemaType)
+    const schemaType = tpl && schema.get(tpl.schemaType)
 
     return new MenuItemBuilder()
       .title(title)
-      .icon((tpl && tpl.icon) || (schema && schema.icon) || getPlusIcon())
-      .intent({
-        type: 'create',
-        params: intentParams,
-      })
+      .icon((tpl && tpl.icon) || (schemaType && schemaType.icon) || AddIcon)
+      .intent({type: 'create', params: intentParams})
       .serialize()
   })
 }

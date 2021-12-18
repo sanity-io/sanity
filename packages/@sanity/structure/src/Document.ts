@@ -1,18 +1,14 @@
-import {uniq, camelCase} from 'lodash'
 import {getTemplateById} from '@sanity/initial-value-templates'
-import {ChildResolver} from './ChildResolver'
+import {SchemaType} from '@sanity/types'
+import {uniq, camelCase} from 'lodash'
+import {ChildResolver, ChildResolverContext} from './ChildResolver'
 import {SerializeOptions, Serializable, Child, DocumentNode, EditorNode} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
-import {SchemaType} from './parts/Schema'
 import {validateId} from './util/validateId'
 import {View, ViewBuilder, maybeSerializeView} from './views/View'
 import {form} from './views'
-import {
-  getUserDefinedDefaultDocumentBuilder,
-  DocumentFragmentResolveOptions,
-} from './userDefinedStructure'
 
-const resolveDocumentChild: ChildResolver = (itemId, {params, path}) => {
+const resolveDocumentChild: ChildResolver = (context, itemId, {params, path}) => {
   const {type} = params
 
   const parentPath = path.slice(0, path.length - 1)
@@ -26,16 +22,17 @@ const resolveDocumentChild: ChildResolver = (itemId, {params, path}) => {
     )
   }
 
-  return getDefaultDocumentNode({documentId: itemId, schemaType: type})
+  return getDefaultDocumentNode(context, {
+    documentId: itemId,
+    schemaType: type,
+  })
 }
 
 interface DocumentOptions {
   id: string
   type: string
   template?: string
-  templateParameters?: {
-    [key: string]: any
-  }
+  templateParameters?: Record<string, any>
 }
 
 export type PartialDocumentNode = {
@@ -57,23 +54,23 @@ export class DocumentBuilder implements Serializable {
     return this.clone({id})
   }
 
-  getId() {
+  getId(): string | undefined {
     return this.spec.id
   }
 
-  title(title: string) {
+  title(title: string): DocumentBuilder {
     return this.clone({title, id: this.spec.id || camelCase(title)})
   }
 
-  getTitle() {
+  getTitle(): string | undefined {
     return this.spec.title
   }
 
-  child(child: Child) {
+  child(child: Child): DocumentBuilder {
     return this.clone({child})
   }
 
-  getChild() {
+  getChild(): Child | undefined {
     return this.spec.child
   }
 
@@ -89,7 +86,7 @@ export class DocumentBuilder implements Serializable {
     })
   }
 
-  getDocumentId() {
+  getDocumentId(): string | undefined {
     return this.spec.options && this.spec.options.id
   }
 
@@ -102,11 +99,11 @@ export class DocumentBuilder implements Serializable {
     })
   }
 
-  getSchemaType() {
+  getSchemaType(): string | undefined {
     return this.spec.options && this.spec.options.type
   }
 
-  initialValueTemplate(templateId: string, parameters?: {[key: string]: any}) {
+  initialValueTemplate(templateId: string, parameters?: Record<string, any>): DocumentBuilder {
     return this.clone({
       options: {
         ...(this.spec.options || {}),
@@ -116,15 +113,15 @@ export class DocumentBuilder implements Serializable {
     })
   }
 
-  getInitalValueTemplate() {
+  getInitalValueTemplate(): string | undefined {
     return this.spec.options && this.spec.options.template
   }
 
-  getInitialValueTemplateParameters() {
+  getInitialValueTemplateParameters(): Record<string, any> | undefined {
     return this.spec.options && this.spec.options.templateParameters
   }
 
-  views(views: (View | ViewBuilder)[]) {
+  views(views: (View | ViewBuilder)[]): DocumentBuilder {
     return this.clone({views})
   }
 
@@ -172,10 +169,9 @@ export class DocumentBuilder implements Serializable {
       )
     }
 
-    const views = (this.spec.views && this.spec.views.length > 0
-      ? this.spec.views
-      : [form()]
-    ).map((item, i) => maybeSerializeView(item, i, path))
+    const views = (this.spec.views && this.spec.views.length > 0 ? this.spec.views : [form()]).map(
+      (item, i) => maybeSerializeView(item, i, path)
+    )
 
     const viewIds = views.map((view) => view.id)
     const dupes = uniq(viewIds.filter((viewId, i) => viewIds.includes(viewId, i + 1)))
@@ -198,7 +194,7 @@ export class DocumentBuilder implements Serializable {
     }
   }
 
-  clone(withSpec: PartialDocumentNode = {}) {
+  clone(withSpec: PartialDocumentNode = {}): DocumentBuilder {
     const builder = new DocumentBuilder()
     const options = {...(this.spec.options || {}), ...(withSpec.options || {})}
     builder.spec = {...this.spec, ...withSpec, options}
@@ -223,11 +219,14 @@ function getDocumentOptions(spec: Partial<DocumentOptions>): DocumentOptions {
   return opts
 }
 
-export function documentFromEditor(spec?: EditorNode) {
+export function documentFromEditor(
+  context: ChildResolverContext,
+  spec?: EditorNode
+): DocumentBuilder {
   let doc =
     spec && spec.type
       ? // Use user-defined document fragment as base if possible
-        getDefaultDocumentNode({schemaType: spec.type})
+        getDefaultDocumentNode(context, {schemaType: spec.type})
       : // Fall back to plain old document builder
         new DocumentBuilder()
 
@@ -253,25 +252,34 @@ export function documentFromEditor(spec?: EditorNode) {
 }
 
 export function documentFromEditorWithInitialValue(
+  context: ChildResolverContext,
   templateId: string,
-  parameters?: {[key: string]: any}
-) {
-  const template = getTemplateById(templateId)
+  parameters?: Record<string, any>
+): DocumentBuilder {
+  const template = getTemplateById(context.schema, context.templates, templateId)
+
   if (!template) {
     throw new Error(`Template with ID "${templateId}" not defined`)
   }
 
-  return getDefaultDocumentNode({schemaType: template.schemaType}).initialValueTemplate(
-    templateId,
-    parameters
-  )
+  return getDefaultDocumentNode(context, {
+    schemaType: template.schemaType,
+  }).initialValueTemplate(templateId, parameters)
 }
 
-export function getDefaultDocumentNode(options: DocumentFragmentResolveOptions): DocumentBuilder {
+export function getDefaultDocumentNode(
+  context: ChildResolverContext,
+  options: {
+    documentId?: string
+    schemaType: string
+  }
+): DocumentBuilder {
+  const {resolveStructureDocumentNode, structureBuilder: S} = context
   const {documentId, schemaType} = options
-  const userDefined = getUserDefinedDefaultDocumentBuilder(options)
+  const userDefined = resolveStructureDocumentNode && resolveStructureDocumentNode(S, options)
 
   let builder = userDefined || new DocumentBuilder()
+
   if (!builder.getId()) {
     builder = builder.id('documentEditor')
   }

@@ -1,15 +1,13 @@
+import {Schema, SchemaType} from '@sanity/types'
 import {camelCase} from 'lodash'
 import {SerializeOptions, Serializable, Collection, CollectionBuilder} from './StructureNodes'
-import {getDefaultSchema, SchemaType} from './parts/Schema'
 import {ChildResolver} from './ChildResolver'
 import {DocumentListBuilder} from './DocumentList'
 import {SerializeError, HELP_URL} from './SerializeError'
-import {Partial} from './Partial'
 import {ListBuilder} from './List'
 import {DocumentBuilder} from './Document'
 import {ComponentBuilder} from './Component'
 import {validateId} from './util/validateId'
-import {FixMe} from './types'
 
 type UnserializedListItemChild = Collection | CollectionBuilder | ChildResolver
 
@@ -26,7 +24,7 @@ interface ListItemDisplayOptions {
 export interface ListItemInput {
   id: string
   title?: string
-  icon?: FixMe
+  icon?: React.ComponentType
   child?: ListItemChild
   displayOptions?: ListItemDisplayOptions
   schemaType?: SchemaType | string
@@ -36,7 +34,7 @@ export interface ListItem {
   id: string
   type: string
   title?: string
-  icon?: FixMe
+  icon?: React.ComponentType
   child?: ListItemChild
   displayOptions?: ListItemDisplayOptions
   schemaType?: SchemaType
@@ -45,7 +43,7 @@ export interface ListItem {
 export interface UnserializedListItem {
   id: string
   title: string
-  icon?: FixMe
+  icon?: React.ComponentType
   child?: UnserializedListItemChild
   displayOptions?: ListItemDisplayOptions
   schemaType?: SchemaType | string
@@ -54,43 +52,45 @@ export interface UnserializedListItem {
 type PartialListItem = Partial<UnserializedListItem>
 
 export class ListItemBuilder implements Serializable {
+  protected schema: Schema
   protected spec: PartialListItem
 
-  constructor(spec?: ListItemInput) {
+  constructor(schema: Schema, spec?: ListItemInput) {
+    this.schema = schema
     this.spec = spec ? spec : {}
   }
 
-  id(id: string) {
+  id(id: string): ListItemBuilder {
     return this.clone({id})
   }
 
-  getId() {
+  getId(): string | undefined {
     return this.spec.id
   }
 
-  title(title: string) {
+  title(title: string): ListItemBuilder {
     return this.clone({title, id: this.spec.id || camelCase(title)})
   }
 
-  getTitle() {
+  getTitle(): string | undefined {
     return this.spec.title
   }
 
-  icon(icon: FixMe): ListItemBuilder {
+  icon(icon: React.ComponentType | undefined): ListItemBuilder {
     return this.clone({icon})
   }
 
-  showIcon(enabled: boolean) {
+  showIcon(enabled: boolean): ListItemBuilder {
     return this.clone({
       displayOptions: {...(this.spec.displayOptions || {}), showIcon: enabled},
     })
   }
 
-  getShowIcon() {
+  getShowIcon(): boolean | undefined {
     return this.spec.displayOptions ? this.spec.displayOptions.showIcon : undefined
   }
 
-  getIcon() {
+  getIcon(): React.ComponentType | undefined {
     return this.spec.icon
   }
 
@@ -98,7 +98,7 @@ export class ListItemBuilder implements Serializable {
     return this.clone({child})
   }
 
-  getChild() {
+  getChild(): UnserializedListItemChild | undefined {
     return this.spec.child
   }
 
@@ -106,7 +106,7 @@ export class ListItemBuilder implements Serializable {
     return this.clone({schemaType})
   }
 
-  getSchemaType() {
+  getSchemaType(): SchemaType | string | undefined {
     return this.spec.schemaType
   }
 
@@ -128,7 +128,7 @@ export class ListItemBuilder implements Serializable {
 
     let schemaType = this.spec.schemaType
     if (typeof schemaType === 'string') {
-      const type = getDefaultSchema().get(schemaType)
+      const type = this.schema.get(schemaType)
       if (!type) {
         throw new SerializeError(
           `Could not find type "${schemaType}" in schema`,
@@ -153,8 +153,8 @@ export class ListItemBuilder implements Serializable {
     // context, so we may lazily resolve it at some point in the future without losing context
     if (typeof listChild === 'function') {
       const originalChild = listChild
-      listChild = (itemId, childOptions) => {
-        return originalChild(itemId, {...childOptions, serializeOptions})
+      listChild = (context, itemId, childOptions) => {
+        return originalChild(context, itemId, {...childOptions, serializeOptions})
       }
     }
 
@@ -169,7 +169,7 @@ export class ListItemBuilder implements Serializable {
   }
 
   clone(withSpec?: PartialListItem): ListItemBuilder {
-    const builder = new ListItemBuilder()
+    const builder = new ListItemBuilder(this.schema)
     builder.spec = {...this.spec, ...(withSpec || {})}
     return builder
   }
