@@ -3,19 +3,14 @@ import {Path} from '@sanity/types'
 import {ReactEditor} from '@sanity/slate-react'
 import {DOMNode} from '@sanity/slate-react/dist/utils/dom'
 import {Type} from '../../types/schema'
-import {
-  PortableTextBlock,
-  PortableTextChild,
-  PortableTextFeatures,
-  TextBlock,
-} from '../../types/portableText'
+import {PortableTextBlock, PortableTextChild, PortableTextFeatures} from '../../types/portableText'
 import {EditorSelection, PortableTextSlateEditor} from '../../types/editor'
 import {toSlateValue, fromSlateValue} from '../../utils/values'
 import {toSlateRange, toPortableTextRange} from '../../utils/ranges'
 import {PortableTextEditor} from '../PortableTextEditor'
 
 import {debugWithName} from '../../utils/debug'
-import {KEY_TO_VALUE_ELEMENT} from '../../utils/weakMaps'
+import {KEY_TO_VALUE_ELEMENT, SLATE_TO_PORTABLE_TEXT_RANGE} from '../../utils/weakMaps'
 
 const debug = debugWithName('API:editable')
 
@@ -436,8 +431,17 @@ export function createWithEditableAPI(
           }
         }
       },
-      getSelection: () => {
-        return toPortableTextRange(editor, editor.selection)
+      getSelection: (): EditorSelection | null => {
+        let ptRange: EditorSelection = null
+        if (editor.selection) {
+          const existing = SLATE_TO_PORTABLE_TEXT_RANGE.get(editor.selection)
+          if (existing) {
+            return existing
+          }
+          ptRange = toPortableTextRange(editor, editor.selection)
+          SLATE_TO_PORTABLE_TEXT_RANGE.set(editor.selection, ptRange)
+        }
+        return ptRange
       },
       getValue: () => {
         return fromSlateValue(

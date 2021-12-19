@@ -43,7 +43,6 @@ export type PortableTextEditorProps = {
 
 type State = {
   invalidValueResolution: InvalidValueResolution
-  selection: EditorSelection
 }
 
 // The PT editor's public API
@@ -89,7 +88,7 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
     return editor.portableTextFeatures
   }
   static getSelection = (editor: PortableTextEditor) => {
-    return editor.editable?.getSelection()
+    return editor.editable ? editor.editable.getSelection() : null
   }
   static getValue = (editor: PortableTextEditor) => {
     return editor.editable?.getValue()
@@ -178,7 +177,7 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
     this.keyGenerator = props.keyGenerator || defaultKeyGenerator
 
     // Validate the Portable Text value
-    let state: State = {selection: null, invalidValueResolution: null}
+    let state: State = {invalidValueResolution: null}
     const validation = validateValue(props.value, this.portableTextFeatures, this.keyGenerator)
     if (props.value && !validation.valid) {
       this.change$.next({type: 'loading', isLoading: false})
@@ -270,7 +269,6 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
         }
         break
       case 'selection':
-        this.setState({selection: next.selection})
         onChange(next)
         break
       case 'undo':
@@ -290,7 +288,9 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
     return (
       <PortableTextEditorContext.Provider value={this}>
         <PortableTextEditorValueContext.Provider value={this.props.value}>
-          <PortableTextEditorSelectionContext.Provider value={this.state.selection}>
+          <PortableTextEditorSelectionContext.Provider
+            value={PortableTextEditor.getSelection(this)}
+          >
             {this.props.children}
           </PortableTextEditorSelectionContext.Provider>
         </PortableTextEditorValueContext.Provider>

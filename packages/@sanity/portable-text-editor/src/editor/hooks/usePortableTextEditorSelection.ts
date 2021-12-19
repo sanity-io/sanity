@@ -5,7 +5,7 @@ import {EditorSelection} from '../../types/editor'
  * A React context for sharing the editor selection.
  */
 
-export const PortableTextEditorSelectionContext = createContext<EditorSelection>(null)
+export const PortableTextEditorSelectionContext = createContext<EditorSelection | null>(null)
 
 /**
  * Get the current editor selection from the React context.
