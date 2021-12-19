@@ -201,7 +201,7 @@ describe('initialization', () => {
     expect(PortableTextEditor.getSelection(editorRef.current)).toEqual(initialSelection)
   })
 
-  it('updates editor selection from new prop', () => {
+  it('updates editor selection from new prop and keeps object equality in editor.getSelection()', () => {
     const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
     const initialValue = [helloBlock]
     const initialSelection: EditorSelection = {
@@ -227,8 +227,13 @@ describe('initialization', () => {
     }
     act(() => {
       if (editorRef.current) {
+        const sel = PortableTextEditor.getSelection(editorRef.current)
         PortableTextEditor.focus(editorRef.current)
-        expect(PortableTextEditor.getSelection(editorRef.current)).toEqual(initialSelection)
+
+        // Test for object equality here!
+        const anotherSel = PortableTextEditor.getSelection(editorRef.current)
+        expect(PortableTextEditor.getSelection(editorRef.current)).toStrictEqual(initialSelection)
+        expect(sel).toBe(anotherSel)
       }
     })
     rerender(

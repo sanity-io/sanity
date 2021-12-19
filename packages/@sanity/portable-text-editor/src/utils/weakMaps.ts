@@ -1,4 +1,5 @@
 import {Editor, Element, Range} from 'slate'
+import {EditorSelection} from '..'
 
 /**
  * Dragging
@@ -17,3 +18,6 @@ export const IS_DRAGGING_BLOCK_TARGET_POSITION: WeakMap<Editor, 'top' | 'bottom'
 
 export const KEY_TO_SLATE_ELEMENT: WeakMap<Editor, any | undefined> = new WeakMap()
 export const KEY_TO_VALUE_ELEMENT: WeakMap<Editor, any | undefined> = new WeakMap()
+
+// Keep object relation to slate range in the portable-text-range
+export const SLATE_TO_PORTABLE_TEXT_RANGE = new WeakMap<Range, EditorSelection>()
