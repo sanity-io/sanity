@@ -11,7 +11,7 @@ import {
 import {applyAll} from '../patch/applyPatch'
 import {toGradient} from '../sanity/utils/gradientPatchAdapter'
 import {getDummySchema, getDummyDocument, DUMMY_DOCUMENT_ID} from './_common/data'
-import {FilterFieldInput, FormBuilderTester, FormDebugger} from './_common/input'
+import {FilterFieldInput, FormBuilderTester, FormDebugger, TypeTester} from './_common/input'
 
 const patchChannel = FormBuilder.createPatchChannel()
 
@@ -24,6 +24,7 @@ export default function ExampleStory() {
   const isReadOnly = useBoolean('Read-only', false, 'Props')
   const isFilterFields = useBoolean('Filter Fields', false, 'Props')
   const isHiddenGroup = useBoolean('Hidden Group', false, 'Props')
+  const isTypeTester = useBoolean('Type Performance Tester', false, 'Props')
   const includeUnknownField = useBoolean('Unknown Field in Value', false, 'Props')
   const isDebug = useBoolean('Debug', false, 'Props')
   const [documentValue, setDocumentValue] = useState<{[key: string]: any}>(getDummyDocument())
@@ -117,6 +118,7 @@ export default function ExampleStory() {
           {isFilterFields && (
             <FilterFieldInput value={fieldFilterSource} onChange={handleChangeFieldFilter} />
           )}
+          {isTypeTester && <TypeTester />}
           <FormBuilderTester patchChannel={patchChannel} schema={schema} value={documentValue}>
             <FormBuilderInput
               type={documentType}
