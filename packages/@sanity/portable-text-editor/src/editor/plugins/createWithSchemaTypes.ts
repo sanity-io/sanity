@@ -1,5 +1,5 @@
 import {Element, Operation, InsertNodeOperation, Text as SlateText} from 'slate'
-import {PortableTextFeatures, TextBlock, ListItem} from '../../types/portableText'
+import {PortableTextFeatures, TextBlock, ListItem, TextSpan} from '../../types/portableText'
 import {debugWithName} from '../../utils/debug'
 import {PortableTextSlateEditor} from '../../types/editor'
 
@@ -18,6 +18,15 @@ export function createWithSchemaTypes(portableTextFeatures: PortableTextFeatures
         'children' in value &&
         '_type' in value &&
         portableTextFeatures.types.block.name === value._type
+      )
+    }
+    editor.isTextSpan = (value: any): value is TextSpan => {
+      return (
+        !editor.isVoid(value) &&
+        'text' in value &&
+        'marks' in value &&
+        '_type' in value &&
+        portableTextFeatures.types.span.name === value._type
       )
     }
     editor.isListBlock = (value: any): value is ListItem => {

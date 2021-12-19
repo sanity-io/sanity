@@ -1,10 +1,16 @@
 import {Path} from '@sanity/types'
 import {Subject, Observable} from 'rxjs'
-import {Node as SlateNode, Operation as SlateOperation, Element} from 'slate'
+import {Node as SlateNode, Operation as SlateOperation} from 'slate'
 import {ReactEditor} from '@sanity/slate-react'
 import type {Patch} from '../types/patch'
 import {Type} from '../types/schema'
-import {PortableTextBlock, PortableTextChild, TextBlock, ListItem} from '../types/portableText'
+import {
+  ListItem,
+  PortableTextBlock,
+  PortableTextChild,
+  TextBlock,
+  TextSpan,
+} from '../types/portableText'
 import {PortableTextEditor} from '../editor/PortableTextEditor'
 
 export interface EditableAPI {
@@ -62,8 +68,11 @@ export interface PortableTextSlateEditor extends ReactEditor {
   _type: 'editor'
   editable: EditableAPI
   history: History
-  isTextBlock: (value: any) => value is TextBlock
-  isListBlock: (value: any) => value is ListItem
+  isTextBlock: (value: unknown) => value is TextBlock
+  isTextSpan: (value: unknown) => value is TextSpan
+  isListBlock: (value: unknown) => value is ListItem
+  isSelecting: boolean
+  isThrottling: boolean
 
   /**
    * Increments selected list items levels, or decrements them if @reverse is true.
@@ -73,19 +82,19 @@ export interface PortableTextSlateEditor extends ReactEditor {
    */
   pteIncrementBlockLevels: (reverse?: boolean) => boolean
   /**
-   * Toggle blocks as listItem
+   * Toggle selected blocks as listItem
    *
    * @param {string} listStyle
    */
   pteToggleListItem: (listStyle: string) => void
   /**
-   * Set block as listItem
+   * Set selected block as listItem
    *
    * @param {string} listStyle
    */
   pteSetListItem: (listStyle: string) => void
   /**
-   * Unset block as listItem
+   * Unset selected block as listItem
    *
    * @param {string} listStyle
    */

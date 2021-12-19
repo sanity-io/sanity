@@ -161,6 +161,13 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
 
   // Track selection (action) state
   const [isSelecting, setIsSelecting] = useState(false)
+  useEffect(() => {
+    slateEditor.isSelecting = isSelecting
+  }, [isSelecting, slateEditor])
+
+  useEffect(() => {
+    slateEditor.isThrottling = isThrottling
+  }, [isThrottling, slateEditor])
 
   const renderElement = useCallback(
     (eProps) => (
