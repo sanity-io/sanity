@@ -359,12 +359,31 @@ export function createWithEditableAPI(
         if (selection) {
           const range = toSlateRange(selection, editor)
           if (range) {
-            const ptMode: string | undefined = (options && options.mode) || undefined
-            let mode: 'highest' | 'lowest' = 'highest'
-            if (ptMode) {
-              mode = ptMode === 'block' ? 'highest' : 'lowest'
-            }
-            Transforms.removeNodes(editor, {at: range, mode})
+            const nodes = Editor.nodes(editor, {
+              at: range,
+              match: (node) => {
+                if (options?.mode === 'block') {
+                  debug(`Deleting blocks from selection`)
+                  return (
+                    editor.isTextBlock(node) ||
+                    (!editor.isTextBlock(node) && SlateElement.isElement(node))
+                  )
+                }
+                debug(`Deleting children from selection`)
+                return (
+                  node._type === portableTextFeatures.types.span.name || // Text children
+                  (!editor.isTextBlock(node) && SlateElement.isElement(node)) // inline blocks
+                )
+              },
+            })
+            const nodeAndPaths = [...nodes]
+            nodeAndPaths.forEach(([, p]) => {
+              Transforms.removeNodes(editor, {
+                at: p,
+                voids: true,
+                hanging: true,
+              })
+            })
           }
         }
       },
