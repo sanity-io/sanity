@@ -1,13 +1,12 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
-import type {EditStateFor} from '@sanity/base/_internal'
-import documentStore from 'part:@sanity/base/datastore/document'
 import {useMemoObservable} from 'react-rx'
+import {useDatastores} from '../datastores'
+import type {EditStateFor} from '../datastores/document/document-pair/editState'
 
 export function useEditState(publishedDocId: string, docTypeName: string): EditStateFor {
-  return useMemoObservable(() => documentStore.pair.editState(publishedDocId, docTypeName), [
-    publishedDocId,
-    docTypeName,
-  ]) as EditStateFor
+  const {documentStore} = useDatastores()
+
+  return useMemoObservable(
+    () => documentStore.pair.editState(publishedDocId, docTypeName),
+    [publishedDocId, docTypeName]
+  ) as EditStateFor
 }
