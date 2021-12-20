@@ -118,7 +118,6 @@ export interface AssetSourceComponentProps {
   document: SanityDocument
   dialogHeaderTitle?: string
   selectedAssets: Asset[]
-  selectionType: 'single' | 'multiple'
   onClose: () => void
   onSelect: (assetFromSource: AssetFromSource) => void
 }
