@@ -1,12 +1,18 @@
-import {uuid} from '@sanity/uuid'
 import sub from 'date-fns/sub'
 import testSanityClient from '../../helpers/sanityClientSetUp'
+import {createUniqueDocument} from '../../helpers/createUniqueDocument'
 
-const testDocumentId = `conditional-fieldset-test-${uuid()}`
-const testLocation = `/test/desk/input-ci;conditionalFieldset;${testDocumentId}%2Csince%3D%40lastPublished`
+const getTestLocation = (documentId) =>
+  `/test/desk/input-ci;conditionalFieldset;${documentId}%2Csince%3D%40lastPublished`
+
+function deleteOldDocuments() {
+  const threeHoursAgo = sub(new Date(), {hours: -2}).toISOString()
+  testSanityClient.delete({
+    query: `*[_type == "conditionalFieldset" && title match "[Cypress]" && dateTime(_updatedAt) < dateTime('${threeHoursAgo}')]`,
+  })
+}
 
 const doc = {
-  _id: testDocumentId,
   _type: 'conditionalFieldset',
   title: 'Conditional fieldset [Cypress]',
   hidden: true,
@@ -46,12 +52,12 @@ const waitForReviewChanges = () => {
 }
 
 describe('@sanity/field: Multi fieldset and review changes', () => {
+  let testLocation
+
   before(async () => {
-    const threeHoursAgo = sub(new Date(), {hours: -2}).toISOString()
-    await testSanityClient.delete({
-      query: `*[_type == "conditionalFieldset" && title match "[Cypress]" && dateTime(_updatedAt) < dateTime('${threeHoursAgo}')]`,
-    })
-    await testSanityClient.createOrReplace(doc)
+    deleteOldDocuments()
+    const testDoc = await createUniqueDocument(doc)
+    testLocation = getTestLocation(testDoc?._id)
   })
 
   beforeEach(() => {
@@ -222,8 +228,11 @@ describe('@sanity/field: Multi fieldset and review changes', () => {
 })
 
 describe('@sanity/field: Single fieldset and review changes', () => {
+  let testLocation
+
   before(async () => {
-    await testSanityClient.createOrReplace(doc)
+    const testDoc = await createUniqueDocument(doc)
+    testLocation = getTestLocation(testDoc?._id)
   })
 
   beforeEach(() => {
