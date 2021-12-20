@@ -24,6 +24,7 @@ interface AnnotationProps {
   onFocus: (path: Path) => void
   renderCustomMarkers: RenderCustomMarkers
   type: Type
+  readOnly: boolean
   value: PortableTextChild
   scrollElement: HTMLElement
 }
@@ -75,6 +76,7 @@ export const Annotation = React.forwardRef(function Annotation(
     onFocus,
     renderCustomMarkers,
     scrollElement,
+    readOnly,
     type,
     value,
   } = props
@@ -161,15 +163,16 @@ export const Annotation = React.forwardRef(function Annotation(
       data-custom-markers={hasCustomMarkers ? '' : undefined}
     >
       <span ref={forwardedRef}>{markersToolTip || text}</span>
-
-      <AnnotationToolbarPopover
-        textElement={textElement}
-        annotationElement={annotationRef?.current}
-        scrollElement={scrollElement}
-        onEdit={handleEditClick}
-        onDelete={handleRemoveClick}
-        title={type?.title || type.name}
-      />
+      {!readOnly && (
+        <AnnotationToolbarPopover
+          textElement={textElement}
+          annotationElement={annotationRef?.current}
+          scrollElement={scrollElement}
+          onEdit={handleEditClick}
+          onDelete={handleRemoveClick}
+          title={type?.title || type.name}
+        />
+      )}
     </Root>
   )
 })

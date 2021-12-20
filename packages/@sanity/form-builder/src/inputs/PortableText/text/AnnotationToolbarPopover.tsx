@@ -11,6 +11,7 @@ import {
 } from '@sanity/ui'
 import styled from 'styled-components'
 import {EditIcon, TrashIcon} from '@sanity/icons'
+import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 
 const ToolbarPopover = styled(Popover)`
   &[data-popper-reference-hidden='true'] {
@@ -39,7 +40,10 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
   const [selection, setSelection] = useState(null)
   const isClosingRef = useRef<boolean>(false)
   const rangeRef = useRef<Range | null>(null)
+  const editButtonRef = useRef<HTMLButtonElement>()
+  const isTabbing = useRef<boolean>(false)
   const {sanity} = useTheme()
+  const editor = usePortableTextEditor()
 
   const popoverScheme = sanity.color.dark ? 'light' : 'dark'
 
@@ -79,10 +83,22 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
     useCallback(
       (event) => {
         if (event.key === 'Escape' && open) {
+          event.preventDefault()
+          event.stopPropagation()
           setOpen(false)
+          isTabbing.current = false
+          PortableTextEditor.focus(editor)
+        }
+        if (event.key === 'Tab' && open) {
+          if (!isTabbing.current) {
+            event.preventDefault()
+            event.stopPropagation()
+            editButtonRef.current.focus()
+          }
+          isTabbing.current = true
         }
       },
-      [open]
+      [editor, open]
     )
   )
 
@@ -131,6 +147,12 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
     }
   }, [selection, annotationElement])
 
+  useEffect(() => {
+    if (open && isTabbing.current) {
+      editButtonRef.current?.focus()
+    }
+  }, [open])
+
   return (
     <ToolbarPopover
       boundaryElement={scrollElement}
@@ -143,7 +165,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
                 {title}
               </Text>
             </Box>
-            <Button icon={EditIcon} mode="bleed" onClick={onEdit} padding={2} />
+            <Button ref={editButtonRef} icon={EditIcon} mode="bleed" onClick={onEdit} padding={2} />
             <Button icon={TrashIcon} mode="bleed" padding={2} onClick={onDelete} tone="critical" />
           </Inline>
         </Box>
