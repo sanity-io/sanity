@@ -1,4 +1,4 @@
-import {BinaryDocumentIcon, EllipsisHorizontalIcon, EllipsisVerticalIcon} from '@sanity/icons'
+import {BinaryDocumentIcon, EllipsisVerticalIcon} from '@sanity/icons'
 import React, {JSXElementConstructor, ReactElement} from 'react'
 import {FileAsset} from '@sanity/types'
 
