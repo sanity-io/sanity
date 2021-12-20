@@ -1,4 +1,5 @@
 import {uuid} from '@sanity/uuid'
+import sub from 'date-fns/sub'
 import testSanityClient from '../../helpers/sanityClientSetUp'
 
 const testDocumentId = `conditional-fieldset-test-${uuid()}`
@@ -46,6 +47,10 @@ const waitForReviewChanges = () => {
 
 describe('@sanity/field: Multi fieldset and review changes', () => {
   before(async () => {
+    const threeHoursAgo = sub(new Date(), {hours: -2}).toISOString()
+    await testSanityClient.delete({
+      query: `*[_type == "conditionalFieldset" && title match "[Cypress]" && dateTime(_updatedAt) < dateTime('${threeHoursAgo}')]`,
+    })
     await testSanityClient.createOrReplace(doc)
   })
 
