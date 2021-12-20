@@ -15,7 +15,7 @@ import {
 import {cloneDeep, get} from 'lodash'
 import ValidationErrorClass from './ValidationError'
 import escapeRegex from './util/escapeRegex'
-import convertToValidationMarker from './util/convertToValidationMarker'
+import {convertToValidationMarker} from './util/convertToValidationMarker'
 import pathToString from './util/pathToString'
 import genericValidator from './validators/genericValidator'
 import booleanValidator from './validators/booleanValidator'
@@ -372,7 +372,11 @@ const Rule: RuleClass = class Rule implements IRule {
     return this.cloneWithRules([{flag: 'assetRequired', constraint: {assetType}}])
   }
 
-  async validate(value: unknown, context: ValidationContext = {}): Promise<ValidationMarker[]> {
+  async validate(value: unknown, context: ValidationContext): Promise<ValidationMarker[]> {
+    if (!context) {
+      throw new Error('missing context')
+    }
+
     const valueIsEmpty = value === null || value === undefined
 
     // Short-circuit on optional, empty fields

@@ -1,5 +1,7 @@
 import {Rule} from '../src'
 
+const context: any = {client: {}}
+
 describe('child rules', () => {
   // --- ALL ---
   test('all() rules - single failure', async () => {
@@ -12,8 +14,8 @@ describe('child rules', () => {
         .error('Must follow with lowercase characters'),
     ])
 
-    await expect(rule.validate('Sanity')).resolves.toMatchSnapshot('all() rules - match')
-    await expect(rule.validate('moop')).resolves.toMatchSnapshot(
+    await expect(rule.validate('Sanity', context)).resolves.toMatchSnapshot('all() rules - match')
+    await expect(rule.validate('moop', context)).resolves.toMatchSnapshot(
       'all() rules - single failure, custom message'
     )
   })
@@ -29,8 +31,8 @@ describe('child rules', () => {
         .error('Must follow with lowercase characters'),
     ])
 
-    await expect(rule.validate('Sanity')).resolves.toMatchSnapshot('all() rules - match')
-    await expect(rule.validate('moop')).resolves.toMatchSnapshot(
+    await expect(rule.validate('Sanity', context)).resolves.toMatchSnapshot('all() rules - match')
+    await expect(rule.validate('moop', context)).resolves.toMatchSnapshot(
       'all() rules - multiple failures, custom messages'
     )
   })
@@ -40,7 +42,7 @@ describe('child rules', () => {
       .all([Rule.string().regex(/^[A-Z]/), Rule.string().regex(/[a-z]+/)])
       .error('Needs to start with a capital letter and then follow with lowercase characters')
 
-    await expect(rule.validate('moop')).resolves.toMatchSnapshot(
+    await expect(rule.validate('moop', context)).resolves.toMatchSnapshot(
       'all() rules - single failure, common error'
     )
   })
@@ -50,7 +52,7 @@ describe('child rules', () => {
       .all([Rule.string().regex(/^[A-Z]/), Rule.string().min(5), Rule.string().regex(/[a-z]+/)])
       .error('Needs to be a capital letter followed by at least 4 lowercase characters')
 
-    await expect(rule.validate('moop')).resolves.toMatchSnapshot(
+    await expect(rule.validate('moop', context)).resolves.toMatchSnapshot(
       'all() rules - multiple failures, common error'
     )
   })
@@ -66,10 +68,10 @@ describe('child rules', () => {
         .error('Must be hex color with #-prefix'),
     ])
 
-    await expect(rule.validate('rgb(16, 22, 133)')).resolves.toMatchSnapshot(
+    await expect(rule.validate('rgb(16, 22, 133)', context)).resolves.toMatchSnapshot(
       'either() rules - match'
     )
-    await expect(rule.validate('#bf')).resolves.toMatchSnapshot(
+    await expect(rule.validate('#bf', context)).resolves.toMatchSnapshot(
       'either() rules - single failure, custom message'
     )
   })
@@ -80,8 +82,12 @@ describe('child rules', () => {
       Rule.string().regex(/ed$/).error('Must end with "ed"'),
     ])
 
-    await expect(rule.validate('Red')).resolves.toMatchSnapshot('either() rules - all match')
-    await expect(rule.validate('nope')).resolves.toMatchSnapshot('either() rules - no matches')
+    await expect(rule.validate('Red', context)).resolves.toMatchSnapshot(
+      'either() rules - all match'
+    )
+    await expect(rule.validate('nope', context)).resolves.toMatchSnapshot(
+      'either() rules - no matches'
+    )
   })
 
   test('either() rules - all fail, custom, common error', async () => {
@@ -89,7 +95,7 @@ describe('child rules', () => {
       .either([Rule.string().regex(/^[A-Z]/), Rule.string().regex(/^i[A-Z]/)])
       .error("Needs to start with a capital letter, unless it's an iProduct")
 
-    await expect(rule.validate('mopatis!')).resolves.toMatchSnapshot(
+    await expect(rule.validate('mopatis!', context)).resolves.toMatchSnapshot(
       'either() rules - all fail, common error'
     )
   })

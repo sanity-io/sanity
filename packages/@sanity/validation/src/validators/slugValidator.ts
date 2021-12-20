@@ -1,6 +1,6 @@
 import {SlugIsUniqueValidator, Path, CustomValidator, isKeyedObject} from '@sanity/types'
 import {memoize} from 'lodash'
-import getClient from '../getClient'
+// import getClient from '../getClient'
 
 const memoizedWarnOnArraySlug = memoize(warnOnArraySlug)
 
@@ -23,7 +23,7 @@ function serializePath(path: Path): string {
 }
 
 const defaultIsUnique: SlugIsUniqueValidator = (slug, context) => {
-  const {document, path, type} = context
+  const {client, document, path, type} = context
   const schemaOptions = type?.options as {disableArrayWarning?: boolean} | undefined
 
   if (!document) {
@@ -48,7 +48,7 @@ const defaultIsUnique: SlugIsUniqueValidator = (slug, context) => {
     `${atPath} == $slug`,
   ].join(' && ')
 
-  return getClient().fetch<boolean>(
+  return client.fetch<boolean>(
     `!defined(*[${constraints}][0]._id)`,
     {
       docType,

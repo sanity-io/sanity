@@ -1,17 +1,23 @@
-/// <reference types="@sanity/types/parts" />
-
 import {Rule, SchemaType, SanityDocument, Schema, ArraySchemaType, Block} from '@sanity/types'
-import createSchema from 'part:@sanity/base/schema-creator'
+import {createSchema} from '../test/createSchema'
+import {createMockSanityClient} from '../test/mocks/mockSanityClient'
 import validateDocument, {resolveTypeForArrayItem, validateItem} from './validateDocument'
-import convertToValidationMarker from './util/convertToValidationMarker'
+import {convertToValidationMarker} from './util/convertToValidationMarker'
 
 jest.mock('./util/convertToValidationMarker', () => {
-  return jest.fn(jest.requireActual('./util/convertToValidationMarker').default)
+  return {
+    convertToValidationMarker: jest.fn(
+      jest.requireActual('./util/convertToValidationMarker').convertToValidationMarker
+    ),
+  }
 })
 
 beforeEach(() => {
   ;(convertToValidationMarker as jest.Mock).mockClear()
 })
+
+// mock client
+const client = createMockSanityClient()
 
 describe('resolveTypeForArrayItem', () => {
   const schema: Schema = createSchema({
@@ -39,7 +45,7 @@ describe('resolveTypeForArrayItem', () => {
         _key: 'exampleKey',
         title: 5,
       },
-      [fooType, barType]
+      [fooType!, barType!]
     )
 
     expect(resolved).toBe(barType)
@@ -52,7 +58,7 @@ describe('resolveTypeForArrayItem', () => {
         _key: 'exampleKey',
         title: 5,
       },
-      [fooType]
+      [fooType!]
     )
 
     expect(resolved).toBe(fooType)
@@ -87,7 +93,7 @@ describe('validateDocument', () => {
       title: null,
     }
 
-    const result = await validateDocument(document, schema)
+    const result = await validateDocument(client as any, document, schema)
     expect(result).toMatchObject([
       {
         type: 'validation',
@@ -163,6 +169,7 @@ describe('validateItem', () => {
 
     await expect(
       validateItem({
+        client: client as any,
         value: {},
         document: undefined,
         path: [],
@@ -237,6 +244,7 @@ describe('validateItem', () => {
 
     await expect(
       validateItem({
+        client: client as any,
         document: undefined,
         parent: undefined,
         path: undefined,
@@ -403,6 +411,7 @@ describe('validateItem', () => {
     }
 
     const result = await validateItem({
+      client: client as any,
       document: document,
       parent: undefined,
       path: [],
@@ -506,6 +515,7 @@ describe('validateItem', () => {
 
     await expect(
       validateItem({
+        client: client as any,
         document: undefined,
         parent: undefined,
         path: [],
@@ -594,9 +604,9 @@ describe('validateItem', () => {
     }
 
     const rootType = schema.get('root')
-    const level1ObjectType = getField({in: rootType, name: 'level1Object'})
+    const level1ObjectType = getField({in: rootType!, name: 'level1Object'})
     const level2StringType = getField({in: level1ObjectType, name: 'level2String'})
-    const level1ArrayType = getField({in: rootType, name: 'level1Array'})
+    const level1ArrayType = getField({in: rootType!, name: 'level1Array'})
     const level2NumberType = getField({
       in: (level1ArrayType as ArraySchemaType).of[0],
       name: 'level2Number',
@@ -604,6 +614,7 @@ describe('validateItem', () => {
 
     await expect(
       validateItem({
+        client: client as any,
         value,
         type: rootType,
         document,
@@ -745,6 +756,7 @@ describe('validateItem', () => {
     }
 
     const resultPromise = validateItem({
+      client: client as any,
       value,
       document: undefined,
       parent: undefined,

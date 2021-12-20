@@ -11,6 +11,7 @@ import {
   isSpanSchemaType,
 } from '@sanity/types'
 import {uniqBy} from 'lodash'
+import {SanityClient} from '@sanity/client'
 import typeString from './util/typeString'
 import ValidationErrorClass from './ValidationError'
 import normalizeValidationRules from './util/normalizeValidationRules'
@@ -47,6 +48,7 @@ export function resolveTypeForArrayItem(
 }
 
 export default async function validateDocument(
+  client: SanityClient,
   doc: SanityDocument,
   schema: Schema,
   context?: Pick<ValidationContext, 'getDocumentExists'>
@@ -59,6 +61,7 @@ export default async function validateDocument(
 
   try {
     return await validateItem({
+      client,
       parent: undefined,
       value: doc,
       path: [],

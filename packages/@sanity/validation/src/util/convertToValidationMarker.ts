@@ -8,7 +8,7 @@ export function isNonNullable<T>(t: T): t is NonNullable<T> {
   return t !== null || t !== undefined
 }
 
-export default function convertToValidationMarker(
+export function convertToValidationMarker(
   validatorResult:
     | true
     | true[]
@@ -21,6 +21,10 @@ export default function convertToValidationMarker(
   level: 'error' | 'warning' | 'info' | undefined,
   context: ValidationContext
 ): ValidationMarker[] {
+  if (!context) {
+    throw new Error('missing context')
+  }
+
   if (validatorResult === true) return []
 
   if (Array.isArray(validatorResult)) {
