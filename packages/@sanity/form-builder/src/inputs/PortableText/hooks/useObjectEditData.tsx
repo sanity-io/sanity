@@ -9,6 +9,8 @@ import {Path, isKeySegment, isKeyedObject, KeyedSegment} from '@sanity/types'
 import {PortableTextBlock} from '../../../../../portable-text-editor/src/types/portableText'
 import {ObjectEditData} from '../types'
 
+// This hook will gather the info we need to create a edit modal for some embedded object in the editor
+// based on the current focusPath details.
 export function useObjectEditData(
   focusPath: Path,
   refs: {

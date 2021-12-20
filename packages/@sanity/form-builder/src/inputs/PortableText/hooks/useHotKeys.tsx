@@ -5,6 +5,7 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 
+// This hook will create final hotkeys for the editor from on those from props.
 export function useHotkeys(hotkeys: HotkeyOptions): HotkeyOptions {
   const editor = usePortableTextEditor()
   return useMemo(() => {

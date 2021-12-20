@@ -5,6 +5,7 @@ import {useCallback, useMemo} from 'react'
 import {Subject} from 'rxjs'
 import PatchEvent from '../../../PatchEvent'
 
+// This hook will forward patches to the root onChange from the forms of the embedded objects.
 export function useObjectEditFormBuilderChange(
   onChange: (event: PatchEvent) => void,
   patches$: Subject<EditorPatch>
