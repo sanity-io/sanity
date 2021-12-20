@@ -51,7 +51,6 @@ import {PresenceOverlay, FormFieldPresence} from '@sanity/base/presence'
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
 import {Uploader, UploaderResolver, UploadOptions} from '../../../sanity/uploads/types'
 import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
-import UploadFilePlaceholder from '../common/UploadFilePlaceholder'
 import {FileInputButton} from '../common/FileInputButton/FileInputButton'
 import {FileTarget, FileInfo, Overlay} from '../common/styles'
 import {InternalAssetSource, UploadState} from '../types'
@@ -61,6 +60,7 @@ import {handleSelectAssetFromSource} from '../common/assetSource'
 import resolveUploader from '../../../sanity/uploads/resolveUploader'
 import {ActionsMenu} from '../common/ActionsMenu'
 import {PlaceholderText} from '../common/PlaceholderText'
+import UploadPlaceholder from '../common/UploadPlaceholder'
 import {CardOverlay, FlexContainer} from './styles'
 import {FileInputField} from './FileInputField'
 import FileContent from './FileContent'
@@ -444,6 +444,8 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
     const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
 
+    const accept = get(type, 'options.accept', '')
+
     // If multiple asset sources render a dropdown
     if (assetSources.length > 1 && !readOnly) {
       return (
@@ -471,7 +473,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
 
     // Single asset source (just a normal button)
     return (
-      <UploadFilePlaceholder
+      <UploadPlaceholder
         onBrowse={() => this.handleSelectFileFromAssetSource(assetSources[0])}
         onUpload={this.handleSelectFiles}
         readOnly={readOnly}
@@ -479,6 +481,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
         acceptedFiles={acceptedFiles}
         rejectedFilesCount={rejectedFilesCount}
         type="file"
+        accept={accept}
       />
     )
   }

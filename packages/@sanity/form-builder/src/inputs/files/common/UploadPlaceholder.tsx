@@ -15,9 +15,10 @@ type UploadPlaceholderProps = {
 
   acceptedFiles: FileLike[]
   rejectedFilesCount: number
+  accept: string
 }
 
-export default React.memo(function UploadImagePlaceholder({
+export default React.memo(function UploadPlaceholder({
   onBrowse,
   onUpload,
   readOnly,
@@ -25,8 +26,8 @@ export default React.memo(function UploadImagePlaceholder({
   hoveringFiles,
   acceptedFiles,
   rejectedFilesCount,
+  accept,
 }: UploadPlaceholderProps) {
-  const accept = get(type, 'options.accept', '')
   return (
     <Flex
       align="center"
