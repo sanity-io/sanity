@@ -1,13 +1,11 @@
-/* eslint-disable complexity */
 import {useTimeAgo} from '@sanity/base/hooks'
-
 import {Box, Button, Flex, Stack, Text, Tooltip} from '@sanity/ui'
 import {PlayIcon, PublishIcon} from '@sanity/icons'
 import React from 'react'
 import styled from 'styled-components'
-import {IconBadge} from './IconBadge'
 
 interface PublishStatusProps {
+  collapsed?: boolean
   disabled: boolean
   lastPublished?: string
   lastUpdated?: string
@@ -19,7 +17,7 @@ const Root = styled(Flex)`
 `
 
 export function PublishStatus(props: PublishStatusProps) {
-  const {disabled, lastPublished, lastUpdated, liveEdit} = props
+  const {collapsed, disabled, lastPublished, lastUpdated, liveEdit} = props
 
   const lastPublishedTimeAgo = useTimeAgo(lastPublished || '', {minimal: true, agoSuffix: true})
   const lastPublishedTime = useTimeAgo(lastPublished || '', {minimal: true})
@@ -34,10 +32,11 @@ export function PublishStatus(props: PublishStatusProps) {
         content={
           <Stack padding={3} space={3}>
             <Text size={1} muted>
-              {liveEdit && (
+              {liveEdit ? (
                 <>Last updated {lastUpdated ? lastUpdatedTimeAgo : lastPublishedTimeAgo}</>
+              ) : (
+                <>Last published {lastPublishedTimeAgo}</>
               )}
-              {!liveEdit && <>Last published {lastPublishedTimeAgo}</>}
             </Text>
           </Stack>
         }
@@ -49,16 +48,18 @@ export function PublishStatus(props: PublishStatusProps) {
           disabled={disabled}
         >
           <Flex align="center">
-            <Box marginRight={3}>
-              <Text size={2}>
-                {liveEdit && <PlayIcon />}
-                {!liveEdit && <PublishIcon />}
-              </Text>
+            <Box marginRight={collapsed ? 0 : 3}>
+              <Text size={2}>{liveEdit ? <PlayIcon /> : <PublishIcon />}</Text>
             </Box>
-            <Text size={1} weight="medium">
-              {liveEdit && <>{lastUpdated ? lastUpdatedTime : lastPublishedTime}</>}
-              {!liveEdit && lastPublishedTime}
-            </Text>
+            {!collapsed && (
+              <Text size={1} weight="medium">
+                {liveEdit ? (
+                  <>{lastUpdated ? lastUpdatedTime : lastPublishedTime}</>
+                ) : (
+                  lastPublishedTime
+                )}
+              </Text>
+            )}
           </Flex>
         </Button>
       </Tooltip>
