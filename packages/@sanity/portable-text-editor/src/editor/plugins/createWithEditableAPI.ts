@@ -34,15 +34,12 @@ export function createWithEditableAPI(
       },
       toggleMark: (mark: string): void => {
         editor.pteToggleMark(mark)
-        ReactEditor.focus(editor)
       },
       toggleList: (listStyle: string): void => {
         editor.pteToggleListItem(listStyle)
-        ReactEditor.focus(editor)
       },
       toggleBlockStyle: (blockStyle: string): void => {
         editor.pteToggleBlockStyle(blockStyle)
-        ReactEditor.focus(editor)
       },
       isMarkActive: (mark: string): boolean => {
         // Try/catch this, as Slate may error because the selection is currently wrong
@@ -72,7 +69,6 @@ export function createWithEditableAPI(
           } else {
             Transforms.select(editor, slateSelection)
           }
-          ReactEditor.focus(editor)
         }
       },
       focusBlock: (): PortableTextBlock | undefined => {
@@ -162,7 +158,6 @@ export function createWithEditableAPI(
         )[0] as unknown) as SlateElement
         const child = block.children[0]
         Editor.insertNode(editor, child as Node)
-        editor.onChange()
         return toPortableTextRange(editor, editor.selection)?.focus.path || []
       },
       insertBlock: (type: Type, value?: {[prop: string]: any}): Path => {
@@ -180,7 +175,6 @@ export function createWithEditableAPI(
           portableTextFeatures.types.block.name
         )[0] as unknown) as Node
         Editor.insertNode(editor, block)
-        editor.onChange()
         return toPortableTextRange(editor, editor.selection)?.focus.path || []
       },
       hasBlockStyle: (style: string): boolean => {
@@ -327,7 +321,6 @@ export function createWithEditableAPI(
                   }
                 })
                 Editor.normalize(editor)
-                editor.onChange()
                 const newSelection = toPortableTextRange(editor, editor.selection)
                 // eslint-disable-next-line max-depth
                 if (newSelection && typeof block._key === 'string') {
@@ -341,7 +334,6 @@ export function createWithEditableAPI(
                           at: Range.end(editor.selection),
                         }
                       )
-                      editor.onChange()
                     }
                   })
                   return {
@@ -389,7 +381,6 @@ export function createWithEditableAPI(
       },
       removeAnnotation: (type: Type): void => {
         let {selection} = editor
-        let changed = false
         if (selection) {
           // Select the whole annotation if collapsed
           if (Range.isCollapsed(selection)) {
@@ -439,15 +430,11 @@ export function createWithEditableAPI(
                           {at: path, voids: false, split: false}
                         )
                       }
-                      changed = true
                     })
                 }
               })
             }
           })
-          if (changed) {
-            editor.onChange()
-          }
         }
       },
       getSelection: (): EditorSelection | null => {
