@@ -1,11 +1,16 @@
 /* eslint-disable import/named */
 
-import styled, {DefaultTheme, StyledComponent} from 'styled-components'
+import {Card, Flex} from '@sanity/ui'
+import styled from 'styled-components'
 
-export const AssetBackground: StyledComponent<'div', DefaultTheme> = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 12rem;
+export const CardOverlay = styled(Card)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+`
+
+export const FlexContainer = styled(Flex)`
+  height: 100%;
 `
