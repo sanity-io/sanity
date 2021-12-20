@@ -274,14 +274,16 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
   )
 })
 
-// A fn to determine if we should set a new formBuilder focus path from the focus we got from the editor
-const shouldSetNewFocusPath = (focusPath: Path, selectionFocusPath: Path | undefined) => {
-  // Don't set if we are in inside some object or in as transition to open up a modal (FOCUS_TERMINATOR)
+export const isObject = (focusPath: Path) => {
   const isTerminatorEditPath = focusPath.slice(-1)[0] === FOCUS_TERMINATOR
   const isBlockObjectEditPath =
     focusPath.length !== 1 && focusPath[1] && focusPath[1] !== 'children'
   const isChildObjectEditPath = focusPath.length > 3 && focusPath[1] === 'children'
-  const isObject = isBlockObjectEditPath || isChildObjectEditPath || isTerminatorEditPath
+  return isBlockObjectEditPath || isChildObjectEditPath || isTerminatorEditPath
+}
+// A fn to determine if we should set a new formBuilder focus path from the focus we got from the editor
+export const shouldSetNewFocusPath = (focusPath: Path, selectionFocusPath: Path | undefined) => {
+  // Don't set if we are in inside some object or in as transition to open up a modal (FOCUS_TERMINATOR)
   if (isObject) {
     return false
   }
