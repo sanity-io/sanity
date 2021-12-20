@@ -10,7 +10,7 @@ import type {PreviewConfig} from './preview'
 
 export interface Schema {
   name: string
-  get: (name: string) => SchemaType
+  get: (name: string) => SchemaType | undefined
   has: (name: string) => boolean
   getTypeNames: () => string[]
 }
@@ -110,7 +110,7 @@ export interface BaseSchemaType {
 export interface TitledListValue<V = unknown> {
   _key?: string
   title: string
-  value: V
+  value?: V
 }
 
 interface EnumListProps<V = unknown> {
