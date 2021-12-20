@@ -5,6 +5,7 @@ import {FileAsset} from '@sanity/types'
 import styled from 'styled-components'
 
 import {Button, Card, Flex, Inline, MenuButton, Stack, Text} from '@sanity/ui'
+import {formatBytes} from '../../common/helper'
 
 const ButtonWrapper = styled(Button)`
   width: 100%;
@@ -18,6 +19,7 @@ type Props = {
 
 export default function WithMaterializedReference(props: Props) {
   const {assetDocument, children, readOnly} = props
+  const size = assetDocument.size
 
   return (
     <Flex align="center" justify="space-between" paddingRight={2}>
@@ -32,7 +34,7 @@ export default function WithMaterializedReference(props: Props) {
             <Stack space={2}>
               <Text size={2}>{assetDocument.originalFilename}</Text>
               <Text size={1} muted>
-                2.3MB (@todo)
+                {formatBytes(size)}
               </Text>
             </Stack>
           </Inline>
