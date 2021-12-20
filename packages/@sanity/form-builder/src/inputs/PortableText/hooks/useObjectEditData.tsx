@@ -16,6 +16,7 @@ export function useObjectEditData(
   refs: {
     block: React.MutableRefObject<HTMLDivElement>
     child: React.MutableRefObject<HTMLSpanElement>
+    inline: React.MutableRefObject<HTMLSpanElement>
   }
 ): ObjectEditData | null {
   const editor = usePortableTextEditor()
@@ -65,7 +66,7 @@ export function useObjectEditData(
         formBuilderPath: path,
         kind,
         returnToSelection: selection,
-        editorHTMLElementRef: isChild ? refs.child : refs.block,
+        editorHTMLElementRef: isChild ? refs.inline : refs.block,
       }
     }
   }
