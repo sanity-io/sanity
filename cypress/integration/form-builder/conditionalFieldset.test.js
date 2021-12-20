@@ -1,10 +1,18 @@
+import sub from 'date-fns/sub'
 import testSanityClient from '../../helpers/sanityClientSetUp'
+import {createUniqueDocument} from '../../helpers/createUniqueDocument'
 
-const testDocumentId = 'conditional-fieldset-test'
-const testLocation = `/test/desk/input-ci;conditionalFieldset;${testDocumentId}%2Csince%3D%40lastPublished`
+const getTestLocation = (documentId) =>
+  `/test/desk/input-ci;conditionalFieldset;${documentId}%2Csince%3D%40lastPublished`
+
+function deleteOldDocuments() {
+  const threeHoursAgo = sub(new Date(), {hours: -2}).toISOString()
+  testSanityClient.delete({
+    query: `*[_type == "conditionalFieldset" && title match "[Cypress]" && dateTime(_updatedAt) < dateTime('${threeHoursAgo}')]`,
+  })
+}
 
 const doc = {
-  _id: testDocumentId,
   _type: 'conditionalFieldset',
   title: 'Conditional fieldset [Cypress]',
   hidden: true,
@@ -37,14 +45,25 @@ const doc = {
   singleReadOnlyCallbackTrue1: 'Lorem',
 }
 
+const waitForReviewChanges = () => {
+  // Sometimes it takes a while for Review Changes to appear when loading the page.
+  // This prevents the test from failing randomly
+  cy.get('[data-testid="review-changes-pane"]', {timeout: 10000}).should('be.visible')
+}
+
 describe('@sanity/field: Multi fieldset and review changes', () => {
+  let testLocation
+
   before(async () => {
-    await testSanityClient.createOrReplace(doc)
+    deleteOldDocuments()
+    const testDoc = await createUniqueDocument(doc)
+    testLocation = getTestLocation(testDoc?._id)
   })
 
   beforeEach(() => {
     cy.viewport(2000, 3500)
     cy.visit(testLocation)
+    waitForReviewChanges()
   })
 
   // Hidden boolean false
@@ -209,13 +228,17 @@ describe('@sanity/field: Multi fieldset and review changes', () => {
 })
 
 describe('@sanity/field: Single fieldset and review changes', () => {
+  let testLocation
+
   before(async () => {
-    await testSanityClient.createOrReplace(doc)
+    const testDoc = await createUniqueDocument(doc)
+    testLocation = getTestLocation(testDoc?._id)
   })
 
   beforeEach(() => {
     cy.viewport(2000, 3500)
     cy.visit(testLocation)
+    waitForReviewChanges()
   })
 
   // Hidden boolean false
