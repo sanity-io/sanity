@@ -60,7 +60,8 @@ import {DropMessage} from '../common/DropMessage'
 import {handleSelectAssetFromSource} from '../common/assetSource'
 import resolveUploader from '../../../sanity/uploads/resolveUploader'
 import {ActionsMenu} from '../common/ActionsMenu'
-import {AssetBackground} from './styles'
+import {PlaceholderText} from '../common/PlaceholderText'
+import {CardOverlay, FlexContainer} from './styles'
 import {FileInputField} from './FileInputField'
 import FileContent from './FileContent'
 
@@ -411,6 +412,28 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     )
   }
 
+  renderAssetHover(tone) {
+    const {type, readOnly} = this.props
+    const {hoveringFiles} = this.state
+
+    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
+    const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
+
+    return (
+      <CardOverlay tone={tone}>
+        <FlexContainer align="center" justify="center" gap={2} flex={1}>
+          <PlaceholderText
+            readOnly={readOnly}
+            hoveringFiles={hoveringFiles}
+            acceptedFiles={acceptedFiles}
+            rejectedFilesCount={rejectedFilesCount}
+            type={'file'}
+          />
+        </FlexContainer>
+      </CardOverlay>
+    )
+  }
+
   renderUploadPlaceholder() {
     const {assetSources, readOnly, type} = this.props
     const {hoveringFiles} = this.state
@@ -558,6 +581,10 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                   {value?._upload && this.renderUploadState(value._upload)}
                   {!value?._upload && value?.asset && this.renderAsset()}
                   {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
+                  {!value?._upload &&
+                    value?.asset &&
+                    hoveringFiles.length > 0 &&
+                    this.renderAssetHover(getFileTone())}
                 </FileTarget>
               </ChangeIndicatorWithProvidedFullPath>
             </ChangeIndicatorCompareValueProvider>
@@ -570,4 +597,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       </>
     )
   }
+}
+function getFileTone(): import('@sanity/ui').CardTone {
+  throw new Error('Function not implemented.')
 }
