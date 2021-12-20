@@ -41,7 +41,11 @@ export function runTest(props: TestOptions): () => boolean {
     return false
   }
 
-  sampleNext()
+  // If we call `runTest` from within a React event handler, React will batch up any calls to setState happening
+  // synchronously within the same call stack, and defer any re-render til the event handler completes
+  // This means the first sample will be super fast because React will not re-render at all while it is running
+  // For this reason we want to schedule the first sample async to escape the React event call stack
+  Promise.resolve().then(sampleNext)
 
   if (!handleRun) {
     // eslint-disable-next-line no-console
