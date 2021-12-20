@@ -1,21 +1,18 @@
 import {
   HotkeyOptions,
-  PortableTextBlock,
   PortableTextEditable,
   RenderAnnotationFunction,
   RenderBlockFunction,
   RenderChildFunction,
   RenderDecoratorFunction,
-  EditorSelection,
   OnPasteFn,
   OnCopyFn,
-  PortableTextEditor,
-  usePortableTextEditor,
+  ScrollSelectionIntoViewFunction,
+  EditorSelection,
 } from '@sanity/portable-text-editor'
 import {Path} from '@sanity/types'
 import {BoundaryElementProvider, useBoundaryElement, useLayer} from '@sanity/ui'
-import React, {useMemo, useEffect, useCallback, useRef} from 'react'
-import {createScrollSelectionIntoView} from './utils/scrollSelectionIntoView'
+import React, {useCallback, useEffect, useMemo, useRef} from 'react'
 import {Toolbar} from './toolbar'
 import {Decorator} from './text'
 import {
@@ -26,7 +23,6 @@ import {
   Scroller,
   ToolbarCard,
 } from './Editor.styles'
-
 interface EditorProps {
   initialSelection?: EditorSelection
   isFullscreen: boolean
@@ -40,9 +36,9 @@ interface EditorProps {
   renderBlock: RenderBlockFunction
   renderChild: RenderChildFunction
   scrollElement: HTMLElement | null
+  scrollSelectionIntoView: ScrollSelectionIntoViewFunction
   setPortalElement?: (portalElement: HTMLDivElement | null) => void
   setScrollElement: (scrollElement: HTMLElement) => void
-  value: PortableTextBlock[] | undefined
 }
 
 const renderDecorator: RenderDecoratorFunction = (mark, mType, attributes, defaultRender) => {
@@ -51,7 +47,7 @@ const renderDecorator: RenderDecoratorFunction = (mark, mType, attributes, defau
 
 export function Editor(props: EditorProps) {
   const {
-    hotkeys: hotkeysProp,
+    hotkeys,
     initialSelection,
     isFullscreen,
     onCopy,
@@ -63,94 +59,14 @@ export function Editor(props: EditorProps) {
     renderBlock,
     renderChild,
     scrollElement,
+    scrollSelectionIntoView,
     setPortalElement,
     setScrollElement,
-    value,
   } = props
-
-  const editor = usePortableTextEditor()
-  const ptFeatures = useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [editor])
   const {isTopLayer} = useLayer()
+  const editableRef = useRef<HTMLDivElement>()
+
   const {element: boundaryElement} = useBoundaryElement()
-
-  // TODO: Enable when we agree upon the hotkey for opening edit object interface when block object is focused
-  //
-  // const handleOpenObjectHotkey = (
-  //   event: React.BaseSyntheticEvent,
-  //   ptEditor: PortableTextEditor
-  // ) => {
-  //   const selection = PortableTextEditor.getSelection(ptEditor)
-  //   if (selection) {
-  //     event.preventDefault()
-  //     event.stopPropagation()
-  //     const {focus} = selection
-  //     const activeAnnotations = PortableTextEditor.activeAnnotations(ptEditor)
-  //     const focusBlock = PortableTextEditor.focusBlock(ptEditor)
-  //     const focusChild = PortableTextEditor.focusChild(ptEditor)
-  //     if (activeAnnotations.length > 0) {
-  //       onFocus([
-  //         ...focus.path.slice(0, 1),
-  //         'markDefs',
-  //         {_key: activeAnnotations[0]._key},
-  //         FOCUS_TERMINATOR,
-  //       ])
-  //       return
-  //     }
-  //     if (focusChild && PortableTextEditor.isVoid(ptEditor, focusChild)) {
-  //       onFocus([...focus.path, FOCUS_TERMINATOR])
-  //       return
-  //     }
-  //     if (focusBlock && PortableTextEditor.isVoid(ptEditor, focusBlock)) {
-  //       onFocus([...focus.path.slice(0, 1), FOCUS_TERMINATOR])
-  //     }
-  //   }
-  // }
-
-  const customFromProps: HotkeyOptions = useMemo(
-    () => ({
-      custom: {
-        'mod+enter': onToggleFullscreen,
-        // 'mod+o': handleOpenObjectHotkey, // TODO: disabled for now, enable when we agree on the hotkey
-        ...(hotkeysProp || {}).custom,
-      },
-    }),
-    [hotkeysProp, onToggleFullscreen]
-  )
-
-  const defaultHotkeys = useMemo(() => {
-    const def = {marks: {}}
-
-    ptFeatures.decorators.forEach((dec) => {
-      switch (dec.value) {
-        case 'strong':
-          def.marks['mod+b'] = dec.value
-          break
-        case 'em':
-          def.marks['mod+i'] = dec.value
-          break
-        case 'underline':
-          def.marks['mod+u'] = dec.value
-          break
-        case 'code':
-          def.marks["mod+'"] = dec.value
-          break
-        default:
-        // Nothing
-      }
-    })
-
-    return def
-  }, [ptFeatures.decorators])
-
-  const marksFromProps: HotkeyOptions = useMemo(
-    () => ({marks: {...defaultHotkeys.marks, ...(hotkeysProp || {}).marks}}),
-    [hotkeysProp, defaultHotkeys]
-  )
-
-  const hotkeys: HotkeyOptions = useMemo(() => ({...marksFromProps, ...customFromProps}), [
-    marksFromProps,
-    customFromProps,
-  ])
 
   useEffect(() => {
     if (!isTopLayer || !isFullscreen) return undefined
@@ -170,31 +86,31 @@ export function Editor(props: EditorProps) {
     }
   }, [isFullscreen, isTopLayer, onToggleFullscreen])
 
-  const handleScrollSelectionIntoView = useMemo(
-    () => createScrollSelectionIntoView(scrollElement),
-    [scrollElement]
-  )
-
-  const editorRef = useRef<HTMLDivElement>()
+  // Keep the editor focused even though we are clicking on the background or the toolbar of the editor.
+  const keepFocused = useCallback((event: React.SyntheticEvent) => {
+    if (event.target instanceof Node && !editableRef.current.contains(event.target)) {
+      event.preventDefault()
+      event.stopPropagation()
+    }
+  }, [])
 
   const editable = useMemo(
     () => (
       <PortableTextEditable
-        ref={editorRef}
         hotkeys={hotkeys}
         onCopy={onCopy}
         onPaste={onPaste}
-        placeholderText={value ? undefined : 'Empty'}
+        placeholderText="Empty"
+        ref={editableRef}
         renderAnnotation={renderAnnotation}
         renderBlock={renderBlock}
         renderChild={renderChild}
         renderDecorator={renderDecorator}
-        scrollSelectionIntoView={handleScrollSelectionIntoView}
+        scrollSelectionIntoView={scrollSelectionIntoView}
         selection={initialSelection}
       />
     ),
     [
-      handleScrollSelectionIntoView,
       hotkeys,
       initialSelection,
       onCopy,
@@ -202,17 +118,9 @@ export function Editor(props: EditorProps) {
       renderAnnotation,
       renderBlock,
       renderChild,
-      value,
+      scrollSelectionIntoView,
     ]
   )
-
-  // Keep the editor focused even though we are clicking on the background or the toolbar of the editor.
-  const keepFocused = useCallback((event: React.SyntheticEvent) => {
-    if (event.target instanceof Node && !editorRef.current.contains(event.target)) {
-      event.preventDefault()
-      event.stopPropagation()
-    }
-  }, [])
 
   return (
     <Root $fullscreen={isFullscreen} data-testid="pt-editor" onMouseDown={keepFocused}>
