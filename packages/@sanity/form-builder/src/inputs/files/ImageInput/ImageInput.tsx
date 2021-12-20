@@ -31,7 +31,7 @@ import {
 } from '../../../sanity/uploads/types'
 import {ImageToolInput} from '../ImageToolInput'
 import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
-import UploadImagePlaceholder from '../common/UploadImagePlaceholder'
+import UploadPlaceholder from '../common/UploadPlaceholder'
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
 import {FileTarget} from '../common/styles'
 import {InternalAssetSource, UploadState} from '../types'
@@ -443,7 +443,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   renderAsset() {
     const {value, materialize, readOnly, assetSources, type} = this.props
 
-    const accept = get('image', 'options.accept', 'image/*')
+    const accept = get(type, 'options.accept', 'image/*')
 
     const fieldGroups = this.getGroupedFields(type)
     const showAdvancedEditButton =
@@ -482,6 +482,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
     const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
 
+    const accept = get(type, 'options.accept', 'image/*')
+
     // If multiple asset sources render a dropdown
     if (assetSources.length > 1 && !readOnly) {
       return (
@@ -509,14 +511,15 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
     // Single asset source (just a normal button)
     return (
-      <UploadImagePlaceholder
+      <UploadPlaceholder
         readOnly={readOnly}
         onBrowse={() => this.handleSelectImageFromAssetSource(assetSources[0])}
         onUpload={this.handleSelectFiles}
         hoveringFiles={hoveringFiles}
         acceptedFiles={acceptedFiles}
         rejectedFilesCount={rejectedFilesCount}
-        type={type}
+        type="image"
+        accept={accept}
       />
     )
   }
