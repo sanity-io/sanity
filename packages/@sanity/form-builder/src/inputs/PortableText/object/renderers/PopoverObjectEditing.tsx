@@ -1,13 +1,7 @@
 /* eslint-disable react/no-unused-prop-types */
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import {CloseIcon} from '@sanity/icons'
-import {
-  PortableTextBlock,
-  PortableTextChild,
-  PortableTextEditor,
-  Type,
-  usePortableTextEditor,
-} from '@sanity/portable-text-editor'
+import {PortableTextBlock, PortableTextChild, Type} from '@sanity/portable-text-editor'
 import {Path, Marker, SchemaType} from '@sanity/types'
 import {
   Box,
@@ -32,7 +26,7 @@ import {ModalWidth} from './types'
 
 interface PopoverObjectEditingProps {
   editorPath: Path
-  editorHTMLElementRef: React.MutableRefObject<HTMLElement>
+  elementRef: React.MutableRefObject<HTMLElement>
   focusPath: Path
   markers: Marker[]
   object: PortableTextBlock | PortableTextChild
@@ -82,8 +76,8 @@ const ContentHeaderBox = styled(Box)`
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
 export function PopoverObjectEditing(props: PopoverObjectEditingProps) {
-  const {width, editorHTMLElementRef} = props
-  const refElement = editorHTMLElementRef.current
+  const {width, elementRef} = props
+  const refElement = elementRef.current
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const boundaryElement = useBoundaryElement()
   const boundaryElementRect = useElementRect(boundaryElement.element)

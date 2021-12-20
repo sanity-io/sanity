@@ -1,6 +1,6 @@
 /* eslint-disable react/no-find-dom-node */
 
-import React, {useState, useEffect, useMemo, useLayoutEffect, useCallback} from 'react'
+import React, {useState, useEffect, useMemo, useCallback} from 'react'
 import {isKeySegment, Path, Marker} from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {
@@ -74,7 +74,7 @@ export const EditObject = (props: EditObjectProps) => {
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     setObject(objectFromValue)
   }, [objectFromValue])
 
@@ -129,9 +129,9 @@ export const EditObject = (props: EditObjectProps) => {
   ) {
     return (
       <PopoverObjectEditing
-        focusPath={focusPath}
-        editorHTMLElementRef={objectEditData.editorHTMLElementRef}
+        elementRef={objectEditData.editorHTMLElementRef}
         editorPath={objectEditData.editorPath}
+        focusPath={focusPath}
         markers={markers}
         object={object}
         onBlur={onBlur}
