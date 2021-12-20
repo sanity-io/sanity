@@ -64,10 +64,10 @@ const Overlay = styled(Flex)`
   left: 0;
   right: 0;
   bottom: 0;
-  backdrop-filter: ${({drag}) => (drag ? 'blur(10px)' : '')};
+  backdrop-filter: ${({drag, uploading}) => (drag || uploading ? 'blur(10px)' : '')};
   color: ${studioTheme.color.light.primary.card.enabled.fg};
-  background-color: ${({theme, drag}) =>
-    drag ? rgba(studioTheme.color.light.primary.card.enabled.bg, 0.8) : 'transparent'};
+  background-color: ${({theme, drag, uploading}) =>
+    drag || uploading ? 'var(--card-bg-color)' : 'transparent'};
 `
 
 const ProgressBar = styled(Card)`
@@ -77,7 +77,7 @@ const ProgressBar = styled(Card)`
 const MAX_HEIGHT = '15rem'
 
 export function HasImage(props) {
-  const {drag, hasDetails, readOnly, assetSources} = props
+  const {drag, hasDetails, readOnly, assetSources, uploading} = props
   const imageContainer = useRef()
   const [maxHeight, setMaxHeight] = useState(MAX_HEIGHT)
   const firstResize = useRef(true)
@@ -118,7 +118,7 @@ export function HasImage(props) {
   // }, [imageContainer])
 
   return (
-    <Card border tabIndex={0} tone={drag ? 'primary' : 'default'}>
+    <Card border tabIndex={0} tone={drag || uploading ? 'primary' : 'default'}>
       <RatioBox
         ref={imageContainer}
         // maxHeight={maxHeight}
@@ -128,11 +128,18 @@ export function HasImage(props) {
         }}
         // onResize={handleResize}
         paddingY={5}
+        tone={drag || uploading ? 'primary' : 'default'}
       >
         <Card data-container tone="transparent" sizing="border">
           <img src={'https://source.unsplash.com/random?moon'} />
         </Card>
-        <Overlay justify="flex-end" padding={3} drag={drag && !readOnly}>
+        <Overlay
+          justify={uploading ? 'center' : 'flex-end'}
+          padding={3}
+          drag={drag && !readOnly}
+          uploading={uploading}
+          align={uploading ? 'center' : 'flex-start'}
+        >
           {drag && !readOnly && (
             <Flex
               direction="column"
@@ -148,6 +155,31 @@ export function HasImage(props) {
               <Text size={1}>Drop image to upload</Text>
             </Flex>
           )}
+          {uploading && !readOnly && (
+            <Card tone="primary" style={{background: 'transparent'}} flex={1}>
+              <Flex direction="column" gap={2} align="center" style={{width: '100%'}}>
+                <Inline space={2}>
+                  <Text size={1}>Uploading</Text>
+                  <Code size={1}>some-file-name.jpg</Code>
+                </Inline>
+                <Card
+                  marginBottom={3}
+                  style={{width: '50%', position: 'relative'}}
+                  radius={5}
+                  shadow={1}
+                >
+                  <ProgressBar radius={5} style={{height: '0.5rem', width: '50%'}} />
+                </Card>
+                <Button
+                  fontSize={2}
+                  text="Cancel upload"
+                  mode="ghost"
+                  tone="critical"
+                  style={{backgroundColor: 'transparent'}}
+                />
+              </Flex>
+            </Card>
+          )}
           <Inline data-buttons space={1}>
             {hasDetails && !drag && (
               <Tooltip
@@ -162,7 +194,7 @@ export function HasImage(props) {
                 <Button mode="ghost" icon={EditIcon} />
               </Tooltip>
             )}
-            {!drag && (
+            {!drag && !uploading && (
               <MenuButton
                 id="image-menu"
                 button={<Button icon={EllipsisVerticalIcon} mode="ghost" />}
@@ -174,19 +206,26 @@ export function HasImage(props) {
                         Replace
                       </Label>
                     </Card>
-                    {!assetSources && <MenuItem icon={SearchIcon} text="Browse" disabled={readOnly} />}
+                    {!assetSources && (
+                      <MenuItem icon={SearchIcon} text="Browse" disabled={readOnly} />
+                    )}
                     {assetSources && (
-                      <MenuGroup text="Browse"  disabled={readOnly} >
+                      <MenuGroup text="Browse" disabled={readOnly}>
                         <MenuItem icon={ImageIcon} text="Media" />
                         <MenuItem icon={ImageIcon} text="Unsplash" />
                       </MenuGroup>
                     )}
-                    <MenuItem icon={UploadIcon} text="Upload"  disabled={readOnly} />
+                    <MenuItem icon={UploadIcon} text="Upload" disabled={readOnly} />
                     <MenuDivider />
-                      <MenuItem icon={DownloadIcon} text="Download image" />
-                      <MenuItem icon={ClipboardIcon} text="Copy URL" />
+                    <MenuItem icon={DownloadIcon} text="Download image" />
+                    <MenuItem icon={ClipboardIcon} text="Copy URL" />
                     <MenuDivider />
-                    <MenuItem icon={ResetIcon} text="Clear field" tone="critical"  disabled={readOnly} />
+                    <MenuItem
+                      icon={ResetIcon}
+                      text="Clear field"
+                      tone="critical"
+                      disabled={readOnly}
+                    />
                   </Menu>
                 }
               />

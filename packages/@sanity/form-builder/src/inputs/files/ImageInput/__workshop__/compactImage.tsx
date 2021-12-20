@@ -177,16 +177,17 @@ export default function CompactImage() {
               />
             )}
 
-            {hasImage && !uploading && (
+            {hasImage && (
               <HasImage
                 drag={drag}
                 assetSources={assetSources}
                 hasDetails={hasDetails}
                 readOnly={readOnly}
+                uploading={uploading}
               />
             )}
 
-            {uploading && <Uploading />}
+            {!hasImage && uploading && <Uploading />}
           </Stack>
           <Stack space={3}>
             <Text size={1} weight="semibold">
