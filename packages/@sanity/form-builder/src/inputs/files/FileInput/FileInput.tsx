@@ -243,7 +243,6 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       <UploadProgress
         uploadState={uploadState}
         onCancel={isUploading ? this.handleCancelUpload : undefined}
-        onClearStale={this.handleClearUploadState}
       />
     )
   }
@@ -563,32 +562,36 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                 hasFocus={this.hasFileTargetFocus()}
                 value={value?.asset?._ref}
               >
-                <FileTarget
-                  tabIndex={readOnly ? undefined : 0}
-                  disabled={readOnly === true}
-                  ref={this.setFocusInput}
-                  onFiles={this.handleSelectFiles}
-                  onFilesOver={this.handleFilesOver}
-                  onFilesOut={this.handleFilesOut}
-                  onFocus={this.handleFileTargetFocus}
-                  onBlur={this.handleFileTargetBlur}
-                  border
-                  tone={getFileTone()}
-                  readOnly={readOnly}
-                  padding={!value?._upload && value?.asset ? 1 : 3}
-                  style={{
-                    position: 'relative',
-                    borderStyle: !value?._upload && value?.asset ? 'solid' : 'dashed',
-                  }}
-                >
-                  {value?._upload && this.renderUploadState(value._upload)}
-                  {!value?._upload && value?.asset && this.renderAsset()}
-                  {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
-                  {!value?._upload &&
-                    value?.asset &&
-                    hoveringFiles.length > 0 &&
-                    this.renderAssetHover(getFileTone())}
-                </FileTarget>
+                {/* not uploading */}
+                {!value?._upload && (
+                  <FileTarget
+                    tabIndex={readOnly ? undefined : 0}
+                    disabled={readOnly === true}
+                    ref={this.setFocusInput}
+                    onFiles={this.handleSelectFiles}
+                    onFilesOver={this.handleFilesOver}
+                    onFilesOut={this.handleFilesOut}
+                    onFocus={this.handleFileTargetFocus}
+                    onBlur={this.handleFileTargetBlur}
+                    border
+                    tone={getFileTone()}
+                    readOnly={readOnly}
+                    padding={value?.asset ? 1 : 3}
+                    style={{
+                      position: 'relative',
+                      borderStyle: !value?._upload && value?.asset ? 'solid' : 'dashed',
+                    }}
+                  >
+                    {value?.asset && this.renderAsset()}
+                    {!value?.asset && this.renderUploadPlaceholder()}
+                    {value?.asset &&
+                      hoveringFiles.length > 0 &&
+                      this.renderAssetHover(getFileTone())}
+                  </FileTarget>
+                )}
+
+                {/* uploading */}
+                {value?._upload && this.renderUploadState(value._upload)}
               </ChangeIndicatorWithProvidedFullPath>
             </ChangeIndicatorCompareValueProvider>
           </div>

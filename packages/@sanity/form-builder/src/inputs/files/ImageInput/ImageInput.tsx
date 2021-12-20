@@ -5,7 +5,7 @@ import {Box, Button, Dialog, Menu, MenuButton, MenuItem, Stack, Text, ToastParam
 import {get, groupBy, uniqueId} from 'lodash'
 import {Observable, Subscription} from 'rxjs'
 import {ChangeIndicatorForFieldPath} from '@sanity/base/change-indicators'
-import {ImageIcon, SearchIcon} from '@sanity/icons'
+import {ImageIcon, ResetIcon, SearchIcon, WarningOutlineIcon} from '@sanity/icons'
 //import HotspotImage from '@sanity/imagetool/HotspotImage'
 import ImageTool from '@sanity/imagetool'
 import {
@@ -531,7 +531,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       <UploadProgress
         uploadState={uploadState}
         onCancel={isUploading ? this.handleCancelUpload : undefined}
-        onClearStale={this.handleClearUploadState}
       />
     )
   }
@@ -679,27 +678,31 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                 this.hasChangeInFields(fieldGroups.imageToolAndDialog)
               }
             >
-              <FileTarget
-                tabIndex={readOnly ? undefined : 0}
-                disabled={false}
-                ref={this.setFocusElement}
-                onFiles={this.handleSelectFiles}
-                onFilesOver={this.handleFilesOver}
-                onFilesOut={this.handleFilesOut}
-                onFocus={this.handleFileTargetFocus}
-                onBlur={this.handleFileTargetBlur}
-                border={!(!value?._upload && value?.asset)}
-                padding={!value?._upload && value?.asset ? 0 : 5}
-                style={{
-                  borderStyle:
-                    !value?._upload && !readOnly && hoveringFiles.length > 0 ? 'solid' : 'dashed',
-                }}
-                tone={getFileTone()}
-              >
-                {value?._upload && this.renderUploadState(value._upload)}
-                {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
-                {!value?._upload && value?.asset && this.renderAsset()}
-              </FileTarget>
+              {/* not uploading */}
+              {!value?._upload && (
+                <FileTarget
+                  tabIndex={readOnly ? undefined : 0}
+                  disabled={false}
+                  ref={this.setFocusElement}
+                  onFiles={this.handleSelectFiles}
+                  onFilesOver={this.handleFilesOver}
+                  onFilesOut={this.handleFilesOut}
+                  onFocus={this.handleFileTargetFocus}
+                  onBlur={this.handleFileTargetBlur}
+                  border={!value?.asset}
+                  padding={value?.asset ? 0 : 5}
+                  style={{
+                    borderStyle: !readOnly && hoveringFiles.length > 0 ? 'solid' : 'dashed',
+                  }}
+                  tone={getFileTone()}
+                >
+                  {!value?.asset && this.renderUploadPlaceholder()}
+                  {!value?._upload && value?.asset && this.renderAsset()}
+                </FileTarget>
+              )}
+
+              {/* uploading */}
+              {value?._upload && this.renderUploadState(value._upload)}
             </ChangeIndicatorForFieldPath>
           </div>
 
