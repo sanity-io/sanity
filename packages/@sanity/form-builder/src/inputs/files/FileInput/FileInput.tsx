@@ -61,6 +61,7 @@ import resolveUploader from '../../../sanity/uploads/resolveUploader'
 import {ActionsMenu} from '../common/ActionsMenu'
 import {PlaceholderText} from '../common/PlaceholderText'
 import UploadPlaceholder from '../common/UploadPlaceholder'
+import {UploadWarning} from '../common/UploadWarning'
 import {CardOverlay, FlexContainer} from './styles'
 import {FileInputField} from './FileInputField'
 import FileContent from './FileContent'
@@ -102,6 +103,7 @@ type FileInputState = {
   selectedAssetSource: InternalAssetSource | null
   isAdvancedEditOpen: boolean
   hoveringFiles: FileInfo[]
+  isStale: boolean
 }
 
 type Focusable = {
@@ -124,6 +126,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     isAdvancedEditOpen: false,
     selectedAssetSource: null,
     hoveringFiles: [],
+    isStale: false,
   }
 
   toast: {push: (params: ToastParams) => void} | null = null
@@ -176,7 +179,12 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   handleClearUploadState = () => {
+    this.setState({isStale: false})
     this.clearUploadStatus()
+  }
+
+  handleStaleUpload = () => {
+    this.setState({isStale: true})
   }
 
   handleSelectFiles = (files: DOMFile[]) => {
@@ -243,6 +251,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       <UploadProgress
         uploadState={uploadState}
         onCancel={isUploading ? this.handleCancelUpload : undefined}
+        onStale={this.handleStaleUpload}
       />
     )
   }
@@ -515,7 +524,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       readOnly,
       presence,
     } = this.props
-    const {isAdvancedEditOpen, hoveringFiles, selectedAssetSource} = this.state
+    const {isAdvancedEditOpen, hoveringFiles, selectedAssetSource, isStale} = this.state
     const [highlightedFields, otherFields] = partition(
       type.fields.filter((field) => !HIDDEN_FIELDS.includes(field.name)),
       'type.options.isHighlighted'
@@ -557,6 +566,12 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
               value={value?.asset?._ref}
               compareValue={compareValue?.asset?._ref}
             >
+              {isStale && (
+                <Box marginBottom={2}>
+                  <UploadWarning onClearStale={this.handleClearUploadState} />
+                </Box>
+              )}
+
               <ChangeIndicatorWithProvidedFullPath
                 path={[]}
                 hasFocus={this.hasFileTargetFocus()}

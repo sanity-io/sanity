@@ -40,6 +40,7 @@ import {EMPTY_ARRAY} from '../../../utils/empty'
 import {handleSelectAssetFromSource} from '../common/assetSource'
 import {ActionsMenu} from '../common/ActionsMenu'
 import resolveUploader from '../../../sanity/uploads/resolveUploader'
+import {UploadWarning} from '../common/UploadWarning'
 import {HotspotImage} from './HotSpotImage'
 import {ImageInputField} from './ImageInputField'
 import {ImageActionsMenu} from './ImageActionsMenu'
@@ -83,6 +84,7 @@ type ImageInputState = {
   selectedAssetSource: InternalAssetSource | null
   // Metadata about files currently over the drop area
   hoveringFiles: FileInfo[]
+  isStale: boolean
 }
 
 type Focusable = {
@@ -121,6 +123,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     isUploading: false,
     selectedAssetSource: null,
     hoveringFiles: [],
+    isStale: false,
   }
 
   toast: {push: (params: ToastParams) => void} | null = null
@@ -314,7 +317,12 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   handleClearUploadState = () => {
+    this.setState({isStale: false})
     this.clearUploadStatus()
+  }
+
+  handleStaleUpload = () => {
+    this.setState({isStale: true})
   }
 
   handleSelectFiles = (files: File[]) => this.uploadFirstAccepted(files)
@@ -531,6 +539,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       <UploadProgress
         uploadState={uploadState}
         onCancel={isUploading ? this.handleCancelUpload : undefined}
+        onStale={this.handleStaleUpload}
       />
     )
   }
@@ -622,7 +631,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       directUploads,
       resolveUploader,
     } = this.props
-    const {hoveringFiles, selectedAssetSource} = this.state
+    const {hoveringFiles, selectedAssetSource, isStale} = this.state
 
     const fieldGroups = this.getGroupedFields(type)
 
@@ -670,6 +679,12 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
           __unstable_changeIndicator={false}
         >
           <div>
+            {isStale && (
+              <Box marginBottom={2}>
+                <UploadWarning onClearStale={this.handleClearUploadState} />
+              </Box>
+            )}
+
             <ChangeIndicatorForFieldPath
               path={ASSET_FIELD_PATH}
               hasFocus={this.hasFileTargetFocus()}

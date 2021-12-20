@@ -6,10 +6,23 @@ import {UploadState} from '../types'
 type Props = {
   uploadState: UploadState
   onCancel?: () => void
+  onStale?: () => void
 }
 
-export function UploadProgress({uploadState, onCancel}: Props) {
+// If it's more than this amount of milliseconds since last time upload state was reported,
+// the upload will be marked as stale/interrupted.
+const STALE_UPLOAD_MS = 1000 * 60 * 2 // 2 minutes
+
+const elapsedMs = (date: string): number => new Date().getTime() - new Date(date).getTime()
+
+export function UploadProgress({uploadState, onCancel, onStale}: Props) {
   const filename = uploadState.file.name
+
+  useEffect(() => {
+    if (elapsedMs(uploadState.updated) > STALE_UPLOAD_MS) {
+      onStale()
+    }
+  }, [uploadState.updated, onStale])
 
   return (
     <Card tone="primary" padding={4} border>
