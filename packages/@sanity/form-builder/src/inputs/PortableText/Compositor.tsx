@@ -25,7 +25,6 @@ import {
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/components'
 import ActivateOnFocus from '../../components/ActivateOnFocus/ActivateOnFocus'
 import PatchEvent from '../../PatchEvent'
-import {useSelectFromFocusPath} from './hooks/useSelectFromFocusPath'
 import {BlockObject} from './object/BlockObject'
 import {InlineObject} from './object/InlineObject'
 import {EditObject} from './object/EditObject'
@@ -36,10 +35,10 @@ import {ExpandedLayer, Root} from './Compositor.styles'
 import {useObjectEditData} from './hooks/useObjectEditData'
 import {useSpellcheck} from './hooks/useSpellCheck'
 import {useScrollSelectionIntoView} from './hooks/useScrollSelectionIntoView'
-import {useScrollToAnnotation} from './hooks/useScrollToAnnotation'
 import {useObjectEditFormBuilderFocus} from './hooks/useObjectEditFormBuilderFocus'
 import {useObjectEditFormBuilderChange} from './hooks/useObjectEditFormBuilderChange'
 import {useHotkeys} from './hooks/useHotKeys'
+import {useScrollToFocusFromOutside} from './hooks/useScrollToFocusFromOutside'
 
 const ROOT_PATH = []
 const ACTIVATE_ON_FOCUS_MESSAGE = <Text weight="semibold">Click to activate</Text>
@@ -101,11 +100,8 @@ export function Compositor(props: InputProps) {
   const objectEditData = useObjectEditData(focusPath, {
     block: blockObjectElementRef,
     child: childEditorElementRef,
+    inline: inlineObjectElementRef,
   })
-
-  // Respond to focusPath and select relevant block in editor
-  // NOTE: keep this after useObjectEditData hook
-  useSelectFromFocusPath(focusPath)
 
   // Deal with focus when editing objects
   const {
@@ -118,14 +114,14 @@ export function Compositor(props: InputProps) {
 
   // Scroll to selection and and special case for annotations (comment inside)
   const scrollSelectionIntoView = useScrollSelectionIntoView(scrollElement)
-  useScrollToAnnotation(childEditorElementRef, scrollElement, objectEditData?.kind === 'annotation')
+  useScrollToFocusFromOutside(objectEditData, scrollElement)
 
   // Set as active whenever we have focus inside the editor.
   useEffect(() => {
-    if (hasFocus) {
+    if (hasFocus || focusPath.length > 1) {
       setIsActive(true)
     }
-  }, [hasFocus])
+  }, [hasFocus, focusPath])
 
   const handleToggleFullscreen = useCallback(() => {
     onToggleFullscreen()
