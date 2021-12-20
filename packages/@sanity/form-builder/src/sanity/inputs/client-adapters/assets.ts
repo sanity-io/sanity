@@ -79,6 +79,7 @@ export function materializeReference(id: string): Observable<FileAsset> {
     'description',
     'creditLine',
     'source',
+    'size',
   ]) as Observable<FileAsset>
 }
 
