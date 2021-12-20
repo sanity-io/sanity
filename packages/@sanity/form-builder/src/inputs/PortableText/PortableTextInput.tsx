@@ -15,6 +15,7 @@ import {
 import {Subject} from 'rxjs'
 import {Box, Text, useToast} from '@sanity/ui'
 import scrollIntoView from 'scroll-into-view-if-needed'
+import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import PatchEvent from '../../PatchEvent'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {Patch} from '../../patch/types'
@@ -275,8 +276,13 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
 
 // A fn to determine if we should set a new formBuilder focus path from the focus we got from the editor
 const shouldSetNewFocusPath = (focusPath: Path, selectionFocusPath: Path | undefined) => {
-  // Don't set if we are in inside some object
-  if (focusPath && focusPath.length > 2) {
+  // Don't set if we are in inside some object or in as transition to open up a modal (FOCUS_TERMINATOR)
+  const isTerminatorEditPath = focusPath.slice(-1)[0] === FOCUS_TERMINATOR
+  const isBlockObjectEditPath =
+    focusPath.length !== 1 && focusPath[1] && focusPath[1] !== 'children'
+  const isChildObjectEditPath = focusPath.length > 3 && focusPath[1] === 'children'
+  const isObject = isBlockObjectEditPath || isChildObjectEditPath || isTerminatorEditPath
+  if (isObject) {
     return false
   }
   // Only if we have something to set focus *to*

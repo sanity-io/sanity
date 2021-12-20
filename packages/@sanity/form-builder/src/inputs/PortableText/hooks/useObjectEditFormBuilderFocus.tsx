@@ -29,6 +29,7 @@ export function useObjectEditFormBuilderFocus(onFocus: (path: Path) => void) {
   const onEditObjectClose = useCallback(() => {
     if (selection) {
       PortableTextEditor.select(editor, selection)
+      PortableTextEditor.focus(editor)
     }
     onFocus(selection?.focus.path || [])
   }, [editor, onFocus, selection])
