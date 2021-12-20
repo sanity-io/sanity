@@ -94,8 +94,6 @@ export type Props = {
   presence: FormFieldPresence[]
 }
 
-const cardBorder = {borderStyle: 'dashed'}
-
 const HIDDEN_FIELDS = ['asset']
 
 type FileInputState = {
@@ -398,7 +396,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     return (
       <WithMaterializedReference reference={value!.asset} materialize={materialize}>
         {(assetDocument: FileAsset) => (
-          <FileContent assetDocument={assetDocument}>
+          <FileContent assetDocument={assetDocument} readOnly={readOnly}>
             <ActionsMenu
               onUpload={this.handleSelectFiles}
               onBrowse={() => this.handleSelectFileFromAssetSource(assetSources[0])}
@@ -514,7 +512,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       if (!value?._upload && !readOnly && hoveringFiles.length > 0) {
         return 'primary'
       }
-      return value?._upload && value?.asset ? 'transparent' : 'default'
+      return (value?._upload && value?.asset) || readOnly ? 'transparent' : 'default'
     }
 
     return (
@@ -549,10 +547,13 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                   onFocus={this.handleFileTargetFocus}
                   onBlur={this.handleFileTargetBlur}
                   border
-                  padding={4}
                   tone={getFileTone()}
-                  style={cardBorder}
                   readOnly={readOnly}
+                  padding={!value?._upload && value?.asset ? 1 : 3}
+                  style={{
+                    position: 'relative',
+                    borderStyle: !value?._upload && value?.asset ? 'solid' : 'dashed',
+                  }}
                 >
                   {value?._upload && this.renderUploadState(value._upload)}
                   {!value?._upload && value?.asset && this.renderAsset()}

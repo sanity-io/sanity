@@ -31,9 +31,9 @@ export default React.memo(function UploadImagePlaceholder({
     <Flex
       align="center"
       justify="space-between"
-      gap={[3, 4, 4]}
-      direction={['column-reverse', 'column-reverse', 'row']}
-      paddingY={[0, 2, 2]}
+      gap={4}
+      direction={['column', 'column', 'row']}
+      paddingY={[2, 2, 0]}
     >
       <Flex align="center" justify="center" gap={2} flex={1}>
         <PlaceholderText

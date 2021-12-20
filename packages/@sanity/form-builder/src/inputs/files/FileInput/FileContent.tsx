@@ -4,44 +4,49 @@ import {FileAsset} from '@sanity/types'
 
 import styled from 'styled-components'
 
-import {Button, Flex, MenuButton, Text} from '@sanity/ui'
+import {Button, Card, Flex, Inline, MenuButton, Stack, Text} from '@sanity/ui'
 
-const ButtonContainer = styled(Button)`
-  z-index: 100;
+const ButtonWrapper = styled(Button)`
+  width: 100%;
 `
 
 type Props = {
   children: ReactElement<any, string | JSXElementConstructor<any>>
   assetDocument: FileAsset
+  readOnly: boolean
 }
 
 export default function WithMaterializedReference(props: Props) {
-  const {assetDocument, children} = props
+  const {assetDocument, children, readOnly} = props
 
   return (
-    <Flex
-      align="center"
-      justify="space-between"
-      gap={[3, 4, 4]}
-      direction={['column-reverse', 'column-reverse', 'row']}
-    >
-      <Flex align="center" gap={2} flex={1}>
-        <Flex justify="center">
-          <Text>
-            <BinaryDocumentIcon />
-          </Text>
-        </Flex>
-        <Flex justify="center">
-          <Text size={1}>{assetDocument.originalFilename}</Text>
-        </Flex>
-      </Flex>
+    <Flex align="center" justify="space-between" paddingRight={2}>
+      <Card flex={1} tone={readOnly ? 'transparent' : 'default'}>
+        <ButtonWrapper mode="bleed" padding={2} disabled={readOnly}>
+          <Inline space={3} flex={1}>
+            <Card padding={3} tone="transparent" shadow={1} radius={1}>
+              <Text muted={readOnly}>
+                <BinaryDocumentIcon />
+              </Text>
+            </Card>
+            <Stack space={2}>
+              <Text size={2}>{assetDocument.originalFilename}</Text>
+              <Text size={1} muted>
+                2.3MB (@todo)
+              </Text>
+            </Stack>
+          </Inline>
+        </ButtonWrapper>
+      </Card>
 
-      <MenuButton
-        button={<ButtonContainer icon={EllipsisVerticalIcon} mode="bleed" />}
-        id="menu-button-example"
-        menu={children}
-        popover={{portal: true}}
-      />
+      <Card tone={readOnly ? 'transparent' : 'default'}>
+        <MenuButton
+          button={<Button icon={EllipsisVerticalIcon} mode="bleed" padding={2} />}
+          popover={{tone: 'default'}}
+          id="menu-button-example"
+          menu={children}
+        />
+      </Card>
     </Flex>
   )
 }
