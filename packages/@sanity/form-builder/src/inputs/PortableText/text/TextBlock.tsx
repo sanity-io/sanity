@@ -10,6 +10,7 @@ import {TEXT_STYLE_PADDING} from './constants'
 import {
   BlockActionsInner,
   BlockActionsOuter,
+  BlockExtrasContainer,
   ChangeIndicatorWrapper,
   ListPrefixWrapper,
   StyledChangeIndicatorWithProvidedFullPath,
@@ -157,14 +158,7 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
             </TextRoot>
           </Tooltip>
         </Box>
-
-        <div
-          contentEditable={false}
-          // NOTE: it’s important that this element does not have the `user-select: none` CSS
-          // property, because that will not work in Safari (breaks `Cmd+A`).
-          // It seems Safari does not allow defining `user-select` on an element which also has
-          // the `contenteditable="false"` attribute.
-        >
+        <BlockExtrasContainer contentEditable={false}>
           {renderBlockActions && (
             <BlockActionsOuter marginRight={1}>
               <BlockActionsInner>
@@ -178,6 +172,7 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
               </BlockActionsInner>
             </BlockActionsOuter>
           )}
+
           {isFullscreen && (
             <ChangeIndicatorWrapper>
               <StyledChangeIndicatorWithProvidedFullPath
@@ -188,7 +183,7 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
               />
             </ChangeIndicatorWrapper>
           )}
-        </div>
+        </BlockExtrasContainer>
       </TextBlockFlexWrapper>
     </Box>
   )
