@@ -3,6 +3,7 @@ import {useBoolean} from '@sanity/ui-workshop'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {Patcher} from '@sanity/mutator'
 import type {SchemaType, ObjectField} from '@sanity/types'
+import {PresenceOverlay} from '@sanity/base/presence'
 import {
   FormBuilder,
   FormBuilderInput,
@@ -11,7 +12,7 @@ import {
 import {applyAll} from '../patch/applyPatch'
 import {toGradient} from '../sanity/utils/gradientPatchAdapter'
 import {getDummySchema, getDummyDocument, DUMMY_DOCUMENT_ID} from './_common/data'
-import {FilterFieldInput, FormBuilderTester, FormDebugger, TypeTester} from './_common/input'
+import {TypeTester, FilterFieldInput, FormDebugger, FormBuilderTester} from './_common'
 
 const patchChannel = FormBuilder.createPatchChannel()
 
@@ -112,36 +113,38 @@ export default function ExampleStory() {
   }, [includeUnknownField])
 
   return (
-    <Card padding={4}>
-      <Grid columns={isDebug ? [1, 1, 1, 12] : 1} gap={4}>
-        <Stack space={4} column={6}>
-          {isFilterFields && (
-            <FilterFieldInput value={fieldFilterSource} onChange={handleChangeFieldFilter} />
-          )}
-          {isTypeTester && <TypeTester />}
-          <FormBuilderTester patchChannel={patchChannel} schema={schema} value={documentValue}>
-            <FormBuilderInput
-              type={documentType}
-              onChange={isUseMutator ? handleChangeMutator : handleChange}
-              level={0}
-              value={documentValue}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
-              focusPath={focusPath}
-              readOnly={isReadOnly}
-              isRoot
-              filterField={fieldFilter}
-              ref={ref}
-              path={EMPTY}
-            />
-          </FormBuilderTester>
-        </Stack>
-        {isDebug && (
+    <PresenceOverlay>
+      <Card padding={4}>
+        <Grid columns={isDebug ? [1, 1, 1, 12] : 1} gap={4}>
           <Stack space={4} column={6}>
-            <FormDebugger value={documentValue} focusPath={focusPath} />
+            {isFilterFields && (
+              <FilterFieldInput value={fieldFilterSource} onChange={handleChangeFieldFilter} />
+            )}
+            {isTypeTester && <TypeTester />}
+            <FormBuilderTester patchChannel={patchChannel} schema={schema} value={documentValue}>
+              <FormBuilderInput
+                type={documentType}
+                onChange={isUseMutator ? handleChangeMutator : handleChange}
+                level={0}
+                value={documentValue}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+                focusPath={focusPath}
+                readOnly={isReadOnly}
+                isRoot
+                filterField={fieldFilter}
+                ref={ref}
+                path={EMPTY}
+              />
+            </FormBuilderTester>
           </Stack>
-        )}
-      </Grid>
-    </Card>
+          {isDebug && (
+            <Stack space={4} column={6}>
+              <FormDebugger value={documentValue} focusPath={focusPath} />
+            </Stack>
+          )}
+        </Grid>
+      </Card>
+    </PresenceOverlay>
   )
 }

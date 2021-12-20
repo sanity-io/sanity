@@ -1,5 +1,5 @@
 import resolveInputComponent from '../../sanity/inputResolver/inputResolver'
-import {DebugInput} from './input'
+import {DebugInput} from './DebugInput'
 
 export const inputResolver = (input: any) => {
   if (input.type.name === 'document') {

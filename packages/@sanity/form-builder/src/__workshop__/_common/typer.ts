@@ -7,13 +7,13 @@ const triggerInputEvent = (input, nextValue) => {
   input.dispatchEvent(new Event('input', {bubbles: true}))
 }
 
-const chars = 'abcdefghijklmnopqrstuvwxyz'.split('')
-
 function format(string: string, ...args) {
   return string.replace(/{(\d+)}/g, function (match, index) {
     return typeof args[index] === 'undefined' ? match : args[index]
   })
 }
+
+const chars = 'abcdefghijklmnopqrstuvwxyz'.split('')
 
 interface TestOptions {
   inputElement: HTMLInputElement | HTMLTextAreaElement
@@ -26,10 +26,10 @@ interface TestOptions {
 export function runTest(props: TestOptions): () => boolean {
   const {inputElement, times = 3, gracePeriod = 4000, onRun, onFinished} = props
 
+  const originalValue = inputElement.value
   let total = 0
   let sampleNo = 0
   let remainingSamples = times
-  const originalValue = inputElement.value
   let handleRun = onRun
   let timer
 
@@ -56,12 +56,21 @@ export function runTest(props: TestOptions): () => boolean {
     const duration = performance.now() - start
     total += duration
     // eslint-disable-next-line callback-return
-    handleRun(format('Sample #{0}: {1}ms, avg: {2}ms', sampleNo, duration, total / sampleNo))
+    handleRun(
+      format(
+        'Sample #{0}: {1}ms, avg: {2}ms',
+        sampleNo,
+        duration.toPrecision(4),
+        (total / sampleNo).toPrecision(4)
+      )
+    )
     if (remainingSamples > 0) {
       timer = setTimeout(sampleNext, gracePeriod)
     } else {
       // eslint-disable-next-line callback-return
-      handleRun(format('Average of {0} samples: {1}ms', sampleNo, total / sampleNo))
+      handleRun(
+        format('Average of {0} samples: {1}ms', sampleNo, (total / sampleNo).toPrecision(4))
+      )
       onFinished()
       triggerInputEvent(inputElement, originalValue)
     }
