@@ -35,7 +35,7 @@ export function TestInput(props: TestInputProps) {
     withCustomMarkers = false,
   } = props
   const [value, setValue] = useState<any[]>(propsValue)
-  const [focusPath, setFocusPath] = useState<Path>(undefined)
+  const [focusPath, setFocusPath] = useState<Path>([])
   const blockType = useMemo(() => type.of.find((t) => t.type.name === 'block'), [type])
   const presence = useMemo(() => [], [])
   const hotkeys = useMemo(() => ({}), [])
@@ -43,12 +43,11 @@ export function TestInput(props: TestInputProps) {
   const uniqMarkers = useUnique(markers)
 
   const onFocus = useCallback((path: Path) => {
-    console.log('FormBuilder onFocus called', path)
     setFocusPath(path)
   }, [])
 
   const onBlur = useCallback(() => {
-    console.log('FormBuilder onBlur called')
+    setFocusPath([])
   }, [])
 
   const onChange = useCallback((event) => {
