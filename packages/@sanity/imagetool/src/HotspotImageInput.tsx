@@ -12,7 +12,7 @@ interface Props {
   isRejected: boolean
 }
 
-export function HotspotImageInput(props: Props) {
+export default function HotspotImageInput(props: Props) {
   const {drag, readOnly, assetDocument, isRejected} = props
   const imageContainer = useRef()
   const [storedHeight, setStoredHeight] = useState(
