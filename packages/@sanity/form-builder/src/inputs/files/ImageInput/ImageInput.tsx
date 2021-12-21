@@ -22,6 +22,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import deepCompare from 'react-fast-compare'
+import HotspotImageInput from '@sanity/imagetool/HotspotImageInput'
 import {
   ResolvedUploader,
   Uploader,
@@ -40,7 +41,6 @@ import {handleSelectAssetFromSource} from '../common/assetSource'
 import {ActionsMenu} from '../common/ActionsMenu'
 import resolveUploader from '../../../sanity/uploads/resolveUploader'
 import {UploadWarning} from '../common/UploadWarning'
-import {HotspotImageInput} from './HotspotImageInput'
 import {ImageInputField} from './ImageInputField'
 import {ImageActionsMenu} from './ImageActionsMenu'
 
