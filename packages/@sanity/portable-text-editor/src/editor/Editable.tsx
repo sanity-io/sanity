@@ -1,7 +1,6 @@
 import {Descendant, Transforms} from 'slate'
 import {isEqual} from 'lodash'
 import isHotkey from 'is-hotkey'
-import {normalizeBlock} from '@sanity/block-tools'
 import React, {
   useCallback,
   useMemo,
@@ -106,9 +105,11 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
 
   const {change$, isThrottling, keyGenerator, portableTextFeatures, readOnly} = portableTextEditor
 
+  const blockType = portableTextFeatures.types.block
+
   const placeHolderBlock = useMemo(
     () => ({
-      _type: portableTextFeatures.types.block.name,
+      _type: blockType.name,
       _key: keyGenerator(),
       style: portableTextFeatures.styles[0].value,
       markDefs: [],
@@ -121,18 +122,18 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         },
       ],
     }),
-    [portableTextFeatures, keyGenerator]
+    [blockType.name, keyGenerator, portableTextFeatures.styles]
   )
 
   const initialValue = useMemo(
     () =>
       toSlateValue(
         getValueOrInitialValue(value, [placeHolderBlock]),
-        portableTextFeatures.types.block.name,
+        blockType.name,
         KEY_TO_SLATE_ELEMENT.get(slateEditor)
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [placeHolderBlock, slateEditor, portableTextFeatures.types.block.name] // Note that 'value' is deliberately left out here.
+    [placeHolderBlock, slateEditor, blockType.name] // Note that 'value' is deliberately left out here.
   )
 
   // React/UI-spesific plugins
@@ -217,7 +218,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       debug(`Setting value from props`)
       const slateValueFromProps = toSlateValue(
         getValueOrInitialValue(value, [placeHolderBlock]),
-        portableTextFeatures.types.block.name,
+        blockType.name,
         KEY_TO_SLATE_ELEMENT.get(slateEditor)
       )
       slateEditor.children = slateValueFromProps
@@ -228,15 +229,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       })
     }
     change$.next({type: 'value', value})
-  }, [
-    change$,
-    isSelecting,
-    isThrottling,
-    placeHolderBlock,
-    portableTextFeatures.types.block.name,
-    slateEditor,
-    value,
-  ])
+  }, [change$, isSelecting, isThrottling, placeHolderBlock, blockType.name, slateEditor, value])
 
   // Restore selection from props
   useEffect(() => {
@@ -280,19 +273,28 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     [onCopy]
   )
 
-  // Handle pasting in the editor
+  // Handle incoming pasting events in the editor
   const handlePaste = useCallback(
-    (event: React.SyntheticEvent): Promise<void> | void => {
-      event.persist() // Keep the event through the plugin chain after calling next()
-      const _selection = PortableTextEditor.getSelection(portableTextEditor)
-      const type = portableTextFeatures.types.portableText
-      if (!_selection) {
+    (event: React.ClipboardEvent<HTMLDivElement>): Promise<void> | void => {
+      if (!slateEditor.selection) {
+        return
+      }
+      if (!onPaste) {
+        slateEditor.insertData(event.clipboardData)
         return
       }
       if (onPaste) {
         const resolveOnPasteResultOrError = (): OnPasteResultOrPromise | Error => {
           try {
-            return onPaste({event, value, path: _selection.focus.path, type})
+            return onPaste({
+              event,
+              value: PortableTextEditor.getValue(portableTextEditor),
+              path: slateEditor.selection?.focus.path || [],
+              // Note: this is a breaking change introduced in v.2.23.2
+              // This used to be the block type, but one needs the whole PT array type
+              // to fully operate in the model space of the current editor.
+              type: portableTextFeatures.types.portableText,
+            })
           } catch (error) {
             return error as Error
           }
@@ -313,19 +315,8 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
             }
             if (result && result.insert) {
               event.preventDefault() // Stop the chain
-              const allowedDecorators = portableTextFeatures.decorators.map((item) => item.value)
-              const blocksToInsertNormalized = result.insert.map((block) =>
-                normalizeBlock(block, {allowedDecorators})
-              ) as PortableTextBlock[]
-              const dataTransfer = new DataTransfer()
-              const stringToEncode = JSON.stringify(
-                toSlateValue(blocksToInsertNormalized, portableTextFeatures.types.block.name)
-              )
-              const encoded = window.btoa(encodeURIComponent(stringToEncode))
-              dataTransfer.setData('application/x-slate-fragment', encoded)
-              slateEditor.insertData(dataTransfer)
+              slateEditor.insertData(event.clipboardData)
               change$.next({type: 'loading', isLoading: false})
-              slateEditor.onChange()
               return
             }
             console.warn('Your onPaste function returned something unexpected:', result)
@@ -337,7 +328,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
           })
       }
     },
-    [change$, onPaste, portableTextEditor, portableTextFeatures, slateEditor, value]
+    [change$, onPaste, portableTextEditor, portableTextFeatures.types.portableText, slateEditor]
   )
 
   const _isSelecting = useRef(false)

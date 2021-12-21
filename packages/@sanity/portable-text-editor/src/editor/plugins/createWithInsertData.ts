@@ -18,21 +18,18 @@ export function createWithInsertData(
   keyGenerator: () => string
 ) {
   return function withInsertData(editor: PortableTextSlateEditor): PortableTextSlateEditor {
-    const {setFragmentData: originalSetFragmentData} = editor
     const blockTypeName = portableTextFeatures.types.block.name
     const spanTypeName = portableTextFeatures.types.span.name
 
-    editor.setFragmentData = (data: DataTransfer, originEvent?: 'drag' | 'copy' | 'cut') => {
-      debug('Get fragment data')
+    editor.setFragmentData = (data: DataTransfer) => {
       if (editor.selection) {
-        debug('Putting PortableText on clipboard')
-        const portableText = fromSlateValue(
-          Node.fragment(editor, editor.selection),
-          portableTextFeatures.types.block.name
-        )
-        data.setData('application/x-portable-text', JSON.stringify(portableText))
-        data.setData('application/json', JSON.stringify(portableText))
-        originalSetFragmentData(data, originEvent)
+        debug('Set fragment data')
+        const fragment = Node.fragment(editor, editor.selection)
+        const portableText = fromSlateValue(fragment, portableTextFeatures.types.block.name)
+        const asJSON = JSON.stringify(portableText)
+        data.clearData()
+        data.setData('application/x-portable-text', asJSON)
+        data.setData('application/json', asJSON)
       }
     }
 
@@ -41,9 +38,9 @@ export function createWithInsertData(
         return false
       }
       const pText = data.getData('application/x-portable-text')
+      debug('Inserting portable text from clipboard', pText)
       if (pText) {
         const parsed = JSON.parse(pText) as PortableTextBlock[]
-        debug('parsed', parsed)
         if (Array.isArray(parsed) && parsed.length > 0) {
           const slateValue = regenerateKeys(
             editor,
@@ -67,9 +64,6 @@ export function createWithInsertData(
             debug('Invalid insert result', validation)
             return false
           }
-          const string = JSON.stringify(slateValue)
-          const encoded = window.btoa(encodeURIComponent(string))
-          data.setData('application/x-slate-fragment', encoded)
           mixMarkDefs(editor, slateValue)
           editor.insertFragment(slateValue)
           editor.onChange()
@@ -148,6 +142,17 @@ export function createWithInsertData(
         editor.insertTextOrHTMLData(data)
       }
     }
+
+    editor.insertFragmentData = (data: DataTransfer): boolean => {
+      const fragment = data.getData('application/x-portable-text')
+      if (fragment) {
+        const parsed = JSON.parse(fragment) as Node[]
+        editor.insertFragment(parsed)
+        return true
+      }
+      return false
+    }
+
     return editor
   }
 }
