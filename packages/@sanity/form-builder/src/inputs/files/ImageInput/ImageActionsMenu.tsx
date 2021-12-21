@@ -1,7 +1,7 @@
 import React, {JSXElementConstructor, MouseEventHandler, ReactElement} from 'react'
 
 import {EllipsisVerticalIcon, EditIcon} from '@sanity/icons'
-import {MenuButton} from '@sanity/ui'
+import {Menu, MenuButton} from '@sanity/ui'
 import {MenuActionsWrapper, ButtonContainer} from './ImageActionsMenu.styled'
 
 interface Props {
@@ -19,7 +19,7 @@ export function ImageActionsMenu(props: Props) {
       <MenuButton
         button={<ButtonContainer icon={EllipsisVerticalIcon} mode="ghost" />}
         id="menu-button-example"
-        menu={children}
+        menu={<Menu>{children}</Menu>}
         popover={{portal: true}}
       />
     </MenuActionsWrapper>

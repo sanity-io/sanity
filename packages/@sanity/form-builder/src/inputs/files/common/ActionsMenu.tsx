@@ -26,7 +26,7 @@ export function ActionsMenu(props: Props) {
   }, [pushToast, assetDocument])
 
   return (
-    <Menu>
+    <>
       <Box padding={2}>
         <Label muted size={1}>
           Replace
@@ -55,6 +55,6 @@ export function ActionsMenu(props: Props) {
         onClick={onReset}
         disabled={readOnly}
       />
-    </Menu>
+    </>
   )
 }
