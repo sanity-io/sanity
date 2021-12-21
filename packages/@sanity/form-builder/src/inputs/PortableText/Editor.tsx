@@ -108,6 +108,7 @@ export function Editor(props: EditorProps) {
         renderDecorator={renderDecorator}
         scrollSelectionIntoView={scrollSelectionIntoView}
         selection={initialSelection}
+        spellCheck={false} // This is taken care of via renderBlock prop
       />
     ),
     [
