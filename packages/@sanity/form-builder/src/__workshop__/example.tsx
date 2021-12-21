@@ -34,6 +34,7 @@ export default function ExampleStory() {
   const isTypeTester = useBoolean('Type Performance Tester', false, 'Props')
   const includeUnknownField = useBoolean('Unknown Field in Value', false, 'Props')
   const isDebug = useBoolean('Debug', false, 'Props')
+  const isChangesOpen = useBoolean('Changes Open', false, 'Props')
   const selectedSchemaKey = useSelect(
     'Schema',
     schemaListOptions,
@@ -149,7 +150,12 @@ export default function ExampleStory() {
               />
             )}
             {isTypeTester && <TypeTester />}
-            <FormBuilderTester patchChannel={patchChannel} schema={schema} value={documentValue}>
+            <FormBuilderTester
+              patchChannel={patchChannel}
+              schema={schema}
+              value={documentValue}
+              isChangesOpen={isChangesOpen}
+            >
               <FormBuilderInput
                 type={documentType}
                 onChange={isUseMutator ? handleChangeMutator : handleChange}

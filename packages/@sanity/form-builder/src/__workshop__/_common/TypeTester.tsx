@@ -23,6 +23,7 @@ function getNameFromInput(input: HTMLInputElement | HTMLTextAreaElement) {
 const Sticky = styled.div`
   position: sticky;
   top: 1rem;
+  z-index: 2;
 `
 
 export function TypeTester() {
