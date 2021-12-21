@@ -117,12 +117,10 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $readOnly: 
       padding-bottom: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 9 : 5]}px;
     }
 
-    & > .pt-block {
-      user-select: ${({$readOnly}) => ($readOnly ? 'all' : 'text')};
+    /* & > .pt-block {
       & .pt-inline-object {
-        user-select: ${({$readOnly}) => ($readOnly ? 'all' : 'none')};
       }
-    }
+    } */
 
     & .pt-drop-indicator {
       pointer-events: none;
