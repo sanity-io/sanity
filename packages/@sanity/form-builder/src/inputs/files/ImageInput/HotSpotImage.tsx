@@ -6,7 +6,6 @@ import {ImageAsset} from '@sanity/types/src'
 import {RatioBox, Overlay, MAX_HEIGHT} from './HotSpotImage.styled'
 
 interface Props {
-  id: string
   readOnly?: boolean | null
   drag: boolean
   assetDocument: ImageAsset
@@ -14,20 +13,25 @@ interface Props {
 }
 
 export function HotspotImage(props: Props) {
-  const {id, drag, readOnly, assetDocument, isRejected} = props
+  const {drag, readOnly, assetDocument, isRejected} = props
   const imageContainer = useRef()
-  const [storedHeight, setStoredHeight] = useState(window.localStorage.getItem(`imageHeight_${id}`))
+  const [storedHeight, setStoredHeight] = useState(
+    window.localStorage.getItem(`imageHeight_${assetDocument._id}`)
+  )
   const [tone, setTone] = useState('default' as CardTone)
 
   useEffect(() => {
     const observer = new ResizeObserver(function (mutations) {
-      const storageHeight = window.localStorage.getItem(`imageHeight_${id}`)
+      const storageHeight = window.localStorage.getItem(`imageHeight_${assetDocument._id}`)
 
       if (storageHeight) {
         setStoredHeight(storedHeight)
-        window.localStorage.setItem(`imageHeight_${id}`, mutations[0].contentRect.height)
+        window.localStorage.setItem(
+          `imageHeight_${assetDocument._id}`,
+          mutations[0].contentRect.height
+        )
       } else {
-        window.localStorage.setItem(`imageHeight_${id}`, storageHeight)
+        window.localStorage.setItem(`imageHeight_${assetDocument._id}`, MAX_HEIGHT)
       }
     })
 
@@ -36,8 +40,6 @@ export function HotspotImage(props: Props) {
     }
 
     return () => {
-      window.localStorage.removeItem(`imageHeight_${id}`)
-
       return observer.disconnect()
     }
   })
@@ -76,7 +78,7 @@ export function HotspotImage(props: Props) {
       <RatioBox
         ref={imageContainer}
         style={{
-          maxHeight: storedHeight ? 'unset' : MAX_HEIGHT,
+          maxHeight: MAX_HEIGHT,
           height: storedHeight ? `${storedHeight}px` : '30vh',
         }}
         paddingY={5}

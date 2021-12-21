@@ -401,7 +401,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
     return (
       <HotspotImage
-        id={this._inputId}
         drag={!value?._upload && hoveringFiles.length > 0}
         assetDocument={assetDocument}
         isRejected={rejectedFilesCount > 0}
