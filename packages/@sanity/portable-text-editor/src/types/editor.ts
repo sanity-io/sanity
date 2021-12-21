@@ -68,6 +68,8 @@ export interface PortableTextSlateEditor extends ReactEditor {
   _type: 'editor'
   editable: EditableAPI
   history: History
+  insertPortableTextData: (data: DataTransfer) => boolean
+  insertTextOrHTMLData: (data: DataTransfer) => boolean
   isTextBlock: (value: unknown) => value is TextBlock
   isTextSpan: (value: unknown) => value is TextSpan
   isListBlock: (value: unknown) => value is ListItem
