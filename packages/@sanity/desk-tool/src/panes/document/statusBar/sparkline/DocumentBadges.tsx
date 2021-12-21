@@ -1,9 +1,6 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import {DocumentBadgeDescription} from '@sanity/base'
 import {Badge, BadgeTone, Box, Inline, Text, Tooltip} from '@sanity/ui'
-import {RenderBadgeCollectionState} from 'part:@sanity/base/actions/utils'
+import {RenderBadgeCollectionState} from '@sanity/base/_internal'
 import React from 'react'
 import {useDocumentPane} from '../../useDocumentPane'
 

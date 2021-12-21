@@ -1,6 +1,3 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import * as PathUtils from '@sanity/util/paths'
 import {
   isIndexSegment,
@@ -12,7 +9,7 @@ import {
   SanityDocument,
   SchemaType,
 } from '@sanity/types'
-import {collate, getPublishedId} from 'part:@sanity/base/util/draft-utils'
+import {collate, getPublishedId} from '@sanity/base/_internal'
 import {DocumentListPaneItem, SortOrder, SortOrderBy} from './types'
 
 export function getDocumentKey(value: DocumentListPaneItem, index: number): string {
@@ -27,10 +24,11 @@ export function removePublishedWithDrafts(documents: SanityDocument[]): Document
       hasPublished: !!entry.published,
       hasDraft: !!entry.draft,
     }
-  })
+  }) as any
 }
 
-const RE_TYPE_NAME_IN_FILTER = /\b_type\s*==\s*(['"].*?['"]|\$.*?(?:\s|$))|\B(['"].*?['"]|\$.*?(?:\s|$))\s*==\s*_type\b/
+const RE_TYPE_NAME_IN_FILTER =
+  /\b_type\s*==\s*(['"].*?['"]|\$.*?(?:\s|$))|\B(['"].*?['"]|\$.*?(?:\s|$))\s*==\s*_type\b/
 export function getTypeNameFromSingleTypeFilter(
   filter: string,
   params: Record<string, unknown> = {}

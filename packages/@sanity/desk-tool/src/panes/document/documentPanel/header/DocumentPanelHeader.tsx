@@ -1,10 +1,6 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
 import {Button, Inline} from '@sanity/ui'
 import {negate} from 'lodash'
-import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
 import React, {memo, forwardRef, useMemo} from 'react'
 import {PaneMenuItem} from '../../../../types'
 import {PaneHeader, PaneContextMenuButton} from '../../../../components/pane'
@@ -12,6 +8,7 @@ import {useDeskTool} from '../../../../contexts/deskTool'
 import {usePaneRouter} from '../../../../contexts/paneRouter'
 import {TimelineMenu} from '../../timeline'
 import {useDocumentPane} from '../../useDocumentPane'
+import {LanguageFilter} from '../../../../TODO'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {ValidationMenu} from './ValidationMenu'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'

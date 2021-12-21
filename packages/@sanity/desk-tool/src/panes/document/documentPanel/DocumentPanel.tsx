@@ -3,9 +3,8 @@ import React, {createElement, useEffect, useMemo, useRef, useState} from 'react'
 import {ScrollContainer} from '@sanity/base/components'
 import {unstable_useDocumentValuePermissions as useDocumentValuePermissions} from '@sanity/base/hooks'
 import styled, {css} from 'styled-components'
-import {SchemaType} from '@sanity/types'
 import {getPublishedId, getDraftId} from '@sanity/base/_internal'
-import {useDatastores} from '@sanity/base'
+import {useConfig, useDatastores} from '@sanity/base'
 import {PaneContent} from '../../../components/pane'
 import {usePaneLayout} from '../../../components/pane/usePaneLayout'
 import {useDeskTool} from '../../../contexts/deskTool'
@@ -15,14 +14,6 @@ import {DocumentPanelHeader} from './header'
 import {FormView} from './documentViews'
 import {PermissionCheckBanner} from './PermissionCheckBanner'
 import {ReferenceChangedBanner} from './ReferenceChangedBanner'
-
-function getSchemaType(typeName: string): SchemaType | null {
-  const schemaMod = require('part:@sanity/base/schema')
-  const schema = schemaMod.default || schemaMod
-  const type = schema.get(typeName)
-  if (!type) return null
-  return type
-}
 
 interface DocumentPanelProps {
   footerHeight: number | null
@@ -47,6 +38,7 @@ const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => 
 export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {footerHeight, rootElement, isInspectOpen} = props
   const {grantsStore} = useDatastores()
+  const {schema} = useConfig()
   const {
     activeViewId,
     displayed,
@@ -67,7 +59,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
-  const liveEdit = useMemo(() => Boolean(getSchemaType(documentType)?.liveEdit), [documentType])
+  const liveEdit = useMemo(() => Boolean(schema.get(documentType)?.liveEdit), [documentType])
   const docId = value._id ? value._id : 'dummy-id'
   const docPermissionsInput = useMemo(() => {
     return {

@@ -1,11 +1,10 @@
-/* eslint-disable complexity */
+import {DocumentBuilder} from '@sanity/structure'
 import {omit} from 'lodash'
 import {Observable} from 'rxjs'
 import {first} from 'rxjs/operators'
 import {PaneNode, RouterPanes, RouterPaneSiblingContext, UnresolvedPaneNode} from '../types'
 import {assignId} from './assignId'
 import {createPaneResolver, PaneResolverMiddleware} from './createPaneResolver'
-import {loadStructure} from './loadStructure'
 import {memoBind} from './memoBind'
 
 interface TraverseOptions {
@@ -21,7 +20,7 @@ interface TraverseOptions {
 }
 
 export interface ResolveIntentOptions {
-  rootPaneNode?: UnresolvedPaneNode
+  rootPaneNode: UnresolvedPaneNode
   intent: string
   params: {type: string; id: string; [key: string]: string | undefined}
   payload: unknown
@@ -40,7 +39,10 @@ export interface ResolveIntentOptions {
  *
  * @see PaneNode
  */
-export async function resolveIntent(options: ResolveIntentOptions): Promise<RouterPanes> {
+export async function resolveIntent(
+  resolveDocumentNode: (options: {documentId?: string; schemaType: string}) => DocumentBuilder,
+  options: ResolveIntentOptions
+): Promise<RouterPanes> {
   const resolvedPaneCache = new Map<string, Observable<PaneNode>>()
 
   // this is a simple version of the memoizer in `createResolvedPaneNodeStream`
@@ -54,7 +56,7 @@ export async function resolveIntent(options: ResolveIntentOptions): Promise<Rout
     return result
   }
 
-  const resolvePane = createPaneResolver(memoize)
+  const resolvePane = createPaneResolver(resolveDocumentNode, memoize)
 
   const fallbackEditorPanes: RouterPanes = [
     [
@@ -181,7 +183,7 @@ export async function resolveIntent(options: ResolveIntentOptions): Promise<Rout
     parent: null,
     path: [],
     payload: options.payload,
-    unresolvedPane: options.rootPaneNode || loadStructure(),
+    unresolvedPane: options.rootPaneNode,
   })
 
   const closestPaneToRoot = matchingPanes.sort((a, b) => {

@@ -2,6 +2,7 @@ import {Observable, NEVER, of as observableOf, concat} from 'rxjs'
 import {switchMap, map, scan, distinctUntilChanged, pairwise, startWith} from 'rxjs/operators'
 import {isEqual} from 'lodash'
 import {generateHelpUrl} from '@sanity/generate-help-url'
+import {DocumentBuilder} from '@sanity/structure'
 import {
   PaneNode,
   RouterPaneSiblingContext,
@@ -11,7 +12,7 @@ import {
   UnresolvedPaneNode,
   DocumentPaneNode,
 } from '../types'
-import {defaultDocument} from '../defaultStructure'
+// import {defaultDocument} from '../defaultStructure'
 import {assignId} from './assignId'
 import {createPaneResolver, PaneResolver, PaneResolverMiddleware} from './createPaneResolver'
 import {memoBind} from './memoBind'
@@ -21,7 +22,7 @@ import {PaneResolutionError} from './PaneResolutionError'
  * the fallback editor child that is implicitly inserted into the structure tree
  * if the id starts with `__edit__`
  */
-const fallbackEditorChild: PaneNodeResolver = (nodeId, context) => {
+const fallbackEditorChild: PaneNodeResolver = (resolveDocumentNode, nodeId, context) => {
   const id = nodeId.replace(/^__edit__/, '')
   const {params, payload} = context
   const {type, template} = params
@@ -32,7 +33,7 @@ const fallbackEditorChild: PaneNodeResolver = (nodeId, context) => {
     )
   }
 
-  let defaultDocumentBuilder = defaultDocument({
+  let defaultDocumentBuilder = resolveDocumentNode({
     schemaType: type,
     documentId: id,
   })
@@ -287,16 +288,19 @@ function resolvePaneTree({
  * Takes in a stream of `RouterPanes` and an unresolved root pane and returns
  * a stream of `ResolvedPaneMeta`
  */
-export function createResolvedPaneNodeStream({
-  routerPanesStream,
-  rootPaneNode,
-  initialCacheState = {
-    cacheKeysByFlatIndex: [],
-    flattenedRouterPanes: [],
-    resolvedPaneCache: new Map(),
-    resolvePane: () => NEVER,
-  },
-}: CreateResolvedPaneNodeStreamOptions): Observable<ResolvedPaneMeta[]> {
+export function createResolvedPaneNodeStream(
+  resolveDocumentNode: (options: {documentId?: string; schemaType: string}) => DocumentBuilder,
+  {
+    routerPanesStream,
+    rootPaneNode,
+    initialCacheState = {
+      cacheKeysByFlatIndex: [],
+      flattenedRouterPanes: [],
+      resolvedPaneCache: new Map(),
+      resolvePane: () => NEVER,
+    },
+  }: CreateResolvedPaneNodeStreamOptions
+): Observable<ResolvedPaneMeta[]> {
   const resolvedPanes$ = routerPanesStream.pipe(
     // add in implicit "root" router pane
     map((rawRouterPanes) => [[{id: 'root'}], ...rawRouterPanes]),
@@ -376,7 +380,7 @@ export function createResolvedPaneNodeStream({
         flattenedRouterPanes,
         cacheKeysByFlatIndex,
         resolvedPaneCache,
-        resolvePane: createPaneResolver(memoize),
+        resolvePane: createPaneResolver(resolveDocumentNode, memoize),
       }
     }, initialCacheState),
     // run the memoized, recursive resolving

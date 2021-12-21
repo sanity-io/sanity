@@ -1,6 +1,3 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import {SyncIcon} from '@sanity/icons'
 import {
   Box,
@@ -15,10 +12,10 @@ import {
   VirtualList,
   VirtualListChangeOpts,
 } from '@sanity/ui'
-import schema from 'part:@sanity/base/schema'
-import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
+import {getPublishedId} from '@sanity/base/_internal'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {SanityDocument} from '@sanity/types'
+import {useConfig} from '@sanity/base'
 import {Delay} from '../../components/Delay'
 import {PaneContent, usePane, usePaneLayout} from '../../components/pane'
 import {PaneItem} from '../../components/paneItem'
@@ -55,6 +52,8 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     showIcons,
   } = props
 
+  const {schema} = useConfig()
+
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed, index} = usePane()
   const [shouldRender, setShouldRender] = useState(false)
@@ -90,7 +89,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
         />
       )
     },
-    [childItemId, isActive, layout, showIcons]
+    [childItemId, isActive, layout, schema, showIcons]
   )
 
   const content = useMemo(() => {

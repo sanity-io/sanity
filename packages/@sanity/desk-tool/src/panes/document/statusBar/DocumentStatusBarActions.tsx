@@ -1,10 +1,7 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import React, {memo, useCallback, useMemo, useState} from 'react'
 import {DocumentActionDescription} from '@sanity/base'
 import {Box, Flex, Tooltip, Stack, Button, Hotkeys, LayerProvider, Text} from '@sanity/ui'
-import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
+import {RenderActionCollectionState} from '@sanity/base/_internal'
 import {HistoryRestoreAction} from '../../../actions/HistoryRestoreAction'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'

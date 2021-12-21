@@ -1,3 +1,6 @@
+import {DocumentBuilder} from '@sanity/structure'
+import {UnresolvedPaneNode} from '../../types'
+
 /**
  * @internal
  */
@@ -17,4 +20,6 @@ export interface DeskToolFeatures {
 export interface DeskToolContextValue {
   features: DeskToolFeatures
   layoutCollapsed: boolean
+  resolveDocumentNode: (options: {documentId?: string; schemaType: string}) => DocumentBuilder
+  structure: UnresolvedPaneNode
 }

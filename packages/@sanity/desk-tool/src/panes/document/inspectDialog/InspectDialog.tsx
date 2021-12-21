@@ -19,7 +19,7 @@ export function InspectDialog(props: InspectDialogProps) {
   const {handleInspectClose, paneKey} = useDocumentPane()
   const dialogIdPrefix = `${paneKey}_inspect_`
 
-  /* this creates a view mode (the default that it opens with is the parsed tab) that is saved based on the paneKey 
+  /* this creates a view mode (the default that it opens with is the parsed tab) that is saved based on the paneKey
   where the inspect dialog lives.
   This also means that when a page is loaded, the state of the tabs remains and doesn't revert to the pane tab */
   const [viewModeId, onViewModeChange] = useDeskToolSetting(

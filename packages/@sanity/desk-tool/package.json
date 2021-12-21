@@ -14,41 +14,6 @@
       "source": "./src/_exports/components.ts",
       "require": "./lib/_exports/components.cjs",
       "default": "./lib/_exports/components.js"
-    },
-    "./structure-builder": {
-      "source": "./src/_exports/structure-builder.ts",
-      "require": "./lib/_exports/structure-builder.cjs",
-      "default": "./lib/_exports/structure-builder.js"
-    },
-    "./_parts/base-diff-resolver": {
-      "source": "./src/_parts/base-diff-resolver.ts",
-      "require": "./lib/_parts/base-diff-resolver.cjs",
-      "default": "./lib/_parts/base-diff-resolver.js"
-    },
-    "./_parts/base-document-actions-resolver": {
-      "source": "./src/_parts/base-document-actions-resolver.ts",
-      "require": "./lib/_parts/base-document-actions-resolver.cjs",
-      "default": "./lib/_parts/base-document-actions-resolver.js"
-    },
-    "./_parts/base-document-actions": {
-      "source": "./src/_parts/base-document-actions.ts",
-      "require": "./lib/_parts/base-document-actions.cjs",
-      "default": "./lib/_parts/base-document-actions.js"
-    },
-    "./_parts/base-document-badges-resolver": {
-      "source": "./src/_parts/base-document-badges-resolver.ts",
-      "require": "./lib/_parts/base-document-badges-resolver.cjs",
-      "default": "./lib/_parts/base-document-badges-resolver.js"
-    },
-    "./_parts/base-document-badges": {
-      "source": "./src/_parts/base-document-badges.ts",
-      "require": "./lib/_parts/base-document-badges.cjs",
-      "default": "./lib/_parts/base-document-badges.js"
-    },
-    "./_parts/base-tool": {
-      "source": "./src/_parts/base-tool.tsx",
-      "require": "./lib/_parts/base-tool.cjs",
-      "default": "./lib/_parts/base-tool.js"
     }
   },
   "types": "./lib/dts/src/_exports/index.d.ts",

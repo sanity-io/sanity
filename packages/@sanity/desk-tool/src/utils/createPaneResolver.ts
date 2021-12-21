@@ -1,3 +1,4 @@
+import {DocumentBuilder} from '@sanity/structure'
 import {Observable, of as observableOf, from as observableFrom, Subscribable} from 'rxjs'
 import {publishReplay, refCount, switchMap} from 'rxjs/operators'
 import {PaneNode, RouterPaneSiblingContext, UnresolvedPaneNode} from '../types'
@@ -30,40 +31,44 @@ export type PaneResolver = (
 
 export type PaneResolverMiddleware = (paneResolveFn: PaneResolver) => PaneResolver
 
-const rethrowWithPaneResolutionErrors: PaneResolverMiddleware = (next) => (
-  unresolvedPane,
-  context,
-  flatIndex
-) => {
-  try {
-    return next(unresolvedPane, context, flatIndex)
-  } catch (e) {
-    // re-throw errors that are already `PaneResolutionError`s
-    if (e instanceof PaneResolutionError) {
-      throw e
+const rethrowWithPaneResolutionErrors: PaneResolverMiddleware =
+  (next) => (unresolvedPane, context, flatIndex) => {
+    try {
+      return next(unresolvedPane, context, flatIndex)
+    } catch (e) {
+      // re-throw errors that are already `PaneResolutionError`s
+      if (e instanceof PaneResolutionError) {
+        throw e
+      }
+
+      console.error(e)
+
+      // anything else, wrap with `PaneResolutionError` and set the underlying
+      // error as a the `cause`
+      throw new PaneResolutionError({
+        message: typeof e?.message === 'string' ? e.message : '',
+        context,
+        cause: e,
+      })
     }
-
-    // anything else, wrap with `PaneResolutionError` and set the underlying
-    // error as a the `cause`
-    throw new PaneResolutionError({
-      message: typeof e?.message === 'string' ? e.message : '',
-      context,
-      cause: e,
-    })
   }
-}
 
-const wrapWithPublishReplay: PaneResolverMiddleware = (next) => (...args) => {
-  return next(...args).pipe(
-    // need to add publishReplay + refCount to ensure new subscribers always
-    // get an emission. without this, memoized observables may get stuck
-    // waiting for their first emissions resulting in a loading pane
-    publishReplay(1),
-    refCount()
-  )
-}
+const wrapWithPublishReplay: PaneResolverMiddleware =
+  (next) =>
+  (...args) => {
+    return next(...args).pipe(
+      // need to add publishReplay + refCount to ensure new subscribers always
+      // get an emission. without this, memoized observables may get stuck
+      // waiting for their first emissions resulting in a loading pane
+      publishReplay(1),
+      refCount()
+    )
+  }
 
-export function createPaneResolver(middleware: PaneResolverMiddleware): PaneResolver {
+export function createPaneResolver(
+  resolveDocumentNode: (options: {documentId?: string; schemaType: string}) => DocumentBuilder,
+  middleware: PaneResolverMiddleware
+): PaneResolver {
   // note: this API includes a middleware/wrapper function because the function
   // is recursive. we want to call the wrapped version of the function always
   // (even inside of nested calls) so the identifier invoked for the recursion
@@ -90,7 +95,11 @@ export function createPaneResolver(middleware: PaneResolverMiddleware): PaneReso
         }
 
         if (typeof unresolvedPane === 'function') {
-          return resolvePane(unresolvedPane(context.id, context), context, flatIndex)
+          return resolvePane(
+            unresolvedPane(resolveDocumentNode, context.id, context),
+            context,
+            flatIndex
+          )
         }
 
         return observableOf(unresolvedPane)

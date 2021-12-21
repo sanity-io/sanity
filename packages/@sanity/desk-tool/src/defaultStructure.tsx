@@ -1,15 +1,15 @@
-import Structure from './structure-builder'
+import {StructureBuilder} from '@sanity/structure'
 import {MissingDocumentTypesMessage} from './components/MissingDocumentTypesMessage'
 
 /**
  * @internal
  */
-export function defaultStructure() {
-  const pane = Structure.defaults()
+export function defaultStructure(S: StructureBuilder) {
+  const pane = S.defaults()
   const paneItems = pane.getItems()
 
   if (paneItems?.length === 0) {
-    return Structure.component({
+    return S.component({
       id: 'empty-list-pane',
       component: MissingDocumentTypesMessage,
     })
@@ -21,4 +21,4 @@ export function defaultStructure() {
 /**
  * @internal
  */
-export const defaultDocument = Structure.defaultDocument
+// export const defaultDocument = S.defaultDocument

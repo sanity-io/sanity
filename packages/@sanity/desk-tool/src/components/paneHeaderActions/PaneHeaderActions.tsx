@@ -1,9 +1,10 @@
+import {useConfig} from '@sanity/base'
+import {getTemplateById} from '@sanity/base/initial-value-templates'
 import {UnknownIcon} from '@sanity/icons'
 import {InitialValueTemplateItem} from '@sanity/structure'
 import {Box, Button, Inline, Text, Tooltip} from '@sanity/ui'
-import React, {memo, useCallback, useMemo} from 'react'
 import {partition, uniqBy} from 'lodash'
-import {getTemplateById} from '@sanity/base/initial-value-templates'
+import React, {memo, useCallback, useMemo} from 'react'
 import {DeskToolPaneActionHandler, PaneMenuItem, PaneMenuItemGroup} from '../../types'
 import {IntentButton} from '../IntentButton'
 import {PaneContextMenuButton} from '../pane/PaneContextMenuButton'
@@ -13,7 +14,9 @@ import {PaneHeaderCreateButton} from './PaneHeaderCreateButton'
 const emptyArray: never[] = []
 const emptyObject = {}
 
-const isNonNullable = <T,>(t: T): t is NonNullable<T> => t !== null && t !== undefined
+function isNonNullable<T>(value: T): value is NonNullable<T> {
+  return value !== null && value !== undefined
+}
 
 /**
  * hashes an object to a string where the order of the keys don't matter
@@ -24,7 +27,9 @@ const hashObject = (value: unknown) => {
     if (Array.isArray(v)) return v.map(sortObject)
     return Object.entries(v).sort(([keyA], [keyB]) => keyA.localeCompare(keyB, 'en'))
   }
+
   const normalize = (v: unknown) => JSON.parse(JSON.stringify(v))
+
   return JSON.stringify(sortObject(normalize(value)))
 }
 
@@ -42,6 +47,8 @@ export const PaneHeaderActions = memo(
     menuItemGroups = emptyArray,
     actionHandlers = emptyObject,
   }: PaneHeaderActionsProps) => {
+    const {schema} = useConfig()
+
     const handleAction = useCallback(
       (item: PaneMenuItem) => {
         if (typeof item.action === 'string' && !(item.action in actionHandlers)) {
@@ -93,7 +100,7 @@ export const PaneHeaderActions = memo(
           const templateId = intentParams.template || intentParams.type
           if (!templateId) return null
 
-          const template = getTemplateById(templateId)
+          const template = getTemplateById(schema, templateId)
           // the template doesn't exist then the action might be disabled
           if (!template) return null
 

@@ -1,6 +1,6 @@
 import leven from 'leven'
 import {UnresolvedPaneNode} from '../types'
-import {defaultStructure} from '../defaultStructure'
+// import {defaultStructure} from '../defaultStructure'
 import {isRecord} from './isRecord'
 
 const KNOWN_STRUCTURE_EXPORTS = ['getDefaultDocumentNode']
@@ -16,11 +16,11 @@ function isStructure(structure: unknown): structure is UnresolvedPaneNode {
   )
 }
 
-export const loadStructure = (): UnresolvedPaneNode => {
-  const mod = require('part:@sanity/desk-tool/structure?') || defaultStructure
-  const structure: UnresolvedPaneNode = mod && mod.__esModule ? mod.default : mod
+export const validateStructure = (structure: any): UnresolvedPaneNode => {
+  // const mod = require('part:@sanity/desk-tool/structure?') || defaultStructure
+  // const structure: UnresolvedPaneNode = mod && mod.__esModule ? mod.default : mod
 
-  warnOnUnknownExports(mod)
+  warnOnUnknownExports(structure as any)
 
   if (!isStructure(structure)) {
     throw new Error(

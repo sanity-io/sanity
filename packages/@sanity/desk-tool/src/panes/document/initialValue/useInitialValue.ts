@@ -1,4 +1,5 @@
 import {useEffect, useMemo, useState} from 'react'
+import {useConfig, useDatastores} from '@sanity/base'
 import {DocumentPaneNode} from '../../../types'
 import {usePaneRouter} from '../../../contexts/paneRouter'
 import {useUnique} from '../../../utils/useUnique'
@@ -12,6 +13,8 @@ export function useInitialValue(
   documentId: string,
   rawPaneOptions: DocumentPaneNode['options']
 ): InitialValueState {
+  const {schema} = useConfig()
+  const {documentPreviewStore} = useDatastores()
   const paneRouter = usePaneRouter()
   const paneParams = useUnique(paneRouter.params)
   const panePayload = useUnique(paneRouter.payload)
@@ -30,7 +33,13 @@ export function useInitialValue(
 
     const initialValueOptions = {documentId, paneOptions, panePayload, urlTemplate}
 
-    const sub = getInitialValueObservable(initialValueOptions).subscribe((msg) => {
+    const initialValueMsg$ = getInitialValueObservable(
+      schema,
+      documentPreviewStore,
+      initialValueOptions
+    )
+
+    const sub = initialValueMsg$.subscribe((msg) => {
       if (msg.type === 'success') {
         setState({
           loading: false,
@@ -45,7 +54,15 @@ export function useInitialValue(
     })
 
     return () => sub.unsubscribe()
-  }, [defaultValue, documentId, paneOptions, panePayload, urlTemplate])
+  }, [
+    defaultValue,
+    documentId,
+    documentPreviewStore,
+    paneOptions,
+    panePayload,
+    schema,
+    urlTemplate,
+  ])
 
   return state
 }

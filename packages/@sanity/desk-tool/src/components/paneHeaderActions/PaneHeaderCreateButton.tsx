@@ -7,6 +7,7 @@ import {TemplatePermissionsResult} from '@sanity/base/_internal'
 import {Box, Button, Label, Menu, MenuButton, MenuItem, PopoverProps} from '@sanity/ui'
 import {IntentLink} from '@sanity/base/router'
 import {useConfig, useDatastores} from '@sanity/base'
+import {Schema} from '@sanity/types'
 import {IntentButton} from '../IntentButton'
 import {InsufficientPermissionsMessageTooltip} from './InsufficientPermissionsMessageTooltip'
 
@@ -17,8 +18,8 @@ const POPOVER_PROPS: PopoverProps = {
 }
 type Intent = React.ComponentProps<typeof IntentButton>['intent']
 
-const getIntent = (item: InitialValueTemplateItem): Intent | null => {
-  const typeName = getTemplateById(item.templateId)?.schemaType
+const getIntent = (schema: Schema, item: InitialValueTemplateItem): Intent | null => {
+  const typeName = getTemplateById(schema, item.templateId)?.schemaType
   if (!typeName) return null
 
   const baseParams = {
@@ -83,7 +84,7 @@ export function PaneHeaderCreateButton({initialValueTemplateItems}: PaneHeaderCr
     const firstItem = initialValueTemplateItems[0]
     const permissions = permissionsById[firstItem.id]
     const disabled = !permissions?.granted
-    const intent = getIntent(firstItem)
+    const intent = getIntent(schema, firstItem)
     if (!intent) return null
 
     return (
@@ -123,8 +124,8 @@ export function PaneHeaderCreateButton({initialValueTemplateItems}: PaneHeaderCr
           {initialValueTemplateItems.map((item, itemIndex) => {
             const permissions = permissionsById[item.id]
             const disabled = !permissions?.granted
-            const intent = getIntent(item)
-            const template = getTemplateById(item.templateId)
+            const intent = getIntent(schema, item)
+            const template = getTemplateById(schema, item.templateId)
             if (!template || !intent) return null
 
             const Link = forwardRef((linkProps, linkRef: React.ForwardedRef<never>) =>

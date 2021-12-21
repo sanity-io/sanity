@@ -1,12 +1,7 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
-///////////////////////////////////////////////////////////////
-/// THIS FILE IS TO BE REMOVED! BACKWARDS COMPATIBILITY ETC ///
-///////////////////////////////////////////////////////////////
 import {SanityDocument} from '@sanity/types'
 import React from 'react'
-import {WithReferringDocuments} from 'part:@sanity/base/with-referring-documents'
+import {WithReferringDocuments} from '@sanity/base/components'
+import {useDatastores} from '@sanity/base'
 
 export interface WithReferringDocumentsProps {
   referringDocuments: Record<string, any>[]
@@ -22,6 +17,8 @@ export function enhanceWithReferringDocuments<ComponentProps extends WithReferri
   function EnhancedWithReferringDocuments(
     props: Omit<ComponentProps, 'referringDocuments' | 'isCheckingReferringDocuments'>
   ) {
+    const {documentStore} = useDatastores()
+
     const renderChild = (renderProps: {
       isLoading: boolean
       referringDocuments: Record<string, any>
@@ -38,7 +35,9 @@ export function enhanceWithReferringDocuments<ComponentProps extends WithReferri
     }
 
     return props.published ? (
-      <WithReferringDocuments id={props.published._id}>{renderChild}</WithReferringDocuments>
+      <WithReferringDocuments documentStore={documentStore} id={props.published._id}>
+        {renderChild}
+      </WithReferringDocuments>
     ) : (
       renderChild({referringDocuments: [], isLoading: false})
     )

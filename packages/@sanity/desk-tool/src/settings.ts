@@ -2,13 +2,13 @@
 ///<reference types="@sanity/types/parts" />
 
 import {Observable} from 'rxjs'
-import settings from 'part:@sanity/base/settings'
+// import settings from 'part:@sanity/base/settings'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 /**
  * @internal
  */
-export const deskToolSettings = settings.forNamespace('desk-tool')
+export const deskToolSettings: any = undefined // settings.forNamespace('desk-tool')
 
 /**
  * @internal
@@ -25,13 +25,13 @@ export function useDeskToolSetting<ValueType>(
   } | null>(null)
 
   useEffect(() => {
-    const settingsNamespace = deskToolSettings.forNamespace(namespace)
+    const settingsNamespace = deskToolSettings?.forNamespace(namespace)
 
-    settingRef.current = settingsNamespace.forKey(key)
+    settingRef.current = settingsNamespace?.forKey(key)
 
-    const sub = settingRef.current.listen(defaultValue).subscribe(setValue)
+    const sub = settingRef.current?.listen(defaultValue).subscribe(setValue)
 
-    return () => sub.unsubscribe()
+    return () => sub?.unsubscribe()
   }, [defaultValue, key, namespace])
 
   const set = useCallback((newValue: ValueType) => {

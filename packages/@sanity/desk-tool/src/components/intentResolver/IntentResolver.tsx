@@ -1,5 +1,7 @@
+import {useDatastores} from '@sanity/base'
 import {Box, Card, Flex, Spinner, Text} from '@sanity/ui'
 import React, {useEffect, useState} from 'react'
+import {useDeskTool} from '../../contexts/deskTool'
 import {RouterPanes} from '../../types'
 import {resolveIntent} from '../../utils/resolveIntent'
 import {useUnique} from '../../utils/useUnique'
@@ -19,6 +21,8 @@ export interface IntentResolverProps {
  */
 export function IntentResolver(props: IntentResolverProps) {
   const {intent} = props
+  const {resolveDocumentNode, structure} = useDeskTool()
+  const {documentStore} = useDatastores()
   const params = useUnique(props.params || {})
   const payload = useUnique(props.payload)
   const [nextRouterPanes, setNextRouterPanes] = useState<RouterPanes | null>(null)
@@ -28,12 +32,13 @@ export function IntentResolver(props: IntentResolverProps) {
     const cancelledRef = {current: false}
 
     async function getNextRouterPanes() {
-      const {id, type} = await ensureDocumentIdAndType(params.id, params.type)
+      const {id, type} = await ensureDocumentIdAndType(documentStore, params.id, params.type)
 
-      return resolveIntent({
+      return resolveIntent(resolveDocumentNode, {
         intent,
         params: {...params, id, type},
         payload,
+        rootPaneNode: structure,
       })
     }
 
@@ -48,7 +53,7 @@ export function IntentResolver(props: IntentResolverProps) {
     return () => {
       cancelledRef.current = true
     }
-  }, [intent, params, payload])
+  }, [documentStore, intent, params, payload, resolveDocumentNode, structure])
 
   // throwing here bubbles the error up to the error boundary inside of the
   // `DeskToolRoot` component

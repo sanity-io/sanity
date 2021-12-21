@@ -3,7 +3,9 @@ import {RouterState, useRouter} from '@sanity/base/router'
 import {PortalProvider, useToast} from '@sanity/ui'
 import React, {memo, Fragment, useState, useEffect, useCallback, useMemo} from 'react'
 import styled from 'styled-components'
-import {PaneNode} from './types'
+import {DocumentBuilder} from '@sanity/structure'
+import {useConfig} from '@sanity/base'
+import {PaneNode, UnresolvedPaneNode} from './types'
 import {PaneLayout} from './components/pane'
 import {LOADING_PANE} from './constants'
 import {DeskToolProvider} from './contexts/deskTool'
@@ -13,6 +15,8 @@ import {DeskToolPane, LoadingPane} from './panes'
 
 interface DeskToolProps {
   onPaneChange: (panes: Array<PaneNode | typeof LOADING_PANE>) => void
+  resolveDocumentNode: (options: {documentId?: string; schemaType: string}) => DocumentBuilder
+  structure: UnresolvedPaneNode
 }
 
 const StyledPaneLayout = styled(PaneLayout)`
@@ -25,10 +29,14 @@ const EMPTY_ROUTER_STATE: RouterState = {}
 /**
  * @internal
  */
-export const DeskTool = memo(({onPaneChange}: DeskToolProps) => {
+export const DeskTool = memo(({onPaneChange, resolveDocumentNode, structure}: DeskToolProps) => {
+  const {schema} = useConfig()
   const {push: pushToast} = useToast()
   const {navigate, state: routerState = EMPTY_ROUTER_STATE} = useRouter()
-  const {paneDataItems, resolvedPanes, routerPanes} = useResolvedPanes()
+  const {paneDataItems, resolvedPanes, routerPanes} = useResolvedPanes(
+    structure,
+    resolveDocumentNode
+  )
 
   const [layoutCollapsed, setLayoutCollapsed] = useState(false)
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
@@ -68,7 +76,7 @@ export const DeskTool = memo(({onPaneChange}: DeskToolProps) => {
     } = routerState as any
 
     const {template: templateName} = params
-    const template = getTemplateById(templateName)
+    const template = getTemplateById(schema, templateName)
     const type = (template && template.schemaType) || schemaType
     return (action === 'edit' && legacyEditDocumentId) || (type && editDocumentId)
   }, [routerState])
@@ -78,7 +86,7 @@ export const DeskTool = memo(({onPaneChange}: DeskToolProps) => {
 
     const {legacyEditDocumentId, type: schemaType, editDocumentId, params = {}} = routerState as any
     const {template: templateName, ...payloadParams} = params
-    const template = getTemplateById(templateName)
+    const template = getTemplateById(schema, templateName)
     const type = (template && template.schemaType) || schemaType
 
     navigate(
@@ -113,7 +121,11 @@ export const DeskTool = memo(({onPaneChange}: DeskToolProps) => {
   }, [pushToast])
 
   return (
-    <DeskToolProvider layoutCollapsed={layoutCollapsed}>
+    <DeskToolProvider
+      layoutCollapsed={layoutCollapsed}
+      resolveDocumentNode={resolveDocumentNode}
+      structure={structure}
+    >
       <PortalProvider element={portalElement || null}>
         <StyledPaneLayout
           flex={1}

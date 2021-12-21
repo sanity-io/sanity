@@ -6,7 +6,7 @@ interface Params {
   features: DeskToolFeatures
   changesOpen: boolean
   hasValue: boolean
-  previewUrl: string | null
+  previewUrl?: string | null
 }
 
 const getHistoryMenuItem = (params: Params): PaneMenuItem | null => {

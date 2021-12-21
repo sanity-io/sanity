@@ -1,7 +1,5 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react'
+import {getPublishedId} from '@sanity/base/_internal'
 import {Path, SanityDocument} from '@sanity/types'
 import {
   useConnectionState,
@@ -13,17 +11,13 @@ import {omit} from 'lodash'
 import {useToast} from '@sanity/ui'
 import {fromString as pathFromString, pathFor} from '@sanity/util/paths'
 import isHotkey from 'is-hotkey'
-import {setLocation} from 'part:@sanity/base/datastore/presence'
-import resolveDocumentActions from 'part:@sanity/base/document-actions/resolver'
-import resolveDocumentBadges from 'part:@sanity/base/document-badges/resolver'
-import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import schema from 'part:@sanity/base/schema'
 import {useMemoObservable} from 'react-rx'
+import {useClient, useConfig, useDatastores} from '@sanity/base'
 import {PaneMenuItem} from '../../types'
 import {useDeskTool} from '../../contexts/deskTool'
 import {usePaneRouter} from '../../contexts/paneRouter'
 import {useUnique} from '../../utils/useUnique'
-import {versionedClient} from '../../versionedClient'
+import {resolveDocumentActions, resolveDocumentBadges} from '../../TODO'
 import {createObservableController} from './documentHistory/history/Controller'
 import {Timeline} from './documentHistory/history/Timeline'
 import {DocumentPaneContext, DocumentPaneContextValue} from './DocumentPaneContext'
@@ -43,6 +37,9 @@ type Props = {children: React.ReactElement} & DocumentPaneProviderProps
  */
 // eslint-disable-next-line complexity, max-statements
 export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Props) => {
+  const {schema} = useConfig()
+  const client = useClient()
+  const {presenceStore} = useDatastores()
   const paneRouter = usePaneRouter()
   const {features} = useDeskTool()
   const {push: pushToast} = useToast()
@@ -81,9 +78,9 @@ export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Prop
         timeline,
         documentId,
         documentType,
-        client: versionedClient,
+        client,
       }),
-    [timeline, documentId, documentType, timeline, versionedClient]
+    [client, timeline, documentId, documentType, timeline]
   )!
   /**
    * @todo: this will now happen on each render, but should be refactored so it happens only when
@@ -124,19 +121,21 @@ export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Prop
   )
 
   const handleFocus = useCallback(
-    (nextFocusPath: Path) => {
-      setFocusPath(pathFor(nextFocusPath))
+    (nextFocusPath?: Path | React.FocusEvent<any>) => {
+      const path = Array.isArray(nextFocusPath) ? nextFocusPath : []
 
-      setLocation([
+      setFocusPath(pathFor(path))
+
+      presenceStore.setLocation([
         {
           type: 'document',
           documentId,
-          path: nextFocusPath,
+          path,
           lastActiveAt: new Date().toISOString(),
         },
       ])
     },
-    [documentId, setFocusPath]
+    [documentId, presenceStore, setFocusPath]
   )
 
   const handleChange = useCallback(

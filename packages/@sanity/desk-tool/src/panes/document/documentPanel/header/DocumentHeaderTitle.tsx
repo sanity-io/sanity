@@ -1,14 +1,11 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import React from 'react'
-import {PreviewFields} from 'part:@sanity/base/preview'
-import {SanityDocument} from '@sanity/types'
+import {PreviewFields} from '@sanity/base/preview'
+// import {SanityDocument} from '@sanity/types'
 import {useDocumentPane} from '../../useDocumentPane'
 
 const PREVIEW_FIELDS = ['title']
 
-function renderTitle({title}: SanityDocument) {
+function renderTitle({title}: any) {
   return title ? <>{title}</> : <em>Untitled</em>
 }
 
@@ -28,7 +25,12 @@ export function DocumentHeaderTitle() {
   }
 
   return (
-    <PreviewFields document={value} layout="inline" type={documentSchema} fields={PREVIEW_FIELDS}>
+    <PreviewFields
+      document={value as any}
+      layout="inline"
+      type={documentSchema}
+      fields={PREVIEW_FIELDS}
+    >
       {renderTitle}
     </PreviewFields>
   )

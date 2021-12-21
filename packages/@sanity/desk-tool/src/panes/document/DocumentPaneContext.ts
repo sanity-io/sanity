@@ -25,7 +25,7 @@ export interface DocumentPaneContextValue {
   documentType: string
   focusPath: Path
   handleChange: (patches: any[]) => void
-  handleFocus: (nextPath: Path) => void
+  handleFocus: (pathOrEvent?: Path | React.FocusEvent<any>) => void
   handleHistoryClose: () => void
   handleHistoryOpen: () => void
   handleInspectClose: () => void
@@ -40,7 +40,7 @@ export interface DocumentPaneContextValue {
   menuItems: PaneMenuItem[]
   menuItemGroups: PaneMenuItemGroup[]
   paneKey: string
-  previewUrl: string | null
+  previewUrl?: string | null
   ready: boolean
   setTimelineMode: (mode: TimelineMode) => void
   setTimelineRange(since: string | null, rev: string | null): void

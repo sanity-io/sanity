@@ -1,10 +1,8 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import documentStore from 'part:@sanity/base/datastore/document'
 import {uuid} from '@sanity/uuid'
 import {first} from 'rxjs/operators'
 import {Observable} from 'rxjs'
+import {getPublishedId} from '@sanity/base/_internal'
+import {DocumentStore} from '@sanity/base'
 import {PaneResolutionError} from '../../utils/PaneResolutionError'
 
 export function removeDraftPrefix(documentId: string): string {
@@ -22,6 +20,7 @@ export function removeDraftPrefix(documentId: string): string {
 }
 
 export async function ensureDocumentIdAndType(
+  documentStore: DocumentStore,
   id: string | undefined,
   type: string | undefined
 ): Promise<{id: string; type: string}> {

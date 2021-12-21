@@ -1,11 +1,12 @@
 import {RouterState, useRouter} from '@sanity/base/router'
+import {DocumentBuilder} from '@sanity/structure'
 import {useEffect, useState, useMemo} from 'react'
-import {Observable, Subject} from 'rxjs'
+import {Subject} from 'rxjs'
 import {map} from 'rxjs/operators'
 import {LOADING_PANE} from '../constants'
-import {RouterPanes, PaneNode, RouterPaneGroup} from '../types'
+import {RouterPanes, PaneNode, RouterPaneGroup, UnresolvedPaneNode} from '../types'
 import {createResolvedPaneNodeStream} from './createResolvedPaneNodeStream'
-import {loadStructure} from './loadStructure'
+// import {loadStructure} from './loadStructure'
 
 interface PaneData {
   active: boolean
@@ -28,7 +29,10 @@ interface Panes {
   resolvedPanes: (PaneNode | typeof LOADING_PANE)[]
 }
 
-export function useResolvedPanes(): Panes {
+export function useResolvedPanes(
+  structure: UnresolvedPaneNode,
+  resolveDocumentNode: (options: {documentId?: string; schemaType: string}) => DocumentBuilder
+): Panes {
   const router = useRouter()
   const [data, setData] = useState<Panes>({
     paneDataItems: [],
@@ -50,8 +54,8 @@ export function useResolvedPanes(): Panes {
   )
 
   useEffect(() => {
-    const resolvedPanes$ = createResolvedPaneNodeStream({
-      rootPaneNode: loadStructure(),
+    const resolvedPanes$ = createResolvedPaneNodeStream(resolveDocumentNode, {
+      rootPaneNode: structure,
       routerPanesStream: routerPanes$,
     }).pipe(
       map((resolvedPanes) => {
@@ -103,7 +107,7 @@ export function useResolvedPanes(): Panes {
     })
 
     return () => subscription.unsubscribe()
-  }, [router, routerPanes$])
+  }, [router, routerPanes$, structure])
 
   useEffect(() => routerStateSubject.next(router.state), [routerStateSubject, router.state])
 

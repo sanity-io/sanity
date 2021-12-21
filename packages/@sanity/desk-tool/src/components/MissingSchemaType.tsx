@@ -1,10 +1,7 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import {WarningOutlineIcon} from '@sanity/icons'
 import {SanityDocument} from '@sanity/types'
 import React from 'react'
-import {SanityDefaultPreview} from 'part:@sanity/base/preview'
+import {SanityDefaultPreview} from '@sanity/base/preview'
 
 export interface MissingSchemaTypeProps {
   layout?: 'inline' | 'block' | 'default' | 'card' | 'media'

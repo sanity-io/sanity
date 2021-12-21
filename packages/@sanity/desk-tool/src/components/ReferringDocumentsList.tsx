@@ -1,12 +1,9 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import {EditIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
-import Preview from 'part:@sanity/base/preview'
-import schema from 'part:@sanity/base/schema'
+import {SanityPreview} from '@sanity/base/preview'
 import {useRouter} from '@sanity/base/router'
+import {useConfig} from '@sanity/base'
 
 export interface ReferringDocumentsListProps {
   documents: Record<string, any>[]
@@ -32,6 +29,7 @@ interface DocumentPreviewLinkProps {
 
 function DocumentPreviewLink(props: DocumentPreviewLinkProps) {
   const {document} = props
+  const {schema} = useConfig()
   const router = useRouter()
   const intent = useMemo(
     () => ({action: 'edit', params: {id: document._id, type: document._type}}),
@@ -61,7 +59,7 @@ function DocumentPreviewLink(props: DocumentPreviewLinkProps) {
     <Card as="a" href={href} onClick={handleClick} padding={1} radius={2}>
       <Flex align="center">
         <Box flex={1}>
-          <Preview layout="default" type={schemaType} value={document} />
+          <SanityPreview layout="default" type={schemaType} value={document as any} />
         </Box>
         {document._hasDraft && (
           <Box marginLeft={3}>

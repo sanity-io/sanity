@@ -1,18 +1,11 @@
-/* eslint-disable max-nested-callbacks */
-
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import {
   templateExists,
   getTemplateById,
   getTemplatesBySchemaType,
   resolveInitialValue,
 } from '@sanity/base/initial-value-templates'
-import {SanityDocument} from '@sanity/types'
-import {observePaths} from 'part:@sanity/base/preview'
-import schema from 'part:@sanity/base/schema'
-import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
+import {SanityDocument, Schema} from '@sanity/types'
+import {getDraftId, getPublishedId} from '@sanity/base/_internal'
 import {from, merge, Observable, of} from 'rxjs'
 import {
   map,
@@ -24,6 +17,7 @@ import {
   debounceTime,
   startWith,
 } from 'rxjs/operators'
+import {DocumentPreviewStore} from '@sanity/base/preview'
 import {DocumentPaneNode} from '../../../types'
 
 interface InitialValueOptions {
@@ -54,10 +48,18 @@ type InitialValueMsg = InitialValueLoadingMsg | InitialValueSuccessMsg | Initial
 /**
  * @internal
  */
-export function getInitialValueObservable(opts: InitialValueOptions): Observable<InitialValueMsg> {
+export function getInitialValueObservable(
+  schema: Schema,
+  documentPreviewStore: DocumentPreviewStore,
+  opts: InitialValueOptions
+): Observable<InitialValueMsg> {
   return merge(
-    observePaths(getDraftId(opts.documentId), ['_type']).pipe(map((draft) => ({draft}))),
-    observePaths(getPublishedId(opts.documentId), ['_type']).pipe(map((published) => ({published})))
+    documentPreviewStore
+      .observePaths(getDraftId(opts.documentId), ['_type'])
+      .pipe(map((draft) => ({draft}))),
+    documentPreviewStore
+      .observePaths(getPublishedId(opts.documentId), ['_type'])
+      .pipe(map((published) => ({published})))
   ).pipe(
     scan((prev, res) => ({...prev, ...res}), {}),
     // Wait until we know the state of both draft and published
@@ -68,7 +70,7 @@ export function getInitialValueObservable(opts: InitialValueOptions): Observable
     // Prevent rapid re-resolving when transitioning between different templates
     debounceTime(25),
     switchMap((document) => {
-      const {templateName, parameters} = getInitialValueProps(document || null, opts) || {}
+      const {templateName, parameters} = getInitialValueProps(schema, document || null, opts) || {}
 
       if (!templateName || !parameters) {
         const msg: InitialValueSuccessMsg = {type: 'success', value: null}
@@ -78,7 +80,7 @@ export function getInitialValueObservable(opts: InitialValueOptions): Observable
 
       return merge(
         of({isResolving: true}),
-        resolveInitialValueWithParameters(templateName, parameters).pipe(
+        resolveInitialValueWithParameters(schema, templateName, parameters).pipe(
           // @ts-expect-error NOTE: TypeScript fails for an unknown reason.
           catchError((resolveError) => {
             /* eslint-disable no-console */
@@ -120,6 +122,7 @@ export function getInitialValueObservable(opts: InitialValueOptions): Observable
  * @internal
  */
 function getInitialValueProps(
+  schema: Schema,
   document: SanityDocument | null,
   opts: InitialValueOptions
 ): {templateName: string; parameters: Record<string, unknown>} | null {
@@ -138,7 +141,7 @@ function getInitialValueProps(
   }
 
   const template = structureNodeTemplate || opts.urlTemplate
-  const typeTemplates = getTemplatesBySchemaType(opts.paneOptions.type)
+  const typeTemplates = getTemplatesBySchemaType(schema, opts.paneOptions.type)
 
   const parameters = {
     ...opts.paneOptions.templateParameters,
@@ -160,16 +163,17 @@ function getInitialValueProps(
  * @internal
  */
 function resolveInitialValueWithParameters(
+  schema: Schema,
   templateName: string,
   parameters: Record<string, unknown>
 ) {
-  if (!templateExists(templateName)) {
+  if (!templateExists(schema, templateName)) {
     // eslint-disable-next-line no-console
     console.warn('Template "%s" not defined, using empty initial value', templateName)
     return of({isResolving: false, initialValue: undefined})
   }
 
-  const tpl = getTemplateById(templateName)
+  const tpl = getTemplateById(schema, templateName)
 
   return from(resolveInitialValue(schema, tpl!, parameters)).pipe(
     map((initialValue) => ({isResolving: false, initialValue}))

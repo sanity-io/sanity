@@ -1,6 +1,6 @@
 import {Subscribable} from 'rxjs'
 import {SchemaType, SanityDocument} from '@sanity/types'
-import {InitialValueTemplateItem, StructureBuilder} from '@sanity/structure'
+import {DocumentBuilder, InitialValueTemplateItem, StructureBuilder} from '@sanity/structure'
 
 export type DeskToolPaneActionHandler = (params: any, scope?: unknown) => void
 
@@ -81,7 +81,7 @@ export interface RouterPaneSiblingContext {
   }
 }
 
-type MenuItem = ReturnType<ReturnType<typeof StructureBuilder.menuItem>['serialize']>
+type MenuItem = ReturnType<ReturnType<StructureBuilder['menuItem']>['serialize']>
 
 /**
  * Represents what can be passed into `menuItems` inside of desk-tool panes
@@ -223,7 +223,11 @@ export type SerializablePaneNode = {
   serialize(context: RouterPaneSiblingContext): UnresolvedPaneNode
 }
 
-export type PaneNodeResolver = (id: string, context: RouterPaneSiblingContext) => UnresolvedPaneNode
+export type PaneNodeResolver = (
+  defaultResolver: (opts: {documentId?: string; schemaType: string}) => DocumentBuilder,
+  id: string,
+  context: RouterPaneSiblingContext
+) => UnresolvedPaneNode
 
 export type UnresolvedPaneNode =
   | PaneNodeResolver

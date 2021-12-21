@@ -6,10 +6,6 @@
   "plugins": ["@sanity/form-builder", "@sanity/data-aspects"],
   "parts": [
     {
-      "implements": "part:@sanity/base/tool",
-      "path": "_parts/base-tool"
-    },
-    {
       "implements": "part:@sanity/base/document-actions",
       "description": "The default document actions",
       "path": "_parts/base-document-actions"
