@@ -16,7 +16,7 @@ export function useObjectEditFormBuilderFocus(onFocus: (path: Path) => void) {
 
   const onEditObjectFormBuilderFocus = useCallback(
     (nextPath: Path): void => {
-      if (nextPath && selection) {
+      if (selection) {
         PortableTextEditor.blur(editor)
       }
       onFocus(nextPath)
@@ -28,10 +28,10 @@ export function useObjectEditFormBuilderFocus(onFocus: (path: Path) => void) {
 
   const onEditObjectClose = useCallback(() => {
     if (selection) {
-      PortableTextEditor.select(editor, selection)
       PortableTextEditor.focus(editor)
+      // Not sure why, but Safari resets the selection for some reason if the path isn't emitted as a new object here.
+      onFocus([...selection.focus.path])
     }
-    onFocus(selection?.focus.path || [])
   }, [editor, onFocus, selection])
 
   return useMemo(
