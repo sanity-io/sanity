@@ -8,7 +8,7 @@ import {render} from '@testing-library/react'
 
 import React from 'react'
 import {PortableTextEditor} from '../../PortableTextEditor'
-import {PortableTextEditorTester, type} from '../../__tests__/PortableTextEditor.test'
+import {PortableTextEditorTester, type} from '../../../editor/__tests__/PortableTextEditorTester'
 
 describe('plugin:withPortableTextMarksModel: normalization', () => {
   it('merges adjacent spans correctly when removing annotations', () => {
