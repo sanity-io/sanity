@@ -165,7 +165,11 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
           })
           break
         case 'selection':
-          if (shouldSetNewFocusPath(focusPath, change.selection?.focus.path)) {
+          if (
+            change.selection && // If we have something selected
+            PortableTextEditor.isObjectPath(ref.current, focusPath) === false && // Not if this is pointing to an embedded object
+            focusPath.slice(-1)[0] !== FOCUS_TERMINATOR // Not if in transition to open modal
+          ) {
             onFocus(change.selection.focus.path)
           }
           break
@@ -273,23 +277,3 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
     </div>
   )
 })
-
-export const isObject = (focusPath: Path) => {
-  const isTerminatorEditPath = focusPath.slice(-1)[0] === FOCUS_TERMINATOR
-  const isBlockObjectEditPath =
-    focusPath.length !== 1 && focusPath[1] && focusPath[1] !== 'children'
-  const isChildObjectEditPath = focusPath.length > 3 && focusPath[1] === 'children'
-  return isBlockObjectEditPath || isChildObjectEditPath || isTerminatorEditPath
-}
-// A fn to determine if we should set a new formBuilder focus path from the focus we got from the editor
-export const shouldSetNewFocusPath = (focusPath: Path, selectionFocusPath: Path | undefined) => {
-  // Don't set if we are in inside some object or in as transition to open up a modal (FOCUS_TERMINATOR)
-  if (isObject) {
-    return false
-  }
-  // Only if we have something to set focus *to*
-  if (selectionFocusPath) {
-    return true
-  }
-  return false
-}
