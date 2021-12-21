@@ -1,9 +1,11 @@
 import {studioTheme, rgba, Card, Flex} from '@sanity/ui'
 import styled from 'styled-components'
 
+export const MAX_HEIGHT = '15rem'
+
 export const RatioBox = styled(Card)`
   position: relative;
-  max-height: ${({maxHeight}) => maxHeight};
+  max-height: 15rem;
   width: 100%;
   resize: vertical;
   overflow: hidden;
@@ -37,4 +39,10 @@ export const Overlay = styled(Flex)`
     drag ? rgba(studioTheme.color.light[tone].card.enabled.bg, 0.8) : 'transparent'};
 `
 
-export const MAX_HEIGHT = '15rem'
+export const FlexOverlay = styled(Flex)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+`

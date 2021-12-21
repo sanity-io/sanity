@@ -1,9 +1,9 @@
 import React, {useEffect, useRef, useState} from 'react'
 
 import {AccessDeniedIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
-import {Card, Flex, Box, Heading, Text, CardTone} from '@sanity/ui'
+import {Card, Box, Heading, Text, CardTone} from '@sanity/ui'
 import {ImageAsset} from '@sanity/types/src'
-import {RatioBox, Overlay, MAX_HEIGHT} from './HotspotImageInput.styled'
+import {RatioBox, Overlay, FlexOverlay, MAX_HEIGHT} from './HotspotImageInput.styled'
 
 interface Props {
   readOnly?: boolean | null
@@ -78,7 +78,6 @@ export default function HotspotImageInput(props: Props) {
       <RatioBox
         ref={imageContainer}
         style={{
-          maxHeight: MAX_HEIGHT,
           height: storedHeight ? `${storedHeight}px` : '30vh',
         }}
         paddingY={5}
@@ -88,19 +87,14 @@ export default function HotspotImageInput(props: Props) {
         </Card>
         <Overlay justify="flex-end" padding={3} tone={tone} drag={drag}>
           {drag && (
-            <Flex
-              direction="column"
-              align="center"
-              justify="center"
-              style={{position: 'absolute', top: 0, left: 0, bottom: 0, right: 0}}
-            >
+            <FlexOverlay direction="column" align="center" justify="center">
               <Box marginBottom={3}>
                 <Heading>
                   <HoverIcon />
                 </Heading>
               </Box>
               <HoverText />
-            </Flex>
+            </FlexOverlay>
           )}
         </Overlay>
       </RatioBox>
