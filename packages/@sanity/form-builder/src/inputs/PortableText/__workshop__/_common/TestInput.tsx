@@ -1,5 +1,6 @@
 import {PortableTextBlock, Type as PTType} from '@sanity/portable-text-editor'
 import {Path, Schema} from '@sanity/types'
+import {Code, Card, Heading, Box} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import FormBuilderContext from '../../../../FormBuilderContext'
 import {PortableTextInput} from '../../PortableTextInput'
@@ -181,19 +182,24 @@ export function TestInput(props: TestInputProps) {
       resolveInputComponent={inputResolver}
       resolvePreviewComponent={resolvePreviewComponent}
     >
-      {/* <div
+      <Box
         style={{
+          width: '300px',
+          height: '300px',
           position: 'absolute',
-          top: 0,
-          zIndex: 999,
-          background: 'white',
+          bottom: 0,
+          zIndex: 9999,
           padding: 10,
           left: 0,
-          border: '1px solid red',
         }}
       >
-        <pre>{JSON.stringify(focusPath, null, 2)}</pre>
-      </div> */}
+        <Box marginBottom={3}>
+          <Heading size={1}>FocusPath</Heading>
+        </Box>
+        <Box>
+          <Code size={5}>{JSON.stringify(focusPath, null, 2)}</Code>
+        </Box>
+      </Box>
       <PortableTextInput
         focusPath={focusPath}
         hotkeys={hotkeys}
