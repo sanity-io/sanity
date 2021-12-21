@@ -26,6 +26,7 @@ export function createWithEditableAPI(
         if (!editor.selection) {
           const point = {path: [0, 0], offset: 0}
           Transforms.select(editor, {focus: point, anchor: point})
+          editor.onChange()
         }
         ReactEditor.focus(editor)
       },
@@ -63,13 +64,11 @@ export function createWithEditableAPI(
       select: (selection: EditorSelection): void => {
         const slateSelection = toSlateRange(selection, editor)
         if (slateSelection) {
-          const [node] = Editor.node(editor, slateSelection)
-          if (Editor.isVoid(editor, node)) {
-            Transforms.select(editor, slateSelection.focus.path.concat(0))
-          } else {
-            Transforms.select(editor, slateSelection)
-          }
+          Transforms.select(editor, slateSelection)
+        } else {
+          Transforms.deselect(editor)
         }
+        editor.onChange()
       },
       focusBlock: (): PortableTextBlock | undefined => {
         if (editor.selection) {
