@@ -13,6 +13,7 @@ import {ConditionalReadOnlyField} from '../../common'
 import getEmptyValue from './getEmptyValue'
 import {ItemRow} from './ItemRow'
 import {PrimitiveValue} from './types'
+import {nearestIndexOf} from './utils/nearestIndex'
 
 const NO_MARKERS: Marker[] = []
 
@@ -29,9 +30,12 @@ function move<T>(arr: T[], from: number, to: number): T[] {
  * @param arr the array to insert the item into
  * @param item the item to insert
  *
- * example:
- *  insertAfter(-1, ["one", "two"], "hello")
- *  => ["hello", "one", "two"]
+ * @example
+ * Inserts "hello" at the beginning
+ * ```js
+ * insertAfter(-1, ["one", "two"], "hello")
+ * // => ["hello", "one", "two"]
+ * ```
  */
 function insertAfter<T>(index: number, arr: T[], item: T): T[] {
   const copy = arr.slice()
@@ -56,7 +60,7 @@ export interface Props {
 type Focusable = {focus: () => void}
 
 export class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
-  _element: Focusable | null = null
+  _element: HTMLElement | null = null
   _lastAddedIndex = -1
 
   set(nextValue: PrimitiveValue[]) {
@@ -138,7 +142,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
     )
   }
 
-  setElement = (el: Focusable | null) => {
+  setElement = (el: HTMLElement | null) => {
     this._element = el
   }
 
@@ -155,6 +159,63 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
     // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
     if (event.currentTarget === event.target && event.currentTarget === this._element) {
       this.props.onFocus([])
+    }
+  }
+
+  getSnapshotBeforeUpdate(prevProps, prevState) {
+    const {focusPath: prevFocusPath = [], value: prevValue = []} = prevProps
+    const {focusPath = [], value = []} = this.props
+    if (prevFocusPath[0] === focusPath[0] && prevValue.length !== value.length) {
+      // the length of the array has changed, but the focus path has not, which may happen if someone inserts or removes a new item above the one currently in focus
+      const focusIndex = focusPath[0]
+
+      const selection = window.getSelection()
+      if (!(selection.focusNode instanceof HTMLElement)) {
+        return null
+      }
+
+      const input = selection.focusNode?.querySelector('input,textarea')
+
+      return input instanceof HTMLInputElement
+        ? {
+            prevFocusedIndex: focusIndex,
+            restoreSelection: {
+              text: selection.toString(),
+              start: input.selectionStart,
+              end: input.selectionEnd,
+              value: input.value,
+            },
+          }
+        : {}
+    }
+
+    return null
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (snapshot?.restoreSelection && prevProps.value) {
+      const prevFocusedValue = prevProps.value[snapshot.prevFocusedIndex]
+
+      const nearestIndex = nearestIndexOf(
+        this.props.value,
+        snapshot.prevFocusedIndex,
+        prevFocusedValue
+      )
+      if (nearestIndex === -1) {
+        return
+      }
+      const newInput = this._element.querySelector(
+        `[data-item-index='${nearestIndex}'] input,textarea`
+      )
+      if (newInput instanceof HTMLInputElement) {
+        newInput.focus()
+        try {
+          newInput.setSelectionRange(snapshot.restoreSelection.start, snapshot.restoreSelection.end)
+        } catch {
+          // not all inputs supports selection (e.g. <input type="number" />)
+        }
+      }
+      this.props.onFocus([nearestIndex])
     }
   }
 
@@ -212,9 +273,9 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
                     // Since items may be reordered and change at any time, there's no way to reliably address each item uniquely
                     // This is a "best effort"-attempt at making sure we don't re-use internal state for item inputs
                     // when items gets added or removed to the array
-                    const key = memberType.name + String(index) + String(value.length)
+                    const key = `${memberType?.name || 'invalid-type'}-${String(index)}`
                     return (
-                      <Item key={key} index={index} isSortable={isSortable}>
+                      <Item key={key} index={index} data-item-index={index} isSortable={isSortable}>
                         <ConditionalReadOnlyField
                           readOnly={readOnly || this.getMemberType(resolveTypeName(item))?.readOnly}
                           value={item}
