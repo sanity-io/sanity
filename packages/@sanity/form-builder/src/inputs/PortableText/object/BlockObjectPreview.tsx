@@ -1,12 +1,27 @@
 import {IntentLink} from '@sanity/base/router'
 import {EditIcon, LinkIcon, TrashIcon, EyeOpenIcon, EllipsisVerticalIcon} from '@sanity/icons'
-import {PortableTextBlock, Type} from '@sanity/portable-text-editor'
-import {Box, Button, Flex, Menu, MenuButton, MenuButtonProps, MenuItem} from '@sanity/ui'
-import React, {forwardRef, useMemo} from 'react'
+import {
+  PortableTextBlock,
+  PortableTextEditor,
+  Type,
+  usePortableTextEditor,
+} from '@sanity/portable-text-editor'
+import {
+  Box,
+  Button,
+  Flex,
+  Menu,
+  MenuButton,
+  MenuButtonProps,
+  MenuItem,
+  useGlobalKeyDown,
+} from '@sanity/ui'
+import React, {forwardRef, useCallback, useMemo, useRef} from 'react'
 import {useId} from '@reach/auto-id'
 import Preview from '../../../Preview'
 
 interface BlockObjectPreviewProps {
+  focused: boolean
   type: Type
   value: PortableTextBlock
   readOnly: boolean
@@ -22,8 +37,11 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
 }
 
 export function BlockObjectPreview(props: BlockObjectPreviewProps) {
-  const {value, type, readOnly, onClickingEdit, onClickingDelete} = props
+  const {focused, value, type, readOnly, onClickingEdit, onClickingDelete} = props
+  const editor = usePortableTextEditor()
   const menuButtonId = useId()
+  const previewMenu = useRef<HTMLElement>()
+  const isTabbing = useRef<boolean>(false)
   const isCustomPreviewComponent = Boolean(type.preview?.component)
   const layout = 'block'
 
@@ -35,6 +53,33 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps) {
     [value?._ref]
   )
 
+  // Go to menu when tabbed to
+  // Focus block on escape
+  useGlobalKeyDown(
+    useCallback(
+      (event) => {
+        if (!focused) {
+          return
+        }
+        if (event.key === 'Escape' && open) {
+          event.preventDefault()
+          event.stopPropagation()
+          isTabbing.current = false
+          PortableTextEditor.focus(editor)
+        }
+        if (event.key === 'Tab' && open) {
+          if (previewMenu.current && !isTabbing.current) {
+            event.preventDefault()
+            event.stopPropagation()
+            previewMenu.current.focus()
+            isTabbing.current = true
+          }
+        }
+      },
+      [focused, editor]
+    )
+  )
+
   const actions = (
     <MenuButton
       button={
@@ -42,7 +87,7 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps) {
       }
       id={menuButtonId}
       menu={
-        <Menu>
+        <Menu ref={previewMenu}>
           {value?._ref && (
             <MenuItem as={referenceLink} data-as="a" icon={LinkIcon} text="Open reference" />
           )}

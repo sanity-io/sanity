@@ -186,9 +186,10 @@ export const BlockObject = React.forwardRef(function BlockObject(
     (e) => {
       e.preventDefault()
       e.stopPropagation()
+      PortableTextEditor.blur(editor)
       handleEdit()
     },
-    [handleEdit]
+    [editor, handleEdit]
   )
 
   const handleDelete = useCallback(() => {
@@ -204,13 +205,14 @@ export const BlockObject = React.forwardRef(function BlockObject(
     return (
       <BlockObjectPreview
         type={type}
+        focused={focused}
         value={block}
         readOnly={readOnly}
         onClickingDelete={handleDelete}
         onClickingEdit={handleEdit}
       />
     )
-  }, [type, block, readOnly, handleDelete, handleEdit])
+  }, [focused, type, block, readOnly, handleDelete, handleEdit])
 
   const tone = selected || focused ? 'primary' : 'default'
 
