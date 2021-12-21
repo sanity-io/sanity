@@ -49,14 +49,17 @@ function memoize(method) {
   }
 }
 
+export interface PatchChannelOptions {
+  onPatch?: (patch: any) => void
+  receivePatches?: (patches: any[]) => void
+}
+
 interface Props {
   schema: Schema
   value?: unknown
   children: any
   filterField?: any
-  patchChannel: {
-    onPatch?: (patch: any) => void
-  }
+  patchChannel?: PatchChannelOptions
   resolveInputComponent: (type: SchemaType) => React.ComponentType<any>
   resolvePreviewComponent: (type: SchemaType) => React.ComponentType<any>
 }

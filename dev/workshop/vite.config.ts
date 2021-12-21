@@ -1,7 +1,7 @@
 /* eslint-disable no-process-env, no-sync */
 
 import path from 'path'
-import {viteCommonjs} from '@originjs/vite-plugin-commonjs'
+import {viteCommonjs, esbuildCommonjs} from '@originjs/vite-plugin-commonjs'
 import reactRefresh from '@vitejs/plugin-react-refresh'
 import {defineConfig} from 'vite'
 import {pluginCanonicalModules} from './vite/plugin-canonical-modules'
@@ -51,11 +51,35 @@ export default defineConfig({
         frame: path.resolve(__dirname, 'src/frame/index.html'),
       },
     },
-    // sourcemap: true,
+    // - vite uses rollup to bundle the built version of the workshop
+    // - vite also includes the commonjs plugin by default in order to transform
+    //   the commonjs module in `node_modules`
+    // - these options here are forwarded directly to the commonjs rollup plugin
+    //   and includes overrides that make the commonjs plugin run outside of
+    //   `node_modules` and for typescript files as well
+    //
+    // see here:
+    // https://github.com/vitejs/vite/blob/aab303f7bd333307c77363259f97a310762c4848/packages/vite/src/node/build.ts#L265-L269
+    commonjsOptions: {
+      transformMixedEsModules: true,
+      extensions: ['.js', '.cjs', '.ts', '.tsx'],
+      // this include is empty to override the default `include`
+      include: [],
+      // https://github.com/rollup/plugins/tree/master/packages/commonjs/#dynamicrequiretargets
+      dynamicRequireTargets: ['part:@sanity/base/util/document-action-utils'],
+    },
+    sourcemap: true,
   },
+
   define: {
     // __DEV__: JSON.stringify(true),
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+  },
+  optimizeDeps: {
+    include: ['@sanity/form-builder'],
+    esbuildOptions: {
+      plugins: [esbuildCommonjs(['@sanity/form-builder'])],
+    },
   },
   plugins: [
     reactRefresh(),
@@ -63,7 +87,7 @@ export default defineConfig({
     pluginCanonicalModules(['@sanity/ui', 'react', 'react-dom', 'styled-components']),
     pluginWorkshopScopes(),
     viteCommonjs({
-      include: ['@sanity/eventsource', '@sanity/structure'],
+      include: ['@sanity/eventsource', '@sanity/structure', '@sanity/form-builder'],
     }),
   ],
   resolve: {

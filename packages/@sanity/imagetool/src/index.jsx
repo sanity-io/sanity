@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-filename-extension */
 import React from 'react'
 import PropTypes from 'prop-types'
 import ImageLoader from './ImageLoader'
