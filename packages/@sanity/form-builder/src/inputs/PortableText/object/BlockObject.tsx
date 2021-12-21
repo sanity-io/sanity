@@ -182,9 +182,14 @@ export const BlockObject = React.forwardRef(function BlockObject(
     onFocus(path.concat(FOCUS_TERMINATOR))
   }, [onFocus, path])
 
-  const handleClickToOpen = useCallback(() => {
-    handleEdit()
-  }, [handleEdit])
+  const handleDoubleClickToOpen = useCallback(
+    (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      handleEdit()
+    },
+    [handleEdit]
+  )
 
   const handleDelete = useCallback(() => {
     PortableTextEditor.delete(
@@ -289,7 +294,7 @@ export const BlockObject = React.forwardRef(function BlockObject(
             data-testid="pte-block-object"
             data-image-preview={isImagePreview ? '' : undefined}
             flex={1}
-            onDoubleClick={handleClickToOpen}
+            onDoubleClick={handleDoubleClickToOpen}
             padding={isImagePreview ? 0 : 1}
             ref={elementRef}
             tone={tone}
