@@ -224,7 +224,9 @@ export const InlineObject = React.forwardRef(function InlineObject(
         contentEditable={false}
         ref={forwardedRef}
       >
-        <span ref={refElm}>{markersToolTip || preview}</span>
+        <span ref={refElm} onDoubleClick={handleEditClick}>
+          {markersToolTip || preview}
+        </span>
       </Root>
       {!readOnly && !isEditing && (
         <EditObjectToolTip
