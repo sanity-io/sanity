@@ -6,9 +6,9 @@ const getTestLocation = (documentId) =>
   `/test/desk/input-ci;conditionalFieldset;${documentId}%2Csince%3D%40lastPublished`
 
 function deleteOldDocuments() {
-  const threeHoursAgo = sub(new Date(), {hours: -2}).toISOString()
+  const timestampOneDayAgo = sub(new Date(), {days: -1}).toISOString()
   testSanityClient.delete({
-    query: `*[_type == "conditionalFieldset" && title match "[Cypress]" && dateTime(_updatedAt) < dateTime('${threeHoursAgo}')]`,
+    query: `*[_type == "conditionalFieldset" && dateTime(_updatedAt) < dateTime('${timestampOneDayAgo}') && title match "[Cypress]" &&]`,
   })
 }
 
