@@ -4,7 +4,7 @@ import {FileAsset} from '@sanity/types'
 
 import styled from 'styled-components'
 
-import {Button, Card, Flex, Inline, MenuButton, Stack, Text} from '@sanity/ui'
+import {Button, Card, Flex, Inline, Menu, MenuButton, Stack, Text} from '@sanity/ui'
 import {formatBytes} from '../../common/helper'
 
 const ButtonWrapper = styled(Button)`
@@ -43,10 +43,10 @@ export default function WithMaterializedReference(props: Props) {
 
       <Card tone={readOnly ? 'transparent' : 'default'}>
         <MenuButton
-          button={<Button icon={EllipsisVerticalIcon} mode="bleed" padding={2} />}
+          button={<Button icon={EllipsisVerticalIcon} mode="bleed" />}
           popover={{tone: 'default'}}
           id="menu-button-example"
-          menu={children}
+          menu={<Menu>{children}</Menu>}
         />
       </Card>
     </Flex>
