@@ -12,7 +12,6 @@ import {
   MergeNodeOperation,
   MoveNodeOperation,
   Node,
-  NodeOperation,
   Operation,
   Path,
   RemoveNodeOperation,
@@ -20,7 +19,6 @@ import {
   SetNodeOperation,
   SplitNodeOperation,
   Text as SlateText,
-  TextOperation,
   Transforms,
 } from 'slate'
 import {setIfMissing, unset} from '../../patch/PatchEvent'
@@ -45,12 +43,6 @@ const debug = debugWithName('plugin:withPatches')
 const dmp = new DMP.diff_match_patch()
 
 const THROTTLE_EDITOR_MS = 500
-
-type PatchFn = (
-  editor: PortableTextSlateEditor,
-  operation: Operation,
-  previousChildren: Descendant[]
-) => Patch[]
 
 export type PatchFunctions = {
   insertNodePatch: (
@@ -514,5 +506,5 @@ function adjustSelection(
     return
   }
   editor.selection = newSelection // Important: set the state here immediately without a transform!
-  Transforms.select(editor, newSelection) // Do a transform too so that we keep history on this change.
+  Transforms.select(editor, newSelection) // Do a transform too so that we keep history on this change, but don't call editor.onChange()
 }
