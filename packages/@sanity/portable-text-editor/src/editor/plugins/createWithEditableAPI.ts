@@ -158,6 +158,7 @@ export function createWithEditableAPI(
         )[0] as unknown) as SlateElement
         const child = block.children[0]
         Editor.insertNode(editor, child as Node)
+        editor.onChange()
         return toPortableTextRange(editor, editor.selection)?.focus.path || []
       },
       insertBlock: (type: Type, value?: {[prop: string]: any}): Path => {
@@ -175,6 +176,7 @@ export function createWithEditableAPI(
           portableTextFeatures.types.block.name
         )[0] as unknown) as Node
         Editor.insertNode(editor, block)
+        editor.onChange()
         return toPortableTextRange(editor, editor.selection)?.focus.path || []
       },
       hasBlockStyle: (style: string): boolean => {
@@ -334,6 +336,7 @@ export function createWithEditableAPI(
                           at: Range.end(editor.selection),
                         }
                       )
+                      editor.onChange()
                     }
                   })
                   return {
@@ -376,6 +379,7 @@ export function createWithEditableAPI(
                 hanging: true,
               })
             })
+            editor.onChange()
           }
         }
       },
@@ -433,6 +437,7 @@ export function createWithEditableAPI(
                     })
                 }
               })
+              editor.onChange()
             }
           })
         }
