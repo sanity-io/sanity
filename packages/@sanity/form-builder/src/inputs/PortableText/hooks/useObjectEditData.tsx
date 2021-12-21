@@ -4,7 +4,6 @@ import {
   usePortableTextEditor,
   usePortableTextEditorSelection,
 } from '@sanity/portable-text-editor'
-import {isEqual} from 'lodash'
 import {Path, isKeySegment, isKeyedObject, KeyedSegment} from '@sanity/types'
 import {PortableTextBlock} from '../../../../../portable-text-editor/src/types/portableText'
 import {ObjectEditData} from '../types'
@@ -21,14 +20,13 @@ export function useObjectEditData(
 ): ObjectEditData | null {
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
-  const sameSelection = selection && isEqual(selection.focus.path, focusPath)
   const blockSegment = focusPath && isKeySegment(focusPath[0]) ? focusPath[0] : undefined
   const isChild =
     blockSegment && focusPath && focusPath[1] === 'children' && isKeyedObject(focusPath[2])
   const isAnnotation = blockSegment && focusPath[1] === 'markDefs'
 
   // Handle focusPath pointing to a annotated span
-  if (isAnnotation && !sameSelection) {
+  if (isAnnotation) {
     const [node] = PortableTextEditor.findByPath(editor, focusPath.slice(0, 1))
     const block = node ? (node as PortableTextBlock) : undefined
     const markDefSegment =
