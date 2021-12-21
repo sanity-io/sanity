@@ -1,12 +1,11 @@
 /* eslint-disable import/no-unresolved */
 
 import {FormFieldSet, ImperativeToast} from '@sanity/base/components'
-import {Box, Button, Dialog, Menu, MenuButton, MenuItem, Stack, Text, ToastParams} from '@sanity/ui'
+import {Box, Button, Dialog, Menu, MenuButton, MenuItem, Stack, ToastParams} from '@sanity/ui'
 import {get, groupBy, uniqueId} from 'lodash'
 import {Observable, Subscription} from 'rxjs'
 import {ChangeIndicatorForFieldPath} from '@sanity/base/change-indicators'
-import {ImageIcon, ResetIcon, SearchIcon, WarningOutlineIcon} from '@sanity/icons'
-//import HotspotImage from '@sanity/imagetool/HotspotImage'
+import {ImageIcon, SearchIcon} from '@sanity/icons'
 import ImageTool from '@sanity/imagetool'
 import {
   Asset as AssetDocument,
@@ -41,7 +40,7 @@ import {handleSelectAssetFromSource} from '../common/assetSource'
 import {ActionsMenu} from '../common/ActionsMenu'
 import resolveUploader from '../../../sanity/uploads/resolveUploader'
 import {UploadWarning} from '../common/UploadWarning'
-import {HotspotImage} from './HotSpotImage'
+import {HotspotImageInput} from './HotspotImageInput'
 import {ImageInputField} from './ImageInputField'
 import {ImageActionsMenu} from './ImageActionsMenu'
 
@@ -400,7 +399,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
 
     return (
-      <HotspotImage
+      <HotspotImageInput
         drag={!value?._upload && hoveringFiles.length > 0}
         assetDocument={assetDocument}
         isRejected={rejectedFilesCount > 0}

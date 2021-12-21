@@ -3,7 +3,7 @@ import React, {useEffect, useRef, useState} from 'react'
 import {AccessDeniedIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
 import {Card, Flex, Box, Heading, Text, CardTone} from '@sanity/ui'
 import {ImageAsset} from '@sanity/types/src'
-import {RatioBox, Overlay, MAX_HEIGHT} from './HotSpotImage.styled'
+import {RatioBox, Overlay, MAX_HEIGHT} from './HotspotImageInput.styled'
 
 interface Props {
   readOnly?: boolean | null
@@ -12,7 +12,7 @@ interface Props {
   isRejected: boolean
 }
 
-export function HotspotImage(props: Props) {
+export function HotspotImageInput(props: Props) {
   const {drag, readOnly, assetDocument, isRejected} = props
   const imageContainer = useRef()
   const [storedHeight, setStoredHeight] = useState(
