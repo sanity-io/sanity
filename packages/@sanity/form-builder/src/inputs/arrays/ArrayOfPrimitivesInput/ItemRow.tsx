@@ -80,13 +80,13 @@ export const ItemRow = React.forwardRef(function ItemRow(
 
   const handleInsert = useCallback(
     (pos: 'before' | 'after', insertType: SchemaType) => {
-      onInsert(pos, index, getEmptyValue(insertType))
+      onInsert?.(pos, index, getEmptyValue(insertType))
     },
     [index, onInsert]
   )
 
   const handleDuplicate = useCallback(() => {
-    onInsert('after', index, value)
+    onInsert?.('after', index, value)
   }, [index, onInsert, value])
 
   const handleKeyPress = useCallback(
@@ -199,18 +199,14 @@ export const ItemRow = React.forwardRef(function ItemRow(
                 popover={{portal: true, tone: 'default'}}
                 menu={
                   <Menu>
-                    {!readOnly && (
-                      <>
-                        <MenuItem
-                          text="Remove"
-                          tone="critical"
-                          icon={TrashIcon}
-                          onClick={handleRemove}
-                        />
-                        <MenuItem text="Duplicate" icon={DuplicateIcon} onClick={handleDuplicate} />
-                        <InsertMenu types={insertableTypes} onInsert={handleInsert} />
-                      </>
-                    )}
+                    <MenuItem
+                      text="Remove"
+                      tone="critical"
+                      icon={TrashIcon}
+                      onClick={handleRemove}
+                    />
+                    <MenuItem text="Duplicate" icon={DuplicateIcon} onClick={handleDuplicate} />
+                    <InsertMenu types={insertableTypes} onInsert={handleInsert} />
                   </Menu>
                 }
               />
