@@ -165,6 +165,7 @@ export const Annotation = React.forwardRef(function Annotation(
       <span ref={forwardedRef}>{markersToolTip || text}</span>
       {!readOnly && (
         <AnnotationToolbarPopover
+          focused={attributes.focused}
           textElement={textElement}
           annotationElement={annotationRef?.current}
           scrollElement={scrollElement}
