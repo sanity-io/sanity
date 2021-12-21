@@ -6,10 +6,16 @@ const getTestLocation = (documentId) =>
   `/test/desk/input-ci;conditionalFieldset;${documentId}%2Csince%3D%40lastPublished`
 
 function deleteOldDocuments() {
-  const threeHoursAgo = sub(new Date(), {hours: -2}).toISOString()
+  const timestampOneDayAgo = sub(new Date(), {days: -1}).toISOString()
   testSanityClient.delete({
-    query: `*[_type == "conditionalFieldset" && title match "[Cypress]" && dateTime(_updatedAt) < dateTime('${threeHoursAgo}')]`,
+    query: `*[_type == "conditionalFieldset" && dateTime(_updatedAt) < dateTime('${timestampOneDayAgo}') && title match "[Cypress]" &&]`,
   })
+}
+
+const TEST_CONFIG = {
+  defaultCommandTimeout: 15000,
+  viewportWidth: 2000,
+  viewportHeight: 3500,
 }
 
 const doc = {
@@ -51,19 +57,32 @@ const waitForReviewChanges = () => {
   cy.get('[data-testid="review-changes-pane"]', {timeout: 10000}).should('be.visible')
 }
 
-describe('@sanity/field: Multi fieldset and review changes', () => {
+const ensureCorrectUri = (checkLocation) => {
+  cy.location('pathname').should('eq', checkLocation)
+}
+
+const getTestLocationUri = async () => {
+  const testDoc = await createUniqueDocument(doc)
+  return getTestLocation(testDoc?._id)
+}
+
+describe('@sanity/field: Multi fieldset and review changes', TEST_CONFIG, () => {
   let testLocation
+  let alreadyOnLocation = false
 
   before(async () => {
     deleteOldDocuments()
-    const testDoc = await createUniqueDocument(doc)
-    testLocation = getTestLocation(testDoc?._id)
+    testLocation = await getTestLocationUri()
   })
 
   beforeEach(() => {
-    cy.viewport(2000, 3500)
-    cy.visit(testLocation)
-    waitForReviewChanges()
+    if (!alreadyOnLocation) {
+      cy.visit(testLocation)
+      waitForReviewChanges()
+      alreadyOnLocation = true
+    }
+
+    ensureCorrectUri(testLocation)
   })
 
   // Hidden boolean false
@@ -227,18 +246,22 @@ describe('@sanity/field: Multi fieldset and review changes', () => {
   */
 })
 
-describe('@sanity/field: Single fieldset and review changes', () => {
+describe('@sanity/field: Single fieldset and review changes', TEST_CONFIG, () => {
   let testLocation
+  let alreadyOnLocation = false
 
   before(async () => {
-    const testDoc = await createUniqueDocument(doc)
-    testLocation = getTestLocation(testDoc?._id)
+    testLocation = await getTestLocationUri()
   })
 
   beforeEach(() => {
-    cy.viewport(2000, 3500)
-    cy.visit(testLocation)
-    waitForReviewChanges()
+    if (!alreadyOnLocation) {
+      cy.visit(testLocation)
+      waitForReviewChanges()
+      alreadyOnLocation = true
+    }
+
+    ensureCorrectUri(testLocation)
   })
 
   // Hidden boolean false
