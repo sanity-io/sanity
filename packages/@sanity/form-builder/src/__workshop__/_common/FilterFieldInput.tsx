@@ -1,4 +1,4 @@
-import React, {MutableRefObject, useCallback, useEffect, useState, useMemo} from 'react'
+import React, {MutableRefObject, useCallback, useMemo} from 'react'
 import {Button, Card, Code, Label, Stack, TextArea} from '@sanity/ui'
 import styled from 'styled-components'
 
@@ -10,6 +10,7 @@ const EXAMPLE_FILTER_FUNCTION = `(type, field) => field.name === 'title'`
 
 interface FilterFieldInputOptions {
   onChange: (value) => void
+  onFilter: () => void
   value: string | null
 }
 
@@ -17,37 +18,32 @@ export const FilterFieldInput = React.forwardRef(function FilterFieldInput(
   props: FilterFieldInputOptions,
   ref: MutableRefObject<HTMLTextAreaElement>
 ) {
-  const {value, onChange} = props
-  const [internalValue, setInternalValue] = useState(value)
-
-  useEffect(() => {
-    setInternalValue(value)
-  }, [value])
+  const {value, onChange, onFilter} = props
 
   const handleChange = useCallback(
     (event) => {
-      setInternalValue(event.target.value)
+      onChange(event.target.value)
     },
-    [setInternalValue]
+    [onChange]
   )
 
   const handleFilterExample = useCallback(() => {
-    setInternalValue(EXAMPLE_FILTER_FUNCTION)
-  }, [setInternalValue])
+    onChange(EXAMPLE_FILTER_FUNCTION)
+  }, [onChange])
 
   const handleFilter = useCallback(() => {
-    onChange(internalValue)
-  }, [onChange, internalValue])
+    onFilter()
+  }, [onFilter])
 
   const isDisabled = useMemo(() => {
-    return internalValue.length === 0
-  }, [internalValue])
+    return value.length === 0
+  }, [value])
 
   return (
     <Card padding={4} tone="default" border>
       <Stack space={4}>
         <Label size={0}>Function value</Label>
-        <TextArea rows={4} ref={ref} onChange={handleChange} value={internalValue} />
+        <TextArea rows={4} ref={ref} onChange={handleChange} value={value} />
         <ExampleCode
           title="Use example code"
           size={1}

@@ -31,6 +31,7 @@ export default function ExampleStory() {
   const isDebug = useBoolean('Debug', false, 'Props')
   const [documentValue, setDocumentValue] = useState<{[key: string]: any}>(getDummyDocument())
   const [fieldFilterSource, setFieldFilterSource] = useState<string>(``)
+  const [fieldFilterValue, setFieldFilterValue] = useState<string>(``)
   const EMPTY = []
 
   const schema = useMemo(() => {
@@ -56,20 +57,23 @@ export default function ExampleStory() {
     setFocusPath(path)
     setFocused(true)
   }, [])
-  const handleChangeFieldFilter = useCallback((value) => {
+  const handleChangeFieldFilterSource = useCallback((value) => {
     const handledValue = value && value.length > 0 ? value : ``
 
     setFieldFilterSource(handledValue)
-    toast.push({status: 'success', title: `Updated field filter`})
   }, [])
+  const handleChangeFieldFilter = useCallback(() => {
+    setFieldFilterValue(fieldFilterSource)
+    toast.push({status: 'success', title: `Updated field filter`})
+  }, [fieldFilterSource])
 
   const memoizedFieldFilter = useMemo(() => {
-    if (!fieldFilterSource || fieldFilterSource.length === 0) {
+    if (!fieldFilterValue || fieldFilterValue.length === 0) {
       return () => true
     }
 
     try {
-      const body = `const [type, field] = args; const result = ${fieldFilterSource}; return result(type, field);`
+      const body = `const [type, field] = args; const result = ${fieldFilterValue}; return result(type, field);`
       // eslint-disable-next-line no-new-func
       const filter = new Function('...args', body)
 
@@ -80,7 +84,7 @@ export default function ExampleStory() {
 
       return () => true
     }
-  }, [fieldFilterSource])
+  }, [fieldFilterValue])
 
   const fieldFilter = useCallback(
     (type: SchemaType, field: ObjectField) => {
@@ -93,6 +97,7 @@ export default function ExampleStory() {
   useEffect(() => {
     if (!isFilterFields && fieldFilterSource.length > 0) {
       setFieldFilterSource(``)
+      setFieldFilterValue(``)
       toast.push({status: 'success', title: `Cleared field filter`})
     }
   }, [fieldFilterSource.length, isFilterFields, toast])
@@ -125,7 +130,11 @@ export default function ExampleStory() {
         <Grid columns={isDebug ? [1, 1, 1, 12] : 1} gap={4}>
           <Stack space={4} column={6}>
             {isFilterFields && (
-              <FilterFieldInput value={fieldFilterSource} onChange={handleChangeFieldFilter} />
+              <FilterFieldInput
+                value={fieldFilterSource}
+                onChange={handleChangeFieldFilterSource}
+                onFilter={handleChangeFieldFilter}
+              />
             )}
             {isTypeTester && <TypeTester />}
             <FormBuilderTester patchChannel={patchChannel} schema={schema} value={documentValue}>
