@@ -1,5 +1,5 @@
 import {Card, Grid, Stack, useToast} from '@sanity/ui'
-import {useBoolean, useScope} from '@sanity/ui-workshop'
+import {useBoolean, useSelect, useScope} from '@sanity/ui-workshop'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {Patcher} from '@sanity/mutator'
 import type {SchemaType, ObjectField} from '@sanity/types'
@@ -11,7 +11,12 @@ import {
 } from '../sanity/legacyPartImplementations/form-builder'
 import {applyAll} from '../patch/applyPatch'
 import {toGradient} from '../sanity/utils/gradientPatchAdapter'
-import {getDummySchema, getDummyDocument, DUMMY_DOCUMENT_ID} from './_common/data'
+import {
+  getDummySchema,
+  getDummyDocument,
+  schemaListOptions,
+  DUMMY_DOCUMENT_ID,
+} from './_common/data'
 import {TypeTester, FilterFieldInput, FormDebugger, FormBuilderTester} from './_common'
 
 const patchChannel = FormBuilder.createPatchChannel()
@@ -29,6 +34,12 @@ export default function ExampleStory() {
   const isTypeTester = useBoolean('Type Performance Tester', false, 'Props')
   const includeUnknownField = useBoolean('Unknown Field in Value', false, 'Props')
   const isDebug = useBoolean('Debug', false, 'Props')
+  const selectedSchemaKey = useSelect(
+    'Schema',
+    schemaListOptions,
+    Object.values(schemaListOptions)[0],
+    'Props'
+  )
   const [documentValue, setDocumentValue] = useState<{[key: string]: any}>(getDummyDocument())
   const [fieldFilterSource, setFieldFilterSource] = useState<string>(``)
   const [fieldFilterValue, setFieldFilterValue] = useState<string>(``)
@@ -36,11 +47,12 @@ export default function ExampleStory() {
 
   const schema = useMemo(() => {
     return getDummySchema({
+      schemaKey: selectedSchemaKey,
       hiddenGroup: isHiddenGroup,
     })
-  }, [isHiddenGroup])
+  }, [isHiddenGroup, selectedSchemaKey])
   const documentType = useMemo(() => {
-    return schema.get('book')
+    return schema.get('dummy')
   }, [schema])
 
   const handleChange = useCallback((patchEvent: PatchEvent) => {

@@ -1,7 +1,45 @@
 import Schema from '@sanity/schema'
 import type {Schema as SchemaSchema} from '@sanity/types'
+import {keyBy, mapValues} from 'lodash'
+import getSimpleDummySchema from './schema/simpleDummySchema'
+import getSimpleFieldGroupSchema from './schema/simpleFieldGroupSchema'
 
 export const DUMMY_DOCUMENT_ID = '10053a07-8647-4ebd-9d1d-33a512d30d3a'
+
+interface SchemaMapType {
+  name: string
+  title?: string
+  schema: (props: WorkshopSchemaProps) => unknown
+}
+
+type SchemaKey = typeof schemaMap[number]['name']
+
+export interface WorkshopSchemaProps {
+  schemaKey?: SchemaKey
+  hiddenGroup?: boolean
+}
+
+export function wrapSchema(schema: unknown) {
+  return {
+    name: 'test',
+    types: [schema],
+  }
+}
+
+const schemaMap: Readonly<SchemaMapType[]> = [
+  {
+    name: 'simple',
+    title: 'Simple',
+    schema: getSimpleDummySchema,
+  },
+  {
+    name: 'simpleFieldGroup',
+    title: 'Simple w/ Field Group',
+    schema: getSimpleFieldGroupSchema,
+  },
+] as const
+
+export const schemaListOptions = mapValues(keyBy(schemaMap, 'title'), 'name')
 
 export function getDummyDocument() {
   return {
@@ -17,79 +55,10 @@ export function getDummyDocument() {
   }
 }
 
-interface DummySchemaProps {
-  hiddenGroup?: boolean
-}
+export function getDummySchema(props?: WorkshopSchemaProps): SchemaSchema {
+  const {schemaKey = 'simple'} = props
+  const schemaType = schemaMap.find((s) => s.name === schemaKey)
+  const schema = schemaType.schema(props)
 
-export function getDummySchema(props?: DummySchemaProps): SchemaSchema {
-  const {hiddenGroup = false} = props
-
-  return Schema.compile({
-    name: 'test',
-    types: [
-      {
-        name: 'book',
-        type: 'document',
-        groups: [
-          {
-            name: 'group1',
-            title: 'Group 1',
-            hidden: hiddenGroup,
-          },
-        ],
-        fields: [
-          {
-            name: 'title',
-            title: 'Title',
-            type: 'string',
-          },
-          {
-            name: 'person',
-            type: 'object',
-            group: ['group1'],
-            fieldsets: [
-              {
-                name: 'social',
-                title: 'Social media handles [collapsed by default]',
-                options: {collapsible: true, collapsed: true},
-              },
-            ],
-            groups: [
-              {
-                name: 'instagram',
-                title: 'Instagram',
-              },
-            ],
-            fields: [
-              {
-                name: 'name',
-                title: 'Name',
-                type: 'string',
-              },
-              {
-                name: 'twitter',
-                title: 'Twitter',
-                type: 'string',
-                fieldset: 'social',
-                validation: (Rule) => Rule.required(),
-              },
-              {
-                name: 'instagram',
-                title: 'Instagram',
-                type: 'string',
-                fieldset: 'social',
-                group: ['instagram'],
-              },
-              {
-                name: 'facebook',
-                title: 'Facebook',
-                type: 'string',
-                fieldset: 'social',
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  })
+  return Schema.compile(schema)
 }
