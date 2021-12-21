@@ -34,23 +34,25 @@ interface InlineObjectToolbarPopoverProps {
 export function EditObjectToolTip(props: InlineObjectToolbarPopoverProps) {
   const {open, onEdit, onDelete, referenceElement, scrollElement, setOpen, title} = props
   const {sanity} = useTheme()
-  const editor = usePortableTextEditor()
   const editButtonRef = useRef<HTMLButtonElement>()
   const popoverScheme = sanity.color.dark ? 'light' : 'dark'
   const isTabbing = useRef<boolean>(false)
 
   // Close floating toolbar on Escape
+  // Focus to edit button on Tab
   useGlobalKeyDown(
     useCallback(
       (event) => {
-        if (event.key === 'Escape' && open) {
+        if (!open) {
+          return
+        }
+        if (event.key === 'Escape') {
           event.preventDefault()
           event.stopPropagation()
           isTabbing.current = false
           setOpen(false)
-          PortableTextEditor.focus(editor)
         }
-        if (event.key === 'Tab' && open) {
+        if (event.key === 'Tab') {
           if (!isTabbing.current) {
             event.preventDefault()
             event.stopPropagation()
@@ -59,7 +61,7 @@ export function EditObjectToolTip(props: InlineObjectToolbarPopoverProps) {
           }
         }
       },
-      [editor, open, setOpen]
+      [open, setOpen]
     )
   )
 

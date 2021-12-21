@@ -196,6 +196,7 @@ export const InlineObject = React.forwardRef(function InlineObject(
       const point = {path, offset: 0}
       const selection = {anchor: point, focus: point}
       PortableTextEditor.delete(editor, selection, {mode: 'children'})
+      PortableTextEditor.focus(editor)
     },
     [editor, path]
   )

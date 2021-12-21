@@ -40,7 +40,7 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps) {
   const {focused, value, type, readOnly, onClickingEdit, onClickingDelete} = props
   const editor = usePortableTextEditor()
   const menuButtonId = useId()
-  const previewMenu = useRef<HTMLElement>()
+  const menuButton = useRef<HTMLButtonElement>()
   const isTabbing = useRef<boolean>(false)
   const isCustomPreviewComponent = Boolean(type.preview?.component)
   const layout = 'block'
@@ -61,17 +61,17 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps) {
         if (!focused) {
           return
         }
-        if (event.key === 'Escape' && open) {
+        if (event.key === 'Escape') {
           event.preventDefault()
           event.stopPropagation()
           isTabbing.current = false
           PortableTextEditor.focus(editor)
         }
-        if (event.key === 'Tab' && open) {
-          if (previewMenu.current && !isTabbing.current) {
+        if (event.key === 'Tab') {
+          if (menuButton.current && !isTabbing.current) {
             event.preventDefault()
             event.stopPropagation()
-            previewMenu.current.focus()
+            menuButton.current.focus()
             isTabbing.current = true
           }
         }
@@ -85,9 +85,10 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps) {
       button={
         <Button fontSize={1} iconRight={EllipsisVerticalIcon} mode="bleed" aria-label="Open menu" />
       }
+      ref={menuButton}
       id={menuButtonId}
       menu={
-        <Menu ref={previewMenu}>
+        <Menu>
           {value?._ref && (
             <MenuItem as={referenceLink} data-as="a" icon={LinkIcon} text="Open reference" />
           )}

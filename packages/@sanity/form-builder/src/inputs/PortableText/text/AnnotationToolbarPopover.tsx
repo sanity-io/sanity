@@ -25,6 +25,7 @@ interface AnnotationToolbarPopoverProps {
   /**
    * Needed to update the popover position on scroll
    */
+  focused: boolean
   scrollElement: HTMLElement
   annotationElement: HTMLElement
   textElement: HTMLElement
@@ -34,7 +35,7 @@ interface AnnotationToolbarPopoverProps {
 }
 
 export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
-  const {scrollElement, annotationElement, textElement, title, onEdit, onDelete} = props
+  const {scrollElement, annotationElement, focused, textElement, title, onEdit, onDelete} = props
   const [open, setOpen] = useState<boolean>(false)
   const [cursorRect, setCursorRect] = useState<DOMRect | null>(null)
   const [selection, setSelection] = useState(null)
@@ -82,20 +83,23 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
   useGlobalKeyDown(
     useCallback(
       (event) => {
-        if (event.key === 'Escape' && open) {
+        if (!open) {
+          return
+        }
+        if (event.key === 'Escape') {
           event.preventDefault()
           event.stopPropagation()
           setOpen(false)
           isTabbing.current = false
           PortableTextEditor.focus(editor)
         }
-        if (event.key === 'Tab' && open) {
+        if (event.key === 'Tab') {
           if (!isTabbing.current) {
             event.preventDefault()
             event.stopPropagation()
             editButtonRef.current.focus()
+            isTabbing.current = true
           }
-          isTabbing.current = true
         }
       },
       [editor, open]
@@ -129,7 +133,11 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
     if (!selection) return
     if (isClosingRef.current) return
     const {anchorNode, focusNode} = selection
-
+    // Safari would close the popover by loosing range when button is focused.
+    // If we are focused and currently tabbing to the action buttons, just return here.
+    if (focused && isTabbing.current) {
+      return
+    }
     if (annotationElement && annotationElement.contains(anchorNode) && anchorNode === focusNode) {
       const range = window.getSelection().getRangeAt(0)
       const rect = range.getBoundingClientRect()
@@ -138,20 +146,14 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
 
       if (rect) {
         setCursorRect(rect)
-        setOpen(true)
       }
+      setOpen(true)
     } else {
       setOpen(false)
       setCursorRect(null)
       rangeRef.current = null
     }
-  }, [selection, annotationElement])
-
-  useEffect(() => {
-    if (open && isTabbing.current) {
-      editButtonRef.current?.focus()
-    }
-  }, [open])
+  }, [focused, selection, annotationElement])
 
   return (
     <ToolbarPopover
@@ -171,7 +173,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
         </Box>
       }
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
-      open={cursorElement && open}
+      open={open}
       placement="top"
       portal="editor"
       referenceElement={cursorElement as HTMLElement}
