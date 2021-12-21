@@ -3,6 +3,7 @@ import {
   PortableTextBlock,
   Type,
   RenderAttributes,
+  EditorSelection,
 } from '@sanity/portable-text-editor'
 import {isKeySegment, Marker, Path} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
@@ -193,12 +194,11 @@ export const BlockObject = React.forwardRef(function BlockObject(
   )
 
   const handleDelete = useCallback(() => {
-    PortableTextEditor.delete(
-      editor,
-      {focus: {path, offset: 0}, anchor: {path, offset: 0}},
-      {mode: 'block'}
-    )
-    PortableTextEditor.focus(editor)
+    const sel: EditorSelection = {focus: {path, offset: 0}, anchor: {path, offset: 0}}
+    PortableTextEditor.delete(editor, sel, {mode: 'block'})
+    // The focus seems to get stuck somehow on the dropdown menu.
+    // Setting focus like this seems to avoid that.
+    setTimeout(() => PortableTextEditor.focus(editor))
   }, [editor, path])
 
   const blockPreview = useMemo(() => {
