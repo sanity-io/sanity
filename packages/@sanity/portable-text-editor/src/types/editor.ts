@@ -12,6 +12,7 @@ import {
   TextSpan,
 } from '../types/portableText'
 import {PortableTextEditor} from '../editor/PortableTextEditor'
+import {PortableTextFeatures} from '..'
 
 export interface EditableAPI {
   activeAnnotations: () => PortableTextBlock[]
@@ -272,6 +273,7 @@ export type OnPasteResultOrPromise = OnPasteResult | Promise<OnPasteResult>
 export type OnPasteFn = (arg0: {
   event: React.SyntheticEvent
   path: Path
+  portableTextFeatures: PortableTextFeatures
   type: Type
   value: PortableTextBlock[] | undefined
 }) => OnPasteResultOrPromise
