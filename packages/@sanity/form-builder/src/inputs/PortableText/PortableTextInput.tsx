@@ -11,6 +11,7 @@ import {
   PortableTextEditor,
   Type,
   HotkeyOptions,
+  EditorSelection,
 } from '@sanity/portable-text-editor'
 import {Subject} from 'rxjs'
 import {Box, Text, useToast} from '@sanity/ui'
@@ -165,11 +166,7 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
           })
           break
         case 'selection':
-          if (
-            change.selection && // If we have something selected
-            PortableTextEditor.isObjectPath(ref.current, focusPath) === false && // Not if this is pointing to an embedded object
-            focusPath.slice(-1)[0] !== FOCUS_TERMINATOR // Not if in transition to open modal
-          ) {
+          if (shouldSetEditorFormBuilderFocus(ref.current, change.selection, focusPath)) {
             onFocus(change.selection.focus.path)
           }
           break
@@ -277,3 +274,15 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
     </div>
   )
 })
+
+function shouldSetEditorFormBuilderFocus(
+  editor: PortableTextEditor,
+  selection: EditorSelection | undefined,
+  focusPath: Path
+) {
+  return (
+    selection && // If we have something selected
+    focusPath.slice(-1)[0] !== FOCUS_TERMINATOR && // Not if in transition to open modal
+    PortableTextEditor.isObjectPath(editor, focusPath) === false // Not if this is pointing to an embedded object
+  )
+}
