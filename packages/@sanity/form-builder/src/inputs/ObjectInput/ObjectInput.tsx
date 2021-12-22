@@ -1,4 +1,4 @@
-import React, {ForwardedRef, forwardRef, memo, useCallback, useState} from 'react'
+import React, {ForwardedRef, forwardRef, memo, useCallback, useEffect, useState} from 'react'
 import {
   Marker,
   MultiFieldSet,
@@ -129,6 +129,10 @@ export const ObjectInput = memo(
       setIsAllGroupsHidden(hidden)
     }, [])
     const hasGroups = filterGroups.length > 0
+
+    useEffect(() => {
+      setSelectedFieldGroupName(defaultFieldGroupName)
+    }, [type.fields])
 
     const handleFieldChange = React.useCallback(
       (fieldEvent: PatchEvent, field: ObjectField) => {
