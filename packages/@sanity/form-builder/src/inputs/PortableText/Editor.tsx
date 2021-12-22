@@ -23,6 +23,7 @@ import {
   Scroller,
   ToolbarCard,
 } from './Editor.styles'
+
 interface EditorProps {
   initialSelection?: EditorSelection
   isFullscreen: boolean
