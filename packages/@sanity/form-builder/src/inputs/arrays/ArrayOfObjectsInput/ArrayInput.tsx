@@ -66,6 +66,7 @@ export interface Props {
   ReferenceItemComponent: ReferenceItemComponentType
   filterField: () => any
   ArrayFunctionsImpl: typeof ArrayFunctions
+  ArrayItemImpl: typeof ArrayItem
   resolveUploader?: (type: SchemaType, file: FileLike) => Uploader | null
   resolveInitialValue?: (type: ObjectSchemaType, value: any) => Promise<any>
   presence: FormFieldPresence[]
@@ -291,6 +292,7 @@ export class ArrayInput extends React.Component<Props> {
       filterField,
       ReferenceItemComponent,
       ArrayFunctionsImpl,
+      ArrayItemImpl = ArrayItem,
     } = this.props
 
     const {isResolvingInitialValue} = this.state
@@ -414,7 +416,7 @@ export class ArrayInput extends React.Component<Props> {
                           value={item}
                           parent={value}
                         >
-                          <ArrayItem
+                          <ArrayItemImpl
                             compareValue={compareValue}
                             filterField={filterField}
                             focusPath={focusPath}
