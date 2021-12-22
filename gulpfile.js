@@ -58,11 +58,11 @@ const compileTaskName = (taskType, packagePath, extra = '') => {
 
 function buildJavaScript(packageDir, destDir) {
   return withDisplayName(compileTaskName('babel', packageDir, 'cjs'), () =>
-    src([`${SRC_DIR}/**/*.{js,ts,tsx}`, '!**/*.{test,spec}.{js,ts,tsx}'], {cwd: packageDir})
+    src([`${SRC_DIR}/**/*.{js,jsx,ts,tsx}`, '!**/*.{test,spec}.{js,jsx,ts,tsx}'], {cwd: packageDir})
       .pipe(
         changed(destDir, {
           cwd: packageDir,
-          transformPath: (orgPath) => orgPath.replace(/\.tsx?$/, '.js'),
+          transformPath: (orgPath) => orgPath.replace(/\.(t|j)sx?$/, '.js'),
         })
       )
       .pipe(babel())
@@ -73,7 +73,7 @@ function buildJavaScript(packageDir, destDir) {
 function copyAssets(packageDir, destDir) {
   return withDisplayName(compileTaskName('assets', packageDir), () =>
     src(`${SRC_DIR}/**/*`, {cwd: packageDir})
-      .pipe(filter(['**/*.*', '!**/*.js', '!**/*.ts', '!**/*.tsx']))
+      .pipe(filter(['**/*.*', '!**/*.js', '!**/*.jsx', '!**/*.ts', '!**/*.tsx']))
       .pipe(changed(destDir, {cwd: packageDir}))
       .pipe(dest(destDir, {cwd: packageDir}))
   )
