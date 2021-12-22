@@ -15,6 +15,7 @@ type UploadPlaceholderProps = {
   acceptedFiles: FileLike[]
   rejectedFilesCount: number
   accept: string
+  directUploads: boolean
 }
 
 export default React.memo(function UploadPlaceholder({
@@ -26,6 +27,7 @@ export default React.memo(function UploadPlaceholder({
   acceptedFiles,
   rejectedFilesCount,
   accept,
+  directUploads,
 }: UploadPlaceholderProps) {
   return (
     <Flex
@@ -42,6 +44,7 @@ export default React.memo(function UploadPlaceholder({
           acceptedFiles={acceptedFiles}
           rejectedFilesCount={rejectedFilesCount}
           type={type}
+          directUploads={directUploads}
         />
       </Flex>
       <Inline space={2}>
@@ -52,7 +55,7 @@ export default React.memo(function UploadPlaceholder({
           accept={accept}
           text="Upload"
           data-testid="file-input-upload-button"
-          disabled={readOnly}
+          disabled={readOnly || !directUploads}
         />
         <Button
           fontSize={2}

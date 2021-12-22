@@ -324,7 +324,15 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     this.setState({isStale: true})
   }
 
-  handleSelectFiles = (files: File[]) => this.uploadFirstAccepted(files)
+  handleSelectFiles = (files: File[]) => {
+    const {directUploads} = this.props
+    const {hoveringFiles} = this.state
+    if (directUploads) {
+      this.uploadFirstAccepted(files)
+    } else if (hoveringFiles.length > 0) {
+      this.handleFilesOut()
+    }
+  }
 
   handleSelectImageFromAssetSource = (source: InternalAssetSource) => {
     this.setState({selectedAssetSource: source})
@@ -392,7 +400,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderMaterializedAsset = (assetDocument: ImageAsset) => {
-    const {value = {}, readOnly, type} = this.props
+    const {value = {}, readOnly, type, directUploads} = this.props
     const {hoveringFiles} = this.state
 
     const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
@@ -402,7 +410,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       <HotspotImageInput
         drag={!value?._upload && hoveringFiles.length > 0}
         assetDocument={assetDocument}
-        isRejected={rejectedFilesCount > 0}
+        isRejected={rejectedFilesCount > 0 || !directUploads}
         readOnly={readOnly}
       />
     )
@@ -447,7 +455,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderAsset() {
-    const {value, materialize, readOnly, assetSources, type} = this.props
+    const {value, materialize, readOnly, assetSources, type, directUploads} = this.props
 
     const accept = get(type, 'options.accept', 'image/*')
 
@@ -467,6 +475,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                   onReset={this.handleRemoveButtonClick}
                   assetDocument={fileAsset}
                   readOnly={readOnly}
+                  directUploads={directUploads}
                   accept={accept}
                 />
               </ImageActionsMenu>
@@ -479,7 +488,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderUploadPlaceholder() {
-    const {assetSources, readOnly, resolveUploader, type} = this.props
+    const {assetSources, readOnly, resolveUploader, type, directUploads} = this.props
     const {hoveringFiles} = this.state
     if (!assetSources?.length) {
       return null
@@ -491,7 +500,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     const accept = get(type, 'options.accept', 'image/*')
 
     // If multiple asset sources render a dropdown
-    if (assetSources.length > 1 && !readOnly) {
+    if (assetSources.length > 1 && !readOnly && !directUploads) {
       return (
         <MenuButton
           id={`${this._inputId}_assetImageButton`}
@@ -526,6 +535,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         rejectedFilesCount={rejectedFilesCount}
         type="image"
         accept={accept}
+        directUploads={directUploads}
       />
     )
   }
@@ -647,8 +657,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
       const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
 
-      if (hoveringFiles) {
-        if (rejectedFilesCount > 0) {
+      if (hoveringFiles.length > 0) {
+        if (rejectedFilesCount > 0 || !directUploads) {
           return 'critical'
         }
       }

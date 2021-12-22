@@ -13,10 +13,11 @@ interface Props {
   assetDocument: FileAsset
   onReset: MouseEventHandler<HTMLDivElement>
   accept: string
+  directUploads: boolean
 }
 
 export function ActionsMenu(props: Props) {
-  const {onUpload, onBrowse, onReset, readOnly, assetDocument, accept} = props
+  const {onUpload, onBrowse, onReset, readOnly, assetDocument, accept, directUploads} = props
 
   const {push: pushToast} = useToast()
 
@@ -39,7 +40,7 @@ export function ActionsMenu(props: Props) {
         accept={accept}
         text="Upload"
         data-testid="file-input-upload-button"
-        disabled={readOnly}
+        disabled={readOnly || !directUploads}
         fromMenu
       />
       <MenuItem icon={SearchIcon} text="Browse" onClick={onBrowse} disabled={readOnly} />
