@@ -103,7 +103,7 @@ export function Compositor(props: InputProps) {
     inline: inlineObjectElementRef,
   })
 
-  // Deal with focus when editing objects
+  // Various focus handling hooks
   const {
     onEditObjectFormBuilderFocus,
     onEditObjectFormBuilderBlur,
@@ -112,9 +112,12 @@ export function Compositor(props: InputProps) {
 
   const {onObjectEditFormBuilderChange} = useObjectEditFormBuilderChange(onChange, patches$)
 
-  // Scroll to selection and and special case for annotations (comment inside)
+  // This is what PortableTextEditor will use to scroll the content into view when editing
+  // inside the editor
   const scrollSelectionIntoView = useScrollSelectionIntoView(scrollElement)
-  useScrollToFocusFromOutside(objectEditData, scrollElement)
+
+  // This will scroll to the content when focusPath is set from the outside
+  useScrollToFocusFromOutside(hasFocus, focusPath, objectEditData, scrollElement)
 
   // Set as active whenever we have focus inside the editor.
   useEffect(() => {

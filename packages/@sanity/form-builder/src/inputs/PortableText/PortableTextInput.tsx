@@ -224,14 +224,16 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
     return null
   }, [handleEditorChange, handleIgnoreValidation, invalidValue])
 
-  // Scroll to the field if we have focus and needed
+  // Scroll to *the field* (not the editor) into view if we have focus in the field.
+  // For internal editor scrolling see useScrollToFocusFromOutside and useScrollSelectionIntoView in
+  // the Compositor component.
   useEffect(() => {
     if (focusPath && focusPath.length > 0 && innerElementRef.current) {
       scrollIntoView(innerElementRef.current, {
         scrollMode: 'if-needed',
       })
     }
-  }, [focusPath, value])
+  }, [focusPath])
 
   return (
     <div ref={innerElementRef}>
