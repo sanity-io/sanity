@@ -290,10 +290,8 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
               event,
               value: PortableTextEditor.getValue(portableTextEditor),
               path: slateEditor.selection?.focus.path || [],
-              // Note: this is a breaking change introduced in v.2.23.2
-              // This used to be the block type, but one needs the whole PT array type
-              // to fully operate in the model space of the current editor.
-              type: portableTextFeatures.types.portableText,
+              portableTextFeatures, // New key added in v.2.23.2
+              type: blockType, // For legacy support
             })
           } catch (error) {
             return error as Error
@@ -328,7 +326,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
           })
       }
     },
-    [change$, onPaste, portableTextEditor, portableTextFeatures.types.portableText, slateEditor]
+    [blockType, change$, onPaste, portableTextEditor, portableTextFeatures, slateEditor]
   )
 
   const _isSelecting = useRef(false)
