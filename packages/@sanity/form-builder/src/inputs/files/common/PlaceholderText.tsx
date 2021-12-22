@@ -17,10 +17,11 @@ interface Props {
   type: string
   acceptedFiles: FileLike[]
   rejectedFilesCount: number
+  directUploads: boolean
 }
 
 export function PlaceholderText(props: Props) {
-  const {hoveringFiles, type, readOnly, acceptedFiles, rejectedFilesCount} = props
+  const {hoveringFiles, type, readOnly, acceptedFiles, rejectedFilesCount, directUploads} = props
   const isFileType = type === 'file'
 
   function MessageIcon() {
@@ -28,10 +29,8 @@ export function PlaceholderText(props: Props) {
       return <ReadOnlyIcon />
     }
 
-    if (hoveringFiles) {
-      if (rejectedFilesCount > 0) {
-        return <AccessDeniedIcon />
-      }
+    if ((hoveringFiles && rejectedFilesCount > 0) || !directUploads) {
+      return <AccessDeniedIcon />
     }
 
     return isFileType ? <BinaryDocumentIcon /> : <ImageIcon />
@@ -39,11 +38,16 @@ export function PlaceholderText(props: Props) {
 
   function MessageText() {
     let message = `Drag or paste ${type} here`
+
+    if (!directUploads) {
+      message = `Can't upload files here`
+    }
+
     if (readOnly) {
       message = 'Read only'
     }
 
-    if (hoveringFiles) {
+    if (hoveringFiles && directUploads) {
       if (acceptedFiles.length > 0) {
         message = `Drag ${type} here`
       }

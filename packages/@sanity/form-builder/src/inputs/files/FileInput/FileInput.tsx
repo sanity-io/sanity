@@ -188,7 +188,13 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   handleSelectFiles = (files: DOMFile[]) => {
-    this.uploadFirstAccepted(files)
+    const {directUploads} = this.props
+    const {hoveringFiles} = this.state
+    if (directUploads) {
+      this.uploadFirstAccepted(files)
+    } else if (hoveringFiles.length > 0) {
+      this.handleFilesOut()
+    }
   }
 
   handleSelectFileFromAssetSource = (source: InternalAssetSource) => {
@@ -398,7 +404,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   renderAsset() {
-    const {value, materialize, type, readOnly, assetSources} = this.props
+    const {value, materialize, type, readOnly, assetSources, directUploads} = this.props
 
     const accept = get(type, 'options.accept', '')
 
@@ -413,6 +419,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
               assetDocument={assetDocument}
               readOnly={readOnly}
               accept={accept}
+              directUploads={directUploads}
             />
           </FileContent>
         )}
@@ -443,7 +450,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   renderUploadPlaceholder() {
-    const {assetSources, readOnly, type} = this.props
+    const {assetSources, readOnly, type, directUploads} = this.props
     const {hoveringFiles} = this.state
     if (!assetSources?.length) {
       return null
@@ -490,6 +497,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
         rejectedFilesCount={rejectedFilesCount}
         type="file"
         accept={accept}
+        directUploads={directUploads}
       />
     )
   }
@@ -537,8 +545,8 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
       const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
 
-      if (hoveringFiles) {
-        if (rejectedFilesCount > 0) {
+      if (hoveringFiles.length > 0) {
+        if (rejectedFilesCount > 0 || !directUploads) {
           return 'critical'
         }
       }
@@ -618,7 +626,4 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       </>
     )
   }
-}
-function getFileTone(): import('@sanity/ui').CardTone {
-  throw new Error('Function not implemented.')
 }
