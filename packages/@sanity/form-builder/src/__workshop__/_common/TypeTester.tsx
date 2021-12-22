@@ -26,7 +26,11 @@ const Sticky = styled.div`
   z-index: 2;
 `
 
-export function TypeTester() {
+interface TypeTesterProps {
+  readOnly?: boolean
+}
+
+export function TypeTester({readOnly}: TypeTesterProps) {
   const textAreaRef = useRef()
   const [focusedInput, setFocusedInput] = useState<HTMLInputElement | HTMLTextAreaElement>()
   const [testOutput, setTestOutput] = useState('')
@@ -93,8 +97,13 @@ export function TypeTester() {
   }, [focusedInput])
 
   const isDisabled = useMemo(() => {
-    return isRunning || !focusedInput || !['INPUT', 'TEXTAREA'].includes(focusedInput.tagName)
-  }, [focusedInput, isRunning])
+    return (
+      isRunning ||
+      !focusedInput ||
+      !['INPUT', 'TEXTAREA'].includes(focusedInput.tagName) ||
+      readOnly
+    )
+  }, [focusedInput, isRunning, readOnly])
 
   return (
     <Sticky>

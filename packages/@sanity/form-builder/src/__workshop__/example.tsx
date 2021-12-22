@@ -149,7 +149,7 @@ export default function ExampleStory() {
                 onFilter={handleChangeFieldFilter}
               />
             )}
-            {isTypeTester && <TypeTester />}
+            {isTypeTester && <TypeTester readOnly={isReadOnly} />}
             <FormBuilderTester
               patchChannel={patchChannel}
               schema={schema}
