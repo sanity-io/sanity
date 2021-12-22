@@ -40,7 +40,7 @@ export function useScrollSelectionIntoView(scrollElement: HTMLElement) {
           // Nothing
         }
         scrollIntoView(leafEl, {
-          scrollMode: voidOffset ? 'always' : 'if-needed',
+          scrollMode: 'if-needed',
           behavior: (actions) => {
             if (voidIsVisible) {
               return
