@@ -75,10 +75,16 @@ export default function ExampleStory() {
 
     setFieldFilterSource(handledValue)
   }, [])
-  const handleChangeFieldFilter = useCallback(() => {
-    setFieldFilterValue(fieldFilterSource)
-    toast.push({status: 'success', title: `Updated field filter`})
-  }, [fieldFilterSource])
+  const handleChangeFieldFilter = useCallback(
+    (value) => {
+      setFieldFilterValue(value)
+      toast.push({
+        status: 'success',
+        title: value === `` ? `Cleared field filter` : `Updated field filter`,
+      })
+    },
+    [toast]
+  )
 
   const memoizedFieldFilter = useMemo(() => {
     if (!fieldFilterValue || fieldFilterValue.length === 0) {
