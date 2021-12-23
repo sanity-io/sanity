@@ -32,23 +32,20 @@ const RootFlex = styled(Flex)`
 `
 
 const StyleSelectBox = styled(Box)`
-  min-width: 8em;
+  width: 8em;
 `
 
 const StyleSelectFlex = styled(Flex)`
   border-right: 1px solid var(--card-border-color);
 `
 
-const ActionMenuBox = styled(Box)<{$withMaxWidth: boolean}>`
-  ${({$withMaxWidth}) =>
-    $withMaxWidth &&
+const ActionMenuBox = styled(Box)<{$withInsertMenu: boolean}>`
+  ${({$withInsertMenu}) =>
+    $withInsertMenu &&
     css`
       max-width: max-content;
+      border-right: 1px solid var(--card-border-color);
     `}
-`
-
-const InsertMenuBox = styled(Box)`
-  border-left: 1px solid var(--card-border-color);
 `
 
 const FullscreenButtonBox = styled(Box)`
@@ -102,32 +99,33 @@ const InnerToolbar = memo(function InnerToolbar({
         </StyleSelectBox>
       </StyleSelectFlex>
 
-      {showActionMenu && (
-        <ActionMenuBox
-          flex={collapsed ? undefined : 1}
-          padding={isFullscreen ? 2 : 1}
-          $withMaxWidth={showInsertMenu}
-        >
-          <ActionMenu
-            disabled={disabled}
-            collapsed={collapsed}
-            groups={actionGroups}
-            isFullscreen={isFullscreen}
-          />
-        </ActionMenuBox>
-      )}
+      <Flex flex={1}>
+        {showActionMenu && (
+          <ActionMenuBox
+            flex={collapsed ? undefined : 1}
+            padding={isFullscreen ? 2 : 1}
+            $withInsertMenu={showInsertMenu}
+          >
+            <ActionMenu
+              disabled={disabled}
+              collapsed={collapsed}
+              groups={actionGroups}
+              isFullscreen={isFullscreen}
+            />
+          </ActionMenuBox>
+        )}
 
-      {showInsertMenu && (
-        <InsertMenuBox flex={collapsed ? undefined : 1} padding={isFullscreen ? 2 : 1}>
-          <InsertMenu
-            disabled={disabled}
-            collapsed={collapsed}
-            items={insertMenuItems}
-            isFullscreen={isFullscreen}
-          />
-        </InsertMenuBox>
-      )}
-
+        {showInsertMenu && (
+          <Box flex={collapsed ? undefined : 1} padding={isFullscreen ? 2 : 1}>
+            <InsertMenu
+              disabled={disabled}
+              collapsed={collapsed}
+              items={insertMenuItems}
+              isFullscreen={isFullscreen}
+            />
+          </Box>
+        )}
+      </Flex>
       <FullscreenButtonBox padding={isFullscreen ? 2 : 1}>
         <Tooltip
           content={
