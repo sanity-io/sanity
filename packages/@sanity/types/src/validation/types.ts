@@ -1,3 +1,4 @@
+import type {SanityClient} from '@sanity/client'
 import type {Path} from '../paths'
 import type {SchemaType, SchemaValidationValue} from '../schema'
 import type {SanityDocument} from '../documents'
@@ -140,7 +141,7 @@ export interface Rule {
   block(blockValidators: BlockValidator): Rule
   fields(rules: FieldRules): Rule
   assetRequired(): Rule
-  validate(value: unknown, options?: ValidationContext): Promise<ValidationMarker[]>
+  validate(value: unknown, options: ValidationContext): Promise<ValidationMarker[]>
 }
 
 export type RuleSpec =
@@ -204,6 +205,7 @@ export type RuleSpecConstraint<T extends RuleSpec['flag']> = ConditionalIndexAcc
  * ```
  */
 export type ValidationContext = {
+  client: SanityClient
   parent?: unknown
   type?: SchemaType
   document?: SanityDocument
@@ -250,13 +252,11 @@ export type Validator<T = any, Value = any> = (
  * }
  * ```
  */
-export type Validators = Partial<
-  {
-    [P in RuleSpec['flag']]: Validator<
-      ConditionalIndexAccess<Extract<RuleSpec, {flag: P}>, 'constraint'>
-    >
-  }
->
+export type Validators = Partial<{
+  [P in RuleSpec['flag']]: Validator<
+    ConditionalIndexAccess<Extract<RuleSpec, {flag: P}>, 'constraint'>
+  >
+}>
 
 export interface ValidationErrorOptions {
   paths?: Path[]

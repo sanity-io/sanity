@@ -10,7 +10,7 @@ export interface UserColorManagerOptions {
       } | null
     }>
   }
-  colors?: Readonly<Record<UserColorHue, UserColor>>
+  colors?: Record<UserColorHue, UserColor>
   currentUserColor?: UserColorHue
 }
 export declare function createUserColorManager(options?: UserColorManagerOptions): UserColorManager

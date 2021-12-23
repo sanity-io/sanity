@@ -8,7 +8,36 @@ import type {SanityDocument} from '../documents'
 import type {CurrentUser} from '../user'
 import type {PreviewConfig} from './preview'
 
+export interface SchemaValidationError {
+  helpId?: string
+  message: string
+  severity: 'error'
+}
+
+export interface SchemaValidationWarning {
+  helpId?: string
+  message: string
+  severity: 'warning'
+}
+
+export type SchemaValidationProblem = SchemaValidationError | SchemaValidationWarning
+
+export type SchemaValidationProblemPath = Array<
+  {kind: 'type'; type: string; name: string} | {kind: 'property'; name: string}
+>
+
+export interface SchemaValidationProblemGroup {
+  path: SchemaValidationProblemPath
+  problems: SchemaValidationProblem[]
+}
+
 export interface Schema {
+  _original?: {
+    name: string
+    types: any[]
+  }
+  _registry: {[typeName: string]: any}
+  _validation?: SchemaValidationProblemGroup[]
   name: string
   get: (name: string) => SchemaType | undefined
   has: (name: string) => boolean
@@ -53,9 +82,11 @@ export interface ConditionalPropertyCallbackContext {
 export type ConditionalPropertyCallback = (context: ConditionalPropertyCallbackContext) => boolean
 export type ConditionalProperty = boolean | ConditionalPropertyCallback | undefined
 
-export type InitialValueParams = Record<string, unknown>
-export type InitialValueResolver<T> = (params?: InitialValueParams) => Promise<T> | T
-export type InitialValueProperty<T = unknown> = T | InitialValueResolver<T> | undefined
+export type InitialValueResolver<Params, Value> = (params?: Params) => Promise<Value> | Value
+export type InitialValueProperty<Params, Value> =
+  | Value
+  | InitialValueResolver<Params, Value>
+  | undefined
 
 /**
  * Represents the possible values of a schema type's `validation` field.
@@ -96,8 +127,7 @@ export interface BaseSchemaType {
   readOnly?: ConditionalProperty
   hidden?: ConditionalProperty
   icon?: ComponentType
-  initialValue?: InitialValueProperty
-  // options?: Record<string, any>
+  initialValue?: InitialValueProperty<any, any>
   validation?: SchemaValidationValue
   preview?: PreviewConfig
 
@@ -136,7 +166,7 @@ export interface TextSchemaType extends StringSchemaType {
 export interface NumberSchemaType extends BaseSchemaType {
   jsonType: 'number'
   options?: EnumListProps<number>
-  initialValue?: InitialValueProperty<number>
+  initialValue?: InitialValueProperty<any, number>
 }
 
 export interface BooleanSchemaType extends BaseSchemaType {
@@ -144,7 +174,7 @@ export interface BooleanSchemaType extends BaseSchemaType {
   options?: {
     layout: 'checkbox' | 'switch'
   }
-  initialValue?: InitialValueProperty<boolean>
+  initialValue?: InitialValueProperty<any, boolean>
 }
 
 export interface ArraySchemaType<V = unknown> extends BaseSchemaType {
@@ -259,7 +289,7 @@ export interface ObjectSchemaType extends BaseSchemaType {
   fields: ObjectField[]
   groups?: FieldGroup[]
   fieldsets?: Fieldset[]
-  initialValue?: InitialValueProperty<Record<string, unknown>>
+  initialValue?: InitialValueProperty<any, Record<string, unknown>>
   weak?: boolean
 
   // Experimentals

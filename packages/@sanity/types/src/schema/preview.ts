@@ -18,7 +18,7 @@ export interface PreviewValue {
 }
 
 export interface PreviewConfig {
-  select?: PreviewValue
+  select?: Record<string, string> // PreviewValue
   prepare: (
     value: {
       title?: unknown

@@ -320,9 +320,9 @@ declare module 'part:@sanity/base/settings' {
 declare module 'part:@sanity/base/tool'
 declare module 'part:@sanity/base/user'
 declare module 'part:@sanity/base/grants'
-declare module 'part:@sanity/base/util/document-action-utils' {
-  export const isActionEnabled: (schema: Schema, actionName: string) => boolean
-}
+// declare module 'part:@sanity/base/util/document-action-utils' {
+//   export const isActionEnabled: (schema: Schema, actionName: string) => boolean
+// }
 declare module 'part:@sanity/base/util/draft-utils' {
   export declare const collate: (
     documents: SanityDocument[]
