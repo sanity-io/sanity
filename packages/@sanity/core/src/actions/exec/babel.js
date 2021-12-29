@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import registerBabel from '@babel/register'
+import escapeRegExp from "lodash/escapeRegExp";
 
 function getConfig() {
   try {
@@ -23,6 +24,9 @@ function getConfig() {
       ],
       plugins: [require.resolve('@babel/plugin-proposal-class-properties')],
       extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.ts', '.tsx'],
+      ignore: [
+        escapeRegExp(path.sep + "node_modules" + path.sep),
+      ]
     }
   }
 }
