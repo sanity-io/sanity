@@ -6,16 +6,15 @@
     "declarationDir": "./lib/dts/",
     "rootDir": "./",
     "outDir": "./lib/dts/",
-    "jsx": "react",
-    "emitDeclarationOnly": false
+    "jsx": "react"
   },
   "references": [
-    {"path": "../base"},
+    {"path": "../base/tsconfig.lib.json"},
     {"path": "../diff"},
     {"path": "../form-builder/tsconfig.lib.json"},
     {"path": "../initial-value-templates/tsconfig.lib.json"},
     {"path": "../structure/tsconfig.lib.json"},
     {"path": "../types"},
-    {"path": "../util"}
+    {"path": "../util/tsconfig.lib.json"}
   ]
 }

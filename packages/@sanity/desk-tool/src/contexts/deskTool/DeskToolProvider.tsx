@@ -1,5 +1,6 @@
-import {DocumentBuilder} from '@sanity/structure'
+import {SchemaType} from '@sanity/types'
 import React, {useMemo} from 'react'
+import {DocumentActionsResolver} from '../../types'
 import {DeskToolContext} from './DeskToolContext'
 import {DeskToolContextValue} from './types'
 
@@ -8,11 +9,12 @@ import {DeskToolContextValue} from './types'
  */
 export function DeskToolProvider(props: {
   children?: React.ReactNode
+  components: {LanguageFilter?: React.ComponentType<{schemaType: SchemaType}>}
   layoutCollapsed: boolean
-  resolveDocumentNode: (options: {documentId?: string; schemaType: string}) => DocumentBuilder
+  resolveDocumentActions: DocumentActionsResolver
   structure: any
 }): React.ReactElement {
-  const {children, layoutCollapsed, resolveDocumentNode, structure} = props
+  const {children, components, layoutCollapsed, resolveDocumentActions, structure} = props
 
   const features = useMemo(
     () => ({
@@ -26,12 +28,13 @@ export function DeskToolProvider(props: {
 
   const contextValue: DeskToolContextValue = useMemo(
     () => ({
+      components,
       features,
       layoutCollapsed,
-      resolveDocumentNode,
+      resolveDocumentActions,
       structure,
     }),
-    [features, layoutCollapsed, resolveDocumentNode, structure]
+    [components, features, layoutCollapsed, resolveDocumentActions, structure]
   )
 
   return <DeskToolContext.Provider value={contextValue}>{children}</DeskToolContext.Provider>

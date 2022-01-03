@@ -1,12 +1,12 @@
 import {DocumentActionComponent} from '@sanity/base'
 import {EditStateFor} from '@sanity/base/_internal'
+import {isActionEnabled} from '@sanity/schema/_internal'
 import {Schema} from '@sanity/types'
 import {PublishAction} from '../actions/PublishAction'
 import {DiscardChangesAction} from '../actions/DiscardChangesAction'
 import {UnpublishAction} from '../actions/UnpublishAction'
 import {DuplicateAction} from '../actions/DuplicateAction'
 import {DeleteAction} from '../actions/DeleteAction'
-import {isActionEnabled} from '../TODO'
 
 // NOTE: this is a small utility function to avoid having to _cast_ the
 // filtered array below to `DocumentActionComponent[]`.
@@ -24,6 +24,10 @@ export default function resolveDocumentActions(
 ): DocumentActionComponent[] {
   // const {} = useConfig()
   const schemaType = schema.get(props.type)
+
+  if (!schemaType) {
+    throw new Error(`no schema type: "${props.type}"`)
+  }
 
   return [
     isActionEnabled(schemaType, 'publish') && PublishAction,

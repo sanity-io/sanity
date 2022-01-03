@@ -1,25 +1,10 @@
 import isHotkey from 'is-hotkey'
-import {isPlainObject} from 'lodash'
 import {Observable, merge, of} from 'rxjs'
 import {mapTo, delay} from 'rxjs/operators'
 import {RouterPaneGroup} from './types'
-import {parsePanesSegment, encodePanesSegment} from './utils/parsePanesSegment'
+import {parsePanesSegment, encodePanesSegment} from './structure/parsePanesSegment'
 
 declare const __DEV__: boolean
-
-/**
- * @internal
- */
-export function isString(value: unknown): value is string {
-  return typeof value === 'string'
-}
-
-/**
- * @internal
- */
-export function isRecord(value: unknown): value is Record<string, unknown> {
-  return isPlainObject(value)
-}
 
 /**
  * @internal

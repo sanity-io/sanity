@@ -1,34 +1,34 @@
 import {useId} from '@reach/auto-id'
-import {DocumentActionModalDialogProps} from '@sanity/base'
+import {DocumentActionDialogModalProps} from '@sanity/base'
 import {LegacyLayerProvider} from '@sanity/base/components'
 import {Box, Dialog} from '@sanity/ui'
 import React from 'react'
 import {DIALOG_WIDTH_TO_UI_WIDTH} from './constants'
 
-export function ModalDialog(props: {dialog: DocumentActionModalDialogProps}) {
-  const {dialog} = props
-  const dialogId = useId() || ''
+export function ModalDialog(props: {modal: DocumentActionDialogModalProps}) {
+  const {modal} = props
+  const modalId = useId() || ''
 
-  const footer = dialog.footer && (
+  const footer = modal.footer && (
     <Box paddingX={4} paddingY={3}>
-      {dialog.footer}
+      {modal.footer}
     </Box>
   )
 
   return (
     <LegacyLayerProvider zOffset="fullscreen">
       <Dialog
-        __unstable_hideCloseButton={dialog.showCloseButton === false}
+        __unstable_hideCloseButton={modal.showCloseButton === false}
         footer={footer}
-        header={dialog.header}
-        id={dialogId}
+        header={modal.header}
+        id={modalId}
         // eslint-disable-next-line react/jsx-handler-names
-        onClose={dialog.onClose}
+        onClose={modal.onClose}
         // eslint-disable-next-line react/jsx-handler-names
-        onClickOutside={dialog.onClose}
-        width={dialog.width === undefined ? 1 : DIALOG_WIDTH_TO_UI_WIDTH[dialog.width]}
+        onClickOutside={modal.onClose}
+        width={modal.width === undefined ? 1 : DIALOG_WIDTH_TO_UI_WIDTH[modal.width]}
       >
-        <Box padding={4}>{dialog.content}</Box>
+        <Box padding={4}>{modal.content}</Box>
       </Dialog>
     </LegacyLayerProvider>
   )

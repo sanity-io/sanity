@@ -1,4 +1,4 @@
-import {DocumentActionConfirmDialogProps} from '@sanity/base'
+import {DocumentActionConfirmModalProps} from '@sanity/base'
 import {
   Box,
   Button,
@@ -13,14 +13,14 @@ import React, {useCallback, useState} from 'react'
 import {LEGACY_DIALOG_TO_UI_COLOR, POPOVER_FALLBACK_PLACEMENTS} from './constants'
 
 export function ConfirmDialog(props: {
-  dialog: DocumentActionConfirmDialogProps
+  modal: DocumentActionConfirmModalProps
   referenceElement: HTMLElement | null
 }) {
-  const {dialog, referenceElement} = props
+  const {modal, referenceElement} = props
 
   return (
     <Popover
-      content={<ConfirmDialogContent dialog={dialog} />}
+      content={<ConfirmDialogContent modal={modal} />}
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
       open
       placement="top"
@@ -31,18 +31,19 @@ export function ConfirmDialog(props: {
   )
 }
 
-function ConfirmDialogContent(props: {dialog: DocumentActionConfirmDialogProps}) {
-  const {dialog} = props
+function ConfirmDialogContent(props: {modal: DocumentActionConfirmModalProps}) {
+  const {modal} = props
   const {
     cancelButtonIcon,
     cancelButtonText,
     confirmButtonIcon,
     confirmButtonText,
-    color,
+    // color,
     message,
     onCancel,
     onConfirm,
-  } = dialog
+    tone,
+  } = modal
   const {isTopLayer} = useLayer()
   const [element, setElement] = useState<HTMLElement | null>(null)
 
@@ -77,7 +78,7 @@ function ConfirmDialogContent(props: {dialog: DocumentActionConfirmDialogProps})
             icon={confirmButtonIcon}
             onClick={onConfirm}
             text={confirmButtonText || 'Confirm'}
-            tone={color ? LEGACY_DIALOG_TO_UI_COLOR[color] : 'primary'}
+            tone={tone}
           />
         </Grid>
       </Box>

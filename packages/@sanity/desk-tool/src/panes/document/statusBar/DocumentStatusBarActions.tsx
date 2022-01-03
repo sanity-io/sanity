@@ -1,4 +1,9 @@
-import React, {memo, useCallback, useMemo, useState} from 'react'
+import React, {
+  memo,
+  // useCallback,
+  useMemo,
+  useState,
+} from 'react'
 import {DocumentActionDescription} from '@sanity/base'
 import {Box, Flex, Tooltip, Stack, Button, Hotkeys, LayerProvider, Text} from '@sanity/ui'
 import {RenderActionCollectionState} from '@sanity/base/_internal'
@@ -6,7 +11,6 @@ import {HistoryRestoreAction} from '../../../actions/HistoryRestoreAction'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
-import {LEGACY_BUTTON_COLOR_TO_TONE} from './constants'
 
 interface DocumentStatusBarActionsInnerProps {
   disabled: boolean
@@ -52,11 +56,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
                 onClick={firstActionState.onHandle}
                 ref={setButtonElement}
                 text={firstActionState.label}
-                tone={
-                  firstActionState.color
-                    ? LEGACY_BUTTON_COLOR_TO_TONE[firstActionState.color]
-                    : 'primary'
-                }
+                tone={firstActionState.tone || 'primary'}
               />
             </Stack>
           </Tooltip>
@@ -69,8 +69,8 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
         </Box>
       )}
 
-      {firstActionState && firstActionState.dialog && (
-        <ActionStateDialog dialog={firstActionState.dialog} referenceElement={buttonElement} />
+      {firstActionState && firstActionState.modal && (
+        <ActionStateDialog modal={firstActionState.modal} referenceElement={buttonElement} />
       )}
     </Flex>
   )
@@ -78,10 +78,10 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
 
 export const DocumentStatusBarActions = memo(function DocumentStatusBarActions() {
   const {actions, connectionState, editState} = useDocumentPane()
-  const [isMenuOpen, setMenuOpen] = useState(false)
-  const handleMenuOpen = useCallback(() => setMenuOpen(true), [])
-  const handleMenuClose = useCallback(() => setMenuOpen(false), [])
-  const handleActionComplete = useCallback(() => setMenuOpen(false), [])
+  // const [isMenuOpen, setMenuOpen] = useState(false)
+  // const handleMenuOpen = useCallback(() => setMenuOpen(true), [])
+  // const handleMenuClose = useCallback(() => setMenuOpen(false), [])
+  // const handleActionComplete = useCallback(() => setMenuOpen(false), [])
 
   if (!actions || !editState) {
     return null
@@ -89,16 +89,22 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
 
   return (
     <RenderActionCollectionState
-      component={DocumentStatusBarActionsInner}
-      isMenuOpen={isMenuOpen}
-      showMenu={actions.length > 1}
-      onMenuOpen={handleMenuOpen}
-      onMenuClose={handleMenuClose}
-      onActionComplete={handleActionComplete}
+      // component={}
+      // onActionComplete={handleActionComplete}
       actions={actions}
-      actionProps={editState}
-      disabled={connectionState !== 'connected'}
-    />
+      actionProps={editState as any}
+    >
+      {({states}) => (
+        <DocumentStatusBarActionsInner
+          disabled={connectionState !== 'connected'}
+          // isMenuOpen={isMenuOpen}
+          // onMenuOpen={handleMenuOpen}
+          // onMenuClose={handleMenuClose}
+          showMenu={actions.length > 1}
+          states={states}
+        />
+      )}
+    </RenderActionCollectionState>
   )
 })
 
@@ -111,11 +117,14 @@ export const HistoryStatusBarActions = memo(function HistoryStatusBarActions() {
   const actionProps = useMemo(() => ({...(editState || {}), revision}), [editState, revision])
 
   return (
-    <RenderActionCollectionState
-      component={DocumentStatusBarActionsInner}
-      actions={historyActions}
-      actionProps={actionProps}
-      disabled={connectionState !== 'connected' || Boolean(disabled)}
-    />
+    <RenderActionCollectionState actions={historyActions} actionProps={actionProps as any}>
+      {({states}) => (
+        <DocumentStatusBarActionsInner
+          disabled={connectionState !== 'connected' || Boolean(disabled)}
+          showMenu={false}
+          states={states}
+        />
+      )}
+    </RenderActionCollectionState>
   )
 })

@@ -17,7 +17,6 @@ import {
 import React, {createElement, isValidElement, useCallback, useRef, useState, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
 import {ActionStateDialog} from './ActionStateDialog'
-import {LEGACY_BUTTON_COLOR_TO_TONE} from './constants'
 
 export interface ActionMenuButtonProps {
   actionStates: DocumentActionDescription[]
@@ -78,9 +77,9 @@ export function ActionMenuButton(props: ActionMenuButtonProps) {
         ref={setReferenceElement}
       />
 
-      {currentAction && currentAction.dialog && (
+      {currentAction && currentAction.modal && (
         <LegacyLayerProvider zOffset="paneFooter">
-          <ActionStateDialog dialog={currentAction.dialog} referenceElement={referenceElement} />
+          <ActionStateDialog modal={currentAction.modal} referenceElement={referenceElement} />
         </LegacyLayerProvider>
       )}
     </>
@@ -115,7 +114,7 @@ function ActionMenuListItem(props: ActionMenuListItemProps) {
       disabled={disabled || Boolean(actionState.disabled)}
       onClick={handleClick}
       padding={0}
-      tone={actionState.color && LEGACY_BUTTON_COLOR_TO_TONE[actionState.color]}
+      tone={actionState.tone}
     >
       <Tooltip
         content={tooltipContent}

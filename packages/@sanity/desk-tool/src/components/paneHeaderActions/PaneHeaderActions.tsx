@@ -1,7 +1,7 @@
 import {useConfig} from '@sanity/base'
 import {getTemplateById} from '@sanity/base/initial-value-templates'
 import {UnknownIcon} from '@sanity/icons'
-import {InitialValueTemplateItem} from '@sanity/structure'
+import {InitialValueTemplateItem} from '@sanity/base/structure'
 import {Box, Button, Inline, Text, Tooltip} from '@sanity/ui'
 import {partition, uniqBy} from 'lodash'
 import React, {memo, useCallback, useMemo} from 'react'
@@ -47,7 +47,10 @@ export const PaneHeaderActions = memo(
     menuItemGroups = emptyArray,
     actionHandlers = emptyObject,
   }: PaneHeaderActionsProps) => {
-    const {schema} = useConfig()
+    const {
+      data: {initialValueTemplates},
+      schema,
+    } = useConfig()
 
     const handleAction = useCallback(
       (item: PaneMenuItem) => {
@@ -100,7 +103,7 @@ export const PaneHeaderActions = memo(
           const templateId = intentParams.template || intentParams.type
           if (!templateId) return null
 
-          const template = getTemplateById(schema, templateId)
+          const template = getTemplateById(schema, initialValueTemplates, templateId)
           // the template doesn't exist then the action might be disabled
           if (!template) return null
 
@@ -129,7 +132,7 @@ export const PaneHeaderActions = memo(
 
           return initialValueTemplateItem
         })
-    }, [menuItems])
+    }, [initialValueTemplates, menuItems, schema])
 
     const combinedInitialValueTemplates = useMemo(() => {
       // this de-dupes create actions

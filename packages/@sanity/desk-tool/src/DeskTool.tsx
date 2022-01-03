@@ -1,22 +1,30 @@
+import {useConfig} from '@sanity/base'
 import {getTemplateById} from '@sanity/base/initial-value-templates'
 import {RouterState, useRouter} from '@sanity/base/router'
+import {DocumentNodeResolver, StructureBuilder} from '@sanity/base/structure'
+import {SchemaType} from '@sanity/types'
 import {PortalProvider, useToast} from '@sanity/ui'
 import React, {memo, Fragment, useState, useEffect, useCallback, useMemo} from 'react'
+import {Subject} from 'rxjs'
+import {map} from 'rxjs/operators'
 import styled from 'styled-components'
-import {DocumentBuilder} from '@sanity/structure'
-import {useConfig} from '@sanity/base'
-import {PaneNode, UnresolvedPaneNode} from './types'
 import {PaneLayout} from './components/pane'
 import {LOADING_PANE} from './constants'
 import {DeskToolProvider} from './contexts/deskTool'
-import {useResolvedPanes} from './utils/useResolvedPanes'
 import {getIntentRouteParams, getWaitMessages, isSaveHotkey} from './helpers'
 import {DeskToolPane, LoadingPane} from './panes'
+import {useResolvedPanes} from './structure/useResolvedPanes'
+import {DocumentActionsResolver, PaneNode, RouterPanes, UnresolvedPaneNode} from './types'
 
 interface DeskToolProps {
+  components: {
+    LanguageFilter?: React.ComponentType<{schemaType: SchemaType}>
+  }
   onPaneChange: (panes: Array<PaneNode | typeof LOADING_PANE>) => void
-  resolveDocumentNode: (options: {documentId?: string; schemaType: string}) => DocumentBuilder
+  resolveDocumentActions: DocumentActionsResolver
+  resolveDocumentNode: DocumentNodeResolver
   structure: UnresolvedPaneNode
+  structureBuilder: StructureBuilder
 }
 
 const StyledPaneLayout = styled(PaneLayout)`
@@ -29,13 +37,34 @@ const EMPTY_ROUTER_STATE: RouterState = {}
 /**
  * @internal
  */
-export const DeskTool = memo(({onPaneChange, resolveDocumentNode, structure}: DeskToolProps) => {
-  const {schema} = useConfig()
+export const DeskTool = memo(function DeskTool(props: DeskToolProps) {
+  const {
+    components,
+    onPaneChange,
+    resolveDocumentActions,
+    resolveDocumentNode,
+    structure,
+    structureBuilder,
+  } = props
+  const {
+    data: {initialValueTemplates},
+    schema,
+  } = useConfig()
   const {push: pushToast} = useToast()
   const {navigate, state: routerState = EMPTY_ROUTER_STATE} = useRouter()
+
+  const routerStateSubject = useMemo(() => new Subject<RouterState>(), [])
+  const routerState$ = useMemo(() => routerStateSubject.asObservable(), [routerStateSubject])
+  const routerPanes$ = useMemo(
+    () => routerState$.pipe(map((_routerState) => (_routerState?.panes || []) as RouterPanes)),
+    [routerState$]
+  )
+
   const {paneDataItems, resolvedPanes, routerPanes} = useResolvedPanes(
+    structureBuilder,
     structure,
-    resolveDocumentNode
+    resolveDocumentNode,
+    routerPanes$
   )
 
   const [layoutCollapsed, setLayoutCollapsed] = useState(false)
@@ -76,17 +105,17 @@ export const DeskTool = memo(({onPaneChange, resolveDocumentNode, structure}: De
     } = routerState as any
 
     const {template: templateName} = params
-    const template = getTemplateById(schema, templateName)
+    const template = getTemplateById(schema, initialValueTemplates, templateName)
     const type = (template && template.schemaType) || schemaType
     return (action === 'edit' && legacyEditDocumentId) || (type && editDocumentId)
-  }, [routerState])
+  }, [initialValueTemplates, routerState, schema])
 
   useEffect(() => {
     if (!shouldRewrite) return
 
     const {legacyEditDocumentId, type: schemaType, editDocumentId, params = {}} = routerState as any
     const {template: templateName, ...payloadParams} = params
-    const template = getTemplateById(schema, templateName)
+    const template = getTemplateById(schema, initialValueTemplates, templateName)
     const type = (template && template.schemaType) || schemaType
 
     navigate(
@@ -98,7 +127,7 @@ export const DeskTool = memo(({onPaneChange, resolveDocumentNode, structure}: De
       }),
       {replace: true}
     )
-  }, [navigate, routerState, shouldRewrite])
+  }, [initialValueTemplates, navigate, routerState, schema, shouldRewrite])
 
   useEffect(() => {
     const handleGlobalKeyDown = (event: KeyboardEvent) => {
@@ -120,10 +149,13 @@ export const DeskTool = memo(({onPaneChange, resolveDocumentNode, structure}: De
     return () => window.removeEventListener('keydown', handleGlobalKeyDown)
   }, [pushToast])
 
+  useEffect(() => routerStateSubject.next(routerState), [routerStateSubject, routerState])
+
   return (
     <DeskToolProvider
+      components={components}
       layoutCollapsed={layoutCollapsed}
-      resolveDocumentNode={resolveDocumentNode}
+      resolveDocumentActions={resolveDocumentActions}
       structure={structure}
     >
       <PortalProvider element={portalElement || null}>
@@ -181,5 +213,3 @@ export const DeskTool = memo(({onPaneChange, resolveDocumentNode, structure}: De
     </DeskToolProvider>
   )
 })
-
-DeskTool.displayName = 'DeskTool'

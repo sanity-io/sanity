@@ -52,13 +52,11 @@ function DocumentBadgesInner({states}: DocumentBadgesInnerProps) {
 export function DocumentBadges() {
   const {badges, editState} = useDocumentPane()
 
-  if (!badges) return null
+  if (!editState || !badges) return null
 
   return (
-    <RenderBadgeCollectionState
-      component={DocumentBadgesInner}
-      badges={badges}
-      badgeProps={editState}
-    />
+    <RenderBadgeCollectionState badges={badges} badgeProps={editState as any}>
+      {({states}) => <DocumentBadgesInner states={states} />}
+    </RenderBadgeCollectionState>
   )
 }

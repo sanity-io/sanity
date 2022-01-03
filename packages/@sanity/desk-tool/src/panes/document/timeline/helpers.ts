@@ -1,4 +1,4 @@
-import {Chunk, ChunkType} from '@sanity/field/diff'
+import {Chunk, ChunkType} from '@sanity/base/field'
 import {IconComponent} from '@sanity/icons'
 import {TIMELINE_ICON_COMPONENTS, TIMELINE_LABELS} from './constants'
 
@@ -25,9 +25,7 @@ export function sinceTimelineProps(
   }
 }
 
-export function revTimelineProps(
-  rev: Chunk
-): {
+export function revTimelineProps(rev: Chunk): {
   topSelection: Chunk
   bottomSelection: Chunk
 } {

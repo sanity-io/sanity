@@ -1,23 +1,23 @@
 import {DocumentActionComponent, useClient, useDatastores, useSource} from '@sanity/base'
 import {TrashIcon} from '@sanity/icons'
-import {useDocumentOperation} from '@sanity/react-hooks'
-import React, {useCallback, useState} from 'react'
 import {
+  useDocumentOperation,
   unstable_useDocumentPairPermissions as useDocumentPairPermissions,
   useCurrentUser,
 } from '@sanity/base/hooks'
+import React, {useCallback, useState} from 'react'
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
 import {ConfirmDeleteDialog} from '../components/confirmDeleteDialog'
 
 const DISABLED_REASON_TITLE = {
-  NOTHING_TO_DELETE: 'This document doesn‘t yet exist or is already deleted',
+  NOTHING_TO_DELETE: 'This document doesn’t yet exist or is already deleted',
 }
 
 export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComplete}) => {
   const client = useClient()
   const {schema} = useSource()
   const {grantsStore} = useDatastores()
-  const {delete: deleteOp}: any = useDocumentOperation(id, type)
+  const {delete: deleteOp} = useDocumentOperation(id, type)
   const [isDeleting, setIsDeleting] = useState(false)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
 
@@ -52,7 +52,7 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComple
 
   if (!isPermissionsLoading && !permissions?.granted) {
     return {
-      color: 'danger',
+      tone: 'critical',
       icon: TrashIcon,
       disabled: true,
       label: 'Delete',
@@ -66,7 +66,7 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComple
   }
 
   return {
-    color: 'danger',
+    tone: 'critical',
     icon: TrashIcon,
     disabled: isDeleting || Boolean(deleteOp.disabled) || isPermissionsLoading,
     title:
@@ -76,8 +76,8 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComple
     label: isDeleting ? 'Deleting…' : 'Delete',
     shortcut: 'Ctrl+Alt+D',
     onHandle: handle,
-    dialog: isConfirmDialogOpen && {
-      type: 'legacy',
+    modal: isConfirmDialogOpen && {
+      type: 'dialog',
       onClose: onComplete,
       content: (
         <ConfirmDeleteDialog

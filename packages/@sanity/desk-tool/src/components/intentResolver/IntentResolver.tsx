@@ -1,9 +1,11 @@
 import {useDatastores} from '@sanity/base'
+import {isString} from '@sanity/base/util'
 import {Box, Card, Flex, Spinner, Text} from '@sanity/ui'
 import React, {useEffect, useState} from 'react'
+import {DocumentNodeResolver, useStructure} from '@sanity/base/structure'
 import {useDeskTool} from '../../contexts/deskTool'
 import {RouterPanes} from '../../types'
-import {resolveIntent} from '../../utils/resolveIntent'
+import {resolveIntent} from '../../structure/resolveIntent'
 import {useUnique} from '../../utils/useUnique'
 import {Delay} from '../Delay'
 import {Redirect} from './Redirect'
@@ -11,8 +13,9 @@ import {ensureDocumentIdAndType} from './utils'
 
 export interface IntentResolverProps {
   intent: string
-  params: {type: string; id: string; [key: string]: string | undefined}
+  params: Record<string, unknown> // {type: string; id: string; [key: string]: string | undefined}
   payload: unknown
+  resolveDocumentNode: DocumentNodeResolver
 }
 
 /**
@@ -20,21 +23,24 @@ export interface IntentResolverProps {
  * intent location (while showing a loading spinner during the process)
  */
 export function IntentResolver(props: IntentResolverProps) {
-  const {intent} = props
-  const {resolveDocumentNode, structure} = useDeskTool()
+  const {intent, params: paramsProp = {}, payload: payloadProp, resolveDocumentNode} = props
+  const {builder: structureBuilder} = useStructure()
+  const {structure} = useDeskTool()
   const {documentStore} = useDatastores()
-  const params = useUnique(props.params || {})
-  const payload = useUnique(props.payload)
+  const params = useUnique(paramsProp)
+  const payload = useUnique(payloadProp)
   const [nextRouterPanes, setNextRouterPanes] = useState<RouterPanes | null>(null)
   const [error, setError] = useState<unknown>(null)
+  const idParam = isString(params.id) ? params.id : undefined
+  const typeParam = isString(params.type) ? params.type : undefined
 
   useEffect(() => {
     const cancelledRef = {current: false}
 
     async function getNextRouterPanes() {
-      const {id, type} = await ensureDocumentIdAndType(documentStore, params.id, params.type)
+      const {id, type} = await ensureDocumentIdAndType(documentStore, idParam, typeParam)
 
-      return resolveIntent(resolveDocumentNode, {
+      return resolveIntent(structureBuilder, resolveDocumentNode, {
         intent,
         params: {...params, id, type},
         payload,
@@ -53,7 +59,7 @@ export function IntentResolver(props: IntentResolverProps) {
     return () => {
       cancelledRef.current = true
     }
-  }, [documentStore, intent, params, payload, resolveDocumentNode, structure])
+  }, [documentStore, idParam, intent, params, payload, resolveDocumentNode, structure, typeParam])
 
   // throwing here bubbles the error up to the error boundary inside of the
   // `DeskToolRoot` component

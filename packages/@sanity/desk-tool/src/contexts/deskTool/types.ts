@@ -1,5 +1,5 @@
-import {DocumentBuilder} from '@sanity/structure'
-import {UnresolvedPaneNode} from '../../types'
+import {SchemaType} from '@sanity/types'
+import {DocumentActionsResolver, UnresolvedPaneNode} from '../../types'
 
 /**
  * @internal
@@ -18,8 +18,9 @@ export interface DeskToolFeatures {
  * @internal
  */
 export interface DeskToolContextValue {
+  components: {LanguageFilter?: React.ComponentType<{schemaType: SchemaType}>}
   features: DeskToolFeatures
   layoutCollapsed: boolean
-  resolveDocumentNode: (options: {documentId?: string; schemaType: string}) => DocumentBuilder
+  resolveDocumentActions: DocumentActionsResolver
   structure: UnresolvedPaneNode
 }

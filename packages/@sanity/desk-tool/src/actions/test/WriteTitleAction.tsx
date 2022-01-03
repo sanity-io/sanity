@@ -1,5 +1,5 @@
 import {DocumentActionComponent} from '@sanity/base'
-import {useDocumentOperation} from '@sanity/react-hooks'
+import {useDocumentOperation} from '@sanity/base/hooks'
 import {useCallback} from 'react'
 
 export const WriteTitleAction: DocumentActionComponent = (docInfo) => {

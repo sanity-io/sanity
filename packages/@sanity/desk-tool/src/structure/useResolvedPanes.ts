@@ -1,12 +1,10 @@
-import {RouterState, useRouter} from '@sanity/base/router'
-import {DocumentBuilder} from '@sanity/structure'
-import {useEffect, useState, useMemo} from 'react'
-import {Subject} from 'rxjs'
+import {DocumentNodeResolver, StructureBuilder} from '@sanity/base/structure'
+import {useEffect, useState} from 'react'
+import {Observable} from 'rxjs'
 import {map} from 'rxjs/operators'
 import {LOADING_PANE} from '../constants'
 import {RouterPanes, PaneNode, RouterPaneGroup, UnresolvedPaneNode} from '../types'
 import {createResolvedPaneNodeStream} from './createResolvedPaneNodeStream'
-// import {loadStructure} from './loadStructure'
 
 interface PaneData {
   active: boolean
@@ -30,10 +28,11 @@ interface Panes {
 }
 
 export function useResolvedPanes(
+  structureBuilder: StructureBuilder,
   structure: UnresolvedPaneNode,
-  resolveDocumentNode: (options: {documentId?: string; schemaType: string}) => DocumentBuilder
+  resolveDocumentNode: DocumentNodeResolver,
+  routerPanes$: Observable<RouterPanes>
 ): Panes {
-  const router = useRouter()
   const [data, setData] = useState<Panes>({
     paneDataItems: [],
     resolvedPanes: [],
@@ -46,17 +45,12 @@ export function useResolvedPanes(
   const [error, setError] = useState<unknown>()
   if (error) throw error
 
-  const routerStateSubject = useMemo(() => new Subject<RouterState>(), [])
-  const routerState$ = useMemo(() => routerStateSubject.asObservable(), [routerStateSubject])
-  const routerPanes$ = useMemo(
-    () => routerState$.pipe(map((routerState) => (routerState?.panes || []) as RouterPanes)),
-    [routerState$]
-  )
-
   useEffect(() => {
-    const resolvedPanes$ = createResolvedPaneNodeStream(resolveDocumentNode, {
+    const resolvedPanes$ = createResolvedPaneNodeStream({
+      resolveDocumentNode,
       rootPaneNode: structure,
       routerPanesStream: routerPanes$,
+      structureBuilder,
     }).pipe(
       map((resolvedPanes) => {
         const routerPanes = resolvedPanes.reduce<RouterPanes>((acc, next) => {
@@ -107,9 +101,7 @@ export function useResolvedPanes(
     })
 
     return () => subscription.unsubscribe()
-  }, [router, routerPanes$, structure])
-
-  useEffect(() => routerStateSubject.next(router.state), [routerStateSubject, router.state])
+  }, [resolveDocumentNode, routerPanes$, structure, structureBuilder])
 
   return data
 }

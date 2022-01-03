@@ -1,26 +1,26 @@
-import {DocumentActionDescription} from '@sanity/base'
+import {DocumentActionDescription, DocumentActionProps} from '@sanity/base'
 import {LegacyLayerProvider} from '@sanity/base/components'
 import {RenderActionCollectionState} from '@sanity/base/_internal'
 import isHotkey from 'is-hotkey'
-import React, {useCallback, useState} from 'react'
+import React, {useCallback, useMemo, useState} from 'react'
 import {ActionStateDialog} from '../statusBar'
 import {Pane} from '../../../components/pane'
 import {useDocumentPane} from '../useDocumentPane'
 
 export interface KeyboardShortcutResponderProps {
-  actionsBoxElement?: HTMLElement | null
+  actionsBoxElement: HTMLElement | null
   activeIndex: number
   currentMinWidth?: number
-  flex: number
+  flex?: number
   id: string
-  minWidth: number
+  minWidth?: number
   onActionStart: (index: number) => void
   rootRef: React.Ref<HTMLDivElement>
   states: DocumentActionDescription[]
 }
 
 function KeyboardShortcutResponder(
-  props: KeyboardShortcutResponderProps & React.HTMLProps<HTMLDivElement>
+  props: KeyboardShortcutResponderProps & Omit<React.HTMLProps<HTMLDivElement>, 'height'>
 ) {
   const {
     actionsBoxElement,
@@ -69,9 +69,9 @@ function KeyboardShortcutResponder(
     <Pane id={id} onKeyDown={handleKeyDown} tabIndex={-1} {...rest} ref={rootRef}>
       {children}
 
-      {activeAction && activeAction.dialog && (
+      {activeAction && activeAction.modal && (
         <LegacyLayerProvider zOffset="paneFooter">
-          <ActionStateDialog dialog={activeAction.dialog} referenceElement={actionsBoxElement} />
+          <ActionStateDialog modal={activeAction.modal} referenceElement={actionsBoxElement} />
         </LegacyLayerProvider>
       )}
     </Pane>
@@ -79,10 +79,11 @@ function KeyboardShortcutResponder(
 }
 
 export interface DocumentActionShortcutsProps {
-  actionsBoxElement?: HTMLElement | null
+  actionsBoxElement: HTMLElement | null
   currentMinWidth?: number
   debug?: boolean
   flex: number
+  id: string
   minWidth: number
   rootRef: React.Ref<HTMLDivElement>
 }
@@ -97,19 +98,35 @@ export const DocumentActionShortcuts = React.memo(
       setActiveIndex(idx)
     }, [])
 
-    if (!editState) return null
+    const actionProps: DocumentActionProps | null = useMemo(
+      () =>
+        editState && {
+          ...editState,
+
+          // @todo: what to call here?
+          onComplete: () => undefined,
+
+          // @todo: get revision string
+          revision: undefined,
+        },
+      [editState]
+    )
+
+    if (!actionProps || !actions) return null
 
     return (
-      <RenderActionCollectionState
-        actions={actions}
-        actionsBoxElement={actionsBoxElement}
-        actionProps={editState}
-        component={KeyboardShortcutResponder}
-        onActionStart={onActionStart}
-        activeIndex={activeIndex}
-        {...rest}
-      >
-        {children}
+      <RenderActionCollectionState actionProps={actionProps} actions={actions}>
+        {({states}) => (
+          <KeyboardShortcutResponder
+            {...rest}
+            activeIndex={activeIndex}
+            actionsBoxElement={actionsBoxElement}
+            onActionStart={onActionStart}
+            states={states}
+          >
+            {children}
+          </KeyboardShortcutResponder>
+        )}
       </RenderActionCollectionState>
     )
   }

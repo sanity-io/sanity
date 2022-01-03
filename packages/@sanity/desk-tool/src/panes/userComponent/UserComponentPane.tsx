@@ -16,6 +16,7 @@ export function UserComponentPane(props: UserComponentPaneProps) {
   const {index, pane, paneKey, ...restProps} = props
   const {params} = usePaneRouter()
   const {
+    child,
     component,
     menuItems,
     menuItemGroups,
@@ -55,6 +56,8 @@ export function UserComponentPane(props: UserComponentPaneProps) {
             // NOTE: here we're utilizing the function form of refs so setting
             // the ref causes a re-render for `UserComponentPaneHeader`
             ref: setRef,
+            child: child as any, // @todo: Fix typings
+            paneKey,
             // NOTE: this is for backwards compatibility (<= 2.20.0)
             urlParams: params,
           })}

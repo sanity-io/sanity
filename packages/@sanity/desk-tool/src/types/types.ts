@@ -1,6 +1,27 @@
-import {Subscribable} from 'rxjs'
+import {DocumentActionComponent} from '@sanity/base'
+import {EditStateFor} from '@sanity/base/_internal'
+import {
+  ChildResolverContext,
+  DocumentNodeResolver,
+  InitialValueTemplateItem,
+  ListBuilder,
+  StructureBuilder,
+  UserComponent,
+} from '@sanity/base/structure'
 import {SchemaType, SanityDocument} from '@sanity/types'
-import {DocumentBuilder, InitialValueTemplateItem, StructureBuilder} from '@sanity/structure'
+import {Subscribable} from 'rxjs'
+
+export type DocumentActionsResolver = (editState: EditStateFor) => DocumentActionComponent[]
+
+export type StructureResolver = (S: StructureBuilder) => ListBuilder
+
+// export type StructureDocumentNodeResolver = (
+//   S: StructureBuilder,
+//   options: {
+//     documentId?: string
+//     schemaType: string
+//   }
+// ) => DocumentBuilder | DocumentNode | null | undefined
 
 export type DeskToolPaneActionHandler = (params: any, scope?: unknown) => void
 
@@ -114,29 +135,30 @@ interface BaseResolvedPaneNode<T extends PaneNode['type']> {
   child?: UnresolvedPaneNode
 }
 
-export interface CustomComponentPaneNode<
-  // NOTE: other params from this pane value will be pass as props to the
-  // component (thus the generic param)
-  Props extends CustomComponentPaneNodeProps = CustomComponentPaneNodeProps
-> extends BaseResolvedPaneNode<'component'> {
-  component: React.ComponentType<Props> | React.ReactNode
+export interface CustomComponentPaneNode extends BaseResolvedPaneNode<'component'> {
+  component: UserComponent
+  options?: Record<string, unknown>
+  // component: React.ComponentType<Props> | React.ReactNode
+
   /**
    * An experimental flag that can be used to opt out of the forced refresh when
    * the `itemId` or `childItemId` changes. See `UserComponentPane`:
    * https://github.com/sanity-io/sanity/commit/8340a003043edf6de3afd9ff628ce93be79978e2
+   *
+   * @beta
    */
   __preserveInstance?: boolean
 }
 
-export interface CustomComponentPaneNodeProps {
-  id: string
-  childItemId: string
-  itemId: string
-  paneKey: string
-  urlParams: Record<string, string>
-  isActive: boolean
-  isSelected: boolean
-}
+// export interface CustomComponentPaneNodeProps {
+//   id: string
+//   childItemId: string
+//   itemId: string
+//   paneKey: string
+//   urlParams: Record<string, string>
+//   isActive: boolean
+//   isSelected: boolean
+// }
 
 export type PaneView<TOptions = unknown> =
   | {
@@ -224,7 +246,7 @@ export type SerializablePaneNode = {
 }
 
 export type PaneNodeResolver = (
-  defaultResolver: (opts: {documentId?: string; schemaType: string}) => DocumentBuilder,
+  resolverContext: ChildResolverContext,
   id: string,
   context: RouterPaneSiblingContext
 ) => UnresolvedPaneNode

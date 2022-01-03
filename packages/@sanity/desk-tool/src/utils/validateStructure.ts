@@ -1,4 +1,4 @@
-import {SerializeError} from '@sanity/structure'
+import {SerializeError} from '@sanity/base/structure'
 
 export default (structure: any) => {
   if (!structure) {

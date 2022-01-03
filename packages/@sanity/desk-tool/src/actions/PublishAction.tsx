@@ -1,11 +1,13 @@
 import {DocumentActionComponent, useClient, useConfig, useDatastores} from '@sanity/base'
-import {useSyncState, useDocumentOperation, useValidationStatus} from '@sanity/react-hooks'
-import {CheckmarkIcon, PublishIcon} from '@sanity/icons'
-import React, {useCallback, useEffect, useState} from 'react'
 import {
+  useSyncState,
+  useDocumentOperation,
+  useValidationStatus,
   useCurrentUser,
   unstable_useDocumentPairPermissions as useDocumentPairPermissions,
 } from '@sanity/base/hooks'
+import {CheckmarkIcon, PublishIcon} from '@sanity/icons'
+import React, {useCallback, useEffect, useState} from 'react'
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
 import {TimeAgo} from '../components/TimeAgo'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
@@ -110,7 +112,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
   if (liveEdit) {
     return {
-      color: 'success',
+      tone: 'positive',
       label: 'Publish',
       title:
         'Live Edit is enabled for this content type and publishing happens automatically as you make changes',
@@ -120,7 +122,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
   if (!isPermissionsLoading && !permissions?.granted) {
     return {
-      color: 'success',
+      tone: 'positive',
       label: 'Publish',
       title: (
         <InsufficientPermissionsMessage
@@ -142,7 +144,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
   return {
     disabled: disabled || isPermissionsLoading,
-    color: 'success',
+    tone: 'positive',
     label:
       // eslint-disable-next-line no-nested-ternary
       publishState === 'published'

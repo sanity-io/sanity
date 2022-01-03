@@ -3,7 +3,7 @@ import {first} from 'rxjs/operators'
 import {Observable} from 'rxjs'
 import {getPublishedId} from '@sanity/base/_internal'
 import {DocumentStore} from '@sanity/base'
-import {PaneResolutionError} from '../../utils/PaneResolutionError'
+import {PaneResolutionError} from '../../structure/PaneResolutionError'
 
 export function removeDraftPrefix(documentId: string): string {
   const publishedId = getPublishedId(documentId)

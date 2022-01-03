@@ -1,17 +1,17 @@
 import {
   DocumentActionComponent,
-  DocumentActionDialogProps,
+  DocumentActionModalProps,
   useClient,
   useConfig,
   useDatastores,
 } from '@sanity/base'
-import {useDocumentOperation} from '@sanity/react-hooks'
-import {ResetIcon} from '@sanity/icons'
-import React, {useCallback, useMemo, useState} from 'react'
 import {
+  useDocumentOperation,
   unstable_useDocumentPairPermissions as useDocumentPairPermissions,
   useCurrentUser,
 } from '@sanity/base/hooks'
+import {ResetIcon} from '@sanity/icons'
+import React, {useCallback, useMemo, useState} from 'react'
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
 
 const DISABLED_REASON_TITLE = {
@@ -29,7 +29,7 @@ export const DiscardChangesAction: DocumentActionComponent = ({
   const client = useClient()
   const {schema} = useConfig()
   const {grantsStore} = useDatastores()
-  const {discardChanges}: any = useDocumentOperation(id, type)
+  const {discardChanges} = useDocumentOperation(id, type)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions(
     client,
@@ -52,11 +52,11 @@ export const DiscardChangesAction: DocumentActionComponent = ({
     setConfirmDialogOpen(true)
   }, [])
 
-  const dialog: DocumentActionDialogProps | false = useMemo(
+  const modal: DocumentActionModalProps | false = useMemo(
     () =>
       isConfirmDialogOpen && {
         type: 'confirm',
-        color: 'danger',
+        tone: 'critical',
         onCancel: onComplete,
         onConfirm: handleConfirm,
         message: <>Are you sure you want to discard all changes since last published?</>,
@@ -70,7 +70,7 @@ export const DiscardChangesAction: DocumentActionComponent = ({
 
   if (!isPermissionsLoading && !permissions?.granted) {
     return {
-      color: 'danger',
+      tone: 'critical',
       icon: ResetIcon,
       disabled: true,
       label: 'Discard changes',
@@ -84,7 +84,7 @@ export const DiscardChangesAction: DocumentActionComponent = ({
   }
 
   return {
-    color: 'danger',
+    tone: 'critical',
     icon: ResetIcon,
     disabled: Boolean(discardChanges.disabled) || isPermissionsLoading,
     title:
@@ -93,6 +93,6 @@ export const DiscardChangesAction: DocumentActionComponent = ({
       '',
     label: 'Discard changes',
     onHandle: handle,
-    dialog,
+    modal,
   }
 }

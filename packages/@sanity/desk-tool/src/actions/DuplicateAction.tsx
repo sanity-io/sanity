@@ -1,13 +1,13 @@
 import {DocumentActionComponent, useClient, useConfig, useDatastores} from '@sanity/base'
 import {CopyIcon} from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
-import {useDocumentOperation} from '@sanity/react-hooks'
-import {useRouter} from '@sanity/base/router'
-import React, {useCallback, useState} from 'react'
 import {
+  useDocumentOperation,
   unstable_useDocumentPairPermissions as useDocumentPairPermissions,
   useCurrentUser,
 } from '@sanity/base/hooks'
+import {useRouter} from '@sanity/base/router'
+import React, {useCallback, useState} from 'react'
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
 
 const DISABLED_REASON_TITLE = {
@@ -18,7 +18,7 @@ export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete})
   const client = useClient()
   const {schema} = useConfig()
   const {grantsStore} = useDatastores()
-  const {duplicate}: any = useDocumentOperation(id, type)
+  const {duplicate} = useDocumentOperation(id, type)
   const router = useRouter()
   const [isDuplicating, setDuplicating] = useState(false)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions(
@@ -38,7 +38,7 @@ export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete})
     const dupeId = uuid()
 
     setDuplicating(true)
-    duplicate.execute(dupeId)
+    ;(duplicate.execute as any)(dupeId)
     router.navigateIntent('edit', {id: dupeId, type})
     onComplete()
   }, [duplicate, onComplete, router, type])

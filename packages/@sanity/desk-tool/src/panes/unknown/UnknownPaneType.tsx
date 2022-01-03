@@ -1,7 +1,7 @@
-import React from 'react'
+import {isRecord} from '@sanity/base/util'
 import {Box, Text} from '@sanity/ui'
+import React from 'react'
 import {Pane, PaneContent, PaneHeader} from '../../components/pane'
-import {isRecord} from '../../utils/isRecord'
 
 interface UnknownPaneProps {
   isSelected: boolean

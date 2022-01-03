@@ -22,7 +22,7 @@ type Truthy<T> = T extends false
   : T extends null | undefined
   ? NonNullable<T>
   : T
-const isTruthy = (Boolean as (t: unknown) => boolean) as <T>(t: T) => t is Truthy<T>
+const isTruthy = Boolean as (t: unknown) => boolean as <T>(t: T) => t is Truthy<T>
 
 function parseChunks(chunks: string[], initial: RouterPaneSibling): RouterPaneSibling {
   return chunks.reduce(

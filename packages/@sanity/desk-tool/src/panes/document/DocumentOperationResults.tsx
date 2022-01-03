@@ -1,4 +1,4 @@
-import {useDocumentOperationEvent} from '@sanity/react-hooks'
+import {useDocumentOperationEvent} from '@sanity/base/hooks'
 import {useToast} from '@sanity/ui'
 import React, {memo, useEffect} from 'react'
 import {useDocumentPane} from './useDocumentPane'

@@ -2,23 +2,22 @@ import {createPlugin, SanityPlugin} from '@sanity/base'
 import {MasterDetailIcon} from '@sanity/icons'
 import {lazy} from 'react'
 import {DeskToolOptions} from './DeskToolRoot'
-// import {DeskToolRoot} from './DeskToolRoot'
 import {router} from './router'
-// import {getIntentState} from './getIntentState'
 
+export * from './actions/resolveDocumentActions'
 export * from './constants'
 
 // Export pane router
 export * from './contexts/paneRouter/PaneRouterContext'
 export * from './contexts/paneRouter/usePaneRouter'
 
-export const desk = (options?: DeskToolOptions): SanityPlugin => {
+export function deskTool(options?: DeskToolOptions): SanityPlugin {
   return createPlugin({
     tools: [
       {
-        name: 'desk',
-        title: 'Desk',
-        icon: MasterDetailIcon,
+        name: options?.name || 'desk',
+        title: options?.title || 'Desk',
+        icon: options?.icon || MasterDetailIcon,
         component: lazy(() => import('./DeskToolRoot')),
         // canHandleIntent,
         // getIntentState,
@@ -28,6 +27,8 @@ export const desk = (options?: DeskToolOptions): SanityPlugin => {
     ],
   })
 }
+
+export type {DocumentActionsResolver, StructureResolver} from './types'
 
 // function canHandleIntent(intentName: string, params: Record<string, string | undefined>) {
 //   return Boolean(

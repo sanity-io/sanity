@@ -1,45 +1,46 @@
-import {SerializeError} from '@sanity/structure'
+import {createSchema} from '@sanity/base/schema'
+import {createStructureBuilder, SerializeError} from '@sanity/base/structure'
 import {PaneNode, UnresolvedPaneNode} from '../types'
-import S from '../structure-builder'
 import {resolveIntent} from './resolveIntent'
 import {PaneResolutionError} from './PaneResolutionError'
 
-jest.mock('part:@sanity/base/schema', () => {
-  const createSchema = jest.requireActual('part:@sanity/base/schema-creator')
-
-  return createSchema({
-    name: 'mockSchema',
-    types: [
-      {
-        name: 'book',
-        title: 'Book',
-        type: 'document',
-        fields: [{name: 'title', type: 'string'}],
-      },
-      {
-        name: 'movie',
-        title: 'Movie',
-        type: 'document',
-        fields: [{name: 'title', type: 'string'}],
-      },
-      {
-        name: 'author',
-        title: 'Author',
-        type: 'document',
-        fields: [{name: 'name', type: 'string'}],
-      },
-      {
-        name: 'settings',
-        title: 'Settings',
-        type: 'document',
-        fields: [{name: 'toggle', type: 'boolean'}],
-      },
-    ],
-  })
+const mockSchema = createSchema({
+  name: 'mockSchema',
+  types: [
+    {
+      name: 'book',
+      title: 'Book',
+      type: 'document',
+      fields: [{name: 'title', type: 'string'}],
+    },
+    {
+      name: 'movie',
+      title: 'Movie',
+      type: 'document',
+      fields: [{name: 'title', type: 'string'}],
+    },
+    {
+      name: 'author',
+      title: 'Author',
+      type: 'document',
+      fields: [{name: 'name', type: 'string'}],
+    },
+    {
+      name: 'settings',
+      title: 'Settings',
+      type: 'document',
+      fields: [{name: 'toggle', type: 'boolean'}],
+    },
+  ],
 })
 
 describe('resolveIntent', () => {
   it('takes in an intent request and returns `RouterPanes` that match the request', async () => {
+    const S = createStructureBuilder({
+      initialValueTemplates: [],
+      schema: mockSchema,
+    } as any)
+
     const rootPaneNode = S.list()
       .title('Content')
       .items([
@@ -49,7 +50,7 @@ describe('resolveIntent', () => {
         S.documentTypeListItem('movie').title('Rad Movies'),
       ]) as UnresolvedPaneNode
 
-    const routerPanes = await resolveIntent({
+    const routerPanes = await resolveIntent(S, (_, opts) => S.defaultDocument(opts), {
       intent: 'edit',
       params: {id: 'book123', type: 'book'},
       payload: undefined,
@@ -63,6 +64,11 @@ describe('resolveIntent', () => {
   })
 
   it('resolves singletons', async () => {
+    const S = createStructureBuilder({
+      initialValueTemplates: [],
+      schema: mockSchema,
+    } as any)
+
     const rootPaneNode = S.list()
       .title('Content')
       .items([
@@ -75,7 +81,7 @@ describe('resolveIntent', () => {
           .child(S.document().documentId('settings').schemaType('settings')),
       ]) as UnresolvedPaneNode
 
-    const routerPanes = await resolveIntent({
+    const routerPanes = await resolveIntent(S, (_, opts) => S.defaultDocument(opts), {
       intent: 'edit',
       params: {id: 'settings', type: 'settings'},
       payload: undefined,
@@ -86,6 +92,11 @@ describe('resolveIntent', () => {
   })
 
   it('resolves nested singletons', async () => {
+    const S = createStructureBuilder({
+      initialValueTemplates: [],
+      schema: mockSchema,
+    } as any)
+
     const rootPaneNode = S.list()
       .title('Content')
       .items([
@@ -114,7 +125,7 @@ describe('resolveIntent', () => {
           ),
       ]) as UnresolvedPaneNode
 
-    const routerPanes = await resolveIntent({
+    const routerPanes = await resolveIntent(S, (_, opts) => S.defaultDocument(opts), {
       intent: 'edit',
       params: {id: 'settings', type: 'settings'},
       payload: undefined,
@@ -129,6 +140,11 @@ describe('resolveIntent', () => {
   })
 
   it('returns the shallowest match', async () => {
+    const S = createStructureBuilder({
+      initialValueTemplates: [],
+      schema: mockSchema,
+    } as any)
+
     const rootPaneNode = S.list()
       .title('Content')
       .items([
@@ -166,7 +182,7 @@ describe('resolveIntent', () => {
           ),
       ]) as UnresolvedPaneNode
 
-    const routerPanes = await resolveIntent({
+    const routerPanes = await resolveIntent(S, (_, opts) => S.defaultDocument(opts), {
       intent: 'edit',
       params: {id: 'settings', type: 'settings'},
       payload: undefined,
@@ -180,6 +196,11 @@ describe('resolveIntent', () => {
   })
 
   it('resolves to the fallback editor if no match is found', async () => {
+    const S = createStructureBuilder({
+      initialValueTemplates: [],
+      schema: mockSchema,
+    } as any)
+
     const rootPaneNode = S.list()
       .title('Content')
       .items([
@@ -187,7 +208,7 @@ describe('resolveIntent', () => {
         S.documentTypeListItem('movie').title('Rad Movies'),
       ]) as UnresolvedPaneNode
 
-    const routerPanes = await resolveIntent({
+    const routerPanes = await resolveIntent(S, (_, opts) => S.defaultDocument(opts), {
       intent: 'edit',
       params: {id: 'author123', type: 'author'},
       payload: undefined,
@@ -200,6 +221,11 @@ describe('resolveIntent', () => {
   })
 
   it('matches document nodes that have the same ID as the target ID', async () => {
+    const S = createStructureBuilder({
+      initialValueTemplates: [],
+      schema: mockSchema,
+    } as any)
+
     const rootPaneNode = S.list()
       .title('Content')
       .items([
@@ -214,7 +240,7 @@ describe('resolveIntent', () => {
     // without relying on it
     const canHandleIntentSpy = jest.spyOn(rootPaneNode, 'canHandleIntent').mockReturnValue(false)
 
-    const routerPanes = await resolveIntent({
+    const routerPanes = await resolveIntent(S, (_, opts) => S.defaultDocument(opts), {
       intent: 'edit',
       params: {id: 'settings', type: 'settings'},
       payload: undefined,
@@ -226,6 +252,11 @@ describe('resolveIntent', () => {
   })
 
   it('resolves pane nodes that implement `canHandleIntent`', async () => {
+    const S = createStructureBuilder({
+      initialValueTemplates: [],
+      schema: mockSchema,
+    } as any)
+
     const list = S.list()
       .canHandleIntent(() => true)
       .title('My List')
@@ -241,7 +272,7 @@ describe('resolveIntent', () => {
         S.listItem().title('Some Item').child(list),
       ]) as UnresolvedPaneNode
 
-    const routerPanes = await resolveIntent({
+    const routerPanes = await resolveIntent(S, (_, opts) => S.defaultDocument(opts), {
       intent: 'edit',
       params: {id: 'author123', type: 'author'},
       payload: undefined,
@@ -264,6 +295,11 @@ describe('resolveIntent', () => {
   })
 
   it('bubbles (re-throws) structure errors wrapped in a PaneResolutionError', async () => {
+    const S = createStructureBuilder({
+      initialValueTemplates: [],
+      schema: mockSchema,
+    } as any)
+
     const rootPaneNode = S.list().title('Content').items([
       // will give a missing ID error
       S.listItem(),
@@ -272,7 +308,7 @@ describe('resolveIntent', () => {
     let caught = false
 
     try {
-      await resolveIntent({
+      await resolveIntent(S, (_, opts) => S.defaultDocument(opts), {
         intent: 'edit',
         params: {id: 'author123', type: 'author'},
         payload: undefined,

@@ -1,6 +1,6 @@
-import {getTemplateById} from '@sanity/base/initial-value-templates'
+import {getTemplateById, Template} from '@sanity/base/initial-value-templates'
 import {ComposeIcon} from '@sanity/icons'
-import {InitialValueTemplateItem} from '@sanity/structure'
+import {InitialValueTemplateItem} from '@sanity/base/structure'
 import React, {useMemo, forwardRef} from 'react'
 import {unstable_useTemplatePermissions as useTemplatePermissions} from '@sanity/base/hooks'
 import {TemplatePermissionsResult} from '@sanity/base/_internal'
@@ -11,15 +11,20 @@ import {Schema} from '@sanity/types'
 import {IntentButton} from '../IntentButton'
 import {InsufficientPermissionsMessageTooltip} from './InsufficientPermissionsMessageTooltip'
 
+type Intent = React.ComponentProps<typeof IntentButton>['intent']
+
 const POPOVER_PROPS: PopoverProps = {
   constrainSize: true,
   placement: 'bottom',
   portal: true,
 }
-type Intent = React.ComponentProps<typeof IntentButton>['intent']
 
-const getIntent = (schema: Schema, item: InitialValueTemplateItem): Intent | null => {
-  const typeName = getTemplateById(schema, item.templateId)?.schemaType
+const getIntent = (
+  schema: Schema,
+  initialValueTemplates: Template[],
+  item: InitialValueTemplateItem
+): Intent | null => {
+  const typeName = getTemplateById(schema, initialValueTemplates, item.templateId)?.schemaType
   if (!typeName) return null
 
   const baseParams = {
@@ -39,12 +44,16 @@ interface PaneHeaderCreateButtonProps {
 }
 
 export function PaneHeaderCreateButton({initialValueTemplateItems}: PaneHeaderCreateButtonProps) {
-  const {schema} = useConfig()
+  const {
+    data: {initialValueTemplates},
+    schema,
+  } = useConfig()
   const {grantsStore} = useDatastores()
 
   const [templatePermissions, isTemplatePermissionsLoading] = useTemplatePermissions(
     grantsStore,
     schema,
+    initialValueTemplates,
     initialValueTemplateItems
   )
 
@@ -84,7 +93,7 @@ export function PaneHeaderCreateButton({initialValueTemplateItems}: PaneHeaderCr
     const firstItem = initialValueTemplateItems[0]
     const permissions = permissionsById[firstItem.id]
     const disabled = !permissions?.granted
-    const intent = getIntent(schema, firstItem)
+    const intent = getIntent(schema, initialValueTemplates, firstItem)
     if (!intent) return null
 
     return (
@@ -124,8 +133,8 @@ export function PaneHeaderCreateButton({initialValueTemplateItems}: PaneHeaderCr
           {initialValueTemplateItems.map((item, itemIndex) => {
             const permissions = permissionsById[item.id]
             const disabled = !permissions?.granted
-            const intent = getIntent(schema, item)
-            const template = getTemplateById(schema, item.templateId)
+            const intent = getIntent(schema, initialValueTemplates, item)
+            const template = getTemplateById(schema, initialValueTemplates, item.templateId)
             if (!template || !intent) return null
 
             const Link = forwardRef((linkProps, linkRef: React.ForwardedRef<never>) =>

@@ -1,1 +1,1 @@
-export {diffResolver as default} from '@sanity/field/diff'
+export {diffResolver as default} from '@sanity/base/field'

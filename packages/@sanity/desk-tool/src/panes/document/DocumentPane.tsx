@@ -22,6 +22,7 @@ import {Unstable_ReferenceInputOptionsProvider} from '@sanity/form-builder/_inte
 import {Path} from '@sanity/types'
 import {getNewDocumentOptions} from '@sanity/base/_internal'
 import {useConfig, useDatastores} from '@sanity/base'
+import {useStructure} from '@sanity/base/structure'
 import {DocumentPaneNode} from '../../types'
 import {useDeskTool} from '../../contexts/deskTool'
 import {usePaneRouter} from '../../contexts/paneRouter'
@@ -61,15 +62,23 @@ const StyledChangeConnectorRoot = styled(ChangeConnectorRoot)`
 `
 
 export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProviderProps) {
-  const {schema, structureBuilder: S} = useConfig()
+  const {
+    data: {initialValueTemplates},
+    schema,
+  } = useConfig()
+  const {builder: S} = useStructure()
   const {grantsStore} = useDatastores()
   const paneRouter = usePaneRouter()
   const options = usePaneOptions(props.pane.options, paneRouter.params)
   const {documentType, isLoaded: isDocumentLoaded} = useDocumentType(options.id, options.type)
-  const newDocumentOptions = useMemo(() => getNewDocumentOptions(S, schema, undefined), [S, schema])
+  const newDocumentOptions = useMemo(
+    () => getNewDocumentOptions(S as any, schema, initialValueTemplates, undefined),
+    [initialValueTemplates, S, schema]
+  )
   const [templatePermissions, isTemplatePermissionsLoading] = useUnstableTemplatePermissions(
     grantsStore,
     schema,
+    initialValueTemplates,
     newDocumentOptions
   )
   const isLoaded = isDocumentLoaded && !isTemplatePermissionsLoading
@@ -145,7 +154,10 @@ function usePaneOptions(
   options: DocumentPaneOptions,
   params: Record<string, string | undefined> = {}
 ): DocumentPaneOptions {
-  const {schema} = useConfig()
+  const {
+    data: {initialValueTemplates},
+    schema,
+  } = useConfig()
 
   return useMemo(() => {
     // The document type is provided, so return
@@ -155,7 +167,9 @@ function usePaneOptions(
 
     // Attempt to derive document type from the template configuration
     const templateName = options.template || params.template
-    const template = templateName ? getTemplateById(schema, templateName) : undefined
+    const template = templateName
+      ? getTemplateById(schema, initialValueTemplates, templateName)
+      : undefined
     const documentType = template?.schemaType
 
     // No document type was found in a template
@@ -165,7 +179,7 @@ function usePaneOptions(
 
     // The template provided the document type, so modify the pane’s `options` property
     return {...options, type: documentType}
-  }, [options, params.template, schema])
+  }, [initialValueTemplates, options, params.template, schema])
 }
 
 function mergeDocumentType(

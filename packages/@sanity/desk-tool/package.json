@@ -10,6 +10,11 @@
       "require": "./lib/_exports/index.cjs",
       "default": "./lib/_exports/index.js"
     },
+    "./_internal": {
+      "source": "./src/_exports/_internal.ts",
+      "require": "./lib/_exports/_internal.cjs",
+      "default": "./lib/_exports/_internal.js"
+    },
     "./components": {
       "source": "./src/_exports/components.ts",
       "require": "./lib/_exports/components.cjs",
@@ -53,7 +58,6 @@
     "@reach/auto-id": "^0.13.2",
     "@sanity/client": "^3.2.0",
     "@sanity/data-aspects": "2.29.3",
-    "@sanity/diff": "2.29.3",
     "@sanity/form-builder": "2.30.0",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/icons": "^1.2.6",
@@ -69,7 +73,6 @@
     "is-hotkey": "^0.1.6",
     "leven": "^3.1.0",
     "lodash": "^4.17.21",
-    "mendoza": "^2.1.1",
     "nanoid": "^3.1.30",
     "react-copy-to-clipboard": "^5.0.4",
     "react-is": "^17.0.2",

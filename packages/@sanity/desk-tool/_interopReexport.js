@@ -1,3 +1,5 @@
+/* eslint-disable prefer-arrow-callback */
+
 /**
  * esm/commonjs interop reexport helper
  * this should be used instead of doing `module.exports = require('./some/file')

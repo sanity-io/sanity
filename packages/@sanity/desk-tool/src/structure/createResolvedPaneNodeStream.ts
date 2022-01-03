@@ -1,18 +1,17 @@
+import {DocumentBuilder, DocumentNodeResolver, StructureBuilder} from '@sanity/base/structure'
+import {generateHelpUrl} from '@sanity/generate-help-url'
+import {isEqual} from 'lodash'
 import {Observable, NEVER, of as observableOf, concat} from 'rxjs'
 import {switchMap, map, scan, distinctUntilChanged, pairwise, startWith} from 'rxjs/operators'
-import {isEqual} from 'lodash'
-import {generateHelpUrl} from '@sanity/generate-help-url'
-import {DocumentBuilder} from '@sanity/structure'
 import {
+  DocumentPaneNode,
   PaneNode,
   RouterPaneSiblingContext,
   RouterPanes,
   RouterPaneSibling,
   PaneNodeResolver,
   UnresolvedPaneNode,
-  DocumentPaneNode,
 } from '../types'
-// import {defaultDocument} from '../defaultStructure'
 import {assignId} from './assignId'
 import {createPaneResolver, PaneResolver, PaneResolverMiddleware} from './createPaneResolver'
 import {memoBind} from './memoBind'
@@ -22,7 +21,12 @@ import {PaneResolutionError} from './PaneResolutionError'
  * the fallback editor child that is implicitly inserted into the structure tree
  * if the id starts with `__edit__`
  */
-const fallbackEditorChild: PaneNodeResolver = (resolveDocumentNode, nodeId, context) => {
+const fallbackEditorChild: PaneNodeResolver = (
+  resolveContext,
+  nodeId,
+  context
+): DocumentPaneNode => {
+  const {structureBuilder: S} = resolveContext
   const id = nodeId.replace(/^__edit__/, '')
   const {params, payload} = context
   const {type, template} = params
@@ -33,21 +37,25 @@ const fallbackEditorChild: PaneNodeResolver = (resolveDocumentNode, nodeId, cont
     )
   }
 
-  let defaultDocumentBuilder = resolveDocumentNode({
+  let defaultDocumentBuilder = S.defaultDocument({
     schemaType: type,
     documentId: id,
   })
 
-  defaultDocumentBuilder = defaultDocumentBuilder.id('editor').title('Editor')
+  if (defaultDocumentBuilder instanceof DocumentBuilder) {
+    defaultDocumentBuilder = defaultDocumentBuilder.id('editor').title('Editor')
 
-  if (template) {
-    defaultDocumentBuilder = defaultDocumentBuilder.initialValueTemplate(
-      template,
-      payload as {[key: string]: any}
-    )
+    if (template) {
+      defaultDocumentBuilder = defaultDocumentBuilder.initialValueTemplate(
+        template,
+        payload as {[key: string]: any}
+      )
+    }
+
+    return defaultDocumentBuilder.serialize() as DocumentPaneNode
   }
 
-  return defaultDocumentBuilder.serialize() as DocumentPaneNode
+  return defaultDocumentBuilder
 }
 
 /**
@@ -126,6 +134,7 @@ interface CacheState {
 }
 
 export interface CreateResolvedPaneNodeStreamOptions {
+  resolveDocumentNode: DocumentNodeResolver
   /**
    * an input stream of `RouterPanes`
    * @see RouterPanes
@@ -137,6 +146,8 @@ export interface CreateResolvedPaneNodeStreamOptions {
   rootPaneNode: UnresolvedPaneNode
   /** used primarily for testing */
   initialCacheState?: CacheState
+
+  structureBuilder: StructureBuilder
 }
 
 /**
@@ -288,19 +299,18 @@ function resolvePaneTree({
  * Takes in a stream of `RouterPanes` and an unresolved root pane and returns
  * a stream of `ResolvedPaneMeta`
  */
-export function createResolvedPaneNodeStream(
-  resolveDocumentNode: (options: {documentId?: string; schemaType: string}) => DocumentBuilder,
-  {
-    routerPanesStream,
-    rootPaneNode,
-    initialCacheState = {
-      cacheKeysByFlatIndex: [],
-      flattenedRouterPanes: [],
-      resolvedPaneCache: new Map(),
-      resolvePane: () => NEVER,
-    },
-  }: CreateResolvedPaneNodeStreamOptions
-): Observable<ResolvedPaneMeta[]> {
+export function createResolvedPaneNodeStream({
+  // resolveDocumentNode,
+  routerPanesStream,
+  rootPaneNode,
+  initialCacheState = {
+    cacheKeysByFlatIndex: [],
+    flattenedRouterPanes: [],
+    resolvedPaneCache: new Map(),
+    resolvePane: () => NEVER,
+  },
+  structureBuilder: S,
+}: CreateResolvedPaneNodeStreamOptions): Observable<ResolvedPaneMeta[]> {
   const resolvedPanes$ = routerPanesStream.pipe(
     // add in implicit "root" router pane
     map((rawRouterPanes) => [[{id: 'root'}], ...rawRouterPanes]),
@@ -380,7 +390,7 @@ export function createResolvedPaneNodeStream(
         flattenedRouterPanes,
         cacheKeysByFlatIndex,
         resolvedPaneCache,
-        resolvePane: createPaneResolver(resolveDocumentNode, memoize),
+        resolvePane: createPaneResolver(S, memoize),
       }
     }, initialCacheState),
     // run the memoized, recursive resolving

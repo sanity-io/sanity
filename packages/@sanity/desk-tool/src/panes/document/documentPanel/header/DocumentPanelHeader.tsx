@@ -1,14 +1,13 @@
 import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
 import {Button, Inline} from '@sanity/ui'
 import {negate} from 'lodash'
-import React, {memo, forwardRef, useMemo} from 'react'
+import React, {memo, forwardRef, useMemo, createElement} from 'react'
 import {PaneMenuItem} from '../../../../types'
 import {PaneHeader, PaneContextMenuButton} from '../../../../components/pane'
 import {useDeskTool} from '../../../../contexts/deskTool'
 import {usePaneRouter} from '../../../../contexts/paneRouter'
 import {TimelineMenu} from '../../timeline'
 import {useDocumentPane} from '../../useDocumentPane'
-import {LanguageFilter} from '../../../../TODO'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {ValidationMenu} from './ValidationMenu'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
@@ -35,7 +34,7 @@ export const DocumentPanelHeader = memo(
       views,
     } = useDocumentPane()
     const {revTime: rev} = historyController
-    const {features} = useDeskTool()
+    const {components, features} = useDeskTool()
     const {index, BackLink, hasGroupSiblings} = usePaneRouter()
     const contextMenuItems = useMemo(() => menuItems.filter(isMenuButton), [menuItems])
     const [isValidationOpen, setValidationOpen] = React.useState<boolean>(false)
@@ -75,7 +74,11 @@ export const DocumentPanelHeader = memo(
         subActions={showVersionMenu && <TimelineMenu chunk={rev} mode="rev" />}
         actions={
           <Inline space={1}>
-            {LanguageFilter && <LanguageFilter key="language-menu" schemaType={documentSchema} />}
+            {components.LanguageFilter &&
+              createElement(components.LanguageFilter, {
+                key: 'language-menu',
+                schemaType: documentSchema,
+              })}
 
             {markers.length > 0 && (
               <ValidationMenu

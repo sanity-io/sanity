@@ -1,11 +1,11 @@
-import {DocumentBuilder} from '@sanity/structure'
 import {omit} from 'lodash'
 import {Observable} from 'rxjs'
 import {first} from 'rxjs/operators'
+import {DocumentNodeResolver, StructureBuilder} from '@sanity/base/structure'
 import {PaneNode, RouterPanes, RouterPaneSiblingContext, UnresolvedPaneNode} from '../types'
 import {assignId} from './assignId'
-import {createPaneResolver, PaneResolverMiddleware} from './createPaneResolver'
 import {memoBind} from './memoBind'
+import {createPaneResolver, PaneResolverMiddleware} from './createPaneResolver'
 
 interface TraverseOptions {
   unresolvedPane: UnresolvedPaneNode | undefined
@@ -40,7 +40,8 @@ export interface ResolveIntentOptions {
  * @see PaneNode
  */
 export async function resolveIntent(
-  resolveDocumentNode: (options: {documentId?: string; schemaType: string}) => DocumentBuilder,
+  structureBuilder: StructureBuilder,
+  resolveDocumentNode: DocumentNodeResolver,
   options: ResolveIntentOptions
 ): Promise<RouterPanes> {
   const resolvedPaneCache = new Map<string, Observable<PaneNode>>()
@@ -56,7 +57,7 @@ export async function resolveIntent(
     return result
   }
 
-  const resolvePane = createPaneResolver(resolveDocumentNode, memoize)
+  const resolvePane = createPaneResolver(structureBuilder, memoize)
 
   const fallbackEditorPanes: RouterPanes = [
     [

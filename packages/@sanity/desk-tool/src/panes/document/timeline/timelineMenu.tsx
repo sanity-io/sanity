@@ -1,5 +1,5 @@
 import {useTimeAgo} from '@sanity/base/hooks'
-import {Chunk} from '@sanity/field/diff'
+import {Chunk} from '@sanity/base/field'
 import {SelectIcon} from '@sanity/icons'
 import {useClickOutside, Button, Popover} from '@sanity/ui'
 import {upperFirst} from 'lodash'
@@ -40,10 +40,10 @@ export function TimelineMenu({chunk, mode}: TimelineMenuProps) {
   const [buttonRef, setButtonRef] = useState<HTMLButtonElement | null>(null)
   const [menuContent, setMenuContent] = useState<HTMLDivElement | null>(null)
 
-  const handleOpen = () => {
+  const handleOpen = useCallback(() => {
     setTimelineMode(mode)
     setOpen(true)
-  }
+  }, [mode, setTimelineMode])
 
   const handleClose = useCallback(() => {
     setTimelineMode('closed')

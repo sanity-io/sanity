@@ -1,66 +1,66 @@
 import {useId} from '@reach/auto-id'
-import {DocumentActionDialogProps} from '@sanity/base'
+import {DocumentActionModalProps} from '@sanity/base'
 import {Box, Dialog} from '@sanity/ui'
 import React from 'react'
 import {ConfirmDialog} from './dialogs/ConfirmDialog'
-import {DeprecatedErrorDialog} from './dialogs/DeprecatedErrorDialog'
-import {DeprecatedSuccessDialog} from './dialogs/DeprecatedSuccessDialog'
+// import {DeprecatedErrorDialog} from './dialogs/DeprecatedErrorDialog'
+// import {DeprecatedSuccessDialog} from './dialogs/DeprecatedSuccessDialog'
 import {ModalDialog} from './dialogs/ModalDialog'
 import {PopoverDialog} from './dialogs/PopoverDialog'
 
 export interface ActionStateDialogProps {
-  dialog: DocumentActionDialogProps
+  modal: DocumentActionModalProps
   referenceElement?: HTMLElement | null
 }
 
 export function ActionStateDialog(props: ActionStateDialogProps) {
-  const {dialog, referenceElement = null} = props
-  const dialogId = useId() || ''
+  const {modal, referenceElement = null} = props
+  const modalId = useId() || ''
 
   // @todo: rename this type type "component" or "node"?
-  if (dialog.type === 'legacy') {
-    return <>{dialog.content}</>
+  // if (modal.type === 'legacy') {
+  //   return <>{modal.content}</>
+  // }
+
+  if (modal.type === 'confirm') {
+    return <ConfirmDialog modal={modal} referenceElement={referenceElement} />
   }
 
-  if (dialog.type === 'confirm') {
-    return <ConfirmDialog dialog={dialog} referenceElement={referenceElement} />
+  if (modal.type === 'dialog') {
+    return <ModalDialog modal={modal} />
   }
 
-  if (dialog.type === 'modal') {
-    return <ModalDialog dialog={dialog} />
+  if (modal.type === 'popover') {
+    return <PopoverDialog modal={modal} referenceElement={referenceElement} />
   }
 
-  if (dialog.type === 'popover') {
-    return <PopoverDialog dialog={dialog} referenceElement={referenceElement} />
-  }
+  // if (modal.type === 'success') {
+  //   return <DeprecatedSuccessDialog modal={modal} />
+  // }
 
-  if (dialog.type === 'success') {
-    return <DeprecatedSuccessDialog dialog={dialog} />
-  }
-
-  if (dialog.type === 'error') {
-    return <DeprecatedErrorDialog dialog={dialog} />
-  }
+  // if (modal.type === 'error') {
+  //   return <DeprecatedErrorDialog modal={modal} />
+  // }
 
   // @todo: add validation?
-  const unknownDialog: any = dialog
+  const unknownModal: any = modal
 
   // eslint-disable-next-line no-console
-  console.warn(`Unsupported dialog type ${unknownDialog.type}`)
+  console.warn(`Unsupported modal type ${unknownModal.type}`)
 
   return (
     <Dialog
-      id={dialogId}
+      id={modalId}
       // eslint-disable-next-line react/jsx-handler-names
-      onClose={unknownDialog.onClose}
+      onClose={unknownModal.onClose}
       // eslint-disable-next-line react/jsx-handler-names
-      onClickOutside={unknownDialog.onClose}
+      onClickOutside={unknownModal.onClose}
       width={2}
     >
       <Box padding={4}>
-        {unknownDialog.content || (
+        {unknownModal.content || (
           <>
-            Unexpected dialog type (<code>{unknownDialog.type}</code>)
+            Unexpected modal type (<code>{unknownModal.type}</code>)
           </>
         )}
       </Box>

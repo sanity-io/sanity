@@ -6,49 +6,76 @@ import {
   useDocumentOperation,
   useEditState,
   useValidationStatus,
-} from '@sanity/react-hooks'
+} from '@sanity/base/hooks'
 import {omit} from 'lodash'
 import {useToast} from '@sanity/ui'
 import {fromString as pathFromString, pathFor} from '@sanity/util/paths'
 import isHotkey from 'is-hotkey'
 import {useMemoObservable} from 'react-rx'
-import {useClient, useConfig, useDatastores} from '@sanity/base'
+import {useClient, useConfig, useDatastores, useInitialValue} from '@sanity/base'
 import {PaneMenuItem} from '../../types'
 import {useDeskTool} from '../../contexts/deskTool'
 import {usePaneRouter} from '../../contexts/paneRouter'
 import {useUnique} from '../../utils/useUnique'
-import {resolveDocumentActions, resolveDocumentBadges} from '../../TODO'
-import {createObservableController} from './documentHistory/history/Controller'
-import {Timeline} from './documentHistory/history/Timeline'
+import {resolveDocumentBadges} from '../../TODO'
 import {DocumentPaneContext, DocumentPaneContextValue} from './DocumentPaneContext'
-import {useInitialValue} from './initialValue'
 import {getMenuItems} from './menuItems'
 import {DocumentPaneProviderProps} from './types'
 import {getPreviewUrl} from './usePreviewUrl'
+import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
 
 declare const __DEV__: boolean
 
 const emptyObject = {} as Record<string, string | undefined>
 
-type Props = {children: React.ReactElement} & DocumentPaneProviderProps
-
 /**
  * @internal
  */
 // eslint-disable-next-line complexity, max-statements
-export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Props) => {
-  const {schema} = useConfig()
+export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
+  const {children, index, pane, paneKey} = props
+  const {
+    data: {initialValueTemplates},
+    schema,
+  } = useConfig()
   const client = useClient()
-  const {presenceStore} = useDatastores()
+  const {historyStore, presenceStore} = useDatastores()
   const paneRouter = usePaneRouter()
-  const {features} = useDeskTool()
+  const {features, resolveDocumentActions} = useDeskTool()
   const {push: pushToast} = useToast()
   const {options, menuItemGroups, title = null, views: viewsProp = []} = pane
-  const initialValueRaw = useInitialValue(options.id, options)
-  const initialValue = useUnique(initialValueRaw)
-  const documentIdRaw = options.id
+  const paneOptions = useUnique(options)
+  const documentIdRaw = paneOptions.id
   const documentId = getPublishedId(documentIdRaw)
   const documentType = options.type
+  const paneParams = useUnique(paneRouter.params)
+  const panePayload = useUnique(paneRouter.payload)
+  const {templateName, templateParams} = useMemo(
+    () =>
+      getInitialValueTemplateOpts(schema, initialValueTemplates, {
+        documentType,
+        templateName: paneOptions.template,
+        templateParams: paneOptions.templateParameters,
+        panePayload,
+        urlTemplate: paneParams?.template,
+      }),
+    [
+      documentType,
+      initialValueTemplates,
+      paneOptions.template,
+      paneOptions.templateParameters,
+      panePayload,
+      schema,
+      paneParams?.template,
+    ]
+  )
+  const initialValueRaw = useInitialValue({
+    documentId,
+    documentType,
+    templateName,
+    templateParams,
+  })
+  const initialValue = useUnique(initialValueRaw)
   const {patch}: any = useDocumentOperation(documentId, documentType)
   const editState = useEditState(documentId, documentType)
   const {markers: markersRaw} = useValidationStatus(documentId, documentType)
@@ -56,7 +83,10 @@ export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Prop
   const documentSchema = schema.get(documentType)
   const value: Partial<SanityDocument> =
     editState?.draft || editState?.published || initialValue.value
-  const actions = useMemo(() => (editState ? resolveDocumentActions(editState) : null), [editState])
+  const actions = useMemo(
+    () => (editState ? resolveDocumentActions(editState) : null),
+    [editState, resolveDocumentActions]
+  )
   const badges = useMemo(() => (editState ? resolveDocumentBadges(editState) : null), [editState])
   const markers = useUnique(markersRaw)
   const views = useUnique(viewsProp)
@@ -66,21 +96,15 @@ export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Prop
   )
   const activeViewId = params.view || (views[0] && views[0].id) || null
   const timeline = useMemo(
-    () => new Timeline({publishedId: documentId, enableTrace: __DEV__}),
-    [documentId]
+    () => historyStore.getTimeline({publishedId: documentId, enableTrace: __DEV__}),
+    [documentId, historyStore]
   )
   const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')
   // NOTE: this emits sync so can never be null
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const {historyController} = useMemoObservable(
-    () =>
-      createObservableController({
-        timeline,
-        documentId,
-        documentType,
-        client,
-      }),
-    [client, timeline, documentId, documentType, timeline]
+    () => historyStore.getTimelineController({client, documentId, documentType, timeline}),
+    [client, documentId, documentType, timeline]
   )!
   /**
    * @todo: this will now happen on each render, but should be refactored so it happens only when

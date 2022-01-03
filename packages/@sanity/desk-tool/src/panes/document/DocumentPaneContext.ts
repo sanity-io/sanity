@@ -1,10 +1,8 @@
-import {DocumentActionDescription, DocumentBadgeDescription} from '@sanity/base'
+import {DocumentActionComponent, DocumentBadgeComponent} from '@sanity/base'
+import {TimelineController, EditStateFor, Timeline} from '@sanity/base/_internal'
 import {Marker, Path, SanityDocument} from '@sanity/types'
-import {EditStateFor} from '@sanity/base/_internal'
 import {createContext} from 'react'
 import {PaneView, PaneMenuItem, PaneMenuItemGroup} from '../../types'
-import {Controller as HistoryController} from './documentHistory/history/Controller'
-import {Timeline} from './documentHistory/history/Timeline'
 import {TimelineMode} from './types'
 
 // @todo: provide a TS type for this
@@ -12,8 +10,8 @@ type DocumentSchema = any
 
 export interface DocumentPaneContextValue {
   activeViewId: string | null
-  actions: DocumentActionDescription[] | null
-  badges: DocumentBadgeDescription[] | null
+  actions: DocumentActionComponent[] | null
+  badges: DocumentBadgeComponent[] | null
   changesOpen: boolean
   compareValue: Partial<SanityDocument> | null
   connectionState: 'connecting' | 'reconnecting' | 'connected'
@@ -33,7 +31,7 @@ export interface DocumentPaneContextValue {
   handleMenuAction: (item: PaneMenuItem) => void
   handlePaneClose: () => void
   handlePaneSplit: () => void
-  historyController: HistoryController
+  historyController: TimelineController
   index: number
   inspectOpen: boolean
   markers: Marker[]

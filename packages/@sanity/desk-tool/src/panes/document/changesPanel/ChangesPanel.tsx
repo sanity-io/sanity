@@ -6,7 +6,7 @@ import {
   DocumentChangeContextInstance,
   NoChanges,
   ObjectDiff,
-} from '@sanity/field/diff'
+} from '@sanity/base/field'
 import {CloseIcon} from '@sanity/icons'
 import {AvatarStack, BoundaryElementProvider, Box, Button, Flex} from '@sanity/ui'
 import React, {useRef} from 'react'

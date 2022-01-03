@@ -1,5 +1,5 @@
 import {ArrowLeftIcon} from '@sanity/icons'
-import {InitialValueTemplateItem} from '@sanity/structure'
+import {InitialValueTemplateItem} from '@sanity/base/structure'
 import {Button} from '@sanity/ui'
 import React, {memo, useMemo} from 'react'
 import {PaneMenuItem, PaneMenuItemGroup} from '../../types'

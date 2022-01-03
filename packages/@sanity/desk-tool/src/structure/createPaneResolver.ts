@@ -1,8 +1,8 @@
-import {DocumentBuilder} from '@sanity/structure'
+import {StructureBuilder} from '@sanity/base/structure'
+import {isRecord} from '@sanity/base/util'
 import {Observable, of as observableOf, from as observableFrom, Subscribable} from 'rxjs'
 import {publishReplay, refCount, switchMap} from 'rxjs/operators'
 import {PaneNode, RouterPaneSiblingContext, UnresolvedPaneNode} from '../types'
-import {isRecord} from './isRecord'
 import {PaneResolutionError} from './PaneResolutionError'
 
 interface Serializable {
@@ -41,8 +41,6 @@ const rethrowWithPaneResolutionErrors: PaneResolverMiddleware =
         throw e
       }
 
-      console.error(e)
-
       // anything else, wrap with `PaneResolutionError` and set the underlying
       // error as a the `cause`
       throw new PaneResolutionError({
@@ -66,7 +64,7 @@ const wrapWithPublishReplay: PaneResolverMiddleware =
   }
 
 export function createPaneResolver(
-  resolveDocumentNode: (options: {documentId?: string; schemaType: string}) => DocumentBuilder,
+  S: StructureBuilder,
   middleware: PaneResolverMiddleware
 ): PaneResolver {
   // note: this API includes a middleware/wrapper function because the function
@@ -96,7 +94,7 @@ export function createPaneResolver(
 
         if (typeof unresolvedPane === 'function') {
           return resolvePane(
-            unresolvedPane(resolveDocumentNode, context.id, context),
+            unresolvedPane(S._resolverContext, context.id, context),
             context,
             flatIndex
           )

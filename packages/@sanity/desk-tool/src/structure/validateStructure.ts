@@ -1,7 +1,37 @@
+import {SerializeError} from '@sanity/base/structure'
+import {isRecord} from '@sanity/base/util'
 import leven from 'leven'
 import {UnresolvedPaneNode} from '../types'
-// import {defaultStructure} from '../defaultStructure'
-import {isRecord} from './isRecord'
+
+export function validateStructure(structure: any): UnresolvedPaneNode {
+  if (!structure) {
+    let val = 'null'
+
+    if (structure !== null) {
+      val = typeof structure === 'undefined' ? 'undefined' : 'false'
+    }
+
+    throw new SerializeError(`Structure resolved to ${val}`, [], 'root')
+  }
+
+  if (!structure.id) {
+    throw new SerializeError('Structure did not contain required `id` property', [], 'root')
+  }
+
+  if (structure.id === 'edit') {
+    throw new SerializeError('The root structure cannot have value `edit` as `id`', [], 'root')
+  }
+
+  warnOnUnknownExports(structure as any)
+
+  if (!isStructure(structure)) {
+    throw new Error(
+      `Structure needs to export a function, an observable, a promise or a structure builder, got ${typeof structure}`
+    )
+  }
+
+  return structure
+}
 
 const KNOWN_STRUCTURE_EXPORTS = ['getDefaultDocumentNode']
 
@@ -16,20 +46,9 @@ function isStructure(structure: unknown): structure is UnresolvedPaneNode {
   )
 }
 
-export const validateStructure = (structure: any): UnresolvedPaneNode => {
-  // const mod = require('part:@sanity/desk-tool/structure?') || defaultStructure
-  // const structure: UnresolvedPaneNode = mod && mod.__esModule ? mod.default : mod
+// export const validateStructure = (structure: any):  => {
 
-  warnOnUnknownExports(structure as any)
-
-  if (!isStructure(structure)) {
-    throw new Error(
-      `Structure needs to export a function, an observable, a promise or a structure builder, got ${typeof structure}`
-    )
-  }
-
-  return structure
-}
+// }
 
 function warnOnUnknownExports(mod: Record<string, unknown>) {
   if (!mod) return

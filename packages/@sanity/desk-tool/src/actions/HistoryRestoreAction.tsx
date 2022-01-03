@@ -1,5 +1,5 @@
-import {DocumentActionComponent, DocumentActionDialogProps} from '@sanity/base'
-import {useDocumentOperation} from '@sanity/react-hooks'
+import {DocumentActionComponent, DocumentActionModalProps} from '@sanity/base'
+import {useDocumentOperation} from '@sanity/base/hooks'
 import {useRouter} from '@sanity/base/router'
 import {RestoreIcon} from '@sanity/icons'
 import React, {useCallback, useMemo, useState} from 'react'
@@ -8,7 +8,6 @@ export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revisio
   const {restore}: any = useDocumentOperation(id, type)
   const router = useRouter()
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
-  const [error, setError] = useState<Error | null>(null)
 
   const handleConfirm = useCallback(() => {
     restore.execute(revision)
@@ -20,28 +19,19 @@ export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revisio
     setConfirmDialogOpen(true)
   }, [])
 
-  const dialog: DocumentActionDialogProps | null = useMemo(() => {
-    if (!error && isConfirmDialogOpen) {
+  const modal: DocumentActionModalProps | null = useMemo(() => {
+    if (isConfirmDialogOpen) {
       return {
         type: 'confirm',
-        color: 'danger',
+        tone: 'critical',
         onCancel: onComplete,
         onConfirm: handleConfirm,
         message: <>Are you sure you want to restore this document?</>,
       }
     }
 
-    if (!error) {
-      return null
-    }
-
-    return {
-      type: 'error',
-      onClose: () => setError(null),
-      title: 'An error occurred',
-      content: error.message,
-    }
-  }, [error, handleConfirm, isConfirmDialogOpen, onComplete])
+    return null
+  }, [handleConfirm, isConfirmDialogOpen, onComplete])
 
   const isRevisionInitialVersion = revision === '@initial'
 
@@ -53,7 +43,7 @@ export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revisio
       ? "You can't restore to the initial version"
       : 'Restore to this version',
     icon: RestoreIcon,
-    dialog,
+    modal,
     disabled: isRevisionInitialVersion,
   }
 }

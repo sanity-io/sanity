@@ -1,12 +1,12 @@
 import {SanityDocument} from '@sanity/types'
+import {TimelineController} from '@sanity/base/_internal'
 import {resolveProductionPreviewUrl} from '../../TODO'
-import {Controller as HistoryController} from './documentHistory/history/Controller'
 
 export function getPreviewUrl(
-  historyController: HistoryController,
+  timelineController: TimelineController,
   value: Partial<SanityDocument> | null
 ): string | null | undefined {
-  const {revTime} = historyController
+  const {revTime} = timelineController
   const rev = revTime ? revTime.id : null
 
   if (!value || !resolveProductionPreviewUrl) {

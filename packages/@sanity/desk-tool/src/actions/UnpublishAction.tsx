@@ -1,17 +1,17 @@
 import {
   DocumentActionComponent,
-  DocumentActionDialogProps,
+  DocumentActionModalProps,
   useClient,
-  useConfig,
   useDatastores,
+  useSource,
 } from '@sanity/base'
-import {useDocumentOperation} from '@sanity/react-hooks'
-import {UnpublishIcon} from '@sanity/icons'
-import React, {useCallback, useState} from 'react'
 import {
+  useDocumentOperation,
   unstable_useDocumentPairPermissions as useDocumentPairPermissions,
   useCurrentUser,
 } from '@sanity/base/hooks'
+import {UnpublishIcon} from '@sanity/icons'
+import React, {useCallback, useMemo, useState} from 'react'
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
 import {ConfirmDeleteDialog} from '../components/confirmDeleteDialog'
 
@@ -27,11 +27,9 @@ export const UnpublishAction: DocumentActionComponent = ({
   liveEdit,
 }) => {
   const client = useClient()
-  const {schema} = useConfig()
+  const {schema} = useSource()
   const {grantsStore} = useDatastores()
-  const {unpublish}: any = useDocumentOperation(id, type)
-  const [error, setError] = useState<Error | null>(null)
-  const [didUnpublish, setDidUnpublish] = useState(false)
+  const {unpublish} = useDocumentOperation(id, type)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions(
     client,
@@ -56,29 +54,11 @@ export const UnpublishAction: DocumentActionComponent = ({
     onComplete()
   }, [onComplete, unpublish])
 
-  const dialog = ((): DocumentActionDialogProps | null => {
-    if (error) {
-      return {
-        type: 'error',
-        onClose: () => setError(null),
-        title: 'An error occurred',
-        content: error.message,
-      }
-    }
-
-    if (didUnpublish) {
-      return {
-        type: 'success',
-        onClose: () => {
-          setDidUnpublish(false)
-        },
-        title: 'Successfully unpublished the document',
-      }
-    }
-
+  const modal: DocumentActionModalProps | null = useMemo(() => {
     if (isConfirmDialogOpen) {
       return {
-        type: 'legacy',
+        type: 'dialog',
+        onClose: onComplete,
         content: (
           <ConfirmDeleteDialog
             id={draft?._id || id}
@@ -92,7 +72,7 @@ export const UnpublishAction: DocumentActionComponent = ({
     }
 
     return null
-  })()
+  }, [draft, id, handleCancel, handleConfirm, isConfirmDialogOpen, onComplete, type])
 
   if (liveEdit) {
     return null
@@ -100,7 +80,7 @@ export const UnpublishAction: DocumentActionComponent = ({
 
   if (!isPermissionsLoading && !permissions?.granted) {
     return {
-      color: 'danger',
+      tone: 'critical',
       icon: UnpublishIcon,
       label: 'Unpublish',
       title: (
@@ -114,7 +94,7 @@ export const UnpublishAction: DocumentActionComponent = ({
   }
 
   return {
-    color: 'danger',
+    tone: 'critical',
     icon: UnpublishIcon,
     disabled: Boolean(unpublish.disabled) || isPermissionsLoading,
     label: 'Unpublish',
@@ -122,6 +102,6 @@ export const UnpublishAction: DocumentActionComponent = ({
       ? DISABLED_REASON_TITLE[unpublish.disabled as keyof typeof DISABLED_REASON_TITLE]
       : '',
     onHandle: () => setConfirmDialogOpen(true),
-    dialog,
+    modal,
   }
 }
