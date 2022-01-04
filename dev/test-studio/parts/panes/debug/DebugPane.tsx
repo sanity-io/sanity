@@ -1,5 +1,11 @@
 import {usePaneRouter} from '@sanity/desk-tool'
-import {ChevronDownIcon, ChevronRightIcon, ControlsIcon, LinkIcon} from '@sanity/icons'
+import {
+  ChevronDownIcon,
+  ChevronRightIcon,
+  ControlsIcon,
+  LinkIcon,
+  IceCreamIcon,
+} from '@sanity/icons'
 import {Box, Card, Code, Flex, Stack, Text} from '@sanity/ui'
 import React, {useMemo} from 'react'
 
@@ -42,6 +48,13 @@ export function DebugPane(props: any) {
     params: {param1: 'test'},
     payload: {key: 'foo'},
   })
+
+  // this is used to see whether or not the component re-renders.
+  //
+  // notice that the ID is only created on mount and should not change between
+  // subsequent re-renders, therefore this ID will only change when the parent
+  // component re-renders.
+  const randomId = useMemo(() => Math.floor(Math.random() * 10000000).toString(16), [])
 
   return (
     <Box height="fill">
@@ -92,6 +105,24 @@ export function DebugPane(props: any) {
                 <Text>
                   <ChevronDownIcon />
                 </Text>
+              </Box>
+            </Flex>
+          </Card>
+
+          <Card padding={3} radius={2}>
+            <Flex align="center">
+              <Box>
+                <Text>
+                  <IceCreamIcon />
+                </Text>
+              </Box>
+              <Box flex={1} marginLeft={3}>
+                <Flex direction="column" gap={1}>
+                  <Text textOverflow="ellipsis">Random ID: {randomId}</Text>
+                  <Text textOverflow="ellipsis" size={1} muted>
+                    Assigned on component mount
+                  </Text>
+                </Flex>
               </Box>
             </Flex>
           </Card>
