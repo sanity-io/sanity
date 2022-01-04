@@ -68,7 +68,7 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
   const [templatePermissions, isTemplatePermissionsLoading] = useUnstableTemplatePermissions(
     getNewDocumentOptions()
   )
-  const isLoaded = isDocumentLoaded && isTemplatePermissionsLoading
+  const isLoaded = isDocumentLoaded && !isTemplatePermissionsLoading
 
   const providerProps = useMemo(() => {
     return isLoaded && documentType && options.type !== documentType
