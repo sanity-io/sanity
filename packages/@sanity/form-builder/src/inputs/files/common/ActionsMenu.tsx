@@ -1,14 +1,22 @@
 import {get} from 'lodash'
 import React, {MouseEventHandler, useCallback} from 'react'
 
-import {SearchIcon, UploadIcon, ClipboardIcon, ResetIcon, DownloadIcon} from '@sanity/icons'
-import {Text, Menu, Box, MenuItem, MenuDivider, Label, useToast} from '@sanity/ui'
+import {
+  SearchIcon,
+  UploadIcon,
+  ClipboardIcon,
+  ResetIcon,
+  DownloadIcon,
+  ImageIcon,
+} from '@sanity/icons'
+import {Text, Menu, Box, MenuItem, MenuDivider, Label, useToast, MenuButton} from '@sanity/ui'
 import {FileAsset} from '@sanity/types/src'
+import {InternalAssetSource} from '../types'
 import {FileInputButton} from './FileInputButton/FileInputButton'
 
 interface Props {
   onUpload: (files: File[]) => void
-  onBrowse: MouseEventHandler<HTMLDivElement>
+  browse: React.ReactNode
   readOnly: boolean
   assetDocument: FileAsset
   onReset: MouseEventHandler<HTMLDivElement>
@@ -17,7 +25,16 @@ interface Props {
 }
 
 export function ActionsMenu(props: Props) {
-  const {onUpload, onBrowse, onReset, readOnly, assetDocument, accept, directUploads} = props
+  const {
+    onUpload,
+    onBrowse,
+    onReset,
+    readOnly,
+    assetDocument,
+    accept,
+    directUploads,
+    browse,
+  } = props
 
   const {push: pushToast} = useToast()
 
@@ -44,7 +61,8 @@ export function ActionsMenu(props: Props) {
         fontSize={2}
         fromMenu
       />
-      <MenuItem icon={SearchIcon} text="Browse" onClick={onBrowse} disabled={readOnly} />
+      {browse}
+
       <MenuDivider />
       <MenuItem as="a" icon={DownloadIcon} text="Download file" href={`${assetDocument.url}?dl`} />
       <MenuItem icon={ClipboardIcon} text="Copy URL" onClick={handleCopyURL} />
