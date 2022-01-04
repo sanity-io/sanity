@@ -1,13 +1,13 @@
-import React, {MouseEventHandler} from 'react'
-import {UploadIcon, SearchIcon} from '@sanity/icons'
-import {Flex, Button, Inline} from '@sanity/ui'
+import React from 'react'
+import {UploadIcon} from '@sanity/icons'
+import {Flex, Inline} from '@sanity/ui'
 import {FileLike} from '../../../sanity/uploads/types'
 import {FileInputButton} from './FileInputButton/FileInputButton'
 import {PlaceholderText} from './PlaceholderText'
 
 type UploadPlaceholderProps = {
   onUpload?: (files: File[]) => void
-  onBrowse?: MouseEventHandler<HTMLButtonElement>
+  browse?: React.ReactNode
   readOnly?: boolean | null
   type: string
   hoveringFiles: FileLike[]
@@ -19,7 +19,7 @@ type UploadPlaceholderProps = {
 }
 
 export default React.memo(function UploadPlaceholder({
-  onBrowse,
+  browse,
   onUpload,
   readOnly,
   type,
@@ -57,15 +57,7 @@ export default React.memo(function UploadPlaceholder({
           data-testid="file-input-upload-button"
           disabled={readOnly || !directUploads}
         />
-        <Button
-          fontSize={2}
-          text="Browse"
-          icon={SearchIcon}
-          mode="ghost"
-          onClick={onBrowse}
-          data-testid="file-input-select-button"
-          disabled={readOnly}
-        />
+        {browse}
       </Inline>
     </Flex>
   )

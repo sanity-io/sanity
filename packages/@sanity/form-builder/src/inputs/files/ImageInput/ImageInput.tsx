@@ -41,6 +41,7 @@ import {handleSelectAssetFromSource} from '../common/assetSource'
 import {ActionsMenu} from '../common/ActionsMenu'
 import resolveUploader from '../../../sanity/uploads/resolveUploader'
 import {UploadWarning} from '../common/UploadWarning'
+import {FileInputButton} from '../common/FileInputButton/FileInputButton'
 import {ImageInputField} from './ImageInputField'
 import {ImageActionsMenu} from './ImageActionsMenu'
 
@@ -487,25 +488,17 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     )
   }
 
-  renderUploadPlaceholder() {
-    const {assetSources, readOnly, resolveUploader, type, directUploads} = this.props
-    const {hoveringFiles} = this.state
-    if (!assetSources?.length) {
-      return null
-    }
+  renderBrowser() {
+    const {assetSources, readOnly, directUploads} = this.props
 
-    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
-    const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
+    if (assetSources.length === 0) return null
 
-    const accept = get(type, 'options.accept', 'image/*')
-
-    // If multiple asset sources render a dropdown
-    if (assetSources.length > 1 && !readOnly && !directUploads) {
+    if (assetSources.length > 1 && !readOnly && directUploads) {
       return (
         <MenuButton
           id={`${this._inputId}_assetImageButton`}
-          button={<Button mode="ghost" text="Select…" icon={SearchIcon} />}
-          data-testid="image-input-select-button"
+          button={<Button mode="ghost" text="Select" icon={SearchIcon} />}
+          data-testid="input-select-button"
           menu={
             <Menu>
               {assetSources.map((assetSource) => {
@@ -524,12 +517,33 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       )
     }
 
-    // Single asset source (just a normal button)
+    return (
+      <Button
+        fontSize={2}
+        text="Browse"
+        icon={SearchIcon}
+        mode="ghost"
+        onClick={() => this.handleSelectImageFromAssetSource(assetSources[0])}
+        data-testid="file-input-select-button"
+        disabled={readOnly}
+      />
+    )
+  }
+
+  renderUploadPlaceholder() {
+    const {readOnly, resolveUploader, type, directUploads} = this.props
+    const {hoveringFiles} = this.state
+
+    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
+    const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
+
+    const accept = get(type, 'options.accept', 'image/*')
+
     return (
       <UploadPlaceholder
         readOnly={readOnly}
-        onBrowse={() => this.handleSelectImageFromAssetSource(assetSources[0])}
         onUpload={this.handleSelectFiles}
+        browse={this.renderBrowser()}
         hoveringFiles={hoveringFiles}
         acceptedFiles={acceptedFiles}
         rejectedFilesCount={rejectedFilesCount}

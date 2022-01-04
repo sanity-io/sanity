@@ -449,25 +449,17 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     )
   }
 
-  renderUploadPlaceholder() {
-    const {assetSources, readOnly, type, directUploads} = this.props
-    const {hoveringFiles} = this.state
-    if (!assetSources?.length) {
-      return null
-    }
+  renderBrowser() {
+    const {assetSources, readOnly, directUploads} = this.props
 
-    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
-    const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
+    if (assetSources.length === 0) return null
 
-    const accept = get(type, 'options.accept', '')
-
-    // If multiple asset sources render a dropdown
-    if (assetSources.length > 1 && !readOnly) {
+    if (assetSources.length > 1 && !readOnly && directUploads) {
       return (
         <MenuButton
           id={`${this._inputId}_assetFileButton`}
-          button={<Button mode="ghost" text="Select…" icon={SearchIcon} />}
-          data-testid="file-input-select-button"
+          button={<Button mode="ghost" text="Select" icon={SearchIcon} />}
+          data-testid="input-select-button"
           menu={
             <Menu>
               {assetSources.map((assetSource) => {
@@ -486,10 +478,31 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       )
     }
 
-    // Single asset source (just a normal button)
+    return (
+      <Button
+        fontSize={2}
+        text="Browse"
+        icon={SearchIcon}
+        mode="ghost"
+        onClick={() => this.handleSelectFileFromAssetSource(assetSources[0])}
+        data-testid="file-input-select-button"
+        disabled={readOnly}
+      />
+    )
+  }
+
+  renderUploadPlaceholder() {
+    const {readOnly, type, directUploads} = this.props
+    const {hoveringFiles} = this.state
+
+    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
+    const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
+
+    const accept = get(type, 'options.accept', '')
+
     return (
       <UploadPlaceholder
-        onBrowse={() => this.handleSelectFileFromAssetSource(assetSources[0])}
+        browse={this.renderBrowser()}
         onUpload={this.handleSelectFiles}
         readOnly={readOnly}
         hoveringFiles={hoveringFiles}
