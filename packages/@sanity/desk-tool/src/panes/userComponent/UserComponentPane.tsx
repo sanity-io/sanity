@@ -22,6 +22,7 @@ export function UserComponentPane(props: UserComponentPaneProps) {
     title = '',
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type: _unused,
+    __preserveInstance = false,
     ...restPane
   } = pane
   const userComponent = useRef<{
@@ -43,8 +44,11 @@ export function UserComponentPane(props: UserComponentPaneProps) {
             // this forces a re-render when the router panes change. note: in
             // theory, this shouldn't be necessary and the downstream user
             // component could internally handle these updates, but this was done
-            // to preserve older desk tool behavior
-            key: `${restProps.itemId}-${restProps.childItemId}`,
+            // to preserve older desk tool behavior. if the experimental flag
+            // `__preserveInstance` is true, then no key will be applied.
+            ...(!__preserveInstance && {
+              key: `${restProps.itemId}-${restProps.childItemId}`,
+            }),
             ...restProps,
             ...restPane,
             ref: userComponent,
