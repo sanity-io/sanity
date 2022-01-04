@@ -1,4 +1,4 @@
-import {Button, Theme, MenuItem} from '@sanity/ui'
+import {Button, Theme, rem} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {focusRingStyle} from '../../../../components/withFocusRing/helpers'
 
@@ -20,13 +20,8 @@ export const invisibleInput = css`
   }
 `
 
-export const FileMenuItem = styled(MenuItem)`
-  position: relative;
-  ${invisibleInput}
-`
-
-export const FileButton = styled(Button)(({theme}: {theme: Theme}) => {
-  const {focusRing} = theme.sanity
+export const FileButton = styled(Button)(({theme, fromMenu}: {theme: Theme; fromMenu: boolean}) => {
+  const {focusRing, radius} = theme.sanity
   const base = theme.sanity.color.base
   const border = {width: 1, color: 'var(--card-border-color)'}
 
@@ -36,6 +31,18 @@ export const FileButton = styled(Button)(({theme}: {theme: Theme}) => {
         box-shadow: ${focusRingStyle({base, border, focusRing})};
       }
     }
+
+    ${fromMenu &&
+    css`
+      &:hover {
+        background-color: var(--card-focus-ring-color);
+        border-radius: ${rem(radius[2])};
+
+        div {
+          color: #fff;
+        }
+      }
+    `}
 
     ${invisibleInput}
   `

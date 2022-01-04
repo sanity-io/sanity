@@ -47,7 +47,7 @@ export const FileInputButton = React.forwardRef(function FileInputButton(
   )
 
   const content = (
-    <Flex align="center" justify="center" padding={padding}>
+    <Flex align="center" justify={fromMenu ? 'flex-start' : 'center'} padding={padding}>
       {/* Icon */}
       {icon && (
         <Box marginRight={text ? space : undefined}>
@@ -64,7 +64,7 @@ export const FileInputButton = React.forwardRef(function FileInputButton(
           align={textAlign}
           size={fontSize}
           textOverflow="ellipsis"
-          weight={theme.sanity.button.textWeight}
+          weight={fromMenu ? null : theme.sanity.button.textWeight}
         >
           {text}
         </Text>
@@ -72,32 +72,30 @@ export const FileInputButton = React.forwardRef(function FileInputButton(
     </Flex>
   )
 
-  const invisibleInput = (
-    <input
-      accept={accept}
-      capture={capture}
-      id={id}
-      multiple={multiple}
-      onChange={handleChange}
-      ref={forwardedRef}
-      type="file"
-      value=""
-      tabIndex={-1}
+  return (
+    <FileButton
+      {...rest}
+      fromMenu={fromMenu}
+      htmlFor={id}
+      padding={0}
+      fontSize={2}
       disabled={disabled}
-    />
-  )
-
-  return fromMenu ? (
-    <FileMenuItem icon={icon} text={text} disabled={disabled} paddingBottom={0}>
-      {/* Visibly hidden input */}
-      {invisibleInput}
-    </FileMenuItem>
-  ) : (
-    <FileButton {...rest} htmlFor={id} padding={0} fontSize={2} mode="ghost" disabled={disabled}>
+    >
       {content}
 
       {/* Visibly hidden input */}
-      {invisibleInput}
+      <input
+        accept={accept}
+        capture={capture}
+        id={id}
+        multiple={multiple}
+        onChange={handleChange}
+        ref={forwardedRef}
+        type="file"
+        value=""
+        tabIndex={-1}
+        disabled={disabled}
+      />
     </FileButton>
   )
 })
