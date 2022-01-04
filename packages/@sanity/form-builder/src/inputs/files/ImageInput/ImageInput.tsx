@@ -18,7 +18,7 @@ import {
   Path,
   SanityDocument,
 } from '@sanity/types'
-import React from 'react'
+import React, {ReactElement} from 'react'
 import PropTypes from 'prop-types'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import deepCompare from 'react-fast-compare'
@@ -464,6 +464,29 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     const showAdvancedEditButton =
       value && (fieldGroups.dialog.length > 0 || (value?.asset && this.isImageToolEnabled()))
 
+    let browseMenuItem: ReactElement<any, any> | ReactElement<any, any>[] =
+      assetSources.length === 0 ? null : (
+        <MenuItem
+          icon={SearchIcon}
+          text="Browse"
+          onClick={() => this.handleSelectImageFromAssetSource(assetSources[0])}
+          disabled={readOnly}
+        />
+      )
+
+    if (assetSources.length > 1) {
+      browseMenuItem = assetSources.map((assetSource) => {
+        return (
+          <MenuItem
+            key={assetSource.name}
+            text={assetSource.title}
+            onClick={() => this.handleSelectImageFromAssetSource(assetSource)}
+            icon={assetSource.icon || ImageIcon}
+          />
+        )
+      })
+    }
+
     return (
       <WithMaterializedReference reference={value!.asset} materialize={materialize}>
         {(fileAsset) => {
@@ -472,7 +495,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
               <ImageActionsMenu onEdit={this.handleOpenDialog} showEdit={showAdvancedEditButton}>
                 <ActionsMenu
                   onUpload={this.handleSelectFiles}
-                  onBrowse={() => this.handleSelectImageFromAssetSource(assetSources[0])}
+                  browse={browseMenuItem}
                   onReset={this.handleRemoveButtonClick}
                   assetDocument={fileAsset}
                   readOnly={readOnly}

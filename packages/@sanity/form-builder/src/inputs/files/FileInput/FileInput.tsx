@@ -1,6 +1,6 @@
 /* eslint-disable no-undef, import/no-unresolved */
 
-import React from 'react'
+import React, {ReactElement} from 'react'
 import PropTypes from 'prop-types'
 import {Observable, Subscription} from 'rxjs'
 import {get, partition, uniqueId} from 'lodash'
@@ -408,13 +408,36 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
 
     const accept = get(type, 'options.accept', '')
 
+    let browseMenuItem: ReactElement<any, any> | ReactElement<any, any>[] =
+      assetSources.length === 0 ? null : (
+        <MenuItem
+          icon={SearchIcon}
+          text="Browse"
+          onClick={() => this.handleSelectFileFromAssetSource(assetSources[0])}
+          disabled={readOnly}
+        />
+      )
+
+    if (assetSources.length > 1) {
+      browseMenuItem = assetSources.map((assetSource) => {
+        return (
+          <MenuItem
+            key={assetSource.name}
+            text={assetSource.title}
+            onClick={() => this.handleSelectFileFromAssetSource(assetSource)}
+            icon={assetSource.icon || ImageIcon}
+          />
+        )
+      })
+    }
+
     return (
       <WithMaterializedReference reference={value!.asset} materialize={materialize}>
         {(assetDocument: FileAsset) => (
           <FileContent assetDocument={assetDocument} readOnly={readOnly}>
             <ActionsMenu
               onUpload={this.handleSelectFiles}
-              onBrowse={() => this.handleSelectFileFromAssetSource(assetSources[0])}
+              browse={browseMenuItem}
               onReset={this.handleRemoveButtonClick}
               assetDocument={assetDocument}
               readOnly={readOnly}
