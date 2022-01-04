@@ -37,7 +37,7 @@ export const FileButton = styled(Button)(({theme, fromMenu}: {theme: Theme; from
 
     ${fromMenu &&
     css`
-      &:hover {
+      &:not([data-disabled='true']):hover {
         background-color: var(--card-focus-ring-color);
         border-radius: ${rem(radius[2])};
 
