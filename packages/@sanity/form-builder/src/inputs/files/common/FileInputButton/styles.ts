@@ -26,11 +26,14 @@ export const FileButton = styled(Button)(({theme, fromMenu}: {theme: Theme; from
   const border = {width: 1, color: 'var(--card-border-color)'}
 
   return css`
-    &:not([data-disabled='true']) {
-      &:focus-within {
-        box-shadow: ${focusRingStyle({base, border, focusRing})};
+    ${!fromMenu &&
+    css`
+      &:not([data-disabled='true']) {
+        &:focus-within {
+          box-shadow: ${focusRingStyle({base, border, focusRing})};
+        }
       }
-    }
+    `}
 
     ${fromMenu &&
     css`
