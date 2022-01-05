@@ -80,14 +80,14 @@ export function PopoverObjectEditing(props: PopoverObjectEditingProps) {
   const {width, elementRef, scrollElement} = props
   const [forceUpdate, setForceUpdate] = useState(0)
   const virtualElement = useMemo(() => {
-    if (!elementRef.current.getBoundingClientRect()) {
+    if (!elementRef?.current.getBoundingClientRect()) {
       return null
     }
 
     return {
-      contextElement: elementRef.current,
+      contextElement: elementRef.current || undefined,
       getBoundingClientRect: () => {
-        return elementRef.current.getBoundingClientRect()
+        return elementRef?.current.getBoundingClientRect() || null
       },
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -110,9 +110,13 @@ export function PopoverObjectEditing(props: PopoverObjectEditingProps) {
   }, [forceUpdate])
 
   useEffect(() => {
-    scrollElement.addEventListener('scroll', handleScrollOrResize, true)
+    if (scrollElement) {
+      scrollElement.addEventListener('scroll', handleScrollOrResize, true)
+    }
     return () => {
-      scrollElement.removeEventListener('scroll', handleScrollOrResize, true)
+      if (scrollElement) {
+        scrollElement.removeEventListener('scroll', handleScrollOrResize, true)
+      }
     }
   }, [handleScrollOrResize, scrollElement])
 
