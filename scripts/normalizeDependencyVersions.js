@@ -25,7 +25,12 @@ const pkgs = patterns
   .map((file) => path.join(rootPath, file))
   .map((file) => ({contents: fs.readFileSync(file, 'utf8'), file}))
   .map(({contents, file}) => ({file, pkg: JSON.parse(contents)}))
-  .concat([{file: path.join(rootPath, 'package.json'), pkg: corePkg}])
+  .concat([
+    {
+      file: path.join(rootPath, 'package.json'),
+      pkg: corePkg,
+    },
+  ])
   .map(({file, pkg}) => ({
     file,
     name: pkg.name,
@@ -109,7 +114,7 @@ fixablePackages.forEach((pkg) => {
   const manifestPath =
     pkg === corePkg.name
       ? path.join(rootPath, 'package.json')
-      : path.join(rootPath, 'packages', pkg, 'package.json')
+      : pkgs.find((mod) => mod.name === pkg).file
 
   let manifest
   try {
@@ -142,4 +147,5 @@ if (fixablePackages.length > 0) {
     ].join(' '),
     fixablePackages.length
   )
+  console.log('')
 }
