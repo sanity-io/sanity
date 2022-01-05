@@ -300,8 +300,10 @@ export function createWithEditableAPI(
                 },
                 {at: selection.focus}
               )
+              editor.onChange()
               if (Range.isCollapsed(selection)) {
                 editor.pteExpandToWord()
+                editor.onChange()
               }
               const [textNode] = Editor.node(editor, selection.focus, {depth: 2})
               if (editor.selection) {
@@ -319,9 +321,11 @@ export function createWithEditableAPI(
                         match: (n) => n._type === portableTextFeatures.types.span.name,
                       }
                     )
+                    editor.onChange()
                   }
                 })
                 Editor.normalize(editor)
+                editor.onChange()
                 const newSelection = toPortableTextRange(editor, editor.selection)
                 // eslint-disable-next-line max-depth
                 if (newSelection && typeof block._key === 'string') {
@@ -384,6 +388,7 @@ export function createWithEditableAPI(
       },
       removeAnnotation: (type: Type): void => {
         let {selection} = editor
+        debug('Removing annotation', type)
         if (selection) {
           // Select the whole annotation if collapsed
           if (Range.isCollapsed(selection)) {
@@ -396,12 +401,14 @@ export function createWithEditableAPI(
           // Do this without normalization or span references will be unstable!
           Editor.withoutNormalizing(editor, () => {
             if (selection && Range.isExpanded(selection)) {
-              // Split the span first
-              Transforms.setNodes(editor, {}, {match: Text.isText, split: true})
               selection = editor.selection
               if (!selection) {
                 return
               }
+              // Split the span first
+              Transforms.setNodes(editor, {}, {match: Text.isText, split: true})
+              editor.onChange()
+
               // Everything in the selection which has marks
               const spans = [
                 ...Editor.nodes(editor, {
@@ -436,9 +443,10 @@ export function createWithEditableAPI(
                     })
                 }
               })
-              editor.onChange()
             }
           })
+          Editor.normalize(editor)
+          editor.onChange()
         }
       },
       getSelection: (): EditorSelection | null => {
