@@ -1,5 +1,6 @@
 /* eslint-disable react/no-unused-prop-types */
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
+import {ScrollMonitor} from '@sanity/base/components'
 import {CloseIcon} from '@sanity/icons'
 import {PortableTextBlock, PortableTextChild, Type} from '@sanity/portable-text-editor'
 import {Path, Marker, SchemaType} from '@sanity/types'
@@ -77,7 +78,20 @@ const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 
 
 export function PopoverObjectEditing(props: PopoverObjectEditingProps) {
   const {width, elementRef} = props
-  const refElement = elementRef.current
+  const [forceUpdate, setForceUpdate] = useState(0)
+  const virtualElement = useMemo(() => {
+    if (!elementRef.current.getBoundingClientRect()) {
+      return null
+    }
+
+    return {
+      getBoundingClientRect: () => {
+        return elementRef.current.getBoundingClientRect()
+      },
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [elementRef, forceUpdate])
+
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const boundaryElement = useBoundaryElement()
   const boundaryElementRect = useElementRect(boundaryElement.element)
@@ -90,17 +104,25 @@ export function PopoverObjectEditing(props: PopoverObjectEditingProps) {
     [boundaryElementRect]
   )
 
+  const handleScrollOrResize = useCallback(() => {
+    setForceUpdate(forceUpdate + 1)
+  }, [forceUpdate])
+
   return (
-    <RootPopover
-      constrainSize
-      content={<Content {...props} rootElement={rootElement} style={contentStyle} width={width} />}
-      fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
-      placement="bottom"
-      open
-      portal="default"
-      ref={setRootElement}
-      referenceElement={refElement || (debugElement as any)}
-    />
+    <ScrollMonitor onScroll={handleScrollOrResize}>
+      <RootPopover
+        constrainSize
+        content={
+          <Content {...props} rootElement={rootElement} style={contentStyle} width={width} />
+        }
+        fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
+        placement="bottom"
+        open
+        portal="default"
+        ref={setRootElement}
+        referenceElement={virtualElement || (debugElement as any)}
+      />
+    </ScrollMonitor>
   )
 }
 

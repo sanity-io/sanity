@@ -1,15 +1,9 @@
-import React, {useCallback, useEffect, useState} from 'react'
+import React, {useCallback} from 'react'
 import {useId} from '@reach/auto-id'
 import {Path, Marker, SchemaType} from '@sanity/types'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
-import {
-  PortableTextBlock,
-  Type,
-  PortableTextChild,
-  PortableTextEditor,
-  usePortableTextEditor,
-} from '@sanity/portable-text-editor'
-import {Box, Dialog, useGlobalKeyDown, useLayer} from '@sanity/ui'
+import {PortableTextBlock, Type, PortableTextChild} from '@sanity/portable-text-editor'
+import {Box, Dialog} from '@sanity/ui'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {PatchEvent} from '../../../../PatchEvent'
 import {DIALOG_WIDTH_TO_UI_WIDTH} from './constants'
