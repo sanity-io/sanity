@@ -353,8 +353,9 @@ export function Compositor(props: InputProps) {
     ]
   )
 
+  const boundaryElm = isFullscreen ? scrollElement : boundaryElement
   const editObjectNode = (
-    <BoundaryElementProvider element={isFullscreen ? scrollElement : boundaryElement}>
+    <BoundaryElementProvider element={boundaryElm}>
       <EditObject
         focusPath={focusPath}
         objectEditData={objectEditData}
@@ -365,6 +366,7 @@ export function Compositor(props: InputProps) {
         onFocus={onEditObjectFormBuilderFocus}
         readOnly={readOnly}
         presence={presence}
+        scrollElement={boundaryElm}
         value={value}
       />
     </BoundaryElementProvider>
