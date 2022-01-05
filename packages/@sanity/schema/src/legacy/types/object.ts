@@ -183,34 +183,27 @@ function createFieldsGroups(typeDef, fields) {
 
   const groupsByName = keyBy(groups, 'name')
 
-  fields
-    .map((field) => {
-      if (field.group) {
-        const fieldGroupNames = castArray(field.group)
+  fields.forEach((field) => {
+    if (field.group) {
+      const fieldGroupNames = castArray(field.group)
 
-        if (fieldGroupNames.length > 0) {
-          fieldGroupNames.forEach((fieldGroupName) => {
-            const currentGroup = groupsByName[fieldGroupName]
+      if (fieldGroupNames.length > 0) {
+        fieldGroupNames.forEach((fieldGroupName) => {
+          const currentGroup = groupsByName[fieldGroupName]
 
-            if (!currentGroup) {
-              throw new Error(
-                `Field group '${fieldGroupName}' is not defined in schema for type '${
-                  typeDef.name ? startCase(typeDef.name) : typeDef.title ?? ``
-                }'`
-              )
-            }
+          if (!currentGroup) {
+            throw new Error(
+              `Field group '${fieldGroupName}' is not defined in schema for type '${
+                typeDef.name ? startCase(typeDef.name) : typeDef.title ?? ``
+              }'`
+            )
+          }
 
-            currentGroup.fields.push(field)
-          })
-        }
-
-        // Return the fieldset if its the first time we encounter a field in this fieldset
-        return groups
-        // return fieldGroups.groups.length === 1 ? fieldGroups : null
+          currentGroup.fields.push(field)
+        })
       }
-      return {single: true, field}
-    })
-    .filter(Boolean)
+    }
+  })
 
   return flatMap(groupsByName).filter((group) => group.fields.length > 0)
 }

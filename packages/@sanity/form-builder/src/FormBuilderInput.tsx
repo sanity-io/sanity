@@ -214,12 +214,6 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
     return PathUtils.trimChildPath(path, focusPath)
   }
 
-  handleTabChange = (newFocusPath) => {
-    const {onFocus} = this.props
-
-    onFocus([newFocusPath])
-  }
-
   render() {
     const {type, parent, value} = this.props
     // Separate readOnly in order to resolve it to a boolean type
@@ -236,24 +230,22 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
 
     if (typeof readOnly === 'function' || typeof type.readOnly === 'function') {
       return (
-        <>
-          <ConditionalReadOnlyField
-            parent={parent}
-            value={value}
-            readOnly={readOnly ?? type.readOnly}
-          >
-            <FormBuilderInputInner
-              {...restProps}
-              childFocusPath={this.getChildFocusPath()}
-              context={this.context}
-              component={InputComponent}
-              onBlur={this.handleBlur}
-              onChange={this.handleChange}
-              onFocus={this.handleFocus}
-              setInput={this.setInput}
-            />
-          </ConditionalReadOnlyField>
-        </>
+        <ConditionalReadOnlyField
+          parent={parent}
+          value={value}
+          readOnly={readOnly ?? type.readOnly}
+        >
+          <FormBuilderInputInner
+            {...restProps}
+            childFocusPath={this.getChildFocusPath()}
+            context={this.context}
+            component={InputComponent}
+            onBlur={this.handleBlur}
+            onChange={this.handleChange}
+            onFocus={this.handleFocus}
+            setInput={this.setInput}
+          />
+        </ConditionalReadOnlyField>
       )
     }
 

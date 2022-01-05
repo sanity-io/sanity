@@ -7,7 +7,6 @@ interface GroupType extends FieldGroup {
   onClick: (string) => void
   autoFocus?: boolean
   selected: boolean
-  onStateChange?: (name: string, hidden: boolean) => void
   parent: unknown
   'aria-controls': string
   disabled?: boolean
@@ -19,25 +18,14 @@ export const GroupTab = forwardRef(function GroupTab(
 ) {
   const {name, title} = props
   // Separate props for resolving conditional hidden groups
-  const {onClick, onStateChange, parent, hidden, ...group} = props
-
-  const isHidden = useConditionalProperty({
-    checkProperty: hidden,
-    checkPropertyKey: 'hidden',
-    value: group,
-    parent,
-  })
+  const {onClick, parent, hidden, ...group} = props
 
   // Here goes the content of our component
   const handleClick = React.useCallback(() => {
     onClick(name)
   }, [name, onClick])
 
-  useEffect(() => {
-    onStateChange(name, Boolean(isHidden))
-  }, [isHidden, name, onStateChange])
-
-  if (isHidden) {
+  if (hidden) {
     return null
   }
 
@@ -55,24 +43,15 @@ export const GroupTab = forwardRef(function GroupTab(
   )
 })
 
-export const GroupOption = (props: Omit<GroupType, 'onClick' | 'autofocus'>) => {
+export const GroupOption = (props: Omit<GroupType, 'onClick' | 'autoFocus'>) => {
   const {name, title, ...rest} = props
   // Separate props for resolving conditional hidden groups
-  const {autoFocus, selected, hidden, parent, onStateChange, ...group} = props
-  const isHidden = useConditionalProperty({
-    checkProperty: hidden,
-    checkPropertyKey: 'hidden',
-    value: group,
-    parent,
-  })
+  const {selected, hidden} = props
 
-  useEffect(() => {
-    onStateChange(name, Boolean(isHidden))
-  }, [isHidden, name, onStateChange])
-
-  if (isHidden) {
+  if (hidden) {
     return null
   }
+
   return (
     <option
       title={title}

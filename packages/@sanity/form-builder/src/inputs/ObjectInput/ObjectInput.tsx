@@ -13,12 +13,15 @@ import {
 import {FormFieldPresence} from '@sanity/base/presence'
 import {FormFieldSet} from '@sanity/base/components'
 import {Card, Grid} from '@sanity/ui'
-import {castArray, find, defaultTo} from 'lodash'
+import {castArray, find, findLast} from 'lodash'
 import {useId} from '@reach/auto-id'
+import {useCurrentUser} from '@sanity/base/hooks'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import {applyAll} from '../../patch/applyPatch'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {ConditionalReadOnlyField} from '../common/ConditionalReadOnlyField'
+import {useReviewChanges} from '../../sanity/contexts'
+import {isTrueIsh, omitDeprecatedRole} from '../../utils/common'
 import {ObjectInputField} from './ObjectInputField'
 import {UnknownFields} from './UnknownFields'
 import {ObjectFieldSet} from './ObjectFieldSet'
@@ -84,13 +87,15 @@ export const ObjectInput = memo(
       filterField = DEFAULT_FILTER_FIELD,
     } = props
 
+    const {value: currentUser} = useCurrentUser()
+    const {changesOpen} = useReviewChanges()
     const inputId = useId()
     const filterGroups: FieldGroup[] = React.useMemo(() => {
       if (!type.groups || type.groups.length === 0) {
         return []
       }
 
-      return [
+      const groups = [
         {
           name: DEFAULT_FIELD_GROUP_NAME,
           title: 'All fields',
@@ -98,21 +103,39 @@ export const ObjectInput = memo(
         },
         ...(type.groups || []),
       ]
-    }, [type.groups, type.fields])
+        .map((group) => {
+          const {hidden, ...rest} = group
+
+          return {
+            hidden: isTrueIsh(hidden, 'hidden', {
+              currentUser: omitDeprecatedRole(currentUser),
+              value: group,
+              parent: type.groups,
+            }),
+            ...rest,
+          }
+        })
+        .filter((group) => {
+          const {hidden} = group
+
+          return !hidden
+        })
+
+      return groups
+    }, [type.groups, type.fields, currentUser])
     const defaultFieldGroupName = React.useMemo(() => {
       if (filterGroups.length === 0) {
         return DEFAULT_FIELD_GROUP_NAME
       }
 
       return (
-        defaultTo(
-          find(filterGroups, (fieldGroup) => fieldGroup.default),
+        (
+          findLast(filterGroups, (fieldGroup) => fieldGroup.default && !fieldGroup.hidden) ||
           filterGroups?.[0]
         )?.name || DEFAULT_FIELD_GROUP_NAME
       )
     }, [filterGroups])
     const [selectedFieldGroupName, setSelectedFieldGroupName] = useState(defaultFieldGroupName)
-    const [isAllGroupsHidden, setIsAllGroupsHidden] = useState(false)
     const fieldGroupRootFocusPaths = React.useMemo(() => {
       if (filterGroups.length === 0) {
         return type.fields.map((field) => field.name)
@@ -125,14 +148,17 @@ export const ObjectInput = memo(
     const handleSelectTab = useCallback((tabName: string) => {
       setSelectedFieldGroupName(tabName)
     }, [])
-    const handleAllGroupsHidden = useCallback((hidden: boolean) => {
-      setIsAllGroupsHidden(hidden)
-    }, [])
-    const hasGroups = filterGroups.length > 0
+    const hasGroups = filterGroups.length > 1
 
     useEffect(() => {
       setSelectedFieldGroupName(defaultFieldGroupName)
     }, [type.fields])
+
+    useEffect(() => {
+      if (changesOpen && selectedFieldGroupName !== DEFAULT_FIELD_GROUP_NAME) {
+        setSelectedFieldGroupName(DEFAULT_FIELD_GROUP_NAME)
+      }
+    }, [changesOpen, selectedFieldGroupName])
 
     const handleFieldChange = React.useCallback(
       (fieldEvent: PatchEvent, field: ObjectField) => {
@@ -235,17 +261,17 @@ export const ObjectInput = memo(
       ]
     )
 
-    const fieldGroupPredictive = useCallback(
+    const fieldGroupPredicate = useCallback(
       (fieldToCheck) =>
         !hasGroups ||
         selectedFieldGroupName === DEFAULT_FIELD_GROUP_NAME ||
         (fieldToCheck.group && castArray(fieldToCheck.group).includes(selectedFieldGroupName)),
-      [selectedFieldGroupName]
+      [selectedFieldGroupName, hasGroups]
     )
 
     const fieldsForTypeAndGroup = React.useMemo(() => {
-      return type.fields.filter(fieldGroupPredictive)
-    }, [fieldGroupPredictive, type.fields])
+      return type.fields.filter((field) => fieldGroupPredicate(field))
+    }, [fieldGroupPredicate, type.fields])
 
     const fieldSetsForGroup = React.useMemo(() => {
       return type.fieldsets.filter((fieldset) => {
@@ -253,20 +279,22 @@ export const ObjectInput = memo(
           return true
         }
 
-        const hasFieldsetGroups = fieldGroupPredictive(fieldset)
+        const hasFieldsetGroups = fieldGroupPredicate(fieldset)
 
         if (fieldset.single === true) {
-          const fieldBelongsToGroup = fieldGroupPredictive(fieldset.field)
+          const fieldBelongsToGroup = fieldGroupPredicate(fieldset.field)
 
           return hasFieldsetGroups || fieldBelongsToGroup
         }
 
         const hasGroupFields =
-          hasFieldsetGroups || (!fieldset.single && fieldset.fields.some(fieldGroupPredictive))
+          hasFieldsetGroups ||
+          // eslint-disable-next-line max-nested-callbacks
+          (!fieldset.single && fieldset.fields.some((field) => fieldGroupPredicate(field)))
 
         return hasGroupFields
       })
-    }, [fieldGroupPredictive, selectedFieldGroupName, type.fieldsets])
+    }, [fieldGroupPredicate, selectedFieldGroupName, type.fieldsets])
 
     const renderFields = useCallback(() => {
       if (!type.fieldsets) {
@@ -288,7 +316,9 @@ export const ObjectInput = memo(
           }
         })
 
-        const fieldsetFields = fieldset.fields.filter(fieldGroupPredictive)
+        // @todo Maybe have a set?
+        // eslint-disable-next-line max-nested-callbacks
+        const fieldsetFields = fieldset.fields.filter((field) => fieldGroupPredicate(field))
 
         return (
           <ObjectFieldSet
@@ -331,7 +361,7 @@ export const ObjectInput = memo(
       presence,
       markers,
       value,
-      fieldGroupPredictive,
+      fieldGroupPredicate,
     ])
 
     const renderUnknownFields = useCallback(() => {
@@ -404,10 +434,10 @@ export const ObjectInput = memo(
     }, [defaultFieldGroupName])
 
     React.useEffect(() => {
-      if (selectedFieldGroupName !== DEFAULT_FIELD_GROUP_NAME && isAllGroupsHidden) {
+      if (selectedFieldGroupName !== DEFAULT_FIELD_GROUP_NAME && !hasGroups) {
         setSelectedFieldGroupName(DEFAULT_FIELD_GROUP_NAME)
       }
-    }, [isAllGroupsHidden, selectedFieldGroupName])
+    }, [hasGroups, selectedFieldGroupName])
 
     const columns = type.options && type.options.columns
 
@@ -424,9 +454,9 @@ export const ObjectInput = memo(
         <>
           <Card marginBottom={3} data-testid="field-groups">
             <FieldGroupTabs
+              disabled={changesOpen}
               inputId={inputId}
               onClick={handleSelectTab}
-              onGroupsStateChange={handleAllGroupsHidden}
               selectedName={selectedFieldGroupName}
               groups={filterGroups}
               shouldAutoFocus={level === 0 && focusPath.length === 0}
@@ -443,6 +473,7 @@ export const ObjectInput = memo(
       type.groups,
       type.fields,
       columns,
+      changesOpen,
       renderAllFields,
       level,
       selectedFieldGroupName,
