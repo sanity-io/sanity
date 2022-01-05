@@ -62,8 +62,8 @@ export const withPortableText = <T extends Editor>(
 
   // Ordering is important here, selection dealing last, data manipulation in the middle and core model stuff first.
   return withPortableTextSelections(
-    withUndoRedo(
-      withPatches(
+    withPatches(
+      withUndoRedo(
         withMaxBlocks(
           withUtils(
             withPortableTextLists(
