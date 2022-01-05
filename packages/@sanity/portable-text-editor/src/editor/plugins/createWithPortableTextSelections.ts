@@ -1,3 +1,4 @@
+import {Path} from '@sanity/types/src'
 import {Subject} from 'rxjs'
 import {EditorChange, EditorSelection, PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
@@ -10,24 +11,30 @@ export function createWithPortableTextSelections(change$: Subject<EditorChange>)
   return function withPortableTextSelections(
     editor: PortableTextSlateEditor
   ): PortableTextSlateEditor {
-    const {onChange} = editor
-    const emitSelection = () => {
+    const getSelection = () => {
+      let ptRange: EditorSelection = null
       if (editor.selection) {
-        let ptRange: EditorSelection = null
         const existing = SLATE_TO_PORTABLE_TEXT_RANGE.get(editor.selection)
         if (existing) {
           ptRange = existing
         } else {
           ptRange = toPortableTextRange(editor, editor.selection)
-          SLATE_TO_PORTABLE_TEXT_RANGE.set(editor.selection, ptRange)
         }
-        debug(`Emitting selection ${JSON.stringify(ptRange)}`)
-        change$.next({type: 'selection', selection: ptRange})
+        SLATE_TO_PORTABLE_TEXT_RANGE.set(editor.selection, ptRange)
       }
+      return ptRange
     }
+
+    const {onChange} = editor
     editor.onChange = () => {
       onChange()
-      emitSelection()
+      const sel = getSelection()
+      if (sel) {
+        debug(`Emitting selection ${JSON.stringify(sel)}`)
+        change$.next({type: 'selection', selection: sel})
+      } else {
+        change$.next({type: 'selection', selection: null})
+      }
     }
     return editor
   }
