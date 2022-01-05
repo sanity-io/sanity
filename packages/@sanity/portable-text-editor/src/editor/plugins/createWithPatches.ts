@@ -14,6 +14,7 @@ import {
   Node,
   Operation,
   Path,
+  Range,
   RemoveNodeOperation,
   RemoveTextOperation,
   SetNodeOperation,
@@ -21,6 +22,7 @@ import {
   Text as SlateText,
   Transforms,
 } from 'slate'
+import {isKeySegment} from '@sanity/types'
 import {setIfMissing, unset} from '../../patch/PatchEvent'
 import type {Patch} from '../../types/patch'
 
@@ -102,9 +104,8 @@ export function createWithPatches(
   portableTextFeatures: PortableTextFeatures,
   incomingPatches$?: PatchObservable
 ): (editor: PortableTextSlateEditor) => PortableTextSlateEditor {
-  const patchToOperations = createPatchToOperations(portableTextFeatures)
   let previousChildren: Descendant[]
-  let previousChildrenOnPatch: Descendant[]
+  let previousSelection: Range | null
   let isThrottling = false
   return function withPatches(editor: PortableTextSlateEditor) {
     PATCHING.set(editor, true)
@@ -119,21 +120,10 @@ export function createWithPatches(
     // Inspect incoming patches and adjust editor selection accordingly.
     if (incomingPatches$) {
       incomingPatches$.subscribe((patch: Patch) => {
-        previousChildrenOnPatch = previousChildren
         debug(`Handling incoming patch ${JSON.stringify(patch)}`)
-        debug(`Selection is ${JSON.stringify(editor.selection)}`)
-        if (isThrottling) {
-          withoutPatching(editor, () => {
-            if (patchToOperations(editor, patch)) {
-              debug('Applied patch in the throttled state', patch.type)
-            } else {
-              adjustSelection(editor, patch, previousChildrenOnPatch, portableTextFeatures)
-            }
-          })
-        } else {
-          debug(`Adjusting selection for patch ${patch.type}`)
-          adjustSelection(editor, patch, previousChildrenOnPatch, portableTextFeatures)
-        }
+        debug(`Selection is ${JSON.stringify(previousSelection)}`)
+        debug(`Adjusting selection for patch ${patch.type}`)
+        adjustSelection(editor, patch, previousChildren, previousSelection, portableTextFeatures)
       })
     }
 
@@ -151,6 +141,8 @@ export function createWithPatches(
 
       // Apply the operation
       apply(operation)
+
+      previousSelection = editor.selection
 
       if (!isPatching(editor)) {
         debug(`Editor is not producing patch for operation ${operation.type}`, operation)
@@ -235,6 +227,7 @@ function adjustSelection(
   editor: Editor,
   patch: Patch,
   previousChildren: (Node | Partial<Node>)[],
+  previousSelection: Range | null,
   portableTextFeatures: PortableTextFeatures
 ): void {
   const selection = editor.selection
@@ -246,13 +239,7 @@ function adjustSelection(
   // Text patches on same line
   if (patch.type === 'diffMatchPatch') {
     const [block, blockIndex] = findBlockAndIndexFromPath(patch.path[0], editor.children)
-    if (!block) {
-      return
-    }
-    const [child, childIndex] = findChildAndIndexFromPath(patch.path[2], block)
-    if (!child) {
-      return
-    }
+    const [, childIndex] = block ? findChildAndIndexFromPath(patch.path[2], block) : [undefined, -1]
     const onSameBlock =
       selection.focus.path[0] === blockIndex && selection.focus.path[1] === childIndex
 
@@ -301,12 +288,11 @@ function adjustSelection(
   // Unset patches on children within a block
   if (patch.type === 'unset' && patch.path.length === 3) {
     const [oldBlock, oldBlockIndex] = findBlockAndIndexFromPath(patch.path[0], previousChildren)
-    if (!oldBlock) {
-      debug('No block found trying to adjust for unset child')
-      return
-    }
-    const [, childIndex] = findChildAndIndexFromPath(patch.path[2], oldBlock)
+    const [, childIndex] = oldBlock
+      ? findChildAndIndexFromPath(patch.path[2], oldBlock)
+      : [undefined, -1]
     if (
+      oldBlock &&
       selection.focus.path[0] === oldBlockIndex &&
       selection.focus.path[1] >= childIndex &&
       childIndex > -1
@@ -365,96 +351,139 @@ function adjustSelection(
 
     let [, blockIndex] = blkAndIdx
     const [block] = blkAndIdx
+
+    // Deal with editing being done above the removed block
     if (
-      !block ||
-      typeof blockIndex === 'undefined' ||
-      (Path.isBefore(selection.anchor.path, [blockIndex]) &&
-        Path.isBefore(selection.focus.path, [blockIndex]))
+      block &&
+      blockIndex !== undefined &&
+      previousSelection &&
+      !Path.isAfter(selection.anchor.path, [blockIndex]) &&
+      !Path.isAfter(selection.focus.path, [blockIndex])
     ) {
-      return
+      newSelection = {...previousSelection}
+      newSelection.anchor = {...previousSelection.anchor}
+      newSelection.anchor.path = [
+        Math.max(0, previousSelection.anchor.path[0] - 1),
+        ...previousSelection.anchor.path.slice(1),
+      ]
+      newSelection.focus = {...previousSelection.focus}
+      newSelection.focus.path = [
+        Math.max(0, previousSelection.focus.path[0] - 1),
+        ...previousSelection.focus.path.slice(1),
+      ]
     }
 
-    const isTextBlock = block._type === portableTextFeatures.types.block.name
+    // Deal with editing being done below or on the removed block
+    if (
+      block &&
+      blockIndex !== undefined &&
+      !Path.isBefore(selection.anchor.path, [blockIndex]) &&
+      !Path.isBefore(selection.focus.path, [blockIndex])
+    ) {
+      const isTextBlock = block._type === portableTextFeatures.types.block.name
 
-    const addToOffset =
+      const addToOffset =
+        isTextBlock &&
+        isEqual(selection.anchor.path[0], blockIndex) &&
+        isEqual(selection.focus.path[0], blockIndex)
+          ? block.children
+              .map(
+                (child) =>
+                  SlateText.isText(child) &&
+                  child._type === portableTextFeatures.types.span.name &&
+                  child.text
+              )
+              .filter(Boolean)
+              .join('').length + 1
+          : 0
+
+      if (selection.anchor.path[0] === blockIndex && selection.focus.path[0] === blockIndex) {
+        blockIndex = Math.max(0, selection.focus.path[0] - 1)
+      }
+      if (Path.isAfter(selection.anchor.path, [blockIndex])) {
+        newSelection = {...selection}
+        newSelection.anchor = {...newSelection.anchor}
+        newSelection.anchor.path = [
+          Math.max(0, newSelection.anchor.path[0] - 1),
+          ...newSelection.anchor.path.slice(1),
+        ]
+        newSelection.anchor.offset += addToOffset
+      }
+      if (Path.isAfter(selection.focus.path, [blockIndex])) {
+        newSelection = {...(newSelection || selection)}
+        newSelection.focus = {...newSelection.focus}
+        newSelection.focus.path = [
+          Math.max(0, newSelection.focus.path[0] - 1),
+          ...newSelection.focus.path.slice(1),
+        ]
+        newSelection.focus.offset += addToOffset
+      }
+    }
+  }
+
+  // Unset patches on child level
+  if (patch.type === 'unset' && patch.path.length > 2) {
+    const blkAndIdx = findBlockAndIndexFromPath(patch.path[0], previousChildren)
+    const [, blockIndex] = blkAndIdx
+    const [block] = blkAndIdx
+    const isTextBlock = block && block._type === portableTextFeatures.types.block.name
+    const first = patch.path[0]
+
+    const offset =
       isTextBlock &&
-      isEqual(selection.anchor.path[0], blockIndex) &&
-      isEqual(selection.focus.path[0], blockIndex)
+      previousSelection &&
+      isKeySegment(first) &&
+      first._key === block._key &&
+      previousSelection?.anchor.path[0] === blockIndex &&
+      previousSelection?.focus.path[0] === blockIndex
         ? block.children
             .map(
-              (child) =>
+              (child, index) =>
+                previousSelection &&
+                index < previousSelection.focus.path[1] &&
+                index < previousSelection.anchor.path[1] &&
                 SlateText.isText(child) &&
                 child._type === portableTextFeatures.types.span.name &&
                 child.text
             )
             .filter(Boolean)
-            .join('').length + 1
+            .join('').length
         : 0
-
-    if (
-      isEqual(selection.anchor.path[0], blockIndex) &&
-      isEqual(selection.focus.path[0], blockIndex)
-    ) {
-      blockIndex = Math.max(0, selection.focus.path[0] - 1)
-    }
-    newSelection = {...selection}
-    if (Path.isAfter(selection.anchor.path, [blockIndex])) {
+    if (offset && previousSelection) {
+      newSelection = {...selection}
       newSelection.anchor = {...newSelection.anchor}
-      newSelection.anchor.path = [
-        Math.max(0, newSelection.anchor.path[0] - 1),
-        ...newSelection.anchor.path.slice(1),
-      ]
-      newSelection.anchor.offset += addToOffset
-    }
-    if (Path.isAfter(selection.focus.path, [blockIndex])) {
       newSelection.focus = {...newSelection.focus}
-      newSelection.focus.path = [
-        Math.max(0, newSelection.focus.path[0] - 1),
-        ...newSelection.focus.path.slice(1),
-      ]
-      newSelection.focus.offset += addToOffset
-    }
-    if (!isEqual(newSelection, selection)) {
-      debug('adjusting selection for unset block')
+      newSelection.anchor.offset = offset + previousSelection.anchor.offset
+      newSelection.focus.offset = offset + previousSelection.focus.offset
     }
   }
 
   // Insert patches on block level
   if (patch.type === 'insert' && patch.path.length === 1) {
     const [block, blockIndex] = findBlockAndIndexFromPath(patch.path[0], editor.children)
-    if (!block || typeof blockIndex === 'undefined') {
-      return
-    }
-    newSelection = {...selection}
-    if (Path.isAfter(selection.anchor.path, [blockIndex])) {
-      newSelection.anchor = {...selection.anchor}
-      newSelection.anchor.path = [
-        newSelection.anchor.path[0] + patch.items.length,
-        ...newSelection.anchor.path.slice(1),
-      ]
-    }
-    if (Path.isAfter(selection.focus.path, [blockIndex])) {
-      newSelection.focus = {...selection.focus}
-      newSelection.focus.path = [
-        newSelection.focus.path[0] + patch.items.length,
-        ...newSelection.focus.path.slice(1),
-      ]
-    }
-    if (!isEqual(newSelection, selection)) {
-      debug('adjusting selection for insert block')
+    if (block && typeof blockIndex !== 'undefined') {
+      newSelection = {...selection}
+      if (Path.isAfter(selection.anchor.path, [blockIndex])) {
+        newSelection.anchor = {...selection.anchor}
+        newSelection.anchor.path = [
+          newSelection.anchor.path[0] + patch.items.length,
+          ...newSelection.anchor.path.slice(1),
+        ]
+      }
+      if (Path.isAfter(selection.focus.path, [blockIndex])) {
+        newSelection.focus = {...selection.focus}
+        newSelection.focus.path = [
+          newSelection.focus.path[0] + patch.items.length,
+          ...newSelection.focus.path.slice(1),
+        ]
+      }
     }
   }
 
   // Insert patches on block children level
   if (patch.type === 'insert' && patch.path.length === 3) {
     const [block, blockIndex] = findBlockAndIndexFromPath(patch.path[0], editor.children)
-    if (!block || typeof blockIndex === 'undefined') {
-      return
-    }
-    const [child, childIndex] = findChildAndIndexFromPath(patch.path[2], block)
-    if (!child) {
-      return
-    }
+    const [, childIndex] = block ? findChildAndIndexFromPath(patch.path[2], block) : [undefined, -1]
     if (selection.focus.path[0] === blockIndex && selection.focus.path[1] === childIndex) {
       const nextIndex = childIndex + patch.items.length
       const iBlock = editor.children[blockIndex]
@@ -471,10 +500,7 @@ function adjustSelection(
         isEqual(nextBlock.children[0]._key, item._key)
       const [node] = Editor.node(editor, selection)
       const nodeText = SlateText.isText(node) && node.text
-      if (!nodeText) {
-        return
-      }
-      if (selection.focus.offset >= nodeText.length) {
+      if (nodeText && selection.focus.offset >= nodeText.length) {
         if (!isSplitOperation) {
           newSelection = {...selection}
           newSelection.focus = {...selection.focus}
@@ -493,18 +519,14 @@ function adjustSelection(
           newSelection.anchor.offset = selection.anchor.offset - nodeText.length || 0
           newSelection.focus.path = [blockIndex + 1, 0]
           newSelection.focus.offset = selection.focus.offset - nodeText.length || 0
-          editor.selection = newSelection
         }
-      }
-      if (!isEqual(newSelection, selection)) {
-        debug('adjusting selection for unset block child')
       }
     }
   }
-  if (isEqual(newSelection, selection)) {
+  if (isEqual(newSelection, editor.selection)) {
     debug('Selection is the same, not adjusting')
     return
   }
-  editor.selection = newSelection // Important: set the state here immediately without a transform!
-  Transforms.select(editor, newSelection) // Do a transform too so that we keep history on this change, but don't call editor.onChange()
+  Transforms.select(editor, newSelection)
+  // editor.onChange()
 }
