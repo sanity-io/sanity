@@ -294,10 +294,6 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       if (!slateEditor.selection) {
         return
       }
-      if (!onPaste) {
-        slateEditor.insertData(event.clipboardData)
-        return
-      }
       if (onPaste) {
         const resolveOnPasteResultOrError = (): OnPasteResultOrPromise | Error => {
           try {
@@ -340,6 +336,8 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
             return error
           })
       }
+      event.preventDefault()
+      slateEditor.insertData(event.clipboardData)
     },
     [blockType, change$, onPaste, portableTextEditor, portableTextFeatures, slateEditor]
   )
