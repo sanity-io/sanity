@@ -50,6 +50,7 @@ export function FormView(props: FormViewProps) {
     historyController,
     markers,
     ready,
+    changesOpen,
   } = useDocumentPane()
   const presence = useDocumentPresence(documentId)
   const {revTime: rev} = historyController
@@ -159,6 +160,7 @@ export function FormView(props: FormViewProps) {
               focusPath={focusPath}
               onChange={isReadOnly ? noop : handleChange}
               markers={markers}
+              changesOpen={changesOpen}
             />
           ) : (
             <Delay ms={300}>

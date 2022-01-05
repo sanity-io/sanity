@@ -43,6 +43,7 @@ interface FormBuilderInputProps {
   filterField?: (type: ObjectSchemaTypeWithOptions, field: ObjectField) => boolean
   onKeyUp?: (ev: React.KeyboardEvent) => void
   onKeyPress?: (ev: React.KeyboardEvent) => void
+  changesOpen?: boolean
 }
 
 interface Context {
@@ -217,7 +218,7 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
   }
 
   render() {
-    const {type, level, parent, value} = this.props
+    const {type, level, parent, value, changesOpen} = this.props
     // Separate readOnly in order to resolve it to a boolean type
     const {readOnly, ...restProps} = this.props
     const InputComponent = this.resolveInputComponent(type)
@@ -234,28 +235,31 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
 
     if (typeof readOnly === 'function' || typeof type.readOnly === 'function') {
       return (
-        <ConditionalReadOnlyField
-          parent={parent}
-          value={value}
-          readOnly={readOnly ?? type.readOnly}
-        >
-          <FormBuilderInputInner
-            {...restProps}
-            childFocusPath={this.getChildFocusPath()}
-            context={this.context}
-            component={InputComponent}
-            onBlur={this.handleBlur}
-            onChange={this.handleChange}
-            onFocus={this.handleFocus}
-            setInput={this.setInput}
-          />
-        </ConditionalReadOnlyField>
+        <>
+          {level === 0 && hasGroups && <FilterGroupTabs type={type} disabled={changesOpen} />}
+          <ConditionalReadOnlyField
+            parent={parent}
+            value={value}
+            readOnly={readOnly ?? type.readOnly}
+          >
+            <FormBuilderInputInner
+              {...restProps}
+              childFocusPath={this.getChildFocusPath()}
+              context={this.context}
+              component={InputComponent}
+              onBlur={this.handleBlur}
+              onChange={this.handleChange}
+              onFocus={this.handleFocus}
+              setInput={this.setInput}
+            />
+          </ConditionalReadOnlyField>
+        </>
       )
     }
 
     return (
       <>
-        {level === 0 && hasGroups && <FilterGroupTabs type={type} />}
+        {level === 0 && hasGroups && <FilterGroupTabs type={type} disabled={changesOpen} />}
         <FormBuilderInputInner
           {...restProps}
           readOnly={readOnly}
