@@ -31,6 +31,9 @@ export function useObjectEditFormBuilderFocus(onFocus: (path: Path) => void) {
       PortableTextEditor.focus(editor)
       // Not sure why, but Safari resets the selection for some reason if the path isn't emitted as a new object here.
       onFocus([...selection.focus.path])
+    } else {
+      onFocus([])
+      PortableTextEditor.focus(editor)
     }
   }, [editor, onFocus, selection])
 

@@ -59,8 +59,8 @@ export function useActionGroups({
     async (type: Type) => {
       const initialValue = await resolveInitialValue(type)
       const paths = PortableTextEditor.addAnnotation(editor, type, initialValue)
-
       if (paths && paths.markDefPath) {
+        PortableTextEditor.blur(editor)
         onFocus(paths.markDefPath.concat(FOCUS_TERMINATOR))
       }
     },

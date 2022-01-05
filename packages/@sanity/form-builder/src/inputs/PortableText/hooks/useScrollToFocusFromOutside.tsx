@@ -34,7 +34,9 @@ export function useScrollToFocusFromOutside(
       })
       const point = {path: focusPath, offset: 0}
       const selection = {anchor: point, focus: point}
-      PortableTextEditor.select(editor, selection)
+      if (!PortableTextEditor.isObjectPath(editor, focusPath)) {
+        PortableTextEditor.select(editor, selection)
+      }
       objectEditorPathRef.current = objectEditData.editorPath
     }
   }, [editor, focusPath, hasFocus, objectEditData, scrollElement])
