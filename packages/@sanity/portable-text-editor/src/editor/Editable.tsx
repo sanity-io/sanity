@@ -1,15 +1,7 @@
-import {Descendant, Transforms} from 'slate'
+import {Descendant, Transforms, Element as SlateElement} from 'slate'
 import {isEqual} from 'lodash'
 import isHotkey from 'is-hotkey'
-import React, {
-  useCallback,
-  useMemo,
-  useState,
-  useEffect,
-  useRef,
-  forwardRef,
-  useLayoutEffect,
-} from 'react'
+import React, {useCallback, useMemo, useState, useEffect, forwardRef, useRef} from 'react'
 import {Editable as SlateEditable, Slate, ReactEditor, withReact} from '@sanity/slate-react'
 import {
   EditorSelection,
@@ -202,7 +194,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   )
 
   // Restore value from props
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (isThrottling) {
       debug('Not setting value from props (throttling)')
       return
@@ -214,20 +206,43 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     const fromMap = VALUE_TO_SLATE_VALUE.get(value || [])
     if (fromMap === slateEditor.children) {
       debug('Value in sync, not updating value from props')
-    } else {
-      debug(`Setting value from props`)
-      const slateValueFromProps = toSlateValue(
-        getValueOrInitialValue(value, [placeHolderBlock]),
-        blockType.name,
-        KEY_TO_SLATE_ELEMENT.get(slateEditor)
-      )
-      slateEditor.children = slateValueFromProps
-      VALUE_TO_SLATE_VALUE.set(value || [], slateValueFromProps)
-      // Signal changed after this tick (this is really important to let plugins catch up first!)
-      setTimeout(() => {
-        slateEditor.onChange()
-      })
+      return
     }
+    let equal = true
+    const slateValueFromProps = toSlateValue(
+      getValueOrInitialValue(value, [placeHolderBlock]),
+      blockType.name,
+      KEY_TO_SLATE_ELEMENT.get(slateEditor)
+    )
+    const val: PortableTextBlock[] = value || [placeHolderBlock]
+    val.forEach((blk, index) => {
+      if (slateEditor.isTextBlock(blk)) {
+        if (!isEqual(blk, slateEditor.children[index])) {
+          equal = false
+        }
+      } else {
+        const blkVal = slateEditor.children[index] as SlateElement
+        if (
+          !blkVal ||
+          (blkVal &&
+            'value' in blkVal &&
+            !isEqual(blk, {_key: blkVal._key, _type: blkVal._type, ...blkVal.value}))
+        ) {
+          equal = false
+        }
+      }
+    })
+    // Only update the new value from props if the editor is not longer equal to the props value.
+    // IME composing on Safari MacOS breaks when we replace the value like this.
+    // This will help with that - at least in single user mode.
+    debug(`Setting value from props`)
+    if (equal) {
+      debug(`Editor value is in sync.`)
+    } else {
+      slateEditor.children = slateValueFromProps
+      slateEditor.onChange()
+    }
+    VALUE_TO_SLATE_VALUE.set(val, slateValueFromProps)
     change$.next({type: 'value', value})
   }, [change$, isSelecting, isThrottling, placeHolderBlock, blockType.name, slateEditor, value])
 
