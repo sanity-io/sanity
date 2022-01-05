@@ -34,6 +34,7 @@ export interface EditObjectProps {
   onClose: () => void
   onFocus: (path: Path) => void
   presence: FormFieldPresence[]
+  scrollElement: HTMLElement
   readOnly: boolean
   value: PortableTextBlock[] | undefined
 }
@@ -48,6 +49,7 @@ export const EditObject = (props: EditObjectProps) => {
     onClose,
     onFocus,
     presence,
+    scrollElement,
     readOnly,
     value,
   } = props
@@ -141,6 +143,7 @@ export const EditObject = (props: EditObjectProps) => {
         path={formBuilderPath}
         presence={presence}
         readOnly={readOnly}
+        scrollElement={scrollElement}
         type={type}
         width={modalOption.width}
       />

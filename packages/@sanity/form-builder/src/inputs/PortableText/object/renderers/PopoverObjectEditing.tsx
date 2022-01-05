@@ -1,6 +1,5 @@
 /* eslint-disable react/no-unused-prop-types */
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
-import {ScrollMonitor} from '@sanity/base/components'
 import {CloseIcon} from '@sanity/icons'
 import {PortableTextBlock, PortableTextChild, Type} from '@sanity/portable-text-editor'
 import {Path, Marker, SchemaType} from '@sanity/types'
@@ -37,6 +36,7 @@ interface PopoverObjectEditingProps {
   onFocus: (path: Path) => void
   path: Path
   presence: FormFieldPresence[]
+  scrollElement: HTMLElement
   readOnly: boolean
   type: Type
   width?: ModalWidth
@@ -77,7 +77,7 @@ const ContentHeaderBox = styled(Box)`
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
 export function PopoverObjectEditing(props: PopoverObjectEditingProps) {
-  const {width, elementRef} = props
+  const {width, elementRef, scrollElement} = props
   const [forceUpdate, setForceUpdate] = useState(0)
   const virtualElement = useMemo(() => {
     if (!elementRef.current.getBoundingClientRect()) {
@@ -85,6 +85,7 @@ export function PopoverObjectEditing(props: PopoverObjectEditingProps) {
     }
 
     return {
+      contextElement: elementRef.current,
       getBoundingClientRect: () => {
         return elementRef.current.getBoundingClientRect()
       },
@@ -108,21 +109,24 @@ export function PopoverObjectEditing(props: PopoverObjectEditingProps) {
     setForceUpdate(forceUpdate + 1)
   }, [forceUpdate])
 
+  useEffect(() => {
+    scrollElement.addEventListener('scroll', handleScrollOrResize, true)
+    return () => {
+      scrollElement.removeEventListener('scroll', handleScrollOrResize, true)
+    }
+  }, [handleScrollOrResize, scrollElement])
+
   return (
-    <ScrollMonitor onScroll={handleScrollOrResize}>
-      <RootPopover
-        constrainSize
-        content={
-          <Content {...props} rootElement={rootElement} style={contentStyle} width={width} />
-        }
-        fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
-        placement="bottom"
-        open
-        portal="default"
-        ref={setRootElement}
-        referenceElement={virtualElement || (debugElement as any)}
-      />
-    </ScrollMonitor>
+    <RootPopover
+      constrainSize
+      content={<Content {...props} rootElement={rootElement} style={contentStyle} width={width} />}
+      fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
+      placement="bottom"
+      open
+      portal="default"
+      ref={setRootElement}
+      referenceElement={virtualElement || (debugElement as any)}
+    />
   )
 }
 
