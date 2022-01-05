@@ -6,7 +6,7 @@ test('collate()', () => {
   const barDraft = {_id: 'drafts.bar'}
   const baz = {_id: 'baz'}
 
-  expect(collate([foo, fooDraft, barDraft, baz])).toEqual([
+  expect(collate([barDraft, foo, baz, fooDraft])).toEqual([
     {id: 'foo', draft: fooDraft, published: foo},
     {id: 'bar', draft: barDraft},
     {id: 'baz', published: baz},
