@@ -130,6 +130,7 @@ export function EditObjectsStory() {
               onClose={handleClose}
               onFocus={handleFocus}
               presence={presence}
+              scrollElement={portal.boundaryElement}
               readOnly={readOnly}
               value={value}
             />
