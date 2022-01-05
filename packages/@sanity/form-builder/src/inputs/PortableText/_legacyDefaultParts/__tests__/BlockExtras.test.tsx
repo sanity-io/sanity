@@ -9,6 +9,8 @@ import {PortableTextInputProps} from '../../PortableTextInput'
 import {TestInput} from '../../__workshop__/_common/TestInput'
 import {portableTextType} from './schema'
 
+jest.setTimeout(6000)
+
 const schema = Schema.compile({
   name: 'test',
   types: [portableTextType],
