@@ -181,6 +181,17 @@ function createFieldsGroups(typeDef, fields) {
     }
   })
 
+  const defaultGroups = groups.filter((group) => group.default)
+
+  if (defaultGroups.length > 1) {
+    // Throw if you have multiple default field groups defined
+    throw new Error(
+      `You currently have ${defaultGroups.length} default field groups defined for type '${
+        typeDef.name ? startCase(typeDef.name) : typeDef.title ?? ``
+      }', but only 1 is supported`
+    )
+  }
+
   const groupsByName = keyBy(groups, 'name')
 
   fields.forEach((field) => {
