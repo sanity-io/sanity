@@ -1,21 +1,8 @@
 /* eslint-disable no-process-env */
 
 let backup = {}
-beforeAll(() => {
-  const {
-    SANITY_STUDIO_API_PROJECT_ID,
-    SANITY_STUDIO_API_DATASET,
-    SANITY_STUDIO_PROJECT_BASEPATH,
-  } = process.env
-
-  backup = {
-    SANITY_STUDIO_API_PROJECT_ID,
-    SANITY_STUDIO_API_DATASET,
-    SANITY_STUDIO_PROJECT_BASEPATH,
-  }
-})
-
-afterAll(() => {
+beforeEach(() => (backup = {}))
+afterEach(() => {
   Object.keys(backup).forEach((key) => {
     if (backup[key]) {
       process.env[key] = backup[key]
@@ -25,10 +12,16 @@ afterAll(() => {
   })
 })
 
+const temporarilySetEnv = (key: string, value: string) => {
+  backup[key] = process.env[key]
+  process.env[key] = value
+}
+
 test('respects env config', () => {
-  process.env.SANITY_STUDIO_API_PROJECT_ID = 'abc'
-  process.env.SANITY_STUDIO_API_DATASET = 'overridden'
-  process.env.SANITY_STUDIO_PROJECT_BASEPATH = 'myRoot'
+  temporarilySetEnv('SANITY_STUDIO_API_PROJECT_ID', 'abc')
+  temporarilySetEnv('SANITY_STUDIO_API_DATASET', 'overridden')
+  temporarilySetEnv('SANITY_STUDIO_PROJECT_BASEPATH', 'myRoot')
+  temporarilySetEnv('SANITY_STUDIO_PROJECT_NAME', 'New Name')
   const {reduceConfig} = require('../src/_exports/index')
 
   const reduced = reduceConfig({
@@ -36,7 +29,7 @@ test('respects env config', () => {
       name: 'Project',
     },
     api: {
-      projectId: 'kbrhtt13',
+      projectId: 'myprojectid',
       dataset: 'production',
     },
   })
@@ -44,4 +37,24 @@ test('respects env config', () => {
   expect(reduced.api.projectId).toEqual('abc')
   expect(reduced.api.dataset).toEqual('overridden')
   expect(reduced.project.basePath).toEqual('myRoot')
+  expect(reduced.project.name).toEqual('New Name')
+})
+
+test('without envs', () => {
+  const {reduceConfig} = require('../src/_exports/index')
+
+  const reduced = reduceConfig({
+    project: {
+      name: 'Project',
+    },
+    api: {
+      projectId: 'myprojectid',
+      dataset: 'production',
+    },
+  })
+
+  expect(reduced.api.projectId).toEqual('myprojectid')
+  expect(reduced.api.dataset).toEqual('production')
+  expect(reduced.project.name).toEqual('Project')
+  expect(reduced.project.basePath).toBe(undefined)
 })
