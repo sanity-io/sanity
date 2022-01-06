@@ -21,7 +21,7 @@
   "dependencies": {
     "@sanity/generate-help-url": "2.18.0",
     "@sanity/logos": "^1.1.6",
-    "@sanity/ui": "^0.36.17",
+    "@sanity/ui": "^0.37.1",
     "prop-types": "^15.6.0",
     "rxjs": "^6.5.3"
   },

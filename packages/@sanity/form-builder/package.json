@@ -40,7 +40,7 @@
     "@sanity/portable-text-editor": "2.23.2",
     "@sanity/schema": "2.23.0",
     "@sanity/types": "2.23.2",
-    "@sanity/ui": "^0.36.17",
+    "@sanity/ui": "^0.37.1",
     "@sanity/util": "2.23.2",
     "@sanity/uuid": "^3.0.1",
     "attr-accept": "^1.1.0",

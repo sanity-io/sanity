@@ -21,7 +21,7 @@
   ],
   "dependencies": {
     "@sanity/icons": "^1.2.1",
-    "@sanity/ui": "^0.36.17",
+    "@sanity/ui": "^0.37.1",
     "classnames": "^2.2.5",
     "codemirror": "^5.47.0",
     "is-hotkey": "^0.1.6",
