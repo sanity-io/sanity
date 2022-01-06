@@ -1,7 +1,8 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {Flex, Text, Button, Stack, Inline, Card, Code} from '@sanity/ui'
 import {LinearProgress} from '@sanity/base/components'
 import {UploadState} from '../types'
+import {FlexWrapper, LeftSection, CodeWrapper} from './UploadProgress.styled'
 
 type Props = {
   uploadState: UploadState
@@ -26,22 +27,24 @@ export function UploadProgress({uploadState, onCancel, onStale}: Props) {
 
   return (
     <Card tone="primary" padding={4} border>
-      <Flex align="center" justify="space-between" height="fill" direction="row" gap={2}>
-        <Stack style={{width: '60%', position: 'relative'}}>
-          <Text size={1} align="center">
-            <Inline space={2}>
-              Uploading
-              {filename ? <Code size={1}>{filename}</Code> : <>...</>}
-            </Inline>
-          </Text>
+      <FlexWrapper align="center" justify="space-between" height="fill" direction="row" gap={2}>
+        <LeftSection>
+          <Flex justify="center" gap={[3, 3, 2, 2]} direction={['column', 'column', 'row']}>
+            <Text size={1}>
+              <Inline space={2}>
+                Uploading
+                <CodeWrapper size={1}>{filename ? filename : '...'}</CodeWrapper>
+              </Inline>
+            </Text>
+          </Flex>
 
           <Card marginTop={3} radius={5} shadow={1}>
             <LinearProgress value={uploadState.progress} />
           </Card>
-        </Stack>
+        </LeftSection>
 
         <Button fontSize={2} text="Cancel upload" mode="ghost" tone="critical" onClick={onCancel} />
-      </Flex>
+      </FlexWrapper>
     </Card>
   )
 }
