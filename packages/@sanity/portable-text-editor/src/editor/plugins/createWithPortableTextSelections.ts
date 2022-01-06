@@ -1,4 +1,3 @@
-import {Path} from '@sanity/types/src'
 import {Subject} from 'rxjs'
 import {EditorChange, EditorSelection, PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
@@ -7,11 +6,12 @@ import {SLATE_TO_PORTABLE_TEXT_RANGE} from '../../utils/weakMaps'
 
 const debug = debugWithName('plugin:withPortableTextSelections')
 
+// This plugin will make sure that we emit a PT selection if slateEditor.onChange is called.
 export function createWithPortableTextSelections(change$: Subject<EditorChange>) {
   return function withPortableTextSelections(
     editor: PortableTextSlateEditor
   ): PortableTextSlateEditor {
-    const getSelection = () => {
+    const emitSelection = () => {
       let ptRange: EditorSelection = null
       if (editor.selection) {
         const existing = SLATE_TO_PORTABLE_TEXT_RANGE.get(editor.selection)
@@ -22,19 +22,18 @@ export function createWithPortableTextSelections(change$: Subject<EditorChange>)
         }
         SLATE_TO_PORTABLE_TEXT_RANGE.set(editor.selection, ptRange)
       }
-      return ptRange
+      if (ptRange) {
+        debug(`Emitting selection ${JSON.stringify(ptRange)}`)
+        change$.next({type: 'selection', selection: ptRange})
+      } else {
+        change$.next({type: 'selection', selection: null})
+      }
     }
 
     const {onChange} = editor
     editor.onChange = () => {
       onChange()
-      const sel = getSelection()
-      if (sel) {
-        debug(`Emitting selection ${JSON.stringify(sel)}`)
-        change$.next({type: 'selection', selection: sel})
-      } else {
-        change$.next({type: 'selection', selection: null})
-      }
+      emitSelection()
     }
     return editor
   }
