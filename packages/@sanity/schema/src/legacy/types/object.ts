@@ -205,7 +205,7 @@ function createFieldsGroups(typeDef, fields) {
           if (!currentGroup) {
             throw new Error(
               `Field group '${fieldGroupName}' is not defined in schema for type '${
-                typeDef.name ? startCase(typeDef.name) : typeDef.title ?? ``
+                typeDef.name ?? typeDef.title ?? ``
               }'`
             )
           }
