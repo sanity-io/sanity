@@ -474,7 +474,6 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
                     value={value}
                     referenceInfo={loadableReferenceInfo}
                     type={type}
-                    selected={selected}
                   />
                 </PreviewCard>
               ) : (
