@@ -101,6 +101,11 @@ const Root = styled(Card)((props: {theme: Theme}) => {
   `
 })
 
+const PreviewContainer = styled(Flex)`
+  user-select: none;
+  pointer-events: none;
+`
+
 const ChangeIndicatorWrapper = styled.div(({theme}: {theme: Theme}) => {
   const {space} = theme.sanity
 
@@ -147,6 +152,9 @@ const BlockActionsOuter = styled(Box)`
 const BlockActionsInner = styled(Flex)`
   position: absolute;
   right: 0;
+  [data-dragged] & {
+    visibility: hidden;
+  }
 `
 
 const TooltipBox = styled(Box)`
@@ -273,8 +281,8 @@ export const BlockObject = React.forwardRef(function BlockObject(
   const tooltipEnabled = hasErrors || hasWarnings || hasInfo || hasMarkers
 
   return (
-    <InnerFlex marginY={3} ref={forwardedRef}>
-      <Flex flex={1} {...innerPaddingProps}>
+    <InnerFlex marginY={3} ref={forwardedRef} contentEditable={false}>
+      <PreviewContainer flex={1} {...innerPaddingProps}>
         <Tooltip
           placement="top"
           portal="editor"
@@ -304,8 +312,8 @@ export const BlockObject = React.forwardRef(function BlockObject(
             <BlockPreview ref={blockRef}>{blockPreview}</BlockPreview>
           </Root>
         </Tooltip>
-      </Flex>
-      <BlockActionsOuter marginRight={1} contentEditable={false}>
+      </PreviewContainer>
+      <BlockActionsOuter marginRight={1}>
         <BlockActionsInner>
           {renderBlockActions && block && focused && !readOnly && (
             <BlockActions
