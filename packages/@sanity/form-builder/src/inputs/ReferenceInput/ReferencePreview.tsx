@@ -52,7 +52,7 @@ export function ReferencePreview(props: {
   const theme = useRootTheme()
 
   const notFound = availability.reason === 'NOT_FOUND'
-  const insuficcientPermissions = availability.reason === 'PERMISSION_DENIED'
+  const insufficientPermissions = availability.reason === 'PERMISSION_DENIED'
 
   const previewId =
     preview.draft?._id ||
@@ -94,7 +94,7 @@ export function ReferencePreview(props: {
               {refType.title}
             </Label>
           )}
-          {insuficcientPermissions || notFound ? (
+          {insufficientPermissions || notFound ? (
             <Box>
               <Tooltip
                 portal
