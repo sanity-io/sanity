@@ -750,7 +750,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                   onFocus={this.handleFileTargetFocus}
                   onBlur={this.handleFileTargetBlur}
                   border={!value?.asset}
-                  padding={value?.asset ? 0 : 5}
+                  padding={value?.asset ? 0 : 3}
                   style={{
                     borderStyle: !readOnly && hoveringFiles.length > 0 ? 'solid' : 'dashed',
                   }}
