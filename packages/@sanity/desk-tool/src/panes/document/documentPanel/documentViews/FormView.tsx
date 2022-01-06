@@ -26,9 +26,18 @@ interface FormViewProps {
   margins: [number, number, number, number]
 }
 
-type FilterFieldFnOption = (type: ObjectSchemaTypeWithOptions, field: ObjectField) => boolean
+export interface FilterFieldOptions {
+  (type: ObjectSchemaTypeWithOptions, field: ObjectField): boolean
+}
 
-const INITIAL_FILTER_FN: FilterFieldFnOption = () => true
+interface FormViewState {
+  filterField: FilterFieldOptions
+}
+
+const INITIAL_STATE: FormViewState = {
+  filterField: () => true,
+}
+
 const preventDefault = (ev: React.FormEvent) => ev.preventDefault()
 const noop = () => undefined
 
@@ -50,7 +59,7 @@ export function FormView(props: FormViewProps) {
   } = useDocumentPane()
   const presence = useDocumentPresence(documentId)
   const {revTime: rev} = historyController
-  const [filterField, setFilterField] = useState<FilterFieldFnOption>(INITIAL_FILTER_FN)
+  const [{filterField}, setFilterField] = useState<FormViewState>(INITIAL_STATE)
 
   const hasTypeMismatch = value !== null && value._type !== documentSchema.name
   const isNonExistent = !value || !value._id
@@ -82,8 +91,8 @@ export function FormView(props: FormViewProps) {
   useEffect(() => {
     if (!filterFieldFn$) return undefined
 
-    const sub = filterFieldFn$.subscribe((nextFieldFilter: any) => {
-      setFilterField(nextFieldFilter)
+    const sub = filterFieldFn$.subscribe((nextFieldFilter) => {
+      setFilterField(nextFieldFilter ? {filterField: nextFieldFilter} : INITIAL_STATE)
     })
 
     return () => sub.unsubscribe()

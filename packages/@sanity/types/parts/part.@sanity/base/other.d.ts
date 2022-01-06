@@ -10,7 +10,10 @@ declare module 'all:part:@sanity/desk-tool/filter-fields-fn?' {
 }
 
 declare module 'part:@sanity/desk-tool/filter-fields-fn?' {
-  declare const filterField: Observable
+  import type {Observable} from 'rxjs'
+  declare const filterField: Observable<{
+    (type: ObjectSchemaTypeWithOptions, field: ObjectField): boolean
+  }>
   export default filterField
 }
 
