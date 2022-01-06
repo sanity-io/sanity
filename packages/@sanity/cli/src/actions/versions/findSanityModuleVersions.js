@@ -48,7 +48,7 @@ export default async function findSanityModuleVersions(context, opts = {}) {
   return packages.map((mod) => {
     mod.needsUpdate =
       target === 'latest'
-        ? semverCompare(mod.version, mod.latest) === -1
+        ? semverCompare(mod.installed, mod.latest) === -1
         : mod.installed !== mod.latestInRange
     return mod
   })
