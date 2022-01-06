@@ -3,9 +3,10 @@ import {map, switchMap} from 'rxjs/operators'
 import {isReferenceSchemaType, PreviewValue, SchemaType} from '@sanity/types'
 import {isPlainObject} from 'lodash'
 import prepareForPreview, {invokePrepare} from './utils/prepareForPreview'
-import type {Path, PrepareViewOptions, Reference} from './types'
+import type {Path, PrepareViewOptions} from './types'
 import {getPreviewPaths} from './utils/getPreviewPaths'
 import {observeDocumentTypeFromId} from './observeDocumentTypeFromId'
+import {Previewable} from './types'
 
 export interface PreparedSnapshot {
   type?: SchemaType
@@ -16,17 +17,21 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
   return isPlainObject(value)
 }
 
+export function isReference(value: unknown): value is {_ref: string} {
+  return isPlainObject(value)
+}
+
 // Takes a value and its type and prepares a snapshot for it that can be passed to a preview component
-export function createPreviewObserver(observePaths: (value: any, paths: Path[]) => any) {
+export function createPreviewObserver(observePaths: (value: Previewable, paths: Path[]) => any) {
   return function observeForPreview(
-    value: Reference,
+    value: Previewable,
     type: SchemaType,
     viewOptions?: PrepareViewOptions
   ): Observable<PreparedSnapshot> {
     if (isReferenceSchemaType(type)) {
       // if the value is of type reference, but has no _ref property, we cannot prepare any value for the preview
-      // and the most sane thing to do is to return `undefined` for snapshot
-      if (!value._ref) {
+      // and the most appropriate thing to do is to return `undefined` for snapshot
+      if (!isReference(value)) {
         return observableOf({snapshot: undefined})
       }
       // Previewing references actually means getting the referenced value,

@@ -3,7 +3,7 @@ import {Observable, of as observableOf} from 'rxjs'
 import {switchMap} from 'rxjs/operators'
 import props from './utils/props'
 
-import {FieldName, Id, Path, Reference, Document, Value} from './types'
+import {FieldName, Id, Path, Reference, Document, Previewable} from './types'
 
 function isReference(value: Reference | Document | Record<string, any>): value is Reference {
   return '_ref' in value
@@ -30,7 +30,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return isObject(value)
 }
 
-function observePaths(value: Value, paths: Path[], observeFields: ObserveFieldsFn) {
+function observePaths(value: Previewable, paths: Path[], observeFields: ObserveFieldsFn) {
   if (!isRecord(value)) {
     // Reached a leaf. Return as is
     return observableOf(value)
@@ -101,11 +101,14 @@ function normalizePaths(path: (FieldName | Path)[]): Path[] {
 }
 
 // Supports passing either an id or a value (document/reference/object)
-function normalizeValue(value: Value | Id): Value {
+function normalizeValue(value: Previewable | Id): Previewable {
   return typeof value === 'string' ? {_id: value} : value
 }
 
 export function createPathObserver(observeFields: ObserveFieldsFn) {
-  return (value: Value, paths: (FieldName | Path)[]): Observable<Record<string, unknown> | null> =>
+  return (
+    value: Previewable,
+    paths: (FieldName | Path)[]
+  ): Observable<Record<string, unknown> | null> =>
     observePaths(normalizeValue(value), normalizePaths(paths), observeFields)
 }

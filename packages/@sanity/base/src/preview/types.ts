@@ -7,7 +7,7 @@ export type Id = string
 export type {Reference}
 export type Document = {_id: string; [key: string]: unknown}
 
-export type Value = Document | Record<string, unknown> | Reference | Id
+export type Previewable = Document | Record<string, unknown> | Reference | Id
 
 // @todo: unify with content path from @sanity/types
 export type Path = FieldName[]
