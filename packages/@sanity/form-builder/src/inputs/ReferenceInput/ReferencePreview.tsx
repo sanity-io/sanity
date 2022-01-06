@@ -54,7 +54,15 @@ export function ReferencePreview(props: {
   const notFound = availability.reason === 'NOT_FOUND'
   const insuficcientPermissions = availability.reason === 'PERMISSION_DENIED'
 
-  const previewId = preview.draft?._id || preview.published?._id
+  const previewId =
+    preview.draft?._id ||
+    preview.published?._id ||
+    // note: during publish of the referenced document we might have both a missing draft and a missing published version
+    // this happens because the preview system tries to optimistically re-fetch as soon as it sees a mutation, but
+    // when publishing, the draft is deleted, and therefore both the draft and the published may be missing for a brief
+    // moment before the published version appears. In this case, it's safe to fallback to the given id, which is always
+    // the published id
+    id
 
   // Note: we can't pass the preview values as-is to the Preview-component here since it's a "prepared" value and the
   // Preview component expects the "raw"/unprepared value. By passing only _id and _type we make sure the Preview-component
