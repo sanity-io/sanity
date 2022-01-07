@@ -1,5 +1,13 @@
 import S from '@sanity/desk-tool/structure-builder'
-import {EarthGlobeIcon, PlugIcon, SyncIcon, TagIcon, TerminalIcon, RocketIcon} from '@sanity/icons'
+import {
+  EarthGlobeIcon,
+  PlugIcon,
+  SyncIcon,
+  TagIcon,
+  TerminalIcon,
+  RocketIcon,
+  EllipsisHorizontalIcon,
+} from '@sanity/icons'
 import {orderableDocumentListDeskItem} from '@sanity/orderable-document-list'
 import React from 'react'
 import schema from 'part:@sanity/base/schema'
@@ -86,6 +94,12 @@ const DEBUG_INPUT_TYPES = [
 ]
 
 const CI_INPUT_TYPES = ['conditionalFieldset', 'validationCI']
+const FIELD_GROUP_TYPES = [
+  'fieldGroups',
+  'fieldGroupsDefault',
+  'fieldGroupsMany',
+  'fieldGroupsWithValidation',
+]
 
 const EXTERNAL_PLUGIN_INPUT_TYPES = ['markdownTest', 'muxVideoPost']
 
@@ -116,25 +130,64 @@ function _buildTypeGroup(opts) {
         .id(opts.id)
         .items(
           (opts.groups || []).map(_buildTypeGroup).concat(
-            opts.types.map((typeName) => {
-              const schemaType = schema.get(typeName)
+            opts.types
+              .map((typeName) => {
+                const schemaType = schema.get(typeName)
 
-              return S.listItem()
-                .icon(schemaType?.icon)
-                .title(schemaType?.title || typeName)
-                .id(typeName)
-                .child(
-                  S.documentList()
-                    .canHandleIntent((intentName, params) => {
-                      return supportedIntents.includes(intentName) && typeName === params.type
+                return S.listItem()
+                  .icon(schemaType?.icon)
+                  .title(schemaType?.title || typeName)
+                  .id(typeName)
+                  .child(
+                    S.documentList()
+                      .canHandleIntent((intentName, params) => {
+                        return supportedIntents.includes(intentName) && typeName === params.type
+                      })
+                      .id(typeName)
+                      .title(schemaType.title || typeName)
+                      .schemaType(typeName)
+                      .filter(`_type == $type`)
+                      .params({type: typeName})
+                  )
+              })
+              .concat(
+                opts?.subgroups
+                  ? opts.subgroups.map((sgroup) => {
+                      return S.listItem()
+                        .icon(sgroup.icon)
+                        .title(sgroup.title)
+                        .id(sgroup.id)
+                        .child(
+                          S.list()
+                            .title(sgroup.title)
+                            .id(sgroup.id)
+                            .items(
+                              sgroup.types.map((typeName) => {
+                                const schemaType = schema.get(typeName)
+                                return S.listItem()
+                                  .icon(schemaType?.icon)
+                                  .title(schemaType?.title || typeName)
+                                  .id(typeName)
+                                  .child(
+                                    S.documentList()
+                                      .canHandleIntent((intentName, params) => {
+                                        return (
+                                          supportedIntents.includes(intentName) &&
+                                          typeName === params.type
+                                        )
+                                      })
+                                      .id(typeName)
+                                      .title(schemaType.title || typeName)
+                                      .schemaType(typeName)
+                                      .filter(`_type == $type`)
+                                      .params({type: typeName})
+                                  )
+                              })
+                            )
+                        )
                     })
-                    .id(typeName)
-                    .title(schemaType.title || typeName)
-                    .schemaType(typeName)
-                    .filter(`_type == $type`)
-                    .params({type: typeName})
-                )
-            })
+                  : []
+              )
           )
         )
     )
@@ -158,6 +211,14 @@ export default () =>
         id: 'input-debug',
         title: 'Debug inputs',
         types: DEBUG_INPUT_TYPES,
+        subgroups: [
+          {
+            title: 'Field groups',
+            types: FIELD_GROUP_TYPES,
+            id: 'field-groups',
+            icon: EllipsisHorizontalIcon,
+          },
+        ],
       }),
 
       S.divider(),
@@ -470,6 +531,7 @@ export default () =>
           !STANDARD_INPUT_TYPES.includes(listItem.getId()) &&
           !STANDARD_PORTABLE_TEXT_INPUT_TYPES.includes(listItem.getId()) &&
           !PLUGIN_INPUT_TYPES.includes(listItem.getId()) &&
-          !EXTERNAL_PLUGIN_INPUT_TYPES.includes(listItem.getId())
+          !EXTERNAL_PLUGIN_INPUT_TYPES.includes(listItem.getId()) &&
+          !FIELD_GROUP_TYPES.includes(listItem.getId())
       ),
     ])

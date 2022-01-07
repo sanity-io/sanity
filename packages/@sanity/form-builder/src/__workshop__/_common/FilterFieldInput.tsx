@@ -1,5 +1,5 @@
 import React, {MutableRefObject, useCallback, useMemo} from 'react'
-import {Button, Card, Code, Label, Stack, TextArea} from '@sanity/ui'
+import {Box, Button, Card, Code, Flex, Grid, Label, Stack, TextArea} from '@sanity/ui'
 import styled from 'styled-components'
 
 const ExampleCode = styled(Code)`
@@ -10,7 +10,7 @@ const EXAMPLE_FILTER_FUNCTION = `(type, field) => field.name === 'title'`
 
 interface FilterFieldInputOptions {
   onChange: (value) => void
-  onFilter: () => void
+  onFilter: (value?: string) => void
   value: string | null
 }
 
@@ -32,7 +32,11 @@ export const FilterFieldInput = React.forwardRef(function FilterFieldInput(
   }, [onChange])
 
   const handleFilter = useCallback(() => {
-    onFilter()
+    onFilter(value)
+  }, [onFilter, value])
+
+  const handleReset = useCallback(() => {
+    onFilter(``)
   }, [onFilter])
 
   const isDisabled = useMemo(() => {
@@ -49,7 +53,10 @@ export const FilterFieldInput = React.forwardRef(function FilterFieldInput(
           size={1}
           onClick={handleFilterExample}
         >{`Example: ${EXAMPLE_FILTER_FUNCTION}`}</ExampleCode>
-        <Button text="Filter" onClick={handleFilter} disabled={isDisabled} />
+        <Grid columns={2} gap={3}>
+          <Button text="Filter" onClick={handleFilter} disabled={isDisabled} />
+          <Button text="Reset" mode="ghost" onClick={handleReset} disabled={isDisabled} />
+        </Grid>
       </Stack>
     </Card>
   )

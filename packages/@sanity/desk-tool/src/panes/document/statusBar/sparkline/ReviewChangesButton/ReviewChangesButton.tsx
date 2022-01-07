@@ -59,7 +59,14 @@ const ReviewButton = React.forwardRef(function ReviewButton(
         </Stack>
       }
     >
-      <Button mode="bleed" justify="flex-start" tone={buttonProps?.tone} {...rest} ref={ref}>
+      <Button
+        mode="bleed"
+        justify="flex-start"
+        tone={buttonProps?.tone}
+        {...rest}
+        data-testid="review-changes-button"
+        ref={ref}
+      >
         <Flex align="center">
           <Box marginRight={collapsed ? 0 : 3}>
             <Text>

@@ -1,4 +1,4 @@
-import React, {ForwardedRef, forwardRef, memo, useCallback} from 'react'
+import React, {ForwardedRef, forwardRef, memo, useCallback, useEffect, useState} from 'react'
 import {
   Marker,
   MultiFieldSet,
@@ -8,23 +8,30 @@ import {
   SingleFieldSet,
   Fieldset,
   ConditionalProperty,
+  FieldGroup,
 } from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {FormFieldSet} from '@sanity/base/components'
-
-import {Grid} from '@sanity/ui'
+import {Card, Grid} from '@sanity/ui'
+import {castArray, find, findLast} from 'lodash'
+import {useId} from '@reach/auto-id'
+import {useCurrentUser} from '@sanity/base/hooks'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import {applyAll} from '../../patch/applyPatch'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {ConditionalReadOnlyField} from '../common/ConditionalReadOnlyField'
+import {useReviewChanges} from '../../sanity/contexts'
+import {isTrueIsh, omitDeprecatedRole} from '../../utils/common'
 import {ObjectInputField} from './ObjectInputField'
 import {UnknownFields} from './UnknownFields'
 import {ObjectFieldSet} from './ObjectFieldSet'
 import {getCollapsedWithDefaults} from './utils'
+import {FieldGroupTabs} from './fieldGroups'
 
 const EMPTY_MARKERS: Marker[] = EMPTY_ARRAY
 const EMPTY_PRESENCE: FormFieldPresence[] = EMPTY_ARRAY
 const EMPTY_PATH: Path = EMPTY_ARRAY
+const DEFAULT_FIELD_GROUP_NAME = 'all-fields'
 
 function isSingleFieldset(fieldset: Fieldset): fieldset is SingleFieldSet {
   return Boolean(fieldset.single)
@@ -79,6 +86,79 @@ export const ObjectInput = memo(
       compareValue,
       filterField = DEFAULT_FILTER_FIELD,
     } = props
+
+    const {value: currentUser} = useCurrentUser()
+    const {changesOpen} = useReviewChanges()
+    const inputId = useId()
+    const filterGroups: FieldGroup[] = React.useMemo(() => {
+      if (!type.groups || type.groups.length === 0) {
+        return []
+      }
+
+      const groups = [
+        {
+          name: DEFAULT_FIELD_GROUP_NAME,
+          title: 'All fields',
+          fields: type.fields,
+        },
+        ...(type.groups || []),
+      ]
+        .map((group) => {
+          const {hidden, ...rest} = group
+
+          return {
+            hidden: isTrueIsh(hidden, 'hidden', {
+              currentUser: omitDeprecatedRole(currentUser),
+              value: group,
+              parent: type.groups,
+            }),
+            ...rest,
+          }
+        })
+        .filter((group) => {
+          const {hidden} = group
+
+          return !hidden
+        })
+
+      return groups
+    }, [type.groups, type.fields, currentUser])
+    const defaultFieldGroupName = React.useMemo(() => {
+      if (filterGroups.length === 0) {
+        return DEFAULT_FIELD_GROUP_NAME
+      }
+
+      return (
+        (
+          findLast(filterGroups, (fieldGroup) => fieldGroup.default && !fieldGroup.hidden) ||
+          filterGroups?.[0]
+        )?.name || DEFAULT_FIELD_GROUP_NAME
+      )
+    }, [filterGroups])
+    const [selectedFieldGroupName, setSelectedFieldGroupName] = useState(defaultFieldGroupName)
+    const fieldGroupRootFocusPaths = React.useMemo(() => {
+      if (filterGroups.length === 0) {
+        return type.fields.map((field) => field.name)
+      }
+
+      return (
+        find(filterGroups, (fieldGroup) => fieldGroup.name === selectedFieldGroupName)?.fields || []
+      ).map((field) => field.name)
+    }, [filterGroups, selectedFieldGroupName, type.fields])
+    const handleSelectTab = useCallback((tabName: string) => {
+      setSelectedFieldGroupName(tabName)
+    }, [])
+    const hasGroups = filterGroups.length > 1
+
+    useEffect(() => {
+      setSelectedFieldGroupName(defaultFieldGroupName)
+    }, [type.fields])
+
+    useEffect(() => {
+      if (changesOpen && selectedFieldGroupName !== DEFAULT_FIELD_GROUP_NAME) {
+        setSelectedFieldGroupName(DEFAULT_FIELD_GROUP_NAME)
+      }
+    }, [changesOpen, selectedFieldGroupName])
 
     const handleFieldChange = React.useCallback(
       (fieldEvent: PatchEvent, field: ObjectField) => {
@@ -181,12 +261,50 @@ export const ObjectInput = memo(
       ]
     )
 
+    const fieldGroupPredicate = useCallback(
+      (fieldToCheck) =>
+        !hasGroups ||
+        selectedFieldGroupName === DEFAULT_FIELD_GROUP_NAME ||
+        (fieldToCheck.group && castArray(fieldToCheck.group).includes(selectedFieldGroupName)),
+      [selectedFieldGroupName, hasGroups]
+    )
+
+    const fieldsForTypeAndGroup = React.useMemo(() => {
+      return type.fields.filter((field) => fieldGroupPredicate(field))
+    }, [fieldGroupPredicate, type.fields])
+
+    const fieldSetsForGroup = React.useMemo(() => {
+      return type.fieldsets.filter((fieldset) => {
+        if (selectedFieldGroupName === DEFAULT_FIELD_GROUP_NAME) {
+          return true
+        }
+
+        const hasFieldsetGroups = fieldGroupPredicate(fieldset)
+
+        if (fieldset.single === true) {
+          const fieldBelongsToGroup = fieldGroupPredicate(fieldset.field)
+
+          return hasFieldsetGroups || fieldBelongsToGroup
+        }
+
+        const hasGroupFields =
+          hasFieldsetGroups ||
+          // eslint-disable-next-line max-nested-callbacks
+          (!fieldset.single && fieldset.fields.some((field) => fieldGroupPredicate(field)))
+
+        return hasGroupFields
+      })
+    }, [fieldGroupPredicate, selectedFieldGroupName, type.fieldsets])
+
     const renderFields = useCallback(() => {
       if (!type.fieldsets) {
         // this is a fallback for schema types that are not parsed to be objects, but still has jsonType == 'object'
-        return (type.fields || []).map((field, index) => renderField(field, level + 1, index))
+        return (fieldsForTypeAndGroup || []).map((field, index) =>
+          renderField(field, level + 1, index)
+        )
       }
-      return type.fieldsets.map((fieldset, fieldsetIndex) => {
+
+      return fieldSetsForGroup.map((fieldset, fieldsetIndex) => {
         if (isSingleFieldset(fieldset)) {
           return renderField(fieldset.field, level + 1, fieldsetIndex, fieldset.readOnly)
         }
@@ -198,11 +316,15 @@ export const ObjectInput = memo(
           }
         })
 
+        // @todo Maybe have a set?
+        // eslint-disable-next-line max-nested-callbacks
+        const fieldsetFields = fieldset.fields.filter((field) => fieldGroupPredicate(field))
+
         return (
           <ObjectFieldSet
             key={`fieldset-${(fieldset as MultiFieldSet).name}`}
             data-testid={`fieldset-${(fieldset as MultiFieldSet).name}`}
-            fieldset={fieldset as MultiFieldSet}
+            fieldset={{...fieldset, fields: fieldsetFields} as MultiFieldSet}
             focusPath={focusPath}
             onFocus={onFocus}
             level={level + 1}
@@ -213,30 +335,33 @@ export const ObjectInput = memo(
           >
             {() =>
               // lazy render children
-              // eslint-disable-next-line max-nested-callbacks
-              fieldset.fields.map((field, fieldIndex) =>
-                renderField(
-                  field,
-                  level + 2,
-                  fieldsetIndex + fieldIndex,
-                  fieldset.readOnly,
-                  fieldSetValuesObject
+              fieldsetFields
+                // eslint-disable-next-line max-nested-callbacks
+                .map((field, fieldIndex) =>
+                  renderField(
+                    field,
+                    level + 2,
+                    fieldsetIndex + fieldIndex,
+                    fieldset.readOnly,
+                    fieldSetValuesObject
+                  )
                 )
-              )
             }
           </ObjectFieldSet>
         )
       })
     }, [
-      focusPath,
+      type.fieldsets,
+      fieldSetsForGroup,
+      fieldsForTypeAndGroup,
+      renderField,
       level,
-      markers,
+      focusPath,
       onFocus,
       presence,
-      renderField,
-      type.fields,
-      type.fieldsets,
+      markers,
       value,
+      fieldGroupPredicate,
     ])
 
     const renderUnknownFields = useCallback(() => {
@@ -286,18 +411,79 @@ export const ObjectInput = memo(
       const hasFocusWithin = focusPath.length > 0
       if (hasFocusWithin) {
         setCollapsed(false)
+
+        // Restore to default field group if focus path changes and the root focus path is not
+        // available in this field group
+        if (
+          selectedFieldGroupName !== DEFAULT_FIELD_GROUP_NAME &&
+          typeof focusPath?.[0] === 'string' &&
+          !fieldGroupRootFocusPaths.includes(focusPath?.[0])
+        ) {
+          setSelectedFieldGroupName(DEFAULT_FIELD_GROUP_NAME)
+        }
       }
     }, [focusPath])
 
+    React.useEffect(() => {
+      if (
+        defaultFieldGroupName !== DEFAULT_FIELD_GROUP_NAME &&
+        selectedFieldGroupName !== defaultFieldGroupName
+      ) {
+        setSelectedFieldGroupName(defaultFieldGroupName)
+      }
+    }, [defaultFieldGroupName])
+
+    React.useEffect(() => {
+      if (selectedFieldGroupName !== DEFAULT_FIELD_GROUP_NAME && !hasGroups) {
+        setSelectedFieldGroupName(DEFAULT_FIELD_GROUP_NAME)
+      }
+    }, [hasGroups, selectedFieldGroupName])
+
     const columns = type.options && type.options.columns
+
+    const renderFieldGroups = useCallback(() => {
+      if (!hasGroups) {
+        return (
+          <Grid columns={columns} gapX={4} gapY={5}>
+            {renderAllFields()}
+          </Grid>
+        )
+      }
+
+      return (
+        <>
+          <Card marginBottom={3} data-testid="field-groups">
+            <FieldGroupTabs
+              disabled={changesOpen}
+              inputId={inputId}
+              onClick={handleSelectTab}
+              selectedName={selectedFieldGroupName}
+              groups={filterGroups}
+              shouldAutoFocus={level === 0 && focusPath.length === 0}
+            />
+            <Card paddingTop={4}>
+              <Grid columns={columns} gapX={4} gapY={5} id={`${inputId}-field-group-fields`}>
+                {renderAllFields()}
+              </Grid>
+            </Card>
+          </Card>
+        </>
+      )
+    }, [
+      type.groups,
+      type.fields,
+      columns,
+      changesOpen,
+      renderAllFields,
+      level,
+      selectedFieldGroupName,
+      handleSelectTab,
+    ])
+
     if (level === 0) {
       // We don't want to render the fields wrapped in a fieldset if nesting level is 0
       // (e.g. when the object input is used as the root element in a form or a dialog)
-      return (
-        <Grid columns={columns} gapX={4} gapY={5}>
-          {renderAllFields()}
-        </Grid>
-      )
+      return <>{renderFieldGroups()}</>
     }
 
     return (
@@ -314,7 +500,7 @@ export const ObjectInput = memo(
         __unstable_markers={isCollapsed ? markers : EMPTY_ARRAY}
         __unstable_changeIndicator={false}
       >
-        {renderAllFields}
+        {renderFieldGroups()}
       </FormFieldSet>
     )
   })

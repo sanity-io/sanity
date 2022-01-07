@@ -26,6 +26,7 @@ type FormBuilderProps = {
   autoFocus: boolean
   focusPath: Path
   presence: FormFieldPresence[]
+  changesOpen: boolean
 }
 const patchChannel = FormBuilder.createPatchChannel()
 
@@ -40,6 +41,7 @@ export const DEFAULT_PROPS = {
   onBlur: () => undefined,
   autoFocus: undefined,
   focusPath: [],
+  changesOpen: false,
 }
 
 // Use this to test specific inputs rendered in the form-builder

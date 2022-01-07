@@ -35,7 +35,7 @@ export type SortOrdering = {
 }
 export interface ConditionalPropertyCallbackContext {
   parent?: unknown
-  document: SanityDocument
+  document?: SanityDocument
   currentUser: Omit<CurrentUser, 'role'>
   value: unknown
 }
@@ -243,12 +243,23 @@ export type ObjectFieldType<T extends SchemaType = SchemaType> = T & {
 export interface ObjectField<T extends SchemaType = SchemaType> {
   name: string
   fieldset?: string
+  group?: string | string[]
   type: ObjectFieldType<T>
+}
+export interface FieldGroup {
+  name: string
+  icon?: React.ComponentType
+  title?: string
+  description?: string
+  hidden?: ConditionalProperty
+  default?: boolean
+  fields?: ObjectField[]
 }
 
 export interface ObjectSchemaType extends BaseSchemaType {
   jsonType: 'object'
   fields: ObjectField[]
+  groups?: FieldGroup[]
   fieldsets?: Fieldset[]
   initialValue?: InitialValueProperty<Record<string, unknown>>
   weak?: boolean
@@ -271,6 +282,7 @@ export interface SingleFieldSet {
   field: ObjectField
   hidden?: ConditionalProperty
   readOnly?: ConditionalProperty
+  group?: string | string[]
 }
 
 export interface MultiFieldSet {
@@ -278,6 +290,7 @@ export interface MultiFieldSet {
   title?: string
   description?: string
   single?: false
+  group?: string | string[]
   options?: CollapseOptions & {
     columns?: number
   }
