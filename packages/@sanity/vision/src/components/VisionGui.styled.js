@@ -9,6 +9,10 @@ export const Root = styled(Card)`
   height: 100%;
   flex-direction: column;
 
+  .sidebarPanes .Pane {
+    overflow: auto;
+  }
+
   .Resizer {
     background: var(--card-border-color);
     opacity: 1;
