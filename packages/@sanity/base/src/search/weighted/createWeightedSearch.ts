@@ -71,7 +71,7 @@ export function createWeightedSearch(
         {
           ...toGroqParams(terms),
           __types: searchSpec.map((spec) => spec.typeName),
-          __limit: searchOpts.limit ?? 100,
+          __limit: searchOpts.limit ?? 1000,
           ...(params || {}),
         },
         {tag}
