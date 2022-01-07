@@ -1,8 +1,10 @@
 import path from 'path'
 import {promisify} from 'util'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore This may not yet be built.
+import {buildStaticFiles, ChunkModule, ChunkStats} from '@sanity/server'
 import chalk from 'chalk'
 import rimrafCallback from 'rimraf'
-import {buildStaticFiles, ChunkModule, ChunkStats} from '@sanity/server'
 import type {CliCommandArguments, CliCommandContext} from '../../types'
 import checkStudioDependencyVersions from '../../util/checkStudioDependencyVersions'
 import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
