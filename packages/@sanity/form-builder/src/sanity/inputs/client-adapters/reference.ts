@@ -157,15 +157,16 @@ export function search(
   options: ReferenceFilterSearchOptions
 ): Observable<SearchHit[]> {
   const searchWeighted = createWeightedSearch(type.to, searchClient, options)
-  return searchWeighted(textTerm, {includeDrafts: true, limit: 50}).pipe(
+  return searchWeighted(textTerm, {includeDrafts: true}).pipe(
     map((results) => results.map((result) => result.hit)),
     map(collate),
-    map((collated) => collated.slice(0, 50)),
+    // pick the 100 best matches
+    map((collated) => collated.slice(0, 100)),
     mergeMap((collated) => {
       const ids = getMissingIds(collated)
       // note: this is a lot faster than doing the query *[_id in $ids] {_id}
       const q = `{${ids.map((id) => `"${id}": defined(*[_id == "${id}"][0]._id)`).join(',')}}`
-      return searchClient.observable.fetch(q, {}, {tag: 'debug'}).pipe(
+      return searchClient.observable.fetch(q, {}, {tag: 'get-missing-ids'}).pipe(
         map((result) =>
           collated.map((entry) => {
             const draftId = getDraftId(entry.id)
