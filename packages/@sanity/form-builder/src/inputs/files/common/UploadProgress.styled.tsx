@@ -1,5 +1,9 @@
-import {Flex, Stack, Code} from '@sanity/ui'
+import {Card, Flex, Stack, Code} from '@sanity/ui'
 import styled from 'styled-components'
+
+export const CardWrapper = styled(Card)`
+  min-height: 40px;
+`
 
 export const FlexWrapper = styled(Flex)`
   text-overflow: ellipsis;

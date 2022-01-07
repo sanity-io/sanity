@@ -403,6 +403,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   renderMaterializedAsset = (assetDocument: ImageAsset) => {
     const {value = {}, readOnly, type, directUploads} = this.props
     const {hoveringFiles} = this.state
+    const {getValuePath} = this.context
 
     const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
     const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
@@ -413,6 +414,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         assetDocument={assetDocument}
         isRejected={rejectedFilesCount > 0 || !directUploads}
         readOnly={readOnly}
+        path={getValuePath()}
       />
     )
   }
@@ -579,12 +581,14 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
   renderUploadState(uploadState: UploadState) {
     const {isUploading} = this.state
+    const {getValuePath} = this.context
 
     return (
       <UploadProgress
         uploadState={uploadState}
         onCancel={isUploading ? this.handleCancelUpload : undefined}
         onStale={this.handleStaleUpload}
+        path={getValuePath()}
       />
     )
   }
@@ -655,6 +659,13 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     if (prevFocusPath[0] !== 'asset' && currentFocusPath[0] === 'asset') {
       this._assetElementRef?.focus()
     }
+  }
+
+  componentWillUnmount() {
+    const {getValuePath} = this.context
+    const pathId = getValuePath()
+
+    window.localStorage.removeItem(`imageHeight_${pathId}`)
   }
 
   hasChangeInFields(fields: ObjectField[]) {

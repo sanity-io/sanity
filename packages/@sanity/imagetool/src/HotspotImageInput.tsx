@@ -10,28 +10,27 @@ interface Props {
   drag: boolean
   assetDocument: ImageAsset
   isRejected: boolean
+  path: string[]
 }
 
 export default function HotspotImageInput(props: Props) {
-  const {drag, readOnly, assetDocument, isRejected} = props
+  const {drag, readOnly, assetDocument, isRejected, path} = props
   const imageContainer = useRef()
+  const pathId = path.join('_')
   const [storedHeight, setStoredHeight] = useState(
-    window.localStorage.getItem(`imageHeight_${assetDocument._id}`)
+    window.localStorage.getItem(`imageHeight_${pathId}`)
   )
   const [tone, setTone] = useState('default' as CardTone)
 
   useEffect(() => {
     const observer = new ResizeObserver(function (mutations) {
-      const storageHeight = window.localStorage.getItem(`imageHeight_${assetDocument._id}`)
+      const storageHeight = window.localStorage.getItem(`imageHeight_${pathId}`)
 
       if (storageHeight) {
         setStoredHeight(storedHeight)
-        window.localStorage.setItem(
-          `imageHeight_${assetDocument._id}`,
-          mutations[0].contentRect.height
-        )
+        window.localStorage.setItem(`imageHeight_${pathId}`, `${mutations[0].contentRect.height}px`)
       } else {
-        window.localStorage.setItem(`imageHeight_${assetDocument._id}`, MAX_HEIGHT)
+        window.localStorage.setItem(`imageHeight_${pathId}`, '30vh')
       }
     })
 
@@ -78,7 +77,7 @@ export default function HotspotImageInput(props: Props) {
       <RatioBox
         ref={imageContainer}
         style={{
-          height: storedHeight ? `${storedHeight}px` : '30vh',
+          height: storedHeight ? `${storedHeight}` : '30vh',
         }}
         paddingY={5}
       >
