@@ -82,17 +82,11 @@ type UnchangedDiff<A, V> = {
   toValue: V
 }
 
-type FullDiff<A, V, P> = (
-  | AddedDiff<A, V>
-  | RemovedDiff<A, V>
-  | ChangedDiff<A, V>
-  | UnchangedDiff<A, V>
-) &
-  P
+type FullDiff<A, V> = AddedDiff<A, V> | RemovedDiff<A, V> | ChangedDiff<A, V> | UnchangedDiff<A, V>
 
-export type StringDiff<A> = FullDiff<A, string, {type: 'string'; segments: StringDiffSegment<A>[]}>
-export type NumberDiff<A> = FullDiff<A, number, {type: 'number'}>
-export type BooleanDiff<A> = FullDiff<A, boolean, {type: 'boolean'}>
+export type StringDiff<A> = FullDiff<A, string> & {type: 'string'; segments: StringDiffSegment<A>[]}
+export type NumberDiff<A> = FullDiff<A, number> & {type: 'number'}
+export type BooleanDiff<A> = FullDiff<A, boolean> & {type: 'boolean'}
 export type TypeChangeDiff<A> = {
   type: 'typeChange'
   action: 'changed'
@@ -109,16 +103,14 @@ export type TypeChangeDiff<A> = {
   annotation: A
 }
 
-export type ObjectDiff<A, T extends object = Record<string, any>> = FullDiff<
-  A,
-  T,
-  {
-    type: 'object'
-    fields: Record<keyof T, Diff<A>>
-  }
->
-export type ArrayDiff<A, V = unknown> = FullDiff<A, V[], {type: 'array'; items: ItemDiff<A>[]}>
-export type NullDiff<A> = FullDiff<A, null, {type: 'null'}>
+export type ObjectDiff<A, T extends object = Record<string, any>> = FullDiff<A, T> & {
+  type: 'object'
+  fields: Record<keyof T, Diff<A>>
+}
+
+export type ArrayDiff<A, V = unknown> = FullDiff<A, V[]> & {type: 'array'; items: ItemDiff<A>[]}
+
+export type NullDiff<A> = FullDiff<A, null> & {type: 'null'}
 
 export type Diff<A> =
   | NullDiff<A>
