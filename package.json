@@ -65,7 +65,6 @@
     "watch": "lerna run --parallel --scope @sanity/* watch"
   },
   "devDependencies": {
-    "@babel/cli": "^7.16.0",
     "@babel/core": "^7.16.0",
     "@babel/parser": "7.16.4",
     "@babel/plugin-proposal-class-properties": "^7.16.0",

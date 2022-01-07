@@ -2,19 +2,19 @@
   "extends": "./tsconfig.settings",
   "include": ["./babel.config.js", "./dev/aliases.js", "./scripts", "./test"],
   "compilerOptions": {
-    "composite": true,
-    "module": "commonjs",
-    "target": "es2020",
-    "lib": ["dom", "es2020"],
     "allowJs": true,
     "noEmit": true
   },
   "references": [
     {"path": "./packages/@sanity/base"},
     {"path": "./packages/@sanity/block-tools"},
+    {"path": "./packages/@sanity/cli"},
     {"path": "./packages/@sanity/code-input"},
+    {"path": "./packages/@sanity/color-input"},
     {"path": "./packages/@sanity/core"},
+    {"path": "./packages/@sanity/dashboard"},
     {"path": "./packages/@sanity/default-layout"},
+    {"path": "./packages/@sanity/default-login"},
     {"path": "./packages/@sanity/desk-tool"},
     {"path": "./packages/@sanity/diff"},
     {"path": "./packages/@sanity/field"},
@@ -25,13 +25,16 @@
     {"path": "./packages/@sanity/language-filter"},
     {"path": "./packages/@sanity/mutator"},
     {"path": "./packages/@sanity/portable-text-editor"},
+    {"path": "./packages/@sanity/production-preview"},
     {"path": "./packages/@sanity/react-hooks"},
     {"path": "./packages/@sanity/schema"},
     {"path": "./packages/@sanity/state-router"},
     {"path": "./packages/@sanity/structure"},
+    {"path": "./packages/@sanity/studio-hints"},
     {"path": "./packages/@sanity/transaction-collator"},
     {"path": "./packages/@sanity/types"},
     {"path": "./packages/@sanity/util"},
-    {"path": "./packages/@sanity/validation"}
+    {"path": "./packages/@sanity/validation"},
+    {"path": "./packages/@sanity/vision"}
   ]
 }

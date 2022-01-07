@@ -26,6 +26,7 @@ module.exports = {
     camelcase: ['error', {allow: ['^unstable_', '^Unstable_']}],
     'import/no-unresolved': ['error', {ignore: ['.*:.*']}], // because of parts
     'prettier/prettier': 'error',
+    'react/jsx-filename-extension': ['error', {extensions: ['.jsx', '.tsx']}],
     'sort-imports': 'off', // prefer import/order
   },
   plugins: ['import', '@typescript-eslint', 'prettier', 'react'],

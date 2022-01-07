@@ -1,44 +1,38 @@
 {
   "compilerOptions": {
+    "lib": ["dom", "es2020"],
+
+    // Output settings
     "module": "ES2020",
     "target": "ES2020",
-    "lib": ["dom", "es2020"],
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "removeComments": false,
+
+    // Settings
     "preserveConstEnums": true,
-    "moduleResolution": "node",
-    "esModuleInterop": true,
     "useUnknownInCatchVariables": false,
+    "isolatedModules": true,
+
+    // Strict type-checking
     "strict": true,
+    // "noImplicitAny": true,
+    // "strictNullChecks": true,
+    // "strictFunctionTypes": true,
+    // "strictPropertyInitialization": true,
+    // "noImplicitThis": true,
+    // "alwaysStrict": true,
+
+    // Additional checks
+    // "noUnusedLocals": true,
+    // "noUnusedParameters": true,
+    // "noImplicitReturns": true,
+    // "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
-    "isolatedModules": true
-  },
-  "references": [
-    {"path": "./packages/@sanity/base"},
-    {"path": "./packages/@sanity/block-tools"},
-    {"path": "./packages/@sanity/code-input"},
-    {"path": "./packages/@sanity/core"},
-    {"path": "./packages/@sanity/default-layout"},
-    {"path": "./packages/@sanity/desk-tool"},
-    {"path": "./packages/@sanity/diff"},
-    {"path": "./packages/@sanity/field"},
-    {"path": "./packages/@sanity/form-builder"},
-    {"path": "./packages/@sanity/google-maps-input"},
-    {"path": "./packages/@sanity/imagetool"},
-    {"path": "./packages/@sanity/initial-value-templates"},
-    {"path": "./packages/@sanity/language-filter"},
-    {"path": "./packages/@sanity/mutator"},
-    {"path": "./packages/@sanity/portable-text-editor"},
-    {"path": "./packages/@sanity/react-hooks"},
-    {"path": "./packages/@sanity/schema"},
-    {"path": "./packages/@sanity/server"},
-    {"path": "./packages/@sanity/state-router/tsconfig.lib.json"},
-    {"path": "./packages/@sanity/structure"},
-    {"path": "./packages/@sanity/transaction-collator"},
-    {"path": "./packages/@sanity/types"},
-    {"path": "./packages/@sanity/util"},
-    {"path": "./packages/@sanity/validation"}
-  ]
+
+    // Module settings
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
+  }
 }
