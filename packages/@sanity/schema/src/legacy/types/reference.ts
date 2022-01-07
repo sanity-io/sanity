@@ -36,18 +36,13 @@ function humanize(arr, conjunction) {
 }
 
 function buildTitle(type) {
-  if (type.title) {
-    return type.title
-  }
   if (!type.to || type.to.length === 0) {
     return 'Reference'
   }
   return `Reference to ${humanize(
-    arrify(type.to).map((toType) =>
-      (toType.title || toType.name || toType.type || '').toLowerCase()
-    ),
+    arrify(type.to).map((toType) => toType.title),
     'or'
-  )}`
+  ).toLowerCase()}`
 }
 
 export const ReferenceType = {
@@ -62,7 +57,6 @@ export const ReferenceType = {
     }
     const parsed = Object.assign(pick(REFERENCE_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
       type: REFERENCE_CORE,
-      title: subTypeDef.title || buildTitle(subTypeDef),
     })
 
     lazyGetter(parsed, 'fields', () => {
@@ -78,6 +72,8 @@ export const ReferenceType = {
     lazyGetter(parsed, 'to', () => {
       return arrify(subTypeDef.to).map((toType) => createMemberType(toType))
     })
+
+    lazyGetter(parsed, 'title', () => subTypeDef.title || buildTitle(parsed))
 
     return subtype(parsed)
 
