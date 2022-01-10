@@ -30,7 +30,7 @@ export default React.forwardRef(function SanityImageInput(props: Props, forwarde
     [sourcesFromSchema]
   )
 
-  const builder = imageUrlBuilder(versionedClient)
+  const builder = React.useMemo(() => imageUrlBuilder(versionedClient), [])
 
   return (
     <ImageInput
