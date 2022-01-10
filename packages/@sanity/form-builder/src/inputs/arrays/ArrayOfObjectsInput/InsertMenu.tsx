@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-no-bind */
 import {SchemaType} from '@sanity/types'
-import React, {ComponentProps} from 'react'
+import React, {ComponentProps, memo} from 'react'
 import {MenuGroup, MenuItem} from '@sanity/ui'
 import {InsertAboveIcon, InsertBelowIcon} from '@sanity/icons'
 
@@ -11,7 +11,7 @@ interface Props {
 
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default', placement: 'left'} as const
 
-export function InsertMenu(props: Props) {
+export const InsertMenu = memo(function InsertMenu(props: Props) {
   const {types, onInsert} = props
   return (
     <>
@@ -31,7 +31,7 @@ export function InsertMenu(props: Props) {
       />
     </>
   )
-}
+})
 
 function InsertMenuGroup(
   props: Props & {
