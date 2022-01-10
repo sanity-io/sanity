@@ -19,43 +19,15 @@ import {
   ChangeIndicatorCompareValueProvider,
   ChangeIndicatorWithProvidedFullPath,
 } from '@sanity/base/change-indicators'
-import {
-  BinaryDocumentIcon,
-  ClipboardIcon,
-  DownloadIcon,
-  EditIcon,
-  EyeOpenIcon,
-  ImageIcon,
-  ResetIcon,
-  SearchIcon,
-  TrashIcon,
-  UploadIcon,
-} from '@sanity/icons'
-import {
-  Box,
-  Button,
-  Container,
-  Dialog,
-  Flex,
-  Grid,
-  Menu,
-  MenuButton,
-  MenuItem,
-  Stack,
-  Text,
-  Tooltip,
-  ToastParams,
-  MenuDivider,
-} from '@sanity/ui'
+import {ImageIcon, SearchIcon} from '@sanity/icons'
+import {Box, Button, Dialog, Menu, MenuButton, MenuItem, ToastParams} from '@sanity/ui'
 import {PresenceOverlay, FormFieldPresence} from '@sanity/base/presence'
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
 import {Uploader, UploaderResolver, UploadOptions} from '../../../sanity/uploads/types'
 import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
-import {FileInputButton} from '../common/FileInputButton/FileInputButton'
-import {FileTarget, FileInfo, Overlay} from '../common/styles'
+import {FileTarget, FileInfo} from '../common/styles'
 import {InternalAssetSource, UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
-import {DropMessage} from '../common/DropMessage'
 import {handleSelectAssetFromSource} from '../common/assetSource'
 import resolveUploader from '../../../sanity/uploads/resolveUploader'
 import {ActionsMenu} from '../common/ActionsMenu'
