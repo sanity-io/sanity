@@ -42,7 +42,6 @@ import {handleSelectAssetFromSource} from '../common/assetSource'
 import {ActionsMenu} from '../common/ActionsMenu'
 import resolveUploader from '../../../sanity/uploads/resolveUploader'
 import {UploadWarning} from '../common/UploadWarning'
-import {FileInputButton} from '../common/FileInputButton/FileInputButton'
 import {ImageInputField} from './ImageInputField'
 import {ImageActionsMenu} from './ImageActionsMenu'
 
