@@ -2,7 +2,6 @@ import React, {MouseEventHandler, useCallback} from 'react'
 
 import {UploadIcon, ClipboardIcon, ResetIcon, DownloadIcon} from '@sanity/icons'
 import {Box, MenuItem, MenuDivider, Label, useToast} from '@sanity/ui'
-import {FileAsset} from '@sanity/types/src'
 import {FileInputButton} from './FileInputButton/FileInputButton'
 
 interface Props {
