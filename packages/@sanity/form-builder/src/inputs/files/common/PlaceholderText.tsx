@@ -1,15 +1,8 @@
 import React from 'react'
-import {SchemaType} from '@sanity/types'
 
-import {
-  BinaryDocumentIcon,
-  AccessDeniedIcon,
-  SearchIcon,
-  ImageIcon,
-  ReadOnlyIcon,
-} from '@sanity/icons'
-import {Flex, Text, Button, Inline, Stack} from '@sanity/ui'
-import {FileLike, UploaderResolver} from '../../../sanity/uploads/types'
+import {BinaryDocumentIcon, AccessDeniedIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
+import {Flex, Text} from '@sanity/ui'
+import {FileLike} from '../../../sanity/uploads/types'
 
 interface Props {
   readOnly: boolean | null
