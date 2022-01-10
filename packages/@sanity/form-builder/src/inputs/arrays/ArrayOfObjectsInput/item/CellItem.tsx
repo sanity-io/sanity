@@ -5,7 +5,7 @@ import {
   WarningOutlineIcon,
 } from '@sanity/icons'
 import {FieldPresence} from '@sanity/base/presence'
-import React, {useMemo} from 'react'
+import React, {useCallback, useMemo} from 'react'
 import {Badge, Box, Button, Card, Flex, Menu, MenuButton, MenuItem, Text, Tooltip} from '@sanity/ui'
 import {FormFieldValidationStatus} from '@sanity/base/components'
 import styled from 'styled-components'
@@ -125,24 +125,25 @@ export const CellItem = React.forwardRef(function ItemCell(
     return undefined
   }, [hasError, hasWarning, hasKey])
 
-  const handleDuplicate = () => {
-    const key = randomKey()
-    onInsert({
-      item: {...value, _key: key},
+  const handleDuplicate = useCallback(() => {
+    onInsert?.({
+      item: {...value, _key: randomKey()},
       position: 'after',
       path: [{_key: value._key}],
       edit: false,
     })
-  }
+  }, [onInsert, value])
 
-  const handleInsert = (pos: 'before' | 'after', insertType: SchemaType) => {
-    const key = randomKey()
-    onInsert({
-      item: {...createProtoValue(insertType), _key: key},
-      position: pos,
-      path: [{_key: value._key}],
-    })
-  }
+  const handleInsert = useCallback(
+    (pos: 'before' | 'after', insertType: SchemaType) => {
+      onInsert?.({
+        item: createProtoValue(insertType),
+        position: pos,
+        path: [{_key: value._key}],
+      })
+    },
+    [onInsert, value._key]
+  )
 
   const id = useId()
 

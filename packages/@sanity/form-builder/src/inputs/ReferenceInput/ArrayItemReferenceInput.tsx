@@ -139,23 +139,25 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
     onFocus?.([])
   }
 
-  const handleDuplicate = () => {
-    onInsert({
+  const handleDuplicate = useCallback(() => {
+    onInsert?.({
       item: {...value, _key: randomKey()},
       position: 'after',
       path: [{_key: value._key}],
       edit: false,
     })
-  }
+  }, [onInsert, value])
 
-  const handleInsert = (pos: 'before' | 'after') => {
-    const key = randomKey()
-    onInsert({
-      item: {_type: type.name, _key: key},
-      position: pos,
-      path: [{_key: value._key}],
-    })
-  }
+  const handleInsert = useCallback(
+    (pos: 'before' | 'after') => {
+      onInsert?.({
+        item: {_type: type.name, _key: randomKey()},
+        position: pos,
+        path: [{_key: value._key}],
+      })
+    },
+    [onInsert, type.name, value._key]
+  )
 
   const handleChange = useCallback(
     (id: string) => {

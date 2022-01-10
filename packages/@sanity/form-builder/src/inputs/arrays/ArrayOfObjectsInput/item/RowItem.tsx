@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import {FieldPresence} from '@sanity/base/presence'
-import React from 'react'
+import React, {useCallback} from 'react'
 import {
   Badge,
   Box,
@@ -56,24 +56,25 @@ export const RowItem = React.forwardRef(function RegularItem(
   const hasErrors = validation.some((v) => v.level === 'error')
   const hasWarnings = validation.some((v) => v.level === 'warning')
 
-  const handleDuplicate = () => {
-    const key = randomKey()
-    onInsert({
-      item: {...value, _key: key},
+  const handleDuplicate = useCallback(() => {
+    onInsert?.({
+      item: {...value, _key: randomKey()},
       position: 'after',
       path: [{_key: value._key}],
       edit: false,
     })
-  }
+  }, [onInsert, value])
 
-  const handleInsert = (pos: 'before' | 'after', insertType: SchemaType) => {
-    const key = randomKey()
-    onInsert({
-      item: {...createProtoValue(insertType), _key: key},
-      position: pos,
-      path: [{_key: value._key}],
-    })
-  }
+  const handleInsert = useCallback(
+    (pos: 'before' | 'after', insertType: SchemaType) => {
+      onInsert?.({
+        item: {...createProtoValue(insertType), _key: randomKey()},
+        position: pos,
+        path: [{_key: value._key}],
+      })
+    },
+    [onInsert, value._key]
+  )
 
   const id = useId()
   return (
