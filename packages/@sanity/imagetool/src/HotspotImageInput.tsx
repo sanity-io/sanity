@@ -2,8 +2,7 @@ import React, {useEffect, useRef, useState} from 'react'
 
 import {AccessDeniedIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
 import {Card, Box, Heading, Text, CardTone} from '@sanity/ui'
-import {ImageAsset} from '@sanity/types/src'
-import {RatioBox, Overlay, FlexOverlay, MAX_HEIGHT} from './HotspotImageInput.styled'
+import {RatioBox, Overlay, FlexOverlay} from './HotspotImageInput.styled'
 
 interface Props {
   readOnly?: boolean | null

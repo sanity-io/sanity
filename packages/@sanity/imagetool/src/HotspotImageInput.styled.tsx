@@ -1,8 +1,6 @@
 import {studioTheme, rgba, Card, Flex} from '@sanity/ui'
 import styled from 'styled-components'
 
-export const MAX_HEIGHT = '15rem'
-
 export const RatioBox = styled(Card)`
   position: relative;
   width: 100%;
