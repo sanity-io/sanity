@@ -29,6 +29,31 @@ import {
 } from '@sanity/ui'
 import React, {useRef, useState, useEffect} from 'react'
 import styled from 'styled-components'
+import imageUrlBuilder from '@sanity/image-url'
+
+const builder = imageUrlBuilder().projectId('ppsg7ml5').dataset('test')
+
+const imageData = {
+  _type: 'image',
+  asset: {
+    _ref: 'image-cdf091d1b1cfd56eed57794c1758f2fed9fa7663-298x310-png',
+    _type: 'reference',
+  },
+  crop: {
+    _type: 'sanity.imageCrop',
+    top: 0,
+    bottom: 0.1839203423304805,
+    left: 0.35204081632653067,
+    right: 0.17091836734693877,
+  },
+  hotspot: {
+    _type: 'sanity.imageHotspot',
+    x: 0.6224489795918364,
+    y: 0.3847432521395654,
+    height: 0.37712310730744036,
+    width: 0.3673469387755111,
+  },
+}
 
 const RatioBox = styled(Card)`
   position: relative;
@@ -131,7 +156,8 @@ export function HasImage(props) {
         tone={drag || uploading ? 'primary' : 'default'}
       >
         <Card data-container tone="transparent" sizing="border">
-          <img src={'https://source.unsplash.com/random?moon'} />
+          <img src={builder.image(imageData).url()} />
+          {/* <img src={'https://source.unsplash.com/random?moon'} /> */}
         </Card>
         <Overlay
           justify={uploading ? 'center' : 'flex-end'}
