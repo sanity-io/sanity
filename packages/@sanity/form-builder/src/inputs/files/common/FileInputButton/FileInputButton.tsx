@@ -2,7 +2,7 @@ import React, {createElement, isValidElement} from 'react'
 import {isValidElementType} from 'react-is'
 import {useId} from '@reach/auto-id'
 import {Box, ButtonProps, Flex, Text, useTheme} from '@sanity/ui'
-import {FileButton, FileMenuItem} from './styles'
+import {FileButton} from './styles'
 
 export interface FileInputButtonProps extends ButtonProps {
   accept?: string
