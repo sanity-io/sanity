@@ -85,7 +85,7 @@
     "cypress-dotenv": "^1.2.2",
     "deepmerge": "^3.3.0",
     "del": "^5.1.0",
-    "depcheck": "^1.4.1",
+    "depcheck": "^1.4.3",
     "dotenv": "^8.2.0",
     "esbuild": "^0.12.21",
     "esbuild-register": "^3.0.0",

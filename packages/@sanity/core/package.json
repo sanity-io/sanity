@@ -75,8 +75,7 @@
     "@types/inquirer": "^6.0.2",
     "@types/resolve-from": "^4.0.0",
     "@types/semver": "^6.2.3",
-    "chalk": "^2.4.2",
-    "inquirer": "^6.0.0"
+    "chalk": "^2.4.2"
   },
   "repository": {
     "type": "git",
