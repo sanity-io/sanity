@@ -10,6 +10,7 @@ import ImageTool from '@sanity/imagetool'
 import {
   Asset as AssetDocument,
   AssetFromSource,
+  FileAsset,
   Image as BaseImage,
   ImageAsset,
   ImageSchemaType,
@@ -511,7 +512,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                   onUpload={this.handleSelectFiles}
                   browse={browseMenuItem}
                   onReset={this.handleRemoveButtonClick}
-                  assetDocument={fileAsset}
+                  src={fileAsset.url}
                   readOnly={readOnly}
                   directUploads={directUploads}
                   accept={accept}

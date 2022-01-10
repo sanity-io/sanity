@@ -9,21 +9,21 @@ interface Props {
   onUpload: (files: File[]) => void
   browse: React.ReactNode
   readOnly: boolean
-  assetDocument: FileAsset
   onReset: MouseEventHandler<HTMLDivElement>
   accept: string
   directUploads: boolean
+  src: string
 }
 
 export function ActionsMenu(props: Props) {
-  const {onUpload, onReset, readOnly, assetDocument, accept, directUploads, browse} = props
+  const {onUpload, onReset, readOnly, src, accept, directUploads, browse} = props
 
   const {push: pushToast} = useToast()
 
   const handleCopyURL = useCallback(() => {
-    navigator.clipboard.writeText(assetDocument.url)
+    navigator.clipboard.writeText(src)
     pushToast({closable: true, status: 'success', title: 'The url is copied to the clipboard'})
-  }, [pushToast, assetDocument])
+  }, [pushToast, src])
 
   return (
     <>
@@ -46,7 +46,7 @@ export function ActionsMenu(props: Props) {
       {browse}
 
       <MenuDivider />
-      <MenuItem as="a" icon={DownloadIcon} text="Download file" href={`${assetDocument.url}?dl`} />
+      <MenuItem as="a" icon={DownloadIcon} text="Download file" href={`${src}?dl`} />
       <MenuItem icon={ClipboardIcon} text="Copy URL" onClick={handleCopyURL} />
 
       <MenuDivider />

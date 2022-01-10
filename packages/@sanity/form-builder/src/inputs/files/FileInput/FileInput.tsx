@@ -28,6 +28,7 @@ import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
 import {FileTarget, FileInfo} from '../common/styles'
 import {InternalAssetSource, UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
+import {DropMessage} from '../common/DropMessage'
 import {handleSelectAssetFromSource} from '../common/assetSource'
 import resolveUploader from '../../../sanity/uploads/resolveUploader'
 import {ActionsMenu} from '../common/ActionsMenu'
@@ -411,7 +412,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
               onUpload={this.handleSelectFiles}
               browse={browseMenuItem}
               onReset={this.handleRemoveButtonClick}
-              assetDocument={assetDocument}
+              src={assetDocument.url}
               readOnly={readOnly}
               accept={accept}
               directUploads={directUploads}
