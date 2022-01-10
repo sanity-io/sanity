@@ -1,17 +1,8 @@
-import {get} from 'lodash'
 import React, {MouseEventHandler, useCallback} from 'react'
 
-import {
-  SearchIcon,
-  UploadIcon,
-  ClipboardIcon,
-  ResetIcon,
-  DownloadIcon,
-  ImageIcon,
-} from '@sanity/icons'
-import {Text, Menu, Box, MenuItem, MenuDivider, Label, useToast, MenuButton} from '@sanity/ui'
+import {UploadIcon, ClipboardIcon, ResetIcon, DownloadIcon} from '@sanity/icons'
+import {Box, MenuItem, MenuDivider, Label, useToast} from '@sanity/ui'
 import {FileAsset} from '@sanity/types/src'
-import {InternalAssetSource} from '../types'
 import {FileInputButton} from './FileInputButton/FileInputButton'
 
 interface Props {
@@ -25,16 +16,7 @@ interface Props {
 }
 
 export function ActionsMenu(props: Props) {
-  const {
-    onUpload,
-    onBrowse,
-    onReset,
-    readOnly,
-    assetDocument,
-    accept,
-    directUploads,
-    browse,
-  } = props
+  const {onUpload, onReset, readOnly, assetDocument, accept, directUploads, browse} = props
 
   const {push: pushToast} = useToast()
 
