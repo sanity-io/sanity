@@ -8,13 +8,13 @@ import {RatioBox, Overlay, FlexOverlay, MAX_HEIGHT} from './HotspotImageInput.st
 interface Props {
   readOnly?: boolean | null
   drag: boolean
-  assetDocument: ImageAsset
   isRejected: boolean
   path: string[]
+  src: string
 }
 
 export default function HotspotImageInput(props: Props) {
-  const {drag, readOnly, assetDocument, isRejected, path} = props
+  const {drag, readOnly, isRejected, path, src} = props
   const imageContainer = useRef()
   const pathId = path.join('_')
   const [storedHeight, setStoredHeight] = useState(
@@ -82,7 +82,7 @@ export default function HotspotImageInput(props: Props) {
         paddingY={5}
       >
         <Card data-container tone="transparent" sizing="border">
-          <img src={assetDocument.url} />
+          <img src={src} />
         </Card>
         <Overlay justify="flex-end" padding={3} tone={tone} drag={drag}>
           {drag && (

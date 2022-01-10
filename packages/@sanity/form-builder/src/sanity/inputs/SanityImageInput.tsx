@@ -1,5 +1,6 @@
 import React from 'react'
 import {AssetSource} from '@sanity/types'
+import imageUrlBuilder from '@sanity/image-url'
 import ImageInput from '../../inputs/files/ImageInput'
 import resolveUploader from '../uploads/resolveUploader'
 import {
@@ -7,6 +8,7 @@ import {
   formBuilderConfig,
   userDefinedImageAssetSources,
 } from '../../legacyParts'
+import {versionedClient} from '../versionedClient'
 import {materializeReference} from './client-adapters/assets'
 import {wrapWithDocument} from './wrapWithDocument'
 
@@ -28,6 +30,8 @@ export default React.forwardRef(function SanityImageInput(props: Props, forwarde
     [sourcesFromSchema]
   )
 
+  const builder = imageUrlBuilder(versionedClient)
+
   return (
     <ImageInput
       {...props}
@@ -36,6 +40,7 @@ export default React.forwardRef(function SanityImageInput(props: Props, forwarde
       assetSources={assetSources}
       directUploads={SUPPORT_DIRECT_UPLOADS}
       ref={forwardedRef}
+      imageToolBuilder={builder}
     />
   )
 })

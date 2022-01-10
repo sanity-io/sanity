@@ -23,6 +23,7 @@ import PropTypes from 'prop-types'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import deepCompare from 'react-fast-compare'
 import HotspotImageInput from '@sanity/imagetool/HotspotImageInput'
+import {SanityClient} from '@sanity/base/src/datastores/document/types'
 import {
   ResolvedUploader,
   Uploader,
@@ -65,6 +66,7 @@ export type Props = {
   assetSources?: InternalAssetSource[]
   markers: Marker[]
   presence: FormFieldPresence[]
+  imageToolBuilder?: SanityClient
 }
 
 const getDevicePixelRatio = () => {
@@ -401,20 +403,31 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderMaterializedAsset = (assetDocument: ImageAsset) => {
-    const {value = {}, readOnly, type, directUploads} = this.props
+    const {value = {}, readOnly, type, directUploads, imageToolBuilder} = this.props
     const {hoveringFiles} = this.state
     const {getValuePath} = this.context
 
     const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
     const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
 
+    const imageData = {
+      _type: 'image',
+      asset: {
+        _ref: assetDocument._id,
+        _type: assetDocument._type,
+      },
+      crop: value.crop,
+      hotspot: value.hotspot,
+    }
+    const url = imageToolBuilder.image(imageData).url()
+
     return (
       <HotspotImageInput
         drag={!value?._upload && hoveringFiles.length > 0}
-        assetDocument={assetDocument}
         isRejected={rejectedFilesCount > 0 || !directUploads}
         readOnly={readOnly}
         path={getValuePath()}
+        src={url}
       />
     )
   }
