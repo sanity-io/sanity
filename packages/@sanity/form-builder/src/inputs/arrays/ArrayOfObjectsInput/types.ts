@@ -1,4 +1,5 @@
 import type {ComponentType} from 'react'
+import {Path} from '@sanity/types'
 
 export type ModalType = 'modal' | 'fullscreen' | string
 
@@ -8,4 +9,10 @@ export type ArrayMember = {
   [key: string]: any
 }
 
+export interface InsertEvent {
+  position: 'before' | 'after'
+  item: ArrayMember
+  path: Path
+  edit?: boolean
+}
 export type ReferenceItemComponentType = ComponentType<any>
