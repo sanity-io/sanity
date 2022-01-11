@@ -471,6 +471,7 @@ export const ObjectInput = memo(
               }
             />
           </FieldGroupTabsWrapper>
+          {/* Similar to the check below on line 495, we check if nesting level is 0. FormFieldSet on line 502 wraps the fields in its own Grid container. */}
           {level === 0 ? (
             <Grid columns={columns} gapX={4} gapY={5} id={`${inputId}-field-group-fields`}>
               {renderAllFields()}

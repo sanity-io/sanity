@@ -5,5 +5,5 @@ import styled from 'styled-components'
 export const FieldGroupTabsWrapper = styled(Card)<{$level?: number}>`
   margin-bottom: ${({$level, theme}) => ($level === 0 ? 0 : theme.sanity.space[5] * -1)}px;
   padding-bottom: ${({$level, theme}) =>
-    $level === 0 ? theme.sanity.space[3] : theme.sanity.space[3]}px;
+    $level === 0 ? theme.sanity.space[4] : theme.sanity.space[4]}px;
 `

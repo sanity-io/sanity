@@ -33,6 +33,13 @@ export default {
     {name: 'field3', type: 'string', group: 'group1'},
     {name: 'field4', type: 'string', group: ['group1', 'group2', 'group3', 'group4']},
     {
+      name: 'myObject',
+      type: 'myObject',
+      title: 'MyObject',
+      description: 'The first field here should be the title used in previews',
+      group: ['group1', 'group2', 'group3', 'group4'],
+    },
+    {
       name: 'stats',
       title: 'Stats',
       type: 'object',
