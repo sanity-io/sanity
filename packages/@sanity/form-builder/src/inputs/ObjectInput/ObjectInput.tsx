@@ -16,6 +16,7 @@ import {Card, Grid} from '@sanity/ui'
 import {castArray, find, findLast} from 'lodash'
 import {useId} from '@reach/auto-id'
 import {useCurrentUser} from '@sanity/base/hooks'
+import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import {applyAll} from '../../patch/applyPatch'
 import {EMPTY_ARRAY} from '../../utils/empty'
@@ -415,8 +416,10 @@ export const ObjectInput = memo(
         // Restore to default field group if focus path changes and the root focus path is not
         // available in this field group
         if (
+          hasGroups &&
           selectedFieldGroupName !== DEFAULT_FIELD_GROUP_NAME &&
           typeof focusPath?.[0] === 'string' &&
+          focusPath?.[0] !== FOCUS_TERMINATOR &&
           !fieldGroupRootFocusPaths.includes(focusPath?.[0])
         ) {
           setSelectedFieldGroupName(DEFAULT_FIELD_GROUP_NAME)
