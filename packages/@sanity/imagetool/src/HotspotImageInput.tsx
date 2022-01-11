@@ -62,7 +62,7 @@ export default function HotspotImageInput(props: Props) {
   function HoverText() {
     let message = 'Drop image to upload'
     if (isRejected) {
-      message = 'Can’t upload this file here'
+      message = 'Cannot upload this file here'
     }
     if (readOnly) {
       message = 'This field is read only'

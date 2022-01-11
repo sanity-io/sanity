@@ -1,5 +1,5 @@
-import {studioTheme, rgba, Card, Flex} from '@sanity/ui'
-import styled from 'styled-components'
+import {studioTheme, rgba, Card, Flex, CardTone} from '@sanity/ui'
+import styled, {css} from 'styled-components'
 
 export const RatioBox = styled(Card)`
   position: relative;
@@ -24,17 +24,21 @@ export const RatioBox = styled(Card)`
   }
 `
 
-export const Overlay = styled(Flex)`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  backdrop-filter: ${({drag}) => (drag ? 'blur(10px)' : '')};
-  color: ${({tone}) => (tone ? studioTheme.color.light[tone].card.enabled.fg : '')};
-  background-color: ${({tone, drag}) =>
-    drag ? rgba(studioTheme.color.light[tone].card.enabled.bg, 0.8) : 'transparent'};
-`
+export const Overlay = styled(Flex)(({tone, drag}: {tone: CardTone; drag: boolean}) => {
+  const textColor = studioTheme.color.light[tone].card.enabled.fg
+  const backgroundColor = rgba(studioTheme.color.light[tone].card.enabled.bg, 0.8)
+
+  return css`
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    backdrop-filter: ${drag ? 'blur(10px)' : ''};
+    color: ${tone ? textColor : ''};
+    background-color: ${drag ? backgroundColor : 'transparent'};
+  `
+})
 
 export const FlexOverlay = styled(Flex)`
   position: absolute;
