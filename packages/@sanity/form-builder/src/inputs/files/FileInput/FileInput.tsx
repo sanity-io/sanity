@@ -178,7 +178,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   uploadFirstAccepted(files: DOMFile[]) {
-    const {resolveUploader, type} = this.props
+    const {type} = this.props
 
     const match = files
       .map((file) => ({file, uploader: resolveUploader(type, file)}))
@@ -309,7 +309,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   handleSelectAssetFromSource = (assetFromSource: AssetFromSource) => {
-    const {onChange, type, resolveUploader} = this.props
+    const {onChange, type} = this.props
     handleSelectAssetFromSource({
       assetFromSource,
       onChange,
@@ -537,7 +537,6 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       compareValue,
       level,
       markers,
-      resolveUploader,
       readOnly,
       presence,
     } = this.props
