@@ -11,7 +11,6 @@ import {
 } from '@sanity/ui'
 import styled from 'styled-components'
 import {EditIcon, TrashIcon} from '@sanity/icons'
-import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 
 const ToolbarPopover = styled(Popover)`
   &[data-popper-reference-hidden='true'] {
