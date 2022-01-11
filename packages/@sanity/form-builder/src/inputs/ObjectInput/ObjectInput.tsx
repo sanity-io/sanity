@@ -12,7 +12,7 @@ import {
 } from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {FormFieldSet} from '@sanity/base/components'
-import {Card, Grid} from '@sanity/ui'
+import {Grid} from '@sanity/ui'
 import {castArray, find, findLast} from 'lodash'
 import {useId} from '@reach/auto-id'
 import {useCurrentUser} from '@sanity/base/hooks'
@@ -28,6 +28,7 @@ import {UnknownFields} from './UnknownFields'
 import {ObjectFieldSet} from './ObjectFieldSet'
 import {getCollapsedWithDefaults} from './utils'
 import {FieldGroupTabs} from './fieldGroups'
+import {FieldGroupTabsWrapper} from './ObjectInput.styled'
 
 const EMPTY_MARKERS: Marker[] = EMPTY_ARRAY
 const EMPTY_PRESENCE: FormFieldPresence[] = EMPTY_ARRAY
@@ -446,16 +447,18 @@ export const ObjectInput = memo(
 
     const renderFieldGroups = useCallback(() => {
       if (!hasGroups) {
-        return (
+        return level === 0 ? (
           <Grid columns={columns} gapX={4} gapY={5}>
             {renderAllFields()}
           </Grid>
+        ) : (
+          <>{renderAllFields()}</>
         )
       }
 
       return (
         <>
-          <Card marginBottom={3} data-testid="field-groups">
+          <FieldGroupTabsWrapper $level={level} data-testid="field-groups">
             <FieldGroupTabs
               disabled={changesOpen}
               inputId={inputId}
@@ -464,12 +467,15 @@ export const ObjectInput = memo(
               groups={filterGroups}
               shouldAutoFocus={level === 0 && focusPath.length === 0}
             />
-            <Card paddingTop={4}>
-              <Grid columns={columns} gapX={4} gapY={5} id={`${inputId}-field-group-fields`}>
-                {renderAllFields()}
-              </Grid>
-            </Card>
-          </Card>
+          </FieldGroupTabsWrapper>
+          {/* Similar to the check below on line 495, we check if nesting level is 0. FormFieldSet on line 502 wraps the fields in its own Grid container. */}
+          {level === 0 ? (
+            <Grid columns={columns} gapX={4} gapY={5} id={`${inputId}-field-group-fields`}>
+              {renderAllFields()}
+            </Grid>
+          ) : (
+            <>{renderAllFields()}</>
+          )}
         </>
       )
     }, [
