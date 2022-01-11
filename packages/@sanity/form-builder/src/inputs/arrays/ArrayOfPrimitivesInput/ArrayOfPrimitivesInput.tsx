@@ -57,7 +57,6 @@ export interface Props {
   markers: Marker[]
   presence: FormFieldPresence[]
 }
-type Focusable = {focus: () => void}
 
 export class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
   _element: HTMLElement | null = null
