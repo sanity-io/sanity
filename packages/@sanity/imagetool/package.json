@@ -16,7 +16,7 @@
     "debug": "^3.2.7",
     "lodash": "^4.17.15",
     "@sanity/ui": "^0.37.1",
-    "@sanity/icons": "^0.37.1"
+    "@sanity/icons": "^1.2.1"
   },
   "devDependencies": {
     "@sanity/state-router": "2.22.3",
