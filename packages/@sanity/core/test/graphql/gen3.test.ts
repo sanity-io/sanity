@@ -30,7 +30,7 @@ describe('GraphQL - Generation 3', () => {
   })
 })
 
-function sortGraphQLSchema(schema) {
+function sortGraphQLSchema(schema: any) {
   const interfaces = orderBy(schema.interfaces, (iface) => iface.name).map((iface) => ({
     ...iface,
     fields: orderBy(iface.fields, (field) => field.fieldName),

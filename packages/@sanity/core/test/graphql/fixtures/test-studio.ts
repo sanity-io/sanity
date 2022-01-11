@@ -178,7 +178,7 @@ export default Schema.compile({
           mimeType: 'mimeType',
           size: 'size',
         },
-        prepare(doc) {
+        prepare(doc: any) {
           return {
             title: doc.title || doc.path.split('/').slice(-1)[0],
             media: {asset: {_ref: doc.id}},
@@ -296,7 +296,7 @@ export default Schema.compile({
           mimeType: 'mimeType',
           size: 'size',
         },
-        prepare(doc) {
+        prepare(doc: any) {
           return {
             title: doc.title || doc.path.split('/').slice(-1)[0],
             subtitle: `${doc.mimeType} (${(doc.size / 1024 / 1024).toFixed(2)} MB)`,

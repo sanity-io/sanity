@@ -7,11 +7,11 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "build": "../../../bin/pkg-utils transpile --target node",
+    "build": "../../../bin/pkg-utils transpile --target node --tsconfig tsconfig.lib.json",
     "clean": "rimraf lib",
     "prebuild": "yarn clean",
     "test": "jest",
-    "watch": "../../../bin/pkg-utils transpile --target node --watch"
+    "watch": "../../../bin/pkg-utils transpile --target node --tsconfig tsconfig.lib.json --watch"
   },
   "engines": {
     "node": ">=12.0.0"
