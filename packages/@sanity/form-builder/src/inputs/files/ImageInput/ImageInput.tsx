@@ -165,13 +165,13 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   getUploadOptions = (file: File): ResolvedUploader[] => {
-    const {type, resolveUploader} = this.props
+    const {type} = this.props
     const uploader = resolveUploader && resolveUploader(type, file)
     return uploader ? [{type: type, uploader}] : []
   }
 
   uploadFirstAccepted(files: File[]) {
-    const {resolveUploader, type} = this.props
+    const {type} = this.props
 
     const match = files
       .map((file) => ({file, uploader: resolveUploader(type, file)}))
@@ -278,7 +278,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   handleSelectAssetFromSource = (assetFromSource: AssetFromSource) => {
-    const {onChange, type, resolveUploader} = this.props
+    const {onChange, type} = this.props
     handleSelectAssetFromSource({
       assetFromSource,
       onChange,
@@ -568,7 +568,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderUploadPlaceholder() {
-    const {readOnly, resolveUploader, type, directUploads} = this.props
+    const {readOnly, type, directUploads} = this.props
     const {hoveringFiles} = this.state
 
     const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
@@ -697,7 +697,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       presence,
       focusPath = EMPTY_ARRAY,
       directUploads,
-      resolveUploader,
     } = this.props
     const {hoveringFiles, selectedAssetSource, isStale} = this.state
 
