@@ -242,7 +242,7 @@ export const ObjectInput = memo(
               level={fieldLevel}
               presence={presence}
               filterField={filterField}
-              ref={index === 0 ? forwardedRef : null}
+              ref={!hasGroups && index === 0 ? forwardedRef : null}
             />
           </ConditionalReadOnlyField>
         )
@@ -253,6 +253,7 @@ export const ObjectInput = memo(
         focusPath,
         forwardedRef,
         handleFieldChange,
+        hasGroups,
         markers,
         onBlur,
         onFocus,
@@ -465,7 +466,9 @@ export const ObjectInput = memo(
               onClick={handleSelectTab}
               selectedName={selectedFieldGroupName}
               groups={filterGroups}
-              shouldAutoFocus={level === 0 && focusPath.length === 0}
+              shouldAutoFocus={
+                level === 0 && (focusPath.length === 0 || focusPath[0] === FOCUS_TERMINATOR)
+              }
             />
           </FieldGroupTabsWrapper>
           {/* Similar to the check below on line 495, we check if nesting level is 0. FormFieldSet on line 502 wraps the fields in its own Grid container. */}
