@@ -8,5 +8,5 @@
     "rootDir": "./src/",
     "outDir": "./lib/dts/"
   },
-  "references": [{"path": "../base"}]
+  "references": [{"path": "../base/tsconfig.lib.json"}]
 }
