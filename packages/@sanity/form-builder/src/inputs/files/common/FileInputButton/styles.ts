@@ -20,33 +20,32 @@ export const invisibleInput = css`
   }
 `
 
-export const FileButton = styled(Button)(({theme, fromMenu}: {theme: Theme; fromMenu: boolean}) => {
-  const {focusRing, radius} = theme.sanity
-  const base = theme.sanity.color.base
-  const border = {width: 1, color: 'var(--card-border-color)'}
+export const FileButton = styled(Button).attrs({forwardedAs: 'label'})(
+  ({theme, fromMenu}: {theme: Theme; fromMenu: boolean}) => {
+    const {focusRing, radius} = theme.sanity
+    const base = theme.sanity.color.base
+    const border = {width: 1, color: 'var(--card-border-color)'}
 
-  return css`
-    ${!fromMenu &&
-    css`
+    return css`
       &:not([data-disabled='true']) {
         &:focus-within {
           box-shadow: ${focusRingStyle({base, border, focusRing})};
         }
       }
-    `}
 
-    ${fromMenu &&
-    css`
-      &:not([data-disabled='true']):hover {
-        background-color: var(--card-focus-ring-color);
-        border-radius: ${rem(radius[2])};
+      ${fromMenu &&
+      css`
+        &:not([data-disabled='true']):hover {
+          background-color: var(--card-focus-ring-color);
+          border-radius: ${rem(radius[2])};
 
-        div {
-          color: #fff;
+          div {
+            color: #fff;
+          }
         }
-      }
-    `}
+      `}
 
-    ${invisibleInput}
-  `
-})
+      ${invisibleInput}
+    `
+  }
+)

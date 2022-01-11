@@ -93,7 +93,6 @@ export const FileInputButton = React.forwardRef(function FileInputButton(
         ref={forwardedRef}
         type="file"
         value=""
-        tabIndex={-1}
         disabled={disabled}
       />
     </FileButton>
