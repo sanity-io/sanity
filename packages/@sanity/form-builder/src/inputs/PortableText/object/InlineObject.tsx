@@ -38,6 +38,7 @@ function rootStyle({theme}: {theme: Theme}) {
     box-shadow: inset 0 0 0 1px var(--card-border-color);
     height: calc(1em - 1px);
     margin-top: 0.0625em;
+    cursor: default;
 
     & > div:after {
       content: '';
