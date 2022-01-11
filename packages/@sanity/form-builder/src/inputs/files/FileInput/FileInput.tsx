@@ -28,7 +28,6 @@ import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
 import {FileTarget, FileInfo} from '../common/styles'
 import {InternalAssetSource, UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
-import {DropMessage} from '../common/DropMessage'
 import {handleSelectAssetFromSource} from '../common/assetSource'
 import resolveUploader from '../../../sanity/uploads/resolveUploader'
 import {ActionsMenu} from '../common/ActionsMenu'
@@ -424,7 +423,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   renderAssetHover(tone) {
-    const {type, readOnly} = this.props
+    const {type, readOnly, directUploads} = this.props
     const {hoveringFiles} = this.state
 
     const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
@@ -438,6 +437,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
             hoveringFiles={hoveringFiles}
             acceptedFiles={acceptedFiles}
             rejectedFilesCount={rejectedFilesCount}
+            directUploads={directUploads}
             type={'file'}
           />
         </FlexContainer>
