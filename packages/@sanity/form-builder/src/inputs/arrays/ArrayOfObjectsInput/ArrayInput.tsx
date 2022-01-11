@@ -177,10 +177,12 @@ export class ArrayInput extends React.Component<Props> {
       this.uploadSubscriptions[item._key].unsubscribe()
     }
 
+    // move focus to the nearest sibling
     const idx = value.indexOf(item)
-    const nextItem = value[idx + 1] || value[idx - 1]
+    const nearestSibling = value[idx + 1] || value[idx - 1]
 
-    onFocus([nextItem ? {_key: nextItem._key} : FOCUS_TERMINATOR])
+    // if there's no siblings we want to focus the input itself
+    onFocus(nearestSibling ? [{_key: nearestSibling._key}] : [])
   }
 
   handleItemChange = (event: PatchEvent, item: ArrayMember) => {
