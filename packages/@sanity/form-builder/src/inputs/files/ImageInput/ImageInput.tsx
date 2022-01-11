@@ -23,7 +23,7 @@ import PropTypes from 'prop-types'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import deepCompare from 'react-fast-compare'
 import HotspotImageInput from '@sanity/imagetool/HotspotImageInput'
-import {SanityClient} from '@sanity/base/src/datastores/document/types'
+import imageUrlBuilder from '@sanity/image-url'
 import {
   ResolvedUploader,
   Uploader,
@@ -65,7 +65,7 @@ export type Props = {
   assetSources?: InternalAssetSource[]
   markers: Marker[]
   presence: FormFieldPresence[]
-  imageToolBuilder?: SanityClient
+  imageToolBuilder?: ReturnType<typeof imageUrlBuilder>
 }
 
 const getDevicePixelRatio = () => {
