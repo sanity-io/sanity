@@ -10,7 +10,6 @@ import ImageTool from '@sanity/imagetool'
 import {
   Asset as AssetDocument,
   AssetFromSource,
-  FileAsset,
   Image as BaseImage,
   ImageAsset,
   ImageSchemaType,
