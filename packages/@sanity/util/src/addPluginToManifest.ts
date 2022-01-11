@@ -2,7 +2,7 @@ import * as path from 'path'
 import fse from 'fs-extra'
 import {readLocalManifest} from './readLocalManifest'
 
-export const addPluginToManifest = (sanityDir, pluginName) =>
+export const addPluginToManifest = (sanityDir: string, pluginName: string) =>
   readLocalManifest(sanityDir, 'sanity.json')
     .then((manifest) => {
       manifest.plugins = manifest.plugins || []

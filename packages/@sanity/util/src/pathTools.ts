@@ -2,7 +2,7 @@ import * as path from 'path'
 import * as os from 'os'
 import fse from 'fs-extra'
 
-export async function pathIsEmpty(dir) {
+export async function pathIsEmpty(dir: string) {
   try {
     const content = await fse.readdir(absolutify(dir))
     return content.length === 0
@@ -15,7 +15,7 @@ export async function pathIsEmpty(dir) {
   }
 }
 
-export function expandHome(filePath) {
+export function expandHome(filePath: string) {
   if (
     filePath.charCodeAt(0) === 126
     /* ~ */
@@ -34,7 +34,7 @@ export function expandHome(filePath) {
   return filePath
 }
 
-export function absolutify(dir) {
+export function absolutify(dir: string) {
   const pathName = expandHome(dir)
   return path.isAbsolute(pathName) ? pathName : path.resolve(process.cwd(), pathName)
 }

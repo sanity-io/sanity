@@ -1,6 +1,8 @@
 /* eslint-disable no-process-env */
 
-let backup = {}
+export {}
+
+let backup: Record<string, any> = {}
 beforeEach(() => (backup = {}))
 afterEach(() => {
   Object.keys(backup).forEach((key) => {
@@ -22,7 +24,7 @@ test('respects env config', () => {
   temporarilySetEnv('SANITY_STUDIO_API_DATASET', 'overridden')
   temporarilySetEnv('SANITY_STUDIO_PROJECT_BASEPATH', 'myRoot')
   temporarilySetEnv('SANITY_STUDIO_PROJECT_NAME', 'New Name')
-  const {reduceConfig} = require('../src/_exports/index')
+  const {reduceConfig} = require('../src')
 
   const reduced = reduceConfig({
     project: {
@@ -41,7 +43,7 @@ test('respects env config', () => {
 })
 
 test('without envs', () => {
-  const {reduceConfig} = require('../src/_exports/index')
+  const {reduceConfig} = require('../src')
 
   const reduced = reduceConfig({
     project: {

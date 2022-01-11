@@ -6,16 +6,16 @@ import dotenv from 'dotenv'
 
 const readEnvFile = memoize(tryReadEnvFile)
 const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production'
-const apiHosts = {
+const apiHosts: Record<string, string> = {
   staging: 'https://api.sanity.work',
   development: 'http://api.sanity.wtf',
 }
 
-function clean(obj) {
+function clean(obj: Record<string, unknown>) {
   return Object.keys(obj).reduce((acc, key) => (obj[key] ? {...acc, [key]: obj[key]} : acc), {})
 }
 
-function merge(objValue, srcValue, key) {
+function merge(objValue: unknown, srcValue: unknown, key: string) {
   if (Array.isArray(objValue)) {
     return objValue.concat(srcValue)
   }
@@ -46,7 +46,7 @@ function tryReadDotEnv(studioRootPath: string, fallbackEnv?: string) {
 }
 
 export function reduceConfig(
-  rawConfig,
+  rawConfig: any,
   env = 'development',
   options: {studioRootPath?: string} = {}
 ) {

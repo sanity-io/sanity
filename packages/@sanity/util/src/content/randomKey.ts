@@ -1,7 +1,7 @@
 import getRandomValues from 'get-random-values'
 
 const getByteHexTable = (() => {
-  let table
+  let table: any[]
   return () => {
     if (table) {
       return table

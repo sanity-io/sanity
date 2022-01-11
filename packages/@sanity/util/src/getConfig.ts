@@ -11,11 +11,11 @@ const defaults = {
   },
 }
 
-const configContainer = (values) => ({
-  get: (dotPath, defaultValue) => get(values, dotPath, defaultValue),
+const configContainer = (values: any) => ({
+  get: (dotPath: string, defaultValue: any) => get(values, dotPath, defaultValue),
 })
 
-const getConfig = (rootDir, options: {env?: string} = {}) => {
+const getConfig = (rootDir?: string, options: {env?: string} = {}) => {
   const localConfig = rootDir && loadJsonSync(path.join(rootDir, 'sanity.json'))
   const config = reduceConfig(
     localConfig ? merge({}, defaults, localConfig) : defaults,

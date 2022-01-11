@@ -1,7 +1,7 @@
 import {dynamicRequire} from './dynamicRequire'
 
-export function lazyRequire(id) {
-  return (...args) => {
+export function lazyRequire(id: string) {
+  return (...args: any[]) => {
     const mod = dynamicRequire(id)
     return mod(...args)
   }

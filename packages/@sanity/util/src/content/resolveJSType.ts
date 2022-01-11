@@ -1,7 +1,7 @@
 const toString = Object.prototype.toString
 // Copied from https://github.com/ForbesLindesay/type-of, but inlined to have fine grained control
 
-export function resolveJSType(val) {
+export function resolveJSType(val: unknown) {
   switch (toString.call(val)) {
     case '[object Function]':
       return 'function'
@@ -18,9 +18,9 @@ export function resolveJSType(val) {
     default:
   }
 
-  if (typeof val == 'object' && val && typeof val.length == 'number') {
+  if (typeof val == 'object' && val && typeof (val as any).length == 'number') {
     try {
-      if (typeof val.callee == 'function') {
+      if (typeof (val as any).callee == 'function') {
         // eslint-disable-line max-depth
         return 'arguments'
       }
@@ -40,7 +40,7 @@ export function resolveJSType(val) {
     return 'undefined'
   }
 
-  if (val && val.nodeType === 1) {
+  if (val && (val as any).nodeType === 1) {
     return 'element'
   }
 

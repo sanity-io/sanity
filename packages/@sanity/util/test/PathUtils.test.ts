@@ -24,7 +24,7 @@ test('fromString: throws if not a string', () => {
   // @ts-expect-error
   expect(() => fromString(13)).toThrow('Path is not a string')
 
-  expect(() => fromString(null)).toThrow('Path is not a string')
+  expect(() => fromString(null as any)).toThrow('Path is not a string')
   // @ts-expect-error
   expect(() => fromString(false)).toThrow('Path is not a string')
 })
@@ -76,10 +76,10 @@ test('toString: throws if not an array', () => {
   // @ts-expect-error
   expect(() => toString()).toThrow('Path is not an array')
 
-  expect(() => toString(13)).toThrow('Path is not an array')
+  expect(() => toString(13 as any)).toThrow('Path is not an array')
 
-  expect(() => toString(null)).toThrow('Path is not an array')
-  expect(() => toString(false)).toThrow('Path is not an array')
+  expect(() => toString(null as any)).toThrow('Path is not an array')
+  expect(() => toString(false as any)).toThrow('Path is not an array')
 })
 
 test('toString: handles plain property segments', () => {
@@ -120,14 +120,14 @@ test('toString: handles deep key segments', () => {
 })
 
 test('toString: throws on unrecognized segment types', () => {
-  expect(() => toString([{foo: 'bar'}])).toThrow('Unsupported path segment `{"foo":"bar"}`')
+  expect(() => toString([{foo: 'bar'} as any])).toThrow('Unsupported path segment `{"foo":"bar"}`')
 })
 
 test('get: throws on non-array/non-string path', () => {
-  expect(() => get(srcObject, null)).toThrow('Path must be an array or a string')
-  expect(() => get(srcObject, 13)).toThrow('Path must be an array or a string')
-  expect(() => get(srcObject, false)).toThrow('Path must be an array or a string')
-  expect(() => get(srcObject, true)).toThrow('Path must be an array or a string')
+  expect(() => get(srcObject, null as any)).toThrow('Path must be an array or a string')
+  expect(() => get(srcObject, 13 as any)).toThrow('Path must be an array or a string')
+  expect(() => get(srcObject, false as any)).toThrow('Path must be an array or a string')
+  expect(() => get(srcObject, true as any)).toThrow('Path must be an array or a string')
 })
 
 test('get: can get simple props', () => {
