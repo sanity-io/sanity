@@ -52,7 +52,6 @@
     "lodash": "^4.17.15",
     "nano-pubsub": "^2.0.1",
     "pretty-bytes": "^4.0.2",
-    "pretty-ms": "^7.0.1",
     "react-fast-compare": "^3.2.0",
     "react-focus-lock": "^2.5.0",
     "react-is": "^17.0.2",
@@ -61,7 +60,8 @@
     "rxjs": "^6.5.3",
     "scroll-into-view-if-needed": "^2.2.26",
     "shallow-equals": "^1.0.0",
-    "speakingurl": "^13.0.0"
+    "speakingurl": "^13.0.0",
+    "@sanity/image-url": "^1.0.1"
   },
   "devDependencies": {
     "@sanity/state-router": "2.22.3",
