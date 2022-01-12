@@ -1,0 +1,63 @@
+name: Test
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: Test (${{ matrix.os }} / node ${{ matrix.node }})
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node: [12, 14, 16]
+        experimental: [false]
+        # include:
+        #   - os: windows-latest
+        #     node: 16
+        #     experimental: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install project dependencies
+        env:
+          CYPRESS_INSTALL_BINARY: '0'
+        run: yarn install
+
+      # Required for import lint rules to work - packages pointing to ex
+      # `lib/index.js`, where `src/index.ts` gets compiled to `lib/index.js`
+      - name: Build modules
+        id: buildResolver
+        run: yarn build
+
+      - name: Check for unused or missing dependencies
+        id: depcheck
+        run: yarn depcheck
+
+      - name: Test
+        id: test
+        run: yarn test
+
+      - name: Test CLI
+        working-directory: ${{ env.GITHUB_WORKSPACE }}
+        run: |
+          node scripts/testCli.js
+
+      - name: Notify Slack about build failure
+        if: failure() && github.ref == 'refs/heads/ui/main'
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.ACTIONS_SLACK_BOT_TOKEN }}
+        uses: voxmedia/github-action-slack-notify-build@v1
+        with:
+          channel: studio-internal
+          status: FAILED
+          color: danger
