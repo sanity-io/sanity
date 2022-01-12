@@ -206,6 +206,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     const fromMap = VALUE_TO_SLATE_VALUE.get(value || [])
     if (fromMap === slateEditor.children) {
       debug('Value in sync, not updating value from props')
+      change$.next({type: 'value', value})
       return
     }
     let equal = true
