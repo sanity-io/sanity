@@ -139,7 +139,7 @@ Object {
                 ],
                 "jsonType": "object",
                 "name": "reference",
-                "title": "Reference to sanity.imageasset",
+                "title": "Reference to sanity image asset",
                 "to": Array [
                   Object {
                     "__experimental_search": Array [
@@ -500,7 +500,7 @@ Object {
                   ],
                   "jsonType": "object",
                   "name": "reference",
-                  "title": "Reference to sanity.imageasset",
+                  "title": "Reference to sanity image asset",
                   "to": Array [
                     Object {
                       "__experimental_search": Array [
@@ -1079,7 +1079,7 @@ Object {
                           ],
                           "jsonType": "object",
                           "name": "reference",
-                          "title": "Reference to sanity.imageasset",
+                          "title": "Reference to sanity image asset",
                           "to": Array [
                             Object {
                               "__experimental_search": Array [
@@ -1440,7 +1440,7 @@ Object {
                             ],
                             "jsonType": "object",
                             "name": "reference",
-                            "title": "Reference to sanity.imageasset",
+                            "title": "Reference to sanity image asset",
                             "to": Array [
                               Object {
                                 "__experimental_search": Array [
@@ -1820,7 +1820,7 @@ Object {
                             ],
                             "jsonType": "object",
                             "name": "reference",
-                            "title": "Reference to sanity.imageasset",
+                            "title": "Reference to sanity image asset",
                             "to": Array [
                               Object {
                                 "__experimental_search": Array [
@@ -2181,7 +2181,7 @@ Object {
                               ],
                               "jsonType": "object",
                               "name": "reference",
-                              "title": "Reference to sanity.imageasset",
+                              "title": "Reference to sanity image asset",
                               "to": Array [
                                 Object {
                                   "__experimental_search": Array [
@@ -2507,7 +2507,7 @@ Object {
                 ],
                 "jsonType": "object",
                 "name": "reference",
-                "title": "Reference to sanity.imageasset",
+                "title": "Reference to sanity image asset",
                 "to": Array [
                   Object {
                     "__experimental_search": Array [
@@ -3258,7 +3258,7 @@ Object {
                             ],
                             "jsonType": "object",
                             "name": "reference",
-                            "title": "Reference to sanity.imageasset",
+                            "title": "Reference to sanity image asset",
                             "to": Array [
                               Object {
                                 "__experimental_search": Array [
@@ -3619,7 +3619,7 @@ Object {
                               ],
                               "jsonType": "object",
                               "name": "reference",
-                              "title": "Reference to sanity.imageasset",
+                              "title": "Reference to sanity image asset",
                               "to": Array [
                                 Object {
                                   "__experimental_search": Array [
@@ -3999,7 +3999,7 @@ Object {
                               ],
                               "jsonType": "object",
                               "name": "reference",
-                              "title": "Reference to sanity.imageasset",
+                              "title": "Reference to sanity image asset",
                               "to": Array [
                                 Object {
                                   "__experimental_search": Array [
@@ -4360,7 +4360,7 @@ Object {
                                 ],
                                 "jsonType": "object",
                                 "name": "reference",
-                                "title": "Reference to sanity.imageasset",
+                                "title": "Reference to sanity image asset",
                                 "to": Array [
                                   Object {
                                     "__experimental_search": Array [
@@ -4689,7 +4689,7 @@ Object {
                   ],
                   "jsonType": "object",
                   "name": "reference",
-                  "title": "Reference to sanity.imageasset",
+                  "title": "Reference to sanity image asset",
                   "to": Array [
                     Object {
                       "__experimental_search": Array [
@@ -5347,7 +5347,7 @@ Object {
                 ],
                 "jsonType": "object",
                 "name": "reference",
-                "title": "Reference to sanity.imageasset",
+                "title": "Reference to sanity image asset",
                 "to": Array [
                   Object {
                     "__experimental_search": Array [
@@ -5708,7 +5708,7 @@ Object {
                   ],
                   "jsonType": "object",
                   "name": "reference",
-                  "title": "Reference to sanity.imageasset",
+                  "title": "Reference to sanity image asset",
                   "to": Array [
                     Object {
                       "__experimental_search": Array [
@@ -6277,7 +6277,7 @@ Object {
                           ],
                           "jsonType": "object",
                           "name": "reference",
-                          "title": "Reference to sanity.imageasset",
+                          "title": "Reference to sanity image asset",
                           "to": Array [
                             Object {
                               "__experimental_search": Array [
@@ -6638,7 +6638,7 @@ Object {
                             ],
                             "jsonType": "object",
                             "name": "reference",
-                            "title": "Reference to sanity.imageasset",
+                            "title": "Reference to sanity image asset",
                             "to": Array [
                               Object {
                                 "__experimental_search": Array [
@@ -7018,7 +7018,7 @@ Object {
                             ],
                             "jsonType": "object",
                             "name": "reference",
-                            "title": "Reference to sanity.imageasset",
+                            "title": "Reference to sanity image asset",
                             "to": Array [
                               Object {
                                 "__experimental_search": Array [
@@ -7379,7 +7379,7 @@ Object {
                               ],
                               "jsonType": "object",
                               "name": "reference",
-                              "title": "Reference to sanity.imageasset",
+                              "title": "Reference to sanity image asset",
                               "to": Array [
                                 Object {
                                   "__experimental_search": Array [
@@ -7705,7 +7705,7 @@ Object {
                 ],
                 "jsonType": "object",
                 "name": "reference",
-                "title": "Reference to sanity.imageasset",
+                "title": "Reference to sanity image asset",
                 "to": Array [
                   Object {
                     "__experimental_search": Array [
@@ -8456,7 +8456,7 @@ Object {
                             ],
                             "jsonType": "object",
                             "name": "reference",
-                            "title": "Reference to sanity.imageasset",
+                            "title": "Reference to sanity image asset",
                             "to": Array [
                               Object {
                                 "__experimental_search": Array [
@@ -8817,7 +8817,7 @@ Object {
                               ],
                               "jsonType": "object",
                               "name": "reference",
-                              "title": "Reference to sanity.imageasset",
+                              "title": "Reference to sanity image asset",
                               "to": Array [
                                 Object {
                                   "__experimental_search": Array [
@@ -9197,7 +9197,7 @@ Object {
                               ],
                               "jsonType": "object",
                               "name": "reference",
-                              "title": "Reference to sanity.imageasset",
+                              "title": "Reference to sanity image asset",
                               "to": Array [
                                 Object {
                                   "__experimental_search": Array [
@@ -9558,7 +9558,7 @@ Object {
                                 ],
                                 "jsonType": "object",
                                 "name": "reference",
-                                "title": "Reference to sanity.imageasset",
+                                "title": "Reference to sanity image asset",
                                 "to": Array [
                                   Object {
                                     "__experimental_search": Array [
@@ -9887,7 +9887,7 @@ Object {
                   ],
                   "jsonType": "object",
                   "name": "reference",
-                  "title": "Reference to sanity.imageasset",
+                  "title": "Reference to sanity image asset",
                   "to": Array [
                     Object {
                       "__experimental_search": Array [
@@ -10711,7 +10711,7 @@ Object {
                           ],
                           "jsonType": "object",
                           "name": "reference",
-                          "title": "Reference to sanity.imageasset",
+                          "title": "Reference to sanity image asset",
                           "to": Array [
                             Object {
                               "__experimental_search": Array [
@@ -11072,7 +11072,7 @@ Object {
                             ],
                             "jsonType": "object",
                             "name": "reference",
-                            "title": "Reference to sanity.imageasset",
+                            "title": "Reference to sanity image asset",
                             "to": Array [
                               Object {
                                 "__experimental_search": Array [
@@ -11452,7 +11452,7 @@ Object {
                             ],
                             "jsonType": "object",
                             "name": "reference",
-                            "title": "Reference to sanity.imageasset",
+                            "title": "Reference to sanity image asset",
                             "to": Array [
                               Object {
                                 "__experimental_search": Array [
@@ -11813,7 +11813,7 @@ Object {
                               ],
                               "jsonType": "object",
                               "name": "reference",
-                              "title": "Reference to sanity.imageasset",
+                              "title": "Reference to sanity image asset",
                               "to": Array [
                                 Object {
                                   "__experimental_search": Array [
@@ -12139,7 +12139,7 @@ Object {
                 ],
                 "jsonType": "object",
                 "name": "reference",
-                "title": "Reference to sanity.imageasset",
+                "title": "Reference to sanity image asset",
                 "to": Array [
                   Object {
                     "__experimental_search": Array [
@@ -12890,7 +12890,7 @@ Object {
                             ],
                             "jsonType": "object",
                             "name": "reference",
-                            "title": "Reference to sanity.imageasset",
+                            "title": "Reference to sanity image asset",
                             "to": Array [
                               Object {
                                 "__experimental_search": Array [
@@ -13251,7 +13251,7 @@ Object {
                               ],
                               "jsonType": "object",
                               "name": "reference",
-                              "title": "Reference to sanity.imageasset",
+                              "title": "Reference to sanity image asset",
                               "to": Array [
                                 Object {
                                   "__experimental_search": Array [
@@ -13631,7 +13631,7 @@ Object {
                               ],
                               "jsonType": "object",
                               "name": "reference",
-                              "title": "Reference to sanity.imageasset",
+                              "title": "Reference to sanity image asset",
                               "to": Array [
                                 Object {
                                   "__experimental_search": Array [
@@ -13992,7 +13992,7 @@ Object {
                                 ],
                                 "jsonType": "object",
                                 "name": "reference",
-                                "title": "Reference to sanity.imageasset",
+                                "title": "Reference to sanity image asset",
                                 "to": Array [
                                   Object {
                                     "__experimental_search": Array [
@@ -14321,7 +14321,7 @@ Object {
                   ],
                   "jsonType": "object",
                   "name": "reference",
-                  "title": "Reference to sanity.imageasset",
+                  "title": "Reference to sanity image asset",
                   "to": Array [
                     Object {
                       "__experimental_search": Array [
@@ -14979,7 +14979,7 @@ Object {
                 ],
                 "jsonType": "object",
                 "name": "reference",
-                "title": "Reference to sanity.imageasset",
+                "title": "Reference to sanity image asset",
                 "to": Array [
                   Object {
                     "__experimental_search": Array [
@@ -15340,7 +15340,7 @@ Object {
                   ],
                   "jsonType": "object",
                   "name": "reference",
-                  "title": "Reference to sanity.imageasset",
+                  "title": "Reference to sanity image asset",
                   "to": Array [
                     Object {
                       "__experimental_search": Array [
