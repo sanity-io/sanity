@@ -1,0 +1,13 @@
+{
+  "ignore": [
+    "@babel/core",
+    "@babel/eslint-parser",
+    "@babel/preset-env",
+    "@babel/preset-react",
+    "@typescript-eslint/eslint-plugin",
+    "@typescript-eslint/parser",
+    "eslint-plugin-jsx-a11y",
+    "eslint-plugin-react",
+    "eslint-plugin-react-hooks"
+  ]
+}

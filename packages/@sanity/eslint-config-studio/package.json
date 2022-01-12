@@ -1,0 +1,37 @@
+{
+  "name": "@sanity/eslint-config-studio",
+  "version": "2.23.0",
+  "description": "The default ESLint configuration for the Sanity Studio.",
+  "keywords": [
+    "sanity",
+    "eslint"
+  ],
+  "homepage": "https://www.sanity.io/",
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/eslint-config-studio"
+  },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "main": "./index.js",
+  "scripts": {},
+  "dependencies": {
+    "@babel/core": "^7.16.7",
+    "@babel/eslint-parser": "^7.16.5",
+    "@babel/preset-env": "^7.16.8",
+    "@babel/preset-react": "^7.16.7",
+    "@rushstack/eslint-patch": "^1.1.0",
+    "@typescript-eslint/eslint-plugin": "^5.9.1",
+    "@typescript-eslint/parser": "^5.9.1",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react-hooks": "^4.3.0"
+  },
+  "peerDependencies": {
+    "eslint": ">= 8"
+  }
+}
