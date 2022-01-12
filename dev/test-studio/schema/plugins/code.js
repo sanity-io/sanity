@@ -1,5 +1,8 @@
 import {CodeBlockIcon} from '@sanity/icons'
 
+// eslint-disable-next-line import/no-unassigned-import
+import 'ace-builds/src-noconflict/mode-rust'
+
 export default {
   name: 'codeTest',
   type: 'document',
@@ -19,6 +22,39 @@ export default {
       options: {
         withFilename: true,
       },
+    },
+    {
+      name: 'customMode',
+      title: 'Custom mode',
+      description: 'Custom, unsupported modes',
+      type: 'code',
+      options: {
+        languageAlternatives: [
+          {title: 'Rust', value: 'rust', mode: 'rust'},
+          {title: 'JavaScript', value: 'javascript'},
+        ],
+      },
+    },
+    {
+      name: 'codeArray',
+      title: 'Code in arrays',
+      description: 'Code in arrays',
+      type: 'array',
+      of: [
+        {
+          type: 'block',
+        },
+        {
+          type: 'code',
+          options: {
+            withFilename: true,
+            languageAlternatives: [
+              {title: 'Rust', value: 'rust', mode: 'rust'},
+              {title: 'JavaScript', value: 'javascript'},
+            ],
+          },
+        },
+      ],
     },
     {
       name: 'cssOrJsCode',
