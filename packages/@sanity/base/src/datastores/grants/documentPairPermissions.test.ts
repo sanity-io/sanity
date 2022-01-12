@@ -342,7 +342,7 @@ describe('getPairPermission', () => {
       granted: false,
       reason:
         'Unable to duplicate:\n' +
-        '\tnot allowed to create new draft document from existing draft: No matching grants found',
+        '\tnot allowed to create new draft document from existing draft document: No matching grants found',
     })
   })
 
@@ -353,6 +353,51 @@ describe('getPairPermission', () => {
       documentPair: {
         draft: {_id: 'drafts.book-id', _type: 'book', locked: true},
         published: {_id: 'book-id', _type: 'book', locked: false},
+      },
+    })
+
+    await expect(
+      getAdminPairPermissions({
+        id: 'book-id',
+        permission: 'duplicate',
+        type: 'book',
+      })
+    ).resolves.toEqual({granted: true, reason: ''})
+  })
+
+  it("disallows `duplicate` if a new document can't be created with the contents of the published document", async () => {
+    const getRequiresApprovalPairPermissions = setupTest({
+      grants: exampleGrants.requiresApproval,
+      liveEdit: false,
+      // this is the case right after a publish where there is no draft version
+      documentPair: {
+        draft: null,
+        published: {_id: 'book-id', _type: 'book', locked: true},
+      },
+    })
+
+    await expect(
+      getRequiresApprovalPairPermissions({
+        id: 'book-id',
+        permission: 'duplicate',
+        type: 'book',
+      })
+    ).resolves.toEqual({
+      granted: false,
+      reason:
+        'Unable to duplicate:\n' +
+        '\tnot allowed to create new draft document from existing published document: No matching grants found',
+    })
+  })
+
+  it('allows `duplicate` if a new document can be created with the contents of the published document', async () => {
+    const getAdminPairPermissions = setupTest({
+      grants: exampleGrants.administrator,
+      liveEdit: false,
+      // this is the case right after a publish where there is no draft version
+      documentPair: {
+        draft: null,
+        published: {_id: 'book-id', _type: 'book', locked: true},
       },
     })
 
