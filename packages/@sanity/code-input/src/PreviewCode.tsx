@@ -1,6 +1,5 @@
 import React, {useCallback, useEffect, useRef} from 'react'
 import AceEditor from 'react-ace'
-import {get} from 'lodash'
 import styled from 'styled-components'
 import {Box} from '@sanity/ui'
 import {ACE_EDITOR_PROPS, ACE_SET_OPTIONS} from './config'
@@ -53,7 +52,7 @@ export default function PreviewCode(props: PreviewCodeProps) {
   }, [])
 
   const {value, type} = props
-  const fixedLanguage = get(type, 'options.language')
+  const fixedLanguage = type?.options?.language
 
   const mode = value?.language || fixedLanguage
 
