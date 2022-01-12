@@ -75,7 +75,7 @@ export function createGrantsStore(): GrantsStore {
   )
 
   return {
-    checkDocumentPermission(permission: DocumentValuePermission, document: SanityDocument) {
+    checkDocumentPermission(permission: DocumentValuePermission, document: SanityDocument | null) {
       return currentUserDatasetGrants.pipe(
         switchMap((grants) => grantsPermissionOn(grants, permission, document)),
         distinctUntilChanged(shallowEquals)
