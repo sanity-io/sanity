@@ -66,6 +66,7 @@ export type Props = {
   assetSources?: InternalAssetSource[]
   markers: Marker[]
   presence: FormFieldPresence[]
+  getValuePath: () => Path
 }
 
 const HIDDEN_FIELDS = ['asset']
@@ -83,10 +84,6 @@ type Focusable = {
 }
 
 export default class FileInput extends React.PureComponent<Props, FileInputState> {
-  static contextTypes = {
-    getValuePath: PropTypes.func,
-  }
-
   _inputId = uniqueId('FileInput')
   dialogId = uniqueId('fileinput-dialog')
 
@@ -104,8 +101,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   toast: {push: (params: ToastParams) => void} | null = null
 
   handleRemoveButtonClick = () => {
-    const {getValuePath} = this.context
-    const {value} = this.props
+    const {value, getValuePath} = this.props
     const parentPathSegment = getValuePath().slice(-1)[0]
 
     // String path segment mean an object path, while a number or a

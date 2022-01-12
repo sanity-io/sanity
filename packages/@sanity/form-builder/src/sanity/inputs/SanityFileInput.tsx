@@ -6,6 +6,7 @@ import {
   formBuilderConfig,
   userDefinedFileAssetSources,
 } from '../../legacyParts'
+import withValuePath from '../../utils/withValuePath'
 import {materializeReference} from './client-adapters/assets'
 import {wrapWithDocument} from './wrapWithDocument'
 
@@ -27,8 +28,10 @@ export default React.forwardRef(function SanityFileInput(props: Props, forwarded
     [sourcesFromSchema]
   )
 
+  const FileInputWithValuePath = withValuePath(FileInput)
+
   return (
-    <FileInput
+    <FileInputWithValuePath
       {...props}
       resolveUploader={resolveUploader}
       materialize={materializeReference}
