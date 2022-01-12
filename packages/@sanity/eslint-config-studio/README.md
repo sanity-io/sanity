@@ -2,7 +2,7 @@
 
 The ESLint configuration that ships with new Sanity CLI projects.
 
-Designed to be relatively unobtrusive to help find bug instead enforce opinions.
+Designed to be relatively unobtrusive to help find bugs instead enforce opinions.
 
 ## Installation
 
