@@ -10,7 +10,6 @@ import * as PathUtils from '@sanity/util/paths'
 import {ChangeIndicatorProvider} from '@sanity/base/change-indicators'
 import {PatchEvent, set, unset, setIfMissing} from 'part:@sanity/form-builder/patch-event'
 import AceEditor from 'react-ace'
-import {get, has} from 'lodash'
 import styled from 'styled-components'
 import {useId} from '@reach/auto-id'
 import createHighlightMarkers, {highlightMarkersCSS} from './createHighlightMarkers'
@@ -133,7 +132,7 @@ const CodeInput = React.forwardRef(
     )
 
     const getTheme = useCallback(() => {
-      const preferredTheme = get(type, 'options.theme')
+      const preferredTheme = type.options?.theme
       return preferredTheme && SUPPORTED_THEMES.find((theme) => theme === preferredTheme)
         ? preferredTheme
         : DEFAULT_THEME
@@ -201,7 +200,7 @@ const CodeInput = React.forwardRef(
       value: string
       mode?: string
     }[] => {
-      const languageAlternatives = get(type, 'options.languageAlternatives')
+      const languageAlternatives = type.options?.languageAlternatives
       if (!languageAlternatives) {
         return SUPPORTED_LANGUAGES
       }
@@ -241,7 +240,7 @@ const CodeInput = React.forwardRef(
     const handleCodeChange = useCallback(
       (code: string) => {
         const path = PATH_CODE
-        const fixedLanguage = get(type, 'options.language')
+        const fixedLanguage = type.options?.language
 
         onChange(
           PatchEvent.from([
@@ -290,7 +289,7 @@ const CodeInput = React.forwardRef(
     )
 
     const renderEditor = useCallback(() => {
-      const fixedLanguage = get(type, 'options.language')
+      const fixedLanguage = type.options?.language
 
       const language = value?.language || fixedLanguage
 
@@ -340,7 +339,7 @@ const CodeInput = React.forwardRef(
       onBlur,
     ])
 
-    if (has(type, 'options.language')) {
+    if (type.options?.language) {
       return (
         <ChangeIndicatorProvider
           path={PATH_CODE}
@@ -388,7 +387,7 @@ const CodeInput = React.forwardRef(
             </Select>
           </FormField>
         </ChangeIndicatorProvider>
-        {get(type, 'options.withFilename', false) && (
+        {type.options?.withFilename && (
           <ChangeIndicatorProvider
             path={PATH_FILENAME}
             focusPath={focusPath}
