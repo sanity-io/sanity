@@ -66,6 +66,7 @@ export type Props = {
   markers: Marker[]
   presence: FormFieldPresence[]
   imageToolBuilder?: ReturnType<typeof imageUrlBuilder>
+  getValuePath: () => Path
 }
 
 const getDevicePixelRatio = () => {
@@ -110,10 +111,6 @@ const EMPTY_FIELD_GROUPS: FieldGroups = {
 const ASSET_FIELD_PATH = ['asset']
 
 export default class ImageInput extends React.PureComponent<Props, ImageInputState> {
-  static contextTypes = {
-    getValuePath: PropTypes.func,
-  }
-
   _inputId = uniqueId('ImageInput')
 
   _assetElementRef: null | Focusable = null
@@ -225,8 +222,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   handleRemoveButtonClick = () => {
-    const {getValuePath} = this.context
-    const {value} = this.props
+    const {value, getValuePath} = this.props
     const parentPathSegment = getValuePath().slice(-1)[0]
 
     // String path segment mean an object path, while a number or a
@@ -402,9 +398,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderMaterializedAsset = (assetDocument: ImageAsset) => {
-    const {value = {}, readOnly, type, directUploads, imageToolBuilder} = this.props
+    const {value = {}, readOnly, type, directUploads, imageToolBuilder, getValuePath} = this.props
     const {hoveringFiles} = this.state
-    const {getValuePath} = this.context
 
     const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
     const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
@@ -592,8 +587,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderUploadState(uploadState: UploadState) {
+    const {getValuePath} = this.props
     const {isUploading} = this.state
-    const {getValuePath} = this.context
 
     return (
       <UploadProgress
@@ -674,7 +669,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   componentWillUnmount() {
-    const {getValuePath} = this.context
+    const {getValuePath} = this.props
     const pathId = getValuePath()
 
     window.localStorage.removeItem(`imageHeight_${pathId}`)

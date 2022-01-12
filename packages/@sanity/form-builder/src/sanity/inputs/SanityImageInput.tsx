@@ -9,6 +9,7 @@ import {
   userDefinedImageAssetSources,
 } from '../../legacyParts'
 import {versionedClient} from '../versionedClient'
+import withValuePath from '../../utils/withValuePath'
 import {materializeReference} from './client-adapters/assets'
 import {wrapWithDocument} from './wrapWithDocument'
 
@@ -19,6 +20,8 @@ const globalAssetSources = userDefinedImageAssetSources
 const SUPPORT_DIRECT_UPLOADS = formBuilderConfig?.images?.directUploads !== false
 
 type Props = Omit<React.ComponentProps<typeof ImageInput>, 'assetSources'>
+
+const ImageInputWithValuePath = withValuePath(ImageInput)
 
 export default React.forwardRef(function SanityImageInput(props: Props, forwardedRef: any) {
   const sourcesFromSchema = props.type.options?.sources
@@ -33,7 +36,7 @@ export default React.forwardRef(function SanityImageInput(props: Props, forwarde
   const builder = React.useMemo(() => imageUrlBuilder(versionedClient), [])
 
   return (
-    <ImageInput
+    <ImageInputWithValuePath
       {...props}
       resolveUploader={resolveUploader}
       materialize={materializeReference}

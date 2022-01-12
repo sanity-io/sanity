@@ -1,5 +1,6 @@
 import React, {useEffect} from 'react'
 import {Flex, Text, Button, Stack, Inline, Card, Code} from '@sanity/ui'
+import {Path} from '@sanity/types'
 import {LinearProgress} from '@sanity/base/components'
 import {UploadState} from '../types'
 import {CardWrapper, FlexWrapper, LeftSection, CodeWrapper} from './UploadProgress.styled'
@@ -8,7 +9,7 @@ type Props = {
   uploadState: UploadState
   onCancel?: () => void
   onStale?: () => void
-  path?: string[]
+  path?: Path
 }
 
 // If it's more than this amount of milliseconds since last time upload state was reported,
