@@ -1,15 +1,15 @@
 import {PortableTextBlock, Type as PTType} from '@sanity/portable-text-editor'
 import {Path, Schema} from '@sanity/types'
-import {Code, Heading, Box} from '@sanity/ui'
+// import {Code, Heading, Box} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import FormBuilderContext from '../../../../FormBuilderContext'
 import {PortableTextInput} from '../../PortableTextInput'
 import {applyAll} from '../../../../simplePatch'
 import {RenderBlockActions} from '../../types'
 import {useUnique} from '../../utils/useUnique'
+import {ReviewChangesContextProvider} from '../../../../sanity/contexts/reviewChanges/ReviewChangesProvider'
 import {inputResolver} from './input'
 import {resolvePreviewComponent} from './resolvePreviewComponent'
-
 interface TestInputProps {
   markers?: any[]
   readOnly?: boolean
@@ -175,14 +175,15 @@ export function TestInput(props: TestInputProps) {
   }, [props.value])
 
   return (
-    <FormBuilderContext
-      value={value}
-      patchChannel={patchChannel}
-      schema={props.schema}
-      resolveInputComponent={inputResolver}
-      resolvePreviewComponent={resolvePreviewComponent}
-    >
-      {/* <Box
+    <ReviewChangesContextProvider changesOpen={false}>
+      <FormBuilderContext
+        value={value}
+        patchChannel={patchChannel}
+        schema={props.schema}
+        resolveInputComponent={inputResolver}
+        resolvePreviewComponent={resolvePreviewComponent}
+      >
+        {/* <Box
         style={{
           width: '300px',
           height: '300px',
@@ -200,22 +201,23 @@ export function TestInput(props: TestInputProps) {
           <Code size={5}>{JSON.stringify(focusPath, null, 2)}</Code>
         </Box>
       </Box> */}
-      <PortableTextInput
-        focusPath={focusPath}
-        hotkeys={hotkeys}
-        level={1}
-        markers={uniqMarkers}
-        onBlur={onBlur}
-        onChange={onChange}
-        onFocus={onFocus}
-        presence={presence}
-        readOnly={readOnly}
-        renderBlockActions={renderBlockActions}
-        renderCustomMarkers={renderCustomMarkers}
-        subscribe={subscribe}
-        type={props.type}
-        value={value}
-      />
-    </FormBuilderContext>
+        <PortableTextInput
+          focusPath={focusPath}
+          hotkeys={hotkeys}
+          level={1}
+          markers={uniqMarkers}
+          onBlur={onBlur}
+          onChange={onChange}
+          onFocus={onFocus}
+          presence={presence}
+          readOnly={readOnly}
+          renderBlockActions={renderBlockActions}
+          renderCustomMarkers={renderCustomMarkers}
+          subscribe={subscribe}
+          type={props.type}
+          value={value}
+        />
+      </FormBuilderContext>
+    </ReviewChangesContextProvider>
   )
 }
