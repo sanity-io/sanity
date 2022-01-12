@@ -73,7 +73,7 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
     return editor.editable?.findDOMNode(element)
   }
   static findByPath = (editor: PortableTextEditor, path: Path) => {
-    return editor.editable?.findByPath(path)
+    return editor.editable?.findByPath(path) || []
   }
   static focus = (editor: PortableTextEditor): void => {
     debug('Host requesting focus')
