@@ -1,6 +1,7 @@
 export interface CodeInputLanguage {
   title: string
   value: string
+  mode?: string
 }
 
 export interface CodeInputType {
@@ -8,6 +9,12 @@ export interface CodeInputType {
   title?: string
   description?: string
   fields: {name: string; title?: string; placeholder?: string}[]
+  options?: {
+    theme?: string
+    languageAlternatives: CodeInputLanguage[]
+    language: string
+    withFilename?: boolean
+  }
 }
 
 export interface CodeInputValue {

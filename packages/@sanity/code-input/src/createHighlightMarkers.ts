@@ -1,4 +1,4 @@
-import {Marker} from 'react-ace'
+import {IMarker} from 'react-ace'
 import {css} from 'styled-components'
 
 export const highlightMarkersCSS = css`
@@ -11,14 +11,14 @@ export const highlightMarkersCSS = css`
   }
 `
 
-export default function createHighlightMarkers(rows: number[]): Marker[] {
+export default function createHighlightMarkers(rows: number[]): IMarker[] {
   return rows.map((row) => ({
     startRow: Number(row) - 1,
     startCol: 0,
     endRow: Number(row) - 1,
     endCol: +Infinity,
     className: 'ace_editor_markers_highlight',
-    type: 'highlight',
+    type: 'screenLine',
     inFront: true,
   }))
 }

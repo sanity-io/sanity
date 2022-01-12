@@ -3,7 +3,7 @@ import AceEditor from 'react-ace'
 import {get} from 'lodash'
 import styled from 'styled-components'
 import {Box} from '@sanity/ui'
-import {SUPPORTED_LANGUAGES, LANGUAGE_ALIASES, ACE_EDITOR_PROPS, ACE_SET_OPTIONS} from './config'
+import {ACE_EDITOR_PROPS, ACE_SET_OPTIONS} from './config'
 import createHighlightMarkers from './createHighlightMarkers'
 import {CodeInputType, CodeInputValue} from './types'
 /* eslint-disable-next-line import/no-unassigned-import */
@@ -33,20 +33,6 @@ export interface PreviewCodeProps {
   value?: CodeInputValue
 }
 
-function isSupportedLanguage(mode: string) {
-  const alias = LANGUAGE_ALIASES[mode]
-  if (alias) {
-    return alias
-  }
-
-  const isSupported = SUPPORTED_LANGUAGES.find((lang) => lang.value === mode)
-  if (isSupported) {
-    return mode
-  }
-
-  return false
-}
-
 export default function PreviewCode(props: PreviewCodeProps) {
   const aceEditorRef = useRef<any>()
 
@@ -68,7 +54,8 @@ export default function PreviewCode(props: PreviewCodeProps) {
 
   const {value, type} = props
   const fixedLanguage = get(type, 'options.language')
-  const mode = isSupportedLanguage((value && value.language) || fixedLanguage) || 'text'
+
+  const mode = value?.language || fixedLanguage
 
   return (
     <PreviewContainer>

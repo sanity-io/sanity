@@ -52,8 +52,36 @@ Note that the above only works if you import and use the `all:part:@sanity/base/
       {title: 'Javascript', value: 'js'},
       {title: 'HTML', value: 'html'},
       {title: 'CSS', value: 'css'},
+      {title: 'Rust', value: 'rust', mode:'rust'},
       {title: 'SASS', value: 'sass'},
     ]
+  }
+}
+```
+
+## Add support for more languages
+
+Only a subset of languages are supported by default (see full list [here](https://github.com/sanity-io/sanity/blob/current/packages/@sanity/code-input/src/config.ts#L4)). You can add support for other languages by importing the ace mode yourself, and specifying `mode` for the `languageAlternatives` schema config.
+
+Example: Add support for the Rust Programming Language
+
+```js
+// import rust support for ace, see https://github.com/securingsincity/react-ace for more details
+import 'ace-builds/src-noconflict/mode-rust'
+
+{
+    name: 'exampleUsage',
+    title: 'Example usage',
+    type: 'code',
+    options: {
+      languageAlternatives: [
+        {title: 'Javascript', value: 'js'},
+        {
+          title: 'Rust',
+          value: 'rust',
+          mode:'rust' // <- specify the mode to use here. Make sure this mode is also imported from ace-builds (see above)
+        },
+     ]
   }
 }
 ```
