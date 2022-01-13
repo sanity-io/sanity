@@ -4,6 +4,7 @@ import React from 'react'
 import {render, fireEvent, waitFor} from '@testing-library/react'
 import Schema from '@sanity/schema'
 import {DEFAULT_PROPS, ImageInputTester} from '../../../../utils/tests/ImageInputTester'
+import userEvent from '@testing-library/user-event'
 
 const schema = Schema.compile({
   name: 'test',
@@ -78,8 +79,6 @@ describe('ImageInput with empty state', () => {
     expect(queryByTestId('file-button-input').getAttribute('value')).toBe('')
   })
 
-  it.todo('does not allow for upload files based on file type')
-
   /* assetSources - adds a list of sources that a user can pick from when browsing */
 
   it('renders the browse button when it has at least one element in assetSources', () => {
@@ -123,17 +122,8 @@ describe('ImageInput with empty state', () => {
 
   it('does not allow for drag upload of image when directUploads is false', async () => {
     const {queryByTestId, queryByText} = render(<ImageInput directUploads={false} />)
-    const input = queryByTestId('file-button-input')
 
-    fireEvent.change(input, {
-      target: {
-        files: [new File(['(⌐□_□)'], 'cool_sunglasses.png', {type: 'image/png'})],
-      },
-    })
-
-    await waitFor(() => {
-      expect(queryByText(`Can't upload files here`)).toBeInTheDocument()
-    })
+    expect(queryByText(`Can't upload files here`)).toBeInTheDocument()
   })
 
   /* readOnly - the image input is read only or not */
@@ -169,15 +159,15 @@ describe('ImageInput with empty state', () => {
 })
 
 describe('with asset', () => {
-  it('renders the right url as default when it has asset', () => {
-    const value = {
-      asset: {
-        _ref: 'image-4ae478f00c330e7089cbd0f6126d3626e432e595-702x908-png',
-        _type: 'reference',
-      },
-      _type: 'image',
-    }
+  const value = {
+    asset: {
+      _ref: 'image-4ae478f00c330e7089cbd0f6126d3626e432e595-702x908-png',
+      _type: 'reference',
+    },
+    _type: 'image',
+  }
 
+  it('renders the right url as default when it has asset', () => {
     const {queryByTestId} = render(<ImageInput value={value} />)
 
     expect(queryByTestId('hotspot-image-input').getAttribute('src')).toBe(

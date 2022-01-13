@@ -12,6 +12,8 @@ import ImageInput, {Image} from '../../inputs/files/ImageInput'
 import {materializeReference} from '../../sanity/inputs/client-adapters/assets'
 import {versionedClient} from '../../sanity/versionedClient'
 
+import resolveUploader from '../../sanity/uploads/resolveUploader'
+
 export const DEFAULT_PROPS = {
   value: {},
   compareValue: {},
@@ -32,7 +34,7 @@ export const DEFAULT_PROPS = {
   },
   level: 1,
   onChange: () => undefined,
-  resolveUploader: null,
+  resolveUploader: resolveUploader,
   materialize: materializeReference,
   onBlur: () => undefined,
   onFocus: () => undefined,
