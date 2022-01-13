@@ -140,13 +140,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     return get(this.props.type, 'options.hotspot') === true
   }
 
-  getConstrainedImageSrc = (assetDocument: ImageAsset): string => {
-    const materializedSize = ImageTool.maxWidth || 1000
-    const maxSize = materializedSize * getDevicePixelRatio()
-    const constrainedSrc = `${assetDocument.url}?w=${maxSize}&h=${maxSize}&fit=max`
-    return constrainedSrc
-  }
-
   clearUploadStatus() {
     // todo: this is kind of hackish
     if (this.props.value?._upload) {
@@ -351,7 +344,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       onChange,
       readOnly,
       presence,
-      materialize,
+      imageToolBuilder,
     } = this.props
 
     const withImageTool = this.isImageToolEnabled() && value && value.asset
@@ -359,6 +352,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     const imageToolPresence = withImageTool
       ? presence.filter((item) => item.path[0] === 'hotspot')
       : EMPTY_ARRAY
+
+    const url = imageToolBuilder.image(value!.asset).url()
 
     return (
       <Dialog
@@ -372,22 +367,18 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
           <Box padding={4}>
             <Stack space={5}>
               {withImageTool && (
-                <WithMaterializedReference materialize={materialize} reference={value?.asset}>
-                  {(imageAsset) => (
-                    <ImageToolInput
-                      type={type}
-                      level={level}
-                      readOnly={Boolean(readOnly)}
-                      imageUrl={this.getConstrainedImageSrc(imageAsset)}
-                      value={value}
-                      focusPath={focusPath}
-                      presence={imageToolPresence}
-                      onFocus={onFocus}
-                      compareValue={compareValue}
-                      onChange={onChange}
-                    />
-                  )}
-                </WithMaterializedReference>
+                <ImageToolInput
+                  type={type}
+                  level={level}
+                  readOnly={Boolean(readOnly)}
+                  imageUrl={url}
+                  value={value}
+                  focusPath={focusPath}
+                  presence={imageToolPresence}
+                  onFocus={onFocus}
+                  compareValue={compareValue}
+                  onChange={onChange}
+                />
               )}
               {this.renderFields(fields)}
             </Stack>
@@ -397,23 +388,12 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     )
   }
 
-  renderMaterializedAsset = (assetDocument: ImageAsset) => {
-    const {value = {}, readOnly, type, directUploads, imageToolBuilder, getValuePath} = this.props
+  renderMaterializedAsset = (url: string) => {
+    const {value = {}, readOnly, type, directUploads, getValuePath} = this.props
     const {hoveringFiles} = this.state
 
     const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
     const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
-
-    const imageData = {
-      _type: 'image',
-      asset: {
-        _ref: assetDocument._id,
-        _type: assetDocument._type,
-      },
-      crop: value.crop,
-      hotspot: value.hotspot,
-    }
-    const url = imageToolBuilder.image(imageData).url()
 
     return (
       <HotspotImageInput
@@ -465,7 +445,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderAsset() {
-    const {value, materialize, readOnly, assetSources, type, directUploads} = this.props
+    const {value, readOnly, assetSources, type, directUploads, imageToolBuilder} = this.props
 
     const accept = get(type, 'options.accept', 'image/*')
 
@@ -480,6 +460,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
           text="Browse"
           onClick={() => this.handleSelectImageFromAssetSource(assetSources[0])}
           disabled={readOnly}
+          data-testid="file-input-browse-button"
         />
       )
 
@@ -491,32 +472,30 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
             text={assetSource.title}
             onClick={() => this.handleSelectImageFromAssetSource(assetSource)}
             icon={assetSource.icon || ImageIcon}
+            data-testid={`file-input-browse-button-${assetSource.name}`}
           />
         )
       })
     }
 
+    const url = imageToolBuilder.image(value!.asset).url()
+    const urlCropped = imageToolBuilder.image(value).url()
+
     return (
-      <WithMaterializedReference reference={value!.asset} materialize={materialize}>
-        {(fileAsset) => {
-          return (
-            <>
-              <ImageActionsMenu onEdit={this.handleOpenDialog} showEdit={showAdvancedEditButton}>
-                <ActionsMenu
-                  onUpload={this.handleSelectFiles}
-                  browse={browseMenuItem}
-                  onReset={this.handleRemoveButtonClick}
-                  src={fileAsset.url}
-                  readOnly={readOnly}
-                  directUploads={directUploads}
-                  accept={accept}
-                />
-              </ImageActionsMenu>
-              {this.renderMaterializedAsset(fileAsset)}
-            </>
-          )
-        }}
-      </WithMaterializedReference>
+      <>
+        <ImageActionsMenu onEdit={this.handleOpenDialog} showEdit={showAdvancedEditButton}>
+          <ActionsMenu
+            onUpload={this.handleSelectFiles}
+            browse={browseMenuItem}
+            onReset={this.handleRemoveButtonClick}
+            src={url}
+            readOnly={readOnly}
+            directUploads={directUploads}
+            accept={accept}
+          />
+        </ImageActionsMenu>
+        {this.renderMaterializedAsset(urlCropped)}
+      </>
     )
   }
 
@@ -529,8 +508,14 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       return (
         <MenuButton
           id={`${this._inputId}_assetImageButton`}
-          button={<Button mode="ghost" text="Select" icon={SearchIcon} />}
-          data-testid="input-select-button"
+          button={
+            <Button
+              mode="ghost"
+              text="Browse"
+              data-testid="file-input-multi-browse-button"
+              icon={SearchIcon}
+            />
+          }
           menu={
             <Menu>
               {assetSources.map((assetSource) => {
@@ -540,6 +525,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                     text={assetSource.title}
                     onClick={() => this.handleSelectImageFromAssetSource(assetSource)}
                     icon={assetSource.icon || ImageIcon}
+                    data-testid={`file-input-browse-button-${assetSource.name}`}
                   />
                 )
               })}
@@ -556,7 +542,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         icon={SearchIcon}
         mode="ghost"
         onClick={() => this.handleSelectImageFromAssetSource(assetSources[0])}
-        data-testid="file-input-select-button"
+        data-testid="file-input-browse-button"
         disabled={readOnly}
       />
     )
@@ -769,7 +755,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                   border={!value?.asset}
                   padding={value?.asset ? 0 : 3}
                   style={{
-                    borderStyle: !readOnly && hoveringFiles.length > 0 ? 'solid' : 'dashed',
+                    borderStyle: 'dashed',
                   }}
                   tone={getFileTone()}
                 >
