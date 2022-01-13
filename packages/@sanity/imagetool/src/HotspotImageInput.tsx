@@ -38,7 +38,7 @@ export default function HotspotImageInput(props: Props) {
     }
 
     return () => {
-      return observer.disconnect()
+      return observer.unobserve(imageContainer.current)
     }
   })
 
@@ -81,7 +81,7 @@ export default function HotspotImageInput(props: Props) {
         paddingY={5}
       >
         <Card data-container tone="transparent" sizing="border">
-          <img src={src} />
+          <img src={src} data-testid="hotspot-image-input" />
         </Card>
         <Overlay justify="flex-end" padding={3} tone={tone} drag={drag}>
           {drag && (
