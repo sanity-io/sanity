@@ -34,7 +34,7 @@ export default React.forwardRef(function SanityFileInput(props: Props, forwarded
     <FileInputWithValuePath
       {...props}
       resolveUploader={resolveUploader}
-      observeFileAsset={observeFileAsset}
+      observeAsset={observeFileAsset}
       assetSources={assetSources}
       directUploads={SUPPORT_DIRECT_UPLOADS}
       ref={forwardedRef}

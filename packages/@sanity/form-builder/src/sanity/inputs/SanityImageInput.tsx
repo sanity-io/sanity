@@ -39,7 +39,7 @@ export default React.forwardRef(function SanityImageInput(props: Props, forwarde
     <ImageInputWithValuePath
       {...props}
       resolveUploader={resolveUploader}
-      observeFileAsset={observeImageAsset}
+      observeAsset={observeImageAsset}
       assetSources={assetSources}
       directUploads={SUPPORT_DIRECT_UPLOADS}
       ref={forwardedRef}

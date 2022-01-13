@@ -15,11 +15,10 @@ import {
   ObjectField,
   Path,
 } from '@sanity/types'
-import React, {ReactElement} from 'react'
+import React, {ReactElement, ReactNode} from 'react'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import deepCompare from 'react-fast-compare'
 import HotspotImageInput from '@sanity/imagetool/HotspotImageInput'
-import imageUrlBuilder from '@sanity/image-url'
 import {
   ResolvedUploader,
   Uploader,
@@ -31,7 +30,7 @@ import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {FileTarget} from '../common/styles'
-import {InternalAssetSource, UploadState} from '../types'
+import {ImageUrlBuilder, InternalAssetSource, UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import {handleSelectAssetFromSource} from '../common/assetSource'
@@ -61,7 +60,7 @@ export type Props = {
   assetSources?: InternalAssetSource[]
   markers: Marker[]
   presence: FormFieldPresence[]
-  imageToolBuilder?: ReturnType<typeof imageUrlBuilder>
+  imageUrlBuilder?: ImageUrlBuilder
   getValuePath: () => Path
 }
 
@@ -339,7 +338,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       onChange,
       readOnly,
       presence,
-      imageToolBuilder,
+      imageUrlBuilder,
     } = this.props
 
     const withImageTool = this.isImageToolEnabled() && value && value.asset
@@ -348,7 +347,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       ? presence.filter((item) => item.path[0] === 'hotspot')
       : EMPTY_ARRAY
 
-    const url = imageToolBuilder.image(value!.asset).url()
+    const url = imageUrlBuilder.image(value!.asset).url()
 
     return (
       <Dialog
@@ -384,7 +383,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderPreview = () => {
-    const {value, readOnly, type, directUploads, getValuePath, imageToolBuilder} = this.props
+    const {value, readOnly, type, directUploads, getValuePath, imageUrlBuilder} = this.props
     const {hoveringFiles} = this.state
 
     const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
@@ -396,7 +395,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         isRejected={rejectedFilesCount > 0 || !directUploads}
         readOnly={readOnly}
         path={getValuePath()}
-        src={imageToolBuilder.image(value).dpr(getDevicePixelRatio()).url()}
+        src={imageUrlBuilder.image(value).dpr(getDevicePixelRatio()).url()}
       />
     )
   }
@@ -440,7 +439,15 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderAssetMenu() {
-    const {value, readOnly, assetSources, type, directUploads, imageToolBuilder} = this.props
+    const {
+      value,
+      readOnly,
+      assetSources,
+      type,
+      directUploads,
+      imageUrlBuilder,
+      observeAsset,
+    } = this.props
 
     const accept = get(type, 'options.accept', 'image/*')
 
@@ -448,7 +455,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     const showAdvancedEditButton =
       value && (fieldGroups.dialog.length > 0 || (value?.asset && this.isImageToolEnabled()))
 
-    let browseMenuItem: ReactElement<any, any> | ReactElement<any, any>[] =
+    let browseMenuItem: ReactNode =
       assetSources.length === 0 ? null : (
         <MenuItem
           icon={SearchIcon}
@@ -475,15 +482,19 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
     return (
       <ImageActionsMenu onEdit={this.handleOpenDialog} showEdit={showAdvancedEditButton}>
-        <ActionsMenu
-          onUpload={this.handleSelectFiles}
-          browse={browseMenuItem}
-          onReset={this.handleRemoveButtonClick}
-          src={imageToolBuilder.image(value).forceDownload(true).url()}
-          readOnly={readOnly}
-          directUploads={directUploads}
-          accept={accept}
-        />
+        <WithReferencedAsset observeAsset={observeAsset} reference={value.asset}>
+          {(assetDocument) => (
+            <ActionsMenu
+              onUpload={this.handleSelectFiles}
+              browse={browseMenuItem}
+              onReset={this.handleRemoveButtonClick}
+              src={imageUrlBuilder.image(value).forceDownload(assetDocument.originalFilename).url()}
+              readOnly={readOnly}
+              directUploads={directUploads}
+              accept={accept}
+            />
+          )}
+        </WithReferencedAsset>
       </ImageActionsMenu>
     )
   }
