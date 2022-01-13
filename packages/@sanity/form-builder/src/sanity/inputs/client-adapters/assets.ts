@@ -1,6 +1,6 @@
 import {mergeMap, map, catchError} from 'rxjs/operators'
 import {Observable, of as observableOf} from 'rxjs'
-import {FileAsset, ImageAsset} from '@sanity/types'
+import {Asset, FileAsset, ImageAsset} from '@sanity/types'
 import {withMaxConcurrency} from '../../utils/withMaxConcurrency'
 import {UploadOptions} from '../../uploads/types'
 import {observePaths} from '../../../legacyParts'
@@ -69,7 +69,8 @@ export const uploadImageAsset = (file: File | Blob, options: UploadOptions) =>
 export const uploadFileAsset = (file: File | Blob, options: UploadOptions) =>
   uploadAsset('file', file, options)
 
-export function materializeReference(id: string): Observable<FileAsset> {
+// note: there's currently 100% overlap between the ImageAsset document and the FileAsset documents as per interface required by the image and file input
+function observeAssetDoc(id: string) {
   return observePaths(id, [
     'originalFilename',
     'url',
@@ -80,7 +81,15 @@ export function materializeReference(id: string): Observable<FileAsset> {
     'creditLine',
     'source',
     'size',
-  ]) as Observable<FileAsset>
+  ])
+}
+
+export function observeImageAsset(id: string) {
+  return observeAssetDoc(id) as Observable<ImageAsset>
+}
+
+export function observeFileAsset(id: string) {
+  return observeAssetDoc(id) as Observable<FileAsset>
 }
 
 function fetchExisting(type: string, hash: string): Observable<ImageAsset | FileAsset | null> {

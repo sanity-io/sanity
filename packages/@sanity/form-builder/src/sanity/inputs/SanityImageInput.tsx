@@ -10,7 +10,7 @@ import {
 } from '../../legacyParts'
 import {versionedClient} from '../versionedClient'
 import withValuePath from '../../utils/withValuePath'
-import {materializeReference} from './client-adapters/assets'
+import {observeImageAsset} from './client-adapters/assets'
 import {wrapWithDocument} from './wrapWithDocument'
 
 const globalAssetSources = userDefinedImageAssetSources
@@ -39,7 +39,7 @@ export default React.forwardRef(function SanityImageInput(props: Props, forwarde
     <ImageInputWithValuePath
       {...props}
       resolveUploader={resolveUploader}
-      materialize={materializeReference}
+      observeFileAsset={observeImageAsset}
       assetSources={assetSources}
       directUploads={SUPPORT_DIRECT_UPLOADS}
       ref={forwardedRef}

@@ -52,7 +52,7 @@ export type Props = {
   level: number
   onChange: (event: PatchEvent) => void
   resolveUploader: UploaderResolver
-  getAsset: (documentId: string) => Observable<ImageAsset>
+  observeAsset: (documentId: string) => Observable<ImageAsset>
   onBlur: () => void
   onFocus: (path: Path) => void
   readOnly: boolean | null
@@ -577,14 +577,14 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
   renderAssetSource() {
     const {selectedAssetSource} = this.state
-    const {value, getAsset} = this.props
+    const {value, observeAsset} = this.props
     if (!selectedAssetSource) {
       return null
     }
     const Component = selectedAssetSource.component
     if (value && value.asset) {
       return (
-        <WithReferencedAsset getAsset={getAsset} reference={value.asset}>
+        <WithReferencedAsset observeAsset={observeAsset} reference={value.asset}>
           {(imageAsset) => (
             <Component
               selectedAssets={[imageAsset]}

@@ -3,8 +3,8 @@ import '@testing-library/jest-dom/extend-expect'
 import React from 'react'
 import {render, fireEvent, waitFor} from '@testing-library/react'
 import Schema from '@sanity/schema'
-import {DEFAULT_PROPS, ImageInputTester} from '../../../../utils/tests/ImageInputTester'
 import userEvent from '@testing-library/user-event'
+import {DEFAULT_PROPS, ImageInputTester} from '../../../../utils/tests/ImageInputTester'
 
 const schema = Schema.compile({
   name: 'test',
@@ -171,7 +171,7 @@ describe('with asset', () => {
     const {queryByTestId} = render(<ImageInput value={value} />)
 
     expect(queryByTestId('hotspot-image-input').getAttribute('src')).toBe(
-      'https://cdn.sanity.io/images/undefined/undefined/4ae478f00c330e7089cbd0f6126d3626e432e595-702x908.png'
+      'https://cdn.sanity.io/images/some-project-id/some-dataset/4ae478f00c330e7089cbd0f6126d3626e432e595-702x908.png'
     )
   })
 

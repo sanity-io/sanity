@@ -7,7 +7,7 @@ import {
   userDefinedFileAssetSources,
 } from '../../legacyParts'
 import withValuePath from '../../utils/withValuePath'
-import {materializeReference} from './client-adapters/assets'
+import {observeFileAsset} from './client-adapters/assets'
 import {wrapWithDocument} from './wrapWithDocument'
 
 const globalAssetSources = userDefinedFileAssetSources
@@ -34,7 +34,7 @@ export default React.forwardRef(function SanityFileInput(props: Props, forwarded
     <FileInputWithValuePath
       {...props}
       resolveUploader={resolveUploader}
-      materialize={materializeReference}
+      observeFileAsset={observeFileAsset}
       assetSources={assetSources}
       directUploads={SUPPORT_DIRECT_UPLOADS}
       ref={forwardedRef}
