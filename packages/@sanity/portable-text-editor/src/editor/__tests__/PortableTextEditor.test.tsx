@@ -64,7 +64,9 @@ describe('initialization', () => {
                     <span
                       data-slate-leaf="true"
                     >
-                      <span>
+                      <span
+                        draggable="true"
+                      >
                         <span
                           contenteditable="false"
                           data-slate-placeholder="true"

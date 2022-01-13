@@ -20,7 +20,6 @@ type ElementProps = {
   attributes: string
   children: ReactElement
   element: SlateElement
-  keyGenerator: () => string
   portableTextFeatures: PortableTextFeatures
   readOnly: boolean
   renderBlock?: RenderBlockFunction
@@ -38,7 +37,6 @@ export const Element: FunctionComponent<ElementProps> = ({
   attributes,
   children,
   element,
-  keyGenerator,
   portableTextFeatures,
   readOnly,
   renderBlock,
@@ -78,12 +76,7 @@ export const Element: FunctionComponent<ElementProps> = ({
         <span {...attributes}>
           {/* Note that children must follow immediately or cut and selections will not work properly in Chrome. */}
           {children}
-          <DraggableChild
-            element={element}
-            readOnly={readOnly}
-            spanType={portableTextFeatures.types.span.name}
-            keyGenerator={keyGenerator}
-          >
+          <DraggableChild element={element} readOnly={readOnly}>
             <span
               className="pt-inline-object"
               ref={inlineBlockObjectRef}
