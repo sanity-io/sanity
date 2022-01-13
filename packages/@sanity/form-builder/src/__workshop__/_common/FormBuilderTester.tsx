@@ -18,7 +18,7 @@ export type FormBuilderOptions = {
 export function FormBuilderTester(props: FormBuilderOptions) {
   const {value, patchChannel, isChangesOpen = false} = props
   return (
-    <ThemeProvider scheme="light" theme={studioTheme}>
+    <ThemeProvider theme={studioTheme}>
       <LayerProvider>
         <ToastProvider>
           <ReviewChangesContextProvider changesOpen={isChangesOpen}>
