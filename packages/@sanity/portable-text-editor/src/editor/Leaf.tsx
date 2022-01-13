@@ -1,8 +1,8 @@
-import React, {ReactElement, useCallback} from 'react'
+import React, {ReactElement, SyntheticEvent, useCallback} from 'react'
 import {Element, Range, Text} from 'slate'
 import {useSelected, useSlateStatic} from '@sanity/slate-react'
 import {uniq} from 'lodash'
-import {PortableTextFeatures} from '../types/portableText'
+import {PortableTextBlock, PortableTextFeatures, TextBlock} from '../types/portableText'
 import {
   RenderChildFunction,
   RenderDecoratorFunction,
@@ -30,12 +30,20 @@ type LeafProps = {
 export const Leaf = (props: LeafProps) => {
   const editor = useSlateStatic()
   const selected = useSelected()
-  const {attributes, children, leaf, portableTextFeatures, keyGenerator, renderChild} = props
+  const {
+    attributes,
+    children,
+    leaf,
+    portableTextFeatures,
+    keyGenerator,
+    renderChild,
+    readOnly,
+  } = props
   const spanRef = React.useRef(null)
   let returnedChildren = children
   const focused = (selected && editor.selection && Range.isCollapsed(editor.selection)) || false
   const handleMouseDown = useCallback(
-    (event: any) => {
+    (event: SyntheticEvent) => {
       // Slate will deselect this when it is already selected and clicked again, so prevent that. 2020/05/04
       if (focused) {
         event.stopPropagation()
@@ -45,7 +53,7 @@ export const Leaf = (props: LeafProps) => {
     [focused]
   )
   if (Text.isText(leaf) && leaf._type === portableTextFeatures.types.span.name) {
-    const blockElement = children.props.parent
+    const blockElement = children.props.parent as TextBlock | undefined
     const path = blockElement ? [{_key: blockElement._key}, 'children', {_key: leaf._key}] : []
     const decoratorValues = portableTextFeatures.decorators.map((dec) => dec.value)
     const marks: string[] = uniq(
@@ -70,16 +78,16 @@ export const Leaf = (props: LeafProps) => {
         }
       }
     })
-
-    const annotations: any[] = (Array.isArray(leaf.marks) ? leaf.marks : [])
+    const annotationMarks = Array.isArray(leaf.marks) ? leaf.marks : []
+    const annotations = annotationMarks
       .map(
         (mark) =>
           !decoratorValues.includes(mark) &&
           blockElement &&
           blockElement.markDefs &&
-          blockElement.markDefs.find((def: any) => def._key === mark)
+          (blockElement.markDefs.find((def) => def._key === mark) as PortableTextBlock | undefined)
       )
-      .filter(Boolean)
+      .filter(Boolean) as PortableTextBlock[]
 
     if (annotations.length > 0) {
       annotations.forEach((annotation) => {
@@ -122,14 +130,16 @@ export const Leaf = (props: LeafProps) => {
       })
     }
     if (blockElement && renderChild) {
-      const child = blockElement.children.find((_child: any) => _child._key === leaf._key) // Ensure object equality
-      returnedChildren = renderChild(
-        child,
-        portableTextFeatures.types.span,
-        {focused, selected, path, annotations},
-        () => returnedChildren,
-        spanRef
-      )
+      const child = blockElement.children.find((_child) => _child._key === leaf._key) // Ensure object equality
+      if (child) {
+        returnedChildren = renderChild(
+          child,
+          portableTextFeatures.types.span,
+          {focused, selected, path, annotations},
+          () => returnedChildren,
+          spanRef
+        )
+      }
     }
   }
   if (debugRenders) {
@@ -139,12 +149,7 @@ export const Leaf = (props: LeafProps) => {
 
   return (
     <span {...attributes} ref={spanRef} key={key}>
-      <DraggableChild
-        element={leaf}
-        readOnly={props.readOnly}
-        spanType={portableTextFeatures.types.span.name}
-        keyGenerator={props.keyGenerator}
-      >
+      <DraggableChild element={leaf} readOnly={readOnly}>
         {returnedChildren}
       </DraggableChild>
     </span>

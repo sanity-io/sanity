@@ -166,14 +166,13 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     (eProps) => (
       <Element
         {...eProps}
-        keyGenerator={keyGenerator}
         portableTextFeatures={portableTextFeatures}
         readOnly={readOnly}
         renderBlock={renderBlock}
         renderChild={renderChild}
       />
     ),
-    [keyGenerator, portableTextFeatures, readOnly, renderBlock, renderChild]
+    [portableTextFeatures, readOnly, renderBlock, renderChild]
   )
 
   const renderLeaf = useCallback(
