@@ -1,4 +1,4 @@
-import {FormFieldPresence} from '@sanity/base/src/presence'
+import {FormFieldPresence} from '@sanity/base/presence'
 import {ImageSchemaType, Schema, Marker, Path, SanityDocument} from '@sanity/types'
 import {noop, Observable} from 'rxjs'
 import imageUrlBuilder from '@sanity/image-url'
