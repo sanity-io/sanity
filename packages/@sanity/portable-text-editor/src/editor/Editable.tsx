@@ -202,48 +202,47 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       debug('Not setting value from props (is selecting)')
       return
     }
-    const fromMap = VALUE_TO_SLATE_VALUE.get(value || [])
-    if (fromMap === slateEditor.children) {
-      debug('Value in sync, not updating value from props')
-      change$.next({type: 'value', value})
-      return
-    }
-    let equal = true
-    const slateValueFromProps = toSlateValue(
-      getValueOrInitialValue(value, [placeHolderBlock]),
-      blockType.name,
-      KEY_TO_SLATE_ELEMENT.get(slateEditor)
-    )
-    const val: PortableTextBlock[] = value || [placeHolderBlock]
-    val.forEach((blk, index) => {
-      if (slateEditor.isTextBlock(blk)) {
-        if (!isEqual(blk, slateEditor.children[index])) {
-          equal = false
+    const fromMap = value && VALUE_TO_SLATE_VALUE.get(value)
+    if (fromMap !== slateEditor.children) {
+      let equal = true
+      const defaultValue = [placeHolderBlock]
+      const slateValueFromProps = toSlateValue(
+        getValueOrInitialValue(value, defaultValue),
+        blockType.name,
+        KEY_TO_SLATE_ELEMENT.get(slateEditor)
+      )
+      const val: PortableTextBlock[] = value || defaultValue
+      val.forEach((blk, index) => {
+        if (slateEditor.isTextBlock(blk)) {
+          if (!isEqual(toSlateValue([blk], blockType.name)[0], slateEditor.children[index])) {
+            equal = false
+          }
+        } else {
+          const blkVal = slateEditor.children[index] as SlateElement
+          if (
+            !blkVal ||
+            (blkVal &&
+              'value' in blkVal &&
+              !isEqual(blk, {_key: blkVal._key, _type: blkVal._type, ...blkVal.value}))
+          ) {
+            equal = false
+          }
         }
+      })
+      // Only update the new value from props if the editor is not longer equal to the props value.
+      // IME composing on Safari MacOS breaks when we replace the value like this.
+      // This will help with that - at least in single user mode.
+      debug(`Setting value from props`)
+      if (equal) {
+        debug(`Editor value is in sync`)
       } else {
-        const blkVal = slateEditor.children[index] as SlateElement
-        if (
-          !blkVal ||
-          (blkVal &&
-            'value' in blkVal &&
-            !isEqual(blk, {_key: blkVal._key, _type: blkVal._type, ...blkVal.value}))
-        ) {
-          equal = false
-        }
+        debug(`Updating children`)
+        slateEditor.children = slateValueFromProps
+        slateEditor.onChange()
+        VALUE_TO_SLATE_VALUE.set(val, slateEditor.children)
       }
-    })
-    // Only update the new value from props if the editor is not longer equal to the props value.
-    // IME composing on Safari MacOS breaks when we replace the value like this.
-    // This will help with that - at least in single user mode.
-    debug(`Setting value from props`)
-    if (equal) {
-      debug(`Editor value is in sync.`)
-    } else {
-      slateEditor.children = slateValueFromProps
-      slateEditor.onChange()
+      change$.next({type: 'value', value})
     }
-    VALUE_TO_SLATE_VALUE.set(val, slateValueFromProps)
-    change$.next({type: 'value', value})
   }, [change$, isSelecting, isThrottling, placeHolderBlock, blockType.name, slateEditor, value])
 
   // Restore selection from props
