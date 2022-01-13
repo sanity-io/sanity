@@ -55,6 +55,7 @@ export function ActionsMenu(props: Props) {
         text="Clear field"
         onClick={onReset}
         disabled={readOnly}
+        data-testid="file-input-clear"
       />
     </>
   )

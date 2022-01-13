@@ -15,9 +15,22 @@ export function ImageActionsMenu(props: Props) {
 
   return (
     <MenuActionsWrapper data-buttons space={1} padding={2}>
-      {showEdit && <ButtonContainer icon={EditIcon} mode="ghost" onClick={onEdit} />}
+      {showEdit && (
+        <ButtonContainer
+          icon={EditIcon}
+          mode="ghost"
+          onClick={onEdit}
+          data-testid="options-menu-edit-details"
+        />
+      )}
       <MenuButton
-        button={<ButtonContainer icon={EllipsisVerticalIcon} mode="ghost" />}
+        button={
+          <ButtonContainer
+            icon={EllipsisVerticalIcon}
+            mode="ghost"
+            data-testid="options-menu-button"
+          />
+        }
         id="menu-button-example"
         menu={<Menu>{children}</Menu>}
         popover={{portal: true}}

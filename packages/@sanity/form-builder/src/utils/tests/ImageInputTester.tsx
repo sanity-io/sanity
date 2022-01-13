@@ -23,7 +23,7 @@ export const DEFAULT_PROPS = {
     isCustomized: false,
     jsonType: 'object',
     name: '',
-    options: {hotspot: true},
+    options: {},
     preview: {},
     title: '',
     type: {
