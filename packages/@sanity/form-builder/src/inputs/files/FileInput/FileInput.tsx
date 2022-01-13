@@ -1,12 +1,10 @@
 /* eslint-disable no-undef, import/no-unresolved */
 
 import React, {ReactElement} from 'react'
-import PropTypes from 'prop-types'
 import {Observable, Subscription} from 'rxjs'
 import {get, partition, uniqueId} from 'lodash'
 import {FormFieldSet, ImperativeToast} from '@sanity/base/components'
 import {
-  Asset as AssetDocument,
   AssetFromSource,
   File as BaseFile,
   FileAsset,
@@ -22,7 +20,7 @@ import {
 import {ImageIcon, SearchIcon} from '@sanity/icons'
 import {Box, Button, Dialog, Menu, MenuButton, MenuItem, ToastParams} from '@sanity/ui'
 import {PresenceOverlay, FormFieldPresence} from '@sanity/base/presence'
-import WithMaterializedReference from '../../../utils/WithMaterializedReference'
+import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {Uploader, UploaderResolver, UploadOptions} from '../../../sanity/uploads/types'
 import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
 import {FileTarget, FileInfo} from '../common/styles'
@@ -57,7 +55,7 @@ export type Props = {
   level: number
   onChange: (event: PatchEvent) => void
   resolveUploader: UploaderResolver
-  materialize: (documentId: string) => Observable<FileAsset>
+  observeAsset: (documentId: string) => Observable<FileAsset>
   onBlur: () => void
   onFocus: (path: Path) => void
   readOnly: boolean | null
@@ -232,27 +230,25 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
 
   renderAssetSource() {
     const {selectedAssetSource} = this.state
-    const {value, materialize} = this.props
+    const {value, observeAsset} = this.props
     if (!selectedAssetSource) {
       return null
     }
     const Component = selectedAssetSource.component
     if (value && value.asset) {
       return (
-        <WithMaterializedReference materialize={materialize} reference={value.asset}>
-          {(fileAsset) => {
-            return (
-              <Component
-                selectedAssets={[fileAsset as AssetDocument]}
-                selectionType="single"
-                assetType="file"
-                dialogHeaderTitle="Select file"
-                onClose={this.handleAssetSourceClosed}
-                onSelect={this.handleSelectAssetFromSource}
-              />
-            )
-          }}
-        </WithMaterializedReference>
+        <WithReferencedAsset observeAsset={observeAsset} reference={value.asset}>
+          {(fileAsset) => (
+            <Component
+              selectedAssets={[fileAsset]}
+              selectionType="single"
+              assetType="file"
+              dialogHeaderTitle="Select file"
+              onClose={this.handleAssetSourceClosed}
+              onSelect={this.handleSelectAssetFromSource}
+            />
+          )}
+        </WithReferencedAsset>
       )
     }
     return (
@@ -372,7 +368,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   renderAsset() {
-    const {value, materialize, type, readOnly, assetSources, directUploads} = this.props
+    const {value, observeAsset, type, readOnly, assetSources, directUploads} = this.props
 
     const accept = get(type, 'options.accept', '')
 
@@ -400,9 +396,13 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     }
 
     return (
-      <WithMaterializedReference reference={value!.asset} materialize={materialize}>
+      <WithReferencedAsset reference={value!.asset} observeAsset={observeAsset}>
         {(assetDocument: FileAsset) => (
-          <FileContent assetDocument={assetDocument} readOnly={readOnly}>
+          <FileContent
+            size={assetDocument.size}
+            originalFilename={assetDocument.originalFilename}
+            readOnly={readOnly}
+          >
             <ActionsMenu
               onUpload={this.handleSelectFiles}
               browse={browseMenuItem}
@@ -414,7 +414,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
             />
           </FileContent>
         )}
-      </WithMaterializedReference>
+      </WithReferencedAsset>
     )
   }
 

@@ -6,20 +6,16 @@ import {get, groupBy, uniqueId} from 'lodash'
 import {Observable, Subscription} from 'rxjs'
 import {ChangeIndicatorForFieldPath} from '@sanity/base/change-indicators'
 import {ImageIcon, SearchIcon} from '@sanity/icons'
-import ImageTool from '@sanity/imagetool'
 import {
-  Asset as AssetDocument,
+  ImageAsset,
   AssetFromSource,
   Image as BaseImage,
-  ImageAsset,
   ImageSchemaType,
   Marker,
   ObjectField,
   Path,
-  SanityDocument,
 } from '@sanity/types'
 import React, {ReactElement} from 'react'
-import PropTypes from 'prop-types'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import deepCompare from 'react-fast-compare'
 import HotspotImageInput from '@sanity/imagetool/HotspotImageInput'
@@ -33,7 +29,7 @@ import {
 import {ImageToolInput} from '../ImageToolInput'
 import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
 import UploadPlaceholder from '../common/UploadPlaceholder'
-import WithMaterializedReference from '../../../utils/WithMaterializedReference'
+import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {FileTarget} from '../common/styles'
 import {InternalAssetSource, UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
@@ -56,7 +52,7 @@ export type Props = {
   level: number
   onChange: (event: PatchEvent) => void
   resolveUploader: UploaderResolver
-  materialize: (documentId: string) => Observable<SanityDocument>
+  getAsset: (documentId: string) => Observable<ImageAsset>
   onBlur: () => void
   onFocus: (path: Path) => void
   readOnly: boolean | null
@@ -141,7 +137,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   clearUploadStatus() {
-    // todo: this is kind of hackish
     if (this.props.value?._upload) {
       this.props.onChange(PatchEvent.from([unset(['_upload'])]))
     }
@@ -388,8 +383,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     )
   }
 
-  renderMaterializedAsset = (url: string) => {
-    const {value = {}, readOnly, type, directUploads, getValuePath} = this.props
+  renderPreview = () => {
+    const {value, readOnly, type, directUploads, getValuePath, imageToolBuilder} = this.props
     const {hoveringFiles} = this.state
 
     const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
@@ -401,7 +396,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         isRejected={rejectedFilesCount > 0 || !directUploads}
         readOnly={readOnly}
         path={getValuePath()}
-        src={url}
+        src={imageToolBuilder.image(value).dpr(getDevicePixelRatio()).url()}
       />
     )
   }
@@ -444,7 +439,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     )
   }
 
-  renderAsset() {
+  renderAssetMenu() {
     const {value, readOnly, assetSources, type, directUploads, imageToolBuilder} = this.props
 
     const accept = get(type, 'options.accept', 'image/*')
@@ -478,24 +473,18 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       })
     }
 
-    const url = imageToolBuilder.image(value!.asset).url()
-    const urlCropped = imageToolBuilder.image(value).url()
-
     return (
-      <>
-        <ImageActionsMenu onEdit={this.handleOpenDialog} showEdit={showAdvancedEditButton}>
-          <ActionsMenu
-            onUpload={this.handleSelectFiles}
-            browse={browseMenuItem}
-            onReset={this.handleRemoveButtonClick}
-            src={url}
-            readOnly={readOnly}
-            directUploads={directUploads}
-            accept={accept}
-          />
-        </ImageActionsMenu>
-        {this.renderMaterializedAsset(urlCropped)}
-      </>
+      <ImageActionsMenu onEdit={this.handleOpenDialog} showEdit={showAdvancedEditButton}>
+        <ActionsMenu
+          onUpload={this.handleSelectFiles}
+          browse={browseMenuItem}
+          onReset={this.handleRemoveButtonClick}
+          src={imageToolBuilder.image(value).forceDownload(true).url()}
+          readOnly={readOnly}
+          directUploads={directUploads}
+          accept={accept}
+        />
+      </ImageActionsMenu>
     )
   }
 
@@ -588,26 +577,24 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
   renderAssetSource() {
     const {selectedAssetSource} = this.state
-    const {value, materialize} = this.props
+    const {value, getAsset} = this.props
     if (!selectedAssetSource) {
       return null
     }
     const Component = selectedAssetSource.component
     if (value && value.asset) {
       return (
-        <WithMaterializedReference materialize={materialize} reference={value.asset}>
-          {(imageAsset) => {
-            return (
-              <Component
-                selectedAssets={[imageAsset as AssetDocument]}
-                assetType="image"
-                selectionType="single"
-                onClose={this.handleAssetSourceClosed}
-                onSelect={this.handleSelectAssetFromSource}
-              />
-            )
-          }}
-        </WithMaterializedReference>
+        <WithReferencedAsset getAsset={getAsset} reference={value.asset}>
+          {(imageAsset) => (
+            <Component
+              selectedAssets={[imageAsset]}
+              assetType="image"
+              selectionType="single"
+              onClose={this.handleAssetSourceClosed}
+              onSelect={this.handleSelectAssetFromSource}
+            />
+          )}
+        </WithReferencedAsset>
       )
     }
     return (
@@ -760,7 +747,12 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                   tone={getFileTone()}
                 >
                   {!value?.asset && this.renderUploadPlaceholder()}
-                  {!value?._upload && value?.asset && this.renderAsset()}
+                  {!value?._upload && value?.asset && (
+                    <>
+                      {this.renderAssetMenu()}
+                      {this.renderPreview()}
+                    </>
+                  )}
                 </FileTarget>
               )}
 

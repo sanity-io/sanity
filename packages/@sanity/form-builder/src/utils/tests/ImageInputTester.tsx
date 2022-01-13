@@ -11,8 +11,16 @@ import ImageInput, {Image} from '../../inputs/files/ImageInput'
 
 import {materializeReference} from '../../sanity/inputs/client-adapters/assets'
 import {versionedClient} from '../../sanity/versionedClient'
+import {UploadOptions} from '../../sanity/uploads/types'
+import uploadImage from '../../sanity/uploads/uploadImage'
 
-import resolveUploader from '../../sanity/uploads/resolveUploader'
+const mockedResolveUploader = () => {
+  return {
+    type: 'image',
+    accepts: 'image/*',
+    upload: (file: File, type?: SchemaType, options?: UploadOptions) => uploadImage(file, options),
+  }
+}
 
 export const DEFAULT_PROPS = {
   value: {},

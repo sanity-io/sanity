@@ -43,7 +43,7 @@ export default React.forwardRef(function SanityImageInput(props: Props, forwarde
       assetSources={assetSources}
       directUploads={SUPPORT_DIRECT_UPLOADS}
       ref={forwardedRef}
-      imageToolBuilder={builder}
+      imageUrlBuilder={builder}
     />
   )
 })

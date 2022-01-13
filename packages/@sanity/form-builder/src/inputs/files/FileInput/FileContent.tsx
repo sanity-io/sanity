@@ -1,6 +1,5 @@
 import {BinaryDocumentIcon, EllipsisVerticalIcon} from '@sanity/icons'
-import React, {JSXElementConstructor, ReactElement} from 'react'
-import {FileAsset} from '@sanity/types'
+import React, {ReactNode} from 'react'
 
 import styled from 'styled-components'
 
@@ -12,14 +11,14 @@ const ButtonWrapper = styled(Button)`
 `
 
 type Props = {
-  children: ReactElement<any, string | JSXElementConstructor<any>>
-  assetDocument: FileAsset
+  children: ReactNode
+  size: number
+  originalFilename: string
   readOnly: boolean
 }
 
-export default function WithMaterializedReference(props: Props) {
-  const {assetDocument, children, readOnly} = props
-  const size = assetDocument.size
+export default function FileInfo(props: Props) {
+  const {originalFilename, size, children, readOnly} = props
 
   return (
     <Flex align="center" justify="space-between" paddingRight={2}>
@@ -32,7 +31,7 @@ export default function WithMaterializedReference(props: Props) {
               </Text>
             </Card>
             <Stack space={2}>
-              <Text size={2}>{assetDocument.originalFilename}</Text>
+              <Text size={2}>{originalFilename}</Text>
               <Text size={1} muted>
                 {formatBytes(size)}
               </Text>
