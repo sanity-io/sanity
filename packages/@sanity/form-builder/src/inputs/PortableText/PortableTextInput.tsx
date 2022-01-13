@@ -124,12 +124,12 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
   const patches$: Subject<EditorPatch> = useMemo(() => new Subject(), [])
   const patchObservable = useMemo(() => patches$.asObservable(), [patches$])
 
-  const innerElementRef = useRef(null)
+  const innerElementRef = useRef<HTMLDivElement | null>(null)
 
   const handleToggleFullscreen = useCallback(() => {
-    setIsFullscreen(!isFullscreen)
+    setIsFullscreen((v) => !v)
     PortableTextEditor.focus(ref.current)
-  }, [isFullscreen, ref])
+  }, [ref])
 
   // Reset invalidValue if new value is coming in from props
   useEffect(() => {
