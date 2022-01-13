@@ -165,6 +165,7 @@ describe('ImageInput with empty state', () => {
       expect(queryByText(`Read only`)).toBeInTheDocument()
     })
   })*/
+  })
 })
 
 describe('with asset', () => {
