@@ -38,7 +38,7 @@
   "dependencies": {
     "@sanity/block-tools": "2.24.0",
     "@sanity/schema": "2.24.0",
-    "@sanity/slate-react": "2.24.0-202201121132",
+    "@sanity/slate-react": "2.24.0",
     "@sanity/types": "2.24.0",
     "@sanity/util": "2.24.0",
     "debug": "^3.2.7",
