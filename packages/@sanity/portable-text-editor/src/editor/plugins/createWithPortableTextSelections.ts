@@ -24,7 +24,7 @@ export function createWithPortableTextSelections(change$: Subject<EditorChange>)
       }
       if (ptRange) {
         debug(`Emitting selection ${JSON.stringify(ptRange)}`)
-        change$.next({type: 'selection', selection: ptRange})
+        change$.next({type: 'selection', selection: {...ptRange}})
       } else {
         change$.next({type: 'selection', selection: null})
       }
