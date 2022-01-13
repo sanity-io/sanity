@@ -40,10 +40,6 @@ function rootStyle({theme}: {theme: Theme}) {
     margin-top: 0.0625em;
     cursor: default;
 
-    & > div:after {
-      content: '';
-    }
-
     &:not([hidden]) {
       display: inline-flex;
       align-items: center;
