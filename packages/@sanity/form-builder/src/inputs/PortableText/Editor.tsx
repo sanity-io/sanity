@@ -88,7 +88,7 @@ export function Editor(props: EditorProps) {
   }, [isFullscreen, isTopLayer, onToggleFullscreen])
 
   // Keep the editor focused even though we are clicking on the background or the toolbar of the editor.
-  const keepFocused = useCallback((event: React.SyntheticEvent) => {
+  const handleMouseDown = useCallback((event: React.SyntheticEvent) => {
     if (event.target instanceof Node && !editableRef.current.contains(event.target)) {
       event.preventDefault()
       event.stopPropagation()
@@ -125,7 +125,7 @@ export function Editor(props: EditorProps) {
   )
 
   return (
-    <Root $fullscreen={isFullscreen} data-testid="pt-editor" onMouseDown={keepFocused}>
+    <Root $fullscreen={isFullscreen} data-testid="pt-editor" onMouseDown={handleMouseDown}>
       <ToolbarCard data-testid="pt-editor__toolbar-card" shadow={1}>
         <Toolbar
           isFullscreen={isFullscreen}
