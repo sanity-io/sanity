@@ -85,6 +85,7 @@ export default async function buildSanityStudio(
       basePath: overrides?.basePath || buildConfig?.project?.basePath || '/',
       sourceMap: Boolean(flags['source-maps']),
       minify: Boolean(flags.minify),
+      vite: buildConfig?.vite,
     })
     const buildDuration = timer.end('bundleStudio')
 

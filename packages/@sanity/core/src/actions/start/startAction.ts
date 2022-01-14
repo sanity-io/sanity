@@ -79,6 +79,7 @@ function getDevServerConfig({
     httpHost,
     basePath,
     staticPath: path.join(workDir, 'static'),
+    vite: buildConfig?.vite,
   }
 }
 
