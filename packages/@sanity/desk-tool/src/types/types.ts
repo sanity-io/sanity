@@ -2,7 +2,6 @@ import {DocumentActionComponent} from '@sanity/base'
 import {EditStateFor} from '@sanity/base/_internal'
 import {
   ChildResolverContext,
-  DocumentNodeResolver,
   InitialValueTemplateItem,
   ListBuilder,
   StructureBuilder,
@@ -14,14 +13,6 @@ import {Subscribable} from 'rxjs'
 export type DocumentActionsResolver = (editState: EditStateFor) => DocumentActionComponent[]
 
 export type StructureResolver = (S: StructureBuilder) => ListBuilder
-
-// export type StructureDocumentNodeResolver = (
-//   S: StructureBuilder,
-//   options: {
-//     documentId?: string
-//     schemaType: string
-//   }
-// ) => DocumentBuilder | DocumentNode | null | undefined
 
 export type DeskToolPaneActionHandler = (params: any, scope?: unknown) => void
 
@@ -149,16 +140,6 @@ export interface CustomComponentPaneNode extends BaseResolvedPaneNode<'component
    */
   __preserveInstance?: boolean
 }
-
-// export interface CustomComponentPaneNodeProps {
-//   id: string
-//   childItemId: string
-//   itemId: string
-//   paneKey: string
-//   urlParams: Record<string, string>
-//   isActive: boolean
-//   isSelected: boolean
-// }
 
 export type PaneView<TOptions = unknown> =
   | {
