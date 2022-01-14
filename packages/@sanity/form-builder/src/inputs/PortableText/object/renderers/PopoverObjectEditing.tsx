@@ -10,11 +10,13 @@ import {
   Flex,
   Popover,
   PopoverProps,
+  PortalProvider,
   Text,
   useBoundaryElement,
   useClickOutside,
   useElementRect,
   useLayer,
+  usePortal,
 } from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components'
@@ -158,6 +160,7 @@ function Content(
   } = props
   const {isTopLayer} = useLayer()
   const {element: boundaryElement} = useBoundaryElement()
+  const portal = usePortal()
 
   const handleChange = useCallback((patchEvent: PatchEvent): void => onChange(patchEvent, path), [
     onChange,
@@ -199,19 +202,21 @@ function Content(
         <ContentScrollerBox flex={1}>
           <PresenceOverlay margins={[0, 0, 1, 0]}>
             <Box padding={3}>
-              <FormBuilderInput
-                focusPath={focusPath}
-                level={0}
-                markers={markers}
-                onBlur={onBlur}
-                onChange={handleChange}
-                onFocus={onFocus}
-                path={path}
-                presence={presence}
-                readOnly={readOnly || type.readOnly}
-                type={type as SchemaType}
-                value={object}
-              />
+              <PortalProvider element={portal.elements.default}>
+                <FormBuilderInput
+                  focusPath={focusPath}
+                  level={0}
+                  markers={markers}
+                  onBlur={onBlur}
+                  onChange={handleChange}
+                  onFocus={onFocus}
+                  path={path}
+                  presence={presence}
+                  readOnly={readOnly || type.readOnly}
+                  type={type as SchemaType}
+                  value={object}
+                />
+              </PortalProvider>
             </Box>
           </PresenceOverlay>
         </ContentScrollerBox>
