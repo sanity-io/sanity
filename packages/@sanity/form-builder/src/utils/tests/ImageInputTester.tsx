@@ -1,10 +1,10 @@
 import {Schema, SchemaType} from '@sanity/types'
-import {EMPTY, from, noop, of} from 'rxjs'
+import {EMPTY, noop, of} from 'rxjs'
 import imageUrlBuilder from '@sanity/image-url'
 import React, {ComponentProps} from 'react'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {FormBuilderContext} from '../../sanity/legacyPartImplementations/form-builder'
-import ImageInput, {Image} from '../../inputs/files/ImageInput'
+import ImageInput from '../../inputs/files/ImageInput'
 
 import type {UploadOptions} from '../../sanity/uploads/types'
 

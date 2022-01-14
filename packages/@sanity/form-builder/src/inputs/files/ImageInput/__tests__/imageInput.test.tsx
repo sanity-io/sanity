@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-unassigned-import
 import '@testing-library/jest-dom/extend-expect'
 import React from 'react'
-import {render, fireEvent, waitFor} from '@testing-library/react'
+import {render, fireEvent, waitFor, queryByText} from '@testing-library/react'
 import Schema from '@sanity/schema'
 import userEvent from '@testing-library/user-event'
 import {DEFAULT_PROPS, ImageInputTester} from '../../../../utils/tests/ImageInputTester'
@@ -74,9 +74,10 @@ const ImageInput = (changedProps) => (
 
 describe('ImageInput with empty state', () => {
   it('renders an empty input as default', async () => {
-    const {queryByTestId} = render(<ImageInput />)
+    const {container, queryByTestId} = render(<ImageInput />)
 
     expect(queryByTestId('file-button-input').getAttribute('value')).toBe('')
+    expect(queryByText(container, 'Drag or paste image here')).toBeInTheDocument()
   })
 
   it.todo('renders new image when a new image in uploaded')
