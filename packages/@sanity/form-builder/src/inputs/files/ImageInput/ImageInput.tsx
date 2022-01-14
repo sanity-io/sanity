@@ -399,7 +399,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         isRejected={rejectedFilesCount > 0 || !directUploads}
         readOnly={readOnly}
         path={getValuePath()}
-        src={imageUrlBuilder.image(value).dpr(getDevicePixelRatio()).url()}
+        src={imageUrlBuilder.image(value).dpr(getDevicePixelRatio()).auto('format').url()}
       />
     )
   }
