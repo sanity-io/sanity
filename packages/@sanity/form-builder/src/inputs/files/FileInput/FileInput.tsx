@@ -621,9 +621,9 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                 {/* not uploading */}
                 {!value?._upload && (
                   <FileTarget
-                    tabIndex={readOnly ? undefined : 0}
+                    tabIndex={0}
                     disabled={Boolean(readOnly)}
-                    border={!showDropArea}
+                    __unstable_focusRing
                     ref={this.setFocusInput}
                     onFiles={this.handleSelectFiles}
                     onFilesOver={this.handleFilesOver}
@@ -631,19 +631,15 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                     onFocus={this.handleFileTargetFocus}
                     onBlur={this.handleFileTargetBlur}
                     tone={getFileTone()}
+                    padding={showDropArea ? 3 : 1}
+                    border
+                    style={{borderStyle: showDropArea ? 'dashed' : undefined, position: 'relative'}}
                   >
-                    <Card
-                      border={Boolean(showDropArea)}
-                      style={{borderStyle: showDropArea ? 'dashed' : undefined}}
-                      tone={readOnly ? 'transparent' : undefined}
-                      padding={value?.asset ? 1 : 3}
-                    >
-                      {value?.asset && this.renderAsset(otherFields.length > 0)}
-                      {!value?.asset && this.renderUploadPlaceholder()}
-                      {value?.asset &&
-                        hoveringFiles.length > 0 &&
-                        this.renderAssetHover(getFileTone())}
-                    </Card>
+                    {value?.asset && this.renderAsset(otherFields.length > 0)}
+                    {!value?.asset && this.renderUploadPlaceholder()}
+                    {value?.asset && hoveringFiles.length > 0
+                      ? this.renderAssetHover(getFileTone())
+                      : null}
                   </FileTarget>
                 )}
 

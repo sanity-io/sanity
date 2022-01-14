@@ -42,7 +42,7 @@ export function PlaceholderText(props: Props) {
 
     if (hoveringFiles && directUploads && !readOnly) {
       if (acceptedFiles.length > 0) {
-        message = `Drag ${type} here`
+        message = `Drop to upload ${type}`
       }
       if (rejectedFilesCount > 0) {
         message = `Can't upload ${rejectedFilesCount} file${rejectedFilesCount > 1 ? 's' : ''} here`

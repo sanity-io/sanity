@@ -20,6 +20,9 @@ export function FileDetails(props: Props) {
     <Flex wrap="nowrap" justify="space-between" align="center">
       <Card
         as={muted || disabled ? undefined : 'button'}
+        tabIndex={disabled ? undefined : 0}
+        __unstable_focusRing
+        radius={2}
         padding={2}
         tone="inherit"
         onClick={onClick}

@@ -1,5 +1,3 @@
-/* eslint-disable import/named */
-
 import {Card, Flex} from '@sanity/ui'
 import styled from 'styled-components'
 
