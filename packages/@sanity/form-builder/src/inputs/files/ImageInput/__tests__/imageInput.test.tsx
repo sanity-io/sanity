@@ -79,6 +79,9 @@ describe('ImageInput with empty state', () => {
     expect(queryByTestId('file-button-input').getAttribute('value')).toBe('')
   })
 
+  it.todo('renders new image when a new image in uploaded')
+  it.todo('renders new image when a new image is dragged into the input')
+  it.todo('is unable to upload when the file type is not allowed')
   /* assetSources - adds a list of sources that a user can pick from when browsing */
 
   it('renders the browse button when it has at least one element in assetSources', () => {
@@ -128,7 +131,7 @@ describe('ImageInput with empty state', () => {
 
   /* readOnly - the image input is read only or not */
 
-  it('does not allow for upload when input is readOnly', () => {
+  it('the upload button is disabled when the input is readOnly', () => {
     const {queryByTestId} = render(<ImageInput readOnly />)
 
     expect(queryByTestId('file-input-upload-button').getAttribute('data-disabled')).toBe('true')
@@ -141,7 +144,7 @@ describe('ImageInput with empty state', () => {
   })
 
   it('does not allow for upload when input is readOnly', async () => {
-    /*const {queryByTestId, queryByText, debug} = render(<ImageInput readOnly />)
+    const {queryByTestId, queryByText} = render(<ImageInput readOnly />)
     const input = queryByTestId('file-button-input')
 
     fireEvent.change(input, {
@@ -150,12 +153,12 @@ describe('ImageInput with empty state', () => {
       },
     })
 
-    debug(undefined, 3000)
     await waitFor(() => {
       expect(queryByText(`Read only`)).toBeInTheDocument()
     })
-  })*/
   })
+
+  it.todo('does not allow files to be dragged & uploaded when it is readOnly')
 })
 
 describe('with asset', () => {
@@ -167,6 +170,13 @@ describe('with asset', () => {
     _type: 'image',
   }
 
+  const imageType = {
+    options: {
+      accept: 'image/png',
+      hotspot: true,
+    },
+  }
+
   it('renders the right url as default when it has asset', () => {
     const {queryByTestId} = render(<ImageInput value={value} />)
 
@@ -174,6 +184,10 @@ describe('with asset', () => {
       'https://cdn.sanity.io/images/some-project-id/some-dataset/4ae478f00c330e7089cbd0f6126d3626e432e595-702x908.png'
     )
   })
+
+  it.todo('renders new image when a new image in uploaded')
+  it.todo('renders new image when a new image is dragged into the input')
+  it.todo('is unable to upload when the file type is not allowed')
 
   /* assetSources - adds a list of sources that a user can pick from when browsing */
   it('renders the browse button in the image menu when it has at least one element in assetSources', async () => {
@@ -221,7 +235,7 @@ describe('with asset', () => {
 
   /* readOnly - the image input is read only or not */
 
-  it('does not allow for upload when input is readOnly', async () => {
+  it('the upload button in the dropdown menu is disabled when the input is readOnly', async () => {
     const {queryByTestId} = render(<ImageInput value={value} readOnly />)
 
     fireEvent.click(queryByTestId('options-menu-button'))
@@ -250,27 +264,36 @@ describe('with asset', () => {
   })
 
   it('can open the edit details (if the option exists) dialog when the input is readOnly', async () => {
-    const type = {
-      options: {
-        accept: 'image/png',
-        hotspot: true,
-      },
-    }
-    const {queryByTestId} = render(<ImageInput value={value} type={type} readOnlu />)
+    const {queryByTestId} = render(<ImageInput value={value} type={imageType} readOnly />)
     expect(queryByTestId('options-menu-edit-details').getAttribute('data-disabled')).toBe('false')
   })
-  it.todo('does not allow files to be uploaded when it is readOnly')
+
+  it('does not allow for upload when input is readOnly & the image src is the same', async () => {
+    const {queryByTestId} = render(<ImageInput value={value} type={imageType} readOnly />)
+
+    fireEvent.click(queryByTestId('options-menu-button'))
+
+    await waitFor(() => {
+      fireEvent.change(queryByTestId('file-button-input'), {
+        target: {
+          files: [new File(['(⌐□_□)'], 'cool_sunglasses.png', {type: 'image/png'})],
+        },
+      })
+    })
+
+    await waitFor(() => {
+      expect(queryByTestId('hotspot-image-input').getAttribute('src')).toBe(
+        'https://cdn.sanity.io/images/some-project-id/some-dataset/4ae478f00c330e7089cbd0f6126d3626e432e595-702x908.png'
+      )
+    })
+  })
+
+  it.todo('does not allow files to be dragged & uploaded when it is readOnly')
 
   /* shows / hides edit details */
 
   it('hides the editing details if it doesnt have hotspot set', () => {
-    const type = {
-      options: {
-        accept: 'image/png',
-        hotspot: true,
-      },
-    }
-    const {queryByTestId} = render(<ImageInput value={value} type={type} />)
+    const {queryByTestId} = render(<ImageInput value={value} type={imageType} />)
     expect(queryByTestId('options-menu-edit-details')).toBeInTheDocument()
   })
 })

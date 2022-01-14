@@ -310,9 +310,10 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   handleSelectFiles = (files: File[]) => {
-    const {directUploads} = this.props
+    const {directUploads, readOnly} = this.props
     const {hoveringFiles} = this.state
-    if (directUploads) {
+
+    if (directUploads && !readOnly) {
       this.uploadFirstAccepted(files)
     } else if (hoveringFiles.length > 0) {
       this.handleFilesOut()
