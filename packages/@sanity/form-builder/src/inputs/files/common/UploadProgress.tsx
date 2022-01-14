@@ -1,6 +1,5 @@
 import React, {useEffect} from 'react'
-import {Flex, Text, Button, Stack, Inline, Card, Code} from '@sanity/ui'
-import {Path} from '@sanity/types'
+import {Flex, Text, Button, Inline, Card} from '@sanity/ui'
 import {LinearProgress} from '@sanity/base/components'
 import {UploadState} from '../types'
 import {CardWrapper, FlexWrapper, LeftSection, CodeWrapper} from './UploadProgress.styled'
@@ -9,7 +8,6 @@ type Props = {
   uploadState: UploadState
   onCancel?: () => void
   onStale?: () => void
-  path?: Path
 }
 
 // If it's more than this amount of milliseconds since last time upload state was reported,
@@ -18,14 +16,8 @@ const STALE_UPLOAD_MS = 1000 * 60 * 2 // 2 minutes
 
 const elapsedMs = (date: string): number => new Date().getTime() - new Date(date).getTime()
 
-export function UploadProgress({uploadState, onCancel, onStale, path}: Props) {
+export function UploadProgress({uploadState, onCancel, onStale}: Props) {
   const filename = uploadState.file.name
-  let storedHeight = 'initial'
-
-  if (path) {
-    const pathId = path.join('_')
-    storedHeight = window.localStorage.getItem(`imageHeight_${pathId}`)
-  }
 
   useEffect(() => {
     if (elapsedMs(uploadState.updated) > STALE_UPLOAD_MS) {
@@ -34,7 +26,7 @@ export function UploadProgress({uploadState, onCancel, onStale, path}: Props) {
   }, [uploadState.updated, onStale])
 
   return (
-    <CardWrapper tone="primary" padding={4} border style={{height: storedHeight}}>
+    <CardWrapper tone="primary" padding={4} border>
       <FlexWrapper align="center" justify="space-between" height="fill" direction="row" gap={2}>
         <LeftSection>
           <Flex justify="center" gap={[3, 3, 2, 2]} direction={['column', 'column', 'row']}>

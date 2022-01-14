@@ -8,39 +8,13 @@ interface Props {
   readOnly?: boolean | null
   drag: boolean
   isRejected: boolean
-  path: string[]
   src: string
 }
 
 export default function HotspotImageInput(props: Props) {
-  const {drag, readOnly, isRejected, path, src} = props
+  const {drag, readOnly, isRejected, src} = props
   const imageContainer = useRef()
-  const pathId = path.join('_')
-  const [storedHeight, setStoredHeight] = useState(
-    window.localStorage.getItem(`imageHeight_${pathId}`)
-  )
   const [tone, setTone] = useState('default' as CardTone)
-
-  useEffect(() => {
-    const observer = new ResizeObserver(function (mutations) {
-      const storageHeight = window.localStorage.getItem(`imageHeight_${pathId}`)
-
-      if (storageHeight) {
-        setStoredHeight(storedHeight)
-        window.localStorage.setItem(`imageHeight_${pathId}`, `${mutations[0].contentRect.height}px`)
-      } else {
-        window.localStorage.setItem(`imageHeight_${pathId}`, '30vh')
-      }
-    })
-
-    if (imageContainer.current) {
-      observer.observe(imageContainer.current)
-    }
-
-    return () => {
-      return observer.unobserve(imageContainer.current)
-    }
-  })
 
   useEffect(() => {
     const acceptTone = isRejected || readOnly ? 'critical' : 'primary'
@@ -73,13 +47,7 @@ export default function HotspotImageInput(props: Props) {
 
   return (
     <Card border tabIndex={0} tone={tone}>
-      <RatioBox
-        ref={imageContainer}
-        style={{
-          height: storedHeight ? `${storedHeight}` : '30vh',
-        }}
-        paddingY={5}
-      >
+      <RatioBox ref={imageContainer} style={{height: '30vh'}} paddingY={5}>
         <Card data-container tone="transparent" sizing="border">
           <img src={src} data-testid="hotspot-image-input" />
         </Card>

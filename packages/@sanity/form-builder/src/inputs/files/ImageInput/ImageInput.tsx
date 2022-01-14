@@ -15,7 +15,7 @@ import {
   ObjectField,
   Path,
 } from '@sanity/types'
-import React, {ReactElement, ReactNode} from 'react'
+import React, {ReactNode} from 'react'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import deepCompare from 'react-fast-compare'
 import HotspotImageInput from '@sanity/imagetool/HotspotImageInput'
@@ -382,7 +382,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderPreview = () => {
-    const {value, readOnly, type, directUploads, getValuePath, imageUrlBuilder} = this.props
+    const {value, readOnly, type, directUploads, imageUrlBuilder} = this.props
 
     if (!value) {
       return null
@@ -398,7 +398,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         drag={!value?._upload && hoveringFiles.length > 0}
         isRejected={rejectedFilesCount > 0 || !directUploads}
         readOnly={readOnly}
-        path={getValuePath()}
         src={imageUrlBuilder
           .width(2000)
           .fit('max')
@@ -595,7 +594,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderUploadState(uploadState: UploadState) {
-    const {getValuePath} = this.props
     const {isUploading} = this.state
 
     return (
@@ -603,7 +601,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         uploadState={uploadState}
         onCancel={isUploading ? this.handleCancelUpload : undefined}
         onStale={this.handleStaleUpload}
-        path={getValuePath()}
       />
     )
   }
