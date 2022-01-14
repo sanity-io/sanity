@@ -12,17 +12,11 @@ jobs:
 
       - name: Cache node modules
         uses: actions/cache@v2
-        env:
-          # added -vX just to reset the cache, feel free to up it if you need
-          # to reset the cache again
-          cache-name: cache-node-modules-v4
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
-      - name: Install npm dependencies
+      - name: Install project dependencies
         env:
          PUPPETEER_SKIP_DOWNLOAD: 'true'
          CYPRESS_INSTALL_BINARY: '0'
@@ -60,12 +54,12 @@ jobs:
             yarn eslint -- $FILE_NAME
           done
 
-      - name: Notify Slack about build failure
-        if: failure() && github.ref == 'refs/heads/ui/main'
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.ACTIONS_SLACK_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
-        with:
-          channel: studio-internal
-          status: FAILED
-          color: danger
+      # - name: Notify Slack about build failure
+      #   if: failure() && github.ref == 'refs/heads/ui/main'
+      #   env:
+      #     SLACK_BOT_TOKEN: ${{ secrets.ACTIONS_SLACK_BOT_TOKEN }}
+      #   uses: voxmedia/github-action-slack-notify-build@v1
+      #   with:
+      #     channel: studio-internal
+      #     status: FAILED
+      #     color: danger
