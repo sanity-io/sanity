@@ -618,7 +618,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                 {!value?._upload && (
                   <FileTarget
                     tabIndex={readOnly ? undefined : 0}
-                    disabled={readOnly === true}
+                    disabled={false}
                     ref={this.setFocusInput}
                     onFiles={this.handleSelectFiles}
                     onFilesOver={this.handleFilesOver}

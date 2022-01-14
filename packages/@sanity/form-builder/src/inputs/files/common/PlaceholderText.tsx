@@ -40,7 +40,7 @@ export function PlaceholderText(props: Props) {
       message = 'Read only'
     }
 
-    if (hoveringFiles && directUploads) {
+    if (hoveringFiles && directUploads && !readOnly) {
       if (acceptedFiles.length > 0) {
         message = `Drag ${type} here`
       }
