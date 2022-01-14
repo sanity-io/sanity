@@ -31,8 +31,10 @@ export default function FileInfo(props: Props) {
               </Text>
             </Card>
             <Stack space={2}>
-              <Text size={2}>{originalFilename}</Text>
-              <Text size={1} muted>
+              <Text size={2} data-testid="file-name">
+                {originalFilename}
+              </Text>
+              <Text size={1} muted data-testid="file-size">
                 {formatBytes(size)}
               </Text>
             </Stack>
@@ -42,7 +44,9 @@ export default function FileInfo(props: Props) {
 
       <Card tone={readOnly ? 'transparent' : 'default'}>
         <MenuButton
-          button={<Button icon={EllipsisVerticalIcon} mode="bleed" />}
+          button={
+            <Button icon={EllipsisVerticalIcon} mode="bleed" data-testid="options-menu-button" />
+          }
           popover={{tone: 'default'}}
           id="menu-button-example"
           menu={<Menu>{children}</Menu>}

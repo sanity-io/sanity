@@ -484,6 +484,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
             onClick={() => this.handleSelectImageFromAssetSource(assetSource)}
             icon={assetSource.icon || ImageIcon}
             data-testid={`file-input-browse-button-${assetSource.name}`}
+            disabled={readOnly}
           />
         )
       })
@@ -539,6 +540,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                     text={assetSource.title}
                     onClick={() => this.handleSelectImageFromAssetSource(assetSource)}
                     icon={assetSource.icon || ImageIcon}
+                    disabled={readOnly}
                     data-testid={`file-input-browse-button-${assetSource.name}`}
                   />
                 )

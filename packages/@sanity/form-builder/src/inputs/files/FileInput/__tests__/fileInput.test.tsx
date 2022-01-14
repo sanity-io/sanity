@@ -3,16 +3,16 @@ import '@testing-library/jest-dom/extend-expect'
 import React from 'react'
 import {render, fireEvent, waitFor} from '@testing-library/react'
 import Schema from '@sanity/schema'
-import {DEFAULT_PROPS, ImageInputTester} from '../../../../utils/tests/ImageInputTester'
+import {DEFAULT_PROPS, FileInputTester} from '../../../../utils/tests/FileInputTester'
 
 const schema = Schema.compile({
   name: 'test',
   types: [
     {
-      name: 'imagesTest',
+      name: 'fileTest',
       type: 'document',
-      title: 'Images test',
-      description: 'Different test cases of image fields',
+      title: 'File test',
+      description: 'Different test cases of file fields',
       fields: [
         {
           name: 'title',
@@ -20,80 +20,42 @@ const schema = Schema.compile({
           type: 'string',
         },
         {
-          name: 'mainImage',
-          title: 'Image',
-          type: 'image',
-          description:
-            'Image hotspot should be possible to change. Caption should be visible in image field, full description should be editable in modal',
-          options: {
-            hotspot: true,
-          },
-          fields: [
-            {
-              name: 'caption',
-              type: 'string',
-              title: 'Caption',
-              options: {
-                isHighlighted: true,
-              },
-            },
-            {
-              name: 'detailedCaption',
-              type: 'string',
-              title: 'Detailed caption',
-              options: {
-                isHighlighted: true,
-              },
-              hidden: ({parent}) => !parent?.caption,
-            },
-            {
-              name: 'foo',
-              type: 'string',
-              title:
-                'This is a rather longish title for a field. It should still work. This is a rather longish title for a field. It should still work.',
-              options: {
-                isHighlighted: true,
-              },
-            },
-            {
-              name: 'description',
-              type: 'string',
-              title: 'Full description',
-            },
-          ],
+          name: 'someFile',
+          title: 'A simple file',
+          type: 'file',
         },
       ],
     },
   ],
 })
 
-const ImageInput = (changedProps) => (
-  <ImageInputTester schema={schema} {...DEFAULT_PROPS} {...changedProps} />
+const FileInput = (changedProps) => (
+  <FileInputTester schema={schema} {...DEFAULT_PROPS} {...changedProps} />
 )
 
-describe('ImageInput with empty state', () => {
+describe('FileInput with empty state', () => {
   it('renders an empty input as default', () => {
-    const {queryByTestId, queryByText} = render(<ImageInput />)
+    const {queryByTestId, queryByText} = render(<FileInput />)
 
     expect(queryByTestId('file-button-input').getAttribute('value')).toBe('')
-    expect(queryByText('Drag or paste image here')).toBeInTheDocument()
+    expect(queryByText('Drag or paste file here')).toBeInTheDocument()
   })
 
-  it.todo('renders new image when a new image in uploaded')
-  it.todo('renders new image when a new image is dragged into the input')
+  it.todo('renders new file when a new file in uploaded')
+  it.todo('renders new file when a new file is dragged into the input')
   it.todo('is unable to upload when the file type is not allowed')
 
   /* assetSources - adds a list of sources that a user can pick from when browsing */
 
   it('renders the browse button when it has at least one element in assetSources', () => {
-    const {queryByTestId} = render(<ImageInput />)
+    const {queryByTestId} = render(<FileInput />)
 
     expect(queryByTestId('file-input-upload-button')).toBeInTheDocument()
     expect(queryByTestId('file-input-browse-button')).toBeInTheDocument()
   })
 
   it('renders only the upload button when it has no assetSources', () => {
-    const {queryByTestId} = render(<ImageInput assetSources={[]} />)
+    const {queryByTestId} = render(<FileInput assetSources={[]} />)
 
     expect(queryByTestId('file-input-upload-button')).toBeInTheDocument()
     expect(queryByTestId('file-input-browse-button')).not.toBeInTheDocument()
@@ -101,7 +63,7 @@ describe('ImageInput with empty state', () => {
 
   it('renders the browse button with a tooltip when it has at least one element in assetSources', async () => {
     const {queryByTestId} = render(
-      <ImageInput assetSources={[{name: 'source1'}, {name: 'source2'}]} />
+      <FileInput assetSources={[{name: 'source1'}, {name: 'source2'}]} />
     )
     const browseButton = queryByTestId('file-input-multi-browse-button')
 
@@ -116,41 +78,41 @@ describe('ImageInput with empty state', () => {
     })
   })
 
-  /* directUploads - allows for user to upload images directly (default is true) */
+  /* directUploads - allows for user to upload files directly (default is true) */
 
   it('renders the upload button as disabled when directUploads is false', () => {
-    const {queryByTestId} = render(<ImageInput directUploads={false} />)
+    const {queryByTestId} = render(<FileInput directUploads={false} />)
 
     expect(queryByTestId('file-input-upload-button').getAttribute('data-disabled')).toBe('true')
   })
 
-  it('has default text that mentions that you cannot upload images when directUploads is false', async () => {
-    const {queryByText} = render(<ImageInput directUploads={false} />)
+  it('has default text that mentions that you cannot upload files when directUploads is false', async () => {
+    const {queryByText} = render(<FileInput directUploads={false} />)
 
     expect(queryByText(`Can't upload files here`)).toBeInTheDocument()
   })
 
-  /* readOnly - the image input is read only or not */
+  /* readOnly - the file input is read only or not */
 
   it('the upload button is disabled when the input is readOnly', () => {
-    const {queryByTestId} = render(<ImageInput readOnly />)
+    const {queryByTestId} = render(<FileInput readOnly />)
 
     expect(queryByTestId('file-input-upload-button').getAttribute('data-disabled')).toBe('true')
   })
 
   it('does not allow for browsing when input is readOnly', () => {
-    const {queryByTestId} = render(<ImageInput readOnly />)
+    const {queryByTestId} = render(<FileInput readOnly />)
 
     expect(queryByTestId('file-input-browse-button').getAttribute('data-disabled')).toBe('true')
   })
 
   it('does not allow for upload when input is readOnly', async () => {
-    const {queryByTestId, queryByText} = render(<ImageInput readOnly />)
+    const {queryByTestId, queryByText} = render(<FileInput readOnly />)
     const input = queryByTestId('file-button-input')
 
     fireEvent.change(input, {
       target: {
-        files: [new File(['(⌐□_□)'], 'cool_sunglasses.png', {type: 'image/png'})],
+        files: [new File(['(⌐□_□)'], 'cool_sunglasses.pdf', {type: 'file/pdf'})],
       },
     })
 
@@ -162,38 +124,30 @@ describe('ImageInput with empty state', () => {
   it.todo('does not allow files to be dragged & uploaded when it is readOnly')
 })
 
-describe('ImageInput with asset', () => {
+describe('FileInput with asset', () => {
   const value = {
     asset: {
-      _ref: 'image-4ae478f00c330e7089cbd0f6126d3626e432e595-702x908-png',
+      _ref: 'file-26db46ec62059d6cd491b4343afaecc92ff1b4d5-txt',
       _type: 'reference',
     },
-    _type: 'image',
-  }
-
-  const imageType = {
-    options: {
-      accept: 'image/png',
-      hotspot: true,
-    },
+    _type: 'file',
   }
 
   it('renders the right url as default when it has asset', () => {
-    const {queryByTestId} = render(<ImageInput value={value} />)
+    const {queryByText} = render(<FileInput value={value} />)
 
-    expect(queryByTestId('hotspot-image-input').getAttribute('src')).toBe(
-      'https://cdn.sanity.io/images/some-project-id/some-dataset/4ae478f00c330e7089cbd0f6126d3626e432e595-702x908.png'
-    )
+    expect(queryByText('cats.txt')).toBeInTheDocument()
+    expect(queryByText('31 Bytes')).toBeInTheDocument()
   })
 
-  it.todo('renders new image when a new image in uploaded')
-  it.todo('renders new image when a new image is dragged into the input')
+  it.todo('renders new file when a new file in uploaded')
+  it.todo('renders new file when a new file is dragged into the input')
   it.todo('is unable to upload when the file type is not allowed')
 
   /* assetSources - adds a list of sources that a user can pick from when browsing */
 
-  it('renders the browse button in the image menu when it has at least one element in assetSources', async () => {
-    const {queryByTestId} = render(<ImageInput value={value} />)
+  it('renders the browse button in the file menu when it has at least one element in assetSources', async () => {
+    const {queryByTestId} = render(<FileInput value={value} />)
     fireEvent.click(queryByTestId('options-menu-button'))
 
     await waitFor(() => {
@@ -201,8 +155,8 @@ describe('ImageInput with asset', () => {
     })
   })
 
-  it('renders the browse button in the image menu when it has no assetSources', async () => {
-    const {queryByTestId} = render(<ImageInput value={value} assetSources={[]} />)
+  it('renders the browse button in the file menu when it has no assetSources', async () => {
+    const {queryByTestId} = render(<FileInput value={value} assetSources={[]} />)
     fireEvent.click(queryByTestId('options-menu-button'))
 
     await waitFor(() => {
@@ -211,9 +165,9 @@ describe('ImageInput with asset', () => {
     })
   })
 
-  it('renders the multiple browse buttons in the image menu when it has multiple assetSources', async () => {
+  it('renders the multiple browse buttons in the file menu when it has multiple assetSources', async () => {
     const {queryByTestId} = render(
-      <ImageInput value={value} assetSources={[{name: 'source1'}, {name: 'source2'}]} />
+      <FileInput value={value} assetSources={[{name: 'source1'}, {name: 'source2'}]} />
     )
     fireEvent.click(queryByTestId('options-menu-button'))
 
@@ -223,10 +177,10 @@ describe('ImageInput with asset', () => {
     })
   })
 
-  /* directUploads - allows for user to upload images directly (default is true) */
+  /* directUploads - allows for user to upload files directly (default is true) */
 
   it('renders the upload button as disabled when directUploads is false', async () => {
-    const {queryByTestId} = render(<ImageInput value={value} directUploads={false} />)
+    const {queryByTestId} = render(<FileInput value={value} directUploads={false} />)
 
     fireEvent.click(queryByTestId('options-menu-button'))
 
@@ -235,10 +189,10 @@ describe('ImageInput with asset', () => {
     })
   })
 
-  /* readOnly - the image input is read only or not */
+  /* readOnly - the files input is read only or not */
 
   it('the upload button in the dropdown menu is disabled when the input is readOnly', async () => {
-    const {queryByTestId} = render(<ImageInput value={value} readOnly />)
+    const {queryByTestId} = render(<FileInput value={value} readOnly />)
 
     fireEvent.click(queryByTestId('options-menu-button'))
 
@@ -248,7 +202,7 @@ describe('ImageInput with asset', () => {
   })
 
   it('does not allow for browsing when input is readOnly', async () => {
-    const {queryByTestId} = render(<ImageInput value={value} readOnly />)
+    const {queryByTestId} = render(<FileInput value={value} readOnly />)
     fireEvent.click(queryByTestId('options-menu-button'))
 
     await waitFor(() => {
@@ -258,7 +212,7 @@ describe('ImageInput with asset', () => {
 
   it('does not allow for browsing with multiple sources when input is readOnly', async () => {
     const {queryByTestId} = render(
-      <ImageInput value={value} assetSources={[{name: 'source1'}, {name: 'source2'}]} readOnly />
+      <FileInput value={value} assetSources={[{name: 'source1'}, {name: 'source2'}]} readOnly />
     )
     fireEvent.click(queryByTestId('options-menu-button'))
 
@@ -268,8 +222,8 @@ describe('ImageInput with asset', () => {
     })
   })
 
-  it('does not allow for clearing the image when input is readOnly', async () => {
-    const {queryByTestId} = render(<ImageInput value={value} readOnly />)
+  it('does not allow for clearing the input it is readOnly', async () => {
+    const {queryByTestId} = render(<FileInput value={value} readOnly />)
     fireEvent.click(queryByTestId('options-menu-button'))
 
     await waitFor(() => {
@@ -277,35 +231,45 @@ describe('ImageInput with asset', () => {
     })
   })
 
-  it('can open the edit details (if the option exists) dialog when the input is readOnly', async () => {
-    const {queryByTestId} = render(<ImageInput value={value} type={imageType} readOnly />)
-    expect(queryByTestId('options-menu-edit-details').getAttribute('data-disabled')).toBe('false')
-  })
-
   it('does not allow for upload when input is readOnly & the image src is the same', async () => {
-    const {queryByTestId} = render(<ImageInput value={value} type={imageType} readOnly />)
+    const fileType = {
+      description: '',
+      fields: [
+        {
+          name: 'asset',
+          type: {
+            fields: [],
+            jsonType: 'object',
+            name: 'reference',
+            title: 'Reference to file',
+            to: [],
+            type: {name: 'reference', type: null, jsonType: 'object', validation: []},
+            validation: [],
+          },
+        },
+      ],
+      options: {
+        accept: 'file/pdf',
+      },
+    }
+
+    const {queryByText, queryByTestId} = render(
+      <FileInput value={value} type={fileType} readOnly />
+    )
 
     fireEvent.click(queryByTestId('options-menu-button'))
 
     fireEvent.change(queryByTestId('file-button-input'), {
       target: {
-        files: [new File(['(⌐□_□)'], 'cool_sunglasses.png', {type: 'image/png'})],
+        files: [new File(['(⌐□_□)'], 'cool_sunglasses.pdf', {type: 'file/pdf'})],
       },
     })
 
     await waitFor(() => {
-      expect(queryByTestId('hotspot-image-input').getAttribute('src')).toBe(
-        'https://cdn.sanity.io/images/some-project-id/some-dataset/4ae478f00c330e7089cbd0f6126d3626e432e595-702x908.png'
-      )
+      expect(queryByText('cats.txt')).toBeInTheDocument()
+      expect(queryByText('31 Bytes')).toBeInTheDocument()
     })
   })
 
   it.todo('does not allow files to be dragged & uploaded when it is readOnly')
-
-  /* shows / hides edit details */
-
-  it('hides the editing details if it doesnt have hotspot set', () => {
-    const {queryByTestId} = render(<ImageInput value={value} type={imageType} />)
-    expect(queryByTestId('options-menu-edit-details')).toBeInTheDocument()
-  })
 })

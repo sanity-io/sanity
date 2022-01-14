@@ -154,9 +154,9 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   handleSelectFiles = (files: DOMFile[]) => {
-    const {directUploads} = this.props
+    const {directUploads, readOnly} = this.props
     const {hoveringFiles} = this.state
-    if (directUploads) {
+    if (directUploads && !readOnly) {
       this.uploadFirstAccepted(files)
     } else if (hoveringFiles.length > 0) {
       this.handleFilesOut()
@@ -401,6 +401,8 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
             text={assetSource.title}
             onClick={() => this.handleSelectFileFromAssetSource(assetSource)}
             icon={assetSource.icon || ImageIcon}
+            disabled={readOnly}
+            data-testid={`file-input-browse-button-${assetSource.name}`}
           />
         )
       })
@@ -463,7 +465,14 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       return (
         <MenuButton
           id={`${this._inputId}_assetFileButton`}
-          button={<Button mode="ghost" text="Select" icon={SearchIcon} />}
+          button={
+            <Button
+              mode="ghost"
+              text="Select"
+              data-testid="file-input-multi-browse-button"
+              icon={SearchIcon}
+            />
+          }
           data-testid="input-select-button"
           menu={
             <Menu>
@@ -474,6 +483,8 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                     text={assetSource.title}
                     onClick={() => this.handleSelectFileFromAssetSource(assetSource)}
                     icon={assetSource.icon || ImageIcon}
+                    disabled={readOnly}
+                    data-testid={`file-input-browse-button-${assetSource.name}`}
                   />
                 )
               })}
@@ -490,7 +501,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
         icon={SearchIcon}
         mode="ghost"
         onClick={() => this.handleSelectFileFromAssetSource(assetSources[0])}
-        data-testid="file-input-select-button"
+        data-testid="file-input-browse-button"
         disabled={readOnly}
       />
     )
@@ -550,6 +561,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       presence,
     } = this.props
     const {isAdvancedEditOpen, hoveringFiles, selectedAssetSource, isStale} = this.state
+
     const [highlightedFields, otherFields] = partition(
       type.fields.filter((field) => !HIDDEN_FIELDS.includes(field.name)),
       'type.options.isHighlighted'
