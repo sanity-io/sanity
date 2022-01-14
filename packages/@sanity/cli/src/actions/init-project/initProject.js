@@ -357,6 +357,7 @@ export default async function initSanity(args, context) {
       return createProject(apiClient, {
         displayName: projectName,
         subscription: {planId: selectedPlan},
+        metadata: {coupon: intendedCoupon},
       }).then((response) => ({
         ...response,
         isFirstProject: isUsersFirstProject,
@@ -388,6 +389,7 @@ export default async function initSanity(args, context) {
           default: 'My Sanity Project',
         }),
         subscription: {planId: selectedPlan},
+        metadata: {coupon: intendedCoupon},
       }).then((response) => ({
         ...response,
         isFirstProject: isUsersFirstProject,
@@ -619,6 +621,7 @@ export default async function initSanity(args, context) {
       const createdProject = await createProject(apiClient, {
         displayName: createProjectName.trim(),
         subscription: {planId: selectedPlan},
+        metadata: {coupon: intendedCoupon},
       })
       debug('Project with ID %s created', createdProject.projectId)
 
