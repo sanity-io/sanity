@@ -1,11 +1,11 @@
-import React, {JSXElementConstructor, MouseEventHandler, ReactElement} from 'react'
+import React, {MouseEventHandler, ReactNode} from 'react'
 
 import {EllipsisVerticalIcon, EditIcon} from '@sanity/icons'
 import {Menu, MenuButton} from '@sanity/ui'
 import {MenuActionsWrapper, ButtonContainer} from './ImageActionsMenu.styled'
 
 interface Props {
-  children: ReactElement<any, string | JSXElementConstructor<any>>
+  children: ReactNode
   onEdit: MouseEventHandler<HTMLButtonElement>
   showEdit: boolean
 }

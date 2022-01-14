@@ -1,6 +1,6 @@
 /* eslint-disable no-undef, import/no-unresolved */
 
-import React, {ReactElement} from 'react'
+import React, {ReactNode} from 'react'
 import {Observable, Subscription} from 'rxjs'
 import {get, partition, uniqueId} from 'lodash'
 import {FormFieldSet, ImperativeToast} from '@sanity/base/components'
@@ -61,7 +61,7 @@ export type Props = {
   readOnly: boolean | null
   focusPath: Path
   directUploads?: boolean
-  assetSources?: InternalAssetSource[]
+  assetSources: InternalAssetSource[]
   markers: Marker[]
   presence: FormFieldPresence[]
   getValuePath: () => Path
@@ -316,8 +316,14 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     return this.props.focusPath?.[0] === 'asset'
   }
 
-  handleFileTargetFocus = () => {
-    this.props.onFocus(['asset'])
+  handleFileTargetFocus = (event) => {
+    // We want to handle focus when the array input *itself* element receives
+    // focus, not when a child element receives focus, but React has decided
+    // to let focus bubble, so this workaround is needed
+    // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
+    if (event.currentTarget === event.target && event.currentTarget === this._focusRef) {
+      this.props.onFocus(['asset'])
+    }
   }
   handleFileTargetBlur = () => {
     this.props.onBlur()
@@ -368,17 +374,22 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   renderAsset() {
-    const {value, observeAsset, type, readOnly, assetSources, directUploads} = this.props
+    const {value, readOnly, assetSources, type, directUploads, observeAsset} = this.props
+    const asset = value?.asset
+    if (!asset) {
+      return null
+    }
 
-    const accept = get(type, 'options.accept', '')
+    const accept = get(type, 'options.accept', 'image/*')
 
-    let browseMenuItem: ReactElement<any, any> | ReactElement<any, any>[] =
-      assetSources.length === 0 ? null : (
+    let browseMenuItem: ReactNode =
+      assetSources && assetSources?.length === 0 ? null : (
         <MenuItem
           icon={SearchIcon}
           text="Browse"
           onClick={() => this.handleSelectFileFromAssetSource(assetSources[0])}
           disabled={readOnly}
+          data-testid="file-input-browse-button"
         />
       )
 
@@ -396,18 +407,20 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     }
 
     return (
-      <WithReferencedAsset reference={value!.asset} observeAsset={observeAsset}>
-        {(assetDocument: FileAsset) => (
+      <WithReferencedAsset reference={asset} observeAsset={observeAsset}>
+        {(assetDocument) => (
           <FileContent
             size={assetDocument.size}
-            originalFilename={assetDocument.originalFilename}
+            originalFilename={
+              assetDocument?.originalFilename || `download.${assetDocument.extension}`
+            }
             readOnly={readOnly}
           >
             <ActionsMenu
               onUpload={this.handleSelectFiles}
               browse={browseMenuItem}
               onReset={this.handleRemoveButtonClick}
-              src={assetDocument.url}
+              src={`${assetDocument.url}?dl`}
               readOnly={readOnly}
               accept={accept}
               directUploads={directUploads}

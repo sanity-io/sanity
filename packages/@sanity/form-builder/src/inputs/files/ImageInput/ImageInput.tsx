@@ -57,10 +57,10 @@ export type Props = {
   readOnly: boolean | null
   focusPath: Path
   directUploads?: boolean
-  assetSources?: InternalAssetSource[]
+  assetSources: InternalAssetSource[]
   markers: Marker[]
   presence: FormFieldPresence[]
-  imageUrlBuilder?: ImageUrlBuilder
+  imageUrlBuilder: ImageUrlBuilder
   getValuePath: () => Path
 }
 
@@ -348,8 +348,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       ? presence.filter((item) => item.path[0] === 'hotspot')
       : EMPTY_ARRAY
 
-    const url = imageUrlBuilder.image(value!.asset).url()
-
     return (
       <Dialog
         header="Edit details"
@@ -361,12 +359,12 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         <PresenceOverlay>
           <Box padding={4}>
             <Stack space={5}>
-              {withImageTool && (
+              {withImageTool && value?.asset && (
                 <ImageToolInput
                   type={type}
                   level={level}
                   readOnly={Boolean(readOnly)}
-                  imageUrl={url}
+                  imageUrl={imageUrlBuilder.image(value.asset).url()}
                   value={value}
                   focusPath={focusPath}
                   presence={imageToolPresence}
@@ -385,6 +383,11 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
   renderPreview = () => {
     const {value, readOnly, type, directUploads, getValuePath, imageUrlBuilder} = this.props
+
+    if (!value) {
+      return null
+    }
+
     const {hoveringFiles} = this.state
 
     const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
@@ -450,14 +453,19 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       observeAsset,
     } = this.props
 
+    const asset = value?.asset
+    if (!asset) {
+      return null
+    }
+
     const accept = get(type, 'options.accept', 'image/*')
 
     const fieldGroups = this.getGroupedFields(type)
     const showAdvancedEditButton =
-      value && (fieldGroups.dialog.length > 0 || (value?.asset && this.isImageToolEnabled()))
+      value && (fieldGroups.dialog.length > 0 || (asset && this.isImageToolEnabled()))
 
     let browseMenuItem: ReactNode =
-      assetSources.length === 0 ? null : (
+      assetSources && assetSources?.length === 0 ? null : (
         <MenuItem
           icon={SearchIcon}
           text="Browse"
@@ -467,7 +475,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         />
       )
 
-    if (assetSources.length > 1) {
+    if (assetSources && assetSources.length > 1) {
       browseMenuItem = assetSources.map((assetSource) => {
         return (
           <MenuItem
@@ -482,21 +490,26 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     }
 
     return (
-      <ImageActionsMenu onEdit={this.handleOpenDialog} showEdit={showAdvancedEditButton}>
-        <WithReferencedAsset observeAsset={observeAsset} reference={value.asset}>
-          {(assetDocument) => (
+      <WithReferencedAsset observeAsset={observeAsset} reference={asset}>
+        {(assetDocument) => (
+          <ImageActionsMenu onEdit={this.handleOpenDialog} showEdit={showAdvancedEditButton}>
             <ActionsMenu
               onUpload={this.handleSelectFiles}
               browse={browseMenuItem}
               onReset={this.handleRemoveButtonClick}
-              src={imageUrlBuilder.image(value).forceDownload(assetDocument.originalFilename).url()}
+              src={imageUrlBuilder
+                .image(value)
+                .forceDownload(
+                  assetDocument.originalFilename || `download.${assetDocument.extension}`
+                )
+                .url()}
               readOnly={readOnly}
               directUploads={directUploads}
               accept={accept}
             />
-          )}
-        </WithReferencedAsset>
-      </ImageActionsMenu>
+          </ImageActionsMenu>
+        )}
+      </WithReferencedAsset>
     )
   }
 
