@@ -10,4 +10,7 @@ export interface BuildConfig {
     hostname?: string
     port?: number
   }
+
+  // @todo
+  vite?: (config: any) => any
 }
