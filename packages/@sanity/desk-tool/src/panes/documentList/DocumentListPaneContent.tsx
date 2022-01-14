@@ -24,11 +24,11 @@ import {getDocumentKey} from './helpers'
 import {FULL_LIST_LIMIT} from './constants'
 
 interface DocumentListPaneContentProps {
-  childItemId: string
+  childItemId?: string
   error: {message: string} | null
   filterIsSimpleTypeContraint: boolean
   fullList: boolean
-  isActive: boolean
+  isActive?: boolean
   isLoading: boolean
   items: DocumentListPaneItem[] | null
   layout?: Layout

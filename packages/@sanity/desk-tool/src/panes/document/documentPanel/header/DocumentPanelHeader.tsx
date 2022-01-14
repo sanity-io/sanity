@@ -74,7 +74,7 @@ export const DocumentPanelHeader = memo(
         subActions={showVersionMenu && <TimelineMenu chunk={rev} mode="rev" />}
         actions={
           <Inline space={1}>
-            {components.LanguageFilter &&
+            {components?.LanguageFilter &&
               createElement(components.LanguageFilter, {
                 key: 'language-menu',
                 schemaType: documentSchema,

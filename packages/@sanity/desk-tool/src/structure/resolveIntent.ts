@@ -20,7 +20,7 @@ interface TraverseOptions {
 }
 
 export interface ResolveIntentOptions {
-  rootPaneNode: UnresolvedPaneNode
+  rootPaneNode?: UnresolvedPaneNode
   intent: string
   params: {type: string; id: string; [key: string]: string | undefined}
   payload: unknown

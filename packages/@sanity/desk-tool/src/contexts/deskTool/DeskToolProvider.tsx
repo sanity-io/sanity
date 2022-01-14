@@ -9,12 +9,12 @@ import {DeskToolContextValue} from './types'
  */
 export function DeskToolProvider(props: {
   children?: React.ReactNode
-  components: {LanguageFilter?: React.ComponentType<{schemaType: SchemaType}>}
-  layoutCollapsed: boolean
-  resolveDocumentActions: DocumentActionsResolver
-  structure: any
+  components?: {LanguageFilter?: React.ComponentType<{schemaType: SchemaType}>}
+  layoutCollapsed?: boolean
+  resolveDocumentActions?: DocumentActionsResolver
+  structure?: any
 }): React.ReactElement {
-  const {children, components, layoutCollapsed, resolveDocumentActions, structure} = props
+  const {children, components, layoutCollapsed = false, resolveDocumentActions, structure} = props
 
   const features = useMemo(
     () => ({

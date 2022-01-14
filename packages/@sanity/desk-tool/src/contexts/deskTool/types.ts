@@ -18,9 +18,9 @@ export interface DeskToolFeatures {
  * @internal
  */
 export interface DeskToolContextValue {
-  components: {LanguageFilter?: React.ComponentType<{schemaType: SchemaType}>}
+  components?: {LanguageFilter?: React.ComponentType<{schemaType: SchemaType}>}
   features: DeskToolFeatures
   layoutCollapsed: boolean
-  resolveDocumentActions: DocumentActionsResolver
-  structure: UnresolvedPaneNode
+  resolveDocumentActions?: DocumentActionsResolver
+  structure?: UnresolvedPaneNode
 }

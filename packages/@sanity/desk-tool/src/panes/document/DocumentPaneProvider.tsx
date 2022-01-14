@@ -84,7 +84,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const value: Partial<SanityDocument> =
     editState?.draft || editState?.published || initialValue.value
   const actions = useMemo(
-    () => (editState ? resolveDocumentActions(editState) : null),
+    () => (editState && resolveDocumentActions ? resolveDocumentActions(editState) : null),
     [editState, resolveDocumentActions]
   )
   const badges = useMemo(() => (editState ? resolveDocumentBadges(editState) : null), [editState])

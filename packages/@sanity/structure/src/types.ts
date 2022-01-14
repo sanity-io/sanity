@@ -17,10 +17,10 @@ import {View} from './views/View'
 
 export type UserComponent = React.ComponentType<{
   child?: ComponentBuilder
-  childItemId: string
+  childItemId?: string
   id: string
-  isActive: boolean
-  isSelected: boolean
+  isActive?: boolean
+  isSelected?: boolean
   itemId: string
   options?: Record<string, unknown>
   paneKey: string
