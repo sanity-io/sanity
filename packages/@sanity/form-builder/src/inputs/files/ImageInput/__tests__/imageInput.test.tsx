@@ -1,9 +1,8 @@
 // eslint-disable-next-line import/no-unassigned-import
 import '@testing-library/jest-dom/extend-expect'
 import React from 'react'
-import {render, fireEvent, waitFor, queryByText} from '@testing-library/react'
+import {render, fireEvent, waitFor} from '@testing-library/react'
 import Schema from '@sanity/schema'
-import userEvent from '@testing-library/user-event'
 import {DEFAULT_PROPS, ImageInputTester} from '../../../../utils/tests/ImageInputTester'
 
 const schema = Schema.compile({
@@ -73,16 +72,17 @@ const ImageInput = (changedProps) => (
 )
 
 describe('ImageInput with empty state', () => {
-  it('renders an empty input as default', async () => {
-    const {container, queryByTestId} = render(<ImageInput />)
+  it('renders an empty input as default', () => {
+    const {queryByTestId, queryByText} = render(<ImageInput />)
 
     expect(queryByTestId('file-button-input').getAttribute('value')).toBe('')
-    expect(queryByText(container, 'Drag or paste image here')).toBeInTheDocument()
+    expect(queryByText('Drag or paste image here')).toBeInTheDocument()
   })
 
   it.todo('renders new image when a new image in uploaded')
   it.todo('renders new image when a new image is dragged into the input')
   it.todo('is unable to upload when the file type is not allowed')
+
   /* assetSources - adds a list of sources that a user can pick from when browsing */
 
   it('renders the browse button when it has at least one element in assetSources', () => {
@@ -162,7 +162,7 @@ describe('ImageInput with empty state', () => {
   it.todo('does not allow files to be dragged & uploaded when it is readOnly')
 })
 
-describe('with asset', () => {
+describe('ImageInput with asset', () => {
   const value = {
     asset: {
       _ref: 'image-4ae478f00c330e7089cbd0f6126d3626e432e595-702x908-png',
