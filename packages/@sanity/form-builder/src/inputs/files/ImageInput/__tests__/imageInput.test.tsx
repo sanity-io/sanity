@@ -182,7 +182,7 @@ describe('ImageInput with asset', () => {
     const {queryByTestId} = render(<ImageInput value={value} />)
 
     expect(queryByTestId('hotspot-image-input').getAttribute('src')).toBe(
-      'https://cdn.sanity.io/images/some-project-id/some-dataset/4ae478f00c330e7089cbd0f6126d3626e432e595-702x908.png'
+      'https://cdn.sanity.io/images/some-project-id/some-dataset/4ae478f00c330e7089cbd0f6126d3626e432e595-702x908.png?w=2000&fit=max&auto=format'
     )
   })
 
@@ -295,7 +295,7 @@ describe('ImageInput with asset', () => {
 
     await waitFor(() => {
       expect(queryByTestId('hotspot-image-input').getAttribute('src')).toBe(
-        'https://cdn.sanity.io/images/some-project-id/some-dataset/4ae478f00c330e7089cbd0f6126d3626e432e595-702x908.png'
+        'https://cdn.sanity.io/images/some-project-id/some-dataset/4ae478f00c330e7089cbd0f6126d3626e432e595-702x908.png?w=2000&fit=max&auto=format'
       )
     })
   })
