@@ -1,22 +1,53 @@
-import PropTypes from 'prop-types'
 import React from 'react'
-export default function withValuePath(ComposedComponent: any) {
-  return class WithValuePath<P> extends React.PureComponent<P> {
-    _input: typeof ComposedComponent
+import {Path} from '@sanity/types'
+import PropTypes from 'prop-types'
+
+function getDisplayName(component) {
+  return component.displayName || component.name || '<Anonymous>'
+}
+
+function warnMissingFocusMethod(ComposedComponent) {
+  console.warn(
+    `withValuePath(${getDisplayName(
+      ComposedComponent
+    )}): The passed component did not expose a ".focus()" method. Either implement an imperative focus method on the component instance, or forward it's received ref to an element that exposes a .focus() method. The component passed to withValuePath was: %O`,
+    ComposedComponent
+  )
+}
+
+interface WithValuePathProps {
+  getValuePath: () => Path
+}
+
+export default function withValuePath<T extends WithValuePathProps = WithValuePathProps>(
+  ComposedComponent: React.ComponentType<T>
+) {
+  return class WithValuePath extends React.PureComponent<Omit<T, 'getValuePath'>> {
+    _input: any
+    _didShowFocusWarning = false
     static displayName = `withValuePath(${ComposedComponent.displayName || ComposedComponent.name})`
     static contextTypes = {
-      getValuePath: PropTypes.func,
-      formBuilder: PropTypes.any,
+      getValuePath: PropTypes.any,
     }
     focus() {
-      this._input.focus()
+      if (typeof this._input?.focus === 'function') {
+        this._input.focus()
+      } else if (!this._didShowFocusWarning) {
+        warnMissingFocusMethod(ComposedComponent)
+        this._didShowFocusWarning = true
+      }
     }
-    setInput = (input) => {
+    setRef = (input) => {
       this._input = input
     }
     render() {
-      const {getValuePath} = this.context
-      return <ComposedComponent ref={this.setInput} {...this.props} getValuePath={getValuePath} />
+      return (
+        <ComposedComponent
+          ref={this.setRef}
+          getValuePath={this.context.getValuePath as WithValuePathProps['getValuePath']}
+          {...(this.props as T)}
+        />
+      )
     }
   }
 }
