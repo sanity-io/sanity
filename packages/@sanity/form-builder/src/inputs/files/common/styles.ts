@@ -3,10 +3,11 @@
 import styled, {DefaultTheme, StyledComponent} from 'styled-components'
 import {Card} from '@sanity/ui'
 import {fileTarget} from '../../common/fileTarget'
+import {withFocusRing} from '../../../components/withFocusRing'
 
 export type {FileInfo} from '../../common/fileTarget'
 
-export const FileTarget = fileTarget(Card)
+export const FileTarget = withFocusRing(fileTarget(Card))
 
 export const Overlay: StyledComponent<'div', DefaultTheme> = styled.div`
   position: absolute;

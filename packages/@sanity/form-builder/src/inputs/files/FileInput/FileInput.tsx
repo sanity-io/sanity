@@ -18,7 +18,7 @@ import {
   ChangeIndicatorWithProvidedFullPath,
 } from '@sanity/base/change-indicators'
 import {ImageIcon, SearchIcon} from '@sanity/icons'
-import {Box, Button, Dialog, Menu, MenuButton, MenuItem, ToastParams} from '@sanity/ui'
+import {Box, Button, Card, Dialog, Menu, MenuButton, MenuItem, ToastParams} from '@sanity/ui'
 import {PresenceOverlay, FormFieldPresence} from '@sanity/base/presence'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {Uploader, UploaderResolver, UploadOptions} from '../../../sanity/uploads/types'
@@ -34,7 +34,7 @@ import UploadPlaceholder from '../common/UploadPlaceholder'
 import {UploadWarning} from '../common/UploadWarning'
 import {CardOverlay, FlexContainer} from './styles'
 import {FileInputField} from './FileInputField'
-import FileContent from './FileContent'
+import {FileDetails} from './FileDetails'
 
 type Field = {
   name: string
@@ -317,7 +317,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   handleFileTargetFocus = (event) => {
-    // We want to handle focus when the array input *itself* element receives
+    // We want to handle focus when the file target element *itself* receives
     // focus, not when a child element receives focus, but React has decided
     // to let focus bubble, so this workaround is needed
     // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
@@ -373,7 +373,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     )
   }
 
-  renderAsset() {
+  renderAsset(hasAdvancedFields: boolean) {
     const {value, readOnly, assetSources, type, directUploads, observeAsset} = this.props
     const asset = value?.asset
     if (!asset) {
@@ -411,12 +411,14 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     return (
       <WithReferencedAsset reference={asset} observeAsset={observeAsset}>
         {(assetDocument) => (
-          <FileContent
+          <FileDetails
             size={assetDocument.size}
             originalFilename={
               assetDocument?.originalFilename || `download.${assetDocument.extension}`
             }
-            readOnly={readOnly}
+            onClick={hasAdvancedFields ? this.handleStartAdvancedEdit : undefined}
+            muted={!hasAdvancedFields && readOnly}
+            disabled={!hasAdvancedFields}
           >
             <ActionsMenu
               onUpload={this.handleSelectFiles}
@@ -427,7 +429,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
               accept={accept}
               directUploads={directUploads}
             />
-          </FileContent>
+          </FileDetails>
         )}
       </WithReferencedAsset>
     )
@@ -586,6 +588,8 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       return (value?._upload && value?.asset) || readOnly ? 'transparent' : 'default'
     }
 
+    const hasValueOrUpload = Boolean(value?._upload || value?.asset)
+
     return (
       <>
         <ImperativeToast ref={this.setToast} />
@@ -618,27 +622,28 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                 {!value?._upload && (
                   <FileTarget
                     tabIndex={readOnly ? undefined : 0}
-                    disabled={false}
+                    disabled={Boolean(readOnly)}
+                    border={!showDropArea}
                     ref={this.setFocusInput}
                     onFiles={this.handleSelectFiles}
                     onFilesOver={this.handleFilesOver}
                     onFilesOut={this.handleFilesOut}
                     onFocus={this.handleFileTargetFocus}
                     onBlur={this.handleFileTargetBlur}
-                    border
                     tone={getFileTone()}
-                    readOnly={readOnly}
-                    padding={value?.asset ? 1 : 3}
-                    style={{
-                      position: 'relative',
-                      borderStyle: !value?._upload && value?.asset ? 'solid' : 'dashed',
-                    }}
                   >
-                    {value?.asset && this.renderAsset()}
-                    {!value?.asset && this.renderUploadPlaceholder()}
-                    {value?.asset &&
-                      hoveringFiles.length > 0 &&
-                      this.renderAssetHover(getFileTone())}
+                    <Card
+                      border={Boolean(showDropArea)}
+                      style={{borderStyle: showDropArea ? 'dashed' : undefined}}
+                      tone={readOnly ? 'transparent' : undefined}
+                      padding={value?.asset ? 1 : 3}
+                    >
+                      {value?.asset && this.renderAsset(otherFields.length > 0)}
+                      {!value?.asset && this.renderUploadPlaceholder()}
+                      {value?.asset &&
+                        hoveringFiles.length > 0 &&
+                        this.renderAssetHover(getFileTone())}
+                    </Card>
                   </FileTarget>
                 )}
 
