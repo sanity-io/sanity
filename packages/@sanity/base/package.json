@@ -98,7 +98,7 @@
     "use-device-pixel-ratio": "^1.1.0"
   },
   "devDependencies": {
-    "@sanity/ui-workshop": "^0.3.5",
+    "@sanity/ui-workshop": "^0.3.12",
     "@testing-library/jest-dom": "^5.11.10",
     "@testing-library/react-hooks": "^7.0.2",
     "@types/element-resize-detector": "1.1.2",
