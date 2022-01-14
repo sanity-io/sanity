@@ -1,6 +1,6 @@
 import path from 'path'
 import {build} from 'vite'
-import {getViteConfig} from './getViteConfig'
+import {getViteConfig, SanityViteConfig} from './getViteConfig'
 
 export interface ChunkModule {
   name: string
@@ -18,14 +18,23 @@ export interface StaticBuildOptions {
   minify?: boolean
   profile?: boolean
   sourceMap?: boolean
+
+  vite?: (config: SanityViteConfig) => SanityViteConfig
 }
 
 export async function buildStaticFiles(
   options: StaticBuildOptions
 ): Promise<{chunks: ChunkStats[]}> {
-  const {cwd, outputDir, sourceMap = false, minify = true, basePath} = options
+  const {
+    cwd,
+    outputDir,
+    sourceMap = false,
+    minify = true,
+    basePath,
+    vite: extendViteConfig,
+  } = options
 
-  const viteConfig = await getViteConfig({
+  let viteConfig = await getViteConfig({
     cwd,
     basePath,
     outputDir,
@@ -33,6 +42,10 @@ export async function buildStaticFiles(
     sourceMap,
     mode: 'production',
   })
+
+  if (extendViteConfig) {
+    viteConfig = extendViteConfig(viteConfig)
+  }
 
   const bundle = await build(viteConfig)
 

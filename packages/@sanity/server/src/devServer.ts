@@ -2,7 +2,7 @@ import {promisify} from 'util'
 import chalk from 'chalk'
 import express from 'express'
 import {createServer} from 'vite'
-import {getViteConfig} from './getViteConfig'
+import {getViteConfig, SanityViteConfig} from './getViteConfig'
 import {renderDocument} from './renderDocument'
 import {debug} from './debug'
 import {isSanityMonorepo} from './isSanityMonorepo'
@@ -15,6 +15,8 @@ export interface DevServerOptions {
   httpPort: number
   httpHost: string
   projectName?: string
+
+  vite?: (config: SanityViteConfig) => SanityViteConfig
 }
 
 export interface DevServer {
@@ -22,17 +24,21 @@ export interface DevServer {
 }
 
 export async function startDevServer(options: DevServerOptions): Promise<DevServer> {
-  const {cwd, httpPort, httpHost, basePath: base, staticPath} = options
+  const {cwd, httpPort, httpHost, basePath: base, staticPath, vite: extendViteConfig} = options
   const startTime = performance.now()
 
   const isMonorepo = await isSanityMonorepo(cwd)
 
   debug('Resolving vite config')
-  const viteConfig = await getViteConfig({
+  let viteConfig = await getViteConfig({
     basePath: base || '/',
     cwd,
     mode: 'development',
   })
+
+  if (extendViteConfig) {
+    viteConfig = extendViteConfig(viteConfig)
+  }
 
   const basePath = viteConfig.base
   const staticBasePath = `${basePath}static`
