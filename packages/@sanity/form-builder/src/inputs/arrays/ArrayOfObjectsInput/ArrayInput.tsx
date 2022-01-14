@@ -95,12 +95,10 @@ export class ArrayInput extends React.Component<Props> {
   }
 
   handlePrepend = (value: ArrayMember) => {
-    this.insert(value, 'before', [0])
-    this.openItem(value._key)
+    this.handleInsert({item: value, position: 'before', path: [0]})
   }
   handleAppend = (value: ArrayMember) => {
-    this.insert(value, 'after', [-1])
-    this.openItem(value._key)
+    this.handleInsert({item: value, position: 'after', path: [-1]})
   }
 
   handleInsert = (event: InsertEvent) => {
