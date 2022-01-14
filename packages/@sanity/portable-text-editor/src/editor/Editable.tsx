@@ -1,4 +1,4 @@
-import {Descendant, Transforms, Element as SlateElement} from 'slate'
+import {Descendant, Transforms, Element as SlateElement, Editor} from 'slate'
 import {isEqual} from 'lodash'
 import isHotkey from 'is-hotkey'
 import React, {useCallback, useMemo, useState, useEffect, forwardRef, useRef} from 'react'
@@ -259,6 +259,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         const slateRange = toSlateRange(normalizedSelection, slateEditor)
         if (slateRange) {
           Transforms.select(slateEditor, slateRange)
+          slateEditor.onChange()
         }
       }
     }
