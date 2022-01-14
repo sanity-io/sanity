@@ -51,11 +51,19 @@ export interface SanityViteConfig extends InlineConfig {
  * @internal Only meant for consumption inside of Sanity modules, do not depend on this externally
  */
 export async function getViteConfig(options: ViteOptions): Promise<SanityViteConfig> {
-  const {cwd, mode, outputDir, sourceMap, minify, basePath: rawBasePath = '/'} = options
-  const studioRootPath = cwd
+  const {
+    cwd,
+    mode,
+    outputDir,
+    // default to `true` when `mode=development`
+    sourceMap = options.mode === 'development',
+    minify,
+    basePath: rawBasePath = '/',
+  } = options
+
   const basePath = normalizeBasePath(rawBasePath)
   const isMonorepo = await isSanityMonorepo(cwd)
-  const aliases = getAliases({isMonorepo})
+
   const viteConfig: SanityViteConfig = {
     base: basePath,
     build: {
@@ -91,16 +99,17 @@ export async function getViteConfig(options: ViteOptions): Promise<SanityViteCon
       fs: {strict: false},
       middlewareMode: 'ssr',
     },
-    logLevel: mode === 'production' ? 'silent' : undefined,
+    logLevel: mode === 'production' ? 'silent' : 'info',
     resolve: {
-      alias: aliases,
+      alias: getAliases({isMonorepo}),
     },
   }
 
   if (mode === 'production') {
-    viteConfig.root = studioRootPath
+    viteConfig.root = cwd
     viteConfig.build = {
       ...viteConfig.build,
+
       assetsDir: 'static',
       minify: minify ? 'esbuild' : false,
       emptyOutDir: false, // Rely on CLI to do this
@@ -118,10 +127,11 @@ export async function getViteConfig(options: ViteOptions): Promise<SanityViteCon
             ],
           }
         : undefined,
+
       rollupOptions: {
         perf: true,
         input: {
-          main: resolveEntryModulePath({cwd: studioRootPath, isMonorepo}),
+          main: resolveEntryModulePath({cwd, isMonorepo}),
         },
       },
     }

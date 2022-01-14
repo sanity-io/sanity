@@ -1,11 +1,11 @@
 {
   "extends": "../../../tsconfig.settings",
-  "include": ["./src", "./test", "./typings"],
+  "include": ["./src", "./typings"],
   "compilerOptions": {
     "composite": true,
     "jsx": "react",
     "declarationDir": "./lib/dts/",
-    "rootDir": "./",
+    "rootDir": "./src/",
     "outDir": "./lib/dts/"
   },
   "references": [{"path": "../base/tsconfig.lib.json"}]

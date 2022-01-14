@@ -55,7 +55,7 @@ export function viteSanityStudio({
      * We need to conditionally apply _parts_ of the plugin in different commands,
      * so we store the active command so we can reuse it during lifecycle methods
      */
-    apply(config, {command}) {
+    apply(_config, {command}) {
       runCommand = command
       return true
     },
@@ -69,8 +69,12 @@ export function viteSanityStudio({
         return resolveEntryModulePath({cwd, isMonorepo})
       }
 
-      // Only allow resolving config module from entry
-      if (source === configModuleId && basePattern.test(importer) && entryPattern.test(importer)) {
+      if (
+        source === configModuleId &&
+        // Only allow resolving config module from entry
+        basePattern.test(importer) &&
+        entryPattern.test(importer)
+      ) {
         return getSanityStudioConfigPath(cwd)
       }
 

@@ -5,10 +5,11 @@
   "main": "lib/index.js",
   "types": "lib/dts/index.d.ts",
   "scripts": {
-    "build": "../../../bin/pkg-utils transpile --target node",
+    "build": "../../../bin/pkg-utils transpile --target node --tsconfig tsconfig.lib.json",
     "clean": "rimraf lib",
     "prebuild": "yarn clean",
-    "watch": "../../../bin/pkg-utils transpile --target node --watch"
+    "test": "jest",
+    "watch": "../../../bin/pkg-utils transpile --target node --tsconfig tsconfig.lib.json --watch"
   },
   "engines": {
     "node": ">=12.0.0"
@@ -47,6 +48,7 @@
   },
   "devDependencies": {
     "@sanity/base": "2.29.1",
+    "get-it": "^5.2.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "rimraf": "^3.0.2"

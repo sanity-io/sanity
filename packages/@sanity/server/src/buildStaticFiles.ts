@@ -7,10 +7,12 @@ export interface ChunkModule {
   originalLength: number
   renderedLength: number
 }
+
 export interface ChunkStats {
   name: string
   modules: ChunkModule[]
 }
+
 export interface StaticBuildOptions {
   cwd: string
   basePath: string

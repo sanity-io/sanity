@@ -1,3 +1,4 @@
+import fs from 'fs/promises'
 import {promisify} from 'util'
 import chalk from 'chalk'
 import express from 'express'
@@ -6,6 +7,7 @@ import {getViteConfig, SanityViteConfig} from './getViteConfig'
 import {renderDocument} from './renderDocument'
 import {debug} from './debug'
 import {isSanityMonorepo} from './isSanityMonorepo'
+import {isRecord} from './_helpers'
 
 export interface DevServerOptions {
   cwd: string
@@ -40,6 +42,12 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     viteConfig = extendViteConfig(viteConfig)
   }
 
+  const input: Record<string, string> = isRecord(viteConfig.build?.rollupOptions?.input)
+    ? viteConfig.build?.rollupOptions?.input || {}
+    : {}
+
+  const inputEntries = Object.entries(input)
+
   const basePath = viteConfig.base
   const staticBasePath = `${basePath}static`
 
@@ -71,6 +79,21 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     }
 
     try {
+      // Serve custom entrypoints/inputs
+      for (const [inputKey, inputPath] of inputEntries) {
+        const inputBasePath = `${basePath}${inputKey}`
+
+        if (url.startsWith(inputBasePath)) {
+          // Load template
+          let template = await fs.readFile(inputPath, 'utf-8')
+          template = await vite.transformIndexHtml(url, template)
+
+          // Send response
+          res.status(200).set({'Content-Type': 'text/html'}).end(template)
+          return
+        }
+      }
+
       const template = await renderDocument({isMonorepo, studioRootPath: cwd})
       const html = await vite.transformIndexHtml(url, template)
       res.status(200).type('html').end(html)
