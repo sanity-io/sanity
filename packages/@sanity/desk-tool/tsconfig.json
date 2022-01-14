@@ -12,10 +12,9 @@
   "references": [
     {"path": "../base"},
     {"path": "../diff"},
-    {"path": "../field"},
-    {"path": "../form-builder"},
-    {"path": "../react-hooks"},
-    {"path": "../structure"},
+    {"path": "../form-builder/tsconfig.lib.json"},
+    {"path": "../initial-value-templates/tsconfig.lib.json"},
+    {"path": "../structure/tsconfig.lib.json"},
     {"path": "../types"},
     {"path": "../util"}
   ]
