@@ -230,27 +230,33 @@ export function createWithPortableTextMarkModel(
 
     // Override built in removeMark function
     editor.removeMark = (mark: string) => {
-      if (editor.selection) {
-        if (Range.isExpanded(editor.selection)) {
-          // Split if needed
-          Transforms.setNodes(editor, {}, {match: Text.isText, split: true})
-          const splitTextNodes = [
-            ...Editor.nodes(editor, {at: editor.selection, match: Text.isText}),
-          ]
-          splitTextNodes.forEach(([node, path]) => {
-            const block = editor.children[path[0]]
-            if (Element.isElement(block) && block.children.includes(node)) {
-              Transforms.setNodes(
-                editor,
-                {
-                  marks: (Array.isArray(node.marks) ? node.marks : []).filter(
-                    (eMark: string) => eMark !== mark
-                  ),
-                },
-                {at: path}
-              )
+      const {selection} = editor
+      if (selection) {
+        if (Range.isExpanded(selection)) {
+          Editor.withoutNormalizing(editor, () => {
+            // Split if needed
+            Transforms.setNodes(editor, {}, {match: Text.isText, split: true})
+            if (editor.selection) {
+              const splitTextNodes = [
+                ...Editor.nodes(editor, {at: editor.selection, match: Text.isText}),
+              ]
+              splitTextNodes.forEach(([node, path]) => {
+                const block = editor.children[path[0]]
+                if (Element.isElement(block) && block.children.includes(node)) {
+                  Transforms.setNodes(
+                    editor,
+                    {
+                      marks: (Array.isArray(node.marks) ? node.marks : []).filter(
+                        (eMark: string) => eMark !== mark
+                      ),
+                    },
+                    {at: path}
+                  )
+                }
+              })
             }
           })
+          Editor.normalize(editor)
         } else {
           const existingMarks: string[] =
             {
@@ -294,12 +300,6 @@ export function createWithPortableTextMarkModel(
       } else {
         debug(`Add mark '${mark}'`)
         Editor.addMark(editor, mark, true)
-      }
-      const newSelection = toPortableTextRange(editor, editor.selection)
-      if (newSelection) {
-        // Emit a new selection here (though it might be the same).
-        // This is for toolbars etc that listens to selection changes to update themselves.
-        change$.next({type: 'selection', selection: newSelection})
       }
       editor.onChange()
     }
