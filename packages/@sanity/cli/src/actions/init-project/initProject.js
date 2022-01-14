@@ -32,9 +32,27 @@ export default async function initSanity(args, context) {
   const print = unattended ? noop : output.print
   const specifiedOutputPath = cliFlags['output-path']
   const intendedPlan = cliFlags['project-plan']
+  const intendedCoupon = cliFlags.coupon
+  let selectedPlan
   let reconfigure = cliFlags.reconfigure
   let defaultConfig = cliFlags['dataset-default']
   let showDefaultConfigPrompt = !defaultConfig
+
+  // Only allow either --project-plan or --coupon
+  if (intendedCoupon && intendedPlan) {
+    throw new Error(
+      'Error! --project-plan and --coupon cannot be used together; please select only one flag'
+    )
+  } else if (intendedCoupon) {
+    try {
+      selectedPlan = await getPlanFromCoupon(apiClient, intendedCoupon)
+      print(`Coupon "${intendedCoupon}" validated!\n`)
+    } catch (err) {
+      throw new Error(`Unable to validate coupon code: ${intendedCoupon}`)
+    }
+  } else if (intendedPlan) {
+    selectedPlan = intendedPlan
+  }
 
   // Check if we have a project manifest already
   const manifestPath = path.join(workDir, 'sanity.json')
@@ -338,7 +356,7 @@ export default async function initSanity(args, context) {
       const projectName = await prompt.single({message: 'Project name'})
       return createProject(apiClient, {
         displayName: projectName,
-        subscription: {planId: intendedPlan},
+        subscription: {planId: selectedPlan},
       }).then((response) => ({
         ...response,
         isFirstProject: isUsersFirstProject,
@@ -369,7 +387,7 @@ export default async function initSanity(args, context) {
           message: 'Your project name:',
           default: 'My Sanity Project',
         }),
-        subscription: {planId: intendedPlan},
+        subscription: {planId: selectedPlan},
       }).then((response) => ({
         ...response,
         isFirstProject: isUsersFirstProject,
@@ -600,7 +618,7 @@ export default async function initSanity(args, context) {
       debug('--create-project specified, creating a new project')
       const createdProject = await createProject(apiClient, {
         displayName: createProjectName.trim(),
-        subscription: {planId: intendedPlan},
+        subscription: {planId: selectedPlan},
       })
       debug('Project with ID %s created', createdProject.projectId)
 
@@ -721,4 +739,26 @@ async function doDatasetImport(options) {
       fromInitCommand: true,
     })
   )
+}
+
+async function getPlanFromCoupon(apiClient, couponCode) {
+  return apiClient({
+    requireUser: true,
+    requireProject: false,
+  })
+    .request({
+      method: 'GET',
+      uri: `plans/coupon/${couponCode}`,
+    })
+    .then((response) => {
+      try {
+        const planId = response[0].id
+        if (!planId) {
+          throw new Error('Unable to find a plan from coupon code')
+        }
+        return planId
+      } catch (err) {
+        throw err
+      }
+    })
 }

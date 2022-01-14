@@ -12,6 +12,7 @@ Options
   --visibility <mode> Visibility mode for dataset (public/private)
   --create-project <name> Create a new project with the given name
   --project-plan <name> Optionally select a plan for a new project
+  --coupon <name> Optionally select a coupon for a new project (cannot be used with --project-plan)
   --reconfigure Reconfigure Sanity studio in current folder with new project/dataset
 
 Examples
