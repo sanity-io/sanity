@@ -761,23 +761,21 @@ async function doDatasetImport(options) {
 }
 
 async function getPlanFromCoupon(apiClient, couponCode) {
-  return apiClient({
-    requireUser: true,
+  const response = await apiClient({
+    requireUser: false,
     requireProject: false,
+  }).request({
+    method: 'GET',
+    uri: `plans/coupon/${couponCode}`,
   })
-    .request({
-      method: 'GET',
-      uri: `plans/coupon/${couponCode}`,
-    })
-    .then((response) => {
-      try {
-        const planId = response[0].id
-        if (!planId) {
-          throw new Error('Unable to find a plan from coupon code')
-        }
-        return planId
-      } catch (err) {
-        throw err
-      }
-    })
+
+  try {
+    const planId = response[0].id
+    if (!planId) {
+      throw new Error('Unable to find a plan from coupon code')
+    }
+    return planId
+  } catch (err) {
+    throw err
+  }
 }
