@@ -30,7 +30,7 @@ interface InlineObjectToolbarPopoverProps {
   title: string
 }
 
-export function EditObjectToolTip(props: InlineObjectToolbarPopoverProps) {
+export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProps) {
   const {open, onEdit, onDelete, referenceElement, scrollElement, setOpen, title} = props
   const {sanity} = useTheme()
   const editButtonRef = useRef<HTMLButtonElement>()
