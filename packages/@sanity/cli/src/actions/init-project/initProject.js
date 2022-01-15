@@ -359,10 +359,17 @@ export default async function initSanity(args, context) {
       }
     }
 
+    // If the user has no projects or is using a coupon (which can only be applied to new projects)
+    // just ask for project details instead of showing a list of projects
     const isUsersFirstProject = projects.length === 0
-    if (isUsersFirstProject) {
-      debug('No projects found for user, prompting for name')
-      const projectName = await prompt.single({message: 'Project name'})
+    if (isUsersFirstProject || intendedCoupon) {
+      debug(
+        isUsersFirstProject
+          ? 'No projects found for user, prompting for name'
+          : 'Using a coupon - skipping project selection'
+      )
+
+      const projectName = await prompt.single({message: 'Project name:'})
       return createProject(apiClient, {
         displayName: projectName,
         subscription: {planId: selectedPlan},
