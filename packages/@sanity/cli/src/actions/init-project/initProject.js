@@ -57,7 +57,7 @@ export default async function initSanity(args, context) {
       selectedPlan = await getPlanFromCoupon(apiClient, intendedCoupon)
       print(`Coupon "${intendedCoupon}" validated!\n`)
     } catch (err) {
-      throw new Error(`Unable to validate coupon code: ${intendedCoupon}`)
+      throw new Error(`Unable to validate coupon code "${intendedCoupon}":\n\n${err.message}`)
     }
   } else if (intendedPlan) {
     selectedPlan = intendedPlan
