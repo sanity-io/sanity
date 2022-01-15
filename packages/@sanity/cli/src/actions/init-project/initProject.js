@@ -43,7 +43,16 @@ export default async function initSanity(args, context) {
     throw new Error(
       'Error! --project-plan and --coupon cannot be used together; please select only one flag'
     )
-  } else if (intendedCoupon) {
+  }
+
+  // Don't allow --coupon and --project
+  if (intendedCoupon && cliFlags.project) {
+    throw new Error(
+      'Error! --project and --coupon cannot be used together; coupons can only be applied to new projects'
+    )
+  }
+
+  if (intendedCoupon) {
     try {
       selectedPlan = await getPlanFromCoupon(apiClient, intendedCoupon)
       print(`Coupon "${intendedCoupon}" validated!\n`)
