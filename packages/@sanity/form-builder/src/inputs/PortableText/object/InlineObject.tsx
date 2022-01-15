@@ -14,7 +14,7 @@ import {Box, Card, Theme, Tooltip} from '@sanity/ui'
 import Preview from '../../../Preview'
 import {Markers} from '../../../legacyParts'
 import {RenderCustomMarkers} from '../types'
-import {EditObjectToolTip} from './InlineObjectToolbarPopover'
+import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
 
 interface InlineObjectProps {
   attributes: RenderAttributes
@@ -227,7 +227,7 @@ export const InlineObject = React.forwardRef(function InlineObject(
         </span>
       </Root>
       {!readOnly && !isEditing && (
-        <EditObjectToolTip
+        <InlineObjectToolbarPopover
           onDelete={handleRemoveClick}
           onEdit={handleEditClick}
           open={popoverOpen}
