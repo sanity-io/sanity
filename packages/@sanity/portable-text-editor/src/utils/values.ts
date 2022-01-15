@@ -120,7 +120,7 @@ export function fromSlateValue(
         return keepObjectEquality(
           {_key, _type, ...(typeof blockValue === 'object' ? blockValue : {})},
           keyMap
-        ) as PortableTextBlock
+        )
       }
       return block as PortableTextBlock
     })
