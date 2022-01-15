@@ -1,6 +1,6 @@
 {
   "name": "@sanity/portable-text-editor",
-  "version": "2.24.0",
+  "version": "2.24.1",
   "description": "Portable Text Editor made in React",
   "main": "./lib/index.js",
   "types": "./dist/dts/index.d.ts",
