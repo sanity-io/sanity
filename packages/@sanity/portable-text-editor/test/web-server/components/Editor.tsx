@@ -16,7 +16,7 @@ import {
   Patch,
 } from '../../../src'
 import {createKeyGenerator} from '../keyGenerator'
-import {portableTextType} from '../schema'
+import {portableTextType} from '../../schema'
 
 export const HOTKEYS = {
   marks: {
