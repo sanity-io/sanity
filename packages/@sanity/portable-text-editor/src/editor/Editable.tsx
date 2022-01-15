@@ -359,15 +359,18 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       setTimeout(() => setIsSelecting(false))
     }
   }, [_isSelecting])
-  const isSelectKeys = (event: KeyboardEvent) =>
-    isHotkey('shift+down', event) ||
-    isHotkey('shift+up', event) ||
-    isHotkey('shift+left', event) ||
-    isHotkey('shift+right', event) ||
-    isHotkey('shift+end', event) ||
-    isHotkey('shift+home', event) ||
-    isHotkey('shift+pageDown', event) ||
-    isHotkey('shift+pageUp', event)
+  const isSelectKeys = useCallback(
+    (event: KeyboardEvent) =>
+      isHotkey('shift+down', event) ||
+      isHotkey('shift+end', event) ||
+      isHotkey('shift+home', event) ||
+      isHotkey('shift+left', event) ||
+      isHotkey('shift+pageDown', event) ||
+      isHotkey('shift+pageUp', event) ||
+      isHotkey('shift+right', event) ||
+      isHotkey('shift+up', event),
+    []
+  )
   const isSelectingWithKeys = useRef(false)
   const onSelectStartWithKeys = useCallback(
     (event: KeyboardEvent) => {
@@ -376,7 +379,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         onSelectStart(event)
       }
     },
-    [onSelectStart]
+    [isSelectKeys, onSelectStart]
   )
   const onSelectEndWithKeys = useCallback(
     (event: KeyboardEvent) => {
