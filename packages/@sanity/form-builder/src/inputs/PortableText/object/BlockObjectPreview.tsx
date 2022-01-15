@@ -36,6 +36,8 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
   tone: 'default',
 }
 
+const LAYOUT = 'block'
+
 export function BlockObjectPreview(props: BlockObjectPreviewProps) {
   const {focused, value, type, readOnly, onClickingEdit, onClickingDelete} = props
   const editor = usePortableTextEditor()
@@ -43,7 +45,6 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps) {
   const menuButton = useRef<HTMLButtonElement>()
   const isTabbing = useRef<boolean>(false)
   const isCustomPreviewComponent = Boolean(type.preview?.component)
-  const layout = 'block'
 
   const referenceLink = useMemo(
     () =>
@@ -107,12 +108,12 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps) {
     return (
       <Flex>
         <Box flex={1}>
-          <Preview type={type} value={value} layout={layout} />
+          <Preview type={type} value={value} layout={LAYOUT} />
         </Box>
         <Box marginLeft={1}>{actions}</Box>
       </Flex>
     )
   }
 
-  return <Preview actions={actions} type={type} value={value} layout={layout} />
+  return <Preview actions={actions} type={type} value={value} layout={LAYOUT} />
 }
