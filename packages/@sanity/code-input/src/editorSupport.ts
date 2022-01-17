@@ -1,7 +1,6 @@
 /* eslint-disable import/no-unassigned-import */
 // NOTE: MAKE SURE THESE ALIGN WITH SUPPORTED_LANGUAGES in ./config
 import './groq'
-import 'ace-builds/webpack-resolver'
 
 import 'ace-builds/src-noconflict/mode-batchfile'
 import 'ace-builds/src-noconflict/mode-csharp'
