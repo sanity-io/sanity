@@ -81,6 +81,8 @@ type Focusable = {
   focus: () => void
 }
 
+const DASHED_WRAPPER_STYLE = {borderStyle: 'dashed'}
+
 export default class FileInput extends React.PureComponent<Props, FileInputState> {
   _inputId = uniqueId('FileInput')
   dialogId = uniqueId('fileinput-dialog')
@@ -318,11 +320,11 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
 
   handleFileTargetFocus = (event) => {
     // We want to handle focus when the file target element *itself* receives
-    // focus, not when a child element receives focus, but React has decided
+    // focus, not when an interactive child element receives focus. Since React has decided
     // to let focus bubble, so this workaround is needed
     // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
     if (event.currentTarget === event.target && event.currentTarget === this._focusRef) {
-      this.props.onFocus(['asset'])
+      this.props.onFocus([])
     }
   }
   handleFileTargetBlur = () => {
@@ -519,17 +521,26 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     const accept = get(type, 'options.accept', '')
 
     return (
-      <UploadPlaceholder
-        browse={this.renderBrowser()}
-        onUpload={this.handleSelectFiles}
-        readOnly={readOnly}
-        hoveringFiles={hoveringFiles}
-        acceptedFiles={acceptedFiles}
-        rejectedFilesCount={rejectedFilesCount}
-        type="file"
-        accept={accept}
-        directUploads={directUploads}
-      />
+      <div style={{padding: 1}}>
+        <Card
+          tone={readOnly ? 'transparent' : 'inherit'}
+          border
+          padding={3}
+          style={DASHED_WRAPPER_STYLE}
+        >
+          <UploadPlaceholder
+            browse={this.renderBrowser()}
+            onUpload={this.handleSelectFiles}
+            readOnly={readOnly}
+            hoveringFiles={hoveringFiles}
+            acceptedFiles={acceptedFiles}
+            rejectedFilesCount={rejectedFilesCount}
+            type="file"
+            accept={accept}
+            directUploads={directUploads}
+          />
+        </Card>
+      </div>
     )
   }
 
@@ -585,7 +596,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       if (!value?._upload && !readOnly && hoveringFiles.length > 0) {
         return 'primary'
       }
-      return (value?._upload && value?.asset) || readOnly ? 'transparent' : 'default'
+      return value?._upload && value?.asset && readOnly ? 'transparent' : 'default'
     }
 
     const hasValueOrUpload = Boolean(value?._upload || value?.asset)
@@ -623,7 +634,6 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                   <FileTarget
                     tabIndex={0}
                     disabled={Boolean(readOnly)}
-                    __unstable_focusRing
                     ref={this.setFocusInput}
                     onFiles={this.handleSelectFiles}
                     onFilesOver={this.handleFilesOver}
@@ -631,9 +641,9 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                     onFocus={this.handleFileTargetFocus}
                     onBlur={this.handleFileTargetBlur}
                     tone={getFileTone()}
-                    padding={showDropArea ? 3 : 1}
-                    border
-                    style={{borderStyle: showDropArea ? 'dashed' : undefined, position: 'relative'}}
+                    $border={hasValueOrUpload}
+                    padding={hasValueOrUpload ? 1 : 0}
+                    radius={2}
                   >
                     {value?.asset && this.renderAsset(otherFields.length > 0)}
                     {!value?.asset && this.renderUploadPlaceholder()}

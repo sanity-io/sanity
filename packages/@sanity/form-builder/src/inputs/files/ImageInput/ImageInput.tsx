@@ -730,6 +730,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
       return value?._upload && value?.asset ? 'transparent' : 'default'
     }
+    const showDropArea = value?._upload || !value?.asset
 
     return (
       <>
@@ -761,20 +762,17 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
               {/* not uploading */}
               {!value?._upload && (
                 <FileTarget
-                  tabIndex={readOnly ? undefined : 0}
-                  disabled={false}
+                  tabIndex={0}
+                  disabled={Boolean(readOnly)}
                   ref={this.setFocusElement}
                   onFiles={this.handleSelectFiles}
                   onFilesOver={this.handleFilesOver}
                   onFilesOut={this.handleFilesOut}
                   onFocus={this.handleFileTargetFocus}
                   onBlur={this.handleFileTargetBlur}
-                  border={!value?.asset}
-                  padding={value?.asset ? 0 : 3}
-                  style={{
-                    borderStyle: 'dashed',
-                  }}
+                  $border={!showDropArea}
                   tone={getFileTone()}
+                  padding={showDropArea ? 3 : 1}
                 >
                   {!value?.asset && this.renderUploadPlaceholder()}
                   {!value?._upload && value?.asset && (

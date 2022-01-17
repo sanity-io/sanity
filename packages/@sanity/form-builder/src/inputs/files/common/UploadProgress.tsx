@@ -43,7 +43,15 @@ export function UploadProgress({uploadState, onCancel, onStale}: Props) {
           </Card>
         </LeftSection>
 
-        <Button fontSize={2} text="Cancel upload" mode="ghost" tone="critical" onClick={onCancel} />
+        {onCancel ? (
+          <Button
+            fontSize={2}
+            text="Cancel upload"
+            mode="ghost"
+            tone="critical"
+            onClick={onCancel}
+          />
+        ) : null}
       </FlexWrapper>
     </CardWrapper>
   )
