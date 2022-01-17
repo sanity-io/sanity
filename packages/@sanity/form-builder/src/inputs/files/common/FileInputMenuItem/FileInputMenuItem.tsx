@@ -2,9 +2,9 @@ import React, {createElement, isValidElement} from 'react'
 import {isValidElementType} from 'react-is'
 import {useId} from '@reach/auto-id'
 import {Box, ButtonProps, Flex, Text, useTheme} from '@sanity/ui'
-import {FileButton} from './styles'
+import {FileButton} from './FileInputMenuItem.styled'
 
-export interface FileInputButtonProps extends ButtonProps {
+export interface FileInputMenuItemProps extends ButtonProps {
   accept?: string
   capture?: 'user' | 'environment'
   multiple?: boolean
@@ -12,8 +12,8 @@ export interface FileInputButtonProps extends ButtonProps {
   disabled?: boolean
 }
 
-export const FileInputButton = React.forwardRef(function FileInputButton(
-  props: FileInputButtonProps &
+export const FileInputMenuItem = React.forwardRef(function FFileInputMenuItem(
+  props: FileInputMenuItemProps &
     Omit<React.HTMLProps<HTMLButtonElement>, 'as' | 'ref' | 'type' | 'value' | 'onSelect'>,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
@@ -33,7 +33,6 @@ export const FileInputButton = React.forwardRef(function FileInputButton(
     ...rest
   } = props
   const id = useId(idProp)
-  const theme = useTheme()
 
   const handleChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,7 +44,7 @@ export const FileInputButton = React.forwardRef(function FileInputButton(
   )
 
   const content = (
-    <Flex align="center" justify="center" padding={padding}>
+    <Flex align="center" justify="flex-start" padding={padding}>
       {/* Icon */}
       {icon && (
         <Box marginRight={text ? space : undefined}>
@@ -58,12 +57,7 @@ export const FileInputButton = React.forwardRef(function FileInputButton(
 
       {/* Text */}
       {text && (
-        <Text
-          align={textAlign}
-          size={fontSize}
-          textOverflow="ellipsis"
-          weight={theme.sanity.button.textWeight}
-        >
+        <Text align={textAlign} size={fontSize} textOverflow="ellipsis">
           {text}
         </Text>
       )}
@@ -71,7 +65,14 @@ export const FileInputButton = React.forwardRef(function FileInputButton(
   )
 
   return (
-    <FileButton {...rest} htmlFor={id} padding={0} fontSize={2} disabled={disabled}>
+    <FileButton
+      {...rest}
+      htmlFor={id}
+      padding={0}
+      fontSize={2}
+      disabled={disabled}
+      ref={forwardedRef}
+    >
       {content}
 
       {/* Visibly hidden input */}
@@ -82,7 +83,6 @@ export const FileInputButton = React.forwardRef(function FileInputButton(
         id={id}
         multiple={multiple}
         onChange={handleChange}
-        ref={forwardedRef}
         type="file"
         value=""
         disabled={disabled}

@@ -2,7 +2,7 @@ import React, {MouseEventHandler, useCallback} from 'react'
 
 import {UploadIcon, ClipboardIcon, ResetIcon, DownloadIcon} from '@sanity/icons'
 import {Box, MenuItem, MenuDivider, Label, useToast} from '@sanity/ui'
-import {FileInputButton} from './FileInputButton/FileInputButton'
+import {FileInputMenuItem} from './FileInputMenuItem/FileInputMenuItem'
 
 interface Props {
   onUpload: (files: File[]) => void
@@ -31,7 +31,7 @@ export function ActionsMenu(props: Props) {
           Replace
         </Label>
       </Box>
-      <FileInputButton
+      <FileInputMenuItem
         icon={UploadIcon}
         mode="bleed"
         onSelect={onUpload}
@@ -40,7 +40,6 @@ export function ActionsMenu(props: Props) {
         data-testid="file-input-upload-button"
         disabled={readOnly || !directUploads}
         fontSize={2}
-        fromMenu
       />
       {browse}
 
