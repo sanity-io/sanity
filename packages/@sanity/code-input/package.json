@@ -1,6 +1,6 @@
 {
   "name": "@sanity/code-input",
-  "version": "2.24.1",
+  "version": "2.24.2",
   "description": "Ace editor for editing code",
   "main": "./lib/index.js",
   "types": "./dist/dts",
