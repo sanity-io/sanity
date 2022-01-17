@@ -12,6 +12,7 @@ import {FormFieldPresence} from '@sanity/base/presence'
 import React, {memo, useCallback, useMemo, useRef} from 'react'
 import {FOCUS_TERMINATOR, pathFor, startsWith} from '@sanity/util/paths'
 import {Box} from '@sanity/ui'
+import {useConditionalReadOnly} from '@sanity/base/_internal'
 import PatchEvent from '../../../../PatchEvent'
 import {ArrayMember, InsertEvent, ReferenceItemComponentType} from '../types'
 import {EMPTY_ARRAY} from '../../../../utils/empty'
@@ -65,7 +66,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayInputListItemProps)
   } = props
 
   const innerElementRef = useRef(null)
-
+  const conditionalReadOnly = useConditionalReadOnly() ?? readOnly
   const hasFocusWithin = hasFocusWithinPath(props.focusPath, props.value)
   useScrollIntoViewOnFocusWithin(innerElementRef, hasFocusWithin)
 
@@ -123,7 +124,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayInputListItemProps)
   )
 
   const options = type.options || {}
-  const isSortable = !readOnly && options.sortable !== false
+  const isSortable = !conditionalReadOnly && options.sortable !== false
 
   const isEditing = hasFocusWithinPath(focusPath, value)
 
@@ -177,7 +178,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayInputListItemProps)
         value={value}
         isSortable={isSortable}
         ReferenceItemComponent={ReferenceItemComponent}
-        readOnly={readOnly}
+        readOnly={conditionalReadOnly}
         presence={itemPresence}
         compareValue={compareValue}
       />
@@ -187,7 +188,9 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayInputListItemProps)
       form
     ) : (
       <EditPortal
-        header={readOnly ? `View ${itemType?.title || ''}` : `Edit ${itemType?.title || ''}`}
+        header={
+          conditionalReadOnly ? `View ${itemType?.title || ''}` : `Edit ${itemType?.title || ''}`
+        }
         type={type?.options?.editModal === 'fold' ? 'dialog' : type?.options?.editModal || 'dialog'}
         id={value._key}
         onClose={handleEditClose}
@@ -213,7 +216,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayInputListItemProps)
     onBlur,
     onFocus,
     onInsert,
-    readOnly,
+    conditionalReadOnly,
     type?.options?.editModal,
     value,
   ])

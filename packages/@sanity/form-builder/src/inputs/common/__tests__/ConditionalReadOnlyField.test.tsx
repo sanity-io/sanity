@@ -3,9 +3,10 @@ import '@testing-library/jest-dom/extend-expect'
 import React, {MutableRefObject} from 'react'
 import {render} from '@testing-library/react'
 import Schema from '@sanity/schema'
-import {ConditionalReadOnlyField} from '../ConditionalReadOnlyField'
+import {useConditionalReadOnly} from '@sanity/base/_internal'
 import SanityFormBuilderContext from '../../../sanity/SanityFormBuilderContext'
 import FormBuilder from '../../../sanity/SanityFormBuilder'
+import {ConditionalReadOnlyField} from '../conditionalReadOnly'
 
 const callbackFn = jest.fn(() => true)
 const readOnlyCallbackFn = jest.fn((b) => b)
@@ -54,10 +55,13 @@ interface ConditionalFieldsTesterProps {
 }
 
 const DummyPropsComponent = React.forwardRef(function DummyPropsComponent(
-  props: Partial<ConditionalFieldsTesterProps>,
+  _props: Partial<ConditionalFieldsTesterProps>,
   ref: MutableRefObject<HTMLDivElement>
 ) {
-  return <div ref={ref} data-testid="dummy" data-read-only={props.readOnly ? true : undefined} />
+  const conditionalReadOnly = useConditionalReadOnly()
+  return (
+    <div ref={ref} data-testid="dummy" data-read-only={conditionalReadOnly ? true : undefined} />
+  )
 })
 
 const ConditionalFieldsTester = React.forwardRef(function ConditionalFieldsTester(

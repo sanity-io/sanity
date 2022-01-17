@@ -43,6 +43,12 @@ export default function getSchema(props: WorkshopSchemaProps) {
             type: 'string',
           },
           {
+            name: 'conditionalName',
+            title: 'Name (conditional read only)',
+            type: 'string',
+            readOnly: ({parent}) => parent?.name === 'ro',
+          },
+          {
             name: 'twitter',
             title: 'Twitter',
             type: 'string',

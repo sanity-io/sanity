@@ -12,6 +12,7 @@ import {ChangeIndicatorProvider} from '@sanity/base/change-indicators'
 import * as PathUtils from '@sanity/util/paths'
 import generateHelpUrl from '@sanity/generate-help-url'
 import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/presence'
+import {useConditionalReadOnly} from '@sanity/base/_internal'
 import PatchEvent from './PatchEvent'
 import {emptyArray} from './utils/empty'
 import {Props as InputProps} from './inputs/types'
@@ -294,6 +295,7 @@ function FormBuilderInputInner(props: FormBuilderInputInnerProps) {
     value,
     ...rest
   } = props
+  const conditionalReadOnly = useConditionalReadOnly() ?? readOnly
 
   const presence = presenceProp || context.presence
 
@@ -326,7 +328,7 @@ function FormBuilderInputInner(props: FormBuilderInputInnerProps) {
       isRoot,
       value,
       compareValue: childCompareValue,
-      readOnly,
+      readOnly: conditionalReadOnly,
       markers: childMarkers.length === 0 ? EMPTY_MARKERS : childMarkers,
       type,
       presence: childPresenceInfo,
@@ -347,7 +349,7 @@ function FormBuilderInputInner(props: FormBuilderInputInnerProps) {
       onBlur,
       onChange,
       onFocus,
-      readOnly,
+      conditionalReadOnly,
       rest,
       setInput,
       type,

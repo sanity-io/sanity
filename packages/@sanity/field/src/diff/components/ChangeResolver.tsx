@@ -1,4 +1,5 @@
 import {unstable_useConditionalProperty as useConditionalProperty} from '@sanity/base/hooks'
+import {ConditionalReadOnlyContextProvider} from '@sanity/base/_internal'
 import {ConditionalProperty, SanityDocument} from '@sanity/types/src'
 import React, {cloneElement, useContext} from 'react'
 import {ChangeNode} from '../../types'
@@ -89,6 +90,7 @@ const ConditionalHiddenChange = ({
 const ConditionalReadOnlyChange = ({
   readOnly,
   document,
+  children,
   ...props
 }: Props & {readOnly?: ConditionalProperty; children: React.ReactElement}) => {
   const isReadOnly = useConditionalProperty({
@@ -98,5 +100,9 @@ const ConditionalReadOnlyChange = ({
     checkPropertyKey: 'readOnly',
   })
 
-  return cloneElement(props.children, {readOnly: isReadOnly})
+  return (
+    <ConditionalReadOnlyContextProvider readOnly={isReadOnly}>
+      {children}
+    </ConditionalReadOnlyContextProvider>
+  )
 }

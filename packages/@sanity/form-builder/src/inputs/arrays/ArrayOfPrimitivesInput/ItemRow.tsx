@@ -11,6 +11,7 @@ import {
 } from '@sanity/types'
 import {TrashIcon, EllipsisVerticalIcon, CopyIcon as DuplicateIcon} from '@sanity/icons'
 import {useId} from '@reach/auto-id'
+import {useConditionalReadOnly} from '@sanity/base/_internal'
 import {DragHandle} from '../common/DragHandle'
 import PatchEvent, {set} from '../../../PatchEvent'
 import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
@@ -68,11 +69,12 @@ export const ItemRow = React.forwardRef(function ItemRow(
     presence,
   } = props
 
+  const conditionalReadOnly = useConditionalReadOnly() ?? readOnly
   const hasError = markers.filter(isValidationErrorMarker).length > 0
   const hasWarning = markers.filter(isValidationWarningMarker).length > 0
 
-  const showValidationStatus = !readOnly && markers.length > 0 && !type?.title
-  const showPresence = !type?.title && !readOnly && presence.length > 0
+  const showValidationStatus = !conditionalReadOnly && markers.length > 0 && !type?.title
+  const showPresence = !type?.title && !conditionalReadOnly && presence.length > 0
 
   const handleRemove = useCallback(() => {
     onRemove(index)
@@ -161,7 +163,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
                 onFocus={onFocus}
                 onBlur={onBlur}
                 type={type}
-                readOnly={Boolean(readOnly || type.readOnly)}
+                readOnly={Boolean(conditionalReadOnly ?? type.readOnly)}
                 level={level}
                 presence={presence}
                 onKeyUp={handleKeyUp}
@@ -190,7 +192,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
             </Box>
           )}
 
-          {!readOnly && (
+          {!conditionalReadOnly && (
             <Box paddingY={1}>
               <MenuButton
                 button={<Button padding={2} mode="bleed" icon={EllipsisVerticalIcon} />}
