@@ -84,7 +84,13 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps) {
   const actions = (
     <MenuButton
       button={
-        <Button fontSize={1} iconRight={EllipsisVerticalIcon} mode="bleed" aria-label="Open menu" />
+        <Button
+          aria-label="Open menu"
+          fontSize={1}
+          iconRight={EllipsisVerticalIcon}
+          mode="bleed"
+          paddingX={2}
+        />
       }
       ref={menuButton}
       id={menuButtonId}
