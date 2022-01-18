@@ -121,7 +121,7 @@ describe('ImageInput with empty state', () => {
   it('renders the upload button as disabled when directUploads is false', () => {
     const {queryByTestId} = render(<ImageInput directUploads={false} />)
 
-    expect(queryByTestId('file-input-upload-button').hasAttribute('data-disabled'))
+    expect(queryByTestId('file-input-upload-button').getAttribute('data-disabled')).toBe('true')
   })
 
   it('has default text that mentions that you cannot upload images when directUploads is false', async () => {
@@ -231,7 +231,7 @@ describe('ImageInput with asset', () => {
     fireEvent.click(queryByTestId('options-menu-button'))
 
     await waitFor(() => {
-      expect(queryByTestId('file-input-upload-button').hasAttribute('data-disabled'))
+      expect(queryByTestId('file-input-upload-button').getAttribute('data-disabled')).toBe('')
     })
   })
 
@@ -243,7 +243,7 @@ describe('ImageInput with asset', () => {
     fireEvent.click(queryByTestId('options-menu-button'))
 
     await waitFor(() => {
-      expect(queryByTestId('file-input-upload-button').hasAttribute('data-disabled'))
+      expect(queryByTestId('file-input-upload-button').getAttribute('data-disabled')).toBe('')
     })
   })
 
