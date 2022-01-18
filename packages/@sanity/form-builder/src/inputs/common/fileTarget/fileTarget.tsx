@@ -121,7 +121,8 @@ export function fileTarget<ComponentProps>(Component: React.ComponentType<Compon
     const handleDragEnter = useCallback(
       (event: React.DragEvent) => {
         event.stopPropagation()
-        enteredElements.current.push(event.currentTarget)
+        enteredElements.current = [...new Set(enteredElements.current), event.currentTarget]
+
         if (onFilesOver && enteredElements.current.length === 1) {
           const fileTypes = Array.from(event.dataTransfer.items).map((item) => ({
             type: item.type,
