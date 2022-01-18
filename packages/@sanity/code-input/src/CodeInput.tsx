@@ -299,7 +299,7 @@ const CodeInput = React.forwardRef(
       // is the language officially supported (e.g. we import the mode by default)
       const supported = language && isSupportedLanguage(language)
 
-      const mode = configured?.mode || supported ? language : 'text'
+      let mode = configured?.mode || (supported ? language : 'text')
 
       return (
         <EditorContainer radius={1} shadow={1} readOnly={readOnly}>

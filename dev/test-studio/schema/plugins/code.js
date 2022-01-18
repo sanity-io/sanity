@@ -2,6 +2,7 @@ import {CodeBlockIcon} from '@sanity/icons'
 
 // eslint-disable-next-line import/no-unassigned-import
 import 'ace-builds/src-noconflict/mode-rust'
+import 'ace-builds/src-noconflict/mode-c_cpp'
 
 export default {
   name: 'codeTest',
@@ -32,6 +33,7 @@ export default {
         languageAlternatives: [
           {title: 'Rust', value: 'rust', mode: 'rust'},
           {title: 'JavaScript', value: 'javascript'},
+          {title: 'C++', value: 'cpp', mode: 'c_cpp'},
         ],
       },
     },
