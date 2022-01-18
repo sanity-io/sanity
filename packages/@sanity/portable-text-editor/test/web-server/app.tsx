@@ -3,7 +3,7 @@ import React, {useCallback, useMemo, useState} from 'react'
 
 import ReactDOM from 'react-dom'
 import {Subject} from 'rxjs'
-import {EditorSelection, Patch, PortableTextBlock, PortableTextEditor} from '../../src'
+import {EditorSelection, Patch, PortableTextBlock} from '../../src'
 import {Editor} from './components/Editor'
 import {Value} from './components/Value'
 
@@ -22,7 +22,9 @@ export function App() {
     }
   }, [])
   const webSocket = useMemo(() => {
-    const socket = new WebSocket(`ws://localhost:3001/?editorId=${editorId}&testId=${testId}`)
+    const socket = new WebSocket(
+      `ws://${window.location.hostname}:3001/?editorId=${editorId}&testId=${testId}`
+    )
     socket.addEventListener('open', () => {
       socket.send(JSON.stringify({type: 'hello', editorId, testId}))
     })
