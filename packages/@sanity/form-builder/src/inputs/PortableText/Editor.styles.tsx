@@ -56,7 +56,7 @@ export const Scroller = styled(ScrollContainer)`
 
 export const EditableContainer = styled(Container)`
   /* @todo: calculate from theme */
-  max-width: 728px;
+  /* max-width: 728px; */
 `
 
 export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $readOnly: boolean}>`
