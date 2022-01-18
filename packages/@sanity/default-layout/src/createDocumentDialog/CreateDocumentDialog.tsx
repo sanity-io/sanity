@@ -1,6 +1,3 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import React, {memo, useMemo} from 'react'
 import {Box, Dialog, Grid, Text} from '@sanity/ui'
 import {LegacyLayerProvider} from '@sanity/base/components'
@@ -68,7 +65,7 @@ export const CreateDocumentDialog = memo(
           width={2}
           header="Create new document"
         >
-          <Box padding={3}>{content}</Box>
+          <Box padding={4}>{content}</Box>
         </Dialog>
       </LegacyLayerProvider>
     )

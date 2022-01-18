@@ -1,8 +1,14 @@
 /* eslint-disable no-nested-ternary */
-import {IntentButton, InsufficientPermissionsMessage} from '@sanity/base/components'
+
+import {
+  IntentButton,
+  InsufficientPermissionsMessage,
+  TemplatePreview,
+} from '@sanity/base/components'
 import {NewDocumentOption} from '@sanity/base/_internal'
-import {Box, Flex, Stack, Tooltip, Text, Button} from '@sanity/ui'
-import React from 'react'
+import {DocumentIcon} from '@sanity/icons'
+import {Box, Tooltip, Button} from '@sanity/ui'
+import React, {useMemo} from 'react'
 import styled from 'styled-components'
 
 const Root = styled(Box)`
@@ -18,6 +24,10 @@ const Root = styled(Box)`
   }
 `
 
+const TooltipContentBox = styled(Box)`
+  max-width: 300px;
+`
+
 const DisabledButtonWrapper = styled.div`
   height: 100%;
 `
@@ -28,6 +38,7 @@ const StyledIntentButton = styled(IntentButton)`
   width: 100%;
   align-items: flex-start;
 `
+
 const StyledButton = styled(Button)`
   display: flex;
   height: 100%;
@@ -52,56 +63,46 @@ export function CreateDocumentItem({
   currentUser,
   onClick,
 }: CreateDocumentItemProps) {
-  const content = (
+  const params = useMemo(
+    () => granted && [{type: template.schemaType, template: template.id}, parameters],
+    [granted, parameters, template.id, template.schemaType]
+  )
+
+  const children = (
     <Root>
-      <Flex align={description ? 'flex-start' : 'center'}>
-        <Stack space={3} flex={1}>
-          <Text as="h2" style={{whiteSpace: 'break-spaces'}}>
-            {title}
-          </Text>
-
-          {subtitle && (
-            <Text size={1} as="p" textOverflow="ellipsis">
-              {subtitle}
-            </Text>
-          )}
-
-          {description && (
-            <Text as="p" size={1} style={{whiteSpace: 'break-spaces'}}>
-              {description}
-            </Text>
-          )}
-        </Stack>
-
-        {icon && (
-          <Text size={1}>
-            <Flex align="flex-start" paddingLeft={2}>
-              {typeof icon === 'function' ? (
-                React.createElement(icon)
-              ) : typeof icon === 'string' ? (
-                <span>{icon}</span>
-              ) : React.isValidElement(icon) ? (
-                icon
-              ) : null}
-            </Flex>
-          </Text>
-        )}
-      </Flex>
+      <TemplatePreview
+        description={description}
+        media={
+          <>
+            {typeof icon === 'function' ? (
+              React.createElement(icon)
+            ) : typeof icon === 'string' ? (
+              <span>{icon}</span>
+            ) : React.isValidElement(icon) ? (
+              icon
+            ) : (
+              <DocumentIcon />
+            )}
+          </>
+        }
+        subtitle={subtitle}
+        title={title}
+      />
     </Root>
   )
 
   if (granted) {
     return (
       <StyledIntentButton
-        intent="create"
-        params={[{type: template.schemaType, template: template.id}, parameters]}
-        title={subtitle ? `Create new ${title} (${subtitle})` : `Create new ${title}`}
-        onClick={onClick}
-        mode="ghost"
-        fontSize={2}
         data-testid={`create-document-item-${template.id}`}
+        fontSize={2}
+        intent="create"
+        mode="ghost"
+        onClick={onClick}
+        params={params}
+        title={subtitle ? `Create new ${title} (${subtitle})` : `Create new ${title}`}
       >
-        {content}
+        {children}
       </StyledIntentButton>
     )
   }
@@ -109,17 +110,17 @@ export function CreateDocumentItem({
   return (
     <Tooltip
       content={
-        <Box padding={2} style={{maxWidth: 300}}>
+        <TooltipContentBox padding={2}>
           <InsufficientPermissionsMessage
             currentUser={currentUser}
             operationLabel="create this document"
           />
-        </Box>
+        </TooltipContentBox>
       }
     >
       <DisabledButtonWrapper>
         <StyledButton aria-label="insufficient permissions" mode="ghost" disabled>
-          {content}
+          {children}
         </StyledButton>
       </DisabledButtonWrapper>
     </Tooltip>
