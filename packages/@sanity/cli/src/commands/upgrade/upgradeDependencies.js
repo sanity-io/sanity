@@ -4,8 +4,10 @@ import {promises as fs} from 'fs'
 import boxen from 'boxen'
 import rimrafCb from 'rimraf'
 import semver from 'semver'
+import resolveFrom from 'resolve-from'
 import {padStart, noop} from 'lodash'
 import readLocalManifest from '@sanity/util/lib/readLocalManifest'
+
 import findSanityModuleVersions from '../../actions/versions/findSanityModuleVersions'
 import {getFormatters} from '../versions/printVersionResult'
 import debug from '../../debug'
@@ -73,6 +75,9 @@ export default async function upgradeDependencies(args, context) {
       )} The follow modules are pinned to specific versions, not upgrading:\n - ${pinnedNames}`
     )
   }
+
+  // Yarn fails to upgrade `react-ace` in some versions, see function for details
+  maybeDeleteReactAce(nonPinned, workDir)
 
   // Forcefully remove non-symlinked module paths to force upgrade
   await Promise.all(
@@ -192,4 +197,34 @@ function schedulePrintMajorUpgrades({baseMajorUpgrade, majorUpgrades}, {chalk, o
       })
     )
   })
+}
+
+// Workaround for https://github.com/securingsincity/react-ace/issues/1048
+// Yarn fails to upgrade `react-ace` because `react-ace.min.js` is a _file_ in one version
+// but a _folder_ in the next. If we're upgrading the `@sanity/code-input`, remove the
+// `react-ace` dependency before installing
+async function maybeDeleteReactAce(toUpgrade, workDir) {
+  const codeInputUpdate = toUpgrade.find((mod) => mod.name === '@sanity/code-input')
+  if (!codeInputUpdate) {
+    return
+  }
+
+  // Assume it's an old version if we can't figure it out
+  const installed = codeInputUpdate.installed === '<missing>' ? '1.0.0' : codeInputUpdate.installed
+  const upgradeTo = codeInputUpdate.latestInRange
+
+  // react-ace was upgraded in 2.24.1, so if we're going from <= 2.24.0 to => 2.24.1,
+  // we should remove it.
+  const shouldDelete = semver.lte(installed, '2.24.0') && semver.gte(upgradeTo, '2.24.1')
+  if (!shouldDelete) {
+    return
+  }
+
+  // Try to find the path to it from `@sanity/code-input`, otherwise try the studio root `node_modules`
+  const depRootPath = path.join(workDir, 'node_modules')
+  const closestReactAcePath =
+    resolveFrom.silent(path.join(depRootPath, '@sanity', 'code-input'), 'react-ace') ||
+    path.join(depRootPath, 'react-ace')
+
+  await deleteIfNotSymlink(closestReactAcePath)
 }
