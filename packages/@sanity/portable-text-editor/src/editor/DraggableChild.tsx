@@ -83,7 +83,7 @@ export const DraggableChild = ({children, element, readOnly}: ElementProps) => {
   }
 
   return (
-    <span draggable onDragStart={handleDragStart} onDragOver={handleDragOver}>
+    <span draggable={isVoid} onDragStart={handleDragStart} onDragOver={handleDragOver}>
       {children}
     </span>
   )
