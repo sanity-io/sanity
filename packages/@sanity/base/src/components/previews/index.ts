@@ -11,4 +11,4 @@ export * from './portableText/BlockPreview'
 export * from './portableText/InlinePreview'
 
 // Template previews
-export * from './template/CreateDocumentPreview'
+export * from './template/TemplatePreview'
