@@ -1,7 +1,7 @@
-import {defer, from} from 'rxjs'
-import {StateEvent} from './message-transports/transport'
-import {map, shareReplay} from 'rxjs/operators'
+import {defer, from, timer} from 'rxjs'
+import {map, mapTo, mergeMapTo, shareReplay} from 'rxjs/operators'
 import {sample} from 'lodash'
+import {StateEvent} from './message-transports/transport'
 
 const USERIDS = [
   'pqSMwf6hH',
@@ -9,25 +9,17 @@ const USERIDS = [
   'priDVVmy8',
   'p0NFOU0j8',
   'pTDl2jw8d',
-  'pH1ZwC8i9',
-  'pZSfuDqFB',
   'pHMeQnTse',
-  'ppzqWGWNb',
   'pDQYzJbyS',
   'pZyoPHKUs',
-  'pQzJQHSWI',
   'p4Tyi2Be5',
   'pb9vii060',
   'pE8yhOisw',
-  'pgqD5dmam',
-  'pNIRxUDCs',
   'p7Fd2C6Cj',
   'p3exSgYCx',
   'pbIQRYViC',
   'p8GJaTEhN',
   'p27ewL8aM',
-  'p3udQwtNP',
-  'pAxG0VlQB',
   'pYg97z75S',
   'pdLr4quHv',
   'pkJXiDgg6',
@@ -54,7 +46,8 @@ const PATHS = [
   ['customInputWithDefaultPresence', 'row3', 'cell3'],
 ]
 
-export const mock$ = defer(() => from(USERIDS)).pipe(
+export const mock$ = defer(() => timer(0, 10000)).pipe(
+  mergeMapTo(USERIDS),
   map(
     (id, n): StateEvent => ({
       type: 'state',
@@ -64,9 +57,7 @@ export const mock$ = defer(() => from(USERIDS)).pipe(
       locations: [
         {
           type: 'document',
-          documentId: Math.random() * 10 > 5 ? 'presence-test' : null,
-          // documentId: 'foo-bar',
-          // path: ['bestFriend']
+          documentId: 'presence-debug',
           lastActiveAt: new Date().toISOString(),
           path: sample(PATHS),
         },

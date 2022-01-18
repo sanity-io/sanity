@@ -25,6 +25,7 @@ import {
   switchMap,
   switchMapTo,
   takeUntil,
+  tap,
   toArray,
   withLatestFrom,
 } from 'rxjs/operators'
@@ -36,6 +37,7 @@ import userStore from '../user'
 
 import {bifur} from '../../client/bifur'
 import {connectionStatus$} from '../connection-status/connection-status-store'
+import {debugParams$} from '../debugParams'
 import {
   DisconnectEvent,
   RollCallEvent,
@@ -122,15 +124,29 @@ const connectionChange$ = connectionStatus$.pipe(
   distinctUntilChanged()
 )
 
-const debugParams$ = concat(of(0), fromEvent(window, 'hashchange')).pipe(
-  map(() => document.location.hash.toLowerCase().substring(1).split(';'))
+export const debugPresenceParam$ = debugParams$.pipe(
+  map((args) => args.find((arg) => arg.startsWith('presence='))),
+  map(
+    (arg) =>
+      arg
+        ?.split('presence=')[1]
+        .split(',')
+        .map((r) => r.trim()) || []
+  )
 )
-const useMock$ = debugParams$.pipe(
-  filter((args) => args.includes('give_me_company')),
+
+const useMock$ = debugPresenceParam$.pipe(
+  filter((args) => args.includes('fake_others')),
+  tap(() => {
+    // eslint-disable-next-line no-console
+    console.log(
+      'Faking other users present in the studio. They will hang out in the document with _type: "presence" and _id: "presence-debug"'
+    )
+  }),
   switchMapTo(mock$)
 )
 
-const debugIntrospect$ = debugParams$.pipe(map((args) => args.includes('introspect')))
+const debugIntrospect$ = debugPresenceParam$.pipe(map((args) => args.includes('show_own')))
 
 const syncEvent$ = merge(myRollCall$, presenceEvents$).pipe(
   filter(
