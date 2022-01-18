@@ -3,22 +3,22 @@ import {lazy} from 'react'
 
 export default defineScope('base/previews', 'Previews', [
   {
-    name: 'default-preview',
-    title: 'DefaultPreview',
-    component: lazy(() => import('./DefaultPreviewStory')),
+    name: 'general',
+    title: 'General preview',
+    component: lazy(() => import('./GeneralPreviewStory')),
   },
   {
-    name: 'block-preview',
-    title: 'BlockPreview',
-    component: lazy(() => import('./BlockPreviewStory')),
+    name: 'portable-text',
+    title: 'Portable Text preview',
+    component: lazy(() => import('./PortableTextPreviewStory')),
   },
   {
-    name: 'block-image-preview',
-    title: 'BlockImagePreview',
-    component: lazy(() => import('./BlockImagePreviewStory')),
+    name: 'template',
+    title: 'Template preview',
+    component: lazy(() => import('./TemplatePreviewStory')),
   },
   {
-    name: 'inline-preview',
+    name: 'inline',
     title: 'InlinePreview',
     component: lazy(() => import('./InlinePreviewStory')),
   },
