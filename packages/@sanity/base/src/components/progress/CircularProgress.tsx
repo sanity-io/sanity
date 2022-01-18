@@ -33,8 +33,12 @@ const ProgressCircle = styled.circle(({theme}: {theme: Theme}) => {
   `
 })
 
-export function CircularProgress(props: {value: number}) {
-  const {value} = props
+export function CircularProgress(props: {
+  /** Percentage */
+  value: number
+}) {
+  const {value: valueProp} = props
+  const value = Math.min(Math.max(valueProp, 0), 100)
   const radius = SIZE / 2 - STROKE_WIDTH / 2
   const circ = 2 * Math.PI * radius
   const offset = ((100 - value) / 100) * circ

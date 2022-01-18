@@ -24,7 +24,10 @@ const Bar = styled.div(({theme}: {theme: Theme}) => {
   `
 })
 
-export function LinearProgress(props: {value: number}) {
+export function LinearProgress(props: {
+  /** Percentage */
+  value: number
+}) {
   const {value} = props
 
   return (

@@ -1,8 +1,8 @@
 import prettyMs from 'pretty-ms'
 import React from 'react'
+import {CircularProgress} from '@sanity/base/components'
 import {Flex, Box, Text, Button, Stack} from '@sanity/ui'
 import {TrashIcon, WarningOutlineIcon} from '@sanity/icons'
-import {CircularProgress} from '../../../components/progress'
 import {UploadState} from '../types'
 
 // If it's more than this amount of milliseconds since last time upload state was reported,
