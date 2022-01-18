@@ -3,7 +3,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 // Without this container, editing with Android breaks due to how Text is styled via responsiveFont in @sanity/ui
-const TextContainer = styled('div')`
+const TextContainer = styled.div`
   display: block;
 `
 
