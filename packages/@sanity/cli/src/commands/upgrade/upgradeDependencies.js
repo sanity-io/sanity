@@ -125,7 +125,7 @@ export default async function upgradeDependencies(args, context) {
 
   const {versionLength, formatName} = getFormatters(nonPinned)
   nonPinned.forEach((mod) => {
-    const current = chalk.yellow(padStart(mod.installed, versionLength))
+    const current = chalk.yellow(padStart(mod.installed || '<missing>', versionLength))
     const latest = chalk.green(mod.latestInRange)
     context.output.print(`${formatName(mod.name)} ${current} → ${latest}`)
   })
@@ -145,7 +145,8 @@ async function deleteIfNotSymlink(modPath) {
 }
 
 function hasSemverBreakingUpgrade(mod) {
-  return !semver.satisfies(mod.latest, `^${mod.installed}`) && semver.gt(mod.latest, mod.installed)
+  const current = mod.installed || semver.minVersion(mod.declared).toString()
+  return !semver.satisfies(mod.latest, `^${current}`) && semver.gt(mod.latest, current)
 }
 
 function getMajorUpgradeText(mods, chalk) {
@@ -162,7 +163,7 @@ function getMajorUpgradeText(mods, chalk) {
 }
 
 function getMajorStudioUpgradeText(mod, chalk) {
-  const prev = semver.major(mod.installed)
+  const prev = semver.major(mod.installed || semver.minVersion(mod.declared).toString())
   const next = semver.major(mod.latest)
   return [
     'There is now a new major version of Sanity Studio!',
@@ -209,8 +210,8 @@ async function maybeDeleteReactAce(toUpgrade, workDir) {
     return
   }
 
-  // Assume it's an old version if we can't figure it out
-  const installed = codeInputUpdate.installed === '<missing>' ? '1.0.0' : codeInputUpdate.installed
+  // Assume it is an old version if we can't figure out which one is installed
+  const installed = codeInputUpdate.installed ? codeInputUpdate.installed : '2.4.0'
   const upgradeTo = codeInputUpdate.latestInRange
 
   // react-ace was upgraded in 2.24.1, so if we're going from <= 2.24.0 to => 2.24.1,
@@ -223,8 +224,14 @@ async function maybeDeleteReactAce(toUpgrade, workDir) {
   // Try to find the path to it from `@sanity/code-input`, otherwise try the studio root `node_modules`
   const depRootPath = path.join(workDir, 'node_modules')
   const closestReactAcePath =
-    resolveFrom.silent(path.join(depRootPath, '@sanity', 'code-input'), 'react-ace') ||
+    getModulePath('react-ace', path.join(depRootPath, '@sanity', 'code-input')) ||
     path.join(depRootPath, 'react-ace')
 
-  await deleteIfNotSymlink(closestReactAcePath)
+  await rimraf(closestReactAcePath)
+}
+
+function getModulePath(modName, fromPath) {
+  const manifestFile = `${modName.replace(/\//g, path.sep)}/package.json`
+  const manifestPath = resolveFrom.silent(fromPath, manifestFile)
+  return manifestPath ? path.dirname(manifestPath) : null
 }
