@@ -68,7 +68,7 @@
     "style-loader": "^0.20.1",
     "symbol-observable": "^1.2.0",
     "webpack": "^3.8.1",
-    "webpack-hot-middleware": "2.25.0"
+    "webpack-hot-middleware": "2.25.1"
   },
   "devDependencies": {
     "find-config": "^1.0.0",
