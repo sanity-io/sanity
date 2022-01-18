@@ -1,7 +1,14 @@
-export * from './blockPreview'
-export * from './blockImagePreview'
-export * from './defaultPreview'
-export * from './detailPreview'
-export * from './inlinePreview'
-export * from './mediaPreview'
-export * from './createDocumentPreview'
+export * from './types'
+
+// General previews
+export * from './general/DefaultPreview'
+export * from './general/DetailPreview'
+export * from './general/MediaPreview'
+
+// Portable text preview
+export * from './portableText/BlockImagePreview'
+export * from './portableText/BlockPreview'
+export * from './portableText/InlinePreview'
+
+// Template previews
+export * from './template/CreateDocumentPreview'

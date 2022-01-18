@@ -2,7 +2,7 @@ import {EditIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
 import {Card, Container, Flex, MenuButton, Text, Menu, MenuItem, Button} from '@sanity/ui'
 import {useBoolean, useString} from '@sanity/ui-workshop'
 import React from 'react'
-import {BlockImagePreview} from '../blockImagePreview'
+import {BlockImagePreview} from '../portableText/BlockImagePreview'
 
 export default function BlockImagePreviewStory() {
   const title = useString('Title', 'Title', 'Props')

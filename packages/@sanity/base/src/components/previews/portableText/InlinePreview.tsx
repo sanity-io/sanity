@@ -1,7 +1,7 @@
 import React, {useMemo} from 'react'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
-import {MediaDimensions, PreviewProps} from './types'
-import {RootSpan, MediaSpan, TextSpan} from './inlinePreview.styled'
+import {MediaDimensions, PreviewProps} from '../types'
+import {RootSpan, MediaSpan, TextSpan} from './InlinePreview.styled'
 
 const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   width: 32,
