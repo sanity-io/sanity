@@ -405,6 +405,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
           .dpr(getDevicePixelRatio())
           .auto('format')
           .url()}
+        alt="Preview of uploaded image"
       />
     )
   }

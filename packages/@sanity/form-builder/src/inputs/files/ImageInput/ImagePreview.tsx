@@ -9,6 +9,7 @@ interface Props {
   drag: boolean
   isRejected: boolean
   src: string
+  alt: string
 }
 
 export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
@@ -20,7 +21,7 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
   return (
     <RatioBox {...rest} style={{height: '30vh'}} tone="transparent">
       <Card data-container tone="inherit">
-        <img src={src} data-testid="hotspot-image-input" />
+        <img src={src} data-testid="hotspot-image-input" alt={props.alt} />
       </Card>
       <Overlay justify="flex-end" padding={3} tone={tone} drag={drag}>
         {drag && (
