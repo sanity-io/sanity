@@ -8,6 +8,8 @@ export const FileButton = styled(MenuItem)(({theme}: {theme: Theme}) => {
   const border = {width: 1, color: 'var(--card-border-color)'}
 
   return css`
+    position: relative;
+
     &:not([data-disabled='true']) {
       &:focus-within {
         box-shadow: ${focusRingStyle({base, border, focusRing})};
