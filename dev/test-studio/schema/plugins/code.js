@@ -1,8 +1,9 @@
 import {CodeBlockIcon} from '@sanity/icons'
 
-// eslint-disable-next-line import/no-unassigned-import
+/* eslint-disable import/no-unassigned-import */
 import 'ace-builds/src-noconflict/mode-rust'
 import 'ace-builds/src-noconflict/mode-c_cpp'
+/* eslint-enable import/no-unassigned-import */
 
 export default {
   name: 'codeTest',
