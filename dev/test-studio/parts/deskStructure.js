@@ -9,8 +9,8 @@ import {
   EllipsisHorizontalIcon,
 } from '@sanity/icons'
 import {orderableDocumentListDeskItem} from '@sanity/orderable-document-list'
-import React from 'react'
 import schema from 'part:@sanity/base/schema'
+import React from 'react'
 import {uuid} from '@sanity/uuid'
 
 // Icons
@@ -342,7 +342,7 @@ export default () =>
 
               S.listItem()
                 .title('Anything with a title')
-                .icon(() => <span data-sanity-icon>T</span>)
+                .icon(() => <div>Te</div>)
                 .child(() =>
                   delay(
                     S.documentList({
