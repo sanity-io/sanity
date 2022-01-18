@@ -58,6 +58,10 @@ export default async (opts, context) => {
   await Promise.all([
     writeFileIfNotExists('sanity.json', `${JSON.stringify(sanityManifest, null, 2)}\n`),
     writeFileIfNotExists('package.json', packageManifest),
+    writeFileIfNotExists(
+      '.eslintrc',
+      `${JSON.stringify({extends: '@sanity/eslint-config-studio'}, null, 2)}\n`
+    ),
   ])
 
   // Finish up by providing init process with template-specific info
