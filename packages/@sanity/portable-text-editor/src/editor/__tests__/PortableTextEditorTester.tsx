@@ -52,7 +52,7 @@ export const PortableTextEditorTester = forwardRef(function PortableTextEditorTe
     value?: PortableTextEditorProps['value']
     onChange?: PortableTextEditorProps['onChange']
     selection?: PortableTextEditorProps['selection']
-    placeholderText?: string
+    renderPlaceholder?: () => React.ReactNode
   },
   ref: ForwardedRef<PortableTextEditor>
 ) {
@@ -73,7 +73,7 @@ export const PortableTextEditorTester = forwardRef(function PortableTextEditorTe
     >
       <PortableTextEditable
         selection={props.selection || undefined}
-        placeholderText={props.placeholderText || 'Type here'}
+        renderPlaceholder={props.renderPlaceholder}
       />
     </PortableTextEditor>
   )

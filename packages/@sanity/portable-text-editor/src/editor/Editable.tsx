@@ -1,4 +1,4 @@
-import {Descendant, Transforms, Element as SlateElement, Editor} from 'slate'
+import {Descendant, Transforms, Element as SlateElement} from 'slate'
 import {isEqual} from 'lodash'
 import isHotkey from 'is-hotkey'
 import React, {useCallback, useMemo, useState, useEffect, forwardRef, useRef} from 'react'
@@ -18,7 +18,7 @@ import {
 } from '../types/editor'
 import {PortableTextBlock} from '../types/portableText'
 import {HotkeyOptions} from '../types/options'
-import {toSlateValue} from '../utils/values'
+import {isEqualToEmptyEditor, toSlateValue} from '../utils/values'
 import {normalizeSelection} from '../utils/selection'
 import {toPortableTextRange, toSlateRange} from '../utils/ranges'
 import {debugWithName} from '../utils/debug'
@@ -35,6 +35,12 @@ const debug = debugWithName('component:Editable')
 
 // Weakmap for testing if we need to update the state value from a new value coming in from props
 const VALUE_TO_SLATE_VALUE: WeakMap<PortableTextBlock[], Descendant[]> = new WeakMap()
+
+const PLACEHOLDER_STYLE: React.CSSProperties = {
+  opacity: 0.5,
+  position: 'absolute',
+  userSelect: 'none',
+}
 
 const NOOP = () => {
   // Nope
@@ -60,11 +66,11 @@ type EditableProps = {
   onBeforeInput?: OnBeforeInputFn
   onPaste?: OnPasteFn
   onCopy?: OnCopyFn
-  placeholderText?: string
   renderAnnotation?: RenderAnnotationFunction
   renderBlock?: RenderBlockFunction
   renderChild?: RenderChildFunction
   renderDecorator?: RenderDecoratorFunction
+  renderPlaceholder?: () => React.ReactNode
   scrollSelectionIntoView?: ScrollSelectionIntoViewFunction
   selection?: EditorSelection
   spellCheck?: boolean
@@ -79,11 +85,11 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     onBeforeInput,
     onPaste,
     onCopy,
-    placeholderText,
     renderAnnotation,
     renderBlock,
     renderChild,
     renderDecorator,
+    renderPlaceholder,
     selection: propsSelection,
     scrollSelectionIntoView,
     spellCheck,
@@ -116,6 +122,11 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     }),
     [blockType.name, keyGenerator, portableTextFeatures.styles]
   )
+
+  const isEmpty = useMemo(() => isEqualToEmptyEditor(slateEditor.children, portableTextFeatures), [
+    portableTextFeatures,
+    slateEditor.children,
+  ])
 
   const initialValue = useMemo(
     () =>
@@ -177,6 +188,24 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
 
   const renderLeaf = useCallback(
     (lProps) => {
+      if (renderPlaceholder && lProps.leaf.placeholder) {
+        return (
+          <>
+            <div style={PLACEHOLDER_STYLE} contentEditable={false}>
+              {renderPlaceholder()}
+            </div>
+            <Leaf
+              {...lProps}
+              keyGenerator={keyGenerator}
+              portableTextFeatures={portableTextFeatures}
+              renderAnnotation={renderAnnotation}
+              renderChild={renderChild}
+              renderDecorator={renderDecorator}
+              readOnly={readOnly}
+            />
+          </>
+        )
+      }
       return (
         <Leaf
           {...lProps}
@@ -189,7 +218,15 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         />
       )
     },
-    [portableTextFeatures, keyGenerator, renderAnnotation, renderChild, renderDecorator, readOnly]
+    [
+      keyGenerator,
+      portableTextFeatures,
+      renderAnnotation,
+      renderChild,
+      renderDecorator,
+      renderPlaceholder,
+      readOnly,
+    ]
   )
 
   // Restore value from props
@@ -444,6 +481,25 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     }
   }, [portableTextEditor, scrollSelectionIntoView])
 
+  const decorate = useCallback(() => {
+    if (isEmpty) {
+      return [
+        {
+          anchor: {
+            path: [0, 0],
+            offset: 0,
+          },
+          focus: {
+            path: [0, 0],
+            offset: 0,
+          },
+          placeholder: true,
+        },
+      ]
+    }
+    return []
+  }, [isEmpty])
+
   // The editor
   const slateEditable = useMemo(
     () => (
@@ -451,13 +507,13 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         <SlateEditable
           autoFocus={false}
           className="pt-editable"
+          decorate={decorate}
           onBlur={handleOnBlur}
           onCopy={handleCopy}
           onDOMBeforeInput={handleOnBeforeInput}
           onFocus={handleOnFocus}
           onKeyDown={handleKeyDown}
           onPaste={handlePaste}
-          placeholder={placeholderText}
           readOnly={readOnly}
           renderElement={renderElement}
           renderLeaf={renderLeaf}
@@ -467,15 +523,15 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       </Slate>
     ),
     [
-      handleCopy,
-      handleKeyDown,
-      handleOnBeforeInput,
-      handleOnBlur,
-      handleOnFocus,
-      handlePaste,
-      initialValue,
-      placeholderText,
       slateEditor,
+      initialValue,
+      decorate,
+      handleOnBlur,
+      handleCopy,
+      handleOnBeforeInput,
+      handleOnFocus,
+      handleKeyDown,
+      handlePaste,
       readOnly,
       renderElement,
       renderLeaf,

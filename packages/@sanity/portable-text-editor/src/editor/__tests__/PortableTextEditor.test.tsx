@@ -19,13 +19,13 @@ const helloBlock: PortableTextBlock = {
 }
 
 describe('initialization', () => {
-  it('receives initial onChange events and has custom placeholder text', () => {
+  it('receives initial onChange events and has custom placeholder', () => {
     const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
     const onChange = jest.fn()
     const {container} = render(
       <PortableTextEditorTester
         onChange={onChange}
-        placeholderText="Jot something down here"
+        renderPlaceholder={() => 'Jot something down here'}
         ref={editorRef}
         type={type}
         value={undefined}
@@ -47,7 +47,7 @@ describe('initialization', () => {
             data-slate-node="value"
             role="textbox"
             spellcheck="false"
-            style="position: relative; outline: none; white-space: pre-wrap; word-wrap: break-word; min-height: 0px;"
+            style="position: relative; outline: none; white-space: pre-wrap; word-wrap: break-word;"
             zindex="-1"
           >
             <div
@@ -61,19 +61,18 @@ describe('initialization', () => {
                   <span
                     data-slate-node="text"
                   >
+                    <div
+                      contenteditable="false"
+                      style="opacity: 0.5; position: absolute; user-select: none;"
+                    >
+                      Jot something down here
+                    </div>
                     <span
                       data-slate-leaf="true"
                     >
                       <span
                         draggable="false"
                       >
-                        <span
-                          contenteditable="false"
-                          data-slate-placeholder="true"
-                          style="position: absolute; pointer-events: none; width: 100%; max-width: 100%; display: block; opacity: 0.333; user-select: none; text-decoration: none;"
-                        >
-                          Jot something down here
-                        </span>
                         <span
                           data-slate-length="0"
                           data-slate-zero-width="n"
