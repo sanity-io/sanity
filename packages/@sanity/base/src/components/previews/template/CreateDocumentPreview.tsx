@@ -1,10 +1,13 @@
-import React from 'react'
-import {Box, Flex, Stack, Text} from '@sanity/ui'
+import React, {useMemo} from 'react'
+import {Box, Flex, rem, Stack, Text, TextSkeleton} from '@sanity/ui'
 import styled from 'styled-components'
+import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {IntentButton} from '../../IntentButton'
-import {MediaDimensions} from '../types'
+import {PreviewMediaDimensions} from '../types'
+import {Media} from '../_common/Media'
+import {PREVIEW_MEDIA_SIZE} from '../constants'
 
-interface CreateDocumentPreviewProps {
+export interface CreateDocumentPreviewProps {
   title?: React.ReactNode | React.FunctionComponent<unknown>
   subtitle?: React.ReactNode | React.FunctionComponent<{layout: 'default'}>
   description?: React.ReactNode | React.FunctionComponent<unknown>
@@ -18,14 +21,14 @@ interface CreateDocumentPreviewProps {
   }
   templateParams?: Record<string, unknown>
   onClick?: () => void
-  mediaDimensions?: MediaDimensions
+  mediaDimensions?: PreviewMediaDimensions
 }
 
-const DEFAULT_MEDIA_DIMENSION: MediaDimensions = {
-  width: 80,
-  height: 80,
+const DEFAULT_MEDIA_DIMENSION: PreviewMediaDimensions = {
+  ...PREVIEW_MEDIA_SIZE.default,
   aspect: 1,
   fit: 'crop',
+  dpr: getDevicePixelRatio(),
 }
 
 const BLOCK_STYLE = {
@@ -48,6 +51,20 @@ const Root = styled(Box)`
   }
 `
 
+const HeaderFlex = styled(Flex).attrs({align: 'center'})`
+  height: ${rem(PREVIEW_MEDIA_SIZE.default.height)};
+`
+
+const TitleSkeleton = styled(TextSkeleton).attrs({animated: true, radius: 1})`
+  max-width: ${rem(160)};
+  width: 80%;
+`
+
+const SubtitleSkeleton = styled(TextSkeleton).attrs({animated: true, radius: 1, size: 1})`
+  max-width: ${rem(120)};
+  width: 60%;
+`
+
 /**
  * @deprecated
  */
@@ -63,65 +80,60 @@ export function CreateDocumentPreview(props: CreateDocumentPreviewProps) {
     templateParams,
   } = props
 
+  const intentButtonParams = useMemo(() => [params, templateParams], [params, templateParams])
+
   if (isPlaceholder || !params) {
     return (
-      <Root>
-        <Stack space={3} flex={1}>
-          <Text as="h2">Loading…</Text>
-          <Text as="p" size={1}>
-            Loading…
-          </Text>
-        </Stack>
-        {media !== false && <Flex align="flex-start" padding={2} />}
+      <Root padding={3}>
+        <HeaderFlex>
+          <Stack flex={1} space={2}>
+            <TitleSkeleton />
+            <SubtitleSkeleton />
+          </Stack>
+        </HeaderFlex>
       </Root>
     )
   }
 
-  const content = (
-    <Root>
-      <Flex align={description ? 'flex-start' : 'center'}>
-        <Stack space={3} flex={1}>
-          <Text as="h2" style={{whiteSpace: 'break-spaces'}}>
-            {typeof title !== 'function' && title}
-            {typeof title === 'function' && title({layout: 'default'})}
-          </Text>
-          {subtitle && (
-            <Text size={1} as="p" textOverflow="ellipsis">
-              {(typeof subtitle === 'function' && subtitle({layout: 'default'})) || subtitle}
-            </Text>
-          )}
-
-          {description && (
-            <Text as="p" size={1} style={{whiteSpace: 'break-spaces'}}>
-              {description}
-            </Text>
-          )}
-        </Stack>
-        {media && (
-          <Text size={1}>
-            <Flex align="flex-start" paddingLeft={2}>
-              {typeof media === 'function' &&
-                media({dimensions: mediaDimensions, layout: 'default'})}
-              {typeof media === 'string' && <span>{media}</span>}
-              {React.isValidElement(media) && media}
-            </Flex>
-          </Text>
-        )}
-      </Flex>
-    </Root>
-  )
-
   return (
     <IntentButton
       intent="create"
-      params={[params, templateParams]}
-      title={subtitle ? `Create new ${title} (${subtitle})` : `Create new ${title}`}
-      onClick={props.onClick}
-      style={BLOCK_STYLE}
       mode="ghost"
-      fontSize={2}
+      onClick={props.onClick}
+      params={intentButtonParams}
+      style={BLOCK_STYLE}
+      title={subtitle ? `Create new ${title} (${subtitle})` : `Create new ${title}`}
     >
-      {content}
+      <Root>
+        <HeaderFlex>
+          <Stack flex={1} space={2}>
+            <Text>
+              {typeof title !== 'function' && title}
+              {typeof title === 'function' && title({layout: 'default'})}
+            </Text>
+
+            {subtitle && (
+              <Text muted size={1} textOverflow="ellipsis">
+                {(typeof subtitle === 'function' && subtitle({layout: 'default'})) || subtitle}
+              </Text>
+            )}
+          </Stack>
+
+          {media && (
+            <Flex align="flex-start" paddingLeft={2}>
+              <Media dimensions={mediaDimensions} layout="default" media={media} />
+            </Flex>
+          )}
+        </HeaderFlex>
+
+        {description && (
+          <Box marginTop={3}>
+            <Text muted size={1} style={{whiteSpace: 'break-spaces'}}>
+              {description}
+            </Text>
+          </Box>
+        )}
+      </Root>
     </IntentButton>
   )
 }

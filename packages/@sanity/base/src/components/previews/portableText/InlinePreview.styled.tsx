@@ -1,10 +1,11 @@
-import {Text, Theme} from '@sanity/ui'
+import {rem, Text, Theme} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 
 export const RootSpan = styled.span`
   display: inline-flex;
   align-items: center;
   vertical-align: top;
+  height: calc(1em - 1px);
   max-width: 100%;
 `
 
@@ -22,8 +23,7 @@ export const MediaSpan = styled.span`
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: ${({theme}) => theme.sanity.radius[1]}px;
-    margin-right: ${({theme}) => theme.sanity.space[1]}px;
+    border-radius: ${({theme}) => rem(theme.sanity.radius[1])};
   }
 
   & img + span {
@@ -34,7 +34,7 @@ export const MediaSpan = styled.span`
     bottom: 0;
     box-shadow: inset 0 0 0 1px var(--card-fg-color);
     opacity: 0.2;
-    border-radius: ${({theme}) => theme.sanity.radius[1]}px;
+    border-radius: ${({theme}) => rem(theme.sanity.radius[1])};
   }
 
   & svg {

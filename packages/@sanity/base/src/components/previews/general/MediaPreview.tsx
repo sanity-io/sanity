@@ -1,79 +1,98 @@
-import React from 'react'
-import {Box, Text} from '@sanity/ui'
+import React, {useMemo} from 'react'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
-import {ProgressCircle} from '../../progress'
-import {MediaDimensions, PreviewProps} from '../types'
-import {MediaWrapper, MediaString, Root, ProgressWrapper} from './MediaPreview.styled'
+import {Text, Tooltip} from '@sanity/ui'
+import {CircularProgress} from '../../progress'
+import {Media} from '../_common/Media'
+import {PREVIEW_MEDIA_SIZE} from '../constants'
+import {PreviewMediaDimensions, PreviewProps} from '../types'
+import {
+  MediaSkeleton,
+  MediaFlex,
+  ProgressFlex,
+  RootBox,
+  TooltipContentStack,
+} from './MediaPreview.styled'
 
-const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
-  width: 160,
-  height: 160,
+interface MediaPreviewProps extends PreviewProps<'media'> {
+  withRadius?: boolean
+  withBorder?: boolean
+}
+
+const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
+  ...PREVIEW_MEDIA_SIZE.media,
   aspect: 1,
   fit: 'crop',
   dpr: getDevicePixelRatio(),
 }
 
-export const MediaPreview: React.FunctionComponent<
-  PreviewProps<'media'> & {withRadius?: boolean; withBorder?: boolean}
-> = (props) => {
+export function MediaPreview(props: MediaPreviewProps) {
   const {
-    title,
     media,
     mediaDimensions = DEFAULT_MEDIA_DIMENSIONS,
     children,
     isPlaceholder,
-    progress,
-    withRadius = true,
+    progress = -1,
+    subtitle,
+    title,
     withBorder = true,
-    ...rest
+    withRadius = true,
+    ...restProps
   } = props
-  const aspect = mediaDimensions?.aspect || DEFAULT_MEDIA_DIMENSIONS.aspect!
-  const STYLES_PADDER = {
-    paddingTop: `${100 / aspect}%`,
-  }
 
-  if (isPlaceholder) {
+  const aspect = mediaDimensions.aspect
+
+  const STYLES_PADDER = useMemo(() => ({paddingBottom: `${100 / aspect}%`}), [aspect])
+
+  const tooltipContent = useMemo(() => {
+    if (!title || !subtitle) {
+      return null
+    }
+
     return (
-      <Root overflow="hidden" flex={1}>
-        <div style={STYLES_PADDER} />
-      </Root>
+      <TooltipContentStack>
+        {title && (
+          <Text align="center" size={1} weight="semibold">
+            {typeof title === 'function' ? title({layout: 'media'}) : title}
+          </Text>
+        )}
+
+        {subtitle && (
+          <Text align="center" muted size={1}>
+            {typeof subtitle === 'function' ? subtitle({layout: 'media'}) : subtitle}
+          </Text>
+        )}
+      </TooltipContentStack>
     )
-  }
+  }, [subtitle, title])
 
   return (
-    <Root
-      overflow="hidden"
-      flex={1}
-      title={typeof title === 'string' ? title : undefined}
-      {...rest}
-    >
+    <RootBox data-testid="media-preview" overflow="hidden" flex={1} {...restProps}>
       <div style={STYLES_PADDER} />
 
-      <MediaWrapper
-        align="center"
-        justify="center"
-        $withBorder={withBorder}
-        $withRadius={withRadius}
-      >
-        {typeof media === 'undefined' && <Box>{title}</Box>}
-        {typeof media === 'function' &&
-          media({
-            dimensions: mediaDimensions,
-            layout: 'media',
-          })}
-        {typeof media === 'string' && (
-          <MediaString padding={1}>
-            <Text textOverflow="ellipsis">{media}</Text>
-          </MediaString>
-        )}
-        {React.isValidElement(media) && media}
-        {typeof progress === 'number' && progress > -1 && (
-          <ProgressWrapper align="center" justify="center">
-            <ProgressCircle percent={progress} showPercent text="Uploaded" />
-          </ProgressWrapper>
-        )}
-      </MediaWrapper>
+      <Tooltip content={tooltipContent} disabled={!tooltipContent} placement="top" portal>
+        <MediaFlex>
+          {isPlaceholder ? (
+            <MediaSkeleton />
+          ) : (
+            <Media
+              border={withBorder}
+              dimensions={mediaDimensions}
+              layout="media"
+              media={media}
+              radius={withRadius ? 2 : 0}
+              responsive
+            />
+          )}
+
+          {typeof progress === 'number' && progress > -1 && (
+            <ProgressFlex>
+              <CircularProgress value={progress} />
+            </ProgressFlex>
+          )}
+        </MediaFlex>
+      </Tooltip>
+
       {children}
-    </Root>
+    </RootBox>
   )
 }
