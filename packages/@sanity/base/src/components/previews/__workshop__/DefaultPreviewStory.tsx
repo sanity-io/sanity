@@ -2,7 +2,7 @@ import {DocumentIcon, EditIcon} from '@sanity/icons'
 import {Card, Container, Flex, Text} from '@sanity/ui'
 import {useBoolean, useString} from '@sanity/ui-workshop'
 import React from 'react'
-import {DefaultPreview} from '../defaultPreview'
+import {DefaultPreview} from '../general/DefaultPreview'
 
 export default function DefaultPreviewStory() {
   const title = useString('Title', 'Title', 'Props')

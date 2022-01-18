@@ -3,7 +3,7 @@ import {Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {useBoolean, useString} from '@sanity/ui-workshop'
 import React from 'react'
 import styled from 'styled-components'
-import {InlinePreview} from '../inlinePreview'
+import {InlinePreview} from '../portableText/InlinePreview'
 
 const PreviewWrapper = styled.span`
   display: inline-block;

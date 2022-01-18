@@ -1,7 +1,7 @@
 import React from 'react'
 import {Box, Stack, Text, Skeleton, TextSkeleton, useTheme} from '@sanity/ui'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
-import {MediaDimensions, PreviewProps} from './types'
+import {MediaDimensions, PreviewProps} from '../types'
 import {
   Root,
   Top,
@@ -10,7 +10,7 @@ import {
   StatusWrapper,
   MediaWrapper,
   MediaString,
-} from './detailPreview.styled'
+} from './DetailPreview.styled'
 
 const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   width: 80,
