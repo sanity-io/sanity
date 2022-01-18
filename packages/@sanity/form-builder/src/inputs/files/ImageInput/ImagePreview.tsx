@@ -1,7 +1,7 @@
-import React, {useEffect, useRef, useState} from 'react'
+import React, {ComponentProps} from 'react'
 
 import {AccessDeniedIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
-import {Card, Box, Heading, Text, CardTone} from '@sanity/ui'
+import {Card, Box, Heading, Text} from '@sanity/ui'
 import {RatioBox, Overlay, FlexOverlay} from './ImagePreview.styled'
 
 interface Props {
@@ -11,42 +11,14 @@ interface Props {
   src: string
 }
 
-export function ImagePreview(props: Props) {
-  const {drag, readOnly, isRejected, src} = props
-  const imageContainer = useRef()
-  const [tone, setTone] = useState('default' as CardTone)
+export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
+  const {drag, readOnly, isRejected, src, ...rest} = props
 
-  useEffect(() => {
-    const acceptTone = isRejected || readOnly ? 'critical' : 'primary'
-    setTone(drag ? acceptTone : 'default')
-
-    return undefined
-  }, [drag, isRejected, readOnly, tone])
-
-  function HoverIcon() {
-    if (isRejected) {
-      return <AccessDeniedIcon />
-    }
-    if (readOnly) {
-      return <ReadOnlyIcon />
-    }
-    return <ImageIcon />
-  }
-
-  function HoverText() {
-    let message = 'Drop image to upload'
-    if (isRejected) {
-      message = 'Cannot upload this file here'
-    }
-    if (readOnly) {
-      message = 'This field is read only'
-    }
-
-    return <Text size={1}>{message}</Text>
-  }
+  const acceptTone = isRejected || readOnly ? 'critical' : 'primary'
+  const tone = drag ? acceptTone : 'default'
 
   return (
-    <RatioBox ref={imageContainer} style={{height: '30vh'}} tone="inherit">
+    <RatioBox {...rest} style={{height: '30vh'}} tone="transparent">
       <Card data-container tone="inherit">
         <img src={src} data-testid="hotspot-image-input" />
       </Card>
@@ -55,13 +27,35 @@ export function ImagePreview(props: Props) {
           <FlexOverlay direction="column" align="center" justify="center">
             <Box marginBottom={3}>
               <Heading>
-                <HoverIcon />
+                <HoverIcon isRejected={isRejected} readOnly={readOnly} />
               </Heading>
             </Box>
-            <HoverText />
+            <HoverText isRejected={isRejected} readOnly={readOnly} />
           </FlexOverlay>
         )}
       </Overlay>
     </RatioBox>
   )
+}
+
+function HoverIcon({isRejected, readOnly}) {
+  if (isRejected) {
+    return <AccessDeniedIcon />
+  }
+  if (readOnly) {
+    return <ReadOnlyIcon />
+  }
+  return <ImageIcon />
+}
+
+function HoverText({isRejected, readOnly}) {
+  let message = 'Drop image to upload'
+  if (isRejected) {
+    message = 'Cannot upload this file here'
+  }
+  if (readOnly) {
+    message = 'This field is read only'
+  }
+
+  return <Text size={1}>{message}</Text>
 }

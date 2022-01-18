@@ -1,7 +1,7 @@
 /* eslint-disable import/no-unresolved */
 
 import {FormFieldSet, ImperativeToast} from '@sanity/base/components'
-import {Box, Button, Dialog, Menu, MenuButton, MenuItem, Stack, ToastParams} from '@sanity/ui'
+import {Box, Button, Card, Dialog, Menu, MenuButton, MenuItem, Stack, ToastParams} from '@sanity/ui'
 import {get, groupBy, uniqueId} from 'lodash'
 import {Observable, Subscription} from 'rxjs'
 import {ChangeIndicatorForFieldPath} from '@sanity/base/change-indicators'
@@ -395,7 +395,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
     return (
       <ImagePreview
-        border={border}
         drag={!value?._upload && hoveringFiles.length > 0}
         isRejected={rejectedFilesCount > 0 || !directUploads}
         readOnly={readOnly}
@@ -580,17 +579,30 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     const accept = get(type, 'options.accept', 'image/*')
 
     return (
-      <UploadPlaceholder
-        readOnly={readOnly}
-        onUpload={this.handleSelectFiles}
-        browse={this.renderBrowser()}
-        hoveringFiles={hoveringFiles}
-        acceptedFiles={acceptedFiles}
-        rejectedFilesCount={rejectedFilesCount}
-        type="image"
-        accept={accept}
-        directUploads={directUploads}
-      />
+      <div style={{padding: 1}}>
+        <Card
+          tone={readOnly ? 'transparent' : 'inherit'}
+          border
+          padding={3}
+          style={
+            hoveringFiles.length === 0
+              ? {borderStyle: 'dashed'}
+              : {borderStyle: 'dashed', borderColor: 'transparent'}
+          }
+        >
+          <UploadPlaceholder
+            browse={this.renderBrowser()}
+            onUpload={this.handleSelectFiles}
+            readOnly={readOnly}
+            hoveringFiles={hoveringFiles}
+            acceptedFiles={acceptedFiles}
+            rejectedFilesCount={rejectedFilesCount}
+            type="image"
+            accept={accept}
+            directUploads={directUploads}
+          />
+        </Card>
+      </div>
     )
   }
 
@@ -731,7 +743,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
       return value?._upload && value?.asset ? 'transparent' : 'default'
     }
-    const showDropArea = value?._upload || !value?.asset
+    const hasValueOrUpload = Boolean(value?._upload || value?.asset)
 
     return (
       <>
@@ -771,9 +783,11 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                   onFilesOut={this.handleFilesOut}
                   onFocus={this.handleFileTargetFocus}
                   onBlur={this.handleFileTargetBlur}
-                  $border={!showDropArea}
                   tone={getFileTone()}
-                  padding={showDropArea ? 3 : 1}
+                  $border={hasValueOrUpload || hoveringFiles.length > 0}
+                  style={{padding: 1}}
+                  sizing="border"
+                  radius={2}
                 >
                   {!value?.asset && this.renderUploadPlaceholder()}
                   {!value?._upload && value?.asset && (

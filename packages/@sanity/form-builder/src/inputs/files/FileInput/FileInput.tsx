@@ -81,8 +81,6 @@ type Focusable = {
   focus: () => void
 }
 
-const DASHED_WRAPPER_STYLE = {borderStyle: 'dashed'}
-
 export default class FileInput extends React.PureComponent<Props, FileInputState> {
   _inputId = uniqueId('FileInput')
   dialogId = uniqueId('fileinput-dialog')
@@ -437,7 +435,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     )
   }
 
-  renderAssetHover(tone) {
+  renderAssetMenu(tone) {
     const {type, readOnly, directUploads} = this.props
     const {hoveringFiles} = this.state
 
@@ -526,7 +524,11 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
           tone={readOnly ? 'transparent' : 'inherit'}
           border
           padding={3}
-          style={DASHED_WRAPPER_STYLE}
+          style={
+            hoveringFiles.length === 0
+              ? {borderStyle: 'dashed'}
+              : {borderStyle: 'dashed', borderColor: 'transparent'}
+          }
         >
           <UploadPlaceholder
             browse={this.renderBrowser()}
@@ -641,14 +643,14 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                     onFocus={this.handleFileTargetFocus}
                     onBlur={this.handleFileTargetBlur}
                     tone={getFileTone()}
-                    $border={hasValueOrUpload}
+                    $border={hasValueOrUpload || hoveringFiles.length > 0}
                     padding={hasValueOrUpload ? 1 : 0}
                     radius={2}
                   >
                     {value?.asset && this.renderAsset(otherFields.length > 0)}
                     {!value?.asset && this.renderUploadPlaceholder()}
                     {value?.asset && hoveringFiles.length > 0
-                      ? this.renderAssetHover(getFileTone())
+                      ? this.renderAssetMenu(getFileTone())
                       : null}
                   </FileTarget>
                 )}
