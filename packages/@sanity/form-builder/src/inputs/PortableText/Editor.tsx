@@ -95,18 +95,20 @@ export function Editor(props: EditorProps) {
     }
   }, [])
 
+  const renderPlaceholder = useCallback(() => <>Empty</>, [])
+
   const editable = useMemo(
     () => (
       <PortableTextEditable
         hotkeys={hotkeys}
         onCopy={onCopy}
         onPaste={onPaste}
-        placeholderText="Empty"
         ref={editableRef}
         renderAnnotation={renderAnnotation}
         renderBlock={renderBlock}
         renderChild={renderChild}
         renderDecorator={renderDecorator}
+        renderPlaceholder={renderPlaceholder}
         scrollSelectionIntoView={scrollSelectionIntoView}
         selection={initialSelection}
         spellCheck={false} // This is taken care of via renderBlock prop
@@ -120,6 +122,7 @@ export function Editor(props: EditorProps) {
       renderAnnotation,
       renderBlock,
       renderChild,
+      renderPlaceholder,
       scrollSelectionIntoView,
     ]
   )
