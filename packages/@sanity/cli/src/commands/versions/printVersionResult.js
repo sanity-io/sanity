@@ -9,18 +9,23 @@ export default async (args, context) => {
 export function printResult(versions, print) {
   const {versionLength, formatName} = getFormatters(versions)
   versions.forEach((mod) => {
-    const version = padStart(mod.installed, versionLength)
+    const version = padStart(mod.installed || '<missing>', versionLength)
     const latest =
       mod.installed === mod.latest
         ? chalk.green('(up to date)')
         : `(latest: ${chalk.yellow(mod.latest)})`
+
     print(`${formatName(mod.name)} ${version} ${latest}`)
   })
 }
 
 export function getFormatters(versions) {
-  const nameLength = versions.reduce(longestProp('name'), 0)
-  const versionLength = versions.reduce(longestProp('installed'), 0)
+  const nameLength = versions.reduce((max, mod) => Math.max(max, mod.name.length), 0)
+  const versionLength = versions.reduce(
+    (max, mod) => Math.max(max, (mod.installed || '<missing>').length),
+    0
+  )
+
   const formatName = (name) =>
     padEnd(name, nameLength + 1).replace(
       /^@sanity\/(.*)/,
@@ -28,8 +33,4 @@ export function getFormatters(versions) {
     )
 
   return {nameLength, versionLength, formatName}
-}
-
-function longestProp(prop) {
-  return (max, obj) => Math.max(max, obj[prop].length)
 }
