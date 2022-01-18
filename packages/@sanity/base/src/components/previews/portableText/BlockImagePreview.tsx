@@ -1,17 +1,20 @@
-import React, {useCallback} from 'react'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
+import React, {useCallback} from 'react'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
-import {MediaDimensions, PreviewProps} from '../types'
+import {Media} from '../_common/Media'
+import {PREVIEW_MEDIA_SIZE} from '../constants'
+import {PreviewMediaDimensions, PreviewProps} from '../types'
 import {HeaderFlex, MediaCard, RootBox} from './BlockImagePreview.styled'
 
-const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
-  width: 600,
-  height: 400,
+type BlockImagePreviewProps = PreviewProps<'block'>
+
+const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
+  ...PREVIEW_MEDIA_SIZE.blockImage,
   fit: 'fillmax',
   dpr: getDevicePixelRatio(),
 }
 
-export const BlockImagePreview: React.FunctionComponent<PreviewProps<'block'>> = (props) => {
+export function BlockImagePreview(props: BlockImagePreviewProps) {
   const {
     actions,
     title,
@@ -24,20 +27,21 @@ export const BlockImagePreview: React.FunctionComponent<PreviewProps<'block'>> =
     status,
   } = props
 
-  const getRatio = useCallback((dimensions: MediaDimensions) => {
+  const getRatio = useCallback((dimensions: PreviewMediaDimensions) => {
     const {height, width} = dimensions
 
     return (height / width) * 100
   }, [])
 
   return (
-    <RootBox overflow="hidden">
+    <RootBox>
       <Stack>
-        <HeaderFlex align="center" paddingLeft={3} paddingRight={1} paddingY={1}>
-          <Stack space={1} flex={1}>
-            <Text size={1} textOverflow="ellipsis" weight="medium">
+        <HeaderFlex paddingLeft={2} paddingRight={1} paddingY={1}>
+          <Stack flex={1} space={2}>
+            <Text size={1} textOverflow="ellipsis" weight="semibold">
               {title || fallbackTitle}
             </Text>
+
             {subtitle && (
               <Text muted size={1} textOverflow="ellipsis">
                 {subtitle}
@@ -45,31 +49,32 @@ export const BlockImagePreview: React.FunctionComponent<PreviewProps<'block'>> =
             )}
           </Stack>
 
-          <Flex align="center">
+          <Flex gap={1} paddingLeft={1}>
             {status && (
-              <Box marginX={4}>
+              <Box paddingX={2} paddingY={3}>
                 {typeof status === 'function' ? status({layout: 'block'}) : status}
               </Box>
             )}
-            {actions && <div>{actions}</div>}
+
+            {actions}
           </Flex>
         </HeaderFlex>
 
         <MediaCard
-          __unstable_checkered
-          borderTop
-          sizing="border"
-          display="flex"
-          tone="inherit"
           $ratio={getRatio(mediaDimensions)}
+          __unstable_checkered
+          display="flex"
+          sizing="border"
+          tone="inherit"
         >
-          {typeof media === 'function' &&
-            media({
-              dimensions: mediaDimensions,
-              layout: 'block',
-            })}
-          {typeof media === 'string' && <div>{media}</div>}
-          {React.isValidElement(media) && media}
+          <Media
+            border={false}
+            dimensions={mediaDimensions}
+            layout="blockImage"
+            media={media}
+            radius={0}
+            responsive
+          />
         </MediaCard>
       </Stack>
 
@@ -80,6 +85,7 @@ export const BlockImagePreview: React.FunctionComponent<PreviewProps<'block'>> =
           </Text>
         </Box>
       )}
+
       {children && <div>{children}</div>}
     </RootBox>
   )

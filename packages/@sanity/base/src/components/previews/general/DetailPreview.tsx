@@ -1,26 +1,29 @@
 import React from 'react'
-import {Box, Stack, Text, Skeleton, TextSkeleton, useTheme} from '@sanity/ui'
+import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
-import {MediaDimensions, PreviewProps} from '../types'
+import {Media} from '../_common/Media'
+import {PREVIEW_MEDIA_SIZE} from '../constants'
+import {PreviewMediaDimensions, PreviewProps} from '../types'
 import {
-  Root,
-  Top,
-  Content,
-  Header,
-  StatusWrapper,
-  MediaWrapper,
-  MediaString,
+  DescriptionSkeleton,
+  DescriptionText,
+  MediaSkeleton,
+  RootFlex,
+  StatusBox,
+  SubtitleSkeleton,
+  TitleSkeleton,
 } from './DetailPreview.styled'
 
-const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
-  width: 80,
-  height: 80,
+export type DetailPreviewProps = PreviewProps<'detail'>
+
+const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
+  ...PREVIEW_MEDIA_SIZE.detail,
   fit: 'crop',
   aspect: 1,
   dpr: getDevicePixelRatio(),
 }
 
-export const DetailPreview: React.FunctionComponent<PreviewProps<'detail'>> = (props) => {
+export function DetailPreview(props: DetailPreviewProps) {
   const {
     title,
     subtitle,
@@ -31,38 +34,45 @@ export const DetailPreview: React.FunctionComponent<PreviewProps<'detail'>> = (p
     children,
     isPlaceholder,
   } = props
-  const {fonts} = useTheme().sanity
-  const textSize = fonts.text.sizes[1]
-  const maxHeight = textSize.lineHeight * 2 - textSize.ascenderHeight - textSize.descenderHeight
+
+  const statusNode = status && (
+    <StatusBox marginLeft={3} paddingRight={1}>
+      {typeof status === 'function' ? status({layout: 'detail'}) : status}
+    </StatusBox>
+  )
 
   if (isPlaceholder) {
     return (
-      <Root align="center">
-        <Skeleton style={{width: 80, height: 80}} radius={2} marginRight={2} animated />
-        <Stack space={2} flex={1}>
-          <TextSkeleton style={{maxWidth: 320}} radius={1} animated />
-          <TextSkeleton style={{maxWidth: 200}} radius={1} size={1} animated />
-        </Stack>
-      </Root>
+      <RootFlex data-testid="detail-preview">
+        {media !== false && <MediaSkeleton data-testid="detail-preview__media" />}
+
+        <Box flex={1} paddingLeft={media === false ? 1 : 2}>
+          <Flex align="center" data-testid="detail-preview__header">
+            <Stack flex={1} space={2}>
+              <TitleSkeleton />
+              <SubtitleSkeleton />
+            </Stack>
+
+            {statusNode}
+          </Flex>
+
+          {description && (
+            <Box marginTop={3}>
+              <DescriptionSkeleton />
+            </Box>
+          )}
+        </Box>
+      </RootFlex>
     )
   }
 
   return (
-    <Root align="center">
-      {media !== false && (
-        <MediaWrapper align="center" justify="center" marginRight={2}>
-          {typeof media === 'function' &&
-            media({
-              dimensions: mediaDimensions,
-              layout: 'detail',
-            })}
-          {typeof media === 'string' && <MediaString>{media}</MediaString>}
-          {React.isValidElement(media) && media}
-        </MediaWrapper>
-      )}
-      <Content justify="center" direction="column">
-        <Top align="center" justify="space-between">
-          <Header space={2} flex={1}>
+    <RootFlex data-testid="detail-preview">
+      {media !== false && <Media dimensions={mediaDimensions} layout="detail" media={media} />}
+
+      <Box flex={1} paddingLeft={media === false ? 1 : 2}>
+        <Flex align="center" data-testid="detail-preview__header">
+          <Stack flex={1} space={2}>
             <Text textOverflow="ellipsis" style={{color: 'inherit'}}>
               {title && typeof title === 'function' ? title({layout: 'detail'}) : title}
               {!title && <>Untitled</>}
@@ -73,22 +83,21 @@ export const DetailPreview: React.FunctionComponent<PreviewProps<'detail'>> = (p
                 {typeof subtitle === 'function' ? subtitle({layout: 'detail'}) : subtitle}
               </Text>
             )}
-          </Header>
-          {status && (
-            <StatusWrapper paddingLeft={1}>
-              {typeof status === 'function' ? status({layout: 'detail'}) : status}
-            </StatusWrapper>
-          )}
-        </Top>
+          </Stack>
+
+          {statusNode}
+        </Flex>
+
         {description && (
-          <Box marginTop={3} overflow="hidden" style={{maxHeight}}>
-            <Text muted size={1}>
+          <Box marginTop={3}>
+            <DescriptionText muted size={1}>
               {typeof description === 'function' ? description({layout: 'detail'}) : description}
-            </Text>
+            </DescriptionText>
           </Box>
         )}
-      </Content>
+      </Box>
+
       {children}
-    </Root>
+    </RootFlex>
   )
 }

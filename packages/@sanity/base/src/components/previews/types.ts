@@ -1,30 +1,16 @@
-import {SchemaType, ImageUrlFitMode} from '@sanity/types'
+import {ImageUrlFitMode} from '@sanity/types'
 
-export type Id = string
+export type PortableTextPreviewLayoutKey = 'block' | 'blockImage' | 'inline'
 
-export type Reference = {_ref: string; [key: string]: unknown}
-export type Document = {_id: string; [key: string]: unknown}
+export type GeneralPreviewLayoutKey =
+  | 'default'
+  | 'card' // deprecated
+  | 'media'
+  | 'detail'
 
-export type Value = Document | Reference | unknown
+export type PreviewLayoutKey = GeneralPreviewLayoutKey | PortableTextPreviewLayoutKey
 
-export type FieldName = string
-
-export type Path = FieldName[]
-export type Selection = [Id, FieldName[]]
-export type {PrepareViewOptions, SortOrdering} from '@sanity/types'
-
-export type PreviewConfig = {
-  select: {
-    title: string
-    subtitle: string
-    description: string
-  }
-}
-export type Type = SchemaType
-
-export type PreviewLayoutKey = 'default' | 'card' | 'media' | 'detail' | 'inline' | 'block'
-
-export type MediaDimensions = {
+export type PreviewMediaDimensions = {
   width?: number
   height?: number
   fit?: ImageUrlFitMode
@@ -38,11 +24,11 @@ export interface PreviewProps<LayoutKey = PreviewLayoutKey> {
   extendedPreview?: unknown
   fallbackTitle?: React.ReactNode
   isPlaceholder?: boolean
-  mediaDimensions?: MediaDimensions
+  mediaDimensions?: PreviewMediaDimensions
   media?:
     | React.ReactNode
     | React.FC<{
-        dimensions: MediaDimensions
+        dimensions: PreviewMediaDimensions
         layout: LayoutKey
       }>
   progress?: number

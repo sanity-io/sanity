@@ -1,24 +1,29 @@
+import {Box, Flex, rem, Stack, Text} from '@sanity/ui'
 import React from 'react'
-import {Box, Stack, Text} from '@sanity/ui'
+import styled from 'styled-components'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
-import {MediaDimensions, PreviewProps} from '../types'
-import {MediaWrapper, Header, ContentWrapper} from './BlockPreview.styled'
+import {Media} from '../_common/Media'
+import {PREVIEW_MEDIA_SIZE} from '../constants'
+import {PreviewMediaDimensions, PreviewProps} from '../types'
 
-const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
-  width: 40,
-  height: 40,
+const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
+  ...PREVIEW_MEDIA_SIZE.block,
   aspect: 1,
   fit: 'crop',
   dpr: getDevicePixelRatio(),
 }
 
-export const BlockPreview: React.FunctionComponent<PreviewProps<'block'>> = (props) => {
+const HeaderFlex = styled(Flex).attrs({align: 'center'})`
+  min-height: ${rem(PREVIEW_MEDIA_SIZE.block.height)};
+`
+
+export function BlockPreview(props: PreviewProps<'block'>) {
   const {
     actions,
     title,
     subtitle,
     description,
-    mediaDimensions,
+    mediaDimensions = DEFAULT_MEDIA_DIMENSIONS,
     media,
     status,
     children,
@@ -26,33 +31,24 @@ export const BlockPreview: React.FunctionComponent<PreviewProps<'block'>> = (pro
   } = props
 
   return (
-    <Stack space={1} data-testid="block-preview">
-      <Header align="center">
-        {media && (
-          <MediaWrapper marginRight={2}>
-            {typeof media === 'function' &&
-              media({
-                dimensions: mediaDimensions || DEFAULT_MEDIA_DIMENSIONS,
-                layout: 'block',
-              })}
-            {typeof media === 'string' && <Box>{media}</Box>}
-            {React.isValidElement(media) && media}
-          </MediaWrapper>
-        )}
+    <Stack data-testid="block-preview" space={1}>
+      <HeaderFlex data-testid="block-preview__header">
+        {media && <Media dimensions={mediaDimensions} layout="block" media={media} />}
 
-        <ContentWrapper flex={1} paddingY={1}>
-          <Text size={1} textOverflow="ellipsis" weight="medium">
+        <Box flex={1} paddingLeft={media ? 2 : 1}>
+          <Text size={1} textOverflow="ellipsis" weight="semibold">
             {title && typeof title === 'function' ? title({layout: 'block'}) : title}
             {!title && <>Untitled</>}
           </Text>
 
           {subtitle && (
-            <Box marginTop={1}>
+            <Box marginTop={2}>
               <Text muted size={1} textOverflow="ellipsis">
                 {typeof subtitle === 'function' ? subtitle({layout: 'block'}) : subtitle}
               </Text>
             </Box>
           )}
+
           {description && (
             <Box marginTop={3}>
               <Text muted size={1} textOverflow="ellipsis">
@@ -60,18 +56,22 @@ export const BlockPreview: React.FunctionComponent<PreviewProps<'block'>> = (pro
               </Text>
             </Box>
           )}
-        </ContentWrapper>
+        </Box>
 
-        {status && (
-          <Box padding={3}>{typeof status === 'function' ? status({layout: 'block'}) : status}</Box>
-        )}
+        <Flex gap={1} paddingLeft={1}>
+          {status && (
+            <Box paddingX={2} paddingY={3}>
+              {typeof status === 'function' ? status({layout: 'block'}) : status}
+            </Box>
+          )}
 
-        {actions && <Box>{actions}</Box>}
-      </Header>
+          {actions}
+        </Flex>
+      </HeaderFlex>
 
-      {children && <Box>{children}</Box>}
+      {children && <div data-testid="block-preview__children">{children}</div>}
 
-      {extendedPreview && <Box>{extendedPreview}</Box>}
+      {extendedPreview && <div data-testid="block-preview__extended">{extendedPreview}</div>}
     </Stack>
   )
 }
