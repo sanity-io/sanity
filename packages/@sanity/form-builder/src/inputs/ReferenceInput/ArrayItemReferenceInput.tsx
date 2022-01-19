@@ -37,12 +37,19 @@ import {
   useForwardedRef,
   useToast,
 } from '@sanity/ui'
-import {FormField, FormFieldValidationStatus, IntentLink} from '@sanity/base/components'
+import {
+  FormField,
+  FormFieldValidationStatus,
+  IntentLink,
+  PreviewCard,
+} from '@sanity/base/components'
 import {FieldPresence} from '@sanity/base/presence'
 import {getPublishedId} from '@sanity/base/_internal'
 import {useObservableCallback} from 'react-rx'
 import {uuid} from '@sanity/uuid'
 import {useId} from '@reach/auto-id'
+import {useGlobalDocumentPresence} from '@sanity/base/hooks'
+import styled from 'styled-components'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
@@ -62,7 +69,12 @@ import {CreateButton} from './CreateButton'
 import {ReferenceAutocomplete} from './ReferenceAutocomplete'
 import {AutocompleteContainer} from './AutocompleteContainer'
 import {useOnClickOutside} from './utils/useOnClickOutside'
-import {PreviewCard} from './PreviewCard'
+
+const StyledPreviewCard = styled(PreviewCard)`
+  /* this is a hack to avoid layout jumps while previews are loading
+  there's probably better ways of solving this */
+  min-height: 36px;
+`
 
 const INITIAL_SEARCH_STATE: SearchState = {
   hits: [],
@@ -119,6 +131,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
   } = props
 
   const [searchState, setSearchState] = useState<SearchState>(INITIAL_SEARCH_STATE)
+  const documentPresence = useGlobalDocumentPresence()
 
   const handleCreateNew = (option: CreateOption) => {
     const id = uuid()
@@ -346,15 +359,21 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
   const renderOption = useCallback(
     (option) => {
       const id = option.hit.draft?._id || option.hit.published?._id
+
       return (
-        <Card as="button" type="button" radius={2}>
+        <PreviewCard as="button" type="button" radius={2}>
           <Box paddingX={3} paddingY={1}>
-            <OptionPreview type={type} id={id} getReferenceInfo={getReferenceInfoMemo} />
+            <OptionPreview
+              getReferenceInfo={getReferenceInfoMemo}
+              id={id}
+              presence={documentPresence[getPublishedId(id)] || EMPTY_ARRAY}
+              type={type}
+            />
           </Box>
-        </Card>
+        </PreviewCard>
       )
     },
-    [type, getReferenceInfoMemo]
+    [type, getReferenceInfoMemo, documentPresence]
   )
 
   const OpenLink = useMemo(
@@ -478,7 +497,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
           <Box flex={1}>
             <Flex align="center">
               {hasRef ? (
-                <PreviewCard
+                <StyledPreviewCard
                   flex={1}
                   padding={1}
                   paddingRight={3}
@@ -502,8 +521,9 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
                     value={value}
                     referenceInfo={loadableReferenceInfo}
                     type={type}
+                    presence={!readOnly && documentPresence[value._ref]}
                   />
-                </PreviewCard>
+                </StyledPreviewCard>
               ) : (
                 <Card
                   flex={1}
@@ -522,7 +542,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
                   </Box>
                 </Card>
               )}
-              <Inline>
+              <Inline marginLeft={!readOnly && presence.length > 0 ? 2 : undefined}>
                 {!readOnly && presence.length > 0 && (
                   <Box marginLeft={1}>
                     <FieldPresence presence={presence} maxAvatars={1} />
