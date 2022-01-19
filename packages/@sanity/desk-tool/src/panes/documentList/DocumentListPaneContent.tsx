@@ -72,14 +72,15 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
 
   const renderItem = useCallback(
     (item) => {
-      const isSelected = childItemId === getPublishedId(item._id)
+      const publishedId = getPublishedId(item._id)
+      const isSelected = childItemId === publishedId
       const pressed = !isActive && isSelected
       const selected = isActive && isSelected
 
       return (
         <PaneItem
           icon={showIcons === false ? false : undefined}
-          id={getPublishedId(item._id)}
+          id={publishedId}
           pressed={pressed}
           selected={selected}
           layout={layout}
