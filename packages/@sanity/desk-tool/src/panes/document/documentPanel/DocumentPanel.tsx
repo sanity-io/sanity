@@ -64,7 +64,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const requiredPermission = value._createdAt ? 'update' : 'create'
   const liveEdit = useMemo(() => Boolean(getSchemaType(documentType)?.liveEdit), [documentType])
   const docPermissionsInput = useMemo(() => {
-    return {...value, _id: liveEdit ? 'dummy-id' : 'drafts.dummy-id'}
+    return {...value, _id: liveEdit ? value._id : `drafts.${value._id}`}
   }, [liveEdit, value])
   const [permissions, isPermissionsLoading] = useDocumentValuePermissions({
     document: docPermissionsInput,
