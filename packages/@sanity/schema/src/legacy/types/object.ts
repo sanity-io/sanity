@@ -1,8 +1,9 @@
-import {pick, toPath, keyBy, startCase, isPlainObject} from 'lodash'
+import {pick, toPath, keyBy, startCase, isPlainObject, castArray, flatMap} from 'lodash'
 import createPreviewGetter from '../preview/createPreviewGetter'
 import guessOrderingConfig from '../ordering/guessOrderingConfig'
 import resolveSearchConfig from '../resolveSearchConfig'
 import {lazyGetter} from './utils'
+
 import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
 
 const OVERRIDABLE_FIELDS = [
@@ -55,10 +56,11 @@ export const ObjectType = {
       options: options,
       orderings: subTypeDef.orderings || guessOrderingConfig(subTypeDef),
       fields: subTypeDef.fields.map((fieldDef) => {
-        const {name, fieldset, ...rest} = fieldDef
+        const {name, fieldset, group, ...rest} = fieldDef
 
         const compiledField = {
           name,
+          group,
           fieldset,
         }
 
@@ -73,6 +75,10 @@ export const ObjectType = {
 
     lazyGetter(parsed, 'fieldsets', () => {
       return createFieldsets(subTypeDef, parsed.fields)
+    })
+
+    lazyGetter(parsed, 'groups', () => {
+      return createFieldsGroups(subTypeDef, parsed.fields)
     })
 
     lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef))
@@ -126,12 +132,13 @@ export const ObjectType = {
 function createFieldsets(typeDef, fields) {
   const fieldsetsDef = typeDef.fieldsets || []
   const fieldsets = fieldsetsDef.map((fieldset) => {
-    const {name, title, description, options, hidden, readOnly} = fieldset
+    const {name, title, description, options, group, hidden, readOnly} = fieldset
     return {
       name,
       title,
       description,
       options,
+      group,
       fields: [],
       hidden,
       readOnly,
@@ -156,4 +163,58 @@ function createFieldsets(typeDef, fields) {
       return {single: true, field}
     })
     .filter(Boolean)
+}
+
+function createFieldsGroups(typeDef, fields) {
+  const groupsDef = typeDef.groups || []
+  const groups = groupsDef.map((group) => {
+    const {name, title, description, icon, readOnly, hidden} = group
+    return {
+      name,
+      title,
+      description,
+      icon,
+      readOnly,
+      default: group.default,
+      hidden,
+      fields: [],
+    }
+  })
+
+  const defaultGroups = groups.filter((group) => group.default)
+
+  if (defaultGroups.length > 1) {
+    // Throw if you have multiple default field groups defined
+    throw new Error(
+      `You currently have ${defaultGroups.length} default field groups defined for type '${
+        typeDef.name ? startCase(typeDef.name) : typeDef.title ?? ``
+      }', but only 1 is supported`
+    )
+  }
+
+  const groupsByName = keyBy(groups, 'name')
+
+  fields.forEach((field) => {
+    if (field.group) {
+      const fieldGroupNames = castArray(field.group)
+
+      if (fieldGroupNames.length > 0) {
+        fieldGroupNames.forEach((fieldGroupName) => {
+          const currentGroup = groupsByName[fieldGroupName]
+
+          if (!currentGroup) {
+            throw new Error(
+              `Field group '${fieldGroupName}' is not defined in schema for type '${
+                typeDef.name ?? typeDef.title ?? ``
+              }'`
+            )
+          }
+
+          currentGroup.fields.push(field)
+        })
+      }
+    }
+  })
+
+  return flatMap(groupsByName).filter((group) => group.fields.length > 0)
 }

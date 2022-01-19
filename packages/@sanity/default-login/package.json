@@ -1,6 +1,6 @@
 {
   "name": "@sanity/default-login",
-  "version": "2.23.2",
+  "version": "2.24.1",
   "description": "Lets the user log in to Sanity.",
   "main": "./lib/index.js",
   "types": "./dist/dts",
@@ -21,12 +21,12 @@
   "dependencies": {
     "@sanity/generate-help-url": "2.18.0",
     "@sanity/logos": "^1.1.6",
-    "@sanity/ui": "^0.36.17",
+    "@sanity/ui": "^0.37.2",
     "prop-types": "^15.6.0",
     "rxjs": "^6.5.3"
   },
   "devDependencies": {
-    "@sanity/types": "2.23.2",
+    "@sanity/types": "2.24.0",
     "rimraf": "^2.7.1"
   },
   "peerDependencies": {

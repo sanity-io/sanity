@@ -1,6 +1,6 @@
 import {Subject} from 'rxjs'
-import {Editor, Transforms, Element, Path} from 'slate'
-import {PortableTextFeatures} from '../../types/portableText'
+import {Editor, Transforms, Element, Path, Text as SlateText} from 'slate'
+import {PortableTextBlock, PortableTextFeatures} from '../../types/portableText'
 import {EditorChange, PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
 import {toPortableTextRange} from '../../utils/ranges'
@@ -10,9 +10,11 @@ const debug = debugWithName('plugin:withPortableTextBlockStyle')
 export function createWithPortableTextBlockStyle(
   portableTextFeatures: PortableTextFeatures,
   change$: Subject<EditorChange>
-) {
-  return function withPortableTextBlockStyle(editor: PortableTextSlateEditor) {
-    const normalStyle = portableTextFeatures.styles[0].value
+): (editor: PortableTextSlateEditor) => PortableTextSlateEditor {
+  const defaultStyle = portableTextFeatures.styles[0].value
+  return function withPortableTextBlockStyle(
+    editor: PortableTextSlateEditor
+  ): PortableTextSlateEditor {
     // Extend Slate's default normalization to reset split node to normal style
     // if there is no text at the right end of the split.
     const {normalizeNode} = editor
@@ -23,14 +25,15 @@ export function createWithPortableTextBlockStyle(
         if (
           op.type === 'split_node' &&
           op.path.length === 1 &&
-          op.properties.style !== normalStyle &&
+          editor.isTextBlock(op.properties) &&
+          op.properties.style !== defaultStyle &&
           op.path[0] === path[0] &&
           !Path.equals(path, op.path)
         ) {
           const [child] = Editor.node(editor, [op.path[0] + 1, 0])
-          if (child.text === '') {
-            debug(`Normalizing split node to ${normalStyle} style`, op)
-            Transforms.setNodes(editor, {style: normalStyle}, {at: [op.path[0] + 1], voids: false})
+          if (SlateText.isText(child) && child.text === '') {
+            debug(`Normalizing split node to ${defaultStyle} style`, op)
+            Transforms.setNodes(editor, {style: defaultStyle}, {at: [op.path[0] + 1], voids: false})
             break
           }
         }
@@ -43,7 +46,7 @@ export function createWithPortableTextBlockStyle(
       const selectedBlocks = [
         ...Editor.nodes(editor, {
           at: editor.selection,
-          match: (node) => Element.isElement(node) && node.style === style,
+          match: (node) => editor.isTextBlock(node) && node.style === style,
         }),
       ]
       if (selectedBlocks.length > 0) {
@@ -64,13 +67,12 @@ export function createWithPortableTextBlockStyle(
         }),
       ]
       selectedBlocks.forEach(([node, path]) => {
-        const {style, ...rest} = node
-        if (node.style === blockStyle) {
+        if (editor.isTextBlock(node) && node.style === blockStyle) {
           debug(`Unsetting block style '${blockStyle}'`)
-          Transforms.setNodes(editor, {...rest, style: undefined}, {at: path})
+          Transforms.setNodes(editor, {...node, style: defaultStyle} as PortableTextBlock, {
+            at: path,
+          })
         } else {
-          const defaultStyle =
-            portableTextFeatures.styles[0] && portableTextFeatures.styles[0].value
           if (blockStyle) {
             debug(`Setting style '${blockStyle}'`)
           } else {
@@ -79,16 +81,16 @@ export function createWithPortableTextBlockStyle(
           Transforms.setNodes(
             editor,
             {
-              ...rest,
+              ...node,
               style: blockStyle || defaultStyle,
-            },
+            } as PortableTextBlock,
             {at: path}
           )
         }
       })
       // Emit a new selection here (though it might be the same).
       // Toolbars and similar on the outside may rely on selection changes to update themselves.
-      change$.next({type: 'selection', selection: toPortableTextRange(editor)})
+      change$.next({type: 'selection', selection: toPortableTextRange(editor, editor.selection)})
       editor.onChange()
     }
     return editor

@@ -4,6 +4,7 @@ import {FormFieldPresence} from '@sanity/base/presence'
 import {FormBuilderInput} from '../FormBuilderInput'
 import SanityFormBuilderContext from './SanityFormBuilderContext'
 import * as gradientPatchAdapter from './utils/gradientPatchAdapter'
+import {ReviewChangesContextProvider} from './contexts/reviewChanges/ReviewChangesProvider'
 
 type PatchChannel = {
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -26,6 +27,7 @@ type Props = {
   autoFocus: boolean
   focusPath: Path
   presence: FormFieldPresence[]
+  changesOpen: boolean
 }
 
 const EMPTY = []
@@ -64,26 +66,29 @@ export default class SanityFormBuilder extends React.Component<Props> {
       filterField,
       compareValue,
       presence,
+      changesOpen,
     } = this.props
     return (
       <SanityFormBuilderContext value={value} schema={schema} patchChannel={patchChannel}>
-        <FormBuilderInput
-          type={type}
-          onChange={this.handleChange}
-          level={0}
-          value={value}
-          onFocus={onFocus}
-          compareValue={compareValue}
-          onBlur={onBlur}
-          markers={markers}
-          focusPath={focusPath}
-          isRoot
-          readOnly={readOnly}
-          filterField={filterField}
-          ref={this.setInput}
-          path={EMPTY}
-          presence={presence}
-        />
+        <ReviewChangesContextProvider changesOpen={changesOpen}>
+          <FormBuilderInput
+            type={type}
+            onChange={this.handleChange}
+            level={0}
+            value={value}
+            onFocus={onFocus}
+            compareValue={compareValue}
+            onBlur={onBlur}
+            markers={markers}
+            focusPath={focusPath}
+            isRoot
+            readOnly={readOnly}
+            filterField={filterField}
+            ref={this.setInput}
+            path={EMPTY}
+            presence={presence}
+          />
+        </ReviewChangesContextProvider>
       </SanityFormBuilderContext>
     )
   }

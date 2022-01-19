@@ -1,13 +1,21 @@
-import {WarningOutlineIcon} from '@sanity/icons'
+import {
+  CopyIcon as DuplicateIcon,
+  EllipsisVerticalIcon,
+  TrashIcon,
+  WarningOutlineIcon,
+} from '@sanity/icons'
 import {FieldPresence} from '@sanity/base/presence'
-import React, {useMemo} from 'react'
-import {Badge, Box, Card, Flex, Text, Tooltip} from '@sanity/ui'
+import React, {useCallback, useMemo} from 'react'
+import {Badge, Box, Button, Card, Flex, Menu, MenuButton, MenuItem, Text, Tooltip} from '@sanity/ui'
 import {FormFieldValidationStatus} from '@sanity/base/components'
 import styled from 'styled-components'
-import {isValidationWarningMarker, isValidationErrorMarker} from '@sanity/types'
+import {isValidationErrorMarker, isValidationWarningMarker, SchemaType} from '@sanity/types'
+import {useId} from '@reach/auto-id'
 import Preview from '../../../../Preview'
-import {ConfirmDeleteButton} from '../ConfirmDeleteButton'
 import {DragHandle} from '../../common/DragHandle'
+import randomKey from '../../common/randomKey'
+import {createProtoValue} from '../ArrayInput'
+import {InsertMenu} from '../InsertMenu'
 import {ItemWithMissingType} from './ItemWithMissingType'
 import {ItemLayoutProps} from './ItemLayoutProps'
 
@@ -88,6 +96,8 @@ export const CellItem = React.forwardRef(function ItemCell(
     onClick,
     onKeyPress,
     onFocus,
+    onInsert,
+    insertableTypes,
     type,
     readOnly,
     presence,
@@ -114,6 +124,28 @@ export const CellItem = React.forwardRef(function ItemCell(
 
     return undefined
   }, [hasError, hasWarning, hasKey])
+
+  const handleDuplicate = useCallback(() => {
+    onInsert?.({
+      item: {...value, _key: randomKey()},
+      position: 'after',
+      path: [{_key: value._key}],
+      edit: false,
+    })
+  }, [onInsert, value])
+
+  const handleInsert = useCallback(
+    (pos: 'before' | 'after', insertType: SchemaType) => {
+      onInsert?.({
+        item: createProtoValue(insertType),
+        position: pos,
+        path: [{_key: value._key}],
+      })
+    },
+    [onInsert, value._key]
+  )
+
+  const id = useId()
 
   return (
     <Root {...rest} radius={2} ref={ref} border tone={tone}>
@@ -182,16 +214,23 @@ export const CellItem = React.forwardRef(function ItemCell(
             </Tooltip>
           )}
         </Flex>
-
-        {/* Delete button */}
-        <Box>
-          <ConfirmDeleteButton
-            disabled={readOnly || !onRemove}
-            onConfirm={onRemove}
-            placement="bottom"
-            title="Remove item"
-          />
-        </Box>
+        {/* Menu */}
+        {!readOnly && (
+          <Box>
+            <MenuButton
+              button={<Button padding={2} mode="bleed" icon={EllipsisVerticalIcon} />}
+              id={`${id}-menuButton`}
+              portal
+              menu={
+                <Menu>
+                  <MenuItem text="Remove" tone="critical" icon={TrashIcon} onClick={onRemove} />
+                  <MenuItem text="Duplicate" icon={DuplicateIcon} onClick={handleDuplicate} />
+                  <InsertMenu types={insertableTypes} onInsert={handleInsert} />
+                </Menu>
+              }
+            />
+          </Box>
+        )}
       </FooterFlex>
     </Root>
   )

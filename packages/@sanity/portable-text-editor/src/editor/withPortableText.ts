@@ -6,6 +6,7 @@ import {debugWithName} from '../utils/debug'
 import {
   createWithObjectKeys,
   createWithPortableTextMarkModel,
+  createWithPortableTextSelections,
   createWithSchemaTypes,
   createWithPatches,
   createWithMaxBlocks,
@@ -43,31 +44,33 @@ export const withPortableText = <T extends Editor>(
   } = options
   const operationToPatches = createOperationToPatches(portableTextFeatures)
   const withObjectKeys = createWithObjectKeys(portableTextFeatures, keyGenerator)
-  const withScemaTypes = createWithSchemaTypes(portableTextFeatures)
+  const withSchemaTypes = createWithSchemaTypes(portableTextFeatures)
   const withPatches = readOnly
     ? disablePlugin('withPatches')
     : createWithPatches(operationToPatches, change$, portableTextFeatures, incomingPatches$)
 
   const withMaxBlocks =
     maxBlocks && maxBlocks > 0 ? createWithMaxBlocks(maxBlocks) : disablePlugin('withMaxBlocks')
-  const withPortableTextLists = createWithPortableTextLists(portableTextFeatures, change$)
+  const withPortableTextLists = createWithPortableTextLists(portableTextFeatures)
   const withUndoRedo = readOnly
     ? disablePlugin('withUndoRedo')
     : createWithUndoRedo(incomingPatches$)
-  const withPortableTextMarkModel = createWithPortableTextMarkModel(
-    portableTextFeatures,
-    keyGenerator,
-    change$
-  )
+  const withPortableTextMarkModel = createWithPortableTextMarkModel(portableTextFeatures, change$)
   const withPortableTextBlockStyle = createWithPortableTextBlockStyle(portableTextFeatures, change$)
   const withUtils = createWithUtils(portableTextFeatures)
+  const withPortableTextSelections = createWithPortableTextSelections(change$)
 
-  return withPatches(
-    withUndoRedo(
-      withUtils(
-        withPortableTextBlockStyle(
-          withPortableTextLists(
-            withPortableTextMarkModel(withObjectKeys(withScemaTypes(withMaxBlocks(e))))
+  // Ordering is important here, selection dealing last, data manipulation in the middle and core model stuff first.
+  return withPortableTextSelections(
+    withPatches(
+      withUndoRedo(
+        withMaxBlocks(
+          withUtils(
+            withPortableTextLists(
+              withPortableTextBlockStyle(
+                withPortableTextMarkModel(withObjectKeys(withSchemaTypes(e)))
+              )
+            )
           )
         )
       )

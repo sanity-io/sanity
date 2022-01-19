@@ -1,12 +1,7 @@
+/* eslint-disable react/no-unused-prop-types */
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import {CloseIcon} from '@sanity/icons'
-import {
-  PortableTextBlock,
-  PortableTextChild,
-  PortableTextEditor,
-  Type,
-  usePortableTextEditor,
-} from '@sanity/portable-text-editor'
+import {PortableTextBlock, PortableTextChild, Type} from '@sanity/portable-text-editor'
 import {Path, Marker, SchemaType} from '@sanity/types'
 import {
   Box,
@@ -15,11 +10,13 @@ import {
   Flex,
   Popover,
   PopoverProps,
+  PortalProvider,
   Text,
   useBoundaryElement,
   useClickOutside,
   useElementRect,
   useLayer,
+  usePortal,
 } from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components'
@@ -30,8 +27,8 @@ import {debugElement} from './debug'
 import {ModalWidth} from './types'
 
 interface PopoverObjectEditingProps {
-  // eslint-disable-next-line react/no-unused-prop-types
   editorPath: Path
+  elementRef: React.MutableRefObject<HTMLElement>
   focusPath: Path
   markers: Marker[]
   object: PortableTextBlock | PortableTextChild
@@ -41,6 +38,7 @@ interface PopoverObjectEditingProps {
   onFocus: (path: Path) => void
   path: Path
   presence: FormFieldPresence[]
+  scrollElement: HTMLElement
   readOnly: boolean
   type: Type
   width?: ModalWidth
@@ -80,28 +78,26 @@ const ContentHeaderBox = styled(Box)`
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
-function getEditorElement(editor: PortableTextEditor, editorPath: Path): HTMLElement | undefined {
-  const [editorObject] = PortableTextEditor.findByPath(editor, editorPath) || []
-
-  if (!editorObject) {
-    return undefined
-  }
-
-  // eslint-disable-next-line react/no-find-dom-node
-  return PortableTextEditor.findDOMNode(editor, editorObject) as HTMLElement
-}
-
 export function PopoverObjectEditing(props: PopoverObjectEditingProps) {
-  const {editorPath, object, width} = props
-  const editor = usePortableTextEditor()
+  const {width, elementRef, scrollElement} = props
+  const [forceUpdate, setForceUpdate] = useState(0)
+  const virtualElement = useMemo(() => {
+    if (!elementRef?.current.getBoundingClientRect()) {
+      return null
+    }
+
+    return {
+      contextElement: elementRef.current || undefined,
+      getBoundingClientRect: () => {
+        return elementRef?.current.getBoundingClientRect() || null
+      },
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [elementRef, forceUpdate])
+
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
-  const [refElement, setRefElement] = useState(() => getEditorElement(editor, editorPath))
   const boundaryElement = useBoundaryElement()
   const boundaryElementRect = useElementRect(boundaryElement.element)
-
-  useEffect(() => {
-    setRefElement(getEditorElement(editor, editorPath))
-  }, [editor, editorPath, object])
 
   const contentStyle: React.CSSProperties = useMemo(
     () => ({
@@ -111,16 +107,31 @@ export function PopoverObjectEditing(props: PopoverObjectEditingProps) {
     [boundaryElementRect]
   )
 
+  const handleScrollOrResize = useCallback(() => {
+    setForceUpdate(forceUpdate + 1)
+  }, [forceUpdate])
+
+  useEffect(() => {
+    if (scrollElement) {
+      scrollElement.addEventListener('scroll', handleScrollOrResize, true)
+    }
+    return () => {
+      if (scrollElement) {
+        scrollElement.removeEventListener('scroll', handleScrollOrResize, true)
+      }
+    }
+  }, [handleScrollOrResize, scrollElement])
+
   return (
     <RootPopover
       constrainSize
       content={<Content {...props} rootElement={rootElement} style={contentStyle} width={width} />}
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
       placement="bottom"
-      open={Boolean(refElement)}
+      open
       portal="default"
       ref={setRootElement}
-      referenceElement={refElement || (debugElement as any)}
+      referenceElement={virtualElement || (debugElement as any)}
     />
   )
 }
@@ -149,6 +160,7 @@ function Content(
   } = props
   const {isTopLayer} = useLayer()
   const {element: boundaryElement} = useBoundaryElement()
+  const portal = usePortal()
 
   const handleChange = useCallback((patchEvent: PatchEvent): void => onChange(patchEvent, path), [
     onChange,
@@ -190,19 +202,21 @@ function Content(
         <ContentScrollerBox flex={1}>
           <PresenceOverlay margins={[0, 0, 1, 0]}>
             <Box padding={3}>
-              <FormBuilderInput
-                focusPath={focusPath}
-                level={0}
-                markers={markers}
-                onBlur={onBlur}
-                onChange={handleChange}
-                onFocus={onFocus}
-                path={path}
-                presence={presence}
-                readOnly={readOnly || type.readOnly}
-                type={type as SchemaType}
-                value={object}
-              />
+              <PortalProvider element={portal.elements.default}>
+                <FormBuilderInput
+                  focusPath={focusPath}
+                  level={0}
+                  markers={markers}
+                  onBlur={onBlur}
+                  onChange={handleChange}
+                  onFocus={onFocus}
+                  path={path}
+                  presence={presence}
+                  readOnly={readOnly || type.readOnly}
+                  type={type as SchemaType}
+                  value={object}
+                />
+              </PortalProvider>
             </Box>
           </PresenceOverlay>
         </ContentScrollerBox>

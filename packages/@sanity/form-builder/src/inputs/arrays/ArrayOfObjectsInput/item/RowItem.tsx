@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import {FieldPresence} from '@sanity/base/presence'
-import React from 'react'
+import React, {useCallback} from 'react'
 import {
   Badge,
   Box,
@@ -14,17 +14,23 @@ import {
   Text,
   Tooltip,
 } from '@sanity/ui'
-import {EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
+import {CopyIcon as DuplicateIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
 import {FormFieldValidationStatus} from '@sanity/base/components'
 import {useId} from '@reach/auto-id'
+import {SchemaType} from '@sanity/types'
 import Preview from '../../../../Preview'
 
 import {DragHandle} from '../../common/DragHandle'
+import randomKey from '../../common/randomKey'
+import {createProtoValue} from '../ArrayInput'
+import {InsertMenu} from '../InsertMenu'
 import {ItemWithMissingType} from './ItemWithMissingType'
 import {ItemLayoutProps} from './ItemLayoutProps'
 import {RowWrapper} from './components/RowWrapper'
 
 const dragHandle = <DragHandle paddingX={1} paddingY={3} />
+
+const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 
 export const RowItem = React.forwardRef(function RegularItem(
   props: ItemLayoutProps,
@@ -40,6 +46,8 @@ export const RowItem = React.forwardRef(function RegularItem(
     type,
     readOnly,
     presence,
+    onInsert,
+    insertableTypes,
     onRemove,
     validation,
     ...rest
@@ -47,6 +55,26 @@ export const RowItem = React.forwardRef(function RegularItem(
 
   const hasErrors = validation.some((v) => v.level === 'error')
   const hasWarnings = validation.some((v) => v.level === 'warning')
+
+  const handleDuplicate = useCallback(() => {
+    onInsert?.({
+      item: {...value, _key: randomKey()},
+      position: 'after',
+      path: [{_key: value._key}],
+      edit: false,
+    })
+  }, [onInsert, value])
+
+  const handleInsert = useCallback(
+    (pos: 'before' | 'after', insertType: SchemaType) => {
+      onInsert?.({
+        item: {...createProtoValue(insertType), _key: randomKey()},
+        position: pos,
+        path: [{_key: value._key}],
+      })
+    },
+    [onInsert, value._key]
+  )
 
   const id = useId()
   return (
@@ -120,12 +148,14 @@ export const RowItem = React.forwardRef(function RegularItem(
                 {!readOnly && (
                   <>
                     <MenuItem text="Remove" tone="critical" icon={TrashIcon} onClick={onRemove} />
+                    <MenuItem text="Duplicate" icon={DuplicateIcon} onClick={handleDuplicate} />
+                    <InsertMenu types={insertableTypes} onInsert={handleInsert} />
                   </>
                 )}
               </Menu>
             }
             placement="right"
-            popover={{portal: true, tone: 'default'}}
+            popover={MENU_POPOVER_PROPS}
           />
           {!value._key && (
             <Box marginLeft={1}>

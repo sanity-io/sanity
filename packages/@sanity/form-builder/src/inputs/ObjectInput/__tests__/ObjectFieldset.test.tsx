@@ -10,6 +10,7 @@ import {SchemaType} from '@sanity/types'
 import {ObjectInput, Props} from '../ObjectInput'
 import FormBuilderContext from '../../../FormBuilderContext'
 import is from '../../../utils/is'
+import {ReviewChangesContextProvider} from '../../../sanity/contexts/reviewChanges/ReviewChangesProvider'
 
 const schema = Schema.compile({
   name: 'test',
@@ -76,16 +77,18 @@ const ObjectInputTester = forwardRef(function ObjectInputTester(
   return (
     <ThemeProvider scheme="light" theme={studioTheme}>
       <LayerProvider>
-        <FormBuilderContext
-          value={undefined}
-          patchChannel={{onPatch: noop}}
-          schema={schema}
-          filterField={() => true}
-          resolveInputComponent={inputResolver}
-          resolvePreviewComponent={(type) => GenericPreview}
-        >
-          <ObjectInput {...DEFAULT_PROPS} {...props} ref={ref} />
-        </FormBuilderContext>
+        <ReviewChangesContextProvider changesOpen={false}>
+          <FormBuilderContext
+            value={undefined}
+            patchChannel={{onPatch: noop}}
+            schema={schema}
+            filterField={() => true}
+            resolveInputComponent={inputResolver}
+            resolvePreviewComponent={(type) => GenericPreview}
+          >
+            <ObjectInput {...DEFAULT_PROPS} {...props} ref={ref} />
+          </FormBuilderContext>
+        </ReviewChangesContextProvider>
       </LayerProvider>
     </ThemeProvider>
   )

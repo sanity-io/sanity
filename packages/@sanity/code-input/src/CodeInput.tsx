@@ -10,11 +10,10 @@ import * as PathUtils from '@sanity/util/paths'
 import {ChangeIndicatorProvider} from '@sanity/base/change-indicators'
 import {PatchEvent, set, unset, setIfMissing} from 'part:@sanity/form-builder/patch-event'
 import AceEditor from 'react-ace'
-import {get, has} from 'lodash'
 import styled from 'styled-components'
 import {useId} from '@reach/auto-id'
 import createHighlightMarkers, {highlightMarkersCSS} from './createHighlightMarkers'
-import {CodeInputType, CodeInputValue} from './types'
+import {CodeInputLanguage, CodeInputType, CodeInputValue} from './types'
 /* eslint-disable-next-line import/no-unassigned-import */
 import './editorSupport'
 
@@ -133,7 +132,7 @@ const CodeInput = React.forwardRef(
     )
 
     const getTheme = useCallback(() => {
-      const preferredTheme = get(type, 'options.theme')
+      const preferredTheme = type.options?.theme
       return preferredTheme && SUPPORTED_THEMES.find((theme) => theme === preferredTheme)
         ? preferredTheme
         : DEFAULT_THEME
@@ -144,7 +143,7 @@ const CodeInput = React.forwardRef(
         const editorSession = aceEditorRef.current?.editor?.getSession()
         const backgroundMarkers = editorSession?.getMarkers(true)
         const currentHighlightedLines = Object.keys(backgroundMarkers)
-          .filter((key) => backgroundMarkers[key].type === 'highlight')
+          .filter((key) => backgroundMarkers[key].type === 'screenLine')
           .map((key) => backgroundMarkers[key].range.start.row)
         const currentIndex = currentHighlightedLines.indexOf(lineNumber)
         if (currentIndex > -1) {
@@ -199,8 +198,9 @@ const CodeInput = React.forwardRef(
     const getLanguageAlternatives = useCallback((): {
       title: string
       value: string
+      mode?: string
     }[] => {
-      const languageAlternatives = get(type, 'options.languageAlternatives')
+      const languageAlternatives = type.options?.languageAlternatives
       if (!languageAlternatives) {
         return SUPPORTED_LANGUAGES
       }
@@ -211,7 +211,7 @@ const CodeInput = React.forwardRef(
         )
       }
 
-      return languageAlternatives.reduce((acc, {title, value: val}) => {
+      return languageAlternatives.reduce((acc: CodeInputLanguage[], {title, value: val, mode}) => {
         const alias = LANGUAGE_ALIASES[val]
         if (alias) {
           // eslint-disable-next-line no-console
@@ -222,10 +222,10 @@ const CodeInput = React.forwardRef(
             alias
           )
 
-          return acc.concat({title, value: alias})
+          return acc.concat({title, value: alias, mode: mode})
         }
 
-        if (!SUPPORTED_LANGUAGES.find((lang) => lang.value === val)) {
+        if (!mode && !SUPPORTED_LANGUAGES.find((lang) => lang.value === val)) {
           // eslint-disable-next-line no-console
           console.warn(
             `'options.languageAlternatives' lists a language which is not supported: "%s", syntax highlighting will be disabled.`,
@@ -233,14 +233,14 @@ const CodeInput = React.forwardRef(
           )
         }
 
-        return acc.concat({title, value: val})
+        return acc.concat({title, value: val, mode})
       }, [])
     }, [type])
 
     const handleCodeChange = useCallback(
       (code: string) => {
         const path = PATH_CODE
-        const fixedLanguage = get(type, 'options.language')
+        const fixedLanguage = type.options?.language
 
         onChange(
           PatchEvent.from([
@@ -289,8 +289,17 @@ const CodeInput = React.forwardRef(
     )
 
     const renderEditor = useCallback(() => {
-      const fixedLanguage = get(type, 'options.language')
-      const mode = isSupportedLanguage((value && value.language) || fixedLanguage) || 'text'
+      const fixedLanguage = type.options?.language
+
+      const language = value?.language || fixedLanguage
+
+      // the language config from the schema
+      const configured = languages.find((entry) => entry.value === language)
+
+      // is the language officially supported (e.g. we import the mode by default)
+      const supported = language && isSupportedLanguage(language)
+
+      const mode = configured?.mode || (supported ? language : 'text')
 
       return (
         <EditorContainer radius={1} shadow={1} readOnly={readOnly}>
@@ -330,7 +339,7 @@ const CodeInput = React.forwardRef(
       onBlur,
     ])
 
-    if (has(type, 'options.language')) {
+    if (type.options?.language) {
       return (
         <ChangeIndicatorProvider
           path={PATH_CODE}
@@ -378,7 +387,7 @@ const CodeInput = React.forwardRef(
             </Select>
           </FormField>
         </ChangeIndicatorProvider>
-        {get(type, 'options.withFilename', false) && (
+        {type.options?.withFilename && (
           <ChangeIndicatorProvider
             path={PATH_FILENAME}
             focusPath={focusPath}

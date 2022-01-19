@@ -5,7 +5,7 @@ import {SanityDocument} from '@sanity/client'
 import withDocument from '../../utils/withDocument'
 
 type Props = {
-  parent?: Record<string, unknown> | undefined
+  parent?: unknown
   value: unknown
   children?: React.ReactNode
   hidden?: ConditionalProperty

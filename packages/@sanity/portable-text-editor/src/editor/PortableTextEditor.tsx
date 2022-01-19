@@ -43,7 +43,7 @@ export type PortableTextEditorProps = {
 
 type State = {
   invalidValueResolution: InvalidValueResolution
-  selection: EditorSelection
+  selection: EditorSelection // This state is only used to force the selection context to update.
 }
 
 // The PT editor's public API
@@ -54,7 +54,7 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
   static addAnnotation = (
     editor: PortableTextEditor,
     type: Type,
-    value?: {[prop: string]: any}
+    value?: {[prop: string]: unknown}
   ): {spanPath: Path; markDefPath: Path} | undefined => editor.editable?.addAnnotation(type, value)
   static blur = (editor: PortableTextEditor): void => {
     debug('Host blurred')
@@ -73,7 +73,7 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
     return editor.editable?.findDOMNode(element)
   }
   static findByPath = (editor: PortableTextEditor, path: Path) => {
-    return editor.editable?.findByPath(path)
+    return editor.editable?.findByPath(path) || []
   }
   static focus = (editor: PortableTextEditor): void => {
     debug('Host requesting focus')
@@ -89,7 +89,7 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
     return editor.portableTextFeatures
   }
   static getSelection = (editor: PortableTextEditor) => {
-    return editor.editable?.getSelection()
+    return editor.editable ? editor.editable.getSelection() : null
   }
   static getValue = (editor: PortableTextEditor) => {
     return editor.editable?.getValue()
@@ -109,7 +109,7 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
   static insertChild = (
     editor: PortableTextEditor,
     type: Type,
-    value?: {[prop: string]: any}
+    value?: {[prop: string]: unknown}
   ): Path | undefined => {
     debug(`Host inserting child`)
     return editor.editable?.insertChild(type, value)
@@ -117,12 +117,18 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
   static insertBlock = (
     editor: PortableTextEditor,
     type: Type,
-    value?: {[prop: string]: any}
+    value?: {[prop: string]: unknown}
   ): Path | undefined => {
     return editor.editable?.insertBlock(type, value)
   }
   static isVoid = (editor: PortableTextEditor, element: PortableTextBlock | PortableTextChild) => {
     return editor.editable?.isVoid(element)
+  }
+  static isObjectPath = (editor: PortableTextEditor, path: Path): boolean => {
+    if (!path || !Array.isArray(path)) return false
+    const isChildObjectEditPath = path.length > 3 && path[1] === 'children'
+    const isBlockObjectEditPath = path.length > 1 && path[1] !== 'children'
+    return isBlockObjectEditPath || isChildObjectEditPath
   }
   static marks = (editor: PortableTextEditor) => {
     return editor.editable?.marks()
@@ -178,7 +184,7 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
     this.keyGenerator = props.keyGenerator || defaultKeyGenerator
 
     // Validate the Portable Text value
-    let state: State = {selection: null, invalidValueResolution: null}
+    let state: State = {invalidValueResolution: null, selection: null}
     const validation = validateValue(props.value, this.portableTextFeatures, this.keyGenerator)
     if (props.value && !validation.valid) {
       this.change$.next({type: 'loading', isLoading: false})
@@ -270,8 +276,8 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
         }
         break
       case 'selection':
-        this.setState({selection: next.selection})
         onChange(next)
+        this.setState({selection: next.selection})
         break
       case 'undo':
       case 'redo':

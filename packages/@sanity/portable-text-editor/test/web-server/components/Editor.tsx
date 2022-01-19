@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useMemo, useRef, useState} from 'react'
 import {Text, Box, Card, Code} from '@sanity/ui'
 import styled from 'styled-components'
 import {Subject} from 'rxjs'
@@ -16,7 +16,7 @@ import {
   Patch,
 } from '../../../src'
 import {createKeyGenerator} from '../keyGenerator'
-import {portableTextType} from '../schema'
+import {portableTextType} from '../../schema'
 
 export const HOTKEYS = {
   marks: {

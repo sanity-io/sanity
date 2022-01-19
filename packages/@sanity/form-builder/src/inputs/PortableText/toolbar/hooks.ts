@@ -1,5 +1,4 @@
 import {
-  EditorSelectionPoint,
   HotkeyOptions,
   PortableTextBlock,
   PortableTextChild,
@@ -18,7 +17,7 @@ import {BlockStyleItem, PTEToolbarAction, PTEToolbarActionGroup} from './types'
 
 export function useFocusBlock(): PortableTextBlock {
   const editor = usePortableTextEditor()
-  const selection = useSelection()
+  const selection = usePortableTextEditorSelection()
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   return useMemo(() => PortableTextEditor.focusBlock(editor), [editor, selection]) // selection must be an additional dep here
@@ -26,7 +25,7 @@ export function useFocusBlock(): PortableTextBlock {
 
 export function useFocusChild(): PortableTextChild {
   const editor = usePortableTextEditor()
-  const selection = useSelection()
+  const selection = usePortableTextEditorSelection()
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   return useMemo(() => PortableTextEditor.focusChild(editor), [editor, selection]) // selection must be an additional dep here
@@ -36,10 +35,6 @@ export function useFeatures(): PortableTextFeatures {
   const editor = usePortableTextEditor()
 
   return useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [editor])
-}
-
-export function useSelection(): {anchor: EditorSelectionPoint; focus: EditorSelectionPoint} {
-  return usePortableTextEditorSelection()
 }
 
 export function useActionGroups({
@@ -59,8 +54,8 @@ export function useActionGroups({
     async (type: Type) => {
       const initialValue = await resolveInitialValue(type)
       const paths = PortableTextEditor.addAnnotation(editor, type, initialValue)
-
       if (paths && paths.markDefPath) {
+        PortableTextEditor.blur(editor)
         onFocus(paths.markDefPath.concat(FOCUS_TERMINATOR))
       }
     },
@@ -80,7 +75,7 @@ export function useActiveActionKeys({
   actions: Array<PTEToolbarAction & {firstInGroup?: true}>
 }): string[] {
   const editor = usePortableTextEditor()
-  const selection = useSelection()
+  const selection = usePortableTextEditorSelection()
 
   return useUnique(
     useMemo(
@@ -116,7 +111,7 @@ export function useActiveActionKeys({
 export function useActiveStyleKeys({items}: {items: BlockStyleItem[]}): string[] {
   const editor = usePortableTextEditor()
   const focusBlock = useFocusBlock()
-  const selection = useSelection()
+  const selection = usePortableTextEditorSelection()
 
   return useUnique(
     useMemo(

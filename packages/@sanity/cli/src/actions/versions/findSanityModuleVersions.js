@@ -1,5 +1,6 @@
 import path from 'path'
 import promiseProps from 'promise-props-recursive'
+import semver from 'semver'
 import semverCompare from 'semver-compare'
 import getLatestVersion from 'get-latest-version'
 import dynamicRequire from '../../util/dynamicRequire'
@@ -46,9 +47,10 @@ export default async function findSanityModuleVersions(context, opts = {}) {
   spin.stop()
 
   return packages.map((mod) => {
+    const current = mod.installed || semver.minVersion(mod.declared).toString()
     mod.needsUpdate =
       target === 'latest'
-        ? semverCompare(mod.version, mod.latest) === -1
+        ? semverCompare(current, mod.latest) === -1
         : mod.installed !== mod.latestInRange
     return mod
   })
@@ -87,10 +89,12 @@ function buildPackageArray(packages, workDir, options = {}) {
     const latest = tryFindLatestVersion(pkg.name, target || `^${cliMajor}`)
     modules.push({
       name: pkg.name,
+      declared: `^${pkg.version}`,
       installed: pkg.version,
       latest: latest.then((versions) => versions.latest),
       latestInRange: latest.then((versions) => versions.latestInRange),
       isPinned: false,
+      isGlobal: true,
     })
   }
 
@@ -100,7 +104,8 @@ function buildPackageArray(packages, workDir, options = {}) {
       const latest = tryFindLatestVersion(pkgName, target || packages[pkgName] || 'latest')
       return {
         name: pkgName,
-        installed: getLocalVersion(pkgName, workDir) || '<missing>',
+        declared: packages[pkgName],
+        installed: getLocalVersion(pkgName, workDir) || undefined,
         latest: latest.then((versions) => versions.latest),
         latestInRange: latest.then((versions) => versions.latestInRange),
         isPinned: isPinnedVersion(packages[pkgName]),

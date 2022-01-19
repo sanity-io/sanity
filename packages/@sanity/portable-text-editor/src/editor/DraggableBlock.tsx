@@ -1,16 +1,9 @@
-import React, {
-  FunctionComponent,
-  useState,
-  useRef,
-  useMemo,
-  useCallback,
-  DragEvent,
-  useEffect,
-} from 'react'
+import React, {useState, useRef, useMemo, useCallback, DragEvent, useEffect} from 'react'
 import {Element as SlateElement, Transforms, Path, Editor} from 'slate'
-import {ReactEditor, useEditor} from '@sanity/slate-react'
+import {ReactEditor, useSlateStatic} from '@sanity/slate-react'
 import {debugWithName} from '../utils/debug'
 import {
+  IS_DRAGGING_CHILD_ELEMENT,
   IS_DRAGGING_ELEMENT_TARGET,
   IS_DRAGGING_BLOCK_ELEMENT,
   IS_DRAGGING,
@@ -27,13 +20,8 @@ type ElementProps = {
   blockRef: React.MutableRefObject<HTMLDivElement | null>
 }
 
-export const DraggableBlock: FunctionComponent<ElementProps> = ({
-  children,
-  element,
-  readOnly,
-  blockRef,
-}) => {
-  const editor = useEditor()
+export const DraggableBlock = ({children, element, readOnly, blockRef}: ElementProps) => {
+  const editor = useSlateStatic()
   const dragGhostRef: React.MutableRefObject<undefined | HTMLElement> = useRef()
   const [isDragOver, setIsDragOver] = useState(false)
   const isVoid = useMemo(() => Editor.isVoid(editor, element), [editor, element])
@@ -89,16 +77,16 @@ export const DraggableBlock: FunctionComponent<ElementProps> = ({
   // Note: this is called for the dragging block
   const handleDragEnd = useCallback(
     (event: DragEvent) => {
-      IS_DRAGGING.set(editor, false)
-      event.preventDefault()
-      event.stopPropagation()
       const targetBlock = IS_DRAGGING_ELEMENT_TARGET.get(editor)
-      IS_DRAGGING_ELEMENT_TARGET.delete(editor)
-      if (dragGhostRef.current) {
-        debug('Removing drag ghost')
-        document.body.removeChild(dragGhostRef.current)
-      }
       if (targetBlock) {
+        IS_DRAGGING.set(editor, false)
+        event.preventDefault()
+        event.stopPropagation()
+        IS_DRAGGING_ELEMENT_TARGET.delete(editor)
+        if (dragGhostRef.current) {
+          debug('Removing drag ghost')
+          document.body.removeChild(dragGhostRef.current)
+        }
         const dragPosition = IS_DRAGGING_BLOCK_TARGET_POSITION.get(editor)
         IS_DRAGGING_BLOCK_TARGET_POSITION.delete(editor)
         let targetPath = ReactEditor.findPath(editor, targetBlock)

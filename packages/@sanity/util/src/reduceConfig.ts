@@ -6,14 +6,9 @@ import dotenv from 'dotenv'
 
 const readEnvFile = memoize(tryReadEnvFile)
 const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production'
-const basePath = process.env.SANITY_STUDIO_PROJECT_BASEPATH || process.env.STUDIO_BASEPATH
 const apiHosts = {
   staging: 'https://api.sanity.work',
   development: 'http://api.sanity.wtf',
-}
-
-const processEnvConfig = {
-  project: basePath ? {basePath} : {},
 }
 
 function clean(obj) {
@@ -60,9 +55,15 @@ export default (rawConfig, env = 'development', options: {studioRootPath?: strin
 
   const projectId = envVars.SANITY_STUDIO_API_PROJECT_ID
   const dataset = envVars.SANITY_STUDIO_API_DATASET
+  const basePath = process.env.SANITY_STUDIO_PROJECT_BASEPATH || process.env.STUDIO_BASEPATH
+  const name = process.env.SANITY_STUDIO_PROJECT_NAME
 
   const apiHost = apiHosts[sanityEnv]
   const api = clean({apiHost, projectId, dataset})
+  const project = clean({basePath, name})
+
+  const processEnvConfig = {project}
+
   const sanityConf = {api}
   const envConfig = (rawConfig.env || {})[env] || {}
   const config = mergeWith({}, rawConfig, envConfig, sanityConf, processEnvConfig, merge)

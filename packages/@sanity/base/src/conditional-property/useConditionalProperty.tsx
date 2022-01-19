@@ -13,7 +13,7 @@ import {omitDeprecatedRole, useCheckCondition} from './utils'
 export interface ConditionalPropertyProps {
   parent?: unknown
   value: unknown
-  document: SanityDocument
+  document?: SanityDocument
   checkProperty: ConditionalProperty
   checkPropertyKey: string
 }

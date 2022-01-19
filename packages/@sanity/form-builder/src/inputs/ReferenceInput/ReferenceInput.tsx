@@ -473,7 +473,6 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
                     value={value}
                     referenceInfo={loadableReferenceInfo}
                     type={type}
-                    selected={selected}
                   />
                 </PreviewCard>
                 <Inline paddingX={1}>

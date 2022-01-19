@@ -24,7 +24,7 @@ export function EditPortal(props: Props) {
   if (type === 'fullscreen') {
     return (
       <Layer>
-        <Dialog width="auto" id={id} onClose={onClose} header={header}>
+        <Dialog width="auto" id={id} onClose={onClose} header={header} __unstable_autoFocus={false}>
           <PresenceOverlay margins={PRESENCE_MARGINS}>
             <Box padding={4}>{children}</Box>
           </PresenceOverlay>
@@ -53,7 +53,7 @@ export function EditPortal(props: Props) {
   }
 
   return (
-    <Dialog width={1} id={id} onClose={onClose} header={header}>
+    <Dialog width={1} id={id} onClose={onClose} header={header} __unstable_autoFocus={false}>
       <PresenceOverlay margins={PRESENCE_MARGINS}>
         <Box padding={4}>{children}</Box>
       </PresenceOverlay>

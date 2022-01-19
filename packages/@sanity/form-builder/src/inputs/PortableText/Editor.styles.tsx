@@ -56,29 +56,23 @@ export const Scroller = styled(ScrollContainer)`
 
 export const EditableContainer = styled(Container)`
   /* @todo: calculate from theme */
-  max-width: 728px;
+  /* max-width: 728px; */
 `
 
-export const EditableWrapper = styled(Card)<{$isFullscreen: boolean}>`
-  &:not([hidden]) {
-    display: flex;
-  }
-
-  min-height: 100%;
-  position: relative;
-  flex-direction: column;
+export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $readOnly: boolean}>`
   height: 100%;
+  width: 100%;
   counter-reset: ${TEXT_LEVELS.map((l) => createListName(l)).join(' ')};
+  overflow: hidden;
 
   & > div {
     height: 100%;
   }
 
   & .pt-editable {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-height: 100%;
+    display: block;
+    width: 100%;
+    height: 100%;
 
     ${TEXT_LEVELS.map((l) => {
       return css`
@@ -115,15 +109,18 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean}>`
       margin-top: ${({theme}) => theme.sanity.space[3]}px;
     }
 
-    & > .pt-block {
-      &:first-child {
-        padding-top: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 5 : 3]}px;
-      }
-
-      &:last-child {
-        padding-bottom: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 9 : 5]}px;
-      }
+    & > :first-child {
+      padding-top: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 5 : 3]}px;
     }
+
+    & > :last-child {
+      padding-bottom: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 9 : 5]}px;
+    }
+
+    /* & > .pt-block {
+      & .pt-inline-object {
+      }
+    } */
 
     & .pt-drop-indicator {
       pointer-events: none;

@@ -16,8 +16,8 @@ interface BlockActionsProps {
 }
 
 const Root = styled.div`
-  user-select: none;
   display: flex;
+  pointer-events: 'all';
 `
 
 function isClassComponent(component) {

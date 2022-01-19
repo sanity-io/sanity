@@ -105,18 +105,14 @@ export const ListPrefixWrapper = styled.div`
   white-space: nowrap;
 `
 
+export const BlockExtrasContainer = styled(Box)`
+  user-select: none;
+`
+
 export const BlockActionsOuter = styled(Box)`
   line-height: 0;
   width: 25px;
   position: relative;
-  user-select: none;
-
-  /* Without this, select all (CMD-A) will not work properly */
-  /* when the editor is in non-fullscreen mode. */
-  &:before {
-    content: ' ';
-    font-size: 0;
-  }
 `
 
 export const BlockActionsInner = styled(Flex)(({theme}: {theme: Theme}) => {
@@ -134,6 +130,7 @@ export const BlockActionsInner = styled(Flex)(({theme}: {theme: Theme}) => {
   const negativeTop = 0 - (buttonHeight - capHeight2) / 2
 
   return css`
+    user-select: none;
     position: absolute;
     right: 0;
     top: ${negativeTop}px;

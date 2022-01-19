@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 /* eslint-disable complexity */
-import {Editor, Transforms, Path, Range, Element} from 'slate'
+import {Editor, Transforms, Path, Range} from 'slate'
 import isHotkey from 'is-hotkey'
 import {ReactEditor} from '@sanity/slate-react'
 import {PortableTextFeatures} from '../../types/portableText'
@@ -24,7 +24,6 @@ const DEFAULT_HOTKEYS: HotkeyOptions = {
 
 /**
  * This plugin takes care of all hotkeys in the editor
- * TODO: move a lot of these out the their respective plugins
  *
  */
 export function createWithHotkeys(
@@ -35,6 +34,26 @@ export function createWithHotkeys(
 ): (editor: PortableTextSlateEditor & ReactEditor) => any {
   const reservedHotkeys = ['enter', 'tab', 'shift', 'delete', 'end']
   const activeHotkeys = hotkeysFromOptions || DEFAULT_HOTKEYS // TODO: Merge where possible? A union?
+  const createDefaultBlock = () =>
+    toSlateValue(
+      [
+        {
+          _type: portableTextFeatures.types.block.name,
+          _key: keyGenerator(),
+          style: 'normal',
+          markDefs: [],
+          children: [
+            {
+              _type: 'span',
+              _key: keyGenerator(),
+              text: '',
+              marks: [],
+            },
+          ],
+        },
+      ],
+      portableTextFeatures.types.block.name
+    )[0]
   return function withHotKeys(editor: PortableTextSlateEditor & ReactEditor) {
     editor.pteWithHotKeys = (event: React.KeyboardEvent<HTMLDivElement>): void => {
       // Wire up custom marks hotkeys
@@ -79,17 +98,6 @@ export function createWithHotkeys(
       const isShiftTab = isHotkey('shift+tab', event.nativeEvent)
       const isBackspace = isHotkey('backspace', event.nativeEvent)
       const isDelete = isHotkey('delete', event.nativeEvent)
-
-      // Handle inline objects delete and backspace (not implemented in Slate)
-      // TODO: implement cut for inline objects (preferably in Slate)
-      if ((isDelete || isBackspace) && editor.selection && Range.isCollapsed(editor.selection)) {
-        const [focusChild] = Editor.node(editor, editor.selection.focus, {depth: 2})
-        if (Editor.isVoid(editor, focusChild) && Editor.isInline(editor, focusChild)) {
-          Transforms.delete(editor, {at: editor.selection, voids: false, hanging: true})
-          Transforms.collapse(editor)
-          editor.onChange()
-        }
-      }
 
       // Disallow deleting void blocks by backspace from another line.
       // Otherwise it's so easy to delete the void block above when trying to delete text on
@@ -145,17 +153,6 @@ export function createWithHotkeys(
         }
       }
 
-      // There's a bug in Slate atm regarding void nodes not being deleted if it is the last block.
-      // Seems related to 'hanging: true'. 2020/05/26
-      if ((isDelete || isBackspace) && editor.selection && Range.isExpanded(editor.selection)) {
-        event.preventDefault()
-        event.stopPropagation()
-        Transforms.delete(editor, {at: editor.selection, voids: false, hanging: true})
-        Transforms.collapse(editor)
-        editor.onChange()
-        return
-      }
-
       // Tab for lists
       if (isTab || isShiftTab) {
         if (editor.pteIncrementBlockLevels(isShiftTab)) {
@@ -172,34 +169,30 @@ export function createWithHotkeys(
           // Just ignore
         }
         // List item enter key
-        if (focusBlock && focusBlock.listItem) {
+        if (editor.isListBlock(focusBlock)) {
           if (editor.pteEndList()) {
             event.preventDefault()
           }
           return
         }
+
+        // Enter from another style than the first (default one)
+        if (
+          editor.isTextBlock(focusBlock) &&
+          focusBlock.style &&
+          focusBlock.style !== portableTextFeatures.styles[0].value
+        ) {
+          const [, end] = Range.edges(editor.selection)
+          const endAtEndOfNode = Editor.isEnd(editor, end, end.path)
+          if (endAtEndOfNode) {
+            Editor.insertNode(editor, createDefaultBlock())
+            event.preventDefault()
+            return
+          }
+        }
         // Block object enter key
         if (focusBlock && Editor.isVoid(editor, focusBlock)) {
-          const block = toSlateValue(
-            [
-              {
-                _type: portableTextFeatures.types.block.name,
-                _key: keyGenerator(),
-                style: 'normal',
-                markDefs: [],
-                children: [
-                  {
-                    _type: 'span',
-                    _key: keyGenerator(),
-                    text: '',
-                    marks: [],
-                  },
-                ],
-              },
-            ],
-            portableTextFeatures.types.block.name
-          )[0]
-          Editor.insertNode(editor, block)
+          Editor.insertNode(editor, createDefaultBlock())
           event.preventDefault()
           return
         }

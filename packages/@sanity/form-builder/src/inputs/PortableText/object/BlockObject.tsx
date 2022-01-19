@@ -3,6 +3,7 @@ import {
   PortableTextBlock,
   Type,
   RenderAttributes,
+  EditorSelection,
 } from '@sanity/portable-text-editor'
 import {isKeySegment, Marker, Path} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
@@ -100,6 +101,11 @@ const Root = styled(Card)((props: {theme: Theme}) => {
   `
 })
 
+const PreviewContainer = styled(Flex)`
+  user-select: none;
+  pointer-events: none;
+`
+
 const ChangeIndicatorWrapper = styled.div(({theme}: {theme: Theme}) => {
   const {space} = theme.sanity
 
@@ -146,6 +152,9 @@ const BlockActionsOuter = styled(Box)`
 const BlockActionsInner = styled(Flex)`
   position: absolute;
   right: 0;
+  [data-dragged] & {
+    visibility: hidden;
+  }
 `
 
 const TooltipBox = styled(Box)`
@@ -158,7 +167,10 @@ const BlockPreview = styled(Box)((props: {theme: Theme}) => {
   `
 })
 
-export function BlockObject(props: BlockObjectProps) {
+export const BlockObject = React.forwardRef(function BlockObject(
+  props: BlockObjectProps,
+  forwardedRef: React.ForwardedRef<HTMLDivElement>
+) {
   const {
     attributes: {focused, selected, path},
     block,
@@ -179,30 +191,36 @@ export function BlockObject(props: BlockObjectProps) {
     onFocus(path.concat(FOCUS_TERMINATOR))
   }, [onFocus, path])
 
-  const handleClickToOpen = useCallback(() => {
-    handleEdit()
-  }, [handleEdit])
+  const handleDoubleClickToOpen = useCallback(
+    (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      PortableTextEditor.blur(editor)
+      handleEdit()
+    },
+    [editor, handleEdit]
+  )
 
   const handleDelete = useCallback(() => {
-    PortableTextEditor.delete(
-      editor,
-      {focus: {path, offset: 0}, anchor: {path, offset: 0}},
-      {mode: 'block'}
-    )
-    PortableTextEditor.focus(editor)
+    const sel: EditorSelection = {focus: {path, offset: 0}, anchor: {path, offset: 0}}
+    PortableTextEditor.delete(editor, sel, {mode: 'block'})
+    // The focus seems to get stuck somehow on the dropdown menu.
+    // Setting focus like this seems to avoid that.
+    setTimeout(() => PortableTextEditor.focus(editor))
   }, [editor, path])
 
   const blockPreview = useMemo(() => {
     return (
       <BlockObjectPreview
         type={type}
+        focused={focused}
         value={block}
         readOnly={readOnly}
         onClickingDelete={handleDelete}
         onClickingEdit={handleEdit}
       />
     )
-  }, [type, block, readOnly, handleDelete, handleEdit])
+  }, [focused, type, block, readOnly, handleDelete, handleEdit])
 
   const tone = selected || focused ? 'primary' : 'default'
 
@@ -263,8 +281,8 @@ export function BlockObject(props: BlockObjectProps) {
   const tooltipEnabled = hasErrors || hasWarnings || hasInfo || hasMarkers
 
   return (
-    <InnerFlex marginY={3}>
-      <Flex flex={1} {...innerPaddingProps}>
+    <InnerFlex marginY={3} ref={forwardedRef} contentEditable={false}>
+      <PreviewContainer flex={1} {...innerPaddingProps}>
         <Tooltip
           placement="top"
           portal="editor"
@@ -286,7 +304,7 @@ export function BlockObject(props: BlockObjectProps) {
             data-testid="pte-block-object"
             data-image-preview={isImagePreview ? '' : undefined}
             flex={1}
-            onDoubleClick={handleClickToOpen}
+            onDoubleClick={handleDoubleClickToOpen}
             padding={isImagePreview ? 0 : 1}
             ref={elementRef}
             tone={tone}
@@ -294,24 +312,20 @@ export function BlockObject(props: BlockObjectProps) {
             <BlockPreview ref={blockRef}>{blockPreview}</BlockPreview>
           </Root>
         </Tooltip>
-      </Flex>
-
-      {renderBlockActions && (
-        <BlockActionsOuter marginRight={1}>
-          <BlockActionsInner>
-            {block && focused && !readOnly && (
-              <BlockActions
-                onChange={onChange}
-                block={block}
-                renderBlockActions={renderBlockActions}
-              />
-            )}
-          </BlockActionsInner>
-        </BlockActionsOuter>
-      )}
-
+      </PreviewContainer>
+      <BlockActionsOuter marginRight={1}>
+        <BlockActionsInner>
+          {renderBlockActions && block && focused && !readOnly && (
+            <BlockActions
+              onChange={onChange}
+              block={block}
+              renderBlockActions={renderBlockActions}
+            />
+          )}
+        </BlockActionsInner>
+      </BlockActionsOuter>
       {isFullscreen && (
-        <ChangeIndicatorWrapper>
+        <ChangeIndicatorWrapper contentEditable={false}>
           <StyledChangeIndicatorWithProvidedFullPath
             compareDeep
             value={block}
@@ -322,4 +336,4 @@ export function BlockObject(props: BlockObjectProps) {
       )}
     </InnerFlex>
   )
-}
+})

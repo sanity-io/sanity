@@ -1,6 +1,6 @@
 /* eslint-disable react/no-find-dom-node */
 
-import React, {useState, useEffect, useMemo, useLayoutEffect, useCallback} from 'react'
+import React, {useState, useEffect, useMemo, useCallback} from 'react'
 import {isKeySegment, Path, Marker} from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {
@@ -34,6 +34,7 @@ export interface EditObjectProps {
   onClose: () => void
   onFocus: (path: Path) => void
   presence: FormFieldPresence[]
+  scrollElement: HTMLElement
   readOnly: boolean
   value: PortableTextBlock[] | undefined
 }
@@ -48,17 +49,17 @@ export const EditObject = (props: EditObjectProps) => {
     onClose,
     onFocus,
     presence,
+    scrollElement,
     readOnly,
     value,
   } = props
   const editor = usePortableTextEditor()
   const ptFeatures = useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [editor])
-  const [_object, type] = useMemo(() => findObjectAndType(objectEditData, value, ptFeatures), [
-    objectEditData,
-    ptFeatures,
-    value,
-  ])
-  const [object, setObject] = useState(_object)
+  const [objectFromValue, type] = useMemo(
+    () => findObjectAndType(objectEditData, value, ptFeatures),
+    [objectEditData, ptFeatures, value]
+  )
+  const [object, setObject] = useState(objectFromValue)
   const [timeoutInstance, setTimeoutInstance] = useState(undefined)
   const formBuilderPath = objectEditData && objectEditData.formBuilderPath
   const kind = objectEditData && objectEditData.kind
@@ -75,9 +76,9 @@ export const EditObject = (props: EditObjectProps) => {
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  useLayoutEffect(() => {
-    setObject(_object)
-  }, [_object])
+  useEffect(() => {
+    setObject(objectFromValue)
+  }, [objectFromValue])
 
   const cancelThrottle = useMemo(
     () =>
@@ -130,8 +131,9 @@ export const EditObject = (props: EditObjectProps) => {
   ) {
     return (
       <PopoverObjectEditing
-        focusPath={focusPath}
+        elementRef={objectEditData.editorHTMLElementRef}
         editorPath={objectEditData.editorPath}
+        focusPath={focusPath}
         markers={markers}
         object={object}
         onBlur={onBlur}
@@ -141,6 +143,7 @@ export const EditObject = (props: EditObjectProps) => {
         path={formBuilderPath}
         presence={presence}
         readOnly={readOnly}
+        scrollElement={scrollElement}
         type={type}
         width={modalOption.width}
       />

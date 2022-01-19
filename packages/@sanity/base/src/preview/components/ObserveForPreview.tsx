@@ -13,7 +13,7 @@ import {
 } from 'rxjs/operators'
 import {concat, of, Observable} from 'rxjs'
 import {observeForPreview} from '../'
-import type {FieldName, SortOrdering} from '../types'
+import type {FieldName, Previewable, SortOrdering} from '../types'
 
 function isNonNullable<T>(value: T): value is NonNullable<T> {
   return value !== null && value !== undefined
@@ -38,7 +38,7 @@ function memoizeBy<T>(isActive$: Observable<boolean>) {
 
 type OuterProps = {
   isActive: boolean
-  value: any
+  value: Previewable
   type: SchemaType
   children: (props: any) => React.ReactElement
   fields: FieldName[]

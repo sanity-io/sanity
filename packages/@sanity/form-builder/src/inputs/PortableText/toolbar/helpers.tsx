@@ -44,7 +44,10 @@ function getPTEFormatActions(
       disabled: disabled,
       icon: decorator.blockEditor?.icon,
       key: decorator.value,
-      handle: (): void => PortableTextEditor.toggleMark(editor, decorator.value),
+      handle: (): void => {
+        PortableTextEditor.toggleMark(editor, decorator.value)
+        PortableTextEditor.focus(editor)
+      },
       hotkeys,
       title: decorator.title,
     }

@@ -1,5 +1,5 @@
-import {Element, Operation, InsertNodeOperation} from 'slate'
-import {PortableTextFeatures} from '../../types/portableText'
+import {Element, Operation, InsertNodeOperation, Text as SlateText} from 'slate'
+import {PortableTextFeatures, TextBlock, ListItem, TextSpan} from '../../types/portableText'
 import {debugWithName} from '../../utils/debug'
 import {PortableTextSlateEditor} from '../../types/editor'
 
@@ -9,10 +9,37 @@ const debug = debugWithName('plugin:withSchemaTypes')
  *
  */
 export function createWithSchemaTypes(portableTextFeatures: PortableTextFeatures) {
-  return function withSchemaTypes(editor: PortableTextSlateEditor) {
+  return function withSchemaTypes(editor: PortableTextSlateEditor): PortableTextSlateEditor {
+    editor.isTextBlock = (value: any): value is TextBlock => {
+      return (
+        !editor.isVoid(value) &&
+        'markDefs' in value &&
+        'style' in value &&
+        'children' in value &&
+        '_type' in value &&
+        portableTextFeatures.types.block.name === value._type
+      )
+    }
+    editor.isTextSpan = (value: any): value is TextSpan => {
+      return (
+        !editor.isVoid(value) &&
+        'text' in value &&
+        'marks' in value &&
+        '_type' in value &&
+        portableTextFeatures.types.span.name === value._type
+      )
+    }
+    editor.isListBlock = (value: any): value is ListItem => {
+      return Boolean(
+        editor.isTextBlock(value) &&
+          'listItem' in value &&
+          'level' in value &&
+          value.listItem &&
+          Number.isInteger(value.level)
+      )
+    }
     editor.isVoid = (element: Element): boolean => {
       return (
-        typeof element._type === 'string' &&
         portableTextFeatures.types.block.name !== element._type &&
         (portableTextFeatures.types.blockObjects.map((obj) => obj.name).includes(element._type) ||
           portableTextFeatures.types.inlineObjects.map((obj) => obj.name).includes(element._type))
@@ -21,8 +48,8 @@ export function createWithSchemaTypes(portableTextFeatures: PortableTextFeatures
     editor.isInline = (element: Element): boolean => {
       const inlineSchemaTypes = portableTextFeatures.types.inlineObjects.map((obj) => obj.name)
       return (
-        typeof element._type === 'string' &&
         inlineSchemaTypes.includes(element._type) &&
+        '__inline' in element &&
         element.__inline === true
       )
     }
@@ -30,10 +57,16 @@ export function createWithSchemaTypes(portableTextFeatures: PortableTextFeatures
     const {apply} = editor
     editor.apply = (op: Operation) => {
       const isInsertTextWithoutType =
-        op.type === 'insert_node' && op.path.length === 2 && op.node._type === undefined
+        op.type === 'insert_node' &&
+        op.path.length === 2 &&
+        SlateText.isText(op.node) &&
+        op.node._type === undefined
       if (isInsertTextWithoutType) {
         const insertNodeOperation = op as InsertNodeOperation
-        const newNode = {...insertNodeOperation.node, _type: portableTextFeatures.types.span.name}
+        const newNode: SlateText = {
+          ...(insertNodeOperation.node as SlateText),
+          _type: 'span',
+        }
         op.node = newNode
         debug('Setting span type to child without a type', op)
       }

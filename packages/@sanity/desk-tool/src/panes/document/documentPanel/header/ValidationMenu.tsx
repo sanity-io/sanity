@@ -81,7 +81,14 @@ export function ValidationMenu(props: ValidationMenuProps) {
   return (
     <MenuButton
       id={id || ''}
-      button={<Button {...buttonProps} title="Show validation issues" mode="bleed" />}
+      button={
+        <Button
+          {...buttonProps}
+          title="Show validation issues"
+          mode="bleed"
+          data-testid="validation-list-button"
+        />
+      }
       menu={
         <Menu open={isOpen}>
           <ValidationList

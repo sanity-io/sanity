@@ -6,6 +6,7 @@ export type ObjectEditData = {
   formBuilderPath: Path // The actual data storage path in the PT model (like .markDefs for annotations)
   kind: 'annotation' | 'blockObject' | 'inlineObject'
   returnToSelection: EditorSelection | null
+  editorHTMLElementRef?: React.MutableRefObject<HTMLElement> // Optional reference to editor HTML Element
 }
 
 export type RenderCustomMarkers = (markers: Marker[]) => JSX.Element

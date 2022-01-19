@@ -1,16 +1,15 @@
 import React from 'react'
-import {Element} from 'slate'
-import {PortableTextFeatures} from '../../types/portableText'
+import {PortableTextBlock, PortableTextFeatures} from '../../types/portableText'
 import {DefaultListItem, DefaultListItemInner} from '.'
 
 type Props = {
   children: JSX.Element
-  element: Element
+  block: PortableTextBlock
   portableTextFeatures: PortableTextFeatures
 }
 export default function TextBlock(props: Props) {
-  const {portableTextFeatures, children, element} = props
-  const style = typeof element.style === 'string' ? element.style : 'normal'
+  const {portableTextFeatures, children, block} = props
+  const style = block.style || portableTextFeatures.styles[0].value
   // Should we render a custom style?
   // TODO: Look into this API. This is legacy support for older Sanity Studio versions via the type
   let CustomStyle
@@ -23,11 +22,11 @@ export default function TextBlock(props: Props) {
   }
 
   let renderedBlock = children
-  if (element.listItem) {
+  if ('listItem' in block && block.listItem) {
     renderedBlock = (
       <DefaultListItem
-        listStyle={(element.listItem as string) || 'bullet'}
-        listLevel={(element.level as number) || 0}
+        listStyle={block.listItem || portableTextFeatures.lists[0].value}
+        listLevel={block.level || 0}
       >
         <DefaultListItemInner>{renderedBlock}</DefaultListItemInner>
       </DefaultListItem>

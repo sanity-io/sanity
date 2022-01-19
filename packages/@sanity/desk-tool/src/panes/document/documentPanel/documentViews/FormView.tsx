@@ -16,6 +16,7 @@ import {FormBuilder} from 'part:@sanity/form-builder'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {tap} from 'rxjs/operators'
 import {SanityDocument} from '@sanity/client'
+import {ObjectField, ObjectSchemaTypeWithOptions} from '@sanity/types'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Delay} from '../../../../components/Delay'
 
@@ -25,8 +26,12 @@ interface FormViewProps {
   margins: [number, number, number, number]
 }
 
+export interface FilterFieldOptions {
+  (type: ObjectSchemaTypeWithOptions, field: ObjectField): boolean
+}
+
 interface FormViewState {
-  filterField: () => boolean
+  filterField: FilterFieldOptions
 }
 
 const INITIAL_STATE: FormViewState = {
@@ -50,10 +55,11 @@ export function FormView(props: FormViewProps) {
     historyController,
     markers,
     ready,
+    changesOpen,
   } = useDocumentPane()
   const presence = useDocumentPresence(documentId)
   const {revTime: rev} = historyController
-  const [{filterField}, setState] = useState<FormViewState>(INITIAL_STATE)
+  const [{filterField}, setFilterField] = useState<FormViewState>(INITIAL_STATE)
 
   const hasTypeMismatch = value !== null && value._type !== documentSchema.name
   const isNonExistent = !value || !value._id
@@ -85,9 +91,9 @@ export function FormView(props: FormViewProps) {
   useEffect(() => {
     if (!filterFieldFn$) return undefined
 
-    const sub = filterFieldFn$.subscribe((nextFilterField: any) =>
-      setState({filterField: nextFilterField})
-    )
+    const sub = filterFieldFn$.subscribe((nextFieldFilter) => {
+      setFilterField(nextFieldFilter ? {filterField: nextFieldFilter} : INITIAL_STATE)
+    })
 
     return () => sub.unsubscribe()
   }, [])
@@ -159,6 +165,7 @@ export function FormView(props: FormViewProps) {
               focusPath={focusPath}
               onChange={isReadOnly ? noop : handleChange}
               markers={markers}
+              changesOpen={changesOpen}
             />
           ) : (
             <Delay ms={300}>
@@ -192,6 +199,7 @@ export function FormView(props: FormViewProps) {
     ready,
     isReadOnly,
     value,
+    changesOpen,
   ])
 
   const after = useMemo(

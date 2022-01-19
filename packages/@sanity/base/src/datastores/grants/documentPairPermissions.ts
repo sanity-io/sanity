@@ -22,8 +22,8 @@ function getSchemaType(typeName: string): SchemaType {
 
 interface PairPermissionsOptions {
   permission: DocumentPermission
-  draft: SanityDocument
-  published: SanityDocument
+  draft: SanityDocument | null
+  published: SanityDocument | null
   liveEdit: boolean
 }
 
@@ -32,7 +32,17 @@ function getPairPermissions({
   draft,
   published,
   liveEdit,
-}: PairPermissionsOptions): Array<[string, Observable<PermissionCheckResult>] | null> {
+}: PairPermissionsOptions): Array<[string, Observable<PermissionCheckResult>]> {
+  // this was introduced because we ran into a bug where a user with publish
+  // access was marked as not allowed to duplicate a document unless it had a
+  // draft variant. this would happen in non-live edit cases where the document
+  // pair only had a published variant with the draft variant being null.
+  //
+  // note: this should _not_ be used if the draft and published versions should
+  // be considered separately/explicitly in the permissions.
+  const effectiveVersion = draft || published
+  const effectiveVersionType = effectiveVersion === draft ? 'draft' : 'published'
+
   switch (permission) {
     case 'delete': {
       if (liveEdit) {
@@ -98,7 +108,12 @@ function getPairPermissions({
         ]
       }
 
-      return [['update draft document', checkDocumentPermission('update', draft)]]
+      return [
+        [
+          `update ${effectiveVersionType} document`,
+          checkDocumentPermission('update', effectiveVersion),
+        ],
+      ]
     }
 
     case 'duplicate': {
@@ -113,8 +128,8 @@ function getPairPermissions({
 
       return [
         [
-          'create new draft document from existing draft',
-          checkDocumentPermission('create', {...draft, _id: getDraftId('dummy-id')}),
+          `create new draft document from existing ${effectiveVersionType} document`,
+          checkDocumentPermission('create', {...effectiveVersion, _id: getDraftId('dummy-id')}),
         ],
       ]
     }

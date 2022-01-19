@@ -331,6 +331,7 @@ export default {
                   {
                     name: 'testString',
                     type: 'string',
+                    validation: (Rule) => Rule.required(),
                   },
                 ],
               },
@@ -341,7 +342,13 @@ export default {
               type: 'image',
               title: 'Image',
               fields: [
-                {title: 'Caption', name: 'caption', type: 'string', options: {isHighlighted: true}},
+                {
+                  title: 'Caption',
+                  name: 'caption',
+                  type: 'string',
+                  options: {isHighlighted: true},
+                  validation: (Rule) => Rule.required(),
+                },
                 {
                   title: 'Authors',
                   name: 'authors',

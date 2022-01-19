@@ -31,7 +31,7 @@ export const Timeline = ({
   onLoadMore,
 }: TimelineProps) => {
   const rootRef = useRef<HTMLDivElement | null>(null)
-  const listRef = useRef<HTMLOListElement | null>(null)
+  const listRef = useRef<HTMLDivElement | null>(null)
   const [loadingElement, setLoadingElement] = useState<HTMLDivElement | null>(null)
 
   let state: TimelineItemState = disabledBeforeSelection ? 'disabled' : 'enabled'

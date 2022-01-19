@@ -4,8 +4,10 @@ import {promises as fs} from 'fs'
 import boxen from 'boxen'
 import rimrafCb from 'rimraf'
 import semver from 'semver'
+import resolveFrom from 'resolve-from'
 import {padStart, noop} from 'lodash'
 import readLocalManifest from '@sanity/util/lib/readLocalManifest'
+
 import findSanityModuleVersions from '../../actions/versions/findSanityModuleVersions'
 import {getFormatters} from '../versions/printVersionResult'
 import debug from '../../debug'
@@ -74,6 +76,9 @@ export default async function upgradeDependencies(args, context) {
     )
   }
 
+  // Yarn fails to upgrade `react-ace` in some versions, see function for details
+  await maybeDeleteReactAce(nonPinned, workDir)
+
   // Forcefully remove non-symlinked module paths to force upgrade
   await Promise.all(
     nonPinned.map((mod) =>
@@ -120,7 +125,7 @@ export default async function upgradeDependencies(args, context) {
 
   const {versionLength, formatName} = getFormatters(nonPinned)
   nonPinned.forEach((mod) => {
-    const current = chalk.yellow(padStart(mod.installed, versionLength))
+    const current = chalk.yellow(padStart(mod.installed || '<missing>', versionLength))
     const latest = chalk.green(mod.latestInRange)
     context.output.print(`${formatName(mod.name)} ${current} → ${latest}`)
   })
@@ -140,7 +145,8 @@ async function deleteIfNotSymlink(modPath) {
 }
 
 function hasSemverBreakingUpgrade(mod) {
-  return !semver.satisfies(mod.latest, `^${mod.installed}`) && semver.gt(mod.latest, mod.installed)
+  const current = mod.installed || semver.minVersion(mod.declared).toString()
+  return !semver.satisfies(mod.latest, `^${current}`) && semver.gt(mod.latest, current)
 }
 
 function getMajorUpgradeText(mods, chalk) {
@@ -157,7 +163,7 @@ function getMajorUpgradeText(mods, chalk) {
 }
 
 function getMajorStudioUpgradeText(mod, chalk) {
-  const prev = semver.major(mod.installed)
+  const prev = semver.major(mod.installed || semver.minVersion(mod.declared).toString())
   const next = semver.major(mod.latest)
   return [
     'There is now a new major version of Sanity Studio!',
@@ -192,4 +198,40 @@ function schedulePrintMajorUpgrades({baseMajorUpgrade, majorUpgrades}, {chalk, o
       })
     )
   })
+}
+
+// Workaround for https://github.com/securingsincity/react-ace/issues/1048
+// Yarn fails to upgrade `react-ace` because `react-ace.min.js` is a _file_ in one version
+// but a _folder_ in the next. If we're upgrading the `@sanity/code-input`, remove the
+// `react-ace` dependency before installing
+async function maybeDeleteReactAce(toUpgrade, workDir) {
+  const codeInputUpdate = toUpgrade.find((mod) => mod.name === '@sanity/code-input')
+  if (!codeInputUpdate) {
+    return
+  }
+
+  // Assume it is an old version if we can't figure out which one is installed
+  const installed = codeInputUpdate.installed ? codeInputUpdate.installed : '2.4.0'
+  const upgradeTo = codeInputUpdate.latestInRange
+
+  // react-ace was upgraded in 2.24.1, so if we're going from <= 2.24.0 to => 2.24.1,
+  // we should remove it.
+  const shouldDelete = semver.lte(installed, '2.24.0') && semver.gte(upgradeTo, '2.24.1')
+  if (!shouldDelete) {
+    return
+  }
+
+  // Try to find the path to it from `@sanity/code-input`, otherwise try the studio root `node_modules`
+  const depRootPath = path.join(workDir, 'node_modules')
+  const closestReactAcePath =
+    getModulePath('react-ace', path.join(depRootPath, '@sanity', 'code-input')) ||
+    path.join(depRootPath, 'react-ace')
+
+  await rimraf(closestReactAcePath)
+}
+
+function getModulePath(modName, fromPath) {
+  const manifestFile = `${modName.replace(/\//g, path.sep)}/package.json`
+  const manifestPath = resolveFrom.silent(fromPath, manifestFile)
+  return manifestPath ? path.dirname(manifestPath) : null
 }

@@ -4,8 +4,15 @@ import {Node as SlateNode, Operation as SlateOperation} from 'slate'
 import {ReactEditor} from '@sanity/slate-react'
 import type {Patch} from '../types/patch'
 import {Type} from '../types/schema'
-import {PortableTextBlock, PortableTextChild} from '../types/portableText'
+import {
+  ListItem,
+  PortableTextBlock,
+  PortableTextChild,
+  TextBlock,
+  TextSpan,
+} from '../types/portableText'
 import {PortableTextEditor} from '../editor/PortableTextEditor'
+import {PortableTextFeatures} from '..'
 
 export interface EditableAPI {
   activeAnnotations: () => PortableTextBlock[]
@@ -20,7 +27,7 @@ export interface EditableAPI {
   focus: () => void
   focusBlock: () => PortableTextBlock | undefined
   focusChild: () => PortableTextChild | undefined
-  getSelection: () => EditorSelection | undefined
+  getSelection: () => EditorSelection
   getValue: () => PortableTextBlock[] | undefined
   hasBlockStyle: (style: string) => boolean
   hasListStyle: (listStyle: string) => boolean
@@ -58,8 +65,18 @@ export interface History {
 export type EditorSelectionPoint = {path: Path; offset: number}
 export type EditorSelection = {anchor: EditorSelectionPoint; focus: EditorSelectionPoint} | null
 export interface PortableTextSlateEditor extends ReactEditor {
+  _key: 'editor'
+  _type: 'editor'
   editable: EditableAPI
   history: History
+  insertPortableTextData: (data: DataTransfer) => boolean
+  insertTextOrHTMLData: (data: DataTransfer) => boolean
+  isTextBlock: (value: unknown) => value is TextBlock
+  isTextSpan: (value: unknown) => value is TextSpan
+  isListBlock: (value: unknown) => value is ListItem
+  isSelecting: boolean
+  isThrottling: boolean
+
   /**
    * Increments selected list items levels, or decrements them if @reverse is true.
    *
@@ -68,19 +85,19 @@ export interface PortableTextSlateEditor extends ReactEditor {
    */
   pteIncrementBlockLevels: (reverse?: boolean) => boolean
   /**
-   * Toggle blocks as listItem
+   * Toggle selected blocks as listItem
    *
    * @param {string} listStyle
    */
   pteToggleListItem: (listStyle: string) => void
   /**
-   * Set block as listItem
+   * Set selected block as listItem
    *
    * @param {string} listStyle
    */
   pteSetListItem: (listStyle: string) => void
   /**
-   * Unset block as listItem
+   * Unset selected block as listItem
    *
    * @param {string} listStyle
    */
@@ -256,6 +273,7 @@ export type OnPasteResultOrPromise = OnPasteResult | Promise<OnPasteResult>
 export type OnPasteFn = (arg0: {
   event: React.SyntheticEvent
   path: Path
+  portableTextFeatures: PortableTextFeatures
   type: Type
   value: PortableTextBlock[] | undefined
 }) => OnPasteResultOrPromise

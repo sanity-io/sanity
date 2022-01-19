@@ -11,6 +11,9 @@ export default defineConfig({
   build: {
     minify: false,
   },
+  server: {
+    host: true,
+  },
   resolve: {
     alias: {
       '@sanity/schema': path.join(__dirname, '../../../schema/src/legacy/Schema.ts'),

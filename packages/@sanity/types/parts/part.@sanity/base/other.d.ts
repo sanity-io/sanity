@@ -4,6 +4,18 @@ declare module 'all:part:@sanity/base/absolutes' {
 }
 
 declare module 'all:part:@sanity/base/component'
+declare module 'all:part:@sanity/desk-tool/filter-fields-fn?' {
+  declare const filterFields: Observable[]
+  export default filterFields
+}
+
+declare module 'part:@sanity/desk-tool/filter-fields-fn?' {
+  import type {Observable} from 'rxjs'
+  declare const filterField: Observable<{
+    (type: ObjectSchemaTypeWithOptions, field: ObjectField): boolean
+  }>
+  export default filterField
+}
 
 declare module 'all:part:@sanity/base/diff-resolver' {
   type DiffComponent = React.ComponentType<unknown>

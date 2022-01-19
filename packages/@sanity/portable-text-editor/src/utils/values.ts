@@ -1,5 +1,5 @@
 import {isEqual} from 'lodash'
-import {Node, Element} from 'slate'
+import {Node, Element, Text, Descendant} from 'slate'
 import {PathSegment} from '@sanity/types'
 import {
   PortableTextBlock,
@@ -28,10 +28,11 @@ export function toSlateValue(
   value: PortableTextBlock[] | undefined,
   textBlockType: string,
   keyMap: Record<string, any> = {}
-): Node[] {
+): Descendant[] {
   if (value && Array.isArray(value)) {
     return value.map((block) => {
       const {_type, _key, ...rest} = block
+      const voidChildren = [{_key: `${_key}-void-child`, _type: 'span', text: '', marks: []}]
       const isPortableText = block && block._type === textBlockType
       if (isPortableText) {
         const textBlock = block as TextBlock
@@ -41,7 +42,13 @@ export function toSlateValue(
           if (cType !== 'span') {
             hasInlines = true
             return keepObjectEquality(
-              {_type: cType, _key: cKey, children: [{text: ''}], value: cRest, __inline: true},
+              {
+                _type: cType,
+                _key: cKey,
+                children: voidChildren,
+                value: cRest,
+                __inline: true,
+              },
               keyMap
             )
           }
@@ -50,12 +57,20 @@ export function toSlateValue(
         })
         if (!hasInlines && Element.isElement(block)) {
           // Original object
-          return block as Node
+          return block
         }
         return keepObjectEquality({_type, _key, ...rest, children}, keyMap)
       }
-      return keepObjectEquality({_type, _key, children: [{text: ''}], value: rest}, keyMap)
-    }) as Node[]
+      return keepObjectEquality(
+        {
+          _type,
+          _key,
+          children: voidChildren,
+          value: rest,
+        },
+        keyMap
+      )
+    }) as Descendant[]
   }
   return []
 }
@@ -67,40 +82,47 @@ export function fromSlateValue(
 ): PortableTextBlock[] {
   if (value && Array.isArray(value)) {
     return value.map((block) => {
-      const isPortableText = block && block._type === textBlockType
-      if (isPortableText && Element.isElement(block)) {
-        let hasInlines = false
-        const children = block.children.map((child) => {
-          const {_type} = child
-          if (_type !== 'span' && typeof child.value === 'object') {
-            hasInlines = true
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const {value: v, _key: k, _type: t, __inline: _i, children: _c, ...rest} = child
+      if (Element.isElement(block)) {
+        if (block._type === textBlockType) {
+          let hasInlines = false
+          const children = block.children.map((child) => {
+            const {_type} = child
+            if (
+              Element.isElement(child) &&
+              'value' in child &&
+              _type !== 'span' &&
+              typeof child.value === 'object'
+            ) {
+              hasInlines = true
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              const {value: v, _key: k, _type: t, __inline: _i, children: _c, ...rest} = child
+              return keepObjectEquality(
+                {...rest, ...v, _key: k as string, _type: t as string},
+                keyMap
+              )
+            }
+            return child
+          })
+          if (typeof block._key === 'string' && typeof block._type === 'string') {
+            if (!hasInlines) {
+              // Original object
+              return block
+            }
             return keepObjectEquality(
-              {_key: k as string, _type: t as string, ...rest, ...v},
+              {...block, children, _key: block._key, _type: block._type},
               keyMap
             )
           }
-          return child as PortableTextChild
-        })
-        if (typeof block._key === 'string' && typeof block._type === 'string') {
-          if (!hasInlines) {
-            // Original object
-            return (block as unknown) as PortableTextBlock
-          }
-          return keepObjectEquality(
-            {_key: block._key, _type: block._type, ...block, children},
-            keyMap
-          ) as PortableTextBlock
+          throw new Error('Not a valid block type')
         }
-        throw new Error('Not a valid block type')
+        const {_key, _type} = block
+        const blockValue = 'value' in block && block.value
+        return keepObjectEquality(
+          {_key, _type, ...(typeof blockValue === 'object' ? blockValue : {})},
+          keyMap
+        )
       }
-      const {_key, _type} = block as PortableTextBlock
-      const blockValue = block.value as PortableTextBlock | undefined
-      return keepObjectEquality(
-        {_key, _type, ...(typeof blockValue === 'object' ? blockValue : {})},
-        keyMap
-      ) as PortableTextBlock
+      return block as PortableTextBlock
     })
   }
   return value
@@ -109,16 +131,20 @@ export function fromSlateValue(
 export function isEqualToEmptyEditor(
   children: Node[] | undefined,
   portableTextFeatures: PortableTextFeatures
-) {
+): boolean {
   return (
     children === undefined ||
     (children && Array.isArray(children) && children.length === 0) ||
     (children &&
       Array.isArray(children) &&
       children.length === 1 &&
+      Element.isElement(children[0]) &&
       children[0]._type === portableTextFeatures.types.block.name &&
+      'style' in children[0] &&
+      children[0].style === portableTextFeatures.styles[0].value &&
       Array.isArray(children[0].children) &&
       children[0].children.length === 1 &&
+      Text.isText(children[0].children[0]) &&
       children[0].children[0]._type === 'span' &&
       children[0].children[0].text === '')
   )
@@ -133,7 +159,9 @@ export function findBlockAndIndexFromPath(
   if (isNumber) {
     blockIndex = Number(firstPathSegment)
   } else if (children) {
-    blockIndex = children.findIndex((blk) => isEqual({_key: blk._key}, firstPathSegment))
+    blockIndex = children.findIndex(
+      (blk) => Element.isElement(blk) && isEqual({_key: blk._key}, firstPathSegment)
+    )
   }
   if (blockIndex > -1) {
     return [children[blockIndex] as Element, blockIndex]

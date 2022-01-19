@@ -32,9 +32,36 @@ export default async function initSanity(args, context) {
   const print = unattended ? noop : output.print
   const specifiedOutputPath = cliFlags['output-path']
   const intendedPlan = cliFlags['project-plan']
+  const intendedCoupon = cliFlags.coupon
+  let selectedPlan
   let reconfigure = cliFlags.reconfigure
   let defaultConfig = cliFlags['dataset-default']
   let showDefaultConfigPrompt = !defaultConfig
+
+  // Only allow either --project-plan or --coupon
+  if (intendedCoupon && intendedPlan) {
+    throw new Error(
+      'Error! --project-plan and --coupon cannot be used together; please select only one flag'
+    )
+  }
+
+  // Don't allow --coupon and --project
+  if (intendedCoupon && cliFlags.project) {
+    throw new Error(
+      'Error! --project and --coupon cannot be used together; coupons can only be applied to new projects'
+    )
+  }
+
+  if (intendedCoupon) {
+    try {
+      selectedPlan = await getPlanFromCoupon(apiClient, intendedCoupon)
+      print(`Coupon "${intendedCoupon}" validated!\n`)
+    } catch (err) {
+      throw new Error(`Unable to validate coupon code "${intendedCoupon}":\n\n${err.message}`)
+    }
+  } else if (intendedPlan) {
+    selectedPlan = intendedPlan
+  }
 
   // Check if we have a project manifest already
   const manifestPath = path.join(workDir, 'sanity.json')
@@ -332,13 +359,21 @@ export default async function initSanity(args, context) {
       }
     }
 
+    // If the user has no projects or is using a coupon (which can only be applied to new projects)
+    // just ask for project details instead of showing a list of projects
     const isUsersFirstProject = projects.length === 0
-    if (isUsersFirstProject) {
-      debug('No projects found for user, prompting for name')
-      const projectName = await prompt.single({message: 'Project name'})
+    if (isUsersFirstProject || intendedCoupon) {
+      debug(
+        isUsersFirstProject
+          ? 'No projects found for user, prompting for name'
+          : 'Using a coupon - skipping project selection'
+      )
+
+      const projectName = await prompt.single({message: 'Project name:'})
       return createProject(apiClient, {
         displayName: projectName,
-        subscription: {planId: intendedPlan},
+        subscription: {planId: selectedPlan},
+        metadata: {coupon: intendedCoupon},
       }).then((response) => ({
         ...response,
         isFirstProject: isUsersFirstProject,
@@ -369,7 +404,8 @@ export default async function initSanity(args, context) {
           message: 'Your project name:',
           default: 'My Sanity Project',
         }),
-        subscription: {planId: intendedPlan},
+        subscription: {planId: selectedPlan},
+        metadata: {coupon: intendedCoupon},
       }).then((response) => ({
         ...response,
         isFirstProject: isUsersFirstProject,
@@ -600,7 +636,8 @@ export default async function initSanity(args, context) {
       debug('--create-project specified, creating a new project')
       const createdProject = await createProject(apiClient, {
         displayName: createProjectName.trim(),
-        subscription: {planId: intendedPlan},
+        subscription: {planId: selectedPlan},
+        metadata: {coupon: intendedCoupon},
       })
       debug('Project with ID %s created', createdProject.projectId)
 
@@ -721,4 +758,24 @@ async function doDatasetImport(options) {
       fromInitCommand: true,
     })
   )
+}
+
+async function getPlanFromCoupon(apiClient, couponCode) {
+  const response = await apiClient({
+    requireUser: false,
+    requireProject: false,
+  }).request({
+    method: 'GET',
+    uri: `plans/coupon/${couponCode}`,
+  })
+
+  try {
+    const planId = response[0].id
+    if (!planId) {
+      throw new Error('Unable to find a plan from coupon code')
+    }
+    return planId
+  } catch (err) {
+    throw err
+  }
 }

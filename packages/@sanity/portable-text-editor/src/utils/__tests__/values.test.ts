@@ -1,3 +1,4 @@
+import {Node, Descendant} from 'slate'
 import {fromSlateValue, toSlateValue} from '../values'
 
 describe('toSlateValue', () => {
@@ -108,6 +109,9 @@ describe('toSlateValue', () => {
             __inline: true,
             children: [
               {
+                _key: '123-void-child',
+                _type: 'span',
+                marks: [],
                 text: '',
               },
             ],
@@ -144,6 +148,8 @@ describe('fromSlateValue', () => {
             {
               _type: 'image',
               _key: 'e324t4s',
+              __inline: true,
+              children: [{_key: '1', _type: 'span', text: ''}],
               value: {
                 asset: {_ref: '32423r32rewr3rwerwer'},
               },
@@ -155,6 +161,7 @@ describe('fromSlateValue', () => {
         {
           _type: 'image',
           _key: 'wer32434',
+          children: [{_key: '1', _type: 'span', text: ''}],
           value: {
             asset: {_ref: 'werwer452423423'},
           },

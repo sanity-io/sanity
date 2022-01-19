@@ -9,12 +9,13 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import {isValidationErrorMarker, isValidationMarker, Reference} from '@sanity/types'
+import {isValidationErrorMarker, isValidationMarker, Reference, SchemaType} from '@sanity/types'
 import {
   EllipsisVerticalIcon,
   LaunchIcon as OpenInNewTabIcon,
   SyncIcon as ReplaceIcon,
   TrashIcon,
+  CopyIcon as DuplicateIcon,
 } from '@sanity/icons'
 import {concat, Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
@@ -50,6 +51,9 @@ import {isNonNullable} from '../../utils/isNonNullable'
 import {AlertStrip} from '../../AlertStrip'
 import {RowWrapper} from '../arrays/ArrayOfObjectsInput/item/components/RowWrapper'
 import {DragHandle} from '../arrays/common/DragHandle'
+import {InsertEvent} from '../arrays/ArrayOfObjectsInput/types'
+import randomKey from '../arrays/common/randomKey'
+import {InsertMenu} from '../arrays/ArrayOfObjectsInput/InsertMenu'
 import {BaseInputProps, CreateOption, SearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {useReferenceInfo} from './useReferenceInfo'
@@ -68,6 +72,8 @@ const INITIAL_SEARCH_STATE: SearchState = {
 export interface Props extends BaseInputProps {
   value: OptionalRef
   isSortable: boolean
+  insertableTypes?: SchemaType[]
+  onInsert?: (event: InsertEvent) => void
 }
 
 const NO_FILTER = () => true
@@ -97,6 +103,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
     liveEdit,
     onSearch,
     onChange,
+    insertableTypes,
     focusPath = EMPTY_ARRAY,
     onFocus,
     presence,
@@ -104,6 +111,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
     isSortable,
     level,
     onBlur,
+    onInsert,
     selectedState,
     editReferenceLinkComponent: EditReferenceLink,
     onEditReference,
@@ -130,6 +138,26 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
     onEditReference({id, type: option.type, template: option.template})
     onFocus?.([])
   }
+
+  const handleDuplicate = useCallback(() => {
+    onInsert?.({
+      item: {...value, _key: randomKey()},
+      position: 'after',
+      path: [{_key: value._key}],
+      edit: false,
+    })
+  }, [onInsert, value])
+
+  const handleInsert = useCallback(
+    (pos: 'before' | 'after') => {
+      onInsert?.({
+        item: {_type: type.name, _key: randomKey()},
+        position: pos,
+        path: [{_key: value._key}],
+      })
+    },
+    [onInsert, type.name, value._key]
+  )
 
   const handleChange = useCallback(
     (id: string) => {
@@ -474,7 +502,6 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
                     value={value}
                     referenceInfo={loadableReferenceInfo}
                     type={type}
-                    selected={selected}
                   />
                 </PreviewCard>
               ) : (
@@ -550,6 +577,8 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
                           onFocus?.(['_ref'])
                         }}
                       />
+                      <MenuItem text="Duplicate" icon={DuplicateIcon} onClick={handleDuplicate} />
+                      <InsertMenu onInsert={handleInsert} types={insertableTypes} />
                     </>
                   )}
                   {!readOnly && hasRef && <MenuDivider />}
