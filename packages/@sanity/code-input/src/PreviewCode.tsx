@@ -54,7 +54,7 @@ export default function PreviewCode(props: PreviewCodeProps) {
   const {value, type} = props
   const fixedLanguage = type?.options?.language
 
-  const mode = value?.language || fixedLanguage
+  const mode = value?.language || fixedLanguage || 'text'
 
   return (
     <PreviewContainer>
