@@ -77,7 +77,7 @@ export default async function upgradeDependencies(args, context) {
   }
 
   // Yarn fails to upgrade `react-ace` in some versions, see function for details
-  maybeDeleteReactAce(nonPinned, workDir)
+  await maybeDeleteReactAce(nonPinned, workDir)
 
   // Forcefully remove non-symlinked module paths to force upgrade
   await Promise.all(
