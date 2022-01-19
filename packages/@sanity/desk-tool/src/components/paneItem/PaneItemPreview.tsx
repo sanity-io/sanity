@@ -1,16 +1,21 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
+import {DocumentPreviewPresence, DocumentPresence} from '@sanity/base/presence'
 import {SanityDocument, SchemaType} from '@sanity/types'
+import {Inline} from '@sanity/ui'
 import {SanityDefaultPreview} from 'part:@sanity/base/preview'
 import React from 'react'
 import {Subscription} from 'rxjs'
-import {getPreviewStateObservable, getStatusIndicator, getValueWithFallback} from './helpers'
+import {DraftStatus} from '../DraftStatus'
+import {PublishedStatus} from '../PublishedStatus'
+import {getPreviewStateObservable, getValueWithFallback} from './helpers'
 import {PaneItemPreviewState} from './types'
 
 export interface PaneItemPreviewProps {
   icon: React.ComponentType<any> | false
   layout: 'inline' | 'block' | 'default' | 'card' | 'media' | 'detail'
+  presence?: DocumentPresence[]
   schemaType: SchemaType
   value: SanityDocument
 }
@@ -48,8 +53,16 @@ export class PaneItemPreview extends React.Component<PaneItemPreviewProps, PaneI
   }
 
   render() {
-    const {value, layout, icon} = this.props
+    const {icon, layout, presence, value} = this.props
     const {draft, published, isLoading} = this.state
+
+    const status = isLoading ? null : (
+      <Inline space={4}>
+        {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
+        <PublishedStatus document={published} />
+        <DraftStatus document={draft} />
+      </Inline>
+    )
 
     return (
       <SanityDefaultPreview
@@ -57,7 +70,7 @@ export class PaneItemPreview extends React.Component<PaneItemPreviewProps, PaneI
         isPlaceholder={isLoading}
         icon={icon}
         layout={layout}
-        status={isLoading ? null : getStatusIndicator(draft, published)}
+        status={status}
       />
     )
   }
