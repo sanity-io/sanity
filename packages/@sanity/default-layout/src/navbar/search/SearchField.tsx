@@ -2,6 +2,7 @@ import React, {useCallback, useMemo} from 'react'
 import {Text, Flex, Autocomplete, Box, PortalProvider} from '@sanity/ui'
 import {SearchIcon} from '@sanity/icons'
 import styled from 'styled-components'
+import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import {SearchItem, useSearch, SearchPopoverContent, SearchFullscreenContent} from '.'
 
 interface SearchFieldProps {
@@ -32,7 +33,16 @@ export function SearchField(props: SearchFieldProps) {
   const renderOption = useCallback(
     (option) => {
       const {data} = option.payload
-      return <SearchItem data={data} key={data.hit._id} onClick={handleClickItem} padding={2} />
+
+      return (
+        <SearchItem
+          data={data}
+          key={data.hit._id}
+          onClick={handleClickItem}
+          padding={2}
+          documentId={getPublishedId(data.hit._id) || ''}
+        />
+      )
     },
     [handleClickItem]
   )
