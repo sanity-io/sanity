@@ -5,6 +5,8 @@ import {DocumentAvailability} from '@sanity/base/_internal'
 import {Box, Flex, Inline, Label, Text, Tooltip, useRootTheme} from '@sanity/ui'
 import {AccessDeniedIcon, EditIcon, HelpCircleIcon, PublishIcon} from '@sanity/icons'
 import {TextWithTone} from '@sanity/base/components'
+import {DocumentPreviewPresence} from '@sanity/base/presence'
+import {useDocumentPresence} from '@sanity/base/hooks'
 import Preview from '../../Preview'
 import {DocumentPreview} from './types'
 import {TimeAgo} from './utils/TimeAgo'
@@ -47,9 +49,10 @@ export function ReferencePreview(props: {
   layout: string
   showTypeLabel: boolean
 }) {
-  const {layout, refType, showTypeLabel, availability, preview, id} = props
+  const {availability, id, layout, preview, refType, showTypeLabel} = props
 
   const theme = useRootTheme()
+  const documentPresence = useDocumentPresence(id)
 
   const notFound = availability.reason === 'NOT_FOUND'
   const insufficientPermissions = availability.reason === 'PERMISSION_DENIED'
@@ -87,13 +90,15 @@ export function ReferencePreview(props: {
           </Flex>
         </Box>
       )}
+
       <Box paddingLeft={3}>
-        <Inline space={4}>
+        <Inline space={3}>
           {showTypeLabel && (
             <Label size={1} muted>
               {refType.title}
             </Label>
           )}
+
           {insufficientPermissions || notFound ? (
             <Box>
               <Tooltip
@@ -118,56 +123,65 @@ export function ReferencePreview(props: {
               </Tooltip>
             </Box>
           ) : null}
-          <Tooltip
-            content={
-              <Box padding={2}>
-                <Text size={1}>
-                  {preview.published ? (
-                    <>
-                      Published <TimeAgo time={preview.published._updatedAt} />
-                    </>
-                  ) : (
-                    <>Not published</>
-                  )}
-                </Text>
-              </Box>
-            }
-          >
-            <TextWithTone
-              tone={theme.tone === 'default' ? 'positive' : 'default'}
-              size={1}
-              dimmed={!preview.published}
-              muted={!preview.published}
-            >
-              <PublishIcon />
-            </TextWithTone>
-          </Tooltip>
-          <Box>
-            <Tooltip
-              content={
-                <Box padding={2}>
-                  <Text size={1}>
-                    {preview.draft ? (
-                      <>
-                        Edited <TimeAgo time={preview.draft?._updatedAt} />
-                      </>
-                    ) : (
-                      <>No unpublished edits</>
-                    )}
-                  </Text>
-                </Box>
-              }
-            >
-              <TextWithTone
-                tone={theme.tone === 'default' ? 'caution' : 'default'}
-                size={1}
-                dimmed={!preview.draft}
-                muted={!preview.draft}
+
+          {documentPresence && documentPresence.length > 0 && (
+            <DocumentPreviewPresence presence={documentPresence} />
+          )}
+          <Inline space={4}>
+            <Box>
+              <Tooltip
+                content={
+                  <Box padding={2}>
+                    <Text size={1}>
+                      {preview.published ? (
+                        <>
+                          Published <TimeAgo time={preview.published._updatedAt} />
+                        </>
+                      ) : (
+                        <>Not published</>
+                      )}
+                    </Text>
+                  </Box>
+                }
               >
-                <EditIcon />
-              </TextWithTone>
-            </Tooltip>
-          </Box>
+                <TextWithTone
+                  tone={theme.tone === 'default' ? 'positive' : 'default'}
+                  size={1}
+                  dimmed={!preview.published}
+                  muted={!preview.published}
+                >
+                  <PublishIcon />
+                </TextWithTone>
+              </Tooltip>
+            </Box>
+
+            <Box>
+              <Tooltip
+                content={
+                  <Box padding={2}>
+                    <Text size={1}>
+                      {preview.draft ? (
+                        <>
+                          Edited <TimeAgo time={preview.draft?._updatedAt} />
+                        </>
+                      ) : (
+                        <>No unpublished edits</>
+                      )}
+                    </Text>
+                  </Box>
+                }
+              >
+                <TextWithTone
+                  tone={theme.tone === 'default' ? 'caution' : 'default'}
+                  size={1}
+                  dimmed={!preview.draft}
+                  muted={!preview.draft}
+                >
+                  <EditIcon />
+                </TextWithTone>
+              </Tooltip>
+            </Box>
+          </Inline>
         </Inline>
       </Box>
     </Flex>
