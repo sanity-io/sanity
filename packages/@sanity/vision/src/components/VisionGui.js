@@ -463,7 +463,7 @@ class VisionGui extends React.PureComponent {
       >
         <GlobalCodeMirrorStyle />
         <Header paddingX={3} paddingY={2}>
-          <Grid columns={12}>
+          <Grid columns={[6, 6, 12]}>
             {/* Dataset selector */}
             <Box padding={1} column={2}>
               <Stack>
