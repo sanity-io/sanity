@@ -1,6 +1,6 @@
 {
   "name": "@sanity/dashboard",
-  "version": "2.24.1",
+  "version": "2.25.0",
   "description": "Tool for rendering dashboard widgets",
   "main": "./lib/DashboardTool.js",
   "types": "./dist/dts",
@@ -28,7 +28,7 @@
     "rxjs": "^6.5.3"
   },
   "devDependencies": {
-    "@sanity/base": "2.24.1",
+    "@sanity/base": "2.25.0",
     "prop-types": "^15.6.0",
     "rimraf": "^2.7.1"
   },

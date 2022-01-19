@@ -1,6 +1,6 @@
 {
   "name": "@sanity/form-builder",
-  "version": "2.24.1",
+  "version": "2.25.0",
   "description": "Sanity form builder",
   "main": "lib/_exports/index.js",
   "types": "index.d.ts",
@@ -28,7 +28,7 @@
   "license": "MIT",
   "dependencies": {
     "@reach/auto-id": "^0.13.2",
-    "@sanity/base": "2.24.1",
+    "@sanity/base": "2.25.0",
     "@sanity/block-tools": "2.24.0",
     "@sanity/client": "2.23.2",
     "@sanity/color": "^2.1.5",
@@ -37,7 +37,7 @@
     "@sanity/imagetool": "2.23.3",
     "@sanity/initial-value-templates": "2.24.0",
     "@sanity/mutator": "2.21.0",
-    "@sanity/portable-text-editor": "2.24.1",
+    "@sanity/portable-text-editor": "2.25.0",
     "@sanity/schema": "2.24.0",
     "@sanity/types": "2.24.0",
     "@sanity/ui": "^0.37.2",
