@@ -1,17 +1,19 @@
 import React from 'react'
 import {Reference, ReferenceSchemaType} from '@sanity/types'
 import {Box, Flex, Inline, Label, Stack, TextSkeleton} from '@sanity/ui'
+import {GlobalPresence} from '@sanity/base/presence'
 import Preview from '../../Preview'
 import {ReferencePreview} from './ReferencePreview'
 import {Loadable} from './useReferenceInfo'
 import {ReferenceInfo} from './types'
 
 export function PreviewReferenceValue(props: {
-  value: Reference
-  type: ReferenceSchemaType
+  presence?: GlobalPresence[]
   referenceInfo: Loadable<ReferenceInfo>
+  type: ReferenceSchemaType
+  value: Reference
 }) {
-  const {value, type, referenceInfo} = props
+  const {presence, referenceInfo, type, value} = props
 
   if (referenceInfo.isLoading || referenceInfo.error) {
     return (
@@ -67,11 +69,12 @@ export function PreviewReferenceValue(props: {
   return (
     <ReferencePreview
       availability={referenceInfo.result.availability}
+      id={value._ref}
+      layout="default"
+      presence={presence}
       preview={referenceInfo.result.preview}
       refType={refType}
-      id={value._ref}
       showTypeLabel={showTypeLabel}
-      layout="default"
     />
   )
 }
