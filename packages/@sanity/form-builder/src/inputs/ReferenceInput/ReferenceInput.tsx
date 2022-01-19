@@ -34,10 +34,17 @@ import {
   useForwardedRef,
   useToast,
 } from '@sanity/ui'
-import {ChangeIndicatorForFieldPath, FormField, IntentLink} from '@sanity/base/components'
+import {
+  ChangeIndicatorForFieldPath,
+  FormField,
+  IntentLink,
+  PreviewCard,
+} from '@sanity/base/components'
 import {getPublishedId} from '@sanity/base/_internal'
 import {useObservableCallback} from 'react-rx'
 import {uuid} from '@sanity/uuid'
+import {useGlobalDocumentPresence} from '@sanity/base/hooks'
+import styled from 'styled-components'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
@@ -53,7 +60,12 @@ import {CreateButton} from './CreateButton'
 import {ReferenceAutocomplete} from './ReferenceAutocomplete'
 import {AutocompleteContainer} from './AutocompleteContainer'
 import {useOnClickOutside} from './utils/useOnClickOutside'
-import {PreviewCard} from './PreviewCard'
+
+const StyledPreviewCard = styled(PreviewCard)`
+  /* this is a hack to avoid layout jumps while previews are loading
+  there's probably better ways of solving this */
+  min-height: 36px;
+`
 
 const INITIAL_SEARCH_STATE: SearchState = {
   hits: [],
@@ -97,6 +109,8 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
   } = props
 
   const [searchState, setSearchState] = useState<SearchState>(INITIAL_SEARCH_STATE)
+
+  const documentPresence = useGlobalDocumentPresence()
 
   const handleCreateNew = (option: CreateOption) => {
     const id = uuid()
@@ -298,15 +312,21 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
   const renderOption = useCallback(
     (option) => {
       const id = option.hit.draft?._id || option.hit.published?._id
+
       return (
-        <PreviewCard forwardedAs="button" type="button" radius={2}>
+        <StyledPreviewCard forwardedAs="button" type="button" radius={2}>
           <Box paddingX={3} paddingY={1}>
-            <OptionPreview type={type} id={id} getReferenceInfo={getReferenceInfoMemo} />
+            <OptionPreview
+              getReferenceInfo={getReferenceInfoMemo}
+              id={id}
+              presence={documentPresence[getPublishedId(id)] || EMPTY_ARRAY}
+              type={type}
+            />
           </Box>
-        </PreviewCard>
+        </StyledPreviewCard>
       )
     },
-    [type, getReferenceInfoMemo]
+    [type, getReferenceInfoMemo, documentPresence]
   )
 
   const OpenLink = useMemo(
@@ -449,32 +469,33 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
               }
             >
               <Flex align="center" padding={1}>
-                <PreviewCard
-                  flex={1}
-                  padding={1}
-                  paddingRight={3}
-                  radius={2}
+                <StyledPreviewCard
+                  __unstable_focusRing
                   forwardedAs={EditReferenceLink}
+                  data-as="a"
+                  data-pressed={pressed ? true : undefined}
+                  data-selected={selected ? true : undefined}
                   documentId={value?._ref}
                   documentType={refType?.name}
-                  data-as="a"
-                  tone={selected ? 'default' : 'inherit'}
-                  __unstable_focusRing
-                  tabIndex={0}
-                  selected={selected}
-                  pressed={pressed}
-                  onKeyPress={handlePreviewKeyPress}
+                  flex={1}
                   onFocus={handleFocus}
-                  data-selected={selected ? true : undefined}
-                  data-pressed={pressed ? true : undefined}
+                  onKeyPress={handlePreviewKeyPress}
+                  padding={1}
+                  paddingRight={3}
+                  pressed={pressed}
+                  radius={2}
                   ref={focusElementRef}
+                  selected={selected}
+                  tabIndex={0}
+                  tone={selected ? 'default' : 'inherit'}
                 >
                   <PreviewReferenceValue
-                    value={value}
+                    presence={documentPresence[value?._ref] || EMPTY_ARRAY}
                     referenceInfo={loadableReferenceInfo}
                     type={type}
+                    value={value}
                   />
-                </PreviewCard>
+                </StyledPreviewCard>
                 <Inline paddingX={1}>
                   <MenuButton
                     button={<Button padding={2} mode="bleed" icon={EllipsisVerticalIcon} />}
