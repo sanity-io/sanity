@@ -41,6 +41,7 @@ export type PartialDocumentNode = {
   child?: Child
   views?: (View | ViewBuilder)[]
   options?: Partial<DocumentOptions>
+  source?: string
 }
 
 export class DocumentBuilder implements Serializable {
@@ -129,7 +130,11 @@ export class DocumentBuilder implements Serializable {
     return this.spec.views || []
   }
 
-  serialize({path = [], index, hint}: SerializeOptions = {path: []}): DocumentNode {
+  source(source?: string): DocumentBuilder {
+    return this.clone({source})
+  }
+
+  serialize({path = [], index, hint, source}: SerializeOptions = {path: []}): DocumentNode {
     const urlId = path[index || path.length - 1]
 
     // Try to grab document ID / editor ID from URL if not defined
@@ -190,6 +195,7 @@ export class DocumentBuilder implements Serializable {
       id: validateId(id, path, index),
       type: 'document',
       options: getDocumentOptions(options),
+      source: source || this.spec.source,
       views,
     }
   }
@@ -272,13 +278,14 @@ export function getDefaultDocumentNode(
   options: {
     documentId?: string
     schemaType: string
+    source?: string
   }
 ): DocumentBuilder {
   const {resolveStructureDocumentNode, structureBuilder: S} = context
-  const {documentId, schemaType} = options
+  const {documentId, schemaType, source} = options
   const userDefined = resolveStructureDocumentNode && resolveStructureDocumentNode(S, options)
 
-  let builder = userDefined || new DocumentBuilder()
+  let builder = userDefined || new DocumentBuilder({source})
 
   if (!builder.getId()) {
     builder = builder.id('documentEditor')

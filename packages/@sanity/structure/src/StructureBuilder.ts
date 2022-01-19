@@ -39,13 +39,14 @@ import {Divider} from './StructureNodes'
 import {DocumentNodeResolver, StructureBuilder, UserComponent} from './types'
 import * as views from './views'
 
-export const createStructureBuilder = (opts: {
+export function createStructureBuilder(opts: {
   client: SanityClient
   initialValueTemplates: Template[]
   resolveStructureDocumentNode?: DocumentNodeResolver
   schema: Schema
-}): StructureBuilder => {
-  const {client, initialValueTemplates, resolveStructureDocumentNode, schema} = opts
+  source?: string
+}): StructureBuilder {
+  const {client, initialValueTemplates, resolveStructureDocumentNode, schema, source} = opts
 
   const builder: StructureBuilder = {
     component(specOrComponent?: ComponentInput | UserComponent) {
@@ -130,6 +131,7 @@ export const createStructureBuilder = (opts: {
   const resolverContext: ChildResolverContext = {
     client,
     schema,
+    source,
     structureBuilder: builder,
     resolveStructureDocumentNode,
     templates: initialValueTemplates,
@@ -150,6 +152,7 @@ function getDefaultStructure(context: ChildResolverContext): ListBuilder {
   const items = getDocumentTypeListItems(context)
 
   return new ListBuilder()
+    .source(context.source)
     .id('__root__')
     .title('Content')
     .items(items)

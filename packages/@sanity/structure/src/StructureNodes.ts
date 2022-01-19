@@ -25,6 +25,7 @@ export interface DocumentNode extends StructureNode {
     template?: string
     templateParameters?: {[key: string]: any}
   }
+  source?: string
   views: View[]
 }
 
@@ -49,6 +50,7 @@ export interface SerializeOptions {
   path: SerializePath
   index?: number
   hint?: string
+  source?: string
 }
 
 export interface Serializable {

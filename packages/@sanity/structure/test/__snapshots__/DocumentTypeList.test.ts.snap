@@ -487,6 +487,7 @@ Object {
     },
   },
   "schemaTypeName": "author",
+  "source": undefined,
   "title": "Custom author title",
   "type": "documentList",
 }

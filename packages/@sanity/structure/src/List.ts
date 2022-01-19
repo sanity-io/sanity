@@ -1,7 +1,6 @@
 import {find} from 'lodash'
-import {SanityClient} from '@sanity/client'
 import {SerializePath, SerializeOptions, Divider, Collection} from './StructureNodes'
-import {ChildResolverOptions, ChildResolver} from './ChildResolver'
+import {ChildResolver} from './ChildResolver'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {ListItem, ListItemBuilder} from './ListItem'
 import {IntentChecker} from './Intent'
@@ -13,7 +12,6 @@ import {
   GenericListInput,
   shallowIntentChecker,
 } from './GenericList'
-import {StructureBuilder} from './types'
 
 const getArgType = (thing: ListItem) => {
   if (thing instanceof ListBuilder) {
@@ -63,10 +61,11 @@ const resolveChildForItem: ChildResolver = (context, itemId, options) => {
 function maybeSerializeListItem(
   item: ListItem | ListItemBuilder | Divider,
   index: number,
-  path: SerializePath
+  path: SerializePath,
+  source?: string
 ): ListItem | Divider {
   if (item instanceof ListItemBuilder) {
-    return item.serialize({path, index})
+    return item.serialize({path, index, source})
   }
 
   const listItem = item as ListItem
@@ -93,6 +92,7 @@ function isPromise<T>(thing: any): thing is Promise<T> {
 
 export interface List extends GenericList {
   items: (ListItem | Divider)[]
+  source?: string
 }
 
 export interface ListInput extends GenericListInput {
@@ -101,6 +101,7 @@ export interface ListInput extends GenericListInput {
 
 export interface BuildableList extends BuildableGenericList {
   items?: (ListItem | ListItemBuilder | Divider)[]
+  source?: string
 }
 
 export function isList(list: Collection): list is List {
@@ -126,6 +127,8 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
 
   serialize(options: SerializeOptions = {path: []}): List {
     const id = this.spec.id
+    const source = this.spec.source
+
     if (typeof id !== 'string' || !id) {
       throw new SerializeError(
         '`id` is required for lists',
@@ -144,7 +147,9 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
     }
 
     const path = (options.path || []).concat(id)
-    const serializedItems = items.map((item, index) => maybeSerializeListItem(item, index, path))
+    const serializedItems = items.map((item, index) =>
+      maybeSerializeListItem(item, index, path, source)
+    )
     const dupes = serializedItems.filter((val, i) => find(serializedItems, {id: val.id}, i + 1))
 
     if (dupes.length > 0) {
@@ -163,7 +168,12 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
       canHandleIntent: this.spec.canHandleIntent || defaultCanHandleIntent,
       child: this.spec.child || resolveChildForItem,
       items: serializedItems,
+      source: this.spec.source,
     }
+  }
+
+  source(source?: string): ListBuilder {
+    return this.clone({source})
   }
 
   clone(withSpec?: BuildableList) {

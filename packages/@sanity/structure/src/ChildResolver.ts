@@ -8,6 +8,7 @@ export interface ChildResolverContext {
   client: SanityClient
   resolveStructureDocumentNode?: DocumentNodeResolver
   schema: Schema
+  source?: string
   structureBuilder: StructureBuilder
   templates: Template[]
 }

@@ -47,21 +47,23 @@ const resolveDocumentChildForItem: ChildResolver = (
   itemId: string,
   options: ChildResolverOptions
 ): ItemChild | Promise<ItemChild> | undefined => {
-  const parentItem = options.parent as DocumentList
-  const type = parentItem.schemaTypeName || resolveTypeForDocument(context.client, itemId)
+  const parent = options.parent as DocumentList
+  const type = parent.schemaTypeName || resolveTypeForDocument(context.client, itemId)
   return Promise.resolve(type).then((schemaType) =>
     schemaType
       ? getDefaultDocumentNode(context, {
           schemaType,
+          source: parent.source,
           documentId: itemId,
         })
-      : new DocumentBuilder().id('editor').documentId(itemId).schemaType('')
+      : new DocumentBuilder().id('editor').documentId(itemId).schemaType('').source(parent.source)
   )
 }
 
 export interface PartialDocumentList extends BuildableGenericList {
   options?: DocumentListOptions
   schemaTypeName?: string
+  source?: string
 }
 
 export interface DocumentListInput extends GenericListInput {
@@ -72,6 +74,7 @@ export interface DocumentList extends GenericList {
   options: DocumentListOptions
   child: Child
   schemaTypeName?: string
+  source?: string
 }
 
 interface DocumentListOptions {
@@ -116,6 +119,10 @@ export class DocumentListBuilder extends GenericListBuilder<
   schemaType(type: SchemaType | string): DocumentListBuilder {
     const schemaTypeName = typeof type === 'string' ? type : type.name
     return this.clone({schemaTypeName})
+  }
+
+  source(source: string): DocumentListBuilder {
+    return this.clone({source})
   }
 
   getSchemaType(): string | undefined {
@@ -178,6 +185,7 @@ export class DocumentListBuilder extends GenericListBuilder<
           (this.spec.options?.filter === '_type == $type' ? '2021-06-07' : '1'),
         filter: validateFilter(this.spec, options),
       },
+      source: this.spec.source || options.source,
     }
   }
 

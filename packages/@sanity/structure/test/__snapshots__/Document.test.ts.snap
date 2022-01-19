@@ -11,6 +11,7 @@ Object {
     },
     "type": "book",
   },
+  "source": undefined,
   "type": "document",
   "views": Array [
     Object {
@@ -31,6 +32,7 @@ Object {
     "id": "wow",
     "type": "book",
   },
+  "source": undefined,
   "type": "document",
   "views": Array [
     Object {
@@ -55,6 +57,7 @@ Object {
     },
     "type": "book",
   },
+  "source": undefined,
   "type": "document",
   "views": Array [
     Object {
@@ -75,6 +78,7 @@ Object {
     "id": "wow",
     "type": "post",
   },
+  "source": undefined,
   "type": "document",
   "views": Array [
     Object {

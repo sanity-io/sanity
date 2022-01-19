@@ -24,6 +24,7 @@ Object {
     },
   },
   "schemaTypeName": "book",
+  "source": undefined,
   "title": "Books",
   "type": "documentList",
 }
@@ -53,6 +54,7 @@ Object {
     },
   },
   "schemaTypeName": "book",
+  "source": undefined,
   "title": "Books",
   "type": "documentList",
 }
@@ -82,6 +84,7 @@ Object {
     },
   },
   "schemaTypeName": "book",
+  "source": undefined,
   "title": "Books",
   "type": "documentList",
 }
@@ -112,6 +115,7 @@ Object {
     },
   },
   "schemaTypeName": undefined,
+  "source": undefined,
   "title": "Pets",
   "type": "documentList",
 }
@@ -132,6 +136,7 @@ Object {
     "filter": "_type == \\"book\\"",
   },
   "schemaTypeName": undefined,
+  "source": undefined,
   "title": "Foo",
   "type": "documentList",
 }

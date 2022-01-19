@@ -5,7 +5,7 @@ import {schema} from './mocks/schema'
 // @todo: Mock the Sanity client here?
 const client = {} as any
 
-test('builds document type lists with only required properties', () => {
+test.only('builds document type lists with only required properties', () => {
   const S = createStructureBuilder({client, initialValueTemplates: [], schema})
 
   expect(

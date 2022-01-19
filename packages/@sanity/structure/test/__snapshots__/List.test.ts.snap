@@ -19,6 +19,7 @@ Object {
   ],
   "menuItemGroups": Array [],
   "menuItems": Array [],
+  "source": undefined,
   "title": undefined,
   "type": "list",
 }
@@ -35,6 +36,7 @@ Object {
   "items": Array [],
   "menuItemGroups": Array [],
   "menuItems": Array [],
+  "source": undefined,
   "title": "Authors",
   "type": "list",
 }
@@ -51,6 +53,7 @@ Object {
   "items": Array [],
   "menuItemGroups": Array [],
   "menuItems": Array [],
+  "source": undefined,
   "title": undefined,
   "type": "list",
 }
@@ -67,6 +70,7 @@ Object {
   "items": Array [],
   "menuItemGroups": Array [],
   "menuItems": Array [],
+  "source": undefined,
   "title": "Foo",
   "type": "list",
 }
@@ -89,6 +93,7 @@ Object {
   ],
   "menuItemGroups": Array [],
   "menuItems": Array [],
+  "source": undefined,
   "title": undefined,
   "type": "list",
 }
@@ -116,6 +121,7 @@ Object {
       "title": "Print",
     },
   ],
+  "source": undefined,
   "title": undefined,
   "type": "list",
 }
@@ -137,6 +143,7 @@ Object {
       "title": "Print",
     },
   ],
+  "source": undefined,
   "title": undefined,
   "type": "list",
 }
@@ -164,6 +171,7 @@ Object {
       "title": "Print",
     },
   ],
+  "source": undefined,
   "title": undefined,
   "type": "list",
 }
@@ -185,6 +193,7 @@ Object {
       "title": "Purge",
     },
   ],
+  "source": undefined,
   "title": undefined,
   "type": "list",
 }

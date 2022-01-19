@@ -774,6 +774,7 @@ Object {
       "filter": "author == \\"grrm\\"",
     },
     "schemaTypeName": undefined,
+    "source": undefined,
     "title": undefined,
     "type": "documentList",
   },
