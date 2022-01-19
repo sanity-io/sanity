@@ -11,3 +11,5 @@ export {FormFieldPresenceContext}
 export {PresenceOverlay} from './overlay/PresenceOverlay'
 export {FieldPresence} from './FieldPresence'
 export {PresenceScope} from './PresenceScope'
+
+export {DocumentPreviewPresence} from './DocumentPreviewPresence'
