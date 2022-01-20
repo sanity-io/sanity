@@ -2,6 +2,7 @@ import {createPlugin, SanityPlugin} from '@sanity/base'
 import {MasterDetailIcon} from '@sanity/icons'
 import {lazy} from 'react'
 import {DeskToolOptions} from './DeskToolRoot'
+import {getIntentState} from './getIntentState'
 import {router} from './router'
 
 export * from './actions/resolveDocumentActions'
@@ -19,8 +20,8 @@ export function deskTool(options?: DeskToolOptions): SanityPlugin {
         title: options?.title || 'Desk',
         icon: options?.icon || MasterDetailIcon,
         component: lazy(() => import('./DeskToolRoot')),
-        // canHandleIntent,
-        // getIntentState,
+        canHandleIntent,
+        getIntentState,
         options,
         router,
       },
@@ -30,10 +31,10 @@ export function deskTool(options?: DeskToolOptions): SanityPlugin {
 
 export type {DocumentActionsResolver, StructureResolver} from './types'
 
-// function canHandleIntent(intentName: string, params: Record<string, string | undefined>) {
-//   return Boolean(
-//     (intentName === 'edit' && params.id) ||
-//       (intentName === 'create' && params.type) ||
-//       (intentName === 'create' && params.template)
-//   )
-// }
+function canHandleIntent(intent: string, params: Record<string, unknown>, _payload: unknown) {
+  return Boolean(
+    (intent === 'edit' && params.id) ||
+      (intent === 'create' && params.type) ||
+      (intent === 'create' && params.template)
+  )
+}

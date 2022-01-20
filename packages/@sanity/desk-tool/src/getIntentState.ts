@@ -17,15 +17,15 @@ export function setActivePanes(panes: Array<PaneNode | typeof LOADING_PANE>): vo
  * @internal
  */
 export function getIntentState(
-  intentName: string,
+  intent: string,
   params: Record<string, string>,
-  currentState: {panes?: RouterPanes} | undefined,
+  routerState: {panes?: RouterPanes} | undefined,
   payload: unknown
 ): {panes: RouterPanes} | {intent: string; params: Record<string, string>; payload: unknown} {
-  const panes = currentState?.panes || []
+  const panes = routerState?.panes || []
   const activePanes = state.activePanes || []
   const editDocumentId = params.id || uuid()
-  const isTemplate = intentName === 'create' && params.template
+  const isTemplate = intent === 'create' && params.template
 
   // Loop through open panes and see if any of them can handle the intent
   for (let i = activePanes.length - 1; i >= 0; i--) {
@@ -36,7 +36,7 @@ export function getIntentState(
     // NOTE: if you update this logic, please also update the similar handler in
     // `resolveIntent.ts`
     if (
-      pane.canHandleIntent?.(intentName, params, {
+      pane.canHandleIntent?.(intent, params, {
         pane,
         index: i,
       }) ||
@@ -55,5 +55,5 @@ export function getIntentState(
     }
   }
 
-  return {intent: intentName, params, payload}
+  return {intent: intent, params, payload}
 }
