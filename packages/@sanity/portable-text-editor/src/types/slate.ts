@@ -12,10 +12,14 @@ interface VoidElement {
   }
 }
 
+interface SlateTextBlock extends TextBlock {
+  children: Descendant[]
+}
+
 declare module 'slate' {
   interface CustomTypes {
     Editor: BaseEditor & ReactEditor & PortableTextSlateEditor
-    Element: TextBlock | VoidElement
+    Element: SlateTextBlock | VoidElement
     Text: TextSpan
   }
 }
