@@ -80,52 +80,34 @@ export function fromSlateValue(
   textBlockType: string,
   keyMap: Record<string, PortableTextBlock | PortableTextChild> = {}
 ): PortableTextBlock[] {
-  if (value && Array.isArray(value)) {
-    return value.map((block) => {
-      if (Element.isElement(block)) {
-        if (block._type === textBlockType) {
-          let hasInlines = false
-          const children = block.children.map((child) => {
-            const {_type} = child
-            if (
-              Element.isElement(child) &&
-              'value' in child &&
-              _type !== 'span' &&
-              typeof child.value === 'object'
-            ) {
-              hasInlines = true
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              const {value: v, _key: k, _type: t, __inline: _i, children: _c, ...rest} = child
-              return keepObjectEquality(
-                {...rest, ...v, _key: k as string, _type: t as string},
-                keyMap
-              )
-            }
-            return child
-          })
-          if (typeof block._key === 'string' && typeof block._type === 'string') {
-            if (!hasInlines) {
-              // Original object
-              return block
-            }
-            return keepObjectEquality(
-              {...block, children, _key: block._key, _type: block._type},
-              keyMap
-            )
-          }
-          throw new Error('Not a valid block type')
+  return value.map((block) => {
+    const {_key, _type} = block
+    if (!_key || !_type) {
+      throw new Error('Not a valid block')
+    }
+    if (_type === textBlockType && 'children' in block && Array.isArray(block.children) && _key) {
+      let hasInlines = false
+      const children = block.children.map((child) => {
+        const {_type: _cType} = child
+        if ('value' in child && _cType !== 'span') {
+          hasInlines = true
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const {value: v, _key: k, _type: t, __inline: _i, children: _c, ...rest} = child
+          return keepObjectEquality({...rest, ...v, _key: k as string, _type: t as string}, keyMap)
         }
-        const {_key, _type} = block
-        const blockValue = 'value' in block && block.value
-        return keepObjectEquality(
-          {_key, _type, ...(typeof blockValue === 'object' ? blockValue : {})},
-          keyMap
-        )
+        return child
+      })
+      if (!hasInlines) {
+        return block as PortableTextBlock // Original object
       }
-      return block as PortableTextBlock
-    })
-  }
-  return value
+      return keepObjectEquality({...block, children, _key, _type}, keyMap) as PortableTextBlock
+    }
+    const blockValue = 'value' in block && block.value
+    return keepObjectEquality(
+      {_key, _type, ...(typeof blockValue === 'object' ? blockValue : {})},
+      keyMap
+    ) as PortableTextBlock
+  })
 }
 
 export function isEqualToEmptyEditor(
