@@ -2,7 +2,7 @@ import {
   unstable_useTemplatePermissions as useUnstableTemplatePermissions,
   useDocumentType,
 } from '@sanity/base/hooks'
-import {LegacyLayerProvider, useZIndex} from '@sanity/base/components'
+import {useZIndex} from '@sanity/base/components'
 import {ChangeConnectorRoot} from '@sanity/base/change-indicators'
 import {getTemplateById} from '@sanity/base/initial-value-templates'
 import {
@@ -32,7 +32,6 @@ import {LoadingPane} from '../loading'
 import {ChangesPanel} from './changesPanel'
 import {DocumentPanel} from './documentPanel'
 import {DocumentOperationResults} from './DocumentOperationResults'
-import {InspectDialog} from './inspectDialog'
 import {DocumentActionShortcuts} from './keyboardShortcuts'
 import {DocumentStatusBar} from './statusBar'
 import {useDocumentPane} from './useDocumentPane'
@@ -179,7 +178,6 @@ function mergeDocumentType(
 function InnerDocumentPane() {
   const {
     changesOpen,
-    displayed,
     documentSchema,
     documentType,
     handleFocus,
@@ -199,8 +197,14 @@ function InnerDocumentPane() {
   const footerH = footerRect?.height
 
   const documentPanel = useMemo(
-    () => <DocumentPanel footerHeight={footerH || null} rootElement={rootElement} />,
-    [footerH, rootElement]
+    () => (
+      <DocumentPanel
+        footerHeight={footerH || null}
+        rootElement={rootElement}
+        isInspectOpen={inspectOpen}
+      />
+    ),
+    [footerH, rootElement, inspectOpen]
   )
 
   const footer = useMemo(
@@ -210,15 +214,6 @@ function InnerDocumentPane() {
       </PaneFooter>
     ),
     []
-  )
-
-  const inspectDialog = useMemo(
-    () => (
-      <LegacyLayerProvider zOffset="fullscreen">
-        {inspectOpen && <InspectDialog value={displayed || value} />}
-      </LegacyLayerProvider>
-    ),
-    [displayed, value, inspectOpen]
   )
 
   const changesPanel = useMemo(() => {
@@ -292,7 +287,6 @@ function InnerDocumentPane() {
         </DialogProvider>
         {footer}
         <DocumentOperationResults />
-        {inspectDialog}
       </>
     )
   }, [
@@ -304,7 +298,6 @@ function InnerDocumentPane() {
     footer,
     handleFocus,
     handleHistoryOpen,
-    inspectDialog,
     layoutCollapsed,
     paneKey,
     value,
