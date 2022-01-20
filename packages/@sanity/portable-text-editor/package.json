@@ -59,7 +59,7 @@
     "@types/jest": "^27.0.1",
     "@types/jest-dev-server": "^4.2.1",
     "@types/lodash": "^4.14.149",
-    "@types/node": "^14.18.0",
+    "@types/node": "^14.18.9",
     "@types/node-ipc": "^9.0.0",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
