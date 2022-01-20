@@ -14,7 +14,7 @@ import {
   Descendant,
 } from 'slate'
 import {set, insert, unset, diffMatchPatch, setIfMissing} from '../patch/PatchEvent'
-import {PortableTextFeatures, PortableTextBlock, PortableTextChild} from '../types/portableText'
+import {PortableTextFeatures, PortableTextBlock, TextSpan} from '../types/portableText'
 import type {Patch, InsertPosition} from '../types/patch'
 import {PatchFunctions} from '../editor/plugins/createWithPatches'
 import {fromSlateValue} from './values'
@@ -22,73 +22,56 @@ import {debugWithName} from './debug'
 
 const debug = debugWithName('operationToPatches')
 
-// TODO: optimize how nodes are found and make sure everything here uses those finders.
-
-function findBlock(path: Path, value: PortableTextBlock[] | undefined) {
-  const _key = typeof path[0] === 'object' && '_key' in path[0] && path[0]._key
-  if (_key) {
-    return value?.find((blk) => blk._key === _key)
-  }
-  if (Number.isInteger(path[0])) {
-    const index = path[0] as number
-    return value && value[index]
-  }
-  throw new Error('Invalid first path segment')
-}
-
 export function createOperationToPatches(
   portableTextFeatures: PortableTextFeatures
 ): PatchFunctions {
+  const textBlockName = portableTextFeatures.types.block.name
   function insertTextPatch(
     editor: Editor,
     operation: InsertTextOperation,
-    beforeValue: PortableTextBlock[]
+    beforeValue: Descendant[]
   ) {
-    const block = editor && editor.children[operation.path[0]]
+    const block =
+      editor.isTextBlock(editor.children[operation.path[0]]) && editor.children[operation.path[0]]
     if (!block) {
       throw new Error('Could not find block')
     }
-    if (typeof block._key !== 'string') {
-      throw new Error('Expected block to have a _key')
-    }
-    const child = editor.isTextBlock(block) && block.children[operation.path[1]]
-    if (!child) {
+    const textChild =
+      editor.isTextBlock(block) &&
+      Text.isText(block.children[operation.path[1]]) &&
+      (block.children[operation.path[1]] as TextSpan)
+    if (!textChild) {
       throw new Error('Could not find child')
     }
-    const path: Path = [{_key: block._key}, 'children', {_key: child._key}, 'text']
-    const prevBlock = findBlock(operation.path, beforeValue)
-    const prevText =
-      prevBlock &&
-      prevBlock.children &&
-      prevBlock.children[operation.path[1]] &&
-      prevBlock.children[operation.path[1]].text
-    const patch = diffMatchPatch(prevText || '', child.text, path)
+    const path: Path = [{_key: block._key}, 'children', {_key: textChild._key}, 'text']
+    const prevBlock = beforeValue[operation.path[0]]
+    const prevChild = Editor.isBlock(editor, prevBlock) && prevBlock.children[operation.path[1]]
+    const prevText = Text.isText(prevChild) ? prevChild.text : ''
+    const patch = diffMatchPatch(prevText, textChild.text, path)
     return patch.value.length ? [patch] : []
   }
 
   function removeTextPatch(
     editor: Editor,
     operation: RemoveTextOperation,
-    beforeValue: PortableTextBlock[]
+    beforeValue: Descendant[]
   ) {
     const block = editor && editor.children[operation.path[0]]
     if (!block) {
       throw new Error('Could not find block')
     }
-    if (typeof block._key !== 'string') {
-      throw new Error('Expected block to have a _key')
-    }
-    const child = editor.isTextBlock(block) && block.children[operation.path[1]]
-    if (!child) {
+    const textChild =
+      editor.isTextBlock(block) &&
+      Text.isText(block.children[operation.path[1]]) &&
+      (block.children[operation.path[1]] as TextSpan)
+    if (!textChild) {
       throw new Error('Could not find child')
     }
-    const path: Path = [{_key: block._key}, 'children', {_key: child._key}, 'text']
-    const prevText =
-      beforeValue[operation.path[0]] &&
-      beforeValue[operation.path[0]].children &&
-      beforeValue[operation.path[0]].children[operation.path[1]] &&
-      beforeValue[operation.path[0]].children[operation.path[1]].text
-    const patch = diffMatchPatch(prevText || '', child.text, path)
+    const path: Path = [{_key: block._key}, 'children', {_key: textChild._key}, 'text']
+    const beforeBlock = beforeValue[operation.path[0]]
+    const prevTextChild = editor.isTextBlock(beforeBlock) && beforeBlock.children[operation.path[1]]
+    const prevText = Text.isText(prevTextChild) && prevTextChild.text
+    const patch = diffMatchPatch(prevText || '', textChild.text, path)
     return patch.value ? [patch] : []
   }
 
@@ -102,11 +85,7 @@ export function createOperationToPatches(
         {...editor.children[operation.path[0]], ...operation.newProperties},
         isUndefined
       )
-      return [
-        set(fromSlateValue([setNode], portableTextFeatures.types.block.name)[0], [
-          {_key: block._key},
-        ]),
-      ]
+      return [set(fromSlateValue([setNode], textBlockName)[0], [{_key: block._key}])]
     } else if (operation.path.length === 2) {
       const block = editor.children[operation.path[0]]
       if (editor.isTextBlock(block)) {
@@ -134,31 +113,27 @@ export function createOperationToPatches(
     operation: InsertNodeOperation,
     beforeValue: Descendant[]
   ): Patch[] {
-    const block = beforeValue[operation.path[0]] as PortableTextBlock
+    const block = beforeValue[operation.path[0]]
+    if (!Editor.isBlock(editor, block)) {
+      throw new Error('Not a valid block')
+    }
     if (operation.path.length === 1) {
       const position = operation.path[0] === 0 ? 'before' : 'after'
-      const targetKey =
-        operation.path[0] === 0
-          ? block && block._key
-          : beforeValue[operation.path[0] - 1] &&
-            (beforeValue[operation.path[0] - 1] as PortableTextBlock)._key
+      const beforeBlock = beforeValue[operation.path[0] - 1]
+      const targetKey = operation.path[0] === 0 ? block._key : beforeBlock?._key
       if (targetKey) {
         return [
-          insert(
-            [fromSlateValue([operation.node], portableTextFeatures.types.block.name)[0]],
-            position,
-            [{_key: targetKey}]
-          ),
+          insert([fromSlateValue([operation.node], textBlockName)[0]], position, [
+            {_key: targetKey},
+          ]),
         ]
       }
       if (beforeValue.length === 0) {
         return [
           setIfMissing(beforeValue, []),
-          insert(
-            [fromSlateValue([operation.node], portableTextFeatures.types.block.name)[0]],
-            'before',
-            [operation.path[0]]
-          ),
+          insert([fromSlateValue([operation.node], textBlockName)[0]], 'before', [
+            operation.path[0],
+          ]),
         ]
       }
       throw new Error('Target key not found!')
@@ -169,16 +144,11 @@ export function createOperationToPatches(
         [
           {
             _key: 'bogus',
-            _type: portableTextFeatures.types.block.name,
-            children: [
-              {
-                ...operation.node,
-                _type: operation.node._type || portableTextFeatures.types.span.name,
-              },
-            ],
+            _type: textBlockName,
+            children: [operation.node as Descendant],
           },
         ],
-        portableTextFeatures.types.block.name
+        textBlockName
       )[0].children[0]
       return [
         insert([child], position, [
@@ -201,21 +171,28 @@ export function createOperationToPatches(
   function splitNodePatch(
     editor: Editor,
     operation: SplitNodeOperation,
-    beforeValue: PortableTextBlock[]
+    beforeValue: Descendant[]
   ) {
     const patches: Patch[] = []
     const splitBlock = editor.children[operation.path[0]]
-    if (!Editor.isBlock(editor, splitBlock) || typeof splitBlock._key !== 'string') {
-      throw new Error(`Block with path ${JSON.stringify(operation.path[0])} could not be found`)
+    if (!editor.isTextBlock(splitBlock)) {
+      throw new Error(
+        `Block with path ${JSON.stringify(
+          operation.path[0]
+        )} is not a text block and can't be split`
+      )
     }
     if (operation.path.length === 1) {
       const oldBlock = beforeValue[operation.path[0]]
-      if (oldBlock && oldBlock._key) {
-        const targetValue = editor.children[operation.path[0] + 1]
+      if (editor.isTextBlock(oldBlock)) {
+        const targetValue = fromSlateValue(
+          [editor.children[operation.path[0] + 1]],
+          textBlockName
+        )[0]
         if (targetValue) {
           patches.push(insert([targetValue], 'after', [{_key: splitBlock._key}]))
-          const spansToUnset = beforeValue[operation.path[0]].children.slice(operation.position)
-          spansToUnset.forEach((span: any) => {
+          const spansToUnset = oldBlock.children.slice(operation.position)
+          spansToUnset.forEach((span) => {
             const path = [{_key: oldBlock._key}, 'children', {_key: span._key}]
             patches.push(unset(path))
           })
@@ -225,8 +202,17 @@ export function createOperationToPatches(
     }
     if (operation.path.length === 2) {
       const splitSpan = splitBlock.children[operation.path[1]]
-      if (splitSpan && Text.isText(splitSpan)) {
-        const targetSpans = splitBlock.children.slice(operation.path[1] + 1, operation.path[1] + 2)
+      if (Text.isText(splitSpan)) {
+        const targetSpans = fromSlateValue(
+          [
+            {
+              ...splitBlock,
+              children: splitBlock.children.slice(operation.path[1] + 1, operation.path[1] + 2),
+            },
+          ],
+          textBlockName
+        )[0].children
+
         patches.push(
           insert(targetSpans, 'after', [
             {_key: splitBlock._key},
@@ -278,14 +264,11 @@ export function createOperationToPatches(
       const block = beforeValue[operation.path[0]]
       const targetKey = block && block._key
       if (targetKey) {
-        const newBlock = fromSlateValue(
-          [editor.children[operation.path[0] - 1]],
-          portableTextFeatures.types.block.name
-        )[0]
+        const newBlock = fromSlateValue([editor.children[operation.path[0] - 1]], textBlockName)[0]
         patches.push(set(newBlock, [{_key: newBlock._key}]))
         patches.push(unset([{_key: targetKey}]))
       } else {
-        throw new Error('Targetkey not found!')
+        throw new Error('Target key not found!')
       }
     } else if (operation.path.length === 2) {
       const block = beforeValue[operation.path[0]]
@@ -309,7 +292,7 @@ export function createOperationToPatches(
   }
 
   function moveNodePatch(
-    editor: Editor,
+    _: Editor,
     operation: MoveNodeOperation,
     beforeValue: PortableTextBlock[]
   ) {
@@ -320,16 +303,13 @@ export function createOperationToPatches(
       const position: InsertPosition = operation.path[0] > operation.newPath[0] ? 'before' : 'after'
       patches.push(unset([{_key: block._key}]))
       patches.push(
-        insert([fromSlateValue([block], portableTextFeatures.types.block.name)[0]], position, [
-          {_key: targetBlock._key},
-        ])
+        insert([fromSlateValue([block], textBlockName)[0]], position, [{_key: targetBlock._key}])
       )
     } else if (operation.path.length === 2) {
-      const child = block.children[operation.path[1]] as PortableTextChild
-      const targetChild = targetBlock.children[operation.newPath[1]] as PortableTextChild
+      const child = block.children[operation.path[1]]
+      const targetChild = targetBlock.children[operation.newPath[1]]
       const position = operation.newPath[1] === targetBlock.children.length ? 'after' : 'before'
-      const childToInsert = fromSlateValue([block], portableTextFeatures.types.block.name)[0]
-        .children[operation.path[1]]
+      const childToInsert = fromSlateValue([block], textBlockName)[0].children[operation.path[1]]
       patches.push(unset([{_key: block._key}, 'children', {_key: child._key}]))
       patches.push(
         insert([childToInsert], position, [
