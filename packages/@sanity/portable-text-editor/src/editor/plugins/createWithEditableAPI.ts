@@ -106,7 +106,7 @@ export function createWithEditableAPI(
               })
             )[0] || [undefined]
             if (node && !Editor.isBlock(editor, node)) {
-              const pseudoBlock = {
+              const pseudoBlock: PortableTextBlock = {
                 _key: 'pseudo',
                 _type: portableTextFeatures.types.block.name,
                 children: [node],

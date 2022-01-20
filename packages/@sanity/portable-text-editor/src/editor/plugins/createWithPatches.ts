@@ -35,8 +35,7 @@ import {
 import {PortableTextBlock, PortableTextFeatures} from '../../types/portableText'
 import {EditorChange, PatchObservable, PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
-import {createPatchToOperations} from '../../utils/patchToOperations'
-import {PATCHING, withoutPatching, isPatching} from '../../utils/withoutPatching'
+import {PATCHING, isPatching} from '../../utils/withoutPatching'
 import {KEY_TO_VALUE_ELEMENT} from '../../utils/weakMaps'
 
 const debug = debugWithName('plugin:withPatches')
@@ -106,7 +105,6 @@ export function createWithPatches(
 ): (editor: PortableTextSlateEditor) => PortableTextSlateEditor {
   let previousChildren: Descendant[]
   let previousSelection: Range | null
-  let isThrottling = false
   return function withPatches(editor: PortableTextSlateEditor) {
     PATCHING.set(editor, true)
     previousChildren = editor.children
@@ -114,7 +112,6 @@ export function createWithPatches(
     // This will cancel the throttle when the user is not producing anything for a short time
     const cancelThrottle = debounce(() => {
       change$.next({type: 'throttle', throttle: false})
-      isThrottling = false
     }, THROTTLE_EDITOR_MS)
 
     // Inspect incoming patches and adjust editor selection accordingly.
@@ -201,7 +198,6 @@ export function createWithPatches(
       if (patches.length > 0) {
         // Signal throttling
         change$.next({type: 'throttle', throttle: true})
-        isThrottling = true
         // Emit all patches immediately
         patches.forEach((patch) => {
           change$.next({

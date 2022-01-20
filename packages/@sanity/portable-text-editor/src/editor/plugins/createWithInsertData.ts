@@ -1,4 +1,4 @@
-import {Node, Element, Transforms, Editor, Descendant, Range} from 'slate'
+import {Node, Element, Transforms, Editor, Descendant, Range, Text} from 'slate'
 import {htmlToBlocks, normalizeBlock} from '@sanity/block-tools'
 import {ReactEditor} from '@sanity/slate-react'
 import {PortableTextFeatures, PortableTextBlock, PortableTextChild} from '../../types/portableText'
@@ -271,7 +271,7 @@ function regenerateKeys(
         const newKey = keyGenerator()
         if (Array.isArray(newNode.children)) {
           newNode.children = newNode.children.map((child) =>
-            child._type === spanTypeName
+            child._type === spanTypeName && Text.isText(child)
               ? {
                   ...child,
                   marks:

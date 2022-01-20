@@ -5,20 +5,17 @@
  *
  */
 
-import {Subject} from 'rxjs'
 import {isEqual, flatten, uniq} from 'lodash'
 import {Editor, Range, Transforms, Text, Path, NodeEntry, Element} from 'slate'
 
 import {debugWithName} from '../../utils/debug'
-import {EditorChange, PortableTextSlateEditor} from '../../types/editor'
-import {toPortableTextRange} from '../../utils/ranges'
+import {PortableTextSlateEditor} from '../../types/editor'
 import {PortableTextFeatures} from '../../types/portableText'
 
 const debug = debugWithName('plugin:withPortableTextMarkModel')
 
 export function createWithPortableTextMarkModel(
-  portableTextFeatures: PortableTextFeatures,
-  change$: Subject<EditorChange>
+  portableTextFeatures: PortableTextFeatures
 ): (editor: PortableTextSlateEditor) => PortableTextSlateEditor {
   return function withPortableTextMarkModel(editor: PortableTextSlateEditor) {
     const {apply, normalizeNode} = editor
@@ -347,7 +344,9 @@ export function createWithPortableTextMarkModel(
         if (editor.isTextBlock(block)) {
           const newMarkDefs = block.markDefs.filter((def) => {
             return block.children.find((child) => {
-              return Array.isArray(child.marks) && child.marks.includes(def._key)
+              return (
+                Text.isText(child) && Array.isArray(child.marks) && child.marks.includes(def._key)
+              )
             })
           })
           if (!isEqual(newMarkDefs, block.markDefs)) {
