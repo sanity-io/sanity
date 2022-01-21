@@ -28,6 +28,7 @@
     "@sanity/desk-tool": "2.25.0",
     "@sanity/icons": "^1.2.1",
     "@sanity/language-filter": "2.24.1",
+    "@sanity/portable-text-editor": "2.25.0",
     "@sanity/ui": "^0.37.2",
     "@sanity/vision": "2.25.0",
     "bio-pv": "^1.8.1",

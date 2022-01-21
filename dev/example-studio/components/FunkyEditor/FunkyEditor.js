@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import {BlockEditor} from 'part:@sanity/form-builder'
+import {PortableTextEditor} from '@sanity/portable-text-editor'
 import blockTools from '@sanity/block-tools'
 import CustomMarkers from './CustomMarkers'
 import BlockActions from './BlockActions'
@@ -69,7 +70,7 @@ function handlePaste(input) {
 }
 
 const FunkyEditor = (props) => {
-  const {markers, value} = props
+  const {markers, value, onFocus} = props
   return (
     <div>
       <BlockEditor
@@ -77,6 +78,30 @@ const FunkyEditor = (props) => {
         onPaste={handlePaste}
         renderBlockActions={BlockActions}
         renderCustomMarkers={CustomMarkers}
+        hotkeys={{
+          custom: {
+            'control+k': (e, editor) => {
+              e.preventDefault()
+              const existing = PortableTextEditor.activeAnnotations(editor).find(
+                (a) => a._type === 'link'
+              )
+              if (existing) {
+                const focusBlock = PortableTextEditor.focusBlock(editor)
+                if (focusBlock) {
+                  const aPath = [{_key: focusBlock._key}, 'markDefs', {_key: existing._key}, '$']
+                  PortableTextEditor.blur(editor)
+                  onFocus(aPath)
+                }
+              } else {
+                const paths = PortableTextEditor.addAnnotation(editor, {name: 'link'})
+                if (paths && paths.markDefPath) {
+                  PortableTextEditor.blur(editor)
+                  onFocus(paths.markDefPath.concat('$'))
+                }
+              }
+            },
+          },
+        }}
         markers={markers.concat([
           {type: 'customMarkerTest', path: value && value[0] ? [{_key: value[0]._key}] : []},
         ])}
