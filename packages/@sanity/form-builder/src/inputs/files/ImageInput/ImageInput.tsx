@@ -610,12 +610,15 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
   renderUploadState(uploadState: UploadState) {
     const {isUploading} = this.state
+    const elementHeight = this._assetElementRef?.offsetHeight
+    const height = elementHeight === 0 ? undefined : elementHeight
 
     return (
       <UploadProgress
         uploadState={uploadState}
         onCancel={isUploading ? this.handleCancelUpload : undefined}
         onStale={this.handleStaleUpload}
+        height={height}
       />
     )
   }

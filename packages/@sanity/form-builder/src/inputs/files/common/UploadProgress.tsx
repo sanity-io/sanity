@@ -8,6 +8,7 @@ type Props = {
   uploadState: UploadState
   onCancel?: () => void
   onStale?: () => void
+  height?: number
 }
 
 // If it's more than this amount of milliseconds since last time upload state was reported,
@@ -16,7 +17,7 @@ const STALE_UPLOAD_MS = 1000 * 60 * 2 // 2 minutes
 
 const elapsedMs = (date: string): number => new Date().getTime() - new Date(date).getTime()
 
-export function UploadProgress({uploadState, onCancel, onStale}: Props) {
+export function UploadProgress({uploadState, onCancel, onStale, height}: Props) {
   const filename = uploadState.file.name
 
   useEffect(() => {
@@ -26,7 +27,7 @@ export function UploadProgress({uploadState, onCancel, onStale}: Props) {
   }, [uploadState.updated, onStale])
 
   return (
-    <CardWrapper tone="primary" padding={4} border>
+    <CardWrapper tone="primary" padding={4} border style={{height: `${height}px`}}>
       <FlexWrapper align="center" justify="space-between" height="fill" direction="row" gap={2}>
         <LeftSection>
           <Flex justify="center" gap={[3, 3, 2, 2]} direction={['column', 'column', 'row']}>
