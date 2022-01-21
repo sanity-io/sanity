@@ -1,28 +1,18 @@
 // Note: INCOMPLETE, but it's a start
-import type {ReactNode, ComponentType} from 'react'
+import type {ComponentType} from 'react'
 import {Rule} from '../validation'
 import {ReferenceOptions} from '../reference'
 import {AssetSource} from '../assets'
 import {SlugOptions} from '../slug'
 import {SanityDocument} from '../documents'
 import {CurrentUser} from '../user'
+import {PreviewConfig} from './preview'
 
 export interface Schema {
   name: string
   get: (name: string) => SchemaType
   has: (name: string) => boolean
   getTypeNames: () => string[]
-}
-
-export interface PreviewValue {
-  title?: ReactNode
-  subtitle?: ReactNode
-  description?: ReactNode
-  media?: ReactNode
-}
-
-export interface PrepareViewOptions {
-  ordering?: SortOrdering
 }
 
 export type SortOrdering = {
@@ -89,18 +79,7 @@ export interface BaseSchemaType {
   initialValue?: InitialValueProperty
   options?: Record<string, any>
   validation?: SchemaValidationValue
-  preview?: {
-    select?: PreviewValue
-    prepare: (
-      value: {
-        title?: unknown
-        subtitle?: unknown
-        description?: unknown
-        media?: unknown
-      },
-      viewOptions?: PrepareViewOptions
-    ) => PreviewValue
-  }
+  preview?: PreviewConfig
 
   /**
    * @deprecated
