@@ -504,12 +504,13 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
               onUpload={this.handleSelectFiles}
               browse={browseMenuItem}
               onReset={this.handleRemoveButtonClick}
-              src={imageUrlBuilder
-                .image(value)
+              downloadUrl={imageUrlBuilder
+                .image(value.asset)
                 .forceDownload(
                   assetDocument.originalFilename || `download.${assetDocument.extension}`
                 )
                 .url()}
+              copyUrl={imageUrlBuilder.image(value.asset).url()}
               readOnly={readOnly}
               directUploads={directUploads}
               accept={accept}

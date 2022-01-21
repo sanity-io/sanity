@@ -11,18 +11,19 @@ interface Props {
   onReset: MouseEventHandler<HTMLDivElement>
   accept: string
   directUploads: boolean
-  src: string
+  downloadUrl: string
+  copyUrl: string
 }
 
 export function ActionsMenu(props: Props) {
-  const {onUpload, onReset, readOnly, src, accept, directUploads, browse} = props
+  const {onUpload, onReset, readOnly, accept, directUploads, browse, downloadUrl, copyUrl} = props
 
   const {push: pushToast} = useToast()
 
   const handleCopyURL = useCallback(() => {
-    navigator.clipboard.writeText(src)
+    navigator.clipboard.writeText(copyUrl)
     pushToast({closable: true, status: 'success', title: 'The url is copied to the clipboard'})
-  }, [pushToast, src])
+  }, [pushToast, copyUrl])
 
   return (
     <>
@@ -44,7 +45,7 @@ export function ActionsMenu(props: Props) {
       {browse}
 
       <MenuDivider />
-      <MenuItem as="a" icon={DownloadIcon} text="Download original file" href={src} />
+      <MenuItem as="a" icon={DownloadIcon} text="Download original file" href={downloadUrl} />
       <MenuItem icon={ClipboardIcon} text="Copy URL" onClick={handleCopyURL} />
 
       <MenuDivider />

@@ -424,7 +424,8 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
               onUpload={this.handleSelectFiles}
               browse={browseMenuItem}
               onReset={this.handleRemoveButtonClick}
-              src={`${assetDocument.url}?dl`}
+              downloadUrl={`${assetDocument.url}?dl`}
+              copyUrl={`${assetDocument.url}`}
               readOnly={readOnly}
               accept={accept}
               directUploads={directUploads}
