@@ -17,4 +17,9 @@ export default defineScope('base/components', 'components', [
     title: 'TextWithTone',
     component: lazy(() => import('./TextWithToneStory')),
   },
+  {
+    name: 'preview-card',
+    title: 'PreviewCard',
+    component: lazy(() => import('./PreviewCardStory')),
+  },
 ])
