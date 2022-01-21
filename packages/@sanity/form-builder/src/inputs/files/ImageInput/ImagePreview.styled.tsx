@@ -1,4 +1,4 @@
-import {studioTheme, rgba, Card, Flex, CardTone} from '@sanity/ui'
+import {studioTheme, rgba, Card, Flex, CardTone, Spinner} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 
 export const RatioBox = styled(Card)`
@@ -23,6 +23,10 @@ export const RatioBox = styled(Card)`
     max-width: 100%;
     max-height: 100%;
   }
+`
+
+export const SpinnerWrapper = styled(Spinner)`
+  position: absolute;
 `
 
 export const Overlay = styled(Flex)(({tone, drag}: {tone: CardTone; drag: boolean}) => {

@@ -1,8 +1,8 @@
-import React, {ComponentProps} from 'react'
+import React, {ComponentProps, useCallback, useState} from 'react'
 
 import {AccessDeniedIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
 import {Card, Box, Heading, Text} from '@sanity/ui'
-import {RatioBox, Overlay, FlexOverlay} from './ImagePreview.styled'
+import {RatioBox, Overlay, FlexOverlay, SpinnerWrapper} from './ImagePreview.styled'
 
 interface Props {
   readOnly?: boolean | null
@@ -14,14 +14,20 @@ interface Props {
 
 export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
   const {drag, readOnly, isRejected, src, ...rest} = props
+  const [isLoaded, setLoaded] = useState(false)
 
   const acceptTone = isRejected || readOnly ? 'critical' : 'primary'
   const tone = drag ? acceptTone : 'default'
 
+  const onLoadChange = useCallback(() => {
+    setLoaded(true)
+  }, [setLoaded])
+
   return (
     <RatioBox {...rest} style={{height: '30vh'}} tone="transparent">
       <Card data-container tone="inherit">
-        <img src={src} data-testid="hotspot-image-input" alt={props.alt} />
+        {!isLoaded && <SpinnerWrapper muted />}
+        <img src={src} data-testid="hotspot-image-input" alt={props.alt} onLoad={onLoadChange} />
       </Card>
       <Overlay justify="flex-end" padding={3} tone={tone} drag={drag}>
         {drag && (
