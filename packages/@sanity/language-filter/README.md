@@ -1,12 +1,35 @@
-### @sanity/language-filter
+# Field-level translation filter Plugin for Sanity.io
 
 A Sanity plugin that supports filtering localized fields by language
 
-## Usage
+![Language Filter UI](https://user-images.githubusercontent.com/9684022/150549913-68f1b7c7-3305-48b4-b72b-41b95e82450c.gif)
 
-### Install plugin
+## What this plugin solves
 
-> sanity install @sanity/language-filter
+There are two popular methods of internationalization in Sanity Studio:
+
+- **Field-level translation**
+  - A single document with many languages of content
+  - Achieved by mapping over languages on each field, to create an object
+  - Best for documents that have a mix of language-specific and common fields
+  - Not recommended for Portable Text
+- **Document-level translation**
+  - A unique document version for every language
+  - Joined together by references and/or a predictable `_id`
+  - Best for documents that have unique, language-specific fields and no common content across languages
+  - Best for translating content using Portable Text
+
+This plugin adds features to the Studio to improve handling **field-level translations**.
+
+- A "Filter Languages" button to show/hide fields in an object of language-specific fields
+- Configuration to set "default" languages which are always visible
+
+For **document-level translations** you should use the [@sanity/document-internationalization plugin](https://www.npmjs.com/package/@sanity/document-internationalization).
+## Installation
+
+```
+sanity install @sanity/language-filter
+```
 
 Installing with `sanity install` updates your `sanity.json` to include this plugin. If installing with npm or yarn, ensure your `plugins` array includes `@sanity/language-filter`.
 
