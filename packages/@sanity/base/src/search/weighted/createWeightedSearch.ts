@@ -24,7 +24,8 @@ const pathWithMapper = ({mapWith, path}: SearchPath): string =>
   mapWith ? `${mapWith}(${path})` : path
 
 export function createWeightedSearch(
-  types: ObjectSchemaType[],
+  // eslint-disable-next-line camelcase
+  types: {name: string; __experimental_search: ObjectSchemaType['__experimental_search']}[],
   client: SanityClient,
   options: WeightedSearchOptions = {}
 ): (query: string, opts?: SearchOptions) => Observable<WeightedHit[]> {
