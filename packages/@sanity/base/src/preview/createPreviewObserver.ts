@@ -52,7 +52,7 @@ export function createPreviewObserver(observePaths: (value: Previewable, paths: 
       )
     }
 
-    const paths = getPreviewPaths(type)
+    const paths = getPreviewPaths(type.preview)
     if (paths) {
       return observePaths(value, paths).pipe(
         map((snapshot) => ({
