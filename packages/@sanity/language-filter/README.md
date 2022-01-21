@@ -25,6 +25,11 @@ This plugin adds features to the Studio to improve handling **field-level transl
 - Configuration to set "default" languages which are always visible
 
 For **document-level translations** you should use the [@sanity/document-internationalization plugin](https://www.npmjs.com/package/@sanity/document-internationalization).
+<<<<<<< HEAD
+
+=======
+
+> > > > > > > 37ba7f3b8a10546d361bb2434ca281ab8f386c45
 
 ## Installation
 
