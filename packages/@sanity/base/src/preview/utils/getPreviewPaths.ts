@@ -1,8 +1,8 @@
 import {SchemaType} from '@sanity/types'
 import {Path} from '../types'
 
-export function getPreviewPaths(type: SchemaType): null | Path[] {
-  const selection = type.preview?.select
+export function getPreviewPaths(preview: SchemaType['preview']): null | Path[] {
+  const selection = preview?.select
 
   if (!selection) return null
 
