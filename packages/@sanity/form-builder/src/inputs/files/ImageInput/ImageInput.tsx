@@ -86,6 +86,7 @@ type ImageInputState = {
 
 type Focusable = {
   focus: () => void
+  offsetHeight: number
 }
 
 interface FieldGroups {
