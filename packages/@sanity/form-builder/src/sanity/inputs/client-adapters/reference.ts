@@ -87,7 +87,7 @@ export function getReferenceInfo(
           const refSchemaType = referenceType.to.find((memberType) => memberType.name === typeName)!
 
           const previewPaths = [
-            ...(getPreviewPaths(refSchemaType) || []),
+            ...(getPreviewPaths(refSchemaType.preview) || []),
             ['_updatedAt'],
             ['_createdAt'],
           ]
