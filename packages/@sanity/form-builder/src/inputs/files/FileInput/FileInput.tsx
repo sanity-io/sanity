@@ -275,10 +275,9 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
 
   handleOpenDialog = () => {
     const {type, onFocus} = this.props
-    const otherFields = partition(
-      type.fields.filter((field) => !HIDDEN_FIELDS.includes(field.name)),
-      'type.options.isHighlighted'
-    )[1]
+    const otherFields = type.fields.filter(
+      (field) => !HIDDEN_FIELDS.includes(field.name) && !field.type.options?.isHighlighted
+    )
 
     onFocus([otherFields[0].name])
   }

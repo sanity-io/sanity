@@ -156,7 +156,6 @@ export interface ArraySchemaType<V = unknown> extends BaseSchemaType {
     layout?: V extends string ? 'tags' : 'grid'
     direction?: 'horizontal' | 'vertical'
     sortable?: boolean
-
     /**
      * @deprecated
      */
@@ -326,6 +325,7 @@ export interface AssetSchemaTypeOptions {
 export interface FileSchemaType extends ObjectSchemaType {
   options?: AssetSchemaTypeOptions & {
     sources?: AssetSource[]
+    isHighlighted?: boolean
   }
 }
 
