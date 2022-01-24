@@ -325,7 +325,6 @@ export interface AssetSchemaTypeOptions {
 export interface FileSchemaType extends ObjectSchemaType {
   options?: AssetSchemaTypeOptions & {
     sources?: AssetSource[]
-    isHighlighted?: boolean
   }
 }
 
