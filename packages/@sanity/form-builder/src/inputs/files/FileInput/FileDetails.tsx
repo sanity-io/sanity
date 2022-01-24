@@ -23,18 +23,19 @@ type Props = {
   onClick: () => void
   muted: boolean
   disabled: boolean
+  isMenuOpen: boolean
+  onMenuOpen: (boolean) => void
 }
 
 export function FileDetails(props: Props) {
-  const {originalFilename, size, children, muted, disabled, onClick} = props
+  const {originalFilename, size, children, muted, disabled, onClick, isMenuOpen, onMenuOpen} = props
 
-  const [isMenuOpen, setMenuOpen] = useState(false)
   const [menuElement, setMenuRef] = useState<HTMLDivElement | null>(null)
 
-  const handleClick = React.useCallback(() => setMenuOpen(!isMenuOpen), [setMenuOpen, isMenuOpen])
+  const handleClick = React.useCallback(() => onMenuOpen(true), [onMenuOpen])
 
   useClickOutside(
-    React.useCallback(() => setMenuOpen(false), [setMenuOpen]),
+    React.useCallback(() => onMenuOpen(false), [onMenuOpen]),
     [menuElement]
   )
 

@@ -8,17 +8,18 @@ interface Props {
   children: ReactNode
   onEdit: MouseEventHandler<HTMLButtonElement>
   showEdit: boolean
+  isMenuOpen: boolean
+  onMenuOpen: (boolean) => void
 }
 
 export function ImageActionsMenu(props: Props) {
-  const {onEdit, children, showEdit} = props
-  const [isMenuOpen, setMenuOpen] = useState(false)
+  const {onEdit, children, showEdit, isMenuOpen, onMenuOpen} = props
   const [menuElement, setMenuRef] = useState<HTMLDivElement | null>(null)
 
-  const handleClick = React.useCallback(() => setMenuOpen(!isMenuOpen), [setMenuOpen, isMenuOpen])
+  const handleClick = React.useCallback(() => onMenuOpen(true), [onMenuOpen])
 
   useClickOutside(
-    React.useCallback(() => setMenuOpen(false), [setMenuOpen]),
+    React.useCallback(() => onMenuOpen(false), [onMenuOpen]),
     [menuElement]
   )
 

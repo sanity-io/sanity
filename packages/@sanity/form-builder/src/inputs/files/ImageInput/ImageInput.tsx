@@ -82,6 +82,7 @@ type ImageInputState = {
   // Metadata about files currently over the drop area
   hoveringFiles: FileInfo[]
   isStale: boolean
+  isMenuOpen: boolean
 }
 
 type Focusable = {
@@ -118,6 +119,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     selectedAssetSource: null,
     hoveringFiles: [],
     isStale: false,
+    isMenuOpen: false,
   }
 
   toast: {push: (params: ToastParams) => void} | null = null
@@ -165,6 +167,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     if (match) {
       this.uploadWith(match.uploader!, match.file)
     }
+
+    this.setState({isMenuOpen: false})
   }
 
   uploadWith = (uploader: Uploader, file: File, assetDocumentProps: UploadOptions = {}) => {
@@ -459,6 +463,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       imageUrlBuilder,
       observeAsset,
     } = this.props
+    const {isMenuOpen} = this.state
 
     const asset = value?.asset
     if (!asset) {
@@ -476,7 +481,10 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         <MenuItem
           icon={SearchIcon}
           text="Browse"
-          onClick={() => this.handleSelectImageFromAssetSource(assetSources[0])}
+          onClick={() => {
+            this.setState({isMenuOpen: false})
+            this.handleSelectImageFromAssetSource(assetSources[0])
+          }}
           disabled={readOnly}
           data-testid="file-input-browse-button"
         />
@@ -488,7 +496,10 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
           <MenuItem
             key={assetSource.name}
             text={assetSource.title}
-            onClick={() => this.handleSelectImageFromAssetSource(assetSource)}
+            onClick={() => {
+              this.setState({isMenuOpen: false})
+              this.handleSelectImageFromAssetSource(assetSource)
+            }}
             icon={assetSource.icon || ImageIcon}
             data-testid={`file-input-browse-button-${assetSource.name}`}
             disabled={readOnly}
@@ -500,7 +511,12 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     return (
       <WithReferencedAsset observeAsset={observeAsset} reference={asset}>
         {(assetDocument) => (
-          <ImageActionsMenu onEdit={this.handleOpenDialog} showEdit={showAdvancedEditButton}>
+          <ImageActionsMenu
+            isMenuOpen={isMenuOpen}
+            onEdit={this.handleOpenDialog}
+            showEdit={showAdvancedEditButton}
+            onMenuOpen={(isOpen) => this.setState({isMenuOpen: isOpen})}
+          >
             <ActionsMenu
               onUpload={this.handleSelectFiles}
               browse={browseMenuItem}
