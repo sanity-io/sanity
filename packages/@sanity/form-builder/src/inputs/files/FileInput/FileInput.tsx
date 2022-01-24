@@ -32,6 +32,7 @@ import {ActionsMenu} from '../common/ActionsMenu'
 import {PlaceholderText} from '../common/PlaceholderText'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import {UploadWarning} from '../common/UploadWarning'
+import {EMPTY_ARRAY} from '../../../utils/empty'
 import {CardOverlay, FlexContainer} from './styles'
 import {FileInputField} from './FileInputField'
 import {FileDetails} from './FileDetails'
@@ -72,7 +73,6 @@ const HIDDEN_FIELDS = ['asset']
 type FileInputState = {
   isUploading: boolean
   selectedAssetSource: InternalAssetSource | null
-  isAdvancedEditOpen: boolean
   hoveringFiles: FileInfo[]
   isStale: boolean
 }
@@ -90,7 +90,6 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
 
   state: FileInputState = {
     isUploading: false,
-    isAdvancedEditOpen: false,
     selectedAssetSource: null,
     hoveringFiles: [],
     isStale: false,
@@ -273,12 +272,19 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       )
     )
   }
-  handleStartAdvancedEdit = () => {
-    this.setState({isAdvancedEditOpen: true})
+
+  handleOpenDialog = () => {
+    const {type, onFocus} = this.props
+    const otherFields = partition(
+      type.fields.filter((field) => !HIDDEN_FIELDS.includes(field.name)),
+      'type.options.isHighlighted'
+    )[1]
+
+    onFocus([otherFields[0].name])
   }
 
   handleStopAdvancedEdit = () => {
-    this.setState({isAdvancedEditOpen: false})
+    this.props.onFocus([])
   }
 
   renderAdvancedEdit(fields: Field[]) {
@@ -288,6 +294,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
         id={this.dialogId}
         onClose={this.handleStopAdvancedEdit}
         width={1}
+        __unstable_autoFocus={false}
       >
         <PresenceOverlay margins={[0, 0, 1, 0]}>
           <Box padding={4}>{this.renderFields(fields)}</Box>
@@ -416,7 +423,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
             originalFilename={
               assetDocument?.originalFilename || `download.${assetDocument.extension}`
             }
-            onClick={hasAdvancedFields ? this.handleStartAdvancedEdit : undefined}
+            onClick={hasAdvancedFields ? this.handleOpenDialog : undefined}
             muted={!hasAdvancedFields && readOnly}
             disabled={!hasAdvancedFields}
           >
@@ -575,16 +582,21 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       markers,
       readOnly,
       presence,
+      focusPath = EMPTY_ARRAY,
     } = this.props
-    const {isAdvancedEditOpen, hoveringFiles, selectedAssetSource, isStale} = this.state
+    const {hoveringFiles, selectedAssetSource, isStale} = this.state
 
-    const [highlightedFields, otherFields] = partition(
+    const fieldGroups = partition(
       type.fields.filter((field) => !HIDDEN_FIELDS.includes(field.name)),
       'type.options.isHighlighted'
     )
+    const [highlightedFields, otherFields] = fieldGroups
 
     // Whoever is present at the asset field is who we show on the field itself
     const assetFieldPresence = presence.filter((item) => item.path[0] === 'asset')
+
+    const isDialogOpen =
+      focusPath.length > 0 && otherFields.some((field) => focusPath[0] === field.name)
 
     function getFileTone() {
       const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
@@ -603,7 +615,6 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     }
 
     const hasValueOrUpload = Boolean(value?._upload || value?.asset)
-
     return (
       <>
         <ImperativeToast ref={this.setToast} />
@@ -613,7 +624,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
           title={type.title}
           description={type.description}
           level={highlightedFields.length > 0 ? level : 0}
-          __unstable_presence={assetFieldPresence}
+          __unstable_presence={isDialogOpen ? EMPTY_ARRAY : assetFieldPresence}
           __unstable_changeIndicator={false}
         >
           <div>
@@ -663,7 +674,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
           </div>
 
           {highlightedFields.length > 0 && this.renderFields(highlightedFields)}
-          {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
+          {isDialogOpen && this.renderAdvancedEdit(otherFields)}
           {selectedAssetSource && this.renderAssetSource()}
         </FormFieldSet>
       </>
