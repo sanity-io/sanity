@@ -279,6 +279,9 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       (field) => !HIDDEN_FIELDS.includes(field.name) && !field.type.options?.isHighlighted
     )
 
+    /* for context: this code will only ever run if there are fields which are not highlighted.
+    in the FileDetails component (used in the renderAsset method) there is a button which is active if there are 
+    fields that are not highlighted, opening this dialog */
     onFocus([otherFields[0].name])
   }
 
