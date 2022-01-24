@@ -8,6 +8,7 @@ import {PaneContent} from '../../../components/pane'
 import {usePaneLayout} from '../../../components/pane/usePaneLayout'
 import {useDeskTool} from '../../../contexts/deskTool'
 import {useDocumentPane} from '../useDocumentPane'
+import {InspectDialog} from '../inspectDialog'
 import {DocumentPanelHeader} from './header'
 import {FormView} from './documentViews'
 import {PermissionCheckBanner} from './PermissionCheckBanner'
@@ -24,6 +25,7 @@ function getSchemaType(typeName: string): SchemaType | null {
 interface DocumentPanelProps {
   footerHeight: number | null
   rootElement: HTMLDivElement | null
+  isInspectOpen: boolean
 }
 
 const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => {
@@ -41,7 +43,7 @@ const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => 
 })
 
 export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
-  const {footerHeight, rootElement} = props
+  const {footerHeight, rootElement, isInspectOpen} = props
   const {
     activeViewId,
     displayed,
@@ -124,6 +126,10 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     documentScrollElement.scrollTo(0, 0)
   }, [documentId, documentScrollElement])
 
+  const inspectDialog = useMemo(() => {
+    return isInspectOpen ? <InspectDialog value={displayed || value} /> : null
+  }, [isInspectOpen, displayed, value])
+
   return (
     <Flex direction="column" flex={2} overflow={layoutCollapsed ? undefined : 'hidden'}>
       <DocumentPanelHeader rootElement={rootElement} ref={setHeaderElement} />
@@ -154,6 +160,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
               />
               {activeViewNode}
             </Scroller>
+
+            {inspectDialog}
 
             <div data-testid="document-panel-portal" ref={portalRef} />
           </BoundaryElementProvider>

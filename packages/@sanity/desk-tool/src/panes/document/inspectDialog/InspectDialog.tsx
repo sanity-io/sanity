@@ -2,54 +2,41 @@ import {SanityDocument} from '@sanity/types'
 import {Card, Code, Dialog, Flex, Tab, TabList, TabPanel} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import JSONInspector from 'react-json-inspector'
-import {withPropsStream} from 'react-props-stream'
-import {combineLatest, Observable} from 'rxjs'
-import {map} from 'rxjs/operators'
 import {DocTitle} from '../../../components/DocTitle'
-import {deskToolSettings} from '../../../settings'
+import {useDeskToolSetting} from '../../../settings'
 import {useDocumentPane} from '../useDocumentPane'
 import {VIEW_MODE_PARSED, VIEW_MODE_RAW, VIEW_MODES} from './constants'
 import {isDocumentWithType, isExpanded, maybeSelectAll, select, toggleExpanded} from './helpers'
 import {JSONInspectorWrapper} from './InspectDialog.styles'
 import {Search} from './Search'
-import {InspectViewMode} from './types'
 
 interface InspectDialogProps {
   value: Partial<SanityDocument> | null
 }
 
-interface InnerInspectDialogProps extends InspectDialogProps {
-  onViewModeChange: (viewMode: InspectViewMode) => void
-  viewMode: InspectViewMode
-}
-
-const viewModeSettings = deskToolSettings.forKey('inspect-view-preferred-view-mode')
-
-function mapReceivedPropsToChildProps(
-  props$: Observable<InspectDialogProps>
-): Observable<InnerInspectDialogProps> {
-  const onViewModeChange = (nextViewMode: InspectViewMode) => viewModeSettings.set(nextViewMode.id)
-
-  const viewModeSetting$: Observable<InspectViewMode> = viewModeSettings
-    .listen('parsed')
-    .pipe(map((id: string) => VIEW_MODES.find((mode) => mode.id === id)))
-
-  return combineLatest(props$, viewModeSetting$).pipe(
-    map(([props, viewMode]) => ({...props, viewMode, onViewModeChange}))
-  )
-}
-
-function InspectDialogComponent(props: InnerInspectDialogProps) {
-  const {onViewModeChange, value, viewMode} = props
+export function InspectDialog(props: InspectDialogProps) {
+  const {value} = props
   const {handleInspectClose, paneKey} = useDocumentPane()
   const dialogIdPrefix = `${paneKey}_inspect_`
 
+  /* this creates a view mode (the default that it opens with is the parsed tab) that is saved based on the paneKey 
+  where the inspect dialog lives.
+  This also means that when a page is loaded, the state of the tabs remains and doesn't revert to the pane tab */
+  const [viewModeId, onViewModeChange] = useDeskToolSetting(
+    'desk-tool',
+    `inspect-view-preferred-view-mode-${paneKey}`,
+    'parsed'
+  )
+
+  /* based on the view mode it shows the right tab content */
+  const viewMode = VIEW_MODES.find((mode) => mode.id === viewModeId)
+
   const setParsedViewMode = useCallback(() => {
-    onViewModeChange(VIEW_MODE_PARSED)
+    onViewModeChange(VIEW_MODE_PARSED.id)
   }, [onViewModeChange])
 
   const setRawViewMode = useCallback(() => {
-    onViewModeChange(VIEW_MODE_RAW)
+    onViewModeChange(VIEW_MODE_RAW.id)
   }, [onViewModeChange])
 
   return (
@@ -93,7 +80,7 @@ function InspectDialogComponent(props: InnerInspectDialogProps) {
         </Card>
 
         <TabPanel
-          aria-labelledby={`${dialogIdPrefix}tab-${viewMode.id}`}
+          aria-labelledby={`${dialogIdPrefix}tab-${viewModeId}`}
           flex={1}
           id={`${dialogIdPrefix}tabpanel`}
           overflow="auto"
@@ -127,8 +114,3 @@ function InspectDialogComponent(props: InnerInspectDialogProps) {
     </Dialog>
   )
 }
-
-export const InspectDialog = withPropsStream<InspectDialogProps, InnerInspectDialogProps>(
-  mapReceivedPropsToChildProps,
-  InspectDialogComponent
-)
