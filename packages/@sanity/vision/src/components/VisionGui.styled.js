@@ -9,6 +9,10 @@ export const Root = styled(Card)`
   height: 100%;
   flex-direction: column;
 
+  .sidebarPanes .Pane {
+    overflow: auto;
+  }
+
   .Resizer {
     background: var(--card-border-color);
     opacity: 1;
@@ -91,6 +95,8 @@ export const Header = styled(Card)`
   border-bottom: 1px solid var(--card-border-color);
 `
 
+export const StyledLabel = styled(Label)``
+
 export const SplitpaneContainer = styled(Box)`
   position: relative;
 `
@@ -109,7 +115,7 @@ export const InputBackgroundContainer = styled(Box)`
   z-index: 10;
   right: 0;
 
-  ${Label} {
+  ${StyledLabel} {
     user-select: none;
   }
 `
