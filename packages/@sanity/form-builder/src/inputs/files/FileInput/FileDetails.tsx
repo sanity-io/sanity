@@ -1,7 +1,19 @@
 import {BinaryDocumentIcon, EllipsisVerticalIcon} from '@sanity/icons'
-import React, {ReactNode} from 'react'
+import React, {ReactNode, useState} from 'react'
 
-import {Box, Button, Card, Flex, Inline, Menu, MenuButton, Stack, Text} from '@sanity/ui'
+import {
+  Box,
+  Button,
+  Card,
+  Flex,
+  Inline,
+  Menu,
+  MenuButton,
+  Popover,
+  Stack,
+  Text,
+  useClickOutside,
+} from '@sanity/ui'
 import {formatBytes} from '../../common/helper'
 
 type Props = {
@@ -15,6 +27,16 @@ type Props = {
 
 export function FileDetails(props: Props) {
   const {originalFilename, size, children, muted, disabled, onClick} = props
+
+  const [isMenuOpen, setMenuOpen] = useState(false)
+  const [menuElement, setMenuRef] = useState<HTMLDivElement | null>(null)
+
+  const handleClick = React.useCallback(() => setMenuOpen(!isMenuOpen), [setMenuOpen, isMenuOpen])
+
+  useClickOutside(
+    React.useCallback(() => setMenuOpen(false), [setMenuOpen]),
+    [menuElement]
+  )
 
   return (
     <Flex wrap="nowrap" justify="space-between" align="center">
@@ -44,14 +66,14 @@ export function FileDetails(props: Props) {
         </Flex>
       </Card>
       <Box marginRight={2}>
-        <MenuButton
-          button={
-            <Button icon={EllipsisVerticalIcon} mode="bleed" data-testid="options-menu-button" />
-          }
-          popover={{tone: 'default'}}
-          id="menu-button-example"
-          menu={<Menu>{children}</Menu>}
-        />
+        <Popover content={<Menu ref={setMenuRef}>{children}</Menu>} portal open={isMenuOpen}>
+          <Button
+            icon={EllipsisVerticalIcon}
+            mode="bleed"
+            data-testid="options-menu-button"
+            onClick={handleClick}
+          />
+        </Popover>
       </Box>
     </Flex>
   )
