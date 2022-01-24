@@ -12,3 +12,6 @@ export * from './portableText/InlinePreview'
 
 // Template previews
 export * from './template/TemplatePreview'
+
+// @todo: REMOVE THIS
+export * from '../_deprecated/CreateDocumentPreview'
