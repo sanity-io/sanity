@@ -4,6 +4,7 @@ import {ScrollContainer} from '@sanity/base/components'
 import {unstable_useDocumentValuePermissions as useDocumentValuePermissions} from '@sanity/base/hooks'
 import styled, {css} from 'styled-components'
 import {SchemaType} from '@sanity/types'
+import {getPublishedId, getDraftId} from '@sanity/base/_internal'
 import {PaneContent} from '../../../components/pane'
 import {usePaneLayout} from '../../../components/pane/usePaneLayout'
 import {useDeskTool} from '../../../contexts/deskTool'
@@ -65,9 +66,13 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
   const liveEdit = useMemo(() => Boolean(getSchemaType(documentType)?.liveEdit), [documentType])
+  const docId = value._id ? value._id : 'dummy-id'
   const docPermissionsInput = useMemo(() => {
-    return {...value, _id: liveEdit ? 'dummy-id' : 'drafts.dummy-id'}
-  }, [liveEdit, value])
+    return {
+      ...value,
+      _id: liveEdit ? getPublishedId(docId) : getDraftId(docId),
+    }
+  }, [liveEdit, value, docId])
   const [permissions, isPermissionsLoading] = useDocumentValuePermissions({
     document: docPermissionsInput,
     permission: requiredPermission,
