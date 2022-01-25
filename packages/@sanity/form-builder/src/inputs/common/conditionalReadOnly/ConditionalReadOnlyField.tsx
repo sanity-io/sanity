@@ -2,7 +2,8 @@ import React, {forwardRef} from 'react'
 import {ConditionalProperty} from '@sanity/types'
 import {SanityDocument} from '@sanity/client'
 import {unstable_useConditionalProperty as useConditionalProperty} from '@sanity/base/hooks'
-import withDocument from '../../utils/withDocument'
+import {ConditionalReadOnlyContextProvider} from '@sanity/base/_internal'
+import withDocument from '../../../utils/withDocument'
 
 type Props = {
   parent?: unknown
@@ -15,7 +16,9 @@ export const ConditionalReadOnlyField = ({readOnly, ...rest}: Props) => {
   return typeof readOnly === 'function' ? (
     <ConditionalReadOnlyWithDocument {...rest} readOnly={readOnly} />
   ) : (
-    <>{mappedChildren({children: rest.children, childProps: {readOnly: readOnly}})}</>
+    <ConditionalReadOnlyContextProvider readOnly={readOnly}>
+      {rest.children}
+    </ConditionalReadOnlyContextProvider>
   )
 }
 
@@ -32,23 +35,10 @@ const ConditionalReadOnlyWithDocument = withDocument(
       parent,
       document,
     })
-    return <>{mappedChildren({children, childProps: {readOnly: isReadOnly}})}</>
+    return (
+      <ConditionalReadOnlyContextProvider readOnly={isReadOnly}>
+        {children}
+      </ConditionalReadOnlyContextProvider>
+    )
   })
 )
-
-type ChildrenWithPropsProps = {
-  children: React.ReactNode | React.ReactNode[]
-  childProps: Record<string, unknown>
-}
-
-function mappedChildren({children, childProps}: ChildrenWithPropsProps) {
-  if (!Array.isArray(children)) {
-    children = [children]
-  }
-  return React.Children.map(children, function (child) {
-    if (React.isValidElement(child)) {
-      return React.cloneElement(child, childProps)
-    }
-    return child
-  })
-}

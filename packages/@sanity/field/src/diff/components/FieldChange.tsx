@@ -3,6 +3,7 @@ import {useDocumentOperation} from '@sanity/react-hooks'
 import React, {useCallback, useContext, useMemo, useState} from 'react'
 import {unstable_useDocumentPairPermissions as useDocumentPairPermissions} from '@sanity/base/hooks'
 import {Stack, Box, Button, Text, Grid, useClickOutside} from '@sanity/ui'
+import {useConditionalReadOnly} from '@sanity/base/_internal'
 import {undoChange} from '../changes/undoChange'
 import {DiffContext} from '../contexts/DiffContext'
 import {FieldChangeNode, OperationsAPI} from '../../types'
@@ -22,6 +23,7 @@ export function FieldChange(
   >
 ) {
   const {change, hidden, readOnly, ...restProps} = props
+  const conditionalReadOnly = useConditionalReadOnly() ?? readOnly
 
   const DiffComponent = change.diffComponent || FallbackDiff
   const {
@@ -113,7 +115,7 @@ export function FieldChange(
                       onMouseEnter={handleRevertButtonMouseEnter}
                       onMouseLeave={handleRevertButtonMouseLeave}
                       selected={confirmRevertOpen}
-                      disabled={readOnly}
+                      disabled={conditionalReadOnly}
                       data-testid={`single-change-revert-button-${change?.key}`}
                     />
                   </Box>
@@ -123,7 +125,7 @@ export function FieldChange(
           </FieldWrapper>
         </Stack>
       ),
-    [hidden, readOnly, confirmRevertOpen, isPermissionsLoading, permissions]
+    [hidden, conditionalReadOnly, confirmRevertOpen, isPermissionsLoading, permissions]
   )
 
   return content

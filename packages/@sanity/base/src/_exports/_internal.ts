@@ -35,3 +35,5 @@ export type {EditStateFor} from '../datastores/document/document-pair/editState'
 export type {TemplatePermissionsResult} from '../datastores/grants'
 
 export * from '../actions/utils/types'
+
+export * from '../conditional-property/conditionalReadOnly'

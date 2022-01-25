@@ -3,6 +3,7 @@ import {useDocumentOperation} from '@sanity/react-hooks'
 import React, {useCallback, useContext, useMemo, useState} from 'react'
 import {unstable_useDocumentPairPermissions as useDocumentPairPermissions} from '@sanity/base/hooks'
 import {Box, Stack, Button, Grid, Text, useClickOutside} from '@sanity/ui'
+import {useConditionalReadOnly} from '@sanity/base/_internal'
 import {undoChange} from '../changes/undoChange'
 import {isFieldChange} from '../helpers'
 import {isPTSchemaType} from '../../types/portableText/diff'
@@ -29,6 +30,7 @@ export function GroupChange({
   const {documentId, schemaType, FieldWrapper, rootDiff, isComparingCurrent} = useContext(
     DocumentChangeContext
   )
+  const conditionalReadOnly = useConditionalReadOnly() ?? readOnly
 
   const isPortableText = changes.every(
     (change) => isFieldChange(change) && isPTSchemaType(change.schemaType)
@@ -83,7 +85,12 @@ export function GroupChange({
       >
         <Stack as={ChangeListWrapper} space={5}>
           {changes.map((change) => (
-            <ChangeResolver key={change.key} change={change} readOnly={readOnly} hidden={hidden} />
+            <ChangeResolver
+              key={change.key}
+              change={change}
+              readOnly={conditionalReadOnly}
+              hidden={hidden}
+            />
           ))}
         </Stack>
         {isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
@@ -112,7 +119,7 @@ export function GroupChange({
                 onClick={handleRevertChangesConfirm}
                 ref={setRevertButtonRef}
                 selected={confirmRevertOpen}
-                disabled={readOnly}
+                disabled={conditionalReadOnly}
                 data-testid={`group-change-revert-button-${group.fieldsetName}`}
               />
             </Box>
@@ -120,7 +127,7 @@ export function GroupChange({
         )}
       </Stack>
     ),
-    [readOnly, hidden, confirmRevertOpen, isPermissionsLoading, permissions]
+    [conditionalReadOnly, hidden, confirmRevertOpen, isPermissionsLoading, permissions]
   )
 
   return hidden ? null : (

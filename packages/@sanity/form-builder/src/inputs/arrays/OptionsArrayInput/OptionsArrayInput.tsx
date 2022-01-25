@@ -5,6 +5,7 @@ import {ArraySchemaType, isTitledListValue, Marker, Path} from '@sanity/types'
 import {Box, Checkbox, Flex, Text} from '@sanity/ui'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {resolveTypeName} from '@sanity/util/content'
+import {useConditionalReadOnly} from '@sanity/base/_internal'
 import PatchEvent, {set, unset} from '../../../PatchEvent'
 import Preview from '../../../Preview'
 import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
@@ -135,7 +136,7 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
                     parent={value}
                     value={checked}
                   >
-                    <Checkbox
+                    <WrappedCheckbox
                       disabled={disabled}
                       checked={checked}
                       onChange={(e) => this.handleChange(e.currentTarget.checked, option)}
@@ -168,4 +169,10 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
       </FormFieldSet>
     )
   }
+}
+
+const WrappedCheckbox = (props: React.HTMLProps<HTMLInputElement>) => {
+  const {disabled, checked, onChange, onFocus, onBlur} = props
+  const readOnly = useConditionalReadOnly()
+  return <Checkbox {...{disabled, checked, readOnly, onChange, onFocus, onBlur}} />
 }
