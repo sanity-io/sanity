@@ -39,7 +39,7 @@ npm start
 
 ## Merging
 
-Prefer squash + merge. If it makes sense to keep individual commits (e.g. different people has been working on the same feature), the pull request should be merged with the "Rebase + merge"-button. If possible, each individual commit message should be rewritten with the pull-request number in parenthesis, e.g. `[some-package] Fix stuff (#22)`
+Prefer squash + merge. If it makes sense to keep individual commits (e.g. different people have been working on the same feature), the pull request should be merged with the "Rebase + merge"-button. If possible, each individual commit message should be rewritten with the pull-request number in parenthesis, e.g. `[some-package] Fix stuff (#22)`
 
 ## Branches
 
