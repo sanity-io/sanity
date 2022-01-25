@@ -1,19 +1,7 @@
 import {BinaryDocumentIcon, EllipsisVerticalIcon} from '@sanity/icons'
 import React, {ReactNode, useState} from 'react'
 
-import {
-  Box,
-  Button,
-  Card,
-  Flex,
-  Inline,
-  Menu,
-  MenuButton,
-  Popover,
-  Stack,
-  Text,
-  useClickOutside,
-} from '@sanity/ui'
+import {Box, Button, Card, Flex, Menu, Popover, Stack, Text, useClickOutside} from '@sanity/ui'
 import {formatBytes} from '../../common/helper'
 
 type Props = {
