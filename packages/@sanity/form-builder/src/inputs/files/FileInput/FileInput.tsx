@@ -18,7 +18,17 @@ import {
   ChangeIndicatorWithProvidedFullPath,
 } from '@sanity/base/change-indicators'
 import {ImageIcon, SearchIcon} from '@sanity/icons'
-import {Box, Button, Card, Dialog, Menu, MenuButton, MenuItem, ToastParams} from '@sanity/ui'
+import {
+  Box,
+  Button,
+  Card,
+  Dialog,
+  Menu,
+  MenuButton,
+  MenuItem,
+  ToastParams,
+  Spinner,
+} from '@sanity/ui'
 import {PresenceOverlay, FormFieldPresence} from '@sanity/base/presence'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {Uploader, UploaderResolver, UploadOptions} from '../../../sanity/uploads/types'
@@ -240,7 +250,15 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     const Component = selectedAssetSource.component
     if (value && value.asset) {
       return (
-        <WithReferencedAsset observeAsset={observeAsset} reference={value.asset}>
+        <WithReferencedAsset
+          observeAsset={observeAsset}
+          reference={value.asset}
+          waitPlaceholder={
+            <Box padding={2}>
+              <Spinner muted />
+            </Box>
+          }
+        >
           {(fileAsset) => (
             <Component
               selectedAssets={[fileAsset]}
@@ -429,7 +447,15 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     }
 
     return (
-      <WithReferencedAsset reference={asset} observeAsset={observeAsset}>
+      <WithReferencedAsset
+        reference={asset}
+        observeAsset={observeAsset}
+        waitPlaceholder={
+          <Box padding={2}>
+            <Spinner muted />
+          </Box>
+        }
+      >
         {(assetDocument) => (
           <FileDetails
             size={assetDocument.size}
