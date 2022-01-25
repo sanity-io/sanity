@@ -40,6 +40,7 @@ export const Root = styled(Card)`
     margin: 0 -5px;
     border-width: 0 5px;
     cursor: col-resize;
+    z-index: 2; /* To prevent the resizer from being hidden behind CodeMirror scroll area */
   }
 
   .Resizer.disabled {
@@ -63,6 +64,10 @@ export const Root = styled(Card)`
 
   .CodeMirror-linenumber {
     color: var(--card-code-fg-color);
+  }
+
+  .CodeMirror-scroll {
+    z-index: 2;
   }
 
   .CodeMirror-line,

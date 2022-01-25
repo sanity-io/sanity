@@ -35,6 +35,7 @@ export const ReactCodeMirror = styled(BaseReactCodeMirror)`
     left: 0;
     width: 100%;
     pointer-events: none;
+    z-index: 0;
   }
 
   .CodeMirror-sizer {
