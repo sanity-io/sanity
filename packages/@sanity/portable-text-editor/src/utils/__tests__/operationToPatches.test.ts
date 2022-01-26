@@ -87,4 +87,84 @@ describe('operationToPatches', () => {
       ]
     `)
   })
+  it('produce correct insert block patch', () => {
+    expect(
+      operationToPatches.insertNodePatch(
+        editor,
+        {
+          type: 'insert_node',
+          path: [0],
+          node: {
+            _type: 'someObject',
+            _key: 'c130395c640c',
+            value: {},
+            __inline: false,
+            children: [{_key: '1', _type: 'span', text: '', marks: []}],
+          },
+        },
+
+        defaultValue
+      )
+    ).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "items": Array [
+            Object {
+              "_key": "c130395c640c",
+              "_type": "someObject",
+            },
+          ],
+          "path": Array [
+            Object {
+              "_key": "1f2e64b47787",
+            },
+          ],
+          "position": "before",
+          "type": "insert",
+        },
+      ]
+    `)
+  })
+  it('produce correct insert child patch', () => {
+    expect(
+      operationToPatches.insertNodePatch(
+        editor,
+        {
+          type: 'insert_node',
+          path: [0, 3],
+          node: {
+            _type: 'someObject',
+            _key: 'c130395c640c',
+            value: {},
+            __inline: true,
+            children: [{_key: '1', _type: 'span', text: '', marks: []}],
+          },
+        },
+
+        defaultValue
+      )
+    ).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "items": Array [
+            Object {
+              "_key": "c130395c640c",
+              "_type": "someObject",
+            },
+          ],
+          "path": Array [
+            Object {
+              "_key": "1f2e64b47787",
+            },
+            "children",
+            Object {
+              "_key": "fd9b4a4e6c0b",
+            },
+          ],
+          "position": "after",
+          "type": "insert",
+        },
+      ]
+    `)
+  })
 })
