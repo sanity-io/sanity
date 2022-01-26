@@ -114,9 +114,6 @@ export function createOperationToPatches(
     beforeValue: Descendant[]
   ): Patch[] {
     const block = beforeValue[operation.path[0]]
-    if (!Editor.isBlock(editor, block)) {
-      throw new Error('Not a valid block')
-    }
     if (operation.path.length === 1) {
       const position = operation.path[0] === 0 ? 'before' : 'after'
       const beforeBlock = beforeValue[operation.path[0] - 1]
@@ -138,6 +135,9 @@ export function createOperationToPatches(
       }
       throw new Error('Target key not found!')
     } else if (operation.path.length === 2 && editor.children[operation.path[0]]) {
+      if (!editor.isTextBlock(block)) {
+        throw new Error('Invalid block')
+      }
       const position =
         block.children.length === 0 || !block.children[operation.path[1] - 1] ? 'before' : 'after'
       const child = fromSlateValue(
