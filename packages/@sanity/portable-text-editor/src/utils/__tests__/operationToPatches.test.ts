@@ -5,6 +5,7 @@ import {type} from '../../editor/__tests__/PortableTextEditorTester'
 import {createOperationToPatches} from '../operationToPatches'
 import {withPortableText} from '../../editor/withPortableText'
 import {keyGenerator} from '../..'
+import {TextBlock} from '../../types/portableText'
 
 const portableTextFeatures = getPortableTextFeatures(type)
 
@@ -16,25 +17,33 @@ const editor = withPortableText(createEditor(), {
   readOnly: false,
 })
 
-const defaultValue = [
-  {
-    _type: 'myTestBlockType',
-    _key: '1f2e64b47787',
-    style: 'normal',
-    markDefs: [],
-    children: [
-      {_type: 'span', _key: 'c130395c640c', text: '', marks: []},
-      {_key: '773866318fa8', _type: 'someObject', value: {title: 'The Object'}, __inline: true},
-      {_type: 'span', _key: 'fd9b4a4e6c0b', text: '', marks: []},
-    ],
-  },
-] as Descendant[]
+const createDefaultValue = () =>
+  [
+    {
+      _type: 'myTestBlockType',
+      _key: '1f2e64b47787',
+      style: 'normal',
+      markDefs: [],
+      children: [
+        {_type: 'span', _key: 'c130395c640c', text: '', marks: []},
+        {
+          _key: '773866318fa8',
+          _type: 'someObject',
+          value: {title: 'The Object'},
+          __inline: true,
+          children: [{_type: 'span', _key: 'bogus', text: '', marks: []}],
+        },
+        {_type: 'span', _key: 'fd9b4a4e6c0b', text: '', marks: []},
+      ],
+    },
+  ] as Descendant[]
 
 describe('operationToPatches', () => {
   beforeEach(() => {
-    editor.children = defaultValue
+    editor.children = createDefaultValue()
     editor.onChange()
   })
+
   it('translates void items correctly when splitting spans', () => {
     expect(
       operationToPatches.splitNodePatch(
@@ -46,7 +55,7 @@ describe('operationToPatches', () => {
           properties: {_type: 'span', _key: 'c130395c640c', marks: []},
         },
 
-        defaultValue
+        createDefaultValue()
       )
     ).toMatchInlineSnapshot(`
       Array [
@@ -87,6 +96,7 @@ describe('operationToPatches', () => {
       ]
     `)
   })
+
   it('produce correct insert block patch', () => {
     expect(
       operationToPatches.insertNodePatch(
@@ -103,7 +113,7 @@ describe('operationToPatches', () => {
           },
         },
 
-        defaultValue
+        createDefaultValue()
       )
     ).toMatchInlineSnapshot(`
       Array [
@@ -125,6 +135,7 @@ describe('operationToPatches', () => {
       ]
     `)
   })
+
   it('produce correct insert child patch', () => {
     expect(
       operationToPatches.insertNodePatch(
@@ -141,7 +152,7 @@ describe('operationToPatches', () => {
           },
         },
 
-        defaultValue
+        createDefaultValue()
       )
     ).toMatchInlineSnapshot(`
       Array [
@@ -163,6 +174,199 @@ describe('operationToPatches', () => {
           ],
           "position": "after",
           "type": "insert",
+        },
+      ]
+    `)
+  })
+
+  it('produce correct insert text patch', () => {
+    ;(editor.children[0] as TextBlock).children[2].text = '1'
+    editor.onChange()
+    expect(
+      operationToPatches.insertTextPatch(
+        editor,
+        {
+          type: 'insert_text',
+          path: [0, 2],
+          text: '1',
+          offset: 0,
+        },
+
+        createDefaultValue()
+      )
+    ).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "path": Array [
+            Object {
+              "_key": "1f2e64b47787",
+            },
+            "children",
+            Object {
+              "_key": "fd9b4a4e6c0b",
+            },
+            "text",
+          ],
+          "type": "diffMatchPatch",
+          "value": "@@ -0,0 +1 @@
+      +1
+      ",
+        },
+      ]
+    `)
+  })
+
+  it('produces correct remove text patch', () => {
+    const before = createDefaultValue()
+    ;(before[0] as TextBlock).children[2].text = '1'
+    expect(
+      operationToPatches.removeTextPatch(
+        editor,
+        {
+          type: 'remove_text',
+          path: [0, 2],
+          text: '1',
+          offset: 1,
+        },
+
+        before
+      )
+    ).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "path": Array [
+            Object {
+              "_key": "1f2e64b47787",
+            },
+            "children",
+            Object {
+              "_key": "fd9b4a4e6c0b",
+            },
+            "text",
+          ],
+          "type": "diffMatchPatch",
+          "value": "@@ -1 +0,0 @@
+      -1
+      ",
+        },
+      ]
+    `)
+  })
+
+  it('produces correct remove child patch', () => {
+    expect(
+      operationToPatches.removeNodePatch(
+        editor,
+        {
+          type: 'remove_node',
+          path: [0, 1],
+          node: {
+            _key: '773866318fa8',
+            _type: 'someObject',
+            value: {title: 'The Object'},
+            __inline: true,
+            children: [{_type: 'span', _key: 'bogus', text: '', marks: []}],
+          },
+        },
+
+        createDefaultValue()
+      )
+    ).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "path": Array [
+            Object {
+              "_key": "1f2e64b47787",
+            },
+            "children",
+            Object {
+              "_key": "773866318fa8",
+            },
+          ],
+          "type": "unset",
+        },
+      ]
+    `)
+  })
+
+  it('produce correct remove block patch', () => {
+    const val = createDefaultValue()
+    expect(
+      operationToPatches.removeNodePatch(
+        editor,
+        {
+          type: 'remove_node',
+          path: [0],
+          node: val[0],
+        },
+
+        val
+      )
+    ).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "path": Array [
+            Object {
+              "_key": "1f2e64b47787",
+            },
+          ],
+          "type": "unset",
+        },
+      ]
+    `)
+  })
+
+  it('produce correct merge node patch', () => {
+    const val = createDefaultValue()
+    ;(val[0] as TextBlock).children.push({
+      _type: 'span',
+      _key: 'r4wr323432',
+      text: '1234',
+      marks: [],
+    })
+    const block = editor.children[0] as TextBlock
+    block.children = block.children.splice(0, 3)
+    block.children[2].text = '1234'
+    editor.onChange()
+    expect(
+      operationToPatches.mergeNodePatch(
+        editor,
+        {
+          type: 'merge_node',
+          path: [0, 3],
+          position: 2,
+          properties: {text: '1234'},
+        },
+
+        val
+      )
+    ).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "path": Array [
+            Object {
+              "_key": "1f2e64b47787",
+            },
+            "children",
+            Object {
+              "_key": "fd9b4a4e6c0b",
+            },
+            "text",
+          ],
+          "type": "set",
+          "value": "1234",
+        },
+        Object {
+          "path": Array [
+            Object {
+              "_key": "1f2e64b47787",
+            },
+            "children",
+            Object {
+              "_key": "r4wr323432",
+            },
+          ],
+          "type": "unset",
         },
       ]
     `)
