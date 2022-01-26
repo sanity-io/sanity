@@ -1,7 +1,7 @@
 {
   "name": "perf-studio",
   "private": true,
-  "version": "2.25.1",
+  "version": "2.25.2",
   "description": "Content studio running with schema from the clean template",
   "main": "package.json",
   "author": "Sanity.io <hello@sanity.io>",
@@ -24,7 +24,7 @@
     "@sanity/core": "2.25.0",
     "@sanity/default-layout": "2.25.1",
     "@sanity/default-login": "2.24.1",
-    "@sanity/desk-tool": "2.25.1",
+    "@sanity/desk-tool": "2.25.2",
     "@sanity/icons": "^1.2.1",
     "@sanity/types": "2.24.0",
     "@sanity/vision": "2.25.1",

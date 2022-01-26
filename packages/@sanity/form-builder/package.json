@@ -1,6 +1,6 @@
 {
   "name": "@sanity/form-builder",
-  "version": "2.25.1",
+  "version": "2.25.2",
   "description": "Sanity form builder",
   "main": "lib/_exports/index.js",
   "types": "index.d.ts",
@@ -37,7 +37,7 @@
     "@sanity/imagetool": "2.23.3",
     "@sanity/initial-value-templates": "2.24.0",
     "@sanity/mutator": "2.21.0",
-    "@sanity/portable-text-editor": "2.25.1",
+    "@sanity/portable-text-editor": "2.25.2",
     "@sanity/schema": "2.24.0",
     "@sanity/types": "2.24.0",
     "@sanity/ui": "^0.37.2",
