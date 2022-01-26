@@ -532,7 +532,10 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                   <MenuItem
                     key={assetSource.name}
                     text={assetSource.title}
-                    onClick={() => this.handleSelectFileFromAssetSource(assetSource)}
+                    onClick={() => {
+                      this.setState({isMenuOpen: false})
+                      this.handleSelectFileFromAssetSource(assetSource)
+                    }}
                     icon={assetSource.icon || ImageIcon}
                     disabled={readOnly}
                     data-testid={`file-input-browse-button-${assetSource.name}`}
@@ -551,7 +554,10 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
         text="Browse"
         icon={SearchIcon}
         mode="ghost"
-        onClick={() => this.handleSelectFileFromAssetSource(assetSources[0])}
+        onClick={() => {
+          this.setState({isMenuOpen: false})
+          this.handleSelectFileFromAssetSource(assetSources[0])
+        }}
         data-testid="file-input-browse-button"
         disabled={readOnly}
       />

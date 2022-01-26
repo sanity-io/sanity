@@ -562,7 +562,10 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                   <MenuItem
                     key={assetSource.name}
                     text={assetSource.title}
-                    onClick={() => this.handleSelectImageFromAssetSource(assetSource)}
+                    onClick={() => {
+                      this.setState({isMenuOpen: false})
+                      this.handleSelectImageFromAssetSource(assetSource)
+                    }}
                     icon={assetSource.icon || ImageIcon}
                     disabled={readOnly}
                     data-testid={`file-input-browse-button-${assetSource.name}`}
@@ -581,7 +584,10 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         text="Browse"
         icon={SearchIcon}
         mode="ghost"
-        onClick={() => this.handleSelectImageFromAssetSource(assetSources[0])}
+        onClick={() => {
+          this.setState({isMenuOpen: false})
+          this.handleSelectImageFromAssetSource(assetSources[0])
+        }}
         data-testid="file-input-browse-button"
         disabled={readOnly}
       />
