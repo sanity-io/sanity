@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "sanity-workshop",
-  "version": "2.25.2",
+  "version": "2.25.3",
   "main": "package.json",
   "license": "MIT",
   "scripts": {
@@ -30,7 +30,7 @@
     "@sanity/base": "2.25.1",
     "@sanity/default-layout": "2.25.1",
     "@sanity/default-login": "2.24.1",
-    "@sanity/desk-tool": "2.25.2",
+    "@sanity/desk-tool": "2.25.3",
     "@sanity/resolver": "2.24.0",
     "@sanity/types": "2.24.0",
     "@types/qs": "^6.9.7",
