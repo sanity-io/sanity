@@ -45,7 +45,7 @@ export function createOperationToPatches(
     }
     const path: Path = [{_key: block._key}, 'children', {_key: textChild._key}, 'text']
     const prevBlock = beforeValue[operation.path[0]]
-    const prevChild = Editor.isBlock(editor, prevBlock) && prevBlock.children[operation.path[1]]
+    const prevChild = editor.isTextBlock(prevBlock) && prevBlock.children[operation.path[1]]
     const prevText = Text.isText(prevChild) ? prevChild.text : ''
     const patch = diffMatchPatch(prevText, textChild.text, path)
     return patch.value.length ? [patch] : []
@@ -274,8 +274,8 @@ export function createOperationToPatches(
       const block = beforeValue[operation.path[0]]
       const mergedSpan = block.children[operation.path[1]]
       const targetBlock = editor.children[operation.path[0]]
-      if (!Editor.isBlock(editor, targetBlock)) {
-        throw new Error('Block expected')
+      if (!editor.isTextBlock(targetBlock)) {
+        throw new Error('Invalid block')
       }
       const targetSpan = targetBlock.children[operation.path[1] - 1]
       if (Text.isText(targetSpan)) {
