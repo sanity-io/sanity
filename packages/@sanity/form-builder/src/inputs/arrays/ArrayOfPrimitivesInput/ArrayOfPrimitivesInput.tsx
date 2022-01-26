@@ -196,7 +196,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
       const prevFocusedValue = prevProps.value[snapshot.prevFocusedIndex]
 
       const nearestIndex = nearestIndexOf(
-        this.props.value,
+        this.props.value || [],
         snapshot.prevFocusedIndex,
         prevFocusedValue
       )
