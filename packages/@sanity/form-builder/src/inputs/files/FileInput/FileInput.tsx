@@ -353,7 +353,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     // to let focus bubble, so this workaround is needed
     // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
     if (event.currentTarget === event.target && event.currentTarget === this._focusRef) {
-      this.props.onFocus([])
+      this.props.onFocus(['asset'])
     }
   }
   handleFileTargetBlur = () => {
