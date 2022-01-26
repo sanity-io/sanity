@@ -112,7 +112,6 @@ describe('operationToPatches', () => {
             children: [{_key: '1', _type: 'span', text: '', marks: []}],
           },
         },
-
         createDefaultValue()
       )
     ).toMatchInlineSnapshot(`
@@ -128,6 +127,50 @@ describe('operationToPatches', () => {
             Object {
               "_key": "1f2e64b47787",
             },
+          ],
+          "position": "before",
+          "type": "insert",
+        },
+      ]
+    `)
+  })
+
+  it('produce correct insert block patch with an empty editor', () => {
+    editor.children = []
+    editor.onChange()
+    expect(
+      operationToPatches.insertNodePatch(
+        editor,
+        {
+          type: 'insert_node',
+          path: [0],
+          node: {
+            _type: 'someObject',
+            _key: 'c130395c640c',
+            value: {},
+            __inline: false,
+            children: [{_key: '1', _type: 'span', text: '', marks: []}],
+          },
+        },
+
+        []
+      )
+    ).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "path": Array [],
+          "type": "setIfMissing",
+          "value": Array [],
+        },
+        Object {
+          "items": Array [
+            Object {
+              "_key": "c130395c640c",
+              "_type": "someObject",
+            },
+          ],
+          "path": Array [
+            0,
           ],
           "position": "before",
           "type": "insert",

@@ -117,7 +117,7 @@ export function createOperationToPatches(
     if (operation.path.length === 1) {
       const position = operation.path[0] === 0 ? 'before' : 'after'
       const beforeBlock = beforeValue[operation.path[0] - 1]
-      const targetKey = operation.path[0] === 0 ? block._key : beforeBlock?._key
+      const targetKey = operation.path[0] === 0 ? block?._key : beforeBlock?._key
       if (targetKey) {
         return [
           insert([fromSlateValue([operation.node], textBlockName)[0]], position, [
@@ -125,15 +125,10 @@ export function createOperationToPatches(
           ]),
         ]
       }
-      if (beforeValue.length === 0) {
-        return [
-          setIfMissing(beforeValue, []),
-          insert([fromSlateValue([operation.node], textBlockName)[0]], 'before', [
-            operation.path[0],
-          ]),
-        ]
-      }
-      throw new Error('Target key not found!')
+      return [
+        setIfMissing(beforeValue, []),
+        insert([fromSlateValue([operation.node], textBlockName)[0]], 'before', [operation.path[0]]),
+      ]
     } else if (operation.path.length === 2 && editor.children[operation.path[0]]) {
       if (!editor.isTextBlock(block)) {
         throw new Error('Invalid block')
@@ -159,13 +154,12 @@ export function createOperationToPatches(
             : {_key: block.children[operation.path[1] - 1]._key},
         ]),
       ]
-    } else {
-      throw new Error(
-        `Unexpected path encountered: ${JSON.stringify(operation.path)} - ${JSON.stringify(
-          beforeValue
-        )}`
-      )
     }
+    throw new Error(
+      `Unexpected path encountered: ${JSON.stringify(operation.path)} - ${JSON.stringify(
+        beforeValue
+      )}`
+    )
   }
 
   function splitNodePatch(
