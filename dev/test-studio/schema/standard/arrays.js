@@ -364,6 +364,12 @@ export default {
       type: 'topLevelPrimitiveArrayType',
     },
     {
+      name: 'requiredFieldOfTopLevelPrimitiveArrayType',
+      title: 'Required field of top level primitive array type',
+      type: 'topLevelPrimitiveArrayType',
+      validation: (R) => R.required(),
+    },
+    {
       name: 'imageArrayInGrid',
       title: 'Image array',
       description: 'An array of images. options: {layout: "grid"}',
