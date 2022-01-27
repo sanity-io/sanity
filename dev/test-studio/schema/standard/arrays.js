@@ -115,6 +115,24 @@ export default {
       ],
     },
     {
+      name: 'arrayWithInitialValue',
+      title: 'Array of types that has initial values defined',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          title: 'Dog breed',
+          fields: [
+            {
+              name: 'name',
+              type: 'string',
+            },
+          ],
+          initialValue: {name: 'Miniature Schnauzer'},
+        },
+      ],
+    },
+    {
       name: 'arrayOfMultipleTypesPopover',
       title: 'Array of multiple types (editModal=popover)',
       options: {
