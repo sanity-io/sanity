@@ -54,15 +54,17 @@ export function FileDetails(props: Props) {
           </Stack>
         </Flex>
       </Card>
-      <Box marginRight={2}>
-        <Popover content={<Menu ref={setMenuRef}>{children}</Menu>} portal open={isMenuOpen}>
-          <Button
-            icon={EllipsisVerticalIcon}
-            mode="bleed"
-            data-testid="options-menu-button"
-            onClick={handleClick}
-          />
-        </Popover>
+      <Box padding={2}>
+        <Flex justify="center">
+          <Popover content={<Menu ref={setMenuRef}>{children}</Menu>} portal open={isMenuOpen}>
+            <Button
+              icon={EllipsisVerticalIcon}
+              mode="bleed"
+              data-testid="options-menu-button"
+              onClick={handleClick}
+            />
+          </Popover>
+        </Flex>
       </Box>
     </Flex>
   )
