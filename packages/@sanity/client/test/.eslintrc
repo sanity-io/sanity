@@ -1,7 +1,0 @@
-{
-  "rules": {
-    "id-length": 0,
-    "newline-per-chained-call": 0,
-    "no-sync": 0
-  }
-}
