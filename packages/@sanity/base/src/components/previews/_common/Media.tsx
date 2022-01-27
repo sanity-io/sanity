@@ -1,5 +1,5 @@
 import {Text} from '@sanity/ui'
-import React, {isValidElement, useMemo} from 'react'
+import React, {isValidElement} from 'react'
 import {PreviewMediaDimensions, PreviewLayoutKey, PreviewProps} from '../types'
 import {MediaWrapper} from './Media.styled'
 
@@ -19,26 +19,6 @@ export interface MediaProps {
 export function Media(props: MediaProps) {
   const {border = true, dimensions, layout, media, radius = 2, responsive = false, styles} = props
 
-  const child = useMemo(() => {
-    if (typeof media === 'function') {
-      return media({dimensions, layout})
-    }
-
-    if (typeof media === 'string') {
-      return (
-        <Text as="span" className={styles?.mediaString}>
-          {media}
-        </Text>
-      )
-    }
-
-    if (isValidElement(media)) {
-      return media
-    }
-
-    return null
-  }, [dimensions, layout, media, styles?.mediaString])
-
   return (
     <MediaWrapper
       $dimensions={dimensions}
@@ -48,8 +28,38 @@ export function Media(props: MediaProps) {
       className={styles?.media}
       data-testid="Media"
     >
-      {child}
+      {renderMedia({dimensions, layout, media})}
       {border && <span />}
     </MediaWrapper>
   )
+}
+
+function renderMedia(props: {
+  dimensions: PreviewMediaDimensions
+  layout: PreviewLayoutKey
+  media: PreviewProps['media']
+  styles?: {
+    media?: string
+    mediaString?: string
+  }
+}) {
+  const {dimensions, layout, media, styles} = props
+
+  if (typeof media === 'function') {
+    return media({dimensions, layout})
+  }
+
+  if (typeof media === 'string') {
+    return (
+      <Text as="span" className={styles?.mediaString}>
+        {media}
+      </Text>
+    )
+  }
+
+  if (isValidElement(media)) {
+    return media
+  }
+
+  return null
 }
