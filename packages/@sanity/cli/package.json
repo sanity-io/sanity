@@ -39,7 +39,7 @@
   },
   "homepage": "https://www.sanity.io/",
   "devDependencies": {
-    "@sanity/client": "2.23.2",
+    "@sanity/client": "^3.0.1",
     "@sanity/generate-help-url": "2.18.0",
     "@sanity/resolver": "2.24.0",
     "@sanity/util": "2.24.0",
