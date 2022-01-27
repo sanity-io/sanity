@@ -5,7 +5,11 @@ import shallowEquals from 'shallow-equals'
 import {chunk, flatten, keyBy} from 'lodash'
 import {getDraftId, getPublishedId} from '../util/draftUtils'
 import {versionedClient} from '../client/versionedClient'
-import type {DocumentAvailability, DraftsModelDocumentAvailability} from './types'
+import type {
+  AvailabilityResponse,
+  DocumentAvailability,
+  DraftsModelDocumentAvailability,
+} from './types'
 import {debounceCollect} from './utils/debounceCollect'
 import {
   AVAILABILITY_NOT_FOUND,
@@ -77,7 +81,7 @@ function fetchDocumentReadabilityChunked(ids: string[]): Observable<DocumentAvai
       query: {excludeContent: 'true'},
       tag: 'preview.documents-availability',
     }
-    return versionedClient.observable.request(requestOptions).pipe(
+    return versionedClient.observable.request<AvailabilityResponse>(requestOptions).pipe(
       map((response) => {
         const omitted = keyBy(response.omitted || [], (entry) => entry.id)
         return ids.map((id) => {

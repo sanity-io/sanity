@@ -14,6 +14,10 @@ export type Path = FieldName[]
 export type Selection = [Id, Path[]]
 export type FieldName = string
 
+export interface AvailabilityResponse {
+  omitted: {id: string; reason: 'existence' | 'permission'}[]
+}
+
 export enum AvailabilityReason {
   READABLE = 'READABLE',
   PERMISSION_DENIED = 'PERMISSION_DENIED',
