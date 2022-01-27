@@ -1,11 +1,12 @@
 import {PortableTextBlock, RenderAttributes} from '@sanity/portable-text-editor'
 import {isKeySegment, isValidationMarker, Marker} from '@sanity/types'
 import {Box, ResponsivePaddingProps, Tooltip} from '@sanity/ui'
-import React, {useMemo} from 'react'
+import React, {useCallback, useMemo, useState} from 'react'
 import {Markers} from '../../../legacyParts'
 import PatchEvent from '../../../PatchEvent'
 import {BlockActions} from '../BlockActions'
 import {RenderBlockActions, RenderCustomMarkers} from '../types'
+import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
 import {TEXT_STYLE_PADDING} from './constants'
 import {
   BlockActionsInner,
@@ -13,7 +14,6 @@ import {
   BlockExtrasContainer,
   ChangeIndicatorWrapper,
   ListPrefixWrapper,
-  StyledChangeIndicatorWithProvidedFullPath,
   TextBlockFlexWrapper,
   TextFlex,
   TextRoot,
@@ -50,9 +50,17 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
     spellCheck,
   } = props
 
+  const [reviewChangesHovered, setReviewChangesHovered] = useState<boolean>(false)
+  const [hasChanges, setHasChanges] = useState<boolean>(false)
+
   const {focused} = attributes
 
   const blockKey = block._key
+
+  const handleMouseOver = useCallback(() => setReviewChangesHovered(true), [])
+  const handleMouseOut = useCallback(() => setReviewChangesHovered(false), [])
+
+  const handleOnHasChanges = useCallback((changed: boolean) => setHasChanges(changed), [])
 
   // These are marker that is only for the block level (things further up, like annotations and inline objects are dealt with in their respective components)
   const blockMarkers = useMemo(
@@ -174,16 +182,24 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
           )}
 
           {isFullscreen && (
-            <ChangeIndicatorWrapper>
+            <ChangeIndicatorWrapper
+              onMouseOver={handleMouseOver}
+              onMouseOut={handleMouseOut}
+              $hasChanges={Boolean(hasChanges)}
+            >
               <StyledChangeIndicatorWithProvidedFullPath
                 compareDeep
                 value={block}
                 hasFocus={focused}
                 path={blockPath}
+                withHoverEffect={false}
+                onHasChanges={handleOnHasChanges}
               />
             </ChangeIndicatorWrapper>
           )}
         </BlockExtrasContainer>
+
+        {reviewChangesHovered && <ReviewChangesHighlightBlock />}
       </TextBlockFlexWrapper>
     </Box>
   )
