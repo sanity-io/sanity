@@ -18,17 +18,7 @@ import {
   ChangeIndicatorWithProvidedFullPath,
 } from '@sanity/base/change-indicators'
 import {ImageIcon, SearchIcon} from '@sanity/icons'
-import {
-  Box,
-  Button,
-  Card,
-  Dialog,
-  Menu,
-  MenuButton,
-  MenuItem,
-  ToastParams,
-  Spinner,
-} from '@sanity/ui'
+import {Box, Button, Card, Dialog, Menu, MenuButton, MenuItem, ToastParams} from '@sanity/ui'
 import {PresenceOverlay, FormFieldPresence} from '@sanity/base/presence'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {Uploader, UploaderResolver, UploadOptions} from '../../../sanity/uploads/types'
@@ -46,6 +36,7 @@ import {EMPTY_ARRAY} from '../../../utils/empty'
 import {CardOverlay, FlexContainer} from './styles'
 import {FileInputField} from './FileInputField'
 import {FileDetails} from './FileDetails'
+import {FileSkeleton} from './FileSkeleton'
 
 type Field = {
   name: string
@@ -253,11 +244,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
         <WithReferencedAsset
           observeAsset={observeAsset}
           reference={value.asset}
-          waitPlaceholder={
-            <Box padding={2}>
-              <Spinner muted />
-            </Box>
-          }
+          waitPlaceholder={<FileSkeleton />}
         >
           {(fileAsset) => (
             <Component
@@ -450,11 +437,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       <WithReferencedAsset
         reference={asset}
         observeAsset={observeAsset}
-        waitPlaceholder={
-          <Box padding={2}>
-            <Spinner muted />
-          </Box>
-        }
+        waitPlaceholder={<FileSkeleton />}
       >
         {(assetDocument) => (
           <FileDetails
