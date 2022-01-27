@@ -1,5 +1,5 @@
 import {useLayer} from '@sanity/ui'
-import React, {memo, useContext, useMemo} from 'react'
+import React, {memo, useCallback, useContext, useEffect, useMemo} from 'react'
 import deepCompare from 'react-fast-compare'
 import * as PathUtils from '@sanity/util/paths'
 import {Path} from '@sanity/types'
@@ -30,13 +30,14 @@ const canCompareShallow = (valueA: unknown, valueB: unknown): boolean => {
 
 const ChangeBarWrapper = memo(function ChangeBarWrapper(
   props: React.ComponentProps<'div'> & {
-    isChanged: boolean
-    hasFocus: boolean
-    fullPath: Path
     disabled?: boolean
+    fullPath: Path
+    hasFocus: boolean
+    isChanged: boolean
+    withHoverEffect?: boolean
   }
 ) {
-  const {children, className, fullPath, hasFocus, isChanged, disabled} = props
+  const {children, className, disabled, fullPath, hasFocus, isChanged, withHoverEffect} = props
   const layer = useLayer()
   const [hasHover, setHover] = React.useState(false)
   const onMouseEnter = React.useCallback(() => setHover(true), [])
@@ -59,7 +60,12 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
 
   return (
     <div ref={ref} className={className} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-      <ElementWithChangeBar hasFocus={hasFocus} isChanged={isChanged} disabled={disabled}>
+      <ElementWithChangeBar
+        hasFocus={hasFocus}
+        isChanged={isChanged}
+        disabled={disabled}
+        withHoverEffect={withHoverEffect}
+      >
         {children}
       </ElementWithChangeBar>
     </div>
@@ -124,39 +130,54 @@ export function ChangeIndicatorProvider(props: {
 }
 
 interface CoreProps {
+  children?: React.ReactNode
   className?: string
+  compareDeep?: boolean
+  compareValue: unknown
   disabled?: boolean
   fullPath: Path
-  compareDeep?: boolean
-  value: unknown
   hasFocus: boolean
-  compareValue: unknown
-  children?: React.ReactNode
+  /**
+   * Callback function that returns a boolean if there are changes
+   */
+  onHasChanges?: (changed: boolean) => void
+  value: unknown
+  withHoverEffect?: boolean
 }
 
 export function CoreChangeIndicator(props: CoreProps) {
   const {
+    children,
     className,
+    compareDeep,
+    compareValue,
     disabled,
     fullPath,
-    value,
-    compareValue,
     hasFocus,
-    compareDeep,
-    children,
+    onHasChanges,
+    value,
+    withHoverEffect,
   } = props
+
   // todo: lazy compare debounced (possibly with intersection observer)
   const isChanged =
     (canCompareShallow(value, compareValue) && value !== compareValue) ||
     (compareDeep && !deepCompare(value, compareValue))
 
+  useEffect(() => {
+    if (onHasChanges) {
+      onHasChanges(isChanged)
+    }
+  }, [isChanged, onHasChanges])
+
   return (
     <ChangeBarWrapper
       className={className}
-      isChanged={isChanged}
+      disabled={disabled}
       fullPath={fullPath}
       hasFocus={hasFocus}
-      disabled={disabled}
+      isChanged={isChanged}
+      withHoverEffect={withHoverEffect}
     >
       {children}
     </ChangeBarWrapper>
@@ -193,19 +214,34 @@ export function ChangeIndicatorForFieldPath(props: {
 }
 
 interface ChangeIndicatorWithProvidedFullPathProps {
+  children?: React.ReactNode
   className?: string
+  compareDeep?: boolean
   disabled?: boolean
+  hasFocus: boolean
+  /**
+   * Callback function that returns a boolean if there are changes
+   */
+  onHasChanges?: (changed: boolean) => void
   path: Path
   value: unknown
-  hasFocus: boolean
-  compareDeep?: boolean
-  children?: React.ReactNode
+  withHoverEffect?: boolean
 }
 
 export function ChangeIndicatorWithProvidedFullPath(
   props: ChangeIndicatorWithProvidedFullPathProps
 ) {
-  const {className, disabled, path, value, hasFocus, compareDeep, children} = props
+  const {
+    children,
+    className,
+    compareDeep,
+    disabled,
+    hasFocus,
+    onHasChanges,
+    path,
+    value,
+    withHoverEffect,
+  } = props
   const parentContext = React.useContext(ChangeIndicatorContext)
 
   const fullPath = React.useMemo(() => PathUtils.pathFor(parentContext.fullPath.concat(path)), [
@@ -213,15 +249,26 @@ export function ChangeIndicatorWithProvidedFullPath(
     path,
   ])
 
+  const handleOnHasChanges = useCallback(
+    (changed) => {
+      if (onHasChanges) {
+        onHasChanges(changed)
+      }
+    },
+    [onHasChanges]
+  )
+
   return (
     <CoreChangeIndicator
-      disabled={disabled}
       className={className}
-      value={value}
-      compareValue={PathUtils.get(parentContext.compareValue, path)}
-      hasFocus={hasFocus}
-      fullPath={fullPath}
       compareDeep={compareDeep}
+      compareValue={PathUtils.get(parentContext.compareValue, path)}
+      disabled={disabled}
+      fullPath={fullPath}
+      hasFocus={hasFocus}
+      onHasChanges={handleOnHasChanges}
+      value={value}
+      withHoverEffect={withHoverEffect}
     >
       {children}
     </CoreChangeIndicator>
