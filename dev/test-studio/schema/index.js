@@ -91,6 +91,7 @@ import species from './species'
 import conditionalFieldset from './ci/conditionalFieldset'
 import validationTest from './ci/validationCI'
 import crossDatasetReference from './standard/crossDatasetReference'
+import {crossDatasetToken} from './debug/crossDatasetToken'
 
 export default createSchema({
   name: 'test-examples',
@@ -174,6 +175,7 @@ export default createSchema({
     typeWithNoToplevelStrings,
     uploads,
     urls,
+    crossDatasetToken,
     validation,
     validationArraySuperType,
     validationTest,

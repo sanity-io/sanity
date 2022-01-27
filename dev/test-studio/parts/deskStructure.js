@@ -90,6 +90,7 @@ const DEBUG_INPUT_TYPES = [
   'select',
   'typeWithNoToplevelStrings',
   'uploadsTest',
+  'crossDatasetToken',
   'validationTest',
   'withDocumentTest',
 ]
