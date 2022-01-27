@@ -28,6 +28,7 @@ import {ConditionalReadOnlyField} from '../../common'
 import {ArrayItem} from './item'
 import type {ArrayMember, InsertEvent, ReferenceItemComponentType} from './types'
 import {uploadTarget} from './uploadTarget/uploadTarget'
+import {isEmpty} from './item/helpers'
 
 declare const __DEV__: boolean
 
@@ -105,9 +106,11 @@ export class ArrayInput extends React.Component<Props> {
     const {resolveInitialValue, onFocus} = this.props
     this.setState({isResolvingInitialValue: true})
     const memberType = this.getMemberTypeOfItem(event.item)
-    const resolvedInitialValue = resolveInitialValue
-      ? resolveInitialValue(memberType as ObjectSchemaType, event.item)
-      : Promise.resolve({})
+
+    const resolvedInitialValue =
+      isEmpty(event.item) && resolveInitialValue
+        ? resolveInitialValue(memberType as ObjectSchemaType, event.item)
+        : Promise.resolve({})
 
     resolvedInitialValue
       .then((initial) => ({...event.item, ...initial}))
