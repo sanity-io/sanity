@@ -30,7 +30,6 @@ module.exports = {
   '@sanity/initial-value-templates': './packages/@sanity/initial-value-templates/src',
   '@sanity/portable-text-editor': './packages/@sanity/portable-text-editor/src',
   '@sanity/mutator': './packages/@sanity/mutator/src',
-  '@sanity/client': './packages/@sanity/client/src/sanityClient',
   '@sanity/resolver': './packages/@sanity/resolver/src/resolver',
 
   '@sanity/react-hooks': './packages/@sanity/react-hooks/src',

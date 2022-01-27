@@ -125,7 +125,6 @@ function matchPackages(names) {
 
 const CLI_PKGS = [
   '@sanity/cli',
-  '@sanity/client',
   '@sanity/core',
   '@sanity/export',
   '@sanity/import',
