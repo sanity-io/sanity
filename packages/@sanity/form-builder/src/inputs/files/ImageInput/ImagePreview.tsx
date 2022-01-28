@@ -1,4 +1,4 @@
-import React, {ComponentProps, useCallback, useState} from 'react'
+import React, {ComponentProps, useCallback, useEffect, useState} from 'react'
 
 import {AccessDeniedIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
 import {Card, Box, Heading, Text} from '@sanity/ui'
@@ -19,6 +19,12 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
   const acceptTone = isRejected || readOnly ? 'critical' : 'primary'
   const tone = drag ? acceptTone : 'default'
 
+  useEffect(() => {
+    /* set for when the src is being switched when the image input already had a image src
+    - meaning it already had an asset */
+    setLoaded(false)
+  }, [src])
+
   const onLoadChange = useCallback(() => {
     setLoaded(true)
   }, [setLoaded])
@@ -26,7 +32,13 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
   return (
     <RatioBox {...rest} style={{height: '30vh'}} tone="transparent">
       <Card data-container tone="inherit">
-        {!isLoaded && <SpinnerWrapper muted />}
+        {!isLoaded && (
+          <Overlay justify="flex-end" padding={3} tone={tone} drag>
+            <FlexOverlay direction="column" align="center" justify="center">
+              <SpinnerWrapper />
+            </FlexOverlay>
+          </Overlay>
+        )}
         <img src={src} data-testid="hotspot-image-input" alt={props.alt} onLoad={onLoadChange} />
       </Card>
 
