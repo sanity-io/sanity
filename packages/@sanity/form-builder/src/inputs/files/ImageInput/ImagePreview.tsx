@@ -33,7 +33,7 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
     <RatioBox {...rest} style={{height: '30vh'}} tone="transparent">
       <Card data-container tone="inherit">
         {!isLoaded && (
-          <Overlay justify="flex-end" padding={3} tone={tone} drag>
+          <Overlay justify="flex-end" padding={3} tone="transparent" drag>
             <FlexOverlay direction="column" align="center" justify="center">
               <SpinnerWrapper />
             </FlexOverlay>
