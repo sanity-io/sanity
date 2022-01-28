@@ -29,8 +29,9 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
         {!isLoaded && <SpinnerWrapper muted />}
         <img src={src} data-testid="hotspot-image-input" alt={props.alt} onLoad={onLoadChange} />
       </Card>
-      <Overlay justify="flex-end" padding={3} tone={tone} drag={drag}>
-        {drag && (
+
+      {drag && (
+        <Overlay justify="flex-end" padding={3} tone={tone} drag={drag}>
           <FlexOverlay direction="column" align="center" justify="center">
             <Box marginBottom={3}>
               <Heading>
@@ -39,8 +40,8 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
             </Box>
             <HoverText isRejected={isRejected} readOnly={readOnly} />
           </FlexOverlay>
-        )}
-      </Overlay>
+        </Overlay>
+      )}
     </RatioBox>
   )
 }
