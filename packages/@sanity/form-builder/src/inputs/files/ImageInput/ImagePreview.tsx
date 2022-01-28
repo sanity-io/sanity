@@ -32,27 +32,25 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
   return (
     <RatioBox {...rest} style={{height: '30vh'}} tone="transparent">
       <Card data-container tone="inherit">
-        {!isLoaded && (
-          <Overlay justify="flex-end" padding={3} tone="transparent" drag>
-            <FlexOverlay direction="column" align="center" justify="center">
-              <SpinnerWrapper />
-            </FlexOverlay>
-          </Overlay>
-        )}
+        {!isLoaded && <OverlayComponent cardTone="transparent" drag content={<SpinnerWrapper />} />}
         <img src={src} data-testid="hotspot-image-input" alt={props.alt} onLoad={onLoadChange} />
       </Card>
 
       {drag && (
-        <Overlay justify="flex-end" padding={3} tone={tone} drag={drag}>
-          <FlexOverlay direction="column" align="center" justify="center">
-            <Box marginBottom={3}>
-              <Heading>
-                <HoverIcon isRejected={isRejected} readOnly={readOnly} />
-              </Heading>
-            </Box>
-            <HoverText isRejected={isRejected} readOnly={readOnly} />
-          </FlexOverlay>
-        </Overlay>
+        <OverlayComponent
+          cardTone={tone}
+          drag={drag}
+          content={
+            <>
+              <Box marginBottom={3}>
+                <Heading>
+                  <HoverIcon isRejected={isRejected} readOnly={readOnly} />
+                </Heading>
+              </Box>
+              <HoverText isRejected={isRejected} readOnly={readOnly} />
+            </>
+          }
+        />
       )}
     </RatioBox>
   )
@@ -78,4 +76,14 @@ function HoverText({isRejected, readOnly}) {
   }
 
   return <Text size={1}>{message}</Text>
+}
+
+function OverlayComponent({cardTone, drag, content}) {
+  return (
+    <Overlay justify="flex-end" padding={3} tone={cardTone} drag={drag}>
+      <FlexOverlay direction="column" align="center" justify="center">
+        {content}
+      </FlexOverlay>
+    </Overlay>
+  )
 }
