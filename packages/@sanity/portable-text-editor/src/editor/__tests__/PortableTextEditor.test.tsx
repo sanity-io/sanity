@@ -63,7 +63,7 @@ describe('initialization', () => {
                   >
                     <div
                       contenteditable="false"
-                      style="opacity: 0.5; position: absolute; user-select: none;"
+                      style="opacity: 0.5; position: absolute; user-select: none; pointer-events: none;"
                     >
                       Jot something down here
                     </div>
