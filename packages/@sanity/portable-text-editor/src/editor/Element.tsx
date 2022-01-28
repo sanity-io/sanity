@@ -132,7 +132,7 @@ export const Element: FunctionComponent<ElementProps> = ({
       if (Number.isInteger(element.level)) {
         renderAttribs.level = element.level
       } else {
-        element.level = 1
+        renderAttribs.level = 1
       }
       className += ` pt-list-item pt-list-item-${element.listItem} pt-list-item-level-${element.level}`
     }
