@@ -111,6 +111,9 @@ export default class CollaborationEnvironment extends NodeEnvironment {
     this.global.getEditors = () =>
       Promise.all(
         [this._pageA, this._pageB].map(async (page, index) => {
+          const userAgent = await page.evaluate(() => navigator.userAgent)
+          const isMac = /Mac|iPod|iPhone|iPad/.test(userAgent)
+          const metaKey = isMac ? 'Meta' : 'Control'
           const editorId = ['A', 'B'][index]
           const editableHandle = await page.waitForSelector('div[contentEditable="true"]')
           const selectionHandle: puppeteer.ElementHandle<HTMLDivElement> = await page.waitForSelector(
@@ -216,11 +219,11 @@ export default class CollaborationEnvironment extends NodeEnvironment {
               }
             },
             toggleMark: async () => {
-              await page.keyboard.down('Control')
+              await page.keyboard.down(metaKey)
               await page.keyboard.down('b')
 
               await page.keyboard.up('b')
-              await page.keyboard.up('Control')
+              await page.keyboard.up(metaKey)
               await waitForRevision()
             },
             focus: async () => {
