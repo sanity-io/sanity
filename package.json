@@ -58,7 +58,7 @@
     "test": "jest",
     "test-e2e": "start-server-and-test build-and-serve http://localhost:3333 'yarn cypress:run'",
     "test-perf": "start-server-and-test perf-studio http://localhost:3344 'ts-node -r dotenv/config perf/suite'",
-    "type-check": "tsc -b",
+    "type-check": "tsc --build",
     "updated": "lerna updated",
     "vercel-build": "yarn build:js && (cd dev/test-studio && yarn build -y)",
     "verify-format": "lerna run clean && yarn prettier -c",
