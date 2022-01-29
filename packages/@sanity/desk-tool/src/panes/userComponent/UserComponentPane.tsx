@@ -55,7 +55,7 @@ export function UserComponentPane(props: UserComponentPaneProps) {
             ...restPane,
             // NOTE: here we're utilizing the function form of refs so setting
             // the ref causes a re-render for `UserComponentPaneHeader`
-            ref: setRef,
+            ...({ref: setRef} as any),
             child: child as any, // @todo: Fix typings
             paneKey,
             // NOTE: this is for backwards compatibility (<= 2.20.0)
