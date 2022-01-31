@@ -9,6 +9,7 @@ export interface CurrentUser {
   name: string
   email: string
   profileImage?: string
+  provider?: string
   /** @deprecated use `roles` instead */
   role: string
   roles: Role[]
