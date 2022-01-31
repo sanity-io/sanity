@@ -6,7 +6,8 @@ import {
   formBuilderConfig,
   userDefinedFileAssetSources,
 } from '../../legacyParts'
-import {materializeReference} from './client-adapters/assets'
+import withValuePath from '../../utils/withValuePath'
+import {observeFileAsset} from './client-adapters/assets'
 import {wrapWithDocument} from './wrapWithDocument'
 
 const globalAssetSources = userDefinedFileAssetSources
@@ -16,6 +17,8 @@ const globalAssetSources = userDefinedFileAssetSources
 const SUPPORT_DIRECT_UPLOADS = formBuilderConfig?.files?.directUploads !== false
 
 type Props = Omit<React.ComponentProps<typeof FileInput>, 'assetSources'>
+
+const FileInputWithValuePath = withValuePath(FileInput)
 
 export default React.forwardRef(function SanityFileInput(props: Props, forwardedRef: any) {
   const sourcesFromSchema = props.type.options?.sources
@@ -28,10 +31,10 @@ export default React.forwardRef(function SanityFileInput(props: Props, forwarded
   )
 
   return (
-    <FileInput
+    <FileInputWithValuePath
       {...props}
       resolveUploader={resolveUploader}
-      materialize={materializeReference}
+      observeAsset={observeFileAsset}
       assetSources={assetSources}
       directUploads={SUPPORT_DIRECT_UPLOADS}
       ref={forwardedRef}

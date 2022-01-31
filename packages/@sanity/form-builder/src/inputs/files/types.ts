@@ -1,5 +1,9 @@
 import {ComponentType} from 'react'
 import {AssetSource, AssetSourceComponentProps} from '@sanity/types'
+import imageUrlBuilder from '@sanity/image-url'
+
+// todo: see if we can get the ImageUrlBuilder type directly from @sanity/image-url instead of having to use this ReturnType workaround
+export type ImageUrlBuilder = ReturnType<typeof imageUrlBuilder>
 
 export interface UploadState {
   progress: number

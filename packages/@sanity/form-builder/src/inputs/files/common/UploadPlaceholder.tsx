@@ -1,49 +1,64 @@
 import React from 'react'
-import {ClipboardImageIcon, UploadIcon} from '@sanity/icons'
-import {Box, Flex, Heading, Text} from '@sanity/ui'
-import styled from 'styled-components'
-import {FileTarget} from './styles'
+import {UploadIcon} from '@sanity/icons'
+import {Flex, Inline} from '@sanity/ui'
+import {FileLike} from '../../../sanity/uploads/types'
+import {FileInputButton} from './FileInputButton/FileInputButton'
+import {PlaceholderText} from './PlaceholderText'
 
 type UploadPlaceholderProps = {
-  fileType?: string
+  onUpload?: (files: File[]) => void
+  browse?: React.ReactNode
+  readOnly?: boolean | null
+  type: string
+  hoveringFiles: FileLike[]
+
+  acceptedFiles: FileLike[]
+  rejectedFilesCount: number
+  accept: string
+  directUploads: boolean
 }
 
-const ClipboardBox = styled(Box)<{canPaste?: boolean}>`
-  opacity: 0.25;
-  ${FileTarget}:focus & {
-    opacity: 1;
-  }
-  transition-property: opacity;
-  transition-duration: 100ms;
-`
-
-export default React.memo(function UploadPlaceholder({fileType = 'file'}: UploadPlaceholderProps) {
+export default React.memo(function UploadPlaceholder({
+  browse,
+  onUpload,
+  readOnly,
+  type,
+  hoveringFiles,
+  acceptedFiles,
+  rejectedFilesCount,
+  accept,
+  directUploads,
+}: UploadPlaceholderProps) {
   return (
-    <Flex height="fill" align="center" justify="center">
-      <Box marginX={2}>
-        <Box>
-          <Box>
-            <Heading align="center" size={5}>
-              <UploadIcon />
-            </Heading>
-          </Box>
-          <Box marginTop={4}>
-            <Text weight="bold">Drop {fileType}</Text>
-          </Box>
-        </Box>
-      </Box>
-      <ClipboardBox marginX={2}>
-        <Box>
-          <Box>
-            <Heading align="center" size={5}>
-              <ClipboardImageIcon />
-            </Heading>
-          </Box>
-          <Box marginTop={4}>
-            <Text weight="bold">Paste {fileType}</Text>
-          </Box>
-        </Box>
-      </ClipboardBox>
+    <Flex
+      align="center"
+      justify="space-between"
+      gap={4}
+      direction={['column', 'column', 'row']}
+      paddingY={[2, 2, 0]}
+    >
+      <Flex align="center" justify="center" gap={2} flex={1}>
+        <PlaceholderText
+          readOnly={readOnly}
+          hoveringFiles={hoveringFiles}
+          acceptedFiles={acceptedFiles}
+          rejectedFilesCount={rejectedFilesCount}
+          type={type}
+          directUploads={directUploads}
+        />
+      </Flex>
+      <Inline space={2}>
+        <FileInputButton
+          icon={UploadIcon}
+          mode="ghost"
+          onSelect={onUpload}
+          accept={accept}
+          text="Upload"
+          data-testid="file-input-upload-button"
+          disabled={readOnly || !directUploads}
+        />
+        {browse}
+      </Inline>
     </Flex>
   )
 })
