@@ -40,7 +40,7 @@
   "homepage": "https://www.sanity.io/",
   "devDependencies": {
     "@sanity/client": "^3.0.1",
-    "@sanity/generate-help-url": "2.18.0",
+    "@sanity/generate-help-url": "^3.0.0",
     "@sanity/resolver": "2.26.0",
     "@sanity/util": "2.26.0",
     "boxen": "^4.1.0",

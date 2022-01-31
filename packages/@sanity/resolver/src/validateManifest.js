@@ -1,4 +1,4 @@
-import generateHelpUrl from '@sanity/generate-help-url'
+import {generateHelpUrl} from '@sanity/generate-help-url'
 
 const matchers = {
   partPrefix: /^part:/,

@@ -1,6 +1,6 @@
 import config from 'config:@sanity/data-aspects'
 import {startCase} from 'lodash'
-import generateHelpUrl from '@sanity/generate-help-url'
+import {generateHelpUrl} from '@sanity/generate-help-url'
 
 const bundledTypeNames = ['geopoint', 'richDate', 'date', 'sanity.imageAsset', 'sanity.fileAsset']
 

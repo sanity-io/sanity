@@ -35,7 +35,7 @@
     "@sanity/diff": "2.20.0",
     "@sanity/field": "2.26.0",
     "@sanity/form-builder": "2.26.0",
-    "@sanity/generate-help-url": "2.18.0",
+    "@sanity/generate-help-url": "^3.0.0",
     "@sanity/icons": "^1.2.1",
     "@sanity/react-hooks": "2.26.0",
     "@sanity/structure": "2.26.0",
