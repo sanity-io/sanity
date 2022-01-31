@@ -27,7 +27,7 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
 
   const onLoadChange = useCallback(() => {
     setLoaded(true)
-  }, [setLoaded])
+  }, [])
 
   return (
     <RatioBox {...rest} style={{height: '30vh'}} tone="transparent">
