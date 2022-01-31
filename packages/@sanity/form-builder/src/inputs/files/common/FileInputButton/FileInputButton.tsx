@@ -76,7 +76,7 @@ export const FileInputButton = React.forwardRef(function FileInputButton(
 
       {/* Visibly hidden input */}
       <input
-        data-testid={`file-button-input`}
+        data-testid="file-button-input"
         accept={accept}
         capture={capture}
         id={id}

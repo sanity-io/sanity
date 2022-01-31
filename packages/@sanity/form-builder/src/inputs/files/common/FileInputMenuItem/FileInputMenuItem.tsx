@@ -77,7 +77,7 @@ export const FileInputMenuItem = React.forwardRef(function FFileInputMenuItem(
 
       {/* Visibly hidden input */}
       <input
-        data-testid={`file-button-input`}
+        data-testid="file-button-input"
         accept={accept}
         capture={capture}
         id={id}
