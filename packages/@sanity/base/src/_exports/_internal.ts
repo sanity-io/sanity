@@ -23,6 +23,8 @@ export {AvailabilityReason} from '../preview/types'
 export {createWeightedSearch} from '../search/weighted/createWeightedSearch'
 export type {WeightedHit} from '../search/weighted/types'
 
+export {createHookFromObservableFactory} from '../util/createHookFromObservableFactory'
+
 export {collate, getDraftId, getPublishedId, getIdPair} from '../util/draftUtils'
 export type {CollatedHit} from '../util/draftUtils'
 

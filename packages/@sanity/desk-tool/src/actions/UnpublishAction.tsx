@@ -1,13 +1,13 @@
 import {DocumentActionComponent, DocumentActionDialogProps} from '@sanity/base'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import {UnpublishIcon} from '@sanity/icons'
-import React, {useCallback, useMemo, useState} from 'react'
+import React, {useCallback, useState} from 'react'
 import {
   unstable_useDocumentPairPermissions as useDocumentPairPermissions,
   useCurrentUser,
 } from '@sanity/base/hooks'
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
-import {ConfirmUnpublish} from '../components/ConfirmUnpublish'
+import {ConfirmDeleteDialog} from '../components/confirmDeleteDialog'
 
 const DISABLED_REASON_TITLE = {
   NOT_PUBLISHED: 'This document is not published',
@@ -17,7 +17,6 @@ export const UnpublishAction: DocumentActionComponent = ({
   id,
   type,
   draft,
-  published,
   onComplete,
   liveEdit,
 }) => {
@@ -43,7 +42,7 @@ export const UnpublishAction: DocumentActionComponent = ({
     onComplete()
   }, [onComplete, unpublish])
 
-  const dialog: DocumentActionDialogProps | null = useMemo(() => {
+  const dialog = ((): DocumentActionDialogProps | null => {
     if (error) {
       return {
         type: 'error',
@@ -66,11 +65,11 @@ export const UnpublishAction: DocumentActionComponent = ({
     if (isConfirmDialogOpen) {
       return {
         type: 'legacy',
-        onClose: onComplete,
         content: (
-          <ConfirmUnpublish
-            draft={draft}
-            published={published}
+          <ConfirmDeleteDialog
+            id={draft?._id || id}
+            type={type}
+            action="unpublish"
             onCancel={handleCancel}
             onConfirm={handleConfirm}
           />
@@ -79,16 +78,7 @@ export const UnpublishAction: DocumentActionComponent = ({
     }
 
     return null
-  }, [
-    didUnpublish,
-    draft,
-    error,
-    handleCancel,
-    handleConfirm,
-    isConfirmDialogOpen,
-    onComplete,
-    published,
-  ])
+  })()
 
   if (liveEdit) {
     return null
