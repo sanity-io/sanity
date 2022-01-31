@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import generateHelpUrl from '@sanity/generate-help-url'
+import {generateHelpUrl} from '@sanity/generate-help-url'
 import flattenTree from './flattenTree'
 import readManifest from './readManifest'
 import {resolvePlugins, resolvePlugin} from './resolvePlugins'

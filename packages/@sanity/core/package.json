@@ -30,7 +30,7 @@
     "@babel/register": "^7.7.4",
     "@sanity/eventsource": "2.23.0",
     "@sanity/export": "2.23.1",
-    "@sanity/generate-help-url": "2.18.0",
+    "@sanity/generate-help-url": "^3.0.0",
     "@sanity/import": "2.26.0",
     "@sanity/plugin-loader": "2.26.0",
     "@sanity/resolver": "2.26.0",

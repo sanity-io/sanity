@@ -40,7 +40,7 @@ jobs:
         run: npm install
 
       - name: Test individual modules
-        run: npx jest && lerna run --scope groq --scope '@sanity/{client,generate-help-url,plugin-loader}' test
+        run: npx jest && lerna run --scope groq --scope '@sanity/{client,plugin-loader}' test
 
       - name: Build modules
         run: npm run build

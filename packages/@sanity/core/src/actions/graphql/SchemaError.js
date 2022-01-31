@@ -1,6 +1,6 @@
 const {upperFirst} = require('lodash')
 const logSymbols = require('log-symbols')
-const generateHelpUrl = require('@sanity/generate-help-url')
+const {generateHelpUrl} = require('@sanity/generate-help-url')
 
 // eslint-disable-next-line no-console
 const consoleOutputter = {error: (...args) => console.error(...args)}
