@@ -8,6 +8,15 @@ import {
 // This hook will create final hotkeys for the editor from on those from props.
 export function useHotkeys(hotkeys: HotkeyOptions): HotkeyOptions {
   const editor = usePortableTextEditor()
+
+  // Guard that hotkeys from props will be a stable object.
+  // If this props is defined inline and is always a new object, there will be issues with key handling and cursor!
+  const initialHotkeys = useMemo(() => hotkeys, [])
+  if (initialHotkeys !== hotkeys) {
+    console.warn(
+      'Make sure that hotkeys are a stable object across renders, or there will be issues with key handling in the Portable Text Editor.'
+    )
+  }
   return useMemo(() => {
     const defaultHotkeys = {marks: {}}
     const ptFeatures = PortableTextEditor.getPortableTextFeatures(editor)
@@ -29,10 +38,10 @@ export function useHotkeys(hotkeys: HotkeyOptions): HotkeyOptions {
       }
     })
     return {
-      marks: {...defaultHotkeys.marks, ...(hotkeys || {}).marks},
-      custom: hotkeys.custom,
+      marks: {...defaultHotkeys.marks, ...(initialHotkeys || {}).marks},
+      custom: initialHotkeys.custom,
     }
-  }, [editor, hotkeys])
+  }, [editor, initialHotkeys])
 }
 
 // If we want to have a hotkey to open up a focused object, we can use this:
