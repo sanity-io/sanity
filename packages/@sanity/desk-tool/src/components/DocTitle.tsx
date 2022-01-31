@@ -10,7 +10,9 @@ export interface DocTitleProps {
   document: Partial<Omit<SanityDocument, '_type'>> & {_type: SanityDocument['_type']}
 }
 
-const renderTitle = ({title}: SanityDocument) => <>{title}</>
+const renderTitle = ({title}: SanityDocument) => {
+  return <>{title || 'Untitled'}</>
+}
 
 const PREVIEW_FIELDS = ['title']
 
