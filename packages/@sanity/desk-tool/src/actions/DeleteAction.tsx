@@ -7,13 +7,13 @@ import {
   useCurrentUser,
 } from '@sanity/base/hooks'
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
-import {ConfirmDelete} from '../components/ConfirmDelete'
+import {ConfirmDeleteDialog} from '../components/confirmDeleteDialog'
 
 const DISABLED_REASON_TITLE = {
   NOTHING_TO_DELETE: 'This document doesn‘t yet exist or is already deleted',
 }
 
-export const DeleteAction: DocumentActionComponent = ({id, type, draft, published, onComplete}) => {
+export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComplete}) => {
   const {delete: deleteOp}: any = useDocumentOperation(id, type)
   const [isDeleting, setIsDeleting] = useState(false)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
@@ -72,9 +72,10 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, publishe
       type: 'legacy',
       onClose: onComplete,
       content: (
-        <ConfirmDelete
-          draft={draft}
-          published={published}
+        <ConfirmDeleteDialog
+          action="delete"
+          id={draft?._id || id}
+          type={type}
           onCancel={handleCancel}
           onConfirm={handleConfirm}
         />

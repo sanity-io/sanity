@@ -1,1 +1,1 @@
-export {default as SanityPreview} from '../preview'
+export {default as SanityPreview, SanityDefaultPreview} from '../preview'
