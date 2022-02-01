@@ -43,13 +43,13 @@ import {
   IntentLink,
   PreviewCard,
 } from '@sanity/base/components'
-import {FieldPresence} from '@sanity/base/presence'
+import {FieldPresence, GlobalPresence} from '@sanity/base/presence'
 import {getPublishedId} from '@sanity/base/_internal'
 import {useObservableCallback} from 'react-rx'
 import {uuid} from '@sanity/uuid'
 import {useId} from '@reach/auto-id'
-import {useGlobalDocumentPresence} from '@sanity/base/hooks'
 import styled from 'styled-components'
+
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
@@ -131,7 +131,6 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
   } = props
 
   const [searchState, setSearchState] = useState<SearchState>(INITIAL_SEARCH_STATE)
-  const documentPresence = useGlobalDocumentPresence()
 
   const handleCreateNew = (option: CreateOption) => {
     const id = uuid()
@@ -363,17 +362,13 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
       return (
         <PreviewCard as="button" type="button" radius={2}>
           <Box paddingX={3} paddingY={1}>
-            <OptionPreview
-              getReferenceInfo={getReferenceInfoMemo}
-              id={id}
-              presence={documentPresence[getPublishedId(id)] || EMPTY_ARRAY}
-              type={type}
-            />
+            asd
+            <OptionPreview getReferenceInfo={getReferenceInfoMemo} id={id} type={type} />
           </Box>
         </PreviewCard>
       )
     },
-    [type, getReferenceInfoMemo, documentPresence]
+    [type, getReferenceInfoMemo]
   )
 
   const OpenLink = useMemo(
@@ -521,7 +516,6 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
                     value={value}
                     referenceInfo={loadableReferenceInfo}
                     type={type}
-                    presence={!readOnly && documentPresence[value._ref]}
                   />
                 </StyledPreviewCard>
               ) : (

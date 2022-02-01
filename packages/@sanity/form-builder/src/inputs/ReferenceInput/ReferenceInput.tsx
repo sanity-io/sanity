@@ -43,7 +43,6 @@ import {
 import {getPublishedId} from '@sanity/base/_internal'
 import {useObservableCallback} from 'react-rx'
 import {uuid} from '@sanity/uuid'
-import {useGlobalDocumentPresence} from '@sanity/base/hooks'
 import styled from 'styled-components'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import {EMPTY_ARRAY} from '../../utils/empty'
@@ -109,8 +108,6 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
   } = props
 
   const [searchState, setSearchState] = useState<SearchState>(INITIAL_SEARCH_STATE)
-
-  const documentPresence = useGlobalDocumentPresence()
 
   const handleCreateNew = (option: CreateOption) => {
     const id = uuid()
@@ -316,17 +313,12 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
       return (
         <StyledPreviewCard forwardedAs="button" type="button" radius={2}>
           <Box paddingX={3} paddingY={1}>
-            <OptionPreview
-              getReferenceInfo={getReferenceInfoMemo}
-              id={id}
-              presence={documentPresence[getPublishedId(id)] || EMPTY_ARRAY}
-              type={type}
-            />
+            <OptionPreview getReferenceInfo={getReferenceInfoMemo} id={id} type={type} />
           </Box>
         </StyledPreviewCard>
       )
     },
-    [type, getReferenceInfoMemo, documentPresence]
+    [type, getReferenceInfoMemo]
   )
 
   const OpenLink = useMemo(
@@ -490,7 +482,6 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
                   tone={selected ? 'default' : 'inherit'}
                 >
                   <PreviewReferenceValue
-                    presence={documentPresence[value?._ref] || EMPTY_ARRAY}
                     referenceInfo={loadableReferenceInfo}
                     type={type}
                     value={value}
