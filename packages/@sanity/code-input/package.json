@@ -1,6 +1,6 @@
 {
   "name": "@sanity/code-input",
-  "version": "2.25.4",
+  "version": "2.26.0",
   "description": "Ace editor for editing code",
   "main": "./lib/index.js",
   "types": "./dist/dts",
@@ -21,11 +21,11 @@
   ],
   "dependencies": {
     "@reach/auto-id": "^0.13.2",
-    "@sanity/base": "2.25.4",
+    "@sanity/base": "2.26.0",
     "@sanity/icons": "^1.2.1",
-    "@sanity/types": "2.24.0",
+    "@sanity/types": "2.26.0",
     "@sanity/ui": "^0.37.2",
-    "@sanity/util": "2.24.0",
+    "@sanity/util": "2.26.0",
     "ace-builds": "^1.4.13",
     "react-ace": "^9.5.0"
   },
