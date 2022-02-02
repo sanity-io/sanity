@@ -1,12 +1,15 @@
 import {studioTheme, rgba, Card, Flex, CardTone, Spinner} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 
+export const MAX_HEIGHT = 30
+
 export const RatioBox = styled(Card)`
   position: relative;
   width: 100%;
   resize: vertical;
   overflow: hidden;
   min-height: 3.75rem;
+  max-height: ${MAX_HEIGHT}vh;
 
   & > div[data-container] {
     //position: absolute;
