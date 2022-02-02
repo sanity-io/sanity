@@ -33,12 +33,6 @@ export default {
               title: 'title',
               media: 'coverImage',
             },
-            prepare(val) {
-              return {
-                title: val.title,
-                media: val.coverImage,
-              }
-            },
           },
         },
       ],
@@ -64,12 +58,12 @@ export default {
           preview: {
             select: {
               title: 'title',
-              coverImage: 'coverImage',
+              media: 'coverImage',
             },
             prepare(val) {
               return {
                 title: val.title,
-                media: val.coverImage,
+                media: val.media,
               }
             },
           },
