@@ -30,13 +30,13 @@ jobs:
       - name: Install npm dependencies
         env:
          PUPPETEER_SKIP_DOWNLOAD: 'true'
-        run: npm install
+        run: yarn install
 
       - name: Build monorepo packages
-        run: npm run build
+        run: yarn build
 
       - name: Run cypress
-        run: npm run test-e2e
+        run: yarn test-e2e
         env:
           CYPRESS_SANITY_SESSION_TOKEN: ${{ secrets.CYPRESS_SANITY_SESSION_TOKEN }}
 

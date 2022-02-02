@@ -20,31 +20,30 @@ const sortRanges = (ranges) =>
 const patterns = config.packages.map((pkg) => path.join(pkg, 'package.json'))
 const flatten = (target, item) => target.concat(item)
 const globFlatten = (files, pattern) => glob.sync(pattern).reduce(flatten, files)
-const pkgs = patterns
+const dependencies = patterns
   .reduce(globFlatten, [])
   .map((file) => path.join(rootPath, file))
-  .map((file) => ({contents: fs.readFileSync(file, 'utf8'), file}))
-  .map(({contents, file}) => ({file, pkg: JSON.parse(contents)}))
-  .concat([{file: path.join(rootPath, 'package.json'), pkg: corePkg}])
-  .map(({file, pkg}) => ({
-    file,
-    name: pkg.name,
-    deps: Object.assign({}, pkg.dependencies || {}, pkg.devDependencies || {}),
+  .map((file) => fs.readFileSync(file, 'utf8'))
+  .map((file) => JSON.parse(file))
+  .concat(corePkg)
+  .map((file) => ({
+    name: file.name,
+    deps: Object.assign({}, file.dependencies || {}, file.devDependencies || {}),
   }))
 
 const versionRanges = {}
 const fixable = {}
 
-pkgs.forEach((pkg) => {
-  if (!pkg.name) {
+dependencies.forEach((item) => {
+  if (!item.name) {
     return
   }
 
-  Object.keys(pkg.deps).forEach((depName) => {
-    const version = pkg.deps[depName]
-    versionRanges[depName] = versionRanges[depName] || {}
-    versionRanges[depName][version] = versionRanges[depName][version] || []
-    versionRanges[depName][version].push(pkg.name)
+  Object.keys(item.deps).forEach((pkg) => {
+    const version = item.deps[pkg]
+    versionRanges[pkg] = versionRanges[pkg] || {}
+    versionRanges[pkg][version] = versionRanges[pkg][version] || []
+    versionRanges[pkg][version].push(item.name)
   })
 })
 
@@ -80,16 +79,7 @@ Object.keys(versionRanges).forEach((depName) => {
     const sign = isGreatest || isFixable ? chalk.green('✔') : chalk.red('✖')
 
     console.log(`  ${chalk[isGreatest ? 'green' : 'yellow'](range)}:`)
-    console.log(
-      `    ${sign} ${packages
-        .map((pkgName) => {
-          // eslint-disable-next-line max-nested-callbacks
-          const pkg = pkgs.find((p) => p.name === pkgName)
-
-          return `${pkgName} ${chalk.gray(path.relative(rootPath, pkg.file))}`
-        })
-        .join(`\n    ${sign} `)}`
-    )
+    console.log(`    ${sign} ${packages.join(`\n    ${sign} `)}`)
 
     if (range === greatestRange || !isFixable) {
       return

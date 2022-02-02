@@ -30,10 +30,10 @@ jobs:
           PUPPETEER_SKIP_DOWNLOAD: 'true'
         # --ignore-scripts disables postinstall because it's not needed
         # in this CI step and takes a long time
-        run: npm install --ignore-scripts
+        run: yarn install --ignore-scripts
 
       - name: Verify format
-        run: npm run verify-format
+        run: yarn verify-format
 
       - name: Notify Slack about build failure
         if: failure() && github.ref == 'refs/heads/ui/main'
