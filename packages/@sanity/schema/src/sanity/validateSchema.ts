@@ -9,6 +9,7 @@ import image from './validation/types/image'
 import block from './validation/types/block'
 import common from './validation/types/common'
 import rootType from './validation/types/rootType'
+import crossDatasetReference from './validation/types/crossDatasetReference'
 
 const typeVisitors = {
   array,
@@ -19,6 +20,7 @@ const typeVisitors = {
   block,
   document: documentVisitor,
   reference: reference,
+  crossDatasetReference: crossDatasetReference,
 }
 
 const getNoopVisitor = (visitorContext) => (schemaDef) => ({
