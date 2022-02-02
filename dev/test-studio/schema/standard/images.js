@@ -45,6 +45,7 @@ export default {
           options: {
             isHighlighted: true,
           },
+          validation: (Rule) => Rule.required(),
         },
         {
           name: 'detailedCaption',

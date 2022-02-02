@@ -273,6 +273,24 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
 
   handleFieldChange = (event: PatchEvent) => {
     const {onChange, type} = this.props
+
+    // When editing a metadata field for a file (eg `description`), and no asset
+    // is currently selected, we want to unset the entire file field if the
+    // field we are currently editing goes blank and gets unset.
+    //
+    // For instance:
+    // A file field with a `description` and a `title` subfield, where the file `asset`
+    // and the `title` field is empty, and we are erasing the `description` field.
+    // We do _not_ however want to clear the field if any content is present in
+    // the other fields, eg if `title` _has_ a value and we erase `description`
+    //
+    // Also, we don't want to use this logic for array items, since the parent will
+    // take care of it when closing the array dialog
+    if (!this.valueIsArrayElement() && this.eventIsUnsettingLastFilledField(event)) {
+      onChange(PatchEvent.from(unset()))
+      return
+    }
+
     onChange(
       event.prepend(
         setIfMissing({
@@ -282,6 +300,32 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     )
   }
 
+  eventIsUnsettingLastFilledField = (event: PatchEvent): boolean => {
+    const patch = event.patches[0]
+    if (event.patches.length !== 1 || patch.type !== 'unset') {
+      return false
+    }
+
+    const allKeys = Object.keys(this.props.value || {})
+    const remainingKeys = allKeys.filter((key) => !['_type', '_key'].includes(key))
+
+    const isEmpty =
+      event.patches[0].path.length === 1 &&
+      remainingKeys.length === 1 &&
+      remainingKeys[0] === event.patches[0].path[0]
+
+    return isEmpty
+  }
+
+  valueIsArrayElement = () => {
+    const {getValuePath} = this.props
+    const parentPathSegment = getValuePath().slice(-1)[0]
+
+    // String path segment mean an object path, while a number or a
+    // keyed segment means we're a direct child of an array
+    return typeof parentPathSegment !== 'string'
+  }
+
   handleOpenDialog = () => {
     const {type, onFocus} = this.props
     const otherFields = type.fields.filter(
@@ -289,7 +333,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     )
 
     /* for context: this code will only ever run if there are fields which are not highlighted.
-    in the FileDetails component (used in the renderAsset method) there is a button which is active if there are 
+    in the FileDetails component (used in the renderAsset method) there is a button which is active if there are
     fields that are not highlighted, opening this dialog */
     onFocus([otherFields[0].name])
   }
