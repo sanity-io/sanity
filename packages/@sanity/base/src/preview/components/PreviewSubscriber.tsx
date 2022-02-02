@@ -8,7 +8,6 @@ const HIDE_DELAY = 20 * 1000
 
 interface Props {
   type: SchemaType
-  fields: string[]
   value: any
   ordering?: SortOrdering
   children: (props: any) => React.ReactElement
@@ -17,11 +16,10 @@ interface Props {
 
 export default class PreviewSubscriber extends React.Component<Props> {
   renderChild = (isVisible: boolean) => {
-    const {children, type, value, ordering, fields, ...props} = this.props
+    const {children, type, value, ordering, ...props} = this.props
     // isVisible may be null which means undetermined
     return isVisible === null ? null : (
       <ObserveForPreview
-        fields={fields}
         isActive={isVisible === true}
         type={type}
         value={value}
