@@ -6,10 +6,9 @@ import RenderPreviewSnapshot from './RenderPreviewSnapshot'
 
 interface Props {
   type: SchemaType
-  fields: string[]
   value: any
   ordering?: SortOrdering
-  children: (props: any) => React.ReactElement
+  children?: (props: any) => React.ReactElement
   layout: 'default' | 'card' | 'media' | 'detail' | 'inline' | 'block'
 }
 
