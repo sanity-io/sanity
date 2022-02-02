@@ -23,6 +23,7 @@ export const HELP_IDS = {
   REFERENCE_INVALID_FILTER_PARAMS_COMBINATION: 'schema-reference-filter-params-combination',
   SLUG_SLUGIFY_FN_RENAMED: 'slug-slugifyfn-renamed',
   ASSET_METADATA_FIELD_INVALID: 'asset-metadata-field-invalid',
+  CROSS_DATASET_REFERENCE_INVALID: 'cross-dataset-reference-invalid',
 }
 
 function createValidationResult(
