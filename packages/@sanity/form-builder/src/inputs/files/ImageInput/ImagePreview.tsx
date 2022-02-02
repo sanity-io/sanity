@@ -2,7 +2,7 @@ import React, {ComponentProps, useCallback, useEffect, useState} from 'react'
 
 import {AccessDeniedIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
 import {Card, Box, Heading, Text} from '@sanity/ui'
-import {RatioBox, Overlay, FlexOverlay, SpinnerWrapper} from './ImagePreview.styled'
+import {MAX_HEIGHT, RatioBox, Overlay, FlexOverlay, SpinnerWrapper} from './ImagePreview.styled'
 
 interface Props {
   readOnly?: boolean | null
@@ -19,18 +19,28 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
   const acceptTone = isRejected || readOnly ? 'critical' : 'primary'
   const tone = drag ? acceptTone : 'default'
 
+  const [useInitialHeight, setUseInitialHeight] = useState(false)
+
   useEffect(() => {
     /* set for when the src is being switched when the image input already had a image src
     - meaning it already had an asset */
     setLoaded(false)
   }, [src])
 
-  const onLoadChange = useCallback(() => {
+  const onLoadChange = useCallback(({target: img}) => {
+    const imgHeight = img.offsetWidth
+    const maxHeightToPx = (MAX_HEIGHT * document.documentElement.clientHeight) / 100
+    // convert from vh to px
+
+    if (imgHeight > maxHeightToPx) {
+      setUseInitialHeight(true)
+    }
+
     setLoaded(true)
   }, [])
 
   return (
-    <RatioBox {...rest} tone="transparent">
+    <RatioBox {...rest} style={{height: useInitialHeight ? '30vh' : ''}} tone="transparent">
       <Card data-container tone="inherit">
         {!isLoaded && <OverlayComponent cardTone="transparent" drag content={<SpinnerWrapper />} />}
         <img src={src} data-testid="hotspot-image-input" alt={props.alt} onLoad={onLoadChange} />
