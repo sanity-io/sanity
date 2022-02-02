@@ -12,6 +12,7 @@ export default [
   {name: 'number', jsonType: 'number'},
   {name: 'object', jsonType: 'object'},
   {name: 'reference', jsonType: 'object'},
+  {name: 'crossDatasetReference', jsonType: 'object'},
   {name: 'slug', jsonType: 'object'},
   {name: 'string', jsonType: 'string'},
   {name: 'telephone', jsonType: 'string'},
