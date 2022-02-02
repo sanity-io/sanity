@@ -13,7 +13,7 @@ import {
 } from 'rxjs/operators'
 import {concat, of, Observable} from 'rxjs'
 import {observeForPreview} from '../'
-import type {FieldName, Previewable, SortOrdering} from '../types'
+import type {Previewable, SortOrdering} from '../types'
 
 function isNonNullable<T>(value: T): value is NonNullable<T> {
   return value !== null && value !== undefined
@@ -41,7 +41,6 @@ type OuterProps = {
   value: Previewable
   type: SchemaType
   children: (props: any) => React.ReactElement
-  fields: FieldName[]
   ordering?: SortOrdering
 }
 const connect = (props$: Observable<OuterProps>): Observable<ReceivedProps> => {
