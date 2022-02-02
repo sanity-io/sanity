@@ -1,14 +1,20 @@
-import type {ReactNode} from 'react'
+import {ReactNode} from 'react'
 import {SortOrdering} from './types'
 
 export interface PrepareViewOptions {
   ordering?: SortOrdering
 }
 export interface PreviewValue {
-  title?: ReactNode
-  subtitle?: ReactNode
-  description?: ReactNode
-  media?: ReactNode
+  title?: string
+  subtitle?: string
+  description?: string
+  media?:
+    | string
+    | {_ref: string}
+    | {asset: {_ref: string}}
+    | {url?: string}
+    | {asset: {url: string}}
+    | ReactNode
 }
 
 export interface PreviewConfig {
