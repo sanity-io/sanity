@@ -396,4 +396,98 @@ describe('plugin:withPortableTextMarksModel: normalization', () => {
       ]
     `)
   })
+  it('toggles marks on children with annotation marks correctly', () => {
+    const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+    const initialValue = [
+      {
+        _key: 'a',
+        _type: 'myTestBlockType',
+        children: [
+          {
+            _key: 'a1',
+            _type: 'span',
+            marks: ['abc'],
+            text: 'A link',
+          },
+          {
+            _key: 'a2',
+            _type: 'span',
+            marks: [],
+            text: ', not a link',
+          },
+        ],
+        markDefs: [
+          {
+            _type: 'link',
+            _key: 'abc',
+            href: 'http://www.link.com',
+          },
+        ],
+        style: 'normal',
+      },
+    ]
+    const onChange = jest.fn()
+    act(() => {
+      render(
+        <PortableTextEditorTester
+          onChange={onChange}
+          ref={editorRef}
+          type={type}
+          value={initialValue}
+        />
+      )
+    })
+    if (!editorRef.current) {
+      throw new Error('No editor')
+    }
+    act(() => {
+      if (editorRef.current) {
+        PortableTextEditor.focus(editorRef.current)
+        PortableTextEditor.select(editorRef.current, {
+          focus: {path: [{_key: 'a'}, 'children', {_key: 'a1'}], offset: 0},
+          anchor: {path: [{_key: 'a'}, 'children', {_key: 'b1'}], offset: 12},
+        })
+      }
+    })
+    act(() => {
+      if (editorRef.current) {
+        PortableTextEditor.toggleMark(editorRef.current, 'bold')
+      }
+    })
+    expect(PortableTextEditor.getValue(editorRef.current)).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "_key": "a",
+          "_type": "myTestBlockType",
+          "children": Array [
+            Object {
+              "_key": "a1",
+              "_type": "span",
+              "marks": Array [
+                "abc",
+                "bold",
+              ],
+              "text": "A link",
+            },
+            Object {
+              "_key": "a2",
+              "_type": "span",
+              "marks": Array [
+                "bold",
+              ],
+              "text": ", not a link",
+            },
+          ],
+          "markDefs": Array [
+            Object {
+              "_key": "abc",
+              "_type": "link",
+              "href": "http://www.link.com",
+            },
+          ],
+          "style": "normal",
+        },
+      ]
+    `)
+  })
 })
