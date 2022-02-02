@@ -214,12 +214,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   handleRemoveButtonClick = () => {
-    const {value, getValuePath} = this.props
-    const parentPathSegment = getValuePath().slice(-1)[0]
-
-    // String path segment mean an object path, while a number or a
-    // keyed segment means we're a direct child of an array
-    const isArrayElement = typeof parentPathSegment !== 'string'
+    const {value} = this.props
 
     // When removing the image, we should also remove any crop and hotspot
     // _type and _key are "meta"-properties and are not significant unless
@@ -238,11 +233,31 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       .concat(allKeys.filter((key) => ['crop', 'hotspot', '_upload'].includes(key)))
       .map((key) => unset([key]))
 
-    this.props.onChange(PatchEvent.from(isEmpty && !isArrayElement ? unset() : removeKeys))
+    this.props.onChange(
+      PatchEvent.from(isEmpty && !this.valueIsArrayElement() ? unset() : removeKeys)
+    )
   }
 
   handleFieldChange = (event: PatchEvent) => {
     const {onChange, type} = this.props
+
+    // When editing a metadata field for an image (eg `altText`), and no asset
+    // is currently selected, we want to unset the entire image field if the
+    // field we are currently editing goes blank and gets unset.
+    //
+    // For instance:
+    // An image field with an `altText` and a `title` subfield, where the image
+    // `asset` and the `title` field is empty, and we are erasing the `alt` field.
+    // We do _not_ however want to clear the field if any content is present in
+    // the other fields - but we do not consider `crop` and `hotspot`.
+    //
+    // Also, we don't want to use this logic for array items, since the parent will
+    // take care of it when closing the array dialog
+    if (!this.valueIsArrayElement() && this.eventIsUnsettingLastFilledField(event)) {
+      onChange(PatchEvent.from(unset()))
+      return
+    }
+
     onChange(
       event.prepend(
         setIfMissing({
@@ -250,6 +265,34 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         })
       )
     )
+  }
+
+  eventIsUnsettingLastFilledField = (event: PatchEvent): boolean => {
+    const patch = event.patches[0]
+    if (event.patches.length !== 1 || patch.type !== 'unset') {
+      return false
+    }
+
+    const allKeys = Object.keys(this.props.value || {})
+    const remainingKeys = allKeys.filter(
+      (key) => !['_type', '_key', 'crop', 'hotspot'].includes(key)
+    )
+
+    const isEmpty =
+      event.patches[0].path.length === 1 &&
+      remainingKeys.length === 1 &&
+      remainingKeys[0] === event.patches[0].path[0]
+
+    return isEmpty
+  }
+
+  valueIsArrayElement = () => {
+    const {getValuePath} = this.props
+    const parentPathSegment = getValuePath().slice(-1)[0]
+
+    // String path segment mean an object path, while a number or a
+    // keyed segment means we're a direct child of an array
+    return typeof parentPathSegment !== 'string'
   }
 
   handleOpenDialog = () => {
