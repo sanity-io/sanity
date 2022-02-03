@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "ES2020",
+    "target": "ES2020",
+    "lib": ["dom", "es2020"],
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": true,
+    "sourceMap": true,
+    "removeComments": false,
+    "preserveConstEnums": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "useUnknownInCatchVariables": false,
+    "strict": true,
+    "skipLibCheck": true
+  }
+}
