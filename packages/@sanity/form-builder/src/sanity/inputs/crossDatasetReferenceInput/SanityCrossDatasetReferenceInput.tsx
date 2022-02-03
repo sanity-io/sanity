@@ -13,7 +13,7 @@ import {get} from '@sanity/util/paths'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
-import sanityClient from '@sanity/client'
+import client from 'part:@sanity/base/client'
 import {Box, Button, Flex, Stack, Text, TextInput, TextSkeleton} from '@sanity/ui'
 import withValuePath from '../../../utils/withValuePath'
 import withDocument from '../../../utils/withDocument'
@@ -101,15 +101,17 @@ const SanityCrossDatasetReferenceInput = forwardRef(function SanityCrossDatasetR
 
   const crossDatasetClient = useMemo(() => {
     return loadableToken.status === 'loaded' && loadableToken.result?.token
-      ? sanityClient({
-          projectId: 'ppsg7ml5',
-          dataset: 'playground',
-          apiVersion: '2022-01-21', // use current UTC date - see "specifying API version"!
-          token: loadableToken.result.token,
-          useCdn: false,
-        })
+      ? client
+          .withConfig({
+            projectId: type.projectId,
+            dataset: type.dataset,
+            apiVersion: '2022-01-21',
+            token: loadableToken.result.token,
+          })
+          // seems like this is required to prevent this client from sometimes magically get mutated with a new projectId and dataset
+          .clone()
       : null
-  }, [loadableToken])
+  }, [loadableToken, type.dataset, type.projectId])
 
   const documentRef = useValueRef(document)
 

@@ -98,21 +98,32 @@ export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetRefere
       if (!hit) {
         throw new Error('Selected an item that wasnt part of the result set')
       }
-      // if there's no published version of this document, set the reference to weak
 
-      const patches = [
-        setIfMissing({}),
-        set(type.name, ['_type']),
-        set(getPublishedId(id), ['_ref']),
-        // set(type.projectId, ['_projectId']),
-        // set(type.dataset, ['_dataset']),
-        set(true, ['_weak']), // todo
-      ].filter(isNonNullable)
-
-      onChange(PatchEvent.from(patches))
+      onChange(
+        PatchEvent.from(
+          set({
+            _type: type.name,
+            _ref: getPublishedId(id),
+            _projectId: type.projectId,
+            _dataset: type.dataset,
+            _weak: type.weak,
+            // persist _key between mutations if the value is in an array
+            _key: value?._key,
+          })
+        )
+      )
       onFocus?.([])
     },
-    [searchState.hits, type.name, type.weak, onChange, onFocus]
+    [
+      value?._key,
+      searchState.hits,
+      type.name,
+      type.projectId,
+      type.dataset,
+      type.weak,
+      onChange,
+      onFocus,
+    ]
   )
 
   const handleClear = useCallback(() => {

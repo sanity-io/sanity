@@ -10,7 +10,7 @@ export default {
     {name: 'title', type: 'string'},
     {
       name: 'bookInPlayground',
-      title: 'Reference to book or author in the "playground" dataset in project "ppsg7ml5"',
+      title: 'Reference to book or author in the "playground" dataset in project "exx11uqh"',
       description:
         "Note: The current token for the dataset does not have read access to documents in the 'restricted.**' path",
       type: 'crossDatasetReference',
