@@ -140,23 +140,21 @@ export const RowItem = React.forwardRef(function RegularItem(
               />
             </Box>
           )}
-          <MenuButton
-            button={<Button padding={2} mode="bleed" icon={EllipsisVerticalIcon} />}
-            id={`${id}-menuButton`}
-            menu={
-              <Menu>
-                {!readOnly && (
-                  <>
-                    <MenuItem text="Remove" tone="critical" icon={TrashIcon} onClick={onRemove} />
-                    <MenuItem text="Duplicate" icon={DuplicateIcon} onClick={handleDuplicate} />
-                    <InsertMenu types={insertableTypes} onInsert={handleInsert} />
-                  </>
-                )}
-              </Menu>
-            }
-            placement="right"
-            popover={MENU_POPOVER_PROPS}
-          />
+          {!readOnly && (
+            <MenuButton
+              button={<Button padding={2} mode="bleed" icon={EllipsisVerticalIcon} />}
+              id={`${id}-menuButton`}
+              menu={
+                <Menu>
+                  <MenuItem text="Remove" tone="critical" icon={TrashIcon} onClick={onRemove} />
+                  <MenuItem text="Duplicate" icon={DuplicateIcon} onClick={handleDuplicate} />
+                  <InsertMenu types={insertableTypes} onInsert={handleInsert} />
+                </Menu>
+              }
+              placement="right"
+              popover={MENU_POPOVER_PROPS}
+            />
+          )}
           {!value._key && (
             <Box marginLeft={1}>
               <Tooltip
