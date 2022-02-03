@@ -1,394 +1,245 @@
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
-  ReactElement,
-  Children,
-  cloneElement,
-  Fragment,
-} from 'react'
-import {
-  Box,
-  Button,
-  Flex,
-  Menu,
-  MenuButton,
-  MenuItem,
-  Text,
-  Tooltip,
-  useElementRect,
-  PopoverProps,
-  MenuDivider,
-} from '@sanity/ui'
-import {InView} from 'react-intersection-observer'
 import {EllipsisVerticalIcon} from '@sanity/icons'
-import styled from 'styled-components'
-import {CollapseMenuDivider, CollapseMenuButton, CollapseMenuItemProps} from '.'
+import {Box, Button, Flex, MenuButtonProps, Text, Tooltip, useElementRect} from '@sanity/ui'
+import React, {cloneElement, forwardRef, useCallback, useMemo, useState} from 'react'
+import styled, {css} from 'styled-components'
+import {CollapseOverflowMenu} from './CollapseOverflowMenu'
+import {ObserveElement} from './ObserveElement'
+import {CollapseMenuDivider} from './CollapseMenuDivider'
 
-interface CollapseMenuProps {
+export interface CollapseMenuProps {
   children: React.ReactNode
   collapsed?: boolean
-  gap?: number | number[]
-  menuButton?: ReactElement<HTMLButtonElement>
-  menuPopoverProps?: PopoverProps
-  onMenuClose?: () => void
-  onMenuVisible?: (visible: boolean) => void
+  collapseText?: boolean
   disableRestoreFocusOnClose?: boolean
+  gap?: number | number[]
+  menuButtonProps?: Omit<MenuButtonProps, 'id' | 'menu' | 'button'> & {
+    id?: string
+    button?: React.ReactElement
+  }
+  onMenuClose?: () => void
 }
 
-const RootBox = styled(Box)<{$hide?: boolean}>`
-  border-radius: inherit;
-  position: relative;
-  overflow: hidden;
-  /**
-  * We need to add padding + negative margin to make the focusRing  visible
-  */
-  padding: ${({theme}) => theme.sanity.focusRing.width}px;
-  margin: -${({theme}) => theme.sanity.focusRing.width}px;
-`
+const FOCUS_RING_PADDING = 3
 
-const InnerFlex = styled(Flex)<{$hide?: boolean}>`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  pointer-events: ${({$hide}) => ($hide ? 'none' : 'inherit')};
-  opacity: ${({$hide}) => ($hide ? 0 : 1)};
-  position: ${({$hide}) => ($hide ? 'absolute' : 'static')};
-  visibility: ${({$hide}) => ($hide ? 'hidden' : 'visible')};
-  width: ${({$hide}) => ($hide ? 'max-content' : 'auto')};
-  /**
-  * We need to add padding + negative margin to make the focusRing  visible
-  */
-  padding: ${({theme}) => theme.sanity.focusRing.width}px;
-  margin: -${({theme}) => theme.sanity.focusRing.width}px;
-`
-
-const OptionBox = styled(Box)<{$inView: boolean}>`
+const OPTION_STYLE = css`
   list-style: none;
   display: flex;
   white-space: nowrap;
-  visibility: ${({$inView}) => ($inView ? 'visible' : 'hidden')};
-  pointer-events: ${({$inView}) => ($inView ? 'inherit' : 'none')};
+
+  &[data-hidden='true'] {
+    opacity: 0;
+    visibility: hidden;
+  }
 `
 
-function MenuCollapse({
-  menuButton,
-  popoverProps,
-  options,
-  disableRestoreFocusOnClose,
-  onClose,
-}: {
-  menuButton: ReactElement<HTMLButtonElement>
-  popoverProps: PopoverProps
-  options: ReactElement[]
-  disableRestoreFocusOnClose?: boolean
-  onClose: () => void
-}) {
-  const handleClose = useCallback(() => {
-    if (onClose) {
-      onClose()
-    }
-  }, [onClose])
+const OuterFlex = styled(Flex)`
+  padding: ${FOCUS_RING_PADDING}px;
+  margin: -${FOCUS_RING_PADDING}px;
+  box-sizing: border-box;
+`
 
-  return (
-    <MenuButton
-      button={menuButton}
-      id="collapse-menu"
-      popover={popoverProps}
-      __unstable_disableRestoreFocusOnClose={disableRestoreFocusOnClose}
-      onClose={handleClose}
-      menu={
-        <Menu>
-          {options.map((child, index) => {
-            const {
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              buttonProps,
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              collapseText,
-              dividerBefore,
-              icon,
-              menuItemProps = {},
-              selected,
-              text,
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              tooltipProps,
-              ...restProps
-            } = child.props as CollapseMenuItemProps
+const RootFlex = styled(Flex)`
+  border-radius: inherit;
+  position: relative;
+`
 
-            return (
-              <Fragment key={child.key}>
-                {dividerBefore && index !== 0 && <MenuDivider />}
-                <MenuItem
-                  {...restProps}
-                  icon={icon}
-                  text={text}
-                  fontSize={2}
-                  radius={2}
-                  {...menuItemProps}
-                  pressed={selected}
-                />
-              </Fragment>
-            )
-          })}
-        </Menu>
-      }
-    />
-  )
+const RowFlex = styled(Flex)`
+  width: max-content;
+
+  &[data-hidden='true'] {
+    height: 0px;
+    visibility: hidden;
+  }
+`
+
+const OptionObserveElement = styled(ObserveElement)`
+  ${OPTION_STYLE}
+`
+
+const OptionHiddenFlex = styled(Flex)`
+  ${OPTION_STYLE}
+`
+
+function _isReactElement(node: unknown): node is React.ReactElement {
+  return Boolean(node)
 }
 
-export function CollapseMenu(props: CollapseMenuProps) {
+export const CollapseMenu = forwardRef(function CollapseMenu(
+  props: CollapseMenuProps,
+  ref: React.ForwardedRef<HTMLDivElement>
+) {
   const {
-    children,
-    collapsed: shouldCollapse,
-    gap = 1,
-    menuButton,
-    menuPopoverProps,
+    children: childrenProp,
+    collapsed,
+    collapseText,
+    disableRestoreFocusOnClose,
+    gap,
+    menuButtonProps,
     onMenuClose,
-    onMenuVisible,
-    disableRestoreFocusOnClose = false,
   } = props
+  const [rootEl, setRootEl] = useState<HTMLDivElement | null>(null)
+  const [hiddenRowEl, setHiddenRowEl] = useState<HTMLDivElement | null>(null)
+  const rootRect = useElementRect(rootEl)
+  const [menuOptions, setMenuOptions] = useState<React.ReactElement[]>([])
 
-  const [rootBoxElement, setRootBoxElement] = useState<HTMLDivElement | null>(null)
-  const [innerFlexElement, setInnerFlexElement] = useState<HTMLDivElement | null>(null)
-  const [collapsed, setCollapsed] = useState<boolean>(true)
-  const [menuOptions, setMenuOptions] = useState<ReactElement[] | []>([])
-  const rootBoxRect = useElementRect(rootBoxElement)
-
-  /**
-   * Array of children
-   */
-  const childrenArray = useMemo(() => Children.toArray(children) as ReactElement[], [children])
-
-  /**
-   * Filter to get the latest state of menu options
-   */
-  const menuOptionsArray = useMemo(
-    () => childrenArray.filter(({key}) => menuOptions.find((o: ReactElement) => o.key === key)),
-    [childrenArray, menuOptions]
-  )
-
-  /**
-   * Menu popover props
-   */
-  const popoverProps: PopoverProps = useMemo(
-    () => ({portal: true, placement: 'bottom', preventOverflow: true, ...menuPopoverProps}),
-    [menuPopoverProps]
-  )
-
-  /**
-   * Pick what button to render as menu button
-   */
-  const menuButtonToRender = useMemo(() => {
-    if (menuButton) {
-      return menuButton
+  const hasOverflow = useMemo(() => {
+    if (rootRect && rootEl && hiddenRowEl) {
+      return rootRect.width < hiddenRowEl.scrollWidth
     }
-    return <Button mode="bleed" icon={EllipsisVerticalIcon} />
-  }, [menuButton])
+    return false
+  }, [hiddenRowEl, rootEl, rootRect])
 
-  /**
-   * Check if menu is visible
-   */
-  const menuIsVisible = useMemo(() => collapsed && menuOptionsArray.length > 0, [
+  const menuButton = useMemo(
+    () => menuButtonProps?.button || <Button icon={EllipsisVerticalIcon} mode="bleed" />,
+    [menuButtonProps]
+  )
+
+  const intersectionOptions = useMemo(
+    () => ({
+      root: rootEl,
+      threshold: 1,
+      rootMargin: '2px',
+    }),
+    [rootEl]
+  )
+
+  const children = useMemo(() => React.Children.toArray(childrenProp).filter(_isReactElement), [
+    childrenProp,
+  ])
+
+  const menuOptionsArray = useMemo(
+    // eslint-disable-next-line max-nested-callbacks
+    () => children.filter(({key}) => menuOptions.find((o: React.ReactElement) => o.key === key)),
+    [children, menuOptions]
+  )
+
+  const menuIsVisible = useMemo(() => collapsed || menuOptionsArray.length > 0, [
     collapsed,
     menuOptionsArray.length,
   ])
 
-  const handleMenuClose = useCallback(() => {
-    if (onMenuClose) {
-      onMenuClose()
-    }
-  }, [onMenuClose])
+  const isInMenu = useCallback((childKey) => menuOptionsArray.some((o) => o.key === childKey), [
+    menuOptionsArray,
+  ])
 
-  useEffect(() => {
-    if (onMenuVisible) {
-      onMenuVisible(menuIsVisible)
-    }
-  }, [menuIsVisible, onMenuVisible])
+  const handleIntersection = useCallback(
+    (e: IntersectionObserverEntry, child: React.ReactElement) => {
+      const exists = isInMenu(child.key)
 
-  /**
-   * Compare RootBox width with InnerFlex scrollWidth to collapse/expand menu
-   */
-  useEffect(() => {
-    if (rootBoxRect && innerFlexElement) {
-      const collapse = rootBoxRect.width < innerFlexElement.scrollWidth
-      setCollapsed(collapse)
-    }
-  }, [innerFlexElement, rootBoxRect])
-
-  // Add or remove option in menuOptions
-  const handleInViewChange = useCallback(
-    (payload: {child: ReactElement; inView: boolean}) => {
-      const {child, inView} = payload
-      const exists = menuOptions.some(({key}) => key === child.key)
-
-      if (!inView && !exists) {
+      if (!e.isIntersecting && !exists) {
         setMenuOptions((prev) => [child, ...prev])
       }
 
-      if (inView && exists) {
-        const updatedOptions = menuOptions.filter(({key}) => key !== child.key)
+      if (e.isIntersecting && exists) {
+        const updatedOptions = menuOptionsArray.filter(({key}) => key !== child.key)
+
         setMenuOptions(updatedOptions)
       }
     },
-    [menuOptions]
+    [isInMenu, menuOptionsArray]
   )
 
-  //Check if child is in menu
-  const isInMenu = useCallback(
-    (childKey) => {
-      const exists = menuOptionsArray.some((o) => o.key === childKey)
-      return exists
-    },
-    [menuOptionsArray]
+  const items = useMemo(
+    () =>
+      children.map((child) => {
+        const {collapsedProps, expandedProps} = child.props
+        const modeProps = hasOverflow ? collapsedProps : expandedProps
+        const text = hasOverflow && !collapseText ? undefined : child.props.text
+
+        return cloneElement(child, {
+          ...modeProps,
+          text: text,
+        })
+      }),
+    [children, collapseText, hasOverflow]
   )
 
-  /**
-   * Return the collapsed menu
-   */
-  if (shouldCollapse) {
+  if (collapsed) {
     return (
-      <MenuCollapse
-        options={childrenArray}
-        menuButton={menuButtonToRender}
-        popoverProps={popoverProps}
+      <CollapseOverflowMenu
         disableRestoreFocusOnClose={disableRestoreFocusOnClose}
-        onClose={handleMenuClose}
+        menuButton={menuButton}
+        menuButtonProps={menuButtonProps}
+        menuOptionsArray={children}
+        onMenuClose={onMenuClose}
       />
     )
   }
 
   return (
-    <RootBox ref={setRootBoxElement} display="flex" data-ui="CollapseMenu">
-      {/* Expanded row, visible when there is enough space to show text on buttons */}
-      <InnerFlex
-        align="center"
-        ref={setInnerFlexElement}
-        $hide={collapsed}
-        aria-hidden={collapsed}
-        data-testid="inner-flex-expanded"
-      >
-        <Flex as="ul" gap={gap}>
-          {childrenArray.map((child, index) => {
-            const {
-              buttonProps = {},
-              dividerBefore,
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              menuItemProps,
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              tooltipProps,
-              ...restProps
-            } = child.props as CollapseMenuItemProps
-
-            const showDivider = dividerBefore && index !== 0
+    <OuterFlex align="center" data-ui="CollapseMenu" overflow="hidden" sizing="border" ref={ref}>
+      <RootFlex direction="column" flex={1} justify="center" ref={setRootEl}>
+        {/* Content */}
+        <RowFlex gap={gap}>
+          {items.map((child, index) => {
+            const {dividerBefore, tooltipText = '', tooltipProps = {}} = child.props
+            const hidden = isInMenu(child.key)
 
             return (
-              <Fragment key={child.key}>
-                {showDivider && <CollapseMenuDivider />}
-                <Tooltip
-                  portal
-                  {...tooltipProps}
-                  disabled={tooltipProps?.disabled || !tooltipProps?.text}
-                  content={
-                    <Box padding={2} sizing="border">
-                      <Text size={1} muted>
-                        {tooltipProps?.text}
-                      </Text>
-                    </Box>
-                  }
+              <React.Fragment key={child.key}>
+                {dividerBefore && index !== 0 && <CollapseMenuDivider hidden={hidden} />}
+
+                <OptionObserveElement
+                  options={intersectionOptions}
+                  // eslint-disable-next-line react/jsx-no-bind
+                  callback={(e) => handleIntersection(e[0], child)}
+                  aria-hidden={hidden}
+                  data-hidden={hidden}
                 >
-                  <Box as="li">
-                    {cloneElement(child, {
-                      ...{...restProps, ...buttonProps},
-                    })}
-                  </Box>
-                </Tooltip>
-              </Fragment>
+                  <Tooltip
+                    portal
+                    disabled={!tooltipText}
+                    content={
+                      <Box padding={2} sizing="border">
+                        <Text size={1}>{tooltipText}</Text>
+                      </Box>
+                    }
+                    {...tooltipProps}
+                  >
+                    <Flex>
+                      {cloneElement(child, {
+                        disabled: child.props.disabled || hidden,
+                        'aria-hidden': hidden,
+                      })}
+                    </Flex>
+                  </Tooltip>
+                </OptionObserveElement>
+              </React.Fragment>
             )
           })}
-        </Flex>
-      </InnerFlex>
+        </RowFlex>
 
-      {/* Collapsed row, visible when there is not enough space to show text on buttons */}
-      <InnerFlex
-        align="center"
-        gap={gap}
-        $hide={!collapsed}
-        aria-hidden={!collapsed}
-        data-testid="inner-flex-collapsed"
-      >
-        <Flex gap={gap} as="ul">
-          {childrenArray.map((child, index) => {
-            if (child.type !== CollapseMenuButton) {
-              return null
-            }
-
-            const {
-              buttonProps = {},
-              dividerBefore,
-              collapseText = true,
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              menuItemProps,
-              text,
-              tooltipProps,
-              ...restProps
-            } = child.props as CollapseMenuItemProps
-
-            const showDivider = index !== 0 && dividerBefore
+        {/* Hidden row used to detect when to collapse/collapse the layout  */}
+        <RowFlex data-hidden aria-hidden="true" gap={gap} ref={setHiddenRowEl}>
+          {children.map((child, index) => {
+            const {dividerBefore} = child.props
 
             return (
-              <InView
-                aria-hidden={isInMenu(child.key)}
-                // eslint-disable-next-line react/jsx-no-bind
-                onChange={(inView) => handleInViewChange({inView, child})}
-                key={child.key}
-                threshold={1}
-                rootMargin="1px"
-                root={rootBoxElement}
-              >
-                {({ref, inView}) => (
-                  <OptionBox ref={ref} as="li" $inView={inView && collapsed}>
-                    {showDivider && <CollapseMenuDivider />}
-                    <Box marginLeft={showDivider ? gap : undefined}>
-                      <Tooltip
-                        disabled={!inView || !collapseText}
-                        portal
-                        {...tooltipProps}
-                        content={
-                          <Box padding={2} sizing="border">
-                            <Text size={1}>{tooltipProps?.text || text}</Text>
-                          </Box>
-                        }
-                      >
-                        {cloneElement(child, {
-                          ...{...restProps, ...buttonProps},
-                          'aria-label': text,
-                          text: collapseText ? null : text,
-                        })}
-                      </Tooltip>
-                    </Box>
-                  </OptionBox>
-                )}
-              </InView>
+              <React.Fragment key={child.key}>
+                {dividerBefore && index !== 0 && <CollapseMenuDivider />}
+                <OptionHiddenFlex key={child.key}>
+                  {cloneElement(child, {
+                    disabled: true,
+                    'aria-hidden': true,
+                  })}
+                </OptionHiddenFlex>
+              </React.Fragment>
             )
           })}
-        </Flex>
-      </InnerFlex>
+        </RowFlex>
+      </RootFlex>
 
-      {/* Menu displaying the options that is outside of RootBox in collapsed state  */}
       {menuIsVisible && (
-        <MenuCollapse
-          options={menuOptionsArray}
-          menuButton={menuButtonToRender}
-          popoverProps={popoverProps}
-          disableRestoreFocusOnClose={disableRestoreFocusOnClose}
-          onClose={handleMenuClose}
-        />
+        <Flex marginLeft={gap}>
+          <CollapseOverflowMenu
+            disableRestoreFocusOnClose={disableRestoreFocusOnClose}
+            menuButton={menuButton}
+            menuButtonProps={menuButtonProps}
+            menuOptionsArray={menuOptionsArray}
+            onMenuClose={onMenuClose}
+          />
+        </Flex>
       )}
-    </RootBox>
+    </OuterFlex>
   )
-}
+})

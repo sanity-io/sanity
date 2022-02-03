@@ -1,41 +1,39 @@
-import React from 'react'
-import {Button, ButtonProps, ButtonTone, MenuItemProps, TooltipProps} from '@sanity/ui'
+import {Button, ButtonProps, TooltipProps} from '@sanity/ui'
+import React, {forwardRef} from 'react'
 
-export type CollapseMenuButtonProps = Omit<ButtonProps, 'selected' | 'text' | 'icon' | 'iconRight'>
-
-export interface CollapseMenuItemProps {
+export interface CommonProps extends Omit<ButtonProps, 'text' | 'icon' | 'iconRight'> {
   as?: React.ElementType | keyof JSX.IntrinsicElements
-  buttonProps?: CollapseMenuButtonProps
-  collapseText?: boolean
   dividerBefore?: boolean
-  icon: React.ComponentType | React.ReactNode
-  menuItemProps?: Omit<MenuItemProps, 'pressed' | 'selected' | 'text' | 'icon' | 'iconRight'>
-  selected?: boolean
+  focused?: boolean
+  tooltipProps?: TooltipProps
+  tooltipText?: React.ReactNode
+  icon?: React.ReactNode
+}
+export interface CollapseMenuButtonProps extends CommonProps {
+  collapsedProps?: Omit<CommonProps, 'text'>
+  expandedProps?: CommonProps
+  icon: React.ReactNode
   text: React.ReactNode
-  tooltipProps?: Omit<TooltipProps, 'content'> & {text?: React.ReactNode}
-  tone?: ButtonTone
 }
 
-export const CollapseMenuButton = React.forwardRef(function CollapseMenuButton(
-  props: CollapseMenuItemProps & Omit<React.HTMLProps<HTMLButtonElement>, 'as' | 'type'>,
+export const CollapseMenuButton = forwardRef(function CollapseMenuButton(
+  props: CollapseMenuButtonProps & Omit<React.HTMLProps<HTMLButtonElement>, 'as'>,
   ref: React.ForwardedRef<HTMLButtonElement>
 ) {
-  /**
-   * We need to do this destructure in order to not get unwanted attributes in the DOM
-   */
   const {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    buttonProps,
+    collapsedProps = {},
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    collapseText,
+    expandedProps = {},
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    tooltipProps = {},
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    tooltipText,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     dividerBefore,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    menuItemProps,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    tooltipProps,
-    ...restProps
+    ...rest
   } = props
 
-  return <Button {...restProps} ref={ref} data-ui="CollapseMenuButton" />
+  return <Button data-ui="CollapseMenuButton" {...rest} ref={ref} />
 })
