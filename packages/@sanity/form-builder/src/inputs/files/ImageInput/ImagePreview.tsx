@@ -29,8 +29,7 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
 
   const onLoadChange = useCallback(({target: img}) => {
     const imgHeight = img.offsetWidth
-    const maxHeightToPx = (MAX_HEIGHT * document.documentElement.clientHeight) / 100
-    // convert from vh to px
+    const maxHeightToPx = (MAX_HEIGHT * document.documentElement.clientHeight) / 100 // convert from vh to px
 
     if (imgHeight > maxHeightToPx) {
       setUseInitialHeight(true)
