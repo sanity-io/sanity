@@ -13,6 +13,7 @@ export * from './progress'
 export * from './collapseMenu'
 export * from './TextWithTone'
 export * from './PreviewCard'
+export * from './rovingFocus'
 
 // @todo: REMOVE THIS
 export * from './_deprecated/CreateDocumentList'
