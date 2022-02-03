@@ -12,7 +12,7 @@ import {useToast} from '@sanity/ui'
 import {fromString as pathFromString, pathFor} from '@sanity/util/paths'
 import isHotkey from 'is-hotkey'
 import {useMemoObservable} from 'react-rx'
-import {useClient, useConfig, useDatastores, useInitialValue} from '@sanity/base'
+import {useClient, useSource, useDatastores, useInitialValue} from '@sanity/base'
 import {PaneMenuItem} from '../../types'
 import {useDeskTool} from '../../contexts/deskTool'
 import {usePaneRouter} from '../../contexts/paneRouter'
@@ -34,10 +34,7 @@ const emptyObject = {} as Record<string, string | undefined>
 // eslint-disable-next-line complexity, max-statements
 export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const {children, index, pane, paneKey} = props
-  const {
-    data: {initialValueTemplates},
-    schema,
-  } = useConfig()
+  const source = useSource()
   const client = useClient()
   const {historyStore, presenceStore} = useDatastores()
   const paneRouter = usePaneRouter()
@@ -52,7 +49,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const panePayload = useUnique(paneRouter.payload)
   const {templateName, templateParams} = useMemo(
     () =>
-      getInitialValueTemplateOpts(schema, initialValueTemplates, {
+      getInitialValueTemplateOpts(source.schema, source.initialValueTemplates, {
         documentType,
         templateName: paneOptions.template,
         templateParams: paneOptions.templateParameters,
@@ -61,11 +58,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       }),
     [
       documentType,
-      initialValueTemplates,
+      source.initialValueTemplates,
       paneOptions.template,
       paneOptions.templateParameters,
       panePayload,
-      schema,
+      source.schema,
       paneParams?.template,
     ]
   )
@@ -80,7 +77,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const editState = useEditState(documentId, documentType)
   const {markers: markersRaw} = useValidationStatus(documentId, documentType)
   const connectionState = useConnectionState(documentId, documentType)
-  const documentSchema = schema.get(documentType)
+  const documentSchema = source.schema.get(documentType)
   const value: Partial<SanityDocument> =
     editState?.draft || editState?.published || initialValue.value
   const actions = useMemo(

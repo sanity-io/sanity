@@ -174,6 +174,7 @@ export interface DocumentPaneNode extends BaseResolvedPaneNode<'document'> {
     template?: string
     templateParameters?: Record<string, unknown>
   }
+  source?: string
   views?: PaneView[]
 }
 
@@ -188,6 +189,7 @@ export interface DocumentListPaneNode extends BaseResolvedPaneNode<'documentList
     apiVersion?: string
   }
   schemaTypeName: string
+  source?: string
 }
 
 export interface PaneListItem<TParams = unknown> {
@@ -213,6 +215,7 @@ export interface ListPaneNode extends BaseResolvedPaneNode<'list'> {
   defaultLayout?: 'inline' | 'block' | 'default' | 'card' | 'media' | 'detail'
   displayOptions?: {showIcons?: boolean}
   items?: Array<PaneListItem | PaneListItemDivider>
+  source?: string
 }
 
 export type PaneNode =

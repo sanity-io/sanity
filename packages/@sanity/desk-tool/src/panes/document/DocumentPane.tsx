@@ -21,8 +21,8 @@ import {fromString as pathFromString} from '@sanity/util/paths'
 import {Unstable_ReferenceInputOptionsProvider} from '@sanity/form-builder/_internal'
 import {Path} from '@sanity/types'
 import {getNewDocumentOptions} from '@sanity/base/_internal'
-import {useConfig, useDatastores} from '@sanity/base'
-import {useStructure} from '@sanity/base/structure'
+import {useSource, useDatastores, SourceProvider} from '@sanity/base'
+import {useStructureBuilder} from '@sanity/base/structure'
 import {DocumentPaneNode} from '../../types'
 import {useDeskTool} from '../../contexts/deskTool'
 import {usePaneRouter} from '../../contexts/paneRouter'
@@ -62,23 +62,29 @@ const StyledChangeConnectorRoot = styled(ChangeConnectorRoot)`
 `
 
 export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProviderProps) {
-  const {
-    data: {initialValueTemplates},
-    schema,
-  } = useConfig()
-  const {builder: S} = useStructure()
+  return (
+    <SourceProvider name={props.pane.source}>
+      <DocumentPaneInner {...props} />
+    </SourceProvider>
+  )
+})
+
+function DocumentPaneInner(props: DocumentPaneProviderProps) {
+  const {pane, paneKey} = props
+  const source = useSource()
+  const S = useStructureBuilder()
   const {grantsStore} = useDatastores()
   const paneRouter = usePaneRouter()
-  const options = usePaneOptions(props.pane.options, paneRouter.params)
+  const options = usePaneOptions(pane.options, paneRouter.params)
   const {documentType, isLoaded: isDocumentLoaded} = useDocumentType(options.id, options.type)
   const newDocumentOptions = useMemo(
-    () => getNewDocumentOptions(S as any, schema, initialValueTemplates, undefined),
-    [initialValueTemplates, S, schema]
+    () => getNewDocumentOptions(S as any, source.schema, source.initialValueTemplates, undefined),
+    [source.initialValueTemplates, S, source.schema]
   )
   const [templatePermissions, isTemplatePermissionsLoading] = useUnstableTemplatePermissions(
     grantsStore,
-    schema,
-    initialValueTemplates,
+    source.schema,
+    source.initialValueTemplates,
     newDocumentOptions
   )
   const isLoaded = isDocumentLoaded && !isTemplatePermissionsLoading
@@ -110,9 +116,7 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
   }, [parentRefPath, groupIndex, routerPanesStateLength])
 
   if (options.type === '*' && !isLoaded) {
-    return (
-      <LoadingPane flex={2.5} minWidth={320} paneKey={props.paneKey} title="Loading document…" />
-    )
+    return <LoadingPane flex={2.5} minWidth={320} paneKey={paneKey} title="Loading document…" />
   }
 
   if (!documentType) {
@@ -120,7 +124,7 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
       <ErrorPane
         flex={2.5}
         minWidth={320}
-        paneKey={props.paneKey}
+        paneKey={paneKey}
         title={<>The document was not found</>}
       >
         <Stack space={4}>
@@ -148,16 +152,13 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
       </Unstable_ReferenceInputOptionsProvider>
     </DocumentPaneProvider>
   )
-})
+}
 
 function usePaneOptions(
   options: DocumentPaneOptions,
   params: Record<string, string | undefined> = {}
 ): DocumentPaneOptions {
-  const {
-    data: {initialValueTemplates},
-    schema,
-  } = useConfig()
+  const source = useSource()
 
   return useMemo(() => {
     // The document type is provided, so return
@@ -168,7 +169,7 @@ function usePaneOptions(
     // Attempt to derive document type from the template configuration
     const templateName = options.template || params.template
     const template = templateName
-      ? getTemplateById(schema, initialValueTemplates, templateName)
+      ? getTemplateById(source.schema, source.initialValueTemplates, templateName)
       : undefined
     const documentType = template?.schemaType
 
@@ -179,7 +180,7 @@ function usePaneOptions(
 
     // The template provided the document type, so modify the pane’s `options` property
     return {...options, type: documentType}
-  }, [initialValueTemplates, options, params.template, schema])
+  }, [source.initialValueTemplates, options, params.template, source.schema])
 }
 
 function mergeDocumentType(

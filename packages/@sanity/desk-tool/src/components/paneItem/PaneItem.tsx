@@ -1,4 +1,4 @@
-import {useConfig, useDatastores} from '@sanity/base'
+import {useSource, useDatastores} from '@sanity/base'
 import {PreviewCard} from '@sanity/base/components'
 import {useDocumentPresence} from '@sanity/base/hooks'
 import {PreviewValue, SanityDefaultPreview} from '@sanity/base/preview'
@@ -24,11 +24,11 @@ interface PaneItemProps {
 
 export function PaneItem(props: PaneItemProps) {
   const {icon, id, layout = 'default', pressed, schemaType, selected, title, value} = props
-  const {schema} = useConfig()
+  const source = useSource()
   const {documentPreviewStore} = useDatastores()
   const {ChildLink} = usePaneRouter()
   const documentPresence = useDocumentPresence(id)
-  const hasSchemaType = Boolean(schemaType && schemaType.name && schema.get(schemaType.name))
+  const hasSchemaType = Boolean(schemaType && schemaType.name && source.schema.get(schemaType.name))
   const previewValue = useMemo(() => ({title}), [title])
   const [clicked, setClicked] = useState<boolean>(false)
 

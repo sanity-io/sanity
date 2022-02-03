@@ -1,4 +1,4 @@
-import {DocumentNodeResolver, StructureBuilder, useStructure} from '@sanity/base/structure'
+import {DocumentNodeResolver, StructureBuilder, useStructureBuilder} from '@sanity/base/structure'
 import {Box, Card, Code, Flex, Radio, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {Subject} from 'rxjs'
@@ -27,21 +27,21 @@ const testPaths: RouterPanes[] = [
 ]
 
 export default function ResolvePanesStory() {
-  const {builder: structureBuilder} = useStructure()
+  const S = useStructureBuilder()
 
   const structure = useMemo(() => {
     let unresolvedStructureNode = null
 
     if (resolveStructure) {
       // @todo Find out why this typing is not working
-      unresolvedStructureNode = resolveStructure(structureBuilder)
+      unresolvedStructureNode = resolveStructure(S)
     } else {
-      unresolvedStructureNode = structureBuilder.defaults()
+      unresolvedStructureNode = S.defaults()
 
       const paneItems = unresolvedStructureNode.getItems()
 
       if (paneItems?.length === 0) {
-        unresolvedStructureNode = structureBuilder.component({
+        unresolvedStructureNode = S.component({
           id: 'empty-list-pane',
           component: MissingDocumentTypesMessage,
         })
@@ -49,18 +49,18 @@ export default function ResolvePanesStory() {
     }
 
     return validateStructure(unresolvedStructureNode)
-  }, [structureBuilder])
+  }, [S])
 
   const resolveDocumentNode: DocumentNodeResolver = useCallback(
-    (_, options) => structureBuilder.defaultDocument(options),
-    [structureBuilder]
+    (_, options) => S.defaultDocument(options),
+    [S]
   )
 
   const routerPanesSubject = useMemo(() => new Subject<RouterPanes>(), [])
   const routerPanes$ = useMemo(() => routerPanesSubject.asObservable(), [routerPanesSubject])
 
   const {paneDataItems, resolvedPanes, routerPanes} = useResolvedPanes(
-    structureBuilder,
+    S,
     structure as any,
     resolveDocumentNode,
     routerPanes$

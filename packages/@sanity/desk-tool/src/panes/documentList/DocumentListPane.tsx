@@ -1,5 +1,6 @@
+import {SourceProvider, useSource} from '@sanity/base'
 import React, {memo, useMemo} from 'react'
-import schema from 'part:@sanity/base/schema'
+import {Card, Code} from '@sanity/ui'
 import {Pane} from '../../components/pane'
 import {useShallowUnique} from '../../utils/useShallowUnique'
 import {useUnique} from '../../utils/useUnique'
@@ -25,6 +26,7 @@ const emptyArray: never[] = []
  */
 export const DocumentListPane = memo(function DocumentListPane(props: DocumentListPaneProps) {
   const {childItemId, index, isActive, isSelected, pane, paneKey} = props
+  const {schema} = useSource()
   const {
     defaultLayout = 'default',
     displayOptions,
@@ -34,9 +36,9 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     options,
     title,
   } = pane
-
-  const {defaultOrdering = emptyArray, filter, apiVersion} = options
+  const {apiVersion, defaultOrdering = emptyArray, filter} = options
   const params = useShallowUnique(options.params || EMPTY_RECORD)
+  const sourceName = pane.source
   const typeName = useMemo(() => getTypeNameFromSingleTypeFilter(filter, params), [filter, params])
   const showIcons = displayOptions?.showIcons !== false
   const [layout, setLayout] = useDeskToolSetting<Layout>(typeName, 'layout', defaultLayout)
@@ -48,7 +50,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
 
   const sortWithOrderingFn =
     typeName && sortOrderRaw
-      ? applyOrderingFunctions(sortOrderRaw, schema.get(typeName))
+      ? applyOrderingFunctions(sortOrderRaw, schema.get(typeName) as any)
       : sortOrderRaw
 
   const sortOrder = useUnique(sortWithOrderingFn)
@@ -63,30 +65,36 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   })
 
   return (
-    <Pane currentMaxWidth={350} id={paneKey} maxWidth={640} minWidth={320} selected={isSelected}>
-      <DocumentListPaneHeader
-        index={index}
-        initialValueTemplates={initialValueTemplates}
-        menuItems={menuItems}
-        menuItemGroups={menuItemGroups}
-        setLayout={setLayout}
-        setSortOrder={setSortOrder}
-        title={title}
-      />
+    <SourceProvider name={sourceName}>
+      <Pane currentMaxWidth={350} id={paneKey} maxWidth={640} minWidth={320} selected={isSelected}>
+        <Card padding={4} tone="transparent">
+          <Code>{pane.source || '(none)'}</Code>
+        </Card>
 
-      <DocumentListPaneContent
-        childItemId={childItemId}
-        error={error}
-        filterIsSimpleTypeContraint={filterIsSimpleTypeContraint}
-        fullList={fullList}
-        isActive={isActive}
-        isLoading={isLoading}
-        items={items}
-        layout={layout}
-        onListChange={handleListChange}
-        onRetry={onRetry}
-        showIcons={showIcons}
-      />
-    </Pane>
+        <DocumentListPaneHeader
+          index={index}
+          initialValueTemplates={initialValueTemplates}
+          menuItems={menuItems}
+          menuItemGroups={menuItemGroups}
+          setLayout={setLayout}
+          setSortOrder={setSortOrder}
+          title={title}
+        />
+
+        <DocumentListPaneContent
+          childItemId={childItemId}
+          error={error}
+          filterIsSimpleTypeContraint={filterIsSimpleTypeContraint}
+          fullList={fullList}
+          isActive={isActive}
+          isLoading={isLoading}
+          items={items}
+          layout={layout}
+          onListChange={handleListChange}
+          onRetry={onRetry}
+          showIcons={showIcons}
+        />
+      </Pane>
+    </SourceProvider>
   )
 })

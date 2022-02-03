@@ -15,7 +15,7 @@ import {
 import {getPublishedId} from '@sanity/base/_internal'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {SanityDocument} from '@sanity/types'
-import {useConfig} from '@sanity/base'
+import {useSource} from '@sanity/base'
 import {Delay} from '../../components/Delay'
 import {PaneContent, usePane, usePaneLayout} from '../../components/pane'
 import {PaneItem} from '../../components/paneItem'
@@ -52,7 +52,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     showIcons,
   } = props
 
-  const {schema} = useConfig()
+  const source = useSource()
 
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed, index} = usePane()
@@ -84,12 +84,12 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
           pressed={pressed}
           selected={selected}
           layout={layout}
-          schemaType={schema.get(item._type)}
+          schemaType={source.schema.get(item._type)}
           value={item}
         />
       )
     },
-    [childItemId, isActive, layout, schema, showIcons]
+    [childItemId, isActive, layout, source.schema, showIcons]
   )
 
   const content = useMemo(() => {

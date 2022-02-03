@@ -1,4 +1,4 @@
-import {DocumentActionComponent, useClient, useConfig, useDatastores} from '@sanity/base'
+import {DocumentActionComponent, useClient, useSource, useDatastores} from '@sanity/base'
 import {
   useSyncState,
   useDocumentOperation,
@@ -38,7 +38,7 @@ function getDisabledReason(
 export const PublishAction: DocumentActionComponent = (props) => {
   const {id, type, liveEdit, draft, published} = props
   const client = useClient()
-  const {schema} = useConfig()
+  const source = useSource()
   const {grantsStore} = useDatastores()
   const [publishState, setPublishState] = useState<'publishing' | 'published' | null>(null)
   const {publish}: any = useDocumentOperation(id, type)
@@ -51,7 +51,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const isNeitherSyncingNorValidating = !syncState.isSyncing && !validationStatus.isValidating
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions(
     client,
-    schema,
+    source.schema,
     grantsStore,
     {
       id,

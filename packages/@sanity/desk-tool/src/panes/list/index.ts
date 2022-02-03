@@ -1,1 +1,1 @@
-export {ListPane} from './ListPane'
+export {ListPane as default} from './ListPane'

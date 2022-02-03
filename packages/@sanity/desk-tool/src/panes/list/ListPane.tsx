@@ -1,5 +1,5 @@
 import React from 'react'
-import {Box, Button, Stack} from '@sanity/ui'
+import {Box, Button, Card, Code, Stack} from '@sanity/ui'
 import styled from 'styled-components'
 import {ArrowLeftIcon} from '@sanity/icons'
 import {PaneListItem} from '../../types'
@@ -49,6 +49,10 @@ export function ListPane(props: ListPaneProps) {
       minWidth={320}
       selected={isSelected}
     >
+      <Card padding={4} tone="transparent">
+        <Code>{pane.source || '(none)'}</Code>
+      </Card>
+
       <PaneHeader
         actions={<PaneHeaderActions menuItems={menuItems} menuItemGroups={menuItemGroups} />}
         backButton={

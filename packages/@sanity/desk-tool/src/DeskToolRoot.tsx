@@ -1,10 +1,10 @@
-import {SanityTool, useConfig} from '@sanity/base'
+import {SanityTool, SourceProvider, useSource} from '@sanity/base'
 import {useRouterState} from '@sanity/base/router'
 import {
   DocumentBuilder,
   DocumentNode,
   DocumentNodeResolver,
-  useStructure,
+  useStructureBuilder,
 } from '@sanity/base/structure'
 import {isRecord, isString} from '@sanity/base/util'
 import {SchemaType} from '@sanity/types'
@@ -24,25 +24,35 @@ export interface DeskToolOptions {
   components?: {
     LanguageFilter?: React.ComponentType<{schemaType: SchemaType}>
   }
+  documentActions?: DocumentActionsResolver
   icon?: React.ComponentType
   name?: string
-  resolveDocumentActions?: DocumentActionsResolver
-  resolveStructure?: StructureResolver
+  source?: string
+  structure?: StructureResolver
   title?: string
 }
 
 export default function DeskToolRoot(props: {tool: SanityTool<DeskToolOptions>}) {
+  const {source} = props.tool.options
+
+  return (
+    <SourceProvider name={source}>
+      <DeskToolApp {...props} />
+    </SourceProvider>
+  )
+}
+
+function DeskToolApp(props: {tool: SanityTool<DeskToolOptions>}) {
   const {
     components: componentsOption,
-    resolveDocumentActions = defaultResolveDocumentActions,
-    resolveStructure = defaultResolveStructure,
+    documentActions: resolveDocumentActions = defaultResolveDocumentActions,
+    structure: resolveStructure = defaultResolveStructure,
   } = props.tool.options
 
-  const {
-    data: {resolveStructureDocumentNode = defaultResolveDocumentNode},
-  } = useConfig()
+  const source = useSource()
 
-  const {builder: S} = useStructure()
+  const {structureDocumentNode: resolveStructureDocumentNode = defaultResolveDocumentNode} = source
+  const S = useStructureBuilder()
 
   const components = useMemo(() => {
     return {

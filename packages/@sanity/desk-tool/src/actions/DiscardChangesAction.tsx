@@ -2,7 +2,7 @@ import {
   DocumentActionComponent,
   DocumentActionModalProps,
   useClient,
-  useConfig,
+  useSource,
   useDatastores,
 } from '@sanity/base'
 import {
@@ -27,13 +27,13 @@ export const DiscardChangesAction: DocumentActionComponent = ({
   onComplete,
 }) => {
   const client = useClient()
-  const {schema} = useConfig()
+  const source = useSource()
   const {grantsStore} = useDatastores()
   const {discardChanges} = useDocumentOperation(id, type)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions(
     client,
-    schema,
+    source.schema,
     grantsStore,
     {
       id,

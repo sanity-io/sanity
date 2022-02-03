@@ -1,10 +1,18 @@
-import {BoundaryElementProvider, Flex, PortalProvider, usePortal, useElementRect} from '@sanity/ui'
+import {
+  BoundaryElementProvider,
+  Flex,
+  PortalProvider,
+  usePortal,
+  useElementRect,
+  Card,
+  Code,
+} from '@sanity/ui'
 import React, {createElement, useEffect, useMemo, useRef, useState} from 'react'
 import {ScrollContainer} from '@sanity/base/components'
 import {unstable_useDocumentValuePermissions as useDocumentValuePermissions} from '@sanity/base/hooks'
 import styled, {css} from 'styled-components'
 import {getPublishedId, getDraftId} from '@sanity/base/_internal'
-import {useConfig, useDatastores} from '@sanity/base'
+import {useDatastores, useSource} from '@sanity/base'
 import {PaneContent} from '../../../components/pane'
 import {usePaneLayout} from '../../../components/pane/usePaneLayout'
 import {useDeskTool} from '../../../contexts/deskTool'
@@ -36,19 +44,19 @@ const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => 
 })
 
 export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
-  const {footerHeight, rootElement, isInspectOpen} = props
+  const {footerHeight, isInspectOpen, rootElement} = props
+  const source = useSource()
   const {grantsStore} = useDatastores()
-  const {schema} = useConfig()
   const {
     activeViewId,
     displayed,
     documentId,
     documentSchema,
+    documentType,
     editState,
     value,
     views,
     ready,
-    documentType,
   } = useDocumentPane()
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const parentPortal = usePortal()
@@ -59,7 +67,10 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
-  const liveEdit = useMemo(() => Boolean(schema.get(documentType)?.liveEdit), [documentType])
+  const liveEdit = useMemo(
+    () => Boolean(source.schema.get(documentType)?.liveEdit),
+    [documentType, source.schema]
+  )
   const docId = value._id ? value._id : 'dummy-id'
   const docPermissionsInput = useMemo(() => {
     return {
@@ -132,6 +143,10 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   return (
     <Flex direction="column" flex={2} overflow={layoutCollapsed ? undefined : 'hidden'}>
+      <Card padding={4} tone="transparent">
+        <Code>{source.name}</Code>
+      </Card>
+
       <DocumentPanelHeader rootElement={rootElement} ref={setHeaderElement} />
 
       <PaneContent>

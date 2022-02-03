@@ -2,7 +2,7 @@ import {useDatastores} from '@sanity/base'
 import {isString} from '@sanity/base/util'
 import {Box, Card, Flex, Spinner, Text} from '@sanity/ui'
 import React, {useEffect, useState} from 'react'
-import {DocumentNodeResolver, useStructure} from '@sanity/base/structure'
+import {DocumentNodeResolver, useStructureBuilder} from '@sanity/base/structure'
 import {useDeskTool} from '../../contexts/deskTool'
 import {RouterPanes} from '../../types'
 import {resolveIntent} from '../../structure/resolveIntent'
@@ -24,7 +24,7 @@ export interface IntentResolverProps {
  */
 export function IntentResolver(props: IntentResolverProps) {
   const {intent, params: paramsProp = {}, payload: payloadProp, resolveDocumentNode} = props
-  const {builder: structureBuilder} = useStructure()
+  const S = useStructureBuilder()
   const {structure} = useDeskTool()
   const {documentStore} = useDatastores()
   const params = useUnique(paramsProp)
@@ -40,7 +40,7 @@ export function IntentResolver(props: IntentResolverProps) {
     async function getNextRouterPanes() {
       const {id, type} = await ensureDocumentIdAndType(documentStore, idParam, typeParam)
 
-      return resolveIntent(structureBuilder, resolveDocumentNode, {
+      return resolveIntent(S, resolveDocumentNode, {
         intent,
         params: {...params, id, type},
         payload,

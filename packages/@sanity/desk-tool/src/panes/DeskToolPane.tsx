@@ -1,12 +1,9 @@
-import React, {memo} from 'react'
+import React, {memo, lazy, Suspense} from 'react'
 import {isEqual} from 'lodash'
 import {PaneNode} from '../types'
 import {PaneRouterProvider} from '../contexts/paneRouter'
-import {DocumentPane} from './document'
-import {DocumentListPane} from './documentList'
-import {ListPane} from './list'
 import {UnknownPane} from './unknown'
-import {UserComponentPane} from './userComponent'
+import {LoadingPane} from './loading'
 
 interface DeskToolPaneProps {
   active: boolean
@@ -23,10 +20,10 @@ interface DeskToolPaneProps {
 }
 
 const paneMap = {
-  component: UserComponentPane,
-  document: DocumentPane,
-  documentList: DocumentListPane,
-  list: ListPane,
+  component: lazy(() => import('./userComponent')),
+  document: lazy(() => import('./document')),
+  documentList: lazy(() => import('./documentList')),
+  list: lazy(() => import('./list')),
 }
 
 /**
@@ -60,16 +57,18 @@ export const DeskToolPane = memo(
         payload={payload}
         siblingIndex={siblingIndex}
       >
-        <PaneComponent
-          childItemId={childItemId || ''}
-          index={index}
-          itemId={itemId}
-          isActive={active}
-          isSelected={selected}
-          paneKey={paneKey}
-          // @ts-expect-error TS doesn't know how to handle this intersection
-          pane={pane}
-        />
+        <Suspense fallback={<LoadingPane paneKey={paneKey} />}>
+          <PaneComponent
+            childItemId={childItemId || ''}
+            index={index}
+            itemId={itemId}
+            isActive={active}
+            isSelected={selected}
+            paneKey={paneKey}
+            // @ts-expect-error TS doesn't know how to handle this intersection
+            pane={pane}
+          />
+        </Suspense>
       </PaneRouterProvider>
     )
   },

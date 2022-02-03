@@ -1,4 +1,4 @@
-import {useConfig} from '@sanity/base'
+import {useSource} from '@sanity/base'
 import {getTemplateById} from '@sanity/base/initial-value-templates'
 import {RouterState, useRouter} from '@sanity/base/router'
 import {DocumentNodeResolver, StructureBuilder} from '@sanity/base/structure'
@@ -46,10 +46,7 @@ export const DeskTool = memo(function DeskTool(props: DeskToolProps) {
     structure,
     structureBuilder,
   } = props
-  const {
-    data: {initialValueTemplates},
-    schema,
-  } = useConfig()
+  const source = useSource()
   const {push: pushToast} = useToast()
   const {navigate, state: routerState = EMPTY_ROUTER_STATE} = useRouter()
 
@@ -105,17 +102,17 @@ export const DeskTool = memo(function DeskTool(props: DeskToolProps) {
     } = routerState as any
 
     const {template: templateName} = params
-    const template = getTemplateById(schema, initialValueTemplates, templateName)
+    const template = getTemplateById(source.schema, source.initialValueTemplates, templateName)
     const type = (template && template.schemaType) || schemaType
     return (action === 'edit' && legacyEditDocumentId) || (type && editDocumentId)
-  }, [initialValueTemplates, routerState, schema])
+  }, [source.initialValueTemplates, routerState, source.schema])
 
   useEffect(() => {
     if (!shouldRewrite) return
 
     const {legacyEditDocumentId, type: schemaType, editDocumentId, params = {}} = routerState as any
     const {template: templateName, ...payloadParams} = params
-    const template = getTemplateById(schema, initialValueTemplates, templateName)
+    const template = getTemplateById(source.schema, source.initialValueTemplates, templateName)
     const type = (template && template.schemaType) || schemaType
 
     navigate(
@@ -127,7 +124,7 @@ export const DeskTool = memo(function DeskTool(props: DeskToolProps) {
       }),
       {replace: true}
     )
-  }, [initialValueTemplates, navigate, routerState, schema, shouldRewrite])
+  }, [source.initialValueTemplates, navigate, routerState, source.schema, shouldRewrite])
 
   useEffect(() => {
     const handleGlobalKeyDown = (event: KeyboardEvent) => {

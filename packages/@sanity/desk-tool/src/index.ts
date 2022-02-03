@@ -12,7 +12,7 @@ export * from './constants'
 export * from './contexts/paneRouter/PaneRouterContext'
 export * from './contexts/paneRouter/usePaneRouter'
 
-export function deskTool(options?: DeskToolOptions): SanityPlugin {
+export function deskTool(options: DeskToolOptions = {}): SanityPlugin {
   return createPlugin({
     tools: [
       {

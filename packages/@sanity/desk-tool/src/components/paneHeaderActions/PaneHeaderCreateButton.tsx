@@ -6,7 +6,7 @@ import {unstable_useTemplatePermissions as useTemplatePermissions} from '@sanity
 import {TemplatePermissionsResult} from '@sanity/base/_internal'
 import {Box, Button, Label, Menu, MenuButton, MenuItem, PopoverProps} from '@sanity/ui'
 import {IntentLink} from '@sanity/base/router'
-import {useConfig, useDatastores} from '@sanity/base'
+import {useSource, useDatastores} from '@sanity/base'
 import {Schema} from '@sanity/types'
 import {IntentButton} from '../IntentButton'
 import {InsufficientPermissionsMessageTooltip} from './InsufficientPermissionsMessageTooltip'
@@ -44,16 +44,13 @@ interface PaneHeaderCreateButtonProps {
 }
 
 export function PaneHeaderCreateButton({initialValueTemplateItems}: PaneHeaderCreateButtonProps) {
-  const {
-    data: {initialValueTemplates},
-    schema,
-  } = useConfig()
+  const source = useSource()
   const {grantsStore} = useDatastores()
 
   const [templatePermissions, isTemplatePermissionsLoading] = useTemplatePermissions(
     grantsStore,
-    schema,
-    initialValueTemplates,
+    source.schema,
+    source.initialValueTemplates,
     initialValueTemplateItems
   )
 
@@ -93,7 +90,7 @@ export function PaneHeaderCreateButton({initialValueTemplateItems}: PaneHeaderCr
     const firstItem = initialValueTemplateItems[0]
     const permissions = permissionsById[firstItem.id]
     const disabled = !permissions?.granted
-    const intent = getIntent(schema, initialValueTemplates, firstItem)
+    const intent = getIntent(source.schema, source.initialValueTemplates, firstItem)
     if (!intent) return null
 
     return (
@@ -133,8 +130,12 @@ export function PaneHeaderCreateButton({initialValueTemplateItems}: PaneHeaderCr
           {initialValueTemplateItems.map((item, itemIndex) => {
             const permissions = permissionsById[item.id]
             const disabled = !permissions?.granted
-            const intent = getIntent(schema, initialValueTemplates, item)
-            const template = getTemplateById(schema, initialValueTemplates, item.templateId)
+            const intent = getIntent(source.schema, source.initialValueTemplates, item)
+            const template = getTemplateById(
+              source.schema,
+              source.initialValueTemplates,
+              item.templateId
+            )
             if (!template || !intent) return null
 
             const Link = forwardRef((linkProps, linkRef: React.ForwardedRef<never>) =>
