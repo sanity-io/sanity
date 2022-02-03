@@ -81,7 +81,6 @@
     "react-click-outside": "^3.0.0",
     "react-fast-compare": "^3.2.0",
     "react-icon-base": "^2.1.2",
-    "react-intersection-observer": "^8.32.0",
     "react-is": "^17.0.2",
     "react-popper": "^2.2.4",
     "react-props-stream": "^1.0.0",
@@ -100,7 +99,9 @@
   "devDependencies": {
     "@sanity/ui-workshop": "^0.3.12",
     "@testing-library/jest-dom": "^5.11.10",
+    "@testing-library/react": "^11.2.5",
     "@testing-library/react-hooks": "^7.0.2",
+    "@testing-library/user-event": "^13.0.16",
     "@types/element-resize-detector": "1.1.2",
     "@types/raf": "^3.4.0",
     "@types/refractor": "^3.0.0",
