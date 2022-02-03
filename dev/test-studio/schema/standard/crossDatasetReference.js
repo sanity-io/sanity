@@ -10,12 +10,12 @@ export default {
     {name: 'title', type: 'string'},
     {
       name: 'bookInPlayground',
-      title: 'Reference to book or author in the "playground" dataset in project "ppsg7ml5"',
+      title: 'Reference to book or author in the "playground" dataset in project "exx11uqh"',
       description:
         "Note: The current token for the dataset does not have read access to documents in the 'restricted.**' path",
       type: 'crossDatasetReference',
       dataset: 'playground',
-      projectId: 'ppsg7ml5',
+      projectId: 'exx11uqh',
       tokenId: 'restricted',
       studioUrl: ({id, type}) => {
         return type
@@ -38,11 +38,11 @@ export default {
       ],
     },
     {
-      title: 'Reference to book or author in the "playground" dataset in project "ppsg7ml5"',
+      title: 'Reference to book or author in the "playground" dataset in project "exx11uqh"',
       name: 'bookOrAuthorInPlayground',
       type: 'crossDatasetReference',
       dataset: 'playground',
-      projectId: 'ppsg7ml5',
+      projectId: 'exx11uqh',
       tokenId: 'readToken',
       studioUrl: ({id, type}) => {
         return type
