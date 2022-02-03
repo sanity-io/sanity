@@ -2,7 +2,13 @@ import React, {ComponentProps, useCallback, useEffect, useState} from 'react'
 
 import {AccessDeniedIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
 import {Card, Box, Heading, Text} from '@sanity/ui'
-import {MAX_HEIGHT, RatioBox, Overlay, FlexOverlay, SpinnerWrapper} from './ImagePreview.styled'
+import {
+  MAX_DEFAULT_HEIGHT,
+  RatioBox,
+  Overlay,
+  FlexOverlay,
+  SpinnerWrapper,
+} from './ImagePreview.styled'
 
 interface Props {
   readOnly?: boolean | null
@@ -19,7 +25,7 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
   const acceptTone = isRejected || readOnly ? 'critical' : 'primary'
   const tone = drag ? acceptTone : 'default'
 
-  const [useInitialHeight, setUseInitialHeight] = useState(false)
+  const [initialHeight, setInitialHeight] = useState(null)
 
   useEffect(() => {
     /* set for when the src is being switched when the image input already had a image src
@@ -28,18 +34,18 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
   }, [src])
 
   const onLoadChange = useCallback(({target: img}) => {
-    const imgHeight = img.offsetWidth
-    const maxHeightToPx = (MAX_HEIGHT * document.documentElement.clientHeight) / 100 // convert from vh to px
+    const imgHeight = img.height
+    const maxHeightToPx = (MAX_DEFAULT_HEIGHT * document.documentElement.clientHeight) / 100 // convert from vh to px, max height of the input
 
     if (imgHeight > maxHeightToPx) {
-      setUseInitialHeight(true)
+      setInitialHeight(`${MAX_DEFAULT_HEIGHT}vh`)
     }
 
     setLoaded(true)
   }, [])
 
   return (
-    <RatioBox {...rest} style={{height: useInitialHeight ? '30vh' : ''}} tone="transparent">
+    <RatioBox {...rest} style={{height: initialHeight}} tone="transparent">
       <Card data-container tone="inherit">
         {!isLoaded && <OverlayComponent cardTone="transparent" drag content={<SpinnerWrapper />} />}
         <img src={src} data-testid="hotspot-image-input" alt={props.alt} onLoad={onLoadChange} />
