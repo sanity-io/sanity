@@ -1,5 +1,5 @@
 import arrify from 'arrify'
-import {pick} from 'lodash'
+import {capitalize, pick} from 'lodash'
 import {lazyGetter} from './utils'
 import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
 
@@ -40,7 +40,7 @@ function buildTitle(type) {
     return 'Cross dataset Reference'
   }
   return `Cross dataset reference to ${humanize(
-    arrify(type.to).map((toType) => toType.title),
+    arrify(type.to).map((toType) => toType.title || capitalize(toType.name)),
     'or'
   ).toLowerCase()}`
 }
