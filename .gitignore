@@ -50,3 +50,6 @@ yarn.lock
 package-lock.json
 
 .env
+test-results/
+playwright-report/
+storageState.json
