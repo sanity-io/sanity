@@ -22,4 +22,14 @@ export default defineScope('base/components', 'components', [
     title: 'PreviewCard',
     component: lazy(() => import('./PreviewCardStory')),
   },
+  {
+    name: 'collapse-menu',
+    title: 'CollapseMenu',
+    component: lazy(() => import('./CollapseMenuStory')),
+  },
+  {
+    name: 'roving-focus',
+    title: 'RovingFocus',
+    component: lazy(() => import('./RovingFocusStory')),
+  },
 ])
