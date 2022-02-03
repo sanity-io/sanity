@@ -8,11 +8,6 @@ export default defineScope('base/components', 'components', [
     component: lazy(() => import('./UserAvatarStory')),
   },
   {
-    name: 'collapse-menu',
-    title: 'CollapseMenu',
-    component: lazy(() => import('./CollapseMenuStory')),
-  },
-  {
     name: 'text-with-tone',
     title: 'TextWithTone',
     component: lazy(() => import('./TextWithToneStory')),

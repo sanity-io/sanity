@@ -1,116 +1,42 @@
-import React, {useCallback, useMemo, useState} from 'react'
-import {Button, Card, Container, useToast} from '@sanity/ui'
-import {
-  BoldIcon,
-  CodeIcon,
-  CogIcon,
-  ImageIcon,
-  ItalicIcon,
-  OlistIcon,
-  UlistIcon,
-  UnderlineIcon,
-} from '@sanity/icons'
+import {EllipsisVerticalIcon, IceCreamIcon} from '@sanity/icons'
+import {Button, Card, Flex} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
+import React from 'react'
 import {CollapseMenu, CollapseMenuButton} from '..'
 
-const GAP_OPTIONS = {'0': 0, '1': 1, '2': 2, '3': 3}
+const GAP_OPTIONS = {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4}
 
 export default function CollapseMenuStory() {
-  const {push} = useToast()
-  const [selected, setSelected] = useState<string>('')
-  const collapseText = useBoolean('Collapse text', true)
-  const customMenuButton = useBoolean('Custom menu button', false)
-  const gap = useSelect('Gap', GAP_OPTIONS, 1)
   const collapsed = useBoolean('Collapsed', false)
-  const disableRestoreFocusOnClose = useBoolean('Disable restore focus on close', false)
-  const onMenuClose = useBoolean('onMenuClose', false)
-
-  const handleSelect = useCallback((id: string) => {
-    setSelected(id)
-  }, [])
-
-  const handleMenuClose = useCallback(() => {
-    push({
-      title: 'Menu closed',
-      status: 'success',
-    })
-  }, [push])
-
-  const menuButton = useMemo(
-    () => (customMenuButton ? <Button tone="primary" icon={CogIcon} /> : undefined),
-    [customMenuButton]
-  )
+  const gap = useSelect('Gap', GAP_OPTIONS, 1)
+  const collapseText = useBoolean('Collapse text', false)
 
   return (
-    <Container padding={4} width={4} sizing="border">
-      <Card shadow={1} padding={1} radius={3}>
+    <Flex align="center" height="fill" justify="center" padding={2}>
+      <Card shadow={1} radius={3} padding={1}>
         <CollapseMenu
-          collapsed={collapsed}
           gap={gap}
-          menuButton={menuButton}
-          onMenuClose={onMenuClose ? handleMenuClose : undefined}
-          disableRestoreFocusOnClose={disableRestoreFocusOnClose}
+          collapsed={collapsed}
+          collapseText={collapseText}
+          menuButtonProps={{
+            button: <Button icon={EllipsisVerticalIcon} mode="bleed" padding={2} fontSize={1} />,
+          }}
         >
-          <CollapseMenuButton
-            buttonProps={{mode: 'bleed'}}
-            collapseText={collapseText}
-            icon={BoldIcon}
-            onClick={() => handleSelect('bold')}
-            selected={selected === 'bold'}
-            text="Bold"
-          />
-          <CollapseMenuButton
-            buttonProps={{mode: 'bleed'}}
-            collapseText={collapseText}
-            icon={ItalicIcon}
-            onClick={() => handleSelect('italic')}
-            selected={selected === 'italic'}
-            text="Italic"
-          />
-          <CollapseMenuButton
-            buttonProps={{mode: 'bleed'}}
-            collapseText={collapseText}
-            icon={CodeIcon}
-            onClick={() => handleSelect('code')}
-            selected={selected === 'code'}
-            text="Code"
-          />
-          <CollapseMenuButton
-            buttonProps={{mode: 'bleed'}}
-            collapseText={collapseText}
-            icon={UnderlineIcon}
-            onClick={() => handleSelect('underline')}
-            selected={selected === 'underline'}
-            text="Underline"
-          />
-          <CollapseMenuButton
-            buttonProps={{mode: 'bleed'}}
-            collapseText={collapseText}
-            dividerBefore
-            icon={UlistIcon}
-            onClick={() => handleSelect('ulist')}
-            selected={selected === 'ulist'}
-            text="Ulist"
-          />
-          <CollapseMenuButton
-            buttonProps={{mode: 'bleed'}}
-            collapseText={collapseText}
-            icon={OlistIcon}
-            onClick={() => handleSelect('olist')}
-            selected={selected === 'olist'}
-            text="Olist"
-          />
-          <CollapseMenuButton
-            buttonProps={{mode: 'bleed'}}
-            collapseText={collapseText}
-            dividerBefore
-            icon={ImageIcon}
-            onClick={() => handleSelect('image')}
-            selected={selected === 'image'}
-            text="Image"
-          />
+          {[...Array(5).keys()].map((num) => (
+            <CollapseMenuButton
+              key={num}
+              fontSize={1}
+              padding={2}
+              text={`Button ${num + 1}`}
+              dividerBefore={Boolean(num % 2)}
+              icon={IceCreamIcon}
+              mode="bleed"
+              collapsedProps={{tooltipText: 'Collapsed'}}
+              expandedProps={{tooltipText: 'Expanded'}}
+            />
+          ))}
         </CollapseMenu>
       </Card>
-    </Container>
+    </Flex>
   )
 }
