@@ -1,5 +1,5 @@
 import React, {memo, useCallback, useMemo} from 'react'
-import {CollapseMenu, CollapseMenuButton, CollapseMenuButtonProps} from '@sanity/base/components'
+import {CollapseMenu, CollapseMenuButton} from '@sanity/base/components'
 import {AddIcon} from '@sanity/icons'
 import {Button, PopoverProps} from '@sanity/ui'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
@@ -8,9 +8,7 @@ import {useFeatures, useFocusBlock} from './hooks'
 
 const CollapseMenuMemo = memo(CollapseMenu)
 
-const MENU_POPOVER_PROPS: PopoverProps = {constrainSize: true}
-const COLLAPSE_BUTTON_PROPS: CollapseMenuButtonProps = {padding: 2, mode: 'bleed'}
-
+const MENU_POPOVER_PROPS: PopoverProps = {constrainSize: true, portal: true}
 interface InsertMenuProps {
   disabled: boolean
   items: BlockItem[]
@@ -37,38 +35,41 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
       return (
         <CollapseMenuButton
           aria-label={`Insert ${title}${item.inline ? ' (inline)' : ' (block)'}`}
-          buttonProps={COLLAPSE_BUTTON_PROPS}
-          collapseText={false}
+          padding={2}
+          mode="bleed"
           disabled={disabled || (isVoidFocus && item.inline === true)}
           icon={item.icon}
           key={item.key}
           // eslint-disable-next-line react/jsx-no-bind, react/jsx-handler-names
           onClick={item.handle}
           text={title}
+          tooltipText={`Insert ${title}`}
           tooltipProps={{
             disabled,
             placement: isFullscreen ? 'bottom' : 'top',
             portal: 'default',
-            text: `Insert ${title}`,
           }}
         />
       )
     })
   }, [items, disabled, isVoidFocus, isFullscreen])
 
-  const menuButton = useMemo(
-    () => <Button icon={AddIcon} mode="bleed" padding={2} disabled={disabled} />,
+  const menuButtonProps = useMemo(
+    () => ({
+      button: <Button icon={AddIcon} mode="bleed" padding={2} disabled={disabled} />,
+      popover: MENU_POPOVER_PROPS,
+    }),
     [disabled]
   )
 
   return (
     <CollapseMenuMemo
       collapsed={collapsed}
-      gap={1}
-      menuButton={menuButton}
-      menuPopoverProps={MENU_POPOVER_PROPS}
-      onMenuClose={handleMenuClose}
+      collapseText={false}
       disableRestoreFocusOnClose
+      gap={1}
+      menuButtonProps={menuButtonProps}
+      onMenuClose={handleMenuClose}
     >
       {children}
     </CollapseMenuMemo>
