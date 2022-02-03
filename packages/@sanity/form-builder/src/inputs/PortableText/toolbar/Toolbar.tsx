@@ -12,6 +12,7 @@ import {resolveInitialValueForType} from '@sanity/initial-value-templates'
 import {Box, Button, Flex, Hotkeys, Text, Tooltip, useElementRect, useToast} from '@sanity/ui'
 import {CollapseIcon, ExpandIcon} from '@sanity/icons'
 import styled, {css} from 'styled-components'
+import {useRovingFocus} from '@sanity/base/components'
 import {ActionMenu} from './ActionMenu'
 import {BlockStyleSelect} from './BlockStyleSelect'
 import {InsertMenu} from './InsertMenu'
@@ -79,6 +80,10 @@ const InnerToolbar = memo(function InnerToolbar({
   const rootElementRect = useElementRect(rootElement)
 
   const collapsed = rootElementRect ? rootElementRect?.width < 400 : false
+
+  useRovingFocus({
+    rootElement: rootElement,
+  })
 
   return (
     <RootFlex align="center" ref={setRootElement}>
