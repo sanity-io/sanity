@@ -12,7 +12,6 @@ export const RatioBox = styled(Card)`
   max-height: ${MAX_HEIGHT}vh;
 
   & > div[data-container] {
-    //position: absolute;
     top: 0;
     left: 0;
     width: 100%;
