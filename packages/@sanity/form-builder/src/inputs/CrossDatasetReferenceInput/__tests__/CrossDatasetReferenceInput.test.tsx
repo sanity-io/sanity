@@ -1,18 +1,20 @@
 // eslint-disable-next-line import/no-unassigned-import
 import '@testing-library/jest-dom/extend-expect'
-import {render} from '@testing-library/react'
+import {render, within} from '@testing-library/react'
 import {RouterProvider} from '@sanity/state-router/components'
 import {route} from '@sanity/state-router'
 import React, {forwardRef, useImperativeHandle} from 'react'
 import Schema from '@sanity/schema'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
-import {of} from 'rxjs'
+import {Observable, of} from 'rxjs'
 import {noop} from 'lodash'
 
 import {AvailabilityReason} from '@sanity/base/_internal'
 import {Reference} from '@sanity/types'
+import userEvent from '@testing-library/user-event'
 import {CrossDatasetReferenceInput, Props} from '../CrossDatasetReferenceInput'
-import {CrossDatasetReferenceInfo, DocumentPreview} from '../types'
+import {CrossDatasetReferenceInfo, DocumentPreview, SearchHit} from '../types'
+import {openElement, openHtml} from './utils/open-html'
 
 const EMPTY_SEARCH = () => of([])
 
@@ -73,8 +75,12 @@ function ReferenceInfoTester(
 ) {
   const schema = Schema.compile({
     types: [
-      {name: 'actor', type: 'document', fields: [{name: 'name', type: 'string'}]},
-      {name: 'actorReference', type: 'reference', weak: props.typeIsWeakRef, to: [{type: 'actor'}]},
+      {
+        name: 'actorReference',
+        type: 'crossDatasetReference',
+        weak: props.typeIsWeakRef,
+        to: [{type: 'actor'}],
+      },
     ],
   })
 
@@ -89,10 +95,8 @@ function ReferenceInfoTester(
   )
 }
 
-const PUBLISHED_PREVIEW = {title: 'Actor (published)', description: ''}
-
 describe('if schema type is a weak reference', () => {
-  test('a warning is visible if the reference value is strong while the schema says it should be weak', () => {
+  test('a warning is displayed if the reference value is strong while the schema says it should be weak', () => {
     const {getByTestId} = render(
       <ReferenceInfoTester
         typeIsWeakRef
@@ -107,11 +111,83 @@ describe('if schema type is a weak reference', () => {
           type: 'actorReference',
           availability: AVAILABLE,
           preview: {
-            published: PUBLISHED_PREVIEW as DocumentPreview,
+            published: {title: 'Actor (published)', description: ''} as DocumentPreview,
           },
         }}
       />
     )
     expect(getByTestId('alert-reference-strength-mismatch')).toBeInTheDocument()
+  })
+})
+
+describe('user interaction', () => {
+  test('support searching for references and emits patches when a reference is chosen', async () => {
+    const handleSearch = jest.fn<Observable<SearchHit[]>, [string]>().mockReturnValue(
+      of([
+        {id: 'one', type: 'product', published: {_id: 'one', _type: 'product'}},
+        {id: 'two', type: 'product', published: {_id: 'two', _type: 'product'}},
+      ])
+    )
+    const handleChange = jest.fn()
+
+    const schema = Schema.compile({
+      types: [
+        {
+          name: 'productReference',
+          type: 'crossDatasetReference',
+          dataset: 'products',
+          projectId: 'abcxyz',
+          to: [{type: 'product'}],
+        },
+      ],
+    })
+
+    const {getByTestId} = render(
+      <CrossDatasetReferenceInputTester
+        value={undefined}
+        type={schema.get('productReference')}
+        onChange={handleChange}
+        getReferenceInfo={(id) =>
+          of({
+            id,
+            type: 'product',
+            availability: AVAILABLE,
+            preview: {
+              published: {title: `Product ${id}`},
+            },
+          })
+        }
+        onSearch={handleSearch}
+      />
+    )
+
+    const autocomplete = getByTestId('autocomplete')
+    expect(autocomplete).toBeInTheDocument()
+    userEvent.type(autocomplete, 'foo')
+
+    expect(autocomplete).toBeInTheDocument()
+    const popover = getByTestId('autocomplete-popover')
+    expect(popover).toBeInTheDocument()
+
+    const previews = within(popover).getAllByTestId('preview')
+
+    expect(previews.length).toBe(2)
+    expect(previews[0]).toHaveTextContent('Product one')
+    expect(previews[1]).toHaveTextContent('Product two')
+    // openElement(previews[1])
+    userEvent.click(within(popover).getAllByRole('button')[1])
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    expect(handleChange).toHaveBeenCalledTimes(1)
+    expect(handleChange.mock.calls[0]).toEqual([
+      {
+        patches: [
+          {type: 'setIfMissing', path: [], value: {}},
+          {type: 'set', path: ['_type'], value: 'productReference'},
+          {type: 'set', path: ['_ref'], value: 'two'},
+          {type: 'set', path: ['_dataset'], value: 'products'},
+          {type: 'set', path: ['_productId'], value: 'abcxyz'},
+        ],
+      },
+    ])
   })
 })

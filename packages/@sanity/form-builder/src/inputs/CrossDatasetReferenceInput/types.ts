@@ -20,12 +20,7 @@ export interface CrossDatasetReferenceInfo {
 }
 export type ReferenceParams = Record<string, string | number | boolean>
 
-export interface DocumentPreview extends PreviewValue {
-  _id: string
-  _type: string
-  _createdAt: string
-  _updatedAt: string
-}
+export type DocumentPreview = PreviewValue
 
 export interface SearchState {
   hits: SearchHit[]
