@@ -1,11 +1,12 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import tools from 'all:part:@sanity/base/tool'
 import config from 'config:sanity'
 import {route} from '@sanity/base/router'
 import {CONFIGURED_SPACES, HAS_SPACES} from './util/spaces'
+import {getRegisteredTools} from './util/getRegisteredTools'
 
+const tools = getRegisteredTools()
 const basePath = ((config.project && config.project.basePath) || '').replace(/\/+$/, '')
 
 const toolRoute = route('/:tool', (toolParams: any) => {

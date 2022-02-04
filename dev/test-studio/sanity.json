@@ -110,6 +110,10 @@
     {
       "implements": "part:@sanity/base/tool",
       "path": "parts/tools/ui-test-bed-tool/tool"
+    },
+    {
+      "implements": "part:@sanity/base/tool",
+      "path": "parts/tools/test-conditional-tool"
     }
   ],
   "env": {

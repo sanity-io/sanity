@@ -3,7 +3,7 @@
 
 import React, {createElement, memo, useCallback, useEffect, useRef, useState} from 'react'
 import {Box, Card, Container, ErrorBoundary, Heading, Stack, Text} from '@sanity/ui'
-import tools from 'all:part:@sanity/base/tool'
+import {getRegisteredTools} from '../util/getRegisteredTools'
 import {RenderToolErrorScreen} from './ErrorScreen'
 
 declare const __DEV__: boolean
@@ -17,6 +17,7 @@ interface Props {
 }
 
 export const RenderTool = memo(function RenderTool(props: Props) {
+  const tools = getRegisteredTools()
   const {tool: activeToolName} = props
   const activeToolNameRef = useRef(activeToolName)
   const activeTool = tools.find((tool) => tool.name === activeToolName)
