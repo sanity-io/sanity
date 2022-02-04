@@ -1,5 +1,5 @@
 import React from 'react'
-import {AssetSource} from '@sanity/types'
+import type {AssetSource} from '@sanity/types'
 import imageUrlBuilder from '@sanity/image-url'
 import ImageInput from '../../inputs/files/ImageInput'
 import resolveUploader from '../uploads/resolveUploader'
@@ -13,8 +13,8 @@ import withValuePath from '../../utils/withValuePath'
 import {observeImageAsset} from './client-adapters/assets'
 import {wrapWithDocument} from './wrapWithDocument'
 
-const globalAssetSources = userDefinedImageAssetSources
-  ? userDefinedImageAssetSources
+const globalAssetSources: AssetSource[] = userDefinedImageAssetSources
+  ? ensureArrayOfSources(userDefinedImageAssetSources)
   : defaultImageAssetSources
 
 const SUPPORT_DIRECT_UPLOADS = formBuilderConfig?.images?.directUploads !== false
@@ -29,7 +29,7 @@ export default React.forwardRef(function SanityImageInput(props: Props, forwarde
   // note: type.options.sources may be an empty array and in that case we're
   // disabling selecting images from asset source  (it's a feature, not a bug)
   const assetSources = React.useMemo(
-    (): AssetSource[] => (sourcesFromSchema || globalAssetSources).map(wrapWithDocument),
+    () => (sourcesFromSchema || globalAssetSources).map(wrapWithDocument),
     [sourcesFromSchema]
   )
 
@@ -47,3 +47,14 @@ export default React.forwardRef(function SanityImageInput(props: Props, forwarde
     />
   )
 })
+
+function ensureArrayOfSources(sources: unknown): AssetSource[] {
+  if (Array.isArray(sources)) {
+    return sources
+  }
+
+  console.warn(
+    'Configured image asset sources is not an array - if `part:@sanity/form-builder/input/image/asset-sources` is defined, make sure it returns an array!'
+  )
+  return defaultImageAssetSources
+}
