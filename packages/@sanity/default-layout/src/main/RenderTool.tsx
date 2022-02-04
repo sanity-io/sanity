@@ -19,7 +19,7 @@ interface Props {
 export const RenderTool = memo(function RenderTool(props: Props) {
   const {tool: activeToolName} = props
   const activeToolNameRef = useRef(activeToolName)
-  const activeTool = tools.find((tool) => tool.name === activeToolName)
+  const activeTool = tools.find((tool) => tool?.name === activeToolName)
   const [state, setState] = useState({error: null, showErrorDetails: __DEV__})
 
   useEffect(() => {

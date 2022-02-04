@@ -9,7 +9,7 @@ import {CONFIGURED_SPACES, HAS_SPACES} from './util/spaces'
 const basePath = ((config.project && config.project.basePath) || '').replace(/\/+$/, '')
 
 const toolRoute = route('/:tool', (toolParams: any) => {
-  const foundTool = tools.find((current) => current.name === toolParams.tool)
+  const foundTool = tools.find((current) => current && current.name === toolParams.tool)
   return foundTool ? (route as any).scope(foundTool.name, '/', foundTool.router) : route('/')
 })
 

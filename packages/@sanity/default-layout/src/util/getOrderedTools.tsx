@@ -9,12 +9,13 @@ export default function getOrderedTools(): Tool[] {
   const config = pluginConfig.toolSwitcher || {}
   const order = config.order || []
   const hidden = config.hidden || []
+  const toolsFiltered = tools.filter(Boolean)
 
   if (!order.length && !hidden.length) {
-    return tools
+    return toolsFiltered
   }
 
-  const keyed = tools.reduce((target, tool) => {
+  const keyed = toolsFiltered.reduce((target, tool) => {
     const title = tool.title || '<unknown>'
 
     if (!tool.name) {
@@ -38,7 +39,7 @@ export default function getOrderedTools(): Tool[] {
 
   const isVisible = (tool: Tool) => hidden.indexOf(tool.name) === -1
 
-  return tools.filter(isVisible).sort((tool1, tool2) => {
+  return toolsFiltered.filter(isVisible).sort((tool1, tool2) => {
     const toolA = keyed[tool1.name]
     const toolB = keyed[tool2.name]
 
