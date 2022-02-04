@@ -1,0 +1,20 @@
+{
+  "private": true,
+  "name": "sanity-multi-schema-studio",
+  "version": "0.0.0-development",
+  "scripts": {
+    "build": "run-s sanity:build",
+    "dev": "run-p sanity:start",
+    "sanity:build": "sanity build",
+    "sanity:start": "sanity start --port 3337",
+    "start": "http-server -a localhost -c-0 -p 3337 -s -P http://localhost:3337/index.html? dist"
+  },
+  "dependencies": {
+    "@sanity/base": "2.29.1",
+    "@sanity/desk-tool": "2.29.1",
+    "@sanity/icons": "^1.2.1",
+    "@sanity/ui": "^0.37.5",
+    "react": "17.0.2",
+    "styled-components": "^5.2.0"
+  }
+}
