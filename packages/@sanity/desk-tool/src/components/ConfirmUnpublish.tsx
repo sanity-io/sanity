@@ -42,6 +42,7 @@ export const ConfirmUnpublish = enhanceWithReferringDocuments(function ConfirmUn
           onClick={onConfirm}
           text={hasReferringDocuments ? 'Try to unpublish anyway' : 'Unpublish now'}
           tone="critical"
+          data-testid="confirm-unpublish"
         />
       )}
     </Grid>

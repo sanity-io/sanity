@@ -65,9 +65,9 @@
     "@babel/preset-typescript": "^7.10.4",
     "@babel/register": "^7.7.4",
     "@babel/runtime": "7.12.13",
-    "@sanity/client": "^3.0.1",
     "@cypress/code-coverage": "^3.9.12",
-    "@playwright/test": "^1.18.1",
+    "@playwright/test": "^1.19.1",
+    "@sanity/client": "^3.0.1",
     "@types/jest": "^27.0.1",
     "@types/node": "^14.18.9",
     "@types/react": "^17.0.0",
@@ -140,5 +140,8 @@
     "hooks": {
       "commitmsg": "node scripts/validateCommitMessage.js"
     }
+  },
+  "dependencies": {
+    "playright": "^0.0.22"
   }
 }

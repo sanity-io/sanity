@@ -43,6 +43,7 @@ export const ConfirmDelete = enhanceWithReferringDocuments(function ConfirmDelet
           onClick={onConfirm}
           text={hasReferringDocuments ? 'Delete anyway' : 'Delete now'}
           tone="critical"
+          data-testid="confirm-delete"
         />
       )}
     </Grid>

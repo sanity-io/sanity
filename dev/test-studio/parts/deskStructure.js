@@ -93,7 +93,7 @@ const DEBUG_INPUT_TYPES = [
   'withDocumentTest',
 ]
 
-const CI_INPUT_TYPES = ['conditionalFieldset', 'validationCI']
+const CI_INPUT_TYPES = ['conditionalFieldset', 'validationCI', 'documentActionsCI']
 const FIELD_GROUP_TYPES = [
   'fieldGroups',
   'fieldGroupsDefault',

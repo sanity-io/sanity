@@ -90,6 +90,7 @@ import species from './species'
 // CI documents
 import conditionalFieldset from './ci/conditionalFieldset'
 import validationTest from './ci/validationCI'
+import documentActionsCI from './ci/documentActionsCI'
 
 export default createSchema({
   name: 'test-examples',
@@ -180,5 +181,6 @@ export default createSchema({
     fieldGroupsDefault,
     fieldGroupsMany,
     fieldGroupsWithValidation,
+    documentActionsCI,
   ]),
 })

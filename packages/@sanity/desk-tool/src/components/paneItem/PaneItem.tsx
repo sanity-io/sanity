@@ -89,10 +89,11 @@ export function PaneItem(props: PaneItemProps) {
         pressed={pressed}
         selected={selected || clicked}
         tone="inherit"
+        data-testid={`pane-item-${id}`}
       >
         {preview}
       </PreviewCard>
     ),
-    [clicked, handleClick, LinkComponent, pressed, preview, selected]
+    [clicked, handleClick, LinkComponent, pressed, preview, selected, id]
   )
 }

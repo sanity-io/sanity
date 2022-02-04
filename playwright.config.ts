@@ -8,6 +8,8 @@ const config: PlaywrightTestConfig = {
   testDir: './playwright/tests',
   /* Maximum time one test can run for. */
   // timeout: 30 * 1000 * 1000,
+  // Limit the number of failures on CI to save resources
+  maxFailures: process.env.CI ? 10 : undefined,
 
   expect: {
     /**
@@ -91,7 +93,7 @@ const config: PlaywrightTestConfig = {
   ],
 
   /* Folder for test artifacts such as screenshots, videos, traces, etc. */
-  outputDir: 'test-results/',
+  outputDir: 'playwright/test-results/',
 
   /* Run your local dev server before starting the tests */
   // webServer: {
