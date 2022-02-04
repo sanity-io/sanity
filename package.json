@@ -36,7 +36,7 @@
     "dev:partless-studio": "yarn --cwd dev/partless-studio dev",
     "dev:perf-studio": "yarn --cwd dev/perf-studio start",
     "dev:workspaces": "yarn --cwd dev/workspaces dev",
-    "dev:starter-studio": "yarn --cwd dev/starter-studio start",
+    "dev:starter-studio": "yarn --cwd dev/starter-studio dev",
     "dev:test-studio": "yarn --cwd dev/test-studio start",
     "dev:workshop": "yarn --cwd dev/workshop dev",
     "eslint": "eslint --ext=.js,.jsx,.mjs,.ts,.tsx --quiet",
