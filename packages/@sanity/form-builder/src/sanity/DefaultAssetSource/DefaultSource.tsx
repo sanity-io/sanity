@@ -46,7 +46,7 @@ const CardLoadMore = styled(Card)`
   z-index: 200;
 `
 
-export const DefaultSource = React.memo(function DefaultSource(props: Props) {
+const DefaultAssetSource = function DefaultAssetSource(props: Props, ref) {
   const _elementId = useRef(`default-asset-source-${uniqueId()}`)
   const currentPageNumber = useRef(0)
   const fetch$ = useRef<Subscription>()
@@ -200,6 +200,7 @@ export const DefaultSource = React.memo(function DefaultSource(props: Props) {
 
   return (
     <Dialog
+      ref={ref}
       id={_elementId.current}
       header={dialogHeaderTitle}
       width={2}
@@ -224,4 +225,6 @@ export const DefaultSource = React.memo(function DefaultSource(props: Props) {
       )}
     </Dialog>
   )
-})
+}
+
+export const DefaultSource = React.memo(React.forwardRef(DefaultAssetSource))
