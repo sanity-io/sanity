@@ -2,20 +2,20 @@
 ///<reference types="@sanity/types/parts" />
 
 import pluginConfig from 'config:@sanity/default-layout'
-import tools from 'all:part:@sanity/base/tool'
 import {Tool} from '../types'
+import {getRegisteredTools} from './getRegisteredTools'
 
 export default function getOrderedTools(): Tool[] {
   const config = pluginConfig.toolSwitcher || {}
   const order = config.order || []
   const hidden = config.hidden || []
-  const toolsFiltered = tools.filter(Boolean)
+  const tools = getRegisteredTools()
 
   if (!order.length && !hidden.length) {
-    return toolsFiltered
+    return tools
   }
 
-  const keyed = toolsFiltered.reduce((target, tool) => {
+  const keyed = tools.reduce((target, tool) => {
     const title = tool.title || '<unknown>'
 
     if (!tool.name) {
@@ -39,7 +39,7 @@ export default function getOrderedTools(): Tool[] {
 
   const isVisible = (tool: Tool) => hidden.indexOf(tool.name) === -1
 
-  return toolsFiltered.filter(isVisible).sort((tool1, tool2) => {
+  return tools.filter(isVisible).sort((tool1, tool2) => {
     const toolA = keyed[tool1.name]
     const toolB = keyed[tool2.name]
 
