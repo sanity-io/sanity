@@ -383,7 +383,14 @@ export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetRefere
                 )}
                 <Inline paddingX={1}>
                   <MenuButton
-                    button={<Button padding={2} mode="bleed" icon={EllipsisVerticalIcon} />}
+                    button={
+                      <Button
+                        padding={2}
+                        mode="bleed"
+                        icon={EllipsisVerticalIcon}
+                        data-testid="menu-button"
+                      />
+                    }
                     id={`${inputId}-menuButton`}
                     menu={
                       <Menu>
@@ -393,11 +400,13 @@ export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetRefere
                               text="Clear"
                               tone="critical"
                               icon={ClearIcon}
+                              data-testid="menu-item-clear"
                               onClick={handleClear}
                             />
                             <MenuItem
                               text="Replace"
                               icon={ReplaceIcon}
+                              data-testid="menu-item-replace"
                               onClick={() => {
                                 onFocus?.(['_ref'])
                               }}
