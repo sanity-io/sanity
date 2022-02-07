@@ -32,6 +32,14 @@ import MissingProjectConfig from './MissingProjectConfig'
 import VersionChecker from './VersionChecker'
 import {useZIndex, ZIndexProvider} from './zOffsets'
 
+/**
+ * When importing fonts in the variables font, you end up with many duplicates.
+ * To work around this, we instead have a separate part for only the font imports.
+ * This is what is imported here, to kick things off.
+ **/
+// eslint-disable-next-line import/no-unassigned-import
+import 'part:@sanity/base/theme/variables/fonts-style'
+
 Refractor.registerLanguage(bash)
 Refractor.registerLanguage(javascript)
 Refractor.registerLanguage(json)
