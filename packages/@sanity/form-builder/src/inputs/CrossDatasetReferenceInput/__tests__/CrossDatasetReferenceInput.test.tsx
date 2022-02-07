@@ -10,11 +10,10 @@ import {Observable, of} from 'rxjs'
 import {noop} from 'lodash'
 
 import {AvailabilityReason} from '@sanity/base/_internal'
-import {Reference} from '@sanity/types'
 import userEvent from '@testing-library/user-event'
 import {CrossDatasetReferenceInput, Props} from '../CrossDatasetReferenceInput'
-import {CrossDatasetReferenceInfo, DocumentPreview, SearchHit} from '../types'
-import {openElement, openHtml} from './utils/open-html'
+import {SearchHit} from '../types'
+import {wait} from './utils/wait'
 
 const EMPTY_SEARCH = () => of([])
 
@@ -65,63 +64,113 @@ function CrossDatasetReferenceInputTester(
   )
 }
 
-function ReferenceInfoTester(
-  props: Partial<Omit<Props, 'getReferenceInfo' | 'type'>> & {
-    referenceInfo: CrossDatasetReferenceInfo
-    typeIsWeakRef?: boolean
-    isEditing?: boolean
-    value: Reference
-  }
-) {
-  const schema = Schema.compile({
-    types: [
-      {
-        name: 'actorReference',
-        type: 'crossDatasetReference',
-        weak: props.typeIsWeakRef,
-        to: [{type: 'actor'}],
-      },
-    ],
+describe('render states', () => {
+  test('it renders the autocomplete when no value is given', () => {
+    const schema = Schema.compile({
+      types: [
+        {
+          name: 'productReference',
+          type: 'crossDatasetReference',
+          dataset: 'products',
+          projectId: 'abcxyz',
+          to: [{type: 'product'}],
+        },
+      ],
+    })
+
+    const {queryByTestId} = render(
+      <CrossDatasetReferenceInputTester
+        value={undefined}
+        type={schema.get('productReference')}
+        getReferenceInfo={(id) =>
+          of({
+            id,
+            type: 'product',
+            availability: AVAILABLE,
+            preview: {
+              published: {title: `Product ${id}`},
+            },
+          })
+        }
+      />
+    )
+
+    expect(queryByTestId('autocomplete')).toBeInTheDocument()
   })
 
-  return (
-    <CrossDatasetReferenceInputTester
-      getReferenceInfo={(id: string) => of(props.referenceInfo)}
-      onSearch={EMPTY_SEARCH}
-      focusPath={props.isEditing ? ['_ref'] : []}
-      type={schema.get('actorReference')}
-      value={props.value}
-    />
-  )
-}
+  test('it renders the autocomplete when it has a value but focus is on the _ref', () => {
+    const schema = Schema.compile({
+      types: [
+        {
+          name: 'productReference',
+          type: 'crossDatasetReference',
+          dataset: 'products',
+          projectId: 'abcxyz',
+          to: [{type: 'product'}],
+        },
+      ],
+    })
 
-describe('if schema type is a weak reference', () => {
-  test('a warning is displayed if the reference value is strong while the schema says it should be weak', () => {
     const {getByTestId} = render(
-      <ReferenceInfoTester
-        typeIsWeakRef
+      <CrossDatasetReferenceInputTester
+        value={{_type: 'productReference', _ref: 'foo', _dataset: 'foo', _projectId: 'foo'}}
+        focusPath={['_ref']}
+        type={schema.get('productReference')}
+        getReferenceInfo={jest.fn().mockReturnValue(
+          of({
+            _id: 'foo',
+            type: 'product',
+            availability: AVAILABLE,
+            preview: {
+              published: {title: `Foo`},
+            },
+          })
+        )}
+      />
+    )
+    expect(getByTestId('autocomplete')).toBeInTheDocument()
+  })
+
+  test('a warning is displayed if the reference value is strong while the schema says it should be weak', () => {
+    const schema = Schema.compile({
+      types: [
+        {
+          name: 'productReference',
+          type: 'crossDatasetReference',
+          dataset: 'products',
+          projectId: 'abcxyz',
+          weak: true,
+          to: [{type: 'product'}],
+        },
+      ],
+    })
+    const {getByTestId} = render(
+      <CrossDatasetReferenceInputTester
+        type={schema.get('productReference')}
         value={{
           _type: 'reference',
           _ref: 'someActor',
           _dataset: 'otherDataset',
           _projectId: 'otherProject',
         }}
-        referenceInfo={{
-          id: 'someActor',
-          type: 'actorReference',
-          availability: AVAILABLE,
-          preview: {
-            published: {title: 'Actor (published)', description: ''} as DocumentPreview,
-          },
-        }}
+        getReferenceInfo={jest.fn().mockReturnValue(
+          of({
+            _id: 'foo',
+            type: 'product',
+            availability: AVAILABLE,
+            preview: {
+              published: {title: `Foo`},
+            },
+          })
+        )}
       />
     )
     expect(getByTestId('alert-reference-strength-mismatch')).toBeInTheDocument()
   })
 })
 
-describe('user interaction', () => {
-  test('support searching for references and emits patches when a reference is chosen', async () => {
+describe('user interaction happy paths', () => {
+  test('an input without a value support searching for references and emits patches when a reference is chosen', async () => {
     const handleSearch = jest.fn<Observable<SearchHit[]>, [string]>().mockReturnValue(
       of([
         {id: 'one', type: 'product', published: {_id: 'one', _type: 'product'}},
@@ -162,30 +211,206 @@ describe('user interaction', () => {
     )
 
     const autocomplete = getByTestId('autocomplete')
-    expect(autocomplete).toBeInTheDocument()
     userEvent.type(autocomplete, 'foo')
-
-    expect(autocomplete).toBeInTheDocument()
     const popover = getByTestId('autocomplete-popover')
-    expect(popover).toBeInTheDocument()
 
     const previews = within(popover).getAllByTestId('preview')
 
     expect(previews.length).toBe(2)
     expect(previews[0]).toHaveTextContent('Product one')
     expect(previews[1]).toHaveTextContent('Product two')
-    // openElement(previews[1])
+
     userEvent.click(within(popover).getAllByRole('button')[1])
-    await new Promise((resolve) => setTimeout(resolve, 100))
+
+    // Note: this asserts the necessity of awaiting after click. Currently, the onChange event is emitted asynchronously after an item is selected due to behavior in Sanity UI's autocomplete
+    // (https://github.com/sanity-io/design/blob/b956686c2c663c4f21910f7d3d0be0a27663f5f4/packages/%40sanity/ui/src/components/autocomplete/autocompleteOption.tsx#L16-L20)
+    // if this tests suddenly fails this expectation, it can be removed along with the waiting
+    expect(handleChange).toHaveBeenCalledTimes(0)
+    await wait(1)
+    //----
+
     expect(handleChange).toHaveBeenCalledTimes(1)
     expect(handleChange.mock.calls[0]).toEqual([
       {
         patches: [
-          {type: 'setIfMissing', path: [], value: {}},
-          {type: 'set', path: ['_type'], value: 'productReference'},
-          {type: 'set', path: ['_ref'], value: 'two'},
-          {type: 'set', path: ['_dataset'], value: 'products'},
-          {type: 'set', path: ['_productId'], value: 'abcxyz'},
+          {
+            path: [],
+            type: 'set',
+            value: {
+              _dataset: 'products',
+              _projectId: 'abcxyz',
+              _ref: 'two',
+              _type: 'productReference',
+            },
+          },
+        ],
+      },
+    ])
+  })
+  test('an input with an existing value support replacing the value, and emits patches when a new reference is chosen', async () => {
+    const handleSearch = jest.fn<Observable<SearchHit[]>, [string]>().mockReturnValue(
+      of([
+        {id: 'one', type: 'product', published: {_id: 'one', _type: 'product'}},
+        {id: 'two', type: 'product', published: {_id: 'two', _type: 'product'}},
+      ])
+    )
+
+    const handleChange = jest.fn()
+    const handleFocus = jest.fn()
+
+    const schema = Schema.compile({
+      types: [
+        {
+          name: 'productReference',
+          type: 'crossDatasetReference',
+          dataset: 'products',
+          projectId: 'abcxyz',
+          to: [{type: 'product'}],
+        },
+      ],
+    })
+
+    const value = {
+      _type: 'productReference',
+      _ref: 'some-product',
+      _dataset: 'products',
+      _projectId: 'abcxyz',
+    }
+    const getReferenceInfo = (id) =>
+      of({
+        id,
+        type: 'product',
+        availability: AVAILABLE,
+        preview: {
+          published: {title: `Product ${id}`},
+        },
+      })
+
+    const {getByTestId, rerender} = render(
+      <CrossDatasetReferenceInputTester
+        value={value}
+        type={schema.get('productReference')}
+        onChange={handleChange}
+        onFocus={handleFocus}
+        getReferenceInfo={getReferenceInfo}
+        onSearch={handleSearch}
+      />
+    )
+    const preview = getByTestId('preview')
+    expect(preview).toHaveTextContent('Product some-product')
+    const menuButton = getByTestId('menu-button')
+    menuButton.click()
+    const replaceMenuItem = getByTestId('menu-item-replace')
+
+    replaceMenuItem.click()
+
+    expect(handleFocus).toHaveBeenCalledTimes(1)
+    expect(handleFocus).toHaveBeenCalledWith(['_ref'])
+    rerender(
+      <CrossDatasetReferenceInputTester
+        value={value}
+        type={schema.get('productReference')}
+        onChange={handleChange}
+        focusPath={['_ref']}
+        onFocus={handleFocus}
+        getReferenceInfo={getReferenceInfo}
+        onSearch={handleSearch}
+      />
+    )
+    const autocomplete = getByTestId('autocomplete')
+    userEvent.type(autocomplete, 'foo')
+    const popover = getByTestId('autocomplete-popover')
+
+    const previews = within(popover).getAllByTestId('preview')
+
+    expect(previews.length).toBe(2)
+    expect(previews[0]).toHaveTextContent('Product one')
+    expect(previews[1]).toHaveTextContent('Product two')
+
+    userEvent.click(within(popover).getAllByRole('button')[1])
+
+    // Note: this asserts the necessity of awaiting after click. Currently, the onChange event is emitted asynchronously after an item is selected due to behavior in Sanity UI's autocomplete
+    // (https://github.com/sanity-io/design/blob/b956686c2c663c4f21910f7d3d0be0a27663f5f4/packages/%40sanity/ui/src/components/autocomplete/autocompleteOption.tsx#L16-L20)
+    // if this tests suddenly fails this expectation, it can be removed along with the waiting
+    expect(handleChange).toHaveBeenCalledTimes(0)
+    await wait(1)
+    //----
+
+    expect(handleChange).toHaveBeenCalledTimes(1)
+    expect(handleChange.mock.calls[0]).toEqual([
+      {
+        patches: [
+          {
+            path: [],
+            type: 'set',
+            value: {
+              _dataset: 'products',
+              _projectId: 'abcxyz',
+              _ref: 'two',
+              _type: 'productReference',
+            },
+          },
+        ],
+      },
+    ])
+  })
+  test('an input with an existing value support clearing the value', () => {
+    const handleChange = jest.fn()
+    const handleFocus = jest.fn()
+
+    const schema = Schema.compile({
+      types: [
+        {
+          name: 'productReference',
+          type: 'crossDatasetReference',
+          dataset: 'products',
+          projectId: 'abcxyz',
+          to: [{type: 'product'}],
+        },
+      ],
+    })
+
+    const value = {
+      _type: 'productReference',
+      _ref: 'some-product',
+      _dataset: 'products',
+      _projectId: 'abcxyz',
+    }
+    const getReferenceInfo = (id) =>
+      of({
+        id,
+        type: 'product',
+        availability: AVAILABLE,
+        preview: {
+          published: {title: `Product ${id}`},
+        },
+      })
+
+    const {getByTestId} = render(
+      <CrossDatasetReferenceInputTester
+        value={value}
+        type={schema.get('productReference')}
+        onChange={handleChange}
+        onFocus={handleFocus}
+        getReferenceInfo={getReferenceInfo}
+      />
+    )
+    const preview = getByTestId('preview')
+    expect(preview).toHaveTextContent('Product some-product')
+    const menuButton = getByTestId('menu-button')
+    menuButton.click()
+    const replaceMenuItem = getByTestId('menu-item-clear')
+
+    replaceMenuItem.click()
+
+    expect(handleChange).toHaveBeenCalledTimes(1)
+    expect(handleChange.mock.calls[0]).toEqual([
+      {
+        patches: [
+          {
+            path: [],
+            type: 'unset',
+          },
         ],
       },
     ])
