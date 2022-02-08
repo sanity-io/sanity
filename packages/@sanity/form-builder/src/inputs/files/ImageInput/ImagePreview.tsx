@@ -1,7 +1,7 @@
 import React, {ComponentProps, useCallback, useEffect, useState} from 'react'
 
 import {AccessDeniedIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
-import {Card, Box, Heading, Text} from '@sanity/ui'
+import {Card, Box, Heading, Text, useElementRect} from '@sanity/ui'
 import {
   MAX_DEFAULT_HEIGHT,
   RatioBox,
@@ -18,14 +18,36 @@ interface Props {
   alt: string
 }
 
+const getImageSize = (src) => {
+  const imageUrlParams = new URLSearchParams(src.split('?')[1])
+  const rect = imageUrlParams.get('rect')
+
+  if (rect) {
+    return [rect.split(',')[2], rect.split(',')[3]].map(Number)
+  }
+
+  return src.split('-')[1].split('.')[0].split('x').map(Number)
+}
+
 export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
   const {drag, readOnly, isRejected, src, ...rest} = props
   const [isLoaded, setLoaded] = useState(false)
-
+  const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
+  const rootRect = useElementRect(rootElement)
+  const rootWidth = rootRect?.width || 0
   const acceptTone = isRejected || readOnly ? 'critical' : 'primary'
   const tone = drag ? acceptTone : 'default'
 
-  const [initialHeight, setInitialHeight] = useState(null)
+  const maxHeightToPx = (MAX_DEFAULT_HEIGHT * document.documentElement.clientHeight) / 100 // convert from vh to px, max height of the input
+
+  const [imageWidth, imageHeight] = getImageSize(src)
+
+  const imageRatio = imageWidth / imageHeight
+
+  // is image wider than root? if so calculate the resized height
+  const renderedImageHeight = imageWidth > rootWidth ? rootWidth / imageRatio : imageHeight
+
+  const rootHeight = renderedImageHeight < maxHeightToPx ? null : `${MAX_DEFAULT_HEIGHT}vh`
 
   useEffect(() => {
     /* set for when the src is being switched when the image input already had a image src
@@ -33,19 +55,12 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
     setLoaded(false)
   }, [src])
 
-  const onLoadChange = useCallback(({target: img}) => {
-    const imgHeight = img.height
-    const maxHeightToPx = (MAX_DEFAULT_HEIGHT * document.documentElement.clientHeight) / 100 // convert from vh to px, max height of the input
-
-    if (imgHeight > maxHeightToPx) {
-      setInitialHeight(`${MAX_DEFAULT_HEIGHT}vh`)
-    }
-
+  const onLoadChange = useCallback(() => {
     setLoaded(true)
   }, [])
 
   return (
-    <RatioBox {...rest} style={{height: initialHeight}} tone="transparent">
+    <RatioBox {...rest} ref={setRootElement} style={{height: rootHeight}} tone="transparent">
       <Card data-container tone="inherit">
         {!isLoaded && <OverlayComponent cardTone="transparent" drag content={<SpinnerWrapper />} />}
         <img src={src} data-testid="hotspot-image-input" alt={props.alt} onLoad={onLoadChange} />

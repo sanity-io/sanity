@@ -5,7 +5,7 @@ import {Box, Button, Card, Dialog, Menu, MenuButton, MenuItem, Stack, ToastParam
 import {get, groupBy, uniqueId} from 'lodash'
 import {Observable, Subscription} from 'rxjs'
 import {ChangeIndicatorForFieldPath} from '@sanity/base/change-indicators'
-import {ImageIcon, SearchIcon} from '@sanity/icons'
+import {ChevronDownIcon, ImageIcon, SearchIcon} from '@sanity/icons'
 import {
   ImageAsset,
   AssetFromSource,
@@ -523,7 +523,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       assetSources && assetSources?.length === 0 ? null : (
         <MenuItem
           icon={SearchIcon}
-          text="Browse"
+          text="Select"
           onClick={() => {
             this.setState({isMenuOpen: false})
             this.handleSelectImageFromAssetSource(assetSources[0])
@@ -593,9 +593,10 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
           button={
             <Button
               mode="ghost"
-              text="Browse"
+              text="Select"
               data-testid="file-input-multi-browse-button"
               icon={SearchIcon}
+              iconRight={ChevronDownIcon}
             />
           }
           menu={
@@ -624,7 +625,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     return (
       <Button
         fontSize={2}
-        text="Browse"
+        text="Select"
         icon={SearchIcon}
         mode="ghost"
         onClick={() => {
