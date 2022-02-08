@@ -362,7 +362,6 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
       return (
         <PreviewCard as="button" type="button" radius={2}>
           <Box paddingX={3} paddingY={1}>
-            asd
             <OptionPreview getReferenceInfo={getReferenceInfoMemo} id={id} type={type} />
           </Box>
         </PreviewCard>
