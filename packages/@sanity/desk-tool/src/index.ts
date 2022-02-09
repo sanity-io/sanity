@@ -14,6 +14,7 @@ export * from './contexts/paneRouter/usePaneRouter'
 
 export function deskTool(options: DeskToolOptions = {}): SanityPlugin {
   return createPlugin({
+    name: '@sanity/desk-tool',
     tools: [
       {
         name: options?.name || 'desk',
