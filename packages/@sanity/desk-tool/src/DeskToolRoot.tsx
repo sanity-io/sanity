@@ -62,7 +62,10 @@ function DeskToolApp(props: {tool: SanityTool<DeskToolOptions>}) {
 
   const routerState = useRouterState()
 
-  const structure = useMemo(() => validateStructure(resolveStructure(S)), [resolveStructure, S])
+  const structure = useMemo(
+    () => validateStructure(resolveStructure(S, {schema: source.schema})),
+    [resolveStructure, S, source]
+  )
 
   const intent = isString(routerState.intent) ? routerState.intent : undefined
   const params = isRecord(routerState.params) ? routerState.params : {}

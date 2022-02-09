@@ -7,12 +7,12 @@ import {
   StructureBuilder,
   UserComponent,
 } from '@sanity/base/structure'
-import {SchemaType, SanityDocument} from '@sanity/types'
+import {SchemaType, SanityDocument, Schema} from '@sanity/types'
 import {Subscribable} from 'rxjs'
 
 export type DocumentActionsResolver = (editState: EditStateFor) => DocumentActionComponent[]
 
-export type StructureResolver = (S: StructureBuilder) => ListBuilder
+export type StructureResolver = (S: StructureBuilder, context: {schema: Schema}) => ListBuilder
 
 export type DeskToolPaneActionHandler = (params: any, scope?: unknown) => void
 
