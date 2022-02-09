@@ -18,6 +18,7 @@ import {usePaneLayout} from '../../../components/pane/usePaneLayout'
 import {useDeskTool} from '../../../contexts/deskTool'
 import {useDocumentPane} from '../useDocumentPane'
 import {InspectDialog} from '../inspectDialog'
+import {_DEBUG} from '../../..'
 import {DocumentPanelHeader} from './header'
 import {FormView} from './documentViews'
 import {PermissionCheckBanner} from './PermissionCheckBanner'
@@ -143,9 +144,11 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   return (
     <Flex direction="column" flex={2} overflow={layoutCollapsed ? undefined : 'hidden'}>
-      <Card padding={4} tone="transparent">
-        <Code>{source.name}</Code>
-      </Card>
+      {_DEBUG && (
+        <Card padding={4} tone="transparent">
+          <Code>{source.name}</Code>
+        </Card>
+      )}
 
       <DocumentPanelHeader rootElement={rootElement} ref={setHeaderElement} />
 

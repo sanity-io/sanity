@@ -6,6 +6,7 @@ import {useShallowUnique} from '../../utils/useShallowUnique'
 import {useUnique} from '../../utils/useUnique'
 import {useDeskToolSetting} from '../../settings'
 import {BaseDeskToolPaneProps} from '../types'
+import {_DEBUG} from '../../constants'
 import {DEFAULT_ORDERING, EMPTY_RECORD} from './constants'
 import {
   applyOrderingFunctions,
@@ -67,9 +68,11 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   return (
     <SourceProvider name={sourceName}>
       <Pane currentMaxWidth={350} id={paneKey} maxWidth={640} minWidth={320} selected={isSelected}>
-        <Card padding={4} tone="transparent">
-          <Code>{pane.source || '(none)'}</Code>
-        </Card>
+        {_DEBUG && (
+          <Card padding={4} tone="transparent">
+            <Code>{pane.source || '(none)'}</Code>
+          </Card>
+        )}
 
         <DocumentListPaneHeader
           index={index}

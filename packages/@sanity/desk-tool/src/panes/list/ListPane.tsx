@@ -8,6 +8,7 @@ import {PaneItem} from '../../components/paneItem'
 import {useDeskTool} from '../../contexts/deskTool'
 import {BackLink} from '../../contexts/paneRouter'
 import {BaseDeskToolPaneProps} from '../types'
+import {_DEBUG} from '../../constants'
 
 type ListPaneProps = BaseDeskToolPaneProps<'list'>
 
@@ -49,9 +50,11 @@ export function ListPane(props: ListPaneProps) {
       minWidth={320}
       selected={isSelected}
     >
-      <Card padding={4} tone="transparent">
-        <Code>{pane.source || '(none)'}</Code>
-      </Card>
+      {_DEBUG && (
+        <Card padding={4} tone="transparent">
+          <Code>{pane.source || '(none)'}</Code>
+        </Card>
+      )}
 
       <PaneHeader
         actions={<PaneHeaderActions menuItems={menuItems} menuItemGroups={menuItemGroups} />}
