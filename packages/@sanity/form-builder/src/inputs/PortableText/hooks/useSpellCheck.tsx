@@ -6,7 +6,7 @@ export function useSpellcheck(): boolean {
   return useMemo(() => {
     // Chrome 96. has serious perf. issues with spellchecking
     // https://bugs.chromium.org/p/chromium/issues/detail?id=1271918
-    // TODO: check up on the status of this.
+    // This issue is verified fixed in Chrome 97.
     const spellCheckOption = editor.portableTextFeatures.types.block.options?.spellCheck
     const isChrome96 =
       typeof navigator === 'undefined' ? false : /Chrome\/96/.test(navigator.userAgent)
