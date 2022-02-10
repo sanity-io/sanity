@@ -33,7 +33,6 @@ import {RenderBlockActions, RenderCustomMarkers} from './types'
 import {Editor} from './Editor'
 import {ExpandedLayer, Root} from './Compositor.styles'
 import {useObjectEditData} from './hooks/useObjectEditData'
-import {useSpellcheck} from './hooks/useSpellCheck'
 import {useScrollSelectionIntoView} from './hooks/useScrollSelectionIntoView'
 import {useObjectEditFormBuilderFocus} from './hooks/useObjectEditFormBuilderFocus'
 import {useObjectEditFormBuilderChange} from './hooks/useObjectEditFormBuilderChange'
@@ -83,7 +82,6 @@ export function Compositor(props: InputProps) {
   } = props
 
   const editor = usePortableTextEditor()
-  const spellcheck = useSpellcheck()
 
   const [isActive, setIsActive] = useState(false)
   const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
@@ -198,7 +196,6 @@ export function Compositor(props: InputProps) {
             markers={blockMarkers}
             onChange={onChange}
             readOnly={readOnly}
-            spellCheck={spellcheck}
             renderBlockActions={hasContent && renderBlockActions}
             renderCustomMarkers={hasContent && renderCustomMarkers}
           >
@@ -237,7 +234,6 @@ export function Compositor(props: InputProps) {
       readOnly,
       renderBlockActions,
       renderCustomMarkers,
-      spellcheck,
     ]
   )
 
