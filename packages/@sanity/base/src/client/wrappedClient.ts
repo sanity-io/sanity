@@ -15,6 +15,7 @@ import sanityClient from '@sanity/client'
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import config from 'config:sanity'
 import configureClient from 'part:@sanity/base/configure-client?'
+import {authToken$} from '../datastores/authToken'
 
 const fallbackConfig = {projectId: 'UNSPECIFIED', dataset: 'UNSPECIFIED'}
 const apiConfig = {
@@ -67,9 +68,15 @@ export const wrappedClient = {
         )}`
       )
     }
-
     const newClient = configuredClient.clone().config(newConfig)
     instances.push(newClient)
+    authToken$.subscribe((token) => {
+      if (token) {
+        newClient.config({...newConfig, token})
+      } else {
+        newClient.config({...newConfig})
+      }
+    })
     return newClient
   },
 }
