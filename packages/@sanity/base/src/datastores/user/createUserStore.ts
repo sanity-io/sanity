@@ -82,23 +82,14 @@ const currentUser: Observable<CurrentUser | null> = merge(
       throw err
     })
   ), // initial fetch
-  refresh$.pipe(
-    switchMap(() =>
-      fetchCurrentUser().pipe(
-        tap((usr) => {
-          if (!usr) {
-            deleteToken(projectId)
-          }
-          broadcastAuthStateChanged()
-        })
-      )
-    )
-  ), // re-fetch as response to request to refresh current user
+  refresh$.pipe(switchMap(() => fetchCurrentUser())), // re-fetch as response to request to refresh current user
   logout$.pipe(
     mergeMap(() => authenticationFetcher.logout()),
     tap(() => {
-      deleteToken(projectId)
-      broadcastAuthStateChanged()
+      if (isClientConfiguredWithToken()) {
+        deleteToken(projectId)
+        broadcastAuthStateChanged()
+      }
     }),
     mapTo(null)
   )
