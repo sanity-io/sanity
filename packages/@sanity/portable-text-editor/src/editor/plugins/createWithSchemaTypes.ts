@@ -14,7 +14,8 @@ export function createWithSchemaTypes(portableTextFeatures: PortableTextFeatures
       return (
         !editor.isVoid(value) &&
         'markDefs' in value &&
-        'style' in value &&
+        // style is not required in TextBlock 
+        /*'style' in value && */  
         'children' in value &&
         '_type' in value &&
         portableTextFeatures.types.block.name === value._type
