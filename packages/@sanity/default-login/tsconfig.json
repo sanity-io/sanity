@@ -7,5 +7,6 @@
     "rootDir": "./src",
     "jsx": "react",
     "noImplicitAny": false,
-  }
+  },
+  "references": [{"path": "../base"}]
 }
