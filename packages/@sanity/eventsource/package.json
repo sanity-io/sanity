@@ -26,6 +26,7 @@
   },
   "homepage": "https://www.sanity.io/",
   "dependencies": {
+    "event-source-polyfill": "^1.0.25",
     "@rexxars/eventsource-polyfill": "^1.0.0",
     "eventsource": "^1.0.6"
   }
