@@ -11,12 +11,14 @@ export default class LoginDialog extends React.Component {
     description: PropTypes.node,
     projectId: PropTypes.string,
     SanityLogo: PropTypes.oneOfType([PropTypes.object, PropTypes.node, PropTypes.func]),
+    type: PropTypes.string,
   }
 
   static defaultProps = {
     description: null,
     projectId: null,
     SanityLogo: null,
+    type: 'cookie',
   }
 
   state = {
@@ -51,9 +53,13 @@ export default class LoginDialog extends React.Component {
   }
 
   redirectToProvider(provider) {
-    const {projectId} = this.props
+    const {projectId, type} = this.props
     const currentUrl = encodeURIComponent(window.location.toString())
-    const params = [`origin=${currentUrl}`, projectId && `projectId=${projectId}`].filter(Boolean)
+    const params = [
+      `origin=${currentUrl}`,
+      projectId && `projectId=${projectId}`,
+      `type=${type}`,
+    ].filter(Boolean)
 
     if (provider.custom && !provider.supported && !this.state.error) {
       this.setState({
