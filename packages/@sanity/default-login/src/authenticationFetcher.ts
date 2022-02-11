@@ -1,10 +1,11 @@
+import {User} from '@sanity/types'
 import getProviders from './util/getProviders'
 import {versionedClient} from './versionedClient'
 
 export default {
   getProviders,
 
-  getCurrentUser: () =>
+  getCurrentUser: (): Promise<User | null> =>
     versionedClient
       .request({
         uri: '/users/me',
@@ -21,5 +22,5 @@ export default {
         throw err
       }),
 
-  logout: () => versionedClient.auth.logout(),
+  logout: (): Promise<void> => versionedClient.auth.logout(),
 }
