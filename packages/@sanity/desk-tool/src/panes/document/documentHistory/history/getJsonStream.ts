@@ -2,8 +2,15 @@ import {TransactionLogEvent} from './types'
 
 type StreamResult = TransactionLogEvent | {error: {description?: string; type: string}}
 
-export async function getJsonStream(url: string): Promise<ReadableStream<StreamResult>> {
-  const options: RequestInit = {credentials: 'include'}
+export async function getJsonStream(
+  url: string,
+  token?: string
+): Promise<ReadableStream<StreamResult>> {
+  const authorizationHeader = {
+    Authorization: `Bearer ${token}`,
+  }
+
+  const options: RequestInit = token ? {headers: authorizationHeader} : {credentials: 'include'}
   const response = await fetch(url, options)
   return getStream(response)
 }
