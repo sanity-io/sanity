@@ -22,8 +22,10 @@ export const deleteToken = (projectId: string): void => {
 export const getToken = (projectId: string): string | null => {
   const item = window.localStorage.getItem(getLSKey(projectId))
   if (item) {
-    const {token} = JSON.parse(item)
-    return token
+    const {token}: {token: string} = JSON.parse(item)
+    if (token) {
+      return token
+    }
   }
   return null
 }
