@@ -70,13 +70,16 @@ export const wrappedClient = {
     }
     const newClient = configuredClient.clone().config(newConfig)
     instances.push(newClient)
+
+    // Subscribe to auth token stream and configure the client depending on token value
     authToken$.subscribe((token) => {
       if (token) {
         newClient.config({...newConfig, token})
       } else {
-        newClient.config({...newConfig})
+        newClient.config({...newConfig, token: undefined})
       }
     })
+
     return newClient
   },
 }
