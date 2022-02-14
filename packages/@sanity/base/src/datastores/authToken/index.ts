@@ -1,5 +1,5 @@
 import config from 'config:sanity'
-import {concat, defer, merge, Observable, of} from 'rxjs'
+import {concat, defer, merge, of, Subject} from 'rxjs'
 import {filter, shareReplay, switchMapTo} from 'rxjs/operators'
 import {otherWindowMessages$, crossWindowBroadcast} from '../crossWindowMessaging'
 import {getToken} from './token'
@@ -8,21 +8,31 @@ export {deleteToken, fetchToken, getToken, saveToken} from './token'
 
 const MSG_AUTH_STATE_CHANGED = 'authStateChange'
 
-export const broadcastAuthStateChanged = (): void => crossWindowBroadcast(MSG_AUTH_STATE_CHANGED)
+const authStateChangedInThisWindow$ = new Subject<string>()
 
-const authStateChangedInOtherTab$ = otherWindowMessages$.pipe(
+const authStateChangedInOtherWindow$ = otherWindowMessages$.pipe(
   filter((msg) => msg === MSG_AUTH_STATE_CHANGED)
 )
+
+export const broadcastAuthStateChanged = (): void => {
+  crossWindowBroadcast(MSG_AUTH_STATE_CHANGED)
+  authStateChangedInThisWindow$.next(MSG_AUTH_STATE_CHANGED)
+}
 
 // TODO: some kind of refresh mechanism here when we support refresh tokens / stamping?
 const freshToken$ = defer(() => {
   const projectId = config.api.projectId
   if (!projectId) {
-    return null
+    throw new Error('No projectId configured')
   }
   return of(getToken(projectId))
 })
 
-export const authToken$: Observable<string | undefined> = defer(() =>
-  concat(freshToken$, merge(authStateChangedInOtherTab$).pipe(switchMapTo(freshToken$)))
+export const authToken$ = defer(() =>
+  concat(
+    freshToken$,
+    merge(authStateChangedInOtherWindow$, authStateChangedInThisWindow$).pipe(
+      switchMapTo(freshToken$)
+    )
+  )
 ).pipe(shareReplay({bufferSize: 1, refCount: true}))
