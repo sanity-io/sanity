@@ -2,28 +2,9 @@
   "name": "@sanity/cli",
   "version": "2.30.0",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
-  "main": "lib/cli.js",
-  "bin": {
-    "sanity": "./bin/sanity"
-  },
-  "scripts": {
-    "build": "run-s build:lib build:pack package-yarn",
-    "build:lib": "../../../bin/pkg-utils transpile --target node",
-    "clean": "rimraf bin/sanity-cli.js lib",
-    "build:pack": "node scripts/pack.js",
-    "package-yarn": "node -r @babel/register src/scripts/package-yarn.js",
-    "prebuild": "yarn clean",
-    "prepublishOnly": "yarn build",
-    "watch": "../../../bin/pkg-utils transpile --target node --watch"
-  },
-  "engines": {
-    "node": ">=12.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git",
-    "directory": "packages/@sanity/cli"
-  },
+  "source": "src/index.ts",
+  "types": "lib/dts/src/index.d.ts",
+  "main": "lib/index.js",
   "keywords": [
     "sanity",
     "cms",
@@ -33,25 +14,52 @@
     "cli",
     "tool"
   ],
-  "author": "Sanity.io <hello@sanity.io>",
-  "license": "MIT",
+  "homepage": "https://www.sanity.io/",
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
   },
-  "homepage": "https://www.sanity.io/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/cli"
+  },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "bin": {
+    "sanity": "./bin/sanity"
+  },
+  "scripts": {
+    "prebuild": "yarn clean",
+    "build": "run-s build:lib build:pack package-yarn",
+    "build:lib": "../../../bin/pkg-utils transpile --target node --tsconfig tsconfig.lib.json",
+    "build:pack": "node scripts/pack.js",
+    "clean": "rimraf bin/sanity-cli.js lib",
+    "package-yarn": "node -r @babel/register src/scripts/package-yarn.js",
+    "prepublishOnly": "yarn build",
+    "watch": "../../../bin/pkg-utils transpile --target node --tsconfig tsconfig.lib.json --watch"
+  },
   "dependencies": {
     "esbuild-register": "^3.2.0"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-typescript": "^7.16.0",
+    "@rexxars/gitconfiglocal": "^3.0.1",
     "@sanity/client": "^3.2.0",
     "@sanity/eslint-config-studio": "^2.0.0",
     "@sanity/generate-help-url": "^3.0.0",
-    "@sanity/resolver": "2.29.5",
+    "@sanity/types": "2.27.0",
     "@sanity/util": "2.29.5",
+    "@types/configstore": "^5.0.1",
+    "@types/decompress": "^4.2.4",
+    "@types/eventsource": "^1.1.8",
+    "@types/node": "^14.0.0",
+    "@types/split2": "^3.2.1",
+    "@types/validate-npm-package-name": "^3.0.3",
+    "@types/which": "^2.0.1",
     "boxen": "^4.1.0",
     "chalk": "^4.1.2",
+    "clean-stack": "^3.0.0",
     "configstore": "^5.0.1",
     "debug": "^3.2.7",
     "decompress": "^4.2.0",
@@ -61,24 +69,21 @@
     "eventsource": "^1.0.6",
     "execa": "^2.0.0",
     "fs-extra": "^7.0.0",
-    "gauge": "^2.7.4",
+    "gauge": "^4.0.0",
     "get-it": "^5.2.1",
-    "get-latest-version": "^4.0.0",
-    "git-user-info": "^1.0.1",
-    "gitconfiglocal": "^2.0.1",
+    "get-latest-version": "^3.0.2",
+    "git-user-info": "^2.0.0",
     "inquirer": "^6.0.0",
-    "is-installed-globally": "^0.1.0",
+    "is-installed-globally": "^0.4.0",
     "klaw-sync": "^4.0.0",
     "leven": "^3.1.0",
     "lodash": "^4.17.21",
     "minimist": "^1.2.5",
-    "neat-stack": "^1.0.1",
-    "opn": "^5.2.0",
+    "open": "^8.4.0",
     "ora": "^5.4.1",
-    "osenv": "^0.1.4",
     "p-filter": "^2.1.0",
-    "p-timeout": "^2.0.1",
-    "promise-props-recursive": "^1.0.0",
+    "p-timeout": "^4.0.0",
+    "promise-props-recursive": "^2.0.1",
     "resolve-from": "^5.0.0",
     "rimraf": "^3.0.2",
     "semver": "^7.3.5",
@@ -86,7 +91,10 @@
     "split2": "^3.2.2",
     "validate-npm-package-name": "^3.0.0",
     "webpack": "^4.14.0",
-    "which": "^1.3.0",
-    "xdg-basedir": "^3.0.0"
+    "which": "^2.0.2",
+    "xdg-basedir": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }

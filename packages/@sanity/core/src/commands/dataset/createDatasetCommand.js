@@ -1,4 +1,4 @@
-import debug from '../../debug'
+import {debug} from '../../debug'
 import promptForDatasetName from '../../actions/dataset/datasetNamePrompt'
 import validateDatasetName from '../../actions/dataset/validateDatasetName'
 

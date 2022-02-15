@@ -7,7 +7,7 @@ import padStart from 'lodash/padStart'
 import prettyMs from 'pretty-ms'
 import chooseDatasetPrompt from '../../actions/dataset/chooseDatasetPrompt'
 import validateDatasetName from '../../actions/dataset/validateDatasetName'
-import debug from '../../debug'
+import {debug} from '../../debug'
 
 const yellow = (str) => `\u001b[33m${str}\u001b[39m`
 

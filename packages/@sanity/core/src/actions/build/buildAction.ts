@@ -5,7 +5,7 @@ import {promisify} from 'util'
 import {buildStaticFiles, ChunkModule, ChunkStats} from '@sanity/server'
 import chalk from 'chalk'
 import rimrafCallback from 'rimraf'
-import type {CliCommandArguments, CliCommandContext} from '../../types'
+import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
 import checkStudioDependencyVersions from '../../util/checkStudioDependencyVersions'
 import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
 import {getTimer} from '../../util/timing'
@@ -26,7 +26,7 @@ export default async function buildSanityStudio(
   overrides?: {basePath?: string}
 ): Promise<{didCompile: boolean}> {
   const timer = getTimer()
-  const {output, prompt, workDir, buildConfig} = context
+  const {output, prompt, workDir, cliConfig} = context
   const flags: BuildSanityStudioCommandFlags = {
     minify: true,
     stats: false,
@@ -82,10 +82,10 @@ export default async function buildSanityStudio(
     const bundle = await buildStaticFiles({
       cwd: workDir,
       outputDir,
-      basePath: overrides?.basePath || buildConfig?.project?.basePath || '/',
+      basePath: overrides?.basePath || cliConfig?.project?.basePath || '/',
       sourceMap: Boolean(flags['source-maps']),
       minify: Boolean(flags.minify),
-      vite: buildConfig?.vite,
+      vite: cliConfig && 'vite' in cliConfig ? cliConfig.vite : undefined,
     })
     const buildDuration = timer.end('bundleStudio')
 

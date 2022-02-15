@@ -1,13 +1,15 @@
 {
   "extends": "../../../tsconfig.settings",
-  "include": ["./src/"],
+  "include": ["./src", "./test", "./typings", "./package.json"],
   "compilerOptions": {
     "composite": true,
     "declarationDir": "./lib/dts/",
-    "rootDir": "./src/",
+    "rootDir": "./",
     "outDir": "./lib/dts/",
     "checkJs": false,
-    "allowJs": true
+    "allowJs": true,
+    "jsx": "react",
+    "resolveJsonModule": true
   },
   "references": [{"path": "../types"}]
 }

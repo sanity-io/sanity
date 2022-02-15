@@ -10,15 +10,11 @@
  */
 
 var err = '\u001b[31m\u001b[1mERROR:\u001b[22m\u001b[39m '
-var nodeVersionParts = process.version
-  .replace(/^v/i, '')
-  .split('.')
-  .map(Number)
+var nodeVersionParts = process.version.replace(/^v/i, '').split('.').map(Number)
 
 var majorVersion = nodeVersionParts[0]
-var minorVersion = nodeVersionParts[1]
-if (majorVersion < 12) {
-  console.error(err + 'Node.js version 12 or higher required. You are running ' + process.version)
+if (majorVersion < 14) {
+  console.error(err + 'Node.js version 14 or higher required. You are running ' + process.version)
   console.error('')
   process.exit(1)
 }
@@ -28,6 +24,10 @@ try {
   require('./entry')
   return
 } catch (error) {
+  if (error.code !== 'MODULE_NOT_FOUND') {
+    throw error
+  }
+
   // Probably in "production", flow through to pre-packaged
 }
 

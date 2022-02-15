@@ -3,7 +3,7 @@ import {Observable} from 'rxjs'
 import chalk from 'chalk'
 import promptForDatasetName from '../../actions/dataset/datasetNamePrompt'
 import validateDatasetName from '../../actions/dataset/validateDatasetName'
-import debug from '../../debug'
+import {debug} from '../../debug'
 
 const helpText = `
 Options

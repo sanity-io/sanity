@@ -2,7 +2,7 @@ import path from 'path'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore The `@sanity/server` may not be built yet.
 import {DevServerOptions, startDevServer} from '@sanity/server'
-import type {BuildConfig} from '@sanity/types'
+import type {CliConfig} from '@sanity/cli'
 import {getTimer} from '../../util/timing'
 import type {CliCommandArguments, CliCommandContext} from '../../types'
 import checkStudioDependencyVersions from '../../util/checkStudioDependencyVersions'
@@ -19,7 +19,7 @@ export default async function startSanityDevServer(
 ): Promise<void> {
   const timers = getTimer()
   const flags = args.extOptions
-  const {output, workDir, buildConfig} = context
+  const {output, workDir, cliConfig} = context
 
   timers.start('checkStudioDependencyVersions')
   await checkStudioDependencyVersions(workDir)
@@ -33,7 +33,7 @@ export default async function startSanityDevServer(
 
   // Try to load CLI configuration from sanity.cli.(js|ts)
   const configSpinner = output.spinner('Checking configuration files...')
-  const config = getDevServerConfig({flags, workDir, buildConfig})
+  const config = getDevServerConfig({flags, workDir, cliConfig})
   configSpinner.succeed()
 
   try {
@@ -54,24 +54,24 @@ export default async function startSanityDevServer(
 function getDevServerConfig({
   flags,
   workDir,
-  buildConfig,
+  cliConfig,
 }: {
   flags: StartDevServerCommandFlags
   workDir: string
-  buildConfig?: BuildConfig
+  cliConfig?: CliConfig
 }): DevServerOptions {
   // Order of preference: CLI flags, environment variables, user build config, default config
   const env = process.env // eslint-disable-line no-process-env
 
   const httpHost =
-    flags.host || env.SANITY_STUDIO_SERVER_HOSTNAME || buildConfig?.server?.hostname || '127.0.0.1'
+    flags.host || env.SANITY_STUDIO_SERVER_HOSTNAME || cliConfig?.server?.hostname || '127.0.0.1'
 
   const httpPort = toInt(
-    flags.port || env.SANITY_STUDIO_SERVER_PORT || buildConfig?.server?.port,
+    flags.port || env.SANITY_STUDIO_SERVER_PORT || cliConfig?.server?.port,
     3333
   )
 
-  const basePath = env.SANITY_STUDIO_BASEPATH || buildConfig?.project?.basePath || '/'
+  const basePath = env.SANITY_STUDIO_BASEPATH || cliConfig?.project?.basePath || '/'
 
   return {
     cwd: workDir,
@@ -79,7 +79,7 @@ function getDevServerConfig({
     httpHost,
     basePath,
     staticPath: path.join(workDir, 'static'),
-    vite: buildConfig?.vite,
+    vite: cliConfig?.vite,
   }
 }
 

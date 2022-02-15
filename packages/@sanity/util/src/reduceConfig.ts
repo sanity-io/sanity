@@ -46,10 +46,10 @@ function tryReadDotEnv(studioRootPath: string, fallbackEnv?: string) {
 }
 
 export function reduceConfig(
-  rawConfig: any,
+  rawConfig: SanityJson,
   env = 'development',
   options: {studioRootPath?: string} = {}
-) {
+): Omit<SanityJson, 'env'> {
   const studioRootPath = options.studioRootPath
 
   let envVars = {...process.env}
@@ -73,4 +73,41 @@ export function reduceConfig(
   const config = mergeWith({}, rawConfig, envConfig, sanityConf, processEnvConfig, merge)
   delete config.env
   return config
+}
+
+export interface SanityJson {
+  root?: boolean
+
+  project?: {
+    name: string
+  }
+
+  api?: {
+    projectId?: string
+    dataset?: string
+  }
+
+  // eslint-disable-next-line camelcase
+  __experimental_spaces?: {
+    name: string
+    title: string
+    default?: true
+    api: {
+      projectId?: string
+      dataset?: string
+    }
+  }[]
+
+  plugins?: string[]
+
+  parts?: {
+    name?: string
+    path?: string
+    implements?: string
+    description?: string
+  }[]
+
+  env?: {
+    [key: string]: SanityJson | undefined
+  }
 }

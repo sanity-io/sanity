@@ -1,4 +1,4 @@
-import debug from '../../debug'
+import {debug} from '../../debug'
 import promptForDatasetName from './datasetNamePrompt'
 
 export default async (context, options = {}) => {
