@@ -1,10 +1,10 @@
-// These are path mappings/aliases used by various tools in the monorepo to map imported modules to source files
-// in order to speed up rebuilding and avoid having a separate watcher process to build from src => lib.
+// These are path mappings/aliases used by various tools in the monorepo to map imported modules to
+// source files in order to speed up rebuilding and avoid having a separate watcher process to build
+// from src => lib.
 
 // This file is currently read by:
-// - webpack when running the dev server
-// - vite config for the workshop
-// - jest when running test suite
+//   - vite when running the dev server (only when running in this monorepo)
+//   - jest when running test suite
 
 // prettier-ignore
 module.exports = {
@@ -12,6 +12,7 @@ module.exports = {
   // because they will be escaped by the jest config
   '@sanity/base': './packages/@sanity/base/src/_exports',
   '@sanity/block-tools': './packages/@sanity/block-tools/src',
+  '@sanity/code-input': './packages/@sanity/code-input/src',
   '@sanity/desk-tool': './packages/@sanity/desk-tool/src/_exports',
   '@sanity/diff': './packages/@sanity/diff/src',
   '@sanity/form-builder': './packages/@sanity/form-builder/src/_exports',
