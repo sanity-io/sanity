@@ -4,11 +4,14 @@ import {SanityLogo as SanityLogotype} from '@sanity/logos'
 import {Spinner, Container, Flex} from '@sanity/ui'
 import {of} from 'rxjs'
 import {map, catchError} from 'rxjs/operators'
+import {authToken$} from '@sanity/base/_internal'
 import CookieTest from './CookieTest'
 import ErrorDialog from './ErrorDialog'
 import UnauthorizedUser from './UnauthorizedUser'
 import {versionedClient} from './versionedClient'
 import {userStore, LoginDialog} from './legacyParts'
+
+const ENABLE_CROSS_WINDOW_TOKEN_LOGIN_SYNC = false
 
 const isProjectLogin = versionedClient.config().useProjectHostname
 const projectId =
@@ -41,11 +44,28 @@ export default class LoginWrapper extends React.PureComponent {
   state = {isLoading: true, user: null, error: null}
 
   userSubscription = null
+  tokenSubscription = null
 
   constructor(props) {
     super(props)
 
     let sync = true
+    this.tokenSubscription = ENABLE_CROSS_WINDOW_TOKEN_LOGIN_SYNC
+      ? authToken$.subscribe((token) => {
+          if (token) {
+            if (!this.state.user) {
+              this.handleRetry()
+            }
+            return
+          }
+          if (sync) {
+            // eslint-disable-next-line react/no-direct-mutation-state
+            this.state = {...this.state, ...{user: null}}
+          } else {
+            this.setState({user: null})
+          }
+        })
+      : null
     this.userSubscription = userStore.me
       .pipe(
         map((currentUser) => ({
@@ -74,6 +94,9 @@ export default class LoginWrapper extends React.PureComponent {
   componentWillUnmount() {
     if (this.userSubscription) {
       this.userSubscription.unsubscribe()
+    }
+    if (this.tokenSubscription) {
+      this.tokenSubscription.unsubscribe()
     }
   }
 
