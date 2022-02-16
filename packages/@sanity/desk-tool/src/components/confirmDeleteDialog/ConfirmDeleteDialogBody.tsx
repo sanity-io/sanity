@@ -44,7 +44,7 @@ export function ConfirmDeleteDialogBody({
 }: DeletionConfirmationDialogBodyProps) {
   const toast = useToast()
 
-  if (internalReferences?.total === 0 && crossDatasetReferences?.total === 0) {
+  if (internalReferences?.totalCount === 0 && crossDatasetReferences?.totalCount === 0) {
     return (
       <Text as="p">
         Are you sure you want to delete <strong>“{documentTitle}”</strong>?
@@ -78,7 +78,7 @@ export function ConfirmDeleteDialogBody({
       </Text>
 
       <ReferencesCard radius={2} shadow={1}>
-        {internalReferences.total > 0 && (
+        {internalReferences.totalCount > 0 && (
           <InternalReferences>
             {internalReferences.references.map((internalReference) => (
               <Box as="li" key={internalReference._id} paddingX={3} paddingY={3}>
@@ -89,7 +89,7 @@ export function ConfirmDeleteDialogBody({
                 />
               </Box>
             ))}
-            {internalReferences.total > internalReferences.references.length && (
+            {internalReferences.totalCount > internalReferences.references.length && (
               <Box as="li" padding={3}>
                 <OtherReferenceCount {...internalReferences} />
               </Box>
@@ -97,12 +97,12 @@ export function ConfirmDeleteDialogBody({
           </InternalReferences>
         )}
 
-        {crossDatasetReferences.total > 0 && (
+        {crossDatasetReferences.totalCount > 0 && (
           <CrossDatasetReferences
             style={{
               // only add the border if needed
               borderTop:
-                internalReferences.total > 0
+                internalReferences.totalCount > 0
                   ? '1px solid var(--card-shadow-outline-color)'
                   : undefined,
             }}
@@ -112,10 +112,10 @@ export function ConfirmDeleteDialogBody({
                 <DocumentsIcon />
               </Text>
               <Text>
-                {crossDatasetReferences.total === 1 ? (
+                {crossDatasetReferences.totalCount === 1 ? (
                   <>1 document in another project</>
                 ) : (
-                  <>{crossDatasetReferences.total} documents in other projects</>
+                  <>{crossDatasetReferences.totalCount} documents in other projects</>
                 )}
               </Text>
               <Chevron />
@@ -144,14 +144,14 @@ export function ConfirmDeleteDialogBody({
                 </thead>
                 <tbody>
                   {crossDatasetReferences.references.map(
-                    ({projectId, dataset, id: documentId}, index) => (
+                    ({projectId, datasetName, id: documentId}, index) => (
                       // eslint-disable-next-line react/no-array-index-key
                       <tr key={`${documentId}-${index}`}>
                         <td>
                           <Text size={1}>{projectId}</Text>
                         </td>
                         <td>
-                          <Text size={1}>{dataset}</Text>
+                          <Text size={1}>{datasetName}</Text>
                         </td>
                         <td>
                           <Flex align="center" gap={2} justify="flex-end">

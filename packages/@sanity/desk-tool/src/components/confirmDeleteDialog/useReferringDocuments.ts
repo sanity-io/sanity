@@ -1,37 +1,49 @@
 import documentStore from 'part:@sanity/base/datastore/document'
+import client from 'part:@sanity/base/client'
 import {createHookFromObservableFactory, getPublishedId} from '@sanity/base/_internal'
-import {Observable, of, timer, fromEvent, EMPTY} from 'rxjs'
-import {delay, map, startWith, distinctUntilChanged, switchMap} from 'rxjs/operators'
+import {Observable, timer, fromEvent, EMPTY} from 'rxjs'
+import {map, startWith, distinctUntilChanged, switchMap, shareReplay, tap} from 'rxjs/operators'
 
 const POLL_INTERVAL = 5000
+// only fetches when the document is visible
+
+const visiblePoll$ = fromEvent(document, 'visibilitychange').pipe(
+  // add empty emission to have this fire on creation
+  startWith(null),
+  map(() => document.visibilityState === 'visible'),
+  distinctUntilChanged(),
+  switchMap((visible) =>
+    visible
+      ? // using timer instead of interval since timer will emit on creation
+        timer(0, POLL_INTERVAL)
+      : EMPTY
+  ),
+  shareReplay({refCount: true, bufferSize: 1})
+)
 
 export type ReferringDocuments = {
   isLoading: boolean
   total: number
   internalReferences?: {
-    total: number
+    totalCount: number
     references: Array<{_id: string; _type: string}>
   }
   crossDatasetReferences?: {
-    total: number
-    references: Array<{id: string; projectId: string; dataset: string}>
+    totalCount: number
+    references: Array<{id: string; projectId: string; datasetName: string}>
   }
 }
 
-// TODO: remove this implementation
-function stubFetchExternalReferences(
-  // eslint-disable-next-line
-  _documentId: string
+function fetchExternalReferences(
+  documentId: string
 ): Observable<ReferringDocuments['crossDatasetReferences']> {
-  const references = Array.from({length: 25}).flatMap(() => [
-    {id: '7bbbded8-4fdf-47d8-b85f-46c8eca793a5', projectId: 'fooProject', dataset: 'fooDataset'},
-    {id: '7bbbded8-4fdf-47d8-b85f-46c8eca793a5', projectId: 'barProject', dataset: 'barData'},
-  ])
-
-  return of({
-    total: references.length,
-    references,
-  }).pipe(delay(1000))
+  return visiblePoll$.pipe(
+    switchMap(() =>
+      client.withConfig({apiVersion: 'X'}).observable.request({
+        url: `/data/references/playground/documents/${documentId}/to?excludeInternalReferences=true&excludePaths=true`,
+      })
+    )
+  )
 }
 
 const useInternalReferences = createHookFromObservableFactory((documentId: string) => {
@@ -39,28 +51,14 @@ const useInternalReferences = createHookFromObservableFactory((documentId: strin
   const totalClause = 'count(*[references($documentId)])'
 
   return documentStore.listenQuery(
-    `{"references":${referencesClause},"total":${totalClause}}`,
+    `{"references":${referencesClause},"totalCount":${totalClause}}`,
     {documentId},
     {tag: 'use-referring-documents'}
   ) as Observable<ReferringDocuments['internalReferences']>
 })
 
 const useCrossDatasetReferences = createHookFromObservableFactory((documentId: string) => {
-  // only fetches when the document is visible
-  const visiblePoll$ = fromEvent(document, 'visibilitychange').pipe(
-    // add empty emission to have this fire on creation
-    startWith(null),
-    map(() => document.visibilityState === 'visible'),
-    distinctUntilChanged(),
-    switchMap((visible) =>
-      visible
-        ? // using timer instead of interval since timer will emit on creation
-          timer(0, POLL_INTERVAL)
-        : EMPTY
-    )
-  )
-
-  return visiblePoll$.pipe(switchMap(() => stubFetchExternalReferences(documentId)))
+  return visiblePoll$.pipe(switchMap(() => fetchExternalReferences(documentId)))
 })
 
 export function useReferringDocuments(documentId: string): ReferringDocuments {
@@ -71,7 +69,7 @@ export function useReferringDocuments(documentId: string): ReferringDocuments {
   )
 
   return {
-    total: (internalReferences?.total || 0) + (crossDatasetReferences?.total || 0),
+    total: (internalReferences?.totalCount || 0) + (crossDatasetReferences?.totalCount || 0),
     internalReferences,
     crossDatasetReferences,
     isLoading: isInternalReferencesLoading || isCrossDatasetReferencesLoading,

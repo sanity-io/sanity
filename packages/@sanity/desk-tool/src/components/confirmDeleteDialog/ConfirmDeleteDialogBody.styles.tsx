@@ -76,8 +76,8 @@ export const ReferencesCard = styled(Card)`
   min-height: 150px;
 `
 
-export const OtherReferenceCount = (props: {total: number; references: unknown[]}) => {
-  const difference = props.total - props.references.length
+export const OtherReferenceCount = (props: {totalCount: number; references: unknown[]}) => {
+  const difference = props.totalCount - props.references.length
 
   if (!difference) return null
 
