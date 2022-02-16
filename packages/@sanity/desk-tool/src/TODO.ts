@@ -1,4 +1,4 @@
-import {FormBuilderFilterFieldFn} from '@sanity/form-builder'
+import {FormBuilderFilterFieldFn} from '@sanity/form-builder/_internal'
 import {SanityDocument} from '@sanity/types'
 import {Observable} from 'rxjs'
 
