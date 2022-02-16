@@ -115,11 +115,12 @@ export type AssetFromSource = {
 
 export interface AssetSourceComponentProps {
   assetType?: 'file' | 'image'
+  selectionType: 'single'
   document: SanityDocument
-  dialogHeaderTitle?: string
+  dialogHeaderTitle?: React.ReactNode
   selectedAssets: Asset[]
   onClose: () => void
-  onSelect: (assetFromSource: AssetFromSource) => void
+  onSelect: (assetFromSource: AssetFromSource[]) => void
 }
 
 export type AssetMetadataType =
