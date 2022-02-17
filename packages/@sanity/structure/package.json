@@ -26,7 +26,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@sanity/client": "^3.1.0",
+    "@sanity/client": "^3.2.0",
     "@sanity/icons": "^1.2.1",
     "@sanity/initial-value-templates": "2.27.0",
     "@types/lodash": "^4.14.149",
