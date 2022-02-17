@@ -45,7 +45,7 @@
     "@popperjs/core": "^2.5.4",
     "@reach/auto-id": "^0.13.2",
     "@sanity/bifur-client": "^0.0.8",
-    "@sanity/client": "^3.1.0",
+    "@sanity/client": "^3.2.0",
     "@sanity/color": "^2.1.5",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/icons": "^1.2.1",
