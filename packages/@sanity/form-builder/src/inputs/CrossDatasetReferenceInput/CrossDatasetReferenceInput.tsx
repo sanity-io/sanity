@@ -50,7 +50,6 @@ const INITIAL_SEARCH_STATE: SearchState = {
 
 export interface Props extends BaseInputProps {
   value?: CrossDatasetReference
-  onReconfigureToken: () => void
 }
 
 const NO_FILTER = () => true
@@ -74,7 +73,6 @@ export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetRefere
     readOnly,
     onSearch,
     onChange,
-    onReconfigureToken,
     presence,
     focusPath = EMPTY_ARRAY,
     onFocus,
@@ -411,12 +409,6 @@ export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetRefere
                                 onFocus?.(['_ref'])
                               }}
                             />
-                          </>
-                        )}
-                        {onReconfigureToken && (
-                          <>
-                            <MenuDivider />
-                            <MenuItem text="Settings" icon={CogIcon} onClick={onReconfigureToken} />
                           </>
                         )}
                       </Menu>
