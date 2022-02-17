@@ -32,7 +32,7 @@
     "directory": "packages/@sanity/validation"
   },
   "devDependencies": {
-    "@sanity/client": "^3.0.1",
+    "@sanity/client": "^3.0.6",
     "@sanity/schema": "2.27.0"
   },
   "peerDependencies": {

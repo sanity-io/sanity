@@ -70,7 +70,7 @@
     "yargs": "^16.2.0"
   },
   "devDependencies": {
-    "@sanity/client": "^3.0.1",
+    "@sanity/client": "^3.0.6",
     "@types/fs-extra": "^7.0.0",
     "@types/inquirer": "^6.0.2",
     "@types/resolve-from": "^4.0.0",
