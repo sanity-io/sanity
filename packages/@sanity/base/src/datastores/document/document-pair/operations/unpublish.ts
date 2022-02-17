@@ -21,6 +21,12 @@ export const unpublish = {
       })
     }
 
-    return tx.commit({tag: 'document.unpublish'})
+    return tx.commit({
+      tag: 'document.unpublish',
+      // this disables referential integrity for cross-dataset references. we
+      // have this set because we warn against unpublishes in the `ConfirmDeleteDialog`
+      // UI. This operation is run when "unpublish anyway" is clicked
+      skipCrossDatasetReferenceValidation: true,
+    })
   },
 }
