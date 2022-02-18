@@ -51,6 +51,7 @@ import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {isNonNullable} from '../../utils/isNonNullable'
 import {AlertStrip} from '../../AlertStrip'
 import {Alert} from '../../components/Alert'
+import {useOnClickOutside} from '../../hooks/useOnClickOutside'
 import {BaseInputProps, CreateOption, SearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {useReferenceInfo} from './useReferenceInfo'
@@ -58,7 +59,6 @@ import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {CreateButton} from './CreateButton'
 import {ReferenceAutocomplete} from './ReferenceAutocomplete'
 import {AutocompleteContainer} from './AutocompleteContainer'
-import {useOnClickOutside} from './utils/useOnClickOutside'
 
 const StyledPreviewCard = styled(PreviewCard)`
   /* this is a hack to avoid layout jumps while previews are loading
