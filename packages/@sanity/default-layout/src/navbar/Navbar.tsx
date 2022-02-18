@@ -18,7 +18,7 @@ import {useDefaultLayoutRouter} from '../useDefaultLayoutRouter'
 import {tools} from '../config'
 import {versionedClient} from '../versionedClient'
 import Branding from './branding/Branding'
-import SanityStatusContainer from './studioStatus/SanityStatusContainer'
+import {ChangelogContainer} from './changelog'
 import {PresenceMenu, LoginStatus, SearchField} from '.'
 
 interface NavbarProps {
@@ -137,12 +137,12 @@ export const Navbar = memo(function Navbar(props: NavbarProps) {
   const shouldRender = useMemo(
     () => ({
       brandingCenter: mediaIndex <= 1,
+      changelog: mediaIndex > 1,
       collapsedPresenceMenu: mediaIndex <= 1,
       hints: mediaIndex > 1 && sidecar && sidecar.isSidecarEnabled && sidecar.isSidecarEnabled(),
       loginStatus: mediaIndex > 1,
       searchFullscreen: mediaIndex <= 1,
       spaces: HAS_SPACES && mediaIndex >= 3,
-      statusContainer: mediaIndex > 1,
       tools: mediaIndex >= 3,
     }),
     [mediaIndex]
@@ -311,9 +311,9 @@ export const Navbar = memo(function Navbar(props: NavbarProps) {
         )}
 
         <RightFlex align="center">
-          {shouldRender.statusContainer && (
+          {shouldRender.changelog && (
             <SpacingBox marginRight={1}>
-              <SanityStatusContainer />
+              <ChangelogContainer />
             </SpacingBox>
           )}
 
