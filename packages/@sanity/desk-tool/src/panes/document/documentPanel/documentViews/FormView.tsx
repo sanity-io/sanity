@@ -104,7 +104,7 @@ export function FormView(props: FormViewProps) {
     return () => {
       sub.unsubscribe()
     }
-  }, [documentId, documentType, patchChannelRef])
+  }, [documentId, documentStore, documentType, patchChannelRef])
 
   const hasRev = Boolean(value?._rev)
   useEffect(() => {
@@ -145,20 +145,20 @@ export function FormView(props: FormViewProps) {
         <Box as="form" onSubmit={preventDefault}>
           {ready ? (
             <SanityFormBuilder
-              patchChannel={patchChannelRef.current}
-              value={value as any}
-              compareValue={compareValue}
-              type={documentSchema}
-              presence={presence}
-              filterField={filterField}
-              readOnly={isReadOnly}
-              onBlur={handleBlur}
-              onFocus={handleFocus}
-              focusPath={focusPath}
-              onChange={isReadOnly ? noop : handleChange}
-              markers={markers}
               changesOpen={changesOpen}
+              compareValue={compareValue}
+              filterField={filterField}
+              focusPath={focusPath}
+              markers={markers}
+              onBlur={handleBlur}
+              onChange={isReadOnly ? noop : handleChange}
+              onFocus={handleFocus}
+              patchChannel={patchChannelRef.current}
+              presence={presence}
+              readOnly={isReadOnly}
               schema={schema}
+              type={documentSchema}
+              value={value as any}
             />
           ) : (
             <Delay ms={300}>
