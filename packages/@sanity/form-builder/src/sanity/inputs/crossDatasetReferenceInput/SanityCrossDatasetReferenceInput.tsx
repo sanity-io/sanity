@@ -158,8 +158,14 @@ const SanityCrossDatasetReferenceInput = forwardRef(function SanityCrossDatasetR
           <Stack space={3}>
             <Text size={1}>
               This cross dataset reference field requires a cross dataset token to be registered.
-              Please configure a token with ID <b>{type.tokenId}</b> for project{' '}
-              <b>{type.projectId}</b> that has read access to the <b>{type.dataset}</b>-dataset.
+              Please configure a token{' '}
+              {type.tokenId ? (
+                <>
+                  with ID <b>{type.tokenId}</b>
+                </>
+              ) : null}{' '}
+              for project <b>{type.projectId}</b> that has read access to the <b>{type.dataset}</b>
+              -dataset.
             </Text>
             <Text size={1}>
               See the documentation for{' '}
