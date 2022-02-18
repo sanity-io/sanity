@@ -22,6 +22,6 @@
     {"path": "../validation"},
     {"path": "../mutator"},
     {"path": "../transaction-collator"},
-    {"path": "../initial-value-templates"}
+    {"path": "../initial-value-templates"},
   ]
 }

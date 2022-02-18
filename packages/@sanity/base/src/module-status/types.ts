@@ -1,4 +1,46 @@
 import type {SanityClient} from '@sanity/client'
+import type {SanityImageHotspot, SanityImageCrop, SanityImageDimensions} from '@sanity/asset-utils'
+import type {PortableTextBlock} from '@portabletext/types'
+
+export interface CodeBlock {
+  _type: 'code'
+  code?: string
+  language?: string
+  filename?: string
+  highlightedLines?: number[]
+}
+
+export interface MaterializedImage {
+  _type: 'image'
+  alt?: string
+  caption?: string
+  hotspot?: SanityImageHotspot
+  crop?: SanityImageCrop
+  asset: {
+    _id: string
+    path: string
+    metadata: {
+      dimensions: SanityImageDimensions
+      lqip?: string
+    }
+  }
+}
+
+export type StudioBlockContent = PortableTextBlock | CodeBlock | MaterializedImage
+
+export interface ChangelogItem {
+  changeType: 'bugfix' | 'feature'
+  description: StudioBlockContent[]
+  title?: string
+}
+
+export interface ChangelogVersion {
+  changeItems: ChangelogItem[] | null
+  version: string
+  isLatest: boolean
+}
+
+export type Changelog = ChangelogVersion[]
 
 export interface CheckModuleVersionsOptions {
   /**
@@ -68,6 +110,21 @@ export interface VersionsResponse {
    * Optional help URL received from the backend
    */
   helpUrl?: string
+
+  /**
+   * Studio changelog
+   */
+  changelog: Changelog
+
+  /**
+   * The current version of the studio
+   */
+  currentVersion: string
+
+  /**
+   * The latest available version of the studio
+   */
+  latestVersion: string
 }
 
 export interface ModuleStatusResponse extends VersionsResponse {
