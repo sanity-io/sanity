@@ -45,7 +45,7 @@
     "@babel/register": "^7.7.4",
     "@hot-loader/react-dom": "^16.9.0-4.12.11",
     "@sanity/css-loader": "^0.28.12",
-    "@sanity/eventsource": "2.23.0",
+    "@sanity/eventsource": "^3.0.1",
     "@sanity/resolver": "2.27.0",
     "@sanity/util": "2.27.0",
     "@sanity/webpack-dev-middleware": "^2.0.6",
