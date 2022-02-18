@@ -71,7 +71,7 @@ export const CollapseMenu = forwardRef(function CollapseMenu(
   const {
     children: childrenProp,
     collapsed,
-    collapseText,
+    collapseText = true,
     disableRestoreFocusOnClose,
     gap,
     menuButtonProps,
@@ -144,7 +144,7 @@ export const CollapseMenu = forwardRef(function CollapseMenu(
       children.map((child) => {
         const {collapsedProps, expandedProps} = child.props
         const modeProps = hasOverflow ? collapsedProps : expandedProps
-        const text = hasOverflow && !collapseText ? undefined : child.props.text
+        const text = hasOverflow && collapseText ? undefined : child.props.text
 
         return cloneElement(child, {
           ...modeProps,
