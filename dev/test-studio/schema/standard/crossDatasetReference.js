@@ -124,7 +124,6 @@ export default {
       name: 'docsArticle',
       type: 'crossDatasetReference',
       dataset: 'next',
-      tokenId: 'docs',
       projectId: '3do82whm',
       studioUrl: ({id, type}) => {
         return type ? `https://admin.sanity.io/desk/docs;${type};${id}` : null

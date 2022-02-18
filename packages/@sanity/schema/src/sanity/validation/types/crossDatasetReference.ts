@@ -93,13 +93,6 @@ export default (typeDef, visitorContext) => {
     if (validationResult !== true) {
       problems.push(error(validationResult, HELP_IDS.CROSS_DATASET_REFERENCE_INVALID))
     }
-  } else {
-    problems.push(
-      error(
-        'A `tokenId` must be specified for a cross dataset reference',
-        HELP_IDS.CROSS_DATASET_REFERENCE_INVALID
-      )
-    )
   }
 
   if (typeof typeDef.projectId !== 'string') {
