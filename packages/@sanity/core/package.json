@@ -28,7 +28,7 @@
     "@babel/preset-react": "^7.10.4",
     "@babel/preset-typescript": "^7.10.4",
     "@babel/register": "^7.7.4",
-    "@sanity/eventsource": "2.23.0",
+    "@sanity/eventsource": "^3.0.1",
     "@sanity/export": "2.23.1",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/import": "2.27.0",
@@ -70,7 +70,7 @@
     "yargs": "^16.2.0"
   },
   "devDependencies": {
-    "@sanity/client": "^3.0.1",
+    "@sanity/client": "^3.1.0",
     "@types/fs-extra": "^7.0.0",
     "@types/inquirer": "^6.0.2",
     "@types/resolve-from": "^4.0.0",
