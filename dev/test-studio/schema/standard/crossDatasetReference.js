@@ -93,5 +93,29 @@ export default {
         },
       ],
     },
+    {
+      title: 'Article in docs dataset',
+      name: 'docsArticle',
+      type: 'crossDatasetReference',
+      dataset: 'next',
+      tokenId: 'docs',
+      projectId: '3do82whm',
+      studioUrl: ({id, type}) => {
+        return type ? `https://admin.sanity.io/desk/docs;${type};${id}` : null
+      },
+      to: [
+        {
+          type: 'article',
+          icon: BookIcon,
+          // eslint-disable-next-line camelcase
+          __experimental_search: [{path: ['title'], weight: 10}],
+          preview: {
+            select: {
+              title: 'title',
+            },
+          },
+        },
+      ],
+    },
   ],
 }
