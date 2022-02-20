@@ -12,7 +12,7 @@
  * ```
  */
 import sanityClient from '@sanity/client'
-import generateHelpUrl from '@sanity/generate-help-url'
+import {generateHelpUrl} from '@sanity/generate-help-url'
 import config from 'config:sanity'
 import configureClient from 'part:@sanity/base/configure-client?'
 

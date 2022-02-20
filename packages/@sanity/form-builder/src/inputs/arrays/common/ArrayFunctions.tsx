@@ -1,7 +1,7 @@
 import {ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
 import {AddIcon} from '@sanity/icons'
 import React, {ReactNode, useMemo} from 'react'
-import {Button, Grid, Menu, MenuButton, MenuItem} from '@sanity/ui'
+import {Box, Button, Grid, Menu, MenuButton, MenuItem, Tooltip, Text} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {useConditionalReadOnly} from '@sanity/base/_internal'
 import PatchEvent from '../../../PatchEvent'
@@ -43,7 +43,27 @@ export default function ArrayFunctions<MemberType>(
   const popoverProps = useMemo(() => ({constrainSize: true, portal: true}), [])
 
   if (conditionalReadOnly) {
-    return null
+    return (
+      <Tooltip
+        portal
+        content={
+          <Box padding={2} sizing="border">
+            <Text size={1} muted>
+              This field is read-only
+            </Text>
+          </Box>
+        }
+      >
+        <Grid>
+          <Button
+            icon={AddIcon}
+            mode="ghost"
+            disabled
+            text={type.of.length === 1 ? 'Add item' : 'Add item...'}
+          />
+        </Grid>
+      </Tooltip>
+    )
   }
 
   return (

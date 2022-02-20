@@ -25,7 +25,6 @@ const IGNORED_PACKAGES = [
   /examples\/.*-studio/,
   'packages/@sanity/date-input',
   'packages/@sanity/eventsource',
-  'packages/@sanity/generate-help-url',
   'packages/@sanity/plugin-loader',
   'packages/create-sanity',
   'packages/sanity',

@@ -1,3 +1,4 @@
+import {useLayer} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
 import {ConnectorContext} from './ConnectorContext'
 import {
@@ -10,22 +11,24 @@ import {
 
 export function ElementWithChangeBar(props: {
   children: React.ReactNode
+  disabled?: boolean
   hasFocus: boolean
   isChanged: boolean
-  disabled?: boolean
+  withHoverEffect?: boolean
 }) {
-  const {children, hasFocus, isChanged, disabled} = props
+  const {children, disabled, hasFocus, isChanged, withHoverEffect = true} = props
 
   const [hover, setHover] = useState(false)
   const {onOpenReviewChanges, isReviewChangesOpen} = React.useContext(ConnectorContext)
+  const {zIndex} = useLayer()
 
   const handleMouseEnter = useCallback(() => setHover(true), [])
   const handleMouseLeave = useCallback(() => setHover(false), [])
 
   const changeBar = useMemo(
     () =>
-      disabled ? null : (
-        <ChangeBar data-testid="change-bar">
+      disabled || !isChanged ? null : (
+        <ChangeBar data-testid="change-bar" $zIndex={zIndex}>
           <ChangeBarMarker data-testid="change-bar__marker" />
 
           <ChangeBarButton
@@ -36,20 +39,30 @@ export function ElementWithChangeBar(props: {
             onMouseLeave={handleMouseLeave}
             tabIndex={-1}
             type="button"
+            $withHoverEffect={withHoverEffect}
           />
         </ChangeBar>
       ),
-    [handleMouseEnter, handleMouseLeave, isReviewChangesOpen, onOpenReviewChanges, disabled]
+    [
+      disabled,
+      isChanged,
+      zIndex,
+      isReviewChangesOpen,
+      onOpenReviewChanges,
+      handleMouseEnter,
+      handleMouseLeave,
+      withHoverEffect,
+    ]
   )
 
   return (
     <ChangeBarWrapper
+      changed={isChanged}
       data-testid="change-bar-wrapper"
+      disabled={disabled}
       focus={hasFocus}
       hover={hover}
-      changed={isChanged}
       isReviewChangeOpen={isReviewChangesOpen}
-      disabled={disabled}
     >
       <FieldWrapper data-testid="change-bar__field-wrapper">{children}</FieldWrapper>
       {changeBar}

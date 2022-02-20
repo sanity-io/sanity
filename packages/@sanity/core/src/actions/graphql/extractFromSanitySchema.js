@@ -1,5 +1,5 @@
 const {uniqBy, startCase} = require('lodash')
-const generateHelpUrl = require('@sanity/generate-help-url')
+const {generateHelpUrl} = require('@sanity/generate-help-url')
 const schemaCompiler = require('@sanity/schema')
 const oneline = require('oneline')
 const helpUrls = require('./helpUrls')

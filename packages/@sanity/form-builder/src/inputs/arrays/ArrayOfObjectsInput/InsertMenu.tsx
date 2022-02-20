@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-no-bind */
 import {SchemaType} from '@sanity/types'
 import React, {ComponentProps, memo} from 'react'
-import {MenuGroup, MenuItem} from '@sanity/ui'
+import {MenuGroup, MenuItem, PopoverProps} from '@sanity/ui'
 import {InsertAboveIcon, InsertBelowIcon} from '@sanity/icons'
 
 interface Props {
@@ -9,7 +9,12 @@ interface Props {
   onInsert: (pos: 'before' | 'after', type: SchemaType) => void
 }
 
-const MENU_POPOVER_PROPS = {portal: true, tone: 'default', placement: 'left'} as const
+const MENU_POPOVER_PROPS: PopoverProps = {
+  portal: true,
+  tone: 'default',
+  placement: 'left',
+  constrainSize: true,
+} as const
 
 export const InsertMenu = memo(function InsertMenu(props: Props) {
   const {types, onInsert} = props

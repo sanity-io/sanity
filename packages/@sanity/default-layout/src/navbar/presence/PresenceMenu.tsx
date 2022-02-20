@@ -16,13 +16,13 @@ import {
 import {CogIcon, UsersIcon} from '@sanity/icons'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
-import {versionedClient} from '../../versionedClient'
 import {StatusButton} from '../components'
 import {PresenceMenuItem} from '.'
 
 type PresenceMenuProps = {
   collapse?: boolean
   maxAvatars?: number
+  projectId: string
 }
 const AvatarStackCard = styled(Card)`
   background: transparent;
@@ -44,8 +44,8 @@ const PRESENCE_MENU_POPOVER_PROPS: MenuButtonProps['popover'] = {
   scheme: 'light',
 }
 
-export function PresenceMenu({collapse, maxAvatars}: PresenceMenuProps) {
-  const {projectId} = versionedClient.config()
+export function PresenceMenu(props: PresenceMenuProps) {
+  const {collapse, maxAvatars, projectId} = props
   const presence = useGlobalPresence()
   const hasPresence = presence.length > 0
 

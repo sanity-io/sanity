@@ -1,7 +1,7 @@
-import {nanoid} from 'nanoid'
+import {uuid} from '@sanity/uuid'
 import client from '../../helpers/sanityClientSetUp'
 
-const docId = `drafts.${nanoid()}`
+const docId = `drafts.${uuid()}`
 
 const doc = {
   _id: docId,
@@ -15,7 +15,7 @@ const doc = {
 const VALID_VALUE = 'String longer than 5'
 const INVALID_VALUE = 'abc'
 
-async function patchDocument(payload) {
+function patchDocument(payload) {
   return client.patch(docId).set(payload).commit({visibility: 'async'})
 }
 

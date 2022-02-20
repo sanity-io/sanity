@@ -11,6 +11,7 @@ interface RootProps {
   changed: boolean
   isReviewChangeOpen: boolean
   disabled: boolean
+  $withHoverEffect?: boolean
 }
 
 const animationSpeed = 250
@@ -59,10 +60,11 @@ export const FieldWrapper = styled.div`
   min-width: 0;
 `
 
-export const ChangeBar = styled.div`
+export const ChangeBar = styled.div<{$zIndex: number}>`
   position: relative;
   opacity: 1;
   transition: opacity 100ms;
+  z-index: ${({$zIndex}) => $zIndex};
 `
 
 export const ChangeBarMarker = styled.div(({theme}: ThemeContext) => {
@@ -85,50 +87,57 @@ export const ChangeBarMarker = styled.div(({theme}: ThemeContext) => {
   `
 })
 
-export const ChangeBarButton = styled.button(({theme}: ThemeContext) => {
-  /* these colours aren't freely available on the current theme */
-  const notSelectedColor = theme.sanity.color.spot.yellow
+export const ChangeBarButton = styled.button(
+  ({theme, $withHoverEffect}: {theme: Theme; $withHoverEffect?: boolean}) => {
+    /* these colours aren't freely available on the current theme */
+    const notSelectedColor = theme.sanity.color.spot.yellow
 
-  return css`
-    appearance: none;
-    border: 0;
-    outline: 0;
-    display: block;
-    padding: 0;
-    background: transparent;
-    opacity: 0;
-    position: absolute;
-    height: 100%;
-    cursor: pointer;
-    pointer-events: all;
-    left: calc(-0.25rem + var(--change-bar-offset));
-    width: 1rem;
-    transition: opacity ${animationSpeed}ms;
-
-    &:focus {
+    return css`
+      appearance: none;
       border: 0;
       outline: 0;
-    }
-
-    &:after {
-      content: '';
-      width: 16px;
-      height: calc(100% + 14px);
       display: block;
+      padding: 0;
+      background: transparent;
+      opacity: 0;
       position: absolute;
-      top: -7px;
-      left: -3px;
-      border-radius: 8px;
-      background: ${notSelectedColor};
-    }
+      height: 100%;
+      cursor: pointer;
+      pointer-events: all;
+      left: calc(-0.25rem + var(--change-bar-offset));
+      width: 1rem;
+      transition: opacity ${animationSpeed}ms;
 
-    &:focus {
-      border: 0;
-      outline: 0;
-    }
+      &:focus {
+        border: 0;
+        outline: 0;
+      }
 
-    &:hover {
-      opacity: 0.2;
-    }
-  `
-})
+      &:after {
+        content: '';
+        width: 16px;
+        height: calc(100% + 14px);
+        display: block;
+        position: absolute;
+        top: -7px;
+        left: -3px;
+        border-radius: 8px;
+        background: ${notSelectedColor};
+      }
+
+      &:focus {
+        border: 0;
+        outline: 0;
+      }
+
+      ${$withHoverEffect &&
+      css`
+        @media (hover: hover) {
+          &:hover {
+            opacity: 0.2;
+          }
+        }
+      `}
+    `
+  }
+)

@@ -16,6 +16,7 @@ import {HAS_SPACES} from '../util/spaces'
 import {DatasetSelect} from '../datasetSelect'
 import {useDefaultLayoutRouter} from '../useDefaultLayoutRouter'
 import {tools} from '../config'
+import {versionedClient} from '../versionedClient'
 import Branding from './branding/Branding'
 import SanityStatusContainer from './studioStatus/SanityStatusContainer'
 import {PresenceMenu, LoginStatus, SearchField} from '.'
@@ -119,6 +120,8 @@ export const Navbar = memo(function Navbar(props: NavbarProps) {
   const {value: currentUser} = useCurrentUser()
   const mediaIndex = useMediaIndex()
   const router = useDefaultLayoutRouter()
+
+  const {projectId} = versionedClient.config()
 
   const canCreateSome = useMemo(() => {
     if (isTemplatePermissionsLoading) return false
@@ -320,14 +323,22 @@ export const Navbar = memo(function Navbar(props: NavbarProps) {
 
           <LegacyLayerProvider zOffset="navbarPopover">
             <SpacingBox marginRight={1}>
-              <PresenceMenu collapse={shouldRender.collapsedPresenceMenu} maxAvatars={4} />
+              <PresenceMenu
+                collapse={shouldRender.collapsedPresenceMenu}
+                maxAvatars={4}
+                projectId={projectId}
+              />
             </SpacingBox>
           </LegacyLayerProvider>
 
           {shouldRender.tools && (
             <LegacyLayerProvider zOffset="navbarPopover">
               <Flex align="center">
-                <LoginStatus onLogout={onUserLogout} />
+                <LoginStatus
+                  currentUser={currentUser}
+                  onLogout={onUserLogout}
+                  projectId={projectId}
+                />
               </Flex>
             </LegacyLayerProvider>
           )}

@@ -1,7 +1,7 @@
 import {Observable, NEVER, of as observableOf, concat} from 'rxjs'
 import {switchMap, map, scan, distinctUntilChanged, pairwise, startWith} from 'rxjs/operators'
 import {isEqual} from 'lodash'
-import generateHelpUrl from '@sanity/generate-help-url'
+import {generateHelpUrl} from '@sanity/generate-help-url'
 import {
   PaneNode,
   RouterPaneSiblingContext,

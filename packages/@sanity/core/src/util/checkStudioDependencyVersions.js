@@ -2,7 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const semver = require('semver')
 const resolveFrom = require('resolve-from')
-const generateHelpUrl = require('@sanity/generate-help-url')
+const {generateHelpUrl} = require('@sanity/generate-help-url')
 
 // NOTE: when doing changes here, also remember to update versions in help docs at
 // https://admin.sanity.io/desk/docs;helpArticle;upgrade-packages

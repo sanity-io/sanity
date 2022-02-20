@@ -8,8 +8,10 @@ import isHotkey from 'is-hotkey'
 import {Flex, Card, Stack, Box, Hotkeys, Select, Text, TextInput, Tooltip, Grid} from '@sanity/ui'
 import studioClient from 'part:@sanity/base/client'
 import {FormFieldValidationStatus} from '@sanity/base/components'
+import config from 'config:@sanity/vision'
 import {storeState, getState} from '../util/localState'
 import parseApiQueryString from '../util/parseApiQueryString'
+import prefixApiVersion from '../util/prefixApiVersion'
 import tryParseParams from '../util/tryParseParams'
 import encodeQueryString from '../util/encodeQueryString'
 import {apiVersions} from '../apiVersions'
@@ -80,6 +82,8 @@ function calculatePaneSizeOptions(rootHeight) {
   }
 }
 
+const DEFAULT_API_VERSION = '2021-03-25'
+
 class VisionGui extends React.PureComponent {
   constructor(props) {
     super(props)
@@ -89,7 +93,7 @@ class VisionGui extends React.PureComponent {
 
     const firstDataset = this.props.datasets[0] && this.props.datasets[0].name
     const defaultDataset = studioClient.config().dataset || firstDataset
-    const defaultApiVersion = `v${studioClient.config().apiVersion || '1'}`
+    const defaultApiVersion = prefixApiVersion(`${config.defaultApiVersion || DEFAULT_API_VERSION}`)
 
     let dataset = getState('dataset', defaultDataset)
     let apiVersion = getState('apiVersion', defaultApiVersion)

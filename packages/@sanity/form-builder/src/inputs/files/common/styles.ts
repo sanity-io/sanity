@@ -7,7 +7,8 @@ import {withFocusRing} from '../../../components/withFocusRing'
 
 export type {FileInfo} from '../../common/fileTarget'
 
-export const FileTarget = withFocusRing(fileTarget(Card))
+// Note: FileTarget needs its own focusRing because we need show it on click, not only when :focus-visible
+export const FileTarget = fileTarget(withFocusRing(Card))
 
 export const Overlay: StyledComponent<'div', DefaultTheme> = styled.div`
   position: absolute;

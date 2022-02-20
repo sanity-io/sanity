@@ -2,7 +2,7 @@
 import fs from 'fs'
 import fse from 'fs-extra'
 import path from 'path'
-import generateHelpUrl from '@sanity/generate-help-url'
+import {generateHelpUrl} from '@sanity/generate-help-url'
 import {reduceConfig} from '@sanity/util'
 import validateManifest from './validateManifest'
 

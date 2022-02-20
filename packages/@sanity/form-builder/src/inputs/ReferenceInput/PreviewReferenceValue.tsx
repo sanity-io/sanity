@@ -7,11 +7,11 @@ import {Loadable} from './useReferenceInfo'
 import {ReferenceInfo} from './types'
 
 export function PreviewReferenceValue(props: {
-  value: Reference
-  type: ReferenceSchemaType
   referenceInfo: Loadable<ReferenceInfo>
+  type: ReferenceSchemaType
+  value: Reference
 }) {
-  const {value, type, referenceInfo} = props
+  const {referenceInfo, type, value} = props
 
   if (referenceInfo.isLoading || referenceInfo.error) {
     return (
@@ -67,11 +67,11 @@ export function PreviewReferenceValue(props: {
   return (
     <ReferencePreview
       availability={referenceInfo.result.availability}
+      id={value._ref}
+      layout="default"
       preview={referenceInfo.result.preview}
       refType={refType}
-      id={value._ref}
       showTypeLabel={showTypeLabel}
-      layout="default"
     />
   )
 }

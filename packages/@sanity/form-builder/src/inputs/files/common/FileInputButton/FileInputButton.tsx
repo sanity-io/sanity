@@ -9,6 +9,7 @@ export interface FileInputButtonProps extends ButtonProps {
   capture?: 'user' | 'environment'
   multiple?: boolean
   onSelect?: (files: File[]) => void
+  disabled?: boolean
 }
 
 export const FileInputButton = React.forwardRef(function FileInputButton(
@@ -28,6 +29,7 @@ export const FileInputButton = React.forwardRef(function FileInputButton(
     space = 3,
     textAlign,
     text,
+    disabled,
     ...rest
   } = props
   const id = useId(idProp)
@@ -69,11 +71,12 @@ export const FileInputButton = React.forwardRef(function FileInputButton(
   )
 
   return (
-    <FileButton {...rest} htmlFor={id} padding={0}>
+    <FileButton {...rest} htmlFor={id} padding={0} fontSize={2} disabled={disabled}>
       {content}
 
       {/* Visibly hidden input */}
       <input
+        data-testid="file-button-input"
         accept={accept}
         capture={capture}
         id={id}
@@ -82,6 +85,7 @@ export const FileInputButton = React.forwardRef(function FileInputButton(
         ref={forwardedRef}
         type="file"
         value=""
+        disabled={disabled}
       />
     </FileButton>
   )

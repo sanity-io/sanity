@@ -18,7 +18,7 @@ import withValuePath from '../../utils/withValuePath'
 import {slugify} from './utils/slugify'
 import {useAsync} from './utils/useAsync'
 
-interface Slug {
+export interface Slug {
   _type: 'slug'
   current?: string
 }

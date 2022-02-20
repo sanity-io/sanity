@@ -1,10 +1,11 @@
 import React, {forwardRef, useCallback, useEffect, useMemo, useState} from 'react'
 import {FolderIcon, ChevronRightIcon, DocumentIcon} from '@sanity/icons'
 import {isSanityDocument, SchemaType} from '@sanity/types'
-import {Card, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
 import {SanityDefaultPreview} from 'part:@sanity/base/preview'
-import styled from 'styled-components'
+import {PreviewCard} from '@sanity/base/components'
+import {useDocumentPresence} from '@sanity/base/hooks'
 import {getIconWithFallback} from '../../utils/getIconWithFallback'
 import {MissingSchemaType} from '../MissingSchemaType'
 import {usePaneRouter} from '../../contexts/paneRouter'
@@ -22,24 +23,13 @@ interface PaneItemProps {
   schemaType?: SchemaType
 }
 
-const PaneItemCard = styled(Card)`
-  /* TextWithTone uses its own logic to set color, and we therefore need 
-  to override this logic in order to set the correct color in different states */
-  &[data-selected],
-  &[data-pressed],
-  &:active {
-    [data-ui='TextWithTone'] {
-      color: inherit;
-    }
-  }
-`
-
 export function PaneItem(props: PaneItemProps) {
   const {icon, id, layout = 'default', pressed, schemaType, selected, title, value} = props
   const {ChildLink} = usePaneRouter()
+  const documentPresence = useDocumentPresence(id)
   const hasSchemaType = Boolean(schemaType && schemaType.name && schema.get(schemaType.name))
   const previewValue = useMemo(() => ({title}), [title])
-  const [clicked, setClicked] = useState(false)
+  const [clicked, setClicked] = useState<boolean>(false)
 
   const preview = useMemo(() => {
     if (value && isSanityDocument(value)) {
@@ -53,6 +43,7 @@ export function PaneItem(props: PaneItemProps) {
           layout={layout}
           schemaType={schemaType}
           value={value}
+          presence={documentPresence}
         />
       )
     }
@@ -69,7 +60,7 @@ export function PaneItem(props: PaneItemProps) {
         value={previewValue}
       />
     )
-  }, [hasSchemaType, icon, layout, previewValue, schemaType, value])
+  }, [hasSchemaType, icon, layout, previewValue, schemaType, value, documentPresence])
 
   const LinkComponent = useMemo(
     () =>
@@ -87,9 +78,9 @@ export function PaneItem(props: PaneItemProps) {
 
   return useMemo(
     () => (
-      <PaneItemCard
+      <PreviewCard
         __unstable_focusRing
-        forwardedAs={LinkComponent}
+        as={LinkComponent}
         data-as="a"
         data-ui="PaneItem"
         padding={2}
@@ -100,7 +91,7 @@ export function PaneItem(props: PaneItemProps) {
         tone="inherit"
       >
         {preview}
-      </PaneItemCard>
+      </PreviewCard>
     ),
     [clicked, handleClick, LinkComponent, pressed, preview, selected]
   )

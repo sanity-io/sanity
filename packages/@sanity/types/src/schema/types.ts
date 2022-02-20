@@ -156,7 +156,6 @@ export interface ArraySchemaType<V = unknown> extends BaseSchemaType {
     layout?: V extends string ? 'tags' : 'grid'
     direction?: 'horizontal' | 'vertical'
     sortable?: boolean
-
     /**
      * @deprecated
      */

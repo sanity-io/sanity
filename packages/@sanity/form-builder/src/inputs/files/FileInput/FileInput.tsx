@@ -1,12 +1,10 @@
 /* eslint-disable no-undef, import/no-unresolved */
 
-import React from 'react'
-import PropTypes from 'prop-types'
+import React, {ReactNode} from 'react'
 import {Observable, Subscription} from 'rxjs'
 import {get, partition, uniqueId} from 'lodash'
 import {FormFieldSet, ImperativeToast} from '@sanity/base/components'
 import {
-  Asset as AssetDocument,
   AssetFromSource,
   File as BaseFile,
   FileAsset,
@@ -19,44 +17,26 @@ import {
   ChangeIndicatorCompareValueProvider,
   ChangeIndicatorWithProvidedFullPath,
 } from '@sanity/base/change-indicators'
-import {
-  BinaryDocumentIcon,
-  DownloadIcon,
-  EditIcon,
-  EyeOpenIcon,
-  ImageIcon,
-  SearchIcon,
-  TrashIcon,
-  UploadIcon,
-} from '@sanity/icons'
-import {
-  Box,
-  Button,
-  Container,
-  Dialog,
-  Flex,
-  Grid,
-  Menu,
-  MenuButton,
-  MenuItem,
-  Stack,
-  Text,
-  Tooltip,
-  ToastParams,
-} from '@sanity/ui'
+import {ImageIcon, SearchIcon} from '@sanity/icons'
+import {Box, Button, Card, Dialog, Menu, MenuButton, MenuItem, ToastParams} from '@sanity/ui'
 import {PresenceOverlay, FormFieldPresence} from '@sanity/base/presence'
-import WithMaterializedReference from '../../../utils/WithMaterializedReference'
+import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {Uploader, UploaderResolver, UploadOptions} from '../../../sanity/uploads/types'
 import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
-import UploadPlaceholder from '../common/UploadPlaceholder'
-import {FileInputButton} from '../common/FileInputButton/FileInputButton'
-import {FileTarget, FileInfo, Overlay} from '../common/styles'
+import {FileTarget, FileInfo} from '../common/styles'
 import {InternalAssetSource, UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
-import {DropMessage} from '../common/DropMessage'
 import {handleSelectAssetFromSource} from '../common/assetSource'
-import {AssetBackground} from './styles'
+import resolveUploader from '../../../sanity/uploads/resolveUploader'
+import {ActionsMenu} from '../common/ActionsMenu'
+import {PlaceholderText} from '../common/PlaceholderText'
+import UploadPlaceholder from '../common/UploadPlaceholder'
+import {UploadWarning} from '../common/UploadWarning'
+import {EMPTY_ARRAY} from '../../../utils/empty'
+import {CardOverlay, FlexContainer} from './styles'
 import {FileInputField} from './FileInputField'
+import {FileDetails} from './FileDetails'
+import {FileSkeleton} from './FileSkeleton'
 
 type Field = {
   name: string
@@ -77,15 +57,16 @@ export type Props = {
   level: number
   onChange: (event: PatchEvent) => void
   resolveUploader: UploaderResolver
-  materialize: (documentId: string) => Observable<FileAsset>
+  observeAsset: (documentId: string) => Observable<FileAsset>
   onBlur: () => void
   onFocus: (path: Path) => void
   readOnly: boolean | null
   focusPath: Path
   directUploads?: boolean
-  assetSources?: InternalAssetSource[]
+  assetSources: InternalAssetSource[]
   markers: Marker[]
   presence: FormFieldPresence[]
+  getValuePath: () => Path
 }
 
 const HIDDEN_FIELDS = ['asset']
@@ -93,8 +74,9 @@ const HIDDEN_FIELDS = ['asset']
 type FileInputState = {
   isUploading: boolean
   selectedAssetSource: InternalAssetSource | null
-  isAdvancedEditOpen: boolean
   hoveringFiles: FileInfo[]
+  isStale: boolean
+  isMenuOpen: boolean
 }
 
 type Focusable = {
@@ -102,10 +84,6 @@ type Focusable = {
 }
 
 export default class FileInput extends React.PureComponent<Props, FileInputState> {
-  static contextTypes = {
-    getValuePath: PropTypes.func,
-  }
-
   _inputId = uniqueId('FileInput')
   dialogId = uniqueId('fileinput-dialog')
 
@@ -114,16 +92,16 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
 
   state: FileInputState = {
     isUploading: false,
-    isAdvancedEditOpen: false,
     selectedAssetSource: null,
     hoveringFiles: [],
+    isStale: false,
+    isMenuOpen: false,
   }
 
   toast: {push: (params: ToastParams) => void} | null = null
 
   handleRemoveButtonClick = () => {
-    const {getValuePath} = this.context
-    const {value} = this.props
+    const {value, getValuePath} = this.props
     const parentPathSegment = getValuePath().slice(-1)[0]
 
     // String path segment mean an object path, while a number or a
@@ -169,11 +147,22 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   handleClearUploadState = () => {
+    this.setState({isStale: false})
     this.clearUploadStatus()
   }
 
+  handleStaleUpload = () => {
+    this.setState({isStale: true})
+  }
+
   handleSelectFiles = (files: DOMFile[]) => {
-    this.uploadFirstAccepted(files)
+    const {directUploads, readOnly} = this.props
+    const {hoveringFiles} = this.state
+    if (directUploads && !readOnly) {
+      this.uploadFirstAccepted(files)
+    } else if (hoveringFiles.length > 0) {
+      this.handleFilesOut()
+    }
   }
 
   handleSelectFileFromAssetSource = (source: InternalAssetSource) => {
@@ -185,7 +174,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   uploadFirstAccepted(files: DOMFile[]) {
-    const {resolveUploader, type} = this.props
+    const {type} = this.props
 
     const match = files
       .map((file) => ({file, uploader: resolveUploader(type, file)}))
@@ -194,6 +183,8 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     if (match) {
       this.uploadWith(match.uploader!, match.file)
     }
+
+    this.setState({isMenuOpen: false})
   }
 
   uploadWith = (uploader: Uploader, file: DOMFile, assetDocumentProps: UploadOptions = {}) => {
@@ -229,55 +220,6 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     })
   }
 
-  renderMaterializedAsset = (assetDocument: FileAsset) => {
-    const showTooltip = (assetDocument?.originalFilename || '').length > 12
-    return (
-      <Stack space={3}>
-        <Flex align="center" justify="center">
-          <Box>
-            <Text size={4}>
-              <BinaryDocumentIcon />
-            </Text>
-          </Box>
-          <Box marginLeft={3}>
-            {showTooltip && (
-              <Tooltip
-                content={
-                  <Box padding={2}>
-                    <Text muted size={1}>
-                      {assetDocument.originalFilename}
-                    </Text>
-                  </Box>
-                }
-                fallbackPlacements={['right', 'left']}
-                placement="top"
-                portal
-              >
-                <Text textOverflow="ellipsis" weight="medium">
-                  {assetDocument.originalFilename}
-                </Text>
-              </Tooltip>
-            )}
-            {!showTooltip && (
-              <Text textOverflow="ellipsis" weight="medium">
-                {assetDocument.originalFilename}
-              </Text>
-            )}
-          </Box>
-        </Flex>
-
-        <Button
-          as="a"
-          fontSize={1}
-          href={`${assetDocument.url}?dl`}
-          icon={DownloadIcon}
-          mode="ghost"
-          text="Download file"
-        />
-      </Stack>
-    )
-  }
-
   renderUploadState(uploadState: UploadState) {
     const {isUploading} = this.state
 
@@ -285,76 +227,36 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       <UploadProgress
         uploadState={uploadState}
         onCancel={isUploading ? this.handleCancelUpload : undefined}
-        onClearStale={this.handleClearUploadState}
-      />
-    )
-  }
-
-  renderSelectFileButton() {
-    const {assetSources} = this.props
-    if (!assetSources?.length) {
-      return null
-    }
-    // If multiple asset sources render a dropdown
-    if (assetSources.length > 1) {
-      return (
-        <MenuButton
-          id={`${this._inputId}_assetFileButton`}
-          button={<Button mode="ghost" text="Select…" icon={SearchIcon} />}
-          data-testid="file-input-select-button"
-          menu={
-            <Menu>
-              {assetSources.map((assetSource) => {
-                return (
-                  <MenuItem
-                    key={assetSource.name}
-                    text={assetSource.title}
-                    onClick={() => this.handleSelectFileFromAssetSource(assetSource)}
-                    icon={assetSource.icon || ImageIcon}
-                  />
-                )
-              })}
-            </Menu>
-          }
-        />
-      )
-    }
-
-    // Single asset source (just a normal button)
-    return (
-      <Button
-        icon={SearchIcon}
-        onClick={() => this.handleSelectFileFromAssetSource(assetSources[0])}
-        mode="ghost"
-        text="Select"
-        data-testid="file-input-select-button"
+        onStale={this.handleStaleUpload}
       />
     )
   }
 
   renderAssetSource() {
     const {selectedAssetSource} = this.state
-    const {value, materialize} = this.props
+    const {value, observeAsset} = this.props
     if (!selectedAssetSource) {
       return null
     }
     const Component = selectedAssetSource.component
     if (value && value.asset) {
       return (
-        <WithMaterializedReference materialize={materialize} reference={value.asset}>
-          {(fileAsset) => {
-            return (
-              <Component
-                selectedAssets={[fileAsset as AssetDocument]}
-                selectionType="single"
-                assetType="file"
-                dialogHeaderTitle="Select file"
-                onClose={this.handleAssetSourceClosed}
-                onSelect={this.handleSelectAssetFromSource}
-              />
-            )
-          }}
-        </WithMaterializedReference>
+        <WithReferencedAsset
+          observeAsset={observeAsset}
+          reference={value.asset}
+          waitPlaceholder={<FileSkeleton />}
+        >
+          {(fileAsset) => (
+            <Component
+              selectedAssets={[fileAsset]}
+              selectionType="single"
+              assetType="file"
+              dialogHeaderTitle="Select file"
+              onClose={this.handleAssetSourceClosed}
+              onSelect={this.handleSelectAssetFromSource}
+            />
+          )}
+        </WithReferencedAsset>
       )
     }
     return (
@@ -371,6 +273,24 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
 
   handleFieldChange = (event: PatchEvent) => {
     const {onChange, type} = this.props
+
+    // When editing a metadata field for a file (eg `description`), and no asset
+    // is currently selected, we want to unset the entire file field if the
+    // field we are currently editing goes blank and gets unset.
+    //
+    // For instance:
+    // A file field with a `description` and a `title` subfield, where the file `asset`
+    // and the `title` field is empty, and we are erasing the `description` field.
+    // We do _not_ however want to clear the field if any content is present in
+    // the other fields, eg if `title` _has_ a value and we erase `description`
+    //
+    // Also, we don't want to use this logic for array items, since the parent will
+    // take care of it when closing the array dialog
+    if (!this.valueIsArrayElement() && this.eventIsUnsettingLastFilledField(event)) {
+      onChange(PatchEvent.from(unset()))
+      return
+    }
+
     onChange(
       event.prepend(
         setIfMissing({
@@ -379,12 +299,47 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       )
     )
   }
-  handleStartAdvancedEdit = () => {
-    this.setState({isAdvancedEditOpen: true})
+
+  eventIsUnsettingLastFilledField = (event: PatchEvent): boolean => {
+    const patch = event.patches[0]
+    if (event.patches.length !== 1 || patch.type !== 'unset') {
+      return false
+    }
+
+    const allKeys = Object.keys(this.props.value || {})
+    const remainingKeys = allKeys.filter((key) => !['_type', '_key'].includes(key))
+
+    const isEmpty =
+      event.patches[0].path.length === 1 &&
+      remainingKeys.length === 1 &&
+      remainingKeys[0] === event.patches[0].path[0]
+
+    return isEmpty
+  }
+
+  valueIsArrayElement = () => {
+    const {getValuePath} = this.props
+    const parentPathSegment = getValuePath().slice(-1)[0]
+
+    // String path segment mean an object path, while a number or a
+    // keyed segment means we're a direct child of an array
+    return typeof parentPathSegment !== 'string'
+  }
+
+  handleOpenDialog = () => {
+    const {type, onFocus} = this.props
+    const otherFields = type.fields.filter(
+      (field) => !HIDDEN_FIELDS.includes(field.name) && !(field.type as any)?.options?.isHighlighted
+    )
+
+    /* for context: this code will only ever run if there are fields which are not highlighted.
+    in the FileDetails component (used in the renderAsset method) there is a button which is active if there are
+    fields that are not highlighted, opening this dialog */
+    onFocus([otherFields[0].name])
   }
 
   handleStopAdvancedEdit = () => {
-    this.setState({isAdvancedEditOpen: false})
+    this.props.onFocus([])
   }
 
   renderAdvancedEdit(fields: Field[]) {
@@ -394,6 +349,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
         id={this.dialogId}
         onClose={this.handleStopAdvancedEdit}
         width={1}
+        __unstable_autoFocus={false}
       >
         <PresenceOverlay margins={[0, 0, 1, 0]}>
           <Box padding={4}>{this.renderFields(fields)}</Box>
@@ -407,7 +363,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   handleSelectAssetFromSource = (assetFromSource: AssetFromSource) => {
-    const {onChange, type, resolveUploader} = this.props
+    const {onChange, type} = this.props
     handleSelectAssetFromSource({
       assetFromSource,
       onChange,
@@ -422,8 +378,14 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     return this.props.focusPath?.[0] === 'asset'
   }
 
-  handleFileTargetFocus = () => {
-    this.props.onFocus(['asset'])
+  handleFileTargetFocus = (event) => {
+    // We want to handle focus when the file target element *itself* receives
+    // focus, not when an interactive child element receives focus. Since React has decided
+    // to let focus bubble, so this workaround is needed
+    // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
+    if (event.currentTarget === event.target && event.currentTarget === this._focusRef) {
+      this.props.onFocus(['asset'])
+    }
   }
   handleFileTargetBlur = () => {
     this.props.onBlur()
@@ -473,24 +435,196 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     )
   }
 
-  renderAsset() {
-    const {value, materialize} = this.props
+  renderAsset(hasAdvancedFields: boolean) {
+    const {value, readOnly, assetSources, type, directUploads, observeAsset} = this.props
+    const {isMenuOpen} = this.state
+    const asset = value?.asset
+    if (!asset) {
+      return null
+    }
+
+    const accept = get(type, 'options.accept', 'image/*')
+
+    let browseMenuItem: ReactNode =
+      assetSources && assetSources?.length === 0 ? null : (
+        <MenuItem
+          icon={SearchIcon}
+          text="Browse"
+          onClick={() => {
+            this.setState({isMenuOpen: false})
+            this.handleSelectFileFromAssetSource(assetSources[0])
+          }}
+          disabled={readOnly}
+          data-testid="file-input-browse-button"
+        />
+      )
+
+    if (assetSources.length > 1) {
+      browseMenuItem = assetSources.map((assetSource) => {
+        return (
+          <MenuItem
+            key={assetSource.name}
+            text={assetSource.title}
+            onClick={() => {
+              this.setState({isMenuOpen: false})
+              this.handleSelectFileFromAssetSource(assetSource)
+            }}
+            icon={assetSource.icon || ImageIcon}
+            disabled={readOnly}
+            data-testid={`file-input-browse-button-${assetSource.name}`}
+          />
+        )
+      })
+    }
+
     return (
-      <WithMaterializedReference reference={value!.asset} materialize={materialize}>
-        {this.renderMaterializedAsset}
-      </WithMaterializedReference>
+      <WithReferencedAsset
+        reference={asset}
+        observeAsset={observeAsset}
+        waitPlaceholder={<FileSkeleton />}
+      >
+        {(assetDocument) => (
+          <FileDetails
+            size={assetDocument.size}
+            originalFilename={
+              assetDocument?.originalFilename || `download.${assetDocument.extension}`
+            }
+            onClick={hasAdvancedFields ? this.handleOpenDialog : undefined}
+            muted={!hasAdvancedFields && readOnly}
+            disabled={!hasAdvancedFields}
+            onMenuOpen={(isOpen) => this.setState({isMenuOpen: isOpen})}
+            isMenuOpen={isMenuOpen}
+          >
+            <ActionsMenu
+              onUpload={this.handleSelectFiles}
+              browse={browseMenuItem}
+              onReset={this.handleRemoveButtonClick}
+              downloadUrl={`${assetDocument.url}?dl`}
+              copyUrl={`${assetDocument.url}`}
+              readOnly={readOnly}
+              accept={accept}
+              directUploads={directUploads}
+            />
+          </FileDetails>
+        )}
+      </WithReferencedAsset>
+    )
+  }
+
+  renderAssetMenu(tone) {
+    const {type, readOnly, directUploads} = this.props
+    const {hoveringFiles} = this.state
+
+    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
+    const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
+
+    return (
+      <CardOverlay tone={tone}>
+        <FlexContainer align="center" justify="center" gap={2} flex={1}>
+          <PlaceholderText
+            readOnly={readOnly}
+            hoveringFiles={hoveringFiles}
+            acceptedFiles={acceptedFiles}
+            rejectedFilesCount={rejectedFilesCount}
+            directUploads={directUploads}
+            type={'file'}
+          />
+        </FlexContainer>
+      </CardOverlay>
+    )
+  }
+
+  renderBrowser() {
+    const {assetSources, readOnly, directUploads} = this.props
+
+    if (assetSources.length === 0) return null
+
+    if (assetSources.length > 1 && !readOnly && directUploads) {
+      return (
+        <MenuButton
+          id={`${this._inputId}_assetFileButton`}
+          button={
+            <Button
+              mode="ghost"
+              text="Select"
+              data-testid="file-input-multi-browse-button"
+              icon={SearchIcon}
+            />
+          }
+          data-testid="input-select-button"
+          menu={
+            <Menu>
+              {assetSources.map((assetSource) => {
+                return (
+                  <MenuItem
+                    key={assetSource.name}
+                    text={assetSource.title}
+                    onClick={() => {
+                      this.setState({isMenuOpen: false})
+                      this.handleSelectFileFromAssetSource(assetSource)
+                    }}
+                    icon={assetSource.icon || ImageIcon}
+                    disabled={readOnly}
+                    data-testid={`file-input-browse-button-${assetSource.name}`}
+                  />
+                )
+              })}
+            </Menu>
+          }
+        />
+      )
+    }
+
+    return (
+      <Button
+        fontSize={2}
+        text="Browse"
+        icon={SearchIcon}
+        mode="ghost"
+        onClick={() => {
+          this.setState({isMenuOpen: false})
+          this.handleSelectFileFromAssetSource(assetSources[0])
+        }}
+        data-testid="file-input-browse-button"
+        disabled={readOnly}
+      />
     )
   }
 
   renderUploadPlaceholder() {
-    const {readOnly} = this.props
+    const {readOnly, type, directUploads} = this.props
+    const {hoveringFiles} = this.state
 
-    return readOnly ? (
-      <Text align="center" muted>
-        This field is read-only
-      </Text>
-    ) : (
-      <UploadPlaceholder />
+    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
+    const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
+
+    const accept = get(type, 'options.accept', '')
+
+    return (
+      <div style={{padding: 1}}>
+        <Card
+          tone={readOnly ? 'transparent' : 'inherit'}
+          border
+          padding={3}
+          style={
+            hoveringFiles.length === 0
+              ? {borderStyle: 'dashed'}
+              : {borderStyle: 'dashed', borderColor: 'transparent'}
+          }
+        >
+          <UploadPlaceholder
+            browse={this.renderBrowser()}
+            onUpload={this.handleSelectFiles}
+            readOnly={readOnly}
+            hoveringFiles={hoveringFiles}
+            acceptedFiles={acceptedFiles}
+            rejectedFilesCount={rejectedFilesCount}
+            type="file"
+            accept={accept}
+            directUploads={directUploads}
+          />
+        </Card>
+      </div>
     )
   }
 
@@ -520,20 +654,41 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       compareValue,
       level,
       markers,
-      resolveUploader,
       readOnly,
       presence,
+      focusPath = EMPTY_ARRAY,
     } = this.props
-    const {isAdvancedEditOpen, hoveringFiles, selectedAssetSource} = this.state
-    const [highlightedFields, otherFields] = partition(
+    const {hoveringFiles, selectedAssetSource, isStale} = this.state
+
+    const fieldGroups = partition(
       type.fields.filter((field) => !HIDDEN_FIELDS.includes(field.name)),
       'type.options.isHighlighted'
     )
-    const accept = get(type, 'options.accept', '')
+    const [highlightedFields, otherFields] = fieldGroups
 
     // Whoever is present at the asset field is who we show on the field itself
     const assetFieldPresence = presence.filter((item) => item.path[0] === 'asset')
 
+    const isDialogOpen =
+      focusPath.length > 0 && otherFields.some((field) => focusPath[0] === field.name)
+
+    function getFileTone() {
+      const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
+      const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
+
+      if (hoveringFiles.length > 0) {
+        if (rejectedFilesCount > 0 || !directUploads) {
+          return 'critical'
+        }
+      }
+
+      if (!value?._upload && !readOnly && hoveringFiles.length > 0) {
+        return 'primary'
+      }
+      return value?._upload && value?.asset && readOnly ? 'transparent' : 'default'
+    }
+
+    const hasValueOrUpload = Boolean(value?._upload || value?.asset)
     return (
       <>
         <ImperativeToast ref={this.setToast} />
@@ -543,7 +698,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
           title={type.title}
           description={type.description}
           level={highlightedFields.length > 0 ? level : 0}
-          __unstable_presence={assetFieldPresence}
+          __unstable_presence={isDialogOpen ? EMPTY_ARRAY : assetFieldPresence}
           __unstable_changeIndicator={false}
         >
           <div>
@@ -551,84 +706,49 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
               value={value?.asset?._ref}
               compareValue={compareValue?.asset?._ref}
             >
+              {isStale && (
+                <Box marginBottom={2}>
+                  <UploadWarning onClearStale={this.handleClearUploadState} />
+                </Box>
+              )}
+
               <ChangeIndicatorWithProvidedFullPath
                 path={[]}
                 hasFocus={this.hasFileTargetFocus()}
                 value={value?.asset?._ref}
               >
-                <FileTarget
-                  tabIndex={readOnly ? undefined : 0}
-                  disabled={readOnly === true}
-                  ref={this.setFocusInput}
-                  onFiles={this.handleSelectFiles}
-                  onFilesOver={this.handleFilesOver}
-                  onFilesOut={this.handleFilesOut}
-                  onFocus={this.handleFileTargetFocus}
-                  onBlur={this.handleFileTargetBlur}
-                  tone="transparent"
-                >
-                  <AssetBackground>
-                    <Container padding={3} sizing="border" width={0}>
-                      {value?._upload && this.renderUploadState(value._upload)}
-                      {!value?._upload && value?.asset && this.renderAsset()}
-                      {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
-                      {!value?._upload && !readOnly && hoveringFiles.length > 0 && (
-                        <Overlay>
-                          <DropMessage
-                            hoveringFiles={hoveringFiles}
-                            resolveUploader={resolveUploader}
-                            types={[type]}
-                          />
-                        </Overlay>
-                      )}
-                    </Container>
-                  </AssetBackground>
-                </FileTarget>
+                {/* not uploading */}
+                {!value?._upload && (
+                  <FileTarget
+                    tabIndex={0}
+                    disabled={Boolean(readOnly)}
+                    ref={this.setFocusInput}
+                    onFiles={this.handleSelectFiles}
+                    onFilesOver={this.handleFilesOver}
+                    onFilesOut={this.handleFilesOut}
+                    onFocus={this.handleFileTargetFocus}
+                    onBlur={this.handleFileTargetBlur}
+                    tone={getFileTone()}
+                    $border={hasValueOrUpload || hoveringFiles.length > 0}
+                    padding={hasValueOrUpload ? 1 : 0}
+                    radius={2}
+                  >
+                    {value?.asset && this.renderAsset(otherFields.length > 0)}
+                    {!value?.asset && this.renderUploadPlaceholder()}
+                    {value?.asset && hoveringFiles.length > 0
+                      ? this.renderAssetMenu(getFileTone())
+                      : null}
+                  </FileTarget>
+                )}
+
+                {/* uploading */}
+                {value?._upload && this.renderUploadState(value._upload)}
               </ChangeIndicatorWithProvidedFullPath>
             </ChangeIndicatorCompareValueProvider>
-
-            <Grid
-              gap={1}
-              marginTop={3}
-              style={{gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))'}}
-            >
-              {!readOnly && directUploads && (
-                <FileInputButton
-                  onSelect={this.handleSelectFiles}
-                  mode="ghost"
-                  icon={UploadIcon}
-                  accept={accept}
-                  text="Upload file"
-                  data-testid="file-input-upload-button"
-                />
-              )}
-
-              {!readOnly && this.renderSelectFileButton()}
-
-              {value && otherFields.length > 0 && (
-                <Button
-                  icon={readOnly ? EyeOpenIcon : EditIcon}
-                  mode="ghost"
-                  onClick={this.handleStartAdvancedEdit}
-                  text={readOnly ? 'View details' : 'Edit details'}
-                />
-              )}
-
-              {!readOnly && value?.asset && (
-                <Button
-                  icon={TrashIcon}
-                  mode="ghost"
-                  onClick={this.handleRemoveButtonClick}
-                  text="Remove file"
-                  tone="critical"
-                  data-testid="file-input-remove-button"
-                />
-              )}
-            </Grid>
           </div>
 
           {highlightedFields.length > 0 && this.renderFields(highlightedFields)}
-          {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
+          {isDialogOpen && this.renderAdvancedEdit(otherFields)}
           {selectedAssetSource && this.renderAssetSource()}
         </FormFieldSet>
       </>

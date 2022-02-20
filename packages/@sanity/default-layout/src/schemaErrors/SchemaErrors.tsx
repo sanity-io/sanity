@@ -1,7 +1,7 @@
 import React from 'react'
 import {Box, Card, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {ArrowRightIcon, ErrorOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
-import generateHelpUrl from '@sanity/generate-help-url'
+import {generateHelpUrl} from '@sanity/generate-help-url'
 import PropTypes from 'prop-types'
 
 function renderPath(path) {

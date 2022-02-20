@@ -1,5 +1,5 @@
 import client from '@sanity/client'
-import generateHelpUrl from '@sanity/generate-help-url'
+import {generateHelpUrl} from '@sanity/generate-help-url'
 import getUserConfig from './getUserConfig'
 
 const apiHosts = {

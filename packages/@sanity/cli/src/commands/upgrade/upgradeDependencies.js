@@ -153,7 +153,9 @@ function getMajorUpgradeText(mods, chalk) {
   const modNames = mods.map((mod) => `${mod.name} (v${semver.major(mod.latest)})`).join('\n - ')
 
   return [
-    `The following modules has new major versions\n`,
+    mods.length === 1
+      ? `The following module has a new major version\n`
+      : `The following modules have new major versions\n`,
     `released and will have to be manually upgraded:\n\n`,
     ` - ${modNames}\n\n`,
     chalk.yellow('⚠'),

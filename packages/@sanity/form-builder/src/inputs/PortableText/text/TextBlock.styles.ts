@@ -1,4 +1,3 @@
-import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/change-indicators'
 import {hues} from '@sanity/color'
 import {Box, Flex, Theme} from '@sanity/ui'
 import styled, {css} from 'styled-components'
@@ -146,27 +145,23 @@ export const TextFlex = styled(Flex)<{$level?: number}>`
   padding-left: ${({$level}) => ($level ? $level * 32 : 0)}px;
 `
 
-export const ChangeIndicatorWrapper = styled.div(({theme}: {theme: Theme}) => {
-  const {space} = theme.sanity
+export const ChangeIndicatorWrapper = styled.div<{$hasChanges: boolean}>(
+  ({theme, $hasChanges}: {theme: Theme; $hasChanges: boolean}) => {
+    const {space} = theme.sanity
 
-  return css`
-    position: absolute;
-    width: ${space[2]}px;
-    right: 0;
-    top: -${space[1]}px;
-    bottom: -${space[1]}px;
-    padding-left: ${space[1]}px;
-    user-select: none;
-  `
-})
+    return css`
+      position: absolute;
+      width: ${space[2]}px;
+      right: 0;
+      top: -${space[1]}px;
+      bottom: -${space[1]}px;
+      padding-left: ${space[1]}px;
+      user-select: none;
 
-export const StyledChangeIndicatorWithProvidedFullPath = styled(
-  ChangeIndicatorWithProvidedFullPath
-)`
-  width: 1px;
-  height: 100%;
-
-  & > div {
-    height: 100%;
+      ${!$hasChanges &&
+      css`
+        display: none;
+      `}
+    `
   }
-`
+)

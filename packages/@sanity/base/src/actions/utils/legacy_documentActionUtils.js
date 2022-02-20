@@ -1,5 +1,5 @@
 import {difference} from 'lodash'
-import helpUrl from '@sanity/generate-help-url'
+import {generateHelpUrl} from '@sanity/generate-help-url'
 
 const ACTIONS_FLAG = '__experimental_actions'
 
@@ -9,8 +9,9 @@ const VALID_ACTIONS = DEFAULT_ACTIONS
 const hasWarned = {}
 const readActions = (schemaType) => {
   // todo: enable this when officially deprecating experimental actions
+  // eslint-disable-next-line no-constant-condition
   if (false && !(schemaType.name in hasWarned)) {
-    console.warn(`Heads up! Experimental actions is now deprecated and replaced by Document Actions. Read more about how to migrate on ${helpUrl(
+    console.warn(`Heads up! Experimental actions is now deprecated and replaced by Document Actions. Read more about how to migrate on ${generateHelpUrl(
       'experimental-actions-replaced-by-document-actions'
     )}".
 `)

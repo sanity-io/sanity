@@ -46,7 +46,6 @@ export const DescriptionText = styled(Text)(({theme}) => {
       text-overflow: ellipsis;
       -webkit-line-clamp: ${maxLines};
       -webkit-box-orient: vertical;
-      outline: 1px solid black;
     }
   `
 })

@@ -7,16 +7,24 @@ import {
 } from '@sanity/portable-text-editor'
 import {isKeySegment, Marker, Path} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
-import {Card, Theme, Tooltip, Flex, Box, ResponsivePaddingProps} from '@sanity/ui'
-import {hues} from '@sanity/color'
-import React, {useCallback, useMemo, useRef} from 'react'
-import styled, {css} from 'styled-components'
-import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/change-indicators'
+import {Tooltip, ResponsivePaddingProps, Flex} from '@sanity/ui'
+import React, {useCallback, useMemo, useRef, useState} from 'react'
 import {RenderBlockActions, RenderCustomMarkers} from '../types'
 import {Markers} from '../../../legacyParts'
 import PatchEvent from '../../../PatchEvent'
 import {BlockActions} from '../BlockActions'
+import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
 import {BlockObjectPreview} from './BlockObjectPreview'
+import {
+  Root,
+  PreviewContainer,
+  ChangeIndicatorWrapper,
+  InnerFlex,
+  BlockActionsOuter,
+  BlockActionsInner,
+  TooltipBox,
+  BlockPreview,
+} from './BlockObject.styles'
 
 interface BlockObjectProps {
   attributes: RenderAttributes
@@ -32,140 +40,6 @@ interface BlockObjectProps {
   renderCustomMarkers?: RenderCustomMarkers
   type: Type
 }
-
-const Root = styled(Card)((props: {theme: Theme}) => {
-  const {color, radius, space} = props.theme.sanity
-
-  const overlay = css`
-    pointer-events: none;
-    content: '';
-    position: absolute;
-    top: -${space[1]}px;
-    bottom: -${space[1]}px;
-    left: -${space[1]}px;
-    right: -${space[1]}px;
-    border-radius: ${radius[2]}px;
-    mix-blend-mode: ${color.dark ? 'screen' : 'multiply'};
-  `
-
-  return css`
-    box-shadow: 0 0 0 1px var(--card-border-color);
-    border-radius: ${radius[1]}px;
-    pointer-events: all;
-    position: relative;
-
-    &[data-focused] {
-      box-shadow: 0 0 0 1px ${color.selectable.primary.selected.border};
-    }
-
-    &:not([data-focused]):not([data-selected]) {
-      @media (hover: hover) {
-        &:hover {
-          --card-border-color: ${color.input.default.hovered.border};
-        }
-      }
-    }
-
-    &[data-markers] {
-      &:after {
-        ${overlay}
-        background-color: ${color.dark ? hues.purple[950].hex : hues.purple[50].hex};
-      }
-    }
-
-    &[data-warning] {
-      &:after {
-        ${overlay}
-        background-color: ${color.muted.caution.hovered.bg};
-      }
-
-      @media (hover: hover) {
-        &:hover {
-          --card-border-color: ${color.muted.caution.hovered.border};
-        }
-      }
-    }
-
-    &[data-invalid] {
-      &:after {
-        ${overlay}
-        background-color: ${color.input.invalid.enabled.bg};
-      }
-
-      @media (hover: hover) {
-        &:hover {
-          --card-border-color: ${color.input.invalid.hovered.border};
-        }
-      }
-    }
-  `
-})
-
-const PreviewContainer = styled(Flex)`
-  user-select: none;
-  pointer-events: none;
-`
-
-const ChangeIndicatorWrapper = styled.div(({theme}: {theme: Theme}) => {
-  const {space} = theme.sanity
-
-  return css`
-    position: absolute;
-    width: ${space[2]}px;
-    right: 0;
-    top: -${space[1]}px;
-    bottom: -${space[1]}px;
-    padding-left: ${space[1]}px;
-
-    [data-dragged] & {
-      visibility: hidden;
-    }
-  `
-})
-
-const StyledChangeIndicatorWithProvidedFullPath = styled(ChangeIndicatorWithProvidedFullPath)`
-  width: 1px;
-  height: 100%;
-
-  & > div {
-    height: 100%;
-  }
-`
-
-const InnerFlex = styled(Flex)`
-  position: relative;
-
-  [data-dragged] > & {
-    opacity: 0.5;
-  }
-`
-
-const BlockActionsOuter = styled(Box)`
-  width: 25px;
-  position: relative;
-
-  [data-dragged] & {
-    visibility: hidden;
-  }
-`
-
-const BlockActionsInner = styled(Flex)`
-  position: absolute;
-  right: 0;
-  [data-dragged] & {
-    visibility: hidden;
-  }
-`
-
-const TooltipBox = styled(Box)`
-  max-width: 250px;
-`
-const BlockPreview = styled(Box)((props: {theme: Theme}) => {
-  const color = props.theme.sanity.color.input
-  return css`
-    background-color: ${color.default.enabled.bg};
-  `
-})
 
 export const BlockObject = React.forwardRef(function BlockObject(
   props: BlockObjectProps,
@@ -186,6 +60,13 @@ export const BlockObject = React.forwardRef(function BlockObject(
     type,
   } = props
   const elementRef = useRef<HTMLDivElement>()
+  const [reviewChangesHovered, setReviewChangesHovered] = useState<boolean>(false)
+  const [hasChanges, setHasChanges] = useState<boolean>(false)
+
+  const handleMouseOver = useCallback(() => setReviewChangesHovered(true), [])
+  const handleMouseOut = useCallback(() => setReviewChangesHovered(false), [])
+
+  const handleOnHasChanges = useCallback((changed: boolean) => setHasChanges(changed), [])
 
   const handleEdit = useCallback(() => {
     onFocus(path.concat(FOCUS_TERMINATOR))
@@ -226,18 +107,17 @@ export const BlockObject = React.forwardRef(function BlockObject(
 
   const innerPaddingProps: ResponsivePaddingProps = useMemo(() => {
     if (isFullscreen && !renderBlockActions) {
-      return {paddingX: 5, paddingBottom: 1}
+      return {paddingX: 5}
     }
 
     if (isFullscreen && renderBlockActions) {
-      return {paddingLeft: 5, paddingRight: 2, paddingBottom: 1}
+      return {paddingLeft: 5, paddingRight: 2}
     }
 
     if (renderBlockActions) {
       return {
         paddingLeft: 3,
         paddingRight: 2,
-        paddingBottom: 1,
       }
     }
 
@@ -281,59 +161,72 @@ export const BlockObject = React.forwardRef(function BlockObject(
   const tooltipEnabled = hasErrors || hasWarnings || hasInfo || hasMarkers
 
   return (
-    <InnerFlex marginY={3} ref={forwardedRef} contentEditable={false}>
-      <PreviewContainer flex={1} {...innerPaddingProps}>
-        <Tooltip
-          placement="top"
-          portal="editor"
-          disabled={!tooltipEnabled}
-          content={
-            tooltipEnabled && (
-              <TooltipBox padding={2}>
-                <Markers markers={markers} renderCustomMarkers={renderCustomMarkers} />
-              </TooltipBox>
-            )
-          }
-        >
-          <Root
-            data-focused={focused ? '' : undefined}
-            data-invalid={hasErrors ? '' : undefined}
-            data-selected={selected ? '' : undefined}
-            data-markers={hasMarkers ? '' : undefined}
-            data-warning={hasWarnings ? '' : undefined}
-            data-testid="pte-block-object"
-            data-image-preview={isImagePreview ? '' : undefined}
-            flex={1}
-            onDoubleClick={handleDoubleClickToOpen}
-            padding={isImagePreview ? 0 : 1}
-            ref={elementRef}
-            tone={tone}
+    <Flex paddingBottom={1} marginY={3} contentEditable={false} ref={forwardedRef}>
+      <InnerFlex flex={1}>
+        <PreviewContainer flex={1} {...innerPaddingProps}>
+          <Tooltip
+            placement="top"
+            portal="editor"
+            disabled={!tooltipEnabled}
+            content={
+              tooltipEnabled && (
+                <TooltipBox padding={2}>
+                  <Markers markers={markers} renderCustomMarkers={renderCustomMarkers} />
+                </TooltipBox>
+              )
+            }
           >
-            <BlockPreview ref={blockRef}>{blockPreview}</BlockPreview>
-          </Root>
-        </Tooltip>
-      </PreviewContainer>
-      <BlockActionsOuter marginRight={1}>
-        <BlockActionsInner>
-          {renderBlockActions && block && focused && !readOnly && (
-            <BlockActions
-              onChange={onChange}
-              block={block}
-              renderBlockActions={renderBlockActions}
+            <Root
+              data-focused={focused ? '' : undefined}
+              data-image-preview={isImagePreview ? '' : undefined}
+              data-invalid={hasErrors ? '' : undefined}
+              data-markers={hasMarkers ? '' : undefined}
+              data-selected={selected ? '' : undefined}
+              data-testid="pte-block-object"
+              data-warning={hasWarnings ? '' : undefined}
+              flex={1}
+              onDoubleClick={handleDoubleClickToOpen}
+              padding={isImagePreview ? 0 : 1}
+              ref={elementRef}
+              tone={tone}
+            >
+              <BlockPreview ref={blockRef}>{blockPreview}</BlockPreview>
+            </Root>
+          </Tooltip>
+        </PreviewContainer>
+
+        <BlockActionsOuter marginRight={1}>
+          <BlockActionsInner>
+            {renderBlockActions && block && focused && !readOnly && (
+              <BlockActions
+                onChange={onChange}
+                block={block}
+                renderBlockActions={renderBlockActions}
+              />
+            )}
+          </BlockActionsInner>
+        </BlockActionsOuter>
+
+        {isFullscreen && (
+          <ChangeIndicatorWrapper
+            contentEditable={false}
+            onMouseOver={handleMouseOver}
+            onMouseLeave={handleMouseOut}
+            $hasChanges={Boolean(hasChanges)}
+          >
+            <StyledChangeIndicatorWithProvidedFullPath
+              compareDeep
+              value={block}
+              hasFocus={focused}
+              path={blockPath}
+              withHoverEffect={false}
+              onHasChanges={handleOnHasChanges}
             />
-          )}
-        </BlockActionsInner>
-      </BlockActionsOuter>
-      {isFullscreen && (
-        <ChangeIndicatorWrapper contentEditable={false}>
-          <StyledChangeIndicatorWithProvidedFullPath
-            compareDeep
-            value={block}
-            hasFocus={focused}
-            path={blockPath}
-          />
-        </ChangeIndicatorWrapper>
-      )}
-    </InnerFlex>
+          </ChangeIndicatorWrapper>
+        )}
+
+        {reviewChangesHovered && <ReviewChangesHighlightBlock />}
+      </InnerFlex>
+    </Flex>
   )
 })

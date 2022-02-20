@@ -10,7 +10,7 @@ import {
 } from '@sanity/types'
 import {ChangeIndicatorProvider} from '@sanity/base/change-indicators'
 import * as PathUtils from '@sanity/util/paths'
-import generateHelpUrl from '@sanity/generate-help-url'
+import {generateHelpUrl} from '@sanity/generate-help-url'
 import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/presence'
 import {useConditionalReadOnly} from '@sanity/base/_internal'
 import PatchEvent from './PatchEvent'

@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import generateHelpUrl from '@sanity/generate-help-url'
+import {generateHelpUrl} from '@sanity/generate-help-url'
 import {Dialog, Text, Box, Stack, Container} from '@sanity/ui'
 import cancelWrap from './cancelWrap'
 import {authenticationFetcher, pluginConfig, LoginDialogContent} from './legacyParts'

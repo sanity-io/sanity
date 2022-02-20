@@ -45,6 +45,7 @@ export default {
           options: {
             isHighlighted: true,
           },
+          validation: (Rule) => Rule.required(),
         },
         {
           name: 'detailedCaption',
@@ -88,8 +89,19 @@ export default {
           options: {isHighlighted: true},
         },
         {
+          title: '👀',
+          name: 'description_eyes',
+          type: 'string',
+          options: {isHighlighted: true},
+        },
+        {
           title: 'Not so important',
           name: 'notsoimportant',
+          type: 'string',
+        },
+        {
+          title: 'not so important but electric boogaloo',
+          name: 'notsoimportant2',
           type: 'string',
         },
       ],

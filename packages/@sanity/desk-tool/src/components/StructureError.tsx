@@ -1,4 +1,4 @@
-import generateHelpUrl from '@sanity/generate-help-url'
+import {generateHelpUrl} from '@sanity/generate-help-url'
 import {SerializeError} from '@sanity/structure'
 import {Box, Button, Card, Code, Container, Heading, Label, Stack, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'

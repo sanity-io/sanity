@@ -23,6 +23,7 @@ import {
   Scroller,
   ToolbarCard,
 } from './Editor.styles'
+import {useSpellcheck} from './hooks/useSpellCheck'
 
 interface EditorProps {
   initialSelection?: EditorSelection
@@ -96,6 +97,7 @@ export function Editor(props: EditorProps) {
   }, [])
 
   const renderPlaceholder = useCallback(() => <>Empty</>, [])
+  const spellcheck = useSpellcheck()
 
   const editable = useMemo(
     () => (
@@ -111,7 +113,7 @@ export function Editor(props: EditorProps) {
         renderPlaceholder={renderPlaceholder}
         scrollSelectionIntoView={scrollSelectionIntoView}
         selection={initialSelection}
-        spellCheck={false} // This is taken care of via renderBlock prop
+        spellCheck={spellcheck}
       />
     ),
     [
@@ -124,6 +126,7 @@ export function Editor(props: EditorProps) {
       renderChild,
       renderPlaceholder,
       scrollSelectionIntoView,
+      spellcheck,
     ]
   )
 
@@ -139,14 +142,10 @@ export function Editor(props: EditorProps) {
         />
       </ToolbarCard>
 
-      <EditableCard flex={1} tone="transparent">
+      <EditableCard flex={1}>
         <Scroller ref={setScrollElement}>
           <EditableContainer padding={isFullscreen ? 2 : 0} sizing="border" width={1}>
-            <EditableWrapper
-              shadow={isFullscreen ? 1 : 0}
-              $isFullscreen={isFullscreen}
-              $readOnly={readOnly}
-            >
+            <EditableWrapper $isFullscreen={isFullscreen} $readOnly={readOnly}>
               <BoundaryElementProvider element={isFullscreen ? scrollElement : boundaryElement}>
                 {editable}
               </BoundaryElementProvider>

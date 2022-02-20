@@ -106,10 +106,6 @@ export default defineConfig({
         replacement: path.resolve(__dirname, 'mocks/@sanity/client.ts'),
       },
       {
-        find: '@sanity/generate-help-url',
-        replacement: path.resolve(__dirname, 'mocks/@sanity/generate-help-url.ts'),
-      },
-      {
         find: 'part:@sanity/base/client',
         replacement: path.resolve(MONOREPO_PATH, 'packages/@sanity/base/src/client/index.esm.ts'),
       },

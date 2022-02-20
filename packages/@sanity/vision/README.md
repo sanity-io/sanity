@@ -10,3 +10,21 @@ Vision is a plugin for Sanity Studio for testing GROQ queries. It features:
 
 ## Installation
 `sanity install @sanity/vision`
+
+### Configuring
+
+It is possible to override the default configuration by setting up a config file.
+
+Create a file named `vision.json` and place it at `config/@sanity/vision.json` relative to your root studio folder.
+
+Currently we only support overriding the default API version.
+
+Here's an example `vision.json` file:
+
+```js
+{
+  "defaultApiVersion": "v2021-10-21"
+}
+```
+
+- `defaultApiVersion` Valid options is `v1`, `vX`, `v2021-03-25` or `v2021-10-21`

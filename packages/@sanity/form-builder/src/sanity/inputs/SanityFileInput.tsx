@@ -1,4 +1,5 @@
 import React from 'react'
+import type {AssetSource} from '@sanity/types'
 import FileInput from '../../inputs/files/FileInput'
 import resolveUploader from '../uploads/resolveUploader'
 import {
@@ -6,16 +7,19 @@ import {
   formBuilderConfig,
   userDefinedFileAssetSources,
 } from '../../legacyParts'
-import {materializeReference} from './client-adapters/assets'
+import withValuePath from '../../utils/withValuePath'
+import {observeFileAsset} from './client-adapters/assets'
 import {wrapWithDocument} from './wrapWithDocument'
 
-const globalAssetSources = userDefinedFileAssetSources
-  ? userDefinedFileAssetSources
+const globalAssetSources: AssetSource[] = userDefinedFileAssetSources
+  ? ensureArrayOfSources(userDefinedFileAssetSources)
   : defaultFileAssetSources
 
 const SUPPORT_DIRECT_UPLOADS = formBuilderConfig?.files?.directUploads !== false
 
 type Props = Omit<React.ComponentProps<typeof FileInput>, 'assetSources'>
+
+const FileInputWithValuePath = withValuePath(FileInput)
 
 export default React.forwardRef(function SanityFileInput(props: Props, forwardedRef: any) {
   const sourcesFromSchema = props.type.options?.sources
@@ -28,13 +32,24 @@ export default React.forwardRef(function SanityFileInput(props: Props, forwarded
   )
 
   return (
-    <FileInput
+    <FileInputWithValuePath
       {...props}
       resolveUploader={resolveUploader}
-      materialize={materializeReference}
+      observeAsset={observeFileAsset}
       assetSources={assetSources}
       directUploads={SUPPORT_DIRECT_UPLOADS}
       ref={forwardedRef}
     />
   )
 })
+
+function ensureArrayOfSources(sources: unknown): AssetSource[] {
+  if (Array.isArray(sources)) {
+    return sources
+  }
+
+  console.warn(
+    'Configured file asset sources is not an array - if `part:@sanity/form-builder/input/file/asset-sources` is defined, make sure it returns an array!'
+  )
+  return defaultFileAssetSources
+}

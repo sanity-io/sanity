@@ -195,21 +195,22 @@ export function createWithPortableTextMarkModel(
             editor.removeMark(mark)
             return
           }
-          splitTextNodes.forEach(([node]) => {
-            const marks = [
-              ...(Array.isArray(node.marks) ? node.marks : []).filter(
-                (eMark: string) => eMark !== mark
-              ),
-              mark,
-            ]
-            if (location && editor.selection) {
+          Editor.withoutNormalizing(editor, () => {
+            splitTextNodes.forEach(([node, path]) => {
+              const marks = [
+                ...(Array.isArray(node.marks) ? node.marks : []).filter(
+                  (eMark: string) => eMark !== mark
+                ),
+                mark,
+              ]
               Transforms.setNodes(
                 editor,
                 {marks},
-                {at: editor.selection, match: Text.isText, split: true, hanging: true}
+                {at: path, match: Text.isText, split: true, hanging: true}
               )
-            }
+            })
           })
+          Editor.normalize(editor)
         } else {
           const existingMarks: string[] =
             {

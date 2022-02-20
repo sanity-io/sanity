@@ -8,13 +8,23 @@ export default defineScope('base/components', 'components', [
     component: lazy(() => import('./UserAvatarStory')),
   },
   {
+    name: 'text-with-tone',
+    title: 'TextWithTone',
+    component: lazy(() => import('./TextWithToneStory')),
+  },
+  {
+    name: 'preview-card',
+    title: 'PreviewCard',
+    component: lazy(() => import('./PreviewCardStory')),
+  },
+  {
     name: 'collapse-menu',
     title: 'CollapseMenu',
     component: lazy(() => import('./CollapseMenuStory')),
   },
   {
-    name: 'text-with-tone',
-    title: 'TextWithTone',
-    component: lazy(() => import('./TextWithToneStory')),
+    name: 'roving-focus',
+    title: 'RovingFocus',
+    component: lazy(() => import('./RovingFocusStory')),
   },
 ])

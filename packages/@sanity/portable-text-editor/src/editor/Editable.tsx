@@ -40,6 +40,7 @@ const PLACEHOLDER_STYLE: React.CSSProperties = {
   opacity: 0.5,
   position: 'absolute',
   userSelect: 'none',
+  pointerEvents: 'none',
 }
 
 const NOOP = () => {
@@ -221,11 +222,11 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     [
       keyGenerator,
       portableTextFeatures,
+      readOnly,
       renderAnnotation,
       renderChild,
       renderDecorator,
       renderPlaceholder,
-      readOnly,
     ]
   )
 

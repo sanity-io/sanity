@@ -1,6 +1,6 @@
 import React, {memo, useCallback, useMemo} from 'react'
-import {CollapseMenu, CollapseMenuButton, CollapseMenuButtonProps} from '@sanity/base/components'
-import {Button, PopoverProps} from '@sanity/ui'
+import {CollapseMenuButton, CollapseMenu} from '@sanity/base/components'
+import {Button, ButtonProps, PopoverProps} from '@sanity/ui'
 import {EllipsisVerticalIcon} from '@sanity/icons'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {PTEToolbarAction, PTEToolbarActionGroup} from './types'
@@ -9,8 +9,8 @@ import {getActionIcon} from './helpers'
 
 const CollapseMenuMemo = memo(CollapseMenu)
 
-const MENU_POPOVER_PROPS: PopoverProps = {constrainSize: true}
-const COLLAPSE_BUTTON_PROPS: CollapseMenuButtonProps = {padding: 2, mode: 'bleed'}
+const MENU_POPOVER_PROPS: PopoverProps = {constrainSize: true, portal: true}
+const COLLAPSE_BUTTON_PROPS: ButtonProps = {padding: 2, mode: 'bleed'}
 
 interface ActionMenuProps {
   disabled: boolean
@@ -61,7 +61,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
         return (
           <CollapseMenuButton
             disabled={disabled || annotationDisabled}
-            buttonProps={COLLAPSE_BUTTON_PROPS}
+            {...COLLAPSE_BUTTON_PROPS}
             dividerBefore={action.firstInGroup}
             icon={getActionIcon(action, active)}
             key={action.key}
@@ -69,6 +69,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
             onClick={() => action.handle(active)}
             selected={active}
             text={action.title || action.key}
+            tooltipText={action.title || action.key}
             tooltipProps={{
               disabled: disabled || annotationDisabled,
               placement: isFullscreen ? 'bottom' : 'top',
@@ -80,19 +81,21 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
     [actions, activeKeys, disabled, isEmptyTextBlock, isFullscreen]
   )
 
-  const menuButton = useMemo(
-    () => <Button icon={EllipsisVerticalIcon} mode="bleed" padding={2} disabled={disabled} />,
+  const menuButtonProps = useMemo(
+    () => ({
+      button: <Button icon={EllipsisVerticalIcon} mode="bleed" padding={2} disabled={disabled} />,
+      popover: MENU_POPOVER_PROPS,
+    }),
     [disabled]
   )
 
   return (
     <CollapseMenuMemo
       collapsed={collapsed}
-      gap={1}
-      menuButton={menuButton}
-      menuPopoverProps={MENU_POPOVER_PROPS}
-      onMenuClose={handleMenuClose}
       disableRestoreFocusOnClose
+      gap={1}
+      menuButtonProps={menuButtonProps}
+      onMenuClose={handleMenuClose}
     >
       {children}
     </CollapseMenuMemo>
