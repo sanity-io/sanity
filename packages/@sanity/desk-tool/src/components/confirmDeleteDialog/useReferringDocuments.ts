@@ -27,41 +27,6 @@ const versionedClient = client.withConfig({
   apiVersion: '2022-03-07',
 })
 
-function parseTokenDocumentId(
-  id: string
-): null | {
-  projectId: string
-  tokenId?: string
-} {
-  if (!id.startsWith(TOKEN_DOCUMENT_ID_BASE)) {
-    return null
-  }
-  //prettier-ignore
-  const [/*secrets*/, /*sanity*/, /*sharedContent*/, projectId] = id.split('.')
-  return {projectId: projectId!}
-}
-function fetchCrossDatasetTokens(): Observable<
-  {
-    projectId: string
-    token: string
-  }[]
-> {
-  return versionedClient.observable
-    .fetch(`*[_id in path("secrets.sanity.sharedContent.**")]{_id, _type, _updatedAt, token}`)
-    .pipe(
-      mergeMap((tokenDocs: {_id: string; token: string}[]) => from(tokenDocs)),
-      map((doc) => {
-        const parsedId = parseTokenDocumentId(doc._id)
-        if (parsedId === null) {
-          return null
-        }
-        return {projectId: parsedId.projectId, token: doc.token}
-      }),
-      filter(isNonNullable),
-      toArray()
-    )
-}
-
 const POLL_INTERVAL = 5000
 
 // only fetches when the document is visible
