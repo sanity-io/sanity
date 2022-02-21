@@ -101,11 +101,13 @@ function fetchCrossDatasetReferences(
       const currentDataset = client.config().dataset
       return versionedClient.observable.request({
         url: `/data/references/${currentDataset}/documents/${documentId}/to?excludeInternalReferences=true&excludePaths=true`,
-        headers: {
-          'sanity-project-tokens': crossDatasetTokens
-            .map((t) => `${t.projectId}=${t.token}`)
-            .join(','),
-        },
+        ...(crossDatasetTokens.length > 0
+          ? {
+              'sanity-project-tokens': crossDatasetTokens
+                .map((t) => `${t.projectId}=${t.token}`)
+                .join(','),
+            }
+          : null),
       })
     })
   )
