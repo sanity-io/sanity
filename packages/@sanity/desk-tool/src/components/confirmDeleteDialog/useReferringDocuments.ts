@@ -23,19 +23,15 @@ const versionedClient = client.withConfig({
   apiVersion: 'X', // TODO: replace with named API version
 })
 
-function parseTokenDocumentId(
-  id: string
-): null | {
-  projectId: string
-  tokenId?: string
-} {
+function getProjectIdFromTokenDocumentId(id: string): null | string {
   if (!id.startsWith(TOKEN_DOCUMENT_ID_BASE)) {
     return null
   }
   //prettier-ignore
   const [/*secrets*/, /*sanity*/, /*sharedContent*/, projectId] = id.split('.')
-  return {projectId: projectId!}
+  return projectId
 }
+
 function fetchCrossDatasetTokens(): Observable<
   {
     projectId: string
@@ -47,11 +43,8 @@ function fetchCrossDatasetTokens(): Observable<
     .pipe(
       mergeMap((tokenDocs: {_id: string; token: string}[]) => from(tokenDocs)),
       map((doc) => {
-        const parsedId = parseTokenDocumentId(doc._id)
-        if (parsedId === null) {
-          return null
-        }
-        return {projectId: parsedId.projectId, token: doc.token}
+        const projectId = getProjectIdFromTokenDocumentId(doc._id)
+        return projectId ? {projectId, token: doc.token} : null
       }),
       filter(isNonNullable),
       toArray()
