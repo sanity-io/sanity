@@ -4,7 +4,7 @@
   "version": "2.10.2",
   "private": true,
   "devDependencies": {
-    "@sanity/client": "^2.8.0",
+    "@sanity/client": "^3.1.0",
     "puppeteer": "^9.1.1"
   }
 }
