@@ -86,6 +86,9 @@ const SanityCrossDatasetReferenceInput = forwardRef(function SanityCrossDatasetR
 ) {
   const {getValuePath, type, document} = props
 
+  const currentProject = versionedClient.config().projectId
+
+  const isCurrentProject = currentProject === type.projectId
   const loadableToken = useCrossDatasetToken(versionedClient, {
     projectId: type.projectId,
     dataset: type.dataset,
@@ -93,18 +96,22 @@ const SanityCrossDatasetReferenceInput = forwardRef(function SanityCrossDatasetR
   })
 
   const crossDatasetClient = useMemo(() => {
-    return loadableToken.status === 'loaded' && loadableToken.result?.token
-      ? client
-          .withConfig({
-            projectId: type.projectId,
-            dataset: type.dataset,
-            apiVersion: '2022-01-21',
-            token: loadableToken.result.token,
-          })
-          // seems like this is required to prevent this client from sometimes magically get mutated with a new projectId and dataset
-          .clone()
-      : null
-  }, [loadableToken, type.dataset, type.projectId])
+    const token = isCurrentProject
+      ? undefined
+      : loadableToken.status === 'loaded' && loadableToken.result?.token
+
+    return (
+      client
+        .withConfig({
+          projectId: type.projectId,
+          dataset: type.dataset,
+          apiVersion: '2022-03-07',
+          token,
+        })
+        // seems like this is required to prevent this client from sometimes magically get mutated with a new projectId and dataset
+        .clone()
+    )
+  }, [isCurrentProject, loadableToken, type.projectId, type.dataset])
 
   const documentRef = useValueRef(document)
 
@@ -148,7 +155,7 @@ const SanityCrossDatasetReferenceInput = forwardRef(function SanityCrossDatasetR
     )
   }
 
-  if (loadableToken.status === 'loaded' && !loadableToken.result?.token) {
+  if (!isCurrentProject && loadableToken.status === 'loaded' && !loadableToken.result?.token) {
     return (
       <Stack space={2} marginY={2}>
         <Text size={1} weight="semibold">
