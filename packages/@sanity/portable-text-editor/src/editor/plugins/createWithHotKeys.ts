@@ -52,7 +52,7 @@ export function createWithHotkeys(
           ],
         },
       ],
-      portableTextFeatures.types.block.name
+      portableTextEditor
     )[0]
   return function withHotKeys(editor: PortableTextSlateEditor & ReactEditor) {
     editor.pteWithHotKeys = (event: React.KeyboardEvent<HTMLDivElement>): void => {
