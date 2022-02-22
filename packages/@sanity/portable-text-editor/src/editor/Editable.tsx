@@ -133,7 +133,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     () =>
       toSlateValue(
         getValueOrInitialValue(value, [placeHolderBlock]),
-        blockType.name,
+        portableTextEditor,
         KEY_TO_SLATE_ELEMENT.get(slateEditor)
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -246,13 +246,13 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       const defaultValue = [placeHolderBlock]
       const slateValueFromProps = toSlateValue(
         getValueOrInitialValue(value, defaultValue),
-        blockType.name,
+        portableTextEditor,
         KEY_TO_SLATE_ELEMENT.get(slateEditor)
       )
       const val: PortableTextBlock[] = value || defaultValue
       val.forEach((blk, index) => {
         if (slateEditor.isTextBlock(blk)) {
-          if (!isEqual(toSlateValue([blk], blockType.name)[0], slateEditor.children[index])) {
+          if (!isEqual(toSlateValue([blk], portableTextEditor)[0], slateEditor.children[index])) {
             equal = false
           }
         } else {
@@ -281,7 +281,16 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       }
       change$.next({type: 'value', value})
     }
-  }, [change$, isSelecting, isThrottling, placeHolderBlock, blockType.name, slateEditor, value])
+  }, [
+    change$,
+    isSelecting,
+    isThrottling,
+    placeHolderBlock,
+    blockType.name,
+    slateEditor,
+    value,
+    portableTextEditor,
+  ])
 
   // Restore selection from props
   useEffect(() => {

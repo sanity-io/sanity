@@ -130,7 +130,7 @@ export function createWithInsertData(
         if (Array.isArray(parsed) && parsed.length > 0) {
           const slateValue = regenerateKeys(
             editor,
-            toSlateValue(parsed, blockTypeName),
+            toSlateValue(parsed, {portableTextFeatures}),
             keyGenerator,
             spanTypeName
           )
@@ -177,7 +177,7 @@ export function createWithInsertData(
             html,
             portableTextFeatures.types.portableText
           ).map((block: PortableTextBlock) => normalizeBlock(block, {blockTypeName}))
-          fragment = toSlateValue(portableText, blockTypeName)
+          fragment = toSlateValue(portableText, {portableTextFeatures})
           insertedType = 'HTML'
         } else {
           // plain text
@@ -189,9 +189,9 @@ export function createWithInsertData(
             .join('')
           const textToHtml = `<html><body>${blocks}</body></html>`
           portableText = htmlToBlocks(textToHtml, portableTextFeatures.types.portableText)
-          fragment = toSlateValue(portableText, blockTypeName).map((block: PortableTextBlock) =>
-            normalizeBlock(block, {blockTypeName})
-          )
+          fragment = toSlateValue(portableText, {
+            portableTextFeatures,
+          }).map((block: PortableTextBlock) => normalizeBlock(block, {blockTypeName}))
           insertedType = 'text'
         }
 

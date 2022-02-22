@@ -8,13 +8,15 @@ import {KEY_TO_SLATE_ELEMENT} from './weakMaps'
 
 const debug = debugWithName('operationToPatches')
 
-export function createPatchToOperations(portableTextFeatures: PortableTextFeatures) {
+export function createPatchToOperations(
+  portableTextFeatures: PortableTextFeatures
+): (editor: Editor, patch: Patch) => boolean {
   function insertPatch(editor: Editor, patch: InsertPatch) {
     if (patch.path.length === 1) {
       const {items, position} = patch
       const blocksToInsert = (toSlateValue(
         items as PortableTextBlock[],
-        portableTextFeatures.types.block.name,
+        {portableTextFeatures},
         KEY_TO_SLATE_ELEMENT.get(editor)
       ) as unknown) as Node[]
       const posKey = findLastKey(patch.path)

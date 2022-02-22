@@ -2,11 +2,14 @@ import {isEqual} from 'lodash'
 import {Node, Element, Text, Descendant} from 'slate'
 import {PathSegment} from '@sanity/types'
 import {
+  MarkDef,
   PortableTextBlock,
   PortableTextChild,
   PortableTextFeatures,
   TextBlock,
 } from '../types/portableText'
+
+const EMPTY_MARKDEFS: MarkDef[] = []
 
 type Partial<T> = {
   [P in keyof T]?: T[P]
@@ -26,17 +29,19 @@ function keepObjectEquality(
 
 export function toSlateValue(
   value: PortableTextBlock[] | undefined,
-  textBlockType: string,
+  {portableTextFeatures}: {portableTextFeatures: PortableTextFeatures},
   keyMap: Record<string, any> = {}
 ): Descendant[] {
   if (value && Array.isArray(value)) {
     return value.map((block) => {
       const {_type, _key, ...rest} = block
       const voidChildren = [{_key: `${_key}-void-child`, _type: 'span', text: '', marks: []}]
-      const isPortableText = block && block._type === textBlockType
+      const isPortableText = block && block._type === portableTextFeatures.types.block.name
       if (isPortableText) {
         const textBlock = block as TextBlock
         let hasInlines = false
+        const hasMissingStyle = typeof textBlock.style === 'undefined'
+        const hasMissingMarkDefs = typeof textBlock.markDefs === 'undefined'
         const children = textBlock.children.map((child) => {
           const {_type: cType, _key: cKey, ...cRest} = child
           if (cType !== 'span') {
@@ -55,9 +60,15 @@ export function toSlateValue(
           // Original object
           return child
         })
-        if (!hasInlines && Element.isElement(block)) {
+        if (!hasMissingStyle && !hasMissingMarkDefs && !hasInlines && Element.isElement(block)) {
           // Original object
           return block
+        }
+        if (hasMissingStyle) {
+          rest.style = portableTextFeatures.styles[0].value
+        }
+        if (hasMissingMarkDefs) {
+          rest.markDefs = EMPTY_MARKDEFS
         }
         return keepObjectEquality({_type, _key, ...rest, children}, keyMap)
       }

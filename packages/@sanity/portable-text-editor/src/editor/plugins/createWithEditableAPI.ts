@@ -153,7 +153,7 @@ export function createWithEditableAPI(
               ],
             },
           ],
-          portableTextFeatures.types.block.name
+          portableTextEditor
         )[0] as unknown) as SlateElement
         const child = block.children[0]
         Editor.insertNode(editor, child as Node)
@@ -172,7 +172,7 @@ export function createWithEditableAPI(
               ...(value ? value : {}),
             },
           ],
-          portableTextFeatures.types.block.name
+          portableTextEditor
         )[0] as unknown) as Node
         Editor.insertNode(editor, block)
         editor.onChange()

@@ -1,13 +1,17 @@
 import {fromSlateValue, toSlateValue} from '../values'
+import {type} from '../../editor/__tests__/PortableTextEditorTester'
+import {getPortableTextFeatures} from '../getPortableTextFeatures'
+
+const portableTextFeatures = getPortableTextFeatures(type)
 
 describe('toSlateValue', () => {
   it('checks undefined', () => {
-    const result = toSlateValue(undefined, 'image')
+    const result = toSlateValue(undefined, {portableTextFeatures})
     expect(result).toHaveLength(0)
   })
 
   it('runs given empty array', () => {
-    const result = toSlateValue([], 'image')
+    const result = toSlateValue([], {portableTextFeatures})
     expect(result).toHaveLength(0)
   })
 
@@ -19,7 +23,7 @@ describe('toSlateValue', () => {
           _key: '123',
         },
       ],
-      'block'
+      {portableTextFeatures}
     )
 
     expect(result).toMatchObject([
@@ -40,39 +44,43 @@ describe('toSlateValue', () => {
     const result = toSlateValue(
       [
         {
-          _type: 'block',
+          _type: portableTextFeatures.types.block.name,
           _key: '123',
           children: [
             {
               _type: 'span',
               _key: '1231',
-              value: '123',
+              text: '123',
             },
           ],
         },
       ],
-      'block'
+      {portableTextFeatures}
     )
-    expect(result).toEqual([
-      {
-        _key: '123',
-        _type: 'block',
-        children: [
-          {
-            _key: '1231',
-            _type: 'span',
-            value: '123',
-          },
-        ],
-      },
-    ])
+    expect(result).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "_key": "123",
+          "_type": "myTestBlockType",
+          "children": Array [
+            Object {
+              "_key": "1231",
+              "_type": "span",
+              "text": "123",
+            },
+          ],
+          "markDefs": Array [],
+          "style": "normal",
+        },
+      ]
+    `)
   })
 
   it('given type is block and has custom object in children', () => {
     const result = toSlateValue(
       [
         {
-          _type: 'block',
+          _type: portableTextFeatures.types.block.name,
           _key: '123',
           children: [
             {
@@ -90,39 +98,43 @@ describe('toSlateValue', () => {
           ],
         },
       ],
-      'block'
+      {portableTextFeatures}
     )
-    expect(result).toEqual([
-      {
-        _key: '123',
-        _type: 'block',
-        children: [
-          {
-            _key: '1231',
-            _type: 'span',
-            text: '123',
-          },
-          {
-            _key: '1232',
-            _type: 'image',
-            __inline: true,
-            children: [
-              {
-                _key: '123-void-child',
-                _type: 'span',
-                marks: [],
-                text: '',
-              },
-            ],
-            value: {
-              asset: {
-                _ref: 'ref-123',
+    expect(result).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "_key": "123",
+          "_type": "myTestBlockType",
+          "children": Array [
+            Object {
+              "_key": "1231",
+              "_type": "span",
+              "text": "123",
+            },
+            Object {
+              "__inline": true,
+              "_key": "1232",
+              "_type": "image",
+              "children": Array [
+                Object {
+                  "_key": "123-void-child",
+                  "_type": "span",
+                  "marks": Array [],
+                  "text": "",
+                },
+              ],
+              "value": Object {
+                "asset": Object {
+                  "_ref": "ref-123",
+                },
               },
             },
-          },
-        ],
-      },
-    ])
+          ],
+          "markDefs": Array [],
+          "style": "normal",
+        },
+      ]
+    `)
   })
 })
 
@@ -225,8 +237,8 @@ describe('fromSlateValue', () => {
         style: 'normal',
       },
     ]
-    const toSlate1 = toSlateValue(value, 'block', keyMap)
-    const toSlate2 = toSlateValue(value, 'block', keyMap)
+    const toSlate1 = toSlateValue(value, {portableTextFeatures}, keyMap)
+    const toSlate2 = toSlateValue(value, {portableTextFeatures}, keyMap)
     expect(toSlate1[0]).toBe(toSlate2[0])
     expect(toSlate1[1]).toBe(toSlate2[1])
     const fromSlate1 = fromSlateValue(toSlate1, 'block', keyMap)
