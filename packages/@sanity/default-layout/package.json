@@ -1,6 +1,6 @@
 {
   "name": "@sanity/default-layout",
-  "version": "2.27.0",
+  "version": "2.27.1",
   "description": "The default layout components for Sanity",
   "main": "./lib/default-layout.js",
   "types": "./dist/dts",
@@ -31,7 +31,7 @@
   "homepage": "https://www.sanity.io/",
   "dependencies": {
     "@reach/auto-id": "^0.13.2",
-    "@sanity/base": "2.27.0",
+    "@sanity/base": "2.27.1",
     "@sanity/client": "^3.0.1",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/icons": "^1.2.1",
