@@ -19,7 +19,6 @@ import {
 // eslint-disable-next-line camelcase
 import {searchClient} from '../../versionedClient'
 import {DocumentPreview, ReferenceInfo} from '../../../inputs/ReferenceInput/types'
-import {isNonNullable} from '../../../utils/isNonNullable'
 
 const READABLE = {
   available: true,
@@ -130,25 +129,33 @@ export function getReferenceInfo(
 interface SearchHit {
   id: string
   type: string
-  draft: undefined | {_id: string; _type: string}
-  published: undefined | {_id: string; _type: string}
+  draft?: {_id: string; _type: string}
+  published?: {_id: string; _type: string}
 }
 
 /**
  * when we get a search result it may not include all [draft, published] id pairs for documents matching the
- * query. For example: the search may yield a hit in the draft, but not the published and vice versa
- * This method takes a list of collated search hits, returns the ids that's missing
- * @param collated
+ * query. For example: searching for "potato" may yield a hit in the draft, but not the published (or vice versa)
+ * This method takes a list of collated search hits and returns an array of the missing "counterpart" ids
+ * @param collatedHits
  */
-function getMissingIds(collated: CollatedHit[]): string[] {
-  return collated
-    .filter((c) => !c.draft || !c.published)
-    .flatMap((c) => {
-      const draftId = getDraftId(c.id)
+function getCounterpartIds(collatedHits: CollatedHit[]): string[] {
+  return collatedHits
+    .filter(
+      (collatedHit) =>
+        // we're interested in hits where either draft or published is missing
+        !collatedHit.draft || !collatedHit.published
+    )
+    .map((collatedHit) =>
+      // if we have the draft, return the published id or vice versa
+      collatedHit.draft ? collatedHit.id : getDraftId(collatedHit.id)
+    )
+}
 
-      return [c.draft ? null : draftId, c.published ? null : c.id]
-    })
-    .filter(isNonNullable)
+function getExistingCounterparts(ids: string[]) {
+  return ids.length === 0
+    ? of([])
+    : searchClient.observable.fetch(`*[_id in $ids]._id`, {ids}, {tag: 'get-counterpart-ids'})
 }
 
 export function search(
@@ -163,24 +170,33 @@ export function search(
     // pick the 100 best matches
     map((collated) => collated.slice(0, 100)),
     mergeMap((collated) => {
-      const ids = getMissingIds(collated)
-      // note: this is a lot faster than doing the query *[_id in $ids] {_id}
-      const q = `{${ids.map((id) => `"${id}": defined(*[_id == "${id}"][0]._id)`).join(',')}}`
-      return searchClient.observable.fetch(q, {}, {tag: 'get-missing-ids'}).pipe(
-        map((result) =>
-          collated.map((entry) => {
+      // Note: It might seem like this step is redundant, but it's here for a reason:
+      // The list of search hits returned from here will be passed as options to the reference input's autocomplete. When
+      // one of them gets selected by the user, it will then be passed as the argument to the `onChange` handler in the
+      // Reference Input. This handler will then look at the passed value to determine whether to make a link to a
+      // draft (using _strengthenOnPublish) or a published document.
+      //
+      // Without this step, in a case where both a draft and a published version exist but only the draft matches
+      // the search term, we'd end up making a reference with `_strengthenOnPublish: true`, when we instead should be
+      // making a normal reference to the published id
+      return getExistingCounterparts(getCounterpartIds(collated)).pipe(
+        map((existingCounterpartIds) => {
+          return collated.map((entry) => {
             const draftId = getDraftId(entry.id)
             return {
               id: entry.id,
               type: entry.type,
-              draft: entry.draft || result[draftId] ? {_id: draftId, _type: entry.type} : undefined,
+              draft:
+                entry.draft || existingCounterpartIds.includes(draftId)
+                  ? {_id: draftId, _type: entry.type}
+                  : undefined,
               published:
-                entry.published || result[entry.id]
+                entry.published || existingCounterpartIds.includes(entry.id)
                   ? {_id: entry.id, _type: entry.type}
                   : undefined,
             }
           })
-        )
+        })
       )
     })
   )
