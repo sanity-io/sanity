@@ -1,4 +1,4 @@
-import {runTypingSpeedTest} from './typingSpeed/run'
+import {runTypingSpeedTest} from './typingSpeed'
 
 async function runSuite() {
   await runTypingSpeedTest()

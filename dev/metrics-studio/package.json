@@ -29,7 +29,8 @@
     "@sanity/types": "2.27.0",
     "@sanity/vision": "2.27.0",
     "react": "17.0.1",
-    "react-dom": "17.0.1"
+    "react-dom": "17.0.1",
+    "styled-components": "^5.3.3"
   },
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
@@ -39,5 +40,8 @@
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git",
     "directory": "packages/clean-studio"
+  },
+  "devDependencies": {
+    "@types/styled-components": "^5.1.23"
   }
 }
