@@ -58,8 +58,8 @@ export type SearchFunction = (query: string) => Observable<SearchHit[]>
 export interface SearchHit {
   id: string
   type: string
-  draft: undefined | {_id: string; _type: string}
-  published: undefined | {_id: string; _type: string}
+  draft?: {_id: string; _type: string}
+  published?: {_id: string; _type: string}
 }
 
 export interface BaseInputProps {
