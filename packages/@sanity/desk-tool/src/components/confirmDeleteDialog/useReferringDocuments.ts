@@ -118,7 +118,10 @@ function fetchCrossDatasetReferences(
             // it's possible that referencing document doesn't exist yet so the
             // API will return a 404. In those cases, we want to catch and return
             // a response with no references
-            if (isClientError(e)) return of({totalCount: 0, references: []})
+            if (isClientError(e) && e.statusCode === 404) {
+              return of({totalCount: 0, references: []})
+            }
+
             throw e
           })
         )
