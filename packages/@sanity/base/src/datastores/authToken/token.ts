@@ -15,7 +15,7 @@ export const saveToken = ({token, projectId}: {token: string; projectId: string}
   )
 }
 
-export const deleteToken = (projectId: string): void => {
+export const clearToken = (projectId: string): void => {
   window.localStorage.removeItem(getLSKey(projectId))
 }
 

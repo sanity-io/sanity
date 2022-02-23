@@ -4,7 +4,7 @@ import {filter, shareReplay, switchMapTo} from 'rxjs/operators'
 import {otherWindowMessages$, crossWindowBroadcast} from '../crossWindowMessaging'
 import {getToken} from './token'
 
-export {deleteToken, fetchToken, getToken, saveToken} from './token'
+export {clearToken, fetchToken, getToken, saveToken} from './token'
 
 const MSG_AUTH_STATE_CHANGED = 'authStateChange'
 
