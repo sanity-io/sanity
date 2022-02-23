@@ -56,18 +56,18 @@ export default function CookieTest(props: Props) {
   }, [])
 
   /* first condition checks if the loginMethods key exists in the config,
-    if it doesn't, then you should go with the default (add support for older studios)
+  if it doesn't, then you should go with the default (add support for older studios)
 
-    second condition checks if the loginMethods are empty which means it should use the default
-    way too.
+  second condition checks if the loginMethods are empty which means it should use the default
+  way too.
     
-    third it checks if it has both the cookie and token items in the array */
+  third it checks if it has both the cookie and token items in the array */
   const hasBothMethods =
     !loginMethods ||
     loginMethods.length === 0 ||
     (loginMethods.includes('cookie') && loginMethods.includes('token'))
 
-  /* where the method for login that was defined in the config is always the token */
+  // where the method for login that was defined in the config is always the token
   const onlyUseToken =
     loginMethods && loginMethods.includes('token') && !loginMethods.includes('cookie')
 
@@ -103,9 +103,9 @@ export default function CookieTest(props: Props) {
     )
   }
   /* check if it can use both methods (cookie and token) AND doesn't have cookie support 
-    this is the default and targets cases like Safari
-    or
-    if the config has set only token, then it should always go with this path
+  this is the default and targets cases like Safari
+  or
+  if the config has set only token, then it should always go with this path
   */
   if ((hasBothMethods && !hasCookieSupport) || onlyUseToken) {
     return (
