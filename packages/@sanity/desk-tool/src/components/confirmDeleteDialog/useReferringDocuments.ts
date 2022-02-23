@@ -1,26 +1,26 @@
 import documentStore from 'part:@sanity/base/datastore/document'
 import client from 'part:@sanity/base/client'
+import {ClientError} from '@sanity/client'
 import {
   createHookFromObservableFactory,
   getPublishedId,
   fetchAllCrossProjectTokens,
 } from '@sanity/base/_internal'
-import {Observable, timer, fromEvent, EMPTY, from} from 'rxjs'
+import {Observable, timer, fromEvent, EMPTY, of} from 'rxjs'
 import {
   map,
   startWith,
   distinctUntilChanged,
   switchMap,
   shareReplay,
-  filter,
-  mergeMap,
-  toArray,
+  catchError,
 } from 'rxjs/operators'
 
-const TOKEN_DOCUMENT_ID_BASE = `secrets.sanity.sharedContent`
-
-export function isNonNullable<T>(value: T): value is NonNullable<T> {
-  return value !== null
+// this is used in place of `instanceof` so the matching can be more robust
+function isClientError(e: unknown): e is ClientError {
+  if (typeof e !== 'object') return false
+  if (!e) return false
+  return 'statusCode' in e && 'response' in e
 }
 
 const versionedClient = client.withConfig({
@@ -77,10 +77,23 @@ function fetchCrossDatasetReferences(
             }
           : {}
 
-      return versionedClient.observable.request({
-        url: `/data/references/${currentDataset}/documents/${documentId}/to?excludeInternalReferences=true&excludePaths=true`,
-        headers,
-      })
+      return versionedClient.observable
+        .request({
+          url: `/data/references/${currentDataset}/documents/${documentId}/to?excludeInternalReferences=true&excludePaths=true`,
+          headers,
+        })
+        .pipe(
+          catchError((e) => {
+            // it's possible that referencing document doesn't exist yet so the
+            // API will return a 404. In those cases, we want to catch and return
+            // a response with no references
+            if (isClientError(e) && e.statusCode === 404) {
+              return of({totalCount: 0, references: []})
+            }
+
+            throw e
+          })
+        )
     })
   )
 }
