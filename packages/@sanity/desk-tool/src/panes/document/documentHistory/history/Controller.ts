@@ -1,7 +1,7 @@
 import type {SanityClient} from '@sanity/client'
 import {Annotation} from '@sanity/field/diff'
 import {Observable} from 'rxjs'
-import {remoteSnapshots, getToken} from '@sanity/base/_internal'
+import {remoteSnapshots} from '@sanity/base/_internal'
 import {Diff, ObjectDiff} from '@sanity/diff'
 import {Timeline, ParsedTimeRef} from './Timeline'
 import {getJsonStream} from './getJsonStream'
@@ -267,9 +267,7 @@ export class Controller {
     }
 
     const url = `/data/history/${dataset}/transactions/${publishedId},${draftId}?${queryParams}`
-    const projectId = this.client.config().projectId
-    const token = projectId ? getToken(projectId) : null
-
+    const {token} = this.client.config()
     const stream = await getJsonStream(this.client.getUrl(url), token || undefined)
     const reader = stream.getReader()
     let count = 0
