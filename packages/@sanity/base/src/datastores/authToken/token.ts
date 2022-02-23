@@ -36,7 +36,8 @@ export const getToken = (projectId: string): string | null => {
 export const fetchToken = (sid: string): Promise<{token: string}> => {
   return versionedClient.request({
     method: 'GET',
-    uri: `/auth/fetch?sid=${sid}`,
+    uri: `/auth/fetch`,
+    query: {sid},
     tag: 'auth.fetch-token',
   })
 }
