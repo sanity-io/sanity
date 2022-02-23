@@ -1,7 +1,8 @@
 import documentStore from 'part:@sanity/base/datastore/document'
 import client from 'part:@sanity/base/client'
+import {ClientError} from '@sanity/client'
 import {createHookFromObservableFactory, getPublishedId} from '@sanity/base/_internal'
-import {Observable, timer, fromEvent, EMPTY, from} from 'rxjs'
+import {Observable, timer, fromEvent, EMPTY, from, of} from 'rxjs'
 import {
   map,
   startWith,
@@ -11,12 +12,20 @@ import {
   filter,
   mergeMap,
   toArray,
+  catchError,
 } from 'rxjs/operators'
 
 const TOKEN_DOCUMENT_ID_BASE = `secrets.sanity.sharedContent`
 
-export function isNonNullable<T>(value: T): value is NonNullable<T> {
+function isNonNullable<T>(value: T): value is NonNullable<T> {
   return value !== null
+}
+
+// this is used in place of `instanceof` so the matching can be more robust
+function isClientError(e: unknown): e is ClientError {
+  if (typeof e !== 'object') return false
+  if (!e) return false
+  return 'statusCode' in e && 'response' in e
 }
 
 const versionedClient = client.withConfig({
@@ -92,16 +101,30 @@ function fetchCrossDatasetReferences(
     switchMap(() => fetchCrossDatasetTokens()),
     switchMap((crossDatasetTokens) => {
       const currentDataset = client.config().dataset
-      return versionedClient.observable.request({
-        url: `/data/references/${currentDataset}/documents/${documentId}/to?excludeInternalReferences=true&excludePaths=true`,
-        ...(crossDatasetTokens.length > 0
-          ? {
-              'sanity-project-tokens': crossDatasetTokens
-                .map((t) => `${t.projectId}=${t.token}`)
-                .join(','),
+
+      return versionedClient.observable
+        .request({
+          url: `/data/references/${currentDataset}/documents/${documentId}/to?excludeInternalReferences=true&excludePaths=true`,
+          ...(crossDatasetTokens.length > 0
+            ? {
+                'sanity-project-tokens': crossDatasetTokens
+                  .map((t) => `${t.projectId}=${t.token}`)
+                  .join(','),
+              }
+            : null),
+        })
+        .pipe(
+          catchError((e) => {
+            // it's possible that referencing document doesn't exist yet so the
+            // API will return a 404. In those cases, we want to catch and return
+            // a response with no references
+            if (isClientError(e) && e.statusCode === 404) {
+              return of({totalCount: 0, references: []})
             }
-          : null),
-      })
+
+            throw e
+          })
+        )
     })
   )
 }
