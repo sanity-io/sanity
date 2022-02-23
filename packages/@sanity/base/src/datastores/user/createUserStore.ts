@@ -13,7 +13,7 @@ import sanityClient from 'part:@sanity/base/client'
 import {User, CurrentUser} from '@sanity/types'
 import {debugRolesParam$} from '../debugParams'
 import {getDebugRolesByNames} from '../grants/debug'
-import {broadcastAuthStateChanged, deleteToken} from '../authToken'
+import {broadcastAuthStateChanged, clearToken} from '../authToken'
 import {UserStore, CurrentUserSnapshot} from './types'
 
 const client = sanityClient.withConfig({apiVersion: '2021-06-07'})
@@ -69,14 +69,14 @@ const currentUser: Observable<CurrentUser | null> = merge(
     tap((usr) => {
       if (isClientConfiguredWithToken()) {
         if (!usr) {
-          deleteToken(projectId)
+          clearToken(projectId)
         }
         broadcastAuthStateChanged()
       }
     }),
     catchError((err) => {
       if (err.statusCode === 401 && isClientConfiguredWithToken()) {
-        deleteToken(projectId)
+        clearToken(projectId)
         return of(null)
       }
       throw err
@@ -87,7 +87,7 @@ const currentUser: Observable<CurrentUser | null> = merge(
     mergeMap(() => authenticationFetcher.logout()),
     tap(() => {
       if (isClientConfiguredWithToken()) {
-        deleteToken(projectId)
+        clearToken(projectId)
         broadcastAuthStateChanged()
       }
     }),
