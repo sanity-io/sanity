@@ -60,7 +60,7 @@ export default class LoginWrapper extends React.PureComponent {
           }
           if (sync) {
             // eslint-disable-next-line react/no-direct-mutation-state
-            this.state = {...this.state, ...{user: null}}
+            this.state = {...this.state, user: null}
           } else {
             this.setState({user: null})
           }
