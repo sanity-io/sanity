@@ -60,7 +60,7 @@ export default function CookieTest(props: Props) {
 
   second condition checks if the loginMethods are empty which means it should use the default
   way too.
-    
+
   third it checks if it has both the cookie and token items in the array */
   const hasBothMethods =
     !loginMethods ||
@@ -102,7 +102,7 @@ export default function CookieTest(props: Props) {
       </Container>
     )
   }
-  /* check if it can use both methods (cookie and token) AND doesn't have cookie support 
+  /* check if it can use both methods (cookie and token) AND doesn't have cookie support
   this is the default and targets cases like Safari
   or
   if the config has set only token, then it should always go with this path
