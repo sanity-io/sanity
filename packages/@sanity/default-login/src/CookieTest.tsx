@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {Container, Text, Flex, Spinner} from '@sanity/ui'
 import {fetchToken, saveToken} from '@sanity/base/_internal'
 import {versionedClient} from './versionedClient'
@@ -50,11 +50,6 @@ export default function CookieTest(props: Props) {
   const {loginMethods} = pluginConfig
   const [hasCookieSupport, setHasCookieSupport] = useState(true)
 
-  const sid = useMemo(() => {
-    const params = new URLSearchParams(window.location.search)
-    return params.get('sid')
-  }, [])
-
   /* first condition checks if the loginMethods key exists in the config,
   if it doesn't, then you should go with the default (add support for older studios)
 
@@ -72,6 +67,10 @@ export default function CookieTest(props: Props) {
     loginMethods && loginMethods.includes('token') && !loginMethods.includes('cookie')
 
   useEffect(() => {
+    // sid is a one-time-use secret for fetching the actual token from the API after a login redirect
+    // for which it's added to the url query params of the return url.
+    const params = new URLSearchParams(window.location.search)
+    const sid = params.get('sid')
     if (sid && projectId) {
       fetchToken(sid)
         .then((res) => {
@@ -83,13 +82,11 @@ export default function CookieTest(props: Props) {
         })
     } else {
       testCookieSupport().then((supportsCookies) => {
-        if (!supportsCookies) {
-          setHasCookieSupport(false)
-        }
+        setHasCookieSupport(!!supportsCookies)
         setLoading(false)
       })
     }
-  }, [sid])
+  }, [])
 
   if (loading) {
     return (
