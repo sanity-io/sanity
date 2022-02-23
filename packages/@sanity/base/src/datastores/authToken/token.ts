@@ -9,26 +9,35 @@ const getLSKey = (projectId: string) => {
 }
 
 export const saveToken = ({token, projectId}: {token: string; projectId: string}): void => {
-  window.localStorage.setItem(
-    getLSKey(projectId),
-    JSON.stringify({token, time: new Date().toISOString()})
-  )
+  try {
+    window.localStorage.setItem(
+      getLSKey(projectId),
+      JSON.stringify({token, time: new Date().toISOString()})
+    )
+  } catch (err) {
+    console.error(err)
+  }
 }
 
 export const clearToken = (projectId: string): void => {
-  window.localStorage.removeItem(getLSKey(projectId))
+  try {
+    window.localStorage.removeItem(getLSKey(projectId))
+  } catch (err) {
+    console.error(err)
+  }
 }
 
 export const getToken = (projectId: string): string | null => {
-  if (!window.localStorage) {
-    return null
-  }
-  const item = window.localStorage.getItem(getLSKey(projectId))
-  if (item) {
-    const {token}: {token: string} = JSON.parse(item)
-    if (token) {
-      return token
+  try {
+    const item = window.localStorage.getItem(getLSKey(projectId))
+    if (item) {
+      const {token}: {token: string} = JSON.parse(item)
+      if (token && typeof token === 'string') {
+        return token
+      }
     }
+  } catch (err) {
+    console.error(err)
   }
   return null
 }
