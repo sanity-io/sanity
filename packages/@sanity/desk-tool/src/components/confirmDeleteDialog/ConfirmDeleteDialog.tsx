@@ -59,7 +59,8 @@ export function ConfirmDeleteDialog({
     internalReferences,
     crossDatasetReferences,
     isLoading,
-    totalCount: total,
+    totalCount,
+    projectIds,
   } = useReferringDocuments(id)
   const capitalizedAction = `${action.substring(0, 1).toUpperCase()}${action.substring(1)}`
 
@@ -78,7 +79,7 @@ export function ConfirmDeleteDialog({
           {showConfirmButton && (
             <Button
               data-testid="confirm-delete-button"
-              text={total > 0 ? `${capitalizedAction} anyway` : `${capitalizedAction} now`}
+              text={totalCount > 0 ? `${capitalizedAction} anyway` : `${capitalizedAction} now`}
               tone="critical"
               onClick={onConfirm}
             />
@@ -94,8 +95,9 @@ export function ConfirmDeleteDialog({
             internalReferences={internalReferences}
             documentTitle={documentTitle}
             isLoading={isLoading}
-            totalCount={total}
+            totalCount={totalCount}
             action={action}
+            projectIds={projectIds}
           />
         ) : (
           <LoadingContainer data-testid="loading-container">

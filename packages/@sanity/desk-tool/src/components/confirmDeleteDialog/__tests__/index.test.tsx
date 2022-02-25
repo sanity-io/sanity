@@ -138,7 +138,7 @@ describe('ConfirmDeleteDialog', () => {
       })
     })
 
-    // when the loading is finished then the
+    // when the loading is finished then the confirm-delete-button is rendered
     await findByTestId('confirm-delete-button')
 
     const internalReferences = queryByTestId('internal-references')
@@ -147,6 +147,7 @@ describe('ConfirmDeleteDialog', () => {
 
     const crossDatasetReferences = queryByTestId('cross-dataset-references')
     expect(crossDatasetReferences).toContainElement(queryByText('1 document in another project'))
+    expect(crossDatasetReferences).toContainElement(queryByText('Project ID: test-project'))
   })
 
   it('shows a fallback dialog if an error occurs', async () => {
