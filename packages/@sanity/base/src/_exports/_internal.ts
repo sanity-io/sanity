@@ -37,5 +37,3 @@ export type {TemplatePermissionsResult} from '../datastores/grants'
 export * from '../actions/utils/types'
 
 export * from '../conditional-property/conditionalReadOnly'
-
-export * from '../datastores/authToken'

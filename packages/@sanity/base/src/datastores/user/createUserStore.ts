@@ -13,11 +13,14 @@ import sanityClient from 'part:@sanity/base/client'
 import {User, CurrentUser} from '@sanity/types'
 import {debugRolesParam$} from '../debugParams'
 import {getDebugRolesByNames} from '../grants/debug'
-import {broadcastAuthStateChanged, clearToken} from '../authToken'
+import {broadcastAuthStateChanged, clearToken, fetchToken, saveToken} from '../authToken'
 import {UserStore, CurrentUserSnapshot} from './types'
+import {consumeSessionId} from './sessionId'
 
 const client = sanityClient.withConfig({apiVersion: '2021-06-07'})
 
+// Consume any session ID as early as possible (before mount) so we can remove it from the URL
+let sid: string | null = consumeSessionId()
 const projectId = config.api.projectId
 
 const [logout$, logout] = observableCallback()
@@ -37,7 +40,7 @@ const debugRoles$ = debugRolesParam$.pipe(map(getDebugRolesByNames))
 
 function fetchCurrentUser(): Observable<CurrentUser | null> {
   return defer(() => {
-    const currentUserPromise = authenticationFetcher.getCurrentUser() as Promise<CurrentUser>
+    const currentUserPromise = authenticationFetcher.getCurrentUser()
     userLoader.prime(
       'me',
       // @ts-expect-error although not reflected in typings, priming with a promise is indeed supported, see https://github.com/graphql/dataloader/issues/235#issuecomment-692495153 and this PR for fixing it https://github.com/graphql/dataloader/pull/252
@@ -45,6 +48,35 @@ function fetchCurrentUser(): Observable<CurrentUser | null> {
     )
     return currentUserPromise
   }).pipe(
+    switchMap((user) => {
+      if (user || (!user && !sid)) {
+        return of(user)
+      }
+
+      // If we have consumed a session ID from the URL, we would expect a user to be returned,
+      // as there should be a session cookie set. If (because of cookie restrictions or similar)
+      // that is _not_ the case, exchange the SID for a token and persist it.
+      return fetchToken(sid, client).pipe(
+        tap(() => {
+          // Regardless of success or failure, we don't want to reuse the SID
+          sid = null
+        }),
+        switchMap(({token}) => {
+          // Save token to local storage
+          saveToken({token, projectId})
+
+          // Will trigger clients to be reconfigured with token
+          broadcastAuthStateChanged()
+
+          // Now try retrieving the user again
+          return authenticationFetcher.getCurrentUser()
+        }),
+        catchError((error) => {
+          console.warn('Error fetching authentication token:', error)
+          return of(null)
+        })
+      )
+    }),
     tap((user) => {
       if (user) {
         // prime the data loader cache with the id of current user
