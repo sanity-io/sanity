@@ -58,7 +58,35 @@ declare module 'part:@sanity/base/app-loading-screen' {
 declare module 'part:@sanity/base/arrow-drop-down'
 declare module 'part:@sanity/base/arrow-right'
 declare module 'part:@sanity/base/asset-url-builder'
-declare module 'part:@sanity/base/authentication-fetcher'
+declare module 'part:@sanity/base/authentication-fetcher' {
+  interface Role {
+    name: string
+    title: string
+    description: string
+  }
+  interface CurrentUser {
+    id: string
+    name: string
+    email: string
+    profileImage?: string
+    provider?: string
+    role: string | null
+    roles: Role[]
+  }
+
+  interface Provider {
+    name: string
+    title: string
+    url: string
+  }
+
+  const fetcher: {
+    getProviders: () => Promise<Provider[]>
+    getCurrentUser: () => Promise<CurrentUser | null>
+    logout: () => Promise<void>
+  }
+  export default fetcher
+}
 declare module 'part:@sanity/base/brand-logo' {
   declare const BrandLogo: React.ComponentType
   export default BrandLogo
