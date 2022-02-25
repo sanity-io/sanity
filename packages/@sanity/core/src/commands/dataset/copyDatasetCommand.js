@@ -22,9 +22,24 @@ Examples
 
 const progress = (url) => {
   return new Observable((observer) => {
-    const progressSource = new EventSource(url)
+    let progressSource = new EventSource(url)
+    let stopped = false
 
     function onError(error) {
+      if (progressSource) {
+        progressSource.close()
+      }
+
+      debug(`Error received: ${error}`)
+      if (stopped) {
+        return
+      }
+      observer.next({type: 'reconnect'})
+      progressSource = new EventSource(url)
+    }
+
+    function onChannelError(error) {
+      stopped = true
       progressSource.close()
       observer.error(error)
     }
@@ -45,7 +60,7 @@ const progress = (url) => {
 
     function onComplete() {
       progressSource.removeEventListener('error', onError)
-      progressSource.removeEventListener('channelError', onError)
+      progressSource.removeEventListener('channel_error', onChannelError)
       progressSource.removeEventListener('job', onMessage)
       progressSource.removeEventListener('done', onComplete)
       progressSource.close()
@@ -53,18 +68,14 @@ const progress = (url) => {
     }
 
     progressSource.addEventListener('error', onError)
-    progressSource.addEventListener('channelError', onError)
+    progressSource.addEventListener('channel_error', onChannelError)
     progressSource.addEventListener('job', onMessage)
     progressSource.addEventListener('done', onComplete)
   })
 }
 
 const followProgress = (jobId, client, output) => {
-  const spinner = output
-    .spinner({
-      text: `Copy in progress: 0%`,
-    })
-    .start()
+  const spinner = output.spinner({}).start()
 
   const listenUrl = client.getUrl(`jobs/${jobId}/listen`)
 
@@ -76,8 +87,8 @@ const followProgress = (jobId, client, output) => {
 
       spinner.text = `Copy in progress: ${eventProgress}%`
     },
-    error: () => {
-      spinner.fail('There was an error copying the dataset.')
+    error: (err) => {
+      spinner.fail(`There was an error copying the dataset: ${err.message}`)
     },
     complete: () => {
       spinner.succeed(`Copy finished.`)
