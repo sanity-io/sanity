@@ -1,5 +1,6 @@
 declare module 'config:@sanity/data-aspects'
 declare module 'config:@sanity/default-login'
+declare module 'config:@sanity/default-login?'
 declare module 'config:@sanity/form-builder'
 declare module 'config:@sanity/google-maps-input'
 declare module 'config:@sanity/storybook'
