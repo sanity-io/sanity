@@ -18,7 +18,7 @@ export default class LoginDialog extends React.Component {
     description: null,
     projectId: null,
     SanityLogo: null,
-    type: 'cookie',
+    type: 'dual',
   }
 
   state = {
