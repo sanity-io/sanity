@@ -43,6 +43,7 @@ export function ConfirmDeleteDialogBody({
   documentTitle,
   totalCount,
   action,
+  projectIds,
 }: DeletionConfirmationDialogBodyProps) {
   const toast = useToast()
 
@@ -53,6 +54,13 @@ export function ConfirmDeleteDialogBody({
       </Text>
     )
   }
+
+  const documentCount =
+    crossDatasetReferences.totalCount === 1
+      ? '1 document'
+      : `${crossDatasetReferences.totalCount.toLocaleString()} documents`
+  const projectCount = projectIds.length === 1 ? 'another project' : `${projectIds.length} projects`
+  const projectIdList = `Project ID${projectIds.length === 1 ? '' : 's'}: ${projectIds.join(', ')}`
 
   return (
     <>
@@ -132,18 +140,18 @@ export function ConfirmDeleteDialogBody({
                       <DocumentsIcon />
                     </Text>
                   </Box>
-                  <Box marginRight={4}>
-                    <Text>
-                      {crossDatasetReferences.totalCount === 1 ? (
-                        <>1 document in another project</>
-                      ) : (
-                        <>
-                          {crossDatasetReferences.totalCount.toLocaleString()} documents in other
-                          projects
-                        </>
-                      )}
-                    </Text>
-                  </Box>
+                  <Flex marginRight={4} direction="column">
+                    <Box marginBottom={2}>
+                      <Text>
+                        {documentCount} in {projectCount}
+                      </Text>
+                    </Box>
+                    <Box>
+                      <Text title={projectIdList} textOverflow="ellipsis" size={1} muted>
+                        {projectIdList}
+                      </Text>
+                    </Box>
+                  </Flex>
                   <ChevronWrapper>
                     <Text muted>
                       <ChevronDownIcon />
@@ -174,8 +182,15 @@ export function ConfirmDeleteDialogBody({
                     </tr>
                   </thead>
                   <tbody>
-                    {crossDatasetReferences.references.map(
-                      ({projectId, datasetName, documentId}, index) => (
+                    {crossDatasetReferences.references
+                      .filter((reference): reference is Required<typeof reference> => {
+                        return (
+                          'projectId' in reference &&
+                          'datasetName' in reference &&
+                          'documentId' in reference
+                        )
+                      })
+                      .map(({projectId, datasetName, documentId}, index) => (
                         // eslint-disable-next-line react/no-array-index-key
                         <tr key={`${documentId}-${index}`}>
                           <td>
@@ -210,8 +225,7 @@ export function ConfirmDeleteDialogBody({
                             </Flex>
                           </td>
                         </tr>
-                      )
-                    )}
+                      ))}
                   </tbody>
                 </Table>
                 <Box padding={2}>
