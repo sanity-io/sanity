@@ -1,5 +1,5 @@
-import {wrappedClient} from '../../client/wrappedClient'
+import config from 'config:sanity'
 
 export function readConfig(): {projectId: string} {
-  return {projectId: wrappedClient.clientConfig.projectId}
+  return {projectId: config.api.projectId}
 }

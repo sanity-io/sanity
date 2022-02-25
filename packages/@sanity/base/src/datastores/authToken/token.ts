@@ -1,4 +1,5 @@
-import {versionedClient} from '../../client/versionedClient'
+import type {SanityClient} from '@sanity/client'
+import type {Observable} from 'rxjs'
 
 // Project ID is part of the localStorage key so that different projects can store their separate tokens, and it's easier to do book keeping.
 const getLSKey = (projectId: string) => {
@@ -42,8 +43,8 @@ export const getToken = (projectId: string): string | null => {
   return null
 }
 
-export const fetchToken = (sid: string): Promise<{token: string}> => {
-  return versionedClient.request({
+export const fetchToken = (sid: string, client: SanityClient): Observable<{token: string}> => {
+  return client.observable.request({
     method: 'GET',
     uri: `/auth/fetch`,
     query: {sid},
