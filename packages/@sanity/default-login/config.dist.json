@@ -3,5 +3,6 @@
     "mode": "append",
     "redirectOnSingle": false,
     "entries": []
-  }
+  },
+  "loginMethod": "dual"
 }

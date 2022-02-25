@@ -13,7 +13,13 @@ import sanityClient from 'part:@sanity/base/client'
 import {User, CurrentUser} from '@sanity/types'
 import {debugRolesParam$} from '../debugParams'
 import {getDebugRolesByNames} from '../grants/debug'
-import {broadcastAuthStateChanged, clearToken, fetchToken, saveToken} from '../authToken'
+import {
+  broadcastAuthStateChanged,
+  clearToken,
+  fetchToken,
+  saveToken,
+  authTokenIsAllowed,
+} from '../authToken'
 import {UserStore, CurrentUserSnapshot} from './types'
 import {consumeSessionId} from './sessionId'
 
@@ -49,7 +55,7 @@ function fetchCurrentUser(): Observable<CurrentUser | null> {
     return currentUserPromise
   }).pipe(
     switchMap((user) => {
-      if (user || (!user && !sid)) {
+      if (!authTokenIsAllowed() || user || (!user && !sid)) {
         return of(user)
       }
 
