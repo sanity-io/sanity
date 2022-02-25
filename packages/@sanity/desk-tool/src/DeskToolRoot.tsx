@@ -11,7 +11,6 @@ import {SchemaType} from '@sanity/types'
 import {ErrorBoundary, ErrorBoundaryProps} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {resolveDocumentActions as defaultResolveDocumentActions} from './actions/resolveDocumentActions'
-import {IntentResolver} from './components/intentResolver'
 import {StructureError} from './components/StructureError'
 import {DeskTool} from './DeskTool'
 import {setActivePanes} from './getIntentState'
@@ -31,6 +30,8 @@ export interface DeskToolOptions {
   structure?: StructureResolver
   title?: string
 }
+
+const EMPTY_RECORD = {}
 
 export default function DeskToolRoot(props: {tool: SanityTool<DeskToolOptions>}) {
   const {source} = props.tool.options
@@ -67,9 +68,14 @@ function DeskToolApp(props: {tool: SanityTool<DeskToolOptions>}) {
     [resolveStructure, S, source]
   )
 
-  const intent = isString(routerState.intent) ? routerState.intent : undefined
-  const params = isRecord(routerState.params) ? routerState.params : {}
+  const intentName = isString(routerState.intent) ? routerState.intent : undefined
+  const params = isRecord(routerState.params) ? routerState.params : EMPTY_RECORD
   const payload = routerState.payload
+
+  const intent = useMemo(
+    () => (intentName ? {name: intentName, params, payload} : undefined),
+    [intentName, params, payload]
+  )
 
   useEffect(() => {
     // Set active panes to blank on mount and unmount
@@ -105,23 +111,15 @@ function DeskToolApp(props: {tool: SanityTool<DeskToolOptions>}) {
 
   return (
     <ErrorBoundary onCatch={handleCatch}>
-      {intent ? (
-        <IntentResolver
-          intent={intent}
-          params={params}
-          payload={payload}
-          resolveDocumentNode={resolveDocumentNode}
-        />
-      ) : (
-        <DeskTool
-          components={components}
-          onPaneChange={setActivePanes}
-          resolveDocumentActions={resolveDocumentActions}
-          resolveDocumentNode={resolveDocumentNode}
-          structure={structure}
-          structureBuilder={S}
-        />
-      )}
+      <DeskTool
+        components={components}
+        intent={intent}
+        onPaneChange={setActivePanes}
+        resolveDocumentActions={resolveDocumentActions}
+        resolveDocumentNode={resolveDocumentNode}
+        structure={structure}
+        structureBuilder={S}
+      />
     </ErrorBoundary>
   )
 }

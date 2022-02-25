@@ -8,6 +8,7 @@ import React, {memo, Fragment, useState, useEffect, useCallback, useMemo} from '
 import {Subject} from 'rxjs'
 import {map} from 'rxjs/operators'
 import styled from 'styled-components'
+import {IntentResolver} from './components/intentResolver'
 import {PaneLayout} from './components/pane'
 import {LOADING_PANE} from './constants'
 import {DeskToolProvider} from './contexts/deskTool'
@@ -19,6 +20,11 @@ import {DocumentActionsResolver, PaneNode, RouterPanes, UnresolvedPaneNode} from
 interface DeskToolProps {
   components: {
     LanguageFilter?: React.ComponentType<{schemaType: SchemaType}>
+  }
+  intent?: {
+    name: string
+    params: Record<string, unknown>
+    payload: unknown
   }
   onPaneChange: (panes: Array<PaneNode | typeof LOADING_PANE>) => void
   resolveDocumentActions: DocumentActionsResolver
@@ -40,6 +46,7 @@ const EMPTY_ROUTER_STATE: RouterState = {}
 export const DeskTool = memo(function DeskTool(props: DeskToolProps) {
   const {
     components,
+    intent,
     onPaneChange,
     resolveDocumentActions,
     resolveDocumentNode,
@@ -155,58 +162,69 @@ export const DeskTool = memo(function DeskTool(props: DeskToolProps) {
       resolveDocumentActions={resolveDocumentActions}
       structure={structure}
     >
-      <PortalProvider element={portalElement || null}>
-        <StyledPaneLayout
-          flex={1}
-          height={layoutCollapsed ? undefined : 'fill'}
-          minWidth={512}
-          onCollapse={handleRootCollapse}
-          onExpand={handleRootExpand}
-        >
-          {paneDataItems.map(
-            ({
-              active,
-              childItemId,
-              groupIndex,
-              itemId,
-              key: paneKey,
-              pane,
-              index: paneIndex,
-              params: paneParams,
-              path,
-              payload,
-              siblingIndex,
-              selected,
-            }) => (
-              <Fragment key={`${pane === LOADING_PANE ? 'loading' : pane.type}-${paneIndex}`}>
-                {pane === LOADING_PANE ? (
-                  <LoadingPane
-                    paneKey={paneKey}
-                    path={path}
-                    message={getWaitMessages}
-                    selected={selected}
-                  />
-                ) : (
-                  <DeskToolPane
-                    active={active}
-                    groupIndex={groupIndex}
-                    index={paneIndex}
-                    pane={pane}
-                    childItemId={childItemId}
-                    itemId={itemId}
-                    paneKey={paneKey}
-                    params={paneParams}
-                    payload={payload}
-                    selected={selected}
-                    siblingIndex={siblingIndex}
-                  />
-                )}
-              </Fragment>
-            )
-          )}
-        </StyledPaneLayout>
-        <div data-portal="" ref={setPortalElement} />
-      </PortalProvider>
+      {intent && (
+        <IntentResolver
+          intent={intent.name}
+          params={intent.params}
+          payload={intent.payload}
+          resolveDocumentNode={resolveDocumentNode}
+        />
+      )}
+
+      {!intent && (
+        <PortalProvider element={portalElement || null}>
+          <StyledPaneLayout
+            flex={1}
+            height={layoutCollapsed ? undefined : 'fill'}
+            minWidth={512}
+            onCollapse={handleRootCollapse}
+            onExpand={handleRootExpand}
+          >
+            {paneDataItems.map(
+              ({
+                active,
+                childItemId,
+                groupIndex,
+                itemId,
+                key: paneKey,
+                pane,
+                index: paneIndex,
+                params: paneParams,
+                path,
+                payload,
+                siblingIndex,
+                selected,
+              }) => (
+                <Fragment key={`${pane === LOADING_PANE ? 'loading' : pane.type}-${paneIndex}`}>
+                  {pane === LOADING_PANE ? (
+                    <LoadingPane
+                      paneKey={paneKey}
+                      path={path}
+                      message={getWaitMessages}
+                      selected={selected}
+                    />
+                  ) : (
+                    <DeskToolPane
+                      active={active}
+                      groupIndex={groupIndex}
+                      index={paneIndex}
+                      pane={pane}
+                      childItemId={childItemId}
+                      itemId={itemId}
+                      paneKey={paneKey}
+                      params={paneParams}
+                      payload={payload}
+                      selected={selected}
+                      siblingIndex={siblingIndex}
+                    />
+                  )}
+                </Fragment>
+              )
+            )}
+          </StyledPaneLayout>
+          <div data-portal="" ref={setPortalElement} />
+        </PortalProvider>
+      )}
     </DeskToolProvider>
   )
 })
