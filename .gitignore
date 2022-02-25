@@ -46,7 +46,10 @@ jspm_packages
 /package-lock.json
 
 # Environment files
+# @todo: this should be allowed
 /.env
+# ignore all local .env files
+.env.local
 
 # TypeScript
 /tsconfig.tsbuildinfo
