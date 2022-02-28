@@ -15,7 +15,7 @@ export interface PatchOperations {
   ifRevisionID?: string
 }
 
-export type MutationSelection = {query: string} | {id: string}
+export type MutationSelection = {query: string; params?: Record<string, unknown>} | {id: string}
 export type PatchMutationOperation = PatchOperations & MutationSelection
 
 export interface CreateMutation {
