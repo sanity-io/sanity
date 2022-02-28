@@ -30,7 +30,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     title,
   } = pane
 
-  const {defaultOrdering = emptyArray, filter} = options
+  const {defaultOrdering = emptyArray, filter, apiVersion} = options
   const params = useShallowUnique(options.params || EMPTY_RECORD)
   const typeName = useMemo(() => getTypeNameFromSingleTypeFilter(filter, params), [filter, params])
   const showIcons = displayOptions?.showIcons !== false
@@ -48,6 +48,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     filter,
     params,
     sortOrder,
+    apiVersion,
   })
 
   return (

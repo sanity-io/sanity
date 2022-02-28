@@ -12,6 +12,7 @@ interface UseDocumentListOpts {
   filter: string
   params: Record<string, unknown>
   sortOrder?: SortOrder
+  apiVersion: number
 }
 
 interface DocumentListState {
@@ -27,7 +28,7 @@ interface DocumentListState {
  * @internal
  */
 export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
-  const {defaultOrdering, filter, params, sortOrder} = opts
+  const {defaultOrdering, filter, params, sortOrder, apiVersion} = opts
   const [fullList, setFullList] = useState(false)
   const fullListRef = useRef(fullList)
   const [result, setResult] = useState<QueryResult | null>(null)
@@ -95,7 +96,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
     // Set loading state
     setResult((r) => (r ? {...r, loading: true} : null))
 
-    const queryResults$ = getQueryResults(of({query, params}), {tag: 'desk.document-list'}).pipe(
+    const queryResults$ = getQueryResults(of({query, params}), {tag: 'desk.document-list', apiVersion}).pipe(
       filterEvents(filterFn)
     )
 
