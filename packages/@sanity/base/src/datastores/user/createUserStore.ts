@@ -19,7 +19,7 @@ import {
   fetchToken,
   saveToken,
   authTokenIsAllowed,
-} from '../authToken'
+} from '../authState'
 import {UserStore, CurrentUserSnapshot} from './types'
 import {consumeSessionId} from './sessionId'
 
