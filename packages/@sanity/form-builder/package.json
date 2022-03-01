@@ -1,6 +1,6 @@
 {
   "name": "@sanity/form-builder",
-  "version": "2.27.1",
+  "version": "2.27.2",
   "description": "Sanity form builder",
   "main": "lib/_exports/index.js",
   "types": "index.d.ts",
@@ -28,7 +28,7 @@
   "license": "MIT",
   "dependencies": {
     "@reach/auto-id": "^0.13.2",
-    "@sanity/base": "2.27.1",
+    "@sanity/base": "2.27.2",
     "@sanity/block-tools": "2.27.0",
     "@sanity/client": "^3.0.1",
     "@sanity/color": "^2.1.5",
