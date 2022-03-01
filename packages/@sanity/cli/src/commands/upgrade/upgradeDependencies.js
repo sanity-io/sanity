@@ -89,21 +89,28 @@ export default async function upgradeDependencies(args, context) {
   )
 
   // Replace versions in `package.json`
-  const versionPrefix = saveExact ? '' : '^'
+  const versionPrefix = saveExact || targetRange ? '' : '^'
   const oldManifest = await readLocalManifest(workDir)
   const newManifest = nonPinned.reduce((target, mod) => {
+    const savedVersion =
+      targetRange && !saveExact ? targetRange : `${versionPrefix}${mod.latestInRange}`
+
     if (oldManifest.dependencies && oldManifest.dependencies[mod.name]) {
       target.dependencies[mod.name] =
         typeof mod.latestInRange === 'undefined'
-          ? oldManifest.dependencies[mod.name]
-          : versionPrefix + mod.latestInRange
+          ? // Keep as-is if we can't resolve within range/tag
+            oldManifest.dependencies[mod.name]
+          : // Store latest within range, or just the tag name if using that
+            savedVersion
     }
 
     if (oldManifest.devDependencies && oldManifest.devDependencies[mod.name]) {
       target.devDependencies[mod.name] =
         typeof mod.latestInRange === 'undefined'
-          ? oldManifest.devDependencies[mod.name]
-          : versionPrefix + mod.latestInRange
+          ? // Keep as-is if we can't resolve within range/tag
+            oldManifest.dependencies[mod.name]
+          : // Store latest within range, or just the tag name if using that
+            savedVersion
     }
 
     return target
