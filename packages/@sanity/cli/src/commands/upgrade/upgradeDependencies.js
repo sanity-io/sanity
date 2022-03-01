@@ -94,14 +94,14 @@ export default async function upgradeDependencies(args, context) {
   const newManifest = nonPinned.reduce((target, mod) => {
     if (oldManifest.dependencies && oldManifest.dependencies[mod.name]) {
       target.dependencies[mod.name] =
-        mod.latestInRange === 'unknown'
+        typeof mod.latestInRange === 'undefined'
           ? oldManifest.dependencies[mod.name]
           : versionPrefix + mod.latestInRange
     }
 
     if (oldManifest.devDependencies && oldManifest.devDependencies[mod.name]) {
       target.devDependencies[mod.name] =
-        mod.latestInRange === 'unknown'
+        typeof mod.latestInRange === 'undefined'
           ? oldManifest.devDependencies[mod.name]
           : versionPrefix + mod.latestInRange
     }
