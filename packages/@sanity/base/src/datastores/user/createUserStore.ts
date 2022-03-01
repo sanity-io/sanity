@@ -1,9 +1,21 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
+import debugIt from 'debug'
 import config from 'config:sanity'
-import {Observable, of, from, merge, defer, concat} from 'rxjs'
-import {catchError, map, mergeMap, mapTo, switchMap, shareReplay, tap, take} from 'rxjs/operators'
+import {Observable, of, from, merge, defer, combineLatest} from 'rxjs'
+import {
+  catchError,
+  map,
+  mergeMap,
+  mapTo,
+  switchMap,
+  shareReplay,
+  tap,
+  take,
+  distinctUntilChanged,
+  filter,
+} from 'rxjs/operators'
 import raf from 'raf'
 import DataLoader from 'dataloader'
 import authenticationFetcher from 'part:@sanity/base/authentication-fetcher'
@@ -12,6 +24,7 @@ import {generateHelpUrl} from '@sanity/generate-help-url'
 import sanityClient from 'part:@sanity/base/client'
 import {User, CurrentUser} from '@sanity/types'
 import {debugRolesParam$} from '../debugParams'
+import {authStateChangedInOtherWindow$, authStateChangedInThisWindow$} from '../authState/state'
 import {getDebugRolesByNames} from '../grants/debug'
 import {
   broadcastAuthStateChanged,
@@ -23,6 +36,7 @@ import {
 import {UserStore, CurrentUserSnapshot} from './types'
 import {consumeSessionId} from './sessionId'
 
+const debug = debugIt('sanity:userstore')
 const client = sanityClient.withConfig({apiVersion: '2021-06-07'})
 
 // Consume any session ID as early as possible (before mount) so we can remove it from the URL
@@ -46,6 +60,7 @@ const debugRoles$ = debugRolesParam$.pipe(map(getDebugRolesByNames))
 
 function fetchCurrentUser(): Observable<CurrentUser | null> {
   return defer(() => {
+    debug('Fetching current user')
     const currentUserPromise = authenticationFetcher.getCurrentUser()
     userLoader.prime(
       'me',
@@ -56,25 +71,37 @@ function fetchCurrentUser(): Observable<CurrentUser | null> {
   }).pipe(
     switchMap((user) => {
       if (!authTokenIsAllowed() || user || (!user && !sid)) {
+        debug(user ? `Received user with ID ${user.id}` : 'Received no user')
+
+        // Nullify the session ID - in some cases (with multiple tabs/windows), we might
+        // trigger a re-fetch of the authentication state, and do not want to treat a sid
+        // from a previous session, successful login to be considered as the fresh one
+        sid = null
+
         return of(user)
       }
+
+      debug('Session ID present in URL, but no user received - fetching token')
+
+      // Regardless of success or failure, we don't want to reuse the SID after this try
+      const sessionId = sid
+      sid = null
 
       // If we have consumed a session ID from the URL, we would expect a user to be returned,
       // as there should be a session cookie set. If (because of cookie restrictions or similar)
       // that is _not_ the case, exchange the SID for a token and persist it.
-      return fetchToken(sid, client).pipe(
-        tap(() => {
-          // Regardless of success or failure, we don't want to reuse the SID
-          sid = null
-        }),
+      return fetchToken(sessionId, client).pipe(
         switchMap(({token}) => {
+          debug('Token received - storing in localStorage')
+
           // Save token to local storage
           saveToken({token, projectId})
 
-          // Will trigger clients to be reconfigured with token
-          broadcastAuthStateChanged()
+          // Trigger local clients to be configured with token
+          authStateChangedInThisWindow$.next(true)
 
           // Now try retrieving the user again
+          debug('Re-fetching user with explicit authorization token')
           return authenticationFetcher.getCurrentUser()
         }),
         catchError((error) => {
@@ -90,48 +117,64 @@ function fetchCurrentUser(): Observable<CurrentUser | null> {
       }
     }),
     mergeMap((user) =>
-      concat(
-        of(user),
-        debugRoles$.pipe(
-          map((debugRoles) => (debugRoles.length > 0 ? {...user, roles: debugRoles} : user))
-        )
+      debugRoles$.pipe(
+        map((debugRoles) => (user && debugRoles.length > 0 ? {...user, roles: debugRoles} : user))
       )
     )
   )
 }
 
-const isClientConfiguredWithToken = () => !!client.config().token
-
 const currentUser: Observable<CurrentUser | null> = merge(
   fetchCurrentUser().pipe(
-    tap((usr) => {
-      if (isClientConfiguredWithToken()) {
-        if (!usr) {
-          clearToken(projectId)
-        }
-        broadcastAuthStateChanged()
+    tap((user) => {
+      if (!user) {
+        clearToken(projectId)
       }
+
+      debug('Current user fetched - %s', user ? 'found user' : 'no user')
     }),
     catchError((err) => {
-      if (err.statusCode === 401 && isClientConfiguredWithToken()) {
+      if (err.statusCode === 401) {
         clearToken(projectId)
         return of(null)
       }
       throw err
     })
   ), // initial fetch
-  refresh$.pipe(switchMap(() => fetchCurrentUser())), // re-fetch as response to request to refresh current user
+  refresh$.pipe(
+    tap(() => debug('Re-fetching current user in response to refresh request')),
+    switchMap(() => fetchCurrentUser())
+  ),
   logout$.pipe(
-    mergeMap(() => authenticationFetcher.logout()),
     tap(() => {
-      if (isClientConfiguredWithToken()) {
-        clearToken(projectId)
-        broadcastAuthStateChanged()
-      }
+      debug('Logout triggered - clearing any local token')
+      clearToken(projectId)
     }),
+    mergeMap(() => authenticationFetcher.logout()),
     mapTo(null)
   )
-).pipe(shareReplay({refCount: true, bufferSize: 1}))
+).pipe(
+  distinctUntilChanged<CurrentUser | null>((prev, current) => prev?.id === current?.id),
+  tap((user) => {
+    debug('Broadcasting auth state change, user ID: %s', user?.id || 'null')
+    broadcastAuthStateChanged(user?.id || undefined)
+  }),
+  shareReplay({refCount: true, bufferSize: 1})
+)
+
+const updateFromRemote$ = combineLatest([currentUser, authStateChangedInOtherWindow$])
+  .pipe(filter(([current, remote]) => current?.id !== remote?.id))
+  .subscribe(() => {
+    debug('Auth state changed in different window, refreshing locally')
+    refresh()
+  })
+
+// In the case of hot module reloading, make sure we don't have dangling pointers
+if (module?.hot?.dispose) {
+  module.hot.dispose(() => {
+    updateFromRemote$.unsubscribe()
+  })
+}
 
 const normalizedCurrentUser = currentUser.pipe(
   map((user) => (user ? normalizeOwnUser(user) : user))
