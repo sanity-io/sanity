@@ -51,7 +51,7 @@ export default async function findSanityModuleVersions(context, opts = {}) {
     mod.needsUpdate =
       target === 'latest'
         ? semverCompare(current, mod.latest) === -1
-        : mod.installed !== mod.latestInRange
+        : Boolean(mod.latestInRange && mod.installed !== mod.latestInRange)
     return mod
   })
 }
@@ -117,7 +117,7 @@ function buildPackageArray(packages, workDir, options = {}) {
 function tryFindLatestVersion(pkgName, range) {
   return getLatestVersion(pkgName, {range, includeLatest: true})
     .then(({latest, inRange}) => ({latest, latestInRange: inRange}))
-    .catch(() => ({latest: 'unknown', latestInRange: 'unknown'}))
+    .catch(() => ({latest: undefined, latestInRange: undefined}))
 }
 
 function isPinnedVersion(version) {
