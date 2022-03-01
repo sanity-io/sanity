@@ -98,7 +98,7 @@ function buildPackageArray(packages, workDir, options = {}) {
     modules.push({
       name: pkg.name,
       declared: `^${pkg.version}`,
-      installed: pkg.version,
+      installed: trimHash(pkg.version),
       latest: latest.then((versions) => versions.latest),
       latestInRange: latest.then((versions) => versions.latestInRange),
       isPinned: false,
@@ -110,10 +110,11 @@ function buildPackageArray(packages, workDir, options = {}) {
     ...modules,
     ...Object.keys(packages).map((pkgName) => {
       const latest = tryFindLatestVersion(pkgName, target || packages[pkgName] || 'latest')
+      const localVersion = getLocalVersion(pkgName, workDir)
       return {
         name: pkgName,
         declared: packages[pkgName],
-        installed: getLocalVersion(pkgName, workDir) || undefined,
+        installed: localVersion ? trimHash(localVersion) : undefined,
         latest: latest.then((versions) => versions.latest),
         latestInRange: latest.then((versions) => versions.latestInRange),
         isPinned: isPinnedVersion(packages[pkgName]),
@@ -130,4 +131,12 @@ function tryFindLatestVersion(pkgName, range) {
 
 function isPinnedVersion(version) {
   return /^\d+\.\d+\.\d+/.test(version)
+}
+
+/**
+ * `2.27.3-cookieless-auth.34+8ba9c1504` =>
+ * `2.27.3-cookieless-auth.34`
+ */
+function trimHash(version) {
+  return version.replace(/\+[a-z0-9]{8,}$/, '')
 }
