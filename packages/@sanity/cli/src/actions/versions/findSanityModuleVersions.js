@@ -47,13 +47,21 @@ export default async function findSanityModuleVersions(context, opts = {}) {
   spin.stop()
 
   return packages.map((mod) => {
-    const current = mod.installed || semver.minVersion(mod.declared).toString()
+    const current = mod.installed || tryGetMinVersion(mod.declared)
     mod.needsUpdate =
       target === 'latest'
-        ? semverCompare(current, mod.latest) === -1
+        ? Boolean(current && semverCompare(current, mod.latest) === -1)
         : Boolean(mod.latestInRange && mod.installed !== mod.latestInRange)
     return mod
   })
+}
+
+function tryGetMinVersion(version) {
+  try {
+    return semver.minVersion(version).toString()
+  } catch (err) {
+    return undefined
+  }
 }
 
 function getLocalManifest(workDir) {
