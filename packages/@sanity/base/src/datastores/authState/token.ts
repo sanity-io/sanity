@@ -1,5 +1,9 @@
 import type {SanityClient} from '@sanity/client'
 import type {Observable} from 'rxjs'
+import {concat, defer, merge, of} from 'rxjs'
+import {shareReplay, switchMapTo} from 'rxjs/operators'
+import {readConfig, authTokenIsAllowed} from './config'
+import {authStateChangedInOtherWindow$, authStateChangedInThisWindow$} from './state'
 import * as storage from './storage'
 
 // Project ID is part of the localStorage key so that different projects can store their separate tokens, and it's easier to do book keeping.
@@ -49,3 +53,25 @@ export const fetchToken = (sid: string, client: SanityClient): Observable<{token
     tag: 'auth.fetch-token',
   })
 }
+
+// TODO: some kind of refresh mechanism here when we support refresh tokens / stamping?
+const freshToken$ = defer(() => {
+  if (!authTokenIsAllowed()) {
+    return of(null)
+  }
+
+  const {projectId} = readConfig()
+  if (!projectId) {
+    throw new Error('No projectId configured')
+  }
+  return of(getToken(projectId))
+})
+
+export const authToken$ = defer(() =>
+  concat(
+    freshToken$,
+    merge(authStateChangedInOtherWindow$, authStateChangedInThisWindow$).pipe(
+      switchMapTo(freshToken$)
+    )
+  )
+).pipe(shareReplay({bufferSize: 1, refCount: true}))
