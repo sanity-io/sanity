@@ -12,7 +12,7 @@ interface UseDocumentListOpts {
   filter: string
   params: Record<string, unknown>
   sortOrder?: SortOrder
-  apiVersion: number
+  apiVersion?: string
 }
 
 interface DocumentListState {
@@ -96,9 +96,10 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
     // Set loading state
     setResult((r) => (r ? {...r, loading: true} : null))
 
-    const queryResults$ = getQueryResults(of({query, params}), {tag: 'desk.document-list', apiVersion}).pipe(
-      filterEvents(filterFn)
-    )
+    const queryResults$ = getQueryResults(of({query, params}), {
+      tag: 'desk.document-list',
+      apiVersion,
+    }).pipe(filterEvents(filterFn))
 
     const sub = queryResults$.subscribe(setResult)
 

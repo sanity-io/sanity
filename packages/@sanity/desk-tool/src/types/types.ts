@@ -193,6 +193,7 @@ export interface DocumentListPaneNode extends BaseResolvedPaneNode<'documentList
     filter: string
     defaultOrdering?: Array<{field: string; direction: 'asc' | 'desc'}>
     params?: Record<string, unknown>
+    apiVersion?: string
   }
   schemaTypeName: string
 }
