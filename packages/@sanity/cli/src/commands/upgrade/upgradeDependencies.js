@@ -122,7 +122,7 @@ export default async function upgradeDependencies(args, context) {
 
   // Run `yarn install`
   const flags = extOptions.offline ? ['--offline'] : []
-  const cmd = ['install'].concat(flags)
+  const cmd = ['install', '--check-files'].concat(flags)
 
   debug('Running yarn %s', cmd.join(' '))
   await yarn(cmd, {...output, rootDir: workDir})
@@ -152,8 +152,18 @@ async function deleteIfNotSymlink(modPath) {
 }
 
 function hasSemverBreakingUpgrade(mod) {
-  const current = mod.installed || semver.minVersion(mod.declared).toString()
-  return !semver.satisfies(mod.latest, `^${current}`) && semver.gt(mod.latest, current)
+  const current = mod.installed || tryGetMinVersion(mod.declared)
+  return Boolean(
+    current && !semver.satisfies(mod.latest, `^${current}`) && semver.gt(mod.latest, current)
+  )
+}
+
+function tryGetMinVersion(version) {
+  try {
+    return semver.minVersion(version).toString()
+  } catch (err) {
+    return undefined
+  }
 }
 
 function getMajorUpgradeText(mods, chalk) {
