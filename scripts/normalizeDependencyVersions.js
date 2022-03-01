@@ -111,8 +111,14 @@ fixablePackages.forEach((pkg) => {
       ? path.join(rootPath, 'package.json')
       : path.join(rootPath, 'packages', pkg, 'package.json')
 
-  // eslint-disable-next-line import/no-dynamic-require
-  const manifest = require(manifestPath)
+  let manifest
+  try {
+    // eslint-disable-next-line import/no-dynamic-require
+    manifest = require(manifestPath)
+  } catch (err) {
+    return
+  }
+
   toFix.forEach((dep) => {
     const depSection = (manifest.dependencies || {})[dep.depName]
       ? manifest.dependencies
