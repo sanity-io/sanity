@@ -350,6 +350,7 @@ export default () =>
                       title: 'Titles!',
                       options: {
                         filter: 'defined(title)',
+                        apiVersion: 'v2021-06-07',
                       },
                     })
                   )
