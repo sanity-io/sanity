@@ -76,18 +76,6 @@ export default async function upgradeDependencies(args, context) {
     )
   }
 
-  // Yarn fails to upgrade `react-ace` in some versions, see function for details
-  await maybeDeleteReactAce(nonPinned, workDir)
-
-  // Forcefully remove non-symlinked module paths to force upgrade
-  await Promise.all(
-    nonPinned.map((mod) =>
-      deleteIfNotSymlink(
-        path.join(context.workDir, 'node_modules', mod.name.replace(/\//g, path.sep))
-      )
-    )
-  )
-
   // Replace versions in `package.json`
   const versionPrefix = saveExact || targetRange ? '' : '^'
   const oldManifest = await readLocalManifest(workDir)
@@ -119,6 +107,18 @@ export default async function upgradeDependencies(args, context) {
   // Write new `package.json`
   const manifestPath = path.join(context.workDir, 'package.json')
   await writeJson(manifestPath, newManifest, {spaces: 2})
+
+  // Yarn fails to upgrade `react-ace` in some versions, see function for details
+  await maybeDeleteReactAce(nonPinned, workDir)
+
+  // Forcefully remove non-symlinked module paths to force upgrade
+  await Promise.all(
+    nonPinned.map((mod) =>
+      deleteIfNotSymlink(
+        path.join(context.workDir, 'node_modules', mod.name.replace(/\//g, path.sep))
+      )
+    )
+  )
 
   // Run `yarn install`
   const flags = extOptions.offline ? ['--offline'] : []
