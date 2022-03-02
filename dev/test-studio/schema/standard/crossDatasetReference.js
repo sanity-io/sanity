@@ -1,5 +1,33 @@
 import {UserIcon, MoonIcon, BookIcon} from '@sanity/icons'
 
+export const crossDatasetSubtype = {
+  type: 'crossDatasetReference',
+  name: 'crossDatasetSubtype',
+  title: 'Subtype of cross dataset references',
+  dataset: 'playground',
+  projectId: 'ppsg7ml5',
+  to: [
+    {
+      type: 'book',
+      icon: BookIcon,
+      // eslint-disable-next-line camelcase
+      __experimental_search: [{path: ['title'], weight: 10}],
+      preview: {
+        select: {
+          title: 'title',
+          media: 'coverImage',
+        },
+        prepare(val) {
+          return {
+            title: val.title,
+            media: val.coverImage,
+          }
+        },
+      },
+    },
+  ],
+}
+
 export default {
   name: 'crossDatasetReferenceTest',
   type: 'document',
@@ -141,6 +169,70 @@ export default {
           },
         },
       ],
+    },
+    {
+      title: 'Cross Dataset reference in PTE',
+      name: 'portableText',
+      type: 'array',
+      of: [
+        {type: 'block'},
+        {
+          type: 'crossDatasetReference',
+          dataset: 'next',
+          projectId: '3do82whm',
+          studioUrl: ({id, type}) => {
+            return type ? `https://admin.sanity.io/desk/docs;${type};${id}` : null
+          },
+          title: 'Cross dataset reference to docs article in admin.sanity.io',
+          to: [
+            {
+              type: 'article',
+              icon: BookIcon,
+              // eslint-disable-next-line camelcase
+              __experimental_search: [{path: 'title', weight: 10}],
+              preview: {
+                select: {
+                  title: 'title',
+                },
+              },
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'Cross Dataset reference in array',
+      name: 'array',
+      type: 'array',
+      of: [
+        {
+          type: 'crossDatasetReference',
+          dataset: 'next',
+          projectId: '3do82whm',
+          studioUrl: ({id, type}) => {
+            return type ? `https://admin.sanity.io/desk/docs;${type};${id}` : null
+          },
+          title: 'Cross dataset reference to docs article in admin.sanity.io',
+          to: [
+            {
+              type: 'article',
+              icon: BookIcon,
+              // eslint-disable-next-line camelcase
+              __experimental_search: [{path: 'title', weight: 10}],
+              preview: {
+                select: {
+                  title: 'title',
+                },
+              },
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'Cross Dataset reference subtype test',
+      name: 'crossDatasetSubtype',
+      type: 'crossDatasetSubtype',
     },
   ],
   preview: {
