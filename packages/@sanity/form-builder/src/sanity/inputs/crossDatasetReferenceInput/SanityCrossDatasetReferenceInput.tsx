@@ -22,7 +22,7 @@ import {CrossDatasetReferenceInput} from '../../../inputs/CrossDatasetReferenceI
 import {versionedClient} from '../../versionedClient'
 import {Alert} from '../../../components/Alert'
 import {search} from './datastores/search'
-import {getReferenceInfo} from './datastores/getReferenceInfo'
+import {createGetReferenceInfo} from './datastores/getReferenceInfo'
 import {useCrossDatasetToken} from './datastores/useCrossDatasetToken'
 
 // eslint-disable-next-line require-await
@@ -107,6 +107,7 @@ const SanityCrossDatasetReferenceInput = forwardRef(function SanityCrossDatasetR
           dataset: type.dataset,
           apiVersion: '2022-03-07',
           token,
+          ignoreBrowserTokenWarning: true,
         })
         // seems like this is required to prevent this client from sometimes magically get mutated with a new projectId and dataset
         .clone()
@@ -137,10 +138,9 @@ const SanityCrossDatasetReferenceInput = forwardRef(function SanityCrossDatasetR
     [crossDatasetClient, documentRef, getValuePath, type]
   )
 
-  const _getReferenceInfo = useCallback(
-    (id: string) => (crossDatasetClient ? getReferenceInfo(crossDatasetClient, type, id) : null),
-    [crossDatasetClient, type]
-  )
+  const getReferenceInfo = useMemo(() => createGetReferenceInfo(crossDatasetClient), [
+    crossDatasetClient,
+  ])
 
   if (loadableToken.status === 'loading') {
     return (
@@ -191,7 +191,7 @@ const SanityCrossDatasetReferenceInput = forwardRef(function SanityCrossDatasetR
     <CrossDatasetReferenceInput
       {...props}
       onSearch={handleSearch}
-      getReferenceInfo={_getReferenceInfo}
+      getReferenceInfo={getReferenceInfo}
       ref={ref}
     />
   )
