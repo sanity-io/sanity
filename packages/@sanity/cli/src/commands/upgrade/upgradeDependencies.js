@@ -16,8 +16,7 @@ const rimraf = util.promisify(rimrafCb)
 
 export default async function upgradeDependencies(args, context) {
   const {output, workDir, yarn, chalk} = context
-  const {extOptions, argsWithoutOptions} = args
-  const modules = argsWithoutOptions.slice()
+  const {extOptions} = args
   const {range, tag} = extOptions
   const saveExact = extOptions['save-exact']
   const targetRange = tag || range
@@ -32,14 +31,9 @@ export default async function upgradeDependencies(args, context) {
 
   // Find which modules needs update according to the target range
   const versions = await findSanityModuleVersions(context, {target: targetRange, includeCli: false})
-  const allNeedsUpdate = versions.filter((mod) => mod.needsUpdate)
+  const needsUpdate = versions.filter((mod) => mod.needsUpdate)
 
-  debug('In need of update: %s', allNeedsUpdate.map((mod) => mod.name).join(', '))
-
-  const needsUpdate =
-    modules.length === 0
-      ? allNeedsUpdate
-      : allNeedsUpdate.filter((outOfDate) => modules.indexOf(outOfDate.name) !== -1)
+  debug('In need of update: %s', needsUpdate.map((mod) => mod.name).join(', '))
 
   const semverBreakingUpgrades = versions.filter(hasSemverBreakingUpgrade)
   const baseMajorUpgrade = semverBreakingUpgrades.find((mod) => mod.name === '@sanity/base')
@@ -48,10 +42,7 @@ export default async function upgradeDependencies(args, context) {
 
   // If all modules are up-to-date, say so and exit
   if (needsUpdate.length === 0) {
-    const specified = modules.length === 0 ? 'All' : 'All *specified*'
-    context.output.print(
-      `${chalk.green('✔')} ${specified} Sanity modules are at latest compatible versions`
-    )
+    context.output.print(`${chalk.green('✔')} All Sanity modules are at latest compatible versions`)
     return
   }
 
