@@ -84,7 +84,7 @@
     "react-is": "^17.0.2",
     "react-popper": "^2.2.4",
     "react-props-stream": "^1.0.0",
-    "react-refractor": "^2.1.2",
+    "react-refractor": "^2.1.6",
     "react-rx": "^1.0.0-beta.6",
     "react-sortable-hoc": "^1.11.0",
     "react-split-pane": "^0.1.84",
