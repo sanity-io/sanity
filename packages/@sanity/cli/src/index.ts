@@ -1,2 +1,2 @@
 export * from './types'
-export {runCli} from './cli'
+export * from './config'
