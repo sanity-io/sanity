@@ -1,7 +1,6 @@
 import os from 'os'
 import util from 'util'
 import path from 'path'
-import fse from 'fs-extra'
 import xdgBasedir from 'xdg-basedir'
 import promiseProps from 'promise-props-recursive'
 import {pick, omit} from 'lodash'
@@ -66,8 +65,11 @@ export const printDebugInfo: CliCommandAction = async (args, context) => {
 
   // Project configuration (projectDir/sanity.json)
   if (projectConfig) {
-    const configLocation = path.join(context.workDir, 'sanity.json')
-    context.output.print(`Project config (${chalk.yellow(configLocation)}):`)
+    const configLocation = context.cliConfigPath
+      ? ` (${chalk.yellow(path.relative(process.cwd(), context.cliConfigPath))})`
+      : ''
+
+    context.output.print(`Project config${configLocation}:`)
     context.output.print(`  ${formatObject(projectConfig).replace(/\n/g, '\n  ')}`)
   }
 
@@ -154,23 +156,14 @@ function gatherGlobalConfigInfo(): CliUserConfig {
   return getUserConfig().all
 }
 
-async function gatherProjectConfigInfo(
-  context: CliCommandContext
-): Promise<SanityJson | {error: Error} | null> {
-  const workDir = context.workDir
-  const configLocation = path.join(workDir, 'sanity.json')
+function gatherProjectConfigInfo(context: CliCommandContext): SanityJson | {error: string} | null {
+  const {cliConfig} = context
+  if (cliConfig?.api?.projectId) {
+    return cliConfig
+  }
 
-  try {
-    const config = await fse.readJson(configLocation)
-    if (!config.api || !config.api.projectId) {
-      throw new Error(
-        `Project config (${configLocation}) does not contain required "api.projectId" key`
-      )
-    }
-
-    return config
-  } catch (err) {
-    return err.code === 'ENOENT' ? null : {error: err}
+  return {
+    error: `Missing required "api.projectId" key`,
   }
 }
 
