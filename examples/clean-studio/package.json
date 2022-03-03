@@ -1,7 +1,7 @@
 {
   "name": "clean-studio",
   "private": true,
-  "version": "2.27.2",
+  "version": "2.27.3",
   "description": "Content studio running with schema from the clean template",
   "main": "package.json",
   "author": "Sanity.io <hello@sanity.io>",
@@ -19,11 +19,11 @@
   ],
   "dependencies": {
     "@sanity/base": "2.27.2",
-    "@sanity/cli": "2.27.0",
+    "@sanity/cli": "2.27.3",
     "@sanity/core": "2.27.0",
     "@sanity/default-layout": "2.27.2",
     "@sanity/default-login": "2.27.0",
-    "@sanity/desk-tool": "2.27.2",
+    "@sanity/desk-tool": "2.27.3",
     "@sanity/vision": "2.27.2",
     "react": "17.0.1",
     "react-dom": "17.0.1",
