@@ -22,7 +22,7 @@ export function printResult(versions: ModuleVersionResult[], print: (msg: string
         ? chalk.green('(up to date)')
         : `(latest: ${chalk.yellow(mod.latest)})`
 
-    print(`${formatName(mod.name)} ${version} ${latest}`)
+    print(`${formatName(getDisplayName(mod))} ${version} ${latest}`)
   })
 }
 
@@ -31,7 +31,7 @@ export function getFormatters(versions: ModuleVersionResult[]): {
   versionLength: number
   formatName: (name: string) => string
 } {
-  const nameLength = versions.reduce((max, mod) => Math.max(max, mod.name.length), 0)
+  const nameLength = versions.reduce((max, mod) => Math.max(max, getDisplayName(mod).length), 0)
   const versionLength = versions.reduce(
     (max, mod) => Math.max(max, (mod.installed || '<missing>').length),
     0
@@ -39,9 +39,13 @@ export function getFormatters(versions: ModuleVersionResult[]): {
 
   const formatName = (name: string): string =>
     padEnd(name, nameLength + 1).replace(
-      /^@sanity\/(.*)/,
-      `${chalk.yellow('@sanity/')}${chalk.cyan('$1')}`
+      /^@sanity\/(.*?)(\s|$)/,
+      `${chalk.yellow('@sanity/')}${chalk.cyan('$1')}$2`
     )
 
   return {nameLength, versionLength, formatName}
+}
+
+function getDisplayName(mod: ModuleVersionResult): string {
+  return mod.isGlobal ? `${mod.name} (global)` : mod.name
 }
