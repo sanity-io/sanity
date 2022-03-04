@@ -1,4 +1,4 @@
-import {Reference} from '@sanity/types'
+import {PreviewConfig, Reference, SchemaType} from '@sanity/types'
 
 export type {SortOrdering, PrepareViewOptions} from '@sanity/types'
 
@@ -22,6 +22,16 @@ export enum AvailabilityReason {
   READABLE = 'READABLE',
   PERMISSION_DENIED = 'PERMISSION_DENIED',
   NOT_FOUND = 'NOT_FOUND',
+}
+
+export interface PreviewableType {
+  fields?: {name: string; type: SchemaType}[]
+  preview?: PreviewConfig
+}
+
+export interface ApiConfig {
+  projectId: string
+  dataset: string
 }
 
 export type DocumentAvailability =
