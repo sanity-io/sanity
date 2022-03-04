@@ -91,6 +91,7 @@ import species from './species'
 import conditionalFieldset from './ci/conditionalFieldset'
 import validationTest from './ci/validationCI'
 import crossDatasetReference, {crossDatasetSubtype} from './standard/crossDatasetReference'
+import {circularCrossDatasetReferenceTest} from './debug/circularCrossDatasetReference'
 
 export default createSchema({
   name: 'test-examples',
@@ -156,6 +157,7 @@ export default createSchema({
     references,
     crossDatasetReference,
     crossDatasetSubtype,
+    circularCrossDatasetReferenceTest,
     reservedFieldNames,
     review,
     richTextObject,
