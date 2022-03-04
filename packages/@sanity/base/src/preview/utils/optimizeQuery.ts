@@ -44,7 +44,7 @@ function toSubQuery({ids, fields}: {ids: string[]; fields: string[]}) {
     .join(',')}}`
 }
 
-export function toGradientQuery(combinedSelections: CombinedSelection[]): string {
+export function toQuery(combinedSelections: CombinedSelection[]): string {
   return `[${combinedSelections.map(toSubQuery).join(',')}][0...${combinedSelections.length}]`
 }
 
