@@ -3,7 +3,7 @@ import {Observable, of as observableOf} from 'rxjs'
 import {switchMap} from 'rxjs/operators'
 import props from './utils/props'
 
-import {FieldName, Id, Path, Reference, Document, Previewable} from './types'
+import {FieldName, Id, Path, Reference, Document, Previewable, ApiConfig} from './types'
 
 function isReference(value: Reference | Document | Record<string, any>): value is Reference {
   return '_ref' in value
@@ -24,13 +24,22 @@ function resolveMissingHeads(value: Record<string, unknown>, paths: string[][]) 
   return paths.filter((path) => !(path[0] in value))
 }
 
-type ObserveFieldsFn = (id: string, fields: FieldName[]) => Observable<Record<string, any> | null>
+type ObserveFieldsFn = (
+  id: string,
+  fields: FieldName[],
+  apiConfig?: ApiConfig
+) => Observable<Record<string, any> | null>
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return isObject(value)
 }
 
-function observePaths(value: Previewable, paths: Path[], observeFields: ObserveFieldsFn) {
+function observePaths(
+  value: Previewable,
+  paths: Path[],
+  observeFields: ObserveFieldsFn,
+  apiConfig?: ApiConfig
+) {
   if (!isRecord(value)) {
     // Reached a leaf. Return as is
     return observableOf(value)
@@ -43,9 +52,20 @@ function observePaths(value: Previewable, paths: Path[], observeFields: ObserveF
     const nextHeads: string[] = uniq(pathsWithMissingHeads.map((path: string[]) => path[0]))
 
     const isRef = isReference(value)
-    if (isReference(value) || isDocument(value)) {
+    if (isRef || isDocument(value)) {
       const id = isRef ? (value as Reference)._ref : (value as Document)._id
-      return observeFields(id, nextHeads).pipe(
+
+      const refApiConfig =
+        // if it's a cross dataset reference we want to use it's `_projectId` + `_dataset`
+        // attributes as api config
+        isRef && value._dataset && value._projectId
+          ? {
+              projectId: value._projectId as string,
+              dataset: value._dataset as string,
+            }
+          : apiConfig
+
+      return observeFields(id, nextHeads, refApiConfig).pipe(
         switchMap((snapshot) => {
           if (snapshot === null) {
             return observableOf(null)
@@ -53,11 +73,12 @@ function observePaths(value: Previewable, paths: Path[], observeFields: ObserveF
           return observePaths(
             {
               ...createEmpty(nextHeads),
-              ...(isRef ? {_ref: value._ref} : value),
+              ...(isRef ? {_ref: value._ref, ...apiConfig} : value),
               ...snapshot,
             },
             paths,
-            observeFields
+            observeFields,
+            refApiConfig
           )
         })
       )
@@ -80,7 +101,12 @@ function observePaths(value: Previewable, paths: Path[], observeFields: ObserveF
       if (tails.length === 0) {
         res[head] = value[head]
       } else {
-        res[head] = observePaths(value[head] as Record<string, unknown>, tails, observeFields)
+        res[head] = observePaths(
+          value[head] as Record<string, unknown>,
+          tails,
+          observeFields,
+          apiConfig
+        )
       }
       return res
     },
@@ -108,7 +134,8 @@ function normalizeValue(value: Previewable | Id): Previewable {
 export function createPathObserver(observeFields: ObserveFieldsFn) {
   return (
     value: Previewable,
-    paths: (FieldName | Path)[]
+    paths: (FieldName | Path)[],
+    apiConfig?: ApiConfig
   ): Observable<Record<string, unknown> | null> =>
-    observePaths(normalizeValue(value), normalizePaths(paths), observeFields)
+    observePaths(normalizeValue(value), normalizePaths(paths), observeFields, apiConfig)
 }
