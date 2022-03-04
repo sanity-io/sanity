@@ -16,12 +16,13 @@ import pkg from '../../../package.json'
  * explicitly exclude certain modules from being upgraded.
  */
 const PACKAGES_TO_EXCLUDE = [
-  '@sanity/ui',
+  '@sanity/block-content-to-html',
+  '@sanity/block-content-to-react',
+  '@sanity/block-tools',
+  '@sanity/client',
   '@sanity/icons',
   '@sanity/logos',
-  '@sanity/block-content-to-react',
-  '@sanity/block-content-to-html',
-  '@sanity/block-tools',
+  '@sanity/ui',
 ]
 
 const defaultOptions = {
