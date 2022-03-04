@@ -86,7 +86,7 @@ export function CrossDatasetReferencePreview(props: {
   }, [previewMedia, dataset, projectId, refType?.icon])
 
   return (
-    <Flex align="center">
+    <Flex align="center" data-testid="preview">
       {availability.available ? (
         <Box flex={1} paddingX={2} paddingY={1}>
           <DefaultPreview
