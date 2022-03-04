@@ -38,6 +38,7 @@ const STANDARD_INPUT_TYPES = [
   'numbersTest',
   'objectsTest',
   'referenceTest',
+  'crossDatasetReferenceTest',
   'slugsTest',
   'stringsTest',
   'textsTest',
