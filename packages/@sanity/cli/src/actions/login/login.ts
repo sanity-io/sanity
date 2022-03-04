@@ -1,5 +1,4 @@
 import os from 'os'
-import urlParser from 'url'
 import crypto from 'crypto'
 import open from 'open'
 import chalk from 'chalk'
@@ -58,9 +57,9 @@ export async function login(
   const {secret, url} = await getAuthInfo(es)
 
   // Open a browser on the login page (or tell the user to)
-  const providerUrl = urlParser.parse(url, true)
-  providerUrl.query.label = `${os.hostname()} / ${os.platform()}`
-  const loginUrl = urlParser.format(providerUrl)
+  const providerUrl = new URL(url)
+  providerUrl.searchParams.set('label', `${os.hostname()} / ${os.platform()}`)
+  const loginUrl = providerUrl.href
 
   const shouldLaunchBrowser = canLaunchBrowser()
   const actionText = shouldLaunchBrowser ? 'Opening browser at' : 'Please open a browser at'
