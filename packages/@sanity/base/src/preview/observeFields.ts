@@ -22,7 +22,7 @@ import {
 import {difference, flatten} from 'lodash'
 import {versionedClient} from '../client/versionedClient'
 import {debounceCollect} from './utils/debounceCollect'
-import {combineSelections, reassemble, toGradientQuery} from './utils/optimizeQuery'
+import {combineSelections, reassemble, toQuery} from './utils/optimizeQuery'
 import {FieldName, Id, Path, Selection} from './types'
 import {INCLUDE_FIELDS} from './constants'
 import hasEqualFields from './utils/hasEqualFields'
@@ -81,7 +81,7 @@ function listen(id: Id) {
 function fetchAllDocumentPaths(selections: Selection[]) {
   const combinedSelections = combineSelections(selections)
   return versionedClient.observable
-    .fetch(toGradientQuery(combinedSelections), {}, {tag: 'preview.document-paths'})
+    .fetch(toQuery(combinedSelections), {}, {tag: 'preview.document-paths'})
     .pipe(map((result: any) => reassemble(result, combinedSelections)))
 }
 
