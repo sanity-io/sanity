@@ -40,6 +40,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
       contentRef: React.Ref<HTMLDivElement>
     ) => (
       <StyledPopover
+        data-testid="autocomplete-popover"
         placement="bottom-start"
         arrow={false}
         constrainSize
@@ -54,9 +55,6 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
                 <Flex align="center" height="fill" justify="center">
                   <StyledText align="center" muted>
                     No results for <strong>“{props.searchString}”</strong>
-                    {props.searchString?.toLowerCase() === 'capybara' ? (
-                      <>. What a shame. There should be more Capybaras.</>
-                    ) : null}
                   </StyledText>
                 </Flex>
               </Box>
