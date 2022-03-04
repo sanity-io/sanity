@@ -2,7 +2,7 @@ import {isTitledListValue, PreviewValue, SchemaType, TitledListValue} from '@san
 import {debounce, flatten, get, isPlainObject, pick, uniqBy} from 'lodash'
 import {INVALID_PREVIEW_FALLBACK} from '../constants'
 import {isPortableTextArray, extractTextFromBlocks} from '../utils/portableText'
-import type {PrepareViewOptions} from '../types'
+import type {PrepareViewOptions, PreviewableType} from '../types'
 import {keysOf} from './keysOf'
 
 const PRESERVE_KEYS = ['_id', '_type', '_upload', '_createdAt', '_updatedAt']
@@ -186,7 +186,7 @@ function defaultPrepare(value: SelectedValue) {
 }
 
 export function invokePrepare(
-  type: SchemaType,
+  type: PreviewableType,
   value: SelectedValue,
   viewOptions: PrepareViewOptions = {}
 ): PrepareInvocationResult {
@@ -242,7 +242,7 @@ function getListOptions(type: SchemaType): TitledListValue[] | undefined {
 
 export default function prepareForPreview(
   rawValue: unknown,
-  type: SchemaType,
+  type: PreviewableType,
   viewOptions: PrepareViewOptions = {}
 ): PreviewValue {
   const hasCustomPrepare = typeof type.preview?.prepare === 'function'
