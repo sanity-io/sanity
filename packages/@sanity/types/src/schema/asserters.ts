@@ -1,9 +1,9 @@
+import {CrossDatasetReferenceSchemaType} from '../crossDatasetReference'
 import {
   BlockSchemaType,
   ArraySchemaType,
   ObjectSchemaType,
   ReferenceSchemaType,
-  SchemaType,
   SpanSchemaType,
   TitledListValue,
   SpanChildrenObjectField,
@@ -25,10 +25,17 @@ export function isArraySchemaType(type: unknown): type is ArraySchemaType {
   return type.jsonType === 'array'
 }
 
-export function isReferenceSchemaType(
-  type: SchemaType | ReferenceSchemaType
-): type is ReferenceSchemaType {
-  return type.jsonType === 'object' && 'to' in type && Array.isArray(type.to)
+export function isReferenceSchemaType(type: unknown): type is ReferenceSchemaType {
+  return isRecord(type) && (type.name === 'reference' || isReferenceSchemaType(type.type))
+}
+
+export function isCrossDatasetReferenceSchemaType(
+  type: unknown
+): type is CrossDatasetReferenceSchemaType {
+  return (
+    isRecord(type) &&
+    (type.name === 'crossDatasetReference' || isCrossDatasetReferenceSchemaType(type.type))
+  )
 }
 
 export function isTitledListValue(item: unknown): item is TitledListValue {
