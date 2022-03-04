@@ -4,9 +4,11 @@ import {
   defer,
   EMPTY,
   from,
+  fromEvent,
   merge,
   Observable,
   of as observableOf,
+  timer,
 } from 'rxjs'
 import {
   distinctUntilChanged,
@@ -16,14 +18,16 @@ import {
   publishReplay,
   refCount,
   share,
+  startWith,
   switchMap,
   tap,
 } from 'rxjs/operators'
-import {difference, flatten} from 'lodash'
+import {difference, flatten, memoize} from 'lodash'
+import {SanityClient} from '@sanity/client'
 import {versionedClient} from '../client/versionedClient'
 import {debounceCollect} from './utils/debounceCollect'
 import {combineSelections, reassemble, toGradientQuery} from './utils/optimizeQuery'
-import {FieldName, Id, Path, Selection} from './types'
+import {ApiConfig, FieldName, Id, Path, Selection} from './types'
 import {INCLUDE_FIELDS} from './constants'
 import hasEqualFields from './utils/hasEqualFields'
 import isUniqueBy from './utils/isUniqueBy'
@@ -78,17 +82,19 @@ function listen(id: Id) {
   )
 }
 
-function fetchAllDocumentPaths(selections: Selection[]) {
-  const combinedSelections = combineSelections(selections)
-  return versionedClient.observable
-    .fetch(toGradientQuery(combinedSelections), {}, {tag: 'preview.document-paths'})
-    .pipe(map((result: any) => reassemble(result, combinedSelections)))
+function fetchAllDocumentPathsWith(client: SanityClient) {
+  return function fetchAllDocumentPath(selections: Selection[]) {
+    const combinedSelections = combineSelections(selections)
+    return client.observable
+      .fetch(toGradientQuery(combinedSelections), {}, {tag: 'preview.document-paths'})
+      .pipe(map((result: any) => reassemble(result, combinedSelections)))
+  }
 }
 
-const fetchDocumentPathsFast = debounceCollect(fetchAllDocumentPaths, 100)
-const fetchDocumentPathsSlow = debounceCollect(fetchAllDocumentPaths, 1000)
+const fetchDocumentPathsFast = debounceCollect(fetchAllDocumentPathsWith(versionedClient), 100)
+const fetchDocumentPathsSlow = debounceCollect(fetchAllDocumentPathsWith(versionedClient), 1000)
 
-function listenFields(id: Id, fields: Path[]) {
+function currentDatasetListenFields(id: Id, fields: Path[]) {
   return listen(id).pipe(
     switchMap((event: any) => {
       if (event.type === 'welcome' || event.visibility === 'query') {
@@ -127,11 +133,42 @@ type Cache = {
 }
 const CACHE: Cache = {} // todo: use a LRU cache instead (e.g. hashlru or quick-lru)
 
-function createCachedFieldObserver<T>(id, fields): CachedFieldObserver {
+const getBatchFetcherForDataset = memoize(
+  function getBatchFetcherForDataset(apiConfig: ApiConfig) {
+    // todo: get and use xdr token with client here
+    const client = versionedClient.withConfig(apiConfig)
+    const fetchAll = fetchAllDocumentPathsWith(client)
+    return debounceCollect(fetchAll, 10)
+  },
+  (apiConfig) => apiConfig.dataset + apiConfig.projectId
+)
+
+const CROSS_DATASET_PREVIEW_POLL_INTERVAL = 10000
+// We want to poll for changes in the other dataset, but only when window/tab is visible
+// This sets up a shared stream that emits an event every `POLL_INTERVAL` milliseconds as long as the
+// document is visible. It starts emitting immediately (if the page is visible)
+const visiblePoll$ = fromEvent(document, 'visibilitychange').pipe(
+  startWith(0),
+  map(() => document.visibilityState === 'visible'),
+  switchMap((visible) => (visible ? timer(0, CROSS_DATASET_PREVIEW_POLL_INTERVAL) : EMPTY)),
+  share()
+)
+
+function crossDatasetListenFields(id: Id, fields: Path[], apiConfig: ApiConfig) {
+  const batchFetcher = getBatchFetcherForDataset(apiConfig)
+  return visiblePoll$.pipe(
+    startWith(0),
+    switchMap(() => batchFetcher(id, fields))
+  )
+}
+
+function createCachedFieldObserver<T>(id, fields, apiConfig: ApiConfig): CachedFieldObserver {
   let latest: T | null = null
   const changes$ = merge<T | null>(
     defer(() => (latest === null ? EMPTY : observableOf(latest))),
-    listenFields(id, fields) as Observable<T>
+    (apiConfig
+      ? crossDatasetListenFields(id, fields, apiConfig)
+      : currentDatasetListenFields(id, fields)) as Observable<T>
   ).pipe(
     tap((v: T | null) => (latest = v)),
     publishReplay(1),
@@ -141,19 +178,23 @@ function createCachedFieldObserver<T>(id, fields): CachedFieldObserver {
   return {id, fields, changes$}
 }
 
-export default function cachedObserveFields(id: Id, fields: FieldName[]) {
-  if (!(id in CACHE)) {
-    CACHE[id] = []
+export default function cachedObserveFields(id: Id, fields: FieldName[], apiConfig?: ApiConfig) {
+  const cacheKey = apiConfig
+    ? `${apiConfig.projectId}:${apiConfig.dataset}:${id}`
+    : `$current$-${id}`
+
+  if (!(cacheKey in CACHE)) {
+    CACHE[cacheKey] = []
   }
 
-  const existingObservers = CACHE[id]
+  const existingObservers = CACHE[cacheKey]
   const missingFields = difference(
     fields,
     flatten(existingObservers.map((cachedFieldObserver) => cachedFieldObserver.fields))
   )
 
   if (missingFields.length > 0) {
-    existingObservers.push(createCachedFieldObserver(id, fields))
+    existingObservers.push(createCachedFieldObserver(id, fields, apiConfig))
   }
 
   const cachedFieldObservers = existingObservers
