@@ -1,5 +1,6 @@
 import arrify from 'arrify'
 import {capitalize, pick} from 'lodash'
+import {normalizeSearchConfigs} from '../searchConfig/normalize'
 import {lazyGetter} from './utils'
 import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
 
@@ -74,7 +75,13 @@ export const CrossDatasetReferenceType = {
     })
 
     lazyGetter(parsed, 'to', () => {
-      return arrify(subTypeDef.to)
+      return arrify(subTypeDef.to).map((toType) => {
+        return {
+          ...toType,
+          // eslint-disable-next-line camelcase
+          __experimental_search: normalizeSearchConfigs(toType.__experimental_search),
+        }
+      })
     })
 
     lazyGetter(parsed, 'title', () => subTypeDef.title || buildTitle(parsed))
