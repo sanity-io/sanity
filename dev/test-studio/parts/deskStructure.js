@@ -76,6 +76,7 @@ const DEBUG_INPUT_TYPES = [
   'thesis',
   'noTitleField',
   'poppers',
+  'circularCrossDatasetReferenceTest',
   'presence',
   'previewImageUrlTest',
   'previewMediaTest',

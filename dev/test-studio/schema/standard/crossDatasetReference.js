@@ -72,32 +72,6 @@ export default {
       ],
     },
     {
-      title:
-        'Reference to cross dataset reference document in the "playground" dataset in project "ppsg7ml5"',
-      name: 'crossDatasetReferenceInPlayground',
-      type: 'crossDatasetReference',
-      dataset: 'playground',
-      projectId: 'ppsg7ml5',
-      studioUrl: ({id, type}) => {
-        return type
-          ? `${document.location.protocol}//${document.location.host}/playground/desk/${type};${id}`
-          : null
-      },
-      to: [
-        {
-          type: 'crossDatasetReference',
-          // eslint-disable-next-line camelcase
-          __experimental_search: [{path: 'title', weight: 10}],
-          preview: {
-            select: {
-              title: 'title',
-              coverImage: 'coverImage',
-            },
-          },
-        },
-      ],
-    },
-    {
       title: 'Reference to book or author in the "playground" dataset in project "ppsg7ml5"',
       name: 'bookOrAuthorInPlayground',
       type: 'crossDatasetReference',
@@ -237,13 +211,22 @@ export default {
   ],
   preview: {
     select: {
-      title: 'bookOrAuthorInPlayground.name',
-      bff: 'bookOrAuthorInPlayground.bestFriend.name',
+      title: 'title',
+      authorRefName: 'bookOrAuthorInPlayground.name',
+      authorBff: 'bookOrAuthorInPlayground.bestFriend.name',
+      bookRefTitle: 'bookOrAuthorInPlayground.title',
     },
     prepare(values) {
       return {
         title: values.title,
-        subtitle: values.bff ? `Bff: ${values.bff}` : '',
+        subtitle: [
+          values.authorRefName
+            ? `Author: ${values.authorRefName} (${`Bff: ${values.authorBff || 'none'}`})`
+            : '',
+          values.bookRefTitle ? `Book title: ${values.bookRefTitle}` : '',
+        ]
+          .filter(Boolean)
+          .join(', '),
       }
     },
   },
