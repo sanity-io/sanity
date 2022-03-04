@@ -1,5 +1,5 @@
-import {defer, from, timer} from 'rxjs'
-import {map, mapTo, mergeMapTo, shareReplay} from 'rxjs/operators'
+import {defer, timer} from 'rxjs'
+import {map, mergeMapTo, shareReplay} from 'rxjs/operators'
 import {sample} from 'lodash'
 import {StateEvent} from './message-transports/transport'
 
@@ -24,6 +24,10 @@ const USERIDS = [
   'pdLr4quHv',
   'pkJXiDgg6',
   'pkl4UAKcA',
+
+  // Included to ensure we handle the case when a user profile cannot
+  // be fetched due to insufficient privileges or similar
+  'pNoExists',
 ]
 
 const PATHS = [

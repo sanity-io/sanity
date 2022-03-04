@@ -1,16 +1,4 @@
-import {
-  BehaviorSubject,
-  concat,
-  defer,
-  EMPTY,
-  from,
-  fromEvent,
-  merge,
-  NEVER,
-  Observable,
-  of,
-  timer,
-} from 'rxjs'
+import {BehaviorSubject, defer, EMPTY, from, fromEvent, merge, NEVER, Observable, timer} from 'rxjs'
 
 import {
   auditTime,
@@ -181,13 +169,14 @@ const allSessions$: Observable<UserSessionPair[]> = connectionChange$.pipe(
     const userIds = uniq(sessions.map((sess) => sess.userId))
     return from(userStore.getUsers(userIds)).pipe(
       map((users) =>
-        sessions.map(
-          (session): UserSessionPair => ({
+        sessions
+          .map((session) => ({
             // eslint-disable-next-line max-nested-callbacks
-            user: users.find((res) => res.id === session.userId) as User,
+            user: users.find((res) => res.id === session.userId),
             session: session,
-          })
-        )
+          }))
+          // If we failed to find a user profile for a session, remove it
+          .filter(userSessionPairHasUser)
       )
     )
   }),
@@ -196,6 +185,10 @@ const allSessions$: Observable<UserSessionPair[]> = connectionChange$.pipe(
   ),
   shareReplay({refCount: true, bufferSize: 1})
 )
+
+function userSessionPairHasUser(pair: Partial<UserSessionPair>): pair is UserSessionPair {
+  return Boolean(pair.user && pair.session)
+}
 
 export const globalPresence$: Observable<GlobalPresence[]> = allSessions$.pipe(
   map((sessions): {user: User; sessions: Session[]}[] => {
