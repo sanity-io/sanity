@@ -1,9 +1,4 @@
-import defaultInputs from './defaultInputs'
 import * as is from '../../utils/is'
-import resolveReferenceInput from './resolveReferenceInput'
-import resolveArrayInput from './resolveArrayInput'
-import resolveStringInput from './resolveStringInput'
-import resolveNumberInput from './resolveNumberInput'
 import {
   BooleanInput,
   DateTimeInput,
@@ -16,6 +11,12 @@ import {
   TextInput,
   UrlInput,
 } from '../../legacyParts'
+import SanityCrossDatasetReferenceInput from '../inputs/crossDatasetReference/SanityCrossDatasetReferenceInput'
+import defaultInputs from './defaultInputs'
+import resolveReferenceInput from './resolveReferenceInput'
+import resolveArrayInput from './resolveArrayInput'
+import resolveStringInput from './resolveStringInput'
+import resolveNumberInput from './resolveNumberInput'
 
 const CUSTOM_INPUT_MAP = {
   object: ObjectInput,
@@ -24,6 +25,7 @@ const CUSTOM_INPUT_MAP = {
   string: StringInput,
   text: TextInput,
   reference: ReferenceInput,
+  crossDatasetReference: SanityCrossDatasetReferenceInput,
   datetime: DateTimeInput,
   email: EmailInput,
   geopoint: GeoPointInput,
