@@ -58,6 +58,7 @@
   },
   "devDependencies": {
     "@sanity/base": "2.27.2",
+    "@sanity/schema": "2.27.0",
     "@sanity/ui-workshop": "^0.3.12",
     "@testing-library/jest-dom": "^5.11.10",
     "@testing-library/react": "^11.2.5",
