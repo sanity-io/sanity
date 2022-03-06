@@ -1,11 +1,16 @@
 import React, {memo, useMemo} from 'react'
+import schema from 'part:@sanity/base/schema'
 import {Pane} from '../../components/pane'
 import {useShallowUnique} from '../../utils/useShallowUnique'
 import {useUnique} from '../../utils/useUnique'
 import {useDeskToolSetting} from '../../settings'
 import {BaseDeskToolPaneProps} from '../types'
 import {DEFAULT_ORDERING, EMPTY_RECORD} from './constants'
-import {getTypeNameFromSingleTypeFilter, isSimpleTypeFilter} from './helpers'
+import {
+  applyOrderingFunctions,
+  getTypeNameFromSingleTypeFilter,
+  isSimpleTypeFilter,
+} from './helpers'
 import {DocumentListPaneContent} from './DocumentListPaneContent'
 import {DocumentListPaneHeader} from './DocumentListPaneHeader'
 import {Layout, SortOrder} from './types'
@@ -40,7 +45,13 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     'sortOrder',
     DEFAULT_ORDERING
   )
-  const sortOrder = useUnique(sortOrderRaw)
+
+  const sortWithOrderingFn =
+    typeName && sortOrderRaw
+      ? applyOrderingFunctions(sortOrderRaw, schema.get(typeName))
+      : sortOrderRaw
+
+  const sortOrder = useUnique(sortWithOrderingFn)
   const filterIsSimpleTypeContraint = isSimpleTypeFilter(filter)
 
   const {error, fullList, handleListChange, isLoading, items, onRetry} = useDocumentList({
