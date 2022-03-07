@@ -48,8 +48,14 @@ function exportDataset(opts) {
 
   debug('Outputting assets (temporarily) to %s', tmpDir)
   debug('Outputting to %s', options.outputPath === '-' ? 'stdout' : options.outputPath)
-  const outputStream =
-    options.outputPath === '-' ? process.stdout : fse.createWriteStream(options.outputPath)
+
+  let outputStream
+  if (isWritableStream(options.outputPath)) {
+    outputStream = options.outputPath
+  } else {
+    outputStream =
+      options.outputPath === '-' ? process.stdout : fse.createWriteStream(options.outputPath)
+  }
 
   let assetStreamHandler = assetHandler.noop
   if (!options.raw) {
@@ -193,6 +199,16 @@ function exportDataset(opts) {
       reject(err)
     }
   })
+}
+
+function isWritableStream(val) {
+  return (
+    val !== null &&
+    typeof val === 'object' &&
+    typeof val.pipe === 'function' &&
+    typeof val._write === 'function' &&
+    typeof val._writableState === 'object'
+  )
 }
 
 module.exports = exportDataset
