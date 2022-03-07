@@ -1,6 +1,3 @@
-/* eslint-disable max-statements, complexity */
-import fs from 'fs'
-import os from 'os'
 import path from 'path'
 import fse from 'fs-extra'
 import pFilter from 'p-filter'
@@ -19,8 +16,6 @@ import type {
   CliCommandArguments,
   CliCommandContext,
   CliCommandDefinition,
-  CliOutputter,
-  CliPrompter,
   SanityJson,
 } from '../../types'
 import {createProject} from '../project/createProject'
@@ -29,6 +24,9 @@ import {dynamicRequire} from '../../util/dynamicRequire'
 import {promptForDatasetName} from './promptForDatasetName'
 import bootstrapTemplate from './bootstrapTemplate'
 import templates from './templates'
+import {reconfigureV2Project} from './reconfigureV2Project'
+import {validateEmptyPath, absolutify} from './fsUtils'
+import {promptForAclMode, promptForDefaultConfig, promptImplicitReconfigure} from './prompts'
 
 /* eslint-disable no-process-env */
 const isCI = process.env.CI
@@ -96,7 +94,7 @@ export default async function initSanity(
   args: CliCommandArguments<InitProjectFlags>,
   context: CliCommandContext
 ): Promise<void> {
-  const {output, prompt, workDir, apiClient, yarn, chalk} = context
+  const {output, prompt, workDir, apiClient, yarn, chalk, sanityMajorVersion} = context
   const cliFlags = args.extOptions
   const unattended = cliFlags.y || cliFlags.yes
   const print = unattended ? noop : output.print
@@ -107,6 +105,11 @@ export default async function initSanity(
   let reconfigure = cliFlags.reconfigure
   let defaultConfig = cliFlags['dataset-default']
   let showDefaultConfigPrompt = !defaultConfig
+
+  if (sanityMajorVersion === 2) {
+    await reconfigureV2Project(args, context)
+    return
+  }
 
   // Only allow either --project-plan or --coupon
   if (intendedCoupon && intendedPlan) {
@@ -834,86 +837,6 @@ export default async function initSanity(
   function getOrganizationsWithAttachGrant(organizations: ProjectOrganization[]) {
     return pFilter(organizations, (org) => hasProjectAttachGrant(org.id), {concurrency: 3})
   }
-}
-
-function promptForDefaultConfig(prompt: CliPrompter): Promise<boolean> {
-  return prompt.single({
-    type: 'confirm',
-    message: 'Use the default dataset configuration?',
-    default: true,
-  })
-}
-
-function promptImplicitReconfigure(prompt: CliPrompter): Promise<boolean> {
-  return prompt.single({
-    type: 'confirm',
-    message:
-      'The current folder contains a configured Sanity studio. Would you like to reconfigure it?',
-    default: true,
-  })
-}
-
-function validateEmptyPath(dir: string): true | string {
-  const checkPath = absolutify(dir)
-  return pathIsEmpty(checkPath) ? true : 'Given path is not empty'
-}
-
-function pathIsEmpty(dir: string): boolean {
-  // We are using fs instead of fs-extra because it silently, weirdly, crashes on windows
-  try {
-    // eslint-disable-next-line no-sync
-    const content = fs.readdirSync(dir)
-    return content.length === 0
-  } catch (err) {
-    if (err.code === 'ENOENT') {
-      return true
-    }
-
-    throw err
-  }
-}
-
-function expandHome(filePath: string): string {
-  if (filePath.charCodeAt(0) === 126 /* ~ */) {
-    if (filePath.charCodeAt(1) === 43 /* + */) {
-      return path.join(process.cwd(), filePath.slice(2))
-    }
-
-    const home = os.homedir()
-    return home ? path.join(home, filePath.slice(1)) : filePath
-  }
-
-  return filePath
-}
-
-function absolutify(dir: string): string {
-  const pathName = expandHome(dir)
-  return path.isAbsolute(pathName) ? pathName : path.resolve(process.cwd(), pathName)
-}
-
-async function promptForAclMode(prompt: CliPrompter, output: CliOutputter): Promise<string> {
-  const mode = await prompt.single({
-    type: 'list',
-    message: 'Choose dataset visibility – this can be changed later',
-    choices: [
-      {
-        value: 'public',
-        name: 'Public (world readable)',
-      },
-      {
-        value: 'private',
-        name: 'Private (authenticated requests only)',
-      },
-    ],
-  })
-
-  if (mode === 'private') {
-    output.print(
-      'Please note that while documents are private, assets (files and images) are still public\n'
-    )
-  }
-
-  return mode
 }
 
 async function doDatasetImport(options: {
