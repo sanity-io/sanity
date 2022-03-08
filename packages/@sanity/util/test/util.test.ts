@@ -7,14 +7,16 @@ import {reduceConfig, getSanityVersions, pathTools} from '../src'
 test('merges env config', () => {
   const reduced = reduceConfig(
     {
-      foo: 'bar',
-      nested: {structure: true, onlyInOriginal: 'yes'},
+      root: false,
+      api: {
+        projectId: 'onlyInOriginal',
+        dataset: 'abc',
+      },
       env: {
         production: {
-          foo: 'baz',
-          nested: {
-            structure: false,
-            otherProp: 'yup',
+          root: true,
+          api: {
+            dataset: 'xyz',
           },
         },
       },
@@ -22,25 +24,15 @@ test('merges env config', () => {
     'production'
   )
 
-  expect(reduced.foo).toEqual('baz')
-  expect(reduced.nested.structure).toEqual(false)
-  expect(reduced.nested.onlyInOriginal).toEqual('yes')
-  expect(reduced.nested.otherProp).toEqual('yup')
-  expect(reduced.env).toEqual(undefined)
+  expect(reduced.root).toEqual(true)
+  expect(reduced.api.projectId).toEqual('onlyInOriginal')
+  expect(reduced.api.dataset).toEqual('xyz')
+  expect((reduced as any).env).toEqual(undefined)
 })
 
 test('does not crash if there is no env config specified', () => {
-  const reduced = reduceConfig(
-    {
-      foo: 'bar',
-      nested: {structure: true, onlyInOriginal: 'yes'},
-    },
-    'production'
-  )
-
-  expect(reduced.foo).toEqual('bar')
-  expect(reduced.nested.structure).toEqual(true)
-  expect(reduced.nested.onlyInOriginal).toEqual('yes')
+  const reduced = reduceConfig({root: true}, 'production')
+  expect(reduced.root).toEqual(true)
 })
 
 test('concats arrays', () => {
