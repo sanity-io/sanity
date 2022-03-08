@@ -13,7 +13,7 @@ export default (typeDef, visitorContext) => {
 
   let options = typeDef.options
   const metadata = options?.metadata
-  const superflousMeta = Array.isArray(metadata)
+  const superfluousMeta = Array.isArray(metadata)
     ? metadata.filter((meta) => autoMeta.includes(meta))
     : []
 
@@ -24,10 +24,10 @@ export default (typeDef, visitorContext) => {
         HELP_IDS.ASSET_METADATA_FIELD_INVALID
       )
     )
-  } else if (superflousMeta.length > 0) {
+  } else if (superfluousMeta.length > 0) {
     problems.push(
       warning(
-        `Image \`metadata\` field contains superflous properties (they are always included): ${superflousMeta.join(
+        `Image \`metadata\` field contains superfluous properties (they are always included): ${superfluousMeta.join(
           ', '
         )}`
       )
