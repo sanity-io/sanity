@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+/* eslint-disable import/no-dynamic-require, no-process-env */
 const path = require('path')
 const fs = require('fs')
 const depcheck = require('depcheck')
@@ -7,17 +7,16 @@ const chalk = require('chalk')
 
 const cwd = path.resolve(process.cwd(), process.argv[2] || '.')
 
-const MONOREPO_ROOT = process.env.LERNA_ROOT_PATH
+const MONOREPO_ROOT = process.env.LERNA_ROOT_PATH || path.resolve(__dirname, '..')
 
-// eslint-disable-next-line import/no-dynamic-require
 const rootPkg = require(`${MONOREPO_ROOT}/package.json`)
-// eslint-disable-next-line import/no-dynamic-require
 const package = require(`${cwd}/package.json`)
 
 const options = {
   ignoreMatches: [
     '@types/jest',
     '@types/webpack-env',
+    '@sanity/core', // Temporary, until we can make implicit cli/core dep work
     'ts-node',
     'config:*',
     'part:*',
@@ -124,7 +123,8 @@ function typeScriptReferencesDirective(node) {
   }
   return []
 }
-function sanityJSONParser(filePath, deps, dir) {
+
+function sanityJSONParser(filePath, deps) {
   const filename = path.basename(filePath)
   if (filename === 'sanity.json') {
     const sanityConfig = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
