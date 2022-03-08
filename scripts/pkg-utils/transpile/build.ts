@@ -40,6 +40,7 @@ export async function build(opts: {
 
   const files = await globby([
     path.resolve(SRC_PATH, '**/*.js'),
+    path.resolve(SRC_PATH, '**/*.jsx'),
     path.resolve(SRC_PATH, '**/*.ts'),
     path.resolve(SRC_PATH, '**/*.tsx'),
   ])
