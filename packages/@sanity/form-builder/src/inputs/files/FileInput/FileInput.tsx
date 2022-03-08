@@ -56,7 +56,6 @@ export type Props = {
   type: FileSchemaType
   level: number
   onChange: (event: PatchEvent) => void
-  resolveUploader: UploaderResolver
   observeAsset: (documentId: string) => Observable<FileAsset>
   onBlur: () => void
   onFocus: (path: Path) => void

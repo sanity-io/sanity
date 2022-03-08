@@ -60,10 +60,6 @@ interface InputState {
 class GeopointInput extends React.PureComponent<InputProps, InputState> {
   _geopointInputId = uniqueId('GeopointInput')
 
-  static defaultProps = {
-    markers: [],
-  }
-
   editButton: Focusable | undefined
 
   constructor(props) {
@@ -129,7 +125,7 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
   }
 
   render() {
-    const {value, compareValue, readOnly, type, markers, level, presence} = this.props
+    const {value, compareValue, readOnly, type, markers = [], level, presence} = this.props
     const {modalOpen} = this.state
 
     if (!config || !config.apiKey) {

@@ -10,8 +10,6 @@ interface Props {
   map: google.maps.Map
   onMove?: (event: google.maps.MapMouseEvent) => void
   onClick?: (event: google.maps.MapMouseEvent) => void
-  onMouseOver?: (event: google.maps.MapMouseEvent) => void
-  onMouseOut?: (event: google.maps.MapMouseEvent) => void
   position: LatLng | google.maps.LatLng
   zIndex?: number
   opacity?: number

@@ -4,7 +4,6 @@ import exif from 'exif-component'
 
 function readFileAsArrayBuffer(file: File, length: number) {
   return new Observable((observer) => {
-    /* global window */
     const reader = new window.FileReader()
     reader.onerror = (err) => observer.error(err)
     reader.onload = () => {
@@ -21,7 +20,7 @@ const SKIP_EXIF_ERROR_RE = /(invalid image format)|(No exif data)/i
 // 128k should be enough for exif data according to https://github.com/mattiasw/ExifReader#tips
 const EXIF_BUFFER_LENGTH = 128000
 
-export default function readExif(file: File) {
+export default function readExif(file: File): Observable<{[key: string]: unknown}> {
   return observableFrom(readFileAsArrayBuffer(file, EXIF_BUFFER_LENGTH)).pipe(
     map((buf) => exif(buf)),
     catchError((error) => {

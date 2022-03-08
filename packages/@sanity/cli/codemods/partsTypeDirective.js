@@ -36,8 +36,8 @@ const partMatcher = /^(all:)?part:[@A-Za-z0-9_-]+\/[A-Za-z0-9_/-]+/
 const configMatcher = /^config:(@?[A-Za-z0-9_-]+\/[A-Za-z0-9_-]+|[A-Za-z0-9_-]+)$/
 const sanityMatcher = /^sanity:/
 
-const isSanityPart = (path) =>
-  [partMatcher, configMatcher, sanityMatcher].some((match) => match.test(path))
+const isSanityPart = (importPath) =>
+  [partMatcher, configMatcher, sanityMatcher].some((match) => match.test(importPath))
 
 const isSanityTypesReferenceDirective = (node) =>
   node.type === 'CommentLine' &&

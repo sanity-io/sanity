@@ -43,7 +43,7 @@ export interface ProblemType {
   _problems: Problem[]
 }
 
-export interface Problem {}
+export type Problem = ValidationResult
 
 export interface TypeWithProblems {
   path: any[]

@@ -32,8 +32,6 @@ export function validateTypeName(typeName: string, visitorContext) {
   if (!isValid) {
     const suggestions = possibleTypeNames
       .map((possibleTypeName) => {
-        if (!possibleTypeName || !typeName) {
-        }
         return [leven(typeName, possibleTypeName), possibleTypeName]
       })
       .filter(([distance]) => distance < 3)
