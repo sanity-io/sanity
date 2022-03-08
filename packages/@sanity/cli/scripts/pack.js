@@ -27,8 +27,8 @@ if (bindings.length > 0) {
   process.exit(1)
 }
 
-const opnDir = path.dirname(require.resolve('opn'))
-const xdgPath = path.join(opnDir, 'xdg-open')
+const openDir = path.dirname(require.resolve('open'))
+const xdgPath = path.join(openDir, 'xdg-open')
 fse.copy(xdgPath, path.join(basedir, 'bin', 'xdg-open'))
 
 const babelRc = JSON.parse(fse.readFileSync(path.join(basedir, '.babelrc'), 'utf8'))
