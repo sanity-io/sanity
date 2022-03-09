@@ -8,7 +8,7 @@ import {BooleanSchemaType} from '@sanity/types'
 import {ChangeIndicator, FormFieldHeaderText, FormFieldStatus} from '@sanity/base/components'
 import {FieldPresence} from '@sanity/base/presence'
 import PatchEvent, {set} from '../PatchEvent'
-import {Props} from './types'
+import {FormInputProps} from '../types'
 
 const CenterAlignedBox = styled(Box)`
   align-self: center;
@@ -19,7 +19,7 @@ const ZeroLineHeightBox = styled(Box)`
 `
 
 const BooleanInput = React.forwardRef(function BooleanInput(
-  props: Props<boolean, BooleanSchemaType>,
+  props: FormInputProps<boolean, BooleanSchemaType>,
   ref: React.ForwardedRef<HTMLInputElement>
 ) {
   const {onChange} = props

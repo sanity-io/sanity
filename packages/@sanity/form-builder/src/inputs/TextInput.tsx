@@ -5,7 +5,7 @@ import {TextSchemaType} from '@sanity/types'
 import {TextArea} from '@sanity/ui'
 import styled from 'styled-components'
 import PatchEvent, {set, unset} from '../PatchEvent'
-import {Props} from './types'
+import {FormInputProps} from '../types'
 
 const StyledTextArea = styled(TextArea)`
   &[data-as='textarea'] {
@@ -14,7 +14,7 @@ const StyledTextArea = styled(TextArea)`
 `
 
 const TextInput = React.forwardRef(function TextInput(
-  props: Props<string, TextSchemaType>,
+  props: FormInputProps<string, TextSchemaType>,
   forwardedRef: ForwardedRef<HTMLTextAreaElement>
 ) {
   const {value, markers, type, readOnly, level, onFocus, onBlur, onChange, presence} = props

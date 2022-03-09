@@ -8,10 +8,9 @@ import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/presence
 import {useConditionalReadOnly} from '@sanity/base/_internal'
 import PatchEvent from './PatchEvent'
 import {emptyArray} from './utils/empty'
-import {Props as InputProps} from './inputs/types'
+import {FormInputProps as InputProps, FormBuilderFilterFieldFn} from './types'
 import {ConditionalReadOnlyField} from './inputs/common'
 import {useFormBuilder} from './useFormBuilder'
-import {FormBuilderFilterFieldFn} from './types'
 import {FormBuilderContextValue} from './FormBuilderContext'
 
 const EMPTY_MARKERS: Marker[] = emptyArray()

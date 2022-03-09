@@ -5,7 +5,7 @@ import {isTitledListValue, TitledListValue} from '@sanity/types'
 import {Inline, Stack, Card, Text, Select, Flex, Radio, Box} from '@sanity/ui'
 import {FormField} from '@sanity/base/components'
 import PatchEvent, {set, unset} from '../PatchEvent'
-import {Props} from './types'
+import {FormInputProps} from '../types'
 
 function toSelectItem(
   option: TitledListValue<string | number> | string | number
@@ -16,7 +16,7 @@ function toSelectItem(
 const EMPTY_ITEM = {title: '', value: undefined}
 
 const SelectInput = React.forwardRef(function SelectInput(
-  props: Props<string | number>,
+  props: FormInputProps<string | number>,
   forwardedRef: React.ForwardedRef<HTMLSelectElement | HTMLInputElement>
 ) {
   const {value, readOnly, markers, type, level, onChange, onFocus, presence} = props

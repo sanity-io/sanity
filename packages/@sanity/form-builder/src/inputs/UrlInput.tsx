@@ -5,10 +5,10 @@ import {useId} from '@reach/auto-id'
 import {FormField} from '@sanity/base/components'
 import PatchEvent, {set, unset} from '../PatchEvent'
 import {getValidationRule} from '../utils/getValidationRule'
-import {Props} from './types'
+import {FormInputProps} from '../types'
 
 const UrlInput = React.forwardRef(function UrlInput(
-  props: Props<string, StringSchemaType>,
+  props: FormInputProps<string, StringSchemaType>,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
   const {value, readOnly, type, markers, level, onFocus, onBlur, onChange, presence} = props

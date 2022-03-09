@@ -4,7 +4,7 @@ import {FormFieldPresence} from '@sanity/base/presence'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {ArrayMember, InsertEvent, ReferenceItemComponentType} from '../types'
 import PatchEvent from '../../../../PatchEvent'
-import {Props as InputProps} from '../../../types'
+import {FormInputProps as InputProps} from '../../../../types'
 
 type Props = {
   type: SchemaType

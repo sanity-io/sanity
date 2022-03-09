@@ -5,7 +5,7 @@ import OptionsArray from '../../inputs/arrays/OptionsArrayInput'
 import {PortableTextInput} from '../../inputs/PortableText/PortableTextInput'
 import {TagsArrayInput} from '../../inputs/TagsArrayInput'
 import {SanityArrayInput, SanityArrayOfPrimitivesInput} from '../inputs/SanityArrayInput'
-import {Props} from '../../inputs/types'
+import {FormInputProps} from '../../types'
 
 const PRIMITIVES = ['string', 'number', 'boolean']
 
@@ -30,7 +30,7 @@ export function hasOptionsList(type: ArraySchemaType): boolean {
   return Boolean(type.options?.list)
 }
 
-export default function resolveArrayInput(type: ArraySchemaType): ComponentType<Props> {
+export default function resolveArrayInput(type: ArraySchemaType): ComponentType<FormInputProps> {
   // Schema provides predefines list
   if (hasOptionsList(type)) {
     // @todo: fix typing
