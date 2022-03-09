@@ -25,10 +25,14 @@ import {Compositor} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {VisibleOnFocusButton} from './VisibleOnFocusButton'
 
-// An outer React PureComponent Class purely to satisfy the form-builder's need for 'blur' and 'focus' class methods.
+/**
+ * An outer React PureComponent Class purely to satisfy the form-builder's need for 'blur' and 'focus' class methods.
+ *
+ * @alpha
+ */
 export const PortableTextInput = withPatchSubscriber(
   class PortableTextInput extends React.PureComponent<
-    PortableTextInputProps & {children: React.ReactNode}
+    PortableTextInputProps & {children: React.ReactNode; subscribe: PatchSubscribe}
   > {
     editorRef: React.RefObject<PortableTextEditor> = React.createRef()
     focus() {
@@ -86,13 +90,12 @@ export type PortableTextInputProps = {
   renderBlockActions?: RenderBlockActions
   renderCustomMarkers?: RenderCustomMarkers
   presence: FormFieldPresence[]
-  subscribe: PatchSubscribe
   type: Type
   value: PortableTextBlock[] | undefined
 }
 
 const PortableTextInputController = React.forwardRef(function PortableTextInputController(
-  props: Omit<PortableTextInputProps, 'level'>,
+  props: Omit<PortableTextInputProps, 'level'> & {subscribe: PatchSubscribe},
   ref: React.RefObject<PortableTextEditor>
 ) {
   const {
