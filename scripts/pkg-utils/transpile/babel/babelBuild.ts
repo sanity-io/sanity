@@ -20,7 +20,7 @@ export async function babelBuild(opts: {
   const babelConfig = getBabelConfig({format})
 
   const transpiled: Array<BabelFileResult | null> = await Promise.all(
-    files.map((file): Promise<BabelFileResult | null> => _handleFile(file, {babelConfig}))
+    files.map((file): Promise<BabelFileResult | null> => _handleFile(file, {babelConfig, format}))
   )
 
   const outputs = await Promise.all(
@@ -32,14 +32,16 @@ export async function babelBuild(opts: {
 
 function _handleFile(
   file: string,
-  opts: {babelConfig: TransformOptions}
+  opts: {babelConfig: TransformOptions; format: ModuleFormat}
 ): Promise<BabelFileResult | null> {
+  const supportsStaticESM = opts.format === 'esm' || opts.format === 'module'
   return transformFileAsync(file, {
     babelrc: false,
     ...opts.babelConfig,
     caller: {
       name: 'sanity-pkg-utils',
-      supportsStaticESM: false,
+      supportsStaticESM,
+      supportsDynamicImport: supportsStaticESM,
     },
   })
 }
