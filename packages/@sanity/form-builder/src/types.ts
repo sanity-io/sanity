@@ -13,10 +13,16 @@ import {
 } from '@sanity/types'
 import PatchEvent from './PatchEvent'
 
+/**
+ * @alpha
+ */
 export interface FormBuilderFilterFieldFn {
   (type: ObjectSchemaTypeWithOptions, field: ObjectField, selectedLanguageIds: string[]): boolean
 }
 
+/**
+ * @alpha
+ */
 export type FormInputProps<
   T = any,
   S = T extends Array<any>
@@ -31,6 +37,8 @@ export type FormInputProps<
     ? ObjectSchemaType
     : SchemaType
 > = {
+  compareValue: T | null | undefined
+  focusPath: Path
   level: number
   markers: Marker[]
   onBlur?: () => void
@@ -43,6 +51,8 @@ export type FormInputProps<
   // element's onFocus handler, but use Path consistently on internal inputs
   onFocus: (pathOrEvent?: Path | React.FocusEvent<any>) => void
   presence: FormFieldPresence[]
+  // @todo: should the `readOnly` use the `ConditionalProperty` type?
+  // readOnly?: ConditionalProperty
   readOnly?: boolean
   type: S
   value: T | null | undefined

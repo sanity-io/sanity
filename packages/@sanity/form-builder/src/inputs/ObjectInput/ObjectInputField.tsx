@@ -1,44 +1,30 @@
 import React, {ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
 import {FormFieldSet} from '@sanity/base/components'
 import {resolveTypeName} from '@sanity/util/content'
-import {FormFieldPresence} from '@sanity/base/presence'
 import {useConditionalReadOnly} from '@sanity/base/_internal'
-import {
-  ConditionalProperty,
-  Marker,
-  ObjectFieldType,
-  ObjectSchemaTypeWithOptions,
-  Path,
-  SchemaType,
-} from '@sanity/types'
+import {ObjectFieldType, ObjectSchemaTypeWithOptions, SchemaType} from '@sanity/types'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import {InvalidValueInput} from '../InvalidValueInput'
 import PatchEvent from '../../PatchEvent'
 import {ConditionalHiddenField} from '../common/ConditionalHiddenField'
+import {FormInputProps} from '../../types'
 
 interface FieldType {
   name: string
   type: ObjectFieldType
 }
-interface FieldProps {
+
+export interface ObjectInputFieldProps extends Omit<FormInputProps<unknown>, 'onChange' | 'type'> {
   field: FieldType
   parent: Record<string, unknown> | undefined
-  value: unknown
-  compareValue: unknown
   onChange: (event: PatchEvent, field: FieldType) => void
-  onFocus: (path: Path) => void
-  onBlur: () => void
-  focusPath?: Path
   filterField?: (type: ObjectSchemaTypeWithOptions) => boolean
-  readOnly?: ConditionalProperty
-  markers?: Marker[]
-  level: number
-  presence?: FormFieldPresence[]
 }
+
 // This component renders a single type in an object type. It emits onChange events telling the owner about the name of the type
 // that changed. This gives the owner an opportunity to use the same event handler function for all of its fields
 export const ObjectInputField = forwardRef(function ObjectInputField(
-  props: FieldProps,
+  props: ObjectInputFieldProps,
   forwardedRef: ForwardedRef<any>
 ) {
   const {

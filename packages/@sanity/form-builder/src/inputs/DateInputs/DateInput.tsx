@@ -1,34 +1,26 @@
 import React, {useCallback} from 'react'
 import {format, parse} from '@sanity/util/legacyDateFormat'
+import {StringSchemaType} from '@sanity/types'
 import PatchEvent, {set, unset} from '../../PatchEvent'
-
+import {FormInputProps} from '../../types'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
-import {CommonProps} from './types'
 
-type ParsedOptions = {
+interface ParsedOptions {
   dateFormat: string
   calendarTodayLabel: string
 }
-type SchemaOptions = {
+
+interface SchemaOptions {
   dateFormat?: string
   calendarTodayLabel?: string
 }
+
+export type DateInputProps = FormInputProps<string, StringSchemaType>
 
 // This is the format dates are stored on
 const VALUE_FORMAT = 'YYYY-MM-DD'
 // default to how they are stored
 const DEFAULT_DATE_FORMAT = VALUE_FORMAT
-
-export type Props = CommonProps & {
-  onChange: (event: PatchEvent) => void
-  type: {
-    name: string
-    title: string
-    description?: string
-    options?: SchemaOptions
-    placeholder?: string
-  }
-}
 
 function parseOptions(options: SchemaOptions = {}): ParsedOptions {
   return {
@@ -41,10 +33,10 @@ const deserialize = (value: string) => parse(value, VALUE_FORMAT)
 const serialize = (date: Date) => format(date, VALUE_FORMAT)
 
 export const DateInput = React.forwardRef(function DateInput(
-  props: Props,
+  props: DateInputProps,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
-  const {type, onChange, ...rest} = props
+  const {type, onChange, ...restProps} = props
   const {title, description, placeholder} = type
 
   const {dateFormat} = parseOptions(type.options)
@@ -64,7 +56,7 @@ export const DateInput = React.forwardRef(function DateInput(
 
   return (
     <CommonDateTimeInput
-      {...rest}
+      {...restProps}
       onChange={handleChange}
       ref={forwardedRef}
       selectTime={false}

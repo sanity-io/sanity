@@ -1,37 +1,31 @@
 import React, {useCallback} from 'react'
 import {getMinutes, setMinutes, parseISO} from 'date-fns'
-
 import {format, parse} from '@sanity/util/legacyDateFormat'
+import {StringSchemaType} from '@sanity/types'
 import PatchEvent, {set, unset} from '../../PatchEvent'
+import {FormInputProps} from '../../types'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
-import {CommonProps, ParseResult} from './types'
+import {ParseResult} from './types'
 import {isValidDate} from './utils'
 
-type ParsedOptions = {
+interface ParsedOptions {
   dateFormat: string
   timeFormat: string
   timeStep: number
   calendarTodayLabel: string
 }
-type SchemaOptions = {
+
+interface SchemaOptions {
   dateFormat?: string
   timeFormat?: string
   timeStep?: number
   calendarTodayLabel?: string
 }
+
+export type DateTimeInputProps = FormInputProps<string, StringSchemaType>
+
 const DEFAULT_DATE_FORMAT = 'YYYY-MM-DD'
 const DEFAULT_TIME_FORMAT = 'HH:mm'
-
-export type Props = CommonProps & {
-  onChange: (event: PatchEvent) => void
-  type: {
-    name: string
-    title: string
-    description?: string
-    options?: SchemaOptions
-    placeholder?: string
-  }
-}
 
 function parseOptions(options: SchemaOptions = {}): ParsedOptions {
   return {
@@ -71,7 +65,7 @@ function enforceTimeStep(dateString: string, timeStep: number) {
 }
 
 export const DateTimeInput = React.forwardRef(function DateTimeInput(
-  props: Props,
+  props: DateTimeInputProps,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
   const {type, onChange, ...rest} = props

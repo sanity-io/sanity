@@ -23,12 +23,20 @@ import {EMPTY_ARRAY} from '../../utils/empty'
 import {ConditionalReadOnlyField} from '../common/conditionalReadOnly'
 import {useReviewChanges} from '../../sanity/contexts'
 import {isTrueIsh, omitDeprecatedRole} from '../../utils/common'
+import {FormInputProps} from '../../types'
 import {ObjectInputField} from './ObjectInputField'
 import {UnknownFields} from './UnknownFields'
 import {ObjectFieldSet} from './ObjectFieldSet'
 import {getCollapsedWithDefaults} from './utils'
 import {FieldGroupTabs} from './fieldGroups'
 import {FieldGroupTabsWrapper} from './ObjectInput.styled'
+
+export interface ObjectInputProps
+  extends FormInputProps<Record<string, unknown>, ObjectSchemaTypeWithOptions> {
+  isRoot?: boolean
+  // @todo find the right typing
+  filterField?: (...args: any[]) => any
+}
 
 const EMPTY_MARKERS: Marker[] = EMPTY_ARRAY
 const EMPTY_PRESENCE: FormFieldPresence[] = EMPTY_ARRAY
@@ -41,22 +49,6 @@ function isSingleFieldset(fieldset: Fieldset): fieldset is SingleFieldSet {
 
 function isRecord(obj: unknown): obj is Record<string, unknown> {
   return typeof obj === 'object' && obj !== null && !Array.isArray(obj)
-}
-
-export interface Props {
-  type: ObjectSchemaTypeWithOptions
-  value?: Record<string, unknown>
-  compareValue?: Record<string, unknown>
-  onChange?: (event: PatchEvent) => void
-  onFocus: (path: Path) => void
-  onBlur: () => void
-  focusPath?: Path
-  markers?: Marker[]
-  level?: number
-  readOnly?: ConditionalProperty
-  isRoot?: boolean
-  filterField?: (...args: any[]) => any
-  presence: FormFieldPresence[]
 }
 
 const DEFAULT_FILTER_FIELD = () => true
@@ -72,7 +64,10 @@ const DEFAULT_FILTER_FIELD = () => true
 // disable eslint false positive
 // eslint-disable-next-line react/display-name
 export const ObjectInput = memo(
-  forwardRef(function ObjectInput(props: Props, forwardedRef: ForwardedRef<HTMLDivElement>) {
+  forwardRef(function ObjectInput(
+    props: ObjectInputProps,
+    forwardedRef: ForwardedRef<HTMLDivElement>
+  ) {
     const {
       type,
       presence = EMPTY_PRESENCE,

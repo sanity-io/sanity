@@ -1,7 +1,5 @@
 import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
-
 import {
-  Marker,
   Path,
   Reference,
   ReferenceFilterSearchOptions,
@@ -11,17 +9,16 @@ import {
 } from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 import {get} from '@sanity/util/paths'
-import {FormFieldPresence} from '@sanity/base/presence'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 import {useClient, useDatastores, useSource} from '@sanity/base'
 import withValuePath from '../../../utils/withValuePath'
 import withDocument from '../../../utils/withDocument'
 import {useReferenceInputOptions} from '../../contexts/ReferenceInputOptions'
-import PatchEvent from '../../../PatchEvent'
 import * as adapter from '../client-adapters/reference'
 import {ReferenceInput} from '../../../inputs/ReferenceInput/ReferenceInput'
 import {EditReferenceEvent} from '../../../inputs/ReferenceInput/types'
+import {FormInputProps} from '../../../types'
 
 // eslint-disable-next-line require-await
 async function resolveUserDefinedFilter(
@@ -45,22 +42,11 @@ async function resolveUserDefinedFilter(
   }
 }
 
-export type Props = {
-  value?: Reference
-  compareValue?: Reference
-  type: ReferenceSchemaType
-  markers: Marker[]
-  focusPath: Path
-  readOnly?: boolean
-  onFocus: (path: Path) => void
-  onChange: (event: PatchEvent) => void
-  level: number
-  presence: FormFieldPresence[]
-
-  // From withDocument
+export interface SanityReferenceInputProps extends FormInputProps<Reference, ReferenceSchemaType> {
+  // From `withDocument`
   document: SanityDocument
 
-  // From withValuePath
+  // From `withValuePath`
   getValuePath: () => Path
 }
 
@@ -79,7 +65,7 @@ type SearchError = {
 }
 
 const SanityReferenceInput = forwardRef(function SanityReferenceInput(
-  props: Props,
+  props: SanityReferenceInputProps,
   ref: ForwardedRef<HTMLInputElement>
 ) {
   const {schema} = useSource()

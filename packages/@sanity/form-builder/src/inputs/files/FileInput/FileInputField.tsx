@@ -1,25 +1,15 @@
 import React from 'react'
 import * as PathUtils from '@sanity/util/paths'
-import {FormFieldPresence} from '@sanity/base/presence'
-import {ConditionalProperty, Marker, ObjectField, Path} from '@sanity/types'
+import {ConditionalProperty, ObjectField} from '@sanity/types'
 import PatchEvent from '../../../PatchEvent'
 import {FormBuilderInput} from '../../../FormBuilderInput'
 import {ConditionalHiddenField, ConditionalReadOnlyField} from '../../common'
+import {FormInputProps} from '../../../types'
 
-interface FileInputFieldProps {
+export interface FileInputFieldProps extends Omit<FormInputProps<unknown>, 'readOnly' | 'type'> {
   field: ObjectField
-  onChange: (event: PatchEvent) => void
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  value: unknown
   parentValue: Record<string, unknown>
-  onBlur: () => void
-  onFocus: (path: Path) => void
   readOnly: ConditionalProperty
-  focusPath: Path
-  compareValue: any
-  markers: Marker[]
-  level: number
-  presence: FormFieldPresence[]
 }
 
 export function FileInputField(props: FileInputFieldProps) {

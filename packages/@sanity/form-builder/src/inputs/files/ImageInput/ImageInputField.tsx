@@ -1,25 +1,14 @@
 import React from 'react'
 import * as PathUtils from '@sanity/util/paths'
-import {ConditionalProperty, Marker, ObjectField, Path} from '@sanity/types'
-import {FormFieldPresence} from '@sanity/base/presence'
+import {ObjectField} from '@sanity/types'
 import PatchEvent from '../../../PatchEvent'
 import {FormBuilderInput} from '../../../FormBuilderInput'
 import {ConditionalHiddenField, ConditionalReadOnlyField} from '../../common'
+import {FormInputProps} from '../../../types'
 
-interface ImageInputFieldProps {
+interface ImageInputFieldProps extends Omit<FormInputProps<unknown>, 'type'> {
   field: ObjectField
-  onChange: (event: PatchEvent) => void
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  value: any
   parentValue: Record<string, unknown>
-  onBlur: () => void
-  onFocus: (path: Path) => void
-  readOnly?: ConditionalProperty
-  focusPath: Path
-  compareValue: any
-  markers: Marker[]
-  level: number
-  presence: FormFieldPresence[]
 }
 
 export function ImageInputField(props: ImageInputFieldProps) {

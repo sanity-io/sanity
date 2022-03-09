@@ -1,9 +1,8 @@
 import {Observable} from 'rxjs'
 import React, {ReactNode} from 'react'
-import {Marker, Path, PreviewValue, Reference, ReferenceSchemaType} from '@sanity/types'
+import {PreviewValue, Reference, ReferenceSchemaType} from '@sanity/types'
 import {DocumentAvailability} from '@sanity/base/_internal'
-import {FormFieldPresence} from '@sanity/base/presence'
-import PatchEvent from '../../PatchEvent'
+import {FormInputProps} from '../../types'
 
 export interface ReferenceInfo {
   id: string
@@ -62,24 +61,15 @@ export interface SearchHit {
   published?: {_id: string; _type: string}
 }
 
-export interface BaseInputProps {
-  type: ReferenceSchemaType
-  markers: Marker[]
+export interface ReferenceInputProps<Value = Reference>
+  extends FormInputProps<Value, ReferenceSchemaType> {
   id?: string
   suffix?: ReactNode
-  focusPath: Path
-  readOnly?: boolean
   liveEdit: boolean
   onSearch: SearchFunction
-  compareValue?: Reference
-  onFocus?: (path: Path) => void
-  onBlur?: () => void
   selectedState?: 'selected' | 'pressed' | 'none'
   createOptions: CreateOption[]
   editReferenceLinkComponent: React.ComponentType<{documentId: string; documentType: string}>
   onEditReference: (event: EditReferenceEvent) => void
   getReferenceInfo: (id: string, type: ReferenceSchemaType) => Observable<ReferenceInfo>
-  onChange: (event: PatchEvent) => void
-  level: number
-  presence: FormFieldPresence[]
 }

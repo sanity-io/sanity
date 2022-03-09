@@ -1,19 +1,18 @@
 import React, {ForwardedRef, forwardRef, useCallback, useEffect, useState} from 'react'
 import {FormField, ChangeIndicatorForFieldPath} from '@sanity/base/components'
-import {ImageCrop, ImageHotspot, ImageSchemaType, Path} from '@sanity/types'
+import {ImageCrop, ImageHotspot, ImageSchemaType} from '@sanity/types'
 import {ImageTool} from '@sanity/imagetool'
 import {HotspotImage} from '@sanity/imagetool/HotspotImage'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from '@sanity/imagetool/constants'
-
 import {Box, Card, Flex, Text, Grid, Heading, useForwardedRef} from '@sanity/ui'
 import styled from 'styled-components'
 import shallowEquals from 'shallow-equals'
-import {FormFieldPresence} from '@sanity/base/presence'
 import PatchEvent, {set} from '../../../PatchEvent'
 import {Checkerboard} from '../../../components/Checkerboard'
 import {withFocusRing} from '../../../components/withFocusRing'
 import {RatioBox} from '../common/RatioBox'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
+import {FormInputProps} from '../../../types'
 import {useLoadImage} from './useLoadImage'
 
 interface Value {
@@ -21,17 +20,9 @@ interface Value {
   crop?: ImageCrop
 }
 
-interface ImageToolInputProps {
+export interface ImageToolInputProps
+  extends Omit<FormInputProps<Value, ImageSchemaType>, 'markers'> {
   imageUrl: string
-  value?: Value
-  compareValue?: Value
-  onChange: (event: PatchEvent) => void
-  readOnly: boolean | null
-  focusPath: Path
-  presence?: FormFieldPresence[]
-  onFocus: (nextPath: Path) => void
-  level: number
-  type: ImageSchemaType
 }
 
 const HOTSPOT_PATH = ['hotspot']

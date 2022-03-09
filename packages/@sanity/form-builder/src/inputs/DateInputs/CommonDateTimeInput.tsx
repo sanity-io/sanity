@@ -1,13 +1,15 @@
 /* eslint-disable no-nested-ternary */
 import React, {useEffect} from 'react'
 import {FormField} from '@sanity/base/components'
-import {Marker} from '@sanity/types'
+import {Marker, StringSchemaType} from '@sanity/types'
 import {useId} from '@reach/auto-id'
 import {useForwardedRef, TextInput} from '@sanity/ui'
+import {FormInputProps} from '../../types'
 import {DateTimeInput} from './base/DateTimeInput'
-import {CommonProps, ParseResult} from './types'
+import {ParseResult} from './types'
 
-type Props = CommonProps & {
+export interface CommonDateTimeInputProps
+  extends Omit<FormInputProps<string, StringSchemaType>, 'onChange' | 'type'> {
   title: string
   description?: string
   parseInputValue: (inputValue: string) => ParseResult
@@ -23,7 +25,7 @@ type Props = CommonProps & {
 const DEFAULT_PLACEHOLDER_TIME = new Date()
 
 export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput(
-  props: Props,
+  props: CommonDateTimeInputProps,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
   const {

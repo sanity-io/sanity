@@ -7,8 +7,11 @@ import PatchEvent, {set, unset} from '../PatchEvent'
 import {getValidationRule} from '../utils/getValidationRule'
 import {FormInputProps} from '../types'
 
+export type UrlInputProps = FormInputProps<string, StringSchemaType>
+
+// @todo Rename to `URLInput`?
 const UrlInput = React.forwardRef(function UrlInput(
-  props: FormInputProps<string, StringSchemaType>,
+  props: UrlInputProps,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
   const {value, readOnly, type, markers, level, onFocus, onBlur, onChange, presence} = props

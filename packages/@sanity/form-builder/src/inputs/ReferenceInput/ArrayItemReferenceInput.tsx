@@ -43,17 +43,15 @@ import {
   IntentLink,
   PreviewCard,
 } from '@sanity/base/components'
-import {FieldPresence, GlobalPresence} from '@sanity/base/presence'
+import {FieldPresence} from '@sanity/base/presence'
 import {getPublishedId} from '@sanity/base/_internal'
 import {useObservableCallback} from 'react-rx'
 import {uuid} from '@sanity/uuid'
 import {useId} from '@reach/auto-id'
 import styled from 'styled-components'
-
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
-
 import {isNonNullable} from '../../utils/isNonNullable'
 import {AlertStrip} from '../../AlertStrip'
 import {RowWrapper} from '../arrays/ArrayOfObjectsInput/item/components/RowWrapper'
@@ -62,7 +60,7 @@ import {InsertEvent} from '../arrays/ArrayOfObjectsInput/types'
 import randomKey from '../arrays/common/randomKey'
 import {InsertMenu} from '../arrays/ArrayOfObjectsInput/InsertMenu'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
-import {BaseInputProps, CreateOption, SearchState} from './types'
+import {ReferenceInputProps, CreateOption, SearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
@@ -81,8 +79,7 @@ const INITIAL_SEARCH_STATE: SearchState = {
   isLoading: false,
 }
 
-export interface Props extends BaseInputProps {
-  value: OptionalRef
+export interface Props extends ReferenceInputProps<OptionalRef> {
   isSortable: boolean
   insertableTypes?: SchemaType[]
   onInsert?: (event: InsertEvent) => void

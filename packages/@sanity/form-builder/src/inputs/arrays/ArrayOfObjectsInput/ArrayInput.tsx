@@ -1,9 +1,7 @@
-import {FormFieldPresence} from '@sanity/base/presence'
 import {
   ArraySchemaType,
   isKeySegment,
   isObjectSchemaType,
-  Marker,
   ObjectSchemaType,
   Path,
   SchemaType,
@@ -25,6 +23,7 @@ import {EMPTY_ARRAY} from '../../../utils/empty'
 import ArrayFunctions from '../common/ArrayFunctions'
 import {applyAll} from '../../../patch/applyPatch'
 import {ConditionalReadOnlyField} from '../../common'
+import {FormBuilderFilterFieldFn, FormInputProps} from '../../../types'
 import {ArrayItem} from './item'
 import type {ArrayMember, InsertEvent, ReferenceItemComponentType} from './types'
 import {uploadTarget} from './uploadTarget/uploadTarget'
@@ -53,31 +52,21 @@ export function createProtoValue(type: SchemaType): ArrayMember {
   return type.name === 'object' ? {_key} : {_type: type.name, _key}
 }
 
-export interface Props {
-  type: ArraySchemaType
-  value: ArrayMember[]
-  compareValue: ArrayMember[]
-  markers: Marker[]
-  level: number
-  onChange: (event: PatchEvent) => void
-  onFocus: (path: Path) => void
-  onBlur: () => void
-  focusPath: Path
-  readOnly: boolean
-  ReferenceItemComponent: ReferenceItemComponentType
-  filterField: () => any
+export interface ArrayInputProps
+  extends FormInputProps<ArrayMember[], ArraySchemaType<ArrayMember>> {
   ArrayFunctionsImpl: typeof ArrayFunctions
   ArrayItemImpl: typeof ArrayItem
-  resolveUploader?: (type: SchemaType, file: FileLike) => Uploader | null
+  ReferenceItemComponent: ReferenceItemComponentType
+  filterField: FormBuilderFilterFieldFn
   resolveInitialValue?: (type: ObjectSchemaType, value: any) => Promise<any>
-  presence: FormFieldPresence[]
+  resolveUploader?: (type: SchemaType, file: FileLike) => Uploader | null
 }
 
 interface State {
   isResolvingInitialValue: boolean
 }
 
-export class ArrayInput extends React.Component<Props> {
+export class ArrayInput extends React.Component<ArrayInputProps> {
   static defaultProps = {
     focusPath: [],
   }

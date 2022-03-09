@@ -20,6 +20,7 @@ import {hasFocusAtPath, hasFocusWithinPath} from '../../../../utils/focusUtils'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
 import {EditPortal} from '../../../../EditPortal'
 import {useDidUpdate} from '../../../../hooks/useDidUpdate'
+import {FormBuilderFilterFieldFn} from '../../../../types'
 import {getItemType, isEmpty} from './helpers'
 import {ItemForm} from './ItemForm'
 import {RowItem} from './RowItem'
@@ -39,7 +40,7 @@ interface ArrayInputListItemProps {
   onFocus: (path: Path) => void
   onBlur: () => void
   ReferenceItemComponent: ReferenceItemComponentType
-  filterField: () => any
+  filterField: FormBuilderFilterFieldFn
   readOnly: boolean
   focusPath: Path
   presence: FormFieldPresence[]

@@ -4,7 +4,7 @@ import {FormFieldPresence} from '@sanity/base/presence'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {ArrayMember, InsertEvent, ReferenceItemComponentType} from '../types'
 import PatchEvent from '../../../../PatchEvent'
-import {FormInputProps as InputProps} from '../../../../types'
+import {FormBuilderFilterFieldFn, FormInputProps as InputProps} from '../../../../types'
 
 type Props = {
   type: SchemaType
@@ -17,7 +17,7 @@ type Props = {
   insertableTypes?: SchemaType[]
   ReferenceItemComponent: ReferenceItemComponentType
   onBlur: () => void
-  filterField: () => any
+  filterField: FormBuilderFilterFieldFn
   isSortable: boolean
   readOnly: boolean | null
   focusPath: Path

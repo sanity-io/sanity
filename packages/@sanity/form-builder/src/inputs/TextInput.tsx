@@ -7,6 +7,8 @@ import styled from 'styled-components'
 import PatchEvent, {set, unset} from '../PatchEvent'
 import {FormInputProps} from '../types'
 
+export type TextInputProps = FormInputProps<string, TextSchemaType>
+
 const StyledTextArea = styled(TextArea)`
   &[data-as='textarea'] {
     resize: vertical;
@@ -14,7 +16,7 @@ const StyledTextArea = styled(TextArea)`
 `
 
 const TextInput = React.forwardRef(function TextInput(
-  props: FormInputProps<string, TextSchemaType>,
+  props: TextInputProps,
   forwardedRef: ForwardedRef<HTMLTextAreaElement>
 ) {
   const {value, markers, type, readOnly, level, onFocus, onBlur, onChange, presence} = props

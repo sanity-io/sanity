@@ -1,9 +1,8 @@
 import React from 'react'
 import {get} from 'lodash'
 import {FormFieldSet} from '@sanity/base/components'
-import {ArraySchemaType, isTitledListValue, Marker, Path} from '@sanity/types'
+import {ArraySchemaType, isTitledListValue} from '@sanity/types'
 import {Box, Checkbox, Flex, Text} from '@sanity/ui'
-import {FormFieldPresence} from '@sanity/base/presence'
 import {resolveTypeName} from '@sanity/util/content'
 import {useConditionalReadOnly} from '@sanity/base/_internal'
 import PatchEvent, {set, unset} from '../../../PatchEvent'
@@ -11,6 +10,7 @@ import Preview from '../../../Preview'
 import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
 import {Item, List} from '../common/list'
 import {ConditionalReadOnlyField} from '../../common'
+import {FormInputProps} from '../../../types'
 import {resolveValueWithLegacyOptionsSupport, isLegacyOptionsItem} from './legacyOptionsSupport'
 
 type Focusable = {focus: () => void}
@@ -51,17 +51,7 @@ function inArray(array, candidate) {
   return array ? array.some((item) => isEqual(item, candidate)) : false
 }
 
-type OptionsArrayInputProps = {
-  type: ArraySchemaType
-  markers?: Marker[]
-  value?: unknown[]
-  level?: number
-  readOnly?: boolean
-  onChange?: (...args: any[]) => any
-  presence: FormFieldPresence[]
-  onFocus: (path: Path) => void
-  onBlur: () => void
-}
+type OptionsArrayInputProps = FormInputProps<unknown[], ArraySchemaType>
 
 export default class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProps> {
   _element: Focusable | null

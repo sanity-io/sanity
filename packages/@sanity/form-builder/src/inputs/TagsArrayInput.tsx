@@ -5,8 +5,10 @@ import {TagInput} from '../components/tagInput'
 import PatchEvent, {set, unset} from '../PatchEvent'
 import {FormInputProps} from '../types'
 
+export type TagsArrayInputProps = FormInputProps<string[]>
+
 export const TagsArrayInput = forwardRef(function TagsArrayInput(
-  props: FormInputProps<string[]>,
+  props: TagsArrayInputProps,
   ref: React.Ref<{focus: () => void}>
 ) {
   const {level, markers, onChange, onFocus, presence, readOnly, type, value = []} = props

@@ -2,10 +2,10 @@ import React, {ForwardedRef, forwardRef, useCallback} from 'react'
 import {resolveInitialValueForType} from '@sanity/initial-value-templates'
 import {SchemaType} from '@sanity/types'
 import sanityResolveUploader from '../uploads/resolveUploader'
-import ArrayInput, {Props} from '../../inputs/arrays/ArrayOfObjectsInput'
+import ArrayInput, {ArrayInputProps} from '../../inputs/arrays/ArrayOfObjectsInput'
 import {
   ArrayOfPrimitivesInput,
-  Props as PrimitiveArrayInputProps,
+  ArrayOfPrimitivesInputProps,
 } from '../../inputs/arrays/ArrayOfPrimitivesInput'
 import * as is from '../../utils/is'
 import {FileLike} from '../uploads/types'
@@ -30,7 +30,7 @@ const arrayResolveUploader = (
 }
 
 export const SanityArrayInput = forwardRef(function SanityArrayInput(
-  props: Props,
+  props: ArrayInputProps,
   ref: ForwardedRef<ArrayInput>
 ) {
   const formBuilder = useFormBuilder()
@@ -55,7 +55,7 @@ export const SanityArrayInput = forwardRef(function SanityArrayInput(
 })
 
 export const SanityArrayOfPrimitivesInput = forwardRef(function SanityArrayOfPrimitivesInput(
-  props: Omit<PrimitiveArrayInputProps, 'ArrayFunctionsImpl'>,
+  props: Omit<ArrayOfPrimitivesInputProps, 'ArrayFunctionsImpl'>,
   ref: ForwardedRef<ArrayOfPrimitivesInput>
 ) {
   const formBuilder = useFormBuilder()

@@ -5,6 +5,7 @@ import {render} from '@testing-library/react'
 import React from 'react'
 import {SanityFormBuilder} from '../../sanity/legacyPartImplementations/form-builder'
 import {createPatchChannel, PatchChannel} from '../../patchChannel'
+import {FormBuilderFilterFieldFn} from '../../types'
 
 type FormBuilderProps = {
   value: any | null
@@ -16,7 +17,7 @@ type FormBuilderProps = {
   onFocus: (path: Path) => void
   readOnly: boolean
   onChange: (patches: any[]) => void
-  filterField: (field: any) => boolean
+  filterField: FormBuilderFilterFieldFn
   onBlur: () => void
   autoFocus: boolean
   focusPath: Path

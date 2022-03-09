@@ -4,3 +4,6 @@ export * from '../sanity/legacyPartImplementations/form-builder'
 
 export * from '../PatchEvent'
 export {default} from '../PatchEvent'
+
+// Export `FormInputProps` so it can be used to build custom input components with type safety.
+export type {FormInputProps} from '../types'

@@ -1,15 +1,15 @@
 import React from 'react'
 import {get} from 'lodash'
 import {startsWith} from '@sanity/util/paths'
-import {ArraySchemaType, Marker, Path, SchemaType} from '@sanity/types'
+import {ArraySchemaType, Marker, SchemaType} from '@sanity/types'
 import {Card, Stack} from '@sanity/ui'
 import {FormFieldSet} from '@sanity/base/components'
-import {FormFieldPresence} from '@sanity/base/presence'
 import {resolveTypeName} from '@sanity/util/content'
 import {PatchEvent, set, unset} from '../../../PatchEvent'
 import {Item, List} from '../common/list'
 import ArrayFunctions from '../common/ArrayFunctions'
 import {ConditionalReadOnlyField} from '../../common'
+import {FormInputProps} from '../../../types'
 import getEmptyValue from './getEmptyValue'
 import {ItemRow} from './ItemRow'
 import {PrimitiveValue} from './types'
@@ -43,22 +43,12 @@ function insertAfter<T>(index: number, arr: T[], item: T): T[] {
   return copy
 }
 
-export interface Props {
-  type: ArraySchemaType<PrimitiveValue>
-  value: PrimitiveValue[]
-  compareValue?: PrimitiveValue[]
-  level: number
-  onChange: (event: PatchEvent) => void
-  onFocus: (path: Path) => void
-  onBlur: () => void
-  focusPath: Path
+export interface ArrayOfPrimitivesInputProps
+  extends FormInputProps<PrimitiveValue[], ArraySchemaType<PrimitiveValue>> {
   ArrayFunctionsImpl: typeof ArrayFunctions
-  readOnly?: boolean
-  markers: Marker[]
-  presence: FormFieldPresence[]
 }
 
-export class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
+export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitivesInputProps> {
   _element: HTMLElement | null = null
   _lastAddedIndex = -1
 

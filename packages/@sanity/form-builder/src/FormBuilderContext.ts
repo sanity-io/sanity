@@ -1,6 +1,7 @@
 import {AssetSource, Path, Schema, SchemaType} from '@sanity/types'
 import React, {createContext} from 'react'
 import {PatchChannel} from './patchChannel'
+import {FormBuilderFilterFieldFn} from './types'
 
 export interface FormBuilderContextValue {
   // @todo: fix prop typings
@@ -41,7 +42,7 @@ export interface FormBuilderContextValue {
    * @internal
    */
   __internal_patchChannel: PatchChannel // eslint-disable-line camelcase
-  filterField: () => void
+  filterField: FormBuilderFilterFieldFn
   schema: Schema
   resolveInputComponent: (type: SchemaType) => React.ComponentType<any>
   resolvePreviewComponent: (type: SchemaType) => React.ComponentType<any>

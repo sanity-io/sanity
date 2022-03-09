@@ -10,12 +10,11 @@ import {
   AssetFromSource,
   Image as BaseImage,
   ImageSchemaType,
-  Marker,
   ObjectField,
   Path,
 } from '@sanity/types'
 import React, {ReactNode} from 'react'
-import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
+import {PresenceOverlay} from '@sanity/base/presence'
 import deepCompare from 'react-fast-compare'
 import {ResolvedUploader, Uploader, UploadOptions} from '../../../sanity/uploads/types'
 import {ImageToolInput} from '../ImageToolInput'
@@ -29,6 +28,7 @@ import {EMPTY_ARRAY} from '../../../utils/empty'
 import {handleSelectAssetFromSource} from '../common/assetSource'
 import {ActionsMenu} from '../common/ActionsMenu'
 import {UploadWarning} from '../common/UploadWarning'
+import {FormInputProps} from '../../../types'
 import {ImagePreview} from './ImagePreview'
 import {ImageInputField} from './ImageInputField'
 import {ImageActionsMenu} from './ImageActionsMenu'
@@ -37,24 +37,13 @@ export interface Image extends Partial<BaseImage> {
   _upload?: UploadState
 }
 
-export type Props = {
-  value?: Image
-  compareValue?: Image
-  type: ImageSchemaType
-  level: number
-  onChange: (event: PatchEvent) => void
-  resolveUploader: UploaderResolver
-  observeAsset: (documentId: string) => Observable<ImageAsset>
-  onBlur: () => void
-  onFocus: (path: Path) => void
-  readOnly: boolean | null
-  focusPath: Path
-  directUploads?: boolean
+export interface ImageInputProps extends FormInputProps<Image, ImageSchemaType> {
   assetSources: InternalAssetSource[]
-  markers: Marker[]
-  presence: FormFieldPresence[]
-  imageUrlBuilder: ImageUrlBuilder
+  directUploads?: boolean
   getValuePath: () => Path
+  imageUrlBuilder: ImageUrlBuilder
+  observeAsset: (documentId: string) => Observable<ImageAsset>
+  resolveUploader: UploaderResolver
 }
 
 const getDevicePixelRatio = () => {
@@ -100,7 +89,7 @@ const EMPTY_FIELD_GROUPS: FieldGroups = {
 }
 const ASSET_FIELD_PATH = ['asset']
 
-export default class ImageInput extends React.PureComponent<Props, ImageInputState> {
+export default class ImageInput extends React.PureComponent<ImageInputProps, ImageInputState> {
   _inputId = uniqueId('ImageInput')
 
   _assetElementRef: null | Focusable = null
@@ -725,7 +714,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     return this._fieldGroupsMemo
   }
 
-  componentDidUpdate(prevProps: Props) {
+  componentDidUpdate(prevProps: ImageInputProps) {
     const {focusPath: prevFocusPath = []} = prevProps
     const {focusPath: currentFocusPath = []} = this.props
     if (prevFocusPath[0] !== 'asset' && currentFocusPath[0] === 'asset') {

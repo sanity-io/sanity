@@ -1,17 +1,20 @@
 import React, {useCallback} from 'react'
 import {useDatastores} from '@sanity/base'
-import FileInput from '../../inputs/files/FileInput'
+import FileInput, {FileInputProps} from '../../inputs/files/FileInput'
 import resolveUploader from '../uploads/resolveUploader'
 import withValuePath from '../../utils/withValuePath'
 import {useFormBuilder} from '../../useFormBuilder'
 import {observeFileAsset} from './client-adapters/assets'
 import {wrapWithDocument} from './wrapWithDocument'
 
-type Props = Omit<React.ComponentProps<typeof FileInput>, 'assetSources'>
+export type SanityFileInputProps = Omit<FileInputProps, 'assetSources'>
 
 const FileInputWithValuePath = withValuePath(FileInput)
 
-export default React.forwardRef(function SanityFileInput(props: Props, forwardedRef: any) {
+export default React.forwardRef(function SanityFileInput(
+  props: SanityFileInputProps,
+  forwardedRef: any
+) {
   const sourcesFromSchema = props.type.options?.sources
   const {documentPreviewStore} = useDatastores()
   const {file} = useFormBuilder()

@@ -7,8 +7,10 @@ import {getValidationRule} from '../utils/getValidationRule'
 import PatchEvent, {set, unset} from '../PatchEvent'
 import {FormInputProps} from '../types'
 
+export type NumberInputProps = FormInputProps<number, NumberSchemaType>
+
 const NumberInput = React.forwardRef(function NumberInput(
-  props: FormInputProps<number, NumberSchemaType>,
+  props: NumberInputProps,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
   const {value = '', readOnly, markers, type, level, onFocus, onChange, presence} = props

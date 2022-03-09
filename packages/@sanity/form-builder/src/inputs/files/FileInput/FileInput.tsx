@@ -14,13 +14,12 @@ import {
   File as BaseFile,
   FileAsset,
   FileSchemaType,
-  Marker,
   Path,
   SchemaType,
 } from '@sanity/types'
 import {ImageIcon, SearchIcon} from '@sanity/icons'
 import {Box, Button, Card, Dialog, Menu, MenuButton, MenuItem, ToastParams} from '@sanity/ui'
-import {PresenceOverlay, FormFieldPresence} from '@sanity/base/presence'
+import {PresenceOverlay} from '@sanity/base/presence'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {Uploader, UploaderResolver, UploadOptions} from '../../../sanity/uploads/types'
 import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
@@ -33,6 +32,7 @@ import {PlaceholderText} from '../common/PlaceholderText'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import {UploadWarning} from '../common/UploadWarning'
 import {EMPTY_ARRAY} from '../../../utils/empty'
+import {FormInputProps} from '../../../types'
 import {CardOverlay, FlexContainer} from './styles'
 import {FileInputField} from './FileInputField'
 import {FileDetails} from './FileDetails'
@@ -50,23 +50,12 @@ export interface File extends Partial<BaseFile> {
   _upload?: UploadState
 }
 
-export type Props = {
-  value?: File
-  compareValue?: File
-  type: FileSchemaType
-  level: number
-  onChange: (event: PatchEvent) => void
-  resolveUploader: UploaderResolver
-  observeAsset: (documentId: string) => Observable<FileAsset>
-  onBlur: () => void
-  onFocus: (path: Path) => void
-  readOnly: boolean | null
-  focusPath: Path
-  directUploads?: boolean
+export interface FileInputProps extends FormInputProps<File, FileSchemaType> {
   assetSources: InternalAssetSource[]
-  markers: Marker[]
-  presence: FormFieldPresence[]
+  directUploads?: boolean
   getValuePath: () => Path
+  observeAsset: (documentId: string) => Observable<FileAsset>
+  resolveUploader: UploaderResolver
 }
 
 const HIDDEN_FIELDS = ['asset']
@@ -83,7 +72,7 @@ type Focusable = {
   focus: () => void
 }
 
-export default class FileInput extends React.PureComponent<Props, FileInputState> {
+export default class FileInput extends React.PureComponent<FileInputProps, FileInputState> {
   _inputId = uniqueId('FileInput')
   dialogId = uniqueId('fileinput-dialog')
 

@@ -2,7 +2,6 @@ import type {Patch as FormBuilderPatch} from '@sanity/base/_internal'
 import {FormField} from '@sanity/base/components'
 import React, {useEffect, useState, useMemo, useCallback, useRef} from 'react'
 import {Marker, Path} from '@sanity/types'
-import {FormFieldPresence} from '@sanity/base/presence'
 import {
   EditorChange,
   OnCopyFn,
@@ -20,10 +19,37 @@ import scrollIntoView from 'scroll-into-view-if-needed'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import PatchEvent from '../../PatchEvent'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
+import {FormInputProps} from '../../types'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
 import {Compositor} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {VisibleOnFocusButton} from './VisibleOnFocusButton'
+
+export type PatchWithOrigin = FormBuilderPatch & {
+  origin: 'local' | 'remote' | 'internal'
+  timestamp: Date
+}
+
+type PatchSubscribe = (subscribeFn: PatchSubscriber) => () => void
+type PatchSubscriber = ({
+  patches,
+}: {
+  patches: PatchWithOrigin[]
+  snapshot: PortableTextBlock[] | undefined
+}) => void
+
+/**
+ * @alpha
+ */
+export interface PortableTextInputProps extends FormInputProps<PortableTextBlock[], Type> {
+  hotkeys?: HotkeyOptions
+  // @todo: move the `Marker` type to this directory
+  markers: Marker[]
+  onCopy?: OnCopyFn
+  onPaste?: OnPasteFn
+  renderBlockActions?: RenderBlockActions
+  renderCustomMarkers?: RenderCustomMarkers
+}
 
 /**
  * An outer React PureComponent Class purely to satisfy the form-builder's need for 'blur' and 'focus' class methods.
@@ -62,37 +88,6 @@ export const PortableTextInput = withPatchSubscriber(
     }
   }
 ) as React.ComponentType as React.ComponentType<PortableTextInputProps>
-
-export type PatchWithOrigin = FormBuilderPatch & {
-  origin: 'local' | 'remote' | 'internal'
-  timestamp: Date
-}
-
-type PatchSubscribe = (subscribeFn: PatchSubscriber) => () => void
-type PatchSubscriber = ({
-  patches,
-}: {
-  patches: PatchWithOrigin[]
-  snapshot: PortableTextBlock[] | undefined
-}) => void
-
-export type PortableTextInputProps = {
-  focusPath: Path
-  hotkeys?: HotkeyOptions
-  level: number
-  markers: Marker[]
-  onBlur: () => void
-  onChange: (event: PatchEvent) => void
-  onFocus: (path) => void
-  onCopy?: OnCopyFn
-  onPaste?: OnPasteFn
-  readOnly: boolean | null
-  renderBlockActions?: RenderBlockActions
-  renderCustomMarkers?: RenderCustomMarkers
-  presence: FormFieldPresence[]
-  type: Type
-  value: PortableTextBlock[] | undefined
-}
 
 const PortableTextInputController = React.forwardRef(function PortableTextInputController(
   props: Omit<PortableTextInputProps, 'level'> & {subscribe: PatchSubscribe},

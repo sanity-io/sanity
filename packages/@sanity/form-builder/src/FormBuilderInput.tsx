@@ -11,7 +11,6 @@ import {emptyArray} from './utils/empty'
 import {FormInputProps as InputProps, FormBuilderFilterFieldFn} from './types'
 import {ConditionalReadOnlyField} from './inputs/common'
 import {useFormBuilder} from './useFormBuilder'
-import {FormBuilderContextValue} from './FormBuilderContext'
 
 const EMPTY_MARKERS: Marker[] = emptyArray()
 const EMPTY_PATH: Path = emptyArray()
@@ -23,7 +22,7 @@ interface FormBuilderInputProps {
   type: SchemaType
   onChange: (event: PatchEvent) => void
   onFocus: (path: Path) => void
-  onBlur: () => void
+  onBlur?: () => void
   readOnly?: ConditionalProperty
   parent?: Record<string, unknown> | undefined
   presence?: FormFieldPresence[]

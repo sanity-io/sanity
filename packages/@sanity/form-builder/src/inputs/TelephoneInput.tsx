@@ -6,8 +6,10 @@ import {FormField} from '@sanity/base/components'
 import PatchEvent, {set, unset} from '../PatchEvent'
 import {FormInputProps} from '../types'
 
+export type TelephoneInputProps = FormInputProps<string, StringSchemaType>
+
 const TelephoneInput = React.forwardRef(function TelephoneInput(
-  props: FormInputProps<string, StringSchemaType>,
+  props: TelephoneInputProps,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
   const {value, readOnly, type, markers, level, onFocus, onBlur, onChange, presence} = props

@@ -4,7 +4,6 @@ import {
   SanityDocument,
   SlugParent,
   SlugSchemaType,
-  Marker,
   isValidationErrorMarker,
 } from '@sanity/types'
 import {ChangeIndicatorCompareValueProvider, FormField} from '@sanity/base/components'
@@ -14,6 +13,7 @@ import {useId} from '@reach/auto-id'
 import {PatchEvent, set, setIfMissing, unset} from '../../PatchEvent'
 import withDocument from '../../utils/withDocument'
 import withValuePath from '../../utils/withValuePath'
+import {FormInputProps} from '../../types'
 import {slugify} from './utils/slugify'
 import {useAsync} from './utils/useAsync'
 
@@ -22,18 +22,9 @@ export interface Slug {
   current?: string
 }
 
-type Props = {
-  type: SlugSchemaType
-  level: number
-  value?: Slug
-  compareValue?: Slug
-  readOnly?: boolean
+export interface SlugInputProps extends FormInputProps<Slug, SlugSchemaType> {
   document: SanityDocument
-  onChange: (ev: PatchEvent) => void
-  onFocus: (pathOrEvent?: Path | React.FocusEvent<any>) => void
   getValuePath: () => Path
-  markers: Marker[]
-  presence: any
 }
 
 function getNewFromSource(source, valuePath, document) {
@@ -47,7 +38,7 @@ function getNewFromSource(source, valuePath, document) {
 }
 
 const SlugInput = React.forwardRef(function SlugInput(
-  props: Props,
+  props: SlugInputProps,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
   const {

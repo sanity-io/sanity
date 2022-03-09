@@ -9,7 +9,7 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import {isValidationErrorMarker, Reference} from '@sanity/types'
+import {isValidationErrorMarker} from '@sanity/types'
 import {
   EllipsisVerticalIcon,
   LaunchIcon as OpenInNewTabIcon,
@@ -47,12 +47,11 @@ import styled from 'styled-components'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
-
 import {isNonNullable} from '../../utils/isNonNullable'
 import {AlertStrip} from '../../AlertStrip'
 import {Alert} from '../../components/Alert'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
-import {BaseInputProps, CreateOption, SearchState} from './types'
+import {ReferenceInputProps, CreateOption, SearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
@@ -71,10 +70,6 @@ const INITIAL_SEARCH_STATE: SearchState = {
   isLoading: false,
 }
 
-export interface Props extends BaseInputProps {
-  value?: Reference
-}
-
 const NO_FILTER = () => true
 
 function nonNullable<T>(v: T): v is NonNullable<T> {
@@ -83,7 +78,7 @@ function nonNullable<T>(v: T): v is NonNullable<T> {
 
 const REF_PATH = ['_ref']
 export const ReferenceInput = forwardRef(function ReferenceInput(
-  props: Props,
+  props: ReferenceInputProps,
   forwardedRef: ForwardedRef<HTMLInputElement>
 ) {
   const {
