@@ -11,3 +11,5 @@ node_modules
 # Built assets
 dist
 
+# Files generated during build
+/build
