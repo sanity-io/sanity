@@ -272,6 +272,7 @@ export type OnPasteResult =
       path?: Path
     }
   | Error
+  | undefined
 export type OnPasteResultOrPromise = OnPasteResult | Promise<OnPasteResult>
 
 export type OnPasteFn = (arg0: {
