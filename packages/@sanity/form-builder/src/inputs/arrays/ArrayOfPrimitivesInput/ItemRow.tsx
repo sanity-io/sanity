@@ -1,14 +1,8 @@
-import {FieldPresence, FormFieldPresence} from '@sanity/base/presence'
+import {FieldPresence} from '@sanity/base/presence'
 import React, {useCallback, useMemo} from 'react'
 import {Box, Button, Card, Menu, Flex, MenuButton, MenuItem} from '@sanity/ui'
 import {FormFieldValidationStatus} from '@sanity/base/components'
-import {
-  Marker,
-  Path,
-  SchemaType,
-  isValidationErrorMarker,
-  isValidationWarningMarker,
-} from '@sanity/types'
+import {SchemaType, isValidationErrorMarker, isValidationWarningMarker} from '@sanity/types'
 import {TrashIcon, EllipsisVerticalIcon, CopyIcon as DuplicateIcon} from '@sanity/icons'
 import {useId} from '@reach/auto-id'
 import {useConditionalReadOnly} from '@sanity/base/_internal'
@@ -17,34 +11,24 @@ import PatchEvent, {set} from '../../../PatchEvent'
 import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
 import {FormBuilderInput, FormBuilderInputInstance} from '../../../FormBuilderInput'
 import {InsertMenu} from '../ArrayOfObjectsInput/InsertMenu'
+import {FormInputProps} from '../../../types'
 import getEmptyValue from './getEmptyValue'
 import {PrimitiveValue} from './types'
 
 const dragHandle = <DragHandle paddingX={1} paddingY={3} />
 
-type Props = {
-  type?: SchemaType
-  onChange: (event: PatchEvent) => void
+interface ItemRowProps extends FormInputProps<string | number | boolean, SchemaType> {
   onRemove: (item: number) => void
   onInsert: (pos: 'before' | 'after', index: number, item: PrimitiveValue) => void
   insertableTypes: SchemaType[]
   onEnterKey: (item: number) => void
   onEscapeKey: (item: number) => void
-  onFocus: (path: Path) => void
-  onBlur: () => void
-  focusPath: Path
-  markers: Marker[]
   index: number
-  value: string | number | boolean
-  compareValue?: (string | number | boolean)[]
   isSortable: boolean
-  readOnly?: boolean | null
-  level: number
-  presence: FormFieldPresence[]
 }
 
 export const ItemRow = React.forwardRef(function ItemRow(
-  props: Props,
+  props: ItemRowProps,
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
   const focusRef = React.useRef<FormBuilderInputInstance>(null)
@@ -63,17 +47,17 @@ export const ItemRow = React.forwardRef(function ItemRow(
     onInsert,
     onRemove,
     focusPath,
-    markers,
+    validation,
     type,
     readOnly,
     presence,
   } = props
 
   const conditionalReadOnly = useConditionalReadOnly() ?? readOnly
-  const hasError = markers.filter(isValidationErrorMarker).length > 0
-  const hasWarning = markers.filter(isValidationWarningMarker).length > 0
+  const hasError = validation.filter(isValidationErrorMarker).length > 0
+  const hasWarning = validation.filter(isValidationWarningMarker).length > 0
 
-  const showValidationStatus = !conditionalReadOnly && markers.length > 0 && !type?.title
+  const showValidationStatus = !conditionalReadOnly && validation.length > 0 && !type?.title
   const showPresence = !type?.title && !conditionalReadOnly && presence.length > 0
 
   const handleRemove = useCallback(() => {
@@ -159,7 +143,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
                 value={value}
                 path={[index]}
                 compareValue={compareValue}
-                markers={markers}
+                validation={validation}
                 focusPath={focusPath}
                 onFocus={onFocus}
                 onBlur={onBlur}
@@ -182,7 +166,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
         <Flex align="center" marginLeft={2}>
           {showValidationStatus && (
             <Box marginRight={3}>
-              <FormFieldValidationStatus __unstable_markers={markers} />
+              <FormFieldValidationStatus validation={validation} />
             </Box>
           )}
 

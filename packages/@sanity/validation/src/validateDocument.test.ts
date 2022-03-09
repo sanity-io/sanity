@@ -96,7 +96,6 @@ describe('validateDocument', () => {
     const result = await validateDocument(client as any, document, schema)
     expect(result).toMatchObject([
       {
-        type: 'validation',
         level: 'error',
         item: {
           message: 'Expected type "String", got "null"',
@@ -105,7 +104,6 @@ describe('validateDocument', () => {
         path: ['title'],
       },
       {
-        type: 'validation',
         level: 'error',
         item: {
           message: 'Required',
@@ -179,37 +177,31 @@ describe('validateItem', () => {
       })
     ).resolves.toMatchObject([
       {
-        type: 'validation',
         level: 'error',
         item: {message: 'This is required!'},
         path: ['registeredString'],
       },
       {
-        type: 'validation',
         level: 'error',
         item: {message: 'This is required!'},
         path: ['inlineString'],
       },
       {
-        type: 'validation',
         level: 'error',
         item: {message: 'Required'},
         path: ['registeredObject'],
       },
       {
-        type: 'validation',
         level: 'error',
         item: {message: 'This is required!'},
         path: ['registeredObject', 'foo'],
       },
       {
-        type: 'validation',
         level: 'error',
         item: {message: 'Required'},
         path: ['inlineObject'],
       },
       {
-        type: 'validation',
         level: 'error',
         item: {message: 'This is required!'},
         path: ['inlineObject', 'foo'],
@@ -257,13 +249,11 @@ describe('validateItem', () => {
         item: {message: 'Expected type "String", got "Number"'},
         level: 'error',
         path: ['foo'],
-        type: 'validation',
       },
       {
         item: {message: 'Required'},
         level: 'error',
         path: ['bar'],
-        type: 'validation',
       },
     ])
   })
@@ -425,7 +415,6 @@ describe('validateItem', () => {
         item: {message: 'mock invalid response', paths: []},
         level: 'error',
         path: ['content', {_key: 'block-key'}, 'markDefs', {_key: '1'}],
-        type: 'validation',
       },
       // this tests for nested markDef validation
       {
@@ -445,7 +434,6 @@ describe('validateItem', () => {
           {_key: 'example-annotation-key'},
           'value',
         ],
-        type: 'validation',
       },
     ])
 
@@ -525,7 +513,6 @@ describe('validateItem', () => {
       })
     ).resolves.toEqual([
       {
-        type: 'validation',
         level: 'error',
         item: {
           message: 'Expected type "String", got "Number"',

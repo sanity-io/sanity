@@ -46,7 +46,7 @@ const SlugInput = React.forwardRef(function SlugInput(
     compareValue,
     type,
     level,
-    markers,
+    validation,
     onChange,
     onFocus,
     getValuePath,
@@ -58,7 +58,7 @@ const SlugInput = React.forwardRef(function SlugInput(
   const sourceField = type.options?.source
 
   const inputId = useId()
-  const errors = useMemo(() => markers.filter(isValidationErrorMarker), [markers])
+  const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
 
   const updateSlug = React.useCallback(
     (nextSlug) => {
@@ -102,7 +102,7 @@ const SlugInput = React.forwardRef(function SlugInput(
         title={type.title}
         description={type.description}
         level={level}
-        __unstable_markers={markers}
+        validation={validation}
         __unstable_presence={presence}
         inputId={inputId}
       >

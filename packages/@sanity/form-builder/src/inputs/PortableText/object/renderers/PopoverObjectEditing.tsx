@@ -2,7 +2,7 @@
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import {CloseIcon} from '@sanity/icons'
 import {PortableTextBlock, PortableTextChild, Type} from '@sanity/portable-text-editor'
-import {Path, Marker, SchemaType} from '@sanity/types'
+import {Path, ValidationMarker, SchemaType} from '@sanity/types'
 import {
   Box,
   Button,
@@ -30,7 +30,7 @@ interface PopoverObjectEditingProps {
   editorPath: Path
   elementRef: React.MutableRefObject<HTMLElement>
   focusPath: Path
-  markers: Marker[]
+  validation: ValidationMarker[]
   object: PortableTextBlock | PortableTextChild
   onBlur: () => void
   onChange: (patchEvent: PatchEvent, path: Path) => void
@@ -144,7 +144,7 @@ function Content(
 ) {
   const {
     focusPath,
-    markers,
+    validation,
     object,
     onBlur,
     onChange,
@@ -206,7 +206,7 @@ function Content(
                 <FormBuilderInput
                   focusPath={focusPath}
                   level={0}
-                  markers={markers}
+                  validation={validation}
                   onBlur={onBlur}
                   onChange={handleChange}
                   onFocus={onFocus}

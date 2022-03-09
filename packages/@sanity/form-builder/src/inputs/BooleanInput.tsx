@@ -25,7 +25,7 @@ const BooleanInput = React.forwardRef(function BooleanInput(
   ref: React.ForwardedRef<HTMLInputElement>
 ) {
   const {onChange} = props
-  const {value, type, readOnly, onFocus, markers, presence} = props
+  const {value, type, readOnly, onFocus, validation, presence} = props
   const layout = type.options?.layout || 'switch'
   const inputId = useId()
 
@@ -63,7 +63,7 @@ const BooleanInput = React.forwardRef(function BooleanInput(
             <FormFieldHeaderText
               description={type.description}
               inputId={inputId}
-              __unstable_markers={markers}
+              validation={validation}
               title={type.title}
             />
           </Box>

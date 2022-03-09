@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-import {Marker} from '@sanity/types'
+import {ValidationMarker} from '@sanity/types'
 import {Stack} from '@sanity/ui'
 import React, {memo} from 'react'
 import {ChangeIndicator, ChangeIndicatorContextProvidedProps} from '../changeIndicators'
@@ -9,15 +9,15 @@ import {FormFieldHeader} from './FormFieldHeader'
 
 export interface FormFieldProps {
   /**
-   * @beta
+   * @alpha
    */
   __unstable_changeIndicator?: ChangeIndicatorContextProvidedProps | boolean
   /**
-   * @beta
+   * @alpha
    */
-  __unstable_markers?: Marker[]
+  validation?: ValidationMarker[]
   /**
-   * @beta
+   * @alpha
    */
   __unstable_presence?: FormFieldPresence[]
   children: React.ReactNode
@@ -38,7 +38,7 @@ export const FormField = memo(function FormField(
 ) {
   const {
     __unstable_changeIndicator: changeIndicator = true,
-    __unstable_markers: markers,
+    validation,
     __unstable_presence: presence,
     children,
     description,
@@ -64,7 +64,7 @@ export const FormField = memo(function FormField(
       */}
       {title && (
         <FormFieldHeader
-          __unstable_markers={markers}
+          validation={validation}
           __unstable_presence={presence}
           description={description}
           inputId={inputId}

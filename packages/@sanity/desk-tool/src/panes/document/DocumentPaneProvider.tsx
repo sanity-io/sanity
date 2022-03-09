@@ -75,7 +75,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const initialValue = useUnique(initialValueRaw)
   const {patch}: any = useDocumentOperation(documentId, documentType)
   const editState = useEditState(documentId, documentType)
-  const {markers: markersRaw} = useValidationStatus(documentId, documentType)
+  const {validation: validationRaw} = useValidationStatus(documentId, documentType)
   const connectionState = useConnectionState(documentId, documentType)
   const documentSchema = source.schema.get(documentType)
   const value: Partial<SanityDocument> =
@@ -85,7 +85,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [editState, resolveDocumentActions]
   )
   const badges = useMemo(() => (editState ? resolveDocumentBadges(editState) : null), [editState])
-  const markers = useUnique(markersRaw)
+  const validation = useUnique(validationRaw)
   const views = useUnique(viewsProp)
   const params = paneRouter.params || emptyObject
   const [focusPath, setFocusPath] = useState<Path>(() =>
@@ -253,7 +253,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     historyController,
     index,
     inspectOpen,
-    markers,
+    validation,
     menuItems,
     menuItemGroups: menuItemGroups || [],
     paneKey,

@@ -10,8 +10,8 @@ import {noop} from 'lodash'
 
 import {AvailabilityReason} from '@sanity/base/_internal'
 import {Reference} from '@sanity/types'
-import {Props, ReferenceInput} from '../ReferenceInput'
-import {DocumentPreview, ReferenceInfo} from '../types'
+import {ReferenceInput} from '../ReferenceInput'
+import {DocumentPreview, ReferenceInfo, ReferenceInputProps} from '../types'
 
 const EMPTY_SEARCH = () => of([])
 
@@ -39,7 +39,9 @@ const StubComponent = forwardRef(
 StubComponent.displayName = 'StubComponent'
 type PartialExcept<T, K extends keyof T> = Partial<T> & Pick<T, K>
 
-function ReferenceInputTester(props: PartialExcept<Props, 'type' | 'getReferenceInfo'>) {
+function ReferenceInputTester(
+  props: PartialExcept<ReferenceInputProps, 'type' | 'getReferenceInfo'>
+) {
   const onFocus = jest.fn()
   const onChange = jest.fn()
 
@@ -51,7 +53,7 @@ function ReferenceInputTester(props: PartialExcept<Props, 'type' | 'getReference
             <ReferenceInput
               onFocus={onFocus}
               onChange={onChange}
-              markers={[]}
+              validation={[]}
               level={0}
               liveEdit={false}
               focusPath={[]}
@@ -70,7 +72,7 @@ function ReferenceInputTester(props: PartialExcept<Props, 'type' | 'getReference
 }
 
 function ReferenceInfoTester(
-  props: Partial<Omit<Props, 'getReferenceInfo' | 'type'>> & {
+  props: Partial<Omit<ReferenceInputProps, 'getReferenceInfo' | 'type'>> & {
     referenceInfo: ReferenceInfo
     typeIsWeakRef?: boolean
     isEditing?: boolean

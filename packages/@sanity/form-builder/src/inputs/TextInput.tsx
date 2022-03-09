@@ -1,7 +1,7 @@
 import React, {ForwardedRef, useMemo} from 'react'
 import {useId} from '@reach/auto-id'
 import {FormField} from '@sanity/base/components'
-import {TextSchemaType} from '@sanity/types'
+import {isValidationErrorMarker, TextSchemaType} from '@sanity/types'
 import {TextArea} from '@sanity/ui'
 import styled from 'styled-components'
 import PatchEvent, {set, unset} from '../PatchEvent'
@@ -19,14 +19,9 @@ const TextInput = React.forwardRef(function TextInput(
   props: TextInputProps,
   forwardedRef: ForwardedRef<HTMLTextAreaElement>
 ) {
-  const {value, markers, type, readOnly, level, onFocus, onBlur, onChange, presence} = props
-
+  const {value, validation, type, readOnly, level, onFocus, onBlur, onChange, presence} = props
   const inputId = useId()
-
-  const errors = useMemo(
-    () => markers.filter((marker) => marker.type === 'validation' && marker.level === 'error'),
-    [markers]
-  )
+  const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
 
   const handleChange = React.useCallback(
     (event) => {
@@ -38,7 +33,7 @@ const TextInput = React.forwardRef(function TextInput(
   return (
     <FormField
       level={level}
-      __unstable_markers={markers}
+      validation={validation}
       title={type.title}
       description={type.description}
       __unstable_presence={presence}

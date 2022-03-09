@@ -35,12 +35,11 @@ export default function ExampleStory() {
     [user]
   )
 
-  const markers: ValidationMarker[] = useMemo(
+  const validation: ValidationMarker[] = useMemo(
     () =>
       validationErrors
         ? [
             {
-              type: 'validation',
               level: 'error',
               item: {
                 message: 'Something is not right',
@@ -64,7 +63,7 @@ export default function ExampleStory() {
       <Container width={1}>
         <LayerProvider>
           <FormField
-            __unstable_markers={markers}
+            validation={validation}
             __unstable_presence={presence}
             inputId={inputId}
             level={level}

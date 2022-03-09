@@ -64,7 +64,6 @@ export function convertToValidationMarker(
   if (!validatorResult.paths?.length) {
     return [
       {
-        type: 'validation',
         level: level || 'error',
         item: validatorResult,
         path: context.path || [],
@@ -77,7 +76,6 @@ export function convertToValidationMarker(
   // the relative path with the path from the validation context
   return results.concat(
     validatorResult.paths.map((path) => ({
-      type: 'validation',
       path: (context.path || []).concat(path),
       level: level || 'error',
       item: validatorResult,

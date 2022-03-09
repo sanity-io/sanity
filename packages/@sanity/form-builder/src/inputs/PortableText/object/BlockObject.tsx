@@ -5,11 +5,18 @@ import {
   RenderAttributes,
   EditorSelection,
 } from '@sanity/portable-text-editor'
-import {isKeySegment, Marker, Path} from '@sanity/types'
+import {
+  isKeySegment,
+  ValidationMarker,
+  Path,
+  isValidationErrorMarker,
+  isValidationWarningMarker,
+  isValidationInfoMarker,
+} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {Tooltip, Flex, ResponsivePaddingProps} from '@sanity/ui'
 import React, {useCallback, useMemo, useRef, useState} from 'react'
-import {RenderBlockActions, RenderCustomMarkers} from '../types'
+import {PortableTextMarker, RenderBlockActions, RenderCustomMarkers} from '../types'
 import PatchEvent from '../../../PatchEvent'
 import {BlockActions} from '../BlockActions'
 import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
@@ -31,7 +38,8 @@ interface BlockObjectProps {
   block: PortableTextBlock
   blockRef?: React.RefObject<HTMLDivElement>
   editor: PortableTextEditor
-  markers: Marker[]
+  markers: PortableTextMarker[]
+  validation: ValidationMarker[]
   isFullscreen?: boolean
   onChange: (event: PatchEvent) => void
   onFocus: (path: Path) => void
@@ -52,6 +60,7 @@ export const BlockObject = React.forwardRef(function BlockObject(
     editor,
     isFullscreen,
     markers,
+    validation,
     onChange,
     onFocus,
     readOnly,
@@ -126,40 +135,24 @@ export const BlockObject = React.forwardRef(function BlockObject(
   }, [isFullscreen, renderBlockActions])
 
   // These are marker that is only for the block level (things further up, like annotations and inline objects are dealt with in their respective components)
-  const blockMarkers = useMemo(
+  const blockValidationMarkers = useMemo(
     () =>
-      markers.filter(
+      validation.filter(
         (marker) => isKeySegment(marker.path[0]) && marker.path[0]._key === block._key
       ),
-    [block._key, markers]
+    [block._key, validation]
   )
 
-  const errorMarkers = useMemo(
-    () => blockMarkers.filter((marker) => marker.type === 'validation' && marker.level === 'error'),
-    [blockMarkers]
-  )
-
-  const warningMarkers = useMemo(
-    () =>
-      blockMarkers.filter((marker) => marker.type === 'validation' && marker.level === 'warning'),
-    [blockMarkers]
-  )
-
-  const infoMarkers = useMemo(
-    () => blockMarkers.filter((marker) => marker.type === 'validation' && marker.level === 'info'),
-    [blockMarkers]
-  )
-
-  const hasMarkers = Boolean(blockMarkers.length > 0 && renderCustomMarkers)
-  const hasErrors = errorMarkers.length > 0
-  const hasWarnings = warningMarkers.length > 0
-  const hasInfo = infoMarkers.length > 0
+  const hasMarkers = Boolean(blockValidationMarkers.length > 0)
+  const hasErrors = blockValidationMarkers.some(isValidationErrorMarker)
+  const hasWarnings = blockValidationMarkers.some(isValidationWarningMarker)
+  const hasInfo = blockValidationMarkers.some(isValidationInfoMarker)
 
   const isImagePreview = type?.type?.name === 'image'
 
   const blockPath = useMemo(() => [{_key: block._key}], [block._key])
 
-  const tooltipEnabled = hasErrors || hasWarnings || hasInfo || hasMarkers
+  const tooltipEnabled = hasErrors || hasWarnings || hasInfo || (hasMarkers && renderCustomMarkers)
 
   return (
     <Flex paddingBottom={1} marginY={3} contentEditable={false} ref={forwardedRef}>
@@ -172,7 +165,11 @@ export const BlockObject = React.forwardRef(function BlockObject(
             content={
               tooltipEnabled && (
                 <TooltipBox padding={2}>
-                  <Markers markers={markers} renderCustomMarkers={renderCustomMarkers} />
+                  <Markers
+                    markers={markers}
+                    validation={validation}
+                    renderCustomMarkers={renderCustomMarkers}
+                  />
                 </TooltipBox>
               )
             }
@@ -181,7 +178,7 @@ export const BlockObject = React.forwardRef(function BlockObject(
               data-focused={focused ? '' : undefined}
               data-image-preview={isImagePreview ? '' : undefined}
               data-invalid={hasErrors ? '' : undefined}
-              data-markers={hasMarkers ? '' : undefined}
+              data-markers={hasMarkers && renderCustomMarkers ? '' : undefined}
               data-selected={selected ? '' : undefined}
               data-testid="pte-block-object"
               data-warning={hasWarnings ? '' : undefined}

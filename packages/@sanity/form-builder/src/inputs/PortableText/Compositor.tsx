@@ -1,6 +1,5 @@
 import {Subject} from 'rxjs'
 import React, {useEffect, useState, useMemo, useCallback, useRef} from 'react'
-import {FormFieldPresence} from '@sanity/base/presence'
 import {
   EditorSelection,
   OnCopyFn,
@@ -13,7 +12,7 @@ import {
   RenderAttributes,
   Type,
 } from '@sanity/portable-text-editor'
-import {Path, isKeySegment, Marker} from '@sanity/types'
+import {isKeySegment, isValidationErrorMarker, isValidationWarningMarker} from '@sanity/types'
 import {
   BoundaryElementProvider,
   Portal,
@@ -24,12 +23,12 @@ import {
 } from '@sanity/ui'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/components'
 import ActivateOnFocus from '../../components/ActivateOnFocus/ActivateOnFocus'
-import PatchEvent from '../../PatchEvent'
+import {FormInputProps} from '../../types'
 import {BlockObject} from './object/BlockObject'
 import {InlineObject} from './object/InlineObject'
 import {EditObject} from './object/EditObject'
 import {Annotation, TextBlock} from './text'
-import {RenderBlockActions, RenderCustomMarkers} from './types'
+import {PortableTextMarker, RenderBlockActions, RenderCustomMarkers} from './types'
 import {Editor} from './Editor'
 import {ExpandedLayer, Root} from './Compositor.styles'
 import {useObjectEditData} from './hooks/useObjectEditData'
@@ -42,23 +41,17 @@ import {useScrollToFocusFromOutside} from './hooks/useScrollToFocusFromOutside'
 const ROOT_PATH = []
 const ACTIVATE_ON_FOCUS_MESSAGE = <Text weight="semibold">Click to activate</Text>
 
-interface InputProps {
-  focusPath: Path
+interface InputProps extends Omit<FormInputProps<PortableTextBlock[]>, 'type'> {
   hasFocus: boolean
   hotkeys: HotkeyOptions
   isFullscreen: boolean
-  markers: Marker[]
-  onChange: (event: PatchEvent) => void
+  markers: PortableTextMarker[]
   onCopy?: OnCopyFn
-  onFocus: (path: Path) => void
   onPaste?: OnPasteFn
   onToggleFullscreen: () => void
   patches$: Subject<EditorPatch>
-  presence: FormFieldPresence[]
-  readOnly: boolean | null
   renderBlockActions?: RenderBlockActions
   renderCustomMarkers?: RenderCustomMarkers
-  value: PortableTextBlock[] | undefined
 }
 
 export function Compositor(props: InputProps) {
@@ -78,6 +71,7 @@ export function Compositor(props: InputProps) {
     readOnly,
     renderBlockActions,
     renderCustomMarkers,
+    validation,
     value,
   } = props
 
@@ -181,7 +175,10 @@ export function Compositor(props: InputProps) {
       const isTextBlock = block._type === ptFeatures.types.block.name
       const blockRef: React.RefObject<HTMLDivElement> = React.createRef()
       const blockMarkers = markers.filter(
-        (marker) => isKeySegment(marker.path[0]) && marker.path[0]._key === block._key
+        (msg) => isKeySegment(msg.path[0]) && msg.path[0]._key === block._key
+      )
+      const blockValidation = validation.filter(
+        (msg) => isKeySegment(msg.path[0]) && msg.path[0]._key === block._key
       )
       if (isTextBlock) {
         return (
@@ -191,6 +188,7 @@ export function Compositor(props: InputProps) {
             blockRef={blockRef}
             isFullscreen={isFullscreen}
             markers={blockMarkers}
+            validation={blockValidation}
             onChange={onChange}
             readOnly={readOnly}
             renderBlockActions={hasContent && renderBlockActions}
@@ -209,6 +207,7 @@ export function Compositor(props: InputProps) {
           editor={editor}
           isFullscreen={isFullscreen}
           markers={blockMarkers}
+          validation={blockValidation}
           onChange={onChange}
           onFocus={onFocus}
           readOnly={readOnly}
@@ -231,6 +230,7 @@ export function Compositor(props: InputProps) {
       readOnly,
       renderBlockActions,
       renderCustomMarkers,
+      validation,
     ]
   )
 
@@ -243,14 +243,14 @@ export function Compositor(props: InputProps) {
           <span ref={useRefElm ? childEditorElementRef : undefined}>{defaultRender(child)}</span>
         )
       }
-      const childMarkers = markers.filter(
+      const childValidation = validation.filter(
         (marker) => isKeySegment(marker.path[2]) && marker.path[2]._key === child._key
       )
       return (
         <InlineObject
           attributes={attributes}
           isEditing={!!editObjectKey}
-          markers={childMarkers}
+          validation={childValidation}
           onFocus={onFocus}
           readOnly={readOnly}
           ref={useRefElm ? inlineObjectElementRef : undefined}
@@ -263,7 +263,7 @@ export function Compositor(props: InputProps) {
     },
     [
       editObjectKey,
-      markers,
+      validation,
       onFocus,
       ptFeatures.types.span.name,
       readOnly,
@@ -277,20 +277,18 @@ export function Compositor(props: InputProps) {
       const annotationMarkers = markers.filter(
         (marker) => isKeySegment(marker.path[2]) && marker.path[2]._key === annotation._key
       )
-      const hasError =
-        annotationMarkers.filter(
-          (marker) => marker.type === 'validation' && marker.level === 'error'
-        ).length > 0
-      const hasWarning =
-        annotationMarkers.filter(
-          (marker) => marker.type === 'validation' && marker.level === 'warning'
-        ).length > 0
+      const annotationValidation = validation.filter(
+        (marker) => isKeySegment(marker.path[2]) && marker.path[2]._key === annotation._key
+      )
+      const hasError = annotationValidation.some(isValidationErrorMarker)
+      const hasWarning = annotationValidation.some(isValidationWarningMarker)
       return (
         <Annotation
           attributes={attributes}
           hasError={hasError}
           hasWarning={hasWarning}
           markers={annotationMarkers}
+          validation={annotationValidation}
           onFocus={onFocus}
           readOnly={readOnly}
           renderCustomMarkers={renderCustomMarkers}
@@ -302,7 +300,7 @@ export function Compositor(props: InputProps) {
         </Annotation>
       )
     },
-    [markers, onFocus, readOnly, renderCustomMarkers, scrollElement]
+    [markers, onFocus, readOnly, renderCustomMarkers, scrollElement, validation]
   )
 
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
@@ -352,7 +350,7 @@ export function Compositor(props: InputProps) {
       <EditObject
         focusPath={focusPath}
         objectEditData={objectEditData}
-        markers={markers} // TODO: filter relevant?
+        validation={validation} // TODO: filter relevant?
         onBlur={onEditObjectFormBuilderBlur}
         onChange={onObjectEditFormBuilderChange}
         onClose={onEditObjectClose}

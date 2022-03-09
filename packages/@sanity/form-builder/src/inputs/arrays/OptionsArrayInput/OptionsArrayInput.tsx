@@ -96,7 +96,7 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
   }
 
   render() {
-    const {type, markers, value, level, readOnly, presence, onFocus, onBlur} = this.props
+    const {type, validation, value, level, readOnly, presence, onFocus, onBlur} = this.props
     const options: any[] = type.options?.list || []
 
     // note: direction was never documented and makes more sense to use "grid" for it too
@@ -110,7 +110,7 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
         __unstable_presence={presence}
         level={level}
         __unstable_changeIndicator={changeIndicatorOptions}
-        __unstable_markers={markers}
+        validation={validation}
       >
         <List isGrid={isGrid}>
           {options.map((option, index) => {

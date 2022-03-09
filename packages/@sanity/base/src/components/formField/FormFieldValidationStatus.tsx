@@ -2,31 +2,25 @@
 
 import {hues} from '@sanity/color'
 import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
-import {
-  isValidationErrorMarker,
-  isValidationMarker,
-  isValidationWarningMarker,
-  Marker,
-  ValidationMarker,
-} from '@sanity/types'
+import {isValidationErrorMarker, isValidationWarningMarker, ValidationMarker} from '@sanity/types'
 import {Box, Flex, Placement, Stack, Text, Tooltip} from '@sanity/ui'
 import React, {useMemo} from 'react'
-import {markersToValidationList} from './helpers'
-import {FormFieldValidation} from './types'
 
 export interface FormFieldValidationStatusProps {
   /**
-   * @beta
+   * @alpha
    */
-  __unstable_markers?: Marker[]
+  validation?: ValidationMarker[]
   /**
-   * @beta
+   * @alpha
    */
   __unstable_showSummary?: boolean
   fontSize?: number | number
   placement?: Placement
   portal?: boolean
 }
+
+const EMPTY_ARRAY: never[] = []
 
 const VALIDATION_COLORS: Record<'error' | 'warning' | 'info', string> = {
   error: hues.red[500].hex,
@@ -42,17 +36,16 @@ const VALIDATION_ICONS: Record<'error' | 'warning' | 'info', React.ReactElement>
 
 export function FormFieldValidationStatus(props: FormFieldValidationStatusProps) {
   const {
-    __unstable_markers: markers = [],
+    validation = EMPTY_ARRAY,
     __unstable_showSummary: showSummary,
     fontSize,
     placement = 'top',
     portal,
   } = props
-  const validationMarkers = markers.filter(isValidationMarker)
-  const validation = markersToValidationList(validationMarkers)
-  const errors = validation.filter((v) => v.type === 'error')
-  const warnings = validation.filter((v) => v.type === 'warning')
-  const info = validation.filter((v) => v.type === 'info')
+
+  const errors = validation.filter((v) => v.level === 'error')
+  const warnings = validation.filter((v) => v.level === 'warning')
+  const info = validation.filter((v) => v.level === 'info')
 
   const hasErrors = errors.length > 0
   const hasWarnings = warnings.length > 0
@@ -76,7 +69,7 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
     <Tooltip
       content={
         <Stack padding={3} space={3}>
-          {showSummary && <FormFieldValidationSummary markers={validationMarkers} />}
+          {showSummary && <FormFieldValidationSummary validation={validation} />}
 
           {!showSummary && (
             <>
@@ -101,20 +94,20 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
   )
 }
 
-function FormFieldValidationStatusItem(props: {item: FormFieldValidation}) {
+function FormFieldValidationStatusItem(props: {item: ValidationMarker}) {
   const {item} = props
 
   const statusIcon = useMemo(() => {
-    if (item.type === 'error') return VALIDATION_ICONS.error
-    if (item.type === 'warning') return VALIDATION_ICONS.warning
-    if (item.type === 'info') return VALIDATION_ICONS.info
+    if (item.level === 'error') return VALIDATION_ICONS.error
+    if (item.level === 'warning') return VALIDATION_ICONS.warning
+    if (item.level === 'info') return VALIDATION_ICONS.info
     return undefined
   }, [item])
 
   const statusColor = useMemo(() => {
-    if (item.type === 'error') return VALIDATION_COLORS.error
-    if (item.type === 'warning') return VALIDATION_COLORS.warning
-    if (item.type === 'info') return VALIDATION_COLORS.info
+    if (item.level === 'error') return VALIDATION_COLORS.error
+    if (item.level === 'warning') return VALIDATION_COLORS.warning
+    if (item.level === 'info') return VALIDATION_COLORS.info
     return undefined
   }, [item])
 
@@ -127,16 +120,16 @@ function FormFieldValidationStatusItem(props: {item: FormFieldValidation}) {
       </Box>
       <Box flex={1}>
         <Text muted size={1}>
-          {item.label}
+          {item.item.message}
         </Text>
       </Box>
     </Flex>
   )
 }
 
-function FormFieldValidationSummary({markers}: {markers: ValidationMarker[]}) {
-  const errorMarkers = markers.filter(isValidationErrorMarker)
-  const warningMarkers = markers.filter(isValidationWarningMarker)
+function FormFieldValidationSummary({validation}: {validation: ValidationMarker[]}) {
+  const errorMarkers = validation.filter(isValidationErrorMarker)
+  const warningMarkers = validation.filter(isValidationWarningMarker)
   const errorLen = errorMarkers.length
   const warningLen = warningMarkers.length
 

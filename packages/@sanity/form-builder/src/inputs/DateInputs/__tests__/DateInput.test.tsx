@@ -5,9 +5,9 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
-import {DateInput, Props} from '../DateInput'
+import {DateInput, DateInputProps} from '../DateInput'
 
-function renderInput(props: Partial<Props> = {}) {
+function renderInput(props: Partial<DateInputProps> = {}) {
   const onFocus = jest.fn()
   const onChange = jest.fn()
 
@@ -15,11 +15,13 @@ function renderInput(props: Partial<Props> = {}) {
     <ThemeProvider scheme="light" theme={studioTheme}>
       <LayerProvider>
         <DateInput
-          type={{title: 'Date input test', name: 'date', options: {}}}
+          focusPath={[]}
+          type={{title: 'Date input test', name: 'date', options: {}} as any}
           onFocus={onFocus}
           onChange={onChange}
-          markers={[]}
+          validation={[]}
           level={0}
+          presence={[]}
           {...props}
         />
       </LayerProvider>

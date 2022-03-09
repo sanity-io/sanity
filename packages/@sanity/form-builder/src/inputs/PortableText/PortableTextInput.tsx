@@ -1,7 +1,7 @@
 import type {Patch as FormBuilderPatch} from '@sanity/base/_internal'
 import {FormField} from '@sanity/base/components'
 import React, {useEffect, useState, useMemo, useCallback, useRef} from 'react'
-import {Marker, Path} from '@sanity/types'
+import {Path} from '@sanity/types'
 import {
   EditorChange,
   OnCopyFn,
@@ -20,7 +20,7 @@ import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import PatchEvent from '../../PatchEvent'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {FormInputProps} from '../../types'
-import {RenderBlockActions, RenderCustomMarkers} from './types'
+import {PortableTextMarker, RenderBlockActions, RenderCustomMarkers} from './types'
 import {Compositor} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {VisibleOnFocusButton} from './VisibleOnFocusButton'
@@ -43,8 +43,7 @@ type PatchSubscriber = ({
  */
 export interface PortableTextInputProps extends FormInputProps<PortableTextBlock[], Type> {
   hotkeys?: HotkeyOptions
-  // @todo: move the `Marker` type to this directory
-  markers: Marker[]
+  markers?: PortableTextMarker[]
   onCopy?: OnCopyFn
   onPaste?: OnPasteFn
   renderBlockActions?: RenderBlockActions
@@ -72,11 +71,11 @@ export const PortableTextInput = withPatchSubscriber(
       }
     }
     render() {
-      const {type, level, markers, presence} = this.props
+      const {type, level, validation, presence} = this.props
       return (
         <FormField
           __unstable_changeIndicator={false}
-          __unstable_markers={markers}
+          validation={validation}
           __unstable_presence={presence}
           description={type.description}
           level={level}
@@ -90,13 +89,16 @@ export const PortableTextInput = withPatchSubscriber(
 ) as React.ComponentType as React.ComponentType<PortableTextInputProps>
 
 const PortableTextInputController = React.forwardRef(function PortableTextInputController(
-  props: Omit<PortableTextInputProps, 'level'> & {subscribe: PatchSubscribe},
+  props: PortableTextInputProps & {subscribe: PatchSubscribe},
   ref: React.RefObject<PortableTextEditor>
 ) {
   const {
+    compareValue,
     focusPath,
     hotkeys,
-    markers,
+    level,
+    markers = [],
+    validation,
     onBlur,
     onChange,
     onCopy,
@@ -252,11 +254,14 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
           value={value}
         >
           <Compositor
+            compareValue={compareValue}
             focusPath={focusPath}
             hasFocus={hasFocus}
             hotkeys={hotkeys}
             isFullscreen={isFullscreen}
+            level={level}
             markers={markers}
+            validation={validation}
             onChange={onChange}
             onCopy={onCopy}
             onFocus={onFocus}

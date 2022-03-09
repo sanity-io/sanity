@@ -73,7 +73,6 @@ export default async function validateDocument(
     console.error(err)
     return [
       {
-        type: 'validation',
         level: 'error',
         path: [],
         item: new ValidationErrorClass(err?.message),

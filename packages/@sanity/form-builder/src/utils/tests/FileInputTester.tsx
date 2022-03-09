@@ -68,7 +68,7 @@ export const DEFAULT_PROPS = {
   focusPath: [],
   directUploads: true,
   assetSources: [{}],
-  markers: [],
+  validation: [],
   presence: [],
   imageUrlBuilder: imageUrlBuilderStub,
   getValuePath: () => ['File'],

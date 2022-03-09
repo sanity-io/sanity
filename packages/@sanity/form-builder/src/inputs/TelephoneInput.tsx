@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react'
-import {StringSchemaType} from '@sanity/types'
+import {isValidationErrorMarker, StringSchemaType} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {FormField} from '@sanity/base/components'
@@ -12,13 +12,9 @@ const TelephoneInput = React.forwardRef(function TelephoneInput(
   props: TelephoneInputProps,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
-  const {value, readOnly, type, markers, level, onFocus, onBlur, onChange, presence} = props
+  const {value, readOnly, type, validation, level, onFocus, onBlur, onChange, presence} = props
   const inputId = useId()
-
-  const errors = useMemo(
-    () => markers.filter((marker) => marker.type === 'validation' && marker.level === 'error'),
-    [markers]
-  )
+  const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
 
   const handleChange = React.useCallback(
     (event) => {
@@ -30,7 +26,7 @@ const TelephoneInput = React.forwardRef(function TelephoneInput(
   return (
     <FormField
       level={level}
-      __unstable_markers={markers}
+      validation={validation}
       title={type.title}
       description={type.description}
       __unstable_presence={presence}

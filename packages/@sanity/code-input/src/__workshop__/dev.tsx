@@ -1,13 +1,18 @@
 import {FormFieldPresence} from '@sanity/base/presence'
-import {Path} from '@sanity/types'
+import {createSchema} from '@sanity/base/schema'
+import {ValidationMarker, Path} from '@sanity/types'
 import {Box} from '@sanity/ui'
 import {useAction} from '@sanity/ui-workshop'
 import React, {useState} from 'react'
-import CodeInput from '../CodeInput'
-import type from '../schema'
+import CodeInput, {CodeSchemaType} from '../CodeInput'
+import typeDef from '../schema'
+
+const schema = createSchema({name: 'dev', types: [typeDef]})
+const type = schema.get('code') as CodeSchemaType
 
 export default function DevStory() {
   const [focusPath] = useState<Path>([])
+  const [validation] = useState<ValidationMarker[]>([])
   const onBlur = useAction('onBlur')
   const onChange = useAction('onChange')
   const onFocus = useAction('onFocus')
@@ -17,6 +22,8 @@ export default function DevStory() {
     <Box padding={4}>
       <CodeInput
         focusPath={focusPath}
+        level={0}
+        validation={validation}
         onBlur={onBlur}
         onChange={onChange}
         onFocus={onFocus}

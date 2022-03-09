@@ -13,7 +13,7 @@ import {
   first,
 } from 'rxjs/operators'
 import {validateDocument} from '@sanity/validation'
-import {Marker, ValidationContext, isReference, Schema} from '@sanity/types'
+import {ValidationMarker, ValidationContext, isReference, Schema} from '@sanity/types'
 import reduceJSON from 'json-reduce'
 import {memoize} from '../utils/createMemoizer'
 import {IdPair} from '../types'
@@ -23,10 +23,10 @@ import {editState} from './editState'
 
 export interface ValidationStatus {
   isValidating: boolean
-  markers: Marker[]
+  validation: ValidationMarker[]
 }
 
-const INITIAL_VALIDATION_STATUS: ValidationStatus = {isValidating: true, markers: []}
+const INITIAL_VALIDATION_STATUS: ValidationStatus = {isValidating: true, validation: []}
 
 function findReferenceIds(obj: any): Set<string> {
   return reduceJSON(
@@ -143,7 +143,7 @@ export const validation = memoize(
           of({isValidating: true}),
           defer(async () => {
             if (!document?._type) {
-              return {markers: [], isValidating: false}
+              return {validation: [], isValidating: false}
             }
 
             // TODO: consider cancellation eventually
@@ -151,7 +151,7 @@ export const validation = memoize(
               getDocumentExists,
             })
 
-            return {markers, isValidating: false}
+            return {validation: markers, isValidating: false}
           })
         )
       ),

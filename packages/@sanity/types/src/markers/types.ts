@@ -1,9 +1,9 @@
 import type {ValidationError} from '../validation'
 import type {Path} from '../paths'
 
-export type Marker = ValidationMarker
-
-interface BaseMarker {
+export interface ValidationMarker {
+  level: 'error' | 'warning' | 'info'
+  item: ValidationError
   /**
    * The sanity path _relative to the root of the current document_ to this
    * marker.
@@ -12,10 +12,4 @@ interface BaseMarker {
    * are not compatible with deep getters like lodash/get
    */
   path: Path
-}
-
-export interface ValidationMarker extends BaseMarker {
-  type: 'validation'
-  level: 'error' | 'warning' | 'info'
-  item: ValidationError
 }

@@ -391,10 +391,10 @@ export default class FileInput extends React.PureComponent<FileInputProps, FileI
   }
 
   renderField(field: Field) {
-    const {value, level, focusPath, onFocus, readOnly, onBlur, compareValue, presence, markers} =
+    const {value, level, focusPath, onFocus, readOnly, onBlur, compareValue, presence, validation} =
       this.props
     const fieldValue = value?.[field.name]
-    const fieldMarkers = markers.filter((marker) => marker.path[0] === field.name)
+    const fieldMarkers = validation.filter((marker) => marker.path[0] === field.name)
 
     return (
       <FileInputField
@@ -410,7 +410,7 @@ export default class FileInput extends React.PureComponent<FileInputProps, FileI
         focusPath={focusPath}
         level={level}
         presence={presence}
-        markers={fieldMarkers}
+        validation={fieldMarkers}
       />
     )
   }
@@ -633,7 +633,7 @@ export default class FileInput extends React.PureComponent<FileInputProps, FileI
       value,
       compareValue,
       level,
-      markers,
+      validation,
       readOnly,
       presence,
       resolveUploader,
@@ -675,7 +675,7 @@ export default class FileInput extends React.PureComponent<FileInputProps, FileI
         <ImperativeToast ref={this.setToast} />
 
         <FormFieldSet
-          __unstable_markers={markers}
+          validation={validation}
           title={type.title}
           description={type.description}
           level={highlightedFields.length > 0 ? level : 0}

@@ -64,10 +64,6 @@ const value = [
     ],
   },
 ]
-const noop = () => {
-  // noop
-}
-const subscribe = () => noop
 
 function renderCustomMarkers(markers) {
   return markers.map((marker, index) => {
@@ -109,7 +105,6 @@ function renderInput(props: Partial<PortableTextInputProps> = {}) {
             renderBlockActions={renderBlockActions}
             readOnly={false}
             presence={[]}
-            subscribe={subscribe}
             value={value}
             schema={schema}
             {...(props || {})}

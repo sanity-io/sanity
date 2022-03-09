@@ -90,16 +90,15 @@ describe('validation', () => {
     await expect(subscription).resolves.toMatchObject([
       {
         isValidating: true,
-        markers: [],
+        validation: [],
       },
       {
         isValidating: false,
-        markers: [
+        validation: [
           {
             item: {message: 'Expected type "String", got "Number"'},
             level: 'error',
             path: ['title'],
-            type: 'validation',
           },
         ],
       },
@@ -156,10 +155,13 @@ describe('validation', () => {
     closeSubscription()
 
     await expect(subscription).resolves.toMatchObject([
-      {isValidating: true, markers: []},
-      {isValidating: false, markers: [{item: {message: 'Expected type "String", got "Number"'}}]},
-      {isValidating: true, markers: [{item: {message: 'Expected type "String", got "Number"'}}]},
-      {isValidating: false, markers: []},
+      {isValidating: true, validation: []},
+      {
+        isValidating: false,
+        validation: [{item: {message: 'Expected type "String", got "Number"'}}],
+      },
+      {isValidating: true, validation: [{item: {message: 'Expected type "String", got "Number"'}}]},
+      {isValidating: false, validation: []},
     ])
   })
 
@@ -216,17 +218,16 @@ describe('validation', () => {
     closeSubscription()
 
     await expect(subscription).resolves.toMatchObject([
-      {isValidating: true, markers: []},
-      {isValidating: false, markers: []},
-      {isValidating: true, markers: []},
+      {isValidating: true, validation: []},
+      {isValidating: false, validation: []},
+      {isValidating: true, validation: []},
       {
         isValidating: false,
-        markers: [
+        validation: [
           {
             item: {message: /.+/},
             level: 'error',
             path: ['exampleRef'],
-            type: 'validation',
           },
         ],
       },
@@ -272,16 +273,15 @@ describe('validation', () => {
     expect(result).toMatchObject([
       {
         isValidating: true,
-        markers: [],
+        validation: [],
       },
       {
         isValidating: false,
-        markers: [
+        validation: [
           {
             item: {message: 'Expected type "String", got "Number"'},
             level: 'error',
             path: ['title'],
-            type: 'validation',
           },
         ],
       },
@@ -307,7 +307,7 @@ describe('validation', () => {
     expect(immediatePlayback).toEqual(immediatePlaybackAgain)
   })
 
-  it.skip('returns empty markers if there is no available published or draft snapshot', async () => {
+  it.skip('returns empty validation message arrays if there is no available published or draft snapshot', async () => {
     const client = createMockSanityClient()
 
     // Mock `editState`
@@ -329,8 +329,8 @@ describe('validation', () => {
     closeSubscription()
 
     await expect(subscription).resolves.toMatchObject([
-      {isValidating: true, markers: []},
-      {isValidating: false, markers: []},
+      {isValidating: true, validation: []},
+      {isValidating: false, validation: []},
     ])
   })
 })

@@ -1,6 +1,6 @@
 import React, {ForwardedRef, forwardRef, memo, useCallback, useEffect, useState} from 'react'
 import {
-  Marker,
+  ValidationMarker,
   MultiFieldSet,
   ObjectField,
   ObjectSchemaTypeWithOptions,
@@ -38,7 +38,7 @@ export interface ObjectInputProps
   filterField?: (...args: any[]) => any
 }
 
-const EMPTY_MARKERS: Marker[] = EMPTY_ARRAY
+const EMPTY_VALIDATION: ValidationMarker[] = EMPTY_ARRAY
 const EMPTY_PRESENCE: FormFieldPresence[] = EMPTY_ARRAY
 const EMPTY_PATH: Path = EMPTY_ARRAY
 const DEFAULT_FIELD_GROUP_NAME = 'all-fields'
@@ -71,7 +71,7 @@ export const ObjectInput = memo(
     const {
       type,
       presence = EMPTY_PRESENCE,
-      markers = EMPTY_MARKERS,
+      validation = EMPTY_VALIDATION,
       onChange,
       readOnly,
       level = 0,
@@ -232,7 +232,7 @@ export const ObjectInput = memo(
               onFocus={onFocus}
               onBlur={onBlur}
               compareValue={compareValue}
-              markers={markers}
+              validation={validation}
               focusPath={focusPath}
               level={fieldLevel}
               presence={presence}
@@ -249,7 +249,7 @@ export const ObjectInput = memo(
         forwardedRef,
         handleFieldChange,
         hasGroups,
-        markers,
+        validation,
         onBlur,
         onFocus,
         presence,
@@ -327,7 +327,7 @@ export const ObjectInput = memo(
             onFocus={onFocus}
             level={level + 1}
             presence={presence}
-            markers={markers}
+            validation={validation}
             fieldSetParent={value}
             fieldValues={fieldSetValuesObject}
           >
@@ -357,7 +357,7 @@ export const ObjectInput = memo(
       focusPath,
       onFocus,
       presence,
-      markers,
+      validation,
       value,
       fieldGroupPredicate,
     ])
@@ -504,7 +504,7 @@ export const ObjectInput = memo(
         collapsed={isCollapsed}
         onToggle={handleToggleFieldset}
         __unstable_presence={isCollapsed ? presence : EMPTY_ARRAY}
-        __unstable_markers={isCollapsed ? markers : EMPTY_ARRAY}
+        validation={isCollapsed ? validation : EMPTY_ARRAY}
         __unstable_changeIndicator={false}
       >
         {renderFieldGroups()}

@@ -77,12 +77,10 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
     useReferenceInputOptions()
 
   const documentRef = useValueRef(document)
-
   const documentTypeName = documentRef.current?._type
+  const refType = schema.get(documentTypeName)
 
-  const isDocumentLiveEdit = useMemo(() => {
-    return schema.get(documentTypeName).liveEdit === true
-  }, [documentTypeName, schema])
+  const isDocumentLiveEdit = useMemo(() => refType?.liveEdit, [refType])
 
   const valuePath = useMemo(getValuePath, [getValuePath])
 
@@ -152,7 +150,7 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
     return (
       (initialValueTemplateItems || [])
         // eslint-disable-next-line max-nested-callbacks
-        .filter((i) => type.to.some((refType) => refType.name === i.template.schemaType))
+        .filter((i) => type.to.some((_refType) => _refType.name === i.template.schemaType))
         .map((item) => ({
           id: item.id,
           title: item.title || `${item.template.schemaType} from template ${item.template.id}`,

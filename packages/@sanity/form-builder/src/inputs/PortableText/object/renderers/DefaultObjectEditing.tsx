@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect} from 'react'
 import {useId} from '@reach/auto-id'
-import {Path, Marker, SchemaType} from '@sanity/types'
+import {Path, ValidationMarker, SchemaType} from '@sanity/types'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import {PortableTextBlock, Type, PortableTextChild} from '@sanity/portable-text-editor'
 import {Box, Dialog, PortalProvider, useLayer, usePortal} from '@sanity/ui'
@@ -11,7 +11,7 @@ import {ModalWidth} from './types'
 
 interface DefaultObjectEditingProps {
   focusPath: Path
-  markers: Marker[]
+  validation: ValidationMarker[]
   object: PortableTextBlock | PortableTextChild
   onBlur: () => void
   onChange: (patchEvent: PatchEvent, path: Path) => void
@@ -27,7 +27,7 @@ interface DefaultObjectEditingProps {
 export function DefaultObjectEditing(props: DefaultObjectEditingProps) {
   const {
     focusPath,
-    markers,
+    validation,
     object,
     onBlur,
     onChange,
@@ -81,7 +81,7 @@ export function DefaultObjectEditing(props: DefaultObjectEditingProps) {
             <FormBuilderInput
               focusPath={focusPath}
               level={0}
-              markers={markers}
+              validation={validation}
               onBlur={onBlur}
               onChange={handleChange}
               onFocus={onFocus}

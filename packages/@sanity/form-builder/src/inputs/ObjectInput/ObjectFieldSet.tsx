@@ -2,7 +2,7 @@
 import React, {ForwardedRef, forwardRef, useMemo} from 'react'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {FormFieldSet, FormFieldSetProps} from '@sanity/base/components'
-import {Marker, MultiFieldSet, Path} from '@sanity/types'
+import {MultiFieldSet, Path} from '@sanity/types'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {ConditionalHiddenField} from '../common/ConditionalHiddenField'
 import {getCollapsedWithDefaults} from './utils'
@@ -13,7 +13,6 @@ interface Props extends Omit<FormFieldSetProps, 'onFocus'> {
   onFocus: (focusPath: Path) => void
   level: number
   presence: FormFieldPresence[]
-  markers: Marker[]
   fieldSetParent: Record<string, unknown> | undefined
   fieldValues: Record<string, unknown>
 }
@@ -32,7 +31,7 @@ export const ObjectFieldSet = forwardRef(function ObjectFieldSet(
     children,
     level,
     presence,
-    markers,
+    validation,
     onFocus,
     fieldValues,
     fieldSetParent,
@@ -55,12 +54,12 @@ export const ObjectFieldSet = forwardRef(function ObjectFieldSet(
   }, [fieldNames, isCollapsed, presence])
 
   const childMarkers = useMemo(() => {
-    return markers.length === 0
-      ? markers
-      : markers.filter(
+    return validation.length === 0
+      ? validation
+      : validation.filter(
           (item) => typeof item.path[0] === 'string' && fieldNames.includes(item.path[0])
         )
-  }, [fieldNames, markers])
+  }, [fieldNames, validation])
 
   const handleToggleFieldset = React.useCallback(
     (nextCollapsed) => {
@@ -108,7 +107,7 @@ export const ObjectFieldSet = forwardRef(function ObjectFieldSet(
           onToggle={handleToggleFieldset}
           __unstable_presence={isCollapsed ? childPresence : EMPTY_ARRAY}
           __unstable_changeIndicator={false}
-          __unstable_markers={childMarkers}
+          validation={childMarkers}
           ref={isCollapsed ? forwardedRef : null}
         >
           {children}

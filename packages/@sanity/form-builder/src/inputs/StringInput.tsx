@@ -1,6 +1,6 @@
 import React, {useMemo} from 'react'
 import {useId} from '@reach/auto-id'
-import {StringSchemaType} from '@sanity/types'
+import {isValidationErrorMarker, StringSchemaType} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {FormField} from '@sanity/base/components'
 import PatchEvent, {set, unset} from '../PatchEvent'
@@ -12,14 +12,10 @@ const StringInput = React.forwardRef(function StringInput(
   props: StringInputProps,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
-  const {value, readOnly, type, markers, level, onFocus, onBlur, onChange, presence} = props
+  const {value, readOnly, type, validation, level, onFocus, onBlur, onChange, presence} = props
   const placeholder = type.placeholder
   const inputId = useId()
-
-  const errors = useMemo(
-    () => markers.filter((marker) => marker.type === 'validation' && marker.level === 'error'),
-    [markers]
-  )
+  const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
 
   const handleChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,7 +47,7 @@ const StringInput = React.forwardRef(function StringInput(
       description={type.description}
       inputId={inputId}
       level={level}
-      __unstable_markers={markers}
+      validation={validation}
       __unstable_presence={presence}
       title={type.title}
     >

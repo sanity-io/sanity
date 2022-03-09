@@ -161,7 +161,6 @@ describe('schema validation inference', () => {
         validateDocument(client as unknown as SanityClient, mockDocument, schema)
       ).resolves.toMatchObject([
         {
-          type: 'validation',
           path: ['slugField'],
           level: 'error',
           item: {message: 'Slug is already in use', paths: []},
@@ -240,7 +239,6 @@ describe('schema validation inference', () => {
           item: {message: /.+/},
           level: 'error',
           path: ['referenceField'],
-          type: 'validation',
         },
       ])
 

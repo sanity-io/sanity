@@ -2,17 +2,17 @@
 
 import React, {memo} from 'react'
 import {Box, Flex} from '@sanity/ui'
-import {Marker} from '@sanity/types'
+import {ValidationMarker} from '@sanity/types'
 import {FieldPresence, FormFieldPresence} from '../../presence'
 import {FormFieldHeaderText} from './FormFieldHeaderText'
 
 export interface FormFieldHeaderProps {
   /**
-   * @beta
+   * @alpha
    */
-  __unstable_markers?: Marker[]
+  validation?: ValidationMarker[]
   /**
-   * @beta
+   * @alpha
    */
   __unstable_presence?: FormFieldPresence[]
   description?: React.ReactNode
@@ -24,19 +24,13 @@ export interface FormFieldHeaderProps {
 }
 
 export const FormFieldHeader = memo(function FormFieldHeader(props: FormFieldHeaderProps) {
-  const {
-    __unstable_markers: markers,
-    __unstable_presence: presence,
-    description,
-    inputId,
-    title,
-  } = props
+  const {validation, __unstable_presence: presence, description, inputId, title} = props
 
   return (
     <Flex align="flex-end">
       <Box flex={1} paddingY={2}>
         <FormFieldHeaderText
-          __unstable_markers={markers}
+          validation={validation}
           description={description}
           inputId={inputId}
           title={title}

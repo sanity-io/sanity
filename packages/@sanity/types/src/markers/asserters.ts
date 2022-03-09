@@ -1,23 +1,19 @@
-import type {Marker, ValidationMarker} from './types'
-
-export function isValidationMarker(marker: Marker): marker is ValidationMarker {
-  return marker.type === 'validation'
-}
+import type {ValidationMarker} from './types'
 
 export function isValidationErrorMarker(
-  marker: Marker
+  marker: ValidationMarker
 ): marker is ValidationMarker & {level: 'error'} {
-  return isValidationMarker(marker) && marker.level === 'error'
+  return marker.level === 'error'
 }
 
 export function isValidationWarningMarker(
-  marker: Marker
+  marker: ValidationMarker
 ): marker is ValidationMarker & {level: 'warning'} {
-  return isValidationMarker(marker) && marker.level === 'warning'
+  return marker.level === 'warning'
 }
 
 export function isValidationInfoMarker(
-  marker: Marker
+  marker: ValidationMarker
 ): marker is ValidationMarker & {level: 'info'} {
-  return isValidationMarker(marker) && marker.level === 'info'
+  return marker.level === 'info'
 }

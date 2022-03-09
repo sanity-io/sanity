@@ -38,7 +38,9 @@ export default function ReferenceInputStory() {
                 onChange={onChange}
                 onFocus={onFocus}
                 path={path}
+                presence={[]}
                 type={schemaType}
+                validation={[]}
                 value={undefined}
               />
             </SanityFormBuilderProvider>

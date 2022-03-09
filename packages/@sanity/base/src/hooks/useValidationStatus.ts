@@ -1,13 +1,13 @@
-import {Marker} from '@sanity/types'
+import {ValidationMarker} from '@sanity/types'
 import {useMemoObservable} from 'react-rx'
 import {useDatastores} from '../datastores'
 
 interface ValidationStatus {
   isValidating: boolean
-  markers: Marker[]
+  validation: ValidationMarker[]
 }
 
-const INITIAL: ValidationStatus = {markers: [], isValidating: false}
+const INITIAL: ValidationStatus = {validation: [], isValidating: false}
 
 export function useValidationStatus(publishedDocId: string, docTypeName: string): ValidationStatus {
   const {documentStore} = useDatastores()

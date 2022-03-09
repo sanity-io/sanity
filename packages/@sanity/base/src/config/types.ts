@@ -3,7 +3,6 @@ import {Router, RouterState} from '@sanity/state-router'
 import {
   Asset,
   AssetFromSource,
-  Marker,
   Schema as SanitySchema,
   Schema,
   SchemaType,
@@ -47,17 +46,34 @@ export interface SanityFormBuilderAssetSourceConfig {
   icon: React.ComponentType
 }
 
+/**
+ * @alpha
+ */
 export interface SanityFormBuilderConfig {
-  components?: {
-    // @todo
-    ArrayFunctions?: React.ComponentType<any>
-    CustomMarkers?: React.ComponentType<{markers: ValidationMarker[]}>
-    Markers?: React.ComponentType<{
-      markers: Marker[]
-      renderCustomMarkers?: (markers: Marker[]) => JSX.Element
-    }>
-  }
   assetSources?: SanityFormBuilderAssetSourceConfig[]
+  /**
+   * @todo Create typings for these components
+   */
+  components?: {
+    ArrayFunctions?: React.ComponentType<any>
+    CustomMarkers?: React.ComponentType<{validation: ValidationMarker[]}>
+    Markers?: React.ComponentType<{
+      validation: ValidationMarker[]
+      renderCustomMarkers?: (validation: ValidationMarker[]) => JSX.Element
+    }>
+    inputs?: {
+      object?: React.ComponentType<any>
+      boolean?: React.ComponentType<any>
+      number?: React.ComponentType<any>
+      string?: React.ComponentType<any>
+      text?: React.ComponentType<any>
+      reference?: React.ComponentType<any>
+      datetime?: React.ComponentType<any>
+      email?: React.ComponentType<any>
+      geopoint?: React.ComponentType<any>
+      url?: React.ComponentType<any>
+    }
+  }
   inputResolver?: (schemaType: SchemaType) => React.ComponentType<any> | undefined | false | null
 }
 

@@ -1,11 +1,10 @@
 import {PortableTextBlock, Type as PTType} from '@sanity/portable-text-editor'
-import {Path, Schema} from '@sanity/types'
+import {Path, Schema, ValidationMarker} from '@sanity/types'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import FormBuilderProvider from '../../../../FormBuilderProvider'
 import {PortableTextInput} from '../../PortableTextInput'
 import {applyAll} from '../../../../simplePatch'
-import {RenderBlockActions} from '../../types'
-import {useUnique} from '../../utils/useUnique'
+import {PortableTextMarker, RenderBlockActions, RenderCustomMarkers} from '../../types'
 import {ReviewChangesContextProvider} from '../../../../sanity/contexts/reviewChanges/ReviewChangesProvider'
 import {useFormBuilder} from '../../../../useFormBuilder'
 import {createPatchChannel} from '../../../../patchChannel'
@@ -13,10 +12,11 @@ import {inputResolver} from './input'
 import {resolvePreviewComponent} from './resolvePreviewComponent'
 
 interface TestInputProps {
-  markers?: any[]
+  markers?: PortableTextMarker[]
+  validation?: ValidationMarker[]
   readOnly?: boolean
   renderBlockActions?: RenderBlockActions
-  renderCustomMarkers?: (markers: any) => any
+  renderCustomMarkers?: RenderCustomMarkers // (markers: PortableTextMarker[]) => React.ReactNode
   schema: Schema
   type: PTType
   value: PortableTextBlock[] | undefined
@@ -27,7 +27,8 @@ interface TestInputProps {
 
 export function TestInput(props: TestInputProps) {
   const {
-    markers: propsMarkers,
+    markers: markersProp = [],
+    validation: validationProp = [],
     readOnly = false,
     renderBlockActions,
     renderCustomMarkers,
@@ -43,8 +44,9 @@ export function TestInput(props: TestInputProps) {
   const blockType = useMemo(() => type.of.find((t) => t.type.name === 'block'), [type])
   const presence = useMemo(() => [], [])
   const hotkeys = useMemo(() => ({}), [])
-  const [markers, setMarkers] = useState<any[]>(propsMarkers || [])
-  const uniqMarkers = useUnique(markers)
+  const [markers, setMarkers] = useState<PortableTextMarker[]>([])
+  const [validation, setValidation] = useState<ValidationMarker[]>([])
+  // const uniqMarkers = useUnique(markers)
 
   const onFocus = useCallback((path: Path) => {
     setFocusPath(path)
@@ -60,23 +62,23 @@ export function TestInput(props: TestInputProps) {
 
   useEffect(() => {
     if (value) {
-      const newMarkers = [...(propsMarkers || [])]
+      const newValidation = [...validationProp]
+      const newMarkers = [...markersProp]
+
       value.forEach((blk) => {
         if (blk._type === blockType.name) {
           const inline = blk.children.find((child) => child._type !== 'span')
           const annotation = blk.markDefs[0]
           if (inline) {
             if (withError) {
-              newMarkers.push({
-                type: 'validation',
+              newValidation.push({
                 level: 'error',
                 path: [{_key: blk._key}, 'children', {_key: inline._key}],
                 item: {message: 'There is an error with this inline object'},
               })
             }
             if (withWarning) {
-              newMarkers.push({
-                type: 'validation',
+              newValidation.push({
                 level: 'warning',
                 path: [{_key: blk._key}, 'children', {_key: inline._key}],
                 item: {message: 'This is a warning'},
@@ -90,16 +92,14 @@ export function TestInput(props: TestInputProps) {
             }
           } else if (annotation) {
             if (withError) {
-              newMarkers.push({
-                type: 'validation',
+              newValidation.push({
                 level: 'error',
                 path: [{_key: blk._key}, 'markDefs', {_key: annotation._key}],
                 item: {message: 'There an error with this annotation'},
               })
             }
             if (withWarning) {
-              newMarkers.push({
-                type: 'validation',
+              newValidation.push({
                 level: 'warning',
                 path: [{_key: blk._key}, 'markDefs', {_key: annotation._key}],
                 item: {message: 'This is a warning'},
@@ -113,16 +113,14 @@ export function TestInput(props: TestInputProps) {
             }
           } else {
             if (withError) {
-              newMarkers.push({
-                type: 'validation',
+              newValidation.push({
                 level: 'error',
                 path: [{_key: blk._key}],
                 item: {message: 'There is an error with this textblock'},
               })
             }
             if (withWarning) {
-              newMarkers.push({
-                type: 'validation',
+              newValidation.push({
                 level: 'warning',
                 path: [{_key: blk._key}],
                 item: {message: 'This is a warning'},
@@ -137,16 +135,14 @@ export function TestInput(props: TestInputProps) {
           }
         } else {
           if (withError) {
-            newMarkers.push({
-              type: 'validation',
+            newValidation.push({
               level: 'error',
               path: [{_key: blk._key}, 'title'],
               item: {message: 'There is an error with this object block'},
             })
           }
           if (withWarning) {
-            newMarkers.push({
-              type: 'validation',
+            newValidation.push({
               level: 'warning',
               path: [{_key: blk._key}, 'title'],
               item: {message: 'This is a warning'},
@@ -161,15 +157,15 @@ export function TestInput(props: TestInputProps) {
         }
       })
       setMarkers(newMarkers)
+      setValidation(newValidation)
     }
     if (!withError && !withCustomMarkers && !withWarning) {
-      setMarkers(propsMarkers || [])
+      setMarkers(markersProp)
+      setValidation(validationProp)
     }
-  }, [blockType.name, propsMarkers, value, withCustomMarkers, withError, withWarning])
+  }, [blockType, markersProp, validationProp, value, withCustomMarkers, withError, withWarning])
 
   const patchChannel = useMemo(() => createPatchChannel(), [])
-
-  const subscribe = useCallback(() => () => undefined, [])
 
   useEffect(() => {
     setValue(props.value)
@@ -206,7 +202,8 @@ export function TestInput(props: TestInputProps) {
           focusPath={focusPath}
           hotkeys={hotkeys}
           level={1}
-          markers={uniqMarkers}
+          markers={markers}
+          validation={validation}
           onBlur={onBlur}
           onChange={onChange}
           onFocus={onFocus}
@@ -214,7 +211,6 @@ export function TestInput(props: TestInputProps) {
           readOnly={readOnly}
           renderBlockActions={renderBlockActions}
           renderCustomMarkers={renderCustomMarkers}
-          subscribe={subscribe}
           type={props.type}
           value={value}
         />

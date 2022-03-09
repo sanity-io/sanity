@@ -173,6 +173,8 @@ export default function ExampleStory() {
                 filterField={fieldFilter}
                 ref={ref}
                 path={EMPTY}
+                validation={[]}
+                presence={[]}
               />
             </FormBuilderTester>
           </Stack>

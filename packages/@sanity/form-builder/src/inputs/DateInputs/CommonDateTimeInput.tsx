@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import React, {useEffect} from 'react'
 import {FormField} from '@sanity/base/components'
-import {Marker, StringSchemaType} from '@sanity/types'
+import {ValidationMarker, StringSchemaType} from '@sanity/types'
 import {useId} from '@reach/auto-id'
 import {useForwardedRef, TextInput} from '@sanity/ui'
 import {FormInputProps} from '../../types'
@@ -30,7 +30,7 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
 ) {
   const {
     value,
-    markers,
+    validation,
     title,
     description,
     placeholder,
@@ -96,17 +96,16 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
 
   return (
     <FormField
-      __unstable_markers={
+      validation={
         parseResult?.error
           ? [
-              ...markers,
-              ({
-                type: 'validation',
+              ...validation,
+              {
                 level: 'error',
                 item: {message: parseResult.error, paths: []},
-              } as unknown) as Marker, // casting to marker to avoid having to implement cloneWithMessage on item
+              } as unknown as ValidationMarker, // casting to marker to avoid having to implement cloneWithMessage on item
             ]
-          : markers
+          : validation
       }
       title={title}
       level={level}

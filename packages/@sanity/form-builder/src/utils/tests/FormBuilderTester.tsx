@@ -1,5 +1,5 @@
 import {FormFieldPresence} from '@sanity/base/presence'
-import {Marker, Path, Schema, SchemaType} from '@sanity/types'
+import {ValidationMarker, Path, Schema, SchemaType} from '@sanity/types'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {render} from '@testing-library/react'
 import React from 'react'
@@ -11,7 +11,7 @@ type FormBuilderProps = {
   value: any | null
   schema: Schema
   type: SchemaType
-  markers: Marker[]
+  validation: ValidationMarker[]
   patchChannel: PatchChannel
   compareValue: any
   onFocus: (path: Path) => void
@@ -28,7 +28,7 @@ const patchChannel = createPatchChannel()
 
 export const DEFAULT_PROPS = {
   level: 0,
-  markers: [],
+  validation: [],
   presence: [],
   compareValue: undefined,
   readOnly: undefined,

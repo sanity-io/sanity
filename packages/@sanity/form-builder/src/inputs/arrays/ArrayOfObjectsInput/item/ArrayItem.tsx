@@ -1,13 +1,5 @@
-/* eslint-disable import/no-unresolved,no-nested-ternary */
-
 import {ChangeIndicatorScope, ContextProvidedChangeIndicator} from '@sanity/base/components'
-import {
-  ArraySchemaType,
-  isReferenceSchemaType,
-  isValidationMarker,
-  Marker,
-  Path,
-} from '@sanity/types'
+import {ArraySchemaType, isReferenceSchemaType, ValidationMarker} from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
 import React, {memo, useCallback, useMemo, useRef} from 'react'
 import {FOCUS_TERMINATOR, pathFor, startsWith} from '@sanity/util/paths'
@@ -20,36 +12,28 @@ import {hasFocusAtPath, hasFocusWithinPath} from '../../../../utils/focusUtils'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
 import {EditPortal} from '../../../../EditPortal'
 import {useDidUpdate} from '../../../../hooks/useDidUpdate'
-import {FormBuilderFilterFieldFn} from '../../../../types'
+import {FormBuilderFilterFieldFn, FormInputProps} from '../../../../types'
 import {getItemType, isEmpty} from './helpers'
 import {ItemForm} from './ItemForm'
 import {RowItem} from './RowItem'
 import {CellItem} from './CellItem'
 
-interface ArrayInputListItemProps {
-  type: ArraySchemaType
-  value: ArrayMember
+export interface ArrayItemProps
+  extends Omit<FormInputProps<ArrayMember, ArraySchemaType>, 'level' | 'onChange'> {
   index: number
-  compareValue?: any[]
-  markers: Marker[]
   itemKey: string | undefined
   layout?: 'media' | 'default'
   onRemove: (value: ArrayMember) => void
   onInsert: (event: InsertEvent) => void
   onChange: (event: PatchEvent, value: ArrayMember) => void
-  onFocus: (path: Path) => void
-  onBlur: () => void
   ReferenceItemComponent: ReferenceItemComponentType
   filterField: FormBuilderFilterFieldFn
-  readOnly: boolean
-  focusPath: Path
-  presence: FormFieldPresence[]
 }
 
-export const ArrayItem = memo(function ArrayItem(props: ArrayInputListItemProps) {
+export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
   const {
     value,
-    markers,
+    validation,
     type,
     index,
     itemKey,
@@ -135,15 +119,15 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayInputListItemProps)
   const ItemComponent = isGrid ? CellItem : RowItem
 
   const itemMarkers = React.useMemo(
-    () => markers.filter((marker: Marker) => startsWith(itemPath, marker.path)),
-    [itemPath, markers]
+    () => validation.filter((marker: ValidationMarker) => startsWith(itemPath, marker.path)),
+    [itemPath, validation]
   )
 
   const scopedValidation = useMemo(
     () =>
       itemMarkers.length === 0
         ? EMPTY_ARRAY
-        : itemMarkers.filter(isValidationMarker).map((marker) => {
+        : itemMarkers.map((marker) => {
             if (marker.path.length <= 1) {
               return marker
             }
@@ -168,7 +152,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayInputListItemProps)
     const form = (
       <ItemForm
         onChange={handleChange}
-        markers={itemMarkers}
+        validation={itemMarkers}
         filterField={filterField}
         focusPath={focusPath}
         onFocus={onFocus}
@@ -218,7 +202,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayInputListItemProps)
     onFocus,
     onInsert,
     conditionalReadOnly,
-    type?.options?.editModal,
+    type,
     value,
   ])
 

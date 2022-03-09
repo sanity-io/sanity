@@ -1,7 +1,7 @@
 import React from 'react'
 import {get} from 'lodash'
 import {startsWith} from '@sanity/util/paths'
-import {ArraySchemaType, Marker, SchemaType} from '@sanity/types'
+import {ArraySchemaType, ValidationMarker, SchemaType} from '@sanity/types'
 import {Card, Stack} from '@sanity/ui'
 import {FormFieldSet} from '@sanity/base/components'
 import {resolveTypeName} from '@sanity/util/content'
@@ -15,7 +15,7 @@ import {ItemRow} from './ItemRow'
 import {PrimitiveValue} from './types'
 import {nearestIndexOf} from './utils/nearestIndex'
 
-const NO_MARKERS: Marker[] = []
+const NO_MARKERS: ValidationMarker[] = []
 
 function move<T>(arr: T[], from: number, to: number): T[] {
   const copy = arr.slice()
@@ -217,7 +217,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
       type,
       value,
       level = 1,
-      markers,
+      validation,
       readOnly,
       onChange,
       onFocus,
@@ -242,7 +242,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
           (item) => item.path[0] === '$' || item.path.length === 0
         )}
         __unstable_changeIndicator={false}
-        __unstable_markers={markers}
+        validation={validation}
       >
         <Stack space={3}>
           <Stack space={1}>
@@ -250,7 +250,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
               <Card padding={1} border>
                 <List onSortEnd={this.handleSortEnd} isSortable={isSortable}>
                   {value.map((item, index) => {
-                    const filteredMarkers = markers.filter((marker) =>
+                    const itemValidationMarkers = validation.filter((marker) =>
                       startsWith([index], marker.path)
                     )
                     const childPresence = presence.filter((pItem) =>
@@ -274,9 +274,13 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
                             level={level + 1}
                             index={index}
                             value={item}
-                            compareValue={compareValue}
+                            compareValue={compareValue?.[index]}
                             readOnly={readOnly}
-                            markers={filteredMarkers.length === 0 ? NO_MARKERS : filteredMarkers}
+                            validation={
+                              itemValidationMarkers.length === 0
+                                ? NO_MARKERS
+                                : itemValidationMarkers
+                            }
                             isSortable={isSortable}
                             type={memberType}
                             focusPath={focusPath}

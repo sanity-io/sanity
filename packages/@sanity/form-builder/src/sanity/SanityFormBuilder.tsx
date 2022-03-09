@@ -1,5 +1,5 @@
 import React from 'react'
-import {Marker, Path, Schema, SchemaType} from '@sanity/types'
+import {ValidationMarker, Path, Schema, SchemaType} from '@sanity/types'
 import {MutationPatch, toMutationPatches} from '@sanity/base/_internal'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {FormBuilderInput, FormBuilderInputInstance} from '../FormBuilderInput'
@@ -20,7 +20,7 @@ export interface SanityFormBuilderProps {
   value: any | null
   schema: Schema
   type: SchemaType
-  markers: Marker[]
+  validation: ValidationMarker[]
   compareValue: any
   onFocus: (path: Path) => void
   readOnly: boolean
@@ -64,7 +64,7 @@ export default class SanityFormBuilder extends React.Component<SanityFormBuilder
       __internal_patchChannel: patchChannel,
       type,
       readOnly,
-      markers,
+      validation,
       onFocus,
       onBlur,
       focusPath,
@@ -90,7 +90,7 @@ export default class SanityFormBuilder extends React.Component<SanityFormBuilder
             onFocus={onFocus}
             compareValue={compareValue}
             onBlur={onBlur}
-            markers={markers}
+            validation={validation}
             focusPath={focusPath}
             isRoot
             readOnly={readOnly}

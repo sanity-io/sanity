@@ -7,20 +7,21 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
-import {isValidationMarker, Marker, Path} from '@sanity/types'
+import {ValidationMarker, Path} from '@sanity/types'
 import styled, {css} from 'styled-components'
 import {Box, Theme, ThemeColorToneKey, Tooltip} from '@sanity/ui'
 import {hues} from '@sanity/color'
 import Markers from '../_legacyDefaultParts/Markers'
-import {RenderCustomMarkers} from '../types'
-import {AnnotationToolbarPopover} from './'
+import {PortableTextMarker, RenderCustomMarkers} from '../types'
+import {AnnotationToolbarPopover} from './AnnotationToolbarPopover'
 
 interface AnnotationProps {
   attributes: RenderAttributes
   children: JSX.Element
   hasError: boolean
   hasWarning: boolean
-  markers: Marker[]
+  markers: PortableTextMarker[]
+  validation: ValidationMarker[]
   onFocus: (path: Path) => void
   renderCustomMarkers: RenderCustomMarkers
   type: Type
@@ -73,6 +74,7 @@ export const Annotation = React.forwardRef(function Annotation(
     hasError,
     hasWarning,
     markers,
+    validation,
     onFocus,
     renderCustomMarkers,
     scrollElement,
@@ -104,14 +106,18 @@ export const Annotation = React.forwardRef(function Annotation(
           portal="default"
           content={
             <TooltipBox padding={2}>
-              <Markers markers={markers} renderCustomMarkers={renderCustomMarkers} />
+              <Markers
+                markers={markers}
+                renderCustomMarkers={renderCustomMarkers}
+                validation={validation}
+              />
             </TooltipBox>
           }
         >
           <span>{text}</span>
         </Tooltip>
       ) : undefined,
-    [markers, renderCustomMarkers, text]
+    [markers, renderCustomMarkers, text, validation]
   )
 
   const handleEditClick = useCallback(
@@ -151,7 +157,7 @@ export const Annotation = React.forwardRef(function Annotation(
     return 'default'
   }, [isLink, hasError, hasWarning])
 
-  const hasCustomMarkers = markers.filter((m) => !isValidationMarker(m)).length > 0
+  const hasCustomMarkers = markers.length > 0
 
   return (
     <Root

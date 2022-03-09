@@ -85,7 +85,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
     type,
     value,
     level,
-    markers = EMPTY_ARRAY,
+    validation = EMPTY_ARRAY,
     readOnly,
     liveEdit,
     onSearch,
@@ -232,7 +232,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
 
   const {push} = useToast()
 
-  const errors = useMemo(() => markers.filter(isValidationErrorMarker), [markers])
+  const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
 
   const pressed = selectedState === 'pressed'
   const selected = selectedState === 'selected'
@@ -366,7 +366,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
 
   return (
     <FormField
-      __unstable_markers={markers}
+      validation={validation}
       __unstable_presence={presence}
       __unstable_changeIndicator={false}
       inputId={inputId}

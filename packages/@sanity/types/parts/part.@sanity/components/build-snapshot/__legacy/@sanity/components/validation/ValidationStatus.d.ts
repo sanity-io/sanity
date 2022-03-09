@@ -1,13 +1,16 @@
 import type React from 'react'
-import {Marker} from '_self_'
-import {Placement} from '../types'
+import type {ValidationMarker} from '_self_'
+import type {Placement} from '../types'
+
 interface ValidationStatusProps {
   hideTooltip?: boolean
-  markers: Marker[]
+  validation: ValidationMarker[]
   placement?: Placement
   showSummary?: boolean
 }
+
 declare function ValidationStatus(
   props: ValidationStatusProps & React.HTMLProps<HTMLDivElement>
 ): JSX.Element
+
 export default ValidationStatus

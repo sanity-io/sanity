@@ -370,6 +370,7 @@ export default class ImageInput extends React.PureComponent<ImageInputProps, Ima
       readOnly,
       presence,
       imageUrlBuilder,
+      validation,
     } = this.props
 
     const withImageTool = this.isImageToolEnabled() && value && value.asset
@@ -401,6 +402,7 @@ export default class ImageInput extends React.PureComponent<ImageInputProps, Ima
                   onFocus={onFocus}
                   compareValue={compareValue}
                   onChange={onChange}
+                  validation={validation}
                 />
               )}
               {this.renderFields(fields)}
@@ -445,10 +447,10 @@ export default class ImageInput extends React.PureComponent<ImageInputProps, Ima
   }
 
   renderField(field: ObjectField) {
-    const {value, level, focusPath, onFocus, readOnly, onBlur, compareValue, presence, markers} =
+    const {value, level, focusPath, onFocus, readOnly, onBlur, compareValue, presence, validation} =
       this.props
     const fieldValue = value?.[field.name]
-    const fieldMarkers = markers.filter((marker) => marker.path[0] === field.name)
+    const fieldMarkers = validation.filter((marker) => marker.path[0] === field.name)
 
     return (
       <ImageInputField
@@ -464,7 +466,7 @@ export default class ImageInput extends React.PureComponent<ImageInputProps, Ima
         focusPath={focusPath}
         level={level}
         presence={presence}
-        markers={fieldMarkers}
+        validation={fieldMarkers}
       />
     )
   }
@@ -741,7 +743,7 @@ export default class ImageInput extends React.PureComponent<ImageInputProps, Ima
       value,
       compareValue,
       level,
-      markers,
+      validation,
       readOnly,
       presence,
       focusPath = EMPTY_ARRAY,
@@ -789,7 +791,7 @@ export default class ImageInput extends React.PureComponent<ImageInputProps, Ima
         <ImperativeToast ref={this.setToast} />
 
         <FormFieldSet
-          __unstable_markers={markers}
+          validation={validation}
           __unstable_presence={isDialogOpen ? EMPTY_ARRAY : fieldPresence}
           title={type.title}
           description={type.description}

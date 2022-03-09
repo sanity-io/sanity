@@ -1,11 +1,11 @@
 import {PortableTextBlock, RenderAttributes} from '@sanity/portable-text-editor'
-import {isKeySegment, isValidationMarker, Marker} from '@sanity/types'
+import {isKeySegment, ValidationMarker} from '@sanity/types'
 import {Box, ResponsivePaddingProps, Tooltip} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
 import PatchEvent from '../../../PatchEvent'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {BlockActions} from '../BlockActions'
-import {RenderBlockActions, RenderCustomMarkers} from '../types'
+import {PortableTextMarker, RenderBlockActions, RenderCustomMarkers} from '../types'
 import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
 import {TEXT_STYLE_PADDING} from './constants'
 import {
@@ -27,7 +27,8 @@ interface TextBlockProps {
   blockRef?: React.RefObject<HTMLDivElement>
   children: React.ReactNode
   isFullscreen?: boolean
-  markers: Marker[]
+  markers: PortableTextMarker[]
+  validation: ValidationMarker[]
   onChange: (event: PatchEvent) => void
   readOnly: boolean
   renderBlockActions?: RenderBlockActions
@@ -43,6 +44,7 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
     children,
     isFullscreen,
     markers,
+    validation,
     onChange,
     readOnly,
     renderBlockActions,
@@ -62,34 +64,36 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
 
   const handleOnHasChanges = useCallback((changed: boolean) => setHasChanges(changed), [])
 
-  // These are marker that is only for the block level (things further up, like annotations and inline objects are dealt with in their respective components)
-  const blockMarkers = useMemo(
+  // These are validation messages that are only for the block level (things further up, like
+  // annotations and inline objects are dealt with in their respective components)
+  const blockValidation = useMemo(
     () =>
-      markers.filter(
+      validation.filter(
         (marker) =>
           marker.path.length === 1 &&
           isKeySegment(marker.path[0]) &&
           marker.path[0]._key === blockKey
       ),
-    [blockKey, markers]
+    [blockKey, validation]
   )
 
-  const errorMarkers = useMemo(
-    () => blockMarkers.filter((marker) => isValidationMarker(marker) && marker.level === 'error'),
-    [blockMarkers]
+  const errorMessages = useMemo(
+    () => blockValidation.filter((marker) => marker.level === 'error'),
+    [blockValidation]
   )
 
-  const warningMarkers = useMemo(
-    () => blockMarkers.filter((marker) => isValidationMarker(marker) && marker.level === 'warning'),
-    [blockMarkers]
+  const warningMessages = useMemo(
+    () => blockValidation.filter((marker) => marker.level === 'warning'),
+    [blockValidation]
   )
 
-  const hasCustomMarkers =
-    Boolean(renderCustomMarkers) && blockMarkers.filter((m) => !isValidationMarker(m)).length > 0
-  const hasErrors = errorMarkers.length > 0
-  const hasWarnings = warningMarkers.length > 0
+  // const hasCustomMarkers =
+  //   Boolean(renderCustomMarkers) && blockValidation.filter((m) => !isValidationMarker(m)).length > 0
+  const hasMarkers = markers.length > 0
+  const hasErrors = errorMessages.length > 0
+  const hasWarnings = warningMessages.length > 0
 
-  const tooltipEnabled = hasErrors || hasWarnings || hasCustomMarkers
+  const tooltipEnabled = hasErrors || hasWarnings || hasMarkers
 
   const blockPath = useMemo(() => [{_key: blockKey}], [blockKey])
 
@@ -147,7 +151,7 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
             content={
               tooltipEnabled && (
                 <TooltipBox padding={2}>
-                  <Markers markers={blockMarkers} renderCustomMarkers={renderCustomMarkers} />
+                  <Markers markers={blockValidation} renderCustomMarkers={renderCustomMarkers} />
                 </TooltipBox>
               )
             }
@@ -157,7 +161,8 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
               data-error={hasErrors ? '' : undefined}
               data-warning={hasWarnings ? '' : undefined}
               data-list-item={block.listItem}
-              data-custom-markers={hasCustomMarkers ? '' : undefined}
+              // @todo: rename to `data-markers`
+              data-custom-markers={hasMarkers ? '' : undefined}
               data-testid="text-block__text"
               spellCheck={spellCheck}
               ref={blockRef}

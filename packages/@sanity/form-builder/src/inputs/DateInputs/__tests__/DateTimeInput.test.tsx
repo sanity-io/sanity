@@ -6,9 +6,9 @@ import React from 'react'
 
 import {LayerProvider, ThemeProvider, studioTheme} from '@sanity/ui'
 
-import {DateTimeInput, Props} from '../DateTimeInput'
+import {DateTimeInput, DateTimeInputProps} from '../DateTimeInput'
 
-function renderInput(props: Partial<Props> = {}) {
+function renderInput(props: Partial<DateTimeInputProps> = {}) {
   const onFocus = jest.fn()
   const onChange = jest.fn()
 
@@ -16,10 +16,12 @@ function renderInput(props: Partial<Props> = {}) {
     <ThemeProvider scheme="light" theme={studioTheme}>
       <LayerProvider>
         <DateTimeInput
-          type={{title: 'Test', name: 'datetime'}}
+          focusPath={[]}
+          type={{title: 'Test', name: 'datetime'} as any}
           onFocus={onFocus}
           onChange={onChange}
-          markers={[]}
+          presence={[]}
+          validation={[]}
           level={0}
           {...props}
         />

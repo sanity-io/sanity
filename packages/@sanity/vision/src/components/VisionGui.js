@@ -411,7 +411,6 @@ class VisionGui extends React.PureComponent {
       ? []
       : [
           {
-            type: 'validation',
             level: 'error',
             item: {
               message: validationError || 'Invalid JSON',
@@ -590,7 +589,7 @@ class VisionGui extends React.PureComponent {
                           <Box marginLeft={2}>
                             <FormFieldValidationStatus
                               fontSize={1}
-                              __unstable_markers={paramValidationMarkers}
+                              validation={paramValidationMarkers}
                             />
                           </Box>
                         )}

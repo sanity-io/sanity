@@ -2,7 +2,7 @@ import React, {useCallback} from 'react'
 import {
   ObjectSchemaType,
   Path,
-  Marker,
+  ValidationMarker,
   isValidationErrorMarker,
   isValidationWarningMarker,
   isValidationInfoMarker,
@@ -13,18 +13,17 @@ import {ListItem} from './listItem'
 interface ValidationListProps {
   documentType?: ObjectSchemaType
   kind?: 'simple'
-  markers: Marker[]
+  validation: ValidationMarker[]
   onFocus?: (path: Path) => void
   onClose?: () => void
   truncate?: boolean
 }
 
 export function ValidationList(props: ValidationListProps) {
-  const {documentType, kind, markers, onFocus, onClose, truncate} = props
-
-  const errors = markers.filter(isValidationErrorMarker)
-  const warnings = markers.filter(isValidationWarningMarker)
-  const info = markers.filter(isValidationInfoMarker)
+  const {documentType, kind, validation, onFocus, onClose, truncate} = props
+  const errors = validation.filter(isValidationErrorMarker)
+  const warnings = validation.filter(isValidationWarningMarker)
+  const info = validation.filter(isValidationInfoMarker)
 
   const handleClick = useCallback(
     (path: Path = []) => {

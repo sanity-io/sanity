@@ -1,9 +1,9 @@
 import type React from 'react'
-import {Marker} from '_self_'
+import type {ValidationMarker} from '_self_'
 interface SwitchProps {
   label?: string
   description?: string
-  markers?: Marker[]
+  validation?: ValidationMarker[]
   readOnly?: boolean
 }
 declare const _default: React.ForwardRefExoticComponent<
@@ -729,7 +729,7 @@ declare const _default: React.ForwardRefExoticComponent<
     | 'onTransitionEnd'
     | 'onTransitionEndCapture'
     | 'key'
-    | 'markers'
+    | 'validation'
     | 'description'
   > &
     React.RefAttributes<unknown>

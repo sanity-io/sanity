@@ -34,7 +34,7 @@ export const ObjectInputField = forwardRef(function ObjectInputField(
     onChange,
     onFocus,
     onBlur,
-    markers,
+    validation,
     focusPath,
     filterField,
     compareValue,
@@ -77,7 +77,7 @@ export const ObjectInputField = forwardRef(function ObjectInputField(
         onBlur={onBlur}
         focusPath={focusPath}
         filterField={filterField}
-        markers={markers}
+        validation={validation}
         compareValue={compareValue}
         level={level}
         presence={presence}
@@ -96,7 +96,7 @@ export const ObjectInputField = forwardRef(function ObjectInputField(
     onBlur,
     focusPath,
     filterField,
-    markers,
+    validation,
     compareValue,
     level,
     presence,

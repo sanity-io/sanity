@@ -54,7 +54,7 @@ function Debug(props: {documentId: string; documentType: string}) {
   })
 
   const editState = useEditState(documentId, documentType)
-  const {markers} = useValidationStatus(documentId, documentType)
+  const {validation} = useValidationStatus(documentId, documentType)
   const connectionState = useConnectionState(documentId, documentType)
 
   const value = editState?.draft || editState?.published || initialValue.value
@@ -70,7 +70,7 @@ function Debug(props: {documentId: string; documentType: string}) {
             documentId,
             documentType,
             initialValue,
-            markers,
+            validation,
             templateName,
             templateParams,
             value,

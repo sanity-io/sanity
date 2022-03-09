@@ -9,7 +9,7 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import {isValidationErrorMarker, isValidationMarker, Reference, SchemaType} from '@sanity/types'
+import {isValidationErrorMarker, Reference, SchemaType} from '@sanity/types'
 import {
   EllipsisVerticalIcon,
   LaunchIcon as OpenInNewTabIcon,
@@ -107,7 +107,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
   const {
     type,
     value,
-    markers,
+    validation,
     readOnly,
     liveEdit,
     onSearch,
@@ -181,12 +181,12 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
       if (!hit) {
         throw new Error('Selected an item that wasnt part of the result set')
       }
-      // if there's no published version of this document, set the reference to weak
 
       const patches = [
         setIfMissing({}),
         set(type.name, ['_type']),
         set(getPublishedId(id), ['_ref']),
+        // if there's no published version of this document, set the reference to weak
         hit.published && !type.weak ? unset(['_weak']) : set(true, ['_weak']),
         hit.published
           ? unset(['_strengthenOnPublish'])
@@ -281,7 +281,6 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
 
   const {push} = useToast()
 
-  const validation = useMemo(() => markers.filter(isValidationMarker), [markers])
   const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
 
   const pressed = selectedState === 'pressed'
@@ -438,7 +437,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
         {isEditing ? (
           <Box flex={1} padding={1} ref={clickOutsideBoundaryRef}>
             <FormField
-              __unstable_markers={markers}
+              validation={validation}
               __unstable_presence={presence}
               __unstable_changeIndicator={false}
               inputId={inputId}
@@ -540,7 +539,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
                 )}
                 {validation.length > 0 && (
                   <Box marginLeft={1} paddingX={1} paddingY={3}>
-                    <FormFieldValidationStatus __unstable_markers={validation} />
+                    <FormFieldValidationStatus validation={validation} />
                   </Box>
                 )}
                 {!value._key && (

@@ -1,7 +1,7 @@
 /// <reference types="react" />
-import {Path, Marker} from '_self_'
+import {Path, ValidationMarker} from '_self_'
 export interface DefaultTextInputProps extends React.HTMLProps<HTMLInputElement> {
-  markers?: Marker[]
+  validation?: ValidationMarker[]
   focusPath?: Path
   onClear?: () => void
   isClearable?: boolean

@@ -9,6 +9,7 @@ import {
 import {CheckmarkIcon, PublishIcon} from '@sanity/icons'
 import React, {useCallback, useEffect, useState} from 'react'
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
+import {isValidationErrorMarker} from '@sanity/types'
 import {TimeAgo} from '../components/TimeAgo'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 
@@ -45,7 +46,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const validationStatus = useValidationStatus(id, type)
   const syncState = useSyncState(id, type)
   const {changesOpen, handleHistoryOpen} = useDocumentPane()
-  const hasValidationErrors = validationStatus.markers.some((marker) => marker.level === 'error')
+  const hasValidationErrors = validationStatus.validation.some(isValidationErrorMarker)
   // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
   const [publishScheduled, setPublishScheduled] = useState<boolean>(false)
   const isNeitherSyncingNorValidating = !syncState.isSyncing && !validationStatus.isValidating

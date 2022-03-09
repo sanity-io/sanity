@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react'
-import {NumberSchemaType} from '@sanity/types'
+import {isValidationErrorMarker, NumberSchemaType} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {FormField} from '@sanity/base/components'
@@ -13,13 +13,8 @@ const NumberInput = React.forwardRef(function NumberInput(
   props: NumberInputProps,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
-  const {value = '', readOnly, markers, type, level, onFocus, onChange, presence} = props
-
-  const errors = useMemo(
-    () => markers.filter((marker) => marker.type === 'validation' && marker.level === 'error'),
-    [markers]
-  )
-
+  const {value = '', readOnly, validation, type, level, onFocus, onChange, presence} = props
+  const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
   const id = useId()
 
   // Show numpad on mobile if only positive numbers is preferred
@@ -36,7 +31,7 @@ const NumberInput = React.forwardRef(function NumberInput(
   return (
     <FormField
       level={level}
-      __unstable_markers={markers}
+      validation={validation}
       title={type.title}
       description={type.description}
       inputId={id}

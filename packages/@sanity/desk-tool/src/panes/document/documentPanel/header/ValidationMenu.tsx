@@ -10,7 +10,7 @@ import {Button, ButtonProps, Menu, MenuButton} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
 import {useDocumentPane} from '../../useDocumentPane'
 
-interface ValidationMenuProps {
+export interface ValidationMenuProps {
   boundaryElement: HTMLDivElement | null
   isOpen: boolean
   setOpen: (val: boolean) => void
@@ -33,50 +33,23 @@ const BUTTON_PROPS: Record<'error' | 'warning' | 'info', ButtonProps> = {
 
 export function ValidationMenu(props: ValidationMenuProps) {
   const {boundaryElement, isOpen, setOpen} = props
-  const {documentSchema, handleFocus, markers} = useDocumentPane()
+  const {documentSchema, handleFocus, validation} = useDocumentPane()
   const id = useId()
-
-  const validationMarkers = useMemo(
-    () => markers.filter((marker) => marker.type === 'validation'),
-    [markers]
-  )
-
-  const validationErrorMarkers = useMemo(() => validationMarkers.filter(isValidationErrorMarker), [
-    validationMarkers,
-  ])
-
-  const validationWarningMarkers = useMemo(
-    () => validationMarkers.filter(isValidationWarningMarker),
-    [validationMarkers]
-  )
-
-  const validationInfoMarkers = useMemo(() => validationMarkers.filter(isValidationInfoMarker), [
-    validationMarkers,
-  ])
-
-  const hasError = validationErrorMarkers.length > 0
-  const hasWarning = validationWarningMarkers.length > 0
-  const hasInfo = validationInfoMarkers.length > 0
-  const noValidation = !hasError && !hasWarning && !hasInfo
+  const hasValidationMarkers = validation.length > 0
+  const hasErrorMarkers = validation.some(isValidationErrorMarker)
+  const hasWarningMarkers = validation.some(isValidationWarningMarker)
+  const hasInfoMarkers = validation.some(isValidationInfoMarker)
 
   const buttonProps = useMemo(() => {
-    if (hasError) {
-      return BUTTON_PROPS.error
-    }
-    if (hasWarning) {
-      return BUTTON_PROPS.warning
-    }
-    if (hasInfo) {
-      return BUTTON_PROPS.info
-    }
+    if (hasErrorMarkers) return BUTTON_PROPS.error
+    if (hasWarningMarkers) return BUTTON_PROPS.warning
+    if (hasInfoMarkers) return BUTTON_PROPS.info
     return undefined
-  }, [hasError, hasInfo, hasWarning])
+  }, [hasErrorMarkers, hasInfoMarkers, hasWarningMarkers])
 
   const handleClose = useCallback(() => setOpen(false), [setOpen])
 
-  if (noValidation) {
-    return null
-  }
+  if (!hasValidationMarkers) return null
 
   return (
     <MenuButton
@@ -93,7 +66,7 @@ export function ValidationMenu(props: ValidationMenuProps) {
         <Menu open={isOpen}>
           <ValidationList
             documentType={documentSchema}
-            markers={validationMarkers}
+            validation={validation}
             onClose={handleClose}
             onFocus={handleFocus}
           />

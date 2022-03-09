@@ -1,6 +1,6 @@
 import React, {forwardRef, useCallback, useMemo} from 'react'
 import shallowEquals from 'shallow-equals'
-import {ConditionalProperty, Marker, Path, SchemaType} from '@sanity/types'
+import {ConditionalProperty, ValidationMarker, Path, SchemaType} from '@sanity/types'
 import {ChangeIndicatorProvider} from '@sanity/base/components'
 import * as PathUtils from '@sanity/util/paths'
 import {generateHelpUrl} from '@sanity/generate-help-url'
@@ -8,29 +8,20 @@ import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/presence
 import {useConditionalReadOnly} from '@sanity/base/_internal'
 import PatchEvent from './PatchEvent'
 import {emptyArray} from './utils/empty'
-import {FormInputProps as InputProps, FormBuilderFilterFieldFn} from './types'
+import {FormInputProps as InputProps, FormBuilderFilterFieldFn, FormInputProps} from './types'
 import {ConditionalReadOnlyField} from './inputs/common'
 import {useFormBuilder} from './useFormBuilder'
 
-const EMPTY_MARKERS: Marker[] = emptyArray()
+const EMPTY_VALIDATION: ValidationMarker[] = emptyArray()
 const EMPTY_PATH: Path = emptyArray()
 const EMPTY_PRESENCE: FormFieldPresence[] = emptyArray()
 const WRAPPER_INNER_STYLES = {minWidth: 0}
 
-interface FormBuilderInputProps {
-  value: unknown
-  type: SchemaType
-  onChange: (event: PatchEvent) => void
-  onFocus: (path: Path) => void
-  onBlur?: () => void
+export interface FormBuilderInputProps
+  extends Omit<FormInputProps<unknown, SchemaType>, 'readOnly'> {
   readOnly?: ConditionalProperty
   parent?: Record<string, unknown> | undefined
-  presence?: FormFieldPresence[]
-  focusPath: Path
-  markers?: Marker[]
-  compareValue?: unknown
   inputComponent?: React.ComponentType<InputProps>
-  level: number
   isRoot?: boolean
   path: Path
   filterField?: FormBuilderFilterFieldFn
@@ -70,7 +61,7 @@ export class FormBuilderInputInstance extends React.Component<
   static defaultProps = {
     focusPath: EMPTY_PATH,
     path: EMPTY_PATH,
-    markers: EMPTY_MARKERS,
+    validation: EMPTY_VALIDATION,
   }
 
   _element: HTMLDivElement | null
@@ -89,8 +80,8 @@ export class FormBuilderInputInstance extends React.Component<
   }
 
   shouldComponentUpdate(nextProps: FormBuilderInputProps) {
-    const {path: oldPath, focusPath: oldFocusPath, markers: oldMarkers, ...oldProps} = this.props
-    const {path: newPath, focusPath: newFocusPath, markers: newMarkers, ...newProps} = nextProps
+    const {path: oldPath, focusPath: oldFocusPath, validation: oldMarkers, ...oldProps} = this.props
+    const {path: newPath, focusPath: newFocusPath, validation: newMarkers, ...newProps} = nextProps
 
     return (
       !shallowEquals(oldProps, newProps) ||
@@ -270,7 +261,7 @@ function FormBuilderInputInner(props: FormBuilderInputInnerProps) {
     compareValue,
     component: InputComponent,
     focusPath,
-    markers,
+    validation,
     isRoot,
     level,
     onBlur,
@@ -299,13 +290,13 @@ function FormBuilderInputInner(props: FormBuilderInputInnerProps) {
       .map((item) => ({...item, path: PathUtils.trimChildPath(path, item.path)}))
   }, [path, presence])
 
-  const childMarkers = useMemo(() => {
-    if (isRoot) return markers
+  const childValidation = useMemo(() => {
+    if (isRoot) return validation
 
-    return markers
+    return validation
       .filter((marker) => PathUtils.startsWith(path, marker.path))
       .map((marker) => ({...marker, path: PathUtils.trimChildPath(path, marker.path)}))
-  }, [isRoot, markers, path])
+  }, [isRoot, validation, path])
 
   const isLeaf = type.jsonType !== 'object' && type.jsonType !== 'array'
 
@@ -319,7 +310,7 @@ function FormBuilderInputInner(props: FormBuilderInputInnerProps) {
       value,
       compareValue: childCompareValue,
       readOnly: conditionalReadOnly,
-      markers: childMarkers.length === 0 ? EMPTY_MARKERS : childMarkers,
+      validation: childValidation.length === 0 ? EMPTY_VALIDATION : childValidation,
       type,
       presence: childPresenceInfo,
       onChange,
@@ -331,7 +322,7 @@ function FormBuilderInputInner(props: FormBuilderInputInnerProps) {
     [
       childCompareValue,
       childFocusPath,
-      childMarkers,
+      childValidation,
       childPresenceInfo,
       isLeaf,
       isRoot,

@@ -6,7 +6,7 @@ import React, {ForwardedRef, forwardRef, useMemo} from 'react'
 import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
 import Schema from '@sanity/schema'
 import {SchemaType} from '@sanity/types'
-import {ObjectInput, Props} from '../ObjectInput'
+import {ObjectInput, ObjectInputProps} from '../ObjectInput'
 import FormBuilderProvider from '../../../FormBuilderProvider'
 import is from '../../../utils/is'
 import {ReviewChangesContextProvider} from '../../../sanity/contexts/reviewChanges/ReviewChangesProvider'
@@ -86,13 +86,13 @@ const DEFAULT_PROPS = {
   onFocus: jest.fn(),
   onBlur: jest.fn(),
   onChange: jest.fn(),
-  markers: [],
+  validation: [],
   level: 0,
   presence: [],
 }
 
 const ObjectInputTester = forwardRef(function ObjectInputTester(
-  props: Partial<Omit<Props, 'type'>> & {type: Props['type']},
+  props: Partial<Omit<ObjectInputProps, 'type'>> & {type: ObjectInputProps['type']},
   ref: ForwardedRef<any>
 ) {
   const patchChannel = useMemo(() => createPatchChannel(), [])
@@ -109,7 +109,7 @@ const ObjectInputTester = forwardRef(function ObjectInputTester(
             resolveInputComponent={inputResolver}
             resolvePreviewComponent={(type) => GenericPreview}
           >
-            <ObjectInput {...DEFAULT_PROPS} {...props} ref={ref} />
+            <ObjectInput {...DEFAULT_PROPS} {...props} focusPath={[]} ref={ref} />
           </FormBuilderProvider>
         </ReviewChangesContextProvider>
       </LayerProvider>

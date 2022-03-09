@@ -1,7 +1,7 @@
 import type React from 'react'
-import {Marker, Path} from '_self_'
-import {ChangeIndicatorContextProvidedProps} from '../../../../change-indicators'
-import {FormFieldPresence} from '../../../../presence'
+import type {ValidationMarker, Path} from '_self_'
+import type {ChangeIndicatorContextProvidedProps} from '../../../../change-indicators'
+import type {FormFieldPresence} from '../../../../presence'
 interface FieldsetProps {
   description?: string
   legend: string
@@ -19,7 +19,7 @@ interface FieldsetProps {
   tabIndex?: number
   transparent?: boolean
   styles?: Record<string, string>
-  markers?: Marker[]
+  validation?: ValidationMarker[]
   presence: FormFieldPresence[]
   changeIndicator: ChangeIndicatorContextProvidedProps | boolean
 }
@@ -38,7 +38,7 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
     fieldset: {}
     isCollapsed: boolean
     isCollapsible: boolean
-    markers: any[]
+    validation: any[]
     onFocus: any
     styles: any
     tabIndex: any

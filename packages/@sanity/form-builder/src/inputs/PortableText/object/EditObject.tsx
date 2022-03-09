@@ -1,7 +1,7 @@
 /* eslint-disable react/no-find-dom-node */
 
 import React, {useState, useEffect, useMemo, useCallback} from 'react'
-import {isKeySegment, Path, Marker} from '@sanity/types'
+import {isKeySegment, Path, ValidationMarker} from '@sanity/types'
 import {Patch as FormBuilderPatch} from '@sanity/base/_internal'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {
@@ -28,7 +28,7 @@ const THROTTLE_MS = 300
 
 export interface EditObjectProps {
   focusPath: Path
-  markers: Marker[]
+  validation: ValidationMarker[]
   objectEditData: ObjectEditData
   onBlur: () => void
   onChange: (patchEvent: PatchEvent, editPath: Path) => void
@@ -43,7 +43,7 @@ export interface EditObjectProps {
 export const EditObject = (props: EditObjectProps) => {
   const {
     focusPath,
-    markers,
+    validation,
     objectEditData,
     onBlur,
     onChange,
@@ -136,7 +136,7 @@ export const EditObject = (props: EditObjectProps) => {
         elementRef={objectEditData.editorHTMLElementRef}
         editorPath={objectEditData.editorPath}
         focusPath={focusPath}
-        markers={markers}
+        validation={validation}
         object={object}
         onBlur={onBlur}
         onChange={handleChange}
@@ -155,7 +155,7 @@ export const EditObject = (props: EditObjectProps) => {
   return (
     <DefaultObjectEditing
       focusPath={focusPath}
-      markers={markers}
+      validation={validation}
       object={object}
       onBlur={onBlur}
       onChange={handleChange}

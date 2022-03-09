@@ -1,15 +1,15 @@
 /* eslint-disable camelcase */
 
-import {isValidationMarker, Marker} from '@sanity/types'
+import {ValidationMarker} from '@sanity/types'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
-import React, {memo, useMemo} from 'react'
+import React, {memo} from 'react'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 
 export interface FormFieldHeaderTextProps {
   /**
-   * @beta
+   * @alpha
    */
-  __unstable_markers?: Marker[]
+  validation?: ValidationMarker[]
   description?: React.ReactNode
   /**
    * The unique ID used to target the actual input element
@@ -23,9 +23,8 @@ const EMPTY_ARRAY: never[] = []
 export const FormFieldHeaderText = memo(function FormFieldHeaderText(
   props: FormFieldHeaderTextProps
 ) {
-  const {description, inputId, title, __unstable_markers: markers = EMPTY_ARRAY} = props
-  const validationMarkers = useMemo(() => markers.filter(isValidationMarker), [markers])
-  const hasValidations = validationMarkers.length > 0
+  const {description, inputId, title, validation = EMPTY_ARRAY} = props
+  const hasValidations = validation.length > 0
 
   return (
     <Stack space={2}>
@@ -36,7 +35,7 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
 
         {hasValidations && (
           <Box marginLeft={2}>
-            <FormFieldValidationStatus fontSize={1} __unstable_markers={markers} />
+            <FormFieldValidationStatus fontSize={1} validation={validation} />
           </Box>
         )}
       </Flex>

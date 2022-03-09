@@ -27,7 +27,7 @@ export const DocumentPanelHeader = memo(
       handlePaneClose,
       handlePaneSplit,
       historyController,
-      markers,
+      validation,
       menuItems,
       menuItemGroups,
       ready,
@@ -80,7 +80,7 @@ export const DocumentPanelHeader = memo(
                 schemaType: documentSchema,
               })}
 
-            {markers.length > 0 && (
+            {validation.length > 0 && (
               <ValidationMenu
                 boundaryElement={rootElement}
                 isOpen={isValidationOpen}

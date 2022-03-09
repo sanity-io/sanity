@@ -1,12 +1,13 @@
-/// <reference types="react" />
-import {ObjectSchemaType, Path, Marker} from '_self_'
+import type {ObjectSchemaType, Path, ValidationMarker} from '_self_'
 interface ValidationListProps {
   documentType?: ObjectSchemaType
   kind?: 'simple'
-  markers: Marker[]
+  validation: ValidationMarker[]
   onFocus?: (path: Path) => void
   onClose?: () => void
   truncate?: boolean
 }
+
 declare function ValidationList(props: ValidationListProps): JSX.Element
+
 export default ValidationList

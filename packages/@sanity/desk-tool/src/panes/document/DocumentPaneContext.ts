@@ -1,6 +1,6 @@
 import {DocumentActionComponent, DocumentBadgeComponent} from '@sanity/base'
 import {TimelineController, EditStateFor, Timeline} from '@sanity/base/_internal'
-import {Marker, Path, SanityDocument} from '@sanity/types'
+import {ValidationMarker, Path, SanityDocument} from '@sanity/types'
 import {createContext} from 'react'
 import {PaneView, PaneMenuItem, PaneMenuItemGroup} from '../../types'
 import {TimelineMode} from './types'
@@ -34,7 +34,7 @@ export interface DocumentPaneContextValue {
   historyController: TimelineController
   index: number
   inspectOpen: boolean
-  markers: Marker[]
+  validation: ValidationMarker[]
   menuItems: PaneMenuItem[]
   menuItemGroups: PaneMenuItemGroup[]
   paneKey: string

@@ -3,7 +3,7 @@ interface TagsTextFieldProps {
   onChange: (value: string[]) => void
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void
   readOnly?: boolean
-  markers?: unknown[]
+  validation?: unknown[]
   value?: string[]
   inputId?: string
 }

@@ -42,6 +42,7 @@ function renderInput() {
     <ThemeProvider scheme="light" theme={studioTheme}>
       <LayerProvider>
         <CommonDateTimeInput
+          focusPath={[]}
           title="test"
           serialize={serialize}
           deserialize={deserialize}
@@ -49,8 +50,9 @@ function renderInput() {
           formatInputValue={formatInputValue}
           onFocus={onFocus}
           onChange={onChange}
-          value={''}
-          markers={[]}
+          value=""
+          presence={[]}
+          validation={[]}
           level={0}
           description="Some description"
         />

@@ -2,7 +2,7 @@ import {FormFieldPresence} from '@sanity/base/presence'
 import {
   ArraySchemaType,
   BooleanSchemaType,
-  Marker,
+  ValidationMarker,
   NumberSchemaType,
   ObjectField,
   ObjectSchemaType,
@@ -37,10 +37,10 @@ export type FormInputProps<
     ? ObjectSchemaType
     : SchemaType
 > = {
-  compareValue: T | null | undefined
+  compareValue?: T | null
   focusPath: Path
   level: number
-  markers: Marker[]
+  validation: ValidationMarker[]
   onBlur?: () => void
   // @todo allow implementers to pass a native DOM ChangeEvent
   // @todo allow implementers to pass an array of patch objects
@@ -55,5 +55,5 @@ export type FormInputProps<
   // readOnly?: ConditionalProperty
   readOnly?: boolean
   type: S
-  value: T | null | undefined
+  value?: T | null
 }

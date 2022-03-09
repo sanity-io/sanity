@@ -1,7 +1,7 @@
 import React, {useMemo, useCallback, forwardRef} from 'react'
 import {capitalize} from 'lodash'
 import {useId} from '@reach/auto-id'
-import {isTitledListValue, TitledListValue} from '@sanity/types'
+import {isTitledListValue, isValidationErrorMarker, TitledListValue} from '@sanity/types'
 import {Inline, Stack, Card, Text, Select, Flex, Radio, Box} from '@sanity/ui'
 import {FormField} from '@sanity/base/components'
 import PatchEvent, {set, unset} from '../PatchEvent'
@@ -21,17 +21,14 @@ const SelectInput = React.forwardRef(function SelectInput(
   props: SelectInputProps,
   forwardedRef: React.ForwardedRef<HTMLSelectElement | HTMLInputElement>
 ) {
-  const {value, readOnly, markers, type, level, onChange, onFocus, presence} = props
-  const items = useMemo(() => ((type.options?.list || []) as unknown[]).map(toSelectItem), [
-    type.options?.list,
-  ])
+  const {value, readOnly, validation, type, level, onChange, onFocus, presence} = props
+  const items = useMemo(
+    () => ((type.options?.list || []) as unknown[]).map(toSelectItem),
+    [type.options?.list]
+  )
   const currentItem = items.find((item) => item.value === value)
   const isRadio = type.options && type.options.layout === 'radio'
-
-  const errors = useMemo(
-    () => markers.filter((marker) => marker.type === 'validation' && marker.level === 'error'),
-    [markers]
-  )
+  const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
 
   const itemFromOptionValue = useCallback(
     (optionValue) => {
@@ -133,7 +130,7 @@ const SelectInput = React.forwardRef(function SelectInput(
       level={level}
       title={type.title}
       description={type.description}
-      __unstable_markers={markers}
+      validation={validation}
       __unstable_presence={presence}
     >
       {children}

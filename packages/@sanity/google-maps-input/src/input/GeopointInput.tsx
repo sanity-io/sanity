@@ -5,15 +5,13 @@ import React from 'react'
 import {uniqueId} from 'lodash'
 import {Box, Grid, Button, Dialog} from '@sanity/ui'
 import {TrashIcon, EditIcon} from '@sanity/icons'
-import {Path, Marker} from '@sanity/types'
 import config from 'config:@sanity/google-maps-input'
 import {
   FormFieldSet,
   ChangeIndicatorCompareValueProvider,
   ChangeIndicator,
 } from '@sanity/base/components'
-import {FormFieldPresence} from '@sanity/base/presence'
-import {PatchEvent, set, setIfMissing, unset} from '@sanity/form-builder'
+import {FormInputProps, PatchEvent, set, setIfMissing, unset} from '@sanity/form-builder'
 import {GoogleMapsLoadProxy} from '../loader/GoogleMapsLoadProxy'
 import {Geopoint, GeopointSchemaType} from '../types'
 import {GeopointSelect} from './GeopointSelect'
@@ -37,18 +35,7 @@ const getStaticImageUrl = (value) => {
   return `https://maps.googleapis.com/maps/api/staticmap?${qs.join('&')}`
 }
 
-interface InputProps {
-  markers: Marker[]
-  level?: number
-  value?: Geopoint
-  compareValue?: Geopoint
-  type: GeopointSchemaType
-  readOnly?: boolean
-  onFocus: (path: Path) => void
-  onBlur: () => void
-  onChange: (patchEvent: unknown) => void
-  presence: FormFieldPresence[]
-}
+type GeopointInputProps = FormInputProps<Geopoint, GeopointSchemaType>
 
 // @todo
 // interface Focusable {
@@ -60,8 +47,12 @@ interface InputState {
   modalOpen: boolean
 }
 
-class GeopointInput extends React.PureComponent<InputProps, InputState> {
+class GeopointInput extends React.PureComponent<GeopointInputProps, InputState> {
   _geopointInputId = uniqueId('GeopointInput')
+
+  static defaultProps = {
+    validation: [],
+  }
 
   editButton: Focusable | undefined
 
@@ -88,7 +79,7 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
   }
 
   handleBlur = () => {
-    this.props.onBlur()
+    this.props.onBlur?.()
   }
 
   handleToggleModal = () => {
@@ -99,7 +90,7 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
         if (this.state.modalOpen) {
           onFocus(['$'])
         } else {
-          onBlur()
+          onBlur?.()
         }
       }
     )
@@ -128,7 +119,7 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
   }
 
   render() {
-    const {value, compareValue, readOnly, type, markers = [], level, presence} = this.props
+    const {value, compareValue, readOnly, type, validation, level, presence} = this.props
     const {modalOpen} = this.state
 
     if (!config || !config.apiKey) {
@@ -162,7 +153,7 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
         onBlur={this.handleBlur}
         __unstable_presence={presence}
         __unstable_changeIndicator={false}
-        __unstable_markers={markers}
+        validation={validation}
       >
         <div>
           {value && (
@@ -211,7 +202,7 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
                   {(api) => (
                     <GeopointSelect
                       api={api}
-                      value={value}
+                      value={value || undefined}
                       onChange={readOnly ? undefined : this.handleChange}
                       defaultLocation={config.defaultLocation}
                       defaultZoom={config.defaultZoom}

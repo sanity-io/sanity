@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-import {Marker} from '@sanity/types'
+import {ValidationMarker} from '@sanity/types'
 import {Box, Flex, Grid, rem, Stack, Text, Theme, useForwardedRef} from '@sanity/ui'
 import React, {forwardRef, useState, useCallback, useEffect, useMemo} from 'react'
 import styled, {css} from 'styled-components'
@@ -8,20 +8,15 @@ import {ChangeIndicator, ChangeIndicatorContextProvidedProps} from '../changeInd
 import {FieldPresence, FormFieldPresence} from '../../presence'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
-import {markersToValidationList} from './helpers'
 import {focusRingStyle} from './styles'
 
 export interface FormFieldSetProps {
   /**
-   * @beta
+   * @alpha
    */
   __unstable_changeIndicator?: ChangeIndicatorContextProvidedProps | boolean
   /**
-   * @beta
-   */
-  __unstable_markers?: Marker[]
-  /**
-   * @beta
+   * @alpha
    */
   __unstable_presence?: FormFieldPresence[]
   children: React.ReactNode | (() => React.ReactNode)
@@ -35,6 +30,10 @@ export interface FormFieldSetProps {
   level?: number
   onToggle?: (collapsed: boolean) => void
   title?: React.ReactNode
+  /**
+   * @alpha
+   */
+  validation?: ValidationMarker[]
 }
 
 function getChildren(children: React.ReactNode | (() => React.ReactNode)): React.ReactNode {
@@ -80,120 +79,115 @@ const Content = styled(Box)<{
 
 const EMPTY_ARRAY: never[] = []
 
-export const FormFieldSet = forwardRef(
-  (
-    props: FormFieldSetProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
-    ref: React.ForwardedRef<HTMLDivElement>
-  ) => {
-    const {
-      __unstable_changeIndicator: changeIndicator = false,
-      __unstable_markers: markers = EMPTY_ARRAY,
-      __unstable_presence: presence = EMPTY_ARRAY,
-      children,
-      collapsed: collapsedProp = false,
-      collapsible,
-      columns,
-      description,
-      level = 0,
-      onFocus,
-      onToggle,
-      tabIndex,
-      title,
-      ...restProps
-    } = props
-    const [collapsed, setCollapsed] = useState(collapsedProp)
-    const validation = markersToValidationList(markers)
-    const hasValidations = validation.length > 0
-    const forwardedRef = useForwardedRef(ref)
+export const FormFieldSet = forwardRef(function FormFieldSet(
+  props: FormFieldSetProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
+  ref: React.ForwardedRef<HTMLDivElement>
+) {
+  const {
+    __unstable_changeIndicator: changeIndicator = false,
+    validation = EMPTY_ARRAY,
+    __unstable_presence: presence = EMPTY_ARRAY,
+    children,
+    collapsed: collapsedProp = false,
+    collapsible,
+    columns,
+    description,
+    level = 0,
+    onFocus,
+    onToggle,
+    tabIndex,
+    title,
+    ...restProps
+  } = props
+  const [collapsed, setCollapsed] = useState(collapsedProp)
+  const hasValidationMarkers = validation.length > 0
+  const forwardedRef = useForwardedRef(ref)
 
-    const handleToggleCollapse = useCallback(() => {
-      setCollapsed(!collapsed)
-      if (onToggle) onToggle(!collapsed)
-    }, [collapsed, onToggle])
+  const handleToggleCollapse = useCallback(() => {
+    setCollapsed(!collapsed)
+    if (onToggle) onToggle(!collapsed)
+  }, [collapsed, onToggle])
 
-    const handleFocus = useCallback(
-      (event: React.FocusEvent<HTMLDivElement>) => {
-        const element = forwardedRef.current
+  const handleFocus = useCallback(
+    (event: React.FocusEvent<HTMLDivElement>) => {
+      const element = forwardedRef.current
 
-        if (element === event.target) {
-          if (onFocus) onFocus(event)
-        }
-      },
-      [forwardedRef, onFocus]
-    )
-
-    const content = useMemo(() => {
-      if (collapsed) {
-        return null
+      if (element === event.target) {
+        if (onFocus) onFocus(event)
       }
-      return (
-        <Grid columns={columns} gapX={4} gapY={5}>
-          {changeIndicator ? (
-            <ChangeIndicator {...(changeIndicator === true ? {} : changeIndicator)}>
-              {getChildren(children)}
-            </ChangeIndicator>
-          ) : (
-            getChildren(children)
-          )}
-        </Grid>
-      )
-    }, [changeIndicator, children, collapsed, columns])
+    },
+    [forwardedRef, onFocus]
+  )
 
-    useEffect(() => {
-      setCollapsed(collapsedProp)
-    }, [collapsedProp])
-
+  const content = useMemo(() => {
+    if (collapsed) {
+      return null
+    }
     return (
-      <Root data-level={level} {...restProps}>
-        {title && (
-          <Flex align="flex-end">
-            <Box flex={1} paddingY={2}>
-              <Stack space={2}>
-                <Flex>
-                  <FormFieldSetLegend
-                    collapsed={collapsed}
-                    collapsible={collapsible}
-                    onClick={collapsible ? handleToggleCollapse : undefined}
-                    title={title}
-                  />
-
-                  {hasValidations && (
-                    <Box marginLeft={2}>
-                      <FormFieldValidationStatus fontSize={1} __unstable_markers={markers} />
-                    </Box>
-                  )}
-                </Flex>
-
-                {description && (
-                  <Text muted size={1}>
-                    {description}
-                  </Text>
-                )}
-              </Stack>
-            </Box>
-
-            {presence.length > 0 && (
-              <Box>
-                <FieldPresence maxAvatars={4} presence={presence} />
-              </Box>
-            )}
-          </Flex>
+      <Grid columns={columns} gapX={4} gapY={5}>
+        {changeIndicator ? (
+          <ChangeIndicator {...(changeIndicator === true ? {} : changeIndicator)}>
+            {getChildren(children)}
+          </ChangeIndicator>
+        ) : (
+          getChildren(children)
         )}
-
-        <Content
-          $borderLeft={level > 0}
-          hidden={collapsed}
-          marginTop={1}
-          paddingLeft={level === 0 ? 0 : 3}
-          onFocus={typeof tabIndex === 'number' && tabIndex > -1 ? handleFocus : undefined}
-          ref={forwardedRef}
-          tabIndex={tabIndex}
-        >
-          {!collapsed && content}
-        </Content>
-      </Root>
+      </Grid>
     )
-  }
-)
+  }, [changeIndicator, children, collapsed, columns])
 
-FormFieldSet.displayName = 'FormFieldSet'
+  useEffect(() => {
+    setCollapsed(collapsedProp)
+  }, [collapsedProp])
+
+  return (
+    <Root data-level={level} {...restProps}>
+      {title && (
+        <Flex align="flex-end">
+          <Box flex={1} paddingY={2}>
+            <Stack space={2}>
+              <Flex>
+                <FormFieldSetLegend
+                  collapsed={collapsed}
+                  collapsible={collapsible}
+                  onClick={collapsible ? handleToggleCollapse : undefined}
+                  title={title}
+                />
+
+                {hasValidationMarkers && (
+                  <Box marginLeft={2}>
+                    <FormFieldValidationStatus fontSize={1} validation={validation} />
+                  </Box>
+                )}
+              </Flex>
+
+              {description && (
+                <Text muted size={1}>
+                  {description}
+                </Text>
+              )}
+            </Stack>
+          </Box>
+
+          {presence.length > 0 && (
+            <Box>
+              <FieldPresence maxAvatars={4} presence={presence} />
+            </Box>
+          )}
+        </Flex>
+      )}
+
+      <Content
+        $borderLeft={level > 0}
+        hidden={collapsed}
+        marginTop={1}
+        paddingLeft={level === 0 ? 0 : 3}
+        onFocus={typeof tabIndex === 'number' && tabIndex > -1 ? handleFocus : undefined}
+        ref={forwardedRef}
+        tabIndex={tabIndex}
+      >
+        {!collapsed && content}
+      </Content>
+    </Root>
+  )
+})

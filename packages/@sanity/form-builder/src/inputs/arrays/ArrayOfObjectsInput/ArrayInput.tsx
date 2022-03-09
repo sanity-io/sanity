@@ -282,7 +282,7 @@ export class ArrayInput extends React.Component<ArrayInputProps> {
     const {
       type,
       level = 1,
-      markers,
+      validation,
       readOnly,
       onChange,
       value = [],
@@ -311,7 +311,7 @@ export class ArrayInput extends React.Component<ArrayInputProps> {
           tabIndex={0}
           onFocus={this.handleFocus}
           ref={this.setFocusArea}
-          __unstable_markers={markers}
+          validation={validation}
         >
           <Alert
             status="error"
@@ -359,7 +359,7 @@ export class ArrayInput extends React.Component<ArrayInputProps> {
         onBlur={onBlur}
         level={level - 1}
         __unstable_presence={fieldPresence.length > 0 ? fieldPresence : EMPTY_ARRAY}
-        __unstable_markers={markers}
+        validation={validation}
         disabled={readOnly}
         ref={this.setFocusArea}
         resolveUploader={resolveUploader}
@@ -420,12 +420,12 @@ export class ArrayInput extends React.Component<ArrayInputProps> {
                           parent={value}
                         >
                           <ArrayItemImpl
-                            compareValue={compareValue}
+                            compareValue={compareValue?.[index]}
                             filterField={filterField}
                             focusPath={focusPath}
                             itemKey={item._key}
                             index={index}
-                            markers={markers}
+                            validation={validation}
                             ReferenceItemComponent={ReferenceItemComponent}
                             onBlur={onBlur}
                             onChange={this.handleItemChange}

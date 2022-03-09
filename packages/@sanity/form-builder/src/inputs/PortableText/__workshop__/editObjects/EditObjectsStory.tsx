@@ -121,7 +121,7 @@ export function EditObjectsStory() {
           <PortableTextEditor onChange={handleChange} type={schemaType as any} value={value}>
             <EditObject
               focusPath={focusPath}
-              markers={markers}
+              validation={markers}
               objectEditData={objectEditData}
               onBlur={handleBlur}
               onChange={handleChange}

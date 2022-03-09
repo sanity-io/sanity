@@ -1,34 +1,26 @@
-import {isReferenceSchemaType, Marker, Path, SchemaType} from '@sanity/types'
+import {isReferenceSchemaType, SchemaType} from '@sanity/types'
 import React, {ForwardedRef, forwardRef, useMemo} from 'react'
-import {FormFieldPresence} from '@sanity/base/presence'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {ArrayMember, InsertEvent, ReferenceItemComponentType} from '../types'
-import PatchEvent from '../../../../PatchEvent'
-import {FormBuilderFilterFieldFn, FormInputProps as InputProps} from '../../../../types'
+import {
+  FormBuilderFilterFieldFn,
+  FormInputProps,
+  FormInputProps as InputProps,
+} from '../../../../types'
 
-type Props = {
-  type: SchemaType
-  value: ArrayMember
-  compareValue?: ArrayMember[]
+interface ItemFormProps extends Omit<FormInputProps<ArrayMember, SchemaType>, 'level'> {
   onInsert?: (event: InsertEvent) => void
-  markers: Marker[]
-  onChange: (event: PatchEvent) => void
-  onFocus: (path: Path) => void
   insertableTypes?: SchemaType[]
   ReferenceItemComponent: ReferenceItemComponentType
-  onBlur: () => void
   filterField: FormBuilderFilterFieldFn
   isSortable: boolean
-  readOnly: boolean | null
-  focusPath: Path
-  presence: FormFieldPresence[]
 }
 
-export const ItemForm = forwardRef(function ItemForm(props: Props, ref: ForwardedRef<any>) {
+export const ItemForm = forwardRef(function ItemForm(props: ItemFormProps, ref: ForwardedRef<any>) {
   const {
     type,
     value,
-    markers,
+    validation,
     focusPath,
     onFocus,
     onBlur,
@@ -67,6 +59,8 @@ export const ItemForm = forwardRef(function ItemForm(props: Props, ref: Forwarde
     [ReferenceItemComponent, insertableTypes, isReference, isSortable, onInsert, onChange]
   )
 
+  const path = useMemo(() => [{_key: value._key}], [value?._key])
+
   return (
     <FormBuilderInput
       type={type}
@@ -79,8 +73,8 @@ export const ItemForm = forwardRef(function ItemForm(props: Props, ref: Forwarde
       compareValue={compareValue}
       focusPath={focusPath}
       readOnly={readOnly || type.readOnly || false}
-      markers={markers}
-      path={[{_key: value._key}]}
+      validation={validation}
+      path={path}
       filterField={filterField}
       presence={presence}
       ref={ref}

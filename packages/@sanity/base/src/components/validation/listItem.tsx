@@ -1,11 +1,11 @@
-import {Marker, Path} from '@sanity/types'
+import {ValidationMarker, Path} from '@sanity/types'
 import React, {useCallback, useMemo} from 'react'
 import {WarningOutlineIcon, ErrorOutlineIcon, InfoOutlineIcon} from '@sanity/icons'
 import {Box, Text, MenuItem, Stack, Flex, ButtonTone} from '@sanity/ui'
 import styled from 'styled-components'
 
 interface ValidationListItemProps {
-  marker: Marker
+  marker: ValidationMarker
   onClick?: (path?: Path) => void
   path: string
   truncate?: boolean

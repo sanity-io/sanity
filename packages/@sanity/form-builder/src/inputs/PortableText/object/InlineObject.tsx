@@ -7,7 +7,12 @@ import {
   PortableTextEditor,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
-import {Marker, Path} from '@sanity/types'
+import {
+  ValidationMarker,
+  Path,
+  isValidationErrorMarker,
+  isValidationWarningMarker,
+} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import styled, {css} from 'styled-components'
 import {Box, Card, Theme, Tooltip} from '@sanity/ui'
@@ -19,7 +24,7 @@ import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
 interface InlineObjectProps {
   attributes: RenderAttributes
   isEditing: boolean
-  markers: Marker[]
+  validation: ValidationMarker[]
   onFocus: (path: Path) => void
   readOnly: boolean
   renderCustomMarkers: RenderCustomMarkers
@@ -109,7 +114,7 @@ export const InlineObject = React.forwardRef(function InlineObject(
   const {
     attributes: {focused, selected, path},
     isEditing,
-    markers,
+    validation,
     onFocus,
     readOnly,
     renderCustomMarkers,
@@ -122,21 +127,9 @@ export const InlineObject = React.forwardRef(function InlineObject(
   const refElm = useRef(null)
   const [popoverOpen, setPopoverOpen] = useState(false)
 
-  const hasError = useMemo(
-    () =>
-      markers.filter((marker) => marker.type === 'validation' && marker.level === 'error').length >
-      0,
-    [markers]
-  )
-
-  const hasWarning = useMemo(
-    () =>
-      markers.filter((marker) => marker.type === 'validation' && marker.level === 'warning')
-        .length > 0,
-    [markers]
-  )
-
-  const hasMarkers = markers.length > 0
+  const hasError = useMemo(() => validation.some(isValidationErrorMarker), [validation])
+  const hasWarning = useMemo(() => validation.some(isValidationWarningMarker), [validation])
+  const hasValidationMarkers = validation.length > 0
 
   const tone = useMemo(() => {
     if (hasError) {
@@ -165,20 +158,20 @@ export const InlineObject = React.forwardRef(function InlineObject(
 
   const markersToolTip = useMemo(
     () =>
-      markers.length > 0 ? (
+      validation.length > 0 ? (
         <Tooltip
           placement="top"
           portal="editor"
           content={
             <TooltipBox padding={2}>
-              <Markers markers={markers} renderCustomMarkers={renderCustomMarkers} />
+              <Markers markers={validation} renderCustomMarkers={renderCustomMarkers} />
             </TooltipBox>
           }
         >
           {preview}
         </Tooltip>
       ) : undefined,
-    [markers, preview, renderCustomMarkers]
+    [validation, preview, renderCustomMarkers]
   )
 
   const handleEditClick = useCallback((): void => {
@@ -217,7 +210,7 @@ export const InlineObject = React.forwardRef(function InlineObject(
         data-warning={hasWarning || undefined}
         data-selected={selected || undefined}
         data-read-only={readOnly || undefined}
-        data-markers={hasMarkers || undefined}
+        data-markers={hasValidationMarkers || undefined}
         tone={tone}
         forwardedAs="span"
         contentEditable={false}

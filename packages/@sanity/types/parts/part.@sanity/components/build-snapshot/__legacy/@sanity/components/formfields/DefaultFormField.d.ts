@@ -1,7 +1,7 @@
 import type React from 'react'
-import {Marker} from '_self_'
-import {FormFieldPresence} from '../../../../presence'
-import {ChangeIndicatorContextProvidedProps} from '../../../../change-indicators'
+import type {ValidationMarker} from '_self_'
+import type {FormFieldPresence} from '../../../../presence'
+import type {ChangeIndicatorContextProvidedProps} from '../../../../change-indicators'
 interface DefaultFormFieldProps {
   label?: string
   className?: string
@@ -11,7 +11,7 @@ interface DefaultFormFieldProps {
   children?: React.ReactNode
   wrapped?: boolean
   labelFor?: string
-  markers?: Marker[]
+  validation?: ValidationMarker[]
   presence?: FormFieldPresence[]
   changeIndicator?: ChangeIndicatorContextProvidedProps | boolean
 }

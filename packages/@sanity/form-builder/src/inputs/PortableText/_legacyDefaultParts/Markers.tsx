@@ -1,13 +1,14 @@
-import React, {useMemo} from 'react'
-import {Marker, isValidationMarker} from '@sanity/types'
+import React from 'react'
+import {ValidationMarker} from '@sanity/types'
 import {Box, Flex, Stack, Text, Theme} from '@sanity/ui'
 import {InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import styled, {css} from 'styled-components'
-import {RenderCustomMarkers} from '../types'
+import {PortableTextMarker, RenderCustomMarkers} from '../types'
 import {useFormBuilder} from '../../../useFormBuilder'
 
-type Props = {
-  markers: Marker[]
+type MarkersProps = {
+  markers: PortableTextMarker[]
+  validation: ValidationMarker[]
   renderCustomMarkers?: RenderCustomMarkers
 }
 
@@ -35,32 +36,21 @@ const IconText = styled(Text)(({theme}: {theme: Theme}) => {
   `
 })
 
-export default function Markers(props: Props) {
-  const {markers, renderCustomMarkers} = props
+export default function Markers(props: MarkersProps) {
+  const {markers, validation, renderCustomMarkers} = props
   const {CustomMarkers} = useFormBuilder().components
 
-  const customMarkersForBlock = useMemo(
-    () => markers.filter((marker) => !isValidationMarker(marker)),
-    [markers]
-  )
-  const validationMarkersForBlock = useMemo(
-    () => markers.filter((marker) => isValidationMarker(marker)),
-    [markers]
-  )
-  if (markers.length === 0) {
+  if (markers.length === 0 && validation.length === 0) {
     return null
   }
 
   return (
     <Stack space={1}>
-      {validationMarkersForBlock.length > 0 &&
-        validationMarkersForBlock.map(({item, level}, index) => (
+      {validation.length > 0 &&
+        validation.map(({item, level}, index) => (
           // eslint-disable-next-line react/no-array-index-key
           <Flex key={`validationItem-${index}`}>
-            <Box
-              marginRight={2}
-              marginBottom={index + 1 === validationMarkersForBlock.length ? 0 : 2}
-            >
+            <Box marginRight={2} marginBottom={index + 1 === validation.length ? 0 : 2}>
               <IconText
                 size={1}
                 data-error={level === 'error' ? '' : undefined}
@@ -75,9 +65,9 @@ export default function Markers(props: Props) {
             </Box>
           </Flex>
         ))}
-      {customMarkersForBlock.length > 0 && (
-        <Box marginTop={validationMarkersForBlock.length > 0 ? 3 : 0}>
-          {renderCustomMarkers && renderCustomMarkers(customMarkersForBlock)}
+      {markers.length > 0 && (
+        <Box marginTop={validation.length > 0 ? 3 : 0}>
+          {renderCustomMarkers && renderCustomMarkers(markers)}
           {!renderCustomMarkers && <CustomMarkers markers={markers} />}
         </Box>
       )}

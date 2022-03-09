@@ -20,8 +20,8 @@ export default function FormBuilderStory() {
   const editState = useEditState(documentId, documentType)
   const {patch}: any = useDocumentOperation(documentId, documentType)
   const value = editState.draft || editState.published
-  const {markers: markersRaw} = useValidationStatus(documentId, documentType)
-  const markers = useUnique(markersRaw)
+  const {validation: validationRaw} = useValidationStatus(documentId, documentType)
+  const validation = useUnique(validationRaw)
   const [focusPath, setFocusPath] = useState<Path>([])
   const presence = useMemo(() => [], [])
 
@@ -66,7 +66,7 @@ export default function FormBuilderStory() {
           compareValue={value}
           filterField={filterField}
           focusPath={focusPath}
-          markers={markers}
+          validation={validation}
           onBlur={handleBlur}
           onChange={handleChange}
           onFocus={handleFocus}

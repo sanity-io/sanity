@@ -1,15 +1,14 @@
 import React, {useCallback, useEffect, useImperativeHandle, useRef} from 'react'
-import {FormFieldPresence} from '@sanity/base/presence'
 import {FormField, FormFieldSet, ChangeIndicatorProvider} from '@sanity/base/components'
-import {PatchEvent, set, unset, setIfMissing} from '@sanity/form-builder'
-import {Path, Marker} from '@sanity/types'
+import {PatchEvent, set, unset, setIfMissing, FormInputProps} from '@sanity/form-builder'
+import {ObjectSchemaType} from '@sanity/types'
 import {Card, Select, Stack, TextInput} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import AceEditor from 'react-ace'
 import styled from 'styled-components'
 import {useId} from '@reach/auto-id'
 import createHighlightMarkers, {highlightMarkersCSS} from './createHighlightMarkers'
-import {CodeInputLanguage, CodeInputType, CodeInputValue} from './types'
+import {CodeInputLanguage, CodeInputValue} from './types'
 /* eslint-disable-next-line import/no-unassigned-import */
 import './editorSupport'
 
@@ -49,18 +48,16 @@ const EditorContainer = styled(Card)`
   }
 `
 
-export interface CodeInputProps {
-  compareValue?: CodeInputValue
-  focusPath: Path
-  level?: number
-  onBlur: () => void
-  onChange: (...args: any[]) => void
-  onFocus: (path: Path) => void
-  presence: FormFieldPresence[]
-  readOnly?: boolean
-  type: CodeInputType
-  value?: CodeInputValue
+export type CodeSchemaType = Omit<ObjectSchemaType, 'options'> & {
+  options: {
+    theme?: string
+    languageAlternatives: CodeInputLanguage[]
+    language: string
+    withFilename?: boolean
+  }
 }
+
+export type CodeInputProps = FormInputProps<CodeInputValue, CodeSchemaType>
 
 // Returns a string with the mode name if supported (because aliases), otherwise false
 function isSupportedLanguage(mode: string) {
@@ -366,7 +363,7 @@ const CodeInput = React.forwardRef(
           >
             <FormField
               level={level + 1}
-              label={languageField?.title || 'Language'}
+              label={languageField?.type.title || 'Language'}
               __unstable_presence={languagePresence}
             >
               <Select
@@ -392,14 +389,14 @@ const CodeInput = React.forwardRef(
               compareValue={filenameCompareValue}
             >
               <FormField
-                label={filenameField?.title || 'Filename'}
+                label={filenameField?.type.title || 'Filename'}
                 level={level + 1}
                 __unstable_presence={filenamePresence}
               >
                 <TextInput
                   name="filename"
                   value={value?.filename || ''}
-                  placeholder={filenameField?.placeholder}
+                  placeholder={filenameField?.type.placeholder}
                   onChange={handleFilenameChange}
                   onFocus={handleFilenameFocus}
                   onBlur={onBlur}

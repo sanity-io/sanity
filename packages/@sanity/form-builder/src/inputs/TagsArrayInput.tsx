@@ -11,7 +11,7 @@ export const TagsArrayInput = forwardRef(function TagsArrayInput(
   props: TagsArrayInputProps,
   ref: React.Ref<{focus: () => void}>
 ) {
-  const {level, markers, onChange, onFocus, presence, readOnly, type, value = []} = props
+  const {level, validation, onChange, onFocus, presence, readOnly, type, value = []} = props
   const id = useId()
   const tagInputValue = useMemo(() => value.map((v) => ({value: v})), [value])
   const inputRef = useRef<HTMLInputElement | null>(null)
@@ -36,7 +36,7 @@ export const TagsArrayInput = forwardRef(function TagsArrayInput(
       description={type.description}
       __unstable_presence={presence}
       inputId={id}
-      __unstable_markers={markers}
+      validation={validation}
     >
       <TagInput
         id={id}

@@ -1,4 +1,4 @@
-import {Marker, SchemaType} from '@sanity/types'
+import {ValidationMarker, SchemaType} from '@sanity/types'
 import React from 'react'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {InsertEvent} from '../types'
@@ -16,5 +16,5 @@ export interface ItemLayoutProps {
   onInsert?: (event: InsertEvent) => void
   onKeyPress: (event: React.KeyboardEvent<any>) => void
   presence: FormFieldPresence[]
-  validation: Marker[]
+  validation: ValidationMarker[]
 }

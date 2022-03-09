@@ -54,7 +54,7 @@ export function FormView(props: FormViewProps) {
     handleChange,
     handleFocus,
     historyController,
-    markers,
+    validation,
     ready,
     changesOpen,
   } = useDocumentPane()
@@ -172,7 +172,7 @@ export function FormView(props: FormViewProps) {
               compareValue={compareValue}
               filterField={filterField}
               focusPath={focusPath}
-              markers={markers}
+              validation={validation}
               onBlur={handleBlur}
               onChange={isReadOnly ? noop : handleChange}
               onFocus={handleFocus}
@@ -209,7 +209,7 @@ export function FormView(props: FormViewProps) {
     handleFocus,
     hasTypeMismatch,
     margins,
-    markers,
+    validation,
     patchChannel,
     presence,
     ready,
