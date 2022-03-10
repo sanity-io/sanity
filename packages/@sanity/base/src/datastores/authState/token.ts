@@ -1,6 +1,5 @@
 import type {SanityClient} from '@sanity/client'
-import type {Observable} from 'rxjs'
-import {concat, defer, merge, of} from 'rxjs'
+import {concat, defer, merge, of, EMPTY, Observable} from 'rxjs'
 import {shareReplay, switchMapTo} from 'rxjs/operators'
 import {readConfig, authTokenIsAllowed} from './config'
 import {authStateChangedInOtherWindow$, authStateChangedInThisWindow$} from './state'
@@ -56,8 +55,8 @@ export const fetchToken = (sid: string, client: SanityClient): Observable<{token
 
 // TODO: some kind of refresh mechanism here when we support refresh tokens / stamping?
 const freshToken$ = defer(() => {
-  if (!authTokenIsAllowed()) {
-    return of(null)
+  if (typeof window === 'undefined' || !authTokenIsAllowed()) {
+    return EMPTY
   }
 
   const {projectId} = readConfig()

@@ -73,7 +73,11 @@ export const wrappedClient = {
 
     // Subscribe to auth token stream and configure the client depending on token value
     authToken$.subscribe((token) => {
-      newClient.config({...newConfig, token})
+      const currentHasToken = Boolean(newClient.config().token)
+      const nextHasToken = Boolean(token)
+      if (currentHasToken !== nextHasToken) {
+        newClient.config({...newConfig, token})
+      }
     })
 
     return newClient
