@@ -1,6 +1,6 @@
 import {FormField} from '@sanity/base/components'
 import {TextArea} from '@sanity/ui'
-import {withDocument} from 'part:@sanity/form-builder'
+import {withDocument} from '@sanity/form-builder'
 import React, {forwardRef} from 'react'
 
 const TestInput = forwardRef(function TestInput(props: any, ref: any) {
@@ -8,7 +8,7 @@ const TestInput = forwardRef(function TestInput(props: any, ref: any) {
 
   return (
     <FormField
-      __unstable_markers={props.markers}
+      validation={props.validation}
       __unstable_presence={props.presence}
       description={props.type.description}
       title={props.type.title}
@@ -24,4 +24,4 @@ const TestInput = forwardRef(function TestInput(props: any, ref: any) {
   )
 })
 
-export const WithDocumentTestInput = withDocument(TestInput)
+export const WithDocumentTestInput = withDocument(TestInput as any) as any
