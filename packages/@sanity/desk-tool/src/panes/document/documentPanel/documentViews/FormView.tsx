@@ -10,12 +10,8 @@ import {
 } from '@sanity/base/hooks'
 import {PresenceOverlay} from '@sanity/base/presence'
 import {SanityDocument} from '@sanity/client'
-import {SanityFormBuilder} from '@sanity/form-builder'
-import {
-  createPatchChannel,
-  FormBuilderFilterFieldFn,
-  PatchMsg,
-} from '@sanity/form-builder/_internal'
+import {FormBuilderFilterFieldFn, SanityFormBuilder} from '@sanity/form-builder'
+import {createPatchChannel, PatchMsg} from '@sanity/form-builder/_internal'
 import {isActionEnabled} from '@sanity/schema/_internal'
 import {Box, Container, Flex, Spinner, Text} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
