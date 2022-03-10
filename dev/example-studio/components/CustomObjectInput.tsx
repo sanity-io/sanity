@@ -1,64 +1,69 @@
-import PropTypes from 'prop-types'
+import {FormFieldSet} from '@sanity/base/components'
+import {
+  FormBuilderInput,
+  FormBuilderInputInstance,
+  FormInputProps,
+  PatchEvent,
+  setIfMissing,
+} from '@sanity/form-builder'
+import {ObjectField, ObjectSchemaType} from '@sanity/types'
+import {Card, Stack, Text} from '@sanity/ui'
 import React from 'react'
-import Fieldset from 'part:@sanity/components/fieldsets/default'
-import {setIfMissing} from '@sanity/form-builder'
-import {FormBuilderInput} from 'part:@sanity/form-builder'
 
-export default class CustomObjectInput extends React.PureComponent {
-  static propTypes = {
-    type: PropTypes.shape({
-      title: PropTypes.string,
-      name: PropTypes.string,
-    }).isRequired,
-    level: PropTypes.number,
-    value: PropTypes.shape({
-      _type: PropTypes.string,
-    }),
-    focusPath: PropTypes.array.isRequired,
-    onFocus: PropTypes.func.isRequired,
-    onChange: PropTypes.func.isRequired,
-    onBlur: PropTypes.func.isRequired,
-  }
+type CustomObjectInputProps = FormInputProps<Record<string, unknown>, ObjectSchemaType>
 
-  firstFieldInput = React.createRef()
+export default class CustomObjectInput extends React.PureComponent<CustomObjectInputProps> {
+  firstFieldInput = React.createRef<FormBuilderInputInstance>()
 
-  handleFieldChange = (field, fieldPatchEvent) => {
+  handleFieldChange = (field: ObjectField, fieldPatchEvent: PatchEvent) => {
     const {onChange, type} = this.props
-    // Whenever the field input emits a patch event, we need to make sure to each of the included patches
-    // are prefixed with its field name, e.g. going from:
+
+    // Whenever the field input emits a patch event, we need to make sure to each of the included
+    // patches are prefixed with its field name, e.g. going from:
     // {path: [], set: <nextvalue>} to {path: [<fieldName>], set: <nextValue>}
     // and ensure this input's value exists
     onChange(fieldPatchEvent.prefixAll(field.name).prepend(setIfMissing({_type: type.name})))
   }
 
   focus() {
-    this.firstFieldInput.current.focus()
+    const firstFieldInput = this.firstFieldInput.current
+
+    if (firstFieldInput) {
+      firstFieldInput.focus()
+    }
   }
 
   render() {
-    const {type, value, level, focusPath, onFocus, onBlur} = this.props
+    const {type, value, level, focusPath, onFocus, onBlur, presence, validation} = this.props
+
     return (
-      <Fieldset level={level} legend={type.title} description={type.description}>
-        This is my custom object input with fields
-        <div style={{backgroundColor: 'lightblue'}}>
-          {type.fields.map((field, i) => (
-            // Delegate to the generic FormBuilderInput. It will resolve and insert the actual input component
-            // for the given field type
-            <FormBuilderInput
-              level={level + 1}
-              ref={i === 0 ? this.firstFieldInput : null}
-              key={field.name}
-              type={field.type}
-              value={value && value[field.name]}
-              onChange={(patchEvent) => this.handleFieldChange(field, patchEvent)}
-              path={[field.name]}
-              focusPath={focusPath}
-              onFocus={onFocus}
-              onBlur={onBlur}
-            />
-          ))}
-        </div>
-      </Fieldset>
+      <FormFieldSet level={level} title={type.title} description={type.description}>
+        <Text accent size={1}>
+          This is my custom object input with fields
+        </Text>
+        <Card padding={3} radius={2} tone="primary">
+          <Stack space={4}>
+            {type.fields.map((field, i) => (
+              // Delegate to the generic FormBuilderInput. It will resolve and insert the actual
+              // input component for the given field type
+              <FormBuilderInput
+                level={level + 1}
+                ref={i === 0 ? this.firstFieldInput : null}
+                key={field.name}
+                type={field.type}
+                value={value?.[field.name]}
+                onChange={(patchEvent) => this.handleFieldChange(field, patchEvent)}
+                path={[field.name]}
+                focusPath={focusPath}
+                onFocus={onFocus}
+                onBlur={onBlur}
+                presence={presence.filter((p) => p.path[0] === field.name)}
+                validation={validation.filter((p) => p.path[0] === field.name)}
+              />
+            ))}
+          </Stack>
+        </Card>
+      </FormFieldSet>
     )
   }
 }

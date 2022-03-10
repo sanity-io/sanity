@@ -1,13 +1,12 @@
+import {PortableTextMarker} from '@sanity/form-builder'
 import React from 'react'
 
-import styles from './CustomMarkers.css'
-
-export default function renderCustomMarkers(markers) {
+export default function renderCustomMarkers(markers: PortableTextMarker[]) {
   return (
-    <div className={styles.root}>
+    <div>
       {markers.map((marker, index) => {
         if (marker.type === 'customMarkerTest') {
-          return <div key={`marker${index}`}>Marker!</div>
+          return <div key={index}>Marker!</div>
         }
         return null
       })}
