@@ -1,5 +1,5 @@
 import {PortableTextEditor} from '@sanity/portable-text-editor'
-import {LayerProvider, PortalProvider, usePortal} from '@sanity/ui'
+import {Card, Code, LayerProvider, PortalProvider, Stack, Text, usePortal} from '@sanity/ui'
 import {useAction, useBoolean, useSelect} from '@sanity/ui-workshop'
 import React, {useMemo} from 'react'
 import FormBuilderProvider from '../../../../FormBuilderProvider'
@@ -7,7 +7,7 @@ import {createPatchChannel} from '../../../../patchChannel'
 import {EditObject} from '../../object'
 import {ObjectEditData} from '../../types'
 import {resolveInputComponent, resolvePreviewComponent} from './formBuilder'
-import {schema, schemaType} from './schemaType'
+import {schema} from './schemaType'
 
 const TYPE_OPTIONS: Record<string, 'annotation' | 'blockObject' | 'inlineObject'> = {
   Annotation: 'annotation',
@@ -108,6 +108,28 @@ export function EditObjectsStory() {
 
   const patchChannel = useMemo(() => createPatchChannel(), [])
 
+  const type = schema.get('body')
+
+  if (!type) {
+    return (
+      <Card height="fill" overflow="auto" tone="critical">
+        <Stack padding={4} space={4}>
+          <Text weight="bold">"body" type not found</Text>
+          <Code language="json" size={1}>
+            {JSON.stringify(
+              {
+                schema: schema._original,
+                schemaErrors: schema._validation,
+              },
+              null,
+              2
+            )}
+          </Code>
+        </Stack>
+      </Card>
+    )
+  }
+
   return (
     <PortalProvider __unstable_elements={{default: portal.element}}>
       <LayerProvider>
@@ -118,7 +140,7 @@ export function EditObjectsStory() {
           resolveInputComponent={resolveInputComponent}
           resolvePreviewComponent={resolvePreviewComponent}
         >
-          <PortableTextEditor onChange={handleChange} type={schemaType as any} value={value}>
+          <PortableTextEditor onChange={handleChange} type={type as any} value={value}>
             <EditObject
               focusPath={focusPath}
               validation={markers}

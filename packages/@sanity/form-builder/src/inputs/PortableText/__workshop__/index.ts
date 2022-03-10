@@ -1,11 +1,13 @@
 import {defineScope} from '@sanity/ui-workshop'
 import {lazy} from 'react'
+import DefaultSchemaStory from './defaultSchema/Story'
 
 export default defineScope('form-builder/portable-text-input', 'PortableTextInput', [
   {
     name: 'default',
     title: 'Default Schema',
-    component: lazy(() => import('./defaultSchema/Story')),
+    component: DefaultSchemaStory,
+    // component: lazy(() => import('./defaultSchema/Story')),
   },
   {
     name: 'custom',

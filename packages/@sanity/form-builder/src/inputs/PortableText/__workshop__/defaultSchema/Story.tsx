@@ -1,9 +1,20 @@
+import {createSchema} from '@sanity/base/schema'
 import {Card, Container, Flex, LayerProvider} from '@sanity/ui'
-import React from 'react'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
+import React from 'react'
 import {TestInput} from '../_common/TestInput'
-import {schema, portableTextType} from './schema'
 import {values, valueOptions} from './values'
+
+const ptType = {
+  type: 'array',
+  name: 'body',
+  of: [{type: 'block'}],
+}
+
+export const schema = createSchema({
+  name: 'default',
+  types: [ptType],
+})
 
 export default function Story() {
   const readOnly = useBoolean('Read only', false)
@@ -11,6 +22,8 @@ export default function Story() {
   const withWarning = useBoolean('With warning', false)
   const selectedValue = useSelect('Values', valueOptions) || 'empty'
   const value = values[selectedValue]
+
+  const type = schema.get('body')
 
   return (
     <LayerProvider zOffset={100}>
@@ -20,7 +33,7 @@ export default function Story() {
             <TestInput
               readOnly={readOnly}
               schema={schema}
-              type={portableTextType as any}
+              type={type as any}
               value={value}
               withError={withError}
               withWarning={withWarning}

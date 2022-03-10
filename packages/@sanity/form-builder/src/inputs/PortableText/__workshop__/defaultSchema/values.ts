@@ -1,3 +1,8 @@
+export const valueOptions = {
+  Empty: 'empty',
+  'With Text': 'withText',
+}
+
 export const values = {
   empty: undefined,
   withText: [
@@ -134,5 +139,3 @@ export const values = {
     },
   ],
 }
-
-export const valueOptions = {Empty: 'empty', 'With Text': 'withText'}

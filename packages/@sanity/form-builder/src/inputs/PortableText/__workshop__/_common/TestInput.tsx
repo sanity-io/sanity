@@ -1,12 +1,12 @@
 import {PortableTextBlock, Type as PTType} from '@sanity/portable-text-editor'
 import {Path, Schema, ValidationMarker} from '@sanity/types'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import {useSanity} from '@sanity/base'
 import FormBuilderProvider from '../../../../FormBuilderProvider'
 import {PortableTextInput} from '../../PortableTextInput'
 import {applyAll} from '../../../../simplePatch'
 import {PortableTextMarker, RenderBlockActions, RenderCustomMarkers} from '../../types'
 import {ReviewChangesContextProvider} from '../../../../sanity/contexts/reviewChanges/ReviewChangesProvider'
-import {useFormBuilder} from '../../../../useFormBuilder'
 import {createPatchChannel} from '../../../../patchChannel'
 import {inputResolver} from './input'
 import {resolvePreviewComponent} from './resolvePreviewComponent'
@@ -33,20 +33,24 @@ export function TestInput(props: TestInputProps) {
     renderBlockActions,
     renderCustomMarkers,
     type,
-    value: propsValue,
+    value: valueProp,
     withError = false,
     withWarning = false,
     withCustomMarkers = false,
   } = props
-  const formBuilder = useFormBuilder()
-  const [value, setValue] = useState<any[]>(propsValue)
+  const {formBuilder} = useSanity()
+  const [value, setValue] = useState<PortableTextBlock[]>(valueProp)
   const [focusPath, setFocusPath] = useState<Path>([])
   const blockType = useMemo(() => type.of.find((t) => t.type.name === 'block'), [type])
   const presence = useMemo(() => [], [])
   const hotkeys = useMemo(() => ({}), [])
   const [markers, setMarkers] = useState<PortableTextMarker[]>([])
   const [validation, setValidation] = useState<ValidationMarker[]>([])
-  // const uniqMarkers = useUnique(markers)
+
+  const resolveInputComponent = useCallback(
+    (_type) => inputResolver(formBuilder, _type),
+    [formBuilder]
+  )
 
   const onFocus = useCallback((path: Path) => {
     setFocusPath(path)
@@ -60,110 +64,110 @@ export function TestInput(props: TestInputProps) {
     setValue((prevValue) => applyAll(prevValue, event.patches))
   }, [])
 
-  useEffect(() => {
-    if (value) {
-      const newValidation = [...validationProp]
-      const newMarkers = [...markersProp]
+  // useEffect(() => {
+  //   if (value) {
+  //     const newValidation = [...validationProp]
+  //     const newMarkers = [...markersProp]
 
-      value.forEach((blk) => {
-        if (blk._type === blockType.name) {
-          const inline = blk.children.find((child) => child._type !== 'span')
-          const annotation = blk.markDefs[0]
-          if (inline) {
-            if (withError) {
-              newValidation.push({
-                level: 'error',
-                path: [{_key: blk._key}, 'children', {_key: inline._key}],
-                item: {message: 'There is an error with this inline object'},
-              })
-            }
-            if (withWarning) {
-              newValidation.push({
-                level: 'warning',
-                path: [{_key: blk._key}, 'children', {_key: inline._key}],
-                item: {message: 'This is a warning'},
-              })
-            }
-            if (withCustomMarkers) {
-              newMarkers.push({
-                type: 'customMarkerTest',
-                path: [{_key: blk._key}, 'children', {_key: inline._key}],
-              })
-            }
-          } else if (annotation) {
-            if (withError) {
-              newValidation.push({
-                level: 'error',
-                path: [{_key: blk._key}, 'markDefs', {_key: annotation._key}],
-                item: {message: 'There an error with this annotation'},
-              })
-            }
-            if (withWarning) {
-              newValidation.push({
-                level: 'warning',
-                path: [{_key: blk._key}, 'markDefs', {_key: annotation._key}],
-                item: {message: 'This is a warning'},
-              })
-            }
-            if (withCustomMarkers) {
-              newMarkers.push({
-                type: 'customMarkerTest',
-                path: [{_key: blk._key}, 'markDefs', {_key: annotation._key}],
-              })
-            }
-          } else {
-            if (withError) {
-              newValidation.push({
-                level: 'error',
-                path: [{_key: blk._key}],
-                item: {message: 'There is an error with this textblock'},
-              })
-            }
-            if (withWarning) {
-              newValidation.push({
-                level: 'warning',
-                path: [{_key: blk._key}],
-                item: {message: 'This is a warning'},
-              })
-            }
-            if (withCustomMarkers) {
-              newMarkers.push({
-                type: 'customMarkerTest',
-                path: [{_key: blk._key}],
-              })
-            }
-          }
-        } else {
-          if (withError) {
-            newValidation.push({
-              level: 'error',
-              path: [{_key: blk._key}, 'title'],
-              item: {message: 'There is an error with this object block'},
-            })
-          }
-          if (withWarning) {
-            newValidation.push({
-              level: 'warning',
-              path: [{_key: blk._key}, 'title'],
-              item: {message: 'This is a warning'},
-            })
-          }
-          if (withCustomMarkers) {
-            newMarkers.push({
-              type: 'customMarkerTest',
-              path: [{_key: blk._key}],
-            })
-          }
-        }
-      })
-      setMarkers(newMarkers)
-      setValidation(newValidation)
-    }
-    if (!withError && !withCustomMarkers && !withWarning) {
-      setMarkers(markersProp)
-      setValidation(validationProp)
-    }
-  }, [blockType, markersProp, validationProp, value, withCustomMarkers, withError, withWarning])
+  //     value.forEach((blk) => {
+  //       if (blk._type === blockType.name) {
+  //         const inline = blk.children.find((child) => child._type !== 'span')
+  //         const annotation = blk.markDefs[0]
+  //         if (inline) {
+  //           if (withError) {
+  //             newValidation.push({
+  //               level: 'error',
+  //               path: [{_key: blk._key}, 'children', {_key: inline._key}],
+  //               item: {message: 'There is an error with this inline object'},
+  //             })
+  //           }
+  //           if (withWarning) {
+  //             newValidation.push({
+  //               level: 'warning',
+  //               path: [{_key: blk._key}, 'children', {_key: inline._key}],
+  //               item: {message: 'This is a warning'},
+  //             })
+  //           }
+  //           if (withCustomMarkers) {
+  //             newMarkers.push({
+  //               type: 'customMarkerTest',
+  //               path: [{_key: blk._key}, 'children', {_key: inline._key}],
+  //             })
+  //           }
+  //         } else if (annotation) {
+  //           if (withError) {
+  //             newValidation.push({
+  //               level: 'error',
+  //               path: [{_key: blk._key}, 'markDefs', {_key: annotation._key}],
+  //               item: {message: 'There an error with this annotation'},
+  //             })
+  //           }
+  //           if (withWarning) {
+  //             newValidation.push({
+  //               level: 'warning',
+  //               path: [{_key: blk._key}, 'markDefs', {_key: annotation._key}],
+  //               item: {message: 'This is a warning'},
+  //             })
+  //           }
+  //           if (withCustomMarkers) {
+  //             newMarkers.push({
+  //               type: 'customMarkerTest',
+  //               path: [{_key: blk._key}, 'markDefs', {_key: annotation._key}],
+  //             })
+  //           }
+  //         } else {
+  //           if (withError) {
+  //             newValidation.push({
+  //               level: 'error',
+  //               path: [{_key: blk._key}],
+  //               item: {message: 'There is an error with this textblock'},
+  //             })
+  //           }
+  //           if (withWarning) {
+  //             newValidation.push({
+  //               level: 'warning',
+  //               path: [{_key: blk._key}],
+  //               item: {message: 'This is a warning'},
+  //             })
+  //           }
+  //           if (withCustomMarkers) {
+  //             newMarkers.push({
+  //               type: 'customMarkerTest',
+  //               path: [{_key: blk._key}],
+  //             })
+  //           }
+  //         }
+  //       } else {
+  //         if (withError) {
+  //           newValidation.push({
+  //             level: 'error',
+  //             path: [{_key: blk._key}, 'title'],
+  //             item: {message: 'There is an error with this object block'},
+  //           })
+  //         }
+  //         if (withWarning) {
+  //           newValidation.push({
+  //             level: 'warning',
+  //             path: [{_key: blk._key}, 'title'],
+  //             item: {message: 'This is a warning'},
+  //           })
+  //         }
+  //         if (withCustomMarkers) {
+  //           newMarkers.push({
+  //             type: 'customMarkerTest',
+  //             path: [{_key: blk._key}],
+  //           })
+  //         }
+  //       }
+  //     })
+  //     setMarkers(newMarkers)
+  //     setValidation(newValidation)
+  //   }
+  //   if (!withError && !withCustomMarkers && !withWarning) {
+  //     setMarkers(markersProp)
+  //     setValidation(validationProp)
+  //   }
+  // }, [blockType, markersProp, validationProp, value, withCustomMarkers, withError, withWarning])
 
   const patchChannel = useMemo(() => createPatchChannel(), [])
 
@@ -172,14 +176,14 @@ export function TestInput(props: TestInputProps) {
   }, [props.value])
 
   return (
-    <ReviewChangesContextProvider changesOpen={false}>
-      <FormBuilderProvider
-        value={value}
-        __internal_patchChannel={patchChannel}
-        schema={props.schema}
-        resolveInputComponent={(_type) => inputResolver(formBuilder, _type)}
-        resolvePreviewComponent={resolvePreviewComponent}
-      >
+    <FormBuilderProvider
+      value={value}
+      __internal_patchChannel={patchChannel}
+      schema={props.schema}
+      resolveInputComponent={resolveInputComponent}
+      resolvePreviewComponent={resolvePreviewComponent}
+    >
+      <ReviewChangesContextProvider changesOpen={false}>
         {/* <Box
         style={{
           width: '300px',
@@ -214,7 +218,7 @@ export function TestInput(props: TestInputProps) {
           type={props.type}
           value={value}
         />
-      </FormBuilderProvider>
-    </ReviewChangesContextProvider>
+      </ReviewChangesContextProvider>
+    </FormBuilderProvider>
   )
 }
