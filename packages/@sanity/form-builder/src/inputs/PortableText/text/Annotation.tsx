@@ -11,8 +11,9 @@ import {ValidationMarker, Path} from '@sanity/types'
 import styled, {css} from 'styled-components'
 import {Box, Theme, ThemeColorToneKey, Tooltip} from '@sanity/ui'
 import {hues} from '@sanity/color'
-import {Markers} from '../_legacyDefaultParts/Markers'
+import {DefaultMarkers} from '../_legacyDefaultParts/Markers'
 import {PortableTextMarker, RenderCustomMarkers} from '../types'
+import {useFormBuilder} from '../../../useFormBuilder'
 import {AnnotationToolbarPopover} from './AnnotationToolbarPopover'
 
 interface AnnotationProps {
@@ -82,6 +83,7 @@ export const Annotation = React.forwardRef(function Annotation(
     type,
     value,
   } = props
+  const {Markers = DefaultMarkers} = useFormBuilder().components
   const {path} = attributes
   const annotationRef = useRef<HTMLElement>(null)
   const editor = usePortableTextEditor()
@@ -117,7 +119,7 @@ export const Annotation = React.forwardRef(function Annotation(
           <span>{text}</span>
         </Tooltip>
       ) : undefined,
-    [markers, renderCustomMarkers, text, validation]
+    [Markers, markers, renderCustomMarkers, text, validation]
   )
 
   const handleEditClick = useCallback(

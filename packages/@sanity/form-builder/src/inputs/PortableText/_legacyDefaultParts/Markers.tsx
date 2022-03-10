@@ -6,7 +6,7 @@ import styled, {css} from 'styled-components'
 import {PortableTextMarker, RenderCustomMarkers} from '../types'
 import {useFormBuilder} from '../../../useFormBuilder'
 
-type MarkersProps = {
+export interface MarkersProps {
   markers: PortableTextMarker[]
   validation: ValidationMarker[]
   renderCustomMarkers?: RenderCustomMarkers
@@ -36,7 +36,7 @@ const IconText = styled(Text)(({theme}: {theme: Theme}) => {
   `
 })
 
-export function Markers(props: MarkersProps) {
+export function DefaultMarkers(props: MarkersProps) {
   const {markers, validation, renderCustomMarkers} = props
   const {CustomMarkers} = useFormBuilder().components
 
@@ -65,6 +65,7 @@ export function Markers(props: MarkersProps) {
             </Box>
           </Flex>
         ))}
+
       {markers.length > 0 && (
         <Box marginTop={validation.length > 0 ? 3 : 0}>
           {renderCustomMarkers && renderCustomMarkers(markers)}

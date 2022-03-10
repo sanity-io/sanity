@@ -2,14 +2,18 @@ import React from 'react'
 import {PreviewPrimitive} from './PreviewPrimitive'
 import {PreviewObject} from './PreviewObject'
 import {PreviewArray} from './PreviewArray'
+
 const NO_VALUE = <PreviewPrimitive value="<no value>" />
-type Props = {
-  value: Array<any> | Record<string, any> | number | boolean | string
+
+export interface PreviewAnyProps {
+  value: Array<unknown> | Record<string, unknown> | number | boolean | string
   maxDepth: number
   _depth?: number
 }
-export function PreviewAny(props: Props) {
+
+export function PreviewAny(props: PreviewAnyProps) {
   const {value, ...rest} = props
+
   switch (typeof value) {
     case 'number':
     case 'boolean':

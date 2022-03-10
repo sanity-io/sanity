@@ -3,9 +3,13 @@ import {SanityPreview} from '@sanity/base/preview'
 import {Schema, SchemaType} from '@sanity/types'
 import {FormBuilderProvider, FormBuilderProviderProps} from '../FormBuilderProvider'
 import {PatchChannel} from '../patchChannel'
+import {FormPreviewComponentResolver} from '../types'
 import {resolveInputComponent as defaultInputResolver} from './inputResolver/inputResolver'
 
-const previewResolver = (..._: unknown[]) => SanityPreview
+const previewResolver: FormPreviewComponentResolver = (..._: unknown[]) => {
+  // @todo: Implement correct typing here
+  return SanityPreview as any
+}
 
 /**
  * @alpha This API might change.

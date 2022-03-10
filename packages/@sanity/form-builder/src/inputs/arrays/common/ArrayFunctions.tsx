@@ -2,28 +2,14 @@
 
 import {ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
 import {AddIcon} from '@sanity/icons'
-import React, {ReactNode, useMemo} from 'react'
+import React, {useMemo} from 'react'
 import {Box, Button, Grid, Menu, MenuButton, MenuItem, Tooltip, Text} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {useConditionalReadOnly} from '@sanity/base/_internal'
-import {PatchEvent} from '../../../PatchEvent'
+import {FormArrayInputFunctionsProps} from '../../../types'
 
-// These are the props any implementation of the ArrayFunctions part will receive
-export interface ArrayFunctionsProps<SchemaType extends ArraySchemaType, MemberType> {
-  className?: string
-  type: SchemaType
-  children?: ReactNode
-  value?: MemberType[]
-  readOnly: boolean | null
-  onAppendItem: (itemValue: MemberType) => void
-  onPrependItem: (itemValue: MemberType) => void
-  onFocusItem: (item: MemberType, index: number) => void
-  onCreateValue: (type: SchemaType) => MemberType
-  onChange: (event: PatchEvent) => void
-}
-
-export function ArrayFunctions<MemberType>(
-  props: ArrayFunctionsProps<ArraySchemaType, MemberType>
+export function DefaultArrayInputFunctions<SchemaType extends ArraySchemaType, MemberType>(
+  props: FormArrayInputFunctionsProps<SchemaType, MemberType>
 ) {
   const {type, readOnly, children, onCreateValue, onAppendItem} = props
   const menuButtonId = useId()
@@ -106,4 +92,4 @@ export function ArrayFunctions<MemberType>(
   )
 }
 
-ArrayFunctions.__SANITY_INTERNAL_IMPLEMENTATION = true
+DefaultArrayInputFunctions.__SANITY_INTERNAL_IMPLEMENTATION = true

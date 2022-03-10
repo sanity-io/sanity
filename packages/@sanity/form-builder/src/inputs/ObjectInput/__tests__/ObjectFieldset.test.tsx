@@ -11,6 +11,7 @@ import {FormBuilderProvider} from '../../../FormBuilderProvider'
 import {is} from '../../../utils/is'
 import {ReviewChangesContextProvider} from '../../../sanity/contexts/reviewChanges/ReviewChangesProvider'
 import {createPatchChannel} from '../../../patchChannel'
+import {FormInputComponentResolver, FormInputProps} from '../../../types'
 
 const schema = Schema.compile({
   name: 'test',
@@ -43,7 +44,10 @@ const schema = Schema.compile({
   ],
 })
 
-const GenericInput = forwardRef(function GenericInput(props: any, ref: ForwardedRef<any>) {
+const GenericInput = forwardRef(function GenericInput(
+  props: FormInputProps,
+  ref: ForwardedRef<any>
+) {
   return <input type="string" ref={ref} onFocus={props.onFocus} />
 })
 
@@ -51,7 +55,7 @@ const GenericPreview = function GenericPreview(props: any) {
   return <div />
 }
 
-function inputResolver(type: SchemaType) {
+const inputResolver: FormInputComponentResolver = (type: SchemaType) => {
   if (is('object', type)) {
     return ObjectInput
   }

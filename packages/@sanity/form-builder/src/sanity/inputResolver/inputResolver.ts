@@ -1,7 +1,7 @@
 import {SchemaType} from '@sanity/types'
 import React from 'react'
 import * as is from '../../utils/is'
-import {FormBuilderContextValue} from '../../FormBuilderContext'
+import {FormInputProps} from '../../types'
 import {sanityInputs} from './defaultInputs'
 import {resolveReferenceInput} from './resolveReferenceInput'
 import {resolveArrayInput} from './resolveArrayInput'
@@ -30,7 +30,9 @@ function resolveTypeVariants(type) {
 }
 
 export function resolveInputComponent(
-  inputComponents: FormBuilderContextValue['components']['inputs'] | undefined,
+  inputComponents:
+    | Record<string, React.ComponentType<FormInputProps<any, any>> | undefined>
+    | undefined,
   userDefinedInputComponentProp: unknown,
   type: SchemaType
 ): React.ComponentType<any> | undefined {

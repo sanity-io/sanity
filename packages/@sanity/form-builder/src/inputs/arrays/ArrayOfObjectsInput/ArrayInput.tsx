@@ -22,10 +22,13 @@ import {Alert} from '../../../components/Alert'
 import {Details} from '../../../components/Details'
 import {Item, List} from '../common/list'
 import {EMPTY_ARRAY} from '../../../utils/empty'
-import {ArrayFunctions} from '../common/ArrayFunctions'
 import {applyAll} from '../../../patch/applyPatch'
 import {ConditionalReadOnlyField} from '../../common'
-import {FormBuilderFilterFieldFn, FormInputProps} from '../../../types'
+import {
+  FormArrayInputFunctionsProps,
+  FormBuilderFilterFieldFn,
+  FormInputProps,
+} from '../../../types'
 import {ArrayItem} from './item'
 import type {ArrayMember, InsertEvent, ReferenceItemComponentType} from './types'
 import {uploadTarget} from './uploadTarget/uploadTarget'
@@ -56,7 +59,9 @@ export function createProtoValue(type: SchemaType): ArrayMember {
 
 export interface ArrayInputProps
   extends FormInputProps<ArrayMember[], ArraySchemaType<ArrayMember>> {
-  ArrayFunctionsImpl: typeof ArrayFunctions
+  ArrayFunctionsImpl: React.ComponentType<
+    FormArrayInputFunctionsProps<ArraySchemaType<ArrayMember>, ArrayMember>
+  >
   ArrayItemImpl: typeof ArrayItem
   ReferenceItemComponent: ReferenceItemComponentType
   filterField: FormBuilderFilterFieldFn

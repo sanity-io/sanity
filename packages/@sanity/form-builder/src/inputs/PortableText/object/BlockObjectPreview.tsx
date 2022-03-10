@@ -114,12 +114,12 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps) {
     return (
       <Flex>
         <Box flex={1}>
-          <Preview type={type} value={value} layout={LAYOUT} />
+          <Preview type={type as any} value={value} layout={LAYOUT} />
         </Box>
         <Box marginLeft={1}>{actions}</Box>
       </Flex>
     )
   }
 
-  return <Preview actions={actions} type={type} value={value} layout={LAYOUT} />
+  return <Preview actions={actions} type={type as any} value={value} layout={LAYOUT} />
 }

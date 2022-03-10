@@ -17,13 +17,14 @@ import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import styled, {css} from 'styled-components'
 import {Box, Card, Theme, Tooltip} from '@sanity/ui'
 import {Preview} from '../../../Preview'
-import {RenderCustomMarkers} from '../types'
+import {PortableTextMarker, RenderCustomMarkers} from '../types'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
 
 interface InlineObjectProps {
   attributes: RenderAttributes
   isEditing: boolean
+  markers: PortableTextMarker[]
   validation: ValidationMarker[]
   onFocus: (path: Path) => void
   readOnly: boolean
@@ -114,6 +115,7 @@ export const InlineObject = React.forwardRef(function InlineObject(
   const {
     attributes: {focused, selected, path},
     isEditing,
+    markers,
     validation,
     onFocus,
     readOnly,
@@ -150,7 +152,7 @@ export const InlineObject = React.forwardRef(function InlineObject(
   const preview = useMemo(
     () => (
       <PreviewSpan>
-        <Preview type={type} value={value} fallbackTitle="Click to edit" layout="inline" />
+        <Preview type={type as any} value={value} fallbackTitle="Click to edit" layout="inline" />
       </PreviewSpan>
     ),
     [type, value]
@@ -164,14 +166,18 @@ export const InlineObject = React.forwardRef(function InlineObject(
           portal="editor"
           content={
             <TooltipBox padding={2}>
-              <Markers markers={validation} renderCustomMarkers={renderCustomMarkers} />
+              <Markers
+                markers={markers}
+                validation={validation}
+                renderCustomMarkers={renderCustomMarkers}
+              />
             </TooltipBox>
           }
         >
           {preview}
         </Tooltip>
       ) : undefined,
-    [validation, preview, renderCustomMarkers]
+    [Markers, markers, validation, preview, renderCustomMarkers]
   )
 
   const handleEditClick = useCallback((): void => {

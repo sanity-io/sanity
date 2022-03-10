@@ -8,6 +8,7 @@ import {applyAll} from '../../../../simplePatch'
 import {PortableTextMarker, RenderBlockActions, RenderCustomMarkers} from '../../types'
 import {ReviewChangesContextProvider} from '../../../../sanity/contexts/reviewChanges/ReviewChangesProvider'
 import {createPatchChannel} from '../../../../patchChannel'
+import {FormInputComponentResolver} from '../../../../types'
 import {inputResolver} from './input'
 import {resolvePreviewComponent} from './resolvePreviewComponent'
 
@@ -47,8 +48,8 @@ export function TestInput(props: TestInputProps) {
   const [markers, setMarkers] = useState<PortableTextMarker[]>([])
   const [validation, setValidation] = useState<ValidationMarker[]>([])
 
-  const resolveInputComponent = useCallback(
-    (_type) => inputResolver(formBuilder, _type),
+  const resolveInputComponent: FormInputComponentResolver = useCallback(
+    (_type) => inputResolver(_type, formBuilder),
     [formBuilder]
   )
 

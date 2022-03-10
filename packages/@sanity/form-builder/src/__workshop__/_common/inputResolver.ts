@@ -1,8 +1,9 @@
 import {SchemaType} from '@sanity/types'
 import {resolveInputComponent} from '../../sanity/inputResolver/inputResolver'
+import {FormInputComponentResolver} from '../../types'
 import {DebugInput} from './DebugInput'
 
-export const inputResolver = (input: SchemaType) => {
+export const inputResolver: FormInputComponentResolver = (input: SchemaType) => {
   if (input.type.name === 'document') {
     input.type.name = 'object'
   }

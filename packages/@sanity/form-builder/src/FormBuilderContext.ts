@@ -1,33 +1,25 @@
-import {AssetSource, Path, Schema, SchemaType} from '@sanity/types'
+import {AssetSource, Path, Schema, ValidationMarker} from '@sanity/types'
 import React, {createContext} from 'react'
+import {PortableTextMarker, RenderCustomMarkers} from './inputs/PortableText/types'
 import {PatchChannel} from './patchChannel'
-import {FormBuilderFilterFieldFn} from './types'
+import {
+  FormArrayInputFunctionsProps,
+  FormBuilderFilterFieldFn,
+  FormInputComponentResolver,
+  FormInputProps,
+  FormPreviewComponentResolver,
+} from './types'
 
 export interface FormBuilderContextValue {
-  // @todo: fix prop typings
   components: {
-    ArrayFunctions: React.ComponentType<any>
-    CustomMarkers?: React.ComponentType<any>
-    Markers: React.ComponentType<any>
-    inputs: {
-      array?: React.ComponentType<any>
-      boolean?: React.ComponentType<any>
-      date?: React.ComponentType<any>
-      datetime?: React.ComponentType<any>
-      email?: React.ComponentType<any>
-      file?: React.ComponentType<any>
-      geopoint?: React.ComponentType<any>
-      image?: React.ComponentType<any>
-      number?: React.ComponentType<any>
-      object?: React.ComponentType<any>
-      reference?: React.ComponentType<any>
-      slug?: React.ComponentType<any>
-      string?: React.ComponentType<any>
-      text?: React.ComponentType<any>
-      url?: React.ComponentType<any>
-
-      crossDatasetReference?: React.ComponentType<any>
-    }
+    ArrayFunctions: React.ComponentType<FormArrayInputFunctionsProps<any, any>>
+    CustomMarkers: React.ComponentType<{markers: PortableTextMarker[]}>
+    Markers: React.ComponentType<{
+      markers: PortableTextMarker[]
+      renderCustomMarkers: RenderCustomMarkers
+      validation: ValidationMarker[]
+    }>
+    inputs: Record<string, React.ComponentType<FormInputProps<any, any>> | undefined>
   }
   file: {
     assetSources: AssetSource[]
@@ -44,8 +36,8 @@ export interface FormBuilderContextValue {
   __internal_patchChannel: PatchChannel // eslint-disable-line camelcase
   filterField: FormBuilderFilterFieldFn
   schema: Schema
-  resolveInputComponent: (type: SchemaType) => React.ComponentType<any>
-  resolvePreviewComponent: (type: SchemaType) => React.ComponentType<any>
+  resolveInputComponent: FormInputComponentResolver
+  resolvePreviewComponent: FormPreviewComponentResolver
   getDocument: () => unknown
 }
 

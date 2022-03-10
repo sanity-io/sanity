@@ -5,6 +5,7 @@ import {SchemaType} from '@sanity/types'
 import {SanityFormBuilderConfig} from '@sanity/base'
 import {PortableTextInput} from '../../PortableTextInput'
 import {resolveInputComponent} from '../../../../sanity/inputResolver/inputResolver'
+import {FormInputProps} from '../../../..'
 
 const DebugTextArea = styled(TextArea)(({theme}: {theme: Theme}) => {
   return css`
@@ -12,7 +13,7 @@ const DebugTextArea = styled(TextArea)(({theme}: {theme: Theme}) => {
   `
 })
 
-const DebugInput = forwardRef(function DebugInput(props: any, ref) {
+const DebugInput = forwardRef(function DebugInput(props: FormInputProps, ref) {
   const rootRef = useRef<HTMLTextAreaElement | null>(null)
 
   useImperativeHandle(ref, () => ({
@@ -32,7 +33,10 @@ const DebugInput = forwardRef(function DebugInput(props: any, ref) {
   )
 })
 
-export const inputResolver = (formBuilder: SanityFormBuilderConfig, input: SchemaType) => {
+export function inputResolver(
+  input: SchemaType,
+  formBuilder: SanityFormBuilderConfig
+): React.ComponentType<FormInputProps<any, any>> {
   if (input.type.name === 'block') {
     return PortableTextInput
   }

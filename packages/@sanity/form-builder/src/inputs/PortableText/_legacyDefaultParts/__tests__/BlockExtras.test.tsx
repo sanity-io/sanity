@@ -2,7 +2,6 @@
 import '@testing-library/jest-dom/extend-expect'
 import {fireEvent, render, waitFor} from '@testing-library/react'
 import React from 'react'
-
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import Schema from '@sanity/schema'
 import {PortableTextInputProps} from '../../PortableTextInput'

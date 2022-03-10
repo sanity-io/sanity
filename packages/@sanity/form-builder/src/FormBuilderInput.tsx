@@ -8,7 +8,7 @@ import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/presence
 import {useConditionalReadOnly} from '@sanity/base/_internal'
 import {PatchEvent} from './PatchEvent'
 import {emptyArray} from './utils/empty'
-import {FormInputProps as InputProps, FormBuilderFilterFieldFn, FormInputProps} from './types'
+import {FormBuilderFilterFieldFn, FormInputComponentResolver, FormInputProps} from './types'
 import {ConditionalReadOnlyField} from './inputs/common'
 import {useFormBuilder} from './useFormBuilder'
 
@@ -24,7 +24,7 @@ export interface FormBuilderInputProps
   extends Omit<FormInputProps<unknown, SchemaType>, 'readOnly'> {
   readOnly?: ConditionalProperty
   parent?: Record<string, unknown> | undefined
-  inputComponent?: React.ComponentType<InputProps>
+  inputComponent?: React.ComponentType<FormInputProps>
   isRoot?: boolean
   path: Path
   filterField?: FormBuilderFilterFieldFn
@@ -68,7 +68,7 @@ export const FormBuilderInput = forwardRef(function FormBuilderInput(
 export class FormBuilderInputInstance extends React.Component<
   FormBuilderInputProps & {
     getValuePath: () => Path
-    resolveInputComponent: (type: SchemaType) => React.ComponentType<any> | null | undefined
+    resolveInputComponent: FormInputComponentResolver
   }
 > {
   static defaultProps = {
@@ -136,7 +136,7 @@ export class FormBuilderInputInstance extends React.Component<
     }
 
     const inputComponent = this.resolveInputComponent(type)
-    const inputDisplayName = getDisplayName(inputComponent)
+    const inputDisplayName = inputComponent && getDisplayName(inputComponent)
 
     // no ref
     if (!this._input) {
@@ -263,7 +263,7 @@ export class FormBuilderInputInstance extends React.Component<
 
 interface FormBuilderInputInnerProps extends FormBuilderInputProps {
   childFocusPath: Path
-  component: React.ComponentType<InputProps>
+  component: React.ComponentType<FormInputProps>
   setInput: (component: FormBuilderInputInstance | HTMLDivElement | null) => void
   readOnly?: boolean
 }
@@ -315,7 +315,7 @@ function FormBuilderInputInner(props: FormBuilderInputInnerProps) {
 
   const childCompareValue = PathUtils.get(compareValue, path)
 
-  const inputProps: InputProps = useMemo(
+  const inputProps: FormInputProps = useMemo(
     () => ({
       ...rest,
       focusPath: isLeaf ? undefined : childFocusPath,

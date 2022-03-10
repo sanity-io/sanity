@@ -1,9 +1,9 @@
 import {ErrorOutlineIcon, WarningOutlineIcon, InfoOutlineIcon} from '@sanity/icons'
-import {Box, Card, Flex} from '@sanity/ui'
-import React, {ComponentProps} from 'react'
+import {Box, Card, CardProps, Flex} from '@sanity/ui'
+import React from 'react'
 import {Details} from './components/Details'
 
-interface AlertProps extends Omit<ComponentProps<typeof Card>, 'title'> {
+interface AlertProps extends Omit<CardProps, 'title'> {
   title: React.ReactNode
   status?: 'warning' | 'error' | 'info'
 }
@@ -20,7 +20,7 @@ const STATUS_ICONS = {
   info: <InfoOutlineIcon />,
 }
 
-export function AlertStrip(props: AlertProps) {
+export function AlertStrip(props: AlertProps & Omit<React.HTMLProps<HTMLDivElement>, 'ref'>) {
   const {children, status = 'warning', title, ...rest} = props
 
   return (

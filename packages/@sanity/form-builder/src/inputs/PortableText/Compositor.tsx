@@ -243,6 +243,9 @@ export function Compositor(props: InputProps) {
           <span ref={useRefElm ? childEditorElementRef : undefined}>{defaultRender(child)}</span>
         )
       }
+      const childMarkers = markers.filter(
+        (marker) => isKeySegment(marker.path[2]) && marker.path[2]._key === child._key
+      )
       const childValidation = validation.filter(
         (marker) => isKeySegment(marker.path[2]) && marker.path[2]._key === child._key
       )
@@ -250,6 +253,7 @@ export function Compositor(props: InputProps) {
         <InlineObject
           attributes={attributes}
           isEditing={!!editObjectKey}
+          markers={childMarkers}
           validation={childValidation}
           onFocus={onFocus}
           readOnly={readOnly}
@@ -263,6 +267,7 @@ export function Compositor(props: InputProps) {
     },
     [
       editObjectKey,
+      markers,
       validation,
       onFocus,
       ptFeatures.types.span.name,

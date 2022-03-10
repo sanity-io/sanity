@@ -64,7 +64,19 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
 
   const handleOnHasChanges = useCallback((changed: boolean) => setHasChanges(changed), [])
 
-  // These are validation messages that are only for the block level (things further up, like
+  // These are custom markers that are only for this block
+  const blockMarkers = useMemo(
+    () =>
+      markers.filter(
+        (marker) =>
+          marker.path.length === 1 &&
+          isKeySegment(marker.path[0]) &&
+          marker.path[0]._key === blockKey
+      ),
+    [blockKey, markers]
+  )
+
+  // These are validation markers that are only for the block level (things further up, like
   // annotations and inline objects are dealt with in their respective components)
   const blockValidation = useMemo(
     () =>
@@ -151,7 +163,11 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
             content={
               tooltipEnabled && (
                 <TooltipBox padding={2}>
-                  <Markers markers={blockValidation} renderCustomMarkers={renderCustomMarkers} />
+                  <Markers
+                    markers={blockMarkers}
+                    validation={blockValidation}
+                    renderCustomMarkers={renderCustomMarkers}
+                  />
                 </TooltipBox>
               )
             }

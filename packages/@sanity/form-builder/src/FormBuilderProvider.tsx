@@ -1,31 +1,39 @@
 import React, {useMemo} from 'react'
-import {AssetSource, Schema, SchemaType} from '@sanity/types'
+import {AssetSource, Schema, SchemaType, ValidationMarker} from '@sanity/types'
 import {fallbackInputs} from './fallbackInputs'
 import {FormBuilderContext, FormBuilderContextValue} from './FormBuilderContext'
-import DefaultArrayFunctions from './_parts/array-functions-default'
-import BlockMarkersDefault from './_parts/block-markers-default'
-import fileAssetSourceDefault from './_parts/file-asset-source-default'
-import imageAssetSourceDefault from './_parts/image-asset-source-default'
+import {PortableTextMarker, RenderCustomMarkers} from './inputs/PortableText/types'
 import {PatchChannel} from './patchChannel'
+import {
+  FormBuilderFilterFieldFn,
+  FormInputComponentResolver,
+  FormPreviewComponentResolver,
+  FormInputProps,
+  FormArrayInputFunctionsProps,
+} from './types'
+import {DefaultArrayInputFunctions} from './inputs/arrays/common/ArrayFunctions'
+import {DefaultMarkers} from './inputs/PortableText/_legacyDefaultParts/Markers'
+import {DefaultCustomMarkers} from './inputs/PortableText/_legacyDefaultParts/CustomMarkers'
+import {FileSource, ImageSource} from './sanity/DefaultAssetSource'
 
-const defaultFileAssetSources = [fileAssetSourceDefault]
-const defaultImageAssetSources = [imageAssetSourceDefault]
+const defaultFileAssetSources = [FileSource]
+const defaultImageAssetSources = [ImageSource]
 
 const EMPTY_ARRAY = []
 
-const RESOLVE_NULL = (..._: unknown[]) => null
-
-function resolve(
-  providedResolve: FormBuilderContextValue['resolveInputComponent'] = RESOLVE_NULL,
+function resolveComponentFromType<Props>(
+  providedResolve:
+    | ((type: SchemaType) => React.ComponentType<Props> | null | false | undefined)
+    | undefined,
   type: SchemaType
 ) {
   let itType = type
 
   while (itType) {
-    const resolved = providedResolve(itType)
-    if (resolved) {
-      return resolved
-    }
+    const resolved = providedResolve?.(itType)
+
+    if (resolved) return resolved
+
     itType = itType.type
   }
 
@@ -34,21 +42,14 @@ function resolve(
 
 export interface FormBuilderProviderProps {
   components?: {
-    ArrayFunctions?: React.ComponentType<any>
-    CustomMarkers?: React.ComponentType<any>
-    Markers?: React.ComponentType<any>
-    inputs?: {
-      object?: React.ComponentType<any>
-      boolean?: React.ComponentType<any>
-      number?: React.ComponentType<any>
-      string?: React.ComponentType<any>
-      text?: React.ComponentType<any>
-      reference?: React.ComponentType<any>
-      datetime?: React.ComponentType<any>
-      email?: React.ComponentType<any>
-      geopoint?: React.ComponentType<any>
-      url?: React.ComponentType<any>
-    }
+    ArrayFunctions?: React.ComponentType<FormArrayInputFunctionsProps<any, any>>
+    CustomMarkers?: React.ComponentType<{markers: PortableTextMarker[]}>
+    Markers: React.ComponentType<{
+      markers: PortableTextMarker[]
+      renderCustomMarkers: RenderCustomMarkers
+      validation: ValidationMarker[]
+    }>
+    inputs?: Record<string, React.ComponentType<FormInputProps<any, any>> | undefined>
   }
   file?: {
     assetSources?: AssetSource[]
@@ -61,13 +62,13 @@ export interface FormBuilderProviderProps {
   schema: Schema
   value?: unknown
   children?: React.ReactNode
-  filterField?: any
+  filterField?: FormBuilderFilterFieldFn
   /**
    * @internal
    */
   __internal_patchChannel?: PatchChannel // eslint-disable-line camelcase
-  resolveInputComponent: (type: SchemaType) => React.ComponentType<any> | undefined
-  resolvePreviewComponent: (type: SchemaType) => React.ComponentType<any> | undefined
+  resolveInputComponent: FormInputComponentResolver
+  resolvePreviewComponent: FormPreviewComponentResolver
 }
 
 const missingPatchChannel: PatchChannel = {
@@ -97,9 +98,9 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
   const formBuilder: FormBuilderContextValue = useMemo(() => {
     return {
       components: {
-        ArrayFunctions: components?.ArrayFunctions || DefaultArrayFunctions,
-        CustomMarkers: components?.CustomMarkers,
-        Markers: components?.Markers || BlockMarkersDefault,
+        ArrayFunctions: components?.ArrayFunctions || DefaultArrayInputFunctions,
+        CustomMarkers: components?.CustomMarkers || DefaultCustomMarkers,
+        Markers: components?.Markers || DefaultMarkers,
         inputs: components?.inputs || {},
       },
       file: {
@@ -119,8 +120,9 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       __internal_patchChannel: patchChannel, // eslint-disable-line camelcase
       schema,
       resolveInputComponent: (type) =>
-        resolve(resolveInputComponentProp, type) || fallbackInputs[type.jsonType],
-      resolvePreviewComponent: (type) => resolve(resolvePreviewComponentProp, type),
+        resolveComponentFromType(resolveInputComponentProp, type) || fallbackInputs[type.jsonType],
+      resolvePreviewComponent: (type) =>
+        resolveComponentFromType(resolvePreviewComponentProp, type),
       getDocument: () => value,
     }
   }, [

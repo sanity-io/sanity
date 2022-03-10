@@ -7,9 +7,8 @@ import {FormFieldSet} from '@sanity/base/components'
 import {resolveTypeName} from '@sanity/util/content'
 import {PatchEvent, set, unset} from '../../../PatchEvent'
 import {Item, List} from '../common/list'
-import {ArrayFunctions} from '../common/ArrayFunctions'
 import {ConditionalReadOnlyField} from '../../common'
-import {FormInputProps} from '../../../types'
+import {FormArrayInputFunctionsProps, FormInputProps} from '../../../types'
 import {getEmptyValue} from './getEmptyValue'
 import {ItemRow} from './ItemRow'
 import {PrimitiveValue} from './types'
@@ -45,7 +44,9 @@ function insertAfter<T>(index: number, arr: T[], item: T): T[] {
 
 export interface ArrayOfPrimitivesInputProps
   extends FormInputProps<PrimitiveValue[], ArraySchemaType<PrimitiveValue>> {
-  ArrayFunctionsImpl: typeof ArrayFunctions
+  ArrayFunctionsImpl: React.ComponentType<
+    FormArrayInputFunctionsProps<ArraySchemaType<PrimitiveValue>, PrimitiveValue>
+  >
 }
 
 export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitivesInputProps> {
@@ -302,7 +303,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
               </Card>
             )}
           </Stack>
-          <ArrayFunctionsImpl<PrimitiveValue>
+          <ArrayFunctionsImpl
             type={type}
             value={value}
             readOnly={readOnly}

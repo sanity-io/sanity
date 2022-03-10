@@ -14,6 +14,22 @@ import {
 import {PatchEvent} from './PatchEvent'
 
 /**
+ * These are the props an implementation of the ArrayFunctions component will receive
+ */
+export interface FormArrayInputFunctionsProps<SchemaType extends ArraySchemaType, MemberType> {
+  className?: string
+  type: SchemaType
+  children?: React.ReactNode
+  value?: MemberType[]
+  readOnly: boolean | null
+  onAppendItem: (itemValue: MemberType) => void
+  onPrependItem: (itemValue: MemberType) => void
+  onFocusItem: (item: MemberType, index: number) => void
+  onCreateValue: (type: SchemaType) => MemberType
+  onChange: (event: PatchEvent) => void
+}
+
+/**
  * @alpha
  */
 export interface FormBuilderFilterFieldFn {
@@ -57,3 +73,30 @@ export type FormInputProps<
   type: S
   value?: T | null
 }
+
+/**
+ * @alpha
+ */
+export type FormInputComponentResolver = (
+  type: SchemaType
+) => React.ComponentType<FormInputProps<any, any>> | null | false | undefined
+
+/**
+ * @alpha
+ */
+export interface FormPreviewProps {
+  actions?: React.ReactNode
+  layout?: string
+  value?: Array<unknown> | Record<string, unknown> | number | boolean | string
+  type: SchemaType
+  fallbackTitle?: React.ReactNode
+  withRadius?: boolean
+  withBorder?: boolean
+}
+
+/**
+ * @alpha
+ */
+export type FormPreviewComponentResolver = (
+  type: SchemaType
+) => React.ComponentType<FormPreviewProps> | null | false | undefined

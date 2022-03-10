@@ -10,10 +10,14 @@ import {SlugInput} from '../../inputs/Slug/SlugInput'
 import {SanityArrayInput} from '../inputs/SanityArrayInput'
 import {SanityImageInput} from '../inputs/SanityImageInput'
 import {SanityFileInput} from '../inputs/SanityFileInput'
-import {FormBuilderContextValue} from '../../FormBuilderContext'
 import SanityCrossDatasetReferenceInput from '../inputs/crossDatasetReference/SanityCrossDatasetReferenceInput'
 
-export const sanityInputs: FormBuilderContextValue['components']['inputs'] = {
+import {FormInputProps} from '../../types'
+
+export const sanityInputs: Record<
+  string,
+  React.ComponentType<FormInputProps<any, any>> | undefined
+> = {
   object: ObjectInput,
   array: SanityArrayInput,
   boolean: BooleanInput,
