@@ -8,7 +8,7 @@ const TestInput = forwardRef(function TestInput(props: any, ref: any) {
 
   return (
     <FormField
-      __unstable_markers={props.markers}
+      validation={props.markers}
       __unstable_presence={props.presence}
       description={props.type.description}
       title={props.type.title}

@@ -1,12 +1,11 @@
 import {isPlainObject} from 'lodash'
-import React, {useCallback} from 'react'
+import React, {useCallback, useMemo} from 'react'
+import {Patch} from '@sanity/base/_internal'
 import {FormBuilderInput, PatchEvent, set, setIfMissing} from '@sanity/form-builder'
-// import sanityClient from 'part:@sanity/base/client'
 import {Box} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {useClient} from '@sanity/base'
-
-// const client = sanityClient.withConfig({apiVersion: '2021-03-01'})
+import {ValidationMarker} from '@sanity/types'
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return isPlainObject(value)
@@ -18,16 +17,7 @@ export interface LinkAnnotationInputProps {
   onChange: (event: any) => void
   onFocus: (path: any) => void
   onBlur: () => void
-  markers: any[]
-}
-
-// PatchEvent type can be found packages/@sanity/form-builder/src/PatchEvent.ts
-// It's a class thats imported via part: which looses typings '@sanity/form-builder'
-// It's quite a large complex type, emulating the useful structure here
-interface Patch {
-  path: any[]
-  type: 'set' | 'unset' | 'setIfMissing' | 'dec' | 'inc' | 'diffMatchPatch'
-  value: unknown
+  validation: ValidationMarker[]
 }
 
 interface PartialPatchEvent {
@@ -41,8 +31,9 @@ interface SlugQueryResult {
 }
 
 export const LinkAnnotationInput = (props: LinkAnnotationInputProps) => {
-  const {type, value, onChange, onBlur, onFocus, markers} = props
+  const {type, value, onChange, onBlur, onFocus, validation} = props
   const client = useClient()
+  const versionedClient = useMemo(() => client.withConfig({apiVersion: '2021-03-01'}), [client])
   const referenceArticleField = type.fields.find((field) => field.name === 'reference')
   const urlField = type.fields.find((field) => field.name === 'href')
   const urlFieldDisabled =
@@ -51,11 +42,9 @@ export const LinkAnnotationInput = (props: LinkAnnotationInputProps) => {
     value[referenceArticleField?.name] !== undefined
   const exclude = [urlField?.name, referenceArticleField?.name]
   const otherFields = type.fields.filter((f) => !exclude.includes(f.name))
-  const getFieldMarkers = useCallback(
-    (fieldName) => {
-      return markers.filter((marker) => PathUtils.startsWith([fieldName], marker.path))
-    },
-    [markers]
+  const getFieldValidation = useCallback(
+    (fieldName) => validation.filter((marker) => PathUtils.startsWith([fieldName], marker.path)),
+    [validation]
   )
   const handleFieldChange = useCallback(
     (field, fieldPatchEvent) => {
@@ -72,7 +61,7 @@ export const LinkAnnotationInput = (props: LinkAnnotationInputProps) => {
       const setPatch = patchEvent.patches.find((patch) => patch.type === 'set')
       if (setPatch) {
         const params = {
-          ID: setPatch.value as string,
+          ID: (setPatch as any).value as string,
         }
         const query = `
         *[
@@ -85,7 +74,7 @@ export const LinkAnnotationInput = (props: LinkAnnotationInputProps) => {
         }
         [0]
       `
-        const result = (await client.fetch(query, params)) as SlugQueryResult
+        const result = (await versionedClient.fetch(query, params)) as SlugQueryResult
 
         if (result) {
           const event = PatchEvent.from(set(result?.uniqueSlug?.current, ['href']))
@@ -93,13 +82,15 @@ export const LinkAnnotationInput = (props: LinkAnnotationInputProps) => {
         }
       }
     },
-    [handleFieldChange, onChange, referenceArticleField]
+    [handleFieldChange, onChange, referenceArticleField, versionedClient]
   )
+
   return (
     <>
       <Box flex={1} paddingY={2}>
         <FormBuilderInput
           key={referenceArticleField?.name}
+          level={0}
           type={referenceArticleField?.type as any}
           value={
             (isRecord(value) &&
@@ -113,10 +104,13 @@ export const LinkAnnotationInput = (props: LinkAnnotationInputProps) => {
           focusPath={[referenceArticleField?.name as any, '_ref']}
           path={[referenceArticleField?.name as any]}
           filterField={referenceArticleField?.type?.options?.filter}
+          presence={[]}
+          validation={[]}
         />
       </Box>
       <Box flex={1} paddingY={2}>
         <FormBuilderInput
+          level={0}
           key={urlField?.name}
           type={urlField?.type as any}
           value={(isRecord(value) && urlField?.name && value[urlField?.name]) || undefined}
@@ -129,7 +123,8 @@ export const LinkAnnotationInput = (props: LinkAnnotationInputProps) => {
           path={[urlField?.name as any]}
           filterField={urlField?.type?.options?.filter}
           readOnly={urlFieldDisabled || false}
-          markers={getFieldMarkers(urlField?.name)}
+          presence={[]}
+          validation={getFieldValidation(urlField?.name)}
         />
       </Box>
       {otherFields.map((field) => (
@@ -145,7 +140,9 @@ export const LinkAnnotationInput = (props: LinkAnnotationInputProps) => {
             focusPath={[field?.name]}
             path={[field?.name]}
             filterField={field?.type?.options?.filter}
-            markers={getFieldMarkers(field?.name)}
+            level={0}
+            presence={[]}
+            validation={getFieldValidation(field?.name)}
           />
         </Box>
       ))}
