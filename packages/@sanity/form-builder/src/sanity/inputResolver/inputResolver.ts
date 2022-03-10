@@ -30,7 +30,7 @@ function resolveTypeVariants(type) {
 }
 
 export default function resolveInputComponent(
-  inputComponents: FormBuilderContextValue['components']['inputs'],
+  inputComponents: FormBuilderContextValue['components']['inputs'] | undefined,
   userDefinedInputComponentProp: unknown,
   type: SchemaType
 ): React.ComponentType<any> | undefined {
@@ -45,5 +45,5 @@ export default function resolveInputComponent(
     return (type as any).inputComponent
   }
 
-  return resolveTypeVariants(type) || inputComponents[type.name] || sanityInputs[type.name]
+  return resolveTypeVariants(type) || inputComponents?.[type.name] || sanityInputs[type.name]
 }
