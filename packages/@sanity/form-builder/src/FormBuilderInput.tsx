@@ -17,6 +17,9 @@ const EMPTY_PATH: Path = emptyArray()
 const EMPTY_PRESENCE: FormFieldPresence[] = emptyArray()
 const WRAPPER_INNER_STYLES = {minWidth: 0}
 
+/**
+ * @alpha
+ */
 export interface FormBuilderInputProps
   extends Omit<FormInputProps<unknown, SchemaType>, 'readOnly'> {
   readOnly?: ConditionalProperty
@@ -33,7 +36,13 @@ function getDisplayName(component: React.ComponentType) {
   return component.displayName || component.name || 'Unknown'
 }
 
-export const FormBuilderInput = forwardRef(function FormBuilderInput(props: FormBuilderInputProps) {
+/**
+ * @alpha
+ */
+export const FormBuilderInput = forwardRef(function FormBuilderInput(
+  props: FormBuilderInputProps,
+  ref: React.ForwardedRef<FormBuilderInputInstance>
+) {
   const {getValuePath, resolveInputComponent} = useFormBuilder()
 
   const scopedResolveInputComponent = useCallback(
@@ -47,11 +56,15 @@ export const FormBuilderInput = forwardRef(function FormBuilderInput(props: Form
     <FormBuilderInputInstance
       {...props}
       getValuePath={getValuePath}
+      ref={ref}
       resolveInputComponent={scopedResolveInputComponent}
     />
   )
 })
 
+/**
+ * @internal
+ */
 export class FormBuilderInputInstance extends React.Component<
   FormBuilderInputProps & {
     getValuePath: () => Path
