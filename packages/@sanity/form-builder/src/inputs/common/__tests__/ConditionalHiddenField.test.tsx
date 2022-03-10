@@ -4,7 +4,7 @@ import React, {useMemo} from 'react'
 import {render} from '@testing-library/react'
 import Schema from '@sanity/schema'
 import {ConditionalHiddenField} from '../ConditionalHiddenField'
-import SanityFormBuilderProvider from '../../../sanity/SanityFormBuilderProvider'
+import {SanityFormBuilderProvider} from '../../../sanity/SanityFormBuilderProvider'
 import {createPatchChannel} from '../../../patchChannel'
 
 const callbackFn = jest.fn(() => true)

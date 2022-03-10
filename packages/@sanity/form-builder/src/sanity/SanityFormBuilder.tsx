@@ -6,7 +6,7 @@ import {FormBuilderInput, FormBuilderInputInstance} from '../FormBuilderInput'
 import {FormBuilderFilterFieldFn} from '../types'
 import {PatchChannel} from '../patchChannel'
 import PatchEvent from '../PatchEvent'
-import SanityFormBuilderProvider from './SanityFormBuilderProvider'
+import {SanityFormBuilderProvider} from './SanityFormBuilderProvider'
 import {ReviewChangesContextProvider} from './contexts/reviewChanges/ReviewChangesProvider'
 
 /**
@@ -39,7 +39,7 @@ const EMPTY = []
 /**
  * @alpha
  */
-export default class SanityFormBuilder extends React.Component<SanityFormBuilderProps> {
+export class SanityFormBuilder extends React.Component<SanityFormBuilderProps> {
   _input: FormBuilderInputInstance | null
 
   setInput = (input: FormBuilderInputInstance | null) => {

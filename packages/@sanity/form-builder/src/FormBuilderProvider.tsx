@@ -80,7 +80,7 @@ const missingPatchChannel: PatchChannel = {
   },
 }
 
-export default function FormBuilderProvider(props: FormBuilderProviderProps) {
+export function FormBuilderProvider(props: FormBuilderProviderProps) {
   const {
     children,
     components,

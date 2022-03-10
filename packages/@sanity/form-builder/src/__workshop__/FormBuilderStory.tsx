@@ -4,7 +4,7 @@ import {useDocumentOperation, useEditState, useValidationStatus} from '@sanity/b
 import {Path} from '@sanity/types'
 import {Card, Container} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
-import SanityFormBuilder from '../sanity/SanityFormBuilder'
+import {SanityFormBuilder} from '../sanity/SanityFormBuilder'
 import {createPatchChannel} from '../patchChannel'
 
 export default function FormBuilderStory() {

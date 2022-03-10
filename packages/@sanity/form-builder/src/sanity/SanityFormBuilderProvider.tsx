@@ -1,7 +1,7 @@
 import React, {useCallback} from 'react'
 import {SanityPreview} from '@sanity/base/preview'
 import {Schema, SchemaType} from '@sanity/types'
-import FormBuilderProvider, {FormBuilderProviderProps} from '../FormBuilderProvider'
+import {FormBuilderProvider, FormBuilderProviderProps} from '../FormBuilderProvider'
 import {PatchChannel} from '../patchChannel'
 import defaultInputResolver from './inputResolver/inputResolver'
 
@@ -27,7 +27,7 @@ export interface SanityFormBuilderProviderProps {
  *
  * @alpha This API might change.
  */
-export default function SanityFormBuilderProvider(props: SanityFormBuilderProviderProps) {
+export function SanityFormBuilderProvider(props: SanityFormBuilderProviderProps) {
   const {
     __internal_patchChannel: patchChannel,
     components,

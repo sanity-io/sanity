@@ -3,7 +3,7 @@ import {EMPTY, of} from 'rxjs'
 import imageUrlBuilder from '@sanity/image-url'
 import React, {ComponentProps, useMemo} from 'react'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
-import {FormBuilderProvider} from '../../sanity/legacyPartImplementations/form-builder'
+import {SanityFormBuilderProvider} from '../../sanity/SanityFormBuilderProvider'
 import FileInput from '../../inputs/files/FileInput'
 
 import type {UploadOptions} from '../../sanity/uploads/types'
@@ -87,13 +87,13 @@ export const FileInputTester = React.forwardRef(function ImageInputTester(
     <ThemeProvider scheme="light" theme={studioTheme}>
       <LayerProvider>
         <ToastProvider>
-          <FormBuilderProvider
+          <SanityFormBuilderProvider
             value={undefined}
             __internal_patchChannel={patchChannel}
             schema={schema}
           >
             <FileInput {...rest} />
-          </FormBuilderProvider>
+          </SanityFormBuilderProvider>
         </ToastProvider>
       </LayerProvider>
     </ThemeProvider>

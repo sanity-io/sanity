@@ -3,7 +3,7 @@ import {ValidationMarker, Path, Schema, SchemaType} from '@sanity/types'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {render} from '@testing-library/react'
 import React from 'react'
-import {SanityFormBuilder} from '../../sanity/legacyPartImplementations/form-builder'
+import {SanityFormBuilder} from '../../sanity/SanityFormBuilder'
 import {createPatchChannel, PatchChannel} from '../../patchChannel'
 import {FormBuilderFilterFieldFn} from '../../types'
 

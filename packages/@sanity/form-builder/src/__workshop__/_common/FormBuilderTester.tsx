@@ -1,7 +1,7 @@
 import React from 'react'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import type {Schema as SchemaSchema} from '@sanity/types'
-import FormBuilderProvider from '../../FormBuilderProvider'
+import {FormBuilderProvider} from '../../FormBuilderProvider'
 import {ReviewChangesContextProvider} from '../../sanity/contexts/reviewChanges/ReviewChangesProvider'
 import {PatchChannel} from '../../patchChannel'
 import {inputResolver} from './inputResolver'

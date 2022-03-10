@@ -3,7 +3,7 @@ import {ValidationMarker} from '@sanity/types'
 import {Box, Card, Container} from '@sanity/ui'
 import {useAction, useBoolean} from '@sanity/ui-workshop'
 import React, {useCallback, useMemo} from 'react'
-import FormBuilderProvider from '../../../../FormBuilderProvider'
+import {FormBuilderProvider} from '../../../../FormBuilderProvider'
 import {TextBlock} from '../../text'
 import {PortableTextMarker} from '../../types'
 
