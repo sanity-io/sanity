@@ -167,6 +167,11 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
 
   constructor(props: PortableTextEditorProps) {
     super(props)
+
+    if (!props.type) {
+      throw new Error('PortableTextEditor: missing "type" property')
+    }
+
     // Test if we have a compiled schema type, if not, conveniently compile it
     this.type = props.type.hasOwnProperty('jsonType') ? props.type : compileType(props.type)
     // Indicate that we are loading
