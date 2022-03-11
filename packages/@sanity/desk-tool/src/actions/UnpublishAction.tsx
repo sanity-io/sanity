@@ -1,7 +1,6 @@
 import {
   DocumentActionComponent,
   DocumentActionModalProps,
-  useClient,
   useDatastores,
   useSource,
 } from '@sanity/base'
@@ -26,8 +25,7 @@ export const UnpublishAction: DocumentActionComponent = ({
   onComplete,
   liveEdit,
 }) => {
-  const client = useClient()
-  const {schema} = useSource()
+  const {client, schema} = useSource()
   const {grantsStore} = useDatastores()
   const {unpublish} = useDocumentOperation(id, type)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)

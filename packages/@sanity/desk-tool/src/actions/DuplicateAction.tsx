@@ -1,4 +1,4 @@
-import {DocumentActionComponent, useClient, useSource, useDatastores} from '@sanity/base'
+import {DocumentActionComponent, useSource, useDatastores} from '@sanity/base'
 import {CopyIcon} from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
 import {
@@ -15,15 +15,14 @@ const DISABLED_REASON_TITLE = {
 }
 
 export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete}) => {
-  const client = useClient()
-  const source = useSource()
+  const {client, schema} = useSource()
   const {grantsStore} = useDatastores()
   const {duplicate} = useDocumentOperation(id, type)
   const router = useRouter()
   const [isDuplicating, setDuplicating] = useState(false)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions(
     client,
-    source.schema,
+    schema,
     grantsStore,
     {
       id,

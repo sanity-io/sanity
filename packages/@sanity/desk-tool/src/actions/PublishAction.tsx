@@ -38,7 +38,7 @@ function getDisabledReason(
 // eslint-disable-next-line complexity
 export const PublishAction: DocumentActionComponent = (props) => {
   const {id, type, liveEdit, draft, published} = props
-  const client = useClient()
+  const {client} = useSource()
   const source = useSource()
   const {grantsStore} = useDatastores()
   const [publishState, setPublishState] = useState<'publishing' | 'published' | null>(null)

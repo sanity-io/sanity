@@ -1,4 +1,4 @@
-import {DocumentActionComponent, useClient, useDatastores, useSource} from '@sanity/base'
+import {DocumentActionComponent, useSource, useDatastores} from '@sanity/base'
 import {TrashIcon} from '@sanity/icons'
 import {
   useDocumentOperation,
@@ -14,8 +14,7 @@ const DISABLED_REASON_TITLE = {
 }
 
 export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComplete}) => {
-  const client = useClient()
-  const {schema} = useSource()
+  const {client, schema} = useSource()
   const {grantsStore} = useDatastores()
   const {delete: deleteOp} = useDocumentOperation(id, type)
   const [isDeleting, setIsDeleting] = useState(false)

@@ -35,7 +35,7 @@ const emptyObject = {} as Record<string, string | undefined>
 export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const {children, index, pane, paneKey} = props
   const source = useSource()
-  const client = useClient()
+  const {client} = useSource()
   const {historyStore, presenceStore} = useDatastores()
   const paneRouter = usePaneRouter()
   const {features, resolveDocumentActions} = useDeskTool()

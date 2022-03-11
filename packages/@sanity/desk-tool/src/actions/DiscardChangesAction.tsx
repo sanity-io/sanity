@@ -26,7 +26,7 @@ export const DiscardChangesAction: DocumentActionComponent = ({
   liveEdit,
   onComplete,
 }) => {
-  const client = useClient()
+  const {client} = useSource()
   const source = useSource()
   const {grantsStore} = useDatastores()
   const {discardChanges} = useDocumentOperation(id, type)

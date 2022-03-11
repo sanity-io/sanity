@@ -3,7 +3,7 @@ import {getQueryResults} from '@sanity/base/_internal'
 import {useEffect, useState, useCallback, useMemo, useRef} from 'react'
 import {of} from 'rxjs'
 import {filter as filterEvents} from 'rxjs/operators'
-import {useClient} from '@sanity/base'
+import {useSource} from '@sanity/base'
 import {DocumentListPaneItem, QueryResult, SortOrder, SortOrderBy} from './types'
 import {removePublishedWithDrafts, toOrderClause} from './helpers'
 import {DEFAULT_ORDERING, FULL_LIST_LIMIT, PARTIAL_PAGE_LIMIT} from './constants'
@@ -30,7 +30,7 @@ interface DocumentListState {
  */
 export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
   const {apiVersion, defaultOrdering, filter, params, sortOrder} = opts
-  const client = useClient()
+  const {client} = useSource()
   const [fullList, setFullList] = useState(false)
   const fullListRef = useRef(fullList)
   const [result, setResult] = useState<QueryResult | null>(null)
