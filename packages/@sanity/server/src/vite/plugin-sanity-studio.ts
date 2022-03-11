@@ -125,7 +125,13 @@ export function viteSanityStudio({
  */
 export function resolveEntryModulePath(opts: {cwd: string; isMonorepo: boolean}): string {
   if (opts.isMonorepo) {
-    return resolveFrom(opts.cwd, '@sanity/base/src/_exports/studioEntry')
+    try {
+      // NOTE: this does not seem to work when `@sanity/base` is not built
+      // @todo: find out if we can improve this
+      return resolveFrom(opts.cwd, '@sanity/base/src/_exports/studioEntry')
+    } catch (_) {
+      return resolveFrom(opts.cwd, '@sanity/base/studioEntry')
+    }
   }
 
   return resolveFrom(opts.cwd, '@sanity/base/studioEntry')
