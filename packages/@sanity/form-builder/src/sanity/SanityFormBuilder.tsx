@@ -1,4 +1,3 @@
-import {useSanity} from '@sanity/base'
 import {
   FormBuilderFilterFieldFn,
   MutationPatch,
@@ -61,9 +60,6 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
     value,
   } = props
 
-  // Load Sanity config
-  const {formBuilder} = useSanity()
-
   const inputRef = useRef<FormBuilderInputInstance | null>(null)
 
   useEffect(() => {
@@ -76,12 +72,7 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
   )
 
   return (
-    <SanityFormBuilderProvider
-      {...formBuilder}
-      __internal_patchChannel={patchChannel}
-      schema={schema}
-      value={value}
-    >
+    <SanityFormBuilderProvider __internal_patchChannel={patchChannel} schema={schema} value={value}>
       <ReviewChangesContextProvider changesOpen={changesOpen}>
         <FormBuilderInput
           compareValue={compareValue}
@@ -103,5 +94,4 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
       </ReviewChangesContextProvider>
     </SanityFormBuilderProvider>
   )
-  // }
 }
