@@ -41,7 +41,7 @@
     "dev:test-studio": "yarn --cwd dev/test-studio start",
     "dev:workshop": "yarn --cwd dev/workshop dev",
     "eslint": "eslint --ext=.js,.jsx,.mjs,.ts,.tsx --quiet",
-    "example-studio": "cd dev/example-studio && npm start",
+    "exports-check": "lerna run --scope @sanity/* exports-check",
     "init": "lerna clean --yes && run-s bootstrap build",
     "lint": "yarn eslint .",
     "lint:fix": "eslint . --quiet --fix",

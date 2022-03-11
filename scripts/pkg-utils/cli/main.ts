@@ -1,5 +1,6 @@
 import {isString} from '../helpers'
 import {bundleCommand} from './commands/bundleCommand'
+import {exportsCheckCommand} from './commands/exportsCheckCommand'
 import {transpileCommand} from './commands/transpileCommand'
 import {getCLIContext} from './helpers'
 
@@ -17,6 +18,13 @@ async function main() {
       target: (isString(flags.target) ? flags.target : 'web') as any,
       tsconfig: isString(flags.tsconfig) ? flags.tsconfig : undefined,
       watch: Boolean(flags.watch),
+    })
+    return
+  }
+
+  if (cmd === 'exports-check') {
+    await exportsCheckCommand({
+      cwd,
     })
     return
   }

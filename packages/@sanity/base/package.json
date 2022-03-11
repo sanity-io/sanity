@@ -18,6 +18,8 @@
   "scripts": {
     "clean": "rimraf lib dest",
     "coverage": "jest --coverage",
+    "exports-check": "../../../bin/pkg-utils exports-check",
+    "prebuild": "yarn clean",
     "prepublishOnly": "node scripts/writeRequiredUIVersion.js",
     "test": "jest"
   },
