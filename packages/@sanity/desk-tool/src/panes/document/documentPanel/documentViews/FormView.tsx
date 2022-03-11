@@ -161,19 +161,19 @@ export function FormView(props: FormViewProps) {
         <Box as="form" onSubmit={preventDefault}>
           {ready ? (
             <SanityFormBuilder
+              __internal_patchChannel={patchChannel}
               changesOpen={changesOpen}
               compareValue={compareValue}
               filterField={filterField}
               focusPath={focusPath}
-              validation={validation}
               onBlur={handleBlur}
               onChange={isReadOnly ? noop : handleChange}
               onFocus={handleFocus}
-              __internal_patchChannel={patchChannel}
               presence={presence}
               readOnly={isReadOnly}
               schema={schema}
               type={documentSchema}
+              validation={validation}
               value={value as any}
             />
           ) : (
@@ -193,6 +193,7 @@ export function FormView(props: FormViewProps) {
       </PresenceOverlay>
     )
   }, [
+    changesOpen,
     compareValue,
     documentSchema,
     filterField,
@@ -201,15 +202,14 @@ export function FormView(props: FormViewProps) {
     handleChange,
     handleFocus,
     hasTypeMismatch,
+    isReadOnly,
     margins,
-    validation,
     patchChannel,
     presence,
     ready,
-    isReadOnly,
-    value,
-    changesOpen,
     schema,
+    validation,
+    value,
   ])
 
   const after = useMemo(
