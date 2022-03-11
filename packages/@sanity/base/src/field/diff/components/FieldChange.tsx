@@ -1,7 +1,6 @@
 import React, {useCallback, useMemo, useState} from 'react'
 import {Stack, Box, Button, Text, Grid, useClickOutside} from '@sanity/ui'
 import {ObjectSchemaType} from '@sanity/types'
-import {useClient} from '../../../client'
 import {useConditionalReadOnly} from '../../../conditional-property/conditionalReadOnly'
 import {useSource} from '../../../source'
 import {useDatastores} from '../../../datastores'
@@ -29,7 +28,7 @@ export function FieldChange(
   } & React.HTMLAttributes<HTMLDivElement>
 ) {
   const {change, hidden, readOnly} = props
-  const client = useClient()
+  const {client} = useSource()
   const source = useSource()
   const {grantsStore} = useDatastores()
   const conditionalReadOnly = useConditionalReadOnly() ?? readOnly

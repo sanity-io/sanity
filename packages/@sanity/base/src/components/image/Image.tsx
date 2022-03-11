@@ -1,7 +1,7 @@
 import createImageUrlBuilder from '@sanity/image-url'
 import {ImageUrlFitMode} from '@sanity/types'
 import React, {forwardRef, useMemo} from 'react'
-import {useClient} from '../../client'
+import {useSource} from '../../source'
 
 export interface ImageCrop {
   _type: 'sanity.imageCrop'
@@ -42,7 +42,7 @@ export const Image = forwardRef(function Image(
   ref: React.ForwardedRef<HTMLImageElement>
 ) {
   const {dpr, fit, height, source, width, ...restProps} = props
-  const client = useClient()
+  const {client} = useSource()
   const imageUrlBuilder = useMemo(() => createImageUrlBuilder(client), [client])
   const image = useMemo(() => imageUrlBuilder.image(source), [imageUrlBuilder, source])
 

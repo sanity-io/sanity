@@ -1,9 +1,9 @@
 import {useEffect, useState} from 'react'
-import {useClient} from '../../../client'
+import {useSource} from '../../../source'
 
 export function useRefValue<T = unknown>(refId: string | undefined | null): T | undefined {
   const [value, setValue] = useState<T | undefined>(undefined)
-  const client = useClient()
+  const {client} = useSource()
 
   useEffect(() => {
     if (!refId) {

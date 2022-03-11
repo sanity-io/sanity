@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {SanityAuthConfig} from '../config'
-import {useClient} from '../client'
+import {useSource} from '../source'
 import {AuthContext} from './AuthContext'
 import {createAuthController} from './authController'
 import {AuthState} from './types'
@@ -14,7 +14,7 @@ const INITIAL_STATE: AuthState = {
 
 export function AuthProvider(props: {children?: React.ReactNode; config?: SanityAuthConfig}) {
   const {children, config} = props
-  const client = useClient()
+  const {client} = useSource()
   const [state, setState] = useState<AuthState>(INITIAL_STATE)
   const authController = useMemo(() => createAuthController({client, config}), [client, config])
 

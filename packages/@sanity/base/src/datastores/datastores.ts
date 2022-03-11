@@ -16,12 +16,13 @@ import {Datastores, DatastoresContext} from './types'
 import {createUserStore} from './user'
 
 export function createDatastores(context: DatastoresContext): Datastores {
-  const {bifur, client, config, source} = context
+  const {auth} = context.config
+  const {bifur, client, initialValueTemplates, schema} = context.source
 
-  const projectId = source.projectId
+  const projectId = context.source.projectId
   const versionedClient = client.withConfig({apiVersion: '1'})
 
-  const authenticationFetcher = createAuthController({client, config: config.auth})
+  const authenticationFetcher = createAuthController({client, config: auth})
   const crossWindowMessaging = __tmp_crossWindowMessaging({projectId})
   const authStore = createAuthStore({crossWindowMessaging, projectId})
   const userStore = createUserStore({
@@ -38,8 +39,8 @@ export function createDatastores(context: DatastoresContext): Datastores {
     client,
     documentPreviewStore,
     historyStore,
-    source.schema,
-    source.initialValueTemplates
+    schema,
+    initialValueTemplates
   )
   const connectionStatusStore = createConnectionStatusStore(bifur)
   const presenceStore = __tmp_wrap_presenceStore({bifur, connectionStatusStore, userStore})

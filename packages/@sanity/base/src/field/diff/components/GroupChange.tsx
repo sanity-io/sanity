@@ -4,7 +4,6 @@ import {
   useDocumentOperation,
   unstable_useDocumentPairPermissions as useDocumentPairPermissions,
 } from '../../../hooks'
-import {useClient} from '../../../client'
 import {useSource} from '../../../source'
 import {useDatastores} from '../../../datastores'
 import {undoChange} from '../changes/undoChange'
@@ -34,8 +33,7 @@ export function GroupChange(
     // 'data-revert-all-changes-hover': dataRevertAllChangesHover,
     ...restProps
   } = props
-  const client = useClient()
-  const source = useSource()
+  const {client, schema} = useSource()
   const {grantsStore} = useDatastores()
   const {titlePath, changes, path: groupPath} = group
   const {path: diffPath} = useContext(DiffContext)
@@ -54,7 +52,7 @@ export function GroupChange(
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions(
     client,
-    source.schema,
+    schema,
     grantsStore,
     {
       id: documentId,

@@ -12,7 +12,7 @@ export type {
   DocumentActionProps,
   DocumentActionResolver,
 } from '../actions/utils/types'
-export {useClient} from '../client'
+
 export * from '../components/Document'
 export * from '../config'
 export * from '../datastores'

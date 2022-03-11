@@ -23,7 +23,7 @@ import {
   PreviewLayoutKey,
   PreviewProps,
 } from '../../components/previews/types'
-import {useClient} from '../../client'
+import {useSource} from '../../source'
 
 interface UploadState {
   progress: number
@@ -111,7 +111,7 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps) {
       }
     : uploadValue
 
-  const client = useClient()
+  const {client} = useSource()
 
   const renderMedia = (options: {
     dimensions: {width?: number; height?: number; fit: ImageUrlFitMode; dpr?: number}

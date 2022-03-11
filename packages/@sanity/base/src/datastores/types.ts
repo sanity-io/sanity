@@ -1,5 +1,3 @@
-import {BifurClient} from '@sanity/bifur-client'
-import {SanityClient} from '@sanity/client'
 import {SanityConfig} from '../config'
 import {DocumentPreviewStore} from '../preview'
 import {SanitySource} from '../source'
@@ -13,8 +11,6 @@ import {SettingsStore} from './settings/types'
 import {UserStore} from './user'
 
 export interface DatastoresContext {
-  bifur: BifurClient
-  client: SanityClient
   config: SanityConfig
   source: SanitySource
 }

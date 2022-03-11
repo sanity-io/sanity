@@ -4,7 +4,6 @@ import React, {useCallback, useContext, useMemo, useState} from 'react'
 import {SanityDocument} from '@sanity/client'
 import {ObjectSchemaType} from '@sanity/types'
 import {useSource} from '../../../source'
-import {useClient} from '../../../client'
 import {useDatastores} from '../../../datastores'
 import {
   useDocumentOperation,
@@ -27,8 +26,7 @@ interface Props {
 }
 
 export function ChangeList({diff, fields, schemaType}: Props): React.ReactElement | null {
-  const client = useClient()
-  const source = useSource()
+  const {client, schema} = useSource()
   const {grantsStore} = useDatastores()
   const {documentId, isComparingCurrent, value} = useDocumentChange()
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
@@ -50,7 +48,7 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions(
     client,
-    source.schema,
+    schema,
     grantsStore,
     {
       id: documentId,

@@ -1,13 +1,13 @@
 import {Dialog} from '@sanity/ui'
 import React from 'react'
 import semverCompare from 'semver-compare'
-import {useClient} from '../client'
 import {
   checkModuleStatus,
   CheckModuleVersionsOptions,
   useModuleStatus,
   VersionsResponse,
 } from '../module-status'
+import {useSource} from '../source'
 
 /**
  * @note This _shouldn't_ be in use anywhere, but lets keep it around until we can be sure
@@ -15,7 +15,7 @@ import {
  * @returns
  */
 export function DeprecatedVersionChecker() {
-  const client = useClient()
+  const {client} = useSource()
   const {value: result} = useModuleStatus({client})
 
   if (!result || result.isSupported || result.isSupported === undefined) {
