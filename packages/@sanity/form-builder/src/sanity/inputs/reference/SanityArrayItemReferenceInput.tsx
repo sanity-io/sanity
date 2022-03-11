@@ -1,5 +1,5 @@
 import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
-import {useClient, useDatastores, useSource} from '@sanity/base'
+import {useDatastores, useSource} from '@sanity/base'
 import {FormInputProps} from '@sanity/base/form'
 import {
   Path,
@@ -76,7 +76,7 @@ const SanityArrayItemReferenceInputInner = forwardRef(function SanityReferenceIn
   ref: ForwardedRef<HTMLInputElement>
 ) {
   const {schema} = useSource()
-  const client = useClient()
+  const {client} = useSource()
   const {documentPreviewStore} = useDatastores()
   const searchClient = useMemo(() => client.withConfig({apiVersion: '2021-03-25'}), [client])
   const {getValuePath, type, document} = props

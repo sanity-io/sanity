@@ -1,6 +1,6 @@
 import React, {useCallback, useMemo} from 'react'
 import imageUrlBuilder from '@sanity/image-url'
-import {useClient, useDatastores} from '@sanity/base'
+import {useDatastores, useSource} from '@sanity/base'
 import {ImageInput, ImageInputProps} from '../../inputs/files/ImageInput'
 import {withValuePath} from '../../utils/withValuePath'
 import {useFormBuilder} from '../../useFormBuilder'
@@ -18,7 +18,7 @@ export const SanityImageInput = React.forwardRef(function SanityImageInput(
   const sourcesFromSchema = props.type.options?.sources
   const {image} = useFormBuilder()
   const {documentPreviewStore} = useDatastores()
-  const client = useClient()
+  const {client} = useSource()
   const versionedClient = useMemo(() => client.withConfig({apiVersion: '1'}), [client])
 
   // note: type.options.sources may be an empty array and in that case we're

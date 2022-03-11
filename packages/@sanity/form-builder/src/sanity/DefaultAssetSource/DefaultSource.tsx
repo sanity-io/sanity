@@ -5,7 +5,7 @@ import {Box, Button, Card, Dialog, Flex, Grid, Spinner, Text} from '@sanity/ui'
 import {Asset as AssetType, AssetFromSource, AssetSourceComponentProps} from '@sanity/types'
 import {uniqueId} from 'lodash'
 import styled from 'styled-components'
-import {useClient} from '@sanity/base'
+import {useSource} from '@sanity/base'
 import {AssetThumb} from './AssetThumb'
 import {TableList} from './TableList'
 
@@ -39,7 +39,7 @@ const CardLoadMore = styled(Card)`
 `
 
 const DefaultAssetSource = function DefaultAssetSource(props: AssetSourceComponentProps, ref) {
-  const client = useClient()
+  const {client} = useSource()
   const versionedClient = useMemo(() => client.withConfig({apiVersion: '1'}), [client])
   const _elementId = useRef(`default-asset-source-${uniqueId()}`)
   const currentPageNumber = useRef(0)

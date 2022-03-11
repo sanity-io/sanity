@@ -6,7 +6,7 @@ import {DocumentIcon, ChevronUpIcon, ChevronDownIcon, LinkIcon, TrashIcon} from 
 import {useTimeAgo} from '@sanity/base/hooks'
 import prettyBytes from 'pretty-bytes'
 import {Asset as AssetType} from '@sanity/types'
-import {useClient} from '@sanity/base'
+import {useSource} from '@sanity/base'
 import {AssetUsageDialog} from './AssetUsageDialog'
 import {AssetMenu} from './AssetMenu'
 import {AssetMenuAction} from './types'
@@ -114,7 +114,7 @@ const STYLES_ASSETMENU_WRAPPER = {
 const DISABLED_DELETE_TITLE = 'Cannot delete current file'
 
 export const AssetRow = (props: RowProps) => {
-  const client = useClient()
+  const {client} = useSource()
   const versionedClient = useMemo(() => client.withConfig({apiVersion: '1'}), [client])
   const toast = useToast()
   const deleteRef$ = useRef<Subscription>()
