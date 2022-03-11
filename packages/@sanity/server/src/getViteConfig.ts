@@ -2,11 +2,12 @@ import path from 'path'
 import {esbuildCommonjs, viteCommonjs} from '@originjs/vite-plugin-commonjs'
 import type {InlineConfig} from 'vite'
 import viteReact from '@vitejs/plugin-react'
-import {isSanityMonorepo} from './isSanityMonorepo'
+import {normalizeBasePath} from './_helpers'
 import {DEFAULT_CANONICAL_MODULES, DEFAULT_COMMONJS_MODULES} from './constants'
 import {viteCanonicalModules} from './vite/plugin-canonical-modules'
 import {viteSanityStudio, resolveEntryModulePath} from './vite/plugin-sanity-studio'
 import {getAliases} from './aliases'
+import {loadSanityMonorepo} from './sanityMonorepo'
 
 export interface ViteOptions {
   /**
@@ -62,7 +63,7 @@ export async function getViteConfig(options: ViteOptions): Promise<SanityViteCon
   } = options
 
   const basePath = normalizeBasePath(rawBasePath)
-  const isMonorepo = await isSanityMonorepo(cwd)
+  const monorepo = await loadSanityMonorepo(cwd)
 
   const viteConfig: SanityViteConfig = {
     base: basePath,
@@ -83,7 +84,7 @@ export async function getViteConfig(options: ViteOptions): Promise<SanityViteCon
       viteSanityStudio({
         basePath,
         cwd,
-        isMonorepo,
+        monorepo,
       }),
       viteCanonicalModules({
         ids: DEFAULT_CANONICAL_MODULES,
@@ -101,7 +102,7 @@ export async function getViteConfig(options: ViteOptions): Promise<SanityViteCon
     },
     logLevel: mode === 'production' ? 'silent' : 'info',
     resolve: {
-      alias: getAliases({isMonorepo}),
+      alias: getAliases({monorepo}),
     },
   }
 
@@ -117,7 +118,7 @@ export async function getViteConfig(options: ViteOptions): Promise<SanityViteCon
       // NOTE: when the Studio is running within the monorepo, some packages which contain CommonJS
       // is located outside of `node_modules`. To work around this, we configure the `include`
       // option for Rollup’s CommonJS plugin here.
-      commonjsOptions: isMonorepo
+      commonjsOptions: monorepo
         ? {
             include: [
               /node_modules/,
@@ -131,20 +132,11 @@ export async function getViteConfig(options: ViteOptions): Promise<SanityViteCon
       rollupOptions: {
         perf: true,
         input: {
-          main: resolveEntryModulePath({cwd, isMonorepo}),
+          main: resolveEntryModulePath({cwd, monorepo}),
         },
       },
     }
   }
 
   return viteConfig
-}
-
-/**
- * Ensures that the given path both starts and ends with a single slash
- *
- * @internal
- */
-function normalizeBasePath(pathName: string): string {
-  return `/${pathName}/`.replace(/^\/+/, '/').replace(/\/+$/, '/')
 }

@@ -1,14 +1,15 @@
 import path from 'path'
+import {SanityMonorepo} from './sanityMonorepo'
 
 /**
  * Returns an object of aliases for vite to use
  *
  * @internal
  */
-export function getAliases(opts: {isMonorepo: boolean}): Record<string, string> {
-  const {isMonorepo} = opts
+export function getAliases(opts: {monorepo?: SanityMonorepo}): Record<string, string> {
+  const {monorepo} = opts
 
-  if (!isMonorepo) {
+  if (!monorepo) {
     return {}
   }
 

@@ -11,13 +11,14 @@ import {Worker, parentPort, workerData, isMainThread} from 'worker_threads'
 import {createElement} from 'react'
 import {renderToString} from 'react-dom/server'
 import {getAliases} from './aliases'
+import {SanityMonorepo} from './sanityMonorepo'
 
 const defaultProps = {
   entryPath: '/$SANITY_STUDIO_ENTRY$',
 }
 
 export function renderDocument(options: {
-  isMonorepo: boolean
+  monorepo?: SanityMonorepo
   studioRootPath: string
   props?: {entryPath?: string}
 }): Promise<string> {
@@ -59,7 +60,7 @@ function renderDocumentFromWorkerData() {
     throw new Error('Must be used as a Worker with a valid options object in worker data')
   }
 
-  const isMonorepo = workerData.isMonorepo
+  const monorepo = workerData.monorepo
   const studioRootPath = workerData.studioRootPath
   const props = workerData.props
 
@@ -75,7 +76,7 @@ function renderDocumentFromWorkerData() {
 
   // Require hook #1
   // Alias monorepo modules
-  require('module-alias').addAliases(getAliases({isMonorepo}))
+  require('module-alias').addAliases(getAliases({monorepo}))
 
   // Require hook #2
   // Use `esbuild` to allow JSX/TypeScript and modern JS features
