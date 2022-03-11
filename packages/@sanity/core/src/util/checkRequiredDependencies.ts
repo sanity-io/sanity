@@ -26,15 +26,12 @@ interface CheckResult {
  */
 export async function checkRequiredDependencies(context: CliCommandContext): Promise<CheckResult> {
   const {workDir: studioPath, output} = context
-  const [
-    basePeerDependencies,
-    studioPackageManifest,
-    installedStyledComponentsVersion,
-  ] = await Promise.all([
-    await readBasePeerDependencies(studioPath),
-    await readPackageManifest(path.join(studioPath, 'package.json'), defaultStudioManifestProps),
-    await readModuleVersion(studioPath, 'styled-components'),
-  ])
+  const [basePeerDependencies, studioPackageManifest, installedStyledComponentsVersion] =
+    await Promise.all([
+      await readBasePeerDependencies(studioPath),
+      await readPackageManifest(path.join(studioPath, 'package.json'), defaultStudioManifestProps),
+      await readModuleVersion(studioPath, 'styled-components'),
+    ])
 
   // If the `@sanity/base` package.json does not have a `styled-components` peer dependency
   // declared, the user is probably running an old version of `@sanity/base`. This is a bit
@@ -123,12 +120,25 @@ export async function checkRequiredDependencies(context: CliCommandContext): Pro
 async function readBasePeerDependencies(
   studioPath: string
 ): Promise<Record<string, string | undefined>> {
-  const manifestPath = resolveFrom.silent(studioPath, path.join('@sanity/base', 'package.json'))
+  let manifestPath: string | null = null
+  let dirPath = studioPath
+
+  // Look for `node_modules/@sanity/base/package.json` in this directory, or any parent directory
+  while (manifestPath === null && dirPath !== '/') {
+    const searchPath = path.resolve(dirPath, 'node_modules/@sanity/base/package.json')
+    const exists = await fileExists(searchPath)
+
+    if (exists) {
+      manifestPath = searchPath
+    } else {
+      dirPath = path.dirname(dirPath)
+    }
+  }
 
   // If we can't resolve the manifest path, that means `@sanity/base` is not installed
   if (!manifestPath) {
     throw new Error(
-      'Failed to resolve @sanity/base/package.json - install dependencies with `npm install` or `yarn`.'
+      'Failed to resolve @sanity/base/package.json - please install dependencies with `npm install` or `yarn install`'
     )
   }
 
