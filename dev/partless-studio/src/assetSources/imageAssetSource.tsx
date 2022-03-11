@@ -1,23 +1,28 @@
-import {
-  SanityFormBuilderAssetSourceComponent,
-  SanityFormBuilderAssetSourceConfig,
-} from '@sanity/base'
 import {ImagesIcon} from '@sanity/icons'
-import {Box, Dialog} from '@sanity/ui'
+import {AssetSource, AssetSourceComponentProps} from '@sanity/types'
+import {Box, Dialog, Text} from '@sanity/ui'
 import React from 'react'
 
-const ImageAssetSource: SanityFormBuilderAssetSourceComponent = (props) => {
-  const {dialogHeaderTitle} = props
+function ImageAssetSource(props: AssetSourceComponentProps) {
+  const {dialogHeaderTitle, onClose, ...restProps} = props
 
   return (
-    <Dialog header={dialogHeaderTitle} id="test">
-      <Box padding={4}>ImageAssetSource</Box>
+    <Dialog
+      header={dialogHeaderTitle || 'Custom: browse images'}
+      id="test"
+      onClose={onClose}
+      width={1}
+    >
+      <Box padding={4}>
+        <Text muted size={1} weight="medium">
+          (custom image asset source)
+        </Text>
+      </Box>
     </Dialog>
   )
 }
 
-export const imageAssetSource: SanityFormBuilderAssetSourceConfig = {
-  type: 'image',
+export const imageAssetSource: AssetSource = {
   name: 'test',
   title: 'Test',
   icon: ImagesIcon,

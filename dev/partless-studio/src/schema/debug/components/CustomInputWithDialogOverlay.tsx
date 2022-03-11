@@ -1,8 +1,9 @@
 import React from 'react'
 import {PresenceOverlay, FieldPresence, DocumentPresence} from '@sanity/base/presence'
 import {Button, Dialog} from '@sanity/ui'
-import {setIfMissing, FormBuilderInput} from '@sanity/form-builder'
+import {FormBuilderInput} from '@sanity/form-builder'
 import {ObjectSchemaType, Path} from '@sanity/types'
+import {setIfMissing} from '@sanity/base/form'
 
 export const CustomInputWithDialogOverlay = React.forwardRef(function CustomInputWithDialogOverlay(
   props: {

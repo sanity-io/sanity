@@ -1,5 +1,5 @@
 import {FormField} from '@sanity/base/components'
-import {PatchEvent, set} from '@sanity/form-builder'
+import {PatchEvent, set} from '@sanity/base/form'
 import React from 'react'
 import PropTypes from 'prop-types'
 

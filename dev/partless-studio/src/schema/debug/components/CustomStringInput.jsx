@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {PatchEvent, set} from '@sanity/form-builder'
+import {PatchEvent, set} from '@sanity/base/form'
 
 export default class CustomStringInput extends React.Component {
   static propTypes = {

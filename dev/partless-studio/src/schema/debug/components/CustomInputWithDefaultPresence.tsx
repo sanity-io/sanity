@@ -1,7 +1,7 @@
 import React from 'react'
 import {range} from 'lodash'
+import {PatchEvent, set, setIfMissing} from '@sanity/base/form'
 import {FieldPresence, PresenceScope} from '@sanity/base/presence'
-import {PatchEvent, set, setIfMissing} from '@sanity/form-builder'
 
 export const CustomInputWithDefaultPresence = React.forwardRef(
   function CustomInputWithDefaultPresence(props: any, ref: React.ForwardedRef<HTMLDivElement>) {

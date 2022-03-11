@@ -1,8 +1,8 @@
-import React, {useCallback, useState} from 'react'
-import {isValidationErrorMarker, ObjectSchemaType} from '@sanity/types'
-import {FormInputProps, PatchEvent, set, unset} from '@sanity/form-builder'
 import {FormField} from '@sanity/base/components'
+import {FormInputProps, PatchEvent, set, unset} from '@sanity/base/form'
+import {isValidationErrorMarker, ObjectSchemaType} from '@sanity/types'
 import {Select} from '@sanity/ui'
+import React, {useCallback, useState} from 'react'
 
 type Value = {title: string; value: string}
 

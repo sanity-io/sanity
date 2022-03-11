@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {PatchEvent, set, setIfMissing} from '@sanity/form-builder'
+import {PatchEvent, set, setIfMissing} from '@sanity/base/form'
 
 export default class CustomMyObjectInput extends React.Component {
   static propTypes = {

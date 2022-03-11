@@ -2,7 +2,7 @@ import {createConfig} from '@sanity/base'
 import {codeInput} from '@sanity/code-input'
 import {deskTool} from '@sanity/desk-tool'
 import {BookIcon} from '@sanity/icons'
-import {assetSources} from './src/assetSources'
+import {imageAssetSource} from './src/assetSources'
 import {Branding} from './src/components/Branding'
 import {CustomMarkers} from './src/components/formBuilder/CustomMarkers'
 import {LanguageFilter} from './src/components/deskTool/LanguageFilter'
@@ -27,12 +27,13 @@ const sanityConfig = createConfig({
     },
   ],
   formBuilder: {
-    assetSources,
     components: {
       CustomMarkers,
       Markers,
     },
-    inputResolver: undefined,
+    image: {
+      assetSources: [imageAssetSource],
+    },
   },
   plugins: [
     codeInput(),

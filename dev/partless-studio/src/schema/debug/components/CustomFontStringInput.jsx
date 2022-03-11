@@ -1,6 +1,6 @@
-import React from 'react'
+import {PatchEvent, set} from '@sanity/base/form'
 import PropTypes from 'prop-types'
-import {PatchEvent, set} from '@sanity/form-builder'
+import React from 'react'
 import styles from './CustomFontStringInput.module.css'
 
 export default class CustomStringInput extends React.Component {
