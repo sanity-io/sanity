@@ -4,7 +4,7 @@ import {Patch} from '@sanity/base/_internal'
 import {FormBuilderInput, PatchEvent, set, setIfMissing} from '@sanity/form-builder'
 import {Box} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
-import {useClient} from '@sanity/base'
+import {useSource} from '@sanity/base'
 import {ValidationMarker} from '@sanity/types'
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
@@ -32,7 +32,7 @@ interface SlugQueryResult {
 
 export const LinkAnnotationInput = (props: LinkAnnotationInputProps) => {
   const {type, value, onChange, onBlur, onFocus, validation} = props
-  const client = useClient()
+  const {client} = useSource()
   const versionedClient = useMemo(() => client.withConfig({apiVersion: '2021-03-01'}), [client])
   const referenceArticleField = type.fields.find((field) => field.name === 'reference')
   const urlField = type.fields.find((field) => field.name === 'href')

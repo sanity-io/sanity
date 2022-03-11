@@ -1,4 +1,4 @@
-import {useClient} from '@sanity/base'
+import {useSource} from '@sanity/base'
 import {FormField} from '@sanity/base/components'
 import {FormBuilderInputProps, PatchEvent, set, unset, setIfMissing} from '@sanity/form-builder'
 import imageUrlBuilder from '@sanity/image-url'
@@ -20,7 +20,7 @@ export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
   ref: React.ForwardedRef<any>
 ) {
   const {level, readOnly = false, type, value} = props
-  const client = useClient()
+  const {client} = useSource()
   const current = value && value._ref
   const imageBuilder = useMemo(() => imageUrlBuilder(client), [client])
 
