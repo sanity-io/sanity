@@ -33,6 +33,12 @@ jobs:
           CYPRESS_INSTALL_BINARY: '0'
         run: yarn install
 
+      - name: Typecheck modules
+        # If TypeScript project references is set up properly, `tsc --build` should work right after dependencies
+        # has been installed, no extra build/compile step required
+        id: typeCheckModules
+        run: yarn type-check
+
       # Required for import lint rules to work - packages pointing to ex
       # `lib/index.js`, where `src/index.ts` gets compiled to `lib/index.js`
       - name: Build modules
