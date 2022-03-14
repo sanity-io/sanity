@@ -487,7 +487,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
       value && (fieldGroups.dialog.length > 0 || (asset && this.isImageToolEnabled()))
 
     let browseMenuItem: ReactNode =
-      assetSources && assetSources?.length === 0 ? null : (
+      assetSources && assetSources.length === 0 ? null : (
         <MenuItem
           icon={SearchIcon}
           text="Select"
@@ -551,9 +551,9 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
   renderBrowser() {
     const {assetSources, readOnly, directUploads} = this.props
 
-    if (assetSources.length === 0) return null
+    if (assetSources && assetSources.length === 0) return null
 
-    if (assetSources.length > 1 && !readOnly && directUploads) {
+    if (assetSources && assetSources.length > 1 && !readOnly && directUploads) {
       return (
         <MenuButton
           id={`${this._inputId}_assetImageButton`}
