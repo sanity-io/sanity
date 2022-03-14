@@ -22,18 +22,18 @@ export interface SanityFormBuilderProps {
   __internal_patchChannel: PatchChannel // eslint-disable-line camelcase
   autoFocus?: boolean
   changesOpen: boolean
-  compareValue: any | null
+  compareValue?: any | null
   filterField: FormBuilderFilterFieldFn
   focusPath: Path
-  onBlur: () => void
+  onBlur?: () => void
   onChange: (patches: MutationPatch[]) => void
   onFocus: (path: Path) => void
   presence: FormFieldPresence[]
-  readOnly: boolean
+  readOnly?: boolean
   schema: Schema
   type: SchemaType
   validation: ValidationMarker[]
-  value: any | null
+  value?: any | null
 }
 
 const EMPTY = []
