@@ -75,23 +75,26 @@ const progress = (url) => {
 }
 
 const followProgress = (jobId, client, output) => {
-  const spinner = output.spinner({}).start()
+  let currentProgress = 0
 
+  const spinner = output.spinner({}).start()
   const listenUrl = client.getUrl(`jobs/${jobId}/listen`)
 
   debug(`Listening to ${listenUrl}`)
 
   progress(listenUrl).subscribe({
     next: (event) => {
-      const eventProgress = event.progress ? event.progress : 0
+      if (typeof event.progress === 'number') {
+        currentProgress = event.progress
+      }
 
-      spinner.text = `Copy in progress: ${eventProgress}%`
+      spinner.text = `Copy in progress: ${currentProgress}%`
     },
     error: (err) => {
       spinner.fail(`There was an error copying the dataset: ${err.message}`)
     },
     complete: () => {
-      spinner.succeed(`Copy finished.`)
+      spinner.succeed('Copy finished.')
     },
   })
 }
@@ -163,7 +166,7 @@ export default {
       )
 
       if (flags.detach) {
-        output.print(`Copy initiated.`)
+        output.print('Copy initiated.')
         output.print(
           `\nRun:\n\n    sanity dataset copy --attach ${response.jobId}\n\nto watch attach`
         )
