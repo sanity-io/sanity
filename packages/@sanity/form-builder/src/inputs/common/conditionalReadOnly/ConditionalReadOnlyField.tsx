@@ -5,14 +5,14 @@ import {unstable_useConditionalProperty as useConditionalProperty} from '@sanity
 import {ConditionalReadOnlyContextProvider} from '@sanity/base/_internal'
 import {withDocument} from '../../../utils/withDocument'
 
-type Props = {
+export interface ConditionalReadOnlyFieldProps {
   parent?: unknown
   value: unknown
   children?: React.ReactNode
   readOnly?: ConditionalProperty
 }
 
-export const ConditionalReadOnlyField = ({readOnly, ...rest}: Props) => {
+export const ConditionalReadOnlyField = ({readOnly, ...rest}: ConditionalReadOnlyFieldProps) => {
   return typeof readOnly === 'function' ? (
     <ConditionalReadOnlyWithDocument {...rest} readOnly={readOnly} />
   ) : (
@@ -24,7 +24,7 @@ export const ConditionalReadOnlyField = ({readOnly, ...rest}: Props) => {
 
 const ConditionalReadOnlyWithDocument = withDocument(
   forwardRef(function ConditionalReadOnlyWithDocument(
-    props: Props & {document: SanityDocument},
+    props: ConditionalReadOnlyFieldProps & {document: SanityDocument},
     ref /* ignore ref as there's no place to put it */
   ) {
     const {readOnly, value, parent, document, children} = props
