@@ -1,3 +1,4 @@
+import {ClientConfig as SanityClientConfig, SanityClient} from '@sanity/client'
 import {T, Template, TemplateBuilder} from '@sanity/initial-value-templates'
 import {Router, RouterState} from '@sanity/state-router'
 import {AssetSource, Schema as SanitySchema, Schema} from '@sanity/types'
@@ -82,7 +83,13 @@ export interface SanityTool<Options = any> {
 /**
  * @alpha
  */
+export type SanityClientFactory = (clientConfig: SanityClientConfig) => SanityClient
+
+/**
+ * @alpha
+ */
 export interface SanitySourceConfig {
+  clientFactory?: SanityClientFactory
   projectId: string
   dataset: string
   name: string

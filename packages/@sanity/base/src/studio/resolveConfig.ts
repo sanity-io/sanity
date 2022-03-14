@@ -1,5 +1,5 @@
 import {fromSanityClient} from '@sanity/bifur-client'
-import createSanityClient from '@sanity/client'
+import defaultCreateSanityClient from '@sanity/client'
 import {T, prepareTemplates} from '@sanity/initial-value-templates'
 import {
   SanityAuthConfig,
@@ -90,6 +90,7 @@ export function resolveTools(options: {
 
 function resolveSource(options: {schemaTypes: any[]; config: SanitySourceConfig}): SanitySource {
   const {config, schemaTypes = EMPTY_ARRAY} = options
+  const {clientFactory: createSanityClient = defaultCreateSanityClient} = config
 
   const client = createSanityClient({
     projectId: config.projectId,
