@@ -47,13 +47,13 @@ const progress = (url) => {
     function onMessage(event) {
       const data = JSON.parse(event.data)
       if (data.state === 'failed') {
-        debug(`Job failed. Data: ${event}`)
+        debug('Job failed. Data: %o', event)
         observer.error(event)
       } else if (data.state === 'completed') {
-        debug(`Job succeeded. Data: ${event}`)
+        debug('Job succeeded. Data: %o', event)
         onComplete()
       } else {
-        debug(`Job progressed. Data: ${event}`)
+        debug(`Job progressed. Data: %o`, event)
         observer.next(data)
       }
     }
