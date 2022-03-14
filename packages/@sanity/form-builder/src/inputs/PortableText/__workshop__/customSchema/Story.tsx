@@ -23,7 +23,7 @@ export default function Story() {
             <TestInput
               readOnly={readOnly}
               schema={schema}
-              type={portableTextType}
+              type={portableTextType as any}
               value={value}
               withError={withError}
               withWarning={withWarning}

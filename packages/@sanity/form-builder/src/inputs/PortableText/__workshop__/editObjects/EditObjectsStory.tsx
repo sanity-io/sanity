@@ -118,7 +118,7 @@ export function EditObjectsStory() {
           resolveInputComponent={resolveInputComponent}
           resolvePreviewComponent={resolvePreviewComponent}
         >
-          <PortableTextEditor onChange={handleChange} type={schemaType} value={value}>
+          <PortableTextEditor onChange={handleChange} type={schemaType as any} value={value}>
             <EditObject
               focusPath={focusPath}
               markers={markers}
