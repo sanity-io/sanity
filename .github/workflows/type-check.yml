@@ -22,11 +22,6 @@ jobs:
          CYPRESS_INSTALL_BINARY: '0'
         run: yarn install
 
-      # Required for linked packages to work
-      - name: Build modules
-        id: buildResolver
-        run: yarn build
-
       - name: Type check
         id: typeCheck
         run: yarn type-check
