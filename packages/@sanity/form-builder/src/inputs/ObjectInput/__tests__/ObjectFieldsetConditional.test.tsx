@@ -1,100 +1,90 @@
-// eslint-disable-next-line import/no-unassigned-import
-import '@testing-library/jest-dom/extend-expect'
-import Schema from '@sanity/schema'
-import {inputTester} from '../../../utils/tests/FormBuilderTester'
+import {renderForm} from '../../../../test/renderForm'
 
-const schema = Schema.compile({
-  name: 'test',
-  types: [
+const fieldsetsTestType = {
+  title: 'Fieldsets test',
+  name: 'fieldsetsTest',
+  type: 'document',
+  fieldsets: [
+    /** Hidden fieldsets */
     {
-      title: 'Fieldsets test',
-      name: 'fieldsetsTest',
-      type: 'document',
-      fieldsets: [
-        /** Hidden fieldsets */
-        {
-          name: 'hiddenFieldsetBooleanTrue',
-          hidden: true,
-        },
-        {
-          name: 'hiddenFieldsetBooleanFalse',
-          hidden: false,
-        },
-        {
-          name: 'hiddenFieldsetCallbackTrue',
-          hidden: ({document}) => document.isHidden === true,
-        },
-        {
-          name: 'hiddenFieldsetCallbackFalse',
-          hidden: ({document}) => document.isHidden === 'lorem',
-        },
-        /** Read only fieldsets */
-        {
-          name: 'readOnlyFieldsetBooleanTrue',
-          readOnly: true,
-        },
-        {
-          name: 'readOnlyFieldsetBooleanFalse',
-          readOnly: false,
-        },
-        {
-          name: 'readOnlyFieldsetCallbackTrue',
-          readOnly: ({document}) => document.isReadOnly === true,
-        },
-        {
-          name: 'readOnlyFieldsetCallbackFalse',
-          readOnly: ({document}) => document.isReadOnly === 'lorem',
-        },
-      ],
-      fields: [
-        /** Hidden inputs */
-        {
-          name: 'hiddenFieldsetBooleanTrue1',
-          type: 'string',
-          fieldset: 'hiddenFieldsetBooleanTrue',
-        },
-        {
-          name: 'hiddenFieldsetBooleanFalse1',
-          type: 'string',
-          fieldset: 'hiddenFieldsetBooleanFalse',
-        },
-        {
-          name: 'hiddenFieldsetCallbackTrue1',
-          type: 'string',
-          fieldset: 'hiddenFieldsetCallbackTrue',
-        },
-        {
-          name: 'hiddenFieldsetCallbackFalse1',
-          type: 'string',
-          fieldset: 'hiddenFieldsetCallbackFalse',
-        },
-        /** Read only inputs */
-        {
-          name: 'readOnlyFieldsetBooleanTrue1',
-          type: 'string',
-          fieldset: 'readOnlyFieldsetBooleanTrue',
-        },
-        {
-          name: 'readOnlyFieldsetBooleanFalse1',
-          type: 'string',
-          fieldset: 'readOnlyFieldsetBooleanFalse',
-        },
-        {
-          name: 'readOnlyFieldsetCallbackTrue1',
-          type: 'string',
-          fieldset: 'readOnlyFieldsetCallbackTrue',
-        },
-        {
-          name: 'readOnlyFieldsetCallbackFalse1',
-          type: 'string',
-          fieldset: 'readOnlyFieldsetCallbackFalse',
-        },
-      ],
+      name: 'hiddenFieldsetBooleanTrue',
+      hidden: true,
+    },
+    {
+      name: 'hiddenFieldsetBooleanFalse',
+      hidden: false,
+    },
+    {
+      name: 'hiddenFieldsetCallbackTrue',
+      hidden: ({document}) => document.isHidden === true,
+    },
+    {
+      name: 'hiddenFieldsetCallbackFalse',
+      hidden: ({document}) => document.isHidden === 'lorem',
+    },
+    /** Read only fieldsets */
+    {
+      name: 'readOnlyFieldsetBooleanTrue',
+      readOnly: true,
+    },
+    {
+      name: 'readOnlyFieldsetBooleanFalse',
+      readOnly: false,
+    },
+    {
+      name: 'readOnlyFieldsetCallbackTrue',
+      readOnly: ({document}) => document.isReadOnly === true,
+    },
+    {
+      name: 'readOnlyFieldsetCallbackFalse',
+      readOnly: ({document}) => document.isReadOnly === 'lorem',
     },
   ],
-})
-
-const documentType = schema.get('fieldsetsTest')
+  fields: [
+    /** Hidden inputs */
+    {
+      name: 'hiddenFieldsetBooleanTrue1',
+      type: 'string',
+      fieldset: 'hiddenFieldsetBooleanTrue',
+    },
+    {
+      name: 'hiddenFieldsetBooleanFalse1',
+      type: 'string',
+      fieldset: 'hiddenFieldsetBooleanFalse',
+    },
+    {
+      name: 'hiddenFieldsetCallbackTrue1',
+      type: 'string',
+      fieldset: 'hiddenFieldsetCallbackTrue',
+    },
+    {
+      name: 'hiddenFieldsetCallbackFalse1',
+      type: 'string',
+      fieldset: 'hiddenFieldsetCallbackFalse',
+    },
+    /** Read only inputs */
+    {
+      name: 'readOnlyFieldsetBooleanTrue1',
+      type: 'string',
+      fieldset: 'readOnlyFieldsetBooleanTrue',
+    },
+    {
+      name: 'readOnlyFieldsetBooleanFalse1',
+      type: 'string',
+      fieldset: 'readOnlyFieldsetBooleanFalse',
+    },
+    {
+      name: 'readOnlyFieldsetCallbackTrue1',
+      type: 'string',
+      fieldset: 'readOnlyFieldsetCallbackTrue',
+    },
+    {
+      name: 'readOnlyFieldsetCallbackFalse1',
+      type: 'string',
+      fieldset: 'readOnlyFieldsetCallbackFalse',
+    },
+  ],
+}
 
 const dummyDocument = {
   _createdAt: '2021-11-04T15:41:48Z',
@@ -106,51 +96,55 @@ const dummyDocument = {
   isHidden: true,
 }
 
-function renderInput(testId: string) {
-  return inputTester(dummyDocument, documentType, schema, testId)
-}
-
 describe('Fieldset with readOnly and hidden', () => {
   it('does not render because the hidden property is set to true', () => {
-    const {inputContainer} = renderInput('fieldset-hiddenFieldsetBooleanTrue')
+    const {result} = renderForm({type: fieldsetsTestType, value: dummyDocument})
+    const inputContainer = result.queryByTestId('fieldset-hiddenFieldsetBooleanTrue')
     expect(inputContainer).toBeNull()
   })
 
   it('does render because the hidden property is set to false', () => {
-    const {inputContainer} = renderInput('fieldset-hiddenFieldsetBooleanFalse')
+    const {result} = renderForm({type: fieldsetsTestType, value: dummyDocument})
+    const inputContainer = result.queryByTestId('fieldset-hiddenFieldsetBooleanFalse')
     expect(inputContainer).not.toBeNull()
   })
 
   it('does not render because the hidden property callback returns true', () => {
-    const {inputContainer} = renderInput('fieldset-hiddenFieldsetCallbackTrue')
+    const {result} = renderForm({type: fieldsetsTestType, value: dummyDocument})
+    const inputContainer = result.queryByTestId('fieldset-hiddenFieldsetCallbackTrue')
     expect(inputContainer).toBeNull()
   })
 
   it('does render because the hidden property callback returns false', () => {
-    const {inputContainer} = renderInput('fieldset-hiddenFieldsetCallbackFalse')
+    const {result} = renderForm({type: fieldsetsTestType, value: dummyDocument})
+    const inputContainer = result.queryByTestId('fieldset-hiddenFieldsetCallbackFalse')
     expect(inputContainer).not.toBeNull()
   })
 
   it('input in fieldset is read only because the fieldsets readOnly property is set to true', () => {
-    const {inputContainer} = renderInput('fieldset-readOnlyFieldsetBooleanTrue')
+    const {result} = renderForm({type: fieldsetsTestType, value: dummyDocument})
+    const inputContainer = result.queryByTestId('fieldset-readOnlyFieldsetBooleanTrue')
     const input = inputContainer.querySelector('input')
     expect(input).toHaveAttribute('readonly')
   })
 
   it('input in fieldset is not read only because the fieldsets readOnly property is set to false', () => {
-    const {inputContainer} = renderInput('fieldset-readOnlyFieldsetBooleanFalse')
+    const {result} = renderForm({type: fieldsetsTestType, value: dummyDocument})
+    const inputContainer = result.queryByTestId('fieldset-readOnlyFieldsetBooleanFalse')
     const input = inputContainer.querySelector('input')
     expect(input).not.toHaveAttribute('readonly')
   })
 
   it('input in fieldset is read only because the fieldsets readOnly property callback returns true', () => {
-    const {inputContainer} = renderInput('fieldset-readOnlyFieldsetCallbackTrue')
+    const {result} = renderForm({type: fieldsetsTestType, value: dummyDocument})
+    const inputContainer = result.queryByTestId('fieldset-readOnlyFieldsetCallbackTrue')
     const input = inputContainer.querySelector('input')
     expect(input).toHaveAttribute('readonly')
   })
 
   it('input in fieldset is not read only because the fieldsets readOnly property callback returns false', () => {
-    const {inputContainer} = renderInput('fieldset-readOnlyFieldsetCallbackFalse')
+    const {result} = renderForm({type: fieldsetsTestType, value: dummyDocument})
+    const inputContainer = result.queryByTestId('fieldset-readOnlyFieldsetCallbackFalse')
     const input = inputContainer.querySelector('input')
     expect(input).not.toHaveAttribute('readonly')
   })

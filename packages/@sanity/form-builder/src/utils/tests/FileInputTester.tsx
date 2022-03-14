@@ -25,6 +25,7 @@ const observeAssetStub = (id: string) =>
     _rev: 'slQurnjRhOy7Fj3dkfUHei',
     _type: 'sanity.fileAsset',
   })
+
 const imageUrlBuilderStub = imageUrlBuilder({dataset: 'some-dataset', projectId: 'some-project-id'})
 
 export const DEFAULT_PROPS = {

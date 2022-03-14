@@ -1,19 +1,11 @@
-// eslint-disable-next-line import/no-unassigned-import
-import '@testing-library/jest-dom/extend-expect'
-import {fireEvent, render, waitFor} from '@testing-library/react'
+import {PortableTextMarker} from '@sanity/base/form'
+import {fireEvent, waitFor} from '@testing-library/react'
 import React from 'react'
-import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
-import Schema from '@sanity/schema'
-import {PortableTextInputProps} from '../../PortableTextInput'
-import {TestInput} from '../../__workshop__/_common/TestInput'
+import {renderInput} from '../../../../../test/renderInput'
+import {PortableTextInput, PortableTextInputProps} from '../../PortableTextInput'
 import {portableTextType} from './schema'
 
 jest.setTimeout(10000)
-
-const schema = Schema.compile({
-  name: 'test',
-  types: [portableTextType],
-})
 
 const value = [
   {
@@ -64,7 +56,7 @@ const value = [
   },
 ]
 
-function renderCustomMarkers(markers) {
+function renderCustomMarkers(markers: PortableTextMarker[]) {
   return markers.map((marker, index) => {
     if (marker.type === 'customMarkerTest') {
       return (
@@ -81,56 +73,42 @@ function renderBlockActions() {
   return <div data-testid="block-action-test">Action!</div>
 }
 
-const markers = [{type: 'customMarkerTest', path: [{_key: value[0]._key}]}]
-
-function renderInput(props: Partial<PortableTextInputProps> = {}) {
-  const onBlur = jest.fn()
-  const onFocus = jest.fn()
-  const onChange = jest.fn()
-
-  const {queryByTestId, queryAllByTestId, queryByText, findByText, findByTestId} = render(
-    <ThemeProvider scheme="light" theme={studioTheme}>
-      <LayerProvider>
-        <ToastProvider>
-          <TestInput
-            focusPath={[]}
-            type={schema.get('body')}
-            onBlur={onBlur}
-            onFocus={onFocus}
-            onChange={onChange}
-            markers={markers}
-            level={0}
-            renderCustomMarkers={renderCustomMarkers}
-            renderBlockActions={renderBlockActions}
-            readOnly={false}
-            presence={[]}
-            value={value}
-            schema={schema}
-            {...(props || {})}
-          />
-        </ToastProvider>
-      </LayerProvider>
-    </ThemeProvider>
-  )
-  return {onChange, onFocus, queryByTestId, queryAllByTestId, queryByText, findByText, findByTestId}
+function render(props?: Partial<PortableTextInputProps>) {
+  return renderInput({
+    render: (renderProps) => (
+      <PortableTextInput
+        {...renderProps}
+        renderBlockActions={renderBlockActions}
+        renderCustomMarkers={renderCustomMarkers}
+        {...props}
+      />
+    ),
+    type: portableTextType,
+  })
 }
 
 describe('Portable Text Editor Block Extras', () => {
   test('custom markers', async () => {
-    const {findByText, queryByTestId} = renderInput()
-    const block = await findByText('Lorem ipsum dolor sit amet', {exact: false})
+    const markers: PortableTextMarker[] = [
+      {type: 'customMarkerTest', path: [{_key: value[0]._key}]},
+    ]
+    const {result} = render({markers, value})
+    const block = await result.findByText('Lorem ipsum dolor sit amet', {exact: false})
     if (block) {
       fireEvent.mouseOver(block)
     }
-    await waitFor(() => expect(queryByTestId('custom-marker-test')).toBeTruthy())
+    await waitFor(() => expect(result.queryByTestId('custom-marker-test')).toBeTruthy())
   })
 
   test.skip('block actions', async () => {
-    const {queryByTestId, findByText} = renderInput()
-    const block = await findByText('Lorem ipsum dolor sit amet', {exact: false})
+    const markers: PortableTextMarker[] = [
+      {type: 'customMarkerTest', path: [{_key: value[0]._key}]},
+    ]
+    const {result} = render({markers, value})
+    const block = await result.findByText('Lorem ipsum dolor sit amet', {exact: false})
     if (block) {
       fireEvent.click(block)
     }
-    await waitFor(() => expect(queryByTestId('block-action-test')).toBeTruthy())
+    await waitFor(() => expect(result.queryByTestId('block-action-test')).toBeTruthy())
   })
 })

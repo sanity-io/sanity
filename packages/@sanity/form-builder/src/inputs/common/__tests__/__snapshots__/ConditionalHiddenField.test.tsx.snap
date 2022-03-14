@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Conditional Hidden Callback hidden callback function gets called 1`] = `
+Array [
+  Array [
+    Object {
+      "currentUser": null,
+      "document": Object {
+        "_createdAt": "2021-11-04T15:41:48Z",
+        "_id": "drafts.10053a07-8647-4ebd-9d1d-33a512d30d3a",
+        "_rev": "5hb8s6-k75-ip4-4bq-5ztbf3fbx",
+        "_type": "conditionalFieldsTest",
+        "_updatedAt": "2021-11-05T12:34:29Z",
+        "fieldWithObjectType": Object {
+          "field1": "dqwdw",
+          "field2": "vdsvdsvdsnkjnjkk",
+          "roleConditionField": "dvsvd",
+        },
+        "hiddenIfTitleIsHidden": "dweefbfdssnflewnfklfwnlekfss",
+        "hiddenTestTitle": "hide me",
+        "isPublished": true,
+      },
+      "parent": Object {
+        "parentTest": "hello",
+      },
+      "value": undefined,
+    },
+  ],
+]
+`;

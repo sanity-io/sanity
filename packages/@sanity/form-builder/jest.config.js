@@ -6,4 +6,5 @@ module.exports = createJestConfig({
   rootDir: __dirname,
   globalSetup: '<rootDir>/test/setup/global.ts',
   setupFiles: ['<rootDir>/test/setup/environment.ts'],
+  setupFilesAfterEnv: ['<rootDir>/test/setup/afterEnv.ts'],
 })
