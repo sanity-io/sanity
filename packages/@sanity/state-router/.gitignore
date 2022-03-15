@@ -1,12 +1,15 @@
 # Logs
+/logs
 *.log
 
-# Compiled files
-lib
-
 # Coverage directory used by tools like istanbul
-coverage
+/coverage
 
 # Dependency directories
-node_modules
-dist
+/node_modules
+
+# Compiled code
+/lib
+
+# Extracted API docs
+/etc

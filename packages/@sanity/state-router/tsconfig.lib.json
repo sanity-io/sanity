@@ -1,8 +1,7 @@
 {
   "extends": "../../../tsconfig.settings",
-  "include": ["./example.ts", "./src", "./perf", "./test"],
+  "include": ["./src"],
   "compilerOptions": {
-    "noEmit": true,
     "composite": true,
     "jsx": "react",
     "declarationDir": "./lib/dts/",
