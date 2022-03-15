@@ -69,8 +69,9 @@
     "@sanity/cli": "2.29.3",
     "@sanity/client": "^3.2.0",
     "@types/fs-extra": "^7.0.0",
-    "@types/rimraf": "^3.0.2",
+    "@types/log-symbols": "^2.0.0",
     "@types/resolve-from": "^4.0.0",
+    "@types/rimraf": "^3.0.2",
     "@types/semver": "^6.2.3",
     "@types/tar-fs": "^2.0.1"
   },
