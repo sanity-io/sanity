@@ -2,8 +2,7 @@
   "name": "@sanity/import",
   "version": "2.29.3",
   "description": "Import documents to a Sanity dataset",
-  "main": "lib/import.js",
-  "types": "lib/dts/import.d.ts",
+  "main": "./lib/import.js",
   "engines": {
     "node": ">=12.0.0"
   },
