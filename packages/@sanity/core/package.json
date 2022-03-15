@@ -2,8 +2,8 @@
   "name": "@sanity/core",
   "version": "2.30.0",
   "description": "Sanity core bundle, containing required packages for the development and build process",
-  "main": "lib/index.js",
-  "types": "lib/dts/index.d.ts",
+  "main": "./lib/index.js",
+  "types": "./lib/dts/src/index.d.ts",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
