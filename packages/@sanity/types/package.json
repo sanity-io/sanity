@@ -2,10 +2,9 @@
   "name": "@sanity/types",
   "version": "2.29.5",
   "description": "Type definitions for common Sanity data structures",
-  "source": "src/index.ts",
-  "main": "lib/index.cjs",
-  "module": "lib/index.js",
-  "types": "lib/dts/index.d.ts",
+  "source": "./src/index.ts",
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.js",
   "exports": {
     ".": {
       "source": "./src/index.ts",
@@ -13,6 +12,7 @@
       "default": "./lib/index.js"
     }
   },
+  "types": "./lib/dts/src/index.d.ts",
   "//": "the typesVersion config below is a workaround for TypeScript's lack of support for package exports",
   "typesVersions": {
     "*": {
