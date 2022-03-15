@@ -1,22 +1,11 @@
 {
-  "extends": "../../../tsconfig",
-  "include": ["src"],
+  "extends": "../../../tsconfig.settings",
+  "include": ["./src", "./test"],
   "compilerOptions": {
     "composite": true,
-    // todo: we need to disable noImplicitAny in a transition phase and should be removed eventually
-    "noImplicitAny": false,
-    "rootDir": "./src",
-    "outDir": "./dist/dts"
+    "declarationDir": "./lib/dts/",
+    "rootDir": "./",
+    "outDir": "./lib/dts/"
   },
-  "references": [
-    {
-      "path": "../types"
-    },
-    {
-      "path": "../util"
-    },
-    {
-      "path": "../schema"
-    }
-  ]
+  "references": [{"path": "../schema"}, {"path": "../types"}, {"path": "../util/tsconfig.lib.json"}]
 }
