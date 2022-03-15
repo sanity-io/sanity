@@ -5,6 +5,6 @@ Before you can run the perf tests you need to add a session token so the tests a
 Run the perf tests like so:
 
 ```
-$ npm run test-perf
+$ yarn test-perf
 ```
 

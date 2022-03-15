@@ -5,11 +5,11 @@ Before you can run the tests you need to add a session token so the tests are ab
 Run the tests like so:
 
 ```
-$ npm run test-e2e
+$ yarn test-e2e
 ```
 
 Or open cypress for interactivity:
 
 ```
-$ npm run cypress:open
+$ yarn cypress:open
 ```

@@ -48,15 +48,15 @@ Prefer squash + merge. If it makes sense to keep individual commits (e.g. differ
 
 ## Publishing official releases
 
-When `next` is ready for release, run `npm run publish` in the `next` branch and select version. After a successful release, remember to rebase `next` against `current`.
+When `next` is ready for release, run `yarn publish` in the `next` branch and select version. After a successful release, remember to rebase `next` against `current`.
 
 ## Publishing a hotfix release from `current`
 
-If we need to publish a hotfix, a patch release should be done by running `npm run publish` from the project root, selecting "Patch" from the menu. Remember to rebase `next` against `current` after the release is completed.
+If we need to publish a hotfix, a patch release should be done by running `yarn publish` from the project root, selecting "Patch" from the menu. Remember to rebase `next` against `current` after the release is completed.
 
 ## Publishing _canary_ versions from feature branches
 
-This can be done at any time by anyone and is done by `npm run publish-canary`. This will publish with the commit hash from HEAD, and can be installed with `sanity upgrade --tag=canary --save-exact`
+This can be done at any time by anyone and is done by `yarn publish-canary`. This will publish with the commit hash from HEAD, and can be installed with `sanity upgrade --tag=canary --save-exact`
 
 # How to file an issue
 
@@ -86,14 +86,14 @@ If you find yourself wishing for a feature that doesn't exist in Sanity, you are
 
 # Troubleshooting
 
-If you run into build issues, you might want to run `npm run init`, which will delete all `node_modules` folders, then run a fresh `npm run bootstrap` to install and cross-symlink all modules, followed by building all ES6 code to ES5.
+If you run into build issues, you might want to run `yarn init`, which will delete all `node_modules` folders, then run a fresh `yarn bootstrap` to install and cross-symlink all modules, followed by building all ES6 code to ES5.
 
 # Testing
 
 Some tests are based on compiled files, so you will need to build the repository first before running the tests:
 
 ```sh
-npm run build
+yarn build
 npm test
 ```
 
