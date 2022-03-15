@@ -1,9 +1,7 @@
 import fs from 'fs/promises'
 import path from 'path'
 import chalk from 'chalk'
-import globby from 'globby'
 import * as esbuild from 'esbuild'
-import {resolveTsconfigPath} from '../helpers'
 import {TERM_DIVIDER} from './constants'
 
 export async function build(opts: {cwd: string}): Promise<void> {
@@ -22,7 +20,7 @@ export async function build(opts: {cwd: string}): Promise<void> {
   const external = [
     ...new Set([
       // @TODO add support for depcheckignore files
-      '$SANITY_STUDIO_CONFIG$',
+      '@sanity-studio-config',
       '@self/config',
       ...(pkg.dependencies ? Object.keys(pkg.dependencies) : []),
       ...(pkg.devDependencies ? Object.keys(pkg.devDependencies) : []),
