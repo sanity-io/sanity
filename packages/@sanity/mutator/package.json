@@ -2,14 +2,23 @@
   "name": "@sanity/mutator",
   "version": "2.29.3",
   "description": "A set of models to make it easier to utilize the powerful real time collaborative features of Sanity",
-  "main": "./lib/index.js",
-  "types": "./dist/dts",
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.js",
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "require": "./lib/index.cjs",
+      "default": "./lib/index.js"
+    }
+  },
+  "types": "./lib/dts/src/index.d.ts",
   "scripts": {
-    "build": "babel src --extensions '.js,.jsx,.ts,.tsx' --copy-files --out-dir lib",
-    "clean": "rimraf lib dest",
-    "test": "jest",
+    "build": "../../../bin/pkg-utils bundle --tsconfig tsconfig.lib.json",
+    "clean": "rimraf lib",
     "perf": "node ./perf/run.js",
-    "prebuild": "npm run clean"
+    "prebuild": "yarn clean",
+    "test": "jest",
+    "watch": "../../../bin/pkg-utils bundle --tsconfig tsconfig.lib.json --watch"
   },
   "keywords": [
     "sanity",
@@ -25,12 +34,12 @@
     "@types/diff-match-patch": "^1.0.32",
     "debug": "^3.2.7",
     "diff-match-patch": "^1.0.4",
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@types/debug": "^4.1.5",
     "@types/lodash": "^4.14.149",
-    "rimraf": "^2.7.1",
+    "rimraf": "^3.0.2",
     "tap": "^14.6.1"
   },
   "repository": {
