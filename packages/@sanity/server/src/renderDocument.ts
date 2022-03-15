@@ -14,7 +14,7 @@ import {getAliases} from './aliases'
 import {SanityMonorepo} from './sanityMonorepo'
 
 const defaultProps = {
-  entryPath: '/$SANITY_STUDIO_ENTRY$',
+  entryPath: '/@sanity-studio-entry',
 }
 
 export function renderDocument(options: {

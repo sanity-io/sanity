@@ -7,8 +7,8 @@ import {SanityMonorepo} from '../sanityMonorepo'
 
 const basePattern = /@sanity[/\\]base/
 const entryPattern = /studioEntry\.(js|ts)x?$/
-const entryModuleId = '$SANITY_STUDIO_ENTRY$'
-const configModuleId = '$SANITY_STUDIO_CONFIG$'
+const entryModuleId = '@sanity-studio-entry'
+const configModuleId = '@sanity-studio-config'
 
 export interface SanityStudioVitePluginOptions {
   cwd: string
@@ -21,8 +21,8 @@ export interface SanityStudioVitePluginOptions {
  * needing an index on-disk physically.
  *
  * Provided aliases:
- * - `$SANITY_STUDIO_CONFIG$` => `<studioRoot>/sanity.config.(js|ts)`
- * - `$SANITY_STUID_ENTRY$`   => `@sanity/base/studioEntry` (studio relative)
+ * - `@sanity-studio-config` => `<studioRoot>/sanity.config.(js|ts)`
+ * - `@sanity-studio-entry`   => `@sanity/base/studioEntry` (studio relative)
  *
  * Aside from being aliases, these are treated as any other source files,
  * giving the same affordances: watching, hot reloading, transpilation etc.
@@ -123,7 +123,7 @@ export function viteSanityStudio({cwd, basePath, monorepo}: SanityStudioVitePlug
  */
 export function resolveEntryModulePath(opts: {cwd: string; monorepo?: SanityMonorepo}): string {
   if (opts.monorepo) {
-    return path.resolve(opts.monorepo.path, 'packages/@sanity/base/src/_exports/studioEntry')
+    return path.resolve(opts.monorepo.path, 'packages/@sanity/base/src/_exports/studioEntry.tsx')
   }
 
   return resolveFrom(opts.cwd, '@sanity/base/studioEntry')
