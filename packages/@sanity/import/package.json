@@ -3,17 +3,19 @@
   "version": "2.29.3",
   "description": "Import documents to a Sanity dataset",
   "main": "lib/import.js",
+  "types": "lib/dts/import.d.ts",
   "engines": {
     "node": ">=12.0.0"
   },
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "build": "babel src --copy-files --out-dir lib",
-    "clean": "rimraf lib dest",
+    "build": "../../../bin/pkg-utils transpile --target node",
+    "clean": "rimraf lib",
     "coverage": "jest --coverage",
-    "prebuild": "npm run clean",
-    "test": "jest"
+    "prebuild": "yarn clean",
+    "test": "jest",
+    "watch": "../../../bin/pkg-utils transpile --target node --watch"
   },
   "keywords": [
     "sanity",
@@ -25,7 +27,7 @@
     "ndjson"
   ],
   "dependencies": {
-    "@sanity/asset-utils": "^1.2.0",
+    "@sanity/asset-utils": "1.2.3",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/mutator": "2.29.3",
     "@sanity/uuid": "^3.0.1",
@@ -37,7 +39,7 @@
     "globby": "^10.0.0",
     "gunzip-maybe": "^1.4.1",
     "is-tar": "^1.0.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "mississippi": "^4.0.0",
     "p-map": "^1.2.0",
     "peek-stream": "^1.1.2",
@@ -49,7 +51,7 @@
   "devDependencies": {
     "@sanity/client": "^3.2.0",
     "nock": "^9.0.5",
-    "rimraf": "^2.7.1"
+    "rimraf": "^3.0.2"
   },
   "repository": {
     "type": "git",
