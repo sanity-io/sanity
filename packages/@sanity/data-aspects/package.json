@@ -6,7 +6,10 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "clean": "rimraf lib dest"
+    "build": "../../../bin/pkg-utils transpile",
+    "clean": "rimraf lib",
+    "prebuild": "yarn clean",
+    "watch": "../../../bin/pkg-utils transpile --watch"
   },
   "keywords": [
     "sanity",
@@ -19,10 +22,10 @@
   ],
   "dependencies": {
     "@sanity/generate-help-url": "^3.0.0",
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "rimraf": "^2.7.1"
+    "rimraf": "^3.0.2"
   },
   "repository": {
     "type": "git",
