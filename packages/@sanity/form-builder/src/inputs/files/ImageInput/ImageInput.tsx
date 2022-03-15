@@ -50,7 +50,6 @@ export type Props = {
   type: ImageSchemaType
   level: number
   onChange: (event: PatchEvent) => void
-  resolveUploader: UploaderResolver
   observeAsset: (documentId: string) => Observable<ImageAsset>
   onBlur: () => void
   onFocus: (path: Path) => void
