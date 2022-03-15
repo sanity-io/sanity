@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "routes": [
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/plugins/workshop/frame/(.*)",
+      "dest": "/plugins/workshop/frame/index.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}

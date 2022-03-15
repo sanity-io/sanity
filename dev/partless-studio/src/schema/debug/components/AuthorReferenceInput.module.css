@@ -1,0 +1,9 @@
+.authorGroup {
+  max-width: 500px;
+}
+
+.authorImage {
+  display: block;
+  width: 75px;
+  height: 75px;
+}

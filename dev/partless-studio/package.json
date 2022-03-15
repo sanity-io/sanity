@@ -1,0 +1,45 @@
+{
+  "private": true,
+  "name": "sanity-partless-studio",
+  "version": "0.0.0-development",
+  "scripts": {
+    "build": "run-s workshop:build sanity:build",
+    "dev": "run-p workshop:dev sanity:dev",
+    "sanity:build": "sanity build",
+    "sanity:dev": "sanity start",
+    "start": "http-server -a localhost -c-0 -p 3333 -s -P http://localhost:3333/index.html? dist",
+    "workshop:build": "node -r esbuild-register scripts/workshop/build.ts",
+    "workshop:dev": "node -r esbuild-register scripts/workshop/dev.ts"
+  },
+  "dependencies": {
+    "@sanity/base": "2.29.1",
+    "@sanity/code-input": "2.29.1",
+    "@sanity/desk-tool": "2.29.1",
+    "@sanity/form-builder": "2.29.1",
+    "@sanity/icons": "^1.2.1",
+    "@sanity/image-url": "^1.0.1",
+    "@sanity/types": "2.28.0",
+    "@sanity/ui": "^0.37.5",
+    "@sanity/ui-workshop": "^0.3.15",
+    "@sanity/util": "2.28.0",
+    "@sanity/uuid": "^3.0.1",
+    "@turf/helpers": "^6.0.1",
+    "@turf/points-within-polygon": "^5.1.5",
+    "chokidar": "^3.0.0",
+    "globby": "^10.0.0",
+    "lodash": "^4.17.21",
+    "prop-types": "^15.6.0",
+    "qs": "^6.10.2",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-refractor": "^2.1.6",
+    "refractor": "^3.6.0",
+    "rxjs": "^6.5.3",
+    "styled-components": "^5.2.0"
+  },
+  "devDependencies": {
+    "@sanity/cli": "2.28.0",
+    "http-server": "^14.0.0",
+    "vite": "^2.7.2"
+  }
+}

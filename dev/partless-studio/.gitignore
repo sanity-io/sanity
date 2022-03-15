@@ -1,0 +1,4 @@
+/dist
+
+# Ignore generated source files
+/src/workshop/scopes.js
