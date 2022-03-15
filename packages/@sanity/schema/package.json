@@ -2,22 +2,37 @@
   "name": "@sanity/schema",
   "version": "2.29.3",
   "description": "",
-  "main": "./lib/_exports/index.js",
-  "types": "index.d.ts",
+  "source": "./src/_exports/index.ts",
+  "main": "./lib/_exports/index.cjs",
+  "module": "./lib/_exports/index.js",
+  "exports": {
+    ".": {
+      "source": "./src/_exports/index.ts",
+      "require": "./lib/_exports/index.cjs",
+      "default": "./lib/_exports/index.js"
+    },
+    "./_internal": {
+      "source": "./src/_exports/_internal.ts",
+      "require": "./lib/_exports/_internal.cjs",
+      "default": "./lib/_exports/_internal.js"
+    }
+  },
+  "types": "./lib/dts/src/_exports/index.d.ts",
   "//": "the typesVersion config below is a workaround for TypeScript's lack of support for package exports",
   "typesVersions": {
     "*": {
-      "*": [
-        "dist/dts/_exports/*"
+      "_internal": [
+        "./lib/dts/src/_exports/_internal.d.ts"
       ]
     }
   },
   "scripts": {
-    "clean": "rimraf lib dest",
-    "compile": "babel src --copy-files --out-dir lib",
-    "compile:watch": "npm run compile -- --watch",
+    "build": "../../../bin/pkg-utils bundle",
+    "clean": "rimraf lib",
+    "prebuild": "yarn clean",
     "test": "jest",
-    "test:watch": "jest --watchAll"
+    "test:watch": "jest --watchAll",
+    "watch": "../../../bin/pkg-utils bundle --watch"
   },
   "keywords": [
     "sanity",
@@ -31,14 +46,15 @@
   "license": "MIT",
   "dependencies": {
     "@sanity/generate-help-url": "^3.0.0",
+    "@sanity/types": "2.29.3",
     "arrify": "^1.0.1",
     "humanize-list": "^1.0.1",
     "leven": "^3.1.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "object-inspect": "^1.6.0"
   },
   "devDependencies": {
-    "rimraf": "^2.7.1"
+    "rimraf": "^3.0.2"
   },
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
