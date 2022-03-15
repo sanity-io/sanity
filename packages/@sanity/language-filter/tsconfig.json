@@ -1,13 +1,14 @@
 {
-  "extends": "../../../tsconfig",
-  "include": ["src"],
+  "extends": "../../../tsconfig.settings",
+  "include": ["./src/"],
   "compilerOptions": {
     "composite": true,
-    "rootDir": "./src",
-    "outDir": "./dist/dts",
-    "jsx": "react"
+    "declarationDir": "./lib/dts/",
+    "rootDir": "./",
+    "outDir": "./lib/dts/",
+    "jsx": "react",
+    "checkJs": false,
+    "allowJs": true
   },
-  "references": [
-    {"path": "../types"}
-  ]
+  "references": [{"path": "../types"}]
 }
