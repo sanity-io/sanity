@@ -7,6 +7,9 @@ export interface DocumentBadgeDescription {
   icon?: React.ReactNode | React.ComponentType
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface DocumentBadgeProps extends EditStateFor {}
+
 export interface DocumentBadgeComponent {
-  (props: EditStateFor): DocumentBadgeDescription | null
+  (props: DocumentBadgeProps): DocumentBadgeDescription | null
 }

@@ -37,7 +37,11 @@ export default function RovingFocusStory() {
   return (
     <Flex align="center" height="fill" justify="center">
       <Card padding={3} radius={3} shadow={1}>
-        <Flex gap={2} direction={FLEX_DIRECTION[direction]} ref={setRootElement}>
+        <Flex
+          gap={2}
+          direction={direction ? FLEX_DIRECTION[direction] : undefined}
+          ref={setRootElement}
+        >
           {OPTIONS.map((num) => (
             <Button
               text={`Option ${num + 1}`}

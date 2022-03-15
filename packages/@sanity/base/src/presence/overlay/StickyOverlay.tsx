@@ -28,7 +28,7 @@ const ITEM_TRANSITION: React.CSSProperties = {
   transitionTimingFunction: 'cubic-bezier(0.85, 0, 0.15, 1)',
 }
 
-const bottom = (rect) => rect.top + rect.height
+const bottom = (rect: {top: number; height: number}) => rect.top + rect.height
 
 type RegionWithSpacerHeight = RegionWithIntersectionDetails & {
   spacerHeight: number
@@ -49,15 +49,13 @@ function withSpacerHeight(
 const orderByTop = (regionsWithIntersectionDetails: RegionWithIntersectionDetails[]) =>
   orderBy(regionsWithIntersectionDetails, (withIntersection) => withIntersection.region.rect.top)
 
-const plus = (a, b) => a + b
-const sum = (array) => array.reduce(plus, 0)
+const plus = (a: number, b: number) => a + b
+const sum = (array: number[]) => array.reduce(plus, 0)
 
 type Margins = [number, number, number, number]
 type RegionWithSpacerHeightAndIndent = RegionWithSpacerHeight & {indent: number}
 
-function group(
-  regionsWithIntersectionDetails: RegionWithIntersectionDetails[]
-): {
+function group(regionsWithIntersectionDetails: RegionWithIntersectionDetails[]): {
   top: RegionWithSpacerHeightAndIndent[]
   inside: RegionWithSpacerHeightAndIndent[]
   bottom: RegionWithSpacerHeightAndIndent[]
@@ -106,19 +104,19 @@ const Spacer = ({height, ...rest}: {height: number; style?: React.CSSProperties}
 
 const DEFAULT_MARGINS: Margins = [0, 0, 0, 0]
 
-const getOffsetsTo = (source, target) => {
-  let el = source
+const getOffsetsTo = (source: HTMLElement, target: HTMLElement) => {
+  let el: HTMLElement | null = source
   let top = -el.scrollTop
   let left = 0
   while (el && el !== target) {
     top += el.offsetTop - el.scrollTop
     left += el.offsetLeft
-    el = el.offsetParent
+    el = el.offsetParent instanceof HTMLElement ? el.offsetParent : null
   }
   return {top, left}
 }
 
-function getRelativeRect(element, parent): Rect {
+function getRelativeRect(element: HTMLElement, parent: HTMLElement): Rect {
   return {
     ...getOffsetsTo(element, parent),
     width: element.offsetWidth,
@@ -128,7 +126,7 @@ function getRelativeRect(element, parent): Rect {
 
 function regionsWithComputedRects(
   regions: ReportedPresenceData[],
-  parent
+  parent: HTMLElement
 ): ReportedRegionWithRect<FieldPresenceData>[] {
   return regions.map(([id, region]) => ({
     ...region,
@@ -141,7 +139,7 @@ type Props = {margins: Margins; children: React.ReactNode}
 export function StickyOverlay(props: Props) {
   const {children, margins = DEFAULT_MARGINS} = props
   const reportedValues = useReportedValues()
-  const ref = React.useRef()
+  const ref = React.useRef<HTMLDivElement | null>(null)
   const regions = React.useMemo(
     () => (ref.current ? regionsWithComputedRects(reportedValues, ref.current) : EMPTY_ARRAY),
     [reportedValues]
@@ -206,7 +204,7 @@ export function StickyOverlay(props: Props) {
   )
 }
 
-const EMPTY_ARRAY = []
+const EMPTY_ARRAY: never[] = []
 
 const PresenceDock = memo(function PresenceDock(props: {
   closeCount: number

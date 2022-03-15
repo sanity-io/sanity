@@ -1,13 +1,14 @@
-import {versionedClient} from '../../../../client/versionedClient'
+import {MultipleMutationResult} from '@sanity/client'
 import {OperationArgs} from '../../types'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 
 export const del = {
-  disabled: ({snapshots}) => (snapshots.draft || snapshots.published ? false : 'NOTHING_TO_DELETE'),
-  execute: ({idPair, typeName}: OperationArgs) => {
-    const tx = versionedClient.observable.transaction().delete(idPair.publishedId)
+  disabled: ({snapshots}: OperationArgs): 'NOTHING_TO_DELETE' | false =>
+    snapshots.draft || snapshots.published ? false : 'NOTHING_TO_DELETE',
+  execute: ({client, idPair, schema, typeName}: OperationArgs): Promise<MultipleMutationResult> => {
+    const tx = client.observable.transaction().delete(idPair.publishedId)
 
-    if (isLiveEditEnabled(typeName)) {
+    if (isLiveEditEnabled(schema, typeName)) {
       return tx.commit({tag: 'document.delete'})
     }
 

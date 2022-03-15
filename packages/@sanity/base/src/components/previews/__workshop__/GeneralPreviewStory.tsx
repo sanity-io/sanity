@@ -44,7 +44,7 @@ export default function GeneralPreviewStory() {
   const progress = useNumber('Progress (%)', 50)
 
   const media = useMemo(() => {
-    const {width, height} = PREVIEW_MEDIA_SIZE[layout] || PREVIEW_MEDIA_SIZE.default
+    const {width, height} = layout ? PREVIEW_MEDIA_SIZE[layout] : PREVIEW_MEDIA_SIZE.default
 
     if (mediaKey === 'image') {
       return <img src={`https://source.unsplash.com/${width * 2}x${height * 2}/?abstract`} />
@@ -61,7 +61,7 @@ export default function GeneralPreviewStory() {
     return false
   }, [layout, mediaKey])
 
-  const component = previewComponents[layout]
+  const component = layout && previewComponents[layout]
 
   if (!component) {
     return (

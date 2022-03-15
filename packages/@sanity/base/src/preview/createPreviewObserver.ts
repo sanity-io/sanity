@@ -4,19 +4,12 @@ import {
   isCrossDatasetReference,
   isCrossDatasetReferenceSchemaType,
   isReferenceSchemaType,
-  PreviewValue,
 } from '@sanity/types'
 import {isPlainObject} from 'lodash'
-import prepareForPreview, {invokePrepare} from './utils/prepareForPreview'
-import type {ApiConfig, Path, PrepareViewOptions} from './types'
+import {invokePrepare, prepareForPreview} from './utils/prepareForPreview'
+import type {ApiConfig, Path, PreparedSnapshot, PrepareViewOptions} from './types'
 import {getPreviewPaths} from './utils/getPreviewPaths'
-import {observeDocumentTypeFromId} from './observeDocumentTypeFromId'
 import {Previewable, PreviewableType} from './types'
-
-export interface PreparedSnapshot {
-  type?: PreviewableType
-  snapshot: undefined | PreviewValue
-}
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return isPlainObject(value)
@@ -27,9 +20,12 @@ export function isReference(value: unknown): value is {_ref: string} {
 }
 
 // Takes a value and its type and prepares a snapshot for it that can be passed to a preview component
-export function createPreviewObserver(
+export function createPreviewObserver(context: {
+  observeDocumentTypeFromId: (id: string, apiConfig?: ApiConfig) => Observable<string | undefined>
   observePaths: (value: Previewable, paths: Path[], apiConfig?: ApiConfig) => any
-) {
+}) {
+  const {observeDocumentTypeFromId, observePaths} = context
+
   return function observeForPreview(
     value: Previewable,
     type: PreviewableType,
@@ -47,7 +43,7 @@ export function createPreviewObserver(
         switchMap((typeName) => {
           if (typeName) {
             const refType = type.to.find((toType) => toType.type === typeName)
-            return observeForPreview(value, refType, {}, refApiConfig)
+            return observeForPreview(value, refType as any, {}, refApiConfig)
           }
           return observableOf({snapshot: undefined})
         })
@@ -66,7 +62,7 @@ export function createPreviewObserver(
         switchMap((typeName) => {
           if (typeName) {
             const refType = type.to.find((toType) => toType.name === typeName)
-            return observeForPreview(value, refType)
+            return observeForPreview(value, refType as any)
           }
           // todo: in case we can't read the document type, we can figure out the reason why e.g. whether it's because
           //  the document doesn't exist or it's not readable due to lack of permission.
@@ -81,7 +77,7 @@ export function createPreviewObserver(
       return observePaths(value, paths, apiConfig).pipe(
         map((snapshot) => ({
           type: type,
-          snapshot: snapshot && prepareForPreview(snapshot, type, viewOptions),
+          snapshot: snapshot && prepareForPreview(snapshot, type as any, viewOptions),
         }))
       )
     }
@@ -94,6 +90,6 @@ export function createPreviewObserver(
       type,
       snapshot:
         value && isRecord(value) ? invokePrepare(type, value, viewOptions).returnValue : null,
-    })
+    }) as any
   }
 }

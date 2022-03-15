@@ -1,9 +1,10 @@
-import client from 'part:@sanity/base/client'
+import {SanityClient} from '@sanity/client'
 import {first} from 'rxjs/operators'
-import {createGrantsStore} from './createGrantsStore'
+import {UserStore} from '../user'
+import {createGrantsStore} from './grantsStore'
 import {viewer} from './debug/exampleGrants'
 
-jest.mock('part:@sanity/base/client', () => {
+function createMockClient(data: {requests?: Record<string, any>} = {}): SanityClient {
   const mockConfig = {
     useCdn: false,
     projectId: 'mock-project-id',
@@ -11,27 +12,43 @@ jest.mock('part:@sanity/base/client', () => {
     apiVersion: '1',
   }
 
+  const requestUriPrefix = `/projects/${mockConfig.projectId}/datasets/${mockConfig.dataset}`
+
   const mockClient = {
     config: () => mockConfig,
     withConfig: () => mockClient,
-    request: jest.fn(() => Promise.resolve(null)),
+    request: jest.fn((opts: {uri: string; tag?: string; withCredentials: boolean}) => {
+      const path = opts.uri.slice(requestUriPrefix.length)
+
+      if (data?.requests?.[path]) {
+        return Promise.resolve(data?.requests?.[path])
+      }
+
+      return Promise.resolve(data?.requests?.['*'] || null)
+    }),
   }
 
-  return mockClient
-})
+  return mockClient as any
+}
 
-jest.mock('../user', () => {
+function createMockUserStore(): UserStore {
   const userStore = {
     getCurrentUser: () => Promise.resolve({id: 'example-user-id'}),
   }
 
-  return userStore
-})
+  return userStore as any
+}
 
 describe('checkDocumentPermission', () => {
   it('takes in a permission and document and returns an observable of PermissionCheckResult', async () => {
-    ;(client.request as jest.Mock).mockImplementation(() => Promise.resolve(viewer))
-    const {checkDocumentPermission} = createGrantsStore()
+    const client = createMockClient({
+      requests: {
+        '/acl': viewer,
+      },
+    })
+
+    const userStore = createMockUserStore()
+    const {checkDocumentPermission} = createGrantsStore(client, userStore)
 
     await expect(
       checkDocumentPermission('create', {_id: 'example-id', _type: 'book'})

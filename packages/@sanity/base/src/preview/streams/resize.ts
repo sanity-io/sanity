@@ -1,4 +1,7 @@
-import {fromEvent} from 'rxjs'
+import {fromEvent, of} from 'rxjs'
 import {debounceTime, share} from 'rxjs/operators'
 
-export default fromEvent(window, 'resize', {passive: true}).pipe(debounceTime(200), share())
+export const resize$ =
+  typeof window === 'undefined'
+    ? of({})
+    : fromEvent(window, 'resize', {passive: true}).pipe(debounceTime(200), share())

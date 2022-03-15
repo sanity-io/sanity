@@ -7,7 +7,7 @@ import {IntentLink} from './IntentLink'
 export function IntentButton(
   props: Omit<ComponentProps<typeof Button> & ComponentProps<typeof IntentLink>, 'as' | 'href'> & {
     intent: string
-    params: Record<string, any> | [Record<string, any>, Record<string, any>]
+    params: Record<string, unknown> | [Record<string, unknown>, Record<string, unknown>]
   }
 ) {
   return props.disabled ? (

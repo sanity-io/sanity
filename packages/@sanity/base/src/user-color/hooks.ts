@@ -5,7 +5,13 @@ import {UserColorManagerContext} from './context'
 import {UserColor, UserColorManager} from './types'
 
 export function useUserColorManager(): UserColorManager {
-  return useContext(UserColorManagerContext)
+  const userColorManager = useContext(UserColorManagerContext)
+
+  if (!userColorManager) {
+    throw new Error('UserColorManager: missing context value')
+  }
+
+  return userColorManager
 }
 
 export function useUserColor(userId: string | null): UserColor {

@@ -1,3 +1,5 @@
+import {IdPair, OperationArgs} from '../../types'
+import {emitOperation} from '../operationEvents'
 import {del} from './delete'
 import {publish} from './publish'
 import {patch} from './patch'
@@ -6,9 +8,6 @@ import {discardChanges} from './discardChanges'
 import {unpublish} from './unpublish'
 import {duplicate} from './duplicate'
 import {restore} from './restore'
-
-import {OperationArgs} from '../../types'
-import {emitOperation} from '../operationEvents'
 
 /* Ok, this became a bit messy - sorry
  *  The important thing to consider here is the PublicOperations interface -
@@ -68,9 +67,10 @@ export const GUARDED: OperationsAPI = {
   duplicate: createOperationGuard('duplicate'),
   restore: createOperationGuard('restore'),
 }
-const createEmitter = (operationName: keyof OperationsAPI, idPair, typeName) => (
-  ...executeArgs: any[]
-) => emitOperation(operationName, idPair, typeName, executeArgs)
+const createEmitter =
+  (operationName: keyof OperationsAPI, idPair: IdPair, typeName: string) =>
+  (...executeArgs: any[]) =>
+    emitOperation(operationName, idPair, typeName, executeArgs)
 
 function wrap<ErrorStrings>(
   opName: keyof OperationsAPI,

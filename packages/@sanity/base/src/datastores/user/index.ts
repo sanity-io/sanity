@@ -1,5 +1,2 @@
-import createUserStore from './createUserStore'
-
-export default createUserStore()
-
+export * from './createUserStore'
 export * from './types'

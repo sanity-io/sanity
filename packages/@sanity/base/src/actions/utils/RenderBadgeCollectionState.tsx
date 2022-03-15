@@ -1,16 +1,25 @@
 import React from 'react'
-import {DocumentBadgeComponent, DocumentBadgeDescription} from '../../badges/types'
+import {DocumentBadgeDescription, DocumentBadgeProps} from '../../badges/types'
 import {EditStateFor} from '../../datastores/document/document-pair/editState'
 import {GetHookCollectionState} from './GetHookCollectionState'
 
-interface RenderBadgeCollectionProps {
-  badges: DocumentBadgeComponent[]
-  badgeProps: EditStateFor
-  onActionComplete: () => void
-  component: (args: {states: DocumentBadgeDescription[]}) => React.ReactNode
+interface Badge<Args, Description> {
+  (args: Args): Description | null
 }
 
-export function RenderBadgeCollectionState(props: RenderBadgeCollectionProps) {
-  const {badges, component, badgeProps, ...rest} = props
-  return <GetHookCollectionState {...rest} hooks={badges} args={badgeProps} component={component} />
+interface RenderBadgeCollectionProps {
+  badges: Badge<DocumentBadgeProps, DocumentBadgeDescription>[]
+  badgeProps: EditStateFor
+  children: (props: {states: DocumentBadgeDescription[]}) => React.ReactNode
+  onActionComplete?: () => void
+}
+
+export const RenderBadgeCollectionState = (props: RenderBadgeCollectionProps) => {
+  const {badges, children, badgeProps, ...rest} = props
+
+  return (
+    <GetHookCollectionState {...rest} hooks={badges} args={badgeProps}>
+      {children}
+    </GetHookCollectionState>
+  )
 }

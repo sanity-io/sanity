@@ -10,8 +10,8 @@ export const MediaWrapper = styled.span<{
   $responsive: boolean
 }>((props) => {
   const {$dimensions, $layout, $radius, $responsive} = props
-  const width = $dimensions.width
-  const height = $dimensions.width
+  const width = $dimensions.width || 0
+  const height = $dimensions.width || 0
   const iconSize = PREVIEW_ICON_SIZE[$layout]
 
   return css`

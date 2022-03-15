@@ -2,6 +2,7 @@ import {useAsObservable, useObservable} from 'react-rx'
 import {concat, Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, map, scan, switchMap} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
+import {useUnique} from './useUnique'
 
 type LoadingTuple<T> = [T, boolean]
 
@@ -86,10 +87,12 @@ export function createHookFromObservableFactory<T, TArgs extends unknown[]>(
     )
 
   return function useLoadableFromCreateLoadable(...args) {
-    const tuple$ = useAsObservable(args, asLoadingTuple)
+    const _args = useUnique(args)
+    const tuple$ = useAsObservable(_args, asLoadingTuple)
     const result = useObservable(tuple$, {type: 'tuple', tuple: initialLoadingTuple})
 
     if (result.type === 'error') throw result.error
+
     return result.tuple
   }
 }

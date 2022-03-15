@@ -1,20 +1,25 @@
-import type {Observable} from 'rxjs'
+import {SanityClient} from '@sanity/client'
+import {Schema} from '@sanity/types'
+import {Observable} from 'rxjs'
+import {Template} from '@sanity/initial-value-templates'
 import {getDraftId, isDraftId} from '../../util/draftUtils'
-import {versionedClient} from '../../client/versionedClient'
-import type {DocumentVersionEvent, Pair} from './document-pair/checkoutPair'
-import {checkoutPair} from './document-pair/checkoutPair'
+import {HistoryStore} from '../history'
+import {DocumentPreviewStore} from '../../preview'
 import createDeprecatedAPIs from './_createDeprecatedAPIs'
-import type {IdPair} from './types'
-import {resolveTypeForDocument} from './resolveTypeForDocument'
-import {listenQuery} from './listenQuery'
-import {editState, EditStateFor} from './document-pair/editState'
-import {editOperations} from './document-pair/editOperations'
-import {documentEvents} from './document-pair/documentEvents'
-import {validation, ValidationStatus} from './document-pair/validation'
-import {operationEvents} from './document-pair/operationEvents'
+import {checkoutPair, DocumentVersionEvent, Pair} from './document-pair/checkoutPair'
 import {consistencyStatus} from './document-pair/consistencyStatus'
-import type {OperationError, OperationSuccess} from './document-pair/operationEvents'
-import type {OperationsAPI} from './document-pair/operations'
+import {documentEvents} from './document-pair/documentEvents'
+import {editOperations} from './document-pair/editOperations'
+import {editState, EditStateFor} from './document-pair/editState'
+import {getOperationEvents, OperationError, OperationSuccess} from './document-pair/operationEvents'
+import {OperationsAPI} from './document-pair/operations'
+import {validation, ValidationStatus} from './document-pair/validation'
+import {listenQuery, ListenQueryOptions} from './listenQuery'
+import {resolveTypeForDocument} from './resolveTypeForDocument'
+import {IdPair} from './types'
+import {getInitialValueStream, InitialValueMsg, InitialValueOptions} from './initialValue'
+
+type QueryParams = Record<string, string | number | boolean | string[]>
 
 function getIdPairFromPublished(publishedId: string): IdPair {
   if (isDraftId(publishedId)) {
@@ -24,32 +29,76 @@ function getIdPairFromPublished(publishedId: string): IdPair {
   return {publishedId, draftId: getDraftId(publishedId)}
 }
 
-export default {
-  ...createDeprecatedAPIs(versionedClient), // Todo: can be removed in ~january 2020
-  checkoutPair: (idPair: IdPair): Pair => checkoutPair(idPair),
-  listenQuery,
-  resolveTypeForDocument,
+export interface DocumentStore {
+  checkoutPair: (idPair: IdPair) => Pair
+  initialValue: (opts: InitialValueOptions) => Observable<InitialValueMsg>
+  listenQuery: (query: string, params: QueryParams, options: ListenQueryOptions) => Observable<any>
+  resolveTypeForDocument: (id: string, specifiedType?: string) => Observable<string>
 
   pair: {
-    editState: (publishedId: string, type: string): Observable<EditStateFor> =>
-      editState(getIdPairFromPublished(publishedId), type),
-
-    editOperations: (publishedId: string, type: string): Observable<OperationsAPI> =>
-      editOperations(getIdPairFromPublished(publishedId), type),
-
-    documentEvents: (publishedId: string, type: string): Observable<DocumentVersionEvent> =>
-      documentEvents(getIdPairFromPublished(publishedId), type),
-
-    validation: (publishedId: string, type: string): Observable<ValidationStatus> =>
-      validation(getIdPairFromPublished(publishedId), type),
-
+    consistencyStatus: (publishedId: string, type: string) => Observable<boolean>
+    documentEvents: (publishedId: string, type: string) => Observable<DocumentVersionEvent>
+    editOperations: (publishedId: string, type: string) => Observable<OperationsAPI>
+    editState: (publishedId: string, type: string) => Observable<EditStateFor>
     operationEvents: (
       publishedId: string,
       type: string
-    ): Observable<OperationSuccess | OperationError> =>
-      operationEvents(getIdPairFromPublished(publishedId), type),
+    ) => Observable<OperationSuccess | OperationError>
+    validation: (publishedId: string, type: string) => Observable<ValidationStatus>
+  }
+}
 
-    consistencyStatus: (publishedId: string, type: string): Observable<boolean> =>
-      consistencyStatus(getIdPairFromPublished(publishedId), type),
-  },
+export function createDocumentStore(
+  client: SanityClient,
+  documentPreviewStore: DocumentPreviewStore,
+  historyStore: HistoryStore,
+  schema: Schema,
+  initialValueTemplates: Template[]
+): DocumentStore {
+  const versionedClient = client.withConfig({
+    apiVersion: '2021-12-01',
+  })
+
+  const ctx = {client, documentPreviewStore, historyStore, schema}
+
+  const operationEvents = getOperationEvents(ctx)
+
+  return {
+    // Todo: can be removed in ~january 2020
+    ...createDeprecatedAPIs(versionedClient),
+
+    // Public API
+    checkoutPair(idPair) {
+      return checkoutPair(versionedClient, idPair)
+    },
+    initialValue(opts) {
+      return getInitialValueStream(schema, initialValueTemplates, documentPreviewStore, opts)
+    },
+    listenQuery(query, params, options) {
+      return listenQuery(versionedClient, query, params, options)
+    },
+    resolveTypeForDocument(id, specifiedType) {
+      return resolveTypeForDocument(versionedClient, id, specifiedType)
+    },
+    pair: {
+      consistencyStatus(publishedId, type) {
+        return consistencyStatus(ctx.client, getIdPairFromPublished(publishedId), type)
+      },
+      documentEvents(publishedId, type) {
+        return documentEvents(ctx.client, getIdPairFromPublished(publishedId), type)
+      },
+      editOperations(publishedId, type) {
+        return editOperations(ctx, getIdPairFromPublished(publishedId), type)
+      },
+      editState(publishedId, type) {
+        return editState(ctx, getIdPairFromPublished(publishedId), type)
+      },
+      operationEvents(publishedId, type) {
+        return operationEvents(getIdPairFromPublished(publishedId), type)
+      },
+      validation(publishedId, type) {
+        return validation(ctx, getIdPairFromPublished(publishedId), type)
+      },
+    },
+  }
 }

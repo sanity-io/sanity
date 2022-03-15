@@ -1,7 +1,7 @@
+import {SanityClient} from '@sanity/client'
 import {defer, partition, merge, of, throwError, asyncScheduler, Observable} from 'rxjs'
 import {mergeMap, throttleTime, share, take} from 'rxjs/operators'
 import {exhaustMapToWithTrailing} from 'rxjs-exhaustmap-with-trailing'
-import {getVersionedClient} from '../../client/versionedClient'
 import {ReconnectEvent, WelcomeEvent, MutationEvent} from './types'
 
 type Params = Record<string, string | number | boolean | string[]>
@@ -11,17 +11,19 @@ export interface ListenQueryOptions {
   apiVersion?: string
 }
 
-const fetch = (query: string, params: Params, options: ListenQueryOptions) =>
+const fetch = (client: SanityClient, query: string, params: Params, options: ListenQueryOptions) =>
   defer(() =>
-    getVersionedClient(options.apiVersion).observable.fetch(query, params, {
+    // getVersionedClient(options.apiVersion)
+    client.observable.fetch(query, params, {
       tag: options.tag,
       filterResponse: true,
     })
   )
 
-const listen = (query: string, params: Params, options: ListenQueryOptions) =>
+const listen = (client: SanityClient, query: string, params: Params, options: ListenQueryOptions) =>
   defer(() =>
-    getVersionedClient(options.apiVersion).listen(query, params, {
+    // getVersionedClient(options.apiVersion)
+    client.listen(query, params, {
       events: ['welcome', 'mutation', 'reconnect'],
       includeResult: false,
       visibility: 'query',
@@ -38,13 +40,14 @@ function isWelcomeEvent(
 // todo: promote as building block for better re-use
 // todo: optimize by patching collection in-place
 export const listenQuery = (
+  client: SanityClient,
   query: string,
   params: Params = {},
   options: ListenQueryOptions = {}
 ) => {
-  const fetchOnce$ = fetch(query, params, options)
+  const fetchOnce$ = fetch(client, query, params, options)
 
-  const events$ = listen(query, params, options).pipe(
+  const events$ = listen(client, query, params, options).pipe(
     mergeMap((ev, i) => {
       const isFirst = i === 0
       if (isFirst && !isWelcomeEvent(ev)) {

@@ -10,7 +10,7 @@ import {
   ValidationMarker,
 } from '@sanity/types'
 import {Box, Flex, Placement, Stack, Text, Tooltip} from '@sanity/ui'
-import React from 'react'
+import React, {useMemo} from 'react'
 import {markersToValidationList} from './helpers'
 import {FormFieldValidation} from './types'
 
@@ -58,19 +58,19 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
   const hasWarnings = warnings.length > 0
   const hasInfo = info.length > 0
 
-  const statusIcon = () => {
+  const statusIcon = useMemo(() => {
     if (hasErrors) return VALIDATION_ICONS.error
     if (hasWarnings) return VALIDATION_ICONS.warning
     if (hasInfo) return VALIDATION_ICONS.info
-    return null
-  }
+    return undefined
+  }, [hasErrors, hasInfo, hasWarnings])
 
-  const statusColor = () => {
+  const statusColor = useMemo(() => {
     if (hasErrors) return VALIDATION_COLORS.error
     if (hasWarnings) return VALIDATION_COLORS.warning
     if (hasInfo) return VALIDATION_COLORS.info
-    return null
-  }
+    return undefined
+  }, [hasErrors, hasInfo, hasWarnings])
 
   return (
     <Tooltip
@@ -93,8 +93,8 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
       fallbackPlacements={['bottom', 'right', 'left']}
     >
       <div>
-        <Text muted size={fontSize} weight="semibold" style={{color: statusColor()}}>
-          {statusIcon()}
+        <Text muted size={fontSize} weight="semibold" style={{color: statusColor}}>
+          {statusIcon}
         </Text>
       </div>
     </Tooltip>
@@ -104,25 +104,25 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
 function FormFieldValidationStatusItem(props: {item: FormFieldValidation}) {
   const {item} = props
 
-  const statusIcon = () => {
+  const statusIcon = useMemo(() => {
     if (item.type === 'error') return VALIDATION_ICONS.error
     if (item.type === 'warning') return VALIDATION_ICONS.warning
     if (item.type === 'info') return VALIDATION_ICONS.info
-    return null
-  }
+    return undefined
+  }, [item])
 
-  const statusColor = () => {
+  const statusColor = useMemo(() => {
     if (item.type === 'error') return VALIDATION_COLORS.error
     if (item.type === 'warning') return VALIDATION_COLORS.warning
     if (item.type === 'info') return VALIDATION_COLORS.info
-    return null
-  }
+    return undefined
+  }, [item])
 
   return (
     <Flex>
       <Box marginRight={2}>
-        <Text size={1} style={{color: statusColor()}}>
-          {statusIcon()}
+        <Text size={1} style={{color: statusColor}}>
+          {statusIcon}
         </Text>
       </Box>
       <Box flex={1}>

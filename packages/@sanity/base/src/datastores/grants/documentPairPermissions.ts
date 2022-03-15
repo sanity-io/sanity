@@ -1,26 +1,24 @@
-/* eslint-disable max-nested-callbacks */
-import {SanityDocument, SchemaType} from '@sanity/types'
-import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
+import {SanityClient} from '@sanity/client'
+import {SanityDocument, Schema, SchemaType} from '@sanity/types'
 import {Observable, combineLatest, of} from 'rxjs'
 import {switchMap, map} from 'rxjs/operators'
 import {createHookFromObservableFactory} from '../../util/createHookFromObservableFactory'
 import {snapshotPair} from '../document/document-pair/snapshotPair'
-import {PermissionCheckResult} from './types'
-import grantsStore from './grantsStore'
+import {getDraftId, getPublishedId} from '../../util/draftUtils'
+import {GrantsStore, PermissionCheckResult} from './types'
 
-const {checkDocumentPermission} = grantsStore
-
-function getSchemaType(typeName: string): SchemaType {
-  const schemaMod = require('part:@sanity/base/schema')
-  const schema = schemaMod.default || schemaMod
+function getSchemaType(schema: Schema, typeName: string): SchemaType {
   const type = schema.get(typeName)
+
   if (!type) {
     throw new Error(`No such schema type: ${typeName}`)
   }
+
   return type
 }
 
 interface PairPermissionsOptions {
+  grantsStore: GrantsStore
   permission: DocumentPermission
   draft: SanityDocument | null
   published: SanityDocument | null
@@ -28,11 +26,12 @@ interface PairPermissionsOptions {
 }
 
 function getPairPermissions({
+  grantsStore,
   permission,
   draft,
   published,
   liveEdit,
-}: PairPermissionsOptions): Array<[string, Observable<PermissionCheckResult>]> {
+}: PairPermissionsOptions): Array<[string, Observable<PermissionCheckResult>] | null> {
   // this was introduced because we ran into a bug where a user with publish
   // access was marked as not allowed to duplicate a document unless it had a
   // draft variant. this would happen in non-live edit cases where the document
@@ -42,6 +41,8 @@ function getPairPermissions({
   // be considered separately/explicitly in the permissions.
   const effectiveVersion = draft || published
   const effectiveVersionType = effectiveVersion === draft ? 'draft' : 'published'
+
+  const {checkDocumentPermission} = grantsStore
 
   switch (permission) {
     case 'delete': {
@@ -159,11 +160,12 @@ export interface DocumentPermissionsOptions {
  *
  * @see useDocumentPairPermissions
  */
-function getDocumentPairPermissions({
-  id,
-  type,
-  permission,
-}: DocumentPermissionsOptions): Observable<PermissionCheckResult> {
+function getDocumentPairPermissions(
+  client: SanityClient,
+  schema: Schema,
+  grantsStore: GrantsStore,
+  {id, type, permission}: DocumentPermissionsOptions
+): Observable<PermissionCheckResult> {
   // this case was added to fix a crash that would occur if the `schemaType` was
   // omitted from `S.documentList()`
   //
@@ -173,9 +175,13 @@ function getDocumentPairPermissions({
     return of({granted: false, reason: 'Type specified was `*`'})
   }
 
-  const liveEdit = Boolean(getSchemaType(type).liveEdit)
+  const liveEdit = Boolean(getSchemaType(schema, type).liveEdit)
 
-  return snapshotPair({draftId: getDraftId(id), publishedId: getPublishedId(id)}, type).pipe(
+  return snapshotPair(
+    client,
+    {draftId: getDraftId(id), publishedId: getPublishedId(id)},
+    type
+  ).pipe(
     switchMap((pair) =>
       combineLatest([pair.draft.snapshots$, pair.published.snapshots$]).pipe(
         map(([draft, published]) => ({draft, published}))
@@ -183,13 +189,14 @@ function getDocumentPairPermissions({
     ),
     switchMap(({draft, published}) => {
       const pairPermissions = getPairPermissions({
+        grantsStore,
         permission,
         draft,
         published,
         liveEdit,
-      }).map(([label, observable]) =>
+      }).map(([label, observable]: any) =>
         observable.pipe(
-          map(({granted, reason}) => ({
+          map(({granted, reason}: any) => ({
             granted,
             reason: granted ? '' : `not allowed to ${label}: ${reason}`,
             label,
@@ -201,7 +208,7 @@ function getDocumentPairPermissions({
       if (!pairPermissions.length) return of({granted: true, reason: ''})
 
       return combineLatest(pairPermissions).pipe(
-        map((permissionResults) => {
+        map((permissionResults: any[]) => {
           const granted = permissionResults.every((permissionResult) => permissionResult.granted)
           const reason = granted
             ? ''

@@ -12,8 +12,8 @@ import {
   tap,
 } from 'rxjs/operators'
 import {concat, of, Observable} from 'rxjs'
-import {observeForPreview} from '../'
 import type {Previewable, SortOrdering} from '../types'
+import {ObserveForPreviewFn} from '../documentPreviewStore'
 
 function isNonNullable<T>(value: T): value is NonNullable<T> {
   return value !== null && value !== undefined
@@ -42,6 +42,7 @@ type OuterProps = {
   type: SchemaType
   children: (props: any) => React.ReactElement
   ordering?: SortOrdering
+  observeForPreview: ObserveForPreviewFn
 }
 const connect = (props$: Observable<OuterProps>): Observable<ReceivedProps> => {
   const sharedProps$ = props$.pipe(publishReplay(1), refCount())
@@ -58,18 +59,20 @@ const connect = (props$: Observable<OuterProps>): Observable<ReceivedProps> => {
           snapshot: null,
           children: props.children,
         }),
-        observeForPreview(
-          props.value,
-          props.type,
-          props.ordering ? {ordering: props.ordering} : {}
-        ).pipe(
-          map((result) => ({
-            isLoading: false,
-            type: props.type,
-            snapshot: result.snapshot,
-            children: props.children,
-          }))
-        )
+        props
+          .observeForPreview(
+            props.value,
+            props.type,
+            props.ordering ? {ordering: props.ordering} : {}
+          )
+          .pipe(
+            map((result) => ({
+              isLoading: false,
+              type: props.type,
+              snapshot: result.snapshot,
+              children: props.children,
+            }))
+          )
       )
     ),
     memoizeBy(isActive$)
@@ -77,20 +80,21 @@ const connect = (props$: Observable<OuterProps>): Observable<ReceivedProps> => {
 }
 
 type ReceivedProps = {
-  snapshot: PreviewValue | null
+  snapshot: PreviewValue | null | undefined
   type: SchemaType
   isLoading: boolean
   error?: Error
   children: (props: any) => React.ReactElement
 }
-export default withPropsStream<OuterProps, ReceivedProps>(connect, function ObserveForPreview(
-  props: ReceivedProps
-) {
-  const {type, error, snapshot, isLoading, children} = props
+export default withPropsStream<OuterProps, ReceivedProps>(
+  connect,
+  function ObserveForPreview(props: ReceivedProps) {
+    const {type, error, snapshot, isLoading, children} = props
 
-  return children({
-    error,
-    isLoading,
-    result: {type, snapshot},
-  })
-})
+    return children({
+      error,
+      isLoading,
+      result: {type, snapshot},
+    })
+  }
+)

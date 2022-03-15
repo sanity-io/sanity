@@ -1,44 +1,21 @@
-import type {StructureBuilder} from '@sanity/structure'
-import type {TemplateBuilder} from '@sanity/initial-value-templates'
+import T, {prepareTemplates} from '@sanity/initial-value-templates'
+import {createStructureBuilder} from '@sanity/structure'
+import {createSchema} from '../schema'
+import {getNewDocumentOptions} from './getNewDocumentOptions'
 
-interface GetResultOptions {
-  schema: unknown
-  newDocumentStructure: (structureBuilder: typeof StructureBuilder) => unknown
-  initialValueTemplates: (templateBuilder: typeof TemplateBuilder) => unknown
-}
-
-beforeEach(() => {
-  jest.resetAllMocks()
-  jest.resetModules()
-})
-
-function getResult({schema, newDocumentStructure, initialValueTemplates}: GetResultOptions) {
-  jest.mock('part:@sanity/base/schema', () => {
-    const createSchema = jest.requireActual('part:@sanity/base/schema-creator')
-    return createSchema({types: schema})
-  })
-
-  jest.mock('part:@sanity/base/initial-value-templates?', () => {
-    const {TemplateBuilder: T} = require('@sanity/initial-value-templates')
-    return initialValueTemplates(T)
-  })
-
-  jest.mock('part:@sanity/base/new-document-structure?', () => {
-    const {StructureBuilder: S} = require('@sanity/structure')
-    return newDocumentStructure(S)
-  })
-
-  const {
-    getNewDocumentOptions,
-  } = require('./getNewDocumentOptions') as typeof import('./getNewDocumentOptions')
-
-  return getNewDocumentOptions()
-}
+const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
 
 describe('getNewDocumentOptions', () => {
-  it('creates an array of new document options from the `new-document-structure` part', () => {
-    const newDocumentOptions = getResult({
-      schema: [
+  beforeEach(() => {
+    consoleErrorSpy.mockClear()
+  })
+
+  // @todo For some reason, testing only work when running 1 test at a time
+
+  it.only('creates an array of new document options from the `new-document-structure` part', () => {
+    const schema = createSchema({
+      name: 'test',
+      types: [
         {
           name: 'book',
           type: 'document',
@@ -53,22 +30,31 @@ describe('getNewDocumentOptions', () => {
           ],
         },
       ],
-
-      initialValueTemplates: (T) => [
-        ...T.defaults(),
-
-        T.template({
-          id: 'author-developer',
-          title: 'Developer',
-          schemaType: 'author',
-          value: {
-            role: 'developer',
-          },
-        }),
-      ],
-
-      newDocumentStructure: (S) => [S.initialValueTemplateItem('author-developer')],
     })
+
+    const initialValueTemplates = prepareTemplates(schema, [
+      ...T.defaults(schema),
+
+      T.template({
+        id: 'author-developer',
+        title: 'Developer',
+        schemaType: 'author',
+        value: {
+          role: 'developer',
+        },
+      }),
+    ])
+
+    const S = createStructureBuilder({initialValueTemplates, schema} as any)
+
+    const newDocumentStructure = [S.initialValueTemplateItem('author-developer')]
+
+    const newDocumentOptions = getNewDocumentOptions(
+      S,
+      schema,
+      initialValueTemplates,
+      newDocumentStructure
+    )
 
     expect(newDocumentOptions).toMatchObject([
       {
@@ -90,12 +76,9 @@ describe('getNewDocumentOptions', () => {
   })
 
   it('throws if the structure does not return an array', () => {
-    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {
-      // intentionally blank
-    })
-
-    getResult({
-      schema: [
+    const schema = createSchema({
+      name: 'test',
+      types: [
         {
           name: 'book',
           type: 'document',
@@ -110,14 +93,15 @@ describe('getNewDocumentOptions', () => {
           ],
         },
       ],
-
-      initialValueTemplates: (T) => T.defaults(),
-
-      // not an array
-      newDocumentStructure: (S) => S.initialValueTemplateItem('author-developer'),
     })
 
-    expect(consoleError.mock.calls).toEqual([
+    const initialValueTemplates = prepareTemplates(schema, T.defaults(schema))
+    const S = createStructureBuilder({initialValueTemplates, schema} as any)
+    const newDocumentStructure = S.initialValueTemplateItem('author-developer')
+
+    getNewDocumentOptions(S, schema, initialValueTemplates, newDocumentStructure)
+
+    expect(consoleErrorSpy.mock.calls).toEqual([
       [
         'Invalid "new document" configuration: Invalid "new document" configuration: "part:@sanity/base/new-document-structure" should return an array of items.. Falling back to default structure.',
       ],
@@ -125,12 +109,9 @@ describe('getNewDocumentOptions', () => {
   })
 
   it('throws if the template item is not an object', () => {
-    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {
-      // intentionally blank
-    })
-
-    getResult({
-      schema: [
+    const schema = createSchema({
+      name: 'test',
+      types: [
         {
           name: 'book',
           type: 'document',
@@ -145,13 +126,15 @@ describe('getNewDocumentOptions', () => {
           ],
         },
       ],
-
-      initialValueTemplates: (T) => T.defaults(),
-
-      newDocumentStructure: () => ['not an object'],
     })
 
-    expect(consoleError.mock.calls).toEqual([
+    const initialValueTemplates = prepareTemplates(schema, T.defaults(schema))
+    const S = createStructureBuilder({initialValueTemplates, schema} as any)
+    const newDocumentStructure = ['not an object']
+
+    getNewDocumentOptions(S, schema, initialValueTemplates, newDocumentStructure)
+
+    expect(consoleErrorSpy.mock.calls).toEqual([
       [
         'Invalid "new document" configuration: Expected template item at index 0 to be an object but got string. Falling back to default structure.',
       ],
@@ -159,12 +142,9 @@ describe('getNewDocumentOptions', () => {
   })
 
   it("throws if the type is not 'initialValueTemplateItem'", () => {
-    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {
-      // intentionally blank
-    })
-
-    getResult({
-      schema: [
+    const schema = createSchema({
+      name: 'test',
+      types: [
         {
           name: 'book',
           type: 'document',
@@ -179,13 +159,15 @@ describe('getNewDocumentOptions', () => {
           ],
         },
       ],
-
-      initialValueTemplates: (T) => T.defaults(),
-
-      newDocumentStructure: () => [{type: 'not-the-right-type'}],
     })
 
-    expect(consoleError.mock.calls).toEqual([
+    const initialValueTemplates = prepareTemplates(schema, T.defaults(schema))
+    const S = createStructureBuilder({initialValueTemplates, schema} as any)
+    const newDocumentStructure = [{type: 'not-the-right-type'}]
+
+    getNewDocumentOptions(S, schema, initialValueTemplates, newDocumentStructure)
+
+    expect(consoleErrorSpy.mock.calls).toEqual([
       [
         'Invalid "new document" configuration: Only initial value template items are currently allowed in the new document structure. Item at index 0 is invalid. Falling back to default structure.',
       ],
@@ -193,12 +175,9 @@ describe('getNewDocumentOptions', () => {
   })
 
   it('throws if the there are two items with the same ID', () => {
-    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {
-      // intentionally blank
-    })
-
-    getResult({
-      schema: [
+    const schema = createSchema({
+      name: 'test',
+      types: [
         {
           name: 'book',
           type: 'document',
@@ -213,17 +192,19 @@ describe('getNewDocumentOptions', () => {
           ],
         },
       ],
-
-      initialValueTemplates: (T) => T.defaults(),
-
-      newDocumentStructure: (S) => [
-        S.initialValueTemplateItem('author'),
-        S.initialValueTemplateItem('book'),
-        S.initialValueTemplateItem('author'),
-      ],
     })
 
-    expect(consoleError.mock.calls).toEqual([
+    const initialValueTemplates = prepareTemplates(schema, T.defaults(schema))
+    const S = createStructureBuilder({initialValueTemplates, schema} as any)
+    const newDocumentStructure = [
+      S.initialValueTemplateItem('author'),
+      S.initialValueTemplateItem('book'),
+      S.initialValueTemplateItem('author'),
+    ]
+
+    getNewDocumentOptions(S, schema, initialValueTemplates, newDocumentStructure)
+
+    expect(consoleErrorSpy.mock.calls).toEqual([
       [
         'Invalid "new document" configuration: Template item at index 2 has the same ID ("author") as template at index 0. Falling back to default structure.',
       ],
@@ -231,12 +212,9 @@ describe('getNewDocumentOptions', () => {
   })
 
   it("throws if there isn't a matching template for an item", () => {
-    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {
-      // intentionally blank
-    })
-
-    getResult({
-      schema: [
+    const schema = createSchema({
+      name: 'test',
+      types: [
         {
           name: 'book',
           type: 'document',
@@ -251,13 +229,15 @@ describe('getNewDocumentOptions', () => {
           ],
         },
       ],
-
-      initialValueTemplates: (T) => T.defaults(),
-
-      newDocumentStructure: (S) => [S.initialValueTemplateItem('no-matching-template')],
     })
 
-    expect(consoleError.mock.calls).toEqual([
+    const initialValueTemplates = prepareTemplates(schema, T.defaults(schema))
+    const S = createStructureBuilder({initialValueTemplates, schema} as any)
+    const newDocumentStructure = [S.initialValueTemplateItem('no-matching-template')]
+
+    getNewDocumentOptions(S, schema, initialValueTemplates, newDocumentStructure)
+
+    expect(consoleErrorSpy.mock.calls).toEqual([
       [
         'Invalid "new document" configuration: Template "no-matching-template" not declared. Falling back to default structure.',
       ],
@@ -265,12 +245,9 @@ describe('getNewDocumentOptions', () => {
   })
 
   it("throws if there isn't a matching schema type for an item", () => {
-    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {
-      // intentionally blank
-    })
-
-    getResult({
-      schema: [
+    const schema = createSchema({
+      name: 'test',
+      types: [
         {
           name: 'book',
           type: 'document',
@@ -285,20 +262,23 @@ describe('getNewDocumentOptions', () => {
           ],
         },
       ],
-
-      initialValueTemplates: (T) => [
-        T.template({
-          id: 'has-no-schema-type',
-          schemaType: "doesn't match nothing",
-          title: 'Has no schema type',
-          value: {},
-        }),
-      ],
-
-      newDocumentStructure: (S) => [S.initialValueTemplateItem('has-no-schema-type')],
     })
 
-    expect(consoleError.mock.calls).toEqual([
+    const initialValueTemplates = prepareTemplates(schema, [
+      T.template({
+        id: 'has-no-schema-type',
+        schemaType: "doesn't match nothing",
+        title: 'Has no schema type',
+        value: {},
+      }),
+    ])
+
+    const S = createStructureBuilder({initialValueTemplates, schema} as any)
+    const newDocumentStructure = [S.initialValueTemplateItem('has-no-schema-type')]
+
+    getNewDocumentOptions(S, schema, initialValueTemplates, newDocumentStructure)
+
+    expect(consoleErrorSpy.mock.calls).toEqual([
       [
         'Invalid "new document" configuration: Schema type "doesn\'t match nothing" not declared. Falling back to default structure.',
       ],
@@ -306,12 +286,9 @@ describe('getNewDocumentOptions', () => {
   })
 
   it('excludes items where the schema type run through `isActionEnabled` returns false', () => {
-    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {
-      // intentionally blank
-    })
-
-    getResult({
-      schema: [
+    const schema = createSchema({
+      name: 'test',
+      types: [
         {
           name: 'book',
           type: 'document',
@@ -328,13 +305,16 @@ describe('getNewDocumentOptions', () => {
           ],
         },
       ],
-
-      initialValueTemplates: (T) => T.defaults(),
-
-      newDocumentStructure: (S) => [S.initialValueTemplateItem('book')],
     })
 
-    expect(consoleError.mock.calls).toEqual([
+    const initialValueTemplates = prepareTemplates(schema, T.defaults(schema))
+
+    const S = createStructureBuilder({initialValueTemplates, schema} as any)
+    const newDocumentStructure = [S.initialValueTemplateItem('book')]
+
+    getNewDocumentOptions(S, schema, initialValueTemplates, newDocumentStructure)
+
+    expect(consoleErrorSpy.mock.calls).toEqual([
       [
         'Template with ID "book" has schema type "book", where the "create" action is disabled and will not be included in the "new document"-dialog.',
       ],
@@ -342,12 +322,9 @@ describe('getNewDocumentOptions', () => {
   })
 
   it("excludes items where the template specifies parameters but the item doesn't include any", () => {
-    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {
-      // intentionally blank
-    })
-
-    getResult({
-      schema: [
+    const schema = createSchema({
+      name: 'test',
+      types: [
         {
           name: 'book',
           type: 'document',
@@ -362,22 +339,25 @@ describe('getNewDocumentOptions', () => {
           ],
         },
       ],
-
-      initialValueTemplates: (T) => [
-        ...T.defaults(),
-        T.template({
-          id: 'with-parameters',
-          schemaType: 'book',
-          title: 'Book with params',
-          value: {},
-          parameters: [{name: 'authorId', type: 'string'}],
-        }),
-      ],
-
-      newDocumentStructure: (S) => [S.initialValueTemplateItem('with-parameters')],
     })
 
-    expect(consoleError.mock.calls).toEqual([
+    const initialValueTemplates = prepareTemplates(schema, [
+      ...T.defaults(schema),
+      T.template({
+        id: 'with-parameters',
+        schemaType: 'book',
+        title: 'Book with params',
+        value: {},
+        parameters: [{name: 'authorId', type: 'string'}],
+      }),
+    ])
+
+    const S = createStructureBuilder({initialValueTemplates, schema} as any)
+    const newDocumentStructure = [S.initialValueTemplateItem('with-parameters')]
+
+    getNewDocumentOptions(S, schema, initialValueTemplates, newDocumentStructure)
+
+    expect(consoleErrorSpy.mock.calls).toEqual([
       [
         'Template with ID "with-parameters" requires a set of parameters, but none were given. Skipping.',
       ],

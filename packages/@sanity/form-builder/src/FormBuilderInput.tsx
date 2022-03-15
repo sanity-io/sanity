@@ -8,7 +8,7 @@ import {
   Path,
   SchemaType,
 } from '@sanity/types'
-import {ChangeIndicatorProvider} from '@sanity/base/change-indicators'
+import {ChangeIndicatorProvider} from '@sanity/base/components'
 import * as PathUtils from '@sanity/util/paths'
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/presence'

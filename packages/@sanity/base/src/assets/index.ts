@@ -1,3 +1,1 @@
-import assetUrlBuilder from './asset-url-builder'
-
-export {assetUrlBuilder}
+export * from './asset-url-builder'

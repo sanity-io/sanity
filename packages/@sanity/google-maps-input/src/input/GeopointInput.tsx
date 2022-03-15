@@ -7,10 +7,13 @@ import {Box, Grid, Button, Dialog} from '@sanity/ui'
 import {TrashIcon, EditIcon} from '@sanity/icons'
 import {Path, Marker} from '@sanity/types'
 import config from 'config:@sanity/google-maps-input'
-import {FormFieldSet} from '@sanity/base/components'
+import {
+  FormFieldSet,
+  ChangeIndicatorCompareValueProvider,
+  ChangeIndicator,
+} from '@sanity/base/components'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {PatchEvent, set, setIfMissing, unset} from 'part:@sanity/form-builder/patch-event'
-import {ChangeIndicatorCompareValueProvider, ChangeIndicator} from '@sanity/base/change-indicators'
 import {GoogleMapsLoadProxy} from '../loader/GoogleMapsLoadProxy'
 import {Geopoint, GeopointSchemaType} from '../types'
 import {GeopointSelect} from './GeopointSelect'

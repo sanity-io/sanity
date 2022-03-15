@@ -1,3 +1,6 @@
+import {SanityDocument} from '@sanity/types'
+import {isNonNullable} from './isNonNullable'
+
 // nominal/opaque type hack
 type Opaque<T, K> = T & {__opaqueId__: K}
 
@@ -7,7 +10,7 @@ export type PublishedId = Opaque<string, 'publishedId'>
 export const DRAFTS_FOLDER = 'drafts'
 const DRAFTS_PREFIX = `${DRAFTS_FOLDER}.`
 
-export function isDraft(document) {
+export function isDraft(document: SanityDocument): boolean {
   return isDraftId(document._id)
 }
 
@@ -22,7 +25,7 @@ export function getIdPair(id: string): {draftId: DraftId; publishedId: Published
   }
 }
 
-export function isPublishedId(id): id is PublishedId {
+export function isPublishedId(id: string): id is PublishedId {
   return !isDraftId(id)
 }
 
@@ -34,24 +37,24 @@ export function getPublishedId(id: string): PublishedId {
   return (isDraftId(id) ? id.slice(DRAFTS_PREFIX.length) : id) as PublishedId
 }
 
-export function createDraftFrom(document) {
+export function createDraftFrom(document: SanityDocument): SanityDocument {
   return {
+    ...document,
     _id: getDraftId(document._id),
-    ...document,
   }
 }
 
-export function newDraftFrom(document) {
+export function newDraftFrom(document: SanityDocument): SanityDocument {
   return {
+    ...document,
     _id: DRAFTS_PREFIX,
-    ...document,
   }
 }
 
-export function createPublishedFrom(document) {
+export function createPublishedFrom(document: SanityDocument): SanityDocument {
   return {
-    _id: getPublishedId(document._id),
     ...document,
+    _id: getPublishedId(document._id),
   }
 }
 
@@ -85,6 +88,8 @@ export function collate<T extends {_id: string; _type: string}>(documents: T[]):
 }
 
 // Removes published documents that also has a draft
-export function removeDupes(documents) {
-  return collate(documents).map((entry) => entry.draft || entry.published)
+export function removeDupes(documents: SanityDocument[]): SanityDocument[] {
+  return collate(documents)
+    .map((entry) => entry.draft || entry.published)
+    .filter(isNonNullable)
 }

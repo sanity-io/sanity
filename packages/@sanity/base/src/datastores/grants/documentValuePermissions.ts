@@ -1,14 +1,12 @@
 import {Observable} from 'rxjs'
 import {createHookFromObservableFactory} from '../../util/createHookFromObservableFactory'
-import {DocumentValuePermission, PermissionCheckResult} from './types'
-import grantsStore from './grantsStore'
+import {DocumentValuePermission, GrantsStore, PermissionCheckResult} from './types'
 
 export interface DocumentValuePermissionsOptions {
+  grantsStore: GrantsStore
   document: Record<string, unknown>
   permission: DocumentValuePermission
 }
-
-const {checkDocumentPermission} = grantsStore
 
 /**
  * The observable version of `useDocumentValuePermissions`
@@ -16,9 +14,12 @@ const {checkDocumentPermission} = grantsStore
  * @see useDocumentValuePermissions
  */
 function getDocumentValuePermissions({
+  grantsStore,
   document,
   permission,
 }: DocumentValuePermissionsOptions): Observable<PermissionCheckResult> {
+  const {checkDocumentPermission} = grantsStore
+
   return checkDocumentPermission(permission, document)
 }
 

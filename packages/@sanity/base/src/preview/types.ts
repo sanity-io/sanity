@@ -1,17 +1,18 @@
-import {PreviewConfig, Reference, SchemaType} from '@sanity/types'
+import {PreviewConfig, PreviewValue, SanityDocument, SchemaType} from '@sanity/types'
+import {Observable} from 'rxjs'
 
 export type {SortOrdering, PrepareViewOptions} from '@sanity/types'
 
 export type Id = string
 
-export type {Reference}
+export type Reference = {_ref: string}
 export type Document = {_id: string; [key: string]: unknown}
 
-export type Previewable = Document | Record<string, unknown> | Reference | Id
+export type Previewable = Document | Reference
 
 // @todo: unify with content path from @sanity/types
 export type Path = FieldName[]
-export type Selection = [Id, Path[]]
+export type Selection = [Id, FieldName[]]
 export type FieldName = string
 
 export interface AvailabilityResponse {
@@ -75,4 +76,17 @@ export interface DocumentPreview {
   _updatedAt?: string
   _createdAt?: string
   _rev?: string
+}
+
+export interface PreparedSnapshot {
+  type?: PreviewableType
+  snapshot: undefined | PreviewValue
+}
+
+export type ObserveDocumentTypeFromIdFn = (id: string) => Observable<string | undefined>
+
+export interface ObservePathsFn {
+  (value: Previewable | Id, paths: (string | Path)[], apiConfig?: ApiConfig): Observable<
+    Partial<SanityDocument> | Reference | string | null
+  >
 }

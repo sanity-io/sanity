@@ -3,7 +3,12 @@
 import React, {ReactNode} from 'react'
 import {Observable, Subscription} from 'rxjs'
 import {get, partition, uniqueId} from 'lodash'
-import {FormFieldSet, ImperativeToast} from '@sanity/base/components'
+import {
+  FormFieldSet,
+  ImperativeToast,
+  ChangeIndicatorCompareValueProvider,
+  ChangeIndicatorWithProvidedFullPath,
+} from '@sanity/base/components'
 import {
   AssetFromSource,
   File as BaseFile,
@@ -13,10 +18,6 @@ import {
   Path,
   SchemaType,
 } from '@sanity/types'
-import {
-  ChangeIndicatorCompareValueProvider,
-  ChangeIndicatorWithProvidedFullPath,
-} from '@sanity/base/change-indicators'
 import {ImageIcon, SearchIcon} from '@sanity/icons'
 import {Box, Button, Card, Dialog, Menu, MenuButton, MenuItem, ToastParams} from '@sanity/ui'
 import {PresenceOverlay, FormFieldPresence} from '@sanity/base/presence'
@@ -401,17 +402,8 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   renderField(field: Field) {
-    const {
-      value,
-      level,
-      focusPath,
-      onFocus,
-      readOnly,
-      onBlur,
-      compareValue,
-      presence,
-      markers,
-    } = this.props
+    const {value, level, focusPath, onFocus, readOnly, onBlur, compareValue, presence, markers} =
+      this.props
     const fieldValue = value?.[field.name]
     const fieldMarkers = markers.filter((marker) => marker.path[0] === field.name)
 

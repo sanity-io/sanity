@@ -1,7 +1,0 @@
-{
-  "extends": ["../../../.eslintrc.js"],
-  "rules": {
-    "complexity": "off",
-    "react/prop-types": "off"
-  }
-}

@@ -35,7 +35,7 @@ export default function TemplatePreviewStory() {
   const description = useText('Description', undefined, 'Props')
 
   const media = mediaValues[mediaKey] || false
-  const component = previewComponents[layout]
+  const component = layout && previewComponents[layout]
 
   if (!component) {
     return (

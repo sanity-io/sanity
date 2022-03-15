@@ -1,5 +1,6 @@
 export * from './FormField'
 export * from './FormFieldHeaderText'
 export * from './FormFieldSet'
+export * from './FormFieldStatus'
 export * from './FormFieldValidationStatus'
 export * from './types'

@@ -1,12 +1,12 @@
 const sanityUrlMatch = /^https?:\/\/cdn.sanity.\w+\/images\//
 
-interface BuilderOptions {
+export interface AssetURLBuilderOptions {
   width: number
   height: number
   fit: 'clip' | 'crop' | 'fill' | 'fillmax' | 'max' | 'scale' | 'min'
 }
 
-export default function assetUrlBuilder(url: string, options: BuilderOptions): string {
+export function assetUrlBuilder(url: string, options: AssetURLBuilderOptions): string {
   const {width, height, fit} = options
 
   if (!sanityUrlMatch.test(url)) {

@@ -1,6 +1,5 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
+import {SanityClient} from '@sanity/client'
+import {concat, of, combineLatest, defer, from, Observable} from 'rxjs'
 import {
   map,
   scan,
@@ -13,15 +12,13 @@ import {
   debounceTime,
   first,
 } from 'rxjs/operators'
-
-import {concat, of, combineLatest, defer, from, Observable} from 'rxjs'
-import schema from 'part:@sanity/base/schema'
 import {validateDocument} from '@sanity/validation'
-import {Marker, ValidationContext, isReference} from '@sanity/types'
+import {Marker, ValidationContext, isReference, Schema} from '@sanity/types'
 import reduceJSON from 'json-reduce'
 import {memoize} from '../utils/createMemoizer'
 import {IdPair} from '../types'
-import {observeDocumentPairAvailability} from '../../../preview/availability'
+import {HistoryStore} from '../../history'
+import {DocumentPreviewStore} from '../../../preview'
 import {editState} from './editState'
 
 export interface ValidationStatus {
@@ -46,15 +43,29 @@ function findReferenceIds(obj: any): Set<string> {
 
 type GetDocumentExists = NonNullable<ValidationContext['getDocumentExists']>
 
-const listenDocumentExists = (id: string): Observable<boolean> =>
-  observeDocumentPairAvailability(id).pipe(map(({published}) => published.available))
-
-const getDocumentExists: GetDocumentExists = ({id}) =>
-  listenDocumentExists(id).pipe(first()).toPromise()
+const listenDocumentExists = (
+  previewStore: DocumentPreviewStore,
+  id: string
+): Observable<boolean> =>
+  previewStore
+    .unstable_observeDocumentPairAvailability(id)
+    .pipe(map(({published}) => published.available))
 
 export const validation = memoize(
-  ({draftId, publishedId}: IdPair, typeName: string) => {
-    const document$ = editState({draftId, publishedId}, typeName).pipe(
+  (
+    ctx: {
+      client: SanityClient
+      documentPreviewStore: DocumentPreviewStore
+      historyStore: HistoryStore
+      schema: Schema
+    },
+    {draftId, publishedId}: IdPair,
+    typeName: string
+  ) => {
+    const getDocumentExists: GetDocumentExists = ({id}) =>
+      listenDocumentExists(ctx.documentPreviewStore, id).pipe(first()).toPromise()
+
+    const document$ = editState(ctx, {draftId, publishedId}, typeName).pipe(
       map(({draft, published}) => draft || published),
       // this debounce is needed for performance. it prevents the validation
       // from being run on every keypress
@@ -77,7 +88,7 @@ export const validation = memoize(
       switchMap((idSet) =>
         from(idSet).pipe(
           mergeMap((id) =>
-            listenDocumentExists(id).pipe(
+            listenDocumentExists(ctx.documentPreviewStore, id).pipe(
               map(
                 // eslint-disable-next-line max-nested-callbacks
                 (result) => [id, result] as const
@@ -136,7 +147,9 @@ export const validation = memoize(
             }
 
             // TODO: consider cancellation eventually
-            const markers = await validateDocument(document, schema, {getDocumentExists})
+            const markers = await validateDocument(ctx.client, document, ctx.schema, {
+              getDocumentExists,
+            })
 
             return {markers, isValidating: false}
           })
@@ -147,5 +160,5 @@ export const validation = memoize(
       refCount()
     )
   },
-  (idPair) => idPair.publishedId
+  (_ctx, idPair) => idPair.publishedId
 )

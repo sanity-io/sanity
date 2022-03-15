@@ -27,7 +27,7 @@ export function getPairListener(
   client: SanityClient,
   idPair: IdPair,
   options: PairListenerOptions = {}
-) {
+): Observable<ListenerEvent> {
   const {publishedId, draftId} = idPair
   return defer(
     () =>

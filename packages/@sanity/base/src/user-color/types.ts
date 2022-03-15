@@ -6,13 +6,13 @@ export type HexColor = string
 export type UserColorHue = string
 export type UserId = string
 
-export type UserColor = Readonly<{
+export interface UserColor {
   name: ColorHueKey
   background: HexColor
   border: HexColor
   text: HexColor
   tints: ColorTints
-}>
+}
 
 export interface UserColorManager {
   get: (userId: UserId | null) => UserColor

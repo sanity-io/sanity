@@ -7,7 +7,7 @@ import {
 } from '@sanity/portable-text-editor'
 import {isKeySegment, Marker, Path} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
-import {Tooltip, ResponsivePaddingProps, Flex} from '@sanity/ui'
+import {Tooltip, Flex, ResponsivePaddingProps} from '@sanity/ui'
 import React, {useCallback, useMemo, useRef, useState} from 'react'
 import {RenderBlockActions, RenderCustomMarkers} from '../types'
 import {Markers} from '../../../legacyParts'

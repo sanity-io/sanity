@@ -1,5 +1,5 @@
 import {Avatar, AvatarPosition, AvatarSize, AvatarStatus, Box, Text, Tooltip} from '@sanity/ui'
-import React, {useState} from 'react'
+import React, {forwardRef, useState} from 'react'
 import type {User} from '@sanity/types'
 import {useUserColor} from '../user-color'
 import {useUser} from '../datastores/user/hooks'
@@ -63,6 +63,7 @@ function TooltipUserAvatar(props: LoadedUserProps) {
   const {
     user: {displayName},
   } = props
+
   return (
     <Tooltip
       content={
@@ -73,14 +74,18 @@ function TooltipUserAvatar(props: LoadedUserProps) {
       placement="top"
       portal
     >
-      <div>
+      <div style={{display: 'inline-block'}}>
         <StaticUserAvatar {...props} />
       </div>
     </Tooltip>
   )
 }
 
-function StaticUserAvatar({user, animateArrowFrom, position, size, status, tone}: LoadedUserProps) {
+const StaticUserAvatar = forwardRef(function StaticUserAvatar(
+  props: LoadedUserProps,
+  ref: React.ForwardedRef<HTMLDivElement>
+) {
+  const {user, animateArrowFrom, position, size, status, tone} = props
   const [imageLoadError, setImageLoadError] = useState<null | Error>(null)
   const userColor = useUserColor(user.id)
   const imageUrl = imageLoadError ? undefined : user?.imageUrl
@@ -94,11 +99,12 @@ function StaticUserAvatar({user, animateArrowFrom, position, size, status, tone}
       initials={user?.displayName && nameToInitials(user.displayName)}
       src={imageUrl}
       onImageLoadError={setImageLoadError}
+      ref={ref}
       size={typeof size === 'string' ? LEGACY_TO_UI_AVATAR_SIZES[size] : size}
       status={status}
     />
   )
-}
+})
 
 function UserAvatarLoader({userId, ...loadedProps}: UnloadedUserProps) {
   const {isLoading, error, value} = useUser(userId)

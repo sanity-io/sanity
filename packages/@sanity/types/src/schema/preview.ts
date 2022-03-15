@@ -4,17 +4,19 @@ import type {SortOrdering} from './types'
 export interface PrepareViewOptions {
   ordering?: SortOrdering
 }
+
 export interface PreviewValue {
-  title?: string
-  subtitle?: string
-  description?: string
-  media?:
-    | string
-    | {_ref: string}
-    | {asset: {_ref: string}}
-    | {url?: string}
-    | {asset: {url: string}}
-    | ReactNode
+  title?: ReactNode
+  subtitle?: ReactNode
+  description?: ReactNode
+  media?: ReactNode
+  /**
+   * optional object used to attach meta data to the prepared result.
+   * currently used to add a flag for the invalid preview error fallback and
+   * insufficient permissions fallback
+   * @internal
+   */
+  _internalMeta?: {type?: string}
 }
 
 export interface PreviewConfig {

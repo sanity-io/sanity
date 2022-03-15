@@ -1,14 +1,26 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
+import {SanityClient} from '@sanity/client'
+import {Schema} from '@sanity/types'
 import {concat, merge, Observable, of, EMPTY} from 'rxjs'
 import {map, publishReplay, refCount, mergeMapTo} from 'rxjs/operators'
+import {HistoryStore} from '../../history'
 import {IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
-import {createOperationsAPI, GUARDED, OperationsAPI} from './operations'
 import {operationArgs} from './operationArgs'
-import {operationEvents} from './operationEvents'
+import {getOperationEvents} from './operationEvents'
+import {createOperationsAPI, GUARDED, OperationsAPI} from './operations'
 
 export const editOperations = memoize(
-  (idPair: IdPair, typeName: string): Observable<OperationsAPI> => {
+  (
+    ctx: {
+      client: SanityClient
+      historyStore: HistoryStore
+      schema: Schema
+    },
+    idPair: IdPair,
+    typeName: string
+  ): Observable<OperationsAPI> => {
+    const operationEvents = getOperationEvents(ctx)
+
     // To makes sure we connect the stream that actually performs the operations
     const operationResults$: Observable<never> = operationEvents(idPair, typeName).pipe(
       mergeMapTo(EMPTY)
@@ -16,8 +28,8 @@ export const editOperations = memoize(
 
     return concat(
       of(GUARDED),
-      merge(operationResults$, operationArgs(idPair, typeName).pipe(map(createOperationsAPI)))
+      merge(operationResults$, operationArgs(ctx, idPair, typeName).pipe(map(createOperationsAPI)))
     ).pipe(publishReplay(1), refCount())
   },
-  (idPair, typeName) => idPair.publishedId + typeName
+  (_ctx, idPair, typeName) => idPair.publishedId + typeName
 )

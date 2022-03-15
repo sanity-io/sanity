@@ -1,66 +1,60 @@
+import T, {prepareTemplates} from '@sanity/initial-value-templates'
+import {createStructureBuilder} from '@sanity/structure'
 import {first} from 'rxjs/operators'
-import S from '../../_exports/structure-builder'
+import {createMockSanityClient} from '../../../test/mocks/mockSanityClient'
+import {createAuthController} from '../../auth/authController'
+import {createSchema} from '../../schema'
+import {createUserStore} from '../user'
+import {requiresApproval} from './debug/exampleGrants'
+import {createGrantsStore} from './grantsStore'
 import {unstable_getTemplatePermissions as getTemplatePermissions} from './templatePermissions'
 
-jest.mock('part:@sanity/base/schema', () => {
-  const createSchema = jest.requireActual('part:@sanity/base/schema-creator')
-  return createSchema({
-    types: [
-      {
-        name: 'author',
-        title: 'Author',
-        type: 'document',
-        fields: [
-          {name: 'name', type: 'string'},
-          {name: 'role', type: 'string'},
-          {name: 'locked', type: 'boolean'},
-        ],
-      },
-    ],
-  })
+const schema = createSchema({
+  name: 'test',
+  types: [
+    {
+      name: 'author',
+      title: 'Author',
+      type: 'document',
+      fields: [
+        {name: 'name', type: 'string'},
+        {name: 'role', type: 'string'},
+        {name: 'locked', type: 'boolean'},
+      ],
+    },
+  ],
 })
 
-jest.mock('part:@sanity/base/initial-value-templates?', () => {
-  const {TemplateBuilder: T} = require('@sanity/initial-value-templates')
-
-  return [
-    ...T.defaults(),
-    T.template({
-      id: 'author-developer-locked',
-      title: 'Developer',
-      schemaType: 'author',
-      value: {role: 'developer', locked: true},
-    }),
-    T.template({
-      id: 'author-developer-unlocked',
-      title: 'Developer',
-      schemaType: 'author',
-      value: {role: 'developer', locked: false},
-    }),
-  ]
-})
-
-jest.mock('part:@sanity/base/client', () => {
-  const exampleGrants = require('./debug/exampleGrants')
-  const mockConfig = {
-    useCdn: false,
-    projectId: 'mock-project-id',
-    dataset: 'mock-data-set',
-    apiVersion: '1',
-  }
-
-  const mockClient = {
-    config: () => mockConfig,
-    withConfig: () => mockClient,
-    request: jest.fn(() => Promise.resolve(exampleGrants.requiresApproval)),
-  }
-
-  return mockClient
-})
+const initialValueTemplates = prepareTemplates(schema, [
+  ...T.defaults(schema),
+  T.template({
+    id: 'author-developer-locked',
+    title: 'Developer',
+    schemaType: 'author',
+    value: {role: 'developer', locked: true},
+  }),
+  T.template({
+    id: 'author-developer-unlocked',
+    title: 'Developer',
+    schemaType: 'author',
+    value: {role: 'developer', locked: false},
+  }),
+])
 
 describe('getTemplatePermissions', () => {
   it('takes in a list of `InitialValueTemplateItem`s and returns an observable of `TemplatePermissionsResult` in a record', async () => {
-    const permissions = getTemplatePermissions([
+    const client = createMockSanityClient({requests: {'/acl': requiresApproval}})
+    const authenticationFetcher = createAuthController({client: client as any})
+    const userStore = createUserStore({
+      authStore: {} as any,
+      sanityClient: client as any,
+      authenticationFetcher,
+      projectId: 'foo',
+    })
+    const grantsStore = createGrantsStore(client as any, userStore)
+    const S = createStructureBuilder({initialValueTemplates, schema} as any)
+
+    const permissions = getTemplatePermissions(grantsStore, schema, initialValueTemplates, [
       S.initialValueTemplateItem('author-developer-locked'),
       S.initialValueTemplateItem('author-developer-unlocked'),
     ])

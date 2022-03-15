@@ -1,6 +1,5 @@
-import React from 'react'
+import React, {createElement, createRef} from 'react'
 import {defer, concat, of as observableOf, Subscription} from 'rxjs'
-
 import {
   map,
   tap,
@@ -10,23 +9,32 @@ import {
   publishReplay,
   delay,
 } from 'rxjs/operators'
-import intersectionObservableFor from '../streams/intersectionObservableFor'
-import visibilityChange$ from '../streams/visibilityChange'
-
-const isVisible$ = visibilityChange$.pipe(map((event: Event) => !(event.target as any).hidden))
+import {intersectionObservableFor} from '../streams/intersectionObservableFor'
+import {visibilityChange$} from '../streams/visibilityChange'
 
 const STYLE = {
   minHeight: 1,
-  minWidth: 1, // A stream of booleans to signal whether preview component should keep
-  // subscriptions active or not
+  minWidth: 1,
 }
 
+const isVisible$ = visibilityChange$.pipe(map((event: Event) => !(event.target as any).hidden))
+
+// A stream of booleans to signal whether preview component should keep
+// subscriptions active or not
 const documentVisibility$ = concat(
   defer(() => observableOf(!document.hidden)),
   isVisible$
 ).pipe(distinctUntilChanged(), publishReplay(1), refCount())
 
-type Props = {
+// type Props = {
+//   // How long to wait before signalling hide
+//   hideDelay: number
+//   element?: string
+//   style?: React.CSSProperties
+//   children: (isVisible: boolean) => React.ReactNode
+// }
+
+export interface WithVisibilityProps {
   // How long to wait before signalling hide
   hideDelay: number
   element?: string
@@ -34,23 +42,30 @@ type Props = {
   children: (isVisible: boolean) => React.ReactNode
 }
 
-type State = {
+export interface WithVisibilityState {
   isVisible: boolean
 }
 
-export default class WithVisibility extends React.Component<Props, State> {
-  element: React.RefObject<HTMLElement> = React.createRef()
+// type State = {
+//   isVisible: boolean
+// }
+
+export class WithVisibility extends React.Component<WithVisibilityProps, WithVisibilityState> {
+  element: React.RefObject<HTMLElement> = createRef()
   subscription: Subscription | null = null
-  state: State = {isVisible: false}
+  state: WithVisibilityState = {isVisible: false}
 
   componentDidMount() {
     const {hideDelay = 0} = this.props
+
     if (!this.element.current) {
       return
     }
+
     const inViewport$ = intersectionObservableFor(this.element.current).pipe(
       map((event) => event.isIntersecting)
     )
+
     this.subscription = documentVisibility$
       .pipe(
         switchMap((isVisible) => (isVisible ? inViewport$ : observableOf(false))),
@@ -74,8 +89,15 @@ export default class WithVisibility extends React.Component<Props, State> {
 
   render() {
     const {isVisible} = this.state
-    const {children, style = {}, element = 'span', hideDelay, ...rest} = this.props
-    return React.createElement(
+    const {
+      children,
+      style = {},
+      element = 'span',
+      hideDelay, // omit
+      ...rest
+    } = this.props
+
+    return createElement(
       element,
       {
         ref: this.element,

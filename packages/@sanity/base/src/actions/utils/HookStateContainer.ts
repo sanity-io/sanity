@@ -1,19 +1,21 @@
-import React from 'react'
+import React, {memo, useEffect, useRef} from 'react'
 import shallowEquals from 'shallow-equals'
 
-function useShallowCompareMemoize(value) {
-  const ref = React.useRef()
+function useShallowCompareMemoize<T>(value: T): Array<T | undefined> {
+  const ref = useRef<T | undefined>(undefined)
+
   if (!shallowEquals(value, ref.current)) {
     ref.current = value
   }
+
   return [ref.current]
 }
 
-function useShallowCompareEffect(callback, dependencies) {
-  React.useEffect(callback, useShallowCompareMemoize(dependencies))
+function useShallowCompareEffect(callback: React.EffectCallback, dependencies: any) {
+  useEffect(callback, useShallowCompareMemoize(dependencies))
 }
 
-export const HookStateContainer = React.memo(
+export const HookStateContainer = memo(
   function HookStateContainer(props: any) {
     const {hook, args, id, onNext, onReset, onRequestUpdate} = props
 

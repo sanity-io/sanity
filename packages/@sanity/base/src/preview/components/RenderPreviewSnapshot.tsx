@@ -1,33 +1,45 @@
 import React from 'react'
-import {isReferenceSchemaType, SchemaType} from '@sanity/types'
+import {
+  isReferenceSchemaType,
+  PreviewValue,
+  SanityDocument,
+  SchemaType,
+  SortOrdering,
+} from '@sanity/types'
 import {get} from 'lodash'
-import {previewResolver as customResolver} from '../../legacyParts'
-import SanityDefaultPreview from './SanityDefaultPreview'
+import {customPreviewResolver} from '../../TODO'
+import {isRecord} from '../../util/isRecord'
+import {SanityDefaultPreview} from './SanityDefaultPreview'
+
+interface RenderPreviewSnapshotProps {
+  error?: Error
+  isLive: boolean
+  isLoading: boolean
+  layout?: 'default' | 'detail' | 'card' | 'media' | 'inline' | 'block'
+  ordering?: SortOrdering
+  snapshot: Partial<SanityDocument> | PreviewValue | null
+  type: SchemaType
+}
 
 function resolvePreview(type: SchemaType) {
   const fromPreview = get(type, 'preview.component')
+
   if (fromPreview) {
     return fromPreview
   }
-  const custom = customResolver && customResolver(type)
+
+  const custom = customPreviewResolver && customPreviewResolver(type)
+
   return custom || SanityDefaultPreview
 }
 
-type Props = {
-  snapshot: any
-  type: SchemaType
-  isLive: boolean
-  isLoading: boolean
-  layout: string
-}
-
-export default function RenderPreviewSnapshot(props: Props) {
-  const {snapshot, type, isLive, isLoading, layout, ...rest} = props
+export function RenderPreviewSnapshot(props: RenderPreviewSnapshotProps) {
+  const {snapshot, type, isLoading, layout, ...rest} = props
   const PreviewComponent = resolvePreview(type)
 
   // TODO: Bjoerge: Check for image type with "is()"
   const renderAsBlockImage = layout === 'block' && type && type.name === 'image'
-  const typeName = snapshot?._type
+  const typeName = isRecord(snapshot?._internalMeta) ? snapshot?._internalMeta._type : undefined
   const icon =
     (isReferenceSchemaType(type) && type.to.find((t) => t.name === typeName)?.icon) || type.icon
 
@@ -35,11 +47,13 @@ export default function RenderPreviewSnapshot(props: Props) {
     <PreviewComponent
       media={icon}
       {...rest}
-      value={snapshot}
-      icon={icon}
-      layout={layout}
-      isPlaceholder={isLoading}
       _renderAsBlockImage={renderAsBlockImage}
+      icon={icon}
+      isLoading={isLoading}
+      isPlaceholder={!snapshot}
+      // isPlaceholder={isLoading}
+      layout={layout}
+      value={snapshot}
     />
   )
 

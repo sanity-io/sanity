@@ -18,7 +18,7 @@ export interface FormFieldHeaderTextProps {
   title?: React.ReactNode
 }
 
-const EMPTY_ARRAY = []
+const EMPTY_ARRAY: never[] = []
 
 export const FormFieldHeaderText = memo(function FormFieldHeaderText(
   props: FormFieldHeaderTextProps

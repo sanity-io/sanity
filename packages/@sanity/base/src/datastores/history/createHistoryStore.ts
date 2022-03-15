@@ -1,15 +1,38 @@
-import {from, merge} from 'rxjs'
-// eslint-disable-next-line import/no-unresolved
-import {transactionsToEvents} from '@sanity/transaction-collator'
-import {map, mergeMap, reduce, scan} from 'rxjs/operators'
-import {omit, isUndefined} from 'lodash'
+import {MultipleMutationResult, SanityClient} from '@sanity/client'
+import {HistoryEvent, transactionsToEvents} from '@sanity/transaction-collator'
+import {SanityDocument} from '@sanity/types'
 import jsonReduce from 'json-reduce'
+import {omit, isUndefined} from 'lodash'
+import {from, merge, Observable} from 'rxjs'
+import {map, mergeMap, reduce, scan} from 'rxjs/operators'
 import {getDraftId, getPublishedId} from '../../util/draftUtils'
-import {versionedClient} from '../../client/versionedClient'
+import {Timeline} from './history/Timeline'
+import {TimelineController, createObservableController} from './history/TimelineController'
+
+export interface HistoryStore {
+  getDocumentAtRevision: (documentId: string, revision: string) => any
+  getHistory: (
+    documentIds: string[],
+    options?: {time?: string; revision?: string}
+  ) => Promise<{documents: SanityDocument[]}>
+  getTransactions: (documentIds: string[]) => Promise<any>
+  historyEventsFor: (documentId: string) => Observable<HistoryEvent[]>
+  restore: (id: string, targetId: string, rev: string) => Observable<MultipleMutationResult>
+
+  getTimeline: (options: {publishedId: string; enableTrace?: boolean}) => Timeline
+  getTimelineController: (options: {
+    client: SanityClient
+    documentId: string
+    documentType: string
+    timeline: Timeline
+  }) => Observable<{historyController: TimelineController}>
+}
+
+type HistoryTransaction = any
 
 const documentRevisionCache = Object.create(null)
 
-const compileTransactions = (acc, curr) => {
+const compileTransactions = (acc: any, curr: Record<string, any>) => {
   if (acc[curr.id]) {
     acc[curr.id].mutations = acc[curr.id].mutations.concat(curr.mutations)
     acc[curr.id].timestamp = curr.timestamp
@@ -19,17 +42,19 @@ const compileTransactions = (acc, curr) => {
   return acc
 }
 
-const ndjsonToArray = (ndjson) => {
+const ndjsonToArray = (ndjson: any) => {
   return ndjson
     .toString('utf8')
     .split('\n')
     .filter(Boolean)
-    .map((line) => JSON.parse(line))
+    .map((line: string) => JSON.parse(line))
 }
 
-type HistoryTransaction = any
-
-const getHistory = (documentIds, options: {time?: number; revision?: string} = {}) => {
+const getHistory = (
+  client: SanityClient,
+  documentIds: string[],
+  options: {time?: string; revision?: string} = {}
+): Promise<{documents: SanityDocument[]}> => {
   const ids = Array.isArray(documentIds) ? documentIds : [documentIds]
   const {time, revision} = options
 
@@ -37,50 +62,60 @@ const getHistory = (documentIds, options: {time?: number; revision?: string} = {
     throw new Error(`getHistory can't handle both time and revision parameters`)
   }
 
-  const dataset = versionedClient.clientConfig.dataset
+  const dataset = client.clientConfig.dataset
   let url = `/data/history/${dataset}/documents/${ids.join(',')}`
 
   if (revision) {
     url = `${url}?revision=${revision}`
   } else {
     const timestamp = time || new Date().toISOString()
+
     url = `${url}?time=${timestamp}`
   }
 
-  return versionedClient.request({url})
+  return client.request({url})
 }
 
-const getDocumentAtRevision = (documentId, revision) => {
+const getDocumentAtRevision = (
+  client: SanityClient,
+  documentId: string,
+  revision: string
+): Promise<SanityDocument> => {
   const publishedId = getPublishedId(documentId)
   const draftId = getDraftId(documentId)
-
   const cacheKey = `${publishedId}@${revision}`
+
   if (!(cacheKey in documentRevisionCache)) {
-    const dataset = versionedClient.clientConfig.dataset
+    const dataset = client.clientConfig.dataset
     const url = `/data/history/${dataset}/documents/${publishedId},${draftId}?revision=${revision}`
-    documentRevisionCache[cacheKey] = versionedClient.request({url}).then(({documents}) => {
-      const published = documents.find((res) => res._id === publishedId)
-      const draft = documents.find((res) => res._id === draftId)
-      return draft || published
-    })
+
+    documentRevisionCache[cacheKey] = client
+      .request({url})
+      .then(({documents}: {documents: SanityDocument[]}) => {
+        const published = documents.find((res) => res._id === publishedId)
+        const draft = documents.find((res) => res._id === draftId)
+        return draft || published
+      })
   }
 
   return documentRevisionCache[cacheKey]
 }
 
-const getTransactions = (documentIds) => {
+const getTransactions = async (client: SanityClient, documentIds: string | string[]) => {
   const ids = Array.isArray(documentIds) ? documentIds : [documentIds]
-  const dataset = versionedClient.clientConfig.dataset
+  const dataset = client.clientConfig.dataset
   const url = `/data/history/${dataset}/transactions/${ids.join(',')}?excludeContent=true`
-  return versionedClient.request({url}).then(ndjsonToArray)
+  const result = await client.request({url})
+
+  return ndjsonToArray(result)
 }
 
-function historyEventsFor(documentId) {
+function historyEventsFor(client: SanityClient, documentId: string) {
   const pairs = [getDraftId(documentId), getPublishedId(documentId)]
 
   const query = '*[_id in $documentIds]'
 
-  const pastTransactions$ = from(getTransactions(pairs)).pipe(
+  const pastTransactions$ = from(getTransactions(client, pairs)).pipe(
     mergeMap((transactions) => from(transactions)),
     map((trans: HistoryTransaction) => ({
       author: trans.author,
@@ -92,7 +127,7 @@ function historyEventsFor(documentId) {
     reduce(compileTransactions, {})
   )
 
-  const realtimeTransactions$ = versionedClient.observable.listen(query, {documentIds: pairs}).pipe(
+  const realtimeTransactions$ = client.observable.listen(query, {documentIds: pairs}).pipe(
     map((item) => ({
       author: item.identity,
       documentIDs: pairs,
@@ -107,7 +142,7 @@ function historyEventsFor(documentId) {
     scan((prev, next) => {
       return {...prev, ...next}
     }, {}),
-    map((transactions) =>
+    map((transactions: any) =>
       transactionsToEvents(
         pairs,
         Object.keys(transactions).map((key) => transactions[key])
@@ -116,24 +151,24 @@ function historyEventsFor(documentId) {
   )
 }
 
-const getAllRefIds = (doc) =>
+const getAllRefIds = (doc: SanityDocument): string[] =>
   jsonReduce(
-    doc,
-    (acc, node) =>
+    doc as any,
+    (acc: any, node) =>
       node && typeof node === 'object' && '_ref' in node && !acc.includes(node._ref)
         ? [...acc, node._ref]
         : acc,
     []
   )
 
-function jsonMap(value, mapFn) {
+function jsonMap(value: any, mapFn: any): any {
   if (Array.isArray(value)) {
     return mapFn(value.map((item) => jsonMap(item, mapFn)).filter((item) => !isUndefined(item)))
   }
 
   if (value && typeof value === 'object') {
     return mapFn(
-      Object.keys(value).reduce((res, key) => {
+      Object.keys(value).reduce<Record<string, unknown>>((res, key) => {
         const mappedValue = jsonMap(value[key], mapFn)
         if (!isUndefined(mappedValue)) {
           res[key] = mappedValue
@@ -147,25 +182,25 @@ function jsonMap(value, mapFn) {
   return mapFn(value)
 }
 
-const mapRefNodes = (doc, mapFn) =>
-  jsonMap(doc, (node) => {
+const mapRefNodes = (doc: SanityDocument, mapFn: (node: any) => any) =>
+  jsonMap(doc, (node: any) => {
     return node && typeof node === 'object' && typeof node._ref === 'string' ? mapFn(node) : node
   })
 
-export const removeMissingReferences = (doc, existingIds) =>
+export const removeMissingReferences = (doc: SanityDocument, existingIds: Record<string, string>) =>
   mapRefNodes(doc, (refNode) => {
     const documentExists = existingIds[refNode._ref]
     return documentExists ? refNode : undefined
   })
 
-function restore(id, targetId, rev) {
-  return from(getDocumentAtRevision(id, rev)).pipe(
+function restore(client: SanityClient, id: string, targetId: string, rev: string) {
+  return from(getDocumentAtRevision(client, id, rev)).pipe(
     mergeMap((documentAtRevision) => {
       const existingIdsQuery = getAllRefIds(documentAtRevision)
         .map((refId) => `"${refId}": defined(*[_id=="${refId}"]._id)`)
         .join(',')
 
-      return versionedClient.observable
+      return client.observable
         .fetch(`{${existingIdsQuery}}`)
         .pipe(map((existingIds) => removeMissingReferences(documentAtRevision, existingIds)))
     }),
@@ -177,17 +212,32 @@ function restore(id, targetId, rev) {
       })
     ),
     mergeMap((restoredDraft: any) =>
-      versionedClient.observable.transaction().createOrReplace(restoredDraft).commit()
+      client.observable.transaction().createOrReplace(restoredDraft).commit()
     )
   )
 }
 
-export default function createHistoryStore() {
+export function createHistoryStore(client: SanityClient): HistoryStore {
   return {
-    getDocumentAtRevision,
-    getHistory,
-    getTransactions,
-    historyEventsFor,
-    restore,
+    getDocumentAtRevision(documentId, revision) {
+      return getDocumentAtRevision(client, documentId, revision)
+    },
+    getHistory: (documentIds, options) => getHistory(client, documentIds, options),
+    getTransactions: (documentIds) => getTransactions(client, documentIds),
+    historyEventsFor: (documentId) => historyEventsFor(client, documentId),
+    restore: (id, targetId, rev) => restore(client, id, targetId, rev),
+
+    getTimeline(options: {publishedId: string; enableTrace?: boolean}) {
+      return new Timeline(options)
+    },
+
+    getTimelineController(options: {
+      client: SanityClient
+      documentId: string
+      documentType: string
+      timeline: Timeline
+    }) {
+      return createObservableController(options)
+    },
   }
 }

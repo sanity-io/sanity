@@ -1,5 +1,6 @@
-import React from 'react'
+import {useForwardedRef} from '@sanity/ui'
 import createPubSub from 'nano-pubsub'
+import React, {useContext, useEffect, useMemo} from 'react'
 import {ScrollContext} from './scrollContext'
 
 export interface ScrollContainerProps<T extends React.ElementType>
@@ -19,14 +20,15 @@ const noop = () => undefined
  */
 export const ScrollContainer = React.forwardRef(function ScrollContainer<
   T extends React.ElementType = 'div'
->(props: ScrollContainerProps<T>, forwardedRef) {
+>(props: ScrollContainerProps<T>, ref: React.ForwardedRef<HTMLDivElement>) {
   const {as = 'div', onScroll, ...rest} = props
+  const forwardedRef = useForwardedRef(ref)
 
-  const selfRef = React.useRef<HTMLElement | null>(null)
-  const parentContext = React.useContext(ScrollContext)
-  const childContext = React.useMemo(() => createPubSub<Event>(), [])
+  // const selfRef = useRef<HTMLElement | null>(null)
+  const parentContext = useContext(ScrollContext)
+  const childContext = useMemo(() => createPubSub<Event>(), [])
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (onScroll) {
       // emit scroll events from children
       return childContext.subscribe(onScroll)
@@ -34,7 +36,7 @@ export const ScrollContainer = React.forwardRef(function ScrollContainer<
     return noop
   }, [childContext, onScroll])
 
-  React.useEffect(() => {
+  useEffect(() => {
     // let events bubble up
     if (parentContext) {
       return childContext.subscribe(parentContext.publish)
@@ -42,34 +44,30 @@ export const ScrollContainer = React.forwardRef(function ScrollContainer<
     return noop
   }, [parentContext, childContext])
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleScroll = (event: Event) => {
       childContext.publish(event)
     }
 
-    if (selfRef.current) {
-      selfRef.current.addEventListener('scroll', handleScroll, {
-        passive: true,
-        capture: true,
-      })
+    const el = forwardedRef.current
+
+    if (!el) {
+      return undefined
     }
+
+    el.addEventListener('scroll', handleScroll, {
+      passive: true,
+      capture: true,
+    })
 
     return () => {
-      if (selfRef.current) {
-        selfRef.current.removeEventListener('scroll', handleScroll)
-      }
+      el.removeEventListener('scroll', handleScroll)
     }
-  }, [childContext])
-
-  const setRef = (el: HTMLElement | null) => {
-    selfRef.current = el
-    if (typeof forwardedRef === 'function') forwardedRef(el)
-    else if (forwardedRef && typeof forwardedRef === 'object') forwardedRef.current = el
-  }
+  }, [childContext, forwardedRef])
 
   return (
     <ScrollContext.Provider value={childContext}>
-      {React.createElement(as, {ref: setRef, 'data-testid': 'scroll-container', ...rest})}
+      {React.createElement(as, {ref: forwardedRef, 'data-testid': 'scroll-container', ...rest})}
     </ScrollContext.Provider>
   )
 })

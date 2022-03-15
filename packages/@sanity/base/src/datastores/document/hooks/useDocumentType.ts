@@ -1,6 +1,6 @@
 import {useEffect, useMemo, useState} from 'react'
 import {getPublishedId} from '../../../util/draftUtils'
-import documentStore from '../document-store'
+import {useDatastores} from '../../useDatastores'
 
 export interface DocumentTypeResolveState {
   isLoaded: boolean
@@ -13,15 +13,17 @@ const LOADING_STATE: DocumentTypeResolveState = {
 }
 
 export function useDocumentType(documentId: string, specifiedType = '*'): DocumentTypeResolveState {
+  const {documentStore} = useDatastores()
   const publishedId = getPublishedId(documentId)
   const isResolved = Boolean(specifiedType && specifiedType !== '*')
 
   // Memoize what a synchronously resolved state looks like (eg specified type is present),
   // in order to return the same object each time. Note that this can be "incorrect", but
   // that we won't be returning it in that case, eg: `{documentType: '*', isResolved: true}
-  const SYNC_RESOLVED_STATE = useMemo(() => ({documentType: specifiedType, isLoaded: true}), [
-    specifiedType,
-  ])
+  const SYNC_RESOLVED_STATE = useMemo(
+    () => ({documentType: specifiedType, isLoaded: true}),
+    [specifiedType]
+  )
 
   // Set up our state that we'll only use when we need to reach out to the API to find
   // the document type for a given document. Otherwise we'll be using SYNC_RESOLVED_STATE.
@@ -46,7 +48,7 @@ export function useDocumentType(documentId: string, specifiedType = '*'): Docume
       .subscribe((documentType: string) => setDocumentType({documentType, isLoaded: true}))
 
     return () => sub.unsubscribe()
-  }, [publishedId, specifiedType, isResolved])
+  }, [documentStore, publishedId, specifiedType, isResolved])
 
   return isResolved
     ? // `isResolved` is only true when we're _synchronously_ resolved

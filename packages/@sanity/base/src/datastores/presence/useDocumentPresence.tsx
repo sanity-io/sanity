@@ -1,14 +1,17 @@
 import {useState, useEffect} from 'react'
+import {useDatastores} from '../useDatastores'
 import {DocumentPresence} from './types'
-import {documentPresence} from './presence-store'
 
-export function useDocumentPresence(documentId): DocumentPresence[] {
+export function useDocumentPresence(documentId: string): DocumentPresence[] {
+  const {presenceStore} = useDatastores()
   const [presence, setPresence] = useState<DocumentPresence[]>([])
+
   useEffect(() => {
-    const subscription = documentPresence(documentId).subscribe(setPresence)
+    const subscription = presenceStore.documentPresence(documentId).subscribe(setPresence)
     return () => {
       subscription.unsubscribe()
     }
-  }, [documentId])
+  }, [documentId, presenceStore])
+
   return presence
 }

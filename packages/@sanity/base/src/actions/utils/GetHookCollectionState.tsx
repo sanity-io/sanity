@@ -1,72 +1,61 @@
-import {throttle} from 'lodash'
-import React from 'react'
+import React, {
+  // createElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import {isNonNullable} from '../../util/isNonNullable'
+import {useThrottledCallback} from '../../util/useThrottledCallback'
+import {getHookId} from './actionId'
 import {HookStateContainer} from './HookStateContainer'
 import {cancelIdleCallback, requestIdleCallback} from './requestIdleCallback'
+import {ActionHook} from './types'
 
-const actionIds = new WeakMap()
-
-let counter = 0
-const getHookId = (action) => {
-  if (actionIds.has(action)) {
-    return actionIds.get(action)
-  }
-  const id = `${action.name || action.displayName || '<anonymous>'}-${counter++}`
-  actionIds.set(action, id)
-  return id
-}
-
-interface Props<T, K> {
-  hooks: ((args: T) => K)[]
+interface GetHookCollectionStateProps<T, K> {
   args: T
-  component: React.ComponentProps<any> & React.Component<{state: K[]}>
+  children: (props: {states: K[]}) => React.ReactNode
+  hooks: ActionHook<T, K>[]
   onReset?: () => void
 }
 
-function useThrottled(callback, wait, options) {
-  const throttled = React.useCallback(throttle(callback, wait, options), [callback])
-  React.useEffect(
-    () => () => {
-      throttled.flush()
-    },
-    []
-  )
-  return throttled
-}
+export function GetHookCollectionState<T, K>(props: GetHookCollectionStateProps<T, K>) {
+  const {hooks, args, children, onReset} = props
 
-export function GetHookCollectionState<T, K>(props: Props<T, K>) {
-  const {hooks, args, component: Component, onReset: propsOnReset, ...rest} = props
+  const statesRef = useRef<Record<string, {value: K}>>({})
+  const [, setTick] = useState(0)
 
-  const statesRef = React.useRef({})
-  const [, setTick] = React.useState(0)
+  const [keys, setKeys] = useState<Record<string, number>>({})
+  const mountedRef = useRef(true)
 
-  const [keys, setKeys] = React.useState({})
-  const mountedRef = React.useRef(true)
-
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       mountedRef.current = false
     }
   }, [])
 
-  const ricHandle = React.useRef(null)
-  const onRequestUpdate = useThrottled(
-    () => {
-      if (ricHandle.current) {
-        cancelIdleCallback(ricHandle.current)
+  const ricHandle = useRef<number | null>(null)
+
+  const handleRequestUpdate = useCallback(() => {
+    if (ricHandle.current) {
+      cancelIdleCallback(ricHandle.current)
+    }
+
+    ricHandle.current = requestIdleCallback(() => {
+      ricHandle.current = null
+
+      if (mountedRef.current) {
+        setTick((tick) => tick + 1)
       }
-      ricHandle.current = requestIdleCallback(() => {
-        ricHandle.current = null
+    })
+  }, [])
 
-        if (mountedRef.current) {
-          setTick((tick) => tick + 1)
-        }
-      })
-    },
-    60,
-    {trailing: true}
-  )
+  const handleRequestUpdateThrottled = useThrottledCallback(handleRequestUpdate, 60, {
+    trailing: true,
+  })
 
-  const onNext = React.useCallback((id, hookState) => {
+  const handleNext = useCallback((id, hookState) => {
     if (hookState === null) {
       delete statesRef.current[id]
     } else {
@@ -75,37 +64,44 @@ export function GetHookCollectionState<T, K>(props: Props<T, K>) {
     }
   }, [])
 
-  const onReset = React.useCallback((id) => {
-    setKeys((currentKeys) => ({...currentKeys, [id]: (currentKeys[id] || 0) + 1}))
-    if (propsOnReset) {
-      propsOnReset()
-    }
-  }, [])
+  const handleReset = useCallback(
+    (id) => {
+      setKeys((currentKeys) => ({...currentKeys, [id]: (currentKeys[id] || 0) + 1}))
 
-  const hookIds = hooks.map((hook) => getHookId(hook))
+      if (onReset) {
+        onReset()
+      }
+    },
+    [onReset]
+  )
+
+  const hookIds = useMemo(() => hooks.map((hook) => getHookId(hook)), [hooks])
+
+  const states = useMemo(
+    () => hookIds.map((id) => statesRef.current[id]?.value).filter(isNonNullable),
+    [hookIds]
+  )
 
   return (
     <>
       {hooks.map((hook) => {
         const id = getHookId(hook)
         const key = keys[id] || 0
+
         return (
           <HookStateContainer
             key={`${id}-${key}`}
             hook={hook}
             id={id}
             args={args}
-            onNext={onNext}
-            onRequestUpdate={onRequestUpdate}
-            onReset={onReset}
+            onNext={handleNext}
+            onRequestUpdate={handleRequestUpdateThrottled}
+            onReset={handleReset}
           />
         )
       })}
 
-      <Component
-        {...rest}
-        states={hookIds.map((id) => statesRef.current[id]?.value).filter(Boolean)}
-      />
+      {children({states})}
     </>
   )
 }

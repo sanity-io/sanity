@@ -4,7 +4,7 @@ import {Marker} from '@sanity/types'
 import {Box, Flex, Grid, rem, Stack, Text, Theme, useForwardedRef} from '@sanity/ui'
 import React, {forwardRef, useState, useCallback, useEffect, useMemo} from 'react'
 import styled, {css} from 'styled-components'
-import {ChangeIndicator, ChangeIndicatorContextProvidedProps} from '../../change-indicators'
+import {ChangeIndicator, ChangeIndicatorContextProvidedProps} from '../changeIndicators'
 import {FieldPresence, FormFieldPresence} from '../../presence'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
@@ -78,7 +78,7 @@ const Content = styled(Box)<{
   `
 })
 
-const EMPTY_ARRAY = []
+const EMPTY_ARRAY: never[] = []
 
 export const FormFieldSet = forwardRef(
   (

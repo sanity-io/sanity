@@ -1,3 +1,4 @@
+import {SanityClient} from '@sanity/client'
 import {defer, asyncScheduler, merge, Observable, of, Subject} from 'rxjs'
 import {
   catchError,
@@ -12,8 +13,10 @@ import {
   tap,
   throttleTime,
 } from 'rxjs/operators'
-import {IdPair} from '../types'
+import {Schema} from '@sanity/types'
+import {IdPair, OperationArgs} from '../types'
 import {memoize} from '../utils/createMemoizer'
+import {HistoryStore} from '../../history'
 import {OperationImpl, OperationsAPI} from './operations'
 import {operationArgs} from './operationArgs'
 import {del} from './operations/delete'
@@ -51,8 +54,8 @@ const operationImpls: {[name: string]: OperationImpl<any>} = {
 
 const execute = (
   operationName: keyof typeof operationImpls,
-  operationArguments,
-  extraArgs
+  operationArguments: OperationArgs,
+  extraArgs: any[]
 ): Observable<any> => {
   const operation = operationImpls[operationName]
   return defer(() =>
@@ -98,62 +101,72 @@ interface IntermediaryError {
   error: any
 }
 
-const results$: Observable<IntermediarySuccess | IntermediaryError> = operationCalls$.pipe(
-  groupBy((op) => op.idPair.publishedId),
-  mergeMap((groups$) =>
-    groups$.pipe(
-      // although it might look like a but, dropping pending async operations here is actually a feature
-      // E.g. if the user types `publish` which is async and then starts patching (sync) then the publish
-      // should be cancelled
-      switchMap((args) =>
-        operationArgs(args.idPair, args.typeName).pipe(
-          take(1),
-          switchMap((operationArguments) => {
-            const requiresConsistency = REQUIRES_CONSISTENCY.includes(args.operationName)
-            if (requiresConsistency) {
-              operationArguments.published.commit()
-              operationArguments.draft.commit()
-            }
-            const isConsistent$ = consistencyStatus(args.idPair, args.typeName).pipe(
-              filter(Boolean)
+export function getOperationEvents(ctx: {
+  client: SanityClient
+  historyStore: HistoryStore
+  schema: Schema
+}): (idPair: IdPair, typeName?: string) => Observable<OperationSuccess | OperationError> {
+  const results$: Observable<IntermediarySuccess | IntermediaryError> = operationCalls$.pipe(
+    groupBy((op) => op.idPair.publishedId),
+    mergeMap((groups$) =>
+      groups$.pipe(
+        // although it might look like a but, dropping pending async operations here is actually a feature
+        // E.g. if the user types `publish` which is async and then starts patching (sync) then the publish
+        // should be cancelled
+        switchMap((args) =>
+          operationArgs(ctx, args.idPair, args.typeName).pipe(
+            take(1),
+            switchMap((operationArguments) => {
+              const requiresConsistency = REQUIRES_CONSISTENCY.includes(args.operationName)
+              if (requiresConsistency) {
+                operationArguments.published.commit()
+                operationArguments.draft.commit()
+              }
+              const isConsistent$ = consistencyStatus(ctx.client, args.idPair, args.typeName).pipe(
+                filter(Boolean)
+              )
+              const ready$ = requiresConsistency ? isConsistent$.pipe(take(1)) : of(null)
+              return ready$.pipe(
+                // eslint-disable-next-line max-nested-callbacks
+                mergeMap(() => execute(args.operationName, operationArguments, args.extraArgs))
+              )
+            }),
+            map((): IntermediarySuccess => ({type: 'success', args})),
+            catchError(
+              (err): Observable<IntermediaryError> => of({type: 'error', args, error: err})
             )
-            const ready$ = requiresConsistency ? isConsistent$.pipe(take(1)) : of(null)
-            return ready$.pipe(
-              // eslint-disable-next-line max-nested-callbacks
-              mergeMap(() => execute(args.operationName, operationArguments, args.extraArgs))
-            )
-          }),
-          map((): IntermediarySuccess => ({type: 'success', args})),
-          catchError((err): Observable<IntermediaryError> => of({type: 'error', args, error: err}))
+          )
         )
       )
-    )
-  ),
-  share()
-)
-
-// this enables autocommit after patch operations
-const AUTOCOMMIT_INTERVAL = 1000
-const autoCommit$ = results$.pipe(
-  filter((result) => result.type === 'success' && result.args.operationName === 'patch'),
-  throttleTime(AUTOCOMMIT_INTERVAL, asyncScheduler, {leading: true, trailing: true}),
-  tap((result) => {
-    emitOperation('commit', result.args.idPair, result.args.typeName, [])
-  })
-)
-
-autoCommit$.subscribe()
-
-export const operationEvents = memoize(
-  (idPair: IdPair /*, typeName: string */) =>
-    results$.pipe(
-      filter((result) => result.args.idPair.publishedId === idPair.publishedId),
-      map((result): OperationSuccess | OperationError => {
-        const {operationName, idPair: documentIds} = result.args
-        return result.type === 'success'
-          ? {type: 'success', op: operationName, id: documentIds.publishedId}
-          : {type: 'error', op: operationName, id: documentIds.publishedId, error: result.error}
-      })
     ),
-  (idPair, typeName) => idPair.publishedId + typeName
-)
+    share()
+  )
+
+  // this enables autocommit after patch operations
+  const AUTOCOMMIT_INTERVAL = 1000
+  const autoCommit$ = results$.pipe(
+    filter((result) => result.type === 'success' && result.args.operationName === 'patch'),
+    throttleTime(AUTOCOMMIT_INTERVAL, asyncScheduler, {leading: true, trailing: true}),
+    tap((result) => {
+      emitOperation('commit', result.args.idPair, result.args.typeName, [])
+    })
+  )
+
+  autoCommit$.subscribe()
+
+  const operationEvents = memoize(
+    (idPair: IdPair, _typeName?: string) =>
+      results$.pipe(
+        filter((result) => result.args.idPair.publishedId === idPair.publishedId),
+        map((result): OperationSuccess | OperationError => {
+          const {operationName, idPair: documentIds} = result.args
+          return result.type === 'success'
+            ? {type: 'success', op: operationName, id: documentIds.publishedId}
+            : {type: 'error', op: operationName, id: documentIds.publishedId, error: result.error}
+        })
+      ),
+    (idPair: IdPair, typeName?: string) => idPair.publishedId + typeName
+  )
+
+  return operationEvents
+}

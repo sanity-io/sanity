@@ -1,8 +1,8 @@
-import {versionedClient} from '../../../../client/versionedClient'
+import {MultipleMutationResult} from '@sanity/client'
 import {OperationArgs} from '../../types'
 
 export const discardChanges = {
-  disabled: ({snapshots}: OperationArgs) => {
+  disabled: ({snapshots}: OperationArgs): 'NO_CHANGES' | 'NOT_PUBLISHED' | false => {
     if (!snapshots.draft) {
       return 'NO_CHANGES'
     }
@@ -11,8 +11,8 @@ export const discardChanges = {
     }
     return false
   },
-  execute: ({idPair}: OperationArgs) => {
-    return versionedClient.observable
+  execute: ({client, idPair}: OperationArgs): Promise<MultipleMutationResult> => {
+    return client.observable
       .transaction()
       .delete(idPair.draftId)
       .commit({tag: 'document.discard-changes'})

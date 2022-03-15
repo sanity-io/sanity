@@ -1,33 +1,27 @@
-import {SanityDocument} from '@sanity/types'
+import {ButtonTone} from '@sanity/ui'
 import React from 'react'
+import {EditStateFor} from '../../datastores/document/document-pair/editState'
 
-export type LegacyDocumentActionColor = 'primary' | 'success' | 'warning' | 'danger'
+export type ActionHook<T, K> = (args: T) => K | null
 
 export interface ActionComponent<ActionProps> {
   (props: ActionProps): DocumentActionDescription | null
 }
 
-export interface DocumentActionProps {
-  id: string
-  type: string
-  draft: SanityDocument | null
-  liveEdit: boolean
-  published: SanityDocument | null
-  revision: string
+export interface DocumentActionProps extends EditStateFor {
+  revision?: string
   onComplete: () => void
 }
 
 export type DocumentActionComponent = ActionComponent<DocumentActionProps>
 
-// Rename to `portal`?
-export interface DocumentActionLegacyDialogProps {
-  type: 'legacy'
-  content: React.ReactNode
+export interface DocumentActionResolver {
+  (props: EditStateFor): DocumentActionComponent[]
 }
 
-export interface DocumentActionConfirmDialogProps {
+export interface DocumentActionConfirmModalProps {
   type: 'confirm'
-  color?: 'success' | 'warning' | 'danger' | 'info'
+  tone?: ButtonTone
   message: React.ReactNode
   onConfirm: () => void
   onCancel: () => void
@@ -37,8 +31,8 @@ export interface DocumentActionConfirmDialogProps {
   confirmButtonText?: React.ReactNode
 }
 
-export interface DocumentActionModalDialogProps {
-  type: 'modal'
+export interface DocumentActionDialogModalProps {
+  type: 'dialog'
   content: React.ReactNode
   /**
    * @beta
@@ -56,43 +50,20 @@ export interface DocumentActionModalDialogProps {
   width?: 'small' | 'medium' | 'large' | 'full'
 }
 
-export interface DocumentActionPopoverDialogProps {
+export interface DocumentActionPopoverModalProps {
   type: 'popover'
   content: React.ReactNode
   onClose: () => void
 }
 
-/**
- * @deprecated
- */
-export interface DocumentActionErrorDialogProps {
-  type: 'error'
-  content?: React.ReactNode
-  onClose: () => void
-  title?: React.ReactNode
-}
-
-/**
- * @deprecated
- */
-export interface DocumentActionSuccessDialogProps {
-  type: 'success'
-  content?: React.ReactNode
-  onClose: () => void
-  title?: React.ReactNode
-}
-
-export type DocumentActionDialogProps =
-  | DocumentActionLegacyDialogProps
-  | DocumentActionConfirmDialogProps
-  | DocumentActionPopoverDialogProps
-  | DocumentActionModalDialogProps
-  | DocumentActionErrorDialogProps
-  | DocumentActionSuccessDialogProps
+export type DocumentActionModalProps =
+  | DocumentActionConfirmModalProps
+  | DocumentActionPopoverModalProps
+  | DocumentActionDialogModalProps
 
 export interface DocumentActionDescription {
-  color?: LegacyDocumentActionColor
-  dialog?: DocumentActionDialogProps | false | null
+  tone?: ButtonTone
+  modal?: DocumentActionModalProps | false | null
   disabled?: boolean
   icon?: React.ReactNode | React.ComponentType
   label: string

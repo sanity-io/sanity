@@ -8,7 +8,14 @@ import {joinPath} from '../../util/searchUtils'
 import {tokenize} from '../common/tokenize'
 import {removeDupes} from '../../util/draftUtils'
 import {applyWeights} from './applyWeights'
-import {WeightedHit, WeightedSearchOptions, SearchOptions, SearchPath, SearchHit} from './types'
+import {
+  WeightedHit,
+  WeightedSearchOptions,
+  SearchOptions,
+  SearchPath,
+  SearchHit,
+  SearchSpec,
+} from './types'
 
 const combinePaths = flow([flatten, union, compact])
 
@@ -25,14 +32,18 @@ const pathWithMapper = ({mapWith, path}: SearchPath): string =>
 
 export function createWeightedSearch(
   // eslint-disable-next-line camelcase
-  types: {name: string; __experimental_search: ObjectSchemaType['__experimental_search']}[],
+  types: {name: string; __experimental_search?: ObjectSchemaType['__experimental_search']}[],
   client: SanityClient,
   options: WeightedSearchOptions = {}
 ): (query: string, opts?: SearchOptions) => Observable<WeightedHit[]> {
+  if (!types) {
+    throw new Error('missing types')
+  }
+
   const {filter, params, tag} = options
-  const searchSpec = types.map((type) => ({
+  const searchSpec: SearchSpec[] = types.map((type) => ({
     typeName: type.name,
-    paths: type.__experimental_search.map((config) => ({
+    paths: type.__experimental_search?.map((config) => ({
       weight: config.weight,
       path: joinPath(config.path),
       mapWith: config.mapWith,
@@ -40,12 +51,12 @@ export function createWeightedSearch(
   }))
 
   const combinedSearchPaths = combinePaths(
-    searchSpec.map((configForType) => configForType.paths.map((opt) => pathWithMapper(opt)))
+    searchSpec.map((configForType) => configForType.paths?.map((opt) => pathWithMapper(opt)))
   )
 
   const selections = searchSpec.map((spec) => {
     const constraint = `_type == "${spec.typeName}" => `
-    const selection = `{ ${spec.paths.map((cfg, i) => `"w${i}": ${pathWithMapper(cfg)}`)} }`
+    const selection = `{ ${spec.paths?.map((cfg, i) => `"w${i}": ${pathWithMapper(cfg)}`)} }`
     return `${constraint}${selection}`
   })
 
@@ -53,7 +64,7 @@ export function createWeightedSearch(
   return function search(queryString: string, searchOpts: SearchOptions = {}) {
     const terms = uniq(compact(tokenize(toLower(queryString))))
     const constraints = terms
-      .map((term, i) => combinedSearchPaths.map((joinedPath) => `${joinedPath} match $t${i}`))
+      .map((term, i) => combinedSearchPaths.map((joinedPath: any) => `${joinedPath} match $t${i}`))
       .filter((constraint) => constraint.length > 0)
 
     const filters = [

@@ -1,3 +1,1 @@
-import createHistoryStore from './createHistoryStore'
-
-export default createHistoryStore()
+export * from './createHistoryStore'

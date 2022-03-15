@@ -1,36 +1,27 @@
-// @todo: remove the following line when part imports has been removed from this file
-/// <reference types="@sanity/types/parts" />
-
-import schema from 'part:@sanity/base/schema'
-import {isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
-import {SchemaType} from '@sanity/types'
-import {isObject} from 'lodash'
-import {getTemplateById} from '@sanity/initial-value-templates'
-import type {InitialValueTemplateItem} from '@sanity/structure'
 import {DocumentIcon} from '@sanity/icons'
-import S from '../_exports/structure-builder'
+import {getTemplateById, Template} from '@sanity/initial-value-templates'
+import {isActionEnabled} from '@sanity/schema/_internal'
+import {InitialValueTemplateItem, StructureBuilder} from '@sanity/structure'
+import {Schema, SchemaType} from '@sanity/types'
+import {isRecord} from './isRecord'
 
-const isRecord = isObject as (value: unknown) => value is Record<string, unknown>
+// const isRecord = isObject as (value: unknown) => value is Record<string, unknown>
 const isInitialValueTemplateItem = (
   obj: Record<string, unknown>
 ): obj is InitialValueTemplateItem => obj.type === 'initialValueTemplateItem'
 const serialize = <T extends Record<string, unknown>>(t: T | {serialize: () => T}): T =>
   typeof t.serialize === 'function' ? serialize(t.serialize()) : t
 const quote = (str: string | undefined) => (str && str.length > 0 ? ` "${str}"` : str || '')
-const getDefaultModule = <T>(mod: {__esModule?: boolean; default: T} | T) =>
-  isRecord(mod) && '__esModule' in mod ? mod.default : mod
 
-function computeOnce<T extends () => unknown>(fn: T): T {
+function computeOnce<T extends (...args: any[]) => unknown>(fn: T): T {
   let cached: unknown
 
-  return (() => {
+  return ((...args: any[]) => {
     if (cached) return cached
-    cached = fn()
+    cached = fn(...args)
     return cached
   }) as T
 }
-
-type Template = NonNullable<ReturnType<typeof getTemplateById>>
 
 /**
  * The result of parsing the `new-document-structure` against the registered
@@ -64,14 +55,16 @@ export interface NewDocumentOption extends InitialValueTemplateItem {
 const getNewDocumentOptionsOnce = computeOnce(getNewDocumentOptions)
 export {getNewDocumentOptionsOnce as getNewDocumentOptions}
 
-function getNewDocumentOptions(): NewDocumentOption[] {
-  // this has to be deferred/lazy-loaded due to some weird dependency orderings
-  const newDocumentStructure = getDefaultModule(
-    require('part:@sanity/base/new-document-structure?')
-  )
-
+function getNewDocumentOptions(
+  S: StructureBuilder,
+  schema: Schema,
+  initialValueTemplates: Template[],
+  newDocumentStructure: any
+): NewDocumentOption[] {
   try {
     return createNewDocumentOptions(
+      schema,
+      initialValueTemplates,
       serializeNewDocumentStructure(newDocumentStructure || S.defaultInitialValueTemplateItems())
     )
   } catch (err) {
@@ -80,6 +73,8 @@ function getNewDocumentOptions(): NewDocumentOption[] {
     )
 
     return createNewDocumentOptions(
+      schema,
+      initialValueTemplates,
       serializeNewDocumentStructure(S.defaultInitialValueTemplateItems())
     )
   }
@@ -129,12 +124,16 @@ function serializeNewDocumentStructure(structureItems: unknown): InitialValueTem
   return items
 }
 
-function createNewDocumentOptions(structure: InitialValueTemplateItem[]) {
+function createNewDocumentOptions(
+  schema: Schema,
+  initialValueTemplates: Template[],
+  structure: InitialValueTemplateItem[]
+) {
   return (
     structure
       .map((item) => {
         // Make sure the template actually exists
-        const template = getTemplateById(item.templateId)
+        const template = getTemplateById(schema, initialValueTemplates, item.templateId)
         if (!template) {
           throw new Error(`Template "${item.templateId}" not declared`)
         }
@@ -163,7 +162,13 @@ function createNewDocumentOptions(structure: InitialValueTemplateItem[]) {
       })
       // Don't include templates for schema types we cannot actually create
       .filter(({template}) => {
-        const canCreate = isActionEnabled(schema.get(template.schemaType), 'create')
+        const schemaType = schema.get(template.schemaType)
+
+        if (!schemaType) {
+          throw new Error(`no schema type: "${template.schemaType}"`)
+        }
+
+        const canCreate = isActionEnabled(schemaType, 'create')
 
         if (!canCreate) {
           console.error(

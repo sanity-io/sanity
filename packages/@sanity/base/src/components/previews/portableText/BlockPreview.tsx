@@ -5,6 +5,7 @@ import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {Media} from '../_common/Media'
 import {PREVIEW_MEDIA_SIZE} from '../constants'
 import {PreviewMediaDimensions, PreviewProps} from '../types'
+import {renderPreviewNode} from '../helpers'
 
 const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
   ...PREVIEW_MEDIA_SIZE.block,
@@ -37,14 +38,14 @@ export function BlockPreview(props: PreviewProps<'block'>) {
 
         <Box flex={1} paddingLeft={media ? 2 : 1}>
           <Text size={1} textOverflow="ellipsis" weight="semibold">
-            {title && typeof title === 'function' ? title({layout: 'block'}) : title}
+            {title && renderPreviewNode(title, 'block')}
             {!title && <>Untitled</>}
           </Text>
 
           {subtitle && (
             <Box marginTop={2}>
               <Text muted size={1} textOverflow="ellipsis">
-                {typeof subtitle === 'function' ? subtitle({layout: 'block'}) : subtitle}
+                {renderPreviewNode(subtitle, 'block')}
               </Text>
             </Box>
           )}
@@ -52,7 +53,7 @@ export function BlockPreview(props: PreviewProps<'block'>) {
           {description && (
             <Box marginTop={3}>
               <Text muted size={1} textOverflow="ellipsis">
-                {typeof description === 'function' ? description({layout: 'block'}) : description}
+                {renderPreviewNode(description, 'block')}
               </Text>
             </Box>
           )}
@@ -61,7 +62,7 @@ export function BlockPreview(props: PreviewProps<'block'>) {
         <Flex gap={1} paddingLeft={1}>
           {status && (
             <Box paddingX={2} paddingY={3}>
-              {typeof status === 'function' ? status({layout: 'block'}) : status}
+              {renderPreviewNode(status, 'block')}
             </Box>
           )}
 

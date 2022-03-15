@@ -1,23 +1,29 @@
+import {Dialog} from '@sanity/ui'
 import React from 'react'
 import semverCompare from 'semver-compare'
-import FullscreenMessageDialog from '../__legacy/@sanity/components/dialogs/FullscreenMessageDialog'
-import {sanityModuleVersions} from '../legacyParts'
-import {checkModuleStatus, useModuleStatus, VersionsResponse} from '../module-status'
+import {useClient} from '../client'
+import {
+  checkModuleStatus,
+  CheckModuleVersionsOptions,
+  useModuleStatus,
+  VersionsResponse,
+} from '../module-status'
 
 /**
  * @note This _shouldn't_ be in use anywhere, but lets keep it around until we can be sure
  * @deprecated To be removed, please migrate away from this asap
  * @returns
  */
-export default function DeprecatedVersionChecker() {
-  const {value: result} = useModuleStatus()
+export function DeprecatedVersionChecker() {
+  const client = useClient()
+  const {value: result} = useModuleStatus({client})
 
   if (!result || result.isSupported || result.isSupported === undefined) {
     return null
   }
 
   return (
-    <FullscreenMessageDialog color="danger" title="Unsupported module versions">
+    <Dialog header="Unsupported module versions" id="version-checker-dialog">
       <p>Modules are out of date</p>
 
       {result.helpUrl && (
@@ -25,13 +31,15 @@ export default function DeprecatedVersionChecker() {
           For more information, please read <a href={result.helpUrl}>{result.helpUrl}</a>
         </p>
       )}
-    </FullscreenMessageDialog>
+    </Dialog>
   )
 }
 
-DeprecatedVersionChecker.checkVersions = (): Promise<VersionsResponse> => {
+DeprecatedVersionChecker.checkVersions = (
+  options: CheckModuleVersionsOptions
+): Promise<VersionsResponse> => {
   console.warn('`VersionChecker.checkVersions()` is deprecated and marked for removal')
-  return checkModuleStatus().toPromise()
+  return checkModuleStatus(options).toPromise()
 }
 
 /**
@@ -42,7 +50,9 @@ DeprecatedVersionChecker.checkVersions = (): Promise<VersionsResponse> => {
 DeprecatedVersionChecker.getLatestInstalled = (): string => {
   console.warn('`VersionChecker.getLatestInstalled()` is deprecated and marked for removal')
 
-  const versionNums = Object.keys(sanityModuleVersions).map((pkg) => sanityModuleVersions[pkg])
+  // @todo
+  // const versionNums = Object.keys(sanityModuleVersions).map((pkg) => sanityModuleVersions[pkg])
+  const versionNums: string[] = []
   const sorted = versionNums.sort(semverCompare)
   return sorted[sorted.length - 1]
 }

@@ -1,1 +1,3 @@
-export {default} from './document-store'
+export * from './document-store'
+
+export type {RemoteSnapshotVersionEvent} from './document-pair/checkoutPair'

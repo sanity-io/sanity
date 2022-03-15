@@ -5,11 +5,11 @@ import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 export const patch = {
   disabled: (): false => false,
   execute: (
-    {snapshots, idPair, draft, published, typeName}: OperationArgs,
+    {schema, snapshots, idPair, draft, published, typeName}: OperationArgs,
     patches = [],
-    initialValue
+    initialValue: any
   ): void => {
-    if (isLiveEditEnabled(typeName)) {
+    if (isLiveEditEnabled(schema, typeName)) {
       // No drafting, so patch and commit the published document
       published.mutate([
         published.createIfNotExists({

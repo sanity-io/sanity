@@ -6,7 +6,7 @@ import {UserColorHue, UserColorManager, UserColor, UserId} from './types'
 export interface UserColorManagerOptions {
   anonymousColor?: UserColor
   userStore?: {me: Observable<{id: string} | null>}
-  colors?: Readonly<Record<UserColorHue, UserColor>>
+  colors?: Record<UserColorHue, UserColor>
   currentUserColor?: UserColorHue
 }
 

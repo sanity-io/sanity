@@ -17,7 +17,7 @@ export const StyledCard = styled(Card)(() => {
 })
 
 interface PreviewCardContextValue {
-  selected: boolean
+  selected?: boolean
 }
 
 const PreviewCardContext = createContext<PreviewCardContextValue>({selected: false})

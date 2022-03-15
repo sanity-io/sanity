@@ -1,10 +1,9 @@
 /* eslint-disable import/no-unresolved */
 
-import {FormFieldSet, ImperativeToast} from '@sanity/base/components'
+import {ChangeIndicatorForFieldPath, FormFieldSet, ImperativeToast} from '@sanity/base/components'
 import {Box, Button, Card, Dialog, Menu, MenuButton, MenuItem, Stack, ToastParams} from '@sanity/ui'
 import {get, groupBy, uniqueId} from 'lodash'
 import {Observable, Subscription} from 'rxjs'
-import {ChangeIndicatorForFieldPath} from '@sanity/base/change-indicators'
 import {ChevronDownIcon, ImageIcon, SearchIcon} from '@sanity/icons'
 import {
   ImageAsset,
@@ -18,12 +17,7 @@ import {
 import React, {ReactNode} from 'react'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import deepCompare from 'react-fast-compare'
-import {
-  ResolvedUploader,
-  Uploader,
-  UploaderResolver,
-  UploadOptions,
-} from '../../../sanity/uploads/types'
+import {ResolvedUploader, Uploader, UploadOptions} from '../../../sanity/uploads/types'
 import {ImageToolInput} from '../ImageToolInput'
 import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
 import UploadPlaceholder from '../common/UploadPlaceholder'
@@ -462,17 +456,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderField(field: ObjectField) {
-    const {
-      value,
-      level,
-      focusPath,
-      onFocus,
-      readOnly,
-      onBlur,
-      compareValue,
-      presence,
-      markers,
-    } = this.props
+    const {value, level, focusPath, onFocus, readOnly, onBlur, compareValue, presence, markers} =
+      this.props
     const fieldValue = value?.[field.name]
     const fieldMarkers = markers.filter((marker) => marker.path[0] === field.name)
 
@@ -496,15 +481,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderAssetMenu() {
-    const {
-      value,
-      readOnly,
-      assetSources,
-      type,
-      directUploads,
-      imageUrlBuilder,
-      observeAsset,
-    } = this.props
+    const {value, readOnly, assetSources, type, directUploads, imageUrlBuilder, observeAsset} =
+      this.props
     const {isMenuOpen} = this.state
 
     const asset = value?.asset

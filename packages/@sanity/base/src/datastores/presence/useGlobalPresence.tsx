@@ -1,14 +1,18 @@
 import {useState, useEffect} from 'react'
+import {useDatastores} from '../useDatastores'
 import {GlobalPresence} from './types'
-import {globalPresence$} from './presence-store'
 
 export function useGlobalPresence(): GlobalPresence[] {
   const [presence, setPresence] = useState<GlobalPresence[]>([])
+  const {presenceStore} = useDatastores()
+
   useEffect(() => {
-    const subscription = globalPresence$.subscribe(setPresence)
+    const subscription = presenceStore.globalPresence$.subscribe(setPresence)
+
     return () => {
       subscription.unsubscribe()
     }
-  }, [])
+  }, [presenceStore])
+
   return presence
 }

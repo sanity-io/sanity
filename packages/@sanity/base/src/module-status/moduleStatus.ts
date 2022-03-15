@@ -1,8 +1,10 @@
 import type {Observable} from 'rxjs'
 import {map, shareReplay} from 'rxjs/operators'
-import {sanityModuleVersions} from '../legacyParts'
-import {versionedClient} from '../client/versionedClient'
 import {CheckModuleVersionsOptions, VersionsResponse, ModuleStatusResponse} from './types'
+
+// @todo
+// import {sanityModuleVersions} from '../legacyParts'
+const sanityModuleVersions = {}
 
 // Used to keep track of lookups to prevent multiple requests
 const CACHED_LOOKUPS = new Map<string, Observable<ModuleStatusResponse>>()
@@ -16,9 +18,9 @@ const CACHED_LOOKUPS = new Map<string, Observable<ModuleStatusResponse>>()
  * @internal Not a stable API yet
  */
 export function checkModuleStatus(
-  options?: CheckModuleVersionsOptions
+  options: CheckModuleVersionsOptions
 ): Observable<ModuleStatusResponse> {
-  const {moduleVersions = getInstalledModules(), client = versionedClient} = options || {}
+  const {moduleVersions = getInstalledModules(), client} = options
   const query = buildQueryString(moduleVersions)
   const hash = hashQuery(query.m)
 

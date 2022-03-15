@@ -44,24 +44,6 @@ export interface Schema {
   getTypeNames: () => string[]
 }
 
-export interface PreviewValue {
-  title?: React.ReactNode
-  subtitle?: React.ReactNode
-  description?: React.ReactNode
-  media?: React.ReactNode
-  /**
-   * optional object used to attach meta data to the prepared result.
-   * currently used to add a flag for the invalid preview error fallback and
-   * insufficient permissions fallback
-   * @internal
-   */
-  _internalMeta?: {type?: string}
-}
-
-export interface PrepareViewOptions {
-  ordering?: SortOrdering
-}
-
 export interface SortOrderingItem {
   field: string
   direction: 'asc' | 'desc'

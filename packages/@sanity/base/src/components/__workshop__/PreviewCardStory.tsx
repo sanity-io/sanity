@@ -15,14 +15,17 @@ export default function PreviewCardStory() {
         <PreviewCard as="button" paddingY={2} paddingX={3} radius={2} selected={selected}>
           <Flex align="center" justify="center" gap={4}>
             <DocumentPreviewPresence
-              presence={['id-1', 'id-2', 'id-3', 'id-4'].map((num) => ({
-                status: 'online',
-                lastActiveAt: '',
-                user: {
-                  imageUrl: 'https://source.unsplash.com/96x96/?face',
-                  id: num,
-                },
-              }))}
+              presence={['id-1', 'id-2', 'id-3', 'id-4'].map(
+                (num) =>
+                  ({
+                    status: 'online',
+                    lastActiveAt: '',
+                    user: {
+                      imageUrl: 'https://source.unsplash.com/96x96/?face',
+                      id: num,
+                    },
+                  } as any)
+              )}
             />
             <TextWithTone tone="positive">
               <PublishIcon />

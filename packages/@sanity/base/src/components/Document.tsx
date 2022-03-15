@@ -1,119 +1,42 @@
-import React, {useMemo} from 'react'
-import generateScriptLoader from '../util/generateScriptLoader'
-import uncaughtErrorHandler from '../util/uncaughtErrorHandler'
-import AppLoadingScreen from './AppLoadingScreen'
-import NoJavascript from './NoJavascript'
+import React from 'react'
 
-export interface DocumentAsset {
-  path: string
-  hash?: string
+const globalStyles = `
+html {
+  background-color: #f1f3f6;
 }
-
-export interface DocumentProps {
-  basePath?: string
-  charset?: string
-  title?: string
-  viewport?: string
-  loading?: React.ReactNode
-  staticPath?: string
-  favicons?: DocumentAsset[]
-  stylesheets?: DocumentAsset[]
-  scripts?: DocumentAsset[]
+html,
+body,
+#sanity {
+  height: 100%;
 }
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}`
 
-const DEFAULT_FAVICONS: DocumentAsset[] = [{path: 'favicon.ico'}]
+const globalScript = `
+// For legacy sanity support
+window.__DEV__ = true;
+// Polyfill
+window.setImmediate = setTimeout;
+`
 
-export default function Document(props: DocumentProps) {
-  const {
-    basePath: basePathProp = '',
-    charset = 'utf-8',
-    title = 'Sanity',
-    viewport = 'width=device-width, initial-scale=1, viewport-fit=cover',
-    loading = 'Connecting to Sanity.io',
-    staticPath: staticPathProp = '/static',
-    favicons: faviconsProp = DEFAULT_FAVICONS,
-    stylesheets: stylesheetsProp = [],
-    scripts: scriptsProp = [],
-  } = props
-
-  const basePath = basePathProp.replace(/\/+$/, '')
-  const staticPath = `${basePath}${staticPathProp}`
-
-  const stylesheets = useMemo(
-    () =>
-      stylesheetsProp.map((item) => (
-        <link key={item.path} rel="stylesheet" href={assetUrl(staticPath, item)} />
-      )),
-    [stylesheetsProp, staticPath]
-  )
-
-  const subresources = useMemo(
-    () =>
-      scriptsProp.map((item) => (
-        <link key={item.path} rel="subresource" href={assetUrl(staticPath, item)} />
-      )),
-    [scriptsProp, staticPath]
-  )
-
-  const scripts = useMemo(() => scriptsProp.map((item) => assetUrl(staticPath, item)), [
-    scriptsProp,
-    staticPath,
-  ])
-
-  const scriptLoader = useMemo(() => generateScriptLoader(scripts), [scripts])
-  const errorHandler = useMemo(() => uncaughtErrorHandler(), [])
-
-  const favicons = useMemo(
-    () =>
-      faviconsProp.map((item) => (
-        <link key={item.path} rel="icon" href={assetUrl(staticPath, item)} />
-      )),
-    [faviconsProp, staticPath]
-  )
-
+export function Document(props: {entryPath: string}) {
   return (
-    <html>
+    <html lang="en">
       <head>
-        <meta charSet={charset} />
-        <title>{title}</title>
-        <meta name="viewport" content={viewport} />
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <meta name="robots" content="noindex" />
         <meta name="referrer" content="same-origin" />
-        <style>{`html {background-color: #f1f3f6;}`}</style>
-        {stylesheets}
-        {subresources}
-        {favicons}
+        <title>Sanity Studio</title>
+        <style>{globalStyles}</style>
       </head>
-      <body id="sanityBody">
-        <div id="sanity">
-          <AppLoadingScreen text={loading} />
-          <NoJavascript />
-        </div>
-
-        {/* eslint-disable react/no-danger */}
-        <script dangerouslySetInnerHTML={{__html: errorHandler}} />
-        <script dangerouslySetInnerHTML={{__html: scriptLoader}} />
-        {/* eslint-enable react/no-danger */}
+      <body>
+        <div id="sanity" />
+        <script>{globalScript}</script>
+        <script type="module" src={props.entryPath} />
       </body>
     </html>
   )
-}
-
-function assetUrl(staticPath: string, item: DocumentAsset) {
-  const isAbsolute = item.path.match(/^https?:\/\//)
-
-  if (isAbsolute) {
-    return item.path
-  }
-
-  const base = `${staticPath}/${item.path}`
-
-  if (!item.hash) {
-    return base
-  }
-
-  const hasQuery = base.indexOf('?') !== -1
-  const separator = hasQuery ? '&' : '?'
-
-  return `${base}${separator}${item.hash}`
 }

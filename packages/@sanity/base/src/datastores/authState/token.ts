@@ -1,9 +1,16 @@
+/* eslint-disable camelcase */
+
 import type {SanityClient} from '@sanity/client'
 import {concat, defer, merge, of, EMPTY, Observable} from 'rxjs'
 import {shareReplay, switchMapTo} from 'rxjs/operators'
-import {readConfig, authTokenIsAllowed} from './config'
-import {authStateChangedInOtherWindow$, authStateChangedInThisWindow$} from './state'
+import {AuthStateConfig} from './config'
+import {AuthStateState} from './state'
 import * as storage from './storage'
+
+export interface AuthStateTokenStore {
+  fetchToken: (sid: string, client: SanityClient) => Observable<{token: string}>
+  authToken$: Observable<string | null>
+}
 
 // Project ID is part of the localStorage key so that different projects can store their separate tokens, and it's easier to do book keeping.
 const getStorageKey = (projectId: string) => {
@@ -44,33 +51,45 @@ export const getToken = (projectId: string): string | null => {
   return null
 }
 
-export const fetchToken = (sid: string, client: SanityClient): Observable<{token: string}> => {
-  return client.observable.request({
-    method: 'GET',
-    uri: `/auth/fetch`,
-    query: {sid},
-    tag: 'auth.fetch-token',
+export function __tmp_authState_token(context: {
+  authStateConfig: AuthStateConfig
+  authStateState: AuthStateState
+}): AuthStateTokenStore {
+  const {authStateConfig, authStateState} = context
+
+  // export
+  const fetchToken = (sid: string, client: SanityClient): Observable<{token: string}> => {
+    return client.observable.request({
+      method: 'GET',
+      uri: `/auth/fetch`,
+      query: {sid},
+      tag: 'auth.fetch-token',
+    })
+  }
+
+  // TODO: some kind of refresh mechanism here when we support refresh tokens / stamping?
+  const freshToken$ = defer(() => {
+    if (typeof window === 'undefined' || !authStateConfig.authTokenIsAllowed()) {
+      return EMPTY
+    }
+
+    const {projectId} = authStateConfig.readConfig()
+    if (!projectId) {
+      throw new Error('No projectId configured')
+    }
+    return of(getToken(projectId))
   })
-}
 
-// TODO: some kind of refresh mechanism here when we support refresh tokens / stamping?
-const freshToken$ = defer(() => {
-  if (typeof window === 'undefined' || !authTokenIsAllowed()) {
-    return EMPTY
-  }
-
-  const {projectId} = readConfig()
-  if (!projectId) {
-    throw new Error('No projectId configured')
-  }
-  return of(getToken(projectId))
-})
-
-export const authToken$ = defer(() =>
-  concat(
-    freshToken$,
-    merge(authStateChangedInOtherWindow$, authStateChangedInThisWindow$).pipe(
-      switchMapTo(freshToken$)
+  // export
+  const authToken$ = defer(() =>
+    concat(
+      freshToken$,
+      merge(
+        authStateState.authStateChangedInOtherWindow$,
+        authStateState.authStateChangedInThisWindow$
+      ).pipe(switchMapTo(freshToken$))
     )
-  )
-).pipe(shareReplay({bufferSize: 1, refCount: true}))
+  ).pipe(shareReplay({bufferSize: 1, refCount: true}))
+
+  return {fetchToken, authToken$}
+}

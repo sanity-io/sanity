@@ -2,8 +2,7 @@ import {
   unstable_useTemplatePermissions as useUnstableTemplatePermissions,
   useDocumentType,
 } from '@sanity/base/hooks'
-import {useZIndex} from '@sanity/base/components'
-import {ChangeConnectorRoot} from '@sanity/base/change-indicators'
+import {useZIndex, ChangeConnectorRoot} from '@sanity/base/components'
 import {getTemplateById} from '@sanity/base/initial-value-templates'
 import {
   BoundaryElementProvider,

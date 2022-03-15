@@ -7,7 +7,7 @@ import {ConditionalReadOnlyContextValue} from './types'
  */
 export function ConditionalReadOnlyContextProvider(props: {
   children?: React.ReactNode
-  readOnly: boolean
+  readOnly?: boolean
 }): React.ReactElement {
   const {children, readOnly} = props
 

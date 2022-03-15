@@ -1,25 +1,48 @@
-import {Subject} from 'rxjs'
+/* eslint-disable camelcase */
+
+import {Observable, Subject} from 'rxjs'
 import {filter} from 'rxjs/operators'
-import {otherWindowMessages$, crossWindowBroadcast} from '../crossWindowMessaging'
+import {CrossWindowMessaging} from '../crossWindowMessaging'
+
+export interface AuthStateState {
+  authStateChangedInThisWindow$: Subject<true>
+  authStateChangedInOtherWindow$: Observable<AuthStateChangedMessage>
+  broadcastAuthStateChanged: (userId: string | undefined) => void
+}
 
 const MSG_AUTH_STATE_CHANGED = 'authStateChange'
 
-interface AuthStateChangedMessage {
+export interface AuthStateChangedMessage {
   type: typeof MSG_AUTH_STATE_CHANGED
   id: string | undefined
 }
 
-export const authStateChangedInThisWindow$ = new Subject<true>()
+export function __tmp_authState_state(context: {
+  crossWindowMessaging: CrossWindowMessaging
+}): AuthStateState {
+  const {crossWindowMessaging} = context
 
-export const authStateChangedInOtherWindow$ = otherWindowMessages$.pipe(filter(isAuthChangeMessage))
+  // export
+  const authStateChangedInThisWindow$ = new Subject<true>()
 
-export const broadcastAuthStateChanged = (userId: string | undefined): void => {
-  const message: AuthStateChangedMessage = {type: MSG_AUTH_STATE_CHANGED, id: userId}
-  crossWindowBroadcast(message)
+  // export
+  const authStateChangedInOtherWindow$ = crossWindowMessaging.otherWindowMessages$.pipe(
+    filter(isAuthChangeMessage)
+  )
 
-  authStateChangedInThisWindow$.next(true)
-}
+  // export
+  const broadcastAuthStateChanged = (userId: string | undefined): void => {
+    const message: AuthStateChangedMessage = {type: MSG_AUTH_STATE_CHANGED, id: userId}
+    crossWindowMessaging.crossWindowBroadcast(message)
 
-function isAuthChangeMessage(message: any): message is AuthStateChangedMessage {
-  return typeof message === 'object' && 'type' in message && message.type === MSG_AUTH_STATE_CHANGED
+    authStateChangedInThisWindow$.next(true)
+  }
+
+  function isAuthChangeMessage(message: any): message is AuthStateChangedMessage {
+    return (
+      typeof message === 'object' && 'type' in message && message.type === MSG_AUTH_STATE_CHANGED
+    )
+  }
+
+  return {authStateChangedInThisWindow$, authStateChangedInOtherWindow$, broadcastAuthStateChanged}
 }

@@ -1,8 +1,10 @@
-import {SanityDocument} from '@sanity/types'
+import {SanityClient} from '@sanity/client'
+import {SanityDocument, Schema} from '@sanity/types'
+import {HistoryStore} from '../history'
 import {MutationPayload} from './buffered-doc/types'
 import {DocumentVersionSnapshots} from './document-pair/snapshotPair'
 
-export {SanityClient} from '@sanity/client'
+export type {SanityClient} from '@sanity/client'
 export type {MutationPayload as Mutation}
 
 export interface WelcomeEvent {
@@ -33,6 +35,9 @@ export interface Operation<Args> {
 }
 
 export interface OperationArgs {
+  client: SanityClient
+  historyStore: HistoryStore
+  schema: Schema
   typeName: string
   idPair: IdPair
   snapshots: {draft: null | SanityDocument; published: null | SanityDocument}

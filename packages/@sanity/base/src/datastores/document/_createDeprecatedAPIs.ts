@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
+import {SanityClient} from '@sanity/client'
 import {SanityDocument} from '@sanity/types'
 import {Observable, defer, of as observableOf} from 'rxjs'
 import {concatMap, map, share} from 'rxjs/operators'
 import {createBufferedDocument} from './buffered-doc/createBufferedDocument'
 import {WelcomeEvent} from './types'
 
-function fetchDocumentSnapshot(client, id) {
+function fetchDocumentSnapshot(client: SanityClient, id: string) {
   return client.observable.getDocument(id).pipe(
     map((document) => ({
       type: 'snapshot',
@@ -21,29 +22,29 @@ export interface QuerySnapshotEvent {
 
 type QueryEvent = WelcomeEvent | MutationEvent | QuerySnapshotEvent
 
-function commitMutations(client, mutations) {
+function commitMutations(client: SanityClient, mutations: any[]) {
   return client.dataRequest('mutate', mutations, {
     visibility: 'async',
     returnDocuments: false,
   })
 }
 
-function _createDeprecatedAPIs(client) {
-  const _doCommit = (mutations) => commitMutations(client, mutations)
+function _createDeprecatedAPIs(client: SanityClient) {
+  const _doCommit = (mutations: any[]) => commitMutations(client, mutations)
 
-  function patchDoc(documentId, patches) {
+  function patchDoc(documentId: string, patches: any[]) {
     const doc = checkout(documentId)
     doc.patch(patches)
     return doc.commit()
   }
 
-  function deleteDoc(documentId) {
+  function deleteDoc(documentId: string) {
     const doc = checkout(documentId)
     doc.delete()
     doc.commit()
   }
 
-  function checkout(documentId) {
+  function checkout(documentId: string) {
     const serverEvents$ = client
       .listen(
         '*[_id == $id]',
@@ -59,14 +60,14 @@ function _createDeprecatedAPIs(client) {
         share()
       )
 
-    return createBufferedDocument(documentId, serverEvents$, _doCommit)
+    return createBufferedDocument(documentId, serverEvents$ as any, _doCommit as any)
   }
 
-  function byId(documentId) {
+  function byId(documentId: string) {
     return checkout(documentId).events
   }
 
-  function byIds(documentIds) {
+  function byIds(documentIds: string[]) {
     return new Observable((observer) => {
       const documentSubscriptions = documentIds.map((id) => byId(id).subscribe(observer))
 
@@ -76,15 +77,15 @@ function _createDeprecatedAPIs(client) {
     })
   }
 
-  function create(document) {
+  function create(document: Omit<Partial<SanityDocument>, '_type'> & {_type: string}) {
     return client.observable.create(document)
   }
 
-  function createIfNotExists(document) {
+  function createIfNotExists(document: SanityDocument) {
     return client.observable.createIfNotExists(document)
   }
 
-  function createOrReplace(document) {
+  function createOrReplace(document: SanityDocument) {
     return client.observable.createOrReplace(document)
   }
 
@@ -129,8 +130,8 @@ function _createDeprecatedAPIs(client) {
   }
 }
 
-function deprecate(name, fn) {
-  return (...args) => {
+function deprecate(name: string, fn: any) {
+  return (...args: any[]) => {
     console.warn(
       'The `documentStore.%s()-method is deprecated and should not be relied upon. Please use checkoutPair() or listenQuery() instead.',
       name
@@ -139,13 +140,13 @@ function deprecate(name, fn) {
   }
 }
 
-function mapObj(obj, mapFn) {
-  return Object.keys(obj).reduce((acc, key) => {
+function mapObj(obj: Record<string, unknown>, mapFn: (v: any, k: string) => any) {
+  return Object.keys(obj).reduce<Record<string, unknown>>((acc, key) => {
     acc[key] = mapFn(obj[key], key)
     return acc
   }, {})
 }
 
-export default function createDeprecatedAPIs(client) {
+export default function createDeprecatedAPIs(client: SanityClient) {
   return mapObj(_createDeprecatedAPIs(client), (fn, key) => deprecate(key, fn))
 }

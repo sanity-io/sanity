@@ -3,7 +3,9 @@ import {distinctUntilChanged, map} from 'rxjs/operators'
 
 const DEBUG_PREFIX = '_debug_'
 
-export const debugParams$ = concat(of(0), fromEvent(window, 'hashchange')).pipe(
+const hashchange$ = typeof window === 'undefined' ? of({}) : fromEvent(window, 'hashchange')
+
+export const debugParams$ = concat(of(0), hashchange$).pipe(
   map(() => (typeof document === 'undefined' ? '#' : document.location.hash)),
   distinctUntilChanged(),
   map((hash) =>

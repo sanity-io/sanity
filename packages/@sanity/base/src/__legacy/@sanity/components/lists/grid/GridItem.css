@@ -1,9 +1,0 @@
-@import 'part:@sanity/base/theme/variables-style';
-
-.root {
-  display: block;
-  position: relative;
-  user-select: none;
-  cursor: default;
-  list-style: none;
-}

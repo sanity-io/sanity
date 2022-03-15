@@ -4,6 +4,7 @@ import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {Media} from '../_common/Media'
 import {PREVIEW_MEDIA_SIZE} from '../constants'
 import {PreviewMediaDimensions, PreviewProps} from '../types'
+import {renderPreviewNode} from '../helpers'
 import {
   DescriptionSkeleton,
   DescriptionText,
@@ -37,7 +38,7 @@ export function DetailPreview(props: DetailPreviewProps) {
 
   const statusNode = status && (
     <StatusBox marginLeft={3} paddingRight={1}>
-      {typeof status === 'function' ? status({layout: 'detail'}) : status}
+      {renderPreviewNode(status, 'detail')}
     </StatusBox>
   )
 
@@ -74,13 +75,13 @@ export function DetailPreview(props: DetailPreviewProps) {
         <Flex align="center" data-testid="detail-preview__header">
           <Stack flex={1} space={2}>
             <Text textOverflow="ellipsis" style={{color: 'inherit'}}>
-              {title && typeof title === 'function' ? title({layout: 'detail'}) : title}
+              {title && renderPreviewNode(title, 'detail')}
               {!title && <>Untitled</>}
             </Text>
 
             {subtitle && (
               <Text muted size={1} textOverflow="ellipsis">
-                {typeof subtitle === 'function' ? subtitle({layout: 'detail'}) : subtitle}
+                {renderPreviewNode(subtitle, 'detail')}
               </Text>
             )}
           </Stack>
@@ -91,7 +92,7 @@ export function DetailPreview(props: DetailPreviewProps) {
         {description && (
           <Box marginTop={3}>
             <DescriptionText muted size={1}>
-              {typeof description === 'function' ? description({layout: 'detail'}) : description}
+              {renderPreviewNode(description, 'detail')}
             </DescriptionText>
           </Box>
         )}

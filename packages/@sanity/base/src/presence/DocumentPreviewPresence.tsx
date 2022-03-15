@@ -1,6 +1,7 @@
 import {AvatarStack, Box, Card, Text, Theme, Tooltip, TooltipProps} from '@sanity/ui'
 import React, {useMemo} from 'react'
 import styled, {css, useTheme} from 'styled-components'
+import {isNonNullable} from '../util/isNonNullable'
 import {UserAvatar, usePreviewCard} from '../components'
 import {DocumentPresence} from '../datastores/presence/types'
 
@@ -13,13 +14,13 @@ const PRESENCE_MENU_POPOVER_PROPS: TooltipProps = {
   scheme: 'light',
 }
 
-const AvatarStackCard = styled(Card)(({theme, $selected}: {theme: Theme; $selected: boolean}) => {
+const AvatarStackCard = styled(Card)(({theme, $selected}: {theme: Theme; $selected?: boolean}) => {
   const {color} = theme.sanity
 
   return css`
     --card-bg-color: inherit;
     --card-fg-color: inherit;
-    --card-hairline-hard-color: ${$selected ? color.selectable.default.pressed.border : undefined};
+    --card-hairline-hard-color: ${$selected ? color.selectable?.default.pressed.border : undefined};
   `
 })
 
@@ -47,9 +48,11 @@ export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
 
   const uniqueUsers = useMemo(
     () =>
-      Array.from(new Set(presence.map((a) => a.user.id))).map((id) => {
-        return presence.find((a) => a.user.id === id)
-      }),
+      Array.from(new Set(presence.map((a) => a.user.id)))
+        .map((id) => {
+          return presence.find((a) => a.user.id === id)
+        })
+        .filter(isNonNullable),
     [presence]
   )
 

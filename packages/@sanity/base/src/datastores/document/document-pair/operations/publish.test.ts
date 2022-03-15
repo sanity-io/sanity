@@ -1,36 +1,12 @@
 import {SanityDocument} from '@sanity/types'
-import {versionedClient} from '../../../../client/versionedClient'
+import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
 import {OperationArgs} from '../../types'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 import {publish} from './publish'
 
-jest.mock('../../../../client/versionedClient', () => {
-  const fn = jest.fn()
-
-  const proxy = new Proxy(
-    {},
-    {
-      get: (_, property) => {
-        return (...args: unknown[]) => {
-          fn(property, ...args)
-          return proxy
-        }
-      },
-    }
-  )
-
-  return {
-    versionedClient: {
-      _fn: fn,
-      transaction: () => proxy,
-    },
-  }
-})
-
 jest.mock('../utils/isLiveEditEnabled', () => ({isLiveEditEnabled: jest.fn()}))
 
 beforeEach(() => {
-  ;((versionedClient as unknown) as {_fn: jest.Mock})._fn.mockClear()
   ;(isLiveEditEnabled as jest.Mock).mockClear()
 })
 
@@ -58,13 +34,13 @@ describe('publish', () => {
       )
 
       expect(
-        publish.disabled(({
+        publish.disabled({
           typeName: 'blah',
           snapshots: {
             draft: undefined,
             published: {} as SanityDocument,
           },
-        } as unknown) as OperationArgs)
+        } as unknown as OperationArgs)
       ).toBe('ALREADY_PUBLISHED')
     })
 
@@ -75,13 +51,13 @@ describe('publish', () => {
       )
 
       expect(
-        publish.disabled(({
+        publish.disabled({
           typeName: 'blah',
           snapshots: {
             draft: undefined,
             published: undefined,
           },
-        } as unknown) as OperationArgs)
+        } as unknown as OperationArgs)
       ).toBe('NO_CHANGES')
     })
 
@@ -92,20 +68,23 @@ describe('publish', () => {
       )
 
       expect(
-        publish.disabled(({
+        publish.disabled({
           typeName: 'blah',
           snapshots: {
             draft: {} as SanityDocument,
             published: {} as SanityDocument,
           },
-        } as unknown) as OperationArgs)
+        } as unknown as OperationArgs)
       ).toBe(false)
     })
   })
 
   describe('execute', () => {
-    it('removes the _updatedAt field', () => {
-      publish.execute(({
+    it('removes the `_updatedAt` field', () => {
+      const client = createMockSanityClient()
+
+      publish.execute({
+        client,
         idPair: {
           draftId: 'drafts.my-id',
           publishedId: 'my-id',
@@ -120,26 +99,30 @@ describe('publish', () => {
             newValue: 'hey',
           },
         },
-      } as unknown) as OperationArgs)
+      } as unknown as OperationArgs)
 
-      expect(((versionedClient as unknown) as {_fn: jest.Mock})._fn.mock.calls).toMatchObject([
+      expect(client.$log.calls).toMatchObject([
+        ['transaction'],
         [
-          'create',
+          'transaction#1.create',
           {
             _createdAt: '2021-09-14T22:48:02.303Z',
-            _id: 'my-id',
             _rev: 'exampleRev',
+            _id: 'my-id',
             _type: 'example',
             newValue: 'hey',
           },
         ],
-        ['delete', 'drafts.my-id'],
-        ['commit', {tag: 'document.publish'}],
+        ['transaction#1.delete', 'drafts.my-id'],
+        ['transaction#1.commit', {tag: 'document.publish'}],
       ])
     })
 
     it('calls createOrReplace with _revision_lock_pseudo_field_ if there is an already published document', () => {
-      publish.execute(({
+      const client = createMockSanityClient()
+
+      publish.execute({
+        client,
         idPair: {
           draftId: 'drafts.my-id',
           publishedId: 'my-id',
@@ -161,27 +144,35 @@ describe('publish', () => {
             _updatedAt: '2021-09-14T22:48:02.303Z',
           },
         },
-      } as unknown) as OperationArgs)
+      } as unknown as OperationArgs)
 
-      expect(((versionedClient as unknown) as {_fn: jest.Mock})._fn.mock.calls).toMatchObject([
-        ['patch', 'my-id', {ifRevisionID: 'exampleRev', unset: ['_revision_lock_pseudo_field_']}],
+      expect(client.$log.calls).toMatchObject([
+        ['transaction'],
         [
-          'createOrReplace',
+          'transaction#1.patch',
+          'my-id',
+          {unset: ['_revision_lock_pseudo_field_'], ifRevisionID: 'exampleRev'},
+        ],
+        [
+          'transaction#1.createOrReplace',
           {
             _createdAt: '2021-09-14T22:48:02.303Z',
-            _id: 'my-id',
             _rev: 'exampleRev',
+            _id: 'my-id',
             _type: 'example',
             newValue: 'hey',
           },
         ],
-        ['delete', 'drafts.my-id'],
-        ['commit', {tag: 'document.publish'}],
+        ['transaction#1.delete', 'drafts.my-id'],
+        ['transaction#1.commit', {tag: 'document.publish'}],
       ])
     })
 
-    it('takes in any  and strengthens references where _strengthenOnPublish is true', () => {
-      publish.execute(({
+    it('takes in any and strengthens references where _strengthenOnPublish is true', () => {
+      const client = createMockSanityClient()
+
+      publish.execute({
+        client,
         idPair: {
           draftId: 'drafts.my-id',
           publishedId: 'my-id',
@@ -231,27 +222,28 @@ describe('publish', () => {
           },
           published: null,
         },
-      } as unknown) as OperationArgs)
+      } as unknown as OperationArgs)
 
-      expect(((versionedClient as unknown) as {_fn: jest.Mock})._fn.mock.calls).toMatchObject([
+      expect(client.$log.calls).toMatchObject([
+        ['transaction'],
         [
-          'create',
+          'transaction#1.create',
           {
             _createdAt: '2021-09-14T22:48:02.303Z',
             _id: 'my-id',
             _rev: 'exampleRev',
             _type: 'my-type',
+            simpleRef: {_type: 'reference', _ref: 'my-ref'},
+            notToBeStrengthened: {_type: 'reference', _weak: true, _ref: 'my-ref'},
             inAn: [
-              {_key: 'my-key', _ref: 'my-ref-in-an-', _type: 'reference'},
+              {_type: 'reference', _ref: 'my-ref-in-an-', _key: 'my-key'},
               {_key: 'my-other-key', _type: 'nestedObj', myRef: {_ref: 'my-ref-in-an--nested'}},
-              {_ref: 'my-ref-in-an--no-key', _type: 'reference'},
+              {_type: 'reference', _ref: 'my-ref-in-an--no-key'},
             ],
-            notToBeStrengthened: {_ref: 'my-ref', _type: 'reference', _weak: true},
-            simpleRef: {_ref: 'my-ref', _type: 'reference'},
           },
         ],
-        ['delete', 'drafts.my-id'],
-        ['commit', {tag: 'document.publish'}],
+        ['transaction#1.delete', 'drafts.my-id'],
+        ['transaction#1.commit', {tag: 'document.publish'}],
       ])
     })
   })

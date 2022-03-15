@@ -1,4 +1,5 @@
-import {fromEvent} from 'rxjs'
+import {fromEvent, of} from 'rxjs'
 import {share} from 'rxjs/operators'
 
-export default fromEvent(window, 'orientationchange').pipe(share())
+export const orientationChange$ =
+  typeof window === 'undefined' ? of({}) : fromEvent(window, 'orientationchange').pipe(share())

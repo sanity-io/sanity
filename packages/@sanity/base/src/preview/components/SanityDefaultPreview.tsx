@@ -1,9 +1,15 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import imageUrlBuilder from '@sanity/image-url'
-import {ImageUrlFitMode, SanityDocument} from '@sanity/types'
+import {
+  Image,
+  ImageUrlFitMode,
+  isImage,
+  isReference,
+  Reference,
+  SanityDocument,
+} from '@sanity/types'
 import {DocumentIcon} from '@sanity/icons'
-import {assetUrlBuilder} from '../../assets'
-import {versionedClient} from '../../client/versionedClient'
+import {assetUrlBuilder, AssetURLBuilderOptions} from '../../assets'
 import {
   DefaultPreview,
   BlockImagePreview,
@@ -14,8 +20,10 @@ import {
 } from '../../components/previews'
 import {
   PreviewComponent as PreviewComponentType,
+  PreviewLayoutKey,
   PreviewProps,
 } from '../../components/previews/types'
+import {useClient} from '../../client'
 
 interface UploadState {
   progress: number
@@ -42,47 +50,84 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && !Array.isArray(value) && typeof value === 'object'
 }
 
-function extractUploadState(
-  value: Partial<SanityDocument>
-): {_upload: UploadState | null; value: Partial<SanityDocument>} {
+function extractUploadState(value: PreviewValue | Partial<SanityDocument>): {
+  _upload: UploadState | null
+  value: PreviewValue | Partial<SanityDocument> | null
+} {
   if (!value || typeof value !== 'object') {
-    return {_upload: null, value}
+    return {_upload: null, value: null}
   }
   const {_upload, ...rest} = value
   return {_upload: _upload as UploadState, value: rest}
 }
 
-interface SanityDefaultPreviewProps extends PreviewProps {
-  _renderAsBlockImage?: boolean
-  icon?: React.ComponentType<any> | false
-  layout?: 'default' | 'card' | 'media' | 'detail' | 'inline' | 'block'
-  value: Partial<SanityDocument>
+export interface PreviewValue {
+  id?: string
+  description?: React.ReactNode
+  subtitle?: React.ReactNode
+  title?: React.ReactNode
+  media?: React.ReactNode | React.ComponentType | Reference | Image
+  icon?: boolean
+  type?: string
+  displayOptions?: {showIcon?: boolean}
+  schemaType?: {name?: string}
+  _upload?: unknown
+  imageUrl?: unknown
+  extendedPreview?: unknown
 }
 
-export default class SanityDefaultPreview extends React.PureComponent<SanityDefaultPreviewProps> {
-  componentDidMount() {
-    if (this.props.layout === 'card') {
-      console.warn(
-        'The `card` layout option in previews is deprecated. Please use `default` instead.'
-      )
-    }
+interface SanityDefaultPreviewProps extends PreviewProps {
+  _renderAsBlockImage?: boolean
+  icon?: React.ComponentType | false
+  layout?: PreviewLayoutKey
+  value: PreviewValue | Partial<SanityDocument> //Partial<SanityDocument> | PreviewValue
+}
+
+export function SanityDefaultPreview(props: SanityDefaultPreviewProps) {
+  const {
+    icon, // omit
+    layout,
+    _renderAsBlockImage,
+    value: valueProp,
+    ...rest
+  } = props
+
+  let PreviewComponent =
+    layout && previewComponentMap.hasOwnProperty(layout)
+      ? previewComponentMap[layout]
+      : previewComponentMap.default
+
+  if (_renderAsBlockImage) {
+    PreviewComponent = BlockImagePreview
   }
 
-  renderMedia = (options: {
+  const {_upload, value: uploadValue} = extractUploadState(valueProp)
+
+  const item = _upload
+    ? {
+        ...uploadValue,
+        imageUrl: _upload.previewImage,
+        title: uploadValue?.title || (_upload.file && _upload.file.name) || 'Uploading…',
+      }
+    : uploadValue
+
+  const client = useClient()
+
+  const renderMedia = (options: {
     dimensions: {width?: number; height?: number; fit: ImageUrlFitMode; dpr?: number}
   }) => {
-    const imageBuilder = imageUrlBuilder(versionedClient)
+    const imageBuilder = imageUrlBuilder(client)
 
     // This functions exists because the previews provides options
     // for the rendering of the media (dimensions)
     const {dimensions} = options
-    const {value} = this.props
-    const {media} = value
+
+    const media = valueProp.media as Image
 
     // Handle sanity image
     return (
       <img
-        alt={isString(value.title) ? value.title : undefined}
+        alt={isString(valueProp.title) ? valueProp.title : undefined}
         referrerPolicy="strict-origin-when-cross-origin"
         src={
           imageBuilder
@@ -97,99 +142,85 @@ export default class SanityDefaultPreview extends React.PureComponent<SanityDefa
     )
   }
 
-  renderImageUrl = (options) => {
+  const renderImageUrl = (options: {dimensions: AssetURLBuilderOptions}) => {
     // Legacy support for imageUrl
     const {dimensions} = options
-    const {value} = this.props
-    const imageUrl = value.imageUrl
+    // const {value} = props
+    const imageUrl = valueProp.imageUrl
     if (isString(imageUrl)) {
       const assetUrl = assetUrlBuilder(imageUrl.split('?')[0], dimensions)
-      return <img src={assetUrl} alt={isString(value.title) ? value.title : undefined} />
+      return <img src={assetUrl} alt={isString(valueProp.title) ? valueProp.title : undefined} />
     }
     return undefined
   }
 
-  renderIcon = () => {
-    const {icon} = this.props
+  const renderIcon = () => {
+    // const {icon} = props
     const Icon = icon || DocumentIcon
     return Icon && <Icon className="sanity-studio__preview-fallback-icon" />
   }
 
-  resolveMedia = () => {
-    const {value, icon} = this.props
-    const {media} = value
+  const resolveMedia = () => {
+    const {media} = valueProp
+    // const {value, icon} = props
+    // const {media} = value
 
     if (icon === false) {
       // Explicitly disabled
       return false
     }
 
-    if (typeof media === 'function' || React.isValidElement(media)) {
+    if (typeof media === 'function' || (isRecord(media) && React.isValidElement(media))) {
       return media
     }
 
     // If the asset is on media
-    if (isRecord(value.media) && value.media._type === 'reference' && value.media._ref) {
-      return this.renderMedia
+    if (
+      isRecord(valueProp.media) &&
+      isReference(valueProp.media) &&
+      valueProp.media._type === 'reference' &&
+      valueProp.media._ref
+    ) {
+      return renderMedia
     }
 
     // Legacy support for imageUrl
-    if (value.imageUrl) {
-      return this.renderImageUrl
+    if (valueProp.imageUrl) {
+      return renderImageUrl
     }
 
     // Handle sanity image
-    if (isRecord(media) && media.asset) {
-      return this.renderMedia
+    if (isImage(media)) {
+      return renderMedia
     }
 
     // Render fallback icon
-    return this.renderIcon
+    return renderIcon
   }
 
-  render() {
-    const {
-      icon, // omit
-      layout,
-      _renderAsBlockImage,
-      value: valueProp,
-      ...rest
-    } = this.props
-
-    let PreviewComponent = previewComponentMap.hasOwnProperty(layout)
-      ? previewComponentMap[layout]
-      : previewComponentMap.default
-
-    if (_renderAsBlockImage) {
-      PreviewComponent = BlockImagePreview
+  useEffect(() => {
+    if (layout === 'card') {
+      console.warn(
+        'The `card` layout option in previews is deprecated. Please use `default` instead.'
+      )
     }
+  }, [layout])
 
-    const {_upload, value} = extractUploadState(valueProp)
-
-    const item = _upload
-      ? {
-          ...value,
-          imageUrl: _upload.previewImage,
-          title: value.title || (_upload.file && _upload.file.name) || 'Uploading…',
-        }
-      : value
-
-    if (!item) {
-      return <PreviewComponent {...rest} progress={_upload && _upload.progress} />
-    }
-
-    const media = this.resolveMedia()
-
-    return (
-      <PreviewComponent
-        {...rest}
-        title={item.title}
-        subtitle={item.subtitle}
-        description={item.description}
-        extendedPreview={item.extendedPreview}
-        media={media}
-        progress={_upload && _upload.progress}
-      />
-    )
+  if (!item) {
+    return <PreviewComponent {...rest} progress={(_upload && _upload.progress) || undefined} />
   }
+
+  const media = resolveMedia()
+
+  return (
+    <PreviewComponent
+      {...rest}
+      title={item.title as any}
+      subtitle={item.subtitle as any}
+      description={item.description as any}
+      extendedPreview={item.extendedPreview as any}
+      media={media}
+      progress={(_upload && _upload.progress) || undefined}
+    />
+  )
 }

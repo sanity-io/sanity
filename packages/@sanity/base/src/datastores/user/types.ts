@@ -1,5 +1,4 @@
-import {User, CurrentUser} from '@sanity/types'
-import type {Observable} from 'rxjs'
+import {CurrentUser} from '@sanity/types'
 
 export interface CurrentUserError {
   type: 'error'
@@ -12,25 +11,3 @@ export interface CurrentUserSnapshot {
 }
 
 export type CurrentUserEvent = CurrentUserError | CurrentUserSnapshot
-
-export interface UserStore {
-  actions: {logout: () => void; retry: () => void}
-  me: Observable<CurrentUser | null>
-  getCurrentUser(): Promise<CurrentUser | null>
-  getUser(userId: string): Promise<User | null>
-  getUsers: (ids: string[]) => Promise<User[]>
-
-  /** @deprecated use userStore.me instead */
-  currentUser: Observable<CurrentUserEvent>
-
-  observable: {
-    me: Observable<CurrentUser | null>
-    getUser(userId: string): Observable<User | null>
-    getCurrentUser(): Observable<CurrentUser | null>
-    getUsers(userIds: string[]): Observable<User[]>
-    getUsers(userIds: ('me' | string)[]): Observable<(User | CurrentUser)[]>
-
-    /** @deprecated use userStore.me instead */
-    currentUser: Observable<CurrentUserEvent>
-  }
-}

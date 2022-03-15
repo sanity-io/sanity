@@ -1,3 +1,4 @@
+import {useMemo} from 'react'
 import {LoadableState, useLoadable} from '../util/useLoadable'
 import {checkModuleStatus} from './moduleStatus'
 import {CheckModuleVersionsOptions, ModuleStatusResponse} from './types'
@@ -11,7 +12,9 @@ import {CheckModuleVersionsOptions, ModuleStatusResponse} from './types'
  * @internal Not a stable API yet
  */
 export function useModuleStatus(
-  options?: CheckModuleVersionsOptions
-): LoadableState<ModuleStatusResponse> {
-  return useLoadable(checkModuleStatus(options))
+  options: CheckModuleVersionsOptions
+): LoadableState<ModuleStatusResponse | undefined> {
+  const moduleStatus$ = useMemo(() => checkModuleStatus(options), [options])
+
+  return useLoadable(moduleStatus$)
 }

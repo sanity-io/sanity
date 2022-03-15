@@ -5,6 +5,7 @@ import {CircularProgress} from '../../progress'
 import {Media} from '../_common/Media'
 import {PREVIEW_MEDIA_SIZE} from '../constants'
 import {PreviewMediaDimensions, PreviewProps} from '../types'
+import {renderPreviewNode} from '../helpers'
 import {
   MediaSkeleton,
   MediaFlex,
@@ -39,7 +40,7 @@ export function MediaPreview(props: MediaPreviewProps) {
     ...restProps
   } = props
 
-  const aspect = mediaDimensions.aspect
+  const aspect = mediaDimensions.aspect || 1
 
   const STYLES_PADDER = useMemo(() => ({paddingBottom: `${100 / aspect}%`}), [aspect])
 
@@ -52,13 +53,13 @@ export function MediaPreview(props: MediaPreviewProps) {
       <TooltipContentStack>
         {title && (
           <Text align="center" size={1} weight="semibold">
-            {typeof title === 'function' ? title({layout: 'media'}) : title}
+            {renderPreviewNode(title, 'media')}
           </Text>
         )}
 
         {subtitle && (
           <Text align="center" muted size={1}>
-            {typeof subtitle === 'function' ? subtitle({layout: 'media'}) : subtitle}
+            {renderPreviewNode(subtitle, 'media')}
           </Text>
         )}
       </TooltipContentStack>

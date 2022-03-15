@@ -1,4 +1,5 @@
 import {BufferedDocument, Mutation} from '@sanity/mutator'
+import {SanityDocument} from '@sanity/types'
 import {BehaviorSubject, EMPTY, merge, Observable, Subject} from 'rxjs'
 import {
   distinctUntilChanged,
@@ -57,7 +58,7 @@ const getUpdatedSnapshot = (bufferedDocument: BufferedDocument) => {
   }
 }
 
-const toSnapshotEvent = (document): SnapshotEvent => ({type: 'snapshot', document})
+const toSnapshotEvent = (document: SanityDocument): SnapshotEvent => ({type: 'snapshot', document})
 const getDocument = <T extends {document: any}>(event: T): T['document'] => event.document
 
 // This is an observable interface for BufferedDocument in an attempt
@@ -83,9 +84,9 @@ export const createObservableBufferedDocument = (
   // a stream of remote mutations with effetcs
   const remoteMutations = new Subject<DocumentRemoteMutationEvent>()
 
-  const createInitialBufferedDocument = (initialSnapshot) => {
+  const createInitialBufferedDocument = (initialSnapshot: SanityDocument | null) => {
     const bufferedDocument = new BufferedDocument(initialSnapshot)
-    bufferedDocument.onMutation = ({mutation, remote}) => {
+    bufferedDocument.onMutation = ({mutation, remote}: any) => {
       // this is called after either when:
       // 1) local mutations has been added, optimistically applied and queued for sending
       // 2) remote mutations originating from another client has arrived and been applied
@@ -96,7 +97,7 @@ export const createObservableBufferedDocument = (
         origin: remote ? 'remote' : 'local',
       })
     }
-    ;(bufferedDocument as any).onRemoteMutation = (mutation) => {
+    ;(bufferedDocument as any).onRemoteMutation = (mutation: any) => {
       remoteMutations.next({
         type: 'remoteMutation',
         head: bufferedDocument.document.HEAD as any,
@@ -107,7 +108,7 @@ export const createObservableBufferedDocument = (
       })
     }
 
-    bufferedDocument.onRebase = (edge, nextRemoteMutations, localMutations) => {
+    bufferedDocument.onRebase = (edge: any, nextRemoteMutations: any, localMutations: any) => {
       rebase$.next({
         type: 'rebase',
         document: edge,
@@ -123,7 +124,7 @@ export const createObservableBufferedDocument = (
     bufferedDocument.commitHandler = (opts: {
       success: () => void
       failure: () => void
-      cancel: (error) => void
+      cancel: (error: Error) => void
       mutation: Mutation
     }) => {
       const {resultRev, ...mutation} = opts.mutation.params
@@ -195,7 +196,7 @@ export const createObservableBufferedDocument = (
     share()
   )
 
-  const emitAction = (action) => actions$.next(action)
+  const emitAction = (action: any) => actions$.next(action)
 
   const addMutations = (mutations: MutationPayload[]) => emitAction({type: 'mutation', mutations})
   const addMutation = (mutation: MutationPayload) => addMutations([mutation])
@@ -214,11 +215,11 @@ export const createObservableBufferedDocument = (
     mutations$.pipe(map(getDocument)),
     rebase$.pipe(map(getDocument)),
     snapshotAfterSync$
-  ).pipe(map(toSnapshotEvent), publishReplay(1), refCount())
+  ).pipe(map(toSnapshotEvent as any), publishReplay(1), refCount())
 
   const remoteSnapshot$: Observable<RemoteSnapshotEvent> = merge(
     currentBufferedDocument$.pipe(
-      map((bufferedDocument) => bufferedDocument!.document.HEAD),
+      map((bufferedDocument) => bufferedDocument!.document.HEAD as any),
       map(toSnapshotEvent)
     ),
     remoteMutations

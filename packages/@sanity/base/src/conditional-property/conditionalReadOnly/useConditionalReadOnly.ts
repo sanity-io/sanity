@@ -11,5 +11,5 @@ export function useConditionalReadOnly(): boolean | null {
     return null
   }
 
-  return context.readOnly
+  return context.readOnly || null
 }

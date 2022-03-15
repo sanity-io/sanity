@@ -51,7 +51,17 @@ export const RegionsWithIntersections = forwardRef(function RegionsWithIntersect
     [margins]
   )
 
-  const [intersections, setIntersections] = useState({})
+  const [intersections, setIntersections] = useState<
+    Record<
+      string,
+      | {
+          boundingClientRect: {top: number; bottom: number}
+          isIntersecting: boolean
+          intersectionRect: {top: number; bottom: number}
+        }
+      | undefined
+    >
+  >({})
 
   const onIntersection = useCallback((id, entry) => {
     setIntersections((current) => ({...current, [id]: entry}))

@@ -22,6 +22,7 @@ export interface UserSessionPair {
   user: User
   session: Session
 }
+
 type LastActiveAt = string // iso date
 
 // These are the data prepared and made ready for different types of UI components to use
@@ -29,6 +30,7 @@ type LastActiveAt = string // iso date
 export interface DocumentPresence {
   user: User
   path: Path
+  sessionId: string
   lastActiveAt: LastActiveAt
 }
 

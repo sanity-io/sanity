@@ -1,7 +1,7 @@
 import {isObject, uniq} from 'lodash'
 import {Observable, of as observableOf} from 'rxjs'
 import {switchMap} from 'rxjs/operators'
-import props from './utils/props'
+import {props} from './utils/props'
 
 import {FieldName, Id, Path, Reference, Document, Previewable, ApiConfig} from './types'
 
@@ -39,7 +39,7 @@ function observePaths(
   paths: Path[],
   observeFields: ObserveFieldsFn,
   apiConfig?: ApiConfig
-) {
+): any {
   if (!isRecord(value)) {
     // Reached a leaf. Return as is
     return observableOf(value)
@@ -58,10 +58,10 @@ function observePaths(
       const refApiConfig =
         // if it's a cross dataset reference we want to use it's `_projectId` + `_dataset`
         // attributes as api config
-        isRef && value._dataset && value._projectId
+        isRef && (value as any)._dataset && (value as any)._projectId
           ? {
-              projectId: value._projectId as string,
-              dataset: value._dataset as string,
+              projectId: (value as any)._projectId as string,
+              dataset: (value as any)._dataset as string,
             }
           : apiConfig
 
@@ -99,14 +99,9 @@ function observePaths(
     (res: Record<string, unknown>, head) => {
       const tails = leads[head].filter((tail) => tail.length > 0)
       if (tails.length === 0) {
-        res[head] = value[head]
+        res[head] = (value as any)[head]
       } else {
-        res[head] = observePaths(
-          value[head] as Record<string, unknown>,
-          tails,
-          observeFields,
-          apiConfig
-        )
+        res[head] = observePaths((value as any)[head], tails, observeFields, apiConfig)
       }
       return res
     },
@@ -131,11 +126,16 @@ function normalizeValue(value: Previewable | Id): Previewable {
   return typeof value === 'string' ? {_id: value} : value
 }
 
-export function createPathObserver(observeFields: ObserveFieldsFn) {
-  return (
-    value: Previewable,
-    paths: (FieldName | Path)[],
-    apiConfig?: ApiConfig
-  ): Observable<Record<string, unknown> | null> =>
-    observePaths(normalizeValue(value), normalizePaths(paths), observeFields, apiConfig)
+export function createPathObserver(context: {observeFields: ObserveFieldsFn}) {
+  const {observeFields} = context
+
+  return {
+    observePaths(
+      value: Previewable | Id,
+      paths: (FieldName | Path)[],
+      apiConfig?: ApiConfig
+    ): Observable<Record<string, unknown> | null> {
+      return observePaths(normalizeValue(value), normalizePaths(paths), observeFields, apiConfig)
+    },
+  }
 }

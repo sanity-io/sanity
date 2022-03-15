@@ -1,31 +1,63 @@
+import {SanityClient} from '@sanity/client'
 import {act, renderHook} from '@testing-library/react-hooks'
+import React, {createContext, useContext} from 'react'
 import {asyncScheduler, defer, of} from 'rxjs'
 import {observeOn} from 'rxjs/operators'
+import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
+import {createConfig} from '../../../../config'
+import {SanityProvider} from '../../../../sanity'
 import {useDocumentType} from '../useDocumentType'
-import {versionedClient} from '../../../../client/versionedClient'
+import {useClient} from '../../../../client/useClient'
 
-jest.mock('../../../../client/versionedClient', () => {
-  return {
-    versionedClient: {
-      observable: {
-        fetch: jest.fn(),
+const useClientMock = useClient as jest.Mock
+
+const TestContext = createContext<{client: SanityClient} | null>(null)
+
+// Wrap all module functions with jest.fn
+jest.mock('../../../../client/useClient')
+
+function createWrapperComponent(client: SanityClient) {
+  const config = createConfig({
+    sources: [
+      {
+        name: 'test',
+        title: 'Test',
+        projectId: 'foo',
+        dataset: 'test',
+        schemaTypes: [],
       },
-    },
+    ],
+  })
+
+  function WrapperComponent({children}: any) {
+    return (
+      <TestContext.Provider value={{client}}>
+        <SanityProvider config={config}>{children}</SanityProvider>
+      </TestContext.Provider>
+    )
   }
-})
+
+  return WrapperComponent
+}
 
 beforeEach(() => {
-  ;(versionedClient.observable.fetch as jest.Mock).mockReset()
+  useClientMock.mockImplementation(() => {
+    const ctx = useContext(TestContext)
 
-  function shouldNotBeCalled() {
-    throw new Error('client.fetch() should not be called')
-  }
+    if (!ctx) {
+      throw new Error('Test: missing context value')
+    }
 
-  ;(versionedClient.observable.fetch as jest.Mock).mockImplementation(shouldNotBeCalled)
+    return ctx.client
+  })
 })
 
 test('should return passed document type if already resolved', () => {
-  const {result, rerender} = renderHook(() => useDocumentType('grrm', 'author'))
+  const client = createMockSanityClient()
+  const wrapper = createWrapperComponent(client as any)
+
+  const {result, rerender} = renderHook(() => useDocumentType('grrm', 'author'), {wrapper})
+
   expect(result.current).toEqual({isLoaded: true, documentType: 'author'})
 
   act(() => {
@@ -40,10 +72,15 @@ test('should return passed document type if already resolved', () => {
 })
 
 test('should resolve document type from API on undefined type (with loading state)', async () => {
+  const client = createMockSanityClient()
   const response = defer(() => of(['book']).pipe(observeOn(asyncScheduler)))
-  ;(versionedClient.observable.fetch as jest.Mock).mockReturnValue(response)
 
-  const {result, waitForNextUpdate} = renderHook(() => useDocumentType('asoiaf-got', undefined))
+  client.observable.fetch = () => response
+
+  const {result, waitForNextUpdate} = renderHook(() => useDocumentType('asoiaf-got', undefined), {
+    wrapper: createWrapperComponent(client as any),
+  })
+
   expect(result.current).toEqual({isLoaded: false, documentType: undefined})
 
   await waitForNextUpdate()
@@ -52,27 +89,38 @@ test('should resolve document type from API on undefined type (with loading stat
 })
 
 test('should return correct document type on argument transition', () => {
+  const client = createMockSanityClient()
+
   let documentType = 'book'
-  const {result, rerender} = renderHook(() => useDocumentType('abc123', documentType))
+
+  const {result, rerender} = renderHook(() => useDocumentType('abc123', documentType), {
+    wrapper: createWrapperComponent(client as any),
+  })
+
   expect(result.current).toEqual({isLoaded: true, documentType: 'book'})
 
   documentType = 'author'
   rerender()
 
-  expect(versionedClient.observable.fetch).not.toHaveBeenCalled()
+  // expect(client.observable.fetch).not.toHaveBeenCalled()
+  expect(client.$log.calls.filter((args) => args[0] === 'observable.fetch')).toHaveLength(0)
+
   expect(result.current).toEqual({isLoaded: true, documentType: 'author'})
 })
 
 test('should return correct document type on document ID transition', async () => {
+  const client = createMockSanityClient()
+
   const responseGrrm = defer(() => of(['author']).pipe(observeOn(asyncScheduler)))
   const responseGot = defer(() => of(['book']).pipe(observeOn(asyncScheduler)))
-  ;(versionedClient.observable.fetch as jest.Mock).mockImplementation((_query, params) => {
-    return params.documentId === 'grrm' ? responseGrrm : responseGot
-  })
+
+  client.observable.fetch = (_query, params) =>
+    params.documentId === 'grrm' ? responseGrrm : responseGot
 
   let documentId = 'grrm'
-  const {result, rerender, waitForNextUpdate} = renderHook(() =>
-    useDocumentType(documentId, undefined)
+  const {result, rerender, waitForNextUpdate} = renderHook(
+    () => useDocumentType(documentId, undefined),
+    {wrapper: createWrapperComponent(client as any)}
   )
 
   // First lookup (author)

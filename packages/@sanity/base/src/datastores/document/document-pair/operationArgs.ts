@@ -1,17 +1,30 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
+
+import {SanityClient} from '@sanity/client'
+import {Schema} from '@sanity/types'
 import {combineLatest, Observable} from 'rxjs'
 import {map, publishReplay, refCount, switchMap} from 'rxjs/operators'
-import {snapshotPair} from './snapshotPair'
+import {HistoryStore} from '../../history'
 import {IdPair, OperationArgs} from '../types'
 import {memoize} from '../utils/createMemoizer'
+import {snapshotPair} from './snapshotPair'
 
 export const operationArgs = memoize(
-  (idPair: IdPair, typeName: string): Observable<OperationArgs> => {
-    return snapshotPair(idPair, typeName).pipe(
+  (
+    ctx: {
+      client: SanityClient
+      historyStore: HistoryStore
+      schema: Schema
+    },
+    idPair: IdPair,
+    typeName: string
+  ): Observable<OperationArgs> => {
+    return snapshotPair(ctx.client, idPair, typeName).pipe(
       switchMap((versions) =>
         combineLatest([versions.draft.snapshots$, versions.published.snapshots$]).pipe(
           map(
             ([draft, published]): OperationArgs => ({
+              ...ctx,
               idPair,
               typeName: typeName,
               snapshots: {draft, published},
@@ -25,5 +38,5 @@ export const operationArgs = memoize(
       refCount()
     )
   },
-  (idPair, typeName) => idPair.publishedId + typeName
+  (_ctx, idPair, typeName) => idPair.publishedId + typeName
 )

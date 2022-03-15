@@ -3,7 +3,7 @@
 import {Marker} from '@sanity/types'
 import {Stack} from '@sanity/ui'
 import React, {memo} from 'react'
-import {ChangeIndicator, ChangeIndicatorContextProvidedProps} from '../../change-indicators'
+import {ChangeIndicator, ChangeIndicatorContextProvidedProps} from '../changeIndicators'
 import {FormFieldPresence} from '../../presence'
 import {FormFieldHeader} from './FormFieldHeader'
 

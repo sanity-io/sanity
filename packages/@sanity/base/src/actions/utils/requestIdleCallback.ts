@@ -14,8 +14,7 @@ const win: Window & {
   cancelIdleCallback?: (handle: number) => void
 } = window
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function requestIdleCallbackShim(callback: IdleCallback, options?: IdleOptions): number {
+function requestIdleCallbackShim(callback: IdleCallback, _options?: IdleOptions): number {
   const start = Date.now()
   return win.setTimeout(() => {
     callback({

@@ -1,15 +1,12 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import {SanityDocument, ConditionalProperty} from '@sanity/types'
+import {useMemo} from 'react'
+import {useUnique} from '../util/useUnique'
 import {useCurrentUser} from '../_exports/hooks'
 import {omitDeprecatedRole, useCheckCondition} from './utils'
 
 /**
- * Resolve a callback function to a boolean using the passed arguments
- *
- * @beta This API will change. DO NOT USE IN PRODUCTION.
- * @internal Not a stable API yet
+ * @internal Not yet a stable API
  */
-
 export interface ConditionalPropertyProps {
   parent?: unknown
   value: unknown
@@ -18,27 +15,21 @@ export interface ConditionalPropertyProps {
   checkPropertyKey: string
 }
 
-// eslint-disable-next-line camelcase
-export const unstable_useConditionalProperty = ({
-  checkProperty,
-  ...props
-}: ConditionalPropertyProps): boolean => {
-  if (typeof checkProperty === 'function') {
-    return resolveProperty({checkProperty, ...props})
-  }
-  return checkProperty
-}
+/**
+ * Resolve a callback function to a boolean using the passed arguments
+ *
+ * @internal Not yet a stable API
+ */
+const useConditionalProperty = (props: ConditionalPropertyProps): boolean => {
+  const {checkProperty = false, checkPropertyKey, document, parent, value: valueProp} = props
+  const value = useUnique(valueProp)
+  const {value: userValue} = useCurrentUser()
+  const currentUser = useUnique(
+    useMemo(() => userValue && omitDeprecatedRole(userValue), [userValue])
+  )
 
-function resolveProperty({
-  checkProperty,
-  checkPropertyKey,
-  document,
-  parent,
-  value,
-}: ConditionalPropertyProps): boolean {
-  const {value: currentUser} = useCurrentUser()
   const isPropertyTruthy = useCheckCondition(checkProperty, checkPropertyKey, {
-    currentUser: omitDeprecatedRole(currentUser),
+    currentUser: currentUser!,
     document,
     parent,
     value,
@@ -46,3 +37,5 @@ function resolveProperty({
 
   return isPropertyTruthy
 }
+
+export {useConditionalProperty as unstable_useConditionalProperty}

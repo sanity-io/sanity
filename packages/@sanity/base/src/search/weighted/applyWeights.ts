@@ -24,18 +24,19 @@ export function applyWeights(
   const specByType = keyBy(searchSpec, (spec) => spec.typeName)
   return hits.map((hit, index) => {
     const typeSpec = specByType[hit._type]
-    const stories = typeSpec.paths.map((pathSpec, idx) => {
-      const value = stringify(hit[`w${idx}`])
-      if (!value) {
-        return {path: pathSpec.path, score: 0, why: 'No match'}
-      }
-      const [score, why] = calculateScore(terms, value)
-      return {
-        path: pathSpec.path,
-        score: score * pathSpec.weight,
-        why: `${why} (*${pathSpec.weight})`,
-      }
-    })
+    const stories =
+      typeSpec.paths?.map((pathSpec, idx) => {
+        const value = stringify(hit[`w${idx}`])
+        if (!value) {
+          return {path: pathSpec.path, score: 0, why: 'No match'}
+        }
+        const [score, why] = calculateScore(terms, value)
+        return {
+          path: pathSpec.path,
+          score: score * pathSpec.weight,
+          why: `${why} (*${pathSpec.weight})`,
+        }
+      }) || []
 
     const totalScore = stories.reduce((acc, rank) => acc + rank.score, 0)
 

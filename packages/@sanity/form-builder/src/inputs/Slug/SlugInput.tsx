@@ -7,11 +7,10 @@ import {
   Marker,
   isValidationErrorMarker,
 } from '@sanity/types'
-import {ChangeIndicatorCompareValueProvider} from '@sanity/base/change-indicators'
+import {ChangeIndicatorCompareValueProvider, FormField} from '@sanity/base/components'
 import * as PathUtils from '@sanity/util/paths'
 import {TextInput, Button, Flex, Box, Card, Stack} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
-import {FormField} from '@sanity/base/components'
 import {PatchEvent, set, setIfMissing, unset} from '../../PatchEvent'
 import withDocument from '../../utils/withDocument'
 import withValuePath from '../../utils/withValuePath'
@@ -96,9 +95,10 @@ const SlugInput = React.forwardRef(function SlugInput(
 
   const isUpdating = generateState?.status === 'pending'
 
-  const handleChange = React.useCallback((event) => updateSlug(event.currentTarget.value), [
-    updateSlug,
-  ])
+  const handleChange = React.useCallback(
+    (event) => updateSlug(event.currentTarget.value),
+    [updateSlug]
+  )
 
   const handleFocus = React.useCallback(() => onFocus(['current']), [onFocus])
 

@@ -1,7 +1,7 @@
 import {defineScope} from '@sanity/ui-workshop'
 import {lazy} from 'react'
 
-export default defineScope('base/components', 'components', [
+export default defineScope('base/components', 'Components', [
   {
     name: 'user-avatar',
     title: 'UserAvatar',
@@ -26,5 +26,10 @@ export default defineScope('base/components', 'components', [
     name: 'roving-focus',
     title: 'RovingFocus',
     component: lazy(() => import('./RovingFocusStory')),
+  },
+  {
+    name: 'image',
+    title: 'Image',
+    component: lazy(() => import('./ImageStory')),
   },
 ])

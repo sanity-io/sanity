@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React from 'react'
 import {sortBy} from 'lodash'
 
 const OVERLAY_STYLE: React.CSSProperties = {
@@ -24,14 +24,14 @@ const ITEM_STYLE = {
 }
 
 // This renders regions as they are reported from the RegionReporter. Useful for debugging
-export function AbsoluteOverlay(props) {
+export function AbsoluteOverlay(props: any) {
   const {regions, trackerRef, children, ...rest} = props
   return (
     <div ref={trackerRef} style={{position: 'relative'}}>
       <div>{children}</div>
       <div style={OVERLAY_STYLE}>
         {sortBy(
-          regions.filter((r) => r.data.presence?.length > 0),
+          regions.filter((r: any) => r.data.presence?.length > 0),
           (region) => -region.rect.top
         ).map((region) => {
           return (

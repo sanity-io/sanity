@@ -1,8 +1,8 @@
 import {Subject, Observable, merge, of as observableOf} from 'rxjs'
 import {map, mergeMap, filter} from 'rxjs/operators'
-import resize$ from './resize'
-import scroll$ from './scroll'
-import orientationChange$ from './orientationChange'
+import {resize$} from './resize'
+import {scroll$} from './scroll'
+import {orientationChange$} from './orientationChange'
 
 const ROOT_MARGIN_PX = 150
 
@@ -11,6 +11,7 @@ const ROOT_MARGIN_PX = 150
 */
 function isIntersectionObserverSupported() {
   if (
+    typeof window !== 'undefined' &&
     'IntersectionObserver' in window &&
     'IntersectionObserverEntry' in window &&
     'intersectionRatio' in IntersectionObserverEntry.prototype
@@ -31,32 +32,35 @@ function isIntersectionObserverSupported() {
 
 type IntersectionEvent = {isIntersecting: boolean}
 
-export default isIntersectionObserverSupported()
+export const intersectionObservableFor = isIntersectionObserverSupported()
   ? createIntersectionObserverBased()
   : createLegacyBased()
 
 type IntersectionObservableFor = (element: Element) => Observable<IntersectionEvent>
 
 function createIntersectionObserverBased(): IntersectionObservableFor {
-  const intersectionObserverEntries$$ = new Subject<IntersectionObserverEntry>()
-  const intersectionObserver = new IntersectionObserver(callback, {
-    threshold: 0,
-    rootMargin: `${ROOT_MARGIN_PX}px`,
-  })
+  const intersectionObserverEntriesSubject = new Subject<IntersectionObserverEntry>()
 
-  function callback(entries) {
-    entries.forEach((entry) => {
-      intersectionObserverEntries$$.next(entry)
-    })
-  }
+  const intersectionObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        intersectionObserverEntriesSubject.next(entry)
+      })
+    },
+    {
+      threshold: 0,
+      rootMargin: `${ROOT_MARGIN_PX}px`,
+    }
+  )
 
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   return function intersectionObservableFor(element) {
     return new Observable((observer) => {
       intersectionObserver.observe(element)
       observer.next()
       return () => intersectionObserver.unobserve(element)
     }).pipe(
-      mergeMap(() => intersectionObserverEntries$$.asObservable()),
+      mergeMap(() => intersectionObserverEntriesSubject.asObservable()),
       filter((entry: IntersectionObserverEntry) => entry.target === element),
       map((ev) => ({
         isIntersecting: ev.isIntersecting,
@@ -76,7 +80,11 @@ function createLegacyBased() {
     }
   }
 
-  function intersects(rect, viewport, margin) {
+  function intersects(
+    rect: DOMRect,
+    viewport: {left: number; right: number; top: number; bottom: number},
+    margin: number
+  ) {
     return (
       rect.left <= viewport.right + margin &&
       rect.right >= viewport.left - margin &&
@@ -85,14 +93,16 @@ function createLegacyBased() {
     )
   }
 
-  function inViewport(element) {
+  function inViewport(element: HTMLElement) {
     return () => intersects(element.getBoundingClientRect(), getViewport(), ROOT_MARGIN_PX)
   }
 
-  return function intersectionObservableFor(element): Observable<IntersectionEvent> {
+  // eslint-disable-next-line @typescript-eslint/no-shadow
+  return function intersectionObservableFor(element: HTMLElement): Observable<IntersectionEvent> {
     const isElementInViewport = inViewport(element)
     return merge(observableOf(isElementInViewport()), resize$, scroll$, orientationChange$).pipe(
-      map(isElementInViewport), // todo: consider "faking" more of the IntersectionObserverEntry api if possible
+      // @todo: consider "faking" more of the IntersectionObserverEntry api if possible
+      map(isElementInViewport),
       map((isIntersecting) => ({isIntersecting}))
     )
   }

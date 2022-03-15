@@ -1,4 +1,4 @@
-export default function hasEqualFields(fields: string[]) {
+export function hasEqualFields(fields: string[]) {
   return (object: Record<string, any> | null, otherObject: Record<string, any> | null) => {
     if (object === otherObject) {
       return true

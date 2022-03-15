@@ -1,3 +1,4 @@
+import {SanityClient} from '@sanity/client'
 import {SanityDocument} from '@sanity/types'
 import {filter, map, publishReplay, refCount} from 'rxjs/operators'
 import {Observable} from 'rxjs'
@@ -9,9 +10,7 @@ import {memoizedPair} from './memoizedPair'
 import {DocumentVersion} from './checkoutPair'
 
 // return true if the event comes with a document snapshot
-function isSnapshotEvent(
-  event: BufferedDocumentEvent | ReconnectEvent
-): event is SnapshotEvent & {
+function isSnapshotEvent(event: BufferedDocumentEvent | ReconnectEvent): event is SnapshotEvent & {
   version: 'published' | 'draft'
 } {
   return event.type === 'snapshot'
@@ -40,10 +39,10 @@ export interface DocumentVersionSnapshots {
   snapshots$: Observable<SanityDocument>
 
   // helper functions
-  patch: (patches) => Mutation[]
-  create: (document) => Mutation
-  createIfNotExists: (document) => Mutation
-  createOrReplace: (document) => Mutation
+  patch: (patches: any[]) => Mutation[]
+  create: (document: any) => Mutation
+  createIfNotExists: (document: any) => Mutation
+  createOrReplace: (document: any) => Mutation
   delete: () => Mutation
 
   mutate: (mutations: Mutation[]) => void
@@ -56,19 +55,17 @@ interface SnapshotPair {
 }
 
 export const snapshotPair = memoize(
-  (idPair: IdPair, typeName: string) => {
-    return memoizedPair(idPair, typeName).pipe(
-      map(
-        ({published, draft}): SnapshotPair => {
-          return {
-            published: withSnapshots(published),
-            draft: withSnapshots(draft),
-          }
+  (client: SanityClient, idPair: IdPair, typeName: string) => {
+    return memoizedPair(client, idPair, typeName).pipe(
+      map(({published, draft}): SnapshotPair => {
+        return {
+          published: withSnapshots(published),
+          draft: withSnapshots(draft),
         }
-      ),
+      }),
       publishReplay(1),
       refCount()
     )
   },
-  (idPair, typeName) => idPair.publishedId + typeName
+  (_client, idPair, typeName) => idPair.publishedId + typeName
 )

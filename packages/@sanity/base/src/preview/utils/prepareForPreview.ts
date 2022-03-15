@@ -1,12 +1,19 @@
-import {isTitledListValue, PreviewValue, SchemaType, TitledListValue} from '@sanity/types'
+import {
+  isTitledListValue,
+  PreviewValue,
+  SanityDocument,
+  SchemaType,
+  TitledListValue,
+} from '@sanity/types'
 import {debounce, flatten, get, isPlainObject, pick, uniqBy} from 'lodash'
 import {INVALID_PREVIEW_FALLBACK} from '../constants'
 import {isPortableTextArray, extractTextFromBlocks} from '../utils/portableText'
 import type {PrepareViewOptions, PreviewableType} from '../types'
+import {isRecord} from '../../util/isRecord'
 import {keysOf} from './keysOf'
 
 const PRESERVE_KEYS = ['_id', '_type', '_upload', '_createdAt', '_updatedAt']
-const EMPTY = []
+const EMPTY: never[] = []
 
 type SelectedValue = Record<string, unknown>
 
@@ -17,7 +24,7 @@ export type PrepareInvocationResult = {
 }
 
 const errorCollector = (() => {
-  let errorsByType = {}
+  let errorsByType: Record<string, {error: Error; type: SchemaType; value: any}[]> = {}
 
   return {
     add: (type: SchemaType, value: SelectedValue, error: Error) => {
@@ -88,7 +95,7 @@ const reportErrors = debounce(() => {
   /* eslint-enable no-console */
 }, 1000)
 
-const isRenderable = (fieldName) => (value) => {
+const isRenderable = (fieldName: string) => (value: unknown) => {
   const type = typeof value
   if (
     value === null ||
@@ -110,7 +117,7 @@ const isRenderable = (fieldName) => (value) => {
     ),
   ]
 }
-const FIELD_NAME_VALIDATORS = {
+const FIELD_NAME_VALIDATORS: Record<string, (value: unknown) => any[]> = {
   media: () => {
     // not sure how to validate media as it would  possibly involve executing a function and check the
     // return value
@@ -123,8 +130,8 @@ const FIELD_NAME_VALIDATORS = {
   date: isRenderable('date'),
 }
 
-function inspect(val, prefixType = true) {
-  if (isPlainObject(val)) {
+function inspect(val: unknown, prefixType = true): string {
+  if (isRecord(val)) {
     const keys = Object.keys(val)
     const ellipse = keys.length > 3 ? '...' : ''
     const prefix = `object with keys `
@@ -138,7 +145,7 @@ function inspect(val, prefixType = true) {
   return `the ${typeof val} ${val}`
 }
 
-function validateFieldValue(fieldName, fieldValue) {
+function validateFieldValue(fieldName: string, fieldValue: unknown) {
   if (typeof fieldValue === 'undefined') {
     return EMPTY
   }
@@ -146,7 +153,7 @@ function validateFieldValue(fieldName, fieldValue) {
   return (validator && validator(fieldValue)) || EMPTY
 }
 
-function assignType(type, error) {
+function assignType(type: string, error: Error) {
   return Object.assign(error, {type})
 }
 
@@ -206,7 +213,11 @@ export function invokePrepare(
   }
 }
 
-function withErrors(result, type, selectedValue): PreviewValue {
+function withErrors(
+  result: {errors: Error[]},
+  type: SchemaType,
+  selectedValue: SelectedValue
+): PreviewValue {
   result.errors.forEach((error) => errorCollector.add(type, selectedValue, error))
   reportErrors()
 
@@ -236,20 +247,20 @@ function getListOptions(type: SchemaType): TitledListValue[] | undefined {
 
   const listOptions = type.options.list as EnumListOptions['list']
   return listOptions.map((option) =>
-    isTitledListValue(option) ? option : {title: option, value: option}
+    isTitledListValue(option) ? option : ({title: option, value: option} as TitledListValue)
   )
 }
 
-export default function prepareForPreview(
+export function prepareForPreview(
   rawValue: unknown,
-  type: PreviewableType,
+  type: SchemaType,
   viewOptions: PrepareViewOptions = {}
-): PreviewValue {
+): Partial<SanityDocument> | PreviewValue {
   const hasCustomPrepare = typeof type.preview?.prepare === 'function'
-  const selection = type.preview?.select || {}
+  const selection: Record<string, string> = type.preview?.select || {}
   const targetKeys = Object.keys(selection)
 
-  const selectedValue = targetKeys.reduce((acc, key) => {
+  const selectedValue = targetKeys.reduce<Record<string, any>>((acc, key) => {
     // Find the field the value belongs to
     const typeWithFields = 'fields' in type ? type : null
     const targetFieldName = selection[key]

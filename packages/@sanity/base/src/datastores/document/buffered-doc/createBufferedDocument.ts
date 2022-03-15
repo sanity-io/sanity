@@ -1,5 +1,8 @@
-import {createObservableBufferedDocument} from './createObservableBufferedDocument'
+import {SanityDocument} from '@sanity/types'
 import {Observable} from 'rxjs'
+import {ListenerEvent} from '../getPairListener'
+import {Mutation} from '../types'
+import {createObservableBufferedDocument} from './createObservableBufferedDocument'
 import {
   CommitFunction,
   CommittedEvent,
@@ -8,8 +11,6 @@ import {
   SnapshotEvent,
   RemoteSnapshotEvent,
 } from './types'
-import {ListenerEvent} from '../getPairListener'
-import {Mutation} from '../types'
 
 export type BufferedDocumentEvent =
   | SnapshotEvent
@@ -17,7 +18,7 @@ export type BufferedDocumentEvent =
   | DocumentMutationEvent
   | CommittedEvent
 
-const prepare = (id) => (document) => {
+const prepare = (id: string) => (document: Partial<SanityDocument>) => {
   const {_id, _rev, _updatedAt, ...rest} = document
   return {_id: id, ...rest}
 }
@@ -27,10 +28,10 @@ export interface BufferedDocumentWrapper {
   remoteSnapshot$: Observable<RemoteSnapshotEvent>
   events: Observable<BufferedDocumentEvent>
   // helper functions
-  patch: (patches) => Mutation[]
-  create: (document) => Mutation
-  createIfNotExists: (document) => Mutation
-  createOrReplace: (document) => Mutation
+  patch: (patches: any[]) => Mutation[]
+  create: (document: Partial<SanityDocument>) => Mutation
+  createIfNotExists: (document: SanityDocument) => Mutation
+  createOrReplace: (document: SanityDocument) => Mutation
   delete: () => Mutation
 
   mutate: (mutations: Mutation[]) => void
@@ -50,7 +51,7 @@ export const createBufferedDocument = (
   const DELETE = {delete: {id: documentId}}
 
   return {
-    events: bufferedDocument.updates$,
+    events: bufferedDocument.updates$ as any,
     consistency$: bufferedDocument.consistency$,
     remoteSnapshot$: bufferedDocument.remoteSnapshot$,
 

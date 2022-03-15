@@ -1,10 +1,14 @@
+import {SanityClient} from '@sanity/client'
 import type {Observable} from 'rxjs'
 import {of} from 'rxjs'
 import {map} from 'rxjs/operators'
 import {getPublishedId, getDraftId} from '../../util/draftUtils'
-import {versionedClient} from '../../client/versionedClient'
 
-export function resolveTypeForDocument(id: string, specifiedType = '*'): Observable<string> {
+export function resolveTypeForDocument(
+  client: SanityClient,
+  id: string,
+  specifiedType = '*'
+): Observable<string> {
   // if is resolved document type
   if (specifiedType && specifiedType !== '*') {
     return of(specifiedType)
@@ -14,7 +18,5 @@ export function resolveTypeForDocument(id: string, specifiedType = '*'): Observa
   const documentId = getPublishedId(id)
   const draftId = getDraftId(documentId)
 
-  return versionedClient.observable
-    .fetch(query, {documentId, draftId})
-    .pipe(map((types) => types[0]))
+  return client.observable.fetch(query, {documentId, draftId}).pipe(map((types) => types[0]))
 }

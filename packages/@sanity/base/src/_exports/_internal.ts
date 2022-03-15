@@ -1,21 +1,8 @@
-export {
-  observeForPreview,
-  observePaths,
-  prepareForPreview,
-  getPreviewPaths,
-  observeDocumentTypeFromId,
-} from '../preview'
+export {createHookFromObservableFactory} from '../util/createHookFromObservableFactory'
 
-// eslint-disable-next-line camelcase
-export {observePathsDocumentPair as unstable_observePathsDocumentPair} from '../preview/documentPair'
-// eslint-disable-next-line camelcase
-export {observeDocumentPairAvailability as unstable_observeDocumentPairAvailability} from '../preview/availability'
-export {
-  getProjectIdFromTokenDocumentId,
-  getTokenDocumentId,
-  fetchCrossProjectToken,
-  fetchAllCrossProjectTokens,
-} from '../datastores/crossProjectToken'
+export type {CrossProjectTokenStore} from '../datastores/crossProjectToken'
+
+export * from '../module-status/types'
 
 export type {DocumentAvailability} from '../preview/types'
 export {AvailabilityReason} from '../preview/types'
@@ -23,20 +10,23 @@ export {AvailabilityReason} from '../preview/types'
 export {createWeightedSearch} from '../search/weighted/createWeightedSearch'
 export type {WeightedHit} from '../search/weighted/types'
 
-export {createHookFromObservableFactory} from '../util/createHookFromObservableFactory'
-
 export {collate, getDraftId, getPublishedId, getIdPair} from '../util/draftUtils'
 export type {CollatedHit} from '../util/draftUtils'
-
-export {default as FieldStatus} from '../__legacy/@sanity/components/fieldsets/FieldStatus'
 
 export {resizeObserver} from '../util/resizeObserver'
 
 export {getNewDocumentOptions} from '../util/getNewDocumentOptions'
 export type {NewDocumentOption} from '../util/getNewDocumentOptions'
 
-export type {RemoteSnapshotVersionEvent} from '../datastores/document/document-pair/checkoutPair'
-export type {DocumentRemoteMutationEvent} from '../datastores/document/buffered-doc/types'
+export type {
+  DocumentVersionEvent,
+  RemoteSnapshotVersionEvent,
+} from '../datastores/document/document-pair/checkoutPair'
+export type {
+  DocumentMutationEvent,
+  DocumentRebaseEvent,
+  DocumentRemoteMutationEvent,
+} from '../datastores/document/buffered-doc/types'
 export {remoteSnapshots} from '../datastores/document/document-pair/remoteSnapshots'
 
 export type {EditStateFor} from '../datastores/document/document-pair/editState'
@@ -45,5 +35,26 @@ export type {TemplatePermissionsResult} from '../datastores/grants'
 export * from '../actions/utils/types'
 
 export * from '../conditional-property/conditionalReadOnly'
+export type {IdPair} from '../datastores/document/types'
 
-export * from '../module-status/types'
+export {RenderActionCollectionState} from '../actions/utils'
+export {RenderBadgeCollectionState} from '../actions/utils'
+
+export {getQueryResults} from '../components/QueryContainer'
+
+export type {OperationsAPI} from '../datastores/document/document-pair/operations'
+
+export {Timeline} from '../datastores/history/history/Timeline'
+export {TimelineController} from '../datastores/history/history/TimelineController'
+
+export {AuthProvider} from '../auth'
+
+// datastores
+export type {ProjectData} from '../datastores/project'
+export type {PermissionCheckResult} from '../datastores/grants/types'
+
+// form
+export * from '../form/patch/types'
+export type {MutationPatch} from '../form/utils/mutationPatch'
+export {fromMutationPatches, toMutationPatches} from '../form/utils/mutationPatch'
+export {decodePath, encodePath} from '../form/utils/path'

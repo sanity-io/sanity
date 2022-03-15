@@ -46,7 +46,7 @@ export interface CheckModuleVersionsOptions {
   /**
    * Sanity client to use for performing versions check
    */
-  client?: SanityClient
+  client: SanityClient
 
   /**
    * Whether or not to use cached responses
@@ -114,17 +114,17 @@ export interface VersionsResponse {
   /**
    * Studio changelog
    */
-  changelog: Changelog
+  changelog?: Changelog
 
   /**
    * The current version of the studio
    */
-  currentVersion: string
+  currentVersion?: string
 
   /**
    * The latest available version of the studio
    */
-  latestVersion: string
+  latestVersion?: string
 }
 
 export interface ModuleStatusResponse extends VersionsResponse {

@@ -1,4 +1,11 @@
-import {Observable} from 'rxjs'
+import {Observable, Subscriber} from 'rxjs'
+import {isNonNullable} from '../../util/isNonNullable'
+
+interface QueueItem {
+  args: any[]
+  observer: Subscriber<any>
+  completed: boolean
+}
 
 // Takes an observable returning function and returns a debounced function that, when called
 // collects its passed arguments until wait time has passed without receiving new calls.
@@ -9,15 +16,15 @@ export function debounceCollect<Fn extends (...args: any[]) => Observable<any[]>
 ): Fn extends (collectedArgs: [...infer TArgs][]) => Observable<(infer TReturnValue)[]>
   ? (...args: TArgs) => Observable<TReturnValue>
   : never
-export function debounceCollect(fn, wait: number) {
-  let timer
-  let queue = {}
+export function debounceCollect(fn: any, wait: number) {
+  let timer: NodeJS.Timeout
+  let queue: Record<number | string, QueueItem | undefined> = {}
   let idx = 0
-  return function debounced(...args) {
+  return function debounced(...args: any[]) {
     return new Observable((obs) => {
       clearTimeout(timer)
       timer = setTimeout(flush, wait)
-      const queueItem = {
+      const queueItem: QueueItem = {
         args: args,
         observer: obs,
         completed: false,
@@ -42,18 +49,28 @@ export function debounceCollect(fn, wait: number) {
       //   }
       //   return id
       // })
-      .filter((id) => !currentlyFlushingQueue[id].completed)
+      .filter((id) => {
+        const queueItem = currentlyFlushingQueue[id]
+
+        return queueItem && !queueItem.completed
+      })
 
     if (queueItemIds.length === 0) {
       // nothing to do
       return
     }
-    const collectedArgs = queueItemIds.map((id) => currentlyFlushingQueue[id].args)
+    const collectedArgs = queueItemIds
+      .map((id) => {
+        const queueItem = currentlyFlushingQueue[id]
+
+        return queueItem && queueItem.args
+      })
+      .filter(isNonNullable)
     fn(collectedArgs).subscribe({
-      next(results) {
+      next(results: any[]) {
         results.forEach((result, i) => {
           const queueItem = currentlyFlushingQueue[queueItemIds[i]]
-          if (!queueItem.completed) {
+          if (queueItem && !queueItem.completed) {
             queueItem.observer.next(results[i])
           }
         })
@@ -61,15 +78,15 @@ export function debounceCollect(fn, wait: number) {
       complete() {
         queueItemIds.forEach((id) => {
           const entry = currentlyFlushingQueue[id]
-          if (!entry.completed) {
+          if (entry && !entry.completed) {
             entry.observer.complete()
           }
         })
       },
-      error(err) {
+      error(err: Error) {
         queueItemIds.forEach((id) => {
           const entry = currentlyFlushingQueue[id]
-          if (!entry.completed) {
+          if (entry && !entry.completed) {
             entry.observer.error(err)
           }
         })

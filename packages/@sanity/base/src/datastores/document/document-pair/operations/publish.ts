@@ -1,11 +1,10 @@
 import {omit} from 'lodash'
 import {isReference} from '@sanity/types'
-import {versionedClient} from '../../../../client/versionedClient'
+import {MultipleMutationResult} from '@sanity/client'
 import {OperationArgs} from '../../types'
-
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 
-function strengthenOnPublish(obj: unknown) {
+function strengthenOnPublish(obj: unknown): any {
   if (isReference(obj)) {
     if (obj._strengthenOnPublish) {
       return omit(
@@ -23,8 +22,12 @@ function strengthenOnPublish(obj: unknown) {
 }
 
 export const publish = {
-  disabled: ({typeName, snapshots}: OperationArgs) => {
-    if (isLiveEditEnabled(typeName)) {
+  disabled: ({
+    schema,
+    typeName,
+    snapshots,
+  }: OperationArgs): 'LIVE_EDIT_ENABLED' | 'ALREADY_PUBLISHED' | 'NO_CHANGES' | false => {
+    if (isLiveEditEnabled(schema, typeName)) {
       return 'LIVE_EDIT_ENABLED'
     }
     if (!snapshots.draft) {
@@ -32,8 +35,12 @@ export const publish = {
     }
     return false
   },
-  execute: ({idPair, snapshots}: OperationArgs) => {
-    const tx = versionedClient.transaction()
+  execute: ({client, idPair, snapshots}: OperationArgs): Promise<MultipleMutationResult> => {
+    const tx = client.transaction()
+
+    if (!snapshots.draft) {
+      throw new Error('cannot execute "publish" when draft is missing')
+    }
 
     const value = strengthenOnPublish(omit(snapshots.draft, '_updatedAt'))
 

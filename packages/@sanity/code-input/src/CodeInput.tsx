@@ -3,11 +3,10 @@
 
 import React, {useCallback, useEffect, useImperativeHandle, useRef} from 'react'
 import {FormFieldPresence} from '@sanity/base/presence'
-import {FormField, FormFieldSet} from '@sanity/base/components'
+import {FormField, FormFieldSet, ChangeIndicatorProvider} from '@sanity/base/components'
 import {Path, Marker} from '@sanity/types'
 import {Card, Select, TextInput} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
-import {ChangeIndicatorProvider} from '@sanity/base/change-indicators'
 import {PatchEvent, set, unset, setIfMissing} from 'part:@sanity/form-builder/patch-event'
 import AceEditor from 'react-ace'
 import styled from 'styled-components'

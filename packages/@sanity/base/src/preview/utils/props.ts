@@ -13,7 +13,7 @@ type Props<K extends keyof any, T> = {
   [P in K]: T | Observable<T>
 }
 
-export default function props<K extends keyof any, T>(options: {wait?: boolean} = {}) {
+export function props<K extends keyof any, T>(options: {wait?: boolean} = {}) {
   return (source: Observable<Props<K, T>>) => {
     return new Observable<Props<K, T>>((observer) => source.subscribe(observer)).pipe(
       switchMap((object) => {

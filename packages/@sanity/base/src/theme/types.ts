@@ -1,4 +1,3 @@
-import {ColorTintKey} from '@sanity/color'
+import {RootTheme} from '@sanity/ui'
 
-// eslint-disable-next-line no-unused-vars
-export type Tints = {[key in ColorTintKey]: string}
+export type SanityTheme = RootTheme

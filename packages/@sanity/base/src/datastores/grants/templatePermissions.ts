@@ -1,11 +1,15 @@
-import {getTemplateById, resolveInitialValue} from '@sanity/initial-value-templates'
+import {
+  getTemplateById,
+  resolveInitialValue,
+  Template as TemplateType,
+} from '@sanity/initial-value-templates'
 import {InitialValueTemplateItem} from '@sanity/structure'
 import {Observable, combineLatest, from, of} from 'rxjs'
 import {switchMap, map} from 'rxjs/operators'
 import {Schema} from '@sanity/types'
 import {createHookFromObservableFactory} from '../../util/createHookFromObservableFactory'
 import {getDraftId, getPublishedId} from '../../util/draftUtils'
-import {PermissionCheckResult} from './types'
+import {GrantsStore, PermissionCheckResult} from './types'
 import {unstable_getDocumentValuePermissions as getDocumentValuePermissions} from './documentValuePermissions'
 
 type Template = ReturnType<typeof getTemplateById>
@@ -31,21 +35,25 @@ function serialize<T>(item: T | Serializable<T>): T {
  * The observable version of `useTemplatePermissions`
  */
 function getTemplatePermissions(
+  grantsStore: GrantsStore,
+  schema: Schema,
+  initialValueTemplates: TemplateType[],
   initialValueTemplateItems: Array<
     InitialValueTemplateItem | Serializable<InitialValueTemplateItem>
   >
 ): Observable<Array<TemplatePermissionsResult<Record<string, unknown>>>> {
-  // this has to be deferred/lazy-loaded due to some weird dependency orderings
-  const schemaMod = require('part:@sanity/base/schema')
-  const schema: Schema = schemaMod.default || schemaMod
-
   if (!initialValueTemplateItems?.length) return of([])
 
   return combineLatest(
     initialValueTemplateItems
       .map(serialize)
       .map(async (item) => {
-        const template = getTemplateById(item.templateId)
+        const template = getTemplateById(schema, initialValueTemplates, item.templateId)
+
+        if (!template) {
+          throw new Error(`template not found: "${item.templateId}"`)
+        }
+
         const resolvedInitialValue = await resolveInitialValue(schema, template, item.parameters)
 
         return {template, item, resolvedInitialValue}
@@ -54,10 +62,16 @@ function getTemplatePermissions(
         from(promise).pipe(
           switchMap(({item, resolvedInitialValue, template}) => {
             const schemaType = schema.get(template.schemaType)
+
+            if (!schemaType) {
+              throw new Error(`schema type not found: "${template.schemaType}"`)
+            }
+
             const liveEdit = schemaType?.liveEdit
             const {initialDocumentId = 'dummy-id'} = item
 
             return getDocumentValuePermissions({
+              grantsStore,
               permission: 'create',
               document: {
                 _id: liveEdit ? getPublishedId(initialDocumentId) : getDraftId(initialDocumentId),

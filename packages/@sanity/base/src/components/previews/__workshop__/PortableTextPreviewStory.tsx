@@ -51,7 +51,7 @@ export default function PortableTextPreviewStory() {
   const status = useBoolean('Status', false)
 
   const media = useMemo(() => {
-    const {width, height} = PREVIEW_MEDIA_SIZE[layout] || PREVIEW_MEDIA_SIZE.default
+    const {width, height} = layout ? PREVIEW_MEDIA_SIZE[layout] : PREVIEW_MEDIA_SIZE.default
 
     if (mediaKey === 'image') {
       return <img src={`https://source.unsplash.com/${width * 2}x${height * 2}/?abstract`} />
@@ -68,7 +68,7 @@ export default function PortableTextPreviewStory() {
     return false
   }, [layout, mediaKey])
 
-  const component = previewComponents[layout]
+  const component = layout && previewComponents[layout]
 
   if (!component) {
     return (

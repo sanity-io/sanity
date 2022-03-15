@@ -1,9 +1,0 @@
-@import 'part:@sanity/base/theme/variables-style';
-
-.layer {
-  pointer-events: none;
-}
-
-.root {
-  pointer-events: all;
-}

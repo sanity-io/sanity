@@ -1,17 +1,22 @@
-export {default as DefaultRootComponent} from '../components/DefaultRootComponent'
-export type {UserStore} from '../datastores/user/types'
-export * from '../theme'
-
 // Export document badges typings
 export type {DocumentBadgeComponent, DocumentBadgeDescription} from '../badges/types'
 
 // Export document actions typings
 export type {
   DocumentActionComponent,
-  DocumentActionConfirmDialogProps,
+  DocumentActionConfirmModalProps,
   DocumentActionDescription,
-  DocumentActionDialogProps,
-  DocumentActionModalDialogProps,
-  DocumentActionPopoverDialogProps,
+  DocumentActionModalProps,
+  DocumentActionDialogModalProps,
+  DocumentActionPopoverModalProps,
   DocumentActionProps,
+  DocumentActionResolver,
 } from '../actions/utils/types'
+export {useClient} from '../client'
+export * from '../components/Document'
+export * from '../config'
+export * from '../datastores'
+export * from '../plugin'
+export * from '../sanity'
+export * from '../source'
+export * from '../theme'

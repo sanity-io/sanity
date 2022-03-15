@@ -6,6 +6,7 @@ import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {Media} from '../_common/Media'
 import {PREVIEW_MEDIA_SIZE} from '../constants'
 import {PreviewMediaDimensions, PreviewProps} from '../types'
+import {renderPreviewNode} from '../helpers'
 
 export interface DefaultPreviewProps extends PreviewProps<'default'> {
   styles?: {
@@ -54,7 +55,7 @@ export function DefaultPreview(props: DefaultPreviewProps) {
       paddingLeft={3}
       paddingRight={1}
     >
-      {typeof status === 'function' ? status({layout: 'default'}) : status}
+      {renderPreviewNode(status, 'default')}
     </Box>
   )
 
@@ -101,13 +102,13 @@ export function DefaultPreview(props: DefaultPreviewProps) {
         space={2}
       >
         <Text textOverflow="ellipsis" style={{color: 'inherit'}} className={styles?.title}>
-          {title && typeof title === 'function' ? title({layout: 'default'}) : title}
+          {title && renderPreviewNode(title, 'default')}
           {!title && <>Untitled</>}
         </Text>
 
         {subtitle && (
           <Text muted size={1} textOverflow="ellipsis" className={styles?.subtitle}>
-            {typeof subtitle === 'function' ? subtitle({layout: 'default'}) : subtitle}
+            {renderPreviewNode(subtitle, 'default')}
           </Text>
         )}
 

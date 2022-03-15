@@ -1,4 +1,7 @@
-import {fromEvent} from 'rxjs'
+import {fromEvent, of} from 'rxjs'
 import {share} from 'rxjs/operators'
 
-export default fromEvent(document, 'visibilitychange').pipe(share())
+export const visibilityChange$ =
+  typeof window === 'undefined'
+    ? of({} as any)
+    : fromEvent(document, 'visibilitychange').pipe(share())

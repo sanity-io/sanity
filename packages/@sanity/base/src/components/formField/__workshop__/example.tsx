@@ -2,7 +2,7 @@ import type {ValidationMarker} from '@sanity/types'
 import {Card, Code, Container, Flex, LayerProvider, TextInput} from '@sanity/ui'
 import {useBoolean, useNumber, useString} from '@sanity/ui-workshop'
 import React, {useCallback, useMemo, useState} from 'react'
-import {ElementWithChangeBar} from '../../../change-indicators/ElementWithChangeBar'
+import {ElementWithChangeBar} from '../../changeIndicators/ElementWithChangeBar'
 import type {FormFieldPresence} from '../../../presence'
 import {useCurrentUser} from '../../../_exports/hooks'
 import {FormField} from '../FormField'
@@ -47,7 +47,7 @@ export default function ExampleStory() {
                 // children?: ValidationError[]
                 // operation?: 'AND' | 'OR'
                 paths: [],
-                cloneWithMessage: noop,
+                cloneWithMessage: noop as any,
               },
               path: [],
             },

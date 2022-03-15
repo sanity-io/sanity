@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved,no-nested-ternary */
 
-import {ChangeIndicatorScope, ContextProvidedChangeIndicator} from '@sanity/base/change-indicators'
+import {ChangeIndicatorScope, ContextProvidedChangeIndicator} from '@sanity/base/components'
 import {
   ArraySchemaType,
   isReferenceSchemaType,

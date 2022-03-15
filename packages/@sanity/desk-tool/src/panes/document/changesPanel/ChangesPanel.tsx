@@ -1,4 +1,4 @@
-import {ChangeFieldWrapper} from '@sanity/base/change-indicators'
+import {ChangeFieldWrapper, UserAvatar, ScrollContainer} from '@sanity/base/components'
 import {
   ChangeList,
   DiffTooltip,
@@ -7,7 +7,6 @@ import {
   NoChanges,
   ObjectDiff,
 } from '@sanity/field/diff'
-import {UserAvatar, ScrollContainer} from '@sanity/base/components'
 import {CloseIcon} from '@sanity/icons'
 import {AvatarStack, BoundaryElementProvider, Box, Button, Flex} from '@sanity/ui'
 import React, {useRef} from 'react'
@@ -27,13 +26,8 @@ const Scroller = styled(ScrollContainer)`
 `
 
 export function ChangesPanel(): React.ReactElement | null {
-  const {
-    documentId,
-    documentSchema,
-    handleHistoryClose,
-    historyController,
-    value,
-  } = useDocumentPane()
+  const {documentId, documentSchema, handleHistoryClose, historyController, value} =
+    useDocumentPane()
   const {collapsed} = usePane()
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const historyState = historyController.selectionState

@@ -5,6 +5,7 @@ import {Media} from '../_common/Media'
 import {PREVIEW_MEDIA_SIZE} from '../constants'
 import {PreviewMediaDimensions, PreviewProps} from '../types'
 import {HeaderFlex, MediaCard, RootBox} from './BlockImagePreview.styled'
+import {renderPreviewNode} from '../helpers'
 
 type BlockImagePreviewProps = PreviewProps<'block'>
 
@@ -12,6 +13,16 @@ const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
   ...PREVIEW_MEDIA_SIZE.blockImage,
   fit: 'fillmax',
   dpr: getDevicePixelRatio(),
+}
+
+const getRatio = (dimensions: PreviewMediaDimensions) => {
+  const {height, width} = dimensions
+
+  if (!height || !width) {
+    return 1
+  }
+
+  return (height / width) * 100
 }
 
 export function BlockImagePreview(props: BlockImagePreviewProps) {
@@ -27,12 +38,6 @@ export function BlockImagePreview(props: BlockImagePreviewProps) {
     status,
   } = props
 
-  const getRatio = useCallback((dimensions: PreviewMediaDimensions) => {
-    const {height, width} = dimensions
-
-    return (height / width) * 100
-  }, [])
-
   return (
     <RootBox>
       <Stack>
@@ -44,7 +49,7 @@ export function BlockImagePreview(props: BlockImagePreviewProps) {
 
             {subtitle && (
               <Text muted size={1} textOverflow="ellipsis">
-                {subtitle}
+                {renderPreviewNode(subtitle, 'block')}
               </Text>
             )}
           </Stack>
@@ -52,7 +57,7 @@ export function BlockImagePreview(props: BlockImagePreviewProps) {
           <Flex gap={1} paddingLeft={1}>
             {status && (
               <Box paddingX={2} paddingY={3}>
-                {typeof status === 'function' ? status({layout: 'block'}) : status}
+                {renderPreviewNode(status, 'block')}
               </Box>
             )}
 
@@ -81,7 +86,7 @@ export function BlockImagePreview(props: BlockImagePreviewProps) {
       {description && (
         <Box paddingX={2} paddingY={3}>
           <Text muted size={1}>
-            {typeof description === 'function' ? description({layout: 'block'}) : description}
+            {renderPreviewNode(description, 'block')}
           </Text>
         </Box>
       )}

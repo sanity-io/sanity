@@ -1,6 +1,6 @@
-import * as Rx from 'rxjs'
 import {renderHook} from '@testing-library/react-hooks'
 import {uniq} from 'lodash'
+import * as Rx from 'rxjs'
 import {createHookFromObservableFactory} from './createHookFromObservableFactory'
 
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0))
