@@ -2,12 +2,23 @@
   "name": "@sanity/validation",
   "version": "2.30.0",
   "description": "Validation and warning infrastructure for Sanity projects",
-  "main": "./lib/index.js",
-  "types": "./dist/dts",
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.js",
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "require": "./lib/index.cjs",
+      "default": "./lib/index.js"
+    }
+  },
+  "types": "./lib/dts/src/index.d.ts",
   "scripts": {
+    "build": "../../../bin/pkg-utils bundle",
+    "clean": "rimraf lib",
+    "prebuild": "yarn clean",
     "test": "jest",
     "test:watch": "jest --watch",
-    "clean": "rimraf lib dest"
+    "watch": "../../../bin/pkg-utils bundle --watch"
   },
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
@@ -46,6 +57,6 @@
   "dependencies": {
     "@sanity/types": "2.29.5",
     "date-fns": "^2.16.1",
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.21"
   }
 }
