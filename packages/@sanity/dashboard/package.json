@@ -2,12 +2,16 @@
   "name": "@sanity/dashboard",
   "version": "2.30.0",
   "description": "Tool for rendering dashboard widgets",
-  "main": "./lib/DashboardTool.js",
-  "types": "./dist/dts",
+  "main": "./lib/cjs/DashboardTool.js",
+  "module": "./lib/esm/DashboardTool.js",
+  "types": "./lib/dts/src/DashboardTool.d.ts",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "clean": "rimraf lib dest"
+    "build": "../../../bin/pkg-utils transpile",
+    "clean": "rimraf lib",
+    "prebuild": "yarn clean",
+    "watch": "../../../bin/pkg-utils transpile --watch"
   },
   "keywords": [
     "sanity",
@@ -24,13 +28,14 @@
     "@sanity/image-url": "^1.0.1",
     "@sanity/types": "2.29.5",
     "@sanity/ui": "^0.37.9",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "rxjs": "^6.5.3"
   },
   "devDependencies": {
     "@sanity/base": "2.30.0",
     "prop-types": "^15.6.0",
-    "rimraf": "^2.7.1"
+    "react": "17.0.2",
+    "rimraf": "^3.0.2"
   },
   "peerDependencies": {
     "@sanity/base": "^2.0.0",
