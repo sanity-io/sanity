@@ -2,8 +2,8 @@
   "name": "@sanity/desk-tool",
   "version": "2.30.0",
   "description": "Tool for managing all sorts of content in a structured manner",
-  "main": "lib/_exports/index.cjs",
-  "module": "lib/_exports/index.js",
+  "main": "./lib/_exports/index.cjs",
+  "module": "./lib/_exports/index.js",
   "exports": {
     ".": {
       "source": "./src/_exports/index.ts",
@@ -51,7 +51,18 @@
       "default": "./lib/_parts/base-tool.js"
     }
   },
-  "types": "lib/dts/_exports/index.d.ts",
+  "types": "./lib/dts/src/_exports/index.d.ts",
+  "//": "the typesVersion config below is a workaround for TypeScript's lack of support for package exports",
+  "typesVersions": {
+    "*": {
+      "_internal": [
+        "./lib/dts/src/_exports/_internal.d.ts"
+      ],
+      "components": [
+        "./lib/dts/src/_exports/components.d.ts"
+      ]
+    }
+  },
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
