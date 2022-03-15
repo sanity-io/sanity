@@ -96,7 +96,7 @@
     "depcheck": "^1.4.3",
     "dotenv": "^8.2.0",
     "esbuild": "^0.12.21",
-    "esbuild-register": "^3.0.0",
+    "esbuild-register": "^3.2.0",
     "eslint": "^7.8.1",
     "eslint-config-prettier": "^6.7.0",
     "eslint-config-sanity": "^5.0.0",
