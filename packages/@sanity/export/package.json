@@ -3,16 +3,18 @@
   "version": "2.29.3",
   "description": "Export Sanity documents and assets",
   "main": "lib/export.js",
+  "types": "lib/dts/export.d.ts",
   "engines": {
     "node": ">=12.0.0"
   },
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "build": "babel src --copy-files --out-dir lib",
+    "build": "../../../bin/pkg-utils transpile --target node",
     "clean": "rimraf lib dest",
-    "prebuild": "npm run clean",
-    "test": "jest"
+    "prebuild": "yarn clean",
+    "test": "jest",
+    "watch": "../../../bin/pkg-utils transpile --target node --watch"
   },
   "keywords": [
     "sanity",
@@ -28,13 +30,13 @@
     "debug": "^3.2.7",
     "fs-extra": "^7.0.0",
     "get-it": "^5.2.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "mississippi": "^4.0.0",
     "p-queue": "^2.3.0",
     "split2": "^3.2.2"
   },
   "devDependencies": {
-    "rimraf": "^2.7.1",
+    "rimraf": "^3.0.2",
     "string-to-stream": "^1.1.0"
   },
   "publishConfig": {

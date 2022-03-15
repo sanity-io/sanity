@@ -1,18 +1,15 @@
 # Logs
-logs
+/logs
 *.log
 
 # Coverage directory used by tools like istanbul
-coverage
-
-# Grunt intermediate storage
-.grunt
+/coverage
 
 # Dependency directories
-node_modules
+/node_modules
 
 # Compiled code
-lib
+/lib
 
 # Dev-fixtures
 moviedb.ndjson
