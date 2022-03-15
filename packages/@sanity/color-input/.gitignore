@@ -1,19 +1,12 @@
 # Logs
+/logs
 *.log
 
-# Compiled files
-lib
-
-# Coverage directories used by tools like istanbul
-coverage
-.nyc_output
+# Coverage directory used by tools like istanbul
+/coverage
 
 # Dependency directories
-node_modules
+/node_modules
 
-# UMD bundle
-umd
-
-# Lockfiles
-yarn.lock
-dist
+# Compiled code
+/lib

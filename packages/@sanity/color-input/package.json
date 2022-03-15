@@ -2,11 +2,43 @@
   "name": "@sanity/color-input",
   "version": "2.30.0",
   "description": "Color input",
-  "main": "lib/index.js",
+  "main": "lib/ColorInput.cjs",
+  "module": "lib/ColorInput.js",
+  "exports": {
+    ".": {
+      "source": "./src/ColorInput.js",
+      "require": "./lib/ColorInput.cjs",
+      "default": "./lib/ColorInput.js"
+    },
+    "./schemas/color": {
+      "source": "./src/schemas/color.js",
+      "require": "./lib/schemas/color.cjs",
+      "default": "./lib/schemas/color.js"
+    },
+    "./schemas/hslaColor": {
+      "source": "./src/schemas/hslaColor.js",
+      "require": "./lib/schemas/hslaColor.cjs",
+      "default": "./lib/schemas/hslaColor.js"
+    },
+    "./schemas/hsvaColor": {
+      "source": "./src/schemas/hsvaColor.js",
+      "require": "./lib/schemas/hsvaColor.cjs",
+      "default": "./lib/schemas/hsvaColor.js"
+    },
+    "./schemas/rgbaColor": {
+      "source": "./src/schemas/rgbaColor.js",
+      "require": "./lib/schemas/rgbaColor.cjs",
+      "default": "./lib/schemas/rgbaColor.js"
+    }
+  },
+  "types": "lib/dts/src/ColorInput.d.ts",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "clean": "rimraf lib dest"
+    "build": "../../../bin/pkg-utils bundle",
+    "clean": "rimraf lib",
+    "prebuild": "yarn clean",
+    "watch": "../../../bin/pkg-utils bundle --watch"
   },
   "keywords": [
     "sanity",
@@ -26,11 +58,13 @@
   "devDependencies": {
     "@sanity/base": "2.30.0",
     "@sanity/types": "2.29.5",
+    "prop-types": "^15.6.0",
     "react": "17.0.1",
-    "rimraf": "^2.7.1"
+    "styled-components": "^5.2.0"
   },
   "peerDependencies": {
     "@sanity/base": "^2.14",
+    "@sanity/form-builder": "^2.27",
     "@sanity/types": "^2.14",
     "prop-types": "^15.6 || ^16",
     "react": "^16.9 || ^17",

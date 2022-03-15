@@ -1,0 +1,22 @@
+{
+  "extends": "../../../tsconfig.settings",
+  "include": ["./src", "./typings"],
+  "compilerOptions": {
+    "composite": true,
+    "declarationDir": "./lib/dts/",
+    "rootDir": "./",
+    "outDir": "./lib/dts/",
+    "jsx": "react",
+
+    // Allow JavaScript
+    "checkJs": true,
+    "allowJs": true,
+
+    // Disable strict mode
+    "noImplicitAny": false
+  },
+  "references": [
+    {"path": "../base/tsconfig.lib.json"},
+    {"path": "../form-builder/tsconfig.lib.json"}
+  ]
+}
