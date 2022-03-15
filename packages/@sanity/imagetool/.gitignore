@@ -1,4 +1,12 @@
-node_modules
-npm-debug.log
+# Logs
+/logs
+*.log
+
+# Coverage directory used by tools like istanbul
+/coverage
+
+# Dependency directories
+/node_modules
+
+# Compiled code
 /lib
-dist
