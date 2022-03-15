@@ -2,15 +2,26 @@
   "name": "@sanity/diff",
   "version": "2.29.3",
   "description": "Generates diffs between documents and primitive types",
-  "main": "./lib/index.js",
-  "types": "./dist/dts",
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.js",
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "require": "./lib/index.cjs",
+      "default": "./lib/index.js"
+    }
+  },
+  "types": "./lib/dts/src/index.d.ts",
   "author": "Sanity.io <hello@sanity.io>",
   "engines": {
     "node": ">=12.0.0"
   },
   "license": "MIT",
   "scripts": {
-    "clean": "rimraf lib coverage"
+    "build": "../../../bin/pkg-utils bundle",
+    "clean": "rimraf lib coverage",
+    "prebuild": "yarn clean",
+    "watch": "../../../bin/pkg-utils bundle --watch"
   },
   "keywords": [
     "sanity",
@@ -27,7 +38,7 @@
     "diff-match-patch": "^1.0.4"
   },
   "devDependencies": {
-    "rimraf": "^2.7.1"
+    "rimraf": "^3.0.2"
   },
   "repository": {
     "type": "git",
