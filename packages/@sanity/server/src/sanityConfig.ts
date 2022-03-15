@@ -15,7 +15,7 @@ export async function getSanityStudioConfigPath(studioRootPath: string): Promise
   const [js, ts] = await Promise.all([fileExists(jsConfigPath), fileExists(tsConfigPath)])
 
   if (!js && !ts) {
-    return path.join(__dirname, 'defaultStudioConfig')
+    return path.join(__dirname, 'defaultStudioConfig.js')
   }
 
   if (!js && ts) {
