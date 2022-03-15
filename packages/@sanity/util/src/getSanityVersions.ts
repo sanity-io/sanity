@@ -1,9 +1,9 @@
 import path from 'path'
 import uniq from 'lodash/uniq'
 import resolveFrom from 'resolve-from'
-import dynamicRequire from './dynamicRequire'
+import {dynamicRequire} from './dynamicRequire'
 
-const getSanityVersions = (basePath) => {
+export const getSanityVersions = (basePath) => {
   const manifestPath = path.join(basePath, 'package.json')
 
   let pkg
@@ -23,5 +23,3 @@ const getSanityVersions = (basePath) => {
 
   return versions
 }
-
-export default getSanityVersions

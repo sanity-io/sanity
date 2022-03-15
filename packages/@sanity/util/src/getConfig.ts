@@ -1,7 +1,7 @@
 import * as path from 'path'
 import {get, merge} from 'lodash'
 import {loadJsonSync} from './safeJson'
-import reduceConfig from './reduceConfig'
+import {reduceConfig} from './reduceConfig'
 
 const defaults = {
   server: {

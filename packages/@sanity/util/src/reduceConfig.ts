@@ -45,7 +45,11 @@ function tryReadDotEnv(studioRootPath: string, fallbackEnv?: string) {
   return readEnvFile(envFile)
 }
 
-export default (rawConfig, env = 'development', options: {studioRootPath?: string} = {}) => {
+export function reduceConfig(
+  rawConfig,
+  env = 'development',
+  options: {studioRootPath?: string} = {}
+) {
   const studioRootPath = options.studioRootPath
 
   let envVars = {...process.env}

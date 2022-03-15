@@ -2,21 +2,60 @@
   "name": "@sanity/util",
   "version": "2.29.5",
   "description": "Utilities shared across projects of Sanity",
-  "main": "./lib/_exports/index.js",
-  "types": "index.d.ts",
+  "source": "src/index.ts",
+  "main": "lib/index.cjs",
+  "module": "lib/index.js",
+  "types": "lib/dts/index.d.ts",
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "require": "./lib/index.cjs",
+      "default": "./lib/index.js"
+    },
+    "./_internal": {
+      "source": "./src/_internal.ts",
+      "require": "./lib/_internal.cjs",
+      "default": "./lib/_internal.js"
+    },
+    "./content": {
+      "source": "./src/content/index.ts",
+      "require": "./lib/content.cjs",
+      "default": "./lib/content.js"
+    },
+    "./legacyDateFormat": {
+      "source": "./src/legacyDateFormat.ts",
+      "require": "./lib/legacyDateFormat.cjs",
+      "default": "./lib/legacyDateFormat.js"
+    },
+    "./paths": {
+      "source": "./src/paths.ts",
+      "require": "./lib/paths.cjs",
+      "default": "./lib/paths.js"
+    }
+  },
   "//": "the typesVersion config below is a workaround for TypeScript's lack of support for package exports",
   "typesVersions": {
     "*": {
-      "*": [
-        "dist/dts/_exports/*"
+      "_internal": [
+        "./lib/dts/_internal.d.ts"
+      ],
+      "content": [
+        "./lib/dts/content/index.d.ts"
+      ],
+      "legacyDateFormat": [
+        "./lib/dts/legacyDateFormat.d.ts"
+      ],
+      "paths": [
+        "./lib/dts/paths.d.ts"
       ]
     }
   },
   "scripts": {
-    "build": "babel src --copy-files --extensions '.js,.jsx,.ts,.tsx' --out-dir lib",
-    "clean": "rimraf lib dest",
-    "prebuild": "npm run clean",
-    "test": "jest"
+    "build": "../../../bin/pkg-utils bundle",
+    "clean": "rimraf lib",
+    "prebuild": "yarn clean",
+    "test": "jest",
+    "watch": "../../../bin/pkg-utils bundle --watch"
   },
   "engines": {
     "node": ">=12.0.0"
@@ -42,15 +81,15 @@
   "homepage": "https://www.sanity.io/",
   "dependencies": {
     "@sanity/types": "2.29.5",
-    "dotenv": "^8.2.0",
+    "dotenv": "^10.0.0",
     "fs-extra": "^7.0.0",
     "get-random-values": "^1.2.2",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "moment": "^2.19.1",
     "resolve-from": "^4.0.0"
   },
   "devDependencies": {
     "@types/moment": "^2.13.0",
-    "rimraf": "^2.7.1"
+    "rimraf": "^3.0.2"
   }
 }

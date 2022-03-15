@@ -1,5 +1,5 @@
 /* eslint-disable max-nested-callbacks, @typescript-eslint/ban-ts-comment */
-import {fromString, toString, get} from '../src/pathUtils'
+import {fromString, toString, get} from '../src/paths'
 
 const srcObject = {
   title: 'Hei',

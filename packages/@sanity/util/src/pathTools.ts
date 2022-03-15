@@ -1,6 +1,6 @@
-import fse from 'fs-extra'
 import * as path from 'path'
 import * as os from 'os'
+import fse from 'fs-extra'
 
 export async function pathIsEmpty(dir) {
   try {

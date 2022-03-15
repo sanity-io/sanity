@@ -8,7 +8,8 @@ import {
   PathSegment,
 } from '@sanity/types'
 
-const rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g
+const rePropName =
+  /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g
 const reKeySegment = /_key\s*==\s*['"](.*)['"]/
 const EMPTY_PATH: Path = []
 
@@ -229,4 +230,4 @@ function normalizeIndexTupleSegment(segment: string): IndexTuple {
  *
  * @deprecated use import {randomKey} from '@sanity/util/content instead
  */
-export {randomKey} from './contentUtils'
+export {randomKey} from './content'
