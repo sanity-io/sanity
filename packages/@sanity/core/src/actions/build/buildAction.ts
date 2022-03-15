@@ -43,9 +43,7 @@ export default async (args, context) => {
   try {
     // Compile the bundle
     const buildStartTime = performance.now()
-
     await buildStaticFiles({cwd: workDir, outDir: outputDir})
-
     const buildDuration = performance.now() - buildStartTime
 
     spin.text = `Build Sanity Studio (${buildDuration.toFixed()}ms)`
