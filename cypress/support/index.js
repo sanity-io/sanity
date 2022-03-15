@@ -14,10 +14,10 @@
 // ***********************************************************
 
 // noinspection ES6UnusedImports
-import commands from './commands'
+import {applyCypressCommands} from './commands'
 
-// Alternatively you can use CommonJS syntax:
-// require('./commands')
+applyCypressCommands()
+
 before(() => {
   cy.login()
 })
