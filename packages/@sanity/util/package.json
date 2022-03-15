@@ -2,10 +2,10 @@
   "name": "@sanity/util",
   "version": "2.29.5",
   "description": "Utilities shared across projects of Sanity",
-  "source": "src/index.ts",
-  "main": "lib/index.cjs",
-  "module": "lib/index.js",
-  "types": "lib/dts/index.d.ts",
+  "source": "./src/index.ts",
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.js",
+  "types": "./lib/dts/src/index.d.ts",
   "exports": {
     ".": {
       "source": "./src/index.ts",
@@ -37,16 +37,16 @@
   "typesVersions": {
     "*": {
       "_internal": [
-        "./lib/dts/_internal.d.ts"
+        "./lib/dts/src/_internal.d.ts"
       ],
       "content": [
-        "./lib/dts/content/index.d.ts"
+        "./lib/dts/src/content/index.d.ts"
       ],
       "legacyDateFormat": [
-        "./lib/dts/legacyDateFormat.d.ts"
+        "./lib/dts/src/legacyDateFormat.d.ts"
       ],
       "paths": [
-        "./lib/dts/paths.d.ts"
+        "./lib/dts/src/paths.d.ts"
       ]
     }
   },
