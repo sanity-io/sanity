@@ -1,12 +1,11 @@
 /* eslint-disable no-console, no-process-exit, no-sync */
 // eslint-disable-next-line import/no-unassigned-import
 import path from 'path'
+import fs from 'fs/promises'
 import chalk from 'chalk'
 import dotenv from 'dotenv'
-import fse from 'fs-extra'
 import neatStack from 'neat-stack'
 import resolveFrom from 'resolve-from'
-import {resolveProjectRoot} from '@sanity/resolver'
 import pkg from '../package.json'
 import updateNotifier from './util/updateNotifier'
 import parseArguments from './util/parseArguments'
@@ -23,7 +22,7 @@ module.exports = async function runCli(cliRoot) {
   const args = parseArguments()
   const isInit = args.groupOrCommand === 'init' && args.argsWithoutOptions[0] !== 'plugin'
   const cwd = checkCwdPresence()
-  const workDir = isInit ? process.cwd() : resolveRootDir(cwd)
+  const workDir = isInit ? process.cwd() : await resolveRootDir(cwd)
 
   // Try to load .env files from the sanity studio directory
   // eslint-disable-next-line no-process-env
@@ -35,7 +34,7 @@ module.exports = async function runCli(cliRoot) {
   const options = {
     cliRoot: cliRoot,
     workDir: workDir,
-    corePath: getCoreModulePath(workDir),
+    corePath: await getCoreModulePath(workDir),
   }
 
   warnOnNonProductionEnvironment()
@@ -68,14 +67,13 @@ module.exports = async function runCli(cliRoot) {
   })
 }
 
-function getCoreModulePath(workDir) {
+async function getCoreModulePath(workDir) {
   const pkgPath = resolveFrom.silent(workDir, '@sanity/core')
   if (pkgPath) {
     return pkgPath
   }
 
-  const hasManifest = fse.existsSync(path.join(workDir, 'sanity.json'))
-  if (hasManifest && process.argv.indexOf('install') === -1) {
+  if ((await hasStudioConfig(workDir)) && process.argv.indexOf('install') === -1) {
     console.warn(
       chalk.yellow(
         [
@@ -106,15 +104,10 @@ function checkCwdPresence() {
   return pwd
 }
 
-function resolveRootDir(cwd) {
-  // Resolve project root directory
+async function resolveRootDir(cwd) {
+  // Resolve project root directory, falling back to cwd if it cannot be found
   try {
-    return (
-      resolveProjectRoot({
-        basePath: cwd,
-        sync: true,
-      }) || cwd
-    )
+    return (await resolveProjectRoot(cwd)) || cwd
   } catch (err) {
     console.warn(
       chalk.red(['Error occurred trying to resolve project root:', err.message].join('\n'))
@@ -125,8 +118,38 @@ function resolveRootDir(cwd) {
   return false
 }
 
+async function hasStudioConfig(basePath) {
+  const buildConfigs = await Promise.all([
+    fileExists(path.join(basePath, 'studio.config.js')),
+    fileExists(path.join(basePath, 'studio.config.ts')),
+  ])
+
+  return buildConfigs.some(Boolean)
+}
+
+async function resolveProjectRoot(basePath, iterations = 0) {
+  if (await hasStudioConfig(basePath)) {
+    return basePath
+  }
+
+  const parentDir = path.resolve(basePath, '..')
+  if (parentDir === basePath || iterations > 30) {
+    // Reached root (or max depth), give up
+    return false
+  }
+
+  return resolveProjectRoot(parentDir, iterations + 1)
+}
+
+function fileExists(filePath) {
+  return fs.access(filePath).then(
+    () => true,
+    () => false
+  )
+}
+
 function installUnhandledRejectionsHandler() {
-  process.on('unhandledRejection', (reason, promise) => {
+  process.on('unhandledRejection', (reason) => {
     console.error('Unhandled rejection:', reason.stack)
   })
 }

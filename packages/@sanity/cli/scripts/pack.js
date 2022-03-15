@@ -64,6 +64,29 @@ const compiler = webpack({
       },
     ],
   },
+  externals: {
+    // We don't want to bundle esbuild as it contains binaries that needs to be executed as-is,
+    // and there are multiple different platforms that are targetted
+    esbuild: 'commonjs2 esbuild',
+    'esbuild-register/dist/node': 'commonjs2 esbuild-register/dist/node',
+    'esbuild-register': 'commonjs2 esbuild-register',
+    'esbuild-windows-arm64': 'commonjs2 esbuild-windows-arm64',
+    'esbuild-windows-32': 'commonjs2 esbuild-windows-32',
+    'esbuild-windows-64': 'commonjs2 esbuild-windows-64',
+    'esbuild-android-arm64': 'commonjs2 esbuild-android-arm64',
+    'esbuild-darwin-arm64': 'commonjs2 esbuild-darwin-arm64',
+    'esbuild-darwin-64': 'commonjs2 esbuild-darwin-64',
+    'esbuild-freebsd-arm64': 'commonjs2 esbuild-freebsd-arm64',
+    'esbuild-freebsd-64': 'commonjs2 esbuild-freebsd-64',
+    'esbuild-openbsd-64': 'commonjs2 esbuild-openbsd-64',
+    'esbuild-linux-arm': 'commonjs2 esbuild-linux-arm',
+    'esbuild-linux-arm64': 'commonjs2 esbuild-linux-arm64',
+    'esbuild-linux-32': 'commonjs2 esbuild-linux-32',
+    'esbuild-linux-mips64le': 'commonjs2 esbuild-linux-mips64le',
+    'esbuild-linux-ppc64le': 'commonjs2 esbuild-linux-ppc64le',
+    'esbuild-linux-64': 'commonjs2 esbuild-linux-64',
+    'esbuild-sunos-64': 'commonjs2 esbuild-sunos-64',
+  },
   plugins: [
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.BannerPlugin({
@@ -133,7 +156,7 @@ compiler.run((err, stats) => {
   const normalized = content.replace(replaceRegex, '*** ')
   fse.writeFileSync(outputPath, normalized, 'utf8')
 
-  console.log('Done packing.')
+  console.log(`Done packing to ${path.join(basedir, 'bin', 'sanity-cli.js')}`)
 })
 
 function escapeRegex(string) {

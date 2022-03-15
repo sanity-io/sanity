@@ -1,3 +1,4 @@
+import path from 'path'
 import chalk from 'chalk'
 import client from '@sanity/client'
 import {generateHelpUrl} from '@sanity/generate-help-url'
@@ -37,7 +38,7 @@ export function getCliToken() {
   return envAuthToken || userConfig.get('authToken')
 }
 
-export default function clientWrapper(manifest, configPath) {
+export default function clientWrapper(buildConfig, configPath) {
   const requester = client.requester.clone()
   requester.use(authErrors())
 
@@ -52,7 +53,7 @@ export default function clientWrapper(manifest, configPath) {
     const token = getCliToken()
     const apiHost = apiHosts[sanityEnv]
     const apiConfig = {
-      ...((manifest && manifest.api) || {}),
+      ...((buildConfig && buildConfig.api) || {}),
       ...(api || {}),
     }
 
@@ -65,8 +66,9 @@ export default function clientWrapper(manifest, configPath) {
     }
 
     if (requireProject && !apiConfig.projectId) {
+      const relativeConfigPath = path.relative(process.cwd(), configPath)
       throw new Error(
-        `"${configPath}" does not contain a project identifier ("api.projectId"), ` +
+        `${relativeConfigPath} does not contain a project identifier ("api.projectId"), ` +
           'which is required for the Sanity CLI to communicate with the Sanity API'
       )
     }
@@ -77,7 +79,7 @@ export default function clientWrapper(manifest, configPath) {
       dataset: apiConfig.dataset || '~dummy-placeholder-dataset-',
       token: requireUser ? token : undefined,
       useProjectHostname: requireProject,
-      requester: requester,
+      requester,
       useCdn: false,
     })
   }

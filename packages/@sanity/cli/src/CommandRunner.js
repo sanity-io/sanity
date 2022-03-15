@@ -1,24 +1,17 @@
-import path from 'path'
 import chalk from 'chalk'
-import yarn from './actions/yarn/yarnWithProgress'
 import {groupBy, sortBy, cloneDeep} from 'lodash'
-import {loadJson} from '@sanity/util/lib/safeJson'
-import {reduceConfig} from '@sanity/util'
+import yarn from './actions/yarn/yarnWithProgress'
 import cliPrompter from './prompters/cliPrompter'
 import cliOutputter from './outputters/cliOutputter'
 import clientWrapper from './util/clientWrapper'
 import noSuchCommandText from './util/noSuchCommandText'
+import {getBuildConfig} from './util/getBuildConfig'
 import defaultCommands from './commands'
 import debug from './debug'
 import {
   generateCommandsDocumentation,
   generateCommandDocumentation,
 } from './util/generateCommandsDocumentation'
-
-/* eslint-disable no-process-env */
-const sanityEnv = process.env.SANITY_INTERNAL_ENV
-const environment = sanityEnv ? sanityEnv : process.env.NODE_ENV
-/* eslint-enable no-process-env */
 
 const cmdHasName = (cmdName) => {
   return (cmd) => cmd.name === cmdName
@@ -61,14 +54,10 @@ export default class CommandRunner {
     const output = this.handlers.outputter
     const {prompt} = this.handlers.prompter
 
-    const manifestPath = path.join(options.workDir, 'sanity.json')
-    debug(`Reading "${manifestPath}"`)
+    debug(`Reading build config from "${options.workDir}"`)
 
-    const baseManifest = await loadJson(manifestPath)
-    const manifest = reduceConfig(baseManifest || {}, environment, {
-      studioRootPath: options.workDir,
-    })
-    const apiClient = clientWrapper(manifest, manifestPath)
+    const buildConfig = await getBuildConfig(options.workDir)
+    const apiClient = clientWrapper(buildConfig?.config, buildConfig?.path || 'sanity.build.js')
 
     const context = {
       output,
@@ -76,6 +65,8 @@ export default class CommandRunner {
       apiClient,
       yarn,
       chalk,
+      buildConfig: buildConfig?.config,
+      buildConfigPath: buildConfig?.path,
       ...options,
       commandRunner: this,
     }
@@ -152,7 +143,7 @@ export default class CommandRunner {
     }
   }
 
-  resolveHelpForGroup(groupName) {
+  resolveHelpForGroup() {
     return {
       command: this.commandGroups.default.find(cmdHasName('help')),
       commandName: 'help',
