@@ -1,11 +1,12 @@
-node_modules
-npm-debug.log
-npm-shrinkwrap.json
-.DS_Store
-coverage
-.idea
+# Logs
+/logs
+*.log
+
+# Coverage directory used by tools like istanbul
+/coverage
+
+# Dependency directories
+/node_modules
+
+# Compiled code
 /lib
-form-builder-old
-plugins/@sanity
-examples/schema-testbed/plugins/@sanity
-dist

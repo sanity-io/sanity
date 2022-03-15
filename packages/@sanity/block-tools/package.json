@@ -2,14 +2,24 @@
   "name": "@sanity/block-tools",
   "version": "2.29.3",
   "description": "Can format HTML, Slate JSON or Sanity block array into any other format.",
-  "main": "./lib/index.js",
-  "types": "./dist/dts",
+  "source": "./src/index.ts",
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.js",
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "require": "./lib/index.cjs",
+      "default": "./lib/index.js"
+    }
+  },
+  "types": "./lib/dts/src/index.d.ts",
   "scripts": {
-    "clean": "rimraf lib dest",
-    "compile": "babel src --copy-files --out-dir lib",
-    "compile:watch": "run-s compile --watch",
+    "build": "../../../bin/pkg-utils bundle --tsconfig tsconfig.lib.json",
+    "clean": "rimraf lib",
+    "coverage": "NODE_ENV=test jest --coverage",
+    "prebuild": "yarn clean",
     "test": "NODE_ENV=test jest",
-    "coverage": "NODE_ENV=test jest --coverage"
+    "watch": "../../../bin/pkg-utils bundle --tsconfig tsconfig.lib.json --watch"
   },
   "publishConfig": {
     "access": "public"
@@ -26,7 +36,7 @@
   "license": "MIT",
   "dependencies": {
     "get-random-values": "^1.2.2",
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@sanity/schema": "2.29.3",
