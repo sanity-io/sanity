@@ -2,19 +2,39 @@
   "name": "@sanity/form-builder",
   "version": "2.30.0",
   "description": "Sanity form builder",
-  "main": "lib/_exports/index.js",
-  "types": "index.d.ts",
+  "main": "./lib/cjs/_exports/index.js",
+  "module": "./lib/esm/_exports/index.js",
+  "exports": {
+    ".": {
+      "source": "./src/_exports/index.ts",
+      "require": "./lib/cjs/_exports/index.js",
+      "default": "./lib/esm/_exports/index.js"
+    },
+    "./_internal": {
+      "source": "./src/_exports/_internal.ts",
+      "require": "./lib/cjs/_exports/_internal.js",
+      "default": "./lib/esm/_exports/_internal.js"
+    }
+  },
+  "types": "./lib/dts/src/_exports/index.d.ts",
   "//": "the typesVersion config below is a workaround for TypeScript's lack of support for package exports",
   "typesVersions": {
     "*": {
-      "*": [
-        "dist/dts/_exports/*"
+      ".": [
+        "./lib/dts/src/_exports/index.d.ts"
+      ],
+      "_internal": [
+        "./lib/dts/src/_exports/_internal.d.ts"
       ]
     }
   },
   "scripts": {
-    "clean": "rimraf lib dest",
-    "test": "jest"
+    "build": "../../../bin/pkg-utils transpile --tsconfig tsconfig.lib.json",
+    "clean": "rimraf lib",
+    "prebuild": "yarn clean",
+    "exports-check": "../../../bin/pkg-utils exports-check",
+    "test": "jest",
+    "watch": "../../../bin/pkg-utils transpile --tsconfig tsconfig.lib.json --watch"
   },
   "keywords": [
     "sanity",
@@ -45,13 +65,12 @@
     "@sanity/util": "2.29.5",
     "@sanity/uuid": "^3.0.1",
     "attr-accept": "^1.1.0",
-    "date-fns": "^2.16.1",
+    "date-fns": "^2.26.1",
     "debug": "^3.2.7",
     "diff-match-patch": "^1.0.4",
     "exif-component": "^1.0.1",
     "get-random-values": "^1.2.2",
-    "lodash": "^4.17.15",
-    "nano-pubsub": "^2.0.1",
+    "lodash": "^4.17.21",
     "pretty-bytes": "^4.0.2",
     "react-fast-compare": "^3.2.0",
     "react-focus-lock": "^2.5.0",
@@ -66,7 +85,7 @@
   "devDependencies": {
     "@sanity/state-router": "2.29.3",
     "@sanity/ui-workshop": "^0.4.1",
-    "@testing-library/jest-dom": "^5.11.10",
+    "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^13.0.16",
     "@types/diff-match-patch": "^1.0.32",
@@ -74,7 +93,7 @@
     "prop-types": "^15.6.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
-    "rimraf": "^2.7.1",
+    "rimraf": "^3.0.2",
     "styled-components": "^5.2.0",
     "ts-node": "^9.1.1"
   },
