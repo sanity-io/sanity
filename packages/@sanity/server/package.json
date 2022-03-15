@@ -43,6 +43,7 @@
     "@sanity/css-loader": "^0.28.12",
     "@sanity/eventsource": "^3.0.1",
     "@sanity/resolver": "2.29.5",
+    "@sanity/ui": "^0.37.2",
     "@sanity/util": "2.29.5",
     "@sanity/webpack-dev-middleware": "^2.0.6",
     "@sanity/webpack-integration": "2.29.5",
