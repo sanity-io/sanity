@@ -1,0 +1,12 @@
+import {StudioRoot} from '@sanity/base'
+import React from 'react'
+import {render} from 'react-dom'
+import sanityConfig from '$config'
+
+const rootElement = document.getElementById('sanity')
+
+if (!rootElement) {
+  throw new Error('missing root element')
+}
+
+render(<StudioRoot config={sanityConfig} />, rootElement)
