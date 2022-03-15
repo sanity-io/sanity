@@ -1,6 +1,6 @@
 {
-  "extends": "../../../tsconfig",
-  "include": ["src"],
+  "extends": "../../../tsconfig.settings",
+  "include": ["./src/"],
   "compilerOptions": {
     "composite": true,
     // -- strictness options we need to disable in a transition period.
@@ -8,8 +8,9 @@
     "strictNullChecks": false,
     "strictFunctionTypes": false,
     // --
-    "rootDir": "src",
-    "outDir": "./dist/dts",
+    "declarationDir": "./lib/dts/",
+    "rootDir": "./",
+    "outDir": "./lib/dts/",
     "jsx": "react"
   },
   "references": [{"path": "../base"}, {"path": "../util"}]
