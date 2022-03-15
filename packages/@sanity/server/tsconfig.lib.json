@@ -5,7 +5,7 @@
     "composite": true,
     "jsx": "react",
     "declarationDir": "./lib/dts/",
-    "rootDir": "./src/",
+    "rootDir": "./",
     "outDir": "./lib/dts/"
   },
   "references": [{"path": "../base/tsconfig.lib.json"}]

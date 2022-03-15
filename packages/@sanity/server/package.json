@@ -2,8 +2,8 @@
   "name": "@sanity/server",
   "version": "2.29.5",
   "description": "Webserver dedicated to serving Sanity, allowing a smooth development experience",
-  "main": "lib/index.js",
-  "types": "lib/dts/index.d.ts",
+  "main": "./lib/index.js",
+  "types": "./lib/dts/src/index.d.ts",
   "scripts": {
     "build": "../../../bin/pkg-utils transpile --target node --tsconfig tsconfig.lib.json",
     "clean": "rimraf lib",
