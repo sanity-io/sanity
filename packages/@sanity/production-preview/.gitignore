@@ -1,5 +1,12 @@
+# Logs
+/logs
 *.log
-lib
-node_modules
-yarn.lock
-dist
+
+# Coverage directory used by tools like istanbul
+/coverage
+
+# Dependency directories
+/node_modules
+
+# Compiled code
+/lib

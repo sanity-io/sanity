@@ -2,11 +2,23 @@
   "name": "@sanity/production-preview",
   "version": "2.29.3",
   "description": "Production preview",
-  "main": "lib/index.js",
+  "main": "./lib/resolveProductionUrl.cjs",
+  "module": "./lib/resolveProductionUrl.js",
+  "exports": {
+    ".": {
+      "source": "./src/resolveProductionUrl.js",
+      "require": "./lib/resolveProductionUrl.cjs",
+      "default": "./lib/resolveProductionUrl.js"
+    }
+  },
+  "types": "./lib/dts/src/resolveProductionUrl.d.ts",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "clean": "rimraf lib dest"
+    "build": "../../../bin/pkg-utils bundle",
+    "clean": "rimraf lib",
+    "prebuild": "yarn clean",
+    "watch": "../../../bin/pkg-utils bundle --watch"
   },
   "keywords": [
     "sanity",
@@ -19,7 +31,7 @@
     "sanity-plugin"
   ],
   "devDependencies": {
-    "rimraf": "^2.7.1"
+    "rimraf": "^3.0.2"
   },
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
