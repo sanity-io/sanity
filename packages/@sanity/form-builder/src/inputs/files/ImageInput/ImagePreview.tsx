@@ -18,6 +18,10 @@ interface Props {
   alt: string
 }
 
+/* 
+  Used for setting the initial image height - specifically for images 
+  that are small and so can take less space in the document
+*/
 const getImageSize = (src) => {
   const imageUrlParams = new URLSearchParams(src.split('?')[1])
   const rect = imageUrlParams.get('rect')
@@ -44,9 +48,13 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
 
   const imageRatio = imageWidth / imageHeight
 
-  // is image wider than root? if so calculate the resized height
+  // is the image wider than root? if so calculate the resized height
   const renderedImageHeight = imageWidth > rootWidth ? rootWidth / imageRatio : imageHeight
 
+  /* 
+    if the rendered image is smaller than the max height then it doesn't require a height set
+    otherwise, set the max height (to prevent a large image in the document)
+  */
   const rootHeight = renderedImageHeight < maxHeightToPx ? null : `${MAX_DEFAULT_HEIGHT}vh`
 
   useEffect(() => {
