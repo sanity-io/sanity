@@ -349,7 +349,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
               value: PortableTextEditor.getValue(portableTextEditor),
               path: slateEditor.selection?.focus.path || [],
               portableTextFeatures, // New key added in v.2.23.2
-              type: blockType, // For legacy support
+              type: portableTextFeatures.types.portableText, // For legacy support
             })
           } catch (error) {
             return error as Error
@@ -386,7 +386,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       event.preventDefault()
       slateEditor.insertData(event.clipboardData)
     },
-    [blockType, change$, onPaste, portableTextEditor, portableTextFeatures, slateEditor]
+    [change$, onPaste, portableTextEditor, portableTextFeatures, slateEditor]
   )
 
   const _isSelecting = useRef(false)
