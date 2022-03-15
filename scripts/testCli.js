@@ -12,7 +12,8 @@
 const os = require('os')
 const path = require('path')
 const util = require('util')
-const {spawnSync} = require('child_process')
+const http = require('http')
+const {spawnSync, spawn} = require('child_process')
 const rimrafcb = require('rimraf')
 const chalk = require('chalk')
 
@@ -28,14 +29,14 @@ const githubWorkspace = process.env.GITHUB_WORKSPACE
 const basePath = githubWorkspace || path.join(__dirname, '..')
 
 /** Utility functions */
-function spawn(filePath, args, options = {}) {
+function spawnCommand(command, args, options = {}) {
   const cwd = options.cwd || process.cwd()
 
   console.log('')
-  console.log(chalk.yellow(`[ Running '${filePath} ${args.join(' ')}' in '${cwd}' ]`))
+  console.log(chalk.yellow(`[ Running '${command} ${args.join(' ')}' in '${cwd}' ]`))
 
   const start = Date.now()
-  const result = spawnSync(filePath, args, {
+  const result = spawnSync(command, args, {
     windowsHide: true,
     ...options,
     env: {...env, ...options.env},
@@ -86,13 +87,13 @@ if (!githubWorkspace && !skipDelete) {
   const binPath = path.join(basePath, 'packages', '@sanity', 'cli', 'bin', 'sanity')
 
   // Test `sanity build` command in test studio with all customizations
-  spawn(process.argv[0], [binPath, 'build', '-y'], {
+  spawnCommand(process.argv[0], [binPath, 'build', '-y'], {
     cwd: path.join(basePath, 'dev', 'test-studio'),
     stdio: 'inherit',
   })
 
   // Test `sanity init` command
-  spawn(
+  spawnCommand(
     process.argv[0],
     [
       binPath,
@@ -113,7 +114,7 @@ if (!githubWorkspace && !skipDelete) {
 
   // Replace @sanity-dependencies in the new project with symlinked versions instead
   // of the modules installed by npm/yarn
-  spawn(
+  spawnCommand(
     process.argv[0],
     [path.join(basePath, 'scripts', 'symlinkDependencies.js'), tmpProjectPath],
     {
@@ -123,11 +124,93 @@ if (!githubWorkspace && !skipDelete) {
   )
 
   // Test `sanity build` but with the code from this checkout, not from latest npm release
-  spawn(process.argv[0], [binPath, 'build', '--no-minify'], {
+  spawnCommand(process.argv[0], [binPath, 'build', '--no-minify'], {
     cwd: tmpProjectPath,
     stdio: 'inherit',
   })
+
+  // Test running a v2 studio with the v3 cli (eg defers to @sanity/core)
+  const v2Path = path.resolve(__dirname, '..', 'test', 'v2-studio')
+
+  // npm install for v2 dependencies (eg dont want to symlink the monorepo modules)
+  spawnCommand('npm', ['install'], {
+    cwd: v2Path,
+    stdio: 'inherit',
+  })
+
+  // Test `sanity build` in v2 context
+  spawnCommand(process.argv[0], [binPath, 'build', '-y'], {
+    cwd: v2Path,
+    stdio: 'inherit',
+  })
+
+  // Test `sanity start` in v2 context
+  await testStartCommand({binPath, cwd: v2Path, expectedTitle: 'v2 studio'})
 })().catch((error) => {
   console.error(error)
   process.exit(1)
 })
+
+function testStartCommand({binPath, cwd, expectedTitle}) {
+  return new Promise((resolve, reject) => {
+    const maxWaitForServer = 120000
+    const startedAt = Date.now()
+    let timer
+
+    function scheduleConnect() {
+      if (timer) {
+        clearTimeout(timer)
+      }
+
+      if (Date.now() - startedAt > maxWaitForServer) {
+        reject(new Error('Timed out waiting for server to get online'))
+        return
+      }
+
+      timer = setTimeout(tryConnect, 1000)
+    }
+
+    function tryConnect() {
+      const req = http.request('http://localhost:3333/', {timeout: 500})
+      req.on('response', (res) => {
+        if (res.statusCode !== 200) {
+          reject(new Error(`Dev server responded with HTTP ${res.statusCode}`))
+          return
+        }
+
+        const data = []
+        res.on('data', (buf) => data.push(buf))
+        res.on('close', () => {
+          const html = Buffer.concat(data).toString('utf8')
+          return html.includes(`<title>${expectedTitle}`)
+            ? onSuccess()
+            : reject(new Error(`Did not find expected <title> in HTML:\n\n${html}`))
+        })
+      })
+      req.on('timeout', scheduleConnect)
+      req.on('error', scheduleConnect)
+      req.end()
+    }
+
+    const start = spawn(process.argv[0], [binPath, 'start'], {cwd})
+    start.on('close', (code) => {
+      if (code && code > 0) {
+        reject(new Error(`'sanity start' failed with code ${code}`))
+        return
+      }
+
+      resolve()
+    })
+
+    scheduleConnect()
+
+    function onSuccess() {
+      if (timer) {
+        clearTimeout(timer)
+      }
+
+      start.kill(2)
+      resolve()
+    }
+  })
+}

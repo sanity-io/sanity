@@ -1,0 +1,22 @@
+{
+  "root": true,
+  "project": {
+    "name": "v2 studio"
+  },
+  "api": {
+    "projectId": "ppsg7ml5",
+    "dataset": "test"
+  },
+  "plugins": [
+    "@sanity/base",
+    "@sanity/default-layout",
+    "@sanity/default-login",
+    "@sanity/desk-tool"
+  ],
+  "parts": [
+    {
+      "name": "part:@sanity/base/schema",
+      "path": "schema"
+    }
+  ]
+}
