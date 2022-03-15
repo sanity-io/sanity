@@ -33,10 +33,10 @@
     "@sanity/ui": "^0.37.9",
     "@sanity/vision": "2.30.0",
     "bio-pv": "^1.8.1",
-    "date-fns": "^2.16.1",
+    "date-fns": "^2.26.1",
     "get-video-id": "^2.1.4",
     "humanize-list": "^1.0.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "prop-types": "^15.6.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
@@ -45,7 +45,7 @@
     "styled-components": "^5.2.0"
   },
   "devDependencies": {
-    "rimraf": "^2.7.1"
+    "rimraf": "^3.0.2"
   },
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"

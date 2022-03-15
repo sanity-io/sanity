@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
-import {setIfMissing} from 'part:@sanity/form-builder/patch-event'
+import {setIfMissing} from '@sanity/form-builder'
 import {FormBuilderInput} from 'part:@sanity/form-builder'
 
 export default class CustomObjectInput extends React.PureComponent {
