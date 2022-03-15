@@ -2,8 +2,8 @@
   "name": "@sanity/export",
   "version": "2.29.3",
   "description": "Export Sanity documents and assets",
-  "main": "lib/export.js",
-  "types": "lib/dts/export.d.ts",
+  "main": "./lib/export.js",
+  "types": "./lib/dts/src/export.d.ts",
   "engines": {
     "node": ">=12.0.0"
   },
