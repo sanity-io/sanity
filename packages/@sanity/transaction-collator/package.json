@@ -2,16 +2,28 @@
   "name": "@sanity/transaction-collator",
   "version": "2.29.3",
   "description": "Collate events from a series of transactions",
-  "main": "./lib/index.js",
-  "types": "./dist/dts/index.d.ts",
+  "source": "./src/_exports/index.ts",
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.js",
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "require": "./lib/index.cjs",
+      "default": "./lib/index.js"
+    }
+  },
+  "types": "./lib/dts/src/index.d.ts",
   "author": "Sanity.io <hello@sanity.io>",
   "engines": {
     "node": ">=12.0.0"
   },
   "license": "MIT",
   "scripts": {
+    "build": "../../../bin/pkg-utils bundle",
+    "clean": "rimraf lib",
+    "prebuild": "yarn clean",
     "test": "jest",
-    "clean": "rimraf lib coverage"
+    "watch": "../../../bin/pkg-utils bundle --watch"
   },
   "keywords": [
     "sanity",
@@ -28,10 +40,10 @@
   },
   "dependencies": {
     "@types/lodash": "^4.14.149",
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "rimraf": "^2.7.1"
+    "rimraf": "^3.0.2"
   },
   "repository": {
     "type": "git",
