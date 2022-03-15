@@ -12,7 +12,11 @@
     "node": ">=6"
   },
   "scripts": {
-    "test": "node test/groq.test.js"
+    "build": "../../bin/pkg-utils bundle",
+    "clean": "rimraf lib",
+    "prebuild": "yarn clean",
+    "test": "node test/groq.test.js",
+    "watch": "../../bin/pkg-utils bundle --watch"
   },
   "repository": {
     "type": "git",
