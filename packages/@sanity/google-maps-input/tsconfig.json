@@ -1,20 +1,18 @@
 {
-  "extends": "../../../tsconfig",
-  "include": ["src"],
+  "extends": "../../../tsconfig.settings",
+  "include": ["./src/"],
   "compilerOptions": {
     "composite": true,
     // todo: we need to disable noImplicitAny in a transition phase and should be removed eventually
     "noImplicitAny": false,
-    "rootDir": "./src",
-    "outDir": "./dist/dts",
+    "declarationDir": "./lib/dts/",
+    "rootDir": "./",
+    "outDir": "./lib/dts/",
     "jsx": "react"
   },
   "references": [
-    {
-      "path": "../diff"
-    },
-    {
-      "path": "../base"
-    }
+    {"path": "../diff"},
+    {"path": "../base/tsconfig.lib.json"},
+    {"path": "../form-builder/tsconfig.lib.json"}
   ]
 }

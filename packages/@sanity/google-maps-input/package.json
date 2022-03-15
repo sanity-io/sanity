@@ -2,12 +2,28 @@
   "name": "@sanity/google-maps-input",
   "version": "2.30.0",
   "description": "Sanity plugin providing input handlers for geo-related input types using Google Maps",
-  "main": "lib/index.js",
-  "types": "./dist/dts",
+  "main": "lib/input/GeopointInput.cjs",
+  "module": "lib/input/GeopointInput.js",
+  "exports": {
+    "./input/GeopointInput": {
+      "source": "./src/input/GeopointInput.tsx",
+      "require": "./lib/input/GeopointInput.cjs",
+      "default": "./lib/input/GeopointInput.js"
+    },
+    "./diff/resolver": {
+      "source": "./src/diff/resolver.ts",
+      "require": "./lib/diff/resolver.cjs",
+      "default": "./lib/diff/resolver.js"
+    }
+  },
+  "types": "./lib/dts/src/input/GeopointInput.d.ts",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "clean": "rimraf lib dest"
+    "build": "../../../bin/pkg-utils bundle",
+    "clean": "rimraf lib",
+    "prebuild": "yarn clean",
+    "watch": "../../../bin/pkg-utils bundle --watch"
   },
   "keywords": [
     "sanity",
@@ -19,20 +35,22 @@
     "sanity-plugin"
   ],
   "dependencies": {
-    "@sanity/field": "2.30.0",
     "@sanity/icons": "^1.2.6",
     "@sanity/types": "2.29.5",
     "@sanity/ui": "^0.37.9",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "rxjs": "^6.5.3"
   },
   "devDependencies": {
     "@sanity/base": "2.30.0",
     "@types/googlemaps": "^3.43.0",
-    "rimraf": "^2.7.1"
+    "react": "17.0.1",
+    "rimraf": "^3.0.2",
+    "styled-components": "^5.2.0"
   },
   "peerDependencies": {
     "@sanity/base": "^2.0.0",
+    "@sanity/form-builder": "^2.27",
     "react": "^16.9 || ^17",
     "react-dom": "^16.9 || ^17",
     "styled-components": "^5.2.0"
