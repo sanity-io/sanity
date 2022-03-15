@@ -25,8 +25,8 @@ test('merges env config', () => {
   )
 
   expect(reduced.root).toEqual(true)
-  expect(reduced.api.projectId).toEqual('onlyInOriginal')
-  expect(reduced.api.dataset).toEqual('xyz')
+  expect(reduced.api?.projectId).toEqual('onlyInOriginal')
+  expect(reduced.api?.dataset).toEqual('xyz')
   expect((reduced as any).env).toEqual(undefined)
 })
 
