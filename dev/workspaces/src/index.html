@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
+    />
+    <title>Workspaces</title>
+    <style>
+      html {
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-font-smoothing: antialiased;
+      }
+      html,
+      body,
+      #root {
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+      }
+    </style>
+    <script>
+      window.setImmediate = window.setTimeout
+      window.onerror = function (err) {
+        console.error('[main] Uncaught error:', err)
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      // For legacy sanity support
+      window.__DEV__ = true
+    </script>
+    <script type="module" src="/main.tsx"></script>
+  </body>
+</html>
