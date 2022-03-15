@@ -22,9 +22,6 @@ Examples
   # Initialize a new project, prompt for required information along the way
   sanity init
 
-  # Initialize a new plugin
-  sanity init plugin
-
   # Initialize a new project with a public dataset named "production"
   sanity init --dataset-default
 
@@ -46,8 +43,8 @@ Examples
 
 export const initCommand: CliCommandDefinition = {
   name: 'init',
-  signature: '[plugin]',
-  description: 'Initialize a new Sanity project or plugin',
+  signature: '',
+  description: 'Initialize a new Sanity studio project',
   helpText,
   action: (args, context) => {
     const [type] = args.argsWithoutOptions
@@ -57,7 +54,9 @@ export const initCommand: CliCommandDefinition = {
     }
 
     if (type === 'plugin') {
-      return initPlugin(args, context)
+      return context.sanityMajorVersion === 2
+        ? initPlugin(args, context)
+        : Promise.reject(new Error(`'sanity init plugin' is not available in modern studios`))
     }
 
     return Promise.reject(new Error(`Unknown init type "${type}"`))
