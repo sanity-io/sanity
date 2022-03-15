@@ -102,7 +102,7 @@ depcheck(cwd, options).then((unused) => {
 })
 
 const IMPLICIT_DEPS = {
-  '@sanity/cli': ['@sanity/core'],
+  '@sanity/base': ['styled-components', 'react'],
 }
 
 function implicitDepsParser(filePath, deps) {
