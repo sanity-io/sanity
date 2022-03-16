@@ -1,11 +1,11 @@
 import path from 'path'
 import {esbuildCommonjs, viteCommonjs} from '@originjs/vite-plugin-commonjs'
+import type {InlineConfig} from 'vite'
 import viteReact from '@vitejs/plugin-react'
-import {InlineConfig} from 'vite'
 import {isSanityMonorepo} from './isSanityMonorepo'
 import {DEFAULT_CANONICAL_MODULES, DEFAULT_COMMONJS_MODULES} from './constants'
 import {viteCanonicalModules} from './vite/plugin-canonical-modules'
-
+import {sanityStudioPlugin, resolveEntryModulePath} from './vitePlugins'
 export interface ViteOptions {
   /**
    * Root path of the studio/sanity app
@@ -49,11 +49,13 @@ export interface SanityViteConfig extends InlineConfig {
  * @internal Only meant for consumption inside of Sanity modules, do not depend on this externally
  */
 export async function getViteConfig(options: ViteOptions): Promise<SanityViteConfig> {
-  const {cwd, mode, outputDir, sourceMap, minify, basePath = '/'} = options
+  const {cwd, mode, outputDir, sourceMap, minify, basePath: rawBasePath = '/'} = options
+  const studioRootPath = cwd
+  const basePath = normalizeBasePath(rawBasePath)
   const isMonorepo = await isSanityMonorepo(cwd)
-
+  const aliases = await getAliases({isMonorepo})
   const viteConfig: SanityViteConfig = {
-    base: normalizeBasePath(basePath),
+    base: basePath,
     build: {
       outDir: outputDir || path.resolve(cwd, 'dist'),
       sourcemap: sourceMap,
@@ -64,10 +66,14 @@ export async function getViteConfig(options: ViteOptions): Promise<SanityViteCon
       esbuildOptions: {
         plugins: [esbuildCommonjs(DEFAULT_COMMONJS_MODULES)],
       },
-      include: DEFAULT_COMMONJS_MODULES,
+      include: DEFAULT_COMMONJS_MODULES.concat(Object.values(aliases)), // Fixes CommonJS/ESM mismatches
     },
     plugins: [
       viteReact({}),
+      sanityStudioPlugin({
+        studioRootPath,
+        basePath,
+      }),
       viteCanonicalModules({
         ids: DEFAULT_CANONICAL_MODULES,
         cwd,
@@ -84,11 +90,12 @@ export async function getViteConfig(options: ViteOptions): Promise<SanityViteCon
     },
     logLevel: mode === 'production' ? 'silent' : undefined,
     resolve: {
-      alias: await getAliases({cwd, isMonorepo}),
+      alias: aliases,
     },
   }
 
   if (mode === 'production') {
+    viteConfig.root = studioRootPath
     viteConfig.build = {
       ...viteConfig.build,
       assetsDir: 'static',
@@ -111,46 +118,36 @@ export async function getViteConfig(options: ViteOptions): Promise<SanityViteCon
       rollupOptions: {
         perf: true,
         input: {
-          // @todo Figure out a better input for this
-          main: path.resolve(__dirname, '../src/app/index.html'),
+          main: resolveEntryModulePath(studioRootPath),
         },
       },
     }
-
-    // @todo Figure out a better input for this
-    viteConfig.root = path.resolve(__dirname, '../src/app')
   }
 
   return viteConfig
 }
 
 /**
- * Returns an object of aliases for vite to use.
+ * Returns an object of aliases for vite to use
  *
- * We explicitly add aliases for react, react-dom and styled-components because
- * multiple versions of these dependencies will cause quite a lot of issues.
- *
- * @todo Figure out a non-alias(?) way to spawn up the studio and the config
+ * @internal
  */
-async function getAliases(opts: {
-  cwd: string
-  isMonorepo: boolean
-}): Promise<Record<string, string>> {
-  const {cwd, isMonorepo} = opts
+function getAliases(opts: {isMonorepo: boolean}): Record<string, string> {
+  const {isMonorepo} = opts
+
+  if (!isMonorepo) {
+    return {}
+  }
 
   // Load monorepo aliases (if the current Studio is located within the sanity monorepo)
-  const devAliases: Record<string, string> = isMonorepo ? require('../../../../dev/aliases') : {}
+  const devAliases: Record<string, string> = require('../../../../dev/aliases')
   const monorepoAliases = Object.fromEntries(
     Object.entries(devAliases).map(([key, modulePath]) => {
       return [key, path.resolve(__dirname, '../../../..', modulePath)]
     })
   )
 
-  return {
-    $config: path.resolve(cwd, 'sanity.config.ts'),
-    ...monorepoAliases,
-    '/$studio': path.resolve(__dirname, '../src/app/main.tsx'),
-  }
+  return monorepoAliases
 }
 
 /**
