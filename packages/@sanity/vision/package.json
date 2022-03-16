@@ -2,11 +2,23 @@
   "name": "@sanity/vision",
   "version": "2.30.0",
   "description": "React-based data management tool for Sanity projects",
-  "main": "lib/SanityVision.js",
+  "main": "./lib/VisionTool.cjs",
+  "module": "./lib/VisionTool.js",
+  "exports": {
+    ".": {
+      "source": "./src/VisionTool.js",
+      "require": "./lib/VisionTool.cjs",
+      "default": "./lib/VisionTool.js"
+    }
+  },
+  "types": "./lib/dts/src/VisionTool.d.ts",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "clean": "rimraf lib dest"
+    "build": "../../../bin/pkg-utils bundle",
+    "clean": "rimraf lib",
+    "prebuild": "yarn clean",
+    "watch": "../../../bin/pkg-utils bundle --watch"
   },
   "keywords": [
     "sanity",
@@ -27,7 +39,7 @@
     "codemirror": "^5.47.0",
     "is-hotkey": "^0.1.6",
     "json5": "^1.0.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "moment": "^2.19.1",
     "query-string": "^4.3.2",
     "react-codemirror2": "^6.0.0",
@@ -38,8 +50,9 @@
   "devDependencies": {
     "@sanity/base": "2.30.0",
     "prop-types": "^15.6.0",
-    "react": "17.0.1",
-    "react-dom": "17.0.1"
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "styled-components": "^5.2.0"
   },
   "peerDependencies": {
     "@sanity/base": "^2.21.0",

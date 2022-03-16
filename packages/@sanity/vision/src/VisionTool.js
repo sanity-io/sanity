@@ -3,7 +3,7 @@ import SanityVision from './SanityVision'
 import {EyeOpenIcon} from '@sanity/icons'
 
 export default {
-  router: route('/*'),
+  router: route.create('/*'),
   name: 'vision',
   title: 'Vision',
   icon: EyeOpenIcon,
