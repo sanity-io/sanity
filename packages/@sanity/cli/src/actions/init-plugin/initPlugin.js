@@ -1,4 +1,4 @@
-import addPluginToManifest from '@sanity/util/lib/addPluginToManifest'
+import {addPluginToManifest} from '@sanity/util/_internal'
 import bootstrapFromTemplate from '../../actions/init-plugin/bootstrapFromTemplate'
 import debug from '../../debug'
 import pluginTemplates from './pluginTemplates'
