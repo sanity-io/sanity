@@ -9,9 +9,9 @@
     "jsx": "react"
   },
   "references": [
-    {"path": "../block-tools"},
-    {"path": "../types"},
+    {"path": "../block-tools/tsconfig.lib.json"},
     {"path": "../schema"},
-    {"path": "../util"}
+    {"path": "../types"},
+    {"path": "../util/tsconfig.lib.json"}
   ]
 }
