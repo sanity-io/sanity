@@ -1,20 +1,20 @@
-import * as React from 'react'
-import {HOCRouter} from '../../src/components/types'
-import withRouterHOC from '../../src/components/withRouterHOC'
+import {withRouter} from '@sanity/state-router'
+import {Card, Code, Heading, Label, Stack} from '@sanity/ui'
+import React from 'react'
 
-type Props = {
-  router: HOCRouter
-}
-
-export default withRouterHOC((props: Props) => {
+export const ProductCounter = withRouter(function ProductCounter(props) {
   const {router} = props
+
   return (
-    <div>
-      <h1>My parent never updates. Should still get router state updates.</h1>
-      <h3>Current router state (scoped):</h3>
-      <pre>
-        <code>{JSON.stringify(router.state, null, 2)}</code>
-      </pre>
-    </div>
+    <Card padding={4} shadow={1}>
+      <Stack space={4}>
+        <Label>Product counter</Label>
+        <Heading as="h1">My parent never updates. Should still get router state updates.</Heading>
+        <Heading as="h2" size={1}>
+          Current router state (scoped)
+        </Heading>
+        <Code>{JSON.stringify(router.state, null, 2)}</Code>
+      </Stack>
+    </Card>
   )
 })

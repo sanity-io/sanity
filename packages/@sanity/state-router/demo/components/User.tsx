@@ -1,22 +1,22 @@
+import {StateLink} from '@sanity/state-router'
+import {Card, Heading, Stack, Text} from '@sanity/ui'
 import React from 'react'
-import StateLink from '../../src/components/StateLink'
 
-export default class User extends React.Component<{
-  id: string
-}> {
-  render() {
-    const {id} = this.props
-    const nextUserId = Math.random().toString(32).substring(2)
-    return (
-      <div>
-        <h1>Showing a lot of information about user #{id}</h1>
-        <p>
+export function User(props: {id: string}) {
+  const {id} = props
+  const nextUserId = Math.random().toString(32).substring(2)
+
+  return (
+    <Card padding={4} shadow={1} tone="transparent">
+      <Stack space={4}>
+        <Heading>Showing a lot of information about user #{id}</Heading>
+        <Text>
           <StateLink state={{userId: nextUserId}}>Go to user #{nextUserId}</StateLink>
-        </p>
-        <p>
-          <StateLink state={{userId: 'me'}}>Show profile</StateLink>
-        </p>
-      </div>
-    )
-  }
+        </Text>
+        <Text>
+          <StateLink state={{userId: 'me'}}>Go to user #me</StateLink>
+        </Text>
+      </Stack>
+    </Card>
+  )
 }

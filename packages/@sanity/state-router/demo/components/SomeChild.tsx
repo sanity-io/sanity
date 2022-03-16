@@ -1,11 +1,13 @@
 import React from 'react'
 
-export default class SomeChild extends React.Component {
+export class SomeChild extends React.Component {
   state = {random: Math.random()}
-  handleClick = (e) => {
+
+  handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     this.setState({random: Math.random()})
   }
+
   render() {
     return (
       <span>

@@ -1,8 +1,12 @@
 {
-  "include": ["**/*"],
+  "include": ["**/*.ts", "**/*.tsx"],
   "compilerOptions": {
     "noEmit": true,
     "esModuleInterop": true,
-    "jsx": "react"
+    "jsx": "react",
+    "baseUrl": "../",
+    "paths": {
+      "@sanity/state-router": ["./src"]
+    }
   }
 }

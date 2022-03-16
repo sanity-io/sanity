@@ -1,49 +1,58 @@
+import {StateLink, IntentLink, WithRouter} from '@sanity/state-router'
+import {Button, Card, Code, Heading, Label, Stack, Text} from '@sanity/ui'
 import React from 'react'
-import StateLink from '../../src/components/StateLink'
-import IntentLink from '../../src/components/IntentLink'
-import WithRouter from '../../src/components/WithRouter'
-import NeverUpdate from './NeverUpdate'
+import {NeverUpdate} from './NeverUpdate'
 
-export default class Product extends React.Component<{id: string}> {
-  render() {
-    const {id} = this.props
-    const nextProductId = Math.random().toString(32).substring(2)
-    return (
-      <div>
-        <h1>Showing a lot of information about product #{id}</h1>
-        <StateLink state={{id, detailView: 'details'}}>View more details</StateLink>
-        <p>
+export function Product(props: {id: string}) {
+  const {id} = props
+  const nextProductId = Math.random().toString(32).substring(2)
+
+  return (
+    <Card padding={4} shadow={1}>
+      <Stack space={4}>
+        <Text>
+          <StateLink toIndex>Up…</StateLink>
+        </Text>
+        <Label>Product</Label>
+        <Heading>Showing a lot of information about product #{id}</Heading>
+        <Text>
+          <StateLink state={{id, detailView: 'details'}}>View more details</StateLink>
+        </Text>
+        <Text>
           <StateLink state={{id: nextProductId}}>Go to product #{nextProductId}</StateLink>
-        </p>
-        This is an intentlink:
-        <IntentLink intent="open" params={{type: 'product', id: 'foo'}}>
-          Open Foo
-        </IntentLink>
-        <p>
+        </Text>
+        <Text>
+          This is an intent link:{' '}
+          <IntentLink intent="open" params={{type: 'product', id: 'foo'}}>
+            Open Foo
+          </IntentLink>
+        </Text>
+        <Text>
           <WithRouter>
             {(router) => (
-              <button
+              <Button
                 type="button"
+                // eslint-disable-next-line react/jsx-no-bind
                 onClick={() =>
                   router.navigateIntent('open', {
                     type: 'product',
                     id: 'foobar',
                   })
                 }
-              >
-                Click to programmatically navigate to intent <b>open:</b> product foobar
-              </button>
+                text={
+                  <>
+                    Click to programmatically navigate to intent <code>open</code> product{' '}
+                    <code>id=foobar</code>
+                  </>
+                }
+              />
             )}
           </WithRouter>
-        </p>
-        <WithRouter>{(router) => <pre>{JSON.stringify(router.state)}</pre>}</WithRouter>
-        <p>
-          <StateLink toIndex>Up…</StateLink>
-        </p>
-        <div>
-          <NeverUpdate />
-        </div>
-      </div>
-    )
-  }
+        </Text>
+        <WithRouter>{(router) => <Code>{JSON.stringify(router.state, null, 2)}</Code>}</WithRouter>
+
+        <NeverUpdate />
+      </Stack>
+    </Card>
+  )
 }
