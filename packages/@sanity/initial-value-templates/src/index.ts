@@ -1,6 +1,7 @@
 export type {Template} from './Template'
 
-export {builder as default} from './builder'
+// the T named export is to workaround esModuleInterop bugs
+export {builder as default, builder as T} from './builder'
 export {prepareTemplates} from './prepareTemplates'
 export {resolveInitialValue, isBuilder} from './resolve'
 export {resolveInitialValueForType, resolveInitialObjectValue} from './resolveInitialValueForType'

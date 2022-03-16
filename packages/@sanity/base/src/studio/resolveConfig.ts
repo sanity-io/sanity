@@ -1,4 +1,4 @@
-import T, {prepareTemplates} from '@sanity/initial-value-templates'
+import {T, prepareTemplates} from '@sanity/initial-value-templates'
 import {
   SanityAuthConfig,
   SanityConfig,
