@@ -1,6 +1,6 @@
 {
   "name": "@sanity/desk-tool",
-  "version": "2.28.2",
+  "version": "2.29.1",
   "description": "Tool for managing all sorts of content in a structured manner",
   "main": "./lib/_exports/index.js",
   "types": "index.d.ts",
@@ -33,11 +33,11 @@
     "@sanity/client": "^3.2.0",
     "@sanity/data-aspects": "2.27.0",
     "@sanity/diff": "2.20.0",
-    "@sanity/field": "2.28.2",
-    "@sanity/form-builder": "2.28.2",
+    "@sanity/field": "2.29.1",
+    "@sanity/form-builder": "2.29.1",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/icons": "^1.2.1",
-    "@sanity/react-hooks": "2.28.2",
+    "@sanity/react-hooks": "2.29.1",
     "@sanity/structure": "2.28.0",
     "@sanity/types": "2.28.0",
     "@sanity/ui": "^0.37.2",
@@ -58,7 +58,7 @@
     "shallow-equals": "^1.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "2.28.2",
+    "@sanity/base": "2.29.1",
     "@sanity/schema": "2.28.0",
     "@sanity/ui-workshop": "^0.3.12",
     "@testing-library/jest-dom": "^5.11.10",
