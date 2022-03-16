@@ -1,12 +1,13 @@
 {
-  "extends": "../../../tsconfig",
-  "include": ["src"],
+  "extends": "../../../tsconfig.settings",
+  "include": ["./src/"],
   "compilerOptions": {
     "composite": true,
-    "outDir": "./dist/dts",
-    "rootDir": "./src",
+    "declarationDir": "./lib/dts/",
+    "rootDir": "./",
+    "outDir": "./lib/dts/",
     "jsx": "react",
-    "noImplicitAny": false,
+    "noImplicitAny": false
   },
-  "references": [{"path": "../base"}]
+  "references": [{"path": "../base/tsconfig.lib.json"}, {"path": "../types"}]
 }

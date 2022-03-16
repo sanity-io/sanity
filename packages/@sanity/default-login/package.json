@@ -3,11 +3,13 @@
   "version": "2.30.0",
   "description": "Lets the user log in to Sanity.",
   "main": "./lib/index.js",
-  "types": "./dist/dts",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "clean": "rimraf lib dest"
+    "build": "../../../bin/pkg-utils transpile",
+    "clean": "rimraf lib",
+    "prebuild": "yarn clean",
+    "watch": "../../../bin/pkg-utils transpile --watch"
   },
   "keywords": [
     "sanity",
@@ -29,7 +31,7 @@
   },
   "devDependencies": {
     "@sanity/types": "2.29.5",
-    "rimraf": "^2.7.1"
+    "rimraf": "^3.0.2"
   },
   "peerDependencies": {
     "react": "^16.9 || ^17",
