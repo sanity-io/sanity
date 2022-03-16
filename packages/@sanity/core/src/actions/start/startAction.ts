@@ -31,7 +31,7 @@ export default async function startSanityDevServer(
     return
   }
 
-  // Try to load build configuration from sanity.build.(js|ts)
+  // Try to load CLI configuration from sanity.cli.(js|ts)
   const configSpinner = output.spinner('Checking configuration files...')
   const config = getDevServerConfig({flags, workDir, buildConfig})
   configSpinner.succeed()
@@ -90,7 +90,7 @@ function gracefulDeath(
 ) {
   if (err.code === 'EADDRINUSE') {
     throw new Error(
-      'Port number is already in use, configure `server.port` in `sanity.build.js` or pass `--port <somePort>` to `sanity start`'
+      'Port number is already in use, configure `server.port` in `sanity.cli.js` or pass `--port <somePort>` to `sanity start`'
     )
   }
 
