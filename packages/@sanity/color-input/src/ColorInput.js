@@ -3,7 +3,7 @@
 /* eslint-disable id-length */
 import React, {PureComponent} from 'react'
 import PropTypes from 'prop-types'
-import {PatchEvent, patches} from 'part:@sanity/form-builder'
+import {PatchEvent, patches} from '@sanity/form-builder'
 import {debounce} from 'lodash'
 import {Button} from '@sanity/ui'
 import {AddIcon} from '@sanity/icons'
