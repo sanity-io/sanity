@@ -49,6 +49,7 @@ export default class DocumentTester {
     const mut = new Mutation({
       transactionId: toRev,
       resultRev: toRev,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       _previousRev: fromRev, // not known to receiver yet
       mutations: [{patch}],
