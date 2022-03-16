@@ -1,0 +1,12 @@
+{
+  "extends": "../../../tsconfig.settings",
+  "include": ["src"],
+  "compilerOptions": {
+    "composite": true,
+    "jsx": "react",
+    "declarationDir": "./lib/dts/",
+    "rootDir": "./src/",
+    "outDir": "./lib/dts/"
+  },
+  "references": [{"path": "../base"}]
+}

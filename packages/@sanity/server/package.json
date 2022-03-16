@@ -4,14 +4,10 @@
   "description": "Webserver dedicated to serving Sanity, allowing a smooth development experience",
   "main": "lib/server.js",
   "scripts": {
-    "build": "babel src --copy-files --out-dir lib",
+    "build": "../../../bin/pkg-utils transpile --target node",
     "clean": "rimraf lib dest",
-    "prebuild": "npm run clean",
-    "start": "node bin/sanity-server.js",
-    "start-dev": "node bin/sanity-server.js --dev"
-  },
-  "bin": {
-    "sanity-server": "./bin/sanity-server.js"
+    "prebuild": "yarn clean",
+    "watch": "../../../bin/pkg-utils transpile --target node --watch"
   },
   "engines": {
     "node": ">=12.0.0"
@@ -71,10 +67,11 @@
     "webpack-hot-middleware": "2.25.1"
   },
   "devDependencies": {
-    "find-config": "^1.0.0",
-    "react": "17.0.1",
-    "react-dom": "17.0.1",
-    "rimraf": "^2.7.1"
+    "@sanity/base": "2.29.1",
+    "get-it": "^5.2.1",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "rimraf": "^3.0.2"
   },
   "peerDependencies": {
     "react": "^16.9 || ^17",
