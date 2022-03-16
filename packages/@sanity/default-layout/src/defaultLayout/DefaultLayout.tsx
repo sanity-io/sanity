@@ -11,6 +11,7 @@ import {
   unstable_useTemplatePermissions as useTemplatePermissions,
 } from '@sanity/base/hooks'
 import {getNewDocumentOptions} from '@sanity/base/_internal'
+import {useConfig, useDatastores} from '@sanity/base'
 import Sidecar from '../addons/Sidecar'
 import {RenderTool} from '../main/RenderTool'
 import {CreateDocumentDialog} from '../createDocumentDialog'
@@ -21,9 +22,10 @@ import {useDefaultLayoutRouter} from '../useDefaultLayoutRouter'
 import {RootFlex, MainAreaFlex, ToolBox, SidecarBox, PortalDiv} from './styles'
 import {LoadingScreen} from './LoadingScreen'
 
-const newDocumentOptions = getNewDocumentOptions()
-
 export const DefaultLayout = memo(function DefaultLayout() {
+  const {schema} = useConfig()
+  const {grantsStore} = useDatastores()
+  const newDocumentOptions = getNewDocumentOptions(schema)
   const router = useDefaultLayoutRouter()
   const [createMenuIsOpen, setCreateMenuIsOpen] = useState<boolean>(false)
   const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false)
@@ -36,6 +38,8 @@ export const DefaultLayout = memo(function DefaultLayout() {
 
   const {value: currentUser} = useCurrentUser()
   const [templatePermissions, isTemplatePermissionsLoading] = useTemplatePermissions(
+    grantsStore,
+    schema,
     newDocumentOptions
   )
 

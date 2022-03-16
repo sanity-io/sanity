@@ -1,10 +1,11 @@
 import React, {memo, useMemo} from 'react'
+import {useConfig} from '@sanity/base'
 import {Box, Dialog, Grid, Text} from '@sanity/ui'
 import {LegacyLayerProvider} from '@sanity/base/components'
 import {useCurrentUser} from '@sanity/base/hooks'
 import {getNewDocumentOptions, TemplatePermissionsResult} from '@sanity/base/_internal'
-import styled from 'styled-components'
 import {keyBy} from 'lodash'
+import styled from 'styled-components'
 import {CreateDocumentItem} from './CreateDocumentItem'
 
 const List = styled.ul`
@@ -19,10 +20,10 @@ interface CreateDocumentDialogProps {
   isTemplatePermissionsLoading: boolean
 }
 
-const newDocumentOptions = getNewDocumentOptions()
-
 export const CreateDocumentDialog = memo(
   ({templatePermissions, isTemplatePermissionsLoading, onClose}: CreateDocumentDialogProps) => {
+    const {schema} = useConfig()
+    const newDocumentOptions = useMemo(() => getNewDocumentOptions(schema), [schema])
     const keyedPermissions = useMemo(() => keyBy(templatePermissions, 'id'), [templatePermissions])
     // note: this hook is called once in this component and passed via props for
     // performance reasons
