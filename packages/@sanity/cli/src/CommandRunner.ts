@@ -86,7 +86,7 @@ export class CommandRunner {
     const cliConfig = await getCliConfig(options.workDir)
     const apiClient = getClientWrapper(
       cliConfig?.config?.api || null,
-      cliConfig?.path || (cliConfig?.version === 2 ? 'sanity.json' : 'sanity.build.js')
+      cliConfig?.path || (cliConfig?.version === 2 ? 'sanity.json' : 'sanity.cli.js')
     )
 
     const context: CliCommandContext = {

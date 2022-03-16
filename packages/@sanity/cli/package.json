@@ -83,7 +83,7 @@
     "ora": "^5.4.1",
     "p-filter": "^2.1.0",
     "p-timeout": "^4.0.0",
-    "promise-props-recursive": "^2.0.1",
+    "promise-props-recursive": "^2.0.2",
     "resolve-from": "^5.0.0",
     "rimraf": "^3.0.2",
     "semver": "^7.3.5",

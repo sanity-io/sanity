@@ -68,8 +68,8 @@ async function getSanityJsonConfig(cwd: string): Promise<CliConfigResult | null>
 }
 
 async function getSanityCliConfig(cwd: string): Promise<CliConfigResult | null> {
-  const jsConfigPath = path.join(cwd, 'sanity.build.js')
-  const tsConfigPath = path.join(cwd, 'sanity.build.ts')
+  const jsConfigPath = path.join(cwd, 'sanity.cli.js')
+  const tsConfigPath = path.join(cwd, 'sanity.cli.ts')
 
   const [js, ts] = await Promise.all([
     fs.stat(jsConfigPath).then(yes, nope),
@@ -89,7 +89,7 @@ async function getSanityCliConfig(cwd: string): Promise<CliConfigResult | null> 
   }
 
   if (js && ts) {
-    warn('Found both `sanity.build.js` and `sanity.build.ts` - using sanity.build.js')
+    warn('Found both `sanity.cli.js` and `sanity.cli.ts` - using sanity.cli.js')
   }
 
   return {
