@@ -77,7 +77,7 @@
     "@rollup/plugin-commonjs": "^21.0.1",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.1.1",
-    "@sanity/client": "^3.0.1",
+    "@sanity/client": "^3.0.2",
     "@types/cpx": "^1.5.2",
     "@types/jest": "^27.0.3",
     "@types/mkdirp": "^1.0.2",
