@@ -34,8 +34,8 @@
   },
   "homepage": "https://www.sanity.io/",
   "dependencies": {
-    "@sanity/util": "2.29.5",
     "@vitejs/plugin-react": "^1.1.0",
+    "chalk": "^4.1.2",
     "express": "^4.17.1",
     "read-pkg-up": "^7.0.1",
     "resolve-from": "^5.0.0",
