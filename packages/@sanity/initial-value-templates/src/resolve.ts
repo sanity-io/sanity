@@ -38,7 +38,7 @@ export async function resolveInitialValue(
 
   // Get deep initial values from schema types (note: the initial value from template overrides the types)
   const newValue = deepAssign(
-    (await resolveInitialValueForType(schema.get(schemaType), params)) || {},
+    (await resolveInitialValueForType(schema.get(schemaType)!, params)) || {},
     resolvedValue as Record<string, unknown>
   )
 

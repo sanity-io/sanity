@@ -1,50 +1,43 @@
-import {SchemaType} from '@sanity/types'
+import {Schema, SchemaType} from '@sanity/types'
 import {Template, TemplateBuilder} from './Template'
-import {Schema, getDefaultSchema} from './parts/Schema'
 
 function defaultTemplateForType(
-  schemaType: string | SchemaType,
-  sanitySchema?: Schema
-): TemplateBuilder {
-  let type: SchemaType
-  if (typeof schemaType === 'string') {
-    const schema = sanitySchema || getDefaultSchema()
-    type = schema.get(schemaType)
-  } else {
-    type = schemaType
-  }
-
+  schemaType: SchemaType
+): TemplateBuilder<unknown, {_type: string; [key: string]: unknown}> {
   return new TemplateBuilder({
-    id: type.name,
-    schemaType: type.name,
-    title: type.title || type.name,
-    icon: type.icon,
-    value: type.initialValue || {_type: type.name},
+    id: schemaType.name,
+    schemaType: schemaType.name,
+    title: schemaType.title || schemaType.name,
+    icon: schemaType.icon,
+    value: schemaType.initialValue || {_type: schemaType.name},
   })
 }
 
-function defaults(sanitySchema?: Schema): TemplateBuilder[] {
-  const schema = sanitySchema || getDefaultSchema()
-  if (!schema) {
-    throw new Error(
-      'Unable to automatically resolve schema. Pass schema explicitly: `defaults(schema)`'
-    )
-  }
-
-  return schema
+function defaults(
+  schema: Schema
+): TemplateBuilder<unknown, {_type: string; [key: string]: unknown}>[] {
+  const schemaTypes = schema
     .getTypeNames()
     .filter((typeName) => !/^sanity\./.test(typeName))
-    .filter((typeName) => isDocumentSchemaType(typeName, schema))
-    .map((typeName) => defaultTemplateForType(schema.get(typeName), schema))
+    .map((typeName) => schema.get(typeName))
+    .filter(isNonNullable)
+    .filter((typeName) => isDocumentSchemaType(typeName))
+
+  return schemaTypes.map((schemaType) => defaultTemplateForType(schemaType))
 }
 
-function isDocumentSchemaType(typeName: string, schema: Schema) {
-  const schemaType = schema.get(typeName)
+function isNonNullable<T>(value: T): value is NonNullable<T> {
+  return value !== null && value !== undefined
+}
+
+function isDocumentSchemaType(schemaType: SchemaType) {
   return schemaType.type && schemaType.type.name === 'document'
 }
 
-export default {
-  template: (spec?: Template) => new TemplateBuilder(spec),
+export const builder = {
+  template: <Params = unknown, Value = unknown>(
+    spec?: Template<Params, Value>
+  ): TemplateBuilder<Params, Value> => new TemplateBuilder(spec),
   defaults,
   defaultTemplateForType,
 }

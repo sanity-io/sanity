@@ -1,16 +1,16 @@
 import oneline from 'oneline'
-import {isPlainObject} from 'lodash'
 import {randomKey, toString as pathToString} from '@sanity/util/paths'
+import {Schema} from '@sanity/types'
 import {Template} from './Template'
 import {TemplateParameter} from './TemplateParameters'
-import {getDefaultSchema} from './parts/Schema'
+import {isRecord} from './util/isRecord'
 
 export {validateInitialObjectValue, validateTemplates}
 
 const ALLOWED_REF_PROPS = ['_key', '_ref', '_weak', '_type']
 const REQUIRED_TEMPLATE_PROPS: (keyof Template)[] = ['id', 'title', 'schemaType', 'value']
 
-function validateTemplates(templates: Template[]) {
+function validateTemplates(schema: Schema, templates: Template[]): Template[] {
   const idMap = new Map()
 
   templates.forEach((template, i) => {
@@ -25,7 +25,7 @@ function validateTemplates(templates: Template[]) {
       throw new Error(`Template ${id} is missing required properties: ${missing.join(', ')}`)
     }
 
-    if (typeof template.value !== 'function' && !isPlainObject(template.value)) {
+    if (typeof template.value !== 'function' && !isRecord(template.value)) {
       throw new Error(
         `Template ${id} has an invalid "value" property; should be a function or an object`
       )
@@ -33,7 +33,7 @@ function validateTemplates(templates: Template[]) {
 
     if (typeof template.parameters !== 'undefined') {
       if (Array.isArray(template.parameters)) {
-        template.parameters.forEach((param, j) => validateParameter(param, template, j))
+        template.parameters.forEach((param, j) => validateParameter(schema, param, template, j))
       } else {
         throw new Error(`Template ${id} has an invalid "parameters" property; must be an array`)
       }
@@ -67,7 +67,7 @@ function validateInitialObjectValue<T extends Record<string, unknown>>(
 ): T {
   const contextError = (msg: string) => `Template "${template.id}" initial value: ${msg}`
 
-  if (!isPlainObject(value)) {
+  if (!isRecord(value)) {
     throw new Error(contextError(`resolved to a non-object`))
   }
 
@@ -88,7 +88,7 @@ function validateInitialObjectValue<T extends Record<string, unknown>>(
   }
 }
 
-function validateValue(value: any, path: (string | number)[] = [], parentIsArray = false): any {
+function validateValue(value: unknown, path: (string | number)[] = [], parentIsArray = false): any {
   if (Array.isArray(value)) {
     return value.map((item, i) => {
       if (Array.isArray(item)) {
@@ -101,7 +101,7 @@ function validateValue(value: any, path: (string | number)[] = [], parentIsArray
     })
   }
 
-  if (!isPlainObject(value)) {
+  if (!isRecord(value)) {
     return value
   }
 
@@ -130,8 +130,13 @@ function validateValue(value: any, path: (string | number)[] = [], parentIsArray
   }, initial)
 }
 
-function validateParameter(parameter: TemplateParameter, template: Template, index: number) {
-  const schema = getDefaultSchema()
+function validateParameter(
+  schema: Schema,
+  parameter: TemplateParameter,
+  template: Template,
+  index: number
+) {
+  // const schema = getDefaultSchema()
 
   if (!parameter.name) {
     throw new Error(
@@ -153,7 +158,10 @@ function validateParameter(parameter: TemplateParameter, template: Template, ind
   }
 }
 
-function validateReference(value, path: (string | number)[] = []) {
+function validateReference(
+  value: {_type?: unknown; type?: unknown},
+  path: (string | number)[] = []
+) {
   if (!value._type && value.type) {
     throw new Error(
       `Reference is missing "_type", but has a "type" property at path "${pathToString(path)}"`

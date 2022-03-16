@@ -1,13 +1,14 @@
-export {default as TemplateBuilder} from './builder'
+export type {Template} from './Template'
+
+export {builder as default} from './builder'
+export {prepareTemplates} from './prepareTemplates'
 export {resolveInitialValue, isBuilder} from './resolve'
-export {validateTemplates} from './validate'
+export {resolveInitialValueForType, resolveInitialObjectValue} from './resolveInitialValueForType'
+export {TemplateBuilder} from './Template'
 export {
   templateExists,
-  getTemplates,
   getTemplateById,
   getTemplatesBySchemaType,
   getParameterlessTemplatesBySchemaType,
-  getTemplateErrors,
 } from './templates'
-
-export {resolveInitialValueForType, resolveInitialObjectValue} from './resolveInitialValueForType'
+export {validateTemplates} from './validate'
