@@ -1,6 +1,7 @@
-const createConfig = require('../../../createJestConfig')
+const {createJestConfig} = require('../../../test/config')
 
-module.exports = createConfig({
+/** @type {import('@jest/types').Config.InitialOptions} */
+module.exports = createJestConfig({
   displayName: require('./package.json').name,
   testEnvironment: 'node',
 })
