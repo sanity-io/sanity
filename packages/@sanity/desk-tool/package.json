@@ -70,6 +70,7 @@
     "clean": "rimraf lib",
     "lint": "eslint . --ext .js,.jsx,.mjs,.ts,.tsx --quiet",
     "prebuild": "yarn clean",
+    "exports-check": "../../../bin/pkg-utils exports-check",
     "test": "jest",
     "watch": "../../../bin/pkg-utils bundle --watch"
   },
