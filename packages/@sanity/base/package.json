@@ -2,26 +2,167 @@
   "name": "@sanity/base",
   "version": "2.30.0",
   "description": "Sanity plugin containing the base components and roles for a Sanity configuration",
-  "main": "./lib/_exports/index.js",
-  "types": "index.d.ts",
+  "source": "./src/_exports/index.ts",
+  "main": "./lib/cjs/_exports/index.js",
+  "module": "./lib/esm/_exports/index.js",
+  "exports": {
+    ".": {
+      "source": "./src/_exports/index.ts",
+      "require": "./lib/cjs/_exports/index.js",
+      "default": "./lib/esm/_exports/index.js"
+    },
+    "./_internal": {
+      "source": "./src/_exports/_internal.ts",
+      "require": "./lib/cjs/_exports/_internal.js",
+      "default": "./lib/esm/_exports/_internal.js"
+    },
+    "./actions": {
+      "source": "./src/_exports/actions.ts",
+      "require": "./lib/cjs/_exports/actions.js",
+      "default": "./lib/esm/_exports/actions.js"
+    },
+    "./auth": {
+      "source": "./src/_exports/auth.ts",
+      "require": "./lib/cjs/_exports/auth.js",
+      "default": "./lib/esm/_exports/auth.js"
+    },
+    "./components": {
+      "source": "./src/_exports/components.ts",
+      "require": "./lib/cjs/_exports/components.js",
+      "default": "./lib/esm/_exports/components.js"
+    },
+    "./field": {
+      "source": "./src/_exports/field.ts",
+      "require": "./lib/cjs/_exports/field.js",
+      "default": "./lib/esm/_exports/field.js"
+    },
+    "./hooks": {
+      "source": "./src/_exports/hooks.ts",
+      "require": "./lib/cjs/_exports/hooks.js",
+      "default": "./lib/esm/_exports/hooks.js"
+    },
+    "./initial-value-template-builder": {
+      "source": "./src/_exports/initial-value-template-builder.ts",
+      "require": "./lib/cjs/_exports/initial-value-template-builder.js",
+      "default": "./lib/esm/_exports/initial-value-template-builder.js"
+    },
+    "./initial-value-templates": {
+      "source": "./src/_exports/initial-value-templates.ts",
+      "require": "./lib/cjs/_exports/initial-value-templates.js",
+      "default": "./lib/esm/_exports/initial-value-templates.js"
+    },
+    "./presence": {
+      "source": "./src/_exports/presence.ts",
+      "require": "./lib/cjs/_exports/presence.js",
+      "default": "./lib/esm/_exports/presence.js"
+    },
+    "./preview": {
+      "source": "./src/_exports/preview.ts",
+      "require": "./lib/cjs/_exports/preview.js",
+      "default": "./lib/esm/_exports/preview.js"
+    },
+    "./router": {
+      "source": "./src/_exports/router.ts",
+      "require": "./lib/cjs/_exports/router.js",
+      "default": "./lib/esm/_exports/router.js"
+    },
+    "./schema": {
+      "source": "./src/_exports/schema.ts",
+      "require": "./lib/cjs/_exports/schema.js",
+      "default": "./lib/esm/_exports/schema.js"
+    },
+    "./structure": {
+      "source": "./src/_exports/structure.ts",
+      "require": "./lib/cjs/_exports/structure.js",
+      "default": "./lib/esm/_exports/structure.js"
+    },
+    "./studio": {
+      "source": "./src/_exports/studio.ts",
+      "require": "./lib/cjs/_exports/studio.js",
+      "default": "./lib/esm/_exports/studio.js"
+    },
+    "./studioEntry": {
+      "source": "./src/_exports/studioEntry.tsx",
+      "require": "./lib/cjs/_exports/studioEntry.js",
+      "default": "./lib/esm/_exports/studioEntry.js"
+    },
+    "./user-color": {
+      "source": "./src/_exports/user-color.ts",
+      "require": "./lib/cjs/_exports/user-color.js",
+      "default": "./lib/esm/_exports/user-color.js"
+    },
+    "./util": {
+      "source": "./src/_exports/util.ts",
+      "require": "./lib/cjs/_exports/util.js",
+      "default": "./lib/esm/_exports/util.js"
+    }
+  },
+  "types": "./lib/dts/src/_exports/index.d.ts",
   "//": "the typesVersion config below is a workaround for TypeScript's lack of support for package exports",
   "typesVersions": {
     "*": {
-      "__legacy/*": [
-        "__legacy/*"
+      "_internal": [
+        "./lib/dts/src/_exports/_internal.d.ts"
       ],
-      "*": [
-        "dist/dts/_exports/*"
+      "actions": [
+        "./lib/dts/src/_exports/actions.d.ts"
+      ],
+      "auth": [
+        "./lib/dts/src/_exports/auth.d.ts"
+      ],
+      "components": [
+        "./lib/dts/src/_exports/components.d.ts"
+      ],
+      "field": [
+        "./lib/dts/src/_exports/field.d.ts"
+      ],
+      "hooks": [
+        "./lib/dts/src/_exports/hooks.d.ts"
+      ],
+      "initial-value-template-builder": [
+        "./lib/dts/src/_exports/initial-value-template-builder.d.ts"
+      ],
+      "initial-value-templates": [
+        "./lib/dts/src/_exports/initial-value-templates.d.ts"
+      ],
+      "presence": [
+        "./lib/dts/src/_exports/presence.d.ts"
+      ],
+      "preview": [
+        "./lib/dts/src/_exports/preview.d.ts"
+      ],
+      "router": [
+        "./lib/dts/src/_exports/router.d.ts"
+      ],
+      "schema": [
+        "./lib/dts/src/_exports/schema.d.ts"
+      ],
+      "structure": [
+        "./lib/dts/src/_exports/structure.d.ts"
+      ],
+      "studio": [
+        "./lib/dts/src/_exports/studio.d.ts"
+      ],
+      "studioEntry": [
+        "./lib/dts/src/_exports/studioEntry.d.ts"
+      ],
+      "user-color": [
+        "./lib/dts/src/_exports/user-color.d.ts"
+      ],
+      "util": [
+        "./lib/dts/src/_exports/util.d.ts"
       ]
     }
   },
   "scripts": {
-    "clean": "rimraf lib dest",
+    "build": "../../../bin/pkg-utils transpile --tsconfig tsconfig.lib.json",
+    "clean": "rimraf lib",
     "coverage": "jest --coverage",
     "exports-check": "../../../bin/pkg-utils exports-check",
     "prebuild": "yarn clean",
     "prepublishOnly": "node scripts/writeRequiredUIVersion.js",
-    "test": "jest"
+    "test": "jest",
+    "watch": "../../../bin/pkg-utils transpile --tsconfig tsconfig.lib.json --watch"
   },
   "repository": {
     "type": "git",
@@ -44,12 +185,14 @@
   "homepage": "https://www.sanity.io/",
   "dependencies": {
     "@juggle/resize-observer": "^3.3.1",
-    "@popperjs/core": "^2.5.4",
+    "@portabletext/types": "^1.0.3",
     "@reach/auto-id": "^0.13.2",
-    "@sanity/asset-utils": "^1.2.0",
+    "@portabletext/types": "^1.0.3",
+    "@sanity/asset-utils": "1.2.3",
     "@sanity/bifur-client": "^0.0.8",
     "@sanity/client": "^3.2.0",
     "@sanity/color": "^2.1.8",
+    "@sanity/diff": "2.20.0",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/icons": "^1.2.6",
     "@sanity/image-url": "^1.0.1",
@@ -67,14 +210,14 @@
     "circular-at": "^1.0.3",
     "classnames": "^2.2.5",
     "dataloader": "^2.0.0",
-    "date-fns": "^2.16.1",
+    "date-fns": "^2.26.1",
     "debug": "^3.2.7",
-    "dom-scroll-into-view": "^1.2.1",
-    "element-resize-detector": "^1.1.14",
+    "diff-match-patch": "^1.0.4",
     "groq-js": "^0.2.0",
     "history": "^4.6.3",
     "json-reduce": "^2.0.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
+    "mendoza": "^2.1.1",
     "nano-pubsub": "^2.0.1",
     "nanoid": "^3.1.30",
     "observable-callback": "^1.0.1",
@@ -96,24 +239,27 @@
     "rxjs": "^6.5.3",
     "rxjs-etc": "^10.6.0",
     "rxjs-exhaustmap-with-trailing": "^1.0.0",
+    "sanity-diff-patch": "^1.0.9",
     "semver-compare": "^1.0.0",
     "shallow-equals": "^1.0.0",
     "use-device-pixel-ratio": "^1.1.0"
   },
   "devDependencies": {
-    "@portabletext/types": "1.0.3",
     "@sanity/ui-workshop": "^0.4.1",
-    "@testing-library/jest-dom": "^5.11.10",
+    "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^11.2.5",
     "@testing-library/react-hooks": "^7.0.2",
-    "@testing-library/user-event": "^13.0.16",
-    "@types/element-resize-detector": "1.1.2",
+    "@types/history": "^4.7.9",
+    "@types/lodash": "^4.14.149",
+    "@types/qs": "^6.9.7",
+    "@types/pluralize": "^0.0.29",
     "@types/raf": "^3.4.0",
     "@types/refractor": "^3.0.0",
+    "@types/semver-compare": "^1.0.1",
     "prop-types": "^15.6.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
-    "rimraf": "^2.7.1",
+    "rimraf": "^3.0.2",
     "styled-components": "^5.2.0"
   },
   "peerDependencies": {
