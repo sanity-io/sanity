@@ -1,10 +1,10 @@
 import path from 'path'
 import {defineConfig} from 'vite'
-import reactRefresh from '@vitejs/plugin-react-refresh'
+import viteReact from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [reactRefresh()],
+  plugins: [viteReact()],
   // define: {
   //   __DEV__: true,
   // },
