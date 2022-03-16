@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+
 import path from 'path'
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+import type {BuildConfig} from '@sanity/types'
 // @ts-ignore This may not yet be built.
 import {DevServerOptions, startDevServer} from '@sanity/server'
 import {getTimer} from '../../util/timing'

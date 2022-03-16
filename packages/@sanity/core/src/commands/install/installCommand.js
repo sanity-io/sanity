@@ -1,8 +1,10 @@
-import fse from 'fs-extra'
 import path from 'path'
+import fse from 'fs-extra'
+import {addPluginToManifest} from '@sanity/util/_internal'
 import generateConfigChecksum from '../../util/generateConfigChecksum'
-import addPluginToManifest from '@sanity/util/lib/addPluginToManifest'
 import {setChecksum, hasSameChecksum} from '../../util/pluginChecksumManifest'
+
+const DEBUG = false
 
 export default {
   name: 'install',
@@ -52,7 +54,7 @@ async function copyConfiguration(rootDir, fullName, shortName, output) {
   // Configuration exists, check if user has local configuration already
   if (
     // eslint-disable-line no-constant-condition
-    false /* disabled for now until we can offer the user a way to fix this */ &&
+    DEBUG /* disabled for now until we can offer the user a way to fix this */ &&
     fse.existsSync(dstPath)
   ) {
     const distChecksum = await generateConfigChecksum(configPath)

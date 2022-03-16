@@ -43,7 +43,7 @@ export default {
     context: CliCommandContext
   ): Promise<void> => {
     // Reparsing arguments for improved control of flags
-    const {pretty, dataset, 'api-version': apiVersion} = parseCliFlags(args)
+    const {pretty, dataset, 'api-version': apiVersion} = await parseCliFlags(args)
     const {apiClient, output, chalk} = context
     const [query] = args.argsWithoutOptions
 

@@ -1,7 +1,7 @@
-import fse from 'fs-extra'
 import path from 'path'
+import fse from 'fs-extra'
 import {without} from 'lodash'
-import readLocalManifest from '@sanity/util/lib/readLocalManifest'
+import {readLocalManifest} from '@sanity/util/_internal'
 import generateConfigChecksum from '../../util/generateConfigChecksum'
 import {hasSameChecksum, localConfigExists} from '../../util/pluginChecksumManifest'
 

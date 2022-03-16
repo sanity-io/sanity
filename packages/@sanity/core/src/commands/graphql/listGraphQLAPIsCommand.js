@@ -1,4 +1,4 @@
-import lazyRequire from '@sanity/util/lib/lazyRequire'
+import {lazyRequire} from '@sanity/util/_internal'
 
 const helpText = `
 Examples

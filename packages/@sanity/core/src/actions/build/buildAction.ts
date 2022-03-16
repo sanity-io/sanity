@@ -2,6 +2,8 @@ import path from 'path'
 import {promisify} from 'util'
 import chalk from 'chalk'
 import rimrafCallback from 'rimraf'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 import {buildStaticFiles, ChunkModule, ChunkStats} from '@sanity/server'
 import type {CliCommandArguments, CliCommandContext} from '../../types'
 import checkStudioDependencyVersions from '../../util/checkStudioDependencyVersions'
