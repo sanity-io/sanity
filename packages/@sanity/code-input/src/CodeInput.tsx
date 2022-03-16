@@ -1,13 +1,10 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import React, {useCallback, useEffect, useImperativeHandle, useRef} from 'react'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {FormField, FormFieldSet, ChangeIndicatorProvider} from '@sanity/base/components'
+import {PatchEvent, set, unset, setIfMissing} from '@sanity/form-builder'
 import {Path, Marker} from '@sanity/types'
-import {Card, Select, TextInput} from '@sanity/ui'
+import {Card, Select, Stack, TextInput} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
-import {PatchEvent, set, unset, setIfMissing} from 'part:@sanity/form-builder/patch-event'
 import AceEditor from 'react-ace'
 import styled from 'styled-components'
 import {useId} from '@reach/auto-id'
@@ -17,15 +14,15 @@ import {CodeInputLanguage, CodeInputType, CodeInputValue} from './types'
 import './editorSupport'
 
 import {
-  LANGUAGE_ALIASES,
   ACE_EDITOR_PROPS,
   ACE_SET_OPTIONS,
-  SUPPORTED_LANGUAGES,
-  SUPPORTED_THEMES,
   DEFAULT_THEME,
-  PATH_LANGUAGE,
+  LANGUAGE_ALIASES,
   PATH_CODE,
   PATH_FILENAME,
+  PATH_LANGUAGE,
+  SUPPORTED_LANGUAGES,
+  SUPPORTED_THEMES,
 } from './config'
 
 const EditorContainer = styled(Card)`
@@ -55,8 +52,7 @@ const EditorContainer = styled(Card)`
 export interface CodeInputProps {
   compareValue?: CodeInputValue
   focusPath: Path
-  level: number
-  markers: Marker[]
+  level?: number
   onBlur: () => void
   onChange: (...args: any[]) => void
   onFocus: (path: Path) => void
@@ -95,7 +91,7 @@ const CodeInput = React.forwardRef(
       value,
       presence,
       type,
-      level,
+      level = 0,
       readOnly,
       focusPath,
     } = props
@@ -327,15 +323,16 @@ const CodeInput = React.forwardRef(
         </EditorContainer>
       )
     }, [
-      type,
-      value,
-      readOnly,
+      aceEditorId,
       getTheme,
       handleCodeChange,
-      aceEditorId,
-      handleEditorLoad,
       handleCodeFocus,
+      handleEditorLoad,
+      languages,
       onBlur,
+      readOnly,
+      type,
+      value,
     ])
 
     if (type.options?.language) {
@@ -360,65 +357,67 @@ const CodeInput = React.forwardRef(
         level={level}
         __unstable_changeIndicator={false}
       >
-        <ChangeIndicatorProvider
-          path={PATH_LANGUAGE}
-          focusPath={focusPath}
-          value={selectedLanguage?.value}
-          compareValue={languageCompareValue}
-        >
-          <FormField
-            level={level + 1}
-            label={languageField?.title || 'Language'}
-            __unstable_presence={languagePresence}
-          >
-            <Select
-              onChange={handleLanguageChange}
-              readOnly={readOnly}
-              value={selectedLanguage?.value || ''}
-              onFocus={handleLanguageFocus}
-              onBlur={onBlur}
-            >
-              {languages.map((lang: {title: string; value: string}) => (
-                <option key={lang.value} value={lang.value}>
-                  {lang.title}
-                </option>
-              ))}
-            </Select>
-          </FormField>
-        </ChangeIndicatorProvider>
-        {type.options?.withFilename && (
+        <Stack space={3}>
           <ChangeIndicatorProvider
-            path={PATH_FILENAME}
+            path={PATH_LANGUAGE}
             focusPath={focusPath}
-            value={value?.filename}
-            compareValue={filenameCompareValue}
+            value={selectedLanguage?.value}
+            compareValue={languageCompareValue}
           >
             <FormField
-              label={filenameField?.title || 'Filename'}
               level={level + 1}
-              __unstable_presence={filenamePresence}
+              label={languageField?.title || 'Language'}
+              __unstable_presence={languagePresence}
             >
-              <TextInput
-                name="filename"
-                value={value?.filename || ''}
-                placeholder={filenameField?.placeholder}
-                onChange={handleFilenameChange}
-                onFocus={handleFilenameFocus}
+              <Select
+                onChange={handleLanguageChange}
+                readOnly={readOnly}
+                value={selectedLanguage?.value || ''}
+                onFocus={handleLanguageFocus}
                 onBlur={onBlur}
-              />
+              >
+                {languages.map((lang: {title: string; value: string}) => (
+                  <option key={lang.value} value={lang.value}>
+                    {lang.title}
+                  </option>
+                ))}
+              </Select>
             </FormField>
           </ChangeIndicatorProvider>
-        )}
-        <ChangeIndicatorProvider
-          path={PATH_CODE}
-          focusPath={focusPath}
-          value={value?.code}
-          compareValue={codeCompareValue}
-        >
-          <FormField label="Code" level={level + 1} __unstable_presence={codePresence}>
-            {renderEditor()}
-          </FormField>
-        </ChangeIndicatorProvider>
+          {type.options?.withFilename && (
+            <ChangeIndicatorProvider
+              path={PATH_FILENAME}
+              focusPath={focusPath}
+              value={value?.filename}
+              compareValue={filenameCompareValue}
+            >
+              <FormField
+                label={filenameField?.title || 'Filename'}
+                level={level + 1}
+                __unstable_presence={filenamePresence}
+              >
+                <TextInput
+                  name="filename"
+                  value={value?.filename || ''}
+                  placeholder={filenameField?.placeholder}
+                  onChange={handleFilenameChange}
+                  onFocus={handleFilenameFocus}
+                  onBlur={onBlur}
+                />
+              </FormField>
+            </ChangeIndicatorProvider>
+          )}
+          <ChangeIndicatorProvider
+            path={PATH_CODE}
+            focusPath={focusPath}
+            value={value?.code}
+            compareValue={codeCompareValue}
+          >
+            <FormField label="Code" level={level + 1} __unstable_presence={codePresence}>
+              {renderEditor()}
+            </FormField>
+          </ChangeIndicatorProvider>
+        </Stack>
       </FormFieldSet>
     )
   }
