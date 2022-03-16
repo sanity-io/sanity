@@ -13,7 +13,7 @@ import {
   ChangeIndicator,
 } from '@sanity/base/components'
 import {FormFieldPresence} from '@sanity/base/presence'
-import {PatchEvent, set, setIfMissing, unset} from 'part:@sanity/form-builder/patch-event'
+import {PatchEvent, set, setIfMissing, unset} from '@sanity/form-builder'
 import {GoogleMapsLoadProxy} from '../loader/GoogleMapsLoadProxy'
 import {Geopoint, GeopointSchemaType} from '../types'
 import {GeopointSelect} from './GeopointSelect'

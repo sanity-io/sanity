@@ -5,7 +5,7 @@ import {
   DiffProps as GenericDiffProps,
   DiffTooltip,
   getAnnotationAtPath,
-} from '@sanity/field/diff'
+} from '@sanity/base/field'
 import {GoogleMapsLoadProxy} from '../loader/GoogleMapsLoadProxy'
 import {GoogleMap} from '../map/Map'
 import {Geopoint} from '../types'
