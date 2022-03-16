@@ -2,7 +2,7 @@
 
 import path from 'path'
 import {viteCommonjs, esbuildCommonjs} from '@originjs/vite-plugin-commonjs'
-import reactRefresh from '@vitejs/plugin-react-refresh'
+import viteReact from '@vitejs/plugin-react'
 import {defineConfig} from 'vite'
 import {pluginCanonicalModules} from './vite/plugin-canonical-modules'
 import {pluginLegacyParts} from './vite/plugin-legacy-parts'
@@ -29,7 +29,7 @@ const cssPartAliases = Object.entries(parts.implementations)
 
 function loadMonorepoAliases() {
   // eslint-disable-next-line import/no-dynamic-require
-  const aliases = require(path.resolve(MONOREPO_PATH, '.module-aliases'))
+  const aliases = require(path.resolve(MONOREPO_PATH, 'dev/aliases'))
 
   return Object.entries(aliases)
     .filter(([key]) => key != '@sanity/client')
@@ -82,7 +82,7 @@ export default defineConfig({
     },
   },
   plugins: [
-    reactRefresh(),
+    viteReact(),
     pluginLegacyParts(partsResolver),
     pluginCanonicalModules(['@sanity/ui', 'react', 'react-dom', 'styled-components']),
     pluginWorkshopScopes(),

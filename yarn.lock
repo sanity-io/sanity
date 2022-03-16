@@ -2531,7 +2531,7 @@
     prop-types "15.7.2"
     react-beautiful-dnd "^13.1.0"
 
-"@sanity/resolver@2.27.0":
+"@sanity/resolver@^2.27.0":
   version "2.27.0"
   resolved "https://registry.yarnpkg.com/@sanity/resolver/-/resolver-2.27.0.tgz#69a4ebf9bc3cd8f7fbafa8c73040675d1b856d21"
   integrity sha512-eoo8TH3+gAZgBT8eYaXqNGTVvukAJSBqi3Fq7etR4zRskCMz399P15/ShNivPgYzBbOu6vRQKYll31KLIM32/A==

@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig",
+  "extends": "../../tsconfig.settings",
   "include": ["**/*.ts", "**/*.tsx"],
   "compilerOptions": {
     "outDir": "./dist/dts/",
