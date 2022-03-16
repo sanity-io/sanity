@@ -15,7 +15,7 @@
  * that approach for now until we potentially run into trouble with lack of isolation.
  */
 import path from 'path'
-import {stat} from 'fs/promises'
+import {promises as fs} from 'fs'
 import {register} from 'esbuild-register/dist/node'
 import type {BuildConfig} from '@sanity/types'
 import {dynamicRequire} from './dynamicRequire'
@@ -45,8 +45,8 @@ async function getSanityBuildConfig(): Promise<{config: BuildConfig | null; path
   const tsConfigPath = path.join(process.cwd(), 'sanity.build.ts')
 
   const [js, ts] = await Promise.all([
-    stat(jsConfigPath).then(yes, nope),
-    stat(tsConfigPath).then(yes, nope),
+    fs.stat(jsConfigPath).then(yes, nope),
+    fs.stat(tsConfigPath).then(yes, nope),
   ])
 
   if (!js && !ts) {
