@@ -1,14 +1,12 @@
 # Logs
-logs
+/logs
 *.log
 
 # Coverage directory used by tools like istanbul
-coverage
-.nyc_output
+/coverage
 
 # Dependency directories
-node_modules
+/node_modules
 
 # Compiled code
 /lib
-dist
