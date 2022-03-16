@@ -1,8 +1,8 @@
 import React, {ForwardedRef, forwardRef, useCallback, useEffect} from 'react'
 import Schema from '@sanity/schema'
 import {RawType} from '../../types/schema'
-import {PortableTextEditor, PortableTextEditable} from '../../index'
 
+import {PortableTextEditor, PortableTextEditable} from '../../index'
 import type {PortableTextEditorProps, PortableTextEditableProps} from '../../index'
 
 const imageType: RawType = {

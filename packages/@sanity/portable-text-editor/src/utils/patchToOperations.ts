@@ -14,11 +14,11 @@ export function createPatchToOperations(
   function insertPatch(editor: Editor, patch: InsertPatch) {
     if (patch.path.length === 1) {
       const {items, position} = patch
-      const blocksToInsert = (toSlateValue(
+      const blocksToInsert = toSlateValue(
         items as PortableTextBlock[],
         {portableTextFeatures},
         KEY_TO_SLATE_ELEMENT.get(editor)
-      ) as unknown) as Node[]
+      ) as unknown as Node[]
       const posKey = findLastKey(patch.path)
       const index = editor.children.findIndex((node, indx) => {
         return posKey ? node._key === posKey : indx === patch.path[0]
@@ -72,10 +72,12 @@ function isKeyedSegment(segment: PathSegment): segment is KeyedSegment {
 // Helper function to find the last part of a patch path that has a known key
 function findLastKey(path: Path) {
   let key: string | null = null
+
   path.forEach((part) => {
     if (isKeyedSegment(part)) {
       key = part._key
     }
   })
+
   return key
 }

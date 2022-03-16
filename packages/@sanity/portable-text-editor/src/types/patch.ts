@@ -4,6 +4,18 @@ export type JSONValue = number | string | boolean | {[key: string]: JSONValue} |
 
 export type Origin = 'remote' | 'local' | 'internal'
 
+export type IncPatch = {
+  path: Path
+  type: 'inc'
+  value: JSONValue
+}
+
+export type DecPatch = {
+  path: Path
+  type: 'dec'
+  value: JSONValue
+}
+
 export type SetPatch = {
   path: Path
   type: 'set'
@@ -23,7 +35,8 @@ export type UnsetPatch = {
   origin?: Origin
   type: 'unset'
 }
-export type InsertPosition = 'before' | 'after'
+
+export type InsertPosition = 'before' | 'after' | 'replace'
 
 export type InsertPatch = {
   path: Path
@@ -40,4 +53,11 @@ export type DiffMatchPatch = {
   value: string
 }
 
-export type Patch = SetPatch | SetIfMissingPatch | UnsetPatch | InsertPatch | DiffMatchPatch
+export type Patch =
+  | SetPatch
+  | SetIfMissingPatch
+  | UnsetPatch
+  | InsertPatch
+  | DiffMatchPatch
+  | IncPatch
+  | DecPatch

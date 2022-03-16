@@ -7,8 +7,8 @@ export function validateValue(
   value: PortableTextBlock[] | undefined,
   portableTextFeatures: PortableTextFeatures,
   keyGenerator: () => string
-): {valid: boolean; resolution: InvalidValueResolution} {
-  let resolution: InvalidValueResolution = null
+): {valid: boolean; resolution: InvalidValueResolution | null} {
+  let resolution: InvalidValueResolution | null = null
   let valid = true
   const validChildTypes = [
     ...[portableTextFeatures.types.span.name],

@@ -223,7 +223,7 @@ export type ErrorChange = {
   data?: any
 }
 
-export type InvalidValueResolution = null | {
+export type InvalidValueResolution = {
   patches: Patch[]
   description: string
   action: string
@@ -232,7 +232,7 @@ export type InvalidValueResolution = null | {
 
 export type InvalidValue = {
   type: 'invalidValue'
-  resolution: InvalidValueResolution
+  resolution: InvalidValueResolution | null
   value: PortableTextBlock[]
 }
 
@@ -335,4 +335,4 @@ export type RenderDecoratorFunction = (
 export type ScrollSelectionIntoViewFunction = (
   editor: PortableTextEditor,
   domRange: globalThis.Range
-) => void | null
+) => void

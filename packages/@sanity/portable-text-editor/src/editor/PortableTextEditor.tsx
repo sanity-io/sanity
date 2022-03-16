@@ -42,7 +42,7 @@ export type PortableTextEditorProps = {
 }
 
 type State = {
-  invalidValueResolution: InvalidValueResolution
+  invalidValueResolution: InvalidValueResolution | null
   selection: EditorSelection // This state is only used to force the selection context to update.
 }
 

@@ -1,8 +1,7 @@
 import path from 'path'
-
 import {setup as setupDevServer} from 'jest-dev-server'
 
-const testFolderPath = path.join(__dirname, '../')
+const testFolderPath = path.resolve(__dirname, '..')
 
 module.exports = async function globalSetup() {
   await setupDevServer([
@@ -12,7 +11,7 @@ module.exports = async function globalSetup() {
       port: 3000,
     },
     {
-      command: `ts-node ${testFolderPath}/ws-server`,
+      command: `node -r esbuild-register ${testFolderPath}/ws-server`,
       launchTimeout: 10000,
       port: 3001,
     },
