@@ -15,7 +15,6 @@ module.exports = {
   '@sanity/desk-tool': './packages/@sanity/desk-tool/src/_exports',
   '@sanity/diff': './packages/@sanity/diff/src',
   '@sanity/form-builder': './packages/@sanity/form-builder/src/_exports',
-  '@sanity/generate-help-url': './packages/@sanity/generate-help-url/src',
   '@sanity/imagetool': './packages/@sanity/imagetool/src',
   '@sanity/initial-value-templates': './packages/@sanity/initial-value-templates/src',
   '@sanity/mutator': './packages/@sanity/mutator/src',
