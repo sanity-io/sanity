@@ -263,20 +263,10 @@ declare module 'part:@sanity/base/sanity-logo-alpha'
 declare module 'part:@sanity/base/sanity-root'
 declare module 'part:@sanity/base/sanity-studio-logo'
 declare module 'part:@sanity/base/schema' {
-  import type {SchemaType} from '_self_'
-
-  interface Schema {
-    _validation: {
-      path: Array<string | number | {_key: string}>
-      problems: {message: string; severity: string}[]
-    }[]
-    name: string
-    get: (typeName: string) => SchemaType | undefined
-    has: (typeName: string) => boolean
-    getTypeNames(): string[]
-  }
+  import type {Schema, SchemaType} from '_self_'
 
   const schema: Schema
+
   export default schema
 }
 
@@ -299,9 +289,7 @@ declare module 'part:@sanity/base/search/weighted'
 
 declare module 'part:@sanity/base/settings' {
   export interface SettingsNamespace<ValueType> {
-    forKey: (
-      key: string
-    ) => {
+    forKey: (key: string) => {
       listen: (defaultValue?: ValueType) => Observable<ValueType>
       set: (val: ValueType) => void
     }
