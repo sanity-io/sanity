@@ -44,7 +44,7 @@
   "devDependencies": {
     "@sanity/base": "2.30.0",
     "@types/googlemaps": "^3.43.0",
-    "react": "17.0.1",
+    "react": "17.0.2",
     "rimraf": "^3.0.2",
     "styled-components": "^5.2.0"
   },
