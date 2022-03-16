@@ -122,6 +122,7 @@ export async function getViteConfig(options: ViteOptions): Promise<SanityViteCon
         ? {
             include: [
               /node_modules/,
+              /@sanity\/server/, // Need this for `defaultStudioConfig`, at least for now
               ...DEFAULT_COMMONJS_MODULES.map((id) => {
                 return new RegExp(`${id.replace(/\//g, '\\/')}`)
               }),
