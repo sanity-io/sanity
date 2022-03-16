@@ -83,7 +83,7 @@ export class CommandRunner {
 
     debug(`Reading build config from "${options.workDir}"`)
 
-    const cliConfig = await getCliConfig(options.workDir)
+    const cliConfig = await getCliConfig(options.workDir, {forked: true})
     const apiClient = getClientWrapper(
       cliConfig?.config?.api || null,
       cliConfig?.path || (cliConfig?.version === 2 ? 'sanity.json' : 'sanity.cli.js')

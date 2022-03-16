@@ -4,28 +4,25 @@
  *   - sanity.cli.ts
  *
  * Note: There are two ways of using this:
- * a) Through the exported `getCliConfig()` method (async)
- * b) Through `child_process.fork()` and waiting for a message over the IPC channel
+ * a) `getCliConfig(cwd)`
+ * b) `getCliConfig(cwd, {forked: true})`
  *
  * Approach a is generally a bit faster as it avoids the forking startup time, while
  * approach b could be considered "safer" since any side-effects of running the config
  * file will not bleed into the current CLI process directly.
- *
- * Given that we shave off about 30ms on an M1 Mac using approach A, we're going to use
- * that approach for now until we potentially run into trouble with lack of isolation.
  */
 import path from 'path'
 import {promises as fs} from 'fs'
+import {Worker, isMainThread, parentPort, workerData} from 'worker_threads'
 import {register} from 'esbuild-register/dist/node'
 import type {CliConfig, SanityJson} from '../types'
 import {dynamicRequire} from './dynamicRequire'
 
-if (typeof process.send === 'function') {
-  const send = process.send
-  // We're communicating with a parent process through IPC message channels
-  getCliConfig(process.cwd())
-    .then((config) => send({type: 'config', config}))
-    .catch((error) => send({type: 'error', error}))
+if (!isMainThread) {
+  // We're communicating with a parent process through a message channel
+  getCliConfig(workerData)
+    .then((config) => parentPort?.postMessage({type: 'config', config}))
+    .catch((error) => parentPort?.postMessage({type: 'error', error}))
 }
 
 export type CliMajorVersion = 2 | 3
@@ -35,7 +32,14 @@ export type CliConfigResult =
   | {config: CliConfig; path: string; version: 3}
   | {config: null; path: string; version: CliMajorVersion}
 
-export async function getCliConfig(cwd: string): Promise<CliConfigResult | null> {
+export async function getCliConfig(
+  cwd: string,
+  {forked}: {forked?: boolean} = {}
+): Promise<CliConfigResult | null> {
+  if (forked) {
+    return getCliConfigForked(cwd)
+  }
+
   const {unregister} = register()
 
   try {
@@ -50,6 +54,25 @@ export async function getCliConfig(cwd: string): Promise<CliConfigResult | null>
   } finally {
     unregister()
   }
+}
+
+function getCliConfigForked(cwd: string): Promise<CliConfigResult | null> {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(__filename, {workerData: cwd})
+    worker.on('message', (message) => {
+      if (message.type === 'config') {
+        resolve(message.config)
+      } else {
+        reject(new Error(message.error))
+      }
+    })
+    worker.on('error', reject)
+    worker.on('exit', (code) => {
+      if (code !== 0) {
+        reject(new Error(`Worker stopped with exit code ${code}`))
+      }
+    })
+  })
 }
 
 async function getSanityJsonConfig(cwd: string): Promise<CliConfigResult | null> {
