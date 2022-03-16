@@ -1,7 +1,7 @@
 import {isPlainObject} from 'lodash'
 import React, {useCallback} from 'react'
 import {FormBuilderInput} from 'part:@sanity/form-builder'
-import {PatchEvent, set, setIfMissing} from 'part:@sanity/form-builder/patch-event'
+import {PatchEvent, set, setIfMissing} from '@sanity/form-builder'
 import sanityClient from 'part:@sanity/base/client'
 import {Box} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
@@ -22,7 +22,7 @@ export interface LinkAnnotationInputProps {
 }
 
 // PatchEvent type can be found packages/@sanity/form-builder/src/PatchEvent.ts
-// It's a class thats imported via part: which looses typings 'part:@sanity/form-builder/patch-event'
+// It's a class thats imported via part: which looses typings '@sanity/form-builder'
 // It's quite a large complex type, emulating the useful structure here
 interface Patch {
   path: any[]

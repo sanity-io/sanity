@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {PatchEvent, set} from 'part:@sanity/form-builder/patch-event'
+import {PatchEvent, set} from '@sanity/form-builder'
 import FormField from 'part:@sanity/components/formfields/default'
 
 export const HooksBasedStringInput = React.forwardRef((props, ref) => {

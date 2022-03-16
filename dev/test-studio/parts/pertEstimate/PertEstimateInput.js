@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {PatchEvent, set, unset, setIfMissing} from 'part:@sanity/form-builder/patch-event'
+import {PatchEvent, set, unset, setIfMissing} from '@sanity/form-builder'
 import './PertEstimate.css?raw' // eslint-disable-line
 
 const calculateEstimate = (estimates) => {

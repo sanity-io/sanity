@@ -2,7 +2,7 @@ import React from 'react'
 import {route, withRouterHOC} from '@sanity/base/router'
 
 export default {
-  router: route('/:type/:id'),
+  router: route.create('/:type/:id'),
   canHandleIntent(intentName, params) {
     return (intentName === 'edit' && params.id) || (intentName === 'create' && params.type)
   },

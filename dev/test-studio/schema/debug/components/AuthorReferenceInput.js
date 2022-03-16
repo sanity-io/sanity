@@ -4,7 +4,7 @@ import imageUrlBuilder from '@sanity/image-url'
 import sanityClient from 'part:@sanity/base/client'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import FormField from 'part:@sanity/components/formfields/default'
-import {PatchEvent, set, unset, setIfMissing} from 'part:@sanity/form-builder/patch-event'
+import {PatchEvent, set, unset, setIfMissing} from '@sanity/form-builder'
 import styles from './AuthorReferenceInput.module.css'
 
 const noop = () => null

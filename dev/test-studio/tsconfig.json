@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig",
+  "extends": "../../tsconfig.settings",
   "include": ["./typings/*.d.ts", "./**/*.tsx", "./**/*.ts"],
   "compilerOptions": {
     // todo: we need to disable noImplicitAny in a transition phase and should be removed eventually
@@ -7,7 +7,7 @@
     "jsx": "react"
   },
   "references": [
-    {"path": "../../packages/@sanity/base"},
+    {"path": "../../packages/@sanity/base/tsconfig.lib.json"},
     {"path": "../../packages/@sanity/desk-tool"}
   ]
 }
