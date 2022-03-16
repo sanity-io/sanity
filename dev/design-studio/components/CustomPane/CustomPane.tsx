@@ -19,10 +19,10 @@ export function CustomPane(props: any) {
 function Item({id}: {id: string}) {
   const {ChildLink} = usePaneRouter()
 
-  const Link = useCallback((linkProps: any) => <ChildLink {...linkProps} childId={id} />, [
-    ChildLink,
-    id,
-  ])
+  const Link = useCallback(
+    (linkProps: any) => <ChildLink {...linkProps} childId={id} />,
+    [ChildLink, id]
+  )
 
   return (
     <Button

@@ -1,13 +1,14 @@
 {
-  "extends": "../../tsconfig",
+  "extends": "../../tsconfig.settings",
   "include": ["./**/*.tsx", "./**/*.ts"],
   "compilerOptions": {
-    "jsx": "react"
+    "jsx": "react",
+    "outDir": "./lib/dev"
   },
   "references": [
-    {"path": "../../packages/@sanity/base"},
+    {"path": "../../packages/@sanity/base/tsconfig.lib.json"},
     {"path": "../../packages/@sanity/initial-value-templates"},
-    {"path": "../../packages/@sanity/structure"},
+    {"path": "../../packages/@sanity/structure/tsconfig.lib.json"},
     {"path": "../../packages/@sanity/types"}
   ]
 }
