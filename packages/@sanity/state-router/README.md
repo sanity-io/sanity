@@ -1,4 +1,8 @@
-## @sanity/state-router
+# `@sanity/state-router`
+
+```sh
+npm install @sanity/state-router
+```
 
 ## Features
 Based on a routing schema:
@@ -11,10 +15,10 @@ Define the routes for your application and how they should map to application st
 ```js
 import {route} from '@sanity/state-router'
 
-const router = route('/', [
-  route('/products/:productId'),
-  route('/users/:userId'),
-  route('/:page'),
+const router = route.create('/', [
+  route.create('/products/:productId'),
+  route.create('/users/:userId'),
+  route.create('/:page'),
 ])
 
 router.encode({})
@@ -47,10 +51,10 @@ router.decode('/about')
 
 ```jsx
 import {route} from '@sanity/state-router'
-import {RouterProvider, withRouter} from '@sanity/state-router/components'
+import {RouterProvider, withRouter} from '@sanity/state-router'
 
-const router = route('/', [
-  route('/bikes/:bikeId')
+const router = route.create('/', [
+  route.create('/bikes/:bikeId')
 ])
 
 const history = createHistory()
@@ -78,9 +82,10 @@ const App = withRouter(function App({router}) {
 function render(location) {
   ReactDOM.render((
     <RouterProvider
-     router={router}
-     onNavigate={handleNavigate}
-     state={router.decode(location.pathname)}>
+      router={router}
+      onNavigate={handleNavigate}
+      state={router.decode(location.pathname)}
+    >
       <App />
     </RouterProvider>
   ), document.getElementById('container'))
@@ -91,7 +96,7 @@ history.listen(() => render(document.location))
 
 ## API
 
-- `route(path : string, ?options : Options, ?children : ) : Router`
+- `route.create(path : string, ?options : Options, ?children : ) : Router`
 - `route.scope(name : string, path : string, ?options : Options, ?children : ) : Router`
 - `Router`:
   - `encode(state : object) : string`
@@ -115,22 +120,22 @@ history.listen(() => render(document.location))
   }
   ```
 
-  - `children` can be either another router returned from another `route()-call`, an array of routers or a function that gets passed the matched parameters, and conditionally returns child routes
+  - `children` can be either another router returned from another `route.create()-call`, an array of routers or a function that gets passed the matched parameters, and conditionally returns child routes
 
 ## Limitations
 - Parameterized paths *only*. Each route must have at least one unique parameter. If not, there's no way of unambiguously resolve a path from an empty state.
 
 Consider the following routes:
 ```js
-const router = route('/', [
-  route('/about'),
-  route('/contact')
+const router = route.create('/', [
+  route.create('/about'),
+  route.create('/contact')
 ])
 ```
 
 What route should be resolved from an empty state? Since both `/about` and `/contact` above resolves to an empty state object, there's no way to encode an empty state unambiguously back to either of them. The solution to this would be to introduce the page name as a parameter instead:
 ```js
-const router = route('/', route('/:page'))
+const router = route.create('/', route.create('/:page'))
 ```
 
 Now, `/about` would resolve to the state `{page: 'about'}` which unambiguously can map back to `/page`, and an empty state can map to `/`. To figure out if you are on the index page, you can check for `state.page == null`, (and set the state.page to null to navigate back to the index)
@@ -152,14 +157,14 @@ function encodeParams(params) {
     .join(';')
 }
 
-const router = route('/some/:section/:settings', {
+const router = route.create('/some/:section/:settings', {
   transform: {
     settings: {
       toState: decodeParams,
       toPath: encodeParams
     }
   }
-}, route('/other/:page'))
+}, route.create('/other/:page'))
 ```
 This call...
 ```js
@@ -198,13 +203,13 @@ import {route} from './src'
 function findAppByName(name) {
   return name === 'pokemon' && {
     name: 'pokemon',
-    router: route('/:section', route('/:pokemonName'))
+    router: route.create('/:section', route.create('/:pokemonName'))
   }
 }
 
-const router = route('/', [
-  route('/users/:username'),
-  route('/apps/:appName', params => {
+const router = route.create('/', [
+  route.create('/users/:username'),
+  route.create('/apps/:appName', params => {
     const app = findAppByName(params.appName)
     return app && route.scope(app.name, '/', app.router)
   })
@@ -244,8 +249,8 @@ State router comes with a built in intent-route parser that decodes an intent ro
 
 Full example:
 ```
-const router = route('/', [
-  route('/users/:username'),
+const router = route.create('/', [
+  route.create('/users/:username'),
   route.intents('/intents') // <-- sets up intent routes at the /intents base path
 ])
 ```
@@ -266,7 +271,7 @@ It is now up to your application logic to translate this intent into an action, 
 To check whether a path name matches, you can use the isNotFound method on the returned router instance:
 
 ```js
-const router = route('/pages/:page')
+const router = route.create('/pages/:page')
 
 router.isNotFound('/some/invalid/path')
 // => true
@@ -277,9 +282,9 @@ router.isNotFound('/some/invalid/path')
 
 Using a base path is as simple as adding a toplevel route with no params:
 ```js
-const router = route('/some/basepath', [
- route('/:foo'),
- route('/:bar')
+const router = route.create('/some/basepath', [
+ route.create('/:foo'),
+ route.create('/:bar')
 ])
 ```
 Any empty router state will resolve to `/some/basepath`. To check if you should redirect to the base path on app init, you can use the `router.isRoot(path)` and `router.getBasePath()` method:
