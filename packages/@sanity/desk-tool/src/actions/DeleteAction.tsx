@@ -1,4 +1,4 @@
-import {DocumentActionComponent} from '@sanity/base'
+import {DocumentActionComponent, useClient, useDatastores, useSource} from '@sanity/base'
 import {TrashIcon} from '@sanity/icons'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import React, {useCallback, useState} from 'react'
@@ -14,6 +14,9 @@ const DISABLED_REASON_TITLE = {
 }
 
 export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComplete}) => {
+  const client = useClient()
+  const {schema} = useSource()
+  const {grantsStore} = useDatastores()
   const {delete: deleteOp}: any = useDocumentOperation(id, type)
   const [isDeleting, setIsDeleting] = useState(false)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
@@ -34,11 +37,16 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComple
     setConfirmDialogOpen(true)
   }, [])
 
-  const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
-    id,
-    type,
-    permission: 'delete',
-  })
+  const [permissions, isPermissionsLoading] = useDocumentPairPermissions(
+    client,
+    schema,
+    grantsStore,
+    {
+      id,
+      type,
+      permission: 'delete',
+    }
+  )
 
   const {value: currentUser} = useCurrentUser()
 

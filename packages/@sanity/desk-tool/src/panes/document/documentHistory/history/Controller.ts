@@ -1,8 +1,8 @@
 import type {SanityClient} from '@sanity/client'
 import {Annotation} from '@sanity/field/diff'
-import {Observable} from 'rxjs'
 import {remoteSnapshots} from '@sanity/base/_internal'
 import {Diff, ObjectDiff} from '@sanity/diff'
+import {Observable} from 'rxjs'
 import {Timeline, ParsedTimeRef} from './Timeline'
 import {getJsonStream} from './getJsonStream'
 import {RemoteSnapshotVersionEvent, Chunk} from './types'
@@ -336,7 +336,9 @@ export function createObservableController(
         }
       },
     })
+
     return remoteSnapshots(
+      options.client,
       {
         publishedId: options.documentId,
         draftId: `drafts.${options.documentId}`,

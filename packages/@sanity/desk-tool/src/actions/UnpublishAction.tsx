@@ -1,4 +1,10 @@
-import {DocumentActionComponent, DocumentActionDialogProps} from '@sanity/base'
+import {
+  DocumentActionComponent,
+  DocumentActionDialogProps,
+  useClient,
+  useConfig,
+  useDatastores,
+} from '@sanity/base'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import {UnpublishIcon} from '@sanity/icons'
 import React, {useCallback, useState} from 'react'
@@ -20,15 +26,23 @@ export const UnpublishAction: DocumentActionComponent = ({
   onComplete,
   liveEdit,
 }) => {
+  const client = useClient()
+  const {schema} = useConfig()
+  const {grantsStore} = useDatastores()
   const {unpublish}: any = useDocumentOperation(id, type)
   const [error, setError] = useState<Error | null>(null)
   const [didUnpublish, setDidUnpublish] = useState(false)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
-  const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
-    id,
-    type,
-    permission: 'unpublish',
-  })
+  const [permissions, isPermissionsLoading] = useDocumentPairPermissions(
+    client,
+    schema,
+    grantsStore,
+    {
+      id,
+      type,
+      permission: 'unpublish',
+    }
+  )
   const {value: currentUser} = useCurrentUser()
 
   const handleCancel = useCallback(() => {

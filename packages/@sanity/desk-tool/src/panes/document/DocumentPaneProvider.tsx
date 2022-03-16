@@ -68,9 +68,10 @@ export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Prop
     params.path ? pathFromString(params.path) : []
   )
   const activeViewId = params.view || (views[0] && views[0].id) || null
-  const timeline = useMemo(() => new Timeline({publishedId: documentId, enableTrace: __DEV__}), [
-    documentId,
-  ])
+  const timeline = useMemo(
+    () => new Timeline({publishedId: documentId, enableTrace: __DEV__}),
+    [documentId]
+  )
   const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')
   // NOTE: this emits sync so can never be null
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -90,17 +91,15 @@ export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Prop
    */
   historyController.setRange(params.since || null, params.rev || null)
   const changesOpen = historyController.changesPanelActive()
-  const previewUrl = useMemo(() => getPreviewUrl(historyController, value), [
-    historyController,
-    value,
-  ])
+  const previewUrl = useMemo(
+    () => getPreviewUrl(historyController, value),
+    [historyController, value]
+  )
   const hasValue = Boolean(value)
-  const menuItems = useMemo(() => getMenuItems({features, hasValue, changesOpen, previewUrl}), [
-    features,
-    hasValue,
-    changesOpen,
-    previewUrl,
-  ])
+  const menuItems = useMemo(
+    () => getMenuItems({features, hasValue, changesOpen, previewUrl}),
+    [features, hasValue, changesOpen, previewUrl]
+  )
   const inspectOpen = params.inspect === 'on'
   const compareValue: Partial<SanityDocument> | null = changesOpen
     ? historyController.sinceAttributes()
@@ -140,10 +139,10 @@ export const DocumentPaneProvider = memo(({children, index, pane, paneKey}: Prop
     [documentId, setFocusPath]
   )
 
-  const handleChange = useCallback((patches) => patch.execute(patches, initialValue.value), [
-    patch,
-    initialValue.value,
-  ])
+  const handleChange = useCallback(
+    (patches) => patch.execute(patches, initialValue.value),
+    [patch, initialValue.value]
+  )
 
   const handleHistoryClose = useCallback(() => {
     paneRouter.setParams({...params, since: undefined})

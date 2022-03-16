@@ -5,6 +5,7 @@ import {unstable_useDocumentValuePermissions as useDocumentValuePermissions} fro
 import styled, {css} from 'styled-components'
 import {SchemaType} from '@sanity/types'
 import {getPublishedId, getDraftId} from '@sanity/base/_internal'
+import {useDatastores} from '@sanity/base'
 import {PaneContent} from '../../../components/pane'
 import {usePaneLayout} from '../../../components/pane/usePaneLayout'
 import {useDeskTool} from '../../../contexts/deskTool'
@@ -45,6 +46,7 @@ const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => 
 
 export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {footerHeight, rootElement, isInspectOpen} = props
+  const {grantsStore} = useDatastores()
   const {
     activeViewId,
     displayed,
@@ -74,6 +76,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     }
   }, [liveEdit, value, docId])
   const [permissions, isPermissionsLoading] = useDocumentValuePermissions({
+    grantsStore,
     document: docPermissionsInput,
     permission: requiredPermission,
   })

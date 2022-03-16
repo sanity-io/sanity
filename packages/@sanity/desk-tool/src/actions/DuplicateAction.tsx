@@ -1,4 +1,4 @@
-import {DocumentActionComponent} from '@sanity/base'
+import {DocumentActionComponent, useClient, useConfig, useDatastores} from '@sanity/base'
 import {CopyIcon} from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
 import {useDocumentOperation} from '@sanity/react-hooks'
@@ -15,14 +15,22 @@ const DISABLED_REASON_TITLE = {
 }
 
 export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete}) => {
+  const client = useClient()
+  const {schema} = useConfig()
+  const {grantsStore} = useDatastores()
   const {duplicate}: any = useDocumentOperation(id, type)
   const router = useRouter()
   const [isDuplicating, setDuplicating] = useState(false)
-  const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
-    id,
-    type,
-    permission: 'duplicate',
-  })
+  const [permissions, isPermissionsLoading] = useDocumentPairPermissions(
+    client,
+    schema,
+    grantsStore,
+    {
+      id,
+      type,
+      permission: 'duplicate',
+    }
+  )
 
   const {value: currentUser} = useCurrentUser()
 

@@ -21,6 +21,7 @@ import {fromString as pathFromString} from '@sanity/util/paths'
 import {Unstable_ReferenceInputOptionsProvider} from '@sanity/form-builder/_internal'
 import {Path} from '@sanity/types'
 import {getNewDocumentOptions} from '@sanity/base/_internal'
+import {useConfig, useDatastores} from '@sanity/base'
 import {DocumentPaneNode} from '../../types'
 import {useDeskTool} from '../../contexts/deskTool'
 import {usePaneRouter} from '../../contexts/paneRouter'
@@ -60,11 +61,15 @@ const StyledChangeConnectorRoot = styled(ChangeConnectorRoot)`
 `
 
 export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProviderProps) {
+  const {schema} = useConfig()
+  const {grantsStore} = useDatastores()
   const paneRouter = usePaneRouter()
   const options = usePaneOptions(props.pane.options, paneRouter.params)
   const {documentType, isLoaded: isDocumentLoaded} = useDocumentType(options.id, options.type)
   const [templatePermissions, isTemplatePermissionsLoading] = useUnstableTemplatePermissions(
-    getNewDocumentOptions()
+    grantsStore,
+    schema,
+    getNewDocumentOptions(schema)
   )
   const isLoaded = isDocumentLoaded && !isTemplatePermissionsLoading
 

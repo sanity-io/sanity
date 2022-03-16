@@ -1,18 +1,14 @@
-import React, {memo, useCallback, useMemo} from 'react'
+import {useDatastores} from '@sanity/base'
+import {getPublishedId, DocumentAvailability} from '@sanity/base/_internal'
 import {Box, Button, Card, Container, Flex, Text} from '@sanity/ui'
 import {WarningOutlineIcon, SyncIcon, CloseIcon} from '@sanity/icons'
+import React, {memo, useCallback, useMemo} from 'react'
 import styled from 'styled-components'
 import {fromString as pathFromString, get as pathGet} from '@sanity/util/paths'
 import {KeyedSegment, Reference} from '@sanity/types'
 import {debounceTime, map} from 'rxjs/operators'
-import {
-  getPublishedId,
-  unstable_observePathsDocumentPair,
-  DocumentAvailability,
-} from '@sanity/base/_internal'
 import {concat, Observable, of} from 'rxjs'
 import {useMemoObservable} from 'react-rx'
-
 import {usePaneRouter} from '../../../contexts/paneRouter'
 import {RouterPaneGroup} from '../../../types'
 
@@ -38,6 +34,7 @@ interface ParentReferenceInfo {
 }
 
 export const ReferenceChangedBanner = memo(() => {
+  const {documentPreviewStore} = useDatastores()
   const {params, groupIndex, routerPanesState, replaceCurrent, BackLink} = usePaneRouter()
   const routerReferenceId = routerPanesState[groupIndex]?.[0].id
   const parentGroup = routerPanesState[groupIndex - 1] as RouterPaneGroup | undefined
@@ -80,29 +77,31 @@ export const ReferenceChangedBanner = memo(() => {
         // emit a loading state instantly
         of({loading: true}),
         // then emit the values from watching the published ID's path
-        unstable_observePathsDocumentPair(
-          publishedId,
-          (keyedSegmentIndex === -1 ? path : path.slice(0, keyedSegmentIndex)) as string[][]
-        ).pipe(
-          // this debounce time is needed to prevent flashing banners due to
-          // the router state updating faster than the content-lake state. we
-          // debounce to wait for more emissions because the value pulled
-          // initially could be stale.
-          debounceTime(750),
-          map(
-            ({draft, published}): ParentReferenceInfo => ({
-              loading: false,
-              result: {
-                availability: {
-                  draft: draft.availability,
-                  published: published.availability,
-                },
-                refValue: pathGet<Reference>(draft.snapshot || published.snapshot, parentRefPath)
-                  ?._ref,
-              },
-            })
+        documentPreviewStore
+          .unstable_observePathsDocumentPair(
+            publishedId,
+            (keyedSegmentIndex === -1 ? path : path.slice(0, keyedSegmentIndex)) as string[][]
           )
-        )
+          .pipe(
+            // this debounce time is needed to prevent flashing banners due to
+            // the router state updating faster than the content-lake state. we
+            // debounce to wait for more emissions because the value pulled
+            // initially could be stale.
+            debounceTime(750),
+            map(
+              ({draft, published}): ParentReferenceInfo => ({
+                loading: false,
+                result: {
+                  availability: {
+                    draft: draft.availability,
+                    published: published.availability,
+                  },
+                  refValue: pathGet<Reference>(draft.snapshot || published.snapshot, parentRefPath)
+                    ?._ref,
+                },
+              })
+            )
+          )
       )
     },
     [parentId, parentRefPath],

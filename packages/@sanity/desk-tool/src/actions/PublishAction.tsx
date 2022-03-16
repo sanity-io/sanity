@@ -1,4 +1,4 @@
-import {DocumentActionComponent} from '@sanity/base'
+import {DocumentActionComponent, useClient, useConfig, useDatastores} from '@sanity/base'
 import {useSyncState, useDocumentOperation, useValidationStatus} from '@sanity/react-hooks'
 import {CheckmarkIcon, PublishIcon} from '@sanity/icons'
 import React, {useCallback, useEffect, useState} from 'react'
@@ -35,6 +35,9 @@ function getDisabledReason(
 // eslint-disable-next-line complexity
 export const PublishAction: DocumentActionComponent = (props) => {
   const {id, type, liveEdit, draft, published} = props
+  const client = useClient()
+  const {schema} = useConfig()
+  const {grantsStore} = useDatastores()
   const [publishState, setPublishState] = useState<'publishing' | 'published' | null>(null)
   const {publish}: any = useDocumentOperation(id, type)
   const validationStatus = useValidationStatus(id, type)
@@ -44,11 +47,16 @@ export const PublishAction: DocumentActionComponent = (props) => {
   // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
   const [publishScheduled, setPublishScheduled] = useState<boolean>(false)
   const isNeitherSyncingNorValidating = !syncState.isSyncing && !validationStatus.isValidating
-  const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
-    id,
-    type,
-    permission: 'publish',
-  })
+  const [permissions, isPermissionsLoading] = useDocumentPairPermissions(
+    client,
+    schema,
+    grantsStore,
+    {
+      id,
+      type,
+      permission: 'publish',
+    }
+  )
 
   const {value: currentUser} = useCurrentUser()
 

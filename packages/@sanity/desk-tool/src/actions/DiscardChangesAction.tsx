@@ -1,4 +1,10 @@
-import {DocumentActionComponent, DocumentActionDialogProps} from '@sanity/base'
+import {
+  DocumentActionComponent,
+  DocumentActionDialogProps,
+  useClient,
+  useConfig,
+  useDatastores,
+} from '@sanity/base'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import {ResetIcon} from '@sanity/icons'
 import React, {useCallback, useMemo, useState} from 'react'
@@ -20,13 +26,21 @@ export const DiscardChangesAction: DocumentActionComponent = ({
   liveEdit,
   onComplete,
 }) => {
+  const client = useClient()
+  const {schema} = useConfig()
+  const {grantsStore} = useDatastores()
   const {discardChanges}: any = useDocumentOperation(id, type)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
-  const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
-    id,
-    type,
-    permission: 'discardDraft',
-  })
+  const [permissions, isPermissionsLoading] = useDocumentPairPermissions(
+    client,
+    schema,
+    grantsStore,
+    {
+      id,
+      type,
+      permission: 'discardDraft',
+    }
+  )
   const {value: currentUser} = useCurrentUser()
 
   const handleConfirm = useCallback(() => {
