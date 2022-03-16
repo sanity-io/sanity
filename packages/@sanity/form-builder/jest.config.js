@@ -1,8 +1,10 @@
 const path = require('path')
-const createConfig = require('../../../createJestConfig')
+const {createJestConfig} = require('../../../test/config')
 
-module.exports = createConfig({
+/** @type {import('@jest/types').Config.InitialOptions} */
+module.exports = createJestConfig({
   displayName: require('./package.json').name,
+  rootDir: __dirname,
   globalSetup: '<rootDir>/test/setup/global.ts',
   setupFiles: ['<rootDir>/test/setup/environment.ts'],
   moduleNameMapper: {
@@ -14,6 +16,6 @@ module.exports = createConfig({
       __dirname,
       'src/inputs/PortableText/_legacyDefaultParts/Markers.tsx'
     ),
-    '^part:@sanity/form-builder*': path.resolve(__dirname, '../../../test/undefined'),
+    '^part:@sanity/form-builder*': path.resolve(__dirname, '../../../test/mocks/undefined'),
   },
 })
