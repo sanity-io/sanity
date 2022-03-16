@@ -1,10 +1,10 @@
-import route from '../src/route'
+import {route} from '../src/route'
 
 /* eslint-disable quote-props */
 
-export const router = route('/:dataset', [
-  route('/settings/:setting'),
-  route('/tools/:tool', (params: any): any => {
+export const router = route.create('/:dataset', [
+  route.create('/settings/:setting'),
+  route.create('/tools/:tool', (params: any): any => {
     if (params.tool === 'desk') {
       return [route.scope('desk', '/collections/:collection')]
     }
@@ -15,7 +15,7 @@ export const router = route('/:dataset', [
   }),
 ])
 
-export const examples: Array<[string, {}]> = [
+export const examples: Array<[string, Record<string, unknown>]> = [
   ['/some-dataset', {dataset: 'some-dataset'}],
   ['/some-dataset/tools/desk', {dataset: 'some-dataset', tool: 'desk'}],
   [

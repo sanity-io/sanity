@@ -1,16 +1,15 @@
-/* eslint-disable no-console */
-const route = require('../lib/route').default
-const inspect = require('object-inspect')
+/* eslint-disable import/extensions, import/no-dynamic-require, no-console, no-process-env */
+
 const assert = require('assert')
-const resolveStateFromPath = require('../lib/resolveStateFromPath').default
-const resolvePathFromState = require('../lib/resolvePathFromState').default
+const inspect = require('object-inspect')
+const {resolveStateFromPath, resolvePathFromState, route} = require('../lib/index.cjs')
 
 console.log('\nRunning benchmarks…')
 
 const examples = ['simple', 'deep']
 
 function createRouteFromExample(path, children = []) {
-  return route(
+  return route.create(
     path,
     children.map(([subPath, subChildren]) => {
       return createRouteFromExample(subPath, subChildren)

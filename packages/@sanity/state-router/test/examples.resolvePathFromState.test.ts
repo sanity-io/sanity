@@ -1,6 +1,6 @@
 import inspect from 'object-inspect'
+import {resolvePathFromState} from '../src/resolvePathFromState'
 import {router, examples} from './examples'
-import resolvePathFromState from '../src/resolvePathFromState'
 
 examples.forEach(([path, state]) => {
   test(`state ${inspect(state)} produces path ${path}`, () => {

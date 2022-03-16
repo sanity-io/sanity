@@ -1,6 +1,6 @@
-import route from '../src/route'
+import {route} from '../src/route'
 
-function mock(obj: Object, methodName: string, mockFn: Function) {
+function mock(obj: any, methodName: string, mockFn: (...args: any[]) => void) {
   const original = obj[methodName]
   obj[methodName] = mockFn
   return function restore() {
@@ -13,7 +13,7 @@ test('warn on invalid characters', () => {
     expect(error.message).toEqual('Warning: Param segments ":pa`ram" includes invalid characters.')
     restore()
   })
-  route('/root/:pa`ram')
+  route.create('/root/:pa`ram')
 })
 
 test('warn on splats', () => {
@@ -23,5 +23,5 @@ test('warn on splats', () => {
     )
     restore()
   })
-  route('/root/:pa*ram')
+  route.create('/root/:pa*ram')
 })

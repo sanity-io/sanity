@@ -1,8 +1,8 @@
-import route from '../src/route'
+import {route} from '../src/route'
 import {decodeParams, encodeParams} from '../src/utils/paramsEncoding'
 
 test('transform config on regular routes', () => {
-  const router = route(
+  const router = route.create(
     '/some/:section/:settings',
     {
       transform: {
@@ -12,7 +12,7 @@ test('transform config on regular routes', () => {
         },
       },
     },
-    route('/other/:page')
+    route.create('/other/:page')
   )
 
   expect(router.decode('/some/bar/width=full;view=details')).toEqual({
@@ -53,8 +53,8 @@ test('transform config on regular routes', () => {
 })
 
 test('transform config on scoped routes', () => {
-  const router = route('/some/:section', [
-    route('/other/:params', {
+  const router = route.create('/some/:section', [
+    route.create('/other/:params', {
       scope: 'myscope',
       transform: {
         params: {

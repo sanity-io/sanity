@@ -1,7 +1,7 @@
-import {Node} from '../src/types'
-import resolveStateFromPath from '../src/resolveStateFromPath'
+import {RouterNode} from '../src/types'
+import {resolveStateFromPath} from '../src/resolveStateFromPath'
 
-const node: Node = {
+const node: RouterNode = {
   route: {
     raw: '/foo/:bar',
     segments: [
@@ -18,7 +18,7 @@ const node: Node = {
           {type: 'param', name: 'foo'},
         ],
       },
-      children(state: any) {
+      children(state) {
         if (state.foo === 'foo') {
           return [
             {
@@ -64,7 +64,7 @@ const node: Node = {
       transform: {
         animal: {
           toState: (value) => ({name: value.toUpperCase()}),
-          toPath: (animal) => animal.name.toLowerCase(),
+          toPath: (animal) => (typeof animal.name === 'string' ? animal.name.toLowerCase() : ''),
         },
       },
       children: [],

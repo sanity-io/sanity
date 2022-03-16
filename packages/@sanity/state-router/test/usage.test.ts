@@ -1,11 +1,11 @@
-import route from '../src/route'
+import {route} from '../src/route'
 
-const router = route('/', [
-  route('/animals/:animal'),
-  route('/countries', [
-    route('/:country', [route('/:county', [route('/:municipality')])]),
-    route('/:country/:county'),
-    route('/:country/:county/:municipality/neighbors/:neighbor'),
+const router = route.create('/', [
+  route.create('/animals/:animal'),
+  route.create('/countries', [
+    route.create('/:country', [route.create('/:county', [route.create('/:municipality')])]),
+    route.create('/:country/:county'),
+    route.create('/:country/:county/:municipality/neighbors/:neighbor'),
   ]),
 ])
 

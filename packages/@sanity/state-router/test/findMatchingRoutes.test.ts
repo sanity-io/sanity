@@ -1,7 +1,7 @@
-import {Node, MatchResult} from '../src/types'
-import findMatchingNodes from '../src/findMatchingNodes'
+import {RouterNode, MatchResult} from '../src/types'
+import {findMatchingRoutes} from '../src/findMatchingRoutes'
 
-const node: Node = {
+const node: RouterNode = {
   route: {
     raw: '/foo/:bar',
     segments: [
@@ -30,7 +30,7 @@ const node: Node = {
         transform: {
           animal: {
             toState: (value) => ({name: value.toUpperCase()}),
-            toPath: (animal) => animal.name.toLowerCase(),
+            toPath: (animal) => (typeof animal.name === 'string' ? animal.name.toLowerCase() : ''),
           },
         },
       },
@@ -51,7 +51,7 @@ const node: Node = {
   ],
 }
 
-const examples: [Object, MatchResult][] = [
+const examples: [Record<string, unknown>, MatchResult][] = [
   [
     {},
     {
@@ -71,7 +71,7 @@ const examples: [Object, MatchResult][] = [
   [
     {bar: 'bar', animal: 'cat'},
     {
-      nodes: [node, node.children[0]],
+      nodes: [node, (node.children as RouterNode[])[0]],
       remaining: [],
       missing: [],
     },
@@ -79,7 +79,11 @@ const examples: [Object, MatchResult][] = [
   [
     {bar: 'bar', animal: 'cat', snargh: 'gnargh'},
     {
-      nodes: [node, node.children[1], node.children[1].children[0]],
+      nodes: [
+        node,
+        (node.children as RouterNode[])[1],
+        ((node.children as RouterNode[])[1].children as RouterNode[])[0],
+      ],
       remaining: [],
       missing: [],
     },
@@ -96,6 +100,6 @@ const examples: [Object, MatchResult][] = [
 
 examples.forEach(([state, result]) => {
   test(`state ${JSON.stringify(state)} matches`, () => {
-    expect(findMatchingNodes(node, state)).toEqual(result)
+    expect(findMatchingRoutes(node, state)).toEqual(result)
   })
 })
