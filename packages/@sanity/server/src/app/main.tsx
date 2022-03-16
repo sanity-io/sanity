@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+
+// @ts-ignore This may not yet be built.
 import {StudioRoot} from '@sanity/base'
 import React from 'react'
 import {render} from 'react-dom'
