@@ -1,5 +1,6 @@
 import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
 
+import {useClient} from '@sanity/base'
 import {
   Marker,
   Path,
@@ -87,13 +88,10 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
   props: Props,
   ref: ForwardedRef<HTMLInputElement>
 ) {
+  const client = useClient()
   const {getValuePath, type, document} = props
-  const {
-    EditReferenceLinkComponent,
-    onEditReference,
-    activePath,
-    initialValueTemplateItems,
-  } = useReferenceInputOptions()
+  const {EditReferenceLinkComponent, onEditReference, activePath, initialValueTemplateItems} =
+    useReferenceInputOptions()
 
   const documentRef = useValueRef(document)
 
@@ -191,7 +189,7 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
       {...props}
       liveEdit={isDocumentLiveEdit}
       onSearch={handleSearch}
-      getReferenceInfo={adapter.getReferenceInfo}
+      getReferenceInfo={(id, _type) => adapter.getReferenceInfo(client, id, _type)}
       ref={ref}
       selectedState={selectedState}
       editReferenceLinkComponent={EditReferenceLink}

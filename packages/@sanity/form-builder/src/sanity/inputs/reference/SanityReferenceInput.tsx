@@ -14,6 +14,7 @@ import {get} from '@sanity/util/paths'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
+import {useClient} from '@sanity/base'
 import withValuePath from '../../../utils/withValuePath'
 import withDocument from '../../../utils/withDocument'
 import {useReferenceInputOptions} from '../../contexts/ReferenceInputOptions'
@@ -82,13 +83,10 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
   props: Props,
   ref: ForwardedRef<HTMLInputElement>
 ) {
+  const client = useClient()
   const {getValuePath, type, document} = props
-  const {
-    EditReferenceLinkComponent,
-    onEditReference,
-    activePath,
-    initialValueTemplateItems,
-  } = useReferenceInputOptions()
+  const {EditReferenceLinkComponent, onEditReference, activePath, initialValueTemplateItems} =
+    useReferenceInputOptions()
 
   const documentRef = useValueRef(document)
 
@@ -186,7 +184,7 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
       {...props}
       onSearch={handleSearch}
       liveEdit={isDocumentLiveEdit}
-      getReferenceInfo={adapter.getReferenceInfo}
+      getReferenceInfo={(id, _type) => adapter.getReferenceInfo(client, id, _type)}
       ref={ref}
       selectedState={selectedState}
       editReferenceLinkComponent={EditReferenceLink}

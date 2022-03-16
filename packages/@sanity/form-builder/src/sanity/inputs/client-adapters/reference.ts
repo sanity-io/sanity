@@ -17,6 +17,7 @@ import {
 } from '@sanity/base/_internal'
 
 // eslint-disable-next-line camelcase
+import {SanityClient} from '@sanity/client'
 import {searchClient} from '../../versionedClient'
 import {DocumentPreview, ReferenceInfo} from '../../../inputs/ReferenceInput/types'
 
@@ -41,12 +42,13 @@ const NOT_FOUND = {
  * @param referenceType
  */
 export function getReferenceInfo(
+  client: SanityClient,
   id: string,
   referenceType: ReferenceSchemaType
 ): Observable<ReferenceInfo> {
   const {publishedId, draftId} = getIdPair(id)
 
-  return unstable_observeDocumentPairAvailability(id).pipe(
+  return unstable_observeDocumentPairAvailability(client, id).pipe(
     switchMap(({draft: draftAvailability, published: publishedAvailability}) => {
       if (!draftAvailability.available && !publishedAvailability.available) {
         // combine availability of draft + published
@@ -67,8 +69,8 @@ export function getReferenceInfo(
         } as const)
       }
       return combineLatest([
-        observeDocumentTypeFromId(draftId),
-        observeDocumentTypeFromId(publishedId),
+        observeDocumentTypeFromId(client, draftId),
+        observeDocumentTypeFromId(client, publishedId),
       ]).pipe(
         switchMap(([draftTypeName, publishedTypeName]) => {
           // assume draft + published are always same type
@@ -91,34 +93,32 @@ export function getReferenceInfo(
             ['_createdAt'],
           ]
 
-          const draftPreview$ = observePaths(draftId, previewPaths).pipe(
+          const draftPreview$ = observePaths(client, draftId, previewPaths).pipe(
             map((result) => (result ? prepareForPreview(result, refSchemaType) : result))
           )
-          const publishedPreview$ = observePaths(publishedId, previewPaths).pipe(
+          const publishedPreview$ = observePaths(client, publishedId, previewPaths).pipe(
             map((result) => (result ? prepareForPreview(result, refSchemaType) : result))
           )
           return combineLatest([draftPreview$, publishedPreview$]).pipe(
-            map(
-              ([draftPreview, publishedPreview]): ReferenceInfo => {
-                const availability =
-                  // eslint-disable-next-line no-nested-ternary
-                  draftAvailability.available || publishedAvailability.available
-                    ? READABLE
-                    : draftAvailability.reason === 'PERMISSION_DENIED' ||
-                      publishedAvailability.reason === 'PERMISSION_DENIED'
-                    ? PERMISSION_DENIED
-                    : NOT_FOUND
-                return {
-                  type: typeName,
-                  id: publishedId,
-                  availability,
-                  preview: {
-                    draft: draftPreview as DocumentPreview,
-                    published: publishedPreview as DocumentPreview,
-                  },
-                }
+            map(([draftPreview, publishedPreview]): ReferenceInfo => {
+              const availability =
+                // eslint-disable-next-line no-nested-ternary
+                draftAvailability.available || publishedAvailability.available
+                  ? READABLE
+                  : draftAvailability.reason === 'PERMISSION_DENIED' ||
+                    publishedAvailability.reason === 'PERMISSION_DENIED'
+                  ? PERMISSION_DENIED
+                  : NOT_FOUND
+              return {
+                type: typeName,
+                id: publishedId,
+                availability,
+                preview: {
+                  draft: draftPreview as DocumentPreview,
+                  published: publishedPreview as DocumentPreview,
+                },
               }
-            )
+            })
           )
         })
       )
