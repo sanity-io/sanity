@@ -91,8 +91,8 @@
     "@types/diff-match-patch": "^1.0.32",
     "@types/react-is": "^17.0.1",
     "prop-types": "^15.6.0",
-    "react": "17.0.1",
-    "react-dom": "17.0.1",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
     "rimraf": "^3.0.2",
     "styled-components": "^5.2.0",
     "ts-node": "^9.1.1"
