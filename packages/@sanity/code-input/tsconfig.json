@@ -1,26 +1,19 @@
 {
-  "extends": "../../../tsconfig",
-  "include": ["src"],
+  "extends": "../../../tsconfig.settings",
+  "include": ["./src/"],
   "compilerOptions": {
     "composite": true,
-    "outDir": "./dist/dts",
-    "rootDir": "./src",
+    "declarationDir": "./lib/dts/",
+    "rootDir": "./",
+    "outDir": "./lib/dts/",
     "checkJs": true,
     "allowJs": true,
     "jsx": "react"
   },
   "references": [
-    {
-      "path": "../base"
-    },
-    {
-      "path": "../form-builder"
-    },
-    {
-      "path": "../types"
-    },
-    {
-      "path": "../util"
-    }
+    {"path": "../base/tsconfig.lib.json"},
+    {"path": "../form-builder/tsconfig.lib.json"},
+    {"path": "../types"},
+    {"path": "../util/tsconfig.lib.json"}
   ]
 }

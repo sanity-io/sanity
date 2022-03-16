@@ -2,12 +2,39 @@
   "name": "@sanity/code-input",
   "version": "2.30.0",
   "description": "Ace editor for editing code",
-  "main": "./lib/index.js",
-  "types": "./dist/dts",
+  "source": "./src/index.ts",
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.js",
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "require": "./lib/index.cjs",
+      "default": "./lib/index.js"
+    },
+    "./CodeInput": {
+      "source": "./src/CodeInput.tsx",
+      "require": "./lib/CodeInput.cjs",
+      "default": "./lib/CodeInput.js"
+    },
+    "./schema": {
+      "source": "./src/schema.tsx",
+      "require": "./lib/schema.cjs",
+      "default": "./lib/schema.js"
+    },
+    "./deprecatedSchema": {
+      "source": "./src/deprecatedSchema.ts",
+      "require": "./lib/deprecatedSchema.cjs",
+      "default": "./lib/deprecatedSchema.js"
+    }
+  },
+  "types": "./lib/dts/src/index.d.ts",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "clean": "rimraf lib dest"
+    "build": "../../../bin/pkg-utils bundle",
+    "clean": "rimraf lib",
+    "prebuild": "yarn clean",
+    "watch": "../../../bin/pkg-utils bundle --watch"
   },
   "keywords": [
     "sanity",
@@ -21,7 +48,6 @@
   ],
   "dependencies": {
     "@reach/auto-id": "^0.13.2",
-    "@sanity/base": "2.30.0",
     "@sanity/icons": "^1.2.6",
     "@sanity/types": "2.29.5",
     "@sanity/ui": "^0.37.9",
@@ -30,9 +56,20 @@
     "react-ace": "^9.5.0"
   },
   "devDependencies": {
-    "rimraf": "^2.7.1"
+    "@sanity/base": "2.29.2",
+    "@sanity/form-builder": "2.29.1",
+    "@sanity/types": "2.28.0",
+    "@sanity/ui-workshop": "^0.3.15",
+    "@sanity/util": "2.28.0",
+    "react": "17.0.2",
+    "rimraf": "^3.0.2",
+    "styled-components": "^5.2.0"
   },
   "peerDependencies": {
+    "@sanity/base": "^2.14",
+    "@sanity/form-builder": "^2.27",
+    "@sanity/types": "^2.14",
+    "@sanity/util": "2.27",
     "prop-types": "^15.6 || ^16",
     "react": "^16.9 || ^17",
     "styled-components": "^5.2.0"
