@@ -9,17 +9,17 @@ import {getRegisteredTools} from './util/getRegisteredTools'
 const tools = getRegisteredTools()
 const basePath = ((config.project && config.project.basePath) || '').replace(/\/+$/, '')
 
-const toolRoute = route('/:tool', (toolParams: any) => {
+const toolRoute = route.create('/:tool', (toolParams: any) => {
   const foundTool = tools.find((current) => current.name === toolParams.tool)
-  return foundTool ? (route as any).scope(foundTool.name, '/', foundTool.router) : route('/')
+  return foundTool ? (route as any).scope(foundTool.name, '/', foundTool.router) : route.create('/')
 })
 
-const spaceRoute = route('/:space', ((params: any) => {
+const spaceRoute = route.create('/:space', ((params: any) => {
   const foundSpace = CONFIGURED_SPACES.find((sp) => sp.name === params.space)
-  return foundSpace ? toolRoute : route('/')
+  return foundSpace ? toolRoute : route.create('/')
 }) as any)
 
-const rootRouter = route(`${basePath}/`, [
+const rootRouter = route.create(`${basePath}/`, [
   (route as any).intents('/intent'),
   HAS_SPACES ? spaceRoute : toolRoute,
 ])

@@ -59,9 +59,9 @@ function DefaultLayoutRoot() {
     return () => sub.unsubscribe()
   }, [])
 
-  const handleNavigate = useCallback((url: string, options: any) => {
-    urlStateStore.navigate(url, options)
-  }, [])
+  // const handleNavigate = useCallback((url: string, options: any) => {
+  //   urlStateStore.navigate(url, options)
+  // }, [])
 
   if (error) {
     return (
@@ -76,7 +76,12 @@ function DefaultLayoutRoot() {
   return (
     <NormalizedLoginWrapper>
       {state.urlState && (
-        <RouterProvider router={rootRouter} state={state.urlState} onNavigate={handleNavigate}>
+        <RouterProvider
+          router={rootRouter}
+          state={state.urlState}
+          // eslint-disable-next-line react/jsx-handler-names
+          onNavigate={urlStateStore.navigate}
+        >
           {state.isNotFound && (
             <NotFound>
               {!state.intent && (

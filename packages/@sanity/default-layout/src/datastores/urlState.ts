@@ -123,7 +123,7 @@ function maybeHandleIntent(
 
     if (redirectState) {
       const newUrl = rootRouter.encode(redirectState)
-      setTimeout(() => navigate(newUrl, {replace: true}), 0)
+      setTimeout(() => navigate({path: newUrl, replace: true}), 0)
       return null
     }
   }
@@ -142,14 +142,14 @@ function decodeUrlState(locationEvent: {type: string}) {
 function maybeRedirectDefaultState(event: SnapshotStateEvent): StateEvent | null {
   const redirectState = resolveDefaultState(event.state)
   if (redirectState !== event.state) {
-    navigate(rootRouter.encode(redirectState), {replace: true})
+    navigate({path: rootRouter.encode(redirectState), replace: true})
     return null
   }
   return event
 }
 
-export function navigate(newUrl: string, options: {replace: boolean}): void {
-  locationStore.actions.navigate(newUrl, options)
+export function navigate(opts: {path: string; replace: boolean}): void {
+  locationStore.actions.navigate(opts.path, {replace: opts.replace})
 }
 
 export const state: Observable<StateEvent> = locationStore.state.pipe(
