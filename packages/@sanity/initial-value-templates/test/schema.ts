@@ -1,8 +1,9 @@
-const {default: Schema} = require('@sanity/schema')
+import SchemaBuilder from '@sanity/schema'
+import {Schema} from '@sanity/types'
 
 const Icon = () => null
 
-const compiled = Schema.compile({
+export const schema = SchemaBuilder.compile({
   name: 'default',
   types: [
     {
@@ -192,6 +193,4 @@ const compiled = Schema.compile({
       ],
     },
   ],
-})
-
-module.exports = compiled
+}) as Schema

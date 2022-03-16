@@ -1,25 +1,15 @@
-import {format} from 'util'
-import {getTemplates} from '../src'
-
-beforeEach(() => {
-  jest.resetModules()
-})
-
-function getConsoleSpyWithAssert() {
-  const consoleSpy = jest.spyOn(global.console, 'warn')
-  consoleSpy.mockImplementation((msg, ...args) =>
-    expect(format(msg, ...args)).toMatchSnapshot('warning')
-  )
-  return {restore: () => consoleSpy.mockRestore()}
-}
+import T, {prepareTemplates} from '../src/'
+import {schema} from './schema'
 
 describe('getTemplates', () => {
   test('returns defaults if part is not implemented', () => {
-    expect(getTemplates()).toMatchSnapshot()
+    const templates = prepareTemplates(schema, T.defaults(schema))
+
+    expect(templates).toMatchSnapshot()
   })
 
   test('returns defined templates if part implemented', () => {
-    jest.mock('part:@sanity/base/initial-value-templates?', () => [
+    const templates = prepareTemplates(schema, [
       {
         id: 'author',
         title: 'Author',
@@ -34,112 +24,101 @@ describe('getTemplates', () => {
           value: {title: 'Foo'},
         }),
       },
-    ])
-    expect(getTemplates()).toMatchSnapshot()
+    ] as any)
+
+    expect(templates).toMatchSnapshot()
   })
 
   test('validates that templates has ID', () => {
-    jest.mock('part:@sanity/base/initial-value-templates?', () => [
-      {
-        title: 'Author',
-        schemaType: 'author',
-        value: {title: 'here'},
-      },
-    ])
-
-    const consoleSpy = getConsoleSpyWithAssert()
-    expect(getTemplates()).toMatchSnapshot()
-    consoleSpy.restore()
+    expect(() =>
+      prepareTemplates(schema, [
+        {
+          title: 'Author',
+          schemaType: 'author',
+          value: {title: 'here'},
+        },
+      ] as any)
+    ).toThrow('Template "Author" is missing required properties: id')
   })
 
   test('validates that templates has title', () => {
-    jest.mock('part:@sanity/base/initial-value-templates?', () => [
-      {
-        id: 'author',
-        schemaType: 'author',
-        value: {title: 'here'},
-      },
-    ])
-
-    const consoleSpy = getConsoleSpyWithAssert()
-    expect(getTemplates()).toMatchSnapshot()
-    consoleSpy.restore()
+    expect(() =>
+      prepareTemplates(schema, [
+        {
+          id: 'author',
+          schemaType: 'author',
+          value: {title: 'here'},
+        },
+      ] as any)
+    ).toThrow('Template "author" is missing required properties: title')
   })
 
   test('validates that templates has schema type', () => {
-    jest.mock('part:@sanity/base/initial-value-templates?', () => [
-      {
-        id: 'author',
-        title: 'Author',
-        value: {title: 'here'},
-      },
-    ])
-
-    const consoleSpy = getConsoleSpyWithAssert()
-    expect(getTemplates()).toMatchSnapshot()
-    consoleSpy.restore()
+    expect(() =>
+      prepareTemplates(schema, [
+        {
+          id: 'author',
+          title: 'Author',
+          value: {title: 'here'},
+        },
+      ] as any)
+    ).toThrow('Template "author" is missing required properties: schemaType')
   })
 
   test('validates that templates has value', () => {
-    jest.mock('part:@sanity/base/initial-value-templates?', () => [
-      {
-        id: 'author',
-        title: 'Author',
-        schemaType: 'author',
-      },
-    ])
-
-    const consoleSpy = getConsoleSpyWithAssert()
-    expect(getTemplates()).toMatchSnapshot()
-    consoleSpy.restore()
+    expect(() =>
+      prepareTemplates(schema, [
+        {
+          id: 'author',
+          title: 'Author',
+          schemaType: 'author',
+        },
+      ] as any)
+    ).toThrow('Template "author" is missing required properties: value')
   })
 
   test('validates that templates has id, title, schemaType, value', () => {
-    jest.mock('part:@sanity/base/initial-value-templates?', () => [{}])
-
-    const consoleSpy = getConsoleSpyWithAssert()
-    expect(getTemplates()).toMatchSnapshot()
-    consoleSpy.restore()
+    expect(() => prepareTemplates(schema, [{}] as any)).toThrow(
+      'Template at index 0 is missing required properties: id, title, schemaType, value'
+    )
   })
 
   test('validates that templates has an object/function value', () => {
-    jest.mock('part:@sanity/base/initial-value-templates?', () => [
-      {
-        id: 'author',
-        title: 'Author',
-        schemaType: 'author',
-        value: [],
-      },
-      {
-        id: 'person',
-        title: 'Person',
-        schemaType: 'person',
-        value: [],
-      },
-    ])
-
-    const consoleSpy = getConsoleSpyWithAssert()
-    expect(getTemplates()).toMatchSnapshot()
-    consoleSpy.restore()
+    expect(() =>
+      prepareTemplates(schema, [
+        {
+          id: 'author',
+          title: 'Author',
+          schemaType: 'author',
+          value: [],
+        },
+        {
+          id: 'person',
+          title: 'Person',
+          schemaType: 'person',
+          value: [],
+        },
+      ] as any)
+    ).toThrow(
+      'Template "author" has an invalid "value" property; should be a function or an object'
+    )
   })
 
   test('validates that templates has unique IDs', () => {
-    jest.mock('part:@sanity/base/initial-value-templates?', () => [
-      {
-        id: 'author',
-        title: 'Author',
-        schemaType: 'author',
-        value: {name: 'Gunnar'},
-      },
-      {
-        id: 'person',
-        title: 'Person',
-        schemaType: 'person',
-      },
-    ])
-
-    const consoleSpy = getConsoleSpyWithAssert()
-    expect(getTemplates()).toMatchSnapshot()
-    consoleSpy.restore()
+    expect(() =>
+      prepareTemplates(schema, [
+        {
+          id: 'author',
+          title: 'Author',
+          schemaType: 'author',
+          value: {name: 'Gunnar'},
+        },
+        {
+          id: 'person',
+          title: 'Person',
+          schemaType: 'person',
+        },
+      ] as any)
+    ).toThrow('Template "person" is missing required properties: value')
   })
 })

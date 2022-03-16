@@ -1,4 +1,5 @@
-import {TemplateBuilder as T} from '../src'
+import T from '../src'
+import {schema} from './schema'
 
 const icon = () => null
 
@@ -68,17 +69,21 @@ describe('T.template()', () => {
 
 describe('T.defaultTemplateForType()', () => {
   test('generates correct representation of type without initial value', () => {
-    expect(T.defaultTemplateForType('author').serialize()).toMatchSnapshot()
+    const schemaType = schema.get('author')!
+
+    expect(T.defaultTemplateForType(schemaType).serialize()).toMatchSnapshot()
   })
 
   test('generates correct representation of type with initial value', () => {
-    expect(T.defaultTemplateForType('post').serialize()).toMatchSnapshot()
+    const schemaType = schema.get('post')!
+
+    expect(T.defaultTemplateForType(schemaType).serialize()).toMatchSnapshot()
   })
 })
 
 describe('T.defaults()', () => {
   test('generates array of all schema type templates', () => {
-    expect(T.defaults()).toMatchSnapshot()
-    expect(T.defaults().map((tpl) => tpl.serialize())).toMatchSnapshot()
+    expect(T.defaults(schema)).toMatchSnapshot()
+    expect(T.defaults(schema).map((tpl) => tpl.serialize())).toMatchSnapshot()
   })
 })

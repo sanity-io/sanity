@@ -1,9 +1,6 @@
 import {omit} from 'lodash'
-import {resolveInitialValue, TemplateBuilder as T} from '../src'
-import {Template} from '../src/Template'
-import {getDefaultSchema} from '../src/parts/Schema'
-
-const schema = getDefaultSchema()
+import T, {resolveInitialValue, Template} from '../src'
+import {schema} from './schema'
 
 beforeEach(() => {
   jest.resetModules()
@@ -78,7 +75,7 @@ describe('resolveInitialValue', () => {
   // todo: we should validate based on schema type here and reenable this test
   //  Currently the initial value validator is not schema aware and fails if resolved initial value is missing _type
   //  but this doesn't account for fields of type object, which is a valid case for omitting _type.
-  xtest('throws on values with sub-objects missing `_type`', () => {
+  test.skip('throws on values with sub-objects missing `_type`', () => {
     expect(
       resolveInitialValue(schema, {
         ...example,
