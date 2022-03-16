@@ -2,16 +2,27 @@
   "name": "@sanity/structure",
   "version": "2.29.5",
   "description": "Build a navigation structure programatically",
-  "main": "./lib/index.js",
-  "types": "./dist/dts",
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.js",
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "require": "./lib/index.cjs",
+      "default": "./lib/index.js"
+    }
+  },
+  "types": "./lib/dts/src/index.d.ts",
   "author": "Sanity.io <hello@sanity.io>",
   "engines": {
     "node": ">=12.0.0"
   },
   "license": "MIT",
   "scripts": {
+    "build": "../../../bin/pkg-utils bundle",
+    "clean": "rimraf lib coverage",
+    "prebuild": "yarn clean",
     "test": "jest",
-    "clean": "rimraf lib coverage"
+    "watch": "../../../bin/pkg-utils bundle --watch"
   },
   "keywords": [
     "sanity",
@@ -29,13 +40,15 @@
     "@sanity/client": "^3.2.0",
     "@sanity/icons": "^1.2.6",
     "@sanity/initial-value-templates": "2.29.5",
+    "@sanity/schema": "2.29.3",
+    "@sanity/types": "2.29.5",
     "@types/lodash": "^4.14.149",
     "@types/memoize-one": "^3.1.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "memoize-one": "^3.1.1"
   },
   "devDependencies": {
-    "rimraf": "^2.7.1",
+    "rimraf": "^3.0.2",
     "rxjs": "^6.5.3"
   },
   "repository": {

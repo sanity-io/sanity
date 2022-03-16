@@ -1,10 +1,11 @@
 {
-  "extends": "../../../tsconfig",
+  "extends": "../../../tsconfig.settings",
   "include": ["src"],
   "compilerOptions": {
     "composite": true,
-    "outDir": "./dist/dts",
-    "rootDir": "./src",
+    "declarationDir": "./lib/dts/",
+    "rootDir": "./src/",
+    "outDir": "./lib/dts/",
     // todo: we need to disable noImplicitAny in a transition phase and should be removed eventually
     "noImplicitAny": false
   },
