@@ -69,7 +69,6 @@
     "@sanity/cli": "2.29.3",
     "@sanity/client": "^3.2.0",
     "@types/fs-extra": "^7.0.0",
-    "@types/inquirer": "^6.0.2",
     "@types/rimraf": "^3.0.2",
     "@types/resolve-from": "^4.0.0",
     "@types/semver": "^6.2.3",
