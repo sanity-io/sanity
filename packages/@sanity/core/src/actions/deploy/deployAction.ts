@@ -1,6 +1,6 @@
 import path from 'path'
 import zlib from 'zlib'
-import fs from 'fs/promises'
+import {promises as fs} from 'fs'
 import tar from 'tar-fs'
 import type {SanityClient} from '@sanity/client'
 import type {CliCommandArguments, CliCommandContext} from '../../types'
