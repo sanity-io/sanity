@@ -21,6 +21,9 @@ export async function build(opts: {cwd: string}): Promise<void> {
   }
   const external = [
     ...new Set([
+      // @TODO add support for depcheckignore files
+      '$SANITY_STUDIO_CONFIG$',
+      '@self/config',
       ...(pkg.dependencies ? Object.keys(pkg.dependencies) : []),
       ...(pkg.devDependencies ? Object.keys(pkg.devDependencies) : []),
       ...(pkg.peerDependencies ? Object.keys(pkg.peerDependencies) : []),
@@ -91,7 +94,6 @@ async function check(opts: {
     imports.push(opts.format === 'cjs' ? `require('${identifier}');` : `import '${identifier}';`)
   }
 
-  console.log(imports.join('\n'))
   const result = await esbuild.build({
     external: opts.external,
     stdin: {
