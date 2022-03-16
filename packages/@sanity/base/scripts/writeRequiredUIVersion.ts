@@ -1,8 +1,8 @@
 // This overwrites the compiled ./lib/requiredSanityUiVersion.js with a the actual version we currently depend on in @sanity/base
-const fs = require('fs')
-const pkg = require('../package.json')
+import fs from 'fs'
+import pkg from '../package.json'
 
-const template = (version) => `exports.REQUIRED_UI_VERSION = '${version}'`
+const template = (version: string) => `exports.REQUIRED_UI_VERSION = '${version}'`
 
 let builtFile
 try {
