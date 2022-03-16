@@ -1,19 +1,33 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
-import React from 'react'
-import schema from 'part:@sanity/base/schema'
-import {getTemplateErrors} from '@sanity/base/initial-value-templates'
-import InitialValueTemplateError from './InitialValueTemplateError'
+import {useSource} from '@sanity/base'
+import {Schema} from '@sanity/types'
+import React, {useEffect} from 'react'
 import SchemaErrors from './SchemaErrors'
 
-interface Props {
+interface SchemaErrorReporterProps {
   children: () => React.ReactNode
 }
 
 declare const __DEV__: boolean
 
-function renderPath(path) {
+export function SchemaErrorReporter(props: SchemaErrorReporterProps): React.ReactElement {
+  const source = useSource()
+
+  const problemGroups = source.schema._validation
+
+  const groupsWithErrors = problemGroups.filter((group) =>
+    group.problems.some((problem) => problem.severity === 'error')
+  )
+
+  useEffect(() => reportWarnings(source.schema), [source.schema])
+
+  if (groupsWithErrors.length > 0) {
+    return <SchemaErrors problemGroups={groupsWithErrors} />
+  }
+
+  return <>{props.children()}</>
+}
+
+function renderPath(path: any[]) {
   return path
     .map((segment) => {
       if (segment.kind === 'type') {
@@ -31,10 +45,11 @@ function renderPath(path) {
     .join(' > ')
 }
 
-function reportWarnings() {
+function reportWarnings(schema: Schema) {
   if (!__DEV__) {
     return
   }
+
   /* eslint-disable no-console */
   const problemGroups = schema._validation
 
@@ -45,36 +60,17 @@ function reportWarnings() {
     return
   }
   console.groupCollapsed(`⚠️ Schema has ${groupsWithWarnings.length} warnings`)
-  groupsWithWarnings.forEach((group, i) => {
+  groupsWithWarnings.forEach((group) => {
     const path = renderPath(group.path)
+
     console.group(`%cAt ${path}`, 'color: #FF7636')
-    group.problems.forEach((problem, j) => {
+
+    group.problems.forEach((problem) => {
       console.log(problem.message)
     })
-    ;(console as any).groupEnd(`At ${path}`)
+
+    console.groupEnd()
   })
-  ;(console as any).groupEnd('Schema warnings')
+  console.groupEnd()
   /* eslint-enable no-console */
-}
-
-export class SchemaErrorReporter extends React.Component<Props> {
-  componentDidMount = reportWarnings
-  render() {
-    const problemGroups = schema._validation
-
-    const groupsWithErrors = problemGroups.filter((group) =>
-      group.problems.some((problem) => problem.severity === 'error')
-    )
-
-    if (groupsWithErrors.length > 0) {
-      return <SchemaErrors problemGroups={groupsWithErrors} />
-    }
-
-    const templateErrors = getTemplateErrors(undefined as any)
-    if (templateErrors.length > 0) {
-      return <InitialValueTemplateError errors={templateErrors} />
-    }
-
-    return this.props.children()
-  }
 }

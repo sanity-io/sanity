@@ -13,5 +13,5 @@
     "outDir": "./lib/dts/",
     "jsx": "react"
   },
-  "references": [{"path": "../base"}, {"path": "../util"}]
+  "references": [{"path": "../base/tsconfig.lib.json"}, {"path": "../util/tsconfig.lib.json"}]
 }

@@ -7,6 +7,7 @@ import {
 } from '@sanity/base/components'
 import {NewDocumentOption} from '@sanity/base/_internal'
 import {DocumentIcon} from '@sanity/icons'
+import {CurrentUser} from '@sanity/types'
 import {Box, Tooltip, Button} from '@sanity/ui'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
@@ -48,7 +49,7 @@ const StyledButton = styled(Button)`
 
 interface CreateDocumentItemProps extends NewDocumentOption {
   granted: boolean
-  currentUser: unknown
+  currentUser: CurrentUser
   onClick: () => void
 }
 
@@ -63,8 +64,8 @@ export function CreateDocumentItem({
   currentUser,
   onClick,
 }: CreateDocumentItemProps) {
-  const params = useMemo(
-    () => granted && [{type: template.schemaType, template: template.id}, parameters],
+  const params: [Record<string, any>, Record<string, any>] | undefined = useMemo(
+    () => (granted ? [{type: template.schemaType, template: template.id}, parameters] : undefined),
     [granted, parameters, template.id, template.schemaType]
   )
 

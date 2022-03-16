@@ -1,9 +1,10 @@
 import React, {memo, useMemo} from 'react'
-import {useConfig} from '@sanity/base'
-import {Box, Dialog, Grid, Text} from '@sanity/ui'
+import {useSource} from '@sanity/base'
+import {getNewDocumentOptions, TemplatePermissionsResult} from '@sanity/base/_internal'
 import {LegacyLayerProvider} from '@sanity/base/components'
 import {useCurrentUser} from '@sanity/base/hooks'
-import {getNewDocumentOptions, TemplatePermissionsResult} from '@sanity/base/_internal'
+import {useStructureBuilder} from '@sanity/base/structure'
+import {Box, Dialog, Grid, Text} from '@sanity/ui'
 import {keyBy} from 'lodash'
 import styled from 'styled-components'
 import {CreateDocumentItem} from './CreateDocumentItem'
@@ -22,9 +23,17 @@ interface CreateDocumentDialogProps {
 
 export const CreateDocumentDialog = memo(
   ({templatePermissions, isTemplatePermissionsLoading, onClose}: CreateDocumentDialogProps) => {
-    const {schema} = useConfig()
-    const newDocumentOptions = useMemo(() => getNewDocumentOptions(schema), [schema])
+    const source = useSource()
+
+    const S = useStructureBuilder()
+
+    const newDocumentOptions = useMemo(
+      () => getNewDocumentOptions(S, source.schema, source.initialValueTemplates, undefined),
+      [source.initialValueTemplates, S, source.schema]
+    )
+
     const keyedPermissions = useMemo(() => keyBy(templatePermissions, 'id'), [templatePermissions])
+
     // note: this hook is called once in this component and passed via props for
     // performance reasons
     const {value: currentUser} = useCurrentUser()

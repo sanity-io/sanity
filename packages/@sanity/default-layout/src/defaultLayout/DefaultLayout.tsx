@@ -1,17 +1,13 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
-import React, {memo, useState, useEffect, useCallback} from 'react'
+import React, {memo, useState, useEffect, useCallback, useMemo} from 'react'
 import {RouteScope} from '@sanity/base/router'
-import absolutes from 'all:part:@sanity/base/absolutes'
-import userStore from 'part:@sanity/base/user'
+import {useSource, useDatastores} from '@sanity/base'
+import {getNewDocumentOptions} from '@sanity/base/_internal'
 import {LegacyLayerProvider} from '@sanity/base/components'
 import {
   useCurrentUser,
   unstable_useTemplatePermissions as useTemplatePermissions,
 } from '@sanity/base/hooks'
-import {getNewDocumentOptions} from '@sanity/base/_internal'
-import {useConfig, useDatastores} from '@sanity/base'
+import {useStructureBuilder} from '@sanity/base/structure'
 import Sidecar from '../addons/Sidecar'
 import {RenderTool} from '../main/RenderTool'
 import {CreateDocumentDialog} from '../createDocumentDialog'
@@ -23,9 +19,13 @@ import {RootFlex, MainAreaFlex, ToolBox, SidecarBox, PortalDiv} from './styles'
 import {LoadingScreen} from './LoadingScreen'
 
 export const DefaultLayout = memo(function DefaultLayout() {
-  const {schema} = useConfig()
-  const {grantsStore} = useDatastores()
-  const newDocumentOptions = getNewDocumentOptions(schema)
+  const source = useSource()
+  const S = useStructureBuilder()
+  const {grantsStore, userStore} = useDatastores()
+  const newDocumentOptions = useMemo(
+    () => getNewDocumentOptions(S, source.schema, source.initialValueTemplates, undefined),
+    [source.initialValueTemplates, S, source.schema]
+  )
   const router = useDefaultLayoutRouter()
   const [createMenuIsOpen, setCreateMenuIsOpen] = useState<boolean>(false)
   const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false)
@@ -39,7 +39,8 @@ export const DefaultLayout = memo(function DefaultLayout() {
   const {value: currentUser} = useCurrentUser()
   const [templatePermissions, isTemplatePermissionsLoading] = useTemplatePermissions(
     grantsStore,
-    schema,
+    source.schema,
+    source.initialValueTemplates,
     newDocumentOptions
   )
 
@@ -87,7 +88,7 @@ export const DefaultLayout = memo(function DefaultLayout() {
 
   const handleLogout = useCallback(() => {
     userStore.actions.logout()
-  }, [])
+  }, [userStore])
 
   const handleSearchOpen = useCallback((open) => {
     setSearchIsOpen(open)
@@ -164,9 +165,9 @@ export const DefaultLayout = memo(function DefaultLayout() {
           </LegacyLayerProvider>
         )}
 
-        {absolutes.map((Abs, i) => (
+        {/* {absolutes.map((Abs, i) => (
           <Abs key={String(i)} />
-        ))}
+        ))} */}
       </RootFlex>
     )
   }

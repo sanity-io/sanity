@@ -3,7 +3,7 @@
 
 import {Card, Code, Stack, Text} from '@sanity/ui'
 import {isEqual} from 'lodash'
-import React, {useCallback, useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import LoginWrapper from 'part:@sanity/base/login-wrapper?'
 import {RouterProvider} from '@sanity/base/router'
 import AppLoadingScreen from 'part:@sanity/base/app-loading-screen'
