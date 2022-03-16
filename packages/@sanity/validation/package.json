@@ -47,7 +47,7 @@
     "@sanity/schema": "2.29.3"
   },
   "peerDependencies": {
-    "@sanity/client": "^3.2.0"
+    "@sanity/client": "^3.2"
   },
   "peerDependenciesMeta": {
     "@sanity/client": {
