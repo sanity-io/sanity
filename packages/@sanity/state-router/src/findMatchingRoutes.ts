@@ -1,13 +1,24 @@
-import {Node, MatchResult} from './types'
-import {difference, intersection, pick} from 'lodash'
-import arrayify from './utils/arrayify'
+import {difference, intersection, isPlainObject, pick} from 'lodash'
+import {RouterNode, MatchResult} from './types'
+import {arrayify} from './utils/arrayify'
 
-function createMatchResult(nodes: Node[], missing: string[], remaining: string[]): MatchResult {
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return isPlainObject(value)
+}
+
+function createMatchResult(
+  nodes: RouterNode[],
+  missing: string[],
+  remaining: string[]
+): MatchResult {
   return {nodes, missing, remaining}
 }
 
-export default function findMatchingRoutes(node: Node, _state: Object | null): MatchResult {
-  if (_state === null || _state === undefined) {
+export function findMatchingRoutes(
+  node: RouterNode,
+  _state?: Record<string, unknown>
+): MatchResult {
+  if (!_state) {
     return createMatchResult([], [], [])
   }
 
@@ -17,7 +28,7 @@ export default function findMatchingRoutes(node: Node, _state: Object | null): M
     .filter((seg) => seg.type === 'param')
     .map((seg) => seg.name)
 
-  const stateKeys = state ? Object.keys(state) : []
+  const stateKeys = isRecord(state) ? Object.keys(state) : []
 
   const consumedParams = intersection(stateKeys, requiredParams)
   const missingParams = difference(requiredParams, consumedParams)
@@ -31,8 +42,11 @@ export default function findMatchingRoutes(node: Node, _state: Object | null): M
     return createMatchResult([node], [], [])
   }
 
-  const children =
-    (typeof node.children === 'function' ? node.children(state) : node.children) || []
+  const children = arrayify(
+    (typeof node.children === 'function'
+      ? node.children(isRecord(state) ? state : {})
+      : node.children) || []
+  )
 
   if (remainingParams.length > 0 && children.length === 0) {
     return createMatchResult([], remainingParams, [])

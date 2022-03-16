@@ -1,44 +1,94 @@
-export type Segment = {
+/**
+ * @public
+ */
+export interface Segment {
   name: string
   type: 'dir' | 'param'
 }
 
-export type Transform<T> = {
+/**
+ * @public
+ */
+export interface Transform<T> {
   toState: (value: string) => T
   toPath: (value: T) => string
 }
 
-export type Route = {
+/**
+ * @public
+ */
+export interface Route {
   raw: string
   segments: Segment[]
   transform?: {
-    [key: string]: Transform<any>
+    [key: string]: Transform<RouterState>
   }
 }
 
-// eslint-disable-next-line no-use-before-define
-export type RouteChildren = Node[] | ((state: Record<string, unknown>) => Node[])
+/**
+ * @public
+ */
+export type RouteChildren =
+  | RouterNode[]
+  | ((state: RouterState) => Router | RouterNode | RouterNode[] | undefined | false)
 
-export type Node = {
+/**
+ * @public
+ */
+export interface RouterNode {
   route: Route
   scope?: string
   transform?: {
-    [key: string]: Transform<any>
+    [key: string]: Transform<RouterState>
   }
   children: RouteChildren
 }
 
-export type Router = Node & {
+/**
+ * @public
+ */
+export interface Router extends RouterNode {
   _isRoute: boolean
-  encode: (state: Record<string, unknown>) => string
-  decode: (path: string) => Record<string, unknown> | null
+  encode: (state: RouterState) => string
+  decode: (path: string) => RouterState | null
   isNotFound: (path: string) => boolean
   getBasePath: () => string
   getRedirectBase: (pathname: string) => string | null
   isRoot: (path: string) => boolean
 }
-export type MatchResult = {
-  nodes: Node[]
+
+export interface MatchResult {
+  nodes: RouterNode[]
   missing: string[]
   remaining: string[]
+}
+/**
+ * @public
+ */
+export type NavigateOptions = {
+  replace?: boolean
+}
+
+/**
+ * @public
+ */
+export type IntentParameters =
+  | Record<string, unknown>
+  | [Record<string, unknown>, Record<string, unknown>]
+
+/**
+ * @public
+ */
+export type RouterState = Record<string, unknown>
+
+/**
+ * @public
+ */
+export type RouterContextValue = {
+  resolvePathFromState: (nextState: RouterState) => string
+  resolveIntentLink: (intentName: string, params?: IntentParameters) => string
+  navigateUrl: (opts: {path: string; replace?: boolean}) => void
+  navigate: (nextState: RouterState, options?: NavigateOptions) => void
+  navigateIntent: (intentName: string, params?: IntentParameters, options?: NavigateOptions) => void
+  state: RouterState
 }

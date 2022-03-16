@@ -1,12 +1,16 @@
-import {Node, MatchResult} from './types'
-import findMatchingNodes from './findMatchingNodes'
 import {flatten} from 'lodash'
+import {findMatchingRoutes} from './findMatchingRoutes'
+import {RouterNode, MatchResult} from './types'
 import {debug} from './utils/debug'
 
-export default function resolvePathFromState(node: Node, state: Record<string, unknown>): string {
+/**
+ * @public
+ */
+export function resolvePathFromState(node: RouterNode, state: Record<string, unknown>): string {
   debug('Resolving path from state %o', state)
 
-  const match: MatchResult = findMatchingNodes(node, state)
+  const match: MatchResult = findMatchingRoutes(node, state)
+
   if (match.remaining.length > 0) {
     const remaining = match.remaining
     throw new Error(
@@ -21,17 +25,23 @@ export default function resolvePathFromState(node: Node, state: Record<string, u
   }
 
   let scopedState: Record<string, unknown> = state
+
   const relative = flatten(
     match.nodes.map((matchNode) => {
       if (matchNode.scope && matchNode.scope in scopedState) {
         scopedState = scopedState[matchNode.scope] as Record<string, unknown>
       }
+
       return matchNode.route.segments.map((segment) => {
         if (segment.type === 'dir') {
           return segment.name
         }
+
         const transform = matchNode.transform && matchNode.transform[segment.name]
-        return transform ? transform.toPath(scopedState[segment.name]) : scopedState[segment.name]
+
+        return transform
+          ? transform.toPath(scopedState[segment.name] as any)
+          : scopedState[segment.name]
       })
     })
   ).join('/')

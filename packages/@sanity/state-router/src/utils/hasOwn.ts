@@ -1,2 +1,3 @@
 const _hasOWn = Object.prototype.hasOwnProperty
-export default _hasOWn.call.bind(_hasOWn)
+
+export const hasOwn = _hasOWn.call.bind(_hasOWn)

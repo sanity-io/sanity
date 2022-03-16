@@ -1,7 +1,16 @@
 import {useContext} from 'react'
-import {InternalRouter} from './components/types'
 import {RouterContext} from './RouterContext'
+import {RouterContextValue} from './types'
 
-export function useRouter(): InternalRouter {
-  return useContext(RouterContext)
+/**
+ * @public
+ */
+export function useRouter(): RouterContextValue {
+  const router = useContext(RouterContext)
+
+  if (!router) {
+    throw new Error('Router: missing context value')
+  }
+
+  return router
 }

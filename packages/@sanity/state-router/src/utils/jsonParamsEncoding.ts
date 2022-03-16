@@ -1,5 +1,6 @@
-export function decodeJsonParams(pathsegment = '') {
+export function decodeJsonParams(pathsegment = ''): Record<string, unknown> {
   const segment = decodeURIComponent(pathsegment)
+
   if (!segment) {
     return {}
   }
@@ -13,13 +14,12 @@ export function decodeJsonParams(pathsegment = '') {
   try {
     return JSON.parse(segment)
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.warn('Failed to parse JSON parameters')
   }
 
   return {}
 }
 
-export function encodeJsonParams(params) {
-  return params === null || typeof params === 'undefined' ? '' : btoa(JSON.stringify(params))
+export function encodeJsonParams(params?: Record<string, unknown>): string {
+  return params ? btoa(JSON.stringify(params)) : ''
 }

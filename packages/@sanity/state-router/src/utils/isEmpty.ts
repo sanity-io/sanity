@@ -1,10 +1,11 @@
-import hasOwn from './hasOwn'
+import {hasOwn} from './hasOwn'
 
-export default function isEmpty(object: Object): boolean {
+export function isEmpty(object: Record<string, unknown>): boolean {
   for (const key in object) {
     if (hasOwn(object, key)) {
       return false
     }
   }
+
   return true
 }

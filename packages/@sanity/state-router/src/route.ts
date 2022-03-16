@@ -1,12 +1,14 @@
+import {parseRoute} from './parseRoute'
+import {resolveStateFromPath} from './resolveStateFromPath'
+import {resolvePathFromState} from './resolvePathFromState'
 import {Transform, Router, RouteChildren} from './types'
-
-import parseRoute from './parseRoute'
-import resolveStateFromPath from './resolveStateFromPath'
-import resolvePathFromState from './resolvePathFromState'
-import {decodeParams, encodeParams} from './utils/paramsEncoding'
 import {decodeJsonParams, encodeJsonParams} from './utils/jsonParamsEncoding'
+import {decodeParams, encodeParams} from './utils/paramsEncoding'
 
-type NodeOptions = {
+/**
+ * @public
+ */
+export type NodeOptions = {
   path?: string
   children?: RouteChildren
   transform?: {
@@ -35,6 +37,7 @@ function normalizeArgs(
   if (typeof path === 'object') {
     return path
   }
+
   if (
     Array.isArray(childrenOrOpts) ||
     typeof childrenOrOpts === 'function' ||
@@ -42,21 +45,36 @@ function normalizeArgs(
   ) {
     return {path, children: normalizeChildren(childrenOrOpts)}
   }
+
   if (children) {
     return {path, ...childrenOrOpts, children: normalizeChildren(children)}
   }
+
   return {path, ...childrenOrOpts}
 }
 
-export default function route(
-  routeOrOpts: string | NodeOptions,
+/**
+ * @public
+ */
+export const route: {
+  create: (
+    routeOrOpts: NodeOptions | string,
+    childrenOrOpts?: NodeOptions | RouteChildren | null,
+    children?: Router | RouteChildren
+  ) => Router
+  intents: (base: string) => Router
+  scope: (scopeName: string, ...rest: any[]) => Router
+} = {create: createRoute, scope: routeScope, intents: routeIntents}
+
+function createRoute(
+  routeOrOpts: NodeOptions | string,
   childrenOrOpts?: NodeOptions | RouteChildren | null,
   children?: Router | RouteChildren
 ): Router {
   return createNode(normalizeArgs(routeOrOpts, childrenOrOpts, children))
 }
 
-route.scope = function scope(scopeName: string, ...rest: any[]): Router {
+function routeScope(scopeName: string, ...rest: any[]): Router {
   const options = normalizeArgs(...rest)
 
   return createNode({
@@ -65,14 +83,15 @@ route.scope = function scope(scopeName: string, ...rest: any[]): Router {
   })
 }
 
-function normalize(...paths) {
-  return paths.reduce((acc, path) => acc.concat(path.split('/')), []).filter(Boolean)
+function normalize(...paths: string[]) {
+  return paths.reduce<string[]>((acc, path) => acc.concat(path.split('/')), []).filter(Boolean)
 }
 
-route.intents = function intents(base) {
+function routeIntents(base: string): Router {
   const basePath = normalize(base).join('/')
-  return route(`${basePath}/:intent`, [
-    route(
+
+  return route.create(`${basePath}/:intent`, [
+    route.create(
       ':params',
       {
         transform: {
@@ -83,7 +102,7 @@ route.intents = function intents(base) {
         },
       },
       [
-        route(':payload', {
+        route.create(':payload', {
           transform: {
             payload: {
               toState: decodeJsonParams,
@@ -97,21 +116,26 @@ route.intents = function intents(base) {
 }
 
 const EMPTY_STATE = {}
+
 function isRoot(pathname: string): boolean {
   const parts = pathname.split('/')
+
   for (let i = 0; i < parts.length; i++) {
     if (parts[i]) {
       return false
     }
   }
+
   return true
 }
 
 function createNode(options: NodeOptions): Router {
   const {path, scope, transform, children} = options
+
   if (!path) {
     throw new TypeError('Missing path')
   }
+
   const parsedRoute = parseRoute(path)
 
   return {

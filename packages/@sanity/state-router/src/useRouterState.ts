@@ -1,35 +1,44 @@
 import {identity} from 'lodash'
-import {useContext, useEffect, useState} from 'react'
-import {RouterState} from './components/types'
-import {RouterContext} from './RouterContext'
+import {useEffect, useState} from 'react'
+import {RouterState} from './types'
+import {useRouter} from './useRouter'
 
+/**
+ * @public
+ */
 export function useRouterState<R = RouterState>(selector: (routerState: RouterState) => R): R
+/**
+ * @public
+ */
 export function useRouterState(): RouterState
+/**
+ * @public
+ */
 export function useRouterState(
   selector: (routerState: RouterState) => unknown = identity
 ): unknown {
-  const {channel, getState} = useContext(RouterContext)
-  const [selectedState, setState] = useState(() => selector(getState()))
+  const {state} = useRouter()
+  const [selectedState, setState] = useState(() => selector(state))
 
   // reset the state when the `selector` prop changes
-  useEffect(() => setState(selector(getState())), [selector, getState])
+  useEffect(() => setState(selector(state)), [selector, state])
 
   // update the state via a subscription
-  useEffect(() => {
-    // prevents "Can't perform a React state update on an unmounted component."
-    const mounted = {current: true}
+  // useEffect(() => {
+  //   // prevents "Can't perform a React state update on an unmounted component."
+  //   const mounted = {current: true}
 
-    const unsubscribe = channel.subscribe(() => {
-      if (mounted.current) {
-        setState(selector(getState()))
-      }
-    })
+  //   const unsubscribe = channel.subscribe(() => {
+  //     if (mounted.current) {
+  //       setState(selector(state))
+  //     }
+  //   })
 
-    return () => {
-      mounted.current = false
-      unsubscribe()
-    }
-  }, [channel, selector, getState])
+  //   return () => {
+  //     mounted.current = false
+  //     unsubscribe()
+  //   }
+  // }, [channel, selector, getState])
 
   return selectedState
 }

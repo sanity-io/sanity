@@ -1,7 +1,9 @@
 export function decodeParams(pathSegment: string): Record<string, string> {
   return pathSegment.split(';').reduce<Record<string, string>>((params, pair) => {
     const [key, value] = pair.split('=')
+
     params[decodeURIComponent(key)] = decodeURIComponent(value)
+
     return params
   }, {})
 }
