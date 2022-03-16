@@ -255,10 +255,17 @@ const CodeInput = React.forwardRef(
     const handleLanguageChange = useCallback(
       (event: React.ChangeEvent<HTMLSelectElement>) => {
         const val = event.currentTarget.value
+        const configured = languages.find((entry) => entry.value === val)
         const path = PATH_LANGUAGE
 
         onChange(
           PatchEvent.from([setIfMissing({_type: type.name}), val ? set(val, path) : unset(path)])
+        )
+        onChange(
+          PatchEvent.from([
+            setIfMissing({_type: type.name}),
+            configured?.mode ? set(configured?.mode, ['mode']) : unset(['mode']),
+          ])
         )
       },
       [onChange, type.name]

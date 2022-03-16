@@ -48,12 +48,14 @@ export default {
       code: 'code',
       filename: 'filename',
       highlightedLines: 'highlightedLines',
+      mode: 'mode',
     },
     prepare: (value: {
       language?: string
       code?: string
       filename?: string
       highlightedLines?: number[]
+      mode?: string
     }) => {
       return {
         title: value.filename || (value.language || 'unknown').toUpperCase(),
