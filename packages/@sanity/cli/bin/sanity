@@ -19,17 +19,26 @@ if (majorVersion < 14) {
   process.exit(1)
 }
 
-try {
-  // Default, unpackaged version for development
-  require('./entry')
-  return
-} catch (error) {
-  if (error.code !== 'MODULE_NOT_FOUND') {
-    throw error
+process.on('unhandledRejection', (error) => {
+  console.error(error)
+  process.exit(1)
+})
+
+runCli()
+
+function runCli() {
+  try {
+    // Default, unpackaged version for development
+    require('./entry')
+    return
+  } catch (error) {
+    if (error.code !== 'MODULE_NOT_FOUND') {
+      throw error
+    }
+
+    // Probably in "production", flow through to pre-packaged
   }
 
-  // Probably in "production", flow through to pre-packaged
+  // Pre-packaged
+  require('./sanity-cli')
 }
-
-// Pre-packaged
-require('./sanity-cli')
