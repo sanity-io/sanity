@@ -1,4 +1,7 @@
 /* eslint-disable no-undef */
+
+export {}
+
 // Grammar from https://github.com/sanity-io/vscode-sanity
 const rules = {
   start: [
@@ -563,7 +566,7 @@ declare let ace: any
 ace.define(
   'ace/mode/groq_highlight_rules',
   ['require', 'exports', 'module', 'ace/lib/oop', 'ace/mode/text_highlight_rules'],
-  function (acequire: (id: string) => any, exports: Record<string, unknown>, _module: any) {
+  (acequire: (id: string) => any, exports: Record<string, unknown>, _module: any) => {
     const oop = acequire('../lib/oop')
     const TextHighlightRules = acequire('./text_highlight_rules').TextHighlightRules
 
@@ -594,7 +597,7 @@ ace.define(
     'ace/mode/groq_highlight_rules',
     'ace/mode/folding/cstyle',
   ],
-  function (acequire: (id: string) => any, exports: Record<string, unknown>, _module: any) {
+  (acequire: (id: string) => any, exports: Record<string, unknown>, _module: any) => {
     // eslint-disable-next-line strict
     'use strict'
     const oop = acequire('../lib/oop')
