@@ -10,7 +10,7 @@
 // 2. mocking per test file using `jest.mock('part:@sanity/base/client', () => {})`
 
 import {NEVER} from 'rxjs'
-import type {ClientConfig} from '../packages/@sanity/client'
+import type {ClientConfig} from '@sanity/client'
 
 const mockConfig: ClientConfig = {
   useCdn: false,
@@ -22,7 +22,7 @@ const mockConfig: ClientConfig = {
 const mockClient = {
   withConfig: () => mockClient,
   constructor: () => mockClient,
-  config: (config) => (config ? mockClient : mockConfig),
+  config: (config: any) => (config ? mockClient : mockConfig),
   clone: () => mockClient,
   fetch: () => Promise.resolve(null),
   request: () => Promise.resolve(null),
