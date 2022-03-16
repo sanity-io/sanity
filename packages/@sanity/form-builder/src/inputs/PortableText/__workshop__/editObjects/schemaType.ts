@@ -1,6 +1,4 @@
-import Schema from '@sanity/schema'
-import schemaTypes from 'all:part:@sanity/base/schema-type'
-import {baseTypes} from '../_common/baseTypes'
+import {createSchema} from '@sanity/base/schema'
 
 const linkType = {
   type: 'object',
@@ -46,9 +44,9 @@ const bodyType = {
   of: [blockType, myObjectBlockType],
 }
 
-export const schema = Schema.compile({
+export const schema = createSchema({
   name: 'default',
-  types: schemaTypes.concat([bodyType]).concat(baseTypes),
+  types: [bodyType],
 })
 
 export const schemaType = schema.get('body')

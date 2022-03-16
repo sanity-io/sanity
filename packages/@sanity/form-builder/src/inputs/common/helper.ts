@@ -1,5 +1,5 @@
 /* method which returns a file size in a readable format */
-export function formatBytes(bytes, decimals = 2) {
+export function formatBytes(bytes: number, decimals = 2) {
   if (bytes === 0) return '0 Bytes'
 
   const k = 1024

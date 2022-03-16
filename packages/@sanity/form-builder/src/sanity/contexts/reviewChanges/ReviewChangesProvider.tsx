@@ -10,13 +10,7 @@ export function ReviewChangesContextProvider(props: {
   changesOpen: boolean
 }): React.ReactElement {
   const {children, changesOpen} = props
-
-  const contextValue: ReviewChangesContextValue = useMemo(
-    () => ({
-      changesOpen,
-    }),
-    [changesOpen]
-  )
+  const contextValue: ReviewChangesContextValue = useMemo(() => ({changesOpen}), [changesOpen])
 
   return (
     <ReviewChangesContext.Provider value={contextValue}>{children}</ReviewChangesContext.Provider>

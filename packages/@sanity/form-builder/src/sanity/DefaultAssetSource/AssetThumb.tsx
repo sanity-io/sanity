@@ -1,10 +1,10 @@
 import type {Subscription} from 'rxjs'
-import React, {useState, useEffect, useRef, useCallback} from 'react'
+import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react'
 import styled from 'styled-components'
 import {Button, useToast} from '@sanity/ui'
 import {Asset as AssetType} from '@sanity/types'
+import {useClient} from '@sanity/base'
 import {FullscreenSpinner} from '../../components/FullscreenSpinner'
-import {versionedClient} from '../versionedClient'
 import {Checkerboard} from '../../components/Checkerboard'
 import {AssetUsageDialog} from './AssetUsageDialog'
 import {AssetMenu} from './AssetMenu'
@@ -60,6 +60,8 @@ const MenuContainer = styled.div`
 `
 
 const AssetThumb = (props: AssetProps) => {
+  const client = useClient()
+  const versionedClient = useMemo(() => client.withConfig({apiVersion: '1'}), [client])
   const toast = useToast()
   const deleteRef$ = useRef<Subscription>()
   const {asset, onClick, onKeyPress, onDeleteFinished, isSelected} = props

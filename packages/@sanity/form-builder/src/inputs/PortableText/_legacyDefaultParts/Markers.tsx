@@ -3,8 +3,8 @@ import {Marker, isValidationMarker} from '@sanity/types'
 import {Box, Flex, Stack, Text, Theme} from '@sanity/ui'
 import {InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import styled, {css} from 'styled-components'
-import {CustomMarkers} from '../../../legacyParts'
 import {RenderCustomMarkers} from '../types'
+import {useFormBuilder} from '../../../useFormBuilder'
 
 type Props = {
   markers: Marker[]
@@ -37,6 +37,7 @@ const IconText = styled(Text)(({theme}: {theme: Theme}) => {
 
 export default function Markers(props: Props) {
   const {markers, renderCustomMarkers} = props
+  const {CustomMarkers} = useFormBuilder().components
 
   const customMarkersForBlock = useMemo(
     () => markers.filter((marker) => !isValidationMarker(marker)),

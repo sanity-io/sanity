@@ -5,9 +5,7 @@ import styled from 'styled-components'
 import {useId} from '@reach/auto-id'
 import {Box, Card, Checkbox, Flex, Switch} from '@sanity/ui'
 import {BooleanSchemaType} from '@sanity/types'
-import {FormFieldHeaderText} from '@sanity/base/components'
-import {FieldStatus} from '@sanity/base/_internal'
-import {ChangeIndicator} from '@sanity/base/change-indicators'
+import {ChangeIndicator, FormFieldHeaderText, FormFieldStatus} from '@sanity/base/components'
 import {FieldPresence} from '@sanity/base/presence'
 import PatchEvent, {set} from '../PatchEvent'
 import {Props} from './types'
@@ -68,9 +66,9 @@ const BooleanInput = React.forwardRef(function BooleanInput(
             />
           </Box>
           <CenterAlignedBox paddingX={3} paddingY={1}>
-            <FieldStatus maxAvatars={1} position="top">
+            <FormFieldStatus maxAvatars={1} position="top">
               <FieldPresence maxAvatars={1} presence={presence} />
-            </FieldStatus>
+            </FormFieldStatus>
           </CenterAlignedBox>
         </Flex>
       </Card>

@@ -22,7 +22,7 @@ export function UploadProgress({uploadState, onCancel, onStale, height}: Props) 
 
   useEffect(() => {
     if (elapsedMs(uploadState.updated) > STALE_UPLOAD_MS) {
-      onStale()
+      onStale?.()
     }
   }, [uploadState.updated, onStale])
 

@@ -1,2 +1,6 @@
-// intentionally left blank for now since this package have never had any official package exports before
-export {}
+// This exports the public api of '@sanity/form-builder'
+
+export * from '../sanity/legacyPartImplementations/form-builder'
+
+export * from '../PatchEvent'
+export {default} from '../PatchEvent'

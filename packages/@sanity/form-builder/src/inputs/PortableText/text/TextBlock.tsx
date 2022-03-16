@@ -2,8 +2,8 @@ import {PortableTextBlock, RenderAttributes} from '@sanity/portable-text-editor'
 import {isKeySegment, isValidationMarker, Marker} from '@sanity/types'
 import {Box, ResponsivePaddingProps, Tooltip} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
-import {Markers} from '../../../legacyParts'
 import PatchEvent from '../../../PatchEvent'
+import {useFormBuilder} from '../../../useFormBuilder'
 import {BlockActions} from '../BlockActions'
 import {RenderBlockActions, RenderCustomMarkers} from '../types'
 import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
@@ -49,7 +49,7 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
     renderCustomMarkers,
     spellCheck,
   } = props
-
+  const {Markers} = useFormBuilder().components
   const [reviewChangesHovered, setReviewChangesHovered] = useState<boolean>(false)
   const [hasChanges, setHasChanges] = useState<boolean>(false)
 

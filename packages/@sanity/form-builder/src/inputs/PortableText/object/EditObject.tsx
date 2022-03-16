@@ -2,9 +2,11 @@
 
 import React, {useState, useEffect, useMemo, useCallback} from 'react'
 import {isKeySegment, Path, Marker} from '@sanity/types'
+import {Patch as FormBuilderPatch} from '@sanity/base/_internal'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {
   compactPatches,
+  Patch,
   PortableTextBlock,
   PortableTextChild,
   PortableTextEditor,
@@ -16,7 +18,6 @@ import {debounce} from 'lodash'
 import {applyAll} from '../../../simplePatch'
 import {PatchEvent} from '../../../PatchEvent'
 import {ObjectEditData} from '../types'
-import {Patch} from '../../../patch/types'
 import {DefaultObjectEditing} from './renderers/DefaultObjectEditing'
 import {PopoverObjectEditing} from './renderers/PopoverObjectEditing'
 import {getModalOption} from './helpers'
@@ -104,7 +105,7 @@ export const EditObject = (props: EditObjectProps) => {
     const _patches = compactPatches(PATCHES.get(editor).slice(0, length))
     PATCHES.set(editor, PATCHES.get(editor).slice(length))
     setTimeout(() => {
-      onChange(PatchEvent.from(_patches), formBuilderPath)
+      onChange(PatchEvent.from(_patches as FormBuilderPatch[]), formBuilderPath)
     })
     cancelThrottle()
   }, [cancelThrottle, editor, formBuilderPath, onChange, timeoutInstance])

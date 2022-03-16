@@ -9,7 +9,7 @@ interface Props {
   onEdit: MouseEventHandler<HTMLButtonElement>
   showEdit: boolean
   isMenuOpen: boolean
-  onMenuOpen: (boolean) => void
+  onMenuOpen: (v: boolean) => void
 }
 
 export function ImageActionsMenu(props: Props) {

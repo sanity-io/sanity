@@ -10,10 +10,10 @@ import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {Tooltip, Flex, ResponsivePaddingProps} from '@sanity/ui'
 import React, {useCallback, useMemo, useRef, useState} from 'react'
 import {RenderBlockActions, RenderCustomMarkers} from '../types'
-import {Markers} from '../../../legacyParts'
 import PatchEvent from '../../../PatchEvent'
 import {BlockActions} from '../BlockActions'
 import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
+import {useFormBuilder} from '../../../useFormBuilder'
 import {BlockObjectPreview} from './BlockObjectPreview'
 import {
   Root,
@@ -59,6 +59,7 @@ export const BlockObject = React.forwardRef(function BlockObject(
     renderCustomMarkers,
     type,
   } = props
+  const {Markers} = useFormBuilder().components
   const elementRef = useRef<HTMLDivElement>()
   const [reviewChangesHovered, setReviewChangesHovered] = useState<boolean>(false)
   const [hasChanges, setHasChanges] = useState<boolean>(false)

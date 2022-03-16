@@ -1,15 +1,17 @@
 import {PortableTextBlock, Type as PTType} from '@sanity/portable-text-editor'
 import {Path, Schema} from '@sanity/types'
-// import {Code, Heading, Box} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
-import FormBuilderContext from '../../../../FormBuilderContext'
+import FormBuilderProvider from '../../../../FormBuilderProvider'
 import {PortableTextInput} from '../../PortableTextInput'
 import {applyAll} from '../../../../simplePatch'
 import {RenderBlockActions} from '../../types'
 import {useUnique} from '../../utils/useUnique'
 import {ReviewChangesContextProvider} from '../../../../sanity/contexts/reviewChanges/ReviewChangesProvider'
+import {useFormBuilder} from '../../../../useFormBuilder'
+import {createPatchChannel} from '../../../../patchChannel'
 import {inputResolver} from './input'
 import {resolvePreviewComponent} from './resolvePreviewComponent'
+
 interface TestInputProps {
   markers?: any[]
   readOnly?: boolean
@@ -35,6 +37,7 @@ export function TestInput(props: TestInputProps) {
     withWarning = false,
     withCustomMarkers = false,
   } = props
+  const formBuilder = useFormBuilder()
   const [value, setValue] = useState<any[]>(propsValue)
   const [focusPath, setFocusPath] = useState<Path>([])
   const blockType = useMemo(() => type.of.find((t) => t.type.name === 'block'), [type])
@@ -164,9 +167,7 @@ export function TestInput(props: TestInputProps) {
     }
   }, [blockType.name, propsMarkers, value, withCustomMarkers, withError, withWarning])
 
-  const patchChannel = useMemo(() => {
-    return {onPatch: () => () => undefined}
-  }, [])
+  const patchChannel = useMemo(() => createPatchChannel(), [])
 
   const subscribe = useCallback(() => () => undefined, [])
 
@@ -176,11 +177,11 @@ export function TestInput(props: TestInputProps) {
 
   return (
     <ReviewChangesContextProvider changesOpen={false}>
-      <FormBuilderContext
+      <FormBuilderProvider
         value={value}
-        patchChannel={patchChannel}
+        __internal_patchChannel={patchChannel}
         schema={props.schema}
-        resolveInputComponent={inputResolver}
+        resolveInputComponent={(_type) => inputResolver(formBuilder, _type)}
         resolvePreviewComponent={resolvePreviewComponent}
       >
         {/* <Box
@@ -217,7 +218,7 @@ export function TestInput(props: TestInputProps) {
           type={props.type}
           value={value}
         />
-      </FormBuilderContext>
+      </FormBuilderProvider>
     </ReviewChangesContextProvider>
   )
 }

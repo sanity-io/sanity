@@ -4,6 +4,7 @@ import React from 'react'
 import {render, fireEvent, waitFor} from '@testing-library/react'
 import Schema from '@sanity/schema'
 import {DEFAULT_PROPS, FileInputTester} from '../../../../utils/tests/FileInputTester'
+// import {DEFAULT_PROPS, FileInputTester} from '../../../../../test/FileInputTester'
 
 const schema = Schema.compile({
   name: 'test',
@@ -29,7 +30,7 @@ const schema = Schema.compile({
   ],
 })
 
-const FileInput = (changedProps) => (
+const FileInput = (changedProps: any) => (
   <FileInputTester schema={schema} {...DEFAULT_PROPS} {...changedProps} />
 )
 
@@ -37,7 +38,7 @@ describe('FileInput with empty state', () => {
   it('renders an empty input as default', () => {
     const {queryByTestId, queryByText} = render(<FileInput />)
 
-    expect(queryByTestId('file-button-input').getAttribute('value')).toBe('')
+    expect(queryByTestId('file-button-input')!.getAttribute('value')).toBe('')
     expect(queryByText('Drag or paste file here')).toBeInTheDocument()
   })
 
@@ -70,7 +71,7 @@ describe('FileInput with empty state', () => {
     expect(queryByTestId('file-input-upload-button')).toBeInTheDocument()
     expect(browseButton).toBeInTheDocument()
 
-    fireEvent.click(browseButton)
+    fireEvent.click(browseButton!)
 
     await waitFor(() => {
       expect(queryByTestId('file-input-browse-button-source1')).toBeInTheDocument()
@@ -82,7 +83,7 @@ describe('FileInput with empty state', () => {
 
   it('renders the upload button as disabled when directUploads is false', () => {
     const {queryByTestId} = render(<FileInput directUploads={false} />)
-    expect(queryByTestId('file-input-upload-button').getAttribute('data-disabled')).toBe('true')
+    expect(queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe('true')
   })
 
   it('has default text that mentions that you cannot upload files when directUploads is false', async () => {
@@ -95,20 +96,20 @@ describe('FileInput with empty state', () => {
 
   it('the upload button is disabled when the input is readOnly', () => {
     const {queryByTestId} = render(<FileInput readOnly />)
-    expect(queryByTestId('file-input-upload-button').getAttribute('data-disabled')).toBe('true')
+    expect(queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe('true')
   })
 
   it('does not allow for browsing when input is readOnly', () => {
     const {queryByTestId} = render(<FileInput readOnly />)
 
-    expect(queryByTestId('file-input-browse-button').getAttribute('data-disabled')).toBe('true')
+    expect(queryByTestId('file-input-browse-button')!.getAttribute('data-disabled')).toBe('true')
   })
 
   it('does not allow for upload when input is readOnly', async () => {
     const {queryByTestId, queryByText} = render(<FileInput readOnly />)
     const input = queryByTestId('file-button-input')
 
-    fireEvent.change(input, {
+    fireEvent.change(input!, {
       target: {
         files: [new File(['(⌐□_□)'], 'cool_sunglasses.pdf', {type: 'file/pdf'})],
       },
@@ -146,7 +147,7 @@ describe('FileInput with asset', () => {
 
   it('renders the browse button in the file menu when it has at least one element in assetSources', async () => {
     const {queryByTestId} = render(<FileInput value={value} />)
-    fireEvent.click(queryByTestId('options-menu-button'))
+    fireEvent.click(queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
       expect(queryByTestId('file-input-browse-button')).toBeInTheDocument()
@@ -155,7 +156,7 @@ describe('FileInput with asset', () => {
 
   it('renders the browse button in the file menu when it has no assetSources', async () => {
     const {queryByTestId} = render(<FileInput value={value} assetSources={[]} />)
-    fireEvent.click(queryByTestId('options-menu-button'))
+    fireEvent.click(queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
       expect(queryByTestId('file-input-upload-button')).toBeInTheDocument()
@@ -167,7 +168,7 @@ describe('FileInput with asset', () => {
     const {queryByTestId} = render(
       <FileInput value={value} assetSources={[{name: 'source1'}, {name: 'source2'}]} />
     )
-    fireEvent.click(queryByTestId('options-menu-button'))
+    fireEvent.click(queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
       expect(queryByTestId('file-input-browse-button-source1')).toBeInTheDocument()
@@ -180,10 +181,10 @@ describe('FileInput with asset', () => {
   it('renders the upload button as disabled when directUploads is false', async () => {
     const {queryByTestId} = render(<FileInput value={value} directUploads={false} />)
 
-    fireEvent.click(queryByTestId('options-menu-button'))
+    fireEvent.click(queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
-      expect(queryByTestId('file-input-upload-button').getAttribute('data-disabled')).toBe('')
+      expect(queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe('')
     })
   })
 
@@ -192,19 +193,19 @@ describe('FileInput with asset', () => {
   it('the upload button in the dropdown menu is disabled when the input is readOnly', async () => {
     const {queryByTestId} = render(<FileInput value={value} readOnly />)
 
-    fireEvent.click(queryByTestId('options-menu-button'))
+    fireEvent.click(queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
-      expect(queryByTestId('file-input-upload-button').getAttribute('data-disabled')).toBe('')
+      expect(queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe('')
     })
   })
 
   it('does not allow for browsing when input is readOnly', async () => {
     const {queryByTestId} = render(<FileInput value={value} readOnly />)
-    fireEvent.click(queryByTestId('options-menu-button'))
+    fireEvent.click(queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
-      expect(queryByTestId('file-input-browse-button').hasAttribute('data-disabled'))
+      expect(queryByTestId('file-input-browse-button')!.hasAttribute('data-disabled'))
     })
   })
 
@@ -212,20 +213,20 @@ describe('FileInput with asset', () => {
     const {queryByTestId} = render(
       <FileInput value={value} assetSources={[{name: 'source1'}, {name: 'source2'}]} readOnly />
     )
-    fireEvent.click(queryByTestId('options-menu-button'))
+    fireEvent.click(queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
-      expect(queryByTestId('file-input-browse-button-source1').hasAttribute('data-disabled'))
-      expect(queryByTestId('file-input-browse-button-source2').hasAttribute('data-disabled'))
+      expect(queryByTestId('file-input-browse-button-source1')!.hasAttribute('data-disabled'))
+      expect(queryByTestId('file-input-browse-button-source2')!.hasAttribute('data-disabled'))
     })
   })
 
   it('does not allow for clearing the input it is readOnly', async () => {
     const {queryByTestId} = render(<FileInput value={value} readOnly />)
-    fireEvent.click(queryByTestId('options-menu-button'))
+    fireEvent.click(queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
-      expect(queryByTestId('file-input-clear').hasAttribute('data-disabled'))
+      expect(queryByTestId('file-input-clear')!.hasAttribute('data-disabled'))
     })
   })
 
@@ -255,9 +256,9 @@ describe('FileInput with asset', () => {
       <FileInput value={value} type={fileType} readOnly />
     )
 
-    fireEvent.click(queryByTestId('options-menu-button'))
+    fireEvent.click(queryByTestId('options-menu-button')!)
 
-    fireEvent.change(queryByTestId('file-button-input'), {
+    fireEvent.change(queryByTestId('file-button-input')!, {
       target: {
         files: [new File(['(⌐□_□)'], 'cool_sunglasses.pdf', {type: 'file/pdf'})],
       },

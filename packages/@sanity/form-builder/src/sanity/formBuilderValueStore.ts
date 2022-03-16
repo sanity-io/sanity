@@ -1,13 +1,12 @@
+import {DocumentStore} from '@sanity/base'
+import {Patch, fromMutationPatches, toMutationPatches} from '@sanity/base/_internal'
 import {map, scan} from 'rxjs/operators'
-import type {Patch} from '../patch/types'
-import {documentStore} from '../legacyParts'
-import * as gradientPatchAdapter from './utils/gradientPatchAdapter'
 
 function prepareMutationEvent(event) {
   const patches = event.mutations.map((mut) => mut.patch).filter(Boolean)
   return {
     ...event,
-    patches: gradientPatchAdapter.toFormBuilder(event.origin, patches),
+    patches: fromMutationPatches(event.origin, patches),
   }
 }
 
@@ -24,7 +23,7 @@ function prepareRebaseEvent(event) {
     mutations: patches.map((patch) => ({
       patch,
     })),
-    patches: gradientPatchAdapter.toFormBuilder('internal', patches),
+    patches: fromMutationPatches('internal', patches),
   }
 }
 
@@ -58,13 +57,13 @@ function wrap(document) {
     ...document,
     events: events$,
     patch(patches: Array<Patch>) {
-      document.patch(gradientPatchAdapter.toGradient(patches))
+      document.patch(toMutationPatches(patches))
     },
   }
 }
 
 let hasWarned = false
-export function checkoutPair(idPair) {
+export function checkoutPair(documentStore: DocumentStore, idPair) {
   if (!hasWarned) {
     // eslint-disable-next-line no-console
     console.warn(

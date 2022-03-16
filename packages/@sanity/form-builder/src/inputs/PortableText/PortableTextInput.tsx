@@ -1,3 +1,4 @@
+import type {Patch as FormBuilderPatch} from '@sanity/base/_internal'
 import {FormField} from '@sanity/base/components'
 import React, {useEffect, useState, useMemo, useCallback, useRef} from 'react'
 import {Marker, Path} from '@sanity/types'
@@ -19,14 +20,13 @@ import scrollIntoView from 'scroll-into-view-if-needed'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import PatchEvent from '../../PatchEvent'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
-import {Patch} from '../../patch/types'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
 import {Compositor} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {VisibleOnFocusButton} from './VisibleOnFocusButton'
 
 // An outer React PureComponent Class purely to satisfy the form-builder's need for 'blur' and 'focus' class methods.
-export const PortableTextInput = (withPatchSubscriber(
+export const PortableTextInput = withPatchSubscriber(
   class PortableTextInput extends React.PureComponent<
     PortableTextInputProps & {children: React.ReactNode}
   > {
@@ -57,9 +57,9 @@ export const PortableTextInput = (withPatchSubscriber(
       )
     }
   }
-) as React.ComponentType) as React.ComponentType<PortableTextInputProps>
+) as React.ComponentType as React.ComponentType<PortableTextInputProps>
 
-export type PatchWithOrigin = Patch & {
+export type PatchWithOrigin = FormBuilderPatch & {
   origin: 'local' | 'remote' | 'internal'
   timestamp: Date
 }
@@ -162,7 +162,7 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
       switch (change.type) {
         case 'mutation':
           setTimeout(() => {
-            onChange(PatchEvent.from(change.patches))
+            onChange(PatchEvent.from(change.patches as FormBuilderPatch[]))
           })
           break
         case 'selection':
@@ -181,7 +181,7 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
         case 'undo':
         case 'redo':
           setTimeout(() => {
-            onChange(PatchEvent.from(change.patches))
+            onChange(PatchEvent.from(change.patches as FormBuilderPatch[]))
           })
           break
         case 'invalidValue':

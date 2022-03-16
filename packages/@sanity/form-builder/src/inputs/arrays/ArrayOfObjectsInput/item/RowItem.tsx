@@ -115,7 +115,9 @@ export const RowItem = React.forwardRef(function RegularItem(
             __unstable_focusRing
           >
             <Preview
-              layout={type.options?.layout === 'grid' ? 'media' : 'default'}
+              layout={
+                'layout' in type.options && type.options?.layout === 'grid' ? 'media' : 'default'
+              }
               value={value}
               type={type}
             />

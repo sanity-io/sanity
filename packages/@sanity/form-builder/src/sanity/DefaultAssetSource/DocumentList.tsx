@@ -1,9 +1,9 @@
 import React, {useCallback} from 'react'
 import {Card, Text, Flex} from '@sanity/ui'
 import {Asset as AssetType, SanityDocument} from '@sanity/types'
-import Preview from 'part:@sanity/base/preview'
+import {SanityPreview} from '@sanity/base/preview'
 import {IntentLink} from '@sanity/base/components'
-import {schema} from '../../legacyParts'
+import {useSource} from '@sanity/base'
 
 export const DocumentList = ({
   asset,
@@ -45,6 +45,8 @@ export const DocumentList = ({
 }
 
 const DocumentLink = ({document}: {document: SanityDocument}) => {
+  const source = useSource()
+
   const LinkComponent = useCallback(
     (linkProps: Omit<React.HTMLProps<HTMLAnchorElement>, 'ref'>) => (
       <IntentLink {...linkProps} params={{id: document._id, type: document._type}} intent="edit" />
@@ -63,7 +65,11 @@ const DocumentLink = ({document}: {document: SanityDocument}) => {
       tabIndex={0}
     >
       <Flex align="center" gap={2}>
-        <Preview layout="default" value={document} type={schema.get(document._type)} />
+        <SanityPreview
+          layout="default"
+          value={{_type: 'reference', _ref: document._id}}
+          type={source.schema.get(document._type)}
+        />
       </Flex>
     </Card>
   )

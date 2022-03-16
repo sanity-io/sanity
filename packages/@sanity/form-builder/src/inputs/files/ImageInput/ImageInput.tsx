@@ -28,7 +28,6 @@ import {UploadProgress} from '../common/UploadProgress'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import {handleSelectAssetFromSource} from '../common/assetSource'
 import {ActionsMenu} from '../common/ActionsMenu'
-import resolveUploader from '../../../sanity/uploads/resolveUploader'
 import {UploadWarning} from '../common/UploadWarning'
 import {ImagePreview} from './ImagePreview'
 import {ImageInputField} from './ImageInputField'
@@ -44,6 +43,7 @@ export type Props = {
   type: ImageSchemaType
   level: number
   onChange: (event: PatchEvent) => void
+  resolveUploader: UploaderResolver
   observeAsset: (documentId: string) => Observable<ImageAsset>
   onBlur: () => void
   onFocus: (path: Path) => void
@@ -145,13 +145,13 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   getUploadOptions = (file: File): ResolvedUploader[] => {
-    const {type} = this.props
+    const {type, resolveUploader} = this.props
     const uploader = resolveUploader && resolveUploader(type, file)
     return uploader ? [{type: type, uploader}] : []
   }
 
   uploadFirstAccepted(files: File[]) {
-    const {type} = this.props
+    const {type, resolveUploader} = this.props
 
     const match = files
       .map((file) => ({file, uploader: resolveUploader(type, file)}))
@@ -301,8 +301,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     this.props.onFocus([])
   }
 
-  handleSelectAssetFromSource = (assetFromSource: AssetFromSource) => {
-    const {onChange, type} = this.props
+  handleSelectAssetFromSource = (assetFromSource: AssetFromSource[]) => {
+    const {onChange, type, resolveUploader} = this.props
     handleSelectAssetFromSource({
       assetFromSource,
       onChange,
@@ -423,7 +423,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderPreview = () => {
-    const {value, readOnly, type, directUploads, imageUrlBuilder} = this.props
+    const {value, readOnly, type, directUploads, imageUrlBuilder, resolveUploader} = this.props
 
     if (!value) {
       return null
@@ -616,7 +616,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderUploadPlaceholder() {
-    const {readOnly, type, directUploads} = this.props
+    const {readOnly, type, directUploads, resolveUploader} = this.props
     const {hoveringFiles} = this.state
 
     const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
@@ -757,6 +757,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       presence,
       focusPath = EMPTY_ARRAY,
       directUploads,
+      resolveUploader,
     } = this.props
     const {hoveringFiles, selectedAssetSource, isStale} = this.state
 

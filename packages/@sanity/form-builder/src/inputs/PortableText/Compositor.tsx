@@ -102,11 +102,8 @@ export function Compositor(props: InputProps) {
   })
 
   // Various focus handling hooks
-  const {
-    onEditObjectFormBuilderFocus,
-    onEditObjectFormBuilderBlur,
-    onEditObjectClose,
-  } = useObjectEditFormBuilderFocus(onFocus)
+  const {onEditObjectFormBuilderFocus, onEditObjectFormBuilderBlur, onEditObjectClose} =
+    useObjectEditFormBuilderFocus(onFocus)
 
   const {onObjectEditFormBuilderChange} = useObjectEditFormBuilderChange(onChange, patches$)
 

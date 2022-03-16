@@ -1,6 +1,4 @@
-import Schema from '@sanity/schema'
-import schemaTypes from 'all:part:@sanity/base/schema-type'
-import {baseTypes} from '../_common/baseTypes'
+import {createSchema} from '@sanity/base/schema'
 
 const ptType = {
   type: 'array',
@@ -8,9 +6,9 @@ const ptType = {
   of: [{type: 'block'}],
 }
 
-export const schema = Schema.compile({
+export const schema = createSchema({
   name: 'default',
-  types: schemaTypes.concat([ptType]).concat(baseTypes),
+  types: [ptType],
 })
 
 export const portableTextType = schema.get('body')

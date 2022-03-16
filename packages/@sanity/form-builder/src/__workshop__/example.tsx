@@ -2,15 +2,13 @@ import {Card, Grid, Stack, useToast} from '@sanity/ui'
 import {useBoolean, useProps, useSelect} from '@sanity/ui-workshop'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {Patcher} from '@sanity/mutator'
-import type {SchemaType, ObjectField} from '@sanity/types'
+import type {ObjectField, ObjectSchemaTypeWithOptions} from '@sanity/types'
+import {toMutationPatches} from '@sanity/base/_internal'
 import {PresenceOverlay} from '@sanity/base/presence'
-import {
-  FormBuilder,
-  FormBuilderInput,
-  PatchEvent,
-} from '../sanity/legacyPartImplementations/form-builder'
+import {FormBuilderInput} from '../sanity/legacyPartImplementations/form-builder'
 import {applyAll} from '../patch/applyPatch'
-import {toGradient} from '../sanity/utils/gradientPatchAdapter'
+import {createPatchChannel} from '../patchChannel'
+import PatchEvent from '../PatchEvent'
 import {
   getDummySchema,
   getDummyDocument,
@@ -19,7 +17,7 @@ import {
 } from './_common/data'
 import {TypeTester, FilterFieldInput, FormDebugger, FormBuilderTester} from './_common'
 
-const patchChannel = FormBuilder.createPatchChannel()
+const patchChannel = createPatchChannel()
 
 export default function ExampleStory() {
   const {setPropValue} = useProps()
@@ -61,7 +59,7 @@ export default function ExampleStory() {
   }, [])
   const handleChangeMutator = useCallback((patchEvent: PatchEvent) => {
     const patcher = new Patcher(
-      toGradient(patchEvent.patches).map((patch) => ({...patch, id: DUMMY_DOCUMENT_ID}))
+      toMutationPatches(patchEvent.patches).map((patch) => ({...patch, id: DUMMY_DOCUMENT_ID}))
     )
     setDocumentValue((currentDocumentValue) => patcher.apply(currentDocumentValue))
   }, [])
@@ -106,7 +104,7 @@ export default function ExampleStory() {
   }, [fieldFilterValue])
 
   const fieldFilter = useCallback(
-    (type: SchemaType, field: ObjectField) => {
+    (type: ObjectSchemaTypeWithOptions, field: ObjectField) => {
       return memoizedFieldFilter(type, field)
     },
     [memoizedFieldFilter]

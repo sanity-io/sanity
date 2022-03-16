@@ -1,14 +1,15 @@
 import {mergeMap, map, catchError} from 'rxjs/operators'
 import {Observable, of as observableOf} from 'rxjs'
-import {Asset, FileAsset, ImageAsset} from '@sanity/types'
+import {FileAsset, ImageAsset} from '@sanity/types'
+import {DocumentPreviewStore} from '@sanity/base/preview'
+import {SanityClient} from '@sanity/client'
 import {withMaxConcurrency} from '../../utils/withMaxConcurrency'
 import {UploadOptions} from '../../uploads/types'
-import {observePaths} from '../../../legacyParts'
-import {versionedClient} from '../../versionedClient'
 
 const MAX_CONCURRENT_UPLOADS = 4
 
 function uploadSanityAsset(
+  client: SanityClient,
   assetType: 'file' | 'image',
   file: File | Blob,
   options: UploadOptions = {}
@@ -23,7 +24,7 @@ function uploadSanityAsset(
     ),
     mergeMap((hash) =>
       // note: the sanity api will still dedupe unique files, but this saves us from uploading the asset file entirely
-      hash ? fetchExisting(`sanity.${assetType}Asset`, hash) : observableOf(null)
+      hash ? fetchExisting(client, `sanity.${assetType}Asset`, hash) : observableOf(null)
     ),
     mergeMap((existing: FileAsset | ImageAsset | null) => {
       if (existing) {
@@ -34,7 +35,7 @@ function uploadSanityAsset(
           asset: existing,
         })
       }
-      return versionedClient.observable.assets
+      return client.observable.assets
         .upload(assetType, file, {
           tag: 'asset.upload',
           extract,
@@ -70,8 +71,8 @@ export const uploadFileAsset = (file: File | Blob, options: UploadOptions) =>
   uploadAsset('file', file, options)
 
 // note: there's currently 100% overlap between the ImageAsset document and the FileAsset documents as per interface required by the image and file input
-function observeAssetDoc(id: string) {
-  return observePaths(id, [
+function observeAssetDoc(documentPreviewStore: DocumentPreviewStore, id: string) {
+  return documentPreviewStore.observePaths(id, [
     'originalFilename',
     'url',
     'metadata',
@@ -84,16 +85,20 @@ function observeAssetDoc(id: string) {
   ])
 }
 
-export function observeImageAsset(id: string) {
-  return observeAssetDoc(id) as Observable<ImageAsset>
+export function observeImageAsset(documentPreviewStore: DocumentPreviewStore, id: string) {
+  return observeAssetDoc(documentPreviewStore, id) as Observable<ImageAsset>
 }
 
-export function observeFileAsset(id: string) {
-  return observeAssetDoc(id) as Observable<FileAsset>
+export function observeFileAsset(documentPreviewStore: DocumentPreviewStore, id: string) {
+  return observeAssetDoc(documentPreviewStore, id) as Observable<FileAsset>
 }
 
-function fetchExisting(type: string, hash: string): Observable<ImageAsset | FileAsset | null> {
-  return versionedClient.observable.fetch(
+function fetchExisting(
+  client: SanityClient,
+  type: string,
+  hash: string
+): Observable<ImageAsset | FileAsset | null> {
+  return client.observable.fetch(
     '*[_type == $documentType && sha1hash == $hash][0]',
     {documentType: type, hash},
     {tag: 'asset.find-duplicate'}

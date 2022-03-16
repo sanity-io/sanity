@@ -2,12 +2,12 @@ import {Path, PathSegment} from '@sanity/types'
 import {
   SetIfMissingPatch,
   InsertPatch,
-  InsertPosition,
+  InsertPatchPosition,
   SetPatch,
   UnsetPatch,
   IncPatch,
   DecPatch,
-} from './types'
+} from '@sanity/base/_internal'
 
 export function setIfMissing(value: any, path: Path = []): SetIfMissingPatch {
   return {
@@ -17,7 +17,7 @@ export function setIfMissing(value: any, path: Path = []): SetIfMissingPatch {
   }
 }
 
-export function insert(items: any[], position: InsertPosition, path: Path = []): InsertPatch {
+export function insert(items: any[], position: InsertPatchPosition, path: Path = []): InsertPatch {
   return {
     type: 'insert',
     path,

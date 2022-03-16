@@ -1,14 +1,14 @@
 import {AssetFromSource, FileSchemaType} from '@sanity/types'
+import {get} from 'lodash'
 import PatchEvent, {set, setIfMissing, unset} from '../../../PatchEvent'
 import {Uploader, UploaderResolver, UploadOptions} from '../../../sanity/uploads/types'
 import {base64ToFile, urlToFile} from '../ImageInput/utils/image'
-import {get} from 'lodash'
 
 // We alias DOM File type here to distinguish it from the type of the File value
 type DOMFile = globalThis.File
 
 interface Props {
-  assetFromSource: AssetFromSource
+  assetFromSource: AssetFromSource[]
   onChange: (event: PatchEvent) => void
   type: FileSchemaType
   resolveUploader: UploaderResolver
@@ -58,9 +58,9 @@ export function handleSelectAssetFromSource({
       )
       break
     case 'file': {
-      const uploader = resolveUploader(type, firstAsset.value)
+      const uploader = resolveUploader(type, firstAsset.value as any)
       if (uploader) {
-        uploadWith(uploader, firstAsset.value, {
+        uploadWith(uploader, firstAsset.value as any, {
           label,
           title,
           description,
@@ -71,7 +71,7 @@ export function handleSelectAssetFromSource({
       break
     }
     case 'base64':
-      base64ToFile(firstAsset.value, originalFilename).then((file) => {
+      base64ToFile(firstAsset.value as any, originalFilename).then((file) => {
         const uploader = resolveUploader(type, file)
         if (uploader) {
           uploadWith(uploader, file, {label, title, description, creditLine, source})
@@ -79,7 +79,7 @@ export function handleSelectAssetFromSource({
       })
       break
     case 'url':
-      urlToFile(firstAsset.value, originalFilename).then((file) => {
+      urlToFile(firstAsset.value as any, originalFilename).then((file) => {
         const uploader = resolveUploader(type, file)
         if (uploader) {
           uploadWith(uploader, file, {label, title, description, creditLine, source})

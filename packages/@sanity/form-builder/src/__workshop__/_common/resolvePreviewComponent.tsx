@@ -1,5 +1,5 @@
 import {Button, Card, Code, ErrorBoundary, Stack} from '@sanity/ui'
-import SanityPreview, {SanityDefaultPreview} from 'part:@sanity/base/preview'
+import {SanityPreview} from '@sanity/base/preview'
 import React, {useCallback, useState} from 'react'
 
 export const resolvePreviewComponent = () => TestPreview

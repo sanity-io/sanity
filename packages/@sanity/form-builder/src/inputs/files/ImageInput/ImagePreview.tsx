@@ -1,7 +1,7 @@
 import React, {ComponentProps, useCallback, useEffect, useState} from 'react'
 
 import {AccessDeniedIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
-import {Card, Box, Heading, Text, useElementRect} from '@sanity/ui'
+import {Box, Card, CardTone, Heading, Text, useElementRect} from '@sanity/ui'
 import {
   MAX_DEFAULT_HEIGHT,
   RatioBox,
@@ -100,7 +100,7 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
   )
 }
 
-function HoverIcon({isRejected, readOnly}) {
+function HoverIcon({isRejected, readOnly}: {isRejected: boolean; readOnly?: boolean}) {
   if (isRejected) {
     return <AccessDeniedIcon />
   }
@@ -110,7 +110,7 @@ function HoverIcon({isRejected, readOnly}) {
   return <ImageIcon />
 }
 
-function HoverText({isRejected, readOnly}) {
+function HoverText({isRejected, readOnly}: {isRejected: boolean; readOnly?: boolean}) {
   let message = 'Drop image to upload'
   if (isRejected) {
     message = 'Cannot upload this file here'
@@ -122,7 +122,15 @@ function HoverText({isRejected, readOnly}) {
   return <Text size={1}>{message}</Text>
 }
 
-function OverlayComponent({cardTone, drag, content}) {
+function OverlayComponent({
+  cardTone,
+  drag,
+  content,
+}: {
+  cardTone: Exclude<CardTone, 'inherit'>
+  drag: boolean
+  content: React.ReactNode
+}) {
   return (
     <Overlay justify="flex-end" padding={3} tone={cardTone} drag={drag}>
       <FlexOverlay direction="column" align="center" justify="center">

@@ -5,7 +5,7 @@
 
 import React from 'react'
 import {Path} from '@sanity/types'
-import {toFormBuilder, toGradient} from '../utils/convertPath'
+import {decodePath, encodePath} from '@sanity/base/_internal'
 
 type ChildArgs = {
   onFocus: (path: Path) => void
@@ -15,8 +15,8 @@ type ChildArgs = {
 
 type Props = {
   focusPath: any | null
-  onFocus: () => {}
-  onBlur: () => {}
+  onFocus: () => void
+  onBlur: () => void
   children: (arg0: ChildArgs) => any
 }
 
@@ -30,7 +30,7 @@ function getHash() {
 
 function getPathFromHash() {
   const hash = getHash()
-  return hash ? toFormBuilder(hash) : []
+  return hash ? decodePath(hash) : []
 }
 
 export default class HashFocusManager extends React.Component<Props, State> {
@@ -51,7 +51,7 @@ export default class HashFocusManager extends React.Component<Props, State> {
   }
 
   handleFocus = (focusPath: Path) => {
-    document.location.hash = toGradient(focusPath)
+    document.location.hash = encodePath(focusPath)
   }
 
   handleBlur = () => {

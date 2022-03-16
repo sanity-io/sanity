@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+
 import {Patch as EditorPatch} from '@sanity/portable-text-editor'
 import {Path} from '@sanity/types'
 import {useCallback, useMemo} from 'react'

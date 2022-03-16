@@ -1,7 +1,7 @@
 import React from 'react'
 import {Box, Dialog, Layer} from '@sanity/ui'
+import {PopoverDialog} from '@sanity/base/components'
 import {PresenceOverlay} from '@sanity/base/presence'
-import {PopoverDialog} from './transitional/PopoverDialog'
 
 const PRESENCE_MARGINS: [number, number, number, number] = [0, 0, 1, 0]
 
@@ -47,7 +47,9 @@ export function EditPortal(props: Props) {
         placement="auto"
         title={header}
       >
-        <PresenceOverlay margins={PRESENCE_MARGINS}>{children}</PresenceOverlay>
+        <PresenceOverlay margins={PRESENCE_MARGINS}>
+          <Box padding={4}>{children}</Box>
+        </PresenceOverlay>
       </PopoverDialog>
     )
   }

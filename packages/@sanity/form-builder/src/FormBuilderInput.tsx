@@ -1,13 +1,6 @@
-import React, {useMemo} from 'react'
+import React, {forwardRef, useCallback, useMemo} from 'react'
 import shallowEquals from 'shallow-equals'
-import {
-  ConditionalProperty,
-  Marker,
-  ObjectField,
-  ObjectSchemaTypeWithOptions,
-  Path,
-  SchemaType,
-} from '@sanity/types'
+import {ConditionalProperty, Marker, Path, SchemaType} from '@sanity/types'
 import {ChangeIndicatorProvider} from '@sanity/base/components'
 import * as PathUtils from '@sanity/util/paths'
 import {generateHelpUrl} from '@sanity/generate-help-url'
@@ -17,6 +10,9 @@ import PatchEvent from './PatchEvent'
 import {emptyArray} from './utils/empty'
 import {Props as InputProps} from './inputs/types'
 import {ConditionalReadOnlyField} from './inputs/common'
+import {useFormBuilder} from './useFormBuilder'
+import {FormBuilderFilterFieldFn} from './types'
+import {FormBuilderContextValue} from './FormBuilderContext'
 
 const EMPTY_MARKERS: Marker[] = emptyArray()
 const EMPTY_PATH: Path = emptyArray()
@@ -33,41 +29,46 @@ interface FormBuilderInputProps {
   parent?: Record<string, unknown> | undefined
   presence?: FormFieldPresence[]
   focusPath: Path
-  markers: Marker[]
+  markers?: Marker[]
   compareValue?: unknown
   inputComponent?: React.ComponentType<InputProps>
   level: number
   isRoot?: boolean
   path: Path
-  filterField?: (type: ObjectSchemaTypeWithOptions, field: ObjectField) => boolean
+  filterField?: FormBuilderFilterFieldFn
   onKeyUp?: (ev: React.KeyboardEvent) => void
   onKeyPress?: (ev: React.KeyboardEvent) => void
 }
-
-interface Context {
-  presence?: FormFieldPresence[]
-  formBuilder: any
-  getValuePath: any
-}
-
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-const ENABLE_CONTEXT = () => undefined
 
 function getDisplayName(component: React.ComponentType) {
   return component.displayName || component.name || 'Unknown'
 }
 
-export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
-  static contextTypes = {
-    presence: ENABLE_CONTEXT,
-    formBuilder: ENABLE_CONTEXT,
-    getValuePath: ENABLE_CONTEXT,
-  }
+export const FormBuilderInput = forwardRef(function FormBuilderInput(props: FormBuilderInputProps) {
+  const {getValuePath, resolveInputComponent} = useFormBuilder()
 
-  static childContextTypes = {
-    getValuePath: ENABLE_CONTEXT,
-  }
+  const scopedResolveInputComponent = useCallback(
+    (type: SchemaType) => {
+      return resolveInputComponent(type)
+    },
+    [resolveInputComponent]
+  )
 
+  return (
+    <FormBuilderInputInstance
+      {...props}
+      getValuePath={getValuePath}
+      resolveInputComponent={scopedResolveInputComponent}
+    />
+  )
+})
+
+export class FormBuilderInputInstance extends React.Component<
+  FormBuilderInputProps & {
+    getValuePath: () => Path
+    resolveInputComponent: (type: SchemaType) => React.ComponentType<any> | null | undefined
+  }
+> {
   static defaultProps = {
     focusPath: EMPTY_PATH,
     path: EMPTY_PATH,
@@ -75,17 +76,11 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
   }
 
   _element: HTMLDivElement | null
-  _input: FormBuilderInput | HTMLDivElement | null
+  _input: FormBuilderInputInstance | HTMLDivElement | null
   scrollTimeout: number
 
   getValuePath = () => {
-    return this.context.getValuePath().concat(this.props.path)
-  }
-
-  getChildContext() {
-    return {
-      getValuePath: this.getValuePath,
-    }
+    return this.props.getValuePath().concat(this.props.path)
   }
 
   componentDidMount() {
@@ -123,10 +118,10 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
 
   resolveInputComponent(type: SchemaType) {
     const {inputComponent} = this.props
-    return inputComponent ?? this.context.formBuilder.resolveInputComponent(type)
+    return inputComponent ?? this.props.resolveInputComponent(type)
   }
 
-  setInput = (component: FormBuilderInput | HTMLDivElement | null) => {
+  setInput = (component: FormBuilderInputInstance | HTMLDivElement | null) => {
     this._input = component
   }
 
@@ -239,7 +234,6 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
           <FormBuilderInputInner
             {...restProps}
             childFocusPath={this.getChildFocusPath()}
-            context={this.context}
             component={InputComponent}
             onBlur={this.handleBlur}
             onChange={this.handleChange}
@@ -255,7 +249,6 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
         {...restProps}
         readOnly={readOnly}
         childFocusPath={this.getChildFocusPath()}
-        context={this.context}
         component={InputComponent}
         onBlur={this.handleBlur}
         onChange={this.handleChange}
@@ -269,8 +262,7 @@ export class FormBuilderInput extends React.Component<FormBuilderInputProps> {
 interface FormBuilderInputInnerProps extends FormBuilderInputProps {
   childFocusPath: Path
   component: React.ComponentType<InputProps>
-  context: Context
-  setInput: (component: FormBuilderInput | HTMLDivElement | null) => void
+  setInput: (component: FormBuilderInputInstance | HTMLDivElement | null) => void
   readOnly?: boolean
 }
 
@@ -279,7 +271,6 @@ function FormBuilderInputInner(props: FormBuilderInputInnerProps) {
     childFocusPath,
     compareValue,
     component: InputComponent,
-    context,
     focusPath,
     markers,
     isRoot,
@@ -297,7 +288,8 @@ function FormBuilderInputInner(props: FormBuilderInputInnerProps) {
   } = props
   const conditionalReadOnly = useConditionalReadOnly() ?? readOnly
 
-  const presence = presenceProp || context.presence
+  // @todo: find out if `presence` somehow used to be passed through context, and improve this:
+  const presence = presenceProp // || context.presence
 
   const childPresenceInfo = useMemo(() => {
     if (!presence || presence.length === 0) {

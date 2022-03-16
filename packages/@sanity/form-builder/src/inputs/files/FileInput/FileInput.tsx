@@ -28,7 +28,6 @@ import {FileTarget, FileInfo} from '../common/styles'
 import {InternalAssetSource, UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
 import {handleSelectAssetFromSource} from '../common/assetSource'
-import resolveUploader from '../../../sanity/uploads/resolveUploader'
 import {ActionsMenu} from '../common/ActionsMenu'
 import {PlaceholderText} from '../common/PlaceholderText'
 import UploadPlaceholder from '../common/UploadPlaceholder'
@@ -57,6 +56,7 @@ export type Props = {
   type: FileSchemaType
   level: number
   onChange: (event: PatchEvent) => void
+  resolveUploader: UploaderResolver
   observeAsset: (documentId: string) => Observable<FileAsset>
   onBlur: () => void
   onFocus: (path: Path) => void
@@ -177,7 +177,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     const {type} = this.props
 
     const match = files
-      .map((file) => ({file, uploader: resolveUploader(type, file)}))
+      .map((file) => ({file, uploader: this.props.resolveUploader(type, file)}))
       .find((result) => result.uploader)
 
     if (match) {
@@ -362,8 +362,8 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     return fields.map((field) => this.renderField(field))
   }
 
-  handleSelectAssetFromSource = (assetFromSource: AssetFromSource) => {
-    const {onChange, type} = this.props
+  handleSelectAssetFromSource = (assetFromSource: AssetFromSource[]) => {
+    const {onChange, type, resolveUploader} = this.props
     handleSelectAssetFromSource({
       assetFromSource,
       onChange,
@@ -503,7 +503,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   renderAssetMenu(tone) {
-    const {type, readOnly, directUploads} = this.props
+    const {type, readOnly, directUploads, resolveUploader} = this.props
     const {hoveringFiles} = this.state
 
     const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
@@ -583,7 +583,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   renderUploadPlaceholder() {
-    const {readOnly, type, directUploads} = this.props
+    const {readOnly, type, directUploads, resolveUploader} = this.props
     const {hoveringFiles} = this.state
 
     const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
@@ -647,6 +647,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       markers,
       readOnly,
       presence,
+      resolveUploader,
       focusPath = EMPTY_ARRAY,
     } = this.props
     const {hoveringFiles, selectedAssetSource, isStale} = this.state

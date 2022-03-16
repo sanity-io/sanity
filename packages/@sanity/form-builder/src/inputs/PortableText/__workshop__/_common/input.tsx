@@ -1,8 +1,10 @@
 import {TextArea, Theme} from '@sanity/ui'
 import React, {forwardRef, useImperativeHandle, useRef} from 'react'
 import styled, {css} from 'styled-components'
+import {SchemaType} from '@sanity/types'
 import {PortableTextInput} from '../../PortableTextInput'
 import resolveInputComponent from '../../../../sanity/inputResolver/inputResolver'
+import {FormBuilderContextValue} from '../../../../FormBuilderContext'
 
 const DebugTextArea = styled(TextArea)(({theme}: {theme: Theme}) => {
   return css`
@@ -30,14 +32,15 @@ const DebugInput = forwardRef(function DebugInput(props: any, ref) {
   )
 })
 
-export const inputResolver = (input: any) => {
+export const inputResolver = (formBuilder: FormBuilderContextValue, input: SchemaType) => {
   if (input.type.name === 'block') {
     return PortableTextInput
   }
   if (input.type.name === 'document') {
+    // @TODO: remove this mutation
     input.type.name = 'object'
   }
-  const resolved = resolveInputComponent(input.type)
+  const resolved = resolveInputComponent(formBuilder.components.inputs, null, input.type)
   if (resolved) {
     return resolved
   }

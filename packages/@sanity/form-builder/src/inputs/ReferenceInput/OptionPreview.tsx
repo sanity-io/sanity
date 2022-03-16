@@ -1,7 +1,7 @@
 /* eslint-disable max-nested-callbacks,no-nested-ternary */
 import React from 'react'
 import {ReferenceSchemaType} from '@sanity/types'
-import {Stack, TextSkeleton} from '@sanity/ui'
+import {Stack, Text, TextSkeleton} from '@sanity/ui'
 import {Observable} from 'rxjs'
 import {Alert} from '../../components/Alert'
 import {ReferenceInfo} from './types'
@@ -19,10 +19,8 @@ export function OptionPreview(props: {
   type: ReferenceSchemaType
   getReferenceInfo: (id: string) => Observable<ReferenceInfo>
 }) {
-  const {isLoading, result: referenceInfo, error} = useReferenceInfo(
-    props.id,
-    props.getReferenceInfo
-  )
+  const {getReferenceInfo, id: documentId} = props
+  const {isLoading, result: referenceInfo, error} = useReferenceInfo(documentId, getReferenceInfo)
 
   if (isLoading) {
     return (
@@ -36,7 +34,11 @@ export function OptionPreview(props: {
   if (error) {
     return (
       <Stack space={2} padding={1}>
-        <Alert title="Failed to load referenced document">Error: {error.message}</Alert>
+        <Alert title="Failed to load referenced document">
+          <Text muted size={1}>
+            Error: {error.message}
+          </Text>
+        </Alert>
       </Stack>
     )
   }
@@ -54,6 +56,7 @@ export function OptionPreview(props: {
   }
 
   const refType = props.type.to.find((toType) => toType.name === referenceInfo.type)
+
   if (!refType) {
     return (
       <Stack space={2} padding={1}>
@@ -61,6 +64,7 @@ export function OptionPreview(props: {
       </Stack>
     )
   }
+
   return (
     referenceInfo &&
     refType && (

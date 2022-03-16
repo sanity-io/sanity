@@ -24,7 +24,7 @@ export const Root = styled(Card)((props: {theme: Theme}) => {
     position: relative;
 
     &[data-focused] {
-      box-shadow: 0 0 0 1px ${color.selectable.primary.selected.border};
+      box-shadow: 0 0 0 1px ${color.selectable?.primary.selected.border};
     }
 
     &:not([data-focused]):not([data-selected]) {

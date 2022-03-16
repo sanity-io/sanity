@@ -90,7 +90,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
     type,
     value,
     level,
-    markers,
+    markers = EMPTY_ARRAY,
     readOnly,
     liveEdit,
     onSearch,
@@ -379,7 +379,10 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
       level={level}
       description={type.description}
     >
-      <Stack space={1} marginY={isEditing ? 2 : 0}>
+      <Stack
+        space={1}
+        // marginY={isEditing ? 2 : 0}
+      >
         {isEditing || isWeakRefToNonexistent ? (
           <Stack space={2} ref={clickOutsideBoundaryRef}>
             {isWeakRefToNonexistent ? (
@@ -449,7 +452,6 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
             isChanged={value?._ref !== compareValue?._ref}
           >
             <Card
-              padding={0}
               border
               radius={1}
               tone={

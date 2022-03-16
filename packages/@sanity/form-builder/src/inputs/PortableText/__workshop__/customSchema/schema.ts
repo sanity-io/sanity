@@ -1,7 +1,5 @@
-import Schema from '@sanity/schema'
+import {createSchema} from '@sanity/base/schema'
 import {Rule} from '@sanity/types'
-import schemaTypes from 'all:part:@sanity/base/schema-type'
-import {baseTypes} from '../_common/baseTypes'
 
 const imageType = {
   type: 'image',
@@ -90,9 +88,9 @@ const ptType = {
   of: [blockType, someObject, imageType],
 }
 
-export const schema = Schema.compile({
+export const schema = createSchema({
   name: 'default',
-  types: schemaTypes.concat([imageType, someObject, ptType]).concat(baseTypes),
+  types: [imageType, someObject, ptType],
 })
 
 export const portableTextType = schema.get('body')

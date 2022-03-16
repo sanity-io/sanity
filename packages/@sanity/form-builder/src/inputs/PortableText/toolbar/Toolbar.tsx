@@ -167,7 +167,7 @@ export function Toolbar(props: ToolbarProps) {
           title: 'Resolving initial value…',
         })
       }, SLOW_INITIAL_VALUE_LIMIT)
-      return resolveInitialValueForType((type as unknown) as SchemaType)
+      return resolveInitialValueForType(type as unknown as SchemaType, {})
         .then((value) => {
           if (isSlow) {
             // I found no way to close an existing toast, so this will replace the message in the

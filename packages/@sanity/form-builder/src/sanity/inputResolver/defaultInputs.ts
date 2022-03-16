@@ -7,12 +7,14 @@ import {DateTimeInput, DateInput} from '../../inputs/DateInputs'
 import TextInput from '../../inputs/TextInput'
 import UrlInput from '../../inputs/UrlInput'
 import SlugInput from '../../inputs/Slug/SlugInput'
+import SanityCrossDatasetReferenceInput from '../inputs/crossDatasetReference/SanityCrossDatasetReferenceInput'
 
 import {SanityArrayInput} from '../inputs/SanityArrayInput'
 import Image from '../inputs/SanityImageInput'
 import SanityFileInput from '../inputs/SanityFileInput'
+import {FormBuilderContextValue} from '../../FormBuilderContext'
 
-export default {
+export const sanityInputs: FormBuilderContextValue['components']['inputs'] = {
   object: ObjectInput,
   array: SanityArrayInput,
   boolean: BooleanInput,
@@ -26,4 +28,6 @@ export default {
   file: SanityFileInput,
   string: StringInput,
   slug: SlugInput,
+
+  crossDatasetReference: SanityCrossDatasetReferenceInput,
 }

@@ -1,4 +1,4 @@
-import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/change-indicators'
+import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/components'
 import styled, {css} from 'styled-components'
 
 export const StyledChangeIndicatorWithProvidedFullPath = styled(

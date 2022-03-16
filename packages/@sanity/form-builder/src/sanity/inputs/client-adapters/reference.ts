@@ -1,5 +1,4 @@
 import {map, mergeMap, switchMap} from 'rxjs/operators'
-
 import {ReferenceFilterSearchOptions, ReferenceSchemaType} from '@sanity/types'
 import {combineLatest, EMPTY, Observable, of} from 'rxjs'
 import {
@@ -9,16 +8,9 @@ import {
   createWeightedSearch,
   getDraftId,
   getIdPair,
-  getPreviewPaths,
-  observeDocumentTypeFromId,
-  observePaths,
-  prepareForPreview,
-  unstable_observeDocumentPairAvailability,
 } from '@sanity/base/_internal'
-
-// eslint-disable-next-line camelcase
 import {SanityClient} from '@sanity/client'
-import {searchClient} from '../../versionedClient'
+import {DocumentPreviewStore, getPreviewPaths, prepareForPreview} from '@sanity/base/preview'
 import {DocumentPreview, ReferenceInfo} from '../../../inputs/ReferenceInput/types'
 
 const READABLE = {
@@ -42,13 +34,13 @@ const NOT_FOUND = {
  * @param referenceType
  */
 export function getReferenceInfo(
-  client: SanityClient,
+  documentPreviewStore: DocumentPreviewStore,
   id: string,
   referenceType: ReferenceSchemaType
 ): Observable<ReferenceInfo> {
   const {publishedId, draftId} = getIdPair(id)
 
-  return unstable_observeDocumentPairAvailability(client, id).pipe(
+  return documentPreviewStore.unstable_observeDocumentPairAvailability(id).pipe(
     switchMap(({draft: draftAvailability, published: publishedAvailability}) => {
       if (!draftAvailability.available && !publishedAvailability.available) {
         // combine availability of draft + published
@@ -69,8 +61,8 @@ export function getReferenceInfo(
         } as const)
       }
       return combineLatest([
-        observeDocumentTypeFromId(client, draftId),
-        observeDocumentTypeFromId(client, publishedId),
+        documentPreviewStore.observeDocumentTypeFromId(draftId),
+        documentPreviewStore.observeDocumentTypeFromId(publishedId),
       ]).pipe(
         switchMap(([draftTypeName, publishedTypeName]) => {
           // assume draft + published are always same type
@@ -93,12 +85,12 @@ export function getReferenceInfo(
             ['_createdAt'],
           ]
 
-          const draftPreview$ = observePaths(client, draftId, previewPaths).pipe(
-            map((result) => (result ? prepareForPreview(result, refSchemaType) : result))
-          )
-          const publishedPreview$ = observePaths(client, publishedId, previewPaths).pipe(
-            map((result) => (result ? prepareForPreview(result, refSchemaType) : result))
-          )
+          const draftPreview$ = documentPreviewStore
+            .observePaths(draftId, previewPaths)
+            .pipe(map((result) => (result ? prepareForPreview(result, refSchemaType) : result)))
+          const publishedPreview$ = documentPreviewStore
+            .observePaths(publishedId, previewPaths)
+            .pipe(map((result) => (result ? prepareForPreview(result, refSchemaType) : result)))
           return combineLatest([draftPreview$, publishedPreview$]).pipe(
             map(([draftPreview, publishedPreview]): ReferenceInfo => {
               const availability =
@@ -152,18 +144,19 @@ function getCounterpartIds(collatedHits: CollatedHit[]): string[] {
     )
 }
 
-function getExistingCounterparts(ids: string[]) {
+function getExistingCounterparts(client: SanityClient, ids: string[]) {
   return ids.length === 0
     ? of([])
-    : searchClient.observable.fetch(`*[_id in $ids]._id`, {ids}, {tag: 'get-counterpart-ids'})
+    : client.observable.fetch(`*[_id in $ids]._id`, {ids}, {tag: 'get-counterpart-ids'})
 }
 
 export function search(
+  client: SanityClient,
   textTerm: string,
   type: ReferenceSchemaType,
   options: ReferenceFilterSearchOptions
 ): Observable<SearchHit[]> {
-  const searchWeighted = createWeightedSearch(type.to, searchClient, options)
+  const searchWeighted = createWeightedSearch(type.to, client, options)
   return searchWeighted(textTerm, {includeDrafts: true}).pipe(
     map((results) => results.map((result) => result.hit)),
     map(collate),
@@ -179,7 +172,7 @@ export function search(
       // Without this step, in a case where both a draft and a published version exist but only the draft matches
       // the search term, we'd end up making a reference with `_strengthenOnPublish: true`, when we instead should be
       // making a normal reference to the published id
-      return getExistingCounterparts(getCounterpartIds(collated)).pipe(
+      return getExistingCounterparts(client, getCounterpartIds(collated)).pipe(
         map((existingCounterpartIds) => {
           return collated.map((entry) => {
             const draftId = getDraftId(entry.id)

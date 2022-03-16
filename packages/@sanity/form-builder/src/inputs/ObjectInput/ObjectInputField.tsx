@@ -2,8 +2,15 @@ import React, {ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
 import {FormFieldSet} from '@sanity/base/components'
 import {resolveTypeName} from '@sanity/util/content'
 import {FormFieldPresence} from '@sanity/base/presence'
-import {ConditionalProperty, Marker, ObjectFieldType, Path, SchemaType} from '@sanity/types'
 import {useConditionalReadOnly} from '@sanity/base/_internal'
+import {
+  ConditionalProperty,
+  Marker,
+  ObjectFieldType,
+  ObjectSchemaTypeWithOptions,
+  Path,
+  SchemaType,
+} from '@sanity/types'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import {InvalidValueInput} from '../InvalidValueInput'
 import PatchEvent from '../../PatchEvent'
@@ -22,7 +29,7 @@ interface FieldProps {
   onFocus: (path: Path) => void
   onBlur: () => void
   focusPath?: Path
-  filterField?: (type: SchemaType) => boolean
+  filterField?: (type: ObjectSchemaTypeWithOptions) => boolean
   readOnly?: ConditionalProperty
   markers?: Marker[]
   level: number

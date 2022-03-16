@@ -1,8 +1,8 @@
 import React, {ForwardedRef, forwardRef, useCallback, useEffect, useState} from 'react'
 import {FormField, ChangeIndicatorForFieldPath} from '@sanity/base/components'
-import {ImageCrop, ImageHotspot, ObjectSchemaType, Path} from '@sanity/types'
-import ImageTool from '@sanity/imagetool'
-import HotspotImage from '@sanity/imagetool/HotspotImage'
+import {ImageCrop, ImageHotspot, ImageSchemaType, Path} from '@sanity/types'
+import {ImageTool} from '@sanity/imagetool'
+import {HotspotImage} from '@sanity/imagetool/HotspotImage'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from '@sanity/imagetool/constants'
 
 import {Box, Card, Flex, Text, Grid, Heading, useForwardedRef} from '@sanity/ui'
@@ -31,7 +31,7 @@ interface ImageToolInputProps {
   presence?: FormFieldPresence[]
   onFocus: (nextPath: Path) => void
   level: number
-  type: ObjectSchemaType
+  type: ImageSchemaType
 }
 
 const HOTSPOT_PATH = ['hotspot']

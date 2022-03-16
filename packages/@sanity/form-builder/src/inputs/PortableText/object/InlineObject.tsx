@@ -12,8 +12,8 @@ import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import styled, {css} from 'styled-components'
 import {Box, Card, Theme, Tooltip} from '@sanity/ui'
 import Preview from '../../../Preview'
-import {Markers} from '../../../legacyParts'
 import {RenderCustomMarkers} from '../types'
+import {useFormBuilder} from '../../../useFormBuilder'
 import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
 
 interface InlineObjectProps {
@@ -117,6 +117,7 @@ export const InlineObject = React.forwardRef(function InlineObject(
     type,
     value,
   } = props
+  const {Markers} = useFormBuilder().components
   const editor = usePortableTextEditor()
   const refElm = useRef(null)
   const [popoverOpen, setPopoverOpen] = useState(false)

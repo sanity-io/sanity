@@ -1,12 +1,13 @@
 // eslint-disable-next-line import/no-unassigned-import
 import '@testing-library/jest-dom/extend-expect'
-import React, {MutableRefObject} from 'react'
+import React, {MutableRefObject, useMemo} from 'react'
 import {render} from '@testing-library/react'
 import Schema from '@sanity/schema'
 import {useConditionalReadOnly} from '@sanity/base/_internal'
-import SanityFormBuilderContext from '../../../sanity/SanityFormBuilderContext'
+import SanityFormBuilderProvider from '../../../sanity/SanityFormBuilderProvider'
 import FormBuilder from '../../../sanity/SanityFormBuilder'
 import {ConditionalReadOnlyField} from '../conditionalReadOnly'
+import {createPatchChannel} from '../../../patchChannel'
 
 const callbackFn = jest.fn(() => true)
 const readOnlyCallbackFn = jest.fn((b) => b)
@@ -68,18 +69,18 @@ const ConditionalFieldsTester = React.forwardRef(function ConditionalFieldsTeste
   props: Partial<ConditionalFieldsTesterProps>,
   ref: MutableRefObject<HTMLDivElement>
 ) {
-  const patchChannel = FormBuilder.createPatchChannel()
+  const patchChannel = useMemo(() => createPatchChannel(), [])
 
   return (
-    <SanityFormBuilderContext
+    <SanityFormBuilderProvider
       value={DEFAULT_PROPS.value}
       schema={schema}
-      patchChannel={patchChannel}
+      __internal_patchChannel={patchChannel}
     >
       <ConditionalReadOnlyField {...DEFAULT_PROPS} readOnly={props.readOnly}>
         <DummyPropsComponent ref={ref} />
       </ConditionalReadOnlyField>
-    </SanityFormBuilderContext>
+    </SanityFormBuilderProvider>
   )
 })
 

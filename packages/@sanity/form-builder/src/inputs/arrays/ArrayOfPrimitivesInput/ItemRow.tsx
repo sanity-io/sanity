@@ -15,7 +15,7 @@ import {useConditionalReadOnly} from '@sanity/base/_internal'
 import {DragHandle} from '../common/DragHandle'
 import PatchEvent, {set} from '../../../PatchEvent'
 import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
-import {FormBuilderInput} from '../../../FormBuilderInput'
+import {FormBuilderInput, FormBuilderInputInstance} from '../../../FormBuilderInput'
 import {InsertMenu} from '../ArrayOfObjectsInput/InsertMenu'
 import getEmptyValue from './getEmptyValue'
 import {PrimitiveValue} from './types'
@@ -47,7 +47,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
   props: Props,
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
-  const focusRef = React.useRef<FormBuilderInput>(null)
+  const focusRef = React.useRef<FormBuilderInputInstance>(null)
   const {
     isSortable,
     value,
@@ -117,12 +117,13 @@ export const ItemRow = React.forwardRef(function ItemRow(
     (patchEvent: PatchEvent) => {
       onChange(
         PatchEvent.from(
-          patchEvent.patches.map((
-            patch // Map direct unset patches to empty value instead in order to not *remove* elements as the user clears out the value
-          ) =>
-            patch.path.length === 0 && patch.type === 'unset' && type
-              ? set(getEmptyValue(type))
-              : patch
+          patchEvent.patches.map(
+            (
+              patch // Map direct unset patches to empty value instead in order to not *remove* elements as the user clears out the value
+            ) =>
+              patch.path.length === 0 && patch.type === 'unset' && type
+                ? set(getEmptyValue(type))
+                : patch
           )
         ).prefixAll(index)
       )

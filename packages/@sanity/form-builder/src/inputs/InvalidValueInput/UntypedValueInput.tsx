@@ -1,8 +1,8 @@
 import React, {useCallback, useMemo} from 'react'
 import {Button, Card, Code, Grid, Stack, Text} from '@sanity/ui'
+import {useSource} from '@sanity/base'
 import {Alert} from '../../components/Alert'
 import {Details} from '../../components/Details'
-import {schema} from '../../legacyParts'
 import PatchEvent, {setIfMissing, unset} from '../../PatchEvent'
 
 declare const __DEV__: boolean
@@ -53,10 +53,10 @@ function UnsetItemButton({
   // Doesn't matter which `_type` we use as long as it's allowed by the array
   const itemValue = useMemo(() => ({...value, _type: validTypes[0]}), [validTypes, value])
 
-  const handleClick = useCallback(() => onChange(PatchEvent.from(unset()), itemValue), [
-    itemValue,
-    onChange,
-  ])
+  const handleClick = useCallback(
+    () => onChange(PatchEvent.from(unset()), itemValue),
+    [itemValue, onChange]
+  )
 
   return <Button onClick={handleClick} tone="critical" text="Unset value" />
 }
@@ -66,6 +66,7 @@ function UnsetItemButton({
  * but the schema has a named type
  */
 export function UntypedValueInput({validTypes, value, onChange}: UntypedValueInputProps) {
+  const {schema} = useSource()
   const isSingleValidType = validTypes.length === 1
   const isHoistedType = schema.has(validTypes[0])
 

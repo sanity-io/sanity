@@ -1,25 +1,17 @@
 import type {Subscription} from 'rxjs'
 import React, {useState, useRef, useCallback, useMemo, useEffect} from 'react'
 import {DownloadIcon} from '@sanity/icons'
-import {Box, Button, Card, Dialog, Flex, Grid, Spinner, Stack, Text} from '@sanity/ui'
-import {AssetFromSource, Asset as AssetType} from '@sanity/types'
+import {Box, Button, Card, Dialog, Flex, Grid, Spinner, Text} from '@sanity/ui'
+import {Asset as AssetType, AssetFromSource, AssetSourceComponentProps} from '@sanity/types'
 import {uniqueId} from 'lodash'
 import styled from 'styled-components'
-import {versionedClient} from '../versionedClient'
+import {useClient} from '@sanity/base'
 import AssetThumb from './AssetThumb'
 import TableList from './TableList'
 
 const PER_PAGE = 200
 const ASSET_TYPE_IMAGE = 'sanity.imageAsset'
 const ASSET_TYPE_FILE = 'sanity.fileAsset'
-
-export interface Props {
-  onSelect: (arg0: AssetFromSource[]) => void
-  onClose: () => void
-  selectedAssets: AssetType[]
-  assetType: 'file' | 'image'
-  dialogHeaderTitle?: string
-}
 
 const buildQuery = (start = 0, end = PER_PAGE, assetType = ASSET_TYPE_IMAGE) => `
   *[_type == "${assetType}"] | order(_updatedAt desc) [${start}...${end}] {
@@ -46,7 +38,9 @@ const CardLoadMore = styled(Card)`
   z-index: 200;
 `
 
-const DefaultAssetSource = function DefaultAssetSource(props: Props, ref) {
+const DefaultAssetSource = function DefaultAssetSource(props: AssetSourceComponentProps, ref) {
+  const client = useClient()
+  const versionedClient = useMemo(() => client.withConfig({apiVersion: '1'}), [client])
   const _elementId = useRef(`default-asset-source-${uniqueId()}`)
   const currentPageNumber = useRef(0)
   const fetch$ = useRef<Subscription>()
@@ -81,7 +75,7 @@ const DefaultAssetSource = function DefaultAssetSource(props: Props, ref) {
           setIsLoading(false)
         })
     },
-    [assetType, setIsLoading, setAssets, setIsLastPage]
+    [assetType, setIsLoading, setAssets, setIsLastPage, versionedClient]
   )
 
   const handleDeleteFinished = useCallback(
@@ -97,7 +91,9 @@ const DefaultAssetSource = function DefaultAssetSource(props: Props, ref) {
       const selected = assets.find((doc) => doc._id === id)
 
       if (selected) {
-        onSelect([{kind: 'assetDocumentId', value: id}])
+        const selectedSource: AssetFromSource[] = [{kind: 'assetDocumentId', value: id}]
+
+        onSelect(selectedSource)
       }
     },
     [assets, onSelect]

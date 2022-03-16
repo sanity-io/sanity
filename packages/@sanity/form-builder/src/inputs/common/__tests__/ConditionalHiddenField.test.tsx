@@ -1,11 +1,11 @@
 // eslint-disable-next-line import/no-unassigned-import
 import '@testing-library/jest-dom/extend-expect'
-import React, {MutableRefObject} from 'react'
+import React, {useMemo} from 'react'
 import {render} from '@testing-library/react'
 import Schema from '@sanity/schema'
 import {ConditionalHiddenField} from '../ConditionalHiddenField'
-import SanityFormBuilderContext from '../../../sanity/SanityFormBuilderContext'
-import FormBuilder from '../../../sanity/SanityFormBuilder'
+import SanityFormBuilderProvider from '../../../sanity/SanityFormBuilderProvider'
+import {createPatchChannel} from '../../../patchChannel'
 
 const callbackFn = jest.fn(() => true)
 const hiddenCallback = jest.fn((b) => b)
@@ -59,18 +59,18 @@ const DummyPropsComponent = function DummyPropsComponent() {
 const ConditionalFieldsTester = function ConditionalFieldsTester(
   props: Partial<ConditionalFieldsTesterProps>
 ) {
-  const patchChannel = FormBuilder.createPatchChannel()
+  const patchChannel = useMemo(() => createPatchChannel(), [])
 
   return (
-    <SanityFormBuilderContext
+    <SanityFormBuilderProvider
       value={DEFAULT_PROPS.value}
       schema={schema}
-      patchChannel={patchChannel}
+      __internal_patchChannel={patchChannel}
     >
       <ConditionalHiddenField {...DEFAULT_PROPS} hidden={props.hidden}>
         <DummyPropsComponent />
       </ConditionalHiddenField>
-    </SanityFormBuilderContext>
+    </SanityFormBuilderProvider>
   )
 }
 

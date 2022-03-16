@@ -2,7 +2,8 @@ import {PortableTextEditor} from '@sanity/portable-text-editor'
 import {LayerProvider, PortalProvider, usePortal} from '@sanity/ui'
 import {useAction, useBoolean, useSelect} from '@sanity/ui-workshop'
 import React, {useMemo} from 'react'
-import FormBuilderContext from '../../../../FormBuilderContext'
+import FormBuilderProvider from '../../../../FormBuilderProvider'
+import {createPatchChannel} from '../../../../patchChannel'
 import {EditObject} from '../../object'
 import {ObjectEditData} from '../../types'
 import {resolveInputComponent, resolvePreviewComponent} from './formBuilder'
@@ -105,16 +106,14 @@ export function EditObjectsStory() {
   const handleClose = useAction('onClose')
   const handleFocus = useAction('onFocus')
 
-  const patchChannel = useMemo(() => {
-    return {onPatch: () => () => undefined}
-  }, [])
+  const patchChannel = useMemo(() => createPatchChannel(), [])
 
   return (
     <PortalProvider __unstable_elements={{default: portal.element}}>
       <LayerProvider>
-        <FormBuilderContext
+        <FormBuilderProvider
           value={value}
-          patchChannel={patchChannel}
+          __internal_patchChannel={patchChannel}
           schema={schema}
           resolveInputComponent={resolveInputComponent}
           resolvePreviewComponent={resolvePreviewComponent}
@@ -134,7 +133,7 @@ export function EditObjectsStory() {
               value={value}
             />
           </PortableTextEditor>
-        </FormBuilderContext>
+        </FormBuilderProvider>
       </LayerProvider>
     </PortalProvider>
   )

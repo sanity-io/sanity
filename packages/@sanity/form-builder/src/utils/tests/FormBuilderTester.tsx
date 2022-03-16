@@ -3,13 +3,8 @@ import {Marker, Path, Schema, SchemaType} from '@sanity/types'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {render} from '@testing-library/react'
 import React from 'react'
-import {FormBuilder} from '../../sanity/legacyPartImplementations/form-builder'
-
-type PatchChannel = {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  subscribe: () => () => {}
-  receivePatches: (patches: any[]) => void
-}
+import {SanityFormBuilder} from '../../sanity/legacyPartImplementations/form-builder'
+import {createPatchChannel, PatchChannel} from '../../patchChannel'
 
 type FormBuilderProps = {
   value: any | null
@@ -28,7 +23,7 @@ type FormBuilderProps = {
   presence: FormFieldPresence[]
   changesOpen: boolean
 }
-const patchChannel = FormBuilder.createPatchChannel()
+const patchChannel = createPatchChannel()
 
 export const DEFAULT_PROPS = {
   level: 0,
@@ -77,7 +72,7 @@ export const FormBuilderTester = React.forwardRef(function FormBuilderTester(
     <ThemeProvider scheme="light" theme={studioTheme}>
       <LayerProvider>
         <ToastProvider>
-          <FormBuilder {...props} />
+          <SanityFormBuilder {...(props as any)} />
         </ToastProvider>
       </LayerProvider>
     </ThemeProvider>

@@ -1,6 +1,6 @@
 import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
 
-import {useClient} from '@sanity/base'
+import {useClient, useDatastores, useSource} from '@sanity/base'
 import {
   Marker,
   Path,
@@ -23,7 +23,6 @@ import PatchEvent from '../../../PatchEvent'
 import * as adapter from '../client-adapters/reference'
 import {ArrayItemReferenceInput} from '../../../inputs/ReferenceInput/ArrayItemReferenceInput'
 import {EditReferenceEvent} from '../../../inputs/ReferenceInput/types'
-import {schema} from '../../../legacyParts'
 import {InsertEvent} from '../../../inputs/arrays/ArrayOfObjectsInput/types'
 
 // eslint-disable-next-line require-await
@@ -88,7 +87,10 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
   props: Props,
   ref: ForwardedRef<HTMLInputElement>
 ) {
+  const {schema} = useSource()
   const client = useClient()
+  const {documentPreviewStore} = useDatastores()
+  const searchClient = useMemo(() => client.withConfig({apiVersion: '2021-03-25'}), [client])
   const {getValuePath, type, document} = props
   const {EditReferenceLinkComponent, onEditReference, activePath, initialValueTemplateItems} =
     useReferenceInputOptions()
@@ -101,7 +103,7 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
 
   const isDocumentLiveEdit = useMemo(() => {
     return schema.get(documentTypeName).liveEdit
-  }, [documentTypeName])
+  }, [documentTypeName, schema])
 
   const disableNew = type.options?.disableNew === true
 
@@ -109,7 +111,7 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
     (searchString: string) =>
       from(resolveUserDefinedFilter(type.options, documentRef.current, getValuePath())).pipe(
         mergeMap(({filter, params}) =>
-          adapter.search(searchString, type, {
+          adapter.search(searchClient, searchString, type, {
             ...type.options,
             filter,
             params,
@@ -124,7 +126,7 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
           return throwError(err)
         })
       ),
-    [documentRef, getValuePath, type]
+    [documentRef, getValuePath, searchClient, type]
   )
 
   const template = props.value?._strengthenOnPublish?.template
@@ -189,7 +191,7 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
       {...props}
       liveEdit={isDocumentLiveEdit}
       onSearch={handleSearch}
-      getReferenceInfo={(id, _type) => adapter.getReferenceInfo(client, id, _type)}
+      getReferenceInfo={(id, _type) => adapter.getReferenceInfo(documentPreviewStore, id, _type)}
       ref={ref}
       selectedState={selectedState}
       editReferenceLinkComponent={EditReferenceLink}

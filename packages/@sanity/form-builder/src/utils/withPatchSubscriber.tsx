@@ -1,9 +1,10 @@
-import PropTypes from 'prop-types'
-import React from 'react'
+/* eslint-disable max-nested-callbacks */
 
-import shallowEquals from 'shallow-equals'
+import {Patch} from '@sanity/base/_internal'
 import {get, find} from 'lodash'
-import {Patch} from '../patch/types'
+import React, {forwardRef, useCallback} from 'react'
+import shallowEquals from 'shallow-equals'
+import {useFormBuilder} from '../useFormBuilder'
 
 function isSegmentEqual(segment1, segment2) {
   const segment1Type = typeof segment1
@@ -55,39 +56,35 @@ type SubscriberArg = {
 }
 type Subscriber = (arg0: SubscriberArg) => void
 export default function withPatchSubscriber(ComposedComponent: any) {
-  return class SubscribePatch extends React.Component {
-    _input: typeof ComposedComponent
-    static displayName = `withPatches(${ComposedComponent.displayName || ComposedComponent.name})`
-    static contextTypes = {
-      getValuePath: PropTypes.func,
-      formBuilder: PropTypes.any,
-    }
-    subscribe = (subscriber: Subscriber) => {
-      return this.context.formBuilder.onPatch(({snapshot, patches}) => {
-        const selfPath = this.context.getValuePath()
-        const filtered = patches
-          .filter((patch) => startsWith(patch.path, selfPath))
-          .map((patch) => ({
-            ...patch,
-            path: patch.path.slice(selfPath.length),
-          }))
-        subscriber({
-          shouldReset: shouldReset(selfPath, patches),
-          snapshot: getValueAtPath(snapshot, selfPath),
-          patches: filtered,
+  const SubscribePatch = forwardRef(function SubscribePatch(props: any, ref) {
+    const {__internal_patchChannel: patchChannel, getValuePath} = useFormBuilder()
+
+    const subscribe = useCallback(
+      (subscriber: Subscriber) => {
+        return patchChannel.subscribe(({snapshot, patches}) => {
+          const selfPath = getValuePath()
+          const filtered = patches
+            .filter((patch) => startsWith(patch.path, selfPath))
+            .map((patch) => ({
+              ...patch,
+              path: patch.path.slice(selfPath.length),
+            }))
+          subscriber({
+            shouldReset: shouldReset(selfPath, patches),
+            snapshot: getValueAtPath(snapshot, selfPath),
+            patches: filtered,
+          })
         })
-      })
-    }
-    focus() {
-      if (this._input && this._input.focus) {
-        this._input.focus()
-      }
-    }
-    setInput = (input) => {
-      this._input = input
-    }
-    render() {
-      return <ComposedComponent ref={this.setInput} {...this.props} subscribe={this.subscribe} />
-    }
-  }
+      },
+      [getValuePath, patchChannel]
+    )
+
+    return <ComposedComponent ref={ref} {...props} subscribe={subscribe} />
+  })
+
+  SubscribePatch.displayName = `withPatches(${
+    ComposedComponent.displayName || ComposedComponent.name
+  })`
+
+  return SubscribePatch
 }

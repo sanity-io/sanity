@@ -1,12 +1,13 @@
 import {Schema, SchemaType} from '@sanity/types'
-import {EMPTY, noop, of} from 'rxjs'
+import {EMPTY, of} from 'rxjs'
 import imageUrlBuilder from '@sanity/image-url'
-import React, {ComponentProps} from 'react'
+import React, {ComponentProps, useMemo} from 'react'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
-import {FormBuilderContext} from '../../sanity/legacyPartImplementations/form-builder'
+import {FormBuilderProvider} from '../../sanity/legacyPartImplementations/form-builder'
 import ImageInput from '../../inputs/files/ImageInput'
 
 import type {UploadOptions} from '../../sanity/uploads/types'
+import {createPatchChannel} from '../../patchChannel'
 
 const resolveUploaderStub = () => ({
   priority: 1,
@@ -41,8 +42,7 @@ const observeAssetStub = (id: string) =>
     sha1hash: '47b2fbcdb38bee39c02064b218b47a17de808945',
     size: 4277677,
     uploadId: 'OLknm0kCxeXuzlxbcBHaRzmRWCHIbIYu',
-    url:
-      'https://cdn.sanity.io/images/ppsg7ml5/test/47b2fbcdb38bee39c02064b218b47a17de808945-2736x3648.jpg',
+    url: 'https://cdn.sanity.io/images/ppsg7ml5/test/47b2fbcdb38bee39c02064b218b47a17de808945-2736x3648.jpg',
   })
 const imageUrlBuilderStub = imageUrlBuilder({dataset: 'some-dataset', projectId: 'some-project-id'})
 
@@ -87,13 +87,19 @@ export const ImageInputTester = React.forwardRef(function ImageInputTester(
   ref
 ) {
   const {schema, ...rest} = props
+  const patchChannel = useMemo(() => createPatchChannel(), [])
+
   return (
     <ThemeProvider scheme="light" theme={studioTheme}>
       <LayerProvider>
         <ToastProvider>
-          <FormBuilderContext value={undefined} patchChannel={{onPatch: noop}} schema={schema}>
+          <FormBuilderProvider
+            value={undefined}
+            __internal_patchChannel={patchChannel}
+            schema={schema}
+          >
             <ImageInput {...rest} />
-          </FormBuilderContext>
+          </FormBuilderProvider>
         </ToastProvider>
       </LayerProvider>
     </ThemeProvider>

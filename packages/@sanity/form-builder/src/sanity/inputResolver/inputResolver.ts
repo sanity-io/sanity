@@ -1,50 +1,12 @@
+import {SchemaType} from '@sanity/types'
+import React from 'react'
 import * as is from '../../utils/is'
-import {
-  BooleanInput,
-  DateTimeInput,
-  EmailInput,
-  GeoPointInput,
-  NumberInput,
-  ObjectInput,
-  ReferenceInput,
-  StringInput,
-  TextInput,
-  UrlInput,
-} from '../../legacyParts'
-import SanityCrossDatasetReferenceInput from '../inputs/crossDatasetReference/SanityCrossDatasetReferenceInput'
-import defaultInputs from './defaultInputs'
+import {FormBuilderContextValue} from '../../FormBuilderContext'
+import {sanityInputs} from './defaultInputs'
 import resolveReferenceInput from './resolveReferenceInput'
 import resolveArrayInput from './resolveArrayInput'
 import resolveStringInput from './resolveStringInput'
 import resolveNumberInput from './resolveNumberInput'
-
-const CUSTOM_INPUT_MAP = {
-  object: ObjectInput,
-  boolean: BooleanInput,
-  number: NumberInput,
-  string: StringInput,
-  text: TextInput,
-  reference: ReferenceInput,
-  crossDatasetReference: SanityCrossDatasetReferenceInput,
-  datetime: DateTimeInput,
-  email: EmailInput,
-  geopoint: GeoPointInput,
-  url: UrlInput,
-}
-
-function getExport(obj) {
-  return obj && obj.__esModule ? obj.default : obj
-}
-
-// this is needed to avoid errors due to circular imports
-// this can happen if a custom input component imports and tries
-// to access something from the form-builder immediately (top-level)
-let getCustomResolver = () => {
-  // TODO(@benedicteb, 2021-01-18) How can we move this to legacyParts.ts?
-  const resolver = getExport(require('part:@sanity/form-builder/input-resolver?'))
-  getCustomResolver = () => resolver
-  return resolver
-}
 
 function resolveTypeVariants(type) {
   if (is.type('array', type)) {
@@ -67,17 +29,21 @@ function resolveTypeVariants(type) {
   return null
 }
 
-export default function resolveInputComponent(type) {
-  const customResolver = getCustomResolver()
+export default function resolveInputComponent(
+  inputComponents: FormBuilderContextValue['components']['inputs'],
+  userDefinedInputComponentProp: unknown,
+  type: SchemaType
+): React.ComponentType<any> | undefined {
+  const customInputComponent =
+    typeof userDefinedInputComponentProp === 'function' && userDefinedInputComponentProp(type)
 
-  const custom = typeof customResolver === 'function' && customResolver(type)
-  if (custom) {
-    return custom
+  if (customInputComponent) {
+    return customInputComponent
   }
 
-  if (type.inputComponent) {
-    return type.inputComponent
+  if ('inputComponent' in type && (type as any).inputComponent) {
+    return (type as any).inputComponent
   }
 
-  return resolveTypeVariants(type) || CUSTOM_INPUT_MAP[type.name] || defaultInputs[type.name]
+  return resolveTypeVariants(type) || inputComponents[type.name] || sanityInputs[type.name]
 }

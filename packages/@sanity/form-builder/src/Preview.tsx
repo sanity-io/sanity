@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, {useMemo} from 'react'
+import {useFormBuilder} from './useFormBuilder'
 import {PreviewAny} from './utils/fallback-preview/PreviewAny'
 
 type PreviewProps = {
@@ -11,24 +12,26 @@ type PreviewProps = {
   withRadius?: boolean
   withBorder?: boolean
 }
-export default class Preview extends React.PureComponent<PreviewProps> {
-  static contextTypes = {
-    formBuilder: PropTypes.object,
+export default function Preview(props: PreviewProps) {
+  // static contextTypes = {
+  //   formBuilder: PropTypes.object,
+  // }
+
+  // render() {
+  const {type, value} = props
+  const {resolvePreviewComponent} = useFormBuilder()
+
+  const PreviewComponent = useMemo(() => resolvePreviewComponent(type), [type])
+
+  // const PreviewComponent = context.formBuilder.resolvePreviewComponent(type)
+
+  if (PreviewComponent) {
+    return <PreviewComponent {...props} />
   }
 
-  render() {
-    const {type, value} = this.props
-
-    const PreviewComponent = this.context.formBuilder.resolvePreviewComponent(type)
-
-    if (PreviewComponent) {
-      return <PreviewComponent {...this.props} />
-    }
-
-    return (
-      <div title="Unable to resolve preview component. Using fallback.">
-        <PreviewAny value={value} maxDepth={2} />
-      </div>
-    )
-  }
+  return (
+    <div title="Unable to resolve preview component. Using fallback.">
+      <PreviewAny value={value} maxDepth={2} />
+    </div>
+  )
 }

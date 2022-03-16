@@ -2,15 +2,15 @@
 import '@testing-library/jest-dom/extend-expect'
 import {render} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import React, {ForwardedRef, forwardRef} from 'react'
-
+import React, {ForwardedRef, forwardRef, useMemo} from 'react'
 import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
 import Schema from '@sanity/schema'
 import {SchemaType} from '@sanity/types'
 import {ObjectInput, Props} from '../ObjectInput'
-import FormBuilderContext from '../../../FormBuilderContext'
+import FormBuilderProvider from '../../../FormBuilderProvider'
 import is from '../../../utils/is'
 import {ReviewChangesContextProvider} from '../../../sanity/contexts/reviewChanges/ReviewChangesProvider'
+import {createPatchChannel} from '../../../patchChannel'
 
 const schema = Schema.compile({
   name: 'test',
@@ -67,27 +67,26 @@ const DEFAULT_PROPS = {
   presence: [],
 }
 
-// eslint-disable-next-line no-empty-function,@typescript-eslint/no-empty-function
-const noop = () => {}
-
 const ObjectInputTester = forwardRef(function ObjectInputTester(
   props: Partial<Omit<Props, 'type'>> & {type: Props['type']},
   ref: ForwardedRef<any>
 ) {
+  const patchChannel = useMemo(() => createPatchChannel(), [])
+
   return (
     <ThemeProvider scheme="light" theme={studioTheme}>
       <LayerProvider>
         <ReviewChangesContextProvider changesOpen={false}>
-          <FormBuilderContext
+          <FormBuilderProvider
             value={undefined}
-            patchChannel={{onPatch: noop}}
+            __internal_patchChannel={patchChannel}
             schema={schema}
             filterField={() => true}
             resolveInputComponent={inputResolver}
             resolvePreviewComponent={(type) => GenericPreview}
           >
             <ObjectInput {...DEFAULT_PROPS} {...props} ref={ref} />
-          </FormBuilderContext>
+          </FormBuilderProvider>
         </ReviewChangesContextProvider>
       </LayerProvider>
     </ThemeProvider>

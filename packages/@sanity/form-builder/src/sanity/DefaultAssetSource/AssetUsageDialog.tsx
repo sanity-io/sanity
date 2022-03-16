@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react'
+import {WithReferringDocuments} from '@sanity/base/components'
 import {TrashIcon} from '@sanity/icons'
 import {Box, Dialog, Grid, Button, Stack} from '@sanity/ui'
 import {Asset as AssetType, SanityDocument} from '@sanity/types'
-import {WithReferringDocuments} from '../../legacyParts'
-
+import {useDatastores} from '@sanity/base'
 import {SpinnerWithText} from '../../components/SpinnerWithText'
 import {DocumentList} from './DocumentList'
 import {ConfirmMessage} from './ConfirmMessage'
@@ -23,8 +23,10 @@ const MODE_CONFIRM_DELETE = 'confirmDelete'
 const MODE_LIST_USAGE = 'listUsage'
 
 export function AssetUsageDialog(props: UsageDialogProps) {
+  const {documentStore} = useDatastores()
+
   return (
-    <WithReferringDocuments id={props.asset._id}>
+    <WithReferringDocuments documentStore={documentStore} id={props.asset._id}>
       {({isLoading, referringDocuments}) => (
         <InnerAssetUsageDialog
           {...props}
