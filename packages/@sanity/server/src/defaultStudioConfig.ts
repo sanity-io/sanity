@@ -1,3 +1,3 @@
-import {defaultStudioConfig} from '@sanity/base'
+import {defaultConfig} from '@sanity/base'
 
-export default defaultStudioConfig
+export default defaultConfig

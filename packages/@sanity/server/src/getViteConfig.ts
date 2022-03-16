@@ -5,7 +5,7 @@ import viteReact from '@vitejs/plugin-react'
 import {isSanityMonorepo} from './isSanityMonorepo'
 import {DEFAULT_CANONICAL_MODULES, DEFAULT_COMMONJS_MODULES} from './constants'
 import {viteCanonicalModules} from './vite/plugin-canonical-modules'
-import {sanityStudioPlugin, resolveEntryModulePath} from './vitePlugins'
+import {viteSanityStudio, resolveEntryModulePath} from './vite/plugin-sanity-studio'
 export interface ViteOptions {
   /**
    * Root path of the studio/sanity app
@@ -66,13 +66,13 @@ export async function getViteConfig(options: ViteOptions): Promise<SanityViteCon
       esbuildOptions: {
         plugins: [esbuildCommonjs(DEFAULT_COMMONJS_MODULES)],
       },
-      include: DEFAULT_COMMONJS_MODULES.concat(Object.values(aliases)), // Fixes CommonJS/ESM mismatches
+      include: DEFAULT_COMMONJS_MODULES,
     },
     plugins: [
       viteReact({}),
-      sanityStudioPlugin({
-        studioRootPath,
+      viteSanityStudio({
         basePath,
+        cwd,
       }),
       viteCanonicalModules({
         ids: DEFAULT_CANONICAL_MODULES,

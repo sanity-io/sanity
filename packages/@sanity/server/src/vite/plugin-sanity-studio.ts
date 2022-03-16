@@ -9,7 +9,7 @@ const entryModuleId = '$SANITY_STUDIO_ENTRY$'
 const configModuleId = '$SANITY_STUDIO_CONFIG$'
 
 export interface SanityStudioVitePluginOptions {
-  studioRootPath: string
+  cwd: string
   basePath: string
 }
 
@@ -39,15 +39,12 @@ export interface SanityStudioVitePluginOptions {
  *
  * @internal
  */
-export function sanityStudioPlugin({
-  studioRootPath,
-  basePath,
-}: SanityStudioVitePluginOptions): Plugin {
+export function viteSanityStudio({cwd, basePath}: SanityStudioVitePluginOptions): Plugin {
   let runCommand: ConfigEnv['command']
   let entryChunkRef: string
 
   return {
-    name: 'sanity-studio-plugin',
+    name: '@sanity/server/vite-sanity-studio',
 
     /**
      * We need to conditionally apply _parts_ of the plugin in different commands,
@@ -64,12 +61,12 @@ export function sanityStudioPlugin({
     resolveId(source, importer = '') {
       // Only allow loading entry chunk from index.html
       if (source.endsWith(`/${entryModuleId}`) && importer.endsWith('/index.html')) {
-        return resolveEntryModulePath(studioRootPath)
+        return resolveEntryModulePath(cwd)
       }
 
       // Only allow resolving config module from entry
       if (source === configModuleId && basePattern.test(importer) && entryPattern.test(importer)) {
-        return getSanityStudioConfigPath(studioRootPath)
+        return getSanityStudioConfigPath(cwd)
       }
 
       return null
@@ -86,7 +83,7 @@ export function sanityStudioPlugin({
 
       entryChunkRef = this.emitFile({
         type: 'chunk',
-        id: resolveEntryModulePath(studioRootPath),
+        id: resolveEntryModulePath(cwd),
         name: 'studioEntry',
       })
     },
@@ -103,7 +100,7 @@ export function sanityStudioPlugin({
         type: 'asset',
         fileName: 'index.html',
         source: await renderDocument({
-          studioRootPath,
+          studioRootPath: cwd,
           props: {entryPath: `${basePath}${this.getFileName(entryChunkRef)}`},
         }),
       })
