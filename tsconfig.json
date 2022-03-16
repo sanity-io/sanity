@@ -19,7 +19,6 @@
     {"path": "./packages/@sanity/diff"},
     {"path": "./packages/@sanity/field"},
     {"path": "./packages/@sanity/form-builder"},
-    {"path": "./packages/@sanity/generate-help-url"},
     {"path": "./packages/@sanity/google-maps-input"},
     {"path": "./packages/@sanity/imagetool"},
     {"path": "./packages/@sanity/initial-value-templates"},
