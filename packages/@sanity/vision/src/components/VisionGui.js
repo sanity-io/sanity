@@ -10,10 +10,10 @@ import studioClient from 'part:@sanity/base/client'
 import {FormFieldValidationStatus} from '@sanity/base/components'
 import config from 'config:@sanity/vision'
 import {storeState, getState} from '../util/localState'
-import parseApiQueryString from '../util/parseApiQueryString'
+import {parseApiQueryString} from '../util/parseApiQueryString'
 import prefixApiVersion from '../util/prefixApiVersion'
-import tryParseParams from '../util/tryParseParams'
-import encodeQueryString from '../util/encodeQueryString'
+import {tryParseParams} from '../util/tryParseParams'
+import {encodeQueryString} from '../util/encodeQueryString'
 import {apiVersions} from '../apiVersions'
 import {ResizeObserver} from '../util/resizeObserver'
 import DelayedSpinner from './DelayedSpinner'
@@ -546,7 +546,7 @@ class VisionGui extends React.PureComponent {
         <SplitpaneContainer flex={1}>
           <SplitPane split="vertical" minSize={280} defaultSize={400} maxSize={-400}>
             <Box height="stretch" flex={1}>
-              {/* 
+              {/*
                   The way react-split-pane handles the sizes is kind of finicky and not clear. What the props above does is:
                   - It sets the initial size of the panes to 1/2 of the total available height of the container
                   - Sets the minimum size of a pane whatever is bigger of 1/2 of the total available height of the container, or 170px

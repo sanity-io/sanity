@@ -1,4 +1,4 @@
-export default function parseApiQueryString(qs) {
+export function parseApiQueryString(qs) {
   const params = Object.keys(qs)
     .filter((key) => key[0] === '$')
     .reduce((keep, key) => {

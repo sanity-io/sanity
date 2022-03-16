@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import {debounce} from 'lodash'
 import isPlainObject from '../util/isPlainObject'
-import tryParseParams from '../util/tryParseParams'
+import {tryParseParams} from '../util/tryParseParams'
 import {ReactCodeMirror} from './ParamsEditor.styled'
 
 const ENTER_KEY = 13

@@ -1,6 +1,6 @@
 const JSON5 = require('json5')
 
-const tryParseParams = (val) => {
+export const tryParseParams = (val) => {
   try {
     return val ? JSON5.parse(val) : {}
   } catch (err) {
@@ -10,5 +10,3 @@ const tryParseParams = (val) => {
     return err
   }
 }
-
-export default tryParseParams
