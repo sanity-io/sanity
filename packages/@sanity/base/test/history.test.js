@@ -2,6 +2,9 @@ import {removeMissingReferences} from '../src/datastores/history/createHistorySt
 
 const testDoc = {
   _id: 'foo',
+  _rev: 'foo',
+  _createdAt: '',
+  _updatedAt: '',
   _type: 'test',
   string: 'value',
   number: 123,

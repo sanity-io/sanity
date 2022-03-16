@@ -63,7 +63,7 @@ describe('module status', () => {
 })
 
 describe('useModuleStatus', () => {
-  let container
+  let container: HTMLElement | null = null
 
   beforeEach(() => {
     container = document.createElement('div')
@@ -71,8 +71,10 @@ describe('useModuleStatus', () => {
   })
 
   afterEach(() => {
-    document.body.removeChild(container)
-    container = null
+    if (container) {
+      document.body.removeChild(container)
+      container = null
+    }
   })
 
   test('has loading state', async () => {
@@ -92,10 +94,12 @@ describe('useModuleStatus', () => {
       ReactDOM.render(React.createElement(StatusDumper), container)
     })
 
-    expect(container.textContent).toMatchInlineSnapshot(`"{\\"isLoading\\":true}"`)
+    expect(container!.textContent).toMatchInlineSnapshot(
+      `"{\\"isLoading\\":true,\\"error\\":null}"`
+    )
     await act(nextTick)
-    expect(container.textContent).toMatchInlineSnapshot(
-      `"{\\"isLoading\\":false,\\"value\\":{\\"isSupported\\":true,\\"isUpToDate\\":true,\\"outdated\\":[],\\"installed\\":{\\"@sanity/base\\":\\"3.0.0\\"}}}"`
+    expect(container!.textContent).toMatchInlineSnapshot(
+      `"{\\"isLoading\\":false,\\"value\\":{\\"isSupported\\":true,\\"isUpToDate\\":true,\\"outdated\\":[],\\"installed\\":{\\"@sanity/base\\":\\"3.0.0\\"}},\\"error\\":null}"`
     )
   })
 
@@ -120,8 +124,8 @@ describe('useModuleStatus', () => {
       ReactDOM.render(React.createElement(StatusDumper), container)
     })
 
-    expect(container.textContent).toMatchInlineSnapshot(
-      `"{\\"isLoading\\":false,\\"value\\":{\\"isSupported\\":true,\\"isUpToDate\\":true,\\"outdated\\":[],\\"installed\\":{\\"@sanity/base\\":\\"3.0.1\\"}}}"`
+    expect(container!.textContent).toMatchInlineSnapshot(
+      `"{\\"isLoading\\":false,\\"value\\":{\\"isSupported\\":true,\\"isUpToDate\\":true,\\"outdated\\":[],\\"installed\\":{\\"@sanity/base\\":\\"3.0.1\\"}},\\"error\\":null}"`
     )
   })
 })
@@ -129,14 +133,12 @@ describe('useModuleStatus', () => {
 function getMockClient(response?: Partial<VersionsResponse>): SanityClient {
   const responseBody = {...defaults, ...response}
 
-  const request = jest.fn(
-    (options: {url: string}): Observable<VersionsResponse> => {
-      expect(options.url).toBe('/versions')
-      return of(responseBody, asyncScheduler)
-    }
-  )
+  const request = jest.fn((options: {url: string}): Observable<VersionsResponse> => {
+    expect(options.url).toBe('/versions')
+    return of(responseBody, asyncScheduler)
+  })
 
-  const observable = ({request} as unknown) as SanityClient['observable']
+  const observable = {request} as unknown as SanityClient['observable']
   const mockClient = {observable} as SanityClient
   return mockClient
 }

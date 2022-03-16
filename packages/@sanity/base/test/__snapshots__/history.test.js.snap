@@ -2,8 +2,11 @@
 
 exports[`removeMissingReferences removes references to missing docs, deeply 1`] = `
 Object {
+  "_createdAt": "",
   "_id": "foo",
+  "_rev": "foo",
   "_type": "test",
+  "_updatedAt": "",
   "arrayOfObjects": Array [
     Object {
       "_type": "foo",
