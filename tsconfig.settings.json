@@ -34,7 +34,7 @@
     {"path": "./packages/@sanity/react-hooks"},
     {"path": "./packages/@sanity/schema"},
     {"path": "./packages/@sanity/server"},
-    {"path": "./packages/@sanity/state-router"},
+    {"path": "./packages/@sanity/state-router/tsconfig.lib.json"},
     {"path": "./packages/@sanity/structure"},
     {"path": "./packages/@sanity/transaction-collator"},
     {"path": "./packages/@sanity/types"},
