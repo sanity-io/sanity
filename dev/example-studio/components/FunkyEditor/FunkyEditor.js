@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import {BlockEditor} from 'part:@sanity/form-builder'
 import {PortableTextEditor} from '@sanity/portable-text-editor'
-import blockTools from '@sanity/block-tools'
+import {htmlToBlocks} from '@sanity/block-tools'
 import CustomMarkers from './CustomMarkers'
 import BlockActions from './BlockActions'
 
@@ -31,7 +31,7 @@ function handlePaste(input) {
     console.log('Run `sanity install @sanity/code-input, and add `type: "code"` to your schema.')
   }
   if (html && hasCodeType) {
-    const blocks = blockTools.htmlToBlocks(html, type, {
+    const blocks = htmlToBlocks(html, type, {
       rules: [
         {
           deserialize(el, next, block) {
