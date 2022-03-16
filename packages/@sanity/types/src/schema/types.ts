@@ -97,7 +97,7 @@ export interface BaseSchemaType {
   hidden?: ConditionalProperty
   icon?: ComponentType
   initialValue?: InitialValueProperty
-  options?: Record<string, any>
+  // options?: Record<string, any>
   validation?: SchemaValidationValue
   preview?: PreviewConfig
 
@@ -272,9 +272,13 @@ export interface ObjectSchemaType extends BaseSchemaType {
    * @beta
    */
   orderings?: SortOrdering[]
+
+  options: {
+    // @todo
+  }
 }
 
-export interface ObjectSchemaTypeWithOptions extends ObjectSchemaType {
+export interface ObjectSchemaTypeWithOptions extends Omit<ObjectSchemaType, 'options'> {
   options?: CollapseOptions & {
     columns?: number
   }
@@ -314,7 +318,7 @@ export interface CollapseOptions {
   collapsible?: boolean
 }
 
-export interface ReferenceSchemaType extends ObjectSchemaType {
+export interface ReferenceSchemaType extends Omit<ObjectSchemaType, 'options'> {
   jsonType: 'object'
   to: ObjectSchemaType[]
   weak?: boolean
@@ -326,13 +330,13 @@ export interface AssetSchemaTypeOptions {
   storeOriginalFilename?: boolean
 }
 
-export interface FileSchemaType extends ObjectSchemaType {
+export interface FileSchemaType extends Omit<ObjectSchemaType, 'options'> {
   options?: AssetSchemaTypeOptions & {
     sources?: AssetSource[]
   }
 }
 
-export interface ImageSchemaType extends ObjectSchemaType {
+export interface ImageSchemaType extends Omit<ObjectSchemaType, 'options'> {
   options?: AssetSchemaTypeOptions & {
     hotspot?: boolean
     metadata?: ('exif' | 'location' | 'lqip' | 'palette' | 'blurhash')[]
@@ -343,6 +347,7 @@ export interface ImageSchemaType extends ObjectSchemaType {
 export type SchemaType =
   | ArraySchemaType
   | BooleanSchemaType
+  | FileSchemaType
   | NumberSchemaType
   | ObjectSchemaType
   | StringSchemaType
