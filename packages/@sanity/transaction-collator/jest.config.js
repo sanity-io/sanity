@@ -1,9 +1,6 @@
-const createConfig = require('../../../createJestConfig')
+const {createJestConfig} = require('../../../test/config')
 
 /** @type {import('@jest/types').Config.InitialOptions} */
-module.exports = createConfig({
+module.exports = createJestConfig({
   displayName: require('./package.json').name,
-  moduleNameMapper: {
-    '^part:@sanity/base/schema$': '<rootDir>/test/mocks/schema.js',
-  },
 })
