@@ -1,12 +1,7 @@
+import {Schema} from '@sanity/types'
 import {Ordering} from '../Sort'
 import {FixMe} from '../types'
 import getDefaultModule from './getDefaultModule'
-
-interface Schema {
-  name: string
-  get(typeName: string): SchemaType | undefined
-  getTypeNames(): string[]
-}
 
 interface SchemaField {
   name: string
@@ -42,4 +37,4 @@ const getDefaultSchema = (): Schema => {
   return schema
 }
 
-export {Schema, getDefaultSchema}
+export {getDefaultSchema}
