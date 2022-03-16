@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import Barcode from 'react-barcode'
 import {FormFieldSet} from '@sanity/base/components'
 import {Box} from '@sanity/ui'
-import {setIfMissing} from '@sanity/form-builder/PatchEvent'
+import {setIfMissing} from '@sanity/form-builder'
 import {FormBuilderInput} from '@sanity/form-builder/lib/FormBuilderInput'
 import styled from 'styled-components'
 
