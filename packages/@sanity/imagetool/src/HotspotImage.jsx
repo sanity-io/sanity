@@ -17,7 +17,7 @@ function getCropAspect(crop, srcAspect) {
   return cropWidth / cropHeight
 }
 
-export default class HotspotImage extends React.PureComponent {
+export class HotspotImage extends React.PureComponent {
   static propTypes = {
     src: PropTypes.string.isRequired,
     srcAspectRatio: PropTypes.number.isRequired,
@@ -174,3 +174,4 @@ export default class HotspotImage extends React.PureComponent {
     )
   }
 }
+export default HotspotImage

@@ -2,10 +2,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import ImageLoader from './ImageLoader'
-import ImageTool from './ImageTool'
+import ImageToolWrapped from './ImageTool'
 import Resize from './Resize'
 
-export default function ImageToolWrapper(props) {
+export function ImageTool(props) {
   return (
     <ImageLoader src={props.src}>
       {({isLoading, image, error}) => {
@@ -17,12 +17,8 @@ export default function ImageToolWrapper(props) {
         }
         if (image) {
           return (
-            <Resize
-              image={image}
-              maxHeight={ImageToolWrapper.maxHeight}
-              maxWidth={ImageToolWrapper.maxWidth}
-            >
-              {(canvas) => <ImageTool image={canvas} {...props} />}
+            <Resize image={image} maxHeight={ImageTool.maxHeight} maxWidth={ImageTool.maxWidth}>
+              {(canvas) => <ImageToolWrapped image={canvas} {...props} />}
             </Resize>
           )
         }
@@ -32,7 +28,7 @@ export default function ImageToolWrapper(props) {
   )
 }
 
-ImageToolWrapper.propTypes = {
+ImageTool.propTypes = {
   src: PropTypes.string.isRequired,
   value: PropTypes.shape({
     hotspot: PropTypes.shape({
@@ -51,5 +47,7 @@ ImageToolWrapper.propTypes = {
   readOnly: PropTypes.bool,
 }
 
-ImageToolWrapper.maxHeight = 500
-ImageToolWrapper.maxWidth = 1000
+ImageTool.maxHeight = 500
+ImageTool.maxWidth = 1000
+
+export default ImageTool
