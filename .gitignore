@@ -52,4 +52,4 @@ jspm_packages
 .env.local
 
 # TypeScript
-/tsconfig.tsbuildinfo
+tsconfig.tsbuildinfo
