@@ -43,9 +43,8 @@
     "esbuild-register": "^3.2.0"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-class-properties": "^7.16.0",
     "@babel/preset-env": "^7.16.4",
-    "@rexxars/gitconfiglocal": "^3.0.1",
+    "@babel/preset-typescript": "^7.16.0",
     "@sanity/client": "^3.2.0",
     "@sanity/eslint-config-studio": "^2.0.0",
     "@sanity/generate-help-url": "^3.0.0",
