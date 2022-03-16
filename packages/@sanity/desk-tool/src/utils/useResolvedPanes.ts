@@ -1,6 +1,6 @@
-import {RouterContext} from '@sanity/base/router'
-import {useEffect, useState, useContext} from 'react'
-import {Observable} from 'rxjs'
+import {RouterState, useRouter} from '@sanity/base/router'
+import {useEffect, useState, useMemo} from 'react'
+import {Observable, Subject} from 'rxjs'
 import {map} from 'rxjs/operators'
 import {LOADING_PANE} from '../constants'
 import {RouterPanes, PaneNode, RouterPaneGroup} from '../types'
@@ -29,7 +29,7 @@ interface Panes {
 }
 
 export function useResolvedPanes(): Panes {
-  const router = useContext(RouterContext)
+  const router = useRouter()
   const [data, setData] = useState<Panes>({
     paneDataItems: [],
     resolvedPanes: [],
@@ -42,15 +42,14 @@ export function useResolvedPanes(): Panes {
   const [error, setError] = useState<unknown>()
   if (error) throw error
 
+  const routerStateSubject = useMemo(() => new Subject<RouterState>(), [])
+  const routerState$ = useMemo(() => routerStateSubject.asObservable(), [routerStateSubject])
+  const routerPanes$ = useMemo(
+    () => routerState$.pipe(map((routerState) => (routerState?.panes || []) as RouterPanes)),
+    [routerState$]
+  )
+
   useEffect(() => {
-    const routerPanes$ = new Observable<Record<string, unknown>>((observer) => {
-      // emit state initial flow
-      observer.next(router.getState())
-
-      const unsubscribe = router.channel.subscribe(() => observer.next(router.getState()))
-      return unsubscribe
-    }).pipe(map((routerState) => (routerState?.panes || []) as RouterPanes))
-
     const resolvedPanes$ = createResolvedPaneNodeStream({
       rootPaneNode: loadStructure(),
       routerPanesStream: routerPanes$,
@@ -104,7 +103,9 @@ export function useResolvedPanes(): Panes {
     })
 
     return () => subscription.unsubscribe()
-  }, [router])
+  }, [router, routerPanes$])
+
+  useEffect(() => routerStateSubject.next(router.state), [routerStateSubject, router.state])
 
   return data
 }

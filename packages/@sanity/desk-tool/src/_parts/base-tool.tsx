@@ -6,6 +6,7 @@ import {IntentResolver} from '../components/intentResolver'
 import {StructureError} from '../components/StructureError'
 import {DeskTool} from '../DeskTool'
 import {getIntentState, setActivePanes} from '../getIntentState'
+import {isRecord, isString} from '../helpers'
 import {router} from '../router'
 
 export default {
@@ -27,7 +28,10 @@ function canHandleIntent(intentName: string, params: Record<string, string | und
 }
 
 function DeskToolRoot() {
-  const {intent, params, payload} = useRouterState()
+  const routerState = useRouterState() || {}
+  const intent = isString(routerState.intent) ? routerState.intent : undefined
+  const params = isRecord(routerState.params) ? routerState.params : {}
+  const payload = routerState.payload
 
   useEffect(() => {
     // Set active panes to blank on mount and unmount
@@ -45,7 +49,7 @@ function DeskToolRoot() {
   return (
     <ErrorBoundary onCatch={handleCatch}>
       {intent ? (
-        <IntentResolver intent={intent} params={params} payload={payload} />
+        <IntentResolver intent={intent} params={params as any} payload={payload} />
       ) : (
         <DeskTool onPaneChange={setActivePanes} />
       )}

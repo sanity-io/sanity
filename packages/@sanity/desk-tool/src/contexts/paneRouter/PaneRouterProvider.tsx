@@ -2,7 +2,7 @@ import {useRouter, useRouterState} from '@sanity/base/router'
 import {omit} from 'lodash'
 import React, {useCallback, useMemo} from 'react'
 import {toString as pathToString} from '@sanity/util/paths'
-import {RouterPaneGroup, RouterPaneSibling} from '../../types'
+import {RouterPaneGroup, RouterPanes, RouterPaneSibling} from '../../types'
 import {ChildLink} from './ChildLink'
 import {BackLink} from './BackLink'
 import {ReferenceChildLink} from './ReferenceChildLink'
@@ -26,9 +26,10 @@ export function PaneRouterProvider(props: {
   const {children, flatIndex, index, params, payload, siblingIndex} = props
   const {navigate, navigateIntent} = useRouter()
   const routerState = useRouterState()
-  const routerPaneGroups: RouterPaneGroup[] = useMemo(() => routerState?.panes || emptyArray, [
-    routerState?.panes,
-  ])
+  const routerPaneGroups: RouterPaneGroup[] = useMemo(
+    () => (routerState?.panes || emptyArray) as RouterPanes,
+    [routerState?.panes]
+  )
 
   const groupIndex = index - 1
 

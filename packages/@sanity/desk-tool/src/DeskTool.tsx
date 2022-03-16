@@ -1,7 +1,7 @@
 import {getTemplateById} from '@sanity/base/initial-value-templates'
-import {useRouter, useRouterState} from '@sanity/base/router'
+import {RouterState, useRouter} from '@sanity/base/router'
 import {PortalProvider, useToast} from '@sanity/ui'
-import React, {memo, Fragment, useState, useEffect, useCallback} from 'react'
+import React, {memo, Fragment, useState, useEffect, useCallback, useMemo} from 'react'
 import styled from 'styled-components'
 import {PaneNode} from './types'
 import {PaneLayout} from './components/pane'
@@ -20,12 +20,14 @@ const StyledPaneLayout = styled(PaneLayout)`
   min-width: 320px;
 `
 
+const EMPTY_ROUTER_STATE: RouterState = {}
+
 /**
  * @internal
  */
 export const DeskTool = memo(({onPaneChange}: DeskToolProps) => {
   const {push: pushToast} = useToast()
-  const {navigate, getState} = useRouter()
+  const {navigate, state: routerState = EMPTY_ROUTER_STATE} = useRouter()
   const {paneDataItems, resolvedPanes, routerPanes} = useResolvedPanes()
 
   const [layoutCollapsed, setLayoutCollapsed] = useState(false)
@@ -56,22 +58,25 @@ export const DeskTool = memo(({onPaneChange}: DeskToolProps) => {
   }, [navigate, layoutCollapsed, routerPanes])
 
   // Handle old-style URLs
-  const shouldRewrite = useRouterState(
-    useCallback((routerState) => {
-      const {action, legacyEditDocumentId, type: schemaType, editDocumentId, params = {}} =
-        routerState || {}
+  const shouldRewrite = useMemo(() => {
+    const {
+      action,
+      legacyEditDocumentId,
+      type: schemaType,
+      editDocumentId,
+      params = {},
+    } = routerState as any
 
-      const {template: templateName} = params
-      const template = getTemplateById(templateName)
-      const type = (template && template.schemaType) || schemaType
-      return (action === 'edit' && legacyEditDocumentId) || (type && editDocumentId)
-    }, [])
-  )
+    const {template: templateName} = params
+    const template = getTemplateById(templateName)
+    const type = (template && template.schemaType) || schemaType
+    return (action === 'edit' && legacyEditDocumentId) || (type && editDocumentId)
+  }, [routerState])
 
   useEffect(() => {
     if (!shouldRewrite) return
 
-    const {legacyEditDocumentId, type: schemaType, editDocumentId, params = {}} = getState() || {}
+    const {legacyEditDocumentId, type: schemaType, editDocumentId, params = {}} = routerState as any
     const {template: templateName, ...payloadParams} = params
     const template = getTemplateById(templateName)
     const type = (template && template.schemaType) || schemaType
@@ -85,7 +90,7 @@ export const DeskTool = memo(({onPaneChange}: DeskToolProps) => {
       }),
       {replace: true}
     )
-  }, [getState, navigate, shouldRewrite])
+  }, [navigate, routerState, shouldRewrite])
 
   useEffect(() => {
     const handleGlobalKeyDown = (event: KeyboardEvent) => {
