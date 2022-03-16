@@ -2,13 +2,33 @@
   "name": "@sanity/types",
   "version": "2.29.5",
   "description": "Type definitions for common Sanity data structures",
-  "main": "./lib/index.js",
-  "types": "./dist/dts",
+  "source": "src/index.ts",
+  "main": "lib/index.cjs",
+  "module": "lib/index.js",
+  "types": "lib/dts/index.d.ts",
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "require": "./lib/index.cjs",
+      "default": "./lib/index.js"
+    }
+  },
+  "//": "the typesVersion config below is a workaround for TypeScript's lack of support for package exports",
+  "typesVersions": {
+    "*": {
+      "parts": [
+        "./parts/index.d.ts"
+      ]
+    }
+  },
   "sideEffects": false,
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "clean": "rimraf lib dest"
+    "build": "../../../bin/pkg-utils bundle",
+    "clean": "rimraf lib",
+    "prebuild": "yarn clean",
+    "watch": "../../../bin/pkg-utils bundle --watch"
   },
   "keywords": [
     "sanity",
@@ -23,10 +43,11 @@
     "@sanity/client": "^3.2.0",
     "@sanity/color": "^2.1.8",
     "@types/react": "^17.0.42",
+    "react": "17.0.1",
     "rxjs": "^6.5.3"
   },
   "devDependencies": {
-    "rimraf": "^2.7.1"
+    "rimraf": "^3.0.2"
   },
   "repository": {
     "type": "git",

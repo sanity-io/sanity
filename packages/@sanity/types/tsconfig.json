@@ -1,13 +1,13 @@
 {
-  "extends": "../../../tsconfig",
+  "extends": "../../../tsconfig.settings",
   "include": ["src", "parts"],
   "compilerOptions": {
     "composite": true,
-    "outDir": "./dist/dts",
-    "rootDir": "./src",
+    "declarationDir": "./lib/dts/",
+    "rootDir": "./src/",
+    "outDir": "./lib/dts/",
     "jsx": "react",
     "esModuleInterop": true,
-    "baseUrl": "./src",
     "paths": {
       "_self_": ["./src"]
     }
