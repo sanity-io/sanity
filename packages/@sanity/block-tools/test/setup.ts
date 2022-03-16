@@ -1,3 +1,5 @@
+export {}
+
 let mockTestKey = 0
 
 jest.mock('../src/util/randomKey', () => {
