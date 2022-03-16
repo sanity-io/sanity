@@ -1,5 +1,5 @@
 // These are path mappings/aliases used by various tools in the monorepo to map imported modules to source files
-// in order to speed up rebuilding and avoid having a separate watcher process to build from src => dist/lib.
+// in order to speed up rebuilding and avoid having a separate watcher process to build from src => lib.
 
 // This file is currently read by:
 // - webpack when running the dev server
@@ -22,7 +22,7 @@ module.exports = {
   '@sanity/portable-text-editor': './packages/@sanity/portable-text-editor/src',
   '@sanity/react-hooks': './packages/@sanity/react-hooks/src',
   '@sanity/schema': './packages/@sanity/schema/src/_exports',
-  '@sanity/state-router': './packages/@sanity/state-router/src/_exports',
+  '@sanity/state-router': './packages/@sanity/state-router/src',
   '@sanity/structure': './packages/@sanity/structure/src',
   '@sanity/transaction-collator': './packages/@sanity/transaction-collator/src',
   '@sanity/types': './packages/@sanity/types/src',
