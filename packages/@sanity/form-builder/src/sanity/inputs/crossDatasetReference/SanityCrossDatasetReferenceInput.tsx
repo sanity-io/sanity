@@ -2,23 +2,21 @@ import React, {ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'rea
 import {
   CrossDatasetReference,
   CrossDatasetReferenceSchemaType,
-  Marker,
   Path,
   ReferenceFilterOptions,
   ReferenceFilterSearchOptions,
   SanityDocument,
 } from '@sanity/types'
 import {get} from '@sanity/util/paths'
-import {FormFieldPresence} from '@sanity/base/presence'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 import {Box, Stack, Text, TextSkeleton} from '@sanity/ui'
 import {useClient, useDatastores} from '@sanity/base'
 import withValuePath from '../../../utils/withValuePath'
 import withDocument from '../../../utils/withDocument'
-import PatchEvent from '../../../PatchEvent'
 import {CrossDatasetReferenceInput} from '../../../inputs/CrossDatasetReferenceInput'
 import {Alert} from '../../../components/Alert'
+import {FormInputProps} from '../../../types'
 import {search} from './datastores/search'
 import {createGetReferenceInfo} from './datastores/getReferenceInfo'
 import {useCrossProjectToken} from './datastores/useCrossProjectToken'
@@ -45,21 +43,10 @@ async function resolveUserDefinedFilter(
   }
 }
 
-export type Props = {
-  value?: CrossDatasetReference
-  compareValue?: CrossDatasetReference
-  type: CrossDatasetReferenceSchemaType
-  markers: Marker[]
-  focusPath: Path
-  readOnly?: boolean
-  onFocus: (path: Path) => void
-  onChange: (event: PatchEvent) => void
-  level: number
-  presence: FormFieldPresence[]
-
+export interface SanityCrossDatasetReferenceInputProps
+  extends FormInputProps<CrossDatasetReference, CrossDatasetReferenceSchemaType> {
   // From withDocument
   document: SanityDocument
-
   // From withValuePath
   getValuePath: () => Path
 }
@@ -79,7 +66,7 @@ type SearchError = {
 }
 
 const SanityCrossDatasetReferenceInput = forwardRef(function SanityCrossDatasetReferenceInput(
-  props: Props,
+  props: SanityCrossDatasetReferenceInputProps,
   ref: ForwardedRef<HTMLInputElement>
 ) {
   const {getValuePath, type, document} = props
@@ -139,7 +126,7 @@ const SanityCrossDatasetReferenceInput = forwardRef(function SanityCrossDatasetR
 
   const getReferenceInfo = useMemo(
     () => createGetReferenceInfo({client: crossDatasetClient, documentPreviewStore}),
-    [crossDatasetClient]
+    [crossDatasetClient, documentPreviewStore]
   )
 
   if (loadableToken.status === 'loading') {

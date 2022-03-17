@@ -9,10 +9,12 @@ import Schema from '@sanity/schema'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {Observable, of} from 'rxjs'
 import {noop} from 'lodash'
-
 import {AvailabilityReason} from '@sanity/base/_internal'
 import userEvent from '@testing-library/user-event'
-import {CrossDatasetReferenceInput, Props} from '../CrossDatasetReferenceInput'
+import {
+  CrossDatasetReferenceInput,
+  CrossDatasetReferenceInputProps,
+} from '../CrossDatasetReferenceInput'
 import {SearchHit} from '../types'
 
 const EMPTY_SEARCH = () => of([])
@@ -38,7 +40,7 @@ StubComponent.displayName = 'StubComponent'
 type PartialExcept<T, K extends keyof T> = Partial<T> & Pick<T, K>
 
 function CrossDatasetReferenceInputTester(
-  props: PartialExcept<Props, 'type' | 'getReferenceInfo'>
+  props: PartialExcept<CrossDatasetReferenceInputProps, 'type' | 'getReferenceInfo'>
 ) {
   const onFocus = jest.fn()
   const onChange = jest.fn()
@@ -51,7 +53,7 @@ function CrossDatasetReferenceInputTester(
             <CrossDatasetReferenceInput
               onFocus={onFocus}
               onChange={onChange}
-              markers={[]}
+              validation={[]}
               level={0}
               focusPath={[]}
               presence={[]}

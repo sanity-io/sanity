@@ -1,7 +1,11 @@
-/* eslint-disable complexity */
-/* eslint-disable max-nested-callbacks,no-nested-ternary */
+/* eslint-disable complexity, max-nested-callbacks, no-nested-ternary */
+
 import React, {ForwardedRef, forwardRef, useCallback, useMemo, useRef, useState} from 'react'
-import {CrossDatasetReference, isValidationErrorMarker} from '@sanity/types'
+import {
+  CrossDatasetReference,
+  CrossDatasetReferenceSchemaType,
+  isValidationErrorMarker,
+} from '@sanity/types'
 import {EllipsisVerticalIcon, ResetIcon as ClearIcon, SyncIcon as ReplaceIcon} from '@sanity/icons'
 import {concat, Observable, of} from 'rxjs'
 import {useId} from '@reach/auto-id'
@@ -28,9 +32,11 @@ import {EMPTY_ARRAY} from '../../utils/empty'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {AlertStrip} from '../../AlertStrip'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
-import {BaseInputProps, SearchState} from './types'
+import {FormInputProps} from '../../types'
+import {isNonNullable} from '../../utils/isNonNullable'
+import {CrossDatasetReferenceInfo, SearchHit, SearchState} from './types'
 import {OptionPreview} from './OptionPreview'
-import {useReferenceInfo} from './useReferenceInfo'
+import {GetReferenceInfoFn, useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {ReferenceAutocomplete} from './ReferenceAutocomplete'
 import {PreviewCard} from './PreviewCard'
@@ -40,28 +46,30 @@ const INITIAL_SEARCH_STATE: SearchState = {
   isLoading: false,
 }
 
-export interface Props extends BaseInputProps {
-  value?: CrossDatasetReference
+export interface CrossDatasetReferenceInputProps
+  extends FormInputProps<CrossDatasetReference, CrossDatasetReferenceSchemaType> {
+  getReferenceInfo: (
+    doc: {_id: string; _type?: string},
+    type: CrossDatasetReferenceSchemaType
+  ) => Observable<CrossDatasetReferenceInfo>
+  onSearch: (query: string) => Observable<SearchHit[]>
 }
 
 const NO_FILTER = () => true
 
-function nonNullable<T>(v: T): v is NonNullable<T> {
-  return v !== null
-}
-
 type $TODO = any
 
 const REF_PATH = ['_ref']
+
 export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetReferenceInput(
-  props: Props,
+  props: CrossDatasetReferenceInputProps,
   forwardedRef: ForwardedRef<HTMLInputElement>
 ) {
   const {
     type,
     value,
     level,
-    markers,
+    validation,
     readOnly,
     onSearch,
     onChange,
@@ -130,8 +138,8 @@ export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetRefere
     [onFocus]
   )
 
-  const getReferenceInfoMemo = useCallback(
-    (id) => getReferenceInfo(id, type),
+  const getReferenceInfoMemo: GetReferenceInfoFn = useCallback(
+    (doc) => getReferenceInfo(doc, type),
     [getReferenceInfo, type]
   )
 
@@ -166,7 +174,7 @@ export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetRefere
 
   const {push} = useToast()
 
-  const errors = useMemo(() => markers.filter(isValidationErrorMarker), [markers])
+  const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
 
   const handleFocus = useCallback(
     (event) => {
@@ -187,7 +195,7 @@ export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetRefere
 
   const handleQueryChange = useObservableCallback((inputValue$: Observable<string | null>) => {
     return inputValue$.pipe(
-      filter(nonNullable),
+      filter(isNonNullable),
       distinctUntilChanged(),
       switchMap((searchString) =>
         concat(
@@ -267,7 +275,7 @@ export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetRefere
 
   return (
     <FormField
-      __unstable_markers={markers}
+      validation={validation}
       __unstable_presence={presence}
       __unstable_changeIndicator={false}
       inputId={inputId}

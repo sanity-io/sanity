@@ -27,14 +27,14 @@ export type Loadable<T> =
   | {isLoading: false; result: T; error: undefined; retry: () => void}
   | {isLoading: false; result: undefined; error: Error; retry: () => void}
 
-type GetReferenceInfo = (doc: {
+export type GetReferenceInfoFn = (doc: {
   _id: string
   _type?: string
 }) => Observable<CrossDatasetReferenceInfo>
 
 export function useReferenceInfo(
   doc: {_id: string; _type?: string},
-  getReferenceInfo: GetReferenceInfo
+  getReferenceInfo: GetReferenceInfoFn
 ): Loadable<CrossDatasetReferenceInfo> {
   const [retryAttempt, setRetryAttempt] = useState<number>(0)
 
