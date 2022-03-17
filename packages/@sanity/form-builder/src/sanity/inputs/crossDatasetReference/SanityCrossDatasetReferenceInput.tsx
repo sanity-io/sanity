@@ -1,5 +1,4 @@
 import React, {ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
-
 import {
   CrossDatasetReference,
   CrossDatasetReferenceSchemaType,
@@ -13,13 +12,12 @@ import {get} from '@sanity/util/paths'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
-import client from 'part:@sanity/base/client'
 import {Box, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {useClient, useDatastores} from '@sanity/base'
 import withValuePath from '../../../utils/withValuePath'
 import withDocument from '../../../utils/withDocument'
 import PatchEvent from '../../../PatchEvent'
 import {CrossDatasetReferenceInput} from '../../../inputs/CrossDatasetReferenceInput'
-import {versionedClient} from '../../versionedClient'
 import {Alert} from '../../../components/Alert'
 import {search} from './datastores/search'
 import {createGetReferenceInfo} from './datastores/getReferenceInfo'
@@ -85,11 +83,13 @@ const SanityCrossDatasetReferenceInput = forwardRef(function SanityCrossDatasetR
   ref: ForwardedRef<HTMLInputElement>
 ) {
   const {getValuePath, type, document} = props
+  const client = useClient()
+  const {documentPreviewStore} = useDatastores()
 
-  const currentProject = versionedClient.config().projectId
+  const currentProject = client.config().projectId
 
   const isCurrentProject = currentProject === type.projectId
-  const loadableToken = useCrossProjectToken(versionedClient, {
+  const loadableToken = useCrossProjectToken(client, {
     projectId: type.projectId,
     tokenId: type.tokenId,
   })
@@ -111,7 +111,7 @@ const SanityCrossDatasetReferenceInput = forwardRef(function SanityCrossDatasetR
         // seems like this is required to prevent this client from sometimes magically get mutated with a new projectId and dataset
         .clone()
     )
-  }, [isCurrentProject, loadableToken, type.projectId, type.dataset])
+  }, [client, isCurrentProject, loadableToken, type.projectId, type.dataset])
 
   const documentRef = useValueRef(document)
 
@@ -137,9 +137,10 @@ const SanityCrossDatasetReferenceInput = forwardRef(function SanityCrossDatasetR
     [crossDatasetClient, documentRef, getValuePath, type]
   )
 
-  const getReferenceInfo = useMemo(() => createGetReferenceInfo(crossDatasetClient), [
-    crossDatasetClient,
-  ])
+  const getReferenceInfo = useMemo(
+    () => createGetReferenceInfo({client: crossDatasetClient, documentPreviewStore}),
+    [crossDatasetClient]
+  )
 
   if (loadableToken.status === 'loading') {
     return (

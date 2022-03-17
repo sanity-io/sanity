@@ -2,7 +2,7 @@
 // eslint-disable-next-line import/no-unassigned-import
 import '@testing-library/jest-dom/extend-expect'
 import {render, within} from '@testing-library/react'
-import {RouterProvider} from '@sanity/state-router/components'
+import {RouterProvider} from '@sanity/base/router'
 import {route} from '@sanity/state-router'
 import React, {forwardRef, useImperativeHandle} from 'react'
 import Schema from '@sanity/schema'

@@ -1,16 +1,10 @@
 /* eslint-disable max-nested-callbacks */
-import {map, switchMap} from 'rxjs/operators'
 
+import {map, switchMap} from 'rxjs/operators'
 import {CrossDatasetReferenceSchemaType} from '@sanity/types'
 import {combineLatest, Observable, of} from 'rxjs'
-import {
-  AvailabilityReason,
-  DocumentAvailability,
-  getPreviewPaths,
-  observeDocumentTypeFromId,
-  observePaths,
-  prepareForPreview,
-} from '@sanity/base/_internal'
+import {AvailabilityReason, DocumentAvailability} from '@sanity/base/_internal'
+import {DocumentPreviewStore, getPreviewPaths, prepareForPreview} from '@sanity/base/preview'
 import {SanityClient} from '@sanity/client'
 import {keyBy} from 'lodash'
 import {
@@ -37,9 +31,12 @@ const AVAILABILITY_NOT_FOUND = {
 
 /**
  * Takes a client instance and returns a function that can be called to retrieve reference information
- * @param client
  */
-export function createGetReferenceInfo(client: SanityClient) {
+export function createGetReferenceInfo(context: {
+  client: SanityClient
+  documentPreviewStore: DocumentPreviewStore
+}) {
+  const {client, documentPreviewStore} = context
   const {dataset, projectId} = client.config()
 
   /**
@@ -52,11 +49,12 @@ export function createGetReferenceInfo(client: SanityClient) {
     doc: {_id: string; _type?: string}, // pass {_id, _type} instead and we can skip the `fetchType`
     referenceType: CrossDatasetReferenceSchemaType
   ): Observable<CrossDatasetReferenceInfo> {
-    return (doc._type
-      ? of(doc)
-      : observeDocumentTypeFromId(doc._id, {dataset, projectId}).pipe(
-          map((docType): {_id: string; _type?: string} => ({_id: doc._id, _type: docType}))
-        )
+    return (
+      doc._type
+        ? of(doc)
+        : documentPreviewStore
+            .observeDocumentTypeFromId(doc._id, {dataset, projectId})
+            .pipe(map((docType): {_id: string; _type?: string} => ({_id: doc._id, _type: docType})))
     ).pipe(
       switchMap((resolvedDoc) => {
         if (!resolvedDoc._type) {
@@ -80,9 +78,11 @@ export function createGetReferenceInfo(client: SanityClient) {
           ['_createdAt'],
         ]
 
-        const publishedPreview$ = observePaths(doc._id, previewPaths, {projectId, dataset}).pipe(
-          map((result) => (result ? prepareForPreview(result, refSchemaType) : result))
-        )
+        const publishedPreview$ = documentPreviewStore
+          .observePaths(doc._id, previewPaths, {projectId, dataset})
+          .pipe(
+            map((result) => (result ? prepareForPreview(result, refSchemaType as any) : result))
+          )
         return combineLatest([publishedPreview$]).pipe(
           map(([publishedPreview]) => {
             return {
