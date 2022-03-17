@@ -1,9 +1,6 @@
 import React from 'react'
 import {PreviewFields} from '@sanity/base/preview'
-// import {SanityDocument} from '@sanity/types'
 import {useDocumentPane} from '../../useDocumentPane'
-
-const PREVIEW_FIELDS = ['title']
 
 function renderTitle({title}: any) {
   return title ? <>{title}</> : <em>Untitled</em>
@@ -25,12 +22,7 @@ export function DocumentHeaderTitle() {
   }
 
   return (
-    <PreviewFields
-      document={value as any}
-      layout="inline"
-      type={documentSchema}
-      fields={PREVIEW_FIELDS}
-    >
+    <PreviewFields document={value as any} type={documentSchema}>
       {renderTitle}
     </PreviewFields>
   )

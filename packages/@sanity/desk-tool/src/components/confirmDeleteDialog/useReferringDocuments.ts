@@ -1,11 +1,9 @@
 import {useMemo} from 'react'
-import documentStore from 'part:@sanity/base/datastore/document'
-import client from 'part:@sanity/base/client'
-import {ClientError} from '@sanity/client'
+import {ClientError, SanityClient} from '@sanity/client'
 import {
   createHookFromObservableFactory,
   getPublishedId,
-  fetchAllCrossProjectTokens,
+  CrossProjectTokenStore,
 } from '@sanity/base/_internal'
 import {Observable, timer, fromEvent, EMPTY, of} from 'rxjs'
 import {
@@ -16,6 +14,7 @@ import {
   shareReplay,
   catchError,
 } from 'rxjs/operators'
+import {DocumentStore, useClient, useDatastores} from '@sanity/base'
 
 // this is used in place of `instanceof` so the matching can be more robust and
 // won't have any issues with dual packages etc
@@ -25,10 +24,6 @@ function isClientError(e: unknown): e is ClientError {
   if (!e) return false
   return 'statusCode' in e && 'response' in e
 }
-
-const versionedClient = client.withConfig({
-  apiVersion: '2022-03-07',
-})
 
 const POLL_INTERVAL = 5000
 
@@ -86,12 +81,15 @@ export type ReferringDocuments = {
  * method (for that requests can be automatically cancelled)
  */
 function fetchCrossDatasetReferences(
-  documentId: string
+  documentId: string,
+  context: {versionedClient: SanityClient; crossProjectTokenStore: CrossProjectTokenStore}
 ): Observable<ReferringDocuments['crossDatasetReferences']> {
+  const {crossProjectTokenStore, versionedClient} = context
+
   return visiblePoll$.pipe(
-    switchMap(() => fetchAllCrossProjectTokens()),
+    switchMap(() => crossProjectTokenStore.fetchAllCrossProjectTokens()),
     switchMap((crossProjectTokens) => {
-      const currentDataset = client.config().dataset
+      const currentDataset = versionedClient.config().dataset
       const headers: Record<string, string> =
         crossProjectTokens.length > 0
           ? {
@@ -122,26 +120,43 @@ function fetchCrossDatasetReferences(
   )
 }
 
-const useInternalReferences = createHookFromObservableFactory((documentId: string) => {
-  const referencesClause = '*[references($documentId)][0...100]{_id,_type}'
-  const totalClause = 'count(*[references($documentId)])'
+const useInternalReferences = createHookFromObservableFactory(
+  (documentId: string, context: {documentStore: DocumentStore}) => {
+    const {documentStore} = context
+    const referencesClause = '*[references($documentId)][0...100]{_id,_type}'
+    const totalClause = 'count(*[references($documentId)])'
 
-  return documentStore.listenQuery(
-    `{"references":${referencesClause},"totalCount":${totalClause}}`,
-    {documentId},
-    {tag: 'use-referring-documents'}
-  ) as Observable<ReferringDocuments['internalReferences']>
-})
+    return documentStore.listenQuery(
+      `{"references":${referencesClause},"totalCount":${totalClause}}`,
+      {documentId},
+      {tag: 'use-referring-documents'}
+    ) as Observable<ReferringDocuments['internalReferences']>
+  }
+)
 
-const useCrossDatasetReferences = createHookFromObservableFactory((documentId: string) => {
-  return visiblePoll$.pipe(switchMap(() => fetchCrossDatasetReferences(documentId)))
-})
+const useCrossDatasetReferences = createHookFromObservableFactory(
+  (documentId: string, context: {crossProjectTokenStore: CrossProjectTokenStore}) => {
+    const {crossProjectTokenStore} = context
+    const client = useClient()
+    const versionedClient = useMemo(() => client.withConfig({apiVersion: '2022-03-07'}), [])
+
+    return visiblePoll$.pipe(
+      switchMap(() =>
+        fetchCrossDatasetReferences(documentId, {versionedClient, crossProjectTokenStore})
+      )
+    )
+  }
+)
 
 export function useReferringDocuments(documentId: string): ReferringDocuments {
+  const {crossProjectTokenStore, documentStore} = useDatastores()
   const publishedId = getPublishedId(documentId)
-  const [internalReferences, isInternalReferencesLoading] = useInternalReferences(publishedId)
+  const [internalReferences, isInternalReferencesLoading] = useInternalReferences(publishedId, {
+    documentStore,
+  })
   const [crossDatasetReferences, isCrossDatasetReferencesLoading] = useCrossDatasetReferences(
-    publishedId
+    publishedId,
+    {crossProjectTokenStore}
   )
 
   const projectIds = useMemo(() => {

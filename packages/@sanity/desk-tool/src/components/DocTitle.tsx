@@ -9,8 +9,6 @@ export interface DocTitleProps {
 
 const renderTitle = ({title}: any) => <>{title || 'Untitled'}</>
 
-const PREVIEW_FIELDS = ['title']
-
 export function DocTitle(props: DocTitleProps) {
   const {document} = props
   const {schema} = useSource()
@@ -21,12 +19,7 @@ export function DocTitle(props: DocTitleProps) {
   }
 
   return (
-    <PreviewFields
-      document={document as any}
-      fields={PREVIEW_FIELDS}
-      layout="inline"
-      type={schemaType}
-    >
+    <PreviewFields document={document as any} type={schemaType}>
       {renderTitle}
     </PreviewFields>
   )

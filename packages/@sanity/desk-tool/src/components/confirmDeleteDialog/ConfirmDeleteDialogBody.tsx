@@ -7,10 +7,11 @@ import {
   ChevronDownIcon,
 } from '@sanity/icons'
 import {useToast, Text, Box, Button, Flex, Label, Card, Stack} from '@sanity/ui'
+import {useSource} from '@sanity/base'
 import {SanityDefaultPreview} from '@sanity/base/preview'
 import {CopyToClipboard} from 'react-copy-to-clipboard'
-import {SchemaType} from '@sanity/types'
 import {ReferencePreviewLink} from '../ReferencePreviewLink'
+import {ReferringDocuments} from './useReferringDocuments'
 import {
   ReferencesCard,
   OtherReferenceCount,
@@ -20,18 +21,11 @@ import {
   Table,
   ChevronWrapper,
 } from './ConfirmDeleteDialogBody.styles'
-import {ReferringDocuments} from './useReferringDocuments'
 
 type DeletionConfirmationDialogBodyProps = Required<ReferringDocuments> & {
   documentTitle: React.ReactNode
   action: string
   onReferenceLinkClick?: () => void
-}
-
-function getSchemaType(typeName: string): SchemaType | null {
-  const schemaMod = require('part:@sanity/base/schema')
-  const schema = schemaMod.default || schemaMod
-  return schema.get(typeName) || null
 }
 
 /**
@@ -47,12 +41,12 @@ export function ConfirmDeleteDialogBody({
   projectIds,
   onReferenceLinkClick,
 }: DeletionConfirmationDialogBodyProps) {
+  const {schema} = useSource()
   const toast = useToast()
 
   const renderPreviewItem = useCallback(
     (item) => {
-      const type = getSchemaType(item._type)
-
+      const type = schema.get(item._type)
       if (type) {
         return <ReferencePreviewLink type={type} value={item} onClick={onReferenceLinkClick} />
       }
@@ -71,7 +65,7 @@ export function ConfirmDeleteDialogBody({
         </Box>
       )
     },
-    [onReferenceLinkClick]
+    [schema, onReferenceLinkClick]
   )
 
   if (internalReferences?.totalCount === 0 && crossDatasetReferences?.totalCount === 0) {
