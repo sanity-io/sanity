@@ -31,8 +31,8 @@ interface PromisedModuleVersionInfo {
   name: string
   declared: string
   installed: string | undefined
-  latest: Promise<string>
-  latestInRange: Promise<string>
+  latest: Promise<string | undefined>
+  latestInRange: Promise<string | undefined>
   isPinned: boolean
   isGlobal: boolean
 }
@@ -165,6 +165,6 @@ function isPinnedVersion(version: string): boolean {
  * `2.27.3-cookieless-auth.34+8ba9c1504` =>
  * `2.27.3-cookieless-auth.34`
  */
-function trimHash(version) {
+function trimHash(version: string) {
   return version.replace(/\+[a-z0-9]{8,}$/, '')
 }
