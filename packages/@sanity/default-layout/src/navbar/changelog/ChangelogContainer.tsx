@@ -2,15 +2,17 @@ import React, {useCallback, useMemo, useState} from 'react'
 import {useModuleStatus} from '@sanity/base/hooks'
 import {PackageIcon} from '@sanity/icons'
 import {DialogProps} from '@sanity/ui'
-import {StatusButton} from '../components'
+import {useClient} from '@sanity/base'
 import {ChangelogDialog, UpgradeAccordion} from '../../update'
+import {StatusButton} from '../components'
 
 declare const __DEV__: boolean
 
 export function ChangelogContainer() {
   const [open, setOpen] = useState<boolean>(false)
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
-  const {value, error, isLoading} = useModuleStatus()
+  const client = useClient()
+  const {value, error, isLoading} = useModuleStatus({client})
   const {changelog, currentVersion, latestVersion, isUpToDate} = value || {}
 
   const handleOpen = useCallback(() => setOpen(true), [])
