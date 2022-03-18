@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useImperativeHandle, useRef} from 'react'
 import {FormField, FormFieldSet, ChangeIndicatorProvider} from '@sanity/base/components'
-import {PatchEvent, set, unset, setIfMissing, FormInputProps} from '@sanity/form-builder'
+import {PatchEvent, set, unset, setIfMissing, FormInputProps} from '@sanity/base/form'
 import {ObjectSchemaType} from '@sanity/types'
 import {Card, Select, Stack, TextInput} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
