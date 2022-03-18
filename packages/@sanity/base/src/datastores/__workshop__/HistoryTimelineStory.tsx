@@ -5,7 +5,6 @@ import {format} from 'date-fns'
 import {omit} from 'lodash'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {useMemoObservable} from 'react-rx'
-import {useClient} from '../../client'
 import {ChangeFieldWrapper} from '../../components'
 import {useSource} from '../../source'
 import {
@@ -19,15 +18,14 @@ import {useInitialValue} from '../document/useInitialValue'
 import {useDatastores} from '../useDatastores'
 
 export default function HistoryTimelineStory() {
-  const source = useSource()
+  const {client, schema} = useSource()
   const documentId = useMemo(() => 'test', [])
   const documentType = useMemo(() => 'author', [])
-  const schemaType = source.schema.get(documentType)
+  const schemaType = schema.get(documentType)
   const templateName = useMemo(() => undefined, [])
   const templateParams = useMemo(() => undefined, [])
   const [params, setParams] = useState<{rev?: string; since?: string}>({})
 
-  const client = useClient()
   const {historyStore} = useDatastores()
 
   const connectionState = useConnectionState(documentId, documentType)

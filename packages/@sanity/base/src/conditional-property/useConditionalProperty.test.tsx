@@ -1,16 +1,15 @@
-import {SanityClient} from '@sanity/client'
 import {renderHook} from '@testing-library/react-hooks'
 import React from 'react'
 import {createMockSanityClient} from '../../test/mocks/mockSanityClient'
-import {useClient} from '../client'
 import {createConfig} from '../config'
 import {SanityProvider} from '../sanity'
+import {SanitySource, useSource} from '../source'
 import {
   ConditionalPropertyProps,
   unstable_useConditionalProperty as useConditionalProperty,
 } from './useConditionalProperty'
 
-const useClientMock = useClient as jest.Mock<SanityClient>
+const useSourceMock = useSource as jest.Mock<SanitySource>
 
 jest.mock('../client/useClient')
 
@@ -55,7 +54,7 @@ describe('Conditional property resolver', () => {
   it('calls callback function', () => {
     const mockClient = createMockSanityClient()
 
-    useClientMock.mockImplementation(() => mockClient as any)
+    useSourceMock.mockImplementation(() => ({client: mockClient} as any))
 
     const callbackFn = jest.fn(() => true)
 
@@ -101,7 +100,7 @@ Array [
   it('resolves callback to true', () => {
     const mockClient = createMockSanityClient()
 
-    useClientMock.mockImplementation(() => mockClient as any)
+    useSourceMock.mockImplementation(() => ({client: mockClient} as any))
 
     const {result} = renderHook(
       () =>
@@ -118,7 +117,7 @@ Array [
   it('returns false with callback that returns false', () => {
     const mockClient = createMockSanityClient()
 
-    useClientMock.mockImplementation(() => mockClient as any)
+    useSourceMock.mockImplementation(() => ({client: mockClient} as any))
 
     const {result} = renderHook(
       () =>
@@ -135,7 +134,7 @@ Array [
   it('returns false if document title does not match', () => {
     const mockClient = createMockSanityClient()
 
-    useClientMock.mockImplementation(() => mockClient as any)
+    useSourceMock.mockImplementation(() => ({client: mockClient} as any))
 
     const {result} = renderHook(
       () =>
@@ -152,7 +151,7 @@ Array [
   it('returns true if document is published', () => {
     const mockClient = createMockSanityClient()
 
-    useClientMock.mockImplementation(() => mockClient as any)
+    useSourceMock.mockImplementation(() => ({client: mockClient} as any))
 
     const {result} = renderHook(
       () =>
@@ -169,7 +168,7 @@ Array [
   it('returns undefined because callback returns undefined', () => {
     const mockClient = createMockSanityClient()
 
-    useClientMock.mockImplementation(() => mockClient as any)
+    useSourceMock.mockImplementation(() => ({client: mockClient} as any))
 
     const {result} = renderHook(
       () =>
@@ -186,7 +185,7 @@ Array [
   it('returns true because value matches', () => {
     const mockClient = createMockSanityClient()
 
-    useClientMock.mockImplementation(() => mockClient as any)
+    useSourceMock.mockImplementation(() => ({client: mockClient} as any))
 
     const {result} = renderHook(
       () =>
@@ -204,7 +203,7 @@ Array [
   it('returns false because value does not match', () => {
     const mockClient = createMockSanityClient()
 
-    useClientMock.mockImplementation(() => mockClient as any)
+    useSourceMock.mockImplementation(() => ({client: mockClient} as any))
 
     const {result} = renderHook(
       () =>

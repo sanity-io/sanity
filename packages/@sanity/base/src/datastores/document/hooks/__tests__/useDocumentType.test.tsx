@@ -6,10 +6,10 @@ import {observeOn} from 'rxjs/operators'
 import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
 import {createConfig} from '../../../../config'
 import {SanityProvider} from '../../../../sanity'
+import {SanitySource, useSource} from '../../../../source'
 import {useDocumentType} from '../useDocumentType'
-import {useClient} from '../../../../client/useClient'
 
-const useClientMock = useClient as jest.Mock
+const useSourceMock = useSource as jest.Mock<SanitySource>
 
 const TestContext = createContext<{client: SanityClient} | null>(null)
 
@@ -41,14 +41,14 @@ function createWrapperComponent(client: SanityClient) {
 }
 
 beforeEach(() => {
-  useClientMock.mockImplementation(() => {
+  useSourceMock.mockImplementation(() => {
     const ctx = useContext(TestContext)
 
     if (!ctx) {
       throw new Error('Test: missing context value')
     }
 
-    return ctx.client
+    return {client: ctx.client} as any
   })
 })
 
