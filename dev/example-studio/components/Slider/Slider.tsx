@@ -1,22 +1,43 @@
-import PropTypes from 'prop-types'
+import {FormField} from '@sanity/base/components'
+import {PatchEvent, set, unset} from '@sanity/base/form'
+import {NumberSchemaType, Path} from '@sanity/types'
 import React from 'react'
-import FormField from 'part:@sanity/components/formfields/default'
-import {PatchEvent, set, unset} from '@sanity/form-builder'
+import styles from './Slider.module.css'
 
-import styles from './Slider.css'
+export interface SliderProps {
+  level: number
+  onChange: (event: PatchEvent) => void
+  onFocus: (pathOrEvent?: Path | React.FocusEvent) => void
+  type: Omit<NumberSchemaType, 'options'> & {
+    options?: {
+      range?: {
+        min: number
+        max: number
+        step: number
+      }
+    }
+  }
+  value?: number
+}
 
-const Slider = React.forwardRef(function Slider(props, ref) {
+const Slider = React.forwardRef(function Slider(
+  props: SliderProps,
+  ref: React.ForwardedRef<HTMLInputElement>
+) {
   const {type, value, level, onChange, onFocus} = props
-  const handleChange = React.useCallback((event) => {
-    const inputValue = event.target.value
-    const patch = inputValue === '' ? unset() : set(Number(inputValue))
-    onChange(PatchEvent.from(patch))
-  }, [])
+  const handleChange = React.useCallback(
+    (event) => {
+      const inputValue = event.target.value
+      const patch = inputValue === '' ? unset() : set(Number(inputValue))
+      onChange(PatchEvent.from(patch))
+    },
+    [onChange]
+  )
 
-  const {min, max, step} = type.options.range
+  const {min, max, step} = type.options?.range || {}
 
   return (
-    <FormField label={type.title} level={level} description={type.description}>
+    <FormField title={type.title} level={level} description={type.description}>
       <input
         type="range"
         className={styles.slider}
@@ -31,23 +52,5 @@ const Slider = React.forwardRef(function Slider(props, ref) {
     </FormField>
   )
 })
-
-Slider.propTypes = {
-  type: PropTypes.shape({
-    title: PropTypes.string,
-    description: PropTypes.string,
-    options: PropTypes.shape({
-      range: PropTypes.shape({
-        min: PropTypes.number,
-        max: PropTypes.number,
-        step: PropTypes.number,
-      }),
-    }),
-  }).isRequired,
-  level: PropTypes.number,
-  value: PropTypes.number,
-  onChange: PropTypes.func.isRequired,
-  onFocus: PropTypes.func.isRequired,
-}
 
 export default Slider

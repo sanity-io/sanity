@@ -3,14 +3,10 @@ import cssCustomProperties from 'sanity:css-custom-properties'
 import {ThemePropertyGroup} from './propertyGroup'
 import metadata from './metadata'
 import {getData} from './helpers'
-
-import styles from './tool.css'
+import styles from './tool.module.css'
 
 function CSSVariablesTool() {
-  const data = React.useMemo(() => getData(metadata, cssCustomProperties), [
-    metadata,
-    cssCustomProperties,
-  ])
+  const data = React.useMemo(() => getData(metadata, cssCustomProperties), [])
 
   return (
     <div className={styles.root}>

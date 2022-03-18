@@ -2,7 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {Button} from '@sanity/ui'
 import {CodeIcon} from '@sanity/icons'
-// import styles from './BlockActions.css'
 
 export default class FunkyBlockActions extends React.Component {
   static propTypes = {

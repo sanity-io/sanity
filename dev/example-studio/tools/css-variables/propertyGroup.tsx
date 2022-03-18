@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import {ThemeProperty} from './property'
-
-import styles from './propertyGroup.css'
+import styles from './propertyGroup.module.css'
 
 export function ThemePropertyGroup({group}) {
   return (

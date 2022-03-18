@@ -1,69 +1,119 @@
 import {FormFieldSet} from '@sanity/base/components'
-import {
-  FormBuilderInput,
-  FormBuilderInputInstance,
-  FormInputProps,
-  PatchEvent,
-  setIfMissing,
-} from '@sanity/form-builder'
-import {ObjectField, ObjectSchemaType} from '@sanity/types'
-import {Card, Stack, Text} from '@sanity/ui'
-import React from 'react'
+import {FormInputProps, PatchEvent, setIfMissing} from '@sanity/base/form'
+import {FormFieldPresence} from '@sanity/base/presence'
+import {FormBuilderInput, FormBuilderInputInstance} from '@sanity/form-builder'
+import {ObjectField, ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
+import {Card, Text} from '@sanity/ui'
+import React, {forwardRef, memo, useCallback, useImperativeHandle, useMemo, useRef} from 'react'
 
-type CustomObjectInputProps = FormInputProps<Record<string, unknown>, ObjectSchemaType>
+export const CustomObjectInput = forwardRef(function CustomObjectInput(
+  props: FormInputProps<Record<string, unknown>, ObjectSchemaType>,
+  ref: any
+) {
+  const {focusPath, level, onBlur, onChange, onFocus, presence, type, validation, value} = props
 
-export default class CustomObjectInput extends React.PureComponent<CustomObjectInputProps> {
-  firstFieldInput = React.createRef<FormBuilderInputInstance>()
+  const firstFieldInputRef = useRef<FormBuilderInputInstance | null>(null)
 
-  handleFieldChange = (field: ObjectField, fieldPatchEvent: PatchEvent) => {
-    const {onChange, type} = this.props
+  const handleFieldChange = useCallback(
+    (field: ObjectField, fieldPatchEvent: PatchEvent) => {
+      // const {onChange, type} = props
+      // Whenever the field input emits a patch event, we need to make sure to each of the included patches
+      // are prefixed with its field name, e.g. going from:
+      // {path: [], set: <nextvalue>} to {path: [<fieldName>], set: <nextValue>}
+      // and ensure this input's value exists
+      onChange(fieldPatchEvent.prefixAll(field.name).prepend(setIfMissing({_type: type.name})))
+    },
+    [onChange, type]
+  )
 
-    // Whenever the field input emits a patch event, we need to make sure to each of the included
-    // patches are prefixed with its field name, e.g. going from:
-    // {path: [], set: <nextvalue>} to {path: [<fieldName>], set: <nextValue>}
-    // and ensure this input's value exists
-    onChange(fieldPatchEvent.prefixAll(field.name).prepend(setIfMissing({_type: type.name})))
-  }
+  useImperativeHandle(ref, () => ({focus: () => firstFieldInputRef.current?.focus()}), [])
 
-  focus() {
-    const firstFieldInput = this.firstFieldInput.current
-
-    if (firstFieldInput) {
-      firstFieldInput.focus()
-    }
-  }
-
-  render() {
-    const {type, value, level, focusPath, onFocus, onBlur, presence, validation} = this.props
-
-    return (
-      <FormFieldSet level={level} title={type.title} description={type.description}>
-        <Text accent size={1}>
+  return (
+    <Card padding={3} radius={2} tone="primary">
+      <FormFieldSet level={level + 1} title={type.title} description={type.description}>
+        <Text muted size={1}>
           This is my custom object input with fields
         </Text>
-        <Card padding={3} radius={2} tone="primary">
-          <Stack space={4}>
-            {type.fields.map((field, i) => (
-              // Delegate to the generic FormBuilderInput. It will resolve and insert the actual
-              // input component for the given field type
-              <FormBuilderInput
-                level={level + 1}
-                ref={i === 0 ? this.firstFieldInput : null}
-                key={field.name}
-                type={field.type}
-                value={value?.[field.name]}
-                onChange={(patchEvent) => this.handleFieldChange(field, patchEvent)}
-                path={[field.name]}
-                focusPath={focusPath}
-                onFocus={onFocus}
-                onBlur={onBlur}
-                presence={presence.filter((p) => p.path[0] === field.name)}
-                validation={validation.filter((p) => p.path[0] === field.name)}
-              />
-            ))}
-          </Stack>
-        </Card>
+
+        {type.fields.map((field, i) => (
+          <CustomObjectField
+            baseLevel={level + 1}
+            basePresence={presence}
+            baseValidation={validation}
+            field={field}
+            focusPath={focusPath}
+            inputRef={i === 0 ? firstFieldInputRef : null}
+            key={field.name}
+            onBlur={onBlur}
+            onChange={handleFieldChange}
+            onFocus={onFocus}
+            value={value?.[field.name]}
+          />
+        ))}
       </FormFieldSet>
-    )
-  }
-}
+    </Card>
+  )
+})
+
+const CustomObjectField = memo(function CustomObjectField(props: {
+  baseLevel: number
+  basePresence: FormFieldPresence[]
+  baseValidation: ValidationMarker[]
+  field: ObjectField
+  focusPath: Path
+  inputRef: React.Ref<FormBuilderInputInstance>
+  onBlur?: () => void
+  onChange: (field: ObjectField, fieldPatchEvent: PatchEvent) => void
+  onFocus: (pathOrEvent?: Path | React.FocusEvent) => void
+  value: unknown
+}) {
+  const {
+    baseLevel,
+    basePresence,
+    baseValidation,
+    field,
+    focusPath,
+    inputRef,
+    onBlur,
+    onChange,
+    onFocus,
+    value,
+  } = props
+
+  const path = useMemo(() => [field.name], [field])
+
+  const presence = useMemo(
+    () => basePresence.filter((m) => m.path[0] === field.name),
+    [basePresence, field]
+  )
+
+  const validation = useMemo(
+    () => baseValidation.filter((m) => m.path[0] === field.name),
+    [baseValidation, field]
+  )
+
+  const handleChange = useCallback(
+    (patchEvent) => {
+      onChange(field, patchEvent)
+    },
+    [field, onChange]
+  )
+
+  return (
+    // Delegate to the generic FormBuilderInput. It will resolve and insert the actual input component
+    // for the given field type
+    <FormBuilderInput
+      level={baseLevel + 1}
+      ref={inputRef}
+      type={field.type}
+      value={value}
+      onChange={handleChange}
+      path={path}
+      focusPath={focusPath}
+      onFocus={onFocus}
+      onBlur={onBlur}
+      presence={presence}
+      validation={validation}
+    />
+  )
+})

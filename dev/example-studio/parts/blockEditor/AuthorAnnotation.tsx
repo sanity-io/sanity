@@ -1,59 +1,37 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import ReactTooltip from 'react-tooltip'
-import sanityClient from 'part:@sanity/base/client'
-import styles from './AuthorAnnotation.css'
+import {useSource} from '@sanity/base'
+import {SanityDocument} from '@sanity/types'
+import {Box, Text, Tooltip} from '@sanity/ui'
+import React, {useEffect, useState} from 'react'
+import styles from './AuthorAnnotation.module.css'
 
-const client = sanityClient.withConfig({apiVersion: '1'})
+export default function AuthorAnnotation(props: {_ref?: string; children?: React.ReactNode}) {
+  const {_ref, children} = props
+  const {client} = useSource()
 
-export default class AuthorAnnotation extends React.Component {
-  static propTypes = {
-    children: PropTypes.node.isRequired,
-    _ref: PropTypes.string,
-    _key: PropTypes.string,
-  }
-
-  state = {
+  const [state, setState] = useState<{author: SanityDocument | null}>({
     author: null,
-  }
+  })
 
-  // eslint-disable-next-line consistent-return
-  fetchAuthor() {
-    if (this.props._ref) {
-      return client.getDocument(this.props._ref).then((author) => {
-        this.setState({author: author})
-      })
-    }
-  }
+  useEffect(() => {
+    if (!_ref) return
 
-  componentDidMount() {
-    this.fetchAuthor()
-  }
+    client.getDocument(_ref).then((author) => {
+      setState({author: author || null})
+    })
+  }, [_ref, client])
 
-  componentDidUpdate(prevProps) {
-    if (this.props._ref && prevProps._ref !== this.props._ref) {
-      this.fetchAuthor()
-    }
-  }
-
-  renderToolTip(toolTipId) {
-    if (!this.state.author) {
-      return null
-    }
-    return (
-      <ReactTooltip className={styles.reactToolTip} id={toolTipId}>
-        {this.state.author.name}
-      </ReactTooltip>
-    )
-  }
-
-  render() {
-    const toolTipId = `tooltip${this.props._key}`
-    return (
-      <span className={styles.root} data-tip="" data-for={toolTipId}>
-        {this.props.children}
-        {this.renderToolTip(toolTipId)}
+  return (
+    <Tooltip
+      content={
+        <Box>
+          <Text>{String(state.author?.name)}</Text>
+        </Box>
+      }
+      disabled={!state.author}
+    >
+      <span className={styles.root} data-tip="">
+        {children}
       </span>
-    )
-  }
+    </Tooltip>
+  )
 }

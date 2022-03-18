@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import {ThemePropertyPreview} from './propertyPreview'
-
-import styles from './property.css'
+import styles from './property.module.css'
 
 export function ThemeProperty({property}) {
   return (

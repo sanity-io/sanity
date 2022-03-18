@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-
-import styles from './propertyPreview.css'
+import styles from './propertyPreview.module.css'
 
 // eslint-disable-next-line complexity
 export function ThemePropertyPreview({property}) {

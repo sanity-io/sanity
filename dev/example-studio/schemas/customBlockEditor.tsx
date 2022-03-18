@@ -1,5 +1,6 @@
 import React from 'react'
 import {FaFont as icon, FaUser as AuthorIcon} from 'react-icons/fa'
+import {Rule} from '@sanity/types'
 import Highlight from '../parts/blockEditor/Highlight'
 import AuthorAnnotation from '../parts/blockEditor/AuthorAnnotation'
 import TitleStyle from '../parts/blockEditor/TitleStyle'
@@ -78,7 +79,7 @@ export default {
                     name: 'href',
                     type: 'string',
                     title: 'Url',
-                    validation: (Rule) => Rule.required(),
+                    validation: (rule: Rule) => rule.required(),
                   },
                 ],
               },
@@ -127,7 +128,7 @@ export default {
                   type: 'string',
                   title: 'Caption',
                   options: {isHighlighted: true},
-                  validation: (Rule) => Rule.required(),
+                  validation: (rule: Rule) => rule.required(),
                 },
               ],
             },
@@ -142,7 +143,7 @@ export default {
                 {
                   type: 'string',
                   name: 'title',
-                  validation: (Rule) => Rule.required().min(10).max(80),
+                  validation: (rule: Rule) => rule.required().min(10).max(80),
                 },
               ],
             },
@@ -162,7 +163,7 @@ export default {
             {
               type: 'string',
               name: 'title',
-              validation: (Rule) => Rule.required().min(10).max(80),
+              validation: (rule: Rule) => rule.required().min(10).max(80),
             },
           ],
         },
@@ -177,7 +178,7 @@ export default {
               title: 'Caption',
               description: 'Is required',
               options: {isHighlighted: true},
-              validation: (Rule) => Rule.required(),
+              validation: (rule: Rule) => rule.required(),
             },
             {
               name: 'subtitle',

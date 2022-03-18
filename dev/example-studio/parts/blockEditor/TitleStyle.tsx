@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import styles from './TitleStyle.css'
+import styles from './TitleStyle.module.css'
 
 const TitleStyle = (props) => {
   return <div className={styles.root}>{props.children}</div>

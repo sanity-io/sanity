@@ -1,5 +1,5 @@
 import {MdExtension as icon} from 'react-icons/md'
-import CustomObjectInput from '../components/CustomObjectInput'
+import {CustomObjectInput} from '../components/CustomObjectInput'
 
 export default {
   type: 'document',

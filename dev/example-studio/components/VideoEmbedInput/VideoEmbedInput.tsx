@@ -1,41 +1,46 @@
-import PropTypes from 'prop-types'
 import React from 'react'
-import FormField from 'part:@sanity/components/formfields/default'
-import {PatchEvent, set, unset} from '@sanity/form-builder'
-import Preview from 'part:@sanity/base/preview'
+import {FormField} from '@sanity/base/components'
+import {PatchEvent, set, unset} from '@sanity/base/form'
+import {SanityPreview as Preview} from '@sanity/base/preview'
 import getVideoId from 'get-video-id'
 import humanizeList from 'humanize-list'
+import {ReferenceSchemaType} from '@sanity/types'
 import {SUPPORTED_SERVICES} from '../VideoEmbedPreview'
-import styles from './VideoEmbedInput.css'
+import styles from './VideoEmbedInput.module.css'
+
+export interface VideoEmbedInputProps {
+  level: number
+  type: ReferenceSchemaType
+  onChange: (event: PatchEvent) => void
+  value: {
+    _type: unknown
+    id: string
+    service:
+      | 'youtube'
+      | 'vimeo'
+      | 'vine'
+      | 'videopress'
+      | 'microsoftstream'
+      | 'tiktok'
+      | 'dailymotion'
+      | null
+  }
+}
 
 const ERROR_UNKNOWN_VIDEO_SERVICE = 'Could not find any video service from the given value 😢'
 const ERROR_UNKNOWN_VIDEO_ID = 'Could not find any video from the given value 😢'
 
-function select(ev) {
+function select(ev: React.FocusEvent<HTMLTextAreaElement>) {
   ev.target.select()
 }
 
-export default class VideoEmbedInput extends React.Component {
-  static propTypes = {
-    type: PropTypes.shape({
-      title: PropTypes.string,
-    }).isRequired,
-
-    level: PropTypes.number,
-    value: PropTypes.shape({
-      _type: PropTypes.string,
-      id: PropTypes.string,
-      service: PropTypes.string,
-    }),
-    onChange: PropTypes.func.isRequired,
-  }
-
+export default class VideoEmbedInput extends React.Component<VideoEmbedInputProps> {
   state = {
     errorMessage: null,
     result: null,
   }
 
-  handleSourceChange = (event) => {
+  handleSourceChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const {type} = this.props
     const inputValue = event.target.value
 
@@ -84,17 +89,16 @@ export default class VideoEmbedInput extends React.Component {
       {conjunction: 'or'}
     )}…`
     return (
-      <FormField label={type.title} level={level} description={type.description}>
+      <FormField title={type.title} level={level} description={type.description}>
         <textarea
           className={styles.pasteBox}
-          type="text"
           onFocus={select}
           placeholder={placeholder}
           onChange={this.handleSourceChange}
         />
         {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
         {result && <div>Found a video 🙌</div>}
-        {value && value.id && !errorMessage && <Preview value={value} type={type} />}
+        {value && value.id && !errorMessage && <Preview value={value as any} type={type} />}
       </FormField>
     )
   }
