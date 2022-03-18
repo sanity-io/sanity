@@ -1,16 +1,13 @@
 import {useDatastores, useSource} from '@sanity/base'
-import {
-  DocumentMutationEvent,
-  DocumentRebaseEvent,
-  fromMutationPatches,
-} from '@sanity/base/_internal'
+import {DocumentMutationEvent, DocumentRebaseEvent} from '@sanity/base/_internal'
+import {FormBuilderFilterFieldFn, fromMutationPatches} from '@sanity/base/form'
 import {
   useDocumentPresence,
   unstable_useConditionalProperty as useConditionalProperty,
 } from '@sanity/base/hooks'
 import {PresenceOverlay} from '@sanity/base/presence'
 import {SanityDocument} from '@sanity/client'
-import {FormBuilderFilterFieldFn, SanityFormBuilder} from '@sanity/form-builder'
+import {SanityFormBuilder} from '@sanity/form-builder'
 import {createPatchChannel, PatchMsg} from '@sanity/form-builder/_internal'
 import {isActionEnabled} from '@sanity/schema/_internal'
 import {Box, Container, Flex, Spinner, Text} from '@sanity/ui'
