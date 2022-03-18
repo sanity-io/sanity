@@ -1,3 +1,5 @@
+export {}
+
 // get rid of context warning
 const warn = console.warn
 window.console = {
