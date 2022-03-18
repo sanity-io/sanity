@@ -11,7 +11,7 @@ import {
   ChangeIndicatorCompareValueProvider,
   ChangeIndicator,
 } from '@sanity/base/components'
-import {FormInputProps, PatchEvent, set, setIfMissing, unset} from '@sanity/form-builder'
+import {FormInputProps, PatchEvent, set, setIfMissing, unset} from '@sanity/base/form'
 import {GoogleMapsLoadProxy} from '../loader/GoogleMapsLoadProxy'
 import {Geopoint, GeopointSchemaType} from '../types'
 import {GeopointSelect} from './GeopointSelect'
