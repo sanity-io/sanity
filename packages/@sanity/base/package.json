@@ -116,6 +116,9 @@
       "field": [
         "./lib/dts/src/_exports/field.d.ts"
       ],
+      "form": [
+        "./lib/dts/_exports/form.d.ts"
+      ],
       "hooks": [
         "./lib/dts/src/_exports/hooks.d.ts"
       ],
