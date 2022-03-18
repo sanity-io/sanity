@@ -6,15 +6,29 @@ import {debug} from '../../debug'
 import versionRanges from '../../versionRanges'
 import type {CliCommandContext} from '../../types'
 import {resolveLatestVersions} from '../../util/resolveLatestVersions'
-import {createPackageManifest, createSanityManifest} from './createManifest'
-import type {InitOptions, ProjectTemplate} from './initProject'
+import {copy} from '../../util/copy'
+import {createPackageManifest} from './createPackageManifest'
+import {createStudioConfig, GenerateConfigOptions} from './createStudioConfig'
+import type {ProjectTemplate} from './initProject'
 import templates from './templates'
 
-export default async (opts: InitOptions, context: CliCommandContext): Promise<ProjectTemplate> => {
+export interface BootstrapOptions {
+  packageName: string
+  templateName: string
+  outputPath: string
+  useTypeScript: boolean
+  variables: GenerateConfigOptions['variables']
+}
+
+export async function bootstrapTemplate(
+  opts: BootstrapOptions,
+  context: CliCommandContext
+): Promise<ProjectTemplate> {
   const {apiClient, cliRoot, output} = context
   const templatesDir = path.join(cliRoot, 'templates')
-  const sourceDir = path.join(templatesDir, opts.template)
-  const {outputDir, projectId, template: templateName} = opts
+  const {outputPath, templateName, useTypeScript, packageName, variables} = opts
+  const {projectId} = variables
+  const sourceDir = path.join(templatesDir, templateName)
 
   // Check that we have a template info file (dependencies, plugins etc)
   const template = templates[templateName]
@@ -23,11 +37,10 @@ export default async (opts: InitOptions, context: CliCommandContext): Promise<Pr
   }
 
   // Copy template files
-  debug('Copying files from template "%s" to "%s"', templateName, outputDir)
+  debug('Copying files from template "%s" to "%s"', templateName, outputPath)
   let spinner = output.spinner('Bootstrapping files from template').start()
-  await fse.copy(sourceDir, outputDir, {
-    overwrite: false,
-    errorOnExist: true,
+  await copy(sourceDir, outputPath, {
+    rename: useTypeScript ? toTypeScriptPath : undefined,
   })
   spinner.succeed()
 
@@ -53,19 +66,20 @@ export default async (opts: InitOptions, context: CliCommandContext): Promise<Pr
   // Now create a package manifest (`package.json`) with the merged dependencies
   spinner = output.spinner('Creating default project files').start()
   const packageManifest = await createPackageManifest({
-    name: opts.name,
+    name: packageName,
     dependencies,
   })
 
-  // ...and a `sanity.json` manifest
-  const baseSanityManifest = await createSanityManifest(opts)
-  const sanityManifest = template.generateSanityManifest
-    ? template.generateSanityManifest(baseSanityManifest, opts)
-    : baseSanityManifest
+  // ...and a studio config (`sanity.config.[ts|js]`)
+  const studioConfig = await createStudioConfig({
+    template: template.configTemplate,
+    variables,
+  })
 
   // Write non-template files to disc
+  const codeExt = useTypeScript ? 'ts' : 'js'
   await Promise.all([
-    writeFileIfNotExists('sanity.json', `${JSON.stringify(sanityManifest, null, 2)}\n`),
+    writeFileIfNotExists(`sanity.config.${codeExt}`, studioConfig),
     writeFileIfNotExists('package.json', packageManifest),
     writeFileIfNotExists(
       '.eslintrc',
@@ -93,7 +107,7 @@ export default async (opts: InitOptions, context: CliCommandContext): Promise<Pr
   return template
 
   async function writeFileIfNotExists(fileName: string, content: string): Promise<void> {
-    const filePath = path.join(outputDir, fileName)
+    const filePath = path.join(outputPath, fileName)
     try {
       await fse.writeFile(filePath, content, {flag: 'wx'})
     } catch (err) {
@@ -108,4 +122,8 @@ export default async (opts: InitOptions, context: CliCommandContext): Promise<Pr
 
 function isFirstParty(pkg: string): boolean {
   return pkg.indexOf('@sanity/') === 0
+}
+
+function toTypeScriptPath(originalPath: string): string {
+  return originalPath.replace(/\.js$/, '.ts')
 }

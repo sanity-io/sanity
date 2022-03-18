@@ -7,26 +7,28 @@ import noop from 'lodash/noop'
 import {loadJson} from '@sanity/util/_internal'
 import type {DatasetAclMode} from '@sanity/client'
 import {reduceConfig} from '@sanity/util'
+
 import {debug} from '../../debug'
 import {getClientWrapper} from '../../util/clientWrapper'
 import {getUserConfig} from '../../util/getUserConfig'
 import {getProjectDefaults, ProjectDefaults} from '../../util/getProjectDefaults'
+import type {InitFlags} from '../../commands/init/initCommand'
 import type {
   CliApiClient,
   CliCommandArguments,
   CliCommandContext,
   CliCommandDefinition,
-  SanityJson,
 } from '../../types'
 import {createProject} from '../project/createProject'
 import {login, LoginFlags} from '../login/login'
 import {dynamicRequire} from '../../util/dynamicRequire'
 import {promptForDatasetName} from './promptForDatasetName'
-import bootstrapTemplate from './bootstrapTemplate'
+import {BootstrapOptions, bootstrapTemplate} from './bootstrapTemplate'
 import templates from './templates'
 import {reconfigureV2Project} from './reconfigureV2Project'
 import {validateEmptyPath, absolutify} from './fsUtils'
-import {promptForAclMode, promptForDefaultConfig, promptImplicitReconfigure} from './prompts'
+import {promptForAclMode, promptForDefaultConfig, promptForTypeScript} from './prompts'
+import {GenerateConfigOptions} from './createStudioConfig'
 
 /* eslint-disable no-process-env */
 const isCI = process.env.CI
@@ -34,53 +36,27 @@ const sanityEnv = process.env.SANITY_INTERNAL_ENV
 const environment = sanityEnv ? sanityEnv : process.env.NODE_ENV
 /* eslint-enable no-process-env */
 
-export interface InitProjectFlags {
-  y?: boolean
-  yes?: boolean
-  project?: string
-  dataset?: string
-  template?: string
-  visibility?: string
-
-  'output-path'?: string
-  'project-plan'?: string
-  'create-project'?: boolean | string
-  'dataset-default'?: boolean
-
-  coupon?: string
-  reconfigure?: boolean
-
-  organization?: string
-}
-
-export type InitOptions = {
+export interface InitOptions {
   template: string
   outputDir: string
   name: string
   displayName: string
   dataset: string
   projectId: string
-} & (
-  | ({
-      license: string
-    } & ProjectDefaults & {
-        outputPath: string | undefined
-      })
-  | {
-      description: string | undefined
-      gitRemote: string | undefined
-      author: string | undefined
-      license: string
-      outputPath: string | undefined
-    }
-)
+  author: string | undefined
+  description: string | undefined
+  gitRemote: string | undefined
+  license: string | undefined
+  outputPath: string | undefined
+  projectName: string
+  useTypeScript: boolean
+}
 
 export interface ProjectTemplate {
   datasetUrl?: string
   dependencies?: Record<string, string>
   importPrompt?: string
-  generateSanityManifest: (base: SanityJson, options: InitOptions) => SanityJson
-  getSuccessMessage?: (initOptions: InitOptions, context: CliCommandContext) => string
+  configTemplate?: string | ((variables: GenerateConfigOptions['variables']) => string)
 }
 
 export interface ProjectOrganization {
@@ -91,18 +67,17 @@ export interface ProjectOrganization {
 
 // eslint-disable-next-line max-statements, complexity
 export default async function initSanity(
-  args: CliCommandArguments<InitProjectFlags>,
+  args: CliCommandArguments<InitFlags>,
   context: CliCommandContext
 ): Promise<void> {
   const {output, prompt, workDir, apiClient, yarn, chalk, sanityMajorVersion} = context
   const cliFlags = args.extOptions
   const unattended = cliFlags.y || cliFlags.yes
   const print = unattended ? noop : output.print
-  const specifiedOutputPath = cliFlags['output-path']
   const intendedPlan = cliFlags['project-plan']
   const intendedCoupon = cliFlags.coupon
+  const reconfigure = cliFlags.reconfigure
 
-  let reconfigure = cliFlags.reconfigure
   let defaultConfig = cliFlags['dataset-default']
   let showDefaultConfigPrompt = !defaultConfig
 
@@ -137,56 +112,18 @@ export default async function initSanity(
     selectedPlan = intendedPlan
   }
 
-  // Check if we have a project manifest already
-  const manifestPath = path.join(workDir, 'sanity.json')
-  let inProjectContext = false
-  let projectManifest
-  try {
-    projectManifest = await fse.readJson(manifestPath)
-    inProjectContext = Boolean(projectManifest.root)
-  } catch (err) {
-    // Intentional noop
-  }
-
-  const toDifferentPath = specifiedOutputPath && absolutify(specifiedOutputPath) !== workDir
-
-  // If explicitly reconfiguring, make sure we have something to reconfigure
-  if (reconfigure && !inProjectContext) {
-    throw new Error(
-      projectManifest
-        ? 'Reconfigure flag passed, but no `sanity.json` found'
-        : 'Reconfigure flag passed, but `sanity.json` does not have "root" property set'
-    )
-  }
-
-  // If we are in a Sanity studio project folder and the project manifest has projectId/dataset,
-  // ASK if we want to reconfigure. If no projectId/dataset is present, we assume reconfigure
-  const hasProjectId = projectManifest && projectManifest.api && projectManifest.api.projectId
-  if (!toDifferentPath && hasProjectId && !reconfigure) {
-    reconfigure = await promptImplicitReconfigure(prompt)
-    if (!reconfigure) {
-      print(
-        'Init cancelled. If you want to create a new project, try running `sanity init` in an empty folder'
-      )
-      return
-    }
-  } else if (!toDifferentPath) {
-    reconfigure = inProjectContext
-  }
-
   if (reconfigure) {
-    print(`The Sanity Studio in this folder will be tied to a new project on Sanity.io!`)
-    if (hasProjectId) {
-      print('The previous project configuration will be overwritten.')
-    }
-    print(`We're first going to make sure you have an account with Sanity.io. Hang on.`)
-    print('Press ctrl + C at any time to quit.\n')
-  } else {
-    print(`You're setting up a Sanity.io project!`)
-    print(`We'll make sure you're logged in with Sanity.io.`)
-    print(`Then, we'll install a Sanity Studio for your project.\n`)
-    print('Press ctrl + C at any time to quit.\n')
+    throw new Error('`--reconfigure` is deprecated - manual configuration is now required')
   }
+
+  print(`You're setting up a new project!`)
+  print(`We'll make sure you have an account with Sanity.io. Then we'll`)
+  print('install an open-source JS content editor that connects to')
+  print('the real-time hosted API on Sanity.io. Hang on.\n')
+  print('Press ctrl + C at any time to quit.\n')
+  print('Prefer web interfaces to terminals?')
+  print('You can also set up best practice Sanity projects with')
+  print('your favorite frontends on https://sanity.io/create\n')
 
   // If the user isn't already authenticated, make it so
   const userConfig = getUserConfig()
@@ -224,122 +161,86 @@ export default async function initSanity(
   debug(`Dataset with name ${datasetName} selected`)
 
   let outputPath = workDir
-  let successMessage
-  let defaults: ProjectDefaults | undefined
 
-  if (reconfigure) {
-    // Rewrite project manifest (sanity.json)
-    const projectInfo = projectManifest.project || {}
-    const newProps = {
-      root: true,
-      api: {
-        ...(projectManifest.api || {}),
-        projectId,
-        dataset: datasetName,
-      },
-      project: {
-        ...projectInfo,
-        // Keep original name if present
-        name: projectInfo.name || displayName,
-      },
-    }
+  // Gather project defaults based on environment
+  const defaults = await getProjectDefaults(workDir, {isPlugin: false, context})
 
-    // Ensure root, api and project keys are at top to follow sanity.json key order convention
-    projectManifest = {
-      ...newProps,
-      ...projectManifest,
-      ...newProps,
-    }
+  // Prompt the user for required information
+  const answers = await getProjectInfo()
 
-    await fse.outputJSON(manifestPath, projectManifest, {spaces: 2})
+  // Ensure we are using the output path provided by user
+  outputPath = answers.outputPath
 
-    const hasNodeModules = await fse.pathExists(path.join(workDir, 'node_modules'))
-    if (hasNodeModules) {
-      print('Skipping installation of dependencies since node_modules exists.')
-      print('Run sanity install to reinstall dependencies')
-    } else {
-      try {
-        await yarn(['install'], {...output, rootDir: workDir})
-      } catch (err) {
-        throw err
-      }
-    }
-  } else {
-    // Gather project defaults based on environment
-    defaults = await getProjectDefaults(workDir, {isPlugin: false, context})
+  // Prompt for template to use
+  const templateName = await selectProjectTemplate()
 
-    // Prompt the user for required information
-    const answers = await getProjectInfo()
+  const template = templates[templateName]
+  if (!template) {
+    throw new Error(`Template "${templateName}" not found`)
+  }
 
-    // Ensure we are using the output path provided by user
-    outputPath = answers.outputPath || workDir
+  // Use typescript?
+  let useTypeScript = false
+  if (typeof cliFlags.typescript === 'boolean') {
+    useTypeScript = cliFlags.typescript
+  } else if (!unattended) {
+    useTypeScript = await promptForTypeScript(prompt)
+  }
 
-    // Prompt for template to use
-    const templateName = await selectProjectTemplate()
-
-    // Build a full set of resolved options
-    const initOptions = {
-      template: templateName,
-      outputDir: outputPath,
-      name: sluggedName,
-      displayName: displayName,
+  // Build a full set of resolved options
+  const templateOptions: BootstrapOptions = {
+    outputPath,
+    packageName: sluggedName,
+    templateName,
+    useTypeScript,
+    variables: {
       dataset: datasetName,
-      projectId: projectId,
-      ...answers,
-    }
+      projectId,
+      projectName: displayName || answers.projectName,
+    },
+  }
 
-    const template = templates[templateName]
-    if (!template) {
-      throw new Error(`Template "${templateName}" not found`)
-    }
+  // If the template has a sample dataset, prompt the user whether or not we should import it
+  const shouldImport =
+    !unattended && template.datasetUrl && (await promptForDatasetImport(template.importPrompt))
 
-    // If the template has a sample dataset, prompt the user whether or not we should import it
-    const shouldImport =
-      !unattended && template.datasetUrl && (await promptForDatasetImport(template.importPrompt))
+  // Bootstrap Sanity, creating required project files, manifests etc
+  await bootstrapTemplate(templateOptions, context)
 
-    // Bootstrap Sanity, creating required project files, manifests etc
-    await bootstrapTemplate(initOptions, context)
+  // Now for the slow part... installing dependencies
+  try {
+    await yarn(['install'], {...output, rootDir: outputPath})
+  } catch (err) {
+    throw err
+  }
 
-    // Now for the slow part... installing dependencies
-    try {
-      await yarn(['install'], {...output, rootDir: outputPath})
-    } catch (err) {
-      throw err
-    }
+  // Make sure we have the required configs
+  const corePath = resolveFrom.silent(outputPath, '@sanity/core') || 'null'
 
-    // Make sure we have the required configs
-    const corePath = resolveFrom.silent(outputPath, '@sanity/core') || 'null'
+  debug('@sanity/core path resolved to %s', corePath)
+  debug('(from %s)', outputPath)
+  const coreModule = dynamicRequire(corePath)
+  const coreCommands = coreModule && coreModule.commands
 
-    debug('@sanity/core path resolved to %s', corePath)
-    debug('(from %s)', outputPath)
-    const coreModule = dynamicRequire(corePath)
-    const coreCommands = coreModule && coreModule.commands
+  if (!Array.isArray(coreCommands)) {
+    throw new Error('@sanity/core module failed to be resolved')
+  }
 
-    if (!Array.isArray(coreCommands)) {
-      throw new Error('@sanity/core module failed to be resolved')
-    }
+  // Prompt for dataset import (if a dataset is defined)
+  if (shouldImport) {
+    await doDatasetImport({
+      outputPath,
+      coreCommands,
+      template,
+      datasetName,
+      context,
+    })
 
-    // Prompt for dataset import (if a dataset is defined)
-    if (shouldImport) {
-      await doDatasetImport({
-        outputPath,
-        coreCommands,
-        template,
-        datasetName,
-        context,
-      })
-
-      print('')
-      print('If you want to delete the imported data, use')
-      print(`\t${chalk.cyan(`sanity dataset delete ${datasetName}`)}`)
-      print('and create a new clean dataset with')
-      print(`\t${chalk.cyan(`sanity dataset create <name>`)}\n`)
-    }
-
-    // See if the template has a success message handler and print it
-    successMessage = template.getSuccessMessage
-      ? template.getSuccessMessage(initOptions, context)
-      : ''
+    print('')
+    print('If you want to delete the imported data, use')
+    print(`\t${chalk.cyan(`sanity dataset delete ${datasetName}`)}`)
+    print('and create a new clean dataset with')
+    print(`\t${chalk.cyan(`sanity dataset create <name>`)}\n`)
   }
 
   const isCurrentDir = outputPath === process.cwd()
@@ -356,10 +257,6 @@ export default async function initSanity(
   print(`sanity docs - to open the documentation in a browser`)
   print(`sanity manage - to open the project settings in a browser`)
   print(`sanity help - to explore the CLI manual`)
-
-  if (successMessage) {
-    print(`\n${successMessage}`)
-  }
 
   const sendInvite =
     isFirstProject &&
@@ -393,11 +290,13 @@ export default async function initSanity(
     print('datasets and collaborators safe and snug.')
   }
 
+  // eslint-disable-next-line complexity
   async function getOrCreateProject(): Promise<{
     projectId: string
     displayName: string
     isFirstProject: boolean
   }> {
+    const spinner = context.output.spinner('Fetching existing projects').start()
     let projects
     let organizations: ProjectOrganization[]
     try {
@@ -408,11 +307,14 @@ export default async function initSanity(
       ])
       projects = allProjects
       organizations = allOrgs
+      spinner.succeed()
     } catch (err) {
       if (unattended && flags.project) {
+        spinner.succeed()
         return {projectId: flags.project, displayName: 'Unknown project', isFirstProject: false}
       }
 
+      spinner.fail()
       throw new Error(`Failed to communicate with the Sanity API:\n${err.message}`)
     }
 
@@ -674,34 +576,32 @@ export default async function initSanity(
     })
   }
 
-  async function getProjectInfo() {
+  async function getProjectInfo(): Promise<ProjectDefaults & {outputPath: string}> {
     const specifiedPath = flags['output-path'] && path.resolve(flags['output-path'])
 
-    if (unattended) {
-      return Object.assign({license: 'UNLICENSED'}, defaults, {
-        outputPath: specifiedPath,
-      })
+    if (unattended || specifiedPath) {
+      return {
+        ...defaults,
+        outputPath: specifiedPath || workDir,
+      }
     }
 
     const workDirIsEmpty = (await fse.readdir(workDir)).length === 0
-    return {
-      description: defaults?.description,
-      gitRemote: defaults?.gitRemote,
-      author: defaults?.author,
-      license: 'UNLICENSED',
+    const projectOutputPath = await prompt.single({
+      type: 'input',
+      message: 'Project output path:',
+      default: workDirIsEmpty ? workDir : path.join(workDir, sluggedName),
+      validate: validateEmptyPath,
+      filter: absolutify,
+    })
 
-      outputPath:
-        specifiedPath ||
-        (await prompt.single({
-          type: 'input',
-          message: 'Project output path:',
-          default: workDirIsEmpty ? workDir : path.join(workDir, sluggedName),
-          validate: validateEmptyPath,
-          filter: absolutify,
-        })),
+    return {
+      ...defaults,
+      outputPath: projectOutputPath,
     }
   }
 
+  // eslint-disable-next-line complexity
   async function prepareFlags() {
     const createProjectName = cliFlags['create-project']
     if (cliFlags.dataset || cliFlags.visibility || cliFlags['dataset-default'] || unattended) {
@@ -767,7 +667,7 @@ export default async function initSanity(
         spinner.succeed()
       }
 
-      const newFlags = Object.assign({}, cliFlags, {project: createdProject.projectId})
+      const newFlags = {...cliFlags, project: createdProject.projectId}
       delete newFlags['create-project']
 
       return newFlags

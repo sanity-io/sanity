@@ -36,14 +36,17 @@
     "clean": "rimraf bin/sanity-cli.js lib",
     "package-yarn": "node -r @babel/register src/scripts/package-yarn.js",
     "prepublishOnly": "yarn build",
-    "watch": "../../../bin/pkg-utils transpile --target node --tsconfig tsconfig.lib.json --watch"
+    "watch": "../../../bin/pkg-utils transpile --target node --tsconfig tsconfig.lib.json --watch",
+    "ts": "node -r esbuild-register"
   },
   "dependencies": {
     "esbuild-register": "^3.2.0"
   },
   "devDependencies": {
+    "@babel/parser": "^7.17.7",
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-typescript": "^7.16.0",
+    "@babel/traverse": "^7.17.3",
     "@rexxars/gitconfiglocal": "^3.0.1",
     "@sanity/client": "^3.2.0",
     "@sanity/generate-help-url": "^3.0.0",
@@ -53,6 +56,7 @@
     "@types/decompress": "^4.2.4",
     "@types/eventsource": "^1.1.8",
     "@types/inquirer": "^6.0.0",
+    "@types/klaw-sync": "^6.0.0",
     "@types/node": "^14.18.9",
     "@types/split2": "^3.2.1",
     "@types/validate-npm-package-name": "^3.0.3",
@@ -71,10 +75,10 @@
     "gauge": "^4.0.0",
     "get-it": "^5.2.1",
     "get-latest-version": "^3.0.2",
-    "git-user-info": "^2.0.0",
+    "git-user-info": "^2.0.3",
     "inquirer": "^6.0.0",
     "is-installed-globally": "^0.4.0",
-    "klaw-sync": "^4.0.0",
+    "klaw-sync": "^6.0.0",
     "leven": "^3.1.0",
     "lodash": "^4.17.21",
     "minimist": "^1.2.5",
@@ -83,6 +87,7 @@
     "p-filter": "^2.1.0",
     "p-timeout": "^4.0.0",
     "promise-props-recursive": "^2.0.2",
+    "recast": "^0.20.5",
     "resolve-from": "^5.0.0",
     "rimraf": "^3.0.2",
     "semver": "^7.3.5",

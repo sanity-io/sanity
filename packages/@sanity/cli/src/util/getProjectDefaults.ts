@@ -7,7 +7,8 @@ import type {CliCommandContext} from '../types'
 import {getCliToken} from './clientWrapper'
 
 export interface ProjectDefaults {
-  author: string
+  license: string
+  author: string | undefined
   gitRemote: string
   projectName: string
   description: string
@@ -21,6 +22,8 @@ export function getProjectDefaults(
   const isSanityRoot = workDir === cwd
 
   return promiseProps({
+    license: 'UNLICENSED',
+
     author: getUserInfo(context),
 
     // Don't try to use git remote from main Sanity project for plugins
@@ -47,8 +50,7 @@ async function resolveGitRemote(cwd: string): Promise<string | undefined> {
 async function getUserInfo(context: CliCommandContext): Promise<string | undefined> {
   const user = await getGitUserInfo()
   if (!user) {
-    const userInfo = await getSanityUserInfo(context)
-    return userInfo
+    return getSanityUserInfo(context)
   }
 
   if (user.name && user.email) {

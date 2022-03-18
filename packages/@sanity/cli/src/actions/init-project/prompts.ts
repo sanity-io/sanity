@@ -1,5 +1,13 @@
 import {CliOutputter, CliPrompter} from '../../types'
 
+export function promptForTypeScript(prompt: CliPrompter): Promise<boolean> {
+  return prompt.single({
+    type: 'confirm',
+    message: 'Do you want to use TypeScript?',
+    default: false,
+  })
+}
+
 export function promptForDefaultConfig(prompt: CliPrompter): Promise<boolean> {
   return prompt.single({
     type: 'confirm',

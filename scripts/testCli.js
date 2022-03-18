@@ -129,6 +129,9 @@ if (!githubWorkspace && !skipDelete) {
     stdio: 'inherit',
   })
 
+  // Test `sanity start` in v3 studio
+  await testStartCommand({binPath, cwd: tmpProjectPath, expectedTitle: 'Sanity Studio'})
+
   // Test running a v2 studio with the v3 cli (eg defers to @sanity/core)
   const v2Path = path.resolve(__dirname, '..', 'test', 'v2-studio')
 

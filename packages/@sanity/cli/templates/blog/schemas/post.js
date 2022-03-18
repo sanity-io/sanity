@@ -57,9 +57,7 @@ export default {
     },
     prepare(selection) {
       const {author} = selection
-      return Object.assign({}, selection, {
-        subtitle: author && `by ${author}`,
-      })
+      return {...selection, subtitle: author && `by ${author}`}
     },
   },
 }

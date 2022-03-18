@@ -4,7 +4,7 @@ import noop from 'lodash/noop'
 import type {DatasetAclMode} from '@sanity/client'
 import {debug} from '../../debug'
 import {getUserConfig} from '../../util/getUserConfig'
-import {ProjectDefaults} from '../../util/getProjectDefaults'
+import type {InitFlags} from '../../commands/init/initCommand'
 import type {CliCommandArguments, CliCommandContext, SanityJson} from '../../types'
 import {createProject} from '../project/createProject'
 import {readJson} from '../../util/readJson'
@@ -16,56 +16,9 @@ import {promptForAclMode, promptForDefaultConfig} from './prompts'
 const isCI = process.env.CI
 /* eslint-enable no-process-env */
 
-export interface InitProjectFlags {
-  y?: boolean
-  yes?: boolean
-  project?: string
-  dataset?: string
-  template?: string
-  visibility?: string
-
-  'output-path'?: string
-  'project-plan'?: string
-  'create-project'?: boolean | string
-  'dataset-default'?: boolean
-
-  coupon?: string
-  reconfigure?: boolean
-}
-
-export type InitOptions = {
-  template: string
-  outputDir: string
-  name: string
-  displayName: string
-  dataset: string
-  projectId: string
-} & (
-  | ({
-      license: string
-    } & ProjectDefaults & {
-        outputPath: string | undefined
-      })
-  | {
-      description: string | undefined
-      gitRemote: string | undefined
-      author: string | undefined
-      license: string
-      outputPath: string | undefined
-    }
-)
-
-export interface ProjectTemplate {
-  datasetUrl?: string
-  dependencies?: Record<string, string>
-  importPrompt?: string
-  generateSanityManifest: (base: SanityJson, options: InitOptions) => SanityJson
-  getSuccessMessage?: (initOptions: InitOptions, context: CliCommandContext) => string
-}
-
 // eslint-disable-next-line max-statements, complexity
 export async function reconfigureV2Project(
-  args: CliCommandArguments<InitProjectFlags>,
+  args: CliCommandArguments<InitFlags>,
   context: CliCommandContext
 ): Promise<void> {
   const {output, prompt, workDir, apiClient, yarn, chalk} = context
@@ -479,7 +432,7 @@ export async function reconfigureV2Project(
         spinner.succeed()
       }
 
-      const newFlags = Object.assign({}, cliFlags, {project: createdProject.projectId})
+      const newFlags = {...cliFlags, project: createdProject.projectId}
       delete newFlags['create-project']
 
       return newFlags

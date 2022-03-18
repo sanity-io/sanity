@@ -1,8 +1,5 @@
-import type {SanityJson} from '../../../types'
+import type {ProjectTemplate} from '../initProject'
 
-export const dependencies = {}
+const blogTemplate: ProjectTemplate = {}
 
-export const generateSanityManifest = (base: SanityJson): SanityJson => ({
-  ...base,
-  plugins: base.plugins,
-})
+export default blogTemplate

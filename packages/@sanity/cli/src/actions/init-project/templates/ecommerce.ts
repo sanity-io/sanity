@@ -1,13 +1,38 @@
-import type {SanityJson} from '../../../types'
+import type {ProjectTemplate} from '../initProject'
 
-export const importPrompt = 'Upload a sampling of products to go with your e-commerce schema?'
-export const datasetUrl = 'https://public.sanity.io/ecommerce-2018-05-02.tar.gz'
+const configTemplate = `
+import {createConfig} from '@sanity/base'
+import {deskTool} from '@sanity/desk-tool'
+import {barcode} from './plugins/barcode
+import schemaTypes from './schemas'
 
-export const dependencies = {
-  'react-barcode': '^1.3.2',
+export default createConfig({
+  plugins: [
+    deskTool(),
+    barcode()
+  ],
+  project: {
+    name: '%projectName%'
+  },
+  sources: [
+    {
+      name: '%sourceName%',
+      title: '%sourceTitle%',
+      projectId: '%projectId%',
+      dataset: '%dataset%',
+      schemaTypes
+    },
+  ],
+})
+`
+
+const ecommerceTemplate: ProjectTemplate = {
+  configTemplate,
+  importPrompt: 'Upload a sampling of products to go with your e-commerce schema?',
+  datasetUrl: 'https://public.sanity.io/ecommerce-2018-05-02.tar.gz',
+  dependencies: {
+    'react-barcode': '^1.3.2',
+  },
 }
 
-export const generateSanityManifest = (base: SanityJson): SanityJson => ({
-  ...base,
-  plugins: (base.plugins || []).concat(['barcode-input']),
-})
+export default ecommerceTemplate

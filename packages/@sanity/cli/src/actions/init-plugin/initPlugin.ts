@@ -1,11 +1,12 @@
 import {addPluginToManifest} from '@sanity/util/_internal'
 import type {CliCommandContext, CliCommandArguments} from '../../types'
+import type {InitFlags} from '../../commands/init/initCommand'
 import {debug} from '../../debug'
 import {bootstrapFromTemplate} from './bootstrapFromTemplate'
 import {pluginTemplates} from './pluginTemplates'
 
 export default async function initPlugin(
-  args: CliCommandArguments,
+  args: CliCommandArguments<InitFlags>,
   context: CliCommandContext
 ): Promise<void> {
   const {output, prompt} = context

@@ -17,6 +17,7 @@ Options
   --project-plan <name> Optionally select a plan for a new project
   --coupon <name> Optionally select a coupon for a new project (cannot be used with --project-plan)
   --reconfigure Reconfigure Sanity studio in current folder with new project/dataset
+  --typescript Use TypeScript for template files
 
 Examples
   # Initialize a new project, prompt for required information along the way
@@ -41,12 +42,32 @@ Examples
     --output-path /Users/espenh/movies-unlimited
 `
 
-export const initCommand: CliCommandDefinition = {
+export interface InitFlags {
+  y?: boolean
+  yes?: boolean
+  project?: string
+  dataset?: string
+  template?: string
+  visibility?: string
+  typescript?: boolean
+
+  'output-path'?: string
+  'project-plan'?: string
+  'create-project'?: boolean | string
+  'dataset-default'?: boolean
+
+  coupon?: string
+  reconfigure?: boolean
+
+  organization?: string
+}
+
+export const initCommand: CliCommandDefinition<InitFlags> = {
   name: 'init',
   signature: '',
   description: 'Initialize a new Sanity studio project',
   helpText,
-  action: (args, context) => {
+  action: async (args, context) => {
     const [type] = args.argsWithoutOptions
 
     if (!type) {

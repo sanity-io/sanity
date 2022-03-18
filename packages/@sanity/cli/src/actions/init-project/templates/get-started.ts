@@ -1,17 +1,33 @@
-import type {SanityJson} from '../../../types'
+import type {ProjectTemplate} from '../initProject'
 
-export const dependencies = {}
+const configTemplate = `
+import {createConfig} from '@sanity/base'
+import {deskTool} from '@sanity/desk-tool'
+import {tutorialLayout} from './plugins/tutorial'
+import schemaTypes from './schemas'
 
-export const generateSanityManifest = (base: SanityJson): SanityJson => ({
-  ...base,
-  parts: [
+export default createConfig({
+  plugins: [
+    deskTool(),
+    tutorialLayout()
+  ],
+  project: {
+    name: '%projectName%'
+  },
+  sources: [
     {
-      name: 'part:@sanity/base/schema',
-      path: './schemas/schema',
-    },
-    {
-      implements: 'part:@sanity/base/root',
-      path: 'plugins/sanity-plugin-tutorial/CustomDefaultLayout',
+      name: '%sourceName%',
+      title: '%sourceTitle%',
+      projectId: '%projectId%',
+      dataset: '%dataset%',
+      schemaTypes
     },
   ],
 })
+`
+
+const getStartedTemplate: ProjectTemplate = {
+  configTemplate,
+}
+
+export default getStartedTemplate

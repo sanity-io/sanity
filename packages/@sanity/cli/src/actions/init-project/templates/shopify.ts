@@ -1,46 +1,51 @@
-import type {SanityJson} from '../../../types'
+import type {ProjectTemplate} from '../initProject'
 
-export const dependencies = {
-  '@sanity/dashboard': '^2.21.7',
-  'lodash.get': '^4.4.2',
-  pluralize: '^8.0.0',
-  'react-time-ago': '7.1.3',
-  slug: '^5.1.0',
-  'sanity-plugin-dashboard-widget-shopify': '^0.1.7',
-  'sanity-plugin-media': '^1.4.3',
-}
+// @todo asset sources
+// @todo new document structure
+// @todo document actions
+const configTemplate = `
+import {createConfig} from '@sanity/base'
+import {deskTool} from '@sanity/desk-tool'
+import {dashboard} from '@sanity/dashboard'
+import {media} from 'sanity-plugin-media'
+import {structure} from './deskStructure'
+import schemaTypes from './schemas'
 
-export const generateSanityManifest = (base: SanityJson): SanityJson => ({
-  ...base,
-  plugins: ['@sanity/dashboard', ...(base.plugins || []), 'dashboard-widget-shopify', 'media'],
-  parts: [
+export default createConfig({
+  plugins: [
+    deskTool({structure}),
+    media(),
+    dashboard({
+      widgets: [shopifyWidget()]
+    }),
+  ],
+  project: {
+    name: '%projectName%'
+  },
+  sources: [
     {
-      name: 'part:@sanity/base/schema',
-      path: './schemas/schema',
-    },
-    {
-      name: 'part:@sanity/desk-tool/structure',
-      path: './deskStructure.js',
-    },
-    {
-      implements: 'part:@sanity/form-builder/input/image/asset-sources',
-      path: './parts/assetSources.js',
-    },
-    {
-      implements: 'part:@sanity/form-builder/input/file/asset-sources',
-      path: './parts/assetSources.js',
-    },
-    {
-      implements: 'part:@sanity/dashboard/config',
-      path: './parts/dashboardConfig.js',
-    },
-    {
-      name: 'part:@sanity/base/new-document-structure',
-      path: './parts/newDocumentStructure.js',
-    },
-    {
-      implements: 'part:@sanity/base/document-actions/resolver',
-      path: './parts/resolveDocumentActions.js',
+      name: '%sourceName%',
+      title: '%sourceTitle%',
+      projectId: '%projectId%',
+      dataset: '%dataset%',
+      schemaTypes
     },
   ],
 })
+`
+
+const shopifyTemplate: ProjectTemplate = {
+  configTemplate,
+  importPrompt: 'Add a sampling of sci-fi movies to your dataset on the hosted backend?',
+  datasetUrl: 'https://public.sanity.io/moviesdb-2018-03-06.tar.gz',
+  dependencies: {
+    '@sanity/dashboard': '^2.21.7',
+    'lodash.get': '^4.4.2',
+    pluralize: '^8.0.0',
+    'react-time-ago': '7.1.3',
+    slug: '^5.1.0',
+    'sanity-plugin-dashboard-widget-shopify': '^0.1.7',
+    'sanity-plugin-media': '^1.4.3',
+  },
+}
+export default shopifyTemplate

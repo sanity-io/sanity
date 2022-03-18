@@ -1,10 +1,10 @@
-import {UserIcon} from '@sanity/icons'
+import {MdPerson as icon} from 'react-icons/md'
 
 export default {
   name: 'person',
   title: 'Person',
   type: 'document',
-  icon: UserIcon,
+  icon,
   fields: [
     {
       name: 'name',
