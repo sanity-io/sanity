@@ -1,6 +1,6 @@
 import {findIndex} from 'lodash'
-import applyPatch from './applyPatch'
-import insert from './arrayInsert'
+import {applyPatch} from './applyPatch'
+import {arrayInsert} from './arrayInsert'
 
 const hasOwn = (obj, property) => Object.prototype.hasOwnProperty.call(obj, property)
 
@@ -20,7 +20,7 @@ function findTargetIndex(array, pathSegment) {
   return index === -1 ? false : index
 }
 
-export default function apply(value, patch) {
+export function _arrayApply(value, patch) {
   const nextValue = value.slice() // make a copy for internal mutation
 
   if (patch.path.length === 0) {
@@ -65,7 +65,7 @@ export default function apply(value, patch) {
   if (tail.length === 0) {
     if (patch.type === 'insert') {
       const {position, items} = patch
-      return insert(value, position, index, items)
+      return arrayInsert(value, position, index, items)
     } else if (patch.type === 'unset') {
       if (typeof index !== 'number') {
         throw new Error(`Expected array index to be a number, instead got "${index}"`)

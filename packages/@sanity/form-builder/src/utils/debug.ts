@@ -1,3 +1,3 @@
 import Debug from 'debug'
 
-export default Debug('@sanity/form-builder')
+export const debug = Debug('@sanity/form-builder')

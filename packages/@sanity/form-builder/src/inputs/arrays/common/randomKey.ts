@@ -21,7 +21,7 @@ const getByteHexTable = (() => {
   }
 })()
 
-export default function randomKey(length?: number) {
+export function randomKey(length?: number) {
   const table = getByteHexTable()
   return whatwgRNG(length)
     .reduce((str, n) => str + table[n], '')

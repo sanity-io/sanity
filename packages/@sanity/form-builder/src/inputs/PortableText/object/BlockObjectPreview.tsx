@@ -18,7 +18,7 @@ import {
 } from '@sanity/ui'
 import React, {forwardRef, useCallback, useMemo, useRef} from 'react'
 import {useId} from '@reach/auto-id'
-import Preview from '../../../Preview'
+import {Preview} from '../../../Preview'
 
 interface BlockObjectPreviewProps {
   focused: boolean

@@ -1,7 +1,7 @@
-import NumberSelect from '../../inputs/SelectInput'
-import NumberInput from '../../inputs/NumberInput'
+import {SelectInput} from '../../inputs/SelectInput'
+import {NumberInput} from '../../inputs/NumberInput'
 import {getOption} from './resolveStringInput'
 
-export default function resolveNumberInput(type) {
-  return getOption(type, 'list') ? NumberSelect : NumberInput
+export function resolveNumberInput(type) {
+  return getOption(type, 'list') ? SelectInput : NumberInput
 }

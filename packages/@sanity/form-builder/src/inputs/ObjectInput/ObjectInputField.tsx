@@ -5,7 +5,7 @@ import {useConditionalReadOnly} from '@sanity/base/_internal'
 import {ObjectFieldType, ObjectSchemaTypeWithOptions, SchemaType} from '@sanity/types'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import {InvalidValueInput} from '../InvalidValueInput'
-import PatchEvent from '../../PatchEvent'
+import {PatchEvent} from '../../PatchEvent'
 import {ConditionalHiddenField} from '../common/ConditionalHiddenField'
 import {FormInputProps} from '../../types'
 

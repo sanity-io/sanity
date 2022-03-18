@@ -1,5 +1,6 @@
 import * as DMP from 'diff-match-patch'
 
+// eslint-disable-next-line new-cap
 const dmp = new DMP.diff_match_patch()
 
 const OPERATIONS = {
@@ -22,7 +23,7 @@ const OPERATIONS = {
 
 const SUPPORTED_PATCH_TYPES = Object.keys(OPERATIONS)
 
-export default function apply(value, patch) {
+export function _stringApply(value, patch) {
   if (!SUPPORTED_PATCH_TYPES.includes(patch.type)) {
     throw new Error(
       `Received patch of unsupported type: "${JSON.stringify(

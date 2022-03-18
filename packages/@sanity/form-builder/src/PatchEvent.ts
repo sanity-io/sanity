@@ -5,7 +5,7 @@ import {prefixPath, set, unset, setIfMissing, insert, inc, dec} from './patch/pa
 
 type PatchArg = Patch | Patch[]
 
-export default class PatchEvent {
+export class PatchEvent {
   static from(...patches: PatchArg[]): PatchEvent {
     return new PatchEvent(flatten(patches))
   }
@@ -29,4 +29,4 @@ export default class PatchEvent {
   }
 }
 
-export {PatchEvent, set, unset, setIfMissing, insert, inc, dec}
+export {set, unset, setIfMissing, insert, inc, dec}

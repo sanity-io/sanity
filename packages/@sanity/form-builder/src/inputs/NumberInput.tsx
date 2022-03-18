@@ -4,12 +4,12 @@ import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {FormField} from '@sanity/base/components'
 import {getValidationRule} from '../utils/getValidationRule'
-import PatchEvent, {set, unset} from '../PatchEvent'
+import {PatchEvent, set, unset} from '../PatchEvent'
 import {FormInputProps} from '../types'
 
 export type NumberInputProps = FormInputProps<number, NumberSchemaType>
 
-const NumberInput = React.forwardRef(function NumberInput(
+export const NumberInput = React.forwardRef(function NumberInput(
   props: NumberInputProps,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
@@ -54,5 +54,3 @@ const NumberInput = React.forwardRef(function NumberInput(
     </FormField>
   )
 })
-
-export default NumberInput

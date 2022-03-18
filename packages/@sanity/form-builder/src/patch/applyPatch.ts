@@ -1,28 +1,28 @@
 import {isObject, isString} from 'lodash'
-import applyArrayPatch from './array'
-import applyObjectPatch from './object'
-import applyPrimitivePatch from './primitive'
-import applyStringPatch from './string'
+import {_arrayApply} from './array'
+import {_objectApply} from './object'
+import {_primitiveApply} from './primitive'
+import {_stringApply} from './string'
 
 export function applyAll(value, patches) {
-  return patches.reduce(_apply, value)
+  return patches.reduce(applyPatch, value)
 }
 
-function applyPatch(value, patch) {
+function _applyPatch(value, patch) {
   if (Array.isArray(value)) {
-    return applyArrayPatch(value, patch)
+    return _arrayApply(value, patch)
   }
   if (isString(value)) {
-    return applyStringPatch(value, patch)
+    return _stringApply(value, patch)
   }
   if (isObject(value)) {
-    return applyObjectPatch(value, patch)
+    return _objectApply(value, patch)
   }
-  return applyPrimitivePatch(value, patch)
+  return _primitiveApply(value, patch)
 }
 
-export default function _apply(value, patch) {
-  const res = applyPatch(value, patch)
+export function applyPatch(value, patch) {
+  const res = _applyPatch(value, patch)
   // console.log('applyPatch(%o, %o) : %o (noop? %o)', value, patch, res, value === res)
   return res
 }

@@ -3,12 +3,12 @@ import {isValidationErrorMarker, StringSchemaType} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {FormField} from '@sanity/base/components'
-import PatchEvent, {set, unset} from '../PatchEvent'
+import {PatchEvent, set, unset} from '../PatchEvent'
 import {FormInputProps} from '../types'
 
 export type TelephoneInputProps = FormInputProps<string, StringSchemaType>
 
-const TelephoneInput = React.forwardRef(function TelephoneInput(
+export const TelephoneInput = React.forwardRef(function TelephoneInput(
   props: TelephoneInputProps,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
@@ -48,5 +48,3 @@ const TelephoneInput = React.forwardRef(function TelephoneInput(
     </FormField>
   )
 })
-
-export default TelephoneInput

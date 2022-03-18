@@ -124,7 +124,7 @@ function _orient(img: HTMLImageElement, orientationNumber: number): HTMLCanvasEl
 }
 
 /* eslint-enable */
-export default function orient(image: HTMLImageElement, orientationId: Orientation) {
+export function orient(image: HTMLImageElement, orientationId: Orientation) {
   return new Observable((observer) => {
     // console.time('canvas to blob')
     const orientation = ORIENTATIONS.indexOf(orientationId) + 1

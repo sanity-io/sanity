@@ -4,7 +4,7 @@ import {useId} from '@reach/auto-id'
 import {isTitledListValue, isValidationErrorMarker, TitledListValue} from '@sanity/types'
 import {Inline, Stack, Card, Text, Select, Flex, Radio, Box} from '@sanity/ui'
 import {FormField} from '@sanity/base/components'
-import PatchEvent, {set, unset} from '../PatchEvent'
+import {PatchEvent, set, unset} from '../PatchEvent'
 import {FormInputProps} from '../types'
 
 export type SelectInputProps = FormInputProps<string | number>
@@ -17,7 +17,7 @@ function toSelectItem(
 
 const EMPTY_ITEM = {title: '', value: undefined}
 
-const SelectInput = React.forwardRef(function SelectInput(
+export const SelectInput = React.forwardRef(function SelectInput(
   props: SelectInputProps,
   forwardedRef: React.ForwardedRef<HTMLSelectElement | HTMLInputElement>
 ) {
@@ -137,8 +137,6 @@ const SelectInput = React.forwardRef(function SelectInput(
     </FormField>
   )
 })
-
-export default SelectInput
 
 const RadioSelect = forwardRef(function RadioSelect(
   props: {

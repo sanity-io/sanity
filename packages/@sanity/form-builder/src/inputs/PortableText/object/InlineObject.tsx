@@ -16,7 +16,7 @@ import {
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import styled, {css} from 'styled-components'
 import {Box, Card, Theme, Tooltip} from '@sanity/ui'
-import Preview from '../../../Preview'
+import {Preview} from '../../../Preview'
 import {RenderCustomMarkers} from '../types'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'

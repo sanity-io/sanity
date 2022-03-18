@@ -3,14 +3,14 @@ import {isValidationErrorMarker, StringSchemaType} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {FormField} from '@sanity/base/components'
-import PatchEvent, {set, unset} from '../PatchEvent'
+import {PatchEvent, set, unset} from '../PatchEvent'
 import {getValidationRule} from '../utils/getValidationRule'
 import {FormInputProps} from '../types'
 
 export type UrlInputProps = FormInputProps<string, StringSchemaType>
 
 // @todo Rename to `URLInput`?
-const UrlInput = React.forwardRef(function UrlInput(
+export const UrlInput = React.forwardRef(function UrlInput(
   props: UrlInputProps,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
@@ -52,5 +52,3 @@ const UrlInput = React.forwardRef(function UrlInput(
     </FormField>
   )
 })
-
-export default UrlInput

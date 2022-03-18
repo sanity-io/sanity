@@ -6,7 +6,7 @@ import {UploadEvent, UploadOptions} from './types'
 import {UPLOAD_STATUS_KEY} from './constants'
 import {createUploadEvent, createInitialUploadEvent, CLEANUP_EVENT} from './utils'
 
-export default function uploadFile(file: File, options?: UploadOptions): Observable<UploadEvent> {
+export function uploadFile(file: File, options?: UploadOptions): Observable<UploadEvent> {
   const upload$ = uploadFileAsset(file, options).pipe(
     map((event: any) => {
       if (event.type === 'complete') {

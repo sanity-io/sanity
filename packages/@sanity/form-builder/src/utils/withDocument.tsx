@@ -6,7 +6,7 @@ interface WithDocumentProps<Doc extends SanityDocument = SanityDocument> {
   document: Doc
 }
 
-export default function withDocument<T extends WithDocumentProps = WithDocumentProps>(
+export function withDocument<T extends WithDocumentProps = WithDocumentProps>(
   ComposedComponent: React.ComponentType<T>
 ) {
   const WithDocument = forwardRef(function WithDocument(

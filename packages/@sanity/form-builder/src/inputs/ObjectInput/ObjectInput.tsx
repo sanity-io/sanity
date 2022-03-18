@@ -1,3 +1,5 @@
+/* eslint-disable react/no-unused-prop-types */
+
 import React, {ForwardedRef, forwardRef, memo, useCallback, useEffect, useState} from 'react'
 import {
   ValidationMarker,
@@ -17,7 +19,7 @@ import {castArray, find, findLast} from 'lodash'
 import {useId} from '@reach/auto-id'
 import {useCurrentUser} from '@sanity/base/hooks'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
-import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
+import {PatchEvent, set, setIfMissing, unset} from '../../PatchEvent'
 import {applyAll} from '../../patch/applyPatch'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {ConditionalReadOnlyField} from '../common/conditionalReadOnly'

@@ -6,7 +6,7 @@ interface WithValuePathProps {
   getValuePath: () => Path
 }
 
-export default function withValuePath<T extends WithValuePathProps = WithValuePathProps>(
+export function withValuePath<T extends WithValuePathProps = WithValuePathProps>(
   ComposedComponent: React.ComponentType<T>
 ) {
   const WithValuePath = forwardRef(function WithValuePath(

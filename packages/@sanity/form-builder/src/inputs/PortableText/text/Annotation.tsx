@@ -11,7 +11,7 @@ import {ValidationMarker, Path} from '@sanity/types'
 import styled, {css} from 'styled-components'
 import {Box, Theme, ThemeColorToneKey, Tooltip} from '@sanity/ui'
 import {hues} from '@sanity/color'
-import Markers from '../_legacyDefaultParts/Markers'
+import {Markers} from '../_legacyDefaultParts/Markers'
 import {PortableTextMarker, RenderCustomMarkers} from '../types'
 import {AnnotationToolbarPopover} from './AnnotationToolbarPopover'
 

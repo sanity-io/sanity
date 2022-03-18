@@ -1,8 +1,8 @@
 import React, {useCallback, useMemo} from 'react'
 import imageUrlBuilder from '@sanity/image-url'
 import {useClient, useDatastores} from '@sanity/base'
-import ImageInput from '../../inputs/files/ImageInput'
-import withValuePath from '../../utils/withValuePath'
+import {ImageInput} from '../../inputs/files/ImageInput'
+import {withValuePath} from '../../utils/withValuePath'
 import {useFormBuilder} from '../../useFormBuilder'
 import {observeImageAsset} from './client-adapters/assets'
 import {wrapWithDocument} from './wrapWithDocument'
@@ -11,7 +11,10 @@ type Props = Omit<React.ComponentProps<typeof ImageInput>, 'assetSources'>
 
 const ImageInputWithValuePath = withValuePath(ImageInput)
 
-export default React.forwardRef(function SanityImageInput(props: Props, forwardedRef: any) {
+export const SanityImageInput = React.forwardRef(function SanityImageInput(
+  props: Props,
+  forwardedRef: any
+) {
   const sourcesFromSchema = props.type.options?.sources
   const {image} = useFormBuilder()
   const {documentPreviewStore} = useDatastores()

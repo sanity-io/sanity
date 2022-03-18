@@ -1,7 +1,6 @@
 import {Observable} from 'rxjs'
 import {mergeMap} from 'rxjs/operators'
-import type {Orientation} from './orient'
-import orient from './orient'
+import {orient, Orientation} from './orient'
 
 function loadImage(url: string): Observable<HTMLImageElement> {
   return new Observable((observer) => {
@@ -24,7 +23,7 @@ function loadImage(url: string): Observable<HTMLImageElement> {
   })
 }
 
-export default function rotateImage(file: File, orientation: Orientation) {
+export function rotateImage(file: File, orientation: Orientation) {
   return loadImage(window.URL.createObjectURL(file)).pipe(
     mergeMap((image) => orient(image, orientation))
   )

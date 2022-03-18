@@ -20,7 +20,7 @@ const SKIP_EXIF_ERROR_RE = /(invalid image format)|(No exif data)/i
 // 128k should be enough for exif data according to https://github.com/mattiasw/ExifReader#tips
 const EXIF_BUFFER_LENGTH = 128000
 
-export default function readExif(file: File): Observable<{[key: string]: unknown}> {
+export function readExif(file: File) {
   return observableFrom(readFileAsArrayBuffer(file, EXIF_BUFFER_LENGTH)).pipe(
     map((buf) => exif(buf)),
     catchError((error) => {

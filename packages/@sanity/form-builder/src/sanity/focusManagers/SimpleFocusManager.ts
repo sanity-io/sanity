@@ -1,3 +1,5 @@
+/* eslint-disable react/no-unused-prop-types */
+
 // A simple focus path manager
 
 import React from 'react'
@@ -5,8 +7,8 @@ import {Path} from '@sanity/types'
 
 type Props = {
   path: any | null
-  onFocus: () => {}
-  onBlur: () => {}
+  onFocus: () => void
+  onBlur: () => void
   children: (arg: any) => any
 }
 
@@ -14,7 +16,7 @@ type State = {
   focusPath: Array<any>
 }
 
-export default class SimpleFocusManager extends React.Component<Props, State> {
+export class SimpleFocusManager extends React.Component<Props, State> {
   state = {
     focusPath: [],
   }

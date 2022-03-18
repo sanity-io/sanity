@@ -18,7 +18,7 @@ type UploadPlaceholderProps = {
   directUploads: boolean
 }
 
-export default React.memo(function UploadPlaceholder({
+export const UploadPlaceholder = React.memo(function UploadPlaceholder({
   browse,
   onUpload,
   readOnly,

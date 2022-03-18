@@ -3,7 +3,7 @@ import {SanityPreview} from '@sanity/base/preview'
 import {Schema, SchemaType} from '@sanity/types'
 import {FormBuilderProvider, FormBuilderProviderProps} from '../FormBuilderProvider'
 import {PatchChannel} from '../patchChannel'
-import defaultInputResolver from './inputResolver/inputResolver'
+import {resolveInputComponent as defaultInputResolver} from './inputResolver/inputResolver'
 
 const previewResolver = (..._: unknown[]) => SanityPreview
 

@@ -1,5 +1,5 @@
 import {SchemaType} from '@sanity/types'
-import resolveInputComponent from '../../sanity/inputResolver/inputResolver'
+import {resolveInputComponent} from '../../sanity/inputResolver/inputResolver'
 import {DebugInput} from './DebugInput'
 
 export const inputResolver = (input: SchemaType) => {

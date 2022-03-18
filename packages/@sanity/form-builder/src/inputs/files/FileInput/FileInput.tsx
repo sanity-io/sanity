@@ -22,14 +22,14 @@ import {Box, Button, Card, Dialog, Menu, MenuButton, MenuItem, ToastParams} from
 import {PresenceOverlay} from '@sanity/base/presence'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {Uploader, UploaderResolver, UploadOptions} from '../../../sanity/uploads/types'
-import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
+import {PatchEvent, setIfMissing, unset} from '../../../PatchEvent'
 import {FileTarget, FileInfo} from '../common/styles'
 import {InternalAssetSource, UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
 import {handleSelectAssetFromSource} from '../common/assetSource'
 import {ActionsMenu} from '../common/ActionsMenu'
 import {PlaceholderText} from '../common/PlaceholderText'
-import UploadPlaceholder from '../common/UploadPlaceholder'
+import {UploadPlaceholder} from '../common/UploadPlaceholder'
 import {UploadWarning} from '../common/UploadWarning'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import {FormInputProps} from '../../../types'
@@ -72,7 +72,7 @@ type Focusable = {
   focus: () => void
 }
 
-export default class FileInput extends React.PureComponent<FileInputProps, FileInputState> {
+export class FileInput extends React.PureComponent<FileInputProps, FileInputState> {
   _inputId = uniqueId('FileInput')
   dialogId = uniqueId('fileinput-dialog')
 

@@ -1,4 +1,4 @@
-export default function create(...keys) {
+export function createSubscriptionManager(...keys) {
   const registry = {}
   function validate(key) {
     if (!keys.includes(key)) {

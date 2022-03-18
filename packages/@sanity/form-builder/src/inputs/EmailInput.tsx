@@ -3,12 +3,12 @@ import {isValidationErrorMarker, StringSchemaType} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {FormField} from '@sanity/base/components'
-import PatchEvent, {set, unset} from '../PatchEvent'
+import {PatchEvent, set, unset} from '../PatchEvent'
 import {FormInputProps} from '../types'
 
 export type EmailInputProps = FormInputProps<string, StringSchemaType>
 
-const EmailInput = React.forwardRef(function EmailInput(
+export const EmailInput = React.forwardRef(function EmailInput(
   props: EmailInputProps,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
@@ -49,5 +49,3 @@ const EmailInput = React.forwardRef(function EmailInput(
     </FormField>
   )
 })
-
-export default EmailInput

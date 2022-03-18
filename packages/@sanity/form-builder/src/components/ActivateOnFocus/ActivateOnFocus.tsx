@@ -14,7 +14,7 @@ interface Props {
   isOverlayActive: boolean
 }
 
-export default function ActivateOnFocus(props: Props) {
+export function ActivateOnFocus(props: Props) {
   const {children, message, onActivate, isOverlayActive} = props
 
   function handleClick() {

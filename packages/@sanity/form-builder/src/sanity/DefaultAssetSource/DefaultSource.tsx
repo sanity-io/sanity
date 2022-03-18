@@ -6,8 +6,8 @@ import {Asset as AssetType, AssetFromSource, AssetSourceComponentProps} from '@s
 import {uniqueId} from 'lodash'
 import styled from 'styled-components'
 import {useClient} from '@sanity/base'
-import AssetThumb from './AssetThumb'
-import TableList from './TableList'
+import {AssetThumb} from './AssetThumb'
+import {TableList} from './TableList'
 
 const PER_PAGE = 200
 const ASSET_TYPE_IMAGE = 'sanity.imageAsset'

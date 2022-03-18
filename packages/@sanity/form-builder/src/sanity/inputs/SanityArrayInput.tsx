@@ -1,8 +1,8 @@
 import React, {ForwardedRef, forwardRef, useCallback} from 'react'
 import {resolveInitialValueForType} from '@sanity/initial-value-templates'
 import {SchemaType} from '@sanity/types'
-import sanityResolveUploader from '../uploads/resolveUploader'
-import ArrayInput, {ArrayInputProps} from '../../inputs/arrays/ArrayOfObjectsInput'
+import {resolveUploader as sanityResolveUploader} from '../uploads/resolveUploader'
+import {ArrayInput, ArrayInputProps} from '../../inputs/arrays/ArrayOfObjectsInput'
 import {
   ArrayOfPrimitivesInput,
   ArrayOfPrimitivesInputProps,
@@ -11,7 +11,7 @@ import * as is from '../../utils/is'
 import {FileLike} from '../uploads/types'
 import {FormBuilderContextValue} from '../../FormBuilderContext'
 import {useFormBuilder} from '../../useFormBuilder'
-import SanityArrayItemReferenceInput from './reference/SanityArrayItemReferenceInput'
+import {SanityArrayItemReferenceInput} from './reference/SanityArrayItemReferenceInput'
 
 const arrayResolveUploader = (
   formBuilder: FormBuilderContextValue,

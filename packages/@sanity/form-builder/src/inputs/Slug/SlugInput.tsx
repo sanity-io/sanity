@@ -11,8 +11,8 @@ import * as PathUtils from '@sanity/util/paths'
 import {TextInput, Button, Flex, Box, Card, Stack} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {PatchEvent, set, setIfMissing, unset} from '../../PatchEvent'
-import withDocument from '../../utils/withDocument'
-import withValuePath from '../../utils/withValuePath'
+import {withDocument} from '../../utils/withDocument'
+import {withValuePath} from '../../utils/withValuePath'
 import {FormInputProps} from '../../types'
 import {slugify} from './utils/slugify'
 import {useAsync} from './utils/useAsync'
@@ -37,7 +37,7 @@ function getNewFromSource(source, valuePath, document) {
   )
 }
 
-const SlugInput = React.forwardRef(function SlugInput(
+const SlugInputInner = React.forwardRef(function SlugInput(
   props: SlugInputProps,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
@@ -144,4 +144,4 @@ const SlugInput = React.forwardRef(function SlugInput(
   )
 })
 
-export default withValuePath(withDocument(SlugInput))
+export const SlugInput = withValuePath(withDocument(SlugInputInner))

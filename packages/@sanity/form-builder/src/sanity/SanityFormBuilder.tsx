@@ -5,7 +5,7 @@ import {FormFieldPresence} from '@sanity/base/presence'
 import {FormBuilderInput, FormBuilderInputInstance} from '../FormBuilderInput'
 import {FormBuilderFilterFieldFn} from '../types'
 import {PatchChannel} from '../patchChannel'
-import PatchEvent from '../PatchEvent'
+import {PatchEvent} from '../PatchEvent'
 import {SanityFormBuilderProvider} from './SanityFormBuilderProvider'
 import {ReviewChangesContextProvider} from './contexts/reviewChanges/ReviewChangesProvider'
 

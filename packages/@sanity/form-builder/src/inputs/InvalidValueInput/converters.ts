@@ -32,7 +32,7 @@ export interface ValueConverter {
     | ((value: any) => boolean | Record<string, any> | string)
 }
 
-const converters: {[fromType: string]: {[toType: string]: ValueConverter}} = {
+export const converters: {[fromType: string]: {[toType: string]: ValueConverter}} = {
   string: {
     number: {
       test: Number,
@@ -90,5 +90,3 @@ const converters: {[fromType: string]: {[toType: string]: ValueConverter}} = {
     },
   },
 }
-
-export default converters

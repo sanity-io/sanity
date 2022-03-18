@@ -1,6 +1,6 @@
 import {AssetSource, AssetSourceComponentProps} from '@sanity/types'
 import type {ComponentType} from 'react'
-import withDocument from '../../utils/withDocument'
+import {withDocument} from '../../utils/withDocument'
 
 export interface AssetSourceWithDocument extends Omit<AssetSource, 'component'> {
   component: ComponentType<Omit<AssetSourceComponentProps, 'document'>>

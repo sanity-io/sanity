@@ -3,7 +3,7 @@ import {ConditionalProperty} from '@sanity/types'
 import {SanityDocument} from '@sanity/client'
 import {unstable_useConditionalProperty as useConditionalProperty} from '@sanity/base/hooks'
 import {ConditionalReadOnlyContextProvider} from '@sanity/base/_internal'
-import withDocument from '../../../utils/withDocument'
+import {withDocument} from '../../../utils/withDocument'
 
 type Props = {
   parent?: unknown

@@ -2,8 +2,8 @@ import {Button, Card, Code, Stack, Text} from '@sanity/ui'
 import React, {forwardRef, useCallback, useImperativeHandle, useMemo} from 'react'
 import {Alert} from '../../components/Alert'
 import {Details} from '../../components/Details'
-import PatchEvent, {set, unset} from '../../PatchEvent'
-import CONVERTERS, {ValueConverter} from './converters'
+import {PatchEvent, set, unset} from '../../PatchEvent'
+import {converters as CONVERTERS, ValueConverter} from './converters'
 import {UntypedValueInput} from './UntypedValueInput'
 
 declare const __DEV__: boolean

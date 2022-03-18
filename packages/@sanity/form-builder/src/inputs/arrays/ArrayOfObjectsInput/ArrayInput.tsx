@@ -1,3 +1,5 @@
+/* eslint-disable react/default-props-match-prop-types */
+
 import {
   ArraySchemaType,
   isKeySegment,
@@ -20,7 +22,7 @@ import {Alert} from '../../../components/Alert'
 import {Details} from '../../../components/Details'
 import {Item, List} from '../common/list'
 import {EMPTY_ARRAY} from '../../../utils/empty'
-import ArrayFunctions from '../common/ArrayFunctions'
+import {ArrayFunctions} from '../common/ArrayFunctions'
 import {applyAll} from '../../../patch/applyPatch'
 import {ConditionalReadOnlyField} from '../../common'
 import {FormBuilderFilterFieldFn, FormInputProps} from '../../../types'

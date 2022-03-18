@@ -2,8 +2,8 @@ import {from as observableFrom, of as observableOf, Observable} from 'rxjs'
 import {catchError, concat, filter, map, merge, mergeMap} from 'rxjs/operators'
 import {set} from '../../patch/patches'
 import {uploadImageAsset} from '../inputs/client-adapters/assets'
-import readExif from './image/readExif'
-import rotateImage from './image/rotateImage'
+import {readExif} from './image/readExif'
+import {rotateImage} from './image/rotateImage'
 import {DEFAULT_ORIENTATION, Orientation} from './image/orient'
 import {UploadEvent, UploadOptions} from './types'
 import {UPLOAD_STATUS_KEY} from './constants'
@@ -13,7 +13,7 @@ type Exif = {
   orientation: Orientation
 }
 
-export default function uploadImage(file: File, options?: UploadOptions): Observable<UploadEvent> {
+export function uploadImage(file: File, options?: UploadOptions): Observable<UploadEvent> {
   const upload$ = uploadImageAsset(file, options).pipe(
     filter((event: any) => event.stage !== 'download'),
     map((event) => ({

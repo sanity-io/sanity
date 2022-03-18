@@ -1,5 +1,5 @@
 import {once} from 'lodash'
-import ReferenceInput from '../inputs/reference/SanityReferenceInput'
+import {SanityReferenceInput} from '../inputs/reference/SanityReferenceInput'
 
 /* eslint-disable no-console */
 const warnInputTypeNotSupported = once(() =>
@@ -11,7 +11,7 @@ const warnSearchableOptionNotSupported = once(() =>
 
 /* eslint-enable no-console */
 
-export default function resolveReferenceInput(type) {
+export function resolveReferenceInput(type) {
   const options = type.options || {}
   if (options.inputType) {
     warnInputTypeNotSupported()
@@ -19,5 +19,5 @@ export default function resolveReferenceInput(type) {
   if ('searchable' in options) {
     warnSearchableOptionNotSupported()
   }
-  return ReferenceInput
+  return SanityReferenceInput
 }

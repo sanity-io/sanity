@@ -11,7 +11,7 @@ import {
   SchemaType,
   StringSchemaType,
 } from '@sanity/types'
-import PatchEvent from './PatchEvent'
+import {PatchEvent} from './PatchEvent'
 
 /**
  * @alpha

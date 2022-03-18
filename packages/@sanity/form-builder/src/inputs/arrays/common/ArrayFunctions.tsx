@@ -1,10 +1,12 @@
+/* eslint-disable react/no-unused-prop-types */
+
 import {ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
 import {AddIcon} from '@sanity/icons'
 import React, {ReactNode, useMemo} from 'react'
 import {Box, Button, Grid, Menu, MenuButton, MenuItem, Tooltip, Text} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {useConditionalReadOnly} from '@sanity/base/_internal'
-import PatchEvent from '../../../PatchEvent'
+import {PatchEvent} from '../../../PatchEvent'
 
 // These are the props any implementation of the ArrayFunctions part will receive
 export interface ArrayFunctionsProps<SchemaType extends ArraySchemaType, MemberType> {
@@ -20,7 +22,7 @@ export interface ArrayFunctionsProps<SchemaType extends ArraySchemaType, MemberT
   onChange: (event: PatchEvent) => void
 }
 
-export default function ArrayFunctions<MemberType>(
+export function ArrayFunctions<MemberType>(
   props: ArrayFunctionsProps<ArraySchemaType, MemberType>
 ) {
   const {type, readOnly, children, onCreateValue, onAppendItem} = props

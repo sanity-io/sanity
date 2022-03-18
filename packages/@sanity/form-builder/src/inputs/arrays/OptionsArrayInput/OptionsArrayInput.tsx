@@ -5,8 +5,8 @@ import {ArraySchemaType, isTitledListValue} from '@sanity/types'
 import {Box, Checkbox, Flex, Text} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
 import {useConditionalReadOnly} from '@sanity/base/_internal'
-import PatchEvent, {set, unset} from '../../../PatchEvent'
-import Preview from '../../../Preview'
+import {PatchEvent, set, unset} from '../../../PatchEvent'
+import {Preview} from '../../../Preview'
 import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
 import {Item, List} from '../common/list'
 import {ConditionalReadOnlyField} from '../../common'
@@ -53,7 +53,7 @@ function inArray(array, candidate) {
 
 type OptionsArrayInputProps = FormInputProps<unknown[], ArraySchemaType>
 
-export default class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProps> {
+export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProps> {
   _element: Focusable | null
 
   handleChange = (isChecked, optionValue) => {

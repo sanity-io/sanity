@@ -3,12 +3,12 @@ import {useId} from '@reach/auto-id'
 import {isValidationErrorMarker, StringSchemaType} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {FormField} from '@sanity/base/components'
-import PatchEvent, {set, unset} from '../PatchEvent'
+import {PatchEvent, set, unset} from '../PatchEvent'
 import {FormInputProps} from '../types'
 
 export type StringInputProps = FormInputProps<string, StringSchemaType>
 
-const StringInput = React.forwardRef(function StringInput(
+export const StringInput = React.forwardRef(function StringInput(
   props: StringInputProps,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
@@ -55,5 +55,3 @@ const StringInput = React.forwardRef(function StringInput(
     </FormField>
   )
 })
-
-export default StringInput

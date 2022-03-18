@@ -1,1 +1,1 @@
-export {default, applyAll} from './patch/applyPatch'
+export {applyPatch, applyAll} from './patch/applyPatch'

@@ -8,7 +8,7 @@ import Schema from '@sanity/schema'
 import {SchemaType} from '@sanity/types'
 import {ObjectInput, ObjectInputProps} from '../ObjectInput'
 import {FormBuilderProvider} from '../../../FormBuilderProvider'
-import is from '../../../utils/is'
+import {is} from '../../../utils/is'
 import {ReviewChangesContextProvider} from '../../../sanity/contexts/reviewChanges/ReviewChangesProvider'
 import {createPatchChannel} from '../../../patchChannel'
 

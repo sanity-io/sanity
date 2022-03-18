@@ -113,7 +113,7 @@ const STYLES_ASSETMENU_WRAPPER = {
 }
 const DISABLED_DELETE_TITLE = 'Cannot delete current file'
 
-const AssetRow = (props: RowProps) => {
+export const AssetRow = (props: RowProps) => {
   const client = useClient()
   const versionedClient = useMemo(() => client.withConfig({apiVersion: '1'}), [client])
   const toast = useToast()
@@ -400,5 +400,3 @@ const AssetRow = (props: RowProps) => {
     </CustomCard>
   )
 }
-
-export default AssetRow

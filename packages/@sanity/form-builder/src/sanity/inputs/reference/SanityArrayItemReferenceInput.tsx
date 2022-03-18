@@ -13,8 +13,8 @@ import * as PathUtils from '@sanity/util/paths'
 import {get} from '@sanity/util/paths'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
-import withValuePath from '../../../utils/withValuePath'
-import withDocument from '../../../utils/withDocument'
+import {withValuePath} from '../../../utils/withValuePath'
+import {withDocument} from '../../../utils/withDocument'
 import {useReferenceInputOptions} from '../../contexts/ReferenceInputOptions'
 import * as adapter from '../client-adapters/reference'
 import {ArrayItemReferenceInput} from '../../../inputs/ReferenceInput/ArrayItemReferenceInput'
@@ -71,7 +71,7 @@ type SearchError = {
   }
 }
 
-const SanityReferenceInput = forwardRef(function SanityReferenceInput(
+const SanityArrayItemReferenceInputInner = forwardRef(function SanityReferenceInput(
   props: SanityArrayItemReferenceInputProps,
   ref: ForwardedRef<HTMLInputElement>
 ) {
@@ -189,4 +189,6 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
   )
 })
 
-export default withValuePath(withDocument(SanityReferenceInput))
+export const SanityArrayItemReferenceInput = withValuePath(
+  withDocument(SanityArrayItemReferenceInputInner)
+)

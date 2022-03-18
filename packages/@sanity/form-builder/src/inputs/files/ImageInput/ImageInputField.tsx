@@ -1,7 +1,7 @@
 import React from 'react'
 import * as PathUtils from '@sanity/util/paths'
 import {ObjectField} from '@sanity/types'
-import PatchEvent from '../../../PatchEvent'
+import {PatchEvent} from '../../../PatchEvent'
 import {FormBuilderInput} from '../../../FormBuilderInput'
 import {ConditionalHiddenField, ConditionalReadOnlyField} from '../../common'
 import {FormInputProps} from '../../../types'

@@ -7,7 +7,7 @@ import {Box, Card, Checkbox, Flex, Switch} from '@sanity/ui'
 import {BooleanSchemaType} from '@sanity/types'
 import {ChangeIndicator, FormFieldHeaderText, FormFieldStatus} from '@sanity/base/components'
 import {FieldPresence} from '@sanity/base/presence'
-import PatchEvent, {set} from '../PatchEvent'
+import {PatchEvent, set} from '../PatchEvent'
 import {FormInputProps} from '../types'
 
 export type BooleanInputProps = FormInputProps<boolean, BooleanSchemaType>
@@ -20,7 +20,7 @@ const ZeroLineHeightBox = styled(Box)`
   line-height: 0;
 `
 
-const BooleanInput = React.forwardRef(function BooleanInput(
+export const BooleanInput = React.forwardRef(function BooleanInput(
   props: BooleanInputProps,
   ref: React.ForwardedRef<HTMLInputElement>
 ) {
@@ -77,4 +77,3 @@ const BooleanInput = React.forwardRef(function BooleanInput(
     </ChangeIndicator>
   )
 })
-export default BooleanInput

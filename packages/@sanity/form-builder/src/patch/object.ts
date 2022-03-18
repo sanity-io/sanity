@@ -1,7 +1,7 @@
 import {omit, clone, isObject} from 'lodash'
-import applyPatch from './applyPatch'
+import {applyPatch} from './applyPatch'
 
-export default function apply(value, patch) {
+export function _objectApply(value, patch) {
   const nextValue = clone(value)
   if (patch.path.length === 0) {
     // its directed to me

@@ -55,7 +55,7 @@ type SubscriberArg = {
   snapshot: any
 }
 type Subscriber = (arg0: SubscriberArg) => void
-export default function withPatchSubscriber(ComposedComponent: any) {
+export function withPatchSubscriber(ComposedComponent: any) {
   const SubscribePatch = forwardRef(function SubscribePatch(props: any, ref) {
     const {__internal_patchChannel: patchChannel, getValuePath} = useFormBuilder()
 

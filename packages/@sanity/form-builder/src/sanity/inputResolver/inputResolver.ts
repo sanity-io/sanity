@@ -3,10 +3,10 @@ import React from 'react'
 import * as is from '../../utils/is'
 import {FormBuilderContextValue} from '../../FormBuilderContext'
 import {sanityInputs} from './defaultInputs'
-import resolveReferenceInput from './resolveReferenceInput'
-import resolveArrayInput from './resolveArrayInput'
-import resolveStringInput from './resolveStringInput'
-import resolveNumberInput from './resolveNumberInput'
+import {resolveReferenceInput} from './resolveReferenceInput'
+import {resolveArrayInput} from './resolveArrayInput'
+import {resolveStringInput} from './resolveStringInput'
+import {resolveNumberInput} from './resolveNumberInput'
 
 function resolveTypeVariants(type) {
   if (is.type('array', type)) {
@@ -29,7 +29,7 @@ function resolveTypeVariants(type) {
   return null
 }
 
-export default function resolveInputComponent(
+export function resolveInputComponent(
   inputComponents: FormBuilderContextValue['components']['inputs'] | undefined,
   userDefinedInputComponentProp: unknown,
   type: SchemaType

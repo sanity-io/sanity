@@ -1,7 +1,7 @@
 export const BEFORE = 'before'
 export const AFTER = 'after'
 
-export default function insert(array, position, index, ...args) {
+export function arrayInsert(array, position, index, ...args) {
   if (position !== BEFORE && position !== AFTER) {
     throw new Error(`Invalid position "${position}", must be either ${BEFORE} or ${AFTER}`)
   }

@@ -1,5 +1,4 @@
 import React, {ComponentType, ReactNode, useMemo} from 'react'
-
 import {ObjectSchemaType} from '@sanity/types'
 import {DocumentAvailability} from '@sanity/base/_internal'
 import {Box, Flex, Inline, Label, Text, Tooltip, useRootTheme} from '@sanity/ui'
@@ -7,7 +6,7 @@ import {AccessDeniedIcon, EditIcon, HelpCircleIcon, PublishIcon} from '@sanity/i
 import {TextWithTone} from '@sanity/base/components'
 import {DocumentPreviewPresence} from '@sanity/base/presence'
 import {useDocumentPresence} from '@sanity/base/hooks'
-import Preview from '../../Preview'
+import {Preview} from '../../Preview'
 import {DocumentPreview} from './types'
 import {TimeAgo} from './utils/TimeAgo'
 

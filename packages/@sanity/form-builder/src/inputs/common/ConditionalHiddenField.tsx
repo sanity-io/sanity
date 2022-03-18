@@ -2,7 +2,7 @@ import React, {forwardRef} from 'react'
 import {unstable_useConditionalProperty as useConditionalProperty} from '@sanity/base/hooks'
 import {ConditionalProperty} from '@sanity/types'
 import {SanityDocument} from '@sanity/client'
-import withDocument from '../../utils/withDocument'
+import {withDocument} from '../../utils/withDocument'
 
 type Props = {
   parent?: unknown

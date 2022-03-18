@@ -1,1 +1,1 @@
-export {default} from './OptionsArrayInput'
+export {OptionsArrayInput} from './OptionsArrayInput'

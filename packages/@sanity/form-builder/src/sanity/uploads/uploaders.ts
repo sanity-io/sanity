@@ -1,8 +1,8 @@
 import {SchemaType} from '@sanity/types'
 import {map} from 'rxjs/operators'
 import {set} from '../../patch/patches'
-import uploadImage from './uploadImage'
-import uploadFile from './uploadFile'
+import {uploadImage} from './uploadImage'
+import {uploadFile} from './uploadFile'
 import {Uploader, UploaderDef, UploadOptions} from './types'
 
 const UPLOAD_IMAGE: UploaderDef = {
@@ -31,9 +31,9 @@ const UPLOAD_TEXT: UploaderDef = {
   // and make it possible to register custom uploaders
 }
 
-const uploaders: Array<Uploader> = [UPLOAD_IMAGE, UPLOAD_TEXT, UPLOAD_FILE].map((uploader, i) => ({
-  ...uploader,
-  priority: i,
-}))
-
-export default uploaders
+export const uploaders: Array<Uploader> = [UPLOAD_IMAGE, UPLOAD_TEXT, UPLOAD_FILE].map(
+  (uploader, i) => ({
+    ...uploader,
+    priority: i,
+  })
+)

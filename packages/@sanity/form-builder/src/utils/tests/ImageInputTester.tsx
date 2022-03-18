@@ -4,7 +4,7 @@ import imageUrlBuilder from '@sanity/image-url'
 import React, {ComponentProps, useMemo} from 'react'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {SanityFormBuilderProvider} from '../../sanity/SanityFormBuilderProvider'
-import ImageInput from '../../inputs/files/ImageInput'
+import {ImageInput} from '../../inputs/files/ImageInput'
 import type {UploadOptions} from '../../sanity/uploads/types'
 import {createPatchChannel} from '../../patchChannel'
 

@@ -1,3 +1,5 @@
+/* eslint-disable react/no-unused-prop-types */
+
 /**
  * An example of how to sync focus path through document.location.hash
  *
@@ -33,7 +35,7 @@ function getPathFromHash() {
   return hash ? decodePath(hash) : []
 }
 
-export default class HashFocusManager extends React.Component<Props, State> {
+export class HashFocusManager extends React.Component<Props, State> {
   state = {
     focusPath: getPathFromHash(),
   }

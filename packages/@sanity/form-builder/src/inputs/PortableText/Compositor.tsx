@@ -22,7 +22,7 @@ import {
   usePortal,
 } from '@sanity/ui'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/components'
-import ActivateOnFocus from '../../components/ActivateOnFocus/ActivateOnFocus'
+import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {FormInputProps} from '../../types'
 import {BlockObject} from './object/BlockObject'
 import {InlineObject} from './object/InlineObject'

@@ -18,8 +18,8 @@ import {PresenceOverlay} from '@sanity/base/presence'
 import deepCompare from 'react-fast-compare'
 import {ResolvedUploader, Uploader, UploadOptions} from '../../../sanity/uploads/types'
 import {ImageToolInput} from '../ImageToolInput'
-import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
-import UploadPlaceholder from '../common/UploadPlaceholder'
+import {PatchEvent, setIfMissing, unset} from '../../../PatchEvent'
+import {UploadPlaceholder} from '../common/UploadPlaceholder'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {FileTarget} from '../common/styles'
 import {ImageUrlBuilder, InternalAssetSource, UploadState} from '../types'
@@ -89,7 +89,7 @@ const EMPTY_FIELD_GROUPS: FieldGroups = {
 }
 const ASSET_FIELD_PATH = ['asset']
 
-export default class ImageInput extends React.PureComponent<ImageInputProps, ImageInputState> {
+export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputState> {
   _inputId = uniqueId('ImageInput')
 
   _assetElementRef: null | Focusable = null

@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import React, {useMemo} from 'react'
 import {useFormBuilder} from './useFormBuilder'
 import {PreviewAny} from './utils/fallback-preview/PreviewAny'
@@ -12,18 +11,15 @@ type PreviewProps = {
   withRadius?: boolean
   withBorder?: boolean
 }
-export default function Preview(props: PreviewProps) {
-  // static contextTypes = {
-  //   formBuilder: PropTypes.object,
-  // }
 
-  // render() {
+export function Preview(props: PreviewProps) {
   const {type, value} = props
   const {resolvePreviewComponent} = useFormBuilder()
 
-  const PreviewComponent = useMemo(() => resolvePreviewComponent(type), [type])
-
-  // const PreviewComponent = context.formBuilder.resolvePreviewComponent(type)
+  const PreviewComponent = useMemo(
+    () => resolvePreviewComponent(type),
+    [resolvePreviewComponent, type]
+  )
 
   if (PreviewComponent) {
     return <PreviewComponent {...props} />

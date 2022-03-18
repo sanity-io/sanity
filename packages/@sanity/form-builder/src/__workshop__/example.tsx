@@ -8,7 +8,7 @@ import {PresenceOverlay} from '@sanity/base/presence'
 import {FormBuilderInput} from '../FormBuilderInput'
 import {applyAll} from '../patch/applyPatch'
 import {createPatchChannel} from '../patchChannel'
-import PatchEvent from '../PatchEvent'
+import {PatchEvent} from '../PatchEvent'
 import {
   getDummySchema,
   getDummyDocument,

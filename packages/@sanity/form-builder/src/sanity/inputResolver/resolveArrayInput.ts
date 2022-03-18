@@ -1,7 +1,7 @@
 import {ComponentType} from 'react'
 import {ArraySchemaType} from '@sanity/types'
 import * as is from '../../utils/is'
-import OptionsArray from '../../inputs/arrays/OptionsArrayInput'
+import {OptionsArrayInput as OptionsArray} from '../../inputs/arrays/OptionsArrayInput'
 import {PortableTextInput} from '../../inputs/PortableText/PortableTextInput'
 import {TagsArrayInput} from '../../inputs/TagsArrayInput'
 import {SanityArrayInput, SanityArrayOfPrimitivesInput} from '../inputs/SanityArrayInput'
@@ -30,7 +30,7 @@ export function hasOptionsList(type: ArraySchemaType): boolean {
   return Boolean(type.options?.list)
 }
 
-export default function resolveArrayInput(type: ArraySchemaType): ComponentType<FormInputProps> {
+export function resolveArrayInput(type: ArraySchemaType): ComponentType<FormInputProps> {
   // Schema provides predefines list
   if (hasOptionsList(type)) {
     // @todo: fix typing

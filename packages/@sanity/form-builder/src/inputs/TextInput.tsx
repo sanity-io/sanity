@@ -4,7 +4,7 @@ import {FormField} from '@sanity/base/components'
 import {isValidationErrorMarker, TextSchemaType} from '@sanity/types'
 import {TextArea} from '@sanity/ui'
 import styled from 'styled-components'
-import PatchEvent, {set, unset} from '../PatchEvent'
+import {PatchEvent, set, unset} from '../PatchEvent'
 import {FormInputProps} from '../types'
 
 export type TextInputProps = FormInputProps<string, TextSchemaType>
@@ -15,7 +15,7 @@ const StyledTextArea = styled(TextArea)`
   }
 `
 
-const TextInput = React.forwardRef(function TextInput(
+export const TextInput = React.forwardRef(function TextInput(
   props: TextInputProps,
   forwardedRef: ForwardedRef<HTMLTextAreaElement>
 ) {
@@ -54,5 +54,3 @@ const TextInput = React.forwardRef(function TextInput(
     </FormField>
   )
 })
-
-export default TextInput

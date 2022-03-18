@@ -59,7 +59,7 @@ const MenuContainer = styled.div`
   }
 `
 
-const AssetThumb = (props: AssetProps) => {
+export const AssetThumb = React.memo(function AssetThumb(props: AssetProps) {
   const client = useClient()
   const versionedClient = useMemo(() => client.withConfig({apiVersion: '1'}), [client])
   const toast = useToast()
@@ -182,6 +182,4 @@ const AssetThumb = (props: AssetProps) => {
       )}
     </Root>
   )
-}
-
-export default React.memo(AssetThumb)
+})

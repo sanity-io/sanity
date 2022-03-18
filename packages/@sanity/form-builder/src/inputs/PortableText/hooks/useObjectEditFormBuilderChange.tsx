@@ -4,7 +4,7 @@ import {Patch as EditorPatch} from '@sanity/portable-text-editor'
 import {Path} from '@sanity/types'
 import {useCallback, useMemo} from 'react'
 import {Subject} from 'rxjs'
-import PatchEvent from '../../../PatchEvent'
+import {PatchEvent} from '../../../PatchEvent'
 
 // This hook will forward patches to the root onChange from the forms of the embedded objects.
 export function useObjectEditFormBuilderChange(

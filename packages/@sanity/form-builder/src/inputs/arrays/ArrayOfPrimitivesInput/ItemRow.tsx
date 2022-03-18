@@ -7,12 +7,12 @@ import {TrashIcon, EllipsisVerticalIcon, CopyIcon as DuplicateIcon} from '@sanit
 import {useId} from '@reach/auto-id'
 import {useConditionalReadOnly} from '@sanity/base/_internal'
 import {DragHandle} from '../common/DragHandle'
-import PatchEvent, {set} from '../../../PatchEvent'
+import {PatchEvent, set} from '../../../PatchEvent'
 import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
 import {FormBuilderInput, FormBuilderInputInstance} from '../../../FormBuilderInput'
 import {InsertMenu} from '../ArrayOfObjectsInput/InsertMenu'
 import {FormInputProps} from '../../../types'
-import getEmptyValue from './getEmptyValue'
+import {getEmptyValue} from './getEmptyValue'
 import {PrimitiveValue} from './types'
 
 const dragHandle = <DragHandle paddingX={1} paddingY={3} />

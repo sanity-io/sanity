@@ -18,10 +18,9 @@ import {CopyIcon as DuplicateIcon, EllipsisVerticalIcon, TrashIcon} from '@sanit
 import {FormFieldValidationStatus} from '@sanity/base/components'
 import {useId} from '@reach/auto-id'
 import {SchemaType} from '@sanity/types'
-import Preview from '../../../../Preview'
-
+import {Preview} from '../../../../Preview'
 import {DragHandle} from '../../common/DragHandle'
-import randomKey from '../../common/randomKey'
+import {randomKey} from '../../common/randomKey'
 import {createProtoValue} from '../ArrayInput'
 import {InsertMenu} from '../InsertMenu'
 import {ItemWithMissingType} from './ItemWithMissingType'
