@@ -130,10 +130,10 @@ export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetRefere
     [onFocus]
   )
 
-  const getReferenceInfoMemo = useCallback((id) => getReferenceInfo(id, type), [
-    getReferenceInfo,
-    type,
-  ])
+  const getReferenceInfoMemo = useCallback(
+    (id) => getReferenceInfo(id, type),
+    [getReferenceInfo, type]
+  )
 
   const refDoc = useMemo(() => ({_id: value?._ref}), [value?._ref])
 

@@ -20,10 +20,11 @@ export function OptionPreview(props: {
   referenceType: CrossDatasetReferenceSchemaType
   getReferenceInfo: (doc: {_id: string; _type: string}) => Observable<CrossDatasetReferenceInfo>
 }) {
-  const {isLoading, result: referenceInfo, error} = useReferenceInfo(
-    props.document,
-    props.getReferenceInfo
-  )
+  const {
+    isLoading,
+    result: referenceInfo,
+    error,
+  } = useReferenceInfo(props.document, props.getReferenceInfo)
 
   if (isLoading) {
     return (
