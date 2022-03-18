@@ -36,6 +36,11 @@
       "require": "./lib/cjs/_exports/field.js",
       "default": "./lib/esm/_exports/field.js"
     },
+    "./form": {
+      "source": "./src/_exports/form.ts",
+      "require": "./lib/cjs/_exports/form.js",
+      "default": "./lib/esm/_exports/form.js"
+    },
     "./hooks": {
       "source": "./src/_exports/hooks.ts",
       "require": "./lib/cjs/_exports/hooks.js",
@@ -117,7 +122,7 @@
         "./lib/dts/src/_exports/field.d.ts"
       ],
       "form": [
-        "./lib/dts/_exports/form.d.ts"
+        "./lib/dts/src/_exports/form.d.ts"
       ],
       "hooks": [
         "./lib/dts/src/_exports/hooks.d.ts"
