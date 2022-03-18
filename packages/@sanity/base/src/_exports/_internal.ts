@@ -52,9 +52,3 @@ export {AuthProvider} from '../auth'
 // datastores
 export type {ProjectData} from '../datastores/project'
 export type {PermissionCheckResult} from '../datastores/grants/types'
-
-// form
-export * from '../form/patch/types'
-export type {MutationPatch} from '../form/utils/mutationPatch'
-export {fromMutationPatches, toMutationPatches} from '../form/utils/mutationPatch'
-export {decodePath, encodePath} from '../form/utils/path'

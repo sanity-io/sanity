@@ -1,24 +1,31 @@
-import T, {Template, TemplateBuilder} from '@sanity/initial-value-templates'
+import {T, Template, TemplateBuilder} from '@sanity/initial-value-templates'
 import {Router, RouterState} from '@sanity/state-router'
-import {
-  Asset,
-  AssetFromSource,
-  Schema as SanitySchema,
-  Schema,
-  SchemaType,
-  ValidationMarker,
-} from '@sanity/types'
+import {AssetSource, Schema as SanitySchema, Schema} from '@sanity/types'
 import React from 'react'
+import {
+  FormBuilderArrayFunctionComponent,
+  FormBuilderCustomMarkersComponent,
+  FormBuilderInputComponentMap,
+  FormBuilderMarkersComponent,
+  FormInputComponentResolver,
+  FormPreviewComponentResolver,
+} from '../form'
 import {SanityPlugin} from '../plugin'
 import {DocumentNodeResolver} from '../structure'
 import {SanityTheme} from '../theme'
 
+/**
+ * @alpha
+ */
 export interface InitialValueTemplatesResolver {
   (_T: typeof T, options: {schema: Schema}): Array<Template | TemplateBuilder>
 }
 
 export type {SanitySchema}
 
+/**
+ * @alpha
+ */
 export interface SanityAuthConfig {
   mode?: 'append' | 'replace'
   redirectOnSingle?: boolean
@@ -30,53 +37,32 @@ export interface SanityAuthConfig {
   }[]
 }
 
-export type SanityFormBuilderAssetSourceComponent = React.ComponentType<{
-  assetType: 'file' | 'image'
-  onClose: () => void
-  onSelect: (assetsFromSource: AssetFromSource[]) => void
-  selectedAssets: Asset[]
-  dialogHeaderTitle?: string
-}>
+/**
+ * @alpha
+ */
 
-export interface SanityFormBuilderAssetSourceConfig {
-  type: 'file' | 'image'
-  name: string
-  title: string
-  component: SanityFormBuilderAssetSourceComponent
-  icon: React.ComponentType
+export interface SanityFormBuilderConfig {
+  components?: {
+    ArrayFunctions?: FormBuilderArrayFunctionComponent
+    CustomMarkers?: FormBuilderCustomMarkersComponent
+    Markers?: FormBuilderMarkersComponent
+    inputs?: FormBuilderInputComponentMap
+  }
+  file?: {
+    assetSources?: AssetSource[]
+    directUploads?: boolean
+  }
+  image?: {
+    assetSources?: AssetSource[]
+    directUploads?: boolean
+  }
+  resolveInputComponent?: FormInputComponentResolver
+  resolvePreviewComponent?: FormPreviewComponentResolver
 }
 
 /**
  * @alpha
  */
-export interface SanityFormBuilderConfig {
-  assetSources?: SanityFormBuilderAssetSourceConfig[]
-  /**
-   * @todo Create typings for these components
-   */
-  components?: {
-    ArrayFunctions?: React.ComponentType<any>
-    CustomMarkers?: React.ComponentType<{validation: ValidationMarker[]}>
-    Markers?: React.ComponentType<{
-      validation: ValidationMarker[]
-      renderCustomMarkers?: (validation: ValidationMarker[]) => JSX.Element
-    }>
-    inputs?: {
-      object?: React.ComponentType<any>
-      boolean?: React.ComponentType<any>
-      number?: React.ComponentType<any>
-      string?: React.ComponentType<any>
-      text?: React.ComponentType<any>
-      reference?: React.ComponentType<any>
-      datetime?: React.ComponentType<any>
-      email?: React.ComponentType<any>
-      geopoint?: React.ComponentType<any>
-      url?: React.ComponentType<any>
-    }
-  }
-  inputResolver?: (schemaType: SchemaType) => React.ComponentType<any> | undefined | false | null
-}
-
 export interface SanityTool<Options = any> {
   component: React.ComponentType<{tool: SanityTool<Options>}>
   icon?: React.ComponentType
@@ -93,6 +79,9 @@ export interface SanityTool<Options = any> {
   canHandleIntent?: (intent: string, params: Record<string, unknown>, payload: unknown) => boolean
 }
 
+/**
+ * @alpha
+ */
 export interface SanitySourceConfig {
   projectId: string
   dataset: string
@@ -103,6 +92,9 @@ export interface SanitySourceConfig {
   structureDocumentNode?: DocumentNodeResolver
 }
 
+/**
+ * @alpha
+ */
 export interface SanityConfig {
   auth?: SanityAuthConfig
   formBuilder?: SanityFormBuilderConfig
@@ -113,7 +105,7 @@ export interface SanityConfig {
     logo?: React.ComponentType<{'aria-label'?: string}>
   }
   /**
-   * @beta
+   * @alpha
    */
   __experimental_spaces?: SanitySpace[] // eslint-disable-line camelcase
   schemaTypes?: any[]
@@ -123,7 +115,7 @@ export interface SanityConfig {
 }
 
 /**
- * @beta
+ * @alpha
  */
 export interface SanitySpace {
   name: string
