@@ -1,6 +1,6 @@
 import React, {PureComponent} from 'react'
 import PropTypes from 'prop-types'
-import {PatchEvent, set, setIfMissing, unset} from '@sanity/form-builder'
+import {PatchEvent, set, setIfMissing, unset} from '@sanity/base/form'
 import {debounce} from 'lodash'
 import {Button} from '@sanity/ui'
 import {AddIcon} from '@sanity/icons'
