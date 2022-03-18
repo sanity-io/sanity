@@ -11,12 +11,12 @@ import {get} from '@sanity/util/paths'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 import {Box, Stack, Text, TextSkeleton} from '@sanity/ui'
-import {useClient, useDatastores} from '@sanity/base'
-import withValuePath from '../../../utils/withValuePath'
-import withDocument from '../../../utils/withDocument'
+import {useSource, useDatastores} from '@sanity/base'
+import {FormInputProps} from '@sanity/base/form'
+import {withValuePath} from '../../../utils/withValuePath'
+import {withDocument} from '../../../utils/withDocument'
 import {CrossDatasetReferenceInput} from '../../../inputs/CrossDatasetReferenceInput'
 import {Alert} from '../../../components/Alert'
-import {FormInputProps} from '../../../types'
 import {search} from './datastores/search'
 import {createGetReferenceInfo} from './datastores/getReferenceInfo'
 import {useCrossProjectToken} from './datastores/useCrossProjectToken'
@@ -70,12 +70,10 @@ const SanityCrossDatasetReferenceInput = forwardRef(function SanityCrossDatasetR
   ref: ForwardedRef<HTMLInputElement>
 ) {
   const {getValuePath, type, document} = props
-  const client = useClient()
+  const {client, projectId} = useSource()
   const {documentPreviewStore} = useDatastores()
 
-  const currentProject = client.config().projectId
-
-  const isCurrentProject = currentProject === type.projectId
+  const isCurrentProject = projectId === type.projectId
   const loadableToken = useCrossProjectToken(client, {
     projectId: type.projectId,
     tokenId: type.tokenId,
