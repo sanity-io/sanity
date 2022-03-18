@@ -1,6 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 
-import {Patch} from '@sanity/base/_internal'
+import {Patch} from '@sanity/base/form'
 import {get, find} from 'lodash'
 import React, {forwardRef, useCallback} from 'react'
 import shallowEquals from 'shallow-equals'

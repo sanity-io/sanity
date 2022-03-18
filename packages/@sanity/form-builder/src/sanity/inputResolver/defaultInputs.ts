@@ -1,3 +1,5 @@
+import {FormInputProps} from '@sanity/base/form'
+
 import {BooleanInput} from '../../inputs/BooleanInput'
 import {EmailInput} from '../../inputs/EmailInput'
 import {NumberInput} from '../../inputs/NumberInput'
@@ -11,8 +13,6 @@ import {SanityArrayInput} from '../inputs/SanityArrayInput'
 import {SanityImageInput} from '../inputs/SanityImageInput'
 import {SanityFileInput} from '../inputs/SanityFileInput'
 import SanityCrossDatasetReferenceInput from '../inputs/crossDatasetReference/SanityCrossDatasetReferenceInput'
-
-import {FormInputProps} from '../../types'
 
 export const sanityInputs: Record<
   string,

@@ -1,4 +1,4 @@
-import {set, unset, setIfMissing} from '../../patch/patches'
+import {set, unset, setIfMissing} from '@sanity/base/form'
 import {UploadEvent} from './types'
 import {UPLOAD_STATUS_KEY} from './constants'
 

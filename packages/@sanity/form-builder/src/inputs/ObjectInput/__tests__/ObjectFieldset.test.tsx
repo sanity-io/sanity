@@ -3,6 +3,7 @@ import '@testing-library/jest-dom/extend-expect'
 import {render} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React, {ForwardedRef, forwardRef, useMemo} from 'react'
+import {FormInputComponentResolver, FormInputProps} from '@sanity/base/form'
 import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
 import Schema from '@sanity/schema'
 import {SchemaType} from '@sanity/types'
@@ -11,7 +12,6 @@ import {FormBuilderProvider} from '../../../FormBuilderProvider'
 import {is} from '../../../utils/is'
 import {ReviewChangesContextProvider} from '../../../sanity/contexts/reviewChanges/ReviewChangesProvider'
 import {createPatchChannel} from '../../../patchChannel'
-import {FormInputComponentResolver, FormInputProps} from '../../../types'
 
 const schema = Schema.compile({
   name: 'test',

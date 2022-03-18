@@ -1,6 +1,6 @@
+import {PatchEvent, insert, unset, set} from '@sanity/base/form'
 import {normalizeBlock} from '@sanity/block-tools'
 import {PortableTextBlock} from '@sanity/portable-text-editor'
-import {PatchEvent, insert, unset, set} from '../../../PatchEvent'
 
 type UnsetFunction = () => void
 type SetFunction = (args0: PortableTextBlock) => void

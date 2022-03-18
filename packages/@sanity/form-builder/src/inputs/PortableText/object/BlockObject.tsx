@@ -1,3 +1,4 @@
+import {PatchEvent, PortableTextMarker, RenderCustomMarkers} from '@sanity/base/form'
 import {
   PortableTextEditor,
   PortableTextBlock,
@@ -16,8 +17,7 @@ import {
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {Tooltip, Flex, ResponsivePaddingProps} from '@sanity/ui'
 import React, {useCallback, useMemo, useRef, useState} from 'react'
-import {PortableTextMarker, RenderBlockActions, RenderCustomMarkers} from '../types'
-import {PatchEvent} from '../../../PatchEvent'
+import {RenderBlockActions} from '../types'
 import {BlockActions} from '../BlockActions'
 import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
 import {useFormBuilder} from '../../../useFormBuilder'

@@ -1,7 +1,7 @@
+import {FormInputProps} from '@sanity/base/form'
 import {SchemaType} from '@sanity/types'
 import React from 'react'
 import * as is from '../../utils/is'
-import {FormInputProps} from '../../types'
 import {sanityInputs} from './defaultInputs'
 import {resolveReferenceInput} from './resolveReferenceInput'
 import {resolveArrayInput} from './resolveArrayInput'

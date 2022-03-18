@@ -1,13 +1,8 @@
 /* eslint-disable react/no-unused-prop-types */
 
-/**
- * An example of how to sync focus path through document.location.hash
- *
- */
-
-import React from 'react'
+import {decodePath, encodePath} from '@sanity/base/form'
 import {Path} from '@sanity/types'
-import {decodePath, encodePath} from '@sanity/base/_internal'
+import React from 'react'
 
 type ChildArgs = {
   onFocus: (path: Path) => void
@@ -35,6 +30,9 @@ function getPathFromHash() {
   return hash ? decodePath(hash) : []
 }
 
+/**
+ * An example of how to sync focus path through document.location.hash
+ */
 export class HashFocusManager extends React.Component<Props, State> {
   state = {
     focusPath: getPathFromHash(),

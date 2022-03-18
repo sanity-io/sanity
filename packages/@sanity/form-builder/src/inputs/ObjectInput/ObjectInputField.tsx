@@ -3,11 +3,10 @@ import {FormFieldSet} from '@sanity/base/components'
 import {resolveTypeName} from '@sanity/util/content'
 import {useConditionalReadOnly} from '@sanity/base/_internal'
 import {ObjectFieldType, ObjectSchemaTypeWithOptions, SchemaType} from '@sanity/types'
+import {PatchEvent, FormInputProps} from '@sanity/base/form'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import {InvalidValueInput} from '../InvalidValueInput'
-import {PatchEvent} from '../../PatchEvent'
 import {ConditionalHiddenField} from '../common/ConditionalHiddenField'
-import {FormInputProps} from '../../types'
 
 interface FieldType {
   name: string

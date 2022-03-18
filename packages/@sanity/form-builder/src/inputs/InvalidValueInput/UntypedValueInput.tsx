@@ -1,9 +1,9 @@
 import React, {useCallback, useMemo} from 'react'
 import {Button, Card, Code, Grid, Stack, Text} from '@sanity/ui'
 import {useSource} from '@sanity/base'
+import {PatchEvent, setIfMissing, unset} from '@sanity/base/form'
 import {Alert} from '../../components/Alert'
 import {Details} from '../../components/Details'
-import {PatchEvent, setIfMissing, unset} from '../../PatchEvent'
 
 declare const __DEV__: boolean
 

@@ -1,25 +1,22 @@
-import {AssetSource, Path, Schema, ValidationMarker} from '@sanity/types'
-import React, {createContext} from 'react'
-import {PortableTextMarker, RenderCustomMarkers} from './inputs/PortableText/types'
-import {PatchChannel} from './patchChannel'
 import {
-  FormArrayInputFunctionsProps,
+  FormBuilderArrayFunctionComponent,
+  FormBuilderCustomMarkersComponent,
   FormBuilderFilterFieldFn,
+  FormBuilderInputComponentMap,
+  FormBuilderMarkersComponent,
   FormInputComponentResolver,
-  FormInputProps,
   FormPreviewComponentResolver,
-} from './types'
+} from '@sanity/base/form'
+import {AssetSource, Path, Schema} from '@sanity/types'
+import {createContext} from 'react'
+import {PatchChannel} from './patchChannel'
 
 export interface FormBuilderContextValue {
   components: {
-    ArrayFunctions: React.ComponentType<FormArrayInputFunctionsProps<any, any>>
-    CustomMarkers: React.ComponentType<{markers: PortableTextMarker[]}>
-    Markers: React.ComponentType<{
-      markers: PortableTextMarker[]
-      renderCustomMarkers: RenderCustomMarkers
-      validation: ValidationMarker[]
-    }>
-    inputs: Record<string, React.ComponentType<FormInputProps<any, any>> | undefined>
+    ArrayFunctions: FormBuilderArrayFunctionComponent
+    CustomMarkers: FormBuilderCustomMarkersComponent
+    Markers: FormBuilderMarkersComponent
+    inputs: FormBuilderInputComponentMap
   }
   file: {
     assetSources: AssetSource[]

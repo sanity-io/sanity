@@ -1,9 +1,10 @@
-import React, {useCallback} from 'react'
+import {SanityFormBuilderConfig} from '@sanity/base'
+import {FormPreviewComponentResolver} from '@sanity/base/form'
 import {SanityPreview} from '@sanity/base/preview'
 import {Schema, SchemaType} from '@sanity/types'
-import {FormBuilderProvider, FormBuilderProviderProps} from '../FormBuilderProvider'
+import React, {useCallback} from 'react'
+import {FormBuilderProvider} from '../FormBuilderProvider'
 import {PatchChannel} from '../patchChannel'
-import {FormPreviewComponentResolver} from '../types'
 import {resolveInputComponent as defaultInputResolver} from './inputResolver/inputResolver'
 
 const previewResolver: FormPreviewComponentResolver = (..._: unknown[]) => {
@@ -14,16 +15,14 @@ const previewResolver: FormPreviewComponentResolver = (..._: unknown[]) => {
 /**
  * @alpha This API might change.
  */
-export interface SanityFormBuilderProviderProps {
-  components?: FormBuilderProviderProps['components']
-  value: any | null
-  schema: Schema
+export interface SanityFormBuilderProviderProps extends SanityFormBuilderConfig {
   /**
    * @internal Considered internal, do not use.
    */
   __internal_patchChannel: PatchChannel // eslint-disable-line camelcase
-  resolveInputComponent?: (type: SchemaType) => React.ComponentType<any> | null | undefined
   children: React.ReactElement
+  schema: Schema
+  value: any | null
 }
 
 /**
@@ -36,6 +35,7 @@ export function SanityFormBuilderProvider(props: SanityFormBuilderProviderProps)
     __internal_patchChannel: patchChannel,
     components,
     resolveInputComponent: resolveInputComponentProp,
+    resolvePreviewComponent = previewResolver,
   } = props
 
   const resolveInputComponent = useCallback(
@@ -47,12 +47,12 @@ export function SanityFormBuilderProvider(props: SanityFormBuilderProviderProps)
 
   return (
     <FormBuilderProvider
-      components={components}
-      value={props.value}
-      schema={props.schema}
       __internal_patchChannel={patchChannel}
+      components={components}
       resolveInputComponent={resolveInputComponent}
-      resolvePreviewComponent={previewResolver}
+      resolvePreviewComponent={resolvePreviewComponent}
+      schema={props.schema}
+      value={props.value}
     >
       {props.children}
     </FormBuilderProvider>

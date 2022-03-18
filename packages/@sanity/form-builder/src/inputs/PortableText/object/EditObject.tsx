@@ -2,7 +2,7 @@
 
 import React, {useState, useEffect, useMemo, useCallback} from 'react'
 import {isKeySegment, Path, ValidationMarker} from '@sanity/types'
-import {Patch as FormBuilderPatch} from '@sanity/base/_internal'
+import {PatchEvent, Patch as FormBuilderPatch} from '@sanity/base/form'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {
   compactPatches,
@@ -16,7 +16,6 @@ import {
 } from '@sanity/portable-text-editor'
 import {debounce} from 'lodash'
 import {applyAll} from '../../../simplePatch'
-import {PatchEvent} from '../../../PatchEvent'
 import {ObjectEditData} from '../types'
 import {DefaultObjectEditing} from './renderers/DefaultObjectEditing'
 import {PopoverObjectEditing} from './renderers/PopoverObjectEditing'

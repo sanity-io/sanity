@@ -7,8 +7,7 @@ import {Box, Card, Checkbox, Flex, Switch} from '@sanity/ui'
 import {BooleanSchemaType} from '@sanity/types'
 import {ChangeIndicator, FormFieldHeaderText, FormFieldStatus} from '@sanity/base/components'
 import {FieldPresence} from '@sanity/base/presence'
-import {PatchEvent, set} from '../PatchEvent'
-import {FormInputProps} from '../types'
+import {PatchEvent, set, FormInputProps} from '@sanity/base/form'
 
 export type BooleanInputProps = FormInputProps<boolean, BooleanSchemaType>
 

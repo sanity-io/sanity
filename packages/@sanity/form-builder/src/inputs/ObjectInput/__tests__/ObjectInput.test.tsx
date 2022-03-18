@@ -6,12 +6,12 @@ import React, {ForwardedRef, forwardRef, useMemo} from 'react'
 import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
 import Schema from '@sanity/schema'
 import {SchemaType} from '@sanity/types'
+import {FormInputComponentResolver, FormInputProps} from '@sanity/base/form'
 import {ObjectInput, ObjectInputProps} from '../ObjectInput'
 import {FormBuilderProvider} from '../../../FormBuilderProvider'
 import {is} from '../../../utils/is'
 import {ReviewChangesContextProvider} from '../../../sanity/contexts/reviewChanges/ReviewChangesProvider'
 import {createPatchChannel} from '../../../patchChannel'
-import {FormInputComponentResolver, FormInputProps} from '../../../types'
 
 const schema = Schema.compile({
   name: 'test',

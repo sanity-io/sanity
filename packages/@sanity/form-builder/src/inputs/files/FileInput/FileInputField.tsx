@@ -1,10 +1,9 @@
 import React from 'react'
+import {PatchEvent, FormInputProps} from '@sanity/base/form'
 import * as PathUtils from '@sanity/util/paths'
 import {ConditionalProperty, ObjectField} from '@sanity/types'
-import {PatchEvent} from '../../../PatchEvent'
 import {FormBuilderInput} from '../../../FormBuilderInput'
 import {ConditionalHiddenField, ConditionalReadOnlyField} from '../../common'
-import {FormInputProps} from '../../../types'
 
 export interface FileInputFieldProps extends Omit<FormInputProps<unknown>, 'readOnly' | 'type'> {
   field: ObjectField

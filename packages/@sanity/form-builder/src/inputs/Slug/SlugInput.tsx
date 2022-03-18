@@ -7,13 +7,12 @@ import {
   isValidationErrorMarker,
 } from '@sanity/types'
 import {ChangeIndicatorCompareValueProvider, FormField} from '@sanity/base/components'
+import {FormInputProps, PatchEvent, set, setIfMissing, unset} from '@sanity/base/form'
 import * as PathUtils from '@sanity/util/paths'
 import {TextInput, Button, Flex, Box, Card, Stack} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
-import {PatchEvent, set, setIfMissing, unset} from '../../PatchEvent'
 import {withDocument} from '../../utils/withDocument'
 import {withValuePath} from '../../utils/withValuePath'
-import {FormInputProps} from '../../types'
 import {slugify} from './utils/slugify'
 import {useAsync} from './utils/useAsync'
 

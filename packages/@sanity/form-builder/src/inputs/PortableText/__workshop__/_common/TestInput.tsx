@@ -1,14 +1,18 @@
+import {useSanity} from '@sanity/base'
+import {
+  FormInputComponentResolver,
+  PortableTextMarker,
+  RenderCustomMarkers,
+} from '@sanity/base/form'
 import {PortableTextBlock, Type as PTType} from '@sanity/portable-text-editor'
 import {Path, Schema, ValidationMarker} from '@sanity/types'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
-import {useSanity} from '@sanity/base'
 import {FormBuilderProvider} from '../../../../FormBuilderProvider'
 import {PortableTextInput} from '../../PortableTextInput'
 import {applyAll} from '../../../../simplePatch'
-import {PortableTextMarker, RenderBlockActions, RenderCustomMarkers} from '../../types'
+import {RenderBlockActions} from '../../types'
 import {ReviewChangesContextProvider} from '../../../../sanity/contexts/reviewChanges/ReviewChangesProvider'
 import {createPatchChannel} from '../../../../patchChannel'
-import {FormInputComponentResolver} from '../../../../types'
 import {inputResolver} from './input'
 import {resolvePreviewComponent} from './resolvePreviewComponent'
 
@@ -17,7 +21,7 @@ interface TestInputProps {
   validation?: ValidationMarker[]
   readOnly?: boolean
   renderBlockActions?: RenderBlockActions
-  renderCustomMarkers?: RenderCustomMarkers // (markers: PortableTextMarker[]) => React.ReactNode
+  renderCustomMarkers?: RenderCustomMarkers
   schema: Schema
   type: PTType
   value: PortableTextBlock[] | undefined

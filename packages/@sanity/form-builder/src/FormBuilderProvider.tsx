@@ -1,16 +1,10 @@
+import {SanityFormBuilderConfig} from '@sanity/base'
+import {FormBuilderFilterFieldFn} from '@sanity/base/form'
+import {AssetSource, Schema, SchemaType} from '@sanity/types'
 import React, {useMemo} from 'react'
-import {AssetSource, Schema, SchemaType, ValidationMarker} from '@sanity/types'
 import {fallbackInputs} from './fallbackInputs'
 import {FormBuilderContext, FormBuilderContextValue} from './FormBuilderContext'
-import {PortableTextMarker, RenderCustomMarkers} from './inputs/PortableText/types'
 import {PatchChannel} from './patchChannel'
-import {
-  FormBuilderFilterFieldFn,
-  FormInputComponentResolver,
-  FormPreviewComponentResolver,
-  FormInputProps,
-  FormArrayInputFunctionsProps,
-} from './types'
 import {DefaultArrayInputFunctions} from './inputs/arrays/common/ArrayFunctions'
 import {DefaultMarkers} from './inputs/PortableText/_legacyDefaultParts/Markers'
 import {DefaultCustomMarkers} from './inputs/PortableText/_legacyDefaultParts/CustomMarkers'
@@ -40,25 +34,7 @@ function resolveComponentFromType<Props>(
   return undefined
 }
 
-export interface FormBuilderProviderProps {
-  components?: {
-    ArrayFunctions?: React.ComponentType<FormArrayInputFunctionsProps<any, any>>
-    CustomMarkers?: React.ComponentType<{markers: PortableTextMarker[]}>
-    Markers: React.ComponentType<{
-      markers: PortableTextMarker[]
-      renderCustomMarkers: RenderCustomMarkers
-      validation: ValidationMarker[]
-    }>
-    inputs?: Record<string, React.ComponentType<FormInputProps<any, any>> | undefined>
-  }
-  file?: {
-    assetSources?: AssetSource[]
-    directUploads?: boolean
-  }
-  image?: {
-    assetSources?: AssetSource[]
-    directUploads?: boolean
-  }
+export interface FormBuilderProviderProps extends SanityFormBuilderConfig {
   schema: Schema
   value?: unknown
   children?: React.ReactNode
@@ -67,8 +43,6 @@ export interface FormBuilderProviderProps {
    * @internal
    */
   __internal_patchChannel?: PatchChannel // eslint-disable-line camelcase
-  resolveInputComponent: FormInputComponentResolver
-  resolvePreviewComponent: FormPreviewComponentResolver
 }
 
 const missingPatchChannel: PatchChannel = {

@@ -1,11 +1,10 @@
-import React, {useMemo} from 'react'
+import {FormField} from '@sanity/base/components'
+import {PatchEvent, set, unset, FormInputProps} from '@sanity/base/form'
 import {isValidationErrorMarker, StringSchemaType} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
-import {FormField} from '@sanity/base/components'
-import {PatchEvent, set, unset} from '../PatchEvent'
+import React, {useMemo} from 'react'
 import {getValidationRule} from '../utils/getValidationRule'
-import {FormInputProps} from '../types'
 
 export type UrlInputProps = FormInputProps<string, StringSchemaType>
 

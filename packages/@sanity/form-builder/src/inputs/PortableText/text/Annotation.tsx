@@ -1,4 +1,5 @@
-import React, {SyntheticEvent, useCallback, useMemo, useRef, useState} from 'react'
+import {PortableTextMarker, RenderCustomMarkers} from '@sanity/base/form'
+import {hues} from '@sanity/color'
 import {
   PortableTextChild,
   PortableTextEditor,
@@ -6,13 +7,12 @@ import {
   Type,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
-import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {ValidationMarker, Path} from '@sanity/types'
-import styled, {css} from 'styled-components'
+import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {Box, Theme, ThemeColorToneKey, Tooltip} from '@sanity/ui'
-import {hues} from '@sanity/color'
+import React, {SyntheticEvent, useCallback, useMemo, useRef, useState} from 'react'
+import styled, {css} from 'styled-components'
 import {DefaultMarkers} from '../_legacyDefaultParts/Markers'
-import {PortableTextMarker, RenderCustomMarkers} from '../types'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {AnnotationToolbarPopover} from './AnnotationToolbarPopover'
 

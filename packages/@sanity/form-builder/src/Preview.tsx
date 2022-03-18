@@ -1,5 +1,5 @@
+import {FormPreviewProps} from '@sanity/base/form'
 import React, {useMemo} from 'react'
-import {FormPreviewProps} from './types'
 import {useFormBuilder} from './useFormBuilder'
 import {PreviewAny} from './utils/fallback-preview/PreviewAny'
 

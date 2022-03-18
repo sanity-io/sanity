@@ -3,8 +3,7 @@ import {isValidationErrorMarker, StringSchemaType} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {FormField} from '@sanity/base/components'
-import {PatchEvent, set, unset} from '../PatchEvent'
-import {FormInputProps} from '../types'
+import {PatchEvent, set, unset, FormInputProps} from '@sanity/base/form'
 
 export type TelephoneInputProps = FormInputProps<string, StringSchemaType>
 

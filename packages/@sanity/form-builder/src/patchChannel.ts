@@ -1,4 +1,4 @@
-import {Patch} from '@sanity/base/_internal'
+import {Patch} from '@sanity/base/form'
 
 /**
  * @internal

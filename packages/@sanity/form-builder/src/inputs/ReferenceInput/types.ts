@@ -2,7 +2,7 @@ import {Observable} from 'rxjs'
 import React, {ReactNode} from 'react'
 import {PreviewValue, Reference, ReferenceSchemaType} from '@sanity/types'
 import {DocumentAvailability} from '@sanity/base/_internal'
-import {FormInputProps} from '../../types'
+import {FormInputProps} from '@sanity/base/form'
 
 export interface ReferenceInfo {
   id: string

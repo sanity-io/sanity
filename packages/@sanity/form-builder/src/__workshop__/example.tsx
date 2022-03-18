@@ -3,12 +3,11 @@ import {useBoolean, useProps, useSelect} from '@sanity/ui-workshop'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {Patcher} from '@sanity/mutator'
 import type {ObjectField, ObjectSchemaTypeWithOptions} from '@sanity/types'
-import {toMutationPatches} from '@sanity/base/_internal'
+import {PatchEvent, toMutationPatches} from '@sanity/base/form'
 import {PresenceOverlay} from '@sanity/base/presence'
 import {FormBuilderInput} from '../FormBuilderInput'
 import {applyAll} from '../patch/applyPatch'
 import {createPatchChannel} from '../patchChannel'
-import {PatchEvent} from '../PatchEvent'
 import {
   getDummySchema,
   getDummyDocument,

@@ -5,10 +5,15 @@ import {ArraySchemaType, ValidationMarker, SchemaType} from '@sanity/types'
 import {Card, Stack} from '@sanity/ui'
 import {FormFieldSet} from '@sanity/base/components'
 import {resolveTypeName} from '@sanity/util/content'
-import {PatchEvent, set, unset} from '../../../PatchEvent'
+import {
+  FormArrayInputFunctionsProps,
+  FormInputProps,
+  PatchEvent,
+  set,
+  unset,
+} from '@sanity/base/form'
 import {Item, List} from '../common/list'
 import {ConditionalReadOnlyField} from '../../common'
-import {FormArrayInputFunctionsProps, FormInputProps} from '../../../types'
 import {getEmptyValue} from './getEmptyValue'
 import {ItemRow} from './ItemRow'
 import {PrimitiveValue} from './types'

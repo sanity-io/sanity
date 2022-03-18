@@ -9,6 +9,8 @@ import {
   ChangeIndicatorCompareValueProvider,
   ChangeIndicatorWithProvidedFullPath,
 } from '@sanity/base/components'
+import {PatchEvent, setIfMissing, unset, FormInputProps} from '@sanity/base/form'
+import {PresenceOverlay} from '@sanity/base/presence'
 import {
   AssetFromSource,
   File as BaseFile,
@@ -19,10 +21,8 @@ import {
 } from '@sanity/types'
 import {ImageIcon, SearchIcon} from '@sanity/icons'
 import {Box, Button, Card, Dialog, Menu, MenuButton, MenuItem, ToastParams} from '@sanity/ui'
-import {PresenceOverlay} from '@sanity/base/presence'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {Uploader, UploaderResolver, UploadOptions} from '../../../sanity/uploads/types'
-import {PatchEvent, setIfMissing, unset} from '../../../PatchEvent'
 import {FileTarget, FileInfo} from '../common/styles'
 import {InternalAssetSource, UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
@@ -32,7 +32,6 @@ import {PlaceholderText} from '../common/PlaceholderText'
 import {UploadPlaceholder} from '../common/UploadPlaceholder'
 import {UploadWarning} from '../common/UploadWarning'
 import {EMPTY_ARRAY} from '../../../utils/empty'
-import {FormInputProps} from '../../../types'
 import {CardOverlay, FlexContainer} from './styles'
 import {FileInputField} from './FileInputField'
 import {FileDetails} from './FileDetails'

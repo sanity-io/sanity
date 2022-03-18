@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {PortableTextMarker, RenderCustomMarkers} from '@sanity/base/form'
 import {hues} from '@sanity/color'
 import {
   PortableTextChild,
@@ -14,10 +14,10 @@ import {
   isValidationWarningMarker,
 } from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {Box, Card, Theme, Tooltip} from '@sanity/ui'
 import {Preview} from '../../../Preview'
-import {PortableTextMarker, RenderCustomMarkers} from '../types'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
 

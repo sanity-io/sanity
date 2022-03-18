@@ -11,12 +11,21 @@ import {
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {isPlainObject} from 'lodash'
 import {FormFieldSet, ImperativeToast} from '@sanity/base/components'
+import {
+  FormArrayInputFunctionsProps,
+  FormBuilderFilterFieldFn,
+  FormInputProps,
+  PatchEvent,
+  insert,
+  set,
+  setIfMissing,
+  unset,
+} from '@sanity/base/form'
 import {Box, Button, Card, Flex, Spinner, Stack, Text, ToastParams} from '@sanity/ui'
 import React from 'react'
 import {map} from 'rxjs/operators'
 import {Subscription} from 'rxjs'
 import {randomKey, resolveTypeName} from '@sanity/util/content'
-import {insert, PatchEvent, set, setIfMissing, unset} from '../../../PatchEvent'
 import {FileLike, Uploader, UploadEvent} from '../../../sanity/uploads/types'
 import {Alert} from '../../../components/Alert'
 import {Details} from '../../../components/Details'
@@ -24,11 +33,6 @@ import {Item, List} from '../common/list'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import {applyAll} from '../../../patch/applyPatch'
 import {ConditionalReadOnlyField} from '../../common'
-import {
-  FormArrayInputFunctionsProps,
-  FormBuilderFilterFieldFn,
-  FormInputProps,
-} from '../../../types'
 import {ArrayItem} from './item'
 import type {ArrayMember, InsertEvent, ReferenceItemComponentType} from './types'
 import {uploadTarget} from './uploadTarget/uploadTarget'

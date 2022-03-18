@@ -1,9 +1,8 @@
-import React, {forwardRef, useCallback, useImperativeHandle, useMemo, useRef} from 'react'
-import {FormField} from '@sanity/base/components'
 import {useId} from '@reach/auto-id'
+import {FormField} from '@sanity/base/components'
+import {FormInputProps, PatchEvent, set, unset} from '@sanity/base/form'
+import React, {forwardRef, useCallback, useImperativeHandle, useMemo, useRef} from 'react'
 import {TagInput} from '../components/tagInput'
-import {PatchEvent, set, unset} from '../PatchEvent'
-import {FormInputProps} from '../types'
 
 export type TagsArrayInputProps = FormInputProps<string[]>
 

@@ -2,13 +2,17 @@ import React, {forwardRef, useCallback, useMemo} from 'react'
 import shallowEquals from 'shallow-equals'
 import {ConditionalProperty, ValidationMarker, Path, SchemaType} from '@sanity/types'
 import {ChangeIndicatorProvider} from '@sanity/base/components'
+import {
+  FormBuilderFilterFieldFn,
+  FormInputComponentResolver,
+  FormInputProps,
+  PatchEvent,
+} from '@sanity/base/form'
+import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/presence'
 import * as PathUtils from '@sanity/util/paths'
 import {generateHelpUrl} from '@sanity/generate-help-url'
-import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/presence'
 import {useConditionalReadOnly} from '@sanity/base/_internal'
-import {PatchEvent} from './PatchEvent'
 import {emptyArray} from './utils/empty'
-import {FormBuilderFilterFieldFn, FormInputComponentResolver, FormInputProps} from './types'
 import {ConditionalReadOnlyField} from './inputs/common'
 import {useFormBuilder} from './useFormBuilder'
 

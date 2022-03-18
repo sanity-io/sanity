@@ -6,7 +6,7 @@ import React, {useMemo} from 'react'
 import {Box, Button, Grid, Menu, MenuButton, MenuItem, Tooltip, Text} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {useConditionalReadOnly} from '@sanity/base/_internal'
-import {FormArrayInputFunctionsProps} from '../../../types'
+import {FormArrayInputFunctionsProps} from '@sanity/base/form'
 
 export function DefaultArrayInputFunctions<SchemaType extends ArraySchemaType, MemberType>(
   props: FormArrayInputFunctionsProps<SchemaType, MemberType>

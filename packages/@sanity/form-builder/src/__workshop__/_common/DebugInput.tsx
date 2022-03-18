@@ -1,7 +1,7 @@
-import React, {useImperativeHandle, useRef} from 'react'
+import {FormInputProps} from '@sanity/base/form'
 import {TextArea, Theme} from '@sanity/ui'
+import React, {useImperativeHandle, useRef} from 'react'
 import styled, {css} from 'styled-components'
-import {FormInputProps} from '../../types'
 
 const DebugTextArea = styled(TextArea)(({theme}: {theme: Theme}) => {
   return css`

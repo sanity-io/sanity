@@ -1,18 +1,18 @@
 import React, {useCallback, useMemo} from 'react'
 import imageUrlBuilder from '@sanity/image-url'
 import {useClient, useDatastores} from '@sanity/base'
-import {ImageInput} from '../../inputs/files/ImageInput'
+import {ImageInput, ImageInputProps} from '../../inputs/files/ImageInput'
 import {withValuePath} from '../../utils/withValuePath'
 import {useFormBuilder} from '../../useFormBuilder'
 import {observeImageAsset} from './client-adapters/assets'
 import {wrapWithDocument} from './wrapWithDocument'
 
-type Props = Omit<React.ComponentProps<typeof ImageInput>, 'assetSources'>
+type SanityImageInputProps = Omit<ImageInputProps, 'assetSources'>
 
 const ImageInputWithValuePath = withValuePath(ImageInput)
 
 export const SanityImageInput = React.forwardRef(function SanityImageInput(
-  props: Props,
+  props: SanityImageInputProps,
   forwardedRef: any
 ) {
   const sourcesFromSchema = props.type.options?.sources

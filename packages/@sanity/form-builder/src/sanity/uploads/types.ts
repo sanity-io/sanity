@@ -1,6 +1,6 @@
-import {Observable} from 'rxjs'
-import {Patch} from '@sanity/base/_internal'
+import {Patch} from '@sanity/base/form'
 import {AssetSourceSpec, SchemaType, AssetMetadataType} from '@sanity/types'
+import {Observable} from 'rxjs'
 
 export type UploadEvent = {
   type: 'uploadEvent'

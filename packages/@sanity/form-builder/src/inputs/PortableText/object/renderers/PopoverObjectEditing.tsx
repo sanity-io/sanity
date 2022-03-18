@@ -1,4 +1,6 @@
 /* eslint-disable react/no-unused-prop-types */
+
+import {PatchEvent} from '@sanity/base/form'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import {CloseIcon} from '@sanity/icons'
 import {PortableTextBlock, PortableTextChild, Type} from '@sanity/portable-text-editor'
@@ -21,7 +23,6 @@ import {
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
-import {PatchEvent} from '../../../../PatchEvent'
 import {POPOVER_WIDTH_TO_UI_WIDTH} from './constants'
 import {debugElement} from './debug'
 import {ModalWidth} from './types'

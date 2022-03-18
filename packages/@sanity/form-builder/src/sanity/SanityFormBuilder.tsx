@@ -1,13 +1,17 @@
-import React from 'react'
-import {ValidationMarker, Path, Schema, SchemaType} from '@sanity/types'
-import {MutationPatch, toMutationPatches} from '@sanity/base/_internal'
+import {useSanity} from '@sanity/base'
+import {
+  FormBuilderFilterFieldFn,
+  MutationPatch,
+  PatchEvent,
+  toMutationPatches,
+} from '@sanity/base/form'
 import {FormFieldPresence} from '@sanity/base/presence'
+import {ValidationMarker, Path, Schema, SchemaType} from '@sanity/types'
+import React, {useCallback, useEffect, useRef} from 'react'
 import {FormBuilderInput, FormBuilderInputInstance} from '../FormBuilderInput'
-import {FormBuilderFilterFieldFn} from '../types'
 import {PatchChannel} from '../patchChannel'
-import {PatchEvent} from '../PatchEvent'
-import {SanityFormBuilderProvider} from './SanityFormBuilderProvider'
 import {ReviewChangesContextProvider} from './contexts/reviewChanges/ReviewChangesProvider'
+import {SanityFormBuilderProvider} from './SanityFormBuilderProvider'
 
 /**
  * @alpha
@@ -17,21 +21,20 @@ export interface SanityFormBuilderProps {
    * @internal Considered internal – do not use.
    */
   __internal_patchChannel: PatchChannel // eslint-disable-line camelcase
-  value: any | null
+  autoFocus?: boolean
+  changesOpen: boolean
+  compareValue: any | null
+  filterField: FormBuilderFilterFieldFn
+  focusPath: Path
+  onBlur: () => void
+  onChange: (patches: MutationPatch[]) => void
+  onFocus: (path: Path) => void
+  presence: FormFieldPresence[]
+  readOnly: boolean
   schema: Schema
   type: SchemaType
   validation: ValidationMarker[]
-  compareValue: any
-  onFocus: (path: Path) => void
-  readOnly: boolean
-  onChange: (patches: MutationPatch[]) => void
-  filterField: FormBuilderFilterFieldFn
-  onBlur: () => void
-  autoFocus?: boolean
-  focusPath: Path
-  presence: FormFieldPresence[]
-  changesOpen: boolean
-  resolveInputComponent?: (type: SchemaType) => React.ComponentType<any> | null | undefined
+  value: any | null
 }
 
 const EMPTY = []
@@ -39,68 +42,66 @@ const EMPTY = []
 /**
  * @alpha
  */
-export class SanityFormBuilder extends React.Component<SanityFormBuilderProps> {
-  _input: FormBuilderInputInstance | null
+export function SanityFormBuilder(props: SanityFormBuilderProps) {
+  const {
+    __internal_patchChannel: patchChannel,
+    autoFocus,
+    changesOpen,
+    compareValue,
+    filterField,
+    focusPath,
+    onBlur,
+    onChange,
+    onFocus,
+    presence,
+    readOnly,
+    schema,
+    type,
+    validation,
+    value,
+  } = props
 
-  setInput = (input: FormBuilderInputInstance | null) => {
-    this._input = input
-  }
+  // Load Sanity config
+  const {formBuilder} = useSanity()
 
-  componentDidMount() {
-    const {autoFocus} = this.props
-    if (this._input && autoFocus) {
-      this._input.focus()
-    }
-  }
+  const inputRef = useRef<FormBuilderInputInstance | null>(null)
 
-  handleChange = (patchEvent: PatchEvent) => {
-    this.props.onChange(toMutationPatches(patchEvent.patches))
-  }
+  useEffect(() => {
+    if (autoFocus) inputRef.current?.focus()
+  }, [autoFocus])
 
-  render() {
-    const {
-      value,
-      schema,
-      __internal_patchChannel: patchChannel,
-      type,
-      readOnly,
-      validation,
-      onFocus,
-      onBlur,
-      focusPath,
-      filterField,
-      compareValue,
-      presence,
-      changesOpen,
-      resolveInputComponent,
-    } = this.props
-    return (
-      <SanityFormBuilderProvider
-        __internal_patchChannel={patchChannel}
-        value={value}
-        schema={schema}
-        resolveInputComponent={resolveInputComponent}
-      >
-        <ReviewChangesContextProvider changesOpen={changesOpen}>
-          <FormBuilderInput
-            type={type}
-            onChange={this.handleChange}
-            level={0}
-            value={value}
-            onFocus={onFocus}
-            compareValue={compareValue}
-            onBlur={onBlur}
-            validation={validation}
-            focusPath={focusPath}
-            isRoot
-            readOnly={readOnly}
-            filterField={filterField}
-            ref={this.setInput}
-            path={EMPTY}
-            presence={presence}
-          />
-        </ReviewChangesContextProvider>
-      </SanityFormBuilderProvider>
-    )
-  }
+  const handleChange = useCallback(
+    (patchEvent: PatchEvent) => onChange(toMutationPatches(patchEvent.patches)),
+    [onChange]
+  )
+
+  return (
+    <SanityFormBuilderProvider
+      {...formBuilder}
+      __internal_patchChannel={patchChannel}
+      schema={schema}
+      value={value}
+    >
+      <ReviewChangesContextProvider changesOpen={changesOpen}>
+        <FormBuilderInput
+          compareValue={compareValue}
+          filterField={filterField}
+          focusPath={focusPath}
+          isRoot
+          level={0}
+          onBlur={onBlur}
+          onChange={handleChange}
+          onFocus={onFocus}
+          path={EMPTY}
+          presence={presence}
+          readOnly={readOnly}
+          ref={inputRef}
+          type={type}
+          validation={validation}
+          value={value}
+        />
+      </ReviewChangesContextProvider>
+    </SanityFormBuilderProvider>
+  )
+  // }
 }

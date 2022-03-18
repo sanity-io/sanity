@@ -1,8 +1,8 @@
 import React, {useCallback} from 'react'
+import {PatchEvent, unset} from '@sanity/base/form'
 import {Box, Button, Card, Code, Stack, Text} from '@sanity/ui'
 import {TrashIcon} from '@sanity/icons'
 import {Details} from '../../components/Details'
-import {PatchEvent, unset} from '../../PatchEvent'
 import {Alert} from '../../components/Alert'
 
 declare const __DEV__: boolean

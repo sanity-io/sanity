@@ -1,12 +1,12 @@
 import {isReferenceSchemaType, SchemaType} from '@sanity/types'
 import React, {ForwardedRef, forwardRef, useMemo} from 'react'
-import {FormBuilderInput} from '../../../../FormBuilderInput'
-import {ArrayMember, InsertEvent, ReferenceItemComponentType} from '../types'
 import {
   FormBuilderFilterFieldFn,
   FormInputProps,
   FormInputProps as InputProps,
-} from '../../../../types'
+} from '@sanity/base/form'
+import {FormBuilderInput} from '../../../../FormBuilderInput'
+import {ArrayMember, InsertEvent, ReferenceItemComponentType} from '../types'
 
 interface ItemFormProps extends Omit<FormInputProps<ArrayMember, SchemaType>, 'level'> {
   onInsert?: (event: InsertEvent) => void

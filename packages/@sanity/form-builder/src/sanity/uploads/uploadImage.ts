@@ -1,6 +1,6 @@
+import {set} from '@sanity/base/form'
 import {from as observableFrom, of as observableOf, Observable} from 'rxjs'
 import {catchError, concat, filter, map, merge, mergeMap} from 'rxjs/operators'
-import {set} from '../../patch/patches'
 import {uploadImageAsset} from '../inputs/client-adapters/assets'
 import {readExif} from './image/readExif'
 import {rotateImage} from './image/rotateImage'

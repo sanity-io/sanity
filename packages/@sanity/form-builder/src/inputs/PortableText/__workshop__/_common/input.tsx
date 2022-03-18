@@ -3,9 +3,9 @@ import React, {forwardRef, useImperativeHandle, useRef} from 'react'
 import styled, {css} from 'styled-components'
 import {SchemaType} from '@sanity/types'
 import {SanityFormBuilderConfig} from '@sanity/base'
+import {FormInputProps} from '@sanity/base/form'
 import {PortableTextInput} from '../../PortableTextInput'
 import {resolveInputComponent} from '../../../../sanity/inputResolver/inputResolver'
-import {FormInputProps} from '../../../..'
 
 const DebugTextArea = styled(TextArea)(({theme}: {theme: Theme}) => {
   return css`

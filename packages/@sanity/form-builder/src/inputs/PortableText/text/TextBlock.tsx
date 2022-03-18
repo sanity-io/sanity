@@ -1,12 +1,12 @@
+import {PatchEvent, PortableTextMarker, RenderCustomMarkers} from '@sanity/base/form'
 import {PortableTextBlock, RenderAttributes} from '@sanity/portable-text-editor'
 import {isKeySegment, ValidationMarker} from '@sanity/types'
 import {Box, ResponsivePaddingProps, Tooltip} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
-import {PatchEvent} from '../../../PatchEvent'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {BlockActions} from '../BlockActions'
-import {PortableTextMarker, RenderBlockActions, RenderCustomMarkers} from '../types'
 import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
+import {RenderBlockActions} from '../types'
 import {TEXT_STYLE_PADDING} from './constants'
 import {
   BlockActionsInner,
@@ -21,7 +21,7 @@ import {
 } from './TextBlock.styles'
 import {TEXT_STYLES} from './textStyles'
 
-interface TextBlockProps {
+export interface TextBlockProps {
   attributes: RenderAttributes
   block: PortableTextBlock
   blockRef?: React.RefObject<HTMLDivElement>

@@ -1,5 +1,5 @@
 import {DocumentStore} from '@sanity/base'
-import {Patch, fromMutationPatches, toMutationPatches} from '@sanity/base/_internal'
+import {Patch, fromMutationPatches, toMutationPatches} from '@sanity/base/form'
 import {map, scan} from 'rxjs/operators'
 
 function prepareMutationEvent(event) {

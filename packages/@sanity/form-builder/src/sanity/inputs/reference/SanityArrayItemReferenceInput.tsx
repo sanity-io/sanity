@@ -1,5 +1,6 @@
 import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
 import {useClient, useDatastores, useSource} from '@sanity/base'
+import {FormInputProps} from '@sanity/base/form'
 import {
   Path,
   Reference,
@@ -20,7 +21,6 @@ import * as adapter from '../client-adapters/reference'
 import {ArrayItemReferenceInput} from '../../../inputs/ReferenceInput/ArrayItemReferenceInput'
 import {EditReferenceEvent} from '../../../inputs/ReferenceInput/types'
 import {InsertEvent} from '../../../inputs/arrays/ArrayOfObjectsInput/types'
-import {FormInputProps} from '../../../types'
 
 // eslint-disable-next-line require-await
 async function resolveUserDefinedFilter(

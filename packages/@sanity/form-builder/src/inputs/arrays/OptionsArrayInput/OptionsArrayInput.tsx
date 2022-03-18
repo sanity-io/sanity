@@ -5,12 +5,11 @@ import {ArraySchemaType, isTitledListValue} from '@sanity/types'
 import {Box, Checkbox, Flex, Text} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
 import {useConditionalReadOnly} from '@sanity/base/_internal'
-import {PatchEvent, set, unset} from '../../../PatchEvent'
+import {PatchEvent, set, unset, FormInputProps} from '@sanity/base/form'
 import {Preview} from '../../../Preview'
 import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
 import {Item, List} from '../common/list'
 import {ConditionalReadOnlyField} from '../../common'
-import {FormInputProps} from '../../../types'
 import {resolveValueWithLegacyOptionsSupport, isLegacyOptionsItem} from './legacyOptionsSupport'
 
 type Focusable = {focus: () => void}

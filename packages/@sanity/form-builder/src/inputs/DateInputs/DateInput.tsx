@@ -1,8 +1,7 @@
 import React, {useCallback} from 'react'
 import {format, parse} from '@sanity/util/legacyDateFormat'
 import {StringSchemaType} from '@sanity/types'
-import {PatchEvent, set, unset} from '../../PatchEvent'
-import {FormInputProps} from '../../types'
+import {PatchEvent, set, unset, FormInputProps} from '@sanity/base/form'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
 
 interface ParsedOptions {

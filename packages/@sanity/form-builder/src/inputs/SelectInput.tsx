@@ -1,11 +1,10 @@
-import React, {useMemo, useCallback, forwardRef} from 'react'
-import {capitalize} from 'lodash'
 import {useId} from '@reach/auto-id'
+import {FormField} from '@sanity/base/components'
+import {FormInputProps, PatchEvent, set, unset} from '@sanity/base/form'
 import {isTitledListValue, isValidationErrorMarker, TitledListValue} from '@sanity/types'
 import {Inline, Stack, Card, Text, Select, Flex, Radio, Box} from '@sanity/ui'
-import {FormField} from '@sanity/base/components'
-import {PatchEvent, set, unset} from '../PatchEvent'
-import {FormInputProps} from '../types'
+import {capitalize} from 'lodash'
+import React, {useMemo, useCallback, forwardRef} from 'react'
 
 export type SelectInputProps = FormInputProps<string | number>
 

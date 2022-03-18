@@ -1,9 +1,9 @@
-import React from 'react'
+import {PortableTextMarker, RenderCustomMarkers} from '@sanity/base/form'
+import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {ValidationMarker} from '@sanity/types'
 import {Box, Flex, Stack, Text, Theme} from '@sanity/ui'
-import {InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
+import React from 'react'
 import styled, {css} from 'styled-components'
-import {PortableTextMarker, RenderCustomMarkers} from '../types'
 import {useFormBuilder} from '../../../useFormBuilder'
 
 export interface MarkersProps {
@@ -12,7 +12,11 @@ export interface MarkersProps {
   renderCustomMarkers?: RenderCustomMarkers
 }
 
-const getIcon = (level) => {
+const getIcon = (level: 'error' | 'warning' | 'info') => {
+  if (level === 'error') {
+    return <ErrorOutlineIcon />
+  }
+
   if (level === 'warning') {
     return <WarningOutlineIcon />
   }

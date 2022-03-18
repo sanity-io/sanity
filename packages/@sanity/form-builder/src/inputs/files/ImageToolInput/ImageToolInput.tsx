@@ -7,12 +7,11 @@ import {DEFAULT_CROP, DEFAULT_HOTSPOT} from '@sanity/imagetool/constants'
 import {Box, Card, Flex, Text, Grid, Heading, useForwardedRef} from '@sanity/ui'
 import styled from 'styled-components'
 import shallowEquals from 'shallow-equals'
-import {PatchEvent, set} from '../../../PatchEvent'
+import {PatchEvent, set, FormInputProps} from '@sanity/base/form'
 import {Checkerboard} from '../../../components/Checkerboard'
 import {withFocusRing} from '../../../components/withFocusRing'
 import {RatioBox} from '../common/RatioBox'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
-import {FormInputProps} from '../../../types'
 import {useLoadImage} from './useLoadImage'
 
 interface Value {

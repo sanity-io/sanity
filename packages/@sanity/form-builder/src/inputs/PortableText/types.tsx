@@ -14,11 +14,6 @@ export type ObjectEditData = {
 /**
  * @alpha
  */
-export type RenderCustomMarkers = (markers: PortableTextMarker[]) => JSX.Element
-
-/**
- * @alpha
- */
 export type RenderBlockActions = (actions: {
   block: PortableTextBlock
   value: PortableTextBlock[] | undefined
@@ -26,14 +21,3 @@ export type RenderBlockActions = (actions: {
   unset: () => void
   insert: (block: PortableTextBlock | PortableTextBlock[]) => void
 }) => JSX.Element
-
-/**
- * A generic marker for attaching metadata to specific nodes of the Portable Text input.
- *
- * @alpha
- */
-export interface PortableTextMarker {
-  type: string
-  data?: unknown
-  path: Path
-}

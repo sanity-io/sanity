@@ -1,6 +1,11 @@
-import type {Patch as FormBuilderPatch} from '@sanity/base/_internal'
 import {FormField} from '@sanity/base/components'
-import React, {useEffect, useState, useMemo, useCallback, useRef} from 'react'
+import type {
+  FormInputProps,
+  Patch as FormBuilderPatch,
+  PortableTextMarker,
+  RenderCustomMarkers,
+} from '@sanity/base/form'
+import {PatchEvent} from '@sanity/base/form'
 import {Path} from '@sanity/types'
 import {
   EditorChange,
@@ -13,14 +18,13 @@ import {
   HotkeyOptions,
   EditorSelection,
 } from '@sanity/portable-text-editor'
+import {FOCUS_TERMINATOR} from '@sanity/util/paths'
+import React, {useEffect, useState, useMemo, useCallback, useRef} from 'react'
 import {Subject} from 'rxjs'
 import {Box, Text, useToast} from '@sanity/ui'
 import scrollIntoView from 'scroll-into-view-if-needed'
-import {FOCUS_TERMINATOR} from '@sanity/util/paths'
-import {PatchEvent} from '../../PatchEvent'
 import {withPatchSubscriber} from '../../utils/withPatchSubscriber'
-import {FormInputProps} from '../../types'
-import {PortableTextMarker, RenderBlockActions, RenderCustomMarkers} from './types'
+import {RenderBlockActions} from './types'
 import {Compositor} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {VisibleOnFocusButton} from './VisibleOnFocusButton'

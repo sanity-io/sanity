@@ -1,10 +1,9 @@
 import React from 'react'
 import * as PathUtils from '@sanity/util/paths'
 import {ObjectField} from '@sanity/types'
-import {PatchEvent} from '../../../PatchEvent'
+import {PatchEvent, FormInputProps} from '@sanity/base/form'
 import {FormBuilderInput} from '../../../FormBuilderInput'
 import {ConditionalHiddenField, ConditionalReadOnlyField} from '../../common'
-import {FormInputProps} from '../../../types'
 
 interface ImageInputFieldProps extends Omit<FormInputProps<unknown>, 'type'> {
   field: ObjectField

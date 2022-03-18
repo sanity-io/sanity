@@ -1,4 +1,5 @@
-import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
+import {useClient, useDatastores, useSource} from '@sanity/base'
+import {FormInputProps} from '@sanity/base/form'
 import {
   Path,
   Reference,
@@ -9,16 +10,15 @@ import {
 } from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 import {get} from '@sanity/util/paths'
+import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
-import {useClient, useDatastores, useSource} from '@sanity/base'
 import {withValuePath} from '../../../utils/withValuePath'
 import {withDocument} from '../../../utils/withDocument'
 import {useReferenceInputOptions} from '../../contexts/ReferenceInputOptions'
 import * as adapter from '../client-adapters/reference'
 import {ReferenceInput} from '../../../inputs/ReferenceInput/ReferenceInput'
 import {EditReferenceEvent} from '../../../inputs/ReferenceInput/types'
-import {FormInputProps} from '../../../types'
 
 // eslint-disable-next-line require-await
 async function resolveUserDefinedFilter(

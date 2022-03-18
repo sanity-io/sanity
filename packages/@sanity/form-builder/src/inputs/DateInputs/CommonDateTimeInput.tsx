@@ -4,7 +4,7 @@ import {FormField} from '@sanity/base/components'
 import {ValidationMarker, StringSchemaType} from '@sanity/types'
 import {useId} from '@reach/auto-id'
 import {useForwardedRef, TextInput} from '@sanity/ui'
-import {FormInputProps} from '../../types'
+import {FormInputProps} from '@sanity/base/form'
 import {DateTimeInput} from './base/DateTimeInput'
 import {ParseResult} from './types'
 
