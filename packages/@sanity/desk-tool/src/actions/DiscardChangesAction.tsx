@@ -1,7 +1,6 @@
 import {
   DocumentActionComponent,
   DocumentActionModalProps,
-  useClient,
   useSource,
   useDatastores,
 } from '@sanity/base'

@@ -14,7 +14,7 @@ import {
   shareReplay,
   catchError,
 } from 'rxjs/operators'
-import {DocumentStore, useClient, useDatastores} from '@sanity/base'
+import {DocumentStore, useDatastores, useSource} from '@sanity/base'
 
 // this is used in place of `instanceof` so the matching can be more robust and
 // won't have any issues with dual packages etc
@@ -137,7 +137,7 @@ const useInternalReferences = createHookFromObservableFactory(
 const useCrossDatasetReferences = createHookFromObservableFactory(
   (documentId: string, context: {crossProjectTokenStore: CrossProjectTokenStore}) => {
     const {crossProjectTokenStore} = context
-    const client = useClient()
+    const {client} = useSource()
     const versionedClient = useMemo(() => client.withConfig({apiVersion: '2022-03-07'}), [])
 
     return visiblePoll$.pipe(

@@ -1,4 +1,4 @@
-import {DocumentActionComponent, useClient, useSource, useDatastores} from '@sanity/base'
+import {DocumentActionComponent, useSource, useDatastores} from '@sanity/base'
 import {
   useSyncState,
   useDocumentOperation,
