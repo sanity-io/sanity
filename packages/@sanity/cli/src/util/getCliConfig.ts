@@ -22,7 +22,13 @@ if (!isMainThread) {
   // We're communicating with a parent process through a message channel
   getCliConfig(workerData)
     .then((config) => parentPort?.postMessage({type: 'config', config}))
-    .catch((error) => parentPort?.postMessage({type: 'error', error}))
+    .catch((error) =>
+      parentPort?.postMessage({
+        type: 'error',
+        error: error instanceof Error ? error.stack : error,
+        errorType: error && (error.type || error.name),
+      })
+    )
 }
 
 export type CliMajorVersion = 2 | 3
@@ -37,7 +43,11 @@ export async function getCliConfig(
   {forked}: {forked?: boolean} = {}
 ): Promise<CliConfigResult | null> {
   if (forked) {
-    return getCliConfigForked(cwd)
+    try {
+      return await getCliConfigForked(cwd)
+    } catch (err) {
+      // Intentional noop - try unforked variant
+    }
   }
 
   const {unregister} = register()
@@ -63,6 +73,8 @@ function getCliConfigForked(cwd: string): Promise<CliConfigResult | null> {
       if (message.type === 'config') {
         resolve(message.config)
       } else {
+        const error = new Error(message.error)
+        ;(error as any).type = message.errorType
         reject(new Error(message.error))
       }
     })

@@ -32,7 +32,11 @@ function runCli() {
     require('./entry')
     return
   } catch (error) {
-    if (error.code !== 'MODULE_NOT_FOUND') {
+    var stack = error.requireStack || []
+    var parent = stack[0] || ''
+    var isEntryImport = /sanity$/.test(parent)
+
+    if (error.code !== 'MODULE_NOT_FOUND' || !isEntryImport) {
       throw error
     }
 
