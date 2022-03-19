@@ -83,7 +83,7 @@ test('rejects on duplicate IDs', async () => {
   expect.assertions(1)
   await expect(importer(getFixtureStream('duplicate-ids'), importOptions)).rejects.toHaveProperty(
     'message',
-    'Found 2 duplicate IDs:\n- pk\n- espen'
+    'Found 2 duplicate IDs in the source file:\n- pk\n- espen'
   )
 })
 
