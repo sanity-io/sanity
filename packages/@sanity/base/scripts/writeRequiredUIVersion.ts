@@ -1,12 +1,12 @@
 // This overwrites the compiled ./lib/requiredSanityUiVersion.js with a the actual version we currently depend on in @sanity/base
-import fs from 'fs'
+import fs from 'fs/promises'
 import pkg from '../package.json'
 
 const template = (version: string) => `exports.REQUIRED_UI_VERSION = '${version}'`
 
 let builtFile
 try {
-  builtFile = require.resolve('../lib/requiredSanityUiVersion.js')
+  builtFile = require.resolve('../lib/cjs/requiredSanityUiVersion.js')
 } catch (error) {
   // eslint-disable-next-line no-console
   console.error(
@@ -21,4 +21,4 @@ if (typeof version === 'string' && version.startsWith('^')) {
   version = version.slice(1)
 }
 
-fs.writeFileSync(builtFile, template(version || 'latest'))
+fs.writeFile(builtFile, template(version || 'latest'))

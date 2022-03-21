@@ -160,7 +160,7 @@
     "coverage": "jest --coverage",
     "exports-check": "../../../bin/pkg-utils exports-check",
     "prebuild": "yarn clean",
-    "prepublishOnly": "node scripts/writeRequiredUIVersion.js",
+    "prepublishOnly": "node -r esbuild-register scripts/writeRequiredUIVersion.ts",
     "test": "jest",
     "watch": "../../../bin/pkg-utils transpile --tsconfig tsconfig.lib.json --watch"
   },
@@ -250,6 +250,7 @@
     "@types/raf": "^3.4.0",
     "@types/refractor": "^3.0.0",
     "@types/semver-compare": "^1.0.1",
+    "esbuild-register": "^3.2.0",
     "prop-types": "^15.6.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
