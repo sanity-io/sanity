@@ -1,22 +1,24 @@
 import latestVersion from 'get-latest-version'
 import promiseProps from 'promise-props-recursive'
 
+/**
+ * Resolve the latest versions of given packages within their defined ranges
+ *
+ * @param pkgs {packageName: rangeOrTag}
+ * @returns Object of resolved version numbers. If `rangeOrTag` is `latest`
+ */
 export function resolveLatestVersions(
-  pkgs: string[],
-  {asRange}: {asRange: boolean}
+  pkgs: Record<string, string>
 ): Promise<Record<string, string>> {
-  return promiseProps(
-    pkgs.reduce((versions, pkg) => {
-      versions[pkg] = latestVersion(pkg).then(asRange ? caretify : identity)
-      return versions
-    }, {} as Record<string, Promise<string>>)
-  )
+  const lookups: Record<string, Promise<string> | string> = {}
+  for (const [packageName, range] of Object.entries(pkgs)) {
+    lookups[packageName] =
+      range === 'latest' ? latestVersion(packageName, {range}).then(caretify) : range
+  }
+
+  return promiseProps(lookups)
 }
 
 function caretify(version: string) {
   return `^${version}`
-}
-
-function identity(version: string) {
-  return version
 }

@@ -1,7 +1,6 @@
 import path from 'path'
+import fs from 'fs/promises'
 import chalk from 'chalk'
-import fse from 'fs-extra'
-import {union, difference} from 'lodash'
 import {debug} from '../../debug'
 import versionRanges from '../../versionRanges'
 import type {CliCommandContext} from '../../types'
@@ -45,22 +44,13 @@ export async function bootstrapTemplate(
   spinner.succeed()
 
   // Merge global and template-specific plugins and dependencies
-  const allModules: Record<string, string> = {
-    ...versionRanges.core,
-    ...(template.dependencies || {}),
-  }
-  const modules = union(Object.keys(versionRanges.core), Object.keys(template.dependencies || {}))
 
   // Resolve latest versions of Sanity-dependencies
   spinner = output.spinner('Resolving latest module versions').start()
-  const firstParty = modules.filter(isFirstParty)
-  const thirdParty = difference(modules, firstParty)
-  const firstPartyVersions = await resolveLatestVersions(firstParty, {asRange: true})
-  const thirdPartyVersions = thirdParty.reduce((acc, dep) => {
-    acc[dep] = allModules[dep]
-    return acc
-  }, {} as Record<string, string>)
-  const dependencies = {...firstPartyVersions, ...thirdPartyVersions}
+  const dependencies = await resolveLatestVersions({
+    ...versionRanges.core,
+    ...(template.dependencies || {}),
+  })
   spinner.succeed()
 
   // Now create a package manifest (`package.json`) with the merged dependencies
@@ -109,7 +99,7 @@ export async function bootstrapTemplate(
   async function writeFileIfNotExists(fileName: string, content: string): Promise<void> {
     const filePath = path.join(outputPath, fileName)
     try {
-      await fse.writeFile(filePath, content, {flag: 'wx'})
+      await fs.writeFile(filePath, content, {flag: 'wx'})
     } catch (err) {
       if (err.code === 'EEXIST') {
         output.warn(`\n${chalk.yellow('⚠')} File "${filePath}" already exists, skipping`)
@@ -118,10 +108,6 @@ export async function bootstrapTemplate(
       }
     }
   }
-}
-
-function isFirstParty(pkg: string): boolean {
-  return pkg.indexOf('@sanity/') === 0
 }
 
 function toTypeScriptPath(originalPath: string): string {
