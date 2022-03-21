@@ -1,15 +1,13 @@
-import {Location} from './utils/location'
-
 export type LocationInterceptor = (n: {path: string; cancel: () => void}) => void
 
 export interface LocationChangeEvent {
   type: 'change'
-  location: Location
+  location: URL
 }
 
 export interface LocationSnapshotEvent {
   type: 'snapshot'
-  location: Location
+  location: URL
 }
 
 export type LocationEvent = LocationChangeEvent | LocationSnapshotEvent

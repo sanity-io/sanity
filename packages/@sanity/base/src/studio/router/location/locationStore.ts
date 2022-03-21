@@ -1,10 +1,9 @@
 import {createBrowserHistory} from 'history'
 import {Observable} from 'rxjs'
-import {map, share} from 'rxjs/operators'
+import {share} from 'rxjs/operators'
 import {isRecord} from '../../../util/isRecord'
 import {LocationInterceptor, LocationEvent} from './types'
 import {ActionFunctor, createAction} from './utils/action'
-import {createLocationController, Location} from './utils/location'
 
 export interface LocationStore {
   event$: Observable<LocationEvent>
@@ -17,20 +16,19 @@ const noop = () => undefined
 export function createLocationStore(): LocationStore {
   const interceptors: LocationInterceptor[] = []
   const history = createBrowserHistory()
-  const locationController = createLocationController()
 
   function readLocation() {
-    return locationController.parse(document.location.href)
+    return new URL(document.location.href)
   }
 
-  const location$ = new Observable<Location>((observer) => {
-    return history.listen(() => observer.next(readLocation()))
-  })
-
-  const locationChange$ = location$.pipe(
-    map((location): LocationEvent => ({type: 'change', location})),
-    share()
-  )
+  const locationChange$ = new Observable<LocationEvent>((observer) => {
+    return history.listen(() =>
+      observer.next({
+        type: 'change',
+        location: readLocation(),
+      })
+    )
+  }).pipe(share())
 
   const event$ = new Observable<LocationEvent>((observer) => {
     const subscription = locationChange$.subscribe(observer)
