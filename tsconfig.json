@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.settings",
   "include": ["./babel.config.js", "./dev/aliases.js", "./scripts", "./test"],
+  "exclude": ["./test/v2-studio"],
   "compilerOptions": {
     "allowJs": true,
     "noEmit": true

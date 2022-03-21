@@ -19,6 +19,8 @@
 /packages/@sanity/client/umd
 /packages/@sanity/cli/bin/sanity-cli.js
 
+test/v2-studio/dist/**
+
 *.json
 *.css
 *.snap
