@@ -126,5 +126,8 @@ export function resolveEntryModulePath(opts: {cwd: string; monorepo?: SanityMono
     return path.resolve(opts.monorepo.path, 'packages/@sanity/base/src/_exports/studioEntry.tsx')
   }
 
-  return resolveFrom(opts.cwd, '@sanity/base/studioEntry')
+  // resolve-from uses the node `require.resolve` resolution algorithm, so resolves to the
+  // CommonJS version. The entry module is expected to be an ESM module
+  // (type=module on the <script> tag), so we have to replace CJS with ESM in the path.
+  return resolveFrom(opts.cwd, '@sanity/base/studioEntry').replace('/cjs/', '/esm/')
 }
