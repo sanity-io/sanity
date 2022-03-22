@@ -1,3 +1,3 @@
-/// <reference types="react" />
-import {UserColorManager} from './types'
-export declare const UserColorManagerContext: import('react').Context<UserColorManager>
+import type {Context} from 'react'
+import type {UserColorManager} from './types'
+export declare const UserColorManagerContext: Context<UserColorManager>

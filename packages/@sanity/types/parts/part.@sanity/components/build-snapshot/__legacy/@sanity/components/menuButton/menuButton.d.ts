@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import {ButtonProps} from '../buttons'
 import {Placement} from '../types'
 interface MenuButtonProps {

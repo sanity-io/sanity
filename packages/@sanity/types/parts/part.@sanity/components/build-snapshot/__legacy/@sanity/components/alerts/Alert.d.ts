@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 interface Props {
   children?: React.ReactNode
   color?: 'success' | 'warning' | 'danger'

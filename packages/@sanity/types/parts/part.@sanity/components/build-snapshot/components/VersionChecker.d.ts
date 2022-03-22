@@ -1,4 +1,4 @@
-import {PureComponent} from 'react'
+import type {PureComponent} from 'react'
 interface VersionsResponse {
   hash?: string
   result: {

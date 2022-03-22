@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import {SnackbarAction} from './types'
 export interface SnackbarItemProps {
   action?: SnackbarAction

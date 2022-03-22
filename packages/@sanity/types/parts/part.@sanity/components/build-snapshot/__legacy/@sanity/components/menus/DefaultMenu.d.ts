@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import {MenuItemGroup as MenuItemGroupType, MenuItem as MenuItemType} from './types'
 interface DefaultMenuProps {
   id?: string

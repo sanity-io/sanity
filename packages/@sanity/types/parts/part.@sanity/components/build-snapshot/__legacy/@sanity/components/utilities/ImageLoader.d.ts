@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import {Subscription} from 'rxjs'
 interface ImageLoaderProps {
   src: string

@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 interface ToggleButtonItem {
   icon?: React.ComponentType<Record<string, unknown>>
   title?: string

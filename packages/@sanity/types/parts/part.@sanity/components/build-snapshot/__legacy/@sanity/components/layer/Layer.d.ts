@@ -1,2 +1,2 @@
-import React from 'react'
+import type React from 'react'
 export declare function Layer(props: React.HTMLProps<HTMLDivElement>): JSX.Element

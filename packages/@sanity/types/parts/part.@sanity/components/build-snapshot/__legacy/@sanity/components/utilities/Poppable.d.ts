@@ -1,5 +1,5 @@
 import {Modifier} from '@popperjs/core'
-import React from 'react'
+import type React from 'react'
 import {Placement} from '../types'
 declare type PopperModifiers = ReadonlyArray<Partial<Modifier<string, unknown>>>
 interface PoppableProps {

@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import {MediaDimensions} from '../types'
 declare type BlockPreviewFieldProp = React.ReactNode | (() => void)
 declare type BlockPreviewMediaComponent = React.FunctionComponent<{

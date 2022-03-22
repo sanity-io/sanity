@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 /**
  * SplitController plucks the props from this component and distributes panes,
  * so while this component might seem useless, it has a purpose.

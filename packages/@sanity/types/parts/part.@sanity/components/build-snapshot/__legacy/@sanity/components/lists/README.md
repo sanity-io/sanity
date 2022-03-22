@@ -3,7 +3,7 @@
 ## Regular list
 
 ```js
-import React from 'react'
+import type React from 'react'
 import {List, Item} from 'part:@sanity/components/lists/default'
 
 function renderItem(item, index) {
@@ -19,7 +19,6 @@ function MyComponent() {
 
 ```jsx
 import {List, Item, DragHandle} from 'part:@sanity/components/lists/sortable'
-
 ;<List className="myList">
   <ListItem>
     <DragHandle />
@@ -32,7 +31,6 @@ import {List, Item, DragHandle} from 'part:@sanity/components/lists/sortable'
 
 ```jsx
 import {List, Item} from 'part:@sanity/components/lists/grid'
-
 ;<List className="myGridList">
   <ListItem>Hello this is grid list item #1</ListItem>
   <ListItem>Hello this is grid list item #2</ListItem>
@@ -44,7 +42,6 @@ import {List, Item} from 'part:@sanity/components/lists/grid'
 
 ```jsx
 import {List, Item} from 'part:@sanity/components/lists/sortable-grid'
-
 ;<List className="myGridList">
   <ListItem>
     <DragHandle />

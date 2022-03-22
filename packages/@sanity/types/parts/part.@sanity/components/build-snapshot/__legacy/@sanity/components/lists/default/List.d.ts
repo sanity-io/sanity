@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 declare const List: React.ForwardRefExoticComponent<
   Pick<
     React.HTMLProps<HTMLUListElement>,

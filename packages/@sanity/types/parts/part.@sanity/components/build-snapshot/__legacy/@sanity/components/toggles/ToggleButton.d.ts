@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import {ButtonProps} from '../buttons/types'
 declare const ToggleButton: React.ForwardRefExoticComponent<
   Pick<

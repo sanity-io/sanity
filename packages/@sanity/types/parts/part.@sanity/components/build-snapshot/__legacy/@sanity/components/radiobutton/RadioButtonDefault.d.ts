@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 declare type Props = {
   label: string
   item: Record<string, unknown>
