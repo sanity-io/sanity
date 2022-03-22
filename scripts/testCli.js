@@ -195,6 +195,8 @@ function testStartCommand({binPath, cwd, expectedTitle}) {
       req.end()
     }
 
+    console.log('')
+    console.log(chalk.yellow(`[ Running '${process.argv[0]} ${binPath} start' in '${cwd}' ]`))
     const start = spawn(process.argv[0], [binPath, 'start'], {cwd})
     start.on('close', (code) => {
       if (code && code > 0) {
@@ -212,6 +214,8 @@ function testStartCommand({binPath, cwd, expectedTitle}) {
         clearTimeout(timer)
       }
 
+      const spentSecs = ((Date.now() - startedAt) / 1000).toFixed(2)
+      console.log(chalk.yellow(`[ Dev server ready after %ss ]`), spentSecs)
       start.kill(2)
       resolve()
     }
