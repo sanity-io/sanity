@@ -94,6 +94,7 @@ export function viteSanityStudio({cwd, basePath, monorepo}: SanityStudioVitePlug
         type: 'chunk',
         id: await resolveEntryModulePath({cwd, monorepo}),
         name: 'studioEntry',
+        fileName: 'studioEntry.mjs',
       })
     },
 
