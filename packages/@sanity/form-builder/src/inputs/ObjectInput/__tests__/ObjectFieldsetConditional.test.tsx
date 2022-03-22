@@ -1,5 +1,27 @@
 import {renderForm} from '../../../../test/renderForm'
 
+// This mock is needed to prevent the "not wrapped in act()" error from React testing library.
+// The reason is that the `useCurrentUser` is used by `ObjectInput` to figure out which fields are
+// hidden, and using this hook causes the `ObjectInput` to render again once the user is loaded.
+//
+// NOTE!
+// We can remove this mock when `ObjectInput` no longer uses `useCurrentUser`.
+jest.mock('@sanity/base/hooks', () => {
+  const hooks = jest.requireActual('@sanity/base/hooks')
+
+  return {
+    ...hooks,
+    useCurrentUser: jest.fn().mockImplementation(() => ({
+      value: null,
+      error: null,
+      isLoading: false,
+    })),
+  }
+})
+
+// Spy `console.warn` to prevent warnings from showing in the test output
+const _consoleSpy = jest.spyOn(console, 'warn').mockImplementation()
+
 const fieldsetsTestType = {
   title: 'Fieldsets test',
   name: 'fieldsetsTest',

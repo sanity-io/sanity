@@ -1,5 +1,24 @@
 import userEvent from '@testing-library/user-event'
-import {renderForm} from '../../../test/renderForm'
+import {renderForm} from '../../test/renderForm'
+
+// This mock is needed to prevent the "not wrapped in act()" error from React testing library.
+// The reason is that the `useCurrentUser` is used by `ObjectInput` to figure out which fields are
+// hidden, and using this hook causes the `ObjectInput` to render again once the user is loaded.
+//
+// NOTE!
+// We can remove this mock when `ObjectInput` no longer uses `useCurrentUser`.
+jest.mock('@sanity/base/hooks', () => {
+  const hooks = jest.requireActual('@sanity/base/hooks')
+
+  return {
+    ...hooks,
+    useCurrentUser: jest.fn().mockImplementation(() => ({
+      value: {},
+      error: null,
+      isLoading: false,
+    })),
+  }
+})
 
 const booleanTestsType = {
   type: 'document',
@@ -87,15 +106,7 @@ describe('Mouse accessibility', () => {
     const inputContainer = result.queryByTestId('input-booleanTest')
     userEvent.click(inputContainer)
     expect(onFocus).toBeCalled()
-    expect(onFocus.mock.calls).toMatchInlineSnapshot(`
-      Array [
-        Array [
-          Array [
-            "booleanTest",
-          ],
-        ],
-      ]
-    `)
+    expect(onFocus.mock.calls).toMatchSnapshot()
   })
 
   it('emits onChange when clicked', () => {
@@ -103,19 +114,7 @@ describe('Mouse accessibility', () => {
     const inputContainer = result.queryByTestId('input-booleanTest')
     userEvent.click(inputContainer.querySelector('input'))
     expect(onChange).toBeCalled()
-    expect(onChange.mock.calls).toMatchInlineSnapshot(`
-        Array [
-          Array [
-            Array [
-              Object {
-                "set": Object {
-                  "booleanTest": true,
-                },
-              },
-            ],
-          ],
-        ]
-      `)
+    expect(onChange.mock.calls).toMatchSnapshot()
   })
 })
 
@@ -127,15 +126,7 @@ describe('Keyboard accessibility', () => {
     userEvent.tab({focusTrap: inputContainer})
     expect(input).toHaveFocus()
     expect(onFocus).toBeCalled()
-    expect(onFocus.mock.calls).toMatchInlineSnapshot(`
-      Array [
-        Array [
-          Array [
-            "booleanTest",
-          ],
-        ],
-      ]
-    `)
+    expect(onFocus.mock.calls).toMatchSnapshot()
   })
 
   it('emits onChange when pressing enter', () => {
@@ -144,19 +135,7 @@ describe('Keyboard accessibility', () => {
     userEvent.tab({focusTrap: inputContainer})
     userEvent.keyboard('{space}')
     expect(onChange).toBeCalled()
-    expect(onChange.mock.calls).toMatchInlineSnapshot(`
-        Array [
-          Array [
-            Array [
-              Object {
-                "set": Object {
-                  "booleanTest": true,
-                },
-              },
-            ],
-          ],
-        ]
-      `)
+    expect(onChange.mock.calls).toMatchSnapshot()
   })
 
   it('emits onBlur when navigating away from field', () => {
@@ -216,29 +195,7 @@ describe('readOnly property', () => {
     userEvent.tab({focusTrap: inputContainer})
     userEvent.keyboard('{space}')
     expect(onChange).toBeCalled()
-
-    expect(onChange.mock.calls).toMatchInlineSnapshot(`
-      Array [
-        Array [
-          Array [
-            Object {
-              "set": Object {
-                "readOnlyCallback": true,
-              },
-            },
-          ],
-        ],
-        Array [
-          Array [
-            Object {
-              "set": Object {
-                "readOnlyCallback": true,
-              },
-            },
-          ],
-        ],
-      ]
-    `)
+    expect(onChange.mock.calls).toMatchSnapshot()
   })
 
   it('makes field read-only based on value in document', () => {

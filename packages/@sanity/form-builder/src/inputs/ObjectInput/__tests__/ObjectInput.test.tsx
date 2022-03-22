@@ -3,6 +3,25 @@ import {createRef} from 'react'
 import {renderForm} from '../../../../test/renderForm'
 import {renderObjectInput} from '../../../../test/renderInput'
 
+// This mock is needed to prevent the "not wrapped in act()" error from React testing library.
+// The reason is that the `useCurrentUser` is used by `ObjectInput` to figure out which fields are
+// hidden, and using this hook causes the `ObjectInput` to render again once the user is loaded.
+//
+// NOTE!
+// We can remove this mock when `ObjectInput` no longer uses `useCurrentUser`.
+jest.mock('@sanity/base/hooks', () => {
+  const hooks = jest.requireActual('@sanity/base/hooks')
+
+  return {
+    ...hooks,
+    useCurrentUser: jest.fn().mockImplementation(() => ({
+      value: null,
+      error: null,
+      isLoading: false,
+    })),
+  }
+})
+
 const TOGGLE_BUTTON_SELECTOR = 'legend div'
 
 const types = {

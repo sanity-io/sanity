@@ -1,0 +1,72 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Keyboard accessibility emits onChange when pressing enter 1`] = `
+Array [
+  Array [
+    Array [
+      Object {
+        "set": Object {
+          "booleanTest": true,
+        },
+      },
+    ],
+  ],
+]
+`;
+
+exports[`Keyboard accessibility emits onFocus when navigating to field 1`] = `
+Array [
+  Array [
+    Array [
+      "booleanTest",
+    ],
+  ],
+]
+`;
+
+exports[`Mouse accessibility emits onChange when clicked 1`] = `
+Array [
+  Array [
+    Array [
+      Object {
+        "set": Object {
+          "booleanTest": true,
+        },
+      },
+    ],
+  ],
+]
+`;
+
+exports[`Mouse accessibility emits onFocus when clicked 1`] = `
+Array [
+  Array [
+    Array [
+      "booleanTest",
+    ],
+  ],
+]
+`;
+
+exports[`readOnly property does not make field read-only with callback 1`] = `
+Array [
+  Array [
+    Array [
+      Object {
+        "set": Object {
+          "readOnlyCallback": true,
+        },
+      },
+    ],
+  ],
+  Array [
+    Array [
+      Object {
+        "set": Object {
+          "readOnlyCallback": true,
+        },
+      },
+    ],
+  ],
+]
+`;
