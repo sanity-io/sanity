@@ -1,9 +1,11 @@
+import fs from 'fs/promises'
 import path from 'path'
 import type {ConfigEnv, Plugin} from 'vite'
-import resolveFrom from 'resolve-from'
+import {resolve as resolveExport} from 'resolve.exports'
 import {getSanityStudioConfigPath} from '../sanityConfig'
 import {renderDocument} from '../renderDocument'
 import {SanityMonorepo} from '../sanityMonorepo'
+import {getModulePath} from '../helpers'
 
 const basePattern = /@sanity[/\\]base/
 const entryPattern = /studioEntry\.(js|ts)x?$/
@@ -83,14 +85,14 @@ export function viteSanityStudio({cwd, basePath, monorepo}: SanityStudioVitePlug
      * Generates an entry chunk we can reference in order to get the file path
      * for the built `index.html`
      */
-    buildStart() {
+    async buildStart() {
       if (runCommand !== 'build') {
         return
       }
 
       entryChunkRef = this.emitFile({
         type: 'chunk',
-        id: resolveEntryModulePath({cwd, monorepo}),
+        id: await resolveEntryModulePath({cwd, monorepo}),
         name: 'studioEntry',
       })
     },
@@ -121,13 +123,19 @@ export function viteSanityStudio({cwd, basePath, monorepo}: SanityStudioVitePlug
  *
  * @internal
  */
-export function resolveEntryModulePath(opts: {cwd: string; monorepo?: SanityMonorepo}): string {
-  if (opts.monorepo) {
-    return path.resolve(opts.monorepo.path, 'packages/@sanity/base/src/_exports/studioEntry.tsx')
+export async function resolveEntryModulePath(opts: {
+  cwd: string
+  monorepo?: SanityMonorepo
+}): Promise<string> {
+  const sanityBasePath = await getModulePath('@sanity/base', opts.cwd)
+  const manifest = JSON.parse(await fs.readFile(path.join(sanityBasePath, 'package.json'), 'utf8'))
+  const exportPath = resolveExport(manifest, './studioEntry', {
+    conditions: opts.monorepo ? ['source', 'default'] : ['default'],
+  })
+
+  if (!exportPath) {
+    throw new Error('Failed to resolve entry module (`@sanity/base/studioEntry`)')
   }
 
-  // resolve-from uses the node `require.resolve` resolution algorithm, so resolves to the
-  // CommonJS version. The entry module is expected to be an ESM module
-  // (type=module on the <script> tag), so we have to replace CJS with ESM in the path.
-  return resolveFrom(opts.cwd, '@sanity/base/studioEntry').replace('/cjs/', '/esm/')
+  return path.resolve(sanityBasePath, exportPath)
 }

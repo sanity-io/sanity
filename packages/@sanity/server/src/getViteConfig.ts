@@ -133,7 +133,7 @@ export async function getViteConfig(options: ViteOptions): Promise<SanityViteCon
       rollupOptions: {
         perf: true,
         input: {
-          main: resolveEntryModulePath({cwd, monorepo}),
+          main: await resolveEntryModulePath({cwd, monorepo}),
         },
       },
     }
