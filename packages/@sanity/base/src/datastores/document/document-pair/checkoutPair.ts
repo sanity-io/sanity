@@ -13,6 +13,7 @@ function commitMutations(mutations) {
   return versionedClient.dataRequest('mutate', mutations, {
     visibility: 'async',
     returnDocuments: false,
+    autoGenerateArrayKeys: true,
     tag: 'document.commit',
   })
 }

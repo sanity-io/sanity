@@ -177,7 +177,10 @@ function restore(id, targetId, rev) {
       })
     ),
     mergeMap((restoredDraft: any) =>
-      versionedClient.observable.transaction().createOrReplace(restoredDraft).commit()
+      versionedClient.observable
+        .transaction()
+        .createOrReplace(restoredDraft)
+        .commit({autoGenerateArrayKeys: true})
     )
   )
 }

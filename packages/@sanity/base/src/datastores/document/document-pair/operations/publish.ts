@@ -63,6 +63,6 @@ export const publish = {
 
     tx.delete(idPair.draftId)
 
-    return tx.commit({tag: 'document.publish'})
+    return tx.commit({tag: 'document.publish', autoGenerateArrayKeys: true})
   },
 }

@@ -20,6 +20,7 @@ export const duplicate = {
       },
       {
         tag: 'document.duplicate',
+        autoGenerateArrayKeys: true,
       }
     )
   },
