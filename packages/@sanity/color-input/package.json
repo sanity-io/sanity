@@ -2,11 +2,12 @@
   "name": "@sanity/color-input",
   "version": "2.30.0",
   "description": "Color input",
-  "main": "lib/ColorInput.cjs",
-  "module": "lib/ColorInput.js",
+  "source": "./src/ColorInput.jsx",
+  "main": "./lib/ColorInput.cjs",
+  "module": "./lib/ColorInput.js",
   "exports": {
     ".": {
-      "source": "./src/ColorInput.js",
+      "source": "./src/ColorInput.jsx",
       "require": "./lib/ColorInput.cjs",
       "default": "./lib/ColorInput.js"
     },
