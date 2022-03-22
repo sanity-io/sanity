@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Conditional property resolver calls callback function 1`] = `
+Array [
+  Array [
+    Object {
+      "currentUser": Object {},
+      "document": Object {
+        "_createdAt": "2021-11-04T15:41:48Z",
+        "_id": "drafts.10053a07-8647-4ebd-9d1d-33a512d30d3a",
+        "_rev": "5hb8s6-k75-ip4-4bq-5ztbf3fbx",
+        "_type": "conditionalFieldsTest",
+        "_updatedAt": "2021-11-05T12:34:29Z",
+        "isPublished": true,
+        "title": "Hello world",
+      },
+      "parent": Object {
+        "parentTest": "hello",
+      },
+      "value": undefined,
+    },
+  ],
+]
+`;

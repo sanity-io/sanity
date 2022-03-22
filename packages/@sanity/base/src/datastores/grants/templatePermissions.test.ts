@@ -1,9 +1,13 @@
-import T, {prepareTemplates} from '@sanity/initial-value-templates'
+/* eslint-disable camelcase */
+
+import {prepareTemplates, T} from '@sanity/initial-value-templates'
 import {createStructureBuilder} from '@sanity/structure'
 import {first} from 'rxjs/operators'
 import {createMockSanityClient} from '../../../test/mocks/mockSanityClient'
 import {createAuthController} from '../../auth/authController'
 import {createSchema} from '../../schema'
+import {createAuthStore} from '../authState'
+import {__tmp_crossWindowMessaging} from '../crossWindowMessaging'
 import {createUserStore} from '../user'
 import {requiresApproval} from './debug/exampleGrants'
 import {createGrantsStore} from './grantsStore'
@@ -45,8 +49,10 @@ describe('getTemplatePermissions', () => {
   it('takes in a list of `InitialValueTemplateItem`s and returns an observable of `TemplatePermissionsResult` in a record', async () => {
     const client = createMockSanityClient({requests: {'/acl': requiresApproval}})
     const authenticationFetcher = createAuthController({client: client as any})
+    const crossWindowMessaging = __tmp_crossWindowMessaging({projectId: 'test'})
+    const authStore = createAuthStore({crossWindowMessaging, projectId: 'test'})
     const userStore = createUserStore({
-      authStore: {} as any,
+      authStore,
       sanityClient: client as any,
       authenticationFetcher,
       projectId: 'foo',

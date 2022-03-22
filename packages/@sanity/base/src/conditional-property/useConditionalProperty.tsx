@@ -23,7 +23,7 @@ export interface ConditionalPropertyProps {
 const useConditionalProperty = (props: ConditionalPropertyProps): boolean => {
   const {checkProperty = false, checkPropertyKey, document, parent, value: valueProp} = props
   const value = useUnique(valueProp)
-  const {value: userValue} = useCurrentUser()
+  const userValue = useCurrentUser()?.value
   const currentUser = useUnique(
     useMemo(() => userValue && omitDeprecatedRole(userValue), [userValue])
   )

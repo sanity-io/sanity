@@ -1,17 +1,31 @@
 import {renderHook} from '@testing-library/react-hooks'
-import React from 'react'
+import React, {useMemo} from 'react'
 import {createMockSanityClient} from '../../test/mocks/mockSanityClient'
 import {createConfig} from '../config'
 import {SanityProvider} from '../sanity'
-import {SanitySource, useSource} from '../source'
 import {
   ConditionalPropertyProps,
   unstable_useConditionalProperty as useConditionalProperty,
 } from './useConditionalProperty'
 
-const useSourceMock = useSource as jest.Mock<SanitySource>
+// This mock is needed to prevent the "not wrapped in act()" error from React testing library.
+// The reason is that the `useCurrentUser` is used by `ObjectInput` to figure out which fields are
+// hidden, and using this hook causes the `ObjectInput` to render again once the user is loaded.
+//
+// NOTE!
+// We can remove this mock when `ObjectInput` no longer uses `useCurrentUser`.
+jest.mock('../datastores/user/hooks', () => {
+  const hooks = jest.requireActual('../datastores/user/hooks')
 
-jest.mock('../client/useClient')
+  return {
+    ...hooks,
+    useCurrentUser: jest.fn().mockImplementation(() => ({
+      value: {},
+      error: null,
+      isLoading: false,
+    })),
+  }
+})
 
 const dummyDocument = {
   _createdAt: '2021-11-04T15:41:48Z',
@@ -32,19 +46,26 @@ const DEFAULT_PROPS: Omit<ConditionalPropertyProps, 'checkProperty'> = {
   },
 }
 
-const config = createConfig({
-  sources: [
-    {
-      name: 'test',
-      title: 'Test',
-      projectId: 'foo',
-      dataset: 'test',
-      schemaTypes: [],
-    },
-  ],
-})
+function TestWrapper({children}: any) {
+  const config = useMemo(
+    () =>
+      createConfig({
+        sources: [
+          {
+            clientFactory: () => createMockSanityClient() as any,
+            name: 'test',
+            title: 'Test',
+            projectId: 'foo',
+            dataset: 'test',
+            schemaTypes: [],
+          },
+        ],
+      }),
+    []
+  )
 
-const wrapper = ({children}: any) => <SanityProvider config={config}>{children}</SanityProvider>
+  return <SanityProvider config={config}>{children}</SanityProvider>
+}
 
 afterEach(() => {
   jest.resetAllMocks()
@@ -52,10 +73,6 @@ afterEach(() => {
 
 describe('Conditional property resolver', () => {
   it('calls callback function', () => {
-    const mockClient = createMockSanityClient()
-
-    useSourceMock.mockImplementation(() => ({client: mockClient} as any))
-
     const callbackFn = jest.fn(() => true)
 
     const {result} = renderHook(
@@ -64,7 +81,7 @@ describe('Conditional property resolver', () => {
           checkProperty: callbackFn,
           ...DEFAULT_PROPS,
         }),
-      {wrapper}
+      {wrapper: TestWrapper}
     )
 
     if (result.error) {
@@ -73,35 +90,10 @@ describe('Conditional property resolver', () => {
 
     expect(callbackFn).toBeCalled()
 
-    expect(callbackFn.mock.calls).toMatchInlineSnapshot(`
-Array [
-  Array [
-    Object {
-      "currentUser": null,
-      "document": Object {
-        "_createdAt": "2021-11-04T15:41:48Z",
-        "_id": "drafts.10053a07-8647-4ebd-9d1d-33a512d30d3a",
-        "_rev": "5hb8s6-k75-ip4-4bq-5ztbf3fbx",
-        "_type": "conditionalFieldsTest",
-        "_updatedAt": "2021-11-05T12:34:29Z",
-        "isPublished": true,
-        "title": "Hello world",
-      },
-      "parent": Object {
-        "parentTest": "hello",
-      },
-      "value": undefined,
-    },
-  ],
-]
-`)
+    expect(callbackFn.mock.calls).toMatchSnapshot()
   })
 
   it('resolves callback to true', () => {
-    const mockClient = createMockSanityClient()
-
-    useSourceMock.mockImplementation(() => ({client: mockClient} as any))
-
     const {result} = renderHook(
       () =>
         useConditionalProperty({
@@ -109,16 +101,12 @@ Array [
           checkProperty: jest.fn(() => true),
           ...DEFAULT_PROPS,
         }),
-      {wrapper}
+      {wrapper: TestWrapper}
     )
     expect(result.current).toBeTruthy()
   })
 
   it('returns false with callback that returns false', () => {
-    const mockClient = createMockSanityClient()
-
-    useSourceMock.mockImplementation(() => ({client: mockClient} as any))
-
     const {result} = renderHook(
       () =>
         useConditionalProperty({
@@ -126,16 +114,12 @@ Array [
           checkProperty: jest.fn(() => false),
           ...DEFAULT_PROPS,
         }),
-      {wrapper}
+      {wrapper: TestWrapper}
     )
     expect(result.current).toBe(false)
   })
 
   it('returns false if document title does not match', () => {
-    const mockClient = createMockSanityClient()
-
-    useSourceMock.mockImplementation(() => ({client: mockClient} as any))
-
     const {result} = renderHook(
       () =>
         useConditionalProperty({
@@ -143,16 +127,12 @@ Array [
           checkProperty: jest.fn(({document}) => document?.title !== 'Hello world'),
           ...DEFAULT_PROPS,
         }),
-      {wrapper}
+      {wrapper: TestWrapper}
     )
     expect(result.current).toBeFalsy()
   })
 
   it('returns true if document is published', () => {
-    const mockClient = createMockSanityClient()
-
-    useSourceMock.mockImplementation(() => ({client: mockClient} as any))
-
     const {result} = renderHook(
       () =>
         useConditionalProperty({
@@ -160,16 +140,12 @@ Array [
           checkProperty: jest.fn(({document}) => Boolean(document?.isPublished)),
           ...DEFAULT_PROPS,
         }),
-      {wrapper}
+      {wrapper: TestWrapper}
     )
     expect(result.current).toBeTruthy()
   })
 
   it('returns undefined because callback returns undefined', () => {
-    const mockClient = createMockSanityClient()
-
-    useSourceMock.mockImplementation(() => ({client: mockClient} as any))
-
     const {result} = renderHook(
       () =>
         useConditionalProperty({
@@ -177,16 +153,12 @@ Array [
           checkProperty: jest.fn(() => undefined) as any,
           ...DEFAULT_PROPS,
         }),
-      {wrapper}
+      {wrapper: TestWrapper}
     )
     expect(result.current).toBe(undefined)
   })
 
   it('returns true because value matches', () => {
-    const mockClient = createMockSanityClient()
-
-    useSourceMock.mockImplementation(() => ({client: mockClient} as any))
-
     const {result} = renderHook(
       () =>
         useConditionalProperty({
@@ -195,16 +167,12 @@ Array [
           ...DEFAULT_PROPS,
           value: 'test value',
         }),
-      {wrapper}
+      {wrapper: TestWrapper}
     )
     expect(result.current).toBeTruthy()
   })
 
   it('returns false because value does not match', () => {
-    const mockClient = createMockSanityClient()
-
-    useSourceMock.mockImplementation(() => ({client: mockClient} as any))
-
     const {result} = renderHook(
       () =>
         useConditionalProperty({
@@ -213,7 +181,7 @@ Array [
           ...DEFAULT_PROPS,
           value: 'test value',
         }),
-      {wrapper}
+      {wrapper: TestWrapper}
     )
     expect(result.current).toBeFalsy()
   })
