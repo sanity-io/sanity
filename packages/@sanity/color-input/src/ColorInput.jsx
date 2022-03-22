@@ -1,16 +1,11 @@
-///<reference types="@sanity/types/parts" />
-
-/* eslint-disable id-length */
 import React, {PureComponent} from 'react'
 import PropTypes from 'prop-types'
-import {PatchEvent, patches} from '@sanity/form-builder'
+import {PatchEvent, set, setIfMissing, unset} from '@sanity/form-builder'
 import {debounce} from 'lodash'
 import {Button} from '@sanity/ui'
 import {AddIcon} from '@sanity/icons'
 import {FormField} from '@sanity/base/components'
 import ColorPicker from './ColorPicker'
-
-const {set, unset, setIfMissing} = patches
 
 const DEFAULT_COLOR = {
   hex: '#24a3e3',
