@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import {MediaDimensions} from '../types'
 declare type BlockImagePreviewStatusComponent = React.FunctionComponent<{
   layout: 'default'

@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 interface CustomSelectProps {
   onChange: (item: any) => void
   value: Record<any, any>

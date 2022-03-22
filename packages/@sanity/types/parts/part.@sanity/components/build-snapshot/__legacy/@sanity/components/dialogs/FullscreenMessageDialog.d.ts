@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 interface Props {
   buttons?: React.ReactNode
   children: React.ReactNode

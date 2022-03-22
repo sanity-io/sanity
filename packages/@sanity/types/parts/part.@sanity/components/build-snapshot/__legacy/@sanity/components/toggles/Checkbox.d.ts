@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import {Marker} from '_self_'
 interface CheckboxProps {
   children?: React.ReactNode

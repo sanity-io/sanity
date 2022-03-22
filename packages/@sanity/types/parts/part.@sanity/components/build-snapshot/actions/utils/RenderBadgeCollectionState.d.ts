@@ -1,4 +1,4 @@
-import * as React from 'react'
+import type React from 'react'
 export interface Badge {
   label: string
   title: string

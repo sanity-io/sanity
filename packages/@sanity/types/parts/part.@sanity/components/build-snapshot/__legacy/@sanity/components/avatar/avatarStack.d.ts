@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import {AvatarSize} from './types'
 interface AvatarStackProps {
   children: React.ReactNode

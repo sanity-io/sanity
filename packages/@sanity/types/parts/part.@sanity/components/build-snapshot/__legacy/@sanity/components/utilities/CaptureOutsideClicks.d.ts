@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 interface CaptureOutsideClicksProps extends React.HTMLProps<HTMLDivElement> {
   onClickOutside?: (event: MouseEvent) => void
   wrapperElement?: string

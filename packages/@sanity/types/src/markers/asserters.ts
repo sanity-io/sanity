@@ -1,4 +1,4 @@
-import {Marker, ValidationMarker} from './types'
+import type {Marker, ValidationMarker} from './types'
 
 export function isValidationMarker(marker: Marker): marker is ValidationMarker {
   return marker.type === 'validation'

@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 declare const GridList: React.ForwardRefExoticComponent<
   Pick<
     React.HTMLProps<HTMLUListElement>,

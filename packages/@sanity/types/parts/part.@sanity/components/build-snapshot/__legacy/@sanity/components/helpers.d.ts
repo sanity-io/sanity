@@ -1,2 +1,2 @@
-/// <reference types="react" />
-export declare function childrenToElementArray(children: React.ReactNode): React.ReactElement[]
+import type {ReactNode} from 'react'
+export declare function childrenToElementArray(children: ReactNode): React.ReactElement[]

@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import PropTypes from 'prop-types'
 import {SnackbarItemType} from './types'
 interface SnackbarProviderProps {

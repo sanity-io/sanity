@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 interface FieldStatusProps {
   children?: React.ReactNode
   maxAvatars?: number

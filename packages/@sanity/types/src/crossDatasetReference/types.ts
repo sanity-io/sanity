@@ -1,8 +1,8 @@
-import {ComponentType} from 'react'
-import {Path} from '../paths'
-import {SanityDocument} from '../documents'
-import {ObjectSchemaType, PreviewConfig} from '../schema'
-import {ReferenceFilterOptions} from '../reference'
+import type {ComponentType} from 'react'
+import type {Path} from '../paths'
+import type {SanityDocument} from '../documents'
+import type {ObjectSchemaType, PreviewConfig} from '../schema'
+import type {ReferenceFilterOptions} from '../reference'
 
 export interface CrossDatasetReference {
   _type: string
