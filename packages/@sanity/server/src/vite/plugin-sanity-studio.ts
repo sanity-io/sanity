@@ -128,7 +128,9 @@ export async function resolveEntryModulePath(opts: {
   cwd: string
   monorepo?: SanityMonorepo
 }): Promise<string> {
-  const sanityBasePath = await getModulePath('@sanity/base', opts.cwd)
+  const sanityBasePath = opts.monorepo
+    ? path.resolve(opts.monorepo.path, 'packages/@sanity/base')
+    : await getModulePath('@sanity/base', opts.cwd)
   const manifest = JSON.parse(await fs.readFile(path.join(sanityBasePath, 'package.json'), 'utf8'))
   const exportPath = resolveExport(manifest, './studioEntry', {
     conditions: opts.monorepo ? ['source', 'default'] : ['default'],
