@@ -5,59 +5,59 @@ export default {
   of: [
     {
       lists: [
-        { title: 'Bullet', value: 'bullet' },
-        { title: 'Numbered', value: 'number' }
+        {title: 'Bullet', value: 'bullet'},
+        {title: 'Numbered', value: 'number'},
       ],
       marks: {
         annotations: [
           // Product
           {
             name: 'annotationProduct',
-            type: 'annotationProduct'
+            type: 'annotationProduct',
           },
           // Email
           {
             name: 'annotationLinkEmail',
-            type: 'annotationLinkEmail'
+            type: 'annotationLinkEmail',
           },
           // Internal link
           {
             name: 'annotationLinkInternal',
-            type: 'annotationLinkInternal'
+            type: 'annotationLinkInternal',
           },
           // URL
           {
             name: 'annotationLinkExternal',
-            type: 'annotationLinkExternal'
-          }
+            type: 'annotationLinkExternal',
+          },
         ],
         decorators: [
           {
             title: 'Italic',
-            value: 'em'
+            value: 'em',
           },
           {
             title: 'Strong',
-            value: 'strong'
-          }
-        ]
+            value: 'strong',
+          },
+        ],
       },
       // Inline blocks
-      of: [{ type: 'blockInlineProduct' }, { type: 'blockInlineProductMarginalia' }],
+      of: [{type: 'blockInlineProduct'}, {type: 'blockInlineProductMarginalia'}],
       styles: [
-        { title: 'Heading', value: 'h2' },
-        { title: 'Quote', value: 'blockquote' }
+        {title: 'Heading', value: 'h2'},
+        {title: 'Quote', value: 'blockquote'},
       ],
-      type: 'block'
+      type: 'block',
     },
     // Custom blocks
     {
       name: 'blockImage',
-      type: 'blockImage'
+      type: 'blockImage',
     },
     {
       name: 'blockProduct',
-      type: 'blockProduct'
-    }
-  ]
+      type: 'blockProduct',
+    },
+  ],
 }

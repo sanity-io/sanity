@@ -1,13 +1,13 @@
-import { DEFAULT_CURRENCY_CODE } from '../constants'
+import {DEFAULT_CURRENCY_CODE} from '../constants'
 
-const formatNumber = val => {
+const formatNumber = (val) => {
   return new Intl.NumberFormat('en', {
     currency: DEFAULT_CURRENCY_CODE,
-    style: 'currency'
+    style: 'currency',
   }).format(val)
 }
 
-export const getPriceRange = price => {
+export const getPriceRange = (price) => {
   if (!price || typeof price?.minVariantPrice === 'undefined') {
     return 'No price found'
   }

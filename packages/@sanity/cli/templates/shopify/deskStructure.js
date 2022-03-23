@@ -20,11 +20,11 @@
  */
 
 import S from '@sanity/desk-tool/structure-builder'
-import { articles } from './desk/articles'
-import { collections } from './desk/collections'
-import { home } from './desk/home'
-import { products } from './desk/products'
-import { settings } from './desk/settings'
+import {articles} from './desk/articles'
+import {collections} from './desk/collections'
+import {home} from './desk/home'
+import {products} from './desk/products'
+import {settings} from './desk/settings'
 
 // If you add document types to desk structure manually, you can add them to this array to prevent duplicates in the root pane
 const DOCUMENT_TYPES_IN_STRUCTURE = [
@@ -36,7 +36,7 @@ const DOCUMENT_TYPES_IN_STRUCTURE = [
   'page',
   'product',
   'productVariant',
-  'settings'
+  'settings',
 ]
 
 export default () => {

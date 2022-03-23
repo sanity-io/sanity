@@ -78,6 +78,6 @@ export default createSchema({
     seoSingleton,
     seoStandard,
     shopifyProduct,
-    shopifyProductVariant
-  ])
+    shopifyProductVariant,
+  ]),
 })

@@ -1,7 +1,7 @@
-import { SanityDocument } from '@sanity/client'
-import { WarningOutlineIcon } from '@sanity/icons'
-import { Box, Card, Flex, Stack, Text } from '@sanity/ui'
-import React, { forwardRef } from 'react'
+import {SanityDocument} from '@sanity/client'
+import {WarningOutlineIcon} from '@sanity/icons'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import React, {forwardRef} from 'react'
 
 type Props = {
   document: SanityDocument

@@ -10,12 +10,7 @@ export const dependencies = {
 
 export const generateSanityManifest = (base) => ({
   ...base,
-  plugins: [
-    '@sanity/dashboard',
-    ...base.plugins,
-    'dashboard-widget-shopify',
-    'media',
-  ],
+  plugins: ['@sanity/dashboard', ...base.plugins, 'dashboard-widget-shopify', 'media'],
   parts: [
     {
       name: 'part:@sanity/base/schema',

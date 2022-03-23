@@ -1,5 +1,5 @@
-import { CloseIcon, ImageIcon, LinkRemovedIcon } from '@sanity/icons'
-import React, { forwardRef, useState } from 'react'
+import {CloseIcon, ImageIcon, LinkRemovedIcon} from '@sanity/icons'
+import React, {forwardRef, useState} from 'react'
 
 type Props = {
   isActive: boolean
@@ -9,7 +9,7 @@ type Props = {
 }
 
 const ProductMediaPreview = forwardRef<HTMLDivElement, Props>((props, ref) => {
-  const { isActive, isDeleted, type, url } = props
+  const {isActive, isDeleted, type, url} = props
 
   const [imageVisible, setImageVisible] = useState(true)
 
@@ -25,7 +25,7 @@ const ProductMediaPreview = forwardRef<HTMLDivElement, Props>((props, ref) => {
         height: '5em',
         justifyContent: 'center',
         position: 'relative',
-        width: '5em'
+        width: '5em',
       }}
     >
       {imageVisible && url ? (
@@ -38,7 +38,7 @@ const ProductMediaPreview = forwardRef<HTMLDivElement, Props>((props, ref) => {
             objectFit: 'contain',
             position: 'absolute',
             top: 0,
-            width: '100%'
+            width: '100%',
           }}
         />
       ) : (
@@ -46,7 +46,7 @@ const ProductMediaPreview = forwardRef<HTMLDivElement, Props>((props, ref) => {
           style={{
             height: '100%',
             position: 'absolute',
-            width: '100%'
+            width: '100%',
           }}
         />
       )}
@@ -59,7 +59,7 @@ const ProductMediaPreview = forwardRef<HTMLDivElement, Props>((props, ref) => {
             color: 'rgba(255, 255, 255, 0.85)',
             height: '100%',
             position: 'relative',
-            width: '100%'
+            width: '100%',
           }}
         />
       ) : (
@@ -72,7 +72,7 @@ const ProductMediaPreview = forwardRef<HTMLDivElement, Props>((props, ref) => {
                 color: 'rgba(255, 255, 255, 0.85)',
                 height: '100%',
                 position: 'relative',
-                width: '100%'
+                width: '100%',
               }}
             />
           )}

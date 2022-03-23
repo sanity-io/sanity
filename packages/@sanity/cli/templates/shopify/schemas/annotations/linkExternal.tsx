@@ -3,7 +3,7 @@
  *
  * Read more: https://www.sanity.io/docs/customization#f924645007e1
  */
-import { EarthGlobeIcon } from '@sanity/icons'
+import {EarthGlobeIcon} from '@sanity/icons'
 import React from 'react'
 
 export default {
@@ -12,28 +12,28 @@ export default {
   type: 'object',
   blockEditor: {
     icon: () => <EarthGlobeIcon />,
-    render: ({ children }) => (
+    render: ({children}) => (
       <span>
-        <EarthGlobeIcon style={{ marginRight: '0.2em', verticalAlign: 'text-bottom' }} />
+        <EarthGlobeIcon style={{marginRight: '0.2em', verticalAlign: 'text-bottom'}} />
         {children}
       </span>
-    )
+    ),
   },
   initialValue: {
-    newWindow: true
+    newWindow: true,
   },
   fields: [
     {
       name: 'url',
       title: 'URL',
       type: 'url',
-      validation: Rule => Rule.required().uri({ scheme: ['http', 'https'] })
+      validation: (Rule) => Rule.required().uri({scheme: ['http', 'https']}),
     },
     // Open in a new window
     {
       title: 'Open in a new window?',
       name: 'newWindow',
-      type: 'boolean'
-    }
-  ]
+      type: 'boolean',
+    },
+  ],
 }

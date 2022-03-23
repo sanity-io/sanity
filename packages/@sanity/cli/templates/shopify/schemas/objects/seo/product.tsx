@@ -1,6 +1,6 @@
 import React from 'react'
-import { IntentLink } from '@sanity/base/router'
-import { CogIcon } from '@sanity/icons'
+import {IntentLink} from '@sanity/base/router'
+import {CogIcon} from '@sanity/icons'
 
 export default {
   name: 'seo.product',
@@ -9,7 +9,7 @@ export default {
   description: <></>,
   options: {
     collapsed: false,
-    collapsible: true
+    collapsible: true,
   },
   fields: [
     {
@@ -22,24 +22,25 @@ export default {
         </>
       ),
       options: {
-        field: 'store.title'
+        field: 'store.title',
       },
-      validation: Rule => Rule.max(50).warning('Longer titles may be truncated by search engines')
+      validation: (Rule) =>
+        Rule.max(50).warning('Longer titles may be truncated by search engines'),
     },
     {
       name: 'description',
       title: 'Description',
       type: 'text',
       rows: 2,
-      validation: Rule =>
-        Rule.max(150).warning('Longer descriptions may be truncated by search engines')
+      validation: (Rule) =>
+        Rule.max(150).warning('Longer descriptions may be truncated by search engines'),
     },
     {
       name: 'keywords',
       title: 'Keywords',
       type: 'array',
-      of: [{ type: 'string' }],
-      options: { layout: 'tags' }
+      of: [{type: 'string'}],
+      options: {layout: 'tags'},
     },
     {
       name: 'image',
@@ -53,15 +54,15 @@ export default {
           If empty, displays the image defined in{' '}
           <IntentLink
             intent="edit"
-            params={{ id: 'settings' }}
-            style={{ marginLeft: '0.2em', whiteSpace: 'nowrap' }}
+            params={{id: 'settings'}}
+            style={{marginLeft: '0.2em', whiteSpace: 'nowrap'}}
           >
             <CogIcon />
-            <span style={{ marginLeft: '0.3em' }}>Settings</span>
+            <span style={{marginLeft: '0.3em'}}>Settings</span>
           </IntentLink>
           .
         </>
-      )
-    }
-  ]
+      ),
+    },
+  ],
 }

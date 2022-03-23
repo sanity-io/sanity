@@ -1,4 +1,4 @@
-import { CogIcon, FolderIcon } from '@sanity/icons'
+import {CogIcon, FolderIcon} from '@sanity/icons'
 
 const TITLE = 'Settings'
 
@@ -15,7 +15,7 @@ export default {
       type: 'object',
       options: {
         collapsed: false,
-        collapsible: true
+        collapsible: true,
       },
       fields: [
         // Links
@@ -34,21 +34,21 @@ export default {
                   title: 'Title',
                   name: 'title',
                   type: 'string',
-                  validation: Rule => Rule.required()
+                  validation: (Rule) => Rule.required(),
                 },
                 {
                   title: 'Links',
                   name: 'links',
                   type: 'array',
-                  of: [{ type: 'linkInternal' }, { type: 'linkExternal' }]
-                }
-              ]
+                  of: [{type: 'linkInternal'}, {type: 'linkExternal'}],
+                },
+              ],
             },
-            { type: 'linkInternal' },
-            { type: 'linkExternal' }
-          ]
-        }
-      ]
+            {type: 'linkInternal'},
+            {type: 'linkExternal'},
+          ],
+        },
+      ],
     },
     // Footer
     {
@@ -57,7 +57,7 @@ export default {
       type: 'object',
       options: {
         collapsed: false,
-        collapsible: true
+        collapsible: true,
       },
       fields: [
         // Links
@@ -65,7 +65,7 @@ export default {
           name: 'links',
           title: 'Links',
           type: 'array',
-          of: [{ type: 'linkInternal' }, { type: 'linkExternal' }]
+          of: [{type: 'linkInternal'}, {type: 'linkExternal'}],
         },
         // Text
         {
@@ -81,30 +81,30 @@ export default {
                   {
                     title: 'Email',
                     name: 'annotationLinkEmail',
-                    type: 'annotationLinkEmail'
+                    type: 'annotationLinkEmail',
                   },
                   // Internal link
                   {
                     title: 'Internal page',
                     name: 'annotationLinkInternal',
-                    type: 'annotationLinkInternal'
+                    type: 'annotationLinkInternal',
                   },
                   // URL
                   {
                     title: 'URL',
                     name: 'annotationLinkExternal',
-                    type: 'annotationLinkExternal'
-                  }
+                    type: 'annotationLinkExternal',
+                  },
                 ],
-                decorators: []
+                decorators: [],
               },
               // Block styles
-              styles: [{ title: 'Normal', value: 'normal' }],
-              type: 'block'
-            }
-          ]
-        }
-      ]
+              styles: [{title: 'Normal', value: 'normal'}],
+              type: 'block',
+            },
+          ],
+        },
+      ],
     },
     // SEO
     {
@@ -113,7 +113,7 @@ export default {
       type: 'object',
       options: {
         collapsed: false,
-        collapsible: true
+        collapsible: true,
       },
       fields: [
         {
@@ -121,23 +121,23 @@ export default {
           title: 'Site title',
           type: 'string',
           description: 'Displayed on all pages',
-          validation: Rule => Rule.required()
+          validation: (Rule) => Rule.required(),
         },
         {
           name: 'image',
           title: 'Image',
           type: 'image',
-          description: 'Fallback displayed on pages with no SEO image defined'
-        }
+          description: 'Fallback displayed on pages with no SEO image defined',
+        },
       ],
-      validation: Rule => Rule.required()
-    }
+      validation: (Rule) => Rule.required(),
+    },
   ],
   preview: {
     prepare() {
       return {
-        title: TITLE
+        title: TITLE,
       }
-    }
-  }
+    },
+  },
 }

@@ -1,4 +1,4 @@
-import { SunIcon } from '@sanity/icons'
+import {SunIcon} from '@sanity/icons'
 
 export default {
   title: 'Product option',
@@ -11,26 +11,26 @@ export default {
     {
       title: 'Name',
       name: 'name',
-      type: 'string'
+      type: 'string',
     },
     // Values
     {
       title: 'Values',
       name: 'values',
       type: 'array',
-      of: [{ type: 'string' }]
-    }
+      of: [{type: 'string'}],
+    },
   ],
   preview: {
     select: {
-      name: 'name'
+      name: 'name',
     },
     prepare(selection) {
-      const { name } = selection
+      const {name} = selection
 
       return {
-        title: name
+        title: name,
       }
-    }
-  }
+    },
+  },
 }
