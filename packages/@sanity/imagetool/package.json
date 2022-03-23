@@ -45,7 +45,10 @@
   "scripts": {
     "build": "../../../bin/pkg-utils transpile",
     "clean": "rimraf lib",
-    "exports-check": "../../../bin/pkg-utils exports-check",
+    "exports:check": "../../../bin/pkg-utils exports-check",
+    "exports:clean": "../../../bin/pkg-utils exports-clean",
+    "exports:generate": "../../../bin/pkg-utils exports-generate",
+    "postbuild": "run-s exports:generate",
     "prebuild": "yarn clean",
     "start": "remon --require babel-core/register ./example/app.js",
     "test": "jest",

@@ -1,10 +1,16 @@
-/src
-/bin/entry.js
-/test
 /.babelrc
-/.editorconfig
+/.depcheckignore.json
 /.eslintignore
 /.eslintrc
-/yarn.lock
-tsconfig.tsbuildinfo
+/.idea
+/coverage
+/jest.config.js
+/scripts
+/test
+/tsconfig.json
+/tsconfig.lib.json
+
+# custom
+/src
+/bin/entry.js
 !templates/**/.gitignore

@@ -1,6 +1,11 @@
-demo/
-coverage/
-test/
-.babelrc
-jest.config.js
-tsconfig.json
+/.babelrc
+/.depcheckignore.json
+/.eslintignore
+/.eslintrc
+/.idea
+/coverage
+/jest.config.js
+/scripts
+/test
+/tsconfig.json
+/tsconfig.lib.json

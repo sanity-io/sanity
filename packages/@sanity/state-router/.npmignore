@@ -1,0 +1,15 @@
+/.babelrc
+/.depcheckignore.json
+/.eslintignore
+/.eslintrc
+/.idea
+/coverage
+/jest.config.js
+/scripts
+/test
+/tsconfig.json
+/tsconfig.lib.json
+
+# custom
+/demo
+/perf

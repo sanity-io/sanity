@@ -29,7 +29,7 @@ jobs:
 
       - name: ES check
         id: esCheck
-        run: yarn exports-check
+        run: yarn exports:check
 
       # - name: Notify Slack about build failure
       #   if: failure() && github.ref == 'refs/heads/ui/main'

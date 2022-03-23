@@ -31,8 +31,11 @@
   "scripts": {
     "build": "../../../bin/pkg-utils transpile --tsconfig tsconfig.lib.json",
     "clean": "rimraf lib",
+    "exports:check": "../../../bin/pkg-utils exports-check",
+    "exports:clean": "../../../bin/pkg-utils exports-clean",
+    "exports:generate": "../../../bin/pkg-utils exports-generate",
+    "postbuild": "run-s exports:generate",
     "prebuild": "yarn clean",
-    "exports-check": "../../../bin/pkg-utils exports-check",
     "test": "jest",
     "watch": "../../../bin/pkg-utils transpile --tsconfig tsconfig.lib.json --watch"
   },

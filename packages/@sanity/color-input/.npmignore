@@ -1,7 +1,10 @@
-.babelrc
-.editorconfig
-.eslintignore
-.eslintrc
-src
-test
-tsconfig.tsbuildinfo
+/coverage
+/scripts
+/test
+/.babelrc
+/.depcheckignore.json
+/.eslintignore
+/.eslintrc
+/jest.config.js
+/tsconfig.json
+/tsconfig.lib.json

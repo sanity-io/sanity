@@ -29,6 +29,10 @@
   "scripts": {
     "build": "../../../bin/pkg-utils bundle",
     "clean": "rimraf lib",
+    "exports:check": "../../../bin/pkg-utils exports-check",
+    "exports:clean": "../../../bin/pkg-utils exports-clean",
+    "exports:generate": "../../../bin/pkg-utils exports-generate",
+    "postbuild": "run-s exports:generate",
     "prebuild": "yarn clean",
     "test": "jest",
     "test:watch": "jest --watchAll",

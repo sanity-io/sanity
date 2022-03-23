@@ -1,11 +1,11 @@
 import fs from 'fs/promises'
 import path from 'path'
 import chalk from 'chalk'
-import * as esbuild from 'esbuild'
+import esbuild from 'esbuild'
 import {TERM_DIVIDER} from './constants'
 
-export async function build(opts: {cwd: string}): Promise<void> {
-  const {cwd} = opts
+export async function check(opts: {cwd: string; target: 'node' | 'web'}): Promise<void> {
+  const {cwd, target} = opts
 
   if (!cwd.includes('packages/')) {
     throw new Error('must be in package')
@@ -75,19 +75,23 @@ export async function build(opts: {cwd: string}): Promise<void> {
   }
 
   // Running them in a sequence intentionally, to avoid interleaved log messages
-  await check({format: 'cjs', exports: cjsMap, external, cwd})
-  await check({format: 'esm', exports: esmMap, external, cwd})
+  await _check({format: 'cjs', exports: cjsMap, external, cwd, target})
+  await _check({format: 'esm', exports: esmMap, external, cwd, target})
 
   console.log(TERM_DIVIDER)
 }
 
-async function check(opts: {
+async function _check(opts: {
   cwd: string
   exports: Map<string, string>
   format: 'cjs' | 'esm'
   external: string[]
+  target: 'node' | 'web'
 }) {
+  const {target} = opts
+
   const imports = []
+
   for (const [identifier] of opts.exports) {
     imports.push(opts.format === 'cjs' ? `require('${identifier}');` : `import '${identifier}';`)
   }
@@ -103,12 +107,16 @@ async function check(opts: {
     bundle: true,
     // otherwise output maps to stdout as we're using stdin
     outfile: '/dev/null',
+    platform: target === 'node' ? 'node' : undefined,
   })
+
   if (result.errors.length > 0) {
     throw new Error(result.errors.join(', '))
   }
+
   if (result.warnings.length > 0) {
     console.warn(...result.warnings)
   }
+
   console.log(`${chalk.green(opts.format)}      ${opts.exports.size} files`)
 }
