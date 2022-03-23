@@ -11,7 +11,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -27,7 +26,6 @@ Array [
     },
     "level": "info",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -43,7 +41,6 @@ Array [
     },
     "level": "warning",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -59,7 +56,6 @@ Array [
     },
     "level": "warning",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -75,7 +71,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -91,7 +86,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;

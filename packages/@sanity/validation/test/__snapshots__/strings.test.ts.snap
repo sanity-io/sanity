@@ -11,7 +11,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -27,7 +26,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -43,7 +41,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -59,7 +56,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -77,7 +73,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -93,7 +88,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -109,7 +103,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -127,7 +120,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -145,7 +137,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -165,7 +156,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -183,7 +173,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -199,7 +188,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -219,7 +207,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -235,7 +222,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -251,7 +237,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
   Object {
     "item": ValidationError {
@@ -262,7 +247,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -278,7 +262,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -296,7 +279,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -312,7 +294,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -328,7 +309,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -344,7 +324,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -362,7 +341,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -378,7 +356,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -394,7 +371,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -410,7 +386,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -426,7 +401,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;

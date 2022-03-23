@@ -11,7 +11,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -27,7 +26,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -45,7 +43,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -63,7 +60,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -83,7 +79,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
   Object {
     "item": ValidationError {
@@ -94,7 +89,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -110,7 +104,6 @@ Array [
     },
     "level": "error",
     "path": Array [],
-    "type": "validation",
   },
 ]
 `;
@@ -137,7 +130,6 @@ Array [
     "path": Array [
       0,
     ],
-    "type": "validation",
   },
   Object {
     "item": ValidationError {
@@ -157,7 +149,6 @@ Array [
     "path": Array [
       1,
     ],
-    "type": "validation",
   },
 ]
 `;
@@ -184,7 +175,6 @@ Array [
     "path": Array [
       0,
     ],
-    "type": "validation",
   },
   Object {
     "item": ValidationError {
@@ -204,7 +194,6 @@ Array [
     "path": Array [
       2,
     ],
-    "type": "validation",
   },
 ]
 `;
@@ -231,7 +220,6 @@ Array [
     "path": Array [
       0,
     ],
-    "type": "validation",
   },
   Object {
     "item": ValidationError {
@@ -251,7 +239,6 @@ Array [
     "path": Array [
       2,
     ],
-    "type": "validation",
   },
 ]
 `;
@@ -278,7 +265,6 @@ Array [
     "path": Array [
       0,
     ],
-    "type": "validation",
   },
   Object {
     "item": ValidationError {
@@ -298,7 +284,6 @@ Array [
     "path": Array [
       3,
     ],
-    "type": "validation",
   },
 ]
 `;
@@ -325,7 +310,6 @@ Array [
     "path": Array [
       0,
     ],
-    "type": "validation",
   },
   Object {
     "item": ValidationError {
@@ -345,7 +329,6 @@ Array [
     "path": Array [
       3,
     ],
-    "type": "validation",
   },
 ]
 `;
