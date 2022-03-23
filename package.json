@@ -58,8 +58,6 @@
     "publish-tag": "RELEASE_TAG=\"${RELEASE_TAG:-canary}\"; yarn build && lerna publish --canary --force-publish --no-git-tag-version --dist-tag=$RELEASE_TAG --preid=$RELEASE_TAG --exact",
     "release-notes": "node scripts/printReleaseNotesTemplate.js",
     "start": "yarn dev:test-studio",
-    "stylelint": "stylelint \"**/*.css\"",
-    "stylelint:fix": "stylelint \"**/*.css\" --fix",
     "test": "jest",
     "test-e2e": "start-server-and-test build-and-serve http://localhost:3333 'yarn cypress:run'",
     "test-perf": "start-server-and-test perf-studio http://localhost:3344 'ts-node -r dotenv/config perf/suite'",
