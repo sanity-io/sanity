@@ -5,6 +5,7 @@ const helpText = `
 Options
   -y, --yes Use unattended mode, accepting defaults and using only flags for choices
   --project <projectId> Project ID to use for the studio
+  --organization <organizationId> Organization ID to use for the project
   --dataset <dataset> Dataset name for the studio
   --dataset-default Set up a project with a public dataset named "production"
   --output-path <path> Path to write studio project to

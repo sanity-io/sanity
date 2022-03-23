@@ -1,7 +1,9 @@
+/* eslint-disable max-statements, complexity */
 import fs from 'fs'
 import os from 'os'
 import path from 'path'
 import fse from 'fs-extra'
+import pFilter from 'p-filter'
 import resolveFrom from 'resolve-from'
 import deburr from 'lodash/deburr'
 import noop from 'lodash/noop'
@@ -24,7 +26,6 @@ const sanityEnv = process.env.SANITY_INTERNAL_ENV
 const environment = sanityEnv ? sanityEnv : process.env.NODE_ENV
 /* eslint-enable no-process-env */
 
-// eslint-disable-next-line max-statements, complexity
 export default async function initSanity(args, context) {
   const {output, prompt, workDir, apiClient, yarn, chalk} = context
   const cliFlags = args.extOptions
@@ -330,8 +331,15 @@ export default async function initSanity(args, context) {
 
   async function getOrCreateProject() {
     let projects
+    let organizations
     try {
-      projects = await apiClient({requireProject: false}).projects.list()
+      const client = apiClient({requireProject: false})
+      const [allProjects, allOrgs] = await Promise.all([
+        client.projects.list(),
+        client.request({uri: '/organizations'}),
+      ])
+      projects = allProjects
+      organizations = allOrgs
     } catch (err) {
       if (unattended) {
         return {projectId: flags.project, displayName: 'Unknown project', isFirstProject: false}
@@ -359,6 +367,24 @@ export default async function initSanity(args, context) {
       }
     }
 
+    if (flags.organization) {
+      const organization =
+        organizations.find((org) => org.id === flags.organization) ||
+        organizations.find((org) => org.slug === flags.organization)
+
+      if (!organization) {
+        throw new Error(
+          `Given organization ID (${flags.organization}) not found, or you do not have access to it`
+        )
+      }
+
+      if (!(await hasProjectAttachGrant(flags.organization))) {
+        throw new Error(
+          'You lack the necessary permissions to attach a project to this organization'
+        )
+      }
+    }
+
     // If the user has no projects or is using a coupon (which can only be applied to new projects)
     // just ask for project details instead of showing a list of projects
     const isUsersFirstProject = projects.length === 0
@@ -372,6 +398,7 @@ export default async function initSanity(args, context) {
       const projectName = await prompt.single({message: 'Project name:'})
       return createProject(apiClient, {
         displayName: projectName,
+        organizationId: await getOrganizationId(organizations),
         subscription: {planId: selectedPlan},
         metadata: {coupon: intendedCoupon},
       }).then((response) => ({
@@ -404,6 +431,7 @@ export default async function initSanity(args, context) {
           message: 'Your project name:',
           default: 'My Sanity Project',
         }),
+        organizationId: await getOrganizationId(organizations),
         subscription: {planId: selectedPlan},
         metadata: {coupon: intendedCoupon},
       }).then((response) => ({
@@ -608,6 +636,12 @@ export default async function initSanity(args, context) {
       )
     }
 
+    if (cliFlags.project && cliFlags.organization) {
+      throw new Error(
+        'You have specified both a project and an organization. To move a project to an organization please visit https://www.sanity.io/manage'
+      )
+    }
+
     if (createProjectName === true) {
       throw new Error('Please specify a project name (`--create-project <name>`)')
     }
@@ -636,6 +670,7 @@ export default async function initSanity(args, context) {
       debug('--create-project specified, creating a new project')
       const createdProject = await createProject(apiClient, {
         displayName: createProjectName.trim(),
+        organizationId: cliFlags.organization || undefined,
         subscription: {planId: selectedPlan},
         metadata: {coupon: intendedCoupon},
       })
@@ -658,6 +693,68 @@ export default async function initSanity(args, context) {
     }
 
     return cliFlags
+  }
+
+  async function getOrganizationId(organizations) {
+    let organizationId = flags.organization
+    if (unattended) {
+      return organizationId || undefined
+    }
+
+    const shouldPrompt = organizations.length > 0 && !organizationId
+    if (shouldPrompt) {
+      debug(`User has ${organizations.length} organization(s), checking attach access`)
+      const withGrant = await getOrganizationsWithAttachGrant(organizations)
+      if (withGrant.length === 0) {
+        debug('User lacks project attach grant in all organizations, not prompting')
+        return undefined
+      }
+
+      debug('User has attach access to %d organizations, prompting.', withGrant.length)
+      const organizationChoices = [
+        {value: 'none', name: 'None'},
+        new prompt.Separator(),
+        ...withGrant.map((organization) => ({
+          value: organization.id,
+          name: `${organization.name} [${organization.id}]`,
+        })),
+      ]
+
+      const chosenOrg = await prompt.single({
+        message: 'Select organization to attach project to',
+        type: 'list',
+        choices: organizationChoices,
+      })
+
+      if (chosenOrg && chosenOrg !== 'none') {
+        organizationId = chosenOrg
+      }
+    } else if (organizationId) {
+      debug(`User has defined organization flag explicitly (%s)`, organizationId)
+    } else if (organizations.length === 0) {
+      debug('User has no organizations, skipping selection prompt')
+    }
+
+    return organizationId || undefined
+  }
+
+  async function hasProjectAttachGrant(organizationId) {
+    const requiredGrantGroup = 'sanity.organization.projects'
+    const requiredGrant = 'attach'
+
+    const client = apiClient({requireProject: false, requireUser: true})
+      .clone()
+      .config({apiVersion: 'v2021-06-07'})
+
+    const grants = await client.request({uri: `organizations/${organizationId}/grants`})
+    const group = grants[requiredGrantGroup] || []
+    return group.some(
+      (resource) => resource.grants && resource.grants.some((grant) => grant.name === requiredGrant)
+    )
+  }
+
+  function getOrganizationsWithAttachGrant(organizations) {
+    return pFilter(organizations, (org) => hasProjectAttachGrant(org.id), {concurrency: 3})
   }
 }
 
