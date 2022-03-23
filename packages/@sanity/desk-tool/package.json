@@ -30,7 +30,7 @@
   ],
   "dependencies": {
     "@reach/auto-id": "^0.13.2",
-    "@sanity/client": "^3.2.0",
+    "@sanity/client": "^3.3.0",
     "@sanity/data-aspects": "2.27.0",
     "@sanity/diff": "2.20.0",
     "@sanity/field": "2.29.2",

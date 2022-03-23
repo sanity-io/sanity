@@ -25,7 +25,7 @@
     "ndjson"
   ],
   "dependencies": {
-    "@sanity/client": "^3.2.0",
+    "@sanity/client": "^3.3.0",
     "@sanity/import": "2.28.0",
     "get-it": "^5.2.1",
     "meow": "^9.0.0",
