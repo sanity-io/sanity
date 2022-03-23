@@ -4,23 +4,23 @@ export default {
   type: 'object',
   options: {
     collapsed: true,
-    collapsible: true
+    collapsible: true,
   },
   fieldsets: [
     {
       name: 'status',
       title: 'Status',
       options: {
-        columns: 2
-      }
+        columns: 2,
+      },
     },
     {
       name: 'options',
       title: 'Options',
       options: {
-        columns: 3
-      }
-    }
+        columns: 3,
+      },
+    },
   ],
   fields: [
     /*
@@ -36,14 +36,14 @@ export default {
       fieldset: 'status',
       name: 'createdAt',
       title: 'Created at',
-      type: 'string'
+      type: 'string',
     },
     // Updated at
     {
       fieldset: 'status',
       name: 'updatedAt',
       title: 'Last updated at',
-      type: 'string'
+      type: 'string',
     },
     // Product status
     {
@@ -53,81 +53,81 @@ export default {
       type: 'string',
       options: {
         layout: 'dropdown',
-        list: ['active', 'archived', 'draft']
+        list: ['active', 'archived', 'draft'],
       },
-      validation: Rule => Rule.required()
+      validation: (Rule) => Rule.required(),
     },
     // Deleted
     {
       fieldset: 'status',
       name: 'isDeleted',
       title: 'Deleted from Shopify?',
-      type: 'boolean'
+      type: 'boolean',
     },
     // Title
     {
       name: 'title',
       title: 'Title',
-      type: 'string'
+      type: 'string',
     },
     // SKU
     {
       name: 'sku',
       title: 'SKU',
-      type: 'string'
+      type: 'string',
     },
     // ID
     {
       name: 'id',
       title: 'ID',
-      type: 'number'
+      type: 'number',
     },
     // Product ID
     {
       name: 'productId',
       title: 'Product ID',
-      type: 'number'
+      type: 'number',
     },
     // Price
     {
       name: 'price',
       title: 'Price',
-      type: 'number'
+      type: 'number',
     },
     // Compare at price
     {
       name: 'compareAtPrice',
       title: 'Compare at price',
-      type: 'number'
+      type: 'number',
     },
     // Option 1
     {
       fieldset: 'options',
       name: 'option1',
       title: 'Option 1',
-      type: 'string'
+      type: 'string',
     },
     // Option 2
     {
       fieldset: 'options',
       name: 'option2',
       title: 'Option 2',
-      type: 'string'
+      type: 'string',
     },
     // Option 3
     {
       fieldset: 'options',
       name: 'option3',
       title: 'Option 3',
-      type: 'string'
+      type: 'string',
     },
     // Preview Image URL
     {
       name: 'previewImageUrl',
       title: 'Preview Image URL',
       type: 'string',
-      description: 'Image displayed in both cart and checkout'
-    }
+      description: 'Image displayed in both cart and checkout',
+    },
   ],
-  readOnly: true
+  readOnly: true,
 }

@@ -1,6 +1,6 @@
-import { LinkIcon } from '@sanity/icons'
-import { PAGE_REFERENCES } from '../../constants'
-import { getPriceRange } from '../../utils/getPriceRange'
+import {LinkIcon} from '@sanity/icons'
+import {PAGE_REFERENCES} from '../../constants'
+import {getPriceRange} from '../../utils/getPriceRange'
 
 export default {
   title: 'Internal Link',
@@ -13,16 +13,16 @@ export default {
       title: 'Title',
       name: 'title',
       type: 'string',
-      validation: Rule => Rule.required()
+      validation: (Rule) => Rule.required(),
     },
     // Reference
     {
       name: 'reference',
       type: 'reference',
       weak: true,
-      validation: Rule => Rule.required(),
-      to: PAGE_REFERENCES
-    }
+      validation: (Rule) => Rule.required(),
+      to: PAGE_REFERENCES,
+    },
   ],
   preview: {
     select: {
@@ -31,7 +31,7 @@ export default {
       referenceProductPriceRange: 'reference.store.priceRange',
       referenceTitle: 'reference.title',
       referenceType: 'reference._type',
-      title: 'title'
+      title: 'title',
     },
     prepare(selection) {
       const {
@@ -40,7 +40,7 @@ export default {
         referenceProductTitle,
         referenceTitle,
         referenceType,
-        title
+        title,
       } = selection
 
       let subtitle = []
@@ -56,8 +56,8 @@ export default {
       return {
         // media: image,
         subtitle: subtitle.join(' '),
-        title
+        title,
       }
-    }
-  }
+    },
+  },
 }

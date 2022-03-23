@@ -1,4 +1,4 @@
-import { SHOPIFY_STORE_ID } from '../constants'
+import {SHOPIFY_STORE_ID} from '../constants'
 
 export const productUrl = (storeId: string, productId: number) => {
   return `https://${storeId}/admin/products/${productId}`

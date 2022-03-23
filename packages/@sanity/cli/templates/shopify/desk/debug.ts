@@ -1,8 +1,8 @@
 import S from '@sanity/desk-tool/structure-builder'
-import { EyeOpenIcon, RobotIcon } from '@sanity/icons'
+import {EyeOpenIcon, RobotIcon} from '@sanity/icons'
 import sanityClient from 'part:@sanity/base/client'
 
-import { SANITY_API_VERSION } from '../constants'
+import {SANITY_API_VERSION} from '../constants'
 
 // prettier-ignore
 export const debug = S.listItem()

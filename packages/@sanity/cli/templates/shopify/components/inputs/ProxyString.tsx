@@ -1,10 +1,10 @@
-import { FormField } from '@sanity/base/components'
-import { LockIcon } from '@sanity/icons'
-import { Box, Text, TextInput, Tooltip } from '@sanity/ui'
-import { uuid } from '@sanity/uuid'
+import {FormField} from '@sanity/base/components'
+import {LockIcon} from '@sanity/icons'
+import {Box, Text, TextInput, Tooltip} from '@sanity/ui'
+import {uuid} from '@sanity/uuid'
 import get from 'lodash.get'
-import { withDocument } from 'part:@sanity/form-builder'
-import React, { forwardRef } from 'react'
+import {withDocument} from 'part:@sanity/form-builder'
+import React, {forwardRef} from 'react'
 // import { SanityDocument } from '@sanity/client'
 
 // TODO: type correctly
@@ -20,7 +20,7 @@ const ProxyString = forwardRef<HTMLInputElement, Props>((props, ref) => {
     placeholder,
     presence,
     readOnly,
-    type
+    type,
   } = props
 
   const path = type?.options?.field

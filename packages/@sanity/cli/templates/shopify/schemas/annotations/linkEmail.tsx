@@ -3,7 +3,7 @@
  *
  * Read more: https://www.sanity.io/docs/customization#f924645007e1
  */
-import { EnvelopeIcon } from '@sanity/icons'
+import {EnvelopeIcon} from '@sanity/icons'
 import React from 'react'
 
 export default {
@@ -12,19 +12,19 @@ export default {
   type: 'object',
   blockEditor: {
     icon: () => <EnvelopeIcon />,
-    render: ({ children }) => (
+    render: ({children}) => (
       <span>
-        <EnvelopeIcon style={{ marginRight: '0.2em', verticalAlign: 'text-bottom' }} />
+        <EnvelopeIcon style={{marginRight: '0.2em', verticalAlign: 'text-bottom'}} />
         {children}
       </span>
-    )
+    ),
   },
   fields: [
     // Email
     {
       title: 'Email',
       name: 'email',
-      type: 'email'
-    }
-  ]
+      type: 'email',
+    },
+  ],
 }

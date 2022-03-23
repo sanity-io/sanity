@@ -1,11 +1,11 @@
-import { FormField } from '@sanity/base/components'
-import PatchEvent, { set, unset } from '@sanity/form-builder/PatchEvent'
-import { Marker, Path } from '@sanity/types'
-import { TextInput } from '@sanity/ui'
-import { uuid } from '@sanity/uuid'
+import {FormField} from '@sanity/base/components'
+import PatchEvent, {set, unset} from '@sanity/form-builder/PatchEvent'
+import {Marker, Path} from '@sanity/types'
+import {TextInput} from '@sanity/ui'
+import {uuid} from '@sanity/uuid'
 import get from 'lodash.get'
-import { withDocument } from 'part:@sanity/form-builder'
-import React, { forwardRef, RefObject, useCallback } from 'react'
+import {withDocument} from 'part:@sanity/form-builder'
+import React, {forwardRef, RefObject, useCallback} from 'react'
 
 // TODO: use correct type
 type Props = {
@@ -28,12 +28,12 @@ const PlaceholderStringInput = forwardRef((props: Props, ref: RefObject<HTMLInpu
     presence,
     readOnly,
     type,
-    value
+    value,
   } = props
 
   const handleChange = useCallback(
     // useCallback will help with performance
-    event => {
+    (event) => {
       const inputValue = event.currentTarget.value // get current value
 
       // if the value exists, set the data, if not, unset the data

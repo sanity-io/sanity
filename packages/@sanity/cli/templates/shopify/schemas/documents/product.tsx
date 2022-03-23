@@ -1,9 +1,9 @@
-import { TagIcon } from '@sanity/icons'
+import {TagIcon} from '@sanity/icons'
 import pluralize from 'pluralize'
 import React from 'react'
 import ProductHiddenInput from '../../components/inputs/ProductHidden'
 import ProductStatusMedia from '../../components/media/ProductStatus'
-import { getPriceRange } from '../../utils/getPriceRange'
+import {getPriceRange} from '../../utils/getPriceRange'
 
 export default {
   // HACK: Required to hide 'create new' button in desk structure
@@ -18,41 +18,41 @@ export default {
       name: 'hidden',
       type: 'string',
       inputComponent: ProductHiddenInput,
-      hidden: ({ parent }) => {
+      hidden: ({parent}) => {
         const isActive = parent?.store?.status === 'active'
         const isDeleted = parent?.store?.isDeleted
 
         return isActive && !isDeleted
-      }
+      },
     },
     // Title (proxy)
     {
       title: 'Title',
       name: 'titleProxy',
       type: 'proxyString',
-      options: { field: 'store.title' }
+      options: {field: 'store.title'},
     },
     // Slug (proxy)
     {
       title: 'Slug',
       name: 'slugProxy',
       type: 'proxyString',
-      options: { field: 'store.slug.current' }
+      options: {field: 'store.slug.current'},
     },
     // Images
     {
       title: 'Images',
       name: 'images',
       type: 'array',
-      options: { layout: 'grid' },
+      options: {layout: 'grid'},
       of: [
         {
           name: 'image',
           title: 'Image',
           type: 'image',
-          options: { hotspot: true }
-        }
-      ]
+          options: {hotspot: true},
+        },
+      ],
     },
     // Sections
     {
@@ -70,7 +70,7 @@ export default {
               name: 'title',
               title: 'Title',
               type: 'string',
-              validation: Rule => Rule.required()
+              validation: (Rule) => Rule.required(),
             },
             // Body
             {
@@ -80,58 +80,58 @@ export default {
               of: [
                 {
                   lists: [],
-                  marks: { decorators: [] },
+                  marks: {decorators: []},
                   styles: [],
-                  type: 'block'
-                }
-              ]
-            }
-          ]
-        }
+                  type: 'block',
+                },
+              ],
+            },
+          ],
+        },
       ],
-      validation: Rule => Rule.max(3)
+      validation: (Rule) => Rule.max(3),
     },
     // Body
     {
       name: 'body',
       title: 'Body',
-      type: 'body'
+      type: 'body',
     },
     // Shopify product
     {
       name: 'store',
       title: 'Shopify',
       type: 'shopifyProduct',
-      description: 'Product data from Shopify (read-only)'
+      description: 'Product data from Shopify (read-only)',
     },
     // SEO
     {
       name: 'seo',
       title: 'SEO',
-      type: 'seo.product'
-    }
+      type: 'seo.product',
+    },
   ],
   orderings: [
     {
       title: 'Title (A-Z)',
       name: 'titleAsc',
-      by: [{ field: 'store.title', direction: 'asc' }]
+      by: [{field: 'store.title', direction: 'asc'}],
     },
     {
       title: 'Title (Z-A)',
       name: 'titleAsc',
-      by: [{ field: 'store.title', direction: 'desc' }]
+      by: [{field: 'store.title', direction: 'desc'}],
     },
     {
       title: 'Price (Highest first)',
       name: 'titleAsc',
-      by: [{ field: 'store.priceRange.minVariantPrice', direction: 'desc' }]
+      by: [{field: 'store.priceRange.minVariantPrice', direction: 'desc'}],
     },
     {
       title: 'Title (Lowest first)',
       name: 'titleAsc',
-      by: [{ field: 'store.priceRange.minVariantPrice', direction: 'asc' }]
-    }
+      by: [{field: 'store.priceRange.minVariantPrice', direction: 'asc'}],
+    },
   ],
   preview: {
     select: {
@@ -141,15 +141,22 @@ export default {
       priceRange: 'store.priceRange',
       status: 'store.status',
       title: 'store.title',
-      variantCount: 'store.variants.length'
+      variantCount: 'store.variants.length',
     },
     prepare(selection) {
-      const { isDeleted, optionCount, previewImageUrl, priceRange, status, title, variantCount } =
-        selection
+      const {
+        isDeleted,
+        optionCount,
+        previewImageUrl,
+        priceRange,
+        status,
+        title,
+        variantCount,
+      } = selection
 
       let description = [
         variantCount ? pluralize('variant', variantCount, true) : 'No variants',
-        optionCount ? pluralize('option', optionCount, true) : 'No options'
+        optionCount ? pluralize('option', optionCount, true) : 'No options',
       ]
 
       let subtitle = getPriceRange(priceRange)
@@ -171,8 +178,8 @@ export default {
         ),
         description: description.join(' / '),
         subtitle,
-        title
+        title,
       }
-    }
-  }
+    },
+  },
 }

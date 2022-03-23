@@ -1,4 +1,4 @@
-import { ImageIcon } from '@sanity/icons'
+import {ImageIcon} from '@sanity/icons'
 
 export default {
   name: 'blockImage',
@@ -10,29 +10,29 @@ export default {
       name: 'image',
       title: 'Image',
       type: 'image',
-      options: { hotspot: true }
+      options: {hotspot: true},
     },
     {
       name: 'caption',
       title: 'Caption',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'fullWidth',
       title: 'Full width',
-      type: 'boolean'
-    }
+      type: 'boolean',
+    },
   ],
   preview: {
     select: {
-      image: 'image'
+      image: 'image',
     },
     prepare(selection) {
-      const { image } = selection
+      const {image} = selection
       return {
         media: image,
-        title: 'Image'
+        title: 'Image',
       }
-    }
-  }
+    },
+  },
 }

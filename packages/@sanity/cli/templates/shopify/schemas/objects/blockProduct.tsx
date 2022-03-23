@@ -1,9 +1,9 @@
 import React from 'react'
-import { TagIcon } from '@sanity/icons'
-import { getPriceRange } from '../../utils/getPriceRange'
+import {TagIcon} from '@sanity/icons'
+import {getPriceRange} from '../../utils/getPriceRange'
 
-const ImagePreview = (props: { url: string }) => {
-  const { url } = props
+const ImagePreview = (props: {url: string}) => {
+  const {url} = props
   if (!url) {
     return null
   }
@@ -22,13 +22,13 @@ export default {
       name: 'productWithVariant',
       title: 'Product + Variant',
       type: 'productWithVariant',
-      validation: Rule => Rule.required()
+      validation: (Rule) => Rule.required(),
     },
     {
       name: 'caption',
       title: 'Caption',
-      type: 'string'
-    }
+      type: 'string',
+    },
   ],
   preview: {
     select: {
@@ -39,7 +39,7 @@ export default {
       status: 'productWithVariant.product.store.status',
       title: 'productWithVariant.product.store.title',
       variantPreviewImageUrl: 'productWithVariant.variant.store.previewImageUrl',
-      variantTitle: 'productWithVariant.variant.store.title'
+      variantTitle: 'productWithVariant.variant.store.title',
     },
     // TODO: DRY with `objects/productWithVariant`
     prepare(selection) {
@@ -51,7 +51,7 @@ export default {
         status,
         title,
         variantPreviewImageUrl,
-        variantTitle
+        variantTitle,
       } = selection
 
       const productVariantTitle = variantTitle || defaultVariantTitle
@@ -73,8 +73,8 @@ export default {
         media: <ImagePreview url={variantPreviewImageUrl || previewImageUrl} />,
         // TODO: re-enable when subtitles in PTE look a little nicer
         // subtitle,
-        title: previewTitle.join(' ')
+        title: previewTitle.join(' '),
       }
-    }
-  }
+    },
+  },
 }

@@ -1,5 +1,5 @@
-import { HomeIcon } from '@sanity/icons'
-import { getPriceRange } from '../../utils/getPriceRange'
+import {HomeIcon} from '@sanity/icons'
+import {getPriceRange} from '../../utils/getPriceRange'
 
 const TITLE = 'Home'
 
@@ -13,7 +13,7 @@ export default {
     {
       name: 'intro',
       title: 'Intro',
-      type: 'body'
+      type: 'body',
     },
     // Featured collections
     {
@@ -24,10 +24,10 @@ export default {
         {
           title: 'Collection',
           type: 'reference',
-          to: [{ type: 'collection' }]
-        }
+          to: [{type: 'collection'}],
+        },
       ],
-      validation: Rule => Rule.max(2).unique()
+      validation: (Rule) => Rule.max(2).unique(),
     },
     // Gallery
     {
@@ -43,19 +43,19 @@ export default {
               name: 'image',
               title: 'Image',
               type: 'image',
-              validation: Rule => Rule.required()
+              validation: (Rule) => Rule.required(),
             },
             {
               name: 'productWithVariant',
               title: 'Product + Variant',
               type: 'productWithVariant',
-              validation: Rule => Rule.required()
+              validation: (Rule) => Rule.required(),
             },
             {
               name: 'title',
               title: 'Title',
-              type: 'string'
-            }
+              type: 'string',
+            },
           ],
           preview: {
             select: {
@@ -65,7 +65,7 @@ export default {
               priceRange: 'productWithVariant.product.store.priceRange',
               status: 'productWithVariant.product.store.status',
               title: 'productWithVariant.product.store.title',
-              variantTitle: 'productWithVariant.variant.store.title'
+              variantTitle: 'productWithVariant.variant.store.title',
             },
             // TODO: DRY with `objects/productWithVariant`
             prepare(selection) {
@@ -76,7 +76,7 @@ export default {
                 priceRange,
                 status,
                 title,
-                variantTitle
+                variantTitle,
               } = selection
               const productVariantTitle = variantTitle || defaultVariantTitle
 
@@ -96,12 +96,12 @@ export default {
               return {
                 media: image,
                 subtitle,
-                title: previewTitle.join(' ')
+                title: previewTitle.join(' '),
               }
-            }
-          }
-        }
-      ]
+            },
+          },
+        },
+      ],
     },
     // Featured products
     {
@@ -112,25 +112,25 @@ export default {
         {
           title: 'Product',
           name: 'product',
-          type: 'productWithVariant'
-        }
+          type: 'productWithVariant',
+        },
       ],
-      validation: Rule => Rule.unique()
+      validation: (Rule) => Rule.unique(),
     },
     // SEO
     {
       name: 'seo',
       title: 'SEO',
-      type: 'seo.singleton'
-    }
+      type: 'seo.singleton',
+    },
   ],
   preview: {
     prepare() {
       return {
         // media: icon,
         subtitle: 'Index',
-        title: TITLE
+        title: TITLE,
       }
-    }
-  }
+    },
+  },
 }

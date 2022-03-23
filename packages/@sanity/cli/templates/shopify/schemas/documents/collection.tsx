@@ -1,4 +1,4 @@
-import { PackageIcon } from '@sanity/icons'
+import {PackageIcon} from '@sanity/icons'
 import pluralize from 'pluralize'
 
 export default {
@@ -12,30 +12,30 @@ export default {
       name: 'title',
       title: 'Title',
       type: 'string',
-      validation: Rule => Rule.required()
+      validation: (Rule) => Rule.required(),
     },
     // Slug
     {
       name: 'slug',
       title: 'Slug',
       type: 'slug',
-      options: { source: 'title' },
-      validation: Rule => Rule.required()
+      options: {source: 'title'},
+      validation: (Rule) => Rule.required(),
     },
     // Description
     {
       name: 'description',
       title: 'Description',
       type: 'text',
-      rows: 3
+      rows: 3,
     },
     // Image
     {
       name: 'image',
       title: 'Image',
       type: 'image',
-      options: { hotspot: true },
-      validation: Rule => Rule.required()
+      options: {hotspot: true},
+      validation: (Rule) => Rule.required(),
     },
     // Products
     {
@@ -46,31 +46,31 @@ export default {
         {
           title: 'Product',
           name: 'product',
-          type: 'productWithVariant'
-        }
+          type: 'productWithVariant',
+        },
       ],
-      validation: Rule => Rule.unique()
+      validation: (Rule) => Rule.unique(),
     },
     // SEO
     {
       name: 'seo',
       title: 'SEO',
-      type: 'seo.standard'
-    }
+      type: 'seo.standard',
+    },
   ],
   preview: {
     select: {
       image: 'image',
       productCount: 'products.length',
-      title: 'title'
+      title: 'title',
     },
     prepare(selection) {
-      const { image, productCount, title } = selection
+      const {image, productCount, title} = selection
       return {
         media: image,
         subtitle: productCount ? pluralize('product', productCount, true) : 'No products',
-        title
+        title,
       }
-    }
-  }
+    },
+  },
 }

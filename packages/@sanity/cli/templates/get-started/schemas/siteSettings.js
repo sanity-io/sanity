@@ -1,20 +1,20 @@
-import { CogIcon } from "@sanity/icons";
+import {CogIcon} from '@sanity/icons'
 
 export default {
-  name: "ss",
+  name: 'ss',
   icon: CogIcon,
-  title: "Site Settings",
-  type: "document",
+  title: 'Site Settings',
+  type: 'document',
   fields: [
     {
-      name: "title",
-      title: "Site Title",
-      type: "string",
+      name: 'title',
+      title: 'Site Title',
+      type: 'string',
     },
     {
-      name: "description",
-      title: "Site Description",
-      type: "text",
+      name: 'description',
+      title: 'Site Description',
+      type: 'text',
     },
   ],
-};
+}

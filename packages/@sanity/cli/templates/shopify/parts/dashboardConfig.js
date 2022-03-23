@@ -3,14 +3,14 @@ export default {
     {
       name: 'shopify-intro',
       layout: {
-        width: 'medium'
-      }
+        width: 'medium',
+      },
     },
     {
       name: 'shopify-connect',
       layout: {
-        width: 'small'
-      }
-    }
-  ]
+        width: 'small',
+      },
+    },
+  ],
 }
