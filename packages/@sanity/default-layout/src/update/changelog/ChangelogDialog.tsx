@@ -20,7 +20,8 @@ const StickyBox = styled(Box)`
 export function ChangelogDialog(props: ChangelogDialogProps) {
   const {changelog, currentVersion, dialogProps, latestVersion} = props
 
-  const hasChangelog = changelog.filter((c) => c?.changeItems).length > 0
+  const changelogWithChangeItems = (changelog || []).filter((c) => c?.changeItems?.length > 0)
+  const hasChangelog = changelogWithChangeItems.length > 0
 
   return (
     <Dialog header="Upgrade the Sanity Studio" width={1} {...dialogProps} id="changelog-dialog">
@@ -41,9 +42,9 @@ export function ChangelogDialog(props: ChangelogDialogProps) {
 
         {hasChangelog && (
           <Stack space={5} paddingY={4}>
-            {changelog?.map((log, index) => {
+            {changelogWithChangeItems?.map((log, index) => {
               const {changeItems, version} = log
-              const showDivider = index < changelog.length - 1
+              const showDivider = index < changelogWithChangeItems.length - 1
               const isLatest = version === latestVersion
 
               return (
