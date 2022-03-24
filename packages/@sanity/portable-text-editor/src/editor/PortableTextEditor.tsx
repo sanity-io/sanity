@@ -17,6 +17,7 @@ import {
   InvalidValueResolution,
   PatchObservable,
   PortableTextSlateEditor,
+  EditableAPIDeleteOptions,
 } from '../types/editor'
 import {compactPatches} from '../utils/patches'
 import {validateValue} from '../utils/validateValue'
@@ -63,7 +64,7 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
   static delete = (
     editor: PortableTextEditor,
     selection: EditorSelection,
-    options?: {mode?: 'block' | 'children'}
+    options?: EditableAPIDeleteOptions
   ) => editor.editable?.delete(selection, options)
   static findDOMNode = (
     editor: PortableTextEditor,

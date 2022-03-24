@@ -4,7 +4,11 @@ import {ReactEditor} from '@sanity/slate-react'
 import {DOMNode} from '@sanity/slate-react/dist/utils/dom'
 import {Type} from '../../types/schema'
 import {PortableTextBlock, PortableTextChild, PortableTextFeatures} from '../../types/portableText'
-import {EditorSelection, PortableTextSlateEditor} from '../../types/editor'
+import {
+  EditableAPIDeleteOptions,
+  EditorSelection,
+  PortableTextSlateEditor,
+} from '../../types/editor'
 import {toSlateValue, fromSlateValue} from '../../utils/values'
 import {toSlateRange, toPortableTextRange} from '../../utils/ranges'
 import {PortableTextEditor} from '../PortableTextEditor'
@@ -353,21 +357,31 @@ export function createWithEditableAPI(
         }
         return undefined
       },
-      delete: (selection?: EditorSelection, options?: {mode?: 'block' | 'children'}): void => {
+      delete: (selection: EditorSelection, options?: EditableAPIDeleteOptions): void => {
         if (selection) {
           const range = toSlateRange(selection, editor)
           if (range) {
+            if (!options?.mode || options?.mode === 'selected') {
+              debug(`Deleting content in selection`)
+              Transforms.delete(editor, {
+                at: range,
+                hanging: true,
+                voids: true,
+              })
+              editor.onChange()
+              return
+            }
             const nodes = Editor.nodes(editor, {
               at: range,
               match: (node) => {
-                if (options?.mode === 'block') {
-                  debug(`Deleting blocks from selection`)
+                if (options?.mode === 'blocks') {
+                  debug(`Deleting blocks touched by selection`)
                   return (
                     editor.isTextBlock(node) ||
                     (!editor.isTextBlock(node) && SlateElement.isElement(node))
                   )
                 }
-                debug(`Deleting children from selection`)
+                debug(`Deleting children touched by selection`)
                 return (
                   node._type === portableTextFeatures.types.span.name || // Text children
                   (!editor.isTextBlock(node) && SlateElement.isElement(node)) // inline blocks

@@ -72,7 +72,7 @@ describe('plugin:withEditableAPI: .delete()', () => {
         PortableTextEditor.delete(
           editorRef.current,
           PortableTextEditor.getSelection(editorRef.current),
-          {mode: 'block'}
+          {mode: 'blocks'}
         )
       }
     })
