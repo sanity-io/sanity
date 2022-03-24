@@ -19,6 +19,7 @@ export {getNewDocumentOptions} from '../util/getNewDocumentOptions'
 export type {NewDocumentOption} from '../util/getNewDocumentOptions'
 
 export type {
+  DocumentVersion,
   DocumentVersionEvent,
   RemoteSnapshotVersionEvent,
 } from '../datastores/document/document-pair/checkoutPair'
@@ -26,6 +27,7 @@ export type {
   DocumentMutationEvent,
   DocumentRebaseEvent,
   DocumentRemoteMutationEvent,
+  MutationPayload,
 } from '../datastores/document/buffered-doc/types'
 export {remoteSnapshots} from '../datastores/document/document-pair/remoteSnapshots'
 
