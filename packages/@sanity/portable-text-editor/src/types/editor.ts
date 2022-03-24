@@ -14,6 +14,10 @@ import {
 import {PortableTextEditor} from '../editor/PortableTextEditor'
 import {PortableTextFeatures} from '..'
 
+export interface EditableAPIDeleteOptions {
+  mode?: 'blocks' | 'children' | 'selected'
+}
+
 export interface EditableAPI {
   activeAnnotations: () => PortableTextBlock[]
   addAnnotation: (
@@ -21,7 +25,7 @@ export interface EditableAPI {
     value?: {[prop: string]: any}
   ) => {spanPath: Path; markDefPath: Path} | undefined
   blur: () => void
-  delete: (selection?: EditorSelection, options?: {mode?: 'block' | 'children'}) => void
+  delete: (selection: EditorSelection, options?: EditableAPIDeleteOptions) => void
   findByPath: (path: Path) => [PortableTextBlock | PortableTextChild | undefined, Path | undefined]
   findDOMNode: (element: PortableTextBlock | PortableTextChild) => Node | undefined
   focus: () => void

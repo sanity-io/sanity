@@ -9,6 +9,7 @@ import {render} from '@testing-library/react'
 import React from 'react'
 import {PortableTextEditor} from '../../PortableTextEditor'
 import {PortableTextEditorTester, type} from '../../../editor/__tests__/PortableTextEditorTester'
+import {EditorSelection} from '../../../types/editor'
 
 describe('plugin:withPortableTextMarksModel: normalization', () => {
   it('merges adjacent spans correctly when removing annotations', () => {
@@ -483,6 +484,139 @@ describe('plugin:withPortableTextMarksModel: normalization', () => {
               "_key": "abc",
               "_type": "link",
               "href": "http://www.link.com",
+            },
+          ],
+          "style": "normal",
+        },
+      ]
+    `)
+  })
+
+  it('merges blocks correctly when containing links', () => {
+    const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+    const initialValue = [
+      {
+        _key: '5fc57af23597',
+        _type: 'myTestBlockType',
+        children: [
+          {
+            _key: 'be1c67c6971a',
+            _type: 'span',
+            marks: [],
+            text: 'This is a ',
+          },
+          {
+            _key: '11c8c9f783a8',
+            _type: 'span',
+            marks: ['fde1fd54b544'],
+            text: 'link',
+          },
+        ],
+        markDefs: [
+          {
+            _key: 'fde1fd54b544',
+            _type: 'link',
+            url: '1',
+          },
+        ],
+        style: 'normal',
+      },
+      {
+        _key: '7cd53af36712',
+        _type: 'myTestBlockType',
+        children: [
+          {
+            _key: '576c748e0cd2',
+            _type: 'span',
+            marks: [],
+            text: 'This is ',
+          },
+          {
+            _key: 'f3d73d3833bf',
+            _type: 'span',
+            marks: ['7b6d3d5de30c'],
+            text: 'another',
+          },
+        ],
+        markDefs: [
+          {
+            _key: '7b6d3d5de30c',
+            _type: 'link',
+            url: '2',
+          },
+        ],
+        style: 'normal',
+      },
+    ]
+    const sel: EditorSelection = {
+      focus: {path: [{_key: '5fc57af23597'}, 'children', {_key: '11c8c9f783a8'}], offset: 4},
+      anchor: {path: [{_key: '7cd53af36712'}, 'children', {_key: '576c748e0cd2'}], offset: 0},
+    }
+    const onChange = jest.fn()
+    act(() => {
+      render(
+        <PortableTextEditorTester
+          onChange={onChange}
+          ref={editorRef}
+          type={type}
+          value={initialValue}
+        />
+      )
+    })
+    if (!editorRef.current) {
+      throw new Error('No editor')
+    }
+    act(() => {
+      if (editorRef.current) {
+        PortableTextEditor.select(editorRef.current, sel)
+        PortableTextEditor.delete(editorRef.current, sel)
+      }
+    })
+    expect(PortableTextEditor.getValue(editorRef.current)).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "_key": "5fc57af23597",
+          "_type": "myTestBlockType",
+          "children": Array [
+            Object {
+              "_key": "be1c67c6971a",
+              "_type": "span",
+              "marks": Array [],
+              "text": "This is a ",
+            },
+            Object {
+              "_key": "11c8c9f783a8",
+              "_type": "span",
+              "marks": Array [
+                "fde1fd54b544",
+              ],
+              "text": "link",
+            },
+            Object {
+              "_key": "576c748e0cd2",
+              "_type": "span",
+              "marks": Array [],
+              "text": "This is ",
+            },
+            Object {
+              "_key": "f3d73d3833bf",
+              "_type": "span",
+              "marks": Array [
+                "7b6d3d5de30c",
+              ],
+              "text": "another",
+            },
+          ],
+          "markDefs": Array [
+            Object {
+              "_key": "fde1fd54b544",
+              "_type": "link",
+              "url": "1",
+            },
+            Object {
+              "_key": "7b6d3d5de30c",
+              "_type": "link",
+              "url": "2",
             },
           ],
           "style": "normal",
