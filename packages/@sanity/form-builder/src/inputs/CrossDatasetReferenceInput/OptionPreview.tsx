@@ -18,7 +18,7 @@ import {CrossDatasetReferencePreview} from './CrossDatasetReferencePreview'
 export function OptionPreview(props: {
   document: {_id: string; _type: string}
   referenceType: CrossDatasetReferenceSchemaType
-  getReferenceInfo: (doc: {_id: string; _type: string}) => Observable<CrossDatasetReferenceInfo>
+  getReferenceInfo: (doc: {_id: string; _type?: string}) => Observable<CrossDatasetReferenceInfo>
 }) {
   const {
     isLoading,
@@ -47,7 +47,7 @@ export function OptionPreview(props: {
     return null
   }
 
-  if (referenceInfo.availability.reason === 'PERMISSION_DENIED') {
+  if (referenceInfo.availability?.reason === 'PERMISSION_DENIED') {
     return (
       <Stack space={2} padding={1}>
         Insufficient permissions to view this document

@@ -4,6 +4,7 @@ import {useDatastores, useSource} from '@sanity/base'
 import {ImageInput, ImageInputProps} from '../../inputs/files/ImageInput'
 import {withValuePath} from '../../utils/withValuePath'
 import {useFormBuilder} from '../../useFormBuilder'
+import {FIXME} from '../../types'
 import {observeImageAsset} from './client-adapters/assets'
 import {wrapWithDocument} from './wrapWithDocument'
 
@@ -43,7 +44,7 @@ export const SanityImageInput = React.forwardRef(function SanityImageInput(
       observeAsset={observeAsset}
       assetSources={assetSources}
       directUploads={image.directUploads}
-      ref={forwardedRef as any}
+      ref={forwardedRef as FIXME}
       imageUrlBuilder={builder}
     />
   )

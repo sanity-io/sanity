@@ -4,6 +4,7 @@ import {FileInput, FileInputProps} from '../../inputs/files/FileInput'
 import {resolveUploader} from '../uploads/resolveUploader'
 import {withValuePath} from '../../utils/withValuePath'
 import {useFormBuilder} from '../../useFormBuilder'
+import {FIXME} from '../../types'
 import {observeFileAsset} from './client-adapters/assets'
 import {wrapWithDocument} from './wrapWithDocument'
 
@@ -40,7 +41,7 @@ export const SanityFileInput = React.forwardRef(function SanityFileInput(
       observeAsset={observeAsset}
       assetSources={assetSources}
       directUploads={file.directUploads}
-      ref={forwardedRef as any}
+      ref={forwardedRef as FIXME}
     />
   )
 })

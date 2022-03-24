@@ -7,7 +7,7 @@ import {ConditionalHiddenField, ConditionalReadOnlyField} from '../../common'
 
 export interface FileInputFieldProps extends Omit<FormInputProps<unknown>, 'readOnly' | 'type'> {
   field: ObjectField
-  parentValue: Record<string, unknown>
+  parentValue?: Record<string, unknown>
   readOnly: ConditionalProperty
 }
 

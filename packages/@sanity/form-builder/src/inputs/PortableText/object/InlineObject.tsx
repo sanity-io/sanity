@@ -19,6 +19,7 @@ import styled, {css} from 'styled-components'
 import {Box, Card, Theme, Tooltip} from '@sanity/ui'
 import {Preview} from '../../../Preview'
 import {useFormBuilder} from '../../../useFormBuilder'
+import {FIXME} from '../../../types'
 import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
 
 interface InlineObjectProps {
@@ -27,9 +28,9 @@ interface InlineObjectProps {
   markers: PortableTextMarker[]
   validation: ValidationMarker[]
   onFocus: (path: Path) => void
-  readOnly: boolean
-  renderCustomMarkers: RenderCustomMarkers
-  scrollElement: HTMLElement
+  readOnly?: boolean
+  renderCustomMarkers?: RenderCustomMarkers
+  scrollElement: HTMLElement | null
   type: Type
   value: PortableTextChild
 }
@@ -57,8 +58,8 @@ function rootStyle({theme}: {theme: Theme}) {
     }
 
     &[data-focused] {
-      box-shadow: inset 0 0 0 1px ${color.selectable.primary.selected.border};
-      color: ${color.selectable.primary.pressed.fg};
+      box-shadow: inset 0 0 0 1px ${color.selectable?.primary.selected.border};
+      color: ${color.selectable?.primary.pressed.fg};
     }
 
     &:not([data-focused]):not([data-selected]) {
@@ -152,7 +153,7 @@ export const InlineObject = React.forwardRef(function InlineObject(
   const preview = useMemo(
     () => (
       <PreviewSpan>
-        <Preview type={type as any} value={value} fallbackTitle="Click to edit" layout="inline" />
+        <Preview type={type as FIXME} value={value} fallbackTitle="Click to edit" layout="inline" />
       </PreviewSpan>
     ),
     [type, value]

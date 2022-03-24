@@ -1,8 +1,9 @@
 import {Box, Flex, Text} from '@sanity/ui'
 import React from 'react'
 import {CommentIcon} from '@sanity/icons'
+import {PortableTextMarker} from '@sanity/base/form'
 
-export function renderCustomMarkers(markers) {
+export function renderCustomMarkers(markers: PortableTextMarker[]) {
   return markers.map((marker) => {
     if (marker.type === 'customMarkerTest') {
       return (

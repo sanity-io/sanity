@@ -186,7 +186,7 @@ const BlockRoot = styled.div<{$level: number}>((props) => {
   `
 })
 
-function Block(props: {fontSize: number; index: number; value: BlockType}) {
+function Block(props: {fontSize?: number; index: number; value: BlockType}) {
   const {fontSize, index, value} = props
 
   return (

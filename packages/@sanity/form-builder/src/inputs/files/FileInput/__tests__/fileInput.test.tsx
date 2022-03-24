@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 import {FileAsset, SchemaType} from '@sanity/types'
 import {fireEvent, waitFor} from '@testing-library/react'
 import React from 'react'
 import {EMPTY, Observable, of} from 'rxjs'
 import {renderInput} from '../../../../../test/renderInput'
 import {UploadOptions} from '../../../../sanity/uploads/types'
+import {FIXME} from '../../../../types'
 import {FileInput, FileInputProps} from '../FileInput'
 
 const fileTestType = {
@@ -33,7 +36,7 @@ const observeAssetStub = (id: string): Observable<FileAsset> =>
     _id: 'file-26db46ec62059d6cd491b4343afaecc92ff1b4d5-txt',
     _rev: 'slQurnjRhOy7Fj3dkfUHei',
     _type: 'sanity.fileAsset',
-  } as any)
+  } as FIXME)
 
 const resolveUploaderStub = () => ({
   priority: 1,
@@ -43,7 +46,7 @@ const resolveUploaderStub = () => ({
 })
 
 const defaultProps: Partial<FileInputProps> = {
-  assetSources: [{} as any],
+  assetSources: [{} as FIXME],
   compareValue: {},
   directUploads: true,
   getValuePath: () => ['file'],
@@ -66,7 +69,7 @@ describe('FileInput with empty state', () => {
     // const {queryByTestId, queryByText} = render(<FileInput />)
     const {result} = render()
 
-    expect(result.queryByTestId('file-button-input').getAttribute('value')).toBe('')
+    expect(result.queryByTestId('file-button-input')!.getAttribute('value')).toBe('')
     expect(result.queryByText('Drag or paste file here')).toBeInTheDocument()
   })
 
@@ -98,14 +101,14 @@ describe('FileInput with empty state', () => {
     //   <FileInput assetSources={[{name: 'source1'}, {name: 'source2'}]} />
     // )
     const {result} = render({
-      assetSources: [{name: 'source1'}, {name: 'source2'}] as any,
+      assetSources: [{name: 'source1'}, {name: 'source2'}] as FIXME,
     })
     const browseButton = result.queryByTestId('file-input-multi-browse-button')
 
     expect(result.queryByTestId('file-input-upload-button')).toBeInTheDocument()
     expect(browseButton).toBeInTheDocument()
 
-    fireEvent.click(browseButton)
+    fireEvent.click(browseButton!)
 
     await waitFor(() => {
       expect(result.queryByTestId('file-input-browse-button-source1')).toBeInTheDocument()
@@ -120,7 +123,7 @@ describe('FileInput with empty state', () => {
     const {result} = render({
       directUploads: false,
     })
-    expect(result.queryByTestId('file-input-upload-button').getAttribute('data-disabled')).toBe(
+    expect(result.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
       'true'
     )
   })
@@ -141,7 +144,7 @@ describe('FileInput with empty state', () => {
     const {result} = render({
       readOnly: true,
     })
-    expect(result.queryByTestId('file-input-upload-button').getAttribute('data-disabled')).toBe(
+    expect(result.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
       'true'
     )
   })
@@ -152,7 +155,7 @@ describe('FileInput with empty state', () => {
       readOnly: true,
     })
 
-    expect(result.queryByTestId('file-input-browse-button').getAttribute('data-disabled')).toBe(
+    expect(result.queryByTestId('file-input-browse-button')!.getAttribute('data-disabled')).toBe(
       'true'
     )
   })
@@ -164,7 +167,7 @@ describe('FileInput with empty state', () => {
     })
     const input = result.queryByTestId('file-button-input')
 
-    fireEvent.change(input, {
+    fireEvent.change(input!, {
       target: {
         files: [new File(['(⌐□_□)'], 'cool_sunglasses.pdf', {type: 'file/pdf'})],
       },
@@ -208,7 +211,7 @@ describe('FileInput with asset', () => {
     const {result} = render({
       value,
     })
-    fireEvent.click(result.queryByTestId('options-menu-button'))
+    fireEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
       expect(result.queryByTestId('file-input-browse-button')).toBeInTheDocument()
@@ -221,7 +224,7 @@ describe('FileInput with asset', () => {
       assetSources: [],
       value,
     })
-    fireEvent.click(result.queryByTestId('options-menu-button'))
+    fireEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
       expect(result.queryByTestId('file-input-upload-button')).toBeInTheDocument()
@@ -231,11 +234,11 @@ describe('FileInput with asset', () => {
 
   it('renders the multiple browse buttons in the file menu when it has multiple assetSources', async () => {
     const {result} = render({
-      assetSources: [{name: 'source1'}, {name: 'source2'}] as any,
+      assetSources: [{name: 'source1'}, {name: 'source2'}] as FIXME,
       value,
     })
 
-    fireEvent.click(result.queryByTestId('options-menu-button'))
+    fireEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
       expect(result.queryByTestId('file-input-browse-button-source1')).toBeInTheDocument()
@@ -297,7 +300,7 @@ describe('FileInput with asset', () => {
     //   <FileInput value={value} assetSources={[{name: 'source1'}, {name: 'source2'}]} readOnly />
     // )
     const {result} = render({
-      assetSources: [{name: 'source1'}, {name: 'source2'}] as any,
+      assetSources: [{name: 'source1'}, {name: 'source2'}] as FIXME,
       readOnly: true,
       value,
     })
@@ -350,13 +353,13 @@ describe('FileInput with asset', () => {
 
     const {result} = render({
       readOnly: true,
-      type: fileType as any,
+      type: fileType as FIXME,
       value,
     })
 
-    fireEvent.click(result.queryByTestId('options-menu-button'))
+    fireEvent.click(result.queryByTestId('options-menu-button')!)
 
-    fireEvent.change(result.queryByTestId('file-button-input'), {
+    fireEvent.change(result.queryByTestId('file-button-input')!, {
       target: {
         files: [new File(['(⌐□_□)'], 'cool_sunglasses.pdf', {type: 'file/pdf'})],
       },

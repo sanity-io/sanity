@@ -1,3 +1,4 @@
+import {ReferenceSchemaType} from '@sanity/types'
 import {once} from 'lodash'
 import {SanityReferenceInput} from '../inputs/reference/SanityReferenceInput'
 
@@ -11,9 +12,9 @@ const warnSearchableOptionNotSupported = once(() =>
 
 /* eslint-enable no-console */
 
-export function resolveReferenceInput(type) {
+export function resolveReferenceInput(type: ReferenceSchemaType) {
   const options = type.options || {}
-  if (options.inputType) {
+  if ('inputType' in options) {
     warnInputTypeNotSupported()
   }
   if ('searchable' in options) {

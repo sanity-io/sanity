@@ -16,6 +16,7 @@ import {FormBuilderProvider} from '../src/FormBuilderProvider'
 import {ObjectInput} from '../src/inputs/ObjectInput'
 import {createPatchChannel} from '../src/patchChannel'
 import {ReviewChangesContextProvider} from '../src/sanity/contexts/reviewChanges/ReviewChangesProvider'
+import {FIXME} from '../src/types'
 import {is} from '../src/utils/is'
 import {createMockSanityClient} from './mocks/sanityClient'
 
@@ -46,7 +47,7 @@ export function renderNode(options: {
   const {render: renderFn, type: typeDef} = options
 
   // mock client
-  const client = createMockSanityClient() as any
+  const client = createMockSanityClient() as FIXME
 
   // dummy config
   const config = createConfig({
@@ -69,7 +70,7 @@ export function renderNode(options: {
 
   function Tester(props: any) {
     const {schema} = useSource()
-    const schemaErrors = schema._validation.some((m) =>
+    const schemaErrors = schema._validation?.some((m) =>
       m.problems.some((p) => p.severity === 'error')
     )
 
@@ -78,7 +79,7 @@ export function renderNode(options: {
       throw new Error('schema validation errors')
     }
 
-    const type = schema.get(typeDef.name) as any
+    const type = schema.get(typeDef.name)
 
     if (!type) {
       throw new Error(`type not found: ${typeDef.name}`)

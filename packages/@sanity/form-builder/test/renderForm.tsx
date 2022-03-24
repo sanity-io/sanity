@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import {createConfig, useSource} from '@sanity/base'
-import {FormBuilderFilterFieldFn} from '@sanity/base/src/form'
+import {FormBuilderFilterFieldFn} from '@sanity/base/form'
 import {StudioProvider} from '@sanity/base/studio'
 import {Path} from '@sanity/types'
 import {render} from '@testing-library/react'
 import React from 'react'
 import {SanityFormBuilder} from '../src'
 import {createPatchChannel} from '../src/patchChannel'
+import {FIXME} from '../src/types'
 import {createMockSanityClient} from './mocks/sanityClient'
 
 export function renderForm(props: {
@@ -31,7 +32,7 @@ export function renderForm(props: {
   const onFocus = jest.fn()
   const setScheme = jest.fn()
 
-  const client = createMockSanityClient() as any
+  const client = createMockSanityClient() as FIXME
 
   const schemaTypes = [typeDef]
 
@@ -63,7 +64,7 @@ export function renderForm(props: {
         onFocus={onFocus}
         presence={[]}
         schema={schema}
-        type={docType}
+        type={docType!}
         validation={[]}
         value={value}
         {...restProps}

@@ -1,11 +1,8 @@
-import {get} from 'lodash'
+import {StringSchemaType} from '@sanity/types'
 import {SelectInput} from '../../inputs/SelectInput'
 import {StringInput} from '../../inputs/StringInput'
+import {getOption} from './helpers'
 
-export function getOption(type, optionName) {
-  return get(type.options, optionName)
-}
-
-export function resolveStringInput(type) {
+export function resolveStringInput(type: StringSchemaType) {
   return getOption(type, 'list') ? SelectInput : StringInput
 }

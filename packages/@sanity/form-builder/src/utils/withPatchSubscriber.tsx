@@ -1,12 +1,14 @@
 /* eslint-disable max-nested-callbacks */
 
 import {Patch} from '@sanity/base/form'
+import {isRecord} from '@sanity/base/util'
+import {Path, PathSegment} from '@sanity/types'
 import {get, find} from 'lodash'
 import React, {forwardRef, useCallback} from 'react'
 import shallowEquals from 'shallow-equals'
 import {useFormBuilder} from '../useFormBuilder'
 
-function isSegmentEqual(segment1, segment2) {
+function isSegmentEqual(segment1: PathSegment, segment2: PathSegment) {
   const segment1Type = typeof segment1
   if (segment1Type !== typeof segment2) {
     return false
@@ -16,7 +18,7 @@ function isSegmentEqual(segment1, segment2) {
   }
   return segment1 === segment2
 }
-function startsWith(subjectPath, checkPath) {
+function startsWith(subjectPath: Path, checkPath: Path) {
   if (subjectPath === checkPath) {
     return true
   }
@@ -33,15 +35,15 @@ function startsWith(subjectPath, checkPath) {
   }
   return true
 }
-function isAncestor(path1, path2) {
+function isAncestor(path1: Path, path2: Path) {
   return path1.length === 0 || (startsWith(path2, path1) && !startsWith(path1, path2))
 }
-function shouldReset(path, patches) {
+function shouldReset(path: Path, patches: Patch[]) {
   return patches.some(
     (patch) => isAncestor(patch.path, path) && (patch.type === 'set' || patch.type === 'unset')
   )
 }
-function getValueAtPath(value, path) {
+function getValueAtPath(value: Record<string, unknown>, path: Path) {
   return path.reduce((result, segment) => {
     if (typeof segment === 'object') {
       return find(result, segment)
@@ -71,7 +73,7 @@ export function withPatchSubscriber(ComposedComponent: any) {
             }))
           subscriber({
             shouldReset: shouldReset(selfPath, patches),
-            snapshot: getValueAtPath(snapshot, selfPath),
+            snapshot: isRecord(snapshot) ? getValueAtPath(snapshot, selfPath) : {},
             patches: filtered,
           })
         })

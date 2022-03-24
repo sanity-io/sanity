@@ -26,9 +26,9 @@ interface AnnotationToolbarPopoverProps {
    * Needed to update the popover position on scroll
    */
   focused: boolean
-  scrollElement: HTMLElement
-  annotationElement: HTMLElement
-  textElement: HTMLElement
+  scrollElement: HTMLElement | null
+  annotationElement: HTMLElement | null
+  textElement: HTMLElement | null
   onEdit: (event: React.MouseEvent<HTMLButtonElement>) => void
   onDelete: (event: React.MouseEvent<HTMLButtonElement>) => void
   title: string
@@ -38,10 +38,15 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
   const {scrollElement, annotationElement, focused, textElement, title, onEdit, onDelete} = props
   const [open, setOpen] = useState<boolean>(false)
   const [cursorRect, setCursorRect] = useState<DOMRect | null>(null)
-  const [selection, setSelection] = useState(null)
+  const [selection, setSelection] = useState<{
+    anchorNode: Node | null
+    anchorOffset: number
+    focusNode: Node | null
+    focusOffset: number
+  } | null>(null)
   const isClosingRef = useRef<boolean>(false)
   const rangeRef = useRef<Range | null>(null)
-  const editButtonRef = useRef<HTMLButtonElement>()
+  const editButtonRef = useRef<HTMLButtonElement | null>(null)
   const isTabbing = useRef<boolean>(false)
   const {sanity} = useTheme()
   const editor = usePortableTextEditor()
@@ -72,10 +77,10 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
       }
     }
 
-    scrollElement.addEventListener('scroll', handleScroll, {passive: true})
+    scrollElement?.addEventListener('scroll', handleScroll, {passive: true})
 
     return () => {
-      scrollElement.removeEventListener('scroll', handleScroll)
+      scrollElement?.removeEventListener('scroll', handleScroll)
     }
   }, [open, scrollElement])
 
@@ -97,7 +102,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
           if (!isTabbing.current) {
             event.preventDefault()
             event.stopPropagation()
-            editButtonRef.current.focus()
+            editButtonRef.current?.focus()
             isTabbing.current = true
           }
         }
@@ -111,6 +116,11 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
     function handleSelectionChange() {
       if (!textElement) return
       const winSelection = window.getSelection()
+
+      if (!winSelection) {
+        return
+      }
+
       const {anchorNode, anchorOffset, focusNode, focusOffset} = winSelection
 
       setSelection({
@@ -139,10 +149,10 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
       return
     }
     if (annotationElement && annotationElement.contains(anchorNode) && anchorNode === focusNode) {
-      const range = window.getSelection().getRangeAt(0)
-      const rect = range.getBoundingClientRect()
+      const range = window.getSelection()?.getRangeAt(0)
+      const rect = range?.getBoundingClientRect()
 
-      rangeRef.current = range
+      rangeRef.current = range || null
 
       if (rect) {
         setCursorRect(rect)

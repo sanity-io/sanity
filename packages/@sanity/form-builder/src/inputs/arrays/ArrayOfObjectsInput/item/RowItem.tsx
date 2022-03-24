@@ -23,6 +23,7 @@ import {DragHandle} from '../../common/DragHandle'
 import {randomKey} from '../../common/randomKey'
 import {createProtoValue} from '../ArrayInput'
 import {InsertMenu} from '../InsertMenu'
+import {EMPTY_ARRAY} from '../../../../utils/empty'
 import {ItemWithMissingType} from './ItemWithMissingType'
 import {ItemLayoutProps} from './ItemLayoutProps'
 import {RowWrapper} from './components/RowWrapper'
@@ -48,7 +49,7 @@ export const RowItem = React.forwardRef(function RegularItem(
     onInsert,
     insertableTypes,
     onRemove,
-    validation,
+    validation = EMPTY_ARRAY,
     ...rest
   } = props
 
@@ -115,7 +116,9 @@ export const RowItem = React.forwardRef(function RegularItem(
           >
             <Preview
               layout={
-                'layout' in type.options && type.options?.layout === 'grid' ? 'media' : 'default'
+                type.options && 'layout' in type.options && type.options?.layout === 'grid'
+                  ? 'media'
+                  : 'default'
               }
               value={value}
               type={type}
@@ -137,7 +140,7 @@ export const RowItem = React.forwardRef(function RegularItem(
             <Box marginLeft={1} paddingX={1} paddingY={3}>
               <FormFieldValidationStatus
                 validation={validation}
-                __unstable_showSummary={!value._ref}
+                __unstable_showSummary={!value?._ref}
               />
             </Box>
           )}

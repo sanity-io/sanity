@@ -2,6 +2,7 @@
 // concurrent observables.
 import {first, mergeMap} from 'rxjs/operators'
 import {Subject, Subscription, Observable, from as observableFrom} from 'rxjs'
+import {FIXME} from '../../types'
 
 const DEFAULT_CONCURRENCY = 4
 
@@ -28,10 +29,12 @@ export function createThrottler(concurrency: number = DEFAULT_CONCURRENCY) {
 
   return request
 
-  function request(observable: Observable<any>) {
+  function request(observable: Observable<unknown>): Observable<unknown> {
     return new Observable((observer) => {
       if (currentSubscriptions.length >= concurrency) {
-        return scheduleAndWait(observable).pipe(mergeMap(request)).subscribe(observer)
+        return scheduleAndWait(observable)
+          .pipe(mergeMap(request) as FIXME)
+          .subscribe(observer)
       }
       const subscription = observable.subscribe(observer)
       currentSubscriptions.push(subscription)
@@ -44,7 +47,7 @@ export function createThrottler(concurrency: number = DEFAULT_CONCURRENCY) {
     })
   }
 
-  function scheduleAndWait(observable) {
+  function scheduleAndWait(observable: Observable<unknown>) {
     pendingObservables.push(observable)
     return ready$.asObservable().pipe(first((obs) => obs === observable))
   }

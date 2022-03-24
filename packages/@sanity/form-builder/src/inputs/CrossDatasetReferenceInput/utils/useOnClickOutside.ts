@@ -1,13 +1,16 @@
 // Modified version of https://usehooks.com/useOnClickOutside that can take multiple refs
 import {RefObject, useEffect} from 'react'
 
-export function useOnClickOutside(refs: RefObject<HTMLElement>[], handler) {
+export function useOnClickOutside(refs: RefObject<HTMLElement>[], handler: (event: Event) => void) {
   useEffect(() => {
-    const listener = (event) => {
-      if (refs.some((ref) => ref.current?.contains(event.target))) {
-        return
+    const listener = (event: Event) => {
+      const target = event.target
+      if (target instanceof HTMLElement) {
+        if (refs.some((ref) => ref.current?.contains(target))) {
+          return
+        }
+        handler(event)
       }
-      handler(event)
     }
     document.addEventListener('mousedown', listener)
     document.addEventListener('touchstart', listener)

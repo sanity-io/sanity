@@ -1,3 +1,4 @@
+import {Rule} from '@sanity/types'
 import {WorkshopSchemaProps, wrapSchema} from '../data'
 
 export default function getSchema(props: WorkshopSchemaProps) {
@@ -46,14 +47,14 @@ export default function getSchema(props: WorkshopSchemaProps) {
             name: 'conditionalName',
             title: 'Name (conditional read only)',
             type: 'string',
-            readOnly: ({parent}) => parent?.name === 'ro',
+            readOnly: ({parent}: any) => parent?.name === 'ro',
           },
           {
             name: 'twitter',
             title: 'Twitter',
             type: 'string',
             fieldset: 'social',
-            validation: (Rule) => Rule.required(),
+            validation: (rule: Rule) => rule.required(),
           },
           {
             name: 'instagram',

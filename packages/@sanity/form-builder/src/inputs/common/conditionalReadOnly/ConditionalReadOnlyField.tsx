@@ -28,6 +28,7 @@ const ConditionalReadOnlyWithDocument = withDocument(
     ref /* ignore ref as there's no place to put it */
   ) {
     const {readOnly, value, parent, document, children} = props
+
     const isReadOnly = useConditionalProperty({
       checkProperty: readOnly,
       checkPropertyKey: 'readOnly',

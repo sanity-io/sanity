@@ -18,7 +18,7 @@ export const NumberInput = React.forwardRef(function NumberInput(
 
   // Show numpad on mobile if only positive numbers is preferred
   const minRule = getValidationRule(type, 'min')
-  const onlyPositiveNumber = minRule?.constraint >= 0
+  const onlyPositiveNumber = (minRule?.constraint || 0) >= 0
 
   const handleChange = React.useCallback(
     (event: React.SyntheticEvent<HTMLInputElement>) => {

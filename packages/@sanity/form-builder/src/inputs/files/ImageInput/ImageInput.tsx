@@ -28,6 +28,7 @@ import {EMPTY_ARRAY} from '../../../utils/empty'
 import {handleSelectAssetFromSource} from '../common/assetSource'
 import {ActionsMenu} from '../common/ActionsMenu'
 import {UploadWarning} from '../common/UploadWarning'
+import {FIXME} from '../../../types'
 import {ImagePreview} from './ImagePreview'
 import {ImageInputField} from './ImageInputField'
 import {ImageActionsMenu} from './ImageActionsMenu'
@@ -311,7 +312,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
   }
 
   handleFileTargetBlur = () => {
-    this.props.onBlur()
+    this.props.onBlur?.()
   }
 
   handleFilesOver = (hoveringFiles: FileInfo[]) => {
@@ -532,12 +533,12 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
               browse={browseMenuItem}
               onReset={this.handleRemoveButtonClick}
               downloadUrl={imageUrlBuilder
-                .image(value.asset)
+                .image(value.asset!)
                 .forceDownload(
                   assetDocument.originalFilename || `download.${assetDocument.extension}`
                 )
                 .url()}
-              copyUrl={imageUrlBuilder.image(value.asset).url()}
+              copyUrl={imageUrlBuilder.image(value.asset!).url()}
               readOnly={readOnly}
               directUploads={directUploads}
               accept={accept}
@@ -703,7 +704,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
         if (field.name === 'hotspot' || field.name === 'crop') {
           return 'imagetool'
         }
-        return (field.type as any)?.options?.isHighlighted ? 'highlighted' : 'dialog'
+        return (field.type as FIXME)?.options?.isHighlighted ? 'highlighted' : 'dialog'
       })
 
       this._fieldGroupsMemo = {

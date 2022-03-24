@@ -8,23 +8,29 @@ const PRESENCE_MARGINS: [number, number, number, number] = [0, 0, 1, 0]
 interface Props {
   type: 'fullscreen' | 'popover' | 'dialog' | 'inline'
   header: string
-  id: string
+  id?: string
   onClose: () => void
   children?: JSX.Element
   // eslint-disable-next-line camelcase
-  legacy_referenceElement: HTMLElement
+  legacy_referenceElement: HTMLElement | null
 }
 
-export function EditPortal(props: Props) {
+export function EditPortal(props: Props): React.ReactElement {
   const {type, id, onClose, children, legacy_referenceElement: referenceElement, header} = props
 
   if (type === 'inline') {
-    return children
+    return <>{children}</>
   }
   if (type === 'fullscreen') {
     return (
       <Layer>
-        <Dialog width="auto" id={id} onClose={onClose} header={header} __unstable_autoFocus={false}>
+        <Dialog
+          width="auto"
+          id={id || ''}
+          onClose={onClose}
+          header={header}
+          __unstable_autoFocus={false}
+        >
           <PresenceOverlay margins={PRESENCE_MARGINS}>
             <Box padding={4}>{children}</Box>
           </PresenceOverlay>
@@ -55,7 +61,7 @@ export function EditPortal(props: Props) {
   }
 
   return (
-    <Dialog width={1} id={id} onClose={onClose} header={header} __unstable_autoFocus={false}>
+    <Dialog width={1} id={id || ''} onClose={onClose} header={header} __unstable_autoFocus={false}>
       <PresenceOverlay margins={PRESENCE_MARGINS}>
         <Box padding={4}>{children}</Box>
       </PresenceOverlay>

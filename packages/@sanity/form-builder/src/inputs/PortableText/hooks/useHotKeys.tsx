@@ -18,7 +18,7 @@ export function useHotkeys(hotkeys: HotkeyOptions): HotkeyOptions {
     )
   }
   return useMemo(() => {
-    const defaultHotkeys = {marks: {}}
+    const defaultHotkeys: {marks: Record<string, string>} = {marks: {}}
     const ptFeatures = PortableTextEditor.getPortableTextFeatures(editor)
     ptFeatures.decorators.forEach((dec) => {
       switch (dec.value) {

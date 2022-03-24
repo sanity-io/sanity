@@ -24,8 +24,8 @@ interface InlineObjectToolbarPopoverProps {
   onDelete: (event: React.MouseEvent<HTMLButtonElement>) => void
   onEdit: (event: React.MouseEvent<HTMLButtonElement>) => void
   open: boolean
-  referenceElement: HTMLElement
-  scrollElement: HTMLElement
+  referenceElement: HTMLElement | null
+  scrollElement: HTMLElement | null
   setOpen: (open: boolean) => void
   title: string
 }
@@ -33,7 +33,7 @@ interface InlineObjectToolbarPopoverProps {
 export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProps) {
   const {open, onEdit, onDelete, referenceElement, scrollElement, setOpen, title} = props
   const {sanity} = useTheme()
-  const editButtonRef = useRef<HTMLButtonElement>()
+  const editButtonRef = useRef<HTMLButtonElement | null>(null)
   const popoverScheme = sanity.color.dark ? 'light' : 'dark'
   const isTabbing = useRef<boolean>(false)
 
@@ -55,7 +55,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
           if (!isTabbing.current) {
             event.preventDefault()
             event.stopPropagation()
-            editButtonRef.current.focus()
+            editButtonRef.current?.focus()
             isTabbing.current = true
           }
         }

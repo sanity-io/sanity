@@ -11,7 +11,7 @@ import {AssetMenu} from './AssetMenu'
 import {AssetMenuAction} from './types'
 
 interface AssetProps {
-  asset?: AssetType
+  asset: AssetType
   isSelected: boolean
   onClick?: (...args: any[]) => any
   onKeyPress?: (...args: any[]) => any

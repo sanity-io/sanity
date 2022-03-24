@@ -9,7 +9,7 @@ const TRUE = (): true => true
 const has = (prop: string) => (val?: Record<string, any>) => val && val[prop]
 const is = (typeName: string) => (val?: Record<string, any>) => (val && val._type) === typeName
 
-function toLocalDate(input) {
+function toLocalDate(input: Date) {
   const newDate = new Date(input.getTime() + input.getTimezoneOffset() * 60 * 1000)
   const offset = input.getTimezoneOffset() / 60
   const hours = input.getHours()

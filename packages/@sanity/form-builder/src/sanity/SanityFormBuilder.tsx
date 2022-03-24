@@ -36,7 +36,7 @@ export interface SanityFormBuilderProps {
   value?: any | null
 }
 
-const EMPTY = []
+const EMPTY = [] as never[]
 
 /**
  * @alpha
@@ -71,6 +71,13 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
     [onChange]
   )
 
+  const handleFocus = useCallback(
+    (pathOrEvent?: Path | React.FocusEvent) => {
+      onFocus(Array.isArray(pathOrEvent) ? pathOrEvent : [])
+    },
+    [onFocus]
+  )
+
   return (
     <SanityFormBuilderProvider __internal_patchChannel={patchChannel} schema={schema} value={value}>
       <ReviewChangesContextProvider changesOpen={changesOpen}>
@@ -82,7 +89,7 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
           level={0}
           onBlur={onBlur}
           onChange={handleChange}
-          onFocus={onFocus}
+          onFocus={handleFocus}
           path={EMPTY}
           presence={presence}
           readOnly={readOnly}

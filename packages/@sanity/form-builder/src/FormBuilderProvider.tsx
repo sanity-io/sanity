@@ -1,5 +1,5 @@
 import {SanityFormBuilderConfig} from '@sanity/base'
-import {FormBuilderFilterFieldFn} from '@sanity/base/form'
+import {FormBuilderFilterFieldFn, FormInputProps} from '@sanity/base/form'
 import {AssetSource, Schema, SchemaType} from '@sanity/types'
 import React, {useMemo} from 'react'
 import {fallbackInputs} from './fallbackInputs'
@@ -9,11 +9,10 @@ import {DefaultArrayInputFunctions} from './inputs/arrays/common/ArrayFunctions'
 import {DefaultMarkers} from './inputs/PortableText/_legacyDefaultParts/Markers'
 import {DefaultCustomMarkers} from './inputs/PortableText/_legacyDefaultParts/CustomMarkers'
 import {FileSource, ImageSource} from './sanity/DefaultAssetSource'
+import {EMPTY_ARRAY} from './utils/empty'
 
 const defaultFileAssetSources = [FileSource]
 const defaultImageAssetSources = [ImageSource]
-
-const EMPTY_ARRAY = []
 
 function resolveComponentFromType<Props>(
   providedResolve:
@@ -21,7 +20,7 @@ function resolveComponentFromType<Props>(
     | undefined,
   type: SchemaType
 ) {
-  let itType = type
+  let itType: SchemaType | undefined = type
 
   while (itType) {
     const resolved = providedResolve?.(itType)
@@ -83,7 +82,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
           : defaultFileAssetSources,
         directUploads: file?.directUploads !== false,
       },
-      filterField,
+      filterField: filterField || (() => true),
       image: {
         assetSources: image?.assetSources
           ? ensureArrayOfSources(image.assetSources) || defaultImageAssetSources
@@ -94,7 +93,8 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       __internal_patchChannel: patchChannel, // eslint-disable-line camelcase
       schema,
       resolveInputComponent: (type) =>
-        resolveComponentFromType(resolveInputComponentProp, type) || fallbackInputs[type.jsonType],
+        resolveComponentFromType(resolveInputComponentProp, type) ||
+        (fallbackInputs[type.jsonType] as React.ComponentType<FormInputProps>),
       resolvePreviewComponent: (type) =>
         resolveComponentFromType(resolvePreviewComponentProp, type),
       getDocument: () => value,
@@ -114,7 +114,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
   return <FormBuilderContext.Provider value={formBuilder}>{children}</FormBuilderContext.Provider>
 }
 
-function ensureArrayOfSources(sources: unknown): AssetSource[] {
+function ensureArrayOfSources(sources: unknown): AssetSource[] | null {
   if (Array.isArray(sources)) {
     return sources
   }

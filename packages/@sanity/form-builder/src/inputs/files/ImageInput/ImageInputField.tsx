@@ -7,7 +7,7 @@ import {ConditionalHiddenField, ConditionalReadOnlyField} from '../../common'
 
 interface ImageInputFieldProps extends Omit<FormInputProps<unknown>, 'type'> {
   field: ObjectField
-  parentValue: Record<string, unknown>
+  parentValue?: Record<string, unknown>
 }
 
 export function ImageInputField(props: ImageInputFieldProps) {

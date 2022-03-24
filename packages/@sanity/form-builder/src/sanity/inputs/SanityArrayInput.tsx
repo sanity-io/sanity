@@ -11,6 +11,7 @@ import * as is from '../../utils/is'
 import {FileLike} from '../uploads/types'
 import {FormBuilderContextValue} from '../../FormBuilderContext'
 import {useFormBuilder} from '../../useFormBuilder'
+import {FIXME} from '../../types'
 import {SanityArrayItemReferenceInput} from './reference/SanityArrayItemReferenceInput'
 
 const arrayResolveUploader = (
@@ -49,7 +50,7 @@ export const SanityArrayInput = forwardRef(function SanityArrayInput(
       ReferenceItemComponent={SanityArrayItemReferenceInput}
       resolveUploader={resolveUploader}
       resolveInitialValue={resolveInitialValueForType}
-      ArrayFunctionsImpl={formBuilder.components.ArrayFunctions as any}
+      ArrayFunctionsImpl={formBuilder.components.ArrayFunctions as FIXME}
     />
   )
 })
@@ -63,7 +64,7 @@ export const SanityArrayOfPrimitivesInput = forwardRef(function SanityArrayOfPri
   return (
     <ArrayOfPrimitivesInput
       {...props}
-      ArrayFunctionsImpl={formBuilder.components.ArrayFunctions as any}
+      ArrayFunctionsImpl={formBuilder.components.ArrayFunctions as FIXME}
       ref={ref}
     />
   )

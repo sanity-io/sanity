@@ -16,6 +16,8 @@ import {DragHandle} from '../../common/DragHandle'
 import {randomKey} from '../../common/randomKey'
 import {createProtoValue} from '../ArrayInput'
 import {InsertMenu} from '../InsertMenu'
+import {FIXME} from '../../../../types'
+import {EMPTY_ARRAY} from '../../../../utils/empty'
 import {ItemWithMissingType} from './ItemWithMissingType'
 import {ItemLayoutProps} from './ItemLayoutProps'
 
@@ -89,7 +91,7 @@ export const CellItem = React.forwardRef(function ItemCell(
   props: ItemLayoutProps,
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
-  const focusRef = React.useRef()
+  const focusRef = React.useRef<HTMLDivElement | null>(null)
   const {
     isSortable,
     value,
@@ -102,16 +104,15 @@ export const CellItem = React.forwardRef(function ItemCell(
     readOnly,
     presence,
     onRemove,
-    validation,
+    validation = EMPTY_ARRAY,
     ...rest
   } = props
 
   const hasError = validation.filter(isValidationErrorMarker).length > 0
   const hasWarning = validation.filter(isValidationWarningMarker).length > 0
-  const hasKey = value._key
 
   const tone = useMemo(() => {
-    if (!hasKey) {
+    if (!value._key) {
       return 'caution'
     }
 
@@ -123,7 +124,7 @@ export const CellItem = React.forwardRef(function ItemCell(
     }
 
     return undefined
-  }, [hasError, hasWarning, hasKey])
+  }, [hasError, hasWarning, value._key])
 
   const handleDuplicate = useCallback(() => {
     onInsert?.({
@@ -154,7 +155,7 @@ export const CellItem = React.forwardRef(function ItemCell(
         <PreviewCard
           tone="inherit"
           data-ui="PreviewCard"
-          forwardedAs="button"
+          forwardedAs={'button' as FIXME}
           type="button"
           overflow="auto"
           flex={1}
@@ -185,11 +186,11 @@ export const CellItem = React.forwardRef(function ItemCell(
       <FooterFlex align="center" paddingX={1} sizing="border" justify="space-between">
         <Flex>
           {/* Validation status */}
-          {value._key && validation.length > 0 && (
+          {value?._key && validation.length > 0 && (
             <Box marginLeft={1} paddingX={1} paddingY={3}>
               <FormFieldValidationStatus
                 validation={validation}
-                __unstable_showSummary={!value._ref}
+                __unstable_showSummary={!value?._ref}
                 placement="bottom"
                 portal
               />
@@ -197,7 +198,7 @@ export const CellItem = React.forwardRef(function ItemCell(
           )}
 
           {/* Badge: missing key */}
-          {!hasKey && (
+          {!value._key && (
             <Tooltip
               portal
               content={

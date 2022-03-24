@@ -10,7 +10,7 @@ import {ParseResult} from './types'
 
 export interface CommonDateTimeInputProps
   extends Omit<FormInputProps<string, StringSchemaType>, 'onChange' | 'type'> {
-  title: string
+  title?: string
   description?: string
   parseInputValue: (inputValue: string) => ParseResult
   formatInputValue: (date: Date) => string

@@ -1,5 +1,6 @@
 import {useDatastores, useSource} from '@sanity/base'
 import {FormInputProps} from '@sanity/base/form'
+import {isNonNullable} from '@sanity/base/util'
 import {
   Path,
   Reference,
@@ -18,7 +19,7 @@ import {withDocument} from '../../../utils/withDocument'
 import {useReferenceInputOptions} from '../../contexts/ReferenceInputOptions'
 import * as adapter from '../client-adapters/reference'
 import {ReferenceInput} from '../../../inputs/ReferenceInput/ReferenceInput'
-import {EditReferenceEvent} from '../../../inputs/ReferenceInput/types'
+import {CreateOption, EditReferenceEvent} from '../../../inputs/ReferenceInput/types'
 
 // eslint-disable-next-line require-await
 async function resolveUserDefinedFilter(
@@ -149,18 +150,24 @@ const SanityReferenceInputInner = forwardRef(function SanityReferenceInput(
     return (
       (initialValueTemplateItems || [])
         // eslint-disable-next-line max-nested-callbacks
-        .filter((i) => type.to.some((_refType) => _refType.name === i.template.schemaType))
-        .map((item) => ({
-          id: item.id,
-          title: item.title || `${item.template.schemaType} from template ${item.template.id}`,
-          type: item.template.schemaType,
-          icon: item.icon,
-          template: {
-            id: item.template.id,
-            params: item.parameters,
-          },
-          permission: {granted: item.granted, reason: item.reason},
-        }))
+        .filter((i) => type.to.some((_refType) => _refType.name === i.template?.schemaType))
+        .map((item): CreateOption | undefined =>
+          item.template?.schemaType
+            ? {
+                id: item.id,
+                title:
+                  item.title || `${item.template.schemaType} from template ${item.template?.id}`,
+                type: item.template.schemaType,
+                icon: item.icon,
+                template: {
+                  id: item.template?.id,
+                  params: item.parameters,
+                },
+                permission: {granted: item.granted, reason: item.reason},
+              }
+            : undefined
+        )
+        .filter(isNonNullable)
     )
   }, [disableNew, initialValueTemplateItems, type.to])
 

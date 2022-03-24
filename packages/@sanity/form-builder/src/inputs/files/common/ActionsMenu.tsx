@@ -7,10 +7,10 @@ import {FileInputMenuItem} from './FileInputMenuItem/FileInputMenuItem'
 interface Props {
   onUpload: (files: File[]) => void
   browse: React.ReactNode
-  readOnly: boolean
+  readOnly?: boolean
   onReset: MouseEventHandler<HTMLDivElement>
   accept: string
-  directUploads: boolean
+  directUploads?: boolean
   downloadUrl: string
   copyUrl: string
 }

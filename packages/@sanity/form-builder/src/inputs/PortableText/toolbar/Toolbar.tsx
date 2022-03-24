@@ -23,7 +23,7 @@ import {BlockItem, BlockStyleItem, PTEToolbarActionGroup} from './types'
 interface ToolbarProps {
   hotkeys: HotkeyOptions
   isFullscreen: boolean
-  readOnly: boolean
+  readOnly?: boolean
   onFocus: (path: Path) => void
   onToggleFullscreen: () => void
 }
@@ -200,7 +200,7 @@ export function Toolbar(props: ToolbarProps) {
       const initialValue = await resolveInitialValue(type)
       const path = PortableTextEditor.insertBlock(editor, type, initialValue)
       PortableTextEditor.blur(editor)
-      onFocus(path.concat(FOCUS_TERMINATOR))
+      if (path) onFocus(path.concat(FOCUS_TERMINATOR))
     },
     [editor, onFocus, resolveInitialValue]
   )
@@ -210,7 +210,7 @@ export function Toolbar(props: ToolbarProps) {
       const initialValue = await resolveInitialValue(type)
       const path = PortableTextEditor.insertChild(editor, type, initialValue)
       PortableTextEditor.blur(editor)
-      onFocus(path.concat(FOCUS_TERMINATOR))
+      if (path) onFocus(path.concat(FOCUS_TERMINATOR))
     },
     [editor, onFocus, resolveInitialValue]
   )

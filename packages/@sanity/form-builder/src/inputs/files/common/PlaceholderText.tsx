@@ -5,12 +5,12 @@ import styled from 'styled-components'
 import {FileLike} from '../../../sanity/uploads/types'
 
 interface Props {
-  readOnly: boolean | null
+  readOnly?: boolean
   hoveringFiles: FileLike[]
   type: string
   acceptedFiles: FileLike[]
   rejectedFilesCount: number
-  directUploads: boolean
+  directUploads?: boolean
 }
 
 const RootFlex = styled(Flex)`

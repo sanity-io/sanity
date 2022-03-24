@@ -24,26 +24,26 @@ interface AnnotationProps {
   markers: PortableTextMarker[]
   validation: ValidationMarker[]
   onFocus: (path: Path) => void
-  renderCustomMarkers: RenderCustomMarkers
+  renderCustomMarkers?: RenderCustomMarkers
   type: Type
-  readOnly: boolean
+  readOnly?: boolean
   value: PortableTextChild
-  scrollElement: HTMLElement
+  scrollElement: HTMLElement | null
 }
 
-const Root = styled.span<{$toneKey?: ThemeColorToneKey}>(
-  (props: {$toneKey?: ThemeColorToneKey; theme: Theme}) => {
-    const {$toneKey, theme} = props
+const Root = styled.span<{$toneKey?: Exclude<ThemeColorToneKey, 'transparent'>}>(
+  (props: {$toneKey?: Exclude<ThemeColorToneKey, 'transparent'>; theme: Theme}) => {
+    const {$toneKey = 'default', theme} = props
 
     return css`
       text-decoration: none;
       display: inline;
-      background-color: ${theme.sanity.color.selectable[$toneKey].enabled.bg};
-      border-bottom: 1px dashed ${theme.sanity.color.selectable[$toneKey].enabled.fg};
-      color: ${theme.sanity.color.selectable[$toneKey].enabled.fg};
+      background-color: ${theme.sanity.color.selectable?.[$toneKey].enabled.bg};
+      border-bottom: 1px dashed ${theme.sanity.color.selectable?.[$toneKey].enabled.fg};
+      color: ${theme.sanity.color.selectable?.[$toneKey].enabled.fg};
 
       &[data-link] {
-        border-bottom: 1px solid ${theme.sanity.color.selectable[$toneKey].enabled.fg};
+        border-bottom: 1px solid ${theme.sanity.color.selectable?.[$toneKey].enabled.fg};
       }
 
       &[data-custom-markers] {

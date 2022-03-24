@@ -1,9 +1,11 @@
+import {PortableTextBlock} from '@sanity/portable-text-editor'
+
 export const valueOptions = {
   Empty: 'empty',
   'With Text': 'withText',
 }
 
-export const values = {
+export const values: Record<string, PortableTextBlock[] | undefined> = {
   empty: undefined,
   withText: [
     {

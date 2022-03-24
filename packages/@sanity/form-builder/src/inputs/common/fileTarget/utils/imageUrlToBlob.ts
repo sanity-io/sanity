@@ -2,7 +2,7 @@ export function imageUrlToBlob(
   imageUrl: string,
   format = 'image/jpeg',
   quality = 1
-): Promise<Blob> {
+): Promise<Blob | null> {
   if (imageUrl.match(/^webkit-fake-url:\/\//)) {
     return Promise.reject(new Error('Cannot read image contents from webkit fake url'))
   }
@@ -15,7 +15,7 @@ export function imageUrlToBlob(
       canvas.width = loader.width
       canvas.height = loader.height
       const ctx = canvas.getContext('2d')
-      ctx.drawImage(loader, 0, 0, canvas.width, canvas.height)
+      ctx?.drawImage(loader, 0, 0, canvas.width, canvas.height)
       try {
         canvas.toBlob(resolve, format, quality)
       } catch (error) {

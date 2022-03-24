@@ -8,12 +8,13 @@ import {
 import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {ArrayMember, InsertEvent, ReferenceItemComponentType} from '../types'
 
-interface ItemFormProps extends Omit<FormInputProps<ArrayMember, SchemaType>, 'level'> {
+interface ItemFormProps extends Omit<FormInputProps<ArrayMember, SchemaType>, 'level' | 'value'> {
   onInsert?: (event: InsertEvent) => void
   insertableTypes?: SchemaType[]
   ReferenceItemComponent: ReferenceItemComponentType
   filterField: FormBuilderFilterFieldFn
   isSortable: boolean
+  value: ArrayMember
 }
 
 export const ItemForm = forwardRef(function ItemForm(props: ItemFormProps, ref: ForwardedRef<any>) {
@@ -59,7 +60,7 @@ export const ItemForm = forwardRef(function ItemForm(props: ItemFormProps, ref: 
     [ReferenceItemComponent, insertableTypes, isReference, isSortable, onInsert, onChange]
   )
 
-  const path = useMemo(() => [{_key: value._key}], [value?._key])
+  const path = useMemo(() => [{_key: value?._key}], [value?._key])
 
   return (
     <FormBuilderInput

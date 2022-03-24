@@ -36,7 +36,9 @@ export function uploadImage(file: File, options?: UploadOptions): Observable<Upl
   )
 
   const setPreviewUrl$ = readExif(file).pipe(
-    mergeMap((exifData: Exif) => rotateImage(file, exifData.orientation || DEFAULT_ORIENTATION)),
+    mergeMap((exifData: unknown) =>
+      rotateImage(file, (exifData as Exif).orientation || DEFAULT_ORIENTATION)
+    ),
     catchError((error) => {
       // eslint-disable-next-line no-console
       console.warn(

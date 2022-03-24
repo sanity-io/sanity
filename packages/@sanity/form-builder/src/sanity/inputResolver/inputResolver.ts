@@ -1,29 +1,36 @@
 import {FormInputProps} from '@sanity/base/form'
-import {SchemaType} from '@sanity/types'
+import {
+  ArraySchemaType,
+  NumberSchemaType,
+  ReferenceSchemaType,
+  SchemaType,
+  StringSchemaType,
+} from '@sanity/types'
 import React from 'react'
 import * as is from '../../utils/is'
-import {sanityInputs} from './defaultInputs'
+import {FIXME} from '../../types'
+import {isSanityInputType, sanityInputs, SANITY_INPUT_KEYS} from './defaultInputs'
 import {resolveReferenceInput} from './resolveReferenceInput'
 import {resolveArrayInput} from './resolveArrayInput'
 import {resolveStringInput} from './resolveStringInput'
 import {resolveNumberInput} from './resolveNumberInput'
 
-function resolveTypeVariants(type) {
+function resolveTypeVariants(type: SchemaType) {
   if (is.type('array', type)) {
-    return resolveArrayInput(type)
+    return resolveArrayInput(type as ArraySchemaType)
   }
 
   if (is.type('reference', type)) {
-    return resolveReferenceInput(type)
+    return resolveReferenceInput(type as ReferenceSchemaType)
   }
 
   // String input with a select
   if (is.type('string', type)) {
-    return resolveStringInput(type)
+    return resolveStringInput(type as StringSchemaType)
   }
 
   if (is.type('number', type)) {
-    return resolveNumberInput(type)
+    return resolveNumberInput(type as NumberSchemaType)
   }
 
   return null
@@ -43,9 +50,18 @@ export function resolveInputComponent(
     return customInputComponent
   }
 
-  if ('inputComponent' in type && (type as any).inputComponent) {
-    return (type as any).inputComponent
+  if ('inputComponent' in type && (type as FIXME).inputComponent) {
+    return (type as FIXME).inputComponent
   }
 
-  return resolveTypeVariants(type) || inputComponents?.[type.name] || sanityInputs[type.name]
+  const matchedComponent = resolveTypeVariants(type) || inputComponents?.[type.name]
+
+  if (matchedComponent) return matchedComponent
+
+  // Resolve default input components
+  if (isSanityInputType(type.name)) {
+    return sanityInputs[type.name]
+  }
+
+  return undefined
 }

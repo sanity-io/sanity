@@ -7,6 +7,7 @@ import {useTimeAgo} from '@sanity/base/hooks'
 import prettyBytes from 'pretty-bytes'
 import {Asset as AssetType} from '@sanity/types'
 import {useSource} from '@sanity/base'
+import {FIXME} from '../../types'
 import {AssetUsageDialog} from './AssetUsageDialog'
 import {AssetMenu} from './AssetMenu'
 import {AssetMenuAction} from './types'
@@ -14,7 +15,7 @@ import {formatMimeType} from './utils/mimeType'
 
 interface RowProps {
   isMobile?: boolean
-  asset?: AssetType
+  asset: AssetType
   isSelected?: boolean
   onClick?: (...args: any[]) => any
   onKeyPress?: (...args: any[]) => any
@@ -103,7 +104,7 @@ const RowButton = styled(Button)<RowProps>`
     `}
 `
 
-const STYLES_ROW_CARD = {position: 'relative' as any}
+const STYLES_ROW_CARD = {position: 'relative' as FIXME}
 const STYLES_ICON_CARD = {flexShrink: 0}
 const STYLES_BUTTON_TEXT = {minWidth: 0}
 const STYLES_ASSETMENU_WRAPPER = {
@@ -133,7 +134,7 @@ export const AssetRow = (props: RowProps) => {
     setShowDeleteDialog(true)
   }
 
-  const handleDeleteError = (error) => {
+  const handleDeleteError = (error: Error) => {
     toast.push({
       closable: true,
       status: 'error',
@@ -155,7 +156,7 @@ export const AssetRow = (props: RowProps) => {
     deleteRef$.current = versionedClient.observable.delete(asset._id).subscribe({
       next: () => {
         setIsDeleting(false)
-        onDeleteFinished(asset._id)
+        onDeleteFinished?.(asset._id)
         setShowDeleteDialog(false)
         handleDeleteSuccess()
       },
@@ -203,7 +204,14 @@ export const AssetRow = (props: RowProps) => {
             opacity: isDeleting ? 0.5 : 1,
           }}
         >
-          <RowButton mode="bleed" padding={0} data-id={_id} onClick={onClick} paddingY={1}>
+          <RowButton
+            asset={asset}
+            mode="bleed"
+            padding={0}
+            data-id={_id}
+            onClick={onClick}
+            paddingY={1}
+          >
             <Flex gap={2} flex={2} align="center">
               <Card as={CardIconWrapper} padding={2} tone="transparent" radius={2}>
                 <Text muted size={2} style={STYLES_ICON_CARD}>
@@ -291,6 +299,7 @@ export const AssetRow = (props: RowProps) => {
 
   return (
     <CustomCard
+      asset={asset}
       paddingBottom={1}
       style={STYLES_ROW_CARD}
       radius={0}
@@ -310,6 +319,7 @@ export const AssetRow = (props: RowProps) => {
         }}
       >
         <RowButton
+          asset={asset}
           mode="bleed"
           data-id={_id}
           onClick={onClick}

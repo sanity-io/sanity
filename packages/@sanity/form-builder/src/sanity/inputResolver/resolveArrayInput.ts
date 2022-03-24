@@ -30,7 +30,9 @@ export function hasOptionsList(type: ArraySchemaType): boolean {
   return Boolean(type.options?.list)
 }
 
-export function resolveArrayInput(type: ArraySchemaType): ComponentType<FormInputProps> {
+export function resolveArrayInput(
+  type: ArraySchemaType
+): ComponentType<FormInputProps<any[], ArraySchemaType>> {
   // Schema provides predefines list
   if (hasOptionsList(type)) {
     // @todo: fix typing

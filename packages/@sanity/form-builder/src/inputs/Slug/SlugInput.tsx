@@ -5,6 +5,7 @@ import {
   SlugParent,
   SlugSchemaType,
   isValidationErrorMarker,
+  SlugSourceFn,
 } from '@sanity/types'
 import {ChangeIndicatorCompareValueProvider, FormField} from '@sanity/base/components'
 import {FormInputProps, PatchEvent, set, setIfMissing, unset} from '@sanity/base/form'
@@ -26,7 +27,11 @@ export interface SlugInputProps extends FormInputProps<Slug, SlugSchemaType> {
   getValuePath: () => Path
 }
 
-function getNewFromSource(source, valuePath, document) {
+function getNewFromSource(
+  source: string | Path | SlugSourceFn,
+  valuePath: Path,
+  document: SanityDocument
+) {
   const parentPath = valuePath.slice(0, -1)
   const parent = PathUtils.get(document, parentPath) as SlugParent
   return Promise.resolve(

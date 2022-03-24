@@ -1,8 +1,9 @@
 import React, {useCallback, useEffect} from 'react'
 import {useId} from '@reach/auto-id'
 import {PatchEvent} from '@sanity/base/form'
-import {Path, ValidationMarker, SchemaType} from '@sanity/types'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
+import {isArray} from '@sanity/base/util'
+import {Path, ValidationMarker, SchemaType} from '@sanity/types'
 import {PortableTextBlock, Type, PortableTextChild} from '@sanity/portable-text-editor'
 import {Box, Dialog, PortalProvider, useLayer, usePortal} from '@sanity/ui'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
@@ -19,7 +20,7 @@ interface DefaultObjectEditingProps {
   onFocus: (path: Path) => void
   path: Path
   presence: FormFieldPresence[]
-  readOnly: boolean
+  readOnly?: boolean
   type: Type
   width?: ModalWidth
 }
@@ -53,6 +54,13 @@ export function DefaultObjectEditing(props: DefaultObjectEditingProps) {
     if (isTopLayer) onClose()
   }, [isTopLayer, onClose])
 
+  const handleFocus = useCallback(
+    (pathOrEvent?: Path | React.FocusEvent) => {
+      onFocus(isArray(pathOrEvent) ? pathOrEvent : [])
+    },
+    [onFocus]
+  )
+
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === 'Escape') handleClose()
@@ -77,14 +85,14 @@ export function DefaultObjectEditing(props: DefaultObjectEditingProps) {
     >
       <PresenceOverlay margins={[0, 0, 1, 0]}>
         <Box padding={4}>
-          <PortalProvider element={portal.elements.default}>
+          <PortalProvider element={portal.elements?.default}>
             <FormBuilderInput
               focusPath={focusPath}
               level={0}
               validation={validation}
               onBlur={onBlur}
               onChange={handleChange}
-              onFocus={onFocus}
+              onFocus={handleFocus}
               path={path}
               presence={presence}
               readOnly={readOnly || type.readOnly}

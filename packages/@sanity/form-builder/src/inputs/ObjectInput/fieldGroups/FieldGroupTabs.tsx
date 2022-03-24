@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import {GroupTab, GroupOption} from './GroupTab'
 
 interface FieldGroupTabsProps {
-  inputId: string
+  inputId?: string
   groups: FieldGroup[]
   shouldAutoFocus?: boolean
   title?: string
@@ -123,7 +123,7 @@ export const FieldGroupTabs = React.memo(function FieldGroupTabs({
 
   const handleClick = useCallback(
     (groupName) => {
-      onClick(groupName)
+      onClick?.(groupName)
     },
     [onClick]
   )

@@ -55,10 +55,10 @@ export function getDummyDocument() {
   }
 }
 
-export function getDummySchema(props?: WorkshopSchemaProps): SchemaSchema {
+export function getDummySchema(props: WorkshopSchemaProps): SchemaSchema {
   const {schemaKey = 'simple'} = props
   const schemaType = schemaMap.find((s) => s.name === schemaKey)
-  const schema = schemaType.schema(props)
+  const schema = schemaType?.schema(props)
 
   return Schema.compile(schema)
 }

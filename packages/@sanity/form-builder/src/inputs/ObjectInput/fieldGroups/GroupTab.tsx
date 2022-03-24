@@ -4,7 +4,7 @@ import {FieldGroup} from '@sanity/types/src'
 import {unstable_useConditionalProperty as useConditionalProperty} from '@sanity/base/hooks'
 
 interface GroupType extends FieldGroup {
-  onClick: (string) => void
+  onClick?: (value: string) => void
   autoFocus?: boolean
   selected: boolean
   parent: unknown
@@ -22,7 +22,7 @@ export const GroupTab = forwardRef(function GroupTab(
 
   // Here goes the content of our component
   const handleClick = React.useCallback(() => {
-    onClick(name)
+    onClick?.(name)
   }, [name, onClick])
 
   if (hidden) {

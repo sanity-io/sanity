@@ -1,7 +1,7 @@
-import {keyGenerator as createKey} from '@sanity/portable-text-editor'
+import {keyGenerator as createKey, PortableTextBlock} from '@sanity/portable-text-editor'
 import {words} from './words'
 
-export const valueOptions = {
+export const valueOptions: Record<string, 'empty' | 'withCustomContent' | 'withLargeContent'> = {
   Empty: 'empty',
   'Custom content': 'withCustomContent',
   'Large content': 'withLargeContent',
@@ -17,7 +17,7 @@ function randomWord() {
   return words[Math.floor(Math.random() * words.length)] || 'nihil'
 }
 
-export const values = {
+export const values: Record<string, PortableTextBlock[] | undefined> = {
   empty: undefined,
 
   withCustomContent: [

@@ -1,10 +1,12 @@
 import {findIndex} from 'lodash'
+import {FIXME} from '../types'
 import {applyPatch} from './applyPatch'
 import {arrayInsert} from './arrayInsert'
 
-const hasOwn = (obj, property) => Object.prototype.hasOwnProperty.call(obj, property)
+const hasOwn = (obj: Record<string, unknown>, property: string) =>
+  Object.prototype.hasOwnProperty.call(obj, property)
 
-function move(arr, from, to) {
+function move(arr: unknown[], from: number, to: number) {
   const nextValue = arr.slice()
   const val = nextValue[from]
   nextValue.splice(from, 1)
@@ -12,7 +14,7 @@ function move(arr, from, to) {
   return nextValue
 }
 
-function findTargetIndex(array, pathSegment) {
+function findTargetIndex(array: unknown[], pathSegment: FIXME) {
   if (typeof pathSegment === 'number') {
     return pathSegment
   }
@@ -20,7 +22,7 @@ function findTargetIndex(array, pathSegment) {
   return index === -1 ? false : index
 }
 
-export function _arrayApply(value, patch) {
+export function _arrayApply(value: FIXME, patch: FIXME) {
   const nextValue = value.slice() // make a copy for internal mutation
 
   if (patch.path.length === 0) {

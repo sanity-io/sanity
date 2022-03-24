@@ -118,7 +118,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
 
   handleItemEscapeKey = (index: number) => {
     const {value} = this.props
-    if (index === this._lastAddedIndex && value[index] === '') {
+    if (index === this._lastAddedIndex && value?.[index] === '') {
       this.removeAt(index)
     }
   }
@@ -126,7 +126,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
   handleSortEnd = (event: {oldIndex: number; newIndex: number}) => {
     const {value, onFocus} = this.props
     const {oldIndex, newIndex} = event
-    this.set(move(value, oldIndex, newIndex))
+    if (value) this.set(move(value, oldIndex, newIndex))
     onFocus([newIndex])
   }
 
@@ -147,7 +147,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
     }
   }
 
-  handleFocusRoot = (event) => {
+  handleFocusRoot = (event: React.FocusEvent<HTMLDivElement>) => {
     // We want to handle focus when the array input *itself* element receives
     // focus, not when a child element receives focus, but React has decided
     // to let focus bubble, so this workaround is needed
@@ -157,7 +157,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
     }
   }
 
-  getSnapshotBeforeUpdate(prevProps, prevState) {
+  getSnapshotBeforeUpdate(prevProps: ArrayOfPrimitivesInputProps) {
     const {focusPath: prevFocusPath = [], value: prevValue = []} = prevProps
     const {focusPath = [], value = []} = this.props
     if (prevFocusPath[0] === focusPath[0] && prevValue.length !== value.length) {
@@ -165,7 +165,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
       const focusIndex = focusPath[0]
 
       const selection = window.getSelection()
-      if (!(selection.focusNode instanceof HTMLElement)) {
+      if (!(selection?.focusNode instanceof HTMLElement)) {
         return null
       }
 
@@ -187,7 +187,11 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
     return null
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
+  componentDidUpdate(
+    prevProps: ArrayOfPrimitivesInputProps,
+    prevState: Record<string, unknown>,
+    snapshot?: {restoreSelection: {start: number; end: number}; prevFocusedIndex: number}
+  ) {
     if (snapshot?.restoreSelection && prevProps.value) {
       const prevFocusedValue = prevProps.value[snapshot.prevFocusedIndex]
 
@@ -199,7 +203,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
       if (nearestIndex === -1) {
         return
       }
-      const newInput = this._element.querySelector(
+      const newInput = this._element?.querySelector(
         `[data-item-index='${nearestIndex}'] input,textarea`
       )
       if (newInput instanceof HTMLInputElement) {
@@ -288,7 +292,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
                                 : itemValidationMarkers
                             }
                             isSortable={isSortable}
-                            type={memberType}
+                            type={memberType!} // @todo: remove non-null assertion
                             focusPath={focusPath}
                             onFocus={onFocus}
                             onBlur={onBlur}

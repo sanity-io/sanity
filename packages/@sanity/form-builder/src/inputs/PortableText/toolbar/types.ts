@@ -11,7 +11,7 @@ export interface BlockItem {
 export interface BlockStyleItem {
   key: string
   style: string
-  styleComponent: React.ComponentType | null
+  styleComponent?: React.ComponentType
   title: string
 }
 

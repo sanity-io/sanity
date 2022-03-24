@@ -71,7 +71,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
   )
 
   const handleDuplicate = useCallback(() => {
-    onInsert?.('after', index, value)
+    if (value) onInsert?.('after', index, value)
   }, [index, onInsert, value])
 
   const handleKeyPress = useCallback(

@@ -29,10 +29,10 @@ function getConverters(value: unknown, actualType: string, validTypes: string[])
 }
 
 interface InvalidValueProps {
-  actualType?: string
-  validTypes?: string[]
+  actualType: string
+  validTypes: string[]
   value?: unknown
-  onChange?: (event: PatchEvent) => void
+  onChange: (event: PatchEvent) => void
 }
 
 export const InvalidValueInput = forwardRef(

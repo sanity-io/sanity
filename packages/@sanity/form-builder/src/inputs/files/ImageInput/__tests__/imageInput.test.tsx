@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 import React from 'react'
 import {fireEvent, waitFor} from '@testing-library/react'
 import imageUrlBuilder from '@sanity/image-url'
@@ -6,6 +8,7 @@ import {EMPTY, of} from 'rxjs'
 import {renderInput} from '../../../../../test/renderInput'
 import {ImageInput, ImageInputProps} from '../ImageInput'
 import {UploadOptions} from '../../../../sanity/uploads/types'
+import {FIXME} from '../../../../types'
 
 const imagesTest = {
   name: 'imagesTest',
@@ -109,7 +112,7 @@ const defaultProps: Partial<ImageInputProps> = {
   resolveUploader: resolveUploaderStub,
   observeAsset: observeAssetStub,
   directUploads: true,
-  assetSources: [{} as any],
+  assetSources: [{} as FIXME],
   imageUrlBuilder: imageUrlBuilderStub,
   getValuePath: () => ['image'],
 }
@@ -124,7 +127,7 @@ function renderImageInput(options: {props?: Partial<ImageInputProps>; type: any}
 describe('ImageInput with empty state', () => {
   it('renders an empty input as default', () => {
     const {result} = renderImageInput({type: imagesTest})
-    expect(result.queryByTestId('file-button-input').getAttribute('value')).toBe('')
+    expect(result.queryByTestId('file-button-input')!.getAttribute('value')).toBe('')
     expect(result.queryByText('Drag or paste image here')).toBeInTheDocument()
   })
 
@@ -158,7 +161,7 @@ describe('ImageInput with empty state', () => {
   it('renders the browse button with a tooltip when it has at least one element in assetSources', async () => {
     const {result} = renderImageInput({
       props: {
-        assetSources: [{name: 'source1'} as any, {name: 'source2'} as any],
+        assetSources: [{name: 'source1'} as FIXME, {name: 'source2'} as FIXME],
       },
       type: imagesTest,
     })
@@ -167,7 +170,7 @@ describe('ImageInput with empty state', () => {
     expect(result.queryByTestId('file-input-upload-button')).toBeInTheDocument()
     expect(browseButton).toBeInTheDocument()
 
-    fireEvent.click(browseButton)
+    fireEvent.click(browseButton!)
 
     await waitFor(() => {
       expect(result.queryByTestId('file-input-browse-button-source1')).toBeInTheDocument()
@@ -186,7 +189,7 @@ describe('ImageInput with empty state', () => {
       type: imagesTest,
     })
 
-    expect(result.queryByTestId('file-input-upload-button').getAttribute('data-disabled')).toBe(
+    expect(result.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
       'true'
     )
   })
@@ -214,7 +217,7 @@ describe('ImageInput with empty state', () => {
       type: imagesTest,
     })
 
-    expect(result.queryByTestId('file-input-upload-button').getAttribute('data-disabled')).toBe(
+    expect(result.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
       'true'
     )
   })
@@ -228,7 +231,7 @@ describe('ImageInput with empty state', () => {
       type: imagesTest,
     })
 
-    expect(result.queryByTestId('file-input-browse-button').getAttribute('data-disabled')).toBe(
+    expect(result.queryByTestId('file-input-browse-button')!.getAttribute('data-disabled')).toBe(
       'true'
     )
   })
@@ -281,7 +284,7 @@ describe('ImageInput with asset', () => {
       type: imagesTest,
     })
 
-    expect(result.queryByTestId('hotspot-image-input').getAttribute('src')).toBe(
+    expect(result.queryByTestId('hotspot-image-input')!.getAttribute('src')).toBe(
       'https://cdn.sanity.io/images/some-project-id/some-dataset/4ae478f00c330e7089cbd0f6126d3626e432e595-702x908.png?w=2000&fit=max&auto=format'
     )
   })
@@ -298,7 +301,7 @@ describe('ImageInput with asset', () => {
       props: {value},
       type: imagesTest,
     })
-    fireEvent.click(result.queryByTestId('options-menu-button'))
+    fireEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
       expect(result.queryByTestId('file-input-browse-button')).toBeInTheDocument()
@@ -312,7 +315,7 @@ describe('ImageInput with asset', () => {
       type: imagesTest,
     })
 
-    fireEvent.click(result.queryByTestId('options-menu-button'))
+    fireEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
       expect(result.queryByTestId('file-input-upload-button')).toBeInTheDocument()
@@ -326,13 +329,13 @@ describe('ImageInput with asset', () => {
     // )
     const {result} = renderImageInput({
       props: {
-        assetSources: [{name: 'source1'} as any, {name: 'source2'} as any],
+        assetSources: [{name: 'source1'} as FIXME, {name: 'source2'} as FIXME],
         value,
       },
       type: imagesTest,
     })
 
-    fireEvent.click(result.queryByTestId('options-menu-button'))
+    fireEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
       expect(result.queryByTestId('file-input-browse-button-source1')).toBeInTheDocument()
@@ -352,10 +355,10 @@ describe('ImageInput with asset', () => {
       type: imagesTest,
     })
 
-    fireEvent.click(result.queryByTestId('options-menu-button'))
+    fireEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
-      expect(result.queryByTestId('file-input-upload-button').getAttribute('data-disabled')).toBe(
+      expect(result.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
         ''
       )
     })
@@ -373,10 +376,10 @@ describe('ImageInput with asset', () => {
       type: imagesTest,
     })
 
-    fireEvent.click(result.queryByTestId('options-menu-button'))
+    fireEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
-      expect(result.queryByTestId('file-input-upload-button').getAttribute('data-disabled')).toBe(
+      expect(result.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
         ''
       )
     })
@@ -392,10 +395,10 @@ describe('ImageInput with asset', () => {
       type: imagesTest,
     })
 
-    fireEvent.click(result.queryByTestId('options-menu-button'))
+    fireEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
-      expect(result.queryByTestId('file-input-browse-button').hasAttribute('data-disabled'))
+      expect(result.queryByTestId('file-input-browse-button')!.hasAttribute('data-disabled'))
     })
   })
 
@@ -406,18 +409,22 @@ describe('ImageInput with asset', () => {
 
     const {result} = renderImageInput({
       props: {
-        assetSources: [{name: 'source1'} as any, {name: 'source2'} as any],
+        assetSources: [{name: 'source1'} as FIXME, {name: 'source2'} as FIXME],
         readOnly: true,
         value,
       },
       type: imagesTest,
     })
 
-    fireEvent.click(result.queryByTestId('options-menu-button'))
+    fireEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
-      expect(result.queryByTestId('file-input-browse-button-source1').hasAttribute('data-disabled'))
-      expect(result.queryByTestId('file-input-browse-button-source2').hasAttribute('data-disabled'))
+      expect(
+        result.queryByTestId('file-input-browse-button-source1')!.hasAttribute('data-disabled')
+      )
+      expect(
+        result.queryByTestId('file-input-browse-button-source2')!.hasAttribute('data-disabled')
+      )
     })
   })
 
@@ -431,10 +438,10 @@ describe('ImageInput with asset', () => {
       type: imagesTest,
     })
 
-    fireEvent.click(result.queryByTestId('options-menu-button'))
+    fireEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
-      expect(result.queryByTestId('file-input-clear').hasAttribute('data-disabled'))
+      expect(result.queryByTestId('file-input-clear')!.hasAttribute('data-disabled'))
     })
   })
 

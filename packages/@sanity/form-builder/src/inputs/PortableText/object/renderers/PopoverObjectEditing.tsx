@@ -2,6 +2,7 @@
 
 import {PatchEvent} from '@sanity/base/form'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
+import {isArray} from '@sanity/base/util'
 import {CloseIcon} from '@sanity/icons'
 import {PortableTextBlock, PortableTextChild, Type} from '@sanity/portable-text-editor'
 import {Path, ValidationMarker, SchemaType} from '@sanity/types'
@@ -23,13 +24,14 @@ import {
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
+import {FIXME} from '../../../../types'
 import {POPOVER_WIDTH_TO_UI_WIDTH} from './constants'
 import {debugElement} from './debug'
 import {ModalWidth} from './types'
 
 interface PopoverObjectEditingProps {
   editorPath: Path
-  elementRef: React.MutableRefObject<HTMLElement>
+  elementRef?: React.RefObject<HTMLElement | null>
   focusPath: Path
   validation: ValidationMarker[]
   object: PortableTextBlock | PortableTextChild
@@ -39,8 +41,8 @@ interface PopoverObjectEditingProps {
   onFocus: (path: Path) => void
   path: Path
   presence: FormFieldPresence[]
-  scrollElement: HTMLElement
-  readOnly: boolean
+  scrollElement: HTMLElement | null
+  readOnly?: boolean
   type: Type
   width?: ModalWidth
 }
@@ -83,14 +85,14 @@ export function PopoverObjectEditing(props: PopoverObjectEditingProps) {
   const {width, elementRef, scrollElement} = props
   const [forceUpdate, setForceUpdate] = useState(0)
   const virtualElement = useMemo(() => {
-    if (!elementRef?.current.getBoundingClientRect()) {
+    if (!elementRef?.current?.getBoundingClientRect()) {
       return null
     }
 
     return {
       contextElement: elementRef.current || undefined,
       getBoundingClientRect: () => {
-        return elementRef?.current.getBoundingClientRect() || null
+        return elementRef.current?.getBoundingClientRect() || null
       },
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -132,7 +134,7 @@ export function PopoverObjectEditing(props: PopoverObjectEditingProps) {
       open
       portal="default"
       ref={setRootElement}
-      referenceElement={virtualElement || (debugElement as any)}
+      referenceElement={virtualElement || (debugElement as FIXME)}
     />
   )
 }
@@ -172,6 +174,13 @@ function Content(
     if (isTopLayer) onClose()
   }, [isTopLayer, onClose])
 
+  const handleFocus = useCallback(
+    (pathOrEvent?: Path | React.FocusEvent) => {
+      onFocus(isArray(pathOrEvent) ? pathOrEvent : [])
+    },
+    [onFocus]
+  )
+
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === 'Escape') handleClose()
@@ -203,14 +212,14 @@ function Content(
         <ContentScrollerBox flex={1}>
           <PresenceOverlay margins={[0, 0, 1, 0]}>
             <Box padding={3}>
-              <PortalProvider element={portal.elements.default}>
+              <PortalProvider element={portal.elements?.default}>
                 <FormBuilderInput
                   focusPath={focusPath}
                   level={0}
                   validation={validation}
                   onBlur={onBlur}
                   onChange={handleChange}
-                  onFocus={onFocus}
+                  onFocus={handleFocus}
                   path={path}
                   presence={presence}
                   readOnly={readOnly || type.readOnly}

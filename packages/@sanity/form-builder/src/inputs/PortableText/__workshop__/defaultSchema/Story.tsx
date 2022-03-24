@@ -2,6 +2,7 @@ import {createSchema} from '@sanity/base/schema'
 import {Card, Container, Flex, LayerProvider} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import React from 'react'
+import {FIXME} from '../../../../types'
 import {TestInput} from '../_common/TestInput'
 import {values, valueOptions} from './values'
 
@@ -33,7 +34,7 @@ export default function Story() {
             <TestInput
               readOnly={readOnly}
               schema={schema}
-              type={type as any}
+              type={type as FIXME}
               value={value}
               withError={withError}
               withWarning={withWarning}

@@ -125,7 +125,7 @@ export function fileTarget<ComponentProps>(Component: React.ComponentType<Compon
         if (onFilesOver && forwardedRef.current === event.currentTarget) {
           /* this is a (hackish) work around to have the drag and drop work when the file is hovered back and forth over it
           as part of the refactor and adding more components to the "hover" state, it didn't recognise that it just kept adding the same
-          element over and over, so when it tried to remove them on the handleDragLeave, it only removed the last instance. 
+          element over and over, so when it tried to remove them on the handleDragLeave, it only removed the last instance.
         */
           enteredElements.current = [...new Set(enteredElements.current), event.currentTarget]
 
@@ -203,7 +203,7 @@ function convertImagesToFilesAndClearContentEditable(
     })
     .then((images) => Promise.all(images.map((img) => imageUrlToBlob(img.src))))
     .then((imageBlobs) =>
-      imageBlobs.map((blob) => new File([blob], 'pasted-image.jpg', {type: targetFormat}))
+      imageBlobs.map((blob) => new File([blob!], 'pasted-image.jpg', {type: targetFormat}))
     )
 }
 

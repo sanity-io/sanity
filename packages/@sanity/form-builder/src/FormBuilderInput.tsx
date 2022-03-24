@@ -1,6 +1,6 @@
 import React, {forwardRef, useCallback, useMemo} from 'react'
 import shallowEquals from 'shallow-equals'
-import {ConditionalProperty, ValidationMarker, Path, SchemaType} from '@sanity/types'
+import {ConditionalProperty, Path, SchemaType} from '@sanity/types'
 import {ChangeIndicatorProvider} from '@sanity/base/components'
 import {
   FormBuilderFilterFieldFn,
@@ -8,17 +8,15 @@ import {
   FormInputProps,
   PatchEvent,
 } from '@sanity/base/form'
-import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/presence'
+import {FormFieldPresenceContext} from '@sanity/base/presence'
 import * as PathUtils from '@sanity/util/paths'
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {useConditionalReadOnly} from '@sanity/base/_internal'
-import {emptyArray} from './utils/empty'
+import {isArray} from '@sanity/base/util'
 import {ConditionalReadOnlyField} from './inputs/common'
 import {useFormBuilder} from './useFormBuilder'
+import {EMPTY_ARRAY} from './utils/empty'
 
-const EMPTY_VALIDATION: ValidationMarker[] = emptyArray()
-const EMPTY_PATH: Path = emptyArray()
-const EMPTY_PRESENCE: FormFieldPresence[] = emptyArray()
 const WRAPPER_INNER_STYLES = {minWidth: 0}
 
 /**
@@ -76,14 +74,14 @@ export class FormBuilderInputInstance extends React.Component<
   }
 > {
   static defaultProps = {
-    focusPath: EMPTY_PATH,
-    path: EMPTY_PATH,
-    validation: EMPTY_VALIDATION,
+    focusPath: EMPTY_ARRAY,
+    path: EMPTY_ARRAY,
+    validation: EMPTY_ARRAY,
   }
 
-  _element: HTMLDivElement | null
-  _input: FormBuilderInputInstance | HTMLDivElement | null
-  scrollTimeout: number
+  _element: HTMLDivElement | null = null
+  _input: FormBuilderInputInstance | HTMLDivElement | null = null
+  scrollTimeout: number | null = null
 
   getValuePath = () => {
     return this.props.getValuePath().concat(this.props.path)
@@ -91,7 +89,7 @@ export class FormBuilderInputInstance extends React.Component<
 
   componentDidMount() {
     const {focusPath, path} = this.props
-    if (PathUtils.hasFocus(focusPath, path)) {
+    if (PathUtils.hasFocus(focusPath || EMPTY_ARRAY, path)) {
       this.focus()
     }
   }
@@ -109,8 +107,8 @@ export class FormBuilderInputInstance extends React.Component<
   }
 
   componentDidUpdate(prevProps: FormBuilderInputProps) {
-    const hadFocus = PathUtils.hasFocus(prevProps.focusPath, prevProps.path)
-    const hasFocus = PathUtils.hasFocus(this.props.focusPath, this.props.path)
+    const hadFocus = PathUtils.hasFocus(prevProps.focusPath || EMPTY_ARRAY, prevProps.path)
+    const hasFocus = PathUtils.hasFocus(this.props.focusPath || EMPTY_ARRAY, this.props.path)
     if (!hadFocus && hasFocus) {
       this.focus()
     }
@@ -140,7 +138,7 @@ export class FormBuilderInputInstance extends React.Component<
     }
 
     const inputComponent = this.resolveInputComponent(type)
-    const inputDisplayName = inputComponent && getDisplayName(inputComponent)
+    const inputDisplayName = inputComponent && getDisplayName(inputComponent as React.ComponentType)
 
     // no ref
     if (!this._input) {
@@ -173,7 +171,7 @@ export class FormBuilderInputInstance extends React.Component<
     onChange(patchEvent)
   }
 
-  handleFocus = (nextPath: Path) => {
+  handleFocus = (pathOrEvent?: Path | React.FocusEvent) => {
     const {path, onFocus, focusPath} = this.props
 
     if (!onFocus) {
@@ -185,9 +183,11 @@ export class FormBuilderInputInstance extends React.Component<
       return
     }
 
+    const nextPath = isArray(pathOrEvent) ? pathOrEvent : EMPTY_ARRAY
+
     const nextFocusPath = Array.isArray(nextPath) ? [...path, ...nextPath] : path
 
-    if (PathUtils.isEqual(focusPath, nextFocusPath)) {
+    if (PathUtils.isEqual(focusPath || EMPTY_ARRAY, nextFocusPath)) {
       // no change
       return
     }
@@ -213,7 +213,7 @@ export class FormBuilderInputInstance extends React.Component<
   getChildFocusPath() {
     const {path, focusPath} = this.props
 
-    return PathUtils.trimChildPath(path, focusPath)
+    return PathUtils.trimChildPath(path, focusPath || EMPTY_ARRAY)
   }
 
   render() {
@@ -299,7 +299,7 @@ function FormBuilderInputInner(props: FormBuilderInputInnerProps) {
 
   const childPresenceInfo = useMemo(() => {
     if (!presence || presence.length === 0) {
-      return EMPTY_PRESENCE
+      return EMPTY_ARRAY
     }
 
     return presence
@@ -327,7 +327,7 @@ function FormBuilderInputInner(props: FormBuilderInputInnerProps) {
       value,
       compareValue: childCompareValue,
       readOnly: conditionalReadOnly,
-      validation: childValidation.length === 0 ? EMPTY_VALIDATION : childValidation,
+      validation: childValidation.length === 0 ? EMPTY_ARRAY : childValidation,
       type,
       presence: childPresenceInfo,
       onChange,

@@ -1,10 +1,9 @@
 import {fireEvent, render} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-
 import {LayerProvider, ThemeProvider, studioTheme} from '@sanity/ui'
-
 import {DateTimeInput, DateTimeInputProps} from '../DateTimeInput'
+import {FIXME} from '../../../types'
 
 function renderInput(props: Partial<DateTimeInputProps> = {}) {
   const onFocus = jest.fn()
@@ -15,7 +14,7 @@ function renderInput(props: Partial<DateTimeInputProps> = {}) {
       <LayerProvider>
         <DateTimeInput
           focusPath={[]}
-          type={{title: 'Test', name: 'datetime'} as any}
+          type={{title: 'Test', name: 'datetime'} as FIXME}
           onFocus={onFocus}
           onChange={onChange}
           presence={[]}

@@ -5,7 +5,7 @@ import {Observable} from 'rxjs'
 /**
  * Check if we need to change dims.
  */
-function rotated(n) {
+function rotated(n: number) {
   return [5, 6, 7, 8].indexOf(n) > -1
 }
 
@@ -16,22 +16,22 @@ type RotateOpts = {
 }
 
 // Based on github.com/component/rotate
-function rotate(ctx, options: RotateOpts) {
+function rotate(ctx: CanvasRenderingContext2D | null, options: RotateOpts) {
   const x = options.x
   const y = options.y
 
-  const radians = options.degrees * (Math.PI / 180)
+  const radians = (options.degrees || 0) * (Math.PI / 180)
 
-  ctx.translate(x, y)
-  ctx.rotate(radians)
-  ctx.translate(-x, -y)
+  ctx?.translate(x, y)
+  ctx?.rotate(radians)
+  ctx?.translate(-x, -y)
 }
 
 // Based on github.com/component/flip
 function flip(canvas: HTMLCanvasElement, x: boolean, y: boolean) {
   const ctx = canvas.getContext('2d')
-  ctx.translate(x ? canvas.width : 0, y ? canvas.height : 0)
-  ctx.scale(x ? -1 : 1, y ? -1 : 1)
+  ctx?.translate(x ? canvas.width : 0, y ? canvas.height : 0)
+  ctx?.scale(x ? -1 : 1, y ? -1 : 1)
 }
 
 const ORIENTATION_OPS = [
@@ -115,11 +115,11 @@ function _orient(img: HTMLImageElement, orientationNumber: number): HTMLCanvasEl
 
     if (rotated(orientationNumber)) {
       const d = canvas.width - canvas.height
-      ctx.translate(d / 2, -d / 2)
+      ctx?.translate(d / 2, -d / 2)
     }
   }
 
-  ctx.drawImage(img, 0, 0, img.width, img.height)
+  ctx?.drawImage(img, 0, 0, img.width, img.height)
   return canvas
 }
 

@@ -43,7 +43,7 @@ const MENU_POPOVER_PROPS: MenuButtonProps['popover'] = {
   portal: 'default',
 }
 
-const TEXT_STYLE_OPTIONS = {
+const TEXT_STYLE_OPTIONS: Record<string, (title: React.ReactNode) => React.ReactNode> = {
   h1: (title) => <Heading1>{title}</Heading1>,
   h2: (title) => <Heading2>{title}</Heading2>,
   h3: (title) => <Heading3>{title}</Heading3>,
@@ -60,8 +60,7 @@ const preventDefault = (event: React.MouseEvent<HTMLButtonElement>) => event.pre
 
 const emptyStyle: BlockStyleItem = {
   key: 'style-none',
-  style: null,
-  styleComponent: null,
+  style: '',
   title: 'No style',
 }
 

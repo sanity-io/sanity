@@ -13,11 +13,11 @@ import {ObjectEditData} from '../types'
 export function useScrollToFocusFromOutside(
   hasFocus: boolean,
   focusPath: Path,
-  objectEditData: ObjectEditData,
-  scrollElement: HTMLElement
+  objectEditData: ObjectEditData | null,
+  scrollElement: HTMLElement | null
 ): void {
-  const objectEditorPathRef = useRef<Path>(null)
-  const focusPathRef = useRef<Path>(null)
+  const objectEditorPathRef = useRef<Path | null>(null)
+  const focusPathRef = useRef<Path | null>(null)
   const editor = usePortableTextEditor()
 
   // This will scroll to the relevant block with focusPath pointing to an embedded object inside.
@@ -25,7 +25,7 @@ export function useScrollToFocusFromOutside(
     if (
       !hasFocus &&
       objectEditData &&
-      objectEditData.editorHTMLElementRef.current &&
+      objectEditData?.editorHTMLElementRef?.current &&
       objectEditorPathRef.current !== objectEditData.editorPath
     ) {
       scrollIntoView(objectEditData.editorHTMLElementRef.current, {
@@ -51,7 +51,7 @@ export function useScrollToFocusFromOutside(
       !PortableTextEditor.isObjectPath(editor, focusPath)
     ) {
       const [block] = PortableTextEditor.findByPath(editor, focusPath)
-      const blockElm = PortableTextEditor.findDOMNode(editor, block) as HTMLElement
+      const blockElm = block && (PortableTextEditor.findDOMNode(editor, block) as HTMLElement)
       if (blockElm) {
         scrollIntoView(blockElm, {
           boundary: scrollElement,

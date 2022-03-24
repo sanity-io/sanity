@@ -11,6 +11,7 @@ import {
   CrossDatasetReferenceInfo,
   DocumentPreview,
 } from '../../../../inputs/CrossDatasetReferenceInput/types'
+import {FIXME} from '../../../../types'
 
 const REQUEST_TAG_BASE = 'cross-dataset-refs'
 
@@ -38,6 +39,7 @@ export function createGetReferenceInfo(context: {
 }) {
   const {client, documentPreviewStore} = context
   const {dataset, projectId} = client.config()
+  const apiConfig = dataset && projectId ? {dataset, projectId} : undefined
 
   /**
    * Takes an id and a reference schema type, returns metadata about it
@@ -53,7 +55,7 @@ export function createGetReferenceInfo(context: {
       doc._type
         ? of(doc)
         : documentPreviewStore
-            .observeDocumentTypeFromId(doc._id, {dataset, projectId})
+            .observeDocumentTypeFromId(doc._id, apiConfig)
             .pipe(map((docType): {_id: string; _type?: string} => ({_id: doc._id, _type: docType})))
     ).pipe(
       switchMap((resolvedDoc) => {
@@ -63,7 +65,7 @@ export function createGetReferenceInfo(context: {
           return fetchDocumentAvailability(client, doc._id).pipe(
             map((availability) => ({
               id: doc._id,
-              type: null,
+              type: undefined,
               availability,
               preview: {published: undefined},
             }))
@@ -73,15 +75,15 @@ export function createGetReferenceInfo(context: {
           (candidate) => candidate.type === resolvedDoc._type
         )
         const previewPaths = [
-          ...(getPreviewPaths(refSchemaType.preview) || []),
+          ...(getPreviewPaths(refSchemaType?.preview) || []),
           ['_updatedAt'],
           ['_createdAt'],
         ]
 
         const publishedPreview$ = documentPreviewStore
-          .observePaths(doc._id, previewPaths, {projectId, dataset})
+          .observePaths(doc._id, previewPaths, apiConfig)
           .pipe(
-            map((result) => (result ? prepareForPreview(result, refSchemaType as any) : result))
+            map((result) => (result ? prepareForPreview(result, refSchemaType as FIXME) : result))
           )
         return combineLatest([publishedPreview$]).pipe(
           map(([publishedPreview]) => {
@@ -103,7 +105,7 @@ export function createGetReferenceInfo(context: {
 function fetchDocumentAvailability(
   client: SanityClient,
   id: string
-): Observable<DocumentAvailability> {
+): Observable<DocumentAvailability | null> {
   const requestOptions = {
     uri: client.getDataUrl('doc', id),
     json: true,

@@ -17,6 +17,7 @@ import {
 import {debounce} from 'lodash'
 import {applyAll} from '../../../simplePatch'
 import {ObjectEditData} from '../types'
+import {EMPTY_ARRAY} from '../../../utils/empty'
 import {DefaultObjectEditing} from './renderers/DefaultObjectEditing'
 import {PopoverObjectEditing} from './renderers/PopoverObjectEditing'
 import {getModalOption} from './helpers'
@@ -28,15 +29,15 @@ const THROTTLE_MS = 300
 export interface EditObjectProps {
   focusPath: Path
   validation: ValidationMarker[]
-  objectEditData: ObjectEditData
+  objectEditData: ObjectEditData | null
   onBlur: () => void
   onChange: (patchEvent: PatchEvent, editPath: Path) => void
   onClose: () => void
   onFocus: (path: Path) => void
   presence: FormFieldPresence[]
-  scrollElement: HTMLElement
-  readOnly: boolean
-  value: PortableTextBlock[] | undefined
+  scrollElement: HTMLElement | null
+  readOnly?: boolean
+  value?: PortableTextBlock[]
 }
 
 export const EditObject = (props: EditObjectProps) => {
@@ -56,13 +57,13 @@ export const EditObject = (props: EditObjectProps) => {
   const editor = usePortableTextEditor()
   const ptFeatures = useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [editor])
   const [objectFromValue, type] = useMemo(
-    () => findObjectAndType(objectEditData, value, ptFeatures),
+    () => (objectEditData ? findObjectAndType(objectEditData, value, ptFeatures) : []),
     [objectEditData, ptFeatures, value]
   )
 
   const [object, setObject] = useState(objectFromValue)
-  const [timeoutInstance, setTimeoutInstance] = useState(undefined)
-  const formBuilderPath = objectEditData && objectEditData.formBuilderPath
+  const [timeoutInstance, setTimeoutInstance] = useState<NodeJS.Timeout | null>(null)
+  const formBuilderPath = objectEditData ? objectEditData.formBuilderPath : EMPTY_ARRAY
   const kind = objectEditData && objectEditData.kind
   const modalOption = useMemo(() => getModalOption({type}), [type])
 
@@ -92,7 +93,7 @@ export const EditObject = (props: EditObjectProps) => {
   const sendPatches = useCallback(() => {
     if (IS_THROTTLING.get(editor) === true) {
       cancelThrottle()
-      clearInterval(timeoutInstance)
+      if (timeoutInstance) clearInterval(timeoutInstance)
       setTimeoutInstance(setTimeout(sendPatches, THROTTLE_MS + 100))
       return
     }
@@ -101,8 +102,8 @@ export const EditObject = (props: EditObjectProps) => {
       return
     }
     const length = patches.length
-    const _patches = compactPatches(PATCHES.get(editor).slice(0, length))
-    PATCHES.set(editor, PATCHES.get(editor).slice(length))
+    const _patches = compactPatches(patches.slice(0, length))
+    PATCHES.set(editor, patches.slice(length))
     setTimeout(() => {
       onChange(PatchEvent.from(_patches as FormBuilderPatch[]), formBuilderPath)
     })
@@ -115,7 +116,7 @@ export const EditObject = (props: EditObjectProps) => {
       const patches = PATCHES.get(editor)
       IS_THROTTLING.set(editor, true)
       if (patches) {
-        PATCHES.set(editor, PATCHES.get(editor).concat(patchEvent.patches))
+        PATCHES.set(editor, patches.concat(patchEvent.patches))
         sendPatches()
       }
     },
@@ -178,8 +179,8 @@ function findObjectAndType(
     return [undefined, undefined]
   }
   const {editorPath, formBuilderPath, kind} = objectEditData
-  let object: PortableTextChild
-  let type: Type
+  let object: PortableTextChild | undefined
+  let type: Type | undefined
 
   // Try finding the relevant block
   const blockKey =
@@ -190,7 +191,9 @@ function findObjectAndType(
   const child =
     block &&
     block.children &&
-    block.children.find((cld) => isKeySegment(editorPath[2]) && cld._key === editorPath[2]._key)
+    block.children.find(
+      (cld: any) => isKeySegment(editorPath[2]) && cld._key === editorPath[2]._key
+    )
 
   if (block) {
     // Get object, type, and relevant editor element
@@ -210,7 +213,7 @@ function findObjectAndType(
           const markDef =
             child.marks &&
             block.markDefs &&
-            block.markDefs.find((def) => child.marks.includes(def._key))
+            block.markDefs.find((def: any) => child.marks.includes(def._key))
           if (markDef) {
             type = ptFeatures.types.annotations.find((t) => t.name === markDef._type)
             object = markDef

@@ -14,10 +14,7 @@ import {SanityImageInput} from '../inputs/SanityImageInput'
 import {SanityFileInput} from '../inputs/SanityFileInput'
 import SanityCrossDatasetReferenceInput from '../inputs/crossDatasetReference/SanityCrossDatasetReferenceInput'
 
-export const sanityInputs: Record<
-  string,
-  React.ComponentType<FormInputProps<any, any>> | undefined
-> = {
+export const sanityInputs = {
   object: ObjectInput,
   array: SanityArrayInput,
   boolean: BooleanInput,
@@ -34,3 +31,11 @@ export const sanityInputs: Record<
 
   crossDatasetReference: SanityCrossDatasetReferenceInput,
 }
+
+export type SanityInputType = keyof typeof sanityInputs
+
+export function isSanityInputType(typeName: string): typeName is SanityInputType {
+  return SANITY_INPUT_KEYS.includes(typeName as SanityInputType)
+}
+
+export const SANITY_INPUT_KEYS = Object.keys(sanityInputs) as SanityInputType[]

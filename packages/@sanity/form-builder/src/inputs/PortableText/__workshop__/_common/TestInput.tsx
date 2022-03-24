@@ -24,7 +24,7 @@ interface TestInputProps {
   renderCustomMarkers?: RenderCustomMarkers
   schema: Schema
   type: PTType
-  value: PortableTextBlock[] | undefined
+  value?: PortableTextBlock[]
   withError?: boolean
   withWarning?: boolean
   withCustomMarkers?: boolean
@@ -38,7 +38,7 @@ export function TestInput(props: TestInputProps) {
     renderBlockActions,
     renderCustomMarkers,
     type,
-    value: valueProp,
+    value: valueProp = [],
     withError = false,
     withWarning = false,
     withCustomMarkers = false,
@@ -46,7 +46,7 @@ export function TestInput(props: TestInputProps) {
   const {formBuilder} = useSanity()
   const [value, setValue] = useState<PortableTextBlock[]>(valueProp)
   const [focusPath, setFocusPath] = useState<Path>([])
-  const blockType = useMemo(() => type.of.find((t) => t.type.name === 'block'), [type])
+  const blockType = useMemo(() => type.of?.find((t) => t.type.name === 'block'), [type])
   const presence = useMemo(() => [], [])
   const hotkeys = useMemo(() => ({}), [])
   const [markers, setMarkers] = useState<PortableTextMarker[]>([])
@@ -57,8 +57,8 @@ export function TestInput(props: TestInputProps) {
     [formBuilder]
   )
 
-  const onFocus = useCallback((path: Path) => {
-    setFocusPath(path)
+  const onFocus = useCallback((pathOrEvent?: Path | React.FocusEvent) => {
+    setFocusPath(Array.isArray(pathOrEvent) ? pathOrEvent : [])
   }, [])
 
   const onBlur = useCallback(() => {
@@ -177,7 +177,7 @@ export function TestInput(props: TestInputProps) {
   const patchChannel = useMemo(() => createPatchChannel(), [])
 
   useEffect(() => {
-    setValue(props.value)
+    setValue(props.value || [])
   }, [props.value])
 
   return (

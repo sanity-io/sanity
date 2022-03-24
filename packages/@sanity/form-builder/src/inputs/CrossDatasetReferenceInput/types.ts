@@ -13,7 +13,7 @@ import {DocumentAvailability} from '@sanity/base/_internal'
 export interface CrossDatasetReferenceInfo {
   id: string
   type: string | undefined
-  availability: DocumentAvailability
+  availability: DocumentAvailability | null
   preview: {
     published: DocumentPreview | undefined
   }

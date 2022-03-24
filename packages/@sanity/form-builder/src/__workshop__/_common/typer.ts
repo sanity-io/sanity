@@ -1,15 +1,15 @@
-const triggerInputEvent = (input, nextValue) => {
+const triggerInputEvent = (input: HTMLElement, nextValue: unknown) => {
   const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
     input.constructor.prototype,
     'value'
-  ).set
-  nativeInputValueSetter.call(input, nextValue)
+  )!.set
+  nativeInputValueSetter!.call(input, nextValue)
   input.dispatchEvent(new Event('input', {bubbles: true}))
 }
 
-function format(string: string, ...args) {
-  return string.replace(/{(\d+)}/g, function (match, index) {
-    return typeof args[index] === 'undefined' ? match : args[index]
+function format(string: string, ...args: Array<string | number>) {
+  return string.replace(/{(\d+)}/g, (match, index) => {
+    return typeof args[index] === 'undefined' ? match : String(args[index])
   })
 }
 
@@ -31,7 +31,7 @@ export function runTest(props: TestOptions): () => boolean {
   let sampleNo = 0
   let remainingSamples = times
   let handleRun = onRun
-  let timer
+  let timer: NodeJS.Timeout
 
   function cancelTimer() {
     if (timer) {

@@ -1,4 +1,4 @@
-import React, {ComponentProps, ForwardedRef, forwardRef, MutableRefObject, useCallback} from 'react'
+import React, {forwardRef, useCallback} from 'react'
 import {Autocomplete, Box, Flex, Popover, Text} from '@sanity/ui'
 import styled from 'styled-components'
 
@@ -14,14 +14,14 @@ const StyledText = styled(Text)`
 `
 
 export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
-  props: ComponentProps<typeof Autocomplete> & {
-    referenceElement: HTMLDivElement
+  props: React.ComponentProps<typeof Autocomplete> & {
+    referenceElement: HTMLDivElement | null
     searchString?: string
-    portalRef?: MutableRefObject<HTMLDivElement>
+    portalRef?: React.RefObject<HTMLDivElement>
   },
-  ref: ForwardedRef<HTMLInputElement>
+  ref: React.ForwardedRef<HTMLInputElement>
 ) {
-  const hasResults = props.options.length > 0
+  const hasResults = props.options && props.options.length > 0
   const renderPopover = useCallback(
     (
       {

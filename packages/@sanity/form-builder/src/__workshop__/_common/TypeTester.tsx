@@ -31,7 +31,7 @@ interface TypeTesterProps {
 }
 
 export function TypeTester({readOnly}: TypeTesterProps) {
-  const textAreaRef = useRef()
+  const textAreaRef = useRef<HTMLTextAreaElement | null>(null)
   const [focusedInput, setFocusedInput] = useState<HTMLInputElement | HTMLTextAreaElement>()
   const [testOutput, setTestOutput] = useState('')
   const [isRunning, setIsRunning] = useState(false)
@@ -66,7 +66,7 @@ export function TypeTester({readOnly}: TypeTesterProps) {
     setIsRunning(true)
     setTestOutput('Running test...')
     cancelTypeTester.current = runTest({
-      inputElement: focusedInput,
+      inputElement: focusedInput!,
       times: 4,
       gracePeriod: 4000,
       onRun: (output: string) => {
@@ -81,10 +81,10 @@ export function TypeTester({readOnly}: TypeTesterProps) {
   const handleHighlightMouseOver = useCallback(
     (event) => {
       if (event.type === 'mouseover') {
-        focusedInput.classList.add(HIGHLIGHT_CLASSNAME)
+        focusedInput!.classList.add(HIGHLIGHT_CLASSNAME)
       }
       if (event.type === 'mouseout') {
-        focusedInput.classList.remove(HIGHLIGHT_CLASSNAME)
+        focusedInput!.classList.remove(HIGHLIGHT_CLASSNAME)
       }
     },
     [focusedInput]
@@ -119,7 +119,7 @@ export function TypeTester({readOnly}: TypeTesterProps) {
           >
             {isDisabled && !isRunning
               ? 'No input selected'
-              : `Selected input: ${getNameFromInput(focusedInput)}`}
+              : `Selected input: ${focusedInput ? getNameFromInput(focusedInput) : '<none>'}`}
           </Text>
           <TextArea ref={textAreaRef} readOnly rows={6} value={testOutput} />
           <Button

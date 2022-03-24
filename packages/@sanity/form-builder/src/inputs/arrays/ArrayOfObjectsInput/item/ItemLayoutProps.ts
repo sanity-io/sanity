@@ -5,9 +5,9 @@ import {InsertEvent} from '../types'
 
 export interface ItemLayoutProps {
   isSortable: boolean
-  readOnly: boolean
+  readOnly?: boolean
   index: number
-  value: {_key?: string; _ref?: string}
+  value: {_key: string; _ref?: string}
   type?: SchemaType // note: type might be undefined here if the value doesn't have a matching schema type definition
   insertableTypes?: SchemaType[]
   onClick?: () => void
@@ -16,5 +16,5 @@ export interface ItemLayoutProps {
   onInsert?: (event: InsertEvent) => void
   onKeyPress: (event: React.KeyboardEvent<any>) => void
   presence: FormFieldPresence[]
-  validation: ValidationMarker[]
+  validation?: ValidationMarker[]
 }

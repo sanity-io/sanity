@@ -5,11 +5,12 @@ import {Schema, SchemaType} from '@sanity/types'
 import React, {useCallback} from 'react'
 import {FormBuilderProvider} from '../FormBuilderProvider'
 import {PatchChannel} from '../patchChannel'
+import {FIXME} from '../types'
 import {resolveInputComponent as defaultInputResolver} from './inputResolver/inputResolver'
 
 const previewResolver: FormPreviewComponentResolver = (..._: unknown[]) => {
   // @todo: Implement correct typing here
-  return SanityPreview as any
+  return SanityPreview as FIXME
 }
 
 /**

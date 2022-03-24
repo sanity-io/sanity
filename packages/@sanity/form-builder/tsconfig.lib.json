@@ -1,6 +1,6 @@
 {
   "extends": "../../../tsconfig.settings",
-  "include": ["./src/"],
+  "include": ["./src/", "./typings"],
   "exclude": [
     "./src/**/__fixtures__/*",
     "./src/**/__mocks__/*",
@@ -13,12 +13,6 @@
     "declarationDir": "./lib/dts/",
     "rootDir": "./",
     "outDir": "./lib/dts/",
-    // todo: we need to disable strict in a transition phase and should be removed eventually
-    "noImplicitAny": false,
-    "strictNullChecks": false,
-    "strictFunctionTypes": false,
-    "strictPropertyInitialization": false,
-    "noImplicitThis": false,
     "jsx": "react"
   },
   "references": [

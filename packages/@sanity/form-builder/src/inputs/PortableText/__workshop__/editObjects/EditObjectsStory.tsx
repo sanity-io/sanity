@@ -4,6 +4,8 @@ import {useAction, useBoolean, useSelect} from '@sanity/ui-workshop'
 import React, {useMemo} from 'react'
 import {FormBuilderProvider} from '../../../../FormBuilderProvider'
 import {createPatchChannel} from '../../../../patchChannel'
+import {FIXME} from '../../../../types'
+import {EMPTY_ARRAY} from '../../../../utils/empty'
 import {EditObject} from '../../object'
 import {ObjectEditData} from '../../types'
 import {resolveInputComponent, resolvePreviewComponent} from './formBuilder'
@@ -21,18 +23,18 @@ const TYPE_DATA = {
     focusPath: [{_key: '1'}, 'markDefs', {_key: 'm1'}],
   },
   blockObject: {
+    editorPath: undefined,
     focusPath: [{_key: '2'}],
   },
   inlineObject: {
+    editorPath: undefined,
     focusPath: [{_key: '1'}, 'children', {_key: '1-3'}],
   },
 }
 
-const EMPTY_ARRAY: any[] = []
-
 export function EditObjectsStory() {
   const open = useBoolean('Open', false)
-  const kind = useSelect('Kind', TYPE_OPTIONS, 'annotation')
+  const kind = useSelect('Kind', TYPE_OPTIONS, 'annotation') || 'annotation'
 
   const portal = usePortal()
 
@@ -96,7 +98,8 @@ export function EditObjectsStory() {
     () => ({
       editorPath,
       formBuilderPath: focusPath,
-      kind: kind as any,
+      kind: kind as FIXME,
+      returnToSelection: null,
     }),
     [editorPath, focusPath, kind]
   )
@@ -140,7 +143,7 @@ export function EditObjectsStory() {
           resolveInputComponent={resolveInputComponent}
           resolvePreviewComponent={resolvePreviewComponent}
         >
-          <PortableTextEditor onChange={handleChange} type={type as any} value={value}>
+          <PortableTextEditor onChange={handleChange} type={type as FIXME} value={value}>
             <EditObject
               focusPath={focusPath}
               validation={markers}

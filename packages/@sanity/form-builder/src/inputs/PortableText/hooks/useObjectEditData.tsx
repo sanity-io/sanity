@@ -1,8 +1,12 @@
 /* eslint-disable complexity */
-import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
-import {Path, isKeySegment, isKeyedObject} from '@sanity/types'
+import {
+  PortableTextEditor,
+  usePortableTextEditor,
+  PortableTextBlock,
+  TextBlock,
+} from '@sanity/portable-text-editor'
+import {Path, isKeySegment, isKeyedObject, KeyedSegment} from '@sanity/types'
 import {useMemo} from 'react'
-import {PortableTextBlock} from '../../../../../portable-text-editor/src/types/portableText'
 import {ObjectEditData} from '../types'
 
 // This hook will gather the info we need to create a edit modal for some embedded object in the editor
@@ -10,9 +14,9 @@ import {ObjectEditData} from '../types'
 export function useObjectEditData(
   focusPath: Path,
   refs: {
-    block: React.MutableRefObject<HTMLDivElement>
-    child: React.MutableRefObject<HTMLSpanElement>
-    inline: React.MutableRefObject<HTMLSpanElement>
+    block: React.MutableRefObject<HTMLDivElement | null>
+    child: React.MutableRefObject<HTMLSpanElement | null>
+    inline: React.MutableRefObject<HTMLSpanElement | null>
   }
 ): ObjectEditData | null {
   const editor = usePortableTextEditor()
@@ -28,9 +32,13 @@ export function useObjectEditData(
     if (markDefKey) {
       const [node] = PortableTextEditor.findByPath(editor, [{_key: blockKey}])
       const block = node ? (node as PortableTextBlock) : undefined
-      if (markDefKey) {
-        const span = block.children.find(
-          (child) => Array.isArray(child.marks) && child.marks.includes(markDefKey)
+      const markDefSegment =
+        block &&
+        PortableTextEditor.isVoid(editor, block) === false &&
+        (focusPath[2] as KeyedSegment)
+      if (markDefSegment) {
+        const span = (block as TextBlock).children.find(
+          (child) => Array.isArray(child.marks) && child.marks.includes(markDefSegment._key)
         )
         if (span) {
           return {

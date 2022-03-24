@@ -38,7 +38,10 @@ const CardLoadMore = styled(Card)`
   z-index: 200;
 `
 
-const DefaultAssetSource = function DefaultAssetSource(props: AssetSourceComponentProps, ref) {
+const DefaultAssetSource = function DefaultAssetSource(
+  props: AssetSourceComponentProps,
+  ref: React.ForwardedRef<HTMLDivElement>
+) {
   const {client} = useSource()
   const versionedClient = useMemo(() => client.withConfig({apiVersion: '1'}), [client])
   const _elementId = useRef(`default-asset-source-${uniqueId()}`)

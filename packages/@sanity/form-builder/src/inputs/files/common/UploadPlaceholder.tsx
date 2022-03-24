@@ -8,14 +8,13 @@ import {PlaceholderText} from './PlaceholderText'
 type UploadPlaceholderProps = {
   onUpload?: (files: File[]) => void
   browse?: React.ReactNode
-  readOnly?: boolean | null
+  readOnly?: boolean
   type: string
   hoveringFiles: FileLike[]
-
   acceptedFiles: FileLike[]
   rejectedFilesCount: number
   accept: string
-  directUploads: boolean
+  directUploads?: boolean
 }
 
 export const UploadPlaceholder = React.memo(function UploadPlaceholder({

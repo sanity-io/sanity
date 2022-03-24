@@ -1,29 +1,31 @@
+import {Patch} from '@sanity/base/form'
 import * as DMP from 'diff-match-patch'
+import {FIXME} from '../types'
 
 // eslint-disable-next-line new-cap
 const dmp = new DMP.diff_match_patch()
 
 const OPERATIONS = {
-  replace(currentValue, nextValue) {
+  replace(currentValue: unknown, nextValue: unknown) {
     return nextValue
   },
-  set(currentValue, nextValue) {
+  set(currentValue: unknown, nextValue: unknown) {
     return nextValue
   },
-  setIfMissing(currentValue, nextValue) {
+  setIfMissing(currentValue: unknown, nextValue: unknown) {
     return currentValue === undefined ? nextValue : currentValue
   },
-  unset(currentValue, nextValue) {
+  unset(currentValue: unknown, nextValue: unknown) {
     return undefined
   },
-  diffMatchPatch(currentValue, nextValue) {
+  diffMatchPatch(currentValue: string, nextValue: string) {
     return dmp.patch_apply(dmp.patch_fromText(nextValue), currentValue)[0]
   },
 }
 
 const SUPPORTED_PATCH_TYPES = Object.keys(OPERATIONS)
 
-export function _stringApply(value, patch) {
+export function _stringApply(value: unknown, patch: Patch) {
   if (!SUPPORTED_PATCH_TYPES.includes(patch.type)) {
     throw new Error(
       `Received patch of unsupported type: "${JSON.stringify(
@@ -40,5 +42,5 @@ export function _stringApply(value, patch) {
     )
   }
 
-  return OPERATIONS[patch.type](value, patch.value)
+  return (OPERATIONS as FIXME)[patch.type](value, (patch as FIXME).value)
 }

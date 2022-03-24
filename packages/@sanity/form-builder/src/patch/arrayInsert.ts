@@ -1,7 +1,12 @@
 export const BEFORE = 'before'
 export const AFTER = 'after'
 
-export function arrayInsert(array, position, index, ...args) {
+export function arrayInsert(
+  array: unknown[],
+  position: 'after' | 'before',
+  index: number,
+  ...args: unknown[][]
+) {
   if (position !== BEFORE && position !== AFTER) {
     throw new Error(`Invalid position "${position}", must be either ${BEFORE} or ${AFTER}`)
   }
@@ -22,6 +27,6 @@ export function arrayInsert(array, position, index, ...args) {
   return copy
 }
 
-function flatten(...values) {
+function flatten(...values: unknown[][]) {
   return values.reduce((prev, item) => prev.concat(item), [])
 }

@@ -1,15 +1,22 @@
 import {Box, Button, Text, Tooltip} from '@sanity/ui'
 import React, {memo, useCallback} from 'react'
 import {CopyIcon} from '@sanity/icons'
-import {keyGenerator} from '@sanity/portable-text-editor'
+import {keyGenerator, PortableTextBlock, TextBlock} from '@sanity/portable-text-editor'
+import {RenderBlockActions} from '../../types'
 
-const BlockActions = memo(function BlockActions(props: {block: any; insert: any}) {
+const BlockActions = memo(function BlockActions(props: {
+  block: PortableTextBlock
+  insert: (block: PortableTextBlock) => void
+}) {
   const {block, insert} = props
 
   const handleDuplicate = useCallback(() => {
-    const dupBlock = {
+    const dupBlock: TextBlock = {
       ...block,
+      _type: 'block',
       _key: keyGenerator(),
+      children: block.children || [],
+      markDefs: block.markDefs || [],
     }
 
     if (dupBlock.children) {
@@ -41,6 +48,6 @@ const BlockActions = memo(function BlockActions(props: {block: any; insert: any}
   )
 })
 
-export function renderBlockActions({block, insert}) {
+export const renderBlockActions: RenderBlockActions = ({block, insert}) => {
   return <BlockActions block={block} insert={insert} />
 }

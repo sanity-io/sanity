@@ -1,5 +1,6 @@
 import {FormPreviewProps} from '@sanity/base/form'
 import React, {useMemo} from 'react'
+import {FIXME} from './types'
 import {useFormBuilder} from './useFormBuilder'
 import {PreviewAny} from './utils/fallback-preview/PreviewAny'
 
@@ -18,7 +19,7 @@ export function Preview(props: FormPreviewProps) {
 
   return (
     <div title="Unable to resolve preview component. Using fallback.">
-      <PreviewAny value={value} maxDepth={2} />
+      <PreviewAny value={value as FIXME} maxDepth={2} />
     </div>
   )
 }

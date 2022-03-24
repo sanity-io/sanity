@@ -2,6 +2,7 @@ import {Card, Container, Flex, LayerProvider} from '@sanity/ui'
 import React from 'react'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import {TestInput} from '../_common/TestInput'
+import {FIXME} from '../../../../types'
 import {schema, portableTextType} from './schema'
 import {values, valueOptions} from './values'
 import {renderCustomMarkers} from './customMarkers'
@@ -23,8 +24,8 @@ export default function Story() {
             <TestInput
               readOnly={readOnly}
               schema={schema}
-              type={portableTextType as any}
-              value={value}
+              type={portableTextType as FIXME}
+              value={value || []}
               withError={withError}
               withWarning={withWarning}
               withCustomMarkers={withCustomMarkers}

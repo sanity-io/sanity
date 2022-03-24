@@ -53,7 +53,7 @@ const booleanTestsType = {
       name: 'readOnlyWithDocument',
       title: 'Boolean read-only with document',
       type: 'boolean',
-      readOnly: ({document}) => document.title === 'Hello world',
+      readOnly: ({document}: any) => document.title === 'Hello world',
     },
     {
       name: 'booleanHidden',
@@ -71,7 +71,7 @@ const booleanTestsType = {
       name: 'hiddenWithDocument',
       title: 'Boolean hidden with document',
       type: 'boolean',
-      hidden: ({document}) => document.title === 'Hello world',
+      hidden: ({document}: any) => document.title === 'Hello world',
     },
     {
       name: 'booleanInitialValue',
@@ -94,7 +94,7 @@ const dummyDocument = {
 
 it('renders the boolean input field', () => {
   const {result} = renderForm({type: booleanTestsType, value: dummyDocument})
-  const input = result.queryByTestId('input-booleanTest').querySelector('input')
+  const input = result.queryByTestId('input-booleanTest')!.querySelector('input')
   expect(input).toBeDefined()
   expect(input).toHaveAttribute('type', 'checkbox')
   expect(input).toBePartiallyChecked()
@@ -104,7 +104,7 @@ describe('Mouse accessibility', () => {
   it('emits onFocus when clicked', () => {
     const {onFocus, result} = renderForm({type: booleanTestsType, value: dummyDocument})
     const inputContainer = result.queryByTestId('input-booleanTest')
-    userEvent.click(inputContainer)
+    userEvent.click(inputContainer!)
     expect(onFocus).toBeCalled()
     expect(onFocus.mock.calls).toMatchSnapshot()
   })
@@ -112,7 +112,7 @@ describe('Mouse accessibility', () => {
   it('emits onChange when clicked', () => {
     const {onChange, result} = renderForm({type: booleanTestsType, value: dummyDocument})
     const inputContainer = result.queryByTestId('input-booleanTest')
-    userEvent.click(inputContainer.querySelector('input'))
+    userEvent.click(inputContainer!.querySelector('input')!)
     expect(onChange).toBeCalled()
     expect(onChange.mock.calls).toMatchSnapshot()
   })
@@ -122,8 +122,8 @@ describe('Keyboard accessibility', () => {
   it('emits onFocus when navigating to field', () => {
     const {onFocus, result} = renderForm({type: booleanTestsType, value: dummyDocument})
     const inputContainer = result.queryByTestId('input-booleanTest')
-    const input = inputContainer.querySelector('input')
-    userEvent.tab({focusTrap: inputContainer})
+    const input = inputContainer!.querySelector('input')
+    userEvent.tab({focusTrap: inputContainer!})
     expect(input).toHaveFocus()
     expect(onFocus).toBeCalled()
     expect(onFocus.mock.calls).toMatchSnapshot()
@@ -132,7 +132,7 @@ describe('Keyboard accessibility', () => {
   it('emits onChange when pressing enter', () => {
     const {onChange, result} = renderForm({type: booleanTestsType, value: dummyDocument})
     const inputContainer = result.queryByTestId('input-booleanTest')
-    userEvent.tab({focusTrap: inputContainer})
+    userEvent.tab({focusTrap: inputContainer!})
     userEvent.keyboard('{space}')
     expect(onChange).toBeCalled()
     expect(onChange.mock.calls).toMatchSnapshot()
@@ -141,8 +141,8 @@ describe('Keyboard accessibility', () => {
   it('emits onBlur when navigating away from field', () => {
     const {result} = renderForm({type: booleanTestsType, value: dummyDocument})
     const inputContainer = result.queryByTestId('input-booleanTest')
-    const input = inputContainer.querySelector('input')
-    userEvent.tab({focusTrap: inputContainer})
+    const input = inputContainer!.querySelector('input')
+    userEvent.tab({focusTrap: inputContainer!})
     userEvent.tab()
     expect(input).not.toHaveFocus()
   })
@@ -152,14 +152,14 @@ describe('Layout options', () => {
   it('renders a switch (default)', () => {
     const {result} = renderForm({type: booleanTestsType, value: dummyDocument})
     const inputContainer = result.queryByTestId('input-booleanTest')
-    const layout = inputContainer.querySelector(`[data-ui="Switch"]`)
+    const layout = inputContainer!.querySelector(`[data-ui="Switch"]`)
     expect(layout).toBeDefined()
   })
 
   it('renders a checkbox', () => {
     const {result} = renderForm({type: booleanTestsType, value: dummyDocument})
     const inputContainer = result.queryByTestId('input-booleanCheckbox')
-    const layout = inputContainer.querySelector(`[data-ui="Checkbox"]`)
+    const layout = inputContainer!.querySelector(`[data-ui="Checkbox"]`)
     expect(layout).toBeDefined()
   })
 })
@@ -168,31 +168,31 @@ describe('readOnly property', () => {
   it('makes field read-only', () => {
     const {onChange, result} = renderForm({type: booleanTestsType, value: dummyDocument})
     const inputContainer = result.queryByTestId('input-booleanReadOnly')
-    const input = inputContainer.querySelector('input')
+    const input = inputContainer!.querySelector('input')
     expect(input).toBeDisabled()
 
     // Mouse event
-    userEvent.click(input)
+    userEvent.click(input!)
     expect(onChange).not.toBeCalled()
-    input.blur()
+    input!.blur()
     // Keyboard event
-    userEvent.tab({focusTrap: inputContainer})
+    userEvent.tab({focusTrap: inputContainer!})
     expect(input).not.toHaveFocus()
   })
 
   it('does not make field read-only with callback', () => {
     const {onChange, result} = renderForm({type: booleanTestsType, value: dummyDocument})
     const inputContainer = result.queryByTestId('input-readOnlyCallback')
-    const input = inputContainer.querySelector('input')
+    const input = inputContainer!.querySelector('input')
     expect(input).not.toBeDisabled()
 
     // Mouse event
-    userEvent.click(input)
+    userEvent.click(input!)
     expect(onChange).toBeCalled()
-    input.blur()
+    input!.blur()
     // Keyboard event
     userEvent.tab({shift: true})
-    userEvent.tab({focusTrap: inputContainer})
+    userEvent.tab({focusTrap: inputContainer!})
     userEvent.keyboard('{space}')
     expect(onChange).toBeCalled()
     expect(onChange.mock.calls).toMatchSnapshot()
@@ -201,14 +201,14 @@ describe('readOnly property', () => {
   it('makes field read-only based on value in document', () => {
     const {onChange, result} = renderForm({type: booleanTestsType, value: dummyDocument})
     const inputContainer = result.queryByTestId('input-readOnlyWithDocument')
-    const input = inputContainer.querySelector('input')
+    const input = inputContainer!.querySelector('input')
     expect(input).toBeDisabled()
 
     // Mouse event
-    userEvent.click(input)
+    userEvent.click(input!)
     expect(onChange).not.toBeCalled()
     // Keyboard event
-    userEvent.tab({focusTrap: inputContainer})
+    userEvent.tab({focusTrap: inputContainer!})
     expect(input).not.toHaveFocus()
   })
 })

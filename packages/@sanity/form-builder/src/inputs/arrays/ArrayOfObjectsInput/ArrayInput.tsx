@@ -141,7 +141,7 @@ export class ArrayInput extends React.Component<ArrayInputProps> {
     this.removeItem(item)
   }
 
-  handleFocus = (event) => {
+  handleFocus = (event: React.FocusEvent) => {
     // We want to handle focus when the array input *itself* element receives
     // focus, not when a child element receives focus, but React has decided
     // to let focus bubble, so this workaround is needed
@@ -160,7 +160,7 @@ export class ArrayInput extends React.Component<ArrayInputProps> {
 
     // create a patch for removing the item
     const patch = PatchEvent.from(
-      unset(isKeySegment(item) ? [{_key: item._key}] : [value.indexOf(item)])
+      unset(isKeySegment(item) ? [{_key: item._key}] : [value?.indexOf(item) || -1])
     )
     // apply the patch to the current value
     const result = applyAll(value || [], patch.patches)
@@ -179,8 +179,8 @@ export class ArrayInput extends React.Component<ArrayInputProps> {
     }
 
     // move focus to the nearest sibling
-    const idx = value.indexOf(item)
-    const nearestSibling = value[idx + 1] || value[idx - 1]
+    const idx = value?.indexOf(item) || -1
+    const nearestSibling = value?.[idx + 1] || value?.[idx - 1]
 
     // if there's no siblings we want to focus the input itself
     onFocus(nearestSibling ? [{_key: nearestSibling._key}] : [])
@@ -199,16 +199,18 @@ export class ArrayInput extends React.Component<ArrayInputProps> {
     const key = item._key || randomKey(12)
 
     onChange(
-      event.prefixAll({_key: key}).prepend(item._key ? [] : set(key, [value.indexOf(item), '_key']))
+      event
+        .prefixAll({_key: key})
+        .prepend(item._key ? [] : set(key, [value?.indexOf(item) || -1, '_key']))
     )
   }
 
   handleSortEnd = (event: {newIndex: number; oldIndex: number}) => {
     const {value, onChange} = this.props
-    const item = value[event.oldIndex]
-    const refItem = value[event.newIndex]
+    const item = value?.[event.oldIndex]
+    const refItem = value?.[event.newIndex]
 
-    if (!item._key || !refItem._key) {
+    if (!item?._key || !refItem?._key) {
       // eslint-disable-next-line no-console
       console.error(
         'Neither the item you are moving nor the item you are moving to have a key. Cannot continue.'
@@ -247,7 +249,7 @@ export class ArrayInput extends React.Component<ArrayInputProps> {
 
   handleFixMissingKeys = () => {
     const {onChange, value} = this.props
-    const patches = value.map((val, i) => setIfMissing(randomKey(), [i, '_key']))
+    const patches = (value || []).map((val, i) => setIfMissing(randomKey(), [i, '_key']))
 
     onChange(PatchEvent.from(...patches))
   }
@@ -256,7 +258,7 @@ export class ArrayInput extends React.Component<ArrayInputProps> {
   }
   handleRemoveNonObjectValues = () => {
     const {onChange, value} = this.props
-    const nonObjects = value
+    const nonObjects = (value || [])
       .reduce((acc: number[], val, i) => (isPlainObject(val) ? acc : acc.concat(i)), [])
       .reverse()
     const patches = nonObjects.map((index) => unset([index]))

@@ -5,6 +5,7 @@
  */
 
 import {flatten} from 'lodash'
+import {FIXME} from '../../../../types'
 
 export function extractPastedFiles(dataTransfer: DataTransfer): Promise<File[]> {
   if (dataTransfer.files && dataTransfer.files.length > 0) {
@@ -41,7 +42,7 @@ function normalizeItems(items: DataTransferItem[]) {
         if (!entry) {
           return []
         }
-        return entry.isDirectory ? walk(entry) : toArray(item.getAsFile())
+        return entry.isDirectory ? walk(entry as FIXME) : toArray(item.getAsFile())
       }
 
       if (item.kind === 'file') {

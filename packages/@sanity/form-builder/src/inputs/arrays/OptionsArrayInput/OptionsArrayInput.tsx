@@ -10,13 +10,14 @@ import {Preview} from '../../../Preview'
 import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
 import {Item, List} from '../common/list'
 import {ConditionalReadOnlyField} from '../../common'
+import {FIXME} from '../../../types'
 import {resolveValueWithLegacyOptionsSupport, isLegacyOptionsItem} from './legacyOptionsSupport'
 
 type Focusable = {focus: () => void}
 
 const changeIndicatorOptions = {compareDeep: true}
 
-function isEqual(item, otherItem) {
+function isEqual(item: any, otherItem: any): boolean {
   if (isLegacyOptionsItem(item) || isLegacyOptionsItem(otherItem)) {
     return item.value === otherItem.value
   }
@@ -46,18 +47,18 @@ function isEqual(item, otherItem) {
   return keys.every((keyName) => isEqual(item[keyName], otherItem[keyName]))
 }
 
-function inArray(array, candidate) {
+function inArray(array: unknown[], candidate: unknown) {
   return array ? array.some((item) => isEqual(item, candidate)) : false
 }
 
 type OptionsArrayInputProps = FormInputProps<unknown[], ArraySchemaType>
 
 export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProps> {
-  _element: Focusable | null
+  _element: Focusable | null = null
 
-  handleChange = (isChecked, optionValue) => {
+  handleChange = (isChecked: boolean, optionValue: any) => {
     const {type, value = []} = this.props
-    const list = get(type.options, 'list')
+    const list = get(type.options, 'list') as FIXME[]
     if (!isChecked && optionValue._key) {
       // This is an optimization that only works if list items are _keyed
       this.props.onChange(PatchEvent.from(unset([{_key: optionValue._key}])))
@@ -72,7 +73,7 @@ export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProp
     this.props.onChange(PatchEvent.from(nextValue.length > 0 ? set(nextValue) : unset()))
   }
 
-  getMemberTypeOfItem(option) {
+  getMemberTypeOfItem(option: any) {
     const {type} = this.props
     return type.of.find(
       (memberType) =>
@@ -114,7 +115,7 @@ export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProp
         <List isGrid={isGrid}>
           {options.map((option, index) => {
             const optionType = this.getMemberTypeOfItem(option)
-            const checked = inArray(value, resolveValueWithLegacyOptionsSupport(option))
+            const checked = inArray(value || [], resolveValueWithLegacyOptionsSupport(option))
             const disabled = !optionType
             const isTitled = isTitledListValue(option)
             return (
@@ -163,5 +164,15 @@ export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProp
 const WrappedCheckbox = (props: React.HTMLProps<HTMLInputElement>) => {
   const {disabled, checked, onChange, onFocus, onBlur} = props
   const readOnly = useConditionalReadOnly()
-  return <Checkbox {...{disabled, checked, readOnly, onChange, onFocus, onBlur}} />
+
+  return (
+    <Checkbox
+      disabled={disabled}
+      checked={checked}
+      readOnly={readOnly === true}
+      onChange={onChange}
+      onFocus={onFocus}
+      onBlur={onBlur}
+    />
+  )
 }

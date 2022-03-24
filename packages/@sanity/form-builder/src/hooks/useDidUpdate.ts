@@ -17,13 +17,13 @@ import {usePrevious} from './usePrevious'
  */
 export function useDidUpdate<T>(
   current: T,
-  didUpdate: (previous: T, current: T) => void,
-  compare?: (previous: T, current: T) => boolean
+  didUpdate: (previous: T | undefined, current: T) => void,
+  compare?: (previous: T | undefined, current: T) => boolean
 ): void
 export function useDidUpdate<T>(
   current: T,
-  didUpdate: (previous: T, current: T | undefined) => void,
-  compare: (previous: T, current: T) => boolean = shallowEquals
+  didUpdate: (previous: T | undefined, current: T | undefined) => void,
+  compare: (previous: T | undefined, current: T) => boolean = shallowEquals
 ): void {
   const previous = usePrevious<T>(current)
   const initial = useRef<boolean>(true)

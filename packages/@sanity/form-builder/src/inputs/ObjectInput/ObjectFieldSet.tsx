@@ -53,10 +53,10 @@ export const ObjectFieldSet = forwardRef(function ObjectFieldSet(
       : EMPTY_ARRAY
   }, [fieldNames, isCollapsed, presence])
 
-  const childMarkers = useMemo(() => {
-    return validation.length === 0
+  const childValidation = useMemo(() => {
+    return validation?.length === 0
       ? validation
-      : validation.filter(
+      : validation?.filter(
           (item) => typeof item.path[0] === 'string' && fieldNames.includes(item.path[0])
         )
   }, [fieldNames, validation])
@@ -107,7 +107,7 @@ export const ObjectFieldSet = forwardRef(function ObjectFieldSet(
           onToggle={handleToggleFieldset}
           __unstable_presence={isCollapsed ? childPresence : EMPTY_ARRAY}
           __unstable_changeIndicator={false}
-          validation={childMarkers}
+          validation={childValidation}
           ref={isCollapsed ? forwardedRef : null}
         >
           {children}

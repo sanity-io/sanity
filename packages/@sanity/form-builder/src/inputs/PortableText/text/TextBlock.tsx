@@ -30,7 +30,7 @@ export interface TextBlockProps {
   markers: PortableTextMarker[]
   validation: ValidationMarker[]
   onChange: (event: PatchEvent) => void
-  readOnly: boolean
+  readOnly?: boolean
   renderBlockActions?: RenderBlockActions
   renderCustomMarkers?: RenderCustomMarkers
   spellCheck?: boolean

@@ -1,6 +1,7 @@
 import React from 'react'
 import type {SortableContainerProps} from 'react-sortable-hoc'
 import {SortableContainer, SortableElement, SortableHandle} from 'react-sortable-hoc'
+import {FIXME} from '../../../types'
 
 export const MOVING_ITEM_CLASS_NAME = 'moving'
 export const DRAG_HANDLE_ATTRIBUTE = 'data-drag-handle'
@@ -29,14 +30,14 @@ function sortableContainer<Props>(
   Component: React.ComponentType<Props>,
   options: SortableContainerProps
 ) {
-  const Container = (SortableContainer(
+  const Container = SortableContainer(
     React.forwardRef(function Sortable(
       props: Props & ExposedSortableProps,
       forwardedRef: React.ForwardedRef<React.ComponentType<Props>>
     ) {
       return <Component {...props} ref={forwardedRef} />
     })
-  ) as any) as React.ComponentType<SortableContainerProps> // there are some wonky typings from react-sortable-hoc
+  ) as FIXME as React.ComponentType<SortableContainerProps> // there are some wonky typings from react-sortable-hoc
 
   return React.forwardRef(function SortableList(
     props: Props & ExposedSortableProps,

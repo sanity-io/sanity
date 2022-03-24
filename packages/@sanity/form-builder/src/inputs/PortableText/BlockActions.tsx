@@ -6,6 +6,7 @@ import {
 } from '@sanity/portable-text-editor'
 import React, {useCallback, useMemo} from 'react'
 import styled from 'styled-components'
+import {FIXME} from '../../types'
 import {createBlockActionPatchFn} from './utils/createBlockActionPatchFn'
 import {RenderBlockActions} from './types'
 
@@ -20,13 +21,13 @@ const Root = styled.div`
   pointer-events: 'all';
 `
 
-function isClassComponent(component) {
-  return typeof component === 'function' && !!component.prototype?.isReactComponent
-}
+// function isClassComponent(component: React.ComponentType) {
+//   return typeof component === 'function' && !!component.prototype?.isReactComponent
+// }
 
-function isFunctionComponent(component) {
-  return typeof component === 'function' && String(component).includes('return React.createElement')
-}
+// function isFunctionComponent(component: React.ComponentType) {
+//   return typeof component === 'function' && String(component).includes('return React.createElement')
+// }
 
 export function BlockActions(props: BlockActionsProps) {
   const editor = usePortableTextEditor()
@@ -45,12 +46,12 @@ export function BlockActions(props: BlockActionsProps) {
         unset: createBlockActionPatchFn('unset', block, onChange, decoratorValues) as () => void,
         insert: createBlockActionPatchFn('insert', block, onChange, decoratorValues),
       }
-      // Support returning a class component for renderBlockActions (to keep backward compatability as it was possible before)
-      if (isClassComponent(renderBlockActions) || isFunctionComponent(renderBlockActions)) {
-        const RenderComponent = renderBlockActions
-        return <RenderComponent {...blockActionProps} />
-      }
-      return renderBlockActions(blockActionProps)
+      // // Support returning a class component for renderBlockActions (to keep backward compatability as it was possible before)
+      // if (isClassComponent(renderBlockActions) || isFunctionComponent(renderBlockActions)) {
+      //   const RenderComponent = renderBlockActions
+      //   return <RenderComponent {...blockActionProps} />
+      // }
+      return renderBlockActions(blockActionProps as FIXME)
     }
     return undefined
   }, [renderBlockActions, block, editor, onChange, decoratorValues])

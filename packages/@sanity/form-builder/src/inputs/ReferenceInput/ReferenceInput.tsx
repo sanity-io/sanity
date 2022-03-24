@@ -51,6 +51,7 @@ import {isNonNullable} from '../../utils/isNonNullable'
 import {AlertStrip} from '../../AlertStrip'
 import {Alert} from '../../components/Alert'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
+import {FIXME} from '../../types'
 import {ReferenceInputProps, CreateOption, SearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {useReferenceInfo} from './useReferenceInfo'
@@ -188,14 +189,14 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
   const refTypeName = loadableReferenceInfo.result?.type || value?._strengthenOnPublish?.type
   const refType = refTypeName ? type.to.find((toType) => toType.name === refTypeName) : null
 
-  const autocompletePopoverReferenceElementRef = useRef()
+  const autocompletePopoverReferenceElementRef = useRef<HTMLDivElement | null>(null)
 
   // --- focus handling
   const hasFocusAtRef = focusPath.length === 1 && focusPath[0] === '_ref'
   const focusElementRef = useForwardedRef(forwardedRef)
   useDidUpdate({hasFocusAt: hasFocusAtRef, ref: value?._ref}, (prev, current) => {
-    const refUpdated = prev.ref !== current.ref
-    const focusAtUpdated = prev.hasFocusAt !== current.hasFocusAt
+    const refUpdated = prev?.ref !== current.ref
+    const focusAtUpdated = prev?.hasFocusAt !== current.hasFocusAt
 
     if ((focusAtUpdated || refUpdated) && current.hasFocusAt) {
       // if search mode changed and we're having focus always ensure the
@@ -346,15 +347,15 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
 
   const isWeakRefToNonexistent =
     loadableReferenceInfo?.result?.availability?.reason === 'NOT_FOUND' &&
-    !value._strengthenOnPublish &&
-    value._weak
+    !value?._strengthenOnPublish &&
+    value?._weak
 
   const isEditing = hasFocusAtRef || !value?._ref
 
   // --- click outside handling
-  const clickOutsideBoundaryRef = useRef<HTMLDivElement>()
-  const autocompletePortalRef = useRef<HTMLDivElement>()
-  const createButtonMenuPortalRef = useRef<HTMLDivElement>()
+  const clickOutsideBoundaryRef = useRef<HTMLDivElement | null>(null)
+  const autocompletePortalRef = useRef<HTMLDivElement | null>(null)
+  const createButtonMenuPortalRef = useRef<HTMLDivElement | null>(null)
   useOnClickOutside(
     [clickOutsideBoundaryRef, autocompletePortalRef, createButtonMenuPortalRef],
     () => {
@@ -460,7 +461,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
               <Flex align="center" padding={1}>
                 <StyledPreviewCard
                   __unstable_focusRing
-                  forwardedAs={EditReferenceLink}
+                  forwardedAs={EditReferenceLink as FIXME} // @todo: fix typing
                   data-as="a"
                   data-pressed={pressed ? true : undefined}
                   data-selected={selected ? true : undefined}
@@ -531,7 +532,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
                 >
                   <Stack space={3}>
                     <Text as="p" muted size={1}>
-                      <strong>{loadableReferenceInfo.result.preview.published.title}</strong> is
+                      <strong>{loadableReferenceInfo.result?.preview.published?.title}</strong> is
                       published and this reference should now be{' '}
                       {type.weak ? <>finalized</> : <>converted to a strong reference</>}.
                     </Text>

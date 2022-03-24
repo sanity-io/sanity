@@ -2,7 +2,10 @@ import {Observable, of as observableOf, from as observableFrom} from 'rxjs'
 import {map, catchError} from 'rxjs/operators'
 import exif from 'exif-component'
 
-function readFileAsArrayBuffer(file: File, length: number) {
+function readFileAsArrayBuffer(
+  file: File,
+  length: number
+): Observable<string | ArrayBuffer | null> {
   return new Observable((observer) => {
     const reader = new window.FileReader()
     reader.onerror = (err) => observer.error(err)

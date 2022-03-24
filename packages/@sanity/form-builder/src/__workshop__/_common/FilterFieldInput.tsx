@@ -1,4 +1,4 @@
-import React, {MutableRefObject, useCallback, useMemo} from 'react'
+import React, {useCallback, useMemo} from 'react'
 import {Box, Button, Card, Code, Flex, Grid, Label, Stack, TextArea} from '@sanity/ui'
 import styled from 'styled-components'
 
@@ -9,14 +9,14 @@ const ExampleCode = styled(Code)`
 const EXAMPLE_FILTER_FUNCTION = `(type, field) => field.name === 'title'`
 
 interface FilterFieldInputOptions {
-  onChange: (value) => void
-  onFilter: (value?: string) => void
+  onChange: (value: string | null) => void
+  onFilter: (value: string | null) => void
   value: string | null
 }
 
 export const FilterFieldInput = React.forwardRef(function FilterFieldInput(
   props: FilterFieldInputOptions,
-  ref: MutableRefObject<HTMLTextAreaElement>
+  ref: React.ForwardedRef<HTMLTextAreaElement>
 ) {
   const {value, onChange, onFilter} = props
 
@@ -40,14 +40,14 @@ export const FilterFieldInput = React.forwardRef(function FilterFieldInput(
   }, [onFilter])
 
   const isDisabled = useMemo(() => {
-    return value.length === 0
+    return value?.length === 0
   }, [value])
 
   return (
     <Card padding={4} tone="default" border>
       <Stack space={4}>
         <Label size={0}>Function value</Label>
-        <TextArea rows={4} ref={ref} onChange={handleChange} value={value} />
+        <TextArea rows={4} ref={ref} onChange={handleChange} value={value || ''} />
         <ExampleCode
           title="Use example code"
           size={1}

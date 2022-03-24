@@ -21,7 +21,7 @@ export const ConditionalHiddenField = ({hidden, ...rest}: ConditionalHiddenField
 
 const ConditionalHiddenWithDocument = withDocument(
   forwardRef(function ConditionalHiddenWithDocument(
-    props: ConditionalHiddenFieldProps & {document: SanityDocument; hidden},
+    props: ConditionalHiddenFieldProps & {document: SanityDocument},
     ref /* ignore ref as there's no place to put it */
   ) {
     const {hidden, value, parent, document, children} = props

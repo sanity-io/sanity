@@ -24,6 +24,7 @@ import {
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/components'
 import {FormInputProps, PortableTextMarker, RenderCustomMarkers} from '@sanity/base/form'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
+import {EMPTY_ARRAY} from '../../utils/empty'
 import {BlockObject} from './object/BlockObject'
 import {InlineObject} from './object/InlineObject'
 import {EditObject} from './object/EditObject'
@@ -38,12 +39,9 @@ import {useObjectEditFormBuilderChange} from './hooks/useObjectEditFormBuilderCh
 import {useHotkeys} from './hooks/useHotKeys'
 import {useScrollToFocusFromOutside} from './hooks/useScrollToFocusFromOutside'
 
-const ROOT_PATH = []
-const ACTIVATE_ON_FOCUS_MESSAGE = <Text weight="semibold">Click to activate</Text>
-
 interface InputProps extends Omit<FormInputProps<PortableTextBlock[]>, 'type'> {
   hasFocus: boolean
-  hotkeys: HotkeyOptions
+  hotkeys?: HotkeyOptions
   isFullscreen: boolean
   markers: PortableTextMarker[]
   onCopy?: OnCopyFn
@@ -54,9 +52,11 @@ interface InputProps extends Omit<FormInputProps<PortableTextBlock[]>, 'type'> {
   renderCustomMarkers?: RenderCustomMarkers
 }
 
+const ACTIVATE_ON_FOCUS_MESSAGE = <Text weight="semibold">Click to activate</Text>
+
 export function Compositor(props: InputProps) {
   const {
-    focusPath,
+    focusPath = EMPTY_ARRAY,
     hasFocus,
     hotkeys,
     isFullscreen,
@@ -84,9 +84,9 @@ export function Compositor(props: InputProps) {
   const {element: boundaryElement} = useBoundaryElement()
 
   // References to editor HTML elements that points to externally edited data (blocks, annotations, inline-objects)
-  const childEditorElementRef = useRef<HTMLSpanElement | undefined>()
-  const blockObjectElementRef = useRef<HTMLDivElement | undefined>()
-  const inlineObjectElementRef = useRef<HTMLDivElement | undefined>()
+  const childEditorElementRef = useRef<HTMLSpanElement | null>(null)
+  const blockObjectElementRef = useRef<HTMLDivElement | null>(null)
+  const inlineObjectElementRef = useRef<HTMLDivElement | null>(null)
 
   // Data about the current object inside the modal that is non-text (annotations, objects)
   const objectEditData = useObjectEditData(focusPath, {
@@ -155,7 +155,7 @@ export function Compositor(props: InputProps) {
 
   const initialSelection = useMemo(
     (): EditorSelection =>
-      focusPath && focusPath.length > 0
+      focusPath.length > 0
         ? {
             anchor: {path: focusPath, offset: 0},
             focus: {path: focusPath, offset: 0},
@@ -191,8 +191,8 @@ export function Compositor(props: InputProps) {
             validation={blockValidation}
             onChange={onChange}
             readOnly={readOnly}
-            renderBlockActions={hasContent && renderBlockActions}
-            renderCustomMarkers={hasContent && renderCustomMarkers}
+            renderBlockActions={hasContent ? renderBlockActions : undefined}
+            renderCustomMarkers={hasContent ? renderCustomMarkers : undefined}
           >
             {defaultRender(block)}
           </TextBlock>
@@ -212,8 +212,8 @@ export function Compositor(props: InputProps) {
           onFocus={onFocus}
           readOnly={readOnly}
           ref={useBlockObjectElementRef ? blockObjectElementRef : undefined}
-          renderBlockActions={hasContent && renderBlockActions}
-          renderCustomMarkers={hasContent && renderCustomMarkers}
+          renderBlockActions={hasContent ? renderBlockActions : undefined}
+          renderCustomMarkers={hasContent ? renderCustomMarkers : undefined}
           type={blockType}
         />
       )
@@ -397,7 +397,7 @@ export function Compositor(props: InputProps) {
           compareDeep
           value={value}
           hasFocus={hasFocus && objectEditData === null}
-          path={ROOT_PATH}
+          path={EMPTY_ARRAY}
         >
           <Root data-focused={hasFocus ? '' : undefined} data-read-only={readOnly ? '' : undefined}>
             <div data-wrapper="" ref={setWrapperElement}>

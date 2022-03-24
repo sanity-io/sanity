@@ -1,21 +1,24 @@
 /* eslint-disable complexity */
 /* eslint-disable max-nested-callbacks,no-nested-ternary */
-import React, {ComponentProps, MutableRefObject} from 'react'
+
+import React, {ComponentProps} from 'react'
 import {AddIcon} from '@sanity/icons'
-import {Box, Button, Inline, Menu, MenuButton, MenuItem, Text, Tooltip} from '@sanity/ui'
+import {Box, Button, Menu, MenuButton, MenuItem, Tooltip} from '@sanity/ui'
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
 import {CreateOption} from './types'
 
 interface Props extends ComponentProps<typeof Button> {
   id: string
   createOptions: CreateOption[]
-  menuRef: MutableRefObject<HTMLDivElement>
+  menuRef: React.RefObject<HTMLDivElement>
   onCreate: (option: CreateOption) => void
 }
 
-function ConditionalTooltip(props: ComponentProps<typeof Tooltip> & {enabled: boolean}) {
+function ConditionalTooltip(
+  props: ComponentProps<typeof Tooltip> & {enabled: boolean}
+): React.ReactElement {
   const {enabled, ...rest} = props
-  return enabled ? <Tooltip {...rest} /> : props.children
+  return enabled ? <Tooltip {...rest} /> : <>{props.children}</>
 }
 
 const INLINE_BLOCK_STYLE = {display: 'inline-flex'}

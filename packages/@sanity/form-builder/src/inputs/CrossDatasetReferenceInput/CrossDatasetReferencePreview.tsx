@@ -7,6 +7,7 @@ import {AccessDeniedIcon, HelpCircleIcon, LaunchIcon} from '@sanity/icons'
 import {DefaultPreview, PreviewMediaDimensions, TextWithTone} from '@sanity/base/components'
 import imageUrlBuilder from '@sanity/image-url'
 
+import {FIXME} from '../../types'
 import {DocumentPreview} from './types'
 
 function UnavailableMessage(props: {icon: ComponentType; children: ReactNode; title: ReactNode}) {
@@ -40,7 +41,7 @@ function UnavailableMessage(props: {icon: ComponentType; children: ReactNode; ti
  * @constructor
  */
 export function CrossDatasetReferencePreview(props: {
-  availability: DocumentAvailability
+  availability: DocumentAvailability | null
   id: string
   hasStudioUrl?: boolean
   showStudioUrlIcon?: boolean
@@ -61,8 +62,8 @@ export function CrossDatasetReferencePreview(props: {
     dataset,
     projectId,
   } = props
-  const notFound = availability.reason === 'NOT_FOUND'
-  const insufficientPermissions = availability.reason === 'PERMISSION_DENIED'
+  const notFound = availability?.reason === 'NOT_FOUND'
+  const insufficientPermissions = availability?.reason === 'PERMISSION_DENIED'
 
   const previewMedia = preview.published?.media
 
@@ -74,7 +75,7 @@ export function CrossDatasetReferencePreview(props: {
         ) : (
           <img
             src={imageUrlBuilder({dataset, projectId})
-              .image(previewMedia as any)
+              .image(previewMedia as FIXME)
               .withOptions(dimensions)
               .url()}
             alt="Image preview of referenced document"
@@ -88,7 +89,7 @@ export function CrossDatasetReferencePreview(props: {
 
   return (
     <Flex align="center" data-testid="preview">
-      {availability.available ? (
+      {availability?.available ? (
         <Box flex={1} paddingX={2} paddingY={1}>
           <DefaultPreview
             title={preview.published?.title}

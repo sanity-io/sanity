@@ -25,6 +25,7 @@ import {EMPTY_ARRAY} from '../../utils/empty'
 import {ConditionalReadOnlyField} from '../common/conditionalReadOnly'
 import {useReviewChanges} from '../../sanity/contexts'
 import {isTrueIsh, omitDeprecatedRole} from '../../utils/common'
+import {FIXME} from '../../types'
 import {ObjectInputField} from './ObjectInputField'
 import {UnknownFields} from './UnknownFields'
 import {ObjectFieldSet} from './ObjectFieldSet'
@@ -106,7 +107,7 @@ export const ObjectInput = memo(
 
           return {
             hidden: isTrueIsh(hidden, 'hidden', {
-              currentUser: omitDeprecatedRole(currentUser),
+              currentUser: omitDeprecatedRole(currentUser!),
               value: group,
               parent: type.groups,
             }),
@@ -129,7 +130,7 @@ export const ObjectInput = memo(
       return (
         (
           findLast(filterGroups, (fieldGroup) => fieldGroup.default && !fieldGroup.hidden) ||
-          filterGroups?.[0]
+          (filterGroups?.[0] as FIXME)
         )?.name || DEFAULT_FIELD_GROUP_NAME
       )
     }, [filterGroups])
@@ -273,7 +274,7 @@ export const ObjectInput = memo(
     }, [fieldGroupPredicate, type.fields])
 
     const fieldSetsForGroup = React.useMemo(() => {
-      return type.fieldsets.filter((fieldset) => {
+      return type.fieldsets?.filter((fieldset) => {
         if (selectedFieldGroupName === DEFAULT_FIELD_GROUP_NAME) {
           return true
         }
@@ -303,11 +304,11 @@ export const ObjectInput = memo(
         )
       }
 
-      return fieldSetsForGroup.map((fieldset, fieldsetIndex) => {
+      return fieldSetsForGroup?.map((fieldset, fieldsetIndex) => {
         if (isSingleFieldset(fieldset)) {
           return renderField(fieldset.field, level + 1, fieldsetIndex, fieldset.readOnly)
         }
-        const fieldSetValuesObject = {}
+        const fieldSetValuesObject: Record<string, unknown> = {}
         // eslint-disable-next-line max-nested-callbacks
         fieldset.fields.forEach((field) => {
           if (value) {

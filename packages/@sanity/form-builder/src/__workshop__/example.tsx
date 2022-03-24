@@ -5,7 +5,7 @@ import {Patcher} from '@sanity/mutator'
 import type {ObjectField, ObjectSchemaTypeWithOptions} from '@sanity/types'
 import {PatchEvent, toMutationPatches} from '@sanity/base/form'
 import {PresenceOverlay} from '@sanity/base/presence'
-import {FormBuilderInput} from '../FormBuilderInput'
+import {FormBuilderInput, FormBuilderInputInstance} from '../FormBuilderInput'
 import {applyAll} from '../patch/applyPatch'
 import {createPatchChannel} from '../patchChannel'
 import {
@@ -18,9 +18,11 @@ import {TypeTester, FilterFieldInput, FormDebugger, FormBuilderTester} from './_
 
 const patchChannel = createPatchChannel()
 
+const EMPTY = [] as never[]
+
 export default function ExampleStory() {
   const {setPropValue} = useProps()
-  const ref = React.useRef()
+  const ref = React.useRef<FormBuilderInputInstance | null>(null)
   const toast = useToast()
   const isUseMutator = useBoolean('Use Mutator', false, 'Props')
   const [, setFocused] = useState(false)
@@ -41,7 +43,6 @@ export default function ExampleStory() {
   const [documentValue, setDocumentValue] = useState<{[key: string]: any}>(getDummyDocument())
   const [fieldFilterSource, setFieldFilterSource] = useState<string>(``)
   const [fieldFilterValue, setFieldFilterValue] = useState<string>(``)
-  const EMPTY = []
 
   const schema = useMemo(() => {
     return getDummySchema({
@@ -160,7 +161,7 @@ export default function ExampleStory() {
               isChangesOpen={isChangesOpen}
             >
               <FormBuilderInput
-                type={documentType}
+                type={documentType!}
                 onChange={isUseMutator ? handleChangeMutator : handleChange}
                 level={0}
                 value={documentValue}

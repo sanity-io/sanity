@@ -1,5 +1,6 @@
 import {SanityDocument} from '@sanity/types'
 import React, {forwardRef, useEffect, useState} from 'react'
+import {FIXME} from '../types'
 import {useFormBuilder} from '../useFormBuilder'
 
 interface WithDocumentProps<Doc extends SanityDocument = SanityDocument> {
@@ -25,7 +26,7 @@ export function withDocument<T extends WithDocumentProps = WithDocumentProps>(
       })
     }, [patchChannel])
 
-    return <ComposedComponent ref={ref} document={state.document} {...(props as T)} />
+    return <ComposedComponent ref={ref} document={state.document} {...(props as FIXME)} />
   })
 
   WithDocument.displayName = `withDocument(${

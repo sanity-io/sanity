@@ -43,7 +43,7 @@ interface BlockObjectProps {
   isFullscreen?: boolean
   onChange: (event: PatchEvent) => void
   onFocus: (path: Path) => void
-  readOnly: boolean
+  readOnly?: boolean
   renderBlockActions?: RenderBlockActions
   renderCustomMarkers?: RenderCustomMarkers
   type: Type
@@ -69,7 +69,7 @@ export const BlockObject = React.forwardRef(function BlockObject(
     type,
   } = props
   const {Markers} = useFormBuilder().components
-  const elementRef = useRef<HTMLDivElement>()
+  const elementRef = useRef<HTMLDivElement | null>(null)
   const [reviewChangesHovered, setReviewChangesHovered] = useState<boolean>(false)
   const [hasChanges, setHasChanges] = useState<boolean>(false)
 

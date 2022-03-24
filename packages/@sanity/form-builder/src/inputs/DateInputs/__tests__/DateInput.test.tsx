@@ -4,6 +4,7 @@ import React from 'react'
 
 import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
 import {DateInput, DateInputProps} from '../DateInput'
+import {FIXME} from '../../../types'
 
 function renderInput(props: Partial<DateInputProps> = {}) {
   const onFocus = jest.fn()
@@ -14,7 +15,7 @@ function renderInput(props: Partial<DateInputProps> = {}) {
       <LayerProvider>
         <DateInput
           focusPath={[]}
-          type={{title: 'Date input test', name: 'date', options: {}} as any}
+          type={{title: 'Date input test', name: 'date', options: {}} as FIXME}
           onFocus={onFocus}
           onChange={onChange}
           validation={[]}

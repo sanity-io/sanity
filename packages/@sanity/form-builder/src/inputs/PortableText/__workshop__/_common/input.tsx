@@ -37,6 +37,10 @@ export function inputResolver(
   input: SchemaType,
   formBuilder: SanityFormBuilderConfig
 ): React.ComponentType<FormInputProps<any, any>> {
+  if (!input.type) {
+    throw new Error('inputResolver: missing subtype')
+  }
+
   if (input.type.name === 'block') {
     return PortableTextInput
   }

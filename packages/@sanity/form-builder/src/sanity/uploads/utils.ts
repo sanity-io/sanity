@@ -1,10 +1,10 @@
-import {set, unset, setIfMissing} from '@sanity/base/form'
+import {set, unset, setIfMissing, Patch} from '@sanity/base/form'
 import {UploadEvent} from './types'
 import {UPLOAD_STATUS_KEY} from './constants'
 
 const UNSET_UPLOAD_PATCH = unset([UPLOAD_STATUS_KEY])
 
-export function createUploadEvent(patches = []): UploadEvent {
+export function createUploadEvent(patches: Patch[] = []): UploadEvent {
   return {
     type: 'uploadEvent',
     patches,

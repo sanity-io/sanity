@@ -1,5 +1,5 @@
 import {useConditionalReadOnly} from '@sanity/base/_internal'
-import React, {MutableRefObject} from 'react'
+import React from 'react'
 import {renderNode} from '../../../../test/renderNode'
 import {ConditionalReadOnlyField, ConditionalReadOnlyFieldProps} from '../conditionalReadOnly'
 
@@ -41,7 +41,7 @@ const dummyDocument = {
 
 const DummyPropsComponent = React.forwardRef(function DummyPropsComponent(
   _props: Record<string, unknown>,
-  ref: MutableRefObject<HTMLDivElement>
+  ref: React.ForwardedRef<HTMLDivElement>
 ) {
   const conditionalReadOnly = useConditionalReadOnly()
   return (
@@ -79,9 +79,7 @@ function render(
         checkPropertyKey="testKey"
         document={dummyDocument}
         value={undefined}
-        parent={{
-          parentTest: 'hello',
-        }}
+        parent={{parentTest: 'hello'}}
         {...props}
       >
         <DummyPropsComponent />
@@ -143,9 +141,9 @@ describe('Conditional Read Only component', () => {
     // const {queryByTestId} = render(
     //   <ConditionalFieldsTester readOnly={readOnlyCallbackFnDocumentFalse} />
     // )
-    const readOnlyCallbackFnDocumentFalse = jest.fn(({document}) =>
-      Boolean(document?.readOnlyTestTitle !== 'read only')
-    )
+    const readOnlyCallbackFnDocumentFalse = jest.fn(({document}) => {
+      return document?.readOnlyTestTitle !== 'read only'
+    })
     const {result} = render({readOnly: readOnlyCallbackFnDocumentFalse})
     expect(result.queryByTestId('dummy')).not.toHaveAttribute('data-read-only')
   })

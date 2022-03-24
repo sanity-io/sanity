@@ -59,7 +59,7 @@ export const EditableContainer = styled(Container)`
   /* max-width: 728px; */
 `
 
-export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $readOnly: boolean}>`
+export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $readOnly?: boolean}>`
   height: 100%;
   width: 100%;
   counter-reset: ${TEXT_LEVELS.map((l) => createListName(l)).join(' ')};

@@ -33,6 +33,7 @@ import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {AlertStrip} from '../../AlertStrip'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
 import {isNonNullable} from '../../utils/isNonNullable'
+import {FIXME} from '../../types'
 import {CrossDatasetReferenceInfo, SearchHit, SearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {GetReferenceInfoFn, useReferenceInfo} from './useReferenceInfo'
@@ -144,16 +145,16 @@ export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetRefere
 
   const refDoc = useMemo(() => ({_id: value?._ref}), [value?._ref])
 
-  const loadableReferenceInfo = useReferenceInfo(refDoc, getReferenceInfoMemo)
+  const loadableReferenceInfo = useReferenceInfo(refDoc as FIXME, getReferenceInfoMemo)
 
-  const autocompletePopoverReferenceElementRef = useRef()
+  const autocompletePopoverReferenceElementRef = useRef<HTMLDivElement | null>(null)
 
   // --- focus handling
   const hasFocusAtRef = focusPath.length === 1 && focusPath[0] === '_ref'
   const focusElementRef = useForwardedRef(forwardedRef)
   useDidUpdate({hasFocusAt: hasFocusAtRef, ref: value?._ref}, (prev, current) => {
-    const refUpdated = prev.ref !== current.ref
-    const focusAtUpdated = prev.hasFocusAt !== current.hasFocusAt
+    const refUpdated = prev?.ref !== current.ref
+    const focusAtUpdated = prev?.hasFocusAt !== current.hasFocusAt
 
     if ((focusAtUpdated || refUpdated) && current.hasFocusAt) {
       // if search mode changed and we're having focus always ensure the
@@ -260,9 +261,9 @@ export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetRefere
   const isEditing = hasFocusAtRef || !value?._ref
 
   // --- click outside handling
-  const clickOutsideBoundaryRef = useRef<HTMLDivElement>()
-  const autocompletePortalRef = useRef<HTMLDivElement>()
-  const createButtonMenuPortalRef = useRef<HTMLDivElement>()
+  const clickOutsideBoundaryRef = useRef<HTMLDivElement | null>(null)
+  const autocompletePortalRef = useRef<HTMLDivElement | null>(null)
+  const createButtonMenuPortalRef = useRef<HTMLDivElement | null>(null)
   useOnClickOutside(
     [clickOutsideBoundaryRef, autocompletePortalRef, createButtonMenuPortalRef],
     () => {

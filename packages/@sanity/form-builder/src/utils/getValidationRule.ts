@@ -23,7 +23,7 @@ const normalizeRules = (
  * Note: This accesses private fields of the rule.
  */
 export function getValidationRule<RuleFlag extends RuleSpec['flag']>(
-  type: SchemaType | null | undefined,
+  type: SchemaType | undefined,
   ruleName: RuleFlag
 ): Extract<RuleSpec, {flag: RuleFlag}> | null {
   for (const rule of normalizeRules(type?.validation, type)) {

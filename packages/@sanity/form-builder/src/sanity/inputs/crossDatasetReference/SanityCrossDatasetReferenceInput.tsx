@@ -82,7 +82,7 @@ const SanityCrossDatasetReferenceInput = forwardRef(function SanityCrossDatasetR
   const crossDatasetClient = useMemo(() => {
     const token = isCurrentProject
       ? undefined
-      : loadableToken.status === 'loaded' && loadableToken.result
+      : loadableToken?.status === 'loaded' && loadableToken.result
 
     return (
       client
@@ -90,7 +90,7 @@ const SanityCrossDatasetReferenceInput = forwardRef(function SanityCrossDatasetR
           projectId: type.projectId,
           dataset: type.dataset,
           apiVersion: '2022-03-07',
-          token,
+          token: token || undefined,
           ignoreBrowserTokenWarning: true,
         })
         // seems like this is required to prevent this client from sometimes magically get mutated with a new projectId and dataset
@@ -127,7 +127,7 @@ const SanityCrossDatasetReferenceInput = forwardRef(function SanityCrossDatasetR
     [crossDatasetClient, documentPreviewStore]
   )
 
-  if (loadableToken.status === 'loading') {
+  if (loadableToken?.status === 'loading') {
     return (
       <Box padding={2}>
         <Stack space={2}>
@@ -140,7 +140,7 @@ const SanityCrossDatasetReferenceInput = forwardRef(function SanityCrossDatasetR
     )
   }
 
-  if (!isCurrentProject && loadableToken.status === 'loaded' && !loadableToken.result) {
+  if (!isCurrentProject && loadableToken?.status === 'loaded' && !loadableToken.result) {
     return (
       <Stack space={2} marginY={2}>
         <Text size={1} weight="semibold">

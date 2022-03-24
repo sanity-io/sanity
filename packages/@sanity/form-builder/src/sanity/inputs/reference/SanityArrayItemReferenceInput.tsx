@@ -1,6 +1,7 @@
 import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
 import {useDatastores, useSource} from '@sanity/base'
 import {FormInputProps} from '@sanity/base/form'
+import {isNonNullable} from '@sanity/base/util'
 import {
   Path,
   Reference,
@@ -90,7 +91,7 @@ const SanityArrayItemReferenceInputInner = forwardRef(function SanityReferenceIn
   const documentTypeName = documentRef.current?._type
 
   const isDocumentLiveEdit = useMemo(() => {
-    return schema.get(documentTypeName).liveEdit
+    return schema.get(documentTypeName)?.liveEdit
   }, [documentTypeName, schema])
 
   const disableNew = type.options?.disableNew === true
@@ -159,18 +160,24 @@ const SanityArrayItemReferenceInputInner = forwardRef(function SanityReferenceIn
     return (
       (initialValueTemplateItems || [])
         // eslint-disable-next-line max-nested-callbacks
-        .filter((i) => type.to.some((refType) => refType.name === i.template.schemaType))
-        .map((item) => ({
-          id: item.id,
-          title: item.title || `${item.template.schemaType} from template ${item.template.id}`,
-          type: item.template.schemaType,
-          icon: item.icon,
-          template: {
-            id: item.template.id,
-            params: item.parameters,
-          },
-          permission: {granted: item.granted, reason: item.reason},
-        }))
+        .filter((i) => type.to.some((refType) => refType.name === i.template?.schemaType))
+        .map((item) =>
+          item.template?.schemaType
+            ? {
+                id: item.id,
+                title:
+                  item.title || `${item.template.schemaType} from template ${item.template.id}`,
+                type: item.template.schemaType,
+                icon: item.icon,
+                template: {
+                  id: item.template.id,
+                  params: item.parameters,
+                },
+                permission: {granted: item.granted, reason: item.reason},
+              }
+            : undefined
+        )
+        .filter(isNonNullable)
     )
   }, [disableNew, initialValueTemplateItems, type.to])
 

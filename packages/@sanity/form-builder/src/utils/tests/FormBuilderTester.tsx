@@ -1,29 +1,20 @@
-import {FormBuilderFilterFieldFn} from '@sanity/base/form'
-import {FormFieldPresence} from '@sanity/base/presence'
-import {ValidationMarker, Path, Schema, SchemaType} from '@sanity/types'
+import {FormBuilderFilterFieldFn, FormInputProps} from '@sanity/base/form'
+import {Schema, SanityDocument} from '@sanity/types'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {render} from '@testing-library/react'
 import React from 'react'
 import {SanityFormBuilder} from '../../sanity/SanityFormBuilder'
 import {createPatchChannel, PatchChannel} from '../../patchChannel'
+import {FIXME} from '../../types'
 
-type FormBuilderProps = {
-  value: any | null
+export interface FormBuilderTesterProps extends FormInputProps {
   schema: Schema
-  type: SchemaType
-  validation: ValidationMarker[]
   patchChannel: PatchChannel
-  compareValue: any
-  onFocus: (path: Path) => void
-  readOnly: boolean
-  onChange: (patches: any[]) => void
   filterField: FormBuilderFilterFieldFn
-  onBlur: () => void
-  autoFocus: boolean
-  focusPath: Path
-  presence: FormFieldPresence[]
+  autoFocus?: boolean
   changesOpen: boolean
 }
+
 const patchChannel = createPatchChannel()
 
 export const DEFAULT_PROPS = {
@@ -33,7 +24,7 @@ export const DEFAULT_PROPS = {
   compareValue: undefined,
   readOnly: undefined,
   filterField: () => true,
-  patchChannel: patchChannel as any,
+  patchChannel: patchChannel as FIXME,
   onBlur: () => undefined,
   autoFocus: undefined,
   focusPath: [],
@@ -41,7 +32,7 @@ export const DEFAULT_PROPS = {
 }
 
 // Use this to test specific inputs rendered in the form-builder
-export function inputTester(document, type, schema, testId?: string) {
+export function inputTester(document: SanityDocument, type: any, schema: Schema, testId?: string) {
   const onFocus = jest.fn()
   const onBlur = jest.fn()
   const onChange = jest.fn()
@@ -58,24 +49,21 @@ export function inputTester(document, type, schema, testId?: string) {
     />
   )
 
-  const inputContainer = queryByTestId(testId)
+  const inputContainer = testId ? queryByTestId(testId) : undefined
 
   return {onChange, onFocus, onBlur, inputContainer}
 }
 
 // Use this in your test to get full control when testing the form builder
 // the default props are available in DEFAULT_props
-export const FormBuilderTester = React.forwardRef(function FormBuilderTester(
-  props: FormBuilderProps,
-  ref
-) {
+export function FormBuilderTester(props: FormBuilderTesterProps) {
   return (
     <ThemeProvider scheme="light" theme={studioTheme}>
       <LayerProvider>
         <ToastProvider>
-          <SanityFormBuilder {...(props as any)} />
+          <SanityFormBuilder {...(props as FIXME)} />
         </ToastProvider>
       </LayerProvider>
     </ThemeProvider>
   )
-})
+}

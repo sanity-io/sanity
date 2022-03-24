@@ -71,7 +71,7 @@ const InnerAssetUsageDialog = ({
     </Grid>
   ) : undefined
   useEffect(() => {
-    const drafts = referringDocuments.reduce(
+    const drafts = referringDocuments.reduce<string[]>(
       (acc, doc) => (doc._id.startsWith('drafts.') ? acc.concat(doc._id.slice(7)) : acc),
       []
     )

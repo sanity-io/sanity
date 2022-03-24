@@ -1,6 +1,6 @@
 import {Observable} from 'rxjs'
 import React, {ReactNode} from 'react'
-import {PreviewValue, Reference, ReferenceSchemaType} from '@sanity/types'
+import {Path, PreviewValue, Reference, ReferenceSchemaType} from '@sanity/types'
 import {DocumentAvailability} from '@sanity/base/_internal'
 import {FormInputProps} from '@sanity/base/form'
 
@@ -65,11 +65,16 @@ export interface ReferenceInputProps<Value = Reference>
   extends FormInputProps<Value, ReferenceSchemaType> {
   id?: string
   suffix?: ReactNode
-  liveEdit: boolean
+  liveEdit?: boolean
   onSearch: SearchFunction
   selectedState?: 'selected' | 'pressed' | 'none'
   createOptions: CreateOption[]
-  editReferenceLinkComponent: React.ComponentType<{documentId: string; documentType: string}>
+  editReferenceLinkComponent: React.ComponentType<{
+    children: React.ReactNode
+    documentId: string
+    documentType: string
+    parentRefPath: Path
+  }>
   onEditReference: (event: EditReferenceEvent) => void
   getReferenceInfo: (id: string, type: ReferenceSchemaType) => Observable<ReferenceInfo>
 }

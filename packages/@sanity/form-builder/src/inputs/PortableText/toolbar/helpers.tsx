@@ -30,11 +30,11 @@ function getPTEFormatActions(
 ): PTEToolbarAction[] {
   const features = PortableTextEditor.getPortableTextFeatures(editor)
   return features.decorators.map((decorator) => {
-    const shortCutKey = Object.keys(hotkeyOpts.marks).find(
-      (key) => hotkeyOpts.marks[key] === decorator.value
+    const shortCutKey = Object.keys(hotkeyOpts.marks || {}).find(
+      (key) => hotkeyOpts.marks?.[key] === decorator.value
     )
 
-    let hotkeys: string[]
+    let hotkeys: string[] = []
     if (shortCutKey) {
       hotkeys = [shortCutKey]
     }
@@ -94,7 +94,7 @@ function getPTEAnnotationActions(
       disabled: !hasText || disabled,
       icon: getAnnotationIcon(item),
       key: item.value,
-      handle: (active: boolean): void => {
+      handle: (active?: boolean): void => {
         if (active) {
           PortableTextEditor.removeAnnotation(editor, item.type)
           PortableTextEditor.focus(editor)
@@ -169,11 +169,11 @@ export function getInsertMenuItems(
   return filteredBlockItems
 }
 
-const annotationIcons = {
+const annotationIcons: Record<string, React.ComponentType> = {
   link: LinkIcon,
 }
 
-const formatIcons = {
+const formatIcons: Record<string, React.ComponentType> = {
   strong: BoldIcon,
   em: ItalicIcon,
   'strike-through': StrikethroughIcon,
@@ -181,7 +181,7 @@ const formatIcons = {
   code: CodeIcon,
 }
 
-const listStyleIcons = {
+const listStyleIcons: Record<string, React.ComponentType> = {
   number: OlistIcon,
   bullet: UlistIcon,
 }

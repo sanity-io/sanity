@@ -5,7 +5,7 @@ import {TEXT_BULLET_MARKERS, TEXT_NUMBER_FORMATS} from './constants'
 import {createListName} from './helpers'
 
 interface TextBlockStyleProps {
-  $level?: number
+  $level: number
 }
 
 function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
@@ -87,7 +87,7 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
       flex: 1;
 
       *::selection {
-        background-color: ${color.selectable.primary.pressed.bg};
+        background-color: ${color.selectable?.primary.pressed.bg};
       }
     }
   `

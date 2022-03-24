@@ -1,6 +1,12 @@
 import {createSchema} from '@sanity/base/schema'
 import {Rule} from '@sanity/types'
 
+interface PTBlockValue {
+  _type: 'block'
+  _key: string
+  children?: {_type: string; _key: string; text?: string}[]
+}
+
 const imageType = {
   type: 'image',
   name: 'blockImage',
@@ -41,14 +47,14 @@ const someObject = {
   fields: [{type: 'string', name: 'title'}],
 }
 
-function extractTextFromBlocks(blocks) {
+function extractTextFromBlocks(blocks: PTBlockValue[]) {
   if (!blocks) {
     return ''
   }
   return blocks
     .filter((val) => val._type === 'block')
     .map((block) => {
-      return block.children
+      return (block.children || [])
         .filter((child) => child._type === 'span')
         .map((span) => span.text)
         .join('')
@@ -75,7 +81,7 @@ export const blockType = {
   of: [someObject, imageType],
   validation: (rule: Rule) =>
     rule
-      .custom((block) => {
+      .custom((block: PTBlockValue): any => {
         const length = extractTextFromBlocks([block]).length
         return length < 10 ? 'Please write a longer paragraph.' : null
       })

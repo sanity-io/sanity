@@ -19,12 +19,13 @@ import {
 import React, {forwardRef, useCallback, useMemo, useRef} from 'react'
 import {useId} from '@reach/auto-id'
 import {Preview} from '../../../Preview'
+import {FIXME} from '../../../types'
 
 interface BlockObjectPreviewProps {
   focused: boolean
   type: Type
   value: PortableTextBlock
-  readOnly: boolean
+  readOnly?: boolean
   onClickingEdit: () => void
   onClickingDelete: () => void
 }
@@ -41,8 +42,8 @@ const LAYOUT = 'block'
 export function BlockObjectPreview(props: BlockObjectPreviewProps) {
   const {focused, value, type, readOnly, onClickingEdit, onClickingDelete} = props
   const editor = usePortableTextEditor()
-  const menuButtonId = useId()
-  const menuButton = useRef<HTMLButtonElement>()
+  const menuButtonId = useId() || ''
+  const menuButton = useRef<HTMLButtonElement | null>(null)
   const isTabbing = useRef<boolean>(false)
   const isCustomPreviewComponent = Boolean(type.preview?.component)
 
@@ -114,12 +115,12 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps) {
     return (
       <Flex>
         <Box flex={1}>
-          <Preview type={type as any} value={value} layout={LAYOUT} />
+          <Preview type={type as FIXME} value={value} layout={LAYOUT} />
         </Box>
         <Box marginLeft={1}>{actions}</Box>
       </Flex>
     )
   }
 
-  return <Preview actions={actions} type={type as any} value={value} layout={LAYOUT} />
+  return <Preview actions={actions} type={type as FIXME} value={value} layout={LAYOUT} />
 }

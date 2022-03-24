@@ -17,13 +17,15 @@ import {
   Type,
   HotkeyOptions,
   EditorSelection,
+  InvalidValue,
 } from '@sanity/portable-text-editor'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import React, {useEffect, useState, useMemo, useCallback, useRef} from 'react'
 import {Subject} from 'rxjs'
-import {Box, Text, useToast} from '@sanity/ui'
+import {Box, Text, useForwardedRef, useToast} from '@sanity/ui'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import {withPatchSubscriber} from '../../utils/withPatchSubscriber'
+import {EMPTY_ARRAY} from '../../utils/empty'
 import {RenderBlockActions} from './types'
 import {Compositor} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
@@ -94,7 +96,7 @@ export const PortableTextInput = withPatchSubscriber(
 
 const PortableTextInputController = React.forwardRef(function PortableTextInputController(
   props: PortableTextInputProps & {subscribe: PatchSubscribe},
-  ref: React.RefObject<PortableTextEditor>
+  ref: React.ForwardedRef<PortableTextEditor>
 ) {
   const {
     compareValue,
@@ -117,9 +119,11 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
     subscribe,
   } = props
 
+  const forwardedRef = useForwardedRef(ref)
+
   const [hasFocus, setHasFocus] = useState(false)
   const [ignoreValidationError, setIgnoreValidationError] = useState(false)
-  const [invalidValue, setInvalidValue] = useState(null)
+  const [invalidValue, setInvalidValue] = useState<InvalidValue | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
 
   const toast = useToast()
@@ -132,8 +136,8 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
 
   const handleToggleFullscreen = useCallback(() => {
     setIsFullscreen((v) => !v)
-    PortableTextEditor.focus(ref.current)
-  }, [ref])
+    if (forwardedRef.current) PortableTextEditor.focus(forwardedRef.current)
+  }, [forwardedRef])
 
   // Reset invalidValue if new value is coming in from props
   useEffect(() => {
@@ -170,17 +174,28 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
           })
           break
         case 'selection':
-          if (shouldSetEditorFormBuilderFocus(ref.current, change.selection, focusPath)) {
-            onFocus(change.selection.focus.path)
+          if (
+            forwardedRef.current &&
+            shouldSetEditorFormBuilderFocus(
+              forwardedRef.current,
+              change.selection,
+              focusPath || EMPTY_ARRAY
+            )
+          ) {
+            onFocus(change.selection?.focus.path)
           }
           break
         case 'focus':
           setHasFocus(true)
-          onFocus(PortableTextEditor.getSelection(ref.current)?.focus.path || [])
+          onFocus(
+            (forwardedRef.current &&
+              PortableTextEditor.getSelection(forwardedRef.current)?.focus.path) ||
+              []
+          )
           break
         case 'blur':
           setHasFocus(false)
-          onBlur()
+          onBlur?.()
           break
         case 'undo':
         case 'redo':
@@ -200,21 +215,21 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
         default:
       }
     },
-    [focusPath, onBlur, onChange, onFocus, ref, toast]
+    [focusPath, forwardedRef, onBlur, onChange, onFocus, toast]
   )
 
   const handleFocusSkipperClick = useCallback(() => {
-    if (ref.current) {
-      PortableTextEditor.focus(ref.current)
+    if (forwardedRef.current) {
+      PortableTextEditor.focus(forwardedRef.current)
     }
-  }, [ref])
+  }, [forwardedRef])
 
   const handleIgnoreValidation = useCallback((): void => {
     setIgnoreValidationError(true)
   }, [])
 
   const respondToInvalidContent = useMemo(() => {
-    if (invalidValue) {
+    if (invalidValue && invalidValue.resolution) {
       return (
         <Box marginBottom={2}>
           <RespondToInvalidContent

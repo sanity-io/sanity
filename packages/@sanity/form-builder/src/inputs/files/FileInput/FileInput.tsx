@@ -20,7 +20,17 @@ import {
   SchemaType,
 } from '@sanity/types'
 import {ImageIcon, SearchIcon} from '@sanity/icons'
-import {Box, Button, Card, Dialog, Menu, MenuButton, MenuItem, ToastParams} from '@sanity/ui'
+import {
+  Box,
+  Button,
+  Card,
+  Dialog,
+  Menu,
+  MenuButton,
+  MenuItem,
+  ThemeColorToneKey,
+  ToastParams,
+} from '@sanity/ui'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {Uploader, UploaderResolver, UploadOptions} from '../../../sanity/uploads/types'
 import {FileTarget, FileInfo} from '../common/styles'
@@ -32,6 +42,7 @@ import {PlaceholderText} from '../common/PlaceholderText'
 import {UploadPlaceholder} from '../common/UploadPlaceholder'
 import {UploadWarning} from '../common/UploadWarning'
 import {EMPTY_ARRAY} from '../../../utils/empty'
+import {FIXME} from '../../../types'
 import {CardOverlay, FlexContainer} from './styles'
 import {FileInputField} from './FileInputField'
 import {FileDetails} from './FileDetails'
@@ -165,7 +176,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
     const {type} = this.props
 
     const match = files
-      .map((file) => ({file, uploader: this.props.resolveUploader(type, file)}))
+      .map((file) => ({file, uploader: this.props.resolveUploader?.(type, file)}))
       .find((result) => result.uploader)
 
     if (match) {
@@ -317,7 +328,8 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   handleOpenDialog = () => {
     const {type, onFocus} = this.props
     const otherFields = type.fields.filter(
-      (field) => !HIDDEN_FIELDS.includes(field.name) && !(field.type as any)?.options?.isHighlighted
+      (field) =>
+        !HIDDEN_FIELDS.includes(field.name) && !(field.type as FIXME)?.options?.isHighlighted
     )
 
     /* for context: this code will only ever run if there are fields which are not highlighted.
@@ -366,7 +378,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
     return this.props.focusPath?.[0] === 'asset'
   }
 
-  handleFileTargetFocus = (event) => {
+  handleFileTargetFocus = (event: FIXME) => {
     // We want to handle focus when the file target element *itself* receives
     // focus, not when an interactive child element receives focus. Since React has decided
     // to let focus bubble, so this workaround is needed
@@ -376,7 +388,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
     }
   }
   handleFileTargetBlur = () => {
-    this.props.onBlur()
+    this.props.onBlur?.()
   }
   handleFilesOver = (fileInfo: FileInfo[]) => {
     this.setState({
@@ -490,11 +502,11 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
     )
   }
 
-  renderAssetMenu(tone) {
+  renderAssetMenu(tone: ThemeColorToneKey) {
     const {type, readOnly, directUploads, resolveUploader} = this.props
     const {hoveringFiles} = this.state
 
-    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
+    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader?.(type, file))
     const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
 
     return (
@@ -574,7 +586,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
     const {readOnly, type, directUploads, resolveUploader} = this.props
     const {hoveringFiles} = this.state
 
-    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
+    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader?.(type, file))
     const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
 
     const accept = get(type, 'options.accept', '')
@@ -653,7 +665,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
       focusPath.length > 0 && otherFields.some((field) => focusPath[0] === field.name)
 
     function getFileTone() {
-      const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
+      const acceptedFiles = hoveringFiles.filter((file) => resolveUploader?.(type, file))
       const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
 
       if (hoveringFiles.length > 0) {

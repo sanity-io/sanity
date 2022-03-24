@@ -64,10 +64,10 @@ function uploadSanityAsset(
 
 const uploadAsset = withMaxConcurrency(uploadSanityAsset, MAX_CONCURRENT_UPLOADS)
 
-export const uploadImageAsset = (file: File | Blob, options: UploadOptions) =>
+export const uploadImageAsset = (file: File | Blob, options?: UploadOptions) =>
   uploadAsset('image', file, options)
 
-export const uploadFileAsset = (file: File | Blob, options: UploadOptions) =>
+export const uploadFileAsset = (file: File | Blob, options?: UploadOptions) =>
   uploadAsset('file', file, options)
 
 // note: there's currently 100% overlap between the ImageAsset document and the FileAsset documents as per interface required by the image and file input

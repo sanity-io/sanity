@@ -33,14 +33,14 @@ interface EditorProps {
   onFocus: (nextPath: Path) => void
   onPaste?: OnPasteFn
   onToggleFullscreen: () => void
-  readOnly: boolean | null
+  readOnly?: boolean
   renderAnnotation: RenderAnnotationFunction
   renderBlock: RenderBlockFunction
   renderChild: RenderChildFunction
   scrollElement: HTMLElement | null
   scrollSelectionIntoView: ScrollSelectionIntoViewFunction
   setPortalElement?: (portalElement: HTMLDivElement | null) => void
-  setScrollElement: (scrollElement: HTMLElement) => void
+  setScrollElement: (scrollElement: HTMLElement | null) => void
 }
 
 const renderDecorator: RenderDecoratorFunction = (mark, mType, attributes, defaultRender) => {
@@ -66,7 +66,7 @@ export function Editor(props: EditorProps) {
     setScrollElement,
   } = props
   const {isTopLayer} = useLayer()
-  const editableRef = useRef<HTMLDivElement>()
+  const editableRef = useRef<HTMLDivElement | null>(null)
 
   const {element: boundaryElement} = useBoundaryElement()
 
@@ -90,7 +90,7 @@ export function Editor(props: EditorProps) {
 
   // Keep the editor focused even though we are clicking on the background or the toolbar of the editor.
   const handleMouseDown = useCallback((event: React.SyntheticEvent) => {
-    if (event.target instanceof Node && !editableRef.current.contains(event.target)) {
+    if (event.target instanceof Node && !editableRef.current?.contains(event.target)) {
       event.preventDefault()
       event.stopPropagation()
     }

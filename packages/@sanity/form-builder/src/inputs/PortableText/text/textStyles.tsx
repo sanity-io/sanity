@@ -2,48 +2,50 @@ import {Heading, Text} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
 
+type TextStyleProps = Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'ref'>
+
 // Without this container, editing with Android breaks due to how Text is styled via responsiveFont in @sanity/ui
 const TextContainer = styled.div`
   display: block;
 `
 
-export const Normal = ({children, ...rest}) => (
+export const Normal = ({children, ...rest}: TextStyleProps) => (
   <Text data-testid="text-style--normal" {...rest}>
     <TextContainer>{children}</TextContainer>
   </Text>
 )
 
-export const Heading1 = ({children, ...rest}) => (
+export const Heading1 = ({children, ...rest}: TextStyleProps) => (
   <Heading as="h1" data-testid="text-style--h1" size={5} {...rest}>
     <TextContainer>{children}</TextContainer>
   </Heading>
 )
 
-export const Heading2 = ({children, ...rest}) => (
+export const Heading2 = ({children, ...rest}: TextStyleProps) => (
   <Heading as="h2" data-testid="text-style--h2" size={4} {...rest}>
     <TextContainer>{children}</TextContainer>
   </Heading>
 )
 
-export const Heading3 = ({children, ...rest}) => (
+export const Heading3 = ({children, ...rest}: TextStyleProps) => (
   <Heading as="h3" data-testid="text-style--h3" size={3} {...rest}>
     <TextContainer>{children}</TextContainer>
   </Heading>
 )
 
-export const Heading4 = ({children, ...rest}) => (
+export const Heading4 = ({children, ...rest}: TextStyleProps) => (
   <Heading as="h4" data-testid="text-style--h4" size={2} {...rest}>
     <TextContainer>{children}</TextContainer>
   </Heading>
 )
 
-export const Heading5 = ({children, ...rest}) => (
+export const Heading5 = ({children, ...rest}: TextStyleProps) => (
   <Heading as="h5" data-testid="text-style--h5" size={1} {...rest}>
     <TextContainer>{children}</TextContainer>
   </Heading>
 )
 
-export const Heading6 = ({children, ...rest}) => (
+export const Heading6 = ({children, ...rest}: TextStyleProps) => (
   <Heading as="h6" data-testid="text-style--h6" size={0} {...rest}>
     <TextContainer>{children}</TextContainer>
   </Heading>
@@ -66,13 +68,13 @@ const BlockQuoteRoot = styled.blockquote`
   }
 `
 
-export const BlockQuote = ({children, ...rest}) => (
+export const BlockQuote = ({children, ...rest}: TextStyleProps) => (
   <BlockQuoteRoot data-testid="text-style--blockquote" {...rest}>
     <Text as="p">{children}</Text>
   </BlockQuoteRoot>
 )
 
-export const TEXT_STYLES = {
+export const TEXT_STYLES: Record<string, React.ComponentType<TextStyleProps>> = {
   normal: Normal,
   h1: Heading1,
   h2: Heading2,

@@ -8,9 +8,9 @@ import {Details} from '../../components/Details'
 declare const __DEV__: boolean
 
 interface UntypedValueInputProps {
-  validTypes?: string[]
-  value?: Record<string, unknown>
-  onChange?: (event: PatchEvent, value?: Record<string, unknown>) => void
+  validTypes: string[]
+  value: Record<string, unknown>
+  onChange: (event: PatchEvent, value?: Record<string, unknown>) => void
 }
 
 function SetMissingTypeButton({

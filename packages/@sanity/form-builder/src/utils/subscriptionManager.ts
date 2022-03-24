@@ -1,11 +1,13 @@
-export function createSubscriptionManager(...keys) {
-  const registry = {}
-  function validate(key) {
+import {Subscription} from 'rxjs'
+
+export function createSubscriptionManager(...keys: string[]) {
+  const registry: Record<string, Subscription> = {}
+  function validate(key: string) {
     if (!keys.includes(key)) {
       throw new Error(`Invalid subscription key: "${key}". Must be one of: ${keys.join(', ')}`)
     }
   }
-  function add(key, subscription) {
+  function add(key: string, subscription: Subscription) {
     validate(key)
     if (registry[key]) {
       throw new Error(
@@ -15,14 +17,14 @@ export function createSubscriptionManager(...keys) {
     registry[key] = subscription
   }
 
-  function unsubscribe(key) {
+  function unsubscribe(key: string) {
     validate(key)
     if (registry[key]) {
       registry[key].unsubscribe()
-      registry[key] = null
+      delete registry[key]
     }
   }
-  function replace(key, subscription) {
+  function replace(key: string, subscription: Subscription) {
     if (registry[key]) {
       unsubscribe(key)
     }
@@ -34,9 +36,9 @@ export function createSubscriptionManager(...keys) {
   }
 
   return {
-    add: add,
-    replace: replace,
-    unsubscribe: unsubscribe,
-    unsubscribeAll: unsubscribeAll,
+    add,
+    replace,
+    unsubscribe,
+    unsubscribeAll,
   }
 }

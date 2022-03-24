@@ -8,11 +8,11 @@ type Props = {
   children: ReactNode
   size: number
   originalFilename: string
-  onClick: () => void
-  muted: boolean
+  onClick?: () => void
+  muted?: boolean
   disabled: boolean
   isMenuOpen: boolean
-  onMenuOpen: (boolean) => void
+  onMenuOpen: (flag: boolean) => void
 }
 
 export function FileDetails(props: Props) {

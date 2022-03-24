@@ -21,10 +21,7 @@ export const SelectInput = React.forwardRef(function SelectInput(
   forwardedRef: React.ForwardedRef<HTMLSelectElement | HTMLInputElement>
 ) {
   const {value, readOnly, validation, type, level, onChange, onFocus, presence} = props
-  const items = useMemo(
-    () => ((type.options?.list || []) as unknown[]).map(toSelectItem),
-    [type.options?.list]
-  )
+  const items = useMemo(() => (type.options?.list || []).map(toSelectItem), [type.options?.list])
   const currentItem = items.find((item) => item.value === value)
   const isRadio = type.options && type.options.layout === 'radio'
   const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
@@ -48,9 +45,9 @@ export const SelectInput = React.forwardRef(function SelectInput(
   const inputId = useId()
 
   const handleChange = React.useCallback(
-    (nextItem: TitledListValue<string | number>) => {
+    (nextItem: TitledListValue<string | number> | null) => {
       onChange(
-        PatchEvent.from(typeof nextItem.value === 'undefined' ? unset() : set(nextItem.value))
+        PatchEvent.from(typeof nextItem?.value === 'undefined' ? unset() : set(nextItem.value))
       )
     },
     [onChange]
@@ -82,7 +79,7 @@ export const SelectInput = React.forwardRef(function SelectInput(
           items={items}
           value={currentItem}
           onChange={handleChange}
-          direction={type.options.direction || 'vertical'}
+          direction={type.options?.direction || 'vertical'}
           ref={forwardedRef as React.ForwardedRef<HTMLInputElement>}
           readOnly={readOnly}
           onFocus={handleFocus}
@@ -120,7 +117,7 @@ export const SelectInput = React.forwardRef(function SelectInput(
     items,
     optionValueFromItem,
     readOnly,
-    type.options.direction,
+    type.options?.direction,
   ])
 
   return (
@@ -140,9 +137,9 @@ export const SelectInput = React.forwardRef(function SelectInput(
 const RadioSelect = forwardRef(function RadioSelect(
   props: {
     items: TitledListValue<string | number>[]
-    value: TitledListValue<string | number>
+    value?: TitledListValue<string | number>
     direction: 'horizontal' | 'vertical'
-    readOnly: boolean
+    readOnly?: boolean
     onChange: (value: TitledListValue<string | number> | null) => void
     onFocus: (event: React.FocusEvent<HTMLElement>) => void
     customValidity?: string
@@ -181,8 +178,8 @@ const RadioSelectItem = forwardRef(function RadioSelectItem(
     item: TitledListValue<string | number>
     onChange: (value: TitledListValue<string | number> | null) => void
     onFocus: (event: React.FocusEvent<HTMLElement>) => void
-    readOnly: boolean
-    value: TitledListValue<string | number>
+    readOnly?: boolean
+    value?: TitledListValue<string | number>
   },
   ref: React.ForwardedRef<HTMLInputElement>
 ) {

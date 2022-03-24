@@ -1,7 +1,8 @@
 import {omit, clone, isObject} from 'lodash'
+import {FIXME} from '../types'
 import {applyPatch} from './applyPatch'
 
-export function _objectApply(value, patch) {
+export function _objectApply(value: FIXME, patch: FIXME) {
   const nextValue = clone(value)
   if (patch.path.length === 0) {
     // its directed to me

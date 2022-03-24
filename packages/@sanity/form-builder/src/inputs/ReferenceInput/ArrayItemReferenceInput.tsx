@@ -60,6 +60,7 @@ import {InsertEvent} from '../arrays/ArrayOfObjectsInput/types'
 import {randomKey} from '../arrays/common/randomKey'
 import {InsertMenu} from '../arrays/ArrayOfObjectsInput/InsertMenu'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
+import {FIXME} from '../../types'
 import {ReferenceInputProps, CreateOption, SearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {useReferenceInfo} from './useReferenceInfo'
@@ -149,23 +150,27 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
   }
 
   const handleDuplicate = useCallback(() => {
-    onInsert?.({
-      item: {...value, _key: randomKey()},
-      position: 'after',
-      path: [{_key: value._key}],
-      edit: false,
-    })
+    if (value?._key) {
+      onInsert?.({
+        item: {...value, _key: randomKey()},
+        position: 'after',
+        path: [{_key: value._key}],
+        edit: false,
+      })
+    }
   }, [onInsert, value])
 
   const handleInsert = useCallback(
     (pos: 'before' | 'after') => {
-      onInsert?.({
-        item: {_type: type.name, _key: randomKey()},
-        position: pos,
-        path: [{_key: value._key}],
-      })
+      if (value?._key) {
+        onInsert?.({
+          item: {_type: type.name, _key: randomKey()},
+          position: pos,
+          path: [{_key: value._key}],
+        })
+      }
     },
-    [onInsert, type.name, value._key]
+    [onInsert, type.name, value?._key]
   )
 
   const handleChange = useCallback(
@@ -245,8 +250,8 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
   const hasFocusAtRef = focusPath.length === 1 && (focusPath[0] === '_ref' || focusPath[0] === '$')
   const focusElementRef = useForwardedRef(forwardedRef)
   useDidUpdate({hasFocusAt: hasFocusAtRef, ref: value?._ref}, (prev, current) => {
-    const refUpdated = prev.ref !== current.ref
-    const focusAtUpdated = prev.hasFocusAt !== current.hasFocusAt
+    const refUpdated = prev?.ref !== current.ref
+    const focusAtUpdated = prev?.hasFocusAt !== current.hasFocusAt
 
     if ((focusAtUpdated || refUpdated) && current.hasFocusAt) {
       // if search mode changed and we're having focus always ensure the
@@ -257,7 +262,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
   const weakIs = value?._weak ? 'weak' : 'strong'
   const weakShouldBe = type.weak === true ? 'weak' : 'strong'
 
-  const hasRef = valueHasRef(value)
+  const hasRef = value && valueHasRef(value)
   // If the reference value is marked with _strengthenOnPublish,
   // we allow weak references if the reference points to a document that has a draft but not a published
   // In all other cases we should display a "weak mismatch" warning
@@ -397,9 +402,9 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
   const isEditing = hasFocusAtRef
 
   // --- click outside handling
-  const clickOutsideBoundaryRef = useRef<HTMLDivElement>()
-  const autocompletePortalRef = useRef<HTMLDivElement>()
-  const createButtonMenuPortalRef = useRef<HTMLDivElement>()
+  const clickOutsideBoundaryRef = useRef<HTMLDivElement | null>(null)
+  const autocompletePortalRef = useRef<HTMLDivElement | null>(null)
+  const createButtonMenuPortalRef = useRef<HTMLDivElement | null>(null)
   useOnClickOutside(
     [clickOutsideBoundaryRef, autocompletePortalRef, createButtonMenuPortalRef],
     () => {
@@ -409,7 +414,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
     }
   )
 
-  const autocompletePopoverReferenceElementRef = useRef()
+  const autocompletePopoverReferenceElementRef = useRef<HTMLDivElement | null>(null)
 
   return (
     <RowWrapper
@@ -492,7 +497,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
                   padding={1}
                   paddingRight={3}
                   radius={2}
-                  forwardedAs={EditReferenceLink}
+                  forwardedAs={EditReferenceLink as FIXME}
                   documentId={value?._ref}
                   documentType={refType?.name}
                   data-as="a"
@@ -542,7 +547,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
                     <FormFieldValidationStatus validation={validation} />
                   </Box>
                 )}
-                {!value._key && (
+                {!value?._key && (
                   <Box marginLeft={1}>
                     <Tooltip
                       content={
@@ -616,7 +621,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
         >
           <Stack space={3}>
             <Text as="p" muted size={1}>
-              <strong>{loadableReferenceInfo.result.preview.published.title}</strong> is published
+              <strong>{loadableReferenceInfo.result?.preview.published?.title}</strong> is published
               and this reference should now be{' '}
               {type.weak ? <>finalized</> : <>converted to a strong reference</>}.
             </Text>

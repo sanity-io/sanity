@@ -27,7 +27,7 @@ export function PreviewReferenceValue(props: {
   const refTypeName = referenceInfo.result?.type
   const refType = type.to.find((toType) => toType.type === refTypeName)
 
-  if (referenceInfo.result.availability.available && !refType) {
+  if (referenceInfo.result.availability?.available && !refType) {
     return (
       <Stack space={2} padding={2}>
         <Text as="p">
@@ -37,6 +37,7 @@ export function PreviewReferenceValue(props: {
       </Stack>
     )
   }
+
   return (
     <CrossDatasetReferencePreview
       availability={referenceInfo.result.availability}

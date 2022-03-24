@@ -20,7 +20,7 @@ export const AutocompleteContainer = forwardRef(function AutocompleteContainer(
   },
   forwardedRef: ForwardedRef<HTMLDivElement>
 ) {
-  const [rootElement, setRootElement] = useState<HTMLDivElement>()
+  const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
 
   const handleNewRef = useCallback(
     (element: HTMLDivElement) => {
@@ -35,7 +35,7 @@ export const AutocompleteContainer = forwardRef(function AutocompleteContainer(
   const inputWrapperRect = useElementRect(rootElement)
 
   return (
-    <Root ref={handleNewRef} gap={1} $narrow={inputWrapperRect?.width < 480}>
+    <Root ref={handleNewRef} gap={1} $narrow={(inputWrapperRect?.width || 0) < 480}>
       {props.children}
     </Root>
   )
@@ -44,7 +44,7 @@ export const AutocompleteContainer = forwardRef(function AutocompleteContainer(
 function setForwardedRef<T>(ref: ForwardedRef<T>, instance: T) {
   if (typeof ref === 'function') {
     ref(instance)
-  } else {
+  } else if (ref) {
     ref.current = instance
   }
 }

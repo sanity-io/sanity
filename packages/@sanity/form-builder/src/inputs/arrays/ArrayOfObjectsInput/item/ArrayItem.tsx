@@ -18,15 +18,16 @@ import {RowItem} from './RowItem'
 import {CellItem} from './CellItem'
 
 export interface ArrayItemProps
-  extends Omit<FormInputProps<ArrayMember, ArraySchemaType>, 'level' | 'onChange'> {
+  extends Omit<FormInputProps<ArrayMember, ArraySchemaType>, 'level' | 'onChange' | 'value'> {
+  ReferenceItemComponent: ReferenceItemComponentType
+  filterField: FormBuilderFilterFieldFn
   index: number
   itemKey: string | undefined
   layout?: 'media' | 'default'
-  onRemove: (value: ArrayMember) => void
-  onInsert: (event: InsertEvent) => void
   onChange: (event: PatchEvent, value: ArrayMember) => void
-  ReferenceItemComponent: ReferenceItemComponentType
-  filterField: FormBuilderFilterFieldFn
+  onInsert: (event: InsertEvent) => void
+  onRemove: (value: ArrayMember) => void
+  value: ArrayMember
 }
 
 export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
@@ -38,7 +39,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
     itemKey,
     readOnly,
     presence,
-    focusPath,
+    focusPath = EMPTY_ARRAY,
     onFocus,
     onChange,
     onRemove,
@@ -49,15 +50,15 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
     ReferenceItemComponent,
   } = props
 
-  const innerElementRef = useRef(null)
+  const innerElementRef = useRef<HTMLDivElement | null>(null)
   const conditionalReadOnly = useConditionalReadOnly() ?? readOnly
-  const hasFocusWithin = hasFocusWithinPath(props.focusPath, props.value)
+  const hasFocusWithin = hasFocusWithinPath(focusPath, props.value)
   useScrollIntoViewOnFocusWithin(innerElementRef, hasFocusWithin)
 
-  useDidUpdate(hasFocusAtPath(props.focusPath, props.value), (hadFocus, hasFocus) => {
+  useDidUpdate(hasFocusAtPath(focusPath, props.value), (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus && innerElementRef.current) {
       // Note: if editing an inline item, focus is handled by the item input itself and no ref is being set
-      innerElementRef.current.focus()
+      innerElementRef.current?.focus()
     }
   })
 
@@ -82,7 +83,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
 
   const handleEditOpen = useCallback(() => emitFocus([FOCUS_TERMINATOR]), [emitFocus])
   const handleEditClose = useCallback(() => {
-    if (isEmpty(value)) {
+    if (isEmpty(value!)) {
       onRemove(value)
     } else {
       emitFocus([])
@@ -91,11 +92,11 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
 
   const handleChange = useCallback(
     (event: PatchEvent, valueOverride?: ArrayMember) =>
-      onChange(event, typeof valueOverride === 'undefined' ? value : valueOverride),
+      onChange(event, typeof valueOverride === 'undefined' ? value! : valueOverride),
     [onChange, value]
   )
 
-  const handleRemove = useCallback(() => onRemove(value), [onRemove, value])
+  const handleRemove = useCallback(() => onRemove(value!), [onRemove, value])
 
   const handleKeyPress = useCallback(
     (event) => {
@@ -117,23 +118,26 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
   const isGrid = type.options?.layout === 'grid'
   const ItemComponent = isGrid ? CellItem : RowItem
 
-  const itemMarkers = React.useMemo(
+  const itemValidation = React.useMemo(
     () => validation.filter((marker: ValidationMarker) => startsWith(itemPath, marker.path)),
     [itemPath, validation]
   )
 
-  const scopedValidation = useMemo(
+  const scopedValidation: ValidationMarker[] = useMemo(
     () =>
-      itemMarkers.length === 0
+      itemValidation.length === 0
         ? EMPTY_ARRAY
-        : itemMarkers.map((marker) => {
+        : itemValidation.map((marker) => {
             if (marker.path.length <= 1) {
               return marker
             }
             const level = marker.level === 'error' ? 'errors' : 'warnings'
-            return {...marker, item: marker.item.cloneWithMessage(`Contains ${level}`)}
+            return {
+              ...marker,
+              item: marker.item.cloneWithMessage?.(`Contains ${level}`),
+            } as ValidationMarker
           }),
-    [itemMarkers]
+    [itemValidation]
   )
 
   const itemPresence = useMemo(
@@ -151,14 +155,14 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
     const form = (
       <ItemForm
         onChange={handleChange}
-        validation={itemMarkers}
+        validation={itemValidation}
         filterField={filterField}
         focusPath={focusPath}
         onFocus={onFocus}
         onBlur={onBlur}
         onInsert={onInsert}
         insertableTypes={type.of}
-        type={itemType}
+        type={itemType!}
         value={value}
         isSortable={isSortable}
         ReferenceItemComponent={ReferenceItemComponent}
@@ -176,7 +180,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
           conditionalReadOnly ? `View ${itemType?.title || ''}` : `Edit ${itemType?.title || ''}`
         }
         type={type?.options?.editModal === 'fold' ? 'dialog' : type?.options?.editModal || 'dialog'}
-        id={value._key}
+        id={value?._key}
         onClose={handleEditClose}
         legacy_referenceElement={innerElementRef.current}
       >
@@ -194,7 +198,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
     isGrid,
     isReference,
     isSortable,
-    itemMarkers,
+    itemValidation,
     itemPresence,
     itemType,
     onBlur,

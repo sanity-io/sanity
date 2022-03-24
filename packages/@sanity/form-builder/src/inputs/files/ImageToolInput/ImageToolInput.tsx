@@ -12,6 +12,7 @@ import {Checkerboard} from '../../../components/Checkerboard'
 import {withFocusRing} from '../../../components/withFocusRing'
 import {RatioBox} from '../common/RatioBox'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
+import {EMPTY_ARRAY} from '../../../utils/empty'
 import {useLoadImage} from './useLoadImage'
 
 interface Value {
@@ -62,7 +63,7 @@ export const ImageToolInput = forwardRef(function ImageToolInput(
     compareValue,
     level,
     readOnly,
-    focusPath,
+    focusPath = EMPTY_ARRAY,
     onFocus,
     presence,
     onChange,

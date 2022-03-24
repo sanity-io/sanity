@@ -5,7 +5,7 @@ import {MenuGroup, MenuItem, PopoverProps} from '@sanity/ui'
 import {InsertAboveIcon, InsertBelowIcon} from '@sanity/icons'
 
 interface Props {
-  types: SchemaType[]
+  types?: SchemaType[]
   onInsert: (pos: 'before' | 'after', type: SchemaType) => void
 }
 
@@ -47,12 +47,12 @@ function InsertMenuGroup(
 ) {
   const {types, onInsert, pos, text, icon} = props
 
-  if (types.length === 1) {
+  if (types?.length === 1) {
     return <MenuItem key={pos} text={text} icon={icon} onClick={() => onInsert(pos, types[0])} />
   }
   return (
     <MenuGroup text={text} key={pos} popover={MENU_POPOVER_PROPS}>
-      {types.map((insertableType) => (
+      {types?.map((insertableType) => (
         <MenuItem
           key={insertableType.name}
           icon={insertableType.icon}

@@ -5,7 +5,6 @@ import Schema from '@sanity/schema'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {of} from 'rxjs'
 import {noop} from 'lodash'
-
 import {AvailabilityReason} from '@sanity/base/_internal'
 import {Reference} from '@sanity/types'
 import {ReferenceInput} from '../ReferenceInput'
@@ -26,7 +25,7 @@ const UNAVAILABLE_PERMISSION_DENIED = {
   reason: AvailabilityReason.PERMISSION_DENIED,
 } as const
 
-const infinityNoop = new Proxy(() => infinityNoop, {get: () => infinityNoop})
+const infinityNoop: any = new Proxy<any>(() => infinityNoop, {get: () => infinityNoop})
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const StubComponent = forwardRef(
   ({documentId, documentType}: {documentId: string; documentType: string}, ref) => {

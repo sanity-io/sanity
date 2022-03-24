@@ -15,7 +15,7 @@ import {useUnique} from '../utils/useUnique'
 import {getPTEToolbarActionGroups} from './helpers'
 import {BlockStyleItem, PTEToolbarAction, PTEToolbarActionGroup} from './types'
 
-export function useFocusBlock(): PortableTextBlock {
+export function useFocusBlock(): PortableTextBlock | undefined {
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
 
@@ -23,7 +23,7 @@ export function useFocusBlock(): PortableTextBlock {
   return useMemo(() => PortableTextEditor.focusBlock(editor), [editor, selection]) // selection must be an additional dep here
 }
 
-export function useFocusChild(): PortableTextChild {
+export function useFocusChild(): PortableTextChild | undefined {
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
 
