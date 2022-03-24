@@ -14,6 +14,10 @@ const datastoresCache = (() => {
   function set(context: DatastoresContext, datastores: Datastores) {
     const map1 = map0.get(context.config) || new WeakMap()
 
+    if (!map0.has(context.config)) {
+      map0.set(context.config, map1)
+    }
+
     map1.set(context.source, datastores)
   }
 
