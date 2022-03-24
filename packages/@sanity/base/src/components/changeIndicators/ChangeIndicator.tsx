@@ -97,7 +97,7 @@ export function ChangeIndicatorScope(props: {path: Path; children?: React.ReactN
 
 export function ChangeIndicatorProvider(props: {
   path: Path
-  focusPath: Path
+  focusPath?: Path
   value: unknown
   compareValue: unknown
   children: React.ReactNode

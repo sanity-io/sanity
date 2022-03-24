@@ -48,7 +48,7 @@ export type FormBuilderCustomMarkersComponent = React.ComponentType<{markers: Po
  */
 export type FormBuilderMarkersComponent = React.ComponentType<{
   markers: PortableTextMarker[]
-  renderCustomMarkers: RenderCustomMarkers
+  renderCustomMarkers?: RenderCustomMarkers
   validation: ValidationMarker[]
 }>
 
@@ -71,7 +71,7 @@ export interface FormArrayInputFunctionsProps<SchemaType extends ArraySchemaType
   onCreateValue: (type: SchemaType) => MemberType
   onFocusItem: (item: MemberType, index: number) => void
   onPrependItem: (itemValue: MemberType) => void
-  readOnly: boolean | null
+  readOnly?: boolean
   type: SchemaType
   value?: MemberType[]
 }
@@ -100,8 +100,8 @@ export type FormInputProps<
     ? ObjectSchemaType
     : SchemaType
 > = {
-  compareValue?: T | null
-  focusPath: Path
+  compareValue?: T
+  focusPath?: Path
   level: number
   validation: ValidationMarker[]
   onBlur?: () => void
@@ -118,7 +118,7 @@ export type FormInputProps<
   // readOnly?: ConditionalProperty
   readOnly?: boolean
   type: S
-  value?: T | null
+  value?: T
 }
 
 /**
