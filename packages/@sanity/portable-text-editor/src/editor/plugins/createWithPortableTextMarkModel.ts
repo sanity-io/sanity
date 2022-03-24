@@ -41,8 +41,8 @@ export function createWithPortableTextMarkModel(
       const [node, path] = nodeEntry
       const isSpan = Text.isText(node) && node._type === portableTextFeatures.types.span.name
       const isTextBlock = editor.isTextBlock(node)
-      if (isSpan && Text.isText(node)) {
-        if (!node.marks) {
+      if ((isSpan && Text.isText(node)) || isTextBlock) {
+        if (!isTextBlock && !Array.isArray(node.marks)) {
           debug('Adding .marks to span node')
           Transforms.setNodes(editor, {marks: []}, {at: path})
           editor.onChange()
@@ -52,7 +52,6 @@ export function createWithPortableTextMarkModel(
           if (
             op.type === 'merge_node' &&
             op.path.length === 1 &&
-            Element.isElementProps(op.properties) &&
             'markDefs' in op.properties &&
             op.properties._type === portableTextFeatures.types.block.name &&
             Array.isArray(op.properties.markDefs) &&
@@ -63,12 +62,13 @@ export function createWithPortableTextMarkModel(
             debug(`Copying markDefs over to merged block`, op)
             if (editor.isTextBlock(targetBlock)) {
               const oldDefs = (Array.isArray(targetBlock.markDefs) && targetBlock.markDefs) || []
-              Transforms.setNodes(
-                editor,
-                {markDefs: uniq([...oldDefs, ...op.properties.markDefs])},
-                {at: targetPath, voids: false}
-              )
-              editor.onChange()
+              const newMarkDefs = uniq([...oldDefs, ...op.properties.markDefs])
+              const isNormalized = isEqual(newMarkDefs, targetBlock.markDefs)
+              // eslint-disable-next-line max-depth
+              if (!isNormalized) {
+                Transforms.setNodes(editor, {markDefs: newMarkDefs}, {at: targetPath, voids: false})
+                editor.onChange()
+              }
             }
           }
           // Make sure markDefs are copied over to new block when splitting a block.
@@ -116,8 +116,8 @@ export function createWithPortableTextMarkModel(
             }
           }
         }
-        // Remove marks if text is empty
-        if (Array.isArray(node.marks) && node.marks.length > 0 && node.text === '') {
+        // Empty marks if text is empty
+        if (isSpan && Array.isArray(node.marks) && node.marks.length > 0 && node.text === '') {
           Transforms.setNodes(editor, {marks: []}, {at: path, voids: false})
           editor.onChange()
         }
