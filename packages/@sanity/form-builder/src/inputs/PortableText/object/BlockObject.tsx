@@ -84,7 +84,7 @@ export const BlockObject = React.forwardRef(function BlockObject(
 
   const handleDelete = useCallback(() => {
     const sel: EditorSelection = {focus: {path, offset: 0}, anchor: {path, offset: 0}}
-    PortableTextEditor.delete(editor, sel, {mode: 'block'})
+    PortableTextEditor.delete(editor, sel, {mode: 'blocks'})
     // The focus seems to get stuck somehow on the dropdown menu.
     // Setting focus like this seems to avoid that.
     setTimeout(() => PortableTextEditor.focus(editor))
