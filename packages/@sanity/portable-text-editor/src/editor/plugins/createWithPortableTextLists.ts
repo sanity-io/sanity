@@ -1,5 +1,5 @@
 import {Editor, Transforms, Element, Text} from 'slate'
-import {PortableTextBlock, PortableTextFeatures} from '../../types/portableText'
+import {PortableTextBlock, PortableTextFeatures, TextBlock} from '../../types/portableText'
 import {PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
 
@@ -92,7 +92,16 @@ export function createWithPortableTextLists(portableTextFeatures: PortableTextFe
       selectedBlocks.forEach(([node, path]) => {
         if (Element.isElement(node)) {
           debug('Unset list')
-          Transforms.setNodes(editor, {...node, level: undefined, listItem: undefined}, {at: path})
+          Transforms.setNodes(
+            editor,
+            // @todo: fix typing
+            {
+              ...node,
+              level: undefined,
+              listItem: undefined,
+            } as any,
+            {at: path}
+          )
         }
       })
       return true // Note: we are exiting the plugin chain by not returning editor (or hotkey plugin 'enter' will fire)

@@ -38,7 +38,7 @@ export type PortableTextEditorProps = {
   incomingPatches$?: PatchObservable
   readOnly?: boolean
   type: Type | RawSchemaType
-  value: PortableTextBlock[] | undefined
+  value?: PortableTextBlock[]
 }
 
 type State = {

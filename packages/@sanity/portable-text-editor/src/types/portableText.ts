@@ -8,7 +8,7 @@ export type PortableTextBlock = {
 }
 
 export interface TextBlock {
-  _type: string
+  _type: 'block'
   _key: string
   children: PortableTextChild[]
   markDefs: MarkDef[]
