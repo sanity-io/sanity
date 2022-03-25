@@ -1,1 +1,0 @@
-$type vs _type
