@@ -86,11 +86,6 @@
       "require": "./lib/cjs/_exports/studio.js",
       "default": "./lib/esm/_exports/studio.js"
     },
-    "./studioEntry": {
-      "source": "./src/_exports/studioEntry.tsx",
-      "require": "./lib/cjs/_exports/studioEntry.js",
-      "default": "./lib/esm/_exports/studioEntry.js"
-    },
     "./user-color": {
       "source": "./src/_exports/user-color.ts",
       "require": "./lib/cjs/_exports/user-color.js",
@@ -150,9 +145,6 @@
       ],
       "studio": [
         "./lib/dts/src/_exports/studio.d.ts"
-      ],
-      "studioEntry": [
-        "./lib/dts/src/_exports/studioEntry.d.ts"
       ],
       "user-color": [
         "./lib/dts/src/_exports/user-color.d.ts"
