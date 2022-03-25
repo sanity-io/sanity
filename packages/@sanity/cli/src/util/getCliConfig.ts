@@ -13,23 +13,11 @@
  */
 import path from 'path'
 import {promises as fs} from 'fs'
-import {Worker, isMainThread, parentPort, workerData} from 'worker_threads'
+import {Worker} from 'worker_threads'
 import {register} from 'esbuild-register/dist/node'
 import type {CliConfig, SanityJson} from '../types'
 import {dynamicRequire} from './dynamicRequire'
-
-if (!isMainThread) {
-  // We're communicating with a parent process through a message channel
-  getCliConfig(workerData)
-    .then((config) => parentPort?.postMessage({type: 'config', config}))
-    .catch((error) =>
-      parentPort?.postMessage({
-        type: 'error',
-        error: error instanceof Error ? error.stack : error,
-        errorType: error && (error.type || error.name),
-      })
-    )
-}
+import {getCliWorkerPath} from './cliWorker'
 
 export type CliMajorVersion = 2 | 3
 
@@ -66,9 +54,10 @@ export async function getCliConfig(
   }
 }
 
-function getCliConfigForked(cwd: string): Promise<CliConfigResult | null> {
+async function getCliConfigForked(cwd: string): Promise<CliConfigResult | null> {
+  const workerPath = await getCliWorkerPath('util/getCliConfig.worker')
   return new Promise((resolve, reject) => {
-    const worker = new Worker(__filename, {workerData: cwd})
+    const worker = new Worker(workerPath, {workerData: cwd})
     worker.on('message', (message) => {
       if (message.type === 'config') {
         resolve(message.config)

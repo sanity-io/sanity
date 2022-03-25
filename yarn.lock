@@ -15559,7 +15559,7 @@ pkg-dir@4.2.0, pkg-dir@^4.1.0, pkg-dir@^4.2.0:
   dependencies:
     find-up "^4.0.0"
 
-"pkg-dir@< 6 >= 5":
+"pkg-dir@< 6 >= 5", pkg-dir@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/pkg-dir/-/pkg-dir-5.0.0.tgz#a02d6aebe6ba133a928f74aec20bafdfe6b8e760"
   integrity sha512-NPE8TDbzl/3YQYY7CSS228s3g2ollTFnc+Qi3tqmqJp9Vg2ovUpixcJEo2HJScN2Ez+kEaal6y70c0ehqJBJeA==

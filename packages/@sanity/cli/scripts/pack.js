@@ -115,10 +115,12 @@ compiler.run((err, stats) => {
   }
 
   const filtered = stats.compilation.warnings.filter((warn) => {
+    const userRequest = warn.origin && warn.origin.userRequest
     return (
       !warn.origin ||
-      (warn.origin.userRequest.indexOf('spawn-sync.js') === -1 &&
-        warn.origin.userRequest.indexOf('write-file-atomic') === -1)
+      (!userRequest.includes('spawn-sync.js') &&
+        !userRequest.includes('write-file-atomic') &&
+        !userRequest.includes('getCliConfig'))
     )
   })
 
@@ -137,10 +139,10 @@ compiler.run((err, stats) => {
   }
 
   // Make the file executable
-  const outputPath = path.join(basedir, 'bin', 'sanity')
-  fse.chmodSync(outputPath, 0o755)
+  const binPath = path.join(basedir, 'bin', 'sanity')
+  fse.chmodSync(binPath, 0o755)
 
-  // Make paths more dynamic
+  // Make `/foo/bar/sanity/node_modules/...` paths into `/node_modules/...` in comments
   let replacePath = path.normalize(path.join(__dirname, '..'))
   try {
     const monorepoPkg = require('../../../../package.json')
@@ -151,14 +153,12 @@ compiler.run((err, stats) => {
     // do nothing
   }
 
-  const content = fse.readFileSync(outputPath, 'utf8')
-  const replaceRegex = new RegExp(escapeRegex(`*** ${replacePath}`), 'ig')
-  const normalized = content.replace(replaceRegex, '*** ')
-  fse.writeFileSync(outputPath, normalized, 'utf8')
+  const concatPattern = /\/\*! ModuleConcatenation bailout: .*?\*\/\n?/g
+  const builtCliPath = path.join(basedir, 'bin', 'sanity-cli.js')
+  const content = fse.readFileSync(builtCliPath, 'utf8')
+  const normalized = content.replaceAll(`*** ${replacePath}`, '*** ').replaceAll(concatPattern, '')
 
-  console.log(`Done packing to ${path.join(basedir, 'bin', 'sanity-cli.js')}`)
+  fse.writeFileSync(builtCliPath, normalized, 'utf8')
+
+  console.log(`Done packing to ${builtCliPath}`)
 })
-
-function escapeRegex(string) {
-  return `${string}`.replace(/([?!${}*:()|=^[\]/\\.+])/g, '\\$1')
-}
