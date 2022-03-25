@@ -4,9 +4,7 @@ import pFilter from 'p-filter'
 import resolveFrom from 'resolve-from'
 import deburr from 'lodash/deburr'
 import noop from 'lodash/noop'
-import {loadJson} from '@sanity/util/_internal'
 import type {DatasetAclMode} from '@sanity/client'
-import {reduceConfig} from '@sanity/util'
 
 import {debug} from '../../debug'
 import {getClientWrapper} from '../../util/clientWrapper'
@@ -30,11 +28,8 @@ import {validateEmptyPath, absolutify} from './fsUtils'
 import {promptForAclMode, promptForDefaultConfig, promptForTypeScript} from './prompts'
 import {GenerateConfigOptions} from './createStudioConfig'
 
-/* eslint-disable no-process-env */
+// eslint-disable-next-line no-process-env
 const isCI = process.env.CI
-const sanityEnv = process.env.SANITY_INTERNAL_ENV
-const environment = sanityEnv ? sanityEnv : process.env.NODE_ENV
-/* eslint-enable no-process-env */
 
 export interface InitOptions {
   template: string
@@ -229,6 +224,7 @@ export default async function initSanity(
   // Prompt for dataset import (if a dataset is defined)
   if (shouldImport) {
     await doDatasetImport({
+      projectId,
       outputPath,
       coreCommands,
       template,
@@ -739,30 +735,17 @@ export default async function initSanity(
   }
 }
 
-async function doDatasetImport(options: {
+function doDatasetImport(options: {
+  projectId: string
   outputPath: string
   template: ProjectTemplate
   datasetName: string
   context: CliCommandContext
   coreCommands: CliCommandDefinition[]
 }): Promise<unknown> {
-  const {outputPath, coreCommands, template, datasetName, context} = options
+  const {outputPath, coreCommands, template, datasetName, projectId, context} = options
   if (!template.datasetUrl) {
-    return undefined
-  }
-
-  const manifestPath = path.join(outputPath, 'sanity.json')
-  const baseManifest = await loadJson(manifestPath, undefined)
-  const manifest = reduceConfig(baseManifest || {}, environment, {
-    studioRootPath: outputPath,
-  })
-
-  if (!manifest.api) {
-    throw new Error('No `api` section present in `sanity.json`')
-  }
-
-  if (!manifest.api.projectId || !manifest.api.dataset) {
-    throw new Error('Missing `projectId` or `dataset` from `api` section of `sanity.json`')
+    return Promise.resolve(undefined)
   }
 
   const importCmd = coreCommands.find((cmd) => cmd.name === 'import' && cmd.group === 'dataset')
@@ -778,8 +761,8 @@ async function doDatasetImport(options: {
     extraArguments: [],
   }
 
-  const {projectId, dataset} = manifest.api
-  const apiClient = getClientWrapper({projectId, dataset}, manifestPath)
+  const configPath = context.cliConfigPath || path.join(outputPath, 'sanity.cli.js')
+  const apiClient = getClientWrapper({projectId, dataset: datasetName}, configPath)
 
   const commandContext: CliCommandContext & {fromInitCommand: boolean} = {
     ...context,
