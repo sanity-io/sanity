@@ -7,6 +7,7 @@ import type {CliCommandContext} from '../../types'
 import {resolveLatestVersions} from '../../util/resolveLatestVersions'
 import {copy} from '../../util/copy'
 import {createPackageManifest} from './createPackageManifest'
+import {createCliConfig} from './createCliConfig'
 import {createStudioConfig, GenerateConfigOptions} from './createStudioConfig'
 import type {ProjectTemplate} from './initProject'
 import templates from './templates'
@@ -66,10 +67,17 @@ export async function bootstrapTemplate(
     variables,
   })
 
+  // ...and a CLI config (`sanity.cli.[ts|js]`)
+  const cliConfig = await createCliConfig({
+    projectId: variables.projectId,
+    dataset: variables.dataset,
+  })
+
   // Write non-template files to disc
   const codeExt = useTypeScript ? 'ts' : 'js'
   await Promise.all([
     writeFileIfNotExists(`sanity.config.${codeExt}`, studioConfig),
+    writeFileIfNotExists(`sanity.cli.${codeExt}`, cliConfig),
     writeFileIfNotExists('package.json', packageManifest),
     writeFileIfNotExists(
       '.eslintrc',
