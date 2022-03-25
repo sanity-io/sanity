@@ -37,7 +37,6 @@ export type PortableTextEditorProps = {
   onChange: (change: EditorChange) => void
   incomingPatches$?: PatchObservable
   readOnly?: boolean
-  selection?: EditorSelection
   type: Type | RawSchemaType
   value: PortableTextBlock[] | undefined
 }

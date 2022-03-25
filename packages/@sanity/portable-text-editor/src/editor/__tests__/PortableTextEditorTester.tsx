@@ -3,6 +3,7 @@ import Schema from '@sanity/schema'
 import {PortableTextEditor, PortableTextEditorProps} from '../../editor/PortableTextEditor'
 import {RawType} from '../../types/schema'
 import {PortableTextEditable} from '../../editor/Editable'
+import {EditorSelection} from '../../types/editor'
 
 const imageType: RawType = {
   type: 'image',
@@ -46,12 +47,12 @@ let key = 0
 
 export const PortableTextEditorTester = forwardRef(function PortableTextEditorTester(
   props: Partial<
-    Omit<PortableTextEditorProps, 'type' | 'onChange | value' | 'selection' | 'placeholderText'>
+    Omit<PortableTextEditorProps, 'type' | 'onChange' | 'value' | 'placeholderText'>
   > & {
     type: PortableTextEditorProps['type']
     value?: PortableTextEditorProps['value']
     onChange?: PortableTextEditorProps['onChange']
-    selection?: PortableTextEditorProps['selection']
+    selection?: EditorSelection
     renderPlaceholder?: () => React.ReactNode
   },
   ref: ForwardedRef<PortableTextEditor>
