@@ -110,7 +110,9 @@ function toMutationPatch(patch: Patch): MutationPatch {
     }
   }
 
-  assert(patch.type, `Missing patch type in patch ${JSON.stringify(patch)}`)
+  if (!patch.type) {
+    throw new Error(`Missing patch type in patch ${JSON.stringify(patch)}`)
+  }
   if (matchPath) {
     return {
       [patch.type]: {
