@@ -1,13 +1,11 @@
 import path from 'path'
-import {esbuildCommonjs, viteCommonjs} from '@originjs/vite-plugin-commonjs'
 import type {InlineConfig} from 'vite'
 import viteReact from '@vitejs/plugin-react'
-import {normalizeBasePath} from './_helpers'
-import {DEFAULT_CANONICAL_MODULES, DEFAULT_COMMONJS_MODULES} from './constants'
-import {viteCanonicalModules} from './vite/plugin-canonical-modules'
-import {viteSanityStudio, resolveEntryModulePath} from './vite/plugin-sanity-studio'
-import {getAliases} from './aliases'
+import {sanityRuntimeRewritePlugin} from './vite/plugin-sanity-runtime-rewrite'
+import {sanityBuildEntries, virtualEntryModuleId} from './vite/plugin-sanity-build-entries'
 import {loadSanityMonorepo} from './sanityMonorepo'
+import {normalizeBasePath} from './helpers'
+import {getAliases} from './aliases'
 
 export interface ViteOptions {
   /**
@@ -37,13 +35,14 @@ export interface ViteOptions {
   minify?: boolean
 
   /**
+   * HTTP development server configuration
+   */
+  server?: {port?: number; host?: string}
+
+  /**
    * Mode to run vite in - eg development or production
    */
   mode: 'development' | 'production'
-}
-
-export interface SanityViteConfig extends InlineConfig {
-  base: string
 }
 
 /**
@@ -51,55 +50,42 @@ export interface SanityViteConfig extends InlineConfig {
  *
  * @internal Only meant for consumption inside of Sanity modules, do not depend on this externally
  */
-export async function getViteConfig(options: ViteOptions): Promise<SanityViteConfig> {
+export async function getViteConfig(options: ViteOptions): Promise<InlineConfig> {
   const {
     cwd,
     mode,
     outputDir,
     // default to `true` when `mode=development`
     sourceMap = options.mode === 'development',
+    server,
     minify,
     basePath: rawBasePath = '/',
   } = options
 
-  const basePath = normalizeBasePath(rawBasePath)
   const monorepo = await loadSanityMonorepo(cwd)
+  const basePath = normalizeBasePath(rawBasePath)
 
-  const viteConfig: SanityViteConfig = {
+  const viteConfig: InlineConfig = {
+    root: cwd,
     base: basePath,
     build: {
       outDir: outputDir || path.resolve(cwd, 'dist'),
       sourcemap: sourceMap,
     },
+    server: {
+      base: basePath,
+      host: server?.host,
+      port: server?.port || 3333,
+      strictPort: true,
+    },
     configFile: false,
     mode,
-    optimizeDeps: {
-      esbuildOptions: {
-        plugins: [esbuildCommonjs(DEFAULT_COMMONJS_MODULES)],
-      },
-      include: DEFAULT_COMMONJS_MODULES,
-    },
     plugins: [
-      viteReact({}),
-      viteSanityStudio({
-        basePath,
-        cwd,
-        monorepo,
-      }),
-      viteCanonicalModules({
-        ids: DEFAULT_CANONICAL_MODULES,
-        cwd,
-      }),
-      viteCommonjs({
-        include: DEFAULT_COMMONJS_MODULES,
-      }),
+      viteReact(),
+      sanityRuntimeRewritePlugin(),
+      sanityBuildEntries({basePath, cwd, monorepo}),
     ],
     envPrefix: 'SANITY_STUDIO_',
-    root: cwd,
-    server: {
-      fs: {strict: false},
-      middlewareMode: 'ssr',
-    },
     logLevel: mode === 'production' ? 'silent' : 'info',
     resolve: {
       alias: getAliases({monorepo}),
@@ -107,7 +93,6 @@ export async function getViteConfig(options: ViteOptions): Promise<SanityViteCon
   }
 
   if (mode === 'production') {
-    viteConfig.root = cwd
     viteConfig.build = {
       ...viteConfig.build,
 
@@ -115,25 +100,10 @@ export async function getViteConfig(options: ViteOptions): Promise<SanityViteCon
       minify: minify ? 'esbuild' : false,
       emptyOutDir: false, // Rely on CLI to do this
 
-      // NOTE: when the Studio is running within the monorepo, some packages which contain CommonJS
-      // is located outside of `node_modules`. To work around this, we configure the `include`
-      // option for Rollup’s CommonJS plugin here.
-      commonjsOptions: monorepo
-        ? {
-            include: [
-              /node_modules/,
-              /@sanity\/server/, // Need this for `defaultStudioConfig`, at least for now
-              ...DEFAULT_COMMONJS_MODULES.map((id) => {
-                return new RegExp(`${id.replace(/\//g, '\\/')}`)
-              }),
-            ],
-          }
-        : undefined,
-
       rollupOptions: {
         perf: true,
         input: {
-          main: await resolveEntryModulePath({cwd, monorepo}),
+          main: virtualEntryModuleId,
         },
       },
     }

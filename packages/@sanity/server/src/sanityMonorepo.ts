@@ -17,7 +17,7 @@ export async function loadSanityMonorepo(cwd: string): Promise<SanityMonorepo | 
   let p = cwd
 
   while (p !== '/') {
-    const readResult = await (readPkgUp as any)({cwd: p})
+    const readResult = await readPkgUp({cwd: p})
 
     if (!readResult) {
       return undefined
