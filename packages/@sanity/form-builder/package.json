@@ -107,9 +107,6 @@
     "react-dom": "^16.9 || ^17",
     "styled-components": "^5.2.0"
   },
-  "directories": {
-    "test": "test"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git",
