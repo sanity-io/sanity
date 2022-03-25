@@ -41,7 +41,7 @@ export function createWithPortableTextMarkModel(
       const [node, path] = nodeEntry
       const isSpan = Text.isText(node) && node._type === portableTextFeatures.types.span.name
       const isTextBlock = editor.isTextBlock(node)
-      if ((isSpan && Text.isText(node)) || isTextBlock) {
+      if (isSpan || isTextBlock) {
         if (!isTextBlock && !Array.isArray(node.marks)) {
           debug('Adding .marks to span node')
           Transforms.setNodes(editor, {marks: []}, {at: path})
@@ -140,7 +140,7 @@ export function createWithPortableTextMarkModel(
         if (
           selection &&
           Range.isCollapsed(selection) &&
-          Editor.marks(editor)?.marks?.some((mark: any) => !decorators.includes(mark))
+          Editor.marks(editor)?.marks?.some((mark) => !decorators.includes(mark))
         ) {
           const [node] = Array.from(
             Editor.nodes(editor, {
@@ -165,7 +165,7 @@ export function createWithPortableTextMarkModel(
               {
                 ...(Editor.marks(editor) || {}),
               }.marks || []
-            ).filter((mark: any) => decorators.includes(mark))
+            ).filter((mark) => decorators.includes(mark))
             Transforms.setNodes(
               editor,
               {marks: marksWithoutAnnotationMarks},
