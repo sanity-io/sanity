@@ -89,7 +89,7 @@ export const HelloSanityTutorial = () => {
           <Flex justify={isSmallScreen ? 'start' : 'center'}>
             <Button
               as="a"
-              href="https://www-sanity-io-ir5wewhq6.sanity.build/docs/create-your-first-schema"
+              href="https://www-sanity-io-git-feature-sc-15265hello-sanity-docs.sanity.build/docs/create-a-schema-and-configure-sanity-studio"
               target="_blank"
               padding={isSmallScreen ? undefined : 4}
               tone="primary"
