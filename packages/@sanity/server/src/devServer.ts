@@ -28,7 +28,7 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
   const {cwd, httpPort, httpHost, basePath: base, vite: extendViteConfig} = options
 
   const monorepo = await loadSanityMonorepo(cwd)
-  const runtimeDir = path.join(cwd, 'node_modules', '.sanity', 'runtime')
+  const runtimeDir = path.join(cwd, '.sanity', 'runtime')
   const startTime = performance.now()
 
   debug('Making runtime directory')

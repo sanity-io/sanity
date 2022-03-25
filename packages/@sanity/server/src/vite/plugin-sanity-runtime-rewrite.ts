@@ -8,7 +8,7 @@ export function sanityRuntimeRewritePlugin(): Plugin {
       return () => {
         viteDevServer.middlewares.use((req, res, next) => {
           if (req.url === '/index.html') {
-            req.url = '/node_modules/.sanity/runtime/index.html'
+            req.url = '/.sanity/runtime/index.html'
           }
 
           next()

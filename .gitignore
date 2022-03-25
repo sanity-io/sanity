@@ -53,3 +53,6 @@ jspm_packages
 
 # TypeScript
 tsconfig.tsbuildinfo
+
+# Sanity temp folders
+.sanity
