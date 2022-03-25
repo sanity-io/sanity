@@ -62,7 +62,7 @@ export const hasEditableTarget = (
   return isDOMNode(target) && ReactEditor.hasDOMNode(editor, target, {editable: true})
 }
 
-type EditableProps = {
+export type PortableTextEditableProps = {
   hotkeys?: HotkeyOptions
   onBeforeInput?: OnBeforeInputFn
   onPaste?: OnPasteFn
@@ -78,7 +78,7 @@ type EditableProps = {
 }
 
 export const PortableTextEditable = forwardRef(function PortableTextEditable(
-  props: EditableProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'onPaste'>,
+  props: PortableTextEditableProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'onPaste'>,
   forwardedRef: React.ForwardedRef<HTMLDivElement>
 ) {
   const {

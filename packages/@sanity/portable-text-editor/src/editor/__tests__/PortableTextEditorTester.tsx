@@ -1,9 +1,9 @@
 import React, {ForwardedRef, forwardRef, useCallback, useEffect} from 'react'
 import Schema from '@sanity/schema'
-import {PortableTextEditor, PortableTextEditorProps} from '../../editor/PortableTextEditor'
 import {RawType} from '../../types/schema'
-import {PortableTextEditable} from '../../editor/Editable'
-import {EditorSelection} from '../../types/editor'
+import {PortableTextEditor, PortableTextEditable} from '../../index'
+
+import type {PortableTextEditorProps, PortableTextEditableProps} from '../../index'
 
 const imageType: RawType = {
   type: 'image',
@@ -46,14 +46,12 @@ const schema = Schema.compile({
 let key = 0
 
 export const PortableTextEditorTester = forwardRef(function PortableTextEditorTester(
-  props: Partial<
-    Omit<PortableTextEditorProps, 'type' | 'onChange' | 'value' | 'placeholderText'>
-  > & {
+  props: Partial<Omit<PortableTextEditorProps, 'type' | 'onChange' | 'value'>> & {
     type: PortableTextEditorProps['type']
     value?: PortableTextEditorProps['value']
     onChange?: PortableTextEditorProps['onChange']
-    selection?: EditorSelection
-    renderPlaceholder?: () => React.ReactNode
+    selection?: PortableTextEditableProps['selection']
+    renderPlaceholder?: PortableTextEditableProps['renderPlaceholder']
   },
   ref: ForwardedRef<PortableTextEditor>
 ) {
