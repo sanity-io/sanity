@@ -1,7 +1,7 @@
-import {promises as fs} from 'fs'
+import fs from 'fs/promises'
 import path from 'path'
-import {build} from 'vite'
-import {getViteConfig, SanityViteConfig} from './getViteConfig'
+import {build, InlineConfig} from 'vite'
+import {getViteConfig} from './getViteConfig'
 
 export interface ChunkModule {
   name: string
@@ -22,7 +22,7 @@ export interface StaticBuildOptions {
   profile?: boolean
   sourceMap?: boolean
 
-  vite?: (config: SanityViteConfig) => SanityViteConfig
+  vite?: (config: InlineConfig) => InlineConfig
 }
 
 export async function buildStaticFiles(
@@ -87,7 +87,8 @@ export async function buildStaticFiles(
 
 async function copyDir(srcDir: string, destDir: string): Promise<void> {
   await fs.mkdir(destDir, {recursive: true})
-  for (const file of await fs.readdir(srcDir)) {
+
+  for (const file of await tryReadDir(srcDir)) {
     const srcFile = path.resolve(srcDir, file)
     if (srcFile === destDir) {
       continue
@@ -100,5 +101,18 @@ async function copyDir(srcDir: string, destDir: string): Promise<void> {
     } else {
       await fs.copyFile(srcFile, destFile)
     }
+  }
+}
+
+async function tryReadDir(dir: string): Promise<string[]> {
+  try {
+    const content = await fs.readdir(dir)
+    return content
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      return []
+    }
+
+    throw err
   }
 }
