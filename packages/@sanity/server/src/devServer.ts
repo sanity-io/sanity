@@ -14,7 +14,7 @@ export interface DevServerOptions {
   staticPath: string
 
   httpPort: number
-  httpHost: string
+  httpHost?: string
   projectName?: string
 
   vite?: (config: InlineConfig) => InlineConfig
@@ -69,11 +69,12 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
   await server.listen()
 
   const startupDuration = performance.now() - startTime
+  const url = `http://${httpHost || 'localhost'}:${httpPort || '3333'}`
   info(
     `Sanity Studio ` +
       `using ${chalk.cyan(`vite@${require('vite/package.json').version}`)} ` +
       `ready in ${chalk.cyan(`${Math.ceil(startupDuration)}ms`)} ` +
-      `and running at ${chalk.cyan(`http://${httpHost}:${httpPort}`)}`
+      `and running at ${chalk.cyan(url)}`
   )
 
   return {close: () => server.close()}

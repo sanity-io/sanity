@@ -63,8 +63,7 @@ function getDevServerConfig({
   // Order of preference: CLI flags, environment variables, user build config, default config
   const env = process.env // eslint-disable-line no-process-env
 
-  const httpHost =
-    flags.host || env.SANITY_STUDIO_SERVER_HOSTNAME || cliConfig?.server?.hostname || '127.0.0.1'
+  const httpHost = flags.host || env.SANITY_STUDIO_SERVER_HOSTNAME || cliConfig?.server?.hostname
 
   const httpPort = toInt(
     flags.port || env.SANITY_STUDIO_SERVER_PORT || cliConfig?.server?.port,
