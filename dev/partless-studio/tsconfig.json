@@ -1,10 +1,10 @@
 {
   "extends": "../../tsconfig.settings",
-  "include": ["./sanity.cli.ts", "./sanity.config.ts", "./scripts", "./src", "./typings"],
+  "include": ["**/*.ts", "**/*.tsx"],
   "compilerOptions": {
     "jsx": "preserve",
     "allowJs": true,
-    "outDir": "./lib",
+    "outDir": "./dist/dts",
     "isolatedModules": false
   },
   "references": [

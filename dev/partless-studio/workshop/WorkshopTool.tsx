@@ -5,6 +5,7 @@ import {Workshop, WorkshopFeatures, WorkshopLocation} from '@sanity/ui-workshop'
 import qs from 'qs'
 import React, {useCallback, useMemo} from 'react'
 import {WorkshopOptions} from './types'
+import {scopes} from './scopes'
 
 const workshopFeatures: WorkshopFeatures = {
   navbar: true,
@@ -12,7 +13,7 @@ const workshopFeatures: WorkshopFeatures = {
 
 export function WorkshopTool(props: {tool: SanityTool<WorkshopOptions>}) {
   const {scheme, setScheme} = useStudio()
-  const {collections, name = 'workshop', scopes, title = 'Studio Workshop'} = props.tool.options
+  const {collections, name = 'workshop', title = 'Studio Workshop'} = props.tool.options
 
   const {navigateUrl, state: routerState} = useRouter()
 
@@ -55,7 +56,7 @@ export function WorkshopTool(props: {tool: SanityTool<WorkshopOptions>}) {
     <Workshop
       collections={collections}
       features={workshopFeatures}
-      frameUrl="/plugins/workshop/frame/"
+      frameUrl="/workshop/frame/"
       location={location}
       onLocationPush={handleLocationPush}
       onLocationReplace={handleLocationReplace}

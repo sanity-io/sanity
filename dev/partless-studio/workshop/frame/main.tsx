@@ -8,8 +8,8 @@ import javascript from 'refractor/lang/javascript'
 import json from 'refractor/lang/json'
 import jsx from 'refractor/lang/jsx'
 import typescript from 'refractor/lang/typescript'
-import sanityConfig from '../../../../sanity.config'
-import {scopes} from '../../../workshop/scopes'
+import sanityConfig from '../../sanity.config'
+import {scopes} from '../scopes'
 
 Refractor.registerLanguage(javascript)
 Refractor.registerLanguage(json)
@@ -23,7 +23,7 @@ function Main() {
   return (
     <StudioProvider config={sanityConfig} scheme={scheme} setScheme={setScheme}>
       <WorkshopFrame
-        frameUrl="/plugins/workshop/frame/"
+        frameUrl="/workshop/frame/"
         scopes={scopes}
         setScheme={setScheme}
         title="Workshop"

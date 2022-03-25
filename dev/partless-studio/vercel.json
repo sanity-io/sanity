@@ -5,8 +5,8 @@
       "handle": "filesystem"
     },
     {
-      "src": "/plugins/workshop/frame/(.*)",
-      "dest": "/plugins/workshop/frame/index.html"
+      "src": "/workshop/frame/(.*)",
+      "dest": "/workshop/frame/index.html"
     },
     {
       "src": "/(.*)",

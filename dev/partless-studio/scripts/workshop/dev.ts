@@ -4,7 +4,7 @@ import globby from 'globby'
 import chokidar from 'chokidar'
 
 const ROOT_PATH = path.resolve(__dirname, '../../../..')
-const WORKSHOP_SRC_PATH = path.resolve(__dirname, '../../src/workshop')
+const WORKSHOP_SRC_PATH = path.resolve(__dirname, '../../workshop')
 const WORKSHOP_SCOPES_PATH = path.resolve(WORKSHOP_SRC_PATH, 'scopes.js')
 
 const WORKSHOP_PATTERNS = [
