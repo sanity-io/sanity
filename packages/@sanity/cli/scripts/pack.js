@@ -4,6 +4,7 @@ const path = require('path')
 const fse = require('fs-extra')
 const webpack = require('webpack')
 const klawSync = require('klaw-sync')
+const {escapeRegExp} = require('lodash')
 
 const shebangLoader = require.resolve('./shebang-loader')
 const basedir = path.join(__dirname, '..')
@@ -154,9 +155,10 @@ compiler.run((err, stats) => {
   }
 
   const concatPattern = /\/\*! ModuleConcatenation bailout: .*?\*\/\n?/g
+  const pathPattern = new RegExp(escapeRegExp(`*** ${replacePath}`), 'g')
   const builtCliPath = path.join(basedir, 'bin', 'sanity-cli.js')
   const content = fse.readFileSync(builtCliPath, 'utf8')
-  const normalized = content.replaceAll(`*** ${replacePath}`, '*** ').replaceAll(concatPattern, '')
+  const normalized = content.replace(pathPattern, '*** ').replace(concatPattern, '')
 
   fse.writeFileSync(builtCliPath, normalized, 'utf8')
 
