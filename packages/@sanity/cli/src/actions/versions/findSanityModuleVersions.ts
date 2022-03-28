@@ -81,7 +81,7 @@ export async function findSanityModuleVersions(
     const needsUpdate =
       target === 'latest'
         ? semverCompare(current, mod.latest) === -1
-        : mod.installed !== mod.latestInRange
+        : typeof mod.latestInRange !== 'undefined' && mod.installed !== mod.latestInRange
 
     return {...mod, needsUpdate}
   })
@@ -151,10 +151,18 @@ function buildPackageArray(
   ]
 }
 
-function tryFindLatestVersion(pkgName: string, range: string) {
-  return getLatestVersion(pkgName, {range, includeLatest: true})
-    .then(({latest, inRange}) => ({latest, latestInRange: inRange}))
-    .catch(() => ({latest: undefined, latestInRange: undefined}))
+async function tryFindLatestVersion(pkgName: string, range: string) {
+  try {
+    const {latest, inRange} = await getLatestVersion(pkgName, {range, includeLatest: true})
+    return {latest, latestInRange: inRange}
+  } catch (err) {
+    if (!(err instanceof Error) || !err.message.includes('No version exists')) {
+      throw err
+    }
+
+    const latest = await getLatestVersion(pkgName)
+    return {latest, latestInRange: undefined}
+  }
 }
 
 function isPinnedVersion(version: string): boolean {
