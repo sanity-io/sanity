@@ -45,7 +45,7 @@ export function ActionsMenu(props: Props) {
       {browse}
 
       <MenuDivider />
-      <MenuItem as="a" icon={DownloadIcon} text="Download original file" href={downloadUrl} />
+      <MenuItem as="a" icon={DownloadIcon} text="Download" href={downloadUrl} />
       <MenuItem icon={ClipboardIcon} text="Copy URL" onClick={handleCopyURL} />
 
       <MenuDivider />

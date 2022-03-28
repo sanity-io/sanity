@@ -2,7 +2,6 @@ import React from 'react'
 import type {AssetSource} from '@sanity/types'
 import imageUrlBuilder from '@sanity/image-url'
 import ImageInput from '../../inputs/files/ImageInput'
-import resolveUploader from '../uploads/resolveUploader'
 import {
   defaultImageAssetSources,
   formBuilderConfig,
@@ -38,7 +37,6 @@ export default React.forwardRef(function SanityImageInput(props: Props, forwarde
   return (
     <ImageInputWithValuePath
       {...props}
-      resolveUploader={resolveUploader}
       observeAsset={observeImageAsset}
       assetSources={assetSources}
       directUploads={SUPPORT_DIRECT_UPLOADS}
