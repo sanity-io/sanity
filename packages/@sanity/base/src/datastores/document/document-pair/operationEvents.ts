@@ -15,7 +15,6 @@ import {
 } from 'rxjs/operators'
 import {Schema} from '@sanity/types'
 import {IdPair, OperationArgs} from '../types'
-import {memoize} from '../utils/createMemoizer'
 import {HistoryStore} from '../../history'
 import {OperationImpl, OperationsAPI} from './operations'
 import {operationArgs} from './operationArgs'
@@ -101,12 +100,23 @@ interface IntermediaryError {
   error: any
 }
 
+type __FindMeAName = (
+  idPair: IdPair,
+  typeName?: string
+) => Observable<OperationSuccess | OperationError>
+
+const _cache = new WeakMap<SanityClient, __FindMeAName>()
+
 export function getOperationEvents(ctx: {
   client: SanityClient
   historyStore: HistoryStore
   schema: Schema
-}): (idPair: IdPair, typeName?: string) => Observable<OperationSuccess | OperationError> {
-  const results$: Observable<IntermediarySuccess | IntermediaryError> = operationCalls$.pipe(
+}): __FindMeAName {
+  if (_cache.has(ctx.client)) {
+    return _cache.get(ctx.client)!
+  }
+
+  const result$: Observable<IntermediarySuccess | IntermediaryError> = operationCalls$.pipe(
     groupBy((op) => op.idPair.publishedId),
     mergeMap((groups$) =>
       groups$.pipe(
@@ -144,7 +154,7 @@ export function getOperationEvents(ctx: {
 
   // this enables autocommit after patch operations
   const AUTOCOMMIT_INTERVAL = 1000
-  const autoCommit$ = results$.pipe(
+  const autoCommit$ = result$.pipe(
     filter((result) => result.type === 'success' && result.args.operationName === 'patch'),
     throttleTime(AUTOCOMMIT_INTERVAL, asyncScheduler, {leading: true, trailing: true}),
     tap((result) => {
@@ -154,9 +164,18 @@ export function getOperationEvents(ctx: {
 
   autoCommit$.subscribe()
 
-  const operationEvents = memoize(
-    (idPair: IdPair, _typeName?: string) =>
-      results$.pipe(
+  const cache = new Map<string, Observable<OperationSuccess | OperationError>>()
+
+  const __findMeAName = (
+    idPair: IdPair,
+    typeName?: string
+  ): Observable<OperationSuccess | OperationError> => {
+    const key = `${idPair.publishedId}:${typeName}`
+
+    let ret = cache.get(key)
+
+    if (!ret) {
+      ret = result$.pipe(
         filter((result) => result.args.idPair.publishedId === idPair.publishedId),
         map((result): OperationSuccess | OperationError => {
           const {operationName, idPair: documentIds} = result.args
@@ -164,9 +183,15 @@ export function getOperationEvents(ctx: {
             ? {type: 'success', op: operationName, id: documentIds.publishedId}
             : {type: 'error', op: operationName, id: documentIds.publishedId, error: result.error}
         })
-      ),
-    (idPair: IdPair, typeName?: string) => idPair.publishedId + typeName
-  )
+      )
 
-  return operationEvents
+      cache.set(key, ret)
+    }
+
+    return ret
+  }
+
+  _cache.set(ctx.client, __findMeAName)
+
+  return __findMeAName
 }

@@ -61,6 +61,12 @@ export function createDocumentStore(
 
   const ctx = {client, documentPreviewStore, historyStore, schema}
 
+  const caches = {
+    pair: {
+      editOperations: new Map(),
+    },
+  }
+
   const operationEvents = getOperationEvents(ctx)
 
   return {
@@ -88,7 +94,14 @@ export function createDocumentStore(
         return documentEvents(ctx.client, getIdPairFromPublished(publishedId), type)
       },
       editOperations(publishedId, type) {
-        return editOperations(ctx, getIdPairFromPublished(publishedId), type)
+        const cache = caches.pair.editOperations
+        const key = `${publishedId}:${type}`
+
+        if (!cache.has(key)) {
+          cache.set(key, editOperations(ctx, getIdPairFromPublished(publishedId), type))
+        }
+
+        return cache.get(key)
       },
       editState(publishedId, type) {
         return editState(ctx, getIdPairFromPublished(publishedId), type)
