@@ -22,7 +22,7 @@ interface Props {
   Used for setting the initial image height - specifically for images
   that are small and so can take less space in the document
 */
-const getImageSize = (src) => {
+const getImageSize = (src: string): number[] => {
   const imageUrlParams = new URLSearchParams(src.split('?')[1])
   const rect = imageUrlParams.get('rect')
 

@@ -2,6 +2,9 @@ import type {ComponentType} from 'react'
 import type {Reference} from '../reference'
 import type {SanityDocument} from '../documents'
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface EmptyProps {}
+
 export interface File {
   [key: string]: unknown // We allow meta-fields on file
   asset: Reference
@@ -136,5 +139,5 @@ export interface AssetSource {
   name: string
   title: string
   component: ComponentType<AssetSourceComponentProps>
-  icon?: ComponentType<void>
+  icon?: ComponentType<EmptyProps>
 }

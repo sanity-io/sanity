@@ -17,7 +17,12 @@ import React, {ReactNode} from 'react'
 import {FormInputProps, PatchEvent, setIfMissing, unset} from '@sanity/base/form'
 import {PresenceOverlay} from '@sanity/base/presence'
 import deepCompare from 'react-fast-compare'
-import {ResolvedUploader, Uploader, UploadOptions} from '../../../sanity/uploads/types'
+import {
+  UploaderResolver,
+  ResolvedUploader,
+  Uploader,
+  UploadOptions,
+} from '../../../sanity/uploads/types'
 import {ImageToolInput} from '../ImageToolInput'
 import {UploadPlaceholder} from '../common/UploadPlaceholder'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'

@@ -7,12 +7,12 @@ export const ImageSource: AssetSource = {
   name: 'sanity-default',
   title: 'Uploaded images',
   component: DefaultSource as FIXME,
-  icon: ImageIcon,
+  icon: ImageIcon as FIXME,
 }
 
 export const FileSource: AssetSource = {
   name: 'sanity-default',
   title: 'Uploaded files',
   component: DefaultSource as FIXME,
-  icon: DocumentsIcon,
+  icon: DocumentsIcon as FIXME,
 }

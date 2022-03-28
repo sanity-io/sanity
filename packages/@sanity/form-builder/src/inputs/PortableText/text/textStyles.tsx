@@ -3,6 +3,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 type TextStyleProps = Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'ref'>
+type BlockQuoteStyleProps = Omit<React.HTMLProps<HTMLQuoteElement>, 'as' | 'ref'>
 
 // Without this container, editing with Android breaks due to how Text is styled via responsiveFont in @sanity/ui
 const TextContainer = styled.div`
@@ -69,7 +70,8 @@ const BlockQuoteRoot = styled.blockquote`
 `
 
 export const BlockQuote = ({children, ...rest}: TextStyleProps) => (
-  <BlockQuoteRoot data-testid="text-style--blockquote" {...rest}>
+  // @todo figure out props typings for BlockQuoteStyleProps
+  <BlockQuoteRoot data-testid="text-style--blockquote" {...(rest as any as BlockQuoteStyleProps)}>
     <Text as="p">{children}</Text>
   </BlockQuoteRoot>
 )
