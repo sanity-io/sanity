@@ -16,9 +16,9 @@
   ],
   "scripts": {
     "bootstrap": "yarn install && yarn build:cli",
-    "build": "lerna run --scope @sanity/* build",
+    "build": "lerna run --scope @sanity/* --scope sanity build",
     "build:cli": "lerna run --scope '@sanity/{cli,client,core,export,import,mutator,server,types,util}' build",
-    "clean": "lerna run --scope @sanity/* clean && lerna clean",
+    "clean": "lerna run --scope @sanity/* --scope sanity clean && lerna clean",
     "check:versions": "node scripts/normalizeDependencyVersions.js",
     "cypress:open": "cypress open --config-file cypress/cypress.json",
     "cypress:run": "cypress run --config-file cypress/cypress.json",
@@ -68,7 +68,7 @@
     "updated": "lerna updated",
     "vercel-build": "yarn build:js && (cd dev/test-studio && yarn build -y)",
     "verify-format": "lerna run clean && yarn prettier -c",
-    "watch": "lerna run --parallel --scope @sanity/* watch"
+    "watch": "lerna run --parallel --scope @sanity/* --scope sanity watch"
   },
   "devDependencies": {
     "@babel/core": "^7.16.0",

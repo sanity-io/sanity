@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.settings",
+  "include": ["./src"],
+  "compilerOptions": {
+    "composite": true,
+    "declarationDir": "./lib/dts/",
+    "rootDir": "./",
+    "outDir": "./lib/dts/",
+    "jsx": "react",
+    "paths": {
+      "@self/*": ["./src/*"]
+    }
+  },
+  "references": [
+    {"path": "../@sanity/base/tsconfig.lib.json"},
+    {"path": "../@sanity/desk-tool"},
+    {"path": "../@sanity/cli/tsconfig.lib.json"}
+  ]
+}

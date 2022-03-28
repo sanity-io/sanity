@@ -1,0 +1,28 @@
+#!/usr/bin/env node
+/* eslint-disable import/no-dynamic-require, no-sync, no-var, no-console, no-process-exit */
+
+var fs = require('fs')
+var path = require('path')
+var readPkgUp = require('read-pkg-up')
+
+var expectedPath = path.join(__dirname, '..', 'node_modules', '.bin', 'sanity')
+if (fs.existsSync(expectedPath)) {
+  require(expectedPath)
+} else {
+  getSanityCliPath()
+    .then((cliPath) => require(path.join(cliPath, 'bin', 'sanity')))
+    .catch((err) => {
+      console.error(err)
+      process.exit(1)
+    })
+}
+
+async function getSanityCliPath() {
+  var modulePath = require.resolve('@sanity/cli')
+  var pkg = await readPkgUp({cwd: path.dirname(modulePath)})
+  if (pkg) {
+    return path.dirname(pkg.path)
+  }
+
+  throw new Error('Failed to resolve @sanity/cli path')
+}

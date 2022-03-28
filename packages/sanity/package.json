@@ -2,10 +2,6 @@
   "name": "sanity",
   "version": "2.29.3",
   "description": "Sanity is a real-time content infrastructure with a scalable, hosted backend featuring a Graph Oriented Query Language (GROQ), asset pipelines and fast edge caches",
-  "scripts": {
-    "postinstall": "node placeholder.js"
-  },
-  "main": "placeholder.js",
   "author": "Sanity.io <hello@sanity.io>",
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
@@ -17,8 +13,58 @@
     "realtime",
     "content"
   ],
+  "source": "./src/_exports/index.ts",
+  "main": "./lib/cjs/_exports/index.js",
+  "module": "./lib/esm/_exports/index.js",
+  "exports": {
+    ".": {
+      "source": "./src/_exports/index.ts",
+      "require": "./lib/cjs/_exports/index.js",
+      "default": "./lib/esm/_exports/index.js"
+    },
+    "./cli": {
+      "source": "./src/_exports/cli.ts",
+      "require": "./lib/cjs/_exports/cli.js",
+      "default": "./lib/esm/_exports/cli.js"
+    }
+  },
+  "bin": {
+    "sanity": "./bin/sanity"
+  },
+  "types": "./lib/dts/src/_exports/index.d.ts",
+  "//": "the typesVersion config below is a workaround for TypeScript's lack of support for package exports",
+  "typesVersions": {
+    "*": {
+      "cli": [
+        "./lib/dts/src/_exports/cli.d.ts"
+      ]
+    }
+  },
+  "scripts": {
+    "build": "../../bin/pkg-utils transpile --tsconfig tsconfig.lib.json",
+    "clean": "rimraf lib",
+    "coverage": "jest --coverage",
+    "exports:check": "../../bin/pkg-utils exports-check",
+    "exports:clean": "../../bin/pkg-utils exports-clean",
+    "exports:generate": "../../bin/pkg-utils exports-generate",
+    "postbuild": "run-s exports:generate",
+    "prebuild": "yarn clean",
+    "test": "jest",
+    "watch": "../../bin/pkg-utils transpile --tsconfig tsconfig.lib.json --watch"
+  },
+  "dependencies": {
+    "@sanity/base": "2.29.3",
+    "@sanity/cli": "2.29.3",
+    "@sanity/core": "2.29.3",
+    "@sanity/desk-tool": "2.29.3"
+  },
+  "peerDependencies": {
+    "react": "^17.0.0",
+    "react-dom": "^17.0.0",
+    "styled-components": "^5.2.0"
+  },
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=14.0.0"
   },
   "homepage": "https://www.sanity.io/",
   "license": "MIT",

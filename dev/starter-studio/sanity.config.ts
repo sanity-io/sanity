@@ -1,5 +1,4 @@
-import {createConfig} from '@sanity/base'
-import {deskTool} from '@sanity/desk-tool'
+import {createConfig, deskTool} from 'sanity'
 
 export default createConfig({
   plugins: [deskTool()],
