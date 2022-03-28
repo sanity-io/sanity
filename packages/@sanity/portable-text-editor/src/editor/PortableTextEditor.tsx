@@ -248,19 +248,17 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
     const finalPatches = compactPatches(this.pendingPatches)
     if (finalPatches.length > 0) {
       onChange({type: 'mutation', patches: finalPatches})
+      this.pendingPatches = []
+      debug('Flushing', finalPatches)
     }
-    this.pendingPatches = []
   }
 
   private onEditorChange = (next: EditorChange): void => {
     const {onChange} = this.props
     switch (next.type) {
-      case 'mutation':
-        if (this.isThrottling) {
-          this.pendingPatches = [...this.pendingPatches, ...next.patches]
-        } else {
-          this.flush()
-        }
+      case 'patch':
+        this.pendingPatches.push(next.patch)
+        onChange(next)
         break
       case 'throttle':
         if (next.throttle !== this.isThrottling) {
@@ -270,9 +268,7 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
           this.isThrottling = true
         } else {
           this.isThrottling = false
-          if (this.pendingPatches.length > 0) {
-            this.flush()
-          }
+          this.flush()
         }
         break
       case 'selection':

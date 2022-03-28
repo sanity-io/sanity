@@ -109,8 +109,8 @@ export function createWithPatches(
     PATCHING.set(editor, true)
     previousChildren = editor.children
 
-    // This will cancel the throttle when the user is not producing anything for a short time
-    const cancelThrottle = debounce(() => {
+    // This will cancel the throttle when the user is not producing any patches for a short time
+    const cancelThrottleDebounced = debounce(() => {
       change$.next({type: 'throttle', throttle: false})
     }, THROTTLE_EDITOR_MS)
 
@@ -198,20 +198,14 @@ export function createWithPatches(
       if (patches.length > 0) {
         // Signal throttling
         change$.next({type: 'throttle', throttle: true})
-        // Emit all patches immediately
+        // Emit all patches
         patches.forEach((patch) => {
           change$.next({
             type: 'patch',
             patch,
           })
         })
-
-        // Emit mutation after user is done typing (we show only local state as that happens)
-        change$.next({
-          type: 'mutation',
-          patches: patches,
-        })
-        cancelThrottle()
+        cancelThrottleDebounced()
       }
       return editor
     }
