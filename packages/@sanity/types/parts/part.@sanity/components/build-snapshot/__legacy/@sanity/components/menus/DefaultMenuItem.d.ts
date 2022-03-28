@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import {MenuItem as MenuItemType} from './types'
 interface DefaultMenuItemProps {
   isFocused?: boolean

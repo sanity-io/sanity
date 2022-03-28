@@ -1,8 +1,8 @@
-/// <reference types="react" />
-import {Reported} from '../../components/react-track-elements'
-import {FieldPresenceData} from '../types'
+import type {ReactNode} from 'react'
+import type {Reported} from '../../components/react-track-elements'
+import type {FieldPresenceData} from '../types'
 export declare type ReportedPresenceData = Reported<FieldPresenceData>
-declare const Tracker: (props: {children: import('react').ReactNode}) => JSX.Element,
+declare const Tracker: (props: {children: ReactNode}) => JSX.Element,
   useReporter: import('../../components/react-track-elements/createUseReporter').ReporterHook<FieldPresenceData>,
   useReportedValues: () => Reported<FieldPresenceData>[]
 export {Tracker, useReporter, useReportedValues}

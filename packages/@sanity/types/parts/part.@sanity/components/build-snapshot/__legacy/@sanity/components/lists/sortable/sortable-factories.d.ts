@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import {SortableContainerProps} from 'react-sortable-hoc'
 import {
   DragHandleComponent,

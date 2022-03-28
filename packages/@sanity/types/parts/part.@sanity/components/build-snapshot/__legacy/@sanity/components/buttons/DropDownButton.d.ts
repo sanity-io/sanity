@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import {Placement} from '../types'
 import {ButtonProps} from './types'
 interface DropdownItem {

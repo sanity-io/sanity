@@ -1,7 +1,7 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import React from 'react'
+import type React from 'react'
 import {Item} from 'part:@sanity/components/lists/default'
 declare type Item = unknown
 interface SelectMenuProps {

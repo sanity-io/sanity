@@ -1,4 +1,4 @@
-import {Block, Span} from './types'
+import type {Block, Span} from './types'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && (typeof value == 'object' || typeof value == 'function')

@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import {Marker, Path} from '_self_'
 import {ChangeIndicatorContextProvidedProps} from '../../../../change-indicators'
 import {FormFieldPresence} from '../../../../presence'

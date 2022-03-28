@@ -1,8 +1,8 @@
-import {Path} from '../paths'
-import {SchemaType, SchemaValidationValue} from '../schema'
-import {SanityDocument} from '../documents'
-import {ValidationMarker} from '../markers'
-import {Block} from '../portableText'
+import type {Path} from '../paths'
+import type {SchemaType, SchemaValidationValue} from '../schema'
+import type {SanityDocument} from '../documents'
+import type {ValidationMarker} from '../markers'
+import type {Block} from '../portableText'
 
 export type RuleTypeConstraint = 'Array' | 'Boolean' | 'Date' | 'Number' | 'Object' | 'String'
 export type FieldRules = {[fieldKey: string]: SchemaValidationValue}

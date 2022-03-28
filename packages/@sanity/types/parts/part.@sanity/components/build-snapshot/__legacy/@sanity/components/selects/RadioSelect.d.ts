@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 interface RadioSelectProps {
   name?: string
   direction: 'horizontal' | 'vertical'

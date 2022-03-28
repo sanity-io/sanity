@@ -1,7 +1,7 @@
-import {ColorTints} from '@sanity/color'
-import {Observable} from 'rxjs'
-export declare type HexColor = string
+import type {ColorTints} from '@sanity/color'
+import type {Observable} from 'rxjs'
 export declare type UserColorHue = string
+export declare type HexColor = string
 export declare type UserId = string
 export declare type UserColor = Readonly<{
   background: HexColor

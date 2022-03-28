@@ -1,5 +1,5 @@
 import {InitialValueTemplateItem} from '@sanity/structure/lib/InitialValueTemplateItem'
-import React from 'react'
+import type React from 'react'
 import {MenuItem, MenuItemGroup} from '../menus/types'
 interface DefaultPaneProps {
   color?: 'success' | 'warning' | 'danger'

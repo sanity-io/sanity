@@ -1,6 +1,6 @@
-import React from 'react'
-import {Reference} from '../reference'
-import {SanityDocument} from '../documents'
+import type {ComponentType} from 'react'
+import type {Reference} from '../reference'
+import type {SanityDocument} from '../documents'
 
 export interface File {
   [key: string]: unknown // We allow meta-fields on file
@@ -135,6 +135,6 @@ export type AssetMetadataType =
 export interface AssetSource {
   name: string
   title: string
-  component: React.ComponentType<AssetSourceComponentProps>
-  icon?: React.ComponentType<void>
+  component: ComponentType<AssetSourceComponentProps>
+  icon?: ComponentType<void>
 }

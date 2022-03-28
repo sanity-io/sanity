@@ -23,5 +23,7 @@ module.exports = function ensureUniqueIds(documents) {
     return
   }
 
-  throw new Error(`Found ${numDupes} duplicate IDs:\n- ${duplicates.join('\n- ')}`)
+  throw new Error(
+    `Found ${numDupes} duplicate IDs in the source file:\n- ${duplicates.join('\n- ')}`
+  )
 }

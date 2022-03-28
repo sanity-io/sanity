@@ -1,12 +1,12 @@
 // Note: INCOMPLETE, but it's a start
 import type {ComponentType} from 'react'
-import {Rule} from '../validation'
-import {ReferenceOptions} from '../reference'
-import {AssetSource} from '../assets'
-import {SlugOptions} from '../slug'
-import {SanityDocument} from '../documents'
-import {CurrentUser} from '../user'
-import {PreviewConfig} from './preview'
+import type {Rule} from '../validation'
+import type {ReferenceOptions} from '../reference'
+import type {AssetSource} from '../assets'
+import type {SlugOptions} from '../slug'
+import type {SanityDocument} from '../documents'
+import type {CurrentUser} from '../user'
+import type {PreviewConfig} from './preview'
 
 export interface Schema {
   name: string

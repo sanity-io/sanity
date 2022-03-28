@@ -22,8 +22,7 @@
   "dependencies": {
     "@sanity/client": "^3.2.0",
     "@sanity/color": "^2.1.5",
-    "@types/react": "^17.0.0",
-    "react": "17.0.1",
+    "@types/react": "^17.0.42",
     "rxjs": "^6.5.3"
   },
   "devDependencies": {

@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import {ReportedRegionWithRect, RegionWithIntersectionDetails, FieldPresenceData} from '../types'
 declare type Props = {
   regions: ReportedRegionWithRect<FieldPresenceData>[]

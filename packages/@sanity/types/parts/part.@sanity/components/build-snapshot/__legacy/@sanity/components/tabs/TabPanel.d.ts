@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 interface TabPanelProps {
   'aria-labelledby': string
   children?: React.ReactNode

@@ -40,7 +40,13 @@ export function ChangelogList(props: ChangelogListProps) {
 
       <Flex justify="flex-end">
         <Text size={1}>
-          <a href="#">See full changelog on GitHub</a>
+          <a
+            href="https://github.com/sanity-io/sanity/releases"
+            rel="noreferrer noopener"
+            target="_blank"
+          >
+            See full changelog on GitHub
+          </a>
         </Text>
       </Flex>
     </Stack>

@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import {TooltipPlacement} from './types'
 export interface TooltipProps {
   children?: React.ReactElement

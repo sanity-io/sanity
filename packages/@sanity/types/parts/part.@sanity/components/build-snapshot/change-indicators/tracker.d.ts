@@ -1,6 +1,6 @@
-/// <reference types="react" />
-import {Path} from '_self_'
-import {Reported} from '../components/react-track-elements'
+import type {ReactNode} from 'react'
+import type {Path} from '_self_'
+import type {Reported} from '../components/react-track-elements'
 export interface TrackedChange {
   element: HTMLElement
   path: Path
@@ -13,8 +13,8 @@ export interface TrackedArea {
   element: HTMLElement
 }
 declare const Tracker:
-    | (({children}: {children: import('react').ReactNode}) => JSX.Element)
-    | ((props: {children: import('react').ReactNode}) => JSX.Element),
+    | (({children}: {children: ReactNode}) => JSX.Element)
+    | ((props: {children: ReactNode}) => JSX.Element),
   useReportedValues:
     | (() => Reported<TrackedChange | TrackedArea>[])
     | (() => Reported<TrackedChange | TrackedArea>[]),

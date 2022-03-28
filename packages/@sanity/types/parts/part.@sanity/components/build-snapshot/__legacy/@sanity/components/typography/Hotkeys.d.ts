@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 interface HotkeysProps {
   size?: 'small' | 'medium' | 'large'
   keys?: string[]

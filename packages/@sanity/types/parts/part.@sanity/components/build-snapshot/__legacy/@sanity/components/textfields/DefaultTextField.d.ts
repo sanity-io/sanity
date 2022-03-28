@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 interface DefaultTextFieldProps {
   label: string
   id?: string

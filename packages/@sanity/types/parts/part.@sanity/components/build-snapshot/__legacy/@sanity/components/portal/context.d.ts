@@ -1,5 +1,5 @@
-/// <reference types="react" />
+import type {Context} from 'react'
 export interface PortalContextInterface {
   element: HTMLElement
 }
-export declare const PortalContext: import('react').Context<PortalContextInterface>
+export declare const PortalContext: Context<PortalContextInterface>

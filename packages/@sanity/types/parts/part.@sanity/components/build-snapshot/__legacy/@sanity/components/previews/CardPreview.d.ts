@@ -1,5 +1,5 @@
 import elementResizeDetectorMaker from 'element-resize-detector'
-import React from 'react'
+import type React from 'react'
 import {MediaDimensions} from '../types'
 interface CardPreviewProps {
   title?: React.ReactNode | React.FC<unknown>

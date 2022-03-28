@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 declare const GridItem: React.ForwardRefExoticComponent<
   Pick<
     React.HTMLProps<HTMLLIElement>,

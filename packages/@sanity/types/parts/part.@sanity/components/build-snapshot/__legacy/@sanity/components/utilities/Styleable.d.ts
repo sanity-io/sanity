@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 export default function Styleable(
   Component: React.ComponentType<{
     styles: Record<string, string>

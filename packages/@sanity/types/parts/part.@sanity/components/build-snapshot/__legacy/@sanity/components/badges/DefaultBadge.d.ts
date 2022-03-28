@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 interface DefaultBadgeProps extends React.HTMLProps<HTMLSpanElement> {
   color?: 'success' | 'warning' | 'danger' | 'info'
 }

@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import {AutocompleteSuggestionItem} from './types'
 interface DefaultAutocompleteProps {
   id?: string
