@@ -115,6 +115,28 @@ export function createWithPortableTextMarkModel(
               editor.onChange()
             }
           }
+          // Make sure markDefs are reset, if a block is split at start.
+          if (
+            op.type === 'split_node' &&
+            op.path.length === 1 &&
+            op.properties._type === portableTextFeatures.types.block.name &&
+            'markDefs' in op.properties &&
+            Array.isArray(op.properties.markDefs) &&
+            op.properties.markDefs.length > 0
+          ) {
+            const [block, blockPath] = Editor.node(editor, [op.path[0]])
+            if (
+              editor.isTextBlock(block) &&
+              block.children.length === 1 &&
+              block.markDefs.length > 0 &&
+              Text.isText(block.children[0]) &&
+              block.children[0].text === '' &&
+              block.children[0].marks.length === 0
+            ) {
+              Transforms.setNodes(editor, {markDefs: []}, {at: blockPath})
+              editor.onChange()
+            }
+          }
         }
         // Empty marks if text is empty
         if (isSpan && Array.isArray(node.marks) && node.marks.length > 0 && node.text === '') {

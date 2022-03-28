@@ -624,4 +624,123 @@ describe('plugin:withPortableTextMarksModel: normalization', () => {
       ]
     `)
   })
+
+  it('resets markDefs when splitting a block in the beginning', () => {
+    const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+    const initialValue = [
+      {
+        _key: '1987f99da4a2',
+        _type: 'myTestBlockType',
+        children: [
+          {
+            _key: '3693e789451c',
+            _type: 'span',
+            marks: [],
+            text: '1',
+          },
+        ],
+        markDefs: [],
+        style: 'normal',
+      },
+      {
+        _key: '2f55670a03bb',
+        _type: 'myTestBlockType',
+        children: [
+          {
+            _key: '9f5ed7dee7ab',
+            _type: 'span',
+            marks: ['bab319ad3a9d'],
+            text: '2',
+          },
+        ],
+        markDefs: [
+          {
+            _key: 'bab319ad3a9d',
+            _type: 'link',
+            href: 'http://www.123.com',
+          },
+        ],
+        style: 'normal',
+      },
+    ]
+    const sel: EditorSelection = {
+      focus: {path: [{_key: '2f55670a03bb'}, 'children', {_key: '9f5ed7dee7ab'}], offset: 0},
+      anchor: {path: [{_key: '2f55670a03bb'}, 'children', {_key: '9f5ed7dee7ab'}], offset: 0},
+    }
+    const onChange = jest.fn()
+    act(() => {
+      render(
+        <PortableTextEditorTester
+          onChange={onChange}
+          ref={editorRef}
+          type={type}
+          value={initialValue}
+        />
+      )
+    })
+    if (!editorRef.current) {
+      throw new Error('No editor')
+    }
+    act(() => {
+      if (editorRef.current) {
+        PortableTextEditor.select(editorRef.current, sel)
+        PortableTextEditor.focus(editorRef.current)
+        editorRef.current.slateInstance.insertBreak()
+      }
+    })
+    expect(PortableTextEditor.getValue(editorRef.current)).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "_key": "1987f99da4a2",
+          "_type": "myTestBlockType",
+          "children": Array [
+            Object {
+              "_key": "3693e789451c",
+              "_type": "span",
+              "marks": Array [],
+              "text": "1",
+            },
+          ],
+          "markDefs": Array [],
+          "style": "normal",
+        },
+        Object {
+          "_key": "2f55670a03bb",
+          "_type": "myTestBlockType",
+          "children": Array [
+            Object {
+              "_key": "9f5ed7dee7ab",
+              "_type": "span",
+              "marks": Array [],
+              "text": "",
+            },
+          ],
+          "markDefs": Array [],
+          "style": "normal",
+        },
+        Object {
+          "_key": "2",
+          "_type": "myTestBlockType",
+          "children": Array [
+            Object {
+              "_key": "1",
+              "_type": "span",
+              "marks": Array [
+                "bab319ad3a9d",
+              ],
+              "text": "2",
+            },
+          ],
+          "markDefs": Array [
+            Object {
+              "_key": "bab319ad3a9d",
+              "_type": "link",
+              "href": "http://www.123.com",
+            },
+          ],
+          "style": "normal",
+        },
+      ]
+    `)
+  })
 })
