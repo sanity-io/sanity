@@ -32,7 +32,6 @@ const INITIAL_STATE: FormViewState = {
 }
 
 const preventDefault = (ev: React.FormEvent) => ev.preventDefault()
-const noop = () => undefined
 
 export function FormView(props: FormViewProps) {
   const {hidden, margins, granted} = props
@@ -44,7 +43,7 @@ export function FormView(props: FormViewProps) {
     documentSchema,
     documentType,
     focusPath,
-    handleChange,
+    handleChange: _handleChange,
     handleFocus,
     historyController,
     validation,
@@ -82,6 +81,13 @@ export function FormView(props: FormViewProps) {
       readOnly
     )
   }, [documentSchema, isNonExistent, granted, ready, rev, readOnly])
+
+  const handleChange = useCallback(
+    (patches) => {
+      if (!isReadOnly) _handleChange(patches)
+    },
+    [_handleChange, isReadOnly]
+  )
 
   useEffect(() => {
     if (!filterFieldFn$) return undefined
@@ -167,14 +173,14 @@ export function FormView(props: FormViewProps) {
               filterField={filterField}
               focusPath={focusPath}
               onBlur={handleBlur}
-              onChange={isReadOnly ? noop : handleChange}
+              onChange={handleChange}
               onFocus={handleFocus}
               presence={presence}
               readOnly={isReadOnly}
               schema={schema}
               type={documentSchema}
               validation={validation}
-              value={value as any}
+              value={value}
             />
           ) : (
             <Delay ms={300}>
