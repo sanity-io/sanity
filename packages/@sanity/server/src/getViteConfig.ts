@@ -6,6 +6,7 @@ import {sanityBuildEntries, virtualEntryModuleId} from './vite/plugin-sanity-bui
 import {loadSanityMonorepo} from './sanityMonorepo'
 import {normalizeBasePath} from './helpers'
 import {getAliases} from './aliases'
+import {sanityFaviconsPlugin} from './vite/plugin-sanity-favicons'
 
 export interface ViteOptions {
   /**
@@ -64,6 +65,8 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
 
   const monorepo = await loadSanityMonorepo(cwd)
   const basePath = normalizeBasePath(rawBasePath)
+  const faviconsPath = path.join(__dirname, 'static', 'favicons')
+  const staticPath = `${basePath}static`
 
   const viteConfig: InlineConfig = {
     root: cwd,
@@ -84,6 +87,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
       viteReact(),
       sanityRuntimeRewritePlugin(),
       sanityBuildEntries({basePath, cwd, monorepo}),
+      sanityFaviconsPlugin({faviconsPath, staticUrlPath: staticPath}),
     ],
     envPrefix: 'SANITY_STUDIO_',
     logLevel: mode === 'production' ? 'silent' : 'info',
