@@ -1,35 +1,13 @@
 import {exec, spawn} from 'child_process'
 import path from 'path'
-// import chalk from 'chalk'
 import cpx from 'cpx'
 
-export function copyFiles(opts: {
-  srcPath: string
-  libPath: string
-  watch?: boolean
-}): Promise<void> {
+export function copyFiles(opts: {srcPath: string; libPath: string}): Promise<void> {
   return new Promise((resolve, reject) => {
-    if (opts.watch) {
-      const watcher = cpx.watch(
-        path.resolve(opts.srcPath, '**/*.!(*js|*jsx|*ts|*tsx)'),
-        opts.libPath
-      )
-
-      watcher.on('copy', () => {
-        // console.log(`${chalk.green('copied')} ${event.srcPath} to ${event.dstPath}`)
-      })
-
-      watcher.on('remove', () => {
-        // console.log(`${chalk.red('removed')} ${event.path}`)
-      })
-
-      resolve(undefined)
-    } else {
-      cpx.copy(path.resolve(opts.srcPath, '**/*.!(*js|*jsx|*ts|*tsx)'), opts.libPath, (err) => {
-        if (err) reject(err)
-        else resolve(undefined)
-      })
-    }
+    cpx.copy(path.resolve(opts.srcPath, '**/*.!(*js|*jsx|*ts|*tsx)'), opts.libPath, (err) => {
+      if (err) reject(err)
+      else resolve(undefined)
+    })
   })
 }
 
