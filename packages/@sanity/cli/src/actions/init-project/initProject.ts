@@ -211,6 +211,11 @@ export default async function initSanity(
 
   // Prompt for dataset import (if a dataset is defined)
   if (shouldImport) {
+    // @TODO REIMPLEMENT ME @todo
+    print('Dataset importing is temporarily disabled!')
+    // @TODO REIMPLEMENT ME @todo
+
+    /*
     // Make sure we have the required configs
     const corePath = resolveFrom.silent(outputPath, '@sanity/core') || 'null'
 
@@ -237,6 +242,7 @@ export default async function initSanity(
     print(`\t${chalk.cyan(`sanity dataset delete ${datasetName}`)}`)
     print('and create a new clean dataset with')
     print(`\t${chalk.cyan(`sanity dataset create <name>`)}\n`)
+    */
   }
 
   const isCurrentDir = outputPath === process.cwd()

@@ -1,12 +1,11 @@
+// @todo REPLACE ME ONCE WE GO LIVE
 const V3_TAG = 'purple-unicorn'
 
 export default {
   // Dependencies for a default Sanity installation
   core: {
-    '@sanity/base': V3_TAG,
-    '@sanity/core': V3_TAG,
-    '@sanity/desk-tool': V3_TAG,
-    '@sanity/vision': V3_TAG,
+    // Official studio dependencies
+    sanity: V3_TAG,
 
     // Non-Sanity dependencies
     react: '^17.0.0',

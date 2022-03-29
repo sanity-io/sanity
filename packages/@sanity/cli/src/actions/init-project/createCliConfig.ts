@@ -3,12 +3,14 @@ import * as parser from 'recast/parsers/typescript'
 import traverse from '@babel/traverse'
 
 const defaultTemplate = `
-export default {
+import {createCliConfig} from 'sanity/cli'
+
+export default createCliConfig({
   api: {
     projectId: '%projectId%',
     dataset: '%dataset%'
   }
-}
+})
 `
 
 export interface GenerateCliConfigOptions {
