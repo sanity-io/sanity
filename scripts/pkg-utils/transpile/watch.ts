@@ -1,7 +1,7 @@
 import path from 'path'
+import fs from 'fs/promises'
 import chalk from 'chalk'
 import chokidar from 'chokidar'
-import cpx from 'cpx'
 import rimraf from 'rimraf'
 import {SUPPORTED_TARGETS} from '../constants'
 import {resolveTsconfigPath} from '../helpers'
@@ -32,13 +32,15 @@ export async function watch(opts: {
   const watcher = chokidar.watch('**/*', {cwd: SRC_PATH})
 
   function copy(filePath: string) {
+    console.log(`${chalk.blue('copying')} ${filePath} to ${path.relative(cwd, LIB_PATH)}`)
+
     if (opts.target === 'web') {
-      cpx.copy(path.resolve(SRC_PATH, filePath), path.resolve(LIB_PATH, 'esm', filePath))
-      cpx.copy(path.resolve(SRC_PATH, filePath), path.resolve(LIB_PATH, 'cjs', filePath))
+      copyFile(path.resolve(SRC_PATH, filePath), path.resolve(LIB_PATH, 'esm', filePath))
+      copyFile(path.resolve(SRC_PATH, filePath), path.resolve(LIB_PATH, 'cjs', filePath))
     }
 
     if (opts.target === 'node') {
-      cpx.copy(path.resolve(SRC_PATH, filePath), path.resolve(LIB_PATH, filePath))
+      copyFile(path.resolve(SRC_PATH, filePath), path.resolve(LIB_PATH, filePath))
     }
   }
 
@@ -123,4 +125,9 @@ export async function watch(opts: {
   if (tsconfigPath) {
     await compileDTS({cwd, tsconfig, watch: true})
   }
+}
+
+async function copyFile(srcPath: string, dstPath: string) {
+  await fs.mkdir(path.dirname(dstPath), {recursive: true})
+  await fs.copyFile(srcPath, dstPath)
 }
