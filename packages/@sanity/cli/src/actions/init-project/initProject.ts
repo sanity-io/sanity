@@ -209,20 +209,20 @@ export default async function initSanity(
     throw err
   }
 
-  // Make sure we have the required configs
-  const corePath = resolveFrom.silent(outputPath, '@sanity/core') || 'null'
-
-  debug('@sanity/core path resolved to %s', corePath)
-  debug('(from %s)', outputPath)
-  const coreModule = dynamicRequire(corePath)
-  const coreCommands = coreModule && coreModule.commands
-
-  if (!Array.isArray(coreCommands)) {
-    throw new Error('@sanity/core module failed to be resolved')
-  }
-
   // Prompt for dataset import (if a dataset is defined)
   if (shouldImport) {
+    // Make sure we have the required configs
+    const corePath = resolveFrom.silent(outputPath, '@sanity/core') || 'null'
+
+    debug('@sanity/core path resolved to %s', corePath)
+    debug('(from %s)', outputPath)
+    const coreModule = dynamicRequire(corePath)
+    const coreCommands = coreModule && coreModule.commands
+
+    if (!Array.isArray(coreCommands)) {
+      throw new Error('@sanity/core module failed to be resolved')
+    }
+
     await doDatasetImport({
       projectId,
       outputPath,
