@@ -87,14 +87,21 @@ export async function watch(opts: {
     }
   }
 
-  watcher.on('all', (eventType, filePath) => {
+  watcher.on('all', async (eventType, filePath) => {
     if (['add', 'change'].includes(eventType)) {
       const ext = path.extname(filePath)
 
-      if (TRANSPILE_EXTENSIONS.includes(ext)) {
-        transpile(filePath)
-      } else {
+      if (!TRANSPILE_EXTENSIONS.includes(ext)) {
         copy(filePath)
+        return
+      }
+
+      // Since we are in watch mode, we don't want to fail on errors as they are
+      // likely and expected to happen during development
+      try {
+        await transpile(filePath)
+      } catch (err) {
+        console.error(err)
       }
     }
 
