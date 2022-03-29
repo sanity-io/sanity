@@ -40,15 +40,27 @@ const dummyDocument = {
 describe('number-input', () => {
   it('renders the number input field', () => {
     const {result} = renderForm({type: numberFieldTestType, value: dummyDocument})
-    const input = result.queryByTestId('input-num').querySelector('input')
+    const field = result.queryByTestId('input-num')
+    if (!field) {
+      throw new Error('No field with test id "input-num" found')
+    }
 
+    const input = field.querySelector('input')
     expect(input).toBeDefined()
     expect(input).toHaveAttribute('type', 'number')
   })
 
   it('accepts decimals by default', () => {
     const {result} = renderForm({type: numberFieldTestType, value: dummyDocument})
-    const input = result.queryByTestId('input-num').querySelector('input')
+    const field = result.queryByTestId('input-num')
+    if (!field) {
+      throw new Error('No field with test id "input-num" found')
+    }
+
+    const input = field.querySelector('input')
+    if (!input) {
+      throw new Error('No input found')
+    }
 
     input.value = '1.2'
     expect(input.value).toBe('1.2')
