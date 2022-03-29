@@ -13,7 +13,10 @@ import {createElement} from 'react'
 import {renderToString} from 'react-dom/server'
 import {getAliases} from './aliases'
 import {SanityMonorepo} from './sanityMonorepo'
+import {debug} from './debug'
 
+// Don't use threads in the jest world
+// eslint-disable-next-line no-process-env
 const useThreads = typeof process.env.JEST_WORKER_ID === 'undefined'
 
 const defaultProps = {
@@ -123,6 +126,8 @@ function getDocumentComponent(studioRootPath: string) {
   const userDefined = tryLoadDocumentComponent(studioRootPath)
 
   if (userDefined) {
+    debug('Found user defined document component at %s', userDefined.path)
+
     const DocumentComp = userDefined.component.default || userDefined.component
     if (typeof DocumentComp === 'function') {
       return DocumentComp
@@ -134,12 +139,13 @@ function getDocumentComponent(studioRootPath: string) {
     })
   }
 
+  debug('Using default document component')
   return DefaultDocument
 }
 
 function tryLoadDocumentComponent(studioRootPath: string) {
   try {
-    const componentPath = path.join(studioRootPath, 'src', '_document.js')
+    const componentPath = path.join(studioRootPath, '_document.js')
     return {
       // eslint-disable-next-line import/no-dynamic-require
       component: require(componentPath),
@@ -150,7 +156,7 @@ function tryLoadDocumentComponent(studioRootPath: string) {
   }
 
   try {
-    const componentPath = path.join(studioRootPath, 'src', '_document.tsx')
+    const componentPath = path.join(studioRootPath, '_document.tsx')
     return {
       // eslint-disable-next-line import/no-dynamic-require
       component: require(componentPath),
