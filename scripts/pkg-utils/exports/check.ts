@@ -20,8 +20,6 @@ export async function check(opts: {cwd: string; target: 'node' | 'web'}): Promis
   const external = [
     ...new Set([
       // @TODO add support for depcheckignore files
-      '@sanity-studio-config',
-      '@self/config',
       ...(pkg.dependencies ? Object.keys(pkg.dependencies) : []),
       ...(pkg.devDependencies ? Object.keys(pkg.devDependencies) : []),
       ...(pkg.peerDependencies ? Object.keys(pkg.peerDependencies) : []),

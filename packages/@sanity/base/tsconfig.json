@@ -7,9 +7,6 @@
     "rootDir": "./",
     "outDir": "./lib/dts/",
     "jsx": "react",
-    "paths": {
-      "@self/*": ["./src/*"]
-    },
 
     // For scripts
     "resolveJsonModule": true
