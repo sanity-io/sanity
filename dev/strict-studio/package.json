@@ -1,0 +1,18 @@
+{
+  "private": true,
+  "name": "sanity-strict-studio",
+  "version": "0.0.0-development",
+  "scripts": {
+    "build": "sanity build",
+    "dev": "sanity start",
+    "start": "sanity start"
+  },
+  "dependencies": {
+    "@sanity/base": "2.29.3",
+    "@sanity/desk-tool": "2.29.3",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "sanity": "2.20.0",
+    "styled-components": "^5.2.0"
+  }
+}
