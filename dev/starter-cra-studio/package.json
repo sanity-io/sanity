@@ -3,12 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@sanity/base": "2.29.2",
-    "@sanity/desk-tool": "2.29.2",
     "styled-components": "^5.2.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "react-scripts": "5.0.0"
+    "react-scripts": "5.0.0",
+    "sanity": "2.20.0"
   },
   "scripts": {
     "start": "react-scripts start",

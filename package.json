@@ -17,7 +17,7 @@
   "scripts": {
     "bootstrap": "yarn install && yarn build:cli",
     "build": "lerna run --scope @sanity/* --scope sanity build",
-    "build:cli": "lerna run --scope '@sanity/{cli,client,core,export,import,mutator,server,types,util}' build",
+    "build:cli": "lerna run --scope '@sanity/{cli,client,core,export,import,mutator,server,types,util}' --scope sanity build",
     "clean": "lerna run --scope @sanity/* --scope sanity clean && lerna clean",
     "check:versions": "node scripts/normalizeDependencyVersions.js",
     "cypress:open": "cypress open --config-file cypress/cypress.json",
