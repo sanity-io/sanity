@@ -1,4 +1,5 @@
 import React from 'react'
+import {Favicons} from './Favicons'
 
 const globalStyles = `
 html {
@@ -21,7 +22,13 @@ window.__DEV__ = true;
 window.setImmediate = setTimeout;
 `
 
-export function Document(props: {entryPath: string}) {
+export interface DocumentProps {
+  entryPath: string
+  basePath?: string
+}
+
+export function Document(props: DocumentProps) {
+  const {entryPath, basePath = '/'} = props
   return (
     <html lang="en">
       <head>
@@ -29,13 +36,16 @@ export function Document(props: {entryPath: string}) {
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <meta name="robots" content="noindex" />
         <meta name="referrer" content="same-origin" />
+
+        <Favicons basePath={basePath} />
+
         <title>Sanity Studio</title>
         <style>{globalStyles}</style>
       </head>
       <body>
         <div id="sanity" />
         <script>{globalScript}</script>
-        <script type="module" src={props.entryPath} />
+        <script type="module" src={entryPath} />
       </body>
     </html>
   )
