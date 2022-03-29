@@ -1,10 +1,22 @@
 import {exec, spawn} from 'child_process'
 import path from 'path'
 import cpx from 'cpx'
+import {IGNORE_EXTENSIONS, TRANSPILE_EXTENSIONS} from './constants'
 
 export function copyFiles(opts: {srcPath: string; libPath: string}): Promise<void> {
+  const ignoredExtensions = [
+    // Don't copy source files
+    ...TRANSPILE_EXTENSIONS,
+
+    // Ignore certain denied extensions
+    ...IGNORE_EXTENSIONS,
+  ].map((ext) => `*${ext.replace(/^\./, '')}`)
+
+  const ignoreList = ignoredExtensions.join('|')
+  const globPattern = `**/*.!(${ignoreList})`
+
   return new Promise((resolve, reject) => {
-    cpx.copy(path.resolve(opts.srcPath, '**/*.!(*js|*jsx|*ts|*tsx)'), opts.libPath, (err) => {
+    cpx.copy(path.resolve(opts.srcPath, globPattern), opts.libPath, (err) => {
       if (err) reject(err)
       else resolve(undefined)
     })

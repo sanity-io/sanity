@@ -5,7 +5,7 @@ import cpx from 'cpx'
 import rimraf from 'rimraf'
 import {SUPPORTED_TARGETS} from '../constants'
 import {resolveTsconfigPath} from '../helpers'
-import {TRANSPILE_EXTENSIONS} from './constants'
+import {TRANSPILE_EXTENSIONS, IGNORE_EXTENSIONS} from './constants'
 import {babelBuild} from './babel/babelBuild'
 import {compileDTS} from './helpers'
 
@@ -90,6 +90,10 @@ export async function watch(opts: {
   watcher.on('all', async (eventType, filePath) => {
     if (['add', 'change'].includes(eventType)) {
       const ext = path.extname(filePath)
+
+      if (IGNORE_EXTENSIONS.includes(ext) || IGNORE_EXTENSIONS.includes(path.basename(filePath))) {
+        return
+      }
 
       if (!TRANSPILE_EXTENSIONS.includes(ext)) {
         copy(filePath)
