@@ -59,6 +59,7 @@ export const EditObject = (props: EditObjectProps) => {
     () => findObjectAndType(objectEditData, value, ptFeatures),
     [objectEditData, ptFeatures, value]
   )
+
   const [object, setObject] = useState(objectFromValue)
   const [timeoutInstance, setTimeoutInstance] = useState(undefined)
   const formBuilderPath = objectEditData && objectEditData.formBuilderPath
