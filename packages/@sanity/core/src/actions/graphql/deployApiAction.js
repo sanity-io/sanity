@@ -26,6 +26,7 @@ const isInteractive = process.stdout.isTTY && process.env.TERM !== 'dumb' && !('
 const ignoredWarnings = ['OPTIONAL_INPUT_FIELD_ADDED']
 const ignoredBreaking = []
 
+// eslint-disable-next-line complexity
 module.exports = async function deployApiActions(args, context) {
   // Reparsing CLI flags for better control of binary flags
   const flags = parseCliFlags(args)
@@ -35,7 +36,7 @@ module.exports = async function deployApiActions(args, context) {
   await tryInitializePluginConfigs({workDir, output, env: 'production'})
 
   let spinner
-  const {force, tag, playground, nonNullDocumentFields} = flags
+  const {force, tag, playground, nonNullDocumentFields, dryRun} = flags
 
   const client = apiClient({
     requireUser: true,
@@ -66,14 +67,18 @@ module.exports = async function deployApiActions(args, context) {
   }
 
   let enablePlayground = playground
-  if (typeof playground === 'undefined' && !isInteractive) {
-    enablePlayground = playgroundEnabled
-  } else if (typeof playground === 'undefined') {
-    enablePlayground = await prompt.single({
-      type: 'confirm',
-      message: 'Do you want to enable a GraphQL playground?',
-      default: playgroundEnabled,
-    })
+
+  // if dry run, the playground prompt won't be launched
+  if (!dryRun) {
+    if (typeof playground === 'undefined' && !isInteractive) {
+      enablePlayground = playgroundEnabled
+    } else if (typeof playground === 'undefined') {
+      enablePlayground = await prompt.single({
+        type: 'confirm',
+        message: 'Do you want to enable a GraphQL playground?',
+        default: playgroundEnabled,
+      })
+    }
   }
 
   spinner = output.spinner('Generating GraphQL schema').start()
@@ -115,8 +120,13 @@ module.exports = async function deployApiActions(args, context) {
     throw validationError ? new Error(validationError) : err
   }
 
-  if (!(await confirmValidationResult(valid, {spinner, output, prompt, force}))) {
+  if (!(await confirmValidationResult(valid, {spinner, output, prompt, force, dryRun}))) {
     return
+  }
+
+  if (dryRun) {
+    output.print('GraphQL API is valid and has no breaking changes')
+    process.exit(0)
   }
 
   spinner = output.spinner('Deploying GraphQL API').start()
@@ -170,7 +180,7 @@ function parseCliFlags(args) {
     .option('force', {type: 'boolean'}).argv
 }
 
-async function confirmValidationResult(valid, {spinner, output, prompt, force}) {
+async function confirmValidationResult(valid, {spinner, output, prompt, force, dryRun}) {
   const {validationError, breakingChanges: breaking, dangerousChanges: dangerous} = valid
   if (validationError) {
     spinner.fail()
@@ -204,10 +214,14 @@ async function confirmValidationResult(valid, {spinner, output, prompt, force}) 
 
   output.print('')
 
-  if (!isInteractive) {
+  if (!isInteractive && !dryRun) {
     throw new Error(
       'Dangerous changes found - falling back. Re-run the command with the `--force` flag to force deployment.'
     )
+  }
+
+  if (dryRun) {
+    process.exit(1)
   }
 
   const shouldDeploy = await prompt.single({
