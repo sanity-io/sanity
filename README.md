@@ -1,10 +1,21 @@
-# ![Sanity logo](https://cdn.sanity.io/images/3do82whm/next/51af00784c5addcf63ae7f0c416756acca7e63ac-353x71.svg?w=180&fm=png&fit=max)
+<p align="center">
+  <a href="https://sanity.io">
+    <img src="https://cdn.sanity.io/images/3do82whm/next/51af00784c5addcf63ae7f0c416756acca7e63ac-353x71.svg?w=400&fm=png&fit=max">
+  </a>
+</p>
+
+<p align="center">
+    <img src="https://img.shields.io/npm/v/@sanity/base">
+    <img alt="" src="https://img.shields.io/npm/dm/@sanity/client">
+    <img alt="" src="https://img.shields.io/npm/l/@sanity/client.svg">
+  <a aria-label="Join the community on GitHub" href="https://twitter.com/sanity_io">
+    <img alt="" src="https://img.shields.io/twitter/follow/sanity_io?style=flat&color=blue">
+  </a>
+</p>
 
 ## Build with Structured Content
 
 > **Sanity.io is the platform for structured content. It comes with an open-source editing environment called Sanity Studio that you can customize with JavaScript and a real-time hosted data store. Sanity has generous included quotas – so [getting started](https://www.sanity.io/create) is free.**
-
-![npm](https://img.shields.io/npm/v/@sanity/base) ![Downloads](https://img.shields.io/npm/dm/@sanity/client) [![Join us on Slack](https://slack.sanity.io/badge.svg)](https://slack.sanity.io/) [![Follow on twitter](https://img.shields.io/twitter/follow/sanity_io?style=flat&color=blue)](https://twitter.com/sanity_io)
 
 ## Quickstart
 
