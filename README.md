@@ -5,12 +5,12 @@
 </p>
 
 <p align="center">
-    <img src="https://img.shields.io/npm/v/@sanity/base">
-    <img alt="" src="https://img.shields.io/npm/dm/@sanity/client">
-    <img alt="" src="https://img.shields.io/npm/l/@sanity/client.svg">
+  <img alt="" src="https://img.shields.io/npm/v/@sanity/base">
+  <img alt="" src="https://img.shields.io/npm/dm/@sanity/client">
+  <img alt="" src="https://img.shields.io/npm/l/@sanity/client.svg">
   <a aria-label="Join the community on Slack" href="https://slack.sanity.io">
-  <img alt="" src="https://img.shields.io/badge/Join%20Slack-f03e2f?logo=Slack">
-    </a>
+    <img alt="" src="https://img.shields.io/badge/Join%20Slack-f03e2f?logo=Slack">
+  </a>
   <a aria-label="Follow Sanity on Twitter" href="https://twitter.com/sanity_io">
     <img alt="" src="https://img.shields.io/twitter/follow/sanity_io?style=flat&color=blue">
   </a>
@@ -50,6 +50,7 @@ Or go to [sanity.io/create](https://www.sanity.io/create) to get started from th
 ## Key Features
 
 ![Sanity Studio](https://cdn.sanity.io/images/3do82whm/next/f31379d654eabc2feb5c0226510fce1195a0b3bd-2680x1506.png?w=1200&fit=max&auto=format)
+
 ### [Sanity Studio](https://www.sanity.io/studio)
 
 [Sanity Studio](https://www.sanity.io/studio) is an open source headless real-time CMS, that you can customize with JavaScript and React.
@@ -83,7 +84,6 @@ Or go to [sanity.io/create](https://www.sanity.io/create) to get started from th
 - Subscribe to [our blog by RSS](https://www.sanity.io/feed/rss)
 - Subscribe to our [newsletter](http://eepurl.com/b2yaDz)
 - Join the [developer community on Slack](https://slack.sanity.io)
-
 
 ## Code of Conduct
 
