@@ -57,7 +57,7 @@ export function compileDTS(opts: {cwd: string; tsconfig?: string; watch?: boolea
   }
 
   return new Promise((resolve, reject) => {
-    exec(`tsc --emitDeclarationOnly --project ${tsconfig}`, {cwd}, (err, stdout, stderr) => {
+    exec(`tsc --build ./${tsconfig}`, {cwd}, (err, stdout, stderr) => {
       if (stdout) console.log(stdout)
       if (stderr) console.log(stderr)
       if (err) reject(err)
