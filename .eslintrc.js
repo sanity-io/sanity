@@ -24,8 +24,11 @@ module.exports = {
     'prettier/prettier': 'error',
     'react/jsx-filename-extension': ['error', {extensions: ['.js', '.jsx', '.tsx']}],
     'sort-imports': 'off', // prefer import/order
+
+    // tsdoc
+    'tsdoc/syntax': 'error',
   },
-  plugins: ['import', '@typescript-eslint', 'prettier', 'react'],
+  plugins: ['import', '@typescript-eslint', 'prettier', 'react', 'tsdoc'],
   overrides: [
     {
       files: ['*.{ts,tsx}'],

@@ -1,0 +1,48 @@
+import path from 'path'
+
+function getEnv(key: string) {
+  const val = process.env[key]
+
+  if (val === undefined) {
+    throw new Error(`missing environment variable: ${key}`)
+  }
+
+  return val
+}
+
+export const config = {
+  fs: {
+    etcPath: path.resolve(__dirname, '../../etc/api'),
+  },
+
+  sanity: {
+    projectId: getEnv('SANITY_PROJECT_ID'),
+    dataset: getEnv('SANITY_DATASET'),
+    token: process.env.SANITY_API_TOKEN,
+  },
+
+  workspace: [
+    // 'sanity',
+
+    '@sanity/base',
+    '@sanity/block-tools',
+    '@sanity/code-input',
+    '@sanity/core',
+    // '@sanity/dashboard',
+    '@sanity/diff',
+    // '@sanity/export',
+    '@sanity/google-maps-input',
+    // '@sanity/imagetool',
+    // '@sanity/import',
+    // '@sanity/import-cli',
+    '@sanity/mutator',
+    '@sanity/portable-text-editor',
+    '@sanity/schema',
+    '@sanity/server',
+    '@sanity/transaction-collator',
+    '@sanity/types',
+    '@sanity/util',
+    '@sanity/validation',
+    // '@sanity/vision',
+  ],
+}
