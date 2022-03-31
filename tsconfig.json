@@ -4,7 +4,8 @@
   "exclude": ["./test/v2-studio"],
   "compilerOptions": {
     "allowJs": true,
-    "noEmit": true
+    "emitDeclarationOnly": true,
+    "outDir": "./node_modules/.sanity-monorepo/dts/"
   },
   "references": [
     // {"path": "./dev/example-studio"},
@@ -38,6 +39,6 @@
     {"path": "./packages/@sanity/util"},
     {"path": "./packages/@sanity/validation"},
     {"path": "./packages/@sanity/vision"},
-    {"path": "./packages/sanity"},
+    {"path": "./packages/sanity"}
   ]
 }

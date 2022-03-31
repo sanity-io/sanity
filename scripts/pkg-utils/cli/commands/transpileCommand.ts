@@ -11,16 +11,28 @@ import {transpile} from '../../transpile'
 export async function transpileCommand(opts: {
   cwd: string
   target: 'node' | 'web'
-  tsconfig?: string
+  // tsconfig?: string
   watch: boolean
 }): Promise<void> {
-  const {target, tsconfig = 'tsconfig.json', watch} = opts
+  const {
+    target,
+    // tsconfig = 'tsconfig.json',
+    watch,
+  } = opts
 
   const cwd = path.resolve(process.cwd(), opts.cwd || '.')
 
   if (watch) {
-    await transpile.watch({cwd, target, tsconfig})
+    await transpile.watch({
+      cwd,
+      target,
+      // tsconfig
+    })
   } else {
-    await transpile.build({cwd, target, tsconfig})
+    await transpile.build({
+      cwd,
+      target,
+      // tsconfig
+    })
   }
 }

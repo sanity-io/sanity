@@ -4,17 +4,21 @@ import chalk from 'chalk'
 import chokidar from 'chokidar'
 import rimraf from 'rimraf'
 import {SUPPORTED_TARGETS} from '../constants'
-import {resolveTsconfigPath} from '../helpers'
+// import {resolveTsconfigPath} from '../helpers'
 import {TRANSPILE_EXTENSIONS, IGNORE_EXTENSIONS} from './constants'
 import {babelBuild} from './babel/babelBuild'
-import {compileDTS} from './helpers'
+// import {compileDTS} from './helpers'
 
 export async function watch(opts: {
   cwd: string
   target: 'node' | 'web'
-  tsconfig: string
+  // tsconfig: string
 }): Promise<void> {
-  const {cwd, target, tsconfig} = opts
+  const {
+    cwd,
+    target,
+    // tsconfig
+  } = opts
 
   if (!SUPPORTED_TARGETS.includes(target)) {
     throw new Error(`unsupported target: "${target}"`)
@@ -24,7 +28,7 @@ export async function watch(opts: {
 
   console.log(`${chalk.blue('watching')} ${chalk.yellow(`${pkg.name}@${pkg.version}`)}`)
 
-  const tsconfigPath = resolveTsconfigPath({cwd, tsconfig})
+  // const tsconfigPath = resolveTsconfigPath({cwd, tsconfig})
 
   const SRC_PATH = path.resolve(cwd, 'src')
   const LIB_PATH = path.resolve(cwd, 'lib')
@@ -122,9 +126,9 @@ export async function watch(opts: {
     }
   })
 
-  if (tsconfigPath) {
-    await compileDTS({cwd, tsconfig, watch: true})
-  }
+  // if (tsconfigPath) {
+  //   await compileDTS({cwd, tsconfig, watch: true})
+  // }
 }
 
 async function copyFile(srcPath: string, dstPath: string) {

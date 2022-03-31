@@ -2,17 +2,24 @@ import path from 'path'
 import chalk from 'chalk'
 import globby from 'globby'
 import {SUPPORTED_TARGETS} from '../constants'
-import {resolveTsconfigPath} from '../helpers'
+// import {resolveTsconfigPath} from '../helpers'
 import {TERM_DIVIDER} from './constants'
 import {babelBuild} from './babel/babelBuild'
-import {compileDTS, copyFiles} from './helpers'
+import {
+  // compileDTS,
+  copyFiles,
+} from './helpers'
 
 export async function build(opts: {
   cwd: string
   target: 'node' | 'web'
-  tsconfig: string
+  // tsconfig: string
 }): Promise<void> {
-  const {cwd, target, tsconfig} = opts
+  const {
+    cwd,
+    target,
+    // tsconfig
+  } = opts
 
   if (!cwd.includes('packages/')) {
     throw new Error('must be in package')
@@ -29,11 +36,11 @@ export async function build(opts: {
   console.log(`${chalk.blue('mode')}     transpile`)
   console.log(`${chalk.blue('target')}   ${target}`)
 
-  const tsconfigPath = resolveTsconfigPath({cwd, tsconfig})
+  // const tsconfigPath = resolveTsconfigPath({cwd, tsconfig})
 
-  if (tsconfigPath) {
-    console.log(chalk.blue('tsconfig'), path.relative(cwd, tsconfigPath))
-  }
+  // if (tsconfigPath) {
+  //   console.log(chalk.blue('tsconfig'), path.relative(cwd, tsconfigPath))
+  // }
 
   const SRC_PATH = path.resolve(cwd, 'src')
   const LIB_PATH = path.resolve(cwd, 'lib')
@@ -46,7 +53,11 @@ export async function build(opts: {
   ])
 
   // Run these in parallel
-  await Promise.all([transpile(), copy(), dts()])
+  await Promise.all([
+    transpile(),
+    copy(),
+    // dts()
+  ])
 
   async function transpile() {
     if (target === 'web') {
@@ -107,13 +118,13 @@ export async function build(opts: {
     console.log(`${chalk.green('copied')} files`)
   }
 
-  async function dts() {
-    if (tsconfigPath) {
-      await compileDTS({cwd, tsconfig})
+  // async function dts() {
+  //   if (tsconfigPath) {
+  //     await compileDTS({cwd, tsconfig})
 
-      console.log(`${chalk.green('compiled')} TS definitions`)
-    }
-  }
+  //     console.log(`${chalk.green('compiled')} TS definitions`)
+  //   }
+  // }
 
   console.log(TERM_DIVIDER)
 }

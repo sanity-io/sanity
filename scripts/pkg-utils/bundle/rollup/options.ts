@@ -43,6 +43,7 @@ export function buildOptions(opts: {
       }),
       json(),
       typescript({
+        abortOnError: false,
         cacheRoot: path.resolve(cwd, `node_modules/.cache/sanity-pkg-utils/rpt2/${build.format}`),
         tsconfig: tsconfig,
         tsconfigOverride: {

@@ -50,7 +50,7 @@ async function main() {
     await transpileCommand({
       cwd,
       target: (isString(flags.target) ? flags.target : 'web') as any,
-      tsconfig: isString(flags.tsconfig) ? flags.tsconfig : undefined,
+      // tsconfig: isString(flags.tsconfig) ? flags.tsconfig : undefined,
       watch: Boolean(flags.watch),
     })
     return

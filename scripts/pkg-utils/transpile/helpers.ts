@@ -1,4 +1,4 @@
-import {exec, spawn} from 'child_process'
+// import {exec, spawn} from 'child_process'
 import path from 'path'
 import cpx from 'cpx'
 import {IGNORE_EXTENSIONS, TRANSPILE_EXTENSIONS} from './constants'
@@ -23,45 +23,45 @@ export function copyFiles(opts: {srcPath: string; libPath: string}): Promise<voi
   })
 }
 
-export function compileDTS(opts: {cwd: string; tsconfig?: string; watch?: boolean}): Promise<void> {
-  const {cwd, tsconfig = 'tsconfig.json', watch} = opts
+// export function compileDTS(opts: {cwd: string; tsconfig?: string; watch?: boolean}): Promise<void> {
+//   const {cwd, tsconfig = 'tsconfig.json', watch} = opts
 
-  if (watch) {
-    const ls = spawn(
-      'tsc',
-      ['-emitDeclarationOnly', '--preserveWatchOutput', '--project', tsconfig, '--watch'],
-      {cwd}
-    )
+//   if (watch) {
+//     const ls = spawn(
+//       'tsc',
+//       ['-emitDeclarationOnly', '--preserveWatchOutput', '--project', tsconfig, '--watch'],
+//       {cwd}
+//     )
 
-    ls.stdout.on('data', (data) => {
-      const lines = String(data).trim().split('\n')
+//     ls.stdout.on('data', (data) => {
+//       const lines = String(data).trim().split('\n')
 
-      for (const line of lines) {
-        if (line) console.log(`[tsc] ${line}`)
-      }
-    })
+//       for (const line of lines) {
+//         if (line) console.log(`[tsc] ${line}`)
+//       }
+//     })
 
-    ls.stderr.on('data', (data) => {
-      const lines = String(data).trim().split('\n')
+//     ls.stderr.on('data', (data) => {
+//       const lines = String(data).trim().split('\n')
 
-      for (const line of lines) {
-        if (line) console.error(`[tsc] ${line}`)
-      }
-    })
+//       for (const line of lines) {
+//         if (line) console.error(`[tsc] ${line}`)
+//       }
+//     })
 
-    ls.on('close', (code) => {
-      console.log(`[tsc] exited with code ${code}`)
-    })
+//     ls.on('close', (code) => {
+//       console.log(`[tsc] exited with code ${code}`)
+//     })
 
-    return Promise.resolve()
-  }
+//     return Promise.resolve()
+//   }
 
-  return new Promise((resolve, reject) => {
-    exec(`tsc --build ./${tsconfig}`, {cwd}, (err, stdout, stderr) => {
-      if (stdout) console.log(stdout)
-      if (stderr) console.log(stderr)
-      if (err) reject(err)
-      else resolve()
-    })
-  })
-}
+//   return new Promise((resolve, reject) => {
+//     exec(`tsc --build ./${tsconfig}`, {cwd}, (err, stdout, stderr) => {
+//       if (stdout) console.log(stdout)
+//       if (stderr) console.log(stderr)
+//       if (err) reject(err)
+//       else resolve()
+//     })
+//   })
+// }
