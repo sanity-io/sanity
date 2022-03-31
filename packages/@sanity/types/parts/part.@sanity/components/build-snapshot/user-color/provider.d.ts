@@ -1,4 +1,4 @@
-import type React from 'react'
+import React from 'react'
 import {UserColorManager} from './types'
 interface UserColorManagerProviderProps {
   children: React.ReactNode

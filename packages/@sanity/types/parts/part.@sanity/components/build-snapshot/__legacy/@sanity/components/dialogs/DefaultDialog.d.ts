@@ -1,4 +1,4 @@
-import type React from 'react'
+import React from 'react'
 import {DialogAction, DialogColor} from './types'
 interface DefaultDialogProps {
   actions?: DialogAction[]

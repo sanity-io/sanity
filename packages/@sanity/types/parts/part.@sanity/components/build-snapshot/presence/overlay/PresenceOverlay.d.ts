@@ -1,4 +1,4 @@
-import type React from 'react'
+import React from 'react'
 interface Props {
   children: React.ReactNode
   margins?: [number, number, number, number]

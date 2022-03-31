@@ -42,7 +42,6 @@ const NumberInput = React.forwardRef(function NumberInput(
     >
       <TextInput
         type="number"
-        step="any"
         inputMode={onlyPositiveNumber ? 'numeric' : 'text'}
         id={id}
         customValidity={errors && errors.length > 0 ? errors[0].item.message : ''}

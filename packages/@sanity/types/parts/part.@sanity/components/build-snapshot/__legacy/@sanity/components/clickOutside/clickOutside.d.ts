@@ -1,17 +1,19 @@
-import type {ReactElement, Component} from 'react'
-
+/// <reference types="react" />
 export interface ClickOutsideProps {
-  children: (ref: (el: HTMLElement | null) => void) => ReactElement
+  children: (ref: (el: HTMLElement | null) => void) => React.ReactElement
   onClickOutside?: () => void
 }
 export declare function ClickOutside({
   children,
   onClickOutside,
-}: ClickOutsideProps): ReactElement<
+}: ClickOutsideProps): import('react').ReactElement<
   any,
   | string
   | ((
       props: any
-    ) => ReactElement<any, string | any | (new (props: any) => Component<any, any, any>)>)
-  | (new (props: any) => Component<any, any, any>)
+    ) => import('react').ReactElement<
+      any,
+      string | any | (new (props: any) => import('react').Component<any, any, any>)
+    >)
+  | (new (props: any) => import('react').Component<any, any, any>)
 >

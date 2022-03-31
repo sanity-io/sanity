@@ -1,5 +1,5 @@
-import type {Observable} from 'rxjs'
-import type {UserColorHue, UserColorManager, UserColor} from './types'
+import {Observable} from 'rxjs'
+import {UserColorHue, UserColorManager, UserColor} from './types'
 export interface UserColorManagerOptions {
   anonymousColor?: UserColor
   userStore?: {

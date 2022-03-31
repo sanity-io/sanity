@@ -1,4 +1,4 @@
-import type React from 'react'
+import React from 'react'
 interface EscapableProps {
   onEscape?: (event: KeyboardEvent) => void
   children?: React.ReactNode

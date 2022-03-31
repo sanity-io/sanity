@@ -1,4 +1,4 @@
-import type React from 'react'
+import React from 'react'
 interface SplitControllerProps {
   children: React.ReactNode
   collapsedWidth?: number

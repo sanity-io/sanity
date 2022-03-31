@@ -1,4 +1,4 @@
-import type React from 'react'
+import React from 'react'
 interface DefaultTextAreaProps {
   onClear?: (event?: unknown) => void
   customValidity?: string

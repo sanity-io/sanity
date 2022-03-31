@@ -1,7 +1,7 @@
-import type {Dispatch, SetStateAction} from 'react'
+/// <reference types="react" />
 declare type ClickOutsideListener = (event: Event) => void
 export declare function useClickOutside(
   listener: ClickOutsideListener,
   elementsArg?: Array<HTMLElement | null>
-): Dispatch<SetStateAction<HTMLElement>>
+): import('react').Dispatch<import('react').SetStateAction<HTMLElement>>
 export {}

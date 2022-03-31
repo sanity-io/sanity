@@ -1,4 +1,4 @@
-import type React from 'react'
+import React from 'react'
 import {Placement} from '../types'
 interface PopoverProps {
   allowedAutoPlacements?: Placement[]

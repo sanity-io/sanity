@@ -1,6 +1,6 @@
-import type {ReactNode} from 'react'
+/// <reference types="react" />
 interface PortalProps {
-  children: ReactNode
+  children: React.ReactNode
 }
 export declare function Portal(props: PortalProps): any
 export {}

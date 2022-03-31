@@ -157,7 +157,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   )
 
   // Update the Slate instance's plugins which are dependent on props for Editable
-  useMemo(() => withReact(withEditableAPI(withInsertData(withHotKeys(slateEditor)))), [
+  useMemo(() => withHotKeys(withInsertData(withEditableAPI(withReact(slateEditor)))), [
     slateEditor,
     withEditableAPI,
     withHotKeys,

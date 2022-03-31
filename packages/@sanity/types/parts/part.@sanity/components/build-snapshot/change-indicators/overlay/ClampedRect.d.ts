@@ -1,5 +1,5 @@
 import {Rect} from './types'
-import type React from 'react'
+import React from 'react'
 export declare function ClampedRect(
   props: {
     top: number

@@ -1,4 +1,4 @@
-import type React from 'react'
+import React from 'react'
 import {Marker} from '_self_'
 import {Placement} from '../types'
 interface ValidationStatusProps {

@@ -1,4 +1,4 @@
-import type React from 'react'
+import React from 'react'
 interface DefaultLabelProps extends React.HTMLProps<HTMLDivElement> {
   level: number
 }

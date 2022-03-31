@@ -1,5 +1,5 @@
-import type {Path} from '../paths'
-import type {SanityDocument} from '../documents'
+import {Path} from '../paths'
+import {SanityDocument} from '../documents'
 
 export interface Reference {
   _type: string

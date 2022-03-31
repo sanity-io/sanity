@@ -1,4 +1,4 @@
-import type React from 'react'
+import React from 'react'
 import {DefaultTextInputProps} from './types'
 export default class DefaultTextInput extends React.PureComponent<DefaultTextInputProps> {
   _input: HTMLInputElement | null

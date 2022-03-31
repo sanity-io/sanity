@@ -1,4 +1,4 @@
-import type React from 'react'
+import React from 'react'
 interface DefaultFileInputProps {
   onSelect?: (files: FileList | null) => void
   children?: React.ReactNode

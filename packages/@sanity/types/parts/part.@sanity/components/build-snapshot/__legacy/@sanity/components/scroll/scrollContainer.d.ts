@@ -1,4 +1,4 @@
-import type React from 'react'
+import React from 'react'
 interface ScrollContainerProps<T extends React.ElementType>
   extends Omit<React.HTMLProps<T>, 'as' | 'onScroll'> {
   as?: React.ElementType | keyof JSX.IntrinsicElements

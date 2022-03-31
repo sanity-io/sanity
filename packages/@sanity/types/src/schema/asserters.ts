@@ -1,5 +1,5 @@
-import type {CrossDatasetReferenceSchemaType} from '../crossDatasetReference'
-import type {
+import {CrossDatasetReferenceSchemaType} from '../crossDatasetReference'
+import {
   BlockSchemaType,
   ArraySchemaType,
   ObjectSchemaType,

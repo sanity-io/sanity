@@ -41,8 +41,6 @@ function getRandomColor() {
   return color
 }
 
-const renderPlaceholder = () => 'Type here!'
-
 export const Editor = ({
   value,
   onMutation,
@@ -159,7 +157,7 @@ export const Editor = ({
     >
       <Box padding={4} style={{outline: '1px solid #999'}}>
         <PortableTextEditable
-          renderPlaceholder={renderPlaceholder}
+          placeholderText="Type here!"
           hotkeys={HOTKEYS}
           renderBlock={renderBlock}
           renderDecorator={renderDecorator}

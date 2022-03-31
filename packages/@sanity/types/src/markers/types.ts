@@ -1,5 +1,5 @@
-import type {ValidationError} from '../validation'
-import type {Path} from '../paths'
+import {ValidationError} from '../validation'
+import {Path} from '../paths'
 
 export type Marker = ValidationMarker
 

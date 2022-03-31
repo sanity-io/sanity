@@ -1,4 +1,4 @@
-import type React from 'react'
+import React from 'react'
 declare type Item = unknown
 interface SearchableSelectProps {
   label?: string

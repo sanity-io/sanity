@@ -1,4 +1,4 @@
-import type React from 'react'
+import React from 'react'
 interface DialogContentProps {
   size?: 'small' | 'medium' | 'large' | 'auto'
   padding?: 'none' | 'small' | 'medium' | 'large'

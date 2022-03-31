@@ -1,5 +1,4 @@
-import type {Context, ErrorInfo, FocusEvent, ReactInstance, ReactNode} from 'react'
-
+/// <reference types="react" />
 declare const _default: {
   new (props: import('./types').ButtonProps | Readonly<import('./types').ButtonProps>): {
     _element: HTMLButtonElement
@@ -8,7 +7,7 @@ declare const _default: {
     }
     focus(): void
     setRootElement: (el: HTMLButtonElement) => void
-    handleBlur: (event: FocusEvent<HTMLButtonElement>) => void
+    handleBlur: (event: import('react').FocusEvent<HTMLButtonElement>) => void
     handleInnerBlur: () => void
     render(): JSX.Element
     context: any
@@ -27,10 +26,10 @@ declare const _default: {
     forceUpdate(callback?: () => void): void
     readonly props: Readonly<import('./types').ButtonProps> &
       Readonly<{
-        children?: ReactNode
+        children?: import('react').ReactNode
       }>
     refs: {
-      [key: string]: ReactInstance
+      [key: string]: import('react').ReactInstance
     }
     componentDidMount?(): void
     shouldComponentUpdate?(
@@ -39,7 +38,7 @@ declare const _default: {
       nextContext: any
     ): boolean
     componentWillUnmount?(): void
-    componentDidCatch?(error: Error, errorInfo: ErrorInfo): void
+    componentDidCatch?(error: Error, errorInfo: import('react').ErrorInfo): void
     getSnapshotBeforeUpdate?(
       prevProps: Readonly<import('./types').ButtonProps>,
       prevState: Readonly<import('./createButtonLike').ButtonState>
@@ -77,7 +76,7 @@ declare const _default: {
     }
     focus(): void
     setRootElement: (el: HTMLButtonElement) => void
-    handleBlur: (event: FocusEvent<HTMLButtonElement>) => void
+    handleBlur: (event: import('react').FocusEvent<HTMLButtonElement>) => void
     handleInnerBlur: () => void
     render(): JSX.Element
     context: any
@@ -96,10 +95,10 @@ declare const _default: {
     forceUpdate(callback?: () => void): void
     readonly props: Readonly<import('./types').ButtonProps> &
       Readonly<{
-        children?: ReactNode
+        children?: import('react').ReactNode
       }>
     refs: {
-      [key: string]: ReactInstance
+      [key: string]: import('react').ReactInstance
     }
     componentDidMount?(): void
     shouldComponentUpdate?(
@@ -108,7 +107,7 @@ declare const _default: {
       nextContext: any
     ): boolean
     componentWillUnmount?(): void
-    componentDidCatch?(error: Error, errorInfo: ErrorInfo): void
+    componentDidCatch?(error: Error, errorInfo: import('react').ErrorInfo): void
     getSnapshotBeforeUpdate?(
       prevProps: Readonly<import('./types').ButtonProps>,
       prevState: Readonly<import('./createButtonLike').ButtonState>
@@ -141,6 +140,6 @@ declare const _default: {
   }
   displayName: string
   defaultProps: Record<string, unknown>
-  contextType?: Context<any>
+  contextType?: import('react').Context<any>
 }
 export default _default

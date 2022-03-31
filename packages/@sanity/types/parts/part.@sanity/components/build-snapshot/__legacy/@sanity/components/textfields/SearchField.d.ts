@@ -1,4 +1,4 @@
-import type React from 'react'
+import React from 'react'
 interface SearchFieldFieldProps {
   label: string
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void

@@ -1,2 +1,2 @@
-import type React from 'react'
+import React from 'react'
 export declare const HookStateContainer: React.NamedExoticComponent<any>

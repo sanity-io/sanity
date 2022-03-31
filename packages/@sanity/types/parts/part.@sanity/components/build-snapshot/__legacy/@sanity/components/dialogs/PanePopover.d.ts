@@ -1,4 +1,4 @@
-import type React from 'react'
+import React from 'react'
 interface PanePopoverProps {
   children?: React.ReactNode
   icon?: React.ReactNode | boolean

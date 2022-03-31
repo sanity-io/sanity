@@ -1,6 +1,6 @@
-import type {SlugSchemaType} from '../schema'
-import type {SanityDocument} from '../documents'
-import type {Path} from '../paths'
+import {SlugSchemaType} from '../schema'
+import {SanityDocument} from '../documents'
+import {Path} from '../paths'
 
 export interface Slug {
   _type: 'slug'

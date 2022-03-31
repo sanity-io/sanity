@@ -1,3 +1,3 @@
-import type {Context} from 'react'
-import type {TooltipContextValue} from './types'
-export declare const TooltipContext: Context<TooltipContextValue>
+/// <reference types="react" />
+import {TooltipContextValue} from './types'
+export declare const TooltipContext: import('react').Context<TooltipContextValue>

@@ -1,4 +1,4 @@
-import type React from 'react'
+import React from 'react'
 import {ButtonComponent, ButtonProps} from './types'
 interface ButtonComponentOpts {
   displayName: string

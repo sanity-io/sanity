@@ -1,4 +1,4 @@
-import type React from 'react'
+import React from 'react'
 declare type Margins = [number, number, number, number]
 declare type Props = {
   margins: Margins

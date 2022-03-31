@@ -1,4 +1,4 @@
-import type React from 'react'
+import React from 'react'
 import {MediaDimensions} from '../types'
 interface CreateDocumentPreviewProps {
   title?: React.ReactNode | React.FunctionComponent<unknown>

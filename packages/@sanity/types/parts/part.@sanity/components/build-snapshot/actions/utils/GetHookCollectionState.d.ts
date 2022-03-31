@@ -1,4 +1,4 @@
-import type React from 'react'
+import React from 'react'
 interface Props<T, K> {
   hooks: ((args: T) => K)[]
   args: T

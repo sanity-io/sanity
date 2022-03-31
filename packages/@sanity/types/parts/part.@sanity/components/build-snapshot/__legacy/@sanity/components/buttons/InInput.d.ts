@@ -1,4 +1,4 @@
-import type React from 'react'
+import React from 'react'
 interface InInputButtonProps {
   kind?: 'add' | 'danger' | 'colored' | 'secondary'
   inverted?: boolean

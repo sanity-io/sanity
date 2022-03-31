@@ -1,4 +1,4 @@
-import type React from 'react'
+import React from 'react'
 interface TagsTextFieldProps {
   onChange: (value: string[]) => void
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void

@@ -1,5 +1,5 @@
-import type {ReactNode} from 'react'
-import type {SortOrdering} from './types'
+import {ReactNode} from 'react'
+import {SortOrdering} from './types'
 
 export interface PrepareViewOptions {
   ordering?: SortOrdering
