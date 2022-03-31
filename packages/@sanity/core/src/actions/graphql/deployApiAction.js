@@ -120,11 +120,31 @@ module.exports = async function deployApiActions(args, context) {
     throw validationError ? new Error(validationError) : err
   }
 
-  if (!(await confirmValidationResult(valid, {spinner, output, prompt, force, dryRun}))) {
-    return
-  }
+  // when the result is not valid and there are breaking changes afoot!
+  if (!isResultValid(valid, {spinner, force})) {
+    renderBreakingChanges(valid, {spinner, output, prompt, force, dryRun})
 
-  if (dryRun) {
+    // not valid and a dry run? then it can exit with a error
+    if (dryRun) {
+      process.exit(1)
+    } else {
+      if (!isInteractive) {
+        throw new Error(
+          'Dangerous changes found - falling back. Re-run the command with the `--force` flag to force deployment.'
+        )
+      }
+
+      const shouldDeploy = await prompt.single({
+        type: 'confirm',
+        message: 'Do you want to deploy a new API despite the dangerous changes?',
+        default: false,
+      })
+
+      if (!shouldDeploy) {
+        return
+      }
+    }
+  } else if (dryRun) {
     output.print('GraphQL API is valid and has no breaking changes')
     process.exit(0)
   }
@@ -181,7 +201,7 @@ function parseCliFlags(args) {
     .option('force', {type: 'boolean'}).argv
 }
 
-async function confirmValidationResult(valid, {spinner, output, prompt, force, dryRun}) {
+function isResultValid(valid, {spinner, force}) {
   const {validationError, breakingChanges: breaking, dangerousChanges: dangerous} = valid
   if (validationError) {
     spinner.fail()
@@ -202,6 +222,14 @@ async function confirmValidationResult(valid, {spinner, output, prompt, force, d
   }
 
   spinner.warn()
+  return false
+}
+
+function renderBreakingChanges(valid, {output}) {
+  const {breakingChanges: breaking, dangerousChanges: dangerous} = valid
+
+  const breakingChanges = breaking.filter((change) => !ignoredBreaking.includes(change.type))
+  const dangerousChanges = dangerous.filter((change) => !ignoredWarnings.includes(change.type))
 
   if (dangerousChanges.length > 0) {
     output.print('\nFound potentially dangerous changes from previous schema:')
@@ -214,24 +242,6 @@ async function confirmValidationResult(valid, {spinner, output, prompt, force, d
   }
 
   output.print('')
-
-  if (!isInteractive && !dryRun) {
-    throw new Error(
-      'Dangerous changes found - falling back. Re-run the command with the `--force` flag to force deployment.'
-    )
-  }
-
-  if (dryRun) {
-    process.exit(1)
-  }
-
-  const shouldDeploy = await prompt.single({
-    type: 'confirm',
-    message: 'Do you want to deploy a new API despite the dangerous changes?',
-    default: false,
-  })
-
-  return shouldDeploy
 }
 
 async function resolveApiGeneration({currentGeneration, flags, output, prompt, chalk}) {
