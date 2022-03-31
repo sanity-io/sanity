@@ -162,7 +162,6 @@
     "exports:clean": "../../../bin/pkg-utils exports-clean",
     "exports:generate": "../../../bin/pkg-utils exports-generate",
     "postbuild": "run-s exports:generate",
-    "prebuild": "yarn clean",
     "prepublishOnly": "node -r esbuild-register scripts/writeRequiredUIVersion.ts",
     "test": "jest",
     "watch": "../../../bin/pkg-utils transpile --tsconfig tsconfig.lib.json --watch"

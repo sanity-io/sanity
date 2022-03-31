@@ -20,7 +20,6 @@
   "scripts": {
     "build": "../../../bin/pkg-utils bundle",
     "clean": "rimraf lib",
-    "prebuild": "yarn clean",
     "watch": "../../../bin/pkg-utils bundle --watch"
   },
   "keywords": [

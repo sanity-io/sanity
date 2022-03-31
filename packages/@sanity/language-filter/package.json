@@ -24,7 +24,6 @@
     "exports:clean": "../../../bin/pkg-utils exports-clean",
     "exports:generate": "../../../bin/pkg-utils exports-generate",
     "postbuild": "run-s exports:generate",
-    "prebuild": "yarn clean",
     "watch": "../../../bin/pkg-utils bundle --watch"
   },
   "keywords": [

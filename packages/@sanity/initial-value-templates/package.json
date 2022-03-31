@@ -20,7 +20,6 @@
   "scripts": {
     "build": "../../../bin/pkg-utils bundle --tsconfig tsconfig.lib.json",
     "clean": "rimraf lib coverage",
-    "prebuild": "yarn clean",
     "test": "jest",
     "watch": "../../../bin/pkg-utils bundle --tsconfig tsconfig.lib.json --watch"
   },

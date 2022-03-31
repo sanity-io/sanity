@@ -7,7 +7,6 @@
   "scripts": {
     "build": "../../../bin/pkg-utils transpile --target node --tsconfig tsconfig.lib.json",
     "clean": "rimraf lib",
-    "prebuild": "yarn clean",
     "test": "jest",
     "watch": "../../../bin/pkg-utils transpile --target node --tsconfig tsconfig.lib.json --watch"
   },

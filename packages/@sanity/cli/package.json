@@ -29,7 +29,6 @@
     "sanity": "./bin/sanity"
   },
   "scripts": {
-    "prebuild": "yarn clean",
     "build": "run-s build:lib build:pack package-yarn",
     "build:lib": "../../../bin/pkg-utils transpile --target node --tsconfig tsconfig.lib.json",
     "build:pack": "node scripts/pack.js",

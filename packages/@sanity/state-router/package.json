@@ -25,7 +25,6 @@
     "dev": "cd demo && vite",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "prebuild": "yarn clean",
     "watch": "../../../bin/pkg-utils bundle --tsconfig tsconfig.lib.json --watch"
   },
   "keywords": [

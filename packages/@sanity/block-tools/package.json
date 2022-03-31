@@ -17,7 +17,6 @@
     "build": "../../../bin/pkg-utils bundle --tsconfig tsconfig.lib.json",
     "clean": "rimraf lib",
     "coverage": "NODE_ENV=test jest --coverage",
-    "prebuild": "yarn clean",
     "test": "NODE_ENV=test jest",
     "watch": "../../../bin/pkg-utils bundle --tsconfig tsconfig.lib.json --watch"
   },

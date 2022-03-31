@@ -15,7 +15,6 @@
   "scripts": {
     "build": "../../../bin/pkg-utils bundle --tsconfig tsconfig.lib.json",
     "clean": "rimraf lib",
-    "prebuild": "yarn clean",
     "test": "jest",
     "test:watch": "jest --watch",
     "watch": "../../../bin/pkg-utils bundle --tsconfig tsconfig.lib.json --watch"

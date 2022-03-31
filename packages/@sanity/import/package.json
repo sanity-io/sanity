@@ -12,7 +12,6 @@
     "build": "../../../bin/pkg-utils transpile --target node",
     "clean": "rimraf lib",
     "coverage": "jest --coverage",
-    "prebuild": "yarn clean",
     "test": "jest",
     "watch": "../../../bin/pkg-utils transpile --target node --watch"
   },

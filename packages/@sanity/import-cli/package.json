@@ -14,7 +14,6 @@
   "scripts": {
     "build": "../../../bin/pkg-utils transpile --target node",
     "clean": "rimraf lib",
-    "prebuild": "yarn clean",
     "watch": "../../../bin/pkg-utils transpile --target node --watch"
   },
   "keywords": [

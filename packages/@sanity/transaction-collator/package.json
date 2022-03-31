@@ -21,7 +21,6 @@
   "scripts": {
     "build": "../../../bin/pkg-utils bundle",
     "clean": "rimraf lib",
-    "prebuild": "yarn clean",
     "test": "jest",
     "watch": "../../../bin/pkg-utils bundle --watch"
   },

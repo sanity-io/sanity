@@ -16,7 +16,6 @@
     "build": "../../../bin/pkg-utils bundle --tsconfig tsconfig.lib.json",
     "clean": "rimraf lib",
     "perf": "node ./perf/run.js",
-    "prebuild": "yarn clean",
     "test": "jest",
     "watch": "../../../bin/pkg-utils bundle --tsconfig tsconfig.lib.json --watch"
   },

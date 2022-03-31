@@ -21,7 +21,6 @@
     "build": "../../../bin/pkg-utils bundle",
     "start": "cd ./test/ && ts-node serve",
     "clean": "rimraf coverage lib",
-    "prebuild": "yarn clean",
     "test:watch": "jest --watch",
     "test": "jest",
     "gen-doc": "typedoc --out docs src",
