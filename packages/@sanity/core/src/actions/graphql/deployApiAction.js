@@ -177,6 +177,7 @@ function parseCliFlags(args) {
     .option('generation', {type: 'string'})
     .option('non-null-document-fields', {type: 'boolean', default: false})
     .option('playground', {type: 'boolean'})
+    .option('dry-run', {type: 'boolean', default: false})
     .option('force', {type: 'boolean'}).argv
 }
 
