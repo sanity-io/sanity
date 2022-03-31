@@ -170,7 +170,7 @@ const updateFromRemote$ = combineLatest([currentUser, authStateChangedInOtherWin
   })
 
 // In the case of hot module reloading, make sure we don't have dangling pointers
-if (module?.hot?.dispose) {
+if (typeof module !== 'undefined' && module?.hot?.dispose) {
   module.hot.dispose(() => {
     updateFromRemote$.unsubscribe()
   })
