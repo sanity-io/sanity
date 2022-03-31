@@ -60,7 +60,7 @@
   "devDependencies": {
     "@sanity/base": "2.29.3",
     "@sanity/schema": "2.29.3",
-    "@sanity/ui-workshop": "^0.3.12",
+    "@sanity/ui-workshop": "^0.4.1",
     "@testing-library/jest-dom": "^5.11.10",
     "@testing-library/react": "^11.2.5",
     "@types/is-hotkey": "^0.1.3",

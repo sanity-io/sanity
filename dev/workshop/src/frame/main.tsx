@@ -1,40 +1,31 @@
-import {ErrorBoundary, ThemeColorSchemeKey, ThemeProvider} from '@sanity/ui'
+import {studioTheme, ThemeColorSchemeKey, ThemeProvider} from '@sanity/ui'
 import {WorkshopFrame} from '@sanity/ui-workshop'
-import React, {useCallback, useState} from 'react'
+import React, {useState} from 'react'
 import ReactDOM from 'react-dom'
 import Refractor from 'react-refractor'
+import bash from 'refractor/lang/bash'
 import javascript from 'refractor/lang/javascript'
 import json from 'refractor/lang/json'
 import jsx from 'refractor/lang/jsx'
 import typescript from 'refractor/lang/typescript'
-import {theme} from '../theme'
-import {scopes} from '$workshop'
+import {config} from '../config'
+import {GlobalStyle} from '../GlobalStyle'
 
+Refractor.registerLanguage(bash)
 Refractor.registerLanguage(javascript)
 Refractor.registerLanguage(json)
 Refractor.registerLanguage(jsx)
 Refractor.registerLanguage(typescript)
 
-function Main() {
+ReactDOM.render(<Root />, document.getElementById('root'))
+
+function Root() {
   const [scheme, setScheme] = useState<ThemeColorSchemeKey>('light')
 
-  const handleError = useCallback((params: {error: Error; info: React.ErrorInfo}) => {
-    // eslint-disable-next-line no-console
-    console.log('@todo: handle react error:', params)
-  }, [])
-
   return (
-    <ErrorBoundary onCatch={handleError}>
-      <ThemeProvider scheme={scheme} theme={theme}>
-        <WorkshopFrame
-          frameUrl="/frame/"
-          scopes={scopes}
-          setScheme={setScheme}
-          title="@sanity/ui"
-        />
-      </ThemeProvider>
-    </ErrorBoundary>
+    <ThemeProvider scheme={scheme} theme={studioTheme}>
+      <GlobalStyle />
+      <WorkshopFrame config={config} setScheme={setScheme} />
+    </ThemeProvider>
   )
 }
-
-ReactDOM.render(<Main />, document.getElementById('root'))

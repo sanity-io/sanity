@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@sanity/ui": "^0.37.6",
-    "@sanity/ui-workshop": "^0.3.12",
+    "@sanity/ui-workshop": "^0.4.1",
     "qs": "^6.10.1",
     "react": "17.0.1",
     "react-dom": "17.0.1",

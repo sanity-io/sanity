@@ -1,5 +1,5 @@
 import {Card, Grid, Stack, useToast} from '@sanity/ui'
-import {useBoolean, useSelect, useScope} from '@sanity/ui-workshop'
+import {useBoolean, useProps, useSelect} from '@sanity/ui-workshop'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {Patcher} from '@sanity/mutator'
 import type {SchemaType, ObjectField} from '@sanity/types'
@@ -22,7 +22,7 @@ import {TypeTester, FilterFieldInput, FormDebugger, FormBuilderTester} from './_
 const patchChannel = FormBuilder.createPatchChannel()
 
 export default function ExampleStory() {
-  const {setPropValue} = useScope()
+  const {setPropValue} = useProps()
   const ref = React.useRef()
   const toast = useToast()
   const isUseMutator = useBoolean('Use Mutator', false, 'Props')
