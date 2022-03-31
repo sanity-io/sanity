@@ -54,6 +54,7 @@ export default {
             languageAlternatives: [
               {title: 'Rust', value: 'rust', mode: 'rust'},
               {title: 'JavaScript', value: 'javascript'},
+              {title: 'C++', value: 'cpp', mode: 'c_cpp'},
             ],
           },
         },

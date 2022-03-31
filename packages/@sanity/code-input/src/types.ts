@@ -23,4 +23,5 @@ export interface CodeInputValue {
   filename?: string
   language?: string
   highlightedLines?: number[]
+  mode?: string
 }
