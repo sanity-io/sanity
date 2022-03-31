@@ -22,9 +22,9 @@
   "dependencies": {
     "@reach/auto-id": "^0.13.2",
     "@sanity/base": "2.29.3",
-    "@sanity/icons": "^1.2.1",
+    "@sanity/icons": "^1.2.6",
     "@sanity/types": "2.29.3",
-    "@sanity/ui": "^0.37.2",
+    "@sanity/ui": "^0.37.6",
     "@sanity/util": "2.29.3",
     "ace-builds": "^1.4.13",
     "react-ace": "^9.5.0"

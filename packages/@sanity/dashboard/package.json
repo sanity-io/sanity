@@ -20,10 +20,10 @@
     "sanity-tool"
   ],
   "dependencies": {
-    "@sanity/icons": "^1.2.1",
+    "@sanity/icons": "^1.2.6",
     "@sanity/image-url": "^1.0.1",
     "@sanity/types": "2.29.3",
-    "@sanity/ui": "^0.37.2",
+    "@sanity/ui": "^0.37.6",
     "lodash": "^4.17.15",
     "rxjs": "^6.5.3"
   },
