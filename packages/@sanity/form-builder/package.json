@@ -65,7 +65,7 @@
   },
   "devDependencies": {
     "@sanity/state-router": "2.29.3",
-    "@sanity/ui-workshop": "^0.3.12",
+    "@sanity/ui-workshop": "^0.4.1",
     "@testing-library/jest-dom": "^5.11.10",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^13.0.16",

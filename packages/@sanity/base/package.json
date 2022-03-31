@@ -100,7 +100,7 @@
   },
   "devDependencies": {
     "@portabletext/types": "1.0.3",
-    "@sanity/ui-workshop": "^0.3.12",
+    "@sanity/ui-workshop": "^0.4.1",
     "@testing-library/jest-dom": "^5.11.10",
     "@testing-library/react": "^11.2.5",
     "@testing-library/react-hooks": "^7.0.2",

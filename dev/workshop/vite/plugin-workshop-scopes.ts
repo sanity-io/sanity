@@ -5,7 +5,6 @@ import globby from 'globby'
 import {ResolvedConfig} from 'vite'
 
 const ROOT_PATH = path.resolve(__dirname, '../../..')
-const WORKSHOP_ENV_MODULE_ID = '$workshop'
 const WORKSHOP_SRC_PATH = path.resolve(__dirname, '../src')
 const WORKSHOP_PATTERNS = [
   path.resolve(ROOT_PATH, 'packages/@sanity/*/src/**/__workshop__/index.ts'),
@@ -50,24 +49,25 @@ export function pluginWorkshopScopes() {
       shouldWatch = config.command !== 'build'
     },
 
-    resolveId(id: string) {
-      if (id === WORKSHOP_ENV_MODULE_ID) {
-        if (!isInitialized) {
-          isInitialized = true
-          paths = globby.sync(WORKSHOP_PATTERNS)
+    resolveId() {
+      if (!isInitialized) {
+        _init()
+      }
 
-          _writeModule()
-        }
-
-        if (shouldWatch && !isWatcherInitialized) {
-          _initWatcher()
-        }
-
-        return WORKSHOP_SCOPES_PATH
+      if (shouldWatch && !isWatcherInitialized) {
+        _initWatcher()
       }
 
       return undefined
     },
+  }
+
+  function _init() {
+    isInitialized = true
+
+    paths = globby.sync(WORKSHOP_PATTERNS)
+
+    _writeModule()
   }
 
   function _initWatcher() {
