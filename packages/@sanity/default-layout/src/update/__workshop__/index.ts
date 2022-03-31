@@ -1,7 +1,7 @@
 import {defineScope} from '@sanity/ui-workshop'
 import {lazy} from 'react'
 
-export default defineScope('@default-layout/update', 'Update', [
+export default defineScope('default-layout/update', 'Update', [
   {
     name: 'upgrade-accordion',
     title: 'UpgradeAccordion',
