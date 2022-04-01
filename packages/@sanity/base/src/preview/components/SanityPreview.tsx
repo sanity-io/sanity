@@ -10,6 +10,7 @@ interface Props {
   ordering?: SortOrdering
   children?: (props: any) => React.ReactElement
   layout: 'default' | 'card' | 'media' | 'detail' | 'inline' | 'block'
+  status?: React.ReactNode
 }
 
 export function SanityPreview(props: Props) {
