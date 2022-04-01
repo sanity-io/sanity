@@ -188,10 +188,13 @@ export function createWithInsertData(
             )
             .join('')
           const textToHtml = `<html><body>${blocks}</body></html>`
-          portableText = htmlToBlocks(textToHtml, portableTextFeatures.types.portableText)
+          portableText = htmlToBlocks(
+            textToHtml,
+            portableTextFeatures.types.portableText
+          ).map((block: PortableTextBlock) => normalizeBlock(block, {blockTypeName}))
           fragment = toSlateValue(portableText, {
             portableTextFeatures,
-          }).map((block: PortableTextBlock) => normalizeBlock(block, {blockTypeName}))
+          })
           insertedType = 'text'
         }
 
