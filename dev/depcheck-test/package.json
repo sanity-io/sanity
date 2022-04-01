@@ -1,6 +1,6 @@
 {
   "name": "depcheck-test",
-  "version": "2.29.3",
+  "version": "2.29.4",
   "private": true,
   "dependencies": {
     "@sanity/base": "2.29.3",
