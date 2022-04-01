@@ -8,8 +8,8 @@ import {
 } from '@sanity/icons'
 import {useBoolean, useString} from '@sanity/ui-workshop'
 import React, {useMemo} from 'react'
+import {of} from 'rxjs'
 import {createConfig, SanityTool} from '../../config'
-import {SanityProvider} from '../../sanity'
 import {isNonNullable} from '../../util/isNonNullable'
 import {isTruthy} from '../../util/isTruthy'
 import {Navbar} from '../components/navbar'
@@ -17,6 +17,23 @@ import {StudioProvider} from '../StudioProvider'
 import {useStudio} from '../useStudio'
 
 const Tool = () => <div>Tool</div>
+
+function createMockClient() {
+  const _config = {}
+
+  const _client = {
+    config: () => _config,
+    getUrl: () => '/',
+    withConfig: () => _client,
+    observable: {
+      request: () => of(null),
+    },
+  }
+
+  return _client
+}
+
+const mockClient = createMockClient()
 
 export default function NavbarStory() {
   const projectName = useString('Project name', undefined)
@@ -28,18 +45,25 @@ export default function NavbarStory() {
     () =>
       createConfig({
         project: {name: projectName},
-        sources: [],
+        sources: [
+          {
+            clientFactory: () => mockClient as any,
+            name: 'default',
+            title: 'Test',
+            projectId: 'test',
+            dataset: 'test',
+            schemaTypes: [],
+          },
+        ],
         tools,
       }),
     [projectName, tools]
   )
 
   return (
-    <SanityProvider config={config} scheme={scheme}>
-      <StudioProvider config={config} scheme={scheme} setScheme={setScheme}>
-        <Navbar />
-      </StudioProvider>
-    </SanityProvider>
+    <StudioProvider config={config} scheme={scheme} setScheme={setScheme}>
+      <Navbar />
+    </StudioProvider>
   )
 }
 
