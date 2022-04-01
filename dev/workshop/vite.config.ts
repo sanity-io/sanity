@@ -5,27 +5,10 @@ import {viteCommonjs, esbuildCommonjs} from '@originjs/vite-plugin-commonjs'
 import viteReact from '@vitejs/plugin-react'
 import {defineConfig} from 'vite'
 import {pluginCanonicalModules} from './vite/plugin-canonical-modules'
-import {pluginLegacyParts} from './vite/plugin-legacy-parts'
 import {pluginWorkshopScopes} from './vite/plugin-workshop-scopes'
-import {createPartsResolver} from './__legacy/partsResolver'
-import parts from './__legacy/parts'
 
 const SRC_PATH = path.resolve(__dirname, 'src')
 const MONOREPO_PATH = path.resolve(__dirname, '../..')
-
-const partsResolver = createPartsResolver()
-
-const cssPartAliases = Object.entries(parts.implementations)
-  .filter(
-    ([, implementations]: any) =>
-      implementations.length > 0 && implementations[0].path.endsWith('.css')
-  )
-  .map(([key, implementations]: any) => {
-    return {
-      find: key,
-      replacement: implementations[0].path,
-    }
-  })
 
 function loadMonorepoAliases() {
   // eslint-disable-next-line import/no-dynamic-require
@@ -65,8 +48,6 @@ export default defineConfig({
       extensions: ['.js', '.cjs', '.ts', '.tsx'],
       // this include is empty to override the default `include`
       include: [],
-      // https://github.com/rollup/plugins/tree/master/packages/commonjs/#dynamicrequiretargets
-      dynamicRequireTargets: ['part:@sanity/base/util/document-action-utils'],
     },
     sourcemap: true,
   },
@@ -83,7 +64,6 @@ export default defineConfig({
   },
   plugins: [
     viteReact(),
-    pluginLegacyParts(partsResolver),
     pluginCanonicalModules(['@sanity/ui', 'react', 'react-dom', 'styled-components']),
     pluginWorkshopScopes(),
     viteCommonjs({
@@ -92,22 +72,12 @@ export default defineConfig({
   ],
   resolve: {
     alias: [
-      {
-        find: '@sanity/base/lib',
-        replacement: path.resolve(MONOREPO_PATH, 'packages/@sanity/base/src'),
-      },
-
       ...monorepoAliases,
-      ...cssPartAliases,
 
       // NOTE: this is a workaround since Vite doesn't do CJS exports
       {
         find: '@sanity/client',
         replacement: path.resolve(__dirname, 'mocks/@sanity/client.ts'),
-      },
-      {
-        find: 'part:@sanity/base/client',
-        replacement: path.resolve(MONOREPO_PATH, 'packages/@sanity/base/src/client/index.esm.ts'),
       },
     ],
   },
