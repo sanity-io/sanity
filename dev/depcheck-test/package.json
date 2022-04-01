@@ -4,6 +4,6 @@
   "private": true,
   "dependencies": {
     "@sanity/base": "2.29.3",
-    "sanity-plugin-mux-input": "^1.0.1"
+    "sanity-plugin-mux-input": "^1.1.1"
   }
 }
