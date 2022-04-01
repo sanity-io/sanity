@@ -1,7 +1,6 @@
-import {ComposeIcon, LeaveIcon, MoonIcon, SearchIcon, SunIcon} from '@sanity/icons'
+import {ComposeIcon, LeaveIcon, MoonIcon, SunIcon} from '@sanity/icons'
 import {useRouter, useStateLink} from '@sanity/state-router'
 import {
-  Autocomplete,
   Box,
   Button,
   Card,
@@ -22,6 +21,7 @@ import {useAuth} from '../../../auth'
 import {CollapseMenu, UserAvatar} from '../../../components'
 import {useSanity} from '../../../sanity'
 import {useStudio} from '../../useStudio'
+import {GlobalSearch} from './GlobalSearch'
 import {ToolButton} from './ToolButton'
 
 export function Navbar(props: {activeToolName?: string}) {
@@ -41,7 +41,7 @@ export function Navbar(props: {activeToolName?: string}) {
 
   const rootLink = useStateLink({state: rootState})
 
-  const handleNewDocumentButtonClick = useCallback((event: React.MouseEvent) => {
+  const handleNewDocumentButtonClick = useCallback(() => {
     setNewDocumentDialogOpen(true)
   }, [])
 
@@ -55,12 +55,7 @@ export function Navbar(props: {activeToolName?: string}) {
 
   return (
     <Layer zOffset={100}>
-      <Card
-        // scheme="dark"
-        // shadow={scheme === 'dark' ? 1 : undefined}
-        shadow={1}
-        style={{lineHeight: 0}}
-      >
+      <Card scheme="dark" shadow={scheme === 'dark' ? 1 : undefined} style={{lineHeight: 0}}>
         <Flex>
           <Box padding={2}>
             <Button
@@ -104,7 +99,7 @@ export function Navbar(props: {activeToolName?: string}) {
             </Tooltip>
           </Box>
           <Box padding={2}>
-            <Autocomplete icon={SearchIcon} id="global-search" placeholder="Search" />
+            <GlobalSearch />
           </Box>
           <Box padding={2}>
             <MenuButton
