@@ -2655,7 +2655,7 @@
     object-assign "^4.1.1"
     rxjs "^6.0.0"
 
-"@sanity/color@^2.1.5", "@sanity/color@^2.1.6", "@sanity/color@^2.1.8":
+"@sanity/color@^2.1.6", "@sanity/color@^2.1.8":
   version "2.1.8"
   resolved "https://registry.yarnpkg.com/@sanity/color/-/color-2.1.8.tgz#f05cd398eb8a1638dca87535e4fd78dd29b539f4"
   integrity sha512-QyMsEQXuC/VvufLSj2gst/dyH6HerqbNcDLFXOrMG9nL+k0JPvCASsPvQXfuYcnaVL5iBcHA4UV4a5/5UuXYsg==
@@ -2719,18 +2719,6 @@
     prop-types "15.7.2"
     react-beautiful-dnd "^13.1.0"
 
-"@sanity/resolver@^2.27.0":
-  version "2.28.0"
-  resolved "https://registry.yarnpkg.com/@sanity/resolver/-/resolver-2.28.0.tgz#ed4ede027920db4768122c67eb3ea8c57dacee18"
-  integrity sha512-u+gufPgwxtfMiqkL4f0WF9CRUgImIuPYcxGIyxzehSxophj6ufAH3d7RJHK5VmbkY18FlGjgU5FtPBdTsWlEMQ==
-  dependencies:
-    "@sanity/generate-help-url" "^3.0.0"
-    "@sanity/util" "2.28.0"
-    fs-extra "^7.0.0"
-    lodash "^4.17.15"
-    path-exists "^3.0.0"
-    promise-props-recursive "^1.0.0"
-
 "@sanity/slate-react@2.24.3":
   version "2.24.3"
   resolved "https://registry.yarnpkg.com/@sanity/slate-react/-/slate-react-2.24.3.tgz#6588991b3de60650d97fe61a37a43bbdb0ff3fca"
@@ -2749,17 +2737,6 @@
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/@sanity/timed-out/-/timed-out-4.0.2.tgz#c9f61f9a1609baa1eb3e4235a24ea2a775022cdf"
   integrity sha512-NBDKGj14g9Z+bopIvZcQKWCzJq5JSrdmzRR1CS+iyA3Gm8SnIWBfZa7I3mTg2X6Nu8LQXG0EPKXdOGozLS4i3w==
-
-"@sanity/types@2.28.0":
-  version "2.28.0"
-  resolved "https://registry.yarnpkg.com/@sanity/types/-/types-2.28.0.tgz#7c89d639e2ab28b53eae5ddb61aa0c55bf30cf24"
-  integrity sha512-fE8V3mep7mf3HwMfJJI8LGZ8UCcsr4HWDoiLptNzqqkmAi+3Un0KBROw2AvpqOn2Pqfkim+79Wi7TXH8eARHnQ==
-  dependencies:
-    "@sanity/client" "^3.2.0"
-    "@sanity/color" "^2.1.5"
-    "@types/react" "^17.0.0"
-    react "17.0.1"
-    rxjs "^6.5.3"
 
 "@sanity/ui-workshop@^0.4.1":
   version "0.4.1"
@@ -2802,19 +2779,6 @@
     react-is "^17.0.2"
     react-popper "^2.2.5"
     react-refractor "^2.1.6"
-
-"@sanity/util@2.28.0":
-  version "2.28.0"
-  resolved "https://registry.yarnpkg.com/@sanity/util/-/util-2.28.0.tgz#afc2ba9df90db32e37b99aaa7458428d088cee5c"
-  integrity sha512-LlxoLphaRWdFGsy1ClMiULxN/2hbkV6sGbTEQxElk/lNsmTCanxlNPu8CYfgYRxaRZeCF5xUExOw/X+J3ysUYA==
-  dependencies:
-    "@sanity/types" "2.28.0"
-    dotenv "^8.2.0"
-    fs-extra "^7.0.0"
-    get-random-values "^1.2.2"
-    lodash "^4.17.15"
-    moment "^2.19.1"
-    resolve-from "^4.0.0"
 
 "@sanity/uuid@^3.0.1":
   version "3.0.1"
@@ -3550,7 +3514,7 @@
     "@types/scheduler" "*"
     csstype "^3.0.2"
 
-"@types/react@^17.0.0", "@types/react@^17.0.42":
+"@types/react@^17.0.42":
   version "17.0.43"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.43.tgz#4adc142887dd4a2601ce730bc56c3436fdb07a55"
   integrity sha512-8Q+LNpdxf057brvPu1lMtC5Vn7J119xrP1aq4qiaefNioQUYANF/CYeK4NsKorSZyUGJ66g0IM+4bbjwx45o2A==
@@ -8112,11 +8076,6 @@ dotenv@^10.0.0:
   version "10.0.0"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-10.0.0.tgz#3d4227b8fb95f81096cdd2b66653fb2c7085ba81"
   integrity sha512-rlBi9d8jpv9Sf1klPjNfFAuWDjKLwTIJJ/VxtoTwIR6hnZxcEOQCZg2oIL3MWBYw5GpUDKOEnND7LXTbIpQ03Q==
-
-dotenv@^8.2.0:
-  version "8.6.0"
-  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-8.6.0.tgz#061af664d19f7f4d8fc6e4ff9b584ce237adcb8b"
-  integrity sha512-IrPdXQsk2BbzvCBGBOTmmSH5SodmqZNt4ERAZDmW4CT+tL8VtvinqywuANaFu4bOMWki16nqf0e4oC0QIaDr/g==
 
 duplexer2@0.0.2, duplexer2@~0.0.2:
   version "0.0.2"
@@ -16659,13 +16618,6 @@ promise-inflight@^1.0.1:
   resolved "https://registry.yarnpkg.com/promise-inflight/-/promise-inflight-1.0.1.tgz#98472870bf228132fcbdd868129bad12c3c029e3"
   integrity sha1-mEcocL8igTL8vdhoEputEsPAKeM=
 
-promise-props-recursive@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/promise-props-recursive/-/promise-props-recursive-1.0.0.tgz#aef2caac15bb7bb3ea19088b0f60424039ef7223"
-  integrity sha1-rvLKrBW7e7PqGQiLD2BCQDnvciM=
-  dependencies:
-    lodash.isplainobject "^4.0.0"
-
 promise-props-recursive@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/promise-props-recursive/-/promise-props-recursive-2.0.2.tgz#ae5605f5fb7b483a1d04a52b177b11f26d879d36"
@@ -17412,14 +17364,6 @@ react-use-measure@^2.1.1:
   integrity sha512-nocZhN26cproIiIduswYpV5y5lQpSQS1y/4KuvUCjSKmw7ZWIS/+g3aFnX3WdBkyuGUtTLif3UTqnLLhbDoQig==
   dependencies:
     debounce "^1.2.1"
-
-react@17.0.1:
-  version "17.0.1"
-  resolved "https://registry.yarnpkg.com/react/-/react-17.0.1.tgz#6e0600416bd57574e3f86d92edba3d9008726127"
-  integrity sha512-lG9c9UuMHdcAexXtigOZLX8exLWkW0Ku29qPRU8uhF2R9BN96dLCt0psvzPLlHc5OWkgymP3qwTRgbnw5BKx3w==
-  dependencies:
-    loose-envify "^1.1.0"
-    object-assign "^4.1.1"
 
 react@17.0.2:
   version "17.0.2"
