@@ -1,4 +1,4 @@
-import {createBrowserHistory, createMemoryHistory} from 'history'
+import {createBrowserHistory, createMemoryHistory, History} from 'history'
 import {Observable} from 'rxjs'
 import {share} from 'rxjs/operators'
 import {isRecord} from '../../../util/isRecord'
@@ -13,9 +13,17 @@ export interface LocationStore {
 
 const noop = () => undefined
 
-export function createLocationStore(): LocationStore {
+const createHistory = () =>
+  typeof document === 'undefined' ? createMemoryHistory() : createBrowserHistory()
+
+interface LocationStoreOptions {
+  history?: History
+}
+
+export function createLocationStore({
+  history = createHistory(),
+}: LocationStoreOptions = {}): LocationStore {
   const interceptors: LocationInterceptor[] = []
-  const history = typeof document === 'undefined' ? createMemoryHistory() : createBrowserHistory()
 
   function readLocation() {
     return new URL(document.location.href)

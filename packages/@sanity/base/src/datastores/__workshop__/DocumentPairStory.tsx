@@ -1,10 +1,10 @@
 import {Box, Button, Code, Text} from '@sanity/ui'
 import React, {useEffect, useState} from 'react'
+import {useDocumentStore} from '../datastores'
 import {RemoteSnapshotVersionEvent} from '../document/document-pair/checkoutPair'
-import {useDatastores} from '../useDatastores'
 
 export default function DocumentPairStory() {
-  const {documentStore} = useDatastores()
+  const documentStore = useDocumentStore()
   const [draftSnapshot, setDraftSnapshot] = useState<RemoteSnapshotVersionEvent | null>(null)
   const [publishedSnapshot, setPublishedSnapshot] = useState<RemoteSnapshotVersionEvent | null>(
     null
@@ -38,10 +38,7 @@ export default function DocumentPairStory() {
       <Box marginTop={3}>
         <Code language="json" size={1}>
           {JSON.stringify(
-            {
-              draft: {snapshot: draftSnapshot},
-              published: {snapshot: publishedSnapshot},
-            },
+            {draft: {snapshot: draftSnapshot}, published: {snapshot: publishedSnapshot}},
             null,
             2
           )}

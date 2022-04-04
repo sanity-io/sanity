@@ -1,6 +1,6 @@
 import {useEffect, useMemo, useState} from 'react'
 import {getPublishedId} from '../../../util/draftUtils'
-import {useDatastores} from '../../useDatastores'
+import {useDocumentStore} from '../../datastores'
 
 export interface DocumentTypeResolveState {
   isLoaded: boolean
@@ -13,7 +13,7 @@ const LOADING_STATE: DocumentTypeResolveState = {
 }
 
 export function useDocumentType(documentId: string, specifiedType = '*'): DocumentTypeResolveState {
-  const {documentStore} = useDatastores()
+  const documentStore = useDocumentStore()
   const publishedId = getPublishedId(documentId)
   const isResolved = Boolean(specifiedType && specifiedType !== '*')
 

@@ -1,9 +1,9 @@
 import {useState, useEffect} from 'react'
-import {useDatastores} from '../useDatastores'
+import {usePresenceStore} from '../datastores'
 import {DocumentPresence} from './types'
 
 export function useDocumentPresence(documentId: string): DocumentPresence[] {
-  const {presenceStore} = useDatastores()
+  const presenceStore = usePresenceStore()
   const [presence, setPresence] = useState<DocumentPresence[]>([])
 
   useEffect(() => {

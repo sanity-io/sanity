@@ -1,23 +1,9 @@
-import {Router, RouterState} from '@sanity/state-router'
 import {SanityTool} from '../../config'
+import {RouterState, Router} from '../../router'
 import {isRecord} from '../../util/isRecord'
 import {LocationEvent} from './location'
 import {RouterEvent} from './types'
 import {getOrderedTools} from './util/getOrderedTools'
-
-function resolveUrlStateWithDefaultSpace(
-  hasSpaces: boolean,
-  spaces: string[] | undefined,
-  state: Record<string, unknown> | null
-) {
-  if (!hasSpaces || !state || state.space || spaces?.length === 0) {
-    return state
-  }
-
-  const defaultSpace = spaces && spaces[0]
-
-  return {...state, space: defaultSpace}
-}
 
 function resolveUrlStateWithDefaultTool(
   tools: SanityTool[],
@@ -51,8 +37,6 @@ function makeBackwardsCompatible(
 }
 
 export function resolveDefaultState(
-  hasSpaces: boolean,
-  spaces: string[] | undefined,
   tools: SanityTool[],
   state: Record<string, unknown> | null
 ): RouterState | null {
@@ -61,14 +45,10 @@ export function resolveDefaultState(
     makeBackwardsCompatible(tools, state)
   )
 
-  return hasSpaces
-    ? resolveUrlStateWithDefaultSpace(hasSpaces, spaces, urlStateWithDefaultTool)
-    : urlStateWithDefaultTool
+  return urlStateWithDefaultTool
 }
 
 export function resolveIntentState(
-  hasSpaces: boolean,
-  spaces: string[] | undefined,
   tools: SanityTool[],
   currentState: RouterState | null,
   intentState: RouterState
@@ -105,14 +85,11 @@ export function resolveIntentState(
       payload
     )
 
-    const currentWithState =
-      resolveUrlStateWithDefaultSpace(hasSpaces, spaces, currentState) || currentState
-
     return {
       type: 'state',
       isNotFound: false,
       state: {
-        ...currentWithState,
+        ...currentState,
         tool: matchingTool.name,
         [matchingTool.name]: toolState,
       },

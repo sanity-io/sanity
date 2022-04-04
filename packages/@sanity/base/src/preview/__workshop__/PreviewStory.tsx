@@ -5,8 +5,8 @@ import {assignWith} from 'lodash'
 import {combineLatest, Observable, of} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
 import React, {useEffect, useMemo, useState} from 'react'
-import {useSource} from '../../source'
-import {useDatastores} from '../../datastores'
+import {useSource} from '../../studio'
+import {useDocumentPreviewStore} from '../../datastores'
 import {getDraftId, getPublishedId} from '../../util/draftUtils'
 import {DocumentPreviewStore} from '../documentPreviewStore'
 import {SanityDefaultPreview} from '../components/SanityDefaultPreview'
@@ -48,8 +48,8 @@ export default function PreviewStory() {
 function DocumentPreview(props: {id: string; type: string}) {
   const {id, type} = props
   const previewState = useDocumentPreviewState({id, type})
-  const source = useSource()
-  const schemaType = source.schema.get(type)
+  const {schema} = useSource()
+  const schemaType = schema.get(type)
   const icon = getIconWithFallback(undefined, schemaType, FolderIcon)
 
   const value = previewState
@@ -123,9 +123,9 @@ function getValueWithFallback({
 }
 
 function useDocumentPreviewState(props: {id: string; type: string; title?: unknown}) {
-  const source = useSource()
-  const {documentPreviewStore} = useDatastores()
-  const schemaType = source.schema.get(props.type)
+  const {schema} = useSource()
+  const documentPreviewStore = useDocumentPreviewStore()
+  const schemaType = schema.get(props.type)
   const previewState$ = useMemo(
     () =>
       schemaType

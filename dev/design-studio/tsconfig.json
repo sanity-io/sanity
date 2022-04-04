@@ -7,8 +7,6 @@
   },
   "references": [
     {"path": "../../packages/@sanity/base/tsconfig.lib.json"},
-    {"path": "../../packages/@sanity/initial-value-templates"},
-    {"path": "../../packages/@sanity/structure/tsconfig.lib.json"},
     {"path": "../../packages/@sanity/types"}
   ]
 }

@@ -56,18 +56,12 @@ export default defineConfig({
     // __DEV__: JSON.stringify(true),
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
   },
-  optimizeDeps: {
-    include: ['@sanity/form-builder'],
-    esbuildOptions: {
-      plugins: [esbuildCommonjs(['@sanity/form-builder'])],
-    },
-  },
   plugins: [
     viteReact(),
     pluginCanonicalModules(['@sanity/ui', 'react', 'react-dom', 'styled-components']),
     pluginWorkshopScopes(),
     viteCommonjs({
-      include: ['@sanity/eventsource', '@sanity/structure', '@sanity/form-builder'],
+      include: ['@sanity/eventsource'],
     }),
   ],
   resolve: {

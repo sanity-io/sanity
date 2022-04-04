@@ -2,7 +2,7 @@ import {Box, Card, Code, Container, Flex, Stack, Text} from '@sanity/ui'
 import {useBoolean, useNumber, useString} from '@sanity/ui-workshop'
 import React from 'react'
 import {SanityPreview} from '../../preview'
-import {useSource} from '../../source'
+import {useSource} from '../../studio'
 import {useDocumentSearchResults} from '../useDocumentSearchResults'
 
 export default function DevStory() {

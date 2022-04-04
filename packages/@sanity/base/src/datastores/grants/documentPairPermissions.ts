@@ -5,7 +5,11 @@ import {switchMap, map} from 'rxjs/operators'
 import {createHookFromObservableFactory} from '../../util/createHookFromObservableFactory'
 import {snapshotPair} from '../document/document-pair/snapshotPair'
 import {getDraftId, getPublishedId} from '../../util/draftUtils'
+import {useSource} from '../../studio'
+import {useGrantsStore} from '../datastores'
 import {GrantsStore, PermissionCheckResult} from './types'
+
+type PartialExcept<T, K extends keyof T> = Pick<T, K> & Partial<Omit<T, K>>
 
 function getSchemaType(schema: Schema, typeName: string): SchemaType {
   const type = schema.get(typeName)
@@ -149,7 +153,10 @@ export type DocumentPermission =
   | 'update'
   | 'duplicate'
 
-export interface DocumentPermissionsOptions {
+interface DocumentPairPermissionsOptions {
+  client: SanityClient
+  schema: Schema
+  grantsStore: GrantsStore
   id: string
   type: string
   permission: DocumentPermission
@@ -160,12 +167,14 @@ export interface DocumentPermissionsOptions {
  *
  * @see useDocumentPairPermissions
  */
-function getDocumentPairPermissions(
-  client: SanityClient,
-  schema: Schema,
-  grantsStore: GrantsStore,
-  {id, type, permission}: DocumentPermissionsOptions
-): Observable<PermissionCheckResult> {
+export function getDocumentPairPermissions({
+  client,
+  grantsStore,
+  schema,
+  id,
+  permission,
+  type,
+}: DocumentPairPermissionsOptions): Observable<PermissionCheckResult> {
   // this case was added to fix a crash that would occur if the `schemaType` was
   // omitted from `S.documentList()`
   //
@@ -246,11 +255,27 @@ function getDocumentPairPermissions(
  *
  * @see useDocumentValuePermissions
  */
-const useDocumentPairPermissions = createHookFromObservableFactory(getDocumentPairPermissions)
+const useDocumentPairPermissionsFromHookFactory = createHookFromObservableFactory(
+  getDocumentPairPermissions
+)
 
-export {
-  /* eslint-disable camelcase */
-  getDocumentPairPermissions as unstable_getDocumentPairPermissions,
-  useDocumentPairPermissions as unstable_useDocumentPairPermissions,
-  /* eslint-enable camelcase */
+export function useDocumentPairPermissions({
+  id,
+  type,
+  permission,
+  ...rest
+}: PartialExcept<DocumentPairPermissionsOptions, 'id' | 'type' | 'permission'>): ReturnType<
+  typeof useDocumentPairPermissionsFromHookFactory
+> {
+  const {client, schema} = useSource()
+  const grantsStore = useGrantsStore()
+
+  return useDocumentPairPermissionsFromHookFactory({
+    client: rest.client || client,
+    grantsStore: rest.grantsStore || grantsStore,
+    schema: rest.schema || schema,
+    id,
+    permission,
+    type,
+  })
 }

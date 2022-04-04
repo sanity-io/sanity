@@ -1,5 +1,4 @@
-import {SanityTool} from '@sanity/base'
-import {useStudio} from '@sanity/base/studio'
+import {SanityTool, useColorScheme} from '@sanity/base'
 import {Workshop} from '@sanity/ui-workshop'
 import React from 'react'
 import {WorkshopOptions} from './types'
@@ -9,7 +8,7 @@ import {useLocationStore} from './useLocationStore'
 export function WorkshopTool(props: {tool: SanityTool<WorkshopOptions>}) {
   const {tool} = props
 
-  const {scheme, setScheme} = useStudio()
+  const {scheme, setScheme} = useColorScheme()
 
   const locationStore = useLocationStore({
     baseUrl: `/${tool.options.name || 'workshop'}`,

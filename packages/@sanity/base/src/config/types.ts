@@ -1,8 +1,8 @@
-import {ClientConfig as SanityClientConfig, SanityClient} from '@sanity/client'
-import {T, Template, TemplateBuilder} from '@sanity/initial-value-templates'
-import {Router, RouterState} from '@sanity/state-router'
-import {AssetSource, Schema as SanitySchema, Schema} from '@sanity/types'
+import type {SanityClient} from '@sanity/client'
+import {Schema, CurrentUser, AssetSource, SanityDocumentLike} from '@sanity/types'
 import React from 'react'
+import {Observable} from 'rxjs'
+import {BifurClient} from '@sanity/bifur-client'
 import {
   FormBuilderArrayFunctionComponent,
   FormBuilderCustomMarkersComponent,
@@ -11,18 +11,12 @@ import {
   FormInputComponentResolver,
   FormPreviewComponentResolver,
 } from '../form'
-import {SanityPlugin} from '../plugin'
-import {DocumentNodeResolver} from '../structure'
+import {AuthStore, UserStore} from '../datastores'
+import {AuthController} from '../auth'
 import {SanityTheme} from '../theme'
-
-/**
- * @alpha
- */
-export interface InitialValueTemplatesResolver {
-  (_T: typeof T, options: {schema: Schema}): Array<Template | TemplateBuilder>
-}
-
-export type {SanitySchema}
+import {InitialValueTemplateItem, Template, TemplateResponse} from '../templates'
+import {Router, RouterState} from '../router'
+import {DocumentActionComponent, DocumentBadgeComponent} from '../deskTool'
 
 /**
  * @alpha
@@ -41,7 +35,6 @@ export interface SanityAuthConfig {
 /**
  * @alpha
  */
-
 export interface SanityFormBuilderConfig {
   components?: {
     ArrayFunctions?: FormBuilderArrayFunctionComponent
@@ -80,53 +73,217 @@ export interface SanityTool<Options = any> {
   canHandleIntent?: (intent: string, params: Record<string, unknown>, payload: unknown) => boolean
 }
 
-/**
- * @alpha
- */
-export type SanityClientFactory = (clientConfig: SanityClientConfig) => SanityClient
+export type SchemaTypeDefinition = unknown // TODO
 
-/**
- * @alpha
- */
-export interface SanitySourceConfig {
-  clientFactory?: SanityClientFactory
+export type ComposableOption<TValue, TContext> = (prev: TValue, context: TContext) => TValue
+export type AsyncComposableOption<TValue, TContext> = (
+  prev: TValue,
+  context: TContext
+) => Promise<TValue>
+
+export interface ConfigContext {
   projectId: string
   dataset: string
-  name: string
-  title: string
-  initialValueTemplates?: Template[] | InitialValueTemplatesResolver
-  schemaTypes?: any[]
-  structureDocumentNode?: DocumentNodeResolver
+  currentUser: CurrentUser
+  schema: Schema
+  client: SanityClient
 }
 
-/**
- * @alpha
- */
-export interface SanityConfig {
-  auth?: SanityAuthConfig
-  formBuilder?: SanityFormBuilderConfig
-  plugins?: SanityPlugin[]
-  project?: {
-    basePath?: string
-    name?: string
-    logo?: React.ComponentType<{'aria-label'?: string}>
-  }
+export type TemplateResolver = ComposableOption<Template[], ConfigContext>
+
+export interface SchemaPluginOptions {
+  types?:
+    | SchemaTypeDefinition[]
+    | ComposableOption<SchemaTypeDefinition[], Omit<ConfigContext, 'schema' | 'currentUser'>>
+  templates?: Template[] | TemplateResolver
+}
+
+// interface ComponentPluginOptions {
+//   absolutes?: unknown
+//   sidecar?: unknown
+// }
+
+export type NewDocumentOptionsResolver = ComposableOption<
+  TemplateResponse[],
+  NewDocumentOptionsContext
+>
+
+export interface NewDocumentOptionsContext extends ConfigContext {
+  creationContext: NewDocumentCreationContext
+}
+
+type NewDocumentCreationContext =
+  | {type: 'global'; documentId?: undefined; schemaType?: undefined}
+  | {type: 'document'; documentId: string; schemaType: string}
+  | {type: 'structure'; documentId?: undefined; schemaType: string}
+
+interface DocumentPluginOptions {
+  badges?: DocumentBadgeComponent[] | DocumentBadgesResolver
+  actions?: DocumentActionComponent[] | DocumentActionsResolver
+  resolveProductionUrl?: AsyncComposableOption<string | undefined, ResolveProductionUrlContext>
+  resolveNewDocumentOptions?: NewDocumentOptionsResolver
+}
+
+export type DocumentActionsResolver = ComposableOption<
+  DocumentActionComponent[],
+  DocumentActionsContext
+>
+
+export type DocumentBadgesResolver = ComposableOption<
+  DocumentBadgeComponent[],
+  DocumentBadgesContext
+>
+
+export interface PluginOptions {
+  name: string
+  plugins?: PluginOptions[]
+  schema?: SchemaPluginOptions
+  // TODO:
+  // components?: ComponentPluginOptions
+  document?: DocumentPluginOptions
+  tools?: SanityTool[] | ComposableOption<SanityTool[], ConfigContext>
+  /**
+   * this is marked as unstable because it will change once the alpha 2 is
+   * finished.
+   */
+  unstable_formBuilder?: SanityFormBuilderConfig
+}
+
+export type ConfigPropertyReducer<TValue, TContext> = (
+  prev: TValue,
+  config: PluginOptions,
+  context: TContext
+) => TValue
+
+export type AsyncConfigPropertyReducer<TValue, TContext> = (
+  prev: TValue,
+  config: PluginOptions,
+  context: TContext
+) => TValue | Promise<TValue>
+
+export type Plugin<TOptions = void> = (options: TOptions) => PluginOptions
+
+export interface WorkspaceOptions extends SourceOptions {
+  basePath?: string
+  subtitle?: string
+  logo?: React.ComponentType<{'aria-label'?: string}>
+  theme?: SanityTheme
   /**
    * @alpha
    */
-  __experimental_spaces?: SanitySpace[] // eslint-disable-line camelcase
-  schemaTypes?: any[]
-  sources?: SanitySourceConfig[]
-  theme?: SanityTheme
-  tools?: SanityTool[]
+  unstable_sources?: SourceOptions[]
+}
+
+export interface SourceOptions extends PluginOptions {
+  title?: string
+  projectId: string
+  dataset: string
+  auth?: SanityAuthConfig
+}
+
+export interface ResolveProductionUrlContext extends ConfigContext {
+  document: SanityDocumentLike
+}
+
+export interface DocumentActionsContext extends ConfigContext {
+  documentId?: string
+  schemaType: string
+}
+
+export interface DocumentBadgesContext extends ConfigContext {
+  documentId?: string
+  schemaType: string
+}
+
+type PartialContext<TContext extends ConfigContext> = Pick<
+  TContext,
+  Exclude<keyof TContext, keyof ConfigContext>
+>
+
+export interface Source {
+  name: string
+  title: string
+  projectId: string
+  dataset: string
+  schema: Schema
+  templates: Template[]
+  client: SanityClient
+  tools: SanityTool[]
+  currentUser: CurrentUser
+  document: {
+    actions: (props: PartialContext<DocumentActionsContext>) => DocumentActionComponent[]
+    badges: (props: PartialContext<DocumentActionsContext>) => DocumentBadgeComponent[]
+    resolveProductionUrl: (
+      context: PartialContext<ResolveProductionUrlContext>
+    ) => Promise<string | undefined>
+    resolveNewDocumentOptions: (context: NewDocumentCreationContext) => InitialValueTemplateItem[]
+  }
+  /**
+   * this is marked as unstable because it will change once the alpha 2 is
+   * finished.
+   */
+  unstable_formBuilder: SanityFormBuilderConfig
+  __internal: {
+    auth: {
+      controller: AuthController
+      store: AuthStore
+    }
+    bifur: BifurClient
+    userStore: UserStore
+    staticInitialValueTemplateItems: InitialValueTemplateItem[]
+  }
+}
+
+export interface Workspace extends Source {
+  basePath: string
+  subtitle?: string
+  logo?: React.ComponentType | React.ReactNode
+  theme: SanityTheme
+  /**
+   * @alpha
+   */
+  unstable_sources: Source[]
+}
+
+export interface ResolvedConfig {
+  type: 'resolved-sanity-config'
+
+  /**
+   * @internal
+   * @deprecated not actually deprecated but don't use or you'll be fired
+   */
+  __internal: {
+    workspaces: PartiallyResolvedWorkspace[]
+  }
+}
+
+export interface SanityConfig {
+  type: 'sanity-config'
+
+  /**
+   * @internal
+   * @deprecated not actually deprecated but don't use or you'll be fired
+   */
+  __internal: WorkspaceOptions | WorkspaceOptions[]
 }
 
 /**
- * @alpha
+ * @internal
  */
-export interface SanitySpace {
+interface PartiallyResolvedWorkspace {
+  type: 'partially-resolved-workspace'
+  basePath: string
   name: string
-  title: string
-  default?: boolean
-  api: SanitySourceConfig
+  title?: string
+  subtitle?: string
+  logo?: React.ComponentType<{'aria-label'?: string}>
+  theme: SanityTheme
+  sources: Array<
+    {
+      name: string
+      projectId: string
+      dataset: string
+      schema: Schema
+    } & Observable<Source>
+  >
 }

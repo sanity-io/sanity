@@ -1,5 +1,4 @@
 import {ComposeIcon, LeaveIcon, MoonIcon, SunIcon} from '@sanity/icons'
-import {useRouter, useStateLink} from '@sanity/state-router'
 import {
   Box,
   Button,
@@ -16,30 +15,33 @@ import {
   Text,
   Tooltip,
 } from '@sanity/ui'
-import React, {createElement, useCallback, useMemo, useState} from 'react'
-import {useAuth} from '../../../auth'
+import React, {createElement, useCallback, useMemo, useState, isValidElement} from 'react'
+import {isValidElementType} from 'react-is'
+import {startCase} from 'lodash'
+import {useWorkspace} from '../../workspace'
+import {useColorScheme} from '../../colorScheme'
 import {CollapseMenu, UserAvatar} from '../../../components'
-import {useSanity} from '../../../sanity'
-import {useStudio} from '../../useStudio'
+import {IntentLink, useStateLink} from '../../../router'
 import {GlobalSearch} from './GlobalSearch'
 import {ToolButton} from './ToolButton'
+import {NewDocumentDialog} from './NewDocumentDialog'
 
 export function Navbar(props: {activeToolName?: string}) {
   const {activeToolName} = props
-  const {project} = useSanity()
-  const {scheme, setScheme, spaces, tools} = useStudio()
-  const {sources} = useSanity()
-  const auth = useAuth()
-  const {state: routerState} = useRouter()
-  const hasSpaces = spaces ? spaces.length > 1 : false
+  const {
+    name,
+    tools,
+    logo,
+    unstable_sources: sources,
+    __internal: {auth},
+    ...workspace
+  } = useWorkspace()
+  const {scheme, setScheme} = useColorScheme()
   const [newDocumentDialogOpen, setNewDocumentDialogOpen] = useState(false)
+  const rootLink = useStateLink({state: {}})
 
-  const rootState = useMemo(
-    () => (hasSpaces && routerState.space ? {space: routerState.space} : {}),
-    [hasSpaces, routerState.space]
-  )
-
-  const rootLink = useStateLink({state: rootState})
+  const formattedName = typeof name === 'string' && name !== 'root' ? startCase(name) : null
+  const title = workspace.title || formattedName || 'Studio'
 
   const handleNewDocumentButtonClick = useCallback(() => {
     setNewDocumentDialogOpen(true)
@@ -50,8 +52,14 @@ export function Navbar(props: {activeToolName?: string}) {
   }, [])
 
   const handleToggleScheme = useCallback(() => {
-    setScheme((s) => (s === 'dark' ? 'light' : 'dark'))
-  }, [setScheme])
+    setScheme(scheme === 'dark' ? 'light' : 'dark')
+  }, [scheme, setScheme])
+
+  const rootLinkContent = (() => {
+    if (isValidElementType(logo)) return createElement(logo)
+    if (isValidElement(logo)) return logo
+    return <Text weight="bold">{title}</Text>
+  })()
 
   return (
     <Layer zOffset={100}>
@@ -64,12 +72,9 @@ export function Navbar(props: {activeToolName?: string}) {
               mode="bleed"
               onClick={rootLink.handleClick}
               padding={3}
+              aria-label={title}
             >
-              {project.logo ? (
-                createElement(project.logo, {'aria-label': project.name})
-              ) : (
-                <Text weight="bold">{project.name}</Text>
-              )}
+              {rootLinkContent}
             </Button>
           </Box>
 
@@ -123,7 +128,7 @@ export function Navbar(props: {activeToolName?: string}) {
                     iconRight={LeaveIcon}
                     // mode="ghost"
                     // eslint-disable-next-line react/jsx-handler-names
-                    onClick={auth.logout}
+                    onClick={auth.controller.logout}
                     text="Sign out"
                   />
                 </Menu>
@@ -134,27 +139,7 @@ export function Navbar(props: {activeToolName?: string}) {
         </Flex>
       </Card>
 
-      {newDocumentDialogOpen && (
-        <Dialog
-          header="New document"
-          id="new-document-dialog"
-          onClose={handleNewDocumentDialogClose}
-          width={2}
-        >
-          <Stack padding={4} space={5}>
-            {sources.map((source) => (
-              <Stack key={source.name} space={3}>
-                <Text>{source.title}</Text>
-                <Grid columns={3} gap={3}>
-                  {source.initialValueTemplates.map((template) => (
-                    <Button key={template.id} mode="ghost" text={template.title} />
-                  ))}
-                </Grid>
-              </Stack>
-            ))}
-          </Stack>
-        </Dialog>
-      )}
+      <NewDocumentDialog open={newDocumentDialogOpen} onClose={handleNewDocumentDialogClose} />
     </Layer>
   )
 }

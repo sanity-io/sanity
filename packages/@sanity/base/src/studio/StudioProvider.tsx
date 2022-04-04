@@ -1,89 +1,57 @@
-import {RouterProvider, RouterState} from '@sanity/state-router'
-import {LayerProvider, ThemeColorSchemeKey, ToastProvider} from '@sanity/ui'
-import React, {useEffect, useMemo, useState} from 'react'
+import React from 'react'
+import Refractor from 'react-refractor'
+import bash from 'refractor/lang/bash'
+import javascript from 'refractor/lang/javascript'
+import json from 'refractor/lang/json'
+import jsx from 'refractor/lang/jsx'
+import typescript from 'refractor/lang/typescript'
+import {History} from 'history'
+import {ToastProvider} from '@sanity/ui'
 import {SanityConfig} from '../config'
-import {SanityProvider} from '../sanity'
-import {resolvePlugins, resolveProject, resolveSpaces, resolveTools} from './resolveConfig'
-import {createLocationStore, createRouter, createRouterEventStream} from './router'
-import {StudioContext, StudioContextValue} from './StudioContext'
+import {UserColorManagerProvider} from '../user-color'
+import {ResourceCacheProvider} from '../datastores/ResourceCacheProvider'
+import {ConfigProvider} from './config'
+import {ColorSchemeProvider} from './colorScheme'
+import {LocationProvider} from './location'
+import {StudioThemeProvider} from './StudioThemeProvider'
+import {StudioErrorBoundary} from './StudioErrorBoundary'
+import {WorkspaceResolver} from './components'
+import {LoadingScreen} from './screens'
+import {AuthBoundary} from './AuthBoundary'
+import {LoginScreen} from './screens/login'
 
-interface StudioState {
-  router: {
-    isNotFound: boolean
-    state: RouterState | null
-  }
+Refractor.registerLanguage(bash)
+Refractor.registerLanguage(javascript)
+Refractor.registerLanguage(json)
+Refractor.registerLanguage(jsx)
+Refractor.registerLanguage(typescript)
+
+export interface StudioProviderProps {
+  config: SanityConfig
+  history?: History
+  children: React.ReactNode
 }
 
-export function StudioProvider(props: {
-  children?: React.ReactNode
-  config: SanityConfig
-  scheme: ThemeColorSchemeKey
-  setScheme: React.Dispatch<React.SetStateAction<ThemeColorSchemeKey>>
-}) {
-  const {children, config, scheme, setScheme} = props
-  const plugins = useMemo(() => resolvePlugins({plugins: config.plugins}), [config])
-  const tools = useMemo(() => resolveTools({plugins, tools: config.tools}), [config, plugins])
-  const project = useMemo(() => resolveProject({config}), [config])
-  const spaces = useMemo(() => resolveSpaces({spaces: config.__experimental_spaces}), [config])
-  const spaceNames = useMemo(() => spaces.map((s) => s.name), [spaces])
-  const studio: StudioContextValue = useMemo(
-    () => ({scheme, setScheme, spaces, tools}),
-    [scheme, setScheme, spaces, tools]
-  )
-  const hasSpaces = spaces ? spaces.length > 1 : false
-  const [state, setState] = useState<StudioState>({
-    router: {isNotFound: true, state: null},
-  })
-  const locationStore = useMemo(() => createLocationStore(), [])
-  const router = useMemo(
-    () => createRouter({basePath: project.basePath, spaces: spaceNames, tools}),
-    [project.basePath, spaceNames, tools]
-  )
-  const routerEvent$ = useMemo(() => {
-    return createRouterEventStream(locationStore, hasSpaces, spaceNames, tools, router)
-  }, [hasSpaces, locationStore, router, spaceNames, tools])
-
-  useEffect(() => {
-    const sub = routerEvent$.subscribe((event) => {
-      if (event.type === 'state') {
-        setState((prevState) => ({
-          ...prevState,
-          router: {
-            isNotFound: event.isNotFound,
-            state: event.state,
-          },
-        }))
-      }
-    })
-
-    return () => sub.unsubscribe()
-  }, [routerEvent$])
-
-  // Maybe redirect to base
-  useEffect(() => {
-    const redirectTo = router.getRedirectBase(location.pathname)
-
-    if (redirectTo) {
-      history.replaceState(null, document.title, redirectTo)
-    }
-  }, [router])
-
+export function StudioProvider({config, history, children}: StudioProviderProps) {
   return (
-    <SanityProvider config={config} scheme={scheme}>
-      <StudioContext.Provider value={studio}>
-        <LayerProvider>
-          <ToastProvider>
-            <RouterProvider
-              // eslint-disable-next-line react/jsx-handler-names
-              onNavigate={locationStore.navigate.call}
-              router={router}
-              state={state.router.state || {}}
-            >
-              {children}
-            </RouterProvider>
-          </ToastProvider>
-        </LayerProvider>
-      </StudioContext.Provider>
-    </SanityProvider>
+    <ConfigProvider config={config}>
+      <ColorSchemeProvider>
+        <StudioErrorBoundary>
+          <LocationProvider history={history} noRoute={<>no route</>}>
+            <StudioThemeProvider>
+              <ToastProvider>
+                <UserColorManagerProvider>
+                  <AuthBoundary loginScreen={LoginScreen}>
+                    <WorkspaceResolver loadingScreen={<LoadingScreen />}>
+                      <ResourceCacheProvider>{children}</ResourceCacheProvider>
+                    </WorkspaceResolver>
+                  </AuthBoundary>
+                </UserColorManagerProvider>
+              </ToastProvider>
+            </StudioThemeProvider>
+          </LocationProvider>
+        </StudioErrorBoundary>
+      </ColorSchemeProvider>
+    </ConfigProvider>
   )
 }

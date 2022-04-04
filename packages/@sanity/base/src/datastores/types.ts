@@ -1,6 +1,5 @@
-import {SanityConfig} from '../config'
+import {SanityConfig, Source as SanitySource} from '../config'
 import {DocumentPreviewStore} from '../preview'
-import {SanitySource} from '../source'
 import {CrossProjectTokenStore} from './crossProjectToken'
 import {DocumentStore} from './document'
 import {GrantsStore} from './grants/types'

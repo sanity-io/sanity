@@ -1,4 +1,4 @@
-import {deskTool} from '@sanity/desk-tool'
+import {deskTool} from '@sanity/base'
 import {DocumentsIcon} from '@sanity/icons'
 
 export const docsDeskTool = deskTool({

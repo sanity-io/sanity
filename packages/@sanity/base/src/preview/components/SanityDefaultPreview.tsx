@@ -23,7 +23,7 @@ import {
   PreviewLayoutKey,
   PreviewProps,
 } from '../../components/previews/types'
-import {useSource} from '../../source'
+import {useSource} from '../../studio'
 
 interface UploadState {
   progress: number

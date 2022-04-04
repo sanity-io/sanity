@@ -1,4 +1,4 @@
-import {StructureBuilder} from '@sanity/base/structure'
+import {StructureResolver, DocumentNodeResolver} from '@sanity/base'
 import {CogIcon} from '@sanity/icons'
 import {CustomPane} from './components/CustomPane'
 import {IFrameView} from './components/IframeView'
@@ -8,7 +8,7 @@ import {StyledTestView} from './schemaTypes/documentWithViews/view/styledTest'
 const STRUCTURE_CUSTOM_TYPES = ['settings']
 
 // Add `JSON` tab to the `author` document form
-export const getDefaultDocumentNode = (S: StructureBuilder, {schemaType}: {schemaType: string}) => {
+export const resolveDocumentNode: DocumentNodeResolver = (S, {schemaType}) => {
   // Conditionally return a different configuration based on the schema type
   if (schemaType === 'author') {
     return S.document().views([
@@ -43,7 +43,7 @@ export const getDefaultDocumentNode = (S: StructureBuilder, {schemaType}: {schem
   return undefined
 }
 
-export function structure(S: StructureBuilder) {
+export const structure: StructureResolver = (S) => {
   // The `Settings` root list item
   const settingsListItem = S.listItem()
     .title('Settings')

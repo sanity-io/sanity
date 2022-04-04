@@ -1,8 +1,3 @@
-export interface RouterErrorEvent {
-  type: 'error'
-  error: Error
-}
-
 export interface RouterStateEvent {
   type: 'state'
   state: Record<string, unknown> // | null
@@ -15,4 +10,4 @@ export interface RouterIntentEvent {
   isNotFound: boolean
 }
 
-export type RouterEvent = RouterErrorEvent | RouterStateEvent | RouterIntentEvent
+export type RouterEvent = RouterStateEvent | RouterIntentEvent

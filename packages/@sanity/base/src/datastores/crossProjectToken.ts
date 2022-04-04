@@ -23,11 +23,15 @@ function isNonNullable<T>(value: T): value is NonNullable<T> {
   return value !== null
 }
 
+interface CrossProjectTokenStoreOptions {
+  client: SanityClient
+}
+
 // eslint-disable-next-line camelcase
-export function __tmp_wrap_crossProjectToken(context: {
-  versionedClient: SanityClient
-}): CrossProjectTokenStore {
-  const {versionedClient} = context
+export function __tmp_wrap_crossProjectToken({
+  client: _client,
+}: CrossProjectTokenStoreOptions): CrossProjectTokenStore {
+  const versionedClient = _client.withConfig({apiVersion: '1'})
 
   function fetchTokenDocument(client: SanityClient, id: string) {
     return client.observable.fetch(`*[_id == $id]{_id, _type, _updatedAt, token}[0]`, {

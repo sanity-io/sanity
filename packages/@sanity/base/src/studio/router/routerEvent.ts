@@ -1,32 +1,26 @@
-import {Router} from '@sanity/state-router'
 import {isEqual} from 'lodash'
-import {Observable, of} from 'rxjs'
-import {
-  map,
-  filter,
-  scan,
-  publishReplay,
-  refCount,
-  catchError,
-  distinctUntilChanged,
-} from 'rxjs/operators'
+import {Observable} from 'rxjs'
+import {map, filter, scan, shareReplay, distinctUntilChanged} from 'rxjs/operators'
 import {SanityTool} from '../../config'
+import {Router} from '../../router'
 import {LocationStore} from './location'
 import {decodeUrlState, isNonNullable, resolveDefaultState, resolveIntentState} from './helpers'
 import {RouterEvent} from './types'
 
-export function createRouterEventStream(
-  locationStore: LocationStore,
-  hasSpaces: boolean,
-  spaces: string[] | undefined,
-  tools: SanityTool[],
+interface RouterEventStreamOptions {
+  locationStore: LocationStore
   router: Router
-): Observable<RouterEvent> {
+  tools: SanityTool[]
+}
+
+export function createRouterEventStream({
+  locationStore,
+  router,
+  tools,
+}: RouterEventStreamOptions): Observable<RouterEvent> {
   function maybeHandleIntent(prevEvent: RouterEvent | null, currentEvent: RouterEvent) {
     if (currentEvent?.type === 'state' && currentEvent.state?.intent) {
       const redirectState = resolveIntentState(
-        hasSpaces,
-        spaces,
         tools,
         prevEvent?.type === 'state' ? prevEvent.state : {},
         currentEvent.state
@@ -49,7 +43,7 @@ export function createRouterEventStream(
 
   function maybeRedirectDefaultState(event: RouterEvent) {
     if (event.type === 'state') {
-      const defaultState = resolveDefaultState(hasSpaces, spaces, tools, event.state)
+      const defaultState = resolveDefaultState(tools, event.state)
 
       if (defaultState && defaultState !== event.state) {
         locationStore.navigate.call({
@@ -71,9 +65,7 @@ export function createRouterEventStream(
     map(maybeRedirectDefaultState),
     filter(isNonNullable),
     distinctUntilChanged(isEqual),
-    catchError((err) => of({type: 'error', error: err})),
-    publishReplay(1),
-    refCount()
+    shareReplay(1)
   )
 
   return state$

@@ -1,31 +1,32 @@
-import {createConfig} from '@sanity/base'
+import {createConfig, deskTool} from '@sanity/base'
 import {codeInput} from '@sanity/code-input'
-import {deskTool} from '@sanity/desk-tool'
 import {BookIcon} from '@sanity/icons'
 import {imageAssetSource} from './assetSources'
 import {Branding} from './components/Branding'
 import {CustomMarkers} from './components/formBuilder/CustomMarkers'
-import {LanguageFilter} from './components/deskTool/LanguageFilter'
+// import {LanguageFilter} from './components/deskTool/LanguageFilter'
 import {Markers} from './components/formBuilder/Markers'
 import {resolveDocumentActions} from './documentActions'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {schemaTypes} from './schema'
-import {resolveStructureDocumentNode, resolveStructure} from './structure'
+import {
+  resolveStructureDocumentNode,
+  resolveStructure,
+  resolveNewDocumentOptions,
+} from './structure'
 import {workshopTool} from './workshop'
 
-const sanityConfig = createConfig({
-  sources: [
-    {
-      name: 'default',
-      title: 'Default',
-      projectId: 'ppsg7ml5',
-      dataset: 'test',
-      schemaTypes,
-      initialValueTemplates: resolveInitialValueTemplates,
-      structureDocumentNode: resolveStructureDocumentNode,
-    },
-  ],
-  formBuilder: {
+export default createConfig({
+  name: 'default',
+  title: 'Partless Studio',
+  logo: Branding,
+  projectId: 'ppsg7ml5',
+  dataset: 'test',
+  schema: {
+    types: schemaTypes,
+    templates: resolveInitialValueTemplates,
+  },
+  unstable_formBuilder: {
     components: {
       CustomMarkers,
       Markers,
@@ -34,16 +35,21 @@ const sanityConfig = createConfig({
       assetSources: [imageAssetSource],
     },
   },
+  document: {
+    actions: resolveDocumentActions,
+    resolveNewDocumentOptions,
+  },
   plugins: [
     codeInput(),
     deskTool({
-      components: {
-        LanguageFilter,
-      },
+      // TODO:
+      // components: {
+      //   LanguageFilter,
+      // },
       icon: BookIcon,
       name: 'content',
-      documentActions: resolveDocumentActions,
       structure: resolveStructure,
+      resolveDocumentNode: resolveStructureDocumentNode,
       title: 'Content',
     }),
     workshopTool({
@@ -55,10 +61,4 @@ const sanityConfig = createConfig({
       ],
     }),
   ],
-  project: {
-    logo: Branding,
-    name: 'Partless Studio',
-  },
 })
-
-export default sanityConfig

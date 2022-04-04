@@ -1,14 +1,14 @@
 import {distinctUntilChanged, map, mapTo, startWith, switchMap} from 'rxjs/operators'
 import {of, timer} from 'rxjs'
 import {useMemoObservable} from 'react-rx'
-import {useDatastores} from '../datastores'
+import {useDocumentStore} from '../datastores'
 
 type ConnectionState = 'connecting' | 'reconnecting' | 'connected'
 
 const INITIAL: ConnectionState = 'connecting'
 
 export function useConnectionState(publishedDocId: string, docTypeName: string): ConnectionState {
-  const {documentStore} = useDatastores()
+  const documentStore = useDocumentStore()
 
   return useMemoObservable(
     () =>

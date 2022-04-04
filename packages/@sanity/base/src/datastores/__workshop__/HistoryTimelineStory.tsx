@@ -6,7 +6,7 @@ import {omit} from 'lodash'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {useMemoObservable} from 'react-rx'
 import {ChangeFieldWrapper} from '../../components'
-import {useSource} from '../../source'
+import {useSource} from '../../studio'
 import {
   ChangeList,
   DocumentChangeContext,
@@ -15,7 +15,7 @@ import {
 } from '../../field'
 import {useConnectionState, useEditState} from '../../hooks'
 import {useInitialValue} from '../document/useInitialValue'
-import {useDatastores} from '../useDatastores'
+import {useHistoryStore} from '../datastores'
 
 export default function HistoryTimelineStory() {
   const {client, schema} = useSource()
@@ -26,7 +26,7 @@ export default function HistoryTimelineStory() {
   const templateParams = useMemo(() => undefined, [])
   const [params, setParams] = useState<{rev?: string; since?: string}>({})
 
-  const {historyStore} = useDatastores()
+  const historyStore = useHistoryStore()
 
   const connectionState = useConnectionState(documentId, documentType)
   const editState = useEditState(documentId, documentType)
@@ -46,6 +46,7 @@ export default function HistoryTimelineStory() {
     [documentId, historyStore]
   )
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const {historyController} = useMemoObservable(
     () => historyStore.getTimelineController({client, documentId, documentType, timeline}),
     [client, documentId, documentType, timeline]

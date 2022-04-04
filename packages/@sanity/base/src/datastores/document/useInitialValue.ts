@@ -1,6 +1,6 @@
 import {useEffect, useMemo, useState} from 'react'
 import {useUnique} from '../../util/useUnique'
-import {useDatastores} from '../useDatastores'
+import {useDocumentStore} from '../datastores'
 import {InitialValueState} from './initialValue/types'
 
 /**
@@ -14,7 +14,7 @@ export function useInitialValue(props: {
 }): InitialValueState {
   const {documentId, documentType, templateName, templateParams: templateParamsRaw} = props
   const templateParams = useUnique(templateParamsRaw)
-  const {documentStore} = useDatastores()
+  const documentStore = useDocumentStore()
   const defaultValue = useMemo(() => ({_type: documentType}), [documentType])
 
   const [state, setState] = useState<InitialValueState>({

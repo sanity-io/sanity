@@ -9,11 +9,7 @@
   },
   "references": [
     {"path": "../../packages/@sanity/base/tsconfig.lib.json"},
-    {"path": "../../packages/@sanity/desk-tool"},
-    {"path": "../../packages/@sanity/form-builder/tsconfig.lib.json"},
-    {"path": "../../packages/@sanity/initial-value-templates"},
-    {"path": "../../packages/@sanity/state-router/tsconfig.lib.json"},
     {"path": "../../packages/@sanity/types"},
-    {"path": "../../packages/sanity/tsconfig.lib.json"},
+    {"path": "../../packages/sanity/tsconfig.lib.json"}
   ]
 }

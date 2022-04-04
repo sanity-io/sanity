@@ -1,7 +1,7 @@
 import {SanityDocument} from '@sanity/types'
 import {Box, Code, Text} from '@sanity/ui'
 import React, {useEffect, useState} from 'react'
-import {useDatastores} from '../useDatastores'
+import {useHistoryStore} from '../datastores'
 
 const SECOND = 1000
 const MINUTE = SECOND * 60
@@ -9,7 +9,7 @@ const HOUR = MINUTE * 60
 const DAY = HOUR * 24
 
 export default function HistoryStory() {
-  const {historyStore} = useDatastores()
+  const historyStore = useHistoryStore()
   const [history, setHistory] = useState<{documents: SanityDocument[]} | null>(null)
 
   useEffect(() => {

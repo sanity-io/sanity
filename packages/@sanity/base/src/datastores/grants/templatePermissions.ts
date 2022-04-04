@@ -1,18 +1,15 @@
-import {
-  getTemplateById,
-  resolveInitialValue,
-  Template as TemplateType,
-} from '@sanity/initial-value-templates'
-import {InitialValueTemplateItem} from '@sanity/structure'
 import {Observable, combineLatest, from, of} from 'rxjs'
 import {switchMap, map} from 'rxjs/operators'
 import {Schema} from '@sanity/types'
+import {resolveInitialValue, Template, InitialValueTemplateItem} from '../../templates'
+import {useSource} from '../../studio'
 import {createHookFromObservableFactory} from '../../util/createHookFromObservableFactory'
 import {getDraftId, getPublishedId} from '../../util/draftUtils'
+import {useGrantsStore} from '../datastores'
 import {GrantsStore, PermissionCheckResult} from './types'
-import {unstable_getDocumentValuePermissions as getDocumentValuePermissions} from './documentValuePermissions'
+import {getDocumentValuePermissions} from './documentValuePermissions'
 
-type Template = ReturnType<typeof getTemplateById>
+type PartialExcept<T, K extends keyof T> = Pick<T, K> & Partial<Omit<T, K>>
 
 export interface TemplatePermissionsResult<TInitialValue = Record<string, unknown>>
   extends PermissionCheckResult,
@@ -31,24 +28,31 @@ function serialize<T>(item: T | Serializable<T>): T {
   return item as T
 }
 
+interface TemplatePermissionsOptions {
+  grantsStore: GrantsStore
+  schema: Schema
+  templates: Template[]
+  templateItems: InitialValueTemplateItem[]
+}
+
 /**
  * The observable version of `useTemplatePermissions`
  */
-function getTemplatePermissions(
-  grantsStore: GrantsStore,
-  schema: Schema,
-  initialValueTemplates: TemplateType[],
-  initialValueTemplateItems: Array<
-    InitialValueTemplateItem | Serializable<InitialValueTemplateItem>
-  >
-): Observable<Array<TemplatePermissionsResult<Record<string, unknown>>>> {
-  if (!initialValueTemplateItems?.length) return of([])
+export function getTemplatePermissions({
+  grantsStore,
+  templateItems,
+  templates,
+  schema,
+}: TemplatePermissionsOptions): Observable<
+  Array<TemplatePermissionsResult<Record<string, unknown>>>
+> {
+  if (!templateItems?.length) return of([])
 
   return combineLatest(
-    initialValueTemplateItems
+    templateItems
       .map(serialize)
       .map(async (item) => {
-        const template = getTemplateById(schema, initialValueTemplates, item.templateId)
+        const template = templates.find((t) => t.id === item.templateId)
 
         if (!template) {
           throw new Error(`template not found: "${item.templateId}"`)
@@ -116,11 +120,22 @@ function getTemplatePermissions(
  * are any matching grants for the resolved initial template value, the
  * `TemplatePermissionsResult` will include `granted: true`.
  */
-const useTemplatePermissions = createHookFromObservableFactory(getTemplatePermissions)
+const useTemplatePermissionsFromHookFactory =
+  createHookFromObservableFactory(getTemplatePermissions)
 
-export {
-  /* eslint-disable camelcase */
-  getTemplatePermissions as unstable_getTemplatePermissions,
-  useTemplatePermissions as unstable_useTemplatePermissions,
-  /* eslint-enable camelcase */
+export function useTemplatePermissions({
+  templateItems,
+  ...rest
+}: PartialExcept<TemplatePermissionsOptions, 'templateItems'>): ReturnType<
+  typeof useTemplatePermissionsFromHookFactory
+> {
+  const {templates, schema} = useSource()
+  const grantsStore = useGrantsStore()
+
+  return useTemplatePermissionsFromHookFactory({
+    templateItems,
+    grantsStore: rest.grantsStore || grantsStore,
+    schema: rest.schema || schema,
+    templates: rest.templates || templates,
+  })
 }

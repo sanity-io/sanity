@@ -1,7 +1,7 @@
 import {SearchIcon} from '@sanity/icons'
 import {Autocomplete, Card, Label, Text} from '@sanity/ui'
 import React, {forwardRef, useCallback, useMemo, useState} from 'react'
-import {useSource} from '../../../source'
+import {useSource} from '../../../studio'
 import {SanityPreview} from '../../../preview'
 import {IntentLink} from '../../../router'
 import {useDocumentSearchResults} from '../../../search/useDocumentSearchResults'

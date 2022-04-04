@@ -1,6 +1,9 @@
 import {Observable} from 'rxjs'
 import {createHookFromObservableFactory} from '../../util/createHookFromObservableFactory'
+import {useGrantsStore} from '../datastores'
 import {DocumentValuePermission, GrantsStore, PermissionCheckResult} from './types'
+
+type PartialExcept<T, K extends keyof T> = Pick<T, K> & Partial<Omit<T, K>>
 
 export interface DocumentValuePermissionsOptions {
   grantsStore: GrantsStore
@@ -13,7 +16,7 @@ export interface DocumentValuePermissionsOptions {
  *
  * @see useDocumentValuePermissions
  */
-function getDocumentValuePermissions({
+export function getDocumentValuePermissions({
   grantsStore,
   document,
   permission,
@@ -42,12 +45,24 @@ function getDocumentValuePermissions({
  *
  * @see useDocumentPairPermissions
  */
-const useDocumentValuePermissions = createHookFromObservableFactory(getDocumentValuePermissions)
+const useDocumentValuePermissionsFromHookFactory = createHookFromObservableFactory(
+  getDocumentValuePermissions
+)
 
-export {
-  /* eslint-disable camelcase */
-  getDocumentValuePermissions as unstable_getDocumentValuePermissions,
-  useDocumentValuePermissions as unstable_useDocumentValuePermissions,
-  /* eslint-enable camelcase */
+export function useDocumentValuePermissions({
+  document,
+  permission,
+  ...rest
+}: PartialExcept<DocumentValuePermissionsOptions, 'permission' | 'document'>): ReturnType<
+  typeof useDocumentValuePermissionsFromHookFactory
+> {
+  const grantsStore = useGrantsStore()
+
+  return useDocumentValuePermissionsFromHookFactory({
+    grantsStore: rest.grantsStore || grantsStore,
+    document,
+    permission,
+  })
 }
+
 export type {DocumentValuePermission}

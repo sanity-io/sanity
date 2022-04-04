@@ -47,11 +47,16 @@ export interface DocumentPreviewStore {
   ) => Observable<DraftsModelDocument<T>>
 }
 
-export function createDocumentPreviewStore(context: {
+interface DocumentPreviewStoreOptions {
   crossProjectTokenStore: CrossProjectTokenStore
-  versionedClient: SanityClient
-}): DocumentPreviewStore {
-  const {crossProjectTokenStore, versionedClient} = context
+  client: SanityClient
+}
+
+export function createDocumentPreviewStore({
+  crossProjectTokenStore,
+  client,
+}: DocumentPreviewStoreOptions): DocumentPreviewStore {
+  const versionedClient = client.withConfig({apiVersion: '1'})
 
   // NOTE: this is workaroudn for circumventing a circular dependency between `observePaths` and
   // `observeFields`.

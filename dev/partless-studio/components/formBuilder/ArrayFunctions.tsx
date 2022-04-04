@@ -1,6 +1,5 @@
-import {FormBuilderArrayFunctionsComponent} from '@sanity/form-builder'
 import React from 'react'
 
-export const ArrayFunctions: FormBuilderArrayFunctionsComponent = () => {
+export const ArrayFunctions: any = () => {
   return <div>ArrayFunctions</div>
 }

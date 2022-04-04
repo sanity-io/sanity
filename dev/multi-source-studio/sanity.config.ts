@@ -1,25 +1,25 @@
 import {createConfig} from '@sanity/base'
 import {blogDeskTool} from './blog/deskTool'
-import {blogSource} from './blog/source'
+// import {blogSource} from './blog/source'
 import {docsDeskTool} from './docs/deskTool'
-import {docsSource} from './docs/source'
+// import {docsSource} from './docs/source'
 import {internalDeskTool} from './internal/deskTool'
-import {internalSource} from './internal/source'
+// import {internalSource} from './internal/source'
 import {tools} from './tools'
 
+// TODO: this example is currenlty broken
 export default createConfig({
   plugins: [
     // unsplashSource({
     //   // ...
     //   // sourceName: 'my-unsplash'
     // }),
-
     docsDeskTool,
     blogDeskTool,
     internalDeskTool,
   ],
-  project: {name: 'Sanity.io'},
-  sources: [blogSource, docsSource, internalSource],
+  title: 'Sanity.io',
+  // sources: [blogSource, docsSource, internalSource],
   tools,
 
   // assetSources: [

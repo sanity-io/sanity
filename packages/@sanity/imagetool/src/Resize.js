@@ -3,7 +3,8 @@ import React from 'react'
 
 export default class Resize extends React.Component {
   static propTypes = {
-    image: PropTypes.instanceOf(HTMLImageElement).isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
+    image: PropTypes.object.isRequired,
     maxWidth: PropTypes.number.isRequired,
     maxHeight: PropTypes.number.isRequired,
     children: PropTypes.func.isRequired,

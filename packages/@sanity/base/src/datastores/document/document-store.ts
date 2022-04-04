@@ -1,10 +1,10 @@
 import {SanityClient} from '@sanity/client'
 import {Schema} from '@sanity/types'
 import {Observable} from 'rxjs'
-import {Template} from '@sanity/initial-value-templates'
-import {getDraftId, isDraftId} from '../../util/draftUtils'
+import {getDraftId, isDraftId} from '../../util'
 import {HistoryStore} from '../history'
 import {DocumentPreviewStore} from '../../preview'
+import {Template} from '../../templates'
 import createDeprecatedAPIs from './_createDeprecatedAPIs'
 import {checkoutPair, DocumentVersionEvent, Pair} from './document-pair/checkoutPair'
 import {consistencyStatus} from './document-pair/consistencyStatus'
@@ -48,13 +48,21 @@ export interface DocumentStore {
   }
 }
 
-export function createDocumentStore(
-  client: SanityClient,
-  documentPreviewStore: DocumentPreviewStore,
-  historyStore: HistoryStore,
-  schema: Schema,
+interface DocumentStoreOptions {
+  client: SanityClient
+  documentPreviewStore: DocumentPreviewStore
+  historyStore: HistoryStore
+  schema: Schema
   initialValueTemplates: Template[]
-): DocumentStore {
+}
+
+export function createDocumentStore({
+  client,
+  documentPreviewStore,
+  historyStore,
+  initialValueTemplates,
+  schema,
+}: DocumentStoreOptions): DocumentStore {
   const versionedClient = client.withConfig({
     apiVersion: '2021-12-01',
   })

@@ -57,11 +57,16 @@ const createErrorStatus = ({
   retryAt,
 })
 
+interface ConnectionStatusStoreOptions {
+  bifur: BifurClient
+}
 /**
  * This is the beginning of what should be the data store tracking connection status in the Sanity studio.
  */
 
-export function createConnectionStatusStore(bifur: BifurClient): ConnectionStatusStore {
+export function createConnectionStatusStore({
+  bifur,
+}: ConnectionStatusStoreOptions): ConnectionStatusStore {
   const connectionStatus$: Observable<ConnectionStatus> = merge(
     bifur.heartbeats,
     onOffline$.pipe(mergeMapTo(throwError(new Error('The browser went offline'))))

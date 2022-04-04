@@ -1,4 +1,3 @@
-import {ListBuilder, StructureBuilder} from '@sanity/base/structure'
 import {
   EarthGlobeIcon,
   ImagesIcon,
@@ -9,7 +8,7 @@ import {
   UsersIcon,
 } from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
-import {Schema} from '@sanity/types'
+import {StructureResolver} from '@sanity/base'
 import {DebugPane} from '../components/panes/debug'
 import {JsonDocumentDump} from '../components/panes/JsonDocumentDump'
 import {_buildTypeGroup} from './_buildTypeGroup'
@@ -24,7 +23,7 @@ import {
 } from './constants'
 import {delayValue} from './_helpers'
 
-export function resolveStructure(S: StructureBuilder, {schema}: {schema: Schema}): ListBuilder {
+export const resolveStructure: StructureResolver = (S, {schema}) => {
   return S.list()
     .title('Content')
     .items([

@@ -1,15 +1,7 @@
-import {DocumentBuilder, StructureBuilder} from '@sanity/base/structure'
+import {DocumentNodeResolver} from '@sanity/base'
 import {JSONPreviewDocumentView} from '../components/documentViews/jsonPreview'
 
-export function resolveStructureDocumentNode(
-  S: StructureBuilder,
-  options: {
-    documentId?: string
-    schemaType: string
-  }
-): DocumentBuilder | null {
-  const {schemaType} = options
-
+export const resolveStructureDocumentNode: DocumentNodeResolver = (S, {schemaType}) => {
   if (schemaType === 'author') {
     return S.document().views([
       S.view.form(),

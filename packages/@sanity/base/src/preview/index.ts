@@ -9,3 +9,4 @@ export {getPreviewPaths} from './utils/getPreviewPaths'
 export {prepareForPreview} from './utils/prepareForPreview'
 
 export * from './documentPreviewStore'
+export * from './types'

@@ -1,17 +1,9 @@
-import {CurrentUser} from '@sanity/types'
+import React from 'react'
 import {Box, Button, Code, Text} from '@sanity/ui'
-import React, {useEffect, useState} from 'react'
-import {useDatastores} from '../useDatastores'
+import {useSource} from '../../studio'
 
 export default function CurrentUserStory() {
-  const {userStore} = useDatastores()
-  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null)
-
-  useEffect(() => {
-    const sub = userStore.me.subscribe(setCurrentUser)
-
-    return () => sub.unsubscribe()
-  }, [userStore])
+  const {currentUser} = useSource()
 
   return (
     <Box padding={4}>

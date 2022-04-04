@@ -1,11 +1,11 @@
-import {SchemaType} from '@sanity/types'
+import {SchemaType, SanityDocument} from '@sanity/types'
 import React from 'react'
 import {PreviewSubscriber} from './PreviewSubscriber'
 
 interface PreviewFieldsProps {
-  document: Document
+  document: Partial<SanityDocument>
   type: SchemaType
-  children: (snapshot: Document) => React.ReactNode
+  children: (snapshot: Partial<SanityDocument>) => React.ReactNode
 }
 
 export function PreviewFields(props: PreviewFieldsProps) {

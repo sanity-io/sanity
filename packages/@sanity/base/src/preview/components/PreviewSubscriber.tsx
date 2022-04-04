@@ -1,7 +1,7 @@
 import {SchemaType} from '@sanity/types'
 import React, {useCallback} from 'react'
 import type {SortOrdering} from '../types'
-import {useDatastores} from '../../datastores'
+import {useDocumentPreviewStore} from '../../datastores'
 import {WithVisibility} from './WithVisibility'
 import ObserveForPreview from './ObserveForPreview'
 
@@ -16,7 +16,7 @@ interface Props {
 }
 
 export function PreviewSubscriber(props: Props) {
-  const {documentPreviewStore} = useDatastores()
+  const documentPreviewStore = useDocumentPreviewStore()
 
   const renderChild = useCallback(
     (isVisible: boolean) => {

@@ -1,6 +1,6 @@
 import {useMemoObservable} from 'react-rx'
 import {map} from 'rxjs/operators'
-import {useDatastores} from '../datastores'
+import {useDocumentStore} from '../datastores'
 
 interface SyncState {
   isSyncing: boolean
@@ -10,7 +10,7 @@ const SYNCING = {isSyncing: true}
 const NOT_SYNCING = {isSyncing: false}
 
 export function useSyncState(publishedDocId: string, documentType: string): SyncState {
-  const {documentStore} = useDatastores()
+  const documentStore = useDocumentStore()
 
   return useMemoObservable<SyncState>(
     () =>

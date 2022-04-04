@@ -1,9 +1,3 @@
-import {
-  getTemplateById,
-  resolveInitialValue,
-  Template,
-  templateExists,
-} from '@sanity/initial-value-templates'
 import {Schema} from '@sanity/types'
 import {from, merge, Observable, of} from 'rxjs'
 import {
@@ -17,7 +11,8 @@ import {
   startWith,
 } from 'rxjs/operators'
 import {DocumentPreviewStore} from '../../../preview'
-import {getDraftId, getPublishedId} from '../../../util/draftUtils'
+import {Template, resolveInitialValue} from '../../../templates'
+import {getDraftId, getPublishedId} from '../../../util'
 import {
   InitialValueErrorMsg,
   InitialValueLoadingMsg,
@@ -71,17 +66,11 @@ export function getInitialValueStream(
         return of({isResolving: false, initialValue: undefined})
       }
 
-      if (!templateExists(schema, initialValueTemplates, opts.templateName)) {
-        // eslint-disable-next-line no-console
-        console.warn('Template "%s" not defined, using empty initial value', opts.templateName)
-        return of({isResolving: false, initialValue: undefined})
-      }
-
-      const template = getTemplateById(schema, initialValueTemplates, opts.templateName)
+      const template = initialValueTemplates.find((t) => t.id === opts.templateName)
 
       if (!template) {
         // eslint-disable-next-line no-console
-        console.warn('Template "%s" not found, using empty initial value', opts.templateName)
+        console.warn('Template "%s" not defined, using empty initial value', opts.templateName)
         return of({isResolving: false, initialValue: undefined})
       }
 

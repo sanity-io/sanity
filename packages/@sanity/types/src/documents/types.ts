@@ -7,6 +7,16 @@ export interface SanityDocument {
   _rev: string
 }
 
+/**
+ * Similar to `SanityDocument` but only requires the `_id` and `_type`
+ * @see SanityDocument
+ */
+export interface SanityDocumentLike {
+  [key: string]: unknown
+  _id: string
+  _type: string
+}
+
 export interface TypedObject {
   [key: string]: unknown
   _type: string

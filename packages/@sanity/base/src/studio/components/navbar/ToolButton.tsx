@@ -1,8 +1,8 @@
 import {UnknownIcon} from '@sanity/icons'
-import {useStateLink} from '@sanity/state-router'
 import {Button} from '@sanity/ui'
 import React, {useMemo} from 'react'
 import {SanityTool} from '../../../config'
+import {useStateLink} from '../../../router'
 
 export function ToolButton(props: {selected: boolean; tool: SanityTool}) {
   const {selected, tool} = props

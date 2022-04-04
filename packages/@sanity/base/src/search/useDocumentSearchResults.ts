@@ -1,7 +1,7 @@
 import {useEffect, useMemo, useState} from 'react'
 import {merge, Observable, of, Subject} from 'rxjs'
 import {catchError, debounceTime, map, share, switchMap} from 'rxjs/operators'
-import {useSource} from '../source'
+import {useSource} from '../studio'
 import {createSearch} from './search'
 import {WeightedHit} from './weighted/types'
 

@@ -4,12 +4,11 @@ import React, {createContext, useContext} from 'react'
 import {asyncScheduler, defer, of} from 'rxjs'
 import {observeOn} from 'rxjs/operators'
 import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
-import {createConfig} from '../../../../config'
-import {SanityProvider} from '../../../../sanity'
-import {SanitySource, useSource} from '../../../../source'
+import {createConfig, Source} from '../../../../config'
+import {useSource, StudioProvider} from '../../../../studio'
 import {useDocumentType} from '../useDocumentType'
 
-const useSourceMock = useSource as jest.Mock<SanitySource>
+const useSourceMock = useSource as jest.Mock<Source>
 
 const TestContext = createContext<{client: SanityClient} | null>(null)
 
@@ -18,21 +17,15 @@ jest.mock('../../../../client/useClient')
 
 function createWrapperComponent(client: SanityClient) {
   const config = createConfig({
-    sources: [
-      {
-        name: 'test',
-        title: 'Test',
-        projectId: 'foo',
-        dataset: 'test',
-        schemaTypes: [],
-      },
-    ],
+    name: 'test',
+    projectId: 'foo',
+    dataset: 'test',
   })
 
   function WrapperComponent({children}: any) {
     return (
       <TestContext.Provider value={{client}}>
-        <SanityProvider config={config}>{children}</SanityProvider>
+        <StudioProvider config={config}>{children}</StudioProvider>
       </TestContext.Provider>
     )
   }

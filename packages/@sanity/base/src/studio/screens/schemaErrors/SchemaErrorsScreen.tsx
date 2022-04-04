@@ -1,24 +1,21 @@
-import {Schema, SchemaValidationProblemGroup, SchemaValidationProblemPath} from '@sanity/types'
+import {Schema, SchemaValidationProblemPath} from '@sanity/types'
 import {Card} from '@sanity/ui'
 import React, {useEffect} from 'react'
-import {useSource} from '../../../source'
 import {SchemaErrors} from './SchemaErrors'
 
 interface SchemaErrorsScreenProps {
-  problemGroups: SchemaValidationProblemGroup[]
+  schema: Schema
 }
 
 declare const __DEV__: boolean
 
-export function SchemaErrorsScreen(props: SchemaErrorsScreenProps) {
-  const {problemGroups} = props
-  const source = useSource()
+export function SchemaErrorsScreen({schema}: SchemaErrorsScreenProps) {
+  const groupsWithErrors =
+    schema._validation?.filter((group) =>
+      group.problems.some((problem) => problem.severity === 'error')
+    ) || []
 
-  const groupsWithErrors = problemGroups.filter((group) =>
-    group.problems.some((problem) => problem.severity === 'error')
-  )
-
-  useEffect(() => reportWarnings(source.schema), [source.schema])
+  useEffect(() => reportWarnings(schema), [schema])
 
   return (
     <Card height="fill">

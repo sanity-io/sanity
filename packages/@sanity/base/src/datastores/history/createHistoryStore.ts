@@ -5,9 +5,8 @@ import jsonReduce from 'json-reduce'
 import {omit, isUndefined} from 'lodash'
 import {from, merge, Observable} from 'rxjs'
 import {map, mergeMap, reduce, scan} from 'rxjs/operators'
-import {getDraftId, getPublishedId} from '../../util/draftUtils'
-import {Timeline} from './history/Timeline'
-import {TimelineController, createObservableController} from './history/TimelineController'
+import {getDraftId, getPublishedId} from '../../util'
+import {Timeline, TimelineController, createObservableController} from './history'
 
 export interface HistoryStore {
   getDocumentAtRevision: (documentId: string, revision: string) => any
@@ -217,7 +216,11 @@ function restore(client: SanityClient, id: string, targetId: string, rev: string
   )
 }
 
-export function createHistoryStore(client: SanityClient): HistoryStore {
+interface HistoryStoreOptions {
+  client: SanityClient
+}
+
+export function createHistoryStore({client}: HistoryStoreOptions): HistoryStore {
   return {
     getDocumentAtRevision(documentId, revision) {
       return getDocumentAtRevision(client, documentId, revision)

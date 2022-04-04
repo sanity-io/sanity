@@ -1,6 +1,5 @@
-import {FormBuilderCustomMarkersComponent} from '@sanity/form-builder'
 import React from 'react'
 
-export const CustomMarkers: FormBuilderCustomMarkersComponent = () => {
+export const CustomMarkers: any = () => {
   return <div>CustomMarkers</div>
 }

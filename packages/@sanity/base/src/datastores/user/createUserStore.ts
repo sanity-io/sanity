@@ -19,7 +19,7 @@ import {User, CurrentUser} from '@sanity/types'
 import {SanityClient} from '@sanity/client'
 import {debugRolesParam$} from '../debugParams'
 import {getDebugRolesByNames} from '../grants/debug'
-import {AuthController} from '../../auth/authController'
+import {AuthController} from '../../auth'
 import {AuthStore, clearToken, saveToken} from '../authState'
 import {CurrentUserEvent, CurrentUserSnapshot} from './types'
 import {consumeSessionId} from './sessionId'
@@ -48,15 +48,20 @@ export interface UserStore {
 
 const debug = debugIt('sanity:userstore')
 
-export function createUserStore(context: {
+interface UserStoreOptions {
   authStore: AuthStore
-  authenticationFetcher: AuthController
+  authController: AuthController
   projectId: string
-  sanityClient: SanityClient
-}): UserStore {
-  const {authStore, authenticationFetcher, projectId, sanityClient} = context
+  client: SanityClient
+}
 
-  const client = sanityClient.withConfig({apiVersion: '2021-06-07'})
+export function createUserStore({
+  authStore,
+  authController,
+  projectId,
+  client: _client,
+}: UserStoreOptions): UserStore {
+  const client = _client.withConfig({apiVersion: '2021-06-07'})
 
   // Consume any session ID as early as possible (before mount) so we can remove it from the URL
   let sid: string | null = consumeSessionId()
@@ -78,8 +83,7 @@ export function createUserStore(context: {
 
   function fetchCurrentUser(): Observable<CurrentUser | null> {
     return defer(() => {
-      debug('Fetching current user')
-      const currentUserPromise = authenticationFetcher.getCurrentUser().toPromise()
+      const currentUserPromise = authController.getCurrentUser().toPromise()
       userLoader.prime(
         'me',
         // @ts-expect-error although not reflected in typings, priming with a promise is indeed supported, see https://github.com/graphql/dataloader/issues/235#issuecomment-692495153 and this PR for fixing it https://github.com/graphql/dataloader/pull/252
@@ -120,7 +124,7 @@ export function createUserStore(context: {
 
             // Now try retrieving the user again
             debug('Re-fetching user with explicit authorization token')
-            return authenticationFetcher.getCurrentUser()
+            return authController.getCurrentUser()
           }),
           catchError((error) => {
             console.warn('Error fetching authentication token:', error)
@@ -168,7 +172,7 @@ export function createUserStore(context: {
         debug('Logout triggered - clearing any local token')
         clearToken(projectId)
       }),
-      mergeMap(() => authenticationFetcher.logout()),
+      mergeMap(() => authController.logout()),
       mapTo(null)
     )
   ).pipe(

@@ -1,17 +1,17 @@
 import {useEffect, useState} from 'react'
-import {useDatastores} from '../useDatastores'
+import {useProjectStore} from '../datastores'
 import {ProjectDatasetData} from './types'
 
 export function useProjectDatasets(): {value: ProjectDatasetData[] | null} {
-  const datastores = useDatastores()
+  const projectStore = useProjectStore()
   const [value, setValue] = useState<ProjectDatasetData[] | null>(null)
 
   useEffect(() => {
-    const project$ = datastores.projectStore.getDatasets()
+    const project$ = projectStore.getDatasets()
     const sub = project$.subscribe(setValue)
 
     return () => sub.unsubscribe()
-  }, [datastores])
+  }, [projectStore])
 
   return {value}
 }
