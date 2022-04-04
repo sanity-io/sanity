@@ -11,7 +11,9 @@ import {
   ValidationMarker,
 } from '@sanity/types'
 import {FormFieldPresence} from '../presence'
-import {PatchEvent} from './patch/PatchEvent'
+import {PatchEvent} from './patch'
+
+export type FIXME = any
 
 /**
  * Export `PortableTextMarker` so it can be used to build custom Portable Text markers.

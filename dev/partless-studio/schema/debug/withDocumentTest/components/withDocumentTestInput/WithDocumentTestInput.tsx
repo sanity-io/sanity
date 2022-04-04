@@ -1,6 +1,6 @@
 import {FormField} from '@sanity/base/components'
 import {TextArea} from '@sanity/ui'
-import {withDocument} from '@sanity/base'
+import {withDocument} from '@sanity/base/form'
 import React, {forwardRef} from 'react'
 
 const TestInput = forwardRef(function TestInput(props: any, ref: any) {

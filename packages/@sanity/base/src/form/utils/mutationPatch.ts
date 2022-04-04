@@ -1,4 +1,3 @@
-import assert from 'assert'
 import {arrayToJSONMatchPath} from '@sanity/mutator'
 import {flatten} from 'lodash'
 import type {PatchOrigin, Patch} from '../patch/types'

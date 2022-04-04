@@ -1,6 +1,6 @@
 import {PathSegment} from '@sanity/types'
 import {flatten} from 'lodash'
-import {prefixPath, set, unset, setIfMissing, insert, inc, dec} from './patch'
+import {prefixPath} from './patch'
 import {Patch} from './types'
 
 type PatchArg = Patch | Patch[]
@@ -28,5 +28,3 @@ export class PatchEvent {
     return PatchEvent.from(this.patches.map((patch) => prefixPath(patch, segment)))
   }
 }
-
-export {set, unset, setIfMissing, insert, inc, dec}

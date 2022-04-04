@@ -7,7 +7,13 @@ import {useDocumentPane} from '../../useDocumentPane'
 import {Delay} from '../../../../components/Delay'
 // import {afterEditorComponents, filterFieldFn$} from '../../../../TODO'
 import {useDocumentStore} from '../../../../../datastores'
-import {FormBuilderFilterFieldFn, fromMutationPatches} from '../../../../../form'
+import {
+  FormBuilderFilterFieldFn,
+  fromMutationPatches,
+  createPatchChannel,
+  PatchMsg,
+  SanityFormBuilder,
+} from '../../../../../form'
 import {
   unstable_useConditionalProperty as useConditionalProperty,
   useDocumentPresence,
@@ -19,7 +25,6 @@ import {
   DocumentMutationEvent,
   DocumentRebaseEvent,
 } from '../../../../../datastores/document/buffered-doc/types'
-import {createPatchChannel, PatchMsg, SanityFormBuilder} from '../../../../../formBuilder'
 
 interface FormViewProps {
   granted: boolean
