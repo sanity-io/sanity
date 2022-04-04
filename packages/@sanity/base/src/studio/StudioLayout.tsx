@@ -5,7 +5,7 @@ import {isString} from '../util/isString'
 import {Navbar} from './components'
 import {useWorkspace} from './workspace'
 
-export function StudioContents() {
+export function StudioLayout() {
   const {state: routerState} = useRouter()
   const {tools} = useWorkspace()
   const activeToolName = isString(routerState.tool) ? routerState.tool : undefined
