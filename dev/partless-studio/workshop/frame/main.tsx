@@ -1,4 +1,4 @@
-import {StudioProvider} from '@sanity/base/studio'
+import {StudioProvider} from 'sanity'
 import {ThemeColorSchemeKey, usePrefersDark} from '@sanity/ui'
 import {WorkshopFrame} from '@sanity/ui-workshop'
 import React, {useState} from 'react'
