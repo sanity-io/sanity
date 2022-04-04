@@ -6,7 +6,7 @@ import json from 'refractor/lang/json'
 import jsx from 'refractor/lang/jsx'
 import typescript from 'refractor/lang/typescript'
 import {History} from 'history'
-import {ToastProvider} from '@sanity/ui'
+import {LayerProvider, ToastProvider} from '@sanity/ui'
 import {SanityConfig} from '../config'
 import {UserColorManagerProvider} from '../user-color'
 import {ResourceCacheProvider} from '../datastores/ResourceCacheProvider'
@@ -40,15 +40,17 @@ export function StudioProvider({config, history, children}: StudioProviderProps)
         <StudioErrorBoundary>
           <LocationProvider history={history} noRoute={<>no route</>}>
             <StudioThemeProvider>
-              <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
-                <UserColorManagerProvider>
-                  <AuthBoundary loginScreen={LoginScreen}>
-                    <WorkspaceResolver loadingScreen={<LoadingScreen />}>
-                      <ResourceCacheProvider>{children}</ResourceCacheProvider>
-                    </WorkspaceResolver>
-                  </AuthBoundary>
-                </UserColorManagerProvider>
-              </ToastProvider>
+              <LayerProvider>
+                <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
+                  <UserColorManagerProvider>
+                    <AuthBoundary loginScreen={LoginScreen}>
+                      <WorkspaceResolver loadingScreen={<LoadingScreen />}>
+                        <ResourceCacheProvider>{children}</ResourceCacheProvider>
+                      </WorkspaceResolver>
+                    </AuthBoundary>
+                  </UserColorManagerProvider>
+                </ToastProvider>
+              </LayerProvider>
             </StudioThemeProvider>
           </LocationProvider>
         </StudioErrorBoundary>
