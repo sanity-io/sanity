@@ -24,7 +24,7 @@ export function GetHookCollectionState<T, K>(props: GetHookCollectionStateProps<
   const {hooks, args, children, onReset} = props
 
   const statesRef = useRef<Record<string, {value: K}>>({})
-  const [, setTick] = useState(0)
+  const [tickId, setTick] = useState(0)
 
   const [keys, setKeys] = useState<Record<string, number>>({})
   const mountedRef = useRef(true)
@@ -79,7 +79,7 @@ export function GetHookCollectionState<T, K>(props: GetHookCollectionStateProps<
 
   const states = useMemo(
     () => hookIds.map((id) => statesRef.current[id]?.value).filter(isNonNullable),
-    [hookIds]
+    [hookIds, tickId]
   )
 
   return (
