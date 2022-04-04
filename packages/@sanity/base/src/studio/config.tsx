@@ -1,11 +1,11 @@
 import React, {createContext, useContext} from 'react'
-import {SanityConfig} from '../config'
+import {Config} from '../config'
 
 interface ConfigProviderProps {
-  config: SanityConfig
+  config: Config
   children?: React.ReactChild
 }
-const ConfigContext = createContext<SanityConfig | null>(null)
+const ConfigContext = createContext<Config | null>(null)
 export function ConfigProvider({children, config}: ConfigProviderProps) {
   return <ConfigContext.Provider value={config}>{children}</ConfigContext.Provider>
 }

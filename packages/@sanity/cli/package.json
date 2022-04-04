@@ -39,7 +39,7 @@
     "ts": "node -r esbuild-register"
   },
   "dependencies": {
-    "esbuild-register": "^3.2.0"
+    "esbuild-register": "^3.3.2"
   },
   "devDependencies": {
     "@babel/parser": "^7.17.7",

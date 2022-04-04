@@ -35,7 +35,7 @@
     "react-refractor": "^2.1.6",
     "refractor": "^3.6.0",
     "rxjs": "^6.5.3",
-    "sanity": "2.20.0",
+    "sanity": "^2.29.3",
     "styled-components": "^5.2.0"
   },
   "devDependencies": {

@@ -1,13 +1,13 @@
-import {SanityTool} from '../config'
+import {Tool} from '../config'
 
 export interface SanityPlugin {
   name: string
   schemaTypes?: any[]
-  tools?: SanityTool[]
+  tools?: Tool[]
 }
 
 export interface ResolvedSanityPlugin {
   name: string
   schemaTypes: any[]
-  tools: SanityTool[]
+  tools: Tool[]
 }

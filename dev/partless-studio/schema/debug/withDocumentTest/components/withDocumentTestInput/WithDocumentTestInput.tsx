@@ -1,4 +1,4 @@
-import {FormField} from '@sanity/base/components'
+import {FormField} from '@sanity/base/_unstable'
 import {TextArea} from '@sanity/ui'
 import {withDocument} from '@sanity/base/form'
 import React, {forwardRef} from 'react'

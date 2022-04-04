@@ -13,7 +13,7 @@ import {
 } from '../form'
 import {AuthStore, UserStore} from '../datastores'
 import {AuthController} from '../auth'
-import {SanityTheme} from '../theme'
+import {StudioTheme} from '../theme'
 import {InitialValueTemplateItem, Template, TemplateResponse} from '../templates'
 import {Router, RouterState} from '../router'
 import {DocumentActionComponent, DocumentBadgeComponent} from '../deskTool'
@@ -57,8 +57,8 @@ export interface SanityFormBuilderConfig {
 /**
  * @alpha
  */
-export interface SanityTool<Options = any> {
-  component: React.ComponentType<{tool: SanityTool<Options>}>
+export interface Tool<Options = any> {
+  component: React.ComponentType<{tool: Tool<Options>}>
   icon?: React.ComponentType
   name: string
   options: Options
@@ -141,7 +141,7 @@ export interface PluginOptions {
   // TODO:
   // components?: ComponentPluginOptions
   document?: DocumentPluginOptions
-  tools?: SanityTool[] | ComposableOption<SanityTool[], ConfigContext>
+  tools?: Tool[] | ComposableOption<Tool[], ConfigContext>
   /**
    * this is marked as unstable because it will change once the alpha 2 is
    * finished.
@@ -167,7 +167,7 @@ export interface WorkspaceOptions extends SourceOptions {
   basePath?: string
   subtitle?: string
   logo?: React.ComponentType<{'aria-label'?: string}>
-  theme?: SanityTheme
+  theme?: StudioTheme
   /**
    * @alpha
    */
@@ -178,7 +178,7 @@ export interface SourceOptions extends PluginOptions {
   title?: string
   projectId: string
   dataset: string
-  auth?: SanityAuthConfig
+  unstable_auth?: SanityAuthConfig
 }
 
 export interface ResolveProductionUrlContext extends ConfigContext {
@@ -208,7 +208,7 @@ export interface Source {
   schema: Schema
   templates: Template[]
   client: SanityClient
-  tools: SanityTool[]
+  tools: Tool[]
   currentUser: CurrentUser
   document: {
     actions: (props: PartialContext<DocumentActionsContext>) => DocumentActionComponent[]
@@ -238,7 +238,7 @@ export interface Workspace extends Source {
   basePath: string
   subtitle?: string
   logo?: React.ComponentType | React.ReactNode
-  theme: SanityTheme
+  theme: StudioTheme
   /**
    * @alpha
    */
@@ -257,7 +257,7 @@ export interface ResolvedConfig {
   }
 }
 
-export interface SanityConfig {
+export interface Config {
   type: 'sanity-config'
 
   /**
@@ -277,7 +277,7 @@ interface PartiallyResolvedWorkspace {
   title?: string
   subtitle?: string
   logo?: React.ComponentType<{'aria-label'?: string}>
-  theme: SanityTheme
+  theme: StudioTheme
   sources: Array<
     {
       name: string

@@ -1,4 +1,3 @@
-import oneline from 'oneline'
 import {randomKey, toString as pathToString} from '@sanity/util/paths'
 import {Schema} from '@sanity/types'
 import {TemplateParameter, Template} from './types'
@@ -70,10 +69,9 @@ export function validateInitialObjectValue<T extends Record<string, unknown>>(
 
   if (value._type && template.schemaType !== value._type) {
     throw new Error(
-      contextError(oneline`
-        includes "_type"-property (${value._type})
-        that does not match template (${template.schemaType})
-      `)
+      contextError(
+        `includes "_type"-property (${value._type}) that does not match template (${template.schemaType})`
+      )
     )
   }
 

@@ -10,7 +10,7 @@ import {AuthStore, createAuthStore, createUserStore, UserStore} from '../datasto
 import {AuthController, AuthError, createAuthController} from '../auth'
 import {InitialValueTemplateItem, Template, TemplateResponse} from '../templates'
 import {isNonNullable} from '../util'
-import {Source, SourceOptions, SanityConfig, ResolvedConfig} from './types'
+import {Source, SourceOptions, Config, ResolvedConfig} from './types'
 import {
   schemaTypesReducer,
   resolveProductionUrlReducer,
@@ -29,7 +29,7 @@ import {SchemaError} from './SchemaError'
 type ParamsOf<T> = T extends (arg: infer U) => unknown ? U : never
 type SanityClientLike = ParamsOf<typeof fromSanityClient>
 
-export function resolveConfig(config: SanityConfig): ResolvedConfig {
+export function resolveConfig(config: Config): ResolvedConfig {
   const workspaces = Array.isArray(config.__internal) ? config.__internal : [config.__internal]
   type WorkspaceResult = ResolvedConfig['__internal']['workspaces'][number]
 
@@ -50,7 +50,7 @@ export function resolveConfig(config: SanityConfig): ResolvedConfig {
         })
 
         const auth = {
-          controller: createAuthController({client, config: source.auth}),
+          controller: createAuthController({client, config: source.unstable_auth}),
           store: createAuthStore({projectId}),
         }
         const userStore = createUserStore({

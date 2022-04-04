@@ -1,5 +1,4 @@
 import {SanityDocument} from '@sanity/types'
-import {isString} from '../../util/isString'
 
 export default {
   name: 'sanity.imageAsset',
@@ -117,7 +116,7 @@ export default {
     },
     prepare(doc: Partial<SanityDocument>) {
       return {
-        title: doc.title || (isString(doc.path) && doc.path.split('/').slice(-1)[0]),
+        title: doc.title || (typeof doc.path === 'string' && doc.path.split('/').slice(-1)[0]),
         media: {asset: {_ref: doc.id}},
         subtitle: `${doc.mimeType} (${(Number(doc.size) / 1024 / 1024).toFixed(2)} MB)`,
       }

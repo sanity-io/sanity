@@ -1,14 +1,13 @@
 import {Box, Button, Card, Code, ErrorBoundary, Flex, Heading, Spinner} from '@sanity/ui'
 import React, {createElement, Suspense, useCallback, useEffect, useState} from 'react'
 import {RouteScope, useRouter} from '../router'
-import {isString} from '../util/isString'
 import {Navbar} from './components'
 import {useWorkspace} from './workspace'
 
 export function StudioLayout() {
   const {state: routerState} = useRouter()
   const {tools} = useWorkspace()
-  const activeToolName = isString(routerState.tool) ? routerState.tool : undefined
+  const activeToolName = typeof routerState.tool === 'string' ? routerState.tool : undefined
   const activeTool = tools.find((tool) => tool.name === activeToolName)
   const [toolError, setToolError] = useState<{error: Error; info: React.ErrorInfo} | null>(null)
 

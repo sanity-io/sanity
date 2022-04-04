@@ -1,4 +1,4 @@
-import {SanityTool} from '@sanity/base'
+import {SanityTool} from 'sanity'
 import {
   Box,
   Card,

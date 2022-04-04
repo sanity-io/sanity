@@ -12,7 +12,7 @@
     "next": "^12.1.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "sanity": "2.20.0",
+    "sanity": "^2.29.3",
     "styled-components": "^5.2.0"
   }
 }

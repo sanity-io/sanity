@@ -4,7 +4,7 @@ import {PatchEvent, set, setIfMissing, unset} from '@sanity/base/form'
 import {debounce} from 'lodash'
 import {Button} from '@sanity/ui'
 import {AddIcon} from '@sanity/icons'
-import {FormField} from '@sanity/base/components'
+import {FormField} from '@sanity/base/_unstable'
 import ColorPicker from './ColorPicker'
 
 const DEFAULT_COLOR = {

@@ -15,8 +15,8 @@
     {"path": "../diff"},
     {"path": "../mutator/tsconfig.lib.json"},
     {"path": "../portable-text-editor"},
+    {"path": "../imagetool"},
     {"path": "../schema"},
-    {"path": "../transaction-collator"},
     {"path": "../types"},
     {"path": "../util/tsconfig.lib.json"},
     {"path": "../validation/tsconfig.lib.json"}

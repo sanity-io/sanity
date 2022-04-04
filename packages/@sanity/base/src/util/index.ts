@@ -1,6 +1,5 @@
 export * from './createHookFromObservableFactory'
 export * from './draftUtils'
-export * from './isArray'
 export * from './isNonNullable'
 export * from './isRecord'
 export * from './isTruthy'

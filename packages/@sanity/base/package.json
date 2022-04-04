@@ -16,85 +16,15 @@
       "require": "./lib/cjs/_exports/_internal.js",
       "default": "./lib/esm/_exports/_internal.js"
     },
-    "./actions": {
-      "source": "./src/_exports/actions.ts",
-      "require": "./lib/cjs/_exports/actions.js",
-      "default": "./lib/esm/_exports/actions.js"
-    },
-    "./auth": {
-      "source": "./src/_exports/auth.ts",
-      "require": "./lib/cjs/_exports/auth.js",
-      "default": "./lib/esm/_exports/auth.js"
-    },
-    "./components": {
-      "source": "./src/_exports/components.ts",
-      "require": "./lib/cjs/_exports/components.js",
-      "default": "./lib/esm/_exports/components.js"
-    },
-    "./field": {
-      "source": "./src/_exports/field.ts",
-      "require": "./lib/cjs/_exports/field.js",
-      "default": "./lib/esm/_exports/field.js"
+    "./_unstable": {
+      "source": "./src/_exports/_unstable.ts",
+      "require": "./lib/cjs/_exports/_unstable.js",
+      "default": "./lib/esm/_exports/_unstable.js"
     },
     "./form": {
       "source": "./src/_exports/form.ts",
       "require": "./lib/cjs/_exports/form.js",
       "default": "./lib/esm/_exports/form.js"
-    },
-    "./hooks": {
-      "source": "./src/_exports/hooks.ts",
-      "require": "./lib/cjs/_exports/hooks.js",
-      "default": "./lib/esm/_exports/hooks.js"
-    },
-    "./initial-value-template-builder": {
-      "source": "./src/_exports/initial-value-template-builder.ts",
-      "require": "./lib/cjs/_exports/initial-value-template-builder.js",
-      "default": "./lib/esm/_exports/initial-value-template-builder.js"
-    },
-    "./initial-value-templates": {
-      "source": "./src/_exports/initial-value-templates.ts",
-      "require": "./lib/cjs/_exports/initial-value-templates.js",
-      "default": "./lib/esm/_exports/initial-value-templates.js"
-    },
-    "./presence": {
-      "source": "./src/_exports/presence.ts",
-      "require": "./lib/cjs/_exports/presence.js",
-      "default": "./lib/esm/_exports/presence.js"
-    },
-    "./preview": {
-      "source": "./src/_exports/preview.ts",
-      "require": "./lib/cjs/_exports/preview.js",
-      "default": "./lib/esm/_exports/preview.js"
-    },
-    "./router": {
-      "source": "./src/_exports/router.ts",
-      "require": "./lib/cjs/_exports/router.js",
-      "default": "./lib/esm/_exports/router.js"
-    },
-    "./schema": {
-      "source": "./src/_exports/schema.ts",
-      "require": "./lib/cjs/_exports/schema.js",
-      "default": "./lib/esm/_exports/schema.js"
-    },
-    "./structure": {
-      "source": "./src/_exports/structure.ts",
-      "require": "./lib/cjs/_exports/structure.js",
-      "default": "./lib/esm/_exports/structure.js"
-    },
-    "./studio": {
-      "source": "./src/_exports/studio.ts",
-      "require": "./lib/cjs/_exports/studio.js",
-      "default": "./lib/esm/_exports/studio.js"
-    },
-    "./user-color": {
-      "source": "./src/_exports/user-color.ts",
-      "require": "./lib/cjs/_exports/user-color.js",
-      "default": "./lib/esm/_exports/user-color.js"
-    },
-    "./util": {
-      "source": "./src/_exports/util.ts",
-      "require": "./lib/cjs/_exports/util.js",
-      "default": "./lib/esm/_exports/util.js"
     }
   },
   "types": "./lib/dts/src/_exports/index.d.ts",
@@ -104,53 +34,11 @@
       "_internal": [
         "./lib/dts/src/_exports/_internal.d.ts"
       ],
-      "actions": [
-        "./lib/dts/src/_exports/actions.d.ts"
-      ],
-      "auth": [
-        "./lib/dts/src/_exports/auth.d.ts"
-      ],
-      "components": [
-        "./lib/dts/src/_exports/components.d.ts"
-      ],
-      "field": [
-        "./lib/dts/src/_exports/field.d.ts"
+      "_unstable": [
+        "./lib/dts/src/_exports/_unstable.d.ts"
       ],
       "form": [
         "./lib/dts/src/_exports/form.d.ts"
-      ],
-      "hooks": [
-        "./lib/dts/src/_exports/hooks.d.ts"
-      ],
-      "initial-value-template-builder": [
-        "./lib/dts/src/_exports/initial-value-template-builder.d.ts"
-      ],
-      "initial-value-templates": [
-        "./lib/dts/src/_exports/initial-value-templates.d.ts"
-      ],
-      "presence": [
-        "./lib/dts/src/_exports/presence.d.ts"
-      ],
-      "preview": [
-        "./lib/dts/src/_exports/preview.d.ts"
-      ],
-      "router": [
-        "./lib/dts/src/_exports/router.d.ts"
-      ],
-      "schema": [
-        "./lib/dts/src/_exports/schema.d.ts"
-      ],
-      "structure": [
-        "./lib/dts/src/_exports/structure.d.ts"
-      ],
-      "studio": [
-        "./lib/dts/src/_exports/studio.d.ts"
-      ],
-      "user-color": [
-        "./lib/dts/src/_exports/user-color.d.ts"
-      ],
-      "util": [
-        "./lib/dts/src/_exports/util.d.ts"
       ]
     }
   },
@@ -191,25 +79,25 @@
     "@reach/auto-id": "^0.13.2",
     "@sanity/asset-utils": "^1.2.3",
     "@sanity/bifur-client": "^0.0.8",
+    "@sanity/block-tools": "2.29.3",
     "@sanity/client": "^3.2.0",
     "@sanity/color": "^2.1.8",
     "@sanity/diff": "2.20.0",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/icons": "^1.2.6",
     "@sanity/image-url": "^1.0.1",
-    "@sanity/imagetool": "2.29.3",
-    "@sanity/initial-value-templates": "2.29.5",
+    "@sanity/imagetool": "2.29.8",
     "@sanity/logos": "^1.1.9",
     "@sanity/mutator": "2.29.3",
-    "@sanity/portable-text-editor": "2.29.2",
+    "@sanity/portable-text-editor": "2.29.8",
     "@sanity/schema": "2.29.3",
-    "@sanity/state-router": "2.29.3",
-    "@sanity/structure": "2.29.5",
     "@sanity/transaction-collator": "2.29.3",
-    "@sanity/types": "2.29.5",
-    "@sanity/ui": "^0.37.9",
-    "@sanity/util": "2.29.5",
-    "@sanity/validation": "2.30.0",
+    "@sanity/types": "2.29.3",
+    "@sanity/ui": "^0.37.6",
+    "@sanity/util": "2.29.3",
+    "@sanity/uuid": "^3.0.1",
+    "@sanity/validation": "2.29.3",
+    "@types/is-hotkey": "^0.1.7",
     "@types/react-copy-to-clipboard": "^5.0.2",
     "@types/react-is": "^17.0.1",
     "@types/shallow-equals": "^1.0.0",
@@ -221,9 +109,12 @@
     "debug": "^3.2.7",
     "diff-match-patch": "^1.0.4",
     "exif-component": "^1.0.1",
+    "framer-motion": "^6.2.8",
     "get-random-values": "^1.2.2",
     "groq-js": "^0.2.0",
+    "hashlru": "^2.3.0",
     "history": "^4.6.3",
+    "is-hotkey": "^0.1.6",
     "json-reduce": "^2.0.0",
     "lodash": "^4.17.21",
     "mendoza": "^2.1.1",
@@ -234,17 +125,22 @@
     "raf": "^3.4.1",
     "react-copy-to-clipboard": "^5.0.4",
     "react-fast-compare": "^3.2.0",
+    "react-focus-lock": "^2.8.1",
     "react-is": "^17.0.2",
+    "react-json-inspector": "^7.1.1",
     "react-props-stream": "^1.0.0",
     "react-refractor": "^2.1.6",
     "react-rx": "^1.0.0-beta.6",
+    "react-sortable-hoc": "^2.0.0",
     "refractor": "^3.6.0",
     "rxjs": "^6.5.3",
     "rxjs-etc": "^10.6.0",
     "rxjs-exhaustmap-with-trailing": "^1.0.0",
     "sanity-diff-patch": "^1.0.9",
+    "scroll-into-view-if-needed": "^2.2.29",
     "semver-compare": "^1.0.0",
     "shallow-equals": "^1.0.0",
+    "speakingurl": "^14.0.1",
     "use-device-pixel-ratio": "^1.1.0"
   },
   "devDependencies": {

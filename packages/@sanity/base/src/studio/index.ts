@@ -1,5 +1,4 @@
 export * from './StudioProvider'
-export * from './types'
 export * from './Studio'
 export * from './renderStudio'
 export * from './source'

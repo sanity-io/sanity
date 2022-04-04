@@ -1,7 +1,7 @@
 import {isEqual} from 'lodash'
 import {Observable} from 'rxjs'
 import {map, filter, scan, shareReplay, distinctUntilChanged} from 'rxjs/operators'
-import {SanityTool} from '../../config'
+import {Tool} from '../../config'
 import {Router} from '../../router'
 import {LocationStore} from './location'
 import {decodeUrlState, isNonNullable, resolveDefaultState, resolveIntentState} from './helpers'
@@ -10,7 +10,7 @@ import {RouterEvent} from './types'
 interface RouterEventStreamOptions {
   locationStore: LocationStore
   router: Router
-  tools: SanityTool[]
+  tools: Tool[]
 }
 
 export function createRouterEventStream({

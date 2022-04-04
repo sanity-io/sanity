@@ -1,6 +1,5 @@
 import * as React from 'react'
-import {useUserColor} from '@sanity/base/user-color'
-import {ObjectDiff} from '@sanity/base/field'
+import {useUserColor, ObjectDiff} from '@sanity/base/_unstable'
 import {Marker} from '../map/Marker'
 import {Arrow} from '../map/Arrow'
 import {Geopoint} from '../types'

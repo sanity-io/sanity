@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useState} from 'react'
 import {ErrorBoundary} from '@sanity/ui'
 import {SourceProvider, useWorkspace} from '../../../studio'
-import {SanityTool} from '../../../config'
+import {Tool} from '../../../config'
 import {isRecord} from '../../../util'
 import {DeskToolOptions} from '../../types'
 import {useRouter} from '../../../router'
@@ -14,7 +14,7 @@ import {DeskTool} from './DeskTool'
 const EMPTY_RECORD = {}
 
 interface DeskToolBoundaryProps {
-  tool: SanityTool<DeskToolOptions>
+  tool: Tool<DeskToolOptions>
 }
 
 export function DeskToolBoundary({tool: {options}}: DeskToolBoundaryProps) {

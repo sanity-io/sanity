@@ -1,1 +1,1 @@
-export {createConfig, deskTool, renderStudio} from '@sanity/base'
+export * from '@sanity/base'

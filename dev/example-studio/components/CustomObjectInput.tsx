@@ -1,7 +1,11 @@
-import {FormFieldSet} from '@sanity/base/components'
-import {FormInputProps, PatchEvent, setIfMissing} from '@sanity/base/form'
-import {FormFieldPresence} from '@sanity/base/presence'
-import {FormBuilderInput, FormBuilderInputInstance} from '@sanity/form-builder'
+import {FormFieldSet} from '@sanity/base/_unstable'
+import {
+  FormInputProps,
+  PatchEvent,
+  setIfMissing,
+  FormBuilderInput,
+  FormBuilderInputInstance,
+} from '@sanity/base/form'
 import {ObjectField, ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
 import {Card, Text} from '@sanity/ui'
 import React, {forwardRef, memo, useCallback, useImperativeHandle, useMemo, useRef} from 'react'
@@ -41,7 +45,7 @@ export const CustomObjectInput = forwardRef(function CustomObjectInput(
             basePresence={presence}
             baseValidation={validation}
             field={field}
-            focusPath={focusPath}
+            focusPath={focusPath || []}
             inputRef={i === 0 ? firstFieldInputRef : null}
             key={field.name}
             onBlur={onBlur}
@@ -57,7 +61,7 @@ export const CustomObjectInput = forwardRef(function CustomObjectInput(
 
 const CustomObjectField = memo(function CustomObjectField(props: {
   baseLevel: number
-  basePresence: FormFieldPresence[]
+  basePresence: any[]
   baseValidation: ValidationMarker[]
   field: ObjectField
   focusPath: Path

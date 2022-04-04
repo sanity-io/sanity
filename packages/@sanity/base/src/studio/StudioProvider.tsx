@@ -7,7 +7,7 @@ import jsx from 'refractor/lang/jsx'
 import typescript from 'refractor/lang/typescript'
 import {History} from 'history'
 import {LayerProvider, ThemeColorSchemeKey, ToastProvider} from '@sanity/ui'
-import {SanityConfig} from '../config'
+import {Config} from '../config'
 import {UserColorManagerProvider} from '../user-color'
 import {ResourceCacheProvider} from '../datastores/ResourceCacheProvider'
 import {ConfigProvider} from './config'
@@ -29,7 +29,7 @@ Refractor.registerLanguage(typescript)
 
 export interface StudioProviderProps {
   children: React.ReactNode
-  config: SanityConfig
+  config: Config
   history?: History
   onSchemeChange?: (nextScheme: ThemeColorSchemeKey) => void
   scheme?: ThemeColorSchemeKey

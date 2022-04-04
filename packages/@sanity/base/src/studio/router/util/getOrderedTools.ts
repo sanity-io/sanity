@@ -1,6 +1,6 @@
-import {SanityTool} from '../../../config'
+import {Tool} from '../../../config'
 
-export function getOrderedTools(tools: SanityTool[]): SanityTool[] {
+export function getOrderedTools(tools: Tool[]): Tool[] {
   const pluginConfig: {toolSwitcher?: {order?: string[]; hidden?: string[]}} = {}
   const config = pluginConfig.toolSwitcher || {}
   const order = config.order || []
@@ -10,7 +10,7 @@ export function getOrderedTools(tools: SanityTool[]): SanityTool[] {
     return tools
   }
 
-  const keyed = tools.reduce<Record<string, {index: number; tool: SanityTool}>>((target, tool) => {
+  const keyed = tools.reduce<Record<string, {index: number; tool: Tool}>>((target, tool) => {
     const title = tool.title || '<unknown>'
 
     if (!tool.name) {
@@ -34,7 +34,7 @@ export function getOrderedTools(tools: SanityTool[]): SanityTool[] {
     return target
   }, {})
 
-  const isVisible = (tool: SanityTool) => hidden.indexOf(tool.name) === -1
+  const isVisible = (tool: Tool) => hidden.indexOf(tool.name) === -1
 
   const ret = tools.filter(isVisible)
 

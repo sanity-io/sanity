@@ -1,4 +1,4 @@
-import {createPlugin} from '@sanity/base'
+import {createPlugin} from 'sanity'
 import {IceCreamIcon} from '@sanity/icons'
 import {ColorCanvas} from './ColorCanvas'
 

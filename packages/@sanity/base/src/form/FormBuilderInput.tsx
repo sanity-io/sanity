@@ -3,7 +3,6 @@ import shallowEquals from 'shallow-equals'
 import {ConditionalProperty, Path, SchemaType} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 import {generateHelpUrl} from '@sanity/generate-help-url'
-import {isArray} from '../util'
 import {ChangeIndicatorProvider} from '../components'
 import {FormFieldPresenceContext} from '../presence'
 import {useConditionalReadOnly} from '../conditional-property/conditionalReadOnly'
@@ -181,7 +180,7 @@ export class FormBuilderInputInstance extends React.Component<
       return
     }
 
-    const nextPath = isArray(pathOrEvent) ? pathOrEvent : EMPTY_ARRAY
+    const nextPath = Array.isArray(pathOrEvent) ? pathOrEvent : EMPTY_ARRAY
 
     const nextFocusPath = Array.isArray(nextPath) ? [...path, ...nextPath] : path
 

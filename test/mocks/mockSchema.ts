@@ -6,6 +6,7 @@
 // 1. using the `moduleNameMapper` replacing `part:@sanity/base/schema` in the
 //    project jest.config.js file or
 // 2. mocking per test file using `jest.mock('part:@sanity/base/schema', () => {})`
+// @ts-expect-error TODO: fix the tests
 import createSchema from 'part:@sanity/base/schema-creator'
 
 export default createSchema({

@@ -3,7 +3,7 @@ import {Stack, Box, Button, Text, Grid, useClickOutside} from '@sanity/ui'
 import {ObjectSchemaType} from '@sanity/types'
 import {useConditionalReadOnly} from '../../../conditional-property/conditionalReadOnly'
 import {useDocumentOperation} from '../../../hooks'
-import {FieldChangeNode, OperationsAPI} from '../../types'
+import {FieldChangeNode, FieldOperationsAPI} from '../../types'
 import {undoChange} from '../changes/undoChange'
 import {DiffContext} from '../contexts/DiffContext'
 import {useDocumentChange} from '../hooks'
@@ -33,7 +33,7 @@ export function FieldChange(
     isComparingCurrent,
     FieldWrapper = React.Fragment,
   } = useDocumentChange()
-  const ops = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
+  const ops = useDocumentOperation(documentId, schemaType.name) as FieldOperationsAPI
   const [confirmRevertOpen, setConfirmRevertOpen] = useState(false)
   const [revertHovered, setRevertHovered] = useState(false)
   const [revertButtonElement, setRevertButtonElement] = useState<HTMLDivElement | null>(null)

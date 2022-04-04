@@ -1,14 +1,11 @@
-import {SanityTool} from '../../config'
+import {Tool} from '../../config'
 import {RouterState, Router} from '../../router'
 import {isRecord} from '../../util/isRecord'
 import {LocationEvent} from './location'
 import {RouterEvent} from './types'
 import {getOrderedTools} from './util/getOrderedTools'
 
-function resolveUrlStateWithDefaultTool(
-  tools: SanityTool[],
-  state: Record<string, unknown> | null
-) {
+function resolveUrlStateWithDefaultTool(tools: Tool[], state: Record<string, unknown> | null) {
   const orderedTools = getOrderedTools(tools)
   const defaultTool = orderedTools[0]
 
@@ -22,7 +19,7 @@ function resolveUrlStateWithDefaultTool(
 }
 
 function makeBackwardsCompatible(
-  tools: SanityTool[],
+  tools: Tool[],
   state: Record<string, unknown> | null
 ): Record<string, unknown> | null {
   if (!state) {
@@ -37,7 +34,7 @@ function makeBackwardsCompatible(
 }
 
 export function resolveDefaultState(
-  tools: SanityTool[],
+  tools: Tool[],
   state: Record<string, unknown> | null
 ): RouterState | null {
   const urlStateWithDefaultTool = resolveUrlStateWithDefaultTool(
@@ -49,7 +46,7 @@ export function resolveDefaultState(
 }
 
 export function resolveIntentState(
-  tools: SanityTool[],
+  tools: Tool[],
   currentState: RouterState | null,
   intentState: RouterState
 ): RouterEvent {

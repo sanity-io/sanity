@@ -1,5 +1,5 @@
 import React from 'react'
-import {Document as DefaultDocument} from '@sanity/base'
+import {DefaultDocument} from 'sanity'
 
 export default function Document(props) {
   const {entryPath, ...rest} = props

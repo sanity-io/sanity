@@ -1,7 +1,7 @@
 import {TransformOptions} from '@babel/core'
 import {ModuleFormat} from 'rollup'
 import rawBabelConfig from '../../babel.config'
-import {isArray, isRecord} from './helpers'
+import {isRecord} from './helpers'
 
 /**
  * Get Babel config to use for either `bundle` or `transpile` builds.
@@ -11,7 +11,7 @@ export function getBabelConfig(opts: {format?: ModuleFormat} = {}): TransformOpt
   const babelConfig = {...rawBabelConfig}
 
   babelConfig.presets = babelConfig.presets.map((preset: unknown) => {
-    if (preset === '@babel/env' || (isArray(preset) && preset[0] === '@babel/env')) {
+    if (preset === '@babel/env' || (Array.isArray(preset) && preset[0] === '@babel/env')) {
       return [
         '@babel/env',
         {

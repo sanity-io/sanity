@@ -8,13 +8,13 @@ import {
 } from '@sanity/icons'
 import {useBoolean, useString} from '@sanity/ui-workshop'
 import React, {useMemo} from 'react'
-import {createConfig, SanityTool} from '../../config'
+import {createConfig, Tool} from '../../config'
 import {isNonNullable} from '../../util/isNonNullable'
 import {isTruthy} from '../../util/isTruthy'
 import {Navbar} from '../components/navbar'
 import {StudioProvider} from '../StudioProvider'
 
-const Tool = () => <div>Tool</div>
+const ExampleTool = () => <div>Tool</div>
 
 // const mockClient = createMockClient()
 
@@ -42,7 +42,7 @@ export default function NavbarStory() {
   )
 }
 
-function useTools(): SanityTool[] {
+function useTools(): Tool[] {
   const toggledTools = {
     dashboard: useBoolean('Dashboard'),
     content: useBoolean('Content'),
@@ -59,42 +59,42 @@ function useTools(): SanityTool[] {
           name: 'dashboard',
           title: 'Dashboard',
           icon: DashboardIcon,
-          component: Tool,
+          component: ExampleTool,
           options: {},
         },
         toggledTools.content && {
           name: 'content',
           title: 'Content',
           icon: MasterDetailIcon,
-          component: Tool,
+          component: ExampleTool,
           options: {},
         },
         toggledTools.settings && {
           name: 'settings',
           title: 'Settings',
           icon: CogIcon,
-          component: Tool,
+          component: ExampleTool,
           options: {},
         },
         toggledTools.vision && {
           name: 'vision',
           title: 'Vision',
           icon: EyeOpenIcon,
-          component: Tool,
+          component: ExampleTool,
           options: {},
         },
         toggledTools.schema && {
           name: 'schema',
           title: 'Schema',
           icon: DocumentsIcon,
-          component: Tool,
+          component: ExampleTool,
           options: {},
         },
         toggledTools.arcade && {
           name: 'arcade',
           title: 'Arcade',
           icon: IceCreamIcon,
-          component: Tool,
+          component: ExampleTool,
           options: {},
         },
       ]

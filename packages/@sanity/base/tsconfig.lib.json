@@ -19,7 +19,6 @@
     {"path": "../diff"},
     {"path": "../mutator/tsconfig.lib.json"},
     {"path": "../schema"},
-    {"path": "../transaction-collator"},
     {"path": "../types"},
     {"path": "../util/tsconfig.lib.json"},
     {"path": "../validation/tsconfig.lib.json"}

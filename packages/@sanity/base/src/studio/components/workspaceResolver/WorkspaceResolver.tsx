@@ -2,7 +2,7 @@ import React, {useEffect, useMemo, useState} from 'react'
 import {map, filter, scan, catchError} from 'rxjs/operators'
 import {combineLatest, of} from 'rxjs'
 import {createHookFromObservableFactory} from '../../../util'
-import {ConfigResolutionError, SanityTool, Source, Workspace} from '../../../config'
+import {ConfigResolutionError, Tool, Source, Workspace} from '../../../config'
 import {Router, RouterProvider, RouterState} from '../../../router'
 import {createRouter, createRouterEventStream, LocationStore} from '../../router'
 import {useLocation} from '../../location'
@@ -22,7 +22,7 @@ interface StudioRouterState {
 interface UseRouterStateOptions {
   locationStore: LocationStore
   router: Router | undefined
-  tools: SanityTool[] | undefined
+  tools: Tool[] | undefined
 }
 
 const useRouterState = createHookFromObservableFactory(

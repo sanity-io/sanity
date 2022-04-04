@@ -2,29 +2,24 @@ import {map, mergeMap, switchMap} from 'rxjs/operators'
 import {ReferenceFilterSearchOptions, ReferenceSchemaType} from '@sanity/types'
 import {combineLatest, EMPTY, Observable, of} from 'rxjs'
 import {SanityClient} from '@sanity/client'
-import {
-  AvailabilityReason,
-  DocumentPreviewStore,
-  getPreviewPaths,
-  prepareForPreview,
-} from '../../../../preview'
+import {DocumentPreviewStore, getPreviewPaths, prepareForPreview} from '../../../../preview'
 import {createWeightedSearch} from '../../../../search'
 import {getIdPair, CollatedHit, getDraftId, collate} from '../../../../util'
 import {DocumentPreview, ReferenceInfo} from '../../../inputs/ReferenceInput/types'
 
 const READABLE = {
   available: true,
-  reason: AvailabilityReason.READABLE,
+  reason: 'READABLE',
 } as const
 
 const PERMISSION_DENIED = {
   available: false,
-  reason: AvailabilityReason.PERMISSION_DENIED,
+  reason: 'PERMISSION_DENIED',
 } as const
 
 const NOT_FOUND = {
   available: false,
-  reason: AvailabilityReason.NOT_FOUND,
+  reason: 'NOT_FOUND',
 } as const
 
 /**

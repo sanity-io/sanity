@@ -9,14 +9,13 @@ import {
   CrossDatasetReferenceInputProps,
 } from '../CrossDatasetReferenceInput'
 import {SearchHit} from '../types'
-import {AvailabilityReason} from '../../../../preview'
 import {renderInput} from '../../../test/renderInput'
 
 const EMPTY_SEARCH = () => of([])
 
 const AVAILABLE = {
   available: true,
-  reason: AvailabilityReason.READABLE,
+  reason: 'READABLE',
 } as const
 
 const defaultProps: Partial<CrossDatasetReferenceInputProps> = {

@@ -1,5 +1,5 @@
 import {useSource} from '@sanity/base'
-import {FormField} from '@sanity/base/components'
+import {FormField} from '@sanity/base/_unstable'
 import {FormInputProps, PatchEvent, set, unset, setIfMissing} from '@sanity/base/form'
 import imageUrlBuilder from '@sanity/image-url'
 import {Reference, ReferenceSchemaType} from '@sanity/types'

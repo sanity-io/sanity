@@ -122,7 +122,7 @@ function getDocumentHtml(studioRootPath: string, props?: DocumentProps): string 
 }
 
 function getDocumentComponent(studioRootPath: string) {
-  const {Document: DefaultDocument} = require('@sanity/base')
+  const {DefaultDocument} = require('@sanity/base')
   const userDefined = tryLoadDocumentComponent(studioRootPath)
 
   if (userDefined) {

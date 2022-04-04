@@ -4,8 +4,8 @@ import {useBoolean, useNumber, useString} from '@sanity/ui-workshop'
 import React, {useCallback, useMemo, useState} from 'react'
 import {ElementWithChangeBar} from '../../changeIndicators/ElementWithChangeBar'
 import type {FormFieldPresence} from '../../../presence'
-import {useCurrentUser} from '../../../_exports/hooks'
 import {FormField} from '../FormField'
+import {useCurrentUser} from '../../../hooks'
 
 const DEBUG = false
 const noop = () => undefined

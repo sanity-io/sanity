@@ -7,7 +7,7 @@ import {
   useDocumentOperation,
   unstable_useConditionalProperty as useConditionalProperty,
 } from '../../../hooks'
-import {ObjectDiff, ChangeNode, OperationsAPI} from '../../types'
+import {ObjectDiff, ChangeNode, FieldOperationsAPI} from '../../types'
 import {DiffContext} from '../contexts/DiffContext'
 import {buildObjectChangeList} from '../changes/buildChangeList'
 import {undoChange} from '../changes/undoChange'
@@ -25,7 +25,7 @@ interface Props {
 
 export function ChangeList({diff, fields, schemaType}: Props): React.ReactElement | null {
   const {documentId, isComparingCurrent, value} = useDocumentChange()
-  const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
+  const docOperations = useDocumentOperation(documentId, schemaType.name) as FieldOperationsAPI
   const {path} = useContext(DiffContext)
   const isRoot = path.length === 0
   const [confirmRevertAllOpen, setConfirmRevertAllOpen] = useState(false)

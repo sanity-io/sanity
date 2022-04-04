@@ -1,4 +1,4 @@
-import {createConfig, deskTool} from '@sanity/base'
+import {createConfig, deskTool} from 'sanity'
 import {templates} from './templates'
 import {themePreviewTool} from './plugins/theme-preview-tool'
 import {schemaTypes} from './schemaTypes'

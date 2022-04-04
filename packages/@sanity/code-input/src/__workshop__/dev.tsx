@@ -1,5 +1,4 @@
-import {FormFieldPresence} from '@sanity/base/presence'
-import {createSchema} from '@sanity/base/schema'
+import {createSchema} from '@sanity/base/_unstable'
 import {ValidationMarker, Path} from '@sanity/types'
 import {Box} from '@sanity/ui'
 import {useAction} from '@sanity/ui-workshop'
@@ -16,7 +15,7 @@ export default function DevStory() {
   const onBlur = useAction('onBlur')
   const onChange = useAction('onChange')
   const onFocus = useAction('onFocus')
-  const [presence] = useState<FormFieldPresence[]>([])
+  const [presence] = useState<any[]>([])
 
   return (
     <Box padding={4}>

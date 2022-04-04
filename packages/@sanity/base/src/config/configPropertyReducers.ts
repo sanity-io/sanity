@@ -14,7 +14,7 @@ import {
   ConfigPropertyReducer,
   AsyncConfigPropertyReducer,
   ResolveProductionUrlContext,
-  SanityTool,
+  Tool,
   DocumentActionsContext,
   DocumentBadgesContext,
   NewDocumentOptionsContext,
@@ -57,7 +57,7 @@ export const resolveProductionUrlReducer: AsyncConfigPropertyReducer<
   return prev
 }
 
-export const toolsReducer: ConfigPropertyReducer<SanityTool[], ConfigContext> = (
+export const toolsReducer: ConfigPropertyReducer<Tool[], ConfigContext> = (
   prev,
   {tools},
   context

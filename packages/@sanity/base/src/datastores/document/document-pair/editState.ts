@@ -8,6 +8,7 @@ import {memoize} from '../utils/createMemoizer'
 import {operationArgs} from './operationArgs'
 import {isLiveEditEnabled} from './utils/isLiveEditEnabled'
 
+// TODO: should we rename this?
 export interface EditStateFor {
   id: string
   type: string

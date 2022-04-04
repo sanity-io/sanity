@@ -1,9 +1,9 @@
 import {studioTheme} from '@sanity/ui'
-import {SanityTheme} from './types'
+import {StudioTheme} from './types'
 
 export * from './types'
 
-export const defaultTheme: SanityTheme = {
+export const defaultTheme: StudioTheme = {
   ...studioTheme,
   focusRing: {offset: -1, width: 2},
 }

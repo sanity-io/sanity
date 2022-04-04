@@ -1,4 +1,4 @@
-import {SanityConfig, Source as SanitySource} from '../config'
+import {Config, Source as SanitySource} from '../config'
 import {DocumentPreviewStore} from '../preview'
 import {CrossProjectTokenStore} from './crossProjectToken'
 import {DocumentStore} from './document'
@@ -10,7 +10,7 @@ import {SettingsStore} from './settings/types'
 import {UserStore} from './user'
 
 export interface DatastoresContext {
-  config: SanityConfig
+  config: Config
   source: SanitySource
 }
 

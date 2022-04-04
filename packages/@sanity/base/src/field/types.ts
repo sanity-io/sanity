@@ -248,7 +248,7 @@ export interface PatchOperations {
   ifRevisionID?: string
 }
 
-export interface OperationsAPI {
+export interface FieldOperationsAPI {
   patch: {
     execute: (patches: PatchOperations[]) => void
   }

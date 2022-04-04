@@ -1,6 +1,0 @@
-export * from './all.part.@sanity'
-export * from './config.@sanity'
-export * from './config.sanity'
-export * from './part.@sanity'
-export * from './sanity.css-custom-properties'
-export * from './sanity.versions'

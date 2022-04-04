@@ -2,10 +2,8 @@ import {Observable} from 'rxjs'
 import {distinctUntilChanged, map} from 'rxjs/operators'
 import {SanityClient} from '@sanity/client'
 import {PrepareViewOptions, SanityDocument} from '@sanity/types'
-import {PublishedId} from '../util/draftUtils'
-import {isRecord} from '../util/isRecord'
-import {isString} from '../util/isString'
-import {CrossProjectTokenStore} from '../datastores/crossProjectToken'
+import {PublishedId, isRecord} from '../util'
+import {CrossProjectTokenStore} from '../datastores'
 import {createPathObserver} from './createPathObserver'
 import {createPreviewObserver} from './createPreviewObserver'
 import {create_preview_observeFields} from './observeFields'
@@ -78,9 +76,7 @@ export function createDocumentPreviewStore({
     apiConfig?: ApiConfig
   ): Observable<string | undefined> {
     return observePaths(id, ['_type']).pipe(
-      map((res) =>
-        isRecord(res) && isString((res as any)._type) ? (res as any)._type : undefined
-      ),
+      map((res) => (isRecord(res) && typeof res._type === 'string' ? res._type : undefined)),
       distinctUntilChanged()
     )
   }

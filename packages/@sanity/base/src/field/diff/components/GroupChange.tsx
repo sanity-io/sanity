@@ -4,7 +4,7 @@ import {useDocumentOperation} from '../../../hooks'
 import {undoChange} from '../changes/undoChange'
 import {isFieldChange} from '../helpers'
 import {isPTSchemaType} from '../../types/portableText/diff'
-import {GroupChangeNode, OperationsAPI} from '../../types'
+import {GroupChangeNode, FieldOperationsAPI} from '../../types'
 import {useHover} from '../../utils/useHover'
 import {pathsAreEqual} from '../../paths'
 import {DiffContext} from '../contexts/DiffContext'
@@ -40,7 +40,7 @@ export function GroupChange(
   const isNestedInDiff = pathsAreEqual(diffPath, groupPath)
   const [revertButtonRef, isRevertButtonHovered] = useHover<HTMLButtonElement>()
 
-  const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
+  const docOperations = useDocumentOperation(documentId, schemaType.name) as FieldOperationsAPI
   const [confirmRevertOpen, setConfirmRevertOpen] = useState(false)
   const [revertPopoverElement, setRevertPopoverElement] = useState<HTMLDivElement | null>(null)
 

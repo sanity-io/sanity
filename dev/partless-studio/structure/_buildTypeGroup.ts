@@ -1,6 +1,10 @@
-import {isNonNullable} from '@sanity/base/util'
-import {ListItemBuilder, StructureBuilder} from '@sanity/base/structure'
+import {StructureBuilder} from '@sanity/base'
 import {Schema} from '@sanity/types'
+import {isObject} from 'lodash'
+
+const isNonNullable = isObject as <T>(value: T) => value is NonNullable<T>
+
+type ListItemBuilder = ReturnType<StructureBuilder['listItem']>
 
 interface TypeGroupOpts {
   icon?: React.ComponentType

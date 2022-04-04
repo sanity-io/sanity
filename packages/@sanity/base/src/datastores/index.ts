@@ -1,7 +1,7 @@
 export type {DocumentStore, RemoteSnapshotVersionEvent} from './document'
 export type {GlobalPresence} from './presence'
 
-export {useProject, useProjectDatasets} from './project'
+export * from './project'
 export * from './document'
 export * from './datastores'
 export * from './document'

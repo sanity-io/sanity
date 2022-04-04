@@ -1,16 +1,14 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import React from 'react'
 import {uniqueId} from 'lodash'
 import {Box, Grid, Button, Dialog} from '@sanity/ui'
 import {TrashIcon, EditIcon} from '@sanity/icons'
+// @ts-expect-error TODO: remove the types eventually
 import config from 'config:@sanity/google-maps-input'
 import {
   FormFieldSet,
   ChangeIndicatorCompareValueProvider,
   ChangeIndicator,
-} from '@sanity/base/components'
+} from '@sanity/base/_unstable'
 import {FormInputProps, PatchEvent, set, setIfMissing, unset} from '@sanity/base/form'
 import {GoogleMapsLoadProxy} from '../loader/GoogleMapsLoadProxy'
 import {Geopoint, GeopointSchemaType} from '../types'

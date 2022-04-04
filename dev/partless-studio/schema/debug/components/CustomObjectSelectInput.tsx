@@ -1,4 +1,4 @@
-import {FormField} from '@sanity/base/components'
+import {FormField} from '@sanity/base/_unstable'
 import {FormInputProps, PatchEvent, set, unset} from '@sanity/base/form'
 import {isValidationErrorMarker, ObjectSchemaType} from '@sanity/types'
 import {Select} from '@sanity/ui'

@@ -22,6 +22,11 @@
       "require": "./lib/cjs/_exports/index.js",
       "default": "./lib/esm/_exports/index.js"
     },
+    "./_unstable": {
+      "source": "./src/_exports/_unstable.ts",
+      "require": "./lib/cjs/_exports/_unstable.js",
+      "default": "./lib/esm/_exports/_unstable.js"
+    },
     "./cli": {
       "source": "./src/_exports/cli.ts",
       "require": "./lib/cjs/_exports/cli.js",
@@ -37,6 +42,9 @@
     "*": {
       "cli": [
         "./lib/dts/src/_exports/cli.d.ts"
+      ],
+      "_unstable": [
+        "./lib/dts/src/_exports/_unstable.d.ts"
       ]
     }
   },

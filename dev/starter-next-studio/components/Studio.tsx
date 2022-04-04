@@ -1,7 +1,5 @@
 /* eslint-disable react/react-in-jsx-scope */
-import {createConfig} from '@sanity/base'
-import {StudioRoot} from '@sanity/base/studio'
-import {deskTool} from '@sanity/desk-tool'
+import {createConfig, deskTool, Studio} from 'sanity'
 import {useMemo} from 'react'
 
 if (typeof window !== 'undefined') {
@@ -13,7 +11,7 @@ if (typeof window !== 'undefined') {
   window.__DEV__ = process.env.NODE_ENV === 'development'
 }
 
-export default function Studio({basePath}: {basePath: string}) {
+export default function StudioRoot({basePath}: {basePath: string}) {
   const config = useMemo(
     () =>
       createConfig({
@@ -50,7 +48,7 @@ export default function Studio({basePath}: {basePath: string}) {
 
   return (
     <div style={{height: '100vh', width: '100vw'}}>
-      <StudioRoot config={config} />
+      <Studio config={config} />
     </div>
   )
 }

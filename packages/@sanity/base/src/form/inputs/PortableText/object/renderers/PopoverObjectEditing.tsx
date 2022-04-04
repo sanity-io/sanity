@@ -20,7 +20,6 @@ import {
 } from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components'
-import {isArray} from '../../../../../util'
 import {FormFieldPresence, PresenceOverlay} from '../../../../../presence'
 import {PatchEvent} from '../../../../patch'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
@@ -178,7 +177,7 @@ function Content(
 
   const handleFocus = useCallback(
     (pathOrEvent?: Path | React.FocusEvent) => {
-      onFocus(isArray(pathOrEvent) ? pathOrEvent : [])
+      onFocus(Array.isArray(pathOrEvent) ? pathOrEvent : [])
     },
     [onFocus]
   )

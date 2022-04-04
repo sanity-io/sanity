@@ -5,7 +5,7 @@ import {
   Diff,
   DiffProps as GenericDiffProps,
   DiffComponent,
-} from '@sanity/base/field'
+} from '@sanity/base/_unstable'
 import {GoogleMapsLoadProxy} from '../loader/GoogleMapsLoadProxy'
 import {GoogleMap} from '../map/Map'
 import {Geopoint} from '../types'

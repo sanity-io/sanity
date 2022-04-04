@@ -5,7 +5,6 @@ import {PortableTextBlock, Type, PortableTextChild} from '@sanity/portable-text-
 import {Box, Dialog, PortalProvider, useLayer, usePortal} from '@sanity/ui'
 import {PatchEvent} from '../../../../patch'
 import {FormFieldPresence, PresenceOverlay} from '../../../../../presence'
-import {isArray} from '../../../../../util'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {DIALOG_WIDTH_TO_UI_WIDTH} from './constants'
 import {ModalWidth} from './types'
@@ -56,7 +55,7 @@ export function DefaultObjectEditing(props: DefaultObjectEditingProps) {
 
   const handleFocus = useCallback(
     (pathOrEvent?: Path | React.FocusEvent) => {
-      onFocus(isArray(pathOrEvent) ? pathOrEvent : [])
+      onFocus(Array.isArray(pathOrEvent) ? pathOrEvent : [])
     },
     [onFocus]
   )

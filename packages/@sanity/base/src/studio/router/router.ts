@@ -1,7 +1,7 @@
-import {SanityTool} from '../../config'
+import {Tool} from '../../config'
 import {route, Router} from '../../router'
 
-export function createRouter(opts: {basePath?: string; tools: SanityTool[]}): Router {
+export function createRouter(opts: {basePath?: string; tools: Tool[]}): Router {
   const {basePath = '', tools} = opts
 
   const toolRoute = route.create('/:tool', (toolParams) => {

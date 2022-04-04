@@ -1,3 +1,3 @@
 import {RootTheme} from '@sanity/ui'
 
-export type SanityTheme = RootTheme
+export type StudioTheme = RootTheme

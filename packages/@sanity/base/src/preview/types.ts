@@ -19,11 +19,7 @@ export interface AvailabilityResponse {
   omitted: {id: string; reason: 'existence' | 'permission'}[]
 }
 
-export enum AvailabilityReason {
-  READABLE = 'READABLE',
-  PERMISSION_DENIED = 'PERMISSION_DENIED',
-  NOT_FOUND = 'NOT_FOUND',
-}
+export type AvailabilityReason = 'READABLE' | 'PERMISSION_DENIED' | 'NOT_FOUND'
 
 export interface PreviewableType {
   fields?: {name: string; type: SchemaType}[]
@@ -38,11 +34,11 @@ export interface ApiConfig {
 export type DocumentAvailability =
   | {
       available: true
-      reason: AvailabilityReason.READABLE
+      reason: 'READABLE'
     }
   | {
       available: false
-      reason: AvailabilityReason.PERMISSION_DENIED | AvailabilityReason.NOT_FOUND
+      reason: 'PERMISSION_DENIED' | 'NOT_FOUND'
     }
 
 export interface DraftsModelDocumentAvailability {

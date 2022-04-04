@@ -9,7 +9,6 @@ import {
   DocumentPreviewStore,
   getPreviewPaths,
   prepareForPreview,
-  AvailabilityReason,
   DocumentAvailability,
 } from '../../../../../preview'
 import {
@@ -22,17 +21,17 @@ const REQUEST_TAG_BASE = 'cross-dataset-refs'
 
 const AVAILABILITY_READABLE = {
   available: true,
-  reason: AvailabilityReason.READABLE,
+  reason: 'READABLE',
 } as const
 
 const AVAILABILITY_PERMISSION_DENIED = {
   available: false,
-  reason: AvailabilityReason.PERMISSION_DENIED,
+  reason: 'PERMISSION_DENIED',
 } as const
 
 const AVAILABILITY_NOT_FOUND = {
   available: false,
-  reason: AvailabilityReason.NOT_FOUND,
+  reason: 'NOT_FOUND',
 } as const
 
 /**

@@ -1,6 +1,5 @@
 import {isIndexSegment, isKeyedObject, isKeySegment, isTypedObject, Path} from '@sanity/types'
 import {diffItem} from 'sanity-diff-patch'
-import {isArray} from '../../../util/isArray'
 import {isRecord} from '../../../util/isRecord'
 import {
   findIndex,
@@ -17,7 +16,7 @@ import {
   InsertDiffPatch,
   ItemDiff,
   ObjectDiff,
-  OperationsAPI,
+  FieldOperationsAPI,
   PatchOperations,
   SetDiffPatch,
   UnsetDiffPatch,
@@ -29,7 +28,7 @@ const diffOptions = {diffMatchPatch: {enabled: false}}
 export function undoChange(
   change: ChangeNode,
   rootDiff: ObjectDiff | null,
-  documentOperations: OperationsAPI
+  documentOperations: FieldOperationsAPI
 ): void {
   if (!rootDiff) {
     return
@@ -227,7 +226,7 @@ function getParentStubs(path: Path, rootDiff: ObjectDiff, stubbed: Set<string>):
     // If the next array element does not exist, we need to inject an insert stub here
     if (
       nextIsArrayElement &&
-      isArray(itemValue) &&
+      Array.isArray(itemValue) &&
       !getValueAtPath(nextValue, path.slice(0, i + 1))
     ) {
       const indexAtPrev = findIndex(itemValue, nextSegment)
@@ -266,7 +265,7 @@ function onlyContainsStubs(item: unknown, path: Path, ignorePaths?: Path[]): boo
    * or an array we're checking a string for example and it they cannot
    * contain stubs.
    */
-  if (!isRecord(item) || !isArray(item)) {
+  if (!isRecord(item) || !Array.isArray(item)) {
     return false
   }
 
@@ -294,11 +293,11 @@ function onlyContainsStubs(item: unknown, path: Path, ignorePaths?: Path[]): boo
 }
 
 function isStub(item: unknown, path: Path, ignorePaths?: Path[]): boolean {
-  const isIgnoredPath =
-    isArray(ignorePaths) &&
-    ignorePaths.some((ignorePath) => pathToString(ignorePath) === pathToString(path))
+  const isIgnoredPath = ignorePaths?.some(
+    (ignorePath) => pathToString(ignorePath) === pathToString(path)
+  )
 
-  const isEmptyArray = isArray(item) && item.length <= 0
+  const isEmptyArray = Array.isArray(item) && item.length <= 0
 
   return (
     isIgnoredPath ||
@@ -311,7 +310,7 @@ function isStub(item: unknown, path: Path, ignorePaths?: Path[]): boolean {
 }
 
 function getStubValue(item: unknown): unknown {
-  if (isArray(item)) {
+  if (Array.isArray(item)) {
     return []
   }
 

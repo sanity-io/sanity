@@ -14,15 +14,15 @@ const EMPTY_SEARCH = () => of([])
 
 const AVAILABLE = {
   available: true,
-  reason: AvailabilityReason.READABLE,
+  reason: 'READABLE',
 } as const
 const UNAVAILABLE_NOT_FOUND = {
   available: false,
-  reason: AvailabilityReason.NOT_FOUND,
+  reason: 'NOT_FOUND',
 } as const
 const UNAVAILABLE_PERMISSION_DENIED = {
   available: false,
-  reason: AvailabilityReason.PERMISSION_DENIED,
+  reason: 'PERMISSION_DENIED',
 } as const
 
 const infinityNoop: any = new Proxy<any>(() => infinityNoop, {get: () => infinityNoop})

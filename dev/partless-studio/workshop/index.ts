@@ -1,5 +1,5 @@
 import {createPlugin} from '@sanity/base'
-import {route} from '@sanity/base/router'
+import {route} from '@sanity/base/_unstable'
 import {TerminalIcon} from '@sanity/icons'
 import {WorkshopOptions} from './types'
 import {WorkshopTool} from './WorkshopTool'
