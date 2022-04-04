@@ -3,7 +3,7 @@ import {SchemaType, SanityDocument} from '@sanity/types'
 import {Subscribable} from 'rxjs'
 import {InitialValueTemplateItem} from '../../templates'
 import {
-  DocumentNodeResolver,
+  DefaultDocumentNodeResolver,
   StructureBuilder,
   StructureContext,
   UserComponent,
@@ -22,7 +22,7 @@ export interface DeskToolOptions {
   name?: string
   source?: string
   structure?: StructureResolver
-  resolveDocumentNode?: DocumentNodeResolver
+  defaultDocumentNode?: DefaultDocumentNodeResolver
   title?: string
 }
 

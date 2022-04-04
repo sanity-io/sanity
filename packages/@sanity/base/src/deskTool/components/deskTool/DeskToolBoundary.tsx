@@ -20,7 +20,7 @@ interface DeskToolBoundaryProps {
 export function DeskToolBoundary({tool: {options}}: DeskToolBoundaryProps) {
   const {unstable_sources: sources} = useWorkspace()
   const [firstSource] = sources
-  const {source, resolveDocumentNode, structure} = options
+  const {source, defaultDocumentNode, structure} = options
 
   const {state: routerState} = useRouter()
   const intent = useMemo(() => {
@@ -44,7 +44,7 @@ export function DeskToolBoundary({tool: {options}}: DeskToolBoundaryProps) {
   return (
     <ErrorBoundary onCatch={setError}>
       <SourceProvider name={source || firstSource.name}>
-        <DeskToolProvider resolveDocumentNode={resolveDocumentNode} structure={structure}>
+        <DeskToolProvider defaultDocumentNode={defaultDocumentNode} structure={structure}>
           {/* when an intent is found, we render the intent resolver component */}
           {/* which asynchronously resolves the intent then navigates to it */}
           {intent ? <IntentResolver {...intent} /> : <DeskTool onPaneChange={setActivePanes} />}

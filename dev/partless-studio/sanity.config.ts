@@ -6,14 +6,10 @@ import {Branding} from './components/Branding'
 import {CustomMarkers} from './components/formBuilder/CustomMarkers'
 // import {LanguageFilter} from './components/deskTool/LanguageFilter'
 import {Markers} from './components/formBuilder/Markers'
-import {resolveDocumentActions} from './documentActions'
+import {resolveDocumentActions as documentActions} from './documentActions'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {schemaTypes} from './schema'
-import {
-  resolveStructureDocumentNode,
-  resolveStructure,
-  resolveNewDocumentOptions,
-} from './structure'
+import {defaultDocumentNode, structure, newDocumentOptions} from './structure'
 import {workshopTool} from './workshop'
 
 export default createConfig({
@@ -36,8 +32,8 @@ export default createConfig({
     },
   },
   document: {
-    actions: resolveDocumentActions,
-    resolveNewDocumentOptions,
+    actions: documentActions,
+    newDocumentOptions,
   },
   plugins: [
     codeInput(),
@@ -48,9 +44,9 @@ export default createConfig({
       // },
       icon: BookIcon,
       name: 'content',
-      structure: resolveStructure,
-      resolveDocumentNode: resolveStructureDocumentNode,
       title: 'Content',
+      structure,
+      defaultDocumentNode,
     }),
     workshopTool({
       collections: [

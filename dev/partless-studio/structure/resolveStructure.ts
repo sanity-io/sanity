@@ -23,7 +23,7 @@ import {
 } from './constants'
 import {delayValue} from './_helpers'
 
-export const resolveStructure: StructureResolver = (S, {schema}) => {
+export const structure: StructureResolver = (S, {schema}) => {
   return S.list()
     .title('Content')
     .items([

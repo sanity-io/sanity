@@ -1,6 +1,10 @@
 import React, {createContext, useMemo, useState, useContext} from 'react'
 import {useSource} from '../../studio'
-import {createStructureBuilder, DocumentNodeResolver, StructureContext} from '../structureBuilder'
+import {
+  createStructureBuilder,
+  DefaultDocumentNodeResolver,
+  StructureContext,
+} from '../structureBuilder'
 import {StructureResolver, UnresolvedPaneNode} from '../types'
 
 export interface DeskToolFeatures {
@@ -32,12 +36,12 @@ export function useDeskTool(id?: string): DeskToolContextValue {
 
 interface DeskToolProviderProps {
   structure?: StructureResolver
-  resolveDocumentNode?: DocumentNodeResolver
+  defaultDocumentNode?: DefaultDocumentNodeResolver
   children: React.ReactNode
 }
 
 export function DeskToolProvider({
-  resolveDocumentNode,
+  defaultDocumentNode,
   structure: resolveStructure,
   children,
 }: DeskToolProviderProps): React.ReactElement {
@@ -46,10 +50,10 @@ export function DeskToolProvider({
 
   const S = useMemo(() => {
     return createStructureBuilder({
-      documentNodeResolver: resolveDocumentNode,
+      defaultDocumentNode: defaultDocumentNode,
       source,
     })
-  }, [resolveDocumentNode, source])
+  }, [defaultDocumentNode, source])
 
   const rootPaneNode = useMemo(() => {
     // TODO: unify types and remove cast

@@ -120,8 +120,8 @@ type NewDocumentCreationContext =
 interface DocumentPluginOptions {
   badges?: DocumentBadgeComponent[] | DocumentBadgesResolver
   actions?: DocumentActionComponent[] | DocumentActionsResolver
-  resolveProductionUrl?: AsyncComposableOption<string | undefined, ResolveProductionUrlContext>
-  resolveNewDocumentOptions?: NewDocumentOptionsResolver
+  productionUrl?: AsyncComposableOption<string | undefined, ResolveProductionUrlContext>
+  newDocumentOptions?: NewDocumentOptionsResolver
 }
 
 export type DocumentActionsResolver = ComposableOption<

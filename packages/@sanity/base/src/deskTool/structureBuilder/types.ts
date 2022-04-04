@@ -36,7 +36,7 @@ export interface StructureContext extends Source {
   getStructureBuilder: () => StructureBuilder
 }
 
-export type DocumentNodeResolver = (
+export type DefaultDocumentNodeResolver = (
   S: StructureBuilder,
   options: {
     documentId?: string

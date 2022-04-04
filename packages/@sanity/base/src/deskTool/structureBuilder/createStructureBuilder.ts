@@ -23,11 +23,16 @@ import {
   defaultInitialValueTemplateItems,
   menuItemsFromInitialValueTemplateItems,
 } from './InitialValueTemplateItem'
-import {StructureBuilder, UserComponent, StructureContext, DocumentNodeResolver} from './types'
+import {
+  StructureBuilder,
+  UserComponent,
+  StructureContext,
+  DefaultDocumentNodeResolver,
+} from './types'
 
 export interface StructureBuilderOptions {
   source: Source
-  documentNodeResolver?: DocumentNodeResolver
+  defaultDocumentNode?: DefaultDocumentNodeResolver
 }
 
 function hasIcon(schemaType?: SchemaType | string): boolean {
@@ -48,15 +53,14 @@ function getDefaultStructure(context: StructureContext): ListBuilder {
 }
 
 export function createStructureBuilder({
-  documentNodeResolver,
+  defaultDocumentNode,
   source,
 }: StructureBuilderOptions): StructureBuilder {
   const context: StructureContext = {
     ...source,
     getStructureBuilder: () => structureBuilder,
     resolveDocumentNode: (options) => {
-      let builder =
-        documentNodeResolver?.(structureBuilder, options) || new DocumentBuilder(context)
+      let builder = defaultDocumentNode?.(structureBuilder, options) || new DocumentBuilder(context)
 
       if (!builder.getId()) {
         builder = builder.id('documentEditor')

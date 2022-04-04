@@ -49,7 +49,7 @@ export const resolveProductionUrlReducer: AsyncConfigPropertyReducer<
   string | undefined,
   ResolveProductionUrlContext
 > = async (prev, {document}, context) => {
-  const resolveProductionUrl = document?.resolveProductionUrl
+  const resolveProductionUrl = document?.productionUrl
   // the redundant await is useful for error logging because the error is caught
   // in this stack vs somewhere down stream
   // eslint-disable-next-line no-return-await
@@ -118,7 +118,7 @@ export const newDocumentOptionsResolver: ConfigPropertyReducer<
   TemplateResponse[],
   NewDocumentOptionsContext
 > = (prev, {document}, context) => {
-  const resolveNewDocumentOptions = document?.resolveNewDocumentOptions
+  const resolveNewDocumentOptions = document?.newDocumentOptions
   if (!resolveNewDocumentOptions) return prev
 
   if (typeof resolveNewDocumentOptions !== 'function') {
