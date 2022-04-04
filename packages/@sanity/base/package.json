@@ -11,11 +11,6 @@
       "require": "./lib/cjs/_exports/index.js",
       "default": "./lib/esm/_exports/index.js"
     },
-    "./_internal": {
-      "source": "./src/_exports/_internal.ts",
-      "require": "./lib/cjs/_exports/_internal.js",
-      "default": "./lib/esm/_exports/_internal.js"
-    },
     "./_unstable": {
       "source": "./src/_exports/_unstable.ts",
       "require": "./lib/cjs/_exports/_unstable.js",
@@ -31,9 +26,6 @@
   "//": "the typesVersion config below is a workaround for TypeScript's lack of support for package exports",
   "typesVersions": {
     "*": {
-      "_internal": [
-        "./lib/dts/src/_exports/_internal.d.ts"
-      ],
       "_unstable": [
         "./lib/dts/src/_exports/_unstable.d.ts"
       ],
