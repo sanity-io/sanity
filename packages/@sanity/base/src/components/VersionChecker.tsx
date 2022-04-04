@@ -7,7 +7,7 @@ import {
   useModuleStatus,
   VersionsResponse,
 } from '../module-status'
-import {useSource} from '../source'
+import {useSource} from '../studio'
 
 /**
  * @note This _shouldn't_ be in use anywhere, but lets keep it around until we can be sure

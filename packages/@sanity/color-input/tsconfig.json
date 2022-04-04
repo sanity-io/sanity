@@ -15,8 +15,5 @@
     // Disable strict mode
     "noImplicitAny": false
   },
-  "references": [
-    {"path": "../base/tsconfig.lib.json"},
-    {"path": "../form-builder/tsconfig.lib.json"}
-  ]
+  "references": [{"path": "../base/tsconfig.lib.json"}]
 }

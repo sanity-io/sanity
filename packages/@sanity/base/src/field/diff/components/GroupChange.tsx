@@ -1,11 +1,6 @@
 import React, {useCallback, useContext, useMemo, useState} from 'react'
 import {Box, Stack, Button, Grid, Text, useClickOutside} from '@sanity/ui'
-import {
-  useDocumentOperation,
-  unstable_useDocumentPairPermissions as useDocumentPairPermissions,
-} from '../../../hooks'
-import {useSource} from '../../../source'
-import {useDatastores} from '../../../datastores'
+import {useDocumentOperation} from '../../../hooks'
 import {undoChange} from '../changes/undoChange'
 import {isFieldChange} from '../helpers'
 import {isPTSchemaType} from '../../types/portableText/diff'
@@ -14,6 +9,7 @@ import {useHover} from '../../utils/useHover'
 import {pathsAreEqual} from '../../paths'
 import {DiffContext} from '../contexts/DiffContext'
 import {useDocumentChange} from '../hooks'
+import {useDocumentPairPermissions} from '../../../datastores'
 import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 import {ChangeResolver} from './ChangeResolver'
 import {RevertChangesButton} from './RevertChangesButton'
@@ -33,8 +29,6 @@ export function GroupChange(
     // 'data-revert-all-changes-hover': dataRevertAllChangesHover,
     ...restProps
   } = props
-  const {client, schema} = useSource()
-  const {grantsStore} = useDatastores()
   const {titlePath, changes, path: groupPath} = group
   const {path: diffPath} = useContext(DiffContext)
   const {documentId, schemaType, FieldWrapper, rootDiff, isComparingCurrent} = useDocumentChange()
@@ -50,16 +44,11 @@ export function GroupChange(
   const [confirmRevertOpen, setConfirmRevertOpen] = useState(false)
   const [revertPopoverElement, setRevertPopoverElement] = useState<HTMLDivElement | null>(null)
 
-  const [permissions, isPermissionsLoading] = useDocumentPairPermissions(
-    client,
-    schema,
-    grantsStore,
-    {
-      id: documentId,
-      type: schemaType.name,
-      permission: 'update',
-    }
-  )
+  const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
+    id: documentId,
+    type: schemaType.name,
+    permission: 'update',
+  })
 
   const handleRevertChanges = useCallback(
     () => undoChange(group, rootDiff, docOperations),

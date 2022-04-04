@@ -10,10 +10,8 @@
     "prop-types",
     "element-resize-detector",
     "react-sortable-hoc",
-    "@sanity/structure",
     "@juggle/resize-observer",
     "nano-pubsub",
-    "@sanity/ui",
-    "@sanity/state-router"
+    "@sanity/ui"
   ]
 }

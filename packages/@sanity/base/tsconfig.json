@@ -13,11 +13,9 @@
   },
   "references": [
     {"path": "../diff"},
-    {"path": "../initial-value-templates/tsconfig.lib.json"},
     {"path": "../mutator/tsconfig.lib.json"},
+    {"path": "../portable-text-editor"},
     {"path": "../schema"},
-    {"path": "../state-router/tsconfig.lib.json"},
-    {"path": "../structure/tsconfig.lib.json"},
     {"path": "../transaction-collator"},
     {"path": "../types"},
     {"path": "../util/tsconfig.lib.json"},

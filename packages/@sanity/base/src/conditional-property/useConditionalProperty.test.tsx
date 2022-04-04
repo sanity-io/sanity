@@ -1,8 +1,8 @@
 import {renderHook} from '@testing-library/react-hooks'
 import React, {useMemo} from 'react'
-import {createMockSanityClient} from '../../test/mocks/mockSanityClient'
+// import {createMockSanityClient} from '../../test/mocks/mockSanityClient'
 import {createConfig} from '../config'
-import {SanityProvider} from '../sanity'
+import {StudioProvider} from '../studio'
 import {
   ConditionalPropertyProps,
   unstable_useConditionalProperty as useConditionalProperty,
@@ -50,21 +50,16 @@ function TestWrapper({children}: any) {
   const config = useMemo(
     () =>
       createConfig({
-        sources: [
-          {
-            clientFactory: () => createMockSanityClient() as any,
-            name: 'test',
-            title: 'Test',
-            projectId: 'foo',
-            dataset: 'test',
-            schemaTypes: [],
-          },
-        ],
+        // clientFactory: () => createMockSanityClient() as any,
+        name: 'test',
+        title: 'Test',
+        projectId: 'foo',
+        dataset: 'test',
       }),
     []
   )
 
-  return <SanityProvider config={config}>{children}</SanityProvider>
+  return <StudioProvider config={config}>{children}</StudioProvider>
 }
 
 afterEach(() => {

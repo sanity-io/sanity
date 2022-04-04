@@ -2,16 +2,12 @@ import React, {useCallback, useMemo, useState} from 'react'
 import {Stack, Box, Button, Text, Grid, useClickOutside} from '@sanity/ui'
 import {ObjectSchemaType} from '@sanity/types'
 import {useConditionalReadOnly} from '../../../conditional-property/conditionalReadOnly'
-import {useSource} from '../../../source'
-import {useDatastores} from '../../../datastores'
-import {
-  useDocumentOperation,
-  unstable_useDocumentPairPermissions as useDocumentPairPermissions,
-} from '../../../hooks'
+import {useDocumentOperation} from '../../../hooks'
 import {FieldChangeNode, OperationsAPI} from '../../types'
 import {undoChange} from '../changes/undoChange'
 import {DiffContext} from '../contexts/DiffContext'
 import {useDocumentChange} from '../hooks'
+import {useDocumentPairPermissions} from '../../../datastores'
 import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 import {DiffErrorBoundary} from './DiffErrorBoundary'
 import {DiffInspectWrapper} from './DiffInspectWrapper'
@@ -28,9 +24,6 @@ export function FieldChange(
   } & React.HTMLAttributes<HTMLDivElement>
 ) {
   const {change, hidden, readOnly} = props
-  const {client} = useSource()
-  const source = useSource()
-  const {grantsStore} = useDatastores()
   const conditionalReadOnly = useConditionalReadOnly() ?? readOnly
   const DiffComponent = change.diffComponent || FallbackDiff
   const {
@@ -45,16 +38,11 @@ export function FieldChange(
   const [revertHovered, setRevertHovered] = useState(false)
   const [revertButtonElement, setRevertButtonElement] = useState<HTMLDivElement | null>(null)
 
-  const [permissions, isPermissionsLoading] = useDocumentPairPermissions(
-    client,
-    source.schema,
-    grantsStore,
-    {
-      id: documentId,
-      type: schemaType.name,
-      permission: 'update',
-    }
-  )
+  const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
+    id: documentId,
+    type: schemaType.name,
+    permission: 'update',
+  })
 
   const handleRevertChanges = useCallback(() => {
     undoChange(change, rootDiff, ops)

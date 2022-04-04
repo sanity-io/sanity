@@ -1,7 +1,7 @@
 import createImageUrlBuilder from '@sanity/image-url'
 import {ImageUrlFitMode} from '@sanity/types'
 import React, {forwardRef, useMemo} from 'react'
-import {useSource} from '../../source'
+import {useSource} from '../../studio'
 
 export interface ImageCrop {
   _type: 'sanity.imageCrop'

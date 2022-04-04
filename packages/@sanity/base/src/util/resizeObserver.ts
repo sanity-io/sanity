@@ -2,7 +2,9 @@ import {ResizeObserver as Polyfill, ResizeObserverEntry} from '@juggle/resize-ob
 import createPubSub, {Subscriber} from 'nano-pubsub'
 
 const ResizeObserver: typeof Polyfill =
-  typeof document === 'undefined' ? Polyfill : (window as any).ResizeObserver
+  typeof document === 'object' && typeof window === 'object' && window.ResizeObserver
+    ? window.ResizeObserver
+    : Polyfill
 
 export interface SharedResizeObserver {
   observe: (

@@ -1,8 +1,5 @@
-// Export document badges typings
-export type {DocumentBadgeComponent, DocumentBadgeDescription} from '../badges/types'
-
-// Export document actions typings
 export type {
+  // Export document actions typings
   DocumentActionComponent,
   DocumentActionConfirmModalProps,
   DocumentActionDescription,
@@ -11,12 +8,16 @@ export type {
   DocumentActionPopoverModalProps,
   DocumentActionProps,
   DocumentActionResolver,
-} from '../actions/utils/types'
+  // Export document badges typings
+  DocumentBadgeComponent,
+  DocumentBadgeDescription,
+} from '../deskTool/actions'
 
 export * from '../components/Document'
 export * from '../config'
 export * from '../datastores'
-export * from '../plugin'
-export * from '../sanity'
-export * from '../source'
+export * from '../studio'
 export * from '../theme'
+export * from '../deskTool'
+export * from '../templates'
+export * from '../formBuilder'

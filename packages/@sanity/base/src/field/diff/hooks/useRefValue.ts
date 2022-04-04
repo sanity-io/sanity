@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react'
-import {useSource} from '../../../source'
+import {useSource} from '../../../studio'
 
 export function useRefValue<T = unknown>(refId: string | undefined | null): T | undefined {
   const [value, setValue] = useState<T | undefined>(undefined)

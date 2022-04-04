@@ -2,13 +2,14 @@ import {ObjectSchemaType} from '@sanity/types'
 import {Box, Card} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
 import {FieldChangeNode, ObjectDiff, StringDiff} from '../types'
-import {useSchemaType} from '../../config'
+import {useSource} from '../../studio'
 import {ChangeResolver, DocumentChangeContext, DocumentChangeContextInstance} from '../diff'
 
 export default function ChangeResolverStory() {
-  const documentId = useMemo(() => 'test', [])
-  const documentType = useMemo(() => 'author', [])
-  const schemaType = useSchemaType(documentType) as ObjectSchemaType
+  const documentId = 'test'
+  const documentType = 'author'
+  const {schema} = useSource()
+  const schemaType = schema.get(documentType) as ObjectSchemaType
 
   const nameDiff: StringDiff = useMemo(
     () => ({

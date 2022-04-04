@@ -3,4 +3,5 @@ export type {GlobalPresence} from './presence'
 
 export * from './document/useInitialValue'
 export {useProject, useProjectDatasets} from './project'
+export {useDocumentPreviewStore} from './preview'
 export * from './useDatastores'

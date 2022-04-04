@@ -3,11 +3,8 @@ import {RevertIcon} from '@sanity/icons'
 import React, {useCallback, useContext, useMemo, useState} from 'react'
 import {SanityDocument} from '@sanity/client'
 import {ObjectSchemaType} from '@sanity/types'
-import {useSource} from '../../../source'
-import {useDatastores} from '../../../datastores'
 import {
   useDocumentOperation,
-  unstable_useDocumentPairPermissions as useDocumentPairPermissions,
   unstable_useConditionalProperty as useConditionalProperty,
 } from '../../../hooks'
 import {ObjectDiff, ChangeNode, OperationsAPI} from '../../types'
@@ -15,6 +12,7 @@ import {DiffContext} from '../contexts/DiffContext'
 import {buildObjectChangeList} from '../changes/buildChangeList'
 import {undoChange} from '../changes/undoChange'
 import {useDocumentChange} from '../hooks/useDocumentChange'
+import {useDocumentPairPermissions} from '../../../datastores'
 import {ChangeResolver} from './ChangeResolver'
 import {NoChanges} from './NoChanges'
 import {ChangeListWrapper, PopoverWrapper} from './ChangeList.styled'
@@ -26,8 +24,6 @@ interface Props {
 }
 
 export function ChangeList({diff, fields, schemaType}: Props): React.ReactElement | null {
-  const {client, schema} = useSource()
-  const {grantsStore} = useDatastores()
   const {documentId, isComparingCurrent, value} = useDocumentChange()
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
   const {path} = useContext(DiffContext)
@@ -46,16 +42,11 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
     throw new Error(`Only object schema types are allowed in ChangeList`)
   }
 
-  const [permissions, isPermissionsLoading] = useDocumentPairPermissions(
-    client,
-    schema,
-    grantsStore,
-    {
-      id: documentId,
-      type: schemaType.name,
-      permission: 'update',
-    }
-  )
+  const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
+    id: documentId,
+    type: schemaType.name,
+    permission: 'update',
+  })
 
   const allChanges = useMemo(
     () => buildObjectChangeList(schemaType, diff, path, [], {fieldFilter: fields}),

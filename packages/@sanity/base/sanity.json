@@ -342,10 +342,6 @@
       "path": "locale/intl"
     },
     {
-      "implements": "part:@sanity/base/query-container",
-      "path": "components/QueryContainer"
-    },
-    {
       "implements": "part:@sanity/base/with-referring-documents",
       "path": "components/WithReferringDocuments"
     },

@@ -7,12 +7,7 @@
     "projectId": "ppsg7ml5",
     "dataset": "blog"
   },
-  "plugins": [
-    "@sanity/base",
-    "@sanity/default-layout",
-    "@sanity/default-login",
-    "@sanity/desk-tool"
-  ],
+  "plugins": ["@sanity/base", "@sanity/default-layout", "@sanity/default-login"],
   "parts": [
     {
       "name": "part:@sanity/base/schema",

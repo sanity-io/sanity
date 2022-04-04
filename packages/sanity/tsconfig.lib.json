@@ -17,7 +17,6 @@
   },
   "references": [
     {"path": "../@sanity/base/tsconfig.lib.json"},
-    {"path": "../@sanity/desk-tool"},
     {"path": "../@sanity/cli/tsconfig.lib.json"}
   ]
 }

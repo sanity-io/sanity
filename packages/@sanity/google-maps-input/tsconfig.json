@@ -10,9 +10,5 @@
     "outDir": "./lib/dts/",
     "jsx": "react"
   },
-  "references": [
-    {"path": "../diff"},
-    {"path": "../base/tsconfig.lib.json"},
-    {"path": "../form-builder/tsconfig.lib.json"}
-  ]
+  "references": [{"path": "../diff"}, {"path": "../base/tsconfig.lib.json"}]
 }

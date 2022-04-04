@@ -18,7 +18,7 @@ export default function ExampleStory() {
   const isChanged = useBoolean('Changed', false, 'Props')
   const level = useNumber('Level', 0, 'Props')
   const [focused, setFocused] = useState(false)
-  const {value: user} = useCurrentUser()
+  const user = useCurrentUser()
 
   const presence: FormFieldPresence[] = useMemo(
     () =>

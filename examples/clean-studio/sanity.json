@@ -7,13 +7,7 @@
     "projectId": "ppsg7ml5",
     "dataset": "clean"
   },
-  "plugins": [
-    "@sanity/base",
-    "@sanity/default-layout",
-    "@sanity/default-login",
-    "@sanity/desk-tool",
-    "@sanity/vision"
-  ],
+  "plugins": ["@sanity/base", "@sanity/default-layout", "@sanity/default-login", "@sanity/vision"],
   "parts": [
     {
       "name": "part:@sanity/base/schema",

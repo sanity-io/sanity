@@ -1,7 +1,7 @@
 import {SanityDocument, ConditionalProperty} from '@sanity/types'
 import {useMemo} from 'react'
+import {useCurrentUser} from '../datastores'
 import {useUnique} from '../util/useUnique'
-import {useCurrentUser} from '../_exports/hooks'
 import {omitDeprecatedRole, useCheckCondition} from './utils'
 
 /**
@@ -23,13 +23,10 @@ export interface ConditionalPropertyProps {
 const useConditionalProperty = (props: ConditionalPropertyProps): boolean => {
   const {checkProperty = false, checkPropertyKey, document, parent, value: valueProp} = props
   const value = useUnique(valueProp)
-  const userValue = useCurrentUser()?.value
-  const currentUser = useUnique(
-    useMemo(() => userValue && omitDeprecatedRole(userValue), [userValue])
-  )
+  const currentUser = useCurrentUser()
 
   const isPropertyTruthy = useCheckCondition(checkProperty, checkPropertyKey, {
-    currentUser: currentUser!,
+    currentUser,
     document,
     parent,
     value,

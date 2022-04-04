@@ -15,9 +15,6 @@ export type {CollatedHit} from '../util/draftUtils'
 
 export {resizeObserver} from '../util/resizeObserver'
 
-export {getNewDocumentOptions} from '../util/getNewDocumentOptions'
-export type {NewDocumentOption} from '../util/getNewDocumentOptions'
-
 export type {
   DocumentVersion,
   DocumentVersionEvent,
@@ -34,22 +31,13 @@ export {remoteSnapshots} from '../datastores/document/document-pair/remoteSnapsh
 export type {EditStateFor} from '../datastores/document/document-pair/editState'
 export type {TemplatePermissionsResult} from '../datastores/grants'
 
-export * from '../actions/utils/types'
-
 export * from '../conditional-property/conditionalReadOnly'
 export type {IdPair} from '../datastores/document/types'
-
-export {RenderActionCollectionState} from '../actions/utils'
-export {RenderBadgeCollectionState} from '../actions/utils'
-
-export {getQueryResults} from '../components/QueryContainer'
 
 export type {OperationsAPI} from '../datastores/document/document-pair/operations'
 
 export {Timeline} from '../datastores/history/history/Timeline'
 export {TimelineController} from '../datastores/history/history/TimelineController'
-
-export {AuthProvider} from '../auth'
 
 // datastores
 export type {ProjectData} from '../datastores/project'

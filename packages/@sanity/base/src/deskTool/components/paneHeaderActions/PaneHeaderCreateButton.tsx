@@ -1,0 +1,168 @@
+import {ComposeIcon} from '@sanity/icons'
+import React, {useMemo, forwardRef} from 'react'
+import {Box, Button, Label, Menu, MenuButton, MenuItem, PopoverProps} from '@sanity/ui'
+import {Schema} from '@sanity/types'
+import {IntentButton} from '../IntentButton'
+import {useTemplatePermissions, TemplatePermissionsResult} from '../../../datastores'
+import {IntentLink} from '../../../router'
+import {useSource} from '../../../studio'
+import {Template, InitialValueTemplateItem} from '../../../templates'
+import {InsufficientPermissionsMessageTooltip} from './InsufficientPermissionsMessageTooltip'
+
+type Intent = React.ComponentProps<typeof IntentButton>['intent']
+
+const POPOVER_PROPS: PopoverProps = {
+  constrainSize: true,
+  placement: 'bottom',
+  portal: true,
+}
+
+const getIntent = (
+  schema: Schema,
+  templates: Template[],
+  item: InitialValueTemplateItem
+): Intent | null => {
+  const typeName = templates.find((t) => t.id === item.templateId)?.schemaType
+  if (!typeName) return null
+
+  const baseParams = {
+    template: item.templateId,
+    type: typeName,
+    id: item.initialDocumentId,
+  }
+
+  return {
+    type: 'create',
+    params: item.parameters ? [baseParams, item.parameters] : baseParams,
+  }
+}
+
+interface PaneHeaderCreateButtonProps {
+  templateItems: InitialValueTemplateItem[]
+}
+
+export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonProps) {
+  const source = useSource()
+
+  const [templatePermissions, isTemplatePermissionsLoading] = useTemplatePermissions({
+    templateItems,
+  })
+
+  const nothingGranted = useMemo(() => {
+    return (
+      !isTemplatePermissionsLoading &&
+      templatePermissions?.every((permission) => !permission.granted)
+    )
+  }, [isTemplatePermissionsLoading, templatePermissions])
+
+  const permissionsById = useMemo(() => {
+    if (!templatePermissions) return {}
+    return templatePermissions.reduce<Record<string, TemplatePermissionsResult | undefined>>(
+      (acc, permission) => {
+        acc[permission.id] = permission
+        return acc
+      },
+      {}
+    )
+  }, [templatePermissions])
+
+  if (nothingGranted) {
+    return (
+      <InsufficientPermissionsMessageTooltip reveal loading={isTemplatePermissionsLoading}>
+        <Button
+          aria-label="Insufficient permissions"
+          icon={ComposeIcon}
+          mode="bleed"
+          disabled
+          data-testid="action-intent-button"
+        />
+      </InsufficientPermissionsMessageTooltip>
+    )
+  }
+
+  if (templateItems.length === 1) {
+    const firstItem = templateItems[0]
+    const permissions = permissionsById[firstItem.id]
+    const disabled = !permissions?.granted
+    const intent = getIntent(source.schema, source.templates, firstItem)
+    if (!intent) return null
+
+    return (
+      <InsufficientPermissionsMessageTooltip
+        reveal={disabled}
+        loading={isTemplatePermissionsLoading}
+      >
+        <IntentButton
+          aria-label={firstItem.title}
+          icon={firstItem.icon || ComposeIcon}
+          intent={intent}
+          mode="bleed"
+          disabled={disabled}
+          data-testid="action-intent-button"
+        />
+      </InsufficientPermissionsMessageTooltip>
+    )
+  }
+
+  return (
+    <MenuButton
+      button={
+        <Button
+          icon={ComposeIcon}
+          mode="bleed"
+          padding={3}
+          data-testid="multi-action-intent-button"
+        />
+      }
+      id="create-menu"
+      menu={
+        <Menu>
+          <Box paddingX={3} paddingTop={3} paddingBottom={2}>
+            <Label muted>Create</Label>
+          </Box>
+
+          {templateItems.map((item, itemIndex) => {
+            const permissions = permissionsById[item.id]
+            const disabled = !permissions?.granted
+            const intent = getIntent(source.schema, source.templates, item)
+            const template = source.templates.find((t) => t.id === item.templateId)
+            if (!template || !intent) return null
+
+            const Link = forwardRef((linkProps, linkRef: React.ForwardedRef<never>) =>
+              disabled ? (
+                <button type="button" disabled {...linkProps} ref={linkRef} />
+              ) : (
+                <IntentLink
+                  {...linkProps}
+                  intent={intent.type}
+                  params={intent.params}
+                  ref={linkRef}
+                />
+              )
+            )
+
+            Link.displayName = 'Link'
+
+            return (
+              <InsufficientPermissionsMessageTooltip
+                key={item.id}
+                reveal={disabled}
+                loading={isTemplatePermissionsLoading}
+              >
+                <MenuItem
+                  as={Link}
+                  data-as={disabled ? 'button' : 'a'}
+                  text={item.title || template.title}
+                  aria-label={disabled ? 'Insufficient permissions' : item.title || template.title}
+                  disabled={disabled}
+                  data-testid={`action-intent-button-${itemIndex}`}
+                />
+              </InsufficientPermissionsMessageTooltip>
+            )
+          })}
+        </Menu>
+      }
+      popover={POPOVER_PROPS}
+    />
+  )
+}
