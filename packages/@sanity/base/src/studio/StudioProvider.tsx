@@ -6,7 +6,7 @@ import json from 'refractor/lang/json'
 import jsx from 'refractor/lang/jsx'
 import typescript from 'refractor/lang/typescript'
 import {History} from 'history'
-import {LayerProvider, ToastProvider} from '@sanity/ui'
+import {LayerProvider, ThemeColorSchemeKey, ToastProvider} from '@sanity/ui'
 import {SanityConfig} from '../config'
 import {UserColorManagerProvider} from '../user-color'
 import {ResourceCacheProvider} from '../datastores/ResourceCacheProvider'
@@ -28,20 +28,28 @@ Refractor.registerLanguage(jsx)
 Refractor.registerLanguage(typescript)
 
 export interface StudioProviderProps {
+  children: React.ReactNode
   config: SanityConfig
   history?: History
-  children: React.ReactNode
+  onSchemeChange?: (nextScheme: ThemeColorSchemeKey) => void
+  scheme?: ThemeColorSchemeKey
 }
 
-export function StudioProvider({config, history, children}: StudioProviderProps) {
+export function StudioProvider({
+  children,
+  config,
+  history,
+  onSchemeChange,
+  scheme,
+}: StudioProviderProps) {
   return (
     <ConfigProvider config={config}>
-      <ColorSchemeProvider>
+      <ColorSchemeProvider onSchemeChange={onSchemeChange} scheme={scheme}>
         <StudioErrorBoundary>
           <LocationProvider history={history} noRoute={<>no route</>}>
             <StudioThemeProvider>
-              <LayerProvider>
-                <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
+              <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
+                <LayerProvider>
                   <UserColorManagerProvider>
                     <AuthBoundary loginScreen={LoginScreen}>
                       <WorkspaceResolver loadingScreen={<LoadingScreen />}>
@@ -49,8 +57,8 @@ export function StudioProvider({config, history, children}: StudioProviderProps)
                       </WorkspaceResolver>
                     </AuthBoundary>
                   </UserColorManagerProvider>
-                </ToastProvider>
-              </LayerProvider>
+                </LayerProvider>
+              </ToastProvider>
             </StudioThemeProvider>
           </LocationProvider>
         </StudioErrorBoundary>
