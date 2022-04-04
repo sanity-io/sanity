@@ -28,19 +28,25 @@ function isClientError(e: unknown): e is ClientError {
 const POLL_INTERVAL = 5000
 
 // only fetches when the document is visible
-const visiblePoll$ = fromEvent(document, 'visibilitychange').pipe(
-  // add empty emission to have this fire on creation
-  startWith(null),
-  map(() => document.visibilityState === 'visible'),
-  distinctUntilChanged(),
-  switchMap((visible) =>
-    visible
-      ? // using timer instead of interval since timer will emit on creation
-        timer(0, POLL_INTERVAL)
-      : EMPTY
-  ),
-  shareReplay({refCount: true, bufferSize: 1})
-)
+let visiblePoll$: Observable<number>
+const getVisiblePoll$ = () => {
+  if (!visiblePoll$) {
+    visiblePoll$ = fromEvent(document, 'visibilitychange').pipe(
+      // add empty emission to have this fire on creation
+      startWith(null),
+      map(() => document.visibilityState === 'visible'),
+      distinctUntilChanged(),
+      switchMap((visible) =>
+        visible
+          ? // using timer instead of interval since timer will emit on creation
+            timer(0, POLL_INTERVAL)
+          : EMPTY
+      ),
+      shareReplay({refCount: true, bufferSize: 1})
+    )
+  }
+  return visiblePoll$
+}
 
 export type ReferringDocuments = {
   isLoading: boolean
@@ -86,7 +92,7 @@ function fetchCrossDatasetReferences(
 ): Observable<ReferringDocuments['crossDatasetReferences']> {
   const {crossProjectTokenStore, versionedClient} = context
 
-  return visiblePoll$.pipe(
+  return getVisiblePoll$().pipe(
     switchMap(() => crossProjectTokenStore.fetchAllCrossProjectTokens()),
     switchMap((crossProjectTokens) => {
       const currentDataset = versionedClient.config().dataset
@@ -140,7 +146,7 @@ const useCrossDatasetReferences = createHookFromObservableFactory(
     const {client} = useSource()
     const versionedClient = useMemo(() => client.withConfig({apiVersion: '2022-03-07'}), [])
 
-    return visiblePoll$.pipe(
+    return getVisiblePoll$().pipe(
       switchMap(() =>
         fetchCrossDatasetReferences(documentId, {versionedClient, crossProjectTokenStore})
       )

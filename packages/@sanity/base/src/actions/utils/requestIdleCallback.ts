@@ -9,14 +9,9 @@ interface IdleOptions {
 
 type IdleCallback = (deadline: IdleDeadline) => void
 
-const win: Window & {
-  requestIdleCallback?: (callback: IdleCallback, options?: IdleOptions) => number
-  cancelIdleCallback?: (handle: number) => void
-} = window
-
 function requestIdleCallbackShim(callback: IdleCallback, _options?: IdleOptions): number {
   const start = Date.now()
-  return win.setTimeout(() => {
+  return (setTimeout as Window['setTimeout'])(() => {
     callback({
       didTimeout: false,
       timeRemaining() {
@@ -27,8 +22,10 @@ function requestIdleCallbackShim(callback: IdleCallback, _options?: IdleOptions)
 }
 
 function cancelIdleCallbackShim(handle: number): void {
-  return win.clearTimeout(handle)
+  return clearTimeout(handle)
 }
 
-export const requestIdleCallback = win.requestIdleCallback || requestIdleCallbackShim
-export const cancelIdleCallback = win.cancelIdleCallback || cancelIdleCallbackShim
+export const requestIdleCallback =
+  typeof window === 'undefined' ? requestIdleCallbackShim : window.requestIdleCallback
+export const cancelIdleCallback =
+  typeof window === 'undefined' ? cancelIdleCallbackShim : window.cancelIdleCallback

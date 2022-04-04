@@ -1,11 +1,16 @@
 /* eslint-disable react/react-in-jsx-scope */
-import dynamic from 'next/dynamic'
 import {useRouter} from 'next/router'
-
-const Studio = dynamic(() => import('../../components/Studio'), {ssr: false})
+import {useEffect, useState} from 'react'
+import Studio from '../../components/Studio'
 
 export default function StudioPage() {
   const router = useRouter()
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+  if (!mounted) return null
+
   const [basePath] = router.route.split('/[...tool]')
   return <Studio basePath={basePath} />
 }
