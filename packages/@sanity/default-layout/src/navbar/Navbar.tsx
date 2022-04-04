@@ -52,15 +52,21 @@ const CenterBox = styled(Box)``
 
 const RightFlex = styled(Flex)``
 
-const SearchCard = styled(Card)<{$fullScreen: boolean}>`
-  min-width: ${({$fullScreen}) => ($fullScreen ? undefined : '253px')};
-  max-width: ${({$fullScreen}) => ($fullScreen ? undefined : '350px')};
+const SearchCard = styled(Card)`
   z-index: 1;
-  position: ${({$fullScreen}) => ($fullScreen ? 'absolute' : undefined)};
   top: 0;
   left: 0;
   bottom: 0;
   right: 0;
+
+  &[data-fullscreen='true'] {
+    position: absolute;
+  }
+
+  &[data-fullscreen='false'] {
+    min-width: 253px;
+    max-width: 350px;
+  }
 `
 
 const SpacingBox = styled(Box)`
@@ -200,7 +206,7 @@ export const Navbar = memo(function Navbar(props: NavbarProps) {
   ])
 
   return (
-    <Root $onSearchOpen={searchOpen} padding={2} scheme="dark">
+    <Root $onSearchOpen={searchOpen} data-ui="Navbar" padding={2} scheme="dark">
       <Flex align="center" justify="space-between">
         <LeftFlex flex={shouldRender.brandingCenter ? undefined : 1} align="center">
           {!shouldRender.tools && (
@@ -250,10 +256,10 @@ export const Navbar = memo(function Navbar(props: NavbarProps) {
                 <Button
                   aria-label="Create new document"
                   data-testid="default-layout-global-create-button"
+                  disabled={!canCreateSome}
                   icon={ComposeIcon}
                   mode="bleed"
                   onClick={onCreateButtonClick}
-                  disabled={!canCreateSome}
                   selected={createMenuIsOpen}
                 />
               </SpacingBox>
@@ -263,7 +269,8 @@ export const Navbar = memo(function Navbar(props: NavbarProps) {
           <LegacyLayerProvider zOffset="navbarPopover">
             {(searchOpen || !shouldRender.searchFullscreen) && (
               <SearchCard
-                $fullScreen={shouldRender.searchFullscreen}
+                data-fullscreen={shouldRender.searchFullscreen}
+                data-ui="SearchRoot"
                 flex={1}
                 padding={shouldRender.searchFullscreen ? 2 : undefined}
                 scheme={shouldRender.searchFullscreen ? 'light' : undefined}
@@ -281,10 +288,10 @@ export const Navbar = memo(function Navbar(props: NavbarProps) {
                   </Box>
                   {shouldRender.searchFullscreen && (
                     <Button
-                      icon={CloseIcon}
                       aria-label="Close search"
-                      onClick={handleToggleSearchOpen}
+                      icon={CloseIcon}
                       mode="bleed"
+                      onClick={handleToggleSearchOpen}
                       ref={setSearchCloseButtonElement}
                     />
                   )}
@@ -294,7 +301,7 @@ export const Navbar = memo(function Navbar(props: NavbarProps) {
           </LegacyLayerProvider>
 
           {shouldRender.tools && (
-            <Card borderRight paddingRight={1} flex={1} overflow="visible" marginX={2}>
+            <Card borderRight flex={1} marginX={2} overflow="visible" paddingRight={1}>
               <LegacyLayerProvider zOffset="navbarPopover">
                 <ToolMenu direction="horizontal" tools={tools} />
               </LegacyLayerProvider>
@@ -346,9 +353,9 @@ export const Navbar = memo(function Navbar(props: NavbarProps) {
           {shouldRender.searchFullscreen && (
             <Button
               aria-label="Open search"
-              onClick={handleToggleSearchOpen}
               icon={SearchIcon}
               mode="bleed"
+              onClick={handleToggleSearchOpen}
               ref={setSearchOpenButtonElement}
             />
           )}
