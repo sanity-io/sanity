@@ -1,3 +1,0 @@
-{
-  "extends": "../../../.babelrc",
-  "presets": ["@babel/react", "@babel/typescript"]}
