@@ -8,7 +8,7 @@ import {
   UnpublishAction,
   DocumentBadgeComponent,
   LiveEditBadge,
-} from '../deskTool'
+} from '../deskTool/actions'
 import {
   ConfigContext,
   ConfigPropertyReducer,

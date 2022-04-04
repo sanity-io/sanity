@@ -1,4 +1,11 @@
 export type {
+  DefaultDocumentNodeResolver,
+  DeskToolOptions,
+  StructureBuilder,
+  StructureResolver,
+} from '../deskTool'
+
+export type {
   DocumentActionComponent,
   DocumentActionConfirmModalProps,
   DocumentActionDescription,
@@ -9,21 +16,18 @@ export type {
   DocumentActionResolver,
   DocumentBadgeComponent,
   DocumentBadgeDescription,
-  DefaultDocumentNodeResolver,
-  DeskToolOptions,
-  StructureBuilder,
-  StructureResolver,
-} from '../deskTool'
+} from '../deskTool/actions'
+
+export {deskTool} from '../deskTool'
 
 export {
-  deskTool,
   DeleteAction,
   PublishAction,
   DuplicateAction,
   UnpublishAction,
   DiscardChangesAction,
   HistoryRestoreAction,
-} from '../deskTool'
+} from '../deskTool/actions'
 
 export type {
   AsyncComposableOption,
