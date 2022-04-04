@@ -19,6 +19,7 @@ import {WorkspaceResolver} from './components'
 import {LoadingScreen} from './screens'
 import {AuthBoundary} from './AuthBoundary'
 import {LoginScreen} from './screens/login'
+import {Z_OFFSET} from './constants'
 
 Refractor.registerLanguage(bash)
 Refractor.registerLanguage(javascript)
@@ -39,7 +40,7 @@ export function StudioProvider({config, history, children}: StudioProviderProps)
         <StudioErrorBoundary>
           <LocationProvider history={history} noRoute={<>no route</>}>
             <StudioThemeProvider>
-              <ToastProvider>
+              <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
                 <UserColorManagerProvider>
                   <AuthBoundary loginScreen={LoginScreen}>
                     <WorkspaceResolver loadingScreen={<LoadingScreen />}>
