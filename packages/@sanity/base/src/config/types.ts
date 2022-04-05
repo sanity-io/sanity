@@ -62,7 +62,7 @@ export interface Tool<Options = any> {
   component: React.ComponentType<{tool: Tool<Options>}>
   icon?: React.ComponentType
   name: string
-  options: Options
+  options?: Options
   router?: Router
   title: string
   getIntentState?: (

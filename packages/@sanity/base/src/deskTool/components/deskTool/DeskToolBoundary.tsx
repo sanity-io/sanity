@@ -20,7 +20,7 @@ interface DeskToolBoundaryProps {
 export function DeskToolBoundary({tool: {options}}: DeskToolBoundaryProps) {
   const {unstable_sources: sources} = useWorkspace()
   const [firstSource] = sources
-  const {source, defaultDocumentNode, structure} = options
+  const {source, defaultDocumentNode, structure} = options || {}
 
   const {state: routerState} = useRouter()
   const intent = useMemo(() => {
