@@ -13,6 +13,7 @@
     "preserveConstEnums": true,
     "useUnknownInCatchVariables": false,
     "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true,
 
     // Strict type-checking
     "strict": true,
