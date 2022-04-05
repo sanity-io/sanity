@@ -1,7 +1,6 @@
 import {createConfig, deskTool} from 'sanity'
 
 export default createConfig({
-  basePath: '/test/',
   dataset: 'test',
   plugins: [deskTool()],
   name: 'default',
