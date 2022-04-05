@@ -7,21 +7,18 @@ import {createConfig, deskTool} from 'sanity'
 import schemaTypes from './schemas'
 
 export default createConfig({
+  name: '%sourceName%',
+
+  projectId: '%projectId%',
+  dataset: '%dataset%',
+
   plugins: [
     deskTool()
   ],
-  project: {
-    name: '%projectName%'
-  },
-  sources: [
-    {
-      name: '%sourceName%',
-      title: '%sourceTitle%',
-      projectId: '%projectId%',
-      dataset: '%dataset%',
-      schemaTypes
-    },
-  ],
+
+  schema: {
+    types: schemaTypes
+  }
 })
 `
 
