@@ -52,6 +52,7 @@ async function main() {
       target: (isString(flags.target) ? flags.target : 'web') as any,
       // tsconfig: isString(flags.tsconfig) ? flags.tsconfig : undefined,
       watch: Boolean(flags.watch),
+      verbose: Boolean(flags.verbose),
     })
     return
   }

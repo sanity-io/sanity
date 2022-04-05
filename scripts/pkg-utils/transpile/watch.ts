@@ -12,11 +12,13 @@ import {babelBuild} from './babel/babelBuild'
 export async function watch(opts: {
   cwd: string
   target: 'node' | 'web'
+  verbose?: boolean
   // tsconfig: string
 }): Promise<void> {
   const {
     cwd,
     target,
+    verbose,
     // tsconfig
   } = opts
 
@@ -49,6 +51,10 @@ export async function watch(opts: {
   }
 
   async function transpile(filePath: string) {
+    if (verbose) {
+      console.log(`${chalk.blue('transpiling')} ${chalk.yellow(filePath)}`)
+    }
+
     if (opts.target === 'web') {
       await Promise.all([
         babelBuild({

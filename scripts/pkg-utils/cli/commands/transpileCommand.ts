@@ -13,11 +13,13 @@ export async function transpileCommand(opts: {
   target: 'node' | 'web'
   // tsconfig?: string
   watch: boolean
+  verbose?: boolean
 }): Promise<void> {
   const {
     target,
     // tsconfig = 'tsconfig.json',
     watch,
+    verbose,
   } = opts
 
   const cwd = path.resolve(process.cwd(), opts.cwd || '.')
@@ -26,6 +28,7 @@ export async function transpileCommand(opts: {
     await transpile.watch({
       cwd,
       target,
+      verbose,
       // tsconfig
     })
   } else {
