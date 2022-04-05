@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-filename-extension */
 /* eslint-disable react/react-in-jsx-scope */
-import {createConfig, deskTool, StudioRoot} from 'sanity'
+import {createConfig, deskTool, Studio} from 'sanity'
 
 const config = createConfig({
   plugins: [deskTool()],
@@ -31,8 +31,6 @@ const config = createConfig({
   ],
 })
 
-function Studio() {
-  return <StudioRoot config={config} />
+export default function CraStudio() {
+  return <Studio config={config} />
 }
-
-export default Studio

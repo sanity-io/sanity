@@ -45,8 +45,8 @@ export type {
   Plugin,
   PluginOptions,
   ResolveProductionUrlContext,
-  SanityAuthConfig as Unstable_SanityAuthConfig,
-  SanityFormBuilderConfig as Unstable_SanityFormBuilderConfig,
+  SanityAuthConfig as unstable_SanityAuthConfig,
+  SanityFormBuilderConfig as unstable_SanityFormBuilderConfig,
   Config,
   Tool,
   SchemaError,
@@ -90,6 +90,6 @@ export {
   useDocumentOperation,
 } from '../hooks'
 
-export {DefaultDocument} from '../components'
+export {DefaultDocument, DefaultPreview} from '../components'
 
 export {isDev, isProd} from '../environment'

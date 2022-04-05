@@ -1,1 +1,1 @@
-export {default} from '@sanity/cli/templates/clean/schemas/schema'
+export {default} from '@sanity/cli/templates/clean/schemas'
