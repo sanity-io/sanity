@@ -1,14 +1,13 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import React, {useCallback} from 'react'
 import {ElementQuery, Select, TabList} from '@sanity/ui'
 import styled from 'styled-components'
 import {FieldGroup} from '../../../store/types'
-import {GroupTab, GroupOption} from './GroupTab'
+import {GroupOption, GroupTab} from './GroupTab'
 
 interface FieldGroupTabsProps {
   inputId?: string
   groups: FieldGroup[]
   shouldAutoFocus?: boolean
-  selectedName?: string
   onClick?: (name: string) => void
   disabled?: boolean
 }
@@ -35,7 +34,6 @@ const GroupTabs = ({
   inputId,
   groups,
   onClick,
-  selectedName,
   shouldAutoFocus = true,
   disabled,
 }: FieldGroupTabsProps) => (
@@ -49,8 +47,8 @@ const GroupTabs = ({
             onClick={onClick}
             name={group.name}
             title={group.title || group.name}
-            selected={selectedName === group.name ?? group.default}
-            autoFocus={selectedName === group.name && shouldAutoFocus}
+            selected={Boolean(group.active)}
+            autoFocus={shouldAutoFocus && group.active}
             disabled={disabled}
           />
         )
@@ -64,7 +62,6 @@ const GroupSelect = ({
   groups,
   inputId,
   onSelect,
-  selectedName,
   shouldAutoFocus = true,
   disabled,
 }: Omit<FieldGroupTabsProps, 'onClick'> & {onSelect: (name: string) => void}) => {
@@ -84,7 +81,7 @@ const GroupSelect = ({
       aria-label="Field groups"
       autoFocus={shouldAutoFocus}
       disabled={disabled}
-      value={selectedName}
+      value={groups.find((g) => g.active)?.name}
     >
       {groups.map((group) => {
         // Separate hidden in order to resolve it to a boolean type
@@ -92,7 +89,7 @@ const GroupSelect = ({
           <GroupOption
             key={`${inputId}-${group.name}-tab`}
             aria-controls={`${inputId}-field-group-fields`}
-            selected={selectedName === group.name}
+            selected={Boolean(group.active)}
             disabled={group.disabled}
             name={group.name}
             title={group.title || group.name}
