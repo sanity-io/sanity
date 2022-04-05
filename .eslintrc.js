@@ -2,7 +2,6 @@ module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
   globals: {
-    __DEV__: true,
     JSX: true,
   },
   env: {
@@ -22,9 +21,6 @@ module.exports = {
     'prettier',
   ],
   rules: {
-    'import/no-extraneous-dependencies': 'off', // because of parts
-    camelcase: ['error', {allow: ['^unstable_', '^Unstable_']}],
-    'import/no-unresolved': ['error', {ignore: ['.*:.*']}], // because of parts
     'prettier/prettier': 'error',
     'react/jsx-filename-extension': ['error', {extensions: ['.js', '.jsx', '.tsx']}],
     'sort-imports': 'off', // prefer import/order

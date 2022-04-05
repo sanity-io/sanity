@@ -8678,10 +8678,10 @@ eslint-config-react-app@^7.0.0:
     eslint-plugin-react-hooks "^4.3.0"
     eslint-plugin-testing-library "^5.0.1"
 
-eslint-config-sanity@^5.1.0:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/eslint-config-sanity/-/eslint-config-sanity-5.1.0.tgz#b490214f53d42dc116cf31fed1e12d29c5af4c16"
-  integrity sha512-kYd4Euy33hDoFxAgLIGtFGm9TB7YpIY5c+atyCESDRh+WnadxhlYSrrJvAUne84CWPZxybe5f4U+m9K+uc/eeQ==
+eslint-config-sanity@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/eslint-config-sanity/-/eslint-config-sanity-6.0.0.tgz#6d98e1f617b013f2bf8d1a32303068f73219132d"
+  integrity sha512-AZfA8138Yf7NAE4fvUf2Jh0jDxg/sPWjBkhv0d1mW7V84DMmZ6ecrI6Yz3roQVMWpwlSZrc19eskog0JgS7moA==
 
 eslint-import-resolver-node@^0.3.6:
   version "0.3.6"
