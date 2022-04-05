@@ -1,9 +1,9 @@
 import type {SanityClient} from '@sanity/client'
-import {Schema, CurrentUser, AssetSource, SanityDocumentLike} from '@sanity/types'
-import React from 'react'
-import {Observable} from 'rxjs'
-import {BifurClient} from '@sanity/bifur-client'
-import {
+import type {Schema, CurrentUser, AssetSource, SanityDocumentLike} from '@sanity/types'
+import type React from 'react'
+import type {Observable} from 'rxjs'
+import type {BifurClient} from '@sanity/bifur-client'
+import type {
   FormBuilderArrayFunctionComponent,
   FormBuilderCustomMarkersComponent,
   FormBuilderInputComponentMap,
@@ -11,12 +11,13 @@ import {
   FormInputComponentResolver,
   FormPreviewComponentResolver,
 } from '../form'
-import {AuthStore, UserStore} from '../datastores'
-import {AuthController} from '../auth'
-import {StudioTheme} from '../theme'
-import {InitialValueTemplateItem, Template, TemplateResponse} from '../templates'
-import {Router, RouterState} from '../router'
-import {DocumentActionComponent, DocumentBadgeComponent} from '../deskTool'
+import type {AuthStore, UserStore} from '../datastores'
+import type {AuthController} from '../auth'
+import type {StudioTheme} from '../theme'
+import type {InitialValueTemplateItem, Template, TemplateResponse} from '../templates'
+import type {Router, RouterState} from '../router'
+import type {DocumentActionComponent} from '../deskTool/actions'
+import type {DocumentBadgeComponent} from '../deskTool/badges'
 
 /**
  * @alpha

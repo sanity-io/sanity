@@ -1,6 +1,6 @@
 import {Badge, BadgeTone, Box, Inline, Text, Tooltip} from '@sanity/ui'
 import React from 'react'
-import {DocumentBadgeDescription, RenderBadgeCollectionState} from '../../../../actions'
+import {DocumentBadgeDescription, RenderBadgeCollectionState} from '../../../../badges'
 import {useDocumentPane} from '../../useDocumentPane'
 
 interface DocumentBadgesInnerProps {

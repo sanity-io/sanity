@@ -14,9 +14,9 @@ export type {
   DocumentActionPopoverModalProps,
   DocumentActionProps,
   DocumentActionResolver,
-  DocumentBadgeComponent,
-  DocumentBadgeDescription,
 } from '../deskTool/actions'
+
+export type {DocumentBadgeComponent, DocumentBadgeDescription} from '../deskTool/badges'
 
 export {deskTool} from '../deskTool'
 

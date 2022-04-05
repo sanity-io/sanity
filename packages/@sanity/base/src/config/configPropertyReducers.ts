@@ -1,4 +1,4 @@
-import {Template, TemplateResponse} from '../templates'
+import type {Template, TemplateResponse} from '../templates'
 import {
   DocumentActionComponent,
   DeleteAction,
@@ -6,10 +6,9 @@ import {
   DuplicateAction,
   PublishAction,
   UnpublishAction,
-  DocumentBadgeComponent,
-  LiveEditBadge,
 } from '../deskTool/actions'
-import {
+import {DocumentBadgeComponent, LiveEditBadge} from '../deskTool/badges'
+import type {
   ConfigContext,
   ConfigPropertyReducer,
   AsyncConfigPropertyReducer,

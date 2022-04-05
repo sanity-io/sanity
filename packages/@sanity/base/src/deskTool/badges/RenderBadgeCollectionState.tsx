@@ -1,7 +1,7 @@
 import React from 'react'
-import {EditStateFor} from '../../datastores'
-import {DocumentBadgeDescription, DocumentBadgeProps} from './types'
-import {GetHookCollectionState} from './GetHookCollectionState'
+import type {EditStateFor} from '../../datastores'
+import {GetHookCollectionState} from '../actions/GetHookCollectionState'
+import type {DocumentBadgeDescription, DocumentBadgeProps} from './types'
 
 interface Badge<Args, Description> {
   (args: Args): Description | null

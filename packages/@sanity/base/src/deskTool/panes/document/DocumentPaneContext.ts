@@ -1,7 +1,8 @@
 import {ValidationMarker, Path, SanityDocument} from '@sanity/types'
 import {createContext} from 'react'
 import {EditStateFor, TimelineController, Timeline} from '../../../datastores'
-import {DocumentActionComponent, DocumentBadgeComponent} from '../../actions'
+import {DocumentActionComponent} from '../../actions'
+import {DocumentBadgeComponent} from '../../badges'
 import {PaneView, PaneMenuItem, PaneMenuItemGroup} from '../../types'
 import {TimelineMode} from './types'
 
