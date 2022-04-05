@@ -1,6 +1,6 @@
 import path from 'path'
 import fs from 'fs/promises'
-import klawSync from 'klaw-sync'
+import {readdirRecursive} from './readdirRecursive'
 
 interface CopyOptions {
   rename?: (originalName: string) => string
@@ -12,9 +12,12 @@ export async function copy(
   options?: CopyOptions
 ): Promise<number> {
   const rename = options?.rename
-  const content = klawSync(srcPath)
+  const content = (await fs.stat(srcPath)).isDirectory()
+    ? await readdirRecursive(srcPath)
+    : [{path: srcPath, isDir: false}]
+
   const directories = content
-    .filter((entry) => entry.stats.isDirectory())
+    .filter((entry) => entry.isDir)
     .sort((a, b) => b.path.length - a.path.length)
     .sort((a, b) => a.path.localeCompare(b.path))
     .map((entry) => entry.path)
@@ -26,7 +29,7 @@ export async function copy(
   }
 
   const files = content
-    .filter((entry) => entry.stats.isFile())
+    .filter((entry) => !entry.isDir)
     .sort((a, b) => b.path.length - a.path.length)
     .sort((a, b) => a.path.localeCompare(b.path))
     .map((entry) => {
