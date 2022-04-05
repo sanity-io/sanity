@@ -1,22 +1,30 @@
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react'
-import {Path, SanityDocument} from '@sanity/types'
+import {ObjectSchemaType, Path, SanityDocument} from '@sanity/types'
 import {omit} from 'lodash'
 import {useToast} from '@sanity/ui'
 import {fromString as pathFromString, pathFor} from '@sanity/util/paths'
 import isHotkey from 'is-hotkey'
 import {useMemoObservable} from 'react-rx'
 import {PaneMenuItem} from '../../types'
-import {useHistoryStore, usePresenceStore, useInitialValue} from '../../../datastores'
 import {
+  useCurrentUser,
+  useHistoryStore,
+  useInitialValue,
+  usePresenceStore,
+} from '../../../datastores'
+import {
+  useConnectionState,
   useDocumentOperation,
   useEditState,
   useValidationStatus,
-  useConnectionState,
 } from '../../../hooks'
 import {isDev} from '../../../environment'
 import {useSource} from '../../../studio'
-import {useUnique, getPublishedId} from '../../../util'
-import {usePaneRouter, useDeskTool} from '../../components'
+import {getPublishedId, useUnique} from '../../../util'
+import {useDeskTool, usePaneRouter} from '../../components'
+import {toMutationPatches} from '../../../form'
+import {deriveFormState} from '../../../form/store/formState'
+import {ObjectFieldGroupState} from '../../../form/store/types'
 import {DocumentPaneContext, DocumentPaneContextValue} from './DocumentPaneContext'
 import {getMenuItems} from './menuItems'
 import {DocumentPaneProviderProps} from './types'
@@ -71,7 +79,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const editState = useEditState(documentId, documentType)
   const {validation: validationRaw} = useValidationStatus(documentId, documentType)
   const connectionState = useConnectionState(documentId, documentType)
-  const documentSchema = schema.get(documentType)
+  const documentSchema = schema.get(documentType) as ObjectSchemaType
   const value: Partial<SanityDocument> =
     editState?.draft || editState?.published || initialValue.value
   const actions = useMemo(
@@ -158,7 +166,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
 
   const handleChange = useCallback(
-    (patches) => patch.execute(patches, initialValue.value),
+    (event) => {
+      return patch.execute(toMutationPatches(event.patches), initialValue.value)
+    },
     [patch, initialValue.value]
   )
 
@@ -225,6 +235,20 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const handleInspectClose = useCallback(() => toggleInspect(false), [toggleInspect])
 
+  const currentUser = useCurrentUser()
+
+  const [fieldGroupState, onSetFieldGroupState] = useState<ObjectFieldGroupState>()
+
+  const formState = deriveFormState(documentSchema, {
+    document: value,
+    fieldGroupState,
+    onSetFieldGroupState,
+    value,
+    onChange: handleChange,
+    level: 0,
+    currentUser,
+  })
+
   const documentPane: DocumentPaneContextValue = {
     actions,
     activeViewId,
@@ -240,6 +264,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     editState,
     focusPath,
     handleChange,
+    onSelectGroup: formState.onSetFieldGroup,
     handleFocus,
     handleHistoryClose,
     handleHistoryOpen,
@@ -264,6 +289,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     title,
     value,
     views,
+    state: formState,
   }
 
   useEffect(() => {

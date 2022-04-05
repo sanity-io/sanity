@@ -1,12 +1,12 @@
 import React, {forwardRef} from 'react'
 import {Tab} from '@sanity/ui'
-import {FieldGroup} from '@sanity/types/src'
 
-interface GroupType extends FieldGroup {
+interface GroupType {
+  name: string
+  title: string
   onClick?: (value: string) => void
   autoFocus?: boolean
   selected: boolean
-  parent: unknown
   'aria-controls': string
   disabled?: boolean
 }
@@ -15,41 +15,30 @@ export const GroupTab = forwardRef(function GroupTab(
   props: GroupType,
   ref: React.Ref<HTMLButtonElement>
 ) {
-  const {name, title} = props
   // Separate props for resolving conditional hidden groups
-  const {onClick, parent, hidden, ...group} = props
+  const {onClick} = props
 
   // Here goes the content of our component
   const handleClick = React.useCallback(() => {
-    onClick?.(name)
-  }, [name, onClick])
-
-  if (hidden) {
-    return null
-  }
+    onClick?.(props.name)
+  }, [props.name, onClick])
 
   return (
     <Tab
       data-testid={`group-tab-${name}`}
       size={1}
-      id={`${name}-tab`}
-      label={title || name}
-      title={title || name}
-      onClick={handleClick}
-      {...group}
+      id={`${props.name}-tab`}
+      label={props.title}
       ref={ref}
+      {...props}
+      onClick={handleClick}
     />
   )
 })
 
 export const GroupOption = (props: Omit<GroupType, 'onClick' | 'autoFocus'>) => {
   const {name, title, ...rest} = props
-  // Separate props for resolving conditional hidden groups
-  const {selected, hidden} = props
-
-  if (hidden) {
-    return null
-  }
+  const {selected} = props
 
   return (
     <option

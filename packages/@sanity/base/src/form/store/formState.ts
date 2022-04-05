@@ -12,9 +12,8 @@ import {ComponentType} from 'react'
 import {createProtoValue} from '../utils/createProtoValue'
 import {PatchEvent, setIfMissing} from '../patch'
 import {callConditionalProperties, callConditionalProperty} from './conditional-property'
-import {FieldGroup, FieldMember, FieldProps, ObjectMember} from './types'
+import {FieldGroup, FieldMember, FieldProps, ObjectFieldGroupState, ObjectMember} from './types'
 import {MAX_FIELD_DEPTH} from './constants'
-import {ObjectFieldGroupState} from './formStore'
 import {getItemType} from './utils/getItemType'
 
 function isFieldEnabledByGroupFilter(
@@ -347,7 +346,7 @@ export interface ArrayFormState<T> {
   members: ObjectFormState<unknown>[]
 }
 
-export function createFormState<T extends SanityDocument>(
+export function deriveFormState<T extends SanityDocument>(
   schemaType: ObjectSchemaType,
   ctx: PropsContext<T>
 ): ObjectFormState<T> {

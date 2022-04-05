@@ -7,6 +7,8 @@ import {PatchChannel} from '../patchChannel'
 import {MutationPatch, toMutationPatches} from '../utils/mutationPatch'
 import {ReviewChangesContextProvider} from './contexts/reviewChanges/ReviewChangesProvider'
 import {SanityFormBuilderProvider} from './SanityFormBuilderProvider'
+import {DocumentInput} from '../inputs/DocumentInput/DocumentInput'
+import {FieldGroup, ObjectMember} from '../store/types'
 
 /**
  * @alpha
@@ -26,6 +28,9 @@ export interface SanityFormBuilderProps {
   onFocus: (path: Path) => void
   presence: FormFieldPresence[]
   readOnly?: boolean
+  members: ObjectMember[]
+  groups?: FieldGroup[]
+  onSelectGroup: (groupName: string) => void
   schema: Schema
   type: SchemaType
   validation: ValidationMarker[]
@@ -48,12 +53,15 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
     onBlur,
     onChange,
     onFocus,
+    onSelectGroup,
     presence,
     readOnly,
     schema,
     type,
     validation,
     value,
+    members,
+    groups,
   } = props
 
   const inputRef = useRef<FormBuilderInputInstance | null>(null)
@@ -77,8 +85,8 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
   return (
     <SanityFormBuilderProvider __internal_patchChannel={patchChannel} schema={schema} value={value}>
       <ReviewChangesContextProvider changesOpen={changesOpen}>
-        <FormBuilderInput
-          compareValue={compareValue}
+        <DocumentInput
+          // compareValue={compareValue}
           // filterField={filterField}
           focusPath={focusPath}
           isRoot
@@ -91,6 +99,9 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
           readOnly={readOnly}
           ref={inputRef}
           type={type}
+          members={members}
+          groups={groups}
+          onSelectGroup={onSelectGroup}
           validation={validation}
           value={value}
         />

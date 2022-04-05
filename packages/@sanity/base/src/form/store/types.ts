@@ -1,6 +1,7 @@
 import {
   ArraySchemaType,
   BooleanSchemaType,
+  CurrentUser,
   NumberSchemaType,
   ObjectSchemaType,
   StringSchemaType,
@@ -8,7 +9,24 @@ import {
 import * as React from 'react'
 import {ComponentType} from 'react'
 import {PatchEvent} from '../patch'
-import {ObjectFormState} from './formState'
+import {ObjectFormState, SanityDocument} from './formState'
+
+export interface FormStore<T extends SanityDocument> {
+  updateValue: (updater: (current: T) => T) => void
+  onChange: (patchEvent: PatchEvent) => void
+  onSetFieldGroup: (groupName: string) => void
+  updateCurrentUser: (updater: (current: CurrentUser) => CurrentUser) => void
+  getState: () => ObjectFormState<T>
+  getValue: () => T
+  subscribe: (subscriber: (value: ObjectFormState<T>) => void) => void
+}
+
+export interface ObjectFieldGroupState {
+  current?: string
+  fields?: {
+    [field: string]: ObjectFieldGroupState
+  }
+}
 
 export interface FieldGroup {
   name: string
@@ -16,6 +34,7 @@ export interface FieldGroup {
   icon?: ComponentType<void>
   default?: boolean
   active?: boolean
+  disabled?: boolean
 }
 
 export type ObjectMember = FieldMember | FieldSetMember

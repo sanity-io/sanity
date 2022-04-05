@@ -1,11 +1,10 @@
 import {SanityDocument} from '@sanity/client'
 import {isActionEnabled} from '@sanity/schema/_internal'
-import {Box, Container, Flex, Spinner, Text} from '@sanity/ui'
+import {Box, Code, Container, Flex, Spinner, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo} from 'react'
 import {tap} from 'rxjs/operators'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Delay} from '../../../../components/Delay'
-// import {afterEditorComponents, filterFieldFn$} from '../../../../TODO'
 import {useDocumentStore} from '../../../../../datastores'
 import {
   FormBuilderFilterFieldFn,
@@ -58,6 +57,8 @@ export function FormView(props: FormViewProps) {
     validation,
     ready,
     changesOpen,
+    state,
+    onSelectGroup,
   } = useDocumentPane()
   const documentStore = useDocumentStore()
   const presence = useDocumentPresence(documentId)
@@ -188,6 +189,9 @@ export function FormView(props: FormViewProps) {
               type={documentSchema}
               validation={validation}
               value={value}
+              members={state.members}
+              groups={state.groups}
+              onSelectGroup={onSelectGroup}
             />
           ) : (
             <Delay ms={300}>

@@ -1,14 +1,13 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {ElementQuery, Select, TabList} from '@sanity/ui'
-import {FieldGroup} from '@sanity/types/src'
 import styled from 'styled-components'
+import {FieldGroup} from '../../../store/types'
 import {GroupTab, GroupOption} from './GroupTab'
 
 interface FieldGroupTabsProps {
   inputId?: string
   groups: FieldGroup[]
   shouldAutoFocus?: boolean
-  title?: string
   selectedName?: string
   onClick?: (name: string) => void
   disabled?: boolean
@@ -43,21 +42,16 @@ const GroupTabs = ({
   <TabList space={2} data-testid="field-group-tabs">
     {groups
       .map((group) => {
-        const {fields, ...restGroup} = group
-
-        if (!fields || fields.length === 0) {
-          return null
-        }
         return (
           <GroupTab
             key={`${inputId}-${group.name}-tab`}
             aria-controls={`${inputId}-field-group-fields`}
             onClick={onClick}
+            name={group.name}
+            title={group.title || group.name}
             selected={selectedName === group.name ?? group.default}
             autoFocus={selectedName === group.name && shouldAutoFocus}
-            parent={groups}
             disabled={disabled}
-            {...restGroup}
           />
         )
       })
@@ -94,19 +88,14 @@ const GroupSelect = ({
     >
       {groups.map((group) => {
         // Separate hidden in order to resolve it to a boolean type
-        const {fields, ...restGroup} = group
-
-        if (!fields || fields.length === 0) {
-          return null
-        }
-
         return (
           <GroupOption
             key={`${inputId}-${group.name}-tab`}
             aria-controls={`${inputId}-field-group-fields`}
             selected={selectedName === group.name}
-            parent={groups}
-            {...restGroup}
+            disabled={group.disabled}
+            name={group.name}
+            title={group.title || group.name}
           />
         )
       })}
@@ -119,8 +108,6 @@ export const FieldGroupTabs = React.memo(function FieldGroupTabs({
   disabled = false,
   ...props
 }: FieldGroupTabsProps) {
-  const {groups} = props
-
   const handleClick = useCallback(
     (groupName) => {
       onClick?.(groupName)
