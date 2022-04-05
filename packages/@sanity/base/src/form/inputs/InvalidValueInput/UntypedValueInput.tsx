@@ -4,8 +4,7 @@ import {useSource} from '../../../studio'
 import {PatchEvent, setIfMissing, unset} from '../../patch'
 import {Alert} from '../../components/Alert'
 import {Details} from '../../components/Details'
-
-declare const __DEV__: boolean
+import {isDev} from '../../../environment'
 
 interface UntypedValueInputProps {
   validTypes: string[]
@@ -79,7 +78,7 @@ export function UntypedValueInput({validTypes, value, onChange}: UntypedValueInp
         </>
       }
     >
-      <Details open={__DEV__} title={<>Developer info</>}>
+      <Details open={isDev} title={<>Developer info</>}>
         <Stack space={3}>
           <Text as="p" muted size={1}>
             Encountered an object value without a <code>_type</code> property.

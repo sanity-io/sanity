@@ -13,6 +13,7 @@ import {
   useValidationStatus,
   useConnectionState,
 } from '../../../hooks'
+import {isDev} from '../../../environment'
 import {useSource} from '../../../studio'
 import {useUnique, getPublishedId} from '../../../util'
 import {usePaneRouter, useDeskTool} from '../../components'
@@ -21,8 +22,6 @@ import {getMenuItems} from './menuItems'
 import {DocumentPaneProviderProps} from './types'
 import {usePreviewUrl} from './usePreviewUrl'
 import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
-
-declare const __DEV__: boolean
 
 const emptyObject = {} as Record<string, string | undefined>
 
@@ -91,7 +90,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
   const activeViewId = params.view || (views[0] && views[0].id) || null
   const timeline = useMemo(
-    () => historyStore.getTimeline({publishedId: documentId, enableTrace: __DEV__}),
+    () => historyStore.getTimeline({publishedId: documentId, enableTrace: isDev}),
     [documentId, historyStore]
   )
   const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')

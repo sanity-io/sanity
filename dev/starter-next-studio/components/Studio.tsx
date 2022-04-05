@@ -6,9 +6,6 @@ if (typeof window !== 'undefined') {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   window.setImmediate = window.setTimeout
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  window.__DEV__ = process.env.NODE_ENV === 'development'
 }
 
 export default function StudioRoot({basePath}: {basePath: string}) {

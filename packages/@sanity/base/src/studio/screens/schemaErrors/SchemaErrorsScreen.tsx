@@ -1,13 +1,12 @@
 import {Schema, SchemaValidationProblemPath} from '@sanity/types'
 import {Card} from '@sanity/ui'
 import React, {useEffect} from 'react'
+import {isProd} from '../../../environment'
 import {SchemaErrors} from './SchemaErrors'
 
 interface SchemaErrorsScreenProps {
   schema: Schema
 }
-
-declare const __DEV__: boolean
 
 export function SchemaErrorsScreen({schema}: SchemaErrorsScreenProps) {
   const groupsWithErrors =
@@ -42,7 +41,7 @@ function renderPath(path: SchemaValidationProblemPath) {
 }
 
 function reportWarnings(schema: Schema) {
-  if (!__DEV__) {
+  if (isProd) {
     return
   }
 

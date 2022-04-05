@@ -1,12 +1,11 @@
 import {Button, Card, Code, Stack, Text} from '@sanity/ui'
 import React, {forwardRef, useCallback, useImperativeHandle, useMemo} from 'react'
+import {isDev} from '../../../environment'
 import {PatchEvent, set, unset} from '../../patch'
 import {Alert} from '../../components/Alert'
 import {Details} from '../../components/Details'
 import {converters as CONVERTERS, ValueConverter} from './converters'
 import {UntypedValueInput} from './UntypedValueInput'
-
-declare const __DEV__: boolean
 
 interface Converter extends ValueConverter {
   from: string
@@ -83,7 +82,7 @@ export const InvalidValueInput = forwardRef(
           The property value is stored as a value type that does not match the expected type.
         </Text>
 
-        <Details marginTop={4} open={__DEV__} title={<>Developer info</>}>
+        <Details marginTop={4} open={isDev} title={<>Developer info</>}>
           <Stack space={3}>
             {validTypes.length === 1 && (
               <Text as="p" muted size={1}>

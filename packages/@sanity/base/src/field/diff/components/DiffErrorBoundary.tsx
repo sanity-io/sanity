@@ -1,8 +1,7 @@
+import React from 'react'
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {Box, Card, Flex, Text} from '@sanity/ui'
-import React from 'react'
-
-declare const __DEV__: boolean
+import {isDev} from '../../../environment'
 
 interface DiffErrorBoundaryProps {
   children: React.ReactNode
@@ -47,7 +46,7 @@ export class DiffErrorBoundary extends React.Component<
               Rendering the changes to this field caused an error
             </Text>
 
-            {__DEV__ && (
+            {isDev && (
               <Box marginTop={2}>
                 <Text as="p" size={1}>
                   Check the developer console for more information

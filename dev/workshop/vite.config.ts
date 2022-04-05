@@ -1,7 +1,7 @@
 /* eslint-disable no-process-env, no-sync */
 
 import path from 'path'
-import {viteCommonjs, esbuildCommonjs} from '@originjs/vite-plugin-commonjs'
+import {viteCommonjs} from '@originjs/vite-plugin-commonjs'
 import viteReact from '@vitejs/plugin-react'
 import {defineConfig} from 'vite'
 import {pluginCanonicalModules} from './vite/plugin-canonical-modules'
@@ -53,7 +53,6 @@ export default defineConfig({
   },
 
   define: {
-    // __DEV__: JSON.stringify(true),
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
   },
   plugins: [

@@ -10,7 +10,6 @@ const jsdomDefaultHtml = `<!doctype html>
 </html>`
 
 const getFakeGlobals = (basePath) => ({
-  __DEV__: false,
   requestAnimationFrame: (cb) => setTimeout(cb, 0),
   cancelAnimationFrame: (timer) => clearTimeout(timer),
   InputEvent: global.window && global.window.InputEvent,

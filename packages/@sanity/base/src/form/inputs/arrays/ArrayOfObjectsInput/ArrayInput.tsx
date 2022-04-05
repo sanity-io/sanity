@@ -17,6 +17,7 @@ import {Subscription} from 'rxjs'
 import {randomKey, resolveTypeName} from '@sanity/util/content'
 import {FormFieldSet, ImperativeToast} from '../../../../components'
 import {FileLike, Uploader, UploadEvent} from '../../../sanity/uploads/types'
+import {isDev} from '../../../../environment'
 import {Alert} from '../../../components/Alert'
 import {Details} from '../../../components/Details'
 import {Item, List} from '../common/list'
@@ -33,8 +34,6 @@ import {ArrayItem} from './item'
 import type {ArrayMember, InsertEvent, ReferenceItemComponentType} from './types'
 import {uploadTarget} from './uploadTarget/uploadTarget'
 import {isEmpty} from './item/helpers'
-
-declare const __DEV__: boolean
 
 type Toast = {push: (params: ToastParams) => void}
 
@@ -343,7 +342,7 @@ export class ArrayInput extends React.Component<ArrayInputProps> {
               Some items in this list are not objects. This must be fixed in order to edit the list.
             </Text>
 
-            <Details marginTop={4} open={__DEV__} title={<>Developer info</>}>
+            <Details marginTop={4} open={isDev} title={<>Developer info</>}>
               <Stack space={3}>
                 <Text as="p" muted size={1}>
                   This usually happens when items are created using an API client, or when a custom
@@ -400,7 +399,7 @@ export class ArrayInput extends React.Component<ArrayInputProps> {
                 the list.
               </Text>
 
-              <Details marginTop={4} open={__DEV__} title={<>Developer info</>}>
+              <Details marginTop={4} open={isDev} title={<>Developer info</>}>
                 <Stack space={3}>
                   <Text as="p" muted size={1}>
                     This usually happens when items are created using an API client, and the{' '}

@@ -16,8 +16,6 @@ body {
 }`
 
 const globalScript = `
-// For legacy sanity support
-window.__DEV__ = true;
 // Polyfill
 window.setImmediate = setTimeout;
 `

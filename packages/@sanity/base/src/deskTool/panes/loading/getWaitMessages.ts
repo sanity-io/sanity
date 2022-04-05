@@ -1,7 +1,6 @@
 import {Observable, of, merge} from 'rxjs'
 import {mapTo, delay} from 'rxjs/operators'
-
-declare const __DEV__: boolean
+import {isDev} from '../../../environment'
 
 /**
  * @internal
@@ -12,7 +11,7 @@ export function getWaitMessages(path: string[]): Observable<string> {
     {ms: 5000, message: 'Still loading…'},
   ]
 
-  if (__DEV__) {
+  if (isDev) {
     const message = [
       'Check console for errors?',
       'Is your observable/promise resolving?',

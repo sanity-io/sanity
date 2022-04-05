@@ -18,6 +18,7 @@ import {PaneFooter} from '../../components/pane'
 import {usePaneLayout} from '../../components/pane/usePaneLayout'
 import {ErrorPane} from '../error'
 import {LoadingPane} from '../loading'
+import {isDev} from '../../../environment'
 import {ChangeConnectorRoot, useZIndex} from '../../../components'
 import {useDocumentType} from '../../../hooks'
 import {useSource, SourceProvider} from '../../../studio'
@@ -32,8 +33,6 @@ import {DocumentStatusBar} from './statusBar'
 import {useDocumentPane} from './useDocumentPane'
 import {DocumentPaneProvider} from './DocumentPaneProvider'
 import {DocumentPaneProviderProps} from './types'
-
-declare const __DEV__: boolean
 
 type DocumentPaneOptions = DocumentPaneNode['options']
 
@@ -274,7 +273,7 @@ function InnerDocumentPane() {
               </Text>
             )}
 
-            {__DEV__ && value && (
+            {isDev && value && (
               <>
                 <Text as="p">Here is the JSON representation of the document:</Text>
                 <Card padding={3} overflow="auto" radius={2} shadow={1} tone="inherit">

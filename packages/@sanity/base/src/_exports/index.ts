@@ -91,3 +91,5 @@ export {
 } from '../hooks'
 
 export {DefaultDocument} from '../components'
+
+export {isDev, isProd} from '../environment'
