@@ -28,7 +28,7 @@ export interface FormFieldSetProps {
    * The nesting level of the form field set
    */
   level?: number
-  onToggle?: (collapsed: boolean) => void
+  onToggle?: () => void
   title?: React.ReactNode
   /**
    * @alpha
@@ -95,18 +95,13 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
     level = 0,
     onFocus,
     onToggle,
+    collapsed,
     tabIndex,
     title,
     ...restProps
   } = props
-  const [collapsed, setCollapsed] = useState(collapsedProp)
   const hasValidationMarkers = validation.length > 0
   const forwardedRef = useForwardedRef(ref)
-
-  const handleToggleCollapse = useCallback(() => {
-    setCollapsed(!collapsed)
-    if (onToggle) onToggle(!collapsed)
-  }, [collapsed, onToggle])
 
   const handleFocus = useCallback(
     (event: React.FocusEvent<HTMLDivElement>) => {
@@ -136,10 +131,6 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
     )
   }, [changeIndicator, children, collapsed, columns])
 
-  useEffect(() => {
-    setCollapsed(collapsedProp)
-  }, [collapsedProp])
-
   return (
     <Root data-level={level} {...restProps}>
       {title && (
@@ -148,9 +139,9 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
             <Stack space={2}>
               <Flex>
                 <FormFieldSetLegend
-                  collapsed={collapsed}
+                  collapsed={Boolean(collapsed)}
                   collapsible={collapsible}
-                  onClick={collapsible ? handleToggleCollapse : undefined}
+                  onClick={collapsible ? onToggle : undefined}
                   title={title}
                 />
 

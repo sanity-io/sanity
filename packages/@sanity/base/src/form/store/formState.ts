@@ -52,6 +52,7 @@ function createPropsFromObjectField<T>(
 ): FieldProps {
   const fieldValue = (parentCtx.value as any)?.[field.name]
   const fieldGroupState = parentCtx.fieldGroupState?.fields?.[field.name]
+  const fieldCollapsedState = parentCtx.collapsedState?.fields?.[field.name]
 
   if (isObjectSchemaType(field.type)) {
     const onChange = (fieldChangeEvent: PatchEvent) =>
@@ -88,7 +89,7 @@ function createPropsFromObjectField<T>(
       onSetFieldGroupState,
     })
 
-    const collapsibleOpts = getCollapsedWithDefaults(field.type.options, parentCtx.level)
+    const defaultCollapsedState = getCollapsedWithDefaults(field.type.options, parentCtx.level)
 
     return {
       kind: 'object',
@@ -106,13 +107,17 @@ function createPropsFromObjectField<T>(
       members: fieldState.members,
       groups: fieldState.groups,
       onChange,
-      collapsible: collapsibleOpts.collapsible,
-      collapsed: collapsibleOpts.collapsed,
+      collapsible: defaultCollapsedState.collapsible,
+      collapsed: fieldCollapsedState
+        ? fieldCollapsedState.collapsed
+        : defaultCollapsedState.collapsible,
+
       onCollapse: () => onSetFieldCollapsedState({...parentCtx.collapsedState, collapsed: true}),
       onExpand: () => onSetFieldCollapsedState({...parentCtx.collapsedState, collapsed: false}),
 
       onSelectGroup: (groupName: string) =>
         onSetFieldGroupState({...parentCtx.fieldGroupState, current: groupName}),
+
       value: fieldValue,
     }
   } else if (isArraySchemaType(field.type)) {
@@ -213,10 +218,17 @@ function createObjectInputProps<T>(
   }
 
   const onCollapse = () => {
-    ctx.onSetCollapsedState({collapsed: true, fields: ctx.fieldGroupState?.fields})
+    ctx.onSetCollapsedState({
+      ...ctx.fieldGroupState,
+      collapsed: true,
+    })
   }
+
   const onExpand = () => {
-    ctx.onSetCollapsedState({collapsed: false, fields: ctx.fieldGroupState?.fields})
+    ctx.onSetCollapsedState({
+      ...ctx.fieldGroupState,
+      collapsed: false,
+    })
   }
 
   if (hidden || ctx.level === MAX_FIELD_DEPTH) {
@@ -260,11 +272,11 @@ function createObjectInputProps<T>(
   const parentCtx = {...ctx, level: ctx.level + 1, hidden, readOnly, onChange}
 
   // create a members array for the object
-  const members = (type.fieldsets || []).flatMap((fieldset, index): ObjectMember[] => {
-    if (fieldset.single) {
+  const members = (type.fieldsets || []).flatMap((fieldSet, index): ObjectMember[] => {
+    if (fieldSet.single) {
       // "single" means not part of a fieldset
-      const field = createPropsFromObjectField(fieldset.field, parentCtx, index)
-      return !field.hidden && isFieldEnabledByGroupFilter(groups, fieldset.field, activeGroup)
+      const field = createPropsFromObjectField(fieldSet.field, parentCtx, index)
+      return !field.hidden && isFieldEnabledByGroupFilter(groups, fieldSet.field, activeGroup)
         ? [
             {
               type: 'field',
@@ -274,15 +286,15 @@ function createObjectInputProps<T>(
         : []
     }
 
-    const fieldsetFieldNames = fieldset.fields.map((f) => f.name)
-    const fieldsetHidden = callConditionalProperty(fieldset.hidden, {
+    const fieldsetFieldNames = fieldSet.fields.map((f) => f.name)
+    const fieldsetHidden = callConditionalProperty(fieldSet.hidden, {
       currentUser: ctx.currentUser,
       document: ctx.document,
       parent: ctx.value,
       value: pick(ctx.value, fieldsetFieldNames),
     })
 
-    const fieldMembers = fieldset.fields.flatMap((field): FieldMember[] => {
+    const fieldMembers = fieldSet.fields.flatMap((field): FieldMember[] => {
       const fieldMember = createPropsFromObjectField(field, parentCtx, index)
       return !fieldMember.hidden && isFieldEnabledByGroupFilter(groups, field, activeGroup)
         ? [
@@ -303,10 +315,30 @@ function createObjectInputProps<T>(
       {
         type: 'fieldSet',
         fieldSet: {
-          name: fieldset.name,
-          title: fieldset.title,
+          name: fieldSet.name,
+          title: fieldSet.title,
           hidden: false,
           fields: fieldMembers,
+          collapsible: fieldSet.options?.collapsible,
+          collapsed: ctx.collapsedState?.fieldSets?.[fieldSet.name],
+          onCollapse: () => {
+            ctx.onSetCollapsedState({
+              ...ctx.collapsedState,
+              fieldSets: {
+                ...ctx.collapsedState?.fieldSets,
+                [fieldSet.name]: true,
+              },
+            })
+          },
+          onExpand: () => {
+            ctx.onSetCollapsedState({
+              ...ctx.fieldGroupState,
+              fieldSets: {
+                ...ctx.collapsedState?.fieldSets,
+                [fieldSet.name]: false,
+              },
+            })
+          },
         },
       },
     ]

@@ -4,7 +4,6 @@ import {ObjectSchemaTypeWithOptions, Path, ValidationMarker} from '@sanity/types
 import React, {ForwardedRef, forwardRef, memo, useMemo} from 'react'
 import {useId} from '@reach/auto-id'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
-import {Text} from '@sanity/ui'
 import {FormFieldSet} from '../../../components/formField'
 import {FormFieldPresence} from '../../../presence'
 import {FormInputProps} from '../../types'
@@ -114,10 +113,15 @@ export const ObjectInput = memo(
           }
 
           return (
-            <fieldset key={`fieldset-${member.fieldSet.name}`}>
-              <summary>
-                <Text>{member.fieldSet.title} [FIELDSET]</Text>
-              </summary>
+            <FormFieldSet
+              key={`fieldset-${member.fieldSet.name}`}
+              title={member.fieldSet.title}
+              collapsible={member.fieldSet.collapsible}
+              collapsed={member.fieldSet.collapsed}
+              onToggle={
+                member.fieldSet.collapsed ? member.fieldSet.onExpand : member.fieldSet.onCollapse
+              }
+            >
               {member.fieldSet.fields.map((fieldsetMember) => (
                 <MemberField
                   member={fieldsetMember}
@@ -125,7 +129,7 @@ export const ObjectInput = memo(
                   key={fieldsetMember.field.name}
                 />
               ))}
-            </fieldset>
+            </FormFieldSet>
           )
         })}
         {renderedUnknownFields}

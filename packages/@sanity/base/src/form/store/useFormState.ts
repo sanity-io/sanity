@@ -11,7 +11,7 @@ export function useFormState(
 ) {
   const currentUser = useCurrentUser()
   const [fieldGroupState, onSetFieldGroupState] = useState<ObjectFieldGroupState>()
-  const [expandedState, onSetExpandedState] = useState<ObjectCollapsedState>()
+  const [collapsedState, onSetCollapsedState] = useState<ObjectCollapsedState>()
 
   return useMemo(() => {
     // console.time('derive form state')
@@ -24,10 +24,10 @@ export function useFormState(
       onChange,
       level: 0,
       currentUser,
-      expandedState,
-      onSetCollapsedState: onSetExpandedState,
+      collapsedState,
+      onSetCollapsedState: onSetCollapsedState,
     })
     // console.timeEnd('derive form state')
     return state
-  }, [schemaType, value, fieldGroupState, onChange, currentUser, expandedState])
+  }, [schemaType, value, fieldGroupState, onChange, currentUser, collapsedState])
 }

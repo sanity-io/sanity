@@ -31,7 +31,10 @@ export interface ObjectFieldGroupState {
 export interface ObjectCollapsedState {
   collapsed?: boolean
   fields?: {
-    [field: string]: ObjectCollapsedState
+    [name: string]: ObjectCollapsedState
+  }
+  fieldSets?: {
+    [name: string]: boolean
   }
 }
 
@@ -55,6 +58,10 @@ export interface FieldSetProps {
   name: string
   title?: string
   hidden?: boolean
+  collapsible?: boolean
+  collapsed?: boolean
+  onExpand: () => void
+  onCollapse: () => void
   fields: FieldMember[]
 }
 

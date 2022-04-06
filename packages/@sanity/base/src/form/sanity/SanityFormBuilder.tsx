@@ -89,7 +89,6 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
           // compareValue={compareValue}
           // filterField={filterField}
           focusPath={focusPath}
-          isRoot
           level={0}
           onBlur={onBlur}
           onChange={handleChange}
