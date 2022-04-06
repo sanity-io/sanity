@@ -18,8 +18,8 @@ interface Props {
   alt: string
 }
 
-/* 
-  Used for setting the initial image height - specifically for images 
+/*
+  Used for setting the initial image height - specifically for images
   that are small and so can take less space in the document
 */
 const getImageSize = (src) => {
@@ -51,7 +51,7 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
   // is the image wider than root? if so calculate the resized height
   const renderedImageHeight = imageWidth > rootWidth ? rootWidth / imageRatio : imageHeight
 
-  /* 
+  /*
     if the rendered image is smaller than the max height then it doesn't require a height set
     otherwise, set the max height (to prevent a large image in the document)
   */
@@ -71,7 +71,13 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
     <RatioBox {...rest} ref={setRootElement} style={{height: rootHeight}} tone="transparent">
       <Card data-container tone="inherit">
         {!isLoaded && <OverlayComponent cardTone="transparent" drag content={<SpinnerWrapper />} />}
-        <img src={src} data-testid="hotspot-image-input" alt={props.alt} onLoad={onLoadChange} />
+        <img
+          src={src}
+          data-testid="hotspot-image-input"
+          alt={props.alt}
+          onLoad={onLoadChange}
+          referrerPolicy="strict-origin-when-cross-origin"
+        />
       </Card>
 
       {drag && (

@@ -78,6 +78,7 @@ export default function Document(props: DocumentProps) {
         <title>{title}</title>
         <meta name="viewport" content={viewport} />
         <meta name="robots" content="noindex" />
+        <meta name="referrer" content="same-origin" />
         <style>{`html {background-color: #f1f3f6;}`}</style>
         {stylesheets}
         {subresources}
