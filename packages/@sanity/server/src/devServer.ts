@@ -29,7 +29,7 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
 
   const monorepo = await loadSanityMonorepo(cwd)
   const runtimeDir = path.join(cwd, '.sanity', 'runtime')
-  const startTime = performance.now()
+  const startTime = Date.now()
 
   debug('Making runtime directory')
   await fs.mkdir(runtimeDir, {recursive: true})
@@ -68,7 +68,7 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
 
   await server.listen()
 
-  const startupDuration = performance.now() - startTime
+  const startupDuration = Date.now() - startTime
   const url = `http://${httpHost || 'localhost'}:${httpPort || '3333'}`
   info(
     `Sanity Studio ` +
