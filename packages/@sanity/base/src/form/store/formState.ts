@@ -70,23 +70,25 @@ function createPropsFromObjectField<T>(
       })
     }
 
-    const onSetFieldCollapsedState = (innerFieldCollapsedState: ObjectCollapsedState) => {
+    const onSetCollapsedState = (state: ObjectCollapsedState) => {
       parentCtx.onSetCollapsedState({
-        ...parentCtx.fieldGroupState,
+        ...parentCtx.collapsedState,
         fields: {
-          ...innerFieldCollapsedState.fields,
-          [field.name]: innerFieldCollapsedState,
+          ...parentCtx.collapsedState?.fields,
+          [field.name]: {...parentCtx.collapsedState?.fields?.[field.name], ...state},
         },
       })
     }
 
-    const fieldState = createObjectInputProps(field.type, {
+    const fieldProps = createObjectInputProps(field.type, {
       ...parentCtx,
       parent: parentCtx.value,
       value: fieldValue,
       fieldGroupState,
+      collapsedState: fieldCollapsedState,
       onChange,
       onSetFieldGroupState,
+      onSetCollapsedState,
     })
 
     const defaultCollapsedState = getCollapsedWithDefaults(field.type.options, parentCtx.level)
@@ -101,20 +103,18 @@ function createPropsFromObjectField<T>(
       index,
       hidden:
         parentCtx.hidden ||
-        fieldState.hidden ||
-        fieldState.members.every((member) => isMemberHidden(member)),
-      readOnly: parentCtx.readOnly || fieldState.readOnly,
-      members: fieldState.members,
-      groups: fieldState.groups,
+        fieldProps.hidden ||
+        fieldProps.members.every((member) => isMemberHidden(member)),
+      readOnly: parentCtx.readOnly || fieldProps.readOnly,
+      members: fieldProps.members,
+      groups: fieldProps.groups,
       onChange,
       collapsible: defaultCollapsedState.collapsible,
       collapsed: fieldCollapsedState
         ? fieldCollapsedState.collapsed
         : defaultCollapsedState.collapsible,
-
-      onCollapse: () => onSetFieldCollapsedState({...parentCtx.collapsedState, collapsed: true}),
-      onExpand: () => onSetFieldCollapsedState({...parentCtx.collapsedState, collapsed: false}),
-
+      onCollapse: () => onSetCollapsedState({collapsed: true}),
+      onExpand: () => onSetCollapsedState({collapsed: false}),
       onSelectGroup: (groupName: string) =>
         onSetFieldGroupState({...parentCtx.fieldGroupState, current: groupName}),
 
@@ -219,14 +219,14 @@ function createObjectInputProps<T>(
 
   const onCollapse = () => {
     ctx.onSetCollapsedState({
-      ...ctx.fieldGroupState,
+      ...ctx.collapsedState,
       collapsed: true,
     })
   }
 
   const onExpand = () => {
     ctx.onSetCollapsedState({
-      ...ctx.fieldGroupState,
+      ...ctx.collapsedState,
       collapsed: false,
     })
   }
@@ -269,7 +269,13 @@ function createObjectInputProps<T>(
 
   const activeGroup = groups.find((group) => group.selected)!
 
-  const parentCtx = {...ctx, level: ctx.level + 1, hidden, readOnly, onChange}
+  const parentCtx: PropsContext<unknown> = {
+    ...ctx,
+    level: ctx.level + 1,
+    hidden,
+    readOnly,
+    onChange,
+  }
 
   // create a members array for the object
   const members = (type.fieldsets || []).flatMap((fieldSet, index): ObjectMember[] => {
@@ -335,7 +341,7 @@ function createObjectInputProps<T>(
           },
           onExpand: () => {
             ctx.onSetCollapsedState({
-              ...ctx.fieldGroupState,
+              ...ctx.collapsedState,
               fieldSets: {
                 ...ctx.collapsedState?.fieldSets,
                 [fieldSet.name]: false,

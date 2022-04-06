@@ -25,7 +25,7 @@ export function useFormState(
       level: 0,
       currentUser,
       collapsedState,
-      onSetCollapsedState: onSetCollapsedState,
+      onSetCollapsedState,
     })
     // console.timeEnd('derive form state')
     return state

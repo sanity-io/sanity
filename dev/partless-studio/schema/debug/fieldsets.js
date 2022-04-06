@@ -183,6 +183,7 @@ export default {
       title: 'This field is of type objectsTest',
       description: 'Recursive',
       type: 'objectsTest',
+      group: 'group1',
       fieldset: 'recursive',
     },
   ],
