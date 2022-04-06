@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import path from 'path'
+import {createWriteStream} from 'fs'
 import fs from 'fs/promises'
 import getIt from 'get-it'
 import {promise} from 'get-it/middleware'
@@ -15,7 +16,7 @@ const request = getIt([promise()])
 async function download() {
   console.log('[package-yarn] Downloading bundle')
   const res = await request({url: bundleUrl, stream: true})
-  res.body.pipe(fs.createWriteStream(destination, writeFlags).on('close', writeHeader))
+  res.body.pipe(createWriteStream(destination, writeFlags).on('close', writeHeader))
 }
 
 async function writeHeader() {
