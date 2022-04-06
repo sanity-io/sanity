@@ -1,6 +1,6 @@
 import path from 'path'
+import fs from 'fs/promises'
 import semver from 'semver'
-import fse from 'fs-extra'
 import getIt from 'get-it'
 import promise from 'get-it/lib-node/middleware/promise'
 import decompress from 'decompress'
@@ -8,7 +8,9 @@ import resolveFrom from 'resolve-from'
 import validateNpmPackageName from 'validate-npm-package-name'
 import {pathTools} from '@sanity/util'
 import * as pkg from '../../../package.json'
+import {readJson} from '../../util/readJson'
 import {dynamicRequire} from '../../util/dynamicRequire'
+import {SanityJson} from '../../types'
 import {debug} from '../../debug'
 import {CliCommandContext} from '../..'
 
@@ -37,7 +39,7 @@ export async function bootstrapFromTemplate(
   const {prompt, workDir} = context
   let inProjectContext = false
   try {
-    const projectManifest = await fse.readJson(path.join(workDir, 'sanity.json'))
+    const projectManifest = await readJson<SanityJson>(path.join(workDir, 'sanity.json'))
     inProjectContext = Boolean(projectManifest.root)
   } catch (err) {
     // Intentional noop
@@ -145,14 +147,14 @@ export async function bootstrapFromTemplate(
   }
 
   debug('Ensuring directory exists: %s', outputPath)
-  await fse.ensureDir(outputPath)
+  await fs.mkdir(outputPath, {recursive: true})
 
   await Promise.all(
     templateFiles.map((file: {path: string; data: string | Buffer}) => {
       const filename = file.path.slice(baseDir.length)
 
       debug('Writing template file "%s" to "%s"', filename, outputPath)
-      return fse.outputFile(path.join(outputPath, filename), file.data)
+      return fs.writeFile(path.join(outputPath, filename), file.data)
     })
   )
 

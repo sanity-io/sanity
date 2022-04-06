@@ -1,7 +1,6 @@
+import fs from 'fs/promises'
 import path from 'path'
-import fse from 'fs-extra'
 import pFilter from 'p-filter'
-import resolveFrom from 'resolve-from'
 import deburr from 'lodash/deburr'
 import noop from 'lodash/noop'
 import type {DatasetAclMode} from '@sanity/client'
@@ -19,7 +18,6 @@ import type {
 } from '../../types'
 import {createProject} from '../project/createProject'
 import {login, LoginFlags} from '../login/login'
-import {dynamicRequire} from '../../util/dynamicRequire'
 import {promptForDatasetName} from './promptForDatasetName'
 import {BootstrapOptions, bootstrapTemplate} from './bootstrapTemplate'
 import templates from './templates'
@@ -588,7 +586,7 @@ export default async function initSanity(
       }
     }
 
-    const workDirIsEmpty = (await fse.readdir(workDir)).length === 0
+    const workDirIsEmpty = (await fs.readdir(workDir)).length === 0
     const projectOutputPath = await prompt.single({
       type: 'input',
       message: 'Project output path:',

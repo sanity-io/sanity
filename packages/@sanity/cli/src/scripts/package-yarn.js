@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 import path from 'path'
-import fs from 'fs'
-import fsp from 'fs-extra'
+import fs from 'fs/promises'
 import getIt from 'get-it'
 import {promise} from 'get-it/middleware'
 
@@ -30,7 +29,7 @@ async function writeHeader() {
   const wrappedLicense = `/*\n${commented}*/`
 
   console.log('[package-yarn] Reading bundle')
-  const bundle = await fsp.readFile(destination, writeFlags)
+  const bundle = await fs.readFile(destination, writeFlags)
   if (bundle[0] !== '#' && bundle[1] !== '!') {
     throw new Error('[package-yarn] Expected bundle to start with a shebang (#!), but it did not')
   }
@@ -39,7 +38,7 @@ async function writeHeader() {
   const pkgDate = new Date().toISOString().substr(0, 10)
   const versionString = `/* yarn v${version} - packaged ${pkgDate} */`
   const licensed = bundle.replace(/^(#!.*\n)/, `$1${versionString}\n${wrappedLicense}\n\n`)
-  await fsp.writeFile(destination, licensed, writeFlags)
+  await fs.writeFile(destination, licensed, writeFlags)
 }
 
 download()

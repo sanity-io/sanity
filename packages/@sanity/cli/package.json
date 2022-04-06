@@ -69,7 +69,6 @@
     "dotenv": "^10.0.0",
     "eventsource": "^1.0.6",
     "execa": "^2.0.0",
-    "fs-extra": "^7.0.0",
     "gauge": "^4.0.0",
     "get-it": "^5.2.1",
     "get-latest-version": "^3.0.2",

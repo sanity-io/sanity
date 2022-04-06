@@ -1,12 +1,13 @@
 import path from 'path'
-import fse from 'fs-extra'
 import noop from 'lodash/noop'
 import type {DatasetAclMode} from '@sanity/client'
 import {debug} from '../../debug'
+import {writeJson} from '../../util/writeJson'
 import {getUserConfig} from '../../util/getUserConfig'
 import type {InitFlags} from '../../commands/init/initCommand'
 import type {CliCommandArguments, CliCommandContext, SanityJson} from '../../types'
 import {createProject} from '../project/createProject'
+import {pathExists} from '../../util/pathExists'
 import {readJson} from '../../util/readJson'
 import {login, LoginFlags} from '../login/login'
 import {promptForDatasetName} from './promptForDatasetName'
@@ -103,9 +104,9 @@ export async function reconfigureV2Project(
     ...newProps,
   }
 
-  await fse.outputJSON(manifestPath, projectManifest, {spaces: 2})
+  await writeJson(manifestPath, projectManifest)
 
-  const hasNodeModules = await fse.pathExists(path.join(workDir, 'node_modules'))
+  const hasNodeModules = await pathExists(path.join(workDir, 'node_modules'))
   if (hasNodeModules) {
     print('Skipping installation of dependencies since node_modules exists.')
     print('Run sanity install to reinstall dependencies')

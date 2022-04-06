@@ -1,7 +1,7 @@
 import path from 'path'
-import {readJson} from 'fs-extra'
 import resolveFrom from 'resolve-from'
 import semverCompare from 'semver-compare'
+import {readJson} from '../../../util/readJson'
 import type {PackageJson} from '../../../types'
 import type {CodeMod} from '../types'
 

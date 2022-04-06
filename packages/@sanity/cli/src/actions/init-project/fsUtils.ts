@@ -13,7 +13,6 @@ export function absolutify(dir: string): string {
 }
 
 function pathIsEmpty(dir: string): boolean {
-  // We are using fs instead of fs-extra because it silently, weirdly, crashes on windows
   try {
     // eslint-disable-next-line no-sync
     const content = fs.readdirSync(dir)
