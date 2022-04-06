@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 /* eslint-disable no-console, no-process-exit, no-sync */
 const path = require('path')
-const fse = require('fs-extra')
+const fs = require('fs')
 const webpack = require('webpack')
-const klawSync = require('klaw-sync')
 const {escapeRegExp} = require('lodash')
 
 const shebangLoader = require.resolve('./shebang-loader')
@@ -18,9 +17,7 @@ console.log('Building CLI to a single file')
 
 // Make sure there are no native modules
 const isBinding = (file) => path.basename(file.path) === 'binding.gyp'
-const bindings = klawSync(modulesDir, {nodir: true, filter: isBinding}).filter(
-  isAllowedNativeModule
-)
+const bindings = readdirRecursive(modulesDir).filter(isBinding).filter(isAllowedNativeModule)
 
 if (bindings.length > 0) {
   console.error('Eek! Found native module at:')
@@ -30,9 +27,9 @@ if (bindings.length > 0) {
 
 const openDir = path.dirname(require.resolve('open'))
 const xdgPath = path.join(openDir, 'xdg-open')
-fse.copy(xdgPath, path.join(basedir, 'bin', 'xdg-open'))
+fs.copyFileSync(xdgPath, path.join(basedir, 'bin', 'xdg-open'))
 
-const babelRc = JSON.parse(fse.readFileSync(path.join(basedir, '.babelrc'), 'utf8'))
+const babelRc = JSON.parse(fs.readFileSync(path.join(basedir, '.babelrc'), 'utf8'))
 
 // Use the real node __dirname and __filename in order to get Yarn's source
 // files on the user's system. See constants.js
@@ -141,7 +138,7 @@ compiler.run((err, stats) => {
 
   // Make the file executable
   const binPath = path.join(basedir, 'bin', 'sanity')
-  fse.chmodSync(binPath, 0o755)
+  fs.chmodSync(binPath, 0o755)
 
   // Make `/foo/bar/sanity/node_modules/...` paths into `/node_modules/...` in comments
   let replacePath = path.normalize(path.join(__dirname, '..'))
@@ -157,10 +154,29 @@ compiler.run((err, stats) => {
   const concatPattern = /\/\*! ModuleConcatenation bailout: .*?\*\/\n?/g
   const pathPattern = new RegExp(escapeRegExp(`*** ${replacePath}`), 'g')
   const builtCliPath = path.join(basedir, 'bin', 'sanity-cli.js')
-  const content = fse.readFileSync(builtCliPath, 'utf8')
+  const content = fs.readFileSync(builtCliPath, 'utf8')
   const normalized = content.replace(pathPattern, '*** ').replace(concatPattern, '')
 
-  fse.writeFileSync(builtCliPath, normalized, 'utf8')
+  fs.writeFileSync(builtCliPath, normalized, 'utf8')
 
   console.log(`Done packing to ${builtCliPath}`)
 })
+
+function readdirRecursive(dir) {
+  let content = []
+
+  const currentPath = path.resolve(dir)
+  const dirContent = fs.readdirSync(currentPath).map((item) => path.join(currentPath, item))
+
+  for (const subPath of dirContent) {
+    const stat = fs.statSync(subPath)
+    const isDir = stat.isDirectory()
+    content.push({path: subPath, isDir})
+
+    if (isDir) {
+      content = content.concat(readdirRecursive(subPath))
+    }
+  }
+
+  return content
+}
