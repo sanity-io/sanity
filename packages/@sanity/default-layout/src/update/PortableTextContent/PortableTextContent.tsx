@@ -26,7 +26,7 @@ function Image({value}: {value: MaterializedImage}) {
     <SpaceBox marginY={4}>
       <Stack space={3} as="figure">
         <ImageCard radius={1} shadow={1} overflow="hidden" $aspectRatio={aspectRatio} $lqip={lqip}>
-          <img src={url} alt={alt || caption} />
+          <img src={url} alt={alt || caption} referrerPolicy="strict-origin-when-cross-origin" />
         </ImageCard>
         {caption && (
           <Text align="center" as="figcaption" muted size={1}>

@@ -39,6 +39,7 @@ export default class ImageLoader extends React.Component {
       })
     }
 
+    image.referrerPolicy = 'strict-origin-when-cross-origin'
     image.src = src
   }
 

@@ -83,6 +83,7 @@ export default class SanityDefaultPreview extends React.PureComponent<SanityDefa
     return (
       <img
         alt={isString(value.title) ? value.title : undefined}
+        referrerPolicy="strict-origin-when-cross-origin"
         src={
           imageBuilder
             .image(media)

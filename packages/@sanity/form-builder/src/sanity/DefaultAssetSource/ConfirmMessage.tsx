@@ -48,7 +48,12 @@ export const ConfirmMessage = ({asset, assetType, hasResults = false}: ConfirmMe
           {isImage && (
             <Card __unstable_checkered border radius={1} style={STYLE_CONFIRM_CARD}>
               <Flex align="center" justify="center" style={STYLE_IMAGE_WRAPPER}>
-                <img src={`${asset.url}?w=200`} style={STYLE_ASSET_IMAGE} alt="Preview of image" />
+                <img
+                  src={`${asset.url}?w=200`}
+                  style={STYLE_ASSET_IMAGE}
+                  alt="Preview of image"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                />
               </Flex>
             </Card>
           )}
@@ -78,7 +83,12 @@ export const ConfirmMessage = ({asset, assetType, hasResults = false}: ConfirmMe
         {isImage && (
           <Card __unstable_checkered border radius={1} style={STYLE_CONFIRM_CARD}>
             <Flex align="center" justify="center" style={STYLE_IMAGE_WRAPPER}>
-              <img src={`${asset.url}?w=200`} style={STYLE_ASSET_IMAGE} alt="Preview of image" />
+              <img
+                src={`${asset.url}?w=200`}
+                style={STYLE_ASSET_IMAGE}
+                alt="Preview of image"
+                referrerPolicy="strict-origin-when-cross-origin"
+              />
             </Flex>
           </Card>
         )}

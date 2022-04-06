@@ -78,6 +78,7 @@ export function CrossDatasetReferencePreview(props: {
               .withOptions(dimensions)
               .url()}
             alt="Image preview of referenced document"
+            referrerPolicy="strict-origin-when-cross-origin"
           />
         )
       }

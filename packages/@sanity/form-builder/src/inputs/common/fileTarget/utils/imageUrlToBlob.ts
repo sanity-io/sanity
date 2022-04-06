@@ -9,6 +9,7 @@ export function imageUrlToBlob(
   return new Promise((resolve, reject) => {
     const loader = new Image()
     loader.crossOrigin = 'anonymous'
+    loader.referrerPolicy = 'strict-origin-when-cross-origin'
     loader.onload = () => {
       const canvas = document.createElement('canvas')
       canvas.width = loader.width

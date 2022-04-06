@@ -51,7 +51,11 @@ export function getProviderLogo(provider) {
     default:
       return function CustomLogo() {
         return provider.logo ? (
-          <img src={provider.logo} alt={`Logo for ${provider.name}`} />
+          <img
+            src={provider.logo}
+            alt={`Logo for ${provider.name}`}
+            referrerPolicy="strict-origin-when-cross-origin"
+          />
         ) : (
           <QuestionmarkLogo />
         )
