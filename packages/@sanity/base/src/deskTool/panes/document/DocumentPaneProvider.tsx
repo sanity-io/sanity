@@ -30,6 +30,7 @@ import {getMenuItems} from './menuItems'
 import {DocumentPaneProviderProps} from './types'
 import {usePreviewUrl} from './usePreviewUrl'
 import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
+import {useFormState} from '../../../form/store/useFormState'
 
 const emptyObject = {} as Record<string, string | undefined>
 
@@ -235,19 +236,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const handleInspectClose = useCallback(() => toggleInspect(false), [toggleInspect])
 
-  const currentUser = useCurrentUser()
-
-  const [fieldGroupState, onSetFieldGroupState] = useState<ObjectFieldGroupState>()
-
-  const formState = deriveFormState(documentSchema, {
-    document: value,
-    fieldGroupState,
-    onSetFieldGroupState,
-    value,
-    onChange: handleChange,
-    level: 0,
-    currentUser,
-  })
+  const formState = useFormState(documentSchema, {value, onChange: handleChange})
 
   const documentPane: DocumentPaneContextValue = {
     actions,

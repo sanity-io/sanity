@@ -12,7 +12,16 @@ import {ComponentType} from 'react'
 import {createProtoValue} from '../utils/createProtoValue'
 import {PatchEvent, setIfMissing} from '../patch'
 import {callConditionalProperties, callConditionalProperty} from './conditional-property'
-import {FieldGroup, FieldMember, FieldProps, ObjectFieldGroupState, ObjectMember} from './types'
+import {
+  BooleanFieldProps,
+  FieldGroup,
+  FieldMember,
+  FieldProps,
+  NumberFieldProps,
+  ObjectFieldGroupState,
+  ObjectMember,
+  StringFieldProps,
+} from './types'
 import {MAX_FIELD_DEPTH} from './constants'
 import {getItemType} from './utils/getItemType'
 
@@ -139,7 +148,7 @@ function createPropsFromObjectField<T>(
       parentCtx.onChange(fieldChangeEvent.prefixAll(field.name))
     },
     value: fieldValue,
-  } as FieldProps
+  } as StringFieldProps | NumberFieldProps | BooleanFieldProps
 }
 
 function getKind(type: SchemaType): 'object' | 'array' | 'boolean' | 'number' | 'string' {
@@ -174,7 +183,6 @@ function createObjectInputProps<T>(
     'hidden',
     'readOnly',
   ])
-
   const onChange = (fieldChangeEvent: PatchEvent) => {
     ctx.onChange(fieldChangeEvent.prepend([setIfMissing(createProtoValue(type))]))
   }
@@ -183,7 +191,7 @@ function createObjectInputProps<T>(
     ctx.onSetFieldGroupState({current: groupName, fields: ctx.fieldGroupState?.fields})
   }
 
-  if (ctx.level === MAX_FIELD_DEPTH) {
+  if (hidden || ctx.level === MAX_FIELD_DEPTH) {
     return {
       value: ctx.value as T,
       readOnly: hidden || ctx.readOnly,
