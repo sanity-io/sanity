@@ -320,7 +320,10 @@ function createObjectInputProps<T>(
           hidden: false,
           fields: fieldMembers,
           collapsible: fieldSet.options?.collapsible,
-          collapsed: ctx.collapsedState?.fieldSets?.[fieldSet.name],
+          collapsed:
+            fieldSet.name in (ctx.collapsedState?.fieldSets || {})
+              ? ctx.collapsedState?.fieldSets?.[fieldSet.name]
+              : fieldSet.options?.collapsed,
           onCollapse: () => {
             ctx.onSetCollapsedState({
               ...ctx.collapsedState,
