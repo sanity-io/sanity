@@ -127,22 +127,22 @@ module.exports = async function deployApiActions(args, context) {
     // not valid and a dry run? then it can exit with a error
     if (dryRun) {
       process.exit(1)
-    } else {
-      if (!isInteractive) {
-        throw new Error(
-          'Dangerous changes found - falling back. Re-run the command with the `--force` flag to force deployment.'
-        )
-      }
+    }
 
-      const shouldDeploy = await prompt.single({
-        type: 'confirm',
-        message: 'Do you want to deploy a new API despite the dangerous changes?',
-        default: false,
-      })
+    if (!isInteractive) {
+      throw new Error(
+        'Dangerous changes found - falling back. Re-run the command with the `--force` flag to force deployment.'
+      )
+    }
 
-      if (!shouldDeploy) {
-        return
-      }
+    const shouldDeploy = await prompt.single({
+      type: 'confirm',
+      message: 'Do you want to deploy a new API despite the dangerous changes?',
+      default: false,
+    })
+
+    if (!shouldDeploy) {
+      return
     }
   } else if (dryRun) {
     output.print('GraphQL API is valid and has no breaking changes')
