@@ -2,6 +2,7 @@ import React from 'react'
 
 import {BinaryDocumentIcon, AccessDeniedIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
 import {Flex, Text} from '@sanity/ui'
+import styled from 'styled-components'
 import {FileLike} from '../../../sanity/uploads/types'
 
 interface Props {
@@ -12,6 +13,10 @@ interface Props {
   rejectedFilesCount: number
   directUploads: boolean
 }
+
+const FlexWrapper = styled(Flex)`
+  pointer-events: none;
+`
 
 export function PlaceholderText(props: Props) {
   const {hoveringFiles, type, readOnly, acceptedFiles, rejectedFilesCount, directUploads} = props
@@ -63,9 +68,9 @@ export function PlaceholderText(props: Props) {
           <MessageIcon />
         </Text>
       </Flex>
-      <Flex justify="center">
+      <FlexWrapper justify="center">
         <MessageText />
-      </Flex>
+      </FlexWrapper>
     </>
   )
 }
