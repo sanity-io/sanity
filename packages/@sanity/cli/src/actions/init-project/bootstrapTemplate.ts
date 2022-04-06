@@ -29,6 +29,7 @@ export async function bootstrapTemplate(
   const {outputPath, templateName, useTypeScript, packageName, variables} = opts
   const {projectId} = variables
   const sourceDir = path.join(templatesDir, templateName)
+  const sharedDir = path.join(templatesDir, 'shared')
 
   // Check that we have a template info file (dependencies, plugins etc)
   const template = templates[templateName]
@@ -42,6 +43,7 @@ export async function bootstrapTemplate(
   await copy(sourceDir, outputPath, {
     rename: useTypeScript ? toTypeScriptPath : undefined,
   })
+  await copy(path.join(sharedDir, 'gitignore.txt'), outputPath, {rename: () => '.gitignore'})
   spinner.succeed()
 
   // Merge global and template-specific plugins and dependencies
