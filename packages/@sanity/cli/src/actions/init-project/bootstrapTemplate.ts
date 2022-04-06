@@ -44,6 +44,11 @@ export async function bootstrapTemplate(
     rename: useTypeScript ? toTypeScriptPath : undefined,
   })
   await copy(path.join(sharedDir, 'gitignore.txt'), outputPath, {rename: () => '.gitignore'})
+
+  if (useTypeScript) {
+    await fs.copyFile(path.join(sharedDir, 'tsconfig.json'), path.join(outputPath, 'tsconfig.json'))
+  }
+
   spinner.succeed()
 
   // Merge global and template-specific plugins and dependencies
