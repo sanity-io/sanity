@@ -10,8 +10,14 @@ import {ObjectInput} from '../ObjectInput'
 export interface DocumentInputProps
   extends FormInputProps<Record<string, unknown>, ObjectSchemaTypeWithOptions> {
   members: ObjectMember[]
-  groups: FieldGroup[]
+  groups?: FieldGroup[]
   onSelectGroup: (name: string) => void
+
+  collapsible?: boolean
+  collapsed?: boolean
+
+  onExpand: () => void
+  onCollapse: () => void
 }
 
 /**

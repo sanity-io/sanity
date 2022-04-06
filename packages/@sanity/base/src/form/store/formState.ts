@@ -14,6 +14,7 @@ import {PatchEvent, setIfMissing} from '../patch'
 import {callConditionalProperties, callConditionalProperty} from './conditional-property'
 import {
   BooleanFieldProps,
+  ObjectCollapsedState,
   FieldGroup,
   FieldMember,
   FieldProps,
@@ -24,6 +25,7 @@ import {
 } from './types'
 import {MAX_FIELD_DEPTH} from './constants'
 import {getItemType} from './utils/getItemType'
+import {getCollapsedWithDefaults} from './utils/getCollapsibleOptions'
 
 function isFieldEnabledByGroupFilter(
   // the groups config for the "enclosing object" type
@@ -67,6 +69,16 @@ function createPropsFromObjectField<T>(
       })
     }
 
+    const onSetFieldCollapsedState = (innerFieldCollapsedState: ObjectCollapsedState) => {
+      parentCtx.onSetCollapsedState({
+        ...parentCtx.fieldGroupState,
+        fields: {
+          ...innerFieldCollapsedState.fields,
+          [field.name]: innerFieldCollapsedState,
+        },
+      })
+    }
+
     const fieldState = createObjectInputProps(field.type, {
       ...parentCtx,
       parent: parentCtx.value,
@@ -75,6 +87,8 @@ function createPropsFromObjectField<T>(
       onChange,
       onSetFieldGroupState,
     })
+
+    const collapsibleOpts = getCollapsedWithDefaults(field.type.options, parentCtx.level)
 
     return {
       kind: 'object',
@@ -92,6 +106,11 @@ function createPropsFromObjectField<T>(
       members: fieldState.members,
       groups: fieldState.groups,
       onChange,
+      collapsible: collapsibleOpts.collapsible,
+      collapsed: collapsibleOpts.collapsed,
+      onCollapse: () => onSetFieldCollapsedState({...parentCtx.collapsedState, collapsed: true}),
+      onExpand: () => onSetFieldCollapsedState({...parentCtx.collapsedState, collapsed: false}),
+
       onSelectGroup: (groupName: string) =>
         onSetFieldGroupState({...parentCtx.fieldGroupState, current: groupName}),
       value: fieldValue,
@@ -163,6 +182,8 @@ interface PropsContext<T> {
   hidden?: boolean
   readOnly?: boolean
   fieldGroupState?: ObjectFieldGroupState
+  collapsedState?: ObjectCollapsedState
+  onSetCollapsedState: (state: ObjectCollapsedState) => void
   // nesting level
   level: number
   onChange: (patchEvent: PatchEvent) => void
@@ -187,8 +208,15 @@ function createObjectInputProps<T>(
     ctx.onChange(fieldChangeEvent.prepend([setIfMissing(createProtoValue(type))]))
   }
 
-  const onSetFieldGroup = (groupName: string) => {
+  const onSelectFieldGroup = (groupName: string) => {
     ctx.onSetFieldGroupState({current: groupName, fields: ctx.fieldGroupState?.fields})
+  }
+
+  const onCollapse = () => {
+    ctx.onSetCollapsedState({collapsed: true, fields: ctx.fieldGroupState?.fields})
+  }
+  const onExpand = () => {
+    ctx.onSetCollapsedState({collapsed: false, fields: ctx.fieldGroupState?.fields})
   }
 
   if (hidden || ctx.level === MAX_FIELD_DEPTH) {
@@ -200,7 +228,9 @@ function createObjectInputProps<T>(
       onChange,
       members: [],
       groups: [],
-      onSetFieldGroup,
+      onSelectFieldGroup,
+      onExpand,
+      onCollapse,
     }
   }
 
@@ -211,7 +241,7 @@ function createObjectInputProps<T>(
 
   const groups = schemaTypeGroupConfig.flatMap((group): FieldGroup[] => {
     const groupHidden = callConditionalProperty(group.hidden, conditionalFieldContext)
-    const active = group.name === (ctx.fieldGroupState?.current || defaultGroupName)
+    const selected = group.name === (ctx.fieldGroupState?.current || defaultGroupName)
     return groupHidden
       ? []
       : [
@@ -220,18 +250,19 @@ function createObjectInputProps<T>(
             title: group.title,
             icon: group.icon as ComponentType<void>,
             default: group.default,
-            active,
+            selected,
           },
         ]
   })
 
-  const activeGroup = groups.find((g) => g.active)!
+  const activeGroup = groups.find((group) => group.selected)!
 
   const parentCtx = {...ctx, level: ctx.level + 1, hidden, readOnly, onChange}
 
   // create a members array for the object
   const members = (type.fieldsets || []).flatMap((fieldset, index): ObjectMember[] => {
     if (fieldset.single) {
+      // "single" means not part of a fieldset
       const field = createPropsFromObjectField(fieldset.field, parentCtx, index)
       return !field.hidden && isFieldEnabledByGroupFilter(groups, fieldset.field, activeGroup)
         ? [
@@ -244,7 +275,6 @@ function createObjectInputProps<T>(
     }
 
     const fieldsetFieldNames = fieldset.fields.map((f) => f.name)
-
     const fieldsetHidden = callConditionalProperty(fieldset.hidden, {
       currentUser: ctx.currentUser,
       document: ctx.document,
@@ -253,17 +283,18 @@ function createObjectInputProps<T>(
     })
 
     const fieldMembers = fieldset.fields.flatMap((field): FieldMember[] => {
-      const fieldSetField = createPropsFromObjectField(field, parentCtx, index)
-      return !fieldSetField.hidden && isFieldEnabledByGroupFilter(groups, field, activeGroup)
+      const fieldMember = createPropsFromObjectField(field, parentCtx, index)
+      return !fieldMember.hidden && isFieldEnabledByGroupFilter(groups, field, activeGroup)
         ? [
             {
               type: 'field',
-              field: fieldSetField,
+              field: fieldMember,
             },
           ]
         : []
     })
 
+    // if all members of the fieldset is hidden, the fieldset should effectively also be hidden
     if (fieldsetHidden || fieldMembers.every((field) => isMemberHidden(field))) {
       return []
     }
@@ -287,7 +318,9 @@ function createObjectInputProps<T>(
     hidden: ctx.hidden,
     level: ctx.level,
     onChange,
-    onSetFieldGroup,
+    onSelectFieldGroup,
+    onExpand,
+    onCollapse,
     members,
     groups,
   }
@@ -342,7 +375,12 @@ export interface ObjectFormState<T> {
   readOnly?: boolean
   members: ObjectMember[]
   groups?: FieldGroup[]
-  onSetFieldGroup: (groupName: string) => void
+  onSelectFieldGroup: (groupName: string) => void
+
+  collapsed?: boolean
+  collapsible?: boolean
+  onExpand: () => void
+  onCollapse: () => void
 }
 
 export interface ArrayFormState<T> {

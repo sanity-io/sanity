@@ -253,7 +253,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     editState,
     focusPath,
     handleChange,
-    onSelectGroup: formState.onSetFieldGroup,
+    onSelectGroup: formState.onSelectFieldGroup,
     handleFocus,
     handleHistoryClose,
     handleHistoryOpen,

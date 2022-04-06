@@ -47,8 +47,8 @@ const GroupTabs = ({
             onClick={onClick}
             name={group.name}
             title={group.title || group.name}
-            selected={Boolean(group.active)}
-            autoFocus={shouldAutoFocus && group.active}
+            selected={Boolean(group.selected)}
+            autoFocus={shouldAutoFocus && group.selected}
             disabled={disabled}
           />
         )
@@ -81,7 +81,7 @@ const GroupSelect = ({
       aria-label="Field groups"
       autoFocus={shouldAutoFocus}
       disabled={disabled}
-      value={groups.find((g) => g.active)?.name}
+      value={groups.find((g) => g.selected)?.name}
     >
       {groups.map((group) => {
         // Separate hidden in order to resolve it to a boolean type
@@ -89,7 +89,7 @@ const GroupSelect = ({
           <GroupOption
             key={`${inputId}-${group.name}-tab`}
             aria-controls={`${inputId}-field-group-fields`}
-            selected={Boolean(group.active)}
+            selected={Boolean(group.selected)}
             disabled={group.disabled}
             name={group.name}
             title={group.title || group.name}

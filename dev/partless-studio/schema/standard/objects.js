@@ -46,6 +46,7 @@ export default {
         'This is a field of (anonymous, inline) object type. Values here should never get a `_type` property',
       // readOnly: true,
       // hidden: true,
+      options: {collapsible: true},
       fields: [
         {
           name: 'field1',

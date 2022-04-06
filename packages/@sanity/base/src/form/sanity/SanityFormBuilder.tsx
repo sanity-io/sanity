@@ -1,4 +1,4 @@
-import {ValidationMarker, Path, Schema, SchemaType} from '@sanity/types'
+import {ValidationMarker, Path, Schema, SchemaType, ObjectSchemaType} from '@sanity/types'
 import React, {useCallback, useEffect, useRef} from 'react'
 import {PatchEvent} from '../patch'
 import {FormFieldPresence} from '../../presence'
@@ -32,7 +32,7 @@ export interface SanityFormBuilderProps {
   groups?: FieldGroup[]
   onSelectGroup: (groupName: string) => void
   schema: Schema
-  type: SchemaType
+  type: ObjectSchemaType
   validation: ValidationMarker[]
   value?: any | null
 }

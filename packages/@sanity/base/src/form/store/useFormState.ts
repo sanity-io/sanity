@@ -2,7 +2,7 @@ import {ObjectSchemaType} from '@sanity/types'
 import {useMemo, useState} from 'react'
 import {useCurrentUser} from '../../datastores'
 import {PatchEvent} from '../patch'
-import {ObjectFieldGroupState} from './types'
+import {ObjectCollapsedState, ObjectFieldGroupState} from './types'
 import {deriveFormState, SanityDocument} from './formState'
 
 export function useFormState(
@@ -11,6 +11,7 @@ export function useFormState(
 ) {
   const currentUser = useCurrentUser()
   const [fieldGroupState, onSetFieldGroupState] = useState<ObjectFieldGroupState>()
+  const [expandedState, onSetExpandedState] = useState<ObjectCollapsedState>()
 
   return useMemo(() => {
     // console.time('derive form state')
@@ -23,8 +24,10 @@ export function useFormState(
       onChange,
       level: 0,
       currentUser,
+      expandedState,
+      onSetCollapsedState: onSetExpandedState,
     })
     // console.timeEnd('derive form state')
     return state
-  }, [currentUser, schemaType, fieldGroupState, onChange, value])
+  }, [schemaType, value, fieldGroupState, onChange, currentUser, expandedState])
 }

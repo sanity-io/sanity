@@ -28,12 +28,19 @@ export interface ObjectFieldGroupState {
   }
 }
 
+export interface ObjectCollapsedState {
+  collapsed?: boolean
+  fields?: {
+    [field: string]: ObjectCollapsedState
+  }
+}
+
 export interface FieldGroup {
   name: string
   title?: string
   icon?: ComponentType<void>
   default?: boolean
-  active?: boolean
+  selected?: boolean
   disabled?: boolean
 }
 
@@ -97,6 +104,10 @@ export interface ObjectFieldProps extends BaseFieldProps {
   hidden?: boolean
   value?: Record<string, unknown>
   readOnly?: boolean
+  collapsed?: boolean
+  collapsible?: boolean
+  onCollapse: () => void
+  onExpand: () => void
 }
 
 export interface ArrayFieldProps extends BaseFieldProps {

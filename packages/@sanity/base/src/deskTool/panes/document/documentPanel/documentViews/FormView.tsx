@@ -188,7 +188,7 @@ export function FormView(props: FormViewProps) {
               schema={schema}
               type={documentSchema}
               validation={validation}
-              value={value}
+              value={state.value}
               members={state.members}
               groups={state.groups}
               onSelectGroup={onSelectGroup}

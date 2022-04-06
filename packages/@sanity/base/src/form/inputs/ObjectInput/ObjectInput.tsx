@@ -4,14 +4,13 @@ import {ObjectSchemaTypeWithOptions, Path, ValidationMarker} from '@sanity/types
 import React, {ForwardedRef, forwardRef, memo, useMemo} from 'react'
 import {useId} from '@reach/auto-id'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
+import {Text} from '@sanity/ui'
 import {FormFieldSet} from '../../../components/formField'
 import {FormFieldPresence} from '../../../presence'
 import {FormInputProps} from '../../types'
 import {FieldGroup, ObjectMember, RenderFieldCallback} from '../../store/types'
 import {EMPTY_ARRAY} from '../../utils/empty'
-import {getCollapsedWithDefaults} from './utils'
 import {UnknownFields} from './UnknownFields'
-import {Text} from '@sanity/ui'
 import {FieldGroupTabsWrapper} from './ObjectInput.styled'
 import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'
 import {MemberField} from './MemberField'
@@ -19,9 +18,15 @@ import {MemberField} from './MemberField'
 export interface ObjectInputProps
   extends FormInputProps<Record<string, unknown>, ObjectSchemaTypeWithOptions> {
   members: ObjectMember[]
-  groups: FieldGroup[]
+  groups?: FieldGroup[]
   renderField: RenderFieldCallback
   onSelectGroup: (name: string) => void
+
+  collapsible?: boolean
+  collapsed?: boolean
+
+  onExpand: () => void
+  onCollapse: () => void
 }
 
 // eslint-disable-next-line no-empty-function,@typescript-eslint/no-empty-function
@@ -70,25 +75,21 @@ export const ObjectInput = memo(
       return <UnknownFields fieldNames={unknownFields} value={value} onChange={onChange} />
     }, [onChange, type.fields, value])
 
-    const collapsibleOpts = getCollapsedWithDefaults(type.options, level)
-
-    const [isCollapsed, setCollapsed] = React.useState(collapsibleOpts.collapsed)
-
     return (
       <FormFieldSet
-        ref={isCollapsed ? forwardedRef : null}
+        ref={props.collapsed ? forwardedRef : null}
         level={level}
         title={type.title}
         description={type.description}
         // columns={columns}
-        collapsible={collapsibleOpts.collapsible}
-        collapsed={isCollapsed}
+        collapsible={props.collapsible}
+        collapsed={props.collapsed}
         // onToggle={handleToggleFieldset}
-        __unstable_presence={isCollapsed ? presence : EMPTY_ARRAY}
-        validation={isCollapsed ? validation : EMPTY_ARRAY}
+        __unstable_presence={props.collapsed ? presence : EMPTY_ARRAY}
+        validation={props.collapsed ? validation : EMPTY_ARRAY}
         __unstable_changeIndicator={false}
       >
-        {groups?.length > 0 ? (
+        {groups && groups?.length > 0 ? (
           <FieldGroupTabsWrapper $level={level} data-testid="field-groups">
             <FieldGroupTabs
               inputId={inputId}
