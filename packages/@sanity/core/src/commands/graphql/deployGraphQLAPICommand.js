@@ -18,6 +18,7 @@ Examples
   sanity graphql deploy --dataset staging --tag next --no-playground
   sanity graphql deploy --no-playground --force
   sanity graphql deploy --playground --non-null-document-fields
+  sanity graphql deploy --dry-run
 `
 
 export default {
