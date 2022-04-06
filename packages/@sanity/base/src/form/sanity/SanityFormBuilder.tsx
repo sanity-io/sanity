@@ -1,4 +1,4 @@
-import {ObjectSchemaType, Path, Schema, ValidationMarker} from '@sanity/types'
+import {ObjectSchemaType, Path, Schema, SchemaType, ValidationMarker} from '@sanity/types'
 import React, {useCallback, useEffect, useRef} from 'react'
 import {PatchEvent} from '../patch'
 import {FormFieldPresence} from '../../presence'
@@ -6,9 +6,12 @@ import {FormBuilderInputInstance} from '../FormBuilderInput'
 import {PatchChannel} from '../patchChannel'
 import {MutationPatch, toMutationPatches} from '../utils/mutationPatch'
 import {DocumentInput} from '../inputs/DocumentInput/DocumentInput'
-import {FieldGroup, ObjectMember} from '../store/types'
-import {ReviewChangesContextProvider} from './contexts/reviewChanges/ReviewChangesProvider'
+import {FieldGroup, ObjectMember, RenderFieldCallbackArg} from '../store/types'
+import {useSource} from '../../studio'
 import {SanityFormBuilderProvider} from './SanityFormBuilderProvider'
+import {resolveInputComponent as defaultInputResolver} from './inputResolver/inputResolver'
+import {fallbackInputs} from '../fallbackInputs'
+import {FormInputProps} from '../types'
 
 /**
  * @alpha
@@ -65,6 +68,7 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
   } = props
 
   const inputRef = useRef<FormBuilderInputInstance | null>(null)
+  const {unstable_formBuilder: formBuilder} = useSource()
 
   useEffect(() => {
     if (autoFocus) inputRef.current?.focus()
@@ -82,29 +86,46 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
     [onFocus]
   )
 
+  const resolveInputComponent = useCallback(
+    (inputType: SchemaType) => {
+      const resolved = defaultInputResolver(
+        formBuilder.components?.inputs || {},
+        formBuilder.resolveInputComponent,
+        inputType
+      )
+      return resolved || (fallbackInputs[inputType.jsonType] as React.ComponentType<FormInputProps>)
+    },
+    [formBuilder]
+  )
+
+  const renderField = useCallback(
+    (field: RenderFieldCallbackArg) => {
+      const Input = resolveInputComponent(field.type)
+      if (!Input) {
+        return <div>No input resolved for type: {field.type.name}</div>
+      }
+      return <Input {...field} validation={[]} presence={[]} renderField={renderField} />
+    },
+    [resolveInputComponent]
+  )
+
   return (
     <SanityFormBuilderProvider __internal_patchChannel={patchChannel} schema={schema} value={value}>
-      <ReviewChangesContextProvider changesOpen={changesOpen}>
-        <DocumentInput
-          // compareValue={compareValue}
-          // filterField={filterField}
-          focusPath={focusPath}
-          level={0}
-          onBlur={onBlur}
-          onChange={handleChange}
-          onFocus={handleFocus}
-          path={EMPTY}
-          presence={presence}
-          readOnly={readOnly}
-          ref={inputRef}
-          type={type}
-          members={members}
-          groups={groups}
-          onSelectGroup={onSelectGroup}
-          validation={validation}
-          value={value}
-        />
-      </ReviewChangesContextProvider>
+      <DocumentInput
+        level={0}
+        onBlur={onBlur}
+        onChange={handleChange}
+        onFocus={handleFocus}
+        presence={presence}
+        readOnly={readOnly}
+        ref={inputRef}
+        type={type}
+        members={members}
+        groups={groups}
+        onSelectGroup={onSelectGroup}
+        renderField={renderField}
+        value={value}
+      />
     </SanityFormBuilderProvider>
   )
 }

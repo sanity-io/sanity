@@ -1,16 +1,16 @@
 /* eslint-disable react/no-unused-prop-types */
 
-import React, {ForwardedRef, forwardRef, memo, useCallback} from 'react'
+import React, {ForwardedRef, forwardRef, memo} from 'react'
 import {ObjectSchemaTypeWithOptions} from '@sanity/types'
-import {FieldGroup, ObjectMember, RenderFieldCallbackArg} from '../../store/types'
+import {FieldGroup, ObjectMember, RenderFieldCallback} from '../../store/types'
 import {FormInputProps} from '../../types'
-import {useFormBuilder} from '../../useFormBuilder'
 import {ObjectInput} from '../ObjectInput'
 
 export interface DocumentInputProps
   extends FormInputProps<Record<string, unknown>, ObjectSchemaTypeWithOptions> {
   members: ObjectMember[]
   groups?: FieldGroup[]
+  renderField: RenderFieldCallback
   onSelectGroup: (name: string) => void
 
   collapsible?: boolean
@@ -35,17 +35,6 @@ export const DocumentInput = memo(
     props: DocumentInputProps,
     forwardedRef: ForwardedRef<HTMLDivElement>
   ) {
-    const {resolveInputComponent} = useFormBuilder()
-    const renderField = useCallback(
-      (field: RenderFieldCallbackArg) => {
-        const Input = resolveInputComponent(field.type)
-        if (!Input) {
-          return <div>No input resolved for type: {field.type.name}</div>
-        }
-        return <Input {...field} validation={[]} presence={[]} renderField={renderField} />
-      },
-      [resolveInputComponent]
-    )
-    return <ObjectInput ref={forwardedRef} {...props} renderField={renderField} />
+    return <ObjectInput ref={forwardedRef} {...props} />
   })
 )

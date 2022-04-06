@@ -12,7 +12,7 @@ export const StringInput = React.forwardRef(function StringInput(
   props: StringInputProps,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
-  const {value, readOnly, type, validation, level, onFocus, onBlur, onChange, presence} = props
+  const {value, readOnly, type, validation, onFocus, onBlur, onChange} = props
   const placeholder = type.placeholder
   const inputId = useId()
   const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
@@ -25,7 +25,7 @@ export const StringInput = React.forwardRef(function StringInput(
     [onChange]
   )
 
-  const input = useMemo(
+  return useMemo(
     () => (
       <TextInput
         id={inputId}
@@ -41,18 +41,5 @@ export const StringInput = React.forwardRef(function StringInput(
     ),
 
     [errors, forwardedRef, handleChange, inputId, onBlur, onFocus, placeholder, readOnly, value]
-  )
-
-  return (
-    <FormField
-      description={type.description}
-      inputId={inputId}
-      level={level}
-      validation={validation}
-      __unstable_presence={presence}
-      title={type.title}
-    >
-      {input}
-    </FormField>
   )
 })
