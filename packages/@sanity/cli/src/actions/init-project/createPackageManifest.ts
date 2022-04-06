@@ -41,7 +41,7 @@ function getCommonManifest(data: Omit<PackageJson, 'version'> & {gitRemote?: str
     version: '1.0.0',
     description: data.description,
     author: data.author,
-    license: data.license,
+    license: data.license || 'UNLICENSED',
     devDependencies: {},
   }
 
