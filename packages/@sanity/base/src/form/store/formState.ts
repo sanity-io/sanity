@@ -295,10 +295,10 @@ function prepareObjectInputProps<T>(
     })
   }
 
-  if (hidden || props.level === MAX_FIELD_DEPTH) {
+  if (props.level === MAX_FIELD_DEPTH) {
     return {
       value: props.value as T,
-      readOnly: hidden || props.readOnly,
+      readOnly: props.readOnly,
       hidden,
       level: props.level,
       members: [],
@@ -331,7 +331,7 @@ function prepareObjectInputProps<T>(
         ]
   })
 
-  const activeGroup = groups.find((group) => group.selected)!
+  const selectedGroup = groups.find((group) => group.selected)!
 
   const parentProps: RawProps<ObjectSchemaType, unknown> = {
     ...props,
@@ -350,7 +350,10 @@ function prepareObjectInputProps<T>(
         parentObjectProps: parentProps,
         index,
       })
-      if (fieldProps.hidden || !isFieldEnabledByGroupFilter(groups, fieldSet.field, activeGroup)) {
+      if (
+        fieldProps.hidden ||
+        !isFieldEnabledByGroupFilter(groups, fieldSet.field, selectedGroup)
+      ) {
         return []
       }
       return [
@@ -376,7 +379,7 @@ function prepareObjectInputProps<T>(
 
     const fieldsetMembers = fieldSet.fields.flatMap((field): FieldMember[] => {
       const fieldMember = prepareFieldProps({field, parentObjectProps: parentProps, index})
-      return !fieldMember.hidden && isFieldEnabledByGroupFilter(groups, field, activeGroup)
+      return !fieldMember.hidden && isFieldEnabledByGroupFilter(groups, field, selectedGroup)
         ? [
             {
               type: 'field',

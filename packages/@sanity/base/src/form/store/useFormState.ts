@@ -22,7 +22,6 @@ export function useFormState(
 
   return useMemo(() => {
     // console.time('derive form state')
-
     const state = prepareFormProps({
       type: schemaType,
       document: value,

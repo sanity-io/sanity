@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useEffect, useMemo, useState} from 'react'
+import React, {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {ObjectSchemaType, Path, SanityDocument} from '@sanity/types'
 import {omit} from 'lodash'
 import {useToast} from '@sanity/ui'
@@ -6,12 +6,7 @@ import {fromString as pathFromString, pathFor} from '@sanity/util/paths'
 import isHotkey from 'is-hotkey'
 import {useMemoObservable} from 'react-rx'
 import {PaneMenuItem} from '../../types'
-import {
-  useCurrentUser,
-  useHistoryStore,
-  useInitialValue,
-  usePresenceStore,
-} from '../../../datastores'
+import {useHistoryStore, useInitialValue, usePresenceStore} from '../../../datastores'
 import {
   useConnectionState,
   useDocumentOperation,
@@ -22,15 +17,13 @@ import {isDev} from '../../../environment'
 import {useSource} from '../../../studio'
 import {getPublishedId, useUnique} from '../../../util'
 import {useDeskTool, usePaneRouter} from '../../components'
-import {toMutationPatches} from '../../../form'
-import {prepareFormProps} from '../../../form/store/formState'
-import {ObjectFieldGroupState} from '../../../form/store/types'
+import {PatchEvent, toMutationPatches} from '../../../form'
+import {useFormState} from '../../../form/store/useFormState'
 import {DocumentPaneContext, DocumentPaneContextValue} from './DocumentPaneContext'
 import {getMenuItems} from './menuItems'
 import {DocumentPaneProviderProps} from './types'
 import {usePreviewUrl} from './usePreviewUrl'
 import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
-import {useFormState} from '../../../form/store/useFormState'
 
 const emptyObject = {} as Record<string, string | undefined>
 
@@ -166,12 +159,14 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [documentId, presenceStore, setFocusPath]
   )
 
-  const handleChange = useCallback(
-    (event) => {
-      return patch.execute(toMutationPatches(event.patches), initialValue.value)
-    },
-    [patch, initialValue.value]
-  )
+  const patchRef = useRef<(event: PatchEvent) => void>(() => {
+    throw new Error('Nope')
+  })
+
+  patchRef.current = (event: PatchEvent) =>
+    patch.execute(toMutationPatches(event.patches), initialValue.value)
+
+  const handleChange = useCallback((event) => patchRef.current(event), [])
 
   const handleHistoryClose = useCallback(() => {
     paneRouter.setParams({...params, since: undefined})
@@ -253,7 +248,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     editState,
     focusPath,
     handleChange,
-    onSelectGroup: formState.onSelectFieldGroup,
     handleFocus,
     handleHistoryClose,
     handleHistoryOpen,
@@ -278,6 +272,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     title,
     value,
     views,
+    onSelectGroup: formState.onSelectFieldGroup,
     state: formState,
   }
 
