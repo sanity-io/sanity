@@ -9,16 +9,16 @@ import {
 import * as React from 'react'
 import {ComponentType} from 'react'
 import {PatchEvent} from '../patch'
-import {ObjectInputProps, SanityDocument} from './formState'
+import {PreparedProps, SanityDocument} from './formState'
 
 export interface FormStore<T extends SanityDocument> {
   updateValue: (updater: (current: T) => T) => void
   onChange: (patchEvent: PatchEvent) => void
   onSetFieldGroup: (groupName: string) => void
   updateCurrentUser: (updater: (current: CurrentUser) => CurrentUser) => void
-  getState: () => ObjectInputProps<T>
+  getState: () => PreparedProps<T>
   getValue: () => T
-  subscribe: (subscriber: (value: ObjectInputProps<T>) => void) => void
+  subscribe: (subscriber: (value: PreparedProps<T>) => void) => void
 }
 
 export interface ObjectFieldGroupState {
@@ -120,7 +120,8 @@ export interface ObjectFieldProps extends BaseFieldProps {
 export interface ArrayFieldProps extends BaseFieldProps {
   kind: 'array'
   type: ArraySchemaType
-  members: ObjectInputProps<unknown>[]
+  members: PreparedProps<unknown>[]
+  value?: unknown[]
 }
 
 export type FieldProps =

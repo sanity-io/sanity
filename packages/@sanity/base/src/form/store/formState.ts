@@ -23,6 +23,7 @@ import {
   ObjectFieldGroupState,
   ObjectMember,
   StringFieldProps,
+  ArrayFieldProps,
 } from './types'
 import {MAX_FIELD_DEPTH} from './constants'
 import {getItemType} from './utils/getItemType'
@@ -46,130 +47,189 @@ function isMemberHidden(member: ObjectMember) {
   return member.type === 'field' ? member.field.hidden : member.fieldSet.hidden
 }
 
-function createFieldProps<T>(
-  field: ObjectField,
-  parentCtx: PropsContext<T>,
+/**
+ * Takes a field in context of a parent object and returns prepared props for it
+ * @param props
+ */
+function prepareFieldProps(props: {
+  field: ObjectField
+  parentObjectProps: RawProps<ObjectSchemaType, unknown>
   index: number
-): FieldProps {
-  if (isObjectSchemaType(field.type)) {
-    const fieldValue = (parentCtx.value as any)?.[field.name]
-    const fieldGroupState = parentCtx.fieldGroupState?.fields?.[field.name]
-    const fieldCollapsedState = parentCtx.collapsedState?.fields?.[field.name]
+}): FieldProps | {hidden: true} {
+  if (isObjectSchemaType(props.field.type)) {
+    const fieldValue = (props.parentObjectProps.value as any)?.[props.field.name] as
+      | Record<string, unknown>
+      | undefined
+
+    const fieldGroupState = props.parentObjectProps.fieldGroupState?.fields?.[props.field.name]
+    const fieldCollapsedState = props.parentObjectProps.collapsedState?.fields?.[props.field.name]
 
     const handleChange = (fieldChangeEvent: PatchEvent) =>
-      parentCtx.onChange(fieldChangeEvent.prefixAll(field.name))
+      props.parentObjectProps.onChange(fieldChangeEvent.prefixAll(props.field.name))
 
     const handleSetFieldGroupsState = (innerFieldGroupState: ObjectFieldGroupState) => {
-      parentCtx.onSetFieldGroupState({
-        [field.name]: innerFieldGroupState,
+      props.parentObjectProps.onSetFieldGroupState({
+        [props.field.name]: innerFieldGroupState,
       })
     }
 
     const handleSetCollapsedState = (state: ObjectCollapsedState) => {
-      parentCtx.onSetCollapsedState({
+      props.parentObjectProps.onSetCollapsedState({
         fields: {
-          [field.name]: state,
+          [props.field.name]: state,
         },
       })
     }
 
-    const fieldProps = createObjectInputProps(field.type, {
-      ...parentCtx,
-      parent: parentCtx.value,
+    const preparedInputProps = prepareObjectInputProps({
+      type: props.field.type,
+      currentUser: props.parentObjectProps.currentUser,
+      parent: props.parentObjectProps.value,
+      document: props.parentObjectProps.document,
       value: fieldValue,
       fieldGroupState,
+      level: props.parentObjectProps.level + 1,
       collapsedState: fieldCollapsedState,
       onChange: handleChange,
       onSetFieldGroupState: handleSetFieldGroupsState,
       onSetCollapsedState: handleSetCollapsedState,
     })
 
-    const defaultCollapsedState = getCollapsedWithDefaults(field.type.options, parentCtx.level)
+    if (preparedInputProps.hidden) {
+      return {hidden: true}
+    }
+
+    const level = props.parentObjectProps.level + 1
+
+    const defaultCollapsedState = getCollapsedWithDefaults(props.field.type.options, level)
 
     return {
       kind: 'object',
-      type: field.type,
-      name: field.name,
-      title: field.type.title,
-      description: field.type.description,
-      level: parentCtx.level,
-      index,
+      type: props.field.type,
+      name: props.field.name,
+      title: props.field.type.title,
+      description: props.field.type.description,
+      level: props.parentObjectProps.level,
+      index: props.index,
       hidden:
-        parentCtx.hidden ||
-        fieldProps.hidden ||
-        fieldProps.members.every((member) => isMemberHidden(member)),
-      readOnly: parentCtx.readOnly || fieldProps.readOnly,
-      members: fieldProps.members,
-      groups: fieldProps.groups,
+        preparedInputProps.hidden ||
+        preparedInputProps.members.every((member) => isMemberHidden(member)),
+
+      // if the "enclosing object" is readOnly, the field should also be readOnly
+      readOnly: props.parentObjectProps.readOnly || preparedInputProps.readOnly,
+      members: preparedInputProps.members,
+      groups: preparedInputProps.groups,
       onChange: handleChange,
       collapsible: defaultCollapsedState.collapsible,
       collapsed: fieldCollapsedState
         ? fieldCollapsedState.collapsed
         : defaultCollapsedState.collapsible,
+
       onCollapse: () => {
         handleSetCollapsedState({collapsed: true})
       },
+
       onExpand: () => handleSetCollapsedState({collapsed: false}),
       onSelectGroup: (groupName: string) =>
-        handleSetFieldGroupsState({...parentCtx.fieldGroupState, current: groupName}),
+        handleSetFieldGroupsState({...props.parentObjectProps.fieldGroupState, current: groupName}),
 
       value: fieldValue,
     }
-  } else if (isArraySchemaType(field.type)) {
-    const fieldValue = (parentCtx.value as any)?.[field.name]
-    const fieldGroupState = parentCtx.fieldGroupState?.fields?.[field.name]
+  } else if (isArraySchemaType(props.field.type)) {
+    const fieldValue = (props.parentObjectProps.value as any)?.[props.field.name] as
+      | unknown[]
+      | undefined
 
-    const onChange = (fieldChangeEvent: PatchEvent) =>
-      parentCtx.onChange(fieldChangeEvent.prepend([setIfMissing([])]).prefixAll(field.name))
+    const fieldGroupState = props.parentObjectProps.fieldGroupState?.fields?.[props.field.name]
+    const fieldCollapsedState = props.parentObjectProps.collapsedState?.fields?.[props.field.name]
 
-    const fieldState = createArrayInputProps(field.type, {
-      ...parentCtx,
-      parent: parentCtx.value,
+    const handleChange = (fieldChangeEvent: PatchEvent) =>
+      props.parentObjectProps.onChange(fieldChangeEvent.prefixAll(props.field.name))
+
+    const handleSetFieldGroupsState = (innerFieldGroupState: ObjectFieldGroupState) => {
+      props.parentObjectProps.onSetFieldGroupState({
+        [props.field.name]: innerFieldGroupState,
+      })
+    }
+
+    const handleSetCollapsedState = (state: ObjectCollapsedState) => {
+      props.parentObjectProps.onSetCollapsedState({
+        fields: {
+          [props.field.name]: state,
+        },
+      })
+    }
+    const level = props.parentObjectProps.level + 1
+
+    const preparedInputProps = prepareArrayInputProps({
+      type: props.field.type,
+      parent: props.parentObjectProps.value,
+      currentUser: props.parentObjectProps.currentUser,
+      document: props.parentObjectProps.document,
       value: fieldValue,
       fieldGroupState,
-      onChange,
+      collapsedState: fieldCollapsedState,
+      level,
+      onChange: handleChange,
+      onSetFieldGroupState: handleSetFieldGroupsState,
+      onSetCollapsedState: handleSetCollapsedState,
     })
 
-    return {
+    if (preparedInputProps.hidden) {
+      return {hidden: true}
+    }
+
+    const ret: ArrayFieldProps = {
       kind: 'array',
-      type: field.type,
-      name: field.name,
-      title: field.type.title,
-      description: field.type.description,
-      level: parentCtx.level,
-      index,
-      hidden: parentCtx.hidden || fieldState.hidden,
-      readOnly: parentCtx.readOnly || fieldState.readOnly,
-      members: fieldState.members,
-      onChange,
+      type: props.field.type,
+      name: props.field.name,
+      title: props.field.type.title,
+      description: props.field.type.description,
+      level,
+      index: props.index,
+      hidden: props.parentObjectProps.hidden || preparedInputProps.hidden,
+      readOnly: props.parentObjectProps.readOnly || preparedInputProps.readOnly,
+      members: preparedInputProps.members,
+      onChange: handleChange,
       value: fieldValue,
     }
+    return ret
   } else {
-    const fieldValue = (parentCtx.value as any)?.[field.name]
+    const fieldValue = (props.parentObjectProps.value as any)?.[props.field.name] as
+      | undefined
+      | boolean
+      | string
+      | number
+
+    // note: we *only* want to call the conditional props here, as it's handled by the prepare<Object|Array>InputProps otherwise
     const fieldConditionalProps = callConditionalProperties(
-      field.type,
+      props.field.type,
       {
         value: fieldValue,
-        parent: parentCtx.value,
-        document: parentCtx.document,
-        currentUser: parentCtx.currentUser,
+        parent: props.parentObjectProps.value,
+        document: props.parentObjectProps.document,
+        currentUser: props.parentObjectProps.currentUser,
       },
       ['hidden', 'readOnly']
     )
 
+    if (fieldConditionalProps.hidden) {
+      return {hidden: true}
+    }
+
+    const handleChange = (fieldChangeEvent: PatchEvent) =>
+      props.parentObjectProps.onChange(fieldChangeEvent.prefixAll(props.field.name))
+
     return {
-      kind: getKind(field.type),
-      type: field.type,
-      name: field.name,
-      title: field.type.title,
-      description: field.type.description,
-      level: parentCtx.level,
-      index,
-      hidden: parentCtx.hidden || fieldConditionalProps.hidden,
-      readOnly: parentCtx.readOnly || fieldConditionalProps.readOnly,
-      onChange: (fieldChangeEvent: PatchEvent) => {
-        parentCtx.onChange(fieldChangeEvent.prefixAll(field.name))
-      },
+      kind: getKind(props.field.type),
+      type: props.field.type,
+      name: props.field.name,
+      title: props.field.type.title,
+      description: props.field.type.description,
+      level: props.parentObjectProps.level,
+      index: props.index,
+      onChange: handleChange,
+      readOnly: props.parentObjectProps.readOnly || fieldConditionalProps.readOnly,
       value: fieldValue,
     } as StringFieldProps | NumberFieldProps | BooleanFieldProps
   }
@@ -179,9 +239,10 @@ function getKind(type: SchemaType): 'object' | 'array' | 'boolean' | 'number' | 
   return type.jsonType
 }
 
-interface PropsContext<T> {
+interface RawProps<SchemaType, T> {
+  type: SchemaType
   value?: T
-  document?: SanityDocument
+  document: SanityDocument
   currentUser: Omit<CurrentUser, 'role'>
   parent?: unknown
   hidden?: boolean
@@ -195,47 +256,51 @@ interface PropsContext<T> {
   onSetFieldGroupState: (fieldGroupState: ObjectFieldGroupState) => void
 }
 
-function createObjectInputProps<T>(
-  type: ObjectSchemaType,
-  ctx: PropsContext<T>
-): ObjectInputProps<T> {
+function prepareObjectInputProps<T>(
+  props: RawProps<ObjectSchemaType, T>
+): PreparedProps<T> | {hidden: true} {
   const conditionalFieldContext = {
-    value: ctx.value,
-    parent: ctx.parent,
-    document: ctx.document,
-    currentUser: ctx.currentUser,
+    value: props.value,
+    parent: props.parent,
+    document: props.document,
+    currentUser: props.currentUser,
   }
-  const {hidden, readOnly} = callConditionalProperties(type, conditionalFieldContext, [
+
+  const {hidden, readOnly} = callConditionalProperties(props.type, conditionalFieldContext, [
     'hidden',
     'readOnly',
   ])
 
+  if (hidden) {
+    return {hidden: true}
+  }
+
   const handleChange = (patchEvent: PatchEvent) => {
-    ctx.onChange(patchEvent.prepend([setIfMissing(createProtoValue(type))]))
+    props.onChange(patchEvent.prepend([setIfMissing(createProtoValue(props.type))]))
   }
 
   const handleSelectFieldGroup = (groupName: string) => {
-    ctx.onSetFieldGroupState({current: groupName, fields: ctx.fieldGroupState?.fields})
+    props.onSetFieldGroupState({current: groupName, fields: props.fieldGroupState?.fields})
   }
 
   const handleCollapse = () => {
-    ctx.onSetCollapsedState({
+    props.onSetCollapsedState({
       collapsed: true,
     })
   }
 
   const handleExpand = () => {
-    ctx.onSetCollapsedState({
+    props.onSetCollapsedState({
       collapsed: false,
     })
   }
 
-  if (hidden || ctx.level === MAX_FIELD_DEPTH) {
+  if (hidden || props.level === MAX_FIELD_DEPTH) {
     return {
-      value: ctx.value as T,
-      readOnly: hidden || ctx.readOnly,
+      value: props.value as T,
+      readOnly: hidden || props.readOnly,
       hidden,
-      level: ctx.level,
+      level: props.level,
       members: [],
       groups: [],
       onChange: handleChange,
@@ -245,14 +310,14 @@ function createObjectInputProps<T>(
     }
   }
 
-  const schemaTypeGroupConfig = type.groups || []
+  const schemaTypeGroupConfig = props.type.groups || []
   const defaultGroupName = (
     schemaTypeGroupConfig.find((g) => g.default) || schemaTypeGroupConfig[0]
   )?.name
 
   const groups = schemaTypeGroupConfig.flatMap((group): FieldGroup[] => {
     const groupHidden = callConditionalProperty(group.hidden, conditionalFieldContext)
-    const selected = group.name === (ctx.fieldGroupState?.current || defaultGroupName)
+    const selected = group.name === (props.fieldGroupState?.current || defaultGroupName)
     return groupHidden
       ? []
       : [
@@ -268,19 +333,23 @@ function createObjectInputProps<T>(
 
   const activeGroup = groups.find((group) => group.selected)!
 
-  const parentCtx: PropsContext<unknown> = {
-    ...ctx,
-    level: ctx.level + 1,
+  const parentProps: RawProps<ObjectSchemaType, unknown> = {
+    ...props,
+    level: props.level + 1,
     hidden,
     readOnly,
     onChange: handleChange,
   }
 
   // create a members array for the object
-  const members = (type.fieldsets || []).flatMap((fieldSet, index): ObjectMember[] => {
+  const members = (props.type.fieldsets || []).flatMap((fieldSet, index): ObjectMember[] => {
     if (fieldSet.single) {
       // "single" means not part of a fieldset
-      const fieldProps = createFieldProps(fieldSet.field, parentCtx, index)
+      const fieldProps = prepareFieldProps({
+        field: fieldSet.field,
+        parentObjectProps: parentProps,
+        index,
+      })
       if (fieldProps.hidden || !isFieldEnabledByGroupFilter(groups, fieldSet.field, activeGroup)) {
         return []
       }
@@ -295,10 +364,10 @@ function createObjectInputProps<T>(
     // actual fieldset
     const fieldsetFieldNames = fieldSet.fields.map((f) => f.name)
     const fieldsetHidden = callConditionalProperty(fieldSet.hidden, {
-      currentUser: ctx.currentUser,
-      document: ctx.document,
-      parent: ctx.value,
-      value: pick(ctx.value, fieldsetFieldNames),
+      currentUser: props.currentUser,
+      document: props.document,
+      parent: props.value,
+      value: pick(props.value, fieldsetFieldNames),
     })
 
     if (fieldsetHidden) {
@@ -306,7 +375,7 @@ function createObjectInputProps<T>(
     }
 
     const fieldsetMembers = fieldSet.fields.flatMap((field): FieldMember[] => {
-      const fieldMember = createFieldProps(field, parentCtx, index)
+      const fieldMember = prepareFieldProps({field, parentObjectProps: parentProps, index})
       return !fieldMember.hidden && isFieldEnabledByGroupFilter(groups, field, activeGroup)
         ? [
             {
@@ -332,18 +401,18 @@ function createObjectInputProps<T>(
           fields: fieldsetMembers,
           collapsible: fieldSet.options?.collapsible,
           collapsed:
-            fieldSet.name in (ctx.collapsedState?.fieldSets || {})
-              ? ctx.collapsedState?.fieldSets?.[fieldSet.name]
+            fieldSet.name in (props.collapsedState?.fieldSets || {})
+              ? props.collapsedState?.fieldSets?.[fieldSet.name]
               : fieldSet.options?.collapsed,
           onCollapse: () => {
-            ctx.onSetCollapsedState({
+            props.onSetCollapsedState({
               fieldSets: {
                 [fieldSet.name]: true,
               },
             })
           },
           onExpand: () => {
-            ctx.onSetCollapsedState({
+            props.onSetCollapsedState({
               fieldSets: {
                 [fieldSet.name]: false,
               },
@@ -355,10 +424,10 @@ function createObjectInputProps<T>(
   })
 
   return {
-    value: ctx.value as T,
-    readOnly: ctx.readOnly,
-    hidden: ctx.hidden,
-    level: ctx.level,
+    value: props.value as T,
+    readOnly: props.readOnly,
+    hidden: props.hidden,
+    level: props.level,
     onChange: handleChange,
     onSelectFieldGroup: handleSelectFieldGroup,
     onExpand: handleExpand,
@@ -368,48 +437,56 @@ function createObjectInputProps<T>(
   }
 }
 
-function createArrayInputProps<T>(type: ArraySchemaType, ctx: PropsContext<T>): ArrayFormState<T> {
-  const onChange = (fieldChangeEvent: PatchEvent) => {
-    ctx.onChange(fieldChangeEvent.prepend([setIfMissing([])]))
+function prepareArrayInputProps<T>(props: RawProps<ArraySchemaType, T>): ArrayFormState<T> {
+  const handleChange = (fieldChangeEvent: PatchEvent) => {
+    props.onChange(fieldChangeEvent.prepend([setIfMissing([])]))
   }
 
-  if (ctx.level === MAX_FIELD_DEPTH) {
+  if (props.level === MAX_FIELD_DEPTH) {
     return {
-      value: ctx.value as T,
-      readOnly: ctx.readOnly,
-      level: ctx.level,
-      onChange,
+      value: props.value as T,
+      readOnly: props.readOnly,
+      level: props.level,
+      onChange: handleChange,
       members: [],
     }
   }
 
-  const parentCtx = {...ctx, level: ctx.level + 1, onChange}
-
   // create a members array for the object
-  const members = ((ctx.value as undefined | any[]) || []).flatMap(
-    (item, index): ObjectInputProps<unknown>[] => {
-      const itemType = getItemType(type, item)
-      const itemCtx = {...parentCtx, value: item, parent: parentCtx.value}
+  const members = ((props.value as undefined | unknown[]) || []).flatMap(
+    (item, index): PreparedProps<unknown>[] => {
+      const itemType = getItemType(props.type, item)
       if (isObjectSchemaType(itemType)) {
-        return [createObjectInputProps(itemType, itemCtx)]
+        const itemProps = {
+          type: itemType,
+          onChange: handleChange,
+          level: props.level + 1,
+          document: props.document,
+          value: item,
+          currentUser: props.currentUser,
+          onSetCollapsedState: props.onSetCollapsedState,
+          onSetFieldGroupState: props.onSetFieldGroupState,
+        }
+        const prepared = prepareObjectInputProps(itemProps)
+        return prepared.hidden ? [] : [prepared]
       }
       return [] // todo: primitive arrays
     }
   )
 
   return {
-    value: ctx.value as T,
-    readOnly: ctx.readOnly,
-    hidden: ctx.hidden,
-    level: ctx.level,
-    onChange,
+    value: props.value as T,
+    readOnly: props.readOnly,
+    hidden: props.hidden,
+    level: props.level,
+    onChange: handleChange,
     members,
   }
 }
 
 export type SanityDocument = Record<string, unknown>
 
-export interface ObjectInputProps<T> {
+export interface PreparedProps<T> {
   value: T
   onChange: (patchEvent: PatchEvent) => void
   hidden?: boolean
@@ -431,12 +508,11 @@ export interface ArrayFormState<T> {
   hidden?: boolean
   level: number
   readOnly?: boolean
-  members: ObjectInputProps<unknown>[]
+  members: PreparedProps<unknown>[]
 }
 
-export function deriveFormState<T extends SanityDocument>(
-  schemaType: ObjectSchemaType,
-  ctx: PropsContext<T>
-): ObjectInputProps<T> {
-  return createObjectInputProps(schemaType, ctx)
+export function prepareFormProps<T extends SanityDocument>(
+  props: RawProps<ObjectSchemaType, T>
+): PreparedProps<T> | {hidden: true} {
+  return prepareObjectInputProps(props)
 }

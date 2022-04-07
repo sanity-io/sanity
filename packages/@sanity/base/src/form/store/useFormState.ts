@@ -4,7 +4,7 @@ import {merge} from 'lodash'
 import {useCurrentUser} from '../../datastores'
 import {PatchEvent} from '../patch'
 import {ObjectCollapsedState, ObjectFieldGroupState} from './types'
-import {deriveFormState, SanityDocument} from './formState'
+import {prepareFormProps, SanityDocument} from './formState'
 
 export function useFormState(
   schemaType: ObjectSchemaType,
@@ -23,7 +23,8 @@ export function useFormState(
   return useMemo(() => {
     // console.time('derive form state')
 
-    const state = deriveFormState(schemaType, {
+    const state = prepareFormProps({
+      type: schemaType,
       document: value,
       fieldGroupState,
       onSetFieldGroupState,

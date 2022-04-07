@@ -1,6 +1,6 @@
 import Schema from '@sanity/schema'
 import {ConditionalProperty} from '@sanity/types'
-import {deriveFormState} from '../formState'
+import {prepareFormProps} from '../formState'
 
 // eslint-disable-next-line no-empty-function,@typescript-eslint/no-empty-function
 const noop = () => {}
@@ -79,7 +79,7 @@ test('it omits the hidden member field from the members array', () => {
   const bookType = getBookType({
     subtitle: {hidden: () => true},
   })
-  const result = deriveFormState(bookType, {
+  const result = prepareFormProps(bookType, {
     document: {_id: 'foo', _type: 'book'},
     onSetFieldGroupState: noop,
     level: 0,
@@ -95,7 +95,7 @@ test('it omits nested hidden members from the members array', () => {
   const bookType = getBookType({
     author: {hidden: () => true},
   })
-  const result = deriveFormState(bookType, {
+  const result = prepareFormProps(bookType, {
     document: {_id: 'foo', _type: 'book'},
     onSetFieldGroupState: noop,
     level: 0,
@@ -113,7 +113,7 @@ test('it "upward propagates" hidden fields', () => {
     authorFirstName: {hidden: () => true},
     authorLastName: {hidden: () => true},
   })
-  const result = deriveFormState(bookType, {
+  const result = prepareFormProps(bookType, {
     document: {_id: 'foo', _type: 'book'},
     onSetFieldGroupState: noop,
     level: 0,

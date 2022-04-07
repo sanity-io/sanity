@@ -5,7 +5,7 @@ import {DocumentActionComponent} from '../../actions'
 import {DocumentBadgeComponent} from '../../badges'
 import {PaneView, PaneMenuItem, PaneMenuItemGroup} from '../../types'
 import {TimelineMode} from './types'
-import {ObjectInputProps} from '../../../form/store/formState'
+import {PreparedProps} from '../../../form/store/formState'
 
 // @todo: provide a TS type for this
 type DocumentSchema = any
@@ -50,7 +50,7 @@ export interface DocumentPaneContextValue {
   title: string | null
   value: Partial<SanityDocument>
   views: PaneView[]
-  state: ObjectInputProps<unknown>
+  state: PreparedProps<unknown>
   onSelectGroup: (groupName: string) => void
 }
 

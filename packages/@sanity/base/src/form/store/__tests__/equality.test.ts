@@ -1,4 +1,4 @@
-import {deriveFormState} from '../formState'
+import {prepareFormProps} from '../formState'
 import {ConditionalProperty} from '@sanity/types'
 import Schema from '@sanity/schema'
 // eslint-disable-next-line no-empty-function,@typescript-eslint/no-empty-function
@@ -77,7 +77,7 @@ test('it doesnt return new object equalities given the same input', () => {
   const document = {_id: 'test', _type: 'foo'}
   const bookType = getBookType({})
 
-  const state1 = deriveFormState(bookType, {
+  const state1 = prepareFormProps(bookType, {
     value: document,
     currentUser: MOCK_USER,
     level: 0,
@@ -86,7 +86,7 @@ test('it doesnt return new object equalities given the same input', () => {
     onSetFieldGroupState: noop,
   })
 
-  const state2 = deriveFormState(bookType, {
+  const state2 = prepareFormProps(bookType, {
     value: document,
     currentUser: MOCK_USER,
     level: 0,
