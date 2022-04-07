@@ -1,5 +1,4 @@
-import React from 'react'
-
+import React, {useMemo} from 'react'
 import {BinaryDocumentIcon, AccessDeniedIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
 import {Flex, Text} from '@sanity/ui'
 import styled from 'styled-components'
@@ -14,7 +13,7 @@ interface Props {
   directUploads: boolean
 }
 
-const FlexWrapper = styled(Flex)`
+const RootFlex = styled(Flex)`
   pointer-events: none;
 `
 
@@ -22,7 +21,7 @@ export function PlaceholderText(props: Props) {
   const {hoveringFiles, type, readOnly, acceptedFiles, rejectedFilesCount, directUploads} = props
   const isFileType = type === 'file'
 
-  function MessageIcon() {
+  const messageIcon = useMemo(() => {
     if (readOnly) {
       return <ReadOnlyIcon />
     }
@@ -32,13 +31,13 @@ export function PlaceholderText(props: Props) {
     }
 
     return isFileType ? <BinaryDocumentIcon /> : <ImageIcon />
-  }
+  }, [directUploads, hoveringFiles, isFileType, readOnly, rejectedFilesCount])
 
-  function MessageText() {
+  const messageText = useMemo(() => {
     let message = `Drag or paste ${type} here`
 
     if (!directUploads) {
-      message = `Can't upload files here`
+      return `Can't upload files here`
     }
 
     if (readOnly) {
@@ -54,23 +53,16 @@ export function PlaceholderText(props: Props) {
       }
     }
 
-    return (
-      <Text size={1} muted>
-        {message}
-      </Text>
-    )
-  }
+    return message
+  }, [acceptedFiles.length, directUploads, hoveringFiles, readOnly, rejectedFilesCount, type])
 
   return (
-    <>
-      <Flex justify="center">
-        <Text muted>
-          <MessageIcon />
-        </Text>
-      </Flex>
-      <FlexWrapper justify="center">
-        <MessageText />
-      </FlexWrapper>
-    </>
+    <RootFlex align="center" gap={2} justify="center">
+      <Text muted>{messageIcon}</Text>
+
+      <Text size={1} muted>
+        {messageText}
+      </Text>
+    </RootFlex>
   )
 }
