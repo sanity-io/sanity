@@ -7,7 +7,7 @@ import {
   ObjectSchemaType,
   SchemaType,
 } from '@sanity/types'
-import {pick, castArray} from 'lodash'
+import {pick, castArray, memoize} from 'lodash'
 import {ComponentType} from 'react'
 import {createProtoValue} from '../utils/createProtoValue'
 import {PatchEvent, setIfMissing} from '../patch'
@@ -55,27 +55,21 @@ function createPropsFromObjectField<T>(
   const fieldCollapsedState = parentCtx.collapsedState?.fields?.[field.name]
 
   if (isObjectSchemaType(field.type)) {
-    const onChange = (fieldChangeEvent: PatchEvent) =>
+    const handleChange = (fieldChangeEvent: PatchEvent) =>
       parentCtx.onChange(
         fieldChangeEvent.prepend([setIfMissing(createProtoValue(field.type))]).prefixAll(field.name)
       )
 
-    const onSetFieldGroupState = (innerFieldGroupState: ObjectFieldGroupState) => {
+    const handleSetFieldGroupsState = (innerFieldGroupState: ObjectFieldGroupState) => {
       parentCtx.onSetFieldGroupState({
-        ...parentCtx.fieldGroupState,
-        fields: {
-          ...innerFieldGroupState.fields,
-          [field.name]: innerFieldGroupState,
-        },
+        [field.name]: innerFieldGroupState,
       })
     }
 
-    const onSetCollapsedState = (state: ObjectCollapsedState) => {
+    const handleSetCollapsedState = (state: ObjectCollapsedState) => {
       parentCtx.onSetCollapsedState({
-        ...parentCtx.collapsedState,
         fields: {
-          ...parentCtx.collapsedState?.fields,
-          [field.name]: {...parentCtx.collapsedState?.fields?.[field.name], ...state},
+          [field.name]: state,
         },
       })
     }
@@ -86,9 +80,9 @@ function createPropsFromObjectField<T>(
       value: fieldValue,
       fieldGroupState,
       collapsedState: fieldCollapsedState,
-      onChange,
-      onSetFieldGroupState,
-      onSetCollapsedState,
+      onChange: handleChange,
+      onSetFieldGroupState: handleSetFieldGroupsState,
+      onSetCollapsedState: handleSetCollapsedState,
     })
 
     const defaultCollapsedState = getCollapsedWithDefaults(field.type.options, parentCtx.level)
@@ -108,15 +102,17 @@ function createPropsFromObjectField<T>(
       readOnly: parentCtx.readOnly || fieldProps.readOnly,
       members: fieldProps.members,
       groups: fieldProps.groups,
-      onChange,
+      onChange: handleChange,
       collapsible: defaultCollapsedState.collapsible,
       collapsed: fieldCollapsedState
         ? fieldCollapsedState.collapsed
         : defaultCollapsedState.collapsible,
-      onCollapse: () => onSetCollapsedState({collapsed: true}),
-      onExpand: () => onSetCollapsedState({collapsed: false}),
+      onCollapse: () => {
+        handleSetCollapsedState({collapsed: true})
+      },
+      onExpand: () => handleSetCollapsedState({collapsed: false}),
       onSelectGroup: (groupName: string) =>
-        onSetFieldGroupState({...parentCtx.fieldGroupState, current: groupName}),
+        handleSetFieldGroupsState({...parentCtx.fieldGroupState, current: groupName}),
 
       value: fieldValue,
     }
@@ -209,24 +205,23 @@ function createObjectInputProps<T>(
     'hidden',
     'readOnly',
   ])
-  const onChange = (fieldChangeEvent: PatchEvent) => {
+
+  const handleFieldChange = (fieldChangeEvent: PatchEvent) => {
     ctx.onChange(fieldChangeEvent.prepend([setIfMissing(createProtoValue(type))]))
   }
 
-  const onSelectFieldGroup = (groupName: string) => {
+  const handleSelectFieldGroup = (groupName: string) => {
     ctx.onSetFieldGroupState({current: groupName, fields: ctx.fieldGroupState?.fields})
   }
 
-  const onCollapse = () => {
+  const handleCollapse = () => {
     ctx.onSetCollapsedState({
-      ...ctx.collapsedState,
       collapsed: true,
     })
   }
 
-  const onExpand = () => {
+  const handleExpand = () => {
     ctx.onSetCollapsedState({
-      ...ctx.collapsedState,
       collapsed: false,
     })
   }
@@ -237,12 +232,12 @@ function createObjectInputProps<T>(
       readOnly: hidden || ctx.readOnly,
       hidden: hidden,
       level: ctx.level,
-      onChange,
       members: [],
       groups: [],
-      onSelectFieldGroup,
-      onExpand,
-      onCollapse,
+      onChange: handleFieldChange,
+      onSelectFieldGroup: handleSelectFieldGroup,
+      onExpand: handleExpand,
+      onCollapse: handleCollapse,
     }
   }
 
@@ -274,24 +269,26 @@ function createObjectInputProps<T>(
     level: ctx.level + 1,
     hidden,
     readOnly,
-    onChange,
+    onChange: handleFieldChange,
   }
 
   // create a members array for the object
   const members = (type.fieldsets || []).flatMap((fieldSet, index): ObjectMember[] => {
     if (fieldSet.single) {
       // "single" means not part of a fieldset
-      const field = createPropsFromObjectField(fieldSet.field, parentCtx, index)
-      return !field.hidden && isFieldEnabledByGroupFilter(groups, fieldSet.field, activeGroup)
-        ? [
-            {
-              type: 'field',
-              field,
-            },
-          ]
-        : []
+      const fieldProps = createPropsFromObjectField(fieldSet.field, parentCtx, index)
+      if (fieldProps.hidden || !isFieldEnabledByGroupFilter(groups, fieldSet.field, activeGroup)) {
+        return []
+      }
+      return [
+        {
+          type: 'field',
+          field: fieldProps,
+        },
+      ]
     }
 
+    // actual fieldset
     const fieldsetFieldNames = fieldSet.fields.map((f) => f.name)
     const fieldsetHidden = callConditionalProperty(fieldSet.hidden, {
       currentUser: ctx.currentUser,
@@ -300,7 +297,11 @@ function createObjectInputProps<T>(
       value: pick(ctx.value, fieldsetFieldNames),
     })
 
-    const fieldMembers = fieldSet.fields.flatMap((field): FieldMember[] => {
+    if (fieldsetHidden) {
+      return []
+    }
+
+    const fieldsetMembers = fieldSet.fields.flatMap((field): FieldMember[] => {
       const fieldMember = createPropsFromObjectField(field, parentCtx, index)
       return !fieldMember.hidden && isFieldEnabledByGroupFilter(groups, field, activeGroup)
         ? [
@@ -313,7 +314,7 @@ function createObjectInputProps<T>(
     })
 
     // if all members of the fieldset is hidden, the fieldset should effectively also be hidden
-    if (fieldsetHidden || fieldMembers.every((field) => isMemberHidden(field))) {
+    if (fieldsetMembers.every((field) => isMemberHidden(field))) {
       return []
     }
 
@@ -324,7 +325,7 @@ function createObjectInputProps<T>(
           name: fieldSet.name,
           title: fieldSet.title,
           hidden: false,
-          fields: fieldMembers,
+          fields: fieldsetMembers,
           collapsible: fieldSet.options?.collapsible,
           collapsed:
             fieldSet.name in (ctx.collapsedState?.fieldSets || {})
@@ -332,18 +333,14 @@ function createObjectInputProps<T>(
               : fieldSet.options?.collapsed,
           onCollapse: () => {
             ctx.onSetCollapsedState({
-              ...ctx.collapsedState,
               fieldSets: {
-                ...ctx.collapsedState?.fieldSets,
                 [fieldSet.name]: true,
               },
             })
           },
           onExpand: () => {
             ctx.onSetCollapsedState({
-              ...ctx.collapsedState,
               fieldSets: {
-                ...ctx.collapsedState?.fieldSets,
                 [fieldSet.name]: false,
               },
             })
@@ -358,10 +355,10 @@ function createObjectInputProps<T>(
     readOnly: ctx.readOnly,
     hidden: ctx.hidden,
     level: ctx.level,
-    onChange,
-    onSelectFieldGroup,
-    onExpand,
-    onCollapse,
+    onChange: handleFieldChange,
+    onSelectFieldGroup: handleSelectFieldGroup,
+    onExpand: handleExpand,
+    onCollapse: handleCollapse,
     members,
     groups,
   }

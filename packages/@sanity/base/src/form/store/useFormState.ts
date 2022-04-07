@@ -1,5 +1,6 @@
 import {ObjectSchemaType} from '@sanity/types'
-import {useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
+import {merge} from 'lodash'
 import {useCurrentUser} from '../../datastores'
 import {PatchEvent} from '../patch'
 import {ObjectCollapsedState, ObjectFieldGroupState} from './types'
@@ -13,6 +14,12 @@ export function useFormState(
   const [fieldGroupState, onSetFieldGroupState] = useState<ObjectFieldGroupState>()
   const [collapsedState, onSetCollapsedState] = useState<ObjectCollapsedState>()
 
+  const handleOnCollapseState = useCallback((nextState) => {
+    onSetCollapsedState((prevState) => {
+      return merge({}, prevState, nextState)
+    })
+  }, [])
+
   return useMemo(() => {
     // console.time('derive form state')
 
@@ -25,9 +32,17 @@ export function useFormState(
       level: 0,
       currentUser,
       collapsedState,
-      onSetCollapsedState,
+      onSetCollapsedState: handleOnCollapseState,
     })
     // console.timeEnd('derive form state')
     return state
-  }, [schemaType, value, fieldGroupState, onChange, currentUser, collapsedState])
+  }, [
+    schemaType,
+    value,
+    fieldGroupState,
+    onChange,
+    currentUser,
+    collapsedState,
+    handleOnCollapseState,
+  ])
 }
