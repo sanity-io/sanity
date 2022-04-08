@@ -8,10 +8,6 @@ export const generateSanityManifest = (base) => ({
       path: './schemas/schema',
     },
     {
-      name: 'part:@sanity/desk-tool/structure',
-      path: './deskStructure.js',
-    },
-    {
       implements: 'part:@sanity/base/root',
       path: 'plugins/sanity-plugin-tutorial/CustomDefaultLayout',
     },
