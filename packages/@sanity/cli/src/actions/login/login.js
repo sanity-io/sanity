@@ -10,7 +10,7 @@ import canLaunchBrowser from '../../util/canLaunchBrowser'
 
 export default async function login(args, context) {
   const {prompt, output, apiClient} = context
-  const {sso, experimental} = args.extOptions
+  const {sso, experimental, provider: specifiedProvider} = args.extOptions
 
   // _Potentially_ already authed client
   const authedClient = apiClient({requireUser: false, requireProject: false})
@@ -20,7 +20,7 @@ export default async function login(args, context) {
   const client = authedClient.clone().config({token: undefined})
 
   // Get the desired authentication provider
-  const provider = await getProvider({client, sso, experimental, output, prompt})
+  const provider = await getProvider({client, sso, experimental, output, prompt, specifiedProvider})
   if (provider === undefined) {
     output.print(chalk.red('No authentication providers found'))
     return
@@ -140,7 +140,7 @@ function decryptToken(token, secret, iv) {
   return `${dec}${decipher.final('utf8')}`
 }
 
-async function getProvider({output, client, sso, experimental, prompt}) {
+async function getProvider({output, client, sso, experimental, prompt, specifiedProvider}) {
   if (sso) {
     return getSSOProvider({client, prompt, slug: sso})
   }
@@ -152,6 +152,18 @@ async function getProvider({output, client, sso, experimental, prompt}) {
     providers = [...providers, {name: 'sso', title: 'SSO'}]
   }
   spin.stop()
+
+  const providerNames = providers.map((prov) => prov.name)
+
+  if (specifiedProvider && providerNames.includes(specifiedProvider)) {
+    const provider = providers.find((prov) => prov.name === specifiedProvider)
+
+    if (!provider) {
+      throw new Error(`Cannot find login provider with name "${specifiedProvider}"`)
+    }
+
+    return provider
+  }
 
   const provider = await promptProviders(prompt, providers)
   if (provider.name === 'sso') {
