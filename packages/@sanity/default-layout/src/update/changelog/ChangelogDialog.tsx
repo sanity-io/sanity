@@ -32,7 +32,7 @@ export function ChangelogDialog(props: ChangelogDialogProps) {
               <Stack space={3}>
                 {hasChangelog && <Text weight="semibold">Changelog</Text>}
                 <Text muted size={1}>
-                  Your Sanity Studio version <code>{currentVersion}</code>. The latest version is{' '}
+                  Your Sanity Studio is version <code>{currentVersion}</code>. The latest version is{' '}
                   <code>{latestVersion}</code>.
                 </Text>
               </Stack>
