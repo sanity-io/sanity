@@ -32,8 +32,9 @@ export const DefaultLayout = memo(function DefaultLayout() {
   const [searchIsOpen, setSearchIsOpen] = useState<boolean>(false)
   const [loadingScreenElement, setLoadingScreenElement] = useState<HTMLDivElement | null>(null)
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
-  const {value: currentUser} = useCurrentUser()
+  const [createButtonElement, setCreateButtonElement] = useState<HTMLButtonElement | null>(null)
 
+  const {value: currentUser} = useCurrentUser()
   const [templatePermissions, isTemplatePermissionsLoading] = useTemplatePermissions(
     newDocumentOptions
   )
@@ -65,7 +66,12 @@ export const DefaultLayout = memo(function DefaultLayout() {
 
   const handleActionModalClose = useCallback(() => {
     setCreateMenuIsOpen(false)
-  }, [])
+
+    // Restore focus on the button when closing the dialog
+    if (createButtonElement) {
+      createButtonElement.focus()
+    }
+  }, [createButtonElement])
 
   const handleToggleMenu = useCallback(() => {
     setMenuIsOpen((prev) => !prev)
@@ -105,6 +111,7 @@ export const DefaultLayout = memo(function DefaultLayout() {
             onUserLogout={handleLogout}
             onSearchOpen={handleSearchOpen}
             searchPortalElement={portalElement}
+            setCreateButtonElement={setCreateButtonElement}
           />
         </LegacyLayerProvider>
 

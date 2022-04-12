@@ -1,38 +1,36 @@
 import React, {useCallback, useMemo, useState} from 'react'
 import {useModuleStatus} from '@sanity/base/hooks'
 import {PackageIcon} from '@sanity/icons'
-import {DialogProps, useGlobalKeyDown} from '@sanity/ui'
-import {ChangelogDialog, UpgradeAccordion} from '../../update'
+import {DialogProps} from '@sanity/ui'
 import {StatusButton} from '../components'
+import {ChangelogDialog, UpgradeAccordion} from '../../update'
 
 declare const __DEV__: boolean
 
 export function ChangelogContainer() {
   const [open, setOpen] = useState<boolean>(false)
+  const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
   const {value, error, isLoading} = useModuleStatus()
   const {changelog, currentVersion, latestVersion, isUpToDate} = value || {}
 
-  const handleToggleOpen = useCallback(() => setOpen((v) => !v), [])
+  const handleOpen = useCallback(() => setOpen(true), [])
 
-  useGlobalKeyDown(
-    useCallback(
-      (e) => {
-        if (e.key === 'Escape' && open) {
-          setOpen(false)
-        }
-      },
-      [open]
-    )
-  )
+  const handleClose = useCallback(() => {
+    setOpen(false)
+
+    if (buttonElement) {
+      buttonElement.focus()
+    }
+  }, [buttonElement])
 
   const dialogProps: Omit<DialogProps, 'id'> = useMemo(
     () => ({
       footer: <UpgradeAccordion defaultOpen={__DEV__} />,
-      onClickOutside: handleToggleOpen,
-      onClose: handleToggleOpen,
+      onClickOutside: handleClose,
+      onClose: handleClose,
       scheme: 'light',
     }),
-    [handleToggleOpen]
+    [handleClose]
   )
 
   if (error || isLoading || isUpToDate) {
@@ -44,15 +42,16 @@ export function ChangelogContainer() {
       <StatusButton
         icon={PackageIcon}
         mode="bleed"
-        onClick={handleToggleOpen}
+        onClick={handleOpen}
+        ref={setButtonElement}
         selected={open}
         statusTone="primary"
       />
       {open && (
         <ChangelogDialog
-          dialogProps={dialogProps}
           changelog={changelog}
           currentVersion={currentVersion}
+          dialogProps={dialogProps}
           latestVersion={latestVersion}
         />
       )}

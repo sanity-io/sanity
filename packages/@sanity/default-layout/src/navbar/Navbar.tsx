@@ -22,14 +22,15 @@ import {ChangelogContainer} from './changelog'
 import {PresenceMenu, LoginStatus, SearchField} from '.'
 
 interface NavbarProps {
-  templatePermissions: TemplatePermissionsResult[] | undefined
-  isTemplatePermissionsLoading: boolean
   createMenuIsOpen: boolean
+  isTemplatePermissionsLoading: boolean
   onCreateButtonClick: () => void
+  onSearchOpen: (open: boolean) => void
   onToggleMenu: () => void
   onUserLogout: () => void
-  onSearchOpen: (open: boolean) => void
   searchPortalElement: HTMLDivElement | null
+  setCreateButtonElement?: (el: HTMLButtonElement | null) => void
+  templatePermissions: TemplatePermissionsResult[] | undefined
 }
 
 const Root = styled(Card)<{$onSearchOpen: boolean}>`
@@ -107,13 +108,14 @@ const newDocumentOptions = getNewDocumentOptions()
 export const Navbar = memo(function Navbar(props: NavbarProps) {
   const {
     createMenuIsOpen,
+    isTemplatePermissionsLoading,
     onCreateButtonClick,
+    onSearchOpen,
     onToggleMenu,
     onUserLogout,
-    onSearchOpen,
     searchPortalElement,
+    setCreateButtonElement,
     templatePermissions,
-    isTemplatePermissionsLoading,
   } = props
 
   const [searchOpen, setSearchOpen] = useState<boolean>(false)
@@ -266,6 +268,7 @@ export const Navbar = memo(function Navbar(props: NavbarProps) {
                   icon={ComposeIcon}
                   mode="bleed"
                   onClick={onCreateButtonClick}
+                  ref={setCreateButtonElement}
                   selected={createMenuIsOpen}
                 />
               </SpacingBox>
