@@ -14,7 +14,8 @@ Examples
 export default {
   name: 'login',
   signature: '[--sso <slug>]',
-  description: 'Authenticates against the Sanity.io API (no flag) or a third-party identity provider (with --sso flag)',
+  description:
+    'Authenticates against the Sanity.io API (no flag) or a third-party identity provider (with --sso flag)',
   helpText,
   action: login,
 }
