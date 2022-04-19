@@ -1,6 +1,7 @@
 import {ObjectSchemaType} from '@sanity/types'
 import {useCallback, useMemo, useState} from 'react'
 import {merge} from 'lodash'
+import {pathFor} from '@sanity/util/paths'
 import {useCurrentUser} from '../../datastores'
 import {PatchEvent} from '../patch'
 import {ObjectCollapsedState, ObjectFieldGroupState} from './types'
@@ -28,6 +29,7 @@ export function useFormState(
       fieldGroupState,
       onSetFieldGroupState,
       value,
+      path: pathFor([]),
       onChange,
       level: 0,
       currentUser,

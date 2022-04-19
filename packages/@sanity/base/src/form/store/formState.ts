@@ -6,8 +6,10 @@ import {
   isObjectSchemaType,
   ObjectField,
   ObjectSchemaType,
+  Path,
   SchemaType,
 } from '@sanity/types'
+
 import {pick, castArray} from 'lodash'
 import {ComponentType} from 'react'
 import {createProtoValue} from '../utils/createProtoValue'
@@ -28,6 +30,7 @@ import {
 import {MAX_FIELD_DEPTH} from './constants'
 import {getItemType} from './utils/getItemType'
 import {getCollapsedWithDefaults} from './utils/getCollapsibleOptions'
+import {pathFor} from '@sanity/util/paths'
 
 function isFieldEnabledByGroupFilter(
   // the groups config for the "enclosing object" type
@@ -55,6 +58,7 @@ function prepareFieldProps(props: {
   field: ObjectField
   parentObjectProps: RawProps<ObjectSchemaType, unknown>
   index: number
+  path: Path
 }): FieldProps | {hidden: true} {
   if (isObjectSchemaType(props.field.type)) {
     const fieldValue = (props.parentObjectProps.value as any)?.[props.field.name] as
@@ -88,6 +92,7 @@ function prepareFieldProps(props: {
       document: props.parentObjectProps.document,
       value: fieldValue,
       fieldGroupState,
+      path: pathFor([...props.path, props.field.name]),
       level: props.parentObjectProps.level + 1,
       collapsedState: fieldCollapsedState,
       onChange: handleChange,
@@ -120,6 +125,7 @@ function prepareFieldProps(props: {
       members: preparedInputProps.members,
       groups: preparedInputProps.groups,
       onChange: handleChange,
+      path: pathFor([...props.path, props.field.name]),
       collapsible: defaultCollapsedState.collapsible,
       collapsed: fieldCollapsedState
         ? fieldCollapsedState.collapsed
@@ -170,6 +176,7 @@ function prepareFieldProps(props: {
       fieldGroupState,
       collapsedState: fieldCollapsedState,
       level,
+      path: pathFor([...props.path, props.field.name]),
       onChange: handleChange,
       onSetFieldGroupState: handleSetFieldGroupsState,
       onSetCollapsedState: handleSetCollapsedState,
@@ -247,6 +254,7 @@ interface RawProps<SchemaType, T> {
   parent?: unknown
   hidden?: boolean
   readOnly?: boolean
+  path: Path
   fieldGroupState?: ObjectFieldGroupState
   collapsedState?: ObjectCollapsedState
   onSetCollapsedState: (state: ObjectCollapsedState) => void
@@ -349,6 +357,7 @@ function prepareObjectInputProps<T>(
         field: fieldSet.field,
         parentObjectProps: parentProps,
         index,
+        path: pathFor([...props.path, fieldSet.field.name]),
       })
       if (
         fieldProps.hidden ||
@@ -378,7 +387,12 @@ function prepareObjectInputProps<T>(
     }
 
     const fieldsetMembers = fieldSet.fields.flatMap((field): FieldMember[] => {
-      const fieldMember = prepareFieldProps({field, parentObjectProps: parentProps, index})
+      const fieldMember = prepareFieldProps({
+        field,
+        parentObjectProps: parentProps,
+        path: pathFor([...props.path, field.name]),
+        index,
+      })
       return !fieldMember.hidden && isFieldEnabledByGroupFilter(groups, field, selectedGroup)
         ? [
             {
@@ -460,12 +474,14 @@ function prepareArrayInputProps<T>(props: RawProps<ArraySchemaType, T>): ArrayFo
     (item, index): PreparedProps<unknown>[] => {
       const itemType = getItemType(props.type, item)
       if (isObjectSchemaType(itemType)) {
+        const key = (item as any)?._key
         const itemProps = {
           type: itemType,
           onChange: handleChange,
           level: props.level + 1,
           document: props.document,
           value: item,
+          path: pathFor([...props.path, key]),
           currentUser: props.currentUser,
           onSetCollapsedState: props.onSetCollapsedState,
           onSetFieldGroupState: props.onSetFieldGroupState,

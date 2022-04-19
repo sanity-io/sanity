@@ -4,6 +4,7 @@ import {
   CurrentUser,
   NumberSchemaType,
   ObjectSchemaType,
+  Path,
   StringSchemaType,
 } from '@sanity/types'
 import * as React from 'react'
@@ -107,6 +108,7 @@ export interface ObjectFieldProps extends BaseFieldProps {
   type: ObjectSchemaType
   members: ObjectMember[]
   groups?: FieldGroup[]
+  path: Path
   onSelectGroup: (name: string) => void
   hidden?: boolean
   value?: Record<string, unknown>

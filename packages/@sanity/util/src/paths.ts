@@ -67,6 +67,7 @@ export function pathFor(path: Path): Path {
     return pathsMemo.get(asString)!
   }
   pathsMemo.set(asString, path)
+  Object.freeze(path)
   return path
 }
 
