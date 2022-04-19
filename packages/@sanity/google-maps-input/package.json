@@ -17,6 +17,20 @@
     }
   },
   "types": "./lib/dts/src/input/GeopointInput.d.ts",
+  "//": "the typesVersion config below is a workaround for TypeScript's lack of support for package exports",
+  "typesVersions": {
+    "*": {
+      "input/GeopointInput": [
+        "./lib/dts/src/input/GeopointInput.d.ts"
+      ],
+      "schema": [
+        "./lib/dts/src/schema.d.ts"
+      ],
+      "diff/resolver": [
+        "./lib/dts/src/diff/resolver.d.ts"
+      ]
+    }
+  },
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
