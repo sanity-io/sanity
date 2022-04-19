@@ -28,6 +28,20 @@
     }
   },
   "types": "./lib/dts/src/index.d.ts",
+  "//": "the typesVersion config below is a workaround for TypeScript's lack of support for package exports",
+  "typesVersions": {
+    "*": {
+      "CodeInput": [
+        "./lib/dts/src/CodeInput.d.ts"
+      ],
+      "schema": [
+        "./lib/dts/src/schema.d.ts"
+      ],
+      "deprecatedSchema": [
+        "./lib/dts/src/deprecatedSchema.d.ts"
+      ]
+    }
+  },
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
