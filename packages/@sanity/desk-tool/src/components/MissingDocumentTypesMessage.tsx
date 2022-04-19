@@ -3,7 +3,13 @@ import {Card, Container, Heading, Stack, Text} from '@sanity/ui'
 
 export function MissingDocumentTypesMessage() {
   return (
-    <Card height="fill" paddingX={[5, 5, 7]} paddingY={[5, 5, 6]} sizing="border">
+    <Card
+      data-testid="missing-document-types-message"
+      height="fill"
+      paddingX={[5, 5, 7]}
+      paddingY={[5, 5, 6]}
+      sizing="border"
+    >
       <Container>
         <Stack space={5}>
           <Heading as="h1">Empty schema</Heading>
