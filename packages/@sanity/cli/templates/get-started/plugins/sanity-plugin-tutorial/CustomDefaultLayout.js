@@ -4,10 +4,11 @@ import {useCurrentUser} from '@sanity/base/hooks'
 import HelloSanityTutorial from './HelloSanityTutorial'
 import styled from 'styled-components'
 
-
 // Hide the empty schema message
 const Wrapper = styled.div`
-  *[data-testid="missing-document-types-message"] {
+  height: 100%;
+
+  *[data-testid='missing-document-types-message'] {
     display: none;
   }
 `
