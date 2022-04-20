@@ -31,6 +31,11 @@
       "source": "./src/_exports/cli.ts",
       "require": "./lib/cjs/_exports/cli.js",
       "default": "./lib/esm/_exports/cli.js"
+    },
+    "./form": {
+      "source": "./src/_exports/form.ts",
+      "require": "./lib/cjs/_exports/form.js",
+      "default": "./lib/esm/_exports/form.js"
     }
   },
   "bin": {
@@ -40,11 +45,14 @@
   "//": "the typesVersion config below is a workaround for TypeScript's lack of support for package exports",
   "typesVersions": {
     "*": {
+      "_unstable": [
+        "./lib/dts/src/_exports/_unstable.d.ts"
+      ],
       "cli": [
         "./lib/dts/src/_exports/cli.d.ts"
       ],
-      "_unstable": [
-        "./lib/dts/src/_exports/_unstable.d.ts"
+      "form": [
+        "./lib/dts/src/_exports/form.d.ts"
       ]
     }
   },
