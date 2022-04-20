@@ -1,0 +1,31 @@
+name: Extract, Transform & Load
+
+on: [push, pull_request]
+
+jobs:
+  etl:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install project dependencies
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
+          CYPRESS_INSTALL_BINARY: '0'
+        run: yarn install
+
+      - name: Build TypeScript definitions
+        run: yarn type-check
+
+      - name: Extract API docs
+        env:
+          EXTRACT_SANITY_API_TOKEN: ${{ secrets.EXTRACT_SANITY_API_TOKEN }}
+        run: yarn etl --quiet
