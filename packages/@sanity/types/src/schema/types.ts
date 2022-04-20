@@ -54,10 +54,14 @@ export type SortOrdering = {
   by: SortOrderingItem[]
 }
 export interface ConditionalPropertyCallbackContext {
-  parent?: unknown
-  document?: SanityDocument
+  document: SanityDocument | undefined
+  // `any` should be fine here. leaving this as `unknown` would cause more
+  // friction for end users
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  parent: any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  value: any
   currentUser: Omit<CurrentUser, 'role'>
-  value: unknown
 }
 
 export type ConditionalPropertyCallback = (context: ConditionalPropertyCallbackContext) => boolean
