@@ -24,6 +24,8 @@ import {
   SUPPORTED_THEMES,
 } from './config'
 
+export type {CodeInputLanguage, CodeInputValue} from './types'
+
 const EditorContainer = styled(Card)`
   position: relative;
   box-sizing: border-box;

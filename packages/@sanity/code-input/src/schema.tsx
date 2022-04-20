@@ -4,6 +4,10 @@ import CodeInput from './CodeInput'
 import PreviewCode, {PreviewCodeProps} from './PreviewCode'
 import {getMedia} from './getMedia'
 
+export type {CodeInputProps, CodeSchemaType} from './CodeInput'
+
+export type {CodeInputLanguage, CodeInputValue} from './types'
+
 const Preview = (props: PreviewCodeProps) => {
   return <PreviewCode {...props} />
 }
