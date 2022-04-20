@@ -272,8 +272,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     title,
     value,
     views,
-    onSelectGroup: formState.onSelectFieldGroup,
-    state: formState,
+    formState,
   }
 
   useEffect(() => {

@@ -28,7 +28,7 @@ export interface FormFieldSetProps {
    * The nesting level of the form field set
    */
   level?: number
-  onToggle?: () => void
+  onSetCollapsed?: (collapsed: boolean) => void
   title?: React.ReactNode
   /**
    * @alpha
@@ -88,18 +88,18 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
     validation = EMPTY_ARRAY,
     __unstable_presence: presence = EMPTY_ARRAY,
     children,
-    collapsed: collapsedProp = false,
     collapsible,
     columns,
     description,
     level = 0,
     onFocus,
-    onToggle,
+    onSetCollapsed,
     collapsed,
     tabIndex,
     title,
     ...restProps
   } = props
+  // const collapsed = false
   const hasValidationMarkers = validation.length > 0
   const forwardedRef = useForwardedRef(ref)
 
@@ -113,6 +113,10 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
     },
     [forwardedRef, onFocus]
   )
+
+  const handleToggle = useCallback(() => {
+    return onSetCollapsed?.(!collapsed)
+  }, [collapsed, onSetCollapsed])
 
   const content = useMemo(() => {
     if (collapsed) {
@@ -141,7 +145,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
                 <FormFieldSetLegend
                   collapsed={Boolean(collapsed)}
                   collapsible={collapsible}
-                  onClick={collapsible ? onToggle : undefined}
+                  onClick={collapsible ? handleToggle : undefined}
                   title={title}
                 />
 

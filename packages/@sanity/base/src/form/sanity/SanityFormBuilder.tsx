@@ -12,6 +12,7 @@ import {SanityFormBuilderProvider} from './SanityFormBuilderProvider'
 import {resolveInputComponent as defaultInputResolver} from './inputResolver/inputResolver'
 import {fallbackInputs} from '../fallbackInputs'
 import {FormInputProps} from '../types'
+import {Card, Text} from '@sanity/ui'
 
 /**
  * @alpha
@@ -34,6 +35,7 @@ export interface SanityFormBuilderProps {
   members: ObjectMember[]
   groups?: FieldGroup[]
   onSelectGroup: (groupName: string) => void
+  onSetCollapsed: (collapsed: boolean) => void
   schema: Schema
   type: ObjectSchemaType
   validation: ValidationMarker[]
@@ -57,6 +59,7 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
     onChange,
     onFocus,
     onSelectGroup,
+    onSetCollapsed,
     presence,
     readOnly,
     schema,
@@ -104,7 +107,12 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
       if (!Input) {
         return <div>No input resolved for type: {field.type.name}</div>
       }
-      return <Input {...field} validation={[]} presence={[]} renderField={renderField} />
+      return (
+        // <Card radius={2} shadow={1} padding={2}>
+        //   <Text>PATH: {JSON.stringify(field.path)}</Text>
+        <Input {...field} validation={[]} presence={[]} renderField={renderField} />
+        // </Card>
+      )
     },
     [resolveInputComponent]
   )
@@ -123,6 +131,7 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
         members={members}
         groups={groups}
         onSelectGroup={onSelectGroup}
+        onSetCollapsed={onSetCollapsed}
         renderField={renderField}
         value={value}
       />

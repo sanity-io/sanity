@@ -17,15 +17,14 @@ import {PatchEvent, setIfMissing} from '../patch'
 import {callConditionalProperties, callConditionalProperty} from './conditional-property'
 import {
   BooleanFieldProps,
-  ObjectCollapsedState,
   FieldGroup,
   FieldMember,
   FieldProps,
   NumberFieldProps,
-  ObjectFieldGroupState,
   ObjectMember,
   StringFieldProps,
   ArrayFieldProps,
+  StateTree,
 } from './types'
 import {MAX_FIELD_DEPTH} from './constants'
 import {getItemType} from './utils/getItemType'
@@ -58,31 +57,32 @@ function prepareFieldProps(props: {
   field: ObjectField
   parentObjectProps: RawProps<ObjectSchemaType, unknown>
   index: number
-  path: Path
 }): FieldProps | {hidden: true} {
+  const fieldPath = pathFor([...props.parentObjectProps.path, props.field.name])
+
   if (isObjectSchemaType(props.field.type)) {
     const fieldValue = (props.parentObjectProps.value as any)?.[props.field.name] as
       | Record<string, unknown>
       | undefined
 
-    const fieldGroupState = props.parentObjectProps.fieldGroupState?.fields?.[props.field.name]
-    const fieldCollapsedState = props.parentObjectProps.collapsedState?.fields?.[props.field.name]
+    const fieldGroupState = props.parentObjectProps.fieldGroupState?.children?.[props.field.name]
+    const collapsedFields = props.parentObjectProps.collapsedFields?.children?.[props.field.name]
+    const collapsedFieldSets =
+      props.parentObjectProps.collapsedFieldSets?.children?.[props.field.name]
 
     const handleChange = (fieldChangeEvent: PatchEvent) =>
       props.parentObjectProps.onChange(fieldChangeEvent.prefixAll(props.field.name))
 
-    const handleSetFieldGroupsState = (innerFieldGroupState: ObjectFieldGroupState) => {
-      props.parentObjectProps.onSetFieldGroupState({
-        [props.field.name]: innerFieldGroupState,
-      })
+    const handleSetActiveFieldGroup = (groupName: string) => {
+      props.parentObjectProps.onSetActiveFieldGroup(groupName, fieldPath)
     }
 
-    const handleSetCollapsedState = (state: ObjectCollapsedState) => {
-      props.parentObjectProps.onSetCollapsedState({
-        fields: {
-          [props.field.name]: state,
-        },
-      })
+    const handleSetCollapsedField = (collapsed: boolean, childPath: Path) => {
+      props.parentObjectProps.onSetCollapsedField(collapsed, [props.field.name, ...childPath])
+    }
+
+    const handleSetCollapsedFieldSet = (collapsed: boolean, childPath: Path) => {
+      props.parentObjectProps.onSetCollapsedFieldSet(collapsed, [props.field.name, ...childPath])
     }
 
     const preparedInputProps = prepareObjectInputProps({
@@ -92,12 +92,14 @@ function prepareFieldProps(props: {
       document: props.parentObjectProps.document,
       value: fieldValue,
       fieldGroupState,
-      path: pathFor([...props.path, props.field.name]),
+      path: fieldPath,
       level: props.parentObjectProps.level + 1,
-      collapsedState: fieldCollapsedState,
+      collapsedFields: collapsedFields,
+      collapsedFieldSets: collapsedFieldSets,
       onChange: handleChange,
-      onSetFieldGroupState: handleSetFieldGroupsState,
-      onSetCollapsedState: handleSetCollapsedState,
+      onSetActiveFieldGroup: handleSetActiveFieldGroup,
+      onSetCollapsedField: handleSetCollapsedField,
+      onSetCollapsedFieldSet: handleSetCollapsedFieldSet,
     })
 
     if (preparedInputProps.hidden) {
@@ -125,19 +127,12 @@ function prepareFieldProps(props: {
       members: preparedInputProps.members,
       groups: preparedInputProps.groups,
       onChange: handleChange,
-      path: pathFor([...props.path, props.field.name]),
+      path: fieldPath,
       collapsible: defaultCollapsedState.collapsible,
-      collapsed: fieldCollapsedState
-        ? fieldCollapsedState.collapsed
-        : defaultCollapsedState.collapsible,
+      collapsed: collapsedFields ? collapsedFields.value : defaultCollapsedState.collapsible,
 
-      onCollapse: () => {
-        handleSetCollapsedState({collapsed: true})
-      },
-
-      onExpand: () => handleSetCollapsedState({collapsed: false}),
-      onSelectGroup: (groupName: string) =>
-        handleSetFieldGroupsState({...props.parentObjectProps.fieldGroupState, current: groupName}),
+      onSetCollapsed: (collapsed: boolean) => handleSetCollapsedField(collapsed, []),
+      onSelectGroup: (groupName: string) => handleSetActiveFieldGroup(groupName),
 
       value: fieldValue,
     }
@@ -145,26 +140,25 @@ function prepareFieldProps(props: {
     const fieldValue = (props.parentObjectProps.value as any)?.[props.field.name] as
       | unknown[]
       | undefined
+    const fieldGroupState = props.parentObjectProps.fieldGroupState?.children?.[props.field.name]
+    const collapsedFields = props.parentObjectProps.collapsedFields?.children?.[props.field.name]
+    const collapsedFieldSets =
+      props.parentObjectProps.collapsedFieldSets?.children?.[props.field.name]
 
-    const fieldGroupState = props.parentObjectProps.fieldGroupState?.fields?.[props.field.name]
-    const fieldCollapsedState = props.parentObjectProps.collapsedState?.fields?.[props.field.name]
+    const handleSetActiveFieldGroup = (groupName: string) => {
+      props.parentObjectProps.onSetActiveFieldGroup(groupName, fieldPath)
+    }
+
+    const handleSetCollapsedField = (collapsed: boolean, childPath: Path) => {
+      props.parentObjectProps.onSetCollapsedField(collapsed, [props.field.name, ...childPath])
+    }
+    const handleSetCollapsedFieldSet = (collapsed: boolean, childPath: Path) => {
+      props.parentObjectProps.onSetCollapsedFieldSet(collapsed, [props.field.name, ...childPath])
+    }
 
     const handleChange = (fieldChangeEvent: PatchEvent) =>
       props.parentObjectProps.onChange(fieldChangeEvent.prefixAll(props.field.name))
 
-    const handleSetFieldGroupsState = (innerFieldGroupState: ObjectFieldGroupState) => {
-      props.parentObjectProps.onSetFieldGroupState({
-        [props.field.name]: innerFieldGroupState,
-      })
-    }
-
-    const handleSetCollapsedState = (state: ObjectCollapsedState) => {
-      props.parentObjectProps.onSetCollapsedState({
-        fields: {
-          [props.field.name]: state,
-        },
-      })
-    }
     const level = props.parentObjectProps.level + 1
 
     const preparedInputProps = prepareArrayInputProps({
@@ -174,12 +168,14 @@ function prepareFieldProps(props: {
       document: props.parentObjectProps.document,
       value: fieldValue,
       fieldGroupState,
-      collapsedState: fieldCollapsedState,
+      collapsedFields,
+      collapsedFieldSets,
       level,
-      path: pathFor([...props.path, props.field.name]),
+      path: fieldPath,
       onChange: handleChange,
-      onSetFieldGroupState: handleSetFieldGroupsState,
-      onSetCollapsedState: handleSetCollapsedState,
+      onSetCollapsedField: handleSetCollapsedField,
+      onSetCollapsedFieldSet: handleSetCollapsedFieldSet,
+      onSetActiveFieldGroup: handleSetActiveFieldGroup,
     })
 
     if (preparedInputProps.hidden) {
@@ -193,6 +189,7 @@ function prepareFieldProps(props: {
       title: props.field.type.title,
       description: props.field.type.description,
       level,
+      path: fieldPath,
       index: props.index,
       hidden: props.parentObjectProps.hidden || preparedInputProps.hidden,
       readOnly: props.parentObjectProps.readOnly || preparedInputProps.readOnly,
@@ -231,6 +228,7 @@ function prepareFieldProps(props: {
       kind: getKind(props.field.type),
       type: props.field.type,
       name: props.field.name,
+      path: fieldPath,
       title: props.field.type.title,
       description: props.field.type.description,
       level: props.parentObjectProps.level,
@@ -255,13 +253,15 @@ interface RawProps<SchemaType, T> {
   hidden?: boolean
   readOnly?: boolean
   path: Path
-  fieldGroupState?: ObjectFieldGroupState
-  collapsedState?: ObjectCollapsedState
-  onSetCollapsedState: (state: ObjectCollapsedState) => void
+  fieldGroupState?: StateTree<string>
+  collapsedFields?: StateTree<boolean>
+  collapsedFieldSets?: StateTree<boolean>
+  onSetCollapsedField: (collapsed: boolean, path: Path) => void
+  onSetCollapsedFieldSet: (collapsed: boolean, path: Path) => void
+  onSetActiveFieldGroup: (groupName: string, path: Path) => void
   // nesting level
   level: number
   onChange: (patchEvent: PatchEvent) => void
-  onSetFieldGroupState: (fieldGroupState: ObjectFieldGroupState) => void
 }
 
 function prepareObjectInputProps<T>(
@@ -287,20 +287,12 @@ function prepareObjectInputProps<T>(
     props.onChange(patchEvent.prepend([setIfMissing(createProtoValue(props.type))]))
   }
 
-  const handleSelectFieldGroup = (groupName: string) => {
-    props.onSetFieldGroupState({current: groupName, fields: props.fieldGroupState?.fields})
+  const handleSetActiveFieldGroup = (groupName: string) => {
+    props.onSetActiveFieldGroup(groupName, props.path)
   }
 
-  const handleCollapse = () => {
-    props.onSetCollapsedState({
-      collapsed: true,
-    })
-  }
-
-  const handleExpand = () => {
-    props.onSetCollapsedState({
-      collapsed: false,
-    })
+  const handleSetCollapsed = (collapsed: boolean) => {
+    props.onSetCollapsedField(collapsed, [])
   }
 
   if (props.level === MAX_FIELD_DEPTH) {
@@ -308,13 +300,13 @@ function prepareObjectInputProps<T>(
       value: props.value as T,
       readOnly: props.readOnly,
       hidden,
+      path: props.path,
       level: props.level,
       members: [],
       groups: [],
       onChange: handleChange,
-      onSelectFieldGroup: handleSelectFieldGroup,
-      onExpand: handleExpand,
-      onCollapse: handleCollapse,
+      onSelectFieldGroup: handleSetActiveFieldGroup,
+      onSetCollapsed: handleSetCollapsed,
     }
   }
 
@@ -325,7 +317,7 @@ function prepareObjectInputProps<T>(
 
   const groups = schemaTypeGroupConfig.flatMap((group): FieldGroup[] => {
     const groupHidden = callConditionalProperty(group.hidden, conditionalFieldContext)
-    const selected = group.name === (props.fieldGroupState?.current || defaultGroupName)
+    const selected = group.name === (props.fieldGroupState?.value || defaultGroupName)
     return groupHidden
       ? []
       : [
@@ -357,7 +349,6 @@ function prepareObjectInputProps<T>(
         field: fieldSet.field,
         parentObjectProps: parentProps,
         index,
-        path: pathFor([...props.path, fieldSet.field.name]),
       })
       if (
         fieldProps.hidden ||
@@ -390,7 +381,6 @@ function prepareObjectInputProps<T>(
       const fieldMember = prepareFieldProps({
         field,
         parentObjectProps: parentProps,
-        path: pathFor([...props.path, field.name]),
         index,
       })
       return !fieldMember.hidden && isFieldEnabledByGroupFilter(groups, field, selectedGroup)
@@ -418,22 +408,11 @@ function prepareObjectInputProps<T>(
           fields: fieldsetMembers,
           collapsible: fieldSet.options?.collapsible,
           collapsed:
-            fieldSet.name in (props.collapsedState?.fieldSets || {})
-              ? props.collapsedState?.fieldSets?.[fieldSet.name]
+            fieldSet.name in (props.collapsedFieldSets?.children || {})
+              ? props.collapsedFieldSets?.children?.[fieldSet.name].value
               : fieldSet.options?.collapsed,
-          onCollapse: () => {
-            props.onSetCollapsedState({
-              fieldSets: {
-                [fieldSet.name]: true,
-              },
-            })
-          },
-          onExpand: () => {
-            props.onSetCollapsedState({
-              fieldSets: {
-                [fieldSet.name]: false,
-              },
-            })
+          onSetCollapsed: (collapsed: boolean) => {
+            props.onSetCollapsedFieldSet(collapsed, [fieldSet.name])
           },
         },
       },
@@ -444,11 +423,11 @@ function prepareObjectInputProps<T>(
     value: props.value as T,
     readOnly: props.readOnly,
     hidden: props.hidden,
+    path: props.path,
     level: props.level,
     onChange: handleChange,
-    onSelectFieldGroup: handleSelectFieldGroup,
-    onExpand: handleExpand,
-    onCollapse: handleCollapse,
+    onSelectFieldGroup: handleSetActiveFieldGroup,
+    onSetCollapsed: handleSetCollapsed,
     members,
     groups,
   }
@@ -483,8 +462,9 @@ function prepareArrayInputProps<T>(props: RawProps<ArraySchemaType, T>): ArrayFo
           value: item,
           path: pathFor([...props.path, key]),
           currentUser: props.currentUser,
-          onSetCollapsedState: props.onSetCollapsedState,
-          onSetFieldGroupState: props.onSetFieldGroupState,
+          onSetCollapsedField: props.onSetCollapsedField,
+          onSetCollapsedFieldSet: props.onSetCollapsedFieldSet,
+          onSetActiveFieldGroup: props.onSetActiveFieldGroup,
         }
         const prepared = prepareObjectInputProps(itemProps)
         return prepared.hidden ? [] : [prepared]
@@ -511,14 +491,14 @@ export interface PreparedProps<T> {
   hidden?: boolean
   level: number
   readOnly?: boolean
+  path: Path
   members: ObjectMember[]
   groups?: FieldGroup[]
   onSelectFieldGroup: (groupName: string) => void
+  onSetCollapsed: (collapsed: boolean) => void
 
   collapsed?: boolean
   collapsible?: boolean
-  onExpand: () => void
-  onCollapse: () => void
 }
 
 export interface ArrayFormState<T> {

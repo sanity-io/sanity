@@ -22,10 +22,10 @@ export interface FormStore<T extends SanityDocument> {
   subscribe: (subscriber: (value: PreparedProps<T>) => void) => void
 }
 
-export interface ObjectFieldGroupState {
-  current?: string
-  fields?: {
-    [field: string]: ObjectFieldGroupState
+export interface StateTree<T> {
+  value: T | undefined
+  children?: {
+    [key: string]: StateTree<T>
   }
 }
 
@@ -61,8 +61,7 @@ export interface FieldSetProps {
   hidden?: boolean
   collapsible?: boolean
   collapsed?: boolean
-  onExpand: () => void
-  onCollapse: () => void
+  onSetCollapsed: (collapsed: boolean) => void
   fields: FieldMember[]
 }
 
@@ -75,6 +74,7 @@ interface BaseFieldProps {
   name: string
   title?: string
   description?: string
+  path: Path
   index: number
   level: number
   hidden?: boolean
@@ -108,15 +108,13 @@ export interface ObjectFieldProps extends BaseFieldProps {
   type: ObjectSchemaType
   members: ObjectMember[]
   groups?: FieldGroup[]
-  path: Path
   onSelectGroup: (name: string) => void
   hidden?: boolean
   value?: Record<string, unknown>
   readOnly?: boolean
   collapsed?: boolean
   collapsible?: boolean
-  onCollapse: () => void
-  onExpand: () => void
+  onSetCollapsed: (collapsed: boolean) => void
 }
 
 export interface ArrayFieldProps extends BaseFieldProps {

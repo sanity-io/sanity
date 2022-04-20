@@ -1,3 +1,4 @@
+/* eslint-disable */
 import {SanityDocument} from '@sanity/client'
 import {isActionEnabled} from '@sanity/schema/_internal'
 import {Box, Code, Container, Flex, Spinner, Stack, Text} from '@sanity/ui'
@@ -57,8 +58,7 @@ export function FormView(props: FormViewProps) {
     validation,
     ready,
     changesOpen,
-    state,
-    onSelectGroup,
+    formState,
   } = useDocumentPane()
   const documentStore = useDocumentStore()
   const presence = useDocumentPresence(documentId)
@@ -174,25 +174,32 @@ export function FormView(props: FormViewProps) {
       <PresenceOverlay margins={margins}>
         <Box as="form" onSubmit={preventDefault}>
           {ready ? (
-            <SanityFormBuilder
-              __internal_patchChannel={patchChannel}
-              changesOpen={changesOpen}
-              compareValue={compareValue}
-              // filterField={filterField}
-              focusPath={focusPath}
-              onBlur={handleBlur}
-              onChange={handleChange}
-              onFocus={handleFocus}
-              presence={presence}
-              readOnly={isReadOnly}
-              schema={schema}
-              type={documentSchema}
-              validation={validation}
-              value={state.value}
-              members={state.members}
-              groups={state.groups}
-              onSelectGroup={onSelectGroup}
-            />
+            formState.hidden ? (
+              <Box padding={2}>
+                <Text>This form is hidden</Text>
+              </Box>
+            ) : (
+              <SanityFormBuilder
+                __internal_patchChannel={patchChannel}
+                changesOpen={changesOpen}
+                compareValue={compareValue}
+                // filterField={filterField}
+                focusPath={focusPath}
+                onBlur={handleBlur}
+                onChange={handleChange}
+                onFocus={handleFocus}
+                presence={presence}
+                readOnly={isReadOnly}
+                schema={schema}
+                type={documentSchema}
+                validation={validation}
+                value={formState.value}
+                members={formState.members}
+                groups={formState.groups}
+                onSelectGroup={formState.onSelectFieldGroup}
+                onSetCollapsed={formState.onSetCollapsed}
+              />
+            )
           ) : (
             <Delay ms={300}>
               <Flex align="center" direction="column" height="fill" justify="center">

@@ -50,8 +50,7 @@ export interface DocumentPaneContextValue {
   title: string | null
   value: Partial<SanityDocument>
   views: PaneView[]
-  state: PreparedProps<unknown>
-  onSelectGroup: (groupName: string) => void
+  formState: PreparedProps<unknown> | {hidden: true}
 }
 
 export const DocumentPaneContext = createContext<DocumentPaneContextValue | null>(null)

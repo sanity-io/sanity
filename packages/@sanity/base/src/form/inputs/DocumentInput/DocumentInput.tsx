@@ -16,8 +16,7 @@ export interface DocumentInputProps
   collapsible?: boolean
   collapsed?: boolean
 
-  onExpand: () => void
-  onCollapse: () => void
+  onSetCollapsed: (collapsed: boolean) => void
 }
 
 /**

@@ -1,8 +1,9 @@
-/* eslint-disable react/no-unused-prop-types */
+/* eslint-disable react/no-unused-prop-types,react/jsx-handler-names */
 
 import {ObjectSchemaTypeWithOptions, Path, ValidationMarker} from '@sanity/types'
 import React, {ForwardedRef, forwardRef, memo, useMemo} from 'react'
 import {useId} from '@reach/auto-id'
+import {Text} from '@sanity/ui'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {FormFieldSet} from '../../../components/formField'
 import {FormFieldPresence} from '../../../presence'
@@ -24,8 +25,7 @@ export interface ObjectInputProps
   collapsible?: boolean
   collapsed?: boolean
 
-  onExpand: () => void
-  onCollapse: () => void
+  onSetCollapsed: (collapsed: boolean) => void
 }
 
 // eslint-disable-next-line no-empty-function,@typescript-eslint/no-empty-function
@@ -53,6 +53,7 @@ export const ObjectInput = memo(
       focusPath = EMPTY_PATH,
       value,
       onSelectGroup,
+      onSetCollapsed,
     } = props
 
     const inputId = useId()
@@ -73,7 +74,6 @@ export const ObjectInput = memo(
 
       return <UnknownFields fieldNames={unknownFields} value={value} onChange={onChange} />
     }, [onChange, type.fields, value])
-
     return (
       <FormFieldSet
         ref={props.collapsed ? forwardedRef : null}
@@ -83,7 +83,7 @@ export const ObjectInput = memo(
         columns={props.type.options?.columns}
         collapsible={props.collapsible}
         collapsed={props.collapsed}
-        onToggle={props.collapsed ? props.onExpand : props.onCollapse}
+        onSetCollapsed={onSetCollapsed}
         __unstable_presence={props.collapsed ? presence : EMPTY_ARRAY}
         validation={props.collapsed ? validation : EMPTY_ARRAY}
         __unstable_changeIndicator={false}
@@ -104,11 +104,13 @@ export const ObjectInput = memo(
         {members.map((member) => {
           if (member.type === 'field') {
             return (
-              <MemberField
-                member={member}
-                renderField={renderField}
-                key={`field-${member.field.name}`}
-              />
+              <>
+                <MemberField
+                  member={member}
+                  renderField={renderField}
+                  key={`field-${member.field.name}`}
+                />
+              </>
             )
           }
 
@@ -118,9 +120,7 @@ export const ObjectInput = memo(
               title={member.fieldSet.title}
               collapsible={member.fieldSet.collapsible}
               collapsed={member.fieldSet.collapsed}
-              onToggle={
-                member.fieldSet.collapsed ? member.fieldSet.onExpand : member.fieldSet.onCollapse
-              }
+              onSetCollapsed={member.fieldSet.onSetCollapsed}
             >
               {member.fieldSet.fields.map((fieldsetMember) => (
                 <MemberField
