@@ -10,15 +10,15 @@ import {ComponentBuilder} from './Component'
 import {validateId} from './util/validateId'
 import {StructureContext} from './types'
 
-type UnserializedListItemChild = Collection | CollectionBuilder | ChildResolver
+export type UnserializedListItemChild = Collection | CollectionBuilder | ChildResolver
 
-type ListItemChild = Collection | ChildResolver | undefined
+export type ListItemChild = Collection | ChildResolver | undefined
 
-interface ListItemSerializeOptions extends SerializeOptions {
+export interface ListItemSerializeOptions extends SerializeOptions {
   titleIsOptional?: boolean
 }
 
-interface ListItemDisplayOptions {
+export interface ListItemDisplayOptions {
   showIcon?: boolean
 }
 
@@ -50,7 +50,7 @@ export interface UnserializedListItem {
   schemaType?: SchemaType | string
 }
 
-type PartialListItem = Partial<UnserializedListItem>
+export type PartialListItem = Partial<UnserializedListItem>
 
 export class ListItemBuilder implements Serializable<ListItem> {
   protected spec: PartialListItem

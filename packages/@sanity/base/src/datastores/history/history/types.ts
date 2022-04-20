@@ -9,11 +9,9 @@ export type DocumentRemoteMutationVersionEvent = Exclude<
 
 export type MendozaPatch = unknown[]
 
-export type Attributes = Record<string, unknown>
-
 export type CombinedDocument = {
-  draft: Attributes | null
-  published: Attributes | null
+  draft: Record<string, unknown> | null
+  published: Record<string, unknown> | null
 }
 
 export type MendozaEffectPair = {

@@ -1,7 +1,7 @@
 import {isString} from 'lodash'
 import {Plugin, PluginOptions} from './types'
 
-type PluginFactory<TOptions> = (options: TOptions) => PluginOptions
+export type PluginFactory<TOptions> = (options: TOptions) => PluginOptions
 
 function validatePlugin(pluginResult: PluginOptions) {
   // TODO: name is required etc

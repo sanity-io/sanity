@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 
-interface FieldStatusProps {
+export interface FieldStatusProps {
   children?: React.ReactNode
   maxAvatars?: number
   position?: 'top' | 'bottom'

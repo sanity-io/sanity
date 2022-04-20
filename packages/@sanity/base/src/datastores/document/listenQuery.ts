@@ -4,14 +4,19 @@ import {mergeMap, throttleTime, share, take} from 'rxjs/operators'
 import {exhaustMapToWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import {ReconnectEvent, WelcomeEvent, MutationEvent} from './types'
 
-type Params = Record<string, string | number | boolean | string[]>
+export type ListenQueryParams = Record<string, string | number | boolean | string[]>
 
 export interface ListenQueryOptions {
   tag?: string
   apiVersion?: string
 }
 
-const fetch = (client: SanityClient, query: string, params: Params, options: ListenQueryOptions) =>
+const fetch = (
+  client: SanityClient,
+  query: string,
+  params: ListenQueryParams,
+  options: ListenQueryOptions
+) =>
   defer(() =>
     // getVersionedClient(options.apiVersion)
     client.observable.fetch(query, params, {
@@ -20,7 +25,12 @@ const fetch = (client: SanityClient, query: string, params: Params, options: Lis
     })
   )
 
-const listen = (client: SanityClient, query: string, params: Params, options: ListenQueryOptions) =>
+const listen = (
+  client: SanityClient,
+  query: string,
+  params: ListenQueryParams,
+  options: ListenQueryOptions
+) =>
   defer(() =>
     // getVersionedClient(options.apiVersion)
     client.listen(query, params, {
@@ -42,7 +52,7 @@ function isWelcomeEvent(
 export const listenQuery = (
   client: SanityClient,
   query: string,
-  params: Params = {},
+  params: ListenQueryParams = {},
   options: ListenQueryOptions = {}
 ) => {
   const fetchOnce$ = fetch(client, query, params, options)

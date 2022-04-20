@@ -1,14 +1,14 @@
 import {Box} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
-import {PreviewComponent} from '../../../preview/types'
+import {FieldPreviewComponent} from '../../../preview'
 
 const NumberWrapper = styled.div`
   display: inline-block;
   word-break: break-all;
 `
 
-export const NumberPreview: PreviewComponent<string> = (props) => {
+export const NumberPreview: FieldPreviewComponent<string> = (props) => {
   const {value} = props
 
   return (

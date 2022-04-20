@@ -12,7 +12,7 @@ import {Reconstruction} from './Reconstruction'
 
 const TRANSLOG_ENTRY_LIMIT = 50
 
-export type Options = {
+export type TimelineControllerOptions = {
   timeline: Timeline
   client: SanityClient
   documentId: string
@@ -27,7 +27,7 @@ export type Options = {
 export class TimelineController {
   timeline: Timeline
   client: SanityClient
-  handler: Options['handler']
+  handler: TimelineControllerOptions['handler']
 
   version = 0
 
@@ -41,7 +41,7 @@ export class TimelineController {
    */
   selectionState: 'inactive' | 'rev' | 'range' | 'loading' | 'invalid' = 'inactive'
 
-  constructor(options: Options) {
+  constructor(options: TimelineControllerOptions) {
     this.timeline = options.timeline
     this.client = options.client
     this.handler = options.handler
@@ -326,7 +326,7 @@ export class TimelineController {
 }
 
 export function createObservableController(
-  options: Omit<Options, 'handler'>
+  options: Omit<TimelineControllerOptions, 'handler'>
 ): Observable<{historyController: TimelineController}> {
   return new Observable((observer) => {
     const controller = new TimelineController({

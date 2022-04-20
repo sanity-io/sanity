@@ -1,15 +1,17 @@
+import {Reference, SanityDocument} from '@sanity/types'
 import {isObject, uniq} from 'lodash'
 import {Observable, of as observableOf} from 'rxjs'
 import {switchMap} from 'rxjs/operators'
+import {FieldName, Id, Path, Previewable, ApiConfig} from './types'
 import {props} from './utils/props'
 
-import {FieldName, Id, Path, Reference, Document, Previewable, ApiConfig} from './types'
-
-function isReference(value: Reference | Document | Record<string, any>): value is Reference {
+function isReference(value: Reference | SanityDocument | Record<string, any>): value is Reference {
   return '_ref' in value
 }
 
-function isDocument(value: Reference | Document | Record<string, any>): value is Document {
+function isDocument(
+  value: Reference | SanityDocument | Record<string, any>
+): value is SanityDocument {
   return '_id' in value
 }
 
@@ -53,7 +55,7 @@ function observePaths(
 
     const isRef = isReference(value)
     if (isRef || isDocument(value)) {
-      const id = isRef ? (value as Reference)._ref : (value as Document)._id
+      const id = isRef ? (value as Reference)._ref : (value as SanityDocument)._id
 
       const refApiConfig =
         // if it's a cross dataset reference we want to use it's `_projectId` + `_dataset`
@@ -75,7 +77,7 @@ function observePaths(
               ...createEmpty(nextHeads),
               ...(isRef ? {_ref: value._ref, ...apiConfig} : value),
               ...snapshot,
-            },
+            } as SanityDocument,
             paths,
             observeFields,
             refApiConfig
@@ -123,7 +125,7 @@ function normalizePaths(path: (FieldName | Path)[]): Path[] {
 
 // Supports passing either an id or a value (document/reference/object)
 function normalizeValue(value: Previewable | Id): Previewable {
-  return typeof value === 'string' ? {_id: value} : value
+  return (typeof value === 'string' ? {_id: value} : value) as any
 }
 
 export function createPathObserver(context: {observeFields: ObserveFieldsFn}) {

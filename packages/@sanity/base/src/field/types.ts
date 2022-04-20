@@ -32,6 +32,7 @@ import {
   StringSegmentUnchanged as AgnosticStringSegmentUnchanged,
 } from '@sanity/diff'
 import {FieldValueError} from './validation'
+import {InsertPatch} from '../form'
 
 /**
  * History timeline / chunking
@@ -226,15 +227,6 @@ export interface FromToIndex {
 }
 
 export type ChangeTitlePath = (string | FromToIndex)[]
-
-/**
- * Document operations API + patches
- * @todo remove - should be imported from somewhere else
- */
-export type InsertPatch =
-  | {before: string; items: unknown[]}
-  | {after: string; items: unknown[]}
-  | {replace: string; items: unknown[]}
 
 export interface PatchOperations {
   set?: {[key: string]: unknown}

@@ -8,8 +8,7 @@ import {getDraftId, getPublishedId} from '../../util/draftUtils'
 import {useGrantsStore} from '../datastores'
 import {GrantsStore, PermissionCheckResult} from './types'
 import {getDocumentValuePermissions} from './documentValuePermissions'
-
-type PartialExcept<T, K extends keyof T> = Pick<T, K> & Partial<Omit<T, K>>
+import {PartialExcept} from '../../util/PartialExcept'
 
 export interface TemplatePermissionsResult<TInitialValue = Record<string, unknown>>
   extends PermissionCheckResult,
@@ -28,7 +27,7 @@ function serialize<T>(item: T | Serializable<T>): T {
   return item as T
 }
 
-interface TemplatePermissionsOptions {
+export interface TemplatePermissionsOptions {
   grantsStore: GrantsStore
   schema: Schema
   templates: Template[]
@@ -120,7 +119,7 @@ export function getTemplatePermissions({
  * are any matching grants for the resolved initial template value, the
  * `TemplatePermissionsResult` will include `granted: true`.
  */
-const useTemplatePermissionsFromHookFactory =
+export const useTemplatePermissionsFromHookFactory =
   createHookFromObservableFactory(getTemplatePermissions)
 
 export function useTemplatePermissions({

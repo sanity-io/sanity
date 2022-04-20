@@ -1,7 +1,7 @@
 /**
  * @public
  */
-export interface Segment {
+export interface RouteSegment {
   name: string
   type: 'dir' | 'param'
 }
@@ -9,7 +9,7 @@ export interface Segment {
 /**
  * @public
  */
-export interface Transform<T> {
+export interface RouteTransform<T> {
   toState: (value: string) => T
   toPath: (value: T) => string
 }
@@ -19,9 +19,9 @@ export interface Transform<T> {
  */
 export interface Route {
   raw: string
-  segments: Segment[]
+  segments: RouteSegment[]
   transform?: {
-    [key: string]: Transform<RouterState>
+    [key: string]: RouteTransform<RouterState>
   }
 }
 
@@ -39,7 +39,7 @@ export interface RouterNode {
   route: Route
   scope?: string
   transform?: {
-    [key: string]: Transform<RouterState>
+    [key: string]: RouteTransform<RouterState>
   }
   children: RouteChildren
 }

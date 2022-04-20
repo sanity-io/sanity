@@ -1,14 +1,14 @@
-interface FormFieldValidationWarning {
+export interface FormFieldValidationWarning {
   type: 'warning'
   label: string
 }
 
-interface FormFieldValidationError {
+export interface FormFieldValidationError {
   type: 'error'
   label: string
 }
 
-interface FormFieldValidationInfo {
+export interface FormFieldValidationInfo {
   type: 'info'
   label: string
 }

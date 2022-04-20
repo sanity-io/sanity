@@ -76,7 +76,7 @@ export interface PreviewValue {
   extendedPreview?: unknown
 }
 
-interface SanityDefaultPreviewProps extends PreviewProps {
+export interface SanityDefaultPreviewProps extends PreviewProps {
   _renderAsBlockImage?: boolean
   icon?: React.ComponentType | false
   layout?: PreviewLayoutKey

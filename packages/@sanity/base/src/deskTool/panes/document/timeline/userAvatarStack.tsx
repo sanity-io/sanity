@@ -11,7 +11,7 @@ export function UserAvatarStack({maxLength, userIds}: UserAvatarStackProps) {
   return (
     <AvatarStack maxLength={maxLength}>
       {userIds.map((userId) => (
-        <UserAvatar key={userId} userId={userId} withTooltip />
+        <UserAvatar key={userId} user={userId} withTooltip />
       ))}
     </AvatarStack>
   )

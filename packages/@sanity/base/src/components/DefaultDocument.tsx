@@ -20,12 +20,12 @@ const globalScript = `
 window.setImmediate = setTimeout;
 `
 
-export interface DocumentProps {
+export interface DefaultDocumentProps {
   entryPath: string
   basePath?: string
 }
 
-export function DefaultDocument(props: DocumentProps) {
+export function DefaultDocument(props: DefaultDocumentProps) {
   const {entryPath, basePath = '/'} = props
   return (
     <html lang="en">

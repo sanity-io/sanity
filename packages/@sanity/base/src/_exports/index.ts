@@ -1,3 +1,74 @@
+export type {AuthController, SanityAuthProvider, SanityUser} from '../auth'
+
+export {DefaultDocument, DefaultPreview} from '../components'
+
+export type {
+  DefaultPreviewProps,
+  DefaultDocumentProps,
+  GeneralPreviewLayoutKey,
+  PortableTextPreviewLayoutKey,
+  PreviewLayoutKey,
+  PreviewMediaDimensions,
+  PreviewProps,
+} from '../components'
+
+export type {
+  AsyncComposableOption,
+  ComposableOption,
+  Config,
+  ConfigContext,
+  ConfigPropertyError,
+  ConfigPropertyErrorOptions,
+  ConfigResolutionError,
+  ConfigResolutionErrorOptions,
+  DocumentActionsContext,
+  DocumentActionsResolver,
+  DocumentBadgesContext,
+  DocumentBadgesResolver,
+  DocumentPluginOptions,
+  NewDocumentCreationContext,
+  NewDocumentOptionsContext,
+  NewDocumentOptionsResolver,
+  PartialContext,
+  Plugin,
+  PluginFactory,
+  PluginOptions,
+  ResolveProductionUrlContext,
+  SanityAuthConfig as unstable_SanityAuthConfig,
+  SanityFormBuilderConfig as unstable_SanityFormBuilderConfig,
+  SchemaError,
+  SchemaPluginOptions,
+  SchemaTypeDefinition,
+  Source,
+  SourceOptions,
+  TemplateResolver,
+  Tool,
+  Workspace,
+  WorkspaceOptions,
+} from '../config'
+
+export {createConfig, createPlugin} from '../config'
+
+export type {
+  AuthStateChangedMessage,
+  AuthStateState,
+  AuthStateConfig,
+  AuthStateTokenStore,
+  AuthStore,
+  CurrentUserError,
+  CurrentUserEvent,
+  CurrentUserSnapshot,
+  EditStateFor,
+  GuardedOperation,
+  MSG_AUTH_STATE_CHANGED,
+  Operation,
+  OperationsAPI,
+  UserStore,
+  WrappedOperation,
+} from '../datastores'
+
+export {deskTool} from '../deskTool'
+
 export type {
   DefaultDocumentNodeResolver,
   DeskToolOptions,
@@ -6,6 +77,7 @@ export type {
 } from '../deskTool'
 
 export type {
+  ActionComponent,
   DocumentActionComponent,
   DocumentActionConfirmModalProps,
   DocumentActionDescription,
@@ -16,9 +88,11 @@ export type {
   DocumentActionResolver,
 } from '../deskTool/actions'
 
-export type {DocumentBadgeComponent, DocumentBadgeDescription} from '../deskTool/badges'
-
-export {deskTool} from '../deskTool'
+export type {
+  DocumentBadgeComponent,
+  DocumentBadgeProps,
+  DocumentBadgeDescription,
+} from '../deskTool/badges'
 
 export {
   DeleteAction,
@@ -29,36 +103,134 @@ export {
   HistoryRestoreAction,
 } from '../deskTool/actions'
 
-export type {
-  AsyncComposableOption,
-  ComposableOption,
-  ConfigContext,
-  ConfigPropertyError,
-  ConfigResolutionError,
-  ConfigResolutionErrorOptions,
-  DocumentActionsContext,
-  DocumentActionsResolver,
-  DocumentBadgesContext,
-  DocumentBadgesResolver,
-  NewDocumentOptionsContext,
-  NewDocumentOptionsResolver,
-  Plugin,
-  PluginOptions,
-  ResolveProductionUrlContext,
-  SanityAuthConfig as unstable_SanityAuthConfig,
-  SanityFormBuilderConfig as unstable_SanityFormBuilderConfig,
-  Config,
-  Tool,
-  SchemaError,
-  SchemaPluginOptions,
-  Source,
-  SourceOptions,
-  TemplateResolver,
-  Workspace,
-  WorkspaceOptions,
-} from '../config'
+export {
+  ComponentBuilder,
+  ComponentViewBuilder,
+  DocumentBuilder,
+  DocumentListBuilder,
+  DocumentListItemBuilder,
+  DocumentTypeListBuilder,
+  FormViewBuilder,
+  GenericListBuilder,
+  GenericViewBuilder,
+  InitialValueTemplateItemBuilder,
+  ListBuilder,
+  ListItemBuilder,
+  MenuItemBuilder,
+  MenuItemGroupBuilder,
+} from '../deskTool/structureBuilder'
 
-export {createConfig, createPlugin} from '../config'
+export type {
+  BaseGenericList,
+  BaseIntentParams,
+  BuildableComponent,
+  BuildableGenericList,
+  BuildableList,
+  Child,
+  ChildObservable,
+  ChildResolver,
+  ChildResolverOptions,
+  Collection,
+  CollectionBuilder,
+  Component,
+  ComponentInput,
+  ComponentView,
+  Divider,
+  DocumentList,
+  DocumentListInput,
+  DocumentListItem,
+  DocumentListItemInput,
+  DocumentListOptions,
+  DocumentTypeListInput,
+  DocumentNode,
+  DocumentOptions,
+  EditorNode,
+  FormView,
+  GenericList,
+  GenericListInput,
+  Intent,
+  IntentChecker,
+  IntentJsonParams,
+  IntentParams,
+  ItemChild,
+  List,
+  ListDisplayOptions,
+  ListInput,
+  ListItem,
+  ListItemChild,
+  ListItemDisplayOptions,
+  ListItemInput,
+  ListItemSerializeOptions,
+  MenuItem,
+  MenuItemActionType,
+  MenuItemGroup,
+  MenuItemParamsType,
+  PartialDocumentList,
+  PartialDocumentListItem,
+  PartialDocumentNode,
+  PartialListItem,
+  PartialMenuItem,
+  Serializable,
+  SerializeOptions,
+  SerializePath,
+  StructureContext,
+  StructureNode,
+  UnserializedListItem,
+  UnserializedListItemChild,
+  UserComponent,
+  View,
+  ViewBuilder,
+} from '../deskTool/structureBuilder'
+
+export {isDev, isProd} from '../environment'
+
+export {PatchEvent} from '../form'
+
+export type {
+  FormArrayInputFunctionsProps,
+  FormBuilderArrayFunctionComponent,
+  FormBuilderCustomMarkersComponent,
+  FormBuilderMarkersComponent,
+  FormBuilderInputComponentMap,
+  FormInputComponentResolver,
+  FormInputProps,
+  FormPreviewComponentResolver,
+  FormPreviewProps,
+  InsertPatchPosition,
+  Patch,
+  PatchArg,
+  PatchJSONValue,
+  PatchOrigin,
+  PortableTextMarker,
+  RenderCustomMarkers,
+  SetPatch,
+  SetIfMissingPatch,
+  UnsetPatch,
+  InsertPatch,
+  DiffMatchPatch,
+} from '../form'
+
+export {
+  useEditState,
+  useValidationStatus,
+  useSyncState,
+  useConnectionState,
+  useDocumentOperation,
+} from '../hooks'
+
+export type {ConnectionState, SyncState, ValidationStatus} from '../hooks'
+
+export type {FormFieldPresence} from '../presence'
+
+export type {
+  Route,
+  RouteChildren,
+  Router,
+  RouterNode,
+  RouteSegment,
+  RouterState,
+  RouteTransform,
+} from '../router'
 
 export {
   useColorScheme,
@@ -72,7 +244,12 @@ export {
   WorkspaceProvider,
 } from '../studio'
 
-export type {StudioProps, StudioProviderProps} from '../studio'
+export type {
+  SourceProviderProps,
+  StudioProps,
+  StudioProviderProps,
+  WorkspaceProviderProps,
+} from '../studio'
 
 export type {StudioTheme} from '../theme'
 
@@ -82,14 +259,13 @@ export type {Template, TemplateResponse} from '../templates'
 
 export {getDraftId, getPublishedId} from '../util'
 
-export {
-  useEditState,
-  useValidationStatus,
-  useSyncState,
-  useConnectionState,
-  useDocumentOperation,
-} from '../hooks'
+export type {
+  ArrayFieldDefinition,
+  FieldDefinition,
+  InitialValueTemplateItem,
+  ReferenceTarget,
+  TemplateParameter,
+  TypeTarget,
+} from '../templates'
 
-export {DefaultDocument, DefaultPreview} from '../components'
-
-export {isDev, isProd} from '../environment'
+export type {DraftId, Opaque, PublishedId} from '../util'

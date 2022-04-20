@@ -1,5 +1,5 @@
 import React from 'react'
-import {IsEqualFunction} from '../react-track-elements/createUseReporter'
+import {IsEqualFunction} from '../react-track-elements'
 import {Reported} from './tracker'
 
 // eslint-disable-next-line no-empty-function, @typescript-eslint/no-empty-function

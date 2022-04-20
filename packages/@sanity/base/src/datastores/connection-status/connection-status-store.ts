@@ -13,7 +13,7 @@ const onOffline$ = typeof window === 'undefined' ? of({}) : fromEvent(window, 'o
 
 const expBackoff = (retryCount: number) => Math.pow(2, retryCount) * 100
 
-type ConnectingStatus = {
+export type ConnectingStatus = {
   type: 'connecting'
 }
 
@@ -25,7 +25,7 @@ export type ErrorStatus = {
   retryAt: Date
 }
 
-type RetryingStatus = {
+export type RetryingStatus = {
   type: 'retrying'
 }
 
@@ -57,7 +57,7 @@ const createErrorStatus = ({
   retryAt,
 })
 
-interface ConnectionStatusStoreOptions {
+export interface ConnectionStatusStoreOptions {
   bifur: BifurClient
 }
 /**

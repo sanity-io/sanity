@@ -1,16 +1,14 @@
 import styled, {css} from 'styled-components'
-import {Text, Theme, ThemeColorButtonTones} from '@sanity/ui'
+import {ButtonTone, Text, Theme} from '@sanity/ui'
 import React, {ComponentProps} from 'react'
 
-type ButtonToneKeys = keyof ThemeColorButtonTones
-
-interface TextProps extends ComponentProps<typeof Text> {
-  tone: ButtonToneKeys
+export interface TextWithToneProps extends ComponentProps<typeof Text> {
+  tone: ButtonTone
   dimmed?: boolean
 }
 
 export const TextWithToneStyle = styled(Text)(
-  ({$tone, theme}: {$tone: ButtonToneKeys; theme: Theme}) => {
+  ({$tone, theme}: {$tone: ButtonTone; theme: Theme}) => {
     const tone = theme.sanity.color.muted[$tone]
 
     return css`
@@ -26,7 +24,7 @@ export const TextWithToneStyle = styled(Text)(
 )
 
 export const TextWithTone = React.forwardRef(function TextWithTone(
-  props: TextProps,
+  props: TextWithToneProps,
   ref: React.Ref<HTMLDivElement>
 ) {
   const {tone, dimmed, muted, ...rest} = props

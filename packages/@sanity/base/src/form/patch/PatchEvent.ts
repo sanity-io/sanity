@@ -3,7 +3,7 @@ import {flatten} from 'lodash'
 import {prefixPath} from './patch'
 import {Patch} from './types'
 
-type PatchArg = Patch | Patch[]
+export type PatchArg = Patch | Patch[]
 
 export class PatchEvent {
   static from(...patches: PatchArg[]): PatchEvent {

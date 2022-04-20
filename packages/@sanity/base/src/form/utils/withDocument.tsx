@@ -3,7 +3,7 @@ import React, {forwardRef, useEffect, useState} from 'react'
 import {FIXME} from '../types'
 import {useFormBuilder} from '../useFormBuilder'
 
-interface WithDocumentProps<Doc extends SanityDocument = SanityDocument> {
+export interface WithDocumentProps<Doc extends SanityDocument = SanityDocument> {
   document: Doc
 }
 

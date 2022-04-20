@@ -2,7 +2,7 @@ import {Box} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
 import {Slug} from '@sanity/types'
-import {PreviewComponent} from '../../../preview/types'
+import {FieldPreviewComponent} from '../../../preview'
 
 const SlugWrapper = styled.div`
   display: inline-block;
@@ -10,7 +10,7 @@ const SlugWrapper = styled.div`
   white-space: pre-wrap;
 `
 
-export const SlugPreview: PreviewComponent<Slug> = (props) => {
+export const SlugPreview: FieldPreviewComponent<Slug> = (props) => {
   const {value} = props
 
   return (

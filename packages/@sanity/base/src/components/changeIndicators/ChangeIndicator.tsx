@@ -129,7 +129,7 @@ export function ChangeIndicatorProvider(props: {
   )
 }
 
-interface CoreProps {
+export interface CoreChangeIndicatorProps {
   children?: React.ReactNode
   className?: string
   compareDeep?: boolean
@@ -145,7 +145,7 @@ interface CoreProps {
   withHoverEffect?: boolean
 }
 
-export function CoreChangeIndicator(props: CoreProps) {
+export function CoreChangeIndicator(props: CoreChangeIndicatorProps) {
   const {
     children,
     className,
@@ -213,7 +213,7 @@ export function ChangeIndicatorForFieldPath(props: {
   )
 }
 
-interface ChangeIndicatorWithProvidedFullPathProps {
+export interface ChangeIndicatorWithProvidedFullPathProps {
   children?: React.ReactNode
   className?: string
   compareDeep?: boolean

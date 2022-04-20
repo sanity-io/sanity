@@ -1,8 +1,8 @@
-import {Route, Segment} from './types'
+import {Route, RouteSegment} from './types'
 
 const VALID_PARAM_SEGMENT = /^[a-zA-Z0-9_-]+$/
 
-function createSegment(segment: string): Segment | null {
+function createSegment(segment: string): RouteSegment | null {
   if (!segment) {
     return null
   }
@@ -29,7 +29,7 @@ function createSegment(segment: string): Segment | null {
 export function parseRoute(route: string): Route {
   const [pathname] = route.split('?')
 
-  const segments = pathname.split('/').map(createSegment).filter(Boolean) as Segment[]
+  const segments = pathname.split('/').map(createSegment).filter(Boolean) as RouteSegment[]
 
   return {
     raw: route,

@@ -17,13 +17,13 @@ import {ChangeResolver} from './ChangeResolver'
 import {NoChanges} from './NoChanges'
 import {ChangeListWrapper, PopoverWrapper} from './ChangeList.styled'
 
-interface Props {
+export interface ChangeListProps {
   schemaType: ObjectSchemaType
   diff: ObjectDiff
   fields?: string[]
 }
 
-export function ChangeList({diff, fields, schemaType}: Props): React.ReactElement | null {
+export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.ReactElement | null {
   const {documentId, isComparingCurrent, value} = useDocumentChange()
   const docOperations = useDocumentOperation(documentId, schemaType.name) as FieldOperationsAPI
   const {path} = useContext(DiffContext)

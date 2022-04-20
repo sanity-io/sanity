@@ -31,7 +31,7 @@ export interface UserStore {
   getUser(userId: string): Promise<User | null>
   getUsers: (ids: string[]) => Promise<User[]>
 
-  /** @deprecated use userStore.me instead */
+  /** @deprecated use `userStore.me` instead */
   currentUser: Observable<CurrentUserEvent>
 
   observable: {
@@ -41,14 +41,14 @@ export interface UserStore {
     getUsers(userIds: string[]): Observable<User[]>
     getUsers(userIds: ('me' | string)[]): Observable<(User | CurrentUser)[]>
 
-    /** @deprecated use userStore.me instead */
+    /** @deprecated use `userStore.me` instead */
     currentUser: Observable<CurrentUserEvent>
   }
 }
 
 const debug = debugIt('sanity:userstore')
 
-interface UserStoreOptions {
+export interface UserStoreOptions {
   authStore: AuthStore
   authController: AuthController
   projectId: string

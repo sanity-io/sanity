@@ -6,7 +6,7 @@ import {ENABLED} from '../constants'
 import {Tracker} from '../tracker'
 import {ConnectorsOverlay} from './ConnectorsOverlay'
 
-interface EnabledChangeConnectorRootProps {
+export interface EnabledChangeConnectorRootProps {
   children: React.ReactNode
   className?: string
   isReviewChangesOpen: boolean
@@ -14,7 +14,7 @@ interface EnabledChangeConnectorRootProps {
   onSetFocus: (path: Path) => void
 }
 
-function EnabledChangeConnectorRoot({
+export function EnabledChangeConnectorRoot({
   children,
   className,
   isReviewChangesOpen,
@@ -45,12 +45,15 @@ function EnabledChangeConnectorRoot({
   )
 }
 
-interface DisabledChangeConnectorRootProps {
+export interface DisabledChangeConnectorRootProps {
   className?: string
   children: React.ReactNode
 }
 
-function DisabledChangeConnectorRoot({children, className}: DisabledChangeConnectorRootProps) {
+export function DisabledChangeConnectorRoot({
+  children,
+  className,
+}: DisabledChangeConnectorRootProps) {
   return <ScrollContainer className={className}>{children}</ScrollContainer>
 }
 

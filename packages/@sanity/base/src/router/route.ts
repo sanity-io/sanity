@@ -1,7 +1,7 @@
 import {parseRoute} from './parseRoute'
 import {resolveStateFromPath} from './resolveStateFromPath'
 import {resolvePathFromState} from './resolvePathFromState'
-import {Transform, Router, RouteChildren} from './types'
+import {RouteTransform, Router, RouteChildren} from './types'
 import {decodeJsonParams, encodeJsonParams} from './utils/jsonParamsEncoding'
 import {decodeParams, encodeParams} from './utils/paramsEncoding'
 
@@ -12,7 +12,7 @@ export type NodeOptions = {
   path?: string
   children?: RouteChildren
   transform?: {
-    [key: string]: Transform<any>
+    [key: string]: RouteTransform<any>
   }
   scope?: string
 }

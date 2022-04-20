@@ -1,5 +1,6 @@
 import {Subscriber} from 'nano-pubsub'
-import {Reported} from './index'
+
+export type Reported<Value> = [string, Value]
 
 export interface TrackerContext<Value> {
   add: (id: string, value: Value) => void

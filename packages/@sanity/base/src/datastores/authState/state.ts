@@ -10,7 +10,7 @@ export interface AuthStateState {
   broadcastAuthStateChanged: (userId: string | undefined) => void
 }
 
-const MSG_AUTH_STATE_CHANGED = 'authStateChange'
+export const MSG_AUTH_STATE_CHANGED = 'authStateChange'
 
 export interface AuthStateChangedMessage {
   type: typeof MSG_AUTH_STATE_CHANGED

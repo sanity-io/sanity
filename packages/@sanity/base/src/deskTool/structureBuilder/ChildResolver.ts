@@ -14,7 +14,7 @@ export interface ChildResolverOptions {
 
 export type ItemChild = CollectionBuilder | Collection | undefined
 
-interface ChildObservable {
+export interface ChildObservable {
   subscribe: (child: ItemChild | Promise<ItemChild>) => Record<string, unknown>
 }
 

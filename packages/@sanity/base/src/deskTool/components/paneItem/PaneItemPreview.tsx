@@ -6,11 +6,12 @@ import {Inline} from '@sanity/ui'
 import {PublishedStatus} from '../PublishedStatus'
 import {DraftStatus} from '../DraftStatus'
 import {PreviewLayoutKey} from '../../../components'
-import {DocumentPresence, DocumentPreviewPresence} from '../../../presence'
+import {DocumentPreviewPresence} from '../../../presence'
 import {DocumentPreviewStore, SanityDefaultPreview} from '../../../preview'
 import {isRecord} from '../../../util'
 import {PaneItemPreviewState} from './types'
 import {getPreviewStateObservable, getValueWithFallback} from './helpers'
+import {DocumentPresence} from '../../../datastores'
 
 export interface PaneItemPreviewProps {
   documentPreviewStore: DocumentPreviewStore

@@ -1,6 +1,7 @@
 export * from './ChangeList'
 export * from './ChangeResolver'
 export * from './DiffCard'
+export * from './DiffErrorBoundary'
 export * from './DiffFromTo'
 export * from './DiffString'
 export * from './DiffTooltip'

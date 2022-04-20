@@ -1,7 +1,7 @@
 import React, {createContext, useContext} from 'react'
 import {Workspace} from '../config'
 
-interface WorkspaceProviderProps {
+export interface WorkspaceProviderProps {
   workspace: Workspace
   children?: React.ReactChild
 }

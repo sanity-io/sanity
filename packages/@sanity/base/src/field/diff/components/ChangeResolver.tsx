@@ -7,7 +7,7 @@ import {ChangeNode} from '../../types'
 import {FieldChange} from './FieldChange'
 import {GroupChange} from './GroupChange'
 
-interface ChangeResolverProps {
+export interface ChangeResolverProps {
   change: ChangeNode
   readOnly?: ConditionalProperty
   hidden?: ConditionalProperty

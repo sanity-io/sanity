@@ -15,7 +15,7 @@ export interface DocumentListItem extends ListItem {
   _id: string
 }
 
-type PartialDocumentListItem = Partial<UnserializedListItem>
+export type PartialDocumentListItem = Partial<UnserializedListItem>
 
 const createDefaultChildResolver =
   (context: StructureContext, spec: PartialDocumentListItem) => (documentId: string) => {

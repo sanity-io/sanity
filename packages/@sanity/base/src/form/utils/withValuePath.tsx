@@ -2,7 +2,7 @@ import React, {forwardRef} from 'react'
 import {Path} from '@sanity/types'
 import {useFormBuilder} from '../useFormBuilder'
 
-interface WithValuePathProps {
+export interface WithValuePathProps {
   getValuePath: () => Path
 }
 

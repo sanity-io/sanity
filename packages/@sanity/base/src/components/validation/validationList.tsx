@@ -10,7 +10,7 @@ import {
 import {Container} from '@sanity/ui'
 import {ListItem} from './listItem'
 
-interface ValidationListProps {
+export interface ValidationListProps {
   documentType?: ObjectSchemaType
   kind?: 'simple'
   validation: ValidationMarker[]

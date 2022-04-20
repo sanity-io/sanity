@@ -9,7 +9,7 @@ function trimChildPath(path: Path, childPath: Path) {
   return PathUtils.startsWith(path, childPath) ? PathUtils.trimLeft(path, childPath) : EMPTY_ARRAY
 }
 
-interface PresenceScopeProps {
+export interface PresenceScopeProps {
   readOnly: boolean
   path: Path
   children: React.ReactNode

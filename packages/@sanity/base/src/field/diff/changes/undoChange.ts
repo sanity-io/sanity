@@ -99,17 +99,23 @@ function buildUnsetPatches(rootDiff: ObjectDiff, paths: Path[]): PatchOperations
  * Find the path to the furthest empty ancestor that's also a stub.
  *
  * Used for removing all stubs when unsetting a nested value.
- *
- * @param previousValue The state of the tree before the change was made.
- * @param currentPath Path of the value to unset. Used for recursing.
- * @param ignorePaths An optional list of path to forcefully mark as
- *  a stub regardless of what it actually is.
- * @param initialPath Same as the first value of currentPath.
  */
 function furthestEmptyAncestor(
+  /**
+   * The state of the tree before the change was made.
+   */
   previousValue: Record<string, unknown>,
+  /**
+   * Path of the value to unset. Used for recursing.
+   */
   currentPath: Path,
+  /**
+   * An optional list of path to forcefully mark as a stub regardless of what it actually is.
+   */
   ignorePaths: Path[] = [],
+  /**
+   * Same as the first value of currentPath.
+   */
   initialPath?: Path
 ): Path {
   if (currentPath.length <= 0) {
@@ -171,7 +177,14 @@ function buildMovePatches(
     insertLocation = {after: pathToString([...basePath, prevSegment])}
   }
 
-  return [{unset: [pathToString(path)]}, {insert: {...insertLocation, items: [fromValue]}}]
+  return [
+    {
+      unset: [pathToString(path)],
+    },
+    {
+      insert: {...insertLocation, items: [fromValue]} as any,
+    },
+  ]
 }
 
 function buildUndoPatches(diff: Diff, rootDiff: ObjectDiff, path: Path): PatchOperations[] {
@@ -179,7 +192,7 @@ function buildUndoPatches(diff: Diff, rootDiff: ObjectDiff, path: Path): PatchOp
 
   const inserts = patches
     .filter((patch): patch is InsertDiffPatch => patch.op === 'insert')
-    .map(({after, items}) => ({insert: {after: pathToString(after), items}}))
+    .map(({after, items}) => ({insert: {after: pathToString(after), items}} as any))
 
   const unsets = patches
     .filter((patch): patch is UnsetDiffPatch => patch.op === 'unset')
@@ -235,7 +248,7 @@ function getParentStubs(path: Path, rootDiff: ObjectDiff, stubbed: Set<string>):
       const prevSeg = isKeyedObject(prevItem) ? {_key: prevItem._key} : indexAtPrev - 1
       const after = pathToString(subPath.concat(indexAtPrev < 1 ? 0 : prevSeg))
       stubs.push({setIfMissing: {[pathStr]: []}})
-      stubs.push({insert: {after, items: [getStubValue(nextItem)]}})
+      stubs.push({insert: {after, items: [getStubValue(nextItem)]} as any})
 
       i++
       continue
@@ -253,13 +266,21 @@ function getParentStubs(path: Path, rootDiff: ObjectDiff, stubbed: Set<string>):
 
 /**
  * Check if all items in an object or an array are stubs.
- *
- * @param item The item to check whether is a stub.
- * @param path The path to the item we're checking.
- * @param ignorePaths An optional list of path to forcefully mark as
- *  a stub regardless of what it actually is.
  */
-function onlyContainsStubs(item: unknown, path: Path, ignorePaths?: Path[]): boolean {
+function onlyContainsStubs(
+  /**
+   * The item to check whether is a stub.
+   */
+  item: unknown,
+  /**
+   * The path to the item we're checking.
+   */
+  path: Path,
+  /**
+   * An optional list of path to forcefully mark as a stub regardless of what it actually is.
+   */
+  ignorePaths?: Path[]
+): boolean {
   /*
    * If we're trying to check for stubs inside something which isn't an object
    * or an array we're checking a string for example and it they cannot

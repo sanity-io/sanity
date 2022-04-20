@@ -49,7 +49,7 @@ export interface DocumentVersionSnapshots {
   commit: () => Observable<never>
 }
 
-interface SnapshotPair {
+export interface SnapshotPair {
   draft: DocumentVersionSnapshots
   published: DocumentVersionSnapshots
 }

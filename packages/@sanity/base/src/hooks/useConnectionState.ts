@@ -3,7 +3,7 @@ import {of, timer} from 'rxjs'
 import {useMemoObservable} from 'react-rx'
 import {useDocumentStore} from '../datastores'
 
-type ConnectionState = 'connecting' | 'reconnecting' | 'connected'
+export type ConnectionState = 'connecting' | 'reconnecting' | 'connected'
 
 const INITIAL: ConnectionState = 'connecting'
 

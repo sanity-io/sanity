@@ -74,7 +74,7 @@ export interface DocumentList extends GenericList {
   schemaTypeName?: string
 }
 
-interface DocumentListOptions {
+export interface DocumentListOptions {
   filter: string
   params?: Record<string, unknown>
   apiVersion?: string

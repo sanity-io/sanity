@@ -27,7 +27,7 @@ const createDocumentChildResolver =
     return resolveDocumentNode({documentId: itemId, schemaType: type})
   }
 
-interface DocumentOptions {
+export interface DocumentOptions {
   id: string
   type: string
   template?: string

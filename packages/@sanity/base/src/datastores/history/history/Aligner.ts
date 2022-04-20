@@ -2,17 +2,12 @@ import {SanityDocument} from '@sanity/types'
 import {applyPatch} from 'mendoza'
 import {RemoteSnapshotVersionEvent} from '../../document/document-pair/checkoutPair'
 import {Timeline} from './Timeline'
-import {
-  TransactionLogEvent,
-  DocumentRemoteMutationVersionEvent,
-  Attributes,
-  CombinedDocument,
-} from './types'
+import {TransactionLogEvent, DocumentRemoteMutationVersionEvent, CombinedDocument} from './types'
 
 type VersionState = {
   id: string
   hasAttrs: boolean
-  attrs: Attributes | null
+  attrs: Record<string, unknown> | null
   rev: string | null
   events: Array<DocumentRemoteMutationVersionEvent>
   aligned: boolean

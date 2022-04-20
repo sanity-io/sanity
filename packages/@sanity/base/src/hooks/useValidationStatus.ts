@@ -2,7 +2,7 @@ import {ValidationMarker} from '@sanity/types'
 import {useMemoObservable} from 'react-rx'
 import {useDocumentStore} from '../datastores'
 
-interface ValidationStatus {
+export interface ValidationStatus {
   isValidating: boolean
   validation: ValidationMarker[]
 }

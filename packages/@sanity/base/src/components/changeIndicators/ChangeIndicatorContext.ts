@@ -1,7 +1,7 @@
 import React from 'react'
 import {Path} from '@sanity/types'
 
-interface ChangeIndicatorContextValue {
+export interface ChangeIndicatorContextValue {
   value?: unknown
   compareValue?: unknown
   focusPath: Path

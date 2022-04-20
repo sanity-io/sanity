@@ -23,7 +23,7 @@ function isNonNullable<T>(value: T): value is NonNullable<T> {
   return value !== null
 }
 
-interface CrossProjectTokenStoreOptions {
+export interface CrossProjectTokenStoreOptions {
   client: SanityClient
 }
 

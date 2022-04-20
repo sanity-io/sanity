@@ -9,16 +9,12 @@ import {
 } from './connection-status/connection-status-store'
 import {CrossProjectTokenStore, __tmp_wrap_crossProjectToken} from './crossProjectToken'
 import {createDocumentStore, DocumentStore} from './document'
-import {createGrantsStore} from './grants'
+import {createGrantsStore, GrantsStore} from './grants'
 import {createHistoryStore, HistoryStore} from './history'
 import {PresenceStore, __tmp_wrap_presenceStore} from './presence'
-import {createProjectStore} from './project/projectStore'
+import {createProjectStore, ProjectStore} from './project'
 import {useResourceCache} from './ResourceCacheProvider'
-import {createSettingsStore} from './settings/settingsStore'
-import {GrantsStore} from './grants/types'
-import {ProjectStore} from './project'
-// TODO: fix types
-import {SettingsStore} from './settings/types'
+import {createSettingsStore, SettingsStore} from './settings'
 
 export function useGrantsStore(): GrantsStore {
   const {

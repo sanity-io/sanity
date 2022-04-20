@@ -1,4 +1,4 @@
-import {createScope, Reported} from '../../components/react-track-elements'
+import {createScope, Reported} from '../../components'
 import {FieldPresenceData} from '../types'
 export type ReportedPresenceData = Reported<FieldPresenceData>
 

@@ -1,7 +1,7 @@
 import {Box} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
-import {PreviewComponent} from '../../../preview/types'
+import {FieldPreviewComponent} from '../../../preview'
 
 const StringWrapper = styled.div`
   display: inline-block;
@@ -9,7 +9,7 @@ const StringWrapper = styled.div`
   white-space: pre-wrap;
 `
 
-export const StringPreview: PreviewComponent<string> = (props) => {
+export const StringPreview: FieldPreviewComponent<string> = (props) => {
   const {value} = props
 
   return (

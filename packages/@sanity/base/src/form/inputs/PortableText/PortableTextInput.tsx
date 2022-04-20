@@ -26,7 +26,7 @@ import {Compositor} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {VisibleOnFocusButton} from './VisibleOnFocusButton'
 
-export type PatchWithOrigin = FormBuilderPatch & {
+type PatchWithOrigin = FormBuilderPatch & {
   origin: 'local' | 'remote' | 'internal'
   timestamp: Date
 }

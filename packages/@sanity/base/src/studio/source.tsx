@@ -2,7 +2,7 @@ import React, {createContext, useContext} from 'react'
 import {Source} from '../config'
 import {useWorkspace} from './workspace'
 
-type SourceProviderProps =
+export type SourceProviderProps =
   | {source: Source; children?: React.ReactNode}
   | {name: string; children?: React.ReactNode}
 

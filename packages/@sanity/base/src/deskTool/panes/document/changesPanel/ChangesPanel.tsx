@@ -87,7 +87,7 @@ export function ChangesPanel(): React.ReactElement | null {
               >
                 <AvatarStack maxLength={4}>
                   {changeAnnotations.map(({author}) => (
-                    <UserAvatar key={author} userId={author} />
+                    <UserAvatar key={author} user={author} />
                   ))}
                 </AvatarStack>
               </DiffTooltip>

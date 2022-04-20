@@ -1,14 +1,18 @@
-import {PreviewConfig, PreviewValue, SanityDocument, SchemaType} from '@sanity/types'
+import {
+  PreviewConfig,
+  PreviewValue,
+  Reference,
+  SanityDocument,
+  SanityDocumentLike,
+  SchemaType,
+} from '@sanity/types'
 import {Observable} from 'rxjs'
 
 export type {SortOrdering, PrepareViewOptions} from '@sanity/types'
 
 export type Id = string
 
-export type Reference = {_ref: string}
-export type Document = {_id: string; [key: string]: unknown}
-
-export type Previewable = Document | Reference
+export type Previewable = SanityDocumentLike | Reference
 
 // @todo: unify with content path from @sanity/types
 export type Path = FieldName[]

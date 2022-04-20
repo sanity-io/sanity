@@ -14,12 +14,12 @@ import {restore} from './restore'
  *  as long as this is properly typed, how everything else is implemented doesn't matter
  *  */
 
-interface GuardedOperation {
+export interface GuardedOperation {
   disabled: 'NOT_READY'
   execute: () => never
 }
 
-type WrappedOperation<ErrorStrings> = {
+export type WrappedOperation<ErrorStrings> = {
   disabled: false | ErrorStrings
   execute: () => void
 }
@@ -29,7 +29,9 @@ export type OperationImpl<ErrorStrings> = {
   execute(args: OperationArgs, ...extra: any[]): void
 }
 
-type Operation<DisabledReasons = false> = GuardedOperation | WrappedOperation<DisabledReasons>
+export type Operation<DisabledReasons = false> =
+  | GuardedOperation
+  | WrappedOperation<DisabledReasons>
 
 // Note: Changing this interface in a backwards incompatible manner will be a breaking change
 export interface OperationsAPI {

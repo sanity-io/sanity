@@ -100,7 +100,7 @@ interface IntermediaryError {
   error: any
 }
 
-type __FindMeAName = (
+export type __FindMeAName = (
   idPair: IdPair,
   typeName?: string
 ) => Observable<OperationSuccess | OperationError>

@@ -15,7 +15,7 @@ export default function UserAvatarStory() {
 
   return (
     <Flex align="center" height="fill" justify="center" padding={4}>
-      <UserAvatar size={size} userId="me" withTooltip={withTooltip} />
+      <UserAvatar size={size} user="me" withTooltip={withTooltip} />
     </Flex>
   )
 }

@@ -2,7 +2,7 @@ import {SanityDocument} from '@sanity/types'
 import {isNonNullable} from './isNonNullable'
 
 // nominal/opaque type hack
-type Opaque<T, K> = T & {__opaqueId__: K}
+export type Opaque<T, K> = T & {__opaqueId__: K}
 
 export type DraftId = Opaque<string, 'draftId'>
 export type PublishedId = Opaque<string, 'publishedId'>
@@ -60,7 +60,8 @@ export function createPublishedFrom(document: SanityDocument): SanityDocument {
 
 /**
  * Takes a list of documents and collates draft/published pairs into single entries
- * {id: <published id>, draft?: <draft document>, published?: <published document>}
+ * `{id: <published id>, draft?: <draft document>, published?: <published document>}`
+ *
  * Note: because Map is ordered by insertion key the resulting array will be ordered by whichever
  * version appeared first
  */

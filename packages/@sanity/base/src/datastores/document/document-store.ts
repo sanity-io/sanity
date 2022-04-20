@@ -19,7 +19,7 @@ import {resolveTypeForDocument} from './resolveTypeForDocument'
 import {IdPair} from './types'
 import {getInitialValueStream, InitialValueMsg, InitialValueOptions} from './initialValue'
 
-type QueryParams = Record<string, string | number | boolean | string[]>
+export type QueryParams = Record<string, string | number | boolean | string[]>
 
 function getIdPairFromPublished(publishedId: string): IdPair {
   if (isDraftId(publishedId)) {
@@ -48,7 +48,7 @@ export interface DocumentStore {
   }
 }
 
-interface DocumentStoreOptions {
+export interface DocumentStoreOptions {
   client: SanityClient
   documentPreviewStore: DocumentPreviewStore
   historyStore: HistoryStore

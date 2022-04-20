@@ -1,9 +1,8 @@
 import {Observable} from 'rxjs'
 import {createHookFromObservableFactory} from '../../util/createHookFromObservableFactory'
+import {PartialExcept} from '../../util/PartialExcept'
 import {useGrantsStore} from '../datastores'
 import {DocumentValuePermission, GrantsStore, PermissionCheckResult} from './types'
-
-type PartialExcept<T, K extends keyof T> = Pick<T, K> & Partial<Omit<T, K>>
 
 export interface DocumentValuePermissionsOptions {
   grantsStore: GrantsStore
@@ -45,7 +44,7 @@ export function getDocumentValuePermissions({
  *
  * @see useDocumentPairPermissions
  */
-const useDocumentValuePermissionsFromHookFactory = createHookFromObservableFactory(
+export const useDocumentValuePermissionsFromHookFactory = createHookFromObservableFactory(
   getDocumentValuePermissions
 )
 

@@ -9,7 +9,7 @@ import {useSource} from '../../../studio'
 import {Template, InitialValueTemplateItem} from '../../../templates'
 import {InsufficientPermissionsMessageTooltip} from './InsufficientPermissionsMessageTooltip'
 
-type Intent = React.ComponentProps<typeof IntentButton>['intent']
+export type PaneHeaderIntentProps = React.ComponentProps<typeof IntentButton>['intent']
 
 const POPOVER_PROPS: PopoverProps = {
   constrainSize: true,
@@ -21,7 +21,7 @@ const getIntent = (
   schema: Schema,
   templates: Template[],
   item: InitialValueTemplateItem
-): Intent | null => {
+): PaneHeaderIntentProps | null => {
   const typeName = templates.find((t) => t.id === item.templateId)?.schemaType
   if (!typeName) return null
 

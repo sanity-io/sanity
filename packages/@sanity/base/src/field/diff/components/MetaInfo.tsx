@@ -2,7 +2,7 @@ import {Text, Box, Flex, Stack} from '@sanity/ui'
 import React, {createElement} from 'react'
 import styled from 'styled-components'
 
-interface MetaInfoProps {
+export interface MetaInfoProps {
   title: string
   action?: string
   icon?: React.ComponentType

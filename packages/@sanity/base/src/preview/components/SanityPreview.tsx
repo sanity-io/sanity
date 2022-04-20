@@ -4,7 +4,7 @@ import type {SortOrdering} from '../types'
 import {PreviewSubscriber} from './PreviewSubscriber'
 import {RenderPreviewSnapshot} from './RenderPreviewSnapshot'
 
-interface Props {
+export interface SanityPreviewProps {
   type: SchemaType
   value: any
   ordering?: SortOrdering
@@ -13,6 +13,6 @@ interface Props {
   status?: React.ReactNode
 }
 
-export function SanityPreview(props: Props) {
+export function SanityPreview(props: SanityPreviewProps) {
   return <PreviewSubscriber {...props}>{RenderPreviewSnapshot}</PreviewSubscriber>
 }

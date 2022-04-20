@@ -1,13 +1,13 @@
 import React from 'react'
 import {UserColor} from '../../../../user-color'
-import {PreviewComponent} from '../../../preview/types'
+import {FieldPreviewComponent} from '../../../preview'
 
 type BooleanProps = {
   checked: boolean | undefined | null
   color?: UserColor
 }
 
-export const BooleanPreview: PreviewComponent<boolean> = function BooleanPreview({
+export const BooleanPreview: FieldPreviewComponent<boolean> = function BooleanPreview({
   value,
   schemaType,
   color,

@@ -15,17 +15,20 @@ export function maybeSerializeMenuItem(
   return item instanceof MenuItemBuilder ? item.serialize({path, index}) : item
 }
 
-type ActionType = string | ((params: Record<string, string> | undefined, scope?: any) => void)
-type ParamsType = Record<string, string | unknown | undefined>
+export type MenuItemActionType =
+  | string
+  | ((params: Record<string, string> | undefined, scope?: any) => void)
+
+export type MenuItemParamsType = Record<string, string | unknown | undefined>
 
 export interface MenuItem {
   title: string
-  action?: ActionType
+  action?: MenuItemActionType
   intent?: Intent
   group?: string
   // TODO: align these with TemplateResponse['icon']
   icon?: React.ComponentType | React.ReactNode
-  params?: ParamsType
+  params?: MenuItemParamsType
   showAsAction?: boolean
 }
 
@@ -38,7 +41,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
     this.spec = spec ? spec : {}
   }
 
-  action(action: ActionType): MenuItemBuilder {
+  action(action: MenuItemActionType): MenuItemBuilder {
     return this.clone({action})
   }
 
@@ -78,7 +81,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
     return this.spec.icon
   }
 
-  params(params: ParamsType): MenuItemBuilder {
+  params(params: MenuItemParamsType): MenuItemBuilder {
     return this.clone({params})
   }
 

@@ -15,7 +15,7 @@ import {getAttrs} from './utils'
 
 export type ParsedTimeRef = Chunk | 'loading' | 'invalid'
 
-type Options = {
+export interface TimelineOptions {
   publishedId: string
   enableTrace?: boolean
 }
@@ -47,7 +47,7 @@ export class Timeline {
   private _recreateTransactionsFrom?: number
   private _trace?: TraceEvent[]
 
-  constructor(opts: Options) {
+  constructor(opts: TimelineOptions) {
     this.publishedId = opts.publishedId
     this.draftId = `drafts.${opts.publishedId}`
 

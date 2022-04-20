@@ -1,9 +1,9 @@
 import {PartialDocumentList, getTypeNamesFromFilter} from './DocumentList'
 import {StructureNode} from './StructureNodes'
 
-type JsonParams = {[key: string]: any}
+export type IntentJsonParams = {[key: string]: any}
 
-type BaseIntentParams = {
+export type BaseIntentParams = {
   type?: string
   id?: string
   template?: string
@@ -11,7 +11,7 @@ type BaseIntentParams = {
 
 export const DEFAULT_INTENT_HANDLER = Symbol('Document type list canHandleIntent')
 
-export type IntentParams = BaseIntentParams | [BaseIntentParams, JsonParams]
+export type IntentParams = BaseIntentParams | [BaseIntentParams, IntentJsonParams]
 
 // TODO: intents should be unified somewhere
 export interface Intent {

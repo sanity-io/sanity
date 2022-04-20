@@ -25,7 +25,7 @@ export const FieldPresence = DISABLE_OVERLAY
   ? FieldPresenceWithoutOverlay
   : FieldPresenceWithOverlay
 
-function FieldPresenceWithOverlay(props: FieldPresenceProps) {
+export function FieldPresenceWithOverlay(props: FieldPresenceProps) {
   const contextPresence = useContext(FormFieldPresenceContext)
   const {presence = contextPresence, maxAvatars = DEFAULT_MAX_AVATARS_FIELDS} = props
   const ref = React.useRef(null)
@@ -43,7 +43,7 @@ function FieldPresenceWithOverlay(props: FieldPresenceProps) {
   )
 }
 
-function FieldPresenceWithoutOverlay(props: FieldPresenceProps) {
+export function FieldPresenceWithoutOverlay(props: FieldPresenceProps) {
   const contextPresence = useContext(FormFieldPresenceContext)
   const {presence = contextPresence, maxAvatars = DEFAULT_MAX_AVATARS_FIELDS} = props
 
@@ -54,7 +54,7 @@ function FieldPresenceWithoutOverlay(props: FieldPresenceProps) {
   return <FieldPresenceInner presence={presence} maxAvatars={maxAvatars} />
 }
 
-interface InnerProps {
+export interface FieldPresenceInnerProps {
   maxAvatars?: number
   presence: FormFieldPresence[]
   stack?: boolean
@@ -72,7 +72,7 @@ export const FieldPresenceInner = memo(function FieldPresenceInner({
   animateArrowFrom = 'inside',
   maxAvatars = DEFAULT_MAX_AVATARS_FIELDS,
   stack = true,
-}: InnerProps) {
+}: FieldPresenceInnerProps) {
   const uniquePresence = uniqBy(presence || [], (item) => item.user.id)
   const sorted = sortBy(uniquePresence, (_presence) => _presence.lastActiveAt)
   const [hidden, visible] = stack ? splitRight(sorted, maxAvatars) : [[], sorted]

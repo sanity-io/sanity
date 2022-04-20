@@ -216,7 +216,7 @@ function restore(client: SanityClient, id: string, targetId: string, rev: string
   )
 }
 
-interface HistoryStoreOptions {
+export interface HistoryStoreOptions {
   client: SanityClient
 }
 

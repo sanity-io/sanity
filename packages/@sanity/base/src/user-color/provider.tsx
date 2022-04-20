@@ -3,7 +3,7 @@ import {UserColorManagerContext} from './context'
 import {UserColorManager} from './types'
 import {createUserColorManager} from './manager'
 
-interface UserColorManagerProviderProps {
+export interface UserColorManagerProviderProps {
   children: React.ReactNode
   manager?: UserColorManager
 }

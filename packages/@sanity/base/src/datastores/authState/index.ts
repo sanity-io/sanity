@@ -7,6 +7,10 @@ import {AuthStateTokenStore, __tmp_authState_token} from './token'
 
 export {clearToken, saveToken} from './token'
 
+export type {AuthStateConfig, AuthStateState, AuthStateTokenStore}
+
+export type {AuthStateChangedMessage, MSG_AUTH_STATE_CHANGED} from './state'
+
 export interface AuthStore {
   broadcastAuthStateChanged: AuthStateState['broadcastAuthStateChanged']
   fetchToken: AuthStateTokenStore['fetchToken']

@@ -6,14 +6,14 @@ import {LegacyLayerProvider, UserAvatar} from '../../../components'
 import {AnnotationDetails, Diff} from '../../types'
 import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
 
-interface DiffTooltipProps extends TooltipProps {
+export interface DiffTooltipProps extends TooltipProps {
   children: React.ReactElement
   description?: React.ReactNode
   diff: Diff
   path?: Path | string
 }
 
-interface DiffTooltipWithAnnotationsProps extends TooltipProps {
+export interface DiffTooltipWithAnnotationsProps extends TooltipProps {
   annotations: AnnotationDetails[]
   children: React.ReactElement
   description?: React.ReactNode
@@ -87,7 +87,7 @@ function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
           borderRadius: 'calc(23px / 2)',
         }}
       >
-        <UserAvatar userId={author} />
+        <UserAvatar user={author} />
         <Inline paddingLeft={2}>
           <Text muted size={1} style={{color: color.text}}>
             {user ? user.displayName : 'Loading…'}

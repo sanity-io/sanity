@@ -111,7 +111,7 @@ export function Navbar(props: {activeToolName?: string}) {
               button={
                 <Button mode="bleed">
                   <div style={{margin: -12}}>
-                    <UserAvatar userId="me" size={1} />
+                    <UserAvatar user="me" size={1} />
                   </div>
                 </Button>
               }

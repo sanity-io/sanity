@@ -113,12 +113,12 @@ export interface NewDocumentOptionsContext extends ConfigContext {
   creationContext: NewDocumentCreationContext
 }
 
-type NewDocumentCreationContext =
+export type NewDocumentCreationContext =
   | {type: 'global'; documentId?: undefined; schemaType?: undefined}
   | {type: 'document'; documentId: string; schemaType: string}
   | {type: 'structure'; documentId?: undefined; schemaType: string}
 
-interface DocumentPluginOptions {
+export interface DocumentPluginOptions {
   badges?: DocumentBadgeComponent[] | DocumentBadgesResolver
   actions?: DocumentActionComponent[] | DocumentActionsResolver
   productionUrl?: AsyncComposableOption<string | undefined, ResolveProductionUrlContext>
@@ -196,7 +196,7 @@ export interface DocumentBadgesContext extends ConfigContext {
   schemaType: string
 }
 
-type PartialContext<TContext extends ConfigContext> = Pick<
+export type PartialContext<TContext extends ConfigContext> = Pick<
   TContext,
   Exclude<keyof TContext, keyof ConfigContext>
 >

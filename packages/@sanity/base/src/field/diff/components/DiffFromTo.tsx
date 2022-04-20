@@ -1,19 +1,19 @@
 import {Path, SchemaType} from '@sanity/types'
 import React, {createElement, CSSProperties} from 'react'
-import {PreviewComponent} from '../../preview/types'
+import {FieldPreviewComponent} from '../../preview'
 import {Diff} from '../../types'
 import {getChangeVerb} from '../helpers'
 import {DiffCard} from './DiffCard'
 import {DiffTooltip} from './DiffTooltip'
 import {FromTo} from './FromTo'
 
-interface DiffFromToProps {
+export interface DiffFromToProps {
   align?: 'top' | 'center' | 'bottom'
   cardClassName?: string
   diff: Diff
   layout?: 'grid' | 'inline'
   path?: Path | string
-  previewComponent: PreviewComponent
+  previewComponent: FieldPreviewComponent
   schemaType: SchemaType
 }
 

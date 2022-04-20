@@ -3,9 +3,9 @@ import React, {useMemo} from 'react'
 import styled, {css, useTheme} from 'styled-components'
 import {isNonNullable} from '../util/isNonNullable'
 import {UserAvatar, usePreviewCard} from '../components'
-import {DocumentPresence} from '../datastores/presence/types'
+import {DocumentPresence} from '../datastores'
 
-interface DocumentPreviewPresenceProps {
+export interface DocumentPreviewPresenceProps {
   presence: Omit<DocumentPresence, 'path'>[]
 }
 

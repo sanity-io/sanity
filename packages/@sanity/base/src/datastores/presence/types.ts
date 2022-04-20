@@ -6,7 +6,7 @@ export type Status = 'online' | 'editing' | 'inactive'
 export interface Session {
   sessionId: string
   userId: string
-  lastActiveAt: LastActiveAt
+  lastActiveAt: string // iso date
   locations: PresenceLocation[]
 }
 
@@ -14,7 +14,7 @@ export interface Session {
 export interface PresenceLocation {
   type: 'document'
   documentId: string
-  lastActiveAt: LastActiveAt
+  lastActiveAt: string // iso date
   path: Path
 }
 
@@ -23,20 +23,18 @@ export interface UserSessionPair {
   session: Session
 }
 
-type LastActiveAt = string // iso date
-
 // These are the data prepared and made ready for different types of UI components to use
 // Presence data prepared for a single document
 export interface DocumentPresence {
   user: User
   path: Path
   sessionId: string
-  lastActiveAt: LastActiveAt
+  lastActiveAt: string // iso date
 }
 
 export type GlobalPresence = {
   user: User
   status: Status
-  lastActiveAt: LastActiveAt
+  lastActiveAt: string // iso date
   locations: PresenceLocation[]
 }

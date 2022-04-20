@@ -2,7 +2,7 @@ import {useMemoObservable} from 'react-rx'
 import {map} from 'rxjs/operators'
 import {useDocumentStore} from '../datastores'
 
-interface SyncState {
+export interface SyncState {
   isSyncing: boolean
 }
 

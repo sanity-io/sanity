@@ -1,4 +1,6 @@
+export * from './checkoutPair'
 export * from './editState'
 export * from './operations'
 export * from './remoteSnapshots'
-export * from './checkoutPair'
+export * from './snapshotPair'
+export * from './validation'

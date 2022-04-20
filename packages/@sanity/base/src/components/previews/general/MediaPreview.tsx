@@ -14,7 +14,7 @@ import {
   TooltipContentStack,
 } from './MediaPreview.styled'
 
-interface MediaPreviewProps extends PreviewProps<'media'> {
+export interface MediaPreviewProps extends PreviewProps<'media'> {
   withRadius?: boolean
   withBorder?: boolean
 }

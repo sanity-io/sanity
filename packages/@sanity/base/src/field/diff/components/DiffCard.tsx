@@ -6,7 +6,7 @@ import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
 import {Annotation, Diff} from '../../types'
 import {DiffTooltip} from './DiffTooltip'
 
-interface DiffCardProps {
+export interface DiffCardProps {
   annotation?: Annotation
   as?: React.ElementType | keyof JSX.IntrinsicElements
   diff?: Diff

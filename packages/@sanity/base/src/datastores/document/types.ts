@@ -29,10 +29,10 @@ export interface IdPair {
 }
 
 // eslint-disable-next-line no-unused-vars
-export interface Operation<Args> {
-  disabled: (args: OperationArgs) => false | string
-  execute: (args: OperationArgs) => void
-}
+// export interface Operation<Args> {
+//   disabled: (args: OperationArgs) => false | string
+//   execute: (args: OperationArgs) => void
+// }
 
 export interface OperationArgs {
   client: SanityClient

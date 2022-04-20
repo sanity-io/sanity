@@ -5,18 +5,21 @@
 import React from 'react'
 import {Path} from '@sanity/types'
 
-type Props = {
+export interface SimpleFocusManagerProps {
   path: any | null
   onFocus: () => void
   onBlur: () => void
   children: (arg: any) => any
 }
 
-type State = {
+export interface SimpleFocusManagerState {
   focusPath: Array<any>
 }
 
-export class SimpleFocusManager extends React.Component<Props, State> {
+export class SimpleFocusManager extends React.Component<
+  SimpleFocusManagerProps,
+  SimpleFocusManagerState
+> {
   state = {
     focusPath: [],
   }

@@ -1,6 +1,6 @@
 import {isRecord} from '../util'
 
-interface ConfigPropertyErrorOptions {
+export interface ConfigPropertyErrorOptions {
   propertyName: string
   path: string[]
   cause: unknown

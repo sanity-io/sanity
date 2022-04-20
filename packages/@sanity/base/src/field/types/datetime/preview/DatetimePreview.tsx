@@ -3,7 +3,7 @@ import {StringSchemaType} from '@sanity/types'
 import {Box} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
-import {PreviewComponent} from '../../../preview/types'
+import {FieldPreviewComponent} from '../../../preview'
 
 const DEFAULT_DATE_FORMAT = 'YYYY-MM-DD'
 const DEFAULT_TIME_FORMAT = 'HH:mm'
@@ -13,7 +13,7 @@ const DatetimeWrapper = styled.div`
   word-wrap: break-word;
 `
 
-export const DatetimePreview: PreviewComponent<string> = function DatetimePreview({
+export const DatetimePreview: FieldPreviewComponent<string> = function DatetimePreview({
   value,
   schemaType,
 }) {

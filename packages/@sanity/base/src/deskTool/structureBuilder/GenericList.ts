@@ -1,7 +1,7 @@
 import {camelCase} from 'lodash'
 import {InitialValueTemplateItem} from '../../templates'
 import {StructureNode, SerializeOptions, Serializable, Child} from './StructureNodes'
-import {Layout, layoutOptions} from './Layout'
+import {layoutOptions} from './Layout'
 import {MenuItem, MenuItemBuilder, maybeSerializeMenuItem} from './MenuItem'
 import {MenuItemGroup, MenuItemGroupBuilder, maybeSerializeMenuItemGroup} from './MenuItemGroup'
 import {IntentChecker, defaultIntentChecker} from './Intent'
@@ -11,6 +11,7 @@ import {
   maybeSerializeInitialValueTemplateItem,
 } from './InitialValueTemplateItem'
 import {validateId} from './util/validateId'
+import {PreviewLayoutKey} from '../../components'
 
 function noChildResolver() {
   return undefined
@@ -25,7 +26,7 @@ export interface ListDisplayOptions {
 }
 
 export interface BaseGenericList extends StructureNode {
-  defaultLayout?: Layout
+  defaultLayout?: PreviewLayoutKey
   canHandleIntent?: IntentChecker
   displayOptions?: ListDisplayOptions
   child: Child
@@ -52,7 +53,7 @@ export interface GenericListInput extends StructureNode {
   menuItems?: (MenuItem | MenuItemBuilder)[]
   menuItemGroups?: (MenuItemGroup | MenuItemGroupBuilder)[]
   initialValueTemplates?: (InitialValueTemplateItem | InitialValueTemplateItemBuilder)[]
-  defaultLayout?: Layout
+  defaultLayout?: PreviewLayoutKey
   canHandleIntent?: IntentChecker
   child?: Child
 }
@@ -79,7 +80,7 @@ export abstract class GenericListBuilder<TList extends BuildableGenericList, Con
     return this.spec.title
   }
 
-  defaultLayout(defaultLayout: Layout): ConcreteImpl {
+  defaultLayout(defaultLayout: PreviewLayoutKey): ConcreteImpl {
     return this.clone({defaultLayout})
   }
 

@@ -3,7 +3,7 @@ import {merge, Observable} from 'rxjs'
 import {filter, map, share} from 'rxjs/operators'
 import {SanityDocument} from '@sanity/types'
 import {getPairListener, ListenerEvent} from '../getPairListener'
-import {BufferedDocumentEvent, createBufferedDocument} from '../buffered-doc/createBufferedDocument'
+import {BufferedDocumentEvent, createBufferedDocument} from '../buffered-doc'
 import {IdPair, Mutation, ReconnectEvent} from '../types'
 import {RemoteSnapshotEvent} from '../buffered-doc/types'
 
@@ -20,7 +20,7 @@ function commitMutations(client: SanityClient, mutations: any[]) {
   })
 }
 
-type WithVersion<T> = T & {version: 'published' | 'draft'}
+export type WithVersion<T> = T & {version: 'published' | 'draft'}
 
 export type DocumentVersionEvent = WithVersion<ReconnectEvent | BufferedDocumentEvent>
 export type RemoteSnapshotVersionEvent = WithVersion<RemoteSnapshotEvent>

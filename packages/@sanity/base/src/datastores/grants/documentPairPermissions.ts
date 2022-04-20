@@ -8,8 +8,7 @@ import {getDraftId, getPublishedId} from '../../util/draftUtils'
 import {useSource} from '../../studio'
 import {useGrantsStore} from '../datastores'
 import {GrantsStore, PermissionCheckResult} from './types'
-
-type PartialExcept<T, K extends keyof T> = Pick<T, K> & Partial<Omit<T, K>>
+import {PartialExcept} from '../../util/PartialExcept'
 
 function getSchemaType(schema: Schema, typeName: string): SchemaType {
   const type = schema.get(typeName)
@@ -153,7 +152,7 @@ export type DocumentPermission =
   | 'update'
   | 'duplicate'
 
-interface DocumentPairPermissionsOptions {
+export interface DocumentPairPermissionsOptions {
   client: SanityClient
   schema: Schema
   grantsStore: GrantsStore
@@ -255,7 +254,7 @@ export function getDocumentPairPermissions({
  *
  * @see useDocumentValuePermissions
  */
-const useDocumentPairPermissionsFromHookFactory = createHookFromObservableFactory(
+export const useDocumentPairPermissionsFromHookFactory = createHookFromObservableFactory(
   getDocumentPairPermissions
 )
 
