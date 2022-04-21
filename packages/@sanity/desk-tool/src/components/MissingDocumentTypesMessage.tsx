@@ -1,5 +1,5 @@
 import React from 'react'
-import {Card, Container, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 
 export function MissingDocumentTypesMessage() {
   return (
@@ -10,25 +10,11 @@ export function MissingDocumentTypesMessage() {
       paddingY={[5, 5, 6]}
       sizing="border"
     >
-      <Container>
-        <Stack space={5}>
-          <Heading as="h1">Empty schema</Heading>
-
-          <Text as="p">
-            Your schema does not contain any document types. If it did, those types would be listed
-            here.{' '}
-            <a
-              title="Schema documentation"
-              target="_blank"
-              rel="noopener noreferrer"
-              href="https://www.sanity.io/docs/content-studio/the-schema"
-            >
-              Read more about how to add schema types
-            </a>
-            .
-          </Text>
-        </Stack>
-      </Container>
+      <Text as="p" align="center">
+        We’ll generate a UI here
+        <br aria-hidden="true" />
+        as soon as you build your first schema.
+      </Text>
     </Card>
   )
 }
