@@ -99,7 +99,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
     title,
     ...restProps
   } = props
-  // const collapsed = false
+
   const hasValidationMarkers = validation.length > 0
   const forwardedRef = useForwardedRef(ref)
 

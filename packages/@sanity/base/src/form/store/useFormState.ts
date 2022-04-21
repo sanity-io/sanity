@@ -1,10 +1,12 @@
 import {isKeySegment, ObjectSchemaType, Path} from '@sanity/types'
-import {useCallback, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {pathFor} from '@sanity/util/paths'
 import {useCurrentUser} from '../../datastores'
 import {PatchEvent} from '../patch'
 import {StateTree} from './types'
 import {PreparedProps, prepareFormProps, SanityDocument} from './formState'
+
+import {immutableReconcile} from './utils/immutableReconcile'
 
 function setAtPath<T>(currentTree: StateTree<T> | undefined, path: Path, value: T): StateTree<T> {
   if (path.length === 0) {
@@ -42,9 +44,14 @@ export function useFormState(
     []
   )
 
+  const prev = useRef<PreparedProps<unknown> | {hidden: true} | undefined>()
+
+  useEffect(() => {
+    prev.current = undefined
+  }, [schemaType])
+
   return useMemo(() => {
-    // console.time('derive form state')
-    const state = prepareFormProps({
+    const next = prepareFormProps({
       type: schemaType,
       document: value,
       fieldGroupState,
@@ -59,9 +66,14 @@ export function useFormState(
       level: 0,
       currentUser,
     })
-    // console.timeEnd('derive form state
-    return state
+    const reconciled = immutableReconcile(prev.current, next)
+    prev.current = reconciled
+
+    console.timeEnd('derive form state')
+
+    return reconciled
   }, [
+    //
     schemaType,
     value,
     fieldGroupState,

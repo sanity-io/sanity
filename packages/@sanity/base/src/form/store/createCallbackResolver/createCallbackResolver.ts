@@ -37,7 +37,7 @@ export interface ResolvedCallbackNode {
 }
 
 export interface CallbackResolver {
-  (document: SanityDocumentLike, currentUser: CurrentUser): ResolvedCallbackNode
+  (document: Partial<SanityDocumentLike>, currentUser: CurrentUser): ResolvedCallbackNode
 }
 
 /**
