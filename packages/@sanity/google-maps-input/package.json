@@ -38,7 +38,7 @@
     "sanity-plugin"
   ],
   "dependencies": {
-    "@sanity/icons": "^1.2.6",
+    "@sanity/icons": "^1.2.8",
     "@sanity/types": "2.29.5",
     "@sanity/ui": "^0.37.9",
     "lodash": "^4.17.21",

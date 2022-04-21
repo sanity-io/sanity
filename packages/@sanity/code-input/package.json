@@ -51,7 +51,7 @@
   ],
   "dependencies": {
     "@reach/auto-id": "^0.13.2",
-    "@sanity/icons": "^1.2.6",
+    "@sanity/icons": "^1.2.8",
     "@sanity/types": "2.29.5",
     "@sanity/ui": "^0.37.9",
     "@sanity/util": "2.29.5",
@@ -62,7 +62,7 @@
     "@sanity/base": "2.29.3",
     "@sanity/form-builder": "2.29.3",
     "@sanity/types": "2.29.3",
-    "@sanity/ui-workshop": "^0.4.1",
+    "@sanity/ui-workshop": "^0.4.3",
     "@sanity/util": "2.29.3",
     "react": "17.0.2",
     "rimraf": "^3.0.2",

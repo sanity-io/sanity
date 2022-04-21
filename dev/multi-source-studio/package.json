@@ -12,8 +12,8 @@
   "dependencies": {
     "@sanity/base": "2.29.3",
     "@sanity/desk-tool": "2.29.3",
-    "@sanity/icons": "^1.2.6",
-    "@sanity/ui": "^0.37.6",
+    "@sanity/icons": "^1.2.8",
+    "@sanity/ui": "^0.37.8",
     "react": "17.0.2",
     "styled-components": "^5.2.0"
   }

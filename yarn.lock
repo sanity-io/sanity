@@ -2547,6 +2547,11 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.4.tgz#d8c7b8db9226d2d7664553a0741ad7d0397ee503"
   integrity sha512-q/ytXxO5NKvyT37pmisQAItCFqA7FD/vNb8dgaJy3/630Fsc+Mz9/9f2SziBoIZ30TJooXyTwZmhi1zjXmObYg==
 
+"@popperjs/core@^2.11.5":
+  version "2.11.5"
+  resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.5.tgz#db5a11bf66bdab39569719555b0f76e138d7bd64"
+  integrity sha512-9X2obfABZuDVLCgPK9aX0a/x4jaOEweTTWE2+9sr0Qqqevj2Uv5XorvusThmc9XGYpS9yI+fhh8RTafBtGposw==
+
 "@portabletext/react@^1.0.0":
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/@portabletext/react/-/react-1.0.4.tgz#66438272da11b5543e95425804efee57e7cb7b49"
@@ -2758,7 +2763,12 @@
     object-assign "^4.1.1"
     rxjs "^6.0.0"
 
-"@sanity/color@^2.1.5", "@sanity/color@^2.1.6", "@sanity/color@^2.1.8", "@sanity/color@^2.1.9":
+"@sanity/color@^2.1.10":
+  version "2.1.10"
+  resolved "https://registry.yarnpkg.com/@sanity/color/-/color-2.1.10.tgz#b92e59818600c3d8295b057cf0e8236e7f3b0143"
+  integrity sha512-t1rV2/WAECqyKziAhAxgpHh9oLQuIUGvHlV/jSboAG4K8/HeRPF8WWiGak/B32uiPl6lOpw3oM4BonYmPLb2+Q==
+
+"@sanity/color@^2.1.5", "@sanity/color@^2.1.6", "@sanity/color@^2.1.9":
   version "2.1.9"
   resolved "https://registry.yarnpkg.com/@sanity/color/-/color-2.1.9.tgz#f4e829ff5ebddf19e5ec8b5d0cbd0d5729eec6f0"
   integrity sha512-I+RIswxQ7ncxpOTmrc0LFUWjaMGm3rdAMjMIxMjkVDh1ISRu3XRkKmlkoa/ecdddRTYvFB/b4ZVVitvV0/HjcQ==
@@ -2917,10 +2927,15 @@
   resolved "https://registry.yarnpkg.com/@sanity/generate-help-url/-/generate-help-url-3.0.0.tgz#60e9cba61b82103ea3761730a53cd9310b98892d"
   integrity sha512-wtMYcV5GIDIhVyF/jjmdwq1GdlK07dRL40XMns73VbrFI7FteRltxv48bhYVZPcLkRXb0SHjpDS/icj9/yzbVA==
 
-"@sanity/icons@^1.2.1", "@sanity/icons@^1.2.2", "@sanity/icons@^1.2.6", "@sanity/icons@^1.2.7":
+"@sanity/icons@^1.2.1", "@sanity/icons@^1.2.2", "@sanity/icons@^1.2.7":
   version "1.2.7"
   resolved "https://registry.yarnpkg.com/@sanity/icons/-/icons-1.2.7.tgz#f7e442a25d3a96ab98f6b600ab623693ba3deefe"
   integrity sha512-4E4idufdRrHuvTjZipnJp5Og+hrmB+n7xbwQLi0xCllRqbssbxDZ2Nnj4tc467SocP1RYbPGHD/sBTO8rxsUQg==
+
+"@sanity/icons@^1.2.8":
+  version "1.2.8"
+  resolved "https://registry.yarnpkg.com/@sanity/icons/-/icons-1.2.8.tgz#7d899a83104cb13c434a02f1e73e981148980c63"
+  integrity sha512-WkFb1HGxzXQa+d7ETxIU5KF6TBok9RmbGPdS3H0rLJy302bjIEtUevDA3V6Lxu6j3oyVCOFj/Te5iaoTPqgSqw==
 
 "@sanity/image-url@^1.0.1":
   version "1.0.1"
@@ -2949,7 +2964,12 @@
     lodash "^4.17.15"
     rxjs "^6.5.3"
 
-"@sanity/logos@^1.1.6", "@sanity/logos@^1.1.9":
+"@sanity/logos@^1.1.11":
+  version "1.1.11"
+  resolved "https://registry.yarnpkg.com/@sanity/logos/-/logos-1.1.11.tgz#f5be60d0483c3baa8f82941618caff965ae1704e"
+  integrity sha512-M//lncs2E2my9JgjQKr1+7W9WimaW2J94eNw5AEe9pbvd96znSV8oZVG6ExbaLIzLPSJnqP4PIFNwVggQPGpxQ==
+
+"@sanity/logos@^1.1.6":
   version "1.1.10"
   resolved "https://registry.yarnpkg.com/@sanity/logos/-/logos-1.1.10.tgz#73100b1c975194c302b8976fda12594240888575"
   integrity sha512-Ms7GuPCKldvxlRpGfQ9Oluu+CgILlAzpfbNzVGgUATo/kDZRzoGs+jmD+EyW94WCdcdpg8UwLwnPqlWosQllCw==
@@ -3037,10 +3057,10 @@
     tmp "^0.2.1"
     yargs "^17.4.1"
 
-"@sanity/ui-workshop@^0.4.1":
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/@sanity/ui-workshop/-/ui-workshop-0.4.2.tgz#a3e8d99a84919eef718f87fb122c4a40caab98f4"
-  integrity sha512-hml/QYUmotxzHqU01rhDV6AjycvrHPCKkNxAoo8TyZFkW96dtbWFA3ei6gwn0j3XbJZCpd5lhl57RH4FSaicgw==
+"@sanity/ui-workshop@^0.4.3":
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/@sanity/ui-workshop/-/ui-workshop-0.4.3.tgz#17f507401de7e98101106d777424ea5917c59fd2"
+  integrity sha512-EcDR/p4bk+tQt+eznkfo1ObmtSyyzfr8GF9A9Sg8bpPiNj5cCqAqaxuN8A9GTSybKT8PKk0uW3VnbIIF9Q7OMA==
   dependencies:
     axe-core "^4.4.1"
     pako "^2.0.4"
@@ -3063,7 +3083,7 @@
     react-popper "^2.2.5"
     react-refractor "^2.1.5"
 
-"@sanity/ui@^0.37.2", "@sanity/ui@^0.37.6":
+"@sanity/ui@^0.37.2":
   version "0.37.7"
   resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-0.37.7.tgz#6707bd0e6145922427c66635f4c2b34066fcc1c9"
   integrity sha512-dzv21QRY59gy1ulnoZEVJLJbxNkyvvEbxy2tphzy8SZr/H0uOQVPOTpkPdyvYqZXwLVQYXvGbgb4hIsyaEF+rQ==
@@ -3078,6 +3098,22 @@
     react-is "^17.0.2"
     react-popper "^2.2.5"
     react-refractor "^2.1.6"
+
+"@sanity/ui@^0.37.8":
+  version "0.37.8"
+  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-0.37.8.tgz#4742031b591218c1674d6dedff71652698c7d281"
+  integrity sha512-NT8Z1bsQyo6X/bVv8QU5y7wx4GqwyQ4wGh3JG62VJn9L1Ij0CPaBBcFxQfm6sCnDoUmK4WanAiw6P4NHxrx0dg==
+  dependencies:
+    "@juggle/resize-observer" "^3.3.1"
+    "@popperjs/core" "^2.11.5"
+    "@reach/auto-id" "^0.16.0"
+    "@sanity/color" "^2.1.10"
+    "@sanity/icons" "^1.2.8"
+    framer-motion "6.3.0"
+    popper-max-size-modifier "^0.2.0"
+    react-is "^17.0.2"
+    react-popper "^2.2.5"
+    react-refractor "^2.1.7"
 
 "@sanity/uuid@^3.0.1":
   version "3.0.1"
@@ -9762,6 +9798,19 @@ framer-motion@6.2.8, framer-motion@^6.2.8:
   version "6.2.8"
   resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-6.2.8.tgz#02abb529191af7e2df444185fe27e932215b715d"
   integrity sha512-4PtBWFJ6NqR350zYVt9AsFDtISTqsdqna79FvSYPfYDXuuqFmiKtZdkTnYPslnsOMedTW0pEvaQ7eqjD+sA+HA==
+  dependencies:
+    framesync "6.0.1"
+    hey-listen "^1.0.8"
+    popmotion "11.0.3"
+    style-value-types "5.0.0"
+    tslib "^2.1.0"
+  optionalDependencies:
+    "@emotion/is-prop-valid" "^0.8.2"
+
+framer-motion@6.3.0:
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-6.3.0.tgz#0e50ef04b4fa070fca7d04bc32fb1d64027b7ea7"
+  integrity sha512-Nm6l2cemuFeSC1fmq9R32sCQs1eplOuZ3r14/PxRDewpE3NUr+ul5ulGRRzk8K0Aa5p76Tedi3sfCUaTPa5fRg==
   dependencies:
     framesync "6.0.1"
     hey-listen "^1.0.8"
@@ -16757,6 +16806,16 @@ react-refractor@^2.1.5, react-refractor@^2.1.6:
   integrity sha512-8TwzzzucB38YApaT6A5VEeNJ8e5Zr1CH+JHnsu9gTiNaiavceNeV8BlLSGoCRnkbK6ZRbpsZ72A1Z2YR86jBpw==
   dependencies:
     prop-types "^15.6.1"
+    refractor "^3.6.0"
+    unist-util-filter "^2.0.2"
+    unist-util-visit-parents "^3.0.2"
+
+react-refractor@^2.1.7:
+  version "2.1.7"
+  resolved "https://registry.yarnpkg.com/react-refractor/-/react-refractor-2.1.7.tgz#a7752bb774abed2735e37945aa211a1e1059b976"
+  integrity sha512-avNxSSsnjYg+BKpO8LVCK14KRn5pLZ+8DInMiUEeZPL6hs0SN0zafl3mJIxavGQPKyihqbXqzq4CYNflJQjaaw==
+  dependencies:
+    prop-types "^15.8.1"
     refractor "^3.6.0"
     unist-util-filter "^2.0.2"
     unist-util-visit-parents "^3.0.2"
