@@ -22,4 +22,3 @@ const {Tracker, useReportedValues, useReporter} = ENABLED
   : createNoopTracker<TrackedChange | TrackedArea>()
 
 export {Tracker, useReportedValues, useReporter}
-export type {Reported} from '../react-track-elements'

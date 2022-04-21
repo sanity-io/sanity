@@ -11,7 +11,7 @@ import {
   maybeSerializeInitialValueTemplateItem,
 } from './InitialValueTemplateItem'
 import {validateId} from './util/validateId'
-import {PreviewLayoutKey} from '../../components'
+import {PreviewLayoutKey} from '../../components/previews'
 
 function noChildResolver() {
   return undefined

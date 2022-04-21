@@ -4,7 +4,7 @@ import {useId} from '@reach/auto-id'
 import React, {useMemo} from 'react'
 import {FormInputProps} from '../types'
 import {PatchEvent, set, unset} from '../patch'
-import {FormField} from '../../components'
+import {FormField} from '../../components/formField'
 import {getValidationRule} from '../utils/getValidationRule'
 
 export type UrlInputProps = FormInputProps<string, StringSchemaType>

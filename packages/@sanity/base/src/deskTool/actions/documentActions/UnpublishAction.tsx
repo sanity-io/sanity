@@ -1,6 +1,6 @@
 import {UnpublishIcon} from '@sanity/icons'
 import React, {useCallback, useMemo, useState} from 'react'
-import {InsufficientPermissionsMessage} from '../../../components'
+import {InsufficientPermissionsMessage} from '../../../components/InsufficientPermissionsMessage'
 import {useDocumentPairPermissions} from '../../../datastores'
 import {useDocumentOperation, useCurrentUser} from '../../../hooks'
 import {ConfirmDeleteDialog} from '../../components'

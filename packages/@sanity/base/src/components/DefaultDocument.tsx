@@ -2,18 +2,19 @@ import React from 'react'
 import {Favicons} from './Favicons'
 
 const globalStyles = `
-html {
-  background-color: #f1f3f6;
-}
-html,
-body,
-#sanity {
-  height: 100%;
-}
-body {
-  margin: 0;
-  -webkit-font-smoothing: antialiased;
-}`
+  html {
+    background-color: #f1f3f6;
+  }
+  html,
+  body,
+  #sanity {
+    height: 100%;
+  }
+  body {
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+`
 
 const globalScript = `
 // Polyfill

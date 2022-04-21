@@ -2,8 +2,8 @@ import React, {useCallback} from 'react'
 import {Card, Text, Flex} from '@sanity/ui'
 import {Asset as AssetType, SanityDocument} from '@sanity/types'
 import {SanityPreview} from '../../../preview'
-import {IntentLink} from '../../../components'
 import {useSource} from '../../../studio'
+import {IntentLink} from '../../../router'
 
 export const DocumentList = ({
   asset,

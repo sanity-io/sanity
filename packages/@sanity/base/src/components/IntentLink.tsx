@@ -1,1 +1,0 @@
-export {IntentLink} from '../router'

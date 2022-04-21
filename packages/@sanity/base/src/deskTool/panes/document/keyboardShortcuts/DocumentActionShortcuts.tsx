@@ -3,12 +3,12 @@ import React, {useCallback, useMemo, useState} from 'react'
 import {ActionStateDialog} from '../statusBar'
 import {Pane} from '../../../components'
 import {useDocumentPane} from '../useDocumentPane'
-import {LegacyLayerProvider} from '../../../../components'
 import {
   DocumentActionDescription,
   DocumentActionProps,
   RenderActionCollectionState,
 } from '../../../actions'
+import {LegacyLayerProvider} from '../../../../components/transitional'
 
 export interface KeyboardShortcutResponderProps {
   actionsBoxElement: HTMLElement | null

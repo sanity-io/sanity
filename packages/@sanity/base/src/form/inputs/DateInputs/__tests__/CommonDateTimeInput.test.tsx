@@ -2,7 +2,6 @@ import {fireEvent, render} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {format, parse} from 'date-fns'
 import React from 'react'
-
 import {LayerProvider, ThemeProvider, studioTheme} from '@sanity/ui'
 import {ParseResult} from '../types'
 import {CommonDateTimeInput} from '../CommonDateTimeInput'

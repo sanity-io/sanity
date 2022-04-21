@@ -10,7 +10,7 @@ import {
 // import {TimeAgo} from '../components/TimeAgo'
 // import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {DocumentActionComponent} from '../types'
-import {InsufficientPermissionsMessage} from '../../../components'
+import {InsufficientPermissionsMessage} from '../../../components/InsufficientPermissionsMessage'
 import {TimeAgo} from '../../components'
 import {useDocumentPane} from '../../panes/document/useDocumentPane'
 import {useDocumentPairPermissions} from '../../../datastores'

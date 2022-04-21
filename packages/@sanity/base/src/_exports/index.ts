@@ -1,16 +1,15 @@
 export type {AuthController, SanityAuthProvider, SanityUser} from '../auth'
 
-export {DefaultDocument, DefaultPreview} from '../components'
-
 export type {
   DefaultPreviewProps,
-  DefaultDocumentProps,
   GeneralPreviewLayoutKey,
   PortableTextPreviewLayoutKey,
   PreviewLayoutKey,
   PreviewMediaDimensions,
   PreviewProps,
-} from '../components'
+} from '../components/previews'
+
+export * from '../components/DefaultDocument'
 
 export type {
   AsyncComposableOption,

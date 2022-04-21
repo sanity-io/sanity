@@ -1,6 +1,6 @@
 import {Card, Container, rem} from '@sanity/ui'
 import styled, {css} from 'styled-components'
-import {ScrollContainer} from '../../../components'
+import {ScrollContainer} from '../../../components/scroll'
 import {createListName, TEXT_LEVELS} from './text'
 
 export const Root = styled(Card)<{$fullscreen: boolean}>`

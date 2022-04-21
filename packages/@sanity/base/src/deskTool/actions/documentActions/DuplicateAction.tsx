@@ -1,7 +1,7 @@
 import {CopyIcon} from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
 import React, {useCallback, useState} from 'react'
-import {InsufficientPermissionsMessage} from '../../../components'
+import {InsufficientPermissionsMessage} from '../../../components/InsufficientPermissionsMessage'
 import {useDocumentPairPermissions} from '../../../datastores'
 import {useDocumentOperation, useCurrentUser} from '../../../hooks'
 import {useRouter} from '../../../router'

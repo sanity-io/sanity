@@ -11,7 +11,29 @@ export type {
   Tool,
 } from '../config'
 
-export * from '../components'
+// export * from '../components'
+
+export * from '../components/DefaultDocument'
+export * from '../components/InsufficientPermissionsMessage'
+export * from '../components/IntentButton'
+export * from '../components/PreviewCard'
+export * from '../components/TextWithTone'
+export * from '../components/UserAvatar'
+export * from '../components/WithReferringDocuments'
+export * from '../components/changeIndicators'
+export * from '../components/collapseMenu'
+export * from '../components/formField'
+export * from '../components/popoverDialog'
+export * from '../components/previews'
+export * from '../components/previews'
+export * from '../components/progress'
+export * from '../components/react-track-elements'
+export * from '../components/rovingFocus'
+export * from '../components/scroll'
+export * from '../components/transitional'
+export * from '../components/validation'
+export * from '../components/zOffsets'
+
 export * from '../datastores'
 
 export type {

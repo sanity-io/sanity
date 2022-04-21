@@ -1,6 +1,6 @@
 import React from 'react'
 import {AvatarStack} from '@sanity/ui'
-import {UserAvatar} from '../../../../components'
+import {UserAvatar} from '../../../../components/UserAvatar'
 
 interface UserAvatarStackProps {
   maxLength?: number

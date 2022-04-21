@@ -2,7 +2,7 @@
 import React, {ForwardedRef, forwardRef, useMemo} from 'react'
 import {MultiFieldSet, Path} from '@sanity/types'
 import {FormFieldPresence} from '../../../presence'
-import {FormFieldSet, FormFieldSetProps} from '../../../components'
+import {FormFieldSet, FormFieldSetProps} from '../../../components/formField'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {ConditionalHiddenField} from '../common/ConditionalHiddenField'
 import {getCollapsedWithDefaults} from './utils'

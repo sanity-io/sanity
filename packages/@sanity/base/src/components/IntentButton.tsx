@@ -1,6 +1,7 @@
 import React, {ComponentProps} from 'react'
 import {Button} from '@sanity/ui'
-import {IntentLink} from './IntentLink'
+import {IntentLink} from '../router'
+
 /**
  * @beta
  */

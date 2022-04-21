@@ -10,12 +10,14 @@ import {
   DocumentChangeContext,
   ChangeList,
 } from '../../../../field'
-import {ScrollContainer, ChangeFieldWrapper, UserAvatar} from '../../../../components'
 import {PaneContent, PaneHeader, usePane} from '../../../components'
 import {TimelineMenu} from '../timeline'
 import {useDocumentPane} from '../useDocumentPane'
 import {LoadingContent} from './content/LoadingContent'
 import {collectLatestAuthorAnnotations} from './helpers'
+import {ScrollContainer} from '../../../../components/scroll'
+import {ChangeFieldWrapper} from '../../../../components/changeIndicators'
+import {UserAvatar} from '../../../../components/UserAvatar'
 
 const Scroller = styled(ScrollContainer)`
   height: 100%;

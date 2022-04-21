@@ -1,10 +1,11 @@
 import React, {useMemo} from 'react'
 import {Dialog, Grid, Button, Flex, Box, Tooltip, Spinner} from '@sanity/ui'
 import styled from 'styled-components'
+import {DefaultPreview} from '../../../components/previews'
+import {InsufficientPermissionsMessage} from '../../../components/InsufficientPermissionsMessage'
 import {TemplatePermissionsResult, useTemplatePermissions} from '../../../datastores'
 import {IntentLink} from '../../../router'
 import {useSource} from '../../source'
-import {DefaultPreview, InsufficientPermissionsMessage} from '../../../components'
 
 const NewDocumentButton = styled(Button)`
   text-decoration: none;

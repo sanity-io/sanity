@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react'
 import {Flex, Text, Button, Inline, Card} from '@sanity/ui'
-import {LinearProgress} from '../../../../components'
+import {LinearProgress} from '../../../../components/progress'
 import {UploadState} from '../types'
 import {CardWrapper, FlexWrapper, LeftSection, CodeWrapper} from './UploadProgress.styled'
 

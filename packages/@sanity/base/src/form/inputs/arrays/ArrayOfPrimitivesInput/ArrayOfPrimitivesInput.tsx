@@ -4,7 +4,7 @@ import {startsWith} from '@sanity/util/paths'
 import {ArraySchemaType, ValidationMarker, SchemaType} from '@sanity/types'
 import {Card, Stack} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
-import {FormFieldSet} from '../../../../components'
+import {FormFieldSet} from '../../../../components/formField'
 import {FormArrayInputFunctionsProps, FormInputProps} from '../../../types'
 import {PatchEvent, set, unset} from '../../../patch'
 import {Item, List} from '../common/list'
@@ -25,18 +25,27 @@ function move<T>(arr: T[], from: number, to: number): T[] {
 }
 
 /**
- * @param index index to insert item after. An index of -1 will prepend the item
- * @param arr the array to insert the item into
- * @param item the item to insert
- *
  * @example
  * Inserts "hello" at the beginning
- * ```js
+ * ```ts
  * insertAfter(-1, ["one", "two"], "hello")
  * // => ["hello", "one", "two"]
  * ```
  */
-function insertAfter<T>(index: number, arr: T[], item: T): T[] {
+function insertAfter<T>(
+  /**
+   * index to insert item after. An index of -1 will prepend the item
+   */
+  index: number,
+  /**
+   * the array to insert the item into
+   */
+  arr: T[],
+  /**
+   * the item to insert
+   */
+  item: T
+): T[] {
   const copy = arr.slice()
   copy.splice(index + 1, 0, item)
   return copy

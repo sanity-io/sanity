@@ -1,6 +1,6 @@
 import {useId} from '@reach/auto-id'
 import React, {forwardRef, useCallback, useImperativeHandle, useMemo, useRef} from 'react'
-import {FormField} from '../../components'
+import {FormField} from '../../components/formField'
 import {FormInputProps} from '../types'
 import {PatchEvent, set, unset} from '../patch'
 import {TagInput} from '../components/tagInput'

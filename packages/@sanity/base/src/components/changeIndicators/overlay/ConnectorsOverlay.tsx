@@ -8,11 +8,12 @@ import {isChangeBar} from '../helpers/isChangeBar'
 import {scrollIntoView} from '../helpers/scrollIntoView'
 import {DEBUG_LAYER_BOUNDS} from '../constants'
 import {getOffsetsTo} from '../helpers/getOffsetsTo'
-import {Reported, TrackedArea, TrackedChange, useReportedValues} from '../tracker'
+import {TrackedArea, TrackedChange, useReportedValues} from '../tracker'
 import {Connector} from './Connector'
 import {DebugLayers} from './DebugLayers'
 import {useResizeObserver} from './useResizeObserver'
 import {SvgWrapper} from './ConnectorsOverlay.styled'
+import {Reported} from '../../react-track-elements'
 
 export interface Rect {
   height: number
@@ -99,7 +100,10 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
   const {rootElement, onSetFocus} = props
   const [hovered, setHovered] = React.useState<string | null>(null)
   const allReportedValues = useReportedValues()
-  const byId = useMemo(() => new Map(allReportedValues), [allReportedValues])
+  const byId: Map<string, TrackedChange | TrackedArea> = useMemo(
+    () => new Map(allReportedValues),
+    [allReportedValues]
+  )
 
   const [{connectors}, setState] = useState<State>(() =>
     getState(allReportedValues, hovered, byId, rootElement)

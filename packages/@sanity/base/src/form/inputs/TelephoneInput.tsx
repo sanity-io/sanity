@@ -2,7 +2,7 @@ import React, {useMemo} from 'react'
 import {isValidationErrorMarker, StringSchemaType} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
-import {FormField} from '../../components'
+import {FormField} from '../../components/formField'
 import {FormInputProps} from '../types'
 import {PatchEvent, set, unset} from '../patch'
 

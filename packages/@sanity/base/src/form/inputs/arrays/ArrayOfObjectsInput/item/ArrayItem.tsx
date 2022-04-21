@@ -3,9 +3,12 @@ import {FOCUS_TERMINATOR, pathFor, startsWith} from '@sanity/util/paths'
 import {Box} from '@sanity/ui'
 import React, {memo, useCallback, useMemo, useRef} from 'react'
 import {FormFieldPresence} from '../../../../../presence'
+import {
+  ChangeIndicatorScope,
+  ContextProvidedChangeIndicator,
+} from '../../../../../components/changeIndicators'
 import {FormBuilderFilterFieldFn, FormInputProps} from '../../../../types'
 import {PatchEvent} from '../../../../patch'
-import {ChangeIndicatorScope, ContextProvidedChangeIndicator} from '../../../../../components'
 import {ArrayMember, InsertEvent, ReferenceItemComponentType} from '../types'
 import {EMPTY_ARRAY} from '../../../../utils/empty'
 import {hasFocusAtPath, hasFocusWithinPath} from '../../../../utils/focusUtils'

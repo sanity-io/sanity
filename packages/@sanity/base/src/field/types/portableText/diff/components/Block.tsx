@@ -1,7 +1,7 @@
 import {Box, Card, Stack, Text} from '@sanity/ui'
 import {Path} from '@sanity/types'
 import React, {useCallback, useContext} from 'react'
-import {ConnectorContext} from '../../../../../components'
+import {ConnectorContext} from '../../../../../components/changeIndicators'
 import {DiffContext, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
 import {isHeader} from '../helpers'
 import {PortableTextBlock, PortableTextDiff} from '../types'

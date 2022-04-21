@@ -17,7 +17,9 @@ import deepCompare from 'react-fast-compare'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'
 import {FormInputProps, FIXME} from '../../../types'
 import {PresenceOverlay} from '../../../../presence'
-import {ChangeIndicatorForFieldPath, FormFieldSet, ImperativeToast} from '../../../../components'
+import {ChangeIndicatorForFieldPath} from '../../../../components/changeIndicators'
+import {FormFieldSet} from '../../../../components/formField'
+import {ImperativeToast} from '../../../../components/transitional'
 import {
   UploaderResolver,
   ResolvedUploader,

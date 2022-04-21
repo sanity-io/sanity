@@ -2,7 +2,7 @@ import {BoundaryElementProvider, Flex, PortalProvider, usePortal, useElementRect
 import React, {createElement, useEffect, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {PaneContent, useDeskTool, usePaneLayout} from '../../../components'
-import {ScrollContainer} from '../../../../components'
+import {ScrollContainer} from '../../../../components/scroll'
 import {useDocumentValuePermissions} from '../../../../datastores'
 import {useSource} from '../../../../studio'
 import {getPublishedId, getDraftId} from '../../../../util'

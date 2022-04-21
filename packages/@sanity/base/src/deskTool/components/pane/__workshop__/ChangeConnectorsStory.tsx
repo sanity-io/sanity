@@ -20,11 +20,11 @@ import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
 import {
   ChangeConnectorRoot,
-  ScrollContainer,
   ChangeIndicatorProvider,
   ChangeIndicator,
   ChangeFieldWrapper,
-} from '../../../../components'
+} from '../../../../components/changeIndicators'
+import {ScrollContainer} from '../../../../components/scroll'
 import {Pane} from '../Pane'
 import {PaneContent} from '../PaneContent'
 import {PaneFooter} from '../PaneFooter'

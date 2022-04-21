@@ -1,7 +1,7 @@
 import React, {ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
 import {resolveTypeName} from '@sanity/util/content'
 import {ObjectFieldType, ObjectSchemaTypeWithOptions, SchemaType} from '@sanity/types'
-import {FormFieldSet} from '../../../components'
+import {FormFieldSet} from '../../../components/formField'
 import {PatchEvent} from '../../patch'
 import {FormInputProps} from '../../types'
 import {FormBuilderInput} from '../../FormBuilderInput'
@@ -128,10 +128,17 @@ export const ObjectInputField = forwardRef(function ObjectInputField(
 
 /**
  * Check whether the given value type is assignable to the given schema type
- * @param valueTypeName The resolved value type name
- * @param schemaType The schema type
  */
-function isAssignable(valueTypeName: string, schemaType: SchemaType) {
+function isAssignable(
+  /**
+   * The resolved value type name
+   */
+  valueTypeName: string,
+  /**
+   * The schema type
+   */
+  schemaType: SchemaType
+) {
   return (
     valueTypeName === schemaType.name ||
     // todo: we should consider removing this check, and not allow aliasing native type and

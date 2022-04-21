@@ -21,7 +21,7 @@ import {
   useBoundaryElement,
   usePortal,
 } from '@sanity/ui'
-import {ChangeIndicatorWithProvidedFullPath} from '../../../components'
+import {ChangeIndicatorWithProvidedFullPath} from '../../../components/changeIndicators'
 import {FormInputProps, PortableTextMarker, RenderCustomMarkers} from '../../types'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {EMPTY_ARRAY} from '../../utils/empty'

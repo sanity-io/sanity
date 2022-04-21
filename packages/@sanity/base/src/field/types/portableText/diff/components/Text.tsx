@@ -1,7 +1,7 @@
 import {isKeySegment, Path} from '@sanity/types'
 import React, {SyntheticEvent, useCallback, useMemo} from 'react'
 import {startCase} from 'lodash'
-import {ConnectorContext} from '../../../../../components'
+import {ConnectorContext} from '../../../../../components/changeIndicators'
 import {DiffCard, DiffContext} from '../../../../diff'
 import {ObjectDiff, StringDiff, StringDiffSegment} from '../../../../types'
 import {InlineBox} from './styledComponents'

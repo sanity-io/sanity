@@ -9,7 +9,7 @@ import {Badge, Box, Button, Card, Flex, Menu, MenuButton, MenuItem, Text, Toolti
 import styled from 'styled-components'
 import {isValidationErrorMarker, isValidationWarningMarker, SchemaType} from '@sanity/types'
 import {useId} from '@reach/auto-id'
-import {FormFieldValidationStatus} from '../../../../../components'
+import {FormFieldValidationStatus} from '../../../../../components/formField'
 import {FieldPresence} from '../../../../../presence'
 import {Preview} from '../../../../Preview'
 import {DragHandle} from '../../common/DragHandle'

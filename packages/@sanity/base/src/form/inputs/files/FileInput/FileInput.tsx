@@ -36,11 +36,11 @@ import {UploadWarning} from '../common/UploadWarning'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import {FIXME, FormInputProps} from '../../../types'
 import {
-  ImperativeToast,
-  FormFieldSet,
   ChangeIndicatorCompareValueProvider,
   ChangeIndicatorWithProvidedFullPath,
-} from '../../../../components'
+} from '../../../../components/changeIndicators'
+import {FormFieldSet} from '../../../../components/formField'
+import {ImperativeToast} from '../../../../components/transitional'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'
 import {PresenceOverlay} from '../../../../presence'
 import {CardOverlay, FlexContainer} from './styles'

@@ -1,7 +1,7 @@
 import {Button, Card, Flex} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import React, {useState} from 'react'
-import {useRovingFocus} from '..'
+import {useRovingFocus} from '../rovingFocus'
 
 const DIRECTION_OPTIONS: Record<string, 'horizontal' | 'vertical'> = {
   horizontal: 'horizontal',

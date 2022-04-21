@@ -25,7 +25,7 @@ import {
   useToast,
 } from '@sanity/ui'
 import {useObservableCallback} from 'react-rx'
-import {ChangeIndicatorForFieldPath, FormField} from '../../../components'
+import {ChangeIndicatorForFieldPath} from '../../../components/changeIndicators'
 import {FormInputProps, FIXME} from '../../types'
 import {PatchEvent, set, unset} from '../../patch'
 import {EMPTY_ARRAY} from '../../utils/empty'
@@ -40,6 +40,7 @@ import {GetReferenceInfoFn, useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {ReferenceAutocomplete} from './ReferenceAutocomplete'
 import {PreviewCard} from './PreviewCard'
+import {FormField} from '../../../components/formField'
 
 const INITIAL_SEARCH_STATE: SearchState = {
   hits: [],

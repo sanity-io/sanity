@@ -15,7 +15,7 @@ import React from 'react'
 import {map} from 'rxjs/operators'
 import {Subscription} from 'rxjs'
 import {randomKey, resolveTypeName} from '@sanity/util/content'
-import {FormFieldSet, ImperativeToast} from '../../../../components'
+import {FormFieldSet} from '../../../../components/formField'
 import {FileLike, Uploader, UploadEvent} from '../../../sanity/uploads/types'
 import {isDev} from '../../../../environment'
 import {Alert} from '../../../components/Alert'
@@ -34,6 +34,7 @@ import {ArrayItem} from './item'
 import type {ArrayMember, InsertEvent, ReferenceItemComponentType} from './types'
 import {uploadTarget} from './uploadTarget/uploadTarget'
 import {isEmpty} from './item/helpers'
+import {ImperativeToast} from '../../../../components/transitional'
 
 type Toast = {push: (params: ToastParams) => void}
 

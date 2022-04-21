@@ -37,7 +37,10 @@ import {
 import {useObservableCallback} from 'react-rx'
 import {uuid} from '@sanity/uuid'
 import styled from 'styled-components'
-import {ChangeIndicatorForFieldPath, FormField, IntentLink, PreviewCard} from '../../../components'
+// import {ChangeIndicatorForFieldPath, FormField, PreviewCard} from '../../../components'
+import {ChangeIndicatorForFieldPath} from '../../../components/changeIndicators'
+import {FormField} from '../../../components/formField'
+import {PreviewCard} from '../../../components/PreviewCard'
 import {PatchEvent, set, setIfMissing, unset} from '../../patch'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
@@ -54,6 +57,7 @@ import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {CreateButton} from './CreateButton'
 import {ReferenceAutocomplete} from './ReferenceAutocomplete'
 import {AutocompleteContainer} from './AutocompleteContainer'
+import {IntentLink} from '../../../router'
 
 const StyledPreviewCard = styled(PreviewCard)`
   /* this is a hack to avoid layout jumps while previews are loading

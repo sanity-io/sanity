@@ -2,7 +2,7 @@ import React from 'react'
 import {EditIcon} from '@sanity/icons'
 import {PreviewValue, SanityDocument} from '@sanity/types'
 import {Box, Text, Tooltip} from '@sanity/ui'
-import {TextWithTone} from '../../components'
+import {TextWithTone} from '../../components/TextWithTone'
 import {TimeAgo} from './TimeAgo'
 
 export function DraftStatus(props: {document?: PreviewValue | Partial<SanityDocument> | null}) {

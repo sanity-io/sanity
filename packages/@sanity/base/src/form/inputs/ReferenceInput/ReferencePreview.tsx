@@ -2,7 +2,7 @@ import React, {ComponentType, ReactNode, useMemo} from 'react'
 import {ObjectSchemaType} from '@sanity/types'
 import {Box, Flex, Inline, Label, Text, Tooltip, useRootTheme} from '@sanity/ui'
 import {AccessDeniedIcon, EditIcon, HelpCircleIcon, PublishIcon} from '@sanity/icons'
-import {TextWithTone} from '../../../components'
+import {TextWithTone} from '../../../components/TextWithTone'
 import {DocumentPreviewPresence} from '../../../presence'
 import {useDocumentPresence} from '../../../hooks'
 import {Preview} from '../../Preview'
@@ -37,8 +37,6 @@ function UnavailableMessage(props: {icon: ComponentType; children: ReactNode; ti
 /**
  * Used to preview a referenced type
  * Takes the reference type as props
- * @param props
- * @constructor
  */
 export function ReferencePreview(props: {
   availability: DocumentAvailability
