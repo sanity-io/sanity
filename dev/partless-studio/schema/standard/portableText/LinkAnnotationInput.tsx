@@ -1,11 +1,9 @@
 import {isPlainObject} from 'lodash'
 import React, {useCallback, useMemo} from 'react'
-import {Patch, PatchEvent, set, setIfMissing} from '@sanity/base/form'
-import {FormBuilderInput} from '@sanity/form-builder'
+import {useSource, ValidationMarker} from 'sanity'
+import {FIXME_Patch, FormBuilderInput, PatchEvent, set, setIfMissing} from 'sanity/form'
 import {Box} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
-import {useSource} from '@sanity/base'
-import {ValidationMarker} from '@sanity/types'
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return isPlainObject(value)
@@ -21,7 +19,7 @@ export interface LinkAnnotationInputProps {
 }
 
 interface PartialPatchEvent {
-  patches: Patch[]
+  patches: FIXME_Patch[]
 }
 
 interface SlugQueryResult {
