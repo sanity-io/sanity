@@ -33,7 +33,6 @@ export function TimelineItem(props: {
   const iconComponent = getTimelineEventIconComponent(type)
   const authorUserIds = Array.from(chunk.authors)
   const timeAgo = useTimeAgo(timestamp, {minimal: true})
-  const formattedTimestamp = new Date(timestamp).toISOString()
 
   const isSelected = state === 'selected'
   const isWithinSelection = state === 'withinSelection'
@@ -67,7 +66,7 @@ export function TimelineItem(props: {
       data-selection-bottom={isSelectionBottom}
       data-selection-top={isSelectionTop}
       onClick={handleClick}
-      title={formattedTimestamp}
+      title={timestamp}
     >
       <div
         // eslint-disable-next-line react/jsx-no-bind
