@@ -185,7 +185,7 @@ export type RuleSpec =
 
 // this is used to get allow index access (e.g. `RuleSpec['constraint']`) to
 // constraint when a rule spec might not have a 'constraint` prop
-type ConditionalIndexAccess<T, U> = U extends keyof T ? T[U] : undefined
+export type ConditionalIndexAccess<T, U> = U extends keyof T ? T[U] : undefined
 
 export type RuleSpecConstraint<T extends RuleSpec['flag']> = ConditionalIndexAccess<
   Extract<RuleSpec, {flag: T}>,

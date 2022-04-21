@@ -113,7 +113,7 @@ export interface BaseSchemaType {
   preview?: PreviewConfig
 
   /**
-   * @deprecated
+   * @deprecated This will be removed.
    */
   placeholder?: string
 }
@@ -124,7 +124,7 @@ export interface TitledListValue<V = unknown> {
   value?: V
 }
 
-interface EnumListProps<V = unknown> {
+export interface EnumListProps<V = unknown> {
   list?: TitledListValue<V>[] | V[]
   layout?: 'radio' | 'dropdown'
   direction?: 'horizontal' | 'vertical'
@@ -167,7 +167,7 @@ export interface ArraySchemaType<V = unknown> extends BaseSchemaType {
     direction?: 'horizontal' | 'vertical'
     sortable?: boolean
     /**
-     * @deprecated
+     * @deprecated This will be removed.
      */
     editModal?: 'dialog' | 'fullscreen' | 'popover' | 'fold'
   }
@@ -175,7 +175,7 @@ export interface ArraySchemaType<V = unknown> extends BaseSchemaType {
 
 // Note: this would ideally be a type parameter in `ArraySchemaType` however
 // adding one conflicts with the existing definition.
-type ArraySchemaTypeOf<TSchemaType extends ArraySchemaType['of'][number]> = Omit<
+export type ArraySchemaTypeOf<TSchemaType extends ArraySchemaType['of'][number]> = Omit<
   ArraySchemaType,
   'of'
 > & {of: TSchemaType[]}
