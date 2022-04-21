@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.settings",
-  "include": ["./src"],
+  "include": ["./src/"],
   "exclude": [
     "./src/**/__fixtures__/*",
     "./src/**/__mocks__/*",
@@ -17,6 +17,7 @@
   },
   "references": [
     {"path": "../@sanity/base/tsconfig.lib.json"},
-    {"path": "../@sanity/cli/tsconfig.lib.json"}
+    {"path": "../@sanity/cli/tsconfig.lib.json"},
+    {"path": "../@sanity/types"}
   ]
 }

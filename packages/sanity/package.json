@@ -70,7 +70,8 @@
   "dependencies": {
     "@sanity/base": "2.29.3",
     "@sanity/cli": "2.29.3",
-    "@sanity/core": "2.29.3"
+    "@sanity/core": "2.29.3",
+    "@sanity/types": "2.29.3"
   },
   "peerDependencies": {
     "react": "^17.0.0",

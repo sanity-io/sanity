@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.settings",
-  "include": ["./src"],
+  "include": ["./src/"],
   "compilerOptions": {
     "composite": true,
     "declarationDir": "./lib/dts/",
@@ -13,6 +13,7 @@
   },
   "references": [
     {"path": "../@sanity/base/tsconfig.lib.json"},
-    {"path": "../@sanity/cli/tsconfig.lib.json"}
+    {"path": "../@sanity/cli/tsconfig.lib.json"},
+    {"path": "../@sanity/types"}
   ]
 }
