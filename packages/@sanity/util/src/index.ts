@@ -15,3 +15,5 @@ export {
   getSanityVersions,
   pathTools,
 }
+
+export type {SanityJson} from './reduceConfig'
