@@ -5,7 +5,7 @@ import {get, find} from 'lodash'
 import React, {forwardRef, useCallback} from 'react'
 import shallowEquals from 'shallow-equals'
 import {isRecord} from '../../util'
-import {Patch} from '../patch'
+import {FIXME_Patch} from '../patch'
 import {useFormBuilder} from '../useFormBuilder'
 
 function isSegmentEqual(segment1: PathSegment, segment2: PathSegment) {
@@ -38,7 +38,7 @@ function startsWith(subjectPath: Path, checkPath: Path) {
 function isAncestor(path1: Path, path2: Path) {
   return path1.length === 0 || (startsWith(path2, path1) && !startsWith(path1, path2))
 }
-function shouldReset(path: Path, patches: Patch[]) {
+function shouldReset(path: Path, patches: FIXME_Patch[]) {
   return patches.some(
     (patch) => isAncestor(patch.path, path) && (patch.type === 'set' || patch.type === 'unset')
   )
@@ -52,7 +52,7 @@ function getValueAtPath(value: Record<string, unknown>, path: Path) {
   }, value)
 }
 type SubscriberArg = {
-  patches: Array<Patch>
+  patches: Array<FIXME_Patch>
   shouldReset: boolean
   snapshot: any
 }

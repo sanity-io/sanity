@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 export type {AuthController, SanityAuthProvider, SanityUser} from '../auth'
 
 export type {
@@ -186,27 +188,27 @@ export {isDev, isProd} from '../environment'
 export {PatchEvent} from '../form'
 
 export type {
+  FIXME_DiffMatchPatch,
+  FIXME_InsertPatch,
+  FIXME_InsertPatchPosition,
+  FIXME_Patch,
+  FIXME_PatchJSONValue,
+  FIXME_PatchOrigin,
+  FIXME_SetIfMissingPatch,
+  FIXME_SetPatch,
+  FIXME_UnsetPatch,
   FormArrayInputFunctionsProps,
   FormBuilderArrayFunctionComponent,
   FormBuilderCustomMarkersComponent,
-  FormBuilderMarkersComponent,
   FormBuilderInputComponentMap,
+  FormBuilderMarkersComponent,
   FormInputComponentResolver,
   FormInputProps,
   FormPreviewComponentResolver,
   FormPreviewProps,
-  InsertPatchPosition,
-  Patch,
   PatchArg,
-  PatchJSONValue,
-  PatchOrigin,
   PortableTextMarker,
   RenderCustomMarkers,
-  SetPatch,
-  SetIfMissingPatch,
-  UnsetPatch,
-  InsertPatch,
-  DiffMatchPatch,
 } from '../form'
 
 export {

@@ -1,0 +1,59 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getTemplates returns defaults if part is not implemented 1`] = `
+Array [
+  Object {
+    "icon": [Function],
+    "id": "author",
+    "schemaType": "author",
+    "title": "Author",
+    "value": [Function],
+  },
+  Object {
+    "icon": [Function],
+    "id": "person",
+    "schemaType": "person",
+    "title": "Person",
+    "value": Object {
+      "_type": "person",
+    },
+  },
+  Object {
+    "icon": [Function],
+    "id": "post",
+    "schemaType": "post",
+    "title": "Post",
+    "value": Object {
+      "_type": "post",
+    },
+  },
+  Object {
+    "icon": undefined,
+    "id": "developer",
+    "schemaType": "developer",
+    "title": "Developer",
+    "value": [Function],
+  },
+]
+`;
+
+exports[`getTemplates returns defined templates if part implemented 1`] = `
+Array [
+  Object {
+    "id": "author",
+    "schemaType": "author",
+    "title": "Author",
+    "value": Object {
+      "title": "here",
+    },
+  },
+  Object {
+    "id": "developer",
+    "schemaType": "developer",
+    "title": "Developer",
+    "value": Object {
+      "title": "Foo",
+    },
+  },
+]
+`;

@@ -1,18 +1,18 @@
 import {PathSegment} from '@sanity/types'
 import {flatten} from 'lodash'
 import {prefixPath} from './patch'
-import {Patch} from './types'
+import {FIXME_Patch} from './types'
 
-export type PatchArg = Patch | Patch[]
+export type PatchArg = FIXME_Patch | FIXME_Patch[]
 
 export class PatchEvent {
   static from(...patches: PatchArg[]): PatchEvent {
     return new PatchEvent(flatten(patches))
   }
 
-  patches: Array<Patch>
+  patches: Array<FIXME_Patch>
 
-  constructor(patches: Array<Patch>) {
+  constructor(patches: Array<FIXME_Patch>) {
     this.patches = patches
   }
 

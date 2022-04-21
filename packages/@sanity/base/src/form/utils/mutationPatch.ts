@@ -1,6 +1,6 @@
 import {arrayToJSONMatchPath} from '@sanity/mutator'
 import {flatten} from 'lodash'
-import type {PatchOrigin, Patch} from '../patch/types'
+import type {FIXME_PatchOrigin, FIXME_Patch} from '../patch/types'
 import {decodePath} from './path'
 
 /**
@@ -11,20 +11,23 @@ export type MutationPatch = Record<string, any> // @todo: complete this typing
 /**
  * @internal
  */
-export function toMutationPatches(patches: Patch[]): MutationPatch[] {
+export function toMutationPatches(patches: FIXME_Patch[]): MutationPatch[] {
   return patches.map(toMutationPatch)
 }
 
 /**
  * @internal
  */
-export function fromMutationPatches(origin: PatchOrigin, patches: MutationPatch[]): Patch[] {
+export function fromMutationPatches(
+  origin: FIXME_PatchOrigin,
+  patches: MutationPatch[]
+): FIXME_Patch[] {
   return flatten(patches.map((patch) => toFormBuilderPatches(origin, patch)))
 }
 
 const notIn = (values: unknown[]) => (value: unknown) => !values.includes(value)
 
-function toFormBuilderPatches(origin: PatchOrigin, patch: MutationPatch): Patch[] {
+function toFormBuilderPatches(origin: FIXME_PatchOrigin, patch: MutationPatch): FIXME_Patch[] {
   return flatten(
     Object.keys(patch)
       .filter(notIn(['id', 'ifRevisionID', 'query']))
@@ -91,7 +94,7 @@ function toFormBuilderPatches(origin: PatchOrigin, patch: MutationPatch): Patch[
   )
 }
 
-function toMutationPatch(patch: Patch): MutationPatch {
+function toMutationPatch(patch: FIXME_Patch): MutationPatch {
   const matchPath = arrayToJSONMatchPath(patch.path || [])
   if (patch.type === 'insert') {
     const {position, items} = patch

@@ -67,7 +67,7 @@ export * from '../field/diff/components/ValueError'
 export {PatchEvent} from '../form'
 
 export type {
-  DiffMatchPatch,
+  FIXME_DiffMatchPatch as DiffMatchPatch,
   FormArrayInputFunctionsProps,
   FormBuilderArrayFunctionComponent,
   FormBuilderCustomMarkersComponent,
@@ -77,17 +77,17 @@ export type {
   FormInputProps,
   FormPreviewComponentResolver,
   FormPreviewProps,
-  InsertPatch,
-  InsertPatchPosition,
-  Patch,
+  FIXME_InsertPatch as InsertPatch,
+  FIXME_InsertPatchPosition as InsertPatchPosition,
+  FIXME_Patch as Patch,
   PatchArg,
-  PatchJSONValue,
-  PatchOrigin,
+  FIXME_PatchJSONValue as PatchJSONValue,
+  FIXME_PatchOrigin as PatchOrigin,
   PortableTextMarker,
   RenderCustomMarkers,
-  SetIfMissingPatch,
-  SetPatch,
-  UnsetPatch,
+  FIXME_SetIfMissingPatch as SetIfMissingPatch,
+  FIXME_SetPatch as SetPatch,
+  FIXME_UnsetPatch as UnsetPatch,
 } from '../form'
 
 export * from '../presence'

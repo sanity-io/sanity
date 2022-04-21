@@ -1,11 +1,11 @@
-import {Patch} from './patch'
+import {FIXME_Patch} from './patch'
 
 /**
  * @internal
  */
 export interface MutationPatchMsg {
   type: 'mutation'
-  patches: Patch[]
+  patches: FIXME_Patch[]
   snapshot: unknown
 }
 
@@ -14,7 +14,7 @@ export interface MutationPatchMsg {
  */
 export interface RebasePatchMsg {
   type: 'rebase'
-  patches: Patch[]
+  patches: FIXME_Patch[]
   snapshot: unknown
 }
 

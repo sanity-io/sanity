@@ -1,15 +1,17 @@
+/* eslint-disable camelcase */
+
 import {Path, PathSegment} from '@sanity/types'
 import {
-  SetIfMissingPatch,
-  InsertPatch,
-  InsertPatchPosition,
-  SetPatch,
-  UnsetPatch,
-  IncPatch,
-  DecPatch,
+  FIXME_SetIfMissingPatch,
+  FIXME_InsertPatch,
+  FIXME_InsertPatchPosition,
+  FIXME_SetPatch,
+  FIXME_UnsetPatch,
+  FIXME_IncPatch,
+  FIXME_DecPatch,
 } from './types'
 
-export function setIfMissing(value: any, path: Path = []): SetIfMissingPatch {
+export function setIfMissing(value: any, path: Path = []): FIXME_SetIfMissingPatch {
   return {
     type: 'setIfMissing',
     path,
@@ -17,7 +19,11 @@ export function setIfMissing(value: any, path: Path = []): SetIfMissingPatch {
   }
 }
 
-export function insert(items: any[], position: InsertPatchPosition, path: Path = []): InsertPatch {
+export function insert(
+  items: any[],
+  position: FIXME_InsertPatchPosition,
+  path: Path = []
+): FIXME_InsertPatch {
   return {
     type: 'insert',
     path,
@@ -26,19 +32,19 @@ export function insert(items: any[], position: InsertPatchPosition, path: Path =
   }
 }
 
-export function set(value: any, path: Path = []): SetPatch {
+export function set(value: any, path: Path = []): FIXME_SetPatch {
   return {type: 'set', path, value}
 }
 
-export function unset(path: Path = []): UnsetPatch {
+export function unset(path: Path = []): FIXME_UnsetPatch {
   return {type: 'unset', path}
 }
 
-export function inc(amount = 1, path: Path = []): IncPatch {
+export function inc(amount = 1, path: Path = []): FIXME_IncPatch {
   return {type: 'inc', path, value: amount}
 }
 
-export function dec(amount = 1, path: Path = []): DecPatch {
+export function dec(amount = 1, path: Path = []): FIXME_DecPatch {
   return {type: 'dec', path, value: amount}
 }
 

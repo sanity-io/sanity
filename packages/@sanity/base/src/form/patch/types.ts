@@ -1,96 +1,103 @@
+/* eslint-disable camelcase */
+
 import {Path} from '@sanity/types'
 
 /**
  * @internal
  */
-export type PatchJSONValue =
+export type FIXME_PatchJSONValue =
   | number
   | string
   | boolean
-  | {[key: string]: PatchJSONValue}
-  | PatchJSONValue[]
+  | {[key: string]: FIXME_PatchJSONValue}
+  | FIXME_PatchJSONValue[]
 
 /**
  * @internal
  */
-export type PatchOrigin = 'remote' | 'local' | 'internal'
+export type FIXME_PatchOrigin = 'remote' | 'local' | 'internal'
 
 /**
  * @internal
  */
-export type SetPatch = {
+export type FIXME_SetPatch = {
   path: Path
   type: 'set'
-  origin?: PatchOrigin
-  value: PatchJSONValue
+  origin?: FIXME_PatchOrigin
+  value: FIXME_PatchJSONValue
 }
 
 /**
  * @internal
  */
-export type IncPatch = {
+export type FIXME_IncPatch = {
   path: Path
   type: 'inc'
-  origin?: PatchOrigin
-  value: PatchJSONValue
+  origin?: FIXME_PatchOrigin
+  value: FIXME_PatchJSONValue
 }
 
 /**
  * @internal
  */
-export type DecPatch = {
+export type FIXME_DecPatch = {
   path: Path
   type: 'dec'
-  origin?: PatchOrigin
-  value: PatchJSONValue
+  origin?: FIXME_PatchOrigin
+  value: FIXME_PatchJSONValue
 }
 
 /**
  * @internal
  */
-export type SetIfMissingPatch = {
+export type FIXME_SetIfMissingPatch = {
   path: Path
-  origin?: PatchOrigin
+  origin?: FIXME_PatchOrigin
   type: 'setIfMissing'
-  value: PatchJSONValue
+  value: FIXME_PatchJSONValue
 }
 
 /**
  * @internal
  */
-export type UnsetPatch = {
+export type FIXME_UnsetPatch = {
   path: Path
-  origin?: PatchOrigin
+  origin?: FIXME_PatchOrigin
   type: 'unset'
 }
 
 /**
  * @internal
  */
-export type InsertPatchPosition = 'before' | 'after'
+export type FIXME_InsertPatchPosition = 'before' | 'after'
 
 /**
  * @internal
  */
-export type InsertPatch = {
+export type FIXME_InsertPatch = {
   path: Path
-  origin?: PatchOrigin
+  origin?: FIXME_PatchOrigin
   type: 'insert'
-  position: InsertPatchPosition
-  items: PatchJSONValue[]
+  position: FIXME_InsertPatchPosition
+  items: FIXME_PatchJSONValue[]
 }
 
 /**
  * @internal
  */
-export type DiffMatchPatch = {
+export type FIXME_DiffMatchPatch = {
   path: Path
   type: 'diffMatchPatch'
-  origin?: PatchOrigin
+  origin?: FIXME_PatchOrigin
   value: string
 }
 
 /**
  * @internal
  */
-export type Patch = SetPatch | SetIfMissingPatch | UnsetPatch | InsertPatch | DiffMatchPatch
+export type FIXME_Patch =
+  | FIXME_SetPatch
+  | FIXME_SetIfMissingPatch
+  | FIXME_UnsetPatch
+  | FIXME_InsertPatch
+  | FIXME_DiffMatchPatch

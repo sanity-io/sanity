@@ -32,7 +32,7 @@ import {
   StringSegmentUnchanged as AgnosticStringSegmentUnchanged,
 } from '@sanity/diff'
 import {FieldValueError} from './validation'
-import {InsertPatch} from '../form'
+import {FIXME_InsertPatch} from '../form'
 
 /**
  * History timeline / chunking
@@ -236,7 +236,7 @@ export interface PatchOperations {
   unset?: string[]
   inc?: {[key: string]: number}
   dec?: {[key: string]: number}
-  insert?: InsertPatch
+  insert?: FIXME_InsertPatch
   ifRevisionID?: string
 }
 

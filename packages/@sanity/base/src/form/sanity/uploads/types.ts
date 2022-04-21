@@ -1,10 +1,10 @@
 import {AssetSourceSpec, SchemaType, AssetMetadataType} from '@sanity/types'
 import {Observable} from 'rxjs'
-import {Patch} from '../../patch'
+import {FIXME_Patch} from '../../patch'
 
 export type UploadEvent = {
   type: 'uploadEvent'
-  patches: Patch[] | null
+  patches: FIXME_Patch[] | null
 }
 
 export type ResolvedUploader = {uploader: Uploader; type: SchemaType}

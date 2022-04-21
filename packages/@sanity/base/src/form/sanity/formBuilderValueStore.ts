@@ -9,13 +9,13 @@ import {
   DocumentVersionEvent,
 } from '../../datastores/document/document-pair/checkoutPair'
 import {IdPair} from '../../datastores/document/types'
-import {Patch} from '../patch'
+import {FIXME_Patch} from '../patch'
 import {fromMutationPatches, toMutationPatches} from '../utils/mutationPatch'
 
 import {FIXME} from '../types'
 
 interface LocalMutationEvent extends DocumentMutationEvent {
-  patches: Patch[]
+  patches: FIXME_Patch[]
 }
 
 function prepareMutationEvent(event: DocumentMutationEvent): LocalMutationEvent {
@@ -76,7 +76,7 @@ function wrap(document: DocumentVersion) {
   return {
     ...document,
     events: events$,
-    patch(patches: Array<Patch>) {
+    patch(patches: Array<FIXME_Patch>) {
       document.patch(toMutationPatches(patches))
     },
   }
