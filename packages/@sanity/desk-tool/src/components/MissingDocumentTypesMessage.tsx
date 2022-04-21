@@ -11,9 +11,11 @@ export function MissingDocumentTypesMessage() {
       sizing="border"
     >
       <Text as="p" align="center">
-        We’ll generate a UI here
-        <br aria-hidden="true" />
-        as soon as you build your first schema.
+        We’ll generate a UI here as soon as you{' '}
+        <a href="https://www.sanity.io/docs/create-a-schema-and-configure-sanity-studio">
+          build your first schema
+        </a>
+        .
       </Text>
     </Card>
   )
