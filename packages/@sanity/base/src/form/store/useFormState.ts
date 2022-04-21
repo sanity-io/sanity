@@ -1,5 +1,5 @@
 import {isKeySegment, ObjectSchemaType, Path} from '@sanity/types'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react'
 import {pathFor} from '@sanity/util/paths'
 import {useCurrentUser} from '../../datastores'
 import {PatchEvent} from '../patch'
@@ -31,10 +31,12 @@ export function useFormState(
   const [collapsedFieldSets, onSetCollapsedFieldSets] = useState<StateTree<boolean>>()
 
   const handleOnSetCollapsedField = useCallback((collapsed: boolean, path: Path) => {
+    console.log('set field collapsed %s at %s', collapsed, path)
     onSetCollapsedFields((prevState) => setAtPath(prevState, path, collapsed))
   }, [])
 
   const handleOnSetCollapsedFieldSet = useCallback((collapsed: boolean, path: Path) => {
+    console.log('set fieldset collapsed %s at %s', collapsed, path)
     onSetCollapsedFieldSets((prevState) => setAtPath(prevState, path, collapsed))
   }, [])
 
@@ -46,16 +48,18 @@ export function useFormState(
 
   const prev = useRef<PreparedProps<unknown> | {hidden: true} | undefined>()
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     prev.current = undefined
   }, [schemaType])
 
   return useMemo(() => {
+    // console.time('derive form state')
+
     const next = prepareFormProps({
       type: schemaType,
       document: value,
       fieldGroupState,
-      onSetActiveFieldGroup: handleSetActiveFieldGroup,
+      onSetActiveFieldGroupAtPath: handleSetActiveFieldGroup,
       onSetCollapsedField: handleOnSetCollapsedField,
       onSetCollapsedFieldSet: handleOnSetCollapsedFieldSet,
       collapsedFields,
@@ -68,9 +72,7 @@ export function useFormState(
     })
     const reconciled = immutableReconcile(prev.current, next)
     prev.current = reconciled
-
-    console.timeEnd('derive form state')
-
+    // console.timeEnd('derive form state')
     return reconciled
   }, [
     //

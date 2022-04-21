@@ -1,7 +1,7 @@
 function assertType<T>(value: unknown): asserts value is T {}
 
 /**
- * Reconciles two versions of a state trees by iterating over the next and deep comparing against the next towards the previous.
+ * Reconciles two versions of a state tree by iterating over the next and deep comparing against the next towards the previous.
  * Wherever identical values are found, the previous value is kept, preserving object identities for arrays and objects where possible
  * @param previous
  * @param next

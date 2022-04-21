@@ -74,6 +74,7 @@ export const ObjectInput = memo(
 
       return <UnknownFields fieldNames={unknownFields} value={value} onChange={onChange} />
     }, [onChange, type.fields, value])
+
     return (
       <FormFieldSet
         ref={props.collapsed ? forwardedRef : null}

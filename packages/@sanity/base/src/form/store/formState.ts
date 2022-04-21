@@ -49,218 +49,131 @@ function isMemberHidden(member: ObjectMember) {
   return member.type === 'field' ? member.field.hidden : member.fieldSet.hidden
 }
 
-function createFieldCallback<Callback extends (...args: any[]) => void>(
-  createEntry: (callback: Callback, fieldName: string) => Callback
-) {
-  const cache = new WeakMap<Callback, Map<string, Callback>>()
-
-  return function getOnChange(parentCallback: Callback, fieldName: string) {
-    if (!cache.has(parentCallback)) {
-      cache.set(parentCallback, new Map<string, Callback>())
-    }
-    const entry = cache.get(parentCallback)!
-
-    if (!entry.has(fieldName)) {
-      entry.set(fieldName, createEntry(parentCallback, fieldName))
-    }
-    return entry.get(fieldName)!
+const onChangeCache = new WeakMap<object, (patchEvent: PatchEvent) => void>()
+function getInputOnChangeMemo<T extends (patchEvent: PatchEvent) => void>(
+  parentCallback: object,
+  entryIfMissing: T
+): T {
+  if (!onChangeCache.has(parentCallback)) {
+    onChangeCache.set(parentCallback, entryIfMissing)
   }
+  return onChangeCache.get(parentCallback)! as T
 }
 
-function createInputOnChange<Callback extends (...args: any[]) => void>(
-  createEntry: (callback: Callback, schemaType: SchemaType) => Callback
-) {
-  const cache = new WeakMap<Callback, WeakMap<SchemaType, Callback>>()
-
-  return function getOnChange(parentCallback: Callback, schemaType: SchemaType) {
-    if (!cache.has(parentCallback)) {
-      cache.set(parentCallback, new WeakMap<SchemaType, Callback>())
-    }
-    const entry = cache.get(parentCallback)!
-
-    if (!entry.has(schemaType)) {
-      entry.set(schemaType, createEntry(parentCallback, schemaType))
-    }
-    return entry.get(schemaType)!
+const scopedCallbackCache = new WeakMap<object, WeakMap<Path, (...args: any[]) => any>>()
+function getScopedCallbackForPath<T extends (...args: any[]) => any>(
+  callback: object,
+  path: Path,
+  entryIfMissing: T
+): T {
+  if (!scopedCallbackCache.has(callback)) {
+    scopedCallbackCache.set(callback, new WeakMap<Path, T>())
   }
+  const entry = scopedCallbackCache.get(callback)!
+  if (!entry.has(path)) {
+    entry.set(path, entryIfMissing)
+  }
+  return entry.get(path)! as T
 }
 
-const getFieldOnChange = createFieldCallback(
-  (parentOnChange, fieldName) => (fieldChangeEvent: PatchEvent) =>
-    parentOnChange(fieldChangeEvent.prefixAll(fieldName))
-)
-
-const getObjectTypeInputOnChange = createInputOnChange(
-  (parentOnChange, schemaType) => (patchEvent: PatchEvent) => {
-    parentOnChange(patchEvent.prepend([setIfMissing(createProtoValue(schemaType))]))
-  }
-)
-
-const getArrayTypeInputOnChange = createInputOnChange(
-  (parentOnChange) => (fieldChangeEvent: PatchEvent) => {
-    parentOnChange(fieldChangeEvent.prepend([setIfMissing([])]))
-  }
-)
-
-const getOnSetActiveFieldGroup = createFieldCallback(
-  (parentSetActiveFieldGroup, fieldName: string) => (groupName: string) => {
-    parentSetActiveFieldGroup(groupName, fieldName)
-  }
-)
-
-const getOnSetCollapsedField = createFieldCallback(
-  (parentOnSetCollapsedField: (collapsed: boolean, path: Path) => void, fieldName: string) =>
-    (collapsed: boolean, childPath: Path) => {
-      parentOnSetCollapsedField(collapsed, [fieldName, ...childPath])
-    }
-)
-
-const getOnSetCollapsedFieldSet = createFieldCallback(
-  (parentOnSetCollapsedFieldSet, fieldName: string) => (collapsed: boolean, childPath: Path) => {
-    parentOnSetCollapsedFieldSet(collapsed, [fieldName, ...childPath])
-  }
-)
-
-declare function getMemo(cb: any, deps: unknown[])
-
-const noop = () => {}
 /**
  * Takes a field in context of a parent object and returns prepared props for it
  * @param props
  */
 function prepareFieldProps(props: {
   field: ObjectField
-  parentObjectProps: RawProps<ObjectSchemaType, unknown>
+  parent: RawProps<ObjectSchemaType, unknown>
   index: number
 }): FieldProps | {hidden: true} {
-  const fieldPath = pathFor([...props.parentObjectProps.path, props.field.name])
+  const {parent, field, index} = props
+  const fieldPath = pathFor([...parent.path, field.name])
+  const fieldLevel = parent.level + 1
 
-  if (isObjectSchemaType(props.field.type)) {
-    const fieldValue = (props.parentObjectProps.value as any)?.[props.field.name] as
-      | Record<string, unknown>
-      | undefined
+  const fieldOnChange = getScopedCallbackForPath(
+    parent.onChange,
+    fieldPath,
+    (fieldChangeEvent: PatchEvent) => parent.onChange(fieldChangeEvent.prefixAll(field.name))
+  )
 
-    const fieldGroupState = props.parentObjectProps.fieldGroupState?.children?.[props.field.name]
-    const collapsedFields = props.parentObjectProps.collapsedFields?.children?.[props.field.name]
-    const collapsedFieldSets =
-      props.parentObjectProps.collapsedFieldSets?.children?.[props.field.name]
+  if (isObjectSchemaType(field.type)) {
+    const fieldValue = (parent.value as any)?.[field.name] as Record<string, unknown> | undefined
 
-    const handleChange = getMemo(
-      (fieldChangeEvent: PatchEvent) =>
-        props.parentObjectProps.onChange(fieldChangeEvent.prefixAll(props.field.name)),
-      [props.parentObjectProps.onChange, props.field.name]
-    )
+    const fieldGroupState = parent.fieldGroupState?.children?.[field.name]
+    const collapsedFields = parent.collapsedFields?.children?.[field.name]
+    const collapsedFieldSets = parent.collapsedFieldSets?.children?.[field.name]
 
-    const handleSetActiveFieldGroup = getOnSetActiveFieldGroup(
-      props.parentObjectProps.onSetActiveFieldGroup,
-      props.field.name
-    )
-
-    const handleSetCollapsedField = getOnSetCollapsedField(
-      props.parentObjectProps.onSetCollapsedField,
-      props.field.name
-    )
-
-    const handleSetCollapsedFieldSet = getOnSetCollapsedFieldSet(
-      props.parentObjectProps.onSetCollapsedFieldSet,
-      props.field.name
-    )
-
-    const preparedInputProps = prepareObjectInputProps({
-      type: props.field.type,
-      currentUser: props.parentObjectProps.currentUser,
-      parent: props.parentObjectProps.value,
-      document: props.parentObjectProps.document,
+    const scopedInputProps = prepareObjectInputProps({
+      type: field.type,
+      currentUser: parent.currentUser,
+      parent: parent.value,
+      document: parent.document,
       value: fieldValue,
       fieldGroupState,
       path: fieldPath,
-      level: props.parentObjectProps.level + 1,
+      level: fieldLevel,
       collapsedFields: collapsedFields,
       collapsedFieldSets: collapsedFieldSets,
-      onChange: handleChange,
-      onSetActiveFieldGroup: handleSetActiveFieldGroup,
-      onSetCollapsedField: handleSetCollapsedField,
-      onSetCollapsedFieldSet: handleSetCollapsedFieldSet,
+      onChange: fieldOnChange,
+      onSetActiveFieldGroupAtPath: parent.onSetActiveFieldGroupAtPath,
+      onSetCollapsedField: parent.onSetCollapsedField,
+      onSetCollapsedFieldSet: parent.onSetCollapsedFieldSet,
     })
 
-    if (preparedInputProps.hidden) {
+    if (scopedInputProps.hidden) {
       return {hidden: true}
     }
 
-    const level = props.parentObjectProps.level + 1
+    const defaultCollapsedState = getCollapsedWithDefaults(field.type.options, fieldLevel)
 
-    const defaultCollapsedState = getCollapsedWithDefaults(props.field.type.options, level)
-
+    // note: this is what we actually end up passing down to the components
     return {
       kind: 'object',
-      type: props.field.type,
-      name: props.field.name,
-      title: props.field.type.title,
-      description: props.field.type.description,
-      level: props.parentObjectProps.level,
-      index: props.index,
+      type: field.type,
+      name: field.name,
+      title: field.type.title,
+      description: field.type.description,
+      level: fieldLevel,
+      index: index,
       hidden:
-        preparedInputProps.hidden ||
-        preparedInputProps.members.every((member) => isMemberHidden(member)),
+        scopedInputProps.hidden ||
+        scopedInputProps.members.every((member) => isMemberHidden(member)),
 
       // if the "enclosing object" is readOnly, the field should also be readOnly
-      readOnly: props.parentObjectProps.readOnly || preparedInputProps.readOnly,
-      members: preparedInputProps.members,
-      groups: preparedInputProps.groups,
-      onChange: handleChange,
+      readOnly: parent.readOnly || scopedInputProps.readOnly,
+      members: scopedInputProps.members,
+      groups: scopedInputProps.groups,
+      onChange: fieldOnChange,
       path: fieldPath,
       collapsible: defaultCollapsedState.collapsible,
       collapsed: collapsedFields ? collapsedFields.value : defaultCollapsedState.collapsible,
 
-      onSetCollapsed: noop, // (collapsed: boolean) => handleSetCollapsedField(collapsed, []),
-      onSelectGroup: noop, //(groupName: string) => handleSetActiveFieldGroup(groupName),
+      onSetCollapsed: scopedInputProps.onSetCollapsed,
+      onSelectGroup: scopedInputProps.onSelectFieldGroup,
 
       value: fieldValue,
     }
-  } else if (isArraySchemaType(props.field.type)) {
-    const fieldValue = (props.parentObjectProps.value as any)?.[props.field.name] as
-      | unknown[]
-      | undefined
+  } else if (isArraySchemaType(field.type)) {
+    const fieldValue = (parent.value as any)?.[field.name] as unknown[] | undefined
 
-    const fieldGroupState = props.parentObjectProps.fieldGroupState?.children?.[props.field.name]
-    const collapsedFields = props.parentObjectProps.collapsedFields?.children?.[props.field.name]
-    const collapsedFieldSets =
-      props.parentObjectProps.collapsedFieldSets?.children?.[props.field.name]
-
-    const handleChange = getFieldOnChange(props.parentObjectProps.onChange, props.field.name)
-
-    const handleSetActiveFieldGroup = getOnSetActiveFieldGroup(
-      props.parentObjectProps.onSetActiveFieldGroup,
-      props.field.name
-    )
-
-    const handleSetCollapsedField = getOnSetCollapsedField(
-      props.parentObjectProps.onSetCollapsedField,
-      props.field.name
-    )
-
-    const handleSetCollapsedFieldSet = getOnSetCollapsedFieldSet(
-      props.parentObjectProps.onSetCollapsedFieldSet,
-      props.field.name
-    )
-
-    const level = props.parentObjectProps.level + 1
+    const fieldGroupState = parent.fieldGroupState?.children?.[field.name]
+    const collapsedFields = parent.collapsedFields?.children?.[field.name]
+    const collapsedFieldSets = parent.collapsedFieldSets?.children?.[field.name]
 
     const preparedInputProps = prepareArrayInputProps({
-      type: props.field.type,
-      parent: props.parentObjectProps.value,
-      currentUser: props.parentObjectProps.currentUser,
-      document: props.parentObjectProps.document,
+      type: field.type,
+      parent: parent.value,
+      currentUser: parent.currentUser,
+      document: parent.document,
       value: fieldValue,
       fieldGroupState,
       collapsedFields,
       collapsedFieldSets,
-      level,
+      level: fieldLevel,
       path: fieldPath,
-      onChange: handleChange,
-      onSetCollapsedField: handleSetCollapsedField,
-      onSetCollapsedFieldSet: handleSetCollapsedFieldSet,
-      onSetActiveFieldGroup: handleSetActiveFieldGroup,
+      onChange: fieldOnChange,
+      onSetCollapsedField: parent.onSetCollapsedField,
+      onSetCollapsedFieldSet: parent.onSetCollapsedFieldSet,
+      onSetActiveFieldGroupAtPath: parent.onSetActiveFieldGroupAtPath,
     })
 
     if (preparedInputProps.hidden) {
@@ -269,35 +182,31 @@ function prepareFieldProps(props: {
 
     const ret: ArrayFieldProps = {
       kind: 'array',
-      type: props.field.type,
-      name: props.field.name,
-      title: props.field.type.title,
-      description: props.field.type.description,
-      level,
+      type: field.type,
+      name: field.name,
+      title: field.type.title,
+      description: field.type.description,
+      level: fieldLevel,
       path: fieldPath,
-      index: props.index,
-      hidden: props.parentObjectProps.hidden || preparedInputProps.hidden,
-      readOnly: props.parentObjectProps.readOnly || preparedInputProps.readOnly,
+      index: index,
+      hidden: parent.hidden || preparedInputProps.hidden,
+      readOnly: parent.readOnly || preparedInputProps.readOnly,
       members: preparedInputProps.members,
-      onChange: handleChange,
+      onChange: fieldOnChange,
       value: fieldValue,
     }
     return ret
   } else {
-    const fieldValue = (props.parentObjectProps.value as any)?.[props.field.name] as
-      | undefined
-      | boolean
-      | string
-      | number
+    const fieldValue = (parent.value as any)?.[field.name] as undefined | boolean | string | number
 
     // note: we *only* want to call the conditional props here, as it's handled by the prepare<Object|Array>InputProps otherwise
     const fieldConditionalProps = callConditionalProperties(
-      props.field.type,
+      field.type,
       {
         value: fieldValue,
-        parent: props.parentObjectProps.value,
-        document: props.parentObjectProps.document,
-        currentUser: props.parentObjectProps.currentUser,
+        parent: parent.value,
+        document: parent.document,
+        currentUser: parent.currentUser,
       },
       ['hidden', 'readOnly']
     )
@@ -306,19 +215,17 @@ function prepareFieldProps(props: {
       return {hidden: true}
     }
 
-    const handleChange = getFieldOnChange(props.parentObjectProps.onChange, props.field.name)
-
     return {
-      kind: getKind(props.field.type),
-      type: props.field.type,
-      name: props.field.name,
+      kind: getKind(field.type),
+      type: field.type,
+      name: field.name,
       path: fieldPath,
-      title: props.field.type.title,
-      description: props.field.type.description,
-      level: props.parentObjectProps.level,
-      index: props.index,
-      onChange: handleChange,
-      readOnly: props.parentObjectProps.readOnly || fieldConditionalProps.readOnly,
+      title: field.type.title,
+      description: field.type.description,
+      level: parent.level,
+      index: index,
+      onChange: fieldOnChange,
+      readOnly: parent.readOnly || fieldConditionalProps.readOnly,
       value: fieldValue,
     } as StringFieldProps | NumberFieldProps | BooleanFieldProps
   }
@@ -342,7 +249,7 @@ interface RawProps<SchemaType, T> {
   collapsedFieldSets?: StateTree<boolean>
   onSetCollapsedField: (collapsed: boolean, path: Path) => void
   onSetCollapsedFieldSet: (collapsed: boolean, path: Path) => void
-  onSetActiveFieldGroup: (groupName: string, path: Path) => void
+  onSetActiveFieldGroupAtPath: (groupName: string, path: Path) => void
   // nesting level
   level: number
   onChange: (patchEvent: PatchEvent) => void
@@ -367,17 +274,21 @@ function prepareObjectInputProps<T>(
     return {hidden: true}
   }
 
-  const handleChange = getObjectTypeInputOnChange(props.onChange, props.type)
+  const handleChange = getInputOnChangeMemo(props.onChange, (patchEvent: PatchEvent) =>
+    props.onChange(patchEvent.prepend([setIfMissing(createProtoValue(props.type))]))
+  )
 
-  const handleSetActiveFieldGroup = noop
-  //   (groupName: string) => {
-  //   props.onSetActiveFieldGroup(groupName, props.path)
-  // }
+  const handleSetActiveFieldGroup = getScopedCallbackForPath(
+    props.onSetActiveFieldGroupAtPath,
+    props.path,
+    (groupName: string) => props.onSetActiveFieldGroupAtPath(groupName, props.path)
+  )
 
-  const handleSetCollapsed = noop
-  //   (collapsed: boolean) => {
-  //   props.onSetCollapsedField(collapsed, [])
-  // }
+  const handleSetCollapsed = getScopedCallbackForPath(
+    props.onSetCollapsedField,
+    props.path,
+    (collapsed: boolean) => props.onSetCollapsedField(collapsed, props.path)
+  )
 
   if (props.level === MAX_FIELD_DEPTH) {
     return {
@@ -431,7 +342,7 @@ function prepareObjectInputProps<T>(
       // "single" means not part of a fieldset
       const fieldProps = prepareFieldProps({
         field: fieldSet.field,
-        parentObjectProps: parentProps,
+        parent: parentProps,
         index,
       })
       if (
@@ -464,7 +375,7 @@ function prepareObjectInputProps<T>(
     const fieldsetMembers = fieldSet.fields.flatMap((field): FieldMember[] => {
       const fieldMember = prepareFieldProps({
         field,
-        parentObjectProps: parentProps,
+        parent: parentProps,
         index,
       })
       return !fieldMember.hidden && isFieldEnabledByGroupFilter(groups, field, selectedGroup)
@@ -495,9 +406,13 @@ function prepareObjectInputProps<T>(
             fieldSet.name in (props.collapsedFieldSets?.children || {})
               ? props.collapsedFieldSets?.children?.[fieldSet.name].value
               : fieldSet.options?.collapsed,
-          onSetCollapsed: (collapsed: boolean) => {
-            props.onSetCollapsedFieldSet(collapsed, [fieldSet.name])
-          },
+          onSetCollapsed: getScopedCallbackForPath(
+            props.onSetCollapsedFieldSet,
+            pathFor([...props.path, '@@fieldset@@']),
+            (collapsed: boolean) => {
+              props.onSetCollapsedFieldSet(collapsed, [...props.path, fieldSet.name])
+            }
+          ),
         },
       },
     ]
@@ -548,7 +463,7 @@ function prepareArrayInputProps<T>(props: RawProps<ArraySchemaType, T>): ArrayFo
           currentUser: props.currentUser,
           onSetCollapsedField: props.onSetCollapsedField,
           onSetCollapsedFieldSet: props.onSetCollapsedFieldSet,
-          onSetActiveFieldGroup: props.onSetActiveFieldGroup,
+          onSetActiveFieldGroupAtPath: props.onSetActiveFieldGroupAtPath,
         }
         const prepared = prepareObjectInputProps(itemProps)
         return prepared.hidden ? [] : [prepared]

@@ -8,11 +8,10 @@ import {MutationPatch, toMutationPatches} from '../utils/mutationPatch'
 import {DocumentInput} from '../inputs/DocumentInput/DocumentInput'
 import {FieldGroup, ObjectMember, RenderFieldCallbackArg} from '../store/types'
 import {useSource} from '../../studio'
+import {FormInputProps} from '../types'
+import {fallbackInputs} from '../fallbackInputs'
 import {SanityFormBuilderProvider} from './SanityFormBuilderProvider'
 import {resolveInputComponent as defaultInputResolver} from './inputResolver/inputResolver'
-import {fallbackInputs} from '../fallbackInputs'
-import {FormInputProps} from '../types'
-import {Card, Text} from '@sanity/ui'
 
 /**
  * @alpha
