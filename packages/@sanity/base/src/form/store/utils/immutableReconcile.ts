@@ -1,5 +1,3 @@
-function assertType<T>(value: unknown): asserts value is T {}
-
 /**
  * Reconciles two versions of a state tree by iterating over the next and deep comparing against the next towards the previous.
  * Wherever identical values are found, the previous value is kept, preserving object identities for arrays and objects where possible
@@ -52,3 +50,7 @@ export function immutableReconcile<T>(previous: unknown, next: T): T {
   }
   return next
 }
+
+// just some typescript trickery get type assertion
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+function assertType<T>(value: unknown): asserts value is T {}
