@@ -1,4 +1,4 @@
-import {Rule} from '@sanity/types'
+import {Rule} from 'sanity'
 
 export default {
   type: 'document',

@@ -5,8 +5,5 @@
     "jsx": "react",
     "outDir": "./lib/dev"
   },
-  "references": [
-    {"path": "../../packages/@sanity/base/tsconfig.lib.json"},
-    {"path": "../../packages/@sanity/types"}
-  ]
+  "references": [{"path": "../../packages/sanity"}]
 }

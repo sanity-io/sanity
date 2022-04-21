@@ -1,6 +1,6 @@
-// import author from './author'
+import {Rule} from 'sanity'
 
-import {Rule} from '@sanity/types'
+// import author from './author'
 
 const title = {
   type: 'string',
