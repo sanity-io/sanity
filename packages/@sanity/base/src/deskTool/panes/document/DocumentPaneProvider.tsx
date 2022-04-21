@@ -2,7 +2,7 @@ import React, {memo, useCallback, useEffect, useMemo, useRef, useState} from 're
 import {ObjectSchemaType, Path, SanityDocument} from '@sanity/types'
 import {omit} from 'lodash'
 import {useToast} from '@sanity/ui'
-import {fromString as pathFromString, pathFor} from '@sanity/util/paths'
+import {fromString as pathFromString} from '@sanity/util/paths'
 import isHotkey from 'is-hotkey'
 import {useMemoObservable} from 'react-rx'
 import {PaneMenuItem} from '../../types'
@@ -10,6 +10,7 @@ import {useHistoryStore, useInitialValue, usePresenceStore} from '../../../datas
 import {
   useConnectionState,
   useDocumentOperation,
+  useDocumentPresence,
   useEditState,
   useValidationStatus,
 } from '../../../hooks'
@@ -142,16 +143,13 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
 
   const handleFocus = useCallback(
-    (nextFocusPath?: Path | React.FocusEvent<any>) => {
-      const path = Array.isArray(nextFocusPath) ? nextFocusPath : []
-
-      setFocusPath(pathFor(path))
-
+    (nextFocusPath: Path) => {
+      setFocusPath(nextFocusPath)
       presenceStore.setLocation([
         {
           type: 'document',
           documentId,
-          path,
+          path: nextFocusPath,
           lastActiveAt: new Date().toISOString(),
         },
       ])
@@ -231,7 +229,16 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const handleInspectClose = useCallback(() => toggleInspect(false), [toggleInspect])
 
-  const formState = useFormState(documentSchema, {value, onChange: handleChange})
+  const documentPresence = useDocumentPresence(documentId)
+
+  const formState = useFormState(documentSchema, {
+    value,
+    onChange: handleChange,
+    onFocus: handleFocus,
+    validation,
+    focusPath,
+    presence: documentPresence || [],
+  })
 
   const documentPane: DocumentPaneContextValue = {
     actions,
@@ -248,7 +255,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     editState,
     focusPath,
     handleChange,
-    handleFocus,
     handleHistoryClose,
     handleHistoryOpen,
     handleInspectClose,

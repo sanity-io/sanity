@@ -1,41 +1,22 @@
 import {
   ArraySchemaType,
   BooleanSchemaType,
-  CurrentUser,
   NumberSchemaType,
   ObjectSchemaType,
   Path,
   StringSchemaType,
+  ValidationMarker,
 } from '@sanity/types'
 import * as React from 'react'
 import {ComponentType} from 'react'
 import {PatchEvent} from '../patch'
-import {PreparedProps, SanityDocument} from './formState'
-
-export interface FormStore<T extends SanityDocument> {
-  updateValue: (updater: (current: T) => T) => void
-  onChange: (patchEvent: PatchEvent) => void
-  onSetFieldGroup: (groupName: string) => void
-  updateCurrentUser: (updater: (current: CurrentUser) => CurrentUser) => void
-  getState: () => PreparedProps<T>
-  getValue: () => T
-  subscribe: (subscriber: (value: PreparedProps<T>) => void) => void
-}
+import {FieldPresence, PreparedProps} from './formState'
+import {FormFieldPresence} from '../../presence'
 
 export interface StateTree<T> {
   value: T | undefined
   children?: {
     [key: string]: StateTree<T>
-  }
-}
-
-export interface ObjectCollapsedState {
-  collapsed?: boolean
-  fields?: {
-    [name: string]: ObjectCollapsedState
-  }
-  fieldSets?: {
-    [name: string]: boolean
   }
 }
 
@@ -75,11 +56,14 @@ interface BaseFieldProps {
   title?: string
   description?: string
   path: Path
+  presence: FormFieldPresence[]
+  validation: ValidationMarker[]
   index: number
   level: number
   hidden?: boolean
   readOnly?: boolean
   onChange: (patchEvent: PatchEvent) => void
+  onFocus: (focusEvent: React.FocusEvent) => void
 }
 
 export interface StringFieldProps extends BaseFieldProps {
@@ -100,15 +84,13 @@ export interface BooleanFieldProps extends BaseFieldProps {
   value?: boolean
 }
 
-export type PrimitiveFieldProps = BooleanFieldProps | NumberFieldProps | StringFieldProps
-export type FieldGroupPath = string[]
-
 export interface ObjectFieldProps extends BaseFieldProps {
   kind: 'object'
   type: ObjectSchemaType
   members: ObjectMember[]
   groups?: FieldGroup[]
   onSelectGroup: (name: string) => void
+  onFocus: (focusEvent: React.FocusEvent) => void
   hidden?: boolean
   value?: Record<string, unknown>
   readOnly?: boolean

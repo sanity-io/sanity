@@ -1,4 +1,4 @@
-import {isKeySegment, ObjectSchemaType, Path} from '@sanity/types'
+import {isKeySegment, ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
 import {useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react'
 import {pathFor} from '@sanity/util/paths'
 import {useCurrentUser} from '../../datastores'
@@ -7,6 +7,7 @@ import {StateTree} from './types'
 import {PreparedProps, prepareFormProps, SanityDocument} from './formState'
 
 import {immutableReconcile} from './utils/immutableReconcile'
+import {FormFieldPresence} from '../../presence'
 
 function setAtPath<T>(currentTree: StateTree<T> | undefined, path: Path, value: T): StateTree<T> {
   if (path.length === 0) {
@@ -23,20 +24,32 @@ function setAtPath<T>(currentTree: StateTree<T> | undefined, path: Path, value: 
 
 export function useFormState(
   schemaType: ObjectSchemaType,
-  {value, onChange}: {onChange: (event: PatchEvent) => void; value: Partial<SanityDocument>}
+  {
+    value,
+    onChange,
+    onFocus,
+    validation,
+    presence,
+  }: {
+    onChange: (event: PatchEvent) => void
+    onFocus: (nextFocusPath: Path) => void
+    value: Partial<SanityDocument>
+    validation: ValidationMarker[]
+    focusPath: Path
+    presence: FormFieldPresence[]
+  }
 ): PreparedProps<unknown> | {hidden: true} {
+  // note: feel free to move these state pieces out of this hook
   const currentUser = useCurrentUser()
   const [fieldGroupState, onSetFieldGroupState] = useState<StateTree<string>>()
   const [collapsedFields, onSetCollapsedFields] = useState<StateTree<boolean>>()
   const [collapsedFieldSets, onSetCollapsedFieldSets] = useState<StateTree<boolean>>()
 
   const handleOnSetCollapsedField = useCallback((collapsed: boolean, path: Path) => {
-    console.log('set field collapsed %s at %s', collapsed, path)
     onSetCollapsedFields((prevState) => setAtPath(prevState, path, collapsed))
   }, [])
 
   const handleOnSetCollapsedFieldSet = useCallback((collapsed: boolean, path: Path) => {
-    console.log('set fieldset collapsed %s at %s', collapsed, path)
     onSetCollapsedFieldSets((prevState) => setAtPath(prevState, path, collapsed))
   }, [])
 
@@ -54,10 +67,11 @@ export function useFormState(
 
   return useMemo(() => {
     // console.time('derive form state')
-
     const next = prepareFormProps({
       type: schemaType,
       document: value,
+      validation,
+      presence,
       fieldGroupState,
       onSetActiveFieldGroupAtPath: handleSetActiveFieldGroup,
       onSetCollapsedField: handleOnSetCollapsedField,
@@ -67,6 +81,7 @@ export function useFormState(
       value,
       path: pathFor([]),
       onChange,
+      onFocus,
       level: 0,
       currentUser,
     })
@@ -75,9 +90,10 @@ export function useFormState(
     // console.timeEnd('derive form state')
     return reconciled
   }, [
-    //
     schemaType,
     value,
+    presence,
+    validation,
     fieldGroupState,
     handleSetActiveFieldGroup,
     handleOnSetCollapsedField,
@@ -85,6 +101,7 @@ export function useFormState(
     collapsedFields,
     collapsedFieldSets,
     onChange,
+    onFocus,
     currentUser,
   ])
 }

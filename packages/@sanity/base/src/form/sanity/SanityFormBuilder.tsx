@@ -12,6 +12,7 @@ import {FormInputProps} from '../types'
 import {fallbackInputs} from '../fallbackInputs'
 import {SanityFormBuilderProvider} from './SanityFormBuilderProvider'
 import {resolveInputComponent as defaultInputResolver} from './inputResolver/inputResolver'
+import {Card, Text} from '@sanity/ui'
 
 /**
  * @alpha
@@ -25,10 +26,9 @@ export interface SanityFormBuilderProps {
   changesOpen: boolean
   compareValue?: any | null
   // filterField: FormBuilderFilterFieldFn
-  focusPath: Path
   onBlur?: () => void
   onChange: (patches: MutationPatch[]) => void
-  onFocus: (path: Path) => void
+  onFocus: (event: React.FocusEvent) => void
   presence: FormFieldPresence[]
   readOnly?: boolean
   members: ObjectMember[]
@@ -81,13 +81,6 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
     [onChange]
   )
 
-  const handleFocus = useCallback(
-    (pathOrEvent?: Path | React.FocusEvent) => {
-      onFocus(Array.isArray(pathOrEvent) ? pathOrEvent : [])
-    },
-    [onFocus]
-  )
-
   const resolveInputComponent = useCallback(
     (inputType: SchemaType) => {
       const resolved = defaultInputResolver(
@@ -108,8 +101,13 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
       }
       return (
         // <Card radius={2} shadow={1} padding={2}>
-        //   <Text>PATH: {JSON.stringify(field.path)}</Text>
-        <Input {...field} validation={[]} presence={[]} renderField={renderField} />
+        //   <Text>Presence: {JSON.stringify(field.presence)}</Text>
+        <Input
+          {...field}
+          validation={field.validation || []}
+          presence={field.presence || []}
+          renderField={renderField}
+        />
         // </Card>
       )
     },
@@ -122,8 +120,9 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
         level={0}
         onBlur={onBlur}
         onChange={handleChange}
-        onFocus={handleFocus}
+        onFocus={onFocus}
         presence={presence}
+        validation={validation}
         readOnly={readOnly}
         ref={inputRef}
         type={type}

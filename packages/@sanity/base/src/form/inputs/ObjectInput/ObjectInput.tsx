@@ -105,13 +105,11 @@ export const ObjectInput = memo(
         {members.map((member) => {
           if (member.type === 'field') {
             return (
-              <>
-                <MemberField
-                  member={member}
-                  renderField={renderField}
-                  key={`field-${member.field.name}`}
-                />
-              </>
+              <MemberField
+                member={member}
+                renderField={renderField}
+                key={`field-${member.field.name}`}
+              />
             )
           }
 

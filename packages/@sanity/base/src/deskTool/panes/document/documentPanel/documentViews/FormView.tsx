@@ -14,10 +14,6 @@ import {
   PatchMsg,
   SanityFormBuilder,
 } from '../../../../../form'
-import {
-  unstable_useConditionalProperty as useConditionalProperty,
-  useDocumentPresence,
-} from '../../../../../hooks'
 import {PresenceOverlay} from '../../../../../presence'
 import {useSource} from '../../../../../studio'
 // TODO
@@ -53,7 +49,6 @@ export function FormView(props: FormViewProps) {
     documentType,
     focusPath,
     handleChange: _handleChange,
-    handleFocus,
     historyController,
     validation,
     ready,
@@ -61,7 +56,6 @@ export function FormView(props: FormViewProps) {
     formState,
   } = useDocumentPane()
   const documentStore = useDocumentStore()
-  const presence = useDocumentPresence(documentId)
   const {revTime: rev} = historyController
   // const [{filterField}, setState] = useState<FormViewState>(INITIAL_STATE)
 
@@ -74,23 +68,17 @@ export function FormView(props: FormViewProps) {
   // - Used by `withDocument` to reset value.
   const patchChannel = useMemo(() => createPatchChannel(), [])
 
-  const readOnly = useConditionalProperty({
-    document: value as SanityDocument,
-    value,
-    checkProperty: documentSchema.readOnly,
-    checkPropertyKey: 'readOnly',
-  })
-
   const isReadOnly = useMemo(() => {
     return (
+      formState.hidden ||
+      formState.readOnly ||
       !ready ||
       rev !== null ||
       !granted ||
       !isActionEnabled(documentSchema, 'update') ||
-      (isNonExistent && !isActionEnabled(documentSchema, 'create')) ||
-      readOnly
+      (isNonExistent && !isActionEnabled(documentSchema, 'create'))
     )
-  }, [documentSchema, isNonExistent, granted, ready, rev, readOnly])
+  }, [documentSchema, isNonExistent, granted, ready, rev, formState.hidden || formState.readOnly])
 
   const handleChange = useCallback(
     (patches) => {
@@ -184,15 +172,14 @@ export function FormView(props: FormViewProps) {
                 changesOpen={changesOpen}
                 compareValue={compareValue}
                 // filterField={filterField}
-                focusPath={focusPath}
                 onBlur={handleBlur}
                 onChange={handleChange}
-                onFocus={handleFocus}
-                presence={presence}
+                presence={formState.presence}
+                validation={formState.validation}
                 readOnly={isReadOnly}
                 schema={schema}
                 type={documentSchema}
-                validation={validation}
+                onFocus={formState.onFocus}
                 value={formState.value}
                 members={formState.members}
                 groups={formState.groups}

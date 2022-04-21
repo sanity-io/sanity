@@ -12,6 +12,7 @@ import {
 } from '@sanity/types'
 import {FormFieldPresence} from '../presence'
 import {PatchEvent} from './patch'
+import React from 'react'
 
 export type FIXME = any
 
@@ -106,7 +107,6 @@ export type FormInputProps<
   focusPath?: Path
   level: number
   validation: ValidationMarker[]
-  onBlur?: () => void
   // @todo allow implementers to pass a native DOM ChangeEvent
   // @todo allow implementers to pass an array of patch objects
   // @todo allow implementers to simply pass the new value
@@ -114,10 +114,11 @@ export type FormInputProps<
   onChange: (event: PatchEvent) => void
   // NOTE: we should allow implementers of custom inputs to forward the passed onFocus to native
   // element's onFocus handler, but use Path consistently on internal inputs
-  onFocus: (pathOrEvent?: Path | React.FocusEvent<any>) => void
+  onFocus: (event: React.FocusEvent) => void
+
+  // @todo
+  // onBlur: (event: React.FocusEvent) => void
   presence: FormFieldPresence[]
-  // @todo: should the `readOnly` use the `ConditionalProperty` type?
-  // readOnly?: ConditionalProperty
   readOnly?: boolean
   type: S
   value?: T

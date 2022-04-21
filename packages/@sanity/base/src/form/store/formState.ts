@@ -8,10 +8,12 @@ import {
   ObjectSchemaType,
   Path,
   SchemaType,
+  User,
+  ValidationMarker,
 } from '@sanity/types'
 
 import {pick, castArray} from 'lodash'
-import {ComponentType} from 'react'
+import React, {ComponentType} from 'react'
 import {createProtoValue} from '../utils/createProtoValue'
 import {PatchEvent, setIfMissing} from '../patch'
 import {callConditionalProperties, callConditionalProperty} from './conditional-property'
@@ -29,7 +31,8 @@ import {
 import {MAX_FIELD_DEPTH} from './constants'
 import {getItemType} from './utils/getItemType'
 import {getCollapsedWithDefaults} from './utils/getCollapsibleOptions'
-import {pathFor} from '@sanity/util/paths'
+import {pathFor, startsWith, isEqual} from '@sanity/util/paths'
+import {FormFieldPresence} from '../../presence'
 
 function isFieldEnabledByGroupFilter(
   // the groups config for the "enclosing object" type
@@ -95,6 +98,14 @@ function prepareFieldProps(props: {
     (fieldChangeEvent: PatchEvent) => parent.onChange(fieldChangeEvent.prefixAll(field.name))
   )
 
+  const fieldOnFocus = getScopedCallbackForPath(
+    parent.onFocus,
+    fieldPath,
+    (focusEvent: React.FocusEvent) => parent.onFocus(fieldPath)
+  )
+  const scopedPresence = parent.presence.filter((item) => startsWith(fieldPath, item.path))
+  const scopedValidation = parent.validation.filter((item) => startsWith(fieldPath, item.path))
+
   if (isObjectSchemaType(field.type)) {
     const fieldValue = (parent.value as any)?.[field.name] as Record<string, unknown> | undefined
 
@@ -109,11 +120,14 @@ function prepareFieldProps(props: {
       document: parent.document,
       value: fieldValue,
       fieldGroupState,
+      validation: parent.validation,
+      presence: parent.presence,
       path: fieldPath,
       level: fieldLevel,
       collapsedFields: collapsedFields,
       collapsedFieldSets: collapsedFieldSets,
       onChange: fieldOnChange,
+      onFocus: parent.onFocus,
       onSetActiveFieldGroupAtPath: parent.onSetActiveFieldGroupAtPath,
       onSetCollapsedField: parent.onSetCollapsedField,
       onSetCollapsedFieldSet: parent.onSetCollapsedFieldSet,
@@ -125,7 +139,16 @@ function prepareFieldProps(props: {
 
     const defaultCollapsedState = getCollapsedWithDefaults(field.type.options, fieldLevel)
 
-    // note: this is what we actually end up passing down to the components
+    const collapsed = collapsedFields ? collapsedFields.value : defaultCollapsedState.collapsible
+    const fieldPresence = collapsed
+      ? scopedPresence
+      : scopedPresence.filter((item) => isEqual(fieldPath, item.path))
+
+    const fieldValidation = collapsed
+      ? scopedValidation
+      : scopedValidation.filter((item) => isEqual(fieldPath, item.path))
+
+    // note: this is what we actually end up passing down to the individual input components
     return {
       kind: 'object',
       type: field.type,
@@ -145,8 +168,10 @@ function prepareFieldProps(props: {
       onChange: fieldOnChange,
       path: fieldPath,
       collapsible: defaultCollapsedState.collapsible,
-      collapsed: collapsedFields ? collapsedFields.value : defaultCollapsedState.collapsible,
-
+      collapsed,
+      presence: fieldPresence,
+      validation: fieldValidation,
+      onFocus: fieldOnFocus,
       onSetCollapsed: scopedInputProps.onSetCollapsed,
       onSelectGroup: scopedInputProps.onSelectFieldGroup,
 
@@ -166,11 +191,14 @@ function prepareFieldProps(props: {
       document: parent.document,
       value: fieldValue,
       fieldGroupState,
+      presence: scopedPresence,
+      validation: scopedValidation,
       collapsedFields,
       collapsedFieldSets,
       level: fieldLevel,
       path: fieldPath,
       onChange: fieldOnChange,
+      onFocus: parent.onFocus,
       onSetCollapsedField: parent.onSetCollapsedField,
       onSetCollapsedFieldSet: parent.onSetCollapsedFieldSet,
       onSetActiveFieldGroupAtPath: parent.onSetActiveFieldGroupAtPath,
@@ -180,11 +208,16 @@ function prepareFieldProps(props: {
       return {hidden: true}
     }
 
+    const fieldPresence = scopedPresence.filter((item) => startsWith(fieldPath, item.path))
+    const fieldValidation = scopedValidation.filter((item) => startsWith(fieldPath, item.path))
+
     const ret: ArrayFieldProps = {
       kind: 'array',
       type: field.type,
       name: field.name,
       title: field.type.title,
+      validation: fieldValidation,
+      presence: fieldPresence,
       description: field.type.description,
       level: fieldLevel,
       path: fieldPath,
@@ -193,11 +226,14 @@ function prepareFieldProps(props: {
       readOnly: parent.readOnly || preparedInputProps.readOnly,
       members: preparedInputProps.members,
       onChange: fieldOnChange,
+      onFocus: fieldOnFocus,
       value: fieldValue,
     }
     return ret
   } else {
     const fieldValue = (parent.value as any)?.[field.name] as undefined | boolean | string | number
+    const fieldPresence = scopedPresence.filter((item) => isEqual(fieldPath, item.path))
+    const fieldValidation = scopedValidation.filter((item) => isEqual(fieldPath, item.path))
 
     // note: we *only* want to call the conditional props here, as it's handled by the prepare<Object|Array>InputProps otherwise
     const fieldConditionalProps = callConditionalProperties(
@@ -225,6 +261,9 @@ function prepareFieldProps(props: {
       level: parent.level,
       index: index,
       onChange: fieldOnChange,
+      onFocus: fieldOnFocus,
+      presence: fieldPresence,
+      validation: fieldValidation,
       readOnly: parent.readOnly || fieldConditionalProps.readOnly,
       value: fieldValue,
     } as StringFieldProps | NumberFieldProps | BooleanFieldProps
@@ -240,6 +279,8 @@ interface RawProps<SchemaType, T> {
   value?: T
   document: SanityDocument
   currentUser: Omit<CurrentUser, 'role'>
+  presence: FormFieldPresence[]
+  validation: ValidationMarker[]
   parent?: unknown
   hidden?: boolean
   readOnly?: boolean
@@ -253,6 +294,7 @@ interface RawProps<SchemaType, T> {
   // nesting level
   level: number
   onChange: (patchEvent: PatchEvent) => void
+  onFocus: (path: Path) => void
 }
 
 function prepareObjectInputProps<T>(
@@ -264,7 +306,6 @@ function prepareObjectInputProps<T>(
     document: props.document,
     currentUser: props.currentUser,
   }
-
   const {hidden, readOnly} = callConditionalProperties(props.type, conditionalFieldContext, [
     'hidden',
     'readOnly',
@@ -284,6 +325,12 @@ function prepareObjectInputProps<T>(
     (groupName: string) => props.onSetActiveFieldGroupAtPath(groupName, props.path)
   )
 
+  const handleFocus = getScopedCallbackForPath(
+    props.onFocus,
+    props.path,
+    (focusEvent: React.FocusEvent) => props.onFocus(props.path)
+  )
+
   const handleSetCollapsed = getScopedCallbackForPath(
     props.onSetCollapsedField,
     props.path,
@@ -299,6 +346,9 @@ function prepareObjectInputProps<T>(
       level: props.level,
       members: [],
       groups: [],
+      validation: [],
+      presence: [],
+      onFocus: handleFocus,
       onChange: handleChange,
       onSelectFieldGroup: handleSetActiveFieldGroup,
       onSetCollapsed: handleSetCollapsed,
@@ -424,7 +474,10 @@ function prepareObjectInputProps<T>(
     hidden: props.hidden,
     path: props.path,
     level: props.level,
+    validation: props.validation,
+    presence: props.presence,
     onChange: handleChange,
+    onFocus: handleFocus,
     onSelectFieldGroup: handleSetActiveFieldGroup,
     onSetCollapsed: handleSetCollapsed,
     members,
@@ -453,14 +506,26 @@ function prepareArrayInputProps<T>(props: RawProps<ArraySchemaType, T>): ArrayFo
       const itemType = getItemType(props.type, item)
       if (isObjectSchemaType(itemType)) {
         const key = (item as any)?._key
+        const itemPath = pathFor([...props.path, key])
+
+        const scopedPresence = props.presence.filter((presenceItem) =>
+          startsWith(itemPath, presenceItem.path)
+        )
+        const scopedValidation = props.validation.filter((marker) =>
+          startsWith(itemPath, marker.path)
+        )
+
         const itemProps = {
           type: itemType,
           onChange: handleChange,
           level: props.level + 1,
           document: props.document,
+          validation: props.validation,
+          presence: props.presence,
           value: item,
-          path: pathFor([...props.path, key]),
+          path: itemPath,
           currentUser: props.currentUser,
+          onFocus: props.onFocus,
           onSetCollapsedField: props.onSetCollapsedField,
           onSetCollapsedFieldSet: props.onSetCollapsedFieldSet,
           onSetActiveFieldGroupAtPath: props.onSetActiveFieldGroupAtPath,
@@ -484,6 +549,12 @@ function prepareArrayInputProps<T>(props: RawProps<ArraySchemaType, T>): ArrayFo
 
 export type SanityDocument = Record<string, unknown>
 
+export interface FieldPresence {
+  user: User
+  sessionId: string
+  lastActiveAt: string
+}
+
 export interface PreparedProps<T> {
   value: T
   onChange: (patchEvent: PatchEvent) => void
@@ -493,9 +564,14 @@ export interface PreparedProps<T> {
   path: Path
   members: ObjectMember[]
   groups?: FieldGroup[]
+
   onSelectFieldGroup: (groupName: string) => void
   onSetCollapsed: (collapsed: boolean) => void
+  onFocus: (event: React.FocusEvent) => void
+  // onBlur: (event: React.FocusEvent) => void
 
+  presence: FormFieldPresence[]
+  validation: ValidationMarker[]
   collapsed?: boolean
   collapsible?: boolean
 }

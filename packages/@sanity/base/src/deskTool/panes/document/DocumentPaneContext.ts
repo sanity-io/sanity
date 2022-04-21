@@ -25,7 +25,6 @@ export interface DocumentPaneContextValue {
   documentType: string
   focusPath: Path
   handleChange: (patches: any[]) => void
-  handleFocus: (pathOrEvent?: Path | React.FocusEvent<any>) => void
   handleHistoryClose: () => void
   handleHistoryOpen: () => void
   handleInspectClose: () => void
