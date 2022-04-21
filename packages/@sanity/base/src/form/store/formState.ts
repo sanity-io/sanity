@@ -121,6 +121,8 @@ const getOnSetCollapsedFieldSet = createFieldCallback(
   }
 )
 
+declare function getMemo(cb: any, deps: unknown[])
+
 const noop = () => {}
 /**
  * Takes a field in context of a parent object and returns prepared props for it
@@ -143,7 +145,11 @@ function prepareFieldProps(props: {
     const collapsedFieldSets =
       props.parentObjectProps.collapsedFieldSets?.children?.[props.field.name]
 
-    const handleChange = getFieldOnChange(props.parentObjectProps.onChange, props.field.name)
+    const handleChange = getMemo(
+      (fieldChangeEvent: PatchEvent) =>
+        props.parentObjectProps.onChange(fieldChangeEvent.prefixAll(props.field.name)),
+      [props.parentObjectProps.onChange, props.field.name]
+    )
 
     const handleSetActiveFieldGroup = getOnSetActiveFieldGroup(
       props.parentObjectProps.onSetActiveFieldGroup,
@@ -215,26 +221,29 @@ function prepareFieldProps(props: {
     const fieldValue = (props.parentObjectProps.value as any)?.[props.field.name] as
       | unknown[]
       | undefined
+
     const fieldGroupState = props.parentObjectProps.fieldGroupState?.children?.[props.field.name]
     const collapsedFields = props.parentObjectProps.collapsedFields?.children?.[props.field.name]
     const collapsedFieldSets =
       props.parentObjectProps.collapsedFieldSets?.children?.[props.field.name]
 
-    const handleSetActiveFieldGroup = noop
-    //   (groupName: string) => {
-    //   props.parentObjectProps.onSetActiveFieldGroup(groupName, fieldPath)
-    // }
-
-    const handleSetCollapsedField = noop
-    //   (collapsed: boolean, childPath: Path) => {
-    //   props.parentObjectProps.onSetCollapsedField(collapsed, [props.field.name, ...childPath])
-    // }
-    const handleSetCollapsedFieldSet = noop
-    //   (collapsed: boolean, childPath: Path) => {
-    //   props.parentObjectProps.onSetCollapsedFieldSet(collapsed, [props.field.name, ...childPath])
-    // }
-
     const handleChange = getFieldOnChange(props.parentObjectProps.onChange, props.field.name)
+
+    const handleSetActiveFieldGroup = getOnSetActiveFieldGroup(
+      props.parentObjectProps.onSetActiveFieldGroup,
+      props.field.name
+    )
+
+    const handleSetCollapsedField = getOnSetCollapsedField(
+      props.parentObjectProps.onSetCollapsedField,
+      props.field.name
+    )
+
+    const handleSetCollapsedFieldSet = getOnSetCollapsedFieldSet(
+      props.parentObjectProps.onSetCollapsedFieldSet,
+      props.field.name
+    )
+
     const level = props.parentObjectProps.level + 1
 
     const preparedInputProps = prepareArrayInputProps({
