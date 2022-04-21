@@ -1,3 +1,4 @@
+import chalk from 'chalk'
 import client from '@sanity/client'
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import getUserConfig from './getUserConfig'
@@ -21,7 +22,9 @@ const authErrors = () => ({
   onError: (err) => {
     const statusCode = err.response && err.response.body && err.response.body.statusCode
     if (statusCode === 401) {
-      err.message = `${err.message}. For more information, see ${generateHelpUrl('cli-errors')}.`
+      err.message = `${err.message}. You may need to login again with ${chalk.cyan(
+        'sanity login'
+      )}.\nFor more information, see ${generateHelpUrl('cli-errors')}.`
     }
     return err
   },
@@ -67,7 +70,7 @@ export default function clientWrapper(manifest, configPath) {
       ...apiConfig,
       apiVersion: '1',
       dataset: apiConfig.dataset || '~dummy-placeholder-dataset-',
-      token: token,
+      token: requireUser ? token : undefined,
       useProjectHostname: requireProject,
       requester: requester,
       useCdn: false,
