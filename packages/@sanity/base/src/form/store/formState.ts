@@ -27,7 +27,6 @@ import {
   StringFieldProps,
   ArrayFieldProps,
   StateTree,
-  ObjectFieldProps,
 } from './types'
 import {MAX_FIELD_DEPTH} from './constants'
 import {getItemType} from './utils/getItemType'
@@ -80,9 +79,8 @@ function getScopedCallbackForPath<T extends (...args: any[]) => any>(
   return entry.get(path)! as T
 }
 
-/**
+/*
  * Takes a field in context of a parent object and returns prepared props for it
- * @param props
  */
 function prepareFieldProps(props: {
   field: ObjectField
@@ -96,7 +94,13 @@ function prepareFieldProps(props: {
   const fieldOnChange = getScopedCallbackForPath(
     parent.onChange,
     fieldPath,
-    (fieldChangeEvent: PatchEvent) => parent.onChange(fieldChangeEvent.prefixAll(field.name))
+    (fieldChangeEvent: PatchEvent) => {
+      const ensureValue =
+        isObjectSchemaType(field.type) || isArraySchemaType(field.type)
+          ? [setIfMissing(createProtoValue(field.type))]
+          : []
+      parent.onChange(fieldChangeEvent.prepend(ensureValue).prefixAll(field.name))
+    }
   )
 
   const fieldOnFocus = getScopedCallbackForPath(
@@ -325,11 +329,6 @@ function prepareObjectInputProps<T>(
     return {hidden: true}
   }
 
-  const handleChange = getInputOnChangeMemo(props.onChange, (patchEvent: PatchEvent) => {
-    const ensureValue = props.level > 0 ? setIfMissing(createProtoValue(props.type)) : []
-    props.onChange(patchEvent.prepend(ensureValue))
-  })
-
   const handleSetActiveFieldGroup = getScopedCallbackForPath(
     props.onSetActiveFieldGroupAtPath,
     props.path,
@@ -363,7 +362,7 @@ function prepareObjectInputProps<T>(
       validation: [],
       presence: [],
       onFocus: handleFocus,
-      onChange: handleChange,
+      onChange: props.onChange,
       onSelectFieldGroup: handleSetActiveFieldGroup,
       onSetCollapsed: handleSetCollapsed,
     }
@@ -397,7 +396,7 @@ function prepareObjectInputProps<T>(
     level: props.level + 1,
     hidden,
     readOnly,
-    onChange: handleChange,
+    onChange: props.onChange,
   }
 
   // create a members array for the object
@@ -496,7 +495,7 @@ function prepareObjectInputProps<T>(
     validation: props.validation,
     focused: isEqual(props.path, props.focusPath),
     presence: props.presence,
-    onChange: handleChange,
+    onChange: props.onChange,
     onFocus: handleFocus,
     onSelectFieldGroup: handleSetActiveFieldGroup,
     onSetCollapsed: handleSetCollapsed,
@@ -524,7 +523,6 @@ function prepareArrayInputProps<T extends unknown[]>(
   }
 
   const handleChange = getInputOnChangeMemo(props.onChange, (patchEvent: PatchEvent) => {
-    console.log('handle change in array input')
     props.onChange(patchEvent.prepend([setIfMissing([])]))
   })
 
@@ -594,6 +592,7 @@ function prepareArrayInputProps<T extends unknown[]>(
       })
       return prepared.hidden ? [] : [prepared]
     }
+    // eslint-disable-next-line no-console
     console.log('SKIPPING PRIMITIVE ITEMS (TODO)')
     return [] // todo: primitive arrays
   })
