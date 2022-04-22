@@ -1,10 +1,10 @@
-import {FIXME_Patch, set, setIfMissing, unset} from '../../patch'
+import {FormPatch, set, setIfMissing, unset} from '../../patch'
 import {UploadEvent} from './types'
 import {UPLOAD_STATUS_KEY} from './constants'
 
 const UNSET_UPLOAD_PATCH = unset([UPLOAD_STATUS_KEY])
 
-export function createUploadEvent(patches: FIXME_Patch[] = []): UploadEvent {
+export function createUploadEvent(patches: FormPatch[] = []): UploadEvent {
   return {
     type: 'uploadEvent',
     patches,

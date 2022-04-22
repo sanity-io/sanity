@@ -67,30 +67,32 @@ export * from '../field/diff/components/ValueError'
 export {PatchEvent} from '../form'
 
 export type {
-  FIXME_DiffMatchPatch as DiffMatchPatch,
   FormArrayInputFunctionsProps,
   FormBuilderArrayFunctionComponent,
   FormBuilderCustomMarkersComponent,
   FormBuilderInputComponentMap,
   FormBuilderMarkersComponent,
+  FormDiffMatchPatch,
   FormInputComponentResolver,
   FormInputProps,
+  FormInsertPatch,
+  FormInsertPatchPosition,
+  FormPatch,
+  FormPatchJSONValue,
+  FormPatchOrigin,
   FormPreviewComponentResolver,
   FormPreviewProps,
-  FIXME_InsertPatch as InsertPatch,
-  FIXME_InsertPatchPosition as InsertPatchPosition,
-  FIXME_Patch as Patch,
+  FormSetIfMissingPatch,
+  FormSetPatch,
+  FormUnsetPatch,
   PatchArg,
-  FIXME_PatchJSONValue as PatchJSONValue,
-  FIXME_PatchOrigin as PatchOrigin,
   PortableTextMarker,
   RenderCustomMarkers,
-  FIXME_SetIfMissingPatch as SetIfMissingPatch,
-  FIXME_SetPatch as SetPatch,
-  FIXME_UnsetPatch as UnsetPatch,
 } from '../form'
 
 export * from '../presence'
+
+export {SanityDefaultPreview, SanityPreview} from '../preview'
 
 export type {
   ApiConfig,
@@ -106,9 +108,7 @@ export type {
   PreparedSnapshot,
   Previewable,
   PreviewableType,
-  SanityDefaultPreview,
   SanityDefaultPreviewProps,
-  SanityPreview,
   SanityPreviewProps,
   Path,
   PreviewValue,

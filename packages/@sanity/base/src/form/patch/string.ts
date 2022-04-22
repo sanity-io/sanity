@@ -1,5 +1,5 @@
 import * as DMP from 'diff-match-patch'
-import {FIXME_Patch} from '../patch'
+import {FormPatch} from '../patch'
 import {FIXME} from '../types'
 
 // eslint-disable-next-line new-cap
@@ -25,7 +25,7 @@ const OPERATIONS = {
 
 const SUPPORTED_PATCH_TYPES = Object.keys(OPERATIONS)
 
-export function _stringApply(value: unknown, patch: FIXME_Patch) {
+export function _stringApply(value: unknown, patch: FormPatch) {
   if (!SUPPORTED_PATCH_TYPES.includes(patch.type)) {
     throw new Error(
       `Received patch of unsupported type: "${JSON.stringify(

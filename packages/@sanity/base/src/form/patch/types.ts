@@ -5,99 +5,99 @@ import {Path} from '@sanity/types'
 /**
  * @internal
  */
-export type FIXME_PatchJSONValue =
+export type FormPatchJSONValue =
   | number
   | string
   | boolean
-  | {[key: string]: FIXME_PatchJSONValue}
-  | FIXME_PatchJSONValue[]
+  | {[key: string]: FormPatchJSONValue}
+  | FormPatchJSONValue[]
 
 /**
  * @internal
  */
-export type FIXME_PatchOrigin = 'remote' | 'local' | 'internal'
+export type FormPatchOrigin = 'remote' | 'local' | 'internal'
 
 /**
  * @internal
  */
-export type FIXME_SetPatch = {
+export type FormSetPatch = {
   path: Path
   type: 'set'
-  origin?: FIXME_PatchOrigin
-  value: FIXME_PatchJSONValue
+  origin?: FormPatchOrigin
+  value: FormPatchJSONValue
 }
 
 /**
  * @internal
  */
-export type FIXME_IncPatch = {
+export type FormIncPatch = {
   path: Path
   type: 'inc'
-  origin?: FIXME_PatchOrigin
-  value: FIXME_PatchJSONValue
+  origin?: FormPatchOrigin
+  value: FormPatchJSONValue
 }
 
 /**
  * @internal
  */
-export type FIXME_DecPatch = {
+export type FormDecPatch = {
   path: Path
   type: 'dec'
-  origin?: FIXME_PatchOrigin
-  value: FIXME_PatchJSONValue
+  origin?: FormPatchOrigin
+  value: FormPatchJSONValue
 }
 
 /**
  * @internal
  */
-export type FIXME_SetIfMissingPatch = {
+export type FormSetIfMissingPatch = {
   path: Path
-  origin?: FIXME_PatchOrigin
+  origin?: FormPatchOrigin
   type: 'setIfMissing'
-  value: FIXME_PatchJSONValue
+  value: FormPatchJSONValue
 }
 
 /**
  * @internal
  */
-export type FIXME_UnsetPatch = {
+export type FormUnsetPatch = {
   path: Path
-  origin?: FIXME_PatchOrigin
+  origin?: FormPatchOrigin
   type: 'unset'
 }
 
 /**
  * @internal
  */
-export type FIXME_InsertPatchPosition = 'before' | 'after'
+export type FormInsertPatchPosition = 'before' | 'after'
 
 /**
  * @internal
  */
-export type FIXME_InsertPatch = {
+export type FormInsertPatch = {
   path: Path
-  origin?: FIXME_PatchOrigin
+  origin?: FormPatchOrigin
   type: 'insert'
-  position: FIXME_InsertPatchPosition
-  items: FIXME_PatchJSONValue[]
+  position: FormInsertPatchPosition
+  items: FormPatchJSONValue[]
 }
 
 /**
  * @internal
  */
-export type FIXME_DiffMatchPatch = {
+export type FormDiffMatchPatch = {
   path: Path
   type: 'diffMatchPatch'
-  origin?: FIXME_PatchOrigin
+  origin?: FormPatchOrigin
   value: string
 }
 
 /**
  * @internal
  */
-export type FIXME_Patch =
-  | FIXME_SetPatch
-  | FIXME_SetIfMissingPatch
-  | FIXME_UnsetPatch
-  | FIXME_InsertPatch
-  | FIXME_DiffMatchPatch
+export type FormPatch =
+  | FormSetPatch
+  | FormSetIfMissingPatch
+  | FormUnsetPatch
+  | FormInsertPatch
+  | FormDiffMatchPatch

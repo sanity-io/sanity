@@ -2,16 +2,16 @@
 
 import {Path, PathSegment} from '@sanity/types'
 import {
-  FIXME_SetIfMissingPatch,
-  FIXME_InsertPatch,
-  FIXME_InsertPatchPosition,
-  FIXME_SetPatch,
-  FIXME_UnsetPatch,
-  FIXME_IncPatch,
-  FIXME_DecPatch,
+  FormSetIfMissingPatch,
+  FormInsertPatch,
+  FormInsertPatchPosition,
+  FormSetPatch,
+  FormUnsetPatch,
+  FormIncPatch,
+  FormDecPatch,
 } from './types'
 
-export function setIfMissing(value: any, path: Path = []): FIXME_SetIfMissingPatch {
+export function setIfMissing(value: any, path: Path = []): FormSetIfMissingPatch {
   return {
     type: 'setIfMissing',
     path,
@@ -21,9 +21,9 @@ export function setIfMissing(value: any, path: Path = []): FIXME_SetIfMissingPat
 
 export function insert(
   items: any[],
-  position: FIXME_InsertPatchPosition,
+  position: FormInsertPatchPosition,
   path: Path = []
-): FIXME_InsertPatch {
+): FormInsertPatch {
   return {
     type: 'insert',
     path,
@@ -32,19 +32,19 @@ export function insert(
   }
 }
 
-export function set(value: any, path: Path = []): FIXME_SetPatch {
+export function set(value: any, path: Path = []): FormSetPatch {
   return {type: 'set', path, value}
 }
 
-export function unset(path: Path = []): FIXME_UnsetPatch {
+export function unset(path: Path = []): FormUnsetPatch {
   return {type: 'unset', path}
 }
 
-export function inc(amount = 1, path: Path = []): FIXME_IncPatch {
+export function inc(amount = 1, path: Path = []): FormIncPatch {
   return {type: 'inc', path, value: amount}
 }
 
-export function dec(amount = 1, path: Path = []): FIXME_DecPatch {
+export function dec(amount = 1, path: Path = []): FormDecPatch {
   return {type: 'dec', path, value: amount}
 }
 

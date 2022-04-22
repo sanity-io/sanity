@@ -13,7 +13,7 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {debounce} from 'lodash'
-import {PatchEvent, FIXME_Patch as FormBuilderPatch} from '../../../patch'
+import {FormPatch, PatchEvent} from '../../../patch'
 import {FormFieldPresence} from '../../../../presence'
 import {applyAll} from '../../../simplePatch'
 import {ObjectEditData} from '../types'
@@ -105,7 +105,7 @@ export const EditObject = (props: EditObjectProps) => {
     const _patches = compactPatches(patches.slice(0, length))
     PATCHES.set(editor, patches.slice(length))
     setTimeout(() => {
-      onChange(PatchEvent.from(_patches as FormBuilderPatch[]), formBuilderPath)
+      onChange(PatchEvent.from(_patches as FormPatch[]), formBuilderPath)
     })
     cancelThrottle()
   }, [cancelThrottle, editor, formBuilderPath, onChange, timeoutInstance])
