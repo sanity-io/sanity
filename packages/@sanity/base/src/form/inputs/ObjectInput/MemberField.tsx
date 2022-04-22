@@ -1,4 +1,5 @@
-import React, {memo} from 'react'
+import React, {memo, useRef} from 'react'
+import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {FieldMember, RenderFieldCallback} from '../../store/types'
 
 interface Props {
@@ -7,7 +8,15 @@ interface Props {
 }
 
 export const MemberField = memo(function MemberField(props: Props) {
+  const focusRef = useRef<{focus: () => void}>()
   // this is where we deal with convenience, sanity checks, error handling, etc.
   const {member, renderField} = props
-  return <>{renderField(member.field)}</>
+
+  useDidUpdate(member.field.focused, (hadFocus, hasFocus) => {
+    if (!hadFocus && hasFocus) {
+      focusRef.current?.focus()
+    }
+  })
+
+  return <>{renderField({...member.field, focusRef})}</>
 })

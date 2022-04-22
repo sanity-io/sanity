@@ -104,9 +104,13 @@ export type FormInputProps<
     : SchemaType
 > = {
   compareValue?: T
-  focusPath?: Path
   level: number
   validation: ValidationMarker[]
+  id: string
+
+  path: Path
+
+  presence: FormFieldPresence[]
   // @todo allow implementers to pass a native DOM ChangeEvent
   // @todo allow implementers to pass an array of patch objects
   // @todo allow implementers to simply pass the new value
@@ -115,10 +119,10 @@ export type FormInputProps<
   // NOTE: we should allow implementers of custom inputs to forward the passed onFocus to native
   // element's onFocus handler, but use Path consistently on internal inputs
   onFocus: (event: React.FocusEvent) => void
+  onBlur: (event: React.FocusEvent) => void
+  focusRef: React.Ref<any>
 
   // @todo
-  // onBlur: (event: React.FocusEvent) => void
-  presence: FormFieldPresence[]
   readOnly?: boolean
   type: S
   value?: T

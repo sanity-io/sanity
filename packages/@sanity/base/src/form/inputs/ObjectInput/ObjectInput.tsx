@@ -50,13 +50,12 @@ export const ObjectInput = memo(
       onChange,
       renderField,
       level = 0,
-      focusPath = EMPTY_PATH,
       value,
+      id,
+      path,
       onSelectGroup,
       onSetCollapsed,
     } = props
-
-    const inputId = useId()
 
     const renderedUnknownFields = useMemo(() => {
       if (!type.fields) {
@@ -92,30 +91,22 @@ export const ObjectInput = memo(
         {groups && groups?.length > 0 ? (
           <FieldGroupTabsWrapper $level={level} data-testid="field-groups">
             <FieldGroupTabs
-              inputId={inputId}
+              inputId={id}
               onClick={onSelectGroup}
               groups={groups}
-              shouldAutoFocus={
-                level === 0 && (focusPath.length === 0 || focusPath[0] === FOCUS_TERMINATOR)
-              }
+              shouldAutoFocus={path.length === 0}
             />
           </FieldGroupTabsWrapper>
         ) : null}
 
         {members.map((member) => {
           if (member.type === 'field') {
-            return (
-              <MemberField
-                member={member}
-                renderField={renderField}
-                key={`field-${member.field.name}`}
-              />
-            )
+            return <MemberField member={member} renderField={renderField} key={member.key} />
           }
 
           return (
             <FormFieldSet
-              key={`fieldset-${member.fieldSet.name}`}
+              key={member.key}
               title={member.fieldSet.title}
               collapsible={member.fieldSet.collapsible}
               collapsed={member.fieldSet.collapsed}
@@ -125,7 +116,7 @@ export const ObjectInput = memo(
                 <MemberField
                   member={fieldsetMember}
                   renderField={renderField}
-                  key={fieldsetMember.field.name}
+                  key={fieldsetMember.key}
                 />
               ))}
             </FormFieldSet>

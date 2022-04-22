@@ -31,7 +31,7 @@ import {
 import {MAX_FIELD_DEPTH} from './constants'
 import {getItemType} from './utils/getItemType'
 import {getCollapsedWithDefaults} from './utils/getCollapsibleOptions'
-import {pathFor, startsWith, isEqual} from '@sanity/util/paths'
+import {pathFor, startsWith, isEqual, toString} from '@sanity/util/paths'
 import {FormFieldPresence} from '../../presence'
 
 function isFieldEnabledByGroupFilter(
@@ -124,6 +124,7 @@ function prepareFieldProps(props: {
       presence: parent.presence,
       path: fieldPath,
       level: fieldLevel,
+      focusPath: parent.focusPath,
       collapsedFields: collapsedFields,
       collapsedFieldSets: collapsedFieldSets,
       onChange: fieldOnChange,
@@ -156,6 +157,7 @@ function prepareFieldProps(props: {
       title: field.type.title,
       description: field.type.description,
       level: fieldLevel,
+      id: toString(fieldPath),
       index: index,
       hidden:
         scopedInputProps.hidden ||
@@ -167,6 +169,7 @@ function prepareFieldProps(props: {
       groups: scopedInputProps.groups,
       onChange: fieldOnChange,
       path: fieldPath,
+      focused: isEqual(fieldPath, parent.focusPath),
       collapsible: defaultCollapsedState.collapsible,
       collapsed,
       presence: fieldPresence,
@@ -192,6 +195,7 @@ function prepareFieldProps(props: {
       value: fieldValue,
       fieldGroupState,
       presence: scopedPresence,
+      focusPath: parent.focusPath,
       validation: scopedValidation,
       collapsedFields,
       collapsedFieldSets,
@@ -215,6 +219,7 @@ function prepareFieldProps(props: {
       kind: 'array',
       type: field.type,
       name: field.name,
+      id: toString(fieldPath),
       title: field.type.title,
       validation: fieldValidation,
       presence: fieldPresence,
@@ -222,6 +227,7 @@ function prepareFieldProps(props: {
       level: fieldLevel,
       path: fieldPath,
       index: index,
+      focused: isEqual(parent.focusPath, fieldPath),
       hidden: parent.hidden || preparedInputProps.hidden,
       readOnly: parent.readOnly || preparedInputProps.readOnly,
       members: preparedInputProps.members,
@@ -258,10 +264,12 @@ function prepareFieldProps(props: {
       path: fieldPath,
       title: field.type.title,
       description: field.type.description,
-      level: parent.level,
-      index: index,
+      level: fieldLevel,
+      index,
+      id: toString(fieldPath),
       onChange: fieldOnChange,
       onFocus: fieldOnFocus,
+      focused: isEqual(parent.focusPath, fieldPath),
       presence: fieldPresence,
       validation: fieldValidation,
       readOnly: parent.readOnly || fieldConditionalProps.readOnly,
@@ -285,6 +293,7 @@ interface RawProps<SchemaType, T> {
   hidden?: boolean
   readOnly?: boolean
   path: Path
+  focusPath: Path
   fieldGroupState?: StateTree<string>
   collapsedFields?: StateTree<boolean>
   collapsedFieldSets?: StateTree<boolean>
@@ -343,6 +352,7 @@ function prepareObjectInputProps<T>(
       readOnly: props.readOnly,
       hidden,
       path: props.path,
+      id: toString(props.path),
       level: props.level,
       members: [],
       groups: [],
@@ -405,6 +415,7 @@ function prepareObjectInputProps<T>(
         {
           type: 'field',
           field: fieldProps,
+          key: `field-${fieldProps.name}`,
         },
       ]
     }
@@ -432,6 +443,7 @@ function prepareObjectInputProps<T>(
         ? [
             {
               type: 'field',
+              key: `field-${fieldMember.name}`,
               field: fieldMember,
             },
           ]
@@ -446,6 +458,7 @@ function prepareObjectInputProps<T>(
     return [
       {
         type: 'fieldSet',
+        key: `fieldset-${fieldSet.name}`,
         fieldSet: {
           name: fieldSet.name,
           title: fieldSet.title,
@@ -473,6 +486,7 @@ function prepareObjectInputProps<T>(
     readOnly: props.readOnly,
     hidden: props.hidden,
     path: props.path,
+    id: toString(props.path),
     level: props.level,
     validation: props.validation,
     presence: props.presence,
@@ -515,7 +529,7 @@ function prepareArrayInputProps<T>(props: RawProps<ArraySchemaType, T>): ArrayFo
           startsWith(itemPath, marker.path)
         )
 
-        const itemProps = {
+        const itemProps: RawProps<ObjectSchemaType, unknown> = {
           type: itemType,
           onChange: handleChange,
           level: props.level + 1,
@@ -524,6 +538,7 @@ function prepareArrayInputProps<T>(props: RawProps<ArraySchemaType, T>): ArrayFo
           presence: props.presence,
           value: item,
           path: itemPath,
+          focusPath: props.focusPath,
           currentUser: props.currentUser,
           onFocus: props.onFocus,
           onSetCollapsedField: props.onSetCollapsedField,
@@ -562,6 +577,7 @@ export interface PreparedProps<T> {
   level: number
   readOnly?: boolean
   path: Path
+  id: string
   members: ObjectMember[]
   groups?: FieldGroup[]
 

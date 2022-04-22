@@ -34,6 +34,7 @@ export type ObjectMember = FieldMember | FieldSetMember
 export interface FieldMember {
   type: 'field'
   field: FieldProps
+  key: string
 }
 
 export interface FieldSetProps {
@@ -48,6 +49,7 @@ export interface FieldSetProps {
 
 export interface FieldSetMember {
   type: 'fieldSet'
+  key: string
   fieldSet: FieldSetProps
 }
 
@@ -55,7 +57,11 @@ interface BaseFieldProps {
   name: string
   title?: string
   description?: string
+  // id is a stringified version of the path
+  id: string
+  // the full content path of this input
   path: Path
+  focused: boolean
   presence: FormFieldPresence[]
   validation: ValidationMarker[]
   index: number
@@ -116,6 +122,7 @@ export type FieldProps =
 export type RenderFieldCallback = (renderFieldProps: RenderFieldCallbackArg) => React.ReactNode
 export type RenderFieldCallbackArg = FieldProps & {
   onChange: (event: PatchEvent) => void
+  focusRef: React.Ref<any>
 }
 export type RenderFieldSetCallback = (
   renderFieldSetProps: RenderFieldSetCallbackArg

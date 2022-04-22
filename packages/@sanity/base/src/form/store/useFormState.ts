@@ -30,6 +30,7 @@ export function useFormState(
     onFocus,
     validation,
     presence,
+    focusPath,
   }: {
     onChange: (event: PatchEvent) => void
     onFocus: (nextFocusPath: Path) => void
@@ -79,6 +80,7 @@ export function useFormState(
       collapsedFields,
       collapsedFieldSets,
       value,
+      focusPath,
       path: pathFor([]),
       onChange,
       onFocus,
@@ -94,6 +96,7 @@ export function useFormState(
     value,
     presence,
     validation,
+    focusPath,
     fieldGroupState,
     handleSetActiveFieldGroup,
     handleOnSetCollapsedField,
