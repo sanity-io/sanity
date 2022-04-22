@@ -168,10 +168,14 @@ export function FormView(props: FormViewProps) {
               </Box>
             ) : (
               <SanityFormBuilder
+                id="root"
                 __internal_patchChannel={patchChannel}
                 changesOpen={changesOpen}
                 compareValue={compareValue}
                 // filterField={filterField}
+                level={formState.level}
+                path={formState.path}
+                focused={formState.focused}
                 onBlur={handleBlur}
                 onChange={handleChange}
                 presence={formState.presence}
@@ -183,7 +187,7 @@ export function FormView(props: FormViewProps) {
                 value={formState.value}
                 members={formState.members}
                 groups={formState.groups}
-                onSelectGroup={formState.onSelectFieldGroup}
+                onSelectFieldGroup={formState.onSelectFieldGroup}
                 onSetCollapsed={formState.onSetCollapsed}
               />
             )

@@ -1,59 +1,36 @@
 /* eslint-disable react/no-unused-prop-types,react/jsx-handler-names */
 
-import {ObjectSchemaTypeWithOptions, Path, ValidationMarker} from '@sanity/types'
 import React, {ForwardedRef, forwardRef, memo, useMemo} from 'react'
-import {useId} from '@reach/auto-id'
-import {Text} from '@sanity/ui'
-import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {FormFieldSet} from '../../../components/formField'
-import {FormFieldPresence} from '../../../presence'
-import {FormInputProps} from '../../types'
-import {FieldGroup, ObjectMember, RenderFieldCallback} from '../../store/types'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {UnknownFields} from './UnknownFields'
 import {FieldGroupTabsWrapper} from './ObjectInput.styled'
 import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'
 import {MemberField} from './MemberField'
-
-export interface ObjectInputProps
-  extends FormInputProps<Record<string, unknown>, ObjectSchemaTypeWithOptions> {
-  members: ObjectMember[]
-  groups?: FieldGroup[]
-  renderField: RenderFieldCallback
-  onSelectGroup: (name: string) => void
-
-  collapsible?: boolean
-  collapsed?: boolean
-
-  onSetCollapsed: (collapsed: boolean) => void
-}
+import {ObjectInputComponentProps} from '../../types_v3'
 
 // eslint-disable-next-line no-empty-function,@typescript-eslint/no-empty-function
-
-const EMPTY_VALIDATION: ValidationMarker[] = EMPTY_ARRAY
-const EMPTY_PRESENCE: FormFieldPresence[] = EMPTY_ARRAY
-const EMPTY_PATH: Path = EMPTY_ARRAY
 
 // disable eslint false positive
 // eslint-disable-next-line react/display-name
 export const ObjectInput = memo(
   forwardRef(function ObjectInput(
-    props: ObjectInputProps,
+    props: ObjectInputComponentProps,
     forwardedRef: ForwardedRef<HTMLDivElement>
   ) {
     const {
       type,
       groups,
       members,
-      presence = EMPTY_PRESENCE,
-      validation = EMPTY_VALIDATION,
+      presence,
+      validation,
       onChange,
       renderField,
       level = 0,
       value,
       id,
       path,
-      onSelectGroup,
+      onSelectFieldGroup,
       onSetCollapsed,
     } = props
 
@@ -92,7 +69,7 @@ export const ObjectInput = memo(
           <FieldGroupTabsWrapper $level={level} data-testid="field-groups">
             <FieldGroupTabs
               inputId={id}
-              onClick={onSelectGroup}
+              onClick={onSelectFieldGroup}
               groups={groups}
               shouldAutoFocus={path.length === 0}
             />

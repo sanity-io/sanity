@@ -60,7 +60,7 @@ export function renderForm(props: {
         type={docType!}
         validation={[]}
         value={value}
-        {...restProps}
+        {...(restProps as FIXME)}
       />
     )
   }

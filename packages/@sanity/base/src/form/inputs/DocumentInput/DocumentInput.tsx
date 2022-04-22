@@ -1,23 +1,8 @@
 /* eslint-disable react/no-unused-prop-types */
 
 import React, {ForwardedRef, forwardRef, memo} from 'react'
-import {ObjectSchemaTypeWithOptions} from '@sanity/types'
-import {FieldGroup, ObjectMember, RenderFieldCallback} from '../../store/types'
-import {FormInputProps} from '../../types'
 import {ObjectInput} from '../ObjectInput'
-
-export interface DocumentInputProps
-  extends FormInputProps<Record<string, unknown>, ObjectSchemaTypeWithOptions> {
-  members: ObjectMember[]
-  groups?: FieldGroup[]
-  renderField: RenderFieldCallback
-  onSelectGroup: (name: string) => void
-
-  collapsible?: boolean
-  collapsed?: boolean
-
-  onSetCollapsed: (collapsed: boolean) => void
-}
+import {ObjectInputComponentProps} from '../../types_v3'
 
 /**
  * Please read this about collapsible fields
@@ -31,7 +16,7 @@ export interface DocumentInputProps
 // eslint-disable-next-line react/display-name
 export const DocumentInput = memo(
   forwardRef(function DocumentInput(
-    props: DocumentInputProps,
+    props: ObjectInputComponentProps,
     forwardedRef: ForwardedRef<HTMLDivElement>
   ) {
     return <ObjectInput ref={forwardedRef} {...props} />

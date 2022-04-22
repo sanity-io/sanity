@@ -157,6 +157,10 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [documentId, presenceStore, setFocusPath]
   )
 
+  const handleBlur = useCallback((blurredPath: Path) => {
+    // todo
+  }, [])
+
   const patchRef = useRef<(event: PatchEvent) => void>(() => {
     throw new Error('Nope')
   })
@@ -235,6 +239,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     value,
     onChange: handleChange,
     onFocus: handleFocus,
+    onBlur: handleBlur,
     validation,
     focusPath,
     presence: documentPresence || [],
@@ -255,6 +260,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     editState,
     focusPath,
     handleChange,
+    handleFocus,
     handleHistoryClose,
     handleHistoryOpen,
     handleInspectClose,

@@ -121,26 +121,3 @@ export type FieldProps =
   | ArrayFieldProps
   | NumberFieldProps
   | BooleanFieldProps
-
-export type RenderFieldCallbackArg = FieldProps & {
-  onChange: (event: PatchEvent) => void
-  focusRef: React.Ref<any>
-}
-export type RenderFieldCallback = (renderFieldProps: RenderFieldCallbackArg) => React.ReactNode
-
-export type RenderArrayItemCallback = (
-  renderArrayItemProps: RenderArrayItemCallbackArg
-) => React.ReactNode
-
-export type RenderArrayItemCallbackArg = ArrayMember & {
-  onChange: (event: PatchEvent) => void
-  focusRef: React.Ref<any>
-}
-
-export type RenderFieldSetCallback = (
-  renderFieldSetProps: RenderFieldSetCallbackArg
-) => React.ReactNode
-
-export type RenderFieldSetCallbackArg = FieldSetProps & {
-  children?: React.ReactNode
-}

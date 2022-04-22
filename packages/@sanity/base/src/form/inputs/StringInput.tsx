@@ -1,13 +1,11 @@
 import React, {useMemo} from 'react'
-import {isValidationErrorMarker, StringSchemaType} from '@sanity/types'
+import {isValidationErrorMarker} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {FormField} from '../../components/formField'
-import {FormInputProps} from '../types'
 import {PatchEvent, set, unset} from '../patch'
+import {StringInputComponentProps} from '../types_v3'
 
-export type StringInputProps = FormInputProps<string, StringSchemaType>
-
-export function StringInput(props: StringInputProps) {
+export function StringInput(props: StringInputComponentProps) {
   const {
     value,
     readOnly,

@@ -4,7 +4,6 @@ import {
   NumberSchemaType,
   ObjectField,
   ObjectSchemaType,
-  ObjectSchemaTypeWithOptions,
   Path,
   SchemaType,
   StringSchemaType,
@@ -83,7 +82,7 @@ export interface FormArrayInputFunctionsProps<SchemaType extends ArraySchemaType
  * @alpha
  */
 export interface FormBuilderFilterFieldFn {
-  (type: ObjectSchemaTypeWithOptions, field: ObjectField, selectedLanguageIds: string[]): boolean
+  (type: ObjectSchemaType, field: ObjectField, selectedLanguageIds: string[]): boolean
 }
 
 /**
@@ -104,13 +103,10 @@ export type FormInputProps<
     : SchemaType
 > = {
   compareValue?: T
+  focusPath?: Path
   level: number
   validation: ValidationMarker[]
-  id: string
-
-  path: Path
-
-  presence: FormFieldPresence[]
+  onBlur?: () => void
   // @todo allow implementers to pass a native DOM ChangeEvent
   // @todo allow implementers to pass an array of patch objects
   // @todo allow implementers to simply pass the new value
@@ -118,11 +114,10 @@ export type FormInputProps<
   onChange: (event: PatchEvent) => void
   // NOTE: we should allow implementers of custom inputs to forward the passed onFocus to native
   // element's onFocus handler, but use Path consistently on internal inputs
-  onFocus: (event: React.FocusEvent) => void
-  onBlur: (event: React.FocusEvent) => void
-  focusRef: React.Ref<any>
-
-  // @todo
+  onFocus: (pathOrEvent?: Path | React.FocusEvent<any>) => void
+  presence: FormFieldPresence[]
+  // @todo: should the `readOnly` use the `ConditionalProperty` type?
+  // readOnly?: ConditionalProperty
   readOnly?: boolean
   type: S
   value?: T

@@ -288,9 +288,8 @@ export interface ObjectSchemaType extends BaseSchemaType {
    */
   orderings?: SortOrdering[]
 
-  options: {
-    // @todo
-  }
+  // @todo
+  options?: any
 }
 
 export interface ObjectSchemaTypeWithOptions extends Omit<ObjectSchemaType, 'options'> {

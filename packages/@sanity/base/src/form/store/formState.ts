@@ -1,21 +1,26 @@
 /* eslint-disable no-else-return */
 import {
   ArraySchemaType,
+  BooleanSchemaType,
   CurrentUser,
   isArraySchemaType,
   isObjectSchemaType,
+  NumberSchemaType,
   ObjectField,
   ObjectSchemaType,
   Path,
   SchemaType,
+  StringSchemaType,
   User,
   ValidationMarker,
 } from '@sanity/types'
 
 import {pick, castArray} from 'lodash'
 import React, {ComponentType} from 'react'
+import {pathFor, startsWith, isEqual, toString} from '@sanity/util/paths'
 import {createProtoValue} from '../utils/createProtoValue'
 import {PatchEvent, setIfMissing} from '../patch'
+import {FormFieldPresence} from '../../presence'
 import {callConditionalProperties, callConditionalProperty} from './conditional-property'
 import {
   BooleanFieldProps,
@@ -31,8 +36,6 @@ import {
 import {MAX_FIELD_DEPTH} from './constants'
 import {getItemType} from './utils/getItemType'
 import {getCollapsedWithDefaults} from './utils/getCollapsibleOptions'
-import {pathFor, startsWith, isEqual, toString} from '@sanity/util/paths'
-import {FormFieldPresence} from '../../presence'
 
 function isFieldEnabledByGroupFilter(
   // the groups config for the "enclosing object" type
@@ -134,6 +137,7 @@ function prepareFieldProps(props: {
       collapsedFieldSets: collapsedFieldSets,
       onChange: fieldOnChange,
       onFocus: parent.onFocus,
+      onBlur: parent.onBlur,
       onSetActiveFieldGroupAtPath: parent.onSetActiveFieldGroupAtPath,
       onSetCollapsedField: parent.onSetCollapsedField,
       onSetCollapsedFieldSet: parent.onSetCollapsedFieldSet,
@@ -208,6 +212,7 @@ function prepareFieldProps(props: {
       path: fieldPath,
       onChange: fieldOnChange,
       onFocus: parent.onFocus,
+      onBlur: parent.onBlur,
       onSetCollapsedField: parent.onSetCollapsedField,
       onSetCollapsedFieldSet: parent.onSetCollapsedFieldSet,
       onSetActiveFieldGroupAtPath: parent.onSetActiveFieldGroupAtPath,
@@ -309,6 +314,7 @@ interface RawProps<SchemaType, T> {
   level: number
   onChange: (patchEvent: PatchEvent) => void
   onFocus: (path: Path) => void
+  onBlur: (path: Path) => void
 }
 
 function prepareObjectInputProps<T>(
@@ -341,6 +347,12 @@ function prepareObjectInputProps<T>(
     (focusEvent: React.FocusEvent) => props.onFocus(props.path)
   )
 
+  const handleBlur = getScopedCallbackForPath(
+    props.onBlur,
+    props.path,
+    (focusEvent: React.FocusEvent) => props.onBlur(props.path)
+  )
+
   const handleSetCollapsed = getScopedCallbackForPath(
     props.onSetCollapsedField,
     props.path,
@@ -362,6 +374,7 @@ function prepareObjectInputProps<T>(
       validation: [],
       presence: [],
       onFocus: handleFocus,
+      onBlur: handleBlur,
       onChange: props.onChange,
       onSelectFieldGroup: handleSetActiveFieldGroup,
       onSetCollapsed: handleSetCollapsed,
@@ -497,6 +510,7 @@ function prepareObjectInputProps<T>(
     presence: props.presence,
     onChange: props.onChange,
     onFocus: handleFocus,
+    onBlur: handleBlur,
     onSelectFieldGroup: handleSetActiveFieldGroup,
     onSetCollapsed: handleSetCollapsed,
     members,
@@ -532,6 +546,12 @@ function prepareArrayInputProps<T extends unknown[]>(
     (focusEvent: React.FocusEvent) => props.onFocus(props.path)
   )
 
+  const handleBlur = getScopedCallbackForPath(
+    props.onBlur,
+    props.path,
+    (focusEvent: React.FocusEvent) => props.onBlur(props.path)
+  )
+
   const handleSetCollapsed = getScopedCallbackForPath(
     props.onSetCollapsedField,
     props.path,
@@ -552,6 +572,7 @@ function prepareArrayInputProps<T extends unknown[]>(
       validation: [],
       presence: [],
       onFocus: handleFocus,
+      onBlur: handleBlur,
       onChange: handleChange,
       onSetCollapsed: handleSetCollapsed,
     }
@@ -586,6 +607,7 @@ function prepareArrayInputProps<T extends unknown[]>(
         focusPath: props.focusPath,
         currentUser: props.currentUser,
         onFocus: props.onFocus,
+        onBlur: props.onBlur,
         onSetCollapsedField: props.onSetCollapsedField,
         onSetCollapsedFieldSet: props.onSetCollapsedFieldSet,
         onSetActiveFieldGroupAtPath: props.onSetActiveFieldGroupAtPath,
@@ -609,6 +631,7 @@ function prepareArrayInputProps<T extends unknown[]>(
     validation: props.validation,
     presence: [],
     onFocus: handleFocus,
+    onBlur: handleBlur,
     onChange: handleChange,
     onSetCollapsed: handleSetCollapsed,
   }
@@ -634,7 +657,7 @@ export interface BaseInputProps<S extends SchemaType, T = unknown> {
   focused: boolean
 
   onFocus: (event: React.FocusEvent) => void
-  // onBlur: (event: React.FocusEvent) => void
+  onBlur: (event: React.FocusEvent) => void
 
   presence: FormFieldPresence[]
   validation: ValidationMarker[]

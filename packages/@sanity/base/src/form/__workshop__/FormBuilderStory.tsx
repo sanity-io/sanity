@@ -60,23 +60,24 @@ export default function FormBuilderStory() {
   return (
     <Card paddingX={4} paddingY={[4, 5, 6, 7]} style={{minHeight: '100%', position: 'relative'}}>
       <Container width={1}>
-        <SanityFormBuilder
-          __internal_patchChannel={patchChannel}
-          autoFocus
-          changesOpen={false}
-          compareValue={value}
-          // filterField={filterField}
-          focusPath={focusPath}
-          validation={validation}
-          onBlur={handleBlur}
-          onChange={handleChange}
-          onFocus={handleFocus}
-          presence={presence}
-          readOnly={false}
-          schema={schema}
-          type={schemaType}
-          value={value}
-        />
+        TODO
+        {/*<SanityFormBuilder*/}
+        {/*  __internal_patchChannel={patchChannel}*/}
+        {/*  autoFocus*/}
+        {/*  changesOpen={false}*/}
+        {/*  compareValue={value}*/}
+        {/*  // filterField={filterField}*/}
+        {/*  focusPath={focusPath}*/}
+        {/*  validation={validation}*/}
+        {/*  onBlur={handleBlur}*/}
+        {/*  onChange={handleChange}*/}
+        {/*  onFocus={handleFocus}*/}
+        {/*  presence={presence}*/}
+        {/*  readOnly={false}*/}
+        {/*  schema={schema}*/}
+        {/*  type={schemaType}*/}
+        {/*  value={value}*/}
+        {/*/>*/}
       </Container>
     </Card>
   )

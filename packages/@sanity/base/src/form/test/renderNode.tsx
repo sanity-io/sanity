@@ -6,7 +6,12 @@ import {noop} from 'lodash'
 import React, {forwardRef} from 'react'
 import {StudioProvider, useSource} from '../../studio'
 import {createConfig} from '../../config'
-import {FormInputProps, FormInputComponentResolver, FormPreviewComponentResolver} from '../types'
+import {
+  FormInputProps,
+  FormInputComponentResolver,
+  FormPreviewComponentResolver,
+  FIXME,
+} from '../types'
 import {route, RouterProvider} from '../../router'
 import {FormBuilderProvider} from '../FormBuilderProvider'
 import {ObjectInput} from '../inputs/ObjectInput'
@@ -27,7 +32,7 @@ function GenericPreview() {
 
 const inputResolver: FormInputComponentResolver = (type: SchemaType) => {
   if (is('object', type)) {
-    return ObjectInput
+    return ObjectInput as FIXME
   }
   return GenericInput
 }

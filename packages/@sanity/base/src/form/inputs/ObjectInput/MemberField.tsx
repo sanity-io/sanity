@@ -1,6 +1,7 @@
 import React, {memo, useRef} from 'react'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
-import {FieldMember, RenderFieldCallback} from '../../store/types'
+import {RenderFieldCallback} from '../../types_v3'
+import {FieldMember} from '../../store/types'
 
 interface Props {
   member: FieldMember

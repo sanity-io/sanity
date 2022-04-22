@@ -1,47 +1,30 @@
-import {ObjectSchemaType, Path, Schema, SchemaType, ValidationMarker} from '@sanity/types'
+import {Schema, SchemaType} from '@sanity/types'
 import React, {useCallback, useEffect, useRef} from 'react'
-import {PatchEvent} from '../patch'
-import {FormFieldPresence} from '../../presence'
 import {FormBuilderInputInstance} from '../FormBuilderInput'
 import {PatchChannel} from '../patchChannel'
-import {MutationPatch, toMutationPatches} from '../utils/mutationPatch'
 import {DocumentInput} from '../inputs/DocumentInput/DocumentInput'
-import {FieldGroup, ObjectMember, RenderFieldCallbackArg} from '../store/types'
 import {useSource} from '../../studio'
 import {FormInputProps} from '../types'
 import {fallbackInputs} from '../fallbackInputs'
 import {SanityFormBuilderProvider} from './SanityFormBuilderProvider'
 import {resolveInputComponent as defaultInputResolver} from './inputResolver/inputResolver'
-import {Card, Text} from '@sanity/ui'
+import {RenderFieldCallbackArg} from '../types_v3'
+import {ObjectInputProps} from '../store/formState'
 
 /**
  * @alpha
  */
-export interface SanityFormBuilderProps {
+export interface SanityFormBuilderProps extends ObjectInputProps {
+  changesOpen: boolean
+  compareValue?: any | null
   /**
    * @internal Considered internal – do not use.
    */
   __internal_patchChannel: PatchChannel // eslint-disable-line camelcase
   autoFocus?: boolean
-  changesOpen: boolean
-  compareValue?: any | null
-  // filterField: FormBuilderFilterFieldFn
-  onBlur?: () => void
-  onChange: (patches: MutationPatch[]) => void
-  onFocus: (event: React.FocusEvent) => void
-  presence: FormFieldPresence[]
   readOnly?: boolean
-  members: ObjectMember[]
-  groups?: FieldGroup[]
-  onSelectGroup: (groupName: string) => void
-  onSetCollapsed: (collapsed: boolean) => void
   schema: Schema
-  type: ObjectSchemaType
-  validation: ValidationMarker[]
-  value?: any | null
 }
-
-const EMPTY = [] as never[]
 
 /**
  * @alpha
@@ -50,14 +33,13 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
   const {
     __internal_patchChannel: patchChannel,
     autoFocus,
-    changesOpen,
-    compareValue,
-    // filterField,
-    focusPath,
     onBlur,
+    id,
+    path,
+    focused,
     onChange,
     onFocus,
-    onSelectGroup,
+    onSelectFieldGroup,
     onSetCollapsed,
     presence,
     readOnly,
@@ -75,11 +57,6 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
   useEffect(() => {
     if (autoFocus) inputRef.current?.focus()
   }, [autoFocus])
-
-  const handleChange = useCallback(
-    (patchEvent: PatchEvent) => onChange(toMutationPatches(patchEvent.patches)),
-    [onChange]
-  )
 
   const resolveInputComponent = useCallback(
     (inputType: SchemaType) => {
@@ -104,8 +81,7 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
         //   <Text>Presence: {JSON.stringify(field.presence)}</Text>
         <Input
           {...field}
-          validation={field.validation || []}
-          presence={field.presence || []}
+          /* @ts-ignore */
           renderField={renderField}
         />
         // </Card>
@@ -118,17 +94,20 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
     <SanityFormBuilderProvider __internal_patchChannel={patchChannel} schema={schema} value={value}>
       <DocumentInput
         level={0}
+        id={id}
+        path={path}
+        focused={focused}
         onBlur={onBlur}
-        onChange={handleChange}
+        onChange={onChange}
         onFocus={onFocus}
         presence={presence}
         validation={validation}
         readOnly={readOnly}
-        ref={inputRef}
+        ref={inputRef as any}
         type={type}
         members={members}
         groups={groups}
-        onSelectGroup={onSelectGroup}
+        onSelectFieldGroup={onSelectFieldGroup}
         onSetCollapsed={onSetCollapsed}
         renderField={renderField}
         value={value}

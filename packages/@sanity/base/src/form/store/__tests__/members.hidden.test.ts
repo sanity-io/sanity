@@ -1,6 +1,7 @@
 import Schema from '@sanity/schema'
-import {ConditionalProperty} from '@sanity/types'
+import {ConditionalProperty, ObjectSchemaType} from '@sanity/types'
 import {prepareFormProps} from '../formState'
+import {DEFAULT_PROPS} from './shared'
 
 // eslint-disable-next-line no-empty-function,@typescript-eslint/no-empty-function
 const noop = () => {}
@@ -73,20 +74,20 @@ function getBookType(properties: {
   }).get('book')
 }
 
-const MOCK_USER = {id: 'bjoerge', email: 'bjoerge@gmail.com', name: 'Bjørge', roles: []}
-
 test('it omits the hidden member field from the members array', () => {
-  const bookType = getBookType({
+  const bookType: ObjectSchemaType = getBookType({
     subtitle: {hidden: () => true},
   })
-  const result = prepareFormProps(bookType, {
+  const result = prepareFormProps({
+    ...DEFAULT_PROPS,
+    type: bookType,
     document: {_id: 'foo', _type: 'book'},
-    onSetFieldGroupState: noop,
-    level: 0,
-    currentUser: MOCK_USER,
-    onChange: noop,
   })
 
+  expect(result.hidden).toBe(false)
+  if (result.hidden) {
+    throw new Error('should not be hidden')
+  }
   const fieldNames = result.members.map((member) => member.type === 'field' && member.field.name)
   expect(fieldNames).not.toContain('subtitle')
 })
@@ -95,14 +96,16 @@ test('it omits nested hidden members from the members array', () => {
   const bookType = getBookType({
     author: {hidden: () => true},
   })
-  const result = prepareFormProps(bookType, {
+  const result = prepareFormProps({
+    ...DEFAULT_PROPS,
+    type: bookType,
     document: {_id: 'foo', _type: 'book'},
-    onSetFieldGroupState: noop,
-    level: 0,
-    currentUser: MOCK_USER,
-    onChange: noop,
   })
 
+  expect(result.hidden).toBe(false)
+  if (result.hidden) {
+    throw new Error('should not be hidden')
+  }
   const fieldNames = result.members.map((member) => member.type === 'field' && member.field.name)
   expect(fieldNames).not.toContain('author')
 })
@@ -113,14 +116,15 @@ test('it "upward propagates" hidden fields', () => {
     authorFirstName: {hidden: () => true},
     authorLastName: {hidden: () => true},
   })
-  const result = prepareFormProps(bookType, {
+  const result = prepareFormProps({
+    type: bookType,
     document: {_id: 'foo', _type: 'book'},
-    onSetFieldGroupState: noop,
-    level: 0,
-    currentUser: MOCK_USER,
-    onChange: noop,
+    ...DEFAULT_PROPS,
   })
-
+  expect(result.hidden).toBe(false)
+  if (result.hidden) {
+    throw new Error('should not be hidden')
+  }
   const fieldNames = result.members.map((member) => member.type === 'field' && member.field.name)
   expect(fieldNames).not.toContain('author')
 })

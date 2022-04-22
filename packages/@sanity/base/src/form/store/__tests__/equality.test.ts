@@ -1,8 +1,7 @@
-import {prepareFormProps} from '../formState'
 import {ConditionalProperty} from '@sanity/types'
 import Schema from '@sanity/schema'
-// eslint-disable-next-line no-empty-function,@typescript-eslint/no-empty-function
-const noop = () => {}
+import {prepareFormProps} from '../formState'
+import {DEFAULT_PROPS} from './shared'
 
 function getBookType(properties: {
   root?: {hidden?: ConditionalProperty; readOnly?: ConditionalProperty}
@@ -71,29 +70,27 @@ function getBookType(properties: {
     ],
   }).get('book')
 }
-const MOCK_USER = {id: 'bjoerge', email: 'bjoerge@gmail.com', name: 'Bjørge', roles: []}
 
 test('it doesnt return new object equalities given the same input', () => {
   const document = {_id: 'test', _type: 'foo'}
   const bookType = getBookType({})
 
-  const state1 = prepareFormProps(bookType, {
-    value: document,
-    currentUser: MOCK_USER,
-    level: 0,
-    onChange: noop,
-    onSetCollapsedState: noop,
-    onSetFieldGroupState: noop,
+  const state1 = prepareFormProps({
+    ...DEFAULT_PROPS,
+    type: bookType,
+    document,
   })
 
-  const state2 = prepareFormProps(bookType, {
-    value: document,
-    currentUser: MOCK_USER,
-    level: 0,
-    onChange: noop,
-    onSetCollapsedState: noop,
-    onSetFieldGroupState: noop,
+  const state2 = prepareFormProps({
+    ...DEFAULT_PROPS,
+    type: bookType,
+    document,
   })
+  expect(state1.hidden).toBe(false)
+  expect(state2.hidden).toBe(false)
+  if (state1.hidden || state2.hidden) {
+    throw new Error('should not be hidden')
+  }
 
   expect(state1.value).toBe(state2.value)
   // expect(state1.members[0]).toBe(state2.members[0])

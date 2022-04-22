@@ -1,13 +1,13 @@
 import {isKeySegment, ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
-import {useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useLayoutEffect, useMemo, useRef, useState} from 'react'
 import {pathFor} from '@sanity/util/paths'
 import {useCurrentUser} from '../../datastores'
 import {PatchEvent} from '../patch'
+import {FormFieldPresence} from '../../presence'
 import {StateTree} from './types'
 import {ObjectInputProps, prepareFormProps, SanityDocument} from './formState'
 
 import {immutableReconcile} from './utils/immutableReconcile'
-import {FormFieldPresence} from '../../presence'
 
 function setAtPath<T>(currentTree: StateTree<T> | undefined, path: Path, value: T): StateTree<T> {
   if (path.length === 0) {
@@ -28,12 +28,14 @@ export function useFormState(
     value,
     onChange,
     onFocus,
+    onBlur,
     validation,
     presence,
     focusPath,
   }: {
     onChange: (event: PatchEvent) => void
     onFocus: (nextFocusPath: Path) => void
+    onBlur: (path: Path) => void
     value: Partial<SanityDocument>
     validation: ValidationMarker[]
     focusPath: Path
@@ -84,6 +86,7 @@ export function useFormState(
       path: pathFor([]),
       onChange,
       onFocus,
+      onBlur,
       level: 0,
       currentUser,
     })
@@ -105,6 +108,7 @@ export function useFormState(
     collapsedFieldSets,
     onChange,
     onFocus,
+    onBlur,
     currentUser,
   ])
 }

@@ -4,8 +4,8 @@ import {EditStateFor, TimelineController, Timeline} from '../../../datastores'
 import {DocumentActionComponent} from '../../actions'
 import {DocumentBadgeComponent} from '../../badges'
 import {PaneView, PaneMenuItem, PaneMenuItemGroup} from '../../types'
+import {ObjectInputProps} from '../../../form/store/formState'
 import {TimelineMode} from './types'
-import {PreparedProps} from '../../../form/store/formState'
 
 // @todo: provide a TS type for this
 type DocumentSchema = any
@@ -25,6 +25,7 @@ export interface DocumentPaneContextValue {
   documentType: string
   focusPath: Path
   handleChange: (patches: any[]) => void
+  handleFocus: (pathOrEvent: Path) => void
   handleHistoryClose: () => void
   handleHistoryOpen: () => void
   handleInspectClose: () => void
@@ -49,7 +50,7 @@ export interface DocumentPaneContextValue {
   title: string | null
   value: Partial<SanityDocument>
   views: PaneView[]
-  formState: PreparedProps<unknown> | {hidden: true}
+  formState: ObjectInputProps | {hidden: true}
 }
 
 export const DocumentPaneContext = createContext<DocumentPaneContextValue | null>(null)

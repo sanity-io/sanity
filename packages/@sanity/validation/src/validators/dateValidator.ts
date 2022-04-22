@@ -79,7 +79,7 @@ const dateValidators: Validators = {
     }
 
     const dateTimeOptions: DateTimeOptions = isRecord(context.type.options)
-      ? context.type.options
+      ? (context.type.options as DateTimeOptions)
       : {}
 
     const date = getFormattedDate(context.type.name, minDate, dateTimeOptions)
@@ -102,7 +102,7 @@ const dateValidators: Validators = {
     }
 
     const dateTimeOptions: DateTimeOptions = isRecord(context.type.options)
-      ? context.type.options
+      ? (context.type.options as DateTimeOptions)
       : {}
 
     const date = getFormattedDate(context.type.name, maxDate, dateTimeOptions)

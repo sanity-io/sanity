@@ -3,16 +3,16 @@
 import {ObjectSchemaType} from '@sanity/types'
 import React from 'react'
 import {FormInputProps, FIXME} from '../types'
-import {ObjectInput, ObjectInputProps} from '../inputs/ObjectInput/ObjectInput'
+import {ObjectInput} from '../inputs/ObjectInput/ObjectInput'
 import {renderNode} from './renderNode'
 
 export function renderObjectInput(options: {
   props?: Partial<FormInputProps<any, ObjectSchemaType>> & {ref?: React.Ref<FIXME>}
   type: FIXME // SchemaTypeDefinition
 }) {
-  return renderInput<ObjectInputProps>({
+  return renderInput({
     ...options,
-    render: (props) => <ObjectInput {...props} />,
+    render: (props) => <ObjectInput {...(props as FIXME)} />,
   })
 }
 
