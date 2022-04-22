@@ -27,6 +27,7 @@ import {
   StringFieldProps,
   ArrayFieldProps,
   StateTree,
+  ObjectFieldProps,
 } from './types'
 import {MAX_FIELD_DEPTH} from './constants'
 import {getItemType} from './utils/getItemType'
@@ -308,7 +309,7 @@ interface RawProps<SchemaType, T> {
 
 function prepareObjectInputProps<T>(
   props: RawProps<ObjectSchemaType, T>
-): PreparedProps<T> | {hidden: true} {
+): ObjectInputProps | {hidden: true} {
   const conditionalFieldContext = {
     value: props.value,
     parent: props.parent,
@@ -324,9 +325,10 @@ function prepareObjectInputProps<T>(
     return {hidden: true}
   }
 
-  const handleChange = getInputOnChangeMemo(props.onChange, (patchEvent: PatchEvent) =>
-    props.onChange(patchEvent.prepend([setIfMissing(createProtoValue(props.type))]))
-  )
+  const handleChange = getInputOnChangeMemo(props.onChange, (patchEvent: PatchEvent) => {
+    const ensureValue = props.level > 0 ? setIfMissing(createProtoValue(props.type)) : []
+    props.onChange(patchEvent.prepend(ensureValue))
+  })
 
   const handleSetActiveFieldGroup = getScopedCallbackForPath(
     props.onSetActiveFieldGroupAtPath,
@@ -348,9 +350,11 @@ function prepareObjectInputProps<T>(
 
   if (props.level === MAX_FIELD_DEPTH) {
     return {
-      value: props.value as T,
+      value: props.value as Record<string, unknown> | undefined,
       readOnly: props.readOnly,
       hidden,
+      type: props.type,
+      focused: isEqual(props.path, props.focusPath),
       path: props.path,
       id: toString(props.path),
       level: props.level,
@@ -482,13 +486,15 @@ function prepareObjectInputProps<T>(
   })
 
   return {
-    value: props.value as T,
+    value: props.value as Record<string, unknown> | undefined,
+    type: props.type,
     readOnly: props.readOnly,
     hidden: props.hidden,
     path: props.path,
     id: toString(props.path),
     level: props.level,
     validation: props.validation,
+    focused: isEqual(props.path, props.focusPath),
     presence: props.presence,
     onChange: handleChange,
     onFocus: handleFocus,
@@ -499,66 +505,113 @@ function prepareObjectInputProps<T>(
   }
 }
 
-function prepareArrayInputProps<T>(props: RawProps<ArraySchemaType, T>): ArrayFormState<T> {
-  const handleChange = (fieldChangeEvent: PatchEvent) => {
-    props.onChange(fieldChangeEvent.prepend([setIfMissing([])]))
+function prepareArrayInputProps<T extends unknown[]>(
+  props: RawProps<ArraySchemaType, T>
+): ArrayInputProps | {hidden: true} {
+  const conditionalFieldContext = {
+    value: props.value,
+    parent: props.parent,
+    document: props.document,
+    currentUser: props.currentUser,
   }
+  const {hidden, readOnly} = callConditionalProperties(props.type, conditionalFieldContext, [
+    'hidden',
+    'readOnly',
+  ])
+
+  if (hidden) {
+    return {hidden: true}
+  }
+
+  const handleChange = getInputOnChangeMemo(props.onChange, (patchEvent: PatchEvent) => {
+    console.log('handle change in array input')
+    props.onChange(patchEvent.prepend([setIfMissing([])]))
+  })
+
+  const handleFocus = getScopedCallbackForPath(
+    props.onFocus,
+    props.path,
+    (focusEvent: React.FocusEvent) => props.onFocus(props.path)
+  )
+
+  const handleSetCollapsed = getScopedCallbackForPath(
+    props.onSetCollapsedField,
+    props.path,
+    (collapsed: boolean) => props.onSetCollapsedField(collapsed, props.path)
+  )
 
   if (props.level === MAX_FIELD_DEPTH) {
     return {
       value: props.value as T,
-      readOnly: props.readOnly,
+      readOnly,
+      hidden,
+      type: props.type,
+      focused: isEqual(props.path, props.focusPath),
+      path: props.path,
+      id: toString(props.path),
       level: props.level,
-      onChange: handleChange,
       members: [],
+      validation: [],
+      presence: [],
+      onFocus: handleFocus,
+      onChange: handleChange,
+      onSetCollapsed: handleSetCollapsed,
     }
   }
 
+  const items = Array.isArray(props.value) ? props.value : []
+
   // create a members array for the object
-  const members = ((props.value as undefined | unknown[]) || []).flatMap(
-    (item, index): PreparedProps<unknown>[] => {
-      const itemType = getItemType(props.type, item)
-      if (isObjectSchemaType(itemType)) {
-        const key = (item as any)?._key
-        const itemPath = pathFor([...props.path, key])
+  const members = items.flatMap((item, index): ObjectInputProps[] => {
+    const itemType = getItemType(props.type, item)
+    if (isObjectSchemaType(itemType)) {
+      const key = (item as any)?._key
+      const itemPath = pathFor([...props.path, key])
 
-        const scopedPresence = props.presence.filter((presenceItem) =>
-          startsWith(itemPath, presenceItem.path)
-        )
-        const scopedValidation = props.validation.filter((marker) =>
-          startsWith(itemPath, marker.path)
-        )
+      const scopedPresence = props.presence.filter((presenceItem) =>
+        startsWith(itemPath, presenceItem.path)
+      )
 
-        const itemProps: RawProps<ObjectSchemaType, unknown> = {
-          type: itemType,
-          onChange: handleChange,
-          level: props.level + 1,
-          document: props.document,
-          validation: props.validation,
-          presence: props.presence,
-          value: item,
-          path: itemPath,
-          focusPath: props.focusPath,
-          currentUser: props.currentUser,
-          onFocus: props.onFocus,
-          onSetCollapsedField: props.onSetCollapsedField,
-          onSetCollapsedFieldSet: props.onSetCollapsedFieldSet,
-          onSetActiveFieldGroupAtPath: props.onSetActiveFieldGroupAtPath,
-        }
-        const prepared = prepareObjectInputProps(itemProps)
-        return prepared.hidden ? [] : [prepared]
-      }
-      return [] // todo: primitive arrays
+      const scopedValidation = props.validation.filter((marker) =>
+        startsWith(itemPath, marker.path)
+      )
+
+      const prepared = prepareObjectInputProps({
+        type: itemType,
+        onChange: handleChange,
+        level: props.level + 1,
+        document: props.document,
+        validation: props.validation,
+        presence: props.presence,
+        value: item,
+        path: itemPath,
+        focusPath: props.focusPath,
+        currentUser: props.currentUser,
+        onFocus: props.onFocus,
+        onSetCollapsedField: props.onSetCollapsedField,
+        onSetCollapsedFieldSet: props.onSetCollapsedFieldSet,
+        onSetActiveFieldGroupAtPath: props.onSetActiveFieldGroupAtPath,
+      })
+      return prepared.hidden ? [] : [prepared]
     }
-  )
-
+    console.log('SKIPPING PRIMITIVE ITEMS (TODO)')
+    return [] // todo: primitive arrays
+  })
   return {
     value: props.value as T,
-    readOnly: props.readOnly,
-    hidden: props.hidden,
+    readOnly,
+    hidden,
+    type: props.type,
+    focused: isEqual(props.path, props.focusPath),
+    path: props.path,
+    id: toString(props.path),
     level: props.level,
-    onChange: handleChange,
     members,
+    validation: props.validation,
+    presence: [],
+    onFocus: handleFocus,
+    onChange: handleChange,
+    onSetCollapsed: handleSetCollapsed,
   }
 }
 
@@ -570,39 +623,44 @@ export interface FieldPresence {
   lastActiveAt: string
 }
 
-export interface PreparedProps<T> {
-  value: T
+export interface BaseInputProps<S extends SchemaType, T = unknown> {
+  id: string
+  type: S
+  value: T | undefined
   onChange: (patchEvent: PatchEvent) => void
   hidden?: boolean
   level: number
   readOnly?: boolean
   path: Path
-  id: string
-  members: ObjectMember[]
-  groups?: FieldGroup[]
+  focused: boolean
 
-  onSelectFieldGroup: (groupName: string) => void
-  onSetCollapsed: (collapsed: boolean) => void
   onFocus: (event: React.FocusEvent) => void
   // onBlur: (event: React.FocusEvent) => void
 
   presence: FormFieldPresence[]
   validation: ValidationMarker[]
+}
+
+export interface ObjectInputProps
+  extends BaseInputProps<ObjectSchemaType, Record<string, unknown>> {
+  members: ObjectMember[]
+  groups?: FieldGroup[]
+
+  onSelectFieldGroup: (groupName: string) => void
+  onSetCollapsed: (collapsed: boolean) => void
   collapsed?: boolean
   collapsible?: boolean
 }
 
-export interface ArrayFormState<T> {
-  value: T
-  onChange: (patchEvent: PatchEvent) => void
-  hidden?: boolean
-  level: number
-  readOnly?: boolean
-  members: PreparedProps<unknown>[]
+export interface ArrayInputProps extends BaseInputProps<ArraySchemaType, unknown[]> {
+  members: ObjectInputProps[]
+  onSetCollapsed: (collapsed: boolean) => void
+  collapsed?: boolean
+  collapsible?: boolean
 }
 
 export function prepareFormProps<T extends SanityDocument>(
   props: RawProps<ObjectSchemaType, T>
-): PreparedProps<T> | {hidden: true} {
+): ObjectInputProps | {hidden: true} {
   return prepareObjectInputProps(props)
 }

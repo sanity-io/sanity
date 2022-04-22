@@ -10,8 +10,8 @@ import {
 import * as React from 'react'
 import {ComponentType} from 'react'
 import {PatchEvent} from '../patch'
-import {FieldPresence, PreparedProps} from './formState'
 import {FormFieldPresence} from '../../presence'
+import {ObjectInputProps} from './formState'
 
 export interface StateTree<T> {
   value: T | undefined
@@ -30,6 +30,9 @@ export interface FieldGroup {
 }
 
 export type ObjectMember = FieldMember | FieldSetMember
+
+// note: array members doesn't have the field/fieldSet divide
+export type ArrayMember = ObjectInputProps
 
 export interface FieldMember {
   type: 'field'
@@ -108,7 +111,7 @@ export interface ObjectFieldProps extends BaseFieldProps {
 export interface ArrayFieldProps extends BaseFieldProps {
   kind: 'array'
   type: ArraySchemaType
-  members: PreparedProps<unknown>[]
+  members: ObjectInputProps[]
   value?: unknown[]
 }
 
@@ -119,11 +122,21 @@ export type FieldProps =
   | NumberFieldProps
   | BooleanFieldProps
 
-export type RenderFieldCallback = (renderFieldProps: RenderFieldCallbackArg) => React.ReactNode
 export type RenderFieldCallbackArg = FieldProps & {
   onChange: (event: PatchEvent) => void
   focusRef: React.Ref<any>
 }
+export type RenderFieldCallback = (renderFieldProps: RenderFieldCallbackArg) => React.ReactNode
+
+export type RenderArrayItemCallback = (
+  renderArrayItemProps: RenderArrayItemCallbackArg
+) => React.ReactNode
+
+export type RenderArrayItemCallbackArg = ArrayMember & {
+  onChange: (event: PatchEvent) => void
+  focusRef: React.Ref<any>
+}
+
 export type RenderFieldSetCallback = (
   renderFieldSetProps: RenderFieldSetCallbackArg
 ) => React.ReactNode

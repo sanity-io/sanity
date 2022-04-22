@@ -4,7 +4,7 @@ import {pathFor} from '@sanity/util/paths'
 import {useCurrentUser} from '../../datastores'
 import {PatchEvent} from '../patch'
 import {StateTree} from './types'
-import {PreparedProps, prepareFormProps, SanityDocument} from './formState'
+import {ObjectInputProps, prepareFormProps, SanityDocument} from './formState'
 
 import {immutableReconcile} from './utils/immutableReconcile'
 import {FormFieldPresence} from '../../presence'
@@ -39,7 +39,7 @@ export function useFormState(
     focusPath: Path
     presence: FormFieldPresence[]
   }
-): PreparedProps<unknown> | {hidden: true} {
+): ObjectInputProps | {hidden: true} {
   // note: feel free to move these state pieces out of this hook
   const currentUser = useCurrentUser()
   const [fieldGroupState, onSetFieldGroupState] = useState<StateTree<string>>()
@@ -60,7 +60,7 @@ export function useFormState(
     []
   )
 
-  const prev = useRef<PreparedProps<unknown> | {hidden: true} | undefined>()
+  const prev = useRef<ObjectInputProps | {hidden: true} | undefined>()
 
   useLayoutEffect(() => {
     prev.current = undefined
