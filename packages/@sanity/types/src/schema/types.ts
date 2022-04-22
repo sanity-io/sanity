@@ -247,6 +247,8 @@ export interface ObjectSchemaType extends BaseSchemaType {
   // string array in the schema normalization/compilation step
   // eslint-disable-next-line camelcase
   __experimental_search: {path: string[]; weight: number; mapWith?: string}[]
+  // eslint-disable-next-line camelcase
+  __experimental_search_ignore: boolean
 }
 
 export interface ObjectSchemaTypeWithOptions extends ObjectSchemaType {
