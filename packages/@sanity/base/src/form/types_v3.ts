@@ -29,10 +29,12 @@ export type RenderFieldSetCallbackArg = FieldSetProps & {
 
 export interface ObjectInputComponentProps extends ObjectInputProps {
   renderField: RenderFieldCallback
+  focusRef: React.Ref<any>
 }
 
 export interface ArrayInputComponentProps extends ArrayInputProps {
   renderItem: RenderArrayItemCallback
+  focusRef: React.Ref<any>
 }
 
 export interface StringInputComponentProps extends BaseInputProps<StringSchemaType, string> {

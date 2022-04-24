@@ -95,6 +95,7 @@ export class ArrayInput extends React.Component<ArrayInputProps> {
   handlePrepend = (value: ArrayMember) => {
     this.handleInsert({item: value, position: 'before', path: [0]})
   }
+
   handleAppend = (value: ArrayMember) => {
     this.handleInsert({item: value, position: 'after', path: [-1]})
   }

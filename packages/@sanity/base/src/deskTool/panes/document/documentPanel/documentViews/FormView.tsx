@@ -1,7 +1,7 @@
 /* eslint-disable */
 import {SanityDocument} from '@sanity/client'
 import {isActionEnabled} from '@sanity/schema/_internal'
-import {Box, Code, Container, Flex, Spinner, Stack, Text} from '@sanity/ui'
+import {Box, Card, Code, Container, Flex, Spinner, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo} from 'react'
 import {tap} from 'rxjs/operators'
 import {useDocumentPane} from '../../useDocumentPane'
@@ -21,6 +21,7 @@ import {
   DocumentMutationEvent,
   DocumentRebaseEvent,
 } from '../../../../../datastores/document/buffered-doc/types'
+import {ObjectSchemaType} from '@sanity/types'
 
 interface FormViewProps {
   granted: boolean
@@ -179,10 +180,11 @@ export function FormView(props: FormViewProps) {
                 onBlur={handleBlur}
                 onChange={handleChange}
                 presence={formState.presence}
+                focusPath={formState.focusPath}
                 validation={formState.validation}
                 readOnly={isReadOnly}
                 schema={schema}
-                type={documentSchema}
+                type={formState.type as ObjectSchemaType}
                 onFocus={formState.onFocus}
                 value={formState.value}
                 members={formState.members}

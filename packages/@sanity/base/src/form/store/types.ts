@@ -100,6 +100,8 @@ export interface ObjectFieldProps extends BaseFieldProps {
   groups?: FieldGroup[]
   onSelectGroup: (name: string) => void
   onFocus: (focusEvent: React.FocusEvent) => void
+  onBlur: (focusEvent: React.FocusEvent) => void
+  focusPath: Path
   hidden?: boolean
   value?: Record<string, unknown>
   readOnly?: boolean
@@ -112,6 +114,7 @@ export interface ArrayFieldProps extends BaseFieldProps {
   kind: 'array'
   type: ArraySchemaType
   members: ObjectInputProps[]
+  focusPath: Path
   value?: unknown[]
 }
 

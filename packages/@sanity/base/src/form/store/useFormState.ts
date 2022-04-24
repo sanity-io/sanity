@@ -85,8 +85,8 @@ export function useFormState(
       focusPath,
       path: pathFor([]),
       onChange,
-      onFocus,
       onBlur,
+      onFocus,
       level: 0,
       currentUser,
     })

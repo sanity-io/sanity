@@ -1,3 +1,5 @@
+import {simpleArrayOfObjects} from '../schema/debug/simpleArrayOfObjects'
+
 export const STANDARD_INPUT_TYPES = [
   'arraysTest',
   'booleansTest',
@@ -33,6 +35,7 @@ export const PLUGIN_INPUT_TYPES = [
 
 export const DEBUG_INPUT_TYPES = [
   'actionsTest',
+  'simpleArrayOfObjects',
   'conditionalFieldsTest',
   'customInputsTest',
   'documentActionsTest',

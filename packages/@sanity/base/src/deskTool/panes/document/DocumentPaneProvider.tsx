@@ -157,16 +157,22 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [documentId, presenceStore, setFocusPath]
   )
 
-  const handleBlur = useCallback((blurredPath: Path) => {
-    // todo
-  }, [])
+  const handleBlur = useCallback(
+    (blurredPath: Path) => {
+      setFocusPath([])
+      // note: we're deliberately not syncing presence here since it would make the user avatar disappear when a
+      // user clicks outside a field without focusing another one
+    },
+    [setFocusPath]
+  )
 
   const patchRef = useRef<(event: PatchEvent) => void>(() => {
     throw new Error('Nope')
   })
 
-  patchRef.current = (event: PatchEvent) =>
+  patchRef.current = (event: PatchEvent) => {
     patch.execute(toMutationPatches(event.patches), initialValue.value)
+  }
 
   const handleChange = useCallback((event) => patchRef.current(event), [])
 

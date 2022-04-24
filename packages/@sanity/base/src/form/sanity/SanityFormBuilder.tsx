@@ -3,13 +3,15 @@ import React, {useCallback, useEffect, useRef} from 'react'
 import {FormBuilderInputInstance} from '../FormBuilderInput'
 import {PatchChannel} from '../patchChannel'
 import {DocumentInput} from '../inputs/DocumentInput/DocumentInput'
+
 import {useSource} from '../../studio'
 import {FormInputProps} from '../types'
 import {fallbackInputs} from '../fallbackInputs'
+import {RenderArrayItemCallbackArg, RenderFieldCallbackArg} from '../types_v3'
+import {ObjectInputProps} from '../store/formState'
+import {ChangeIndicatorProvider} from '../../components/changeIndicators'
 import {SanityFormBuilderProvider} from './SanityFormBuilderProvider'
 import {resolveInputComponent as defaultInputResolver} from './inputResolver/inputResolver'
-import {RenderFieldCallbackArg} from '../types_v3'
-import {ObjectInputProps} from '../store/formState'
 
 /**
  * @alpha
@@ -37,6 +39,7 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
     id,
     path,
     focused,
+    focusPath,
     onChange,
     onFocus,
     onSelectFieldGroup,
@@ -51,12 +54,7 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
     groups,
   } = props
 
-  const inputRef = useRef<FormBuilderInputInstance | null>(null)
   const {unstable_formBuilder: formBuilder} = useSource()
-
-  useEffect(() => {
-    if (autoFocus) inputRef.current?.focus()
-  }, [autoFocus])
 
   const resolveInputComponent = useCallback(
     (inputType: SchemaType) => {
@@ -77,14 +75,41 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
         return <div>No input resolved for type: {field.type.name}</div>
       }
       return (
-        // <Card radius={2} shadow={1} padding={2}>
-        //   <Text>Presence: {JSON.stringify(field.presence)}</Text>
-        <Input
-          {...field}
-          /* @ts-ignore */
-          renderField={renderField}
-        />
-        // </Card>
+        <ChangeIndicatorProvider path={field.path} value={field.value} compareValue={undefined}>
+          <Input
+            {...field}
+            validation={field.validation || []}
+            presence={field.presence || []}
+            renderField={renderField}
+            renderItem={renderItem}
+          />
+        </ChangeIndicatorProvider>
+      )
+    },
+    [resolveInputComponent]
+  )
+
+  const renderItem = useCallback(
+    (item: RenderArrayItemCallbackArg) => {
+      const Input = resolveInputComponent(item.type)
+      if (!Input) {
+        return <div>No input resolved for type: {item.type.name}</div>
+      }
+      return (
+        <ChangeIndicatorProvider
+          path={item.path}
+          focusPath={item.focusPath}
+          value={item.value}
+          compareValue={undefined}
+        >
+          <Input
+            {...item}
+            validation={item.validation || []}
+            presence={item.presence || []}
+            renderField={renderField}
+            renderItem={renderItem}
+          />
+        </ChangeIndicatorProvider>
       )
     },
     [resolveInputComponent]
@@ -97,13 +122,13 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
         id={id}
         path={path}
         focused={focused}
+        focusPath={focusPath}
         onBlur={onBlur}
         onChange={onChange}
         onFocus={onFocus}
         presence={presence}
         validation={validation}
         readOnly={readOnly}
-        ref={inputRef as any}
         type={type}
         members={members}
         groups={groups}

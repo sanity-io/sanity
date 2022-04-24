@@ -1,37 +1,34 @@
 /* eslint-disable no-else-return */
 import {
   ArraySchemaType,
-  BooleanSchemaType,
   CurrentUser,
   isArraySchemaType,
   isObjectSchemaType,
-  NumberSchemaType,
   ObjectField,
   ObjectSchemaType,
   Path,
   SchemaType,
-  StringSchemaType,
   User,
   ValidationMarker,
 } from '@sanity/types'
 
-import {pick, castArray} from 'lodash'
+import {castArray, pick} from 'lodash'
 import React, {ComponentType} from 'react'
-import {pathFor, startsWith, isEqual, toString} from '@sanity/util/paths'
+import {isEqual, pathFor, startsWith, toString, isSegmentEqual} from '@sanity/util/paths'
 import {createProtoValue} from '../utils/createProtoValue'
 import {PatchEvent, setIfMissing} from '../patch'
 import {FormFieldPresence} from '../../presence'
 import {callConditionalProperties, callConditionalProperty} from './conditional-property'
 import {
+  ArrayFieldProps,
   BooleanFieldProps,
   FieldGroup,
   FieldMember,
   FieldProps,
   NumberFieldProps,
   ObjectMember,
-  StringFieldProps,
-  ArrayFieldProps,
   StateTree,
+  StringFieldProps,
 } from './types'
 import {MAX_FIELD_DEPTH} from './constants'
 import {getItemType} from './utils/getItemType'
@@ -106,13 +103,19 @@ function prepareFieldProps(props: {
     }
   )
 
-  const fieldOnFocus = getScopedCallbackForPath(
-    parent.onFocus,
-    fieldPath,
-    (focusEvent: React.FocusEvent) => parent.onFocus(fieldPath)
+  const fieldOnFocus = getScopedCallbackForPath(parent.onFocus, fieldPath, () =>
+    parent.onFocus(fieldPath)
+  )
+
+  const fieldOnBlur = getScopedCallbackForPath(parent.onBlur, fieldPath, () =>
+    parent.onBlur(fieldPath)
   )
   const scopedPresence = parent.presence.filter((item) => startsWith(fieldPath, item.path))
   const scopedValidation = parent.validation.filter((item) => startsWith(fieldPath, item.path))
+
+  const scopedFocusPath = pathFor(
+    parent.focusPath[0] === field.name ? parent.focusPath.slice(1) : []
+  )
 
   if (isObjectSchemaType(field.type)) {
     const fieldValue = (parent.value as any)?.[field.name] as Record<string, unknown> | undefined
@@ -132,7 +135,7 @@ function prepareFieldProps(props: {
       presence: parent.presence,
       path: fieldPath,
       level: fieldLevel,
-      focusPath: parent.focusPath,
+      focusPath: scopedFocusPath,
       collapsedFields: collapsedFields,
       collapsedFieldSets: collapsedFieldSets,
       onChange: fieldOnChange,
@@ -178,12 +181,14 @@ function prepareFieldProps(props: {
       groups: scopedInputProps.groups,
       onChange: fieldOnChange,
       path: fieldPath,
+      focusPath: scopedFocusPath,
       focused: isEqual(fieldPath, parent.focusPath),
       collapsible: defaultCollapsedState.collapsible,
       collapsed,
       presence: fieldPresence,
       validation: fieldValidation,
       onFocus: fieldOnFocus,
+      onBlur: fieldOnBlur,
       onSetCollapsed: scopedInputProps.onSetCollapsed,
       onSelectGroup: scopedInputProps.onSelectFieldGroup,
 
@@ -204,7 +209,7 @@ function prepareFieldProps(props: {
       value: fieldValue,
       fieldGroupState,
       presence: scopedPresence,
-      focusPath: parent.focusPath,
+      focusPath: scopedFocusPath,
       validation: scopedValidation,
       collapsedFields,
       collapsedFieldSets,
@@ -236,6 +241,7 @@ function prepareFieldProps(props: {
       description: field.type.description,
       level: fieldLevel,
       path: fieldPath,
+      focusPath: scopedFocusPath,
       index: index,
       focused: isEqual(parent.focusPath, fieldPath),
       hidden: parent.hidden || preparedInputProps.hidden,
@@ -279,7 +285,8 @@ function prepareFieldProps(props: {
       id: toString(fieldPath),
       onChange: fieldOnChange,
       onFocus: fieldOnFocus,
-      focused: isEqual(parent.focusPath, fieldPath),
+      onBlur: fieldOnBlur,
+      focused: isEqual(parent.focusPath, [field.name]),
       presence: fieldPresence,
       validation: fieldValidation,
       readOnly: parent.readOnly || fieldConditionalProps.readOnly,
@@ -341,16 +348,12 @@ function prepareObjectInputProps<T>(
     (groupName: string) => props.onSetActiveFieldGroupAtPath(groupName, props.path)
   )
 
-  const handleFocus = getScopedCallbackForPath(
-    props.onFocus,
-    props.path,
-    (focusEvent: React.FocusEvent) => props.onFocus(props.path)
+  const handleFocus = getScopedCallbackForPath(props.onFocus, props.path, () =>
+    props.onFocus(props.path)
   )
 
-  const handleBlur = getScopedCallbackForPath(
-    props.onBlur,
-    props.path,
-    (focusEvent: React.FocusEvent) => props.onBlur(props.path)
+  const handleBlur = getScopedCallbackForPath(props.onBlur, props.path, () =>
+    props.onBlur(props.path)
   )
 
   const handleSetCollapsed = getScopedCallbackForPath(
@@ -367,6 +370,7 @@ function prepareObjectInputProps<T>(
       type: props.type,
       focused: isEqual(props.path, props.focusPath),
       path: props.path,
+      focusPath: props.focusPath,
       id: toString(props.path),
       level: props.level,
       members: [],
@@ -507,6 +511,7 @@ function prepareObjectInputProps<T>(
     level: props.level,
     validation: props.validation,
     focused: isEqual(props.path, props.focusPath),
+    focusPath: props.focusPath,
     presence: props.presence,
     onChange: props.onChange,
     onFocus: handleFocus,
@@ -540,16 +545,12 @@ function prepareArrayInputProps<T extends unknown[]>(
     props.onChange(patchEvent.prepend([setIfMissing([])]))
   })
 
-  const handleFocus = getScopedCallbackForPath(
-    props.onFocus,
-    props.path,
-    (focusEvent: React.FocusEvent) => props.onFocus(props.path)
+  const handleFocus = getScopedCallbackForPath(props.onFocus, props.path, () =>
+    props.onFocus(props.path)
   )
 
-  const handleBlur = getScopedCallbackForPath(
-    props.onBlur,
-    props.path,
-    (focusEvent: React.FocusEvent) => props.onBlur(props.path)
+  const handleBlur = getScopedCallbackForPath(props.onBlur, props.path, () =>
+    props.onBlur(props.path)
   )
 
   const handleSetCollapsed = getScopedCallbackForPath(
@@ -578,45 +579,12 @@ function prepareArrayInputProps<T extends unknown[]>(
     }
   }
 
+  // Todo: improve error handling at the parent level so that the value here is either undefined or an array
   const items = Array.isArray(props.value) ? props.value : []
 
   // create a members array for the object
-  const members = items.flatMap((item, index): ObjectInputProps[] => {
-    const itemType = getItemType(props.type, item)
-    if (isObjectSchemaType(itemType)) {
-      const key = (item as any)?._key
-      const itemPath = pathFor([...props.path, key])
-
-      const scopedPresence = props.presence.filter((presenceItem) =>
-        startsWith(itemPath, presenceItem.path)
-      )
-
-      const scopedValidation = props.validation.filter((marker) =>
-        startsWith(itemPath, marker.path)
-      )
-
-      const prepared = prepareObjectInputProps({
-        type: itemType,
-        onChange: handleChange,
-        level: props.level + 1,
-        document: props.document,
-        validation: props.validation,
-        presence: props.presence,
-        value: item,
-        path: itemPath,
-        focusPath: props.focusPath,
-        currentUser: props.currentUser,
-        onFocus: props.onFocus,
-        onBlur: props.onBlur,
-        onSetCollapsedField: props.onSetCollapsedField,
-        onSetCollapsedFieldSet: props.onSetCollapsedFieldSet,
-        onSetActiveFieldGroupAtPath: props.onSetActiveFieldGroupAtPath,
-      })
-      return prepared.hidden ? [] : [prepared]
-    }
-    // eslint-disable-next-line no-console
-    console.log('SKIPPING PRIMITIVE ITEMS (TODO)')
-    return [] // todo: primitive arrays
+  const members = items.map((item, index) => {
+    return prepareArrayItemProps({arrayItem: item, parent: props, index})
   })
   return {
     value: props.value as T,
@@ -635,6 +603,73 @@ function prepareArrayInputProps<T extends unknown[]>(
     onChange: handleChange,
     onSetCollapsed: handleSetCollapsed,
   }
+}
+/*
+ * Takes a field in context of a parent object and returns prepared props for it
+ */
+function prepareArrayItemProps(props: {
+  arrayItem: unknown
+  parent: RawProps<ArraySchemaType, unknown>
+  index: number
+}): ObjectInputProps | {hidden: true} {
+  const {arrayItem, parent, index} = props
+  const itemType = getItemType(parent.type, arrayItem)
+
+  if (!isObjectSchemaType(itemType)) {
+    // TODO
+    // eslint-disable-next-line no-console
+    console.log('TODO: Primitive inputs')
+    return {hidden: true}
+  }
+
+  // todo: validate _key
+  const key = (arrayItem as any)?._key
+
+  const itemPath = pathFor([...parent.path, key])
+  const itemLevel = parent.level + 1
+
+  const itemOnChange = getScopedCallbackForPath(
+    parent.onChange,
+    itemPath,
+    (itemChangeEvent: PatchEvent) => {
+      const ensureValue = isObjectSchemaType(itemType)
+        ? [setIfMissing(createProtoValue(itemType))]
+        : []
+      parent.onChange(itemChangeEvent.prepend(ensureValue).prefixAll({_key: key}))
+    }
+  )
+
+  const itemOnFocus = getScopedCallbackForPath(parent.onFocus, itemPath, () =>
+    parent.onFocus(itemPath)
+  )
+
+  const itemOnBlur = getScopedCallbackForPath(parent.onBlur, itemPath, () =>
+    parent.onBlur(itemPath)
+  )
+  const scopedPresence = parent.presence.filter((item) => startsWith(itemPath, item.path))
+  const scopedValidation = parent.validation.filter((item) => startsWith(itemPath, item.path))
+
+  const scopedFocusPath = pathFor(
+    isSegmentEqual(parent.focusPath[0], {_key: key}) ? parent.focusPath.slice(1) : []
+  )
+
+  return prepareObjectInputProps({
+    type: itemType,
+    onChange: itemOnChange,
+    level: itemLevel,
+    document: parent.document,
+    validation: scopedValidation,
+    presence: scopedPresence,
+    value: arrayItem,
+    path: itemPath,
+    focusPath: scopedFocusPath,
+    currentUser: parent.currentUser,
+    onFocus: itemOnFocus,
+    onBlur: itemOnBlur,
+    onSetCollapsedField: parent.onSetCollapsedField,
+    onSetCollapsedFieldSet: parent.onSetCollapsedFieldSet,
+    onSetActiveFieldGroupAtPath: parent.onSetActiveFieldGroupAtPath,
+  })
 }
 
 export type SanityDocument = Record<string, unknown>
@@ -668,6 +703,7 @@ export interface ObjectInputProps
   members: ObjectMember[]
   groups?: FieldGroup[]
 
+  focusPath: Path
   onSelectFieldGroup: (groupName: string) => void
   onSetCollapsed: (collapsed: boolean) => void
   collapsed?: boolean
