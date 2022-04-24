@@ -16,7 +16,7 @@ import {castArray, pick} from 'lodash'
 import React, {ComponentType} from 'react'
 import {isEqual, pathFor, startsWith, toString, isSegmentEqual} from '@sanity/util/paths'
 import {createProtoValue} from '../utils/createProtoValue'
-import {PatchEvent, setIfMissing} from '../patch'
+import {insert, PatchEvent, setIfMissing} from '../patch'
 import {FormFieldPresence} from '../../presence'
 import {callConditionalProperties, callConditionalProperty} from './conditional-property'
 import {
@@ -25,6 +25,7 @@ import {
   FieldGroup,
   FieldMember,
   FieldProps,
+  InsertEvent,
   NumberFieldProps,
   ObjectMember,
   StateTree,
@@ -164,6 +165,7 @@ function prepareFieldProps(props: {
     // note: this is what we actually end up passing down to the individual input components
     return {
       kind: 'object',
+      ...scopedInputProps,
       type: field.type,
       name: field.name,
       title: field.type.title,
@@ -232,6 +234,7 @@ function prepareFieldProps(props: {
 
     const ret: ArrayFieldProps = {
       kind: 'array',
+      ...preparedInputProps,
       type: field.type,
       name: field.name,
       id: toString(fieldPath),
@@ -246,7 +249,6 @@ function prepareFieldProps(props: {
       focused: isEqual(parent.focusPath, fieldPath),
       hidden: parent.hidden || preparedInputProps.hidden,
       readOnly: parent.readOnly || preparedInputProps.readOnly,
-      members: preparedInputProps.members,
       onChange: fieldOnChange,
       onFocus: fieldOnFocus,
       value: fieldValue,
@@ -529,6 +531,14 @@ function prepareArrayInputProps<T extends unknown[]>(
     props.onChange(patchEvent.prepend([setIfMissing([])]))
   })
 
+  const handleInsert = getScopedCallbackForPath(
+    handleChange,
+    pathFor([...props.path, '@@insert']),
+    (event: InsertEvent) => {
+      handleChange(PatchEvent.from([insert(event.items, event.position, [event.reference])]))
+    }
+  )
+
   const handleFocus = getScopedCallbackForPath(props.onFocus, props.path, () =>
     props.onFocus(props.path)
   )
@@ -563,6 +573,7 @@ function prepareArrayInputProps<T extends unknown[]>(
     onFocus: handleFocus,
     onBlur: handleBlur,
     onChange: handleChange,
+    onInsert: handleInsert,
     onSetCollapsed: handleSetCollapsed,
   }
 }
@@ -681,6 +692,7 @@ export interface ObjectInputProps
 export interface ArrayInputProps extends BaseInputProps<ArraySchemaType, unknown[]> {
   members: ObjectInputProps[]
   onSetCollapsed: (collapsed: boolean) => void
+  onInsert: (event: InsertEvent) => void
   collapsed?: boolean
   collapsible?: boolean
 }

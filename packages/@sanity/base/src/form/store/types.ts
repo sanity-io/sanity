@@ -93,6 +93,12 @@ export interface BooleanFieldProps extends BaseFieldProps {
   value?: boolean
 }
 
+export interface InsertEvent {
+  items: unknown[]
+  position: 'before' | 'after'
+  reference: number | string
+}
+
 export interface ObjectFieldProps extends BaseFieldProps {
   kind: 'object'
   type: ObjectSchemaType

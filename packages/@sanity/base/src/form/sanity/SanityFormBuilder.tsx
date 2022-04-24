@@ -34,7 +34,6 @@ export interface SanityFormBuilderProps extends ObjectInputProps {
 export function SanityFormBuilder(props: SanityFormBuilderProps) {
   const {
     __internal_patchChannel: patchChannel,
-    autoFocus,
     onBlur,
     id,
     path,

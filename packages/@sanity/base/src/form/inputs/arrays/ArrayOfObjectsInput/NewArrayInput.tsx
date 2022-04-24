@@ -1,6 +1,5 @@
-import React, {ForwardedRef, forwardRef, memo} from 'react'
+import React, {memo} from 'react'
 import {Button} from '@sanity/ui'
-import {insert, PatchEvent} from '../../../patch'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {randomKey} from '../common/randomKey'
 import {EMPTY_ARRAY} from '../../../utils/empty'
@@ -16,8 +15,8 @@ export const ArrayInput = memo(function ArrayInput(props: ArrayInputComponentPro
     collapsible,
     presence,
     validation,
+    onInsert,
     level,
-    onChange,
     renderItem,
     focusRef,
     id,
@@ -40,11 +39,11 @@ export const ArrayInput = memo(function ArrayInput(props: ArrayInputComponentPro
     >
       <Button
         onClick={() => {
-          onChange(
-            PatchEvent.from([
-              insert([{...createProtoValue(type.of[0].type!), _key: randomKey(12)}], 'after', [-1]),
-            ])
-          )
+          onInsert({
+            items: [{...createProtoValue(type.of[0].type!), _key: randomKey(12)}],
+            position: 'after',
+            reference: -1,
+          })
         }}
         text="Add"
       />
