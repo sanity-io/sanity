@@ -20,7 +20,7 @@ export function immutableReconcile<T>(previous: unknown, next: T): T {
     assertType<unknown[]>(previous)
     assertType<unknown[]>(next)
 
-    let allEqual = true
+    let allEqual = previous.length === next.length
     const result = []
     for (let index = 0; index < next.length; index++) {
       const nextItem = immutableReconcile(previous[index], next[index])
