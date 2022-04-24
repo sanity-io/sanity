@@ -327,6 +327,10 @@ interface RawProps<SchemaType, T> {
 function prepareObjectInputProps<T>(
   props: RawProps<ObjectSchemaType, T>
 ): ObjectInputProps | {hidden: true} {
+  if (props.level === MAX_FIELD_DEPTH) {
+    return {hidden: true}
+  }
+
   const conditionalFieldContext = {
     value: props.value,
     parent: props.parent,
@@ -362,29 +366,6 @@ function prepareObjectInputProps<T>(
     (collapsed: boolean) => props.onSetCollapsedField(collapsed, props.path)
   )
 
-  if (props.level === MAX_FIELD_DEPTH) {
-    return {
-      value: props.value as Record<string, unknown> | undefined,
-      readOnly: props.readOnly,
-      hidden,
-      type: props.type,
-      focused: isEqual(props.path, props.focusPath),
-      path: props.path,
-      focusPath: props.focusPath,
-      id: toString(props.path),
-      level: props.level,
-      members: [],
-      groups: [],
-      validation: [],
-      presence: [],
-      onFocus: handleFocus,
-      onBlur: handleBlur,
-      onChange: props.onChange,
-      onSelectFieldGroup: handleSetActiveFieldGroup,
-      onSetCollapsed: handleSetCollapsed,
-    }
-  }
-
   const schemaTypeGroupConfig = props.type.groups || []
   const defaultGroupName = (
     schemaTypeGroupConfig.find((g) => g.default) || schemaTypeGroupConfig[0]
@@ -410,7 +391,6 @@ function prepareObjectInputProps<T>(
 
   const parentProps: RawProps<ObjectSchemaType, unknown> = {
     ...props,
-    level: props.level + 1,
     hidden,
     readOnly,
     onChange: props.onChange,
@@ -526,6 +506,10 @@ function prepareObjectInputProps<T>(
 function prepareArrayInputProps<T extends unknown[]>(
   props: RawProps<ArraySchemaType, T>
 ): ArrayInputProps | {hidden: true} {
+  if (props.level === MAX_FIELD_DEPTH) {
+    return {hidden: true}
+  }
+
   const conditionalFieldContext = {
     value: props.value,
     parent: props.parent,
@@ -559,33 +543,9 @@ function prepareArrayInputProps<T extends unknown[]>(
     (collapsed: boolean) => props.onSetCollapsedField(collapsed, props.path)
   )
 
-  if (props.level === MAX_FIELD_DEPTH) {
-    return {
-      value: props.value as T,
-      readOnly,
-      hidden,
-      type: props.type,
-      focused: isEqual(props.path, props.focusPath),
-      path: props.path,
-      id: toString(props.path),
-      level: props.level,
-      members: [],
-      validation: [],
-      presence: [],
-      onFocus: handleFocus,
-      onBlur: handleBlur,
-      onChange: handleChange,
-      onSetCollapsed: handleSetCollapsed,
-    }
-  }
-
   // Todo: improve error handling at the parent level so that the value here is either undefined or an array
   const items = Array.isArray(props.value) ? props.value : []
 
-  // create a members array for the object
-  const members = items.map((item, index) => {
-    return prepareArrayItemProps({arrayItem: item, parent: props, index})
-  })
   return {
     value: props.value as T,
     readOnly,
@@ -595,7 +555,9 @@ function prepareArrayInputProps<T extends unknown[]>(
     path: props.path,
     id: toString(props.path),
     level: props.level,
-    members,
+    members: items.flatMap((item, index) =>
+      prepareArrayItemProps({arrayItem: item, parent: props, index})
+    ),
     validation: props.validation,
     presence: [],
     onFocus: handleFocus,
@@ -611,7 +573,7 @@ function prepareArrayItemProps(props: {
   arrayItem: unknown
   parent: RawProps<ArraySchemaType, unknown>
   index: number
-}): ObjectInputProps | {hidden: true} {
+}): ObjectInputProps[] {
   const {arrayItem, parent, index} = props
   const itemType = getItemType(parent.type, arrayItem)
 
@@ -619,7 +581,7 @@ function prepareArrayItemProps(props: {
     // TODO
     // eslint-disable-next-line no-console
     console.log('TODO: Primitive inputs')
-    return {hidden: true}
+    return []
   }
 
   // todo: validate _key
@@ -653,7 +615,7 @@ function prepareArrayItemProps(props: {
     isSegmentEqual(parent.focusPath[0], {_key: key}) ? parent.focusPath.slice(1) : []
   )
 
-  return prepareObjectInputProps({
+  const result = prepareObjectInputProps({
     type: itemType,
     onChange: itemOnChange,
     level: itemLevel,
@@ -670,6 +632,12 @@ function prepareArrayItemProps(props: {
     onSetCollapsedFieldSet: parent.onSetCollapsedFieldSet,
     onSetActiveFieldGroupAtPath: parent.onSetActiveFieldGroupAtPath,
   })
+
+  if (result.hidden) {
+    // todo: figure out what to do here - ideally this should not happen, so might be a good idea to pass a flag to prepareObjectInputProps to disable hidden check in this context
+    throw new Error('Array items cannot be hidden')
+  }
+  return [result]
 }
 
 export type SanityDocument = Record<string, unknown>
