@@ -1,6 +1,6 @@
 {
   "name": "@sanity/cli",
-  "version": "2.29.5",
+  "version": "2.29.6",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "main": "lib/cli.js",
   "bin": {
@@ -39,8 +39,8 @@
   },
   "homepage": "https://www.sanity.io/",
   "devDependencies": {
-    "@sanity/eslint-config-studio": "^2.0.0",
     "@sanity/client": "^3.2.0",
+    "@sanity/eslint-config-studio": "^2.0.0",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/resolver": "2.29.5",
     "@sanity/util": "2.29.5",
