@@ -1,7 +1,7 @@
 import React from 'react'
 import {PresenceOverlay, FieldPresence, DocumentPresence} from '@sanity/base/_unstable'
 import {Button, Dialog} from '@sanity/ui'
-import {FormBuilderInput, setIfMissing} from '@sanity/base/form'
+import {setIfMissing} from '@sanity/base/form'
 import {ObjectSchemaType, Path} from '@sanity/types'
 
 export const CustomInputWithDialogOverlay = React.forwardRef(function CustomInputWithDialogOverlay(
@@ -40,19 +40,20 @@ export const CustomInputWithDialogOverlay = React.forwardRef(function CustomInpu
               {type.fields.map((field, i) => (
                 // Delegate to the generic FormBuilderInput. It will resolve and insert the actual input component
                 // for the given field type
-                <FormBuilderInput
-                  level={level + 1}
-                  key={field.name}
-                  type={field.type}
-                  value={value && value[field.name]}
-                  onChange={(patchEvent) => handleFieldChange(field, patchEvent)}
-                  path={[field.name]}
-                  focusPath={focusPath || []}
-                  onFocus={onFocus}
-                  onBlur={onBlur}
-                  presence={[]}
-                  validation={[]}
-                />
+                <>TODO</>
+                // <FormBuilderInput
+                //   level={level + 1}
+                //   key={field.name}
+                //   type={field.type}
+                //   value={value && value[field.name]}
+                //   onChange={(patchEvent) => handleFieldChange(field, patchEvent)}
+                //   path={[field.name]}
+                //   focusPath={focusPath || []}
+                //   onFocus={onFocus}
+                //   onBlur={onBlur}
+                //   presence={[]}
+                //   validation={[]}
+                // />
               ))}
             </div>
           </PresenceOverlay>

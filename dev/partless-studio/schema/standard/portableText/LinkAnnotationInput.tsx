@@ -1,7 +1,7 @@
 import {isPlainObject} from 'lodash'
 import React, {useCallback, useMemo} from 'react'
 import {useSource, ValidationMarker} from 'sanity'
-import {FIXME_Patch, FormBuilderInput, PatchEvent, set, setIfMissing} from 'sanity/form'
+import {FormPatch, PatchEvent, set, setIfMissing} from 'sanity/form'
 import {Box} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 
@@ -19,7 +19,7 @@ export interface LinkAnnotationInputProps {
 }
 
 interface PartialPatchEvent {
-  patches: FIXME_Patch[]
+  patches: FormPatch[]
 }
 
 interface SlugQueryResult {
@@ -86,7 +86,8 @@ export const LinkAnnotationInput = (props: LinkAnnotationInputProps) => {
   return (
     <>
       <Box flex={1} paddingY={2}>
-        <FormBuilderInput
+        TODO
+        {/* <FormBuilderInput
           key={referenceArticleField?.name}
           level={0}
           type={referenceArticleField?.type as any}
@@ -104,10 +105,11 @@ export const LinkAnnotationInput = (props: LinkAnnotationInputProps) => {
           filterField={referenceArticleField?.type?.options?.filter}
           presence={[]}
           validation={[]}
-        />
+        /> */}
       </Box>
       <Box flex={1} paddingY={2}>
-        <FormBuilderInput
+        TODO
+        {/* <FormBuilderInput
           level={0}
           key={urlField?.name}
           type={urlField?.type as any}
@@ -123,11 +125,12 @@ export const LinkAnnotationInput = (props: LinkAnnotationInputProps) => {
           readOnly={urlFieldDisabled || false}
           presence={[]}
           validation={getFieldValidation(urlField?.name)}
-        />
+        /> */}
       </Box>
       {otherFields.map((field) => (
         <Box flex={1} key={field?.name} paddingY={2}>
-          <FormBuilderInput
+          TODO
+          {/* <FormBuilderInput
             type={field?.type as any}
             value={(isRecord(value) && field?.name && value[field?.name]) || undefined}
             onChange={
@@ -141,7 +144,7 @@ export const LinkAnnotationInput = (props: LinkAnnotationInputProps) => {
             level={0}
             presence={[]}
             validation={getFieldValidation(field?.name)}
-          />
+          /> */}
         </Box>
       ))}
     </>
