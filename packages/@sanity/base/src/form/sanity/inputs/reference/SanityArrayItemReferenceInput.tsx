@@ -13,7 +13,6 @@ import {get} from '@sanity/util/paths'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 import {isNonNullable} from '../../../../util'
-import {FormInputProps} from '../../../types'
 import {withValuePath} from '../../../utils/withValuePath'
 import {withDocument} from '../../../utils/withDocument'
 import * as adapter from '../client-adapters/reference'
@@ -23,6 +22,7 @@ import {InsertEvent} from '../../../inputs/arrays/ArrayOfObjectsInput/types'
 import {useDocumentPreviewStore} from '../../../../datastores'
 import {useSource} from '../../../../studio'
 import {useReferenceInputOptions} from '../../contexts'
+import {ObjectFieldProps} from '../../../store/types'
 
 // eslint-disable-next-line require-await
 async function resolveUserDefinedFilter(
@@ -47,7 +47,7 @@ async function resolveUserDefinedFilter(
 }
 
 export interface SanityArrayItemReferenceInputProps
-  extends FormInputProps<Reference, ReferenceSchemaType> {
+  extends ObjectFieldProps<Reference, ReferenceSchemaType> {
   isSortable: boolean
   onInsert?: (event: InsertEvent) => void
   insertableTypes?: SchemaType[]

@@ -3,11 +3,11 @@ import {isTitledListValue, isValidationErrorMarker, TitledListValue} from '@sani
 import {Inline, Stack, Card, Text, Select, Flex, Radio, Box} from '@sanity/ui'
 import {capitalize} from 'lodash'
 import React, {useMemo, useCallback, forwardRef} from 'react'
-import {FormInputProps} from '../types'
 import {PatchEvent, set, unset} from '../patch'
 import {FormField} from '../../components/formField'
+import {StringInputComponentProps} from '../types_v3'
 
-export type SelectInputProps = FormInputProps<string | number>
+export type SelectInputProps = StringInputComponentProps
 
 function toSelectItem(
   option: TitledListValue<string | number> | string | number

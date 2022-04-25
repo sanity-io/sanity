@@ -4,14 +4,11 @@ import React, {useCallback} from 'react'
 import styled from 'styled-components'
 import {useId} from '@reach/auto-id'
 import {Box, Card, Checkbox, Flex, Switch} from '@sanity/ui'
-import {BooleanSchemaType} from '@sanity/types'
 import {FormFieldHeaderText, FormFieldStatus} from '../../components/formField'
 import {FieldPresence} from '../../presence'
-import {FormInputProps} from '../types'
 import {PatchEvent, set} from '../patch'
 import {ChangeIndicator} from '../../components/changeIndicators'
-
-export type BooleanInputProps = FormInputProps<boolean, BooleanSchemaType>
+import {BooleanInputComponentProps} from '../types_v3'
 
 const CenterAlignedBox = styled(Box)`
   align-self: center;
@@ -22,7 +19,7 @@ const ZeroLineHeightBox = styled(Box)`
 `
 
 export const BooleanInput = React.forwardRef(function BooleanInput(
-  props: BooleanInputProps,
+  props: BooleanInputComponentProps,
   ref: React.ForwardedRef<HTMLInputElement>
 ) {
   const {onChange} = props

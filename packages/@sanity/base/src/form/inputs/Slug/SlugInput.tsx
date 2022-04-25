@@ -11,11 +11,11 @@ import * as PathUtils from '@sanity/util/paths'
 import {TextInput, Button, Flex, Box, Card, Stack} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {PatchEvent, set, setIfMissing, unset} from '../../patch'
-import {FormInputProps} from '../../types'
 import {ChangeIndicatorCompareValueProvider} from '../../../components/changeIndicators'
 import {FormField} from '../../../components/formField'
 import {withDocument} from '../../utils/withDocument'
 import {withValuePath} from '../../utils/withValuePath'
+import {ObjectFieldProps} from '../../store/types'
 import {slugify} from './utils/slugify'
 import {useAsync} from './utils/useAsync'
 
@@ -24,7 +24,7 @@ export interface Slug {
   current?: string
 }
 
-export interface SlugInputProps extends FormInputProps<Slug, SlugSchemaType> {
+export interface SlugInputProps extends ObjectFieldProps<Slug, SlugSchemaType> {
   document: SanityDocument
   getValuePath: () => Path
 }

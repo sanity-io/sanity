@@ -1,29 +1,28 @@
 import React, {forwardRef, useCallback, useMemo} from 'react'
 import shallowEquals from 'shallow-equals'
-import {ConditionalProperty, Path, SchemaType} from '@sanity/types'
+import {Path, SchemaType} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {ChangeIndicatorProvider} from '../components/changeIndicators'
 import {FormFieldPresenceContext} from '../presence'
 import {useConditionalReadOnly} from '../conditional-property/conditionalReadOnly'
-import {FormInputProps, FormInputComponentResolver} from './types'
+import {FormInputComponentResolver} from './types'
 import {PatchEvent} from './patch'
 import {EMPTY_ARRAY} from './utils/empty'
 import {useFormBuilder} from './useFormBuilder'
 import {ConditionalReadOnlyField} from './inputs/common'
+import {FieldProps} from './store/types'
 
 const WRAPPER_INNER_STYLES = {minWidth: 0}
 
 /**
  * @alpha
  */
-export interface FormBuilderInputProps
-  extends Omit<FormInputProps<unknown, SchemaType>, 'readOnly'> {
-  readOnly?: ConditionalProperty
+export type FormBuilderInputProps = FieldProps & {
   parent?: Record<string, unknown> | undefined
-  inputComponent?: React.ComponentType<FormInputProps>
+  inputComponent?: React.ComponentType<FieldProps>
   isRoot?: boolean
-  path: Path
+  // path: Path
   // filterField?: FormBuilderFilterFieldFn
   onKeyUp?: (ev: React.KeyboardEvent) => void
   onKeyPress?: (ev: React.KeyboardEvent) => void
@@ -263,9 +262,9 @@ export class FormBuilderInputInstance extends React.Component<
   }
 }
 
-interface FormBuilderInputInnerProps extends FormBuilderInputProps {
+type FormBuilderInputInnerProps = FormBuilderInputProps & {
   childFocusPath: Path
-  component: React.ComponentType<FormInputProps>
+  component: React.ComponentType<FieldProps>
   setInput: (component: FormBuilderInputInstance | HTMLDivElement | null) => void
   readOnly?: boolean
 }
@@ -317,7 +316,7 @@ function FormBuilderInputInner(props: FormBuilderInputInnerProps) {
 
   const childCompareValue = PathUtils.get(compareValue, path)
 
-  const inputProps: FormInputProps = useMemo(
+  const inputProps: FieldProps = useMemo(
     () => ({
       ...rest,
       focusPath: isLeaf ? undefined : childFocusPath,
@@ -327,6 +326,7 @@ function FormBuilderInputInner(props: FormBuilderInputInnerProps) {
       readOnly: conditionalReadOnly,
       validation: childValidation.length === 0 ? EMPTY_ARRAY : childValidation,
       type,
+      path: [], // @todo
       presence: childPresenceInfo,
       onChange,
       onFocus,

@@ -6,21 +6,17 @@ import {noop} from 'lodash'
 import React, {forwardRef} from 'react'
 import {StudioProvider, useSource} from '../../studio'
 import {createConfig} from '../../config'
-import {
-  FormInputProps,
-  FormInputComponentResolver,
-  FormPreviewComponentResolver,
-  FIXME,
-} from '../types'
+import {FormInputComponentResolver, FormPreviewComponentResolver, FIXME} from '../types'
 import {route, RouterProvider} from '../../router'
 import {FormBuilderProvider} from '../FormBuilderProvider'
 import {ObjectInput} from '../inputs/ObjectInput'
 import {createPatchChannel} from '../patchChannel'
 import {ReviewChangesContextProvider} from '../sanity/contexts/reviewChanges/ReviewChangesProvider'
 import {is} from '../utils/is'
+import {FieldProps} from '../store/types'
 
 const GenericInput = forwardRef(function GenericInput(
-  props: FormInputProps,
+  props: FieldProps,
   ref: React.ForwardedRef<any>
 ) {
   return <input type="string" ref={ref} onFocus={props.onFocus} />

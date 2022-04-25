@@ -1,8 +1,9 @@
 import {TextArea, Theme} from '@sanity/ui'
 import React, {forwardRef, useCallback, useImperativeHandle, useRef} from 'react'
 import styled, {css} from 'styled-components'
-import {FormInputComponentResolver, FormInputProps} from '../../../../types'
+import {FormInputComponentResolver} from '../../../../types'
 import {PatchEvent, set} from '../../../../patch'
+import {FieldProps} from '../../../../store/types'
 
 const DebugTextArea = styled(TextArea)(({theme}: {theme: Theme}) => {
   return css`
@@ -10,7 +11,7 @@ const DebugTextArea = styled(TextArea)(({theme}: {theme: Theme}) => {
   `
 })
 
-const DebugInput = forwardRef(function DebugInput(props: FormInputProps, ref) {
+const DebugInput = forwardRef(function DebugInput(props: FieldProps, ref) {
   const {onBlur, onChange, onFocus, readOnly} = props
 
   const rootRef = useRef<HTMLTextAreaElement | null>(null)

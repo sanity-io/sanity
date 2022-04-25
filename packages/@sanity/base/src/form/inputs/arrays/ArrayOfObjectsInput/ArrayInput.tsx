@@ -24,17 +24,14 @@ import {Item, List} from '../common/list'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import {applyAll} from '../../../patch/applyPatch'
 import {ConditionalReadOnlyField} from '../../common'
-import {
-  FormArrayInputFunctionsProps,
-  FormBuilderFilterFieldFn,
-  FormInputProps,
-} from '../../../types'
+import {FormArrayInputFunctionsProps, FormBuilderFilterFieldFn} from '../../../types'
 import {PatchEvent, insert, setIfMissing, unset, set} from '../../../patch'
+import {ImperativeToast} from '../../../../components/transitional'
+import {ArrayFieldProps} from '../../../store/types'
 import {ArrayItem} from './item'
 import type {ArrayMember, InsertEvent, ReferenceItemComponentType} from './types'
 import {uploadTarget} from './uploadTarget/uploadTarget'
 import {isEmpty} from './item/helpers'
-import {ImperativeToast} from '../../../../components/transitional'
 
 type Toast = {push: (params: ToastParams) => void}
 
@@ -57,8 +54,7 @@ export function createProtoValue(type: SchemaType): ArrayMember {
   return type.name === 'object' ? {_key} : {_type: type.name, _key}
 }
 
-export interface ArrayInputProps
-  extends FormInputProps<ArrayMember[], ArraySchemaType<ArrayMember>> {
+export interface ArrayInputProps extends ArrayFieldProps<ArrayMember> {
   ArrayFunctionsImpl: React.ComponentType<
     FormArrayInputFunctionsProps<ArraySchemaType<ArrayMember>, ArrayMember>
   >

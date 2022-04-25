@@ -12,7 +12,6 @@ import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, u
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 import {isNonNullable} from '../../../../util'
-import {FormInputProps} from '../../../types'
 import {withValuePath} from '../../../utils/withValuePath'
 import {withDocument} from '../../../utils/withDocument'
 import * as adapter from '../client-adapters/reference'
@@ -21,6 +20,7 @@ import {CreateOption, EditReferenceEvent} from '../../../inputs/ReferenceInput/t
 import {useDocumentPreviewStore} from '../../../../datastores'
 import {useSource} from '../../../../studio'
 import {useReferenceInputOptions} from '../../contexts'
+import {ObjectFieldProps} from '../../../store/types'
 
 // eslint-disable-next-line require-await
 async function resolveUserDefinedFilter(
@@ -44,7 +44,8 @@ async function resolveUserDefinedFilter(
   }
 }
 
-export interface SanityReferenceInputProps extends FormInputProps<Reference, ReferenceSchemaType> {
+export interface SanityReferenceInputProps
+  extends ObjectFieldProps<Reference, ReferenceSchemaType> {
   // From `withDocument`
   document: SanityDocument
 

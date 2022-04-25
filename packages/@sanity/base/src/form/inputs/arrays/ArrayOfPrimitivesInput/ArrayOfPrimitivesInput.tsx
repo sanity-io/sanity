@@ -5,10 +5,11 @@ import {ArraySchemaType, ValidationMarker, SchemaType} from '@sanity/types'
 import {Card, Stack} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
 import {FormFieldSet} from '../../../../components/formField'
-import {FormArrayInputFunctionsProps, FormInputProps} from '../../../types'
+import {FormArrayInputFunctionsProps} from '../../../types'
 import {PatchEvent, set, unset} from '../../../patch'
 import {Item, List} from '../common/list'
 import {ConditionalReadOnlyField} from '../../common'
+import {ArrayFieldProps} from '../../../store/types'
 import {getEmptyValue} from './getEmptyValue'
 import {ItemRow} from './ItemRow'
 import {PrimitiveValue} from './types'
@@ -51,8 +52,7 @@ function insertAfter<T>(
   return copy
 }
 
-export interface ArrayOfPrimitivesInputProps
-  extends FormInputProps<PrimitiveValue[], ArraySchemaType<PrimitiveValue>> {
+export interface ArrayOfPrimitivesInputProps extends ArrayFieldProps<PrimitiveValue> {
   ArrayFunctionsImpl: React.ComponentType<
     FormArrayInputFunctionsProps<ArraySchemaType<PrimitiveValue>, PrimitiveValue>
   >

@@ -3,18 +3,18 @@ import {resolveTypeName} from '@sanity/util/content'
 import {ObjectFieldType, ObjectSchemaTypeWithOptions, SchemaType} from '@sanity/types'
 import {FormFieldSet} from '../../../components/formField'
 import {PatchEvent} from '../../patch'
-import {FormInputProps} from '../../types'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import {InvalidValueInput} from '../InvalidValueInput'
 import {ConditionalHiddenField} from '../common/ConditionalHiddenField'
 import {useConditionalReadOnly} from '../../../conditional-property/conditionalReadOnly'
+import {FieldProps} from '../../store/types'
 
 interface FieldType {
   name: string
   type: ObjectFieldType
 }
 
-export interface ObjectInputFieldProps extends Omit<FormInputProps<unknown>, 'onChange' | 'type'> {
+export interface ObjectInputFieldProps extends Omit<FieldProps, 'onChange' | 'type'> {
   field: FieldType
   parent: Record<string, unknown> | undefined
   onChange: (event: PatchEvent, field: FieldType) => void

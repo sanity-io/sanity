@@ -1,7 +1,7 @@
 import {AssetSource, Schema, SchemaType} from '@sanity/types'
 import React, {useMemo} from 'react'
 import {SanityFormBuilderConfig} from '../config'
-import {FormBuilderFilterFieldFn, FormInputProps} from './types'
+import {FormBuilderFilterFieldFn} from './types'
 import {fallbackInputs} from './fallbackInputs'
 import {FormBuilderContext, FormBuilderContextValue} from './FormBuilderContext'
 import {PatchChannel} from './patchChannel'
@@ -10,6 +10,7 @@ import {DefaultMarkers} from './inputs/PortableText/_legacyDefaultParts/Markers'
 import {DefaultCustomMarkers} from './inputs/PortableText/_legacyDefaultParts/CustomMarkers'
 import {FileSource, ImageSource} from './sanity/DefaultAssetSource'
 import {EMPTY_ARRAY} from './utils/empty'
+import {FieldProps} from './store/types'
 
 const defaultFileAssetSources = [FileSource]
 const defaultImageAssetSources = [ImageSource]
@@ -98,7 +99,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       schema,
       resolveInputComponent: (type) =>
         resolveComponentFromType(resolveInputComponentProp, type) ||
-        (fallbackInputs[type.jsonType] as React.ComponentType<FormInputProps>),
+        (fallbackInputs[type.jsonType] as React.ComponentType<FieldProps>),
       resolvePreviewComponent: (type) =>
         resolveComponentFromType(resolvePreviewComponentProp, type),
       getDocument: () => value,

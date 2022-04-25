@@ -34,7 +34,7 @@ import {PlaceholderText} from '../common/PlaceholderText'
 import {UploadPlaceholder} from '../common/UploadPlaceholder'
 import {UploadWarning} from '../common/UploadWarning'
 import {EMPTY_ARRAY} from '../../../utils/empty'
-import {FIXME, FormInputProps} from '../../../types'
+import {FIXME} from '../../../types'
 import {
   ChangeIndicatorCompareValueProvider,
   ChangeIndicatorWithProvidedFullPath,
@@ -43,6 +43,7 @@ import {FormFieldSet} from '../../../../components/formField'
 import {ImperativeToast} from '../../../../components/transitional'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'
 import {PresenceOverlay} from '../../../../presence'
+import {ObjectFieldProps} from '../../../store/types'
 import {CardOverlay, FlexContainer} from './styles'
 import {FileInputField} from './FileInputField'
 import {FileDetails} from './FileDetails'
@@ -60,7 +61,7 @@ export interface File extends Partial<BaseFile> {
   _upload?: UploadState
 }
 
-export interface FileInputProps extends FormInputProps<File, FileSchemaType> {
+export interface FileInputProps extends ObjectFieldProps<File, FileSchemaType> {
   assetSources: InternalAssetSource[]
   directUploads?: boolean
   getValuePath: () => Path

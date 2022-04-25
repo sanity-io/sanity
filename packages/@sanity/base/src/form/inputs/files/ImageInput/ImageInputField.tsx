@@ -1,12 +1,12 @@
 import React from 'react'
 import * as PathUtils from '@sanity/util/paths'
 import {ObjectField} from '@sanity/types'
-import {FormInputProps} from '../../../types'
 import {PatchEvent} from '../../../patch'
 import {FormBuilderInput} from '../../../FormBuilderInput'
 import {ConditionalHiddenField, ConditionalReadOnlyField} from '../../common'
+import {FieldProps} from '../../../store/types'
 
-interface ImageInputFieldProps extends Omit<FormInputProps<unknown>, 'type'> {
+interface ImageInputFieldProps extends Omit<FieldProps, 'type'> {
   field: ObjectField
   parentValue?: Record<string, unknown>
 }

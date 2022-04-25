@@ -22,9 +22,10 @@ import {
   usePortal,
 } from '@sanity/ui'
 import {ChangeIndicatorWithProvidedFullPath} from '../../../components/changeIndicators'
-import {FormInputProps, PortableTextMarker, RenderCustomMarkers} from '../../types'
+import {PortableTextMarker, RenderCustomMarkers} from '../../types'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {EMPTY_ARRAY} from '../../utils/empty'
+import {ArrayFieldProps} from '../../store/types'
 import {BlockObject} from './object/BlockObject'
 import {InlineObject} from './object/InlineObject'
 import {EditObject} from './object/EditObject'
@@ -39,7 +40,7 @@ import {useObjectEditFormBuilderChange} from './hooks/useObjectEditFormBuilderCh
 import {useHotkeys} from './hooks/useHotKeys'
 import {useScrollToFocusFromOutside} from './hooks/useScrollToFocusFromOutside'
 
-interface InputProps extends Omit<FormInputProps<PortableTextBlock[]>, 'type'> {
+interface InputProps extends Omit<ArrayFieldProps<PortableTextBlock>, 'type'> {
   hasFocus: boolean
   hotkeys?: HotkeyOptions
   isFullscreen: boolean

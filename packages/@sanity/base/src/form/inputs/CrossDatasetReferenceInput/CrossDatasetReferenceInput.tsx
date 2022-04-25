@@ -26,7 +26,7 @@ import {
 } from '@sanity/ui'
 import {useObservableCallback} from 'react-rx'
 import {ChangeIndicatorForFieldPath} from '../../../components/changeIndicators'
-import {FormInputProps, FIXME} from '../../types'
+import {FIXME} from '../../types'
 import {PatchEvent, set, unset} from '../../patch'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
@@ -34,13 +34,14 @@ import {AlertStrip} from '../../AlertStrip'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
 import {isNonNullable} from '../../utils/isNonNullable'
 import {getPublishedId} from '../../../util'
+import {FormField} from '../../../components/formField'
+import {ObjectFieldProps} from '../../store/types'
 import {CrossDatasetReferenceInfo, SearchHit, SearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {GetReferenceInfoFn, useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {ReferenceAutocomplete} from './ReferenceAutocomplete'
 import {PreviewCard} from './PreviewCard'
-import {FormField} from '../../../components/formField'
 
 const INITIAL_SEARCH_STATE: SearchState = {
   hits: [],
@@ -48,7 +49,7 @@ const INITIAL_SEARCH_STATE: SearchState = {
 }
 
 export interface CrossDatasetReferenceInputProps
-  extends FormInputProps<CrossDatasetReference, CrossDatasetReferenceSchemaType> {
+  extends ObjectFieldProps<CrossDatasetReference, CrossDatasetReferenceSchemaType> {
   getReferenceInfo: (
     doc: {_id: string; _type?: string},
     type: CrossDatasetReferenceSchemaType

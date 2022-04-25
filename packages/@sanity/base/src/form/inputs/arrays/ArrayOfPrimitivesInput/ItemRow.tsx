@@ -5,19 +5,19 @@ import {TrashIcon, EllipsisVerticalIcon, CopyIcon as DuplicateIcon} from '@sanit
 import {useId} from '@reach/auto-id'
 import {FormFieldValidationStatus} from '../../../../components/formField'
 import {FieldPresence} from '../../../../presence'
-import {FormInputProps} from '../../../types'
 import {PatchEvent, set} from '../../../patch'
 import {DragHandle} from '../common/DragHandle'
 import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
 import {FormBuilderInput, FormBuilderInputInstance} from '../../../FormBuilderInput'
 import {InsertMenu} from '../ArrayOfObjectsInput/InsertMenu'
 import {useConditionalReadOnly} from '../../../../conditional-property/conditionalReadOnly'
+import {FieldProps} from '../../../store/types'
 import {getEmptyValue} from './getEmptyValue'
 import {PrimitiveValue} from './types'
 
 const dragHandle = <DragHandle paddingX={1} paddingY={3} />
 
-interface ItemRowProps extends FormInputProps<string | number | boolean, SchemaType> {
+type ItemRowProps = FieldProps & {
   onRemove: (item: number) => void
   onInsert: (pos: 'before' | 'after', index: number, item: PrimitiveValue) => void
   insertableTypes: SchemaType[]

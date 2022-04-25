@@ -74,7 +74,6 @@ export type {
   FormBuilderMarkersComponent,
   FormDiffMatchPatch,
   FormInputComponentResolver,
-  FormInputProps,
   FormInsertPatch,
   FormInsertPatchPosition,
   FormPatch,

@@ -1,12 +1,12 @@
 import React, {useMemo} from 'react'
-import {isValidationErrorMarker, StringSchemaType} from '@sanity/types'
+import {isValidationErrorMarker} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {FormField} from '../../components/formField'
-import {FormInputProps} from '../types'
 import {PatchEvent, set, unset} from '../patch'
+import {StringInputComponentProps} from '../types_v3'
 
-export type EmailInputProps = FormInputProps<string, StringSchemaType>
+export type EmailInputProps = StringInputComponentProps
 
 export const EmailInput = React.forwardRef(function EmailInput(
   props: EmailInputProps,

@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import {ObjectSchemaType} from '@sanity/types'
 import React from 'react'
-import {FormInputProps, FIXME} from '../types'
+import {FIXME} from '../types'
 import {ObjectInput} from '../inputs/ObjectInput/ObjectInput'
+import {FieldProps, ObjectFieldProps} from '../store/types'
 import {renderNode} from './renderNode'
 
 export function renderObjectInput(options: {
-  props?: Partial<FormInputProps<any, ObjectSchemaType>> & {ref?: React.Ref<FIXME>}
+  props?: Partial<ObjectFieldProps> & {ref?: React.Ref<FIXME>}
   type: FIXME // SchemaTypeDefinition
 }) {
   return renderInput({
@@ -16,7 +16,7 @@ export function renderObjectInput(options: {
   })
 }
 
-export function renderInput<InputProps extends FormInputProps<any, any>>(options: {
+export function renderInput<InputProps extends FieldProps>(options: {
   props?: Partial<InputProps> & {ref?: React.Ref<any>}
   render: (props: InputProps) => React.ReactNode
   type: FIXME

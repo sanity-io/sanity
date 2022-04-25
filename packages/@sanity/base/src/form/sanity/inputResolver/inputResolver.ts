@@ -6,8 +6,9 @@ import {
   StringSchemaType,
 } from '@sanity/types'
 import React from 'react'
-import {FormInputProps, FIXME} from '../../types'
+import {FIXME} from '../../types'
 import * as is from '../../utils/is'
+import {FieldProps} from '../../store/types'
 import {isSanityInputType, sanityInputs} from './defaultInputs'
 import {resolveReferenceInput} from './resolveReferenceInput'
 import {resolveArrayInput} from './resolveArrayInput'
@@ -36,9 +37,7 @@ function resolveTypeVariants(type: SchemaType) {
 }
 
 export function resolveInputComponent(
-  inputComponents:
-    | Record<string, React.ComponentType<FormInputProps<any, any>> | undefined>
-    | undefined,
+  inputComponents: Record<string, React.ComponentType<FieldProps> | undefined> | undefined,
   userDefinedInputComponentProp: unknown,
   type: SchemaType
 ): React.ComponentType<any> | undefined {

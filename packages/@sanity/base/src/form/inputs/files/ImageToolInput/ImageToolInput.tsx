@@ -1,5 +1,5 @@
 import React, {ForwardedRef, forwardRef, useCallback, useEffect, useState} from 'react'
-import {ImageCrop, ImageHotspot, ImageSchemaType} from '@sanity/types'
+import {Image, ImageSchemaType} from '@sanity/types'
 import {ImageTool} from '@sanity/imagetool'
 import {HotspotImage} from '@sanity/imagetool/HotspotImage'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from '@sanity/imagetool/constants'
@@ -9,21 +9,16 @@ import shallowEquals from 'shallow-equals'
 import {ChangeIndicatorForFieldPath} from '../../../../components/changeIndicators'
 import {FormField} from '../../../../components/formField'
 import {PatchEvent, set} from '../../../patch'
-import {FormInputProps} from '../../../types'
 import {Checkerboard} from '../../../components/Checkerboard'
 import {withFocusRing} from '../../../components/withFocusRing'
 import {RatioBox} from '../common/RatioBox'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {EMPTY_ARRAY} from '../../../utils/empty'
+import {ObjectFieldProps} from '../../../store/types'
 import {useLoadImage} from './useLoadImage'
 
-interface Value {
-  hotspot?: ImageHotspot
-  crop?: ImageCrop
-}
-
 export interface ImageToolInputProps
-  extends Omit<FormInputProps<Value, ImageSchemaType>, 'markers'> {
+  extends Omit<ObjectFieldProps<Image, ImageSchemaType>, 'markers'> {
   imageUrl: string
 }
 
@@ -36,7 +31,7 @@ const PREVIEW_ASPECT_RATIOS = [
   ['Panorama', 4 / 1],
 ] as const
 
-const DEFAULT_VALUE: Value = {
+const DEFAULT_VALUE: Partial<Image> = {
   crop: DEFAULT_CROP,
   hotspot: DEFAULT_HOTSPOT,
 }

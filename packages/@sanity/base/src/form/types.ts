@@ -1,17 +1,14 @@
 import {
   ArraySchemaType,
-  BooleanSchemaType,
-  NumberSchemaType,
   ObjectField,
   ObjectSchemaType,
   Path,
   SchemaType,
-  StringSchemaType,
   ValidationMarker,
 } from '@sanity/types'
-import {FormFieldPresence} from '../presence'
-import {PatchEvent} from './patch'
 import React from 'react'
+import {PatchEvent} from './patch'
+import {FieldProps} from './store/types'
 
 export type FIXME = any
 
@@ -59,7 +56,7 @@ export type FormBuilderMarkersComponent = React.ComponentType<{
  */
 export type FormBuilderInputComponentMap = Record<
   string,
-  React.ComponentType<FormInputProps<any, any>> | undefined
+  React.ComponentType<FieldProps> | undefined
 >
 
 /**
@@ -88,47 +85,9 @@ export interface FormBuilderFilterFieldFn {
 /**
  * @alpha
  */
-export type FormInputProps<
-  T = any,
-  S = T extends Array<any>
-    ? ArraySchemaType
-    : T extends boolean
-    ? BooleanSchemaType
-    : T extends string
-    ? StringSchemaType
-    : T extends number
-    ? NumberSchemaType
-    : T extends Record<string, any>
-    ? ObjectSchemaType
-    : SchemaType
-> = {
-  compareValue?: T
-  focusPath?: Path
-  level: number
-  validation: ValidationMarker[]
-  onBlur?: () => void
-  // @todo allow implementers to pass a native DOM ChangeEvent
-  // @todo allow implementers to pass an array of patch objects
-  // @todo allow implementers to simply pass the new value
-  // @todo deprecate `PatchEvent`
-  onChange: (event: PatchEvent) => void
-  // NOTE: we should allow implementers of custom inputs to forward the passed onFocus to native
-  // element's onFocus handler, but use Path consistently on internal inputs
-  onFocus: (pathOrEvent?: Path | React.FocusEvent<any>) => void
-  presence: FormFieldPresence[]
-  // @todo: should the `readOnly` use the `ConditionalProperty` type?
-  // readOnly?: ConditionalProperty
-  readOnly?: boolean
-  type: S
-  value?: T
-}
-
-/**
- * @alpha
- */
 export type FormInputComponentResolver = (
   type: SchemaType
-) => React.ComponentType<FormInputProps<any, any>> | null | false | undefined
+) => React.ComponentType<FieldProps> | null | false | undefined
 
 /**
  * @alpha

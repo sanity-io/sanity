@@ -700,7 +700,8 @@ export interface ObjectInputProps
   collapsible?: boolean
 }
 
-export interface ArrayInputProps extends BaseInputProps<ArraySchemaType, unknown[]> {
+export interface ArrayInputProps<S extends ArraySchemaType = ArraySchemaType, V = unknown[]>
+  extends BaseInputProps<S, V> {
   members: ObjectInputProps[]
 
   focusPath: Path

@@ -3,11 +3,11 @@ import {useId} from '@reach/auto-id'
 import {isValidationErrorMarker, TextSchemaType} from '@sanity/types'
 import {TextArea} from '@sanity/ui'
 import styled from 'styled-components'
-import {FormInputProps} from '../types'
 import {PatchEvent, set, unset} from '../patch'
 import {FormField} from '../../components/formField'
+import {StringInputComponentProps} from '../types_v3'
 
-export type TextInputProps = FormInputProps<string, TextSchemaType>
+export type TextInputProps = StringInputComponentProps<TextSchemaType>
 
 const StyledTextArea = styled(TextArea)`
   &[data-as='textarea'] {

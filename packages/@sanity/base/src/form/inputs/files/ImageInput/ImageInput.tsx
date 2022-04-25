@@ -15,7 +15,7 @@ import {
 import React, {ReactNode} from 'react'
 import deepCompare from 'react-fast-compare'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'
-import {FormInputProps, FIXME} from '../../../types'
+import {FIXME} from '../../../types'
 import {PresenceOverlay} from '../../../../presence'
 import {ChangeIndicatorForFieldPath} from '../../../../components/changeIndicators'
 import {FormFieldSet} from '../../../../components/formField'
@@ -36,6 +36,7 @@ import {EMPTY_ARRAY} from '../../../utils/empty'
 import {handleSelectAssetFromSource} from '../common/assetSource'
 import {ActionsMenu} from '../common/ActionsMenu'
 import {UploadWarning} from '../common/UploadWarning'
+import {ObjectFieldProps} from '../../../store/types'
 import {ImagePreview} from './ImagePreview'
 import {ImageInputField} from './ImageInputField'
 import {ImageActionsMenu} from './ImageActionsMenu'
@@ -44,7 +45,7 @@ export interface Image extends Partial<BaseImage> {
   _upload?: UploadState
 }
 
-export interface ImageInputProps extends FormInputProps<Image, ImageSchemaType> {
+export interface ImageInputProps extends ObjectFieldProps<Image, ImageSchemaType> {
   assetSources: InternalAssetSource[]
   directUploads?: boolean
   getValuePath: () => Path

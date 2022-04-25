@@ -2,11 +2,12 @@ import {Schema, SanityDocument} from '@sanity/types'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {render} from '@testing-library/react'
 import React from 'react'
-import {FormBuilderFilterFieldFn, FormInputProps, FIXME} from '../../types'
+import {FormBuilderFilterFieldFn, FIXME} from '../../types'
 import {SanityFormBuilder} from '../../sanity/SanityFormBuilder'
 import {createPatchChannel, PatchChannel} from '../../patchChannel'
+import {FieldProps} from '../../store/types'
 
-export interface FormBuilderTesterProps extends FormInputProps {
+export type FormBuilderTesterProps = FieldProps & {
   schema: Schema
   patchChannel: PatchChannel
   filterField: FormBuilderFilterFieldFn

@@ -1,11 +1,11 @@
 import {useId} from '@reach/auto-id'
 import React, {forwardRef, useCallback, useImperativeHandle, useMemo, useRef} from 'react'
 import {FormField} from '../../components/formField'
-import {FormInputProps} from '../types'
 import {PatchEvent, set, unset} from '../patch'
 import {TagInput} from '../components/tagInput'
+import {ArrayInputComponentProps} from '../types_v3'
 
-export type TagsArrayInputProps = FormInputProps<string[]>
+export type TagsArrayInputProps = ArrayInputComponentProps<string[]>
 
 export const TagsArrayInput = forwardRef(function TagsArrayInput(
   props: TagsArrayInputProps,

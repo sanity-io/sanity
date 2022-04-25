@@ -5,12 +5,13 @@ import {Box, Checkbox, Flex, Text} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
 import {FormFieldSet} from '../../../../components/formField'
 import {PatchEvent, set, unset} from '../../../patch'
-import {FormInputProps, FIXME} from '../../../types'
+import {FIXME} from '../../../types'
 import {Preview} from '../../../Preview'
 import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
 import {Item, List} from '../common/list'
 import {ConditionalReadOnlyField} from '../../common'
 import {useConditionalReadOnly} from '../../../../conditional-property/conditionalReadOnly'
+import {ArrayFieldProps} from '../../../store/types'
 import {resolveValueWithLegacyOptionsSupport, isLegacyOptionsItem} from './legacyOptionsSupport'
 
 type Focusable = {focus: () => void}
@@ -51,7 +52,7 @@ function inArray(array: unknown[], candidate: unknown) {
   return array ? array.some((item) => isEqual(item, candidate)) : false
 }
 
-type OptionsArrayInputProps = FormInputProps<unknown[], ArraySchemaType>
+type OptionsArrayInputProps = ArrayFieldProps<unknown>
 
 export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProps> {
   _element: Focusable | null = null

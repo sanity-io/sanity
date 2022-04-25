@@ -1,11 +1,11 @@
 import {ArraySchemaType} from '@sanity/types'
 import {ComponentType} from 'react'
-import {FormInputProps} from '../../types'
 import * as is from '../../utils/is'
 import {OptionsArrayInput as OptionsArray} from '../../inputs/arrays/OptionsArrayInput'
 import {PortableTextInput} from '../../inputs/PortableText/PortableTextInput'
 import {TagsArrayInput} from '../../inputs/TagsArrayInput'
 import {SanityArrayInput, SanityArrayOfPrimitivesInput} from '../inputs/SanityArrayInput'
+import {ArrayFieldProps} from '../../store/types'
 
 const PRIMITIVES = ['string', 'number', 'boolean']
 
@@ -30,9 +30,7 @@ export function hasOptionsList(type: ArraySchemaType): boolean {
   return Boolean(type.options?.list)
 }
 
-export function resolveArrayInput(
-  type: ArraySchemaType
-): ComponentType<FormInputProps<any[], ArraySchemaType>> {
+export function resolveArrayInput(type: ArraySchemaType): ComponentType<ArrayFieldProps<any>> {
   // Schema provides predefines list
   if (hasOptionsList(type)) {
     // @todo: fix typing
@@ -40,7 +38,7 @@ export function resolveArrayInput(
   }
 
   if (isStringArray(type) && isTagsArray(type)) {
-    return TagsArrayInput
+    return TagsArrayInput as ComponentType<any>
   }
 
   // Special component for array of primitive values

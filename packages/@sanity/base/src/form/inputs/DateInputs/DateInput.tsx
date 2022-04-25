@@ -1,8 +1,7 @@
 import React, {useCallback} from 'react'
 import {format, parse} from '@sanity/util/legacyDateFormat'
-import {StringSchemaType} from '@sanity/types'
 import {PatchEvent, set, unset} from '../../patch'
-import {FormInputProps} from '../../types'
+import {StringFieldProps} from '../../store/types'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
 
 interface ParsedOptions {
@@ -15,7 +14,7 @@ interface SchemaOptions {
   calendarTodayLabel?: string
 }
 
-export type DateInputProps = FormInputProps<string, StringSchemaType>
+export type DateInputProps = StringFieldProps
 
 // This is the format dates are stored on
 const VALUE_FORMAT = 'YYYY-MM-DD'

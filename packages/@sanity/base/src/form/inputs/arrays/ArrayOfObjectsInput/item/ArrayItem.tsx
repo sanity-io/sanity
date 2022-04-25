@@ -1,4 +1,4 @@
-import {ArraySchemaType, isReferenceSchemaType, ValidationMarker} from '@sanity/types'
+import {isReferenceSchemaType, ValidationMarker} from '@sanity/types'
 import {FOCUS_TERMINATOR, pathFor, startsWith} from '@sanity/util/paths'
 import {Box} from '@sanity/ui'
 import React, {memo, useCallback, useMemo, useRef} from 'react'
@@ -7,7 +7,7 @@ import {
   ChangeIndicatorScope,
   ContextProvidedChangeIndicator,
 } from '../../../../../components/changeIndicators'
-import {FormBuilderFilterFieldFn, FormInputProps} from '../../../../types'
+import {FormBuilderFilterFieldFn} from '../../../../types'
 import {PatchEvent} from '../../../../patch'
 import {ArrayMember, InsertEvent, ReferenceItemComponentType} from '../types'
 import {EMPTY_ARRAY} from '../../../../utils/empty'
@@ -16,13 +16,14 @@ import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoVie
 import {EditPortal} from '../../../../EditPortal'
 import {useDidUpdate} from '../../../../hooks/useDidUpdate'
 import {useConditionalReadOnly} from '../../../../../conditional-property/conditionalReadOnly'
+import {ArrayFieldProps} from '../../../../store/types'
 import {getItemType, isEmpty} from './helpers'
 import {ItemForm} from './ItemForm'
 import {RowItem} from './RowItem'
 import {CellItem} from './CellItem'
 
 export interface ArrayItemProps
-  extends Omit<FormInputProps<ArrayMember, ArraySchemaType>, 'level' | 'onChange' | 'value'> {
+  extends Omit<ArrayFieldProps<ArrayMember>, 'level' | 'onChange' | 'value'> {
   ReferenceItemComponent: ReferenceItemComponentType
   filterField: FormBuilderFilterFieldFn
   index: number

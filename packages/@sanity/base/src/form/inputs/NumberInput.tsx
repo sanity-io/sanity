@@ -1,13 +1,13 @@
 import React, {useMemo} from 'react'
-import {isValidationErrorMarker, NumberSchemaType} from '@sanity/types'
+import {isValidationErrorMarker} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {FormField} from '../../components/formField'
-import {FormInputProps} from '../types'
 import {PatchEvent, set, unset} from '../patch'
 import {getValidationRule} from '../utils/getValidationRule'
+import {NumberInputComponentProps} from '../types_v3'
 
-export type NumberInputProps = FormInputProps<number, NumberSchemaType>
+export type NumberInputProps = NumberInputComponentProps
 
 export const NumberInput = React.forwardRef(function NumberInput(
   props: NumberInputProps,

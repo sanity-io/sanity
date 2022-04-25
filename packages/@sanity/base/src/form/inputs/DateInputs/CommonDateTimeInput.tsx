@@ -1,15 +1,14 @@
 /* eslint-disable no-nested-ternary */
 import React, {useEffect} from 'react'
-import {ValidationMarker, StringSchemaType} from '@sanity/types'
+import {ValidationMarker} from '@sanity/types'
 import {useId} from '@reach/auto-id'
 import {useForwardedRef, TextInput} from '@sanity/ui'
 import {FormField} from '../../../components/formField'
-import {FormInputProps} from '../../types'
+import {StringFieldProps} from '../../store/types'
 import {DateTimeInput} from './base/DateTimeInput'
 import {ParseResult} from './types'
 
-export interface CommonDateTimeInputProps
-  extends Omit<FormInputProps<string, StringSchemaType>, 'onChange' | 'type'> {
+export interface CommonDateTimeInputProps extends Omit<StringFieldProps, 'onChange' | 'type'> {
   title?: string
   description?: string
   parseInputValue: (inputValue: string) => ParseResult

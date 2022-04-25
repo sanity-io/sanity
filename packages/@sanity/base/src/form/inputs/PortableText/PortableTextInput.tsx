@@ -17,10 +17,11 @@ import {Subject} from 'rxjs'
 import {Box, Text, useForwardedRef, useToast} from '@sanity/ui'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import {PatchEvent, FormPatch as FormBuilderPatch} from '../../patch'
-import type {FormInputProps, PortableTextMarker, RenderCustomMarkers} from '../../types'
+import type {PortableTextMarker, RenderCustomMarkers} from '../../types'
 import {FormField} from '../../../components/formField'
 import {withPatchSubscriber} from '../../utils/withPatchSubscriber'
 import {EMPTY_ARRAY} from '../../utils/empty'
+import {ArrayFieldProps} from '../../store/types'
 import {RenderBlockActions} from './types'
 import {Compositor} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
@@ -42,7 +43,7 @@ type PatchSubscriber = ({
 /**
  * @alpha
  */
-export interface PortableTextInputProps extends FormInputProps<PortableTextBlock[], Type> {
+export interface PortableTextInputProps extends ArrayFieldProps<PortableTextBlock, Type> {
   hotkeys?: HotkeyOptions
   markers?: PortableTextMarker[]
   onCopy?: OnCopyFn

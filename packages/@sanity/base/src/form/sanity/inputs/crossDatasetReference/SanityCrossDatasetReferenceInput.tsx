@@ -11,13 +11,13 @@ import {get} from '@sanity/util/paths'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 import {Box, Stack, Text, TextSkeleton} from '@sanity/ui'
-import {FormInputProps} from '../../../types'
 import {withValuePath} from '../../../utils/withValuePath'
 import {withDocument} from '../../../utils/withDocument'
 import {CrossDatasetReferenceInput} from '../../../inputs/CrossDatasetReferenceInput'
 import {Alert} from '../../../components/Alert'
 import {useSource} from '../../../../studio'
 import {useDocumentPreviewStore} from '../../../../datastores'
+import {ObjectFieldProps} from '../../../store/types'
 import {search} from './datastores/search'
 import {createGetReferenceInfo} from './datastores/getReferenceInfo'
 import {useCrossProjectToken} from './datastores/useCrossProjectToken'
@@ -45,7 +45,7 @@ async function resolveUserDefinedFilter(
 }
 
 export interface SanityCrossDatasetReferenceInputProps
-  extends FormInputProps<CrossDatasetReference, CrossDatasetReferenceSchemaType> {
+  extends ObjectFieldProps<CrossDatasetReference, CrossDatasetReferenceSchemaType> {
   // From withDocument
   document: SanityDocument
   // From withValuePath

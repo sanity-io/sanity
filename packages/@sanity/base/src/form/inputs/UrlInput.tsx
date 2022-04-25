@@ -1,13 +1,13 @@
-import {isValidationErrorMarker, StringSchemaType} from '@sanity/types'
+import {isValidationErrorMarker} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import React, {useMemo} from 'react'
-import {FormInputProps} from '../types'
 import {PatchEvent, set, unset} from '../patch'
 import {FormField} from '../../components/formField'
 import {getValidationRule} from '../utils/getValidationRule'
+import {StringInputComponentProps} from '../types_v3'
 
-export type UrlInputProps = FormInputProps<string, StringSchemaType>
+export type UrlInputProps = StringInputComponentProps
 
 // @todo Rename to `URLInput`?
 export const UrlInput = React.forwardRef(function UrlInput(

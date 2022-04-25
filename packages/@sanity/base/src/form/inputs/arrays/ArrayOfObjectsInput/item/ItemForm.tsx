@@ -1,14 +1,11 @@
 import {isReferenceSchemaType, SchemaType} from '@sanity/types'
 import React, {ForwardedRef, forwardRef, useMemo} from 'react'
-import {
-  FormBuilderFilterFieldFn,
-  FormInputProps,
-  FormInputProps as InputProps,
-} from '../../../../types'
+import {FormBuilderFilterFieldFn} from '../../../../types'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {ArrayMember, InsertEvent, ReferenceItemComponentType} from '../types'
+import {ArrayFieldProps, FieldProps} from '../../../../store/types'
 
-interface ItemFormProps extends Omit<FormInputProps<ArrayMember, SchemaType>, 'level' | 'value'> {
+interface ItemFormProps extends Omit<ArrayFieldProps<ArrayMember>, 'level' | 'value'> {
   onInsert?: (event: InsertEvent) => void
   insertableTypes?: SchemaType[]
   ReferenceItemComponent: ReferenceItemComponentType
@@ -42,7 +39,7 @@ export const ItemForm = forwardRef(function ItemForm(props: ItemFormProps, ref: 
     () =>
       isReference
         ? forwardRef(function Input_(
-            givenProps: InputProps,
+            givenProps: FieldProps,
             inputRef: ForwardedRef<{focus: () => void}>
           ) {
             return (

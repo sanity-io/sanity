@@ -2,14 +2,13 @@ import {Schema, SchemaType} from '@sanity/types'
 import React, {useCallback, useEffect, useRef} from 'react'
 import {FormBuilderInputInstance} from '../FormBuilderInput'
 import {PatchChannel} from '../patchChannel'
-import {DocumentInput} from '../inputs/DocumentInput/DocumentInput'
-
+import {DocumentInput} from '../inputs/DocumentInput'
 import {useSource} from '../../studio'
-import {FormInputProps} from '../types'
 import {fallbackInputs} from '../fallbackInputs'
 import {RenderArrayItemCallbackArg, RenderFieldCallbackArg} from '../types_v3'
 import {ObjectInputProps} from '../store/formState'
 import {ChangeIndicatorProvider} from '../../components/changeIndicators'
+import {FieldProps} from '../store/types'
 import {SanityFormBuilderProvider} from './SanityFormBuilderProvider'
 import {resolveInputComponent as defaultInputResolver} from './inputResolver/inputResolver'
 
@@ -62,7 +61,7 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
         formBuilder.resolveInputComponent,
         inputType
       )
-      return resolved || (fallbackInputs[inputType.jsonType] as React.ComponentType<FormInputProps>)
+      return resolved || (fallbackInputs[inputType.jsonType] as React.ComponentType<FieldProps>)
     },
     [formBuilder]
   )
