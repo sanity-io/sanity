@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useImperativeHandle, useRef} from 'react'
 import {FormField, FormFieldSet, ChangeIndicatorProvider} from '@sanity/base/_unstable'
-import {PatchEvent, set, unset, setIfMissing, FormInputProps} from '@sanity/base/form'
+import {PatchEvent, set, unset, setIfMissing, ObjectFieldProps} from '@sanity/base/form'
 import {ObjectSchemaType} from '@sanity/types'
 import {Card, Select, Stack, TextInput} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
@@ -59,7 +59,7 @@ export type CodeSchemaType = Omit<ObjectSchemaType, 'options'> & {
   }
 }
 
-export type CodeInputProps = FormInputProps<CodeInputValue, CodeSchemaType>
+export type CodeInputProps = ObjectFieldProps<CodeInputValue, CodeSchemaType>
 
 // Returns a string with the mode name if supported (because aliases), otherwise false
 function isSupportedLanguage(mode: string) {
