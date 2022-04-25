@@ -6,7 +6,7 @@ import {PatchEvent} from '../../patch'
 import {InvalidValueInput} from '../InvalidValueInput'
 import {ConditionalHiddenField} from '../common/ConditionalHiddenField'
 import {useConditionalReadOnly} from '../../../conditional-property/conditionalReadOnly'
-import {FieldProps} from '../../store/types'
+import {FieldProps} from '../../types'
 
 interface FieldType {
   name: string

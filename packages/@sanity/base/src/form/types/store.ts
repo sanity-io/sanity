@@ -11,7 +11,7 @@ import * as React from 'react'
 import {ComponentType} from 'react'
 import {PatchEvent} from '../patch'
 import {FormFieldPresence} from '../../presence'
-import {ObjectInputProps} from './formState'
+import {ObjectInputProps} from '../store/formState'
 
 export interface StateTree<T> {
   value: T | undefined

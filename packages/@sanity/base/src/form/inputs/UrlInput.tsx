@@ -5,7 +5,7 @@ import React, {useMemo} from 'react'
 import {PatchEvent, set, unset} from '../patch'
 import {FormField} from '../../components/formField'
 import {getValidationRule} from '../utils/getValidationRule'
-import {StringInputComponentProps} from '../types_v3'
+import {StringInputComponentProps} from '../types'
 
 export type UrlInputProps = StringInputComponentProps
 

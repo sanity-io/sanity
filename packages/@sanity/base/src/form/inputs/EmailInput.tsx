@@ -4,7 +4,7 @@ import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {FormField} from '../../components/formField'
 import {PatchEvent, set, unset} from '../patch'
-import {StringInputComponentProps} from '../types_v3'
+import {StringInputComponentProps} from '../types'
 
 export type EmailInputProps = StringInputComponentProps
 

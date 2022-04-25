@@ -1,9 +1,8 @@
 import {TextArea, Theme} from '@sanity/ui'
 import React, {forwardRef, useCallback, useImperativeHandle, useRef} from 'react'
 import styled, {css} from 'styled-components'
-import {FormInputComponentResolver} from '../../../../types'
+import {FieldProps, FormInputComponentResolver} from '../../../../types'
 import {PatchEvent, set} from '../../../../patch'
-import {FieldProps} from '../../../../store/types'
 
 const DebugTextArea = styled(TextArea)(({theme}: {theme: Theme}) => {
   return css`

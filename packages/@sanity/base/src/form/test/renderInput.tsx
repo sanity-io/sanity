@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React from 'react'
-import {FIXME} from '../types'
+import {FIXME, FieldProps, ObjectFieldProps} from '../types'
 import {ObjectInput} from '../inputs/ObjectInput/ObjectInput'
-import {FieldProps, ObjectFieldProps} from '../store/types'
 import {renderNode} from './renderNode'
 
 export function renderObjectInput(options: {

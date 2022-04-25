@@ -20,7 +20,7 @@ import {CreateOption, EditReferenceEvent} from '../../../inputs/ReferenceInput/t
 import {useDocumentPreviewStore} from '../../../../datastores'
 import {useSource} from '../../../../studio'
 import {useReferenceInputOptions} from '../../contexts'
-import {ObjectFieldProps} from '../../../store/types'
+import {ObjectFieldProps} from '../../../types'
 
 // eslint-disable-next-line require-await
 async function resolveUserDefinedFilter(

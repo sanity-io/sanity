@@ -5,7 +5,7 @@ import {TextArea} from '@sanity/ui'
 import styled from 'styled-components'
 import {PatchEvent, set, unset} from '../patch'
 import {FormField} from '../../components/formField'
-import {StringInputComponentProps} from '../types_v3'
+import {StringInputComponentProps} from '../types'
 
 export type TextInputProps = StringInputComponentProps<TextSchemaType>
 

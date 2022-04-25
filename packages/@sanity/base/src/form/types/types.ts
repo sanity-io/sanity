@@ -7,8 +7,8 @@ import {
   ValidationMarker,
 } from '@sanity/types'
 import React from 'react'
-import {PatchEvent} from './patch'
-import {FieldProps} from './store/types'
+import {PatchEvent} from '../patch'
+import {FieldProps} from '../types'
 
 export type FIXME = any
 

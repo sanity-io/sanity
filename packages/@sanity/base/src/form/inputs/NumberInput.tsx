@@ -5,7 +5,7 @@ import {useId} from '@reach/auto-id'
 import {FormField} from '../../components/formField'
 import {PatchEvent, set, unset} from '../patch'
 import {getValidationRule} from '../utils/getValidationRule'
-import {NumberInputComponentProps} from '../types_v3'
+import {NumberInputComponentProps} from '../types'
 
 export type NumberInputProps = NumberInputComponentProps
 

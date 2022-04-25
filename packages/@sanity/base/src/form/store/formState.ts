@@ -18,7 +18,6 @@ import {isEqual, pathFor, startsWith, toString} from '@sanity/util/paths'
 import {createProtoValue} from '../utils/createProtoValue'
 import {insert, PatchEvent, setIfMissing} from '../patch'
 import {FormFieldPresence} from '../../presence'
-import {callConditionalProperties, callConditionalProperty} from './conditional-property'
 import {
   ArrayFieldProps,
   ArrayItemMember,
@@ -32,7 +31,8 @@ import {
   ObjectMember,
   StateTree,
   StringFieldProps,
-} from './types'
+} from '../types'
+import {callConditionalProperties, callConditionalProperty} from './conditional-property'
 import {MAX_FIELD_DEPTH} from './constants'
 import {getItemType} from './utils/getItemType'
 import {getCollapsedWithDefaults} from './utils/getCollapsibleOptions'

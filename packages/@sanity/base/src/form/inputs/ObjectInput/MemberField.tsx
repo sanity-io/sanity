@@ -1,7 +1,6 @@
 import React, {memo, useRef} from 'react'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
-import {RenderFieldCallback} from '../../types_v3'
-import {FieldMember} from '../../store/types'
+import {FieldMember, RenderFieldCallback} from '../../types'
 import {useFormBuilder} from '../../useFormBuilder'
 import {ChangeIndicatorProvider} from '../../../components/changeIndicators'
 

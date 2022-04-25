@@ -34,7 +34,7 @@ import {PlaceholderText} from '../common/PlaceholderText'
 import {UploadPlaceholder} from '../common/UploadPlaceholder'
 import {UploadWarning} from '../common/UploadWarning'
 import {EMPTY_ARRAY} from '../../../utils/empty'
-import {FIXME} from '../../../types'
+import {FIXME, FieldMember, ObjectFieldProps, ObjectInputComponentProps} from '../../../types'
 import {
   ChangeIndicatorCompareValueProvider,
   ChangeIndicatorWithProvidedFullPath,
@@ -43,9 +43,7 @@ import {FormFieldSet} from '../../../../components/formField'
 import {ImperativeToast} from '../../../../components/transitional'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'
 import {PresenceOverlay} from '../../../../presence'
-import {FieldMember, ObjectFieldProps} from '../../../store/types'
 import {MemberField} from '../../ObjectInput/MemberField'
-import {ObjectInputComponentProps} from '../../../types_v3'
 import {CardOverlay, FlexContainer} from './styles'
 // import {FileInputField} from './FileInputField'
 import {FileDetails} from './FileDetails'

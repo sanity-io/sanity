@@ -24,10 +24,13 @@ import {Item, List} from '../common/list'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import {applyAll} from '../../../patch/applyPatch'
 import {ConditionalReadOnlyField} from '../../common'
-import {FormArrayInputFunctionsProps, FormBuilderFilterFieldFn} from '../../../types'
+import {
+  ArrayFieldProps,
+  FormArrayInputFunctionsProps,
+  FormBuilderFilterFieldFn,
+} from '../../../types'
 import {PatchEvent, insert, setIfMissing, unset, set} from '../../../patch'
 import {ImperativeToast} from '../../../../components/transitional'
-import {ArrayFieldProps} from '../../../store/types'
 import {ArrayItem} from './item'
 import type {ArrayMember, InsertEvent, ReferenceItemComponentType} from './types'
 import {uploadTarget} from './uploadTarget/uploadTarget'

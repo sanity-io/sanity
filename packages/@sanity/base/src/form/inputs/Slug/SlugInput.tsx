@@ -15,7 +15,7 @@ import {ChangeIndicatorCompareValueProvider} from '../../../components/changeInd
 import {FormField} from '../../../components/formField'
 import {withDocument} from '../../utils/withDocument'
 import {withValuePath} from '../../utils/withValuePath'
-import {ObjectFieldProps} from '../../store/types'
+import {ObjectFieldProps} from '../../types'
 import {slugify} from './utils/slugify'
 import {useAsync} from './utils/useAsync'
 

@@ -5,7 +5,7 @@ import {OptionsArrayInput as OptionsArray} from '../../inputs/arrays/OptionsArra
 import {PortableTextInput} from '../../inputs/PortableText/PortableTextInput'
 import {TagsArrayInput} from '../../inputs/TagsArrayInput'
 import {StudioArrayInput, StudioArrayOfPrimitivesInput} from '../inputs/StudioArrayInput'
-import {ArrayFieldProps} from '../../store/types'
+import {ArrayFieldProps} from '../../types'
 
 const PRIMITIVES = ['string', 'number', 'boolean']
 

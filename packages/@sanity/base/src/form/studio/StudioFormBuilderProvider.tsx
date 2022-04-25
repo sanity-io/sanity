@@ -1,11 +1,10 @@
 import {Schema, SchemaType} from '@sanity/types'
 import React, {useCallback} from 'react'
 import {useSource} from '../../studio'
-import {FormPreviewComponentResolver, FIXME} from '../types'
+import {FIXME, FormPreviewComponentResolver, RenderFieldCallback} from '../types'
 import {SanityPreview} from '../../preview'
 import {FormBuilderProvider} from '../FormBuilderProvider'
 import {PatchChannel} from '../patch/PatchChannel'
-import {RenderFieldCallback} from '../types_v3'
 import {resolveInputComponent as defaultInputResolver} from './inputResolver/inputResolver'
 
 const previewResolver: FormPreviewComponentResolver = (..._: unknown[]) => {

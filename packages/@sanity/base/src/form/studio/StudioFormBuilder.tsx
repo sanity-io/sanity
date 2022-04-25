@@ -5,20 +5,22 @@ import {PatchChannel} from '../patch/PatchChannel'
 import {DocumentInput} from '../inputs/DocumentInput'
 import {useSource} from '../../studio'
 import {fallbackInputs} from '../fallbackInputs'
-import {FIXME} from '../types'
 import {
+  ArrayFieldProps,
   ArrayInputComponentProps,
   BooleanInputComponentProps,
+  FIXME,
+  FieldProps,
   NumberInputComponentProps,
+  ObjectFieldProps,
   ObjectInputComponentProps,
   RenderArrayItemCallbackArg,
   RenderFieldCallback,
   RenderFieldCallbackArg,
   StringInputComponentProps,
-} from '../types_v3'
+} from '../types'
 import {ArrayInputProps, ObjectInputProps} from '../store/formState'
 import {ChangeIndicatorProvider} from '../../components/changeIndicators'
-import {ArrayFieldProps, FieldProps, ObjectFieldProps} from '../store/types'
 import {assertType, isArrayField, isObjectField} from '../utils/asserters'
 import {StudioFormBuilderProvider} from './StudioFormBuilderProvider'
 import {resolveInputComponent as defaultInputResolver} from './inputResolver/inputResolver'
@@ -106,7 +108,7 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
         assertType<React.ComponentType<ArrayInputComponentProps>>(inputComponent)
 
         return createElement(inputComponent as React.ComponentType<ArrayInputComponentProps>, {
-          ...field,
+          ...(field as FIXME),
           renderItem,
         })
       }

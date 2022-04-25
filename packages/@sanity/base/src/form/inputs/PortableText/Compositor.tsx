@@ -27,10 +27,9 @@ import {
   usePortal,
 } from '@sanity/ui'
 import {ChangeIndicatorWithProvidedFullPath} from '../../../components/changeIndicators'
-import {FIXME, PortableTextMarker, RenderCustomMarkers} from '../../types'
+import {ArrayFieldProps, FIXME, PortableTextMarker, RenderCustomMarkers} from '../../types'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {EMPTY_ARRAY} from '../../utils/empty'
-import {ArrayFieldProps} from '../../store/types'
 import {BlockObject} from './object/BlockObject'
 import {InlineObject} from './object/InlineObject'
 import {EditObject} from './object/EditObject'

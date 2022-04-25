@@ -3,9 +3,9 @@ import {Button, Card} from '@sanity/ui'
 import {ObjectSchemaType} from '@sanity/types'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {randomKey} from '../common/randomKey'
+import {ArrayInputComponentProps} from '../../../types'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import {FormFieldSet} from '../../../../components/formField'
-import {ArrayInputComponentProps} from '../../../types_v3'
 import {ItemMember} from './ItemMember'
 
 export const ArrayInput = memo(function ArrayInput(props: ArrayInputComponentProps) {

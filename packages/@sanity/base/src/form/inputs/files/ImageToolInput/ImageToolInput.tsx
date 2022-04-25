@@ -14,7 +14,7 @@ import {withFocusRing} from '../../../components/withFocusRing'
 import {RatioBox} from '../common/RatioBox'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {EMPTY_ARRAY} from '../../../utils/empty'
-import {ObjectFieldProps} from '../../../store/types'
+import {ObjectFieldProps} from '../../../types'
 import {useLoadImage} from './useLoadImage'
 
 export interface ImageToolInputProps

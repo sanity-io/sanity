@@ -1,7 +1,7 @@
 import {TextArea, Theme} from '@sanity/ui'
 import React, {useImperativeHandle, useRef} from 'react'
 import styled, {css} from 'styled-components'
-import {FieldProps} from '../../store/types'
+import {FieldProps} from '../../types'
 
 const DebugTextArea = styled(TextArea)(({theme}: {theme: Theme}) => {
   return css`

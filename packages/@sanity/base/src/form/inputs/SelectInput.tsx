@@ -5,7 +5,7 @@ import {capitalize} from 'lodash'
 import React, {useMemo, useCallback, forwardRef} from 'react'
 import {PatchEvent, set, unset} from '../patch'
 import {FormField} from '../../components/formField'
-import {StringInputComponentProps} from '../types_v3'
+import {StringInputComponentProps} from '../types'
 
 export type SelectInputProps = StringInputComponentProps
 

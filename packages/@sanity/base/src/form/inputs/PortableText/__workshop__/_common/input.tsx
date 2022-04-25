@@ -5,7 +5,7 @@ import {SchemaType} from '@sanity/types'
 import {PortableTextInput} from '../../PortableTextInput'
 import {resolveInputComponent} from '../../../../studio/inputResolver/inputResolver'
 import {SanityFormBuilderConfig} from '../../../../../config'
-import {FieldProps} from '../../../../store/types'
+import {FieldProps} from '../../../../types'
 
 const DebugTextArea = styled(TextArea)(({theme}: {theme: Theme}) => {
   return css`

@@ -8,7 +8,7 @@ import {FormFieldHeaderText, FormFieldStatus} from '../../components/formField'
 import {FieldPresence} from '../../presence'
 import {PatchEvent, set} from '../patch'
 import {ChangeIndicator} from '../../components/changeIndicators'
-import {BooleanInputComponentProps} from '../types_v3'
+import {BooleanInputComponentProps} from '../types'
 
 const CenterAlignedBox = styled(Box)`
   align-self: center;

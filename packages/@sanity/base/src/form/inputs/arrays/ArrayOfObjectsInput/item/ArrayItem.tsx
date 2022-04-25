@@ -7,7 +7,7 @@ import {
   ChangeIndicatorScope,
   ContextProvidedChangeIndicator,
 } from '../../../../../components/changeIndicators'
-import {FIXME, FormBuilderFilterFieldFn} from '../../../../types'
+import {FieldProps, FIXME, FormBuilderFilterFieldFn, InputComponentProps} from '../../../../types'
 import {PatchEvent} from '../../../../patch'
 import {ArrayMember, InsertEvent, ReferenceItemComponentType} from '../types'
 import {EMPTY_ARRAY} from '../../../../utils/empty'
@@ -16,8 +16,6 @@ import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoVie
 import {EditPortal} from '../../../../components/EditPortal'
 import {useDidUpdate} from '../../../../hooks/useDidUpdate'
 import {useConditionalReadOnly} from '../../../../../conditional-property/conditionalReadOnly'
-import {FieldProps} from '../../../../store/types'
-import {InputComponentProps} from '../../../../types_v3'
 import {getItemType, isEmpty} from './helpers'
 import {ItemForm} from './ItemForm'
 import {RowItem} from './RowItem'

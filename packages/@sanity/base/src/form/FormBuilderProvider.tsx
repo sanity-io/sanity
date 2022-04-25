@@ -1,7 +1,7 @@
 import {AssetSource, Schema, SchemaType} from '@sanity/types'
 import React, {useMemo} from 'react'
 import {SanityFormBuilderConfig} from '../config'
-import {FIXME, FormBuilderFilterFieldFn} from './types'
+import {FIXME, FormBuilderFilterFieldFn, RenderFieldCallback} from './types'
 import {fallbackInputs} from './fallbackInputs'
 import {FormBuilderContext, FormBuilderContextValue} from './FormBuilderContext'
 import {PatchChannel} from './patch/PatchChannel'
@@ -10,8 +10,6 @@ import {DefaultMarkers} from './inputs/PortableText/_legacyDefaultParts/Markers'
 import {DefaultCustomMarkers} from './inputs/PortableText/_legacyDefaultParts/CustomMarkers'
 import {FileSource, ImageSource} from './studio/DefaultAssetSource'
 import {EMPTY_ARRAY} from './utils/empty'
-import {RenderFieldCallback} from './types_v3'
-// import {FieldProps} from './store/types'
 
 const defaultFileAssetSources = [FileSource]
 const defaultImageAssetSources = [ImageSource]

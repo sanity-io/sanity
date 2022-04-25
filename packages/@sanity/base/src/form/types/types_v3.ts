@@ -6,8 +6,8 @@ import {
   StringSchemaType,
 } from '@sanity/types'
 import * as React from 'react'
-import {ArrayInputProps, BaseInputProps, ObjectInputProps} from './store/formState'
-import {FieldProps, FieldSetProps} from './store/types'
+import {ArrayInputProps, BaseInputProps, ObjectInputProps} from '../store/formState'
+import {FieldProps, FieldSetProps} from '../types'
 
 export type RenderFieldCallbackArg = FieldProps & {
   focusRef: React.Ref<any>

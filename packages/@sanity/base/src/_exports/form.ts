@@ -78,6 +78,4 @@ export type {
   TypeTarget,
 } from '../templates'
 
-export * from '../form/store/types'
-
-export * from '../form/types_v3'
+export * from '../form/types'

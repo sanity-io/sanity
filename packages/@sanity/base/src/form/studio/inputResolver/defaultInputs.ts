@@ -11,8 +11,7 @@ import {StudioArrayInput} from '../inputs/StudioArrayInput'
 import {StudioImageInput} from '../inputs/StudioImageInput'
 import {StudioFileInput} from '../inputs/StudioFileInput'
 import {StudioCrossDatasetReferenceInput} from '../inputs/crossDatasetReference/StudioCrossDatasetReferenceInput'
-import {FieldProps} from '../../store/types'
-import {FIXME} from '../../types'
+import {FieldProps, FIXME} from '../../types'
 
 export const sanityInputs: Record<string, {input: React.ComponentType<FieldProps>}> = {
   object: {input: ObjectInput as FIXME},

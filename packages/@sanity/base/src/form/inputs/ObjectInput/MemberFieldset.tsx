@@ -2,8 +2,7 @@
 
 import React from 'react'
 import {FormFieldSet} from '../../../components/formField'
-import {FieldSetMember} from '../../store/types'
-import {RenderFieldCallback} from '../../types_v3'
+import {FieldSetMember, RenderFieldCallback} from '../../types'
 import {MemberField} from './MemberField'
 
 export function MemberFieldset(props: {member: FieldSetMember; renderField: RenderFieldCallback}) {

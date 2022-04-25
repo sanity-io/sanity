@@ -17,7 +17,7 @@ import {CrossDatasetReferenceInput} from '../../../inputs/CrossDatasetReferenceI
 import {Alert} from '../../../components/Alert'
 import {useSource} from '../../../../studio'
 import {useDocumentPreviewStore} from '../../../../datastores'
-import {ObjectFieldProps} from '../../../store/types'
+import {ObjectFieldProps} from '../../../types'
 import {search} from './datastores/search'
 import {createGetReferenceInfo} from './datastores/getReferenceInfo'
 import {useCrossProjectToken} from './datastores/useCrossProjectToken'

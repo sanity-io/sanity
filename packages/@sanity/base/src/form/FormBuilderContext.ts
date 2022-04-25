@@ -1,6 +1,5 @@
 import {AssetSource, Path, Schema} from '@sanity/types'
 import {createContext} from 'react'
-import {RenderFieldCallback} from './types_v3'
 import {
   FormBuilderArrayFunctionComponent,
   FormBuilderCustomMarkersComponent,
@@ -9,6 +8,7 @@ import {
   FormBuilderMarkersComponent,
   FormInputComponentResolver,
   FormPreviewComponentResolver,
+  RenderFieldCallback,
 } from './types'
 import {PatchChannel} from './patch/PatchChannel'
 

@@ -1,8 +1,7 @@
 import * as React from 'react'
 import {memo, useRef} from 'react'
-import {ArrayItemMember} from '../../../store/types'
+import {ArrayItemMember, RenderArrayItemCallback} from '../../../types'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
-import {RenderArrayItemCallback} from '../../../types_v3'
 
 interface Props {
   member: ArrayItemMember

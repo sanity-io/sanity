@@ -1,7 +1,6 @@
 // eslint-disable-next-line no-empty-function,@typescript-eslint/no-empty-function
-import {RenderFieldCallbackArg} from '../types_v3'
-import {ArrayFieldProps, ObjectFieldProps} from '../store/types'
 import React from 'react'
+import {ArrayFieldProps, ObjectFieldProps, RenderFieldCallbackArg} from '../types'
 
 export function assertType<T>(v: unknown): asserts v is T {}
 

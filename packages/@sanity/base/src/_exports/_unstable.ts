@@ -66,28 +66,7 @@ export * from '../field/diff/components/ValueError'
 
 export {PatchEvent} from '../form'
 
-export type {
-  FormArrayInputFunctionsProps,
-  FormBuilderArrayFunctionComponent,
-  FormBuilderCustomMarkersComponent,
-  FormBuilderInputComponentMap,
-  FormBuilderMarkersComponent,
-  FormDiffMatchPatch,
-  FormInputComponentResolver,
-  FormInsertPatch,
-  FormInsertPatchPosition,
-  FormPatch,
-  FormPatchJSONValue,
-  FormPatchOrigin,
-  FormPreviewComponentResolver,
-  FormPreviewProps,
-  FormSetIfMissingPatch,
-  FormSetPatch,
-  FormUnsetPatch,
-  PatchArg,
-  PortableTextMarker,
-  RenderCustomMarkers,
-} from '../form'
+export * from '../form/types'
 
 export * from '../presence'
 

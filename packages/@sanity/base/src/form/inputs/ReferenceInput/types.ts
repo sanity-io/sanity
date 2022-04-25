@@ -2,7 +2,7 @@ import {Observable} from 'rxjs'
 import React, {ReactNode} from 'react'
 import {Path, PreviewValue, Reference, ReferenceSchemaType} from '@sanity/types'
 import {DocumentAvailability} from '../../../preview'
-import {ObjectFieldProps} from '../../store/types'
+import {ObjectFieldProps} from '../../types'
 
 export interface ReferenceInfo {
   id: string

@@ -1,7 +1,7 @@
 import React, {memo, useMemo} from 'react'
 import {FormFieldSet} from '../../../components/formField'
 import {EMPTY_ARRAY} from '../../utils/empty'
-import {ObjectInputComponentProps} from '../../types_v3'
+import {ObjectInputComponentProps} from '../../types'
 import {UnknownFields} from './UnknownFields'
 import {FieldGroupTabsWrapper} from './ObjectInput.styled'
 import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'

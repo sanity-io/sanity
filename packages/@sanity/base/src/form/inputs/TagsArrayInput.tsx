@@ -3,7 +3,7 @@ import React, {forwardRef, useCallback, useImperativeHandle, useMemo, useRef} fr
 import {FormField} from '../../components/formField'
 import {PatchEvent, set, unset} from '../patch'
 import {TagInput} from '../components/tagInput'
-import {ArrayInputComponentProps} from '../types_v3'
+import {ArrayInputComponentProps} from '../types'
 
 export type TagsArrayInputProps = ArrayInputComponentProps<string[]>
 
