@@ -6,7 +6,7 @@ import Barcode from 'react-barcode'
 import {FormFieldSet} from '@sanity/base/components'
 import {Box} from '@sanity/ui'
 import {setIfMissing} from '@sanity/form-builder'
-import {FormBuilderInput} from '@sanity/form-builder/lib/FormBuilderInput'
+// import {FormBuilderInput} from '@sanity/form-builder/lib/FormBuilderInput'
 import styled from 'styled-components'
 
 const BarcodeRoot = styled(Box)`
@@ -75,22 +75,23 @@ const BarcodeInput = React.forwardRef(function BarcodeInput(props, ref) {
       </BarcodeRoot>
       <FieldWrapper>
         {type.fields.map((field) => (
-          <FormBuilderInput
-            key={field.name}
-            description={field.type.description}
-            title={field.type.title}
-            type={field.type}
-            value={value && value[field.name]}
-            compareValue={compareValue}
-            path={[field.name]}
-            focusPath={focusPath}
-            readOnly={readOnly || field.type.readOnly}
-            presence={presence}
-            markers={markers}
-            onFocus={onFocus}
-            onBlur={onBlur}
-            onChange={(patchEvent) => handleFieldChange(field, patchEvent)}
-          />
+          <>TODO</>
+          // <FormBuilderInput
+          //   key={field.name}
+          //   description={field.type.description}
+          //   title={field.type.title}
+          //   type={field.type}
+          //   value={value && value[field.name]}
+          //   compareValue={compareValue}
+          //   path={[field.name]}
+          //   focusPath={focusPath}
+          //   readOnly={readOnly || field.type.readOnly}
+          //   presence={presence}
+          //   markers={markers}
+          //   onFocus={onFocus}
+          //   onBlur={onBlur}
+          //   onChange={(patchEvent) => handleFieldChange(field, patchEvent)}
+          // />
         ))}
       </FieldWrapper>
     </FormFieldSet>
