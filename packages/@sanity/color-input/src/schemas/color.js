@@ -8,7 +8,7 @@ export default {
   name: 'color',
   type: 'object',
   title: 'Color',
-  inputComponent: ColorInput,
+  components: {input: ColorInput},
   fields: [
     {
       title: 'Hex',
