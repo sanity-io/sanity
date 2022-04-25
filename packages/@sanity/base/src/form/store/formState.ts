@@ -122,8 +122,8 @@ function prepareFieldProps(props: {
     const fieldValue = (parent.value as any)?.[field.name] as Record<string, unknown> | undefined
 
     const fieldGroupState = parent.fieldGroupState?.children?.[field.name]
-    const collapsedFields = parent.collapsedFields?.children?.[field.name]
-    const collapsedFieldSets = parent.collapsedFieldSets?.children?.[field.name]
+    const expandedPaths = parent.expandedPaths?.children?.[field.name]
+    const collapsedFieldSets = parent.expandedFieldSets?.children?.[field.name]
 
     const scopedInputProps = prepareObjectInputProps({
       type: field.type,
@@ -136,15 +136,15 @@ function prepareFieldProps(props: {
       presence: parent.presence,
       path: fieldPath,
       level: fieldLevel,
-      focusPath: scopedFocusPath,
-      collapsedFields: collapsedFields,
-      collapsedFieldSets: collapsedFieldSets,
+      focusPath: parent.focusPath,
+      expandedPaths,
+      expandedFieldSets: collapsedFieldSets,
       onChange: fieldOnChange,
       onFocus: parent.onFocus,
       onBlur: parent.onBlur,
       onSetActiveFieldGroupAtPath: parent.onSetActiveFieldGroupAtPath,
-      onSetCollapsedField: parent.onSetCollapsedField,
-      onSetCollapsedFieldSet: parent.onSetCollapsedFieldSet,
+      onSetExpandedPath: parent.onSetExpandedPath,
+      onSetExpandedFieldSet: parent.onSetExpandedFieldSet,
     })
 
     if (scopedInputProps.hidden) {
@@ -153,7 +153,7 @@ function prepareFieldProps(props: {
 
     const defaultCollapsedState = getCollapsedWithDefaults(field.type.options, fieldLevel)
 
-    const collapsed = collapsedFields ? collapsedFields.value : defaultCollapsedState.collapsible
+    const collapsed = expandedPaths ? !expandedPaths.value : defaultCollapsedState.collapsed
     const fieldPresence = collapsed
       ? scopedPresence
       : scopedPresence.filter((item) => isEqual(fieldPath, item.path))
@@ -185,6 +185,7 @@ function prepareFieldProps(props: {
       path: fieldPath,
       focusPath: scopedFocusPath,
       focused: isEqual(fieldPath, parent.focusPath),
+      focus: fieldOnFocus,
       collapsible: defaultCollapsedState.collapsible,
       collapsed,
       presence: fieldPresence,
@@ -200,8 +201,8 @@ function prepareFieldProps(props: {
     const fieldValue = (parent.value as any)?.[field.name] as unknown[] | undefined
 
     const fieldGroupState = parent.fieldGroupState?.children?.[field.name]
-    const collapsedFields = parent.collapsedFields?.children?.[field.name]
-    const collapsedFieldSets = parent.collapsedFieldSets?.children?.[field.name]
+    const scopedExpandedPaths = parent.expandedPaths?.children?.[field.name]
+    const scopedExpandedFieldSets = parent.expandedFieldSets?.children?.[field.name]
 
     const preparedInputProps = prepareArrayInputProps({
       type: field.type,
@@ -211,17 +212,17 @@ function prepareFieldProps(props: {
       value: fieldValue,
       fieldGroupState,
       presence: scopedPresence,
-      focusPath: scopedFocusPath,
+      focusPath: parent.focusPath,
       validation: scopedValidation,
-      collapsedFields,
-      collapsedFieldSets,
+      expandedPaths: scopedExpandedPaths,
+      expandedFieldSets: scopedExpandedFieldSets,
       level: fieldLevel,
       path: fieldPath,
       onChange: fieldOnChange,
       onFocus: parent.onFocus,
       onBlur: parent.onBlur,
-      onSetCollapsedField: parent.onSetCollapsedField,
-      onSetCollapsedFieldSet: parent.onSetCollapsedFieldSet,
+      onSetExpandedPath: parent.onSetExpandedPath,
+      onSetExpandedFieldSet: parent.onSetExpandedFieldSet,
       onSetActiveFieldGroupAtPath: parent.onSetActiveFieldGroupAtPath,
     })
 
@@ -251,6 +252,7 @@ function prepareFieldProps(props: {
       readOnly: parent.readOnly || preparedInputProps.readOnly,
       onChange: fieldOnChange,
       onFocus: fieldOnFocus,
+      focus: fieldOnFocus,
       value: fieldValue,
     }
     return ret
@@ -289,6 +291,7 @@ function prepareFieldProps(props: {
       onFocus: fieldOnFocus,
       onBlur: fieldOnBlur,
       focused: isEqual(parent.focusPath, [field.name]),
+      focus: fieldOnFocus,
       presence: fieldPresence,
       validation: fieldValidation,
       readOnly: parent.readOnly || fieldConditionalProps.readOnly,
@@ -314,10 +317,10 @@ interface RawProps<SchemaType, T> {
   path: Path
   focusPath: Path
   fieldGroupState?: StateTree<string>
-  collapsedFields?: StateTree<boolean>
-  collapsedFieldSets?: StateTree<boolean>
-  onSetCollapsedField: (collapsed: boolean, path: Path) => void
-  onSetCollapsedFieldSet: (collapsed: boolean, path: Path) => void
+  expandedPaths?: StateTree<boolean>
+  expandedFieldSets?: StateTree<boolean>
+  onSetExpandedPath: (expanded: boolean, path: Path) => void
+  onSetExpandedFieldSet: (expanded: boolean, path: Path) => void
   onSetActiveFieldGroupAtPath: (groupName: string, path: Path) => void
   // nesting level
   level: number
@@ -362,10 +365,11 @@ function prepareObjectInputProps<T>(
     props.onBlur(props.path)
   )
 
+  // note: the terminology is inverted for object types as they are expanded by default
   const handleSetCollapsed = getScopedCallbackForPath(
-    props.onSetCollapsedField,
+    props.onSetExpandedPath,
     props.path,
-    (collapsed: boolean) => props.onSetCollapsedField(collapsed, props.path)
+    (collapsed: boolean) => props.onSetExpandedPath(!collapsed, props.path)
   )
 
   const schemaTypeGroupConfig = props.type.groups || []
@@ -468,14 +472,14 @@ function prepareObjectInputProps<T>(
           fields: fieldsetMembers,
           collapsible: fieldSet.options?.collapsible,
           collapsed:
-            fieldSet.name in (props.collapsedFieldSets?.children || {})
-              ? props.collapsedFieldSets?.children?.[fieldSet.name].value
+            fieldSet.name in (props.expandedFieldSets?.children || {})
+              ? !props.expandedFieldSets?.children?.[fieldSet.name].value
               : fieldSet.options?.collapsed,
           onSetCollapsed: getScopedCallbackForPath(
-            props.onSetCollapsedFieldSet,
+            props.onSetExpandedFieldSet,
             pathFor([...props.path, '@@fieldset@@']),
             (collapsed: boolean) => {
-              props.onSetCollapsedFieldSet(collapsed, [...props.path, fieldSet.name])
+              props.onSetExpandedFieldSet(!collapsed, [...props.path, fieldSet.name])
             }
           ),
         },
@@ -497,9 +501,11 @@ function prepareObjectInputProps<T>(
     presence: props.presence,
     onChange: props.onChange,
     onFocus: handleFocus,
+    focus: handleFocus,
     onBlur: handleBlur,
-    onSelectFieldGroup: handleSetActiveFieldGroup,
+    collapsed: !props.expandedPaths?.value,
     onSetCollapsed: handleSetCollapsed,
+    onSelectFieldGroup: handleSetActiveFieldGroup,
     members,
     groups,
   }
@@ -548,9 +554,9 @@ function prepareArrayInputProps<T extends unknown[]>(
   )
 
   const handleSetCollapsed = getScopedCallbackForPath(
-    props.onSetCollapsedField,
+    props.onSetExpandedPath,
     props.path,
-    (collapsed: boolean) => props.onSetCollapsedField(collapsed, props.path)
+    (collapsed: boolean) => props.onSetExpandedPath(!collapsed, props.path)
   )
 
   // Todo: improve error handling at the parent level so that the value here is either undefined or an array
@@ -562,6 +568,7 @@ function prepareArrayInputProps<T extends unknown[]>(
     hidden,
     type: props.type,
     focused: isEqual(props.path, props.focusPath),
+    focusPath: props.focusPath,
     path: props.path,
     id: toString(props.path),
     level: props.level,
@@ -572,6 +579,7 @@ function prepareArrayInputProps<T extends unknown[]>(
     presence: [],
     onFocus: handleFocus,
     onBlur: handleBlur,
+    focus: handleFocus,
     onChange: handleChange,
     onInsert: handleInsert,
     onSetCollapsed: handleSetCollapsed,
@@ -598,8 +606,10 @@ function prepareArrayItemProps(props: {
   // todo: validate _key
   const key = (arrayItem as any)?._key
 
-  const itemPath = pathFor([...parent.path, key])
+  const itemPath = pathFor([...parent.path, {_key: key}])
   const itemLevel = parent.level + 1
+
+  const expandedItemPaths = parent.expandedPaths?.children?.[key]
 
   const itemOnChange = getScopedCallbackForPath(
     parent.onChange,
@@ -611,20 +621,17 @@ function prepareArrayItemProps(props: {
       parent.onChange(itemChangeEvent.prepend(ensureValue).prefixAll({_key: key}))
     }
   )
-
-  const itemOnFocus = getScopedCallbackForPath(parent.onFocus, itemPath, () =>
-    parent.onFocus(itemPath)
-  )
-
-  const itemOnBlur = getScopedCallbackForPath(parent.onBlur, itemPath, () =>
-    parent.onBlur(itemPath)
-  )
+  //
+  // const itemOnFocus = getScopedCallbackForPath(parent.onFocus, itemPath, () => {
+  //   console.log('set focus in', itemPath)
+  //   parent.onFocus(itemPath)
+  // })
+  //
+  // const itemOnBlur = getScopedCallbackForPath(parent.onBlur, itemPath, () =>
+  //   parent.onBlur(itemPath)
+  // )
   const scopedPresence = parent.presence.filter((item) => startsWith(itemPath, item.path))
   const scopedValidation = parent.validation.filter((item) => startsWith(itemPath, item.path))
-
-  const scopedFocusPath = pathFor(
-    isSegmentEqual(parent.focusPath[0], {_key: key}) ? parent.focusPath.slice(1) : []
-  )
 
   const result = prepareObjectInputProps({
     type: itemType,
@@ -635,19 +642,22 @@ function prepareArrayItemProps(props: {
     presence: scopedPresence,
     value: arrayItem,
     path: itemPath,
-    focusPath: scopedFocusPath,
+    focusPath: parent.focusPath,
     currentUser: parent.currentUser,
-    onFocus: itemOnFocus,
-    onBlur: itemOnBlur,
-    onSetCollapsedField: parent.onSetCollapsedField,
-    onSetCollapsedFieldSet: parent.onSetCollapsedFieldSet,
+    onFocus: parent.onFocus,
+    onBlur: parent.onFocus,
+    expandedPaths: expandedItemPaths,
+    onSetExpandedPath: parent.onSetExpandedPath,
+    onSetExpandedFieldSet: parent.onSetExpandedFieldSet,
     onSetActiveFieldGroupAtPath: parent.onSetActiveFieldGroupAtPath,
   })
 
   if (result.hidden) {
-    // todo: figure out what to do here - ideally this should not happen, so might be a good idea to pass a flag to prepareObjectInputProps to disable hidden check in this context
+    // todo: figure out what to do here - ideally this should not happen,
+    //  so might be a good idea to pass a flag to prepareObjectInputProps to disable hidden check in this context
     throw new Error('Array items cannot be hidden')
   }
+
   return [result]
 }
 
@@ -672,6 +682,7 @@ export interface BaseInputProps<S extends SchemaType, T = unknown> {
 
   onFocus: (event: React.FocusEvent) => void
   onBlur: (event: React.FocusEvent) => void
+  focus: () => void
 
   presence: FormFieldPresence[]
   validation: ValidationMarker[]
@@ -691,6 +702,9 @@ export interface ObjectInputProps
 
 export interface ArrayInputProps extends BaseInputProps<ArraySchemaType, unknown[]> {
   members: ObjectInputProps[]
+
+  focusPath: Path
+
   onSetCollapsed: (collapsed: boolean) => void
   onInsert: (event: InsertEvent) => void
   collapsed?: boolean

@@ -73,6 +73,7 @@ interface BaseFieldProps {
   readOnly?: boolean
   onChange: (patchEvent: PatchEvent) => void
   onFocus: (focusEvent: React.FocusEvent) => void
+  focus: () => void
 }
 
 export interface StringFieldProps extends BaseFieldProps {
@@ -113,7 +114,7 @@ export interface ObjectFieldProps extends BaseFieldProps {
   readOnly?: boolean
   collapsed?: boolean
   collapsible?: boolean
-  onSetCollapsed: (collapsed: boolean) => void
+  onSetCollapsed: (expanded: boolean) => void
 }
 
 export interface ArrayFieldProps extends BaseFieldProps {

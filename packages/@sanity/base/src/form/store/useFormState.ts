@@ -45,15 +45,15 @@ export function useFormState(
   // note: feel free to move these state pieces out of this hook
   const currentUser = useCurrentUser()
   const [fieldGroupState, onSetFieldGroupState] = useState<StateTree<string>>()
-  const [collapsedFields, onSetCollapsedFields] = useState<StateTree<boolean>>()
-  const [collapsedFieldSets, onSetCollapsedFieldSets] = useState<StateTree<boolean>>()
+  const [expandedNodes, onSetExpandedNode] = useState<StateTree<boolean>>()
+  const [expandedFieldSets, onSetExpandedFieldSets] = useState<StateTree<boolean>>()
 
-  const handleOnSetCollapsedField = useCallback((collapsed: boolean, path: Path) => {
-    onSetCollapsedFields((prevState) => setAtPath(prevState, path, collapsed))
+  const handleOnSetExpandedPath = useCallback((expanded: boolean, path: Path) => {
+    onSetExpandedNode((prevState) => setAtPath(prevState, path, expanded))
   }, [])
 
-  const handleOnSetCollapsedFieldSet = useCallback((collapsed: boolean, path: Path) => {
-    onSetCollapsedFieldSets((prevState) => setAtPath(prevState, path, collapsed))
+  const handleOnSetExpandedFieldSet = useCallback((expanded: boolean, path: Path) => {
+    onSetExpandedFieldSets((prevState) => setAtPath(prevState, path, expanded))
   }, [])
 
   const handleSetActiveFieldGroup = useCallback(
@@ -77,10 +77,10 @@ export function useFormState(
       presence,
       fieldGroupState,
       onSetActiveFieldGroupAtPath: handleSetActiveFieldGroup,
-      onSetCollapsedField: handleOnSetCollapsedField,
-      onSetCollapsedFieldSet: handleOnSetCollapsedFieldSet,
-      collapsedFields,
-      collapsedFieldSets,
+      onSetExpandedPath: handleOnSetExpandedPath,
+      onSetExpandedFieldSet: handleOnSetExpandedFieldSet,
+      expandedPaths: expandedNodes,
+      expandedFieldSets: expandedFieldSets,
       value,
       focusPath,
       path: pathFor([]),
@@ -102,10 +102,10 @@ export function useFormState(
     focusPath,
     fieldGroupState,
     handleSetActiveFieldGroup,
-    handleOnSetCollapsedField,
-    handleOnSetCollapsedFieldSet,
-    collapsedFields,
-    collapsedFieldSets,
+    handleOnSetExpandedPath,
+    handleOnSetExpandedFieldSet,
+    expandedNodes,
+    expandedFieldSets,
     onChange,
     onFocus,
     onBlur,
