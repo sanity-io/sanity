@@ -35,10 +35,8 @@ export interface BaseInputProps<T = unknown, S extends SchemaType = SchemaType> 
   validation: ValidationMarker[]
 }
 
-export interface ObjectInputProps<
-  T extends Record<string, unknown> = Record<string, unknown>,
-  S extends ObjectSchemaType = ObjectSchemaType
-> extends BaseInputProps<T, S> {
+export interface ObjectInputProps<T = unknown, S extends ObjectSchemaType = ObjectSchemaType>
+  extends BaseInputProps<T, S> {
   members: ObjectMember[]
   groups?: FieldGroup[]
 
@@ -64,5 +62,5 @@ export interface ArrayInputProps<
 }
 
 export type BooleanInputProps = BaseInputProps<boolean, BooleanSchemaType>
-export type NumberInputProps = BaseInputProps<boolean, NumberSchemaType>
-export type StringInputProps = BaseInputProps<boolean, StringSchemaType>
+export type NumberInputProps = BaseInputProps<number, NumberSchemaType>
+export type StringInputProps = BaseInputProps<string, StringSchemaType>

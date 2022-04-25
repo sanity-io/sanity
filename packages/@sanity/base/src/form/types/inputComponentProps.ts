@@ -1,4 +1,4 @@
-import {StringSchemaType} from '@sanity/types'
+import {ObjectSchemaType, StringSchemaType} from '@sanity/types'
 import * as React from 'react'
 import {
   ArrayInputProps,
@@ -9,7 +9,10 @@ import {
 } from './inputProps'
 import {RenderArrayItemCallback, RenderFieldCallback} from './renderCallback'
 
-export interface ObjectInputComponentProps extends ObjectInputProps {
+export interface ObjectInputComponentProps<
+  T extends Record<string, unknown> = Record<string, unknown>,
+  S extends ObjectSchemaType = ObjectSchemaType
+> extends ObjectInputProps<T, S> {
   renderField: RenderFieldCallback
   focusRef: React.Ref<any>
 }

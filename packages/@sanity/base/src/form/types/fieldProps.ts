@@ -1,3 +1,4 @@
+import {ObjectSchemaType} from '@sanity/types'
 import {
   ArrayInputProps,
   BooleanInputProps,
@@ -21,7 +22,9 @@ export interface NumberFieldProps extends NumberInputProps, BaseFieldProps {
 export interface BooleanFieldProps extends BooleanInputProps, BaseFieldProps {
   kind: 'boolean'
 }
-export interface ObjectFieldProps extends ObjectInputProps, BaseFieldProps {
+export interface ObjectFieldProps<T = unknown, S extends ObjectSchemaType = ObjectSchemaType>
+  extends ObjectInputProps<T, S>,
+    BaseFieldProps {
   kind: 'object'
 }
 

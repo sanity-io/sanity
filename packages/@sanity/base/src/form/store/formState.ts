@@ -171,6 +171,7 @@ function prepareFieldProps(props: {
     return {
       kind: 'object',
       ...scopedInputProps,
+      type: field.type,
       name: field.name,
       title: field.type.title,
       description: field.type.description,
@@ -183,6 +184,8 @@ function prepareFieldProps(props: {
 
       // if the "enclosing object" is readOnly, the field should also be readOnly
       readOnly: parent.readOnly || scopedInputProps.readOnly,
+      members: scopedInputProps.members,
+      groups: scopedInputProps.groups,
       onChange: fieldOnChange,
       path: fieldPath,
       focusPath: scopedFocusPath,
@@ -193,6 +196,9 @@ function prepareFieldProps(props: {
       validation: fieldValidation,
       onFocus: fieldOnFocus,
       onBlur: fieldOnBlur,
+      onSetCollapsed: scopedInputProps.onSetCollapsed,
+      // onSelectGroup: scopedInputProps.onSelectFieldGroup,
+
       value: fieldValue,
     }
   } else if (isArraySchemaType(field.type)) {
@@ -284,6 +290,7 @@ function prepareFieldProps(props: {
       level: fieldLevel,
       index,
       id: toString(fieldPath),
+      compareValue: undefined,
       onChange: fieldOnChange,
       onFocus: fieldOnFocus,
       onBlur: fieldOnBlur,
