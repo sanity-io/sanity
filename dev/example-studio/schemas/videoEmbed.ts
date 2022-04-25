@@ -18,7 +18,7 @@ export default {
       description: 'Video id from service',
     },
   ],
-  inputComponent: VideoEmbedInput,
+  components: {input: VideoEmbedInput},
   preview: {
     select: {
       id: 'id',

@@ -29,5 +29,5 @@ export default {
       description: 'Some image',
     },
   ],
-  inputComponent: CustomObjectInput,
+  components: {input: CustomObjectInput},
 }

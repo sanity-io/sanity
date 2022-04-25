@@ -4,7 +4,7 @@ export default {
   name: 'protein',
   title: 'Protein',
   type: 'object',
-  inputComponent: ProteinInput,
+  components: {input: ProteinInput},
   fields: [
     {
       name: 'pdb',
