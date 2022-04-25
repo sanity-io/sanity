@@ -4,11 +4,13 @@ import {useCurrentUser} from '@sanity/base/hooks'
 import GetStartedTutorial from './GetStartedTutorial'
 
 export default function CustomDefaultLayout() {
-  const currentUser = useCurrentUser()
+  const {value} = useCurrentUser()
+
+  const showTutorial = (value?.roles || []).length > 0
 
   return (
     <>
-      {currentUser.value && <GetStartedTutorial />}
+      {showTutorial && <GetStartedTutorial />}
       <StudioRoot />
     </>
   )
