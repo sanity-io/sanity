@@ -6,7 +6,7 @@ export default {
   name: 'barcode',
   title: 'Barcode',
   type: 'object',
-  inputComponent: BarcodeInput,
+  components: {input: BarcodeInput},
 
   preview: {
     select: {
