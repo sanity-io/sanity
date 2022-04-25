@@ -3,7 +3,7 @@ import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/
 import {render} from '@testing-library/react'
 import React from 'react'
 import {FormBuilderFilterFieldFn, FIXME} from '../../types'
-import {StudioFormBuilder} from '../../studio/SanityFormBuilder'
+import {StudioFormBuilder} from '../../studio/StudioFormBuilder'
 import {createPatchChannel, PatchChannel} from '../../patchChannel'
 import {FieldProps} from '../../store/types'
 

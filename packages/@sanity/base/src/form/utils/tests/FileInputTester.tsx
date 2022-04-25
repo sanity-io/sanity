@@ -3,7 +3,7 @@ import {EMPTY, of} from 'rxjs'
 import imageUrlBuilder from '@sanity/image-url'
 import React, {ComponentProps, useMemo} from 'react'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
-import {StudioFormBuilderProvider} from '../../studio/SanityFormBuilderProvider'
+import {StudioFormBuilderProvider} from '../../studio/StudioFormBuilderProvider'
 import {FileInput} from '../../inputs/files/FileInput'
 
 import type {UploadOptions} from '../../studio/uploads/types'
