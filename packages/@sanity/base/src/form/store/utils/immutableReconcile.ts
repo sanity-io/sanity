@@ -4,7 +4,11 @@
  * @param previous
  * @param next
  */
-export function immutableReconcile<T>(previous: unknown, next: T): T {
+export function immutableReconcile<T>(
+  previous: unknown,
+  next: T,
+  visited: Set<any> = new Set()
+): T {
   if (previous === next) return previous as T
 
   // eslint-disable-next-line no-eq-null
@@ -23,7 +27,12 @@ export function immutableReconcile<T>(previous: unknown, next: T): T {
     let allEqual = previous.length === next.length
     const result = []
     for (let index = 0; index < next.length; index++) {
-      const nextItem = immutableReconcile(previous[index], next[index])
+      if (visited.has(next[index])) {
+        return next
+      }
+      visited.add(next[index])
+
+      const nextItem = immutableReconcile(previous[index], next[index], visited)
 
       if (nextItem !== previous[index]) {
         allEqual = false
@@ -40,7 +49,12 @@ export function immutableReconcile<T>(previous: unknown, next: T): T {
     let allEqual = true
     const result: Record<string, unknown> = {}
     for (const key of Object.keys(next)) {
-      const nextValue = immutableReconcile(previous[key], next[key]!)
+      if (visited.has(next[key])) {
+        return next
+      }
+      visited.add(next[key])
+
+      const nextValue = immutableReconcile(previous[key], next[key]!, visited)
       if (nextValue !== previous[key]) {
         allEqual = false
       }
