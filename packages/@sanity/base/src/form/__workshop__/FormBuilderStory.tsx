@@ -5,7 +5,7 @@ import {useSource} from '../../studio'
 import {useUnique} from '../../util'
 import {useDocumentOperation, useEditState, useValidationStatus} from '../../hooks'
 import {StudioFormBuilder} from '../studio/StudioFormBuilder'
-import {createPatchChannel} from '../patchChannel'
+import {createPatchChannel} from '../patch/PatchChannel'
 
 export default function FormBuilderStory() {
   const documentId = '8ab96211-501c-45e3-9eb0-4ed1da1b50df'

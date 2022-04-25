@@ -7,7 +7,7 @@ import {StudioFormBuilderProvider} from '../../studio/StudioFormBuilderProvider'
 import {FileInput} from '../../inputs/files/FileInput'
 
 import type {UploadOptions} from '../../studio/uploads/types'
-import {createPatchChannel} from '../../patchChannel'
+import {createPatchChannel} from '../../patch/PatchChannel'
 
 const resolveUploaderStub = () => ({
   priority: 1,

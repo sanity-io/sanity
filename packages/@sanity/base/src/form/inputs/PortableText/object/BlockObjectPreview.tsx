@@ -19,7 +19,7 @@ import React, {forwardRef, useCallback, useMemo, useRef} from 'react'
 import {useId} from '@reach/auto-id'
 import {ObjectSchemaType} from '@sanity/types'
 import {IntentLink} from '../../../../router'
-import {Preview} from '../../../Preview'
+import {Preview} from '../../../components/Preview'
 import {FIXME} from '../../../types'
 
 interface BlockObjectPreviewProps {

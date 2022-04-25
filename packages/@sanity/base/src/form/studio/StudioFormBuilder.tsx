@@ -1,7 +1,7 @@
 import {Schema, SchemaType} from '@sanity/types'
 import React, {createElement, useCallback, useRef} from 'react'
 // import {Box, Button, Card, Dialog, Flex, Text} from '@sanity/ui'
-import {PatchChannel} from '../patchChannel'
+import {PatchChannel} from '../patch/PatchChannel'
 import {DocumentInput} from '../inputs/DocumentInput'
 import {useSource} from '../../studio'
 import {fallbackInputs} from '../fallbackInputs'

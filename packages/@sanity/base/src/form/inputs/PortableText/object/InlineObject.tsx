@@ -17,7 +17,7 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {Box, Card, Theme, Tooltip} from '@sanity/ui'
 import {PortableTextMarker, RenderCustomMarkers, FIXME} from '../../../types'
-import {Preview} from '../../../Preview'
+import {Preview} from '../../../components/Preview'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
 

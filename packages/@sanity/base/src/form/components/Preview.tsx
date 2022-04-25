@@ -1,7 +1,7 @@
 import React, {useMemo} from 'react'
-import {FormPreviewProps, FIXME} from './types'
-import {useFormBuilder} from './useFormBuilder'
-import {PreviewAny} from './utils/fallback-preview/PreviewAny'
+import {FormPreviewProps, FIXME} from '../types'
+import {useFormBuilder} from '../useFormBuilder'
+import {PreviewAny} from '../utils/fallback-preview/PreviewAny'
 
 export function Preview(props: FormPreviewProps) {
   const {type, value} = props

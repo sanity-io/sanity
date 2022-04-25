@@ -10,7 +10,7 @@ import {FormInputComponentResolver, FormPreviewComponentResolver, FIXME} from '.
 import {route, RouterProvider} from '../../router'
 import {FormBuilderProvider} from '../FormBuilderProvider'
 import {ObjectInput} from '../inputs/ObjectInput'
-import {createPatchChannel} from '../patchChannel'
+import {createPatchChannel} from '../patch/PatchChannel'
 import {ReviewChangesContextProvider} from '../studio/contexts/reviewChanges/ReviewChangesProvider'
 import {is} from '../utils/is'
 import {FieldProps} from '../store/types'

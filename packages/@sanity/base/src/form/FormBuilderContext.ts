@@ -10,7 +10,7 @@ import {
   FormInputComponentResolver,
   FormPreviewComponentResolver,
 } from './types'
-import {PatchChannel} from './patchChannel'
+import {PatchChannel} from './patch/PatchChannel'
 
 export interface FormBuilderContextValue {
   components: {

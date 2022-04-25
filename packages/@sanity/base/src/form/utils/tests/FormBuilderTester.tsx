@@ -4,7 +4,7 @@ import {render} from '@testing-library/react'
 import React from 'react'
 import {FormBuilderFilterFieldFn, FIXME} from '../../types'
 import {StudioFormBuilder} from '../../studio/StudioFormBuilder'
-import {createPatchChannel, PatchChannel} from '../../patchChannel'
+import {createPatchChannel, PatchChannel} from '../../patch/PatchChannel'
 import {FieldProps} from '../../store/types'
 
 export type FormBuilderTesterProps = FieldProps & {

@@ -6,7 +6,7 @@ import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/
 import {StudioFormBuilderProvider} from '../../studio/StudioFormBuilderProvider'
 import {ImageInput} from '../../inputs/files/ImageInput'
 import type {UploadOptions} from '../../studio/uploads/types'
-import {createPatchChannel} from '../../patchChannel'
+import {createPatchChannel} from '../../patch/PatchChannel'
 
 const resolveUploaderStub = () => ({
   priority: 1,

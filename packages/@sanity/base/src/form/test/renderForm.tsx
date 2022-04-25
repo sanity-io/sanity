@@ -6,7 +6,7 @@ import {render} from '@testing-library/react'
 import {createConfig} from '../../config'
 import {FormBuilderFilterFieldFn, FIXME} from '../types'
 import {StudioProvider, useSource} from '../../studio'
-import {createPatchChannel} from '../patchChannel'
+import {createPatchChannel} from '../patch/PatchChannel'
 import {StudioFormBuilder} from '../studio/StudioFormBuilder'
 import {createMockSanityClient} from './mocks/sanityClient'
 

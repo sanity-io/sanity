@@ -5,7 +5,7 @@ import {AccessDeniedIcon, EditIcon, HelpCircleIcon, PublishIcon} from '@sanity/i
 import {TextWithTone} from '../../../components/TextWithTone'
 import {DocumentPreviewPresence} from '../../../presence'
 import {useDocumentPresence} from '../../../hooks'
-import {Preview} from '../../Preview'
+import {Preview} from '../../components/Preview'
 import {DocumentAvailability} from '../../../preview'
 import {DocumentPreview} from './types'
 import {TimeAgo} from './utils/TimeAgo'

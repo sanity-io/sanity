@@ -15,7 +15,7 @@ import {
 import {debounce} from 'lodash'
 import {FormPatch, PatchEvent} from '../../../patch'
 import {FormFieldPresence} from '../../../../presence'
-import {applyAll} from '../../../simplePatch'
+import {applyAll} from '../../../patch/simplePatch'
 import {ObjectEditData} from '../types'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import {FIXME} from '../../../types'

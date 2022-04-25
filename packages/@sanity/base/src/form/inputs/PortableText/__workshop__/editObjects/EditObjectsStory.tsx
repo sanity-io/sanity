@@ -3,7 +3,7 @@ import {Card, Code, LayerProvider, PortalProvider, Stack, Text, usePortal} from 
 import {useAction, useBoolean, useSelect} from '@sanity/ui-workshop'
 import React, {useMemo} from 'react'
 import {FormBuilderProvider} from '../../../../FormBuilderProvider'
-import {createPatchChannel} from '../../../../patchChannel'
+import {createPatchChannel} from '../../../../patch/PatchChannel'
 import {FIXME} from '../../../../types'
 import {EMPTY_ARRAY} from '../../../../utils/empty'
 import {EditObject} from '../../object'

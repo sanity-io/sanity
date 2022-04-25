@@ -7,7 +7,7 @@ import {PatchEvent} from '../patch'
 import {toMutationPatches} from '../utils/mutationPatch'
 import {PresenceOverlay} from '../../presence'
 import {applyAll} from '../patch/applyPatch'
-import {createPatchChannel} from '../patchChannel'
+import {createPatchChannel} from '../patch/PatchChannel'
 import {
   getDummySchema,
   getDummyDocument,

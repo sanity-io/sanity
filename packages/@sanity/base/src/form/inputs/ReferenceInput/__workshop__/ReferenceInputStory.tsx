@@ -5,7 +5,7 @@ import React, {useMemo, useState} from 'react'
 import {useSource} from '../../../../studio'
 import {StudioFormBuilderProvider} from '../../../studio/StudioFormBuilderProvider'
 import {ReviewChangesContextProvider} from '../../../studio/contexts/reviewChanges/ReviewChangesProvider'
-import {createPatchChannel} from '../../../patchChannel'
+import {createPatchChannel} from '../../../patch/PatchChannel'
 
 export default function ReferenceInputStory() {
   const {schema} = useSource()

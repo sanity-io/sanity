@@ -1,7 +1,7 @@
 import React from 'react'
 import {Reference, ReferenceSchemaType} from '@sanity/types'
 import {Box, Flex, Inline, Label, Stack, TextSkeleton} from '@sanity/ui'
-import {Preview} from '../../Preview'
+import {Preview} from '../../components/Preview'
 import {ReferencePreview} from './ReferencePreview'
 import {Loadable} from './useReferenceInfo'
 import {ReferenceInfo} from './types'

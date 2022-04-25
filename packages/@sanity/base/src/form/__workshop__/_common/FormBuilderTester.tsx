@@ -3,7 +3,7 @@ import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/
 import type {Schema as SchemaSchema} from '@sanity/types'
 import {FormBuilderProvider} from '../../FormBuilderProvider'
 import {ReviewChangesContextProvider} from '../../studio/contexts/reviewChanges/ReviewChangesProvider'
-import {PatchChannel} from '../../patchChannel'
+import {PatchChannel} from '../../patch/PatchChannel'
 import {inputResolver} from './inputResolver'
 import {resolvePreviewComponent} from './resolvePreviewComponent'
 

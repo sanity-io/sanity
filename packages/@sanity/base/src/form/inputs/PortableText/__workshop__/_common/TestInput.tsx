@@ -9,10 +9,10 @@ import {
 import {useSource} from '../../../../../studio'
 import {FormBuilderProvider} from '../../../../FormBuilderProvider'
 import {PortableTextInput} from '../../PortableTextInput'
-import {applyAll} from '../../../../simplePatch'
+import {applyAll} from '../../../../patch/simplePatch'
 import {RenderBlockActions} from '../../types'
 import {ReviewChangesContextProvider} from '../../../../studio/contexts/reviewChanges/ReviewChangesProvider'
-import {createPatchChannel} from '../../../../patchChannel'
+import {createPatchChannel} from '../../../../patch/PatchChannel'
 import {inputResolver} from './input'
 import {resolvePreviewComponent} from './resolvePreviewComponent'
 
