@@ -9,7 +9,7 @@ export function codeInput(): SanityPlugin {
         type: 'object',
         name: 'code',
         title: 'Code',
-        inputComponent: CodeInput,
+        components: {input: CodeInput},
         fields: [
           {
             type: 'string',
