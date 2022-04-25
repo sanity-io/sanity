@@ -15,23 +15,20 @@ import {
 import {castArray, pick} from 'lodash'
 import {ComponentType} from 'react'
 import {isEqual, pathFor, startsWith, toString} from '@sanity/util/paths'
-// import {createProtoValue} from '../utils/createProtoValue'
-import {
-  // insert,
-  PatchEvent,
-  // setIfMissing,
-} from '../patch'
+import {createProtoValue} from '../utils/createProtoValue'
+import {insert, PatchEvent, setIfMissing} from '../patch'
 import {FormFieldPresence} from '../../presence'
 import {
   ArrayFieldProps,
+  ArrayInputProps,
   ArrayMember,
   BooleanFieldProps,
   FieldGroup,
   FieldMember,
   FieldProps,
-  // InsertEvent,
+  InsertEvent,
   NumberFieldProps,
-  ObjectFieldProps,
+  ObjectInputProps,
   ObjectMember,
   StateTree,
   StringFieldProps,
@@ -98,25 +95,25 @@ function prepareFieldProps(props: {
   const fieldPath = pathFor([...parent.path, field.name])
   const fieldLevel = parent.level + 1
 
-  // const fieldOnChange = getScopedCallbackForPath(
-  //   parent.onChange,
-  //   fieldPath,
-  //   (fieldChangeEvent: PatchEvent) => {
-  //     const ensureValue =
-  //       isObjectSchemaType(field.type) || isArraySchemaType(field.type)
-  //         ? [setIfMissing(createProtoValue(field.type))]
-  //         : []
-  //     parent.onChange(fieldChangeEvent.prepend(ensureValue).prefixAll(field.name))
-  //   }
-  // )
+  const fieldOnChange = getScopedCallbackForPath(
+    parent.onChange,
+    fieldPath,
+    (fieldChangeEvent: PatchEvent) => {
+      const ensureValue =
+        isObjectSchemaType(field.type) || isArraySchemaType(field.type)
+          ? [setIfMissing(createProtoValue(field.type))]
+          : []
+      parent.onChange(fieldChangeEvent.prepend(ensureValue).prefixAll(field.name))
+    }
+  )
 
-  // const fieldOnFocus = getScopedCallbackForPath(parent.onFocus, fieldPath, () =>
-  //   parent.onFocus(fieldPath)
-  // )
+  const fieldOnFocus = getScopedCallbackForPath(parent.onFocus, fieldPath, () =>
+    parent.onFocus(fieldPath)
+  )
 
-  // const fieldOnBlur = getScopedCallbackForPath(parent.onBlur, fieldPath, () =>
-  //   parent.onBlur(fieldPath)
-  // )
+  const fieldOnBlur = getScopedCallbackForPath(parent.onBlur, fieldPath, () =>
+    parent.onBlur(fieldPath)
+  )
   const scopedPresence = parent.presence.filter((item) => startsWith(fieldPath, item.path))
   const scopedValidation = parent.validation.filter((item) => startsWith(fieldPath, item.path))
 
@@ -145,13 +142,12 @@ function prepareFieldProps(props: {
       focusPath: parent.focusPath,
       expandedPaths,
       expandedFieldSets: collapsedFieldSets,
-      // onChange: fieldOnChange,
-      // onFocus: parent.onFocus,
-      // onBlur: parent.onBlur,
-      // onSetActiveFieldGroupAtPath: parent.onSetActiveFieldGroupAtPath,
-      // onSetExpandedPath: parent.onSetExpandedPath,
-      // onSetExpandedFieldSet: parent.onSetExpandedFieldSet,
-      index,
+      onChange: fieldOnChange,
+      onFocus: parent.onFocus,
+      onBlur: parent.onBlur,
+      onSetActiveFieldGroupAtPath: parent.onSetActiveFieldGroupAtPath,
+      onSetExpandedPath: parent.onSetExpandedPath,
+      onSetExpandedFieldSet: parent.onSetExpandedFieldSet,
     })
 
     if (scopedInputProps.hidden) {
@@ -163,7 +159,6 @@ function prepareFieldProps(props: {
     const collapsed = expandedPaths
       ? expandedPaths.value === false
       : defaultCollapsedState.collapsed
-
     const fieldPresence = collapsed
       ? scopedPresence
       : scopedPresence.filter((item) => isEqual(fieldPath, item.path))
@@ -174,25 +169,21 @@ function prepareFieldProps(props: {
 
     // note: this is what we actually end up passing down to the individual input components
     return {
-      // kind: 'object',
+      kind: 'object',
       ...scopedInputProps,
-      type: field.type,
       name: field.name,
-      // title: field.type.title,
-      // description: field.type.description,
+      title: field.type.title,
+      description: field.type.description,
       level: fieldLevel,
       id: toString(fieldPath),
       index: index,
       hidden:
         scopedInputProps.hidden ||
-        (scopedInputProps.members.length > 0 &&
-          scopedInputProps.members.every((member) => isMemberHidden(member))),
+        scopedInputProps.members.every((member) => isMemberHidden(member)),
 
       // if the "enclosing object" is readOnly, the field should also be readOnly
       readOnly: parent.readOnly || scopedInputProps.readOnly,
-      members: scopedInputProps.members,
-      groups: scopedInputProps.groups,
-      // onChange: fieldOnChange,
+      onChange: fieldOnChange,
       path: fieldPath,
       focusPath: scopedFocusPath,
       focused: isEqual(fieldPath, parent.focusPath),
@@ -200,11 +191,8 @@ function prepareFieldProps(props: {
       collapsed,
       presence: fieldPresence,
       validation: fieldValidation,
-      // onFocus: fieldOnFocus,
-      // onBlur: fieldOnBlur,
-      // onSetCollapsed: scopedInputProps.onSetCollapsed,
-      // onSelectGroup: scopedInputProps.onSelectFieldGroup,
-
+      onFocus: fieldOnFocus,
+      onBlur: fieldOnBlur,
       value: fieldValue,
     }
   } else if (isArraySchemaType(field.type)) {
@@ -228,13 +216,12 @@ function prepareFieldProps(props: {
       expandedFieldSets: scopedExpandedFieldSets,
       level: fieldLevel,
       path: fieldPath,
-      // onChange: fieldOnChange,
-      // onFocus: parent.onFocus,
-      // onBlur: parent.onBlur,
-      // onSetExpandedPath: parent.onSetExpandedPath,
-      // onSetExpandedFieldSet: parent.onSetExpandedFieldSet,
-      // onSetActiveFieldGroupAtPath: parent.onSetActiveFieldGroupAtPath,
-      index,
+      onChange: fieldOnChange,
+      onFocus: parent.onFocus,
+      onBlur: parent.onBlur,
+      onSetExpandedPath: parent.onSetExpandedPath,
+      onSetExpandedFieldSet: parent.onSetExpandedFieldSet,
+      onSetActiveFieldGroupAtPath: parent.onSetActiveFieldGroupAtPath,
     })
 
     if (preparedInputProps.hidden) {
@@ -245,24 +232,24 @@ function prepareFieldProps(props: {
     const fieldValidation = scopedValidation.filter((item) => startsWith(fieldPath, item.path))
 
     const ret: ArrayFieldProps = {
-      // kind: 'array',
+      kind: 'array',
       ...preparedInputProps,
       type: field.type,
       name: field.name,
       id: toString(fieldPath),
-      // title: field.type.title,
+      title: field.type.title,
       validation: fieldValidation,
       presence: fieldPresence,
-      // description: field.type.description,
+      description: field.type.description,
       level: fieldLevel,
       path: fieldPath,
       focusPath: scopedFocusPath,
       index: index,
       focused: isEqual(parent.focusPath, fieldPath),
-      hidden: Boolean(parent.hidden || preparedInputProps.hidden),
+      hidden: parent.hidden || preparedInputProps.hidden,
       readOnly: parent.readOnly || preparedInputProps.readOnly,
-      // onChange: fieldOnChange,
-      // onFocus: fieldOnFocus,
+      onChange: fieldOnChange,
+      onFocus: fieldOnFocus,
       value: fieldValue,
     }
     return ret
@@ -288,9 +275,6 @@ function prepareFieldProps(props: {
     }
 
     return {
-      compareValue: undefined, // @todo
-      hidden: false, // @todo
-      focusPath: [], // @todo
       kind: getKind(field.type),
       type: field.type,
       name: field.name,
@@ -300,9 +284,9 @@ function prepareFieldProps(props: {
       level: fieldLevel,
       index,
       id: toString(fieldPath),
-      // onChange: fieldOnChange,
-      // onFocus: fieldOnFocus,
-      // onBlur: fieldOnBlur,
+      onChange: fieldOnChange,
+      onFocus: fieldOnFocus,
+      onBlur: fieldOnBlur,
       focused: isEqual(parent.focusPath, [field.name]),
       presence: fieldPresence,
       validation: fieldValidation,
@@ -319,7 +303,7 @@ function getKind(type: SchemaType): 'object' | 'array' | 'boolean' | 'number' | 
 interface RawProps<SchemaType, T> {
   type: SchemaType
   value?: T
-  document: Record<string, unknown>
+  document: SanityDocument
   currentUser: Omit<CurrentUser, 'role'>
   presence: FormFieldPresence[]
   validation: ValidationMarker[]
@@ -331,20 +315,19 @@ interface RawProps<SchemaType, T> {
   fieldGroupState?: StateTree<string>
   expandedPaths?: StateTree<boolean>
   expandedFieldSets?: StateTree<boolean>
-  // onSetExpandedPath: (expanded: boolean, path: Path) => void
-  // onSetExpandedFieldSet: (expanded: boolean, path: Path) => void
-  // onSetActiveFieldGroupAtPath: (groupName: string, path: Path) => void
+  onSetExpandedPath: (expanded: boolean, path: Path) => void
+  onSetExpandedFieldSet: (expanded: boolean, path: Path) => void
+  onSetActiveFieldGroupAtPath: (groupName: string, path: Path) => void
   // nesting level
   level: number
-  // onChange: (patchEvent: PatchEvent) => void
-  // onFocus: (path: Path) => void
-  // onBlur: (path: Path) => void
-  index: number
+  onChange: (patchEvent: PatchEvent) => void
+  onFocus: (path: Path) => void
+  onBlur: (path: Path) => void
 }
 
 function prepareObjectInputProps<T>(
   props: RawProps<ObjectSchemaType, T>
-): ObjectFieldProps | {hidden: true} {
+): ObjectInputProps | {hidden: true} {
   if (props.level === MAX_FIELD_DEPTH) {
     return {hidden: true}
   }
@@ -364,26 +347,26 @@ function prepareObjectInputProps<T>(
     return {hidden: true}
   }
 
-  // const handleSetActiveFieldGroup = getScopedCallbackForPath(
-  //   props.onSetActiveFieldGroupAtPath,
-  //   props.path,
-  //   (groupName: string) => props.onSetActiveFieldGroupAtPath(groupName, props.path)
-  // )
+  const handleSetActiveFieldGroup = getScopedCallbackForPath(
+    props.onSetActiveFieldGroupAtPath,
+    props.path,
+    (groupName: string) => props.onSetActiveFieldGroupAtPath(groupName, props.path)
+  )
 
-  // const handleFocus = getScopedCallbackForPath(props.onFocus, props.path, () =>
-  //   props.onFocus(props.path)
-  // )
+  const handleFocus = getScopedCallbackForPath(props.onFocus, props.path, () =>
+    props.onFocus(props.path)
+  )
 
-  // const handleBlur = getScopedCallbackForPath(props.onBlur, props.path, () =>
-  //   props.onBlur(props.path)
-  // )
+  const handleBlur = getScopedCallbackForPath(props.onBlur, props.path, () =>
+    props.onBlur(props.path)
+  )
 
   // note: the terminology is inverted for object types as they are expanded by default
-  // const handleSetCollapsed = getScopedCallbackForPath(
-  //   props.onSetExpandedPath,
-  //   props.path,
-  //   (collapsed: boolean) => props.onSetExpandedPath(!collapsed, props.path)
-  // )
+  const handleSetCollapsed = getScopedCallbackForPath(
+    props.onSetExpandedPath,
+    props.path,
+    (collapsed: boolean) => props.onSetExpandedPath(!collapsed, props.path)
+  )
 
   const schemaTypeGroupConfig = props.type.groups || []
   const defaultGroupName = (
@@ -406,13 +389,13 @@ function prepareObjectInputProps<T>(
         ]
   })
 
-  const selectedGroup = groups.find((group) => group.selected)
+  const selectedGroup = groups.find((group) => group.selected)!
 
   const parentProps: RawProps<ObjectSchemaType, unknown> = {
     ...props,
     hidden,
     readOnly,
-    // onChange: props.onChange,
+    onChange: props.onChange,
   }
 
   // create a members array for the object
@@ -426,7 +409,7 @@ function prepareObjectInputProps<T>(
       })
       if (
         fieldProps.hidden ||
-        (selectedGroup && !isFieldEnabledByGroupFilter(groups, fieldSet.field, selectedGroup))
+        !isFieldEnabledByGroupFilter(groups, fieldSet.field, selectedGroup)
       ) {
         return []
       }
@@ -458,25 +441,19 @@ function prepareObjectInputProps<T>(
         parent: parentProps,
         index,
       })
-
-      if (
-        fieldMember.hidden ||
-        (selectedGroup && !isFieldEnabledByGroupFilter(groups, field, selectedGroup))
-      ) {
-        return []
-      }
-
-      return [
-        {
-          type: 'field',
-          key: `field-${fieldMember.name}`,
-          field: fieldMember,
-        },
-      ]
+      return !fieldMember.hidden && isFieldEnabledByGroupFilter(groups, field, selectedGroup)
+        ? [
+            {
+              type: 'field',
+              key: `field-${fieldMember.name}`,
+              field: fieldMember,
+            },
+          ]
+        : []
     })
 
     // if all members of the fieldset is hidden, the fieldset should effectively also be hidden
-    if (fieldsetMembers.length === 0 || fieldsetMembers.every((field) => isMemberHidden(field))) {
+    if (fieldsetMembers.every((field) => isMemberHidden(field))) {
       return []
     }
 
@@ -494,50 +471,45 @@ function prepareObjectInputProps<T>(
             fieldSet.name in (props.expandedFieldSets?.children || {})
               ? props.expandedFieldSets?.children?.[fieldSet.name].value === false
               : fieldSet.options?.collapsed,
-          // onSetCollapsed: getScopedCallbackForPath(
-          //   props.onSetExpandedFieldSet,
-          //   pathFor([...props.path, '@@fieldset@@']),
-          //   (collapsed: boolean) => {
-          //     props.onSetExpandedFieldSet(!collapsed, [...props.path, fieldSet.name])
-          //   }
-          // ),
+          onSetCollapsed: getScopedCallbackForPath(
+            props.onSetExpandedFieldSet,
+            pathFor([...props.path, '@@fieldset@@']),
+            (collapsed: boolean) => {
+              props.onSetExpandedFieldSet(!collapsed, [...props.path, fieldSet.name])
+            }
+          ),
         },
       },
     ]
   })
 
   return {
-    kind: 'object',
-    collapsed: props.expandedPaths?.value === false,
-    collapsible: false,
     compareValue: undefined,
-    focusPath: props.focusPath,
-    focused: isEqual(props.path, props.focusPath),
-    groups,
-    hidden: Boolean(props.hidden),
+    value: props.value as Record<string, unknown> | undefined,
+    type: props.type,
+    readOnly: props.readOnly,
+    hidden: props.hidden,
+    path: props.path,
     id: toString(props.path),
     level: props.level,
-    members,
-    index: 0, // @todo
-    name: '', // @todo
-    // name: props.field,
-    // onBlur: handleBlur,
-    // onChange: props.onChange,
-    // onFocus: handleFocus,
-    // onSelectFieldGroup: handleSetActiveFieldGroup,
-    // onSetCollapsed: handleSetCollapsed,
-    path: props.path,
-    presence: props.presence,
-    readOnly: Boolean(props.readOnly),
-    type: props.type,
     validation: props.validation,
-    value: props.value as Record<string, unknown> | undefined,
+    focused: isEqual(props.path, props.focusPath),
+    focusPath: props.focusPath,
+    presence: props.presence,
+    onChange: props.onChange,
+    onFocus: handleFocus,
+    onBlur: handleBlur,
+    collapsed: props.expandedPaths?.value === false,
+    onSetCollapsed: handleSetCollapsed,
+    onSelectFieldGroup: handleSetActiveFieldGroup,
+    members,
+    groups,
   }
 }
 
 function prepareArrayInputProps<T extends unknown[]>(
   props: RawProps<ArraySchemaType, T>
-): ArrayFieldProps | {hidden: true} {
+): ArrayInputProps | {hidden: true} {
   if (props.level === MAX_FIELD_DEPTH) {
     return {hidden: true}
   }
@@ -557,49 +529,44 @@ function prepareArrayInputProps<T extends unknown[]>(
     return {hidden: true}
   }
 
-  // const handleChange = getInputOnChangeMemo(props.onChange, (patchEvent: PatchEvent) => {
-  //   props.onChange(patchEvent.prepend([setIfMissing([])]))
-  // })
+  const handleChange = getInputOnChangeMemo(props.onChange, (patchEvent: PatchEvent) => {
+    props.onChange(patchEvent.prepend([setIfMissing([])]))
+  })
 
-  // const handleInsert = getScopedCallbackForPath(
-  //   handleChange,
-  //   pathFor([...props.path, '@@insert']),
-  //   (event: InsertEvent) => {
-  //     handleChange(PatchEvent.from([insert(event.items, event.position, [event.reference])]))
-  //   }
-  // )
+  const handleInsert = getScopedCallbackForPath(
+    handleChange,
+    pathFor([...props.path, '@@insert']),
+    (event: InsertEvent) => {
+      handleChange(PatchEvent.from([insert(event.items, event.position, [event.reference])]))
+    }
+  )
 
-  // const handleFocus = getScopedCallbackForPath(props.onFocus, props.path, () =>
-  //   props.onFocus(props.path)
-  // )
+  const handleFocus = getScopedCallbackForPath(props.onFocus, props.path, () =>
+    props.onFocus(props.path)
+  )
 
-  // const handleBlur = getScopedCallbackForPath(props.onBlur, props.path, () =>
-  //   props.onBlur(props.path)
-  // )
+  const handleBlur = getScopedCallbackForPath(props.onBlur, props.path, () =>
+    props.onBlur(props.path)
+  )
 
-  // const handleSetCollapsed = getScopedCallbackForPath(
-  //   props.onSetExpandedPath,
-  //   props.path,
-  //   (collapsed: boolean) => props.onSetExpandedPath(!collapsed, props.path)
-  // )
+  const handleSetCollapsed = getScopedCallbackForPath(
+    props.onSetExpandedPath,
+    props.path,
+    (collapsed: boolean) => props.onSetExpandedPath(!collapsed, props.path)
+  )
 
   // Todo: improve error handling at the parent level so that the value here is either undefined or an array
   const items = Array.isArray(props.value) ? props.value : []
 
   return {
-    kind: 'array',
-    collapsed: false, // @todo
-    collapsible: false, // @todo
     compareValue: undefined,
     value: props.value as T,
-    readOnly: Boolean(readOnly),
-    hidden: Boolean(hidden),
+    readOnly,
+    hidden,
     type: props.type,
     focused: isEqual(props.path, props.focusPath),
     focusPath: props.focusPath,
     path: props.path,
-    name: '', // @todo
-    index: 0, // @todo
     id: toString(props.path),
     level: props.level,
     members: items.flatMap((item, index) =>
@@ -607,11 +574,11 @@ function prepareArrayInputProps<T extends unknown[]>(
     ),
     validation: props.validation,
     presence: [],
-    // onFocus: handleFocus,
-    // onBlur: handleBlur,
-    // onChange: handleChange,
-    // onInsert: handleInsert,
-    // onSetCollapsed: handleSetCollapsed,
+    onFocus: handleFocus,
+    onBlur: handleBlur,
+    onChange: handleChange,
+    onInsert: handleInsert,
+    onSetCollapsed: handleSetCollapsed,
   }
 }
 /*
@@ -640,22 +607,22 @@ function prepareArrayMembers(props: {
 
   const expandedItemPaths = parent.expandedPaths?.children?.[key]
 
-  // const itemOnChange = getScopedCallbackForPath(
-  //   parent.onChange,
-  //   itemPath,
-  //   (itemChangeEvent: PatchEvent) => {
-  //     const ensureValue = isObjectSchemaType(itemType)
-  //       ? [setIfMissing(createProtoValue(itemType))]
-  //       : []
-  //     parent.onChange(itemChangeEvent.prepend(ensureValue).prefixAll({_key: key}))
-  //   }
-  // )
+  const itemOnChange = getScopedCallbackForPath(
+    parent.onChange,
+    itemPath,
+    (itemChangeEvent: PatchEvent) => {
+      const ensureValue = isObjectSchemaType(itemType)
+        ? [setIfMissing(createProtoValue(itemType))]
+        : []
+      parent.onChange(itemChangeEvent.prepend(ensureValue).prefixAll({_key: key}))
+    }
+  )
   const scopedPresence = parent.presence.filter((item) => startsWith(itemPath, item.path))
   const scopedValidation = parent.validation.filter((item) => startsWith(itemPath, item.path))
 
   const result = prepareObjectInputProps({
     type: itemType,
-    // onChange: itemOnChange,
+    onChange: itemOnChange,
     level: itemLevel,
     document: parent.document,
     validation: scopedValidation,
@@ -664,13 +631,12 @@ function prepareArrayMembers(props: {
     path: itemPath,
     focusPath: parent.focusPath,
     currentUser: parent.currentUser,
-    // onFocus: parent.onFocus,
-    // onBlur: parent.onFocus,
+    onFocus: parent.onFocus,
+    onBlur: parent.onFocus,
     expandedPaths: expandedItemPaths,
-    // onSetExpandedPath: parent.onSetExpandedPath,
-    // onSetExpandedFieldSet: parent.onSetExpandedFieldSet,
-    // onSetActiveFieldGroupAtPath: parent.onSetActiveFieldGroupAtPath,
-    index,
+    onSetExpandedPath: parent.onSetExpandedPath,
+    onSetExpandedFieldSet: parent.onSetExpandedFieldSet,
+    onSetActiveFieldGroupAtPath: parent.onSetActiveFieldGroupAtPath,
   })
 
   if (result.hidden) {
@@ -692,14 +658,16 @@ function prepareArrayMembers(props: {
   ]
 }
 
+export type SanityDocument = Record<string, unknown>
+
 export interface FieldPresence {
   user: User
   sessionId: string
   lastActiveAt: string
 }
 
-export function prepareFormProps<T extends Record<string, unknown>>(
+export function prepareFormProps<T extends SanityDocument>(
   props: RawProps<ObjectSchemaType, T>
-): ObjectFieldProps | {hidden: true} {
+): ObjectInputProps | {hidden: true} {
   return prepareObjectInputProps(props)
 }

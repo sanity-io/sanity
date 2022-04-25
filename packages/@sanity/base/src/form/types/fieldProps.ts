@@ -1,70 +1,35 @@
 import {
-  ArraySchemaType,
-  BooleanSchemaType,
-  NumberSchemaType,
-  ObjectSchemaType,
-  Path,
-  StringSchemaType,
-  ValidationMarker,
-} from '@sanity/types'
-import {FormFieldPresence} from '../../presence'
-import {ArrayMember, ObjectMember} from './member'
-import {FieldGroup} from './fieldGroup'
+  ArrayInputProps,
+  BooleanInputProps,
+  NumberInputProps,
+  ObjectInputProps,
+  StringInputProps,
+} from './inputProps'
 
-export interface BaseFieldProps {
-  collapsed: boolean
-  collapsible: boolean
-  focusPath: Path
-  focused: boolean
-  hidden: boolean
-  id: string // id is a stringified version of the path
-  index: number
-  level: number
+interface BaseFieldProps {
   name: string
-  path: Path // the full content path of this input
-  presence: FormFieldPresence[]
-  readOnly: boolean
-  validation: ValidationMarker[]
+  index: number
 }
-
-export interface StringFieldProps extends BaseFieldProps {
+export interface StringFieldProps extends StringInputProps, BaseFieldProps {
   kind: 'string'
-  compareValue: string | undefined
-  type: StringSchemaType
-  value: string | undefined
 }
 
-export interface NumberFieldProps extends BaseFieldProps {
+export interface NumberFieldProps extends NumberInputProps, BaseFieldProps {
   kind: 'number'
-  compareValue: number | undefined
-  type: NumberSchemaType
-  value: number | undefined
 }
 
-export interface BooleanFieldProps extends BaseFieldProps {
+export interface BooleanFieldProps extends BooleanInputProps, BaseFieldProps {
   kind: 'boolean'
-  compareValue: boolean | undefined
-  type: BooleanSchemaType
-  value: boolean | undefined
 }
-
-export interface ObjectFieldProps<V = Record<string, unknown>, T = ObjectSchemaType>
-  extends BaseFieldProps {
+export interface ObjectFieldProps extends ObjectInputProps, BaseFieldProps {
   kind: 'object'
-  compareValue: V | undefined
-  groups: FieldGroup[]
-  members: ObjectMember[]
-  type: T
-  value: V | undefined
 }
 
-export interface ArrayFieldProps<T = unknown, S extends ArraySchemaType = ArraySchemaType<T>>
-  extends BaseFieldProps {
+/**
+ * Represents an object field of an array type
+ */
+export interface ArrayFieldProps extends ArrayInputProps, BaseFieldProps {
   kind: 'array'
-  compareValue: T[] | undefined
-  members: ArrayMember[]
-  type: S
-  value: T[] | undefined
 }
 
 export type FieldProps =

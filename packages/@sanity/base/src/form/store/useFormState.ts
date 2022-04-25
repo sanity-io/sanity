@@ -82,6 +82,7 @@ export function useFormState(
       currentUser,
       index: 0,
     })
+
     const reconciled = immutableReconcile(prev.current, next)
     prev.current = reconciled
     // console.timeEnd('derive form state')

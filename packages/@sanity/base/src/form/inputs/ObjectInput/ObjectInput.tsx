@@ -1,26 +1,31 @@
 import React, {memo, useMemo} from 'react'
-import {Grid} from '@sanity/ui'
-import {FormFieldSet} from '../../components/formField'
-import {ObjectInputProps, ObjectMember, RenderFieldCallback} from '../../types'
-import {FormNode, useFormNode} from '../../components/formNode'
+import {FormFieldSet} from '../../../components/formField'
+import {EMPTY_ARRAY} from '../../utils/empty'
+import {ObjectInputComponentProps} from '../../types'
 import {UnknownFields} from './UnknownFields'
 import {FieldGroupTabsWrapper} from './ObjectInput.styled'
 import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'
+import {MemberField} from './MemberField'
 import {MemberFieldset} from './MemberFieldset'
 
-export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
-  const {level, path} = useFormNode()
-
+export const ObjectInput = memo(function ObjectInput(props: ObjectInputComponentProps) {
   const {
+    type,
     groups,
-    inputProps,
     members,
+    collapsed,
+    collapsible,
+    focusRef,
+    presence,
+    validation,
     onChange,
+    renderField,
+    level = 0,
+    value,
+    id,
+    path,
     onSelectFieldGroup,
     onSetCollapsed,
-    renderField,
-    type,
-    value,
   } = props
 
   const renderedUnknownFields = useMemo(() => {
@@ -40,43 +45,39 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     return <UnknownFields fieldNames={unknownFields} value={value} onChange={onChange} />
   }, [onChange, type.fields, value])
 
-  const children = (
-    <Grid columns={type.options?.columns} gapX={4} gapY={5}>
+  return (
+    <FormFieldSet
+      ref={focusRef}
+      level={level}
+      title={type.title}
+      description={type.description}
+      columns={type.options?.columns}
+      collapsible={collapsible}
+      collapsed={collapsed}
+      onSetCollapsed={onSetCollapsed}
+      __unstable_presence={collapsed ? presence : EMPTY_ARRAY}
+      validation={collapsed ? validation : EMPTY_ARRAY}
+      __unstable_changeIndicator={false}
+    >
       {groups && groups?.length > 0 ? (
         <FieldGroupTabsWrapper $level={level} data-testid="field-groups">
           <FieldGroupTabs
-            groups={groups}
-            inputId={inputProps.id}
+            inputId={id}
             onClick={onSelectFieldGroup}
+            groups={groups}
             shouldAutoFocus={path.length === 0}
           />
         </FieldGroupTabsWrapper>
       ) : null}
 
-      {members.map((member) => (
-        <Member key={member.key} member={member} renderField={renderField} />
-      ))}
+      {members.map((member) => {
+        if (member.type === 'field') {
+          return <MemberField key={member.key} member={member} renderField={renderField} />
+        }
+
+        return <MemberFieldset key={member.key} member={member} renderField={renderField} />
+      })}
       {renderedUnknownFields}
-    </Grid>
-  )
-
-  if (level === 0) {
-    return children
-  }
-
-  return (
-    <FormFieldSet onSetCollapsed={onSetCollapsed} ref={inputProps.ref}>
-      {children}
     </FormFieldSet>
   )
 })
-
-function Member(props: {member: ObjectMember; renderField: RenderFieldCallback}) {
-  const {member, renderField} = props
-
-  if (member.type === 'field') {
-    return <FormNode fieldProps={member.field} renderField={renderField} />
-  }
-
-  return <MemberFieldset member={member} renderField={renderField} />
-}

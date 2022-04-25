@@ -1,18 +1,15 @@
-/* eslint-disable no-nested-ternary */
-
+/* eslint-disable */
 import {isActionEnabled} from '@sanity/schema/_internal'
 import {Box, Container, Flex, Spinner, Text} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo} from 'react'
 import {tap} from 'rxjs/operators'
-import {ObjectSchemaType, Path} from '@sanity/types'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Delay} from '../../../../components/Delay'
 import {useDocumentStore} from '../../../../../datastores'
 import {
-  // FormBuilderFilterFieldFn,
-  fromMutationPatches,
   createPatchChannel,
-  PatchEvent,
+  FormBuilderFilterFieldFn,
+  fromMutationPatches,
   PatchMsg,
   StudioFormBuilder,
 } from '../../../../../form'
@@ -23,6 +20,7 @@ import {
   DocumentMutationEvent,
   DocumentRebaseEvent,
 } from '../../../../../datastores/document/buffered-doc/types'
+import {ObjectSchemaType} from '@sanity/types'
 
 interface FormViewProps {
   granted: boolean
@@ -30,43 +28,38 @@ interface FormViewProps {
   margins: [number, number, number, number]
 }
 
-// interface FormViewState {
-//   filterField: FormBuilderFilterFieldFn
-// }
+interface FormViewState {
+  filterField: FormBuilderFilterFieldFn
+}
 
-// const INITIAL_STATE: FormViewState = {
-//   filterField: () => true,
-// }
+const INITIAL_STATE: FormViewState = {
+  filterField: () => true,
+}
 
 const preventDefault = (ev: React.FormEvent) => ev.preventDefault()
 
 export function FormView(props: FormViewProps) {
-  const {hidden: hiddenProp, margins, granted} = props
+  const {hidden, margins, granted} = props
   const {schema} = useSource()
   const {
-    // changesOpen,
-    // focusPath,
-    // validation,
     compareValue,
     displayed: value,
     documentId,
     documentSchema,
     documentType,
-    formState,
+    focusPath,
+    handleChange: _handleChange,
     historyController,
-    onBlur,
-    onChange,
-    onFocus,
-    onSetActiveFieldGroup,
-    onSetExpandedFieldSet,
-    onSetExpandedPath,
+    validation,
     ready,
+    changesOpen,
+    formState,
   } = useDocumentPane()
   const documentStore = useDocumentStore()
   const {revTime: rev} = historyController
   // const [{filterField}, setState] = useState<FormViewState>(INITIAL_STATE)
 
-  // const hasTypeMismatch = value !== null && value._type !== documentSchema.name
+  const hasTypeMismatch = value !== null && value._type !== documentSchema.name
   const isNonExistent = !value || !value._id
 
   // The `patchChannel` is an INTERNAL publish/subscribe channel that we use to notify form-builder
@@ -75,52 +68,38 @@ export function FormView(props: FormViewProps) {
   // - Used by `withDocument` to reset value.
   const patchChannel = useMemo(() => createPatchChannel(), [])
 
-  const hidden = formState.hidden || hiddenProp
-  const readOnly = formState.hidden ? false : formState.readOnly
-
   const isReadOnly = useMemo(() => {
     return (
-      hidden ||
-      readOnly ||
+      formState.hidden ||
+      formState.readOnly ||
       !ready ||
       rev !== null ||
       !granted ||
       !isActionEnabled(documentSchema, 'update') ||
       (isNonExistent && !isActionEnabled(documentSchema, 'create'))
     )
-  }, [documentSchema, isNonExistent, granted, ready, rev, hidden, readOnly])
+  }, [documentSchema, isNonExistent, granted, ready, rev, formState.hidden || formState.readOnly])
 
   const handleChange = useCallback(
-    (event: PatchEvent) => {
-      if (!isReadOnly) onChange(event)
+    (patches) => {
+      if (!isReadOnly) _handleChange(patches)
     },
-    [onChange, isReadOnly]
+    [_handleChange, isReadOnly]
   )
 
-  // const handleFocus = useCallback((path: Path) => {
-  //   console.warn('todo: handleFocus', {path})
+  // useEffect(() => {
+  //   if (!filterFieldFn$) return undefined
+
+  //   const sub = filterFieldFn$.subscribe((nextFilterField) =>
+  //     setState({filterField: nextFilterField})
+  //   )
+
+  //   return () => sub.unsubscribe()
   // }, [])
 
-  // const handleSelectFieldGroup = useCallback(
-  //   (path: Path, groupName: string) => {
-  //     onSetActiveFieldGroup(path, groupName)
-  //   },
-  //   [onSetActiveFieldGroup]
-  // )
-
-  const handleSetCollapsed = useCallback(
-    (path: Path, collapsed: boolean) => {
-      onSetExpandedPath(path, !collapsed)
-    },
-    [onSetExpandedPath]
-  )
-
-  const handleSetCollapsedFieldSet = useCallback(
-    (path: Path, collapsed: boolean) => {
-      onSetExpandedFieldSet(path, !collapsed)
-    },
-    [onSetExpandedFieldSet]
-  )
+  const handleBlur = useCallback(() => {
+    // do nothing
+  }, [])
 
   useEffect(() => {
     const sub = documentStore.pair
@@ -189,29 +168,28 @@ export function FormView(props: FormViewProps) {
               </Box>
             ) : (
               <StudioFormBuilder
+                id="root"
                 __internal_patchChannel={patchChannel}
-                collapsed={false}
-                collapsible={false}
+                changesOpen={changesOpen}
                 compareValue={compareValue as Record<string, unknown>}
                 // filterField={filterField}
-                focusPath={formState.focusPath}
-                focused={formState.focused}
-                groups={formState.groups}
                 level={formState.level}
-                members={formState.members}
-                onBlur={onBlur}
-                onChange={handleChange}
-                onFocus={onFocus}
-                onSelectFieldGroup={onSetActiveFieldGroup}
-                onSetCollapsed={handleSetCollapsed}
-                onSetCollapsedFieldSet={handleSetCollapsedFieldSet}
                 path={formState.path}
+                focused={formState.focused}
+                onBlur={handleBlur}
+                onChange={handleChange}
                 presence={formState.presence}
-                readOnly={false}
+                focusPath={formState.focusPath}
+                validation={formState.validation}
+                readOnly={isReadOnly}
                 schema={schema}
                 type={formState.type as ObjectSchemaType}
-                validation={formState.validation}
+                onFocus={formState.onFocus}
                 value={formState.value}
+                members={formState.members}
+                groups={formState.groups}
+                onSelectFieldGroup={formState.onSelectFieldGroup}
+                onSetCollapsed={formState.onSetCollapsed}
               />
             )
           ) : (
