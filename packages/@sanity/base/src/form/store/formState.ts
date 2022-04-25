@@ -155,7 +155,9 @@ function prepareFieldProps(props: {
 
     const defaultCollapsedState = getCollapsedWithDefaults(field.type.options, fieldLevel)
 
-    const collapsed = expandedPaths ? !expandedPaths.value : defaultCollapsedState.collapsed
+    const collapsed = expandedPaths
+      ? expandedPaths.value === false
+      : defaultCollapsedState.collapsed
     const fieldPresence = collapsed
       ? scopedPresence
       : scopedPresence.filter((item) => isEqual(fieldPath, item.path))
@@ -472,7 +474,7 @@ function prepareObjectInputProps<T>(
           collapsible: fieldSet.options?.collapsible,
           collapsed:
             fieldSet.name in (props.expandedFieldSets?.children || {})
-              ? !props.expandedFieldSets?.children?.[fieldSet.name].value
+              ? props.expandedFieldSets?.children?.[fieldSet.name].value === false
               : fieldSet.options?.collapsed,
           onSetCollapsed: getScopedCallbackForPath(
             props.onSetExpandedFieldSet,
@@ -501,7 +503,7 @@ function prepareObjectInputProps<T>(
     onChange: props.onChange,
     onFocus: handleFocus,
     onBlur: handleBlur,
-    collapsed: !props.expandedPaths?.value,
+    collapsed: props.expandedPaths?.value === false,
     onSetCollapsed: handleSetCollapsed,
     onSelectFieldGroup: handleSetActiveFieldGroup,
     members,
