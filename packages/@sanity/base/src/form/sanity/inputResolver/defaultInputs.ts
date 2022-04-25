@@ -11,23 +11,25 @@ import {SanityArrayInput} from '../inputs/SanityArrayInput'
 import {SanityImageInput} from '../inputs/SanityImageInput'
 import {SanityFileInput} from '../inputs/SanityFileInput'
 import SanityCrossDatasetReferenceInput from '../inputs/crossDatasetReference/SanityCrossDatasetReferenceInput'
+import {FieldProps} from '../../store/types'
+import {FIXME} from '../../types'
 
-export const sanityInputs = {
-  object: ObjectInput,
-  array: SanityArrayInput,
-  boolean: BooleanInput,
-  number: NumberInput,
-  text: TextInput,
-  email: EmailInput,
-  datetime: DateTimeInput,
-  date: DateInput,
-  url: UrlInput,
-  image: SanityImageInput,
-  file: SanityFileInput,
-  string: StringInput,
-  slug: SlugInput,
+export const sanityInputs: Record<string, {input: React.ComponentType<FieldProps>}> = {
+  object: {input: ObjectInput},
+  array: {input: SanityArrayInput as FIXME},
+  boolean: {input: BooleanInput as FIXME},
+  number: {input: NumberInput as FIXME},
+  text: {input: TextInput as FIXME},
+  email: {input: EmailInput as FIXME},
+  datetime: {input: DateTimeInput as FIXME},
+  date: {input: DateInput} as FIXME,
+  url: {input: UrlInput as FIXME},
+  image: {input: SanityImageInput as FIXME},
+  file: {input: SanityFileInput as FIXME},
+  string: {input: StringInput},
+  slug: {input: SlugInput as FIXME},
 
-  crossDatasetReference: SanityCrossDatasetReferenceInput,
+  crossDatasetReference: {input: SanityCrossDatasetReferenceInput as FIXME},
 }
 
 export type SanityInputType = keyof typeof sanityInputs

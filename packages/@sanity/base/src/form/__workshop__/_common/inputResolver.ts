@@ -12,7 +12,7 @@ export const inputResolver: FormInputComponentResolver = (input: SchemaType) => 
     input.type.name = 'object'
   }
 
-  const resolved = resolveInputComponent({}, undefined, input.type)
+  const resolved = resolveInputComponent(undefined, undefined, input.type)
 
   if (resolved) {
     return resolved

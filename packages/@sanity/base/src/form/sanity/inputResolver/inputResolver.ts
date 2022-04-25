@@ -6,9 +6,8 @@ import {
   StringSchemaType,
 } from '@sanity/types'
 import React from 'react'
-import {FIXME} from '../../types'
+import {FIXME, FormBuilderInputComponentMap} from '../../types'
 import * as is from '../../utils/is'
-import {FieldProps} from '../../store/types'
 import {isSanityInputType, sanityInputs} from './defaultInputs'
 import {resolveReferenceInput} from './resolveReferenceInput'
 import {resolveArrayInput} from './resolveArrayInput'
@@ -37,7 +36,7 @@ function resolveTypeVariants(type: SchemaType) {
 }
 
 export function resolveInputComponent(
-  inputComponents: Record<string, React.ComponentType<FieldProps> | undefined> | undefined,
+  components: FormBuilderInputComponentMap | undefined,
   userDefinedInputComponentProp: unknown,
   type: SchemaType
 ): React.ComponentType<any> | undefined {
@@ -48,17 +47,17 @@ export function resolveInputComponent(
     return customInputComponent
   }
 
-  if ('inputComponent' in type && (type as FIXME).inputComponent) {
-    return (type as FIXME).inputComponent
+  if ('components' in type && (type as FIXME).components?.input) {
+    return (type as FIXME).components.input
   }
 
-  const matchedComponent = resolveTypeVariants(type) || inputComponents?.[type.name]
+  const matchedComponent = resolveTypeVariants(type) || components?.[type.name]?.input
 
   if (matchedComponent) return matchedComponent
 
   // Resolve default input components
   if (isSanityInputType(type.name)) {
-    return sanityInputs[type.name]
+    return sanityInputs[type.name]?.input
   }
 
   return undefined

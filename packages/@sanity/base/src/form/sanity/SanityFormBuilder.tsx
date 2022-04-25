@@ -57,7 +57,7 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
   const resolveInputComponent = useCallback(
     (inputType: SchemaType) => {
       const resolved = defaultInputResolver(
-        formBuilder.components?.inputs || {},
+        formBuilder.components?.inputs,
         formBuilder.resolveInputComponent,
         inputType
       )

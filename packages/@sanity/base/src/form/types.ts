@@ -56,7 +56,12 @@ export type FormBuilderMarkersComponent = React.ComponentType<{
  */
 export type FormBuilderInputComponentMap = Record<
   string,
-  React.ComponentType<FieldProps> | undefined
+  | {
+      field?: React.ComponentType<FieldProps>
+      item?: React.ComponentType<FieldProps>
+      input?: React.ComponentType<FieldProps>
+    }
+  | undefined
 >
 
 /**
