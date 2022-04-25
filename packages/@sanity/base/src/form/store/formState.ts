@@ -13,14 +13,14 @@ import {
 } from '@sanity/types'
 
 import {castArray, pick} from 'lodash'
-import React, {ComponentType} from 'react'
+import {ComponentType} from 'react'
 import {isEqual, pathFor, startsWith, toString} from '@sanity/util/paths'
 import {createProtoValue} from '../utils/createProtoValue'
 import {insert, PatchEvent, setIfMissing} from '../patch'
 import {FormFieldPresence} from '../../presence'
 import {
   ArrayFieldProps,
-  ArrayItemMember,
+  ArrayInputProps,
   ArrayMember,
   BooleanFieldProps,
   FieldGroup,
@@ -28,6 +28,7 @@ import {
   FieldProps,
   InsertEvent,
   NumberFieldProps,
+  ObjectInputProps,
   ObjectMember,
   StateTree,
   StringFieldProps,
@@ -669,51 +670,6 @@ export interface FieldPresence {
   user: User
   sessionId: string
   lastActiveAt: string
-}
-
-export interface BaseInputProps<S extends SchemaType, T = unknown> {
-  id: string
-  type: S
-  compareValue: T | undefined
-  value: T | undefined
-  onChange: (patchEvent: PatchEvent) => void
-  hidden?: boolean
-  level: number
-  readOnly?: boolean
-  path: Path
-
-  focusPath: Path
-  focused: boolean
-
-  onFocus: (pathOrEvent?: Path | React.FocusEvent) => void
-  onBlur: (event?: React.FocusEvent) => void
-
-  presence: FormFieldPresence[]
-  validation: ValidationMarker[]
-}
-
-export interface ObjectInputProps<
-  T extends Record<string, unknown> = Record<string, unknown>,
-  S extends ObjectSchemaType = ObjectSchemaType
-> extends BaseInputProps<S, T> {
-  members: ObjectMember[]
-  groups?: FieldGroup[]
-
-  focusPath: Path
-  onSelectFieldGroup: (groupName: string) => void
-  onSetCollapsed: (collapsed: boolean) => void
-  collapsed?: boolean
-  collapsible?: boolean
-}
-
-export interface ArrayInputProps<S extends ArraySchemaType = ArraySchemaType, V = unknown[]>
-  extends BaseInputProps<S, V> {
-  members: ArrayMember[]
-
-  onSetCollapsed: (collapsed: boolean) => void
-  onInsert: (event: InsertEvent) => void
-  collapsed?: boolean
-  collapsible?: boolean
 }
 
 export function prepareFormProps<T extends SanityDocument>(

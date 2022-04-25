@@ -1,25 +1,22 @@
 import {Schema, SchemaType} from '@sanity/types'
 import React, {createElement, useCallback, useRef} from 'react'
-// import {Box, Button, Card, Dialog, Flex, Text} from '@sanity/ui'
 import {PatchChannel} from '../patch/PatchChannel'
 import {DocumentInput} from '../inputs/DocumentInput'
 import {useSource} from '../../studio'
 import {fallbackInputs} from '../fallbackInputs'
 import {
-  ArrayFieldProps,
   ArrayInputComponentProps,
   BooleanInputComponentProps,
   FIXME,
   FieldProps,
   NumberInputComponentProps,
-  ObjectFieldProps,
   ObjectInputComponentProps,
+  ObjectInputProps,
   RenderArrayItemCallbackArg,
   RenderFieldCallback,
   RenderFieldCallbackArg,
   StringInputComponentProps,
 } from '../types'
-import {ArrayInputProps, ObjectInputProps} from '../store/formState'
 import {ChangeIndicatorProvider} from '../../components/changeIndicators'
 import {assertType, isArrayField, isObjectField} from '../utils/asserters'
 import {StudioFormBuilderProvider} from './StudioFormBuilderProvider'

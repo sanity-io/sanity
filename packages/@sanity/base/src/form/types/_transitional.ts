@@ -8,7 +8,7 @@ import {
 } from '@sanity/types'
 import React from 'react'
 import {PatchEvent} from '../patch'
-import {FieldProps} from '../types'
+import {FieldProps} from '.'
 
 export type FIXME = any
 

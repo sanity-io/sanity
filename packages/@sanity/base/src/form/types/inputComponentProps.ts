@@ -6,29 +6,9 @@ import {
   StringSchemaType,
 } from '@sanity/types'
 import * as React from 'react'
-import {ArrayInputProps, BaseInputProps, ObjectInputProps} from '../store/formState'
-import {FieldProps, FieldSetProps} from '../types'
-
-export type RenderFieldCallbackArg = FieldProps & {
-  focusRef: React.Ref<any>
-}
-export type RenderFieldCallback = (renderFieldProps: RenderFieldCallbackArg) => React.ReactNode
-
-export type RenderArrayItemCallback = (
-  renderArrayItemProps: RenderArrayItemCallbackArg
-) => React.ReactNode
-
-export type RenderArrayItemCallbackArg = ObjectInputProps & {
-  focusRef: React.Ref<any>
-}
-
-export type RenderFieldSetCallback = (
-  renderFieldSetProps: RenderFieldSetCallbackArg
-) => React.ReactNode
-
-export type RenderFieldSetCallbackArg = FieldSetProps & {
-  children?: React.ReactNode
-}
+import {ArrayInputProps, BaseInputProps, ObjectInputProps} from './inputProps'
+// import {ArrayInputProps, BaseInputProps, ObjectInputProps} from '../store/formState'
+import {RenderArrayItemCallback, RenderFieldCallback} from './renderCallback'
 
 export interface ObjectInputComponentProps<
   T extends Record<string, unknown> = Record<string, unknown>,
@@ -48,9 +28,11 @@ export interface StringInputComponentProps<S extends StringSchemaType = StringSc
   extends BaseInputProps<S, string> {
   focusRef: React.Ref<any>
 }
+
 export interface NumberInputComponentProps extends BaseInputProps<NumberSchemaType, number> {
   focusRef: React.Ref<any>
 }
+
 export interface BooleanInputComponentProps extends BaseInputProps<BooleanSchemaType, boolean> {
   focusRef: React.Ref<any>
 }

@@ -7,60 +7,11 @@ import {
   StringSchemaType,
   ValidationMarker,
 } from '@sanity/types'
-import * as React from 'react'
-import {ComponentType} from 'react'
-import {PatchEvent} from '../patch'
 import {FormFieldPresence} from '../../presence'
-import {ObjectInputProps} from '../store/formState'
-
-export interface StateTree<T> {
-  value: T | undefined
-  children?: {
-    [key: string]: StateTree<T>
-  }
-}
-
-export interface FieldGroup {
-  name: string
-  title?: string
-  icon?: ComponentType<void>
-  default?: boolean
-  selected?: boolean
-  disabled?: boolean
-}
-
-export type ObjectMember = FieldMember | FieldSetMember
-
-export interface ArrayItemMember {
-  type: 'item'
-  key: string
-  item: ObjectInputProps
-}
-
-// note: array members doesn't have the field/fieldSet divide
-export type ArrayMember = ArrayItemMember // todo: add more members, e.g. placehoders for invalid values etc.
-
-export interface FieldMember {
-  type: 'field'
-  field: FieldProps
-  key: string
-}
-
-export interface FieldSetProps {
-  name: string
-  title?: string
-  hidden?: boolean
-  collapsible?: boolean
-  collapsed?: boolean
-  onSetCollapsed: (collapsed: boolean) => void
-  fields: FieldMember[]
-}
-
-export interface FieldSetMember {
-  type: 'fieldSet'
-  key: string
-  fieldSet: FieldSetProps
-}
+import {PatchEvent} from '../patch'
+import {ArrayMember, ObjectMember} from './member'
+import {FieldGroup} from './fieldGroup'
+import {InsertEvent} from './event'
 
 interface BaseFieldProps {
   name: string
@@ -102,12 +53,6 @@ export interface BooleanFieldProps extends BaseFieldProps {
   type: BooleanSchemaType
   compareValue: boolean | undefined
   value: boolean | undefined
-}
-
-export interface InsertEvent {
-  items: unknown[]
-  position: 'before' | 'after'
-  reference: number | string
 }
 
 export interface ObjectFieldProps<V = Record<string, unknown>, T = ObjectSchemaType>

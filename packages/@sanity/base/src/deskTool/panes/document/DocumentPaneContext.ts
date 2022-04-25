@@ -4,7 +4,7 @@ import {EditStateFor, TimelineController, Timeline} from '../../../datastores'
 import {DocumentActionComponent} from '../../actions'
 import {DocumentBadgeComponent} from '../../badges'
 import {PaneView, PaneMenuItem, PaneMenuItemGroup} from '../../types'
-import {ObjectInputProps} from '../../../form/store/formState'
+import {ObjectInputProps} from '../../../form/types'
 import {TimelineMode} from './types'
 
 // @todo: provide a TS type for this

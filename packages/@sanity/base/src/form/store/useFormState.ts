@@ -4,8 +4,8 @@ import {pathFor} from '@sanity/util/paths'
 import {useCurrentUser} from '../../datastores'
 import {PatchEvent} from '../patch'
 import {FormFieldPresence} from '../../presence'
-import {StateTree} from '../types'
-import {ObjectInputProps, prepareFormProps, SanityDocument} from './formState'
+import {ObjectInputProps, StateTree} from '../types'
+import {prepareFormProps, SanityDocument} from './formState'
 
 import {immutableReconcile} from './utils/immutableReconcile'
 
