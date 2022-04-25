@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unused-prop-types,react/jsx-handler-names */
 
-import React, {ForwardedRef, forwardRef, memo, useMemo} from 'react'
+import React, {memo, useMemo} from 'react'
 import {FormFieldSet} from '../../../components/formField'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {UnknownFields} from './UnknownFields'
@@ -9,10 +9,6 @@ import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'
 import {MemberField} from './MemberField'
 import {ObjectInputComponentProps} from '../../types_v3'
 
-// eslint-disable-next-line no-empty-function,@typescript-eslint/no-empty-function
-
-// disable eslint false positive
-// eslint-disable-next-line react/display-name
 export const ObjectInput = memo(function ObjectInput(props: ObjectInputComponentProps) {
   const {
     type,
@@ -49,10 +45,9 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputComponent
 
     return <UnknownFields fieldNames={unknownFields} value={value} onChange={onChange} />
   }, [onChange, type.fields, value])
-
   return (
     <FormFieldSet
-      ref={collapsed ? focusRef : null}
+      ref={focusRef}
       level={level}
       title={type.title}
       description={type.description}
@@ -75,7 +70,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputComponent
         </FieldGroupTabsWrapper>
       ) : null}
 
-      {members.map((member) => {
+      {members.map((member, i) => {
         if (member.type === 'field') {
           return <MemberField member={member} renderField={renderField} key={member.key} />
         }

@@ -14,13 +14,15 @@ import {
 
 import {castArray, pick} from 'lodash'
 import React, {ComponentType} from 'react'
-import {isEqual, pathFor, startsWith, toString, isSegmentEqual} from '@sanity/util/paths'
+import {isEqual, pathFor, startsWith, toString} from '@sanity/util/paths'
 import {createProtoValue} from '../utils/createProtoValue'
 import {insert, PatchEvent, setIfMissing} from '../patch'
 import {FormFieldPresence} from '../../presence'
 import {callConditionalProperties, callConditionalProperty} from './conditional-property'
 import {
   ArrayFieldProps,
+  ArrayItemMember,
+  ArrayMember,
   BooleanFieldProps,
   FieldGroup,
   FieldMember,
@@ -185,7 +187,6 @@ function prepareFieldProps(props: {
       path: fieldPath,
       focusPath: scopedFocusPath,
       focused: isEqual(fieldPath, parent.focusPath),
-      focus: fieldOnFocus,
       collapsible: defaultCollapsedState.collapsible,
       collapsed,
       presence: fieldPresence,
@@ -252,7 +253,6 @@ function prepareFieldProps(props: {
       readOnly: parent.readOnly || preparedInputProps.readOnly,
       onChange: fieldOnChange,
       onFocus: fieldOnFocus,
-      focus: fieldOnFocus,
       value: fieldValue,
     }
     return ret
@@ -291,7 +291,6 @@ function prepareFieldProps(props: {
       onFocus: fieldOnFocus,
       onBlur: fieldOnBlur,
       focused: isEqual(parent.focusPath, [field.name]),
-      focus: fieldOnFocus,
       presence: fieldPresence,
       validation: fieldValidation,
       readOnly: parent.readOnly || fieldConditionalProps.readOnly,
@@ -501,7 +500,6 @@ function prepareObjectInputProps<T>(
     presence: props.presence,
     onChange: props.onChange,
     onFocus: handleFocus,
-    focus: handleFocus,
     onBlur: handleBlur,
     collapsed: !props.expandedPaths?.value,
     onSetCollapsed: handleSetCollapsed,
@@ -573,13 +571,12 @@ function prepareArrayInputProps<T extends unknown[]>(
     id: toString(props.path),
     level: props.level,
     members: items.flatMap((item, index) =>
-      prepareArrayItemProps({arrayItem: item, parent: props, index})
+      prepareArrayMembers({arrayItem: item, parent: props, index})
     ),
     validation: props.validation,
     presence: [],
     onFocus: handleFocus,
     onBlur: handleBlur,
-    focus: handleFocus,
     onChange: handleChange,
     onInsert: handleInsert,
     onSetCollapsed: handleSetCollapsed,
@@ -588,11 +585,11 @@ function prepareArrayInputProps<T extends unknown[]>(
 /*
  * Takes a field in context of a parent object and returns prepared props for it
  */
-function prepareArrayItemProps(props: {
+function prepareArrayMembers(props: {
   arrayItem: unknown
   parent: RawProps<ArraySchemaType, unknown>
   index: number
-}): ObjectInputProps[] {
+}): ArrayMember[] {
   const {arrayItem, parent, index} = props
   const itemType = getItemType(parent.type, arrayItem)
 
@@ -621,15 +618,6 @@ function prepareArrayItemProps(props: {
       parent.onChange(itemChangeEvent.prepend(ensureValue).prefixAll({_key: key}))
     }
   )
-  //
-  // const itemOnFocus = getScopedCallbackForPath(parent.onFocus, itemPath, () => {
-  //   console.log('set focus in', itemPath)
-  //   parent.onFocus(itemPath)
-  // })
-  //
-  // const itemOnBlur = getScopedCallbackForPath(parent.onBlur, itemPath, () =>
-  //   parent.onBlur(itemPath)
-  // )
   const scopedPresence = parent.presence.filter((item) => startsWith(itemPath, item.path))
   const scopedValidation = parent.validation.filter((item) => startsWith(itemPath, item.path))
 
@@ -658,7 +646,7 @@ function prepareArrayItemProps(props: {
     throw new Error('Array items cannot be hidden')
   }
 
-  return [result]
+  return [{type: 'item', key, item: result}]
 }
 
 export type SanityDocument = Record<string, unknown>
@@ -682,7 +670,6 @@ export interface BaseInputProps<S extends SchemaType, T = unknown> {
 
   onFocus: (event: React.FocusEvent) => void
   onBlur: (event: React.FocusEvent) => void
-  focus: () => void
 
   presence: FormFieldPresence[]
   validation: ValidationMarker[]
@@ -702,7 +689,7 @@ export interface ObjectInputProps
 
 export interface ArrayInputProps<S extends ArraySchemaType = ArraySchemaType, V = unknown[]>
   extends BaseInputProps<S, V> {
-  members: ObjectInputProps[]
+  members: ArrayMember[]
 
   focusPath: Path
 

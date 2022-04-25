@@ -31,8 +31,14 @@ export interface FieldGroup {
 
 export type ObjectMember = FieldMember | FieldSetMember
 
+export interface ArrayItemMember {
+  type: 'item'
+  key: string
+  item: ObjectInputProps
+}
+
 // note: array members doesn't have the field/fieldSet divide
-export type ArrayMember = ObjectInputProps
+export type ArrayMember = ArrayItemMember // todo: add more members, e.g. placehoders for invalid values etc.
 
 export interface FieldMember {
   type: 'field'
@@ -64,7 +70,6 @@ interface BaseFieldProps {
   id: string
   // the full content path of this input
   path: Path
-  focusPath: Path
   focused: boolean
   presence: FormFieldPresence[]
   validation: ValidationMarker[]
@@ -72,10 +77,9 @@ interface BaseFieldProps {
   level: number
   hidden?: boolean
   readOnly?: boolean
-  onBlur: () => (focusEvent: React.FocusEvent) => void
+  onBlur: (focusEvent: React.FocusEvent) => void
   onChange: (patchEvent: PatchEvent) => void
-  onFocus: (pathOrFocusEvent: Path | React.FocusEvent) => void
-  focus: () => void
+  onFocus: (event: React.FocusEvent) => void
 }
 
 export interface StringFieldProps extends BaseFieldProps {
@@ -107,6 +111,7 @@ export interface ObjectFieldProps<V = Record<string, unknown>, T = ObjectSchemaT
   kind: 'object'
   type: T
   members: ObjectMember[]
+  focusPath: Path
   groups?: FieldGroup[]
   onSelectGroup: (name: string) => void
   value?: V
@@ -120,7 +125,7 @@ export interface ArrayFieldProps<T = unknown, S extends ArraySchemaType = ArrayS
   extends BaseFieldProps {
   kind: 'array'
   type: S
-  members: ObjectInputProps[]
+  members: ArrayMember[]
   focusPath: Path
   value?: T[]
 }

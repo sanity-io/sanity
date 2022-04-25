@@ -1,11 +1,9 @@
 import {ArraySchemaType, BooleanSchemaType, NumberSchemaType, StringSchemaType} from '@sanity/types'
 import * as React from 'react'
 import {ArrayInputProps, BaseInputProps, ObjectInputProps} from './store/formState'
-import {ArrayMember, FieldProps, FieldSetProps} from './store/types'
-import {PatchEvent} from './patch'
+import {FieldProps, FieldSetProps} from './store/types'
 
 export type RenderFieldCallbackArg = FieldProps & {
-  onChange: (event: PatchEvent) => void
   focusRef: React.Ref<any>
 }
 export type RenderFieldCallback = (renderFieldProps: RenderFieldCallbackArg) => React.ReactNode
@@ -14,8 +12,7 @@ export type RenderArrayItemCallback = (
   renderArrayItemProps: RenderArrayItemCallbackArg
 ) => React.ReactNode
 
-export type RenderArrayItemCallbackArg = ArrayMember & {
-  onChange: (event: PatchEvent) => void
+export type RenderArrayItemCallbackArg = ObjectInputProps & {
   focusRef: React.Ref<any>
 }
 

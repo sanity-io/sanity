@@ -1,6 +1,5 @@
 import {Schema, SchemaType} from '@sanity/types'
-import React, {useCallback, useEffect, useRef} from 'react'
-import {FormBuilderInputInstance} from '../FormBuilderInput'
+import React, {useCallback} from 'react'
 import {PatchChannel} from '../patchChannel'
 import {DocumentInput} from '../inputs/DocumentInput'
 import {useSource} from '../../studio'
@@ -11,6 +10,7 @@ import {ChangeIndicatorProvider} from '../../components/changeIndicators'
 import {FieldProps} from '../store/types'
 import {SanityFormBuilderProvider} from './SanityFormBuilderProvider'
 import {resolveInputComponent as defaultInputResolver} from './inputResolver/inputResolver'
+import {Box, Button, Card, Dialog, Flex, Text} from '@sanity/ui'
 
 /**
  * @alpha
@@ -100,13 +100,51 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
           value={item.value}
           compareValue={undefined}
         >
-          <Input
-            {...item}
-            validation={item.validation || []}
-            presence={item.presence || []}
-            renderField={renderField}
-            renderItem={renderItem}
-          />
+          <Flex gap={1} align="center">
+            <Box flex={1}>
+              <Card
+                as="button"
+                shadow={1}
+                padding={3}
+                radius={2}
+                selected={!item.collapsed}
+                onClick={() => item.onSetCollapsed(false)}
+              >
+                <Text>[preview] {JSON.stringify(item.value?._key)}</Text>
+              </Card>
+              {!item.collapsed && (
+                <Dialog
+                  id={`edit-${item.id}`}
+                  title="Edit"
+                  onClickOutside={() => item.onSetCollapsed(true)}
+                >
+                  <Box padding={4}>
+                    <Input
+                      {...item}
+                      validation={item.validation}
+                      presence={item.presence}
+                      renderField={renderField}
+                      renderItem={renderItem}
+                    />
+                  </Box>
+                </Dialog>
+              )}
+            </Box>
+
+            <Box padding={2}>
+              {item.collapsed ? (
+                <Button
+                  onClick={() => {
+                    item.onSetCollapsed(false)
+                  }}
+                  text="Open"
+                  mode="bleed"
+                />
+              ) : (
+                <Button onClick={() => item.onSetCollapsed(true)} text="Close" mode="bleed" />
+              )}
+            </Box>
+          </Flex>
         </ChangeIndicatorProvider>
       )
     },
