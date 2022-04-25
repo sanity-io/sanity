@@ -16,7 +16,7 @@ export default {
   name: 'code',
   type: 'object',
   title: 'Code',
-  inputComponent: CodeInput,
+  components: {input: CodeInput},
   icon: CodeBlockIcon,
   fields: [
     {
