@@ -648,7 +648,17 @@ function prepareArrayMembers(props: {
     throw new Error('Array items cannot be hidden')
   }
 
-  return [{type: 'item', key, item: result}]
+  return [
+    {
+      type: 'item',
+      key,
+      item: {
+        ...result,
+        // override the default for array items
+        collapsed: expandedItemPaths?.value !== true,
+      },
+    },
+  ]
 }
 
 export type SanityDocument = Record<string, unknown>
