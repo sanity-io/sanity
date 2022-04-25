@@ -118,7 +118,7 @@ const defaultProps: Partial<ImageInputProps> = {
 }
 
 function renderImageInput(options: {props?: Partial<ImageInputProps>; type: any}) {
-  return renderInput<ImageInputProps>({
+  return renderInput<any>({
     ...options,
     render: (props) => <ImageInput {...defaultProps} {...props} />,
   })

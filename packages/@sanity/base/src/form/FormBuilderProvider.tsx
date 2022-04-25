@@ -1,7 +1,7 @@
 import {AssetSource, Schema, SchemaType} from '@sanity/types'
 import React, {useMemo} from 'react'
 import {SanityFormBuilderConfig} from '../config'
-import {FormBuilderFilterFieldFn} from './types'
+import {FIXME, FormBuilderFilterFieldFn} from './types'
 import {fallbackInputs} from './fallbackInputs'
 import {FormBuilderContext, FormBuilderContextValue} from './FormBuilderContext'
 import {PatchChannel} from './patchChannel'
@@ -10,7 +10,8 @@ import {DefaultMarkers} from './inputs/PortableText/_legacyDefaultParts/Markers'
 import {DefaultCustomMarkers} from './inputs/PortableText/_legacyDefaultParts/CustomMarkers'
 import {FileSource, ImageSource} from './studio/DefaultAssetSource'
 import {EMPTY_ARRAY} from './utils/empty'
-import {FieldProps} from './store/types'
+import {RenderFieldCallback} from './types_v3'
+// import {FieldProps} from './store/types'
 
 const defaultFileAssetSources = [FileSource]
 const defaultImageAssetSources = [ImageSource]
@@ -43,6 +44,7 @@ export interface FormBuilderProviderProps extends SanityFormBuilderConfig {
    * @internal
    */
   __internal_patchChannel?: PatchChannel // eslint-disable-line camelcase
+  renderField: RenderFieldCallback
 }
 
 const missingPatchChannel: PatchChannel = {
@@ -65,6 +67,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
     schema,
     filterField,
     __internal_patchChannel: patchChannel = missingPatchChannel,
+    renderField,
     resolveInputComponent: resolveInputComponentProp,
     resolvePreviewComponent: resolvePreviewComponentProp,
     value,
@@ -97,9 +100,17 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       getValuePath: () => EMPTY_ARRAY,
       __internal_patchChannel: patchChannel, // eslint-disable-line camelcase
       schema,
-      resolveInputComponent: (type) =>
-        resolveComponentFromType(resolveInputComponentProp, type) ||
-        (fallbackInputs[type.jsonType] as React.ComponentType<FieldProps>),
+      renderField,
+      resolveInputComponent: (type) => {
+        const resolved = resolveComponentFromType(resolveInputComponentProp, type)
+
+        if (resolved) {
+          return resolved
+        }
+
+        return fallbackInputs[type.jsonType]?.input as FIXME
+      },
+
       resolvePreviewComponent: (type) =>
         resolveComponentFromType(resolvePreviewComponentProp, type),
       getDocument: () => value,
@@ -110,6 +121,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
     filterField,
     image,
     patchChannel,
+    renderField,
     resolveInputComponentProp,
     resolvePreviewComponentProp,
     schema,

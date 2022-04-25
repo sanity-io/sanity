@@ -6,7 +6,12 @@ import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
 import {DateInput, DateInputProps} from '../DateInput'
 import {FIXME} from '../../../types'
 
-function renderInput(props: Partial<DateInputProps> = {}) {
+function renderInput(
+  props: Omit<
+    DateInputProps,
+    'focusPath' | 'type' | 'onFocus' | 'onChange' | 'validation' | 'level' | 'presence'
+  >
+) {
   const onFocus = jest.fn()
   const onChange = jest.fn()
 
@@ -22,6 +27,7 @@ function renderInput(props: Partial<DateInputProps> = {}) {
           level={0}
           presence={[]}
           {...props}
+          kind="string"
         />
       </LayerProvider>
     </ThemeProvider>
@@ -39,7 +45,7 @@ test('timezone for the test environment should be set to America/Los_Angeles', (
 })
 
 test('does not emit onChange after invalid value has been typed', () => {
-  const {textInput, onChange} = renderInput()
+  const {textInput, onChange} = renderInput({} as any)
 
   userEvent.type(textInput, 'this is invalid')
   expect(textInput?.value).toBe('this is invalid')
@@ -51,7 +57,7 @@ test('does not emit onChange after invalid value has been typed', () => {
 })
 
 test('emits onChange on correct format if a valid value has been typed', () => {
-  const {textInput, onChange} = renderInput()
+  const {textInput, onChange} = renderInput({} as any)
 
   // note: the date is entered and displayed in local timezone
   userEvent.type(textInput, '2021-03-28')
@@ -78,6 +84,6 @@ test('emits onChange on correct format if a valid value has been typed', () => {
 })
 
 test('formatting of deserialized value', () => {
-  const {textInput} = renderInput({value: '2021-03-28'})
+  const {textInput} = renderInput({value: '2021-03-28'} as any)
   expect(textInput?.value).toBe('2021-03-28')
 })

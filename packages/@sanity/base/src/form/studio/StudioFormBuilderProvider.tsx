@@ -5,6 +5,7 @@ import {FormPreviewComponentResolver, FIXME} from '../types'
 import {SanityPreview} from '../../preview'
 import {FormBuilderProvider} from '../FormBuilderProvider'
 import {PatchChannel} from '../patchChannel'
+import {RenderFieldCallback} from '../types_v3'
 import {resolveInputComponent as defaultInputResolver} from './inputResolver/inputResolver'
 
 const previewResolver: FormPreviewComponentResolver = (..._: unknown[]) => {
@@ -21,6 +22,7 @@ export interface StudioFormBuilderProviderProps {
    */
   __internal_patchChannel: PatchChannel // eslint-disable-line camelcase
   children: React.ReactElement
+  renderField: RenderFieldCallback
   schema: Schema
   value: any | null
 }
@@ -31,7 +33,7 @@ export interface StudioFormBuilderProviderProps {
  * @alpha This API might change.
  */
 export function StudioFormBuilderProvider(props: StudioFormBuilderProviderProps) {
-  const {__internal_patchChannel: patchChannel, children, schema, value} = props
+  const {__internal_patchChannel: patchChannel, children, renderField, schema, value} = props
 
   const {unstable_formBuilder: formBuilder} = useSource()
 
@@ -52,6 +54,7 @@ export function StudioFormBuilderProvider(props: StudioFormBuilderProviderProps)
       components={formBuilder.components}
       file={formBuilder.file}
       image={formBuilder.image}
+      renderField={renderField}
       resolveInputComponent={resolveInputComponent}
       resolvePreviewComponent={formBuilder.resolvePreviewComponent || previewResolver}
       schema={schema}

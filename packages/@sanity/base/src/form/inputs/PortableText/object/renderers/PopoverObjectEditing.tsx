@@ -22,7 +22,6 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {FormFieldPresence, PresenceOverlay} from '../../../../../presence'
 import {PatchEvent} from '../../../../patch'
-import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {FIXME} from '../../../../types'
 import {POPOVER_WIDTH_TO_UI_WIDTH} from './constants'
 import {debugElement} from './debug'
@@ -214,7 +213,8 @@ function Content(
           <PresenceOverlay margins={[0, 0, 1, 0]}>
             <Box padding={3}>
               <PortalProvider element={portal.elements?.default}>
-                <FormBuilderInput
+                TODO
+                {/* <FormBuilderInput
                   focusPath={focusPath}
                   level={0}
                   validation={validation}
@@ -226,7 +226,7 @@ function Content(
                   readOnly={readOnly || type.readOnly}
                   type={type as SchemaType}
                   value={object}
-                />
+                /> */}
               </PortalProvider>
             </Box>
           </PresenceOverlay>

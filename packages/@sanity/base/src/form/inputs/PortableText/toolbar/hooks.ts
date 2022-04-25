@@ -4,13 +4,14 @@ import {
   PortableTextChild,
   PortableTextEditor,
   PortableTextFeatures,
-  Type,
+  // Type,
   usePortableTextEditor,
   usePortableTextEditorSelection,
 } from '@sanity/portable-text-editor'
-import {Path} from '@sanity/types'
+import {ObjectSchemaType, Path} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {useCallback, useMemo} from 'react'
+import {FIXME} from '../../../types'
 import {useUnique} from '../utils/useUnique'
 import {getPTEToolbarActionGroups} from './helpers'
 import {BlockStyleItem, PTEToolbarAction, PTEToolbarActionGroup} from './types'
@@ -45,15 +46,15 @@ export function useActionGroups({
 }: {
   hotkeys: HotkeyOptions
   onFocus: (path: Path) => void
-  resolveInitialValue: (type: Type) => any
+  resolveInitialValue: (type: ObjectSchemaType) => any
   disabled: boolean
 }): PTEToolbarActionGroup[] {
   const editor = usePortableTextEditor()
 
   const handleInsertAnnotation = useCallback(
-    async (type: Type) => {
+    async (type: ObjectSchemaType) => {
       const initialValue = await resolveInitialValue(type)
-      const paths = PortableTextEditor.addAnnotation(editor, type, initialValue)
+      const paths = PortableTextEditor.addAnnotation(editor, type as FIXME, initialValue)
       if (paths && paths.markDefPath) {
         PortableTextEditor.blur(editor)
         onFocus(paths.markDefPath.concat(FOCUS_TERMINATOR))

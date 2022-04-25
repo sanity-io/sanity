@@ -1,4 +1,4 @@
-import {Type} from '@sanity/portable-text-editor'
+import {ObjectSchemaType} from '@sanity/types'
 import {get} from 'lodash'
 import {ModalType, ModalWidth} from './renderers/types'
 
@@ -7,7 +7,7 @@ interface ModalOption {
   width?: ModalWidth
 }
 
-export function getModalOption(opts: {type?: Type}): ModalOption {
+export function getModalOption(opts: {type?: ObjectSchemaType}): ModalOption {
   const {type} = opts
   const legacyEditModalOption: string | undefined = get(type, 'options.editModal')
   const modalOption: ModalOption = get(type, 'options.modal') || {}

@@ -1,4 +1,10 @@
-import {ArraySchemaType, BooleanSchemaType, NumberSchemaType, StringSchemaType} from '@sanity/types'
+import {
+  ArraySchemaType,
+  BooleanSchemaType,
+  NumberSchemaType,
+  ObjectSchemaType,
+  StringSchemaType,
+} from '@sanity/types'
 import * as React from 'react'
 import {ArrayInputProps, BaseInputProps, ObjectInputProps} from './store/formState'
 import {FieldProps, FieldSetProps} from './store/types'
@@ -24,7 +30,10 @@ export type RenderFieldSetCallbackArg = FieldSetProps & {
   children?: React.ReactNode
 }
 
-export interface ObjectInputComponentProps extends ObjectInputProps {
+export interface ObjectInputComponentProps<
+  T extends Record<string, unknown> = Record<string, unknown>,
+  S extends ObjectSchemaType = ObjectSchemaType
+> extends ObjectInputProps<T, S> {
   renderField: RenderFieldCallback
   focusRef: React.Ref<any>
 }
@@ -45,3 +54,10 @@ export interface NumberInputComponentProps extends BaseInputProps<NumberSchemaTy
 export interface BooleanInputComponentProps extends BaseInputProps<BooleanSchemaType, boolean> {
   focusRef: React.Ref<any>
 }
+
+export type InputComponentProps =
+  | ObjectInputComponentProps
+  | ArrayInputComponentProps
+  | StringInputComponentProps
+  | NumberInputComponentProps
+  | BooleanInputComponentProps

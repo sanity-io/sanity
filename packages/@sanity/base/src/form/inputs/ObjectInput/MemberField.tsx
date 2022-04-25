@@ -2,16 +2,19 @@ import React, {memo, useRef} from 'react'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {RenderFieldCallback} from '../../types_v3'
 import {FieldMember} from '../../store/types'
+import {useFormBuilder} from '../../useFormBuilder'
+import {ChangeIndicatorProvider} from '../../../components/changeIndicators'
 
-interface Props {
+export interface MemberFieldProps {
   member: FieldMember
-  renderField: RenderFieldCallback
+  renderField?: RenderFieldCallback
 }
 
-export const MemberField = memo(function MemberField(props: Props) {
+// this is where we deal with convenience, sanity checks, error handling, etc.
+export const MemberField = memo(function MemberField(props: MemberFieldProps) {
+  const {renderField: defaultRenderField} = useFormBuilder()
+  const {member, renderField = defaultRenderField} = props
   const focusRef = useRef<{focus: () => void}>()
-  // this is where we deal with convenience, sanity checks, error handling, etc.
-  const {member, renderField} = props
 
   useDidUpdate(member.field.focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus) {
@@ -19,5 +22,13 @@ export const MemberField = memo(function MemberField(props: Props) {
     }
   })
 
-  return <>{renderField({...member.field, focusRef})}</>
+  return (
+    <ChangeIndicatorProvider
+      path={member.field.path}
+      value={member.field.value}
+      compareValue={undefined}
+    >
+      {renderField({...member.field, focusRef})}
+    </ChangeIndicatorProvider>
+  )
 })

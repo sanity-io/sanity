@@ -5,7 +5,6 @@ import {PortableTextBlock, Type, PortableTextChild} from '@sanity/portable-text-
 import {Box, Dialog, PortalProvider, useLayer, usePortal} from '@sanity/ui'
 import {PatchEvent} from '../../../../patch'
 import {FormFieldPresence, PresenceOverlay} from '../../../../../presence'
-import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {DIALOG_WIDTH_TO_UI_WIDTH} from './constants'
 import {ModalWidth} from './types'
 
@@ -85,7 +84,8 @@ export function DefaultObjectEditing(props: DefaultObjectEditingProps) {
       <PresenceOverlay margins={[0, 0, 1, 0]}>
         <Box padding={4}>
           <PortalProvider element={portal.elements?.default}>
-            <FormBuilderInput
+            TODO
+            {/* <FormBuilderInput
               focusPath={focusPath}
               level={0}
               validation={validation}
@@ -97,7 +97,7 @@ export function DefaultObjectEditing(props: DefaultObjectEditingProps) {
               readOnly={readOnly || type.readOnly}
               type={type as SchemaType}
               value={object}
-            />
+            /> */}
           </PortalProvider>
         </Box>
       </PresenceOverlay>

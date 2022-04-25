@@ -11,9 +11,6 @@ export * from './studio/focusManagers/SimpleFocusManager'
 export * from './utils/withDocument'
 export * from './utils/withValuePath'
 
-// root components
-export * from './FormBuilderInput'
-
 // inputs
 export * from './inputs/PortableText/PortableTextInput'
 export {PortableTextInput as BlockEditor} from './inputs/PortableText/PortableTextInput'

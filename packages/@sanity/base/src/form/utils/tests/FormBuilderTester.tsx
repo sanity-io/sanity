@@ -39,7 +39,7 @@ export function inputTester(document: SanityDocument, type: any, schema: Schema,
 
   const {queryByTestId} = render(
     <FormBuilderTester
-      {...DEFAULT_PROPS}
+      {...(DEFAULT_PROPS as any)}
       schema={schema}
       value={document}
       type={type}

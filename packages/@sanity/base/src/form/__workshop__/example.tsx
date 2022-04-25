@@ -6,7 +6,6 @@ import type {ObjectField, ObjectSchemaTypeWithOptions} from '@sanity/types'
 import {PatchEvent} from '../patch'
 import {toMutationPatches} from '../utils/mutationPatch'
 import {PresenceOverlay} from '../../presence'
-import {FormBuilderInput, FormBuilderInputInstance} from '../FormBuilderInput'
 import {applyAll} from '../patch/applyPatch'
 import {createPatchChannel} from '../patchChannel'
 import {
@@ -23,7 +22,7 @@ const EMPTY = [] as never[]
 
 export default function ExampleStory() {
   const {setPropValue} = useProps()
-  const ref = React.useRef<FormBuilderInputInstance | null>(null)
+  const ref = React.useRef<{focus: () => void} | null>(null)
   const toast = useToast()
   const isUseMutator = useBoolean('Use Mutator', false, 'Props')
   const [, setFocused] = useState(false)
@@ -164,7 +163,8 @@ export default function ExampleStory() {
               value={documentValue}
               isChangesOpen={isChangesOpen}
             >
-              <FormBuilderInput
+              <>TODO</>
+              {/* <FormBuilderInput
                 type={documentType!}
                 onChange={isUseMutator ? handleChangeMutator : handleChange}
                 level={0}
@@ -179,7 +179,7 @@ export default function ExampleStory() {
                 path={EMPTY}
                 validation={[]}
                 presence={[]}
-              />
+              /> */}
             </FormBuilderTester>
           </Stack>
           {isDebug && (

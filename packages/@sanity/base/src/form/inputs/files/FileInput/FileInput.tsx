@@ -43,9 +43,11 @@ import {FormFieldSet} from '../../../../components/formField'
 import {ImperativeToast} from '../../../../components/transitional'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'
 import {PresenceOverlay} from '../../../../presence'
-import {ObjectFieldProps} from '../../../store/types'
+import {FieldMember, ObjectFieldProps} from '../../../store/types'
+import {MemberField} from '../../ObjectInput/MemberField'
+import {ObjectInputComponentProps} from '../../../types_v3'
 import {CardOverlay, FlexContainer} from './styles'
-import {FileInputField} from './FileInputField'
+// import {FileInputField} from './FileInputField'
 import {FileDetails} from './FileDetails'
 import {FileSkeleton} from './FileSkeleton'
 
@@ -61,7 +63,7 @@ export interface File extends Partial<BaseFile> {
   _upload?: UploadState
 }
 
-export interface FileInputProps extends ObjectFieldProps<File, FileSchemaType> {
+export interface FileInputProps extends ObjectInputComponentProps<File, FileSchemaType> {
   assetSources: InternalAssetSource[]
   directUploads?: boolean
   getValuePath: () => Path
@@ -343,7 +345,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
     this.props.onFocus([])
   }
 
-  renderAdvancedEdit(fields: Field[]) {
+  renderAdvancedEdit(members: FieldMember[]) {
     return (
       <Dialog
         header="Edit details"
@@ -353,14 +355,14 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
         __unstable_autoFocus={false}
       >
         <PresenceOverlay margins={[0, 0, 1, 0]}>
-          <Box padding={4}>{this.renderFields(fields)}</Box>
+          <Box padding={4}>{this.renderFields(members)}</Box>
         </PresenceOverlay>
       </Dialog>
     )
   }
 
-  renderFields(fields: Field[]) {
-    return fields.map((field) => this.renderField(field))
+  renderFields(members: FieldMember[]) {
+    return members.map((member) => this.renderField(member))
   }
 
   handleSelectAssetFromSource = (assetFromSource: AssetFromSource[]) => {
@@ -402,29 +404,32 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
     })
   }
 
-  renderField(field: Field) {
-    const {value, level, focusPath, onFocus, readOnly, onBlur, compareValue, presence, validation} =
-      this.props
-    const fieldValue = value?.[field.name]
-    const fieldMarkers = validation.filter((marker) => marker.path[0] === field.name)
+  renderField(member: FieldMember) {
+    const {renderField} = this.props
+    // const {value, level, focusPath, onFocus, readOnly, onBlur, compareValue, presence, validation} =
+    //   this.props
+    // const fieldValue = value?.[field.name]
+    // const fieldMarkers = validation.filter((marker) => marker.path[0] === field.name)
 
-    return (
-      <FileInputField
-        key={field.name}
-        field={field}
-        parentValue={value}
-        value={fieldValue}
-        onChange={this.handleFieldChange}
-        onFocus={onFocus}
-        compareValue={compareValue}
-        onBlur={onBlur}
-        readOnly={readOnly || field.type.readOnly}
-        focusPath={focusPath}
-        level={level}
-        presence={presence}
-        validation={fieldMarkers}
-      />
-    )
+    return <MemberField member={member} renderField={renderField} />
+
+    // return (
+    //   <FileInputField
+    //     key={field.name}
+    //     field={field}
+    //     parentValue={value}
+    //     value={fieldValue}
+    //     onChange={this.handleFieldChange}
+    //     onFocus={onFocus}
+    //     compareValue={compareValue}
+    //     onBlur={onBlur}
+    //     readOnly={readOnly || field.type.readOnly}
+    //     focusPath={focusPath}
+    //     level={level}
+    //     presence={presence}
+    //     validation={fieldMarkers}
+    //   />
+    // )
   }
 
   renderAsset(hasAdvancedFields: boolean) {
@@ -645,6 +650,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
       value,
       compareValue,
       level,
+      members,
       validation,
       readOnly,
       presence,
@@ -653,17 +659,19 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
     } = this.props
     const {hoveringFiles, selectedAssetSource, isStale} = this.state
 
-    const fieldGroups = partition(
-      type.fields.filter((field) => !HIDDEN_FIELDS.includes(field.name)),
+    const fieldMembers = members.filter((member) => member.type === 'field') as FieldMember[]
+
+    const memberGroups = partition(
+      fieldMembers.filter((member) => !HIDDEN_FIELDS.includes(member.field.name)),
       'type.options.isHighlighted'
     )
-    const [highlightedFields, otherFields] = fieldGroups
+    const [highlightedMembers, otherMembers] = memberGroups
 
     // Whoever is present at the asset field is who we show on the field itself
     const assetFieldPresence = presence.filter((item) => item.path[0] === 'asset')
 
     const isDialogOpen =
-      focusPath.length > 0 && otherFields.some((field) => focusPath[0] === field.name)
+      focusPath.length > 0 && otherMembers.some((member) => focusPath[0] === member.field.name)
 
     function getFileTone() {
       const acceptedFiles = hoveringFiles.filter((file) => resolveUploader?.(type, file))
@@ -690,7 +698,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
           validation={validation}
           title={type.title}
           description={type.description}
-          level={highlightedFields.length > 0 ? level : 0}
+          level={highlightedMembers.length > 0 ? level : 0}
           __unstable_presence={isDialogOpen ? EMPTY_ARRAY : assetFieldPresence}
           __unstable_changeIndicator={false}
         >
@@ -726,7 +734,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
                     padding={hasValueOrUpload ? 1 : 0}
                     radius={2}
                   >
-                    {value?.asset && this.renderAsset(otherFields.length > 0)}
+                    {value?.asset && this.renderAsset(otherMembers.length > 0)}
                     {!value?.asset && this.renderUploadPlaceholder()}
                     {value?.asset && hoveringFiles.length > 0
                       ? this.renderAssetMenu(getFileTone())
@@ -740,8 +748,8 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
             </ChangeIndicatorCompareValueProvider>
           </div>
 
-          {highlightedFields.length > 0 && this.renderFields(highlightedFields)}
-          {isDialogOpen && this.renderAdvancedEdit(otherFields)}
+          {highlightedMembers.length > 0 && this.renderFields(highlightedMembers)}
+          {isDialogOpen && this.renderAdvancedEdit(otherMembers)}
           {selectedAssetSource && this.renderAssetSource()}
         </FormFieldSet>
       </>

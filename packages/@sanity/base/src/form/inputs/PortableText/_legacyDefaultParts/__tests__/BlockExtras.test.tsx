@@ -84,7 +84,7 @@ function render(props?: Partial<PortableTextInputProps>) {
         {...renderProps}
         renderBlockActions={renderBlockActions}
         renderCustomMarkers={renderCustomMarkers}
-        {...props}
+        {...(props as any)}
       />
     ),
 

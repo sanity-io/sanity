@@ -4,7 +4,6 @@ import {useAction} from '@sanity/ui-workshop'
 import React, {useMemo, useState} from 'react'
 import {useSource} from '../../../../studio'
 import {StudioFormBuilderProvider} from '../../../studio/StudioFormBuilderProvider'
-import {FormBuilderInput} from '../../../FormBuilderInput'
 import {ReviewChangesContextProvider} from '../../../studio/contexts/reviewChanges/ReviewChangesProvider'
 import {createPatchChannel} from '../../../patchChannel'
 
@@ -28,10 +27,12 @@ export default function ReferenceInputStory() {
           <ReviewChangesContextProvider changesOpen={false}>
             <StudioFormBuilderProvider
               __internal_patchChannel={patchChannel}
+              renderField={() => <>TODO</>}
               schema={schema}
               value={value}
             >
-              <FormBuilderInput
+              <>TODO</>
+              {/* <FormBuilderInput
                 focusPath={focusPath}
                 level={1}
                 onBlur={onBlur}
@@ -42,7 +43,7 @@ export default function ReferenceInputStory() {
                 type={schemaType}
                 validation={[]}
                 value={undefined}
-              />
+              /> */}
             </StudioFormBuilderProvider>
           </ReviewChangesContextProvider>
         </Container>

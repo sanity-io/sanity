@@ -12,7 +12,12 @@ import {
   RenderAttributes,
   Type,
 } from '@sanity/portable-text-editor'
-import {isKeySegment, isValidationErrorMarker, isValidationWarningMarker} from '@sanity/types'
+import {
+  isKeySegment,
+  isValidationErrorMarker,
+  isValidationWarningMarker,
+  ObjectSchemaType,
+} from '@sanity/types'
 import {
   BoundaryElementProvider,
   Portal,
@@ -22,7 +27,7 @@ import {
   usePortal,
 } from '@sanity/ui'
 import {ChangeIndicatorWithProvidedFullPath} from '../../../components/changeIndicators'
-import {PortableTextMarker, RenderCustomMarkers} from '../../types'
+import {FIXME, PortableTextMarker, RenderCustomMarkers} from '../../types'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {ArrayFieldProps} from '../../store/types'
@@ -171,7 +176,7 @@ export function Compositor(props: InputProps) {
   const renderBlock = useCallback(
     (
       block: PortableTextBlock,
-      blockType: Type,
+      blockType: ObjectSchemaType,
       attributes: RenderAttributes,
       defaultRender: (b: PortableTextBlock) => JSX.Element
     ) => {
@@ -331,7 +336,7 @@ export function Compositor(props: InputProps) {
         onToggleFullscreen={handleToggleFullscreen}
         readOnly={isActive === false || readOnly}
         renderAnnotation={renderAnnotation}
-        renderBlock={renderBlock}
+        renderBlock={renderBlock as FIXME}
         renderChild={renderChild}
         setPortalElement={setPortalElement}
         scrollElement={scrollElement}

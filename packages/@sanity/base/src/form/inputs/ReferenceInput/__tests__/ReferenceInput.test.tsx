@@ -60,7 +60,7 @@ function ReferenceInputTester(
               createOptions={[]}
               editReferenceLinkComponent={StubComponent}
               onEditReference={noop}
-              {...props}
+              {...(props as any)}
             />
           </LayerProvider>
         </ToastProvider>

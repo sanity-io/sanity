@@ -8,10 +8,10 @@ import {FieldPresence} from '../../../../presence'
 import {PatchEvent, set} from '../../../patch'
 import {DragHandle} from '../common/DragHandle'
 import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
-import {FormBuilderInput, FormBuilderInputInstance} from '../../../FormBuilderInput'
 import {InsertMenu} from '../ArrayOfObjectsInput/InsertMenu'
 import {useConditionalReadOnly} from '../../../../conditional-property/conditionalReadOnly'
 import {FieldProps} from '../../../store/types'
+import {FIXME} from '../../../types'
 import {getEmptyValue} from './getEmptyValue'
 import {PrimitiveValue} from './types'
 
@@ -31,7 +31,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
   props: ItemRowProps,
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
-  const focusRef = React.useRef<FormBuilderInputInstance>(null)
+  const focusRef = React.useRef<{focus: () => void} | null>(null)
   const {
     isSortable,
     value,
@@ -72,7 +72,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
   )
 
   const handleDuplicate = useCallback(() => {
-    if (value) onInsert?.('after', index, value)
+    if (value) onInsert?.('after', index, value as FIXME)
   }, [index, onInsert, value])
 
   const handleKeyPress = useCallback(
@@ -138,7 +138,8 @@ export const ItemRow = React.forwardRef(function ItemRow(
             {isSortable && <Box marginRight={1}>{dragHandle}</Box>}
 
             <Box flex={1} marginRight={2}>
-              <FormBuilderInput
+              <>TODO</>
+              {/* <FormBuilderInput
                 ref={focusRef}
                 value={value}
                 path={[index]}
@@ -154,7 +155,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
                 onKeyUp={handleKeyUp}
                 onKeyPress={handleKeyPress}
                 onChange={handleChange}
-              />
+              /> */}
             </Box>
           </Flex>
         ) : (

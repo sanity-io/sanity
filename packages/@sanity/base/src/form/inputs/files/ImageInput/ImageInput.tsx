@@ -36,16 +36,15 @@ import {EMPTY_ARRAY} from '../../../utils/empty'
 import {handleSelectAssetFromSource} from '../common/assetSource'
 import {ActionsMenu} from '../common/ActionsMenu'
 import {UploadWarning} from '../common/UploadWarning'
-import {ObjectFieldProps} from '../../../store/types'
+import {ObjectInputComponentProps} from '../../../types_v3'
 import {ImagePreview} from './ImagePreview'
-import {ImageInputField} from './ImageInputField'
 import {ImageActionsMenu} from './ImageActionsMenu'
 
 export interface Image extends Partial<BaseImage> {
   _upload?: UploadState
 }
 
-export interface ImageInputProps extends ObjectFieldProps<Image, ImageSchemaType> {
+export interface ImageInputProps extends ObjectInputComponentProps<Image, ImageSchemaType> {
   assetSources: InternalAssetSource[]
   directUploads?: boolean
   getValuePath: () => Path
@@ -403,19 +402,20 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
           <Box padding={4}>
             <Stack space={5}>
               {withImageTool && value?.asset && (
-                <ImageToolInput
-                  type={type}
-                  level={level}
-                  readOnly={Boolean(readOnly)}
-                  imageUrl={imageUrlBuilder.image(value.asset).url()}
-                  value={value}
-                  focusPath={focusPath}
-                  presence={imageToolPresence}
-                  onFocus={onFocus}
-                  compareValue={compareValue}
-                  onChange={onChange}
-                  validation={validation}
-                />
+                <>TODO</>
+                // <ImageToolInput
+                //   type={type}
+                //   level={level}
+                //   readOnly={Boolean(readOnly)}
+                //   imageUrl={imageUrlBuilder.image(value.asset).url()}
+                //   value={value as FIXME}
+                //   focusPath={focusPath}
+                //   presence={imageToolPresence}
+                //   onFocus={onFocus}
+                //   compareValue={compareValue as FIXME}
+                //   onChange={onChange}
+                //   validation={validation}
+                // />
               )}
 
               {this.renderFields(fields)}
@@ -466,21 +466,22 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
     const fieldMarkers = validation.filter((marker) => marker.path[0] === field.name)
 
     return (
-      <ImageInputField
-        key={field.name}
-        field={field}
-        parentValue={value}
-        value={fieldValue}
-        onChange={this.handleFieldChange}
-        onFocus={onFocus}
-        compareValue={compareValue}
-        onBlur={onBlur}
-        readOnly={Boolean(readOnly || field.type.readOnly)}
-        focusPath={focusPath}
-        level={level}
-        presence={presence}
-        validation={fieldMarkers}
-      />
+      <>TODO</>
+      // <ImageInputField
+      //   key={field.name}
+      //   field={field}
+      //   parentValue={value}
+      //   value={fieldValue}
+      //   onChange={this.handleFieldChange}
+      //   onFocus={onFocus}
+      //   compareValue={compareValue}
+      //   onBlur={onBlur}
+      //   readOnly={Boolean(readOnly || field.type.readOnly)}
+      //   focusPath={focusPath}
+      //   level={level}
+      //   presence={presence}
+      //   validation={fieldMarkers}
+      // />
     )
   }
 

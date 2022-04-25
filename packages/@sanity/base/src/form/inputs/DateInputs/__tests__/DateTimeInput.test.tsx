@@ -5,7 +5,12 @@ import {LayerProvider, ThemeProvider, studioTheme} from '@sanity/ui'
 import {DateTimeInput, DateTimeInputProps} from '../DateTimeInput'
 import {FIXME} from '../../../types'
 
-function renderInput(props: Partial<DateTimeInputProps> = {}) {
+function renderInput(
+  props: Omit<
+    DateTimeInputProps,
+    'focusPath' | 'onFocus' | 'onChange' | 'presence' | 'validation' | 'level' | 'type'
+  >
+) {
   const onFocus = jest.fn()
   const onChange = jest.fn()
 
@@ -38,7 +43,7 @@ test('timezone for the test environment should be set to America/Los_Angeles', (
 })
 
 test('does not emit onChange after invalid value has been typed', () => {
-  const {textInput, onChange} = renderInput()
+  const {textInput, onChange} = renderInput({} as any)
 
   userEvent.type(textInput, 'this is invalid')
   expect(textInput?.value).toBe('this is invalid')
@@ -50,7 +55,7 @@ test('does not emit onChange after invalid value has been typed', () => {
 })
 
 test('emits onChange on correct format if a valid value has been typed', () => {
-  const {textInput, onChange} = renderInput()
+  const {textInput, onChange} = renderInput({} as any)
 
   // note: the date is entered and displayed in local timezone (which is hardcoded to America/Los_Angeles)
   userEvent.type(textInput, '2021-03-28 10:23')
@@ -77,6 +82,6 @@ test('emits onChange on correct format if a valid value has been typed', () => {
 })
 
 test('formatting of deserialized value', () => {
-  const {textInput} = renderInput({value: '2021-03-28T17:23:00.000Z'})
+  const {textInput} = renderInput({value: '2021-03-28T17:23:00.000Z'} as any)
   expect(textInput?.value).toBe('2021-03-28 10:23')
 })

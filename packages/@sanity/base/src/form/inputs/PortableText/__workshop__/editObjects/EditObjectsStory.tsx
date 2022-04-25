@@ -140,6 +140,7 @@ export function EditObjectsStory() {
           value={value}
           __internal_patchChannel={patchChannel}
           schema={schema}
+          renderField={() => <>TODO</>}
           resolveInputComponent={resolveInputComponent}
           resolvePreviewComponent={resolvePreviewComponent}
         >

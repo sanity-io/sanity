@@ -81,6 +81,7 @@ export function renderNode(options: {
         <FormBuilderProvider
           __internal_patchChannel={patchChannel}
           filterField={filterField}
+          renderField={() => <>TODO</>}
           resolveInputComponent={inputResolver}
           resolvePreviewComponent={previewResolver}
           schema={schema}

@@ -1,7 +1,7 @@
 /* eslint-disable react/no-find-dom-node */
 
 import React, {useState, useEffect, useMemo, useCallback} from 'react'
-import {isKeySegment, Path, ValidationMarker} from '@sanity/types'
+import {isKeySegment, ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
 import {
   compactPatches,
   Patch,
@@ -9,7 +9,7 @@ import {
   PortableTextChild,
   PortableTextEditor,
   PortableTextFeatures,
-  Type,
+  // Type,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {debounce} from 'lodash'
@@ -18,6 +18,7 @@ import {FormFieldPresence} from '../../../../presence'
 import {applyAll} from '../../../simplePatch'
 import {ObjectEditData} from '../types'
 import {EMPTY_ARRAY} from '../../../utils/empty'
+import {FIXME} from '../../../types'
 import {DefaultObjectEditing} from './renderers/DefaultObjectEditing'
 import {PopoverObjectEditing} from './renderers/PopoverObjectEditing'
 import {getModalOption} from './helpers'
@@ -146,7 +147,7 @@ export const EditObject = (props: EditObjectProps) => {
         presence={presence}
         readOnly={readOnly}
         scrollElement={scrollElement}
-        type={type}
+        type={type as FIXME}
         width={modalOption.width}
       />
     )
@@ -164,7 +165,7 @@ export const EditObject = (props: EditObjectProps) => {
       path={formBuilderPath}
       presence={presence}
       readOnly={readOnly}
-      type={type}
+      type={type as FIXME}
       width={modalOption.width}
     />
   )
@@ -174,13 +175,13 @@ function findObjectAndType(
   objectEditData: ObjectEditData,
   value: PortableTextBlock[] | undefined,
   ptFeatures: PortableTextFeatures
-): [PortableTextChild | undefined, Type | undefined] {
+): [PortableTextChild | undefined, ObjectSchemaType | undefined] {
   if (!objectEditData) {
     return [undefined, undefined]
   }
   const {editorPath, formBuilderPath, kind} = objectEditData
   let object: PortableTextChild | undefined
-  let type: Type | undefined
+  let type: ObjectSchemaType | undefined
 
   // Try finding the relevant block
   const blockKey =
@@ -200,12 +201,12 @@ function findObjectAndType(
     switch (kind) {
       case 'blockObject':
         object = block
-        type = ptFeatures.types.blockObjects.find((t) => t.name === block._type)
+        type = ptFeatures.types.blockObjects.find((t) => t.name === block._type) as any
         break
       case 'inlineObject':
         object = child
         if (object) {
-          type = ptFeatures.types.inlineObjects.find((t) => t.name === child._type)
+          type = ptFeatures.types.inlineObjects.find((t) => t.name === child._type) as any
         }
         break
       case 'annotation':
@@ -215,7 +216,7 @@ function findObjectAndType(
             block.markDefs &&
             block.markDefs.find((def: any) => child.marks.includes(def._key))
           if (markDef) {
-            type = ptFeatures.types.annotations.find((t) => t.name === markDef._type)
+            type = ptFeatures.types.annotations.find((t) => t.name === markDef._type) as any
             object = markDef
           }
         }

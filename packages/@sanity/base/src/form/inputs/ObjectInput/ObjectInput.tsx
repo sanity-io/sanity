@@ -1,13 +1,12 @@
-/* eslint-disable react/no-unused-prop-types,react/jsx-handler-names */
-
 import React, {memo, useMemo} from 'react'
 import {FormFieldSet} from '../../../components/formField'
 import {EMPTY_ARRAY} from '../../utils/empty'
+import {ObjectInputComponentProps} from '../../types_v3'
 import {UnknownFields} from './UnknownFields'
 import {FieldGroupTabsWrapper} from './ObjectInput.styled'
 import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'
 import {MemberField} from './MemberField'
-import {ObjectInputComponentProps} from '../../types_v3'
+import {MemberFieldset} from './MemberFieldset'
 
 export const ObjectInput = memo(function ObjectInput(props: ObjectInputComponentProps) {
   const {
@@ -70,28 +69,12 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputComponent
         </FieldGroupTabsWrapper>
       ) : null}
 
-      {members.map((member, i) => {
+      {members.map((member) => {
         if (member.type === 'field') {
-          return <MemberField member={member} renderField={renderField} key={member.key} />
+          return <MemberField key={member.key} member={member} renderField={renderField} />
         }
 
-        return (
-          <FormFieldSet
-            key={member.key}
-            title={member.fieldSet.title}
-            collapsible={member.fieldSet.collapsible}
-            collapsed={member.fieldSet.collapsed}
-            onSetCollapsed={member.fieldSet.onSetCollapsed}
-          >
-            {member.fieldSet.fields.map((fieldsetMember) => (
-              <MemberField
-                member={fieldsetMember}
-                renderField={renderField}
-                key={fieldsetMember.key}
-              />
-            ))}
-          </FormFieldSet>
-        )
+        return <MemberFieldset key={member.key} member={member} renderField={renderField} />
       })}
       {renderedUnknownFields}
     </FormFieldSet>

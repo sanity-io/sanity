@@ -12,6 +12,7 @@ import {
   isValidationErrorMarker,
   isValidationWarningMarker,
   isValidationInfoMarker,
+  ObjectSchemaType,
 } from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {Tooltip, Flex, ResponsivePaddingProps} from '@sanity/ui'
@@ -47,7 +48,7 @@ interface BlockObjectProps {
   readOnly?: boolean
   renderBlockActions?: RenderBlockActions
   renderCustomMarkers?: RenderCustomMarkers
-  type: Type
+  type: ObjectSchemaType
 }
 
 export const BlockObject = React.forwardRef(function BlockObject(

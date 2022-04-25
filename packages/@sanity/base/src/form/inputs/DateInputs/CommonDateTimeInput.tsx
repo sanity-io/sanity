@@ -4,11 +4,11 @@ import {ValidationMarker} from '@sanity/types'
 import {useId} from '@reach/auto-id'
 import {useForwardedRef, TextInput} from '@sanity/ui'
 import {FormField} from '../../../components/formField'
-import {StringFieldProps} from '../../store/types'
+import {FormFieldPresence} from '../../../presence'
 import {DateTimeInput} from './base/DateTimeInput'
 import {ParseResult} from './types'
 
-export interface CommonDateTimeInputProps extends Omit<StringFieldProps, 'onChange' | 'type'> {
+export interface CommonDateTimeInputProps {
   title?: string
   description?: string
   parseInputValue: (inputValue: string) => ParseResult
@@ -19,6 +19,11 @@ export interface CommonDateTimeInputProps extends Omit<StringFieldProps, 'onChan
   selectTime?: boolean
   placeholder?: string
   timeStep?: number
+  value?: string
+  validation: ValidationMarker[]
+  readOnly?: boolean
+  level: number
+  presence: FormFieldPresence[]
 }
 
 const DEFAULT_PLACEHOLDER_TIME = new Date()

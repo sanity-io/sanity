@@ -2,7 +2,7 @@ import {EditIcon, LinkIcon, TrashIcon, EyeOpenIcon, EllipsisVerticalIcon} from '
 import {
   PortableTextBlock,
   PortableTextEditor,
-  Type,
+  // Type,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {
@@ -17,13 +17,14 @@ import {
 } from '@sanity/ui'
 import React, {forwardRef, useCallback, useMemo, useRef} from 'react'
 import {useId} from '@reach/auto-id'
+import {ObjectSchemaType} from '@sanity/types'
 import {IntentLink} from '../../../../router'
 import {Preview} from '../../../Preview'
 import {FIXME} from '../../../types'
 
 interface BlockObjectPreviewProps {
   focused: boolean
-  type: Type
+  type: ObjectSchemaType
   value: PortableTextBlock
   readOnly?: boolean
   onClickingEdit: () => void
@@ -45,7 +46,7 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps) {
   const menuButtonId = useId() || ''
   const menuButton = useRef<HTMLButtonElement | null>(null)
   const isTabbing = useRef<boolean>(false)
-  const isCustomPreviewComponent = Boolean(type.preview?.component)
+  const isCustomPreviewComponent = Boolean((type.preview as any)?.component)
 
   const referenceLink = useMemo(
     () =>

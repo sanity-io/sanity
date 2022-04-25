@@ -172,7 +172,7 @@ export function FormView(props: FormViewProps) {
                 id="root"
                 __internal_patchChannel={patchChannel}
                 changesOpen={changesOpen}
-                compareValue={compareValue}
+                compareValue={compareValue as Record<string, unknown>}
                 // filterField={filterField}
                 level={formState.level}
                 path={formState.path}

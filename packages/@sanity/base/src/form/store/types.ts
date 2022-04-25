@@ -70,6 +70,7 @@ interface BaseFieldProps {
   id: string
   // the full content path of this input
   path: Path
+  focusPath: Path
   focused: boolean
   presence: FormFieldPresence[]
   validation: ValidationMarker[]
@@ -77,27 +78,30 @@ interface BaseFieldProps {
   level: number
   hidden?: boolean
   readOnly?: boolean
-  onBlur: (focusEvent: React.FocusEvent) => void
+  onBlur: (focusEvent?: React.FocusEvent) => void
   onChange: (patchEvent: PatchEvent) => void
-  onFocus: (event: React.FocusEvent) => void
+  onFocus: (pathOrEvent?: Path | React.FocusEvent) => void
 }
 
 export interface StringFieldProps extends BaseFieldProps {
   kind: 'string'
   type: StringSchemaType
-  value?: string
+  compareValue: string | undefined
+  value: string | undefined
 }
 
 export interface NumberFieldProps extends BaseFieldProps {
   kind: 'number'
   type: NumberSchemaType
-  value?: number
+  compareValue: number | undefined
+  value: number | undefined
 }
 
 export interface BooleanFieldProps extends BaseFieldProps {
   kind: 'boolean'
   type: BooleanSchemaType
-  value?: boolean
+  compareValue: boolean | undefined
+  value: boolean | undefined
 }
 
 export interface InsertEvent {
@@ -111,10 +115,10 @@ export interface ObjectFieldProps<V = Record<string, unknown>, T = ObjectSchemaT
   kind: 'object'
   type: T
   members: ObjectMember[]
-  focusPath: Path
   groups?: FieldGroup[]
   onSelectFieldGroup: (name: string) => void
-  value?: V
+  compareValue: V | undefined
+  value: V | undefined
   readOnly?: boolean
   collapsed?: boolean
   collapsible?: boolean
@@ -130,8 +134,8 @@ export interface ArrayFieldProps<T = unknown, S extends ArraySchemaType = ArrayS
   collapsed?: boolean
   collapsible?: boolean
   members: ArrayMember[]
-  focusPath: Path
-  value?: T[]
+  compareValue: T[] | undefined
+  value: T[] | undefined
 }
 
 export type FieldProps =

@@ -2,17 +2,18 @@ import {
   HotkeyOptions,
   usePortableTextEditor,
   usePortableTextEditorSelection,
-  Type,
+  // Type,
   PortableTextEditor,
 } from '@sanity/portable-text-editor'
 import React, {memo, useCallback, useMemo, useState} from 'react'
-import {Path, SchemaType} from '@sanity/types'
+import {ObjectSchemaType, Path, SchemaType} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {Box, Button, Flex, Hotkeys, Text, Tooltip, useElementRect, useToast} from '@sanity/ui'
 import {CollapseIcon, ExpandIcon} from '@sanity/icons'
 import styled, {css} from 'styled-components'
 import {useRovingFocus} from '../../../../components/rovingFocus'
 import {resolveInitialValueForType} from '../../../../templates'
+import {FIXME} from '../../../types'
 import {ActionMenu} from './ActionMenu'
 import {BlockStyleSelect} from './BlockStyleSelect'
 import {InsertMenu} from './InsertMenu'
@@ -157,7 +158,7 @@ export function Toolbar(props: ToolbarProps) {
   const {push} = useToast()
 
   const resolveInitialValue = useCallback(
-    (type: Type) => {
+    (type: ObjectSchemaType) => {
       let isSlow = false
       const slowTimer = setTimeout(() => {
         isSlow = true
@@ -197,9 +198,9 @@ export function Toolbar(props: ToolbarProps) {
   )
 
   const handleInsertBlock = useCallback(
-    async (type: Type) => {
+    async (type: ObjectSchemaType) => {
       const initialValue = await resolveInitialValue(type)
-      const path = PortableTextEditor.insertBlock(editor, type, initialValue)
+      const path = PortableTextEditor.insertBlock(editor, type as FIXME, initialValue)
       PortableTextEditor.blur(editor)
       if (path) onFocus(path.concat(FOCUS_TERMINATOR))
     },
@@ -207,9 +208,9 @@ export function Toolbar(props: ToolbarProps) {
   )
 
   const handleInsertInline = useCallback(
-    async (type: Type) => {
+    async (type: ObjectSchemaType) => {
       const initialValue = await resolveInitialValue(type)
-      const path = PortableTextEditor.insertChild(editor, type, initialValue)
+      const path = PortableTextEditor.insertChild(editor, type as FIXME, initialValue)
       PortableTextEditor.blur(editor)
       if (path) onFocus(path.concat(FOCUS_TERMINATOR))
     },

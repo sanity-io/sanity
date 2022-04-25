@@ -26,6 +26,7 @@ export function FormBuilderTester(props: FormBuilderTesterProps) {
               value={value}
               __internal_patchChannel={patchChannel}
               schema={props.schema}
+              renderField={() => <>TODO</>}
               resolveInputComponent={inputResolver}
               resolvePreviewComponent={resolvePreviewComponent}
             >

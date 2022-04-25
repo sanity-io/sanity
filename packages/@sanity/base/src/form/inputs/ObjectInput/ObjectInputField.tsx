@@ -1,9 +1,8 @@
 import React, {ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
 import {resolveTypeName} from '@sanity/util/content'
-import {ObjectFieldType, ObjectSchemaTypeWithOptions, SchemaType} from '@sanity/types'
+import {ObjectFieldType, ObjectSchemaTypeWithOptions, Path, SchemaType} from '@sanity/types'
 import {FormFieldSet} from '../../../components/formField'
 import {PatchEvent} from '../../patch'
-import {FormBuilderInput} from '../../FormBuilderInput'
 import {InvalidValueInput} from '../InvalidValueInput'
 import {ConditionalHiddenField} from '../common/ConditionalHiddenField'
 import {useConditionalReadOnly} from '../../../conditional-property/conditionalReadOnly'
@@ -15,6 +14,7 @@ interface FieldType {
 }
 
 export interface ObjectInputFieldProps extends Omit<FieldProps, 'onChange' | 'type'> {
+  focusPath: Path
   field: FieldType
   parent: Record<string, unknown> | undefined
   onChange: (event: PatchEvent, field: FieldType) => void
@@ -68,23 +68,24 @@ export const ObjectInputField = forwardRef(function ObjectInputField(
       return null
     }
     return (
-      <FormBuilderInput
-        value={value}
-        type={field.type}
-        onChange={handleChange}
-        path={fieldPath}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        focusPath={focusPath}
-        // filterField={filterField}
-        validation={validation}
-        compareValue={compareValue}
-        level={level}
-        presence={presence}
-        parent={parent}
-        ref={forwardedRef}
-        readOnly={conditionalReadOnly || field.type.readOnly}
-      />
+      <>TODO</>
+      // <FormBuilderInput
+      //   value={value}
+      //   type={field.type}
+      //   onChange={handleChange}
+      //   path={fieldPath}
+      //   onFocus={onFocus}
+      //   onBlur={onBlur}
+      //   focusPath={focusPath}
+      //   // filterField={filterField}
+      //   validation={validation}
+      //   compareValue={compareValue}
+      //   level={level}
+      //   presence={presence}
+      //   parent={parent}
+      //   ref={forwardedRef}
+      //   readOnly={conditionalReadOnly || field.type.readOnly}
+      // />
     )
   }, [
     isValueCompatible,

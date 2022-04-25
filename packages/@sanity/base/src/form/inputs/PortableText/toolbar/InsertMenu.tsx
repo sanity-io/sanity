@@ -30,7 +30,7 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
 
   const children = useMemo(() => {
     return items.map((item) => {
-      const title = item.type.title || item.type.type.name
+      const title = item.type.title || item.type.type?.name
 
       return (
         <CollapseMenuButton

@@ -39,13 +39,13 @@ function renderInput() {
     <ThemeProvider scheme="light" theme={studioTheme}>
       <LayerProvider>
         <CommonDateTimeInput
-          focusPath={[]}
+          // focusPath={[]}
           title="test"
           serialize={serialize}
           deserialize={deserialize}
           parseInputValue={parseInputValue}
           formatInputValue={formatInputValue}
-          onFocus={onFocus}
+          // onFocus={onFocus}
           onChange={onChange}
           value=""
           presence={[]}

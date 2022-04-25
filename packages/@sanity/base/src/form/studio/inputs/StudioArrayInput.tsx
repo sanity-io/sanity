@@ -44,14 +44,15 @@ export const StudioArrayInput = forwardRef(function StudioArrayInput(
   )
 
   return (
-    <ArrayInput
-      {...props}
-      ref={ref}
-      ReferenceItemComponent={StudioArrayItemReferenceInput}
-      resolveUploader={resolveUploader}
-      resolveInitialValue={resolveInitialValueForType}
-      ArrayFunctionsImpl={formBuilder.components.ArrayFunctions as FIXME}
-    />
+    <>TODO</>
+    // <ArrayInput
+    //   {...props}
+    //   ref={ref}
+    //   ReferenceItemComponent={StudioArrayItemReferenceInput}
+    //   resolveUploader={resolveUploader}
+    //   resolveInitialValue={resolveInitialValueForType}
+    //   ArrayFunctionsImpl={formBuilder.components.ArrayFunctions as FIXME}
+    // />
   )
 })
 

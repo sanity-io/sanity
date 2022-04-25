@@ -79,13 +79,13 @@ test('it doesnt return new object equalities given the same input', () => {
     ...DEFAULT_PROPS,
     type: bookType,
     document,
-  })
+  } as any)
 
   const state2 = prepareFormProps({
     ...DEFAULT_PROPS,
     type: bookType,
     document,
-  })
+  } as any)
   expect(state1.hidden).toBe(false)
   expect(state2.hidden).toBe(false)
   if (state1.hidden || state2.hidden) {

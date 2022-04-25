@@ -82,7 +82,7 @@ test('it omits the hidden member field from the members array', () => {
     ...DEFAULT_PROPS,
     type: bookType,
     document: {_id: 'foo', _type: 'book'},
-  })
+  } as any)
 
   expect(result.hidden).toBe(false)
   if (result.hidden) {
@@ -100,7 +100,7 @@ test('it omits nested hidden members from the members array', () => {
     ...DEFAULT_PROPS,
     type: bookType,
     document: {_id: 'foo', _type: 'book'},
-  })
+  } as any)
 
   expect(result.hidden).toBe(false)
   if (result.hidden) {
@@ -120,7 +120,7 @@ test('it "upward propagates" hidden fields', () => {
     type: bookType,
     document: {_id: 'foo', _type: 'book'},
     ...DEFAULT_PROPS,
-  })
+  } as any)
   expect(result.hidden).toBe(false)
   if (result.hidden) {
     throw new Error('should not be hidden')

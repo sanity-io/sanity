@@ -57,7 +57,7 @@ const defaultProps: Partial<FileInputProps> = {
 }
 
 function render(props?: Partial<FileInputProps>) {
-  return renderInput<FileInputProps>({
+  return renderInput<any>({
     props,
     render: (renderProps) => <FileInput {...defaultProps} {...renderProps} />,
     type: fileTestType,

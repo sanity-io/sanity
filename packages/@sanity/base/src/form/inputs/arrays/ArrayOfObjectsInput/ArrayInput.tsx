@@ -429,7 +429,8 @@ export class ArrayInput extends React.Component<ArrayInputProps> {
                           value={item}
                           parent={value}
                         >
-                          <ArrayItemImpl
+                          TODO
+                          {/* <ArrayItemImpl
                             compareValue={compareValue?.[index]}
                             filterField={filterField}
                             focusPath={focusPath}
@@ -446,7 +447,7 @@ export class ArrayInput extends React.Component<ArrayInputProps> {
                             readOnly={readOnly || hasMissingKeys}
                             type={type}
                             value={item}
-                          />
+                          /> */}
                         </ConditionalReadOnlyField>
                       </Item>
                     )

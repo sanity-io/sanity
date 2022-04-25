@@ -65,6 +65,7 @@ export function TextBlocksStory() {
       <Container width={1}>
         <Card padding={3} shadow={1} overflow="auto" style={{maxHeight: '100%'}}>
           <FormBuilderProvider
+            renderField={() => <>TODO</>}
             resolveInputComponent={resolveInputComponent}
             resolvePreviewComponent={resolvePreviewComponent}
             schema={schema}

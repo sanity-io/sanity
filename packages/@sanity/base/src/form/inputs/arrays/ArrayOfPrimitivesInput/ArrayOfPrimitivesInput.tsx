@@ -288,7 +288,8 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
                           value={item}
                           parent={value}
                         >
-                          <ItemRow
+                          TODO
+                          {/* <ItemRow
                             level={level + 1}
                             index={index}
                             value={item}
@@ -311,7 +312,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
                             onInsert={this.handleInsert}
                             onRemove={this.handleRemoveItem}
                             presence={childPresence}
-                          />
+                          /> */}
                         </ConditionalReadOnlyField>
                       </Item>
                     )

@@ -1,4 +1,4 @@
-import {isReferenceSchemaType, ValidationMarker} from '@sanity/types'
+import {ArraySchemaType, isReferenceSchemaType, ValidationMarker} from '@sanity/types'
 import {FOCUS_TERMINATOR, pathFor, startsWith} from '@sanity/util/paths'
 import {Box} from '@sanity/ui'
 import React, {memo, useCallback, useMemo, useRef} from 'react'
@@ -7,7 +7,7 @@ import {
   ChangeIndicatorScope,
   ContextProvidedChangeIndicator,
 } from '../../../../../components/changeIndicators'
-import {FormBuilderFilterFieldFn} from '../../../../types'
+import {FIXME, FormBuilderFilterFieldFn} from '../../../../types'
 import {PatchEvent} from '../../../../patch'
 import {ArrayMember, InsertEvent, ReferenceItemComponentType} from '../types'
 import {EMPTY_ARRAY} from '../../../../utils/empty'
@@ -16,14 +16,14 @@ import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoVie
 import {EditPortal} from '../../../../EditPortal'
 import {useDidUpdate} from '../../../../hooks/useDidUpdate'
 import {useConditionalReadOnly} from '../../../../../conditional-property/conditionalReadOnly'
-import {ArrayFieldProps} from '../../../../store/types'
+import {FieldProps} from '../../../../store/types'
+import {InputComponentProps} from '../../../../types_v3'
 import {getItemType, isEmpty} from './helpers'
 import {ItemForm} from './ItemForm'
 import {RowItem} from './RowItem'
 import {CellItem} from './CellItem'
 
-export interface ArrayItemProps
-  extends Omit<ArrayFieldProps<ArrayMember>, 'level' | 'onChange' | 'value'> {
+export interface ArrayItemProps extends Omit<InputComponentProps, 'level' | 'onChange' | 'value'> {
   ReferenceItemComponent: ReferenceItemComponentType
   filterField: FormBuilderFilterFieldFn
   index: number
@@ -119,7 +119,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
 
   const isEditing = hasFocusWithinPath(focusPath, value)
 
-  const itemType = getItemType(type, value)
+  const itemType = getItemType(type as FIXME, value)
 
   const isGrid = type.options?.layout === 'grid'
   const ItemComponent = isGrid ? CellItem : RowItem
@@ -159,23 +159,24 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
     }
 
     const form = (
-      <ItemForm
-        onChange={handleChange}
-        validation={itemValidation}
-        filterField={filterField}
-        focusPath={focusPath}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        onInsert={onInsert}
-        insertableTypes={type.of}
-        type={itemType!}
-        value={value}
-        isSortable={isSortable}
-        ReferenceItemComponent={ReferenceItemComponent}
-        readOnly={conditionalReadOnly}
-        presence={itemPresence}
-        compareValue={compareValue}
-      />
+      <>TODO</>
+      // <ItemForm
+      //   onChange={handleChange}
+      //   validation={itemValidation}
+      //   filterField={filterField}
+      //   focusPath={focusPath}
+      //   onFocus={onFocus}
+      //   onBlur={onBlur}
+      //   onInsert={onInsert}
+      //   insertableTypes={type.of}
+      //   type={itemType as ArraySchemaType<ArrayMember>}
+      //   value={value}
+      //   isSortable={isSortable}
+      //   ReferenceItemComponent={ReferenceItemComponent}
+      //   readOnly={conditionalReadOnly}
+      //   presence={itemPresence}
+      //   compareValue={compareValue}
+      // />
     )
 
     return isReference && !isGrid ? (
@@ -222,7 +223,7 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
       value={value}
       readOnly={readOnly}
       type={itemType}
-      insertableTypes={type.of}
+      insertableTypes={(type as FIXME).of}
       presence={isEditing ? EMPTY_ARRAY : itemPresence}
       validation={scopedValidation}
       isSortable={isSortable}

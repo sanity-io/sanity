@@ -46,7 +46,7 @@ export function TestInput(props: TestInputProps) {
   const {unstable_formBuilder: formBuilder} = useSource()
   const [value, setValue] = useState<PortableTextBlock[]>(valueProp)
   const [focusPath, setFocusPath] = useState<Path>([])
-  const blockType = useMemo(() => type.of?.find((t) => t.type.name === 'block'), [type])
+  const blockType = useMemo(() => type.of?.find((t) => t.type?.name === 'block'), [type])
   const presence = useMemo(() => [], [])
   const hotkeys = useMemo(() => ({}), [])
   const [markers, setMarkers] = useState<PortableTextMarker[]>([])
@@ -185,6 +185,7 @@ export function TestInput(props: TestInputProps) {
       value={value}
       __internal_patchChannel={patchChannel}
       schema={props.schema}
+      renderField={() => <>TODO</>}
       resolveInputComponent={resolveInputComponent}
       resolvePreviewComponent={resolvePreviewComponent}
     >
@@ -207,7 +208,8 @@ export function TestInput(props: TestInputProps) {
            <Code size={5}>{JSON.stringify(focusPath, null, 2)}</Code>
           </Box>
           </Box> */}
-        <PortableTextInput
+        <>TODO</>
+        {/* <PortableTextInput
           focusPath={focusPath}
           hotkeys={hotkeys}
           level={1}
@@ -220,9 +222,9 @@ export function TestInput(props: TestInputProps) {
           readOnly={readOnly}
           renderBlockActions={renderBlockActions}
           renderCustomMarkers={renderCustomMarkers}
-          type={props.type}
+          type={props.type as any}
           value={value}
-        />
+        /> */}
       </ReviewChangesContextProvider>
     </FormBuilderProvider>
   )

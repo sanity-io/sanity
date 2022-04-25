@@ -1,5 +1,6 @@
 import {AssetSource, Path, Schema} from '@sanity/types'
 import {createContext} from 'react'
+import {RenderFieldCallback} from './types_v3'
 import {
   FormBuilderArrayFunctionComponent,
   FormBuilderCustomMarkersComponent,
@@ -36,6 +37,7 @@ export interface FormBuilderContextValue {
   __internal_patchChannel: PatchChannel // eslint-disable-line camelcase
   filterField: FormBuilderFilterFieldFn
   schema: Schema
+  renderField: RenderFieldCallback
   resolveInputComponent: FormInputComponentResolver
   resolvePreviewComponent: FormPreviewComponentResolver
   getDocument: () => unknown

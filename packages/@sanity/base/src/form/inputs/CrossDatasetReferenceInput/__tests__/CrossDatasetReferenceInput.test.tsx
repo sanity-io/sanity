@@ -30,7 +30,7 @@ function renderCDReferenceInput(options: {
   props?: Partial<CrossDatasetReferenceInputProps>
   type: any
 }) {
-  return renderInput<CrossDatasetReferenceInputProps>({
+  return renderInput<any>({
     ...options,
     render: (props) => <CrossDatasetReferenceInput {...defaultProps} {...props} />,
   })

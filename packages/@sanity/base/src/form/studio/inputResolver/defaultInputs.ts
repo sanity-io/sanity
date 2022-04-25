@@ -15,7 +15,7 @@ import {FieldProps} from '../../store/types'
 import {FIXME} from '../../types'
 
 export const sanityInputs: Record<string, {input: React.ComponentType<FieldProps>}> = {
-  object: {input: ObjectInput},
+  object: {input: ObjectInput as FIXME},
   array: {input: StudioArrayInput as FIXME},
   boolean: {input: BooleanInput as FIXME},
   number: {input: NumberInput as FIXME},
@@ -26,7 +26,7 @@ export const sanityInputs: Record<string, {input: React.ComponentType<FieldProps
   url: {input: UrlInput as FIXME},
   image: {input: StudioImageInput as FIXME},
   file: {input: StudioFileInput as FIXME},
-  string: {input: StringInput},
+  string: {input: StringInput as FIXME},
   slug: {input: SlugInput as FIXME},
 
   crossDatasetReference: {input: StudioCrossDatasetReferenceInput as FIXME},

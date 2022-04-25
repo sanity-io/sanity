@@ -1,32 +1,33 @@
 import {Schema, SchemaType} from '@sanity/types'
-import React, {useCallback} from 'react'
+import React, {createElement, useCallback, useRef} from 'react'
+// import {Box, Button, Card, Dialog, Flex, Text} from '@sanity/ui'
 import {PatchChannel} from '../patchChannel'
 import {DocumentInput} from '../inputs/DocumentInput'
 import {useSource} from '../../studio'
 import {fallbackInputs} from '../fallbackInputs'
+import {FIXME} from '../types'
 import {
   ArrayInputComponentProps,
   BooleanInputComponentProps,
   NumberInputComponentProps,
   ObjectInputComponentProps,
   RenderArrayItemCallbackArg,
+  RenderFieldCallback,
   RenderFieldCallbackArg,
   StringInputComponentProps,
 } from '../types_v3'
 import {ArrayInputProps, ObjectInputProps} from '../store/formState'
 import {ChangeIndicatorProvider} from '../../components/changeIndicators'
 import {ArrayFieldProps, FieldProps, ObjectFieldProps} from '../store/types'
+import {assertType, isArrayField, isObjectField} from '../utils/asserters'
 import {StudioFormBuilderProvider} from './StudioFormBuilderProvider'
 import {resolveInputComponent as defaultInputResolver} from './inputResolver/inputResolver'
-import {Box, Button, Card, Dialog, Flex, Text} from '@sanity/ui'
-import {assertType, isArrayField, isObjectField} from '../utils/asserters'
 
 /**
  * @alpha
  */
 export interface StudioFormBuilderProps extends ObjectInputProps {
   changesOpen: boolean
-  compareValue?: any | null
   /**
    * @internal Considered internal – do not use.
    */
@@ -42,85 +43,101 @@ export interface StudioFormBuilderProps extends ObjectInputProps {
 export function StudioFormBuilder(props: StudioFormBuilderProps) {
   const {
     __internal_patchChannel: patchChannel,
-    onBlur,
-    id,
-    path,
-    focused,
+    compareValue,
     focusPath,
+    focused,
+    groups,
+    id,
+    level,
+    members,
+    onBlur,
     onChange,
     onFocus,
     onSelectFieldGroup,
     onSetCollapsed,
+    path,
     presence,
     readOnly,
     schema,
     type,
     validation,
     value,
-    members,
-    groups,
+    ...restProps
   } = props
 
   const {unstable_formBuilder: formBuilder} = useSource()
 
   const resolveInputComponent = useCallback(
-    (inputType: SchemaType): React.ComponentType<unknown> => {
+    (inputType: SchemaType): React.ComponentType<FieldProps> => {
       const resolved = defaultInputResolver(
         formBuilder.components?.inputs,
         formBuilder.resolveInputComponent,
         inputType
       )
-      return resolved || (fallbackInputs[inputType.jsonType] as React.ComponentType<unknown>)
+
+      if (resolved) {
+        return resolved
+      }
+
+      return fallbackInputs[inputType.jsonType]?.input as FIXME // React.ComponentType<FieldProps>
     },
     [formBuilder]
   )
 
-  const renderField = useCallback(
+  const renderField: RenderFieldCallback = useCallback(
     (field: RenderFieldCallbackArg) => {
-      const Input = resolveInputComponent(field.type)
-      if (!Input) {
+      const inputComponent = resolveInputComponent(field.type)
+
+      if (!inputComponent) {
         return <div>No input resolved for type: {field.type.name}</div>
       }
+
       if (isObjectField(field)) {
-        assertType<React.ComponentType<ObjectInputComponentProps>>(Input)
-        return (
-          <ChangeIndicatorProvider path={field.path} value={field.value} compareValue={undefined}>
-            <Input {...field} renderField={renderField} />
-          </ChangeIndicatorProvider>
-        )
+        assertType<React.ComponentType<ObjectInputComponentProps>>(inputComponent)
+
+        return createElement(inputComponent as React.ComponentType<ObjectInputComponentProps>, {
+          ...field,
+          onSelectFieldGroup: () => undefined,
+          renderField,
+        })
       }
+
       if (isArrayField(field)) {
-        assertType<React.ComponentType<ArrayInputComponentProps>>(Input)
-        return (
-          <ChangeIndicatorProvider path={field.path} value={field.value} compareValue={undefined}>
-            <Input {...field} renderItem={renderItem} />
-          </ChangeIndicatorProvider>
-        )
+        assertType<React.ComponentType<ArrayInputComponentProps>>(inputComponent)
+
+        return createElement(inputComponent as React.ComponentType<ArrayInputComponentProps>, {
+          ...field,
+          renderItem,
+        })
       }
+
       assertType<
         React.ComponentType<
           StringInputComponentProps | NumberInputComponentProps | BooleanInputComponentProps
         >
-      >(Input)
-      return (
-        <ChangeIndicatorProvider path={field.path} value={field.value} compareValue={undefined}>
-          <Input {...field} />
-        </ChangeIndicatorProvider>
-      )
+      >(inputComponent)
+
+      // return (
+      //   <ChangeIndicatorProvider path={field.path} value={field.value} compareValue={undefined}>
+      //     <Input {...field} />
+      //   </ChangeIndicatorProvider>
+      // )
+
+      return createElement(inputComponent, field)
     },
     [resolveInputComponent]
   )
 
   const renderItem = useCallback(
     (item: RenderArrayItemCallbackArg) => {
-      const Input = resolveInputComponent(item.type)
-      if (!Input) {
+      const inputComponent = resolveInputComponent(item.type)
+      if (!inputComponent) {
         return <div>No input resolved for type: {item.type.name}</div>
       }
-      assertType<React.ComponentType<ObjectInputComponentProps>>(Input)
+      assertType<React.ComponentType<ObjectInputComponentProps>>(inputComponent)
       return (
         <ChangeIndicatorProvider path={item.path} value={item.value} compareValue={undefined}>
-          <Input {...item} renderField={renderField} />
+          {createElement(inputComponent, {...item, renderField} as FIXME)}
         </ChangeIndicatorProvider>
       )
     },
@@ -128,9 +145,16 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
   )
 
   return (
-    <StudioFormBuilderProvider __internal_patchChannel={patchChannel} schema={schema} value={value}>
+    <StudioFormBuilderProvider
+      __internal_patchChannel={patchChannel}
+      renderField={renderField}
+      schema={schema}
+      value={value}
+    >
       <DocumentInput
-        level={0}
+        compareValue={compareValue}
+        focusRef={useRef(null)}
+        level={level}
         id={id}
         path={path}
         focused={focused}

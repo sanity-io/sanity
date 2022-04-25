@@ -16,10 +16,12 @@ import {
   PortableTextEditor,
   PortableTextFeature,
   PortableTextFeatures,
-  Type,
+  // Type,
 } from '@sanity/portable-text-editor'
 import {get} from 'lodash'
 import React from 'react'
+import {ObjectSchemaType} from '@sanity/types'
+import {FIXME} from '../../../types'
 import {BlockItem, BlockStyleItem, PTEToolbarAction, PTEToolbarActionGroup} from './types'
 import {CustomIcon} from './CustomIcon'
 
@@ -83,7 +85,7 @@ function getAnnotationIcon(item: PortableTextFeature): React.ComponentType | str
 function getPTEAnnotationActions(
   editor: PortableTextEditor,
   disabled: boolean,
-  onInsert: (type: Type) => void
+  onInsert: (type: ObjectSchemaType) => void
 ): PTEToolbarAction[] {
   const features = PortableTextEditor.getPortableTextFeatures(editor)
   const focusChild = PortableTextEditor.focusChild(editor)
@@ -99,7 +101,7 @@ function getPTEAnnotationActions(
           PortableTextEditor.removeAnnotation(editor, item.type)
           PortableTextEditor.focus(editor)
         } else {
-          onInsert(item.type)
+          onInsert(item.type as FIXME)
         }
       },
       title: item.title,
@@ -110,7 +112,7 @@ function getPTEAnnotationActions(
 export function getPTEToolbarActionGroups(
   editor: PortableTextEditor,
   disabled: boolean,
-  onInsertAnnotation: (type: Type) => void,
+  onInsertAnnotation: (type: ObjectSchemaType) => void,
   hotkeyOpts: HotkeyOptions
 ): PTEToolbarActionGroup[] {
   return [
@@ -131,7 +133,10 @@ export function getBlockStyles(features: PortableTextFeatures): BlockStyleItem[]
   })
 }
 
-function getInsertMenuIcon(type: Type, fallbackIcon: React.ComponentType): React.ComponentType {
+function getInsertMenuIcon(
+  type: ObjectSchemaType,
+  fallbackIcon: React.ComponentType
+): React.ComponentType {
   const referenceIcon = get(type, 'to[0].icon')
 
   return type.icon || (type.type && type.type.icon) || referenceIcon || fallbackIcon
@@ -140,26 +145,26 @@ function getInsertMenuIcon(type: Type, fallbackIcon: React.ComponentType): React
 export function getInsertMenuItems(
   features: PortableTextFeatures,
   disabled: boolean,
-  onInsertBlock: (type: Type) => void,
-  onInsertInline: (type: Type) => void
+  onInsertBlock: (type: ObjectSchemaType) => void,
+  onInsertInline: (type: ObjectSchemaType) => void
 ): BlockItem[] {
   const blockItems = features.types.blockObjects.map(
     (type, index): BlockItem => ({
-      handle: () => onInsertBlock(type),
-      icon: getInsertMenuIcon(type, BlockElementIcon),
+      handle: () => onInsertBlock(type as FIXME),
+      icon: getInsertMenuIcon(type as FIXME, BlockElementIcon),
       inline: false,
       key: `block-${index}`,
-      type,
+      type: type as FIXME,
     })
   )
 
   const inlineItems = features.types.inlineObjects.map(
     (type, index): BlockItem => ({
-      handle: () => onInsertInline(type),
-      icon: getInsertMenuIcon(type, InlineElementIcon),
+      handle: () => onInsertInline(type as FIXME),
+      icon: getInsertMenuIcon(type as FIXME, InlineElementIcon),
       inline: true,
       key: `inline-${index}`,
-      type,
+      type: type as FIXME,
     })
   )
 

@@ -1,4 +1,4 @@
-import {Path} from '@sanity/types'
+import {ArraySchemaType, Path} from '@sanity/types'
 import {
   EditorChange,
   OnCopyFn,
@@ -6,7 +6,6 @@ import {
   Patch as EditorPatch,
   PortableTextBlock,
   PortableTextEditor,
-  Type,
   HotkeyOptions,
   EditorSelection,
   InvalidValue,
@@ -17,7 +16,7 @@ import {Subject} from 'rxjs'
 import {Box, Text, useForwardedRef, useToast} from '@sanity/ui'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import {PatchEvent, FormPatch as FormBuilderPatch} from '../../patch'
-import type {PortableTextMarker, RenderCustomMarkers} from '../../types'
+import type {FIXME, PortableTextMarker, RenderCustomMarkers} from '../../types'
 import {FormField} from '../../../components/formField'
 import {withPatchSubscriber} from '../../utils/withPatchSubscriber'
 import {EMPTY_ARRAY} from '../../utils/empty'
@@ -43,7 +42,8 @@ type PatchSubscriber = ({
 /**
  * @alpha
  */
-export interface PortableTextInputProps extends ArrayFieldProps<PortableTextBlock, Type> {
+export interface PortableTextInputProps
+  extends ArrayFieldProps<PortableTextBlock, ArraySchemaType> {
   hotkeys?: HotkeyOptions
   markers?: PortableTextMarker[]
   onCopy?: OnCopyFn
@@ -95,18 +95,18 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
   ref: React.ForwardedRef<PortableTextEditor>
 ) {
   const {
-    compareValue,
+    // compareValue,
     focusPath,
     hotkeys,
-    level,
+    // level,
     markers = [],
-    validation,
+    // validation,
     onBlur,
     onChange,
     onCopy,
     onFocus,
     onPaste,
-    presence,
+    // presence,
     readOnly,
     renderBlockActions,
     renderCustomMarkers,
@@ -268,26 +268,28 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
           onChange={handleEditorChange}
           maxBlocks={undefined} // TODO: from schema?
           readOnly={readOnly}
-          type={type}
+          type={type as FIXME}
           value={value}
         >
           <Compositor
-            compareValue={compareValue}
-            focusPath={focusPath}
+            {...props}
+            // compareValue={compareValue}
+            // focusPath={focusPath}
             hasFocus={hasFocus}
             hotkeys={hotkeys}
             isFullscreen={isFullscreen}
-            level={level}
+            // level={level}
             markers={markers}
-            validation={validation}
-            onChange={onChange}
+            // validation={validation}
+            // onBlur={onBlur}
+            // onChange={onChange}
             onCopy={onCopy}
-            onFocus={onFocus}
+            // onFocus={onFocus}
             onPaste={onPaste}
             onToggleFullscreen={handleToggleFullscreen}
             patches$={patches$}
-            presence={presence}
-            readOnly={readOnly}
+            // presence={presence}
+            // readOnly={readOnly}
             renderBlockActions={renderBlockActions}
             renderCustomMarkers={renderCustomMarkers}
             value={value}
