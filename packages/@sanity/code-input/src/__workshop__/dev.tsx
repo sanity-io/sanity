@@ -19,7 +19,8 @@ export default function DevStory() {
 
   return (
     <Box padding={4}>
-      <CodeInput
+      <>TODO</>
+      {/* <CodeInput
         focusPath={focusPath}
         level={0}
         validation={validation}
@@ -28,7 +29,7 @@ export default function DevStory() {
         onFocus={onFocus}
         presence={presence}
         type={type}
-      />
+      /> */}
     </Box>
   )
 }
