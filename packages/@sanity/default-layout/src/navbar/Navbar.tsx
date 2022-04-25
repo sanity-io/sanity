@@ -11,7 +11,7 @@ import config from 'config:sanity'
 import * as sidecar from 'part:@sanity/default-layout/sidecar?'
 import ToolMenu from 'part:@sanity/default-layout/tool-switcher'
 import styled from 'styled-components'
-import {TemplatePermissionsResult} from '@sanity/base/_internal'
+import {getNewDocumentOptions, TemplatePermissionsResult} from '@sanity/base/_internal'
 import {HAS_SPACES} from '../util/spaces'
 import {DatasetSelect} from '../datasetSelect'
 import {useDefaultLayoutRouter} from '../useDefaultLayoutRouter'
@@ -102,6 +102,8 @@ const SpacingBox = styled(Box)`
  * ```
  */
 
+const newDocumentOptions = getNewDocumentOptions()
+
 export const Navbar = memo(function Navbar(props: NavbarProps) {
   const {
     createMenuIsOpen,
@@ -128,6 +130,8 @@ export const Navbar = memo(function Navbar(props: NavbarProps) {
   const router = useDefaultLayoutRouter()
 
   const {projectId} = versionedClient.config()
+
+  const noDocumentOptions = newDocumentOptions?.length === 0
 
   const canCreateSome = useMemo(() => {
     if (isTemplatePermissionsLoading) return false
@@ -196,6 +200,23 @@ export const Navbar = memo(function Navbar(props: NavbarProps) {
     [rootState]
   )
 
+  const createTooltipContent = useMemo(() => {
+    if (noDocumentOptions) {
+      return <Text size={1}>You need a schema to create a new document</Text>
+    }
+
+    if (canCreateSome) {
+      return <Text size={1}>Create new document</Text>
+    }
+
+    return (
+      <InsufficientPermissionsMessage
+        currentUser={currentUser}
+        operationLabel="create any document"
+      />
+    )
+  }, [canCreateSome, currentUser, noDocumentOptions])
+
   // The HTML elements that are part of the search view (i.e. the "close" button that is visible
   // when in fullscreen mode on narrow devices) needs to be passed to `<Autocomplete />` so it knows
   // how to make the search experience work properly for non-sighted users.
@@ -236,22 +257,7 @@ export const Navbar = memo(function Navbar(props: NavbarProps) {
           )}
 
           <LegacyLayerProvider zOffset="navbarPopover">
-            <Tooltip
-              portal
-              scheme="light"
-              content={
-                <Box padding={2}>
-                  {canCreateSome ? (
-                    <Text size={1}>Create new document</Text>
-                  ) : (
-                    <InsufficientPermissionsMessage
-                      currentUser={currentUser}
-                      operationLabel="create any document"
-                    />
-                  )}
-                </Box>
-              }
-            >
+            <Tooltip portal scheme="light" content={<Box padding={2}>{createTooltipContent}</Box>}>
               <SpacingBox marginRight={shouldRender.brandingCenter ? undefined : 2}>
                 <Button
                   aria-label="Create new document"
