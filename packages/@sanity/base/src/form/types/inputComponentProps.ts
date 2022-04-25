@@ -1,13 +1,12 @@
-import {
-  ArraySchemaType,
-  BooleanSchemaType,
-  NumberSchemaType,
-  ObjectSchemaType,
-  StringSchemaType,
-} from '@sanity/types'
+import {ArraySchemaType, ObjectSchemaType, StringSchemaType} from '@sanity/types'
 import * as React from 'react'
-import {ArrayInputProps, BaseInputProps, ObjectInputProps} from './inputProps'
-// import {ArrayInputProps, BaseInputProps, ObjectInputProps} from '../store/formState'
+import {
+  ArrayInputProps,
+  BooleanInputProps,
+  NumberInputProps,
+  ObjectInputProps,
+  StringInputProps,
+} from './inputProps'
 import {RenderArrayItemCallback, RenderFieldCallback} from './renderCallback'
 
 export interface ObjectInputComponentProps<
@@ -25,15 +24,15 @@ export interface ArrayInputComponentProps<V = unknown[]>
 }
 
 export interface StringInputComponentProps<S extends StringSchemaType = StringSchemaType>
-  extends BaseInputProps<S, string> {
+  extends StringInputProps<S> {
   focusRef: React.Ref<any>
 }
 
-export interface NumberInputComponentProps extends BaseInputProps<NumberSchemaType, number> {
+export interface NumberInputComponentProps extends NumberInputProps {
   focusRef: React.Ref<any>
 }
 
-export interface BooleanInputComponentProps extends BaseInputProps<BooleanSchemaType, boolean> {
+export interface BooleanInputComponentProps extends BooleanInputProps {
   focusRef: React.Ref<any>
 }
 

@@ -32,7 +32,6 @@ export interface StudioFormBuilderProps extends ObjectInputProps {
    */
   __internal_patchChannel: PatchChannel // eslint-disable-line camelcase
   autoFocus?: boolean
-  readOnly?: boolean
   schema: Schema
 }
 
@@ -151,6 +150,8 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
       value={value}
     >
       <DocumentInput
+        collapsed={false}
+        collapsible={false}
         compareValue={compareValue}
         focusRef={useRef(null)}
         level={level}

@@ -1,4 +1,15 @@
-import {ArraySchemaType, ObjectSchemaType, Path, SchemaType, ValidationMarker} from '@sanity/types'
+/* eslint-disable @typescript-eslint/no-empty-interface */
+
+import {
+  ArraySchemaType,
+  BooleanSchemaType,
+  NumberSchemaType,
+  ObjectSchemaType,
+  Path,
+  SchemaType,
+  StringSchemaType,
+  ValidationMarker,
+} from '@sanity/types'
 import {FormFieldPresence} from '../../presence'
 import {PatchEvent} from '../patch'
 import {InsertEvent} from './event'
@@ -6,46 +17,54 @@ import {FieldGroup} from './fieldGroup'
 import {ArrayMember, ObjectMember} from './member'
 
 export interface BaseInputProps<S extends SchemaType, T = unknown> {
-  id: string
-  type: S
   compareValue: T | undefined
-  value: T | undefined
-  onChange: (patchEvent: PatchEvent) => void
-  hidden?: boolean
-  level: number
-  readOnly?: boolean
-  path: Path
-
   focusPath: Path
   focused: boolean
-
-  onFocus: (pathOrEvent?: Path | React.FocusEvent) => void
+  hidden?: boolean
+  id: string
+  level: number
   onBlur: (event?: React.FocusEvent) => void
-
+  onChange: (patchEvent: PatchEvent) => void
+  onFocus: (pathOrEvent?: Path | React.FocusEvent) => void
+  path: Path
   presence: FormFieldPresence[]
+  readOnly: boolean
+  type: S
   validation: ValidationMarker[]
+  value: T | undefined
 }
 
 export interface ObjectInputProps<
   T extends Record<string, unknown> = Record<string, unknown>,
   S extends ObjectSchemaType = ObjectSchemaType
 > extends BaseInputProps<S, T> {
+  collapsed: boolean
+  collapsible: boolean
+  groups: FieldGroup[]
   members: ObjectMember[]
-  groups?: FieldGroup[]
-
-  focusPath: Path
   onSelectFieldGroup: (groupName: string) => void
   onSetCollapsed: (collapsed: boolean) => void
-  collapsed?: boolean
-  collapsible?: boolean
 }
 
 export interface ArrayInputProps<S extends ArraySchemaType = ArraySchemaType, V = unknown[]>
   extends BaseInputProps<S, V> {
+  collapsed: boolean
+  collapsible: boolean
   members: ArrayMember[]
-
-  onSetCollapsed: (collapsed: boolean) => void
   onInsert: (event: InsertEvent) => void
-  collapsed?: boolean
-  collapsible?: boolean
+  onSetCollapsed: (collapsed: boolean) => void
 }
+
+export interface BooleanInputProps extends BaseInputProps<BooleanSchemaType, boolean> {}
+
+export interface NumberInputProps extends BaseInputProps<NumberSchemaType, number> {}
+
+export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
+  extends BaseInputProps<S, string> {}
+
+export type InputProps =
+  | ObjectInputProps
+  | ArrayInputProps
+  | BooleanInputProps
+  | NumberInputProps
+  | StringInputProps

@@ -173,8 +173,8 @@ function prepareFieldProps(props: {
       ...scopedInputProps,
       type: field.type,
       name: field.name,
-      title: field.type.title,
-      description: field.type.description,
+      // title: field.type.title,
+      // description: field.type.description,
       level: fieldLevel,
       id: toString(fieldPath),
       index: index,
@@ -243,16 +243,16 @@ function prepareFieldProps(props: {
       type: field.type,
       name: field.name,
       id: toString(fieldPath),
-      title: field.type.title,
+      // title: field.type.title,
       validation: fieldValidation,
       presence: fieldPresence,
-      description: field.type.description,
+      // description: field.type.description,
       level: fieldLevel,
       path: fieldPath,
       focusPath: scopedFocusPath,
       index: index,
       focused: isEqual(parent.focusPath, fieldPath),
-      hidden: parent.hidden || preparedInputProps.hidden,
+      hidden: Boolean(parent.hidden || preparedInputProps.hidden),
       readOnly: parent.readOnly || preparedInputProps.readOnly,
       onChange: fieldOnChange,
       onFocus: fieldOnFocus,
@@ -281,6 +281,9 @@ function prepareFieldProps(props: {
     }
 
     return {
+      compareValue: undefined, // @todo
+      hidden: false, // @todo
+      focusPath: [], // @todo
       kind: getKind(field.type),
       type: field.type,
       name: field.name,
@@ -490,10 +493,11 @@ function prepareObjectInputProps<T>(
   })
 
   return {
+    collapsible: false,
     compareValue: undefined,
     value: props.value as Record<string, unknown> | undefined,
     type: props.type,
-    readOnly: props.readOnly,
+    readOnly: Boolean(props.readOnly),
     hidden: props.hidden,
     path: props.path,
     id: toString(props.path),
@@ -565,9 +569,11 @@ function prepareArrayInputProps<T extends unknown[]>(
   const items = Array.isArray(props.value) ? props.value : []
 
   return {
+    collapsed: false, // @todo
+    collapsible: false, // @todo
     compareValue: undefined,
     value: props.value as T,
-    readOnly,
+    readOnly: Boolean(readOnly),
     hidden,
     type: props.type,
     focused: isEqual(props.path, props.focusPath),

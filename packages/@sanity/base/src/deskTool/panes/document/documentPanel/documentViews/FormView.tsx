@@ -169,6 +169,8 @@ export function FormView(props: FormViewProps) {
               </Box>
             ) : (
               <StudioFormBuilder
+                collapsed={false}
+                collapsible={false}
                 id="root"
                 __internal_patchChannel={patchChannel}
                 changesOpen={changesOpen}

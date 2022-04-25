@@ -15,8 +15,6 @@ import {InsertEvent} from './event'
 
 interface BaseFieldProps {
   name: string
-  title?: string
-  description?: string
   // id is a stringified version of the path
   id: string
   // the full content path of this input
@@ -27,8 +25,8 @@ interface BaseFieldProps {
   validation: ValidationMarker[]
   index: number
   level: number
-  hidden?: boolean
-  readOnly?: boolean
+  hidden: boolean
+  readOnly: boolean
   onBlur: (focusEvent?: React.FocusEvent) => void
   onChange: (patchEvent: PatchEvent) => void
   onFocus: (pathOrEvent?: Path | React.FocusEvent) => void
@@ -60,13 +58,12 @@ export interface ObjectFieldProps<V = Record<string, unknown>, T = ObjectSchemaT
   kind: 'object'
   type: T
   members: ObjectMember[]
-  groups?: FieldGroup[]
+  groups: FieldGroup[]
   onSelectFieldGroup: (name: string) => void
   compareValue: V | undefined
   value: V | undefined
-  readOnly?: boolean
-  collapsed?: boolean
-  collapsible?: boolean
+  collapsed: boolean
+  collapsible: boolean
   onSetCollapsed: (expanded: boolean) => void
 }
 
@@ -76,8 +73,8 @@ export interface ArrayFieldProps<T = unknown, S extends ArraySchemaType = ArrayS
   type: S
   onSetCollapsed: (collapsed: boolean) => void
   onInsert: (event: InsertEvent) => void
-  collapsed?: boolean
-  collapsible?: boolean
+  collapsed: boolean
+  collapsible: boolean
   members: ArrayMember[]
   compareValue: T[] | undefined
   value: T[] | undefined
