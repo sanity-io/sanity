@@ -1,22 +1,34 @@
 import {FormFieldSet} from '@sanity/base/_unstable'
 import {
-  ObjectFieldProps,
+  MemberField,
+  MemberFieldset,
+  ObjectInputComponentProps,
   PatchEvent,
   setIfMissing,
-  FormBuilderInput,
-  FormBuilderInputInstance,
 } from '@sanity/base/form'
 import {ObjectField, Path, ValidationMarker} from '@sanity/types'
 import {Card, Text} from '@sanity/ui'
 import React, {forwardRef, memo, useCallback, useImperativeHandle, useMemo, useRef} from 'react'
 
 export const CustomObjectInput = forwardRef(function CustomObjectInput(
-  props: ObjectFieldProps,
+  props: ObjectInputComponentProps,
   ref: any
 ) {
-  const {focusPath, level, onBlur, onChange, onFocus, presence, type, validation, value} = props
+  const {
+    focusPath,
+    level,
+    members,
+    onBlur,
+    onChange,
+    onFocus,
+    presence,
+    renderField,
+    type,
+    validation,
+    value,
+  } = props
 
-  const firstFieldInputRef = useRef<FormBuilderInputInstance | null>(null)
+  const firstFieldInputRef = useRef<{focus: () => void} | null>(null)
 
   const handleFieldChange = useCallback(
     (field: ObjectField, fieldPatchEvent: PatchEvent) => {
@@ -39,7 +51,15 @@ export const CustomObjectInput = forwardRef(function CustomObjectInput(
           This is my custom object input with fields
         </Text>
 
-        {type.fields.map((field, i) => (
+        {members.map((member) => {
+          if (member.type === 'field') {
+            return <MemberField key={member.key} member={member} renderField={renderField} />
+          }
+
+          return <MemberFieldset key={member.key} member={member} renderField={renderField} />
+        })}
+
+        {/* {type.fields.map((field, i) => (
           <CustomObjectField
             baseLevel={level + 1}
             basePresence={presence}
@@ -53,7 +73,7 @@ export const CustomObjectInput = forwardRef(function CustomObjectInput(
             onFocus={onFocus}
             value={value?.[field.name]}
           />
-        ))}
+        ))} */}
       </FormFieldSet>
     </Card>
   )
@@ -65,7 +85,7 @@ const CustomObjectField = memo(function CustomObjectField(props: {
   baseValidation: ValidationMarker[]
   field: ObjectField
   focusPath: Path
-  inputRef: React.Ref<FormBuilderInputInstance>
+  inputRef: React.Ref<{focus: () => void}>
   onBlur?: () => void
   onChange: (field: ObjectField, fieldPatchEvent: PatchEvent) => void
   onFocus: (pathOrEvent?: Path | React.FocusEvent) => void
