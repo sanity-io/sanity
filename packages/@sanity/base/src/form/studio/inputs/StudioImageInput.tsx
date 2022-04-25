@@ -9,12 +9,12 @@ import {useSource} from '../../../studio'
 import {observeImageAsset} from './client-adapters/assets'
 import {wrapWithDocument} from './wrapWithDocument'
 
-type SanityImageInputProps = Omit<ImageInputProps, 'assetSources'>
+type StudioImageInputProps = Omit<ImageInputProps, 'assetSources'>
 
 const ImageInputWithValuePath = withValuePath(ImageInput)
 
-export const SanityImageInput = React.forwardRef(function SanityImageInput(
-  props: SanityImageInputProps,
+export const StudioImageInput = React.forwardRef(function StudioImageInput(
+  props: StudioImageInputProps,
   forwardedRef: any
 ) {
   const sourcesFromSchema = props.type.options?.sources

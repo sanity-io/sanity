@@ -6,7 +6,7 @@ import imageUrlBuilder from '@sanity/image-url'
 import {SchemaType} from '@sanity/types'
 import {EMPTY, of} from 'rxjs'
 import {ImageInput, ImageInputProps} from '../ImageInput'
-import {UploadOptions} from '../../../../sanity/uploads/types'
+import {UploadOptions} from '../../../../studio/uploads/types'
 import {FIXME} from '../../../../types'
 import {renderInput} from '../../../../test/renderInput'
 

@@ -60,7 +60,7 @@ export type {
   HashFocusManagerState,
   SimpleFocusManagerProps,
   SimpleFocusManagerState,
-} from '../form/sanity'
+} from '../form/studio'
 
 export type {FormFieldPresence} from '../presence'
 

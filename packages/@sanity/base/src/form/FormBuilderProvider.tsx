@@ -8,7 +8,7 @@ import {PatchChannel} from './patchChannel'
 import {DefaultArrayInputFunctions} from './inputs/arrays/common/ArrayFunctions'
 import {DefaultMarkers} from './inputs/PortableText/_legacyDefaultParts/Markers'
 import {DefaultCustomMarkers} from './inputs/PortableText/_legacyDefaultParts/CustomMarkers'
-import {FileSource, ImageSource} from './sanity/DefaultAssetSource'
+import {FileSource, ImageSource} from './studio/DefaultAssetSource'
 import {EMPTY_ARRAY} from './utils/empty'
 import {FieldProps} from './store/types'
 

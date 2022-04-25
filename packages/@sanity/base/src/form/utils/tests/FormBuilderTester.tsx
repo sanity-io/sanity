@@ -3,7 +3,7 @@ import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/
 import {render} from '@testing-library/react'
 import React from 'react'
 import {FormBuilderFilterFieldFn, FIXME} from '../../types'
-import {SanityFormBuilder} from '../../sanity/SanityFormBuilder'
+import {StudioFormBuilder} from '../../studio/SanityFormBuilder'
 import {createPatchChannel, PatchChannel} from '../../patchChannel'
 import {FieldProps} from '../../store/types'
 
@@ -61,7 +61,7 @@ export function FormBuilderTester(props: FormBuilderTesterProps) {
     <ThemeProvider scheme="light" theme={studioTheme}>
       <LayerProvider>
         <ToastProvider>
-          <SanityFormBuilder {...(props as FIXME)} />
+          <StudioFormBuilder {...(props as FIXME)} />
         </ToastProvider>
       </LayerProvider>
     </ThemeProvider>

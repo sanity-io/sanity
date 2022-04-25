@@ -8,12 +8,12 @@ import {useDocumentPreviewStore} from '../../../datastores'
 import {observeFileAsset} from './client-adapters/assets'
 import {wrapWithDocument} from './wrapWithDocument'
 
-export type SanityFileInputProps = Omit<FileInputProps, 'assetSources'>
+export type StudioFileInputProps = Omit<FileInputProps, 'assetSources'>
 
 const FileInputWithValuePath = withValuePath(FileInput)
 
-export const SanityFileInput = React.forwardRef(function SanityFileInput(
-  props: SanityFileInputProps,
+export const StudioFileInput = React.forwardRef(function StudioFileInput(
+  props: StudioFileInputProps,
   forwardedRef: any
 ) {
   const sourcesFromSchema = props.type.options?.sources

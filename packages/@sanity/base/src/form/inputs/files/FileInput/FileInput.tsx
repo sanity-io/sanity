@@ -24,7 +24,7 @@ import {
   ToastParams,
 } from '@sanity/ui'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
-import {Uploader, UploaderResolver, UploadOptions} from '../../../sanity/uploads/types'
+import {Uploader, UploaderResolver, UploadOptions} from '../../../studio/uploads/types'
 import {FileTarget, FileInfo} from '../common/styles'
 import {InternalAssetSource, UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'

@@ -1,5 +1,5 @@
 import {SchemaType} from '@sanity/types'
-import {resolveInputComponent} from '../../sanity/inputResolver/inputResolver'
+import {resolveInputComponent} from '../../studio/inputResolver/inputResolver'
 import {FormInputComponentResolver} from '../../types'
 import {DebugInput} from './DebugInput'
 

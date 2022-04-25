@@ -8,7 +8,7 @@ import {
   ResolvedUploader,
   Uploader,
   UploaderResolver,
-} from '../../../../sanity/uploads/types'
+} from '../../../../studio/uploads/types'
 import {FileInfo, fileTarget} from '../../../common/fileTarget'
 import {DropMessage} from '../../../files/common/DropMessage'
 import {Overlay} from './styles'

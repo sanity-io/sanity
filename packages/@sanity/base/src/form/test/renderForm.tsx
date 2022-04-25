@@ -7,7 +7,7 @@ import {createConfig} from '../../config'
 import {FormBuilderFilterFieldFn, FIXME} from '../types'
 import {StudioProvider, useSource} from '../../studio'
 import {createPatchChannel} from '../patchChannel'
-import {SanityFormBuilder} from '../sanity/SanityFormBuilder'
+import {StudioFormBuilder} from '../studio/SanityFormBuilder'
 import {createMockSanityClient} from './mocks/sanityClient'
 
 export function renderForm(props: {
@@ -47,7 +47,7 @@ export function renderForm(props: {
     const docType = schema.get(typeDef.name)
 
     return (
-      <SanityFormBuilder
+      <StudioFormBuilder
         {...testerProps}
         __internal_patchChannel={patchChannel}
         changesOpen={false}

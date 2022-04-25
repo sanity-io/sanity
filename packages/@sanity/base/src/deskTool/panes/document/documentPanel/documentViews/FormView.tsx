@@ -12,7 +12,7 @@ import {
   fromMutationPatches,
   createPatchChannel,
   PatchMsg,
-  SanityFormBuilder,
+  StudioFormBuilder,
 } from '../../../../../form'
 import {PresenceOverlay} from '../../../../../presence'
 import {useSource} from '../../../../../studio'
@@ -168,7 +168,7 @@ export function FormView(props: FormViewProps) {
                 <Text>This form is hidden</Text>
               </Box>
             ) : (
-              <SanityFormBuilder
+              <StudioFormBuilder
                 id="root"
                 __internal_patchChannel={patchChannel}
                 changesOpen={changesOpen}

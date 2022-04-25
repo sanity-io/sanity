@@ -3,9 +3,9 @@ import {EMPTY, of} from 'rxjs'
 import imageUrlBuilder from '@sanity/image-url'
 import React, {ComponentProps, useMemo} from 'react'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
-import {SanityFormBuilderProvider} from '../../sanity/SanityFormBuilderProvider'
+import {StudioFormBuilderProvider} from '../../studio/SanityFormBuilderProvider'
 import {ImageInput} from '../../inputs/files/ImageInput'
-import type {UploadOptions} from '../../sanity/uploads/types'
+import type {UploadOptions} from '../../studio/uploads/types'
 import {createPatchChannel} from '../../patchChannel'
 
 const resolveUploaderStub = () => ({
@@ -92,13 +92,13 @@ export const ImageInputTester = React.forwardRef(function ImageInputTester(
     <ThemeProvider scheme="light" theme={studioTheme}>
       <LayerProvider>
         <ToastProvider>
-          <SanityFormBuilderProvider
+          <StudioFormBuilderProvider
             value={undefined}
             __internal_patchChannel={patchChannel}
             schema={schema}
           >
             <ImageInput {...rest} />
-          </SanityFormBuilderProvider>
+          </StudioFormBuilderProvider>
         </ToastProvider>
       </LayerProvider>
     </ThemeProvider>

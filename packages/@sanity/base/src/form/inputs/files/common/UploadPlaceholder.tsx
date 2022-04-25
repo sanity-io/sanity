@@ -1,7 +1,7 @@
 import React from 'react'
 import {UploadIcon} from '@sanity/icons'
 import {Flex, Inline} from '@sanity/ui'
-import {FileLike} from '../../../sanity/uploads/types'
+import {FileLike} from '../../../studio/uploads/types'
 import {FileInputButton} from './FileInputButton/FileInputButton'
 import {PlaceholderText} from './PlaceholderText'
 

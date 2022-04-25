@@ -1,4 +1,3 @@
-import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
 import {
   Path,
   Reference,
@@ -6,19 +5,18 @@ import {
   ReferenceOptions,
   ReferenceSchemaType,
   SanityDocument,
-  SchemaType,
 } from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 import {get} from '@sanity/util/paths'
+import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 import {isNonNullable} from '../../../../util'
 import {withValuePath} from '../../../utils/withValuePath'
 import {withDocument} from '../../../utils/withDocument'
 import * as adapter from '../client-adapters/reference'
-import {ArrayItemReferenceInput} from '../../../inputs/ReferenceInput/ArrayItemReferenceInput'
-import {EditReferenceEvent} from '../../../inputs/ReferenceInput/types'
-import {InsertEvent} from '../../../inputs/arrays/ArrayOfObjectsInput/types'
+import {ReferenceInput} from '../../../inputs/ReferenceInput/ReferenceInput'
+import {CreateOption, EditReferenceEvent} from '../../../inputs/ReferenceInput/types'
 import {useDocumentPreviewStore} from '../../../../datastores'
 import {useSource} from '../../../../studio'
 import {useReferenceInputOptions} from '../../contexts'
@@ -46,12 +44,8 @@ async function resolveUserDefinedFilter(
   }
 }
 
-export interface SanityArrayItemReferenceInputProps
+export interface StudioReferenceInputProps
   extends ObjectFieldProps<Reference, ReferenceSchemaType> {
-  isSortable: boolean
-  onInsert?: (event: InsertEvent) => void
-  insertableTypes?: SchemaType[]
-
   // From `withDocument`
   document: SanityDocument
 
@@ -73,11 +67,11 @@ type SearchError = {
   }
 }
 
-const SanityArrayItemReferenceInputInner = forwardRef(function SanityReferenceInput(
-  props: SanityArrayItemReferenceInputProps,
+const StudioReferenceInputInner = forwardRef(function StudioReferenceInputInner(
+  props: StudioReferenceInputProps,
   ref: ForwardedRef<HTMLInputElement>
 ) {
-  const {schema, client} = useSource()
+  const {client, schema} = useSource()
   const documentPreviewStore = useDocumentPreviewStore()
   const searchClient = useMemo(() => client.withConfig({apiVersion: '2021-03-25'}), [client])
   const {getValuePath, type, document} = props
@@ -85,14 +79,12 @@ const SanityArrayItemReferenceInputInner = forwardRef(function SanityReferenceIn
     useReferenceInputOptions()
 
   const documentRef = useValueRef(document)
+  const documentTypeName = documentRef.current?._type
+  const refType = schema.get(documentTypeName)
+
+  const isDocumentLiveEdit = useMemo(() => refType?.liveEdit, [refType])
 
   const valuePath = useMemo(getValuePath, [getValuePath])
-
-  const documentTypeName = documentRef.current?._type
-
-  const isDocumentLiveEdit = useMemo(() => {
-    return schema.get(documentTypeName)?.liveEdit
-  }, [documentTypeName, schema])
 
   const disableNew = type.options?.disableNew === true
 
@@ -162,17 +154,17 @@ const SanityArrayItemReferenceInputInner = forwardRef(function SanityReferenceIn
     return (
       (initialValueTemplateItems || [])
         // eslint-disable-next-line max-nested-callbacks
-        .filter((i) => type.to.some((refType) => refType.name === i.template?.schemaType))
-        .map((item) =>
+        .filter((i) => type.to.some((_refType) => _refType.name === i.template?.schemaType))
+        .map((item): CreateOption | undefined =>
           item.template?.schemaType
             ? {
                 id: item.id,
                 title:
-                  item.title || `${item.template.schemaType} from template ${item.template.id}`,
+                  item.title || `${item.template.schemaType} from template ${item.template?.id}`,
                 type: item.template.schemaType,
                 icon: item.icon,
                 template: {
-                  id: item.template.id,
+                  id: item.template?.id,
                   params: item.parameters,
                 },
 
@@ -185,10 +177,10 @@ const SanityArrayItemReferenceInputInner = forwardRef(function SanityReferenceIn
   }, [disableNew, initialValueTemplateItems, type.to])
 
   return (
-    <ArrayItemReferenceInput
+    <ReferenceInput
       {...props}
-      liveEdit={isDocumentLiveEdit}
       onSearch={handleSearch}
+      liveEdit={isDocumentLiveEdit}
       getReferenceInfo={(id, _type) => adapter.getReferenceInfo(documentPreviewStore, id, _type)}
       ref={ref}
       selectedState={selectedState}
@@ -199,6 +191,4 @@ const SanityArrayItemReferenceInputInner = forwardRef(function SanityReferenceIn
   )
 })
 
-export const SanityArrayItemReferenceInput = withValuePath(
-  withDocument(SanityArrayItemReferenceInputInner)
-)
+export const SanityReferenceInput = withValuePath(withDocument(StudioReferenceInputInner))

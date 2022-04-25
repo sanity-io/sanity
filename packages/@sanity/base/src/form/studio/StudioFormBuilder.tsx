@@ -8,14 +8,14 @@ import {RenderArrayItemCallbackArg, RenderFieldCallbackArg} from '../types_v3'
 import {ObjectInputProps} from '../store/formState'
 import {ChangeIndicatorProvider} from '../../components/changeIndicators'
 import {FieldProps} from '../store/types'
-import {SanityFormBuilderProvider} from './SanityFormBuilderProvider'
+import {StudioFormBuilderProvider} from './StudioFormBuilderProvider'
 import {resolveInputComponent as defaultInputResolver} from './inputResolver/inputResolver'
 import {Box, Button, Card, Dialog, Flex, Text} from '@sanity/ui'
 
 /**
  * @alpha
  */
-export interface SanityFormBuilderProps extends ObjectInputProps {
+export interface StudioFormBuilderProps extends ObjectInputProps {
   changesOpen: boolean
   compareValue?: any | null
   /**
@@ -30,7 +30,7 @@ export interface SanityFormBuilderProps extends ObjectInputProps {
 /**
  * @alpha
  */
-export function SanityFormBuilder(props: SanityFormBuilderProps) {
+export function StudioFormBuilder(props: StudioFormBuilderProps) {
   const {
     __internal_patchChannel: patchChannel,
     onBlur,
@@ -152,7 +152,7 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
   )
 
   return (
-    <SanityFormBuilderProvider __internal_patchChannel={patchChannel} schema={schema} value={value}>
+    <StudioFormBuilderProvider __internal_patchChannel={patchChannel} schema={schema} value={value}>
       <DocumentInput
         level={0}
         id={id}
@@ -173,6 +173,6 @@ export function SanityFormBuilder(props: SanityFormBuilderProps) {
         renderField={renderField}
         value={value}
       />
-    </SanityFormBuilderProvider>
+    </StudioFormBuilderProvider>
   )
 }

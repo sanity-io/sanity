@@ -3,7 +3,7 @@ import React, {forwardRef, useImperativeHandle, useRef} from 'react'
 import styled, {css} from 'styled-components'
 import {SchemaType} from '@sanity/types'
 import {PortableTextInput} from '../../PortableTextInput'
-import {resolveInputComponent} from '../../../../sanity/inputResolver/inputResolver'
+import {resolveInputComponent} from '../../../../studio/inputResolver/inputResolver'
 import {SanityFormBuilderConfig} from '../../../../../config'
 import {FieldProps} from '../../../../store/types'
 

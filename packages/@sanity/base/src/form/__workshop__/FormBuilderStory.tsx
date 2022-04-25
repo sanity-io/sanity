@@ -4,7 +4,7 @@ import React, {useCallback, useMemo, useState} from 'react'
 import {useSource} from '../../studio'
 import {useUnique} from '../../util'
 import {useDocumentOperation, useEditState, useValidationStatus} from '../../hooks'
-import {SanityFormBuilder} from '../sanity/SanityFormBuilder'
+import {StudioFormBuilder} from '../studio/StudioFormBuilder'
 import {createPatchChannel} from '../patchChannel'
 
 export default function FormBuilderStory() {

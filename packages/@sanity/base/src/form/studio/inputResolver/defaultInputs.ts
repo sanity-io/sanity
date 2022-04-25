@@ -7,16 +7,16 @@ import {DateTimeInput, DateInput} from '../../inputs/DateInputs'
 import {TextInput} from '../../inputs/TextInput'
 import {UrlInput} from '../../inputs/UrlInput'
 import {SlugInput} from '../../inputs/Slug/SlugInput'
-import {SanityArrayInput} from '../inputs/SanityArrayInput'
-import {SanityImageInput} from '../inputs/SanityImageInput'
-import {SanityFileInput} from '../inputs/SanityFileInput'
-import SanityCrossDatasetReferenceInput from '../inputs/crossDatasetReference/SanityCrossDatasetReferenceInput'
+import {StudioArrayInput} from '../inputs/StudioArrayInput'
+import {StudioImageInput} from '../inputs/StudioImageInput'
+import {StudioFileInput} from '../inputs/StudioFileInput'
+import {StudioCrossDatasetReferenceInput} from '../inputs/crossDatasetReference/StudioCrossDatasetReferenceInput'
 import {FieldProps} from '../../store/types'
 import {FIXME} from '../../types'
 
 export const sanityInputs: Record<string, {input: React.ComponentType<FieldProps>}> = {
   object: {input: ObjectInput},
-  array: {input: SanityArrayInput as FIXME},
+  array: {input: StudioArrayInput as FIXME},
   boolean: {input: BooleanInput as FIXME},
   number: {input: NumberInput as FIXME},
   text: {input: TextInput as FIXME},
@@ -24,12 +24,12 @@ export const sanityInputs: Record<string, {input: React.ComponentType<FieldProps
   datetime: {input: DateTimeInput as FIXME},
   date: {input: DateInput} as FIXME,
   url: {input: UrlInput as FIXME},
-  image: {input: SanityImageInput as FIXME},
-  file: {input: SanityFileInput as FIXME},
+  image: {input: StudioImageInput as FIXME},
+  file: {input: StudioFileInput as FIXME},
   string: {input: StringInput},
   slug: {input: SlugInput as FIXME},
 
-  crossDatasetReference: {input: SanityCrossDatasetReferenceInput as FIXME},
+  crossDatasetReference: {input: StudioCrossDatasetReferenceInput as FIXME},
 }
 
 export type SanityInputType = keyof typeof sanityInputs

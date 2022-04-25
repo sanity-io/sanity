@@ -25,7 +25,7 @@ import {
   ResolvedUploader,
   Uploader,
   UploadOptions,
-} from '../../../sanity/uploads/types'
+} from '../../../studio/uploads/types'
 import {ImageToolInput} from '../ImageToolInput'
 import {UploadPlaceholder} from '../common/UploadPlaceholder'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'

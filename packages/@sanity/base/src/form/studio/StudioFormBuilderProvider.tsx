@@ -15,7 +15,7 @@ const previewResolver: FormPreviewComponentResolver = (..._: unknown[]) => {
 /**
  * @alpha This API might change.
  */
-export interface SanityFormBuilderProviderProps {
+export interface StudioFormBuilderProviderProps {
   /**
    * @internal Considered internal, do not use.
    */
@@ -30,7 +30,7 @@ export interface SanityFormBuilderProviderProps {
  *
  * @alpha This API might change.
  */
-export function SanityFormBuilderProvider(props: SanityFormBuilderProviderProps) {
+export function StudioFormBuilderProvider(props: StudioFormBuilderProviderProps) {
   const {__internal_patchChannel: patchChannel, children, schema, value} = props
 
   const {unstable_formBuilder: formBuilder} = useSource()

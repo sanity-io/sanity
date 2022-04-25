@@ -44,7 +44,7 @@ async function resolveUserDefinedFilter(
   }
 }
 
-export interface SanityCrossDatasetReferenceInputProps
+export interface StudioCrossDatasetReferenceInputProps
   extends ObjectFieldProps<CrossDatasetReference, CrossDatasetReferenceSchemaType> {
   // From withDocument
   document: SanityDocument
@@ -66,8 +66,8 @@ type SearchError = {
   }
 }
 
-const SanityCrossDatasetReferenceInput = forwardRef(function SanityCrossDatasetReferenceInput(
-  props: SanityCrossDatasetReferenceInputProps,
+const _StudioCrossDatasetReferenceInput = forwardRef(function StudioCrossDatasetReferenceInput(
+  props: StudioCrossDatasetReferenceInputProps,
   ref: ForwardedRef<HTMLInputElement>
 ) {
   const {getValuePath, type, document} = props
@@ -186,4 +186,6 @@ const SanityCrossDatasetReferenceInput = forwardRef(function SanityCrossDatasetR
   )
 })
 
-export default withValuePath(withDocument(SanityCrossDatasetReferenceInput))
+export const StudioCrossDatasetReferenceInput = withValuePath(
+  withDocument(_StudioCrossDatasetReferenceInput)
+)

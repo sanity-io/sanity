@@ -2,7 +2,7 @@ import React, {useMemo} from 'react'
 import {BinaryDocumentIcon, AccessDeniedIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
 import {Flex, Text} from '@sanity/ui'
 import styled from 'styled-components'
-import {FileLike} from '../../../sanity/uploads/types'
+import {FileLike} from '../../../studio/uploads/types'
 
 interface Props {
   readOnly?: boolean

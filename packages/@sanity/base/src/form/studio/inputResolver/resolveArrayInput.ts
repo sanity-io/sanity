@@ -4,7 +4,7 @@ import * as is from '../../utils/is'
 import {OptionsArrayInput as OptionsArray} from '../../inputs/arrays/OptionsArrayInput'
 import {PortableTextInput} from '../../inputs/PortableText/PortableTextInput'
 import {TagsArrayInput} from '../../inputs/TagsArrayInput'
-import {SanityArrayInput, SanityArrayOfPrimitivesInput} from '../inputs/SanityArrayInput'
+import {StudioArrayInput, StudioArrayOfPrimitivesInput} from '../inputs/StudioArrayInput'
 import {ArrayFieldProps} from '../../store/types'
 
 const PRIMITIVES = ['string', 'number', 'boolean']
@@ -44,7 +44,7 @@ export function resolveArrayInput(type: ArraySchemaType): ComponentType<ArrayFie
   // Special component for array of primitive values
   if (isArrayOfPrimitives(type)) {
     // @todo: fix typing
-    return SanityArrayOfPrimitivesInput as ComponentType<any>
+    return StudioArrayOfPrimitivesInput as ComponentType<any>
   }
 
   // Use Portable Text editor if portable text.
@@ -55,5 +55,5 @@ export function resolveArrayInput(type: ArraySchemaType): ComponentType<ArrayFie
 
   // use default
   // @todo: fix typing
-  return SanityArrayInput as ComponentType<any>
+  return StudioArrayInput as ComponentType<any>
 }

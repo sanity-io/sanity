@@ -2,7 +2,7 @@ import React from 'react'
 import {SchemaType} from '@sanity/types'
 import {Box, Text, Inline} from '@sanity/ui'
 import {AccessDeniedIcon, UploadIcon} from '@sanity/icons'
-import {FileLike, UploaderResolver} from '../../../sanity/uploads/types'
+import {FileLike, UploaderResolver} from '../../../studio/uploads/types'
 
 interface Props {
   hoveringFiles: FileLike[]

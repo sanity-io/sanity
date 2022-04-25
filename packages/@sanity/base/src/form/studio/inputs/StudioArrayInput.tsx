@@ -12,7 +12,7 @@ import {FormBuilderContextValue} from '../../FormBuilderContext'
 import {useFormBuilder} from '../../useFormBuilder'
 import {FIXME} from '../../types'
 import {resolveInitialValueForType} from '../../../templates'
-import {SanityArrayItemReferenceInput} from './reference/SanityArrayItemReferenceInput'
+import {StudioArrayItemReferenceInput} from './reference/StudioArrayItemReferenceInput'
 
 const arrayResolveUploader = (
   formBuilder: FormBuilderContextValue,
@@ -30,9 +30,9 @@ const arrayResolveUploader = (
   return sanityResolveUploader(type, file)
 }
 
-export const SanityArrayInput = forwardRef(function SanityArrayInput(
+export const StudioArrayInput = forwardRef(function StudioArrayInput(
   props: ArrayInputProps,
-  ref: ForwardedRef<ArrayInput>
+  ref: ForwardedRef<typeof ArrayInput>
 ) {
   const formBuilder = useFormBuilder()
 
@@ -47,7 +47,7 @@ export const SanityArrayInput = forwardRef(function SanityArrayInput(
     <ArrayInput
       {...props}
       ref={ref}
-      ReferenceItemComponent={SanityArrayItemReferenceInput}
+      ReferenceItemComponent={StudioArrayItemReferenceInput}
       resolveUploader={resolveUploader}
       resolveInitialValue={resolveInitialValueForType}
       ArrayFunctionsImpl={formBuilder.components.ArrayFunctions as FIXME}
@@ -55,7 +55,7 @@ export const SanityArrayInput = forwardRef(function SanityArrayInput(
   )
 })
 
-export const SanityArrayOfPrimitivesInput = forwardRef(function SanityArrayOfPrimitivesInput(
+export const StudioArrayOfPrimitivesInput = forwardRef(function StudioArrayOfPrimitivesInput(
   props: Omit<ArrayOfPrimitivesInputProps, 'ArrayFunctionsImpl'>,
   ref: ForwardedRef<ArrayOfPrimitivesInput>
 ) {

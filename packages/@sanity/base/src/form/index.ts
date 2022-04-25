@@ -1,12 +1,11 @@
 // This exports the public api of '@sanity/form-builder'
 
 // sanity
-export * from './sanity/contexts'
-export * from './sanity/SanityFormBuilder'
-export * from './sanity/SanityFormBuilderProvider'
-export * from './sanity/formBuilderValueStore'
-export * from './sanity/focusManagers/HashFocusManager'
-export * from './sanity/focusManagers/SimpleFocusManager'
+export * from './studio/contexts'
+export * from './studio/StudioFormBuilder'
+export * from './studio/StudioFormBuilderProvider'
+export * from './studio/focusManagers/HashFocusManager'
+export * from './studio/focusManagers/SimpleFocusManager'
 
 // utils
 export * from './utils/withDocument'
@@ -20,7 +19,7 @@ export * from './inputs/PortableText/PortableTextInput'
 export {PortableTextInput as BlockEditor} from './inputs/PortableText/PortableTextInput'
 
 export * from './patchChannel'
-export * from './sanity'
+export * from './studio'
 
 export * from './patch/PatchEvent'
 export * from './patch/patch'
