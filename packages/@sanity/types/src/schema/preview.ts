@@ -1,6 +1,8 @@
 import type {ReactNode} from 'react'
 import type {SortOrdering} from './types'
 
+type FIXME = any
+
 export interface PrepareViewOptions {
   ordering?: SortOrdering
 }
@@ -20,6 +22,7 @@ export interface PreviewValue {
 }
 
 export interface PreviewConfig {
+  component?: React.ComponentType<FIXME>
   select?: Record<string, string> // PreviewValue
   prepare: (
     value: {
