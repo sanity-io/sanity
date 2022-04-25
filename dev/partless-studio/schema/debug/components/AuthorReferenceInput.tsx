@@ -1,6 +1,6 @@
 import {useSource} from '@sanity/base'
 import {FormField} from '@sanity/base/_unstable'
-import {FormInputProps, PatchEvent, set, unset, setIfMissing} from '@sanity/base/form'
+import {PatchEvent, set, unset, setIfMissing, ObjectFieldProps} from '@sanity/base/form'
 import imageUrlBuilder from '@sanity/image-url'
 import {Reference, ReferenceSchemaType} from '@sanity/types'
 import {Button, Spinner} from '@sanity/ui'
@@ -16,7 +16,7 @@ interface AuthorReference {
 }
 
 export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
-  props: FormInputProps<Reference, ReferenceSchemaType>,
+  props: ObjectFieldProps<Reference, ReferenceSchemaType>,
   ref: React.ForwardedRef<any>
 ) {
   const {level, readOnly = false, type, value} = props

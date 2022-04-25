@@ -1,5 +1,5 @@
 import {FormField} from '@sanity/base/_unstable'
-import {FormInputProps, PatchEvent, set, unset} from '@sanity/base/form'
+import {ObjectFieldProps, PatchEvent, set, unset} from '@sanity/base/form'
 import {isValidationErrorMarker, ObjectSchemaType} from '@sanity/types'
 import {Select} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
@@ -10,7 +10,7 @@ interface CustomSchemaType extends Omit<ObjectSchemaType, 'options'> {
   options?: {list?: Value[]}
 }
 
-type CustomObjectSelectInputProps = FormInputProps<Value, CustomSchemaType>
+type CustomObjectSelectInputProps = ObjectFieldProps<Value, CustomSchemaType>
 
 const EMPTY_ARRAY: Value[] = []
 
