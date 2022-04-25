@@ -115,6 +115,11 @@ export interface BaseSchemaType {
   initialValue?: InitialValueProperty<any, any>
   validation?: SchemaValidationValue
   preview?: PreviewConfig
+  components?: {
+    field?: React.ComponentType<any> // @todo: use `FieldProps` here
+    item?: React.ComponentType<any> // @todo: use `FieldProps` here
+    input?: React.ComponentType<any> // @todo: use `FieldProps` here
+  }
 
   /**
    * @deprecated This will be removed.
