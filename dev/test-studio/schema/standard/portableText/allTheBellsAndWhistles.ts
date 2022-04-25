@@ -31,7 +31,7 @@ export const ptAllTheBellsAndWhistlesType = {
                 type: 'object',
                 name: 'link',
                 title: 'Link',
-                inputComponent: LinkAnnotationInput,
+                components: {input: LinkAnnotationInput},
                 // options: {
                 //   editModal: 'dialog',
                 // },

@@ -4,7 +4,7 @@ export default {
   name: 'pertEstimate',
   type: 'object',
   title: 'PERT-estimate',
-  inputComponent: PertEstimateInput,
+  components: {input: PertEstimateInput},
   fields: [
     {
       title: 'Optimistic estimate',

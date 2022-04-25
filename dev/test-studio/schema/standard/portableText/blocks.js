@@ -372,7 +372,7 @@ export default {
       name: 'withMarkers',
       title: 'With markers',
       type: 'array',
-      inputComponent: CustomEditor,
+      components: {input: CustomEditor},
       of: [{type: 'block'}],
     },
     {

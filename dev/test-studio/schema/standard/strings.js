@@ -19,7 +19,7 @@ export default {
       type: 'string',
       title: 'Hooks based input',
       description: 'A string field with a custom input (using react hooks)',
-      inputComponent: HooksBasedStringInput,
+      components: {input: HooksBasedStringInput},
     },
     {
       name: 'readonlyField',
