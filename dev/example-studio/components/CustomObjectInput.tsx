@@ -1,17 +1,17 @@
 import {FormFieldSet} from '@sanity/base/_unstable'
 import {
-  FormInputProps,
+  ObjectFieldProps,
   PatchEvent,
   setIfMissing,
   FormBuilderInput,
   FormBuilderInputInstance,
 } from '@sanity/base/form'
-import {ObjectField, ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
+import {ObjectField, Path, ValidationMarker} from '@sanity/types'
 import {Card, Text} from '@sanity/ui'
 import React, {forwardRef, memo, useCallback, useImperativeHandle, useMemo, useRef} from 'react'
 
 export const CustomObjectInput = forwardRef(function CustomObjectInput(
-  props: FormInputProps<Record<string, unknown>, ObjectSchemaType>,
+  props: ObjectFieldProps,
   ref: any
 ) {
   const {focusPath, level, onBlur, onChange, onFocus, presence, type, validation, value} = props
