@@ -9,7 +9,7 @@ import {
   ChangeIndicatorCompareValueProvider,
   ChangeIndicator,
 } from '@sanity/base/_unstable'
-import {FormInputProps, PatchEvent, set, setIfMissing, unset} from '@sanity/base/form'
+import {ObjectFieldProps, PatchEvent, set, setIfMissing, unset} from '@sanity/base/form'
 import {GoogleMapsLoadProxy} from '../loader/GoogleMapsLoadProxy'
 import {Geopoint, GeopointSchemaType} from '../types'
 import {GeopointSelect} from './GeopointSelect'
@@ -33,7 +33,7 @@ const getStaticImageUrl = (value) => {
   return `https://maps.googleapis.com/maps/api/staticmap?${qs.join('&')}`
 }
 
-type GeopointInputProps = FormInputProps<Geopoint, GeopointSchemaType>
+type GeopointInputProps = ObjectFieldProps<Geopoint, GeopointSchemaType>
 
 // @todo
 // interface Focusable {
