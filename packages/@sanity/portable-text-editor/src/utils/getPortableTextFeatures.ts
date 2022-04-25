@@ -1,16 +1,23 @@
-import {PortableTextFeatures} from '../types/portableText'
-import {PortableTextType, Type} from '../types/schema'
+import {ArraySchemaType, ObjectSchemaType, SchemaType} from '@sanity/types'
+import {PortableTextBlock, PortableTextFeatures} from '../types/portableText'
+import {Type} from '../types/schema'
 
-export function getPortableTextFeatures(portabletextType: PortableTextType): PortableTextFeatures {
+export function getPortableTextFeatures(
+  portabletextType: ArraySchemaType<PortableTextBlock>
+): PortableTextFeatures {
   if (!portabletextType) {
     throw new Error("Parameter 'portabletextType' missing (required)")
   }
-  const blockType: Type | undefined = portabletextType.of?.find(findBlockType)
+  const blockType = portabletextType.of?.find(findBlockType) as ObjectSchemaType | undefined
   if (!blockType) {
     throw new Error('Block type is not defined in this schema (required)')
   }
   const childrenField =
-    blockType && blockType.fields && blockType.fields.find((field) => field.name === 'children')
+    blockType &&
+    blockType.fields &&
+    (blockType.fields.find((field) => field.name === 'children') as
+      | {type: ArraySchemaType}
+      | undefined)
   if (!childrenField) {
     throw new Error('Children field for block type found in schema (required)')
   }
@@ -18,13 +25,16 @@ export function getPortableTextFeatures(portabletextType: PortableTextType): Por
   if (!ofType) {
     throw new Error('Valid types for block children not found in schema (required)')
   }
-  const spanType = ofType.find((memberType: Type) => memberType.name === 'span')
+  const spanType = ofType.find((memberType) => memberType.name === 'span') as
+    | ObjectSchemaType
+    | undefined
   if (!spanType) {
     throw new Error('Span type not found in schema (required)')
   }
-  const inlineObjectTypes: Type[] = ofType.filter((memberType) => memberType.name !== 'span') || []
-  const blockObjectTypes: Type[] =
-    portabletextType.of?.filter((field) => field.name !== blockType.name) || []
+  const inlineObjectTypes = (ofType.filter((memberType) => memberType.name !== 'span') ||
+    []) as ObjectSchemaType[]
+  const blockObjectTypes = (portabletextType.of?.filter((field) => field.name !== blockType.name) ||
+    []) as ObjectSchemaType[]
   const annotations = resolveEnabledAnnotationTypes(spanType)
   return {
     styles: resolveEnabledStyles(blockType),
@@ -42,7 +52,7 @@ export function getPortableTextFeatures(portabletextType: PortableTextType): Por
   }
 }
 
-function resolveEnabledStyles(blockType: Type) {
+function resolveEnabledStyles(blockType: ObjectSchemaType) {
   const styleField = blockType.fields?.find((btField) => btField.name === 'style')
   if (!styleField) {
     throw new Error("A field with name 'style' is not defined in the block type (required).")
@@ -59,8 +69,8 @@ function resolveEnabledStyles(blockType: Type) {
   return textStyles
 }
 
-function resolveEnabledAnnotationTypes(spanType: Type) {
-  return spanType.annotations.map((annotation: Type) => {
+function resolveEnabledAnnotationTypes(spanType: ObjectSchemaType) {
+  return (spanType as any).annotations.map((annotation: Type) => {
     return {
       blockEditor: annotation.blockEditor,
       portableText: annotation.portableText,
@@ -72,11 +82,11 @@ function resolveEnabledAnnotationTypes(spanType: Type) {
   })
 }
 
-function resolveEnabledDecorators(spanType: Type) {
-  return spanType.decorators
+function resolveEnabledDecorators(spanType: ObjectSchemaType) {
+  return (spanType as any).decorators
 }
 
-function resolveEnabledListItems(blockType: Type) {
+function resolveEnabledListItems(blockType: ObjectSchemaType) {
   const listField = blockType.fields?.find((btField) => btField.name === 'list')
   if (!listField) {
     throw new Error("A field with name 'list' is not defined in the block type (required).")
@@ -90,13 +100,14 @@ function resolveEnabledListItems(blockType: Type) {
   return listItems
 }
 
-function findBlockType(type: Type): Type | null {
+function findBlockType(type: SchemaType): ObjectSchemaType | null {
   if (type.type) {
     return findBlockType(type.type)
   }
 
   if (type.name === 'block') {
-    return type
+    return type as ObjectSchemaType
   }
+
   return null
 }

@@ -1,3 +1,4 @@
+import {ArraySchemaType, ObjectSchemaType} from '@sanity/types'
 import type {ComponentType} from 'react'
 import type {Type as SchemaType} from './schema'
 
@@ -60,11 +61,11 @@ export type PortableTextFeatures = {
   annotations: PortableTextFeature[]
   lists: PortableTextFeature[]
   types: {
-    block: SchemaType
-    blockObjects: SchemaType[]
-    inlineObjects: SchemaType[]
-    portableText: SchemaType
-    span: SchemaType
-    annotations: SchemaType[]
+    block: ObjectSchemaType
+    blockObjects: ObjectSchemaType[]
+    inlineObjects: ObjectSchemaType[]
+    portableText: ArraySchemaType<PortableTextBlock>
+    span: ObjectSchemaType
+    annotations: ObjectSchemaType[]
   }
 }

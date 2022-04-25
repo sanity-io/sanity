@@ -1,13 +1,16 @@
+import {ArraySchemaType} from '@sanity/types'
+
 export type Type = {
   type: Type
   name: string
   title: string
   description?: string
   readOnly?: boolean
-  of?: Type[]
+  of: ArraySchemaType['of']
   options: Record<string, any> | null
   fields?: Type[]
   [prop: string]: any
+  jsonType: 'array'
 }
 
 export type PortableTextType = Type & {

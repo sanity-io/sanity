@@ -1,4 +1,4 @@
-import {Path} from '@sanity/types'
+import {ArraySchemaType, ObjectSchemaType, Path} from '@sanity/types'
 import {Subject, Observable} from 'rxjs'
 import {Node as SlateNode, Operation as SlateOperation} from 'slate'
 import {ReactEditor} from '@sanity/slate-react'
@@ -279,7 +279,7 @@ export type OnPasteFn = (arg0: {
   event: React.SyntheticEvent
   path: Path
   portableTextFeatures: PortableTextFeatures
-  type: Type
+  type: ArraySchemaType<PortableTextBlock>
   value: PortableTextBlock[] | undefined
 }) => OnPasteResultOrPromise
 
@@ -303,7 +303,7 @@ export type RenderAttributes = {
 
 export type RenderBlockFunction = (
   value: PortableTextBlock,
-  type: Type,
+  type: ObjectSchemaType,
   attributes: RenderAttributes,
   defaultRender: (val: PortableTextBlock) => JSX.Element,
   ref: React.RefObject<HTMLDivElement>
@@ -311,7 +311,7 @@ export type RenderBlockFunction = (
 
 export type RenderChildFunction = (
   value: PortableTextChild,
-  type: Type,
+  type: ObjectSchemaType,
   attributes: RenderAttributes,
   defaultRender: (val: PortableTextChild) => JSX.Element,
   ref: React.RefObject<HTMLSpanElement>
@@ -319,7 +319,7 @@ export type RenderChildFunction = (
 
 export type RenderAnnotationFunction = (
   value: PortableTextBlock,
-  type: Type,
+  type: ObjectSchemaType,
   attributes: RenderAttributes,
   defaultRender: () => JSX.Element,
   ref: React.RefObject<HTMLSpanElement>

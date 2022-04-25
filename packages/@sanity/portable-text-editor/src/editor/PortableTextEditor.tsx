@@ -1,5 +1,5 @@
 import React from 'react'
-import {Path} from '@sanity/types'
+import {ArraySchemaType, Path} from '@sanity/types'
 import {Subscription, Subject} from 'rxjs'
 import {distinctUntilChanged} from 'rxjs/operators'
 import {randomKey} from '@sanity/util/content'
@@ -7,7 +7,7 @@ import {createEditor} from 'slate'
 import {compileType} from '../utils/schema'
 import {getPortableTextFeatures} from '../utils/getPortableTextFeatures'
 import {PortableTextBlock, PortableTextFeatures, PortableTextChild} from '../types/portableText'
-import {Type, RawType as RawSchemaType, PortableTextType} from '../types/schema'
+import {Type} from '../types/schema'
 import type {Patch} from '../types/patch'
 import {
   EditorSelection,
@@ -37,7 +37,7 @@ export type PortableTextEditorProps = {
   onChange: (change: EditorChange) => void
   incomingPatches$?: PatchObservable
   readOnly?: boolean
-  type: Type | RawSchemaType
+  type: ArraySchemaType<PortableTextBlock>
   value?: PortableTextBlock[]
 }
 
@@ -154,7 +154,7 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
   private changeSubscription: Subscription
   private pendingPatches: Patch[] = []
 
-  public type: PortableTextType
+  public type: ArraySchemaType<PortableTextBlock>
   public portableTextFeatures: PortableTextFeatures
   public change$: EditorChanges = new Subject()
   public isThrottling = false

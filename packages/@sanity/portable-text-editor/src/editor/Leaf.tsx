@@ -93,7 +93,7 @@ export const Leaf = (props: LeafProps) => {
       annotations.forEach((annotation) => {
         const type = portableTextFeatures.types.annotations.find((t) => t.name === annotation._type)
         // TODO: look into this API!
-        const CustomComponent = type?.blockEditor?.render
+        const CustomComponent = (type as any)?.blockEditor?.render
         const defaultRender = (): JSX.Element =>
           // TODO: annotation should be an own prop here, keeping for backward compability (2020/05/18).
           CustomComponent ? (
