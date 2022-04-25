@@ -5,7 +5,7 @@ const isDocumentType = (type: SchemaType): type is ObjectSchemaType =>
 
 const isSanityType = (type: SchemaType): boolean => type.name.startsWith('sanity.')
 
-const isSearchable = (type: SchemaType): boolean => type.__experimental_search_ignore !== true
+const isSearchable = (type: ObjectSchemaType): boolean => type.__experimental_search_ignore !== true
 
 export const getSearchableTypes = (
   schema: Schema
