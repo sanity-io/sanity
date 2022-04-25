@@ -1,7 +1,6 @@
 import {isPlainObject} from 'lodash'
 import React, {useCallback} from 'react'
 import {PatchEvent, set, setIfMissing} from '@sanity/base/form'
-import {FormBuilderInput} from '@sanity/form-builder'
 import sanityClient from 'part:@sanity/base/client'
 import {Box} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
@@ -97,7 +96,8 @@ export const LinkAnnotationInput = (props: LinkAnnotationInputProps) => {
   return (
     <>
       <Box flex={1} paddingY={2}>
-        <FormBuilderInput
+        TODO
+        {/* <FormBuilderInput
           key={referenceArticleField?.name}
           type={referenceArticleField?.type}
           value={
@@ -112,10 +112,11 @@ export const LinkAnnotationInput = (props: LinkAnnotationInputProps) => {
           focusPath={[referenceArticleField?.name, '_ref']}
           path={[referenceArticleField?.name]}
           filterField={referenceArticleField?.type?.options?.filter}
-        />
+        /> */}
       </Box>
       <Box flex={1} paddingY={2}>
-        <FormBuilderInput
+        TODO
+        {/* <FormBuilderInput
           key={urlField?.name}
           type={urlField?.type}
           value={(isRecord(value) && urlField?.name && value[urlField?.name]) || undefined}
@@ -127,11 +128,12 @@ export const LinkAnnotationInput = (props: LinkAnnotationInputProps) => {
           filterField={urlField?.type?.options?.filter}
           readOnly={urlFieldDisabled}
           markers={getFieldMarkers(urlField?.name)}
-        />
+        /> */}
       </Box>
       {otherFields.map((field) => (
         <Box flex={1} key={field?.name} paddingY={2}>
-          <FormBuilderInput
+          TODO
+          {/* <FormBuilderInput
             type={field?.type}
             value={(isRecord(value) && field?.name && value[field?.name]) || undefined}
             onChange={(patchEvent: PartialPatchEvent) => handleFieldChange(field, patchEvent)}
@@ -141,7 +143,7 @@ export const LinkAnnotationInput = (props: LinkAnnotationInputProps) => {
             path={[field?.name]}
             filterField={field?.type?.options?.filter}
             markers={getFieldMarkers(field?.name)}
-          />
+          /> */}
         </Box>
       ))}
     </>
