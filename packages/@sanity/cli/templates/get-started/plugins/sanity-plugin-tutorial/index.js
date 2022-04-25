@@ -1,9 +1,9 @@
-import HelloSanityTutorial from './HelloSanityTutorial'
-import HelloSanityTutorialIcon from './HelloSanityTutorialIcon'
+import GetStartedTutorial from './GetStartedTutorial'
+import GetStartedTutorialIcon from './GetStartedTutorialIcon'
 
 export default {
-  title: 'HelloSanityTutorial',
-  name: 'hellosanitytutorial',
-  icon: HelloSanityTutorialIcon,
-  component: HelloSanityTutorial,
+  title: 'GetStartedTutorial',
+  name: 'GetStartedtutorial',
+  icon: GetStartedTutorialIcon,
+  component: GetStartedTutorial,
 }
