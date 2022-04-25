@@ -452,7 +452,7 @@ export default Schema.compile({
       name: 'code',
       type: 'object',
       title: 'Code',
-      inputComponent: {},
+      components: {input: {}},
       icon: {},
       fields: [
         {name: 'language', title: 'Language', type: 'string'},
