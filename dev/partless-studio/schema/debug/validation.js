@@ -539,7 +539,7 @@ export default {
           {title: 'Blue', value: '#00f'},
         ],
       },
-      inputComponent: CustomObjectSelectInput,
+      components: {input: CustomObjectSelectInput},
     },
     {
       name: 'requiredObjectWithFields',

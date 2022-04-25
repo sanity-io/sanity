@@ -14,7 +14,7 @@ export const withDocumentTestSchemaType = {
       type: 'string',
       name: 'withDocumentTest',
       title: 'WithDocumentTest',
-      inputComponent: WithDocumentTestInput,
+      components: {input: WithDocumentTestInput},
     },
   ],
 }

@@ -13,7 +13,7 @@ export default {
       title: 'Author',
       type: 'reference',
       to: {type: 'author'},
-      inputComponent: AuthorReferenceInput,
+      components: {input: AuthorReferenceInput},
     },
     {
       name: 'title',
@@ -21,28 +21,28 @@ export default {
       description: 'A custom input defined by "field.inputComponent"',
       type: 'string',
       placeholder: 'This is the placeholder',
-      inputComponent: CustomStringInput,
+      components: {input: CustomStringInput},
     },
     {
       type: 'string',
       name: 'inputComponentErrorTest',
       title: 'Input component error test',
       // this should make a validation warning to appear in the console
-      inputComponent: 'NOT A REACT COMPONENT',
+      components: {input: 'NOT A REACT COMPONENT'},
     },
     {
       name: 'myObject',
       title: 'A custom input for a custom object type',
       description: 'A custom input for a custom object type',
       type: 'myObject',
-      inputComponent: CustomMyObjectInput,
+      components: {input: CustomMyObjectInput},
     },
     {
       name: 'customFont',
       title: 'Input with custom font',
       description: 'Custom input that has a bundled, custom font',
       type: 'string',
-      inputComponent: CustomFontStringInput,
+      components: {input: CustomFontStringInput},
     },
     {
       name: 'Undefined',
@@ -50,7 +50,7 @@ export default {
       description: 'This should be a schema warning',
       type: 'string',
       // this should make a validation warning to appear in the console
-      inputComponent: undefined,
+      components: {input: undefined},
     },
     // {
     //   name: 'taskEstimate',

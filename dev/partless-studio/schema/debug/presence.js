@@ -74,7 +74,7 @@ export default {
         name: `row${row}`,
         fields: range(8).map((cell) => ({name: `cell${cell}`, type: 'string'})),
       })),
-      inputComponent: CustomInputWithDefaultPresence,
+      components: {input: CustomInputWithDefaultPresence},
     },
     {
       name: 'customInputWithDialog',
@@ -82,7 +82,7 @@ export default {
       description: 'This is an example of how to use a presence overlay inside a dialog',
       type: 'object',
       fields: range(20).map((n) => ({type: 'string', name: `fieldNo${n}`})),
-      inputComponent: CustomInputWithDialogOverlay,
+      components: {input: CustomInputWithDialogOverlay},
     },
     {
       name: 'collapsible',
