@@ -4,13 +4,22 @@ import {PatchChannel} from '../patchChannel'
 import {DocumentInput} from '../inputs/DocumentInput'
 import {useSource} from '../../studio'
 import {fallbackInputs} from '../fallbackInputs'
-import {RenderArrayItemCallbackArg, RenderFieldCallbackArg} from '../types_v3'
-import {ObjectInputProps} from '../store/formState'
+import {
+  ArrayInputComponentProps,
+  BooleanInputComponentProps,
+  NumberInputComponentProps,
+  ObjectInputComponentProps,
+  RenderArrayItemCallbackArg,
+  RenderFieldCallbackArg,
+  StringInputComponentProps,
+} from '../types_v3'
+import {ArrayInputProps, ObjectInputProps} from '../store/formState'
 import {ChangeIndicatorProvider} from '../../components/changeIndicators'
-import {FieldProps} from '../store/types'
+import {ArrayFieldProps, FieldProps, ObjectFieldProps} from '../store/types'
 import {StudioFormBuilderProvider} from './StudioFormBuilderProvider'
 import {resolveInputComponent as defaultInputResolver} from './inputResolver/inputResolver'
 import {Box, Button, Card, Dialog, Flex, Text} from '@sanity/ui'
+import {assertType, isArrayField, isObjectField} from '../utils/asserters'
 
 /**
  * @alpha
@@ -55,13 +64,13 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
   const {unstable_formBuilder: formBuilder} = useSource()
 
   const resolveInputComponent = useCallback(
-    (inputType: SchemaType) => {
+    (inputType: SchemaType): React.ComponentType<unknown> => {
       const resolved = defaultInputResolver(
         formBuilder.components?.inputs,
         formBuilder.resolveInputComponent,
         inputType
       )
-      return resolved || (fallbackInputs[inputType.jsonType] as React.ComponentType<FieldProps>)
+      return resolved || (fallbackInputs[inputType.jsonType] as React.ComponentType<unknown>)
     },
     [formBuilder]
   )
@@ -72,15 +81,30 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
       if (!Input) {
         return <div>No input resolved for type: {field.type.name}</div>
       }
+      if (isObjectField(field)) {
+        assertType<React.ComponentType<ObjectInputComponentProps>>(Input)
+        return (
+          <ChangeIndicatorProvider path={field.path} value={field.value} compareValue={undefined}>
+            <Input {...field} renderField={renderField} />
+          </ChangeIndicatorProvider>
+        )
+      }
+      if (isArrayField(field)) {
+        assertType<React.ComponentType<ArrayInputComponentProps>>(Input)
+        return (
+          <ChangeIndicatorProvider path={field.path} value={field.value} compareValue={undefined}>
+            <Input {...field} renderItem={renderItem} />
+          </ChangeIndicatorProvider>
+        )
+      }
+      assertType<
+        React.ComponentType<
+          StringInputComponentProps | NumberInputComponentProps | BooleanInputComponentProps
+        >
+      >(Input)
       return (
         <ChangeIndicatorProvider path={field.path} value={field.value} compareValue={undefined}>
-          <Input
-            {...field}
-            validation={field.validation || []}
-            presence={field.presence || []}
-            renderField={renderField}
-            renderItem={renderItem}
-          />
+          <Input {...field} />
         </ChangeIndicatorProvider>
       )
     },
@@ -93,58 +117,10 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
       if (!Input) {
         return <div>No input resolved for type: {item.type.name}</div>
       }
+      assertType<React.ComponentType<ObjectInputComponentProps>>(Input)
       return (
-        <ChangeIndicatorProvider
-          path={item.path}
-          focusPath={item.focusPath}
-          value={item.value}
-          compareValue={undefined}
-        >
-          <Flex gap={1} align="center">
-            <Box flex={1}>
-              <Card
-                as="button"
-                shadow={1}
-                padding={3}
-                radius={2}
-                selected={!item.collapsed}
-                onClick={() => item.onSetCollapsed(false)}
-              >
-                <Text>[preview] {JSON.stringify(item.value?._key)}</Text>
-              </Card>
-              {!item.collapsed && (
-                <Dialog
-                  id={`edit-${item.id}`}
-                  title="Edit"
-                  onClickOutside={() => item.onSetCollapsed(true)}
-                >
-                  <Box padding={4}>
-                    <Input
-                      {...item}
-                      validation={item.validation}
-                      presence={item.presence}
-                      renderField={renderField}
-                      renderItem={renderItem}
-                    />
-                  </Box>
-                </Dialog>
-              )}
-            </Box>
-
-            <Box padding={2}>
-              {item.collapsed ? (
-                <Button
-                  onClick={() => {
-                    item.onSetCollapsed(false)
-                  }}
-                  text="Open"
-                  mode="bleed"
-                />
-              ) : (
-                <Button onClick={() => item.onSetCollapsed(true)} text="Close" mode="bleed" />
-              )}
-            </Box>
-          </Flex>
+        <ChangeIndicatorProvider path={item.path} value={item.value} compareValue={undefined}>
+          <Input {...item} renderField={renderField} />
         </ChangeIndicatorProvider>
       )
     },

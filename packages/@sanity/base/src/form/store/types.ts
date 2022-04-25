@@ -113,7 +113,7 @@ export interface ObjectFieldProps<V = Record<string, unknown>, T = ObjectSchemaT
   members: ObjectMember[]
   focusPath: Path
   groups?: FieldGroup[]
-  onSelectGroup: (name: string) => void
+  onSelectFieldGroup: (name: string) => void
   value?: V
   readOnly?: boolean
   collapsed?: boolean
@@ -125,6 +125,10 @@ export interface ArrayFieldProps<T = unknown, S extends ArraySchemaType = ArrayS
   extends BaseFieldProps {
   kind: 'array'
   type: S
+  onSetCollapsed: (collapsed: boolean) => void
+  onInsert: (event: InsertEvent) => void
+  collapsed?: boolean
+  collapsible?: boolean
   members: ArrayMember[]
   focusPath: Path
   value?: T[]
