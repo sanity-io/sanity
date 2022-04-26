@@ -11,7 +11,9 @@ import {FormFieldPresence} from '../../presence'
 import {ArrayMember, ObjectMember} from './member'
 import {FieldGroup} from './fieldGroup'
 
-interface BaseFieldProps {
+export interface BaseFieldProps {
+  collapsed: boolean
+  collapsible: boolean
   focusPath: Path
   focused: boolean
   hidden: boolean
@@ -49,8 +51,6 @@ export interface BooleanFieldProps extends BaseFieldProps {
 export interface ObjectFieldProps<V = Record<string, unknown>, T = ObjectSchemaType>
   extends BaseFieldProps {
   kind: 'object'
-  collapsed: boolean
-  collapsible: boolean
   compareValue: V | undefined
   groups: FieldGroup[]
   members: ObjectMember[]
@@ -61,8 +61,6 @@ export interface ObjectFieldProps<V = Record<string, unknown>, T = ObjectSchemaT
 export interface ArrayFieldProps<T = unknown, S extends ArraySchemaType = ArraySchemaType<T>>
   extends BaseFieldProps {
   kind: 'array'
-  collapsed: boolean
-  collapsible: boolean
   compareValue: T[] | undefined
   members: ArrayMember[]
   type: S

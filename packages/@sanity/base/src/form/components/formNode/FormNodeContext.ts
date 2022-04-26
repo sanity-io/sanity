@@ -3,6 +3,9 @@ import {createContext} from 'react'
 import {FormFieldPresence} from '../../../presence'
 import {PatchArg} from '../../patch'
 
+/**
+ * @alpha
+ */
 export interface FormNodeContextValue<T = unknown> {
   collapsed: boolean
   collapsible: boolean
@@ -16,4 +19,7 @@ export interface FormNodeContextValue<T = unknown> {
   validation: ValidationMarker[]
 }
 
+/**
+ * @internal
+ */
 export const FormNodeContext = createContext<FormNodeContextValue | null>(null)

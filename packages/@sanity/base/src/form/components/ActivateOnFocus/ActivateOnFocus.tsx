@@ -7,14 +7,20 @@ import {
   ContentContainer,
 } from './ActivateOnFocus.styles'
 
-interface Props {
+/**
+ * @internal
+ */
+export interface ActivateOnFocusProps {
   children: React.ReactNode
   message?: React.ReactNode
   onActivate?: () => void
   isOverlayActive: boolean
 }
 
-export function ActivateOnFocus(props: Props) {
+/**
+ * @internal
+ */
+export function ActivateOnFocus(props: ActivateOnFocusProps) {
   const {children, message, onActivate, isOverlayActive} = props
 
   function handleClick() {

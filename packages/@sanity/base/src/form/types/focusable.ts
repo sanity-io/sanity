@@ -1,3 +1,1 @@
-import {FIXME} from './_transitional'
-
-export type Focusable = FIXME // @todo
+export type Focusable = any // @todo

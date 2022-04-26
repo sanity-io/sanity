@@ -3,6 +3,11 @@ import {FormPreviewProps, FIXME} from './types'
 import {useFormBuilder} from './useFormBuilder'
 import {PreviewAny} from './utils/fallback-preview/PreviewAny'
 
+/**
+ * @internal
+ *
+ * TODO: rename to `FormValuePreview` or `ValuePreview` ???
+ */
 export function FormNodePreview(props: FormPreviewProps) {
   const {type, value} = props
   const {resolvePreviewComponent} = useFormBuilder()

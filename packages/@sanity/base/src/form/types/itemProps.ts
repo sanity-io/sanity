@@ -1,5 +1,4 @@
 import {
-  ArraySchemaType,
   BooleanSchemaType,
   NumberSchemaType,
   ObjectSchemaType,
@@ -8,10 +7,10 @@ import {
   ValidationMarker,
 } from '@sanity/types'
 import {FormFieldPresence} from '../../presence'
-import {ArrayMember, ObjectMember} from './member'
+import {ObjectMember} from './member'
 import {FieldGroup} from './fieldGroup'
 
-interface BaseItemProps {
+export interface BaseItemProps {
   name: string
   // id is a stringified version of the path
   id: string

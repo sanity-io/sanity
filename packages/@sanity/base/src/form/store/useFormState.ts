@@ -4,7 +4,7 @@ import {pathFor} from '@sanity/util/paths'
 import {useCurrentUser} from '../../datastores'
 import {FormFieldPresence} from '../../presence'
 import {ObjectFieldProps, StateTree} from '../types'
-import {prepareFormProps, SanityDocument} from './formState'
+import {prepareFormProps} from './formState'
 import {immutableReconcile} from './utils/immutableReconcile'
 
 function setAtPath<T>(currentTree: StateTree<T> | undefined, path: Path, value: T): StateTree<T> {
@@ -28,7 +28,7 @@ export function useFormState(
     presence,
     focusPath,
   }: {
-    value: Partial<SanityDocument>
+    value: Record<string, unknown>
     validation: ValidationMarker[]
     focusPath: Path
     presence: FormFieldPresence[]

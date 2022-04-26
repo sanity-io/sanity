@@ -3,7 +3,7 @@
 import {Path} from '@sanity/types'
 
 /**
- * @internal
+ * @alpha
  */
 export type FormPatchJSONValue =
   | number
@@ -13,12 +13,12 @@ export type FormPatchJSONValue =
   | FormPatchJSONValue[]
 
 /**
- * @internal
+ * @alpha
  */
 export type FormPatchOrigin = 'remote' | 'local' | 'internal'
 
 /**
- * @internal
+ * @alpha
  */
 export type FormSetPatch = {
   path: Path
@@ -28,7 +28,7 @@ export type FormSetPatch = {
 }
 
 /**
- * @internal
+ * @alpha
  */
 export type FormIncPatch = {
   path: Path
@@ -38,7 +38,7 @@ export type FormIncPatch = {
 }
 
 /**
- * @internal
+ * @alpha
  */
 export type FormDecPatch = {
   path: Path
@@ -48,7 +48,7 @@ export type FormDecPatch = {
 }
 
 /**
- * @internal
+ * @alpha
  */
 export type FormSetIfMissingPatch = {
   path: Path
@@ -58,7 +58,7 @@ export type FormSetIfMissingPatch = {
 }
 
 /**
- * @internal
+ * @alpha
  */
 export type FormUnsetPatch = {
   path: Path
@@ -67,12 +67,12 @@ export type FormUnsetPatch = {
 }
 
 /**
- * @internal
+ * @alpha
  */
 export type FormInsertPatchPosition = 'before' | 'after'
 
 /**
- * @internal
+ * @alpha
  */
 export type FormInsertPatch = {
   path: Path
@@ -83,7 +83,7 @@ export type FormInsertPatch = {
 }
 
 /**
- * @internal
+ * @alpha
  */
 export type FormDiffMatchPatch = {
   path: Path
@@ -93,7 +93,7 @@ export type FormDiffMatchPatch = {
 }
 
 /**
- * @internal
+ * @alpha
  */
 export type FormPatch =
   | FormSetPatch
@@ -101,3 +101,8 @@ export type FormPatch =
   | FormUnsetPatch
   | FormInsertPatch
   | FormDiffMatchPatch
+
+/**
+ * @alpha
+ */
+export type PatchArg = FormPatch | FormPatch[]

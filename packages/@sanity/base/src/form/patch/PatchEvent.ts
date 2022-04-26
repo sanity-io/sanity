@@ -1,9 +1,7 @@
 import {PathSegment} from '@sanity/types'
 import {flatten} from 'lodash'
 import {prefixPath} from './patch'
-import {FormPatch} from './types'
-
-export type PatchArg = FormPatch | FormPatch[]
+import {FormPatch, PatchArg} from './types'
 
 /**
  * @internal

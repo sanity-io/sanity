@@ -23,7 +23,10 @@ import {FormNodeProvider} from './FormNodeProvider'
 
 const noop = () => undefined
 
-export function FormNode(props: {
+/**
+ * @alpha
+ */
+export interface FormNodeProps {
   children?: React.ReactNode
   component?: React.ComponentType<InputProps>
   fieldProps: FieldProps
@@ -31,7 +34,12 @@ export function FormNode(props: {
   onChange?: (...patches: PatchArg[]) => void
   renderField?: RenderFieldCallback
   renderItem?: RenderArrayItemCallback
-}) {
+}
+
+/**
+ * @alpha
+ */
+export function FormNode(props: FormNodeProps) {
   const parent = useContext(FormNodeContext)
 
   const {

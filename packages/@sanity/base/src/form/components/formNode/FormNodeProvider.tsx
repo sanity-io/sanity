@@ -5,6 +5,9 @@ import {PatchArg} from '../../patch'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {FormNodeContext, FormNodeContextValue} from './FormNodeContext'
 
+/**
+ * @internal
+ */
 export function FormNodeProvider(props: {
   children?: React.ReactNode
   collapsed?: boolean

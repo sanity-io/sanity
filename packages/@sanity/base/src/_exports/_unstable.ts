@@ -67,6 +67,7 @@ export * from '../field/diff/components/ValueError'
 export {PatchEvent} from '../form'
 
 export * from '../form/types'
+export * from '../form/patch/types'
 
 export * from '../presence'
 

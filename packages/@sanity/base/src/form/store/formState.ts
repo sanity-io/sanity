@@ -318,7 +318,7 @@ function getKind(type: SchemaType): 'object' | 'array' | 'boolean' | 'number' | 
 interface RawProps<SchemaType, T> {
   type: SchemaType
   value?: T
-  document: SanityDocument
+  document: Record<string, unknown>
   currentUser: Omit<CurrentUser, 'role'>
   presence: FormFieldPresence[]
   validation: ValidationMarker[]
@@ -687,15 +687,13 @@ function prepareArrayMembers(props: {
   ]
 }
 
-export type SanityDocument = Record<string, unknown>
-
 export interface FieldPresence {
   user: User
   sessionId: string
   lastActiveAt: string
 }
 
-export function prepareFormProps<T extends SanityDocument>(
+export function prepareFormProps<T extends Record<string, unknown>>(
   props: RawProps<ObjectSchemaType, T>
 ): ObjectFieldProps | {hidden: true} {
   return prepareObjectInputProps(props)
