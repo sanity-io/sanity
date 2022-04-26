@@ -1,9 +1,10 @@
-/* eslint-disable */
-import {SanityDocument} from '@sanity/client'
+/* eslint-disable no-nested-ternary */
+
 import {isActionEnabled} from '@sanity/schema/_internal'
-import {Box, Card, Code, Container, Flex, Spinner, Stack, Text} from '@sanity/ui'
+import {Box, Container, Flex, Spinner, Text} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo} from 'react'
 import {tap} from 'rxjs/operators'
+import {ObjectSchemaType, Path} from '@sanity/types'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Delay} from '../../../../components/Delay'
 import {useDocumentStore} from '../../../../../datastores'
@@ -11,6 +12,7 @@ import {
   FormBuilderFilterFieldFn,
   fromMutationPatches,
   createPatchChannel,
+  PatchEvent,
   PatchMsg,
   StudioFormBuilder,
 } from '../../../../../form'
@@ -21,7 +23,6 @@ import {
   DocumentMutationEvent,
   DocumentRebaseEvent,
 } from '../../../../../datastores/document/buffered-doc/types'
-import {ObjectSchemaType} from '@sanity/types'
 
 interface FormViewProps {
   granted: boolean
@@ -82,21 +83,23 @@ export function FormView(props: FormViewProps) {
   }, [documentSchema, isNonExistent, granted, ready, rev, formState.hidden || formState.readOnly])
 
   const handleChange = useCallback(
-    (patches) => {
-      if (!isReadOnly) _handleChange(patches)
+    (event: PatchEvent) => {
+      if (!isReadOnly) _handleChange(event)
     },
     [_handleChange, isReadOnly]
   )
 
-  // useEffect(() => {
-  //   if (!filterFieldFn$) return undefined
+  const handleFocus = useCallback((path: Path) => {
+    console.warn('todo: handleFocus', {path})
+  }, [])
 
-  //   const sub = filterFieldFn$.subscribe((nextFilterField) =>
-  //     setState({filterField: nextFilterField})
-  //   )
+  const handleSelectFieldGroup = useCallback((path: Path, groupName: string) => {
+    console.warn('todo: handleSelectFieldGroup', {path, groupName})
+  }, [])
 
-  //   return () => sub.unsubscribe()
-  // }, [])
+  const handleSetCollapsed = useCallback((path: Path, collapsed: boolean) => {
+    console.warn('todo: handleSetCollapsed', {path, collapsed})
+  }, [])
 
   const handleBlur = useCallback(() => {
     // do nothing
@@ -169,17 +172,11 @@ export function FormView(props: FormViewProps) {
               </Box>
             ) : (
               <StudioFormBuilder
-                // filterField={filterField}
-                // id="root"
-                // onFocus={formState.onFocus}
-                // onSelectFieldGroup={formState.onSelectFieldGroup}
-                // onSetCollapsed={formState.onSetCollapsed}
-                // readOnly={isReadOnly}
                 __internal_patchChannel={patchChannel}
-                // changesOpen={changesOpen}
                 collapsed={false}
                 collapsible={false}
                 compareValue={compareValue as Record<string, unknown>}
+                // filterField={filterField}
                 focusPath={formState.focusPath}
                 focused={formState.focused}
                 groups={formState.groups}
@@ -187,9 +184,9 @@ export function FormView(props: FormViewProps) {
                 members={formState.members}
                 onBlur={handleBlur}
                 onChange={handleChange}
-                onFocus={() => undefined} // @todo
-                onSelectFieldGroup={() => undefined} // @todo
-                onSetCollapsed={() => undefined} // @todo
+                onFocus={handleFocus}
+                onSelectFieldGroup={handleSelectFieldGroup}
+                onSetCollapsed={handleSetCollapsed}
                 path={formState.path}
                 presence={formState.presence}
                 readOnly={false}

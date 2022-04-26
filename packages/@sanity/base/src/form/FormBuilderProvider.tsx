@@ -1,4 +1,4 @@
-import {AssetSource, Schema, SchemaType} from '@sanity/types'
+import {AssetSource, Path, Schema, SchemaType} from '@sanity/types'
 import React, {useMemo} from 'react'
 import {SanityFormBuilderConfig} from '../config'
 import {FIXME, FormBuilderFilterFieldFn, RenderFieldCallback} from './types'
@@ -10,6 +10,7 @@ import {DefaultMarkers} from './inputs/PortableText/_legacyDefaultParts/Markers'
 import {DefaultCustomMarkers} from './inputs/PortableText/_legacyDefaultParts/CustomMarkers'
 import {FileSource, ImageSource} from './studio/DefaultAssetSource'
 import {EMPTY_ARRAY} from './utils/empty'
+import {PatchArg} from './patch'
 
 const defaultFileAssetSources = [FileSource]
 const defaultImageAssetSources = [ImageSource]
@@ -42,6 +43,11 @@ export interface FormBuilderProviderProps extends SanityFormBuilderConfig {
    * @internal
    */
   __internal_patchChannel?: PatchChannel // eslint-disable-line camelcase
+  onBlur?: () => void
+  onChange?: (path: Path, ...patches: PatchArg[]) => void
+  onFocus?: (path: Path) => void
+  onSelectFieldGroup?: (path: Path, groupName: string) => void
+  onSetCollapsed?: (path: Path, collapsed: boolean) => void
   renderField: RenderFieldCallback
 }
 
@@ -56,6 +62,8 @@ const missingPatchChannel: PatchChannel = {
   },
 }
 
+const noop = () => undefined
+
 export function FormBuilderProvider(props: FormBuilderProviderProps) {
   const {
     children,
@@ -65,6 +73,11 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
     schema,
     filterField,
     __internal_patchChannel: patchChannel = missingPatchChannel,
+    onBlur = noop,
+    onChange = noop,
+    onFocus = noop,
+    onSelectFieldGroup = noop,
+    onSetCollapsed = noop,
     renderField,
     resolveInputComponent: resolveInputComponentProp,
     resolvePreviewComponent: resolvePreviewComponentProp,
@@ -73,6 +86,8 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
 
   const formBuilder: FormBuilderContextValue = useMemo(() => {
     return {
+      __internal_patchChannel: patchChannel, // eslint-disable-line camelcase
+
       components: {
         ArrayFunctions: components?.ArrayFunctions || DefaultArrayInputFunctions,
         CustomMarkers: components?.CustomMarkers || DefaultCustomMarkers,
@@ -88,6 +103,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       },
 
       filterField: filterField || (() => true),
+
       image: {
         assetSources: image?.assetSources
           ? ensureArrayOfSources(image.assetSources) || defaultImageAssetSources
@@ -96,9 +112,17 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       },
 
       getValuePath: () => EMPTY_ARRAY,
-      __internal_patchChannel: patchChannel, // eslint-disable-line camelcase
+
+      onBlur,
+      onChange,
+      onFocus,
+      onSelectFieldGroup,
+      onSetCollapsed,
+
       schema,
+
       renderField,
+
       resolveInputComponent: (type) => {
         const resolved = resolveComponentFromType(resolveInputComponentProp, type)
 
@@ -118,6 +142,11 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
     file,
     filterField,
     image,
+    onBlur,
+    onChange,
+    onFocus,
+    onSelectFieldGroup,
+    onSetCollapsed,
     patchChannel,
     renderField,
     resolveInputComponentProp,

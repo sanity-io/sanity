@@ -1,25 +1,10 @@
-import {Schema, SchemaType} from '@sanity/types'
+import {Path, Schema, SchemaType} from '@sanity/types'
 import React, {createElement, forwardRef, useCallback, useMemo} from 'react'
 import {PatchChannel} from '../patch/PatchChannel'
 import {DocumentInput} from '../inputs/DocumentInput'
 import {useSource} from '../../studio'
 import {fallbackInputs} from '../fallbackInputs'
-import {
-  FIXME,
-  // ObjectInputProps,
-  // ObjectInputProps,
-  // RenderArrayItemCallbackArg,
-  RenderFieldCallback,
-  InputProps,
-  // FieldProps,
-  ObjectFieldProps,
-  ItemProps,
-} from '../types'
-// import {ChangeIndicatorProvider} from '../../components/changeIndicators'
-// import {assertType} from '../utils/asserters'
-// import {FormNode} from '../FormNode'
-// import {FormPatch} from '../patch'
-// import {MutationPatch} from '../utils/mutationPatch'
+import {FIXME, RenderFieldCallback, InputProps, ObjectFieldProps, ItemProps} from '../types'
 import {Focusable} from '../types/focusable'
 import {FormNode} from '../components/formNode'
 import {PatchEvent} from '../patch'
@@ -39,9 +24,9 @@ export interface StudioFormBuilderProps
   // autoFocus?: boolean
   onBlur: () => void
   onChange: (event: PatchEvent) => void
-  onFocus: () => void
-  onSelectFieldGroup: () => void
-  onSetCollapsed: () => void
+  onFocus: (path: Path) => void
+  onSelectFieldGroup: (path: Path, groupName: string) => void
+  onSetCollapsed: (path: Path, collapsed: boolean) => void
   schema: Schema
 }
 
@@ -61,8 +46,6 @@ export const StudioFormBuilder = forwardRef(function StudioFormBuilder(
     focusPath,
     focused,
     groups,
-    // hidden,
-    // id,
     level,
     members,
     onBlur,
@@ -140,10 +123,6 @@ export const StudioFormBuilder = forwardRef(function StudioFormBuilder(
   const rootFieldProps: ObjectFieldProps = useMemo(
     () => ({
       kind: 'object',
-      // focusRef: useRef(null),
-      // onSelectFieldGroup,
-      // onSetCollapsed,
-      // renderField,
       collapsed,
       collapsible,
       compareValue,
@@ -152,15 +131,10 @@ export const StudioFormBuilder = forwardRef(function StudioFormBuilder(
       groups,
       hidden: false,
       id: '', // @todo
-      // hidden: Boolean(hidden),
-      // id,
       index: 0, // @todo
       level,
       members,
       name: '', // @todo
-      // onBlur,
-      // onChange,
-      // onFocus,
       path,
       presence,
       readOnly,
@@ -175,13 +149,8 @@ export const StudioFormBuilder = forwardRef(function StudioFormBuilder(
       focusPath,
       focused,
       groups,
-      // hidden,
-      // id,
       level,
       members,
-      // onBlur,
-      // onChange,
-      // onFocus,
       path,
       presence,
       readOnly,
@@ -195,6 +164,11 @@ export const StudioFormBuilder = forwardRef(function StudioFormBuilder(
     <StudioFormBuilderProvider
       __internal_patchChannel={patchChannel}
       renderField={renderField}
+      onBlur={onBlur}
+      onChange={onChange}
+      onFocus={onFocus}
+      onSelectFieldGroup={onSelectFieldGroup}
+      onSetCollapsed={onSetCollapsed}
       schema={schema}
       value={value}
     >

@@ -3,7 +3,7 @@ import {createContext} from 'react'
 import {
   FormBuilderArrayFunctionComponent,
   FormBuilderCustomMarkersComponent,
-  FormBuilderFilterFieldFn,
+  // FormBuilderFilterFieldFn,
   FormBuilderInputComponentMap,
   FormBuilderMarkersComponent,
   FormInputComponentResolver,
@@ -11,8 +11,14 @@ import {
   RenderFieldCallback,
 } from './types'
 import {PatchChannel} from './patch/PatchChannel'
+import {PatchArg} from './patch'
 
 export interface FormBuilderContextValue {
+  /**
+   * @internal
+   */
+  __internal_patchChannel: PatchChannel // eslint-disable-line camelcase
+
   components: {
     ArrayFunctions: FormBuilderArrayFunctionComponent
     CustomMarkers: FormBuilderCustomMarkersComponent
@@ -25,22 +31,28 @@ export interface FormBuilderContextValue {
     directUploads: boolean
   }
 
+  // filterField: FormBuilderFilterFieldFn
+
   image: {
     assetSources: AssetSource[]
     directUploads: boolean
   }
 
+  getDocument: () => unknown
   getValuePath: () => Path
-  /**
-   * @internal
-   */
-  __internal_patchChannel: PatchChannel // eslint-disable-line camelcase
-  filterField: FormBuilderFilterFieldFn
-  schema: Schema
+
+  onBlur: () => void
+  onChange: (path: Path, ...patches: PatchArg[]) => void
+  onFocus: (path: Path) => void
+  onSelectFieldGroup: (path: Path, groupName: string) => void
+  onSetCollapsed: (path: Path, collapsed: boolean) => void
+
   renderField: RenderFieldCallback
+
   resolveInputComponent: FormInputComponentResolver
   resolvePreviewComponent: FormPreviewComponentResolver
-  getDocument: () => unknown
+
+  schema: Schema
 }
 
 export const FormBuilderContext = createContext<FormBuilderContextValue | null>(null)

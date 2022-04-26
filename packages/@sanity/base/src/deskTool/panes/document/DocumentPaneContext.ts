@@ -1,7 +1,7 @@
 import {ValidationMarker, Path, SanityDocument} from '@sanity/types'
 import {createContext} from 'react'
 import {EditStateFor, TimelineController, Timeline} from '../../../datastores'
-import {ObjectFieldProps} from '../../../form'
+import {PatchEvent, ObjectFieldProps} from '../../../form'
 import {DocumentActionComponent} from '../../actions'
 import {DocumentBadgeComponent} from '../../badges'
 import {PaneView, PaneMenuItem, PaneMenuItemGroup} from '../../types'
@@ -25,7 +25,7 @@ export interface DocumentPaneContextValue {
   documentType: string
   focusPath: Path
   handleBlur: (blurredPath?: Path) => void
-  handleChange: (patches: any[]) => void
+  handleChange: (event: PatchEvent) => void
   handleFocus: (pathOrEvent: Path) => void
   handleHistoryClose: () => void
   handleHistoryOpen: () => void
