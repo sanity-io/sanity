@@ -1,4 +1,4 @@
-import {Path, Schema, SchemaType} from '@sanity/types'
+import {ObjectSchemaType, Path, Schema, SchemaType} from '@sanity/types'
 import React, {useCallback} from 'react'
 import {useSource} from '../../studio'
 import {FIXME, FormPreviewComponentResolver, RenderFieldCallback} from '../types'
@@ -11,17 +11,6 @@ import {resolveInputComponent as defaultInputResolver} from './inputResolver/inp
 const previewResolver: FormPreviewComponentResolver = (..._: unknown[]) => {
   // @todo: Implement correct typing here
   return SanityPreview as FIXME
-}
-
-export function _prefixPath<T extends {path: Path}>(patch: T, path: Path): T {
-  return {
-    ...patch,
-    path: [...path, ...patch.path],
-  }
-}
-
-function _prefixAll(event: PatchEvent, path: Path): PatchEvent {
-  return PatchEvent.from(event.patches.map((patch) => _prefixPath(patch, path)))
 }
 
 /**
@@ -40,6 +29,7 @@ export interface StudioFormBuilderProviderProps {
   onSetCollapsed?: (path: Path, collapsed: boolean) => void
   onSetCollapsedFieldSet?: (path: Path, collapsed: boolean) => void
   renderField: RenderFieldCallback
+  type: ObjectSchemaType
   schema: Schema
   value: any | null
 }
@@ -63,24 +53,25 @@ export function StudioFormBuilderProvider(props: StudioFormBuilderProviderProps)
     onSetCollapsedFieldSet,
     renderField,
     schema,
+    type,
     value,
   } = props
 
   const {unstable_formBuilder: formBuilder} = useSource()
 
   const handleChange = useCallback(
-    (path: Path, ...patches: PatchArg[]) => {
-      onChange(_prefixAll(PatchEvent.from(...patches), path))
+    (...patches: PatchArg[]) => {
+      onChange(PatchEvent.from(...patches))
     },
     [onChange]
   )
 
   const resolveInputComponent = useCallback(
-    (type: SchemaType) => {
+    (_type: SchemaType) => {
       return defaultInputResolver(
         formBuilder.components?.inputs,
         formBuilder.resolveInputComponent,
-        type
+        _type
       )
     },
     [formBuilder]
@@ -103,6 +94,7 @@ export function StudioFormBuilderProvider(props: StudioFormBuilderProviderProps)
       resolvePreviewComponent={formBuilder.resolvePreviewComponent || previewResolver}
       schema={schema}
       value={value}
+      type={type}
     >
       {children}
     </FormBuilderProvider>

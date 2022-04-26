@@ -1,13 +1,10 @@
 import React, {useCallback} from 'react'
 import {FormFieldSet} from '../../../components/formField'
+import {FormNode, FormNodeProvider} from '../../components/formNode'
 import {FieldSetMember, RenderFieldCallback} from '../../types'
-import {MemberField} from './MemberField'
+import {EMPTY_ARRAY} from '../../utils/empty'
 
-export function MemberFieldset(props: {
-  member: FieldSetMember
-  // onSetCollapsed: (collapsed: boolean) => void
-  renderField: RenderFieldCallback
-}) {
+export function MemberFieldset(props: {member: FieldSetMember; renderField: RenderFieldCallback}) {
   const {member, renderField} = props
 
   const onSetCollapsed = useCallback((collapsed: boolean) => {
@@ -15,16 +12,26 @@ export function MemberFieldset(props: {
   }, [])
 
   return (
-    <FormFieldSet
-      title={member.fieldSet.title}
-      collapsible={member.fieldSet.collapsible}
-      collapsed={member.fieldSet.collapsed}
-      onSetCollapsed={onSetCollapsed}
-      // onSetCollapsed={member.fieldSet.onSetCollapsed}
+    <FormNodeProvider
+      compareValue={undefined}
+      collapsed={false}
+      collapsible={false}
+      inputId={member.key}
+      level={1}
+      path={EMPTY_ARRAY}
+      presence={EMPTY_ARRAY}
+      type={member.fieldSet as any}
+      validation={EMPTY_ARRAY}
     >
-      {member.fieldSet.fields.map((fieldsetMember) => (
-        <MemberField member={fieldsetMember} renderField={renderField} key={fieldsetMember.key} />
-      ))}
-    </FormFieldSet>
+      <FormFieldSet onSetCollapsed={onSetCollapsed}>
+        {member.fieldSet.fields.map((fieldsetMember) => (
+          <FormNode
+            fieldProps={fieldsetMember.field}
+            renderField={renderField}
+            key={fieldsetMember.key}
+          />
+        ))}
+      </FormFieldSet>
+    </FormNodeProvider>
   )
 }

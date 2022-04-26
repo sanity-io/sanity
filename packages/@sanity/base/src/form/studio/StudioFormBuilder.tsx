@@ -85,22 +85,14 @@ export const StudioFormBuilder = forwardRef(function StudioFormBuilder(
   )
 
   const renderField: RenderFieldCallback = useCallback(
-    (fieldProps, fieldRef) => {
+    (fieldProps) => {
       const inputComponent = resolveInputComponent(fieldProps.type)
 
       if (!inputComponent) {
         return <div>No input resolved for type: {fieldProps.type.name}</div>
       }
 
-      return (
-        <FormNode
-          component={inputComponent}
-          fieldProps={fieldProps}
-          fieldRef={fieldRef}
-          renderField={renderField}
-          renderItem={renderItem}
-        />
-      )
+      return createElement(inputComponent, fieldProps)
     },
     [resolveInputComponent]
   )
@@ -174,6 +166,7 @@ export const StudioFormBuilder = forwardRef(function StudioFormBuilder(
       onSetCollapsedFieldSet={onSetCollapsedFieldSet}
       schema={schema}
       value={value}
+      type={type}
     >
       <FormNode
         component={DocumentInput as FIXME}

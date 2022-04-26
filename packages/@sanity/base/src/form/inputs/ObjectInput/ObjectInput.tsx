@@ -1,31 +1,24 @@
 import React, {memo, useMemo} from 'react'
 import {FormFieldSet} from '../../../components/formField'
-import {EMPTY_ARRAY} from '../../utils/empty'
 import {ObjectInputProps, ObjectMember, RenderFieldCallback} from '../../types'
+import {FormNode, useFormNode} from '../../components/formNode'
 import {UnknownFields} from './UnknownFields'
 import {FieldGroupTabsWrapper} from './ObjectInput.styled'
 import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'
-import {MemberField} from './MemberField'
 import {MemberFieldset} from './MemberFieldset'
 
 export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
+  const {level, path} = useFormNode()
+
   const {
-    // focusRef,
-    // id,
-    collapsed,
-    collapsible,
     groups,
     inputProps,
-    level = 0,
     members,
     onChange,
     onSelectFieldGroup,
     onSetCollapsed,
-    path,
-    presence,
     renderField,
     type,
-    validation,
     value,
   } = props
 
@@ -47,19 +40,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
   }, [onChange, type.fields, value])
 
   return (
-    <FormFieldSet
-      __unstable_changeIndicator={false}
-      __unstable_presence={collapsed ? presence : EMPTY_ARRAY}
-      collapsed={collapsed}
-      collapsible={collapsible}
-      columns={type.options?.columns}
-      description={type.description}
-      level={level}
-      onSetCollapsed={onSetCollapsed}
-      ref={inputProps.ref}
-      title={type.title}
-      validation={collapsed ? validation : EMPTY_ARRAY}
-    >
+    <FormFieldSet onSetCollapsed={onSetCollapsed} ref={inputProps.ref}>
       {groups && groups?.length > 0 ? (
         <FieldGroupTabsWrapper $level={level} data-testid="field-groups">
           <FieldGroupTabs
@@ -83,7 +64,7 @@ function Member(props: {member: ObjectMember; renderField: RenderFieldCallback})
   const {member, renderField} = props
 
   if (member.type === 'field') {
-    return <MemberField member={member} renderField={renderField} />
+    return <FormNode fieldProps={member.field} renderField={renderField} />
   }
 
   return <MemberFieldset member={member} renderField={renderField} />

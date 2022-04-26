@@ -8,10 +8,11 @@ import {
   FormBuilderMarkersComponent,
   FormInputComponentResolver,
   FormPreviewComponentResolver,
+  RenderArrayItemCallback,
   RenderFieldCallback,
 } from './types'
 import {PatchChannel} from './patch/PatchChannel'
-import {PatchArg} from './patch'
+// import {PatchArg} from './patch'
 
 export interface FormBuilderContextValue {
   /**
@@ -42,13 +43,14 @@ export interface FormBuilderContextValue {
   getValuePath: () => Path
 
   onBlur: () => void
-  onChange: (path: Path, ...patches: PatchArg[]) => void
+  // onChange: (path: Path, ...patches: PatchArg[]) => void
   onFocus: (path: Path) => void
   onSelectFieldGroup: (path: Path, groupName: string) => void
   onSetCollapsed: (path: Path, collapsed: boolean) => void
   onSetCollapsedFieldSet: (path: Path, collapsed: boolean) => void
 
   renderField: RenderFieldCallback
+  renderItem: RenderArrayItemCallback
 
   resolveInputComponent: FormInputComponentResolver
   resolvePreviewComponent: FormPreviewComponentResolver

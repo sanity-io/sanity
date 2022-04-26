@@ -185,7 +185,7 @@ export function TestInput(props: TestInputProps) {
       value={value}
       __internal_patchChannel={patchChannel}
       schema={props.schema}
-      renderField={() => <>TODO</>}
+      renderField={() => <>TEST</>}
       resolveInputComponent={resolveInputComponent}
       resolvePreviewComponent={resolvePreviewComponent}
     >
