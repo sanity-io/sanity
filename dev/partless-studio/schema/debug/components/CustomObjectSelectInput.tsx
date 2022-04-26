@@ -1,4 +1,3 @@
-import {FormField} from '@sanity/base/_unstable'
 import {ObjectInputProps, set, unset, useFormNode} from '@sanity/base/form'
 import {isValidationErrorMarker, ObjectSchemaType} from '@sanity/types'
 import {Select} from '@sanity/ui'
@@ -37,21 +36,19 @@ export const CustomObjectSelectInput = React.forwardRef(function CustomObjectSel
   )
 
   return (
-    <FormField>
-      <Select
-        onChange={handleChange}
-        id={inputId}
-        ref={forwardedRef}
-        readOnly={readOnly}
-        customValidity={errors?.[0]?.item.message}
-        value={value?.value || ''}
-      >
-        {[{title: '', value: undefined}, ...items].map((item, i) => (
-          <option key={i} value={item.value}>
-            {item.title}
-          </option>
-        ))}
-      </Select>
-    </FormField>
+    <Select
+      onChange={handleChange}
+      id={inputId}
+      ref={forwardedRef}
+      readOnly={readOnly}
+      customValidity={errors?.[0]?.item.message}
+      value={value?.value || ''}
+    >
+      {[{title: '', value: undefined}, ...items].map((item, i) => (
+        <option key={i} value={item.value}>
+          {item.title}
+        </option>
+      ))}
+    </Select>
   )
 })

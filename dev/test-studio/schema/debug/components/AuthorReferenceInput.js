@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import imageUrlBuilder from '@sanity/image-url'
 import sanityClient from 'part:@sanity/base/client'
 import Spinner from 'part:@sanity/components/loading/spinner'
-import FormField from 'part:@sanity/components/formfields/default'
 import {PatchEvent, set, unset, setIfMissing} from '@sanity/form-builder'
 import styles from './AuthorReferenceInput.module.css'
 
@@ -104,30 +103,28 @@ export default class AuthorReferenceInput extends React.Component {
     const current = value && value._ref
 
     return (
-      <FormField label={type.title} level={level} description={type.description} labelFor="foo">
-        <div className={styles.authorGroup}>
-          {loading ? (
-            <Spinner inline message="Loading authors..." />
-          ) : (
-            authors.map((author, i) => (
-              <button
-                ref={i === 0 ? this.setFirstInputRef : undefined}
-                key={author._id}
-                type="button"
-                className={current === author._id ? styles.activeButton : styles.button}
-                onClick={readOnly ? noop : () => this.handleChange(author)}
-              >
-                <img
-                  className={styles.authorImage}
-                  title={author.name}
-                  alt={`${author.name || 'Author'}.`}
-                  src={imageBuilder.image(author.image).width(150).height(150).fit('crop').url()}
-                />
-              </button>
-            ))
-          )}
-        </div>
-      </FormField>
+      <div className={styles.authorGroup}>
+        {loading ? (
+          <Spinner inline message="Loading authors..." />
+        ) : (
+          authors.map((author, i) => (
+            <button
+              ref={i === 0 ? this.setFirstInputRef : undefined}
+              key={author._id}
+              type="button"
+              className={current === author._id ? styles.activeButton : styles.button}
+              onClick={readOnly ? noop : () => this.handleChange(author)}
+            >
+              <img
+                className={styles.authorImage}
+                title={author.name}
+                alt={`${author.name || 'Author'}.`}
+                src={imageBuilder.image(author.image).width(150).height(150).fit('crop').url()}
+              />
+            </button>
+          ))
+        )}
+      </div>
     )
   }
 }

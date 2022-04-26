@@ -1,7 +1,6 @@
 import React, {useMemo} from 'react'
 import {isValidationErrorMarker, ObjectSchemaType} from '@sanity/types'
 import {FormInputProps, PatchEvent, set, unset} from '@sanity/form-builder'
-import {FormField} from '@sanity/base/components'
 import {Select} from '@sanity/ui'
 
 type Value = {title: string; value: string}
@@ -37,28 +36,19 @@ export const CustomObjectSelectInput = React.forwardRef(function CustomObjectSel
   )
 
   return (
-    <FormField
-      inputId={inputId}
-      level={level}
-      title={type.title}
-      description={type.description}
-      validation={validation}
-      __unstable_presence={presence}
+    <Select
+      onChange={handleChange}
+      id={inputId}
+      ref={forwardedRef}
+      readOnly={readOnly}
+      customValidity={errors?.[0]?.item.message}
+      value={value?.value || ''}
     >
-      <Select
-        onChange={handleChange}
-        id={inputId}
-        ref={forwardedRef}
-        readOnly={readOnly}
-        customValidity={errors?.[0]?.item.message}
-        value={value?.value || ''}
-      >
-        {_items.map((item, i) => (
-          <option key={i} value={item.value || ''}>
-            {item.title}
-          </option>
-        ))}
-      </Select>
-    </FormField>
+      {_items.map((item, i) => (
+        <option key={i} value={item.value || ''}>
+          {item.title}
+        </option>
+      ))}
+    </Select>
   )
 })

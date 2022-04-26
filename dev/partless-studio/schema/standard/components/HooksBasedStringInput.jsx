@@ -1,10 +1,9 @@
-import {FormField} from '@sanity/base/_unstable'
 import {set} from '@sanity/base/form'
 import React from 'react'
 import PropTypes from 'prop-types'
 
 export const HooksBasedStringInput = React.forwardRef((props, ref) => {
-  const {value, type, level, onChange} = props
+  const {value, type, onChange} = props
   const [isEditing, setIsEditing] = React.useState(false)
   if (typeof React.useState !== 'function') {
     return (
@@ -16,7 +15,7 @@ export const HooksBasedStringInput = React.forwardRef((props, ref) => {
   }
 
   return (
-    <FormField label={type.title} level={level} description={type.description}>
+    <>
       {isEditing ? (
         <input
           type="text"
@@ -31,7 +30,7 @@ export const HooksBasedStringInput = React.forwardRef((props, ref) => {
       <button type="button" onClick={() => setIsEditing(!isEditing)}>
         {isEditing ? 'Stop editing' : 'Start editing'}
       </button>
-    </FormField>
+    </>
   )
 })
 
@@ -39,6 +38,5 @@ HooksBasedStringInput.displayName = 'HooksBasedStringInput'
 HooksBasedStringInput.propTypes = {
   value: PropTypes.string,
   type: PropTypes.object,
-  level: PropTypes.number,
   onChange: PropTypes.func,
 }

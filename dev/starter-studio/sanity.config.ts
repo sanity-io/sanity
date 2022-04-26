@@ -1,4 +1,5 @@
 import {createConfig, deskTool} from 'sanity'
+import {postDocumentType} from './schema/post'
 
 export default createConfig({
   dataset: 'test',
@@ -6,20 +7,7 @@ export default createConfig({
   name: 'default',
   projectId: 'ppsg7ml5',
   schema: {
-    types: [
-      {
-        type: 'document',
-        name: 'post',
-        title: 'Post',
-        fields: [
-          {
-            type: 'string',
-            name: 'title',
-            title: 'Title',
-          },
-        ],
-      },
-    ],
+    types: [postDocumentType],
   },
   title: 'Starter Studio',
 })

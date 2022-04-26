@@ -1,7 +1,6 @@
 import React from 'react'
-import {FormField} from '@sanity/base/components'
 import {PatchEvent, set, unset} from '@sanity/base/form'
-import {SanityPreview as Preview} from '@sanity/base/preview'
+import {SanityPreview as Preview} from '@sanity/base/_unstable'
 import getVideoId from 'get-video-id'
 import humanizeList from 'humanize-list'
 import {ReferenceSchemaType} from '@sanity/types'
@@ -9,7 +8,6 @@ import {SUPPORTED_SERVICES} from '../VideoEmbedPreview'
 import styles from './VideoEmbedInput.module.css'
 
 export interface VideoEmbedInputProps {
-  level: number
   type: ReferenceSchemaType
   onChange: (event: PatchEvent) => void
   value: {
@@ -83,13 +81,13 @@ export default class VideoEmbedInput extends React.Component<VideoEmbedInputProp
 
   render() {
     const {errorMessage, result} = this.state
-    const {type, value, level} = this.props
+    const {type, value} = this.props
     const placeholder = `Paste URL or embed code from ${humanizeList(
       SUPPORTED_SERVICES.map((s) => s.title),
       {conjunction: 'or'}
     )}…`
     return (
-      <FormField title={type.title} level={level} description={type.description}>
+      <>
         <textarea
           className={styles.pasteBox}
           onFocus={select}
@@ -99,7 +97,7 @@ export default class VideoEmbedInput extends React.Component<VideoEmbedInputProp
         {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
         {result && <div>Found a video 🙌</div>}
         {value && value.id && !errorMessage && <Preview value={value as any} type={type} />}
-      </FormField>
+      </>
     )
   }
 }

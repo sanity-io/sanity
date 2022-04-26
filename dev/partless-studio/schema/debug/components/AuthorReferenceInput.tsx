@@ -1,5 +1,4 @@
 import {useSource} from '@sanity/base'
-import {FormField} from '@sanity/base/_unstable'
 import {set, unset, setIfMissing, ObjectInputProps} from '@sanity/base/form'
 import imageUrlBuilder from '@sanity/image-url'
 import {Reference, ReferenceSchemaType} from '@sanity/types'
@@ -81,32 +80,30 @@ export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
   }))
 
   return (
-    <FormField>
-      <div className={styles.authorGroup}>
-        {loading ? (
-          <Spinner
-          //  message="Loading authors..."
-          />
-        ) : (
-          authors.map((author, i) => (
-            <Button
-              ref={i === 0 ? inputRef : undefined}
-              key={author._id}
-              type="button"
-              // className={current === author._id ? styles.activeButton : styles.button}
-              onClick={readOnly ? noop : () => handleChange(author)}
-              selected={current === author._id}
-            >
-              <img
-                className={styles.authorImage}
-                title={author.name}
-                alt={`${author.name || 'Author'}.`}
-                src={imageBuilder.image(author.image).width(150).height(150).fit('crop').url()}
-              />
-            </Button>
-          ))
-        )}
-      </div>
-    </FormField>
+    <div className={styles.authorGroup}>
+      {loading ? (
+        <Spinner
+        //  message="Loading authors..."
+        />
+      ) : (
+        authors.map((author, i) => (
+          <Button
+            ref={i === 0 ? inputRef : undefined}
+            key={author._id}
+            type="button"
+            // className={current === author._id ? styles.activeButton : styles.button}
+            onClick={readOnly ? noop : () => handleChange(author)}
+            selected={current === author._id}
+          >
+            <img
+              className={styles.authorImage}
+              title={author.name}
+              alt={`${author.name || 'Author'}.`}
+              src={imageBuilder.image(author.image).width(150).height(150).fit('crop').url()}
+            />
+          </Button>
+        ))
+      )}
+    </div>
   )
 })
