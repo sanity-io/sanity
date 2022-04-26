@@ -4,12 +4,8 @@ import {Box, Grid, Button, Dialog} from '@sanity/ui'
 import {TrashIcon, EditIcon} from '@sanity/icons'
 // @ts-expect-error TODO: remove the types eventually
 import config from 'config:@sanity/google-maps-input'
-import {
-  FormFieldSet,
-  ChangeIndicatorCompareValueProvider,
-  ChangeIndicator,
-} from '@sanity/base/_unstable'
-import {ObjectInputProps, PatchEvent, set, setIfMissing, unset} from '@sanity/base/form'
+import {ChangeIndicatorCompareValueProvider, ChangeIndicator} from '@sanity/base/_unstable'
+import {FormFieldSet, ObjectInputProps, set, setIfMissing, unset} from '@sanity/base/form'
 import {GoogleMapsLoadProxy} from '../loader/GoogleMapsLoadProxy'
 import {Geopoint, GeopointSchemaType} from '../types'
 import {GeopointSelect} from './GeopointSelect'
@@ -104,23 +100,22 @@ class GeopointInput extends React.PureComponent<GeopointInputProps, InputState> 
   handleChange = (latLng: google.maps.LatLng) => {
     const {type, onChange} = this.props
     onChange(
-      PatchEvent.from([
-        setIfMissing({
-          _type: type.name,
-        }),
-        set(latLng.lat(), ['lat']),
-        set(latLng.lng(), ['lng']),
-      ])
+      setIfMissing({
+        _type: type.name,
+      }),
+      set(latLng.lat(), ['lat']),
+      set(latLng.lng(), ['lng'])
     )
   }
 
   handleClear = () => {
     const {onChange} = this.props
-    onChange(PatchEvent.from(unset()))
+    onChange(unset())
   }
 
   render() {
-    const {inputProps, value, compareValue, type, validation, level, presence} = this.props
+    const {compareValue, level} = this.props.__internal
+    const {inputProps, value, type} = this.props
     const {readOnly} = inputProps
     const {modalOpen} = this.state
 
@@ -149,13 +144,9 @@ class GeopointInput extends React.PureComponent<GeopointInputProps, InputState> 
     return (
       <FormFieldSet
         level={level}
-        title={type.title}
-        description={type.description}
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
-        __unstable_presence={presence}
         __unstable_changeIndicator={false}
-        validation={validation}
         onSetCollapsed={() => console.warn('todo')}
       >
         <div>
