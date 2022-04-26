@@ -16,7 +16,7 @@ interface InspectDialogProps {
 
 export function InspectDialog(props: InspectDialogProps) {
   const {value} = props
-  const {handleInspectClose, paneKey} = useDocumentPane()
+  const {onInspectClose, paneKey} = useDocumentPane()
   const dialogIdPrefix = `${paneKey}_inspect_`
 
   /* this creates a view mode (the default that it opens with is the parsed tab) that is saved based on the paneKey
@@ -54,7 +54,7 @@ export function InspectDialog(props: InspectDialogProps) {
           <em>No value</em>
         )
       }
-      onClose={handleInspectClose}
+      onClose={onInspectClose}
       width={3}
     >
       <Flex direction="column" height="fill">

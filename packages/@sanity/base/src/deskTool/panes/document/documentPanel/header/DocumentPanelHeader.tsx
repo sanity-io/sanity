@@ -23,9 +23,9 @@ export const DocumentPanelHeader = memo(
   forwardRef(({rootElement}: DocumentPanelHeaderProps, ref: React.ForwardedRef<HTMLDivElement>) => {
     const {
       // documentSchema,
-      handleMenuAction,
-      handlePaneClose,
-      handlePaneSplit,
+      onMenuAction,
+      onPaneClose,
+      onPaneSplit,
       historyController,
       validation,
       menuItems,
@@ -49,7 +49,7 @@ export const DocumentPanelHeader = memo(
 
     // show the split pane button if they're enabled and there is more than one
     // view available to use to create a split view
-    const showSplitPaneButton = features.splitViews && handlePaneSplit && views.length > 1
+    const showSplitPaneButton = features.splitViews && onPaneSplit && views.length > 1
 
     // show the split pane button close button if the split button is showing
     // and there is more than one split pane open (aka has-siblings)
@@ -94,7 +94,7 @@ export const DocumentPanelHeader = memo(
               itemGroups={menuItemGroups}
               items={contextMenuItems}
               key="context-menu"
-              onAction={handleMenuAction}
+              onAction={onMenuAction}
             />
 
             {showSplitPaneButton && (
@@ -102,7 +102,7 @@ export const DocumentPanelHeader = memo(
                 icon={SplitVerticalIcon}
                 key="split-pane-button"
                 mode="bleed"
-                onClick={handlePaneSplit}
+                onClick={onPaneSplit}
                 title="Split pane right"
               />
             )}
@@ -112,7 +112,7 @@ export const DocumentPanelHeader = memo(
                 icon={CloseIcon}
                 key="close-view-button"
                 mode="bleed"
-                onClick={handlePaneClose}
+                onClick={onPaneClose}
                 title="Close split pane"
               />
             )}

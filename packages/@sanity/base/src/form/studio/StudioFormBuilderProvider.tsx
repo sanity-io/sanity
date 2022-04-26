@@ -38,6 +38,7 @@ export interface StudioFormBuilderProviderProps {
   onFocus?: (path: Path) => void
   onSelectFieldGroup?: (path: Path, groupName: string) => void
   onSetCollapsed?: (path: Path, collapsed: boolean) => void
+  onSetCollapsedFieldSet?: (path: Path, collapsed: boolean) => void
   renderField: RenderFieldCallback
   schema: Schema
   value: any | null
@@ -59,6 +60,7 @@ export function StudioFormBuilderProvider(props: StudioFormBuilderProviderProps)
     onFocus,
     onSelectFieldGroup,
     onSetCollapsed,
+    onSetCollapsedFieldSet,
     renderField,
     schema,
     value,
@@ -94,6 +96,7 @@ export function StudioFormBuilderProvider(props: StudioFormBuilderProviderProps)
       onChange={handleChange}
       onFocus={onFocus}
       onSelectFieldGroup={onSelectFieldGroup}
+      onSetCollapsedFieldSet={onSetCollapsedFieldSet}
       onSetCollapsed={onSetCollapsed}
       renderField={renderField}
       resolveInputComponent={resolveInputComponent}

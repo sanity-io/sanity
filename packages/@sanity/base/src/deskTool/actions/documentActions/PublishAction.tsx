@@ -44,7 +44,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const {publish}: any = useDocumentOperation(id, type)
   const validationStatus = useValidationStatus(id, type)
   const syncState = useSyncState(id, type)
-  const {changesOpen, handleHistoryOpen} = useDocumentPane()
+  const {changesOpen, onHistoryOpen} = useDocumentPane()
   const hasValidationErrors = validationStatus.validation.some(isValidationErrorMarker)
   // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
   const [publishScheduled, setPublishScheduled] = useState<boolean>(false)
@@ -86,7 +86,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
     if (didPublish) {
       if (changesOpen) {
         // Re-open the panel
-        handleHistoryOpen()
+        onHistoryOpen()
       }
     }
     const nextState = didPublish ? 'published' : null
@@ -95,7 +95,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
       setPublishState(nextState)
     }, delay)
     return () => clearTimeout(timer)
-  }, [changesOpen, publishState, hasDraft, handleHistoryOpen])
+  }, [changesOpen, publishState, hasDraft, onHistoryOpen])
 
   const handle = useCallback(() => {
     if (syncState.isSyncing || validationStatus.isValidating) {

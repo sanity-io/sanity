@@ -9,7 +9,7 @@ import {useDocumentPane} from '../../useDocumentPane'
 import {Delay} from '../../../../components/Delay'
 import {useDocumentStore} from '../../../../../datastores'
 import {
-  FormBuilderFilterFieldFn,
+  // FormBuilderFilterFieldFn,
   fromMutationPatches,
   createPatchChannel,
   PatchEvent,
@@ -30,38 +30,43 @@ interface FormViewProps {
   margins: [number, number, number, number]
 }
 
-interface FormViewState {
-  filterField: FormBuilderFilterFieldFn
-}
+// interface FormViewState {
+//   filterField: FormBuilderFilterFieldFn
+// }
 
-const INITIAL_STATE: FormViewState = {
-  filterField: () => true,
-}
+// const INITIAL_STATE: FormViewState = {
+//   filterField: () => true,
+// }
 
 const preventDefault = (ev: React.FormEvent) => ev.preventDefault()
 
 export function FormView(props: FormViewProps) {
-  const {hidden, margins, granted} = props
+  const {hidden: hiddenProp, margins, granted} = props
   const {schema} = useSource()
   const {
+    // changesOpen,
+    // focusPath,
+    // validation,
     compareValue,
     displayed: value,
     documentId,
     documentSchema,
     documentType,
-    // focusPath,
-    handleChange: _handleChange,
-    historyController,
-    // validation,
-    ready,
-    changesOpen,
     formState,
+    historyController,
+    onBlur,
+    onChange,
+    onFocus,
+    onSetActiveFieldGroup,
+    onSetExpandedFieldSet,
+    onSetExpandedPath,
+    ready,
   } = useDocumentPane()
   const documentStore = useDocumentStore()
   const {revTime: rev} = historyController
   // const [{filterField}, setState] = useState<FormViewState>(INITIAL_STATE)
 
-  const hasTypeMismatch = value !== null && value._type !== documentSchema.name
+  // const hasTypeMismatch = value !== null && value._type !== documentSchema.name
   const isNonExistent = !value || !value._id
 
   // The `patchChannel` is an INTERNAL publish/subscribe channel that we use to notify form-builder
@@ -70,40 +75,52 @@ export function FormView(props: FormViewProps) {
   // - Used by `withDocument` to reset value.
   const patchChannel = useMemo(() => createPatchChannel(), [])
 
+  const hidden = formState.hidden || hiddenProp
+  const readOnly = formState.hidden ? false : formState.readOnly
+
   const isReadOnly = useMemo(() => {
     return (
-      formState.hidden ||
-      formState.readOnly ||
+      hidden ||
+      readOnly ||
       !ready ||
       rev !== null ||
       !granted ||
       !isActionEnabled(documentSchema, 'update') ||
       (isNonExistent && !isActionEnabled(documentSchema, 'create'))
     )
-  }, [documentSchema, isNonExistent, granted, ready, rev, formState.hidden || formState.readOnly])
+  }, [documentSchema, isNonExistent, granted, ready, rev, hidden, readOnly])
 
   const handleChange = useCallback(
     (event: PatchEvent) => {
-      if (!isReadOnly) _handleChange(event)
+      if (!isReadOnly) onChange(event)
     },
-    [_handleChange, isReadOnly]
+    [onChange, isReadOnly]
   )
 
-  const handleFocus = useCallback((path: Path) => {
-    console.warn('todo: handleFocus', {path})
-  }, [])
+  // const handleFocus = useCallback((path: Path) => {
+  //   console.warn('todo: handleFocus', {path})
+  // }, [])
 
-  const handleSelectFieldGroup = useCallback((path: Path, groupName: string) => {
-    console.warn('todo: handleSelectFieldGroup', {path, groupName})
-  }, [])
+  // const handleSelectFieldGroup = useCallback(
+  //   (path: Path, groupName: string) => {
+  //     onSetActiveFieldGroup(path, groupName)
+  //   },
+  //   [onSetActiveFieldGroup]
+  // )
 
-  const handleSetCollapsed = useCallback((path: Path, collapsed: boolean) => {
-    console.warn('todo: handleSetCollapsed', {path, collapsed})
-  }, [])
+  const handleSetCollapsed = useCallback(
+    (path: Path, collapsed: boolean) => {
+      onSetExpandedPath(path, !collapsed)
+    },
+    [onSetExpandedPath]
+  )
 
-  const handleBlur = useCallback(() => {
-    // do nothing
-  }, [])
+  const handleSetCollapsedFieldSet = useCallback(
+    (path: Path, collapsed: boolean) => {
+      onSetExpandedFieldSet(path, !collapsed)
+    },
+    [onSetExpandedFieldSet]
+  )
 
   useEffect(() => {
     const sub = documentStore.pair
@@ -182,11 +199,12 @@ export function FormView(props: FormViewProps) {
                 groups={formState.groups}
                 level={formState.level}
                 members={formState.members}
-                onBlur={handleBlur}
+                onBlur={onBlur}
                 onChange={handleChange}
-                onFocus={handleFocus}
-                onSelectFieldGroup={handleSelectFieldGroup}
+                onFocus={onFocus}
+                onSelectFieldGroup={onSetActiveFieldGroup}
                 onSetCollapsed={handleSetCollapsed}
+                onSetCollapsedFieldSet={handleSetCollapsedFieldSet}
                 path={formState.path}
                 presence={formState.presence}
                 readOnly={false}

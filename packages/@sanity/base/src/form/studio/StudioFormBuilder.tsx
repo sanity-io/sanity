@@ -27,6 +27,7 @@ export interface StudioFormBuilderProps
   onFocus: (path: Path) => void
   onSelectFieldGroup: (path: Path, groupName: string) => void
   onSetCollapsed: (path: Path, collapsed: boolean) => void
+  onSetCollapsedFieldSet: (path: Path, collapsed: boolean) => void
   schema: Schema
 }
 
@@ -53,6 +54,7 @@ export const StudioFormBuilder = forwardRef(function StudioFormBuilder(
     onFocus,
     onSelectFieldGroup,
     onSetCollapsed,
+    onSetCollapsedFieldSet,
     path,
     presence,
     readOnly,
@@ -169,6 +171,7 @@ export const StudioFormBuilder = forwardRef(function StudioFormBuilder(
       onFocus={onFocus}
       onSelectFieldGroup={onSelectFieldGroup}
       onSetCollapsed={onSetCollapsed}
+      onSetCollapsedFieldSet={onSetCollapsedFieldSet}
       schema={schema}
       value={value}
     >

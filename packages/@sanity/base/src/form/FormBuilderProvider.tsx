@@ -48,6 +48,7 @@ export interface FormBuilderProviderProps extends SanityFormBuilderConfig {
   onFocus?: (path: Path) => void
   onSelectFieldGroup?: (path: Path, groupName: string) => void
   onSetCollapsed?: (path: Path, collapsed: boolean) => void
+  onSetCollapsedFieldSet?: (path: Path, collapsed: boolean) => void
   renderField: RenderFieldCallback
 }
 
@@ -78,6 +79,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
     onFocus = noop,
     onSelectFieldGroup = noop,
     onSetCollapsed = noop,
+    onSetCollapsedFieldSet = noop,
     renderField,
     resolveInputComponent: resolveInputComponentProp,
     resolvePreviewComponent: resolvePreviewComponentProp,
@@ -118,6 +120,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       onFocus,
       onSelectFieldGroup,
       onSetCollapsed,
+      onSetCollapsedFieldSet,
 
       schema,
 

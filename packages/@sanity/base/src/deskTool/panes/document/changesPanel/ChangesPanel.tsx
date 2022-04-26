@@ -13,11 +13,11 @@ import {
 import {PaneContent, PaneHeader, usePane} from '../../../components'
 import {TimelineMenu} from '../timeline'
 import {useDocumentPane} from '../useDocumentPane'
-import {LoadingContent} from './content/LoadingContent'
-import {collectLatestAuthorAnnotations} from './helpers'
 import {ScrollContainer} from '../../../../components/scroll'
 import {ChangeFieldWrapper} from '../../../../components/changeIndicators'
 import {UserAvatar} from '../../../../components/UserAvatar'
+import {collectLatestAuthorAnnotations} from './helpers'
+import {LoadingContent} from './content/LoadingContent'
 
 const Scroller = styled(ScrollContainer)`
   height: 100%;
@@ -27,8 +27,7 @@ const Scroller = styled(ScrollContainer)`
 `
 
 export function ChangesPanel(): React.ReactElement | null {
-  const {documentId, documentSchema, handleHistoryClose, historyController, value} =
-    useDocumentPane()
+  const {documentId, documentSchema, onHistoryClose, historyController, value} = useDocumentPane()
   const {collapsed} = usePane()
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const historyState = historyController.selectionState
@@ -74,7 +73,7 @@ export function ChangesPanel(): React.ReactElement | null {
           <Button
             icon={CloseIcon}
             mode="bleed"
-            onClick={handleHistoryClose}
+            onClick={onHistoryClose}
             padding={3}
             title="Hide changes panel"
           />

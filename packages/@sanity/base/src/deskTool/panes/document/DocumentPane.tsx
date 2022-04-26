@@ -199,9 +199,9 @@ function InnerDocumentPane() {
     changesOpen,
     documentSchema,
     documentType,
-    handleFocus,
-    handleHistoryOpen,
-    handleKeyUp,
+    onFocus,
+    onHistoryOpen,
+    onKeyUp,
     inspectOpen,
     paneKey,
     value,
@@ -296,8 +296,8 @@ function InnerDocumentPane() {
             <StyledChangeConnectorRoot
               data-testid="change-connector-root"
               isReviewChangesOpen={changesOpen}
-              onOpenReviewChanges={handleHistoryOpen}
-              onSetFocus={handleFocus}
+              onOpenReviewChanges={onHistoryOpen}
+              onSetFocus={onFocus}
             >
               {documentPanel}
               {changesPanel}
@@ -315,8 +315,8 @@ function InnerDocumentPane() {
     documentSchema,
     documentType,
     footer,
-    handleFocus,
-    handleHistoryOpen,
+    onFocus,
+    onHistoryOpen,
     layoutCollapsed,
     paneKey,
     value,
@@ -339,7 +339,7 @@ function InnerDocumentPane() {
       flex={2.5}
       id={paneKey}
       minWidth={minWidth}
-      onKeyUp={handleKeyUp}
+      onKeyUp={onKeyUp}
       rootRef={setRootElement}
     >
       {children}

@@ -240,15 +240,18 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const documentPresence = useDocumentPresence(documentId)
 
-  const {formState} = useFormState(documentSchema, {
-    value,
-    // onChange: handleChange,
-    // onFocus: handleFocus,
-    // onBlur: handleBlur,
-    validation,
-    focusPath,
-    presence: documentPresence || [],
-  })
+  const {formState, onSetActiveFieldGroup, onSetExpandedFieldSet, onSetExpandedPath} = useFormState(
+    documentSchema,
+    {
+      value,
+      // onChange: handleChange,
+      // onFocus: handleFocus,
+      // onBlur: handleBlur,
+      validation,
+      focusPath,
+      presence: documentPresence || [],
+    }
+  )
 
   const documentPane: DocumentPaneContextValue = {
     actions,
@@ -264,22 +267,25 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     documentType,
     editState,
     focusPath,
-    handleBlur,
-    handleChange,
-    handleFocus,
-    handleHistoryClose,
-    handleHistoryOpen,
-    handleInspectClose,
-    handleKeyUp,
-    handleMenuAction,
-    handlePaneClose,
-    handlePaneSplit,
+    formState,
     historyController,
     index,
     inspectOpen,
-    validation,
-    menuItems,
     menuItemGroups: menuItemGroups || [],
+    menuItems,
+    onBlur: handleBlur,
+    onChange: handleChange,
+    onFocus: handleFocus,
+    onHistoryClose: handleHistoryClose,
+    onHistoryOpen: handleHistoryOpen,
+    onInspectClose: handleInspectClose,
+    onKeyUp: handleKeyUp,
+    onMenuAction: handleMenuAction,
+    onPaneClose: handlePaneClose,
+    onPaneSplit: handlePaneSplit,
+    onSetActiveFieldGroup,
+    onSetExpandedFieldSet,
+    onSetExpandedPath,
     paneKey,
     previewUrl,
     ready,
@@ -288,9 +294,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     timeline,
     timelineMode,
     title,
+    validation,
     value,
     views,
-    formState,
   }
 
   useEffect(() => {

@@ -46,6 +46,7 @@ export interface FormBuilderContextValue {
   onFocus: (path: Path) => void
   onSelectFieldGroup: (path: Path, groupName: string) => void
   onSetCollapsed: (path: Path, collapsed: boolean) => void
+  onSetCollapsedFieldSet: (path: Path, collapsed: boolean) => void
 
   renderField: RenderFieldCallback
 

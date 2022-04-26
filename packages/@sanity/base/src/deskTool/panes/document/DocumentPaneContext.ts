@@ -11,35 +11,38 @@ import {TimelineMode} from './types'
 type DocumentSchema = any
 
 export interface DocumentPaneContextValue {
-  activeViewId: string | null
   actions: DocumentActionComponent[] | null
+  activeViewId: string | null
   badges: DocumentBadgeComponent[] | null
   changesOpen: boolean
   compareValue: Partial<SanityDocument> | null
   connectionState: 'connecting' | 'reconnecting' | 'connected'
   displayed: Partial<SanityDocument> | null
-  editState: EditStateFor | null
   documentId: string
   documentIdRaw: string
   documentSchema: DocumentSchema | null
   documentType: string
+  editState: EditStateFor | null
   focusPath: Path
-  handleBlur: (blurredPath?: Path) => void
-  handleChange: (event: PatchEvent) => void
-  handleFocus: (pathOrEvent: Path) => void
-  handleHistoryClose: () => void
-  handleHistoryOpen: () => void
-  handleInspectClose: () => void
-  handleKeyUp: (event: React.KeyboardEvent<HTMLDivElement>) => void
-  handleMenuAction: (item: PaneMenuItem) => void
-  handlePaneClose: () => void
-  handlePaneSplit: () => void
+  formState: ObjectFieldProps | {hidden: true}
   historyController: TimelineController
   index: number
   inspectOpen: boolean
-  validation: ValidationMarker[]
-  menuItems: PaneMenuItem[]
   menuItemGroups: PaneMenuItemGroup[]
+  menuItems: PaneMenuItem[]
+  onBlur: (blurredPath?: Path) => void
+  onChange: (event: PatchEvent) => void
+  onFocus: (pathOrEvent: Path) => void
+  onHistoryClose: () => void
+  onHistoryOpen: () => void
+  onInspectClose: () => void
+  onKeyUp: (event: React.KeyboardEvent<HTMLDivElement>) => void
+  onMenuAction: (item: PaneMenuItem) => void
+  onPaneClose: () => void
+  onPaneSplit: () => void
+  onSetActiveFieldGroup: (path: Path, groupName: string) => void
+  onSetExpandedPath: (path: Path, expanded: boolean) => void
+  onSetExpandedFieldSet: (path: Path, expanded: boolean) => void
   paneKey: string
   previewUrl?: string | null
   ready: boolean
@@ -49,9 +52,9 @@ export interface DocumentPaneContextValue {
   timeline: Timeline
   timelineMode: TimelineMode
   title: string | null
+  validation: ValidationMarker[]
   value: Partial<SanityDocument>
   views: PaneView[]
-  formState: ObjectFieldProps | {hidden: true}
 }
 
 export const DocumentPaneContext = createContext<DocumentPaneContextValue | null>(null)

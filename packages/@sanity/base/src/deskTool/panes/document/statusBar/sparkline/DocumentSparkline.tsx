@@ -15,8 +15,8 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
     documentId,
     documentType,
     editState,
-    handleHistoryClose,
-    handleHistoryOpen,
+    onHistoryClose,
+    onHistoryOpen,
     historyController,
     value,
   } = useDocumentPane()
@@ -66,7 +66,7 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
       <ReviewChangesButton
         lastUpdated={lastUpdated}
         status={status || (changed ? 'changes' : undefined)}
-        onClick={changesOpen ? handleHistoryClose : handleHistoryOpen}
+        onClick={changesOpen ? onHistoryClose : onHistoryOpen}
         disabled={showingRevision}
         selected={changesOpen}
         collapsed={collapsed}
@@ -75,8 +75,8 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
     [
       changed,
       changesOpen,
-      handleHistoryClose,
-      handleHistoryOpen,
+      onHistoryClose,
+      onHistoryOpen,
       lastUpdated,
       showingRevision,
       status,
