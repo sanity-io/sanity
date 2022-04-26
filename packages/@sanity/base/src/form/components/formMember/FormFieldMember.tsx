@@ -1,5 +1,5 @@
 import React from 'react'
-import {ArrayMember, FieldMember, ObjectMember} from '../../types'
+import {ArrayMember, FieldMember, InputProps, ObjectMember} from '../../types'
 import {FormNode, useFormNode} from '../formNode'
 
 /**
@@ -7,9 +7,12 @@ import {FormNode, useFormNode} from '../formNode'
  *
  * @alpha
  */
-export function FormFieldMember(props: {name: string}) {
+export function FormFieldMember(props: {
+  component?: React.ComponentType<InputProps>
+  name: string
+}) {
   const {members} = useFormNode()
-  const {name} = props
+  const {component, name} = props
   const fieldMembers = members?.filter(isObjectFieldMember)
   const fieldMember = fieldMembers?.find((member) => member.field.name === name)
 
@@ -17,7 +20,7 @@ export function FormFieldMember(props: {name: string}) {
     return null
   }
 
-  return <FormNode fieldProps={fieldMember.field} />
+  return <FormNode component={component} fieldProps={fieldMember.field} />
 }
 
 function isObjectFieldMember(member: ObjectMember | ArrayMember): member is FieldMember {
