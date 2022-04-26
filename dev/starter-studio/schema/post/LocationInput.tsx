@@ -1,6 +1,7 @@
 import {Card, Grid} from '@sanity/ui'
 import React from 'react'
 import {FormFieldMember, ObjectInputProps} from 'sanity/form'
+import {CoordinateInput} from './CoordinateInput'
 
 export interface LocationValue {
   lat?: number
@@ -15,8 +16,8 @@ export function LocationInput() {
   return (
     <Card padding={2} radius={2} tone="positive">
       <Grid columns={2} gap={3}>
-        <FormFieldMember name="lat" />
-        <FormFieldMember name="lng" />
+        <FormFieldMember component={CoordinateInput as any} name="lat" />
+        <FormFieldMember component={CoordinateInput as any} name="lng" />
       </Grid>
     </Card>
   )
