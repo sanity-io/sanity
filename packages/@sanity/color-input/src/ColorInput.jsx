@@ -1,10 +1,9 @@
 import React, {PureComponent} from 'react'
 import PropTypes from 'prop-types'
-import {PatchEvent, set, setIfMissing, unset} from '@sanity/base/form'
+import {set, setIfMissing, unset} from '@sanity/base/form'
 import {debounce} from 'lodash'
 import {Button} from '@sanity/ui'
 import {AddIcon} from '@sanity/icons'
-import {FormField} from '@sanity/base/_unstable'
 import ColorPicker from './ColorPicker'
 
 const DEFAULT_COLOR = {
@@ -60,12 +59,10 @@ export default class ColorInput extends PureComponent {
       })
 
     inputProps.onChange(
-      PatchEvent.from([
-        setIfMissing({_type: type.name}),
-        set(type.name, ['_type']),
-        set(nextColor.rgb.a, ['alpha']),
-        ...fieldPatches,
-      ])
+      setIfMissing({_type: type.name}),
+      set(type.name, ['_type']),
+      set(nextColor.rgb.a, ['alpha']),
+      ...fieldPatches
     )
   }
 
@@ -78,15 +75,15 @@ export default class ColorInput extends PureComponent {
   }
 
   handleUnset = () => {
-    this.props.onChange(PatchEvent.from(unset()))
+    this.props.onChange(unset())
   }
 
   render() {
-    const {inputProps, type, value, level} = this.props
+    const {inputProps, type, value} = this.props
     const {readOnly} = inputProps
 
     return (
-      <FormField title={type.title} description={type.description} level={level}>
+      <>
         {value ? (
           <ColorPicker
             ref={this.focusRef}
@@ -106,7 +103,7 @@ export default class ColorInput extends PureComponent {
             onClick={this.handleCreateColor}
           />
         )}
-      </FormField>
+      </>
     )
   }
 }
