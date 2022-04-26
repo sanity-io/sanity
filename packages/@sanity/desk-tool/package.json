@@ -1,6 +1,6 @@
 {
   "name": "@sanity/desk-tool",
-  "version": "2.29.6",
+  "version": "2.29.7",
   "description": "Tool for managing all sorts of content in a structured manner",
   "main": "./lib/_exports/index.js",
   "types": "index.d.ts",
