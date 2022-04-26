@@ -1,6 +1,13 @@
 import React, {useCallback, useEffect, useImperativeHandle, useMemo, useRef} from 'react'
-import {FormFieldSet, FieldMember} from '@sanity/base/_unstable'
-import {FormNode, set, unset, setIfMissing, ObjectInputProps} from '@sanity/base/form'
+import {
+  FormFieldSet,
+  FieldMember,
+  FormNode,
+  ObjectInputProps,
+  set,
+  setIfMissing,
+  unset,
+} from '@sanity/base/form'
 import {ObjectSchemaType} from '@sanity/types'
 import {Card, Select, Stack, TextInput} from '@sanity/ui'
 import AceEditor from 'react-ace'
