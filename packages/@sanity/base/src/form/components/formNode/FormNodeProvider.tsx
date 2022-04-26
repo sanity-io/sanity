@@ -2,6 +2,7 @@ import {Path, SchemaType, ValidationMarker} from '@sanity/types'
 import React, {useMemo} from 'react'
 import {FormFieldPresence} from '../../../presence'
 import {PatchArg} from '../../patch'
+import {ArrayMember, ObjectMember} from '../../types'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {FormNodeContext, FormNodeContextValue} from './FormNodeContext'
 
@@ -15,6 +16,7 @@ export function FormNodeProvider(props: {
   compareValue?: unknown
   inputId: string
   level?: number
+  members?: Array<ArrayMember | ObjectMember>
   onChange?: (...patches: PatchArg[]) => void
   path: Path
   presence?: FormFieldPresence[]
@@ -28,6 +30,7 @@ export function FormNodeProvider(props: {
     compareValue,
     inputId,
     level = 0,
+    members,
     onChange,
     path,
     presence = EMPTY_ARRAY,
@@ -42,6 +45,7 @@ export function FormNodeProvider(props: {
       compareValue,
       inputId,
       level,
+      members,
       onChange,
       path,
       presence,
@@ -54,6 +58,7 @@ export function FormNodeProvider(props: {
       compareValue,
       inputId,
       level,
+      members,
       onChange,
       path,
       presence,

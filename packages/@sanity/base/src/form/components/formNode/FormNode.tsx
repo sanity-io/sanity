@@ -60,6 +60,9 @@ export function FormNode(props: FormNodeProps) {
 
   const forwardedRef = useForwardedRef(fieldRef)
 
+  const arrayMembers = fieldProps.kind === 'array' ? fieldProps.members : undefined
+  const objectMembers = fieldProps.kind === 'object' ? fieldProps.members : undefined
+
   const isObject = fieldProps.kind === 'object'
   const isArray = fieldProps.kind === 'array'
 
@@ -224,6 +227,7 @@ export function FormNode(props: FormNodeProps) {
       compareValue={compareValue}
       inputId={id}
       level={level}
+      members={arrayMembers || objectMembers}
       onChange={handleChange}
       path={path}
       presence={presence}
