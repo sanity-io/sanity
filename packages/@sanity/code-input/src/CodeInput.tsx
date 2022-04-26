@@ -1,12 +1,10 @@
-import React, {useCallback, useEffect, useImperativeHandle, useRef} from 'react'
-import {FormField, FormFieldSet, ChangeIndicatorProvider} from '@sanity/base/_unstable'
-import {PatchEvent, set, unset, setIfMissing, ObjectInputProps} from '@sanity/base/form'
+import React, {useCallback, useEffect, useImperativeHandle, useMemo, useRef} from 'react'
+import {FormField, FormFieldSet, FieldMember} from '@sanity/base/_unstable'
+import {FormNode, set, unset, setIfMissing, ObjectInputProps} from '@sanity/base/form'
 import {ObjectSchemaType} from '@sanity/types'
 import {Card, Select, Stack, TextInput} from '@sanity/ui'
-import * as PathUtils from '@sanity/util/paths'
 import AceEditor from 'react-ace'
 import styled from 'styled-components'
-import {useId} from '@reach/auto-id'
 import createHighlightMarkers, {highlightMarkersCSS} from './createHighlightMarkers'
 import {CodeInputLanguage, CodeInputValue} from './types'
 /* eslint-disable-next-line import/no-unassigned-import */
@@ -77,292 +75,199 @@ function isSupportedLanguage(mode: string) {
   return false
 }
 
-const CodeInput = React.forwardRef(
-  (props: CodeInputProps, ref: React.ForwardedRef<{focus: () => void}>) => {
-    const aceEditorRef = useRef<any>()
-    // const aceEditorId = useId()
-    const {compareValue, focusPath, inputProps, level = 0, onChange, presence, type, value} = props
-    const {id, onBlur, onFocus, readOnly} = inputProps
+export function CodeInput(props: CodeInputProps) {
+  const {inputProps, members, onChange, renderField, type, value} = props
+  const {id, onBlur, onFocus, readOnly, ref} = inputProps
+  const aceEditorRef = useRef<any>()
 
-    useImperativeHandle(ref, () => ({
-      focus: () => {
-        aceEditorRef?.current?.editor?.focus()
-      },
-    }))
+  const fieldMembers = useMemo(
+    () => members.filter((member) => member.type === 'field') as FieldMember[],
+    [members]
+  )
 
-    const handleLanguageFocus = useCallback(() => {
-      onFocus(PATH_LANGUAGE)
-    }, [onFocus])
+  const languageFieldMember = fieldMembers.find((member) => member.field.name === 'language')
+  const filenameMember = fieldMembers.find((member) => member.field.name === 'filename')
+  const codeFieldMember = fieldMembers.find((member) => member.field.name === 'code')
 
-    const handleCodeFocus = useCallback(() => {
-      onFocus(PATH_CODE)
-    }, [onFocus])
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+      aceEditorRef?.current?.editor?.focus()
+    },
+  }))
 
-    const handleFilenameFocus = useCallback(() => {
-      onFocus(PATH_FILENAME)
-    }, [onFocus])
+  const handleLanguageFocus = useCallback(() => {
+    onFocus(PATH_LANGUAGE)
+  }, [onFocus])
 
-    const handleFilenameChange = useCallback(
-      (event: React.ChangeEvent<HTMLInputElement>) => {
-        const val = event.target.value
-        const path = PATH_FILENAME
+  const handleCodeFocus = useCallback(() => {
+    onFocus(PATH_CODE)
+  }, [onFocus])
 
-        onChange(
-          PatchEvent.from([setIfMissing({_type: type.name}), val ? set(val, path) : unset(path)])
-        )
-      },
-      [onChange, type.name]
-    )
+  const handleFilenameFocus = useCallback(() => {
+    onFocus(PATH_FILENAME)
+  }, [onFocus])
 
-    const getTheme = useCallback(() => {
-      const preferredTheme = type.options?.theme
-      return preferredTheme && SUPPORTED_THEMES.find((theme) => theme === preferredTheme)
-        ? preferredTheme
-        : DEFAULT_THEME
-    }, [type])
+  const handleFilenameChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const val = event.target.value
+      const path = PATH_FILENAME
 
-    const handleToggleSelectLine = useCallback(
-      (lineNumber: number) => {
-        const editorSession = aceEditorRef.current?.editor?.getSession()
-        const backgroundMarkers = editorSession?.getMarkers(true)
-        const currentHighlightedLines = Object.keys(backgroundMarkers)
-          .filter((key) => backgroundMarkers[key].type === 'screenLine')
-          .map((key) => backgroundMarkers[key].range.start.row)
-        const currentIndex = currentHighlightedLines.indexOf(lineNumber)
-        if (currentIndex > -1) {
-          // toggle remove
-          currentHighlightedLines.splice(currentIndex, 1)
-        } else {
-          // toggle add
-          currentHighlightedLines.push(lineNumber)
-          currentHighlightedLines.sort()
-        }
-        onChange(
-          PatchEvent.from(
-            set(
-              currentHighlightedLines.map(
-                (line) =>
-                  // ace starts at line (row) 0, but we store it starting at line 1
-                  line + 1
-              ),
-              ['highlightedLines']
-            )
-          )
-        )
-      },
-      [aceEditorRef, onChange]
-    )
+      onChange(setIfMissing({_type: type.name}), val ? set(val, path) : unset(path))
+    },
+    [onChange, type.name]
+  )
 
-    const handleGutterMouseDown = useCallback(
-      (event: any) => {
-        const target = event.domEvent.target
-        if (target.classList.contains('ace_gutter-cell')) {
-          const row = event.getDocumentPosition().row
-          handleToggleSelectLine(row)
-        }
-      },
-      [handleToggleSelectLine]
-    )
+  const getTheme = useCallback(() => {
+    const preferredTheme = type.options?.theme
+    return preferredTheme && SUPPORTED_THEMES.find((theme) => theme === preferredTheme)
+      ? preferredTheme
+      : DEFAULT_THEME
+  }, [type])
 
-    useEffect(() => {
-      const editor = aceEditorRef?.current?.editor
-      return () => {
-        editor?.session?.removeListener('guttermousedown', handleGutterMouseDown)
+  const handleToggleSelectLine = useCallback(
+    (lineNumber: number) => {
+      const editorSession = aceEditorRef.current?.editor?.getSession()
+      const backgroundMarkers = editorSession?.getMarkers(true)
+      const currentHighlightedLines = Object.keys(backgroundMarkers)
+        .filter((key) => backgroundMarkers[key].type === 'screenLine')
+        .map((key) => backgroundMarkers[key].range.start.row)
+      const currentIndex = currentHighlightedLines.indexOf(lineNumber)
+      if (currentIndex > -1) {
+        // toggle remove
+        currentHighlightedLines.splice(currentIndex, 1)
+      } else {
+        // toggle add
+        currentHighlightedLines.push(lineNumber)
+        currentHighlightedLines.sort()
       }
-    }, [aceEditorRef, handleGutterMouseDown])
-
-    const handleEditorLoad = useCallback(
-      (editor: any) => {
-        editor?.on('guttermousedown', handleGutterMouseDown)
-      },
-      [handleGutterMouseDown]
-    )
-
-    const getLanguageAlternatives = useCallback((): {
-      title: string
-      value: string
-      mode?: string
-    }[] => {
-      const languageAlternatives = type.options?.languageAlternatives
-      if (!languageAlternatives) {
-        return SUPPORTED_LANGUAGES
-      }
-
-      if (!Array.isArray(languageAlternatives)) {
-        throw new Error(
-          `'options.languageAlternatives' should be an array, got ${typeof languageAlternatives}`
+      onChange(
+        set(
+          currentHighlightedLines.map(
+            (line) =>
+              // ace starts at line (row) 0, but we store it starting at line 1
+              line + 1
+          ),
+          ['highlightedLines']
         )
-      }
-
-      return languageAlternatives.reduce((acc: CodeInputLanguage[], {title, value: val, mode}) => {
-        const alias = LANGUAGE_ALIASES[val]
-        if (alias) {
-          // eslint-disable-next-line no-console
-          console.warn(
-            `'options.languageAlternatives' lists a language with value "%s", which is an alias of "%s" - please replace the value to read "%s"`,
-            val,
-            alias,
-            alias
-          )
-
-          return acc.concat({title, value: alias, mode: mode})
-        }
-
-        if (!mode && !SUPPORTED_LANGUAGES.find((lang) => lang.value === val)) {
-          // eslint-disable-next-line no-console
-          console.warn(
-            `'options.languageAlternatives' lists a language which is not supported: "%s", syntax highlighting will be disabled.`,
-            val
-          )
-        }
-
-        return acc.concat({title, value: val, mode})
-      }, [])
-    }, [type])
-
-    const handleCodeChange = useCallback(
-      (code: string) => {
-        const path = PATH_CODE
-        const fixedLanguage = type.options?.language
-
-        onChange(
-          PatchEvent.from([
-            setIfMissing({_type: type.name, language: fixedLanguage}),
-            code ? set(code, path) : unset(path),
-          ])
-        )
-      },
-      [onChange, type]
-    )
-
-    const handleLanguageChange = useCallback(
-      (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const val = event.currentTarget.value
-        const path = PATH_LANGUAGE
-
-        onChange(
-          PatchEvent.from([setIfMissing({_type: type.name}), val ? set(val, path) : unset(path)])
-        )
-      },
-      [onChange, type.name]
-    )
-
-    const languages = getLanguageAlternatives().slice()
-
-    const selectedLanguage = props?.value?.language
-      ? languages.find((item: {value: string | undefined}) => item.value === props?.value?.language)
-      : undefined
-
-    const languageField = type.fields.find((field) => field.name === 'language')
-    const filenameField = type.fields.find((field) => field.name === 'filename')
-
-    const languageCompareValue = PathUtils.get(compareValue, PATH_LANGUAGE)
-    const codeCompareValue = PathUtils.get(compareValue, PATH_CODE)
-    const filenameCompareValue = PathUtils.get(compareValue, PATH_FILENAME)
-
-    const languagePresence = presence.filter((presenceItem) =>
-      PathUtils.startsWith(PATH_LANGUAGE, presenceItem.path)
-    )
-    const codePresence = presence.filter((presenceItem) =>
-      PathUtils.startsWith(PATH_CODE, presenceItem.path)
-    )
-
-    const filenamePresence = presence.filter((presenceItem) =>
-      PathUtils.startsWith(PATH_FILENAME, presenceItem.path)
-    )
-
-    const renderEditor = useCallback(() => {
-      const fixedLanguage = type.options?.language
-
-      const language = value?.language || fixedLanguage
-
-      // the language config from the schema
-      const configured = languages.find((entry) => entry.value === language)
-
-      // is the language officially supported (e.g. we import the mode by default)
-      const supported = language && isSupportedLanguage(language)
-
-      const mode = configured?.mode || (supported ? language : 'text')
-
-      return (
-        <EditorContainer radius={1} shadow={1} readOnly={readOnly}>
-          <AceEditor
-            ref={aceEditorRef}
-            mode={mode}
-            theme={getTheme()}
-            width="100%"
-            onChange={handleCodeChange}
-            name={`editor-${id}`}
-            value={(value && value.code) || ''}
-            markers={
-              value && value.highlightedLines
-                ? createHighlightMarkers(value.highlightedLines)
-                : undefined
-            }
-            onLoad={handleEditorLoad}
-            readOnly={readOnly}
-            tabSize={2}
-            wrapEnabled
-            setOptions={ACE_SET_OPTIONS}
-            editorProps={ACE_EDITOR_PROPS}
-            onFocus={handleCodeFocus}
-            onBlur={onBlur}
-          />
-        </EditorContainer>
       )
-    }, [
-      getTheme,
-      id,
-      handleCodeChange,
-      handleCodeFocus,
-      handleEditorLoad,
-      languages,
-      onBlur,
-      readOnly,
-      type,
-      value,
-    ])
+    },
+    [aceEditorRef, onChange]
+  )
 
-    if (type.options?.language) {
-      return (
-        <ChangeIndicatorProvider
-          path={PATH_CODE}
-          focusPath={focusPath}
-          value={value?.code}
-          compareValue={codeCompareValue}
-        >
-          <FormFieldSet
-            title={type.title}
-            description={type.description}
-            level={level}
-            onSetCollapsed={() => console.warn('todo')}
-          >
-            {renderEditor()}
-          </FormFieldSet>
-        </ChangeIndicatorProvider>
+  const handleGutterMouseDown = useCallback(
+    (event: any) => {
+      const target = event.domEvent.target
+      if (target.classList.contains('ace_gutter-cell')) {
+        const row = event.getDocumentPosition().row
+        handleToggleSelectLine(row)
+      }
+    },
+    [handleToggleSelectLine]
+  )
+
+  useEffect(() => {
+    const editor = aceEditorRef?.current?.editor
+    return () => {
+      editor?.session?.removeListener('guttermousedown', handleGutterMouseDown)
+    }
+  }, [aceEditorRef, handleGutterMouseDown])
+
+  const handleEditorLoad = useCallback(
+    (editor: any) => {
+      editor?.on('guttermousedown', handleGutterMouseDown)
+    },
+    [handleGutterMouseDown]
+  )
+
+  const getLanguageAlternatives = useCallback((): {
+    title: string
+    value: string
+    mode?: string
+  }[] => {
+    const languageAlternatives = type.options?.languageAlternatives
+    if (!languageAlternatives) {
+      return SUPPORTED_LANGUAGES
+    }
+
+    if (!Array.isArray(languageAlternatives)) {
+      throw new Error(
+        `'options.languageAlternatives' should be an array, got ${typeof languageAlternatives}`
       )
     }
 
-    return (
-      <FormFieldSet
-        title={type.title}
-        description={type.description}
-        level={level}
-        __unstable_changeIndicator={false}
-        onSetCollapsed={() => console.warn('todo')}
-      >
-        <Stack space={3}>
-          <ChangeIndicatorProvider
-            path={PATH_LANGUAGE}
-            focusPath={focusPath}
-            value={selectedLanguage?.value}
-            compareValue={languageCompareValue}
-          >
-            <FormField
-              level={level + 1}
-              label={languageField?.type.title || 'Language'}
-              __unstable_presence={languagePresence}
-            >
+    return languageAlternatives.reduce((acc: CodeInputLanguage[], {title, value: val, mode}) => {
+      const alias = LANGUAGE_ALIASES[val]
+      if (alias) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `'options.languageAlternatives' lists a language with value "%s", which is an alias of "%s" - please replace the value to read "%s"`,
+          val,
+          alias,
+          alias
+        )
+
+        return acc.concat({title, value: alias, mode: mode})
+      }
+
+      if (!mode && !SUPPORTED_LANGUAGES.find((lang) => lang.value === val)) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `'options.languageAlternatives' lists a language which is not supported: "%s", syntax highlighting will be disabled.`,
+          val
+        )
+      }
+
+      return acc.concat({title, value: val, mode})
+    }, [])
+  }, [type])
+
+  const handleCodeChange = useCallback(
+    (code: string) => {
+      const path = PATH_CODE
+      const fixedLanguage = type.options?.language
+
+      onChange(
+        setIfMissing({_type: type.name, language: fixedLanguage}),
+        code ? set(code, path) : unset(path)
+      )
+    },
+    [onChange, type]
+  )
+
+  const handleLanguageChange = useCallback(
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
+      const val = event.currentTarget.value
+      const path = PATH_LANGUAGE
+
+      onChange(setIfMissing({_type: type.name}), val ? set(val, path) : unset(path))
+    },
+    [onChange, type.name]
+  )
+
+  const languages = getLanguageAlternatives().slice()
+
+  const selectedLanguage = props?.value?.language
+    ? languages.find((item: {value: string | undefined}) => item.value === props?.value?.language)
+    : undefined
+
+  const fixedLanguage = type.options?.language
+
+  const language = value?.language || fixedLanguage
+
+  // the language config from the schema
+  const configured = languages.find((entry) => entry.value === language)
+
+  // is the language officially supported (e.g. we import the mode by default)
+  const supported = language && isSupportedLanguage(language)
+
+  const mode = configured?.mode || (supported ? language : 'text')
+
+  return (
+    <FormFieldSet __unstable_changeIndicator={false} onSetCollapsed={() => console.warn('todo')}>
+      <Stack space={3}>
+        {languageFieldMember && (
+          <FormNode fieldProps={languageFieldMember.field} renderField={renderField}>
+            <FormField __internal_title={languageFieldMember.field.type.title || 'Language'}>
               <Select
                 onChange={handleLanguageChange}
                 readOnly={readOnly}
@@ -377,46 +282,55 @@ const CodeInput = React.forwardRef(
                 ))}
               </Select>
             </FormField>
-          </ChangeIndicatorProvider>
-          {type.options?.withFilename && (
-            <ChangeIndicatorProvider
-              path={PATH_FILENAME}
-              focusPath={focusPath}
-              value={value?.filename}
-              compareValue={filenameCompareValue}
-            >
-              <FormField
-                label={filenameField?.type.title || 'Filename'}
-                level={level + 1}
-                __unstable_presence={filenamePresence}
-              >
-                <TextInput
-                  name="filename"
-                  value={value?.filename || ''}
-                  placeholder={filenameField?.type.placeholder}
-                  onChange={handleFilenameChange}
-                  onFocus={handleFilenameFocus}
+          </FormNode>
+        )}
+
+        {type.options?.withFilename && filenameMember && (
+          <FormNode fieldProps={filenameMember.field} renderField={renderField}>
+            <FormField __internal_title={filenameMember.field.type.title || 'Language'}>
+              <TextInput
+                name="filename"
+                value={value?.filename || ''}
+                placeholder={filenameMember.field.type.placeholder}
+                onChange={handleFilenameChange}
+                onFocus={handleFilenameFocus}
+                onBlur={onBlur}
+              />
+            </FormField>
+          </FormNode>
+        )}
+
+        {codeFieldMember && (
+          <FormNode fieldProps={codeFieldMember.field} renderField={renderField}>
+            <FormField __internal_title="Code">
+              <EditorContainer radius={1} shadow={1} readOnly={readOnly}>
+                <AceEditor
+                  ref={aceEditorRef}
+                  mode={mode}
+                  theme={getTheme()}
+                  width="100%"
+                  onChange={handleCodeChange}
+                  name={`editor-${id}`}
+                  value={(value && value.code) || ''}
+                  markers={
+                    value && value.highlightedLines
+                      ? createHighlightMarkers(value.highlightedLines)
+                      : undefined
+                  }
+                  onLoad={handleEditorLoad}
+                  readOnly={readOnly}
+                  tabSize={2}
+                  wrapEnabled
+                  setOptions={ACE_SET_OPTIONS}
+                  editorProps={ACE_EDITOR_PROPS}
+                  onFocus={handleCodeFocus}
                   onBlur={onBlur}
                 />
-              </FormField>
-            </ChangeIndicatorProvider>
-          )}
-          <ChangeIndicatorProvider
-            path={PATH_CODE}
-            focusPath={focusPath}
-            value={value?.code}
-            compareValue={codeCompareValue}
-          >
-            <FormField label="Code" level={level + 1} __unstable_presence={codePresence}>
-              {renderEditor()}
+              </EditorContainer>
             </FormField>
-          </ChangeIndicatorProvider>
-        </Stack>
-      </FormFieldSet>
-    )
-  }
-)
-
-CodeInput.displayName = 'CodeInput'
-
-export default CodeInput
+          </FormNode>
+        )}
+      </Stack>
+    </FormFieldSet>
+  )
+}
