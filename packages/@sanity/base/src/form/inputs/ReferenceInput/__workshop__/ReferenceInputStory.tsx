@@ -30,6 +30,7 @@ export default function ReferenceInputStory() {
               renderField={() => <>TODO</>}
               schema={schema}
               value={value}
+              type={documentType}
             >
               <>TODO</>
               {/* <FormBuilderInput

@@ -162,6 +162,7 @@ export default function ExampleStory() {
               schema={schema}
               value={documentValue}
               isChangesOpen={isChangesOpen}
+              type={documentType as any}
             >
               <>TODO</>
               {/* <FormBuilderInput

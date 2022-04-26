@@ -188,6 +188,7 @@ export function TestInput(props: TestInputProps) {
       renderField={() => <>TEST</>}
       resolveInputComponent={resolveInputComponent}
       resolvePreviewComponent={resolvePreviewComponent}
+      type={type as any}
     >
       <ReviewChangesContextProvider changesOpen={false}>
         {/* <Box

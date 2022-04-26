@@ -97,6 +97,7 @@ export const ImageInputTester = React.forwardRef(function ImageInputTester(
             __internal_patchChannel={patchChannel}
             renderField={() => <>TODO</>}
             schema={schema}
+            type={{} as any}
           >
             <ImageInput {...rest} />
           </StudioFormBuilderProvider>

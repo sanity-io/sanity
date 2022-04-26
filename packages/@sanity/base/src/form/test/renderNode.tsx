@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import {SchemaType} from '@sanity/types'
+import {ObjectSchemaType, SchemaType} from '@sanity/types'
 import {render} from '@testing-library/react'
 import {noop} from 'lodash'
 import React, {forwardRef} from 'react'
@@ -91,6 +91,7 @@ export function renderNode(options: {
           resolveInputComponent={inputResolver}
           resolvePreviewComponent={previewResolver}
           schema={schema}
+          type={type as ObjectSchemaType}
           value={undefined}
         >
           {renderFn({type, ...props})}

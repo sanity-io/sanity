@@ -1,6 +1,6 @@
 import React from 'react'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
-import type {Schema as SchemaSchema} from '@sanity/types'
+import type {ObjectSchemaType, Schema} from '@sanity/types'
 import {FormBuilderProvider} from '../../FormBuilderProvider'
 import {ReviewChangesContextProvider} from '../../studio/contexts/reviewChanges/ReviewChangesProvider'
 import {PatchChannel} from '../../patch/PatchChannel'
@@ -10,13 +10,14 @@ import {resolvePreviewComponent} from './resolvePreviewComponent'
 export interface FormBuilderTesterProps {
   value: any | null
   children: React.ReactElement
-  schema: SchemaSchema
+  schema: Schema
   isChangesOpen?: boolean
   patchChannel: PatchChannel
+  type: ObjectSchemaType
 }
 
 export function FormBuilderTester(props: FormBuilderTesterProps) {
-  const {value, patchChannel, isChangesOpen = false} = props
+  const {value, patchChannel, isChangesOpen = false, type} = props
   return (
     <ThemeProvider theme={studioTheme}>
       <LayerProvider>
@@ -29,6 +30,7 @@ export function FormBuilderTester(props: FormBuilderTesterProps) {
               renderField={() => <>TODO</>}
               resolveInputComponent={inputResolver}
               resolvePreviewComponent={resolvePreviewComponent}
+              type={type}
             >
               {props.children}
             </FormBuilderProvider>

@@ -143,6 +143,7 @@ export function EditObjectsStory() {
           renderField={() => <>TODO</>}
           resolveInputComponent={resolveInputComponent}
           resolvePreviewComponent={resolvePreviewComponent}
+          type={type as any}
         >
           <PortableTextEditor onChange={handleChange} type={type as FIXME} value={value}>
             <EditObject
