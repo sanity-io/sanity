@@ -10,21 +10,21 @@ import {
 import * as PathUtils from '@sanity/util/paths'
 import {TextInput, Button, Flex, Box, Card, Stack} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
-import {set, setIfMissing, unset} from '../../patch'
+import {PatchEvent, set, setIfMissing, unset} from '../../patch'
 import {ChangeIndicatorCompareValueProvider} from '../../../components/changeIndicators'
+import {FormField} from '../../../components/formField'
 import {withDocument} from '../../utils/withDocument'
 import {withValuePath} from '../../utils/withValuePath'
-import {ObjectInputProps} from '../../types'
-import {useFormNode} from '../../components/formNode'
+import {LegacyInputProps, ObjectInputProps} from '../../types'
 import {slugify} from './utils/slugify'
 import {useAsync} from './utils/useAsync'
 
-export interface Slug {
+export type Slug = {
   _type: 'slug'
   current?: string
 }
 
-export interface SlugInputProps extends ObjectInputProps<Slug, SlugSchemaType> {
+export interface SlugInputProps extends LegacyInputProps<ObjectInputProps<Slug, SlugSchemaType>> {
   document: SanityDocument
   getValuePath: () => Path
 }
@@ -43,13 +43,23 @@ function getNewFromSource(
   )
 }
 
-export const SlugInput = withValuePath(withDocument(SlugInputInner))
-
-function SlugInputInner(props: SlugInputProps) {
-  const {compareValue, validation} = useFormNode<Slug>()
-  const {inputProps, value, type, onChange, getValuePath, document} = props
-
-  const {onFocus, readOnly, ref} = inputProps
+const SlugInputInner = React.forwardRef(function SlugInput(
+  props: SlugInputProps,
+  forwardedRef: React.ForwardedRef<HTMLInputElement>
+) {
+  const {
+    value,
+    compareValue,
+    type,
+    level,
+    validation,
+    onChange,
+    onFocus,
+    getValuePath,
+    document,
+    readOnly,
+    presence,
+  } = props
 
   const sourceField = type.options?.source
 
@@ -59,11 +69,11 @@ function SlugInputInner(props: SlugInputProps) {
   const updateSlug = React.useCallback(
     (nextSlug) => {
       if (!nextSlug) {
-        onChange(unset())
+        onChange(PatchEvent.from(unset([])))
         return
       }
 
-      onChange(setIfMissing({_type: type.name}), set(nextSlug, ['current']))
+      onChange(PatchEvent.from(setIfMissing({_type: type.name}), set(nextSlug, ['current'])))
     },
     [onChange, type.name]
   )
@@ -94,40 +104,51 @@ function SlugInputInner(props: SlugInputProps) {
       value={value?.current}
       compareValue={compareValue?.current}
     >
-      <Stack space={3}>
-        <Flex>
-          <Box flex={1}>
-            <TextInput
-              id={inputId}
-              ref={ref}
-              customValidity={errors.length > 0 ? errors[0].item.message : ''}
-              disabled={isUpdating}
-              onChange={handleChange}
-              onFocus={handleFocus}
-              value={value?.current || ''}
-              readOnly={readOnly}
-            />
-
-            {generateState?.status === 'error' && (
-              <Card padding={2} tone="critical">
-                {generateState.error.message}
-              </Card>
-            )}
-          </Box>
-          {sourceField && (
-            <Box marginLeft={1}>
-              <Button
-                mode="ghost"
-                type="button"
-                disabled={readOnly || isUpdating}
-                onClick={handleGenerateSlug}
+      <FormField
+        title={type.title}
+        description={type.description}
+        level={level}
+        validation={validation}
+        __unstable_presence={presence}
+        inputId={inputId}
+      >
+        <Stack space={3}>
+          <Flex>
+            <Box flex={1}>
+              <TextInput
+                id={inputId}
+                ref={forwardedRef}
+                customValidity={errors.length > 0 ? errors[0].item.message : ''}
+                disabled={isUpdating}
+                onChange={handleChange}
                 onFocus={handleFocus}
-                text={generateState?.status === 'pending' ? 'Generating…' : 'Generate'}
+                value={value?.current || ''}
+                readOnly={readOnly}
               />
+
+              {generateState?.status === 'error' && (
+                <Card padding={2} tone="critical">
+                  {generateState.error.message}
+                </Card>
+              )}
             </Box>
-          )}
-        </Flex>
-      </Stack>
+            {sourceField && (
+              <Box marginLeft={1}>
+                <Button
+                  mode="ghost"
+                  type="button"
+                  disabled={readOnly || isUpdating}
+                  onClick={handleGenerateSlug}
+                  onFocus={handleFocus}
+                  text={generateState?.status === 'pending' ? 'Generating…' : 'Generate'}
+                />
+              </Box>
+            )}
+          </Flex>
+        </Stack>
+      </FormField>
     </ChangeIndicatorCompareValueProvider>
   )
-}
+})
+
+export const SlugInput = withValuePath(withDocument(SlugInputInner))

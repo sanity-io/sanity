@@ -1,4 +1,3 @@
-/* eslint-disable */
 import {isActionEnabled} from '@sanity/schema/_internal'
 import {Box, Container, Flex, Spinner, Text} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo} from 'react'
@@ -171,7 +170,7 @@ export function FormView(props: FormViewProps) {
                 id="root"
                 __internal_patchChannel={patchChannel}
                 changesOpen={changesOpen}
-                compareValue={compareValue as Record<string, unknown>}
+                // compareValue={compareValue as Record<string, unknown>}
                 // filterField={filterField}
                 level={formState.level}
                 path={formState.path}

@@ -1,0 +1,1 @@
+function SimpleObjectInput(props: Props) {}

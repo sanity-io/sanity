@@ -13,11 +13,21 @@ import {FormFieldPresence} from '../../presence'
 import {ArrayMember, ObjectMember} from './member'
 import {FieldGroup} from './fieldGroup'
 import {InsertEvent} from './event'
+import {FIXME} from './_transitional'
+
+export type LegacyInputProps<T extends BaseInputProps> = Omit<T, 'onFocus'> & {
+  /**
+   *
+   * @param event
+   * @deprecated
+   */
+  onFocus: (path?: Path) => void
+}
 
 export interface BaseInputProps<T = unknown, S extends SchemaType = SchemaType> {
   id: string
   type: S
-  compareValue: T | undefined
+  compareValue?: FIXME
   value: T | undefined
   onChange: (patchEvent: PatchEvent) => void
   title?: string
@@ -61,6 +71,15 @@ export interface ArrayInputProps<
   collapsible?: boolean
 }
 
-export type BooleanInputProps = BaseInputProps<boolean, BooleanSchemaType>
-export type NumberInputProps = BaseInputProps<number, NumberSchemaType>
-export type StringInputProps = BaseInputProps<string, StringSchemaType>
+export type BooleanInputProps<S extends BooleanSchemaType = BooleanSchemaType> = BaseInputProps<
+  boolean,
+  S
+>
+export type NumberInputProps<S extends NumberSchemaType = NumberSchemaType> = BaseInputProps<
+  number,
+  S
+>
+export type StringInputProps<S extends StringSchemaType = StringSchemaType> = BaseInputProps<
+  string,
+  S
+>

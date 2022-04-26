@@ -290,7 +290,7 @@ function prepareFieldProps(props: {
       level: fieldLevel,
       index,
       id: toString(fieldPath),
-      compareValue: undefined,
+      // compareValue: undefined,
       onChange: fieldOnChange,
       onFocus: fieldOnFocus,
       onBlur: fieldOnBlur,
@@ -491,7 +491,7 @@ function prepareObjectInputProps<T>(
   })
 
   return {
-    compareValue: undefined,
+    // compareValue: undefined,
     value: props.value as Record<string, unknown> | undefined,
     type: props.type,
     readOnly: props.readOnly,
@@ -566,7 +566,7 @@ function prepareArrayInputProps<T extends unknown[]>(
   const items = Array.isArray(props.value) ? props.value : []
 
   return {
-    compareValue: undefined,
+    // compareValue: undefined,
     value: props.value as T,
     readOnly,
     hidden,

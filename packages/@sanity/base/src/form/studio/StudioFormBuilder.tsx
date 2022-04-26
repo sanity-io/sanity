@@ -41,7 +41,7 @@ export interface StudioFormBuilderProps extends ObjectInputProps {
 export function StudioFormBuilder(props: StudioFormBuilderProps) {
   const {
     __internal_patchChannel: patchChannel,
-    compareValue,
+    // compareValue,
     focusPath,
     focused,
     groups,
@@ -137,7 +137,7 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
       value={value}
     >
       <DocumentInput
-        compareValue={compareValue}
+        // compareValue={compareValue}
         focusRef={useRef(null)}
         level={0}
         id={id}
