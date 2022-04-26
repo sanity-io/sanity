@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useImperativeHandle, useMemo, useRef} from 'react'
-import {FormField, FormFieldSet, FieldMember} from '@sanity/base/_unstable'
+import {FormFieldSet, FieldMember} from '@sanity/base/_unstable'
 import {FormNode, set, unset, setIfMissing, ObjectInputProps} from '@sanity/base/form'
 import {ObjectSchemaType} from '@sanity/types'
 import {Card, Select, Stack, TextInput} from '@sanity/ui'
@@ -267,67 +267,61 @@ export function CodeInput(props: CodeInputProps) {
       <Stack space={3}>
         {languageFieldMember && (
           <FormNode fieldProps={languageFieldMember.field} renderField={renderField}>
-            <FormField __internal_title={languageFieldMember.field.type.title || 'Language'}>
-              <Select
-                onChange={handleLanguageChange}
-                readOnly={readOnly}
-                value={selectedLanguage?.value || ''}
-                onFocus={handleLanguageFocus}
-                onBlur={onBlur}
-              >
-                {languages.map((lang: {title: string; value: string}) => (
-                  <option key={lang.value} value={lang.value}>
-                    {lang.title}
-                  </option>
-                ))}
-              </Select>
-            </FormField>
+            <Select
+              onChange={handleLanguageChange}
+              readOnly={readOnly}
+              value={selectedLanguage?.value || ''}
+              onFocus={handleLanguageFocus}
+              onBlur={onBlur}
+            >
+              {languages.map((lang: {title: string; value: string}) => (
+                <option key={lang.value} value={lang.value}>
+                  {lang.title}
+                </option>
+              ))}
+            </Select>
           </FormNode>
         )}
 
         {type.options?.withFilename && filenameMember && (
           <FormNode fieldProps={filenameMember.field} renderField={renderField}>
-            <FormField __internal_title={filenameMember.field.type.title || 'Language'}>
-              <TextInput
-                name="filename"
-                value={value?.filename || ''}
-                placeholder={filenameMember.field.type.placeholder}
-                onChange={handleFilenameChange}
-                onFocus={handleFilenameFocus}
-                onBlur={onBlur}
-              />
-            </FormField>
+            <TextInput
+              name="filename"
+              value={value?.filename || ''}
+              placeholder={filenameMember.field.type.placeholder}
+              onChange={handleFilenameChange}
+              onFocus={handleFilenameFocus}
+              onBlur={onBlur}
+            />
           </FormNode>
         )}
 
         {codeFieldMember && (
           <FormNode fieldProps={codeFieldMember.field} renderField={renderField}>
-            <FormField __internal_title="Code">
-              <EditorContainer radius={1} shadow={1} readOnly={readOnly}>
-                <AceEditor
-                  ref={aceEditorRef}
-                  mode={mode}
-                  theme={getTheme()}
-                  width="100%"
-                  onChange={handleCodeChange}
-                  name={`editor-${id}`}
-                  value={(value && value.code) || ''}
-                  markers={
-                    value && value.highlightedLines
-                      ? createHighlightMarkers(value.highlightedLines)
-                      : undefined
-                  }
-                  onLoad={handleEditorLoad}
-                  readOnly={readOnly}
-                  tabSize={2}
-                  wrapEnabled
-                  setOptions={ACE_SET_OPTIONS}
-                  editorProps={ACE_EDITOR_PROPS}
-                  onFocus={handleCodeFocus}
-                  onBlur={onBlur}
-                />
-              </EditorContainer>
-            </FormField>
+            <EditorContainer radius={1} shadow={1} readOnly={readOnly}>
+              <AceEditor
+                ref={aceEditorRef}
+                mode={mode}
+                theme={getTheme()}
+                width="100%"
+                onChange={handleCodeChange}
+                name={`editor-${id}`}
+                value={(value && value.code) || ''}
+                markers={
+                  value && value.highlightedLines
+                    ? createHighlightMarkers(value.highlightedLines)
+                    : undefined
+                }
+                onLoad={handleEditorLoad}
+                readOnly={readOnly}
+                tabSize={2}
+                wrapEnabled
+                setOptions={ACE_SET_OPTIONS}
+                editorProps={ACE_EDITOR_PROPS}
+                onFocus={handleCodeFocus}
+                onBlur={onBlur}
+              />
+            </EditorContainer>
           </FormNode>
         )}
       </Stack>
