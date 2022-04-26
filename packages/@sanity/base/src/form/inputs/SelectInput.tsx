@@ -17,12 +17,9 @@ function toSelectItem(
 
 const EMPTY_ITEM = {title: '', value: undefined}
 
-export const SelectInput = React.forwardRef(function SelectInput(
-  props: SelectInputProps,
-  forwardedRef: React.ForwardedRef<HTMLSelectElement | HTMLInputElement>
-) {
+export function SelectInput(props: SelectInputProps) {
   const {inputProps, value, validation, type, level, onChange, presence} = props
-  const {readOnly, onFocus} = inputProps
+  const {readOnly, onFocus, ref} = inputProps
   const items = useMemo(() => (type.options?.list || []).map(toSelectItem), [type.options?.list])
   const currentItem = items.find((item) => item.value === value)
   const isRadio = type.options && type.options.layout === 'radio'
@@ -82,7 +79,7 @@ export const SelectInput = React.forwardRef(function SelectInput(
           value={currentItem}
           onChange={handleChange}
           direction={type.options?.direction || 'vertical'}
-          ref={forwardedRef as React.ForwardedRef<HTMLInputElement>}
+          ref={ref}
           readOnly={readOnly}
           onFocus={handleFocus}
           customValidity={errors?.[0]?.item.message}
@@ -95,7 +92,7 @@ export const SelectInput = React.forwardRef(function SelectInput(
         onChange={handleSelectChange}
         onFocus={handleFocus}
         id={inputId}
-        ref={forwardedRef as React.ForwardedRef<HTMLSelectElement>}
+        ref={ref}
         readOnly={readOnly}
         customValidity={errors?.[0]?.item.message}
         value={optionValueFromItem(currentItem)}
@@ -110,7 +107,6 @@ export const SelectInput = React.forwardRef(function SelectInput(
   }, [
     currentItem,
     errors,
-    forwardedRef,
     handleChange,
     handleFocus,
     handleSelectChange,
@@ -119,6 +115,7 @@ export const SelectInput = React.forwardRef(function SelectInput(
     items,
     optionValueFromItem,
     readOnly,
+    ref,
     type.options?.direction,
   ])
 
@@ -134,7 +131,7 @@ export const SelectInput = React.forwardRef(function SelectInput(
       {children}
     </FormField>
   )
-})
+}
 
 const RadioSelect = forwardRef(function RadioSelect(
   props: {

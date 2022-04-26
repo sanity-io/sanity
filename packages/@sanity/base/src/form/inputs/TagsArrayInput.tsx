@@ -1,5 +1,5 @@
 import {useId} from '@reach/auto-id'
-import React, {forwardRef, useCallback, useImperativeHandle, useMemo, useRef} from 'react'
+import React, {useCallback, useMemo} from 'react'
 import {FormField} from '../../components/formField'
 import {PatchEvent, set, unset} from '../patch'
 import {TagInput} from '../components/tagInput'
@@ -7,15 +7,11 @@ import {ArrayInputProps} from '../types'
 
 export type TagsArrayInputProps = ArrayInputProps<string[]>
 
-export const TagsArrayInput = forwardRef(function TagsArrayInput(
-  props: TagsArrayInputProps,
-  ref: React.Ref<{focus: () => void}>
-) {
+export function TagsArrayInput(props: TagsArrayInputProps) {
   const {inputProps, level, validation, onChange, presence, type, value = []} = props
-  const {onFocus, readOnly} = inputProps
+  const {onFocus, readOnly, ref} = inputProps
   const id = useId()
   const tagInputValue = useMemo(() => value?.map((v) => ({value: v})), [value])
-  const inputRef = useRef<HTMLInputElement | null>(null)
 
   const handleChange = useCallback(
     (nextValue: {value: string}[]) => {
@@ -25,10 +21,6 @@ export const TagsArrayInput = forwardRef(function TagsArrayInput(
     },
     [onChange]
   )
-
-  useImperativeHandle(ref, () => ({
-    focus: () => inputRef.current?.focus(),
-  }))
 
   return (
     <FormField
@@ -44,9 +36,9 @@ export const TagsArrayInput = forwardRef(function TagsArrayInput(
         onChange={handleChange}
         onFocus={onFocus}
         readOnly={readOnly}
-        ref={inputRef}
+        ref={ref}
         value={tagInputValue}
       />
     </FormField>
   )
-})
+}

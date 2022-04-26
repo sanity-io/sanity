@@ -8,12 +8,9 @@ import {StringInputProps} from '../types'
 
 export type TelephoneInputProps = StringInputProps
 
-export const TelephoneInput = React.forwardRef(function TelephoneInput(
-  props: TelephoneInputProps,
-  forwardedRef: React.ForwardedRef<HTMLInputElement>
-) {
+export function TelephoneInput(props: TelephoneInputProps) {
   const {value, type, validation, level, inputProps, onChange, presence} = props
-  const {readOnly, onFocus, onBlur} = inputProps
+  const {onFocus, onBlur, readOnly, ref} = inputProps
   const inputId = useId()
   const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
 
@@ -27,26 +24,26 @@ export const TelephoneInput = React.forwardRef(function TelephoneInput(
 
   return (
     <FormField
-      level={level}
-      validation={validation}
-      title={type.title}
-      description={type.description}
       __unstable_presence={presence}
+      description={type.description}
       inputId={inputId}
+      level={level}
+      title={type.title}
+      validation={validation}
     >
       <TextInput
-        type="tel"
-        inputMode="tel"
-        id={inputId}
         customValidity={errors.length > 0 ? errors[0].item.message : ''}
-        value={value || ''}
-        readOnly={Boolean(readOnly)}
-        placeholder={type.placeholder}
+        id={inputId}
+        inputMode="tel"
+        onBlur={onBlur}
         onChange={handleChange}
         onFocus={onFocus}
-        onBlur={onBlur}
-        ref={forwardedRef}
+        placeholder={type.placeholder}
+        readOnly={Boolean(readOnly)}
+        ref={ref}
+        type="tel"
+        value={value || ''}
       />
     </FormField>
   )
-})
+}

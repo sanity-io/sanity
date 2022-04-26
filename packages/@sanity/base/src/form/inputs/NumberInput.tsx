@@ -6,16 +6,10 @@ import {FormField} from '../../components/formField'
 import {PatchEvent, set, unset} from '../patch'
 import {getValidationRule} from '../utils/getValidationRule'
 import {NumberInputProps} from '../types'
-// import {NumberInputProps} from '../types'
 
-// export type NumberInputProps = NumberInputProps
-
-export const NumberInput = React.forwardRef(function NumberInput(
-  props: NumberInputProps,
-  forwardedRef: React.ForwardedRef<HTMLInputElement>
-) {
+export function NumberInput(props: NumberInputProps) {
   const {inputProps, value = '', validation, type, level, onChange, presence} = props
-  const {onFocus, readOnly} = inputProps
+  const {onFocus, readOnly, ref} = inputProps
   const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
   const id = useId()
 
@@ -51,9 +45,9 @@ export const NumberInput = React.forwardRef(function NumberInput(
         placeholder={type.placeholder}
         onChange={handleChange}
         onFocus={onFocus}
-        ref={forwardedRef}
+        ref={ref}
         pattern={onlyPositiveNumber ? '[d]*' : undefined}
       />
     </FormField>
   )
-})
+}

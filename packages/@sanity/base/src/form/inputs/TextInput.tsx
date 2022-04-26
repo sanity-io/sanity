@@ -1,4 +1,4 @@
-import React, {ForwardedRef, useMemo} from 'react'
+import React, {useMemo} from 'react'
 import {useId} from '@reach/auto-id'
 import {isValidationErrorMarker, TextSchemaType} from '@sanity/types'
 import {TextArea} from '@sanity/ui'
@@ -15,12 +15,9 @@ const StyledTextArea = styled(TextArea)`
   }
 `
 
-export const TextInput = React.forwardRef(function TextInput(
-  props: TextInputProps,
-  forwardedRef: ForwardedRef<HTMLTextAreaElement>
-) {
+export function TextInput(props: TextInputProps) {
   const {inputProps, value, validation, type, level, onChange, presence} = props
-  const {readOnly, onFocus, onBlur} = inputProps
+  const {onBlur, onFocus, readOnly, ref} = inputProps
   const inputId = useId()
   const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
 
@@ -34,25 +31,25 @@ export const TextInput = React.forwardRef(function TextInput(
 
   return (
     <FormField
-      level={level}
-      validation={validation}
-      title={type.title}
-      description={type.description}
       __unstable_presence={presence}
+      description={type.description}
       inputId={inputId}
+      level={level}
+      title={type.title}
+      validation={validation}
     >
       <StyledTextArea
-        id={inputId}
         customValidity={errors && errors.length > 0 ? errors[0].item.message : ''}
-        value={value || ''}
-        readOnly={Boolean(readOnly)}
-        placeholder={type.placeholder}
+        id={inputId}
+        onBlur={onBlur}
         onChange={handleChange}
         onFocus={onFocus}
-        onBlur={onBlur}
+        placeholder={type.placeholder}
+        readOnly={Boolean(readOnly)}
+        ref={ref}
         rows={typeof type.rows === 'number' ? type.rows : 10}
-        ref={forwardedRef}
+        value={value || ''}
       />
     </FormField>
   )
-})
+}
