@@ -3,7 +3,7 @@ import {isTitledListValue, isValidationErrorMarker, TitledListValue} from '@sani
 import {Inline, Stack, Card, Text, Select, Flex, Radio, Box} from '@sanity/ui'
 import {capitalize} from 'lodash'
 import React, {useMemo, useCallback, forwardRef} from 'react'
-import {PatchEvent, set, unset} from '../patch'
+import {set, unset} from '../patch'
 import {FormField} from '../../components/formField'
 import {StringInputProps} from '../types'
 
@@ -45,9 +45,7 @@ export function SelectInput(props: SelectInputProps) {
 
   const handleChange = React.useCallback(
     (nextItem: TitledListValue<string | number> | null) => {
-      onChange(
-        PatchEvent.from(typeof nextItem?.value === 'undefined' ? unset() : set(nextItem.value))
-      )
+      onChange(typeof nextItem?.value === 'undefined' ? unset() : set(nextItem.value))
     },
     [onChange]
   )

@@ -1,5 +1,5 @@
 import {FormField} from '@sanity/base/_unstable'
-import {PatchEvent, set} from '@sanity/base/form'
+import {set} from '@sanity/base/form'
 import React from 'react'
 import PropTypes from 'prop-types'
 
@@ -22,7 +22,7 @@ export const HooksBasedStringInput = React.forwardRef((props, ref) => {
           type="text"
           ref={ref}
           placeholder={type.placeholder}
-          onChange={(event) => onChange(PatchEvent.from(set(event.target.value)))}
+          onChange={(event) => onChange(set(event.target.value))}
           value={value}
         />
       ) : (

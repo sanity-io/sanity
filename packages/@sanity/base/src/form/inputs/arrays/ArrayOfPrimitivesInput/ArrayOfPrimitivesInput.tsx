@@ -1,7 +1,7 @@
 import React from 'react'
 import {get} from 'lodash'
 import {startsWith} from '@sanity/util/paths'
-import {ArraySchemaType, ValidationMarker, SchemaType} from '@sanity/types'
+import {ArraySchemaType, SchemaType} from '@sanity/types'
 import {Card, Stack} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
 import {FormFieldSet} from '../../../../components/formField'
@@ -12,8 +12,6 @@ import {getEmptyValue} from './getEmptyValue'
 // import {ItemRow} from './ItemRow'
 import {PrimitiveValue} from './types'
 import {nearestIndexOf} from './utils/nearestIndex'
-
-const NO_MARKERS: ValidationMarker[] = []
 
 function move<T>(arr: T[], from: number, to: number): T[] {
   const copy = arr.slice()
@@ -64,7 +62,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
     const {onChange} = this.props
     this._lastAddedIndex = -1
     const patch = nextValue.length === 0 ? unset() : set(nextValue)
-    onChange(PatchEvent.from(patch))
+    onChange(patch)
   }
 
   removeAt(index: number) {
@@ -109,7 +107,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
 
   handleItemChange = (event: PatchEvent) => {
     this._lastAddedIndex = -1
-    this.props.onChange(event)
+    this.props.onChange(event.patches)
   }
 
   handleItemEnterKey = (index: number) => {

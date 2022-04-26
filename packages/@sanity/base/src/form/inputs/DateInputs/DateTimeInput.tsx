@@ -1,7 +1,7 @@
 import {format, parse} from '@sanity/util/legacyDateFormat'
 import {getMinutes, setMinutes, parseISO} from 'date-fns'
 import React, {useCallback} from 'react'
-import {PatchEvent, set, unset} from '../../patch'
+import {set, unset} from '../../patch'
 import {StringInputProps} from '../../types'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
 import {ParseResult} from './types'
@@ -75,7 +75,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
         date = enforceTimeStep(date, timeStep)
       }
 
-      onChange(PatchEvent.from([date === null ? unset() : set(date)]))
+      onChange(date === null ? unset() : set(date))
     },
     [onChange, timeStep]
   )

@@ -1,4 +1,4 @@
-import {PatchEvent, set} from '@sanity/base/form'
+import {set} from '@sanity/base/form'
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from './CustomFontStringInput.module.css'
@@ -11,7 +11,7 @@ export default class CustomStringInput extends React.Component {
   }
 
   handleChange = (event) => {
-    this.props.onChange(PatchEvent.from(set(event.target.value)))
+    this.props.onChange(set(event.target.value))
   }
 
   render() {

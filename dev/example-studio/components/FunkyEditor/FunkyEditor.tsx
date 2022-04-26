@@ -1,19 +1,19 @@
 import React from 'react'
-import {PatchEvent} from '@sanity/base/form'
+import {DocumentPresence} from '@sanity/base/_unstable'
+import {PatchArg, PortableTextMarker} from '@sanity/base/form'
 import {BlockEditor} from '@sanity/form-builder'
 import {OnPasteFn, PortableTextBlock, PortableTextEditor} from '@sanity/portable-text-editor'
 import {htmlToBlocks} from '@sanity/block-tools'
-import {ArraySchemaType, Marker, Path} from '@sanity/types'
-import {DocumentPresence} from '@sanity/base/presence'
+import {ArraySchemaType, Path} from '@sanity/types'
 import CustomMarkers from './CustomMarkers'
 import BlockActions from './BlockActions'
 
 export interface FunkyEditorProps {
   focusPath: Path
   level: number
-  markers: Marker[]
+  markers: PortableTextMarker[]
   onBlur: () => void
-  onChange: (event: PatchEvent) => void
+  onChange: (patches: PatchArg[]) => void
   onFocus: (pathOrEvent?: Path | React.FocusEvent) => void
   presence: DocumentPresence[]
   readOnly: boolean

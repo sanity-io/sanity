@@ -7,7 +7,7 @@ import {
   ValidationMarker,
 } from '@sanity/types'
 import React from 'react'
-import {PatchEvent} from '../patch'
+import {PatchArg} from '../patch'
 import {InputProps} from './inputProps'
 import {FieldProps} from '.'
 
@@ -72,7 +72,7 @@ export interface FormArrayInputFunctionsProps<SchemaType extends ArraySchemaType
   children?: React.ReactNode
   className?: string
   onAppendItem: (itemValue: MemberType) => void
-  onChange: (event: PatchEvent) => void
+  onChange: (...patches: PatchArg[]) => void
   onCreateValue: (type: SchemaType) => MemberType
   onFocusItem: (item: MemberType, index: number) => void
   onPrependItem: (itemValue: MemberType) => void

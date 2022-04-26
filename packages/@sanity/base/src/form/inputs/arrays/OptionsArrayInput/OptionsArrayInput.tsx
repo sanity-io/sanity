@@ -4,7 +4,7 @@ import {isTitledListValue} from '@sanity/types'
 import {Box, Checkbox, Flex, Text} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
 import {FormFieldSet} from '../../../../components/formField'
-import {PatchEvent, set, unset} from '../../../patch'
+import {set, unset} from '../../../patch'
 import {ArrayInputProps, FIXME} from '../../../types'
 import {FormNodePreview} from '../../../FormNodePreview'
 import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
@@ -60,7 +60,7 @@ export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProp
     const list = get(type.options, 'list') as FIXME[]
     if (!isChecked && optionValue._key) {
       // This is an optimization that only works if list items are _keyed
-      this.props.onChange(PatchEvent.from(unset([{_key: optionValue._key}])))
+      this.props.onChange(unset([{_key: optionValue._key}]))
     }
     const nextValue = list
       .filter((item) =>
@@ -69,7 +69,7 @@ export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProp
           : inArray(value, resolveValueWithLegacyOptionsSupport(item))
       )
       .map(resolveValueWithLegacyOptionsSupport)
-    this.props.onChange(PatchEvent.from(nextValue.length > 0 ? set(nextValue) : unset()))
+    this.props.onChange(nextValue.length > 0 ? set(nextValue) : unset())
   }
 
   getMemberTypeOfItem(option: any) {

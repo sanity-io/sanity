@@ -1,6 +1,6 @@
 import React, {useCallback} from 'react'
 import {format, parse} from '@sanity/util/legacyDateFormat'
-import {PatchEvent, set, unset} from '../../patch'
+import {set, unset} from '../../patch'
 import {StringInputProps} from '../../types'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
 
@@ -38,7 +38,7 @@ export function DateInput(props: DateInputProps) {
 
   const handleChange = useCallback(
     (nextDate: string | null) => {
-      onChange(PatchEvent.from([nextDate === null ? unset() : set(nextDate)]))
+      onChange(nextDate === null ? unset() : set(nextDate))
     },
     [onChange]
   )

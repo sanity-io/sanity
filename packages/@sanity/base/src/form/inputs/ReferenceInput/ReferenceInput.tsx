@@ -41,7 +41,7 @@ import styled from 'styled-components'
 import {ChangeIndicatorForFieldPath} from '../../../components/changeIndicators'
 import {FormField} from '../../../components/formField'
 import {PreviewCard} from '../../../components/PreviewCard'
-import {PatchEvent, set, setIfMissing, unset} from '../../patch'
+import {set, setIfMissing, unset} from '../../patch'
 import {EMPTY_ARRAY} from '../../utils/empty'
 // import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {isNonNullable} from '../../utils/isNonNullable'
@@ -114,7 +114,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
       ]),
     ].filter(isNonNullable)
 
-    onChange(PatchEvent.from(patches))
+    onChange(patches)
 
     onEditReference({id, type: option.type, template: option.template})
     onFocus?.([])
@@ -123,7 +123,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
   const handleChange = useCallback(
     (id: string) => {
       if (!id) {
-        onChange(PatchEvent.from(unset()))
+        onChange(unset())
         onFocus?.([])
         return
       }
@@ -145,14 +145,14 @@ export function ReferenceInput(props: ReferenceInputProps) {
           : set({type: hit?.type, weak: type.weak}, ['_strengthenOnPublish']),
       ].filter(isNonNullable)
 
-      onChange(PatchEvent.from(patches))
+      onChange(patches)
       onFocus?.([])
     },
     [searchState.hits, type.name, type.weak, onChange, onFocus]
   )
 
   const handleClear = useCallback(() => {
-    onChange(PatchEvent.from(unset()))
+    onChange(unset())
   }, [onChange])
 
   const handlePreviewKeyPress = useCallback(
@@ -213,17 +213,15 @@ export function ReferenceInput(props: ReferenceInputProps) {
     hasRef && !loadableReferenceInfo.isLoading && value?._strengthenOnPublish
 
   const handleFixStrengthMismatch = useCallback(() => {
-    onChange(PatchEvent.from(type.weak === true ? set(true, ['_weak']) : unset(['_weak'])))
+    onChange(type.weak === true ? set(true, ['_weak']) : unset(['_weak']))
   }, [onChange, type])
 
   const referenceExists = hasRef && loadableReferenceInfo.result?.preview?.published?._id
 
   const handleRemoveStrengthenOnPublish = useCallback(() => {
     onChange(
-      PatchEvent.from([
-        type.weak === true ? set(true, ['_weak']) : unset(['_weak']),
-        unset(['_strengthenOnPublish']),
-      ])
+      type.weak === true ? set(true, ['_weak']) : unset(['_weak']),
+      unset(['_strengthenOnPublish'])
     )
   }, [onChange, type])
 

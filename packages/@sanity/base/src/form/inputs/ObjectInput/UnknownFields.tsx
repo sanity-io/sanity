@@ -2,14 +2,14 @@ import React, {useCallback} from 'react'
 import {Box, Button, Card, Code, Stack, Text} from '@sanity/ui'
 import {TrashIcon} from '@sanity/icons'
 import {isDev} from '../../../environment'
-import {PatchEvent, unset} from '../../patch'
+import {PatchArg, unset} from '../../patch'
 import {Details} from '../../components/Details'
 import {Alert} from '../../components/Alert'
 
 type Props = {
   fieldNames: string[]
   value?: Record<string, unknown>
-  onChange?: (event: PatchEvent) => void
+  onChange: (...patches: PatchArg[]) => void
   readOnly?: boolean
 }
 
@@ -19,9 +19,7 @@ export function UnknownFields(props: Props) {
 
   const handleUnsetClick = useCallback(
     (fieldName) => {
-      if (onChange) {
-        onChange(PatchEvent.from(unset([fieldName])))
-      }
+      onChange(unset([fieldName]))
     },
     [onChange]
   )

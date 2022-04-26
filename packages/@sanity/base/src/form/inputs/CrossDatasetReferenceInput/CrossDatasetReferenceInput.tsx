@@ -27,8 +27,7 @@ import {
 import {useObservableCallback} from 'react-rx'
 import {ChangeIndicatorForFieldPath} from '../../../components/changeIndicators'
 import {FIXME, ObjectInputProps} from '../../types'
-import {PatchEvent, set, unset} from '../../patch'
-import {EMPTY_ARRAY} from '../../utils/empty'
+import {set, unset} from '../../patch'
 // import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {AlertStrip} from '../../components/AlertStrip'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
@@ -84,7 +83,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   const handleChange = useCallback(
     (id: string) => {
       if (!id) {
-        onChange(PatchEvent.from(unset()))
+        onChange(unset())
         onFocus?.([])
         return
       }
@@ -96,17 +95,15 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
       }
 
       onChange(
-        PatchEvent.from(
-          set({
-            _type: type.name,
-            _ref: getPublishedId(id),
-            _projectId: type.projectId,
-            _dataset: type.dataset,
-            _weak: type.weak,
-            // persist _key between mutations if the value is in an array
-            _key: value?._key,
-          })
-        )
+        set({
+          _type: type.name,
+          _ref: getPublishedId(id),
+          _projectId: type.projectId,
+          _dataset: type.dataset,
+          _weak: type.weak,
+          // persist _key between mutations if the value is in an array
+          _key: value?._key,
+        })
       )
 
       onFocus?.([])
@@ -124,7 +121,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   )
 
   const handleClear = useCallback(() => {
-    onChange(PatchEvent.from(unset()))
+    onChange(unset())
   }, [onChange])
 
   const handleAutocompleteKeyDown = useCallback(
@@ -169,7 +166,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   const hasRef = Boolean(value?._ref)
 
   const handleFixStrengthMismatch = useCallback(() => {
-    onChange(PatchEvent.from(type.weak === true ? set(true, ['_weak']) : unset(['_weak'])))
+    onChange(type.weak === true ? set(true, ['_weak']) : unset(['_weak']))
   }, [onChange, type])
 
   const {push} = useToast()

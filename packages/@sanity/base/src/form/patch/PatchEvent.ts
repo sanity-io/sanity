@@ -5,6 +5,9 @@ import {FormPatch} from './types'
 
 export type PatchArg = FormPatch | FormPatch[]
 
+/**
+ * @internal
+ */
 export class PatchEvent {
   static from(...patches: PatchArg[]): PatchEvent {
     return new PatchEvent(flatten(patches))
@@ -16,11 +19,11 @@ export class PatchEvent {
     this.patches = patches
   }
 
-  prepend(...patches: Array<PatchArg>): PatchEvent {
+  prepend(...patches: PatchArg[]): PatchEvent {
     return PatchEvent.from([...flatten(patches), ...this.patches])
   }
 
-  append(...patches: Array<PatchArg>): PatchEvent {
+  append(...patches: PatchArg[]): PatchEvent {
     return PatchEvent.from([...this.patches, ...flatten(patches)])
   }
 

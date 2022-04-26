@@ -108,7 +108,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
                 ? set(getEmptyValue(type))
                 : patch
           )
-        ).prefixAll(index)
+        ).prefixAll(index).patches
       )
     },
     [index, onChange, type]

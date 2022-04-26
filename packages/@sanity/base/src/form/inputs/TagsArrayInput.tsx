@@ -1,7 +1,7 @@
 import {useId} from '@reach/auto-id'
 import React, {useCallback, useMemo} from 'react'
 import {FormField} from '../../components/formField'
-import {PatchEvent, set, unset} from '../patch'
+import {set, unset} from '../patch'
 import {TagInput} from '../components/tagInput'
 import {ArrayInputProps} from '../types'
 
@@ -15,9 +15,7 @@ export function TagsArrayInput(props: TagsArrayInputProps) {
 
   const handleChange = useCallback(
     (nextValue: {value: string}[]) => {
-      const patch = nextValue.length === 0 ? unset() : set(nextValue.map((v) => v.value))
-
-      onChange(PatchEvent.from(patch))
+      onChange(nextValue.length === 0 ? unset() : set(nextValue.map((v) => v.value)))
     },
     [onChange]
   )

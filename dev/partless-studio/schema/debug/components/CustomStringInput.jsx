@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {PatchEvent, set} from '@sanity/base/form'
+import {set} from '@sanity/base/form'
 
 export default class CustomStringInput extends React.Component {
   static propTypes = {
@@ -10,7 +10,7 @@ export default class CustomStringInput extends React.Component {
   }
 
   handleChange = (event) => {
-    this.props.onChange(PatchEvent.from(set(event.target.value)))
+    this.props.onChange(set(event.target.value))
   }
 
   render() {

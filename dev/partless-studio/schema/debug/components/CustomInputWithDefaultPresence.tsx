@@ -1,15 +1,23 @@
 import React from 'react'
 import {range} from 'lodash'
-import {PatchEvent, set, setIfMissing} from '@sanity/base/form'
+import {ObjectInputProps, set, setIfMissing} from '@sanity/base/form'
 import {FieldPresence, PresenceScope} from '@sanity/base/_unstable'
 
 export const CustomInputWithDefaultPresence = React.forwardRef(
-  function CustomInputWithDefaultPresence(props: any, ref: React.ForwardedRef<HTMLDivElement>) {
-    const {value, type, onFocus, onChange, presence, readOnly} = props
+  function CustomInputWithDefaultPresence(
+    props: ObjectInputProps<Record<string, any>>,
+    ref: React.ForwardedRef<HTMLDivElement>
+  ) {
+    const {inputProps, value, type, onChange} = props
 
-    const handleRootFocus = React.useCallback((event) => {
-      if (event.currentTarget.element === ref) onFocus()
-    }, [])
+    const {onFocus, readOnly} = inputProps
+
+    const handleRootFocus = React.useCallback(
+      (event) => {
+        if (event.currentTarget.element === ref) onFocus()
+      },
+      [onFocus, ref]
+    )
 
     return (
       <>
@@ -31,7 +39,7 @@ export const CustomInputWithDefaultPresence = React.forwardRef(
                       <div style={{position: 'absolute', left: -24}}>
                         <PresenceScope path={path} readOnly={readOnly}>
                           {/* Show presence items for this particular cell */}
-                          <FieldPresence maxAvatars={3} presence={presence} />
+                          <FieldPresence maxAvatars={3} />
                         </PresenceScope>
                       </div>
                       <input
@@ -40,11 +48,9 @@ export const CustomInputWithDefaultPresence = React.forwardRef(
                         value={((value || {})[rowField] || {})[cellField]}
                         onChange={(e) => {
                           onChange(
-                            PatchEvent.from(
-                              setIfMissing({}),
-                              setIfMissing({}, [rowField]),
-                              set(e.currentTarget.value, path)
-                            )
+                            setIfMissing({}),
+                            setIfMissing({}, [rowField]),
+                            set(e.currentTarget.value, path)
                           )
                         }}
                         onFocus={() => {

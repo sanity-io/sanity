@@ -17,7 +17,7 @@ import {
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {Tooltip, Flex, ResponsivePaddingProps} from '@sanity/ui'
 import React, {useCallback, useMemo, useRef, useState} from 'react'
-import {PatchEvent} from '../../../patch'
+import {PatchArg, PatchEvent} from '../../../patch'
 import {PortableTextMarker, RenderCustomMarkers} from '../../../types'
 import {RenderBlockActions} from '../types'
 import {BlockActions} from '../BlockActions'
@@ -43,7 +43,7 @@ interface BlockObjectProps {
   markers: PortableTextMarker[]
   validation: ValidationMarker[]
   isFullscreen?: boolean
-  onChange: (event: PatchEvent) => void
+  onChange: (...patches: PatchArg[]) => void
   onFocus: (path: Path) => void
   readOnly?: boolean
   renderBlockActions?: RenderBlockActions

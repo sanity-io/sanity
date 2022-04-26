@@ -11,14 +11,24 @@ import {
   ValidationMarker,
 } from '@sanity/types'
 import {FormFieldPresence} from '../../presence'
-import {PatchEvent} from '../patch'
+import {PatchArg} from '../patch'
 import {InsertEvent} from './event'
 import {FieldGroup} from './fieldGroup'
 import {ArrayMember, ObjectMember} from './member'
 import {RenderArrayItemCallback, RenderFieldCallback} from './renderCallback'
 
 export interface BaseInputProps<T = unknown, S extends SchemaType = SchemaType> {
-  compareValue: T | undefined
+  /**
+   * @internal
+   */
+  __internal: {
+    compareValue: T | undefined
+    level: number
+    path: Path
+    presence: FormFieldPresence[]
+    validation: ValidationMarker[]
+  }
+
   focusPath: Path
   focused: boolean
   hidden?: boolean
@@ -29,12 +39,8 @@ export interface BaseInputProps<T = unknown, S extends SchemaType = SchemaType> 
     readOnly: boolean
     ref: React.Ref<any> // @todo
   }
-  level: number
-  onChange: (patchEvent: PatchEvent) => void
-  path: Path
-  presence: FormFieldPresence[]
+  onChange: (...patches: PatchArg[]) => void
   type: S
-  validation: ValidationMarker[]
   value: T | undefined
 }
 
@@ -42,8 +48,6 @@ export interface BaseInputProps<T = unknown, S extends SchemaType = SchemaType> 
 export interface ObjectInputProps<T extends {} = {}, S extends ObjectSchemaType = ObjectSchemaType>
   extends BaseInputProps<T, S> {
   kind: 'object'
-  collapsed: boolean
-  collapsible: boolean
   groups: FieldGroup[]
   members: ObjectMember[]
   onSelectFieldGroup: (groupName: string) => void
@@ -54,8 +58,6 @@ export interface ObjectInputProps<T extends {} = {}, S extends ObjectSchemaType 
 export interface ArrayInputProps<V = unknown, S extends ArraySchemaType = ArraySchemaType<V>>
   extends BaseInputProps<V, S> {
   kind: 'array'
-  collapsed: boolean
-  collapsible: boolean
   members: ArrayMember[]
   onInsert: (event: InsertEvent) => void
   onSetCollapsed: (collapsed: boolean) => void

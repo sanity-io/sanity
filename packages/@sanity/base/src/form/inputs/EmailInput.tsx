@@ -2,7 +2,7 @@ import React, {useMemo} from 'react'
 import {isValidationErrorMarker} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {FormField} from '../../components/formField'
-import {PatchEvent, set, unset} from '../patch'
+import {set, unset} from '../patch'
 import {StringInputProps} from '../types'
 
 export type EmailInputProps = StringInputProps
@@ -15,7 +15,7 @@ export function EmailInput(props: EmailInputProps) {
   const handleChange = React.useCallback(
     (event) => {
       const inputValue = event.currentTarget.value
-      onChange(PatchEvent.from(inputValue ? set(inputValue) : unset()))
+      onChange(inputValue ? set(inputValue) : unset())
     },
     [onChange]
   )

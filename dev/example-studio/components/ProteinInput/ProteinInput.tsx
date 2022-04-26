@@ -1,7 +1,7 @@
 import React from 'react'
-import {PatchEvent, unset, set, setIfMissing} from '@sanity/base/form'
+import {FormFieldSet} from '@sanity/base/_unstable'
+import {PatchArg, PatchEvent, unset, set, setIfMissing} from '@sanity/base/form'
 import {io, Viewer} from 'bio-pv'
-import {FormFieldSet} from '@sanity/base/components'
 import {Button, Select, Spinner, Stack, Text, TextInput} from '@sanity/ui'
 import {ObjectSchemaType} from '@sanity/types'
 import PDBS from './PDBS'
@@ -14,7 +14,7 @@ interface CameraValue {
 
 interface ProteinInputProps {
   level: number
-  onChange: (event: PatchEvent) => void
+  onChange: (...patches: PatchArg[]) => void
   type: ObjectSchemaType
   value?: {
     _type: unknown
@@ -128,17 +128,15 @@ export default class ProteinInput extends React.Component<ProteinInputProps> {
     const {_rotation, _center, _zoom} = nextCamera
 
     onChange(
-      PatchEvent.from([
-        setIfMissing({_type: type.name, pdb: DEFAULT_PDB}),
-        set(
-          {
-            rotation: Array.from(_rotation),
-            center: Array.from(_center),
-            zoom: _zoom,
-          },
-          ['camera']
-        ),
-      ])
+      setIfMissing({_type: type.name, pdb: DEFAULT_PDB}),
+      set(
+        {
+          rotation: Array.from(_rotation),
+          center: Array.from(_center),
+          zoom: _zoom,
+        },
+        ['camera']
+      )
     )
   }
 

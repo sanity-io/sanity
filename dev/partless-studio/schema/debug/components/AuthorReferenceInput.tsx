@@ -1,6 +1,6 @@
 import {useSource} from '@sanity/base'
 import {FormField} from '@sanity/base/_unstable'
-import {PatchEvent, set, unset, setIfMissing, ObjectFieldProps} from '@sanity/base/form'
+import {set, unset, setIfMissing, ObjectInputProps} from '@sanity/base/form'
 import imageUrlBuilder from '@sanity/image-url'
 import {Reference, ReferenceSchemaType} from '@sanity/types'
 import {Button, Spinner} from '@sanity/ui'
@@ -16,10 +16,11 @@ interface AuthorReference {
 }
 
 export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
-  props: ObjectFieldProps<Reference, ReferenceSchemaType>,
+  props: ObjectInputProps<Reference, ReferenceSchemaType>,
   ref: React.ForwardedRef<any>
 ) {
-  const {level, readOnly = false, type, value} = props
+  const {inputProps, type, value} = props
+  const {readOnly} = inputProps
   const {client} = useSource()
   const current = value && value._ref
   const imageBuilder = useMemo(() => imageUrlBuilder(client), [client])
@@ -58,21 +59,19 @@ export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
     }
 
     props.onChange(
-      PatchEvent.from(
-        // A reference is an object, so we need to initialize it before attempting to set subproperties
-        setIfMissing({_type: type.name, _ref: item._id}),
+      // A reference is an object, so we need to initialize it before attempting to set subproperties
+      setIfMissing({_type: type.name, _ref: item._id}),
 
-        // Allow setting weak reference in schema options
-        type.weak === true ? set(true, ['_weak']) : unset(['_weak']),
+      // Allow setting weak reference in schema options
+      type.weak === true ? set(true, ['_weak']) : unset(['_weak']),
 
-        // Set the actual reference value
-        set(item._id, ['_ref'])
-      )
+      // Set the actual reference value
+      set(item._id, ['_ref'])
     )
   }
 
   const handleClear = () => {
-    props.onChange(PatchEvent.from(unset()))
+    props.onChange(unset())
   }
 
   useImperativeHandle(ref, () => ({
@@ -82,7 +81,7 @@ export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
   }))
 
   return (
-    <FormField label={type.title} level={level} description={type.description} htmlFor="foo">
+    <FormField>
       <div className={styles.authorGroup}>
         {loading ? (
           <Spinner

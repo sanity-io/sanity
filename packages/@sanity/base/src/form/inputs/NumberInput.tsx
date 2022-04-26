@@ -3,7 +3,7 @@ import {isValidationErrorMarker} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {FormField} from '../../components/formField'
-import {PatchEvent, set, unset} from '../patch'
+import {set, unset} from '../patch'
 import {getValidationRule} from '../utils/getValidationRule'
 import {NumberInputProps} from '../types'
 
@@ -20,7 +20,7 @@ export function NumberInput(props: NumberInputProps) {
   const handleChange = React.useCallback(
     (event: React.SyntheticEvent<HTMLInputElement>) => {
       const nextValue = event.currentTarget.value
-      onChange(PatchEvent.from(nextValue === '' ? unset() : set(Number(nextValue))))
+      onChange(nextValue === '' ? unset() : set(Number(nextValue)))
     },
     [onChange]
   )

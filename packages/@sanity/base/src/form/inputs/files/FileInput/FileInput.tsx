@@ -125,13 +125,13 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
       .concat(allKeys.filter((key) => ['_upload'].includes(key)))
       .map((key) => unset([key]))
 
-    this.props.onChange(PatchEvent.from(isEmpty && !isArrayElement ? unset() : removeKeys))
+    this.props.onChange(isEmpty && !isArrayElement ? unset() : removeKeys)
   }
 
   clearUploadStatus() {
     // todo: this is kind of hackish
     if (this.props.value?._upload) {
-      this.props.onChange(PatchEvent.from([unset(['_upload'])]))
+      this.props.onChange(unset(['_upload']))
     }
   }
 
@@ -198,11 +198,11 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
     }
     this.cancelUpload()
     this.setState({isUploading: true})
-    onChange(PatchEvent.from([setIfMissing({_type: type.name})]))
+    onChange(setIfMissing({_type: type.name}))
     this.uploadSubscription = uploader.upload(file, type, options).subscribe({
       next: (uploadEvent) => {
         if (uploadEvent.patches) {
-          onChange(PatchEvent.from(uploadEvent.patches))
+          onChange(uploadEvent.patches)
         }
       },
       error: (err) => {
@@ -288,7 +288,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
     // Also, we don't want to use this logic for array items, since the parent will
     // take care of it when closing the array dialog
     if (!this.valueIsArrayElement() && this.eventIsUnsettingLastFilledField(event)) {
-      onChange(PatchEvent.from(unset()))
+      onChange(unset())
       return
     }
 
@@ -297,7 +297,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
         setIfMissing({
           _type: type.name,
         })
-      )
+      ).patches
     )
   }
 

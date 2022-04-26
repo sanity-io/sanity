@@ -8,7 +8,7 @@ import styled from 'styled-components'
 import shallowEquals from 'shallow-equals'
 import {ChangeIndicatorForFieldPath} from '../../../../components/changeIndicators'
 import {FormField} from '../../../../components/formField'
-import {PatchEvent, set} from '../../../patch'
+import {set} from '../../../patch'
 import {Checkerboard} from '../../../components/Checkerboard'
 import {withFocusRing} from '../../../components/withFocusRing'
 import {RatioBox} from '../common/RatioBox'
@@ -111,7 +111,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
         ? {_type: hotspotField.type.name, ...(finalValue.hotspot || DEFAULT_HOTSPOT)}
         : finalValue.hotspot
 
-      onChange(PatchEvent.from([set(crop, ['crop']), set(hotspot, ['hotspot'])]))
+      onChange(set(crop, ['crop']), set(hotspot, ['hotspot']))
     },
     [onChange, readOnly, type.fields]
   )

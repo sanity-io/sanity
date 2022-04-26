@@ -11,7 +11,7 @@ import {
   ValidationMarker,
 } from '@sanity/types'
 import {FormFieldPresence} from '../../presence'
-import {PatchEvent} from '../patch'
+import {PatchArg} from '../patch'
 import {InsertEvent} from './event'
 import {FieldGroup} from './fieldGroup'
 import {ArrayMember, ObjectMember} from './member'
@@ -30,7 +30,7 @@ export interface BaseItemInputProps<T = unknown, S extends SchemaType = SchemaTy
     ref: React.Ref<any> // @todo
   }
   level: number
-  onChange: (patchEvent: PatchEvent) => void
+  onChange: (patches: PatchArg[]) => void
   path: Path
   presence: FormFieldPresence[]
   type: S

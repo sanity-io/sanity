@@ -5,14 +5,14 @@ import {
 } from '@sanity/portable-text-editor'
 import React, {useCallback, useMemo} from 'react'
 import styled from 'styled-components'
-import {PatchEvent} from '../../patch'
 import {FIXME} from '../../types'
+import {PatchArg} from '../../patch'
 import {createBlockActionPatchFn} from './utils/createBlockActionPatchFn'
 import {RenderBlockActions} from './types'
 
 interface BlockActionsProps {
   block: PortableTextBlock
-  onChange: (event: PatchEvent) => void
+  onChange: (...patches: PatchArg[]) => void
   renderBlockActions?: RenderBlockActions
 }
 

@@ -129,7 +129,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
 
   clearUploadStatus() {
     if (this.props.value?._upload) {
-      this.props.onChange(PatchEvent.from([unset(['_upload'])]))
+      this.props.onChange(unset(['_upload']))
     }
   }
 
@@ -175,11 +175,11 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
 
     this.cancelUpload()
     this.setState({isUploading: true})
-    onChange(PatchEvent.from([setIfMissing({_type: type.name})]))
+    onChange(setIfMissing({_type: type.name}))
     this.uploadSubscription = uploader.upload(file, type, options).subscribe({
       next: (uploadEvent) => {
         if (uploadEvent.patches) {
-          onChange(PatchEvent.from(uploadEvent.patches))
+          onChange(uploadEvent.patches)
         }
       },
       error: (err) => {
@@ -194,7 +194,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
         this.clearUploadStatus()
       },
       complete: () => {
-        onChange(PatchEvent.from([unset(['hotspot']), unset(['crop'])]))
+        onChange(unset(['hotspot']), unset(['crop']))
         this.setState({isUploading: false})
         // this.toast.push({
         //   status: 'success',
@@ -224,9 +224,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
       .concat(allKeys.filter((key) => ['crop', 'hotspot', '_upload'].includes(key)))
       .map((key) => unset([key]))
 
-    this.props.onChange(
-      PatchEvent.from(isEmpty && !this.valueIsArrayElement() ? unset() : removeKeys)
-    )
+    this.props.onChange(isEmpty && !this.valueIsArrayElement() ? unset() : removeKeys)
   }
 
   handleFieldChange = (event: PatchEvent) => {
@@ -245,7 +243,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
     // Also, we don't want to use this logic for array items, since the parent will
     // take care of it when closing the array dialog
     if (!this.valueIsArrayElement() && this.eventIsUnsettingLastFilledField(event)) {
-      onChange(PatchEvent.from(unset()))
+      onChange(unset())
       return
     }
 
@@ -254,7 +252,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
         setIfMissing({
           _type: type.name,
         })
-      )
+      ).patches
     )
   }
 

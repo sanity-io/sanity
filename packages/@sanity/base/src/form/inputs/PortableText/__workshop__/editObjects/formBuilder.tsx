@@ -2,7 +2,7 @@ import {TextArea, Theme} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import styled, {css} from 'styled-components'
 import {FormInputComponentResolver, InputProps} from '../../../../types'
-import {PatchEvent, set} from '../../../../patch'
+import {set} from '../../../../patch'
 
 const DebugTextArea = styled(TextArea)(({theme}: {theme: Theme}) => {
   return css`
@@ -15,7 +15,7 @@ function DebugInput(props: InputProps) {
   const {onBlur, onFocus, readOnly, ref} = inputProps
 
   const handleChange = useCallback(() => {
-    onChange(PatchEvent.from(set({})))
+    onChange(set({}))
   }, [onChange])
 
   return (

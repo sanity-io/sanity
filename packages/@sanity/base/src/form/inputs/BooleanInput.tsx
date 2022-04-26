@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import {ChangeIndicator} from '../../components/changeIndicators'
 import {FormFieldHeaderText, FormFieldStatus} from '../../components/formField'
 import {FieldPresence} from '../../presence'
-import {PatchEvent, set} from '../patch'
+import {set} from '../patch'
 import {BooleanInputProps} from '../types'
 
 const CenterAlignedBox = styled(Box)`
@@ -22,7 +22,7 @@ export function BooleanInput(props: BooleanInputProps) {
 
   const handleChange = useCallback(
     (event: React.SyntheticEvent<HTMLInputElement>) => {
-      onChange(PatchEvent.from(set(event.currentTarget.checked)))
+      onChange(set(event.currentTarget.checked))
     },
     [onChange]
   )

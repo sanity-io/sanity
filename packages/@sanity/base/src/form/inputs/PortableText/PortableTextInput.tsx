@@ -15,7 +15,7 @@ import React, {useEffect, useState, useMemo, useCallback, useRef} from 'react'
 import {Subject} from 'rxjs'
 import {Box, Text, useForwardedRef, useToast} from '@sanity/ui'
 import scrollIntoView from 'scroll-into-view-if-needed'
-import {PatchEvent, FormPatch as FormBuilderPatch} from '../../patch'
+import {FormPatch as FormBuilderPatch} from '../../patch'
 import type {ArrayInputProps, FIXME, PortableTextMarker, RenderCustomMarkers} from '../../types'
 import {FormField} from '../../../components/formField'
 import {withPatchSubscriber} from '../../utils/withPatchSubscriber'
@@ -173,7 +173,7 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
       switch (change.type) {
         case 'mutation':
           setTimeout(() => {
-            onChange(PatchEvent.from(change.patches as FormBuilderPatch[]))
+            onChange(change.patches as FormBuilderPatch[])
           })
           break
         case 'selection':
@@ -204,7 +204,7 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
         case 'undo':
         case 'redo':
           setTimeout(() => {
-            onChange(PatchEvent.from(change.patches as FormBuilderPatch[]))
+            onChange(change.patches as FormBuilderPatch[])
           })
           break
         case 'invalidValue':

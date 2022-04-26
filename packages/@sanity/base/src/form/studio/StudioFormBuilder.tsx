@@ -17,10 +17,12 @@ import {
 } from '../types'
 // import {ChangeIndicatorProvider} from '../../components/changeIndicators'
 // import {assertType} from '../utils/asserters'
-import {FormNode} from '../FormNode'
+// import {FormNode} from '../FormNode'
 // import {FormPatch} from '../patch'
-import {MutationPatch} from '../utils/mutationPatch'
+// import {MutationPatch} from '../utils/mutationPatch'
 import {Focusable} from '../types/focusable'
+import {FormNode} from '../components/formNode'
+import {PatchEvent} from '../patch'
 import {StudioFormBuilderProvider} from './StudioFormBuilderProvider'
 import {resolveInputComponent as defaultInputResolver} from './inputResolver/inputResolver'
 
@@ -36,7 +38,7 @@ export interface StudioFormBuilderProps
   __internal_patchChannel: PatchChannel // eslint-disable-line camelcase
   // autoFocus?: boolean
   onBlur: () => void
-  onChange: (patches: MutationPatch[]) => void
+  onChange: (event: PatchEvent) => void
   onFocus: () => void
   onSelectFieldGroup: () => void
   onSetCollapsed: () => void
@@ -156,9 +158,9 @@ export const StudioFormBuilder = forwardRef(function StudioFormBuilder(
       level,
       members,
       name: '', // @todo
-      onBlur,
-      onChange,
-      onFocus,
+      // onBlur,
+      // onChange,
+      // onFocus,
       path,
       presence,
       readOnly,
@@ -177,9 +179,9 @@ export const StudioFormBuilder = forwardRef(function StudioFormBuilder(
       // id,
       level,
       members,
-      onBlur,
-      onChange,
-      onFocus,
+      // onBlur,
+      // onChange,
+      // onFocus,
       path,
       presence,
       readOnly,

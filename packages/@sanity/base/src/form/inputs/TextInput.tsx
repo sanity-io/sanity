@@ -3,7 +3,7 @@ import {useId} from '@reach/auto-id'
 import {isValidationErrorMarker, TextSchemaType} from '@sanity/types'
 import {TextArea} from '@sanity/ui'
 import styled from 'styled-components'
-import {PatchEvent, set, unset} from '../patch'
+import {set, unset} from '../patch'
 import {FormField} from '../../components/formField'
 import {StringInputProps} from '../types'
 
@@ -24,7 +24,7 @@ export function TextInput(props: TextInputProps) {
   const handleChange = React.useCallback(
     (event) => {
       const inputValue = event.currentTarget.value
-      onChange(PatchEvent.from(inputValue ? set(inputValue) : unset()))
+      onChange(inputValue ? set(inputValue) : unset())
     },
     [onChange]
   )

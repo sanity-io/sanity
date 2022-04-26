@@ -74,7 +74,7 @@ export class ArrayInput extends React.Component<
 
   insert = (item: ArrayMember, position: 'before' | 'after', path: Path) => {
     const {onChange} = this.props
-    onChange(PatchEvent.from(setIfMissing([]), insert([item], position, path)))
+    onChange(setIfMissing([]), insert([item], position, path))
   }
 
   handlePrepend = (value: ArrayMember) => {
@@ -147,17 +147,15 @@ export class ArrayInput extends React.Component<
     const {onFocus} = inputProps
 
     // create a patch for removing the item
-    const patch = PatchEvent.from(
-      unset(isKeySegment(item) ? [{_key: item._key}] : [value?.indexOf(item) || -1])
-    )
+    const patch = unset(isKeySegment(item) ? [{_key: item._key}] : [value?.indexOf(item) || -1])
 
     // apply the patch to the current value
-    const result = applyAll(value || [], patch.patches)
+    const result = applyAll(value || [], [patch])
 
     // if the result is an empty array
     if (Array.isArray(result) && !result.length) {
       // then unset the value
-      onChange(PatchEvent.from(unset()))
+      onChange(unset())
     } else {
       // otherwise apply the patch
       onChange(patch)
@@ -190,7 +188,7 @@ export class ArrayInput extends React.Component<
     onChange(
       event
         .prefixAll({_key: key})
-        .prepend(item._key ? [] : set(key, [value?.indexOf(item) || -1, '_key']))
+        .prepend(item._key ? [] : set(key, [value?.indexOf(item) || -1, '_key'])).patches
     )
   }
 
@@ -213,10 +211,8 @@ export class ArrayInput extends React.Component<
     }
 
     onChange(
-      PatchEvent.from(
-        unset([{_key: item._key}]),
-        insert([item], event.oldIndex > event.newIndex ? 'before' : 'after', [{_key: refItem._key}])
-      )
+      unset([{_key: item._key}]),
+      insert([item], event.oldIndex > event.newIndex ? 'before' : 'after', [{_key: refItem._key}])
     )
   }
 
@@ -241,7 +237,7 @@ export class ArrayInput extends React.Component<
     const {onChange, value = []} = this.props
     const patches = (value || []).map((val, i) => setIfMissing(randomKey(), [i, '_key']))
 
-    onChange(PatchEvent.from(...patches))
+    onChange(...patches)
   }
   setToast = (toast: any | null) => {
     this.toast = toast
@@ -253,7 +249,7 @@ export class ArrayInput extends React.Component<
       .reverse()
     const patches = nonObjects.map((index) => unset([index]))
 
-    onChange(PatchEvent.from(...patches))
+    onChange(...patches)
   }
 
   handleUpload = ({file, type, uploader}: {file: File; type: SchemaType; uploader: Uploader}) => {
@@ -273,7 +269,7 @@ export class ArrayInput extends React.Component<
 
     this.uploadSubscriptions = {
       ...this.uploadSubscriptions,
-      [key]: events$.subscribe(onChange),
+      [key]: events$.subscribe((event) => onChange(event.patches)),
     }
   }
 

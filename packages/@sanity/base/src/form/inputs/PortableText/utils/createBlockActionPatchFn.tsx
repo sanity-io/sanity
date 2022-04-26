@@ -1,6 +1,6 @@
 import {normalizeBlock} from '@sanity/block-tools'
 import {PortableTextBlock} from '@sanity/portable-text-editor'
-import {PatchEvent, insert, unset, set} from '../../../patch'
+import {insert, unset, set, PatchArg} from '../../../patch'
 
 type UnsetFunction = () => void
 type SetFunction = (args0: PortableTextBlock) => void
@@ -9,7 +9,7 @@ type InsertFunction = (args0: PortableTextBlock | PortableTextBlock[]) => void
 export function createBlockActionPatchFn(
   type: string,
   block: PortableTextBlock,
-  onPatch: (event: PatchEvent) => void,
+  onPatch: (...patches: PatchArg[]) => void,
   allowedDecorators: string[]
 ): UnsetFunction | SetFunction | InsertFunction {
   let toInsert
@@ -17,20 +17,18 @@ export function createBlockActionPatchFn(
     case 'set':
       return (givenBlock: PortableTextBlock): void => {
         return onPatch(
-          PatchEvent.from(
-            set(
-              normalizeBlock(givenBlock, {
-                allowedDecorators,
-              }),
+          set(
+            normalizeBlock(givenBlock, {
+              allowedDecorators,
+            }),
 
-              [{_key: block._key}]
-            )
+            [{_key: block._key}]
           )
         )
       }
     case 'unset':
       return (): void => {
-        return onPatch(PatchEvent.from(unset([{_key: block._key}])))
+        return onPatch(unset([{_key: block._key}]))
       }
     case 'insert':
       return (givenBlock: PortableTextBlock | PortableTextBlock[]): void => {
@@ -41,7 +39,7 @@ export function createBlockActionPatchFn(
           })
         )
 
-        return onPatch(PatchEvent.from(insert(toInsert, 'after', [{_key: block._key}])))
+        return onPatch(insert(toInsert, 'after', [{_key: block._key}]))
       }
     default:
       throw new Error(`Patch type ${type} not supported`)

@@ -1,6 +1,6 @@
 import {AssetFromSource, FileSchemaType} from '@sanity/types'
 import {get} from 'lodash'
-import {PatchEvent, set, setIfMissing, unset} from '../../../patch'
+import {PatchArg, set, setIfMissing, unset} from '../../../patch'
 import {Uploader, UploaderResolver, UploadOptions} from '../../../studio/uploads/types'
 import {base64ToFile, urlToFile} from '../ImageInput/utils/image'
 import {FIXME} from '../../../types'
@@ -10,7 +10,7 @@ type DOMFile = globalThis.File
 
 interface Props {
   assetFromSource: AssetFromSource[]
-  onChange: (event: PatchEvent) => void
+  onChange: (...patches: PatchArg[]) => void
   type: FileSchemaType
   resolveUploader: UploaderResolver
   uploadWith: (uploader: Uploader, file: DOMFile, assetDocumentProps?: UploadOptions) => void
@@ -43,21 +43,19 @@ export function handleSelectAssetFromSource({
   switch (firstAsset.kind) {
     case 'assetDocumentId':
       onChange(
-        PatchEvent.from([
-          setIfMissing({
-            _type: type.name,
-          }),
+        setIfMissing({
+          _type: type.name,
+        }),
 
-          ...imagePatches,
-          set(
-            {
-              _type: 'reference',
-              _ref: firstAsset.value,
-            },
+        ...imagePatches,
+        set(
+          {
+            _type: 'reference',
+            _ref: firstAsset.value,
+          },
 
-            ['asset']
-          ),
-        ])
+          ['asset']
+        )
       )
 
       break

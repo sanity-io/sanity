@@ -10,7 +10,7 @@ import {
 import * as PathUtils from '@sanity/util/paths'
 import {TextInput, Button, Flex, Box, Card, Stack} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
-import {PatchEvent, set, setIfMissing, unset} from '../../patch'
+import {set, setIfMissing, unset} from '../../patch'
 import {ChangeIndicatorCompareValueProvider} from '../../../components/changeIndicators'
 import {FormField} from '../../../components/formField'
 import {withDocument} from '../../utils/withDocument'
@@ -69,11 +69,11 @@ function SlugInputInner(props: SlugInputProps) {
   const updateSlug = React.useCallback(
     (nextSlug) => {
       if (!nextSlug) {
-        onChange(PatchEvent.from(unset([])))
+        onChange(unset())
         return
       }
 
-      onChange(PatchEvent.from(setIfMissing({_type: type.name}), set(nextSlug, ['current'])))
+      onChange(setIfMissing({_type: type.name}), set(nextSlug, ['current']))
     },
     [onChange, type.name]
   )

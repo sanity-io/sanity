@@ -3,7 +3,7 @@ import {isKeySegment, ValidationMarker} from '@sanity/types'
 import {Box, ResponsivePaddingProps, Tooltip} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
 import {PortableTextMarker, RenderCustomMarkers} from '../../../types'
-import {PatchEvent} from '../../../patch'
+import {PatchArg, PatchEvent} from '../../../patch'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {BlockActions} from '../BlockActions'
 import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
@@ -30,7 +30,7 @@ export interface TextBlockProps {
   isFullscreen?: boolean
   markers: PortableTextMarker[]
   validation: ValidationMarker[]
-  onChange: (event: PatchEvent) => void
+  onChange: (...patches: PatchArg[]) => void
   readOnly?: boolean
   renderBlockActions?: RenderBlockActions
   renderCustomMarkers?: RenderCustomMarkers
