@@ -22,6 +22,9 @@ import strings from './standard/strings'
 import texts from './standard/texts'
 import urls from './standard/urls'
 
+// Test documents for docs
+import {v3docs} from './docs/v3'
+
 // Test documents for debugging
 import actions from './debug/actions'
 import button from './debug/button'
@@ -176,4 +179,5 @@ export const schemaTypes = [
   fieldGroupsDefault,
   fieldGroupsMany,
   fieldGroupsWithValidation,
+  ...v3docs.types,
 ]

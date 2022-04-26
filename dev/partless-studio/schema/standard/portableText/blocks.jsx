@@ -4,10 +4,10 @@ import React from 'react'
 
 const CustomEditor = React.forwardRef((props, ref) => {
   const {markers, value} = props
-  const newMarkers = markers.concat([
+  const newMarkers = markers?.concat([
     {type: 'customMarkerTest', path: value && value[0] ? [{_key: value[0]._key}] : []},
   ])
-  return <BlockEditor {...props} validation={newMarkers} ref={ref} />
+  return <BlockEditor {...props} markers={newMarkers} ref={ref} />
 })
 CustomEditor.displayName = 'CustomEditor'
 CustomEditor.propTypes = BlockEditor.propTypes // eslint-disable-line react/forbid-foreign-prop-types
