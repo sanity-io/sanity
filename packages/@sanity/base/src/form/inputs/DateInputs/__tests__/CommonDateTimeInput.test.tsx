@@ -39,19 +39,19 @@ function renderInput() {
     <ThemeProvider scheme="light" theme={studioTheme}>
       <LayerProvider>
         <CommonDateTimeInput
-          // focusPath={[]}
-          title="test"
-          serialize={serialize}
-          deserialize={deserialize}
-          parseInputValue={parseInputValue}
-          formatInputValue={formatInputValue}
-          // onFocus={onFocus}
-          onChange={onChange}
-          value=""
-          presence={[]}
-          validation={[]}
-          level={0}
           description="Some description"
+          deserialize={deserialize}
+          formatInputValue={formatInputValue}
+          id="test"
+          level={0}
+          onChange={onChange}
+          parseInputValue={parseInputValue}
+          presence={[]}
+          readOnly={false}
+          serialize={serialize}
+          title="test"
+          validation={[]}
+          value=""
         />
       </LayerProvider>
     </ThemeProvider>

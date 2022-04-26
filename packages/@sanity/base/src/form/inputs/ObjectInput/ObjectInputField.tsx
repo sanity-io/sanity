@@ -12,11 +12,11 @@ interface FieldType {
 }
 
 export interface ObjectInputFieldProps extends Omit<InputProps, 'onChange' | 'type'> {
-  focusPath: Path
+  // focusPath: Path
   field: FieldType
-  parent: Record<string, unknown> | undefined
+  // parent: Record<string, unknown> | undefined
   onChange: (event: PatchEvent, field: FieldType) => void
-  filterField?: (type: ObjectSchemaTypeWithOptions) => boolean
+  // filterField?: (type: ObjectSchemaTypeWithOptions) => boolean
 }
 
 // This component renders a single type in an object type. It emits onChange events telling the owner about the name of the type
@@ -31,12 +31,12 @@ export const ObjectInputField = forwardRef(function ObjectInputField(
     level,
     onChange,
     inputProps,
-    validation,
-    focusPath,
-    filterField,
-    compareValue,
+    // validation,
+    // focusPath,
+    // filterField,
+    // compareValue,
     presence,
-    parent,
+    // parent,
   } = props
   const {onFocus, onBlur, readOnly} = inputProps
   // const conditionalReadOnly = useConditionalReadOnly() ?? readOnly

@@ -37,10 +37,7 @@ export const ItemForm = forwardRef(function ItemForm(props: ItemFormProps, ref: 
   const Input = useMemo(
     () =>
       isReference
-        ? forwardRef(function Input_(
-            givenProps: InputProps,
-            inputRef: ForwardedRef<{focus: () => void}>
-          ) {
+        ? function Input_(givenProps: InputProps) {
             return (
               <ReferenceItemComponent
                 {...givenProps}
@@ -48,10 +45,9 @@ export const ItemForm = forwardRef(function ItemForm(props: ItemFormProps, ref: 
                 onInsert={onInsert}
                 isSortable={isSortable}
                 onChange={onChange}
-                ref={inputRef}
               />
             )
-          })
+          }
         : undefined,
     [ReferenceItemComponent, insertableTypes, isReference, isSortable, onInsert, onChange]
   )

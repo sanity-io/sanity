@@ -1,20 +1,16 @@
 import {isValidationErrorMarker} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import React, {useMemo} from 'react'
-import {PatchEvent, set, unset} from '../patch'
 import {FormField} from '../../components/formField'
-import {getValidationRule} from '../utils/getValidationRule'
+import {PatchEvent, set, unset} from '../patch'
 import {StringInputProps} from '../types'
+import {getValidationRule} from '../utils/getValidationRule'
 
-export type UrlInputProps = StringInputProps
+export type URLInputProps = StringInputProps
 
-// @todo Rename to `URLInput`?
-export const UrlInput = React.forwardRef(function UrlInput(
-  props: UrlInputProps,
-  forwardedRef: React.ForwardedRef<HTMLInputElement>
-) {
+export function URLInput(props: URLInputProps) {
   const {inputProps, value, type, validation, level, onChange, presence} = props
-  const {id: inputId, onFocus, onBlur, readOnly} = inputProps
+  const {id: inputId, onFocus, onBlur, readOnly, ref} = inputProps
   const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
 
   const handleChange = React.useCallback(
@@ -29,26 +25,26 @@ export const UrlInput = React.forwardRef(function UrlInput(
   const inputType = uriRule?.constraint?.options?.allowRelative ? 'text' : 'url'
   return (
     <FormField
-      level={level}
-      validation={validation}
-      title={type.title}
-      description={type.description}
       __unstable_presence={presence}
+      description={type.description}
       inputId={inputId}
+      level={level}
+      title={type.title}
+      validation={validation}
     >
       <TextInput
-        type={inputType}
-        inputMode="url"
-        id={inputId}
         customValidity={errors.length > 0 ? errors[0].item.message : ''}
-        value={value || ''}
-        readOnly={Boolean(readOnly)}
-        placeholder={type.placeholder}
+        id={inputId}
+        inputMode="url"
+        onBlur={onBlur}
         onChange={handleChange}
         onFocus={onFocus}
-        onBlur={onBlur}
-        ref={forwardedRef}
+        placeholder={type.placeholder}
+        readOnly={Boolean(readOnly)}
+        ref={ref}
+        type={inputType}
+        value={value || ''}
       />
     </FormField>
   )
-})
+}

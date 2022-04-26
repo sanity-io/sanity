@@ -31,13 +31,9 @@ function parseOptions(options: SchemaOptions = {}): ParsedOptions {
 const deserialize = (value: string) => parse(value, VALUE_FORMAT)
 const serialize = (date: Date) => format(date, VALUE_FORMAT)
 
-export const DateInput = React.forwardRef(function DateInput(
-  props: DateInputProps,
-  forwardedRef: React.ForwardedRef<HTMLInputElement>
-) {
-  const {type, onChange, ...restProps} = props
-  const {title, description, placeholder} = type
-
+export function DateInput(props: DateInputProps) {
+  const {inputProps, level, onChange, presence, type, validation, value} = props
+  const {id, readOnly, ref} = inputProps
   const {dateFormat} = parseOptions(type.options)
 
   const handleChange = useCallback(
@@ -47,25 +43,31 @@ export const DateInput = React.forwardRef(function DateInput(
     [onChange]
   )
 
-  const formatInputValue = React.useCallback((date: Date) => format(date, dateFormat), [dateFormat])
+  const formatInputValue = useCallback((date: Date) => format(date, dateFormat), [dateFormat])
 
-  const parseInputValue = React.useCallback((inputValue: string) => parse(inputValue, dateFormat), [
-    dateFormat,
-  ])
+  const parseInputValue = useCallback(
+    (inputValue: string) => parse(inputValue, dateFormat),
+    [dateFormat]
+  )
 
   return (
     <CommonDateTimeInput
-      {...restProps}
-      onChange={handleChange}
-      ref={forwardedRef}
-      selectTime={false}
-      title={title}
-      description={description}
-      placeholder={placeholder}
-      parseInputValue={parseInputValue}
-      formatInputValue={formatInputValue}
+      description={type.description}
       deserialize={deserialize}
+      formatInputValue={formatInputValue}
+      id={id}
+      level={level}
+      onChange={handleChange}
+      parseInputValue={parseInputValue}
+      placeholder={type.placeholder}
+      presence={presence}
+      readOnly={readOnly}
+      ref={ref}
+      selectTime={false}
       serialize={serialize}
+      title={type.title}
+      validation={validation}
+      value={value}
     />
   )
-})
+}

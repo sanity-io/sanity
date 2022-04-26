@@ -144,7 +144,6 @@ const RadioSelect = forwardRef(function RadioSelect(
     customValidity?: string
     inputId?: string
   },
-
   ref: React.ForwardedRef<HTMLInputElement>
 ) {
   const {items, value, onChange, onFocus, readOnly, customValidity, direction, inputId} = props
@@ -181,7 +180,6 @@ const RadioSelectItem = forwardRef(function RadioSelectItem(
     readOnly?: boolean
     value?: TitledListValue<string | number>
   },
-
   ref: React.ForwardedRef<HTMLInputElement>
 ) {
   const {customValidity, inputId, item, onChange, onFocus, readOnly, value} = props

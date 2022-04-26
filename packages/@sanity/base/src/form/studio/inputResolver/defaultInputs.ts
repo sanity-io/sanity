@@ -5,7 +5,7 @@ import {ObjectInput} from '../../inputs/ObjectInput'
 import {StringInput} from '../../inputs/StringInput'
 import {DateTimeInput, DateInput} from '../../inputs/DateInputs'
 import {TextInput} from '../../inputs/TextInput'
-import {UrlInput} from '../../inputs/UrlInput'
+import {URLInput} from '../../inputs/UrlInput'
 import {SlugInput} from '../../inputs/Slug/SlugInput'
 import {StudioArrayInput} from '../inputs/StudioArrayInput'
 import {StudioImageInput} from '../inputs/StudioImageInput'
@@ -22,7 +22,7 @@ export const sanityInputs: Record<string, {input: React.ComponentType<FieldProps
   email: {input: EmailInput as FIXME},
   datetime: {input: DateTimeInput as FIXME},
   date: {input: DateInput} as FIXME,
-  url: {input: UrlInput as FIXME},
+  url: {input: URLInput as FIXME},
   image: {input: StudioImageInput as FIXME},
   file: {input: StudioFileInput as FIXME},
   string: {input: StringInput as FIXME},

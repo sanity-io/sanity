@@ -67,10 +67,7 @@ type SearchError = {
   }
 }
 
-const StudioReferenceInputInner = forwardRef(function StudioReferenceInputInner(
-  props: StudioReferenceInputProps,
-  ref: ForwardedRef<HTMLInputElement>
-) {
+function StudioReferenceInputInner(props: StudioReferenceInputProps) {
   const {client, schema} = useSource()
   const documentPreviewStore = useDocumentPreviewStore()
   const searchClient = useMemo(() => client.withConfig({apiVersion: '2021-03-25'}), [client])
@@ -182,13 +179,12 @@ const StudioReferenceInputInner = forwardRef(function StudioReferenceInputInner(
       onSearch={handleSearch}
       liveEdit={isDocumentLiveEdit}
       getReferenceInfo={(id, _type) => adapter.getReferenceInfo(documentPreviewStore, id, _type)}
-      ref={ref}
       selectedState={selectedState}
       editReferenceLinkComponent={EditReferenceLink}
       createOptions={createOptions}
       onEditReference={handleEditReference}
     />
   )
-})
+}
 
 export const SanityReferenceInput = withValuePath(withDocument(StudioReferenceInputInner))

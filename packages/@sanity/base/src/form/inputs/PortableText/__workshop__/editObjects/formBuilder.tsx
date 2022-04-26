@@ -1,5 +1,5 @@
 import {TextArea, Theme} from '@sanity/ui'
-import React, {forwardRef, useCallback, useImperativeHandle, useRef} from 'react'
+import React, {useCallback} from 'react'
 import styled, {css} from 'styled-components'
 import {FormInputComponentResolver, InputProps} from '../../../../types'
 import {PatchEvent, set} from '../../../../patch'
@@ -10,16 +10,9 @@ const DebugTextArea = styled(TextArea)(({theme}: {theme: Theme}) => {
   `
 })
 
-const DebugInput = forwardRef(function DebugInput(props: InputProps, ref) {
+function DebugInput(props: InputProps) {
   const {onChange, inputProps} = props
-  const {onBlur, onFocus, readOnly} = inputProps
-
-  const rootRef = useRef<HTMLTextAreaElement | null>(null)
-
-  useImperativeHandle(ref, () => ({
-    blur: () => rootRef.current?.blur(),
-    focus: () => rootRef.current?.focus(),
-  }))
+  const {onBlur, onFocus, readOnly, ref} = inputProps
 
   const handleChange = useCallback(() => {
     onChange(PatchEvent.from(set({})))
@@ -33,12 +26,12 @@ const DebugInput = forwardRef(function DebugInput(props: InputProps, ref) {
       padding={3}
       radius={1}
       readOnly={readOnly}
-      ref={rootRef}
+      ref={ref}
       rows={100}
       value={JSON.stringify(props.value, null, 2)}
     />
   )
-})
+}
 
 export const resolveInputComponent: FormInputComponentResolver = () => {
   return DebugInput

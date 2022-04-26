@@ -1,13 +1,10 @@
-/* eslint-disable import/no-unresolved */
-
+import {Box, Card, Checkbox, Flex, Switch} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import styled from 'styled-components'
-import {useId} from '@reach/auto-id'
-import {Box, Card, Checkbox, Flex, Switch} from '@sanity/ui'
+import {ChangeIndicator} from '../../components/changeIndicators'
 import {FormFieldHeaderText, FormFieldStatus} from '../../components/formField'
 import {FieldPresence} from '../../presence'
 import {PatchEvent, set} from '../patch'
-import {ChangeIndicator} from '../../components/changeIndicators'
 import {BooleanInputProps} from '../types'
 
 const CenterAlignedBox = styled(Box)`
@@ -18,14 +15,10 @@ const ZeroLineHeightBox = styled(Box)`
   line-height: 0;
 `
 
-export const BooleanInput = React.forwardRef(function BooleanInput(
-  props: BooleanInputProps,
-  ref: React.ForwardedRef<HTMLInputElement>
-) {
+export function BooleanInput(props: BooleanInputProps) {
   const {onChange, value, type, inputProps, validation, presence} = props
-  const {onFocus, readOnly} = inputProps
+  const {id, onFocus, readOnly, ref} = inputProps
   const layout = type.options?.layout || 'switch'
-  const inputId = useId()
 
   const handleChange = useCallback(
     (event: React.SyntheticEvent<HTMLInputElement>) => {
@@ -45,24 +38,24 @@ export const BooleanInput = React.forwardRef(function BooleanInput(
         <Flex>
           <ZeroLineHeightBox padding={3}>
             <LayoutSpecificInput
-              id={inputId}
-              ref={ref}
+              checked={checked}
+              disabled={readOnly}
+              id={id}
+              indeterminate={indeterminate}
               label={type.title}
-              readOnly={readOnly}
               onChange={handleChange}
               onFocus={onFocus}
-              indeterminate={indeterminate}
-              checked={checked}
+              readOnly={readOnly}
+              ref={ref}
               style={{margin: -4}}
-              disabled={readOnly}
             />
           </ZeroLineHeightBox>
           <Box flex={1} paddingY={3}>
             <FormFieldHeaderText
               description={type.description}
-              inputId={inputId}
-              validation={validation}
+              inputId={id}
               title={type.title}
+              validation={validation}
             />
           </Box>
           <CenterAlignedBox paddingX={3} paddingY={1}>
@@ -74,4 +67,4 @@ export const BooleanInput = React.forwardRef(function BooleanInput(
       </Card>
     </ChangeIndicator>
   )
-})
+}

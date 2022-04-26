@@ -1,4 +1,4 @@
-import React, {ForwardedRef, forwardRef, useCallback, useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import {Image, ImageSchemaType} from '@sanity/types'
 import {ImageTool} from '@sanity/imagetool'
 import {HotspotImage} from '@sanity/imagetool/HotspotImage'
@@ -50,10 +50,7 @@ function LoadStatus(props: {children: React.ReactNode}) {
   )
 }
 
-export const ImageToolInput = forwardRef(function ImageToolInput(
-  props: ImageToolInputProps,
-  ref: ForwardedRef<HTMLDivElement>
-) {
+export function ImageToolInput(props: ImageToolInputProps) {
   const {
     imageUrl,
     inputProps,
@@ -66,7 +63,7 @@ export const ImageToolInput = forwardRef(function ImageToolInput(
     type,
   } = props
 
-  const {onFocus, readOnly} = inputProps
+  const {onFocus, readOnly, ref} = inputProps
 
   const [localValue, setLocalValue] = useState(value || DEFAULT_VALUE)
 
@@ -195,4 +192,4 @@ export const ImageToolInput = forwardRef(function ImageToolInput(
       </div>
     </FormField>
   )
-})
+}

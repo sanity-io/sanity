@@ -1,6 +1,6 @@
-import React, {useCallback} from 'react'
-import {getMinutes, setMinutes, parseISO} from 'date-fns'
 import {format, parse} from '@sanity/util/legacyDateFormat'
+import {getMinutes, setMinutes, parseISO} from 'date-fns'
+import React, {useCallback} from 'react'
 import {PatchEvent, set, unset} from '../../patch'
 import {StringInputProps} from '../../types'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
@@ -63,13 +63,9 @@ function enforceTimeStep(dateString: string, timeStep: number) {
   return serialize(date)
 }
 
-export const DateTimeInput = React.forwardRef(function DateTimeInput(
-  props: DateTimeInputProps,
-  forwardedRef: React.ForwardedRef<HTMLInputElement>
-) {
-  const {type, onChange, ...rest} = props
-  const {title, description, placeholder} = type
-
+export function DateTimeInput(props: DateTimeInputProps) {
+  const {inputProps, level, onChange, presence, type, validation, value} = props
+  const {id, readOnly, ref} = inputProps
   const {dateFormat, timeFormat, timeStep} = parseOptions(type.options)
 
   const handleChange = useCallback(
@@ -96,18 +92,23 @@ export const DateTimeInput = React.forwardRef(function DateTimeInput(
 
   return (
     <CommonDateTimeInput
-      {...rest}
-      onChange={handleChange}
-      ref={forwardedRef}
-      selectTime
-      timeStep={timeStep}
-      title={title}
-      description={description}
-      placeholder={placeholder}
-      serialize={serialize}
+      description={type.description}
       deserialize={deserialize}
       formatInputValue={formatInputValue}
+      id={id}
+      level={level}
+      onChange={handleChange}
       parseInputValue={parseInputValue}
+      placeholder={type.placeholder}
+      presence={presence}
+      readOnly={readOnly}
+      ref={ref}
+      selectTime
+      serialize={serialize}
+      timeStep={timeStep}
+      title={type.title}
+      validation={validation}
+      value={value}
     />
   )
-})
+}

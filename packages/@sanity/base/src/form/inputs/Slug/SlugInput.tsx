@@ -43,10 +43,9 @@ function getNewFromSource(
   )
 }
 
-const SlugInputInner = React.forwardRef(function SlugInput(
-  props: SlugInputProps,
-  forwardedRef: React.ForwardedRef<HTMLInputElement>
-) {
+export const SlugInput = withValuePath(withDocument(SlugInputInner))
+
+function SlugInputInner(props: SlugInputProps) {
   const {
     inputProps,
     value,
@@ -60,7 +59,7 @@ const SlugInputInner = React.forwardRef(function SlugInput(
     presence,
   } = props
 
-  const {onFocus, readOnly} = inputProps
+  const {onFocus, readOnly, ref} = inputProps
 
   const sourceField = type.options?.source
 
@@ -118,7 +117,7 @@ const SlugInputInner = React.forwardRef(function SlugInput(
             <Box flex={1}>
               <TextInput
                 id={inputId}
-                ref={forwardedRef}
+                ref={ref}
                 customValidity={errors.length > 0 ? errors[0].item.message : ''}
                 disabled={isUpdating}
                 onChange={handleChange}
@@ -150,6 +149,4 @@ const SlugInputInner = React.forwardRef(function SlugInput(
       </FormField>
     </ChangeIndicatorCompareValueProvider>
   )
-})
-
-export const SlugInput = withValuePath(withDocument(SlugInputInner))
+}

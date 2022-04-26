@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
+
 import React, {useEffect} from 'react'
 import {ValidationMarker} from '@sanity/types'
-import {useId} from '@reach/auto-id'
 import {useForwardedRef, TextInput} from '@sanity/ui'
 import {FormField} from '../../../components/formField'
 import {FormFieldPresence} from '../../../presence'
@@ -9,46 +9,48 @@ import {DateTimeInput} from './base/DateTimeInput'
 import {ParseResult} from './types'
 
 export interface CommonDateTimeInputProps {
-  title?: string
   description?: string
-  parseInputValue: (inputValue: string) => ParseResult
-  formatInputValue: (date: Date) => string
   deserialize: (value: string) => ParseResult
-  serialize: (date: Date) => string
-  onChange: (nextDate: string | null) => void
-  selectTime?: boolean
-  placeholder?: string
-  timeStep?: number
-  value?: string
-  validation: ValidationMarker[]
-  readOnly?: boolean
+  formatInputValue: (date: Date) => string
+  id: string
   level: number
+  onChange: (nextDate: string | null) => void
+  parseInputValue: (inputValue: string) => ParseResult
+  placeholder?: string
   presence: FormFieldPresence[]
+  readOnly: boolean | undefined
+  selectTime?: boolean
+  serialize: (date: Date) => string
+  timeStep?: number
+  title?: string
+  validation: ValidationMarker[]
+  value: string | undefined
 }
 
 const DEFAULT_PLACEHOLDER_TIME = new Date()
 
 export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput(
   props: CommonDateTimeInputProps,
-  forwardedRef: React.ForwardedRef<HTMLInputElement>
+  ref: React.ForwardedRef<HTMLInputElement>
 ) {
   const {
-    value,
-    validation,
-    title,
     description,
-    placeholder,
-    parseInputValue,
-    formatInputValue,
     deserialize,
-    serialize,
-    selectTime,
-    timeStep,
-    readOnly,
+    formatInputValue,
+    id,
     level,
-    presence,
     onChange,
-    ...rest
+    parseInputValue,
+    placeholder,
+    presence,
+    readOnly,
+    selectTime,
+    serialize,
+    timeStep,
+    title,
+    validation,
+    value,
+    ...restProps
   } = props
 
   const [localValue, setLocalValue] = React.useState<string | null>(null)
@@ -86,9 +88,7 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
     [serialize, onChange]
   )
 
-  const inputRef = useForwardedRef(forwardedRef)
-
-  const id = useId()
+  const forwardedRef = useForwardedRef(ref)
 
   const parseResult = localValue ? parseInputValue(localValue) : value ? deserialize(value) : null
 
@@ -121,12 +121,12 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
         <TextInput value={inputValue} readOnly />
       ) : (
         <DateTimeInput
-          {...rest}
+          {...restProps}
           id={id}
           selectTime={selectTime}
           timeStep={timeStep}
           placeholder={placeholder || `e.g. ${formatInputValue(DEFAULT_PLACEHOLDER_TIME)}`}
-          ref={inputRef}
+          ref={forwardedRef}
           value={parseResult?.date}
           inputValue={inputValue || ''}
           readOnly={Boolean(readOnly)}
