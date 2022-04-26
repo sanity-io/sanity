@@ -18,7 +18,7 @@ export const WEAK_FIELD = {
 
 const REFERENCE_FIELDS = [REF_FIELD, WEAK_FIELD]
 
-const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
+const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS, 'searchConfig']
 
 const CROSS_DATASET_REFERENCE_CORE = {
   name: 'crossDatasetReference',
@@ -79,7 +79,7 @@ export const CrossDatasetReferenceType = {
         return {
           ...toType,
           // eslint-disable-next-line camelcase
-          __experimental_search: normalizeSearchConfigs(toType.__experimental_search),
+          searchConfig: normalizeSearchConfigs(toType.searchConfig || toType.__experimental_search),
         }
       })
     })

@@ -23,8 +23,7 @@ export const circularCrossDatasetReferenceTest = {
         {
           type: 'circularCrossDatasetReferenceTest',
           icon: CircleIcon,
-          // eslint-disable-next-line camelcase
-          __experimental_search: [{path: 'title', weight: 10}],
+          searchConfig: [{path: 'title', weight: 10}],
           preview: {
             select: {
               title: 'title',
@@ -48,8 +47,7 @@ export const circularCrossDatasetReferenceTest = {
         {
           type: 'circularCrossDatasetReferenceTest',
           icon: CircleIcon,
-          // eslint-disable-next-line camelcase
-          __experimental_search: [{path: 'title', weight: 10}],
+          searchConfig: [{path: 'title', weight: 10}],
           preview: {
             select: {
               title: 'title',
@@ -71,8 +69,7 @@ export const circularCrossDatasetReferenceTest = {
         {
           type: 'article',
           icon: BookIcon,
-          // eslint-disable-next-line camelcase
-          __experimental_search: [{path: 'title', weight: 10}],
+          searchConfig: [{path: 'title', weight: 10}],
           preview: {
             select: {
               title: 'title',

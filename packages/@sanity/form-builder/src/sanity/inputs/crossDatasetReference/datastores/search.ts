@@ -23,7 +23,11 @@ export function search(
     type.to.map((crossDatasetType) => ({
       name: crossDatasetType.type,
       // eslint-disable-next-line camelcase
-      __experimental_search: crossDatasetType.__experimental_search,
+      __experimental_search:
+        // NOTE: `__experimental_search` is aliased to `searchConfig` because
+        // cross-dataset refs require this config and we don't want to have the
+        // this experimental API be required
+        crossDatasetType.searchConfig || crossDatasetType.__experimental_search,
     })),
     client,
     options

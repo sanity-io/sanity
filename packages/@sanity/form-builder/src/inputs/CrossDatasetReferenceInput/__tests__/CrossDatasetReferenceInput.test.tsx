@@ -74,7 +74,7 @@ describe('render states', () => {
           type: 'crossDatasetReference',
           dataset: 'products',
           projectId: 'abcxyz',
-          to: [{type: 'product', __experimental_search: [{path: 'title'}]}],
+          to: [{type: 'product', searchConfig: [{path: 'title'}]}],
         },
       ],
     })
@@ -107,7 +107,7 @@ describe('render states', () => {
           type: 'crossDatasetReference',
           dataset: 'products',
           projectId: 'abcxyz',
-          to: [{type: 'product', __experimental_search: [{path: 'title'}]}],
+          to: [{type: 'product', searchConfig: [{path: 'title'}]}],
         },
       ],
     })
@@ -141,7 +141,7 @@ describe('render states', () => {
           dataset: 'products',
           projectId: 'abcxyz',
           weak: true,
-          to: [{type: 'product', __experimental_search: [{path: 'title'}]}],
+          to: [{type: 'product', searchConfig: [{path: 'title'}]}],
         },
       ],
     })
@@ -187,7 +187,7 @@ describe('user interaction happy paths', () => {
           type: 'crossDatasetReference',
           dataset: 'products',
           projectId: 'abcxyz',
-          to: [{type: 'product', __experimental_search: [{path: 'title'}]}],
+          to: [{type: 'product', searchConfig: [{path: 'title'}]}],
         },
       ],
     })
@@ -266,7 +266,7 @@ describe('user interaction happy paths', () => {
           type: 'crossDatasetReference',
           dataset: 'products',
           projectId: 'abcxyz',
-          to: [{type: 'product', __experimental_search: [{path: 'title'}]}],
+          to: [{type: 'product', searchConfig: [{path: 'title'}]}],
         },
       ],
     })
@@ -366,7 +366,7 @@ describe('user interaction happy paths', () => {
           type: 'crossDatasetReference',
           dataset: 'products',
           projectId: 'abcxyz',
-          to: [{type: 'product', __experimental_search: [{path: 'title'}]}],
+          to: [{type: 'product', searchConfig: [{path: 'title'}]}],
         },
       ],
     })

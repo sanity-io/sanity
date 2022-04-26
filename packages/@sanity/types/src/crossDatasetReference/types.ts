@@ -34,8 +34,12 @@ export interface CrossDatasetType {
   title?: string
   icon: ComponentType
   preview: PreviewConfig
+  searchConfig: ObjectSchemaType['__experimental_search']
+  /**
+   * @deprecated use `searchConfig` instead
+   */
   // eslint-disable-next-line camelcase
-  __experimental_search: ObjectSchemaType['__experimental_search']
+  __experimental_search?: ObjectSchemaType['__experimental_search']
 }
 
 export interface CrossDatasetReferenceSchemaType extends Omit<ObjectSchemaType, 'fields'> {

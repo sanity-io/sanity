@@ -76,10 +76,12 @@ export default (typeDef, visitorContext) => {
         )
       )
     }
-    validateExperimentalSearch(crossDatasetTypeDef.__experimental_search).forEach((err) => {
+    validateExperimentalSearch(
+      crossDatasetTypeDef.searchConfig || crossDatasetTypeDef.__experimental_search
+    ).forEach((err) => {
       problems.push(
         error(
-          `Invalid "__experimental_search" config for referenced type "${
+          `Invalid search config for referenced type "${
             crossDatasetTypeDef.type || '<unknown type>'
           }": ${err}`,
           HELP_IDS.CROSS_DATASET_REFERENCE_INVALID
