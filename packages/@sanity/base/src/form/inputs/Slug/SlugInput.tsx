@@ -12,10 +12,10 @@ import {TextInput, Button, Flex, Box, Card, Stack} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {set, setIfMissing, unset} from '../../patch'
 import {ChangeIndicatorCompareValueProvider} from '../../../components/changeIndicators'
-import {FormField} from '../../../components/formField'
 import {withDocument} from '../../utils/withDocument'
 import {withValuePath} from '../../utils/withValuePath'
 import {ObjectInputProps} from '../../types'
+import {useFormNode} from '../../components/formNode'
 import {slugify} from './utils/slugify'
 import {useAsync} from './utils/useAsync'
 
@@ -46,18 +46,8 @@ function getNewFromSource(
 export const SlugInput = withValuePath(withDocument(SlugInputInner))
 
 function SlugInputInner(props: SlugInputProps) {
-  const {
-    inputProps,
-    value,
-    compareValue,
-    type,
-    level,
-    validation,
-    onChange,
-    getValuePath,
-    document,
-    presence,
-  } = props
+  const {compareValue, validation} = useFormNode<Slug>()
+  const {inputProps, value, type, onChange, getValuePath, document} = props
 
   const {onFocus, readOnly, ref} = inputProps
 
@@ -104,49 +94,40 @@ function SlugInputInner(props: SlugInputProps) {
       value={value?.current}
       compareValue={compareValue?.current}
     >
-      <FormField
-        title={type.title}
-        description={type.description}
-        level={level}
-        validation={validation}
-        __unstable_presence={presence}
-        inputId={inputId}
-      >
-        <Stack space={3}>
-          <Flex>
-            <Box flex={1}>
-              <TextInput
-                id={inputId}
-                ref={ref}
-                customValidity={errors.length > 0 ? errors[0].item.message : ''}
-                disabled={isUpdating}
-                onChange={handleChange}
-                onFocus={handleFocus}
-                value={value?.current || ''}
-                readOnly={readOnly}
-              />
+      <Stack space={3}>
+        <Flex>
+          <Box flex={1}>
+            <TextInput
+              id={inputId}
+              ref={ref}
+              customValidity={errors.length > 0 ? errors[0].item.message : ''}
+              disabled={isUpdating}
+              onChange={handleChange}
+              onFocus={handleFocus}
+              value={value?.current || ''}
+              readOnly={readOnly}
+            />
 
-              {generateState?.status === 'error' && (
-                <Card padding={2} tone="critical">
-                  {generateState.error.message}
-                </Card>
-              )}
-            </Box>
-            {sourceField && (
-              <Box marginLeft={1}>
-                <Button
-                  mode="ghost"
-                  type="button"
-                  disabled={readOnly || isUpdating}
-                  onClick={handleGenerateSlug}
-                  onFocus={handleFocus}
-                  text={generateState?.status === 'pending' ? 'Generating…' : 'Generate'}
-                />
-              </Box>
+            {generateState?.status === 'error' && (
+              <Card padding={2} tone="critical">
+                {generateState.error.message}
+              </Card>
             )}
-          </Flex>
-        </Stack>
-      </FormField>
+          </Box>
+          {sourceField && (
+            <Box marginLeft={1}>
+              <Button
+                mode="ghost"
+                type="button"
+                disabled={readOnly || isUpdating}
+                onClick={handleGenerateSlug}
+                onFocus={handleFocus}
+                text={generateState?.status === 'pending' ? 'Generating…' : 'Generate'}
+              />
+            </Box>
+          )}
+        </Flex>
+      </Stack>
     </ChangeIndicatorCompareValueProvider>
   )
 }

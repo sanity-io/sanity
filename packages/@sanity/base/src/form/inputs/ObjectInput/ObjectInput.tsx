@@ -1,4 +1,5 @@
 import React, {memo, useMemo} from 'react'
+import {Grid} from '@sanity/ui'
 import {FormFieldSet} from '../../../components/formField'
 import {ObjectInputProps, ObjectMember, RenderFieldCallback} from '../../types'
 import {FormNode, useFormNode} from '../../components/formNode'
@@ -39,8 +40,8 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     return <UnknownFields fieldNames={unknownFields} value={value} onChange={onChange} />
   }, [onChange, type.fields, value])
 
-  return (
-    <FormFieldSet onSetCollapsed={onSetCollapsed} ref={inputProps.ref}>
+  const children = (
+    <Grid columns={type.options?.columns} gapX={4} gapY={5}>
       {groups && groups?.length > 0 ? (
         <FieldGroupTabsWrapper $level={level} data-testid="field-groups">
           <FieldGroupTabs
@@ -56,6 +57,16 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
         <Member key={member.key} member={member} renderField={renderField} />
       ))}
       {renderedUnknownFields}
+    </Grid>
+  )
+
+  if (level === 0) {
+    return children
+  }
+
+  return (
+    <FormFieldSet onSetCollapsed={onSetCollapsed} ref={inputProps.ref}>
+      {children}
     </FormFieldSet>
   )
 })

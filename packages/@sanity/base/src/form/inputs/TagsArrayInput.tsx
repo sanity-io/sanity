@@ -1,6 +1,4 @@
-import {useId} from '@reach/auto-id'
 import React, {useCallback, useMemo} from 'react'
-import {FormField} from '../../components/formField'
 import {set, unset} from '../patch'
 import {TagInput} from '../components/tagInput'
 import {ArrayInputProps} from '../types'
@@ -8,9 +6,8 @@ import {ArrayInputProps} from '../types'
 export type TagsArrayInputProps = ArrayInputProps<string[]>
 
 export function TagsArrayInput(props: TagsArrayInputProps) {
-  const {inputProps, level, validation, onChange, presence, type, value = []} = props
-  const {onFocus, readOnly, ref} = inputProps
-  const id = useId()
+  const {inputProps, onChange, value = []} = props
+  const {id, onFocus, readOnly, ref} = inputProps
   const tagInputValue = useMemo(() => value?.map((v) => ({value: v})), [value])
 
   const handleChange = useCallback(
@@ -21,22 +18,13 @@ export function TagsArrayInput(props: TagsArrayInputProps) {
   )
 
   return (
-    <FormField
-      level={level}
-      title={type.title}
-      description={type.description}
-      __unstable_presence={presence}
-      inputId={id}
-      validation={validation}
-    >
-      <TagInput
-        id={id}
-        onChange={handleChange}
-        onFocus={onFocus}
-        readOnly={readOnly}
-        ref={ref}
-        value={tagInputValue}
-      />
-    </FormField>
+    <TagInput
+      id={id}
+      onChange={handleChange}
+      onFocus={onFocus}
+      readOnly={readOnly}
+      ref={ref}
+      value={tagInputValue}
+    />
   )
 }

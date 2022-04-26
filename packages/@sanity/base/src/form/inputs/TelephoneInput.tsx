@@ -2,14 +2,15 @@ import React, {useMemo} from 'react'
 import {isValidationErrorMarker} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
-import {FormField} from '../../components/formField'
 import {set, unset} from '../patch'
 import {StringInputProps} from '../types'
+import {useFormNode} from '../components/formNode'
 
 export type TelephoneInputProps = StringInputProps
 
 export function TelephoneInput(props: TelephoneInputProps) {
-  const {value, type, validation, level, inputProps, onChange, presence} = props
+  const {validation} = useFormNode()
+  const {value, type, inputProps, onChange} = props
   const {onFocus, onBlur, readOnly, ref} = inputProps
   const inputId = useId()
   const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
@@ -23,27 +24,18 @@ export function TelephoneInput(props: TelephoneInputProps) {
   )
 
   return (
-    <FormField
-      __unstable_presence={presence}
-      description={type.description}
-      inputId={inputId}
-      level={level}
-      title={type.title}
-      validation={validation}
-    >
-      <TextInput
-        customValidity={errors.length > 0 ? errors[0].item.message : ''}
-        id={inputId}
-        inputMode="tel"
-        onBlur={onBlur}
-        onChange={handleChange}
-        onFocus={onFocus}
-        placeholder={type.placeholder}
-        readOnly={Boolean(readOnly)}
-        ref={ref}
-        type="tel"
-        value={value || ''}
-      />
-    </FormField>
+    <TextInput
+      customValidity={errors.length > 0 ? errors[0].item.message : ''}
+      id={inputId}
+      inputMode="tel"
+      onBlur={onBlur}
+      onChange={handleChange}
+      onFocus={onFocus}
+      placeholder={type.placeholder}
+      readOnly={Boolean(readOnly)}
+      ref={ref}
+      type="tel"
+      value={value || ''}
+    />
   )
 }

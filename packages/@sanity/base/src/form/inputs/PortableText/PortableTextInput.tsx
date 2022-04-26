@@ -17,7 +17,6 @@ import {Box, Text, useForwardedRef, useToast} from '@sanity/ui'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import {FormPatch as FormBuilderPatch} from '../../patch'
 import type {ArrayInputProps, FIXME, PortableTextMarker, RenderCustomMarkers} from '../../types'
-import {FormField} from '../../../components/formField'
 import {withPatchSubscriber} from '../../utils/withPatchSubscriber'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {RenderBlockActions} from './types'
@@ -72,19 +71,7 @@ export const PortableTextInput = withPatchSubscriber(
       }
     }
     render() {
-      const {type, level, validation, presence} = this.props
-      return (
-        <FormField
-          __unstable_changeIndicator={false}
-          validation={validation}
-          __unstable_presence={presence}
-          description={type.description}
-          level={level}
-          title={type.title}
-        >
-          <PortableTextInputController {...this.props} ref={this.editorRef} />
-        </FormField>
-      )
+      return <PortableTextInputController {...this.props} ref={this.editorRef} />
     }
   }
 ) as React.ComponentType as React.ComponentType<PortableTextInputProps>
@@ -94,14 +81,10 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
   ref: React.ForwardedRef<PortableTextEditor>
 ) {
   const {
-    collapsed,
-    collapsible,
-    compareValue,
     focusPath,
     focused,
     hotkeys,
     inputProps,
-    level,
     markers = [],
     members,
     onChange,
@@ -109,14 +92,11 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
     onInsert,
     onPaste,
     onSetCollapsed,
-    path,
-    presence,
     renderBlockActions,
     renderCustomMarkers,
     renderItem,
     subscribe,
     type,
-    validation,
     value,
   } = props
 
@@ -279,16 +259,12 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
           value={value}
         >
           <Compositor
-            collapsed={collapsed}
-            collapsible={collapsible}
-            compareValue={compareValue}
             focusPath={focusPath}
             focused={focused}
             hasFocus={hasFocus}
             hotkeys={hotkeys}
             inputProps={inputProps}
             isFullscreen={isFullscreen}
-            level={level}
             markers={markers}
             members={members}
             onChange={onChange}
@@ -298,12 +274,9 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
             onSetCollapsed={onSetCollapsed}
             onToggleFullscreen={handleToggleFullscreen}
             patches$={patches$}
-            path={path}
-            presence={presence}
             renderBlockActions={renderBlockActions}
             renderCustomMarkers={renderCustomMarkers}
             renderItem={renderItem}
-            validation={validation}
             value={value}
           />
         </PortableTextEditor>

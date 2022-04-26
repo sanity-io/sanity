@@ -9,7 +9,7 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import {isValidationErrorMarker} from '@sanity/types'
+import {isValidationErrorMarker, Reference} from '@sanity/types'
 import {
   EllipsisVerticalIcon,
   LaunchIcon as OpenInNewTabIcon,
@@ -39,7 +39,6 @@ import {uuid} from '@sanity/uuid'
 import styled from 'styled-components'
 // import {ChangeIndicatorForFieldPath, FormField, PreviewCard} from '../../../components'
 import {ChangeIndicatorForFieldPath} from '../../../components/changeIndicators'
-import {FormField} from '../../../components/formField'
 import {PreviewCard} from '../../../components/PreviewCard'
 import {set, setIfMissing, unset} from '../../patch'
 import {EMPTY_ARRAY} from '../../utils/empty'
@@ -51,6 +50,7 @@ import {useOnClickOutside} from '../../hooks/useOnClickOutside'
 import {FIXME} from '../../types'
 import {getPublishedId} from '../../../util'
 import {IntentLink} from '../../../router'
+import {useFormNode} from '../../components/formNode'
 import {ReferenceInputProps, CreateOption, SearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {useReferenceInfo} from './useReferenceInfo'
@@ -78,23 +78,21 @@ function nonNullable<T>(v: T): v is NonNullable<T> {
 
 const REF_PATH = ['_ref']
 export function ReferenceInput(props: ReferenceInputProps) {
+  const {compareValue, validation} = useFormNode<Reference>()
+
   const {
+    createOptions,
+    editReferenceLinkComponent: EditReferenceLink,
+    focusPath = EMPTY_ARRAY,
+    getReferenceInfo,
     inputProps,
+    liveEdit,
+    onChange,
+    onEditReference,
+    onSearch,
+    selectedState,
     type,
     value,
-    level,
-    validation = EMPTY_ARRAY,
-    liveEdit,
-    onSearch,
-    onChange,
-    presence,
-    focusPath = EMPTY_ARRAY,
-    selectedState,
-    editReferenceLinkComponent: EditReferenceLink,
-    onEditReference,
-    createOptions,
-    compareValue,
-    getReferenceInfo,
   } = props
 
   const {onFocus, onBlur, readOnly, ref} = inputProps
@@ -364,247 +362,233 @@ export function ReferenceInput(props: ReferenceInputProps) {
   )
 
   return (
-    <FormField
-      validation={validation}
-      __unstable_presence={presence}
-      __unstable_changeIndicator={false}
-      inputId={inputId}
-      title={type.title}
-      level={level}
-      description={type.description}
+    <Stack
+      space={1}
+      // marginY={isEditing ? 2 : 0}
     >
-      <Stack
-        space={1}
-        // marginY={isEditing ? 2 : 0}
-      >
-        {isEditing || isWeakRefToNonexistent ? (
-          <Stack space={2} ref={clickOutsideBoundaryRef}>
-            {isWeakRefToNonexistent ? (
-              <Alert
-                data-testid="alert-nonexistent-document"
-                title="Nonexistent document reference"
-                suffix={
-                  <Stack padding={2}>
-                    <Button text="Clear" onClick={handleClear} />
-                  </Stack>
-                }
-              >
-                <Text size={1}>
-                  This field is currently referencing a document that doesn't exist (ID:
-                  <code>{value._ref}</code>). You can either remove the reference or replace it with
-                  another document.
-                </Text>
-              </Alert>
-            ) : null}
-            <ChangeIndicatorForFieldPath
-              path={REF_PATH}
-              hasFocus={focusPath?.[0] === '_ref'}
-              isChanged={value?._ref !== compareValue?._ref}
+      {isEditing || isWeakRefToNonexistent ? (
+        <Stack space={2} ref={clickOutsideBoundaryRef}>
+          {isWeakRefToNonexistent ? (
+            <Alert
+              data-testid="alert-nonexistent-document"
+              title="Nonexistent document reference"
+              suffix={
+                <Stack padding={2}>
+                  <Button text="Clear" onClick={handleClear} />
+                </Stack>
+              }
             >
-              <AutocompleteContainer ref={autocompletePopoverReferenceElementRef}>
-                <ReferenceAutocomplete
-                  data-testid="autocomplete"
-                  loading={searchState.isLoading}
-                  ref={forwardedRef}
-                  referenceElement={autocompletePopoverReferenceElementRef.current}
-                  portalRef={autocompletePortalRef}
-                  id={inputId || ''}
-                  options={searchState.hits.map((hit) => ({
-                    value: hit.id,
-                    hit: hit,
-                  }))}
-                  onFocus={handleAutocompleteFocus}
-                  onBlur={onBlur}
-                  radius={1}
-                  placeholder="Type to search"
-                  onKeyDown={handleAutocompleteKeyDown}
-                  readOnly={readOnly}
-                  disabled={loadableReferenceInfo.isLoading}
-                  onQueryChange={handleQueryChange}
-                  searchString={searchState.searchString}
-                  onChange={handleChange}
-                  filterOption={NO_FILTER}
-                  renderOption={renderOption}
-                  openButton={{onClick: handleAutocompleteOpenButtonClick}}
-                />
-
-                {!readOnly && createOptions.length > 0 && (
-                  <CreateButton
-                    id={`${inputId}-selectTypeMenuButton`}
-                    createOptions={createOptions}
-                    onCreate={handleCreateNew}
-                    onKeyDown={handleCreateButtonKeyDown}
-                    menuRef={createButtonMenuPortalRef}
-                  />
-                )}
-              </AutocompleteContainer>
-            </ChangeIndicatorForFieldPath>
-          </Stack>
-        ) : (
+              <Text size={1}>
+                This field is currently referencing a document that doesn't exist (ID:
+                <code>{value._ref}</code>). You can either remove the reference or replace it with
+                another document.
+              </Text>
+            </Alert>
+          ) : null}
           <ChangeIndicatorForFieldPath
             path={REF_PATH}
             hasFocus={focusPath?.[0] === '_ref'}
             isChanged={value?._ref !== compareValue?._ref}
           >
-            <Card
-              border
-              radius={1}
-              tone={
-                readOnly
-                  ? 'transparent'
-                  : loadableReferenceInfo.error || errors.length > 0
-                  ? 'critical'
-                  : 'default'
-              }
-            >
-              <Flex align="center" padding={1}>
-                <StyledPreviewCard
-                  __unstable_focusRing
-                  forwardedAs={EditReferenceLink as FIXME} // @todo: fix typing
-                  data-as="a"
-                  data-pressed={pressed ? true : undefined}
-                  data-selected={selected ? true : undefined}
-                  documentId={value?._ref}
-                  documentType={refType?.name}
-                  flex={1}
-                  onFocus={handleFocus}
-                  onKeyPress={handlePreviewKeyPress}
-                  padding={1}
-                  paddingRight={3}
-                  pressed={pressed}
-                  radius={2}
-                  ref={forwardedRef}
-                  selected={selected}
-                  tabIndex={0}
-                  tone={selected ? 'default' : 'inherit'}
-                >
-                  <PreviewReferenceValue
-                    referenceInfo={loadableReferenceInfo}
-                    type={type}
-                    value={value}
-                  />
-                </StyledPreviewCard>
-                <Inline paddingX={1}>
-                  <MenuButton
-                    button={<Button padding={2} mode="bleed" icon={EllipsisVerticalIcon} />}
-                    id={`${inputId}-menuButton`}
-                    menu={
-                      <Menu>
-                        {!readOnly && (
-                          <>
-                            <MenuItem
-                              text="Clear"
-                              tone="critical"
-                              icon={ClearIcon}
-                              onClick={handleClear}
-                            />
+            <AutocompleteContainer ref={autocompletePopoverReferenceElementRef}>
+              <ReferenceAutocomplete
+                data-testid="autocomplete"
+                loading={searchState.isLoading}
+                ref={forwardedRef}
+                referenceElement={autocompletePopoverReferenceElementRef.current}
+                portalRef={autocompletePortalRef}
+                id={inputId || ''}
+                options={searchState.hits.map((hit) => ({
+                  value: hit.id,
+                  hit: hit,
+                }))}
+                onFocus={handleAutocompleteFocus}
+                onBlur={onBlur}
+                radius={1}
+                placeholder="Type to search"
+                onKeyDown={handleAutocompleteKeyDown}
+                readOnly={readOnly}
+                disabled={loadableReferenceInfo.isLoading}
+                onQueryChange={handleQueryChange}
+                searchString={searchState.searchString}
+                onChange={handleChange}
+                filterOption={NO_FILTER}
+                renderOption={renderOption}
+                openButton={{onClick: handleAutocompleteOpenButtonClick}}
+              />
 
-                            <MenuItem
-                              text="Replace"
-                              icon={ReplaceIcon}
-                              onClick={() => {
-                                onFocus?.(['_ref'])
-                              }}
-                            />
-
-                            <MenuDivider />
-                          </>
-                        )}
-
-                        <MenuItem
-                          as={OpenLink}
-                          data-as="a"
-                          text="Open in new tab"
-                          icon={OpenInNewTabIcon}
-                        />
-                      </Menu>
-                    }
-                    placement="right"
-                    popover={{portal: true, tone: 'default'}}
-                  />
-                </Inline>
-              </Flex>
-              {liveEdit && referenceExists && value._strengthenOnPublish && (
-                <AlertStrip
-                  padding={1}
-                  title={type.weak ? 'Finalize reference' : 'Convert to strong reference'}
-                  status="info"
-                  data-testid="alert-reference-published"
-                >
-                  <Stack space={3}>
-                    <Text as="p" muted size={1}>
-                      <strong>{loadableReferenceInfo.result?.preview.published?.title}</strong> is
-                      published and this reference should now be{' '}
-                      {type.weak ? <>finalized</> : <>converted to a strong reference</>}.
-                    </Text>
-                    <Button
-                      onClick={handleRemoveStrengthenOnPublish}
-                      text={<>Convert to strong reference</>}
-                      tone="positive"
-                    />
-                  </Stack>
-                </AlertStrip>
+              {!readOnly && createOptions.length > 0 && (
+                <CreateButton
+                  id={`${inputId}-selectTypeMenuButton`}
+                  createOptions={createOptions}
+                  onCreate={handleCreateNew}
+                  onKeyDown={handleCreateButtonKeyDown}
+                  menuRef={createButtonMenuPortalRef}
+                />
               )}
-
-              {showWeakRefMismatch && (
-                <AlertStrip
-                  padding={1}
-                  title="Reference strength mismatch"
-                  status="warning"
-                  data-testid="alert-reference-strength-mismatch"
-                >
-                  <Stack space={3}>
-                    <Text as="p" muted size={1}>
-                      This reference is <em>{weakIs}</em>, but according to the current schema it
-                      should be <em>{weakShouldBe}.</em>
-                    </Text>
-
-                    <Text as="p" muted size={1}>
-                      {type.weak ? (
+            </AutocompleteContainer>
+          </ChangeIndicatorForFieldPath>
+        </Stack>
+      ) : (
+        <ChangeIndicatorForFieldPath
+          path={REF_PATH}
+          hasFocus={focusPath?.[0] === '_ref'}
+          isChanged={value?._ref !== compareValue?._ref}
+        >
+          <Card
+            border
+            radius={1}
+            tone={
+              readOnly
+                ? 'transparent'
+                : loadableReferenceInfo.error || errors.length > 0
+                ? 'critical'
+                : 'default'
+            }
+          >
+            <Flex align="center" padding={1}>
+              <StyledPreviewCard
+                __unstable_focusRing
+                forwardedAs={EditReferenceLink as FIXME} // @todo: fix typing
+                data-as="a"
+                data-pressed={pressed ? true : undefined}
+                data-selected={selected ? true : undefined}
+                documentId={value?._ref}
+                documentType={refType?.name}
+                flex={1}
+                onFocus={handleFocus}
+                onKeyPress={handlePreviewKeyPress}
+                padding={1}
+                paddingRight={3}
+                pressed={pressed}
+                radius={2}
+                ref={forwardedRef}
+                selected={selected}
+                tabIndex={0}
+                tone={selected ? 'default' : 'inherit'}
+              >
+                <PreviewReferenceValue
+                  referenceInfo={loadableReferenceInfo}
+                  type={type}
+                  value={value}
+                />
+              </StyledPreviewCard>
+              <Inline paddingX={1}>
+                <MenuButton
+                  button={<Button padding={2} mode="bleed" icon={EllipsisVerticalIcon} />}
+                  id={`${inputId}-menuButton`}
+                  menu={
+                    <Menu>
+                      {!readOnly && (
                         <>
-                          It will not be possible to delete the "{preview?.title}"-document without
-                          first removing this reference.
-                        </>
-                      ) : (
-                        <>
-                          This makes it possible to delete the "{preview?.title}"-document without
-                          first deleting this reference, leaving this field referencing a
-                          nonexisting document.
+                          <MenuItem
+                            text="Clear"
+                            tone="critical"
+                            icon={ClearIcon}
+                            onClick={handleClear}
+                          />
+
+                          <MenuItem
+                            text="Replace"
+                            icon={ReplaceIcon}
+                            onClick={() => {
+                              onFocus?.(['_ref'])
+                            }}
+                          />
+
+                          <MenuDivider />
                         </>
                       )}
-                    </Text>
-                    <Button
-                      onClick={handleFixStrengthMismatch}
-                      text={<>Convert to {weakShouldBe} reference</>}
-                      tone="caution"
-                    />
-                  </Stack>
-                </AlertStrip>
-              )}
 
-              {loadableReferenceInfo.error && (
-                <AlertStrip
-                  padding={1}
-                  title="Unable to load reference metadata"
-                  status="warning"
-                  data-testid="alert-reference-info-failed"
-                >
-                  <Stack space={3}>
-                    <Text as="p" muted size={1}>
-                      Error: {loadableReferenceInfo.error.message}
-                    </Text>
-                    <Button
-                      onClick={loadableReferenceInfo.retry!}
-                      text={<>Retry</>}
-                      tone="primary"
-                    />
-                  </Stack>
-                </AlertStrip>
-              )}
-            </Card>
-          </ChangeIndicatorForFieldPath>
-        )}
-      </Stack>
-    </FormField>
+                      <MenuItem
+                        as={OpenLink}
+                        data-as="a"
+                        text="Open in new tab"
+                        icon={OpenInNewTabIcon}
+                      />
+                    </Menu>
+                  }
+                  placement="right"
+                  popover={{portal: true, tone: 'default'}}
+                />
+              </Inline>
+            </Flex>
+            {liveEdit && referenceExists && value._strengthenOnPublish && (
+              <AlertStrip
+                padding={1}
+                title={type.weak ? 'Finalize reference' : 'Convert to strong reference'}
+                status="info"
+                data-testid="alert-reference-published"
+              >
+                <Stack space={3}>
+                  <Text as="p" muted size={1}>
+                    <strong>{loadableReferenceInfo.result?.preview.published?.title}</strong> is
+                    published and this reference should now be{' '}
+                    {type.weak ? <>finalized</> : <>converted to a strong reference</>}.
+                  </Text>
+                  <Button
+                    onClick={handleRemoveStrengthenOnPublish}
+                    text={<>Convert to strong reference</>}
+                    tone="positive"
+                  />
+                </Stack>
+              </AlertStrip>
+            )}
+
+            {showWeakRefMismatch && (
+              <AlertStrip
+                padding={1}
+                title="Reference strength mismatch"
+                status="warning"
+                data-testid="alert-reference-strength-mismatch"
+              >
+                <Stack space={3}>
+                  <Text as="p" muted size={1}>
+                    This reference is <em>{weakIs}</em>, but according to the current schema it
+                    should be <em>{weakShouldBe}.</em>
+                  </Text>
+
+                  <Text as="p" muted size={1}>
+                    {type.weak ? (
+                      <>
+                        It will not be possible to delete the "{preview?.title}"-document without
+                        first removing this reference.
+                      </>
+                    ) : (
+                      <>
+                        This makes it possible to delete the "{preview?.title}"-document without
+                        first deleting this reference, leaving this field referencing a nonexisting
+                        document.
+                      </>
+                    )}
+                  </Text>
+                  <Button
+                    onClick={handleFixStrengthMismatch}
+                    text={<>Convert to {weakShouldBe} reference</>}
+                    tone="caution"
+                  />
+                </Stack>
+              </AlertStrip>
+            )}
+
+            {loadableReferenceInfo.error && (
+              <AlertStrip
+                padding={1}
+                title="Unable to load reference metadata"
+                status="warning"
+                data-testid="alert-reference-info-failed"
+              >
+                <Stack space={3}>
+                  <Text as="p" muted size={1}>
+                    Error: {loadableReferenceInfo.error.message}
+                  </Text>
+                  <Button onClick={loadableReferenceInfo.retry!} text={<>Retry</>} tone="primary" />
+                </Stack>
+              </AlertStrip>
+            )}
+          </Card>
+        </ChangeIndicatorForFieldPath>
+      )}
+    </Stack>
   )
 }

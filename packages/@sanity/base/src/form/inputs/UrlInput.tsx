@@ -1,7 +1,6 @@
 import {isValidationErrorMarker} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import React, {useMemo} from 'react'
-import {FormField} from '../../components/formField'
 import {useFormNode} from '../components/formNode'
 import {set, unset} from '../patch'
 import {StringInputProps} from '../types'
@@ -26,20 +25,18 @@ export function URLInput(props: URLInputProps) {
   const uriRule = getValidationRule(type, 'uri')
   const inputType = uriRule?.constraint?.options?.allowRelative ? 'text' : 'url'
   return (
-    <FormField>
-      <TextInput
-        customValidity={errors.length > 0 ? errors[0].item.message : ''}
-        id={id}
-        inputMode="url"
-        onBlur={onBlur}
-        onChange={handleChange}
-        onFocus={onFocus}
-        placeholder={type.placeholder}
-        readOnly={Boolean(readOnly)}
-        ref={ref}
-        type={inputType}
-        value={value || ''}
-      />
-    </FormField>
+    <TextInput
+      customValidity={errors.length > 0 ? errors[0].item.message : ''}
+      id={id}
+      inputMode="url"
+      onBlur={onBlur}
+      onChange={handleChange}
+      onFocus={onFocus}
+      placeholder={type.placeholder}
+      readOnly={Boolean(readOnly)}
+      ref={ref}
+      type={inputType}
+      value={value || ''}
+    />
   )
 }

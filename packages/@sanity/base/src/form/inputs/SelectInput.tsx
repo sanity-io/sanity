@@ -4,8 +4,8 @@ import {Inline, Stack, Card, Text, Select, Flex, Radio, Box} from '@sanity/ui'
 import {capitalize} from 'lodash'
 import React, {useMemo, useCallback, forwardRef} from 'react'
 import {set, unset} from '../patch'
-import {FormField} from '../../components/formField'
 import {StringInputProps} from '../types'
+import {useFormNode} from '../components/formNode'
 
 export type SelectInputProps = StringInputProps
 
@@ -18,7 +18,8 @@ function toSelectItem(
 const EMPTY_ITEM = {title: '', value: undefined}
 
 export function SelectInput(props: SelectInputProps) {
-  const {inputProps, value, validation, type, level, onChange, presence} = props
+  const {validation} = useFormNode()
+  const {inputProps, value, type, onChange} = props
   const {readOnly, onFocus, ref} = inputProps
   const items = useMemo(() => (type.options?.list || []).map(toSelectItem), [type.options?.list])
   const currentItem = items.find((item) => item.value === value)
@@ -68,66 +69,38 @@ export function SelectInput(props: SelectInputProps) {
     onFocus()
   }, [onFocus])
 
-  const children = useMemo(() => {
-    if (isRadio) {
-      return (
-        <RadioSelect
-          inputId={inputId}
-          items={items}
-          value={currentItem}
-          onChange={handleChange}
-          direction={type.options?.direction || 'vertical'}
-          ref={ref}
-          readOnly={readOnly}
-          onFocus={handleFocus}
-          customValidity={errors?.[0]?.item.message}
-        />
-      )
-    }
-
+  if (isRadio) {
     return (
-      <Select
-        onChange={handleSelectChange}
-        onFocus={handleFocus}
-        id={inputId}
+      <RadioSelect
+        inputId={inputId}
+        items={items}
+        value={currentItem}
+        onChange={handleChange}
+        direction={type.options?.direction || 'vertical'}
         ref={ref}
         readOnly={readOnly}
+        onFocus={handleFocus}
         customValidity={errors?.[0]?.item.message}
-        value={optionValueFromItem(currentItem)}
-      >
-        {[EMPTY_ITEM, ...items].map((item, i) => (
-          <option key={`${i - 1}`} value={i - 1}>
-            {item.title}
-          </option>
-        ))}
-      </Select>
+      />
     )
-  }, [
-    currentItem,
-    errors,
-    handleChange,
-    handleFocus,
-    handleSelectChange,
-    inputId,
-    isRadio,
-    items,
-    optionValueFromItem,
-    readOnly,
-    ref,
-    type.options?.direction,
-  ])
+  }
 
   return (
-    <FormField
-      inputId={inputId}
-      level={level}
-      title={type.title}
-      description={type.description}
-      validation={validation}
-      __unstable_presence={presence}
+    <Select
+      onChange={handleSelectChange}
+      onFocus={handleFocus}
+      id={inputId}
+      ref={ref}
+      readOnly={readOnly}
+      customValidity={errors?.[0]?.item.message}
+      value={optionValueFromItem(currentItem)}
     >
-      {children}
-    </FormField>
+      {[EMPTY_ITEM, ...items].map((item, i) => (
+        <option key={`${i - 1}`} value={i - 1}>
+          {item.title}
+        </option>
+      ))}
+    </Select>
   )
 }
 

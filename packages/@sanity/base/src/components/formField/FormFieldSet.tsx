@@ -1,39 +1,23 @@
 /* eslint-disable camelcase */
 
-import {ValidationMarker} from '@sanity/types'
-import {Box, Flex, Grid, rem, Stack, Text, Theme, useForwardedRef} from '@sanity/ui'
-import React, {forwardRef, useState, useCallback, useEffect, useMemo} from 'react'
+import {Box, Flex, rem, Stack, Text, Theme, useForwardedRef} from '@sanity/ui'
+import React, {forwardRef, useCallback, useMemo} from 'react'
 import styled, {css} from 'styled-components'
 import {ChangeIndicator, ChangeIndicatorContextProvidedProps} from '../changeIndicators'
-import {FieldPresence, FormFieldPresence} from '../../presence'
+import {FieldPresence} from '../../presence'
+import {useFormNode} from '../../form/components/formNode'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
 import {focusRingStyle} from './styles'
 
 export interface FormFieldSetProps {
   /**
-   * @alpha
+   * @beta
    */
   __unstable_changeIndicator?: ChangeIndicatorContextProvidedProps | boolean
-  /**
-   * @alpha
-   */
-  __unstable_presence?: FormFieldPresence[]
   children: React.ReactNode | (() => React.ReactNode)
-  collapsed?: boolean
-  collapsible?: boolean
-  columns?: number
-  description?: React.ReactNode
-  /**
-   * The nesting level of the form field set
-   */
   level?: number
   onSetCollapsed: (collapsed: boolean) => void
-  title?: React.ReactNode
-  /**
-   * @alpha
-   */
-  validation?: ValidationMarker[]
 }
 
 function getChildren(children: React.ReactNode | (() => React.ReactNode)): React.ReactNode {
@@ -51,7 +35,7 @@ const Root = styled(Box).attrs({forwardedAs: 'fieldset'})`
 
 const Content = styled(Box)<{
   /**
-   * @note: The dollar sign ($) prefix is a `styled-components` convention for
+   * NOTE: The dollar sign ($) prefix is a `styled-components` convention for
    * denoting transient props. See:
    * https://styled-components.com/docs/api#transient-props
    */
@@ -77,26 +61,20 @@ const Content = styled(Box)<{
   `
 })
 
-const EMPTY_ARRAY: never[] = []
-
 export const FormFieldSet = forwardRef(function FormFieldSet(
-  props: FormFieldSetProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
+  props: FormFieldSetProps &
+    Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'title'>,
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
+  const {collapsed, collapsible, level: contextLevel, presence, type, validation} = useFormNode()
+
   const {
     __unstable_changeIndicator: changeIndicator = false,
-    validation = EMPTY_ARRAY,
-    __unstable_presence: presence = EMPTY_ARRAY,
     children,
-    collapsible,
-    columns,
-    description,
-    level = 0,
+    level = contextLevel,
     onFocus,
     onSetCollapsed,
-    collapsed,
     tabIndex,
-    title,
     ...restProps
   } = props
 
@@ -123,7 +101,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
       return null
     }
     return (
-      <Grid columns={columns} gapX={4} gapY={5}>
+      <>
         {changeIndicator ? (
           <ChangeIndicator {...(changeIndicator === true ? {} : changeIndicator)}>
             {getChildren(children)}
@@ -131,13 +109,13 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
         ) : (
           getChildren(children)
         )}
-      </Grid>
+      </>
     )
-  }, [changeIndicator, children, collapsed, columns])
+  }, [changeIndicator, children, collapsed])
 
   return (
     <Root data-level={level} {...restProps}>
-      {title && (
+      {type.title && (
         <Flex align="flex-end">
           <Box flex={1} paddingY={2}>
             <Stack space={2}>
@@ -146,19 +124,19 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
                   collapsed={Boolean(collapsed)}
                   collapsible={collapsible}
                   onClick={collapsible ? handleToggle : undefined}
-                  title={title}
+                  title={type.title}
                 />
 
                 {hasValidationMarkers && (
                   <Box marginLeft={2}>
-                    <FormFieldValidationStatus fontSize={1} validation={validation} />
+                    <FormFieldValidationStatus fontSize={1} />
                   </Box>
                 )}
               </Flex>
 
-              {description && (
+              {type.description && (
                 <Text muted size={1}>
-                  {description}
+                  {type.description}
                 </Text>
               )}
             </Stack>
@@ -166,7 +144,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
 
           {presence.length > 0 && (
             <Box>
-              <FieldPresence maxAvatars={4} presence={presence} />
+              <FieldPresence maxAvatars={4} />
             </Box>
           )}
         </Flex>
