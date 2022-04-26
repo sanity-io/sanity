@@ -248,8 +248,7 @@ export interface BlockSchemaType extends ObjectSchemaType {
   ]
 }
 
-export interface SlugSchemaType extends BaseSchemaType {
-  jsonType: 'object'
+export interface SlugSchemaType extends Omit<ObjectSchemaType, 'options'> {
   options?: SlugOptions
 }
 

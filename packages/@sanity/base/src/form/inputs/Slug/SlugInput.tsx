@@ -15,7 +15,7 @@ import {ChangeIndicatorCompareValueProvider} from '../../../components/changeInd
 import {FormField} from '../../../components/formField'
 import {withDocument} from '../../utils/withDocument'
 import {withValuePath} from '../../utils/withValuePath'
-import {ObjectFieldProps} from '../../types'
+import {ObjectInputProps} from '../../types'
 import {slugify} from './utils/slugify'
 import {useAsync} from './utils/useAsync'
 
@@ -24,7 +24,7 @@ export interface Slug {
   current?: string
 }
 
-export interface SlugInputProps extends ObjectFieldProps<Slug, SlugSchemaType> {
+export interface SlugInputProps extends ObjectInputProps<Slug, SlugSchemaType> {
   document: SanityDocument
   getValuePath: () => Path
 }
@@ -48,18 +48,19 @@ const SlugInputInner = React.forwardRef(function SlugInput(
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
   const {
+    inputProps,
     value,
     compareValue,
     type,
     level,
     validation,
     onChange,
-    onFocus,
     getValuePath,
     document,
-    readOnly,
     presence,
   } = props
+
+  const {onFocus, readOnly} = inputProps
 
   const sourceField = type.options?.source
 

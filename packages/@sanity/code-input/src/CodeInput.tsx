@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useImperativeHandle, useRef} from 'react'
 import {FormField, FormFieldSet, ChangeIndicatorProvider} from '@sanity/base/_unstable'
-import {PatchEvent, set, unset, setIfMissing, ObjectFieldProps} from '@sanity/base/form'
+import {PatchEvent, set, unset, setIfMissing, ObjectInputProps} from '@sanity/base/form'
 import {ObjectSchemaType} from '@sanity/types'
 import {Card, Select, Stack, TextInput} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
@@ -59,7 +59,7 @@ export type CodeSchemaType = Omit<ObjectSchemaType, 'options'> & {
   }
 }
 
-export type CodeInputProps = ObjectFieldProps<CodeInputValue, CodeSchemaType>
+export type CodeInputProps = ObjectInputProps<CodeInputValue, CodeSchemaType>
 
 // Returns a string with the mode name if supported (because aliases), otherwise false
 function isSupportedLanguage(mode: string) {
@@ -80,20 +80,9 @@ function isSupportedLanguage(mode: string) {
 const CodeInput = React.forwardRef(
   (props: CodeInputProps, ref: React.ForwardedRef<{focus: () => void}>) => {
     const aceEditorRef = useRef<any>()
-    const aceEditorId = useId()
-
-    const {
-      onFocus,
-      onChange,
-      onBlur,
-      compareValue,
-      value,
-      presence,
-      type,
-      level = 0,
-      readOnly,
-      focusPath,
-    } = props
+    // const aceEditorId = useId()
+    const {compareValue, focusPath, inputProps, level = 0, onChange, presence, type, value} = props
+    const {id, onBlur, onFocus, readOnly} = inputProps
 
     useImperativeHandle(ref, () => ({
       focus: () => {
@@ -303,7 +292,7 @@ const CodeInput = React.forwardRef(
             theme={getTheme()}
             width="100%"
             onChange={handleCodeChange}
-            name={`editor-${aceEditorId}`}
+            name={`editor-${id}`}
             value={(value && value.code) || ''}
             markers={
               value && value.highlightedLines
@@ -322,8 +311,8 @@ const CodeInput = React.forwardRef(
         </EditorContainer>
       )
     }, [
-      aceEditorId,
       getTheme,
+      id,
       handleCodeChange,
       handleCodeFocus,
       handleEditorLoad,
@@ -342,7 +331,12 @@ const CodeInput = React.forwardRef(
           value={value?.code}
           compareValue={codeCompareValue}
         >
-          <FormFieldSet title={type.title} description={type.description} level={level}>
+          <FormFieldSet
+            title={type.title}
+            description={type.description}
+            level={level}
+            onSetCollapsed={() => console.warn('todo')}
+          >
             {renderEditor()}
           </FormFieldSet>
         </ChangeIndicatorProvider>
@@ -355,6 +349,7 @@ const CodeInput = React.forwardRef(
         description={type.description}
         level={level}
         __unstable_changeIndicator={false}
+        onSetCollapsed={() => console.warn('todo')}
       >
         <Stack space={3}>
           <ChangeIndicatorProvider

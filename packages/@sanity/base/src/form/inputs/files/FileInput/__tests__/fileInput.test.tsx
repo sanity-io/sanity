@@ -142,7 +142,7 @@ describe('FileInput with empty state', () => {
   it('the upload button is disabled when the input is readOnly', () => {
     // const {queryByTestId} = render(<FileInput readOnly />)
     const {result} = render({
-      readOnly: true,
+      inputProps: {readOnly: true} as any,
     })
     expect(result.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
       'true'
@@ -152,7 +152,7 @@ describe('FileInput with empty state', () => {
   it('does not allow for browsing when input is readOnly', () => {
     // const {queryByTestId} = render(<FileInput readOnly />)
     const {result} = render({
-      readOnly: true,
+      inputProps: {readOnly: true} as any,
     })
 
     expect(result.queryByTestId('file-input-browse-button')!.getAttribute('data-disabled')).toBe(
@@ -163,7 +163,7 @@ describe('FileInput with empty state', () => {
   it('does not allow for upload when input is readOnly', async () => {
     // const {queryByTestId, queryByText} = render(<FileInput readOnly />)
     const {result} = render({
-      readOnly: true,
+      inputProps: {readOnly: true} as any,
     })
     const input = result.queryByTestId('file-button-input')
 
@@ -269,7 +269,7 @@ describe('FileInput with asset', () => {
   it('the upload button in the dropdown menu is disabled when the input is readOnly', async () => {
     // const {queryByTestId} = render(<FileInput value={value} readOnly />)
     const {result} = render({
-      readOnly: true,
+      inputProps: {readOnly: true} as any,
       value,
     })
 
@@ -285,7 +285,7 @@ describe('FileInput with asset', () => {
   it('does not allow for browsing when input is readOnly', async () => {
     // const {queryByTestId} = render(<FileInput value={value} readOnly />)
     const {result} = render({
-      readOnly: true,
+      inputProps: {readOnly: true} as any,
       value,
     })
     fireEvent.click(result.queryByTestId('options-menu-button')!)
@@ -301,7 +301,7 @@ describe('FileInput with asset', () => {
     // )
     const {result} = render({
       assetSources: [{name: 'source1'}, {name: 'source2'}] as FIXME,
-      readOnly: true,
+      inputProps: {readOnly: true} as any,
       value,
     })
     fireEvent.click(result.queryByTestId('options-menu-button')!)
@@ -319,7 +319,7 @@ describe('FileInput with asset', () => {
   it('does not allow for clearing the input it is readOnly', async () => {
     // const {queryByTestId} = render(<FileInput value={value} readOnly />)
     const {result} = render({
-      readOnly: true,
+      inputProps: {readOnly: true} as any,
       value,
     })
     fireEvent.click(result.queryByTestId('options-menu-button')!)
@@ -352,7 +352,7 @@ describe('FileInput with asset', () => {
     }
 
     const {result} = render({
-      readOnly: true,
+      inputProps: {readOnly: true} as any,
       type: fileType as FIXME,
       value,
     })

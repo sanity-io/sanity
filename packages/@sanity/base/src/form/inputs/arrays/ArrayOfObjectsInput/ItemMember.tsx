@@ -19,5 +19,5 @@ export const ItemMember = memo(function ItemMember(props: Props) {
     }
   })
 
-  return <>{renderItem({...member.item, focusRef})}</>
+  return <>{renderItem(member.item, focusRef)}</>
 })

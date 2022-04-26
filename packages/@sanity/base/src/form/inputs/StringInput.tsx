@@ -3,22 +3,11 @@ import {isValidationErrorMarker} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {FormField} from '../../components/formField'
 import {PatchEvent, set, unset} from '../patch'
-import {StringInputComponentProps} from '../types'
+import {StringInputProps} from '../types'
 
-export function StringInput(props: StringInputComponentProps) {
-  const {
-    value,
-    readOnly,
-    id,
-    focusRef,
-    type,
-    validation,
-    level,
-    onFocus,
-    onBlur,
-    onChange,
-    presence,
-  } = props
+export function StringInput(props: StringInputProps) {
+  const {inputProps, value, type, validation, level, onChange, presence} = props
+  const {readOnly, id, ref, onFocus, onBlur} = inputProps
   const placeholder = type.placeholder
   const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
 
@@ -30,23 +19,6 @@ export function StringInput(props: StringInputComponentProps) {
     [onChange]
   )
 
-  const input = useMemo(
-    () => (
-      <TextInput
-        id={id}
-        customValidity={errors.length > 0 ? errors[0].item.message : ''}
-        value={value || ''}
-        readOnly={Boolean(readOnly)}
-        placeholder={placeholder}
-        onChange={handleChange}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        ref={focusRef}
-      />
-    ),
-    [errors, focusRef, handleChange, id, onBlur, onFocus, placeholder, readOnly, value]
-  )
-
   return (
     <FormField
       description={type.description}
@@ -56,7 +28,17 @@ export function StringInput(props: StringInputComponentProps) {
       __unstable_presence={presence}
       title={type.title}
     >
-      {input}
+      <TextInput
+        id={id}
+        customValidity={errors.length > 0 ? errors[0].item.message : ''}
+        value={value || ''}
+        readOnly={Boolean(readOnly)}
+        placeholder={placeholder}
+        onChange={handleChange}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        ref={ref}
+      />
     </FormField>
   )
 }

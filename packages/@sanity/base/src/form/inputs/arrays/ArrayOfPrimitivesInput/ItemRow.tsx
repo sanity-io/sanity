@@ -10,13 +10,13 @@ import {DragHandle} from '../common/DragHandle'
 import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
 import {InsertMenu} from '../ArrayOfObjectsInput/InsertMenu'
 import {useConditionalReadOnly} from '../../../../conditional-property/conditionalReadOnly'
-import {FieldProps, FIXME} from '../../../types'
+import {FIXME, ItemInputProps} from '../../../types'
 import {getEmptyValue} from './getEmptyValue'
 import {PrimitiveValue} from './types'
 
 const dragHandle = <DragHandle paddingX={1} paddingY={3} />
 
-type ItemRowProps = FieldProps & {
+type ItemRowProps = ItemInputProps & {
   onRemove: (item: number) => void
   onInsert: (pos: 'before' | 'after', index: number, item: PrimitiveValue) => void
   insertableTypes: SchemaType[]
@@ -32,6 +32,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
 ) {
   const focusRef = React.useRef<{focus: () => void} | null>(null)
   const {
+    inputProps,
     isSortable,
     value,
     index,
@@ -39,18 +40,17 @@ export const ItemRow = React.forwardRef(function ItemRow(
     level,
     onEscapeKey,
     onEnterKey,
-    onFocus,
     onChange,
-    onBlur,
     insertableTypes,
     onInsert,
     onRemove,
     focusPath,
     validation,
     type,
-    readOnly,
     presence,
   } = props
+
+  const {onFocus, onBlur, readOnly} = inputProps
 
   const conditionalReadOnly = useConditionalReadOnly() ?? readOnly
   const hasError = validation.filter(isValidationErrorMarker).length > 0

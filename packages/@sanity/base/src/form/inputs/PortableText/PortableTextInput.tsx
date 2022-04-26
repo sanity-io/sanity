@@ -16,11 +16,10 @@ import {Subject} from 'rxjs'
 import {Box, Text, useForwardedRef, useToast} from '@sanity/ui'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import {PatchEvent, FormPatch as FormBuilderPatch} from '../../patch'
-import type {FIXME, PortableTextMarker, RenderCustomMarkers} from '../../types'
+import type {ArrayInputProps, FIXME, PortableTextMarker, RenderCustomMarkers} from '../../types'
 import {FormField} from '../../../components/formField'
 import {withPatchSubscriber} from '../../utils/withPatchSubscriber'
 import {EMPTY_ARRAY} from '../../utils/empty'
-import {ArrayFieldProps} from '../../types'
 import {RenderBlockActions} from './types'
 import {Compositor} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
@@ -43,7 +42,7 @@ type PatchSubscriber = ({
  * @alpha
  */
 export interface PortableTextInputProps
-  extends ArrayFieldProps<PortableTextBlock, ArraySchemaType> {
+  extends ArrayInputProps<PortableTextBlock[], ArraySchemaType> {
   hotkeys?: HotkeyOptions
   markers?: PortableTextMarker[]
   onCopy?: OnCopyFn
@@ -95,25 +94,33 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
   ref: React.ForwardedRef<PortableTextEditor>
 ) {
   const {
-    // compareValue,
+    collapsed,
+    collapsible,
+    compareValue,
     focusPath,
+    focused,
     hotkeys,
-    // level,
+    inputProps,
+    level,
     markers = [],
-    // validation,
-    onBlur,
+    members,
     onChange,
     onCopy,
-    onFocus,
+    onInsert,
     onPaste,
-    // presence,
-    readOnly,
+    onSetCollapsed,
+    path,
+    presence,
     renderBlockActions,
     renderCustomMarkers,
-    type,
-    value,
+    renderItem,
     subscribe,
+    type,
+    validation,
+    value,
   } = props
+
+  const {onBlur, onFocus, readOnly} = inputProps
 
   const forwardedRef = useForwardedRef(ref)
 
@@ -272,26 +279,31 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
           value={value}
         >
           <Compositor
-            {...props}
-            // compareValue={compareValue}
-            // focusPath={focusPath}
+            collapsed={collapsed}
+            collapsible={collapsible}
+            compareValue={compareValue}
+            focusPath={focusPath}
+            focused={focused}
             hasFocus={hasFocus}
             hotkeys={hotkeys}
+            inputProps={inputProps}
             isFullscreen={isFullscreen}
-            // level={level}
+            level={level}
             markers={markers}
-            // validation={validation}
-            // onBlur={onBlur}
-            // onChange={onChange}
+            members={members}
+            onChange={onChange}
             onCopy={onCopy}
-            // onFocus={onFocus}
+            onInsert={onInsert}
             onPaste={onPaste}
+            onSetCollapsed={onSetCollapsed}
             onToggleFullscreen={handleToggleFullscreen}
             patches$={patches$}
-            // presence={presence}
-            // readOnly={readOnly}
+            path={path}
+            presence={presence}
             renderBlockActions={renderBlockActions}
             renderCustomMarkers={renderCustomMarkers}
+            renderItem={renderItem}
+            validation={validation}
             value={value}
           />
         </PortableTextEditor>

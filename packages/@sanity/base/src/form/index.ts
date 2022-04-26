@@ -24,5 +24,7 @@ export * from './studio'
 
 export * from './types'
 
+export {useFormState} from './store/useFormState'
+
 export * from './utils/mutationPatch'
 export * from './utils/path'

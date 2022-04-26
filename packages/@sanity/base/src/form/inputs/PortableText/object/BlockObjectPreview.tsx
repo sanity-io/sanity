@@ -19,7 +19,7 @@ import React, {forwardRef, useCallback, useMemo, useRef} from 'react'
 import {useId} from '@reach/auto-id'
 import {ObjectSchemaType} from '@sanity/types'
 import {IntentLink} from '../../../../router'
-import {Preview} from '../../../components/Preview'
+import {FormNodePreview} from '../../../FormNodePreview'
 import {FIXME} from '../../../types'
 
 interface BlockObjectPreviewProps {
@@ -117,12 +117,12 @@ export function BlockObjectPreview(props: BlockObjectPreviewProps) {
     return (
       <Flex>
         <Box flex={1}>
-          <Preview type={type as FIXME} value={value} layout={LAYOUT} />
+          <FormNodePreview type={type as FIXME} value={value} layout={LAYOUT} />
         </Box>
         <Box marginLeft={1}>{actions}</Box>
       </Flex>
     )
   }
 
-  return <Preview actions={actions} type={type as FIXME} value={value} layout={LAYOUT} />
+  return <FormNodePreview actions={actions} type={type as FIXME} value={value} layout={LAYOUT} />
 }

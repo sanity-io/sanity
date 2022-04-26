@@ -18,7 +18,7 @@ import {useId} from '@reach/auto-id'
 import {SchemaType} from '@sanity/types'
 import {FormFieldValidationStatus} from '../../../../../components/formField'
 import {FieldPresence} from '../../../../../presence'
-import {Preview} from '../../../../components/Preview'
+import {FormNodePreview} from '../../../../FormNodePreview'
 import {DragHandle} from '../../common/DragHandle'
 import {randomKey} from '../../common/randomKey'
 import {createProtoValue} from '../ArrayInput'
@@ -114,7 +114,7 @@ export const RowItem = React.forwardRef(function RegularItem(
             onFocus={onFocus}
             __unstable_focusRing
           >
-            <Preview
+            <FormNodePreview
               layout={
                 type.options && 'layout' in type.options && type.options?.layout === 'grid'
                   ? 'media'

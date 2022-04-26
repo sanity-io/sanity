@@ -8,75 +8,64 @@ import {
   ValidationMarker,
 } from '@sanity/types'
 import {FormFieldPresence} from '../../presence'
-import {PatchEvent} from '../patch'
 import {ArrayMember, ObjectMember} from './member'
 import {FieldGroup} from './fieldGroup'
-import {InsertEvent} from './event'
 
 interface BaseFieldProps {
-  name: string
-  // id is a stringified version of the path
-  id: string
-  // the full content path of this input
-  path: Path
   focusPath: Path
   focused: boolean
-  presence: FormFieldPresence[]
-  validation: ValidationMarker[]
+  hidden: boolean
+  id: string // id is a stringified version of the path
   index: number
   level: number
-  hidden: boolean
+  name: string
+  path: Path // the full content path of this input
+  presence: FormFieldPresence[]
   readOnly: boolean
-  onBlur: (focusEvent?: React.FocusEvent) => void
-  onChange: (patchEvent: PatchEvent) => void
-  onFocus: (pathOrEvent?: Path | React.FocusEvent) => void
+  validation: ValidationMarker[]
 }
 
 export interface StringFieldProps extends BaseFieldProps {
   kind: 'string'
-  type: StringSchemaType
   compareValue: string | undefined
+  type: StringSchemaType
   value: string | undefined
 }
 
 export interface NumberFieldProps extends BaseFieldProps {
   kind: 'number'
-  type: NumberSchemaType
   compareValue: number | undefined
+  type: NumberSchemaType
   value: number | undefined
 }
 
 export interface BooleanFieldProps extends BaseFieldProps {
   kind: 'boolean'
-  type: BooleanSchemaType
   compareValue: boolean | undefined
+  type: BooleanSchemaType
   value: boolean | undefined
 }
 
 export interface ObjectFieldProps<V = Record<string, unknown>, T = ObjectSchemaType>
   extends BaseFieldProps {
   kind: 'object'
-  type: T
-  members: ObjectMember[]
-  groups: FieldGroup[]
-  onSelectFieldGroup: (name: string) => void
-  compareValue: V | undefined
-  value: V | undefined
   collapsed: boolean
   collapsible: boolean
-  onSetCollapsed: (expanded: boolean) => void
+  compareValue: V | undefined
+  groups: FieldGroup[]
+  members: ObjectMember[]
+  type: T
+  value: V | undefined
 }
 
 export interface ArrayFieldProps<T = unknown, S extends ArraySchemaType = ArraySchemaType<T>>
   extends BaseFieldProps {
   kind: 'array'
-  type: S
-  onSetCollapsed: (collapsed: boolean) => void
-  onInsert: (event: InsertEvent) => void
   collapsed: boolean
   collapsible: boolean
-  members: ArrayMember[]
   compareValue: T[] | undefined
+  members: ArrayMember[]
+  type: S
   value: T[] | undefined
 }
 

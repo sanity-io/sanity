@@ -18,8 +18,7 @@ import {isDev} from '../../../environment'
 import {useSource} from '../../../studio'
 import {getPublishedId, useUnique} from '../../../util'
 import {useDeskTool, usePaneRouter} from '../../components'
-import {PatchEvent, toMutationPatches} from '../../../form'
-import {useFormState} from '../../../form/store/useFormState'
+import {PatchEvent, toMutationPatches, useFormState} from '../../../form'
 import {DocumentPaneContext, DocumentPaneContextValue} from './DocumentPaneContext'
 import {getMenuItems} from './menuItems'
 import {DocumentPaneProviderProps} from './types'
@@ -104,7 +103,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [client, documentId, documentType, timeline]
   )!
   /**
-   * @todo: this will now happen on each render, but should be refactored so it happens only when
+   * TODO: this will now happen on each render, but should be refactored so it happens only when
    * the `rev`, `since` or `historyController` values change.
    */
   historyController.setRange(params.since || null, params.rev || null)
@@ -158,7 +157,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
 
   const handleBlur = useCallback(
-    (blurredPath: Path) => {
+    (blurredPath?: Path) => {
       setFocusPath([])
       // note: we're deliberately not syncing presence here since it would make the user avatar disappear when a
       // user clicks outside a field without focusing another one
@@ -241,11 +240,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const documentPresence = useDocumentPresence(documentId)
 
-  const formState = useFormState(documentSchema, {
+  const {formState} = useFormState(documentSchema, {
     value,
-    onChange: handleChange,
-    onFocus: handleFocus,
-    onBlur: handleBlur,
+    // onChange: handleChange,
+    // onFocus: handleFocus,
+    // onBlur: handleBlur,
     validation,
     focusPath,
     presence: documentPresence || [],
@@ -265,6 +264,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     documentType,
     editState,
     focusPath,
+    handleBlur,
     handleChange,
     handleFocus,
     handleHistoryClose,

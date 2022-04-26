@@ -1,15 +1,14 @@
 import React from 'react'
 import {get} from 'lodash'
-import {ArraySchemaType, isTitledListValue} from '@sanity/types'
+import {isTitledListValue} from '@sanity/types'
 import {Box, Checkbox, Flex, Text} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
 import {FormFieldSet} from '../../../../components/formField'
 import {PatchEvent, set, unset} from '../../../patch'
-import {ArrayFieldProps, FIXME} from '../../../types'
-import {Preview} from '../../../components/Preview'
+import {ArrayInputProps, FIXME} from '../../../types'
+import {FormNodePreview} from '../../../FormNodePreview'
 import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
 import {Item, List} from '../common/list'
-import {ConditionalReadOnlyField} from '../../common'
 import {useConditionalReadOnly} from '../../../../conditional-property/conditionalReadOnly'
 import {resolveValueWithLegacyOptionsSupport, isLegacyOptionsItem} from './legacyOptionsSupport'
 
@@ -51,7 +50,7 @@ function inArray(array: unknown[], candidate: unknown) {
   return array ? array.some((item) => isEqual(item, candidate)) : false
 }
 
-type OptionsArrayInputProps = ArrayFieldProps<unknown>
+type OptionsArrayInputProps = ArrayInputProps<unknown[]>
 
 export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProps> {
   _element: Focusable | null = null
@@ -92,11 +91,13 @@ export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProp
   }
 
   handleFocus = (index: number) => {
-    this.props.onFocus([index])
+    const {inputProps} = this.props
+    inputProps.onFocus([index])
   }
 
   render() {
-    const {type, validation, value, level, readOnly, presence, onFocus, onBlur} = this.props
+    const {inputProps, type, validation, value, level, presence} = this.props
+    const {onFocus, onBlur, readOnly} = inputProps
     const options: any[] = type.options?.list || []
 
     // note: direction was never documented and makes more sense to use "grid" for it too
@@ -111,6 +112,7 @@ export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProp
         level={level}
         __unstable_changeIndicator={changeIndicatorOptions}
         validation={validation}
+        onSetCollapsed={() => console.warn('todo')}
       >
         <List isGrid={isGrid}>
           {options.map((option, index) => {
@@ -121,38 +123,32 @@ export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProp
             return (
               <Item index={index} isGrid={isGrid} key={index}>
                 <Flex align="center" as="label" muted={disabled}>
-                  <ConditionalReadOnlyField
-                    readOnly={readOnly || optionType?.readOnly}
-                    parent={value}
-                    value={checked}
-                  >
-                    <WrappedCheckbox
-                      disabled={disabled}
-                      checked={checked}
-                      onChange={(e) => this.handleChange(e.currentTarget.checked, option)}
-                      onFocus={() => this.handleFocus(index)}
-                      onBlur={onBlur}
-                    />
+                  <WrappedCheckbox
+                    disabled={disabled}
+                    checked={checked}
+                    onChange={(e) => this.handleChange(e.currentTarget.checked, option)}
+                    onFocus={() => this.handleFocus(index)}
+                    onBlur={onBlur}
+                  />
 
-                    {optionType &&
-                      (isTitled ? (
-                        <Box padding={2}>
-                          <Text>{option.title}</Text>
-                        </Box>
-                      ) : (
-                        <Box marginLeft={2}>
-                          <Preview
-                            layout="grid"
-                            type={optionType}
-                            value={resolveValueWithLegacyOptionsSupport(option)}
-                          />
-                        </Box>
-                      ))}
+                  {optionType &&
+                    (isTitled ? (
+                      <Box padding={2}>
+                        <Text>{option.title}</Text>
+                      </Box>
+                    ) : (
+                      <Box marginLeft={2}>
+                        <FormNodePreview
+                          layout="grid"
+                          type={optionType}
+                          value={resolveValueWithLegacyOptionsSupport(option)}
+                        />
+                      </Box>
+                    ))}
 
-                    {!optionType && (
-                      <ItemWithMissingType value={option} onFocus={() => onFocus([])} />
-                    )}
-                  </ConditionalReadOnlyField>
+                  {!optionType && (
+                    <ItemWithMissingType value={option} onFocus={() => onFocus([])} />
+                  )}
                 </Flex>
               </Item>
             )

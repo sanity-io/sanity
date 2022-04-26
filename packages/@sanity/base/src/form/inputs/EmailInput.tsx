@@ -1,19 +1,18 @@
 import React, {useMemo} from 'react'
 import {isValidationErrorMarker} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
-import {useId} from '@reach/auto-id'
 import {FormField} from '../../components/formField'
 import {PatchEvent, set, unset} from '../patch'
-import {StringInputComponentProps} from '../types'
+import {StringInputProps} from '../types'
 
-export type EmailInputProps = StringInputComponentProps
+export type EmailInputProps = StringInputProps
 
 export const EmailInput = React.forwardRef(function EmailInput(
   props: EmailInputProps,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
-  const {value, readOnly, type, validation, level, onFocus, onBlur, onChange, presence} = props
-  const inputId = useId()
+  const {inputProps, value, type, validation, level, onChange, presence} = props
+  const {id: inputId, onFocus, onBlur, readOnly} = inputProps
 
   const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
 

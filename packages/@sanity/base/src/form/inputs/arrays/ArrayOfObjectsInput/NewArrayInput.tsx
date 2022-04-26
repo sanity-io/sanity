@@ -1,27 +1,27 @@
-import React, {memo, useCallback} from 'react'
 import {Button, Card} from '@sanity/ui'
 import {ObjectSchemaType} from '@sanity/types'
-import {createProtoValue} from '../../../utils/createProtoValue'
-import {randomKey} from '../common/randomKey'
-import {ArrayInputComponentProps} from '../../../types'
-import {EMPTY_ARRAY} from '../../../utils/empty'
+import React, {memo, useCallback} from 'react'
 import {FormFieldSet} from '../../../../components/formField'
+import {ArrayInputProps} from '../../../types'
+import {createProtoValue} from '../../../utils/createProtoValue'
+import {EMPTY_ARRAY} from '../../../utils/empty'
+import {randomKey} from '../common/randomKey'
 import {ItemMember} from './ItemMember'
 
-export const ArrayInput = memo(function ArrayInput(props: ArrayInputComponentProps) {
+export const ArrayInput = memo(function ArrayInput(props: ArrayInputProps) {
   const {
-    type,
-    members,
+    // focusRef,
     collapsed,
     collapsible,
-    presence,
-    validation,
-    onInsert,
+    inputProps,
     level,
-    renderItem,
-    focusRef,
-    id,
+    members,
+    onInsert,
     onSetCollapsed,
+    presence,
+    renderItem,
+    type,
+    validation,
   } = props
 
   const insert = useCallback(
@@ -37,17 +37,17 @@ export const ArrayInput = memo(function ArrayInput(props: ArrayInputComponentPro
 
   return (
     <FormFieldSet
-      ref={collapsed ? focusRef : null}
-      level={level}
-      title={type.title}
-      id={id}
-      description={type.description}
-      collapsible={collapsible}
-      collapsed={collapsed}
-      onSetCollapsed={onSetCollapsed}
-      __unstable_presence={collapsed ? presence : EMPTY_ARRAY}
-      validation={collapsed ? validation : EMPTY_ARRAY}
       __unstable_changeIndicator={false}
+      __unstable_presence={collapsed ? presence : EMPTY_ARRAY}
+      collapsed={collapsed}
+      collapsible={collapsible}
+      description={type.description}
+      id={inputProps.id}
+      level={level}
+      onSetCollapsed={onSetCollapsed}
+      ref={collapsed ? inputProps.ref : null}
+      title={type.title}
+      validation={collapsed ? validation : EMPTY_ARRAY}
     >
       {type.of.map((memberType) => {
         return (
@@ -58,6 +58,7 @@ export const ArrayInput = memo(function ArrayInput(props: ArrayInputComponentPro
           />
         )
       })}
+
       {members.map((member, index) => {
         if (member.type !== 'item') {
           return 'Non item members not supported currently'

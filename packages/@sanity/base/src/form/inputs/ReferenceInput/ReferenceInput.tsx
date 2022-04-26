@@ -43,7 +43,7 @@ import {FormField} from '../../../components/formField'
 import {PreviewCard} from '../../../components/PreviewCard'
 import {PatchEvent, set, setIfMissing, unset} from '../../patch'
 import {EMPTY_ARRAY} from '../../utils/empty'
-import {useDidUpdate} from '../../hooks/useDidUpdate'
+// import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {isNonNullable} from '../../utils/isNonNullable'
 import {AlertStrip} from '../../components/AlertStrip'
 import {Alert} from '../../components/Alert'
@@ -82,18 +82,16 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
   forwardedRef: ForwardedRef<HTMLInputElement>
 ) {
   const {
+    inputProps,
     type,
     value,
     level,
     validation = EMPTY_ARRAY,
-    readOnly,
     liveEdit,
     onSearch,
     onChange,
     presence,
     focusPath = EMPTY_ARRAY,
-    onFocus,
-    onBlur,
     selectedState,
     editReferenceLinkComponent: EditReferenceLink,
     onEditReference,
@@ -101,6 +99,8 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
     compareValue,
     getReferenceInfo,
   } = props
+
+  const {onFocus, onBlur, readOnly} = inputProps
 
   const [searchState, setSearchState] = useState<SearchState>(INITIAL_SEARCH_STATE)
 
@@ -193,16 +193,16 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
   // --- focus handling
   const hasFocusAtRef = focusPath.length === 1 && focusPath[0] === '_ref'
   const focusElementRef = useForwardedRef(forwardedRef)
-  useDidUpdate({hasFocusAt: hasFocusAtRef, ref: value?._ref}, (prev, current) => {
-    const refUpdated = prev?.ref !== current.ref
-    const focusAtUpdated = prev?.hasFocusAt !== current.hasFocusAt
+  // useDidUpdate({hasFocusAt: hasFocusAtRef, ref: value?._ref}, (prev, current) => {
+  //   const refUpdated = prev?.ref !== current.ref
+  //   const focusAtUpdated = prev?.hasFocusAt !== current.hasFocusAt
 
-    if ((focusAtUpdated || refUpdated) && current.hasFocusAt) {
-      // if search mode changed and we're having focus always ensure the
-      // ref element gets focus
-      focusElementRef.current?.focus()
-    }
-  })
+  //   if ((focusAtUpdated || refUpdated) && current.hasFocusAt) {
+  //     // if search mode changed and we're having focus always ensure the
+  //     // ref element gets focus
+  //     focusElementRef.current?.focus()
+  //   }
+  // })
 
   const weakIs = value?._weak ? 'weak' : 'strong'
   const weakShouldBe = type.weak === true ? 'weak' : 'strong'

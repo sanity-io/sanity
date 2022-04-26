@@ -48,10 +48,10 @@ export function FormView(props: FormViewProps) {
     documentId,
     documentSchema,
     documentType,
-    focusPath,
+    // focusPath,
     handleChange: _handleChange,
     historyController,
-    validation,
+    // validation,
     ready,
     changesOpen,
     formState,
@@ -169,30 +169,34 @@ export function FormView(props: FormViewProps) {
               </Box>
             ) : (
               <StudioFormBuilder
+                // filterField={filterField}
+                // id="root"
+                // onFocus={formState.onFocus}
+                // onSelectFieldGroup={formState.onSelectFieldGroup}
+                // onSetCollapsed={formState.onSetCollapsed}
+                // readOnly={isReadOnly}
+                __internal_patchChannel={patchChannel}
+                // changesOpen={changesOpen}
                 collapsed={false}
                 collapsible={false}
-                id="root"
-                __internal_patchChannel={patchChannel}
-                changesOpen={changesOpen}
                 compareValue={compareValue as Record<string, unknown>}
-                // filterField={filterField}
-                level={formState.level}
-                path={formState.path}
+                focusPath={formState.focusPath}
                 focused={formState.focused}
+                groups={formState.groups}
+                level={formState.level}
+                members={formState.members}
                 onBlur={handleBlur}
                 onChange={handleChange}
+                onFocus={() => undefined} // @todo
+                onSelectFieldGroup={() => undefined} // @todo
+                onSetCollapsed={() => undefined} // @todo
+                path={formState.path}
                 presence={formState.presence}
-                focusPath={formState.focusPath}
-                validation={formState.validation}
-                readOnly={isReadOnly}
+                readOnly={false}
                 schema={schema}
                 type={formState.type as ObjectSchemaType}
-                onFocus={formState.onFocus}
+                validation={formState.validation}
                 value={formState.value}
-                members={formState.members}
-                groups={formState.groups}
-                onSelectFieldGroup={formState.onSelectFieldGroup}
-                onSetCollapsed={formState.onSetCollapsed}
               />
             )
           ) : (

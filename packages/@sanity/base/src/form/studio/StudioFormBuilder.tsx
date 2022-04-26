@@ -1,51 +1,66 @@
 import {Schema, SchemaType} from '@sanity/types'
-import React, {createElement, useCallback, useRef} from 'react'
+import React, {createElement, forwardRef, useCallback, useMemo} from 'react'
 import {PatchChannel} from '../patch/PatchChannel'
 import {DocumentInput} from '../inputs/DocumentInput'
 import {useSource} from '../../studio'
 import {fallbackInputs} from '../fallbackInputs'
 import {
-  ArrayInputComponentProps,
-  BooleanInputComponentProps,
   FIXME,
-  FieldProps,
-  NumberInputComponentProps,
-  ObjectInputComponentProps,
-  ObjectInputProps,
-  RenderArrayItemCallbackArg,
+  // ObjectInputProps,
+  // ObjectInputProps,
+  // RenderArrayItemCallbackArg,
   RenderFieldCallback,
-  RenderFieldCallbackArg,
-  StringInputComponentProps,
+  InputProps,
+  // FieldProps,
+  ObjectFieldProps,
+  ItemProps,
 } from '../types'
-import {ChangeIndicatorProvider} from '../../components/changeIndicators'
-import {assertType, isArrayField, isObjectField} from '../utils/asserters'
+// import {ChangeIndicatorProvider} from '../../components/changeIndicators'
+// import {assertType} from '../utils/asserters'
+import {FormNode} from '../FormNode'
+// import {FormPatch} from '../patch'
+import {MutationPatch} from '../utils/mutationPatch'
+import {Focusable} from '../types/focusable'
 import {StudioFormBuilderProvider} from './StudioFormBuilderProvider'
 import {resolveInputComponent as defaultInputResolver} from './inputResolver/inputResolver'
 
 /**
  * @alpha
  */
-export interface StudioFormBuilderProps extends ObjectInputProps {
-  changesOpen: boolean
+export interface StudioFormBuilderProps
+  extends Omit<ObjectFieldProps, 'hidden' | 'id' | 'index' | 'kind' | 'name'> {
+  // changesOpen: boolean
   /**
    * @internal Considered internal – do not use.
    */
   __internal_patchChannel: PatchChannel // eslint-disable-line camelcase
-  autoFocus?: boolean
+  // autoFocus?: boolean
+  onBlur: () => void
+  onChange: (patches: MutationPatch[]) => void
+  onFocus: () => void
+  onSelectFieldGroup: () => void
+  onSetCollapsed: () => void
   schema: Schema
 }
 
 /**
  * @alpha
  */
-export function StudioFormBuilder(props: StudioFormBuilderProps) {
+export const StudioFormBuilder = forwardRef(function StudioFormBuilder(
+  props: StudioFormBuilderProps,
+  ref: React.Ref<Focusable>
+) {
   const {
     __internal_patchChannel: patchChannel,
+    // changesOpen,
+    collapsed,
+    collapsible,
     compareValue,
     focusPath,
     focused,
     groups,
-    id,
+    // hidden,
+    // id,
     level,
     members,
     onBlur,
@@ -66,7 +81,7 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
   const {unstable_formBuilder: formBuilder} = useSource()
 
   const resolveInputComponent = useCallback(
-    (inputType: SchemaType): React.ComponentType<FieldProps> => {
+    (inputType: SchemaType): React.ComponentType<InputProps> => {
       const resolved = defaultInputResolver(
         formBuilder.components?.inputs,
         formBuilder.resolveInputComponent,
@@ -83,63 +98,95 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
   )
 
   const renderField: RenderFieldCallback = useCallback(
-    (field: RenderFieldCallbackArg) => {
-      const inputComponent = resolveInputComponent(field.type)
+    (fieldProps, fieldRef) => {
+      const inputComponent = resolveInputComponent(fieldProps.type)
 
       if (!inputComponent) {
-        return <div>No input resolved for type: {field.type.name}</div>
+        return <div>No input resolved for type: {fieldProps.type.name}</div>
       }
 
-      if (isObjectField(field)) {
-        assertType<React.ComponentType<ObjectInputComponentProps>>(inputComponent)
-
-        return createElement(inputComponent as React.ComponentType<ObjectInputComponentProps>, {
-          ...field,
-          onSelectFieldGroup: () => undefined,
-          renderField,
-        })
-      }
-
-      if (isArrayField(field)) {
-        assertType<React.ComponentType<ArrayInputComponentProps>>(inputComponent)
-
-        return createElement(inputComponent as React.ComponentType<ArrayInputComponentProps>, {
-          ...(field as FIXME),
-          renderItem,
-        })
-      }
-
-      assertType<
-        React.ComponentType<
-          StringInputComponentProps | NumberInputComponentProps | BooleanInputComponentProps
-        >
-      >(inputComponent)
-
-      // return (
-      //   <ChangeIndicatorProvider path={field.path} value={field.value} compareValue={undefined}>
-      //     <Input {...field} />
-      //   </ChangeIndicatorProvider>
-      // )
-
-      return createElement(inputComponent, field)
+      return (
+        <FormNode
+          component={inputComponent}
+          fieldProps={fieldProps}
+          fieldRef={fieldRef}
+          renderField={renderField}
+          renderItem={renderItem}
+        />
+      )
     },
     [resolveInputComponent]
   )
 
   const renderItem = useCallback(
-    (item: RenderArrayItemCallbackArg) => {
+    (item: ItemProps) => {
       const inputComponent = resolveInputComponent(item.type)
+
       if (!inputComponent) {
         return <div>No input resolved for type: {item.type.name}</div>
       }
-      assertType<React.ComponentType<ObjectInputComponentProps>>(inputComponent)
-      return (
-        <ChangeIndicatorProvider path={item.path} value={item.value} compareValue={undefined}>
-          {createElement(inputComponent, {...item, renderField} as FIXME)}
-        </ChangeIndicatorProvider>
-      )
+
+      if (item.kind === 'object') {
+        return createElement(inputComponent, {...item, renderField} as FIXME)
+      }
+
+      return createElement(inputComponent, {...item, renderField} as FIXME)
     },
     [resolveInputComponent]
+  )
+
+  const rootFieldProps: ObjectFieldProps = useMemo(
+    () => ({
+      kind: 'object',
+      // focusRef: useRef(null),
+      // onSelectFieldGroup,
+      // onSetCollapsed,
+      // renderField,
+      collapsed,
+      collapsible,
+      compareValue,
+      focusPath,
+      focused,
+      groups,
+      hidden: false,
+      id: '', // @todo
+      // hidden: Boolean(hidden),
+      // id,
+      index: 0, // @todo
+      level,
+      members,
+      name: '', // @todo
+      onBlur,
+      onChange,
+      onFocus,
+      path,
+      presence,
+      readOnly,
+      type,
+      validation,
+      value,
+    }),
+    [
+      collapsed,
+      collapsible,
+      compareValue,
+      focusPath,
+      focused,
+      groups,
+      // hidden,
+      // id,
+      level,
+      members,
+      onBlur,
+      onChange,
+      onFocus,
+      path,
+      presence,
+      readOnly,
+      type,
+      validation,
+      value,
+    ]
   )
 
   return (
@@ -149,30 +196,13 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
       schema={schema}
       value={value}
     >
-      <DocumentInput
-        collapsed={false}
-        collapsible={false}
-        compareValue={compareValue}
-        focusRef={useRef(null)}
-        level={level}
-        id={id}
-        path={path}
-        focused={focused}
-        focusPath={focusPath}
-        onBlur={onBlur}
-        onChange={onChange}
-        onFocus={onFocus}
-        presence={presence}
-        validation={validation}
-        readOnly={readOnly}
-        type={type}
-        members={members}
-        groups={groups}
-        onSelectFieldGroup={onSelectFieldGroup}
-        onSetCollapsed={onSetCollapsed}
+      <FormNode
+        component={DocumentInput as FIXME}
+        fieldProps={rootFieldProps}
+        fieldRef={ref}
         renderField={renderField}
-        value={value}
+        renderItem={renderItem}
       />
     </StudioFormBuilderProvider>
   )
-}
+})

@@ -47,7 +47,7 @@ import {FieldPresence} from '../../../presence'
 import {IntentLink} from '../../../router'
 import {PatchEvent, set, setIfMissing, unset} from '../../patch'
 import {EMPTY_ARRAY} from '../../utils/empty'
-import {useDidUpdate} from '../../hooks/useDidUpdate'
+// import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {isNonNullable} from '../../utils/isNonNullable'
 import {AlertStrip} from '../../components/AlertStrip'
 import {RowWrapper} from '../arrays/ArrayOfObjectsInput/item/components/RowWrapper'
@@ -98,32 +98,30 @@ function valueHasRef<T extends {_ref?: string}>(value: T): value is T & {_ref: s
   return typeof value._ref === 'string'
 }
 
-export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
-  props: Props,
-  forwardedRef: ForwardedRef<HTMLInputElement>
-) {
+export function ArrayItemReferenceInput(props: Props) {
   const {
+    inputProps,
     type,
     value,
     validation,
-    readOnly,
     liveEdit,
     onSearch,
     onChange,
     insertableTypes,
     focusPath = EMPTY_ARRAY,
-    onFocus,
     presence,
     createOptions,
     isSortable,
     level,
-    onBlur,
     onInsert,
     selectedState,
     editReferenceLinkComponent: EditReferenceLink,
     onEditReference,
     getReferenceInfo,
   } = props
+
+  const {onBlur, onFocus, readOnly, ref} = inputProps
+  const forwardedRef = useForwardedRef(ref)
 
   const [searchState, setSearchState] = useState<SearchState>(INITIAL_SEARCH_STATE)
 
@@ -245,17 +243,17 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
 
   // --- focus handling
   const hasFocusAtRef = focusPath.length === 1 && (focusPath[0] === '_ref' || focusPath[0] === '$')
-  const focusElementRef = useForwardedRef(forwardedRef)
-  useDidUpdate({hasFocusAt: hasFocusAtRef, ref: value?._ref}, (prev, current) => {
-    const refUpdated = prev?.ref !== current.ref
-    const focusAtUpdated = prev?.hasFocusAt !== current.hasFocusAt
+  // const focusElementRef = useForwardedRef(forwardedRef)
+  // useDidUpdate({hasFocusAt: hasFocusAtRef, ref: value?._ref}, (prev, current) => {
+  //   const refUpdated = prev?.ref !== current.ref
+  //   const focusAtUpdated = prev?.hasFocusAt !== current.hasFocusAt
 
-    if ((focusAtUpdated || refUpdated) && current.hasFocusAt) {
-      // if search mode changed and we're having focus always ensure the
-      // ref element gets focus
-      focusElementRef.current?.focus()
-    }
-  })
+  //   if ((focusAtUpdated || refUpdated) && current.hasFocusAt) {
+  //     // if search mode changed and we're having focus always ensure the
+  //     // ref element gets focus
+  //     focusElementRef.current?.focus()
+  //   }
+  // })
   const weakIs = value?._weak ? 'weak' : 'strong'
   const weakShouldBe = type.weak === true ? 'weak' : 'strong'
 
@@ -289,20 +287,20 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
   const selected = selectedState === 'selected'
   const handleFocus = useCallback(
     (event) => {
-      if (onFocus && event.currentTarget === focusElementRef.current) {
+      if (onFocus && event.currentTarget === forwardedRef.current) {
         onFocus([])
       }
     },
-    [onFocus, focusElementRef]
+    [onFocus, forwardedRef]
   )
 
   const handleAutocompleteFocus = useCallback(
     (event) => {
-      if (onFocus && event.currentTarget === focusElementRef.current) {
+      if (onFocus && event.currentTarget === forwardedRef.current) {
         onFocus(['_ref'])
       }
     },
-    [onFocus, focusElementRef]
+    [onFocus, forwardedRef]
   )
 
   const handleQueryChange = useObservableCallback((inputValue$: Observable<string | null>) => {
@@ -350,10 +348,10 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
   const handleCreateButtonKeyDown = useCallback(
     (e) => {
       if (e.key === 'Escape') {
-        focusElementRef.current?.focus()
+        forwardedRef.current?.focus()
       }
     },
-    [focusElementRef]
+    [forwardedRef]
   )
 
   const renderOption = useCallback(
@@ -455,7 +453,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
                   data-testid="autocomplete"
                   loading={searchState.isLoading}
                   portalRef={autocompletePortalRef}
-                  ref={focusElementRef}
+                  ref={forwardedRef}
                   id={inputId || ''}
                   options={searchState.hits.map((hit) => ({
                     value: hit.id,
@@ -511,7 +509,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
                   onFocus={handleFocus}
                   data-selected={selected ? true : undefined}
                   data-pressed={pressed ? true : undefined}
-                  ref={focusElementRef}
+                  ref={forwardedRef}
                 >
                   <PreviewReferenceValue
                     value={value}
@@ -530,7 +528,7 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
                   __unstable_focusRing
                   tabIndex={0}
                   onClick={() => onFocus?.(['_ref'])}
-                  ref={focusElementRef}
+                  ref={forwardedRef}
                 >
                   <Box marginY={1}>
                     <Text muted>Empty reference</Text>
@@ -694,4 +692,4 @@ export const ArrayItemReferenceInput = forwardRef(function ReferenceInput(
       )}
     </RowWrapper>
   )
-})
+}

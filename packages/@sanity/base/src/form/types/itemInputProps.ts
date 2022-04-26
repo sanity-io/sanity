@@ -17,7 +17,7 @@ import {FieldGroup} from './fieldGroup'
 import {ArrayMember, ObjectMember} from './member'
 import {RenderArrayItemCallback, RenderFieldCallback} from './renderCallback'
 
-export interface BaseInputProps<T = unknown, S extends SchemaType = SchemaType> {
+export interface BaseItemInputProps<T = unknown, S extends SchemaType = SchemaType> {
   compareValue: T | undefined
   focusPath: Path
   focused: boolean
@@ -38,9 +38,11 @@ export interface BaseInputProps<T = unknown, S extends SchemaType = SchemaType> 
   value: T | undefined
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export interface ObjectInputProps<T extends {} = {}, S extends ObjectSchemaType = ObjectSchemaType>
-  extends BaseInputProps<T, S> {
+export interface ObjectItemInputProps<
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  T extends {} = {},
+  S extends ObjectSchemaType = ObjectSchemaType
+> extends BaseItemInputProps<T, S> {
   kind: 'object'
   collapsed: boolean
   collapsible: boolean
@@ -51,8 +53,8 @@ export interface ObjectInputProps<T extends {} = {}, S extends ObjectSchemaType 
   renderField: RenderFieldCallback
 }
 
-export interface ArrayInputProps<V = unknown, S extends ArraySchemaType = ArraySchemaType<V>>
-  extends BaseInputProps<V, S> {
+export interface ArrayItemInputProps<V = unknown, S extends ArraySchemaType = ArraySchemaType<V>>
+  extends BaseItemInputProps<V, S> {
   kind: 'array'
   collapsed: boolean
   collapsible: boolean
@@ -60,34 +62,24 @@ export interface ArrayInputProps<V = unknown, S extends ArraySchemaType = ArrayS
   onInsert: (event: InsertEvent) => void
   onSetCollapsed: (collapsed: boolean) => void
   renderItem: RenderArrayItemCallback
-
-  // ArrayFunctionsImpl: React.ComponentType<
-  //   FormArrayInputFunctionsProps<ArraySchemaType<ArrayMember>, ArrayMember>
-  // >
-
-  // ArrayItemImpl: typeof ArrayItem
-  // ReferenceItemComponent: ReferenceItemComponentType
-  // filterField: FormBuilderFilterFieldFn
-  // resolveInitialValue?: (type: ObjectSchemaType, value: any) => Promise<any>
-  // resolveUploader?: (type: SchemaType, file: FileLike) => Uploader | null
 }
 
-export interface BooleanInputProps extends BaseInputProps<boolean, BooleanSchemaType> {
+export interface BooleanItemInputProps extends BaseItemInputProps<boolean, BooleanSchemaType> {
   kind: 'boolean'
 }
 
-export interface NumberInputProps extends BaseInputProps<number, NumberSchemaType> {
+export interface NumberItemInputProps extends BaseItemInputProps<number, NumberSchemaType> {
   kind: 'number'
 }
 
-export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
-  extends BaseInputProps<string, S> {
+export interface StringItemInputProps<S extends StringSchemaType = StringSchemaType>
+  extends BaseItemInputProps<string, S> {
   kind: 'string'
 }
 
-export type InputProps =
-  | ObjectInputProps
-  | ArrayInputProps
-  | BooleanInputProps
-  | NumberInputProps
-  | StringInputProps
+export type ItemInputProps =
+  | ObjectItemInputProps
+  | ArrayItemInputProps
+  | BooleanItemInputProps
+  | NumberItemInputProps
+  | StringItemInputProps

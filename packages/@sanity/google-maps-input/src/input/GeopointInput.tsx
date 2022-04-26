@@ -9,7 +9,7 @@ import {
   ChangeIndicatorCompareValueProvider,
   ChangeIndicator,
 } from '@sanity/base/_unstable'
-import {ObjectFieldProps, PatchEvent, set, setIfMissing, unset} from '@sanity/base/form'
+import {ObjectInputProps, PatchEvent, set, setIfMissing, unset} from '@sanity/base/form'
 import {GoogleMapsLoadProxy} from '../loader/GoogleMapsLoadProxy'
 import {Geopoint, GeopointSchemaType} from '../types'
 import {GeopointSelect} from './GeopointSelect'
@@ -33,7 +33,7 @@ const getStaticImageUrl = (value) => {
   return `https://maps.googleapis.com/maps/api/staticmap?${qs.join('&')}`
 }
 
-type GeopointInputProps = ObjectFieldProps<Geopoint, GeopointSchemaType>
+type GeopointInputProps = ObjectInputProps<Geopoint, GeopointSchemaType>
 
 // @todo
 // interface Focusable {
@@ -73,15 +73,18 @@ class GeopointInput extends React.PureComponent<GeopointInputProps, InputState> 
   }
 
   handleFocus = (event) => {
-    this.props.onFocus(event)
+    const {inputProps} = this.props
+    inputProps.onFocus(event)
   }
 
   handleBlur = () => {
-    this.props.onBlur?.()
+    const {inputProps} = this.props
+    inputProps.onBlur?.()
   }
 
   handleToggleModal = () => {
-    const {onFocus, onBlur} = this.props
+    const {inputProps} = this.props
+    const {onFocus, onBlur} = inputProps
     this.setState(
       (prevState) => ({modalOpen: !prevState.modalOpen}),
       () => {
@@ -117,7 +120,8 @@ class GeopointInput extends React.PureComponent<GeopointInputProps, InputState> 
   }
 
   render() {
-    const {value, compareValue, readOnly, type, validation, level, presence} = this.props
+    const {inputProps, value, compareValue, type, validation, level, presence} = this.props
+    const {readOnly} = inputProps
     const {modalOpen} = this.state
 
     if (!config || !config.apiKey) {
@@ -152,6 +156,7 @@ class GeopointInput extends React.PureComponent<GeopointInputProps, InputState> 
         __unstable_presence={presence}
         __unstable_changeIndicator={false}
         validation={validation}
+        onSetCollapsed={() => console.warn('todo')}
       >
         <div>
           {value && (

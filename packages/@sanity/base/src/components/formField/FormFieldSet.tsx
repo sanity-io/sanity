@@ -28,7 +28,7 @@ export interface FormFieldSetProps {
    * The nesting level of the form field set
    */
   level?: number
-  onSetCollapsed?: (collapsed: boolean) => void
+  onSetCollapsed: (collapsed: boolean) => void
   title?: React.ReactNode
   /**
    * @alpha

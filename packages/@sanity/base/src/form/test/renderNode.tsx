@@ -6,7 +6,7 @@ import {noop} from 'lodash'
 import React, {forwardRef} from 'react'
 import {StudioProvider, useSource} from '../../studio'
 import {createConfig} from '../../config'
-import {FIXME, FieldProps, FormInputComponentResolver, FormPreviewComponentResolver} from '../types'
+import {FIXME, InputProps, FormInputComponentResolver, FormPreviewComponentResolver} from '../types'
 import {route, RouterProvider} from '../../router'
 import {FormBuilderProvider} from '../FormBuilderProvider'
 import {ObjectInput} from '../inputs/ObjectInput'
@@ -15,10 +15,17 @@ import {ReviewChangesContextProvider} from '../studio/contexts/reviewChanges/Rev
 import {is} from '../utils/is'
 
 const GenericInput = forwardRef(function GenericInput(
-  props: FieldProps,
+  props: InputProps,
   ref: React.ForwardedRef<any>
 ) {
-  return <input type="string" ref={ref} onFocus={props.onFocus} />
+  return (
+    <input
+      type="string"
+      ref={ref}
+      // eslint-disable-next-line react/jsx-handler-names
+      onFocus={props.inputProps.onFocus}
+    />
+  )
 })
 
 function GenericPreview() {

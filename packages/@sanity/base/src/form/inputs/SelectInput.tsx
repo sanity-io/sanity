@@ -5,9 +5,9 @@ import {capitalize} from 'lodash'
 import React, {useMemo, useCallback, forwardRef} from 'react'
 import {PatchEvent, set, unset} from '../patch'
 import {FormField} from '../../components/formField'
-import {StringInputComponentProps} from '../types'
+import {StringInputProps} from '../types'
 
-export type SelectInputProps = StringInputComponentProps
+export type SelectInputProps = StringInputProps
 
 function toSelectItem(
   option: TitledListValue<string | number> | string | number
@@ -21,7 +21,8 @@ export const SelectInput = React.forwardRef(function SelectInput(
   props: SelectInputProps,
   forwardedRef: React.ForwardedRef<HTMLSelectElement | HTMLInputElement>
 ) {
-  const {value, readOnly, validation, type, level, onChange, onFocus, presence} = props
+  const {inputProps, value, validation, type, level, onChange, presence} = props
+  const {readOnly, onFocus} = inputProps
   const items = useMemo(() => (type.options?.list || []).map(toSelectItem), [type.options?.list])
   const currentItem = items.find((item) => item.value === value)
   const isRadio = type.options && type.options.layout === 'radio'

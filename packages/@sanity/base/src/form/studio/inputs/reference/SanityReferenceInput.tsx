@@ -20,7 +20,7 @@ import {CreateOption, EditReferenceEvent} from '../../../inputs/ReferenceInput/t
 import {useDocumentPreviewStore} from '../../../../datastores'
 import {useSource} from '../../../../studio'
 import {useReferenceInputOptions} from '../../contexts'
-import {ObjectFieldProps} from '../../../types'
+import {ObjectInputProps} from '../../../types'
 
 // eslint-disable-next-line require-await
 async function resolveUserDefinedFilter(
@@ -45,7 +45,7 @@ async function resolveUserDefinedFilter(
 }
 
 export interface StudioReferenceInputProps
-  extends ObjectFieldProps<Reference, ReferenceSchemaType> {
+  extends ObjectInputProps<Reference, ReferenceSchemaType> {
   // From `withDocument`
   document: SanityDocument
 

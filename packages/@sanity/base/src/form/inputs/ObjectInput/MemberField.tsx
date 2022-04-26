@@ -3,6 +3,7 @@ import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {FieldMember, RenderFieldCallback} from '../../types'
 import {useFormBuilder} from '../../useFormBuilder'
 import {ChangeIndicatorProvider} from '../../../components/changeIndicators'
+import {Focusable} from '../../types/focusable'
 
 export interface MemberFieldProps {
   member: FieldMember
@@ -13,7 +14,7 @@ export interface MemberFieldProps {
 export const MemberField = memo(function MemberField(props: MemberFieldProps) {
   const {renderField: defaultRenderField} = useFormBuilder()
   const {member, renderField = defaultRenderField} = props
-  const focusRef = useRef<{focus: () => void}>()
+  const focusRef = useRef<Focusable | null>(null)
 
   useDidUpdate(member.field.focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus) {
@@ -27,7 +28,7 @@ export const MemberField = memo(function MemberField(props: MemberFieldProps) {
       value={member.field.value}
       compareValue={undefined}
     >
-      {renderField({...member.field, focusRef})}
+      {renderField(member.field, focusRef)}
     </ChangeIndicatorProvider>
   )
 })

@@ -11,7 +11,7 @@ import {isValidationErrorMarker, isValidationWarningMarker, SchemaType} from '@s
 import {useId} from '@reach/auto-id'
 import {FormFieldValidationStatus} from '../../../../../components/formField'
 import {FieldPresence} from '../../../../../presence'
-import {Preview} from '../../../../components/Preview'
+import {FormNodePreview} from '../../../../FormNodePreview'
 import {DragHandle} from '../../common/DragHandle'
 import {randomKey} from '../../common/randomKey'
 import {createProtoValue} from '../ArrayInput'
@@ -166,7 +166,13 @@ export const CellItem = React.forwardRef(function ItemCell(
           onFocus={onFocus}
           __unstable_focusRing
         >
-          <Preview layout="media" value={value} type={type} withRadius={false} withBorder={false} />
+          <FormNodePreview
+            layout="media"
+            value={value}
+            type={type}
+            withRadius={false}
+            withBorder={false}
+          />
         </PreviewCard>
       ) : (
         <MissingTypeBox flex={1}>

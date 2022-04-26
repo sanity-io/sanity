@@ -22,7 +22,7 @@ import {InsertEvent} from '../../../inputs/arrays/ArrayOfObjectsInput/types'
 import {useDocumentPreviewStore} from '../../../../datastores'
 import {useSource} from '../../../../studio'
 import {useReferenceInputOptions} from '../../contexts'
-import {ObjectFieldProps} from '../../../types'
+import {ObjectInputProps} from '../../../types'
 
 // eslint-disable-next-line require-await
 async function resolveUserDefinedFilter(
@@ -47,7 +47,7 @@ async function resolveUserDefinedFilter(
 }
 
 export interface SanityArrayItemReferenceInputProps
-  extends ObjectFieldProps<Reference, ReferenceSchemaType> {
+  extends ObjectInputProps<Reference, ReferenceSchemaType> {
   isSortable: boolean
   onInsert?: (event: InsertEvent) => void
   insertableTypes?: SchemaType[]
@@ -73,9 +73,9 @@ type SearchError = {
   }
 }
 
-const SanityArrayItemReferenceInputInner = forwardRef(function SanityReferenceInput(
-  props: SanityArrayItemReferenceInputProps,
-  ref: ForwardedRef<HTMLInputElement>
+function SanityArrayItemReferenceInputInner(
+  props: SanityArrayItemReferenceInputProps
+  // ref: ForwardedRef<HTMLInputElement>
 ) {
   const {schema, client} = useSource()
   const documentPreviewStore = useDocumentPreviewStore()
@@ -190,14 +190,14 @@ const SanityArrayItemReferenceInputInner = forwardRef(function SanityReferenceIn
       liveEdit={isDocumentLiveEdit}
       onSearch={handleSearch}
       getReferenceInfo={(id, _type) => adapter.getReferenceInfo(documentPreviewStore, id, _type)}
-      ref={ref}
+      // ref={ref}
       selectedState={selectedState}
       editReferenceLinkComponent={EditReferenceLink}
       createOptions={createOptions}
       onEditReference={handleEditReference}
     />
   )
-})
+}
 
 export const StudioArrayItemReferenceInput = withValuePath(
   withDocument(SanityArrayItemReferenceInputInner)

@@ -20,7 +20,7 @@ function renderInput(
         <DateTimeInput
           focusPath={[]}
           type={{title: 'Test', name: 'datetime'} as FIXME}
-          onFocus={onFocus}
+          // onFocus={onFocus}
           onChange={onChange}
           presence={[]}
           validation={[]}

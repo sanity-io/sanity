@@ -4,15 +4,16 @@ import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {FormField} from '../../components/formField'
 import {PatchEvent, set, unset} from '../patch'
-import {StringInputComponentProps} from '../types'
+import {StringInputProps} from '../types'
 
-export type TelephoneInputProps = StringInputComponentProps
+export type TelephoneInputProps = StringInputProps
 
 export const TelephoneInput = React.forwardRef(function TelephoneInput(
   props: TelephoneInputProps,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
-  const {value, readOnly, type, validation, level, onFocus, onBlur, onChange, presence} = props
+  const {value, type, validation, level, inputProps, onChange, presence} = props
+  const {readOnly, onFocus, onBlur} = inputProps
   const inputId = useId()
   const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
 

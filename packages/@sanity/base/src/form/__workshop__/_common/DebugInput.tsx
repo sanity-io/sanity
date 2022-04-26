@@ -1,7 +1,7 @@
 import {TextArea, Theme} from '@sanity/ui'
 import React, {useImperativeHandle, useRef} from 'react'
 import styled, {css} from 'styled-components'
-import {FieldProps} from '../../types'
+import {InputProps} from '../../types'
 
 const DebugTextArea = styled(TextArea)(({theme}: {theme: Theme}) => {
   return css`
@@ -9,7 +9,7 @@ const DebugTextArea = styled(TextArea)(({theme}: {theme: Theme}) => {
   `
 })
 
-export const DebugInput = React.forwardRef(function DebugInput(props: FieldProps, ref) {
+export const DebugInput = React.forwardRef(function DebugInput(props: InputProps, ref) {
   const rootRef = useRef<HTMLTextAreaElement | null>(null)
 
   useImperativeHandle(ref, () => ({

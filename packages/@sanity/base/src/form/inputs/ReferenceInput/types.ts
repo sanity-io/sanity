@@ -2,7 +2,7 @@ import {Observable} from 'rxjs'
 import React, {ReactNode} from 'react'
 import {Path, PreviewValue, Reference, ReferenceSchemaType} from '@sanity/types'
 import {DocumentAvailability} from '../../../preview'
-import {ObjectFieldProps} from '../../types'
+import {ObjectInputProps} from '../../types'
 
 export interface ReferenceInfo {
   id: string
@@ -62,7 +62,7 @@ export interface SearchHit {
 }
 
 export interface ReferenceInputProps<Value = Reference>
-  extends ObjectFieldProps<Value, ReferenceSchemaType> {
+  extends ObjectInputProps<Value, ReferenceSchemaType> {
   suffix?: ReactNode
   liveEdit?: boolean
   onSearch: SearchFunction

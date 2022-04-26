@@ -34,7 +34,7 @@ import {PlaceholderText} from '../common/PlaceholderText'
 import {UploadPlaceholder} from '../common/UploadPlaceholder'
 import {UploadWarning} from '../common/UploadWarning'
 import {EMPTY_ARRAY} from '../../../utils/empty'
-import {FIXME, FieldMember, ObjectFieldProps, ObjectInputComponentProps} from '../../../types'
+import {FIXME, FieldMember, ObjectInputProps} from '../../../types'
 import {
   ChangeIndicatorCompareValueProvider,
   ChangeIndicatorWithProvidedFullPath,
@@ -61,7 +61,7 @@ export interface File extends Partial<BaseFile> {
   _upload?: UploadState
 }
 
-export interface FileInputProps extends ObjectInputComponentProps<File, FileSchemaType> {
+export interface FileInputProps extends ObjectInputProps<File, FileSchemaType> {
   assetSources: InternalAssetSource[]
   directUploads?: boolean
   getValuePath: () => Path
@@ -156,7 +156,8 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   handleSelectFiles = (files: DOMFile[]) => {
-    const {directUploads, readOnly} = this.props
+    const {directUploads, inputProps} = this.props
+    const {readOnly} = inputProps
     const {hoveringFiles} = this.state
     if (directUploads && !readOnly) {
       this.uploadFirstAccepted(files)
@@ -327,7 +328,8 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   handleOpenDialog = () => {
-    const {type, onFocus} = this.props
+    const {type, inputProps} = this.props
+    const {onFocus} = inputProps
     const otherFields = type.fields.filter(
       (field) =>
         !HIDDEN_FIELDS.includes(field.name) && !(field.type as FIXME)?.options?.isHighlighted
@@ -340,7 +342,8 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   handleStopAdvancedEdit = () => {
-    this.props.onFocus([])
+    const {inputProps} = this.props
+    inputProps.onFocus([])
   }
 
   renderAdvancedEdit(members: FieldMember[]) {
@@ -380,16 +383,18 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   handleFileTargetFocus = (event: FIXME) => {
+    const {inputProps} = this.props
     // We want to handle focus when the file target element *itself* receives
     // focus, not when an interactive child element receives focus. Since React has decided
     // to let focus bubble, so this workaround is needed
     // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
     if (event.currentTarget === event.target && event.currentTarget === this._focusRef) {
-      this.props.onFocus(['asset'])
+      inputProps.onFocus(['asset'])
     }
   }
   handleFileTargetBlur = () => {
-    this.props.onBlur?.()
+    const {inputProps} = this.props
+    inputProps.onBlur?.()
   }
   handleFilesOver = (fileInfo: FileInfo[]) => {
     this.setState({
@@ -431,7 +436,8 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   renderAsset(hasAdvancedFields: boolean) {
-    const {value, readOnly, assetSources, type, directUploads, observeAsset} = this.props
+    const {value, inputProps, assetSources, type, directUploads, observeAsset} = this.props
+    const {readOnly} = inputProps
     const {isMenuOpen} = this.state
     const asset = value?.asset
     if (!asset) {
@@ -507,7 +513,8 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   renderAssetMenu(tone: ThemeColorToneKey) {
-    const {type, readOnly, directUploads, resolveUploader} = this.props
+    const {type, inputProps, directUploads, resolveUploader} = this.props
+    const {readOnly} = inputProps
     const {hoveringFiles} = this.state
 
     const acceptedFiles = hoveringFiles.filter((file) => resolveUploader?.(type, file))
@@ -530,7 +537,8 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   renderBrowser() {
-    const {assetSources, readOnly, directUploads} = this.props
+    const {assetSources, inputProps, directUploads} = this.props
+    const {readOnly} = inputProps
 
     if (assetSources.length === 0) return null
 
@@ -587,7 +595,8 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   renderUploadPlaceholder() {
-    const {readOnly, type, directUploads, resolveUploader} = this.props
+    const {inputProps, type, directUploads, resolveUploader} = this.props
+    const {readOnly} = inputProps
     const {hoveringFiles} = this.state
 
     const acceptedFiles = hoveringFiles.filter((file) => resolveUploader?.(type, file))
@@ -650,11 +659,12 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
       level,
       members,
       validation,
-      readOnly,
+      inputProps,
       presence,
       resolveUploader,
       focusPath = EMPTY_ARRAY,
     } = this.props
+    const {readOnly} = inputProps
     const {hoveringFiles, selectedAssetSource, isStale} = this.state
 
     const fieldMembers = members.filter((member) => member.type === 'field') as FieldMember[]
@@ -693,12 +703,13 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
         <ImperativeToast ref={this.setToast} />
 
         <FormFieldSet
-          validation={validation}
-          title={type.title}
+          __unstable_changeIndicator={false}
+          __unstable_presence={isDialogOpen ? EMPTY_ARRAY : assetFieldPresence}
           description={type.description}
           level={highlightedMembers.length > 0 ? level : 0}
-          __unstable_presence={isDialogOpen ? EMPTY_ARRAY : assetFieldPresence}
-          __unstable_changeIndicator={false}
+          onSetCollapsed={() => console.warn('todo')}
+          title={type.title}
+          validation={validation}
         >
           <div>
             <ChangeIndicatorCompareValueProvider

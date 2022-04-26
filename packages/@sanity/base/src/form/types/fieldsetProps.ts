@@ -6,6 +6,6 @@ export interface FieldSetProps {
   hidden?: boolean
   collapsible?: boolean
   collapsed?: boolean
-  onSetCollapsed: (collapsed: boolean) => void
+  // onSetCollapsed: (collapsed: boolean) => void
   fields: FieldMember[]
 }

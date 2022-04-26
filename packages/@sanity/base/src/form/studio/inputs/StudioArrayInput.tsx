@@ -1,7 +1,7 @@
 import React, {ForwardedRef, forwardRef, useCallback} from 'react'
 import {SchemaType} from '@sanity/types'
 import {resolveUploader as sanityResolveUploader} from '../uploads/resolveUploader'
-import {ArrayInput, ArrayInputProps} from '../../inputs/arrays/ArrayOfObjectsInput'
+import {ArrayInput} from '../../inputs/arrays/ArrayOfObjectsInput'
 import {
   ArrayOfPrimitivesInput,
   ArrayOfPrimitivesInputProps,
@@ -10,7 +10,7 @@ import * as is from '../../utils/is'
 import {FileLike} from '../uploads/types'
 import {FormBuilderContextValue} from '../../FormBuilderContext'
 import {useFormBuilder} from '../../useFormBuilder'
-import {FIXME} from '../../types'
+import {ArrayInputProps, FIXME} from '../../types'
 import {resolveInitialValueForType} from '../../../templates'
 import {StudioArrayItemReferenceInput} from './reference/StudioArrayItemReferenceInput'
 

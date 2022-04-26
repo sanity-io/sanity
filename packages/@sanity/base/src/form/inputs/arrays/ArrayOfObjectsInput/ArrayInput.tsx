@@ -23,15 +23,11 @@ import {Details} from '../../../components/Details'
 import {Item, List} from '../common/list'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import {applyAll} from '../../../patch/applyPatch'
-import {ConditionalReadOnlyField} from '../../common'
-import {
-  ArrayFieldProps,
-  FormArrayInputFunctionsProps,
-  FormBuilderFilterFieldFn,
-} from '../../../types'
+// import {ConditionalReadOnlyField} from '../../common'
+import {ArrayInputProps} from '../../../types'
 import {PatchEvent, insert, setIfMissing, unset, set} from '../../../patch'
 import {ImperativeToast} from '../../../../components/transitional'
-import {ArrayItem} from './item'
+// import {ArrayItem} from './item'
 import type {ArrayMember, InsertEvent, ReferenceItemComponentType} from './types'
 import {uploadTarget} from './uploadTarget/uploadTarget'
 import {isEmpty} from './item/helpers'
@@ -57,23 +53,13 @@ export function createProtoValue(type: SchemaType): ArrayMember {
   return type.name === 'object' ? {_key} : {_type: type.name, _key}
 }
 
-export interface ArrayInputProps extends ArrayFieldProps<ArrayMember> {
-  ArrayFunctionsImpl: React.ComponentType<
-    FormArrayInputFunctionsProps<ArraySchemaType<ArrayMember>, ArrayMember>
-  >
-
-  ArrayItemImpl: typeof ArrayItem
-  ReferenceItemComponent: ReferenceItemComponentType
-  filterField: FormBuilderFilterFieldFn
-  resolveInitialValue?: (type: ObjectSchemaType, value: any) => Promise<any>
-  resolveUploader?: (type: SchemaType, file: FileLike) => Uploader | null
-}
-
 interface State {
   isResolvingInitialValue: boolean
 }
 
-export class ArrayInput extends React.Component<ArrayInputProps> {
+export class ArrayInput extends React.Component<
+  ArrayInputProps<ArrayMember[], ArraySchemaType<ArrayMember>>
+> {
   static defaultProps = {
     focusPath: [],
   }
@@ -100,7 +86,8 @@ export class ArrayInput extends React.Component<ArrayInputProps> {
   }
 
   handleInsert = (event: InsertEvent) => {
-    const {resolveInitialValue, onFocus} = this.props
+    const {inputProps, resolveInitialValue} = this.props
+    const {onFocus} = inputProps
     this.setState({isResolvingInitialValue: true})
     const memberType = this.getMemberTypeOfItem(event.item)
 
@@ -140,21 +127,24 @@ export class ArrayInput extends React.Component<ArrayInputProps> {
   }
 
   handleFocus = (event: React.FocusEvent) => {
+    const {inputProps} = this.props
     // We want to handle focus when the array input *itself* element receives
     // focus, not when a child element receives focus, but React has decided
     // to let focus bubble, so this workaround is needed
     // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
     if (event.currentTarget === event.target && event.currentTarget === this._focusArea) {
-      this.props.onFocus([])
+      inputProps.onFocus([])
     }
   }
 
   openItem = (key: string) => {
-    this.props.onFocus([{_key: key}, FOCUS_TERMINATOR])
+    const {inputProps} = this.props
+    inputProps.onFocus([{_key: key}, FOCUS_TERMINATOR])
   }
 
   removeItem(item: ArrayMember) {
-    const {onChange, onFocus, value} = this.props
+    const {inputProps, onChange, value} = this.props
+    const {onFocus} = inputProps
 
     // create a patch for removing the item
     const patch = PatchEvent.from(
@@ -248,7 +238,7 @@ export class ArrayInput extends React.Component<ArrayInputProps> {
   }
 
   handleFixMissingKeys = () => {
-    const {onChange, value} = this.props
+    const {onChange, value = []} = this.props
     const patches = (value || []).map((val, i) => setIfMissing(randomKey(), [i, '_key']))
 
     onChange(PatchEvent.from(...patches))
@@ -296,20 +286,21 @@ export class ArrayInput extends React.Component<ArrayInputProps> {
       type,
       level = 1,
       validation,
-      readOnly,
+      // readOnly,
       onChange,
       value = [],
       presence,
       focusPath,
-      onBlur,
-      resolveUploader,
-      onFocus,
+      // resolveUploader,
       compareValue,
-      filterField,
-      ReferenceItemComponent,
-      ArrayFunctionsImpl,
-      ArrayItemImpl = ArrayItem,
+      // filterField,
+      // ReferenceItemComponent,
+      // ArrayFunctionsImpl,
+      // ArrayItemImpl = ArrayItem,
+      inputProps,
     } = this.props
+
+    const {onBlur, onFocus, readOnly} = inputProps
 
     const {isResolvingInitialValue} = this.state
 
@@ -323,6 +314,7 @@ export class ArrayInput extends React.Component<ArrayInputProps> {
           level={level - 1}
           tabIndex={0}
           onFocus={this.handleFocus}
+          onSetCollapsed={() => console.warn('todo')}
           ref={this.setFocusArea}
           validation={validation}
         >
@@ -375,7 +367,7 @@ export class ArrayInput extends React.Component<ArrayInputProps> {
         validation={validation}
         disabled={readOnly}
         ref={this.setFocusArea}
-        resolveUploader={resolveUploader}
+        // resolveUploader={resolveUploader}
         types={type.of}
         onUpload={this.handleUpload}
       >
@@ -427,31 +419,25 @@ export class ArrayInput extends React.Component<ArrayInputProps> {
                         isGrid={isGrid}
                         index={index}
                       >
-                        <ConditionalReadOnlyField
-                          readOnly={readOnly || this.getMemberTypeOfItem(item)?.readOnly}
+                        TODO
+                        {/* <ArrayItemImpl
+                          compareValue={compareValue?.[index]}
+                          filterField={filterField}
+                          focusPath={focusPath}
+                          itemKey={item._key}
+                          index={index}
+                          validation={validation}
+                          ReferenceItemComponent={ReferenceItemComponent}
+                          onBlur={onBlur}
+                          onChange={this.handleItemChange}
+                          onFocus={onFocus}
+                          onRemove={this.handleRemoveItem}
+                          onInsert={this.handleInsert}
+                          presence={presence}
+                          readOnly={readOnly || hasMissingKeys}
+                          type={type}
                           value={item}
-                          parent={value}
-                        >
-                          TODO
-                          {/* <ArrayItemImpl
-                            compareValue={compareValue?.[index]}
-                            filterField={filterField}
-                            focusPath={focusPath}
-                            itemKey={item._key}
-                            index={index}
-                            validation={validation}
-                            ReferenceItemComponent={ReferenceItemComponent}
-                            onBlur={onBlur}
-                            onChange={this.handleItemChange}
-                            onFocus={onFocus}
-                            onRemove={this.handleRemoveItem}
-                            onInsert={this.handleInsert}
-                            presence={presence}
-                            readOnly={readOnly || hasMissingKeys}
-                            type={type}
-                            value={item}
-                          /> */}
-                        </ConditionalReadOnlyField>
+                        /> */}
                       </Item>
                     )
                   })}
@@ -471,7 +457,7 @@ export class ArrayInput extends React.Component<ArrayInputProps> {
               </Card>
             )}
 
-            <ArrayFunctionsImpl
+            {/* <ArrayFunctionsImpl
               type={type}
               value={value}
               readOnly={readOnly}
@@ -480,7 +466,7 @@ export class ArrayInput extends React.Component<ArrayInputProps> {
               onFocusItem={this.handleFocusItem}
               onCreateValue={createProtoValue}
               onChange={onChange}
-            />
+            /> */}
           </Stack>
         </Stack>
       </UploadTargetFieldset>

@@ -9,11 +9,20 @@ import {FIXME} from '../../../types'
 function renderInput(
   props: Omit<
     DateInputProps,
-    'focusPath' | 'type' | 'onFocus' | 'onChange' | 'validation' | 'level' | 'presence'
+    | 'focusPath'
+    | 'inputProps'
+    | 'type'
+    | 'onFocus'
+    | 'onChange'
+    | 'validation'
+    | 'level'
+    | 'presence'
   >
 ) {
   const onFocus = jest.fn()
   const onChange = jest.fn()
+
+  const inputProps = {onFocus} as any
 
   const {container} = render(
     <ThemeProvider scheme="light" theme={studioTheme}>
@@ -21,7 +30,7 @@ function renderInput(
         <DateInput
           focusPath={[]}
           type={{title: 'Date input test', name: 'date', options: {}} as FIXME}
-          onFocus={onFocus}
+          inputProps={inputProps}
           onChange={onChange}
           validation={[]}
           level={0}

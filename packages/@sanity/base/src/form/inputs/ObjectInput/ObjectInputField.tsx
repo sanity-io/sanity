@@ -4,16 +4,14 @@ import {ObjectFieldType, ObjectSchemaTypeWithOptions, Path, SchemaType} from '@s
 import {FormFieldSet} from '../../../components/formField'
 import {PatchEvent} from '../../patch'
 import {InvalidValueInput} from '../InvalidValueInput'
-import {ConditionalHiddenField} from '../common/ConditionalHiddenField'
-import {useConditionalReadOnly} from '../../../conditional-property/conditionalReadOnly'
-import {FieldProps} from '../../types'
+import {InputProps} from '../../types'
 
 interface FieldType {
   name: string
   type: ObjectFieldType
 }
 
-export interface ObjectInputFieldProps extends Omit<FieldProps, 'onChange' | 'type'> {
+export interface ObjectInputFieldProps extends Omit<InputProps, 'onChange' | 'type'> {
   focusPath: Path
   field: FieldType
   parent: Record<string, unknown> | undefined
@@ -32,30 +30,28 @@ export const ObjectInputField = forwardRef(function ObjectInputField(
     field,
     level,
     onChange,
-    onFocus,
-    onBlur,
+    inputProps,
     validation,
     focusPath,
     filterField,
     compareValue,
     presence,
     parent,
-    readOnly,
   } = props
-  const conditionalReadOnly = useConditionalReadOnly() ?? readOnly
+  const {onFocus, onBlur, readOnly} = inputProps
+  // const conditionalReadOnly = useConditionalReadOnly() ?? readOnly
 
   const handleChange = useCallback(
     (event) => {
-      const isReadOnly = conditionalReadOnly ?? field.type.readOnly
-      if (typeof isReadOnly === 'boolean' && isReadOnly) {
+      if (readOnly) {
         return
       }
       onChange(event, field)
     },
-    [conditionalReadOnly, field, onChange]
+    [readOnly, field, onChange]
   )
 
-  const fieldPath = useMemo(() => [field.name], [field.name])
+  // const fieldPath = useMemo(() => [field.name], [field.name])
 
   const valueTypeName = resolveTypeName(value)
 
@@ -63,52 +59,14 @@ export const ObjectInputField = forwardRef(function ObjectInputField(
     // undefined is always valid
     value === undefined || isAssignable(valueTypeName, field.type)
 
-  const children = useMemo(() => {
-    if (!isValueCompatible) {
-      return null
-    }
-    return (
-      <>TODO</>
-      // <FormBuilderInput
-      //   value={value}
-      //   type={field.type}
-      //   onChange={handleChange}
-      //   path={fieldPath}
-      //   onFocus={onFocus}
-      //   onBlur={onBlur}
-      //   focusPath={focusPath}
-      //   // filterField={filterField}
-      //   validation={validation}
-      //   compareValue={compareValue}
-      //   level={level}
-      //   presence={presence}
-      //   parent={parent}
-      //   ref={forwardedRef}
-      //   readOnly={conditionalReadOnly || field.type.readOnly}
-      // />
-    )
-  }, [
-    isValueCompatible,
-    value,
-    field.type,
-    handleChange,
-    fieldPath,
-    onFocus,
-    onBlur,
-    focusPath,
-    filterField,
-    validation,
-    compareValue,
-    level,
-    presence,
-    parent,
-    forwardedRef,
-    conditionalReadOnly,
-  ])
-
   if (!isValueCompatible) {
     return (
-      <FormFieldSet title={field.type.title} level={level} __unstable_presence={presence}>
+      <FormFieldSet
+        title={field.type.title}
+        level={level}
+        __unstable_presence={presence}
+        onSetCollapsed={() => console.warn('todo')}
+      >
         <InvalidValueInput
           value={value}
           onChange={handleChange}
@@ -120,10 +78,29 @@ export const ObjectInputField = forwardRef(function ObjectInputField(
     )
   }
 
+  if (!isValueCompatible) {
+    return null
+  }
+
   return (
-    <ConditionalHiddenField parent={props.parent} value={value} hidden={field.type.hidden}>
-      {children}
-    </ConditionalHiddenField>
+    <>TODO</>
+    // <FormBuilderInput
+    //   value={value}
+    //   type={field.type}
+    //   onChange={handleChange}
+    //   path={fieldPath}
+    //   onFocus={onFocus}
+    //   onBlur={onBlur}
+    //   focusPath={focusPath}
+    //   // filterField={filterField}
+    //   validation={validation}
+    //   compareValue={compareValue}
+    //   level={level}
+    //   presence={presence}
+    //   parent={parent}
+    //   ref={forwardedRef}
+    //   readOnly={conditionalReadOnly || field.type.readOnly}
+    // />
   )
 })
 

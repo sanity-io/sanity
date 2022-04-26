@@ -1,9 +1,10 @@
-import {isReferenceSchemaType, SchemaType} from '@sanity/types'
+import {ArraySchemaType, isReferenceSchemaType, SchemaType} from '@sanity/types'
 import React, {ForwardedRef, forwardRef, useMemo} from 'react'
-import {ArrayFieldProps, FieldProps, FormBuilderFilterFieldFn} from '../../../../types'
-import {ArrayMember, InsertEvent, ReferenceItemComponentType} from '../types'
+import {ArrayInputProps, FormBuilderFilterFieldFn, InputProps} from '../../../../types'
+import {ArrayMember, ReferenceItemComponentType} from '../types'
 
-interface ItemFormProps extends Omit<ArrayFieldProps<ArrayMember>, 'level' | 'value'> {
+interface ItemFormProps
+  extends Omit<ArrayInputProps<ArrayMember[], ArraySchemaType>, 'level' | 'value'> {
   // onInsert?: (event: InsertEvent) => void
   insertableTypes?: SchemaType[]
   ReferenceItemComponent: ReferenceItemComponentType
@@ -18,18 +19,18 @@ export const ItemForm = forwardRef(function ItemForm(props: ItemFormProps, ref: 
     value,
     validation,
     focusPath,
-    onFocus,
-    onBlur,
-    onChange,
     ReferenceItemComponent,
     insertableTypes,
-    readOnly,
     isSortable,
     filterField,
     presence,
+    onChange,
     onInsert,
     compareValue,
+    inputProps,
   } = props
+
+  const {onFocus, onBlur, readOnly} = inputProps
 
   const isReference = isReferenceSchemaType(type)
 
@@ -37,7 +38,7 @@ export const ItemForm = forwardRef(function ItemForm(props: ItemFormProps, ref: 
     () =>
       isReference
         ? forwardRef(function Input_(
-            givenProps: FieldProps,
+            givenProps: InputProps,
             inputRef: ForwardedRef<{focus: () => void}>
           ) {
             return (

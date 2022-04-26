@@ -8,6 +8,7 @@ import {
 } from '@sanity/types'
 import React from 'react'
 import {PatchEvent} from '../patch'
+import {InputProps} from './inputProps'
 import {FieldProps} from '.'
 
 export type FIXME = any
@@ -92,7 +93,7 @@ export interface FormBuilderFilterFieldFn {
  */
 export type FormInputComponentResolver = (
   type: SchemaType
-) => React.ComponentType<FieldProps> | null | false | undefined
+) => React.ComponentType<InputProps> | null | false | undefined
 
 /**
  * @alpha

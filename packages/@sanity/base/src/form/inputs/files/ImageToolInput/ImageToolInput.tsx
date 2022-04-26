@@ -12,13 +12,13 @@ import {PatchEvent, set} from '../../../patch'
 import {Checkerboard} from '../../../components/Checkerboard'
 import {withFocusRing} from '../../../components/withFocusRing'
 import {RatioBox} from '../common/RatioBox'
-import {useDidUpdate} from '../../../hooks/useDidUpdate'
+// import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {EMPTY_ARRAY} from '../../../utils/empty'
-import {ObjectFieldProps} from '../../../types'
+import {ObjectInputProps} from '../../../types'
 import {useLoadImage} from './useLoadImage'
 
 export interface ImageToolInputProps
-  extends Omit<ObjectFieldProps<Image, ImageSchemaType>, 'markers'> {
+  extends Omit<ObjectInputProps<Image, ImageSchemaType>, 'markers'> {
   imageUrl: string
 }
 
@@ -56,16 +56,17 @@ export const ImageToolInput = forwardRef(function ImageToolInput(
 ) {
   const {
     imageUrl,
+    inputProps,
     value,
     compareValue,
     level,
-    readOnly,
     focusPath = EMPTY_ARRAY,
-    onFocus,
     presence,
     onChange,
     type,
   } = props
+
+  const {onFocus, readOnly} = inputProps
 
   const [localValue, setLocalValue] = useState(value || DEFAULT_VALUE)
 
@@ -81,13 +82,13 @@ export const ImageToolInput = forwardRef(function ImageToolInput(
     setLocalValue(value || DEFAULT_VALUE)
   }, [value])
 
-  const hasFocus = focusPath[0] === 'hotspot'
+  // const hasFocus = focusPath[0] === 'hotspot'
 
-  useDidUpdate(hasFocus, (hadFocus) => {
-    if (!hadFocus && hasFocus) {
-      forwardedRef.current?.focus()
-    }
-  })
+  // useDidUpdate(hasFocus, (hadFocus) => {
+  //   if (!hadFocus && hasFocus) {
+  //     forwardedRef.current?.focus()
+  //   }
+  // })
 
   const handleChangeEnd = useCallback(
     (finalValue) => {

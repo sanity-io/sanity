@@ -1,5 +1,5 @@
-import {ObjectInputProps} from '../types'
-import {FieldProps} from './fieldProps'
+// import {ObjectInputProps} from '../types'
+import {FieldProps, ObjectFieldProps} from './fieldProps'
 import {FieldSetProps} from './fieldsetProps'
 
 export type ObjectMember = FieldMember | FieldSetMember
@@ -7,7 +7,7 @@ export type ObjectMember = FieldMember | FieldSetMember
 export interface ArrayItemMember {
   type: 'item'
   key: string
-  item: ObjectInputProps
+  item: ObjectFieldProps
 }
 
 // note: array members doesn't have the field/fieldSet divide

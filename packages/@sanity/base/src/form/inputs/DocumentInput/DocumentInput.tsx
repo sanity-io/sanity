@@ -1,7 +1,7 @@
 import React, {memo} from 'react'
 import {ObjectInput} from '../ObjectInput'
-import {ObjectInputComponentProps} from '../../types'
+import {ObjectInputProps} from '../../types'
 
-export const DocumentInput = memo(function DocumentInput(props: ObjectInputComponentProps) {
+export const DocumentInput = memo(function DocumentInput(props: ObjectInputProps) {
   return <ObjectInput {...props} />
 })

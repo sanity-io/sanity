@@ -8,7 +8,7 @@ import {FormFieldHeaderText, FormFieldStatus} from '../../components/formField'
 import {FieldPresence} from '../../presence'
 import {PatchEvent, set} from '../patch'
 import {ChangeIndicator} from '../../components/changeIndicators'
-import {BooleanInputComponentProps} from '../types'
+import {BooleanInputProps} from '../types'
 
 const CenterAlignedBox = styled(Box)`
   align-self: center;
@@ -19,11 +19,11 @@ const ZeroLineHeightBox = styled(Box)`
 `
 
 export const BooleanInput = React.forwardRef(function BooleanInput(
-  props: BooleanInputComponentProps,
+  props: BooleanInputProps,
   ref: React.ForwardedRef<HTMLInputElement>
 ) {
-  const {onChange} = props
-  const {value, type, readOnly, onFocus, validation, presence} = props
+  const {onChange, value, type, inputProps, validation, presence} = props
+  const {onFocus, readOnly} = inputProps
   const layout = type.options?.layout || 'switch'
   const inputId = useId()
 
@@ -48,7 +48,7 @@ export const BooleanInput = React.forwardRef(function BooleanInput(
               id={inputId}
               ref={ref}
               label={type.title}
-              readOnly={Boolean(readOnly)}
+              readOnly={readOnly}
               onChange={handleChange}
               onFocus={onFocus}
               indeterminate={indeterminate}

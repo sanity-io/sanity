@@ -1,10 +1,10 @@
 import {ValidationMarker, Path, SanityDocument} from '@sanity/types'
 import {createContext} from 'react'
 import {EditStateFor, TimelineController, Timeline} from '../../../datastores'
+import {ObjectFieldProps} from '../../../form'
 import {DocumentActionComponent} from '../../actions'
 import {DocumentBadgeComponent} from '../../badges'
 import {PaneView, PaneMenuItem, PaneMenuItemGroup} from '../../types'
-import {ObjectInputProps} from '../../../form/types'
 import {TimelineMode} from './types'
 
 // @todo: provide a TS type for this
@@ -24,6 +24,7 @@ export interface DocumentPaneContextValue {
   documentSchema: DocumentSchema | null
   documentType: string
   focusPath: Path
+  handleBlur: (blurredPath?: Path) => void
   handleChange: (patches: any[]) => void
   handleFocus: (pathOrEvent: Path) => void
   handleHistoryClose: () => void
@@ -50,7 +51,7 @@ export interface DocumentPaneContextValue {
   title: string | null
   value: Partial<SanityDocument>
   views: PaneView[]
-  formState: ObjectInputProps | {hidden: true}
+  formState: ObjectFieldProps | {hidden: true}
 }
 
 export const DocumentPaneContext = createContext<DocumentPaneContextValue | null>(null)

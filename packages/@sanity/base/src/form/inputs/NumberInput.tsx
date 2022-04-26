@@ -5,15 +5,17 @@ import {useId} from '@reach/auto-id'
 import {FormField} from '../../components/formField'
 import {PatchEvent, set, unset} from '../patch'
 import {getValidationRule} from '../utils/getValidationRule'
-import {NumberInputComponentProps} from '../types'
+import {NumberInputProps} from '../types'
+// import {NumberInputProps} from '../types'
 
-export type NumberInputProps = NumberInputComponentProps
+// export type NumberInputProps = NumberInputProps
 
 export const NumberInput = React.forwardRef(function NumberInput(
   props: NumberInputProps,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
-  const {value = '', readOnly, validation, type, level, onFocus, onChange, presence} = props
+  const {inputProps, value = '', validation, type, level, onChange, presence} = props
+  const {onFocus, readOnly} = inputProps
   const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
   const id = useId()
 

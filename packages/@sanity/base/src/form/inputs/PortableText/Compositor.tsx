@@ -10,7 +10,7 @@ import {
   usePortableTextEditor,
   HotkeyOptions,
   RenderAttributes,
-  Type,
+  // Type,
 } from '@sanity/portable-text-editor'
 import {
   isKeySegment,
@@ -27,7 +27,7 @@ import {
   usePortal,
 } from '@sanity/ui'
 import {ChangeIndicatorWithProvidedFullPath} from '../../../components/changeIndicators'
-import {ArrayFieldProps, FIXME, PortableTextMarker, RenderCustomMarkers} from '../../types'
+import {ArrayInputProps, FIXME, PortableTextMarker, RenderCustomMarkers} from '../../types'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {BlockObject} from './object/BlockObject'
@@ -44,7 +44,7 @@ import {useObjectEditFormBuilderChange} from './hooks/useObjectEditFormBuilderCh
 import {useHotkeys} from './hooks/useHotKeys'
 import {useScrollToFocusFromOutside} from './hooks/useScrollToFocusFromOutside'
 
-interface InputProps extends Omit<ArrayFieldProps<PortableTextBlock>, 'type'> {
+interface InputProps extends Omit<ArrayInputProps<PortableTextBlock[]>, 'kind' | 'type'> {
   hasFocus: boolean
   hotkeys?: HotkeyOptions
   isFullscreen: boolean
@@ -64,21 +64,23 @@ export function Compositor(props: InputProps) {
     focusPath = EMPTY_ARRAY,
     hasFocus,
     hotkeys,
+    inputProps,
     isFullscreen,
     markers,
     onChange,
     onCopy,
-    onFocus,
     onPaste,
     onToggleFullscreen,
     patches$,
     presence,
-    readOnly,
     renderBlockActions,
     renderCustomMarkers,
     validation,
     value,
+    ...restProps
   } = props
+
+  const {readOnly, onFocus} = inputProps
 
   const editor = usePortableTextEditor()
 

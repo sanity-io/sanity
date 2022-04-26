@@ -29,7 +29,9 @@ export default class ColorInput extends PureComponent {
       ),
     }).isRequired,
     onChange: PropTypes.func.isRequired,
-    readOnly: PropTypes.bool,
+    inputProps: PropTypes.shape({
+      readOnly: PropTypes.bool,
+    }),
     value: PropTypes.shape({
       hex: PropTypes.string,
       alpha: PropTypes.number,
@@ -44,7 +46,7 @@ export default class ColorInput extends PureComponent {
   }
 
   emitSetColor = (nextColor) => {
-    const {onChange, type} = this.props
+    const {inputProps, type} = this.props
 
     const fieldPatches = type.fields
       .filter((field) => field.name in nextColor)
@@ -57,7 +59,7 @@ export default class ColorInput extends PureComponent {
         )
       })
 
-    onChange(
+    inputProps.onChange(
       PatchEvent.from([
         setIfMissing({_type: type.name}),
         set(type.name, ['_type']),
@@ -80,7 +82,9 @@ export default class ColorInput extends PureComponent {
   }
 
   render() {
-    const {type, readOnly, value, level} = this.props
+    const {inputProps, type, value, level} = this.props
+    const {readOnly} = inputProps
+
     return (
       <FormField title={type.title} description={type.description} level={level}>
         {value ? (

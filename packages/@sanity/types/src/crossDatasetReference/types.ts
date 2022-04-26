@@ -38,8 +38,7 @@ export interface CrossDatasetType {
   __experimental_search: ObjectSchemaType['__experimental_search']
 }
 
-export interface CrossDatasetReferenceSchemaType
-  extends Omit<ObjectSchemaType, 'fields' | 'options'> {
+export interface CrossDatasetReferenceSchemaType extends Omit<ObjectSchemaType, 'options'> {
   jsonType: 'object'
   to: CrossDatasetType[]
   dataset: string

@@ -5,7 +5,7 @@ import {AccessDeniedIcon, EditIcon, HelpCircleIcon, PublishIcon} from '@sanity/i
 import {TextWithTone} from '../../../components/TextWithTone'
 import {DocumentPreviewPresence} from '../../../presence'
 import {useDocumentPresence} from '../../../hooks'
-import {Preview} from '../../components/Preview'
+import {FormNodePreview} from '../../FormNodePreview'
 import {DocumentAvailability} from '../../../preview'
 import {DocumentPreview} from './types'
 import {TimeAgo} from './utils/TimeAgo'
@@ -76,7 +76,7 @@ export function ReferencePreview(props: {
     <Flex align="center">
       {availability.available ? (
         <Box flex={1}>
-          <Preview type={refType} value={previewStub} layout={layout} />
+          <FormNodePreview type={refType} value={previewStub} layout={layout} />
         </Box>
       ) : (
         <Box flex={1}>

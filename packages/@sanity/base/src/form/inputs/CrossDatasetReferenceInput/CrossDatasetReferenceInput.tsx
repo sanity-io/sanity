@@ -1,6 +1,6 @@
 /* eslint-disable complexity, max-nested-callbacks, no-nested-ternary */
 
-import React, {ForwardedRef, forwardRef, useCallback, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useMemo, useRef, useState} from 'react'
 import {
   CrossDatasetReference,
   CrossDatasetReferenceSchemaType,
@@ -26,10 +26,10 @@ import {
 } from '@sanity/ui'
 import {useObservableCallback} from 'react-rx'
 import {ChangeIndicatorForFieldPath} from '../../../components/changeIndicators'
-import {FIXME, ObjectFieldProps} from '../../types'
+import {FIXME, ObjectInputProps} from '../../types'
 import {PatchEvent, set, unset} from '../../patch'
 import {EMPTY_ARRAY} from '../../utils/empty'
-import {useDidUpdate} from '../../hooks/useDidUpdate'
+// import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {AlertStrip} from '../../components/AlertStrip'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
 import {isNonNullable} from '../../utils/isNonNullable'
@@ -48,7 +48,7 @@ const INITIAL_SEARCH_STATE: SearchState = {
 }
 
 export interface CrossDatasetReferenceInputProps
-  extends ObjectFieldProps<CrossDatasetReference, CrossDatasetReferenceSchemaType> {
+  extends ObjectInputProps<CrossDatasetReference, CrossDatasetReferenceSchemaType> {
   getReferenceInfo: (
     doc: {_id: string; _type?: string},
     type: CrossDatasetReferenceSchemaType
@@ -58,29 +58,26 @@ export interface CrossDatasetReferenceInputProps
 
 const NO_FILTER = () => true
 
-type $TODO = any
-
 const REF_PATH = ['_ref']
 
-export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetReferenceInput(
-  props: CrossDatasetReferenceInputProps,
-  forwardedRef: ForwardedRef<HTMLInputElement>
-) {
+export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProps) {
   const {
+    inputProps,
     type,
     value,
     level,
     validation,
-    readOnly,
     onSearch,
     onChange,
     presence,
     focusPath = EMPTY_ARRAY,
-    onFocus,
-    onBlur,
     compareValue,
     getReferenceInfo,
   } = props
+
+  const {onFocus, onBlur, readOnly, ref} = inputProps
+
+  const forwardedRef = useForwardedRef(ref)
 
   const [searchState, setSearchState] = useState<SearchState>(INITIAL_SEARCH_STATE)
 
@@ -151,19 +148,20 @@ export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetRefere
 
   const autocompletePopoverReferenceElementRef = useRef<HTMLDivElement | null>(null)
 
-  // --- focus handling
   const hasFocusAtRef = focusPath.length === 1 && focusPath[0] === '_ref'
-  const focusElementRef = useForwardedRef(forwardedRef)
-  useDidUpdate({hasFocusAt: hasFocusAtRef, ref: value?._ref}, (prev, current) => {
-    const refUpdated = prev?.ref !== current.ref
-    const focusAtUpdated = prev?.hasFocusAt !== current.hasFocusAt
 
-    if ((focusAtUpdated || refUpdated) && current.hasFocusAt) {
-      // if search mode changed and we're having focus always ensure the
-      // ref element gets focus
-      focusElementRef.current?.focus()
-    }
-  })
+  // --- focus handling
+  // const focusElementRef = useForwardedRef(forwardedRef)
+  // useDidUpdate({hasFocusAt: hasFocusAtRef, ref: value?._ref}, (prev, current) => {
+  //   const refUpdated = prev?.ref !== current.ref
+  //   const focusAtUpdated = prev?.hasFocusAt !== current.hasFocusAt
+
+  //   if ((focusAtUpdated || refUpdated) && current.hasFocusAt) {
+  //     // if search mode changed and we're having focus always ensure the
+  //     // ref element gets focus
+  //     focusElementRef.current?.focus()
+  //   }
+  // })
 
   const weakIs = value?._weak ? 'weak' : 'strong'
   const weakShouldBe = type.weak === true ? 'weak' : 'strong'
@@ -180,20 +178,20 @@ export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetRefere
 
   const handleFocus = useCallback(
     (event) => {
-      if (onFocus && event.currentTarget === focusElementRef.current) {
+      if (onFocus && event.currentTarget === forwardedRef.current) {
         onFocus([])
       }
     },
-    [onFocus, focusElementRef]
+    [forwardedRef, onFocus]
   )
 
   const handleAutocompleteFocus = useCallback(
     (event) => {
-      if (onFocus && event.currentTarget === focusElementRef.current) {
-        onFocus(['_ref'])
+      if (onFocus && event.currentTarget === forwardedRef.current) {
+        onFocus(REF_PATH)
       }
     },
-    [onFocus, focusElementRef]
+    [forwardedRef, onFocus]
   )
 
   const handleQueryChange = useObservableCallback((inputValue$: Observable<string | null>) => {
@@ -301,7 +299,7 @@ export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetRefere
                 <ReferenceAutocomplete
                   data-testid="autocomplete"
                   loading={searchState.isLoading}
-                  ref={focusElementRef}
+                  ref={forwardedRef}
                   referenceElement={autocompletePopoverReferenceElementRef.current}
                   portalRef={autocompletePortalRef}
                   id={inputId || ''}
@@ -360,7 +358,7 @@ export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetRefere
                     __unstable_focusRing
                     tabIndex={0}
                     onFocus={handleFocus}
-                    ref={focusElementRef as $TODO}
+                    ref={forwardedRef}
                   >
                     <PreviewReferenceValue
                       value={value}
@@ -380,7 +378,7 @@ export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetRefere
                     __unstable_focusRing
                     tabIndex={0}
                     onFocus={handleFocus}
-                    ref={focusElementRef}
+                    ref={forwardedRef}
                   >
                     <PreviewReferenceValue
                       value={value}
@@ -419,7 +417,7 @@ export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetRefere
                               icon={ReplaceIcon}
                               data-testid="menu-item-replace"
                               onClick={() => {
-                                onFocus?.(['_ref'])
+                                onFocus?.(REF_PATH)
                               }}
                             />
                           </>
@@ -492,4 +490,4 @@ export const CrossDatasetReferenceInput = forwardRef(function CrossDatasetRefere
       </Stack>
     </FormField>
   )
-})
+}

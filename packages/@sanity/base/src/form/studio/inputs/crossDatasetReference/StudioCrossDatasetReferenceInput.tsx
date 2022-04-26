@@ -17,7 +17,7 @@ import {CrossDatasetReferenceInput} from '../../../inputs/CrossDatasetReferenceI
 import {Alert} from '../../../components/Alert'
 import {useSource} from '../../../../studio'
 import {useDocumentPreviewStore} from '../../../../datastores'
-import {ObjectFieldProps} from '../../../types'
+import {ObjectInputProps} from '../../../types'
 import {search} from './datastores/search'
 import {createGetReferenceInfo} from './datastores/getReferenceInfo'
 import {useCrossProjectToken} from './datastores/useCrossProjectToken'
@@ -45,7 +45,7 @@ async function resolveUserDefinedFilter(
 }
 
 export interface StudioCrossDatasetReferenceInputProps
-  extends ObjectFieldProps<CrossDatasetReference, CrossDatasetReferenceSchemaType> {
+  extends ObjectInputProps<CrossDatasetReference, CrossDatasetReferenceSchemaType> {
   // From withDocument
   document: SanityDocument
   // From withValuePath
@@ -66,9 +66,9 @@ type SearchError = {
   }
 }
 
-const _StudioCrossDatasetReferenceInput = forwardRef(function StudioCrossDatasetReferenceInput(
-  props: StudioCrossDatasetReferenceInputProps,
-  ref: ForwardedRef<HTMLInputElement>
+function _StudioCrossDatasetReferenceInput(
+  props: StudioCrossDatasetReferenceInputProps
+  // ref: ForwardedRef<HTMLInputElement>
 ) {
   const {getValuePath, type, document} = props
   const {client, projectId} = useSource()
@@ -181,10 +181,10 @@ const _StudioCrossDatasetReferenceInput = forwardRef(function StudioCrossDataset
       {...props}
       onSearch={handleSearch}
       getReferenceInfo={getReferenceInfo}
-      ref={ref}
+      // ref={ref}
     />
   )
-})
+}
 
 export const StudioCrossDatasetReferenceInput = withValuePath(
   withDocument(_StudioCrossDatasetReferenceInput)

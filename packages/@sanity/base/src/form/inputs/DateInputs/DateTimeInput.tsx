@@ -2,7 +2,7 @@ import React, {useCallback} from 'react'
 import {getMinutes, setMinutes, parseISO} from 'date-fns'
 import {format, parse} from '@sanity/util/legacyDateFormat'
 import {PatchEvent, set, unset} from '../../patch'
-import {StringFieldProps} from '../../types'
+import {StringInputProps} from '../../types'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
 import {ParseResult} from './types'
 import {isValidDate} from './utils'
@@ -21,7 +21,7 @@ interface SchemaOptions {
   calendarTodayLabel?: string
 }
 
-export type DateTimeInputProps = StringFieldProps
+export type DateTimeInputProps = StringInputProps
 
 const DEFAULT_DATE_FORMAT = 'YYYY-MM-DD'
 const DEFAULT_TIME_FORMAT = 'HH:mm'

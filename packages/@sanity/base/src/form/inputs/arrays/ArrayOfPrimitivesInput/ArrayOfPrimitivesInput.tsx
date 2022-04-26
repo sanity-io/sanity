@@ -5,12 +5,11 @@ import {ArraySchemaType, ValidationMarker, SchemaType} from '@sanity/types'
 import {Card, Stack} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
 import {FormFieldSet} from '../../../../components/formField'
-import {ArrayFieldProps, FormArrayInputFunctionsProps} from '../../../types'
+import {ArrayInputProps, FormArrayInputFunctionsProps} from '../../../types'
 import {PatchEvent, set, unset} from '../../../patch'
 import {Item, List} from '../common/list'
-import {ConditionalReadOnlyField} from '../../common'
 import {getEmptyValue} from './getEmptyValue'
-import {ItemRow} from './ItemRow'
+// import {ItemRow} from './ItemRow'
 import {PrimitiveValue} from './types'
 import {nearestIndexOf} from './utils/nearestIndex'
 
@@ -51,9 +50,9 @@ function insertAfter<T>(
   return copy
 }
 
-export interface ArrayOfPrimitivesInputProps extends ArrayFieldProps<PrimitiveValue> {
+export interface ArrayOfPrimitivesInputProps extends ArrayInputProps<PrimitiveValue[]> {
   ArrayFunctionsImpl: React.ComponentType<
-    FormArrayInputFunctionsProps<ArraySchemaType<PrimitiveValue>, PrimitiveValue>
+    FormArrayInputFunctionsProps<ArraySchemaType<PrimitiveValue[]>, PrimitiveValue>
   >
 }
 
@@ -62,37 +61,39 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
   _lastAddedIndex = -1
 
   set(nextValue: PrimitiveValue[]) {
+    const {onChange} = this.props
     this._lastAddedIndex = -1
     const patch = nextValue.length === 0 ? unset() : set(nextValue)
-    this.props.onChange(PatchEvent.from(patch))
+    onChange(PatchEvent.from(patch))
   }
 
   removeAt(index: number) {
+    const {inputProps} = this.props
     const {value = []} = this.props
     this.set(value.filter((_, i) => i !== index))
-    this.props.onFocus([Math.max(0, index - 1)])
+    inputProps.onFocus([Math.max(0, index - 1)])
   }
 
   handleAppend = (itemValue: PrimitiveValue) => {
-    const {value = [], onFocus} = this.props
+    const {value = [], inputProps} = this.props
     this.set(value.concat(itemValue))
-    onFocus([value.length])
+    inputProps.onFocus([value.length])
   }
 
   handlePrepend = (itemValue: PrimitiveValue) => {
-    const {value = [], onFocus} = this.props
+    const {value = [], inputProps} = this.props
     this.set([itemValue].concat(value))
-    onFocus([value.length])
+    inputProps.onFocus([value.length])
   }
 
   insertAfter(index: number, type: SchemaType) {
-    const {value = [], onFocus} = this.props
+    const {value = [], inputProps} = this.props
     const emptyValue = getEmptyValue(type)
     if (emptyValue === undefined) {
       throw new Error(`Cannot create empty primitive value from ${type.name}`)
     }
     this.set(insertAfter(index, value, emptyValue))
-    onFocus([index + 1])
+    inputProps.onFocus([index + 1])
   }
 
   handleRemoveItem = (index: number) => {
@@ -100,10 +101,10 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
   }
 
   handleInsert = (pos: 'before' | 'after', index: number, item: PrimitiveValue) => {
-    const {value = [], onFocus} = this.props
+    const {value = [], inputProps} = this.props
     const insertIndex = index + (pos === 'before' ? -1 : 0)
     this.set(insertAfter(insertIndex, value, item))
-    onFocus([insertIndex + 1])
+    inputProps.onFocus([insertIndex + 1])
   }
 
   handleItemChange = (event: PatchEvent) => {
@@ -127,10 +128,10 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
   }
 
   handleSortEnd = (event: {oldIndex: number; newIndex: number}) => {
-    const {value, onFocus} = this.props
+    const {value, inputProps} = this.props
     const {oldIndex, newIndex} = event
     if (value) this.set(move(value, oldIndex, newIndex))
-    onFocus([newIndex])
+    inputProps.onFocus([newIndex])
   }
 
   getMemberType(typeName: string) {
@@ -151,12 +152,13 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
   }
 
   handleFocusRoot = (event: React.FocusEvent<HTMLDivElement>) => {
+    const {inputProps} = this.props
     // We want to handle focus when the array input *itself* element receives
     // focus, not when a child element receives focus, but React has decided
     // to let focus bubble, so this workaround is needed
     // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
     if (event.currentTarget === event.target && event.currentTarget === this._element) {
-      this.props.onFocus([])
+      inputProps.onFocus([])
     }
   }
 
@@ -195,6 +197,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
     prevState: Record<string, unknown>,
     snapshot?: {restoreSelection: {start: number; end: number}; prevFocusedIndex: number}
   ) {
+    const {inputProps} = this.props
     if (snapshot?.restoreSelection && prevProps.value) {
       const prevFocusedValue = prevProps.value[snapshot.prevFocusedIndex]
 
@@ -219,29 +222,30 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
           // not all inputs supports selection (e.g. <input type="number" />)
         }
       }
-      this.props.onFocus([nearestIndex])
+      inputProps.onFocus([nearestIndex])
     }
   }
 
   handleFocusItem = (item: PrimitiveValue, index: number) => {
-    this.props.onFocus([index])
+    const {inputProps} = this.props
+    inputProps.onFocus([index])
   }
 
   render() {
     const {
+      inputProps,
       type,
       value,
       level = 1,
       validation,
-      readOnly,
       onChange,
-      onFocus,
       presence,
       compareValue,
       focusPath,
       ArrayFunctionsImpl,
-      onBlur,
     } = this.props
+
+    const {onBlur, onFocus, readOnly} = inputProps
 
     const isSortable = !readOnly && get(type, 'options.sortable') !== false
 
@@ -258,6 +262,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
         )}
         __unstable_changeIndicator={false}
         validation={validation}
+        onSetCollapsed={() => console.warn('todo')}
       >
         <Stack space={3}>
           <Stack space={1}>
@@ -282,11 +287,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
                     const key = `${memberType?.name || 'invalid-type'}-${String(index)}`
                     return (
                       <Item key={key} index={index} data-item-index={index} isSortable={isSortable}>
-                        <ConditionalReadOnlyField
-                          readOnly={readOnly || this.getMemberType(resolveTypeName(item))?.readOnly}
-                          value={item}
-                          parent={value}
-                        >
+                        <>
                           TODO
                           {/* <ItemRow
                             level={level + 1}
@@ -312,7 +313,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<ArrayOfPrimitive
                             onRemove={this.handleRemoveItem}
                             presence={childPresence}
                           /> */}
-                        </ConditionalReadOnlyField>
+                        </>
                       </Item>
                     )
                   })}

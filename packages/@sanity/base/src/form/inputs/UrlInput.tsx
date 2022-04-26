@@ -1,21 +1,20 @@
 import {isValidationErrorMarker} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
-import {useId} from '@reach/auto-id'
 import React, {useMemo} from 'react'
 import {PatchEvent, set, unset} from '../patch'
 import {FormField} from '../../components/formField'
 import {getValidationRule} from '../utils/getValidationRule'
-import {StringInputComponentProps} from '../types'
+import {StringInputProps} from '../types'
 
-export type UrlInputProps = StringInputComponentProps
+export type UrlInputProps = StringInputProps
 
 // @todo Rename to `URLInput`?
 export const UrlInput = React.forwardRef(function UrlInput(
   props: UrlInputProps,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
-  const {value, readOnly, type, validation, level, onFocus, onBlur, onChange, presence} = props
-  const inputId = useId()
+  const {inputProps, value, type, validation, level, onChange, presence} = props
+  const {id: inputId, onFocus, onBlur, readOnly} = inputProps
   const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
 
   const handleChange = React.useCallback(
