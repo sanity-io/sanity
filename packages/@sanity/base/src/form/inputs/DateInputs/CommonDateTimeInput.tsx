@@ -3,27 +3,21 @@
 import React, {useEffect} from 'react'
 import {ValidationMarker} from '@sanity/types'
 import {useForwardedRef, TextInput} from '@sanity/ui'
-import {FormField} from '../../../components/formField'
-import {FormFieldPresence} from '../../../presence'
+import {FormField} from '../../components/formField'
+import {useFormNode} from '../../components/formNode'
 import {DateTimeInput} from './base/DateTimeInput'
 import {ParseResult} from './types'
 
 export interface CommonDateTimeInputProps {
-  description?: string
   deserialize: (value: string) => ParseResult
   formatInputValue: (date: Date) => string
-  id: string
-  level: number
   onChange: (nextDate: string | null) => void
   parseInputValue: (inputValue: string) => ParseResult
   placeholder?: string
-  presence: FormFieldPresence[]
   readOnly: boolean | undefined
   selectTime?: boolean
   serialize: (date: Date) => string
   timeStep?: number
-  title?: string
-  validation: ValidationMarker[]
   value: string | undefined
 }
 
@@ -33,22 +27,18 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
   props: CommonDateTimeInputProps,
   ref: React.ForwardedRef<HTMLInputElement>
 ) {
+  const {inputId, validation} = useFormNode()
+
   const {
-    description,
     deserialize,
     formatInputValue,
-    id,
-    level,
     onChange,
     parseInputValue,
     placeholder,
-    presence,
     readOnly,
     selectTime,
     serialize,
     timeStep,
-    title,
-    validation,
     value,
     ...restProps
   } = props
@@ -100,7 +90,7 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
 
   return (
     <FormField
-      validation={
+      __internal_validation={
         parseResult?.error
           ? [
               ...validation,
@@ -111,18 +101,13 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
             ]
           : validation
       }
-      title={title}
-      level={level}
-      description={description}
-      __unstable_presence={presence}
-      inputId={id}
     >
       {readOnly ? (
         <TextInput value={inputValue} readOnly />
       ) : (
         <DateTimeInput
           {...restProps}
-          id={id}
+          id={inputId}
           selectTime={selectTime}
           timeStep={timeStep}
           placeholder={placeholder || `e.g. ${formatInputValue(DEFAULT_PLACEHOLDER_TIME)}`}

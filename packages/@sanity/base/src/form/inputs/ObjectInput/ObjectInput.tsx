@@ -1,6 +1,6 @@
 import React, {memo, useMemo} from 'react'
 import {Grid} from '@sanity/ui'
-import {FormFieldSet} from '../../../components/formField'
+import {FormFieldSet} from '../../components/formField'
 import {ObjectInputProps, ObjectMember, RenderFieldCallback} from '../../types'
 import {FormNode, useFormNode} from '../../components/formNode'
 import {UnknownFields} from './UnknownFields'

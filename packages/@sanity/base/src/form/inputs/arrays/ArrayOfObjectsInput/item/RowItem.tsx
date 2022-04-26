@@ -16,9 +16,9 @@ import {
 import {CopyIcon as DuplicateIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
 import {useId} from '@reach/auto-id'
 import {SchemaType} from '@sanity/types'
-import {FormFieldValidationStatus} from '../../../../../components/formField'
+import {FormFieldValidationStatus} from '../../../../components/formField'
+import {FormNodePreview} from '../../../../components/formNode'
 import {FieldPresence} from '../../../../../presence'
-import {FormNodePreview} from '../../../../FormNodePreview'
 import {DragHandle} from '../../common/DragHandle'
 import {randomKey} from '../../common/randomKey'
 import {createProtoValue} from '../ArrayInput'
@@ -133,16 +133,13 @@ export const RowItem = React.forwardRef(function RegularItem(
         <Flex align="center">
           {!readOnly && presence.length > 0 && (
             <Box marginLeft={1}>
-              <FieldPresence presence={presence} maxAvatars={1} />
+              <FieldPresence maxAvatars={1} />
             </Box>
           )}
 
           {validation.length > 0 && (
             <Box marginLeft={1} paddingX={1} paddingY={3}>
-              <FormFieldValidationStatus
-                validation={validation}
-                __unstable_showSummary={!value?._ref}
-              />
+              <FormFieldValidationStatus __unstable_showSummary={!value?._ref} />
             </Box>
           )}
 

@@ -1,7 +1,7 @@
-import React, {ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
+import React, {useCallback} from 'react'
 import {resolveTypeName} from '@sanity/util/content'
-import {ObjectFieldType, ObjectSchemaTypeWithOptions, Path, SchemaType} from '@sanity/types'
-import {FormFieldSet} from '../../../components/formField'
+import {ObjectFieldType, SchemaType} from '@sanity/types'
+import {FormFieldSet} from '../../components/formField'
 import {PatchEvent} from '../../patch'
 import {InvalidValueInput} from '../InvalidValueInput'
 import {InputProps} from '../../types'
@@ -21,24 +21,19 @@ export interface ObjectInputFieldProps extends Omit<InputProps, 'onChange' | 'ty
 
 // This component renders a single type in an object type. It emits onChange events telling the owner about the name of the type
 // that changed. This gives the owner an opportunity to use the same event handler function for all of its fields
-export const ObjectInputField = forwardRef(function ObjectInputField(
-  props: ObjectInputFieldProps,
-  forwardedRef: ForwardedRef<any>
-) {
+export function ObjectInputField(props: ObjectInputFieldProps) {
   const {
-    value,
-    field,
-    level,
-    onChange,
-    inputProps,
-    // validation,
-    // focusPath,
     // filterField,
-    // compareValue,
-    presence,
+    // focusPath,
     // parent,
+    field,
+    inputProps,
+    onChange,
+    value,
   } = props
-  const {onFocus, onBlur, readOnly} = inputProps
+
+  const {onFocus, onBlur, readOnly, ref} = inputProps
+
   // const conditionalReadOnly = useConditionalReadOnly() ?? readOnly
 
   const handleChange = useCallback(
@@ -61,18 +56,13 @@ export const ObjectInputField = forwardRef(function ObjectInputField(
 
   if (!isValueCompatible) {
     return (
-      <FormFieldSet
-        title={field.type.title}
-        level={level}
-        __unstable_presence={presence}
-        onSetCollapsed={() => console.warn('todo')}
-      >
+      <FormFieldSet onSetCollapsed={() => console.warn('todo')}>
         <InvalidValueInput
           value={value}
           onChange={handleChange}
           validTypes={[field.type.name]}
           actualType={valueTypeName}
-          ref={forwardedRef}
+          ref={ref}
         />
       </FormFieldSet>
     )
@@ -102,7 +92,7 @@ export const ObjectInputField = forwardRef(function ObjectInputField(
     //   readOnly={conditionalReadOnly || field.type.readOnly}
     // />
   )
-})
+}
 
 /**
  * Check whether the given value type is assignable to the given schema type

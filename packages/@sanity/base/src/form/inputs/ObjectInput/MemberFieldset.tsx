@@ -1,5 +1,5 @@
 import React, {useCallback} from 'react'
-import {FormFieldSet} from '../../../components/formField'
+import {FormFieldSet} from '../../components/formField'
 import {FormNode, FormNodeProvider} from '../../components/formNode'
 import {FieldSetMember, RenderFieldCallback} from '../../types'
 import {EMPTY_ARRAY} from '../../utils/empty'

@@ -4,7 +4,7 @@ import {isValidationErrorMarker, TextSchemaType} from '@sanity/types'
 import {TextArea} from '@sanity/ui'
 import styled from 'styled-components'
 import {set, unset} from '../patch'
-import {FormField} from '../../components/formField'
+import {FormField} from '../components/formField'
 import {StringInputProps} from '../types'
 import {useFormNode} from '../components/formNode'
 

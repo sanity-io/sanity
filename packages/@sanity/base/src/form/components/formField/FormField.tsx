@@ -3,8 +3,11 @@
 import {ValidationMarker} from '@sanity/types'
 import {Stack} from '@sanity/ui'
 import React, {memo} from 'react'
-import {useFormNode} from '../../form/components/formNode'
-import {ChangeIndicator, ChangeIndicatorContextProvidedProps} from '../changeIndicators'
+import {useFormNode} from '../formNode'
+import {
+  ChangeIndicator,
+  ChangeIndicatorContextProvidedProps,
+} from '../../../components/changeIndicators'
 import {FormFieldHeader} from './FormFieldHeader'
 
 export interface FormFieldProps {

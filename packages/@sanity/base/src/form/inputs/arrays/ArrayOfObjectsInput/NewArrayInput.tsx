@@ -1,7 +1,7 @@
 import {Button, Card} from '@sanity/ui'
 import {ObjectSchemaType} from '@sanity/types'
 import React, {memo, useCallback} from 'react'
-import {FormFieldSet} from '../../../../components/formField'
+import {FormFieldSet} from '../../../components/formField'
 import {ArrayInputProps} from '../../../types'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {EMPTY_ARRAY} from '../../../utils/empty'

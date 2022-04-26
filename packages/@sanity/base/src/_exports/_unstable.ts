@@ -11,8 +11,6 @@ export type {
   Tool,
 } from '../config'
 
-// export * from '../components'
-
 export * from '../components/DefaultDocument'
 export * from '../components/InsufficientPermissionsMessage'
 export * from '../components/IntentButton'
@@ -22,7 +20,6 @@ export * from '../components/UserAvatar'
 export * from '../components/WithReferringDocuments'
 export * from '../components/changeIndicators'
 export * from '../components/collapseMenu'
-export * from '../components/formField'
 export * from '../components/popoverDialog'
 export * from '../components/previews'
 export * from '../components/previews'

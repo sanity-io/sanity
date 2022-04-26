@@ -3,7 +3,7 @@
 import {useForwardedRef} from '@sanity/ui'
 import React, {createElement, useCallback, useContext, useMemo} from 'react'
 import {ChangeIndicatorProvider} from '../../../components/changeIndicators'
-import {FormField} from '../../../components/formField'
+import {FormField} from '../formField'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {PatchArg, PatchEvent, setIfMissing} from '../../patch'
 import {

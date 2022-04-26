@@ -18,7 +18,7 @@ import {PatchEvent, setIfMissing, unset} from '../../../patch'
 import {FIXME, ObjectInputProps} from '../../../types'
 import {PresenceOverlay} from '../../../../presence'
 import {ChangeIndicatorForFieldPath} from '../../../../components/changeIndicators'
-import {FormFieldSet} from '../../../../components/formField'
+import {FormFieldSet} from '../../../components/formField'
 import {ImperativeToast} from '../../../../components/transitional'
 import {
   UploaderResolver,

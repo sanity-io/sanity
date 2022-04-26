@@ -2,10 +2,11 @@ import type {ValidationMarker} from '@sanity/types'
 import {Card, Code, Container, Flex, LayerProvider, TextInput} from '@sanity/ui'
 import {useBoolean, useNumber, useString} from '@sanity/ui-workshop'
 import React, {useCallback, useMemo, useState} from 'react'
-import {ElementWithChangeBar} from '../../changeIndicators/ElementWithChangeBar'
-import type {FormFieldPresence} from '../../../presence'
+import {ElementWithChangeBar} from '../../../../components/changeIndicators/ElementWithChangeBar'
+import type {FormFieldPresence} from '../../../../presence'
 import {FormField} from '../FormField'
-import {useCurrentUser} from '../../../hooks'
+import {useCurrentUser} from '../../../../hooks'
+import {FormNodeProvider} from '../../formNode'
 
 const DEBUG = false
 const noop = () => undefined
@@ -62,18 +63,20 @@ export default function ExampleStory() {
     <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
       <Container width={1}>
         <LayerProvider>
-          <FormField
-            validation={validation}
-            __unstable_presence={presence}
-            inputId={inputId}
+          <FormNodeProvider
+            inputId="test"
             level={level}
-            title={title}
-            description={description}
+            path={['test']}
+            presence={presence}
+            type={{description, title} as any}
+            validation={validation}
           >
-            <ElementWithChangeBar isChanged={isChanged} hasFocus={focused}>
-              <TextInput id={inputId} onBlur={handleBlur} onFocus={handleFocus} />
-            </ElementWithChangeBar>
-          </FormField>
+            <FormField>
+              <ElementWithChangeBar isChanged={isChanged} hasFocus={focused}>
+                <TextInput id={inputId} onBlur={handleBlur} onFocus={handleFocus} />
+              </ElementWithChangeBar>
+            </FormField>
+          </FormNodeProvider>
         </LayerProvider>
 
         {DEBUG && (

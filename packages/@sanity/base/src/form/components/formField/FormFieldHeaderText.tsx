@@ -2,28 +2,33 @@
 
 import {ValidationMarker} from '@sanity/types'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
-import React, {memo} from 'react'
+import React from 'react'
+import {useFormNode} from '../formNode'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 
-export interface FormFieldHeaderTextProps {
+export function FormFieldHeaderText(props: {
   /**
-   * @alpha
+   * @internal
    */
-  validation?: ValidationMarker[]
-  description?: React.ReactNode
+  __internal_description?: React.ReactNode
+
   /**
-   * The unique ID used to target the actual input element
+   * @internal
    */
-  inputId?: string
-  title?: React.ReactNode
-}
+  __internal_title?: React.ReactNode
 
-const EMPTY_ARRAY: never[] = []
+  /**
+   * @internal
+   */
+  __internal_validation?: ValidationMarker[]
+}) {
+  const {inputId, type, validation: validationContext} = useFormNode()
+  const {
+    __internal_description: description = type.description,
+    __internal_title: title = type.title,
+    __internal_validation: validation = validationContext,
+  } = props
 
-export const FormFieldHeaderText = memo(function FormFieldHeaderText(
-  props: FormFieldHeaderTextProps
-) {
-  const {description, inputId, title, validation = EMPTY_ARRAY} = props
   const hasValidations = validation.length > 0
 
   return (
@@ -35,7 +40,7 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
 
         {hasValidations && (
           <Box marginLeft={2}>
-            <FormFieldValidationStatus fontSize={1} validation={validation} />
+            <FormFieldValidationStatus fontSize={1} />
           </Box>
         )}
       </Flex>
@@ -47,4 +52,4 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
       )}
     </Stack>
   )
-})
+}

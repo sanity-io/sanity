@@ -3,9 +3,12 @@
 import {Box, Flex, rem, Stack, Text, Theme, useForwardedRef} from '@sanity/ui'
 import React, {forwardRef, useCallback, useMemo} from 'react'
 import styled, {css} from 'styled-components'
-import {ChangeIndicator, ChangeIndicatorContextProvidedProps} from '../changeIndicators'
-import {FieldPresence} from '../../presence'
-import {useFormNode} from '../../form/components/formNode'
+import {
+  ChangeIndicator,
+  ChangeIndicatorContextProvidedProps,
+} from '../../../components/changeIndicators'
+import {FieldPresence} from '../../../presence'
+import {useFormNode} from '../formNode'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
 import {focusRingStyle} from './styles'
