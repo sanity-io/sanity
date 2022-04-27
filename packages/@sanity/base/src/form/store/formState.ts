@@ -458,21 +458,25 @@ function prepareObjectInputProps<T>(
         parent: parentProps,
         index,
       })
-      return !fieldMember.hidden &&
-        selectedGroup &&
-        isFieldEnabledByGroupFilter(groups, field, selectedGroup)
-        ? [
-            {
-              type: 'field',
-              key: `field-${fieldMember.name}`,
-              field: fieldMember,
-            },
-          ]
-        : []
+
+      if (
+        fieldMember.hidden ||
+        (selectedGroup && !isFieldEnabledByGroupFilter(groups, field, selectedGroup))
+      ) {
+        return []
+      }
+
+      return [
+        {
+          type: 'field',
+          key: `field-${fieldMember.name}`,
+          field: fieldMember,
+        },
+      ]
     })
 
     // if all members of the fieldset is hidden, the fieldset should effectively also be hidden
-    if (fieldsetMembers.length > 0 && fieldsetMembers.every((field) => isMemberHidden(field))) {
+    if (fieldsetMembers.length === 0 || fieldsetMembers.every((field) => isMemberHidden(field))) {
       return []
     }
 
