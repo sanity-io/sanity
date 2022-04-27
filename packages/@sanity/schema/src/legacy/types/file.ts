@@ -2,6 +2,7 @@ import {pick} from 'lodash'
 import createPreviewGetter from '../preview/createPreviewGetter'
 import {lazyGetter} from './utils'
 import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
+import {createFieldsets} from './object'
 
 export const ASSET_FIELD = {
   name: 'asset',
@@ -44,6 +45,10 @@ export const FileType = {
           type: extendMember(type),
         }
       })
+    })
+
+    lazyGetter(parsed, 'fieldsets', () => {
+      return createFieldsets(subTypeDef, parsed.fields)
     })
 
     lazyGetter(parsed, 'preview', createPreviewGetter(Object.assign({}, subTypeDef, {fields})))

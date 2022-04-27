@@ -3,6 +3,7 @@ import createPreviewGetter from '../preview/createPreviewGetter'
 import {lazyGetter} from './utils'
 import {ASSET_FIELD, HOTSPOT_FIELD, CROP_FIELD} from './image/fieldDefs'
 import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
+import {createFieldsets} from './object'
 
 const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 
@@ -43,6 +44,10 @@ export const ImageType = {
           type: extendMember(type),
         }
       })
+    })
+
+    lazyGetter(parsed, 'fieldsets', () => {
+      return createFieldsets(subTypeDef, parsed.fields)
     })
 
     lazyGetter(parsed, 'preview', createPreviewGetter(Object.assign({}, subTypeDef, {fields})))

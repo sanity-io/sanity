@@ -106,7 +106,7 @@ export const ObjectType = {
   },
 }
 
-function createFieldsets(typeDef, fields) {
+export function createFieldsets(typeDef, fields) {
   const fieldsetsDef = typeDef.fieldsets || []
   const fieldsets = fieldsetsDef.map((fieldset) => {
     const {name, title, description, options, group, hidden, readOnly} = fieldset
