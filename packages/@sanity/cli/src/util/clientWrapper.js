@@ -30,6 +30,13 @@ const authErrors = () => ({
   },
 })
 
+export function getCliToken() {
+  // eslint-disable-next-line no-process-env
+  const envAuthToken = process.env.SANITY_AUTH_TOKEN
+  const userConfig = getUserConfig()
+  return envAuthToken || userConfig.get('authToken')
+}
+
 export default function clientWrapper(manifest, configPath) {
   const requester = client.requester.clone()
   requester.use(authErrors())
@@ -38,13 +45,11 @@ export default function clientWrapper(manifest, configPath) {
     // Read these environment variables "late" to allow `.env` files
 
     /* eslint-disable no-process-env */
-    const envAuthToken = process.env.SANITY_AUTH_TOKEN
     const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production'
     /* eslint-enable no-process-env */
 
     const {requireUser, requireProject, api} = {...defaults, ...opts}
-    const userConfig = getUserConfig()
-    const token = envAuthToken || userConfig.get('authToken')
+    const token = getCliToken()
     const apiHost = apiHosts[sanityEnv]
     const apiConfig = {
       ...((manifest && manifest.api) || {}),
