@@ -185,7 +185,8 @@ function prepareFieldProps(props: {
       index: index,
       hidden:
         scopedInputProps.hidden ||
-        scopedInputProps.members.every((member) => isMemberHidden(member)),
+        (scopedInputProps.members.length > 0 &&
+          scopedInputProps.members.every((member) => isMemberHidden(member))),
 
       // if the "enclosing object" is readOnly, the field should also be readOnly
       readOnly: parent.readOnly || scopedInputProps.readOnly,
@@ -471,7 +472,7 @@ function prepareObjectInputProps<T>(
     })
 
     // if all members of the fieldset is hidden, the fieldset should effectively also be hidden
-    if (fieldsetMembers.every((field) => isMemberHidden(field))) {
+    if (fieldsetMembers.length > 0 && fieldsetMembers.every((field) => isMemberHidden(field))) {
       return []
     }
 
