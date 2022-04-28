@@ -134,7 +134,7 @@ export default async function initSanity(args, context) {
   const {projectId, displayName, isFirstProject} = await getOrCreateProject()
   const sluggedName = deburr(displayName.toLowerCase())
     .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9]/g, '')
+    .replace(/[^a-z0-9-]/g, '')
 
   debug(`Project with name ${displayName} selected`)
 
