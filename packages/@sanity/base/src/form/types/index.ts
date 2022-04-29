@@ -1,7 +1,6 @@
 export * from './_transitional'
 export * from './event'
 export * from './fieldGroup'
-export * from './fieldProps'
 export * from './fieldsetProps'
 export * from './inputState'
 export * from './inputProps'

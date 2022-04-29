@@ -1,22 +1,20 @@
-// import {ObjectInputProps} from '../types'
-import {FieldProps, ObjectFieldProps} from './fieldProps'
+import {InputProps, ObjectInputProps} from '../types'
 import {FieldSetProps} from './fieldsetProps'
 
 export type ObjectMember = FieldMember | FieldSetMember
 
-export interface ArrayItemMember {
+export interface ArrayOfObjectsMember {
   type: 'item'
   key: string
-  item: ObjectFieldProps
+  item: ObjectInputProps
 }
-
-// note: array members doesn't have the field/fieldSet divide
-export type ArrayMember = ArrayItemMember // todo: add more members, e.g. placehoders for invalid values etc.
 
 export interface FieldMember {
   type: 'field'
-  field: FieldProps
   key: string
+  name: string
+  index: number
+  field: InputProps
 }
 
 export interface FieldSetMember {

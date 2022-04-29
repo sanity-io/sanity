@@ -7,8 +7,6 @@ import {PatchEvent, set, unset} from '../patch'
 import {getValidationRule} from '../utils/getValidationRule'
 import {NumberInputProps} from '../types'
 
-export type NumberInputProps = NumberInputProps
-
 export const NumberInput = React.forwardRef(function NumberInput(
   props: NumberInputProps,
   forwardedRef: React.ForwardedRef<HTMLInputElement>

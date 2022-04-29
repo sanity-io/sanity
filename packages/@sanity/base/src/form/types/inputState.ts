@@ -6,13 +6,9 @@ import {
   Path,
   SchemaType,
   StringSchemaType,
-  ValidationMarker,
 } from '@sanity/types'
-import {PatchEvent} from '../patch'
-import {FormFieldPresence} from '../../presence'
-import {ArrayMember, ObjectMember} from './member'
+import {ArrayOfObjectsMember, ObjectMember} from './member'
 import {FieldGroup} from './fieldGroup'
-import {InsertEvent} from './event'
 import {FIXME} from './_transitional'
 
 export interface BaseInputState<T = unknown, S extends SchemaType = SchemaType> {
@@ -20,7 +16,6 @@ export interface BaseInputState<T = unknown, S extends SchemaType = SchemaType> 
   type: S
   compareValue?: FIXME
   value: T | undefined
-  onChange: (patchEvent: PatchEvent) => void
   title?: string
   description?: string
   hidden?: boolean
@@ -28,12 +23,6 @@ export interface BaseInputState<T = unknown, S extends SchemaType = SchemaType> 
   readOnly?: boolean
   path: Path
   focused: boolean
-
-  onFocus: (event: React.FocusEvent) => void
-  onBlur: (event: React.FocusEvent) => void
-
-  presence: FormFieldPresence[]
-  validation: ValidationMarker[]
 }
 
 export interface ObjectInputState<
@@ -44,22 +33,17 @@ export interface ObjectInputState<
   groups?: FieldGroup[]
 
   focusPath: Path
-  onSelectFieldGroup: (groupName: string) => void
-  onSetCollapsed: (collapsed: boolean) => void
   collapsed?: boolean
   collapsible?: boolean
 }
 
-export interface ArrayInputState<
+export interface ArrayOfObjectsInputState<
   T extends any[] = unknown[],
   S extends ArraySchemaType = ArraySchemaType
 > extends BaseInputState<T, S> {
-  members: ArrayMember[]
+  members: ArrayOfObjectsMember[]
 
   focusPath: Path
-
-  onSetCollapsed: (collapsed: boolean) => void
-  onInsert: (event: InsertEvent) => void
   collapsed?: boolean
   collapsible?: boolean
 }

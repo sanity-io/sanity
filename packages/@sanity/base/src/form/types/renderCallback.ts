@@ -1,26 +1,14 @@
 import * as React from 'react'
-import {ObjectInputProps} from '../types'
-import {FieldProps} from './fieldProps'
-import {FieldSetProps} from './fieldsetProps'
 
-export type RenderFieldCallbackArg = FieldProps & {
+import {ArrayOfObjectsMember, FieldMember, FieldSetMember} from '../types'
+
+export type RenderFieldCallbackArg = FieldMember & {
   focusRef: React.Ref<any>
 }
-
-export type RenderFieldCallback = (renderFieldProps: RenderFieldCallbackArg) => React.ReactNode
+export type RenderFieldCallback = (renderFieldProps: FieldMember) => React.ReactNode
 
 export type RenderArrayItemCallback = (
-  renderArrayItemProps: RenderArrayItemCallbackArg
+  renderArrayItemProps: ArrayOfObjectsMember
 ) => React.ReactNode
 
-export type RenderArrayItemCallbackArg = ObjectInputProps & {
-  focusRef: React.Ref<any>
-}
-
-export type RenderFieldSetCallback = (
-  renderFieldSetProps: RenderFieldSetCallbackArg
-) => React.ReactNode
-
-export type RenderFieldSetCallbackArg = FieldSetProps & {
-  children?: React.ReactNode
-}
+export type RenderFieldSetCallback = (member: FieldSetMember) => React.ReactNode
