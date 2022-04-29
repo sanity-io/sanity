@@ -12,7 +12,8 @@ import {getCliToken} from '../../util/clientWrapper'
 export default async function login(args, context) {
   const {prompt, output, apiClient} = context
   const {sso, experimental, provider: specifiedProvider} = args.extOptions
-  const hasExistingToken = Boolean(getCliToken())
+  const previousToken = getCliToken()
+  const hasExistingToken = Boolean(previousToken)
 
   // Explicitly tell this client not to use a token
   const client = apiClient({requireUser: false, requireProject: false})
@@ -69,6 +70,8 @@ export default async function login(args, context) {
   // If we had a session previously, attempt to clear it
   if (hasExistingToken) {
     await apiClient({requireUser: true, requireProject: false})
+      .clone()
+      .config({token: previousToken})
       .request({uri: '/auth/logout', method: 'POST'})
       .catch((err) => {
         const statusCode = err && err.response && err.response.statusCode
