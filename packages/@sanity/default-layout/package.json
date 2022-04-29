@@ -38,7 +38,7 @@
     "@sanity/icons": "^1.2.6",
     "@sanity/image-url": "^1.0.1",
     "@sanity/logos": "^1.1.9",
-    "@sanity/ui": "^0.37.6",
+    "@sanity/ui": "^0.37.9",
     "@sanity/util": "2.29.5",
     "lodash": "^4.17.15",
     "react-rx": "^1.0.0-beta.6",

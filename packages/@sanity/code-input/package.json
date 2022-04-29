@@ -24,7 +24,7 @@
     "@sanity/base": "2.29.5",
     "@sanity/icons": "^1.2.6",
     "@sanity/types": "2.29.5",
-    "@sanity/ui": "^0.37.6",
+    "@sanity/ui": "^0.37.9",
     "@sanity/util": "2.29.5",
     "ace-builds": "^1.4.13",
     "react-ace": "^9.5.0"

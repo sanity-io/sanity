@@ -22,7 +22,7 @@
   "dependencies": {
     "@juggle/resize-observer": "^3.3.1",
     "@sanity/icons": "^1.2.6",
-    "@sanity/ui": "^0.37.6",
+    "@sanity/ui": "^0.37.9",
     "classnames": "^2.2.5",
     "codemirror": "^5.47.0",
     "is-hotkey": "^0.1.6",

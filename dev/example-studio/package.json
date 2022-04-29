@@ -29,7 +29,7 @@
     "@sanity/icons": "^1.2.1",
     "@sanity/language-filter": "2.29.5",
     "@sanity/portable-text-editor": "2.29.5",
-    "@sanity/ui": "^0.37.6",
+    "@sanity/ui": "^0.37.9",
     "@sanity/vision": "2.29.5",
     "bio-pv": "^1.8.1",
     "date-fns": "^2.16.1",

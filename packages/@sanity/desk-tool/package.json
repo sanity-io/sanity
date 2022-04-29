@@ -40,7 +40,7 @@
     "@sanity/react-hooks": "2.29.5",
     "@sanity/structure": "2.29.5",
     "@sanity/types": "2.29.5",
-    "@sanity/ui": "^0.37.6",
+    "@sanity/ui": "^0.37.9",
     "@sanity/util": "2.29.5",
     "@sanity/uuid": "^3.0.1",
     "framer-motion": "^5.3.3",
