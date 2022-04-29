@@ -173,5 +173,10 @@ function validateHostname(value, client) {
   return client
     .request({uri, method: 'PATCH', body: {studioHost}})
     .then(() => true)
-    .catch(() => 'Hostname already taken')
+    .catch((error) => {
+      if (error?.response?.body?.message) {
+        return error.response.body.message
+      }
+      throw error
+    })
 }
