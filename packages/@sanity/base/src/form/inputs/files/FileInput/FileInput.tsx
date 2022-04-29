@@ -3,7 +3,14 @@
 import React, {ReactNode} from 'react'
 import {Observable, Subscription} from 'rxjs'
 import {get, partition, uniqueId} from 'lodash'
-import {AssetFromSource, File as BaseFile, FileAsset, FileSchemaType, Path} from '@sanity/types'
+import {
+  AssetFromSource,
+  File as BaseFile,
+  FileAsset,
+  FileSchemaType,
+  Path,
+  SchemaType,
+} from '@sanity/types'
 import {ImageIcon, SearchIcon} from '@sanity/icons'
 import {
   Box,
@@ -27,19 +34,25 @@ import {PlaceholderText} from '../common/PlaceholderText'
 import {UploadPlaceholder} from '../common/UploadPlaceholder'
 import {UploadWarning} from '../common/UploadWarning'
 import {EMPTY_ARRAY} from '../../../utils/empty'
-import {FIXME, FieldMember, ObjectInputProps} from '../../../types'
+import {FIXME, FieldMember, ObjectFieldProps, ObjectInputProps} from '../../../types'
 import {
   ChangeIndicatorCompareValueProvider,
   ChangeIndicatorWithProvidedFullPath,
 } from '../../../../components/changeIndicators'
-import {FormFieldSet} from '../../../components/formField'
+import {FormFieldSet} from '../../../../components/formField'
 import {ImperativeToast} from '../../../../components/transitional'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'
 import {PresenceOverlay} from '../../../../presence'
-import {FormNode} from '../../../components/formNode'
+import {MemberField} from '../../ObjectInput/MemberField'
 import {CardOverlay, FlexContainer} from './styles'
+// import {FileInputField} from './FileInputField'
 import {FileDetails} from './FileDetails'
 import {FileSkeleton} from './FileSkeleton'
+
+type Field = {
+  name: string
+  type: SchemaType
+}
 
 // We alias DOM File type here to distinguish it from the type of the File value
 type DOMFile = globalThis.File
@@ -112,13 +125,13 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
       .concat(allKeys.filter((key) => ['_upload'].includes(key)))
       .map((key) => unset([key]))
 
-    this.props.onChange(isEmpty && !isArrayElement ? unset() : removeKeys)
+    this.props.onChange(PatchEvent.from(isEmpty && !isArrayElement ? unset() : removeKeys))
   }
 
   clearUploadStatus() {
     // todo: this is kind of hackish
     if (this.props.value?._upload) {
-      this.props.onChange(unset(['_upload']))
+      this.props.onChange(PatchEvent.from([unset(['_upload'])]))
     }
   }
 
@@ -143,8 +156,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   handleSelectFiles = (files: DOMFile[]) => {
-    const {directUploads, inputProps} = this.props
-    const {readOnly} = inputProps
+    const {directUploads, readOnly} = this.props
     const {hoveringFiles} = this.state
     if (directUploads && !readOnly) {
       this.uploadFirstAccepted(files)
@@ -185,11 +197,11 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
     }
     this.cancelUpload()
     this.setState({isUploading: true})
-    onChange(setIfMissing({_type: type.name}))
+    onChange(PatchEvent.from([setIfMissing({_type: type.name})]))
     this.uploadSubscription = uploader.upload(file, type, options).subscribe({
       next: (uploadEvent) => {
         if (uploadEvent.patches) {
-          onChange(uploadEvent.patches)
+          onChange(PatchEvent.from(uploadEvent.patches))
         }
       },
       error: (err) => {
@@ -275,7 +287,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
     // Also, we don't want to use this logic for array items, since the parent will
     // take care of it when closing the array dialog
     if (!this.valueIsArrayElement() && this.eventIsUnsettingLastFilledField(event)) {
-      onChange(unset())
+      onChange(PatchEvent.from(unset()))
       return
     }
 
@@ -284,7 +296,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
         setIfMissing({
           _type: type.name,
         })
-      ).patches
+      )
     )
   }
 
@@ -315,8 +327,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   handleOpenDialog = () => {
-    const {type, inputProps} = this.props
-    const {onFocus} = inputProps
+    const {type, onFocus} = this.props
     const otherFields = type.fields.filter(
       (field) =>
         !HIDDEN_FIELDS.includes(field.name) && !(field.type as FIXME)?.options?.isHighlighted
@@ -329,13 +340,10 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   handleStopAdvancedEdit = () => {
-    const {inputProps} = this.props
-    inputProps.onFocus([])
+    this.props.onFocus([])
   }
 
   renderAdvancedEdit(members: FieldMember[]) {
-    const {renderField} = this.props
-
     return (
       <Dialog
         header="Edit details"
@@ -345,19 +353,15 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
         __unstable_autoFocus={false}
       >
         <PresenceOverlay margins={[0, 0, 1, 0]}>
-          <Box padding={4}>
-            {members.map((member) => (
-              <FormNode fieldProps={member.field} key={member.key} renderField={renderField} />
-            ))}
-          </Box>
+          <Box padding={4}>{this.renderFields(members)}</Box>
         </PresenceOverlay>
       </Dialog>
     )
   }
 
-  // renderFields(members: FieldMember[]) {
-  //   return members.map((member) => this.renderField(member))
-  // }
+  renderFields(members: FieldMember[]) {
+    return members.map((member) => this.renderField(member))
+  }
 
   handleSelectAssetFromSource = (assetFromSource: AssetFromSource[]) => {
     const {onChange, type, resolveUploader} = this.props
@@ -376,18 +380,16 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   handleFileTargetFocus = (event: FIXME) => {
-    const {inputProps} = this.props
     // We want to handle focus when the file target element *itself* receives
     // focus, not when an interactive child element receives focus. Since React has decided
     // to let focus bubble, so this workaround is needed
     // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
     if (event.currentTarget === event.target && event.currentTarget === this._focusRef) {
-      inputProps.onFocus(['asset'])
+      this.props.onFocus(['asset'])
     }
   }
   handleFileTargetBlur = () => {
-    const {inputProps} = this.props
-    inputProps.onBlur?.()
+    this.props.onBlur?.()
   }
   handleFilesOver = (fileInfo: FileInfo[]) => {
     this.setState({
@@ -400,9 +402,36 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
     })
   }
 
+  renderField(member: FieldMember) {
+    const {renderField} = this.props
+    // const {value, level, focusPath, onFocus, readOnly, onBlur, compareValue, presence, validation} =
+    //   this.props
+    // const fieldValue = value?.[field.name]
+    // const fieldMarkers = validation.filter((marker) => marker.path[0] === field.name)
+
+    return <MemberField member={member} renderField={renderField} />
+
+    // return (
+    //   <FileInputField
+    //     key={field.name}
+    //     field={field}
+    //     parentValue={value}
+    //     value={fieldValue}
+    //     onChange={this.handleFieldChange}
+    //     onFocus={onFocus}
+    //     compareValue={compareValue}
+    //     onBlur={onBlur}
+    //     readOnly={readOnly || field.type.readOnly}
+    //     focusPath={focusPath}
+    //     level={level}
+    //     presence={presence}
+    //     validation={fieldMarkers}
+    //   />
+    // )
+  }
+
   renderAsset(hasAdvancedFields: boolean) {
-    const {value, inputProps, assetSources, type, directUploads, observeAsset} = this.props
-    const {readOnly} = inputProps
+    const {value, readOnly, assetSources, type, directUploads, observeAsset} = this.props
     const {isMenuOpen} = this.state
     const asset = value?.asset
     if (!asset) {
@@ -478,8 +507,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   renderAssetMenu(tone: ThemeColorToneKey) {
-    const {type, inputProps, directUploads, resolveUploader} = this.props
-    const {readOnly} = inputProps
+    const {type, readOnly, directUploads, resolveUploader} = this.props
     const {hoveringFiles} = this.state
 
     const acceptedFiles = hoveringFiles.filter((file) => resolveUploader?.(type, file))
@@ -502,8 +530,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   renderBrowser() {
-    const {assetSources, inputProps, directUploads} = this.props
-    const {readOnly} = inputProps
+    const {assetSources, readOnly, directUploads} = this.props
 
     if (assetSources.length === 0) return null
 
@@ -560,8 +587,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   renderUploadPlaceholder() {
-    const {inputProps, type, directUploads, resolveUploader} = this.props
-    const {readOnly} = inputProps
+    const {readOnly, type, directUploads, resolveUploader} = this.props
     const {hoveringFiles} = this.state
 
     const acceptedFiles = hoveringFiles.filter((file) => resolveUploader?.(type, file))
@@ -616,20 +642,19 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   render() {
-    const {compareValue, level, presence} = this.props.__internal
-
     const {
       directUploads,
-      focusPath = EMPTY_ARRAY,
-      inputProps,
-      members,
-      renderField,
-      resolveUploader,
       type,
       value,
+      compareValue,
+      level,
+      members,
+      validation,
+      readOnly,
+      presence,
+      resolveUploader,
+      focusPath = EMPTY_ARRAY,
     } = this.props
-
-    const {readOnly} = inputProps
     const {hoveringFiles, selectedAssetSource, isStale} = this.state
 
     const fieldMembers = members.filter((member) => member.type === 'field') as FieldMember[]
@@ -668,9 +693,12 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
         <ImperativeToast ref={this.setToast} />
 
         <FormFieldSet
-          __unstable_changeIndicator={false}
+          validation={validation}
+          title={type.title}
+          description={type.description}
           level={highlightedMembers.length > 0 ? level : 0}
-          onSetCollapsed={() => console.warn('todo')}
+          __unstable_presence={isDialogOpen ? EMPTY_ARRAY : assetFieldPresence}
+          __unstable_changeIndicator={false}
         >
           <div>
             <ChangeIndicatorCompareValueProvider
@@ -718,10 +746,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
             </ChangeIndicatorCompareValueProvider>
           </div>
 
-          {highlightedMembers.length > 0 &&
-            highlightedMembers.map((member) => (
-              <FormNode fieldProps={member.field} key={member.key} renderField={renderField} />
-            ))}
+          {highlightedMembers.length > 0 && this.renderFields(highlightedMembers)}
           {isDialogOpen && this.renderAdvancedEdit(otherMembers)}
           {selectedAssetSource && this.renderAssetSource()}
         </FormFieldSet>

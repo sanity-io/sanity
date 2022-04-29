@@ -1,10 +1,13 @@
-import {Box, Card, Checkbox, Flex, Switch} from '@sanity/ui'
+/* eslint-disable import/no-unresolved */
+
 import React, {useCallback} from 'react'
 import styled from 'styled-components'
-import {ChangeIndicator} from '../../components/changeIndicators'
-import {FormFieldHeaderText, FormFieldStatus} from '../components/formField'
+import {useId} from '@reach/auto-id'
+import {Box, Card, Checkbox, Flex, Switch} from '@sanity/ui'
+import {FormFieldHeaderText, FormFieldStatus} from '../../components/formField'
 import {FieldPresence} from '../../presence'
-import {set} from '../patch'
+import {PatchEvent, set} from '../patch'
+import {ChangeIndicator} from '../../components/changeIndicators'
 import {BooleanInputProps} from '../types'
 
 const CenterAlignedBox = styled(Box)`
@@ -15,14 +18,18 @@ const ZeroLineHeightBox = styled(Box)`
   line-height: 0;
 `
 
-export function BooleanInput(props: BooleanInputProps) {
-  const {onChange, value, type, inputProps, validation, presence} = props
-  const {id, onFocus, readOnly, ref} = inputProps
+export const BooleanInput = React.forwardRef(function BooleanInput(
+  props: BooleanInputProps,
+  ref: React.ForwardedRef<HTMLInputElement>
+) {
+  const {onChange} = props
+  const {value, type, readOnly, onFocus, validation, presence} = props
   const layout = type.options?.layout || 'switch'
+  const inputId = useId()
 
   const handleChange = useCallback(
     (event: React.SyntheticEvent<HTMLInputElement>) => {
-      onChange(set(event.currentTarget.checked))
+      onChange(PatchEvent.from(set(event.currentTarget.checked)))
     },
     [onChange]
   )
@@ -38,24 +45,24 @@ export function BooleanInput(props: BooleanInputProps) {
         <Flex>
           <ZeroLineHeightBox padding={3}>
             <LayoutSpecificInput
-              checked={checked}
-              disabled={readOnly}
-              id={id}
-              indeterminate={indeterminate}
+              id={inputId}
+              ref={ref}
               label={type.title}
+              readOnly={Boolean(readOnly)}
               onChange={handleChange}
               onFocus={onFocus}
-              readOnly={readOnly}
-              ref={ref}
+              indeterminate={indeterminate}
+              checked={checked}
               style={{margin: -4}}
+              disabled={readOnly}
             />
           </ZeroLineHeightBox>
           <Box flex={1} paddingY={3}>
             <FormFieldHeaderText
               description={type.description}
-              inputId={id}
-              title={type.title}
+              inputId={inputId}
               validation={validation}
+              title={type.title}
             />
           </Box>
           <CenterAlignedBox paddingX={3} paddingY={1}>
@@ -67,4 +74,4 @@ export function BooleanInput(props: BooleanInputProps) {
       </Card>
     </ChangeIndicator>
   )
-}
+})

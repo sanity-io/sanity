@@ -5,9 +5,9 @@ import {capitalize} from 'lodash'
 import React, {useMemo, useCallback, forwardRef} from 'react'
 import {PatchEvent, set, unset} from '../patch'
 import {FormField} from '../../components/formField'
-import {LegacyInputProps, StringInputComponentProps} from '../types'
+import {LegacyInputProps, StringInputProps} from '../types'
 
-export type SelectInputProps = LegacyInputProps<StringInputComponentProps>
+export type SelectInputProps = LegacyInputProps<StringInputProps>
 
 function toSelectItem(
   option: TitledListValue<string | number> | string | number

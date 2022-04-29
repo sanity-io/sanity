@@ -1,14 +1,14 @@
 import React, {memo, useMemo} from 'react'
 import {FormFieldSet} from '../../../components/formField'
 import {EMPTY_ARRAY} from '../../utils/empty'
-import {ObjectInputComponentProps} from '../../types'
+import {ObjectInputProps} from '../../types'
 import {UnknownFields} from './UnknownFields'
 import {FieldGroupTabsWrapper} from './ObjectInput.styled'
 import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'
 import {MemberField} from './MemberField'
 import {MemberFieldset} from './MemberFieldset'
 
-export const ObjectInput = memo(function ObjectInput(props: ObjectInputComponentProps) {
+export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
   const {
     type,
     groups,

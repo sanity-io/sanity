@@ -1,4 +1,4 @@
-import {isReferenceSchemaType, ValidationMarker} from '@sanity/types'
+import {ArraySchemaType, isReferenceSchemaType, ValidationMarker} from '@sanity/types'
 import {FOCUS_TERMINATOR, pathFor, startsWith} from '@sanity/util/paths'
 import {Box} from '@sanity/ui'
 import React, {memo, useCallback, useMemo, useRef} from 'react'
@@ -7,20 +7,17 @@ import {
   ChangeIndicatorScope,
   ContextProvidedChangeIndicator,
 } from '../../../../../components/changeIndicators'
-import {FIXME, FormBuilderFilterFieldFn, InputProps} from '../../../../types'
+import {FieldProps, FIXME, FormBuilderFilterFieldFn, InputProps} from '../../../../types'
 import {PatchEvent} from '../../../../patch'
 import {ArrayMember, InsertEvent, ReferenceItemComponentType} from '../types'
 import {EMPTY_ARRAY} from '../../../../utils/empty'
-import {
-  // hasFocusAtPath,
-  hasFocusWithinPath,
-} from '../../../../utils/focusUtils'
+import {hasFocusAtPath, hasFocusWithinPath} from '../../../../utils/focusUtils'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
 import {EditPortal} from '../../../../components/EditPortal'
-// import {useDidUpdate} from '../../../../hooks/useDidUpdate'
+import {useDidUpdate} from '../../../../hooks/useDidUpdate'
 import {useConditionalReadOnly} from '../../../../../conditional-property/conditionalReadOnly'
 import {getItemType, isEmpty} from './helpers'
-// import {ItemForm} from './ItemForm'
+import {ItemForm} from './ItemForm'
 import {RowItem} from './RowItem'
 import {CellItem} from './CellItem'
 
@@ -43,30 +40,30 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
     type,
     index,
     itemKey,
+    readOnly,
     presence,
     focusPath = EMPTY_ARRAY,
+    onFocus,
     onChange,
     onRemove,
     onInsert,
+    onBlur,
     filterField,
     compareValue,
     ReferenceItemComponent,
-    inputProps,
   } = props
-
-  const {onBlur, onFocus, readOnly} = inputProps
 
   const innerElementRef = useRef<HTMLDivElement | null>(null)
   const conditionalReadOnly = useConditionalReadOnly() ?? readOnly
   const hasFocusWithin = hasFocusWithinPath(focusPath, props.value)
   useScrollIntoViewOnFocusWithin(innerElementRef, hasFocusWithin)
 
-  // useDidUpdate(hasFocusAtPath(focusPath, props.value), (hadFocus, hasFocus) => {
-  //   if (!hadFocus && hasFocus && innerElementRef.current) {
-  //     // Note: if editing an inline item, focus is handled by the item input itself and no ref is being set
-  //     innerElementRef.current?.focus()
-  //   }
-  // })
+  useDidUpdate(hasFocusAtPath(focusPath, props.value), (hadFocus, hasFocus) => {
+    if (!hadFocus && hasFocus && innerElementRef.current) {
+      // Note: if editing an inline item, focus is handled by the item input itself and no ref is being set
+      innerElementRef.current?.focus()
+    }
+  })
 
   const itemPath = useMemo(() => pathFor([itemKey ? {_key: itemKey} : index]), [index, itemKey])
 

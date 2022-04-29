@@ -1,23 +1,27 @@
 import {isValidationErrorMarker} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
+import {useId} from '@reach/auto-id'
 import React, {useMemo} from 'react'
-import {useFormNode} from '../components/formNode'
-import {set, unset} from '../patch'
-import {StringInputProps} from '../types'
+import {PatchEvent, set, unset} from '../patch'
+import {FormField} from '../../components/formField'
 import {getValidationRule} from '../utils/getValidationRule'
+import {StringInputProps} from '../types'
 
-export type URLInputProps = StringInputProps
+export type UrlInputProps = StringInputProps
 
-export function URLInput(props: URLInputProps) {
-  const {validation} = useFormNode()
-  const {inputProps, value, type, onChange} = props
-  const {id, onFocus, onBlur, readOnly, ref} = inputProps
+// @todo Rename to `URLInput`?
+export const UrlInput = React.forwardRef(function UrlInput(
+  props: UrlInputProps,
+  forwardedRef: React.ForwardedRef<HTMLInputElement>
+) {
+  const {value, readOnly, type, validation, level, onFocus, onBlur, onChange, presence} = props
+  const inputId = useId()
   const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
 
   const handleChange = React.useCallback(
     (event) => {
       const inputValue = event.currentTarget.value
-      onChange(inputValue ? set(inputValue) : unset())
+      onChange(PatchEvent.from(inputValue ? set(inputValue) : unset()))
     },
     [onChange]
   )
@@ -25,18 +29,27 @@ export function URLInput(props: URLInputProps) {
   const uriRule = getValidationRule(type, 'uri')
   const inputType = uriRule?.constraint?.options?.allowRelative ? 'text' : 'url'
   return (
-    <TextInput
-      customValidity={errors.length > 0 ? errors[0].item.message : ''}
-      id={id}
-      inputMode="url"
-      onBlur={onBlur}
-      onChange={handleChange}
-      onFocus={onFocus}
-      placeholder={type.placeholder}
-      readOnly={Boolean(readOnly)}
-      ref={ref}
-      type={inputType}
-      value={value || ''}
-    />
+    <FormField
+      level={level}
+      validation={validation}
+      title={type.title}
+      description={type.description}
+      __unstable_presence={presence}
+      inputId={inputId}
+    >
+      <TextInput
+        type={inputType}
+        inputMode="url"
+        id={inputId}
+        customValidity={errors.length > 0 ? errors[0].item.message : ''}
+        value={value || ''}
+        readOnly={Boolean(readOnly)}
+        placeholder={type.placeholder}
+        onChange={handleChange}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        ref={forwardedRef}
+      />
+    </FormField>
   )
-}
+})

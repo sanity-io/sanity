@@ -3,9 +3,9 @@ import React, {forwardRef, useCallback, useImperativeHandle, useMemo, useRef} fr
 import {FormField} from '../../components/formField'
 import {PatchEvent, set, unset} from '../patch'
 import {TagInput} from '../components/tagInput'
-import {ArrayInputComponentProps, LegacyInputProps} from '../types'
+import {ArrayInputProps, LegacyInputProps} from '../types'
 
-export type TagsArrayInputProps = LegacyInputProps<ArrayInputComponentProps<string[]>>
+export type TagsArrayInputProps = LegacyInputProps<ArrayInputProps<string[]>>
 
 export const TagsArrayInput = forwardRef(function TagsArrayInput(
   props: TagsArrayInputProps,

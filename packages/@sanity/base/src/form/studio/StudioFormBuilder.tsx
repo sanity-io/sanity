@@ -7,15 +7,14 @@ import {fallbackInputs} from '../fallbackInputs'
 import {ChangeIndicatorProvider} from '../../components/changeIndicators'
 import {assertType, isArrayField, isObjectField} from '../utils/asserters'
 import {
-  ArrayInputComponentProps,
-  BooleanInputComponentProps,
+  ArrayInputProps,
+  BooleanInputProps,
   FIXME,
-  NumberInputComponentProps,
-  ObjectInputComponentProps,
+  NumberInputProps,
   ObjectInputProps,
   RenderArrayItemCallbackArg,
   RenderFieldCallbackArg,
-  StringInputComponentProps,
+  StringInputProps,
 } from '../types'
 import {PatchChannel} from '../patch/PatchChannel'
 import {StudioFormBuilderProvider} from './StudioFormBuilderProvider'
@@ -84,7 +83,7 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
         return <div>No input resolved for type: {field.type.name}</div>
       }
       if (isObjectField(field)) {
-        assertType<React.ComponentType<ObjectInputComponentProps>>(Input)
+        assertType<React.ComponentType<ObjectInputProps>>(Input)
         return (
           <ChangeIndicatorProvider path={field.path} value={field.value} compareValue={undefined}>
             <Input {...field} renderField={renderField} />
@@ -92,18 +91,16 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
         )
       }
       if (isArrayField(field)) {
-        assertType<React.ComponentType<ArrayInputComponentProps>>(Input)
+        assertType<React.ComponentType<ArrayInputProps>>(Input)
         return (
           <ChangeIndicatorProvider path={field.path} value={field.value} compareValue={undefined}>
             <Input {...field} renderItem={renderItem} />
           </ChangeIndicatorProvider>
         )
       }
-      assertType<
-        React.ComponentType<
-          StringInputComponentProps | NumberInputComponentProps | BooleanInputComponentProps
-        >
-      >(Input)
+      assertType<React.ComponentType<StringInputProps | NumberInputProps | BooleanInputProps>>(
+        Input
+      )
       return (
         <ChangeIndicatorProvider path={field.path} value={field.value} compareValue={undefined}>
           <Input {...field} />
@@ -119,7 +116,7 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
       if (!Input) {
         return <div>No input resolved for type: {item.type.name}</div>
       }
-      assertType<React.ComponentType<ObjectInputComponentProps>>(Input)
+      assertType<React.ComponentType<ObjectInputProps>>(Input)
       return (
         <ChangeIndicatorProvider path={item.path} value={item.value} compareValue={undefined}>
           <Input {...item} renderField={renderField} />
