@@ -332,7 +332,7 @@ export default async function initSanity(args, context) {
     let projects
     let organizations
     try {
-      const client = apiClient({requireProject: false})
+      const client = apiClient({requireUser: true, requireProject: false})
       const [allProjects, allOrgs] = await Promise.all([
         client.projects.list(),
         client.request({uri: '/organizations'}),
