@@ -7,13 +7,6 @@ import {
 } from '@sanity/types'
 import * as React from 'react'
 import {PatchEvent} from '../patch'
-import {
-  ArrayOfObjectsInputState,
-  BooleanInputState,
-  NumberInputState,
-  ObjectInputState,
-  StringInputState,
-} from './inputState'
 
 import {RenderArrayItemCallback, RenderFieldCallback} from './renderCallback'
 import {InsertEvent} from './event'

@@ -59,7 +59,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
       validation={collapsed ? validation : EMPTY_ARRAY}
       __unstable_changeIndicator={false}
     >
-      {groups && groups?.length > 0 ? (
+      {groups.length > 0 ? (
         <FieldGroupTabsWrapper $level={level} data-testid="field-groups">
           <FieldGroupTabs
             inputId={id}

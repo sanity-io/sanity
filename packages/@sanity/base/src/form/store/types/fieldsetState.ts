@@ -1,11 +1,10 @@
-import {FieldMember} from './member'
+import {FieldMember} from './members'
 
-export interface FieldSetProps {
+export interface FieldsetState {
   name: string
   title?: string
   hidden?: boolean
   collapsible?: boolean
   collapsed?: boolean
-  // onSetCollapsed: (collapsed: boolean) => void
   fields: FieldMember[]
 }
