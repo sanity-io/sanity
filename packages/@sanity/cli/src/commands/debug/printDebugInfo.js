@@ -96,7 +96,7 @@ function printKeyValue(obj, context) {
 
 async function gatherInfo(context) {
   const baseInfo = await promiseProps({
-    globalConfig: gatherGlobalConfigInfo(context),
+    globalConfig: gatherGlobalConfigInfo(),
     projectConfig: gatherProjectConfigInfo(context),
   })
 
