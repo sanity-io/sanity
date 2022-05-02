@@ -4,11 +4,12 @@ import React, {useCallback, useEffect, useMemo} from 'react'
 import {tap} from 'rxjs/operators'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Delay} from '../../../../components/Delay'
-import {useDocumentStore} from '../../../../../datastores'
+import {useDocumentPresence, useDocumentStore} from '../../../../../datastores'
 import {
   createPatchChannel,
   FormBuilderFilterFieldFn,
   fromMutationPatches,
+  PatchEvent,
   PatchMsg,
   StudioFormBuilder,
 } from '../../../../../form'
@@ -19,7 +20,6 @@ import {
   DocumentMutationEvent,
   DocumentRebaseEvent,
 } from '../../../../../datastores/document/buffered-doc/types'
-import {ObjectSchemaType} from '@sanity/types'
 
 interface FormViewProps {
   granted: boolean
@@ -53,6 +53,10 @@ export function FormView(props: FormViewProps) {
     ready,
     changesOpen,
     formState,
+    handleFocus,
+    handleOnSetCollapsedPath,
+    handleOnSetCollapsedFieldSet,
+    handleSetActiveFieldGroup,
   } = useDocumentPane()
   const documentStore = useDocumentStore()
   const {revTime: rev} = historyController
@@ -60,6 +64,7 @@ export function FormView(props: FormViewProps) {
 
   const hasTypeMismatch = value !== null && value._type !== documentSchema.name
   const isNonExistent = !value || !value._id
+  const presence = useDocumentPresence(documentId)
 
   // The `patchChannel` is an INTERNAL publish/subscribe channel that we use to notify form-builder
   // nodes about both remote and local patches.
@@ -69,7 +74,7 @@ export function FormView(props: FormViewProps) {
 
   const isReadOnly = useMemo(() => {
     return (
-      formState.hidden ||
+      formState === null ||
       formState.readOnly ||
       !ready ||
       rev !== null ||
@@ -77,11 +82,11 @@ export function FormView(props: FormViewProps) {
       !isActionEnabled(documentSchema, 'update') ||
       (isNonExistent && !isActionEnabled(documentSchema, 'create'))
     )
-  }, [documentSchema, isNonExistent, granted, ready, rev, formState.hidden || formState.readOnly])
+  }, [formState, ready, rev, granted, documentSchema, isNonExistent])
 
   const handleChange = useCallback(
-    (patches) => {
-      if (!isReadOnly) _handleChange(patches)
+    (patchEvent: PatchEvent) => {
+      if (!isReadOnly) _handleChange(patchEvent)
     },
     [_handleChange, isReadOnly]
   )
@@ -161,34 +166,35 @@ export function FormView(props: FormViewProps) {
       <PresenceOverlay margins={margins}>
         <Box as="form" onSubmit={preventDefault}>
           {ready ? (
-            formState.hidden ? (
+            formState === null ? (
               <Box padding={2}>
                 <Text>This form is hidden</Text>
               </Box>
             ) : (
               <StudioFormBuilder
+                path={[]}
+                level={0}
+                compareValue={undefined}
+                autoFocus
                 id="root"
                 __internal_patchChannel={patchChannel}
                 changesOpen={changesOpen}
-                // compareValue={compareValue as Record<string, unknown>}
-                // filterField={filterField}
-                level={formState.level}
-                path={formState.path}
                 focused={formState.focused}
-                onBlur={handleBlur}
-                onChange={handleChange}
-                presence={formState.presence}
+                onPathBlur={handleBlur}
+                onPathFocus={handleFocus}
                 focusPath={formState.focusPath}
-                validation={formState.validation}
                 readOnly={isReadOnly}
                 schema={schema}
-                type={formState.type as ObjectSchemaType}
-                onFocus={formState.onFocus}
-                value={formState.value}
                 members={formState.members}
                 groups={formState.groups}
-                onSelectFieldGroup={formState.onSelectFieldGroup}
-                onSetCollapsed={formState.onSetCollapsed}
+                schemaType={formState.schemaType}
+                presence={presence}
+                validation={validation}
+                value={formState.value}
+                onChange={handleChange}
+                onSetCollapsedPath={handleOnSetCollapsedPath}
+                onSetCollapsedFieldSet={handleOnSetCollapsedFieldSet}
+                onSelectFieldGroup={handleSetActiveFieldGroup}
               />
             )
           ) : (

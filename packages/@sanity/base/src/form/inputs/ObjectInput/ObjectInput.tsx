@@ -1,39 +1,33 @@
 import React, {memo, useMemo} from 'react'
-import {FormFieldSet} from '../../../components/formField'
-import {EMPTY_ARRAY} from '../../utils/empty'
 import {ObjectInputProps} from '../../types'
 import {UnknownFields} from './UnknownFields'
 import {FieldGroupTabsWrapper} from './ObjectInput.styled'
 import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'
-import {MemberField} from './MemberField'
 import {MemberFieldset} from './MemberFieldset'
+import {MemberField} from './MemberField'
+import {Stack} from '@sanity/ui'
 
 export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
   const {
-    type,
+    schemaType,
     groups,
     members,
-    collapsed,
-    collapsible,
-    focusRef,
-    presence,
-    validation,
     onChange,
+    renderInput,
     renderField,
     level = 0,
     value,
     id,
     path,
     onSelectFieldGroup,
-    onSetCollapsed,
   } = props
 
   const renderedUnknownFields = useMemo(() => {
-    if (!type.fields) {
+    if (!schemaType.fields) {
       return null
     }
 
-    const knownFieldNames = type.fields.map((field) => field.name)
+    const knownFieldNames = schemaType.fields.map((field) => field.name)
     const unknownFields = Object.keys(value || {}).filter(
       (key) => !key.startsWith('_') && !knownFieldNames.includes(key)
     )
@@ -43,22 +37,10 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     }
 
     return <UnknownFields fieldNames={unknownFields} value={value} onChange={onChange} />
-  }, [onChange, type.fields, value])
+  }, [onChange, schemaType.fields, value])
 
   return (
-    <FormFieldSet
-      ref={focusRef}
-      level={level}
-      title={type.title}
-      description={type.description}
-      columns={type.options?.columns}
-      collapsible={collapsible}
-      collapsed={collapsed}
-      onSetCollapsed={onSetCollapsed}
-      __unstable_presence={collapsed ? presence : EMPTY_ARRAY}
-      validation={collapsed ? validation : EMPTY_ARRAY}
-      __unstable_changeIndicator={false}
-    >
+    <Stack space={5}>
       {groups.length > 0 ? (
         <FieldGroupTabsWrapper $level={level} data-testid="field-groups">
           <FieldGroupTabs
@@ -71,13 +53,26 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
       ) : null}
 
       {members.map((member) => {
-        if (member.type === 'field') {
-          return <MemberField key={member.key} member={member} renderField={renderField} />
+        if (member.kind === 'field') {
+          return (
+            <MemberField
+              key={member.key}
+              member={member}
+              renderInput={renderInput}
+              renderField={renderField}
+            />
+          )
         }
-
-        return <MemberFieldset key={member.key} member={member} renderField={renderField} />
+        return (
+          <MemberFieldset
+            key={member.key}
+            member={member}
+            renderInput={renderInput}
+            renderField={renderField}
+          />
+        )
       })}
       {renderedUnknownFields}
-    </FormFieldSet>
+    </Stack>
   )
 })

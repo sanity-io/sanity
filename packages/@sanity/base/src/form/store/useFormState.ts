@@ -1,67 +1,34 @@
-import {isKeySegment, ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
-import {useCallback, useLayoutEffect, useMemo, useRef, useState} from 'react'
+import {ObjectSchemaType, Path} from '@sanity/types'
+import {useLayoutEffect, useMemo, useRef} from 'react'
 import {pathFor} from '@sanity/util/paths'
 import {useCurrentUser} from '../../datastores'
-import {PatchEvent} from '../patch'
-import {FormFieldPresence} from '../../presence'
-import {ObjectInputProps, StateTree} from '../types'
+import {StateTree} from '../types'
 import {prepareFormProps, SanityDocument} from './formState'
 
 import {immutableReconcile} from './utils/immutableReconcile'
 import {DocumentNode} from './types/nodes'
 
-function setAtPath<T>(currentTree: StateTree<T> | undefined, path: Path, value: T): StateTree<T> {
-  if (path.length === 0) {
-    return {...(currentTree || {}), value}
-  }
-  const [head, ...tail] = path
-  const key = isKeySegment(head) ? head._key : String(head)
-  const children = currentTree?.children ?? {}
-  return {
-    value: currentTree?.value,
-    children: {...children, [key]: setAtPath(children[key] || {}, tail, value)},
-  }
-}
-
-export function useFormState(
+export function useFormState<
+  T extends {[key in string]: unknown} = {[key in string]: unknown},
+  S extends ObjectSchemaType = ObjectSchemaType
+>(
   schemaType: ObjectSchemaType,
   {
     value,
-    onChange,
-    onFocus,
-    onBlur,
-    validation,
-    presence,
+    fieldGroupState,
+    expandedFieldSets,
+    collapsedPaths,
     focusPath,
   }: {
-    onChange: (event: PatchEvent) => void
-    onFocus: (nextFocusPath: Path) => void
-    onBlur: (path: Path) => void
+    fieldGroupState?: StateTree<string> | undefined
+    expandedFieldSets?: StateTree<boolean> | undefined
+    collapsedPaths?: StateTree<boolean> | undefined
     value: Partial<SanityDocument>
-    validation: ValidationMarker[]
     focusPath: Path
-    presence: FormFieldPresence[]
   }
-): DocumentNode | null {
+) {
   // note: feel free to move these state pieces out of this hook
   const currentUser = useCurrentUser()
-  const [fieldGroupState, onSetFieldGroupState] = useState<StateTree<string>>()
-  const [expandedNodes, onSetExpandedNode] = useState<StateTree<boolean>>()
-  const [expandedFieldSets, onSetExpandedFieldSets] = useState<StateTree<boolean>>()
-
-  const handleOnSetExpandedPath = useCallback((expanded: boolean, path: Path) => {
-    onSetExpandedNode((prevState) => setAtPath(prevState, path, expanded))
-  }, [])
-
-  const handleOnSetExpandedFieldSet = useCallback((expanded: boolean, path: Path) => {
-    onSetExpandedFieldSets((prevState) => setAtPath(prevState, path, expanded))
-  }, [])
-
-  const handleSetActiveFieldGroup = useCallback(
-    (groupName: string, path: Path) =>
-      onSetFieldGroupState((prevState) => setAtPath(prevState, path, groupName)),
-    []
-  )
 
   const prev = useRef<DocumentNode | null>(null)
 
@@ -72,9 +39,11 @@ export function useFormState(
   return useMemo(() => {
     // console.time('derive form state')
     const next = prepareFormProps({
-      type: schemaType,
+      schemaType,
       document: value,
       fieldGroupState,
+      collapsedFieldSets: expandedFieldSets,
+      collapsedPaths,
       value,
       focusPath,
       path: pathFor([]),
@@ -89,18 +58,10 @@ export function useFormState(
   }, [
     schemaType,
     value,
-    presence,
-    validation,
-    focusPath,
     fieldGroupState,
-    handleSetActiveFieldGroup,
-    handleOnSetExpandedPath,
-    handleOnSetExpandedFieldSet,
-    expandedNodes,
     expandedFieldSets,
-    onChange,
-    onFocus,
-    onBlur,
+    collapsedPaths,
+    focusPath,
     currentUser,
   ])
 }

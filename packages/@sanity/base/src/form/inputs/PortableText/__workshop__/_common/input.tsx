@@ -3,7 +3,7 @@ import React, {forwardRef, useImperativeHandle, useRef} from 'react'
 import styled, {css} from 'styled-components'
 import {SchemaType} from '@sanity/types'
 import {PortableTextInput} from '../../PortableTextInput'
-import {resolveInputComponent} from '../../../../studio/inputResolver/inputResolver'
+import {defaultResolveInputComponent} from '../../../../studio/inputResolver/inputResolver'
 import {SanityFormBuilderConfig} from '../../../../../config'
 import {InputProps} from '../../../../types'
 
@@ -50,5 +50,7 @@ export function inputResolver(
   //   input.type.name = 'object'
   // }
 
-  return resolveInputComponent(formBuilder.components?.inputs, null, input.type) || DebugInput
+  return (
+    defaultResolveInputComponent(formBuilder.components?.inputs, null, input.type) || DebugInput
+  )
 }

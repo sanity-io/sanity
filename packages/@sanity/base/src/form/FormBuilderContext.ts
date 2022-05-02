@@ -3,23 +3,16 @@ import {createContext} from 'react'
 import {
   FormBuilderArrayFunctionComponent,
   FormBuilderCustomMarkersComponent,
-  // FormBuilderFilterFieldFn,
+  FormBuilderFilterFieldFn,
   FormBuilderInputComponentMap,
   FormBuilderMarkersComponent,
   FormInputComponentResolver,
   FormPreviewComponentResolver,
-  RenderArrayItemCallback,
-  RenderFieldCallback,
+  RenderInputCallback,
 } from './types'
 import {PatchChannel} from './patch/PatchChannel'
-// import {PatchArg} from './patch'
 
 export interface FormBuilderContextValue {
-  /**
-   * @internal
-   */
-  __internal_patchChannel: PatchChannel // eslint-disable-line camelcase
-
   components: {
     ArrayFunctions: FormBuilderArrayFunctionComponent
     CustomMarkers: FormBuilderCustomMarkersComponent
@@ -32,30 +25,22 @@ export interface FormBuilderContextValue {
     directUploads: boolean
   }
 
-  // filterField: FormBuilderFilterFieldFn
-
   image: {
     assetSources: AssetSource[]
     directUploads: boolean
   }
 
-  getDocument: () => unknown
   getValuePath: () => Path
-
-  onBlur: () => void
-  // onChange: (path: Path, ...patches: PatchArg[]) => void
-  onFocus: (path: Path) => void
-  onSelectFieldGroup: (path: Path, groupName: string) => void
-  onSetCollapsed: (path: Path, collapsed: boolean) => void
-  onSetCollapsedFieldSet: (path: Path, collapsed: boolean) => void
-
-  renderField: RenderFieldCallback
-  renderItem: RenderArrayItemCallback
-
+  /**
+   * @internal
+   */
+  __internal_patchChannel: PatchChannel // eslint-disable-line camelcase
+  filterField: FormBuilderFilterFieldFn
+  schema: Schema
+  renderField: RenderInputCallback
   resolveInputComponent: FormInputComponentResolver
   resolvePreviewComponent: FormPreviewComponentResolver
-
-  schema: Schema
+  getDocument: () => unknown
 }
 
 export const FormBuilderContext = createContext<FormBuilderContextValue | null>(null)

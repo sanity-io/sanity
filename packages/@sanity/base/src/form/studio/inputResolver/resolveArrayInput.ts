@@ -5,7 +5,6 @@ import {OptionsArrayInput as OptionsArray} from '../../inputs/arrays/OptionsArra
 import {PortableTextInput} from '../../inputs/PortableText/PortableTextInput'
 import {TagsArrayInput} from '../../inputs/TagsArrayInput'
 import {StudioArrayInput, StudioArrayOfPrimitivesInput} from '../inputs/StudioArrayInput'
-import {ArrayFieldProps} from '../../types'
 
 const PRIMITIVES = ['string', 'number', 'boolean']
 
@@ -30,30 +29,26 @@ export function hasOptionsList(type: ArraySchemaType): boolean {
   return Boolean(type.options?.list)
 }
 
-export function resolveArrayInput(type: ArraySchemaType): ComponentType<ArrayFieldProps<any>> {
+export function resolveArrayInput(type: ArraySchemaType): ComponentType<any> {
   // Schema provides predefines list
   if (hasOptionsList(type)) {
-    // @todo: fix typing
-    return OptionsArray as ComponentType<any>
+    return OptionsArray
   }
 
   if (isStringArray(type) && isTagsArray(type)) {
-    return TagsArrayInput as ComponentType<any>
+    return TagsArrayInput
   }
 
   // Special component for array of primitive values
   if (isArrayOfPrimitives(type)) {
-    // @todo: fix typing
-    return StudioArrayOfPrimitivesInput as ComponentType<any>
+    return StudioArrayOfPrimitivesInput
   }
 
   // Use Portable Text editor if portable text.
   if (isPortableText(type)) {
-    // @todo: fix typing
-    return PortableTextInput as ComponentType<any>
+    return PortableTextInput
   }
 
   // use default
-  // @todo: fix typing
-  return StudioArrayInput as ComponentType<any>
+  return StudioArrayInput
 }

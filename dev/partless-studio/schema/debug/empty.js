@@ -9,5 +9,11 @@ export default {
       title: 'Name',
       type: 'string',
     },
+    {
+      name: 'obj',
+      title: 'Obj',
+      type: 'object',
+      fields: [{name: 'objName', type: 'string'}],
+    },
   ],
 }

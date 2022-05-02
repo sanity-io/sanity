@@ -13,7 +13,7 @@ import {FieldGroupState} from './fieldGroupState'
 export interface BaseNode<T = unknown, S extends SchemaType = SchemaType> {
   // constants
   id: string
-  type: S
+  schemaType: S
   level: number
   path: Path
 
@@ -32,8 +32,6 @@ export interface ObjectNode<
   groups: FieldGroupState[]
 
   focusPath: Path
-  collapsed: boolean
-  collapsible: boolean
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -49,8 +47,6 @@ export interface ArrayOfObjectsNode<
   members: ArrayOfObjectsMember[]
 
   focusPath: Path
-  collapsed: boolean
-  collapsible: boolean
 }
 
 export interface ArrayOfPrimitivesNode<

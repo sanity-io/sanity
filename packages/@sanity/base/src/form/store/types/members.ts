@@ -31,6 +31,8 @@ export interface FieldMember<Node extends BaseNode = BaseNode> {
   key: string
   name: string
   index: number
+  collapsed: boolean | undefined
+  collapsible: boolean | undefined
   field: Node
 }
 

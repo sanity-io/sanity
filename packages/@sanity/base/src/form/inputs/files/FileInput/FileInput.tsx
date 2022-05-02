@@ -403,13 +403,13 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   renderField(member: FieldMember) {
-    const {renderField} = this.props
+    const {renderInput} = this.props
     // const {value, level, focusPath, onFocus, readOnly, onBlur, compareValue, presence, validation} =
     //   this.props
     // const fieldValue = value?.[field.name]
     // const fieldMarkers = validation.filter((marker) => marker.path[0] === field.name)
 
-    return <MemberField member={member} renderField={renderField} />
+    return <MemberField member={member} renderField={renderInput} />
 
     // return (
     //   <FileInputField

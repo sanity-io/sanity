@@ -1,7 +1,7 @@
-import {AssetSource, ObjectSchemaType, Path, Schema, SchemaType} from '@sanity/types'
+import {AssetSource, Schema, SchemaType} from '@sanity/types'
 import React, {useMemo} from 'react'
 import {SanityFormBuilderConfig} from '../config'
-import {FIXME, FormBuilderFilterFieldFn, RenderFieldCallback} from './types'
+import {FIXME, FormBuilderFilterFieldFn, RenderInputCallback} from './types'
 import {fallbackInputs} from './fallbackInputs'
 import {FormBuilderContext, FormBuilderContextValue} from './FormBuilderContext'
 import {PatchChannel} from './patch/PatchChannel'
@@ -10,8 +10,6 @@ import {DefaultMarkers} from './inputs/PortableText/_legacyDefaultParts/Markers'
 import {DefaultCustomMarkers} from './inputs/PortableText/_legacyDefaultParts/CustomMarkers'
 import {FileSource, ImageSource} from './studio/DefaultAssetSource'
 import {EMPTY_ARRAY} from './utils/empty'
-import {PatchArg} from './patch'
-import {FormNodeProvider} from './components/formNode'
 
 const defaultFileAssetSources = [FileSource]
 const defaultImageAssetSources = [ImageSource]
@@ -44,14 +42,7 @@ export interface FormBuilderProviderProps extends SanityFormBuilderConfig {
    * @internal
    */
   __internal_patchChannel?: PatchChannel // eslint-disable-line camelcase
-  onBlur?: () => void
-  onChange?: (...patches: PatchArg[]) => void
-  onFocus?: (path: Path) => void
-  onSelectFieldGroup?: (path: Path, groupName: string) => void
-  onSetCollapsed?: (path: Path, collapsed: boolean) => void
-  onSetCollapsedFieldSet?: (path: Path, collapsed: boolean) => void
-  renderField: RenderFieldCallback
-  type: ObjectSchemaType
+  renderField: RenderInputCallback
 }
 
 const missingPatchChannel: PatchChannel = {
@@ -65,8 +56,6 @@ const missingPatchChannel: PatchChannel = {
   },
 }
 
-const noop = () => undefined
-
 export function FormBuilderProvider(props: FormBuilderProviderProps) {
   const {
     children,
@@ -76,23 +65,14 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
     schema,
     filterField,
     __internal_patchChannel: patchChannel = missingPatchChannel,
-    onBlur = noop,
-    onChange = noop,
-    onFocus = noop,
-    onSelectFieldGroup = noop,
-    onSetCollapsed = noop,
-    onSetCollapsedFieldSet = noop,
     renderField,
     resolveInputComponent: resolveInputComponentProp,
     resolvePreviewComponent: resolvePreviewComponentProp,
     value,
-    type,
   } = props
 
   const formBuilder: FormBuilderContextValue = useMemo(() => {
     return {
-      __internal_patchChannel: patchChannel, // eslint-disable-line camelcase
-
       components: {
         ArrayFunctions: components?.ArrayFunctions || DefaultArrayInputFunctions,
         CustomMarkers: components?.CustomMarkers || DefaultCustomMarkers,
@@ -108,7 +88,6 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       },
 
       filterField: filterField || (() => true),
-
       image: {
         assetSources: image?.assetSources
           ? ensureArrayOfSources(image.assetSources) || defaultImageAssetSources
@@ -117,31 +96,21 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       },
 
       getValuePath: () => EMPTY_ARRAY,
-
-      onBlur,
-      // onChange,
-      onFocus,
-      onSelectFieldGroup,
-      onSetCollapsed,
-      onSetCollapsedFieldSet,
-
+      __internal_patchChannel: patchChannel, // eslint-disable-line camelcase
       schema,
-
       renderField,
-      renderItem: () => <>TODO</>,
-
-      resolveInputComponent: (_type) => {
-        const resolved = resolveComponentFromType(resolveInputComponentProp, _type)
+      resolveInputComponent: (type) => {
+        const resolved = resolveComponentFromType(resolveInputComponentProp, type)
 
         if (resolved) {
           return resolved
         }
 
-        return fallbackInputs[_type.jsonType]?.input as FIXME
+        return fallbackInputs[type.jsonType]?.input as FIXME
       },
 
-      resolvePreviewComponent: (_type) =>
-        resolveComponentFromType(resolvePreviewComponentProp, _type),
+      resolvePreviewComponent: (type) =>
+        resolveComponentFromType(resolvePreviewComponentProp, type),
       getDocument: () => value,
     }
   }, [
@@ -149,12 +118,6 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
     file,
     filterField,
     image,
-    onBlur,
-    // onChange,
-    onFocus,
-    onSelectFieldGroup,
-    onSetCollapsed,
-    onSetCollapsedFieldSet,
     patchChannel,
     renderField,
     resolveInputComponentProp,
@@ -163,13 +126,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
     value,
   ])
 
-  return (
-    <FormBuilderContext.Provider value={formBuilder}>
-      <FormNodeProvider inputId="" path={EMPTY_ARRAY} onChange={onChange} type={type}>
-        {children}
-      </FormNodeProvider>
-    </FormBuilderContext.Provider>
-  )
+  return <FormBuilderContext.Provider value={formBuilder}>{children}</FormBuilderContext.Provider>
 }
 
 function ensureArrayOfSources(sources: unknown): AssetSource[] | null {

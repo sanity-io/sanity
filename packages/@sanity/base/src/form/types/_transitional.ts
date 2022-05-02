@@ -7,9 +7,10 @@ import {
   ValidationMarker,
 } from '@sanity/types'
 import React from 'react'
-import {PatchArg} from '../patch'
+import {PatchEvent} from '../patch'
+import {Field} from './field'
 import {InputProps} from './inputProps'
-import {FieldProps} from '.'
+import {Item} from './item'
 
 export type FIXME = any
 
@@ -57,12 +58,11 @@ export type FormBuilderMarkersComponent = React.ComponentType<{
  */
 export type FormBuilderInputComponentMap = Record<
   string,
-  | {
-      field?: React.ComponentType<FieldProps>
-      item?: React.ComponentType<FieldProps>
-      input?: React.ComponentType<FieldProps>
-    }
-  | undefined
+  {
+    field?: React.ComponentType<Field>
+    item?: React.ComponentType<Item>
+    input?: React.ComponentType<InputProps>
+  }
 >
 
 /**
@@ -72,7 +72,7 @@ export interface FormArrayInputFunctionsProps<SchemaType extends ArraySchemaType
   children?: React.ReactNode
   className?: string
   onAppendItem: (itemValue: MemberType) => void
-  onChange: (...patches: PatchArg[]) => void
+  onChange: (event: PatchEvent) => void
   onCreateValue: (type: SchemaType) => MemberType
   onFocusItem: (item: MemberType, index: number) => void
   onPrependItem: (itemValue: MemberType) => void
@@ -93,7 +93,7 @@ export interface FormBuilderFilterFieldFn {
  */
 export type FormInputComponentResolver = (
   type: SchemaType
-) => React.ComponentType<InputProps> | null | false | undefined
+) => React.ComponentType<InputProps> | undefined
 
 /**
  * @alpha

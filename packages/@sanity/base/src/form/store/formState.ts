@@ -11,7 +11,6 @@ import {
 } from '@sanity/types'
 
 import {castArray, pick} from 'lodash'
-import {ComponentType} from 'react'
 import {isEqual, pathFor, toString} from '@sanity/util/paths'
 import {StateTree} from '../types'
 import {callConditionalProperties, callConditionalProperty} from './conditional-property'
@@ -52,11 +51,11 @@ function prepareFieldState(props: {
     const fieldValue = (parent.value as any)?.[field.name] as Record<string, unknown> | undefined
 
     const fieldGroupState = parent.fieldGroupState?.children?.[field.name]
-    const expandedPaths = parent.expandedPaths?.children?.[field.name]
-    const collapsedFieldSets = parent.expandedFieldSets?.children?.[field.name]
+    const collapsedPaths = parent.collapsedPaths?.children?.[field.name]
+    const collapsedFieldSets = parent.collapsedFieldSets?.children?.[field.name]
 
     const scopedInputProps = prepareObjectInputState({
-      type: field.type,
+      schemaType: field.type,
       currentUser: parent.currentUser,
       parent: parent.value,
       document: parent.document,
@@ -65,41 +64,44 @@ function prepareFieldState(props: {
       path: fieldPath,
       level: fieldLevel,
       focusPath: parent.focusPath,
-      expandedPaths,
-      expandedFieldSets: collapsedFieldSets,
+      collapsedPaths: collapsedPaths,
+      collapsedFieldSets: collapsedFieldSets,
     })
 
     if (scopedInputProps === null) {
       return null
     }
 
+    const defaultCollapsedState = getCollapsedWithDefaults(field.type.options, fieldLevel)
+
+    const collapsed = collapsedPaths ? collapsedPaths.value : defaultCollapsedState.collapsed
+
     return {
       kind: 'field',
       key: `field-${field.name}`,
       name: field.name,
       index: index,
-
-      // note: this is what we actually end up passing down as to the next input component
+      collapsible: defaultCollapsedState.collapsible,
+      collapsed,
       field: scopedInputProps,
-      // value: fieldValue,
     }
   } else if (isArraySchemaType(field.type)) {
     const fieldValue = (parent.value as any)?.[field.name] as unknown[] | undefined
 
     const fieldGroupState = parent.fieldGroupState?.children?.[field.name]
-    const scopedExpandedPaths = parent.expandedPaths?.children?.[field.name]
-    const scopedExpandedFieldSets = parent.expandedFieldSets?.children?.[field.name]
+    const scopedCollapsedPaths = parent.collapsedPaths?.children?.[field.name]
+    const scopedCollapsedFieldSets = parent.collapsedFieldSets?.children?.[field.name]
 
     const preparedInputProps = prepareArrayOfObjectsInputState({
-      type: field.type,
+      schemaType: field.type,
       parent: parent.value,
       currentUser: parent.currentUser,
       document: parent.document,
       value: fieldValue,
       fieldGroupState,
       focusPath: parent.focusPath,
-      expandedPaths: scopedExpandedPaths,
-      expandedFieldSets: scopedExpandedFieldSets,
+      collapsedPaths: scopedCollapsedPaths,
+      collapsedFieldSets: scopedCollapsedFieldSets,
       level: fieldLevel,
       path: fieldPath,
     })
@@ -114,6 +116,9 @@ function prepareFieldState(props: {
       name: field.name,
       index: index,
 
+      // todo: support for arrays
+      collapsible: false,
+      collapsed: false,
       // note: this is what we actually end up passing down as to the next input component
       field: preparedInputProps,
     }
@@ -142,10 +147,12 @@ function prepareFieldState(props: {
       name: field.name,
       index: index,
 
+      collapsible: false,
+      collapsed: false,
       field: {
         // note: this is what we actually end up passing down as to the next input component
         path: fieldPath,
-        type: field.type,
+        schemaType: field.type,
         compareValue: undefined, // todo
         level: fieldLevel,
         id: toString(fieldPath),
@@ -158,7 +165,7 @@ function prepareFieldState(props: {
 }
 
 interface RawState<SchemaType, T> {
-  type: SchemaType
+  schemaType: SchemaType
   value?: T
   document: SanityDocument
   currentUser: Omit<CurrentUser, 'role'>
@@ -168,8 +175,8 @@ interface RawState<SchemaType, T> {
   path: Path
   focusPath: Path
   fieldGroupState?: StateTree<string>
-  expandedPaths?: StateTree<boolean>
-  expandedFieldSets?: StateTree<boolean>
+  collapsedPaths?: StateTree<boolean>
+  collapsedFieldSets?: StateTree<boolean>
   // nesting level
   level: number
 }
@@ -198,7 +205,7 @@ function prepareObjectInputState<T>(
   }
 
   const {hidden, readOnly} = callConditionalProperties(
-    props.type,
+    props.schemaType,
     conditionalFieldContext,
     enableHiddenCheck ? ['hidden', 'readOnly'] : ['readOnly']
   )
@@ -207,7 +214,7 @@ function prepareObjectInputState<T>(
     return null
   }
 
-  const schemaTypeGroupConfig = props.type.groups || []
+  const schemaTypeGroupConfig = props.schemaType.groups || []
   const defaultGroupName = (
     schemaTypeGroupConfig.find((g) => g.default) || schemaTypeGroupConfig[0]
   )?.name
@@ -234,7 +241,7 @@ function prepareObjectInputState<T>(
   }
 
   // create a members array for the object
-  const members = (props.type.fieldsets || []).flatMap((fieldSet, index): ObjectMember[] => {
+  const members = (props.schemaType.fieldsets || []).flatMap((fieldSet, index): ObjectMember[] => {
     if (fieldSet.single) {
       // "single" means not part of a fieldset
       const fieldState = prepareFieldState({
@@ -291,32 +298,24 @@ function prepareObjectInputState<T>(
           fields: fieldsetMembers,
           collapsible: fieldSet.options?.collapsible,
           collapsed:
-            fieldSet.name in (props.expandedFieldSets?.children || {})
-              ? props.expandedFieldSets?.children?.[fieldSet.name].value === false
-              : fieldSet.options?.collapsed,
+            (fieldSet.options?.collapsible === true &&
+              (props.collapsedFieldSets?.children || {})[fieldSet.name]?.value) ||
+            fieldSet.options?.collapsed,
         },
       },
     ]
   })
 
-  const defaultCollapsedState = getCollapsedWithDefaults(props.type.options, props.level)
-
-  const collapsed = props.expandedPaths
-    ? props.expandedPaths.value === false
-    : defaultCollapsedState.collapsed
-
   return {
     compareValue: undefined,
     value: props.value as Record<string, unknown> | undefined,
-    type: props.type,
+    schemaType: props.schemaType,
     readOnly: props.readOnly,
     path: props.path,
     id: toString(props.path),
     level: props.level,
     focused: isEqual(props.path, props.focusPath),
     focusPath: props.focusPath,
-    collapsible: defaultCollapsedState.collapsible,
-    collapsed: collapsed,
     members,
     groups,
   }
@@ -335,7 +334,7 @@ function prepareArrayOfObjectsInputState<T extends unknown[]>(
     document: props.document,
     currentUser: props.currentUser,
   }
-  const {hidden, readOnly} = callConditionalProperties(props.type, conditionalFieldContext, [
+  const {hidden, readOnly} = callConditionalProperties(props.schemaType, conditionalFieldContext, [
     'hidden',
     'readOnly',
   ])
@@ -352,22 +351,16 @@ function prepareArrayOfObjectsInputState<T extends unknown[]>(
   // todo: support this for arrays as well
   const defaultCollapsedState = getCollapsedWithDefaults({}, props.level)
 
-  const collapsed = props.expandedPaths
-    ? props.expandedPaths.value === false
-    : defaultCollapsedState.collapsed
-
   return {
     compareValue: undefined,
     value: props.value as T,
     readOnly,
-    type: props.type,
+    schemaType: props.schemaType,
     focused: isEqual(props.path, props.focusPath),
     focusPath: props.focusPath,
     path: props.path,
     id: toString(props.path),
     level: props.level,
-    collapsible: defaultCollapsedState.collapsible,
-    collapsed,
     members: items.flatMap((item, index) =>
       prepareArrayMembers({arrayItem: item, parent: props, index})
     ),
@@ -382,7 +375,7 @@ function prepareArrayMembers(props: {
   index: number
 }): ArrayOfObjectsMember[] {
   const {arrayItem, parent, index} = props
-  const itemType = getItemType(parent.type, arrayItem)
+  const itemType = getItemType(parent.schemaType, arrayItem)
 
   if (!isObjectSchemaType(itemType)) {
     // TODO
@@ -397,33 +390,31 @@ function prepareArrayMembers(props: {
   const itemPath = pathFor([...parent.path, {_key: key}])
   const itemLevel = parent.level + 1
 
-  const expandedItemPaths = parent.expandedPaths?.children?.[key]
+  const collapsedItemPaths = parent.collapsedPaths?.children?.[key]
 
   const result = prepareObjectInputState(
     {
-      type: itemType,
+      schemaType: itemType,
       level: itemLevel,
       document: parent.document,
       value: arrayItem,
       path: itemPath,
       focusPath: parent.focusPath,
       currentUser: parent.currentUser,
-      expandedPaths: expandedItemPaths,
+      collapsedPaths: collapsedItemPaths,
     },
     false
   )
 
+  const defaultCollapsedState = getCollapsedWithDefaults(itemType.options, itemLevel)
+  const collapsed = collapsedItemPaths?.value || defaultCollapsedState.collapsed
   return [
     {
       kind: 'item',
       key,
-      collapsed: result.collapsed,
+      collapsed: collapsed,
       collapsible: true,
-      item: {
-        ...result,
-        // override the default for array items
-        collapsed: expandedItemPaths?.value !== true,
-      },
+      item: result,
     },
   ]
 }

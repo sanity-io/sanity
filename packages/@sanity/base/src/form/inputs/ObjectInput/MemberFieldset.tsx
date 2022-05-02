@@ -1,37 +1,33 @@
-import React, {useCallback} from 'react'
-import {FormFieldSet} from '../../components/formField'
-import {FormNode, FormNodeProvider} from '../../components/formNode'
-import {FieldSetMember, RenderFieldCallback} from '../../types'
-import {EMPTY_ARRAY} from '../../utils/empty'
+/* eslint-disable react/jsx-handler-names */
 
-export function MemberFieldset(props: {member: FieldSetMember; renderField: RenderFieldCallback}) {
-  const {member, renderField} = props
+import React from 'react'
+import {FormFieldSet} from '../../../components/formField'
+import {RenderFieldCallback, RenderInputCallback} from '../../types'
+import {FieldSetMember} from '../../store/types/members'
+import {MemberField} from './MemberField'
 
-  const onSetCollapsed = useCallback((collapsed: boolean) => {
-    console.warn('todo: set collapsed', collapsed)
-  }, [])
+export function MemberFieldset(props: {
+  member: FieldSetMember
+  renderField: RenderFieldCallback
+  renderInput: RenderInputCallback
+}) {
+  const {member, renderField, renderInput} = props
 
   return (
-    <FormNodeProvider
-      compareValue={undefined}
-      collapsed={false}
-      collapsible={false}
-      inputId={member.key}
-      level={1}
-      path={EMPTY_ARRAY}
-      presence={EMPTY_ARRAY}
-      type={member.fieldSet as any}
-      validation={EMPTY_ARRAY}
+    <FormFieldSet
+      title={member.fieldSet.title}
+      collapsible={member.fieldSet.collapsible}
+      collapsed={member.fieldSet.collapsed}
+      // onSetCollapsed={member.fieldSet.onSetCollapsed}
     >
-      <FormFieldSet onSetCollapsed={onSetCollapsed}>
-        {member.fieldSet.fields.map((fieldsetMember) => (
-          <FormNode
-            fieldProps={fieldsetMember.field}
-            renderField={renderField}
-            key={fieldsetMember.key}
-          />
-        ))}
-      </FormFieldSet>
-    </FormNodeProvider>
+      {member.fieldSet.fields.map((fieldsetMember) => (
+        <MemberField
+          member={fieldsetMember}
+          renderField={renderField}
+          renderInput={renderInput}
+          key={fieldsetMember.key}
+        />
+      ))}
+    </FormFieldSet>
   )
 }

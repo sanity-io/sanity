@@ -1,19 +1,22 @@
 // eslint-disable-next-line no-empty-function,@typescript-eslint/no-empty-function
-import React from 'react'
-import {ArrayFieldProps, FieldProps, ObjectFieldProps} from '../types'
 
-export function assertType<T>(v: unknown): asserts v is T {
-  //
+import {isArraySchemaType, isObjectSchemaType} from '@sanity/types'
+import {ArrayOfObjectsInputProps, InputProps, ObjectInputProps} from '../types'
+import {FieldProps, ObjectFieldProps, PrimitiveFieldProps} from '../types/fieldProps'
+
+export function assertType<T>(v: unknown): asserts v is T {}
+
+export function isObjectInputProps(inputProps: InputProps): inputProps is ObjectInputProps {
+  return isObjectSchemaType(inputProps.schemaType)
 }
 
-export function isObjectField(
-  field: FieldProps
-): field is ObjectFieldProps & {focusRef: React.Ref<any>} {
-  return field.kind === 'object'
+export function isArrayInputProps(inputProps: InputProps): inputProps is ArrayOfObjectsInputProps {
+  return isArraySchemaType(inputProps.schemaType)
 }
 
-export function isArrayField(
-  field: FieldProps
-): field is ArrayFieldProps & {focusRef: React.Ref<any>} {
-  return field.kind === 'array'
+export function isPrimitiveField(fieldProps: FieldProps): fieldProps is PrimitiveFieldProps {
+  return !isObjectSchemaType(fieldProps.schemaType) && !isArraySchemaType(fieldProps.schemaType)
+}
+export function isObjectField(fieldProps: FieldProps): fieldProps is ObjectFieldProps {
+  return isObjectSchemaType(fieldProps.schemaType)
 }

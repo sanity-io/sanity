@@ -10,7 +10,6 @@ import {useHistoryStore, useInitialValue, usePresenceStore} from '../../../datas
 import {
   useConnectionState,
   useDocumentOperation,
-  useDocumentPresence,
   useEditState,
   useValidationStatus,
 } from '../../../hooks'
@@ -18,12 +17,14 @@ import {isDev} from '../../../environment'
 import {useSource} from '../../../studio'
 import {getPublishedId, useUnique} from '../../../util'
 import {useDeskTool, usePaneRouter} from '../../components'
-import {PatchEvent, toMutationPatches, useFormState} from '../../../form'
+import {PatchEvent, StateTree, toMutationPatches} from '../../../form'
+import {useFormState} from '../../../form/store/useFormState'
 import {DocumentPaneContext, DocumentPaneContextValue} from './DocumentPaneContext'
 import {getMenuItems} from './menuItems'
 import {DocumentPaneProviderProps} from './types'
 import {usePreviewUrl} from './usePreviewUrl'
 import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
+import {setAtPath} from '../../../form/store/stateTreeHelper'
 
 const emptyObject = {} as Record<string, string | undefined>
 
@@ -103,7 +104,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [client, documentId, documentType, timeline]
   )!
   /**
-   * TODO: this will now happen on each render, but should be refactored so it happens only when
+   * @todo: this will now happen on each render, but should be refactored so it happens only when
    * the `rev`, `since` or `historyController` values change.
    */
   historyController.setRange(params.since || null, params.rev || null)
@@ -157,7 +158,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
 
   const handleBlur = useCallback(
-    (blurredPath?: Path) => {
+    (blurredPath: Path) => {
       setFocusPath([])
       // note: we're deliberately not syncing presence here since it would make the user avatar disappear when a
       // user clicks outside a field without focusing another one
@@ -173,10 +174,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     patch.execute(toMutationPatches(event.patches), initialValue.value)
   }
 
-  const handleChange = useCallback((event) => {
-    patchRef.current(event)
-    // console.log('change', event)
-  }, [])
+  const handleChange = useCallback((event) => patchRef.current(event), [])
 
   const handleHistoryClose = useCallback(() => {
     paneRouter.setParams({...params, since: undefined})
@@ -241,20 +239,31 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const handleInspectClose = useCallback(() => toggleInspect(false), [toggleInspect])
 
-  const documentPresence = useDocumentPresence(documentId)
+  const [fieldGroupState, onSetFieldGroupState] = useState<StateTree<string>>()
+  const [collapsedPaths, onSetCollapsedPath] = useState<StateTree<boolean>>()
+  const [collapsedFieldSets, onSetCollapsedFieldSets] = useState<StateTree<boolean>>()
 
-  const {formState, onSetActiveFieldGroup, onSetExpandedFieldSet, onSetExpandedPath} = useFormState(
-    documentSchema,
-    {
-      value,
-      // onChange: handleChange,
-      // onFocus: handleFocus,
-      // onBlur: handleBlur,
-      validation,
-      focusPath,
-      presence: documentPresence || [],
-    }
+  const handleOnSetCollapsedPath = useCallback((path: Path, collapsed: boolean) => {
+    onSetCollapsedPath((prevState) => setAtPath(prevState, path, collapsed))
+  }, [])
+
+  const handleOnSetCollapsedFieldSet = useCallback((path: Path, collapsed: boolean) => {
+    onSetCollapsedFieldSets((prevState) => setAtPath(prevState, path, collapsed))
+  }, [])
+
+  const handleSetActiveFieldGroup = useCallback(
+    (path: Path, groupName: string) =>
+      onSetFieldGroupState((prevState) => setAtPath(prevState, path, groupName)),
+    []
   )
+
+  const formState = useFormState(documentSchema, {
+    value,
+    focusPath,
+    collapsedPaths,
+    expandedFieldSets: collapsedFieldSets,
+    fieldGroupState,
+  })
 
   const documentPane: DocumentPaneContextValue = {
     actions,
@@ -270,25 +279,24 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     documentType,
     editState,
     focusPath,
-    formState,
+    handleChange,
+    handleFocus,
+    handleHistoryClose,
+    handleHistoryOpen,
+    handleInspectClose,
+    handleKeyUp,
+    handleMenuAction,
+    handlePaneClose,
+    handlePaneSplit,
+    handleSetActiveFieldGroup,
+    handleOnSetCollapsedPath,
+    handleOnSetCollapsedFieldSet,
     historyController,
     index,
     inspectOpen,
-    menuItemGroups: menuItemGroups || [],
+    validation,
     menuItems,
-    onBlur: handleBlur,
-    onChange: handleChange,
-    onFocus: handleFocus,
-    onHistoryClose: handleHistoryClose,
-    onHistoryOpen: handleHistoryOpen,
-    onInspectClose: handleInspectClose,
-    onKeyUp: handleKeyUp,
-    onMenuAction: handleMenuAction,
-    onPaneClose: handlePaneClose,
-    onPaneSplit: handlePaneSplit,
-    onSetActiveFieldGroup,
-    onSetExpandedFieldSet,
-    onSetExpandedPath,
+    menuItemGroups: menuItemGroups || [],
     paneKey,
     previewUrl,
     ready,
@@ -297,9 +305,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     timeline,
     timelineMode,
     title,
-    validation,
     value,
     views,
+    formState,
   }
 
   useEffect(() => {
