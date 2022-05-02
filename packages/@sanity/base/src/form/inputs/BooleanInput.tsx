@@ -5,7 +5,6 @@ import styled from 'styled-components'
 import {useId} from '@reach/auto-id'
 import {Box, Card, Checkbox, Flex, Switch} from '@sanity/ui'
 import {FormFieldHeaderText, FormFieldStatus} from '../../components/formField'
-import {FieldPresence} from '../../presence'
 import {PatchEvent, set} from '../patch'
 import {ChangeIndicator} from '../../components/changeIndicators'
 import {BooleanInputProps} from '../types'
@@ -23,8 +22,8 @@ export const BooleanInput = React.forwardRef(function BooleanInput(
   ref: React.ForwardedRef<HTMLInputElement>
 ) {
   const {onChange} = props
-  const {value, type, readOnly, onFocus, validation, presence} = props
-  const layout = type.options?.layout || 'switch'
+  const {value, schemaType, readOnly, onFocus} = props
+  const layout = schemaType.options?.layout || 'switch'
   const inputId = useId()
 
   const handleChange = useCallback(
@@ -47,7 +46,7 @@ export const BooleanInput = React.forwardRef(function BooleanInput(
             <LayoutSpecificInput
               id={inputId}
               ref={ref}
-              label={type.title}
+              label={schemaType.title}
               readOnly={Boolean(readOnly)}
               onChange={handleChange}
               onFocus={onFocus}
@@ -59,15 +58,15 @@ export const BooleanInput = React.forwardRef(function BooleanInput(
           </ZeroLineHeightBox>
           <Box flex={1} paddingY={3}>
             <FormFieldHeaderText
-              description={type.description}
+              description={schemaType.description}
               inputId={inputId}
-              validation={validation}
-              title={type.title}
+              // validation={validation}
+              title={schemaType.title}
             />
           </Box>
           <CenterAlignedBox paddingX={3} paddingY={1}>
             <FormFieldStatus maxAvatars={1} position="top">
-              <FieldPresence maxAvatars={1} presence={presence} />
+              {/*<FieldPresence maxAvatars={1} presence={presence} />*/}
             </FormFieldStatus>
           </CenterAlignedBox>
         </Flex>

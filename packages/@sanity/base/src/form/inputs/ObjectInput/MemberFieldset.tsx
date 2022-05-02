@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-handler-names */
 
-import React from 'react'
+import React, {useCallback} from 'react'
 import {FormFieldSet} from '../../../components/formField'
 import {RenderFieldCallback, RenderInputCallback} from '../../types'
 import {FieldSetMember} from '../../store/types/members'
@@ -10,15 +10,25 @@ export function MemberFieldset(props: {
   member: FieldSetMember
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback
+  onSetFieldSetCollapsed: (fieldsetName: string, collapsed: boolean) => void
 }) {
-  const {member, renderField, renderInput} = props
+  const {member, renderField, renderInput, onSetFieldSetCollapsed} = props
+
+  const handleSetCollapsed = useCallback(
+    (collapsed: boolean) => {
+      onSetFieldSetCollapsed(member.fieldSet.name, collapsed)
+    },
+    [member.fieldSet.name, onSetFieldSetCollapsed]
+  )
 
   return (
     <FormFieldSet
       title={member.fieldSet.title}
+      description={member.fieldSet.description}
+      level={member.fieldSet.level}
       collapsible={member.fieldSet.collapsible}
       collapsed={member.fieldSet.collapsed}
-      // onSetCollapsed={member.fieldSet.onSetCollapsed}
+      onSetCollapsed={handleSetCollapsed}
     >
       {member.fieldSet.fields.map((fieldsetMember) => (
         <MemberField

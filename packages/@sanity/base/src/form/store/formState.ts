@@ -294,7 +294,9 @@ function prepareObjectInputState<T>(
         fieldSet: {
           name: fieldSet.name,
           title: fieldSet.title,
+          description: fieldSet.description,
           hidden: false,
+          level: props.level + 1,
           fields: fieldsetMembers,
           collapsible: fieldSet.options?.collapsible,
           collapsed:

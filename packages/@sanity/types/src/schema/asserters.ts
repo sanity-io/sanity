@@ -9,6 +9,7 @@ import type {
   SpanChildrenObjectField,
   StyleObjectField,
   ListObjectField,
+  BooleanSchemaType,
 } from './types'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -23,6 +24,11 @@ export function isObjectSchemaType(type: unknown): type is ObjectSchemaType {
 export function isArraySchemaType(type: unknown): type is ArraySchemaType {
   if (!isRecord(type)) return false
   return type.jsonType === 'array'
+}
+
+export function isBooleanSchemaType(type: unknown): type is BooleanSchemaType {
+  if (!isRecord(type)) return false
+  return type.jsonType === 'boolean'
 }
 
 export function isReferenceSchemaType(type: unknown): type is ReferenceSchemaType {

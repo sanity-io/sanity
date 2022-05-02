@@ -8,6 +8,7 @@ import {fallbackInputs} from '../fallbackInputs'
 import {
   assertType,
   isArrayInputProps,
+  isBooleanField,
   isObjectInputProps,
   isPrimitiveField,
 } from '../utils/asserters'
@@ -30,6 +31,7 @@ import {defaultResolveInputComponent as defaultInputResolver} from './inputResol
 import {FormCallbacksProvider} from './contexts/FormCallbacks'
 import {ObjectNode} from '../store/types/nodes'
 import {FormField, FormFieldSet} from '../../components/formField'
+import {Card} from '@sanity/ui'
 
 /**
  * @alpha
@@ -123,6 +125,9 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
   )
 
   const renderField: RenderFieldCallback = useCallback((field) => {
+    if (isBooleanField(field)) {
+      return field.children
+    }
     if (isPrimitiveField(field)) {
       return (
         <FormField level={field.level} title={field.title} description={field.description}>
@@ -139,7 +144,10 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
         collapsible={field.collapsible}
         onSetCollapsed={field.onSetCollapsed}
       >
-        {field.children}
+        <Card padding={2} border radius={2}>
+          {String(field.level)}
+          {field.children}
+        </Card>
       </FormFieldSet>
     )
   }, [])
