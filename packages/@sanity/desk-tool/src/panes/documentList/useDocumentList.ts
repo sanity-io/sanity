@@ -44,7 +44,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
     const extendedProjection = sortOrder?.extendedProjection
     const projectionFields = ['_id', '_type']
     const finalProjection = projectionFields.join(',')
-    const sortBy = sortOrder?.by || defaultOrdering || []
+    const sortBy = defaultOrdering || sortOrder?.by || []
     const limit = fullList ? FULL_LIST_LIMIT : PARTIAL_PAGE_LIMIT
     const sort = sortBy.length > 0 ? sortBy : DEFAULT_ORDERING.by
     const order = toOrderClause(sort)
