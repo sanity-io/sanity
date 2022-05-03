@@ -97,15 +97,15 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       __internal_patchChannel: patchChannel, // eslint-disable-line camelcase
       schema,
       renderField,
-      resolveInputComponent: (type) => {
-        const resolved = resolveComponentFromType(resolveInputComponentProp, type)
-
-        if (resolved) {
-          return resolved
-        }
-
-        return fallbackInputs[type.jsonType]?.input as FIXME
-      },
+      // resolveInputComponent: (type) => {
+      //   const resolved = resolveComponentFromType(resolveInputComponentProp, type)
+      //
+      //   if (resolved) {
+      //     return resolved
+      //   }
+      //
+      //   return fallbackInputs[type.jsonType]?.input as FIXME
+      // },
 
       resolvePreviewComponent: (type) =>
         resolveComponentFromType(resolvePreviewComponentProp, type),
@@ -118,7 +118,6 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
     image,
     patchChannel,
     renderField,
-    resolveInputComponentProp,
     resolvePreviewComponentProp,
     schema,
     value,

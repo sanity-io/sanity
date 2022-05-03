@@ -64,7 +64,6 @@ export interface ArrayOfObjectsInputProps<
 
   onRemoveItem: (key: string) => void
   onInsert: (event: InsertEvent) => void
-  renderItem: RenderItemCallback
   renderInput: RenderInputCallback
 }
 

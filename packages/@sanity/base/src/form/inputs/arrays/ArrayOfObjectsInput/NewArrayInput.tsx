@@ -3,10 +3,12 @@ import {Button, Card} from '@sanity/ui'
 import {ObjectSchemaType} from '@sanity/types'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {randomKey} from '../common/randomKey'
-import {ArrayOfObjectsInputProps} from '../../../types'
+import {ArrayOfObjectsInputProps, RenderItemCallback} from '../../../types'
 import {ItemMember} from './ItemMember'
 
-export const ArrayInput = memo(function ArrayInput(props: ArrayOfObjectsInputProps) {
+export const ArrayInput = memo(function ArrayInput(
+  props: ArrayOfObjectsInputProps & {renderItem: RenderItemCallback}
+) {
   const {schemaType, members, onInsert, renderItem} = props
 
   const insert = useCallback(

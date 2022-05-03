@@ -70,10 +70,9 @@ export function ArrayField(props: {
       const ref =
         typeof event.referenceItem === 'string' ? {_key: event.referenceItem} : event.referenceItem
       onChange(
-        PatchEvent.from([
-          setIfMissing([]),
-          insert(event.items, event.position, member.field.path.concat(ref)),
-        ])
+        PatchEvent.from([setIfMissing([]), insert(event.items, event.position, [ref])]).prefixAll(
+          member.name
+        )
       )
     },
     [member.field.path, onChange]
@@ -100,7 +99,7 @@ export function ArrayField(props: {
     [onSetCollapsedPath, member.field.path]
   )
 
-  const inputProps = useMemo((): ArrayOfObjectsInputProps => {
+  const inputProps = useMemo((): Omit<ArrayOfObjectsInputProps, 'renderItem'> => {
     return {
       level: member.field.level,
       onBlur: handleBlur,

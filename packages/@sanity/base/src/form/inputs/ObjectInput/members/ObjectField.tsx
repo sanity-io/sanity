@@ -11,6 +11,7 @@ import {ObjectFieldProps} from '../../../types/fieldProps'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an object input
+ * Note: "ObjectField" in this context means an object field of an object type (not "a field of an object")
  * @param props - Component props
  */
 export function ObjectField(props: {

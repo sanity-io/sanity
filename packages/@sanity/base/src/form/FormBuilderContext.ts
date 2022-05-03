@@ -38,7 +38,7 @@ export interface FormBuilderContextValue {
   filterField: FormBuilderFilterFieldFn
   schema: Schema
   renderField: RenderInputCallback
-  resolveInputComponent: FormInputComponentResolver
+  // resolveInputComponent: FormInputComponentResolver
   resolvePreviewComponent: FormPreviewComponentResolver
   getDocument: () => unknown
 }
