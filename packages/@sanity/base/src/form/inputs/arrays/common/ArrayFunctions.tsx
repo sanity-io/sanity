@@ -8,9 +8,10 @@ import {useId} from '@reach/auto-id'
 import {FormArrayInputFunctionsProps} from '../../../types'
 import {useConditionalReadOnly} from '../../../../conditional-property/conditionalReadOnly'
 
-export function DefaultArrayInputFunctions<SchemaType extends ArraySchemaType, MemberType>(
-  props: FormArrayInputFunctionsProps<SchemaType, MemberType>
-) {
+export function DefaultArrayInputFunctions<
+  SchemaType extends ArraySchemaType,
+  MemberType extends {_key: string}
+>(props: FormArrayInputFunctionsProps<SchemaType, MemberType>) {
   const {type, readOnly, children, onCreateValue, onAppendItem} = props
   const menuButtonId = useId()
   const conditionalReadOnly = useConditionalReadOnly() ?? readOnly

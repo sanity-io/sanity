@@ -409,7 +409,7 @@ function prepareArrayMembers(props: {
   )
 
   const defaultCollapsedState = getCollapsedWithDefaults(itemType.options, itemLevel)
-  const collapsed = collapsedItemPaths?.value || defaultCollapsedState.collapsed
+  const collapsed = collapsedItemPaths?.value ?? defaultCollapsedState.collapsed
   return [
     {
       kind: 'item',

@@ -1,8 +1,8 @@
 import {ObjectSchemaTypeWithOptions} from '@sanity/types'
 
 interface CollapsibleOptions {
-  collapsible: boolean
-  collapsed: boolean
+  collapsible: boolean | undefined
+  collapsed: boolean | undefined
 }
 export function getCollapsedWithDefaults(
   options: ObjectSchemaTypeWithOptions['options'] = {},
@@ -24,7 +24,7 @@ export function getCollapsedWithDefaults(
   }
   // default
   return {
-    collapsible: level > 2,
-    collapsed: level > 2,
+    collapsible: level > 2 ? true : undefined,
+    collapsed: level > 2 ? true : undefined,
   }
 }

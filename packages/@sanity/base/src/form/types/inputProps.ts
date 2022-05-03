@@ -37,14 +37,16 @@ export interface ObjectInputProps<
 > extends ObjectNode<T, S>,
     BaseInputProps {
   groups: FieldGroup[]
-  onChange(patch: FormPatch | FormPatch[] | PatchEvent): void
+
+  // todo: consider remove PatchEvent
+  onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
 
   onSetCollapsed: (collapsed: boolean) => void
   onSetFieldCollapsed: (fieldName: string, collapsed: boolean) => void
+  onSetFieldSetCollapsed: (fieldsetName: string, collapsed: boolean) => void
 
   onFocusChildPath: (path: Path) => void
   onSelectFieldGroup: (groupName: string) => void
-  onSetFieldSetCollapsed: (fieldsetName: string, collapsed: boolean) => void
 
   renderInput: RenderInputCallback
   renderField: RenderFieldCallback
@@ -52,12 +54,17 @@ export interface ObjectInputProps<
 }
 
 export interface ArrayOfObjectsInputProps<
-  T extends any[] = unknown[],
+  T extends {_key: string} = {_key: string},
   S extends ArraySchemaType = ArraySchemaType
-> extends ArrayOfObjectsNode<T, S>,
+> extends ArrayOfObjectsNode<T[], S>,
     BaseInputProps {
-  onChange(patch: FormPatch): void
-  onChange(patches: FormPatch[]): void
+  onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
+  onAppendItem: (item: T) => void
+  onPrependItem: (item: T) => void
+  onRemoveItem: (itemKey: string) => void
+  onInsert: (event: InsertEvent) => void
+
+  onFocusChildPath: (path: Path) => void
 
   // note: not a priority to support collapsible arrays right now
   onSetCollapsed: (collapsed: boolean) => void
@@ -65,8 +72,6 @@ export interface ArrayOfObjectsInputProps<
   // this opens/close items
   onSetItemCollapsed: (itemKey: string, collapsed: boolean) => void
 
-  onRemoveItem: (key: string) => void
-  onInsert: (event: InsertEvent) => void
   renderInput: RenderInputCallback
   renderItem: RenderItemCallback
   renderField: RenderFieldCallback

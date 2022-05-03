@@ -74,7 +74,7 @@ export interface FormArrayInputFunctionsProps<SchemaType extends ArraySchemaType
   onAppendItem: (itemValue: MemberType) => void
   onChange: (event: PatchEvent) => void
   onCreateValue: (type: SchemaType) => MemberType
-  onFocusItem: (item: MemberType, index: number) => void
+  onFocusItem: (itemKey: string) => void
   onPrependItem: (itemValue: MemberType) => void
   readOnly?: boolean
   type: SchemaType

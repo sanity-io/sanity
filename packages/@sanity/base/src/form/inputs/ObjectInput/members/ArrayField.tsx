@@ -13,6 +13,11 @@ import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {insert, PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {ArrayFieldProps} from '../../../types/fieldProps'
+import {randomKey} from '../../arrays/common/randomKey'
+
+function ensureKey(item: any) {
+  return item._key ? item : {...item, _key: randomKey(12)}
+}
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an array input
@@ -72,7 +77,33 @@ export function ArrayField(props: {
       const ref =
         typeof event.referenceItem === 'string' ? {_key: event.referenceItem} : event.referenceItem
       onChange(
-        PatchEvent.from([setIfMissing([]), insert(event.items, event.position, [ref])]).prefixAll(
+        PatchEvent.from([
+          setIfMissing([]),
+          insert(
+            event.items.map((item) => ensureKey(item)),
+            event.position,
+            [ref]
+          ),
+        ]).prefixAll(member.name)
+      )
+    },
+    [member.name, onChange]
+  )
+
+  const handlePrependItem = useCallback(
+    (item) => {
+      onChange(
+        PatchEvent.from([setIfMissing([]), insert([ensureKey(item)], 'before', [0])]).prefixAll(
+          member.name
+        )
+      )
+    },
+    [member.name, onChange]
+  )
+  const handleAppendItem = useCallback(
+    (item) => {
+      onChange(
+        PatchEvent.from([setIfMissing([]), insert([ensureKey(item)], 'after', [-1])]).prefixAll(
           member.name
         )
       )
@@ -121,6 +152,8 @@ export function ArrayField(props: {
       onChange: handleChange,
       onInsert: handleInsert,
       onRemoveItem: handleRemoveItem,
+      onAppendItem: handleAppendItem,
+      onPrependItem: handlePrependItem,
       // todo:
       validation: [],
       renderInput,
@@ -145,6 +178,8 @@ export function ArrayField(props: {
     handleChange,
     handleInsert,
     handleRemoveItem,
+    handleAppendItem,
+    handlePrependItem,
     renderInput,
     renderField,
     renderItem,

@@ -22,7 +22,6 @@ import {
 } from '../utils/asserters'
 import {FormField, FormFieldSet} from '../components/formField'
 import {ObjectInput} from '../inputs/ObjectInput'
-import {ArrayInput} from '../inputs/arrays/ArrayOfObjectsInput'
 import {ObjectItemProps} from '../types/itemProps'
 
 export interface StudioObjectInputProps
@@ -34,21 +33,7 @@ export function StudioObjectInput(props: StudioObjectInputProps) {
   const {resolveInputComponent} = props
   const renderItem: RenderItemCallback = useCallback((_item) => {
     const item = _item as ObjectItemProps
-    return (
-      <Card radius={2} padding={2}>
-        <Button
-          onClick={() => item.onSetCollapsed(!item.collapsed)}
-          text={item.collapsed ? 'Expand' : 'Collapse'}
-        />
-        {item.collapsed ? (
-          <Card shadow={1} radius={2}>
-            Preview: {JSON.stringify(item.value)}
-          </Card>
-        ) : (
-          item.children
-        )}
-      </Card>
-    )
+    return <>{item.children}</>
   }, [])
 
   const renderInput: RenderInputCallback = useCallback(
@@ -63,7 +48,7 @@ export function StudioObjectInput(props: StudioObjectInputProps) {
       }
       if (isArrayInputProps(inputProps)) {
         assertType<React.ComponentType<ArrayOfObjectsInputProps>>(Input)
-        return <ArrayInput {...inputProps} />
+        return <Input {...inputProps} />
       }
       assertType<React.ComponentType<StringInputProps | NumberInputProps | BooleanInputProps>>(
         Input
