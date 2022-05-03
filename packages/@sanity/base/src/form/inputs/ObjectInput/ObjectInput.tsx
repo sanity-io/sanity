@@ -1,11 +1,11 @@
 import React, {memo, useMemo} from 'react'
+import {Stack} from '@sanity/ui'
 import {ObjectInputProps} from '../../types'
 import {UnknownFields} from './UnknownFields'
 import {FieldGroupTabsWrapper} from './ObjectInput.styled'
 import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'
 import {MemberFieldset} from './MemberFieldset'
 import {MemberField} from './MemberField'
-import {Stack} from '@sanity/ui'
 
 export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
   const {
@@ -20,6 +20,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     id,
     path,
     onSelectFieldGroup,
+    onSetFieldSetCollapsed,
   } = props
 
   const renderedUnknownFields = useMemo(() => {
@@ -69,6 +70,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
             member={member}
             renderInput={renderInput}
             renderField={renderField}
+            onSetFieldSetCollapsed={onSetFieldSetCollapsed}
           />
         )
       })}

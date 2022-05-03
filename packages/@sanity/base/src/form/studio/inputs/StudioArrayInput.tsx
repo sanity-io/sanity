@@ -1,7 +1,7 @@
 import React, {ForwardedRef, forwardRef, useCallback} from 'react'
 import {SchemaType} from '@sanity/types'
 import {resolveUploader as sanityResolveUploader} from '../uploads/resolveUploader'
-import {ArrayInput} from '../../inputs/arrays/ArrayOfObjectsInput'
+import {ArrayInput, ArrayInputProps} from '../../inputs/arrays/ArrayOfObjectsInput'
 import {
   ArrayOfPrimitivesInput,
   ArrayOfPrimitivesInputProps,
@@ -10,9 +10,10 @@ import * as is from '../../utils/is'
 import {FileLike} from '../uploads/types'
 import {FormBuilderContextValue} from '../../FormBuilderContext'
 import {useFormBuilder} from '../../useFormBuilder'
-import {ArrayInputProps, FIXME} from '../../types'
+import {ArrayOfObjectsInputProps, FIXME} from '../../types'
 import {resolveInitialValueForType} from '../../../templates'
 import {StudioArrayItemReferenceInput} from './reference/StudioArrayItemReferenceInput'
+import {V3ArrayOfObjectsInput} from '../../inputs/arrays/V3ArrayOfObjectsInput/V3ArrayOfObjectsInput'
 
 const arrayResolveUploader = (
   formBuilder: FormBuilderContextValue,
@@ -31,29 +32,19 @@ const arrayResolveUploader = (
 }
 
 export const StudioArrayInput = forwardRef(function StudioArrayInput(
-  props: ArrayInputProps,
+  props: ArrayOfObjectsInputProps,
   ref: ForwardedRef<typeof ArrayInput>
 ) {
-  const formBuilder = useFormBuilder()
+  // // const formBuilder = useFormBuilder()
+  //
+  // const resolveUploader = useCallback(
+  //   (type: SchemaType, file: FileLike) => {
+  //     return arrayResolveUploader(formBuilder, type, file)
+  //   },
+  //   [formBuilder]
+  // )
 
-  const resolveUploader = useCallback(
-    (type: SchemaType, file: FileLike) => {
-      return arrayResolveUploader(formBuilder, type, file)
-    },
-    [formBuilder]
-  )
-
-  return (
-    <>TODO</>
-    // <ArrayInput
-    //   {...props}
-    //   ref={ref}
-    //   ReferenceItemComponent={StudioArrayItemReferenceInput}
-    //   resolveUploader={resolveUploader}
-    //   resolveInitialValue={resolveInitialValueForType}
-    //   ArrayFunctionsImpl={formBuilder.components.ArrayFunctions as FIXME}
-    // />
-  )
+  return <V3ArrayOfObjectsInput {...props} />
 })
 
 export const StudioArrayOfPrimitivesInput = forwardRef(function StudioArrayOfPrimitivesInput(

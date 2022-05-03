@@ -56,7 +56,7 @@ export interface ArrayOfObjectsInputProps<
 
   onRemoveItem: (key: string) => void
   onInsert: (event: InsertEvent) => void
-  renderItem: RenderItemCallback
+  // renderItem: RenderItemCallback
 }
 
 export interface StringInputProps<S extends StringSchemaType = StringSchemaType>

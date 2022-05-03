@@ -19,7 +19,6 @@ export interface BaseFieldProps {
   name: string
   index: number
   children: React.ReactNode
-  onSetCollapsed: (collapsed: boolean) => void
 }
 
 export interface ObjectFieldProps extends BaseFieldProps {
@@ -27,6 +26,7 @@ export interface ObjectFieldProps extends BaseFieldProps {
   value: {[field in string]: unknown} | undefined
   collapsed?: boolean
   collapsible?: boolean
+  onSetCollapsed: (collapsed: boolean) => void
 }
 
 export interface ArrayFieldProps extends BaseFieldProps {
@@ -34,6 +34,7 @@ export interface ArrayFieldProps extends BaseFieldProps {
   value: unknown[] | undefined
   collapsed?: boolean
   collapsible?: boolean
+  onSetCollapsed: (collapsed: boolean) => void
 }
 
 export interface NumberFieldProps extends BaseFieldProps {

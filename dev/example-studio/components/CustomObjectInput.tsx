@@ -1,6 +1,6 @@
 import {FormFieldSet} from '@sanity/base/_unstable'
 import {
-  MemberField,
+  FieldMember,
   MemberFieldset,
   ObjectInputComponentProps,
   PatchEvent,
@@ -53,7 +53,7 @@ export const CustomObjectInput = forwardRef(function CustomObjectInput(
 
         {members.map((member) => {
           if (member.type === 'field') {
-            return <MemberField key={member.key} member={member} renderField={renderField} />
+            return <FieldMember key={member.key} member={member} renderField={renderField} />
           }
 
           return <MemberFieldset key={member.key} member={member} renderField={renderField} />

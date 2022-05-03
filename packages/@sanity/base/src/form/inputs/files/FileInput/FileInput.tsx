@@ -34,7 +34,7 @@ import {PlaceholderText} from '../common/PlaceholderText'
 import {UploadPlaceholder} from '../common/UploadPlaceholder'
 import {UploadWarning} from '../common/UploadWarning'
 import {EMPTY_ARRAY} from '../../../utils/empty'
-import {FIXME, FieldMember, ObjectFieldProps, ObjectInputProps} from '../../../types'
+import {FIXME, ObjectInputProps} from '../../../types'
 import {
   ChangeIndicatorCompareValueProvider,
   ChangeIndicatorWithProvidedFullPath,
@@ -403,13 +403,13 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   renderField(member: FieldMember) {
-    const {renderInput} = this.props
+    const {renderInput, renderField} = this.props
     // const {value, level, focusPath, onFocus, readOnly, onBlur, compareValue, presence, validation} =
     //   this.props
     // const fieldValue = value?.[field.name]
     // const fieldMarkers = validation.filter((marker) => marker.path[0] === field.name)
 
-    return <MemberField member={member} renderField={renderInput} />
+    return <MemberField member={member} renderInput={renderInput} renderField={renderField} />
 
     // return (
     //   <FileInputField
