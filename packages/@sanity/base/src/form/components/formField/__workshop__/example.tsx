@@ -6,7 +6,6 @@ import {ElementWithChangeBar} from '../../../../components/changeIndicators/Elem
 import type {FormFieldPresence} from '../../../../presence'
 import {FormField} from '../FormField'
 import {useCurrentUser} from '../../../../hooks'
-import {FormNodeProvider} from '../../formNode'
 
 const DEBUG = false
 const noop = () => undefined

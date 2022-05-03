@@ -2,10 +2,10 @@ import React, {useMemo} from 'react'
 import {isValidationErrorMarker} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
-import {FormField} from '../../components/formField'
 import {PatchEvent, set, unset} from '../patch'
 import {getValidationRule} from '../utils/getValidationRule'
 import {NumberInputProps} from '../types'
+import {FormField} from '../components/formField/FormField'
 
 export const NumberInput = React.forwardRef(function NumberInput(
   props: NumberInputProps,

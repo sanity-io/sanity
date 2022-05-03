@@ -30,7 +30,7 @@ import {StudioFormBuilderProvider} from './StudioFormBuilderProvider'
 import {defaultResolveInputComponent as defaultInputResolver} from './inputResolver/inputResolver'
 import {FormCallbacksProvider} from './contexts/FormCallbacks'
 import {ObjectNode} from '../store/types/nodes'
-import {FormField, FormFieldSet} from '../../components/formField'
+import {FormField, FormFieldSet} from '../components/formField'
 import {Card} from '@sanity/ui'
 
 /**
@@ -144,10 +144,7 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
         collapsible={field.collapsible}
         onSetCollapsed={field.onSetCollapsed}
       >
-        <Card padding={2} border radius={2}>
-          {String(field.level)}
-          {field.children}
-        </Card>
+        {field.children}
       </FormFieldSet>
     )
   }, [])

@@ -4,10 +4,7 @@ import {Inline, Stack, Card, Text, Select, Flex, Radio, Box} from '@sanity/ui'
 import {capitalize} from 'lodash'
 import React, {useMemo, useCallback, forwardRef} from 'react'
 import {PatchEvent, set, unset} from '../patch'
-import {FormField} from '../../components/formField'
-import {LegacyInputProps, StringInputProps} from '../types'
-
-export type SelectInputProps = LegacyInputProps<StringInputProps>
+import {StringInputProps} from '../types'
 
 function toSelectItem(
   option: TitledListValue<string | number> | string | number
@@ -18,7 +15,7 @@ function toSelectItem(
 const EMPTY_ITEM = {title: '', value: undefined}
 
 export const SelectInput = React.forwardRef(function SelectInput(
-  props: SelectInputProps,
+  props: StringInputProps,
   forwardedRef: React.ForwardedRef<HTMLSelectElement | HTMLInputElement>
 ) {
   const {value, readOnly, validation, type, level, onChange, onFocus, presence} = props

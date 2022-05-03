@@ -17,7 +17,6 @@ import {CopyIcon as DuplicateIcon, EllipsisVerticalIcon, TrashIcon} from '@sanit
 import {useId} from '@reach/auto-id'
 import {SchemaType} from '@sanity/types'
 import {FormFieldValidationStatus} from '../../../../components/formField'
-import {FormNodePreview} from '../../../../components/formNode'
 import {FieldPresence} from '../../../../../presence'
 import {DragHandle} from '../../common/DragHandle'
 import {randomKey} from '../../common/randomKey'

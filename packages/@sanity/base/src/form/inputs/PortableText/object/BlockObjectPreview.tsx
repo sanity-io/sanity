@@ -19,7 +19,6 @@ import React, {forwardRef, useCallback, useMemo, useRef} from 'react'
 import {useId} from '@reach/auto-id'
 import {ObjectSchemaType} from '@sanity/types'
 import {IntentLink} from '../../../../router'
-import {FormNodePreview} from '../../../FormNodePreview'
 import {FIXME} from '../../../types'
 
 interface BlockObjectPreviewProps {

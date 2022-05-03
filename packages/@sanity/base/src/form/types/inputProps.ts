@@ -4,6 +4,7 @@ import {
   NumberSchemaType,
   ObjectSchemaType,
   StringSchemaType,
+  ValidationMarker,
 } from '@sanity/types'
 import * as React from 'react'
 import {PatchEvent} from '../patch'
@@ -56,6 +57,7 @@ export interface ArrayOfObjectsInputProps<
 
   onRemoveItem: (key: string) => void
   onInsert: (event: InsertEvent) => void
+  validation: ValidationMarker[]
   // renderItem: RenderItemCallback
 }
 

@@ -1,6 +1,5 @@
 import {useId} from '@reach/auto-id'
 import React, {forwardRef, useCallback, useImperativeHandle, useMemo, useRef} from 'react'
-import {FormField} from '../../components/formField'
 import {PatchEvent, set, unset} from '../patch'
 import {TagInput} from '../components/tagInput'
 import {ArrayInputProps, LegacyInputProps} from '../types'
@@ -30,22 +29,13 @@ export const TagsArrayInput = forwardRef(function TagsArrayInput(
   }))
 
   return (
-    <FormField
-      level={level}
-      title={type.title}
-      description={type.description}
-      __unstable_presence={presence}
-      inputId={id}
-      validation={validation}
-    >
-      <TagInput
-        id={id}
-        onChange={handleChange}
-        onFocus={onFocus}
-        readOnly={readOnly}
-        ref={inputRef}
-        value={tagInputValue}
-      />
-    </FormField>
+    <TagInput
+      id={id}
+      onChange={handleChange}
+      onFocus={onFocus}
+      readOnly={readOnly}
+      ref={inputRef}
+      value={tagInputValue}
+    />
   )
 })

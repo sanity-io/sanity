@@ -39,7 +39,7 @@ import {
   ChangeIndicatorCompareValueProvider,
   ChangeIndicatorWithProvidedFullPath,
 } from '../../../../components/changeIndicators'
-import {FormFieldSet} from '../../../../components/formField'
+import {FormFieldSet} from '../../../components/formField'
 import {ImperativeToast} from '../../../../components/transitional'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'
 import {PresenceOverlay} from '../../../../presence'

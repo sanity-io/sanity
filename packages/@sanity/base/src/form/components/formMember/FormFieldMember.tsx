@@ -1,6 +1,5 @@
 import React from 'react'
 import {ArrayMember, FieldMember, InputProps, ObjectMember} from '../../types'
-import {FormNode, useFormNode} from '../formNode'
 
 /**
  * A utility component for rendering an object field.

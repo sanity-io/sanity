@@ -3,7 +3,6 @@ import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import React, {useMemo} from 'react'
 import {PatchEvent, set, unset} from '../patch'
-import {FormField} from '../../components/formField'
 import {getValidationRule} from '../utils/getValidationRule'
 import {StringInputProps} from '../types'
 
@@ -29,27 +28,18 @@ export const UrlInput = React.forwardRef(function UrlInput(
   const uriRule = getValidationRule(type, 'uri')
   const inputType = uriRule?.constraint?.options?.allowRelative ? 'text' : 'url'
   return (
-    <FormField
-      level={level}
-      validation={validation}
-      title={type.title}
-      description={type.description}
-      __unstable_presence={presence}
-      inputId={inputId}
-    >
-      <TextInput
-        type={inputType}
-        inputMode="url"
-        id={inputId}
-        customValidity={errors.length > 0 ? errors[0].item.message : ''}
-        value={value || ''}
-        readOnly={Boolean(readOnly)}
-        placeholder={type.placeholder}
-        onChange={handleChange}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        ref={forwardedRef}
-      />
-    </FormField>
+    <TextInput
+      type={inputType}
+      inputMode="url"
+      id={inputId}
+      customValidity={errors.length > 0 ? errors[0].item.message : ''}
+      value={value || ''}
+      readOnly={Boolean(readOnly)}
+      placeholder={type.placeholder}
+      onChange={handleChange}
+      onFocus={onFocus}
+      onBlur={onBlur}
+      ref={forwardedRef}
+    />
   )
 })

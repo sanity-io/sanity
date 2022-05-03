@@ -46,6 +46,8 @@ export function PrimitiveField(props: {
     },
     [onChange, member.name]
   )
+  // todo:
+  // const customValidity = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
 
   const inputProps = useMemo((): PrimitiveInputProps => {
     return {

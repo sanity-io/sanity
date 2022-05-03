@@ -1,7 +1,7 @@
 import {Schema, SchemaType} from '@sanity/types'
 import React, {useCallback} from 'react'
 import {useSource} from '../../studio'
-import {FIXME, FormPreviewComponentResolver, RenderInputCallback} from '../types'
+import {FIXME, FormPreviewComponentResolver} from '../types'
 import {SanityPreview} from '../../preview'
 import {FormBuilderProvider} from '../FormBuilderProvider'
 import {PatchChannel} from '../patch/PatchChannel'

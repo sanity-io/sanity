@@ -11,7 +11,6 @@ import {isValidationErrorMarker, isValidationWarningMarker, SchemaType} from '@s
 import {useId} from '@reach/auto-id'
 import {FormFieldValidationStatus} from '../../../../components/formField'
 import {FieldPresence} from '../../../../../presence'
-import {FormNodePreview} from '../../../../FormNodePreview'
 import {DragHandle} from '../../common/DragHandle'
 import {randomKey} from '../../common/randomKey'
 import {createProtoValue} from '../ArrayInput'

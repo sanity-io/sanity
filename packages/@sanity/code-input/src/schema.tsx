@@ -1,6 +1,6 @@
 import React from 'react'
 import {CodeBlockIcon} from '@sanity/icons'
-import CodeInput from './CodeInput'
+import {CodeInput} from './CodeInput'
 import PreviewCode, {PreviewCodeProps} from './PreviewCode'
 import {getMedia} from './getMedia'
 
