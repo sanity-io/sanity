@@ -15,6 +15,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     onChange,
     renderInput,
     renderField,
+    renderItem,
     level = 0,
     value,
     id,
@@ -61,6 +62,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
               member={member}
               renderInput={renderInput}
               renderField={renderField}
+              renderItem={renderItem}
             />
           )
         }

@@ -23,6 +23,7 @@ export function ArrayField(props: {
   member: FieldMember<ArrayOfObjectsNode>
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback
+  renderItem: RenderItemCallback
 }) {
   const {
     onPathBlur,
@@ -32,7 +33,7 @@ export function ArrayField(props: {
     onSetCollapsedFieldSet,
     onSelectFieldGroup,
   } = useFormCallbacks()
-  const {member, renderField, renderInput} = props
+  const {member, renderField, renderInput, renderItem} = props
   const focusRef = useRef<{focus: () => void}>()
 
   useDidUpdate(member.field.focused, (hadFocus, hasFocus) => {
@@ -76,7 +77,7 @@ export function ArrayField(props: {
         )
       )
     },
-    [member.field.path, onChange]
+    [member.name, onChange]
   )
 
   const handleSetCollapsed = useCallback(
@@ -99,10 +100,6 @@ export function ArrayField(props: {
     },
     [onSetCollapsedPath, member.field.path]
   )
-
-  const renderItem: RenderItemCallback = useCallback((item) => {
-    return <div>Item</div>
-  }, [])
 
   const inputProps = useMemo((): ArrayOfObjectsInputProps => {
     return {
@@ -127,6 +124,7 @@ export function ArrayField(props: {
       // todo:
       validation: [],
       renderInput,
+      renderField,
       renderItem,
     }
   }, [
@@ -148,6 +146,7 @@ export function ArrayField(props: {
     handleInsert,
     handleRemoveItem,
     renderInput,
+    renderField,
     renderItem,
   ])
 

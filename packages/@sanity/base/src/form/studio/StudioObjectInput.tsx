@@ -1,5 +1,7 @@
 /* eslint-disable react/jsx-handler-names */
 import {SchemaType} from '@sanity/types'
+import React, {useCallback} from 'react'
+import {Button, Card} from '@sanity/ui'
 import {
   ArrayOfObjectsInputProps,
   BooleanInputProps,
@@ -8,9 +10,9 @@ import {
   ObjectInputProps,
   RenderFieldCallback,
   RenderInputCallback,
+  RenderItemCallback,
   StringInputProps,
 } from '../types'
-import React, {useCallback} from 'react'
 import {
   assertType,
   isArrayInputProps,
@@ -20,15 +22,34 @@ import {
 } from '../utils/asserters'
 import {FormField, FormFieldSet} from '../components/formField'
 import {ObjectInput} from '../inputs/ObjectInput'
-import {StudioArrayInput} from './StudioArrayInput'
+import {ArrayInput} from '../inputs/arrays/ArrayOfObjectsInput'
+import {ItemOfObject} from '../types/itemProps'
 
 export interface StudioObjectInputProps
-  extends Omit<ObjectInputProps, 'renderField' | 'renderInput'> {
+  extends Omit<ObjectInputProps, 'renderField' | 'renderInput' | 'renderItem'> {
   resolveInputComponent: (schemaType: SchemaType) => React.ComponentType<InputProps>
 }
 
 export function StudioObjectInput(props: StudioObjectInputProps) {
   const {resolveInputComponent} = props
+  const renderItem: RenderItemCallback = useCallback((_item) => {
+    const item = _item as ItemOfObject
+    return (
+      <Card radius={2} padding={2}>
+        <Button
+          onClick={() => item.onSetCollapsed(!item.collapsed)}
+          text={item.collapsed ? 'Expand' : 'Collapse'}
+        />
+        {item.collapsed ? (
+          <Card shadow={1} radius={2}>
+            Preview: {JSON.stringify(item.value)}
+          </Card>
+        ) : (
+          item.children
+        )}
+      </Card>
+    )
+  }, [])
 
   const renderInput: RenderInputCallback = useCallback(
     (inputProps) => {
@@ -42,7 +63,7 @@ export function StudioObjectInput(props: StudioObjectInputProps) {
       }
       if (isArrayInputProps(inputProps)) {
         assertType<React.ComponentType<ArrayOfObjectsInputProps>>(Input)
-        return <StudioArrayInput {...inputProps} />
+        return <ArrayInput {...inputProps} />
       }
       assertType<React.ComponentType<StringInputProps | NumberInputProps | BooleanInputProps>>(
         Input
@@ -77,5 +98,12 @@ export function StudioObjectInput(props: StudioObjectInputProps) {
     )
   }, [])
 
-  return <ObjectInput {...props} renderInput={renderInput} renderField={renderField} />
+  return (
+    <ObjectInput
+      {...props}
+      renderInput={renderInput}
+      renderField={renderField}
+      renderItem={renderItem}
+    />
+  )
 }

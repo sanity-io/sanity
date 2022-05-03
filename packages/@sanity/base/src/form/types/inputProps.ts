@@ -46,6 +46,7 @@ export interface ObjectInputProps<
 
   renderInput: RenderInputCallback
   renderField: RenderFieldCallback
+  renderItem: RenderItemCallback
 }
 
 export interface ArrayOfObjectsInputProps<

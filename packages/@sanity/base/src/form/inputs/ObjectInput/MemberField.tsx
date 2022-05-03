@@ -1,7 +1,7 @@
 import React, {memo} from 'react'
 import {isArraySchemaType, isObjectSchemaType} from '@sanity/types'
 import {FieldMember} from '../../store/types/members'
-import {RenderFieldCallback, RenderInputCallback} from '../../types'
+import {RenderFieldCallback, RenderInputCallback, RenderItemCallback} from '../../types'
 import {ArrayOfObjectsNode, ObjectNode} from '../../store/types/nodes'
 import {ArrayField} from './members/ArrayField'
 import {PrimitiveField} from './members/PrimitiveField'
@@ -11,6 +11,7 @@ export interface MemberFieldProps {
   member: FieldMember
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback
+  renderItem: RenderItemCallback
 }
 
 function isMemberObject(member: FieldMember): member is FieldMember<ObjectNode> {
@@ -22,7 +23,7 @@ function isMemberArray(member: FieldMember): member is FieldMember<ArrayOfObject
 }
 
 export const MemberField = memo(function MemberField(props: MemberFieldProps) {
-  const {member, renderField, renderInput} = props
+  const {member, renderField, renderInput, renderItem} = props
 
   if (isMemberObject(member)) {
     // this field is of an object type
@@ -30,7 +31,14 @@ export const MemberField = memo(function MemberField(props: MemberFieldProps) {
   }
 
   if (isMemberArray(member)) {
-    return <ArrayField member={member} renderField={renderField} renderInput={renderInput} />
+    return (
+      <ArrayField
+        member={member}
+        renderField={renderField}
+        renderInput={renderInput}
+        renderItem={renderItem}
+      />
+    )
   }
 
   return <PrimitiveField member={member} renderField={renderField} renderInput={renderInput} />
