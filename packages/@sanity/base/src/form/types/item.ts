@@ -1,5 +1,4 @@
 import {ObjectSchemaType, Path} from '@sanity/types'
-import {BooleanInputProps, NumberInputProps, ObjectInputProps, StringInputProps} from './inputProps'
 
 interface BaseItem {
   schemaType: ObjectSchemaType
@@ -7,24 +6,17 @@ interface BaseItem {
   path: Path
   key: string
   index: number
+  children: React.ReactNode
 }
 
 interface ItemOfObject extends BaseItem {
   schemaType: ObjectSchemaType
   collapsed: boolean
   collapsible: boolean
-  inputProps: ObjectInputProps
 }
 
-interface ItemOfNumber extends BaseItem {
-  inputProps: NumberInputProps
-}
-interface ItemOfBoolean extends BaseItem {
-  inputProps: BooleanInputProps
-}
-
-interface ItemOfString extends BaseItem {
-  inputProps: StringInputProps
-}
+interface ItemOfNumber extends BaseItem {}
+interface ItemOfBoolean extends BaseItem {}
+interface ItemOfString extends BaseItem {}
 
 export type Item = ItemOfObject | ItemOfNumber | ItemOfBoolean | ItemOfString

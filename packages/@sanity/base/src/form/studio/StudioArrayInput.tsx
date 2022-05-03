@@ -1,23 +1,17 @@
-import {ObjectInputProps, RenderItemCallback} from '../types'
+import {Card} from '@sanity/ui'
 import React, {useCallback} from 'react'
-import {assertType} from '../utils/asserters'
-import {ChangeIndicatorProvider} from '../../components/changeIndicators'
+import {ArrayOfObjectsInputProps, RenderItemCallback} from '../types'
+import {ArrayInput} from '../inputs/arrays/ArrayOfObjectsInput'
 
-export function StudioArrayInput(props: any) {
-  // const renderItem: RenderItemCallback = useCallback(
-  //   (item) => {
-  //     const Input = resolveInputComponent(item.schemaType)
-  //     if (!Input) {
-  //       return <div>No input resolved for type: {item.schemaType.name}</div>
-  //     }
-  //     assertType<React.ComponentType<ObjectInputProps>>(Input)
-  //     return (
-  //       <ChangeIndicatorProvider path={item.path} value={item.value} compareValue={undefined}>
-  //         <Input {...item.inputProps} renderField={renderField} />
-  //       </ChangeIndicatorProvider>
-  //     )
-  //   },
-  //   [renderField, resolveInputComponent]
-  // )
-  return <div>Todo</div>
+export interface StudioArrayInputProps extends ArrayOfObjectsInputProps {}
+
+export function StudioArrayInput(props: StudioArrayInputProps) {
+  const renderItem: RenderItemCallback = useCallback((item) => {
+    return (
+      <Card radius={2} padding={2}>
+        {item.children}
+      </Card>
+    )
+  }, [])
+  return <ArrayInput {...props} renderItem={renderItem} />
 }

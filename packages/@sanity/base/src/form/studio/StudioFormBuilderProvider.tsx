@@ -35,24 +35,12 @@ export function StudioFormBuilderProvider(props: StudioFormBuilderProviderProps)
 
   const {unstable_formBuilder: formBuilder} = useSource()
 
-  const resolveInputComponent = useCallback(
-    (type: SchemaType) => {
-      return defaultInputResolver(
-        formBuilder.components?.inputs,
-        formBuilder.resolveInputComponent,
-        type
-      )
-    },
-    [formBuilder]
-  )
-
   return (
     <FormBuilderProvider
       __internal_patchChannel={patchChannel}
       components={formBuilder.components}
       file={formBuilder.file}
       image={formBuilder.image}
-      resolveInputComponent={resolveInputComponent}
       resolvePreviewComponent={formBuilder.resolvePreviewComponent || previewResolver}
       schema={schema}
       value={value}

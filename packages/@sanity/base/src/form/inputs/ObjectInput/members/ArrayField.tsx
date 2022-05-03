@@ -122,6 +122,7 @@ export function ArrayField(props: {
       onRemoveItem: handleRemoveItem,
       // todo:
       validation: [],
+      renderInput,
     }
   }, [
     member.field.level,
@@ -141,6 +142,7 @@ export function ArrayField(props: {
     handleChange,
     handleInsert,
     handleRemoveItem,
+    renderInput,
   ])
 
   const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])

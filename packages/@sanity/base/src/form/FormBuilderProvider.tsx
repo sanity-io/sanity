@@ -42,7 +42,6 @@ export interface FormBuilderProviderProps extends SanityFormBuilderConfig {
    * @internal
    */
   __internal_patchChannel?: PatchChannel // eslint-disable-line camelcase
-  renderField: RenderInputCallback
 }
 
 const missingPatchChannel: PatchChannel = {
@@ -66,7 +65,6 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
     filterField,
     __internal_patchChannel: patchChannel = missingPatchChannel,
     renderField,
-    resolveInputComponent: resolveInputComponentProp,
     resolvePreviewComponent: resolvePreviewComponentProp,
     value,
   } = props

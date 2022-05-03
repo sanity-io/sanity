@@ -2,36 +2,18 @@
 import {ObjectSchemaType, Path, Schema, SchemaType, ValidationMarker} from '@sanity/types'
 import React, {useCallback, useRef} from 'react'
 
-import {DocumentInput} from '../inputs/DocumentInput'
 import {useSource} from '../../studio'
 import {fallbackInputs} from '../fallbackInputs'
-import {
-  assertType,
-  isArrayInputProps,
-  isBooleanField,
-  isObjectInputProps,
-  isPrimitiveField,
-} from '../utils/asserters'
-import {
-  ArrayOfObjectsInputProps,
-  BooleanInputProps,
-  InputProps,
-  NumberInputProps,
-  ObjectInputProps,
-  RenderFieldCallback,
-  RenderInputCallback,
-  StringInputProps,
-} from '../types'
+import {InputProps} from '../types'
 import {PatchChannel} from '../patch/PatchChannel'
 import {FormFieldPresence} from '../../presence'
-import {PatchEvent} from '../patch'
+import {FormPatch, PatchEvent} from '../patch'
 import {ObjectMember} from '../store/types/members'
 import {StudioFormBuilderProvider} from './StudioFormBuilderProvider'
 import {defaultResolveInputComponent as defaultInputResolver} from './inputResolver/inputResolver'
 import {FormCallbacksProvider} from './contexts/FormCallbacks'
 import {ObjectNode} from '../store/types/nodes'
-import {FormField, FormFieldSet} from '../components/formField'
-import {Card} from '@sanity/ui'
+import {StudioObjectInput} from './StudioObjectInput'
 
 /**
  * @alpha
@@ -97,58 +79,6 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
     [formBuilderConfig]
   )
 
-  const renderInput: RenderInputCallback = useCallback(
-    (inputProps) => {
-      const Input = resolveInputComponent(inputProps.schemaType)
-      if (!Input) {
-        return <div>No input resolved for type: {inputProps.schemaType.name}</div>
-      }
-      if (isObjectInputProps(inputProps)) {
-        assertType<React.ComponentType<ObjectInputProps>>(Input)
-        return <Input {...inputProps} />
-      }
-      if (isArrayInputProps(inputProps)) {
-        assertType<React.ComponentType<ArrayOfObjectsInputProps>>(Input)
-        return <>Todo: array</>
-        // return (
-        //   <div>
-        //     {field.name}: <StudioArrayInput {...field.inputProps} />
-        //   </div>
-        // )
-      }
-      assertType<React.ComponentType<StringInputProps | NumberInputProps | BooleanInputProps>>(
-        Input
-      )
-      return <Input {...inputProps} />
-    },
-    [resolveInputComponent]
-  )
-
-  const renderField: RenderFieldCallback = useCallback((field) => {
-    if (isBooleanField(field)) {
-      return field.children
-    }
-    if (isPrimitiveField(field)) {
-      return (
-        <FormField level={field.level} title={field.title} description={field.description}>
-          {field.children}
-        </FormField>
-      )
-    }
-    return (
-      <FormFieldSet
-        level={field.level}
-        title={field.title}
-        description={field.description}
-        collapsed={field.collapsed}
-        collapsible={field.collapsible}
-        onSetCollapsed={field.onSetCollapsed}
-      >
-        {field.children}
-      </FormFieldSet>
-    )
-  }, [])
-
   const handleBlur = useCallback(
     (event: React.FocusEvent) => {
       onPathBlur([])
@@ -175,6 +105,13 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
     [onSetCollapsedPath]
   )
 
+  const handleChange = useCallback(
+    (patch: FormPatch | FormPatch[] | PatchEvent) => {
+      onChange(PatchEvent.from(patch))
+    },
+    [onChange]
+  )
+
   const handleSetFieldCollapsed = useCallback(
     (fieldName: string, collapsed: boolean) => {
       onSetCollapsedPath([fieldName], collapsed)
@@ -199,7 +136,8 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
         onPathFocus={props.onPathFocus}
         onChange={props.onChange}
       >
-        <DocumentInput
+        <StudioObjectInput
+          resolveInputComponent={resolveInputComponent}
           compareValue={undefined}
           focusRef={useRef(null)}
           level={0}
@@ -208,7 +146,9 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
           focused={focused}
           focusPath={focusPath}
           onBlur={handleBlur}
-          onChange={onChange}
+          onChange={handleChange}
+          validation={[]}
+          onFocusChildPath={onPathFocus}
           onFocus={handleFocus}
           readOnly={readOnly}
           schemaType={schemaType}
@@ -218,8 +158,6 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
           onSetCollapsed={handleSetCollapsed}
           onSetFieldCollapsed={handleSetFieldCollapsed}
           onSetFieldSetCollapsed={handleSetFieldSetCollapsed}
-          renderInput={renderInput}
-          renderField={renderField}
           value={value}
         />
       </FormCallbacksProvider>

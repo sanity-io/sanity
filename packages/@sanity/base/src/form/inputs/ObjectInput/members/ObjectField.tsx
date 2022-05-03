@@ -139,6 +139,7 @@ export function ObjectField(props: {
     handleSetFieldSetCollapsed,
     handleSetFieldCollapsed,
     handleFocus,
+    handleFocusChildPath,
     handleChange,
     renderField,
     renderInput,

@@ -35,9 +35,7 @@ export interface ObjectInputProps<
   S extends ObjectSchemaType = ObjectSchemaType
 > extends ObjectNode<T, S>,
     BaseInputProps {
-  onChange(patch: FormPatch): void
-  onChange(patch: FormPatch[]): void
-  onChange(patch: PatchEvent): void
+  onChange(patch: FormPatch | FormPatch[] | PatchEvent): void
 
   onSetCollapsed: (collapsed: boolean) => void
   onSetFieldCollapsed: (fieldName: string, collapsed: boolean) => void
@@ -66,7 +64,8 @@ export interface ArrayOfObjectsInputProps<
 
   onRemoveItem: (key: string) => void
   onInsert: (event: InsertEvent) => void
-  // renderItem: RenderItemCallback
+  renderItem: RenderItemCallback
+  renderInput: RenderInputCallback
 }
 
 export interface ArrayOfPrimitivesInputProps<
