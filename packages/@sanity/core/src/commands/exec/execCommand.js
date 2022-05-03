@@ -10,8 +10,17 @@ Examples
   sanity exec some/script.js
 
   # Run the script at migrations/fullname.js and configure \`part:@sanity/base/client\`
-  # to include the current users token
+  # to include the current user's token
   sanity exec migrations/fullname.js --with-user-token
+  
+  # Run the script at scripts/browserScript.js in a mock browser environment
+  sanity exec scripts/browserScript.js --mock-browser-env
+
+  # Pass arbitrary arguments to scripts by separating them with a \`--\`.
+  # Arguments are available in \`process.argv\` as they would in regular node scripts
+  # eg the following command would yield a \`process.argv\` of:
+  # ['/path/to/node', '/path/to/myscript.js', '--dry-run', 'positional-argument']
+  sanity exec --mock-browser-env myscript.js -- --dry-run positional-argument
 `
 
 export default {
