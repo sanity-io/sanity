@@ -6,6 +6,7 @@ import fse from 'fs-extra'
 import xdgBasedir from 'xdg-basedir'
 import promiseProps from 'promise-props-recursive'
 import {pick, omit} from 'lodash'
+import {getCliToken} from '../../util/clientWrapper'
 import getUserConfig from '../../util/getUserConfig'
 import {printResult as printVersionsResult} from '../versions/printVersionResult'
 import findSanityModuleVersions from '../../actions/versions/findSanityModuleVersions'
@@ -95,7 +96,7 @@ function printKeyValue(obj, context) {
 
 async function gatherInfo(context) {
   const baseInfo = await promiseProps({
-    globalConfig: gatherGlobalConfigInfo(context),
+    globalConfig: gatherGlobalConfigInfo(),
     projectConfig: gatherProjectConfigInfo(context),
   })
 
@@ -120,7 +121,7 @@ function getGlobalConfigLocation() {
   return path.join(configDir, 'sanity', 'config.json')
 }
 
-function gatherGlobalConfigInfo(context) {
+function gatherGlobalConfigInfo() {
   return getUserConfig().all
 }
 
@@ -143,7 +144,7 @@ async function gatherProjectConfigInfo(context) {
 }
 
 async function gatherProjectInfo(context, baseInfo) {
-  const client = context.apiClient({requireUser: false, requireProject: false})
+  const client = context.apiClient({requireProject: false})
   const projectId = client.config().projectId
   if (!projectId) {
     return null
@@ -166,12 +167,12 @@ async function gatherProjectInfo(context, baseInfo) {
 }
 
 async function gatherUserInfo(context, info = {}) {
-  const client = context.apiClient({requireUser: false, requireProject: info.projectBased})
-  const hasToken = Boolean(client.config().token)
+  const hasToken = Boolean(getCliToken())
   if (!hasToken) {
     return new Error('Not logged in')
   }
 
+  const client = context.apiClient({requireUser: true, requireProject: info.projectBased})
   const userInfo = await client.users.getById('me')
   if (!userInfo) {
     return new Error('Token expired or invalid')

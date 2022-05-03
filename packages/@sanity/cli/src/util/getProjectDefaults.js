@@ -4,6 +4,7 @@ import gitConfigLocal from 'gitconfiglocal'
 import gitUserInfo from 'git-user-info'
 import promiseProps from 'promise-props-recursive'
 import {promisify} from 'es6-promisify'
+import {getCliToken} from './clientWrapper'
 
 export default (workDir, {isPlugin, context}) => {
   const cwd = process.cwd()
@@ -46,12 +47,12 @@ function getUserInfo(context) {
 }
 
 function getSanityUserInfo(context) {
-  const client = context.apiClient({requireUser: false, requireProject: false})
-  const hasToken = Boolean(client.config().token)
+  const hasToken = Boolean(getCliToken())
   if (!hasToken) {
     return null
   }
 
+  const client = context.apiClient({requireUser: true, requireProject: false})
   return client.users
     .getById('me')
     .then((user) => `${user.name} <${user.email}>`)

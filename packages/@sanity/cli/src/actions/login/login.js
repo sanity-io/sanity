@@ -7,17 +7,18 @@ import EventSource from 'eventsource'
 import {parseJson} from '@sanity/util/lib/safeJson'
 import getUserConfig from '../../util/getUserConfig'
 import canLaunchBrowser from '../../util/canLaunchBrowser'
+import {getCliToken} from '../../util/clientWrapper'
 
 export default async function login(args, context) {
   const {prompt, output, apiClient} = context
   const {sso, experimental, provider: specifiedProvider} = args.extOptions
+  const previousToken = getCliToken()
+  const hasExistingToken = Boolean(previousToken)
 
-  // _Potentially_ already authed client
-  const authedClient = apiClient({requireUser: false, requireProject: false})
-  const hasExistingToken = Boolean(authedClient.config().token)
-
-  // Explicitly tell _this_ client not to use a token
-  const client = authedClient.clone().config({token: undefined})
+  // Explicitly tell this client not to use a token
+  const client = apiClient({requireUser: false, requireProject: false})
+    .clone()
+    .config({token: undefined})
 
   // Get the desired authentication provider
   const provider = await getProvider({client, sso, experimental, output, prompt, specifiedProvider})
@@ -68,12 +69,16 @@ export default async function login(args, context) {
 
   // If we had a session previously, attempt to clear it
   if (hasExistingToken) {
-    await authedClient.request({uri: '/auth/logout', method: 'POST'}).catch((err) => {
-      const statusCode = err && err.response && err.response.statusCode
-      if (statusCode !== 401) {
-        output.warn('[warn] Failed to log out existing session')
-      }
-    })
+    await apiClient({requireUser: true, requireProject: false})
+      .clone()
+      .config({token: previousToken})
+      .request({uri: '/auth/logout', method: 'POST'})
+      .catch((err) => {
+        const statusCode = err && err.response && err.response.statusCode
+        if (statusCode !== 401) {
+          output.warn('[warn] Failed to log out existing session')
+        }
+      })
   }
 
   output.print(chalk.green('Login successful'))

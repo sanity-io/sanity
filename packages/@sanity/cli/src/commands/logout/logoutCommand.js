@@ -14,7 +14,7 @@ export default {
       return
     }
 
-    const client = apiClient({requireUser: false, requireProject: false})
+    const client = apiClient({requireUser: true, requireProject: false})
     try {
       await client.request({uri: '/auth/logout', method: 'POST'})
     } catch (err) {
