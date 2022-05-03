@@ -1,11 +1,10 @@
-import {Schema, SchemaType} from '@sanity/types'
-import React, {useCallback} from 'react'
+import {Schema} from '@sanity/types'
+import React from 'react'
 import {useSource} from '../../studio'
 import {FIXME, FormPreviewComponentResolver} from '../types'
 import {SanityPreview} from '../../preview'
 import {FormBuilderProvider} from '../FormBuilderProvider'
 import {PatchChannel} from '../patch/PatchChannel'
-import {defaultResolveInputComponent as defaultInputResolver} from './inputResolver/inputResolver'
 
 const previewResolver: FormPreviewComponentResolver = (..._: unknown[]) => {
   // @todo: Implement correct typing here

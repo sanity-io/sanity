@@ -72,6 +72,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
             member={member}
             renderInput={renderInput}
             renderField={renderField}
+            renderItem={renderItem}
             onSetFieldSetCollapsed={onSetFieldSetCollapsed}
           />
         )

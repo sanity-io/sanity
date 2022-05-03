@@ -2,7 +2,12 @@ import React, {useCallback, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
 import {FieldMember} from '../../../store/types/members'
 import {ObjectNode} from '../../../store/types/nodes'
-import {ObjectInputProps, RenderFieldCallback, RenderInputCallback} from '../../../types'
+import {
+  ObjectInputProps,
+  RenderFieldCallback,
+  RenderInputCallback,
+  RenderItemCallback,
+} from '../../../types'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {PatchArg, PatchEvent, setIfMissing} from '../../../patch'
@@ -18,6 +23,7 @@ export function ObjectField(props: {
   member: FieldMember<ObjectNode>
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback
+  renderItem: RenderItemCallback
 }) {
   const {
     onPathBlur,
@@ -27,7 +33,7 @@ export function ObjectField(props: {
     onSetCollapsedFieldSet,
     onSelectFieldGroup,
   } = useFormCallbacks()
-  const {member, renderField, renderInput} = props
+  const {member, renderField, renderInput, renderItem} = props
   const focusRef = useRef<{focus: () => void}>()
 
   useDidUpdate(member.field.focused, (hadFocus, hasFocus) => {
@@ -119,6 +125,7 @@ export function ObjectField(props: {
       onChange: handleChange,
       renderField,
       renderInput,
+      renderItem,
       // todo
       validation: [],
     }

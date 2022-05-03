@@ -8,9 +8,9 @@ import {
 } from '@sanity/types'
 import React from 'react'
 import {PatchEvent} from '../patch'
-import {Field} from './field'
 import {InputProps} from './inputProps'
-import {ItemProps} from './item'
+import {FieldProps} from './fieldProps'
+import {ItemProps} from './itemProps'
 
 export type FIXME = any
 
@@ -59,7 +59,7 @@ export type FormBuilderMarkersComponent = React.ComponentType<{
 export type FormBuilderInputComponentMap = Record<
   string,
   {
-    field?: React.ComponentType<Field>
+    field?: React.ComponentType<FieldProps>
     item?: React.ComponentType<ItemProps>
     input?: React.ComponentType<InputProps>
   }

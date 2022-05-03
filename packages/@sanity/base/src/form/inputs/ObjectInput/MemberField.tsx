@@ -27,7 +27,14 @@ export const MemberField = memo(function MemberField(props: MemberFieldProps) {
 
   if (isMemberObject(member)) {
     // this field is of an object type
-    return <ObjectField member={member} renderField={renderField} renderInput={renderInput} />
+    return (
+      <ObjectField
+        member={member}
+        renderField={renderField}
+        renderInput={renderInput}
+        renderItem={renderItem}
+      />
+    )
   }
 
   if (isMemberArray(member)) {

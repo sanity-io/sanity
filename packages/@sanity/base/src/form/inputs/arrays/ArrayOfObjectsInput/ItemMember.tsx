@@ -1,5 +1,6 @@
 import * as React from 'react'
 import {memo, useCallback, useMemo, useRef} from 'react'
+import {Path} from '@sanity/types'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {
   ObjectInputProps,
@@ -10,7 +11,6 @@ import {
 import {ArrayOfObjectsMember} from '../../../store/types/members'
 import {ItemProps} from '../../../types/itemProps'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
-import {Path} from '@sanity/types'
 import {PatchArg, PatchEvent, setIfMissing} from '../../../patch'
 import {createProtoValue} from '../../../utils/createProtoValue'
 
@@ -123,6 +123,7 @@ export const ItemMember = memo(function ItemMember(props: Props) {
       onChange: handleChange,
       renderField,
       renderInput,
+      renderItem,
       // todo
       validation: [],
     }
@@ -148,6 +149,7 @@ export const ItemMember = memo(function ItemMember(props: Props) {
     handleChange,
     renderField,
     renderInput,
+    renderItem,
   ])
 
   const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])

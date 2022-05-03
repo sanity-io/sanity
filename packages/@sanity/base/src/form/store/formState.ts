@@ -12,20 +12,20 @@ import {
 
 import {castArray, pick} from 'lodash'
 import {isEqual, pathFor, toString} from '@sanity/util/paths'
-import {StateTree} from '../types'
+import {StateTree} from './types/state'
 import {callConditionalProperties, callConditionalProperty} from './conditional-property'
 import {MAX_FIELD_DEPTH} from './constants'
 import {getItemType} from './utils/getItemType'
 import {ArrayOfObjectsMember, FieldMember, ObjectMember} from './types/members'
 import {ArrayOfObjectsNode, ObjectNode} from './types/nodes'
-import {FieldGroupState} from './types/fieldGroupState'
+import {FieldGroup} from './types/fieldGroup'
 import {getCollapsedWithDefaults} from './utils/getCollapsibleOptions'
 
 function isFieldEnabledByGroupFilter(
   // the groups config for the "enclosing object" type
-  groupsConfig: FieldGroupState[],
+  groupsConfig: FieldGroup[],
   field: ObjectField,
-  currentGroup: FieldGroupState
+  currentGroup: FieldGroup
 ) {
   // if there's no group config for the object type, all fields are visible
   if (groupsConfig.length === 0) {
@@ -219,7 +219,7 @@ function prepareObjectInputState<T>(
     schemaTypeGroupConfig.find((g) => g.default) || schemaTypeGroupConfig[0]
   )?.name
 
-  const groups = schemaTypeGroupConfig.flatMap((group): FieldGroupState[] => {
+  const groups = schemaTypeGroupConfig.flatMap((group): FieldGroup[] => {
     const groupHidden = callConditionalProperty(group.hidden, conditionalFieldContext)
     const selected = group.name === (props.fieldGroupState?.value || defaultGroupName)
     return groupHidden
@@ -414,6 +414,7 @@ function prepareArrayMembers(props: {
     {
       kind: 'item',
       key,
+      index,
       collapsed: collapsed,
       collapsible: true,
       item: result,

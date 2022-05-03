@@ -1,18 +1,19 @@
 /* eslint-disable react/jsx-handler-names */
 
 import React, {useCallback} from 'react'
-import {RenderFieldCallback, RenderInputCallback} from '../../types'
+import {RenderFieldCallback, RenderInputCallback, RenderItemCallback} from '../../types'
 import {FieldSetMember} from '../../store/types/members'
-import {MemberField} from './MemberField'
 import {FormFieldSet} from '../../components/formField/FormFieldSet'
+import {MemberField} from './MemberField'
 
 export function MemberFieldset(props: {
   member: FieldSetMember
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback
+  renderItem: RenderItemCallback
   onSetFieldSetCollapsed: (fieldsetName: string, collapsed: boolean) => void
 }) {
-  const {member, renderField, renderInput, onSetFieldSetCollapsed} = props
+  const {member, renderField, renderInput, renderItem, onSetFieldSetCollapsed} = props
 
   const handleSetCollapsed = useCallback(
     (collapsed: boolean) => {
@@ -35,6 +36,7 @@ export function MemberFieldset(props: {
           member={fieldsetMember}
           renderField={renderField}
           renderInput={renderInput}
+          renderItem={renderItem}
           key={fieldsetMember.key}
         />
       ))}

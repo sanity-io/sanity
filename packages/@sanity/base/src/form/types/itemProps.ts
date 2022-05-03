@@ -6,6 +6,7 @@ import {
   SchemaType,
   StringSchemaType,
 } from '@sanity/types'
+import React from 'react'
 
 export interface BaseItem {
   schemaType: SchemaType
@@ -20,21 +21,21 @@ export interface BaseItem {
   children: React.ReactNode | null
 }
 
-export interface ItemOfObject extends BaseItem {
+export interface ObjectItemProps extends BaseItem {
   schemaType: ObjectSchemaType
   collapsed: boolean | undefined
   collapsible: boolean
   onSetCollapsed: (collapsed: boolean) => void
 }
 
-export interface ItemOfNumber extends BaseItem {
+export interface NumberItemProps extends BaseItem {
   schemaType: NumberSchemaType
 }
-export interface ItemOfBoolean extends BaseItem {
+export interface BooleanItemProps extends BaseItem {
   schemaType: BooleanSchemaType
 }
-export interface ItemOfString extends BaseItem {
+export interface StringItemProps extends BaseItem {
   schemaType: StringSchemaType
 }
 
-export type ItemProps = ItemOfObject | ItemOfNumber | ItemOfBoolean | ItemOfString
+export type ItemProps = ObjectItemProps | NumberItemProps | BooleanItemProps | StringItemProps

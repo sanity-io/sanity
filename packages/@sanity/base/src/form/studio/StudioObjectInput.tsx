@@ -23,7 +23,7 @@ import {
 import {FormField, FormFieldSet} from '../components/formField'
 import {ObjectInput} from '../inputs/ObjectInput'
 import {ArrayInput} from '../inputs/arrays/ArrayOfObjectsInput'
-import {ItemOfObject} from '../types/itemProps'
+import {ObjectItemProps} from '../types/itemProps'
 
 export interface StudioObjectInputProps
   extends Omit<ObjectInputProps, 'renderField' | 'renderInput' | 'renderItem'> {
@@ -33,7 +33,7 @@ export interface StudioObjectInputProps
 export function StudioObjectInput(props: StudioObjectInputProps) {
   const {resolveInputComponent} = props
   const renderItem: RenderItemCallback = useCallback((_item) => {
-    const item = _item as ItemOfObject
+    const item = _item as ObjectItemProps
     return (
       <Card radius={2} padding={2}>
         <Button

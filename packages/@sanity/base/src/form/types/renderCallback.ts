@@ -3,7 +3,7 @@ import {ItemProps} from './itemProps'
 import {FieldProps} from './fieldProps'
 import {InputProps} from './inputProps'
 
-export type RenderItemCallback = (item: ItemProps) => React.ReactNode
+export type RenderItemCallback = (itemProps: ItemProps) => React.ReactNode
 
 export type RenderFieldCallback<T extends FieldProps = FieldProps> = (
   fieldProps: T

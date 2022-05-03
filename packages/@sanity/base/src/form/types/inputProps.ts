@@ -19,6 +19,7 @@ import {
 } from '../store/types/nodes'
 import {RenderFieldCallback, RenderInputCallback, RenderItemCallback} from './renderCallback'
 import {InsertEvent} from './event'
+import {FieldGroup} from './fieldGroups'
 
 // these are the props shared by *all* inputs
 export interface BaseInputProps {
@@ -35,6 +36,7 @@ export interface ObjectInputProps<
   S extends ObjectSchemaType = ObjectSchemaType
 > extends ObjectNode<T, S>,
     BaseInputProps {
+  groups: FieldGroup[]
   onChange(patch: FormPatch | FormPatch[] | PatchEvent): void
 
   onSetCollapsed: (collapsed: boolean) => void
