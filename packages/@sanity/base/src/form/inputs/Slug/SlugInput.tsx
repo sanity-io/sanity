@@ -51,7 +51,7 @@ const SlugInputInner = React.forwardRef(function SlugInput(
     validation,
     onChange,
     onFocus,
-    onFocusChildPath,
+    onFocusPath,
     getValuePath,
     document,
     readOnly,
@@ -93,7 +93,7 @@ const SlugInputInner = React.forwardRef(function SlugInput(
     [updateSlug]
   )
 
-  const handleFocus = React.useCallback(() => onFocusChildPath(['current']), [onFocusChildPath])
+  const handleFocus = React.useCallback(() => onFocusPath(['current']), [onFocusPath])
 
   return (
     <Stack space={3}>

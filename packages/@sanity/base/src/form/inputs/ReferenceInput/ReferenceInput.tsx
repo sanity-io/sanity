@@ -82,17 +82,21 @@ export function ReferenceInput(props: ReferenceInputProps) {
     editReferenceLinkComponent: EditReferenceLink,
     focusPath = EMPTY_ARRAY,
     getReferenceInfo,
-    inputProps,
     liveEdit,
     onChange,
     onEditReference,
     onSearch,
     selectedState,
-    type,
+    schemaType,
+    onFocus,
+    onBlur,
+    compareValue,
+    readOnly,
+    onFocusPath,
+    validation,
+    inputRef,
     value,
   } = props
-
-  const {onFocus, onBlur, readOnly, ref} = inputProps
 
   const [searchState, setSearchState] = useState<SearchState>(INITIAL_SEARCH_STATE)
 
@@ -101,10 +105,10 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
     const patches = [
       setIfMissing({}),
-      set(type.name, ['_type']),
+      set(schemaType.name, ['_type']),
       set(id, ['_ref']),
       set(true, ['_weak']),
-      set({type: option.type, weak: type.weak, template: option.template}, [
+      set({type: option.type, weak: schemaType.weak, template: option.template}, [
         '_strengthenOnPublish',
       ]),
     ].filter(isNonNullable)
@@ -112,14 +116,14 @@ export function ReferenceInput(props: ReferenceInputProps) {
     onChange(patches)
 
     onEditReference({id, type: option.type, template: option.template})
-    onFocus?.([])
+    onFocusPath([])
   }
 
   const handleChange = useCallback(
     (id: string) => {
       if (!id) {
         onChange(unset())
-        onFocus?.([])
+        onFocusPath([])
         return
       }
 
@@ -132,18 +136,18 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
       const patches = [
         setIfMissing({}),
-        set(type.name, ['_type']),
+        set(schemaType.name, ['_type']),
         set(getPublishedId(id), ['_ref']),
-        hit.published && !type.weak ? unset(['_weak']) : set(true, ['_weak']),
+        hit.published && !schemaType.weak ? unset(['_weak']) : set(true, ['_weak']),
         hit.published
           ? unset(['_strengthenOnPublish'])
-          : set({type: hit?.type, weak: type.weak}, ['_strengthenOnPublish']),
+          : set({type: hit?.type, weak: schemaType.weak}, ['_strengthenOnPublish']),
       ].filter(isNonNullable)
 
       onChange(patches)
-      onFocus?.([])
+      onFocusPath([])
     },
-    [searchState.hits, type.name, type.weak, onChange, onFocus]
+    [searchState.hits, schemaType.name, schemaType.weak, onChange, onFocus]
   )
 
   const handleClear = useCallback(() => {
@@ -154,7 +158,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
     (event) => {
       if (event.key !== 'Enter' && event.key !== 'Space') {
         // enable "search for reference"-mode
-        onFocus?.(['_ref'])
+        onFocusPath(['_ref'])
       }
     },
     [onFocus]
@@ -164,27 +168,28 @@ export function ReferenceInput(props: ReferenceInputProps) {
     (event) => {
       // escape
       if (event.keyCode === 27) {
-        onFocus?.([])
+        onFocusPath([])
       }
     },
     [onFocus]
   )
 
-  const getReferenceInfoMemo = useCallback((id) => getReferenceInfo(id, type), [
-    getReferenceInfo,
-    type,
-  ])
+  const getReferenceInfoMemo = useCallback(
+    (id) => getReferenceInfo(id, schemaType),
+    [getReferenceInfo, schemaType]
+  )
 
   const loadableReferenceInfo = useReferenceInfo(value?._ref, getReferenceInfoMemo)
 
   const refTypeName = loadableReferenceInfo.result?.type || value?._strengthenOnPublish?.type
-  const refType = refTypeName ? type.to.find((toType) => toType.name === refTypeName) : null
+  const refType = refTypeName ? schemaType.to.find((toType) => toType.name === refTypeName) : null
 
   const autocompletePopoverReferenceElementRef = useRef<HTMLDivElement | null>(null)
 
   // --- focus handling
   const hasFocusAtRef = focusPath.length === 1 && focusPath[0] === '_ref'
-  const forwardedRef = useForwardedRef(ref)
+  // todo: fixme
+  const forwardedRef = inputRef
   // useDidUpdate({hasFocusAt: hasFocusAtRef, ref: value?._ref}, (prev, current) => {
   //   const refUpdated = prev?.ref !== current.ref
   //   const focusAtUpdated = prev?.hasFocusAt !== current.hasFocusAt
@@ -197,7 +202,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
   // })
 
   const weakIs = value?._weak ? 'weak' : 'strong'
-  const weakShouldBe = type.weak === true ? 'weak' : 'strong'
+  const weakShouldBe = schemaType.weak === true ? 'weak' : 'strong'
 
   const hasRef = Boolean(value?._ref)
 
@@ -208,17 +213,17 @@ export function ReferenceInput(props: ReferenceInputProps) {
     hasRef && !loadableReferenceInfo.isLoading && value?._strengthenOnPublish
 
   const handleFixStrengthMismatch = useCallback(() => {
-    onChange(type.weak === true ? set(true, ['_weak']) : unset(['_weak']))
-  }, [onChange, type])
+    onChange(schemaType.weak === true ? set(true, ['_weak']) : unset(['_weak']))
+  }, [onChange, schemaType])
 
   const referenceExists = hasRef && loadableReferenceInfo.result?.preview?.published?._id
 
   const handleRemoveStrengthenOnPublish = useCallback(() => {
-    onChange(
-      type.weak === true ? set(true, ['_weak']) : unset(['_weak']),
-      unset(['_strengthenOnPublish'])
-    )
-  }, [onChange, type])
+    onChange([
+      schemaType.weak === true ? set(true, ['_weak']) : unset(['_weak']),
+      unset(['_strengthenOnPublish']),
+    ])
+  }, [onChange, schemaType])
 
   const {push} = useToast()
 
@@ -228,8 +233,8 @@ export function ReferenceInput(props: ReferenceInputProps) {
   const selected = selectedState === 'selected'
   const handleFocus = useCallback(
     (event) => {
-      if (onFocus && event.currentTarget === forwardedRef.current) {
-        onFocus([])
+      if (onFocus && event.currentTarget === inputRef?.current) {
+        onFocus(event)
       }
     },
     [onFocus, forwardedRef]
@@ -237,8 +242,8 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
   const handleAutocompleteFocus = useCallback(
     (event) => {
-      if (onFocus && event.currentTarget === forwardedRef.current) {
-        onFocus(['_ref'])
+      if (onFocus && event.currentTarget === forwardedRef?.current) {
+        onFocus(event)
       }
     },
     [onFocus, forwardedRef]
@@ -289,7 +294,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
   const handleCreateButtonKeyDown = useCallback(
     (e) => {
       if (e.key === 'Escape') {
-        forwardedRef.current?.focus()
+        forwardedRef?.current?.focus()
       }
     },
     [forwardedRef]
@@ -302,12 +307,12 @@ export function ReferenceInput(props: ReferenceInputProps) {
       return (
         <StyledPreviewCard forwardedAs="button" type="button" radius={2}>
           <Box paddingX={3} paddingY={1}>
-            <OptionPreview getReferenceInfo={getReferenceInfoMemo} id={id} type={type} />
+            <OptionPreview getReferenceInfo={getReferenceInfoMemo} id={id} type={schemaType} />
           </Box>
         </StyledPreviewCard>
       )
     },
-    [type, getReferenceInfoMemo]
+    [schemaType, getReferenceInfoMemo]
   )
 
   const OpenLink = useMemo(
@@ -353,7 +358,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
     [clickOutsideBoundaryRef, autocompletePortalRef, createButtonMenuPortalRef],
     () => {
       if (hasFocusAtRef) {
-        onFocus?.([])
+        onFocusPath([])
       }
     }
   )
@@ -466,7 +471,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
               >
                 <PreviewReferenceValue
                   referenceInfo={loadableReferenceInfo}
-                  type={type}
+                  type={schemaType}
                   value={value}
                 />
               </StyledPreviewCard>
@@ -489,7 +494,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
                             text="Replace"
                             icon={ReplaceIcon}
                             onClick={() => {
-                              onFocus?.(['_ref'])
+                              onFocusPath(['_ref'])
                             }}
                           />
 
@@ -513,7 +518,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
             {liveEdit && referenceExists && value._strengthenOnPublish && (
               <AlertStrip
                 padding={1}
-                title={type.weak ? 'Finalize reference' : 'Convert to strong reference'}
+                title={schemaType.weak ? 'Finalize reference' : 'Convert to strong reference'}
                 status="info"
                 data-testid="alert-reference-published"
               >
@@ -521,7 +526,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
                   <Text as="p" muted size={1}>
                     <strong>{loadableReferenceInfo.result?.preview.published?.title}</strong> is
                     published and this reference should now be{' '}
-                    {type.weak ? <>finalized</> : <>converted to a strong reference</>}.
+                    {schemaType.weak ? <>finalized</> : <>converted to a strong reference</>}.
                   </Text>
                   <Button
                     onClick={handleRemoveStrengthenOnPublish}
@@ -546,7 +551,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
                   </Text>
 
                   <Text as="p" muted size={1}>
-                    {type.weak ? (
+                    {schemaType.weak ? (
                       <>
                         It will not be possible to delete the "{preview?.title}"-document without
                         first removing this reference.

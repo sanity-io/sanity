@@ -1,9 +1,14 @@
 /* eslint-disable react/default-props-match-prop-types */
 
-import {isKeySegment, isObjectSchemaType, ObjectSchemaType, Path, SchemaType} from '@sanity/types'
-import {FOCUS_TERMINATOR} from '@sanity/util/paths'
+import {
+  isKeySegment,
+  isObjectSchemaType,
+  isReferenceSchemaType,
+  KeyedSegment,
+  SchemaType,
+} from '@sanity/types'
 import {isPlainObject} from 'lodash'
-import {Box, Button, Card, Flex, Spinner, Stack, Text, ToastParams} from '@sanity/ui'
+import {Box, Button, Card, Dialog, Flex, Spinner, Stack, Text, ToastParams} from '@sanity/ui'
 import React from 'react'
 import {map} from 'rxjs/operators'
 import {Subscription} from 'rxjs'
@@ -14,15 +19,18 @@ import {isDev} from '../../../../environment'
 import {Alert} from '../../../components/Alert'
 import {Details} from '../../../components/Details'
 import {Item, List} from '../common/list'
-import {EMPTY_ARRAY} from '../../../utils/empty'
 import {applyAll} from '../../../patch/applyPatch'
-// import {ConditionalReadOnlyField} from '../../common'
-import {insert, PatchEvent, set, setIfMissing, unset} from '../../../patch'
-import {ImperativeToast} from '../../../../components/transitional'
-// import {ArrayItem} from './item'
+import {PatchEvent, setIfMissing, unset} from '../../../patch'
+import {ObjectItemProps} from '../../../types/itemProps'
+import {DefaultArrayInputFunctions} from '../common/ArrayFunctions'
+import {ArrayOfObjectsInputProps} from '../../../types'
 import type {ArrayMember, InsertEvent} from './types'
 import {uploadTarget} from './uploadTarget/uploadTarget'
 import {isEmpty} from './item/helpers'
+import {MemberItem} from './MemberItem'
+import {ArrayItem} from './item/ArrayItem'
+import {RowItem} from './item/RowItem'
+import {ItemForm} from './item/ItemForm'
 
 type Toast = {push: (params: ToastParams) => void}
 
@@ -49,13 +57,7 @@ interface State {
   isResolvingInitialValue: boolean
 }
 
-export class ArrayInput extends React.Component<
-  ArrayInputProps<ArrayMember[], ArraySchemaType<ArrayMember>>
-> {
-  static defaultProps = {
-    focusPath: [],
-  }
-
+export class ArrayInput extends React.Component<ArrayOfObjectsInputProps<ArrayMember>> {
   _focusArea: HTMLElement | null = null
   toast: Toast | null = null
 
@@ -64,35 +66,42 @@ export class ArrayInput extends React.Component<
     isResolvingInitialValue: false,
   }
 
-  insert = (item: ArrayMember, position: 'before' | 'after', path: Path) => {
-    const {onChange} = this.props
-    onChange(setIfMissing([]), insert([item], position, path))
+  insert = (
+    item: ArrayMember,
+    position: 'before' | 'after',
+    referenceItem: number | KeyedSegment
+  ) => {
+    const {onInsert} = this.props
+    onInsert({items: [item], position, referenceItem})
   }
 
   handlePrepend = (value: ArrayMember) => {
-    this.handleInsert({item: value, position: 'before', path: [0]})
+    this.handleInsert({item: value, position: 'before', referenceItem: 0})
   }
 
   handleAppend = (value: ArrayMember) => {
-    this.handleInsert({item: value, position: 'after', path: [-1]})
+    this.handleInsert({item: value, position: 'after', referenceItem: -1})
   }
 
   handleInsert = (event: InsertEvent) => {
-    const {inputProps, resolveInitialValue} = this.props
-    const {onFocus} = inputProps
+    const {onFocusPath, resolveInitialValue} = this.props
     this.setState({isResolvingInitialValue: true})
     const memberType = this.getMemberTypeOfItem(event.item)
 
+    if (!memberType) {
+      throw new Error(`Type "${event.item._type}" not valid for this array`)
+    }
+
     const resolvedInitialValue =
       isEmpty(event.item) && resolveInitialValue
-        ? resolveInitialValue(memberType as ObjectSchemaType, event.item)
+        ? resolveInitialValue(memberType, event.item)
         : Promise.resolve({})
 
     resolvedInitialValue
       .then((initial) => ({...event.item, ...initial}))
       .then(
         (value) => {
-          this.insert(value, event.position, event.path)
+          this.insert(value, event.position, event.referenceItem)
         },
         (error) => {
           this.toast?.push({
@@ -101,17 +110,23 @@ export class ArrayInput extends React.Component<
             status: 'error',
           })
 
-          this.insert(event.item, event.position, event.path)
+          this.insert(event.item, event.position, event.referenceItem)
         }
       )
       .finally(() => {
         this.setState({isResolvingInitialValue: false})
         if (event.edit === false) {
-          onFocus([{_key: event.item._key}])
+          onFocusPath([{_key: event.item._key}])
         } else {
           this.openItem(event.item._key)
         }
       })
+  }
+
+  getMemberTypeOfItem(item: ArrayMember): SchemaType | undefined {
+    const {schemaType} = this.props
+    const itemTypeName = resolveTypeName(item)
+    return schemaType.of.find((memberType) => memberType.name === itemTypeName)
   }
 
   handleRemoveItem = (item: ArrayMember) => {
@@ -119,24 +134,23 @@ export class ArrayInput extends React.Component<
   }
 
   handleFocus = (event: React.FocusEvent) => {
-    const {inputProps} = this.props
+    const {onFocus} = this.props
     // We want to handle focus when the array input *itself* element receives
     // focus, not when a child element receives focus, but React has decided
     // to let focus bubble, so this workaround is needed
     // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
     if (event.currentTarget === event.target && event.currentTarget === this._focusArea) {
-      inputProps.onFocus([])
+      onFocus(event)
     }
   }
 
   openItem = (key: string) => {
-    const {inputProps} = this.props
-    inputProps.onFocus([{_key: key}, FOCUS_TERMINATOR])
+    const {onSetItemCollapsed} = this.props
+    onSetItemCollapsed(key, false)
   }
 
   removeItem(item: ArrayMember) {
-    const {inputProps, onChange, value} = this.props
-    const {onFocus} = inputProps
+    const {onChange, onFocusPath, value} = this.props
 
     // create a patch for removing the item
     const patch = unset(isKeySegment(item) ? [{_key: item._key}] : [value?.indexOf(item) || -1])
@@ -162,30 +176,11 @@ export class ArrayInput extends React.Component<
     const nearestSibling = value?.[idx + 1] || value?.[idx - 1]
 
     // if there's no siblings we want to focus the input itself
-    onFocus(nearestSibling ? [{_key: nearestSibling._key}] : [])
-  }
-
-  handleItemChange = (event: PatchEvent, item: ArrayMember) => {
-    const {onChange, value} = this.props
-    const memberType = this.getMemberTypeOfItem(item)
-
-    if (!memberType) {
-      // eslint-disable-next-line no-console
-      console.log('Could not find member type of item ', item)
-      return
-    }
-
-    const key = item._key || randomKey(12)
-
-    onChange(
-      event
-        .prefixAll({_key: key})
-        .prepend(item._key ? [] : set(key, [value?.indexOf(item) || -1, '_key'])).patches
-    )
+    onFocusPath(nearestSibling ? [{_key: nearestSibling._key}] : [])
   }
 
   handleSortEnd = (event: {newIndex: number; oldIndex: number}) => {
-    const {value, onChange} = this.props
+    const {value, onMoveItem} = this.props
     const item = value?.[event.oldIndex]
     const refItem = value?.[event.newIndex]
 
@@ -202,17 +197,7 @@ export class ArrayInput extends React.Component<
       return
     }
 
-    onChange(
-      unset([{_key: item._key}]),
-      insert([item], event.oldIndex > event.newIndex ? 'before' : 'after', [{_key: refItem._key}])
-    )
-  }
-
-  getMemberTypeOfItem(item: ArrayMember): SchemaType {
-    const {type} = this.props
-    const itemTypeName = resolveTypeName(item)
-
-    return type.of.find((memberType) => memberType.name === itemTypeName) as SchemaType
+    onMoveItem({fromIndex: event.oldIndex, toIndex: event.newIndex})
   }
 
   focus() {
@@ -229,7 +214,7 @@ export class ArrayInput extends React.Component<
     const {onChange, value = []} = this.props
     const patches = (value || []).map((val, i) => setIfMissing(randomKey(), [i, '_key']))
 
-    onChange(...patches)
+    onChange(patches)
   }
   setToast = (toast: any | null) => {
     this.toast = toast
@@ -241,7 +226,7 @@ export class ArrayInput extends React.Component<
       .reverse()
     const patches = nonObjects.map((index) => unset([index]))
 
-    onChange(...patches)
+    onChange(patches)
   }
 
   handleUpload = ({file, type, uploader}: {file: File; type: SchemaType; uploader: Uploader}) => {
@@ -249,7 +234,7 @@ export class ArrayInput extends React.Component<
     const item = createProtoValue(type)
     const key = item._key
 
-    this.insert(item, 'after', [-1])
+    this.insert(item, 'after', -1)
 
     const events$ = uploader
       .upload(file, type)
@@ -265,30 +250,52 @@ export class ArrayInput extends React.Component<
     }
   }
 
-  handleFocusItem = (item: ArrayMember) => {
-    this.openItem(item._key)
+  handleFocusItem = (itemKey: string) => {
+    this.openItem(itemKey)
+  }
+
+  renderItem = (item: ObjectItemProps) => {
+    const {id, renderItem: defaultRenderItem, schemaType, renderInput} = this.props
+    const options = schemaType.options || {}
+    const isSortable = options.sortable !== false
+    return (
+      <>
+        <RowItem
+          index={item.index}
+          isSortable={isSortable}
+          value={item.value}
+          onClick={() => item.onSetCollapsed(false)}
+          presence={[]}
+          type={item.schemaType}
+        />
+        {item.collapsed === false ? (
+          isReferenceSchemaType(item.schemaType) ? (
+            item.children
+          ) : (
+            <Dialog
+              width={80}
+              header={`Edit ${item.schemaType.title}`}
+              id={`${id}-item-${item.key}-dialog`}
+              onClose={() => item.onSetCollapsed(true)}
+            >
+              <Box padding={4}>{item.children}</Box>
+            </Dialog>
+          )
+        ) : null}
+      </>
+    )
   }
 
   render() {
     const {
-      type,
-      level = 1,
-      validation,
-      // readOnly,
+      schemaType,
       onChange,
       value = [],
-      presence,
-      focusPath,
-      // resolveUploader,
-      compareValue,
-      // filterField,
-      // ReferenceItemComponent,
-      // ArrayFunctionsImpl,
-      // ArrayItemImpl = ArrayItem,
-      inputProps,
+      readOnly,
+      members,
+      renderField,
+      renderInput,
     } = this.props
-
-    const {onBlur, onFocus, readOnly} = inputProps
 
     const {isResolvingInitialValue} = this.state
 
@@ -296,168 +303,119 @@ export class ArrayInput extends React.Component<
 
     if (hasNonObjectValues) {
       return (
-        <FormFieldSet
-          title={type.title}
-          description={type.description}
-          level={level - 1}
-          tabIndex={0}
-          onFocus={this.handleFocus}
-          onSetCollapsed={() => console.warn('todo')}
-          ref={this.setFocusArea}
-          validation={validation}
+        <Alert
+          status="error"
+          suffix={
+            <Stack padding={2}>
+              <Button
+                onClick={this.handleRemoveNonObjectValues}
+                text="Remove non-object values"
+                tone="critical"
+              />
+            </Stack>
+          }
+          title={<>Invalid list values</>}
         >
+          <Text as="p" muted size={1}>
+            Some items in this list are not objects. This must be fixed in order to edit the list.
+          </Text>
+
+          <Details marginTop={4} open={isDev} title={<>Developer info</>}>
+            <Stack space={3}>
+              <Text as="p" muted size={1}>
+                This usually happens when items are created using an API client, or when a custom
+                input component has added invalid data to the list.
+              </Text>
+            </Stack>
+          </Details>
+        </Alert>
+      )
+    }
+
+    const options = schemaType.options || {}
+    const hasMissingKeys = value.some((item) => !item._key)
+    const isSortable = options.sortable !== false && !hasMissingKeys
+    const isGrid = options.layout === 'grid'
+    return (
+      <Stack space={3}>
+        {hasMissingKeys && (
           <Alert
-            status="error"
+            status="warning"
             suffix={
               <Stack padding={2}>
                 <Button
-                  onClick={this.handleRemoveNonObjectValues}
-                  text="Remove non-object values"
-                  tone="critical"
+                  onClick={this.handleFixMissingKeys}
+                  text="Add missing keys"
+                  tone="caution"
                 />
               </Stack>
             }
-            title={<>Invalid list values</>}
+            title={<>Missing keys</>}
           >
             <Text as="p" muted size={1}>
-              Some items in this list are not objects. This must be fixed in order to edit the list.
+              Some items in the list are missing their keys. This must be fixed in order to edit the
+              list.
             </Text>
 
             <Details marginTop={4} open={isDev} title={<>Developer info</>}>
               <Stack space={3}>
                 <Text as="p" muted size={1}>
-                  This usually happens when items are created using an API client, or when a custom
-                  input component has added invalid data to the list.
+                  This usually happens when items are created using an API client, and the{' '}
+                  <code>_key</code> property has not been included.
+                </Text>
+
+                <Text as="p" muted size={1}>
+                  The value of the <code>_key</code> property must be a unique string.
                 </Text>
               </Stack>
             </Details>
           </Alert>
-        </FormFieldSet>
-      )
-    }
+        )}
 
-    const options = type.options || {}
-    const hasMissingKeys = value.some((item) => !item._key)
-    const isSortable = options.sortable !== false && !hasMissingKeys
-    const isGrid = options.layout === 'grid'
-    const fieldPresence = presence.filter((item) => item.path.length === 0)
-    const UploadTargetFieldset = getUploadTargetFieldset()
-    return (
-      <UploadTargetFieldset
-        __unstable_changeIndicator={false}
-        tabIndex={0}
-        title={type.title}
-        description={type.description}
-        onFocus={this.handleFocus}
-        onBlur={onBlur}
-        level={level - 1}
-        __unstable_presence={fieldPresence.length > 0 ? fieldPresence : EMPTY_ARRAY}
-        validation={validation}
-        disabled={readOnly}
-        ref={this.setFocusArea}
-        // resolveUploader={resolveUploader}
-        types={type.of}
-        onUpload={this.handleUpload}
-      >
-        <ImperativeToast ref={this.setToast} />
-        <Stack space={3}>
-          {hasMissingKeys && (
-            <Alert
-              status="warning"
-              suffix={
-                <Stack padding={2}>
-                  <Button
-                    onClick={this.handleFixMissingKeys}
-                    text="Add missing keys"
-                    tone="caution"
-                  />
-                </Stack>
-              }
-              title={<>Missing keys</>}
-            >
-              <Text as="p" muted size={1}>
-                Some items in the list are missing their keys. This must be fixed in order to edit
-                the list.
-              </Text>
-
-              <Details marginTop={4} open={isDev} title={<>Developer info</>}>
-                <Stack space={3}>
-                  <Text as="p" muted size={1}>
-                    This usually happens when items are created using an API client, and the{' '}
-                    <code>_key</code> property has not been included.
-                  </Text>
-
-                  <Text as="p" muted size={1}>
-                    The value of the <code>_key</code> property must be a unique string.
-                  </Text>
-                </Stack>
-              </Details>
-            </Alert>
+        <Stack data-ui="ArrayInput__content" space={3}>
+          {(members?.length > 0 || isResolvingInitialValue) && (
+            <Card border radius={1} paddingY={isGrid ? 2 : 1} paddingX={isGrid ? 2 : undefined}>
+              <List onSortEnd={this.handleSortEnd} isSortable={isSortable} isGrid={isGrid}>
+                {members.map((member, index) => {
+                  return (
+                    <Item key={member.key} isSortable={isSortable} isGrid={isGrid} index={index}>
+                      <MemberItem
+                        member={member}
+                        renderItem={this.renderItem}
+                        renderField={renderField}
+                        renderInput={renderInput}
+                      />
+                    </Item>
+                  )
+                })}
+                {isResolvingInitialValue && (
+                  <Item isGrid={isGrid} index={-1}>
+                    <Card radius={1} padding={1}>
+                      <Flex align="center" justify="center" padding={3}>
+                        <Box marginX={3}>
+                          <Spinner muted />
+                        </Box>
+                        <Text>Resolving initial value…</Text>
+                      </Flex>
+                    </Card>
+                  </Item>
+                )}
+              </List>
+            </Card>
           )}
 
-          <Stack data-ui="ArrayInput__content" space={3}>
-            {(value?.length > 0 || isResolvingInitialValue) && (
-              <Card border radius={1} paddingY={isGrid ? 2 : 1} paddingX={isGrid ? 2 : undefined}>
-                <List onSortEnd={this.handleSortEnd} isSortable={isSortable} isGrid={isGrid}>
-                  {value.map((item, index) => {
-                    return (
-                      <Item
-                        key={item._key || index}
-                        isSortable={isSortable}
-                        isGrid={isGrid}
-                        index={index}
-                      >
-                        TODO
-                        {/* <ArrayItemImpl
-                          compareValue={compareValue?.[index]}
-                          filterField={filterField}
-                          focusPath={focusPath}
-                          itemKey={item._key}
-                          index={index}
-                          validation={validation}
-                          ReferenceItemComponent={ReferenceItemComponent}
-                          onBlur={onBlur}
-                          onChange={this.handleItemChange}
-                          onFocus={onFocus}
-                          onRemove={this.handleRemoveItem}
-                          onInsert={this.handleInsert}
-                          presence={presence}
-                          readOnly={readOnly || hasMissingKeys}
-                          type={type}
-                          value={item}
-                        /> */}
-                      </Item>
-                    )
-                  })}
-                  {isResolvingInitialValue && (
-                    <Item isGrid={isGrid} index={-1}>
-                      <Card radius={1} padding={1}>
-                        <Flex align="center" justify="center" padding={3}>
-                          <Box marginX={3}>
-                            <Spinner muted />
-                          </Box>
-                          <Text>Resolving initial value…</Text>
-                        </Flex>
-                      </Card>
-                    </Item>
-                  )}
-                </List>
-              </Card>
-            )}
-
-            {/* <ArrayFunctionsImpl
-              type={type}
-              value={value}
-              readOnly={readOnly}
-              onAppendItem={this.handleAppend}
-              onPrependItem={this.handlePrepend}
-              onFocusItem={this.handleFocusItem}
-              onCreateValue={createProtoValue}
-              onChange={onChange}
-            /> */}
-          </Stack>
+          <DefaultArrayInputFunctions
+            type={schemaType}
+            value={value}
+            readOnly={readOnly}
+            onAppendItem={this.handleAppend}
+            onPrependItem={this.handlePrepend}
+            onFocusItem={this.handleFocusItem}
+            onCreateValue={createProtoValue}
+            onChange={onChange}
+          />
         </Stack>
-      </UploadTargetFieldset>
+      </Stack>
     )
   }
 }

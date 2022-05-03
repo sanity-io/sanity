@@ -11,7 +11,7 @@ import {FileLike} from '../uploads/types'
 import {FormBuilderContextValue} from '../../FormBuilderContext'
 import {useFormBuilder} from '../../useFormBuilder'
 import {ArrayOfObjectsInputProps, FIXME} from '../../types'
-import {V3ArrayOfObjectsInput} from '../../inputs/arrays/V3ArrayOfObjectsInput/V3ArrayOfObjectsInput'
+import {resolveInitialValueForType} from '../../../templates'
 
 const arrayResolveUploader = (
   formBuilder: FormBuilderContextValue,
@@ -42,7 +42,7 @@ export const StudioArrayInput = forwardRef(function StudioArrayInput(
   //   [formBuilder]
   // )
 
-  return <V3ArrayOfObjectsInput {...props} />
+  return <ArrayInput {...props} resolveInitialValue={resolveInitialValueForType} />
 })
 
 export const StudioArrayOfPrimitivesInput = forwardRef(function StudioArrayOfPrimitivesInput(

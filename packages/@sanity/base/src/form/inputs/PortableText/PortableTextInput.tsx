@@ -16,7 +16,12 @@ import {Subject} from 'rxjs'
 import {Box, Text, useForwardedRef, useToast} from '@sanity/ui'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import {FormPatch as FormBuilderPatch} from '../../patch'
-import type {ArrayInputProps, FIXME, PortableTextMarker, RenderCustomMarkers} from '../../types'
+import type {
+  ArrayOfObjectsInputProps,
+  FIXME,
+  PortableTextMarker,
+  RenderCustomMarkers,
+} from '../../types'
 import {withPatchSubscriber} from '../../utils/withPatchSubscriber'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {RenderBlockActions} from './types'
@@ -41,7 +46,7 @@ type PatchSubscriber = ({
  * @alpha
  */
 export interface PortableTextInputProps
-  extends ArrayInputProps<PortableTextBlock[], ArraySchemaType> {
+  extends ArrayOfObjectsInputProps<PortableTextBlock, ArraySchemaType> {
   hotkeys?: HotkeyOptions
   markers?: PortableTextMarker[]
   onCopy?: OnCopyFn
@@ -84,7 +89,6 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
     focusPath,
     focused,
     hotkeys,
-    inputProps,
     markers = [],
     members,
     onChange,
@@ -96,11 +100,12 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
     renderCustomMarkers,
     renderItem,
     subscribe,
-    type,
+    schemaType: type,
     value,
+    onBlur,
+    onFocus,
+    readOnly,
   } = props
-
-  const {onBlur, onFocus, readOnly} = inputProps
 
   const forwardedRef = useForwardedRef(ref)
 
@@ -259,11 +264,11 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
           value={value}
         >
           <Compositor
+            {...props}
             focusPath={focusPath}
             focused={focused}
             hasFocus={hasFocus}
             hotkeys={hotkeys}
-            inputProps={inputProps}
             isFullscreen={isFullscreen}
             markers={markers}
             members={members}

@@ -117,7 +117,7 @@ export function ObjectField(props: {
       onSetFieldSetCollapsed: handleSetFieldSetCollapsed,
       onSetFieldCollapsed: handleSetFieldCollapsed,
       onFocus: handleFocus,
-      onFocusChildPath: handleFocusChildPath,
+      onFocusPath: handleFocusChildPath,
       path: member.field.path,
       focusPath: member.field.focusPath,
       focused: member.field.focused,

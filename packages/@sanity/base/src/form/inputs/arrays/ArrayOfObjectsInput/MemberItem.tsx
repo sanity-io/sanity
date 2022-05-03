@@ -21,7 +21,7 @@ interface Props {
   renderInput: RenderInputCallback
 }
 
-export const ItemMember = memo(function ItemMember(props: Props) {
+export const MemberItem = memo(function MemberItem(props: Props) {
   const focusRef = useRef<{focus: () => void}>()
   const {member, renderItem, renderInput, renderField} = props
 
@@ -115,7 +115,7 @@ export const ItemMember = memo(function ItemMember(props: Props) {
       onSetFieldSetCollapsed: handleSetFieldSetCollapsed,
       onSetFieldCollapsed: handleSetFieldCollapsed,
       onFocus: handleFocus,
-      onFocusChildPath: handleFocusChildPath,
+      onFocusPath: handleFocusChildPath,
       path: member.item.path,
       focusPath: member.item.focusPath,
       focused: member.item.focused,
@@ -180,6 +180,7 @@ export const ItemMember = memo(function ItemMember(props: Props) {
     member.item.path,
     member.collapsible,
     member.collapsed,
+    handleSetCollapsed,
     renderedInput,
   ])
 

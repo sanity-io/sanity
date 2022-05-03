@@ -100,8 +100,7 @@ function valueHasRef<T extends {_ref?: string}>(value: T): value is T & {_ref: s
 
 export function ArrayItemReferenceInput(props: Props) {
   const {
-    inputProps,
-    type,
+    schemaType: type,
     value,
     validation,
     liveEdit,
@@ -118,9 +117,12 @@ export function ArrayItemReferenceInput(props: Props) {
     editReferenceLinkComponent: EditReferenceLink,
     onEditReference,
     getReferenceInfo,
+    onBlur,
+    onFocus,
+    readOnly,
+    ref,
   } = props
 
-  const {onBlur, onFocus, readOnly, ref} = inputProps
   const forwardedRef = useForwardedRef(ref)
 
   const [searchState, setSearchState] = useState<SearchState>(INITIAL_SEARCH_STATE)

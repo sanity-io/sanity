@@ -1,8 +1,16 @@
+import {KeyedSegment, SchemaType} from '@sanity/types'
+
 export interface InsertItemEvent {
   items: unknown[]
   position: 'before' | 'after'
-  referenceItem: number | string
+  referenceItem: KeyedSegment | number
 }
+export interface InsertInitialValueEvent {
+  type: SchemaType
+  position: 'before' | 'after'
+  referenceItem: KeyedSegment | number
+}
+
 export interface MoveItemEvent {
   fromIndex: number
   toIndex: number

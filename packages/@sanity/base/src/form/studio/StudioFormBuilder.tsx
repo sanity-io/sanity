@@ -151,7 +151,7 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
           onBlur={handleBlur}
           onChange={handleChange}
           validation={[]}
-          onFocusChildPath={onPathFocus}
+          onFocusPath={onPathFocus}
           onFocus={handleFocus}
           readOnly={readOnly}
           schemaType={schemaType}

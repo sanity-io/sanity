@@ -4,6 +4,7 @@ import {
   NumberSchemaType,
   ObjectSchemaType,
   Path,
+  SchemaType,
   StringSchemaType,
   ValidationMarker,
 } from '@sanity/types'
@@ -45,8 +46,10 @@ export interface ObjectInputProps<
   onSetFieldCollapsed: (fieldName: string, collapsed: boolean) => void
   onSetFieldSetCollapsed: (fieldsetName: string, collapsed: boolean) => void
 
-  onFocusChildPath: (path: Path) => void
+  onFocusPath: (path: Path) => void
   onSelectFieldGroup: (groupName: string) => void
+
+  inputRef?: React.RefObject<any>
 
   renderInput: RenderInputCallback
   renderField: RenderFieldCallback
@@ -65,7 +68,9 @@ export interface ArrayOfObjectsInputProps<
   onMoveItem: (event: MoveItemEvent) => void
   onInsert: (event: InsertItemEvent) => void
 
-  onFocusChildPath: (path: Path) => void
+  resolveInitialValue: (type: SchemaType, params: Record<string, unknown>) => Promise<T>
+
+  onFocusPath: (path: Path) => void
 
   // note: not a priority to support collapsible arrays right now
   onSetCollapsed: (collapsed: boolean) => void

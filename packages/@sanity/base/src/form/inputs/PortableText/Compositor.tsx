@@ -27,7 +27,7 @@ import {
   usePortal,
 } from '@sanity/ui'
 import {ChangeIndicatorWithProvidedFullPath} from '../../../components/changeIndicators'
-import {ArrayInputProps, FIXME, PortableTextMarker, RenderCustomMarkers} from '../../types'
+import {ArrayOfObjectsInputProps, FIXME, PortableTextMarker, RenderCustomMarkers} from '../../types'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {BlockObject} from './object/BlockObject'
@@ -44,7 +44,7 @@ import {useObjectEditFormBuilderChange} from './hooks/useObjectEditFormBuilderCh
 import {useHotkeys} from './hooks/useHotKeys'
 import {useScrollToFocusFromOutside} from './hooks/useScrollToFocusFromOutside'
 
-interface InputProps extends Omit<ArrayInputProps<PortableTextBlock[]>, 'kind' | 'type'> {
+interface InputProps extends Omit<ArrayOfObjectsInputProps<PortableTextBlock>, 'kind' | 'type'> {
   hasFocus: boolean
   hotkeys?: HotkeyOptions
   isFullscreen: boolean
@@ -64,7 +64,6 @@ export function Compositor(props: InputProps) {
     focusPath = EMPTY_ARRAY,
     hasFocus,
     hotkeys,
-    inputProps,
     isFullscreen,
     markers,
     onChange,
@@ -77,10 +76,10 @@ export function Compositor(props: InputProps) {
     renderCustomMarkers,
     validation,
     value,
+    readOnly,
+    onFocus,
     ...restProps
   } = props
-
-  const {readOnly, onFocus} = inputProps
 
   const editor = usePortableTextEditor()
 

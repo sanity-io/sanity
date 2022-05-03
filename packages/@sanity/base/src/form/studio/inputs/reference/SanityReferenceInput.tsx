@@ -71,7 +71,7 @@ function StudioReferenceInputInner(props: StudioReferenceInputProps) {
   const {client, schema} = useSource()
   const documentPreviewStore = useDocumentPreviewStore()
   const searchClient = useMemo(() => client.withConfig({apiVersion: '2021-03-25'}), [client])
-  const {getValuePath, type, document} = props
+  const {getValuePath, schemaType, document} = props
   const {EditReferenceLinkComponent, onEditReference, activePath, initialValueTemplateItems} =
     useReferenceInputOptions()
 
@@ -83,14 +83,14 @@ function StudioReferenceInputInner(props: StudioReferenceInputProps) {
 
   const valuePath = useMemo(getValuePath, [getValuePath])
 
-  const disableNew = type.options?.disableNew === true
+  const disableNew = schemaType.options?.disableNew === true
 
   const handleSearch = useCallback(
     (searchString: string) =>
-      from(resolveUserDefinedFilter(type.options, documentRef.current, getValuePath())).pipe(
+      from(resolveUserDefinedFilter(schemaType.options, documentRef.current, getValuePath())).pipe(
         mergeMap(({filter, params}) =>
-          adapter.search(searchClient, searchString, type, {
-            ...type.options,
+          adapter.search(searchClient, searchString, schemaType, {
+            ...schemaType.options,
             filter,
             params,
             tag: 'search.reference',
@@ -99,14 +99,14 @@ function StudioReferenceInputInner(props: StudioReferenceInputProps) {
 
         catchError((err: SearchError) => {
           const isQueryError = err.details && err.details.type === 'queryParseError'
-          if (type.options?.filter && isQueryError) {
+          if (schemaType.options?.filter && isQueryError) {
             err.message = `Invalid reference filter, please check the custom "filter" option`
           }
           return throwError(err)
         })
       ),
 
-    [documentRef, getValuePath, searchClient, type]
+    [documentRef, getValuePath, searchClient, schemaType]
   )
 
   const template = props.value?._strengthenOnPublish?.template
@@ -151,7 +151,7 @@ function StudioReferenceInputInner(props: StudioReferenceInputProps) {
     return (
       (initialValueTemplateItems || [])
         // eslint-disable-next-line max-nested-callbacks
-        .filter((i) => type.to.some((_refType) => _refType.name === i.template?.schemaType))
+        .filter((i) => schemaType.to.some((_refType) => _refType.name === i.template?.schemaType))
         .map((item): CreateOption | undefined =>
           item.template?.schemaType
             ? {
@@ -171,7 +171,7 @@ function StudioReferenceInputInner(props: StudioReferenceInputProps) {
         )
         .filter(isNonNullable)
     )
-  }, [disableNew, initialValueTemplateItems, type.to])
+  }, [disableNew, initialValueTemplateItems, schemaType.to])
 
   return (
     <ReferenceInput

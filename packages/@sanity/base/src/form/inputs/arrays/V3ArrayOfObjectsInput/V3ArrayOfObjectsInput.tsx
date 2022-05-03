@@ -1,23 +1,22 @@
 import React, {useCallback} from 'react'
-import {ArrayOfObjectsInputProps} from '../../../types'
 import {Button, Card, Flex, Inline, Stack, Text} from '@sanity/ui'
+import {CollapseIcon, ExpandIcon} from '@sanity/icons'
+import {ArrayOfObjectsInputProps} from '../../../types'
 import {Item, List} from '../common/list'
-import {ItemMember} from '../ArrayOfObjectsInput/ItemMember'
+import {MemberItem} from '../ArrayOfObjectsInput/MemberItem'
 import {DefaultArrayInputFunctions} from '../common/ArrayFunctions'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {DragHandle} from '../common/DragHandle'
-import {CollapseIcon, ExpandIcon} from '@sanity/icons'
 
 export function V3ArrayOfObjectsInput(props: ArrayOfObjectsInputProps) {
   const {
-    level = 1,
     validation,
     members,
     readOnly,
     value = [],
     schemaType,
     onChange,
-    onFocusChildPath,
+    onFocusPath,
     onAppendItem,
     onPrependItem,
     onMoveItem,
@@ -39,9 +38,9 @@ export function V3ArrayOfObjectsInput(props: ArrayOfObjectsInputProps) {
 
   const handleFocusItem = useCallback(
     (itemKey: string) => {
-      onFocusChildPath([{_key: itemKey}])
+      onFocusPath([{_key: itemKey}])
     },
-    [onFocusChildPath]
+    [onFocusPath]
   )
 
   const renderItem = useCallback((item) => {
@@ -60,7 +59,7 @@ export function V3ArrayOfObjectsInput(props: ArrayOfObjectsInputProps) {
               <Text size={1}>Preview: {JSON.stringify(item.value)}</Text>
             </Card>
           ) : (
-            item.children
+            defaultRenderItem(item)
           )}
         </Flex>
       </Card>
@@ -78,7 +77,7 @@ export function V3ArrayOfObjectsInput(props: ArrayOfObjectsInputProps) {
                   <Item key={member.key} isSortable={isSortable} isGrid={isGrid} index={index}>
                     <Flex gap={2}>
                       <DragHandle />
-                      <ItemMember
+                      <MemberItem
                         member={member}
                         renderItem={renderItem}
                         renderField={renderField}
