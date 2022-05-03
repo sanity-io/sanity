@@ -1,13 +1,6 @@
 /* eslint-disable react/default-props-match-prop-types */
 
-import {
-  ArraySchemaType,
-  isKeySegment,
-  isObjectSchemaType,
-  ObjectSchemaType,
-  Path,
-  SchemaType,
-} from '@sanity/types'
+import {isKeySegment, isObjectSchemaType, ObjectSchemaType, Path, SchemaType} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {isPlainObject} from 'lodash'
 import {Box, Button, Card, Flex, Spinner, Stack, Text, ToastParams} from '@sanity/ui'
@@ -16,7 +9,7 @@ import {map} from 'rxjs/operators'
 import {Subscription} from 'rxjs'
 import {randomKey, resolveTypeName} from '@sanity/util/content'
 import {FormFieldSet} from '../../../components/formField'
-import {FileLike, Uploader, UploadEvent} from '../../../studio/uploads/types'
+import {Uploader, UploadEvent} from '../../../studio/uploads/types'
 import {isDev} from '../../../../environment'
 import {Alert} from '../../../components/Alert'
 import {Details} from '../../../components/Details'
@@ -24,11 +17,10 @@ import {Item, List} from '../common/list'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import {applyAll} from '../../../patch/applyPatch'
 // import {ConditionalReadOnlyField} from '../../common'
-import {ArrayInputProps} from '../../../types'
-import {PatchEvent, insert, setIfMissing, unset, set} from '../../../patch'
+import {insert, PatchEvent, set, setIfMissing, unset} from '../../../patch'
 import {ImperativeToast} from '../../../../components/transitional'
 // import {ArrayItem} from './item'
-import type {ArrayMember, InsertEvent, ReferenceItemComponentType} from './types'
+import type {ArrayMember, InsertEvent} from './types'
 import {uploadTarget} from './uploadTarget/uploadTarget'
 import {isEmpty} from './item/helpers'
 

@@ -19,12 +19,12 @@ import {getPublishedId, useUnique} from '../../../util'
 import {useDeskTool, usePaneRouter} from '../../components'
 import {PatchEvent, StateTree, toMutationPatches} from '../../../form'
 import {useFormState} from '../../../form/store/useFormState'
+import {setAtPath} from '../../../form/store/stateTreeHelper'
 import {DocumentPaneContext, DocumentPaneContextValue} from './DocumentPaneContext'
 import {getMenuItems} from './menuItems'
 import {DocumentPaneProviderProps} from './types'
 import {usePreviewUrl} from './usePreviewUrl'
 import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
-import {setAtPath} from '../../../form/store/stateTreeHelper'
 
 const emptyObject = {} as Record<string, string | undefined>
 

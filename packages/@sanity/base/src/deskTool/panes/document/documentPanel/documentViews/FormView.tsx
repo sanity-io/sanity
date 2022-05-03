@@ -27,13 +27,13 @@ interface FormViewProps {
   margins: [number, number, number, number]
 }
 
-interface FormViewState {
-  filterField: FormBuilderFilterFieldFn
-}
+// interface FormViewState {
+//   filterField: FormBuilderFilterFieldFn
+// }
 
-const INITIAL_STATE: FormViewState = {
-  filterField: () => true,
-}
+// const INITIAL_STATE: FormViewState = {
+//   filterField: () => true,
+// }
 
 const preventDefault = (ev: React.FormEvent) => ev.preventDefault()
 

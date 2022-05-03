@@ -3,14 +3,14 @@ import {Button, Card} from '@sanity/ui'
 import {ObjectSchemaType} from '@sanity/types'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {randomKey} from '../common/randomKey'
-import {ArrayInputProps} from '../../../types'
 import {EMPTY_ARRAY} from '../../../utils/empty'
-import {FormFieldSet} from '../../../../components/formField'
 import {ItemMember} from './ItemMember'
+import {ArrayOfObjectsInputProps} from '../../../types'
+import {FormFieldSet} from '../../../components/formField/FormFieldSet'
 
-export const ArrayInput = memo(function ArrayInput(props: ArrayInputProps) {
+export const ArrayInput = memo(function ArrayInput(props: ArrayOfObjectsInputProps) {
   const {
-    type,
+    schemaType,
     members,
     collapsed,
     collapsible,
@@ -39,9 +39,9 @@ export const ArrayInput = memo(function ArrayInput(props: ArrayInputProps) {
     <FormFieldSet
       ref={collapsed ? focusRef : null}
       level={level}
-      title={type.title}
+      title={schemaType.title}
       id={id}
-      description={type.description}
+      description={schemaType.description}
       collapsible={collapsible}
       collapsed={collapsed}
       onSetCollapsed={onSetCollapsed}
@@ -49,7 +49,7 @@ export const ArrayInput = memo(function ArrayInput(props: ArrayInputProps) {
       validation={collapsed ? validation : EMPTY_ARRAY}
       __unstable_changeIndicator={false}
     >
-      {type.of.map((memberType) => {
+      {schemaType.of.map((memberType) => {
         return (
           <Button
             key={memberType.name}
@@ -59,7 +59,7 @@ export const ArrayInput = memo(function ArrayInput(props: ArrayInputProps) {
         )
       })}
       {members.map((member, index) => {
-        if (member.type !== 'item') {
+        if (member.kind !== 'item') {
           return 'Non item members not supported currently'
         }
         return (

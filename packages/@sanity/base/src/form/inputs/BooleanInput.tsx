@@ -4,10 +4,11 @@ import React, {useCallback} from 'react'
 import styled from 'styled-components'
 import {useId} from '@reach/auto-id'
 import {Box, Card, Checkbox, Flex, Switch} from '@sanity/ui'
-import {FormFieldHeaderText, FormFieldStatus} from '../../components/formField'
 import {PatchEvent, set} from '../patch'
 import {ChangeIndicator} from '../../components/changeIndicators'
 import {BooleanInputProps} from '../types'
+import {FormFieldHeaderText} from '../components/formField/FormFieldHeaderText'
+import {FormFieldStatus} from '../components/formField/FormFieldStatus'
 
 const CenterAlignedBox = styled(Box)`
   align-self: center;

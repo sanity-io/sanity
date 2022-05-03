@@ -5,18 +5,22 @@ import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/ico
 import {isValidationErrorMarker, isValidationWarningMarker, ValidationMarker} from '@sanity/types'
 import {Box, Flex, Placement, Stack, Text, Tooltip} from '@sanity/ui'
 import React, {useMemo} from 'react'
-import {useFormNode} from '../formNode'
 
 export interface FormFieldValidationStatusProps {
   /**
    * @alpha
    */
+  validation?: ValidationMarker[]
+  /**
+   * @alpha
+   */
   __unstable_showSummary?: boolean
-
   fontSize?: number | number
   placement?: Placement
   portal?: boolean
 }
+
+const EMPTY_ARRAY: never[] = []
 
 const VALIDATION_COLORS: Record<'error' | 'warning' | 'info', string> = {
   error: hues.red[500].hex,
@@ -31,19 +35,17 @@ const VALIDATION_ICONS: Record<'error' | 'warning' | 'info', React.ReactElement>
 }
 
 export function FormFieldValidationStatus(props: FormFieldValidationStatusProps) {
-  const {validation} = useFormNode()
-
   const {
-    // validation = EMPTY_ARRAY,
+    validation = EMPTY_ARRAY,
     __unstable_showSummary: showSummary,
     fontSize,
     placement = 'top',
     portal,
   } = props
 
-  const errors = useMemo(() => validation.filter((v) => v.level === 'error'), [validation])
-  const warnings = useMemo(() => validation.filter((v) => v.level === 'warning'), [validation])
-  const info = useMemo(() => validation.filter((v) => v.level === 'info'), [validation])
+  const errors = validation.filter((v) => v.level === 'error')
+  const warnings = validation.filter((v) => v.level === 'warning')
+  const info = validation.filter((v) => v.level === 'info')
 
   const hasErrors = errors.length > 0
   const hasWarnings = warnings.length > 0

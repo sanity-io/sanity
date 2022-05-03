@@ -1,10 +1,10 @@
 /* eslint-disable react/jsx-handler-names */
 
 import React, {useCallback} from 'react'
-import {FormFieldSet} from '../../../components/formField'
 import {RenderFieldCallback, RenderInputCallback} from '../../types'
 import {FieldSetMember} from '../../store/types/members'
 import {MemberField} from './MemberField'
+import {FormFieldSet} from '../../components/formField/FormFieldSet'
 
 export function MemberFieldset(props: {
   member: FieldSetMember

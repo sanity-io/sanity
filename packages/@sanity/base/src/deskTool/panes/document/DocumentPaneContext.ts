@@ -4,10 +4,9 @@ import {EditStateFor, TimelineController, Timeline} from '../../../datastores'
 import {DocumentActionComponent} from '../../actions'
 import {DocumentBadgeComponent} from '../../badges'
 import {PaneView, PaneMenuItem, PaneMenuItemGroup} from '../../types'
-import {ObjectInputProps} from '../../../form/types'
-import {TimelineMode} from './types'
 import {DocumentNode} from '../../../form/store/types/nodes'
 import {PatchEvent} from '../../../form'
+import {TimelineMode} from './types'
 
 // @todo: provide a TS type for this
 type DocumentSchema = any
