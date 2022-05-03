@@ -42,17 +42,6 @@ export function StudioObjectInput(props: StudioObjectInputProps) {
       if (!Input) {
         return <div>No input resolved for type: {inputProps.schemaType.name}</div>
       }
-      if (isObjectInputProps(inputProps)) {
-        assertType<React.ComponentType<ObjectInputProps>>(Input)
-        return <Input {...inputProps} />
-      }
-      if (isArrayInputProps(inputProps)) {
-        assertType<React.ComponentType<ArrayOfObjectsInputProps>>(Input)
-        return <Input {...inputProps} />
-      }
-      assertType<React.ComponentType<StringInputProps | NumberInputProps | BooleanInputProps>>(
-        Input
-      )
       return <Input {...inputProps} />
     },
     [resolveInputComponent]

@@ -71,10 +71,13 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
   const {unstable_formBuilder: formBuilderConfig} = useSource()
 
   const resolveInputComponent = useCallback(
-    (nodeType: SchemaType): React.ComponentType<InputProps> => {
-      const configuredInput = formBuilderConfig.components?.inputs?.[nodeType.name]?.input
-      const resolved = configuredInput || defaultInputResolver(nodeType)
-      return resolved || fallbackInputs[nodeType.jsonType]
+    (type: SchemaType): React.ComponentType<InputProps> => {
+      const configuredInput = formBuilderConfig.components?.inputs?.[type.name]?.input
+      const resolved =
+        configuredInput ||
+        formBuilderConfig.resolveInputComponent?.(type) ||
+        defaultInputResolver(type)
+      return resolved || fallbackInputs[type.jsonType]
     },
     [formBuilderConfig]
   )
