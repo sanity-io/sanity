@@ -198,6 +198,8 @@ export function ArrayField(props: {
       resolveInitialValue: resolveInitialValueForType,
       // todo:
       validation: [],
+      // todo:
+      presence: [],
       renderInput,
       renderField,
       renderItem,

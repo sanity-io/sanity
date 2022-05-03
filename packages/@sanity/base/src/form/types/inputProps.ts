@@ -18,6 +18,7 @@ import {
   ObjectNode,
   StringNode,
 } from '../store/types/nodes'
+import {FieldPresence} from '../store/formState'
 import {RenderFieldCallback, RenderInputCallback, RenderItemCallback} from './renderCallback'
 import {InsertItemEvent, MoveItemEvent} from './event'
 import {FieldGroup} from './fieldGroups'
@@ -30,6 +31,7 @@ export interface BaseInputProps {
   onBlur: (event: React.FocusEvent) => void
 
   validation: ValidationMarker[]
+  presence: FieldPresence[]
 }
 
 export interface ObjectInputProps<
@@ -91,11 +93,24 @@ export interface ArrayOfPrimitivesInputProps<
   // note: not a priority to support collapsible arrays right now
   onSetCollapsed: (collapsed: boolean) => void
 
-  onChange(patch: FormPatch): void
-  onChange(patches: FormPatch[]): void
+  onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
 
   // this opens/close items
   onSetItemCollapsed: (index: number, collapsed: boolean) => void
+
+  onAppendItem: (item: T) => void
+  onPrependItem: (item: T) => void
+  onRemoveItem: (itemKey: string) => void
+  onMoveItem: (event: MoveItemEvent) => void
+  onInsert: (event: InsertItemEvent) => void
+
+  resolveInitialValue: (type: SchemaType, params: Record<string, unknown>) => Promise<T>
+
+  onFocusPath: (path: Path) => void
+
+  renderInput: RenderInputCallback
+  renderItem: RenderItemCallback
+  renderField: RenderFieldCallback
 }
 
 export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
