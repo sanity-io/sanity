@@ -6,6 +6,7 @@ import {
   InsertEvent,
   RenderFieldCallback,
   RenderInputCallback,
+  RenderItemCallback,
 } from '../../../types'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
@@ -99,7 +100,11 @@ export function ArrayField(props: {
     [onSetCollapsedPath, member.field.path]
   )
 
-  const inputProps = useMemo((): Omit<ArrayOfObjectsInputProps, 'renderItem'> => {
+  const renderItem: RenderItemCallback = useCallback((item) => {
+    return <div>Item</div>
+  }, [])
+
+  const inputProps = useMemo((): ArrayOfObjectsInputProps => {
     return {
       level: member.field.level,
       onBlur: handleBlur,
@@ -122,6 +127,7 @@ export function ArrayField(props: {
       // todo:
       validation: [],
       renderInput,
+      renderItem,
     }
   }, [
     member.field.level,
@@ -142,6 +148,7 @@ export function ArrayField(props: {
     handleInsert,
     handleRemoveItem,
     renderInput,
+    renderItem,
   ])
 
   const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])

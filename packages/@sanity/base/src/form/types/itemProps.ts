@@ -3,76 +3,38 @@ import {
   NumberSchemaType,
   ObjectSchemaType,
   Path,
+  SchemaType,
   StringSchemaType,
-  ValidationMarker,
 } from '@sanity/types'
-import {FormFieldPresence} from '../../presence'
-import {ObjectMember} from './member'
-import {FieldGroup} from './fieldGroup'
 
-export interface BaseItemProps {
-  name: string
-  // id is a stringified version of the path
-  id: string
-  // the full content path of this input
-  path: Path
-  focusPath: Path
-  focused: boolean
-  presence: FormFieldPresence[]
-  validation: ValidationMarker[]
+export interface BaseItem {
+  schemaType: SchemaType
+  key: string
   index: number
   level: number
-  hidden: boolean
-  readOnly: boolean
+  value: unknown
+  path: Path
+  title: string | undefined
+  description: string | undefined
+  inputId: string
+  children: React.ReactNode | null
 }
 
-export interface StringItemProps extends BaseItemProps {
-  kind: 'string'
-  type: StringSchemaType
-  compareValue: string | undefined
-  value: string | undefined
-}
-
-export interface NumberItemProps extends BaseItemProps {
-  kind: 'number'
-  type: NumberSchemaType
-  compareValue: number | undefined
-  value: number | undefined
-}
-
-export interface BooleanItemProps extends BaseItemProps {
-  kind: 'boolean'
-  type: BooleanSchemaType
-  compareValue: boolean | undefined
-  value: boolean | undefined
-}
-
-export interface ObjectItemProps<V = Record<string, unknown>, T = ObjectSchemaType>
-  extends BaseItemProps {
-  kind: 'object'
-  type: T
-  members: ObjectMember[]
-  groups: FieldGroup[]
-  compareValue: V | undefined
-  value: V | undefined
-  collapsed: boolean
+export interface ItemOfObject extends BaseItem {
+  schemaType: ObjectSchemaType
+  collapsed: boolean | undefined
   collapsible: boolean
+  onSetCollapsed: (collapsed: boolean) => void
 }
 
-// export interface ArrayItemProps<T = unknown, S extends ArraySchemaType = ArraySchemaType<T>>
-//   extends BaseItemProps {
-//   kind: 'array'
-//   type: S
-//   collapsed: boolean
-//   collapsible: boolean
-//   members: ArrayMember[]
-//   compareValue: T[] | undefined
-//   value: T[] | undefined
-// }
+export interface ItemOfNumber extends BaseItem {
+  schemaType: NumberSchemaType
+}
+export interface ItemOfBoolean extends BaseItem {
+  schemaType: BooleanSchemaType
+}
+export interface ItemOfString extends BaseItem {
+  schemaType: StringSchemaType
+}
 
-export type ItemProps =
-  | StringItemProps
-  | ObjectItemProps
-  // | ArrayItemProps
-  | NumberItemProps
-  | BooleanItemProps
+export type ItemProps = ItemOfObject | ItemOfNumber | ItemOfBoolean | ItemOfString

@@ -10,7 +10,7 @@ import React from 'react'
 import {PatchEvent} from '../patch'
 import {Field} from './field'
 import {InputProps} from './inputProps'
-import {Item} from './item'
+import {ItemProps} from './item'
 
 export type FIXME = any
 
@@ -60,7 +60,7 @@ export type FormBuilderInputComponentMap = Record<
   string,
   {
     field?: React.ComponentType<Field>
-    item?: React.ComponentType<Item>
+    item?: React.ComponentType<ItemProps>
     input?: React.ComponentType<InputProps>
   }
 >

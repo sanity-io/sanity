@@ -6,6 +6,7 @@ export type ObjectMember = FieldMember | FieldSetMember
 export interface ArrayOfObjectsMember<Node extends ObjectNode = ObjectNode> {
   kind: 'item'
   key: string
+  index: number
   // the state resolver should make sure this
   // gets collapsible: false and collapsed by default
   collapsed: undefined | boolean

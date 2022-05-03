@@ -8,7 +8,6 @@ import {
   RenderArrayItemCallback,
   RenderFieldCallback,
 } from './types'
-import {Focusable} from './types/focusable'
 
 export function FormNode(props: {
   component: React.ComponentType<InputProps>

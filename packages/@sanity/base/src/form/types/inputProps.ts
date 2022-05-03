@@ -65,6 +65,8 @@ export interface ArrayOfObjectsInputProps<
   onRemoveItem: (key: string) => void
   onInsert: (event: InsertEvent) => void
   renderInput: RenderInputCallback
+  renderItem: RenderItemCallback
+  renderField: RenderFieldCallback
 }
 
 export interface ArrayOfPrimitivesInputProps<
@@ -80,8 +82,6 @@ export interface ArrayOfPrimitivesInputProps<
 
   // this opens/close items
   onSetItemCollapsed: (index: number, collapsed: boolean) => void
-
-  // renderItem: RenderItemCallback
 }
 
 export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
