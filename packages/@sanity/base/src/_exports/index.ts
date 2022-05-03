@@ -208,7 +208,7 @@ export type {
   FormSetPatch,
   FormUnsetPatch,
   InputProps,
-  InsertEvent,
+  InsertItemEvent,
   NumberInputProps,
   ObjectInputProps,
   PatchArg,

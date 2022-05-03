@@ -3,7 +3,8 @@ import {FieldMember} from '../../../store/types/members'
 import {ArrayOfObjectsNode} from '../../../store/types/nodes'
 import {
   ArrayOfObjectsInputProps,
-  InsertEvent,
+  InsertItemEvent,
+  MoveItemEvent,
   RenderFieldCallback,
   RenderInputCallback,
   RenderItemCallback,
@@ -73,7 +74,7 @@ export function ArrayField(props: {
   )
 
   const handleInsert = useCallback(
-    (event: InsertEvent) => {
+    (event: InsertItemEvent) => {
       const ref =
         typeof event.referenceItem === 'string' ? {_key: event.referenceItem} : event.referenceItem
       onChange(
@@ -88,6 +89,36 @@ export function ArrayField(props: {
       )
     },
     [member.name, onChange]
+  )
+
+  const handleMoveItem = useCallback(
+    (event: MoveItemEvent) => {
+      const value = member.field.value
+      const item = value?.[event.fromIndex] as any
+      const refItem = value?.[event.toIndex] as any
+      if (event.fromIndex === event.toIndex) {
+        return
+      }
+
+      if (!(item as any)?._key || !(refItem as any)?._key) {
+        // eslint-disable-next-line no-console
+        console.error(
+          'Neither the item you are moving nor the item you are moving to have a key. Cannot continue.'
+        )
+
+        return
+      }
+
+      onChange(
+        PatchEvent.from([
+          unset([{_key: item._key}]),
+          insert([item], event.fromIndex > event.toIndex ? 'before' : 'after', [
+            {_key: refItem._key},
+          ]),
+        ]).prefixAll(member.name)
+      )
+    },
+    [member.field.value, onChange]
   )
 
   const handlePrependItem = useCallback(
@@ -151,6 +182,7 @@ export function ArrayField(props: {
       focused: member.field.focused,
       onChange: handleChange,
       onInsert: handleInsert,
+      onMoveItem: handleMoveItem,
       onRemoveItem: handleRemoveItem,
       onAppendItem: handleAppendItem,
       onPrependItem: handlePrependItem,

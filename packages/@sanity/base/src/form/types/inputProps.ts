@@ -18,7 +18,7 @@ import {
   StringNode,
 } from '../store/types/nodes'
 import {RenderFieldCallback, RenderInputCallback, RenderItemCallback} from './renderCallback'
-import {InsertEvent} from './event'
+import {InsertItemEvent, MoveItemEvent} from './event'
 import {FieldGroup} from './fieldGroups'
 
 // these are the props shared by *all* inputs
@@ -62,7 +62,8 @@ export interface ArrayOfObjectsInputProps<
   onAppendItem: (item: T) => void
   onPrependItem: (item: T) => void
   onRemoveItem: (itemKey: string) => void
-  onInsert: (event: InsertEvent) => void
+  onMoveItem: (event: MoveItemEvent) => void
+  onInsert: (event: InsertItemEvent) => void
 
   onFocusChildPath: (path: Path) => void
 

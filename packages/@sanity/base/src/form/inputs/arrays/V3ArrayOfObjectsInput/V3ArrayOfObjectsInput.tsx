@@ -1,18 +1,12 @@
 import React, {useCallback} from 'react'
 import {ArrayOfObjectsInputProps} from '../../../types'
-import {isPlainObject} from 'lodash'
-import {FormFieldSet} from '../../../components/formField'
-import {Alert} from '../../../components/Alert'
-import {Box, Button, Card, Flex, Inline, Spinner, Stack, Text} from '@sanity/ui'
-import {Details} from '../../../components/Details'
-import {isDev} from '../../../../environment'
-import {EMPTY_ARRAY} from '../../../utils/empty'
-import {ImperativeToast} from '../../../../components/transitional'
+import {Button, Card, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {Item, List} from '../common/list'
 import {ItemMember} from '../ArrayOfObjectsInput/ItemMember'
 import {DefaultArrayInputFunctions} from '../common/ArrayFunctions'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {DragHandle} from '../common/DragHandle'
+import {CollapseIcon, ExpandIcon} from '@sanity/icons'
 
 export function V3ArrayOfObjectsInput(props: ArrayOfObjectsInputProps) {
   const {
@@ -26,6 +20,7 @@ export function V3ArrayOfObjectsInput(props: ArrayOfObjectsInputProps) {
     onFocusChildPath,
     onAppendItem,
     onPrependItem,
+    onMoveItem,
     renderItem: defaultRenderItem,
     renderField,
     renderInput,
@@ -35,9 +30,12 @@ export function V3ArrayOfObjectsInput(props: ArrayOfObjectsInputProps) {
   const hasMissingKeys = value.some((item) => !item._key)
   const isSortable = options.sortable !== false && !hasMissingKeys
   const isGrid = options.layout === 'grid'
-  const handleSortEnd = useCallback(() => {
-    console.log('handle sort end')
-  }, [])
+  const handleSortEnd = useCallback(
+    (event: {newIndex: number; oldIndex: number}) => {
+      onMoveItem({fromIndex: event.oldIndex, toIndex: event.newIndex})
+    },
+    [onMoveItem]
+  )
 
   const handleFocusItem = useCallback(
     (itemKey: string) => {
@@ -49,18 +47,22 @@ export function V3ArrayOfObjectsInput(props: ArrayOfObjectsInputProps) {
   const renderItem = useCallback((item) => {
     const collapsed = item.collapsed !== false
     return (
-      <Card radius={2} padding={2}>
-        <Button
-          onClick={() => item.onSetCollapsed(!collapsed)}
-          text={collapsed ? 'Expand' : 'Collapse'}
-        />
-        {collapsed ? (
-          <Card shadow={1} radius={2}>
-            Preview: {JSON.stringify(item.value)}
-          </Card>
-        ) : (
-          item.children
-        )}
+      <Card radius={2} padding={2} border>
+        <Flex gap={2}>
+          <Button
+            mode="bleed"
+            onClick={() => item.onSetCollapsed(!collapsed)}
+            text={collapsed ? 'Expand' : 'Collapse'}
+            icon={collapsed ? CollapseIcon : ExpandIcon}
+          />
+          {collapsed ? (
+            <Card flex={1} shadow={1} radius={2} padding={2}>
+              <Text size={1}>Preview: {JSON.stringify(item.value)}</Text>
+            </Card>
+          ) : (
+            item.children
+          )}
+        </Flex>
       </Card>
     )
   }, [])
