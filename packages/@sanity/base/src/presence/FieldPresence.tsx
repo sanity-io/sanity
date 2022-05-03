@@ -104,7 +104,7 @@ export const FieldPresenceInner = memo(function FieldPresenceInner({
     <FlexWrapper justify="flex-end" style={{width: maxWidth}}>
       <div />
 
-      <PresenceTooltip items={uniquePresence} placement="top">
+      <PresenceTooltip items={uniquePresence}>
         <InnerBox direction="row-reverse" style={{width: currWidth}}>
           {avatars.map(
             (av, i) =>
