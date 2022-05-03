@@ -15,6 +15,7 @@ import {insert, PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {ArrayFieldProps} from '../../../types/fieldProps'
 import {randomKey} from '../../arrays/common/randomKey'
+import {Path} from '@sanity/types'
 
 function ensureKey(item: any) {
   return item._key ? item : {...item, _key: randomKey(12)}
@@ -162,17 +163,23 @@ export function ArrayField(props: {
     },
     [onSetCollapsedPath, member.field.path]
   )
+  const handleFocusChildPath = useCallback(
+    (path: Path) => {
+      onPathFocus(member.field.path.concat(path))
+    },
+    [member.field.path, onPathFocus]
+  )
 
   const inputProps = useMemo((): ArrayOfObjectsInputProps => {
     return {
       level: member.field.level,
       onBlur: handleBlur,
       members: member.field.members,
-      value: member.field.value,
+      value: member.field.value as any,
       readOnly: member.field.readOnly,
       onSetCollapsed: handleSetCollapsed,
       schemaType: member.field.schemaType,
-      compareValue: member.field.compareValue,
+      compareValue: member.field.compareValue as any,
       focusRef: focusRef,
       id: member.field.id,
       onSetItemCollapsed: handleSetItemCollapsed,
@@ -186,6 +193,7 @@ export function ArrayField(props: {
       onRemoveItem: handleRemoveItem,
       onAppendItem: handleAppendItem,
       onPrependItem: handlePrependItem,
+      onFocusChildPath: handleFocusChildPath,
       // todo:
       validation: [],
       renderInput,
