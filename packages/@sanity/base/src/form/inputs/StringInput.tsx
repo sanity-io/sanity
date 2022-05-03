@@ -1,29 +1,18 @@
 import React, {useMemo} from 'react'
 import {isValidationErrorMarker} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
-import {PatchEvent, set, unset} from '../patch'
+import {set, unset} from '../patch'
 import {StringInputProps} from '../types'
 
 export function StringInput(props: StringInputProps) {
-  const {
-    value,
-    readOnly,
-    id,
-    focusRef,
-    // @todo
-    validation = [],
-    schemaType,
-    onFocus,
-    onBlur,
-    onChange,
-  } = props
+  const {value, readOnly, id, focusRef, validation, schemaType, onFocus, onBlur, onChange} = props
   const placeholder = schemaType.placeholder
   const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
 
   const handleChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const inputValue = event.currentTarget.value
-      onChange(PatchEvent.from(inputValue ? set(inputValue) : unset()))
+      onChange(inputValue ? set(inputValue) : unset())
     },
     [onChange]
   )

@@ -1,10 +1,11 @@
-import React, {memo, useCallback, useMemo, useRef} from 'react'
+import React, {useCallback, useMemo, useRef} from 'react'
+import {Path} from '@sanity/types'
 import {FieldMember} from '../../../store/types/members'
 import {ObjectNode} from '../../../store/types/nodes'
 import {ObjectInputProps, RenderFieldCallback, RenderInputCallback} from '../../../types'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
-import {PatchEvent, setIfMissing} from '../../../patch'
+import {PatchArg, PatchEvent, setIfMissing} from '../../../patch'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {ObjectFieldProps} from '../../../types/fieldProps'
 
@@ -48,10 +49,17 @@ export function ObjectField(props: {
     [member.field.path, onPathFocus]
   )
 
+  const handleFocusChildPath = useCallback(
+    (path: Path) => {
+      onPathFocus(member.field.path.concat(path))
+    },
+    [member.field.path, onPathFocus]
+  )
+
   const handleChange = useCallback(
-    (event: PatchEvent) => {
+    (event: PatchEvent | PatchArg) => {
       onChange(
-        event
+        PatchEvent.from(event)
           .prepend(setIfMissing(createProtoValue(member.field.schemaType)))
           .prefixAll(member.name)
       )
@@ -102,6 +110,7 @@ export function ObjectField(props: {
       onSetFieldSetCollapsed: handleSetFieldSetCollapsed,
       onSetFieldCollapsed: handleSetFieldCollapsed,
       onFocus: handleFocus,
+      onFocusChildPath: handleFocusChildPath,
       path: member.field.path,
       focusPath: member.field.focusPath,
       focused: member.field.focused,
@@ -109,6 +118,8 @@ export function ObjectField(props: {
       onChange: handleChange,
       renderField,
       renderInput,
+      // todo
+      validation: [],
     }
   }, [
     member.field.level,

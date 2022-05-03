@@ -4,19 +4,18 @@ import {ArrayOfObjectsNode} from '../../../store/types/nodes'
 import {
   ArrayOfObjectsInputProps,
   InsertEvent,
-  ObjectInputProps,
   RenderFieldCallback,
   RenderInputCallback,
 } from '../../../types'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
-import {insert, PatchEvent, setIfMissing, unset} from '../../../patch'
+import {insert, PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {ArrayFieldProps} from '../../../types/fieldProps'
-import {ArrayInputProps} from '../../arrays/ArrayOfObjectsInput'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an array input
+ * Note: "ArrayField" in this context means an object field of an array type
  * @param props - Component props
  */
 export function ArrayField(props: {
@@ -56,9 +55,9 @@ export function ArrayField(props: {
   )
 
   const handleChange = useCallback(
-    (event: PatchEvent) => {
+    (event: PatchEvent | PatchArg) => {
       onChange(
-        event
+        PatchEvent.from(event)
           .prepend(setIfMissing(createProtoValue(member.field.schemaType)))
           .prefixAll(member.name)
       )
@@ -121,6 +120,8 @@ export function ArrayField(props: {
       onChange: handleChange,
       onInsert: handleInsert,
       onRemoveItem: handleRemoveItem,
+      // todo:
+      validation: [],
     }
   }, [
     member.field.level,

@@ -18,10 +18,13 @@ export const SelectInput = React.forwardRef(function SelectInput(
   props: StringInputProps,
   forwardedRef: React.ForwardedRef<HTMLSelectElement | HTMLInputElement>
 ) {
-  const {value, readOnly, validation, type, level, onChange, onFocus, presence} = props
-  const items = useMemo(() => (type.options?.list || []).map(toSelectItem), [type.options?.list])
+  const {value, readOnly, validation, schemaType, level, onChange, onFocus} = props
+  const items = useMemo(
+    () => (schemaType.options?.list || []).map(toSelectItem),
+    [schemaType.options?.list]
+  )
   const currentItem = items.find((item) => item.value === value)
-  const isRadio = type.options && type.options.layout === 'radio'
+  const isRadio = schemaType.options && schemaType.options.layout === 'radio'
   const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
 
   const itemFromOptionValue = useCallback(
@@ -65,70 +68,34 @@ export const SelectInput = React.forwardRef(function SelectInput(
     [handleChange, itemFromOptionValue]
   )
 
-  const handleFocus = React.useCallback(() => {
-    onFocus()
-  }, [onFocus])
-
-  const children = useMemo(() => {
-    if (isRadio) {
-      return (
-        <RadioSelect
-          inputId={inputId}
-          items={items}
-          value={currentItem}
-          onChange={handleChange}
-          direction={type.options?.direction || 'vertical'}
-          ref={forwardedRef as React.ForwardedRef<HTMLInputElement>}
-          readOnly={readOnly}
-          onFocus={handleFocus}
-          customValidity={errors?.[0]?.item.message}
-        />
-      )
-    }
-
-    return (
-      <Select
-        onChange={handleSelectChange}
-        onFocus={handleFocus}
-        id={inputId}
-        ref={forwardedRef as React.ForwardedRef<HTMLSelectElement>}
-        readOnly={readOnly}
-        customValidity={errors?.[0]?.item.message}
-        value={optionValueFromItem(currentItem)}
-      >
-        {[EMPTY_ITEM, ...items].map((item, i) => (
-          <option key={`${i - 1}`} value={i - 1}>
-            {item.title}
-          </option>
-        ))}
-      </Select>
-    )
-  }, [
-    currentItem,
-    errors,
-    forwardedRef,
-    handleChange,
-    handleFocus,
-    handleSelectChange,
-    inputId,
-    isRadio,
-    items,
-    optionValueFromItem,
-    readOnly,
-    type.options?.direction,
-  ])
-
-  return (
-    <FormField
+  return isRadio ? (
+    <RadioSelect
       inputId={inputId}
-      level={level}
-      title={type.title}
-      description={type.description}
-      validation={validation}
-      __unstable_presence={presence}
+      items={items}
+      value={currentItem}
+      onChange={handleChange}
+      direction={schemaType.options?.direction || 'vertical'}
+      ref={forwardedRef as React.ForwardedRef<HTMLInputElement>}
+      readOnly={readOnly}
+      onFocus={onFocus}
+      customValidity={errors?.[0]?.item.message}
+    />
+  ) : (
+    <Select
+      onChange={handleSelectChange}
+      onFocus={onFocus}
+      id={inputId}
+      ref={forwardedRef as React.ForwardedRef<HTMLSelectElement>}
+      readOnly={readOnly}
+      customValidity={errors?.[0]?.item.message}
+      value={optionValueFromItem(currentItem)}
     >
-      {children}
-    </FormField>
+      {[EMPTY_ITEM, ...items].map((item, i) => (
+        <option key={`${i - 1}`} value={i - 1}>
+          {item.title}
+        </option>
+      ))}
+    </Select>
   )
 })
 

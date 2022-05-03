@@ -11,11 +11,9 @@ import * as PathUtils from '@sanity/util/paths'
 import {TextInput, Button, Flex, Box, Card, Stack} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {PatchEvent, set, setIfMissing, unset} from '../../patch'
-import {ChangeIndicatorCompareValueProvider} from '../../../components/changeIndicators'
-import {FormField} from '../../components/formField'
 import {withDocument} from '../../utils/withDocument'
 import {withValuePath} from '../../utils/withValuePath'
-import {LegacyInputProps, ObjectInputProps} from '../../types'
+import {ObjectInputProps} from '../../types'
 import {slugify} from './utils/slugify'
 import {useAsync} from './utils/useAsync'
 
@@ -24,7 +22,7 @@ export type Slug = {
   current?: string
 }
 
-export interface SlugInputProps extends LegacyInputProps<ObjectInputProps<Slug, SlugSchemaType>> {
+export interface SlugInputProps extends ObjectInputProps<Slug, SlugSchemaType> {
   document: SanityDocument
   getValuePath: () => Path
 }
@@ -49,19 +47,17 @@ const SlugInputInner = React.forwardRef(function SlugInput(
 ) {
   const {
     value,
-    compareValue,
-    type,
-    level,
+    schemaType,
     validation,
     onChange,
     onFocus,
+    onFocusChildPath,
     getValuePath,
     document,
     readOnly,
-    presence,
   } = props
 
-  const sourceField = type.options?.source
+  const sourceField = schemaType.options?.source
 
   const inputId = useId()
   const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
@@ -73,22 +69,22 @@ const SlugInputInner = React.forwardRef(function SlugInput(
         return
       }
 
-      onChange(PatchEvent.from(setIfMissing({_type: type.name}), set(nextSlug, ['current'])))
+      onChange(PatchEvent.from(setIfMissing({_type: schemaType.name}), set(nextSlug, ['current'])))
     },
-    [onChange, type.name]
+    [onChange, schemaType.name]
   )
 
   const [generateState, handleGenerateSlug] = useAsync(() => {
     if (!sourceField) {
       return Promise.reject(
-        new Error(`Source is missing. Check source on type "${type.name}" in schema`)
+        new Error(`Source is missing. Check source on type "${schemaType.name}" in schema`)
       )
     }
 
     return getNewFromSource(sourceField, getValuePath(), document)
-      .then((newFromSource) => slugify(newFromSource || '', type))
+      .then((newFromSource) => slugify(newFromSource || '', schemaType))
       .then((newSlug) => updateSlug(newSlug))
-  }, [getValuePath, updateSlug, document, type])
+  }, [getValuePath, updateSlug, document, schemaType])
 
   const isUpdating = generateState?.status === 'pending'
 
@@ -97,57 +93,43 @@ const SlugInputInner = React.forwardRef(function SlugInput(
     [updateSlug]
   )
 
-  const handleFocus = React.useCallback(() => onFocus(['current']), [onFocus])
+  const handleFocus = React.useCallback(() => onFocusChildPath(['current']), [onFocusChildPath])
 
   return (
-    <ChangeIndicatorCompareValueProvider
-      value={value?.current}
-      compareValue={compareValue?.current}
-    >
-      <FormField
-        title={type.title}
-        description={type.description}
-        level={level}
-        validation={validation}
-        __unstable_presence={presence}
-        inputId={inputId}
-      >
-        <Stack space={3}>
-          <Flex>
-            <Box flex={1}>
-              <TextInput
-                id={inputId}
-                ref={forwardedRef}
-                customValidity={errors.length > 0 ? errors[0].item.message : ''}
-                disabled={isUpdating}
-                onChange={handleChange}
-                onFocus={handleFocus}
-                value={value?.current || ''}
-                readOnly={readOnly}
-              />
+    <Stack space={3}>
+      <Flex>
+        <Box flex={1}>
+          <TextInput
+            id={inputId}
+            ref={forwardedRef}
+            customValidity={errors.length > 0 ? errors[0].item.message : ''}
+            disabled={isUpdating}
+            onChange={handleChange}
+            onFocus={onFocus}
+            value={value?.current || ''}
+            readOnly={readOnly}
+          />
 
-              {generateState?.status === 'error' && (
-                <Card padding={2} tone="critical">
-                  {generateState.error.message}
-                </Card>
-              )}
-            </Box>
-            {sourceField && (
-              <Box marginLeft={1}>
-                <Button
-                  mode="ghost"
-                  type="button"
-                  disabled={readOnly || isUpdating}
-                  onClick={handleGenerateSlug}
-                  onFocus={handleFocus}
-                  text={generateState?.status === 'pending' ? 'Generating…' : 'Generate'}
-                />
-              </Box>
-            )}
-          </Flex>
-        </Stack>
-      </FormField>
-    </ChangeIndicatorCompareValueProvider>
+          {generateState?.status === 'error' && (
+            <Card padding={2} tone="critical">
+              {generateState.error.message}
+            </Card>
+          )}
+        </Box>
+        {sourceField && (
+          <Box marginLeft={1}>
+            <Button
+              mode="ghost"
+              type="button"
+              disabled={readOnly || isUpdating}
+              onClick={handleGenerateSlug}
+              onFocus={handleFocus}
+              text={generateState?.status === 'pending' ? 'Generating…' : 'Generate'}
+            />
+          </Box>
+        )}
+      </Flex>
+    </Stack>
   )
 })
 

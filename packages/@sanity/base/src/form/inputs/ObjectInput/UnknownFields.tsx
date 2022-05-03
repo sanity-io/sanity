@@ -2,14 +2,16 @@ import React, {useCallback} from 'react'
 import {Box, Button, Card, Code, Stack, Text} from '@sanity/ui'
 import {TrashIcon} from '@sanity/icons'
 import {isDev} from '../../../environment'
-import {PatchArg, unset} from '../../patch'
+import {FormPatch, PatchArg, PatchEvent, unset} from '../../patch'
 import {Details} from '../../components/Details'
 import {Alert} from '../../components/Alert'
 
 type Props = {
   fieldNames: string[]
   value?: Record<string, unknown>
-  onChange: (...patches: PatchArg[]) => void
+  onChange(patch: FormPatch): void
+  onChange(patch: FormPatch[]): void
+  onChange(patch: PatchEvent): void
   readOnly?: boolean
 }
 

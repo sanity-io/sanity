@@ -4,7 +4,7 @@ import {PrimitiveInputProps, RenderFieldCallback, RenderInputCallback} from '../
 import {PrimitiveFieldProps} from '../../../types/fieldProps'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
-import {PatchEvent} from '../../../patch'
+import {FormSetPatch, FormUnsetPatch, PatchEvent} from '../../../patch'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for a primitive field/input
@@ -41,8 +41,8 @@ export function PrimitiveField(props: {
   )
 
   const handleChange = useCallback(
-    (event: PatchEvent) => {
-      onChange(event.prefixAll(member.name))
+    (event: FormSetPatch | FormUnsetPatch) => {
+      onChange(PatchEvent.from(event).prefixAll(member.name))
     },
     [onChange, member.name]
   )
@@ -63,6 +63,8 @@ export function PrimitiveField(props: {
       focused: member.field.focused,
       level: member.field.level,
       onChange: handleChange,
+      // todo
+      validation: [],
     }
   }, [
     handleBlur,

@@ -22,14 +22,12 @@ export const BooleanInput = React.forwardRef(function BooleanInput(
   props: BooleanInputProps,
   ref: React.ForwardedRef<HTMLInputElement>
 ) {
-  const {onChange} = props
-  const {value, schemaType, readOnly, onFocus} = props
+  const {id, value, schemaType, readOnly, onFocus, onChange} = props
   const layout = schemaType.options?.layout || 'switch'
-  const inputId = useId()
 
   const handleChange = useCallback(
     (event: React.SyntheticEvent<HTMLInputElement>) => {
-      onChange(PatchEvent.from(set(event.currentTarget.checked)))
+      onChange(set(event.currentTarget.checked))
     },
     [onChange]
   )
@@ -45,7 +43,7 @@ export const BooleanInput = React.forwardRef(function BooleanInput(
         <Flex>
           <ZeroLineHeightBox padding={3}>
             <LayoutSpecificInput
-              id={inputId}
+              id={id}
               ref={ref}
               label={schemaType.title}
               readOnly={Boolean(readOnly)}
@@ -60,7 +58,7 @@ export const BooleanInput = React.forwardRef(function BooleanInput(
           <Box flex={1} paddingY={3}>
             <FormFieldHeaderText
               description={schemaType.description}
-              inputId={inputId}
+              inputId={id}
               // validation={validation}
               title={schemaType.title}
             />

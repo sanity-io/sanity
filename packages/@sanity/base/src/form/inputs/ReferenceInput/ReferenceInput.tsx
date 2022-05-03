@@ -77,8 +77,6 @@ function nonNullable<T>(v: T): v is NonNullable<T> {
 
 const REF_PATH = ['_ref']
 export function ReferenceInput(props: ReferenceInputProps) {
-  const {compareValue, validation} = useFormNode<Reference>()
-
   const {
     createOptions,
     editReferenceLinkComponent: EditReferenceLink,

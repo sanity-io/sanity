@@ -130,7 +130,7 @@ export const TagInput = forwardRef(
     props: {
       readOnly?: boolean
       onChange?: (newValue: {value: string}[]) => void
-      onFocus?: () => void
+      onFocus?: (event: React.FocusEvent) => void
       placeholder?: string
       value?: {value: string}[]
     } & Omit<React.HTMLProps<HTMLInputElement>, 'as' | 'onChange' | 'onFocus' | 'ref' | 'value'>,
@@ -181,10 +181,13 @@ export const TagInput = forwardRef(
       setInputValue(event.currentTarget.value)
     }, [])
 
-    const handleInputFocus = useCallback(() => {
-      setFocused(true)
-      if (onFocus) onFocus()
-    }, [onFocus])
+    const handleInputFocus = useCallback(
+      (event: React.FocusEvent) => {
+        setFocused(true)
+        if (onFocus) onFocus(event)
+      },
+      [onFocus]
+    )
 
     const handleInputKeyDown = useCallback(
       (event: React.KeyboardEvent<HTMLInputElement>) => {

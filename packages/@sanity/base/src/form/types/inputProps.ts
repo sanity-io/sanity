@@ -3,11 +3,12 @@ import {
   BooleanSchemaType,
   NumberSchemaType,
   ObjectSchemaType,
+  Path,
   StringSchemaType,
   ValidationMarker,
 } from '@sanity/types'
 import * as React from 'react'
-import {PatchEvent} from '../patch'
+import {FormPatch, FormSetPatch, FormUnsetPatch, PatchEvent} from '../patch'
 
 import {
   ArrayOfObjectsNode,
@@ -23,10 +24,10 @@ import {InsertEvent} from './event'
 export interface BaseInputProps {
   focusRef: React.Ref<any>
 
-  onChange: (patchEvent: PatchEvent) => void
-
   onFocus: (event: React.FocusEvent) => void
   onBlur: (event: React.FocusEvent) => void
+
+  validation: ValidationMarker[]
 }
 
 export interface ObjectInputProps<
@@ -34,9 +35,14 @@ export interface ObjectInputProps<
   S extends ObjectSchemaType = ObjectSchemaType
 > extends ObjectNode<T, S>,
     BaseInputProps {
+  onChange(patch: FormPatch): void
+  onChange(patch: FormPatch[]): void
+  onChange(patch: PatchEvent): void
+
   onSetCollapsed: (collapsed: boolean) => void
   onSetFieldCollapsed: (fieldName: string, collapsed: boolean) => void
 
+  onFocusChildPath: (path: Path) => void
   onSelectFieldGroup: (groupName: string) => void
   onSetFieldSetCollapsed: (fieldsetName: string, collapsed: boolean) => void
 
@@ -49,7 +55,10 @@ export interface ArrayOfObjectsInputProps<
   S extends ArraySchemaType = ArraySchemaType
 > extends ArrayOfObjectsNode<T, S>,
     BaseInputProps {
-  // note: not a priority to support collapsible arrays
+  onChange(patch: FormPatch): void
+  onChange(patches: FormPatch[]): void
+
+  // note: not a priority to support collapsible arrays right now
   onSetCollapsed: (collapsed: boolean) => void
 
   // this opens/close items
@@ -57,20 +66,43 @@ export interface ArrayOfObjectsInputProps<
 
   onRemoveItem: (key: string) => void
   onInsert: (event: InsertEvent) => void
-  validation: ValidationMarker[]
+  // renderItem: RenderItemCallback
+}
+
+export interface ArrayOfPrimitivesInputProps<
+  T extends (string | boolean | number)[] = (string | boolean | number)[],
+  S extends ArraySchemaType = ArraySchemaType
+> extends ArrayOfObjectsNode<T, S>,
+    BaseInputProps {
+  // note: not a priority to support collapsible arrays right now
+  onSetCollapsed: (collapsed: boolean) => void
+
+  onChange(patch: FormPatch): void
+  onChange(patches: FormPatch[]): void
+
+  // this opens/close items
+  onSetItemCollapsed: (index: number, collapsed: boolean) => void
+
   // renderItem: RenderItemCallback
 }
 
 export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
   extends StringNode<S>,
-    BaseInputProps {}
+    BaseInputProps {
+  onChange(patch: FormPatch): void
+  onChange(patches: FormPatch[]): void
+}
 
 export interface NumberInputProps<S extends NumberSchemaType = NumberSchemaType>
   extends NumberNode<S>,
-    BaseInputProps {}
+    BaseInputProps {
+  onChange(patch: FormSetPatch | FormUnsetPatch): void
+}
 export interface BooleanInputProps<S extends BooleanSchemaType = BooleanSchemaType>
   extends BooleanNode<S>,
-    BaseInputProps {}
+    BaseInputProps {
+  onChange(patch: FormSetPatch | FormUnsetPatch): void
+}
 
 export type PrimitiveInputProps = StringInputProps | BooleanInputProps | NumberInputProps
 

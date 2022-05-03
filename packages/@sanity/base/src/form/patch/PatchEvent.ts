@@ -7,8 +7,11 @@ import {FormPatch, PatchArg} from './types'
  * @internal
  */
 export class PatchEvent {
-  static from(...patches: PatchArg[]): PatchEvent {
-    return new PatchEvent(flatten(patches))
+  static from(input: PatchArg | PatchEvent): PatchEvent {
+    if (input instanceof PatchEvent) {
+      return input
+    }
+    return new PatchEvent(Array.isArray(input) ? flatten(input) : [input])
   }
 
   patches: Array<FormPatch>
