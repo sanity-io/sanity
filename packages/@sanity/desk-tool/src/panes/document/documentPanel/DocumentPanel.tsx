@@ -140,7 +140,10 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       <DocumentPanelHeader rootElement={rootElement} ref={setHeaderElement} />
 
       <PaneContent>
-        <PortalProvider element={portalElement}>
+        <PortalProvider
+          element={portalElement}
+          __unstable_elements={{documentScrollElement: documentScrollElement}}
+        >
           <BoundaryElementProvider element={documentScrollElement}>
             {activeView.type === 'form' && !isPermissionsLoading && ready && (
               <>
