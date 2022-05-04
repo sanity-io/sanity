@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useCallback} from 'react'
 import {
   WarningOutlineIcon,
   DocumentsIcon,
@@ -6,14 +6,13 @@ import {
   UnknownIcon,
   ChevronDownIcon,
 } from '@sanity/icons'
-import {useToast, Text, Box, Button, Flex, Label, Card} from '@sanity/ui'
-import {SanityPreview, SanityDefaultPreview} from '@sanity/base/preview'
+import {useToast, Text, Box, Button, Flex, Label, Card, Stack} from '@sanity/ui'
+import {SanityDefaultPreview} from '@sanity/base/preview'
 import {CopyToClipboard} from 'react-copy-to-clipboard'
 import {SchemaType} from '@sanity/types'
-import {ReferringDocuments} from './useReferringDocuments'
+import {ReferencePreviewLink} from '../ReferencePreviewLink'
 import {
   ReferencesCard,
-  InternalReferences,
   OtherReferenceCount,
   CrossDatasetReferencesDetails,
   CrossDatasetReferencesSummary,
@@ -21,10 +20,12 @@ import {
   Table,
   ChevronWrapper,
 } from './ConfirmDeleteDialogBody.styles'
+import {ReferringDocuments} from './useReferringDocuments'
 
 type DeletionConfirmationDialogBodyProps = Required<ReferringDocuments> & {
   documentTitle: React.ReactNode
   action: string
+  onReferenceLinkClick?: () => void
 }
 
 function getSchemaType(typeName: string): SchemaType | null {
@@ -44,8 +45,34 @@ export function ConfirmDeleteDialogBody({
   totalCount,
   action,
   projectIds,
+  onReferenceLinkClick,
 }: DeletionConfirmationDialogBodyProps) {
   const toast = useToast()
+
+  const renderPreviewItem = useCallback(
+    (item) => {
+      const type = getSchemaType(item._type)
+
+      if (type) {
+        return <ReferencePreviewLink type={type} value={item} onClick={onReferenceLinkClick} />
+      }
+
+      return (
+        // Padding added to match the ReferencePreviewLink styling
+        <Box padding={2}>
+          <SanityDefaultPreview
+            value={{
+              title: 'Preview Unavailable',
+              subtitle: `ID: ${item._id}`,
+              media: <UnknownIcon />,
+            }}
+            layout="default"
+          />
+        </Box>
+      )
+    },
+    [onReferenceLinkClick]
+  )
 
   if (internalReferences?.totalCount === 0 && crossDatasetReferences?.totalCount === 0) {
     return (
@@ -93,33 +120,19 @@ export function ConfirmDeleteDialogBody({
       <ReferencesCard>
         <Flex direction="column" height="fill">
           {internalReferences.totalCount > 0 && (
-            <InternalReferences data-testid="internal-references">
-              {internalReferences.references.map((internalReference) => {
-                const type = getSchemaType(internalReference._type)
+            <Stack as="ul" padding={3} space={3} overflow="auto" data-testid="internal-references">
+              {internalReferences?.references.map((item) => (
+                <Box as="li" key={item._id}>
+                  {renderPreviewItem(item)}
+                </Box>
+              ))}
 
-                return (
-                  <Box as="li" key={internalReference._id} paddingX={3} paddingY={3}>
-                    {type ? (
-                      <SanityPreview type={type} value={internalReference} layout="default" />
-                    ) : (
-                      <SanityDefaultPreview
-                        value={{
-                          title: 'Preview Unavailable',
-                          subtitle: `ID: ${internalReference._id}`,
-                          media: <UnknownIcon />,
-                        }}
-                        layout="default"
-                      />
-                    )}
-                  </Box>
-                )
-              })}
               {internalReferences.totalCount > internalReferences.references.length && (
                 <Box as="li" padding={3}>
                   <OtherReferenceCount {...internalReferences} />
                 </Box>
               )}
-            </InternalReferences>
+            </Stack>
           )}
 
           {crossDatasetReferences.totalCount > 0 && (
