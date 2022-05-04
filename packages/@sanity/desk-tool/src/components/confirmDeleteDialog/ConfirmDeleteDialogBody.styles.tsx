@@ -1,18 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
-import {rem, Text, Card, Box, Inline, Tooltip} from '@sanity/ui'
+import {rem, Text, Card, Box, Tooltip, Container, Inline} from '@sanity/ui'
 import {InfoOutlineIcon} from '@sanity/icons'
 
 export const ChevronWrapper = styled(Box)`
   margin-left: auto;
-`
-
-export const InternalReferences = styled.ul`
-  height: 300px;
-  overflow: auto;
-  padding: 0;
-  margin: 0;
-  flex: initial;
 `
 
 export const CrossDatasetReferencesDetails = styled.details`
@@ -80,23 +72,26 @@ export const OtherReferenceCount = (props: {totalCount: number; references: unkn
   return (
     <Inline space={2}>
       <Text size={1} muted>
-        {difference} other reference{difference === 1 ? '' : 's'} not shown.
+        {difference} other reference{difference === 1 ? '' : 's'} not shown{' '}
       </Text>
+
       <Tooltip
         portal
+        placement="top"
         content={
-          <Box padding={2}>
-            <Text>
-              We can't show metadata about these references because no token with access to the
-              datasets they are in was found. Read more about how to configure tokens in the{' '}
-              <a href="https://www.sanity.io/docs/cross-dataset-references">
-                Cross dataset references documentation
-              </a>
-            </Text>
-          </Box>
+          <Container width={0}>
+            <Box padding={2}>
+              <Text size={1}>
+                We can't show metadata about these references because no token with access to the
+                datasets they are in was found.
+              </Text>
+            </Box>
+          </Container>
         }
       >
-        <InfoOutlineIcon />
+        <Text size={1} muted>
+          <InfoOutlineIcon />
+        </Text>
       </Tooltip>
     </Inline>
   )
