@@ -7,6 +7,7 @@ import {TimeAgo} from './TimeAgo'
 
 export const PublishedStatus = ({document}: {document?: SanityDocument | null}) => (
   <Tooltip
+    portal
     content={
       <Box padding={2}>
         <Text size={1}>
