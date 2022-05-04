@@ -24,7 +24,7 @@ export function getCollapsedWithDefaults(
   }
   // default
   return {
-    collapsible: level > 2 ? true : undefined,
-    collapsed: level > 2 ? true : undefined,
+    collapsible: undefined,
+    collapsed: undefined,
   }
 }
