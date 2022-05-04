@@ -48,6 +48,7 @@ import {CardOverlay, FlexContainer} from './styles'
 // import {FileInputField} from './FileInputField'
 import {FileDetails} from './FileDetails'
 import {FileSkeleton} from './FileSkeleton'
+import {FieldMember} from '../../../store/types/members'
 
 type Field = {
   name: string
@@ -174,10 +175,10 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   uploadFirstAccepted(files: DOMFile[]) {
-    const {type} = this.props
+    const {schemaType} = this.props
 
     const match = files
-      .map((file) => ({file, uploader: this.props.resolveUploader?.(type, file)}))
+      .map((file) => ({file, uploader: this.props.resolveUploader?.(schemaType, file)}))
       .find((result) => result.uploader)
 
     if (match) {
@@ -327,8 +328,8 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   handleOpenDialog = () => {
-    const {schemaType, onFocus} = this.props
-    const otherFields = type.fields.filter(
+    const {schemaType, onFocusPath} = this.props
+    const otherFields = schemaType.fields.filter(
       (field) =>
         !HIDDEN_FIELDS.includes(field.name) && !(field.type as FIXME)?.options?.isHighlighted
     )
@@ -336,11 +337,12 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
     /* for context: this code will only ever run if there are fields which are not highlighted.
     in the FileDetails component (used in the renderAsset method) there is a button which is active if there are
     fields that are not highlighted, opening this dialog */
-    onFocus([otherFields[0].name])
+    onFocusPath([otherFields[0].name])
   }
 
   handleStopAdvancedEdit = () => {
-    this.props.onFocus([])
+    // todo: replace with collapsed
+    this.props.onFocusPath([])
   }
 
   renderAdvancedEdit(members: FieldMember[]) {
@@ -368,7 +370,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
     handleSelectAssetFromSource({
       assetFromSource,
       onChange,
-      schemaType,
+      type: schemaType,
       resolveUploader,
       uploadWith: this.uploadWith,
     })
@@ -385,7 +387,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
     // to let focus bubble, so this workaround is needed
     // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
     if (event.currentTarget === event.target && event.currentTarget === this._focusRef) {
-      this.props.onFocus(['asset'])
+      this.props.onFocusPath(['asset'])
     }
   }
   handleFileTargetBlur = (event: React.FocusEvent) => {
@@ -403,13 +405,20 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   renderField(member: FieldMember) {
-    const {renderInput, renderField} = this.props
+    const {renderInput, renderField, renderItem} = this.props
     // const {value, level, focusPath, onFocus, readOnly, onBlur, compareValue, presence, validation} =
     //   this.props
     // const fieldValue = value?.[field.name]
     // const fieldMarkers = validation.filter((marker) => marker.path[0] === field.name)
 
-    return <MemberField member={member} renderInput={renderInput} renderField={renderField} />
+    return (
+      <MemberField
+        member={member}
+        renderInput={renderInput}
+        renderField={renderField}
+        renderItem={renderItem}
+      />
+    )
 
     // return (
     //   <FileInputField
@@ -587,13 +596,13 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   renderUploadPlaceholder() {
-    const {readOnly, type, directUploads, resolveUploader} = this.props
+    const {readOnly, schemaType, directUploads, resolveUploader} = this.props
     const {hoveringFiles} = this.state
 
-    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader?.(type, file))
+    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader?.(schemaType, file))
     const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
 
-    const accept = get(type, 'options.accept', '')
+    const accept = get(schemaType, 'options.accept', '')
 
     return (
       <div style={{padding: 1}}>
@@ -657,19 +666,16 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
     } = this.props
     const {hoveringFiles, selectedAssetSource, isStale} = this.state
 
-    const fieldMembers = members.filter((member) => member.type === 'field') as FieldMember[]
+    const fieldMembers = members.filter((member): member is FieldMember => member.kind === 'field')
 
     const memberGroups = partition(
-      fieldMembers.filter((member) => !HIDDEN_FIELDS.includes(member.field.name)),
+      fieldMembers.filter((member) => !HIDDEN_FIELDS.includes(member.name)),
       'type.options.isHighlighted'
     )
     const [highlightedMembers, otherMembers] = memberGroups
 
-    // Whoever is present at the asset field is who we show on the field itself
-    const assetFieldPresence = presence.filter((item) => item.path[0] === 'asset')
-
     const isDialogOpen =
-      focusPath.length > 0 && otherMembers.some((member) => focusPath[0] === member.field.name)
+      focusPath.length > 0 && otherMembers.some((member) => focusPath[0] === member.name)
 
     function getFileTone() {
       const acceptedFiles = hoveringFiles.filter((file) => resolveUploader?.(schemaType, file))
@@ -691,65 +697,55 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
     return (
       <>
         <ImperativeToast ref={this.setToast} />
+        <div>
+          <ChangeIndicatorCompareValueProvider
+            value={value?.asset?._ref}
+            compareValue={compareValue?.asset?._ref}
+          >
+            {isStale && (
+              <Box marginBottom={2}>
+                <UploadWarning onClearStale={this.handleClearUploadState} />
+              </Box>
+            )}
 
-        <FormFieldSet
-          validation={validation}
-          title={schemaType.title}
-          description={schemaType.description}
-          level={highlightedMembers.length > 0 ? level : 0}
-          __unstable_presence={isDialogOpen ? EMPTY_ARRAY : assetFieldPresence}
-          __unstable_changeIndicator={false}
-        >
-          <div>
-            <ChangeIndicatorCompareValueProvider
+            <ChangeIndicatorWithProvidedFullPath
+              path={[]}
+              hasFocus={this.hasFileTargetFocus()}
               value={value?.asset?._ref}
-              compareValue={compareValue?.asset?._ref}
             >
-              {isStale && (
-                <Box marginBottom={2}>
-                  <UploadWarning onClearStale={this.handleClearUploadState} />
-                </Box>
+              {/* not uploading */}
+              {!value?._upload && (
+                <FileTarget
+                  tabIndex={0}
+                  disabled={Boolean(readOnly)}
+                  ref={this.setFocusInput}
+                  onFiles={this.handleSelectFiles}
+                  onFilesOver={this.handleFilesOver}
+                  onFilesOut={this.handleFilesOut}
+                  onFocus={this.handleFileTargetFocus}
+                  onBlur={this.handleFileTargetBlur}
+                  tone={getFileTone()}
+                  $border={hasValueOrUpload || hoveringFiles.length > 0}
+                  padding={hasValueOrUpload ? 1 : 0}
+                  radius={2}
+                >
+                  {value?.asset && this.renderAsset(otherMembers.length > 0)}
+                  {!value?.asset && this.renderUploadPlaceholder()}
+                  {value?.asset && hoveringFiles.length > 0
+                    ? this.renderAssetMenu(getFileTone())
+                    : null}
+                </FileTarget>
               )}
 
-              <ChangeIndicatorWithProvidedFullPath
-                path={[]}
-                hasFocus={this.hasFileTargetFocus()}
-                value={value?.asset?._ref}
-              >
-                {/* not uploading */}
-                {!value?._upload && (
-                  <FileTarget
-                    tabIndex={0}
-                    disabled={Boolean(readOnly)}
-                    ref={this.setFocusInput}
-                    onFiles={this.handleSelectFiles}
-                    onFilesOver={this.handleFilesOver}
-                    onFilesOut={this.handleFilesOut}
-                    onFocus={this.handleFileTargetFocus}
-                    onBlur={this.handleFileTargetBlur}
-                    tone={getFileTone()}
-                    $border={hasValueOrUpload || hoveringFiles.length > 0}
-                    padding={hasValueOrUpload ? 1 : 0}
-                    radius={2}
-                  >
-                    {value?.asset && this.renderAsset(otherMembers.length > 0)}
-                    {!value?.asset && this.renderUploadPlaceholder()}
-                    {value?.asset && hoveringFiles.length > 0
-                      ? this.renderAssetMenu(getFileTone())
-                      : null}
-                  </FileTarget>
-                )}
+              {/* uploading */}
+              {value?._upload && this.renderUploadState(value._upload)}
+            </ChangeIndicatorWithProvidedFullPath>
+          </ChangeIndicatorCompareValueProvider>
+        </div>
 
-                {/* uploading */}
-                {value?._upload && this.renderUploadState(value._upload)}
-              </ChangeIndicatorWithProvidedFullPath>
-            </ChangeIndicatorCompareValueProvider>
-          </div>
-
-          {highlightedMembers.length > 0 && this.renderFields(highlightedMembers)}
-          {isDialogOpen && this.renderAdvancedEdit(otherMembers)}
-          {selectedAssetSource && this.renderAssetSource()}
-        </FormFieldSet>
+        {highlightedMembers.length > 0 && this.renderFields(highlightedMembers)}
+        {isDialogOpen && this.renderAdvancedEdit(otherMembers)}
+        {selectedAssetSource && this.renderAssetSource()}
       </>
     )
   }

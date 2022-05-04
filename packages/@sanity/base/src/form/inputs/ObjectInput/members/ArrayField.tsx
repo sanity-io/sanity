@@ -8,7 +8,7 @@ import {
   MoveItemEvent,
   RenderFieldCallback,
   RenderInputCallback,
-  RenderItemCallback,
+  RenderArrayItemCallback,
 } from '../../../types'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
@@ -27,7 +27,7 @@ export function ArrayField(props: {
   member: FieldMember<ArrayOfObjectsNode>
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback
-  renderItem: RenderItemCallback
+  renderItem: RenderArrayItemCallback
 }) {
   const {
     onPathBlur,
@@ -264,7 +264,7 @@ export function ArrayField(props: {
       onSetCollapsedFieldSet={onSetCollapsedFieldSet}
       onSetCollapsedPath={onSetCollapsedPath}
       onPathBlur={onPathBlur}
-      onPathFocus={onPathBlur}
+      onPathFocus={onPathFocus}
     >
       {renderField(fieldProps)}
     </FormCallbacksProvider>

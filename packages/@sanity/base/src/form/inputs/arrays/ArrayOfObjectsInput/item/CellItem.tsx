@@ -127,19 +127,16 @@ export const CellItem = React.forwardRef(function ItemCell(
 
   const handleDuplicate = useCallback(() => {
     onInsert?.({
-      item: {...value, _key: randomKey()},
+      items: [{...value, _key: randomKey()}],
       position: 'after',
-      path: [{_key: value._key}],
-      edit: false,
     })
   }, [onInsert, value])
 
   const handleInsert = useCallback(
     (pos: 'before' | 'after', insertType: SchemaType) => {
       onInsert?.({
-        item: createProtoValue(insertType),
+        items: [createProtoValue(insertType)],
         position: pos,
-        path: [{_key: value._key}],
       })
     },
     [onInsert, value._key]

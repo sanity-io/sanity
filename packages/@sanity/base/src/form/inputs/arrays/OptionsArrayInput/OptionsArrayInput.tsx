@@ -11,7 +11,6 @@ import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingTy
 import {Item, List} from '../common/list'
 import {useConditionalReadOnly} from '../../../../conditional-property/conditionalReadOnly'
 import {resolveValueWithLegacyOptionsSupport, isLegacyOptionsItem} from './legacyOptionsSupport'
-import {ArrayOfPrimitivesInput} from '../ArrayOfPrimitivesInput'
 
 type Focusable = {focus: () => void}
 
@@ -150,14 +149,13 @@ export class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProp
 }
 
 const WrappedCheckbox = (props: React.HTMLProps<HTMLInputElement>) => {
-  const {disabled, checked, onChange, onFocus, onBlur} = props
-  const readOnly = useConditionalReadOnly()
+  const {disabled, checked, onChange, onFocus, readOnly, onBlur} = props
 
   return (
     <Checkbox
       disabled={disabled}
       checked={checked}
-      readOnly={readOnly === true}
+      readOnly={readOnly}
       onChange={onChange}
       onFocus={onFocus}
       onBlur={onBlur}

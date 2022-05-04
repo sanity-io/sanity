@@ -71,7 +71,6 @@ export const RowItem = React.forwardRef(function RegularItem(
     },
     [onInsert]
   )
-
   const id = useId()
   return (
     <RowWrapper

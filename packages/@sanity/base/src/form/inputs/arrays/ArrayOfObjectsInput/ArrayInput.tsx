@@ -28,8 +28,8 @@ import {isObjectItemProps} from '../../../types/asserters'
 import type {ArrayMember, InsertEvent} from './types'
 import {uploadTarget} from './uploadTarget/uploadTarget'
 import {isEmpty} from './item/helpers'
-import {MemberItem} from './MemberItem'
 import {ArrayItem} from './item/ArrayItem'
+import {MemberItem} from './MemberItem'
 
 type Toast = {push: (params: ToastParams) => void}
 
@@ -266,6 +266,9 @@ export class ArrayInput extends React.Component<ArrayOfObjectsInputProps<ArrayMe
     return (
       <>
         <ArrayItem
+          validation={item.validation}
+          itemKey={item.key}
+          readOnly={item.readOnly}
           onInsert={item.onInsert}
           onRemove={item.onRemove}
           onFocus={item.onFocus}

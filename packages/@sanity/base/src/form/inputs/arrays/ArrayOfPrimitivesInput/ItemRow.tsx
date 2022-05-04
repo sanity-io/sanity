@@ -9,14 +9,13 @@ import {PatchEvent, set} from '../../../patch'
 import {DragHandle} from '../common/DragHandle'
 import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
 import {InsertMenu} from '../ArrayOfObjectsInput/InsertMenu'
-import {useConditionalReadOnly} from '../../../../conditional-property/conditionalReadOnly'
-import {FIXME, ItemInputProps} from '../../../types'
+import {FIXME, PrimitiveInputProps} from '../../../types'
 import {getEmptyValue} from './getEmptyValue'
 import {PrimitiveValue} from './types'
 
 const dragHandle = <DragHandle paddingX={1} paddingY={3} />
 
-type ItemRowProps = ItemInputProps & {
+type ItemRowProps = PrimitiveInputProps & {
   onRemove: (item: number) => void
   onInsert: (pos: 'before' | 'after', index: number, item: PrimitiveValue) => void
   insertableTypes: SchemaType[]
@@ -32,7 +31,6 @@ export const ItemRow = React.forwardRef(function ItemRow(
 ) {
   const focusRef = React.useRef<{focus: () => void} | null>(null)
   const {
-    inputProps,
     isSortable,
     value,
     index,
@@ -44,20 +42,19 @@ export const ItemRow = React.forwardRef(function ItemRow(
     insertableTypes,
     onInsert,
     onRemove,
-    focusPath,
+    readOnly,
+    onFocus,
+    onBlur,
     validation,
-    type,
+    schemaType,
     presence,
   } = props
 
-  const {onFocus, onBlur, readOnly} = inputProps
-
-  const conditionalReadOnly = useConditionalReadOnly() ?? readOnly
   const hasError = validation.filter(isValidationErrorMarker).length > 0
   const hasWarning = validation.filter(isValidationWarningMarker).length > 0
 
-  const showValidationStatus = !conditionalReadOnly && validation.length > 0 && !type?.title
-  const showPresence = !type?.title && !conditionalReadOnly && presence.length > 0
+  const showValidationStatus = !readOnly && validation.length > 0 && !schemaType?.title
+  const showPresence = !schemaType?.title && !readOnly && presence.length > 0
 
   const handleRemove = useCallback(() => {
     onRemove(index)
@@ -104,17 +101,15 @@ export const ItemRow = React.forwardRef(function ItemRow(
             (
               patch // Map direct unset patches to empty value instead in order to not *remove* elements as the user clears out the value
             ) =>
-              patch.path.length === 0 && patch.type === 'unset' && type
-                ? set(getEmptyValue(type))
+              patch.path.length === 0 && patch.type === 'unset' && schemaType
+                ? set(getEmptyValue(schemaType))
                 : patch
           )
         ).prefixAll(index).patches
       )
     },
-    [index, onChange, type]
+    [index, onChange, schemaType]
   )
-
-  const handleMissingTypeFocus = useCallback(() => onFocus([]), [onFocus])
 
   const tone = useMemo(() => {
     if (hasError) {
@@ -131,8 +126,8 @@ export const ItemRow = React.forwardRef(function ItemRow(
 
   return (
     <Card tone={tone} radius={2} paddingX={1} paddingY={2}>
-      <Flex align={type ? 'flex-end' : 'center'} ref={ref}>
-        {type ? (
+      <Flex align={schemaType ? 'flex-end' : 'center'} ref={ref}>
+        {schemaType ? (
           <Flex align="flex-end" flex={1}>
             {isSortable && <Box marginRight={1}>{dragHandle}</Box>}
 
@@ -159,7 +154,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
           </Flex>
         ) : (
           <Box flex={1}>
-            <ItemWithMissingType value={value} onFocus={handleMissingTypeFocus} />
+            <ItemWithMissingType value={value} onFocus={onFocus} />
           </Box>
         )}
 
@@ -177,7 +172,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
             </Box>
           )}
 
-          {!conditionalReadOnly && (
+          {!readOnly && (
             <Box paddingY={1}>
               <MenuButton
                 button={<Button padding={2} mode="bleed" icon={EllipsisVerticalIcon} />}

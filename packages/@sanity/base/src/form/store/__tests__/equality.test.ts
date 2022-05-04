@@ -77,21 +77,21 @@ test('it doesnt return new object equalities given the same input', () => {
 
   const state1 = prepareFormProps({
     ...DEFAULT_PROPS,
-    type: bookType,
+    schemaType: bookType,
     document,
-  } as any)
+  })
 
   const state2 = prepareFormProps({
     ...DEFAULT_PROPS,
-    type: bookType,
+    schemaType: bookType,
     document,
-  } as any)
-  expect(state1.hidden).toBe(false)
-  expect(state2.hidden).toBe(false)
-  if (state1.hidden || state2.hidden) {
+  })
+  expect(state1).not.toBe(null)
+  expect(state2).not.toBe(null)
+  if (state1 === null || state2 === null) {
     throw new Error('should not be hidden')
   }
 
-  expect(state1.value).toBe(state2.value)
+  expect(state1?.value).toBe(state2?.value)
   // expect(state1.members[0]).toBe(state2.members[0])
 })

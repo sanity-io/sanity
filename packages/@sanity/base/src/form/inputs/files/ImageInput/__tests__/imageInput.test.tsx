@@ -212,9 +212,7 @@ describe('ImageInput with empty state', () => {
     // const {queryByTestId} = render(<ImageInput readOnly />)
     const {result} = renderImageInput({
       props: {
-        inputProps: {
-          readOnly: true,
-        } as any,
+        readOnly: true,
       },
       type: imagesTest,
     })
@@ -228,9 +226,7 @@ describe('ImageInput with empty state', () => {
     // const {queryByTestId} = render(<ImageInput readOnly />)
     const {result} = renderImageInput({
       props: {
-        inputProps: {
-          readOnly: true,
-        } as any,
+        readOnly: true,
       },
       type: imagesTest,
     })
@@ -244,9 +240,7 @@ describe('ImageInput with empty state', () => {
     // const {queryByTestId, queryByText} = render(<ImageInput readOnly />)
     const {result} = renderImageInput({
       props: {
-        inputProps: {
-          readOnly: true,
-        } as any,
+        readOnly: true,
       },
       type: imagesTest,
     })
@@ -376,9 +370,7 @@ describe('ImageInput with asset', () => {
     // const {queryByTestId} = render(<ImageInput value={value} readOnly />)
     const {result} = renderImageInput({
       props: {
-        inputProps: {
-          readOnly: true,
-        } as any,
+        readOnly: true,
         value,
       },
       type: imagesTest,
@@ -397,9 +389,7 @@ describe('ImageInput with asset', () => {
     // const {queryByTestId} = render(<ImageInput value={value} readOnly />)
     const {result} = renderImageInput({
       props: {
-        inputProps: {
-          readOnly: true,
-        } as any,
+        readOnly: true,
         value,
       },
       type: imagesTest,
@@ -420,9 +410,7 @@ describe('ImageInput with asset', () => {
     const {result} = renderImageInput({
       props: {
         assetSources: [{name: 'source1'} as FIXME, {name: 'source2'} as FIXME],
-        inputProps: {
-          readOnly: true,
-        } as any,
+        readOnly: true,
         value,
       },
       type: imagesTest,
@@ -444,9 +432,7 @@ describe('ImageInput with asset', () => {
     // const {queryByTestId} = render(<ImageInput value={value} readOnly />)
     const {result} = renderImageInput({
       props: {
-        inputProps: {
-          readOnly: true,
-        } as any,
+        readOnly: true,
         value,
       },
       type: imagesTest,
@@ -463,9 +449,7 @@ describe('ImageInput with asset', () => {
     // const {queryByTestId} = render(<ImageInput value={value} type={imageType} readOnly />)
     const {result} = renderImageInput({
       props: {
-        inputProps: {
-          readOnly: true,
-        } as any,
+        readOnly: true,
         value,
       },
       type: {...imagesTest, ...imageType},
@@ -480,9 +464,7 @@ describe('ImageInput with asset', () => {
     // const {queryByTestId} = render(<ImageInput value={value} type={imageType} readOnly />)
     const {result} = renderImageInput({
       props: {
-        inputProps: {
-          readOnly: true,
-        } as any,
+        readOnly: true,
         value,
       },
       type: {...imagesTest, ...imageType},

@@ -64,9 +64,9 @@ function enforceTimeStep(dateString: string, timeStep: number) {
 }
 
 export function DateTimeInput(props: DateTimeInputProps) {
-  const {inputProps, level, onChange, presence, type, validation, value} = props
-  const {id, readOnly, ref} = inputProps
-  const {dateFormat, timeFormat, timeStep} = parseOptions(type.options)
+  const {readOnly, id, onChange, presence, focusRef, schemaType, validation, value} = props
+
+  const {dateFormat, timeFormat, timeStep} = parseOptions(schemaType.options)
 
   const handleChange = useCallback(
     (nextDate: string | null) => {
@@ -92,22 +92,17 @@ export function DateTimeInput(props: DateTimeInputProps) {
 
   return (
     <CommonDateTimeInput
-      description={type.description}
       deserialize={deserialize}
       formatInputValue={formatInputValue}
       id={id}
-      level={level}
       onChange={handleChange}
       parseInputValue={parseInputValue}
-      placeholder={type.placeholder}
-      presence={presence}
+      placeholder={schemaType.placeholder}
       readOnly={readOnly}
-      ref={ref}
+      ref={focusRef}
       selectTime
       serialize={serialize}
       timeStep={timeStep}
-      title={type.title}
-      validation={validation}
       value={value}
     />
   )

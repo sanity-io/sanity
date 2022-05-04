@@ -80,15 +80,15 @@ test('it omits the hidden member field from the members array', () => {
   })
   const result = prepareFormProps({
     ...DEFAULT_PROPS,
-    type: bookType,
+    schemaType: bookType,
     document: {_id: 'foo', _type: 'book'},
-  } as any)
+  })
 
-  expect(result.hidden).toBe(false)
-  if (result.hidden) {
+  expect(result).not.toBe(null)
+  if (result === null) {
     throw new Error('should not be hidden')
   }
-  const fieldNames = result.members.map((member) => member.type === 'field' && member.field.name)
+  const fieldNames = result.members.map((member) => member.kind === 'field' && member.name)
   expect(fieldNames).not.toContain('subtitle')
 })
 
@@ -98,15 +98,15 @@ test('it omits nested hidden members from the members array', () => {
   })
   const result = prepareFormProps({
     ...DEFAULT_PROPS,
-    type: bookType,
+    schemaType: bookType,
     document: {_id: 'foo', _type: 'book'},
-  } as any)
+  })
 
-  expect(result.hidden).toBe(false)
-  if (result.hidden) {
+  expect(result).not.toBe(null)
+  if (result === null) {
     throw new Error('should not be hidden')
   }
-  const fieldNames = result.members.map((member) => member.type === 'field' && member.field.name)
+  const fieldNames = result.members.map((member) => member.kind === 'field' && member.name)
   expect(fieldNames).not.toContain('author')
 })
 
@@ -117,14 +117,14 @@ test('it "upward propagates" hidden fields', () => {
     authorLastName: {hidden: () => true},
   })
   const result = prepareFormProps({
-    type: bookType,
+    schemaType: bookType,
     document: {_id: 'foo', _type: 'book'},
     ...DEFAULT_PROPS,
-  } as any)
-  expect(result.hidden).toBe(false)
-  if (result.hidden) {
+  })
+  expect(result).not.toBe(null)
+  if (result === null) {
     throw new Error('should not be hidden')
   }
-  const fieldNames = result.members.map((member) => member.type === 'field' && member.field.name)
+  const fieldNames = result.members.map((member) => member.kind === 'field' && member.name)
   expect(fieldNames).not.toContain('author')
 })

@@ -6,7 +6,6 @@ import React, {useMemo} from 'react'
 import {Box, Button, Grid, Menu, MenuButton, MenuItem, Tooltip, Text} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {FormArrayInputFunctionsProps} from '../../../types'
-import {useConditionalReadOnly} from '../../../../conditional-property/conditionalReadOnly'
 
 export function DefaultArrayInputFunctions<
   SchemaType extends ArraySchemaType,
@@ -14,7 +13,6 @@ export function DefaultArrayInputFunctions<
 >(props: FormArrayInputFunctionsProps<SchemaType, MemberType>) {
   const {type, readOnly, children, onCreateValue, onAppendItem} = props
   const menuButtonId = useId()
-  const conditionalReadOnly = useConditionalReadOnly() ?? readOnly
 
   const insertItem = React.useCallback(
     (itemType) => {
@@ -31,7 +29,7 @@ export function DefaultArrayInputFunctions<
 
   const popoverProps = useMemo(() => ({constrainSize: true, portal: true}), [])
 
-  if (conditionalReadOnly) {
+  if (readOnly) {
     return (
       <Tooltip
         portal

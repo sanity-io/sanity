@@ -1,7 +1,7 @@
 import React, {memo} from 'react'
 import {isArraySchemaType, isObjectSchemaType} from '@sanity/types'
 import {FieldMember} from '../../store/types/members'
-import {RenderFieldCallback, RenderInputCallback, RenderItemCallback} from '../../types'
+import {RenderFieldCallback, RenderInputCallback, RenderArrayItemCallback} from '../../types'
 import {ArrayOfObjectsNode, ObjectNode} from '../../store/types/nodes'
 import {ArrayField} from './members/ArrayField'
 import {PrimitiveField} from './members/PrimitiveField'
@@ -11,7 +11,7 @@ export interface MemberFieldProps {
   member: FieldMember
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback
-  renderItem: RenderItemCallback
+  renderItem: RenderArrayItemCallback
 }
 
 function isMemberObject(member: FieldMember): member is FieldMember<ObjectNode> {

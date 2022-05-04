@@ -140,16 +140,16 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
   }
 
   getUploadOptions = (file: File): ResolvedUploader[] => {
-    const {type, resolveUploader} = this.props
-    const uploader = resolveUploader && resolveUploader(type, file)
-    return uploader ? [{type: type, uploader}] : []
+    const {schemaType, resolveUploader} = this.props
+    const uploader = resolveUploader && resolveUploader(schemaType, file)
+    return uploader ? [{type: schemaType, uploader}] : []
   }
 
   uploadFirstAccepted(files: File[]) {
-    const {type, resolveUploader} = this.props
+    const {schemaType, resolveUploader} = this.props
 
     const match = files
-      .map((file) => ({file, uploader: resolveUploader(type, file)}))
+      .map((file) => ({file, uploader: resolveUploader(schemaType, file)}))
       .find((result) => result.uploader)
 
     if (match) {
@@ -160,11 +160,11 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
   }
 
   uploadWith = (uploader: Uploader, file: File, assetDocumentProps: UploadOptions = {}) => {
-    const {type, onChange} = this.props
+    const {schemaType, onChange} = this.props
     const {label, title, description, creditLine, source} = assetDocumentProps
     const options = {
-      metadata: get(type, 'options.metadata'),
-      storeOriginalFilename: get(type, 'options.storeOriginalFilename'),
+      metadata: get(schemaType, 'options.metadata'),
+      storeOriginalFilename: get(schemaType, 'options.storeOriginalFilename'),
       label,
       title,
       description,
@@ -174,8 +174,8 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
 
     this.cancelUpload()
     this.setState({isUploading: true})
-    onChange(setIfMissing({_type: type.name}))
-    this.uploadSubscription = uploader.upload(file, type, options).subscribe({
+    onChange(setIfMissing({_type: schemaType.name}))
+    this.uploadSubscription = uploader.upload(file, schemaType, options).subscribe({
       next: (uploadEvent) => {
         if (uploadEvent.patches) {
           onChange(uploadEvent.patches)
@@ -193,7 +193,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
         this.clearUploadStatus()
       },
       complete: () => {
-        onChange(unset(['hotspot']), unset(['crop']))
+        onChange([unset(['hotspot']), unset(['crop'])])
         this.setState({isUploading: false})
         // this.toast.push({
         //   status: 'success',
@@ -227,7 +227,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
   }
 
   handleFieldChange = (event: PatchEvent) => {
-    const {onChange, type} = this.props
+    const {onChange, schemaType} = this.props
 
     // When editing a metadata field for an image (eg `altText`), and no asset
     // is currently selected, we want to unset the entire image field if the
@@ -249,7 +249,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
     onChange(
       event.prepend(
         setIfMissing({
-          _type: type.name,
+          _type: schemaType.name,
         })
       ).patches
     )

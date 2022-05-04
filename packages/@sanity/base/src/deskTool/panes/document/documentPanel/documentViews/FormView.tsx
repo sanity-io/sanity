@@ -47,16 +47,16 @@ export function FormView(props: FormViewProps) {
     documentSchema,
     documentType,
     focusPath,
-    handleChange: _handleChange,
+    onChange: _handleChange,
     historyController,
     validation,
     ready,
     changesOpen,
     formState,
-    handleFocus,
-    handleOnSetCollapsedPath,
-    handleOnSetCollapsedFieldSet,
-    handleSetActiveFieldGroup,
+    onFocus,
+    onSetCollapsedPath,
+    onSetCollapsedFieldSet,
+    onSetActiveFieldGroup,
   } = useDocumentPane()
   const documentStore = useDocumentStore()
   const {revTime: rev} = historyController
@@ -102,8 +102,8 @@ export function FormView(props: FormViewProps) {
   // }, [])
 
   const handleBlur = useCallback(() => {
-    // do nothing
-  }, [])
+    onFocus([])
+  }, [onFocus])
 
   useEffect(() => {
     const sub = documentStore.pair
@@ -181,7 +181,7 @@ export function FormView(props: FormViewProps) {
                 changesOpen={changesOpen}
                 focused={formState.focused}
                 onPathBlur={handleBlur}
-                onPathFocus={handleFocus}
+                onPathFocus={onFocus}
                 focusPath={formState.focusPath}
                 readOnly={isReadOnly}
                 schema={schema}
@@ -192,9 +192,9 @@ export function FormView(props: FormViewProps) {
                 validation={validation}
                 value={formState.value}
                 onChange={handleChange}
-                onSetCollapsedPath={handleOnSetCollapsedPath}
-                onSetCollapsedFieldSet={handleOnSetCollapsedFieldSet}
-                onSelectFieldGroup={handleSetActiveFieldGroup}
+                onSetCollapsedPath={onSetCollapsedPath}
+                onSetCollapsedFieldSet={onSetCollapsedFieldSet}
+                onSelectFieldGroup={onSetActiveFieldGroup}
               />
             )
           ) : (

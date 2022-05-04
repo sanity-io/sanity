@@ -1,4 +1,4 @@
-import {AssetSource, Schema, SchemaType} from '@sanity/types'
+import {AssetSource, ObjectSchemaType, Schema, SchemaType} from '@sanity/types'
 import React, {useMemo} from 'react'
 import {SanityFormBuilderConfig} from '../config'
 import {FIXME, FormBuilderFilterFieldFn, RenderInputCallback} from './types'
@@ -38,6 +38,8 @@ export interface FormBuilderProviderProps extends SanityFormBuilderConfig {
   value?: unknown
   children?: React.ReactNode
   filterField?: FormBuilderFilterFieldFn
+  renderField: FIXME
+  type: ObjectSchemaType
   /**
    * @internal
    */

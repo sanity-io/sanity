@@ -4,12 +4,11 @@ import {startsWith} from '@sanity/util/paths'
 import {ArraySchemaType, SchemaType} from '@sanity/types'
 import {Card, Stack} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
-import {FormFieldSet} from '../../../components/formField'
 import {ArrayOfPrimitivesInputProps, FormArrayInputFunctionsProps} from '../../../types'
 import {PatchEvent, set, unset} from '../../../patch'
 import {Item, List} from '../common/list'
 import {getEmptyValue} from './getEmptyValue'
-// import {ItemRow} from './ItemRow'
+
 import {PrimitiveValue} from './types'
 import {nearestIndexOf} from './utils/nearestIndex'
 
@@ -247,46 +246,30 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
     const isSortable = !readOnly && get(schemaType, 'options.sortable') !== false
 
     return (
-      <FormFieldSet
-        title={schemaType?.title}
-        description={schemaType?.description}
-        level={level - 1}
-        tabIndex={0}
-        onFocus={this.handleFocusRoot}
-        ref={this.setElement}
-        __unstable_presence={presence.filter(
-          (item) => item.path[0] === '$' || item.path.length === 0
-        )}
-        __unstable_changeIndicator={false}
-        validation={validation}
-        onSetCollapsed={() => console.warn('todo')}
-      >
-        <Stack space={3}>
-          <Stack space={1}>
-            {value && value.length > 0 && (
-              <Card padding={1} border>
-                <List onSortEnd={this.handleSortEnd} isSortable={isSortable}>
-                  {value.map((item, index) => {
-                    const itemValidationMarkers = validation.filter((marker) =>
-                      startsWith([index], marker.path)
-                    )
+      <Stack space={3}>
+        <Stack space={1}>
+          {value && value.length > 0 && (
+            <Card padding={1} border>
+              <List onSortEnd={this.handleSortEnd} isSortable={isSortable}>
+                {value.map((item, index) => {
+                  const itemValidationMarkers = validation.filter((marker) =>
+                    startsWith([index], marker.path)
+                  )
 
-                    const childPresence = presence.filter((pItem) =>
-                      startsWith([index], pItem.path)
-                    )
+                  const childPresence = presence.filter((pItem) => startsWith([index], pItem.path))
 
-                    const memberType = this.getMemberType(resolveTypeName(item))
+                  const memberType = this.getMemberType(resolveTypeName(item))
 
-                    // Best effort attempt to make a stable key for each item in the array
-                    // Since items may be reordered and change at any time, there's no way to reliably address each item uniquely
-                    // This is a "best effort"-attempt at making sure we don't re-use internal state for item inputs
-                    // when items gets added or removed to the array
-                    const key = `${memberType?.name || 'invalid-type'}-${String(index)}`
-                    return (
-                      <Item key={key} index={index} data-item-index={index} isSortable={isSortable}>
-                        <>
-                          TODO
-                          {/* <ItemRow
+                  // Best effort attempt to make a stable key for each item in the array
+                  // Since items may be reordered and change at any time, there's no way to reliably address each item uniquely
+                  // This is a "best effort"-attempt at making sure we don't re-use internal state for item inputs
+                  // when items gets added or removed to the array
+                  const key = `${memberType?.name || 'invalid-type'}-${String(index)}`
+                  return (
+                    <Item key={key} index={index} data-item-index={index} isSortable={isSortable}>
+                      <>
+                        TODO
+                        {/* <ItemRow
                             level={level + 1}
                             index={index}
                             value={item}
@@ -310,26 +293,25 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
                             onRemove={this.handleRemoveItem}
                             presence={childPresence}
                           /> */}
-                        </>
-                      </Item>
-                    )
-                  })}
-                </List>
-              </Card>
-            )}
-          </Stack>
-          <ArrayFunctionsImpl
-            type={schemaType}
-            value={value}
-            readOnly={readOnly}
-            onAppendItem={this.handleAppend}
-            onPrependItem={this.handlePrepend}
-            onFocusItem={this.handleFocusItem}
-            onCreateValue={getEmptyValue}
-            onChange={onChange}
-          />
+                      </>
+                    </Item>
+                  )
+                })}
+              </List>
+            </Card>
+          )}
         </Stack>
-      </FormFieldSet>
+        <ArrayFunctionsImpl
+          type={schemaType}
+          value={value}
+          readOnly={readOnly}
+          onAppendItem={this.handleAppend}
+          onPrependItem={this.handlePrepend}
+          onFocusItem={this.handleFocusItem}
+          onCreateValue={getEmptyValue}
+          onChange={onChange}
+        />
+      </Stack>
     )
   }
 }

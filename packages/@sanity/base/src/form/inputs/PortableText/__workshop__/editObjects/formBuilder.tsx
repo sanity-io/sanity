@@ -11,8 +11,7 @@ const DebugTextArea = styled(TextArea)(({theme}: {theme: Theme}) => {
 })
 
 function DebugInput(props: InputProps) {
-  const {onChange, inputProps} = props
-  const {onBlur, onFocus, readOnly, ref} = inputProps
+  const {onChange, onBlur, onFocus, readOnly, focusRef} = props
 
   const handleChange = useCallback(() => {
     onChange(set({}))
@@ -26,7 +25,7 @@ function DebugInput(props: InputProps) {
       padding={3}
       radius={1}
       readOnly={readOnly}
-      ref={ref}
+      ref={focusRef}
       rows={100}
       value={JSON.stringify(props.value, null, 2)}
     />

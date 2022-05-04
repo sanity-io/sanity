@@ -6,7 +6,7 @@ import {
   ObjectInputProps,
   RenderFieldCallback,
   RenderInputCallback,
-  RenderItemCallback,
+  RenderArrayItemCallback,
 } from '../../../types'
 import {ArrayOfObjectsMember} from '../../../store/types/members'
 import {ItemProps} from '../../../types/itemProps'
@@ -17,7 +17,7 @@ import {ensureKey} from '../../../utils/ensureKey'
 
 interface Props {
   member: ArrayOfObjectsMember
-  renderItem: RenderItemCallback
+  renderItem: RenderArrayItemCallback
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback
 }
@@ -103,7 +103,6 @@ export const MemberItem = memo(function MemberItem(props: Props) {
   const inputProps = useMemo((): ObjectInputProps => {
     return {
       level: member.item.level,
-      onBlur: handleBlur,
       members: member.item.members,
       value: member.item.value,
       readOnly: member.item.readOnly,
@@ -115,6 +114,7 @@ export const MemberItem = memo(function MemberItem(props: Props) {
       onSelectFieldGroup: handleSelectFieldGroup,
       onSetFieldSetCollapsed: handleSetFieldSetCollapsed,
       onSetFieldCollapsed: handleSetFieldCollapsed,
+      onBlur: handleBlur,
       onFocus: handleFocus,
       onFocusPath: handleFocusChildPath,
       path: member.item.path,
@@ -189,6 +189,8 @@ export const MemberItem = memo(function MemberItem(props: Props) {
       schemaType: member.item.schemaType,
       onInsert,
       onRemove,
+      validation: [],
+      readOnly: member.item.readOnly,
       focused: member.item.focused,
       onFocus: handleFocus,
       inputId: member.item.id,
@@ -202,10 +204,15 @@ export const MemberItem = memo(function MemberItem(props: Props) {
     member.item.level,
     member.item.value,
     member.item.schemaType,
+    member.item.readOnly,
+    member.item.focused,
     member.item.id,
     member.item.path,
     member.collapsible,
     member.collapsed,
+    onInsert,
+    onRemove,
+    handleFocus,
     handleSetCollapsed,
     renderedInput,
   ])
@@ -217,7 +224,7 @@ export const MemberItem = memo(function MemberItem(props: Props) {
       onSetCollapsedFieldSet={onSetCollapsedFieldSet}
       onSetCollapsedPath={onSetCollapsedPath}
       onPathBlur={onPathBlur}
-      onPathFocus={onPathBlur}
+      onPathFocus={onPathFocus}
     >
       {renderItem(itemProps)}
     </FormCallbacksProvider>

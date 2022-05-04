@@ -78,6 +78,7 @@ export function Compositor(props: InputProps) {
     value,
     readOnly,
     onFocus,
+    onFocusPath,
     ...restProps
   } = props
 
@@ -103,7 +104,7 @@ export function Compositor(props: InputProps) {
 
   // Various focus handling hooks
   const {onEditObjectFormBuilderFocus, onEditObjectFormBuilderBlur, onEditObjectClose} =
-    useObjectEditFormBuilderFocus(onFocus)
+    useObjectEditFormBuilderFocus(onFocusPath)
 
   const {onObjectEditFormBuilderChange} = useObjectEditFormBuilderChange(onChange, patches$)
 
@@ -219,7 +220,7 @@ export function Compositor(props: InputProps) {
           markers={blockMarkers}
           validation={blockValidation}
           onChange={onChange}
-          onFocus={onFocus}
+          onFocus={onFocusPath}
           readOnly={readOnly}
           ref={useBlockObjectElementRef ? blockObjectElementRef : undefined}
           renderBlockActions={hasContent ? renderBlockActions : undefined}
@@ -267,7 +268,7 @@ export function Compositor(props: InputProps) {
           isEditing={!!editObjectKey}
           markers={childMarkers}
           validation={childValidation}
-          onFocus={onFocus}
+          onFocus={onFocusPath}
           readOnly={readOnly}
           ref={useRefElm ? inlineObjectElementRef : undefined}
           renderCustomMarkers={renderCustomMarkers}
@@ -308,7 +309,7 @@ export function Compositor(props: InputProps) {
           hasWarning={hasWarning}
           markers={annotationMarkers}
           validation={annotationValidation}
-          onFocus={onFocus}
+          onFocus={onFocusPath}
           readOnly={readOnly}
           renderCustomMarkers={renderCustomMarkers}
           scrollElement={scrollElement}
@@ -330,7 +331,7 @@ export function Compositor(props: InputProps) {
         hotkeys={editorHotkeys}
         initialSelection={initialSelection}
         isFullscreen={isFullscreen}
-        onFocus={onFocus}
+        onFocus={onFocusPath}
         onCopy={onCopy}
         onPaste={onPaste}
         onToggleFullscreen={handleToggleFullscreen}

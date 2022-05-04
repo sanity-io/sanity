@@ -22,21 +22,16 @@ function renderInput(
   const onFocus = jest.fn()
   const onChange = jest.fn()
 
-  const inputProps = {onFocus} as any
-
   const {container} = render(
     <ThemeProvider scheme="light" theme={studioTheme}>
       <LayerProvider>
         <DateInput
-          focusPath={[]}
-          type={{title: 'Date input test', name: 'date', options: {}} as FIXME}
-          inputProps={inputProps}
+          onFocus={onFocus}
           onChange={onChange}
           validation={[]}
           level={0}
           presence={[]}
           {...props}
-          kind="string"
         />
       </LayerProvider>
     </ThemeProvider>

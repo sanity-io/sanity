@@ -5,6 +5,7 @@ import {
   Path,
   SchemaType,
   StringSchemaType,
+  ValidationMarker,
 } from '@sanity/types'
 import React from 'react'
 
@@ -35,6 +36,8 @@ export interface ObjectItemProps extends BaseItemProps {
   collapsed: boolean | undefined
   collapsible: boolean
   focused?: boolean
+  readOnly?: boolean
+  validation: ValidationMarker[]
   onSetCollapsed: (collapsed: boolean) => void
 }
 

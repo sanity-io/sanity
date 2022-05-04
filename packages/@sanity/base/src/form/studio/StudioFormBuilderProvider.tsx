@@ -22,6 +22,8 @@ export interface StudioFormBuilderProviderProps {
   children: React.ReactElement
   schema: Schema
   value: any | null
+  renderField: FIXME // todo: delete
+  type: FIXME // todo: delete
 }
 
 /**

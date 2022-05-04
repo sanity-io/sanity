@@ -10,7 +10,7 @@ import {
   ObjectInputProps,
   RenderFieldCallback,
   RenderInputCallback,
-  RenderItemCallback,
+  RenderArrayItemCallback,
   StringInputProps,
 } from '../types'
 import {
@@ -31,7 +31,7 @@ export interface StudioObjectInputProps
 
 export function StudioObjectInput(props: StudioObjectInputProps) {
   const {resolveInputComponent} = props
-  const renderItem: RenderItemCallback = useCallback((_item) => {
+  const renderItem: RenderArrayItemCallback = useCallback((_item) => {
     const item = _item as ObjectItemProps
     return <>{item.children}</>
   }, [])

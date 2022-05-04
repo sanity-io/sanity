@@ -18,8 +18,8 @@ import {
   ObjectNode,
   StringNode,
 } from '../store/types/nodes'
-import {FieldPresence} from '../store/formState'
-import {RenderFieldCallback, RenderInputCallback, RenderItemCallback} from './renderCallback'
+import {FormFieldPresence} from '../../presence'
+import {RenderFieldCallback, RenderInputCallback, RenderArrayItemCallback} from './renderCallback'
 import {InsertItemEvent, MoveItemEvent} from './event'
 import {FieldGroup} from './fieldGroups'
 
@@ -31,7 +31,7 @@ export interface BaseInputProps {
   onBlur: (event: React.FocusEvent) => void
 
   validation: ValidationMarker[]
-  presence: FieldPresence[]
+  presence: FormFieldPresence[]
 }
 
 export interface ObjectInputProps<
@@ -53,7 +53,7 @@ export interface ObjectInputProps<
 
   renderInput: RenderInputCallback
   renderField: RenderFieldCallback
-  renderItem: RenderItemCallback
+  renderItem: RenderArrayItemCallback
 }
 
 export interface ArrayOfObjectsInputProps<
@@ -79,7 +79,7 @@ export interface ArrayOfObjectsInputProps<
   onSetItemCollapsed: (itemKey: string, collapsed: boolean) => void
 
   renderInput: RenderInputCallback
-  renderItem: RenderItemCallback
+  renderItem: RenderArrayItemCallback
   renderField: RenderFieldCallback
 }
 
@@ -107,26 +107,25 @@ export interface ArrayOfPrimitivesInputProps<
   onFocusPath: (path: Path) => void
 
   renderInput: RenderInputCallback
-  renderItem: RenderItemCallback
+  renderItem: RenderArrayItemCallback
   renderField: RenderFieldCallback
 }
 
 export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
   extends StringNode<S>,
     BaseInputProps {
-  onChange(patch: FormPatch): void
-  onChange(patches: FormPatch[]): void
+  onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
 }
 
 export interface NumberInputProps<S extends NumberSchemaType = NumberSchemaType>
   extends NumberNode<S>,
     BaseInputProps {
-  onChange(patch: FormSetPatch | FormUnsetPatch): void
+  onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
 }
 export interface BooleanInputProps<S extends BooleanSchemaType = BooleanSchemaType>
   extends BooleanNode<S>,
     BaseInputProps {
-  onChange(patch: FormSetPatch | FormUnsetPatch): void
+  onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
 }
 
 export type PrimitiveInputProps = StringInputProps | BooleanInputProps | NumberInputProps

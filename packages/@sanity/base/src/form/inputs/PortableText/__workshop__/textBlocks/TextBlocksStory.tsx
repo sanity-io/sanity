@@ -57,8 +57,8 @@ export function TextBlocksStory() {
   const attributes = useMemo(() => ({focused: false, selected: false, path: []}), [])
   const readOnly = false
 
-  const resolveInputComponent = useCallback(() => null, [])
-  const resolvePreviewComponent = useCallback(() => null, [])
+  const resolveInputComponent = useCallback(() => undefined, [])
+  const resolvePreviewComponent = useCallback(() => undefined, [])
 
   return (
     <Box padding={4}>

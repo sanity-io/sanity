@@ -17,7 +17,6 @@ import {CellItem} from './CellItem'
 export interface ArrayItemProps {
   index: number
   itemKey: string | undefined
-  layout?: 'media' | 'default'
   onInsert: (event: {items: unknown[]; position: 'before' | 'after'}) => void
   onRemove: (value: ArrayMember) => void
   onFocus: (event: React.FocusEvent) => void
@@ -27,7 +26,7 @@ export interface ArrayItemProps {
   focused?: boolean
   expanded: boolean
   insertableTypes: SchemaType[]
-  readOnly: boolean
+  readOnly?: boolean
   presence: FIXME[]
   validation: FIXME[]
   children: React.ReactNode

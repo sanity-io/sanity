@@ -20,6 +20,7 @@ import {useId} from '@reach/auto-id'
 import {ObjectSchemaType} from '@sanity/types'
 import {IntentLink} from '../../../../router'
 import {FIXME} from '../../../types'
+import {FormNodePreview} from '../../../FormNodePreview'
 
 interface BlockObjectPreviewProps {
   focused: boolean
