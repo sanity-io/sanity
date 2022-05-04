@@ -1,4 +1,4 @@
-/* eslint-disable react/default-props-match-prop-types */
+/* eslint-disable react/default-props-match-prop-types,react/jsx-handler-names */
 
 import {
   isKeySegment,
@@ -21,16 +21,15 @@ import {Details} from '../../../components/Details'
 import {Item, List} from '../common/list'
 import {applyAll} from '../../../patch/applyPatch'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'
-import {ObjectItemProps} from '../../../types/itemProps'
+import {ItemProps} from '../../../types/itemProps'
 import {DefaultArrayInputFunctions} from '../common/ArrayFunctions'
 import {ArrayOfObjectsInputProps} from '../../../types'
+import {isObjectItemProps} from '../../../types/asserters'
 import type {ArrayMember, InsertEvent} from './types'
 import {uploadTarget} from './uploadTarget/uploadTarget'
 import {isEmpty} from './item/helpers'
 import {MemberItem} from './MemberItem'
 import {ArrayItem} from './item/ArrayItem'
-import {RowItem} from './item/RowItem'
-import {ItemForm} from './item/ItemForm'
 
 type Toast = {push: (params: ToastParams) => void}
 
@@ -254,34 +253,43 @@ export class ArrayInput extends React.Component<ArrayOfObjectsInputProps<ArrayMe
     this.openItem(itemKey)
   }
 
-  renderItem = (item: ObjectItemProps) => {
-    const {id, renderItem: defaultRenderItem, schemaType, renderInput} = this.props
+  renderItem = (item: ItemProps) => {
+    if (!isObjectItemProps(item)) {
+      throw new Error('Expected item to be of object type')
+    }
+    const {id, schemaType, renderInput} = this.props
     const options = schemaType.options || {}
-    const isSortable = options.sortable !== false
+
     return (
       <>
-        <RowItem
+        <ArrayItem
+          onInsert={item.onInsert}
+          onRemove={item.onRemove}
+          onFocus={item.onFocus}
           index={item.index}
-          isSortable={isSortable}
-          value={item.value}
+          schemaType={item.schemaType}
+          insertableTypes={schemaType.of}
+          value={item.value as ArrayMember}
+          focused={item.focused}
+          expanded={item.collapsed === false}
           onClick={() => item.onSetCollapsed(false)}
           presence={[]}
-          type={item.schemaType}
-        />
-        {item.collapsed === false ? (
-          isReferenceSchemaType(item.schemaType) ? (
-            item.children
-          ) : (
-            <Dialog
-              width={80}
-              header={`Edit ${item.schemaType.title}`}
-              id={`${id}-item-${item.key}-dialog`}
-              onClose={() => item.onSetCollapsed(true)}
-            >
-              <Box padding={4}>{item.children}</Box>
-            </Dialog>
-          )
-        ) : null}
+        >
+          {item.collapsed === false ? (
+            isReferenceSchemaType(item.schemaType) ? (
+              item.children
+            ) : (
+              <Dialog
+                width={80}
+                header={`Edit ${item.schemaType.title}`}
+                id={`${id}-item-${item.key}-dialog`}
+                onClose={() => item.onSetCollapsed(true)}
+              >
+                <Box padding={4}>{item.children}</Box>
+              </Dialog>
+            )
+          ) : null}
+        </ArrayItem>
       </>
     )
   }

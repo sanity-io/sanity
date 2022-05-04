@@ -11,8 +11,9 @@ import {
 import {ArrayOfObjectsMember} from '../../../store/types/members'
 import {ItemProps} from '../../../types/itemProps'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
-import {PatchArg, PatchEvent, setIfMissing} from '../../../patch'
+import {insert, PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
 import {createProtoValue} from '../../../utils/createProtoValue'
+import {ensureKey} from '../../../utils/ensureKey'
 
 interface Props {
   member: ArrayOfObjectsMember
@@ -126,6 +127,7 @@ export const MemberItem = memo(function MemberItem(props: Props) {
       renderItem,
       // todo
       validation: [],
+      presence: [],
     }
   }, [
     member.item.level,
@@ -154,6 +156,26 @@ export const MemberItem = memo(function MemberItem(props: Props) {
 
   const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
 
+  // const onInsert = useCallback(() => {}, [member.key])
+  const onRemove = useCallback(() => {
+    onChange(PatchEvent.from([unset([{_key: member.key}])]))
+  }, [member.key, onChange])
+
+  const onInsert = useCallback(
+    (event: {items: unknown[]; position: 'before' | 'after'}) => {
+      onChange(
+        PatchEvent.from([
+          insert(
+            event.items.map((item) => ensureKey(item)),
+            event.position,
+            [{_key: member.key}]
+          ),
+        ])
+      )
+    },
+    [member.key, onChange]
+  )
+
   const itemProps = useMemo((): ItemProps => {
     return {
       key: member.key,
@@ -165,6 +187,10 @@ export const MemberItem = memo(function MemberItem(props: Props) {
       collapsible: member.collapsible,
       collapsed: member.collapsed,
       schemaType: member.item.schemaType,
+      onInsert,
+      onRemove,
+      focused: member.item.focused,
+      onFocus: handleFocus,
       inputId: member.item.id,
       path: member.item.path,
       onSetCollapsed: handleSetCollapsed,

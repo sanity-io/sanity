@@ -35,7 +35,7 @@ export interface BaseInputProps {
 }
 
 export interface ObjectInputProps<
-  T extends {[key in string]: unknown} = {[key in string]: unknown},
+  T = {[key in string]: unknown},
   S extends ObjectSchemaType = ObjectSchemaType
 > extends ObjectNode<T, S>,
     BaseInputProps {
@@ -50,8 +50,6 @@ export interface ObjectInputProps<
 
   onFocusPath: (path: Path) => void
   onSelectFieldGroup: (groupName: string) => void
-
-  inputRef?: React.RefObject<any>
 
   renderInput: RenderInputCallback
   renderField: RenderFieldCallback

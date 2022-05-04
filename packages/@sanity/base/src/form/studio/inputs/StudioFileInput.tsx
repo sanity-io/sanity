@@ -16,7 +16,7 @@ export const StudioFileInput = React.forwardRef(function StudioFileInput(
   props: StudioFileInputProps,
   forwardedRef: any
 ) {
-  const sourcesFromSchema = props.type.options?.sources
+  const sourcesFromSchema = props.schemaType.options?.sources
   const documentPreviewStore = useDocumentPreviewStore()
   const {file} = useFormBuilder()
 

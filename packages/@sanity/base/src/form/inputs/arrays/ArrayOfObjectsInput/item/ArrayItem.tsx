@@ -1,64 +1,64 @@
-import {ArraySchemaType, isReferenceSchemaType, ValidationMarker} from '@sanity/types'
-import {FOCUS_TERMINATOR, pathFor, startsWith} from '@sanity/util/paths'
+import {isReferenceSchemaType, SchemaType, ValidationMarker} from '@sanity/types'
+import {pathFor, startsWith} from '@sanity/util/paths'
 import {Box} from '@sanity/ui'
 import React, {memo, useCallback, useMemo, useRef} from 'react'
-import {FormFieldPresence} from '../../../../../presence'
 import {
   ChangeIndicatorScope,
   ContextProvidedChangeIndicator,
 } from '../../../../../components/changeIndicators'
-import {FieldProps, FIXME, FormBuilderFilterFieldFn, InputProps} from '../../../../types'
-import {PatchEvent} from '../../../../patch'
-import {ArrayMember, InsertEvent, ReferenceItemComponentType} from '../types'
+import {ArrayMember} from '../types'
 import {EMPTY_ARRAY} from '../../../../utils/empty'
-import {hasFocusAtPath, hasFocusWithinPath} from '../../../../utils/focusUtils'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
-import {EditPortal} from '../../../../components/EditPortal'
 import {useDidUpdate} from '../../../../hooks/useDidUpdate'
-import {useConditionalReadOnly} from '../../../../../conditional-property/conditionalReadOnly'
-import {getItemType, isEmpty} from './helpers'
-import {ItemForm} from './ItemForm'
+import {FIXME} from '../../../../types'
 import {RowItem} from './RowItem'
 import {CellItem} from './CellItem'
 
-export interface ArrayItemProps extends Omit<InputProps, 'level' | 'onChange' | 'value'> {
-  ReferenceItemComponent: ReferenceItemComponentType
-  filterField: FormBuilderFilterFieldFn
+export interface ArrayItemProps {
   index: number
   itemKey: string | undefined
   layout?: 'media' | 'default'
-  onChange: (event: PatchEvent, value: ArrayMember) => void
-  onInsert: (event: InsertEvent) => void
+  onInsert: (event: {items: unknown[]; position: 'before' | 'after'}) => void
   onRemove: (value: ArrayMember) => void
+  onFocus: (event: React.FocusEvent) => void
+  onClick: () => void
   value: ArrayMember
+  schemaType: SchemaType
+  focused: boolean
+  expanded: boolean
+  insertableTypes: SchemaType[]
+  readOnly: boolean
+  presence: FIXME[]
+  validation: FIXME[]
+  children: React.ReactNode
 }
 
+// This renders the item / preview of unexpanded array items
 export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
   const {
     value,
-    validation,
-    type,
+    insertableTypes,
+    schemaType,
     index,
     itemKey,
+    expanded,
+    onClick,
     readOnly,
-    presence,
-    focusPath = EMPTY_ARRAY,
-    onFocus,
-    onChange,
+    presence = [],
+    validation = [],
+    focused,
     onRemove,
     onInsert,
-    onBlur,
-    filterField,
-    compareValue,
-    ReferenceItemComponent,
+    onFocus,
+    children,
   } = props
 
   const innerElementRef = useRef<HTMLDivElement | null>(null)
-  const conditionalReadOnly = useConditionalReadOnly() ?? readOnly
-  const hasFocusWithin = hasFocusWithinPath(focusPath, props.value)
-  useScrollIntoViewOnFocusWithin(innerElementRef, hasFocusWithin)
 
-  useDidUpdate(hasFocusAtPath(focusPath, props.value), (hadFocus, hasFocus) => {
+  // this is here to make sure the item is visible if it's being edited behind a modal
+  useScrollIntoViewOnFocusWithin(innerElementRef, expanded)
+
+  useDidUpdate(focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus && innerElementRef.current) {
       // Note: if editing an inline item, focus is handled by the item input itself and no ref is being set
       innerElementRef.current?.focus()
@@ -67,59 +67,12 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
 
   const itemPath = useMemo(() => pathFor([itemKey ? {_key: itemKey} : index]), [index, itemKey])
 
-  const emitFocus = useCallback(
-    (path) => {
-      if (itemKey) {
-        onFocus([{_key: itemKey}, ...path])
-      }
-    },
-    [onFocus, itemKey]
-  )
-
-  const handleItemElementFocus = useCallback(
-    (event: React.FocusEvent) => {
-      if (event.target === event.currentTarget) {
-        emitFocus([])
-      }
-    },
-    [emitFocus]
-  )
-
-  const handleEditOpen = useCallback(() => emitFocus([FOCUS_TERMINATOR]), [emitFocus])
-  const handleEditClose = useCallback(() => {
-    if (isEmpty(value!)) {
-      onRemove(value)
-    } else {
-      emitFocus([])
-    }
-  }, [value, onRemove, emitFocus])
-
-  const handleChange = useCallback(
-    (event: PatchEvent, valueOverride?: ArrayMember) =>
-      onChange(event, typeof valueOverride === 'undefined' ? value! : valueOverride),
-    [onChange, value]
-  )
-
   const handleRemove = useCallback(() => onRemove(value!), [onRemove, value])
 
-  const handleKeyPress = useCallback(
-    (event) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault()
-        handleEditOpen()
-      }
-    },
-    [handleEditOpen]
-  )
+  const options = schemaType.options || {}
+  const isSortable = !readOnly && options.sortable !== false
 
-  const options = type.options || {}
-  const isSortable = !conditionalReadOnly && options.sortable !== false
-
-  const isEditing = hasFocusWithinPath(focusPath, value)
-
-  const itemType = getItemType(type as FIXME, value)
-
-  const isGrid = type.options?.layout === 'grid'
+  const isGrid = schemaType.options?.layout === 'grid'
   const ItemComponent = isGrid ? CellItem : RowItem
 
   const itemValidation = React.useMemo(
@@ -144,92 +97,23 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
     [itemValidation]
   )
 
-  const itemPresence = useMemo(
-    () =>
-      presence.filter((presenceItem: FormFieldPresence) => startsWith(itemPath, presenceItem.path)),
-    [itemPath, presence]
-  )
-
-  const isReference = itemType && isReferenceSchemaType(itemType)
-  const editForm = useMemo(() => {
-    if (!isEditing && !isReference) {
-      return null
-    }
-
-    const form = (
-      <>TODO</>
-      // <ItemForm
-      //   onChange={handleChange}
-      //   validation={itemValidation}
-      //   filterField={filterField}
-      //   focusPath={focusPath}
-      //   onFocus={onFocus}
-      //   onBlur={onBlur}
-      //   onInsert={onInsert}
-      //   insertableTypes={type.of}
-      //   type={itemType as ArraySchemaType<ArrayMember>}
-      //   value={value}
-      //   isSortable={isSortable}
-      //   ReferenceItemComponent={ReferenceItemComponent}
-      //   readOnly={conditionalReadOnly}
-      //   presence={itemPresence}
-      //   compareValue={compareValue}
-      // />
-    )
-
-    return isReference && !isGrid ? (
-      form
-    ) : (
-      <EditPortal
-        header={
-          conditionalReadOnly ? `View ${itemType?.title || ''}` : `Edit ${itemType?.title || ''}`
-        }
-        type={type?.options?.editModal === 'fold' ? 'dialog' : type?.options?.editModal || 'dialog'}
-        id={value?._key}
-        onClose={handleEditClose}
-        legacy_referenceElement={innerElementRef.current}
-      >
-        {form}
-      </EditPortal>
-    )
-  }, [
-    ReferenceItemComponent,
-    compareValue,
-    filterField,
-    focusPath,
-    handleChange,
-    handleEditClose,
-    isEditing,
-    isGrid,
-    isReference,
-    isSortable,
-    itemValidation,
-    itemPresence,
-    itemType,
-    onBlur,
-    onFocus,
-    onInsert,
-    conditionalReadOnly,
-    type,
-    value,
-  ])
+  const isReference = schemaType && isReferenceSchemaType(schemaType)
 
   const item = (
     <ItemComponent
-      aria-selected={isEditing}
+      aria-selected={expanded}
       index={index}
+      onFocus={onFocus}
       value={value}
       readOnly={readOnly}
-      type={itemType}
-      insertableTypes={(type as FIXME).of}
-      presence={isEditing ? EMPTY_ARRAY : itemPresence}
+      type={schemaType}
+      insertableTypes={insertableTypes}
+      presence={presence}
       validation={scopedValidation}
       isSortable={isSortable}
       onInsert={onInsert}
-      onFocus={handleItemElementFocus}
-      onClick={itemType ? handleEditOpen : undefined}
+      onClick={onClick}
       onRemove={handleRemove}
-      onKeyPress={handleKeyPress}
       ref={innerElementRef}
     />
   )
@@ -237,16 +121,16 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayItemProps) {
   return (
     <>
       <ChangeIndicatorScope path={itemPath}>
-        <ContextProvidedChangeIndicator compareDeep disabled={isEditing && !isReference}>
+        <ContextProvidedChangeIndicator compareDeep disabled={expanded && !isReference}>
           {isGrid ? (
             // grid should be rendered without a margin
             item
           ) : (
-            <Box marginX={1}>{isReference ? editForm : item}</Box>
+            <Box marginX={1}>{item}</Box>
           )}
         </ContextProvidedChangeIndicator>
       </ChangeIndicatorScope>
-      {isEditing && (!isReference || isGrid) ? editForm : null}
+      {children}
     </>
   )
 })

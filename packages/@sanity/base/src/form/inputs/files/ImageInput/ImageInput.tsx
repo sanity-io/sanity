@@ -26,7 +26,6 @@ import {
   Uploader,
   UploadOptions,
 } from '../../../studio/uploads/types'
-import {ImageToolInput} from '../ImageToolInput'
 import {UploadPlaceholder} from '../common/UploadPlaceholder'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {FileTarget} from '../common/styles'
@@ -124,7 +123,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
   }
 
   isImageToolEnabled() {
-    return get(this.props.type, 'options.hotspot') === true
+    return get(this.props.schemaType, 'options.hotspot') === true
   }
 
   clearUploadStatus() {
@@ -285,25 +284,25 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
   }
 
   handleOpenDialog = () => {
-    const {inputProps, type} = this.props
-    const groups = this.getGroupedFields(type)
+    const {schemaType, onSetFieldCollapsed} = this.props
+    const groups = this.getGroupedFields(schemaType)
     const firstDialogField = this.isImageToolEnabled() ? groups.imagetool[0] : groups.dialog[0]
     if (firstDialogField) {
-      inputProps.onFocus([firstDialogField.name])
+      onSetFieldCollapsed(firstDialogField.name, false)
     }
   }
 
   handleCloseDialog = () => {
-    const {inputProps} = this.props
-    inputProps.onFocus([])
+    const {onSetCollapsed} = this.props
+    onSetCollapsed(true)
   }
 
   handleSelectAssetFromSource = (assetFromSource: AssetFromSource[]) => {
-    const {onChange, type, resolveUploader} = this.props
+    const {onChange, schemaType, resolveUploader} = this.props
     handleSelectAssetFromSource({
       assetFromSource,
       onChange,
-      type,
+      type: schemaType,
       resolveUploader,
       uploadWith: this.uploadWith,
       isImage: true,
@@ -317,13 +316,13 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
   }
 
   handleFileTargetFocus = () => {
-    const {inputProps} = this.props
-    inputProps.onFocus(['asset'])
+    const {onFocusPath} = this.props
+    onFocusPath(['asset'])
   }
 
-  handleFileTargetBlur = () => {
-    const {inputProps} = this.props
-    inputProps.onBlur?.()
+  handleFileTargetBlur = (event: React.FocusEvent) => {
+    const {onBlur} = this.props
+    onBlur(event)
   }
 
   handleFilesOver = (hoveringFiles: FileInfo[]) => {
@@ -351,10 +350,10 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
   }
 
   handleSelectFiles = (files: File[]) => {
-    const {directUploads, inputProps} = this.props
+    const {directUploads, readOnly} = this.props
     const {hoveringFiles} = this.state
 
-    if (directUploads && !inputProps.readOnly) {
+    if (directUploads && !readOnly) {
       this.uploadFirstAccepted(files)
     } else if (hoveringFiles.length > 0) {
       this.handleFilesOut()
@@ -371,7 +370,6 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
 
   renderDialogFields(fields: ObjectField[]) {
     const {
-      inputProps,
       value,
       // compareValue,
       // focusPath,
@@ -428,7 +426,8 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
   }
 
   renderPreview = () => {
-    const {inputProps, value, type, directUploads, imageUrlBuilder, resolveUploader} = this.props
+    const {value, schemaType, readOnly, directUploads, imageUrlBuilder, resolveUploader} =
+      this.props
 
     if (!value) {
       return null
@@ -436,14 +435,14 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
 
     const {hoveringFiles} = this.state
 
-    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
+    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(schemaType, file))
     const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
 
     return (
       <ImagePreview
         drag={!value?._upload && hoveringFiles.length > 0}
         isRejected={rejectedFilesCount > 0 || !directUploads}
-        readOnly={inputProps.readOnly}
+        readOnly={readOnly}
         src={imageUrlBuilder
           .width(2000)
           .fit('max')
@@ -461,8 +460,8 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
   }
 
   renderField(field: ObjectField) {
-    const {value, level, focusPath, inputProps, compareValue, presence, validation} = this.props
-    const {onFocus, readOnly, onBlur} = inputProps
+    const {value, level, focusPath, onFocus, readOnly, onBlur, compareValue, presence, validation} =
+      this.props
     const fieldValue = value?.[field.name]
     const fieldMarkers = validation.filter((marker) => marker.path[0] === field.name)
 
@@ -487,9 +486,15 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
   }
 
   renderAssetMenu() {
-    const {value, assetSources, inputProps, type, directUploads, imageUrlBuilder, observeAsset} =
-      this.props
-    const {readOnly} = inputProps
+    const {
+      value,
+      assetSources,
+      schemaType,
+      readOnly,
+      directUploads,
+      imageUrlBuilder,
+      observeAsset,
+    } = this.props
     const {isMenuOpen} = this.state
 
     const asset = value?.asset
@@ -497,9 +502,9 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
       return null
     }
 
-    const accept = get(type, 'options.accept', 'image/*')
+    const accept = get(schemaType, 'options.accept', 'image/*')
 
-    const fieldGroups = this.getGroupedFields(type)
+    const fieldGroups = this.getGroupedFields(schemaType)
     const showAdvancedEditButton =
       value && (fieldGroups.dialog.length > 0 || (asset && this.isImageToolEnabled()))
 
@@ -566,8 +571,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
   }
 
   renderBrowser() {
-    const {assetSources, inputProps, directUploads} = this.props
-    const {readOnly} = inputProps
+    const {assetSources, readOnly, directUploads} = this.props
 
     if (assetSources && assetSources.length === 0) return null
 
@@ -624,14 +628,14 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
   }
 
   renderUploadPlaceholder() {
-    const {inputProps, type, directUploads, resolveUploader} = this.props
-    const {readOnly} = inputProps
+    const {schemaType, readOnly, directUploads, resolveUploader} = this.props
+
     const {hoveringFiles} = this.state
 
-    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
+    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(schemaType, file))
     const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
 
-    const accept = get(type, 'options.accept', 'image/*')
+    const accept = get(schemaType, 'options.accept', 'image/*')
 
     return (
       <div style={{padding: 1}}>
@@ -757,21 +761,20 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
 
   render() {
     const {
-      type,
+      schemaType,
       value,
       compareValue,
+      readOnly,
       level,
       validation,
-      inputProps,
       presence,
       focusPath = EMPTY_ARRAY,
       directUploads,
       resolveUploader,
     } = this.props
-    const {readOnly} = inputProps
     const {hoveringFiles, selectedAssetSource, isStale} = this.state
 
-    const fieldGroups = this.getGroupedFields(type)
+    const fieldGroups = this.getGroupedFields(schemaType)
 
     // Get presence items for people who are either at the asset field, or at fields shown behind the dialog
     const fieldPresence = presence.filter(
@@ -785,7 +788,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
       fieldGroups.dialog.concat(fieldGroups.imagetool).some((field) => focusPath[0] === field.name)
 
     function getFileTone() {
-      const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(type, file))
+      const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(schemaType, file))
       const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
 
       if (hoveringFiles.length > 0) {
@@ -813,10 +816,10 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
         <FormFieldSet
           __unstable_changeIndicator={false}
           __unstable_presence={isDialogOpen ? EMPTY_ARRAY : fieldPresence}
-          description={type.description}
+          description={schemaType.description}
           level={fieldGroups.highlighted.length > 0 ? level : 0}
           onSetCollapsed={() => console.warn('todo')}
-          title={type.title}
+          title={schemaType.title}
           validation={validation}
         >
           <div>

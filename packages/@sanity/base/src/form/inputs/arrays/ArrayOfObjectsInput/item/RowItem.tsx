@@ -41,7 +41,6 @@ export const RowItem = React.forwardRef(function RegularItem(
     isSortable,
     value,
     onClick,
-    onKeyPress,
     onFocus,
     type,
     readOnly,
@@ -57,23 +56,20 @@ export const RowItem = React.forwardRef(function RegularItem(
   const hasWarnings = validation.some((v) => v.level === 'warning')
 
   const handleDuplicate = useCallback(() => {
-    onInsert?.({
-      item: {...value, _key: randomKey()},
+    onInsert({
+      items: [{...value, _key: randomKey()}],
       position: 'after',
-      path: [{_key: value._key}],
-      edit: false,
     })
   }, [onInsert, value])
 
   const handleInsert = useCallback(
     (pos: 'before' | 'after', insertType: SchemaType) => {
-      onInsert?.({
-        item: {...createProtoValue(insertType), _key: randomKey()},
+      onInsert({
+        items: [{...createProtoValue(insertType), _key: randomKey()}],
         position: pos,
-        path: [{_key: value._key}],
       })
     },
-    [onInsert, value._key]
+    [onInsert]
   )
 
   const id = useId()
@@ -110,7 +106,6 @@ export const RowItem = React.forwardRef(function RegularItem(
             flex={1}
             onClick={onClick}
             ref={focusRef}
-            onKeyPress={onKeyPress}
             onFocus={onFocus}
             __unstable_focusRing
           >

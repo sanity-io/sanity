@@ -8,6 +8,7 @@ import {DateTimeInput} from './base/DateTimeInput'
 import {ParseResult} from './types'
 
 export interface CommonDateTimeInputProps {
+  id: string
   deserialize: (value: string) => ParseResult
   formatInputValue: (date: Date) => string
   onChange: (nextDate: string | null) => void
@@ -26,9 +27,8 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
   props: CommonDateTimeInputProps,
   ref: React.ForwardedRef<HTMLInputElement>
 ) {
-  const {inputId, validation} = useFormNode()
-
   const {
+    id,
     deserialize,
     formatInputValue,
     onChange,
@@ -87,38 +87,22 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
     ? formatInputValue(parseResult.date)
     : value
 
-  return (
-    <FormField
-      __internal_validation={
-        parseResult?.error
-          ? [
-              ...validation,
-              {
-                level: 'error',
-                item: {message: parseResult.error, paths: []},
-              } as unknown as ValidationMarker, // casting to marker to avoid having to implement cloneWithMessage on item
-            ]
-          : validation
-      }
-    >
-      {readOnly ? (
-        <TextInput value={inputValue} readOnly />
-      ) : (
-        <DateTimeInput
-          {...restProps}
-          id={inputId}
-          selectTime={selectTime}
-          timeStep={timeStep}
-          placeholder={placeholder || `e.g. ${formatInputValue(DEFAULT_PLACEHOLDER_TIME)}`}
-          ref={forwardedRef}
-          value={parseResult?.date}
-          inputValue={inputValue || ''}
-          readOnly={Boolean(readOnly)}
-          onInputChange={handleDatePickerInputChange}
-          onChange={handleDatePickerChange}
-          customValidity={parseResult?.error}
-        />
-      )}
-    </FormField>
+  return readOnly ? (
+    <TextInput value={inputValue} readOnly />
+  ) : (
+    <DateTimeInput
+      {...restProps}
+      id={id}
+      selectTime={selectTime}
+      timeStep={timeStep}
+      placeholder={placeholder || `e.g. ${formatInputValue(DEFAULT_PLACEHOLDER_TIME)}`}
+      ref={forwardedRef}
+      value={parseResult?.date}
+      inputValue={inputValue || ''}
+      readOnly={Boolean(readOnly)}
+      onInputChange={handleDatePickerInputChange}
+      onChange={handleDatePickerChange}
+      customValidity={parseResult?.error}
+    />
   )
 })

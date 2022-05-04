@@ -128,6 +128,7 @@ export function ObjectField(props: {
       renderItem,
       // todo
       validation: [],
+      presence: [],
     }
   }, [
     member.field.level,
@@ -151,6 +152,7 @@ export function ObjectField(props: {
     handleChange,
     renderField,
     renderInput,
+    renderItem,
   ])
 
   const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])

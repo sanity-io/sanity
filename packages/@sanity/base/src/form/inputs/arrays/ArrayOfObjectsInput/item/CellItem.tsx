@@ -19,6 +19,7 @@ import {FIXME} from '../../../../types'
 import {EMPTY_ARRAY} from '../../../../utils/empty'
 import {ItemWithMissingType} from './ItemWithMissingType'
 import {ItemLayoutProps} from './ItemLayoutProps'
+import {FormNodePreview} from '../../../../FormNodePreview'
 
 const dragHandle = <DragHandle grid padding={2} mode="ghost" />
 
@@ -95,7 +96,6 @@ export const CellItem = React.forwardRef(function ItemCell(
     isSortable,
     value,
     onClick,
-    onKeyPress,
     onFocus,
     onInsert,
     insertableTypes,
@@ -161,7 +161,6 @@ export const CellItem = React.forwardRef(function ItemCell(
           tabIndex={0}
           onClick={onClick}
           ref={focusRef}
-          onKeyPress={onKeyPress}
           onFocus={onFocus}
           __unstable_focusRing
         >

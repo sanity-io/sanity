@@ -17,7 +17,7 @@ export const StudioImageInput = React.forwardRef(function StudioImageInput(
   props: StudioImageInputProps,
   forwardedRef: any
 ) {
-  const sourcesFromSchema = props.type.options?.sources
+  const sourcesFromSchema = props.schemaType.options?.sources
   const {image} = useFormBuilder()
   const documentPreviewStore = useDocumentPreviewStore()
   const {client} = useSource()

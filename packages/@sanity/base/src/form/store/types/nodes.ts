@@ -8,7 +8,7 @@ import {
   StringSchemaType,
 } from '@sanity/types'
 import {ArrayOfObjectsMember, ObjectMember} from './members'
-import {FieldGroupState} from './fieldGroupState'
+import {FieldGroup} from './fieldGroup'
 
 export interface BaseNode<T = unknown, S extends SchemaType = SchemaType> {
   // constants
@@ -25,11 +25,11 @@ export interface BaseNode<T = unknown, S extends SchemaType = SchemaType> {
 }
 
 export interface ObjectNode<
-  T extends {[key in string]: unknown} = {[key in string]: unknown},
+  T = {[key in string]: unknown},
   S extends ObjectSchemaType = ObjectSchemaType
 > extends BaseNode<T, S> {
   members: ObjectMember[]
-  groups: FieldGroupState[]
+  groups: FieldGroup[]
 
   focusPath: Path
 }

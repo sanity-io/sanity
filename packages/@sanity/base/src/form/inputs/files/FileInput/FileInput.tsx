@@ -188,17 +188,17 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   uploadWith = (uploader: Uploader, file: DOMFile, assetDocumentProps: UploadOptions = {}) => {
-    const {type, onChange} = this.props
+    const {schemaType, onChange} = this.props
     const {source} = assetDocumentProps
     const options = {
-      metadata: get(type, 'options.metadata'),
-      storeOriginalFilename: get(type, 'options.storeOriginalFilename'),
+      metadata: get(schemaType, 'options.metadata'),
+      storeOriginalFilename: get(schemaType, 'options.storeOriginalFilename'),
       source,
     }
     this.cancelUpload()
     this.setState({isUploading: true})
-    onChange(PatchEvent.from([setIfMissing({_type: type.name})]))
-    this.uploadSubscription = uploader.upload(file, type, options).subscribe({
+    onChange(PatchEvent.from([setIfMissing({_type: schemaType.name})]))
+    this.uploadSubscription = uploader.upload(file, schemaType, options).subscribe({
       next: (uploadEvent) => {
         if (uploadEvent.patches) {
           onChange(PatchEvent.from(uploadEvent.patches))
@@ -272,7 +272,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   handleFieldChange = (event: PatchEvent) => {
-    const {onChange, type} = this.props
+    const {onChange, schemaType} = this.props
 
     // When editing a metadata field for a file (eg `description`), and no asset
     // is currently selected, we want to unset the entire file field if the
@@ -294,7 +294,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
     onChange(
       event.prepend(
         setIfMissing({
-          _type: type.name,
+          _type: schemaType.name,
         })
       )
     )
@@ -327,7 +327,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   handleOpenDialog = () => {
-    const {type, onFocus} = this.props
+    const {schemaType, onFocus} = this.props
     const otherFields = type.fields.filter(
       (field) =>
         !HIDDEN_FIELDS.includes(field.name) && !(field.type as FIXME)?.options?.isHighlighted
@@ -364,11 +364,11 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   handleSelectAssetFromSource = (assetFromSource: AssetFromSource[]) => {
-    const {onChange, type, resolveUploader} = this.props
+    const {onChange, schemaType, resolveUploader} = this.props
     handleSelectAssetFromSource({
       assetFromSource,
       onChange,
-      type,
+      schemaType,
       resolveUploader,
       uploadWith: this.uploadWith,
     })
@@ -388,8 +388,8 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
       this.props.onFocus(['asset'])
     }
   }
-  handleFileTargetBlur = () => {
-    this.props.onBlur?.()
+  handleFileTargetBlur = (event: React.FocusEvent) => {
+    this.props.onBlur(event)
   }
   handleFilesOver = (fileInfo: FileInfo[]) => {
     this.setState({
@@ -431,14 +431,14 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   renderAsset(hasAdvancedFields: boolean) {
-    const {value, readOnly, assetSources, type, directUploads, observeAsset} = this.props
+    const {value, readOnly, assetSources, schemaType, directUploads, observeAsset} = this.props
     const {isMenuOpen} = this.state
     const asset = value?.asset
     if (!asset) {
       return null
     }
 
-    const accept = get(type, 'options.accept', 'image/*')
+    const accept = get(schemaType, 'options.accept', 'image/*')
 
     let browseMenuItem: ReactNode =
       assetSources && assetSources?.length === 0 ? null : (
@@ -507,10 +507,10 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   renderAssetMenu(tone: ThemeColorToneKey) {
-    const {type, readOnly, directUploads, resolveUploader} = this.props
+    const {schemaType, readOnly, directUploads, resolveUploader} = this.props
     const {hoveringFiles} = this.state
 
-    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader?.(type, file))
+    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader?.(schemaType, file))
     const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
 
     return (
@@ -644,7 +644,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   render() {
     const {
       directUploads,
-      type,
+      schemaType,
       value,
       compareValue,
       level,
@@ -672,7 +672,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
       focusPath.length > 0 && otherMembers.some((member) => focusPath[0] === member.field.name)
 
     function getFileTone() {
-      const acceptedFiles = hoveringFiles.filter((file) => resolveUploader?.(type, file))
+      const acceptedFiles = hoveringFiles.filter((file) => resolveUploader?.(schemaType, file))
       const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
 
       if (hoveringFiles.length > 0) {
@@ -694,8 +694,8 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
 
         <FormFieldSet
           validation={validation}
-          title={type.title}
-          description={type.description}
+          title={schemaType.title}
+          description={schemaType.description}
           level={highlightedMembers.length > 0 ? level : 0}
           __unstable_presence={isDialogOpen ? EMPTY_ARRAY : assetFieldPresence}
           __unstable_changeIndicator={false}

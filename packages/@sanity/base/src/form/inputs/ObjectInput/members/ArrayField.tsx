@@ -1,10 +1,9 @@
 import React, {useCallback, useMemo, useRef} from 'react'
-import {KeyedSegment, ObjectSchemaType, Path, SchemaType} from '@sanity/types'
+import {Path} from '@sanity/types'
 import {FieldMember} from '../../../store/types/members'
 import {ArrayOfObjectsNode} from '../../../store/types/nodes'
 import {
   ArrayOfObjectsInputProps,
-  InsertInitialValueEvent,
   InsertItemEvent,
   MoveItemEvent,
   RenderFieldCallback,
@@ -16,13 +15,8 @@ import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {insert, PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {ArrayFieldProps} from '../../../types/fieldProps'
-import {randomKey} from '../../arrays/common/randomKey'
 import {resolveInitialValueForType} from '../../../../templates'
-import {isEmpty} from '../../arrays/ArrayOfObjectsInput/item/helpers'
-
-function ensureKey(item: any) {
-  return item._key ? item : {...item, _key: randomKey(12)}
-}
+import {ensureKey} from '../../../utils/ensureKey'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an array input
