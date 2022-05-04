@@ -24,7 +24,7 @@ export interface ArrayItemProps {
   onClick: () => void
   value: ArrayMember
   schemaType: SchemaType
-  focused: boolean
+  focused?: boolean
   expanded: boolean
   insertableTypes: SchemaType[]
   readOnly: boolean

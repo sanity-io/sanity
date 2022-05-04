@@ -257,9 +257,12 @@ export class ArrayInput extends React.Component<ArrayOfObjectsInputProps<ArrayMe
     if (!isObjectItemProps(item)) {
       throw new Error('Expected item to be of object type')
     }
-    const {id, schemaType, renderInput} = this.props
-    const options = schemaType.options || {}
 
+    const {id, schemaType, renderInput} = this.props
+
+    if (isReferenceSchemaType(item.schemaType)) {
+      return item.children
+    }
     return (
       <>
         <ArrayItem
@@ -276,18 +279,14 @@ export class ArrayInput extends React.Component<ArrayOfObjectsInputProps<ArrayMe
           presence={[]}
         >
           {item.collapsed === false ? (
-            isReferenceSchemaType(item.schemaType) ? (
-              item.children
-            ) : (
-              <Dialog
-                width={80}
-                header={`Edit ${item.schemaType.title}`}
-                id={`${id}-item-${item.key}-dialog`}
-                onClose={() => item.onSetCollapsed(true)}
-              >
-                <Box padding={4}>{item.children}</Box>
-              </Dialog>
-            )
+            <Dialog
+              width={80}
+              header={`Edit ${item.schemaType.title}`}
+              id={`${id}-item-${item.key}-dialog`}
+              onClose={() => item.onSetCollapsed(true)}
+            >
+              <Box padding={4}>{item.children}</Box>
+            </Dialog>
           ) : null}
         </ArrayItem>
       </>
