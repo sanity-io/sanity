@@ -87,6 +87,7 @@ export function ConfirmDeleteDialog({
         </Grid>
       }
       onClose={onCancel}
+      onClickOutside={onCancel}
     >
       <DialogBody>
         {crossDatasetReferences && internalReferences && !isLoading ? (
@@ -98,6 +99,7 @@ export function ConfirmDeleteDialog({
             totalCount={totalCount}
             action={action}
             projectIds={projectIds}
+            onReferenceLinkClick={onCancel}
           />
         ) : (
           <LoadingContainer data-testid="loading-container">
