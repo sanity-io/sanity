@@ -72,6 +72,9 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
 
   const resolveInputComponent = useCallback(
     (type: SchemaType): React.ComponentType<InputProps> => {
+      if (type.components?.input) {
+        return type.components.input
+      }
       const configuredInput = formBuilderConfig.components?.inputs?.[type.name]?.input
       const resolved =
         configuredInput ||
