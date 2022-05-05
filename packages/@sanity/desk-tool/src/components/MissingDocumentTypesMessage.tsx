@@ -12,7 +12,11 @@ export function MissingDocumentTypesMessage() {
     >
       <Text as="p" align="center">
         We’ll generate a UI here as soon as you{' '}
-        <a href="https://www.sanity.io/docs/create-a-schema-and-configure-sanity-studio">
+        <a
+          target="_blank"
+          rel="noreferrer"
+          href="https://www.sanity.io/docs/create-a-schema-and-configure-sanity-studio"
+        >
           build your first schema.
         </a>
       </Text>
