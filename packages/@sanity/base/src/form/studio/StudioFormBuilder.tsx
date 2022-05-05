@@ -154,6 +154,7 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
           onBlur={handleBlur}
           onChange={handleChange}
           validation={[]}
+          presence={[]}
           onFocusPath={onPathFocus}
           onFocus={handleFocus}
           readOnly={readOnly}

@@ -69,7 +69,9 @@ const SlugInputInner = React.forwardRef(function SlugInput(
         return
       }
 
-      onChange(PatchEvent.from(setIfMissing({_type: schemaType.name}), set(nextSlug, ['current'])))
+      onChange(
+        PatchEvent.from([setIfMissing({_type: schemaType.name}), set(nextSlug, ['current'])])
+      )
     },
     [onChange, schemaType.name]
   )

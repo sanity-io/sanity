@@ -15,7 +15,7 @@ interface ItemFormProps
 
 export const ItemForm = forwardRef(function ItemForm(props: ItemFormProps, ref: ForwardedRef<any>) {
   const {
-    type,
+    schemaType,
     value,
     validation,
     focusPath,
@@ -30,10 +30,9 @@ export const ItemForm = forwardRef(function ItemForm(props: ItemFormProps, ref: 
     onFocus,
     onBlur,
     readOnly,
-    inputProps,
   } = props
 
-  const isReference = isReferenceSchemaType(type)
+  const isReference = isReferenceSchemaType(schemaType)
 
   const Input = useMemo(
     () =>

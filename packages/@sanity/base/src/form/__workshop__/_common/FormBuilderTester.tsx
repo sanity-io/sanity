@@ -30,7 +30,6 @@ export function FormBuilderTester(props: FormBuilderTesterProps) {
               renderField={() => <>TODO</>}
               resolveInputComponent={inputResolver}
               resolvePreviewComponent={resolvePreviewComponent}
-              type={type}
             >
               {props.children}
             </FormBuilderProvider>

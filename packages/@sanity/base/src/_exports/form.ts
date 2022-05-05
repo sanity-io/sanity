@@ -79,7 +79,5 @@ export type {
 } from '../templates'
 
 export * from '../form/components/formField'
-export * from '../form/components/formMember'
-export * from '../form/components/formNode'
 
 export * from '../form/types'

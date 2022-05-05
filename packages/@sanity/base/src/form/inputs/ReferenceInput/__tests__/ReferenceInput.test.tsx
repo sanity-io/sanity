@@ -38,7 +38,7 @@ StubComponent.displayName = 'StubComponent'
 type PartialExcept<T, K extends keyof T> = Partial<T> & Pick<T, K>
 
 function ReferenceInputTester(
-  props: PartialExcept<ReferenceInputProps, 'type' | 'getReferenceInfo'>
+  props: PartialExcept<ReferenceInputProps, 'schemaType' | 'getReferenceInfo'>
 ) {
   const onFocus = jest.fn()
   const onChange = jest.fn()
@@ -89,7 +89,7 @@ function ReferenceInfoTester(
       getReferenceInfo={(id: string) => of(props.referenceInfo)}
       onSearch={EMPTY_SEARCH}
       focusPath={props.isEditing ? ['_ref'] : []}
-      type={schema.get('actorReference')}
+      schemaType={schema.get('actorReference')}
       value={props.value}
     />
   )

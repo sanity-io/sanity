@@ -94,7 +94,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
     readOnly,
     onFocusPath,
     validation,
-    inputRef,
+    focusRef,
     value,
   } = props
 
@@ -171,7 +171,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
         onFocusPath([])
       }
     },
-    [onFocus]
+    [onFocusPath]
   )
 
   const getReferenceInfoMemo = useCallback(
@@ -189,7 +189,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
   // --- focus handling
   const hasFocusAtRef = focusPath.length === 1 && focusPath[0] === '_ref'
   // todo: fixme
-  const forwardedRef = inputRef
+  const forwardedRef = useForwardedRef(focusRef)
   // useDidUpdate({hasFocusAt: hasFocusAtRef, ref: value?._ref}, (prev, current) => {
   //   const refUpdated = prev?.ref !== current.ref
   //   const focusAtUpdated = prev?.hasFocusAt !== current.hasFocusAt
@@ -233,11 +233,11 @@ export function ReferenceInput(props: ReferenceInputProps) {
   const selected = selectedState === 'selected'
   const handleFocus = useCallback(
     (event) => {
-      if (onFocus && event.currentTarget === inputRef?.current) {
+      if (onFocus && event.currentTarget === forwardedRef?.current) {
         onFocus(event)
       }
     },
-    [onFocus, forwardedRef]
+    [forwardedRef, onFocus]
   )
 
   const handleAutocompleteFocus = useCallback(

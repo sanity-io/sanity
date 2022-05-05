@@ -80,7 +80,7 @@ function SanityArrayItemReferenceInputInner(
   const {schema, client} = useSource()
   const documentPreviewStore = useDocumentPreviewStore()
   const searchClient = useMemo(() => client.withConfig({apiVersion: '2021-03-25'}), [client])
-  const {getValuePath, type, document} = props
+  const {getValuePath, schemaType, document} = props
   const {EditReferenceLinkComponent, onEditReference, activePath, initialValueTemplateItems} =
     useReferenceInputOptions()
 
@@ -94,14 +94,14 @@ function SanityArrayItemReferenceInputInner(
     return schema.get(documentTypeName)?.liveEdit
   }, [documentTypeName, schema])
 
-  const disableNew = type.options?.disableNew === true
+  const disableNew = schemaType.options?.disableNew === true
 
   const handleSearch = useCallback(
     (searchString: string) =>
-      from(resolveUserDefinedFilter(type.options, documentRef.current, getValuePath())).pipe(
+      from(resolveUserDefinedFilter(schemaType.options, documentRef.current, getValuePath())).pipe(
         mergeMap(({filter, params}) =>
-          adapter.search(searchClient, searchString, type, {
-            ...type.options,
+          adapter.search(searchClient, searchString, schemaType, {
+            ...schemaType.options,
             filter,
             params,
             tag: 'search.reference',
@@ -110,14 +110,14 @@ function SanityArrayItemReferenceInputInner(
 
         catchError((err: SearchError) => {
           const isQueryError = err.details && err.details.type === 'queryParseError'
-          if (type.options?.filter && isQueryError) {
+          if (schemaType.options?.filter && isQueryError) {
             err.message = `Invalid reference filter, please check the custom "filter" option`
           }
           return throwError(err)
         })
       ),
 
-    [documentRef, getValuePath, searchClient, type]
+    [documentRef, getValuePath, searchClient, schemaType]
   )
 
   const template = props.value?._strengthenOnPublish?.template
@@ -162,7 +162,7 @@ function SanityArrayItemReferenceInputInner(
     return (
       (initialValueTemplateItems || [])
         // eslint-disable-next-line max-nested-callbacks
-        .filter((i) => type.to.some((refType) => refType.name === i.template?.schemaType))
+        .filter((i) => schemaType.to.some((refType) => refType.name === i.template?.schemaType))
         .map((item) =>
           item.template?.schemaType
             ? {
@@ -182,7 +182,7 @@ function SanityArrayItemReferenceInputInner(
         )
         .filter(isNonNullable)
     )
-  }, [disableNew, initialValueTemplateItems, type.to])
+  }, [disableNew, initialValueTemplateItems, schemaType.to])
 
   return (
     <ArrayItemReferenceInput

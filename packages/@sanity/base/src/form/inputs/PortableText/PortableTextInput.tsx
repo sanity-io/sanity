@@ -104,6 +104,7 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
     value,
     onBlur,
     onFocus,
+    onFocusPath,
     readOnly,
   } = props
 
@@ -170,12 +171,14 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
               focusPath || EMPTY_ARRAY
             )
           ) {
-            onFocus(change.selection?.focus.path)
+            if (change.selection?.focus.path) {
+              onFocusPath(change.selection?.focus.path)
+            }
           }
           break
         case 'focus':
           setHasFocus(true)
-          onFocus(
+          onFocusPath(
             (forwardedRef.current &&
               PortableTextEditor.getSelection(forwardedRef.current)?.focus.path) ||
               []
@@ -184,7 +187,6 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
           break
         case 'blur':
           setHasFocus(false)
-          onBlur?.()
           break
         case 'undo':
         case 'redo':

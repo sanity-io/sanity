@@ -50,7 +50,5 @@ export function inputResolver(
   //   input.type.name = 'object'
   // }
 
-  return (
-    defaultResolveInputComponent(formBuilder.components?.inputs, null, input.type) || DebugInput
-  )
+  return defaultResolveInputComponent(input.type) || DebugInput
 }

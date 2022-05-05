@@ -53,27 +53,27 @@ function LoadStatus(props: {children: React.ReactNode}) {
 export function ImageToolInput(props: ImageToolInputProps) {
   const {
     imageUrl,
-    inputProps,
     value,
     compareValue,
     level,
     focusPath = EMPTY_ARRAY,
     presence,
     onChange,
-    type,
+    schemaType,
+    onFocusPath,
+    readOnly,
+    focusRef,
   } = props
-
-  const {onFocus, readOnly, ref} = inputProps
 
   const [localValue, setLocalValue] = useState(value || DEFAULT_VALUE)
 
   const {image, isLoading: isImageLoading, error: imageLoadError} = useLoadImage(imageUrl)
 
-  const forwardedRef = useForwardedRef(ref)
+  const forwardedRef = useForwardedRef(focusRef)
 
   const handleFocus = useCallback(() => {
-    onFocus(HOTSPOT_PATH)
-  }, [onFocus])
+    onFocusPath(HOTSPOT_PATH)
+  }, [onFocusPath])
 
   useEffect(() => {
     setLocalValue(value || DEFAULT_VALUE)
@@ -93,11 +93,11 @@ export function ImageToolInput(props: ImageToolInputProps) {
         return
       }
       // For backwards compatibility, where hotspot/crop might not have a named type yet
-      const cropField = type.fields.find(
+      const cropField = schemaType.fields.find(
         (field) => field.name === 'crop' && field.type.name !== 'object'
       )
 
-      const hotspotField = type.fields.find(
+      const hotspotField = schemaType.fields.find(
         (field) => field.type.name !== 'object' && field.name === 'hotspot'
       )
 
@@ -111,9 +111,9 @@ export function ImageToolInput(props: ImageToolInputProps) {
         ? {_type: hotspotField.type.name, ...(finalValue.hotspot || DEFAULT_HOTSPOT)}
         : finalValue.hotspot
 
-      onChange(set(crop, ['crop']), set(hotspot, ['hotspot']))
+      onChange([set(crop, ['crop']), set(hotspot, ['hotspot'])])
     },
-    [onChange, readOnly, type.fields]
+    [onChange, readOnly, schemaType.fields]
   )
 
   return (

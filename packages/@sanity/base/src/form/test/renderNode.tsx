@@ -23,7 +23,7 @@ const GenericInput = forwardRef(function GenericInput(
       type="string"
       ref={ref}
       // eslint-disable-next-line react/jsx-handler-names
-      onFocus={props.inputProps.onFocus}
+      onFocus={props.onFocus}
     />
   )
 })
@@ -91,7 +91,6 @@ export function renderNode(options: {
           resolveInputComponent={inputResolver}
           resolvePreviewComponent={previewResolver}
           schema={schema}
-          type={type as ObjectSchemaType}
           value={undefined}
         >
           {renderFn({type, ...props})}

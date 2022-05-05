@@ -27,10 +27,8 @@ export default function ReferenceInputStory() {
           <ReviewChangesContextProvider changesOpen={false}>
             <StudioFormBuilderProvider
               __internal_patchChannel={patchChannel}
-              renderField={() => <>TODO</>}
               schema={schema}
               value={value}
-              type={documentType}
             >
               <>TODO</>
               {/* <FormBuilderInput

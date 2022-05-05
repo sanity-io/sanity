@@ -22,8 +22,6 @@ export interface StudioFormBuilderProviderProps {
   children: React.ReactElement
   schema: Schema
   value: any | null
-  renderField: FIXME // todo: delete
-  type: FIXME // todo: delete
 }
 
 /**
@@ -38,6 +36,7 @@ export function StudioFormBuilderProvider(props: StudioFormBuilderProviderProps)
 
   return (
     <FormBuilderProvider
+      renderField={() => 'TODO'}
       __internal_patchChannel={patchChannel}
       components={formBuilder.components}
       file={formBuilder.file}

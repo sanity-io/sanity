@@ -39,7 +39,6 @@ export interface FormBuilderProviderProps extends SanityFormBuilderConfig {
   children?: React.ReactNode
   filterField?: FormBuilderFilterFieldFn
   renderField: FIXME
-  type: ObjectSchemaType
   /**
    * @internal
    */

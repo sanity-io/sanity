@@ -127,7 +127,7 @@ export const RowItem = React.forwardRef(function RegularItem(
         <Flex align="center">
           {!readOnly && presence.length > 0 && (
             <Box marginLeft={1}>
-              <FieldPresence maxAvatars={1} />
+              <FieldPresence presence={presence} maxAvatars={1} />
             </Box>
           )}
 

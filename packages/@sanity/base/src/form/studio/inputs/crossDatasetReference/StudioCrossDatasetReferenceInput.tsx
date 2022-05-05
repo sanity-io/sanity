@@ -70,14 +70,14 @@ function _StudioCrossDatasetReferenceInput(
   props: StudioCrossDatasetReferenceInputProps
   // ref: ForwardedRef<HTMLInputElement>
 ) {
-  const {getValuePath, type, document} = props
+  const {getValuePath, schemaType, document} = props
   const {client, projectId} = useSource()
   const documentPreviewStore = useDocumentPreviewStore()
 
-  const isCurrentProject = projectId === type.projectId
+  const isCurrentProject = projectId === schemaType.projectId
   const loadableToken = useCrossProjectToken(client, {
-    projectId: type.projectId,
-    tokenId: type.tokenId,
+    projectId: schemaType.projectId,
+    tokenId: schemaType.tokenId,
   })
 
   const crossDatasetClient = useMemo(() => {
@@ -88,8 +88,8 @@ function _StudioCrossDatasetReferenceInput(
     return (
       client
         .withConfig({
-          projectId: type.projectId,
-          dataset: type.dataset,
+          projectId: schemaType.projectId,
+          dataset: schemaType.dataset,
           apiVersion: '2022-03-07',
           token: token || undefined,
           ignoreBrowserTokenWarning: true,
@@ -98,16 +98,16 @@ function _StudioCrossDatasetReferenceInput(
         // seems like this is required to prevent this client from sometimes magically get mutated with a new projectId and dataset
         .clone()
     )
-  }, [client, isCurrentProject, loadableToken, type.projectId, type.dataset])
+  }, [client, isCurrentProject, loadableToken, schemaType.projectId, schemaType.dataset])
 
   const documentRef = useValueRef(document)
 
   const handleSearch = useCallback(
     (searchString: string) =>
-      from(resolveUserDefinedFilter(type.options, documentRef.current, getValuePath())).pipe(
+      from(resolveUserDefinedFilter(schemaType.options, documentRef.current, getValuePath())).pipe(
         mergeMap(({filter, params}) =>
-          search(crossDatasetClient, searchString, type, {
-            ...type.options,
+          search(crossDatasetClient, searchString, schemaType, {
+            ...schemaType.options,
             filter,
             params,
             tag: 'search.cross-dataset-reference',
@@ -116,14 +116,14 @@ function _StudioCrossDatasetReferenceInput(
 
         catchError((err: SearchError) => {
           const isQueryError = err.details && err.details.type === 'queryParseError'
-          if (type.options?.filter && isQueryError) {
+          if (schemaType.options?.filter && isQueryError) {
             err.message = `Invalid reference filter, please check the custom "filter" option`
           }
           return throwError(err)
         })
       ),
 
-    [crossDatasetClient, documentRef, getValuePath, type]
+    [crossDatasetClient, documentRef, getValuePath, schemaType]
   )
 
   const getReferenceInfo = useMemo(
@@ -148,19 +148,20 @@ function _StudioCrossDatasetReferenceInput(
     return (
       <Stack space={2} marginY={2}>
         <Text size={1} weight="semibold">
-          {type.title}
+          {schemaType.title}
         </Text>
         <Alert title="No cross dataset read token found" size={1} muted>
           <Stack space={3}>
             <Text size={1}>
               This cross dataset reference field requires a cross dataset token to be registered.
               Please configure a token{' '}
-              {type.tokenId ? (
+              {schemaType.tokenId ? (
                 <>
-                  with ID <b>{type.tokenId}</b>
+                  with ID <b>{schemaType.tokenId}</b>
                 </>
               ) : null}{' '}
-              for project <b>{type.projectId}</b> that has read access to the <b>{type.dataset}</b>
+              for project <b>{schemaType.projectId}</b> that has read access to the{' '}
+              <b>{schemaType.dataset}</b>
               -dataset.
             </Text>
             <Text size={1}>

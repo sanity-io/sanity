@@ -18,14 +18,13 @@ function renderInput(
     <ThemeProvider scheme="light" theme={studioTheme}>
       <LayerProvider>
         <DateTimeInput
-          focusPath={[]}
-          type={{title: 'Test', name: 'datetime'} as FIXME}
-          // onFocus={onFocus}
           onChange={onChange}
           presence={[]}
           validation={[]}
           level={0}
           {...props}
+          onFocus={onFocus}
+          schemaType={{title: 'Test', name: 'datetime'} as FIXME}
         />
       </LayerProvider>
     </ThemeProvider>

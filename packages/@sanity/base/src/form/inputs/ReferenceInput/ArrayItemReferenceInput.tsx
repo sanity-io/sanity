@@ -119,11 +119,12 @@ export function ArrayItemReferenceInput(props: Props) {
     getReferenceInfo,
     onBlur,
     onFocus,
+    onFocusPath,
     readOnly,
-    ref,
+    focusRef,
   } = props
 
-  const forwardedRef = useForwardedRef(ref)
+  const forwardedRef = useForwardedRef(focusRef)
 
   const [searchState, setSearchState] = useState<SearchState>(INITIAL_SEARCH_STATE)
 
@@ -143,28 +144,27 @@ export function ArrayItemReferenceInput(props: Props) {
     onChange(patches)
 
     onEditReference({id, type: option.type, template: option.template})
-    onFocus?.([])
+    onFocusPath([])
   }
 
   const handleDuplicate = useCallback(() => {
     if (value?._key) {
-      onInsert?.({
-        item: {...value, _key: randomKey()},
-        position: 'after',
-        path: [{_key: value._key}],
-        edit: false,
-      })
+      // todo
+      // onInsert?.({
+      //   items: [{...value, _key: randomKey()}],
+      //   position: 'after',
+      // })
     }
   }, [onInsert, value])
 
   const handleInsert = useCallback(
     (pos: 'before' | 'after') => {
       if (value?._key) {
-        onInsert?.({
-          item: {_type: type.name, _key: randomKey()},
-          position: pos,
-          path: [{_key: value._key}],
-        })
+        // todo
+        // onInsert?.({
+        //   item: {_type: type.name, _key: randomKey()},
+        //   position: pos,
+        // })
       }
     },
     [onInsert, type.name, value?._key]
@@ -174,7 +174,7 @@ export function ArrayItemReferenceInput(props: Props) {
     (id: string) => {
       if (!id) {
         onChange(unset())
-        onFocus?.([])
+        onFocusPath([])
         return
       }
 
@@ -196,9 +196,9 @@ export function ArrayItemReferenceInput(props: Props) {
       ].filter(isNonNullable)
 
       onChange(patches)
-      onFocus?.([])
+      onFocusPath([])
     },
-    [searchState.hits, type.name, type.weak, onChange, onFocus]
+    [searchState.hits, type.name, type.weak, onChange, onFocusPath]
   )
 
   const handleClear = useCallback(() => {
@@ -209,17 +209,17 @@ export function ArrayItemReferenceInput(props: Props) {
     (event) => {
       if (event.key !== 'Enter' && event.key !== 'Space') {
         // enable "search for reference"-mode
-        onFocus?.(['_ref'])
+        onFocusPath(['_ref'])
       }
     },
-    [onFocus]
+    [onFocusPath]
   )
 
   const handleCancelEdit = useCallback(() => {
     if (!value?._ref) {
       onChange(unset())
     }
-    onFocus?.([])
+    onFocusPath([])
   }, [onChange, onFocus, value?._ref])
 
   const handleAutocompleteKeyDown = useCallback(
@@ -273,10 +273,10 @@ export function ArrayItemReferenceInput(props: Props) {
   const referenceExists = hasRef && loadableReferenceInfo.result?.preview?.published?._id
 
   const handleRemoveStrengthenOnPublish = useCallback(() => {
-    onChange(
+    onChange([
       type.weak === true ? set(true, ['_weak']) : unset(['_weak']),
-      unset(['_strengthenOnPublish'])
-    )
+      unset(['_strengthenOnPublish']),
+    ])
   }, [onChange, type])
 
   const {push} = useToast()
@@ -287,8 +287,8 @@ export function ArrayItemReferenceInput(props: Props) {
   const selected = selectedState === 'selected'
   const handleFocus = useCallback(
     (event) => {
-      if (onFocus && event.currentTarget === forwardedRef.current) {
-        onFocus([])
+      if (event.currentTarget === forwardedRef.current) {
+        onFocus(event)
       }
     },
     [onFocus, forwardedRef]
@@ -296,11 +296,11 @@ export function ArrayItemReferenceInput(props: Props) {
 
   const handleAutocompleteFocus = useCallback(
     (event) => {
-      if (onFocus && event.currentTarget === forwardedRef.current) {
-        onFocus(['_ref'])
+      if (onFocusPath && event.currentTarget === forwardedRef.current) {
+        onFocusPath(['_ref'])
       }
     },
-    [onFocus, forwardedRef]
+    [onFocusPath, forwardedRef]
   )
 
   const handleQueryChange = useObservableCallback((inputValue$: Observable<string | null>) => {
@@ -527,7 +527,7 @@ export function ArrayItemReferenceInput(props: Props) {
                   as="button"
                   __unstable_focusRing
                   tabIndex={0}
-                  onClick={() => onFocus?.(['_ref'])}
+                  onClick={() => onFocusPath(['_ref'])}
                   ref={forwardedRef}
                 >
                   <Box marginY={1}>
@@ -592,7 +592,7 @@ export function ArrayItemReferenceInput(props: Props) {
                         text="Replace"
                         icon={ReplaceIcon}
                         onClick={() => {
-                          onFocus?.(['_ref'])
+                          onFocusPath(['_ref'])
                         }}
                       />
 

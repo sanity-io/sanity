@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React from 'react'
-import {FIXME, FieldProps, ObjectFieldProps} from '../types'
+import {FIXME, FieldProps, ObjectFieldProps, ObjectInputProps} from '../types'
 import {ObjectInput} from '../inputs/ObjectInput/ObjectInput'
 import {renderNode} from './renderNode'
 
 export function renderObjectInput(options: {
-  props?: Partial<ObjectFieldProps> & {ref?: React.Ref<FIXME>}
+  props?: Partial<ObjectInputProps> & {ref?: React.Ref<FIXME>}
   type: FIXME // SchemaTypeDefinition
 }) {
   return renderInput({
@@ -15,7 +15,7 @@ export function renderObjectInput(options: {
   })
 }
 
-export function renderInput<InputProps extends FieldProps>(options: {
+export function renderInput<InputProps extends ObjectInputProps>(options: {
   props?: Partial<InputProps> & {ref?: React.Ref<any>}
   render: (props: InputProps) => React.ReactNode
   type: FIXME

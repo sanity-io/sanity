@@ -62,20 +62,20 @@ export default function ExampleStory() {
     <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
       <Container width={1}>
         <LayerProvider>
-          <FormNodeProvider
-            inputId="test"
-            level={level}
-            path={['test']}
-            presence={presence}
-            type={{description, title} as any}
-            validation={validation}
-          >
-            <FormField>
-              <ElementWithChangeBar isChanged={isChanged} hasFocus={focused}>
-                <TextInput id={inputId} onBlur={handleBlur} onFocus={handleFocus} />
-              </ElementWithChangeBar>
-            </FormField>
-          </FormNodeProvider>
+          {/*<FormNodeProvider*/}
+          {/*  inputId="test"*/}
+          {/*  level={level}*/}
+          {/*  path={['test']}*/}
+          {/*  presence={presence}*/}
+          {/*  type={{description, title} as any}*/}
+          {/*  validation={validation}*/}
+          {/*>*/}
+          {/*  <FormField>*/}
+          {/*    <ElementWithChangeBar isChanged={isChanged} hasFocus={focused}>*/}
+          {/*      <TextInput id={inputId} onBlur={handleBlur} onFocus={handleFocus} />*/}
+          {/*    </ElementWithChangeBar>*/}
+          {/*  </FormField>*/}
+          {/*</FormNodeProvider>*/}
         </LayerProvider>
 
         {DEBUG && (

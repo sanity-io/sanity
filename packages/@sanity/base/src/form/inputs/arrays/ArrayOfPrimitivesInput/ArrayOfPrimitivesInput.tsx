@@ -232,6 +232,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
       schemaType,
       value,
       level = 1,
+      members,
       validation,
       onChange,
       presence,
@@ -248,17 +249,17 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
     return (
       <Stack space={3}>
         <Stack space={1}>
-          {value && value.length > 0 && (
+          {members.length > 0 && (
             <Card padding={1} border>
               <List onSortEnd={this.handleSortEnd} isSortable={isSortable}>
-                {value.map((item, index) => {
+                {members.map((member, index) => {
                   const itemValidationMarkers = validation.filter((marker) =>
                     startsWith([index], marker.path)
                   )
 
                   const childPresence = presence.filter((pItem) => startsWith([index], pItem.path))
 
-                  const memberType = this.getMemberType(resolveTypeName(item))
+                  const memberType = this.getMemberType(resolveTypeName(member))
 
                   // Best effort attempt to make a stable key for each item in the array
                   // Since items may be reordered and change at any time, there's no way to reliably address each item uniquely
@@ -301,16 +302,16 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
             </Card>
           )}
         </Stack>
-        <ArrayFunctionsImpl
-          type={schemaType}
-          value={value}
-          readOnly={readOnly}
-          onAppendItem={this.handleAppend}
-          onPrependItem={this.handlePrepend}
-          onFocusItem={this.handleFocusItem}
-          onCreateValue={getEmptyValue}
-          onChange={onChange}
-        />
+        {/* TODO: <ArrayFunctionsImpl*/}
+        {/*  type={schemaType}*/}
+        {/*  value={value}*/}
+        {/*  readOnly={readOnly}*/}
+        {/*  onAppendItem={this.handleAppend}*/}
+        {/*  onPrependItem={this.handlePrepend}*/}
+        {/*  onFocusItem={this.handleFocusItem}*/}
+        {/*  onCreateValue={getEmptyValue}*/}
+        {/*  onChange={onChange}*/}
+        {/*/>*/}
       </Stack>
     )
   }

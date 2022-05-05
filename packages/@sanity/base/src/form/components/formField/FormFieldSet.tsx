@@ -11,7 +11,7 @@ import {
   ChangeIndicator,
   ChangeIndicatorContextProvidedProps,
 } from '../../../components/changeIndicators'
-import {FormFieldPresence} from '../../../presence'
+import {FieldPresence, FormFieldPresence} from '../../../presence'
 
 export interface FormFieldSetProps {
   /**

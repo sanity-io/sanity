@@ -39,18 +39,13 @@ function renderInput() {
     <ThemeProvider scheme="light" theme={studioTheme}>
       <LayerProvider>
         <CommonDateTimeInput
-          description="Some description"
           deserialize={deserialize}
           formatInputValue={formatInputValue}
           id="test"
-          level={0}
           onChange={onChange}
           parseInputValue={parseInputValue}
-          presence={[]}
           readOnly={false}
           serialize={serialize}
-          title="test"
-          validation={[]}
           value=""
         />
       </LayerProvider>

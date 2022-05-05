@@ -2,15 +2,12 @@ import React, {ForwardedRef, forwardRef} from 'react'
 import {SchemaType} from '@sanity/types'
 import {resolveUploader as sanityResolveUploader} from '../uploads/resolveUploader'
 import {ArrayInput} from '../../inputs/arrays/ArrayOfObjectsInput'
-import {
-  ArrayOfPrimitivesInput,
-  ArrayOfPrimitivesInputProps,
-} from '../../inputs/arrays/ArrayOfPrimitivesInput'
+import {ArrayOfPrimitivesInput} from '../../inputs/arrays/ArrayOfPrimitivesInput'
 import * as is from '../../utils/is'
 import {FileLike} from '../uploads/types'
 import {FormBuilderContextValue} from '../../FormBuilderContext'
 import {useFormBuilder} from '../../useFormBuilder'
-import {ArrayOfObjectsInputProps, FIXME} from '../../types'
+import {ArrayOfObjectsInputProps, ArrayOfPrimitivesInputProps, FIXME} from '../../types'
 import {resolveInitialValueForType} from '../../../templates'
 
 const arrayResolveUploader = (
