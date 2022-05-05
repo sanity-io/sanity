@@ -14,6 +14,7 @@ import {defaultResolveInputComponent as defaultInputResolver} from './inputResol
 import {FormCallbacksProvider} from './contexts/FormCallbacks'
 import {ObjectNode} from '../store/types/nodes'
 import {StudioObjectInput} from './StudioObjectInput'
+import {EMPTY_ARRAY} from '../utils/empty'
 
 /**
  * @alpha
@@ -148,14 +149,14 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
           focusRef={useRef(null)}
           level={0}
           id={id}
-          path={[]}
+          path={EMPTY_ARRAY}
           collapsed={false}
           focused={focused}
           focusPath={focusPath}
           onBlur={handleBlur}
           onChange={handleChange}
-          validation={[]}
-          presence={[]}
+          validation={EMPTY_ARRAY}
+          presence={EMPTY_ARRAY}
           onFocusPath={onPathFocus}
           onFocus={handleFocus}
           readOnly={readOnly}

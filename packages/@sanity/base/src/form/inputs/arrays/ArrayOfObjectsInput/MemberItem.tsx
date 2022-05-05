@@ -14,6 +14,7 @@ import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/
 import {insert, PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {ensureKey} from '../../../utils/ensureKey'
+import {EMPTY_ARRAY} from '../../../utils/empty'
 
 interface Props {
   member: ArrayOfObjectsMember
@@ -22,7 +23,7 @@ interface Props {
   renderInput: RenderInputCallback
 }
 
-export const MemberItem = memo(function MemberItem(props: Props) {
+export function MemberItem(props: Props) {
   const focusRef = useRef<{focus: () => void}>()
   const {member, renderItem, renderInput, renderField} = props
 
@@ -127,8 +128,8 @@ export const MemberItem = memo(function MemberItem(props: Props) {
       renderInput,
       renderItem,
       // todo
-      validation: [],
-      presence: [],
+      validation: EMPTY_ARRAY,
+      presence: EMPTY_ARRAY,
     }
   }, [
     member.item.level,
@@ -142,11 +143,12 @@ export const MemberItem = memo(function MemberItem(props: Props) {
     member.item.focusPath,
     member.item.focused,
     member.item.groups,
-    handleBlur,
+    member.collapsed,
     handleSetCollapsed,
     handleSelectFieldGroup,
     handleSetFieldSetCollapsed,
     handleSetFieldCollapsed,
+    handleBlur,
     handleFocus,
     handleFocusChildPath,
     handleChange,
@@ -190,7 +192,7 @@ export const MemberItem = memo(function MemberItem(props: Props) {
       schemaType: member.item.schemaType,
       onInsert,
       onRemove,
-      validation: [],
+      validation: EMPTY_ARRAY,
       readOnly: member.item.readOnly,
       focused: member.item.focused,
       onFocus: handleFocus,
@@ -227,7 +229,7 @@ export const MemberItem = memo(function MemberItem(props: Props) {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
-      {renderItem(itemProps)}
+      {useMemo(() => renderItem(itemProps), [itemProps, renderItem])}
     </FormCallbacksProvider>
   )
-})
+}

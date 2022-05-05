@@ -17,6 +17,7 @@ import {createProtoValue} from '../../../utils/createProtoValue'
 import {ArrayFieldProps} from '../../../types/fieldProps'
 import {resolveInitialValueForType} from '../../../../templates'
 import {ensureKey} from '../../../utils/ensureKey'
+import {EMPTY_ARRAY} from '../../../utils/empty'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an array input
@@ -191,9 +192,9 @@ export function ArrayField(props: {
       onFocusPath: handleFocusChildPath,
       resolveInitialValue: resolveInitialValueForType,
       // todo:
-      validation: [],
+      validation: EMPTY_ARRAY,
       // todo:
-      presence: [],
+      presence: EMPTY_ARRAY,
       renderInput,
       renderField,
       renderItem,
@@ -266,7 +267,7 @@ export function ArrayField(props: {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
-      {renderField(fieldProps)}
+      {useMemo(() => renderField(fieldProps), [fieldProps, renderField])}
     </FormCallbacksProvider>
   )
 }

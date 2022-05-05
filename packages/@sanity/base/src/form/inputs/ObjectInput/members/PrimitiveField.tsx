@@ -4,7 +4,8 @@ import {PrimitiveInputProps, RenderFieldCallback, RenderInputCallback} from '../
 import {PrimitiveFieldProps} from '../../../types/fieldProps'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
-import {FormPatch, FormSetPatch, FormUnsetPatch, PatchEvent} from '../../../patch'
+import {FormPatch, PatchEvent} from '../../../patch'
+import {EMPTY_ARRAY} from '../../../utils/empty'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for a primitive field/input
@@ -64,8 +65,8 @@ export function PrimitiveField(props: {
       level: member.field.level,
       onChange: handleChange,
       // todo
-      validation: [],
-      presence: [],
+      validation: EMPTY_ARRAY,
+      presence: EMPTY_ARRAY,
     }
   }, [
     handleBlur,

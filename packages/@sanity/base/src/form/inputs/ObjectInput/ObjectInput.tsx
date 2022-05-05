@@ -16,7 +16,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     renderInput,
     renderField,
     renderItem,
-    level = 0,
+    level,
     value,
     id,
     path,

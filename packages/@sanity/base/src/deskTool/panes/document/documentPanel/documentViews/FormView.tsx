@@ -21,6 +21,7 @@ import {
   DocumentRebaseEvent,
 } from '../../../../../datastores/document/buffered-doc/types'
 
+const EMPTY_ARRAY: any[] = []
 interface FormViewProps {
   granted: boolean
   hidden: boolean
@@ -172,7 +173,7 @@ export function FormView(props: FormViewProps) {
               </Box>
             ) : (
               <StudioFormBuilder
-                path={[]}
+                path={EMPTY_ARRAY}
                 level={0}
                 compareValue={undefined}
                 autoFocus

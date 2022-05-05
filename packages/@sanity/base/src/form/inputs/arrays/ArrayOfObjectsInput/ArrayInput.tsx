@@ -56,7 +56,7 @@ interface State {
   isResolvingInitialValue: boolean
 }
 
-export class ArrayInput extends React.Component<ArrayOfObjectsInputProps<ArrayMember>> {
+export class ArrayInput extends React.PureComponent<ArrayOfObjectsInputProps<ArrayMember>> {
   _focusArea: HTMLElement | null = null
   toast: Toast | null = null
 

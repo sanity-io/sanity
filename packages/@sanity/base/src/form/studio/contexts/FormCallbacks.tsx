@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unused-prop-types */
 import {Path} from '@sanity/types'
-import React, {useContext} from 'react'
+import React, {memo, useContext} from 'react'
 import {PatchEvent} from '../../patch'
 
 interface FormCallbacksValue {
@@ -14,9 +14,11 @@ interface FormCallbacksValue {
 
 const FormContext = React.createContext<FormCallbacksValue | null>(null)
 
-export function FormCallbacksProvider(props: FormCallbacksValue & {children: React.ReactNode}) {
+export const FormCallbacksProvider = memo(function FormCallbacksProvider(
+  props: FormCallbacksValue & {children: React.ReactNode}
+) {
   return <FormContext.Provider value={props}>{props.children}</FormContext.Provider>
-}
+})
 
 export function useFormCallbacks(): FormCallbacksValue {
   const ctx = useContext(FormContext)

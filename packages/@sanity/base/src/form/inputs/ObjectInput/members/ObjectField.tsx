@@ -4,22 +4,23 @@ import {FieldMember} from '../../../store/types/members'
 import {ObjectNode} from '../../../store/types/nodes'
 import {
   ObjectInputProps,
+  RenderArrayItemCallback,
   RenderFieldCallback,
   RenderInputCallback,
-  RenderArrayItemCallback,
 } from '../../../types'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {PatchArg, PatchEvent, setIfMissing} from '../../../patch'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {ObjectFieldProps} from '../../../types/fieldProps'
+import {EMPTY_ARRAY} from '../../../utils/empty'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an object input
  * Note: "ObjectField" in this context means an object field of an object type (not "a field of an object")
  * @param props - Component props
  */
-export function ObjectField(props: {
+export const ObjectField = function ObjectField(props: {
   member: FieldMember<ObjectNode>
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback
@@ -128,8 +129,8 @@ export function ObjectField(props: {
       renderInput,
       renderItem,
       // todo
-      validation: [],
-      presence: [],
+      validation: EMPTY_ARRAY,
+      presence: EMPTY_ARRAY,
     }
   }, [
     member.field.level,
@@ -143,6 +144,7 @@ export function ObjectField(props: {
     member.field.focusPath,
     member.field.focused,
     member.field.groups,
+    member.collapsed,
     handleBlur,
     handleSetCollapsed,
     handleSelectFieldGroup,
@@ -197,7 +199,7 @@ export function ObjectField(props: {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
-      {renderField(fieldProps)}
+      {useMemo(() => renderField(fieldProps), [fieldProps, renderField])}
     </FormCallbacksProvider>
   )
 }
