@@ -11,7 +11,7 @@ import {
 } from '@sanity/types'
 
 import {castArray, pick} from 'lodash'
-import {isEqual, pathFor, toString} from '@sanity/util/paths'
+import {isEqual, pathFor, trimChildPath, toString} from '@sanity/util/paths'
 import {StateTree} from './types/state'
 import {callConditionalProperties, callConditionalProperty} from './conditional-property'
 import {MAX_FIELD_DEPTH} from './constants'
@@ -317,7 +317,7 @@ function prepareObjectInputState<T>(
     id: toString(props.path),
     level: props.level,
     focused: isEqual(props.path, props.focusPath),
-    focusPath: props.focusPath,
+    focusPath: trimChildPath(props.path, props.focusPath),
     members,
     groups,
   }
@@ -359,7 +359,7 @@ function prepareArrayOfObjectsInputState<T extends unknown[]>(
     readOnly,
     schemaType: props.schemaType,
     focused: isEqual(props.path, props.focusPath),
-    focusPath: props.focusPath,
+    focusPath: trimChildPath(props.path, props.focusPath),
     path: props.path,
     id: toString(props.path),
     level: props.level,
