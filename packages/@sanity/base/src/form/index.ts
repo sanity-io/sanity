@@ -15,6 +15,8 @@ export * from './utils/withValuePath'
 export * from './inputs/PortableText/PortableTextInput'
 export {PortableTextInput as BlockEditor} from './inputs/PortableText/PortableTextInput'
 
+export * from './inputs/ObjectInput/MemberField'
+
 export * from './patch/PatchChannel'
 export * from './patch/PatchEvent'
 export * from './patch/patch'

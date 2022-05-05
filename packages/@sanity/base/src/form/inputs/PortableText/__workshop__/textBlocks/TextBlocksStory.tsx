@@ -69,7 +69,6 @@ export function TextBlocksStory() {
             resolveInputComponent={resolveInputComponent}
             resolvePreviewComponent={resolvePreviewComponent}
             schema={schema}
-            type={{} as any}
           >
             <TextBlock
               markers={markers}

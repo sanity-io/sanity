@@ -149,6 +149,7 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
           level={0}
           id={id}
           path={[]}
+          collapsed={false}
           focused={focused}
           focusPath={focusPath}
           onBlur={handleBlur}

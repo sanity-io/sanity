@@ -44,6 +44,7 @@ export interface ObjectInputProps<
   // todo: consider remove PatchEvent
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
 
+  collapsed: boolean | undefined
   onSetCollapsed: (collapsed: boolean) => void
   onSetFieldCollapsed: (fieldName: string, collapsed: boolean) => void
   onSetFieldSetCollapsed: (fieldsetName: string, collapsed: boolean) => void

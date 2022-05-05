@@ -122,6 +122,7 @@ export const MemberItem = memo(function MemberItem(props: Props) {
       focused: member.item.focused,
       groups: member.item.groups,
       onChange: handleChange,
+      collapsed: member.collapsed,
       renderField,
       renderInput,
       renderItem,

@@ -1,15 +1,15 @@
+/* eslint-disable react/jsx-handler-names */
 import React, {useCallback, useEffect, useImperativeHandle, useMemo, useRef} from 'react'
 import {
-  FormFieldSet,
   FieldMember,
-  FormNode,
+  MemberField,
   ObjectInputProps,
   set,
   setIfMissing,
   unset,
 } from '@sanity/base/form'
 import {ObjectSchemaType} from '@sanity/types'
-import {Card, Select, Stack, TextInput} from '@sanity/ui'
+import {Card, Select, Stack} from '@sanity/ui'
 import AceEditor from 'react-ace'
 import styled from 'styled-components'
 import createHighlightMarkers, {highlightMarkersCSS} from './createHighlightMarkers'
@@ -23,8 +23,6 @@ import {
   DEFAULT_THEME,
   LANGUAGE_ALIASES,
   PATH_CODE,
-  PATH_FILENAME,
-  PATH_LANGUAGE,
   SUPPORTED_LANGUAGES,
   SUPPORTED_THEMES,
 } from './config'
@@ -83,46 +81,39 @@ function isSupportedLanguage(mode: string) {
 }
 
 export function CodeInput(props: CodeInputProps) {
-  const {inputProps, members, onChange, renderField, type, value} = props
-  const {id, onBlur, onFocus, readOnly, ref} = inputProps
+  const {
+    members,
+    onChange,
+    renderField,
+    schemaType: type,
+    value,
+    onBlur,
+    renderItem,
+    onFocusPath,
+    readOnly,
+    focusRef,
+  } = props
+
   const aceEditorRef = useRef<any>()
 
   const fieldMembers = useMemo(
-    () => members.filter((member) => member.type === 'field') as FieldMember[],
+    () => members.filter((member) => member.kind === 'field') as FieldMember[],
     [members]
   )
 
-  const languageFieldMember = fieldMembers.find((member) => member.field.name === 'language')
-  const filenameMember = fieldMembers.find((member) => member.field.name === 'filename')
-  const codeFieldMember = fieldMembers.find((member) => member.field.name === 'code')
+  const languageFieldMember = fieldMembers.find((member) => member.name === 'language')
+  const filenameMember = fieldMembers.find((member) => member.name === 'filename')
+  const codeFieldMember = fieldMembers.find((member) => member.name === 'code')
 
-  useImperativeHandle(ref, () => ({
+  useImperativeHandle(focusRef, () => ({
     focus: () => {
       aceEditorRef?.current?.editor?.focus()
     },
   }))
 
-  const handleLanguageFocus = useCallback(() => {
-    onFocus(PATH_LANGUAGE)
-  }, [onFocus])
-
   const handleCodeFocus = useCallback(() => {
-    onFocus(PATH_CODE)
-  }, [onFocus])
-
-  const handleFilenameFocus = useCallback(() => {
-    onFocus(PATH_FILENAME)
-  }, [onFocus])
-
-  const handleFilenameChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const val = event.target.value
-      const path = PATH_FILENAME
-
-      onChange(setIfMissing({_type: type.name}), val ? set(val, path) : unset(path))
-    },
-    [onChange, type.name]
-  )
+    onFocusPath(PATH_CODE)
+  }, [onFocusPath])
 
   const getTheme = useCallback(() => {
     const preferredTheme = type.options?.theme
@@ -233,29 +224,15 @@ export function CodeInput(props: CodeInputProps) {
       const path = PATH_CODE
       const fixedLanguage = type.options?.language
 
-      onChange(
+      onChange([
         setIfMissing({_type: type.name, language: fixedLanguage}),
-        code ? set(code, path) : unset(path)
-      )
+        code ? set(code, path) : unset(path),
+      ])
     },
     [onChange, type]
   )
 
-  const handleLanguageChange = useCallback(
-    (event: React.ChangeEvent<HTMLSelectElement>) => {
-      const val = event.currentTarget.value
-      const path = PATH_LANGUAGE
-
-      onChange(setIfMissing({_type: type.name}), val ? set(val, path) : unset(path))
-    },
-    [onChange, type.name]
-  )
-
   const languages = getLanguageAlternatives().slice()
-
-  const selectedLanguage = props?.value?.language
-    ? languages.find((item: {value: string | undefined}) => item.value === props?.value?.language)
-    : undefined
 
   const fixedLanguage = type.options?.language
 
@@ -269,69 +246,80 @@ export function CodeInput(props: CodeInputProps) {
 
   const mode = configured?.mode || (supported ? language : 'text')
 
+  const renderLanguageInput = useCallback(
+    (inputProps) => {
+      return (
+        <Select {...inputProps}>
+          {languages.map((lang: {title: string; value: string}) => (
+            <option key={lang.value} value={lang.value}>
+              {lang.title}
+            </option>
+          ))}
+        </Select>
+      )
+    },
+    [languages]
+  )
+
+  const renderCodeInput = useCallback(
+    (inputProps) => {
+      return (
+        <EditorContainer radius={1} shadow={1} readOnly={readOnly}>
+          <AceEditor
+            ref={aceEditorRef}
+            mode={mode}
+            theme={getTheme()}
+            width="100%"
+            onChange={handleCodeChange}
+            name={inputProps.id}
+            value={inputProps.value}
+            markers={
+              value && value.highlightedLines
+                ? createHighlightMarkers(value.highlightedLines)
+                : undefined
+            }
+            onLoad={handleEditorLoad}
+            readOnly={readOnly}
+            tabSize={2}
+            wrapEnabled
+            setOptions={ACE_SET_OPTIONS}
+            editorProps={ACE_EDITOR_PROPS}
+            onFocus={handleCodeFocus}
+            onBlur={onBlur}
+          />
+        </EditorContainer>
+      )
+    },
+    [getTheme, handleCodeChange, handleCodeFocus, handleEditorLoad, mode, onBlur, readOnly, value]
+  )
   return (
-    <FormFieldSet __unstable_changeIndicator={false} onSetCollapsed={() => console.warn('todo')}>
-      <Stack space={3}>
-        {languageFieldMember && (
-          <FormNode fieldProps={languageFieldMember.field} renderField={renderField}>
-            <Select
-              onChange={handleLanguageChange}
-              readOnly={readOnly}
-              value={selectedLanguage?.value || ''}
-              onFocus={handleLanguageFocus}
-              onBlur={onBlur}
-            >
-              {languages.map((lang: {title: string; value: string}) => (
-                <option key={lang.value} value={lang.value}>
-                  {lang.title}
-                </option>
-              ))}
-            </Select>
-          </FormNode>
-        )}
+    <Stack space={3}>
+      {languageFieldMember && (
+        <MemberField
+          member={languageFieldMember}
+          renderItem={renderItem}
+          renderField={renderField}
+          renderInput={renderLanguageInput}
+        />
+      )}
 
-        {type.options?.withFilename && filenameMember && (
-          <FormNode fieldProps={filenameMember.field} renderField={renderField}>
-            <TextInput
-              name="filename"
-              value={value?.filename || ''}
-              placeholder={filenameMember.field.type.placeholder}
-              onChange={handleFilenameChange}
-              onFocus={handleFilenameFocus}
-              onBlur={onBlur}
-            />
-          </FormNode>
-        )}
+      {type.options?.withFilename && filenameMember && (
+        <MemberField
+          member={filenameMember}
+          renderItem={renderItem}
+          renderField={renderField}
+          renderInput={renderLanguageInput}
+        />
+      )}
 
-        {codeFieldMember && (
-          <FormNode fieldProps={codeFieldMember.field} renderField={renderField}>
-            <EditorContainer radius={1} shadow={1} readOnly={readOnly}>
-              <AceEditor
-                ref={aceEditorRef}
-                mode={mode}
-                theme={getTheme()}
-                width="100%"
-                onChange={handleCodeChange}
-                name={`editor-${id}`}
-                value={(value && value.code) || ''}
-                markers={
-                  value && value.highlightedLines
-                    ? createHighlightMarkers(value.highlightedLines)
-                    : undefined
-                }
-                onLoad={handleEditorLoad}
-                readOnly={readOnly}
-                tabSize={2}
-                wrapEnabled
-                setOptions={ACE_SET_OPTIONS}
-                editorProps={ACE_EDITOR_PROPS}
-                onFocus={handleCodeFocus}
-                onBlur={onBlur}
-              />
-            </EditorContainer>
-          </FormNode>
-        )}
-      </Stack>
-    </FormFieldSet>
+      {codeFieldMember && (
+        <MemberField
+          member={codeFieldMember}
+          renderInput={renderCodeInput}
+          renderItem={renderItem}
+          renderField={renderField}
+        />
+      )}
+    </Stack>
   )
 }

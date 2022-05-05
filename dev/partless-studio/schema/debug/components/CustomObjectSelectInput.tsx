@@ -1,4 +1,4 @@
-import {ObjectInputProps, set, unset, useFormNode} from '@sanity/base/form'
+import {ObjectInputProps, set, unset} from '@sanity/base/form'
 import {isValidationErrorMarker, ObjectSchemaType} from '@sanity/types'
 import {Select} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
@@ -19,10 +19,9 @@ export const CustomObjectSelectInput = React.forwardRef(function CustomObjectSel
   props: CustomObjectSelectInputProps,
   forwardedRef: React.ForwardedRef<HTMLSelectElement>
 ) {
-  const {validation} = useFormNode()
-  const {inputProps, value, type, onChange} = props
-  const {readOnly} = inputProps
-  const items = (type.options && type.options.list) || EMPTY_ARRAY
+  const {value, schemaType, onChange, readOnly, validation} = props
+
+  const items = (schemaType.options && schemaType.options.list) || EMPTY_ARRAY
   const errors = validation.filter(isValidationErrorMarker)
   const [inputId] = useState(() => String(++objectSelectInputIdx))
 

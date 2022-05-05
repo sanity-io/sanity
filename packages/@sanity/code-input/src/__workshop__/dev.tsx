@@ -3,7 +3,7 @@ import {ValidationMarker, Path} from '@sanity/types'
 import {Box} from '@sanity/ui'
 import {useAction} from '@sanity/ui-workshop'
 import React, {useState} from 'react'
-import CodeInput, {CodeSchemaType} from '../CodeInput'
+import {CodeInput, CodeSchemaType} from '../CodeInput'
 import typeDef from '../schema'
 
 const schema = createSchema({name: 'dev', types: [typeDef]})

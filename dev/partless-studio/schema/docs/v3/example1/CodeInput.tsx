@@ -1,15 +1,22 @@
-import {FieldMember, FormNode, ObjectInputProps} from '@sanity/base/form'
+import {FieldMember, ObjectInputProps, MemberField} from '@sanity/base/form'
 import {Stack} from '@sanity/ui'
 import React from 'react'
 
 export function CodeInput(props: ObjectInputProps) {
-  const {members, renderField} = props
+  const {members, renderField, renderItem} = props
 
-  const fields = members
-    .filter((member) => member.type === 'field')
-    .map((member) => (member as FieldMember).field)
+  const codeMember = members.find((member) => member.kind === 'field' && member.name === 'code')
 
-  const codeField = fields.find((field) => field.name === 'code')
-
-  return <Stack>{codeField && <FormNode fieldProps={codeField} renderField={renderField} />}</Stack>
+  return (
+    <Stack>
+      {codeMember && (
+        <MemberField
+          member={codeMember as FieldMember}
+          renderField={renderField}
+          renderInput={props.renderInput}
+          renderItem={renderItem}
+        />
+      )}
+    </Stack>
+  )
 }

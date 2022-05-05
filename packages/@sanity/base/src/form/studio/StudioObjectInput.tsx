@@ -1,25 +1,14 @@
 /* eslint-disable react/jsx-handler-names */
 import {SchemaType} from '@sanity/types'
 import React, {useCallback} from 'react'
-import {Button, Card} from '@sanity/ui'
 import {
-  ArrayOfObjectsInputProps,
-  BooleanInputProps,
   InputProps,
-  NumberInputProps,
   ObjectInputProps,
+  RenderArrayItemCallback,
   RenderFieldCallback,
   RenderInputCallback,
-  RenderArrayItemCallback,
-  StringInputProps,
 } from '../types'
-import {
-  assertType,
-  isArrayInputProps,
-  isBooleanField,
-  isObjectInputProps,
-  isPrimitiveField,
-} from '../utils/asserters'
+import {isBooleanField, isPrimitiveField} from '../utils/asserters'
 import {FormField, FormFieldSet} from '../components/formField'
 import {ObjectInput} from '../inputs/ObjectInput'
 import {ObjectItemProps} from '../types/itemProps'

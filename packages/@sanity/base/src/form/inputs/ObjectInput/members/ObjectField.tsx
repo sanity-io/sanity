@@ -113,6 +113,7 @@ export function ObjectField(props: {
       compareValue: member.field.compareValue,
       focusRef: focusRef,
       id: member.field.id,
+      collapsed: member.collapsed,
       onSelectFieldGroup: handleSelectFieldGroup,
       onSetFieldSetCollapsed: handleSetFieldSetCollapsed,
       onSetFieldCollapsed: handleSetFieldCollapsed,

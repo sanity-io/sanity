@@ -68,29 +68,8 @@ class GeopointInput extends React.PureComponent<GeopointInputProps, InputState> 
     }
   }
 
-  handleFocus = (event) => {
-    const {inputProps} = this.props
-    inputProps.onFocus(event)
-  }
-
-  handleBlur = () => {
-    const {inputProps} = this.props
-    inputProps.onBlur?.()
-  }
-
   handleToggleModal = () => {
-    const {inputProps} = this.props
-    const {onFocus, onBlur} = inputProps
-    this.setState(
-      (prevState) => ({modalOpen: !prevState.modalOpen}),
-      () => {
-        if (this.state.modalOpen) {
-          onFocus(['$'])
-        } else {
-          onBlur?.()
-        }
-      }
-    )
+    this.setState((prevState) => ({modalOpen: !prevState.modalOpen}))
   }
 
   handleCloseModal = () => {
@@ -98,14 +77,14 @@ class GeopointInput extends React.PureComponent<GeopointInputProps, InputState> 
   }
 
   handleChange = (latLng: google.maps.LatLng) => {
-    const {type, onChange} = this.props
-    onChange(
+    const {schemaType, onChange} = this.props
+    onChange([
       setIfMissing({
-        _type: type.name,
+        _type: schemaType.name,
       }),
       set(latLng.lat(), ['lat']),
-      set(latLng.lng(), ['lng'])
-    )
+      set(latLng.lng(), ['lng']),
+    ])
   }
 
   handleClear = () => {
@@ -114,9 +93,8 @@ class GeopointInput extends React.PureComponent<GeopointInputProps, InputState> 
   }
 
   render() {
-    const {compareValue, level} = this.props.__internal
-    const {inputProps, value, type} = this.props
-    const {readOnly} = inputProps
+    const {value, schemaType, readOnly, compareValue} = this.props
+
     const {modalOpen} = this.state
 
     if (!config || !config.apiKey) {
@@ -142,72 +120,64 @@ class GeopointInput extends React.PureComponent<GeopointInputProps, InputState> 
     }
 
     return (
-      <FormFieldSet
-        level={level}
-        onFocus={this.handleFocus}
-        onBlur={this.handleBlur}
-        __unstable_changeIndicator={false}
-        onSetCollapsed={() => console.warn('todo')}
-      >
-        <div>
-          {value && (
-            <ChangeIndicatorCompareValueProvider value={value} compareValue={compareValue}>
-              <ChangeIndicator compareDeep>
-                <PreviewImage src={getStaticImageUrl(value)} alt="Map location" />
-              </ChangeIndicator>
-            </ChangeIndicatorCompareValueProvider>
-          )}
+      <>
+        {value && (
+          <ChangeIndicatorCompareValueProvider value={value} compareValue={compareValue}>
+            <ChangeIndicator compareDeep>
+              <PreviewImage src={getStaticImageUrl(value)} alt="Map location" />
+            </ChangeIndicator>
+          </ChangeIndicatorCompareValueProvider>
+        )}
 
-          {!readOnly && (
-            <Box marginTop={4}>
-              <Grid columns={2} gap={2}>
+        {!readOnly && (
+          <Box marginTop={4}>
+            <Grid columns={2} gap={2}>
+              <Button
+                mode="ghost"
+                icon={value && EditIcon}
+                padding={3}
+                ref={this.setEditButton}
+                text={value ? 'Edit' : 'Set location'}
+                onClick={this.handleToggleModal}
+              />
+
+              {value && (
                 <Button
-                  mode="ghost"
-                  icon={value && EditIcon}
+                  tone="critical"
+                  icon={TrashIcon}
                   padding={3}
-                  ref={this.setEditButton}
-                  text={value ? 'Edit' : 'Set location'}
-                  onClick={this.handleToggleModal}
+                  mode="ghost"
+                  text={'Remove'}
+                  onClick={this.handleClear}
                 />
+              )}
+            </Grid>
+          </Box>
+        )}
 
-                {value && (
-                  <Button
-                    tone="critical"
-                    icon={TrashIcon}
-                    padding={3}
-                    mode="ghost"
-                    text={'Remove'}
-                    onClick={this.handleClear}
+        {modalOpen && (
+          <Dialog
+            id={`${this._geopointInputId}_dialog`}
+            onClose={this.handleCloseModal}
+            header="Place the marker on the map"
+            width={1}
+          >
+            <DialogInnerContainer>
+              <GoogleMapsLoadProxy>
+                {(api) => (
+                  <GeopointSelect
+                    api={api}
+                    value={value || undefined}
+                    onChange={readOnly ? undefined : this.handleChange}
+                    defaultLocation={config.defaultLocation}
+                    defaultZoom={config.defaultZoom}
                   />
                 )}
-              </Grid>
-            </Box>
-          )}
-
-          {modalOpen && (
-            <Dialog
-              id={`${this._geopointInputId}_dialog`}
-              onClose={this.handleCloseModal}
-              header="Place the marker on the map"
-              width={1}
-            >
-              <DialogInnerContainer>
-                <GoogleMapsLoadProxy>
-                  {(api) => (
-                    <GeopointSelect
-                      api={api}
-                      value={value || undefined}
-                      onChange={readOnly ? undefined : this.handleChange}
-                      defaultLocation={config.defaultLocation}
-                      defaultZoom={config.defaultZoom}
-                    />
-                  )}
-                </GoogleMapsLoadProxy>
-              </DialogInnerContainer>
-            </Dialog>
-          )}
-        </div>
-      </FormFieldSet>
+              </GoogleMapsLoadProxy>
+            </DialogInnerContainer>
+          </Dialog>
+        )}
+      </>
     )
   }
 }
