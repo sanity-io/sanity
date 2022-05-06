@@ -283,7 +283,7 @@ export class ArrayInput extends React.PureComponent<ArrayOfObjectsInputProps<Arr
         >
           {item.collapsed === false ? (
             <Dialog
-              width={80}
+              width={1}
               header={`Edit ${item.schemaType.title}`}
               id={`${id}-item-${item.key}-dialog`}
               onClose={() => item.onSetCollapsed(true)}
