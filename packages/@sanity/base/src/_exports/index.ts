@@ -39,7 +39,6 @@ export type {
   SanityFormBuilderConfig as unstable_SanityFormBuilderConfig,
   SchemaError,
   SchemaPluginOptions,
-  SchemaTypeDefinition,
   Source,
   SourceOptions,
   TemplateResolver,

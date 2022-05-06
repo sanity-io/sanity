@@ -312,4 +312,4 @@ export type BlockValidator = (
 export type SlugIsUniqueValidator = (
   slug: string,
   options: ValidationContext & {defaultIsUnique: SlugIsUniqueValidator}
-) => Promise<boolean>
+) => boolean | Promise<boolean>

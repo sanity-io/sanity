@@ -21,6 +21,7 @@ export type SlugSourceFn = (
 
 export type SlugifierFn = (source: string, schemaType: SlugSchemaType) => string | Promise<string>
 
+// TODO: De-dupe with validation types
 export interface SlugUniqueOptions {
   parent: SlugParent
   type: SlugSchemaType

@@ -1,5 +1,12 @@
 import type {ClientConfig as SanityClientConfig, SanityClient} from '@sanity/client'
-import type {Schema, CurrentUser, AssetSource, SanityDocumentLike, SchemaType} from '@sanity/types'
+import type {
+  Schema,
+  SchemaType,
+  AssetSource,
+  CurrentUser,
+  SanityDocumentLike,
+  SchemaTypeDefinition,
+} from '@sanity/types'
 import type React from 'react'
 import type {Observable} from 'rxjs'
 import type {BifurClient} from '@sanity/bifur-client'
@@ -118,8 +125,6 @@ export interface Tool<Options = any> {
   ) => unknown
   canHandleIntent?: (intent: string, params: Record<string, unknown>, payload: unknown) => boolean
 }
-
-export type SchemaTypeDefinition = unknown // TODO
 
 export type ComposableOption<TValue, TContext> = (prev: TValue, context: TContext) => TValue
 export type AsyncComposableOption<TValue, TContext> = (

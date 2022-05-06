@@ -1,5 +1,5 @@
 import {isValidElementType} from 'react-is'
-import {AssetSource} from '@sanity/types'
+import {Schema, AssetSource} from '@sanity/types'
 import type {Template, TemplateResponse} from '../templates'
 import {
   DocumentActionComponent,
@@ -36,7 +36,7 @@ export const initialDocumentActions = [
 ]
 
 export const schemaTypesReducer: ConfigPropertyReducer<
-  unknown[],
+  Schema.TypeDefinition[],
   Omit<ConfigContext, 'schema' | 'currentUser'>
 > = (prev, {schema}, context) => {
   const schemaTypes = schema?.types
