@@ -7,7 +7,7 @@ import {CodeInput, CodeSchemaType} from '../CodeInput'
 import typeDef from '../schema'
 
 const schema = createSchema({name: 'dev', types: [typeDef]})
-const type = schema.get('code') as CodeSchemaType
+const schemaType = schema.get('code') as CodeSchemaType
 
 export default function DevStory() {
   const [focusPath] = useState<Path>([])
@@ -28,7 +28,7 @@ export default function DevStory() {
         onChange={onChange}
         onFocus={onFocus}
         presence={presence}
-        type={type}
+        schemaType={schemaType}
       /> */}
     </Box>
   )
