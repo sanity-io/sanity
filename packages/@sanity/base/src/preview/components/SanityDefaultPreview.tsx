@@ -18,11 +18,7 @@ import {
   InlinePreview,
   MediaPreview,
 } from '../../components/previews'
-import {
-  PreviewComponent as PreviewComponentType,
-  PreviewLayoutKey,
-  PreviewProps,
-} from '../../components/previews/types'
+import {PreviewLayoutKey, PreviewProps} from '../../components/previews/types'
 import {useSource} from '../../studio'
 
 interface UploadState {
@@ -33,13 +29,16 @@ interface UploadState {
   previewImage?: string
 }
 
-const previewComponentMap: {[key: string]: PreviewComponentType} = {
+const previewComponentMap: {
+  [TLayoutKey in PreviewLayoutKey]: React.ComponentType<PreviewProps<TLayoutKey>>
+} = {
   default: DefaultPreview,
-  card: DefaultPreview,
   media: MediaPreview,
   detail: DetailPreview,
   inline: InlinePreview,
   block: BlockPreview,
+  // @ts-expect-error this key is deprecated
+  card: DefaultPreview,
 }
 
 function isString(value: unknown): value is string {
@@ -207,6 +206,8 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps) {
   }, [layout])
 
   if (!item) {
+    // @ts-expect-error TS can't handle this expression
+    // > Expression produces a union type that is too complex to represent.ts
     return <PreviewComponent {...rest} progress={(_upload && _upload.progress) || undefined} />
   }
 

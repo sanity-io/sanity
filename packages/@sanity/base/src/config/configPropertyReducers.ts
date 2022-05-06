@@ -1,3 +1,5 @@
+import {isValidElementType} from 'react-is'
+import {AssetSource} from '@sanity/types'
 import type {Template, TemplateResponse} from '../templates'
 import {
   DocumentActionComponent,
@@ -8,6 +10,9 @@ import {
   UnpublishAction,
 } from '../deskTool/actions'
 import {DocumentBadgeComponent, LiveEditBadge} from '../deskTool/badges'
+import {InputProps, FieldProps, ItemProps} from '../form'
+import {isRecord} from '../util'
+import {PreviewProps} from '../components/previews'
 import type {
   ConfigContext,
   ConfigPropertyReducer,
@@ -17,6 +22,7 @@ import type {
   DocumentActionsContext,
   DocumentBadgesContext,
   NewDocumentOptionsContext,
+  FormBuilderComponentResolverContext,
 } from './types'
 
 export const initialDocumentBadges = [LiveEditBadge]
@@ -127,4 +133,94 @@ export const newDocumentOptionsResolver: ConfigPropertyReducer<
   }
 
   return resolveNewDocumentOptions(prev, context)
+}
+
+export const inputComponentResolver: ConfigPropertyReducer<
+  React.ComponentType<InputProps>,
+  FormBuilderComponentResolverContext
+> = (prev, {formBuilder}, context) => {
+  const schemaTypeName = context.schemaType.name
+  const components = formBuilder?.components?.[schemaTypeName]
+
+  // eslint-disable-next-line no-nested-ternary
+  const component = isValidElementType(components)
+    ? (components as React.ComponentType<InputProps>)
+    : // TODO: this should be validated to be an input component
+    isRecord(components) && components.input
+    ? components.input
+    : prev
+
+  const resolver = formBuilder?.resolve?.input
+  return resolver ? resolver(component, context) : component
+}
+
+export const fieldComponentResolver: ConfigPropertyReducer<
+  React.ComponentType<FieldProps>,
+  FormBuilderComponentResolverContext
+> = (prev, {formBuilder}, context) => {
+  const schemaTypeName = context.schemaType.name
+
+  const components = formBuilder?.components?.[schemaTypeName]
+  const component = isRecord(components) && components.field ? components.field : prev
+
+  const resolver = formBuilder?.resolve?.field
+  return resolver ? resolver(component, context) : component
+}
+
+export const itemComponentResolver: ConfigPropertyReducer<
+  React.ComponentType<ItemProps>,
+  FormBuilderComponentResolverContext
+> = (prev, {formBuilder}, context) => {
+  const schemaTypeName = context.schemaType.name
+
+  const components = formBuilder?.components?.[schemaTypeName]
+  const component = isRecord(components) && components.item ? components.item : prev
+
+  const resolver = formBuilder?.resolve?.item
+  return resolver ? resolver(component, context) : component
+}
+
+export const previewComponentResolver: ConfigPropertyReducer<
+  React.ComponentType<PreviewProps>,
+  FormBuilderComponentResolverContext
+> = (prev, {formBuilder}, context) => {
+  const schemaTypeName = context.schemaType.name
+
+  const components = formBuilder?.components?.[schemaTypeName]
+  const component = isRecord(components) && components.preview ? components.preview : prev
+
+  const resolver = formBuilder?.resolve?.preview
+  return resolver ? resolver(component, context) : component
+}
+
+export const fileAssetSourceResolver: ConfigPropertyReducer<AssetSource[], ConfigContext> = (
+  prev,
+  {formBuilder},
+  context
+) => {
+  const assetSources = formBuilder?.file?.assetSources
+  if (!assetSources) return prev
+
+  if (typeof assetSources === 'function') return assetSources(prev, context)
+  if (Array.isArray(assetSources)) return [...prev, ...assetSources]
+
+  throw new Error(
+    `Expected \`file.assetSources\` to an array or a function but found ${typeof assetSources} instead.`
+  )
+}
+
+export const imageAssetSourceResolver: ConfigPropertyReducer<AssetSource[], ConfigContext> = (
+  prev,
+  {formBuilder},
+  context
+) => {
+  const assetSources = formBuilder?.image?.assetSources
+  if (!assetSources) return prev
+
+  if (typeof assetSources === 'function') return assetSources(prev, context)
+  if (Array.isArray(assetSources)) return [...prev, ...assetSources]
+
+  throw new Error(
+    `Expected \`image.assetSources\` to an array or a function but found ${typeof assetSources} instead.`
+  )
 }

@@ -14,10 +14,7 @@ import {
   TooltipContentStack,
 } from './MediaPreview.styled'
 
-export interface MediaPreviewProps extends PreviewProps<'media'> {
-  withRadius?: boolean
-  withBorder?: boolean
-}
+export type MediaPreviewProps = PreviewProps<'media'>
 
 const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
   ...PREVIEW_MEDIA_SIZE.media,
@@ -37,6 +34,11 @@ export function MediaPreview(props: MediaPreviewProps) {
     title,
     withBorder = true,
     withRadius = true,
+    // unused
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    type: _type,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    value: _value,
     ...restProps
   } = props
 

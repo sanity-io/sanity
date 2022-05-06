@@ -32,18 +32,14 @@ export interface StudioFormBuilderProviderProps {
 export function StudioFormBuilderProvider(props: StudioFormBuilderProviderProps) {
   const {__internal_patchChannel: patchChannel, children, schema, value} = props
 
-  const {unstable_formBuilder: formBuilder} = useSource()
+  const {formBuilder} = useSource()
 
   return (
     <FormBuilderProvider
-      renderField={() => 'TODO'}
       __internal_patchChannel={patchChannel}
-      components={formBuilder.components}
-      file={formBuilder.file}
-      image={formBuilder.image}
-      resolvePreviewComponent={formBuilder.resolvePreviewComponent || previewResolver}
       schema={schema}
       value={value}
+      {...formBuilder}
     >
       {children}
     </FormBuilderProvider>

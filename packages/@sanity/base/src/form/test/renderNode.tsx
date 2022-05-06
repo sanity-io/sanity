@@ -66,7 +66,7 @@ export function renderNode(options: {
   const patchChannel = createPatchChannel()
 
   function Tester(props: any) {
-    const {schema} = useSource()
+    const {schema, formBuilder} = useSource()
     const schemaErrors = schema._validation?.some((m) =>
       m.problems.some((p) => p.severity === 'error')
     )
@@ -87,11 +87,9 @@ export function renderNode(options: {
         <FormBuilderProvider
           __internal_patchChannel={patchChannel}
           filterField={filterField}
-          renderField={() => <>TODO</>}
-          resolveInputComponent={inputResolver}
-          resolvePreviewComponent={previewResolver}
           schema={schema}
           value={undefined}
+          {...formBuilder}
         >
           {renderFn({type, ...props})}
         </FormBuilderProvider>

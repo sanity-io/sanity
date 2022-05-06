@@ -2,6 +2,7 @@ import {PortableTextEditor} from '@sanity/portable-text-editor'
 import {Card, Code, LayerProvider, PortalProvider, Stack, Text, usePortal} from '@sanity/ui'
 import {useAction, useBoolean, useSelect} from '@sanity/ui-workshop'
 import React, {useMemo} from 'react'
+import {useSource} from '../../../../../studio'
 import {FormBuilderProvider} from '../../../../FormBuilderProvider'
 import {createPatchChannel} from '../../../../patch/PatchChannel'
 import {FIXME} from '../../../../types'
@@ -37,6 +38,7 @@ export function EditObjectsStory() {
   const kind = useSelect('Kind', TYPE_OPTIONS, 'annotation') || 'annotation'
 
   const portal = usePortal()
+  const source = useSource()
 
   const {editorPath, focusPath} = useMemo(() => {
     if (!open) {
@@ -140,9 +142,7 @@ export function EditObjectsStory() {
           value={value}
           __internal_patchChannel={patchChannel}
           schema={schema}
-          renderField={() => <>TODO</>}
-          resolveInputComponent={resolveInputComponent}
-          resolvePreviewComponent={resolvePreviewComponent}
+          {...source.formBuilder}
         >
           <PortableTextEditor onChange={handleChange} type={type as FIXME} value={value}>
             <EditObject

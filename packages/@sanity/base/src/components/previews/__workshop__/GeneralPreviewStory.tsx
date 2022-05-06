@@ -24,7 +24,9 @@ const LAYOUT_OPTIONS: Record<string, LayoutKey> = {
   Media: 'media',
 }
 
-const previewComponents: Record<LayoutKey, React.ComponentType<PreviewProps>> = {
+const previewComponents: {
+  [TLayoutKey in LayoutKey]: React.ComponentType<PreviewProps<TLayoutKey>>
+} = {
   default: DefaultPreview,
   detail: DetailPreview,
   media: MediaPreview,
@@ -82,7 +84,7 @@ export default function GeneralPreviewStory() {
             selected={interactive ? selected : undefined}
             style={{lineHeight: 0}}
           >
-            {createElement(component, {
+            {createElement(component as React.ComponentType<PreviewProps<string>>, {
               description,
               isPlaceholder,
               media,

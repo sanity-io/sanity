@@ -43,7 +43,7 @@ export function TestInput(props: TestInputProps) {
     withWarning = false,
     withCustomMarkers = false,
   } = props
-  const {unstable_formBuilder: formBuilder} = useSource()
+  const {formBuilder} = useSource()
   const [value, setValue] = useState<PortableTextBlock[]>(valueProp)
   const [focusPath, setFocusPath] = useState<Path>([])
   const blockType = useMemo(() => type.of?.find((t) => t.type?.name === 'block'), [type])
@@ -185,9 +185,7 @@ export function TestInput(props: TestInputProps) {
       value={value}
       __internal_patchChannel={patchChannel}
       schema={props.schema}
-      renderField={() => <>TEST</>}
-      resolveInputComponent={resolveInputComponent}
-      resolvePreviewComponent={resolvePreviewComponent}
+      {...formBuilder}
     >
       <ReviewChangesContextProvider changesOpen={false}>
         {/* <Box

@@ -117,8 +117,9 @@ export interface BaseSchemaType {
   preview?: PreviewConfig
   components?: {
     field?: React.ComponentType<any> // @todo: use `FieldProps` here
-    item?: React.ComponentType<any> // @todo: use `FieldProps` here
-    input?: React.ComponentType<any> // @todo: use `FieldProps` here
+    item?: React.ComponentType<any> // @todo: use `ItemProps` here
+    input?: React.ComponentType<any> // @todo: use `InputProps` here
+    preview?: React.ComponentType<any> // @todo: use `PreviewProps` here
   }
 
   /**

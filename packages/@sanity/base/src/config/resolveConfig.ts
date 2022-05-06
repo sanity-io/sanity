@@ -10,6 +10,13 @@ import {AuthStore, createAuthStore, createUserStore, UserStore} from '../datasto
 import {AuthController, AuthError, createAuthController} from '../auth'
 import {InitialValueTemplateItem, Template, TemplateResponse} from '../templates'
 import {isNonNullable} from '../util'
+// TODO: consider re-exporting this in side of `../form`
+import {
+  defaultResolveFieldComponent,
+  defaultResolveInputComponent,
+  defaultResolveItemComponent,
+  defaultResolvePreviewComponent,
+} from '../form/studio/inputResolver/inputResolver'
 import {Source, SourceOptions, Config, ResolvedConfig} from './types'
 import {
   schemaTypesReducer,
@@ -21,6 +28,12 @@ import {
   initialDocumentBadges,
   documentBadgesReducer,
   newDocumentOptionsResolver,
+  inputComponentResolver,
+  fieldComponentResolver,
+  itemComponentResolver,
+  fileAssetSourceResolver,
+  imageAssetSourceResolver,
+  previewComponentResolver,
 } from './configPropertyReducers'
 import {resolveConfigProperty} from './resolveConfigProperty'
 import {ConfigResolutionError} from './ConfigResolutionError'
@@ -365,13 +378,80 @@ function resolveSource({
         }),
       resolveNewDocumentOptions,
     },
+    formBuilder: {
+      unstable: {
+        ...config.formBuilder?.unstable,
+      },
+      resolveInputComponent: ({schemaType}) =>
+        resolveConfigProperty({
+          config,
+          context: {...context, schemaType},
+          initialValue: defaultResolveInputComponent(schemaType),
+          propertyName: 'formBuilder',
+          reducer: inputComponentResolver,
+        }),
+      resolveFieldComponent: ({schemaType}) =>
+        resolveConfigProperty({
+          config,
+          context: {...context, schemaType},
+          initialValue: defaultResolveFieldComponent(schemaType),
+          propertyName: 'formBuilder',
+          reducer: fieldComponentResolver,
+        }),
+      resolveItemComponent: ({schemaType}) =>
+        resolveConfigProperty({
+          config,
+          context: {...context, schemaType},
+          initialValue: defaultResolveItemComponent(schemaType),
+          propertyName: 'formBuilder',
+          reducer: itemComponentResolver,
+        }),
+      resolvePreviewComponent: ({schemaType}) =>
+        resolveConfigProperty({
+          config,
+          context: {...context, schemaType},
+          initialValue: defaultResolvePreviewComponent(schemaType),
+          propertyName: 'formBuilder',
+          reducer: previewComponentResolver,
+        }),
+      file: {
+        assetSources: resolveConfigProperty({
+          config,
+          context,
+          initialValue: [],
+          propertyName: 'formBuilder.file.assetSources',
+          reducer: fileAssetSourceResolver,
+        }),
+        directUploads:
+          // TODO: consider refactoring this to `noDirectUploads` or similar
+          // default value for this is `true`
+          config.formBuilder?.file?.directUploads === undefined
+            ? true
+            : config.formBuilder.file.directUploads,
+      },
+      image: {
+        assetSources: resolveConfigProperty({
+          config,
+          context,
+          initialValue: [],
+          propertyName: 'formBuilder.image.assetSources',
+          reducer: imageAssetSourceResolver,
+        }),
+        directUploads:
+          // TODO: consider refactoring this to `noDirectUploads` or similar
+          // default value for this is `true`
+          config.formBuilder?.file?.directUploads === undefined
+            ? true
+            : config.formBuilder.file.directUploads,
+      },
+    },
+
     __internal: {
       auth,
       bifur,
       userStore,
       staticInitialValueTemplateItems,
     },
-    unstable_formBuilder: config.unstable_formBuilder || {},
   }
 
   return source

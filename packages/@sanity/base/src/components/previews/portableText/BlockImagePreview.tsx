@@ -1,13 +1,13 @@
 import {Box, Flex, Stack, Text} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import React from 'react'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {Media} from '../_common/Media'
 import {PREVIEW_MEDIA_SIZE} from '../constants'
 import {PreviewMediaDimensions, PreviewProps} from '../types'
-import {HeaderFlex, MediaCard, RootBox} from './BlockImagePreview.styled'
 import {renderPreviewNode} from '../helpers'
+import {HeaderFlex, MediaCard, RootBox} from './BlockImagePreview.styled'
 
-export type BlockImagePreviewProps = PreviewProps<'block'>
+export type BlockImagePreviewProps = PreviewProps<'blockImage'>
 
 const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
   ...PREVIEW_MEDIA_SIZE.blockImage,

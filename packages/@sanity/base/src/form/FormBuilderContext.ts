@@ -17,7 +17,6 @@ export interface FormBuilderContextValue {
     ArrayFunctions: FormBuilderArrayFunctionComponent
     CustomMarkers: FormBuilderCustomMarkersComponent
     Markers: FormBuilderMarkersComponent
-    inputs: FormBuilderInputComponentMap
   }
 
   file: {

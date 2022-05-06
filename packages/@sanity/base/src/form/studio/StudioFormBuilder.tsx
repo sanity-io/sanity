@@ -1,20 +1,18 @@
 /* eslint-disable react/jsx-handler-names */
-import {ObjectSchemaType, Path, Schema, SchemaType, ValidationMarker} from '@sanity/types'
+import {ObjectSchemaType, Path, Schema, ValidationMarker} from '@sanity/types'
 import React, {useCallback, useRef} from 'react'
 
 import {useSource} from '../../studio'
-import {fallbackInputs} from '../fallbackInputs'
-import {InputProps} from '../types'
+import {RenderArrayOfObjectsItemCallback, RenderFieldCallback, RenderInputCallback} from '../types'
 import {PatchChannel} from '../patch/PatchChannel'
 import {FormFieldPresence} from '../../presence'
 import {FormPatch, PatchEvent} from '../patch'
 import {ObjectMember} from '../store/types/members'
-import {StudioFormBuilderProvider} from './StudioFormBuilderProvider'
-import {defaultResolveInputComponent as defaultInputResolver} from './inputResolver/inputResolver'
-import {FormCallbacksProvider} from './contexts/FormCallbacks'
 import {ObjectNode} from '../store/types/nodes'
-import {StudioObjectInput} from './StudioObjectInput'
 import {EMPTY_ARRAY} from '../utils/empty'
+import {ObjectInput} from '../inputs/ObjectInput'
+import {StudioFormBuilderProvider} from './StudioFormBuilderProvider'
+import {FormCallbacksProvider} from './contexts/FormCallbacks'
 
 /**
  * @alpha
@@ -69,22 +67,8 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
     value,
   } = props
 
-  const {unstable_formBuilder: formBuilderConfig} = useSource()
-
-  const resolveInputComponent = useCallback(
-    (type: SchemaType): React.ComponentType<InputProps> => {
-      if (type.components?.input) {
-        return type.components.input
-      }
-      const configuredInput = formBuilderConfig.components?.inputs?.[type.name]?.input
-      const resolved =
-        configuredInput ||
-        formBuilderConfig.resolveInputComponent?.(type) ||
-        defaultInputResolver(type)
-      return resolved || fallbackInputs[type.jsonType]
-    },
-    [formBuilderConfig]
-  )
+  const {resolveFieldComponent, resolveInputComponent, resolveItemComponent} =
+    useSource().formBuilder
 
   const handleBlur = useCallback(
     (event: React.FocusEvent) => {
@@ -133,6 +117,30 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
     [onSetCollapsedFieldSet]
   )
 
+  const renderInput: RenderInputCallback = useCallback(
+    (inputProps) => {
+      const Input = resolveInputComponent({schemaType: inputProps.schemaType})
+      return <Input {...inputProps} />
+    },
+    [resolveInputComponent]
+  )
+
+  const renderField: RenderFieldCallback = useCallback(
+    (field) => {
+      const Field = resolveFieldComponent({schemaType: field.schemaType})
+      return <Field {...field} />
+    },
+    [resolveFieldComponent]
+  )
+
+  const renderItem: RenderArrayOfObjectsItemCallback = useCallback(
+    (item) => {
+      const Item = resolveItemComponent({schemaType: item.schemaType})
+      return <Item {...item} />
+    },
+    [resolveItemComponent]
+  )
+
   return (
     <StudioFormBuilderProvider __internal_patchChannel={patchChannel} schema={schema} value={value}>
       <FormCallbacksProvider
@@ -143,8 +151,7 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
         onPathFocus={props.onPathFocus}
         onChange={props.onChange}
       >
-        <StudioObjectInput
-          resolveInputComponent={resolveInputComponent}
+        <ObjectInput
           compareValue={undefined}
           focusRef={useRef(null)}
           level={0}
@@ -168,6 +175,9 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
           onSetFieldCollapsed={handleSetFieldCollapsed}
           onSetFieldSetCollapsed={handleSetFieldSetCollapsed}
           value={value}
+          renderInput={renderInput}
+          renderField={renderField}
+          renderItem={renderItem}
         />
       </FormCallbacksProvider>
     </StudioFormBuilderProvider>

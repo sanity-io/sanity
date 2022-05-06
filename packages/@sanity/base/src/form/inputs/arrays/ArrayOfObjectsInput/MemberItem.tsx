@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {memo, useCallback, useMemo, useRef} from 'react'
+import {useCallback, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {
@@ -9,7 +9,7 @@ import {
   RenderArrayOfObjectsItemCallback,
 } from '../../../types'
 import {ArrayOfObjectsMember} from '../../../store/types/members'
-import {ItemProps, ObjectItemProps} from '../../../types/itemProps'
+import {ObjectItemProps} from '../../../types/itemProps'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {insert, PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
 import {createProtoValue} from '../../../utils/createProtoValue'

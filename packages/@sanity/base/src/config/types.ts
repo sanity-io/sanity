@@ -1,15 +1,15 @@
 import type {ClientConfig as SanityClientConfig, SanityClient} from '@sanity/client'
-import type {Schema, CurrentUser, AssetSource, SanityDocumentLike} from '@sanity/types'
+import type {Schema, CurrentUser, AssetSource, SanityDocumentLike, SchemaType} from '@sanity/types'
 import type React from 'react'
 import type {Observable} from 'rxjs'
 import type {BifurClient} from '@sanity/bifur-client'
 import type {
   FormBuilderArrayFunctionComponent,
   FormBuilderCustomMarkersComponent,
-  FormBuilderInputComponentMap,
   FormBuilderMarkersComponent,
-  FormInputComponentResolver,
-  FormPreviewComponentResolver,
+  InputProps,
+  FieldProps,
+  ItemProps,
 } from '../form'
 import type {AuthStore, UserStore} from '../datastores'
 import type {AuthController} from '../auth'
@@ -18,6 +18,7 @@ import type {InitialValueTemplateItem, Template, TemplateResponse} from '../temp
 import type {Router, RouterState} from '../router'
 import type {DocumentActionComponent} from '../deskTool/actions'
 import type {DocumentBadgeComponent} from '../deskTool/badges'
+import {PreviewProps} from '../components/previews'
 
 /**
  * @alpha
@@ -33,26 +34,70 @@ export interface SanityAuthConfig {
   }[]
 }
 
+export type AssetSourceResolver = ComposableOption<AssetSource[], ConfigContext>
+
 /**
  * @alpha
  */
 export interface SanityFormBuilderConfig {
-  components?: {
+  /**
+   * these have not been migrated over
+   */
+  unstable?: {
     ArrayFunctions?: FormBuilderArrayFunctionComponent
     CustomMarkers?: FormBuilderCustomMarkersComponent
     Markers?: FormBuilderMarkersComponent
-    inputs?: FormBuilderInputComponentMap
   }
+  components?: Record<
+    string,
+    | React.ComponentType<InputProps>
+    | {
+        input?: React.ComponentType<InputProps>
+        field?: React.ComponentType<FieldProps>
+        item?: React.ComponentType<ItemProps>
+        preview?: React.ComponentType<PreviewProps>
+      }
+  >
   file?: {
-    assetSources?: AssetSource[]
+    assetSources?: AssetSource[] | AssetSourceResolver
+    // TODO: this option needs more thought on composition and availability
     directUploads?: boolean
   }
   image?: {
-    assetSources?: AssetSource[]
+    assetSources?: AssetSource[] | AssetSourceResolver
+    // TODO: this option needs more thought on composition and availability
     directUploads?: boolean
   }
-  resolveInputComponent?: FormInputComponentResolver
-  resolvePreviewComponent?: FormPreviewComponentResolver
+  resolve?: {
+    input?: FormBuilderInputComponentResolver
+    field?: FormBuilderFieldComponentResolver
+    item?: FormBuilderItemComponentResolver
+    preview?: FormBuilderPreviewComponentResolver
+  }
+}
+
+export type FormBuilderInputComponentResolver = ComposableOption<
+  React.ComponentType<InputProps>,
+  FormBuilderComponentResolverContext
+>
+
+export type FormBuilderFieldComponentResolver = ComposableOption<
+  React.ComponentType<FieldProps>,
+  FormBuilderComponentResolverContext
+>
+
+export type FormBuilderItemComponentResolver = ComposableOption<
+  React.ComponentType<ItemProps>,
+  FormBuilderComponentResolverContext
+>
+
+export type FormBuilderPreviewComponentResolver = ComposableOption<
+  React.ComponentType<PreviewProps>,
+  FormBuilderComponentResolverContext
+>
+
+export interface FormBuilderComponentResolverContext extends ConfigContext {
+  schemaType: SchemaType
 }
 
 /**
@@ -99,11 +144,6 @@ export interface SchemaPluginOptions {
   templates?: Template[] | TemplateResolver
 }
 
-// interface ComponentPluginOptions {
-//   absolutes?: unknown
-//   sidecar?: unknown
-// }
-
 export type NewDocumentOptionsResolver = ComposableOption<
   TemplateResponse[],
   NewDocumentOptionsContext
@@ -143,11 +183,7 @@ export interface PluginOptions {
   // components?: ComponentPluginOptions
   document?: DocumentPluginOptions
   tools?: Tool[] | ComposableOption<Tool[], ConfigContext>
-  /**
-   * this is marked as unstable because it will change once the alpha 2 is
-   * finished.
-   */
-  unstable_formBuilder?: SanityFormBuilderConfig
+  formBuilder?: SanityFormBuilderConfig
 }
 
 export type ConfigPropertyReducer<TValue, TContext> = (
@@ -228,11 +264,30 @@ export interface Source {
     ) => Promise<string | undefined>
     resolveNewDocumentOptions: (context: NewDocumentCreationContext) => InitialValueTemplateItem[]
   }
-  /**
-   * this is marked as unstable because it will change once the alpha 2 is
-   * finished.
-   */
-  unstable_formBuilder: SanityFormBuilderConfig
+  formBuilder: {
+    resolveInputComponent: (options: {schemaType: SchemaType}) => React.ComponentType<InputProps>
+    resolveFieldComponent: (options: {schemaType: SchemaType}) => React.ComponentType<FieldProps>
+    resolveItemComponent: (options: {schemaType: SchemaType}) => React.ComponentType<ItemProps>
+    resolvePreviewComponent: (options: {
+      schemaType: SchemaType
+    }) => React.ComponentType<PreviewProps<string>>
+    file: {
+      assetSources: AssetSource[]
+      directUploads: boolean
+    }
+    image: {
+      assetSources: AssetSource[]
+      directUploads: boolean
+    }
+    /**
+     * these have not been migrated over and are not merged by the form builder
+     */
+    unstable?: {
+      ArrayFunctions?: FormBuilderArrayFunctionComponent
+      CustomMarkers?: FormBuilderCustomMarkersComponent
+      Markers?: FormBuilderMarkersComponent
+    }
+  }
   __internal: {
     auth: {
       controller: AuthController

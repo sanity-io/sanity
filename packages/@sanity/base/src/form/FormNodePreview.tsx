@@ -1,5 +1,6 @@
 import React, {useMemo} from 'react'
-import {FormPreviewProps, FIXME} from './types'
+import {PreviewProps} from '../components/previews'
+import {FIXME} from './types'
 import {useFormBuilder} from './useFormBuilder'
 import {PreviewAny} from './utils/fallback-preview/PreviewAny'
 
@@ -8,7 +9,9 @@ import {PreviewAny} from './utils/fallback-preview/PreviewAny'
  *
  * TODO: rename to `FormValuePreview` or `ValuePreview` ???
  */
-export function FormNodePreview(props: FormPreviewProps) {
+export function FormNodePreview(
+  props: PreviewProps<string> & Required<Pick<PreviewProps, 'type'>>
+) {
   const {type, value} = props
   const {resolvePreviewComponent} = useFormBuilder()
 

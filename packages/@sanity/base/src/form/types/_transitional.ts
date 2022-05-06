@@ -8,6 +8,7 @@ import {
 } from '@sanity/types'
 import React from 'react'
 import {PatchEvent} from '../patch'
+import {PreviewProps} from '../../components/previews'
 import {InputProps} from './inputProps'
 import {FieldProps} from './fieldProps'
 import {ItemProps} from './itemProps'
@@ -33,6 +34,7 @@ export interface PortableTextMarker {
 }
 
 /**
+ * unstable
  * @alpha
  */
 export type FormBuilderArrayFunctionComponent = React.ComponentType<
@@ -40,11 +42,13 @@ export type FormBuilderArrayFunctionComponent = React.ComponentType<
 >
 
 /**
+ * unstable
  * @alpha
  */
 export type FormBuilderCustomMarkersComponent = React.ComponentType<{markers: PortableTextMarker[]}>
 
 /**
+ * unstable
  * @alpha
  */
 export type FormBuilderMarkersComponent = React.ComponentType<{
@@ -97,19 +101,6 @@ export type FormInputComponentResolver = (
 /**
  * @alpha
  */
-export interface FormPreviewProps {
-  actions?: React.ReactNode
-  fallbackTitle?: React.ReactNode
-  layout?: string
-  type: SchemaType
-  value?: Array<unknown> | Record<string, unknown> | number | boolean | string
-  withBorder?: boolean
-  withRadius?: boolean
-}
-
-/**
- * @alpha
- */
 export type FormPreviewComponentResolver = (
   type: SchemaType
-) => React.ComponentType<FormPreviewProps> | null | false | undefined
+) => React.ComponentType<PreviewProps<string>> | null | false | undefined

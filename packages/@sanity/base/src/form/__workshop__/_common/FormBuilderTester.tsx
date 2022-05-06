@@ -4,6 +4,7 @@ import type {ObjectSchemaType, Schema} from '@sanity/types'
 import {FormBuilderProvider} from '../../FormBuilderProvider'
 import {ReviewChangesContextProvider} from '../../studio/contexts/reviewChanges/ReviewChangesProvider'
 import {PatchChannel} from '../../patch/PatchChannel'
+import {useSource} from '../../../studio'
 import {inputResolver} from './inputResolver'
 import {resolvePreviewComponent} from './resolvePreviewComponent'
 
@@ -18,6 +19,7 @@ export interface FormBuilderTesterProps {
 
 export function FormBuilderTester(props: FormBuilderTesterProps) {
   const {value, patchChannel, isChangesOpen = false, type} = props
+  const {formBuilder} = useSource()
   return (
     <ThemeProvider theme={studioTheme}>
       <LayerProvider>
@@ -27,9 +29,7 @@ export function FormBuilderTester(props: FormBuilderTesterProps) {
               value={value}
               __internal_patchChannel={patchChannel}
               schema={props.schema}
-              renderField={() => <>TODO</>}
-              resolveInputComponent={inputResolver}
-              resolvePreviewComponent={resolvePreviewComponent}
+              {...formBuilder}
             >
               {props.children}
             </FormBuilderProvider>

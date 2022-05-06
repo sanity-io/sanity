@@ -1,8 +1,7 @@
-import {AssetSource, ObjectSchemaType, Schema, SchemaType} from '@sanity/types'
+import {AssetSource, Schema} from '@sanity/types'
 import React, {useMemo} from 'react'
-import {SanityFormBuilderConfig} from '../config'
-import {FIXME, FormBuilderFilterFieldFn, RenderInputCallback} from './types'
-import {fallbackInputs} from './fallbackInputs'
+import {Source} from '../config'
+import {FormBuilderFilterFieldFn} from './types'
 import {FormBuilderContext, FormBuilderContextValue} from './FormBuilderContext'
 import {PatchChannel} from './patch/PatchChannel'
 import {DefaultArrayInputFunctions} from './inputs/arrays/common/ArrayFunctions'
@@ -14,31 +13,12 @@ import {EMPTY_ARRAY} from './utils/empty'
 const defaultFileAssetSources = [FileSource]
 const defaultImageAssetSources = [ImageSource]
 
-function resolveComponentFromType<Props>(
-  providedResolve:
-    | ((type: SchemaType) => React.ComponentType<Props> | null | false | undefined)
-    | undefined,
-  type: SchemaType
-) {
-  let itType: SchemaType | undefined = type
-
-  while (itType) {
-    const resolved = providedResolve?.(itType)
-
-    if (resolved) return resolved
-
-    itType = itType.type
-  }
-
-  return undefined
-}
-
-export interface FormBuilderProviderProps extends SanityFormBuilderConfig {
+type SourceFormBuilder = Source['formBuilder']
+export interface FormBuilderProviderProps extends SourceFormBuilder {
   schema: Schema
   value?: unknown
   children?: React.ReactNode
   filterField?: FormBuilderFilterFieldFn
-  renderField: FIXME
   /**
    * @internal
    */
@@ -59,25 +39,26 @@ const missingPatchChannel: PatchChannel = {
 export function FormBuilderProvider(props: FormBuilderProviderProps) {
   const {
     children,
-    components,
-    file,
-    image,
     schema,
     filterField,
     __internal_patchChannel: patchChannel = missingPatchChannel,
-    renderField,
-    resolvePreviewComponent: resolvePreviewComponentProp,
+    file,
+    image,
+    resolveFieldComponent,
+    resolvePreviewComponent,
+    unstable,
     value,
   } = props
 
   const formBuilder: FormBuilderContextValue = useMemo(() => {
     return {
       components: {
-        ArrayFunctions: components?.ArrayFunctions || DefaultArrayInputFunctions,
-        CustomMarkers: components?.CustomMarkers || DefaultCustomMarkers,
-        Markers: components?.Markers || DefaultMarkers,
-        inputs: components?.inputs || {},
+        ArrayFunctions: unstable?.ArrayFunctions || DefaultArrayInputFunctions,
+        CustomMarkers: unstable?.CustomMarkers || DefaultCustomMarkers,
+        Markers: unstable?.Markers || DefaultMarkers,
       },
+
+      renderField: resolveFieldComponent,
 
       file: {
         assetSources: file?.assetSources
@@ -97,30 +78,19 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       getValuePath: () => EMPTY_ARRAY,
       __internal_patchChannel: patchChannel, // eslint-disable-line camelcase
       schema,
-      renderField,
-      // resolveInputComponent: (type) => {
-      //   const resolved = resolveComponentFromType(resolveInputComponentProp, type)
-      //
-      //   if (resolved) {
-      //     return resolved
-      //   }
-      //
-      //   return fallbackInputs[type.jsonType]?.input as FIXME
-      // },
 
-      resolvePreviewComponent: (type) =>
-        resolveComponentFromType(resolvePreviewComponentProp, type),
+      resolvePreviewComponent: (schemaType) => resolvePreviewComponent({schemaType}),
       getDocument: () => value,
     }
   }, [
-    components,
     file,
     filterField,
     image,
     patchChannel,
-    renderField,
-    resolvePreviewComponentProp,
+    resolveFieldComponent,
+    resolvePreviewComponent,
     schema,
+    unstable,
     value,
   ])
 

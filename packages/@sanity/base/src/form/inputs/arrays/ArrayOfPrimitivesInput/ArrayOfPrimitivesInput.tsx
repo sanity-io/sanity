@@ -1,15 +1,15 @@
 import React from 'react'
 import {get} from 'lodash'
-import {ArraySchemaType, SchemaType} from '@sanity/types'
+import {ArraySchemaType} from '@sanity/types'
 import {Card, Stack} from '@sanity/ui'
 import {ArrayOfPrimitivesInputProps, FormArrayInputFunctionsProps} from '../../../types'
 import {Item, List} from '../common/list'
+import {PrimitiveItemProps} from '../../../types/itemProps'
 import {getEmptyValue} from './getEmptyValue'
 
 import {PrimitiveValue} from './types'
 import {nearestIndexOf} from './utils/nearestIndex'
 import {PrimitiveMemberItem} from './PrimitiveMemberItem'
-import {PrimitiveItemProps} from '../../../types/itemProps'
 import {ItemRow} from './ItemRow'
 import {ArrayOfPrimitivesFunctions} from './ArrayOfPrimitivesFunctions'
 

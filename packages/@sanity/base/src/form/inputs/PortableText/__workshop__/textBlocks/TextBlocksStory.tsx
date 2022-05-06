@@ -6,6 +6,7 @@ import {createSchema} from '../../../../../schema'
 import {PortableTextMarker} from '../../../../types'
 import {FormBuilderProvider} from '../../../../FormBuilderProvider'
 import {TextBlock} from '../../text'
+import {useSource} from '../../../../../studio'
 
 const errorMarker: ValidationMarker = {
   level: 'error',
@@ -57,19 +58,13 @@ export function TextBlocksStory() {
   const attributes = useMemo(() => ({focused: false, selected: false, path: []}), [])
   const readOnly = false
 
-  const resolveInputComponent = useCallback(() => undefined, [])
-  const resolvePreviewComponent = useCallback(() => undefined, [])
+  const source = useSource()
 
   return (
     <Box padding={4}>
       <Container width={1}>
         <Card padding={3} shadow={1} overflow="auto" style={{maxHeight: '100%'}}>
-          <FormBuilderProvider
-            renderField={() => <>TODO</>}
-            resolveInputComponent={resolveInputComponent}
-            resolvePreviewComponent={resolvePreviewComponent}
-            schema={schema}
-          >
+          <FormBuilderProvider {...source.formBuilder} schema={schema}>
             <TextBlock
               markers={markers}
               validation={validation}
