@@ -16,14 +16,20 @@ import {createProtoValue} from '../../../utils/createProtoValue'
 import {ensureKey} from '../../../utils/ensureKey'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 
-interface Props {
+/**
+ * @alpha
+ */
+export interface MemberItemProps {
   member: ArrayOfObjectsMember
   renderItem: RenderArrayOfObjectsItemCallback
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback
 }
 
-export function MemberItem(props: Props) {
+/**
+ * @alpha
+ */
+export function MemberItem(props: MemberItemProps) {
   const focusRef = useRef<{focus: () => void}>()
   const {member, renderItem, renderInput, renderField} = props
 

@@ -57,6 +57,9 @@ export type {RenderBlockActions} from '../form/inputs/PortableText/types'
 // export {MemberField} from '../form/inputs/ObjectInput/MemberField'
 export {MemberFieldset} from '../form/inputs/ObjectInput/MemberFieldset'
 
+export * from '../form/inputs/arrays/ArrayOfObjectsInput/MemberItem'
+export * from '../form/inputs/arrays/ArrayOfPrimitivesInput/PrimitiveMemberItem'
+
 export type {
   HashFocusManagerChildArgs,
   HashFocusManagerProps,

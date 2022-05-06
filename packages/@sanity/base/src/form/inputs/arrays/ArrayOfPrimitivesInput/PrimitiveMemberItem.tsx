@@ -15,13 +15,19 @@ import {ensureKey} from '../../../utils/ensureKey'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import {getEmptyValue} from './getEmptyValue'
 
-interface Props {
+/**
+ * @alpha
+ */
+export interface PrimitiveMemberItemProps {
   member: ArrayOfPrimitivesMember
   renderItem: RenderArrayOfPrimitivesItemCallback
   renderInput: RenderInputCallback
 }
 
-export function PrimitiveMemberItem(props: Props) {
+/**
+ * @alpha
+ */
+export function PrimitiveMemberItem(props: PrimitiveMemberItemProps) {
   const focusRef = useRef<{focus: () => void}>()
   const {member, renderItem, renderInput} = props
 
