@@ -4,7 +4,7 @@ import React, {useCallback} from 'react'
 import {
   InputProps,
   ObjectInputProps,
-  RenderArrayItemCallback,
+  RenderArrayOfObjectsItemCallback,
   RenderFieldCallback,
   RenderInputCallback,
 } from '../types'
@@ -20,7 +20,7 @@ export interface StudioObjectInputProps
 
 export function StudioObjectInput(props: StudioObjectInputProps) {
   const {resolveInputComponent} = props
-  const renderItem: RenderArrayItemCallback = useCallback((_item) => {
+  const renderItem: RenderArrayOfObjectsItemCallback = useCallback((_item) => {
     const item = _item as ObjectItemProps
     return <>{item.children}</>
   }, [])

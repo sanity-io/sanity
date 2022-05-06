@@ -1,34 +1,66 @@
 import React, {useCallback, useMemo, useRef} from 'react'
-import {Path} from '@sanity/types'
 import {FieldMember} from '../../../store/types/members'
-import {ArrayOfObjectsNode} from '../../../store/types/nodes'
+import {ArrayOfPrimitivesNode} from '../../../store/types/nodes'
 import {
-  ArrayOfObjectsInputProps,
-  InsertItemEvent,
+  ArrayOfPrimitivesInputProps,
   MoveItemEvent,
   RenderFieldCallback,
   RenderInputCallback,
-  RenderArrayItemCallback,
+  RenderArrayOfPrimitivesItemCallback,
 } from '../../../types'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
-import {insert, PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
+import {insert, PatchArg, PatchEvent, set, setIfMissing, unset} from '../../../patch'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {ArrayFieldProps} from '../../../types/fieldProps'
-import {resolveInitialValueForType} from '../../../../templates'
-import {ensureKey} from '../../../utils/ensureKey'
 import {EMPTY_ARRAY} from '../../../utils/empty'
+import {PrimitiveValue} from '../../arrays/ArrayOfPrimitivesInput/types'
+
+function move<T>(arr: T[], from: number, to: number): T[] {
+  const copy = arr.slice()
+  const val = copy[from]
+  copy.splice(from, 1)
+  copy.splice(to, 0, val)
+  return copy
+}
+
+/**
+ * @example
+ * Inserts "hello" at the beginning
+ * ```ts
+ * insertAfter(-1, ["one", "two"], "hello")
+ * // => ["hello", "one", "two"]
+ * ```
+ */
+function insertAfter<T>(
+  /**
+   * index to insert item after. An index of -1 will prepend the item
+   */
+  index: number,
+  /**
+   * the array to insert the item into
+   */
+  arr: T[],
+  /**
+   * the item to insert
+   */
+  items: T[]
+): T[] {
+  const copy = arr.slice()
+  copy.splice(index + 1, 0, ...items)
+  return copy
+}
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an array input
  * Note: "ArrayField" in this context means an object field of an array type
  * @param props - Component props
  */
-export function ArrayField(props: {
-  member: FieldMember<ArrayOfObjectsNode>
+export function ArrayOfPrimitivesField(props: {
+  member: FieldMember<ArrayOfPrimitivesNode>
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback
-  renderItem: RenderArrayItemCallback
+  renderItem: RenderArrayOfPrimitivesItemCallback
 }) {
   const {
     onPathBlur,
@@ -63,80 +95,27 @@ export function ArrayField(props: {
 
   const handleChange = useCallback(
     (event: PatchEvent | PatchArg) => {
-      onChange(
-        PatchEvent.from(event)
-          .prepend(setIfMissing(createProtoValue(member.field.schemaType)))
-          .prefixAll(member.name)
-      )
+      onChange(PatchEvent.from(event).prepend(setIfMissing([])).prefixAll(member.name))
     },
-    [onChange, member.field.schemaType, member.name]
-  )
-
-  const handleInsert = useCallback(
-    (event: InsertItemEvent) => {
-      onChange(
-        PatchEvent.from([
-          setIfMissing([]),
-          insert(
-            event.items.map((item) => ensureKey(item)),
-            event.position,
-            [event.referenceItem]
-          ),
-        ]).prefixAll(member.name)
-      )
-    },
-    [member.name, onChange]
+    [onChange, member.name]
   )
 
   const handleMoveItem = useCallback(
     (event: MoveItemEvent) => {
       const value = member.field.value
       const item = value?.[event.fromIndex] as any
-      const refItem = value?.[event.toIndex] as any
       if (event.fromIndex === event.toIndex) {
-        return
-      }
-
-      if (!(item as any)?._key || !(refItem as any)?._key) {
-        // eslint-disable-next-line no-console
-        console.error(
-          'Neither the item you are moving nor the item you are moving to have a key. Cannot continue.'
-        )
-
         return
       }
 
       onChange(
         PatchEvent.from([
-          unset([{_key: item._key}]),
-          insert([item], event.fromIndex > event.toIndex ? 'before' : 'after', [
-            {_key: refItem._key},
-          ]),
+          unset([item.index]),
+          insert([item], event.fromIndex > event.toIndex ? 'before' : 'after', [item.index]),
         ]).prefixAll(member.name)
       )
     },
     [member.field.value, member.name, onChange]
-  )
-
-  const handlePrependItem = useCallback(
-    (item) => {
-      onChange(
-        PatchEvent.from([setIfMissing([]), insert([ensureKey(item)], 'before', [0])]).prefixAll(
-          member.name
-        )
-      )
-    },
-    [member.name, onChange]
-  )
-  const handleAppendItem = useCallback(
-    (item) => {
-      onChange(
-        PatchEvent.from([setIfMissing([]), insert([ensureKey(item)], 'after', [-1])]).prefixAll(
-          member.name
-        )
-      )
-    },
-    [member.name, onChange]
   )
 
   const handleSetCollapsed = useCallback(
@@ -146,9 +125,52 @@ export function ArrayField(props: {
     [onSetCollapsedPath, member.field.path]
   )
 
+  const setValue = useCallback(
+    (nextValue: PrimitiveValue[]) => {
+      onChange(
+        PatchEvent.from(nextValue.length === 0 ? unset() : set(nextValue)).prefixAll(member.name)
+      )
+    },
+    [member.name, onChange]
+  )
+
+  const handleRemove = useCallback(
+    (index: number) => {
+      const {value = []} = member.field
+      setValue(value.filter((_, i) => i !== index))
+    },
+    [member.field, setValue]
+  )
+
+  const handleAppend = useCallback(
+    (itemValue: PrimitiveValue) => {
+      const {value = []} = member.field
+      setValue(value.concat(itemValue))
+    },
+    [member.field, setValue]
+  )
+
+  const handlePrepend = useCallback(
+    (itemValue: PrimitiveValue) => {
+      const {value = []} = member.field
+      setValue([itemValue].concat(value || []))
+    },
+    [member.field, setValue]
+  )
+
+  const handleInsert = useCallback(
+    (event: {items: PrimitiveValue[]; position: 'before' | 'after'; referenceIndex: number}) => {
+      const {value = []} = member.field
+
+      const insertIndex = event.referenceIndex + (event.position === 'before' ? -1 : 0)
+      setValue(insertAfter(insertIndex, value, event.items))
+    },
+    [member.field, setValue]
+  )
+
   const handleRemoveItem = useCallback(
-    (itemKey: string) => {
-      onChange(PatchEvent.from([unset(member.field.path.concat({_key: itemKey}))]))
+    (index: number) => {
+      onChange(PatchEvent.from([unset(member.field.path.concat(index))]))
     },
     [onChange, member.field.path]
   )
@@ -159,14 +181,14 @@ export function ArrayField(props: {
     },
     [onSetCollapsedPath, member.field.path]
   )
-  const handleFocusChildPath = useCallback(
-    (path: Path) => {
-      onPathFocus(member.field.path.concat(path))
+  const handleFocusIndex = useCallback(
+    (index: number) => {
+      onPathFocus(member.field.path.concat([index]))
     },
     [member.field.path, onPathFocus]
   )
 
-  const inputProps = useMemo((): ArrayOfObjectsInputProps => {
+  const inputProps = useMemo((): ArrayOfPrimitivesInputProps => {
     return {
       level: member.field.level,
       onBlur: handleBlur,
@@ -178,7 +200,6 @@ export function ArrayField(props: {
       compareValue: member.field.compareValue as any,
       focusRef: focusRef,
       id: member.field.id,
-      onSetItemCollapsed: handleSetItemCollapsed,
       onFocus: handleFocus,
       path: member.field.path,
       focusPath: member.field.focusPath,
@@ -186,18 +207,18 @@ export function ArrayField(props: {
       onChange: handleChange,
       onInsert: handleInsert,
       onMoveItem: handleMoveItem,
-      onRemoveItem: handleRemoveItem,
-      onAppendItem: handleAppendItem,
-      onPrependItem: handlePrependItem,
-      onFocusPath: handleFocusChildPath,
-      resolveInitialValue: resolveInitialValueForType,
+      onRemoveItem: handleRemove,
+      onAppendItem: handleAppend,
+      onPrependItem: handlePrepend,
       // todo:
       validation: EMPTY_ARRAY,
       // todo:
       presence: EMPTY_ARRAY,
       renderInput,
-      renderField,
       renderItem,
+      onFocusIndex: handleFocusIndex,
+      collapsible: member.collapsible,
+      collapsed: member.collapsed,
     }
   }, [
     member.field.level,
@@ -210,20 +231,20 @@ export function ArrayField(props: {
     member.field.path,
     member.field.focusPath,
     member.field.focused,
+    member.collapsible,
+    member.collapsed,
     handleBlur,
     handleSetCollapsed,
-    handleSetItemCollapsed,
     handleFocus,
     handleChange,
     handleInsert,
     handleMoveItem,
-    handleRemoveItem,
-    handleAppendItem,
-    handlePrependItem,
-    handleFocusChildPath,
+    handleRemove,
+    handleAppend,
+    handlePrepend,
     renderInput,
-    renderField,
     renderItem,
+    handleFocusIndex,
   ])
 
   const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])

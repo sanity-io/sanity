@@ -43,6 +43,12 @@ export function isNumberSchemaType(type: unknown): type is NumberSchemaType {
   return type.jsonType === 'number'
 }
 
+export function isPrimitiveSchemaType(
+  type: unknown
+): type is BooleanSchemaType | StringSchemaType | NumberSchemaType {
+  return isBooleanSchemaType(type) || isStringSchemaType(type) || isNumberSchemaType(type)
+}
+
 export function isReferenceSchemaType(type: unknown): type is ReferenceSchemaType {
   return isRecord(type) && (type.name === 'reference' || isReferenceSchemaType(type.type))
 }

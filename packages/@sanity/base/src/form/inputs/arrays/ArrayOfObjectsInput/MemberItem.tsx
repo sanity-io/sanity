@@ -6,10 +6,10 @@ import {
   ObjectInputProps,
   RenderFieldCallback,
   RenderInputCallback,
-  RenderArrayItemCallback,
+  RenderArrayOfObjectsItemCallback,
 } from '../../../types'
 import {ArrayOfObjectsMember} from '../../../store/types/members'
-import {ItemProps} from '../../../types/itemProps'
+import {ItemProps, ObjectItemProps} from '../../../types/itemProps'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {insert, PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
 import {createProtoValue} from '../../../utils/createProtoValue'
@@ -18,7 +18,7 @@ import {EMPTY_ARRAY} from '../../../utils/empty'
 
 interface Props {
   member: ArrayOfObjectsMember
-  renderItem: RenderArrayItemCallback
+  renderItem: RenderArrayOfObjectsItemCallback
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback
 }
@@ -179,7 +179,7 @@ export function MemberItem(props: Props) {
     [member.key, onChange]
   )
 
-  const itemProps = useMemo((): ItemProps => {
+  const itemProps = useMemo((): ObjectItemProps => {
     return {
       key: member.key,
       index: member.index,

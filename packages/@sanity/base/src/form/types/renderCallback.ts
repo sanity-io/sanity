@@ -3,8 +3,8 @@ import {ObjectItemProps, PrimitiveItemProps} from './itemProps'
 import {FieldProps} from './fieldProps'
 import {InputProps} from './inputProps'
 
-export type RenderArrayItemCallback = (itemProps: ObjectItemProps) => React.ReactNode
-export type RenderPrimitiveArrayItemCallback = (itemProps: PrimitiveItemProps) => React.ReactNode
+export type RenderArrayOfObjectsItemCallback = (itemProps: ObjectItemProps) => React.ReactNode
+export type RenderArrayOfPrimitivesItemCallback = (itemProps: PrimitiveItemProps) => React.ReactNode
 
 export type RenderFieldCallback<T extends FieldProps = FieldProps> = (
   fieldProps: T

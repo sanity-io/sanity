@@ -420,7 +420,6 @@ export class ArrayInput extends React.PureComponent<ArrayOfObjectsInputProps<Arr
             readOnly={readOnly}
             onAppendItem={this.handleAppend}
             onPrependItem={this.handlePrepend}
-            onFocusItem={this.handleFocusItem}
             onCreateValue={createProtoValue}
             onChange={onChange}
           />

@@ -5,11 +5,6 @@ export interface InsertItemEvent {
   position: 'before' | 'after'
   referenceItem: KeyedSegment | number
 }
-export interface InsertInitialValueEvent {
-  type: SchemaType
-  position: 'before' | 'after'
-  referenceItem: KeyedSegment | number
-}
 
 export interface MoveItemEvent {
   fromIndex: number

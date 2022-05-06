@@ -17,7 +17,7 @@ export function ArrayOfPrimitivesFunctions<
   const insertItem = React.useCallback(
     (itemType) => {
       const item = onCreateValue(itemType)
-
+      debugger
       onAppendItem(item)
     },
     [onCreateValue, onAppendItem]

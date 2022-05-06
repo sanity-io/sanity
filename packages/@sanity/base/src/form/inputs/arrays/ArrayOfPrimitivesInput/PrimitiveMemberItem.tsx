@@ -6,7 +6,7 @@ import {
   FIXME,
   PrimitiveInputProps,
   RenderInputCallback,
-  RenderPrimitiveArrayItemCallback,
+  RenderArrayOfPrimitivesItemCallback,
 } from '../../../types'
 import {PrimitiveItemProps} from '../../../types/itemProps'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
@@ -17,7 +17,7 @@ import {getEmptyValue} from './getEmptyValue'
 
 interface Props {
   member: ArrayOfPrimitivesMember
-  renderItem: RenderPrimitiveArrayItemCallback
+  renderItem: RenderArrayOfPrimitivesItemCallback
   renderInput: RenderInputCallback
 }
 

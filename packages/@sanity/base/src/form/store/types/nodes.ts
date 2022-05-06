@@ -50,14 +50,14 @@ export interface ArrayOfObjectsNode<
 }
 
 export interface ArrayOfPrimitivesNode<
-  T extends any[] = unknown[],
+  T extends (string | number | boolean)[] = (string | number | boolean)[],
   S extends ArraySchemaType = ArraySchemaType
 > extends BaseNode<T, S> {
   members: ArrayOfPrimitivesMember[]
 
   focusPath: Path
-  collapsed: boolean
-  collapsible: boolean
+  collapsed: boolean | undefined
+  collapsible: boolean | undefined
 }
 
 export type BooleanNode<S extends BooleanSchemaType = BooleanSchemaType> = BaseNode<boolean, S>

@@ -4,7 +4,7 @@ import {FieldMember} from '../../../store/types/members'
 import {ObjectNode} from '../../../store/types/nodes'
 import {
   ObjectInputProps,
-  RenderArrayItemCallback,
+  RenderArrayOfObjectsItemCallback,
   RenderFieldCallback,
   RenderInputCallback,
 } from '../../../types'
@@ -24,7 +24,7 @@ export const ObjectField = function ObjectField(props: {
   member: FieldMember<ObjectNode>
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback
-  renderItem: RenderArrayItemCallback
+  renderItem: RenderArrayOfObjectsItemCallback
 }) {
   const {
     onPathBlur,

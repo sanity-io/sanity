@@ -20,7 +20,12 @@ import {
   StringNode,
 } from '../store/types/nodes'
 import {FormFieldPresence} from '../../presence'
-import {RenderFieldCallback, RenderInputCallback, RenderArrayItemCallback} from './renderCallback'
+import {
+  RenderFieldCallback,
+  RenderInputCallback,
+  RenderArrayOfObjectsItemCallback,
+  RenderArrayOfPrimitivesItemCallback,
+} from './renderCallback'
 import {InsertItemEvent, MoveItemEvent} from './event'
 import {FieldGroup} from './fieldGroups'
 
@@ -55,7 +60,7 @@ export interface ObjectInputProps<
 
   renderInput: RenderInputCallback
   renderField: RenderFieldCallback
-  renderItem: RenderArrayItemCallback
+  renderItem: RenderArrayOfObjectsItemCallback
 }
 
 export interface ArrayOfObjectsInputProps<
@@ -81,9 +86,11 @@ export interface ArrayOfObjectsInputProps<
   onSetItemCollapsed: (itemKey: string, collapsed: boolean) => void
 
   renderInput: RenderInputCallback
-  renderItem: RenderArrayItemCallback
+  renderItem: RenderArrayOfObjectsItemCallback
   renderField: RenderFieldCallback
 }
+
+type ElementType<T extends any[]> = T extends (infer K)[] ? K : unknown
 
 export interface ArrayOfPrimitivesInputProps<
   T extends (string | boolean | number)[] = (string | boolean | number)[],
@@ -95,22 +102,16 @@ export interface ArrayOfPrimitivesInputProps<
 
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
 
-  // this opens/close items
-  onSetItemCollapsed: (index: number, collapsed: boolean) => void
-
-  onAppendItem: (item: T) => void
-  onPrependItem: (item: T) => void
-  onRemoveItem: (itemKey: string) => void
+  onAppendItem: (item: ElementType<T>) => void
+  onPrependItem: (item: ElementType<T>) => void
+  onRemoveItem: (index: number) => void
   onMoveItem: (event: MoveItemEvent) => void
-  onInsert: (event: InsertItemEvent) => void
+  onInsert: (event: {items: T; position: 'before' | 'after'; referenceIndex: number}) => void
 
-  resolveInitialValue: (type: SchemaType, params: Record<string, unknown>) => Promise<T>
-
-  onFocusPath: (path: Path) => void
+  onFocusIndex: (index: number) => void
 
   renderInput: RenderInputCallback
-  renderItem: RenderArrayItemCallback
-  renderField: RenderFieldCallback
+  renderItem: RenderArrayOfPrimitivesItemCallback
 }
 
 export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
@@ -135,6 +136,7 @@ export type PrimitiveInputProps = StringInputProps | BooleanInputProps | NumberI
 export type InputProps =
   | ObjectInputProps
   | ArrayOfObjectsInputProps
+  | ArrayOfPrimitivesInputProps
   | StringInputProps
   | BooleanInputProps
   | NumberInputProps

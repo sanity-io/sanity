@@ -1,61 +1,17 @@
 import React from 'react'
 import {get} from 'lodash'
-import {startsWith} from '@sanity/util/paths'
 import {ArraySchemaType, SchemaType} from '@sanity/types'
 import {Card, Stack} from '@sanity/ui'
-import {resolveTypeName} from '@sanity/util/content'
-import {
-  ArrayOfPrimitivesInputProps,
-  FormArrayInputFunctionsProps,
-  RenderArrayItemCallback,
-} from '../../../types'
-import {PatchEvent, set, unset} from '../../../patch'
+import {ArrayOfPrimitivesInputProps, FormArrayInputFunctionsProps} from '../../../types'
 import {Item, List} from '../common/list'
 import {getEmptyValue} from './getEmptyValue'
 
 import {PrimitiveValue} from './types'
 import {nearestIndexOf} from './utils/nearestIndex'
 import {PrimitiveMemberItem} from './PrimitiveMemberItem'
-import {ItemProps, PrimitiveItemProps} from '../../../types/itemProps'
+import {PrimitiveItemProps} from '../../../types/itemProps'
 import {ItemRow} from './ItemRow'
-import {DefaultArrayInputFunctions} from '../common/ArrayFunctions'
-import {createProtoValue} from '../ArrayOfObjectsInput/ArrayInput'
 import {ArrayOfPrimitivesFunctions} from './ArrayOfPrimitivesFunctions'
-
-function move<T>(arr: T[], from: number, to: number): T[] {
-  const copy = arr.slice()
-  const val = copy[from]
-  copy.splice(from, 1)
-  copy.splice(to, 0, val)
-  return copy
-}
-
-/**
- * @example
- * Inserts "hello" at the beginning
- * ```ts
- * insertAfter(-1, ["one", "two"], "hello")
- * // => ["hello", "one", "two"]
- * ```
- */
-function insertAfter<T>(
-  /**
-   * index to insert item after. An index of -1 will prepend the item
-   */
-  index: number,
-  /**
-   * the array to insert the item into
-   */
-  arr: T[],
-  /**
-   * the item to insert
-   */
-  item: T
-): T[] {
-  const copy = arr.slice()
-  copy.splice(index + 1, 0, item)
-  return copy
-}
 
 export interface DefaultArrayOfPrimitivesInputProps extends ArrayOfPrimitivesInputProps {
   ArrayFunctionsImpl: React.ComponentType<
@@ -67,84 +23,41 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
   _element: HTMLElement | null = null
   _lastAddedIndex = -1
 
-  set(nextValue: PrimitiveValue[]) {
-    const {onChange} = this.props
-    this._lastAddedIndex = -1
-    const patch = nextValue.length === 0 ? unset() : set(nextValue)
-    onChange(patch)
-  }
-
-  removeAt(index: number) {
-    const {onFocusPath, value = []} = this.props
-    this.set(value.filter((_, i) => i !== index))
-    onFocusPath([Math.max(0, index - 1)])
-  }
-
   handleAppend = (itemValue: PrimitiveValue) => {
-    const {value = [], onFocusPath} = this.props
-    this.set(value.concat(itemValue))
-    onFocusPath([value.length])
+    const {value = [], onFocusIndex, onAppendItem} = this.props
+    onAppendItem(itemValue)
+    onFocusIndex(value.length)
   }
 
   handlePrepend = (itemValue: PrimitiveValue) => {
-    const {onFocusPath, value = []} = this.props
-    this.set([itemValue].concat(value))
-    onFocusPath([value.length])
+    const {onFocusIndex, value = [], onPrependItem} = this.props
+    onPrependItem(itemValue)
+    onFocusIndex(value.length)
   }
-
-  insertAfter(index: number, type: SchemaType) {
-    const {onFocusPath, value = []} = this.props
-    const emptyValue = getEmptyValue(type)
-    if (emptyValue === undefined) {
-      throw new Error(`Cannot create empty primitive value from ${type.name}`)
-    }
-    this.set(insertAfter(index, value, emptyValue))
-    onFocusPath([index + 1])
-  }
-
-  handleRemoveItem = (index: number) => {
-    this.removeAt(index)
-  }
-
-  handleInsert = (pos: 'before' | 'after', index: number, item: PrimitiveValue) => {
-    const {onFocusPath, value = []} = this.props
-    const insertIndex = index + (pos === 'before' ? -1 : 0)
-    this.set(insertAfter(insertIndex, value, item))
-    onFocusPath([insertIndex + 1])
-  }
-
-  handleItemChange = (event: PatchEvent) => {
-    this._lastAddedIndex = -1
-    this.props.onChange(event.patches)
-  }
-
   handleItemEnterKey = (index: number) => {
-    const firstType = this.props.schemaType?.of[0]
+    const {schemaType, onInsert} = this.props
+    const firstType = schemaType?.of[0]
     if (firstType) {
-      this.insertAfter(index, firstType)
+      onInsert({
+        referenceIndex: index,
+        position: 'after',
+        items: [getEmptyValue(firstType)],
+      })
       this._lastAddedIndex = index + 1
     }
   }
 
   handleItemEscapeKey = (index: number) => {
-    const {value} = this.props
+    const {value, onRemoveItem} = this.props
     if (index === this._lastAddedIndex && value?.[index] === '') {
-      this.removeAt(index)
+      onRemoveItem(index)
     }
   }
 
   handleSortEnd = (event: {oldIndex: number; newIndex: number}) => {
-    const {onFocusPath, value} = this.props
-    const {oldIndex, newIndex} = event
-    if (value) this.set(move(value, oldIndex, newIndex))
-    onFocusPath([newIndex])
-  }
-
-  getMemberType(typeName: string) {
-    const {schemaType} = this.props
-    return schemaType?.of.find(
-      (memberType) => memberType.name === typeName || memberType.jsonType === typeName
-    )
+    const {onFocusIndex, onMoveItem, value} = this.props
+    if (value) onMoveItem({fromIndex: event.oldIndex, toIndex: event.newIndex})
+    onFocusIndex(event.newIndex)
   }
 
   setElement = (el: HTMLElement | null) => {
@@ -158,13 +71,13 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
   }
 
   handleFocusRoot = (event: React.FocusEvent<HTMLDivElement>) => {
-    const {onFocusPath} = this.props
+    const {onFocus} = this.props
     // We want to handle focus when the array input *itself* element receives
     // focus, not when a child element receives focus, but React has decided
     // to let focus bubble, so this workaround is needed
     // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
     if (event.currentTarget === event.target && event.currentTarget === this._element) {
-      onFocusPath([])
+      onFocus(event)
     }
   }
 
@@ -203,7 +116,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
     prevState: Record<string, unknown>,
     snapshot?: {restoreSelection: {start: number; end: number}; prevFocusedIndex: number}
   ) {
-    const {onFocusPath} = this.props
+    const {onFocusIndex} = this.props
     if (snapshot?.restoreSelection && prevProps.value) {
       const prevFocusedValue = prevProps.value[snapshot.prevFocusedIndex]
 
@@ -228,13 +141,8 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
           // not all inputs supports selection (e.g. <input type="number" />)
         }
       }
-      onFocusPath([nearestIndex])
+      onFocusIndex(nearestIndex)
     }
-  }
-
-  handleFocusItem = (item: PrimitiveValue, index: number) => {
-    const {onFocusPath} = this.props
-    onFocusPath([index])
   }
 
   renderItem = (props: PrimitiveItemProps) => {
@@ -294,7 +202,6 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
           readOnly={readOnly}
           onAppendItem={this.handleAppend}
           onPrependItem={this.handlePrepend}
-          // onFocusItem={this.handleFocusItem}
           onCreateValue={getEmptyValue}
           onChange={onChange}
         />
