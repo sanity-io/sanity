@@ -247,7 +247,7 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
   }, [focusPath])
 
   return (
-    <div ref={innerElementRef}>
+    <Box ref={innerElementRef}>
       {!readOnly && (
         <VisibleOnFocusButton onClick={handleFocusSkipperClick}>
           <Text>Go to content</Text>
@@ -288,7 +288,7 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
           />
         </PortableTextEditor>
       )}
-    </div>
+    </Box>
   )
 })
 
