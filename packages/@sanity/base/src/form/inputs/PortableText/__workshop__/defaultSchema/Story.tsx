@@ -1,7 +1,9 @@
 import {Card, Container, Flex, LayerProvider} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import React from 'react'
-import {createSchema} from '../../../../../schema'
+import {createConfig} from '../../../../../config'
+// import {createSchema} from '../../../../../schema'
+import {StudioProvider} from '../../../../../studio'
 import {FIXME} from '../../../../types'
 import {TestInput} from '../_common/TestInput'
 import {values, valueOptions} from './values'
@@ -12,9 +14,18 @@ const ptType = {
   of: [{type: 'block'}],
 }
 
-export const schema = createSchema({
-  name: 'default',
-  types: [ptType],
+// export const schema = createSchema({
+//   name: 'default',
+//   types: [ptType],
+// })
+
+const config = createConfig({
+  name: 'test',
+  dataset: 'test',
+  projectId: 'test',
+  schema: {
+    types: [ptType],
+  },
 })
 
 export default function Story() {
@@ -27,7 +38,7 @@ export default function Story() {
   const type = schema.get('body')
 
   return (
-    <LayerProvider zOffset={100}>
+    <StudioProvider>
       <Card height="fill" padding={4} sizing="border">
         <Flex align="center" height="fill" justify="center">
           <Container width={1}>
@@ -42,6 +53,6 @@ export default function Story() {
           </Container>
         </Flex>
       </Card>
-    </LayerProvider>
+    </StudioProvider>
   )
 }

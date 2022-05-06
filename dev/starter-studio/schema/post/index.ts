@@ -37,5 +37,14 @@ export const postDocumentType = {
         },
       ],
     },
+
+    {
+      type: 'code',
+      name: 'code',
+      title: 'Code',
+      options: {
+        withFilename: true,
+      },
+    },
   ],
 }

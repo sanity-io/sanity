@@ -82,17 +82,17 @@ function isSupportedLanguage(mode: string) {
 
 export function CodeInput(props: CodeInputProps) {
   const {
+    focusRef,
     members,
-    onChange,
-    renderField,
-    schemaType: type,
-    value,
     onBlur,
-    renderItem,
+    onChange,
     onFocusPath,
     readOnly,
+    renderField,
     renderInput,
-    focusRef,
+    renderItem,
+    schemaType: type,
+    value,
   } = props
 
   const aceEditorRef = useRef<any>()
@@ -293,6 +293,7 @@ export function CodeInput(props: CodeInputProps) {
     },
     [getTheme, handleCodeChange, handleCodeFocus, handleEditorLoad, mode, onBlur, readOnly, value]
   )
+
   return (
     <Stack space={4}>
       {languageFieldMember && (

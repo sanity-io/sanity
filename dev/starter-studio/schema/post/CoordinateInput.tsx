@@ -3,7 +3,16 @@ import React, {useCallback} from 'react'
 import {NumberInputProps, set, unset} from 'sanity/form'
 
 export function CoordinateInput(props: NumberInputProps) {
-  const {inputProps, onChange, type, value = ''} = props
+  const {
+    id,
+    // inputProps,
+    onBlur,
+    onChange,
+    onFocus,
+    readOnly,
+    schemaType,
+    value = '',
+  } = props
 
   // We need to create value patch messages based on the user input
   const handleChange = useCallback(
@@ -17,9 +26,13 @@ export function CoordinateInput(props: NumberInputProps) {
 
   return (
     <TextInput
-      {...inputProps}
+      // {...inputProps}
+      id={id}
+      onBlur={onBlur}
       onChange={handleChange}
-      placeholder={type.placeholder}
+      onFocus={onFocus}
+      placeholder={schemaType.placeholder}
+      readOnly={readOnly}
       value={value}
     />
   )
