@@ -13,6 +13,7 @@ import {FormPatch, FormSetPatch, FormUnsetPatch, PatchEvent} from '../patch'
 
 import {
   ArrayOfObjectsNode,
+  ArrayOfPrimitivesNode,
   BooleanNode,
   NumberNode,
   ObjectNode,
@@ -87,7 +88,7 @@ export interface ArrayOfObjectsInputProps<
 export interface ArrayOfPrimitivesInputProps<
   T extends (string | boolean | number)[] = (string | boolean | number)[],
   S extends ArraySchemaType = ArraySchemaType
-> extends ArrayOfObjectsNode<T, S>,
+> extends ArrayOfPrimitivesNode<T, S>,
     BaseInputProps {
   // note: not a priority to support collapsible arrays right now
   onSetCollapsed: (collapsed: boolean) => void

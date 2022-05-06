@@ -4,13 +4,23 @@ import {startsWith} from '@sanity/util/paths'
 import {ArraySchemaType, SchemaType} from '@sanity/types'
 import {Card, Stack} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
-import {ArrayOfPrimitivesInputProps, FormArrayInputFunctionsProps} from '../../../types'
+import {
+  ArrayOfPrimitivesInputProps,
+  FormArrayInputFunctionsProps,
+  RenderArrayItemCallback,
+} from '../../../types'
 import {PatchEvent, set, unset} from '../../../patch'
 import {Item, List} from '../common/list'
 import {getEmptyValue} from './getEmptyValue'
 
 import {PrimitiveValue} from './types'
 import {nearestIndexOf} from './utils/nearestIndex'
+import {PrimitiveMemberItem} from './PrimitiveMemberItem'
+import {ItemProps, PrimitiveItemProps} from '../../../types/itemProps'
+import {ItemRow} from './ItemRow'
+import {DefaultArrayInputFunctions} from '../common/ArrayFunctions'
+import {createProtoValue} from '../ArrayOfObjectsInput/ArrayInput'
+import {ArrayOfPrimitivesFunctions} from './ArrayOfPrimitivesFunctions'
 
 function move<T>(arr: T[], from: number, to: number): T[] {
   const copy = arr.slice()
@@ -227,22 +237,23 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
     onFocusPath([index])
   }
 
+  renderItem = (props: PrimitiveItemProps) => {
+    const {schemaType, readOnly} = this.props
+    const isSortable = !readOnly && get(schemaType, 'options.sortable') !== false
+
+    return (
+      <ItemRow
+        {...props}
+        isSortable={isSortable}
+        insertableTypes={schemaType.of}
+        onEnterKey={this.handleItemEnterKey}
+        onEscapeKey={this.handleItemEscapeKey}
+      />
+    )
+  }
+
   render() {
-    const {
-      schemaType,
-      value,
-      level = 1,
-      members,
-      validation,
-      onChange,
-      presence,
-      compareValue,
-      focusPath,
-      ArrayFunctionsImpl,
-      onBlur,
-      onFocus,
-      readOnly,
-    } = this.props
+    const {schemaType, members, readOnly, value, onChange, renderInput} = this.props
 
     const isSortable = !readOnly && get(schemaType, 'options.sortable') !== false
 
@@ -253,48 +264,22 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
             <Card padding={1} border>
               <List onSortEnd={this.handleSortEnd} isSortable={isSortable}>
                 {members.map((member, index) => {
-                  const itemValidationMarkers = validation.filter((marker) =>
-                    startsWith([index], marker.path)
-                  )
-
-                  const childPresence = presence.filter((pItem) => startsWith([index], pItem.path))
-
-                  const memberType = this.getMemberType(resolveTypeName(member))
-
                   // Best effort attempt to make a stable key for each item in the array
                   // Since items may be reordered and change at any time, there's no way to reliably address each item uniquely
                   // This is a "best effort"-attempt at making sure we don't re-use internal state for item inputs
                   // when items gets added or removed to the array
-                  const key = `${memberType?.name || 'invalid-type'}-${String(index)}`
                   return (
-                    <Item key={key} index={index} data-item-index={index} isSortable={isSortable}>
-                      <>
-                        TODO
-                        {/* <ItemRow
-                            level={level + 1}
-                            index={index}
-                            value={item}
-                            compareValue={compareValue?.[index]}
-                            readOnly={readOnly}
-                            validation={
-                              itemValidationMarkers.length === 0
-                                ? NO_MARKERS
-                                : itemValidationMarkers
-                            }
-                            isSortable={isSortable}
-                            type={memberType!} // @todo: remove non-null assertion
-                            focusPath={focusPath}
-                            onFocus={onFocus}
-                            onBlur={onBlur}
-                            insertableTypes={type.of}
-                            onEnterKey={this.handleItemEnterKey}
-                            onEscapeKey={this.handleItemEscapeKey}
-                            onChange={this.handleItemChange}
-                            onInsert={this.handleInsert}
-                            onRemove={this.handleRemoveItem}
-                            presence={childPresence}
-                          /> */}
-                      </>
+                    <Item
+                      key={member.key}
+                      index={index}
+                      data-item-index={index}
+                      isSortable={isSortable}
+                    >
+                      <PrimitiveMemberItem
+                        member={member}
+                        renderInput={renderInput}
+                        renderItem={this.renderItem}
+                      />
                     </Item>
                   )
                 })}
@@ -302,16 +287,17 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<DefaultArrayOfPr
             </Card>
           )}
         </Stack>
-        {/* TODO: <ArrayFunctionsImpl*/}
-        {/*  type={schemaType}*/}
-        {/*  value={value}*/}
-        {/*  readOnly={readOnly}*/}
-        {/*  onAppendItem={this.handleAppend}*/}
-        {/*  onPrependItem={this.handlePrepend}*/}
-        {/*  onFocusItem={this.handleFocusItem}*/}
-        {/*  onCreateValue={getEmptyValue}*/}
-        {/*  onChange={onChange}*/}
-        {/*/>*/}
+
+        <ArrayOfPrimitivesFunctions
+          type={schemaType}
+          value={value}
+          readOnly={readOnly}
+          onAppendItem={this.handleAppend}
+          onPrependItem={this.handlePrepend}
+          // onFocusItem={this.handleFocusItem}
+          onCreateValue={getEmptyValue}
+          onChange={onChange}
+        />
       </Stack>
     )
   }

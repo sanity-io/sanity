@@ -7,7 +7,7 @@ import {
   SchemaType,
   StringSchemaType,
 } from '@sanity/types'
-import {ArrayOfObjectsMember, ObjectMember} from './members'
+import {ArrayOfObjectsMember, ArrayOfPrimitivesMember, ObjectMember} from './members'
 import {FieldGroup} from './fieldGroup'
 
 export interface BaseNode<T = unknown, S extends SchemaType = SchemaType> {
@@ -53,7 +53,7 @@ export interface ArrayOfPrimitivesNode<
   T extends any[] = unknown[],
   S extends ArraySchemaType = ArraySchemaType
 > extends BaseNode<T, S> {
-  members: ArrayOfPrimitivesNode[]
+  members: ArrayOfPrimitivesMember[]
 
   focusPath: Path
   collapsed: boolean

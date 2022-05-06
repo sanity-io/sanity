@@ -22,6 +22,9 @@ export interface ArrayOfObjectsMember<Node extends ObjectNode = ObjectNode> {
 
 export interface ArrayOfPrimitivesMember<Node extends PrimitiveNode = PrimitiveNode> {
   kind: 'item'
+  // note: there's no persistent handle on primitive items, so our only option is to use the index as key here
+  key: string
+  index: number
   // the state resolver should make sure this
   // gets collapsible: false and collapsed by default
 

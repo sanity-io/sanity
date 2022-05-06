@@ -20,6 +20,8 @@ export interface BaseItemProps {
   description: string | undefined
   inputId: string
   onFocus: (event: React.FocusEvent) => void
+  readOnly?: boolean
+  focused?: boolean
   onRemove: () => void
 
   // --- todo, potentially
@@ -29,26 +31,19 @@ export interface BaseItemProps {
   onInsert: (event: {items: unknown[]; position: 'before' | 'after'}) => void
 
   children: React.ReactNode | null
+
+  validation: ValidationMarker[]
 }
 
 export interface ObjectItemProps extends BaseItemProps {
   schemaType: ObjectSchemaType
   collapsed: boolean | undefined
   collapsible: boolean
-  focused?: boolean
-  readOnly?: boolean
-  validation: ValidationMarker[]
   onSetCollapsed: (collapsed: boolean) => void
 }
 
-export interface NumberItemProps extends BaseItemProps {
-  schemaType: NumberSchemaType
-}
-export interface BooleanItemProps extends BaseItemProps {
-  schemaType: BooleanSchemaType
-}
-export interface StringItemProps extends BaseItemProps {
-  schemaType: StringSchemaType
-}
+export type ItemProps = ObjectItemProps | PrimitiveItemProps
 
-export type ItemProps = ObjectItemProps | NumberItemProps | BooleanItemProps | StringItemProps
+export interface PrimitiveItemProps extends BaseItemProps {
+  schemaType: NumberSchemaType | BooleanSchemaType | StringSchemaType
+}
