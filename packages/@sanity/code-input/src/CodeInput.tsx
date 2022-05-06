@@ -91,6 +91,7 @@ export function CodeInput(props: CodeInputProps) {
     renderItem,
     onFocusPath,
     readOnly,
+    renderInput,
     focusRef,
   } = props
 
@@ -293,7 +294,7 @@ export function CodeInput(props: CodeInputProps) {
     [getTheme, handleCodeChange, handleCodeFocus, handleEditorLoad, mode, onBlur, readOnly, value]
   )
   return (
-    <Stack space={3}>
+    <Stack space={4}>
       {languageFieldMember && (
         <MemberField
           member={languageFieldMember}
@@ -308,7 +309,7 @@ export function CodeInput(props: CodeInputProps) {
           member={filenameMember}
           renderItem={renderItem}
           renderField={renderField}
-          renderInput={renderLanguageInput}
+          renderInput={renderInput}
         />
       )}
 
