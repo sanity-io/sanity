@@ -22,8 +22,8 @@ export default createConfig({
     types: schemaTypes,
     templates: resolveInitialValueTemplates,
   },
-  unstable_formBuilder: {
-    components: {
+  formBuilder: {
+    unstable: {
       CustomMarkers,
       Markers,
     },
