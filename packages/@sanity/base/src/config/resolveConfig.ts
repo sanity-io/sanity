@@ -38,10 +38,11 @@ export function resolveConfig(config: Config): ResolvedConfig {
       const sources = [rootSource as SourceOptions, ...nestedSources]
 
       const resolvedSources = sources.map((source) => {
+        const clientFactory = source.unstable_clientFactory ?? createClient
         const projectId = source.projectId
         const dataset = source.dataset
 
-        const client = createClient({
+        const client = clientFactory({
           apiVersion: '1',
           dataset,
           projectId,

@@ -1,4 +1,4 @@
-import type {SanityClient} from '@sanity/client'
+import type {ClientConfig as SanityClientConfig, SanityClient} from '@sanity/client'
 import type {Schema, CurrentUser, AssetSource, SanityDocumentLike} from '@sanity/types'
 import type React from 'react'
 import type {Observable} from 'rxjs'
@@ -179,7 +179,16 @@ export interface SourceOptions extends PluginOptions {
   title?: string
   projectId: string
   dataset: string
+
+  /**
+   * @alpha
+   */
   unstable_auth?: SanityAuthConfig
+
+  /**
+   * @alpha
+   */
+  unstable_clientFactory?: (options: SanityClientConfig) => SanityClient
 }
 
 export interface ResolveProductionUrlContext extends ConfigContext {
