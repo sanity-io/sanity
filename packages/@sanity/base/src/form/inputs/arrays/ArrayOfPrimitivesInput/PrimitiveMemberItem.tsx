@@ -95,7 +95,6 @@ export function PrimitiveMemberItem(props: Props) {
 
   const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
 
-  // const onInsert = useCallback(() => {}, [member.key])
   const onRemove = useCallback(() => {
     onChange(PatchEvent.from([unset([member.index])]))
   }, [member.index, onChange])

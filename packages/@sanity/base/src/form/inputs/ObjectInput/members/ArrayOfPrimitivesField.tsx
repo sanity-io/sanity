@@ -100,24 +100,6 @@ export function ArrayOfPrimitivesField(props: {
     [onChange, member.name]
   )
 
-  const handleMoveItem = useCallback(
-    (event: MoveItemEvent) => {
-      const value = member.field.value
-      const item = value?.[event.fromIndex] as any
-      if (event.fromIndex === event.toIndex) {
-        return
-      }
-
-      onChange(
-        PatchEvent.from([
-          unset([item.index]),
-          insert([item], event.fromIndex > event.toIndex ? 'before' : 'after', [item.index]),
-        ]).prefixAll(member.name)
-      )
-    },
-    [member.field.value, member.name, onChange]
-  )
-
   const handleSetCollapsed = useCallback(
     (collapsed: boolean) => {
       onSetCollapsedPath(member.field.path, collapsed)
@@ -134,10 +116,14 @@ export function ArrayOfPrimitivesField(props: {
     [member.name, onChange]
   )
 
-  const handleRemove = useCallback(
-    (index: number) => {
+  const handleMoveItem = useCallback(
+    (event: MoveItemEvent) => {
       const {value = []} = member.field
-      setValue(value.filter((_, i) => i !== index))
+      if (event.fromIndex === event.toIndex) {
+        return
+      }
+
+      setValue(move(value, event.fromIndex, event.toIndex))
     },
     [member.field, setValue]
   )
@@ -175,12 +161,6 @@ export function ArrayOfPrimitivesField(props: {
     [onChange, member.field.path]
   )
 
-  const handleSetItemCollapsed = useCallback(
-    (itemKey: string, collapsed: boolean) => {
-      onSetCollapsedPath(member.field.path.concat({_key: itemKey}), collapsed)
-    },
-    [onSetCollapsedPath, member.field.path]
-  )
   const handleFocusIndex = useCallback(
     (index: number) => {
       onPathFocus(member.field.path.concat([index]))
@@ -207,7 +187,7 @@ export function ArrayOfPrimitivesField(props: {
       onChange: handleChange,
       onInsert: handleInsert,
       onMoveItem: handleMoveItem,
-      onRemoveItem: handleRemove,
+      onRemoveItem: handleRemoveItem,
       onAppendItem: handleAppend,
       onPrependItem: handlePrepend,
       // todo:
@@ -239,7 +219,7 @@ export function ArrayOfPrimitivesField(props: {
     handleChange,
     handleInsert,
     handleMoveItem,
-    handleRemove,
+    handleRemoveItem,
     handleAppend,
     handlePrepend,
     renderInput,
