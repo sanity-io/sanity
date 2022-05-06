@@ -53,7 +53,7 @@ export namespace Schema {
   export interface TypeReference<TType extends Type = Type> {
     type: string
     name?: string
-    options?: TypeOptions<TType>
+    options?: TypeOptions<TType> & {[key: string]: unknown}
   }
 
   /**
