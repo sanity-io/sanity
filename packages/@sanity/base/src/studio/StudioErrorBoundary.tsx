@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {ErrorBoundary} from '@sanity/ui'
+import {Button, Card, Code, ErrorBoundary, Heading, Stack} from '@sanity/ui'
 import {SchemaError} from '../config'
 import {isRecord} from '../util'
 import {SchemaErrorsScreen} from './screens'
@@ -20,18 +20,33 @@ export function StudioErrorBoundary({children}: StudioErrorBoundaryProps) {
 
   if (error) {
     return (
-      <>
-        TODO: better error boundary
-        <button
-          type="button"
-          // eslint-disable-next-line react/jsx-no-bind
-          onClick={() => setError({error: null})}
-        >
-          retry
-        </button>
-        {message && <pre>{message}</pre>}
-        {stack && <pre>{stack}</pre>}
-      </>
+      <Card padding={4} tone="critical">
+        <Stack space={4}>
+          {/* TODO: better error boundary */}
+
+          <Heading>An error occurred</Heading>
+
+          <div>
+            <Button
+              // eslint-disable-next-line react/jsx-no-bind
+              onClick={() => setError({error: null})}
+              text="Retry"
+              tone="default"
+            />
+          </div>
+
+          <Card border radius={2} overflow="auto" padding={4} tone="inherit">
+            <Stack space={4}>
+              {message && (
+                <Code size={1}>
+                  <strong>Error: {message}</strong>
+                </Code>
+              )}
+              {stack && <Code size={1}>{stack}</Code>}
+            </Stack>
+          </Card>
+        </Stack>
+      </Card>
     )
   }
 
