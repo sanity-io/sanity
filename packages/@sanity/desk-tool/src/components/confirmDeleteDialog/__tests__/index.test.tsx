@@ -22,6 +22,7 @@ jest.mock('part:@sanity/base/schema', () => {
     ],
   })
 })
+
 jest.mock('part:@sanity/base/datastore/document', () => {
   const actualModule = jest.requireActual('part:@sanity/base/datastore/document').default
   const {Subject} = require('rxjs')
@@ -86,6 +87,34 @@ jest.mock('@sanity/base/preview', () => {
       switch (property) {
         case 'SanityPreview': {
           return MockSanityPreview
+        }
+        default: {
+          return target[property]
+        }
+      }
+    },
+  })
+})
+
+jest.mock('../../../contexts/paneRouter', () => {
+  const actualModule = jest.requireActual('../../../contexts/paneRouter')
+
+  const MockSanityPreview = jest.fn(({value}) => (
+    <div data-testid="mock-preview">{JSON.stringify({value})}</div>
+  ))
+
+  function useMockPaneRouter() {
+    return {
+      ReferenceChildLink: MockSanityPreview,
+    }
+  }
+
+  // partially mock the module
+  return new Proxy(actualModule, {
+    get: (target, property) => {
+      switch (property) {
+        case 'usePaneRouter': {
+          return useMockPaneRouter
         }
         default: {
           return target[property]
