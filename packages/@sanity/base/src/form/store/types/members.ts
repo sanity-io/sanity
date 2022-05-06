@@ -24,8 +24,11 @@ export interface ArrayOfPrimitivesMember<Node extends PrimitiveNode = PrimitiveN
   kind: 'item'
   // the state resolver should make sure this
   // gets collapsible: false and collapsed by default
-  collapsed: undefined | boolean
-  collapsible: true
+
+  // todo: consider if this makes sense
+  // collapsed: undefined | boolean
+  // collapsible: true
+
   // note: ObjectInputProps.collapsed always follows the array item collapsed state
   // this means you cannot have an expanded array item with a collapsed object inside it
   item: Node

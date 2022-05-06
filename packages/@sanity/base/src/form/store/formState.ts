@@ -3,7 +3,10 @@ import {
   ArraySchemaType,
   CurrentUser,
   isArraySchemaType,
+  isBooleanSchemaType,
+  isNumberSchemaType,
   isObjectSchemaType,
+  isStringSchemaType,
   ObjectField,
   ObjectSchemaType,
   Path,
@@ -12,12 +15,18 @@ import {
 
 import {castArray, pick} from 'lodash'
 import {isEqual, pathFor, trimChildPath, toString} from '@sanity/util/paths'
+import {FIXME} from '../types'
 import {StateTree} from './types/state'
 import {callConditionalProperties, callConditionalProperty} from './conditional-property'
 import {MAX_FIELD_DEPTH} from './constants'
-import {getItemType} from './utils/getItemType'
-import {ArrayOfObjectsMember, FieldMember, ObjectMember} from './types/members'
-import {ArrayOfObjectsNode, ObjectNode} from './types/nodes'
+import {getItemType, getPrimitiveItemType} from './utils/getItemType'
+import {
+  ArrayOfObjectsMember,
+  ArrayOfPrimitivesMember,
+  FieldMember,
+  ObjectMember,
+} from './types/members'
+import {ArrayOfObjectsNode, ArrayOfPrimitivesNode, ObjectNode} from './types/nodes'
 import {FieldGroup} from './types/fieldGroup'
 import {getCollapsedWithDefaults} from './utils/getCollapsibleOptions'
 
@@ -92,7 +101,7 @@ function prepareFieldState(props: {
     const scopedCollapsedPaths = parent.collapsedPaths?.children?.[field.name]
     const scopedCollapsedFieldSets = parent.collapsedFieldSets?.children?.[field.name]
 
-    const preparedInputProps = prepareArrayOfObjectsInputState({
+    const preparedInputProps = prepareArrayInputState({
       schemaType: field.type,
       parent: parent.value,
       currentUser: parent.currentUser,
@@ -323,9 +332,9 @@ function prepareObjectInputState<T>(
   }
 }
 
-function prepareArrayOfObjectsInputState<T extends unknown[]>(
+function prepareArrayInputState<T extends unknown[]>(
   props: RawState<ArraySchemaType, T>
-): ArrayOfObjectsNode | null {
+): ArrayOfObjectsNode | ArrayOfPrimitivesNode | null {
   if (props.level === MAX_FIELD_DEPTH) {
     return null
   }
@@ -353,6 +362,13 @@ function prepareArrayOfObjectsInputState<T extends unknown[]>(
   // todo: support this for arrays as well
   const defaultCollapsedState = getCollapsedWithDefaults({}, props.level)
 
+  // todo: guard against mixed arrays
+
+  const isArrayOfObjects = props.schemaType.of.every((memberType) => isObjectSchemaType(memberType))
+  const prepareMember = isArrayOfObjects
+    ? prepareArrayOfObjectsMember
+    : prepareArrayOfPrimitivesMember
+
   return {
     compareValue: undefined,
     value: props.value as T,
@@ -363,15 +379,16 @@ function prepareArrayOfObjectsInputState<T extends unknown[]>(
     path: props.path,
     id: toString(props.path),
     level: props.level,
-    members: items.flatMap((item, index) =>
-      prepareArrayMembers({arrayItem: item, parent: props, index})
+    members: items.flatMap(
+      (item, index) => prepareMember({arrayItem: item, parent: props, index}) as FIXME
     ),
   }
 }
+
 /*
  * Takes a field in context of a parent object and returns prepared props for it
  */
-function prepareArrayMembers(props: {
+function prepareArrayOfObjectsMember(props: {
   arrayItem: unknown
   parent: RawState<ArraySchemaType, unknown>
   index: number
@@ -379,11 +396,13 @@ function prepareArrayMembers(props: {
   const {arrayItem, parent, index} = props
   const itemType = getItemType(parent.schemaType, arrayItem)
 
+  // todo: more graceful handling of this
+  if (!itemType) {
+    throw new Error('Item type not allowed by the array type schema definition')
+  }
+
   if (!isObjectSchemaType(itemType)) {
-    // TODO
-    // eslint-disable-next-line no-console
-    console.log('TODO: Primitive inputs')
-    return []
+    throw new Error('Unexpected non-object schema type included in array')
   }
 
   // todo: validate _key
@@ -418,6 +437,44 @@ function prepareArrayMembers(props: {
       collapsed: collapsed,
       collapsible: true,
       item: result,
+    },
+  ]
+}
+
+/*
+ * Takes a field in context of a parent object and returns prepared props for it
+ */
+function prepareArrayOfPrimitivesMember(props: {
+  arrayItem: unknown
+  parent: RawState<ArraySchemaType, unknown>
+  index: number
+}): ArrayOfPrimitivesMember[] {
+  const {arrayItem, parent, index} = props
+  const itemType = getPrimitiveItemType(parent.schemaType, arrayItem)
+
+  // todo: more graceful handling of this
+  if (!itemType) {
+    throw new Error('Item type not allowed by the array type schema definition')
+  }
+
+  const itemPath = pathFor([...parent.path, index])
+  const itemValue = (parent.value as unknown[] | undefined)?.[index] as string | boolean | number
+  const itemLevel = parent.level + 1
+  return [
+    {
+      kind: 'item',
+      key: String(index),
+      index,
+      item: {
+        compareValue: undefined,
+        level: itemLevel,
+        id: toString(itemPath),
+        readOnly: false, // todo
+        focused: isEqual(parent.path, parent.focusPath),
+        path: itemPath,
+        schemaType: itemType as FIXME,
+        value: itemValue as FIXME,
+      },
     },
   ]
 }
