@@ -1,5 +1,26 @@
 import {Observable, of} from 'rxjs'
 
+export interface MockClientTransactionLog {
+  id: number
+  commit: any[][]
+  create: any[][]
+  createOrReplace: any[][]
+  delete: any[][]
+  patch: any[][]
+}
+
+export interface MockClientLog {
+  listen: {query: string; params?: any}[]
+  observable: {
+    fetch: {query: string; params?: any}[]
+    getDocuments: {ids: string[]}[]
+    listen: {query: string; params?: any}[]
+    request: any[]
+  }
+  request: any[]
+  transaction: MockClientTransactionLog[]
+}
+
 export function createMockSanityClient(data: {requests?: Record<string, any>} = {}) {
   const requests: Record<string, any> = {
     '/auth/providers': {
@@ -17,7 +38,20 @@ export function createMockSanityClient(data: {requests?: Record<string, any>} = 
     },
 
     '/users/me': {
-      //
+      id: 'grrm',
+      name: 'George R.R. Martin',
+      email: 'george@sanity.io',
+      profileImage: 'https://i.hurimg.com/i/hdn/75/0x0/59c94dee45d2a027e83d45f2.jpg',
+      role: 'administrator',
+      roles: [
+        {
+          name: 'administrator',
+          title: 'Administrator',
+          description:
+            'Read and write access to all datasets, with full access to all project settings.',
+        },
+      ],
+      provider: 'google',
     },
 
     ...data.requests,
@@ -34,10 +68,21 @@ export function createMockSanityClient(data: {requests?: Record<string, any>} = 
 
   const requestUriPrefix = `/projects/${mockConfig.projectId}/datasets/${mockConfig.dataset}`
 
-  const $log = jest.fn()
+  // const $log = jest.fn()
+  const $log: MockClientLog = {
+    listen: [],
+    observable: {
+      fetch: [],
+      getDocuments: [],
+      listen: [],
+      request: [],
+    },
+    request: [],
+    transaction: [],
+  }
 
   const mockClient = {
-    $log: $log.mock,
+    $log,
 
     config: () => mockConfig,
 
@@ -48,7 +93,7 @@ export function createMockSanityClient(data: {requests?: Record<string, any>} = 
     withConfig: () => mockClient,
 
     request: (opts: {uri: string; tag?: string; withCredentials: boolean}) => {
-      $log('request', opts)
+      $log.request.push(opts)
 
       if (opts.uri.startsWith(requestUriPrefix)) {
         const path = opts.uri.slice(requestUriPrefix.length)
@@ -62,30 +107,35 @@ export function createMockSanityClient(data: {requests?: Record<string, any>} = 
     },
 
     listen: (query: string, params?: any) => {
-      $log('listen', {query, params})
+      $log.listen.push({query, params})
+
       return of({type: 'welcome'})
     },
 
     observable: {
       fetch: (query: string, params?: any): Observable<any> => {
-        $log('observable.fetch', {query, params})
+        $log.observable.fetch.push({query, params})
+        // $log('observable.fetch', {query, params})
+
         return of(null)
       },
 
       getDocuments: (ids: string[]) => {
-        $log('observable.getDocuments', {ids})
+        $log.observable.getDocuments.push({ids})
+        // $log('observable.getDocuments', {ids})
         return of([])
       },
 
       listen: (query: string, params?: any) => {
-        $log('observable.listen', {query, params})
+        $log.observable.listen.push({query, params})
+        // $log('observable.listen', {query, params})
         return of({type: 'welcome'})
       },
 
       request: (opts: {uri: string; tag?: string; withCredentials: boolean}) => {
         // console.log('mockSanityClient.observable.request', opts)
 
-        $log('observable.request', opts)
+        $log.observable.request.push(opts)
 
         if (opts.uri.startsWith(requestUriPrefix)) {
           const path = opts.uri.slice(requestUriPrefix.length)
@@ -100,7 +150,8 @@ export function createMockSanityClient(data: {requests?: Record<string, any>} = 
     },
 
     transaction: () => {
-      $log('transaction')
+      // $log.transaction.push(null)
+      // $log('transaction')
 
       return _createTransaction()
     },
@@ -114,29 +165,45 @@ export function createMockSanityClient(data: {requests?: Record<string, any>} = 
   function _createTransaction() {
     const id = ++transactionId
 
-    const $tx = {
+    const $txLog: MockClientTransactionLog = {
+      id,
+      commit: [],
+      create: [],
+      createOrReplace: [],
+      delete: [],
+      patch: [],
+    }
+
+    $log.transaction.push($txLog)
+
+    const tx = {
       commit: (...args: any[]) => {
-        $log(`transaction#${id}.commit`, ...args)
+        // $log(`transaction#${id}.commit`, ...args)
+        $txLog.commit.push(args)
         return Promise.resolve({})
       },
       create: (...args: any[]) => {
-        $log(`transaction#${id}.create`, ...args)
-        return $tx
+        $txLog.create.push(args)
+        // $log(`transaction#${id}.create`, ...args)
+        return tx
       },
       createOrReplace: (...args: any[]) => {
-        $log(`transaction#${id}.createOrReplace`, ...args)
-        return $tx
+        $txLog.createOrReplace.push(args)
+        // $log(`transaction#${id}.createOrReplace`, ...args)
+        return tx
       },
       delete: (...args: any[]) => {
-        $log(`transaction#${id}.delete`, ...args)
-        return $tx
+        $txLog.delete.push(args)
+        // $log(`transaction#${id}.delete`, ...args)
+        return tx
       },
       patch: (...args: any[]) => {
-        $log(`transaction#${id}.patch`, ...args)
-        return $tx
+        $txLog.patch.push(args)
+        // $log(`transaction#${id}.patch`, ...args)
+        return tx
       },
     }
 
-    return $tx
+    return tx
   }
 }

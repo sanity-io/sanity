@@ -94,10 +94,9 @@ test('should return correct document type on argument transition', () => {
 
   documentType = 'author'
   rerender()
-
   // expect(client.observable.fetch).not.toHaveBeenCalled()
-  expect(client.$log.calls.filter((args) => args[0] === 'observable.fetch')).toHaveLength(0)
 
+  expect(client.$log).toMatchSnapshot()
   expect(result.current).toEqual({isLoaded: true, documentType: 'author'})
 })
 

@@ -101,21 +101,7 @@ describe('publish', () => {
         },
       } as unknown as OperationArgs)
 
-      expect(client.$log.calls).toMatchObject([
-        ['transaction'],
-        [
-          'transaction#1.create',
-          {
-            _createdAt: '2021-09-14T22:48:02.303Z',
-            _rev: 'exampleRev',
-            _id: 'my-id',
-            _type: 'example',
-            newValue: 'hey',
-          },
-        ],
-        ['transaction#1.delete', 'drafts.my-id'],
-        ['transaction#1.commit', {tag: 'document.publish'}],
-      ])
+      expect(client.$log).toMatchSnapshot()
     })
 
     it('calls createOrReplace with _revision_lock_pseudo_field_ if there is an already published document', () => {
@@ -146,26 +132,7 @@ describe('publish', () => {
         },
       } as unknown as OperationArgs)
 
-      expect(client.$log.calls).toMatchObject([
-        ['transaction'],
-        [
-          'transaction#1.patch',
-          'my-id',
-          {unset: ['_revision_lock_pseudo_field_'], ifRevisionID: 'exampleRev'},
-        ],
-        [
-          'transaction#1.createOrReplace',
-          {
-            _createdAt: '2021-09-14T22:48:02.303Z',
-            _rev: 'exampleRev',
-            _id: 'my-id',
-            _type: 'example',
-            newValue: 'hey',
-          },
-        ],
-        ['transaction#1.delete', 'drafts.my-id'],
-        ['transaction#1.commit', {tag: 'document.publish'}],
-      ])
+      expect(client.$log).toMatchSnapshot()
     })
 
     it('takes in any and strengthens references where _strengthenOnPublish is true', () => {
@@ -224,27 +191,7 @@ describe('publish', () => {
         },
       } as unknown as OperationArgs)
 
-      expect(client.$log.calls).toMatchObject([
-        ['transaction'],
-        [
-          'transaction#1.create',
-          {
-            _createdAt: '2021-09-14T22:48:02.303Z',
-            _id: 'my-id',
-            _rev: 'exampleRev',
-            _type: 'my-type',
-            simpleRef: {_type: 'reference', _ref: 'my-ref'},
-            notToBeStrengthened: {_type: 'reference', _weak: true, _ref: 'my-ref'},
-            inAn: [
-              {_type: 'reference', _ref: 'my-ref-in-an-', _key: 'my-key'},
-              {_key: 'my-other-key', _type: 'nestedObj', myRef: {_ref: 'my-ref-in-an--nested'}},
-              {_type: 'reference', _ref: 'my-ref-in-an--no-key'},
-            ],
-          },
-        ],
-        ['transaction#1.delete', 'drafts.my-id'],
-        ['transaction#1.commit', {tag: 'document.publish'}],
-      ])
+      expect(client.$log).toMatchSnapshot()
     })
   })
 })

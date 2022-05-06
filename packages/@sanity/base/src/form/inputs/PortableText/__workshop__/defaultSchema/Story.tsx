@@ -1,11 +1,17 @@
-import {Card, Container, Flex, LayerProvider} from '@sanity/ui'
-import {useBoolean, useSelect} from '@sanity/ui-workshop'
-import React from 'react'
+import {SanityClient} from '@sanity/client'
+import {Card, Container, Flex} from '@sanity/ui'
+import {useAction, useSelect} from '@sanity/ui-workshop'
+import React, {useCallback, useMemo, useRef, useState} from 'react'
+import {ArraySchemaType, Path} from '@sanity/types'
+import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
 import {createConfig} from '../../../../../config'
-// import {createSchema} from '../../../../../schema'
-import {StudioProvider} from '../../../../../studio'
-import {FIXME} from '../../../../types'
-import {TestInput} from '../_common/TestInput'
+import {StudioProvider, useSource} from '../../../../../studio'
+import {PortableTextInput} from '../../PortableTextInput'
+import {createPatchChannel} from '../../../../patch/PatchChannel'
+import {StudioFormBuilderProvider} from '../../../../studio/StudioFormBuilderProvider'
+import {ArrayOfObjectsMember} from '../../../../types'
+import {applyAll} from '../../../../patch/applyPatch'
+import {FormPatch, PatchEvent} from '../../../../patch'
 import {values, valueOptions} from './values'
 
 const ptType = {
@@ -14,45 +20,102 @@ const ptType = {
   of: [{type: 'block'}],
 }
 
-// export const schema = createSchema({
-//   name: 'default',
-//   types: [ptType],
-// })
-
 const config = createConfig({
   name: 'test',
   dataset: 'test',
   projectId: 'test',
-  schema: {
-    types: [ptType],
-  },
+  schema: {types: [ptType]},
+  unstable_clientFactory: () => createMockSanityClient() as unknown as SanityClient,
 })
 
 export default function Story() {
-  const readOnly = useBoolean('Read only', false)
-  const withError = useBoolean('With error', false)
-  const withWarning = useBoolean('With warning', false)
-  const selectedValue = useSelect('Values', valueOptions) || 'empty'
-  const value = values[selectedValue]
-
-  const type = schema.get('body')
-
   return (
-    <StudioProvider>
+    <StudioProvider config={config}>
       <Card height="fill" padding={4} sizing="border">
         <Flex align="center" height="fill" justify="center">
           <Container width={1}>
-            <TestInput
-              readOnly={readOnly}
-              schema={schema}
-              type={type as FIXME}
-              value={value}
-              withError={withError}
-              withWarning={withWarning}
-            />
+            <TestForm />
           </Container>
         </Flex>
       </Card>
     </StudioProvider>
+  )
+}
+
+function TestForm() {
+  const {schema} = useSource()
+  // const readOnly = useBoolean('Read only', false)
+  // const withError = useBoolean('With error', false)
+  // const withWarning = useBoolean('With warning', false)
+  const selectedValue = useSelect('Values', valueOptions) || 'empty'
+  const [value, setValue] = useState(values[selectedValue])
+  const type = schema.get('body')
+  const patchChannel = useMemo(() => createPatchChannel(), [])
+  const [focusPath, setFocusPath] = useState<Path>([])
+  const compareValue = undefined
+  const focusRef = useRef()
+  const handleAppendItem = useAction('onAppendItem')
+  const handleBlur = useAction('onBlur')
+  const handleFocus = useAction('onFocus')
+  const handleInsert = useAction('onInsert')
+  const handleMoveItem = useAction('onMoveItem')
+  const handlePrependItem = useAction('onPrependItem')
+  const handleRemoveItem = useAction('onRemoveItem')
+  const handleSetCollapsed = useAction('onSetCollapsed')
+  const handleSetItemCollapsed = useAction('onSetItemCollapsed')
+  const members: ArrayOfObjectsMember[] = useMemo(() => [], [])
+  const path = useMemo(() => [], [])
+  const presence = useMemo(() => [], [])
+  const renderField = useCallback(() => <>TODO</>, [])
+  const renderInput = useCallback(() => <>TODO</>, [])
+  const renderItem = useCallback(() => <>TODO</>, [])
+  const resolveInitialValue = useCallback(() => Promise.resolve({} as any), [])
+  const validation = useMemo(() => [], [])
+
+  const handleChange = useCallback((arg: FormPatch | FormPatch[] | PatchEvent) => {
+    if (arg instanceof PatchEvent) {
+      setValue((prevValue) => applyAll(prevValue, arg.patches))
+    } else if (Array.isArray(arg)) {
+      setValue((prevValue) => applyAll(prevValue, arg))
+    } else {
+      setValue((prevValue) => applyAll(prevValue, [arg]))
+    }
+  }, [])
+
+  if (!type) {
+    return <>Type not found</>
+  }
+
+  return (
+    <StudioFormBuilderProvider __internal_patchChannel={patchChannel} schema={schema} value={value}>
+      <PortableTextInput
+        compareValue={compareValue}
+        focusPath={focusPath}
+        focusRef={focusRef}
+        id="test"
+        level={0}
+        members={members}
+        onAppendItem={handleAppendItem}
+        onBlur={handleBlur}
+        onChange={handleChange}
+        onFocus={handleFocus}
+        onFocusPath={setFocusPath}
+        onInsert={handleInsert}
+        onMoveItem={handleMoveItem}
+        onPrependItem={handlePrependItem}
+        onRemoveItem={handleRemoveItem}
+        onSetCollapsed={handleSetCollapsed}
+        onSetItemCollapsed={handleSetItemCollapsed}
+        path={path}
+        presence={presence}
+        renderField={renderField}
+        renderInput={renderInput}
+        renderItem={renderItem}
+        resolveInitialValue={resolveInitialValue}
+        schemaType={type as ArraySchemaType}
+        validation={validation}
+        value={value}
+      />
+    </StudioFormBuilderProvider>
   )
 }
