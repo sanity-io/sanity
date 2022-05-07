@@ -1,11 +1,12 @@
 import path from 'path'
 import type {InlineConfig} from 'vite'
 import viteReact from '@vitejs/plugin-react'
-import {sanityRuntimeRewritePlugin} from './vite/plugin-sanity-runtime-rewrite'
-import {sanityBuildEntries, virtualEntryModuleId} from './vite/plugin-sanity-build-entries'
-import {loadSanityMonorepo} from './sanityMonorepo'
-import {normalizeBasePath} from './helpers'
 import {getAliases} from './aliases'
+import {normalizeBasePath} from './helpers'
+import {loadSanityMonorepo} from './sanityMonorepo'
+import {sanityBuildEntries, virtualEntryModuleId} from './vite/plugin-sanity-build-entries'
+import {sanityDotWorkaroundPlugin} from './vite/plugin-sanity-dot-workaround'
+import {sanityRuntimeRewritePlugin} from './vite/plugin-sanity-runtime-rewrite'
 import {sanityFaviconsPlugin} from './vite/plugin-sanity-favicons'
 
 export interface ViteOptions {
@@ -85,6 +86,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     mode,
     plugins: [
       viteReact(),
+      sanityDotWorkaroundPlugin(),
       sanityRuntimeRewritePlugin(),
       sanityBuildEntries({basePath, cwd, monorepo}),
       sanityFaviconsPlugin({faviconsPath, staticUrlPath: staticPath}),
