@@ -24,13 +24,5 @@ export interface PreviewValue {
 export interface PreviewConfig {
   component?: React.ComponentType<FIXME>
   select?: Record<string, string> // PreviewValue
-  prepare: (
-    value: {
-      title?: unknown
-      subtitle?: unknown
-      description?: unknown
-      media?: unknown
-    },
-    viewOptions?: PrepareViewOptions
-  ) => PreviewValue
+  prepare?: (value: Record<string, unknown>, viewOptions?: PrepareViewOptions) => PreviewValue
 }
