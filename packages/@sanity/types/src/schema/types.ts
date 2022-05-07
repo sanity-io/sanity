@@ -82,7 +82,7 @@ export namespace Schema {
     title?: string
     description?: string
     fieldset?: string
-    group?: string
+    group?: string | string[]
   }
 
   export type ImageMetadataType = 'blurhash' | 'lqip' | 'palette' | 'exif' | 'location'
