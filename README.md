@@ -18,7 +18,7 @@
 
 ## Build with Structured Content
 
-> **Sanity.io is the platform for structured content. It comes with an open-source editing environment called Sanity Studio that you can customize with JavaScript and a real-time hosted data store. Sanity has generous included quotas – so [getting started](https://www.sanity.io/create) is free.**
+> **Sanity.io is the platform for structured content. It comes with an open-source editing environment called Sanity Studio that you can customize with JavaScript and a real-time hosted data store. Sanity has generous included quotas – so [getting started](https://www.sanity.io/get-started) is free.**
 
 ## Quickstart
 
@@ -28,14 +28,15 @@ Get started from the command line:
 npm i -g @sanity/cli && sanity init
 ```
 
-Or go to [sanity.io/create](https://www.sanity.io/create) to get started from the browser in minutes.
+Or go to [sanity.io/get-started](https://www.sanity.io/get-started) to get started from the browser in minutes.
 
 - Watch the [getting started video on YouTube](https://www.youtube.com/watch?v=2ceM_tSus_M&lc=z224vtt5nqq1cbcf2acdp43aylzlb5jhft1kmuafltxw03c010c).
-- [Read the introduction](https://www.sanity.io/docs/a-short-introduction-to-sanity-io) in the documentation.
 - Check out our [guides](https://www.sanity.io/guides) and [plugins](https://www.sanity.io/plugins) and start building.
+
 
 ## Table of contents
 
+- [Build with Structured Content](#build-with-structured-content)
 - [Quickstart](#quickstart)
 - [Table of contents](#table-of-contents)
 - [Key Features](#key-features)
