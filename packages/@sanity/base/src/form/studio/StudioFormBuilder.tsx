@@ -1,9 +1,14 @@
 /* eslint-disable react/jsx-handler-names */
 import {ObjectSchemaType, Path, Schema, ValidationMarker} from '@sanity/types'
-import React, {useCallback, useRef} from 'react'
+import React, {ComponentType, useCallback, useMemo, useRef} from 'react'
 
 import {useSource} from '../../studio'
-import {RenderArrayOfObjectsItemCallback, RenderFieldCallback, RenderInputCallback} from '../types'
+import {
+  ObjectInputProps,
+  RenderArrayOfObjectsItemCallback,
+  RenderFieldCallback,
+  RenderInputCallback,
+} from '../types'
 import {PatchChannel} from '../patch/PatchChannel'
 import {FormFieldPresence} from '../../presence'
 import {FormPatch, PatchEvent} from '../patch'
@@ -141,6 +146,11 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
     [resolveItemComponent]
   )
 
+  const DocumentInput = useMemo(
+    () => resolveInputComponent({schemaType}) as ComponentType<ObjectInputProps>,
+    [resolveInputComponent, schemaType]
+  )
+
   return (
     <StudioFormBuilderProvider __internal_patchChannel={patchChannel} schema={schema} value={value}>
       <FormCallbacksProvider
@@ -151,7 +161,7 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
         onPathFocus={props.onPathFocus}
         onChange={props.onChange}
       >
-        <ObjectInput
+        <DocumentInput
           compareValue={undefined}
           focusRef={useRef(null)}
           level={0}

@@ -15,6 +15,7 @@ import {StudioCrossDatasetReferenceInput} from '../inputs/crossDatasetReference/
 import {FIXME} from '../../types'
 
 export const defaultInputs: Record<string, React.ComponentType<FIXME>> = {
+  document: ObjectInput,
   object: ObjectInput,
   array: StudioArrayInput,
   boolean: BooleanInput,
