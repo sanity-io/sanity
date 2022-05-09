@@ -10,7 +10,7 @@ import path from 'path'
 import {Worker, parentPort, workerData, isMainThread} from 'worker_threads'
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {createElement} from 'react'
-import {renderToString} from 'react-dom/server'
+import {renderToStaticMarkup} from 'react-dom/server'
 import {getAliases} from './aliases'
 import {SanityMonorepo} from './sanityMonorepo'
 import {debug} from './debug'
@@ -33,6 +33,7 @@ ${generateHelpUrl('custom-document-component')}
 
 interface DocumentProps {
   entryPath?: string
+  css?: string[]
 }
 
 export function renderDocument(options: {
@@ -117,7 +118,7 @@ function renderDocumentFromWorkerData() {
 
 function getDocumentHtml(studioRootPath: string, props?: DocumentProps): string {
   const Document = getDocumentComponent(studioRootPath)
-  const result = renderToString(createElement(Document, {...defaultProps, ...props}))
+  const result = renderToStaticMarkup(createElement(Document, {...defaultProps, ...props}))
   return `<!DOCTYPE html>${result}`
 }
 

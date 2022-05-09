@@ -23,11 +23,12 @@ window.setImmediate = setTimeout;
 
 export interface DefaultDocumentProps {
   entryPath: string
+  css?: string[]
   basePath?: string
 }
-
+const EMPTY_ARRAY: never[] = []
 export function DefaultDocument(props: DefaultDocumentProps) {
-  const {entryPath, basePath = '/'} = props
+  const {entryPath, css = EMPTY_ARRAY, basePath = '/'} = props
   return (
     <html lang="en">
       <head>
@@ -39,6 +40,10 @@ export function DefaultDocument(props: DefaultDocumentProps) {
         <Favicons basePath={basePath} />
 
         <title>Sanity Studio</title>
+
+        {css.map((href) => (
+          <link key={href} rel="stylesheet" href={href} />
+        ))}
         <style>{globalStyles}</style>
       </head>
       <body>
