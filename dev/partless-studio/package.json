@@ -15,7 +15,6 @@
     "@sanity/base": "2.29.3",
     "@sanity/code-input": "2.29.3",
     "@sanity/desk-tool": "2.29.3",
-    "@sanity/form-builder": "2.29.3",
     "@sanity/icons": "^1.2.8",
     "@sanity/image-url": "^1.0.1",
     "@sanity/types": "2.29.3",

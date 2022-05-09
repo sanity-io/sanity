@@ -1,6 +1,5 @@
 import {Plugin, ViteDevServer} from 'vite'
 import history from 'connect-history-api-fallback'
-import {Request, Response} from 'express-serve-static-core'
 
 /**
  * This is a Vite plugin for supporting locations containing `.` in their pathname.
@@ -18,7 +17,7 @@ export function sanityDotWorkaroundPlugin(): Plugin {
         })
 
         server.middlewares.use((req, res, next) => {
-          handler(req as Request, res as Response, next)
+          handler(req as any, res as any, next)
         })
       }
     },

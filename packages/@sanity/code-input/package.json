@@ -64,7 +64,6 @@
     "code-editor"
   ],
   "dependencies": {
-    "@reach/auto-id": "^0.13.2",
     "@sanity/icons": "^1.2.8",
     "@sanity/types": "2.29.5",
     "@sanity/ui": "^0.37.9",
