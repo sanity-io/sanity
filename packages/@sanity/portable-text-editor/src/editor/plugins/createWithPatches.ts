@@ -23,7 +23,7 @@ import {
   Transforms,
 } from 'slate'
 import {isKeySegment} from '@sanity/types'
-import {setIfMissing, unset} from '../../patch/PatchEvent'
+import {insert, unset} from '../../patch/PatchEvent'
 import type {Patch} from '../../types/patch'
 
 import {
@@ -147,7 +147,7 @@ export function createWithPatches(
       }
 
       if (editorWasEmpty && operation.type !== 'set_selection') {
-        patches = [setIfMissing(previousChildren, [])]
+        patches = [insert(previousChildren, 'before', [0])]
       }
       switch (operation.type) {
         case 'insert_text':
