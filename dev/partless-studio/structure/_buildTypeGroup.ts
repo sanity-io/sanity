@@ -39,7 +39,7 @@ export function _buildTypeGroup(
                 .map((typeName) => {
                   const schemaType = schema.get(typeName)
 
-                  if (!schemaType) console.warn('schema type not found:', schemaType)
+                  if (!schemaType) console.warn('schema type not found:', typeName)
 
                   return schemaType
                 })
