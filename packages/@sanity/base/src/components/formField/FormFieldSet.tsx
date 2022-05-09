@@ -127,7 +127,7 @@ export const FormFieldSet = forwardRef(
         return null
       }
       return (
-        <Grid columns={columns} gapX={4} gapY={5}>
+        <Grid columns={columns} gapX={4} gapY={5} style={{alignItems: 'flex-end'}}>
           {changeIndicator ? (
             <ChangeIndicator {...(changeIndicator === true ? {} : changeIndicator)}>
               {getChildren(children)}
