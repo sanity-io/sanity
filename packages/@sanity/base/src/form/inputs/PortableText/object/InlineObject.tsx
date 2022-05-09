@@ -124,7 +124,7 @@ export const InlineObject = React.forwardRef(function InlineObject(
     type,
     value,
   } = props
-  const {Markers} = useFormBuilder().components
+  const {Markers} = useFormBuilder().__internal.components
   const editor = usePortableTextEditor()
   const refElm = useRef(null)
   const [popoverOpen, setPopoverOpen] = useState(false)

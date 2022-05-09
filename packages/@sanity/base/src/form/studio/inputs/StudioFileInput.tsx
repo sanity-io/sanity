@@ -18,7 +18,7 @@ export const StudioFileInput = React.forwardRef(function StudioFileInput(
 ) {
   const sourcesFromSchema = props.schemaType.options?.sources
   const documentPreviewStore = useDocumentPreviewStore()
-  const {file} = useFormBuilder()
+  const {file} = useFormBuilder().__internal
 
   // note: type.options.sources may be an empty array and in that case we're
   // disabling selecting images from asset source  (it's a feature, not a bug)

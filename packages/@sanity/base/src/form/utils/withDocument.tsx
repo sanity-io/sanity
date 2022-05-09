@@ -14,14 +14,14 @@ export function withDocument<T extends WithDocumentProps = WithDocumentProps>(
     props: Omit<T, 'document'>,
     ref: React.ForwardedRef<any>
   ) {
-    const {__internal_patchChannel: patchChannel, getDocument} = useFormBuilder()
+    const {patchChannel, getDocument} = useFormBuilder().__internal
     const [state, setState] = useState(() => ({document: getDocument()}))
 
     useEffect(() => {
       return patchChannel.subscribe(({snapshot}) => {
         // we will also receive "delete"-patches, with {snapshot: null}. Don't pass null documents.
         if (snapshot) {
-          setState({document: snapshot})
+          setState({document: snapshot as FIXME})
         }
       })
     }, [patchChannel])

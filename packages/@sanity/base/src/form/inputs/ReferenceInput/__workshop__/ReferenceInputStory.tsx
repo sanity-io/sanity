@@ -27,6 +27,7 @@ export default function ReferenceInputStory() {
           <ReviewChangesContextProvider changesOpen={false}>
             <StudioFormBuilderProvider
               __internal_patchChannel={patchChannel}
+              onChange={onChange}
               schema={schema}
               value={value}
             >

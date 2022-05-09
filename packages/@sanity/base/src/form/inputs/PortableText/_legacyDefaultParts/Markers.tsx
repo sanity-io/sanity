@@ -42,7 +42,7 @@ const IconText = styled(Text)(({theme}: {theme: Theme}) => {
 
 export function DefaultMarkers(props: MarkersProps) {
   const {markers, validation, renderCustomMarkers} = props
-  const {CustomMarkers} = useFormBuilder().components
+  const {CustomMarkers} = useFormBuilder().__internal.components
 
   if (markers.length === 0 && validation.length === 0) {
     return null

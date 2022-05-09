@@ -5,8 +5,8 @@ import {FormBuilderProvider} from '../../FormBuilderProvider'
 import {ReviewChangesContextProvider} from '../../studio/contexts/reviewChanges/ReviewChangesProvider'
 import {PatchChannel} from '../../patch/PatchChannel'
 import {useSource} from '../../../studio'
-import {inputResolver} from './inputResolver'
-import {resolvePreviewComponent} from './resolvePreviewComponent'
+// import {inputResolver} from './inputResolver'
+// import {resolvePreviewComponent} from './resolvePreviewComponent'
 
 export interface FormBuilderTesterProps {
   value: any | null
@@ -26,8 +26,9 @@ export function FormBuilderTester(props: FormBuilderTesterProps) {
         <ToastProvider>
           <ReviewChangesContextProvider changesOpen={isChangesOpen}>
             <FormBuilderProvider
-              value={value}
               __internal_patchChannel={patchChannel}
+              onChange={() => undefined}
+              value={value}
               schema={props.schema}
               {...formBuilder}
             >

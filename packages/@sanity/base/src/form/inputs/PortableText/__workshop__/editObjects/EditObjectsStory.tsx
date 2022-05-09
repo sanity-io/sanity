@@ -139,8 +139,9 @@ export function EditObjectsStory() {
     <PortalProvider __unstable_elements={{default: portal.element}}>
       <LayerProvider>
         <FormBuilderProvider
-          value={value}
           __internal_patchChannel={patchChannel}
+          onChange={handleChange}
+          value={value}
           schema={schema}
           {...source.formBuilder}
         >

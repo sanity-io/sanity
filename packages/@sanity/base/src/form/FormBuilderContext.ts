@@ -1,45 +1,44 @@
-import {AssetSource, Path, Schema} from '@sanity/types'
+import {AssetSource, Path, SanityDocument, Schema} from '@sanity/types'
 import {createContext} from 'react'
 import {
   FormBuilderArrayFunctionComponent,
   FormBuilderCustomMarkersComponent,
   FormBuilderFilterFieldFn,
-  FormBuilderInputComponentMap,
   FormBuilderMarkersComponent,
-  FormInputComponentResolver,
   FormPreviewComponentResolver,
   RenderInputCallback,
 } from './types'
 import {PatchChannel} from './patch/PatchChannel'
+import {PatchEvent} from './patch'
 
 export interface FormBuilderContextValue {
-  components: {
-    ArrayFunctions: FormBuilderArrayFunctionComponent
-    CustomMarkers: FormBuilderCustomMarkersComponent
-    Markers: FormBuilderMarkersComponent
-  }
-
-  file: {
-    assetSources: AssetSource[]
-    directUploads: boolean
-  }
-
-  image: {
-    assetSources: AssetSource[]
-    directUploads: boolean
-  }
-
-  getValuePath: () => Path
   /**
-   * @internal
+   * @deprecated INTERNAL USE ONLY
    */
-  __internal_patchChannel: PatchChannel // eslint-disable-line camelcase
-  filterField: FormBuilderFilterFieldFn
-  schema: Schema
+  __internal: {
+    components: {
+      ArrayFunctions: FormBuilderArrayFunctionComponent
+      CustomMarkers: FormBuilderCustomMarkersComponent
+      Markers: FormBuilderMarkersComponent
+    }
+    file: {
+      assetSources: AssetSource[]
+      directUploads: boolean
+    }
+    filterField: FormBuilderFilterFieldFn
+    image: {
+      assetSources: AssetSource[]
+      directUploads: boolean
+    }
+    getDocument: () => SanityDocument | undefined
+    getValuePath: () => Path
+    onChange: (event: PatchEvent) => void
+    patchChannel: PatchChannel // eslint-disable-line camelcase
+    resolvePreviewComponent: FormPreviewComponentResolver
+  }
+
   renderField: RenderInputCallback
-  // resolveInputComponent: FormInputComponentResolver
-  resolvePreviewComponent: FormPreviewComponentResolver
-  getDocument: () => unknown
+  schema: Schema
 }
 
 export const FormBuilderContext = createContext<FormBuilderContextValue | null>(null)

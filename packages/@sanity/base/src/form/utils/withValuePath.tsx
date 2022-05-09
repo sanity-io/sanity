@@ -13,7 +13,7 @@ export function withValuePath<T extends WithValuePathProps = WithValuePathProps>
     props: Omit<T, 'getValuePath'>,
     ref: React.ForwardedRef<any>
   ) {
-    const {getValuePath} = useFormBuilder()
+    const {getValuePath} = useFormBuilder().__internal
 
     return (
       <ComposedComponent

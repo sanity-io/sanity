@@ -152,7 +152,12 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
   )
 
   return (
-    <StudioFormBuilderProvider __internal_patchChannel={patchChannel} schema={schema} value={value}>
+    <StudioFormBuilderProvider
+      __internal_patchChannel={patchChannel}
+      onChange={props.onChange}
+      schema={schema}
+      value={value}
+    >
       <FormCallbacksProvider
         onSetCollapsedPath={props.onSetCollapsedPath}
         onSetCollapsedFieldSet={props.onSetCollapsedFieldSet}

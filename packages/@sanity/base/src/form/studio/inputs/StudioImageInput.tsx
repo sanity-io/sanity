@@ -18,7 +18,7 @@ export const StudioImageInput = React.forwardRef(function StudioImageInput(
   forwardedRef: any
 ) {
   const sourcesFromSchema = props.schemaType.options?.sources
-  const {image} = useFormBuilder()
+  const {image} = useFormBuilder().__internal
   const documentPreviewStore = useDocumentPreviewStore()
   const {client} = useSource()
   const versionedClient = useMemo(() => client.withConfig({apiVersion: '1'}), [client])

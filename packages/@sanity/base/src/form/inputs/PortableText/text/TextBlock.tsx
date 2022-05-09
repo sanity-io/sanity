@@ -52,7 +52,7 @@ export function TextBlock(props: TextBlockProps): React.ReactElement {
     renderCustomMarkers,
     spellCheck,
   } = props
-  const {Markers} = useFormBuilder().components
+  const {Markers} = useFormBuilder().__internal.components
   const [reviewChangesHovered, setReviewChangesHovered] = useState<boolean>(false)
   const [hasChanges, setHasChanges] = useState<boolean>(false)
 

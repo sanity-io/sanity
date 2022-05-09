@@ -70,7 +70,7 @@ export const BlockObject = React.forwardRef(function BlockObject(
     renderCustomMarkers,
     type,
   } = props
-  const {Markers} = useFormBuilder().components
+  const {Markers} = useFormBuilder().__internal.components
   const elementRef = useRef<HTMLDivElement | null>(null)
   const [reviewChangesHovered, setReviewChangesHovered] = useState<boolean>(false)
   const [hasChanges, setHasChanges] = useState<boolean>(false)

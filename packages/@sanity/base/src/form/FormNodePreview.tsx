@@ -13,7 +13,7 @@ export function FormNodePreview(
   props: PreviewProps<string> & Required<Pick<PreviewProps, 'type'>>
 ) {
   const {type, value} = props
-  const {resolvePreviewComponent} = useFormBuilder()
+  const {resolvePreviewComponent} = useFormBuilder().__internal
 
   const PreviewComponent = useMemo(
     () => resolvePreviewComponent(type),

@@ -83,7 +83,7 @@ export const Annotation = React.forwardRef(function Annotation(
     type,
     value,
   } = props
-  const {Markers = DefaultMarkers} = useFormBuilder().components
+  const {Markers = DefaultMarkers} = useFormBuilder().__internal.components
   const {path} = attributes
   const annotationRef = useRef<HTMLElement>(null)
   const editor = usePortableTextEditor()

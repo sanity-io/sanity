@@ -87,6 +87,7 @@ export function renderNode(options: {
         <FormBuilderProvider
           __internal_patchChannel={patchChannel}
           filterField={filterField}
+          onChange={() => undefined}
           schema={schema}
           value={undefined}
           {...formBuilder}

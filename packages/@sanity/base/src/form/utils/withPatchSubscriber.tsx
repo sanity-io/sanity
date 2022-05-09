@@ -60,7 +60,7 @@ type SubscriberArg = {
 type Subscriber = (arg0: SubscriberArg) => void
 export function withPatchSubscriber(ComposedComponent: any) {
   const SubscribePatch = forwardRef(function SubscribePatch(props: any, ref) {
-    const {__internal_patchChannel: patchChannel, getValuePath} = useFormBuilder()
+    const {patchChannel, getValuePath} = useFormBuilder().__internal
 
     const subscribe = useCallback(
       (subscriber: Subscriber) => {

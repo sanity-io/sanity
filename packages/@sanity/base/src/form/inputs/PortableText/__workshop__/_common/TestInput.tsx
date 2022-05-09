@@ -182,8 +182,9 @@ export function TestInput(props: TestInputProps) {
 
   return (
     <FormBuilderProvider
-      value={value}
       __internal_patchChannel={patchChannel}
+      onChange={onChange}
+      value={value}
       schema={props.schema}
       {...formBuilder}
     >

@@ -78,8 +78,8 @@ export const DEFAULT_PROPS = {
 // Use this in your test to get full control when testing the form builder
 // the default props are available in DEFAULT_props
 export const FileInputTester = React.forwardRef(function ImageInputTester(
-  props: ComponentProps<typeof FileInput> & {schema: Schema},
-  ref
+  props: ComponentProps<typeof FileInput> & {schema: Schema}
+  // ref
 ) {
   const {schema, ...rest} = props
   const patchChannel = useMemo(() => createPatchChannel(), [])
@@ -89,8 +89,9 @@ export const FileInputTester = React.forwardRef(function ImageInputTester(
       <LayerProvider>
         <ToastProvider>
           <StudioFormBuilderProvider
-            value={undefined}
             __internal_patchChannel={patchChannel}
+            onChange={() => undefined}
+            value={undefined}
             schema={schema}
           >
             <FileInput {...rest} />

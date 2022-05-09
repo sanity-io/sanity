@@ -87,7 +87,12 @@ function TestForm() {
   }
 
   return (
-    <StudioFormBuilderProvider __internal_patchChannel={patchChannel} schema={schema} value={value}>
+    <StudioFormBuilderProvider
+      __internal_patchChannel={patchChannel}
+      onChange={handleChange}
+      schema={schema}
+      value={value}
+    >
       <PortableTextInput
         compareValue={compareValue}
         focusPath={focusPath}
