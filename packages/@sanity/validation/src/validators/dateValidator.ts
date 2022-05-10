@@ -16,7 +16,7 @@ interface DateTimeOptions {
   timeFormat?: string
 }
 
-const getFormattedDate = (type = '', value: number | Date, options?: DateTimeOptions) => {
+const getFormattedDate = (type = '', value: string | number | Date, options?: DateTimeOptions) => {
   let format = 'yyyy-MM-dd'
   if (options && options.dateFormat) {
     format = options.dateFormat
