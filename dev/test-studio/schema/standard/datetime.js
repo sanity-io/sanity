@@ -68,6 +68,17 @@ export default {
       placeholder: 'Enter a date here',
     },
     {
+      name: 'startDate',
+      type: 'datetime',
+      title: 'Start date',
+    },
+    {
+      name: 'endTime',
+      type: 'datetime',
+      title: 'End date',
+      validation: (Rule) => Rule.min(Rule.valueOfField('startDate')),
+    },
+    {
       name: 'inArray',
       type: 'array',
       of: [
