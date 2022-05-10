@@ -73,7 +73,7 @@ export function CreateButton(props: Props) {
         </Menu>
       }
       placement="right"
-      popover={{portal: true, tone: 'default'}}
+      popover={{portal: true, tone: 'default', constrainSize: true}}
     />
   ) : (
     <Button
