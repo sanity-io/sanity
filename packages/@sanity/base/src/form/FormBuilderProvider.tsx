@@ -1,5 +1,5 @@
 import {AssetSource, Schema} from '@sanity/types'
-import React, {useMemo} from 'react'
+import React, {useEffect, useMemo, useRef} from 'react'
 import {Source} from '../config'
 import {FIXME, FormBuilderFilterFieldFn} from './types'
 import {FormBuilderContext, FormBuilderContextValue} from './FormBuilderContext'
@@ -55,6 +55,12 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
     value: documentValue,
   } = props
 
+  const documentValueRef = useRef(documentValue)
+
+  useEffect(() => {
+    documentValueRef.current = documentValue
+  }, [documentValue])
+
   const __internal: FormBuilderContextValue['__internal'] = useMemo(
     () => ({
       patchChannel, // eslint-disable-line camelcase
@@ -65,32 +71,23 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       },
       file: {
         assetSources: file?.assetSources
-          ? ensureArrayOfSources(file.assetSources) || defaultFileAssetSources
+          ? _ensureArrayOfSources(file.assetSources) || defaultFileAssetSources
           : defaultFileAssetSources,
         directUploads: file?.directUploads !== false,
       },
       filterField: filterField || (() => true),
       image: {
         assetSources: image?.assetSources
-          ? ensureArrayOfSources(image.assetSources) || defaultImageAssetSources
+          ? _ensureArrayOfSources(image.assetSources) || defaultImageAssetSources
           : defaultFileAssetSources,
         directUploads: image?.directUploads !== false,
       },
-      getDocument: () => documentValue,
+      getDocument: () => documentValueRef.current,
       getValuePath: () => EMPTY_ARRAY,
       onChange,
       resolvePreviewComponent: (schemaType) => resolvePreviewComponent({schemaType}),
     }),
-    [
-      documentValue,
-      file,
-      filterField,
-      image,
-      onChange,
-      patchChannel,
-      resolvePreviewComponent,
-      unstable,
-    ]
+    [file, filterField, image, onChange, patchChannel, resolvePreviewComponent, unstable]
   )
 
   const formBuilder: FormBuilderContextValue = useMemo(
@@ -105,7 +102,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
   return <FormBuilderContext.Provider value={formBuilder}>{children}</FormBuilderContext.Provider>
 }
 
-function ensureArrayOfSources(sources: unknown): AssetSource[] | null {
+function _ensureArrayOfSources(sources: unknown): AssetSource[] | null {
   if (Array.isArray(sources)) {
     return sources
   }
