@@ -6,7 +6,6 @@ import {
   FormBuilderFilterFieldFn,
   FormBuilderMarkersComponent,
   FormPreviewComponentResolver,
-  RenderInputCallback,
 } from './types'
 import {PatchChannel} from './patch/PatchChannel'
 
@@ -36,9 +35,6 @@ export interface FormBuilderContextValue {
     patchChannel: PatchChannel
     resolvePreviewComponent: FormPreviewComponentResolver
   }
-
-  renderField: RenderInputCallback
-  schema: Schema
 }
 
 /**

@@ -48,7 +48,6 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
     filterField,
     image,
     onChange,
-    resolveFieldComponent,
     resolvePreviewComponent,
     schema,
     unstable,
@@ -90,14 +89,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
     [file, filterField, image, onChange, patchChannel, resolvePreviewComponent, unstable]
   )
 
-  const formBuilder: FormBuilderContextValue = useMemo(
-    () => ({
-      __internal,
-      renderField: resolveFieldComponent,
-      schema,
-    }),
-    [__internal, resolveFieldComponent, schema]
-  )
+  const formBuilder: FormBuilderContextValue = useMemo(() => ({__internal}), [__internal])
 
   return <FormBuilderContext.Provider value={formBuilder}>{children}</FormBuilderContext.Provider>
 }
