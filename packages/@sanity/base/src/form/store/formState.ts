@@ -481,12 +481,6 @@ function prepareArrayOfPrimitivesMember(props: {
 
 export type SanityDocument = Record<string, unknown>
 
-export interface FieldPresence {
-  user: User
-  sessionId: string
-  lastActiveAt: string
-}
-
 export function prepareFormProps<T extends SanityDocument>(
   props: RawState<ObjectSchemaType, T>
 ): ObjectNode | null {
