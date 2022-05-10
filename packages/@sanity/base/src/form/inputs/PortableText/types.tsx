@@ -14,7 +14,6 @@ export type ObjectEditData = {
 /**
  * @alpha
  */
-
 export interface RenderBlockActionsProps {
   block: PortableTextBlock
   value: PortableTextBlock[] | undefined
