@@ -157,12 +157,11 @@ export default function ExampleStory() {
             )}
 
             {isTypeTester && <TypeTester readOnly={isReadOnly} />}
+
             <FormBuilderTester
               patchChannel={patchChannel}
-              schema={schema}
               value={documentValue}
               isChangesOpen={isChangesOpen}
-              type={documentType as any}
             >
               <>TODO</>
               {/* <FormBuilderInput

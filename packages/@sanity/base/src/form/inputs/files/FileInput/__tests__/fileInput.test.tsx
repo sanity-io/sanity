@@ -49,7 +49,7 @@ const defaultProps: Partial<FileInputProps> = {
   assetSources: [{} as FIXME],
   compareValue: {},
   directUploads: true,
-  getValuePath: () => ['file'],
+  path: ['file'],
   level: 1,
   observeAsset: observeAssetStub,
   resolveUploader: resolveUploaderStub,

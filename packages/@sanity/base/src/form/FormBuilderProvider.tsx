@@ -1,4 +1,4 @@
-import {AssetSource, Schema} from '@sanity/types'
+import {AssetSource} from '@sanity/types'
 import React, {useEffect, useMemo, useRef} from 'react'
 import {Source} from '../config'
 import {FIXME, FormBuilderFilterFieldFn} from './types'
@@ -8,7 +8,6 @@ import {DefaultArrayInputFunctions} from './inputs/arrays/common/ArrayFunctions'
 import {DefaultMarkers} from './inputs/PortableText/_legacyDefaultParts/Markers'
 import {DefaultCustomMarkers} from './inputs/PortableText/_legacyDefaultParts/CustomMarkers'
 import {FileSource, ImageSource} from './studio/DefaultAssetSource'
-import {EMPTY_ARRAY} from './utils/empty'
 import {PatchEvent} from './patch'
 
 const defaultFileAssetSources = [FileSource]
@@ -25,7 +24,6 @@ export interface FormBuilderProviderProps extends SourceFormBuilder {
   children?: React.ReactNode
   filterField?: FormBuilderFilterFieldFn
   onChange: (event: PatchEvent) => void
-  schema: Schema
   value?: FIXME
 }
 
@@ -49,7 +47,6 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
     image,
     onChange,
     resolvePreviewComponent,
-    schema,
     unstable,
     value: documentValue,
   } = props
@@ -82,7 +79,6 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
         directUploads: image?.directUploads !== false,
       },
       getDocument: () => documentValueRef.current,
-      getValuePath: () => EMPTY_ARRAY,
       onChange,
       resolvePreviewComponent: (schemaType) => resolvePreviewComponent({schemaType}),
     }),

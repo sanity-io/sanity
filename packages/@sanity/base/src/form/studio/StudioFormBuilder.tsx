@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-handler-names */
-import {ObjectSchemaType, Path, Schema, ValidationMarker} from '@sanity/types'
+import {ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
 import React, {ComponentType, useCallback, useMemo, useRef} from 'react'
 
 import {useSource} from '../../studio'
@@ -45,7 +45,6 @@ export interface StudioFormBuilderProps extends ObjectNode {
   presence: FormFieldPresence[]
   validation: ValidationMarker[]
   members: ObjectMember[]
-  schema: Schema
 }
 
 /**
@@ -67,7 +66,6 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
     members,
     groups,
     readOnly,
-    schema,
     schemaType,
     value,
   } = props
@@ -155,7 +153,6 @@ export function StudioFormBuilder(props: StudioFormBuilderProps) {
     <StudioFormBuilderProvider
       __internal_patchChannel={patchChannel}
       onChange={props.onChange}
-      schema={schema}
       value={value}
     >
       <FormCallbacksProvider

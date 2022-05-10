@@ -1,6 +1,5 @@
 import React from 'react'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
-import type {ObjectSchemaType, Schema} from '@sanity/types'
 import {FormBuilderProvider} from '../../FormBuilderProvider'
 import {ReviewChangesContextProvider} from '../../studio/contexts/reviewChanges/ReviewChangesProvider'
 import {PatchChannel} from '../../patch/PatchChannel'
@@ -11,14 +10,12 @@ import {useSource} from '../../../studio'
 export interface FormBuilderTesterProps {
   value: any | null
   children: React.ReactElement
-  schema: Schema
   isChangesOpen?: boolean
   patchChannel: PatchChannel
-  type: ObjectSchemaType
 }
 
 export function FormBuilderTester(props: FormBuilderTesterProps) {
-  const {value, patchChannel, isChangesOpen = false, type} = props
+  const {value, patchChannel, isChangesOpen = false} = props
   const {formBuilder} = useSource()
   return (
     <ThemeProvider theme={studioTheme}>
@@ -29,7 +26,6 @@ export function FormBuilderTester(props: FormBuilderTesterProps) {
               __internal_patchChannel={patchChannel}
               onChange={() => undefined}
               value={value}
-              schema={props.schema}
               {...formBuilder}
             >
               {props.children}

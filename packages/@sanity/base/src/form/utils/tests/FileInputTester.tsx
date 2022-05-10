@@ -1,4 +1,4 @@
-import {Schema, SchemaType} from '@sanity/types'
+import {SchemaType} from '@sanity/types'
 import {EMPTY, of} from 'rxjs'
 import imageUrlBuilder from '@sanity/image-url'
 import React, {ComponentProps, useMemo} from 'react'
@@ -72,16 +72,15 @@ export const DEFAULT_PROPS = {
   validation: [],
   presence: [],
   imageUrlBuilder: imageUrlBuilderStub,
-  getValuePath: () => ['File'],
+  path: ['file'],
 }
 
 // Use this in your test to get full control when testing the form builder
 // the default props are available in DEFAULT_props
 export const FileInputTester = React.forwardRef(function ImageInputTester(
-  props: ComponentProps<typeof FileInput> & {schema: Schema}
+  props: ComponentProps<typeof FileInput>
   // ref
 ) {
-  const {schema, ...rest} = props
   const patchChannel = useMemo(() => createPatchChannel(), [])
 
   return (
@@ -92,9 +91,8 @@ export const FileInputTester = React.forwardRef(function ImageInputTester(
             __internal_patchChannel={patchChannel}
             onChange={() => undefined}
             value={undefined}
-            schema={schema}
           >
-            <FileInput {...rest} />
+            <FileInput {...props} />
           </StudioFormBuilderProvider>
         </ToastProvider>
       </LayerProvider>

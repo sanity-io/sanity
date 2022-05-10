@@ -90,7 +90,6 @@ function TestForm() {
     <StudioFormBuilderProvider
       __internal_patchChannel={patchChannel}
       onChange={handleChange}
-      schema={schema}
       value={value}
     >
       <PortableTextInput

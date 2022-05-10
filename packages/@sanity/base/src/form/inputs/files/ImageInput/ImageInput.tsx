@@ -45,7 +45,6 @@ export interface Image extends Partial<BaseImage> {
 export interface ImageInputProps extends ObjectInputProps<Image, ImageSchemaType> {
   assetSources: InternalAssetSource[]
   directUploads?: boolean
-  getValuePath: () => Path
   imageUrlBuilder: ImageUrlBuilder
   observeAsset: (documentId: string) => Observable<ImageAsset>
   resolveUploader: UploaderResolver
@@ -275,8 +274,8 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
   }
 
   valueIsArrayElement = () => {
-    const {getValuePath} = this.props
-    const parentPathSegment = getValuePath().slice(-1)[0]
+    const {path} = this.props
+    const parentPathSegment = path.slice(-1)[0]
 
     // String path segment mean an object path, while a number or a
     // keyed segment means we're a direct child of an array
@@ -747,10 +746,9 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
   }
 
   componentWillUnmount() {
-    const {getValuePath} = this.props
-    const pathId = getValuePath()
+    const {id} = this.props
 
-    window.localStorage.removeItem(`imageHeight_${pathId}`)
+    window.localStorage.removeItem(`imageHeight:${id}`)
   }
 
   hasChangeInFields(fields: ObjectField[]) {

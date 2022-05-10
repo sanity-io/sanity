@@ -142,7 +142,6 @@ export function EditObjectsStory() {
           __internal_patchChannel={patchChannel}
           onChange={handleChange}
           value={value}
-          schema={schema}
           {...source.formBuilder}
         >
           <PortableTextEditor onChange={handleChange} type={type as FIXME} value={value}>

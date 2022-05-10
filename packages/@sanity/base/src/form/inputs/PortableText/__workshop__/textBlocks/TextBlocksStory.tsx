@@ -64,7 +64,7 @@ export function TextBlocksStory() {
     <Box padding={4}>
       <Container width={1}>
         <Card padding={3} shadow={1} overflow="auto" style={{maxHeight: '100%'}}>
-          <FormBuilderProvider {...source.formBuilder} onChange={onChange} schema={schema}>
+          <FormBuilderProvider {...source.formBuilder} onChange={onChange}>
             <TextBlock
               markers={markers}
               validation={validation}

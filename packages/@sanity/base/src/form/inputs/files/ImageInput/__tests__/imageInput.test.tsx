@@ -114,7 +114,7 @@ const defaultProps: Partial<ImageInputProps> = {
   directUploads: true,
   assetSources: [{} as FIXME],
   imageUrlBuilder: imageUrlBuilderStub,
-  getValuePath: () => ['image'],
+  path: ['image'],
 }
 
 function renderImageInput(options: {props?: Partial<ImageInputProps>; type: any}) {

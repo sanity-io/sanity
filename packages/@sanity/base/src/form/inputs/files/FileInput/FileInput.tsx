@@ -44,11 +44,11 @@ import {ImperativeToast} from '../../../../components/transitional'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'
 import {PresenceOverlay} from '../../../../presence'
 import {MemberField} from '../../ObjectInput/MemberField'
+import {FieldMember} from '../../../store/types/members'
 import {CardOverlay, FlexContainer} from './styles'
 // import {FileInputField} from './FileInputField'
 import {FileDetails} from './FileDetails'
 import {FileSkeleton} from './FileSkeleton'
-import {FieldMember} from '../../../store/types/members'
 
 type Field = {
   name: string
@@ -65,7 +65,6 @@ export interface File extends Partial<BaseFile> {
 export interface FileInputProps extends ObjectInputProps<File, FileSchemaType> {
   assetSources: InternalAssetSource[]
   directUploads?: boolean
-  getValuePath: () => Path
   observeAsset: (documentId: string) => Observable<FileAsset>
   resolveUploader: UploaderResolver
 }
@@ -102,8 +101,8 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   toast: {push: (params: ToastParams) => void} | null = null
 
   handleRemoveButtonClick = () => {
-    const {value, getValuePath} = this.props
-    const parentPathSegment = getValuePath().slice(-1)[0]
+    const {path, value} = this.props
+    const parentPathSegment = path.slice(-1)[0]
 
     // String path segment mean an object path, while a number or a
     // keyed segment means we're a direct child of an array
@@ -319,8 +318,8 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   valueIsArrayElement = () => {
-    const {getValuePath} = this.props
-    const parentPathSegment = getValuePath().slice(-1)[0]
+    const {path} = this.props
+    const parentPathSegment = path.slice(-1)[0]
 
     // String path segment mean an object path, while a number or a
     // keyed segment means we're a direct child of an array

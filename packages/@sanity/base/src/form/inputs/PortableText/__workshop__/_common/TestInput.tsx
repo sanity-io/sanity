@@ -185,7 +185,6 @@ export function TestInput(props: TestInputProps) {
       __internal_patchChannel={patchChannel}
       onChange={onChange}
       value={value}
-      schema={props.schema}
       {...formBuilder}
     >
       <ReviewChangesContextProvider changesOpen={false}>

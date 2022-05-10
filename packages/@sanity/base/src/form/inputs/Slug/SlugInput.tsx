@@ -23,7 +23,6 @@ export type Slug = {
 
 export interface SlugInputProps extends ObjectInputProps<Slug, SlugSchemaType> {
   document: SanityDocument
-  getValuePath: () => Path
 }
 
 function getNewFromSource(
@@ -44,20 +43,9 @@ const SlugInputInner = React.forwardRef(function SlugInput(
   props: SlugInputProps,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
-  const {
-    value,
-    schemaType,
-    validation,
-    onChange,
-    onFocus,
-    onFocusPath,
-    getValuePath,
-    document,
-    readOnly,
-  } = props
-
+  const {path, value, schemaType, validation, onChange, onFocus, onFocusPath, document, readOnly} =
+    props
   const sourceField = schemaType.options?.source
-
   const inputId = useId()
   const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
 
@@ -82,10 +70,10 @@ const SlugInputInner = React.forwardRef(function SlugInput(
       )
     }
 
-    return getNewFromSource(sourceField, getValuePath(), document)
+    return getNewFromSource(sourceField, path, document)
       .then((newFromSource) => slugify(newFromSource || '', schemaType))
       .then((newSlug) => updateSlug(newSlug))
-  }, [getValuePath, updateSlug, document, schemaType])
+  }, [path, updateSlug, document, schemaType])
 
   const isUpdating = generateState?.status === 'pending'
 

@@ -28,7 +28,6 @@ export default function ReferenceInputStory() {
             <StudioFormBuilderProvider
               __internal_patchChannel={patchChannel}
               onChange={onChange}
-              schema={schema}
               value={value}
             >
               <>TODO</>

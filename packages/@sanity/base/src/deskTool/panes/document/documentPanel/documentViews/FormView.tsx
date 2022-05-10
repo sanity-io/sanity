@@ -1,3 +1,5 @@
+/* eslint-disable no-nested-ternary */
+
 import {isActionEnabled} from '@sanity/schema/_internal'
 import {Box, Container, Flex, Spinner, Text} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo} from 'react'
@@ -14,7 +16,6 @@ import {
   StudioFormBuilder,
 } from '../../../../../form'
 import {PresenceOverlay} from '../../../../../presence'
-import {useSource} from '../../../../../studio'
 // TODO
 import {
   DocumentMutationEvent,
@@ -40,7 +41,7 @@ const preventDefault = (ev: React.FormEvent) => ev.preventDefault()
 
 export function FormView(props: FormViewProps) {
   const {hidden, margins, granted} = props
-  const {schema} = useSource()
+
   const {
     compareValue,
     displayed: value,
@@ -185,7 +186,6 @@ export function FormView(props: FormViewProps) {
                 onPathFocus={onFocus}
                 focusPath={formState.focusPath}
                 readOnly={isReadOnly}
-                schema={schema}
                 members={formState.members}
                 groups={formState.groups}
                 schemaType={formState.schemaType}
