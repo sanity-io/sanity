@@ -13,7 +13,6 @@ import {get} from '@sanity/util/paths'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 import {isNonNullable} from '../../../../util'
-import {withDocument} from '../../../utils/withDocument'
 import * as adapter from '../client-adapters/reference'
 import {ArrayItemReferenceInput} from '../../../inputs/ReferenceInput/ArrayItemReferenceInput'
 import {EditReferenceEvent} from '../../../inputs/ReferenceInput/types'
@@ -21,7 +20,8 @@ import {InsertEvent} from '../../../inputs/arrays/ArrayOfObjectsInput/types'
 import {useDocumentPreviewStore} from '../../../../datastores'
 import {useSource} from '../../../../studio'
 import {useReferenceInputOptions} from '../../contexts'
-import {ObjectInputProps} from '../../../types'
+import {FIXME, ObjectInputProps} from '../../../types'
+import {useFormValue} from '../../../useFormValue'
 
 // eslint-disable-next-line require-await
 async function resolveUserDefinedFilter(
@@ -47,12 +47,9 @@ async function resolveUserDefinedFilter(
 
 export interface SanityArrayItemReferenceInputProps
   extends ObjectInputProps<Reference, ReferenceSchemaType> {
+  insertableTypes?: SchemaType[]
   isSortable: boolean
   onInsert?: (event: InsertEvent) => void
-  insertableTypes?: SchemaType[]
-
-  // From `withDocument`
-  document: SanityDocument
 }
 
 function useValueRef<T>(value: T): {current: T} {
@@ -69,18 +66,16 @@ type SearchError = {
   }
 }
 
-function SanityArrayItemReferenceInputInner(
-  props: SanityArrayItemReferenceInputProps
-  // ref: ForwardedRef<HTMLInputElement>
-) {
+export function StudioArrayItemReferenceInput(props: SanityArrayItemReferenceInputProps) {
   const {schema, client} = useSource()
   const documentPreviewStore = useDocumentPreviewStore()
   const searchClient = useMemo(() => client.withConfig({apiVersion: '2021-03-25'}), [client])
-  const {path, schemaType, document} = props
+  const {path, schemaType} = props
   const {EditReferenceLinkComponent, onEditReference, activePath, initialValueTemplateItems} =
     useReferenceInputOptions()
 
-  const documentRef = useValueRef(document)
+  const documentValue = useFormValue([]) as FIXME
+  const documentRef = useValueRef(documentValue)
 
   const documentTypeName = documentRef.current?._type
 
@@ -184,7 +179,6 @@ function SanityArrayItemReferenceInputInner(
       liveEdit={isDocumentLiveEdit}
       onSearch={handleSearch}
       getReferenceInfo={(id, _type) => adapter.getReferenceInfo(documentPreviewStore, id, _type)}
-      // ref={ref}
       selectedState={selectedState}
       editReferenceLinkComponent={EditReferenceLink}
       createOptions={createOptions}
@@ -192,5 +186,3 @@ function SanityArrayItemReferenceInputInner(
     />
   )
 }
-
-export const StudioArrayItemReferenceInput = withDocument(SanityArrayItemReferenceInputInner)

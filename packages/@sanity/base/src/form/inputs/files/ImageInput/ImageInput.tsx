@@ -10,7 +10,7 @@ import {
   Image as BaseImage,
   ImageSchemaType,
   ObjectField,
-  Path,
+  AssetSource,
 } from '@sanity/types'
 import React, {ReactNode} from 'react'
 import deepCompare from 'react-fast-compare'
@@ -29,7 +29,7 @@ import {
 import {UploadPlaceholder} from '../common/UploadPlaceholder'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {FileTarget} from '../common/styles'
-import {ImageUrlBuilder, InternalAssetSource, UploadState} from '../types'
+import {ImageUrlBuilder, UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import {handleSelectAssetFromSource} from '../common/assetSource'
@@ -43,7 +43,7 @@ export interface Image extends Partial<BaseImage> {
 }
 
 export interface ImageInputProps extends ObjectInputProps<Image, ImageSchemaType> {
-  assetSources: InternalAssetSource[]
+  assetSources: AssetSource[]
   directUploads?: boolean
   imageUrlBuilder: ImageUrlBuilder
   observeAsset: (documentId: string) => Observable<ImageAsset>
@@ -64,7 +64,7 @@ type FileInfo = {
 
 type ImageInputState = {
   isUploading: boolean
-  selectedAssetSource: InternalAssetSource | null
+  selectedAssetSource: AssetSource | null
   // Metadata about files currently over the drop area
   hoveringFiles: FileInfo[]
   isStale: boolean
@@ -359,7 +359,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
     }
   }
 
-  handleSelectImageFromAssetSource = (source: InternalAssetSource) => {
+  handleSelectImageFromAssetSource = (source: AssetSource) => {
     this.setState({selectedAssetSource: source})
   }
 

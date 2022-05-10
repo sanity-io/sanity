@@ -11,12 +11,12 @@ import {get} from '@sanity/util/paths'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 import {Box, Stack, Text, TextSkeleton} from '@sanity/ui'
-import {withDocument} from '../../../utils/withDocument'
 import {CrossDatasetReferenceInput} from '../../../inputs/CrossDatasetReferenceInput'
 import {Alert} from '../../../components/Alert'
 import {useSource} from '../../../../studio'
 import {useDocumentPreviewStore} from '../../../../datastores'
-import {ObjectInputProps} from '../../../types'
+import {FIXME, ObjectInputProps} from '../../../types'
+import {useFormValue} from '../../../useFormValue'
 import {search} from './datastores/search'
 import {createGetReferenceInfo} from './datastores/getReferenceInfo'
 import {useCrossProjectToken} from './datastores/useCrossProjectToken'
@@ -43,11 +43,10 @@ async function resolveUserDefinedFilter(
   }
 }
 
-export interface StudioCrossDatasetReferenceInputProps
-  extends ObjectInputProps<CrossDatasetReference, CrossDatasetReferenceSchemaType> {
-  // From withDocument
-  document: SanityDocument
-}
+export type StudioCrossDatasetReferenceInputProps = ObjectInputProps<
+  CrossDatasetReference,
+  CrossDatasetReferenceSchemaType
+>
 
 function useValueRef<T>(value: T): {current: T} {
   const ref = useRef(value)
@@ -63,11 +62,8 @@ type SearchError = {
   }
 }
 
-function _StudioCrossDatasetReferenceInput(
-  props: StudioCrossDatasetReferenceInputProps
-  // ref: ForwardedRef<HTMLInputElement>
-) {
-  const {path, schemaType, document} = props
+export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetReferenceInputProps) {
+  const {path, schemaType} = props
   const {client, projectId} = useSource()
   const documentPreviewStore = useDocumentPreviewStore()
 
@@ -97,7 +93,8 @@ function _StudioCrossDatasetReferenceInput(
     )
   }, [client, isCurrentProject, loadableToken, schemaType.projectId, schemaType.dataset])
 
-  const documentRef = useValueRef(document)
+  const documentValue = useFormValue([]) as FIXME
+  const documentRef = useValueRef(documentValue)
 
   const handleSearch = useCallback(
     (searchString: string) =>
@@ -177,11 +174,8 @@ function _StudioCrossDatasetReferenceInput(
   return (
     <CrossDatasetReferenceInput
       {...props}
-      onSearch={handleSearch}
       getReferenceInfo={getReferenceInfo}
-      // ref={ref}
+      onSearch={handleSearch}
     />
   )
 }
-
-export const StudioCrossDatasetReferenceInput = withDocument(_StudioCrossDatasetReferenceInput)

@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react'
+import React, {useCallback, useMemo} from 'react'
 import {
   Path,
   SanityDocument,
@@ -11,8 +11,8 @@ import * as PathUtils from '@sanity/util/paths'
 import {TextInput, Button, Flex, Box, Card, Stack} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {PatchEvent, set, setIfMissing, unset} from '../../patch'
-import {withDocument} from '../../utils/withDocument'
 import {ObjectInputProps} from '../../types'
+import {useFormBuilder} from '../../useFormBuilder'
 import {slugify} from './utils/slugify'
 import {useAsync} from './utils/useAsync'
 
@@ -21,9 +21,7 @@ export type Slug = {
   current?: string
 }
 
-export interface SlugInputProps extends ObjectInputProps<Slug, SlugSchemaType> {
-  document: SanityDocument
-}
+export type SlugInputProps = ObjectInputProps<Slug, SlugSchemaType>
 
 function getNewFromSource(
   source: string | Path | SlugSourceFn,
@@ -39,17 +37,15 @@ function getNewFromSource(
   )
 }
 
-const SlugInputInner = React.forwardRef(function SlugInput(
-  props: SlugInputProps,
-  forwardedRef: React.ForwardedRef<HTMLInputElement>
-) {
-  const {path, value, schemaType, validation, onChange, onFocus, onFocusPath, document, readOnly} =
+export function SlugInput(props: SlugInputProps) {
+  const {getDocument} = useFormBuilder().__internal
+  const {focusRef, path, value, schemaType, validation, onChange, onFocus, onFocusPath, readOnly} =
     props
   const sourceField = schemaType.options?.source
   const inputId = useId()
   const errors = useMemo(() => validation.filter(isValidationErrorMarker), [validation])
 
-  const updateSlug = React.useCallback(
+  const updateSlug = useCallback(
     (nextSlug) => {
       if (!nextSlug) {
         onChange(PatchEvent.from(unset([])))
@@ -70,7 +66,11 @@ const SlugInputInner = React.forwardRef(function SlugInput(
       )
     }
 
-    return getNewFromSource(sourceField, path, document)
+    return getNewFromSource(
+      sourceField,
+      path,
+      getDocument() || ({_type: schemaType.name} as SanityDocument)
+    )
       .then((newFromSource) => slugify(newFromSource || '', schemaType))
       .then((newSlug) => updateSlug(newSlug))
   }, [path, updateSlug, document, schemaType])
@@ -90,7 +90,7 @@ const SlugInputInner = React.forwardRef(function SlugInput(
         <Box flex={1}>
           <TextInput
             id={inputId}
-            ref={forwardedRef}
+            ref={focusRef}
             customValidity={errors.length > 0 ? errors[0].item.message : ''}
             disabled={isUpdating}
             onChange={handleChange}
@@ -120,6 +120,4 @@ const SlugInputInner = React.forwardRef(function SlugInput(
       </Flex>
     </Stack>
   )
-})
-
-export const SlugInput = withDocument(SlugInputInner)
+}

@@ -12,14 +12,14 @@ import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, u
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 import {isNonNullable} from '../../../../util'
-import {withDocument} from '../../../utils/withDocument'
 import * as adapter from '../client-adapters/reference'
 import {ReferenceInput} from '../../../inputs/ReferenceInput/ReferenceInput'
 import {CreateOption, EditReferenceEvent} from '../../../inputs/ReferenceInput/types'
 import {useDocumentPreviewStore} from '../../../../datastores'
 import {useSource} from '../../../../studio'
 import {useReferenceInputOptions} from '../../contexts'
-import {ObjectInputProps} from '../../../types'
+import {FIXME, ObjectInputProps} from '../../../types'
+import {useFormValue} from '../../../useFormValue'
 
 // eslint-disable-next-line require-await
 async function resolveUserDefinedFilter(
@@ -43,11 +43,7 @@ async function resolveUserDefinedFilter(
   }
 }
 
-export interface StudioReferenceInputProps
-  extends ObjectInputProps<Reference, ReferenceSchemaType> {
-  // From `withDocument`
-  document: SanityDocument
-}
+export type StudioReferenceInputProps = ObjectInputProps<Reference, ReferenceSchemaType>
 
 function useValueRef<T>(value: T): {current: T} {
   const ref = useRef(value)
@@ -63,15 +59,16 @@ type SearchError = {
   }
 }
 
-function StudioReferenceInputInner(props: StudioReferenceInputProps) {
+export function SanityReferenceInput(props: StudioReferenceInputProps) {
   const {client, schema} = useSource()
   const documentPreviewStore = useDocumentPreviewStore()
   const searchClient = useMemo(() => client.withConfig({apiVersion: '2021-03-25'}), [client])
-  const {path, schemaType, document} = props
+  const {path, schemaType} = props
   const {EditReferenceLinkComponent, onEditReference, activePath, initialValueTemplateItems} =
     useReferenceInputOptions()
 
-  const documentRef = useValueRef(document)
+  const documentValue = useFormValue([]) as FIXME
+  const documentRef = useValueRef(documentValue)
   const documentTypeName = documentRef.current?._type
   const refType = schema.get(documentTypeName)
 
@@ -180,5 +177,3 @@ function StudioReferenceInputInner(props: StudioReferenceInputProps) {
     />
   )
 }
-
-export const SanityReferenceInput = withDocument(StudioReferenceInputInner)

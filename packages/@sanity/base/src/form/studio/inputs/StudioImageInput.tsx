@@ -5,9 +5,11 @@ import {useFormBuilder} from '../../useFormBuilder'
 import {useDocumentPreviewStore} from '../../../datastores'
 import {useSource} from '../../../studio'
 import {observeImageAsset} from './client-adapters/assets'
-import {wrapWithDocument} from './wrapWithDocument'
 
-type StudioImageInputProps = Omit<ImageInputProps, 'assetSources'>
+export type StudioImageInputProps = Omit<
+  ImageInputProps,
+  'assetSources' | 'directUploads' | 'imageUrlBuilder' | 'observeAsset'
+>
 
 export function StudioImageInput(props: StudioImageInputProps) {
   const sourcesFromSchema = props.schemaType.options?.sources
@@ -19,7 +21,7 @@ export function StudioImageInput(props: StudioImageInputProps) {
   // note: type.options.sources may be an empty array and in that case we're
   // disabling selecting images from asset source  (it's a feature, not a bug)
   const assetSources = React.useMemo(
-    () => (sourcesFromSchema || image.assetSources).map(wrapWithDocument),
+    () => sourcesFromSchema || image.assetSources,
     [image, sourcesFromSchema]
   )
 
@@ -33,10 +35,10 @@ export function StudioImageInput(props: StudioImageInputProps) {
   return (
     <ImageInput
       {...props}
-      observeAsset={observeAsset}
       assetSources={assetSources}
       directUploads={image.directUploads}
       imageUrlBuilder={builder}
+      observeAsset={observeAsset}
     />
   )
 }

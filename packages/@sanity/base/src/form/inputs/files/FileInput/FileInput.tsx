@@ -5,6 +5,7 @@ import {Observable, Subscription} from 'rxjs'
 import {get, partition, uniqueId} from 'lodash'
 import {
   AssetFromSource,
+  AssetSource,
   File as BaseFile,
   FileAsset,
   FileSchemaType,
@@ -26,7 +27,7 @@ import {
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {Uploader, UploaderResolver, UploadOptions} from '../../../studio/uploads/types'
 import {FileTarget, FileInfo} from '../common/styles'
-import {InternalAssetSource, UploadState} from '../types'
+import {UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
 import {handleSelectAssetFromSource} from '../common/assetSource'
 import {ActionsMenu} from '../common/ActionsMenu'
@@ -63,7 +64,7 @@ export interface File extends Partial<BaseFile> {
 }
 
 export interface FileInputProps extends ObjectInputProps<File, FileSchemaType> {
-  assetSources: InternalAssetSource[]
+  assetSources: AssetSource[]
   directUploads?: boolean
   observeAsset: (documentId: string) => Observable<FileAsset>
   resolveUploader: UploaderResolver
@@ -73,7 +74,7 @@ const HIDDEN_FIELDS = ['asset']
 
 type FileInputState = {
   isUploading: boolean
-  selectedAssetSource: InternalAssetSource | null
+  selectedAssetSource: AssetSource | null
   hoveringFiles: FileInfo[]
   isStale: boolean
   isMenuOpen: boolean
@@ -165,7 +166,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
     }
   }
 
-  handleSelectFileFromAssetSource = (source: InternalAssetSource) => {
+  handleSelectFileFromAssetSource = (source: AssetSource) => {
     this.setState({selectedAssetSource: source})
   }
 

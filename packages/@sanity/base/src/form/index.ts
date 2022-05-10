@@ -7,9 +7,6 @@ export * from './studio/StudioFormBuilderProvider'
 export * from './studio/focusManagers/HashFocusManager'
 export * from './studio/focusManagers/SimpleFocusManager'
 
-// utils
-export * from './utils/withDocument'
-
 // inputs
 export * from './inputs/PortableText/PortableTextInput'
 export {PortableTextInput as BlockEditor} from './inputs/PortableText/PortableTextInput'
@@ -26,6 +23,7 @@ export * from './studio'
 export * from './types'
 
 export {useFormState} from './store/useFormState'
+export * from './useFormValue'
 
 export * from './utils/mutationPatch'
 export * from './utils/path'

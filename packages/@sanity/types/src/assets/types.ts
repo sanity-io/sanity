@@ -119,7 +119,6 @@ export type AssetFromSource = {
 export interface AssetSourceComponentProps {
   assetType?: 'file' | 'image'
   selectionType: 'single'
-  document: SanityDocument
   dialogHeaderTitle?: React.ReactNode
   selectedAssets: Asset[]
   onClose: () => void
