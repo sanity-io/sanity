@@ -5,7 +5,6 @@ import {
 } from '@sanity/portable-text-editor'
 import React, {useCallback, useMemo} from 'react'
 import styled from 'styled-components'
-import {FIXME} from '../../types'
 import {PatchArg} from '../../patch'
 import {RenderBlockActionsCallback, RenderBlockActionsProps} from './types'
 import {createInsertCallback, createSetCallback, createUnsetCallback} from './callbacks'
@@ -52,7 +51,7 @@ export function BlockActions(props: BlockActionsProps) {
       //   const RenderComponent = renderBlockActions
       //   return <RenderComponent {...blockActionProps} />
       // }
-      return renderBlockActions(blockActionProps as FIXME)
+      return renderBlockActions(blockActionProps)
     }
     return undefined
   }, [renderBlockActions, block, editor, onChange, decoratorValues])
@@ -64,9 +63,7 @@ export function BlockActions(props: BlockActionsProps) {
 
   // Don't render anything if the renderBlockActions function returns null.
   // Note that if renderBlockComponent is a React class, this will never be the case.
-  if (!blockActions) {
-    return null
-  }
+  if (!blockActions) return null
 
   return (
     <Root contentEditable={false} onKeyDown={handleClick} onMouseDown={handleClick}>
