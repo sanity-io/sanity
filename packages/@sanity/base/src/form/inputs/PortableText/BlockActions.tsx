@@ -7,13 +7,13 @@ import React, {useCallback, useMemo} from 'react'
 import styled from 'styled-components'
 import {FIXME} from '../../types'
 import {PatchArg} from '../../patch'
-import {createBlockActionPatchFn} from './utils/createBlockActionPatchFn'
-import {RenderBlockActions} from './types'
+import {RenderBlockActionsCallback, RenderBlockActionsProps} from './types'
+import {createInsertCallback, createSetCallback, createUnsetCallback} from './callbacks'
 
 interface BlockActionsProps {
   block: PortableTextBlock
   onChange: (...patches: PatchArg[]) => void
-  renderBlockActions?: RenderBlockActions
+  renderBlockActions?: RenderBlockActionsCallback
 }
 
 const Root = styled.div`
@@ -39,12 +39,12 @@ export function BlockActions(props: BlockActionsProps) {
 
   const blockActions = useMemo(() => {
     if (renderBlockActions) {
-      const blockActionProps = {
+      const blockActionProps: RenderBlockActionsProps = {
         block,
         value: PortableTextEditor.getValue(editor),
-        set: createBlockActionPatchFn('set', block, onChange, decoratorValues),
-        unset: createBlockActionPatchFn('unset', block, onChange, decoratorValues) as () => void,
-        insert: createBlockActionPatchFn('insert', block, onChange, decoratorValues),
+        set: createSetCallback({allowedDecorators: decoratorValues, block, onChange}),
+        unset: createUnsetCallback({block, onChange}),
+        insert: createInsertCallback({allowedDecorators: decoratorValues, block, onChange}),
       }
 
       // // Support returning a class component for renderBlockActions (to keep backward compatability as it was possible before)

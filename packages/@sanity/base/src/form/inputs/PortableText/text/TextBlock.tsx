@@ -7,7 +7,7 @@ import {PatchArg, PatchEvent} from '../../../patch'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {BlockActions} from '../BlockActions'
 import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
-import {RenderBlockActions} from '../types'
+import {RenderBlockActionsCallback} from '../types'
 import {TEXT_STYLE_PADDING} from './constants'
 import {
   BlockActionsInner,
@@ -32,7 +32,7 @@ export interface TextBlockProps {
   validation: ValidationMarker[]
   onChange: (...patches: PatchArg[]) => void
   readOnly?: boolean
-  renderBlockActions?: RenderBlockActions
+  renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
   spellCheck?: boolean
 }

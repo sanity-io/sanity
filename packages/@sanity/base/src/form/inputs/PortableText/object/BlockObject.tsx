@@ -19,7 +19,7 @@ import {Tooltip, Flex, ResponsivePaddingProps} from '@sanity/ui'
 import React, {useCallback, useMemo, useRef, useState} from 'react'
 import {PatchArg, PatchEvent} from '../../../patch'
 import {PortableTextMarker, RenderCustomMarkers} from '../../../types'
-import {RenderBlockActions} from '../types'
+import {RenderBlockActionsCallback} from '../types'
 import {BlockActions} from '../BlockActions'
 import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
 import {useFormBuilder} from '../../../useFormBuilder'
@@ -46,7 +46,7 @@ interface BlockObjectProps {
   onChange: (...patches: PatchArg[]) => void
   onFocus: (path: Path) => void
   readOnly?: boolean
-  renderBlockActions?: RenderBlockActions
+  renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
   type: ObjectSchemaType
 }

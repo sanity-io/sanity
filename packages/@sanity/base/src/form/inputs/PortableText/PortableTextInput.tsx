@@ -23,11 +23,11 @@ import type {
   RenderCustomMarkers,
 } from '../../types'
 import {EMPTY_ARRAY} from '../../utils/empty'
-import {RenderBlockActions} from './types'
 import {Compositor} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {usePatches} from './usePatches'
 import {VisibleOnFocusButton} from './VisibleOnFocusButton'
+import {RenderBlockActionsCallback} from './types'
 
 /**
  * @alpha
@@ -38,7 +38,7 @@ export interface PortableTextInputProps
   markers?: PortableTextMarker[]
   onCopy?: OnCopyFn
   onPaste?: OnPasteFn
-  renderBlockActions?: RenderBlockActions
+  renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
 }
 

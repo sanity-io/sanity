@@ -11,8 +11,8 @@ import {
 import {ObjectSchemaType, Path} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {useCallback, useMemo} from 'react'
+import {useUnique} from '../../../../util'
 import {FIXME} from '../../../types'
-import {useUnique} from '../utils/useUnique'
 import {getPTEToolbarActionGroups} from './helpers'
 import {BlockStyleItem, PTEToolbarAction, PTEToolbarActionGroup} from './types'
 

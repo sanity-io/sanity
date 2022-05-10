@@ -10,7 +10,7 @@ import {useSource} from '../../../../../studio'
 import {FormBuilderProvider} from '../../../../FormBuilderProvider'
 import {PortableTextInput} from '../../PortableTextInput'
 import {applyAll} from '../../../../patch/simplePatch'
-import {RenderBlockActions} from '../../types'
+import {RenderBlockActionsCallback} from '../../types'
 import {ReviewChangesContextProvider} from '../../../../studio/contexts/reviewChanges/ReviewChangesProvider'
 import {createPatchChannel} from '../../../../patch/PatchChannel'
 import {inputResolver} from './input'
@@ -20,7 +20,7 @@ interface TestInputProps {
   markers?: PortableTextMarker[]
   validation?: ValidationMarker[]
   readOnly?: boolean
-  renderBlockActions?: RenderBlockActions
+  renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
   schema: Schema
   type: PTType

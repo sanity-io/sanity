@@ -52,7 +52,10 @@ export type {Annotation, AnnotationDetails, Chunk, ChunkType} from '../field'
 
 export * from '../form'
 
-export type {RenderBlockActions} from '../form/inputs/PortableText/types'
+export type {
+  RenderBlockActionsCallback,
+  RenderBlockActionsProps,
+} from '../form/inputs/PortableText/types'
 
 // export {MemberField} from '../form/inputs/ObjectInput/MemberField'
 export {MemberFieldset} from '../form/inputs/ObjectInput/MemberFieldset'

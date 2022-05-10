@@ -34,7 +34,7 @@ import {BlockObject} from './object/BlockObject'
 import {InlineObject} from './object/InlineObject'
 import {EditObject} from './object/EditObject'
 import {Annotation, TextBlock} from './text'
-import {RenderBlockActions} from './types'
+import {RenderBlockActionsCallback} from './types'
 import {Editor} from './Editor'
 import {ExpandedLayer, Root} from './Compositor.styles'
 import {useObjectEditData} from './hooks/useObjectEditData'
@@ -53,7 +53,7 @@ interface InputProps extends Omit<ArrayOfObjectsInputProps<PortableTextBlock>, '
   onPaste?: OnPasteFn
   onToggleFullscreen: () => void
   patches$: Subject<EditorPatch>
-  renderBlockActions?: RenderBlockActions
+  renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
 }
 

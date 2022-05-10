@@ -14,10 +14,16 @@ export type ObjectEditData = {
 /**
  * @alpha
  */
-export type RenderBlockActions = (actions: {
+
+export interface RenderBlockActionsProps {
   block: PortableTextBlock
   value: PortableTextBlock[] | undefined
   set: (block: PortableTextBlock) => void
   unset: () => void
   insert: (block: PortableTextBlock | PortableTextBlock[]) => void
-}) => JSX.Element
+}
+
+/**
+ * @alpha
+ */
+export type RenderBlockActionsCallback = (props: RenderBlockActionsProps) => React.ReactNode
