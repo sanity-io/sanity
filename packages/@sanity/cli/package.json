@@ -1,6 +1,6 @@
 {
   "name": "@sanity/cli",
-  "version": "2.29.8",
+  "version": "2.30.0",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "main": "lib/cli.js",
   "bin": {

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/field",
-  "version": "2.29.8",
+  "version": "2.30.0",
   "description": "Diff utilities and preview components",
   "main": "./lib/index.js",
   "types": "./dist/dts",
@@ -37,13 +37,13 @@
   },
   "dependencies": {
     "@sanity/asset-utils": "^1.2.0",
-    "@sanity/base": "2.29.8",
+    "@sanity/base": "2.30.0",
     "@sanity/client": "^3.2.0",
     "@sanity/color": "^2.1.8",
     "@sanity/diff": "2.29.3",
     "@sanity/icons": "^1.2.6",
     "@sanity/image-url": "^1.0.1",
-    "@sanity/react-hooks": "2.29.8",
+    "@sanity/react-hooks": "2.30.0",
     "@sanity/types": "2.29.5",
     "@sanity/ui": "^0.37.9",
     "@sanity/util": "2.29.5",
