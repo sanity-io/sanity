@@ -269,7 +269,7 @@ export namespace Schema {
 
   export interface ReferenceDefinition extends BaseDefinitionOptions {
     type: 'reference'
-    to: Array<TypeDefinition | TypeReference>
+    to: TypeDefinition | TypeReference | Array<TypeDefinition | TypeReference>
     weak?: boolean
     options?: ReferenceOptions
   }
