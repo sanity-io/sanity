@@ -136,6 +136,7 @@ export type {
   SourceProviderProps,
   StudioProps,
   StudioProviderProps,
+  ToolMenuProps,
   WorkspaceProviderProps,
 } from '../studio'
 

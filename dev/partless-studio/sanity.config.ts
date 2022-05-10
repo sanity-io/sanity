@@ -7,6 +7,7 @@ import {Branding} from './components/Branding'
 import {CustomMarkers} from './components/formBuilder/CustomMarkers'
 // import {LanguageFilter} from './components/deskTool/LanguageFilter'
 import {Markers} from './components/formBuilder/Markers'
+// import {ToolMenu} from './components/navbar'
 import {resolveDocumentActions as documentActions} from './documentActions'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {schemaTypes} from './schema'
@@ -23,6 +24,11 @@ export default createConfig({
     types: schemaTypes,
     templates: resolveInitialValueTemplates,
   },
+  // navbar: {
+  //   components: {
+  //     ToolMenu: ToolMenu,
+  //   },
+  // },
   formBuilder: {
     unstable: {
       CustomMarkers,

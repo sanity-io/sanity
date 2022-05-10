@@ -1,10 +1,18 @@
 import {Box, Button, Card, Code, ErrorBoundary, Flex, Heading, Spinner} from '@sanity/ui'
 import React, {createElement, Suspense, useCallback, useEffect, useState} from 'react'
+import styled from 'styled-components'
 import {RouteScope, useRouter} from '../router'
 import {Navbar} from './components'
 import {NoToolsScreen} from './screens/NoToolsScreen'
 import {ToolNotFoundScreen} from './screens/ToolNotFoundScreen'
 import {useWorkspace} from './workspace'
+
+const SearchFullscreenPortalCard = styled(Card)`
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  flex: 1;
+`
 
 export function StudioLayout() {
   const {state: routerState} = useRouter()
@@ -12,6 +20,14 @@ export function StudioLayout() {
   const activeToolName = typeof routerState.tool === 'string' ? routerState.tool : undefined
   const activeTool = tools.find((tool) => tool.name === activeToolName)
   const [toolError, setToolError] = useState<{error: Error; info: React.ErrorInfo} | null>(null)
+  const [searchOpen, setSearchOpen] = useState<boolean>(false)
+  const [fullscreenSearchPortalEl, setFullscreenSearchPortalEl] = useState<HTMLDivElement | null>(
+    null
+  )
+
+  const handleSearchOpenChange = useCallback((open: boolean) => {
+    setSearchOpen(open)
+  }, [])
 
   useEffect(() => {
     setToolError(null)
@@ -23,7 +39,10 @@ export function StudioLayout() {
 
   return (
     <Flex data-ui="ToolScreen" direction="column" height="fill">
-      <Navbar activeToolName={activeToolName} />
+      <Navbar
+        onSearchOpenChange={handleSearchOpenChange}
+        fullscreenSearchPortalEl={fullscreenSearchPortalEl}
+      />
 
       {tools.length === 0 && <NoToolsScreen />}
 
@@ -48,7 +67,11 @@ export function StudioLayout() {
         </Card>
       )}
 
-      <Card flex={1}>
+      {searchOpen && (
+        <SearchFullscreenPortalCard ref={setFullscreenSearchPortalEl} overflow="auto" />
+      )}
+
+      <Card flex={1} hidden={searchOpen}>
         {!toolError && activeTool && activeToolName && (
           <RouteScope scope={activeToolName}>
             <ErrorBoundary onCatch={setToolError}>

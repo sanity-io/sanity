@@ -1,7 +1,16 @@
 import {useEffect, useMemo, useState} from 'react'
-import {merge, Observable, of, Subject} from 'rxjs'
-import {catchError, debounceTime, map, share, switchMap} from 'rxjs/operators'
+import {concat, EMPTY, Observable, of, Subject, timer} from 'rxjs'
+import {
+  catchError,
+  distinctUntilChanged,
+  filter,
+  map,
+  mergeMapTo,
+  share,
+  switchMap,
+} from 'rxjs/operators'
 import {useSource} from '../studio'
+import {isNonNullable} from '../util'
 import {createSearch} from './search'
 import {WeightedHit} from './weighted/types'
 
@@ -28,6 +37,8 @@ const LOADING_STATE: DocumentSearchResultsState = {
   value: [],
 }
 
+const DEBOUNCE_VALUE = 400
+
 export function useDocumentSearchResults(props: {
   includeDrafts?: boolean
   limit?: number
@@ -44,25 +55,19 @@ export function useDocumentSearchResults(props: {
     () =>
       paramsSubject.asObservable().pipe(
         share(),
-        debounceTime(100),
+        distinctUntilChanged(),
+        filter(isNonNullable),
         switchMap(
           ({query, options}): Observable<DocumentSearchResultsState> =>
             query
-              ? merge(
+              ? concat(
                   of(LOADING_STATE),
+                  timer(DEBOUNCE_VALUE).pipe(mergeMapTo(EMPTY)),
                   search(query, options).pipe(
-                    map((results) => ({
-                      loading: false,
-                      error: null,
-                      value: results,
-                    })),
-                    catchError((error) =>
-                      of({
-                        loading: false,
-                        error,
-                        value: [],
-                      })
-                    )
+                    map((results) => ({loading: false, error: null, value: results})),
+                    catchError((error) => {
+                      return of({loading: false, error, value: []})
+                    })
                   )
                 )
               : of(EMPTY_STATE)

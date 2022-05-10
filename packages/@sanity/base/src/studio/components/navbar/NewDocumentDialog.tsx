@@ -22,11 +22,11 @@ const DisabledButtonWrapper = styled.div`
 `
 
 interface NewDocumentDialogProps {
-  open: boolean
   onClose: () => void
 }
 
-export function NewDocumentDialog({open, onClose}: NewDocumentDialogProps) {
+export function NewDocumentDialog(props: NewDocumentDialogProps) {
+  const {onClose} = props
   const {
     __internal: {staticInitialValueTemplateItems},
     currentUser,
@@ -42,8 +42,6 @@ export function NewDocumentDialog({open, onClose}: NewDocumentDialogProps) {
     }, {})
   }, [permissions])
 
-  if (!open) return null
-
   if (loading) {
     return (
       <Dialog header="New document" id="new-document-dialog" onClose={onClose} width={2}>
@@ -55,8 +53,14 @@ export function NewDocumentDialog({open, onClose}: NewDocumentDialogProps) {
   }
 
   return (
-    <Dialog header="New document" id="new-document-dialog" onClose={onClose} width={2}>
-      <Grid padding={4} columns={3} gap={3}>
+    <Dialog
+      header="New document"
+      id="new-document-dialog"
+      onClickOutside={onClose}
+      onClose={onClose}
+      width={2}
+    >
+      <Grid padding={4} columns={[2, 2, 3, 3]} gap={3}>
         {staticInitialValueTemplateItems.map((template) => {
           if (keyedPermissions[template.id]?.granted) {
             return (

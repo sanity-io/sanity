@@ -26,6 +26,7 @@ import type {Router, RouterState} from '../router'
 import type {DocumentActionComponent} from '../desk/actions'
 import type {DocumentBadgeComponent} from '../desk/badges'
 import {PreviewProps} from '../components/previews'
+import {ToolMenuProps} from '../studio/components/navbar/tools/ToolMenu'
 
 /**
  * @alpha
@@ -209,6 +210,11 @@ export interface WorkspaceOptions extends SourceOptions {
   basePath?: string
   subtitle?: string
   logo?: React.ComponentType<{'aria-label'?: string}>
+  navbar?: {
+    components?: {
+      ToolMenu: React.ComponentType<ToolMenuProps>
+    }
+  }
   theme?: StudioTheme
   /**
    * @alpha
@@ -308,6 +314,11 @@ export interface Workspace extends Source {
   basePath: string
   subtitle?: string
   logo?: React.ComponentType | React.ReactNode
+  navbar?: {
+    components?: {
+      ToolMenu?: React.ComponentType<ToolMenuProps>
+    }
+  }
   theme: StudioTheme
   /**
    * @alpha
@@ -347,6 +358,11 @@ interface PartiallyResolvedWorkspace {
   title?: string
   subtitle?: string
   logo?: React.ComponentType<{'aria-label'?: string}>
+  navbar?: {
+    components?: {
+      ToolMenu?: React.ComponentType<ToolMenuProps>
+    }
+  }
   theme: StudioTheme
   sources: Array<
     {

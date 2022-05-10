@@ -36,7 +36,14 @@ function getFocusableElements(element: HTMLElement) {
   ```
  */
 export function useRovingFocus(props: RovingFocusProps): undefined {
-  const {direction = 'horizontal', initialFocus, loop = true, pause = false, rootElement} = props
+  const {
+    direction = 'horizontal',
+    initialFocus,
+    loop = true,
+    navigation = ['arrows'],
+    pause = false,
+    rootElement,
+  } = props
   const [focusedIndex, setFocusedIndex] = useState<number>(-1)
   const [focusableElements, setFocusableElements] = useState<HTMLElement[]>([])
 
@@ -76,7 +83,7 @@ export function useRovingFocus(props: RovingFocusProps): undefined {
         return
       }
 
-      if (event.key === prevKey) {
+      const focusPrev = () => {
         event.preventDefault()
         setFocusedIndex((prevIndex) => {
           const next = (prevIndex + lastFocusableIndex) % focusableLen
@@ -89,7 +96,7 @@ export function useRovingFocus(props: RovingFocusProps): undefined {
         })
       }
 
-      if (event.key === nextKey) {
+      const focusNext = () => {
         event.preventDefault()
         setFocusedIndex((prevIndex) => {
           const next = (prevIndex + 1) % focusableLen
@@ -101,8 +108,26 @@ export function useRovingFocus(props: RovingFocusProps): undefined {
           return next
         })
       }
+
+      if (event.key === 'Tab' && navigation.includes('tab')) {
+        if (event.shiftKey) {
+          focusPrev()
+        } else {
+          focusNext()
+        }
+      }
+
+      if (navigation.includes('arrows')) {
+        if (event.key === prevKey) {
+          focusPrev()
+        }
+
+        if (event.key === nextKey) {
+          focusNext()
+        }
+      }
     },
-    [focusableLen, loop, nextKey, pause, prevKey, lastFocusableIndex]
+    [pause, prevKey, navigation, nextKey, lastFocusableIndex, focusableLen, loop]
   )
 
   /**

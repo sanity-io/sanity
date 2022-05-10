@@ -5,7 +5,6 @@ import {CollapseMenuProps} from './CollapseMenu'
 const MENU_BUTTON_POPOVER_PROPS: MenuButtonProps['popover'] = {
   portal: true,
   constrainSize: true,
-  scheme: 'light',
 }
 
 export function CollapseOverflowMenu(
