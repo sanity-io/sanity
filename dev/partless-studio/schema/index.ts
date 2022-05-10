@@ -65,7 +65,6 @@ import select from './debug/select'
 import typeWithNoToplevelStrings from './debug/typeWithNoToplevelStrings'
 import uploads from './debug/uploads'
 import validation, {validationArraySuperType} from './debug/validation'
-import {withDocumentTestSchemaType} from './debug/withDocumentTest'
 import fieldGroups from './debug/fieldGroups'
 import fieldGroupsDefault from './debug/fieldGroupsDefault'
 import fieldGroupsMany from './debug/fieldGroupsMany'
@@ -174,7 +173,6 @@ export const schemaTypes = [
   validation,
   validationArraySuperType,
   validationTest,
-  withDocumentTestSchemaType,
   fieldGroups,
   fieldGroupsDefault,
   fieldGroupsMany,
