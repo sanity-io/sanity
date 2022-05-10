@@ -1,4 +1,6 @@
-import {Plugin, ViteDevServer} from 'vite'
+import fs from 'fs'
+import path from 'path'
+import {Plugin} from 'vite'
 import history from 'connect-history-api-fallback'
 
 /**
@@ -9,11 +11,26 @@ import history from 'connect-history-api-fallback'
 export function sanityDotWorkaroundPlugin(): Plugin {
   return {
     name: '@sanity/server/dot-workaround',
-    configureServer(server: ViteDevServer) {
+    configureServer(server) {
+      const {root} = server.config
+
       return () => {
         const handler = history({
           disableDotRule: true,
-          rewrites: [{from: /\/$/, to: () => '/index.html'}],
+          rewrites: [
+            {
+              from: /\/index.html$/,
+              to: ({parsedUrl}) => {
+                const pathname = parsedUrl.pathname
+
+                if (pathname && fs.existsSync(path.join(root, pathname))) {
+                  return pathname
+                }
+
+                return `/index.html`
+              },
+            },
+          ],
         })
 
         server.middlewares.use((req, res, next) => {
