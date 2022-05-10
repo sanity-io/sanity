@@ -1,5 +1,5 @@
-import {Rule} from '@sanity/types'
 import {UserIcon as icon} from '@sanity/icons'
+import {Rule} from 'sanity'
 
 const AUTHOR_ROLES = [
   {value: 'developer', title: 'Developer'},
@@ -26,11 +26,11 @@ export default {
     },
     prepare({title, media, awards, role: roleName}: any) {
       const role = roleName ? AUTHOR_ROLES.find((option) => option.value === roleName) : undefined
-      const awardsText = awards && awards.join(', ')
+      const awardsText = Array.isArray(awards) && awards.join(', ')
 
       return {
-        title: title,
-        media: media,
+        title: typeof title === 'string' ? title : undefined,
+        media: media as any,
         subtitle: [role?.title, awardsText].filter(Boolean).join(' · '),
       }
     },
