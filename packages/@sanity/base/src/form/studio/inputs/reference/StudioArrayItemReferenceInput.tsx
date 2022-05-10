@@ -13,7 +13,6 @@ import {get} from '@sanity/util/paths'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 import {isNonNullable} from '../../../../util'
-import {withValuePath} from '../../../utils/withValuePath'
 import {withDocument} from '../../../utils/withDocument'
 import * as adapter from '../client-adapters/reference'
 import {ArrayItemReferenceInput} from '../../../inputs/ReferenceInput/ArrayItemReferenceInput'
@@ -54,9 +53,6 @@ export interface SanityArrayItemReferenceInputProps
 
   // From `withDocument`
   document: SanityDocument
-
-  // From `withValuePath`
-  getValuePath: () => Path
 }
 
 function useValueRef<T>(value: T): {current: T} {
@@ -80,13 +76,11 @@ function SanityArrayItemReferenceInputInner(
   const {schema, client} = useSource()
   const documentPreviewStore = useDocumentPreviewStore()
   const searchClient = useMemo(() => client.withConfig({apiVersion: '2021-03-25'}), [client])
-  const {getValuePath, schemaType, document} = props
+  const {path, schemaType, document} = props
   const {EditReferenceLinkComponent, onEditReference, activePath, initialValueTemplateItems} =
     useReferenceInputOptions()
 
   const documentRef = useValueRef(document)
-
-  const valuePath = useMemo(getValuePath, [getValuePath])
 
   const documentTypeName = documentRef.current?._type
 
@@ -98,7 +92,7 @@ function SanityArrayItemReferenceInputInner(
 
   const handleSearch = useCallback(
     (searchString: string) =>
-      from(resolveUserDefinedFilter(schemaType.options, documentRef.current, getValuePath())).pipe(
+      from(resolveUserDefinedFilter(schemaType.options, documentRef.current, path)).pipe(
         mergeMap(({filter, params}) =>
           adapter.search(searchClient, searchString, schemaType, {
             ...schemaType.options,
@@ -117,7 +111,7 @@ function SanityArrayItemReferenceInputInner(
         })
       ),
 
-    [documentRef, getValuePath, searchClient, schemaType]
+    [documentRef, path, searchClient, schemaType]
   )
 
   const template = props.value?._strengthenOnPublish?.template
@@ -131,27 +125,27 @@ function SanityArrayItemReferenceInputInner(
           <EditReferenceLinkComponent
             {..._props}
             ref={forwardedRef}
-            parentRefPath={valuePath}
+            parentRefPath={path}
             template={template}
           />
         ) : null
       }),
-    [EditReferenceLinkComponent, valuePath, template]
+    [EditReferenceLinkComponent, path, template]
   )
 
   const handleEditReference = useCallback(
     (event: EditReferenceEvent) => {
       onEditReference?.({
-        parentRefPath: valuePath,
+        parentRefPath: path,
         id: event.id,
         type: event.type,
         template: event.template,
       })
     },
-    [onEditReference, valuePath]
+    [onEditReference, path]
   )
 
-  const selectedState = PathUtils.startsWith(valuePath, activePath?.path || [])
+  const selectedState = PathUtils.startsWith(path, activePath?.path || [])
     ? activePath?.state
     : 'none'
 
@@ -199,6 +193,4 @@ function SanityArrayItemReferenceInputInner(
   )
 }
 
-export const StudioArrayItemReferenceInput = withValuePath(
-  withDocument(SanityArrayItemReferenceInputInner)
-)
+export const StudioArrayItemReferenceInput = withDocument(SanityArrayItemReferenceInputInner)

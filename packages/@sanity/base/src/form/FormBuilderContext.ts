@@ -1,4 +1,4 @@
-import {AssetSource, Path, SanityDocument, Schema} from '@sanity/types'
+import {AssetSource, SanityDocument, Schema} from '@sanity/types'
 import {createContext} from 'react'
 import {
   FormBuilderArrayFunctionComponent,
@@ -9,8 +9,10 @@ import {
   RenderInputCallback,
 } from './types'
 import {PatchChannel} from './patch/PatchChannel'
-import {PatchEvent} from './patch'
 
+/**
+ * @alpha
+ */
 export interface FormBuilderContextValue {
   /**
    * @deprecated INTERNAL USE ONLY
@@ -31,9 +33,7 @@ export interface FormBuilderContextValue {
       directUploads: boolean
     }
     getDocument: () => SanityDocument | undefined
-    getValuePath: () => Path
-    onChange: (event: PatchEvent) => void
-    patchChannel: PatchChannel // eslint-disable-line camelcase
+    patchChannel: PatchChannel
     resolvePreviewComponent: FormPreviewComponentResolver
   }
 
@@ -41,4 +41,7 @@ export interface FormBuilderContextValue {
   schema: Schema
 }
 
+/**
+ * @internal
+ */
 export const FormBuilderContext = createContext<FormBuilderContextValue | null>(null)

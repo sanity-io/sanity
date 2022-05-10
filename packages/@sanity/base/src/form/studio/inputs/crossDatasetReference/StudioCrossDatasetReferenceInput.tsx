@@ -1,4 +1,4 @@
-import React, {ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
+import React, {useCallback, useMemo, useRef} from 'react'
 import {
   CrossDatasetReference,
   CrossDatasetReferenceSchemaType,
@@ -11,7 +11,6 @@ import {get} from '@sanity/util/paths'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 import {Box, Stack, Text, TextSkeleton} from '@sanity/ui'
-import {withValuePath} from '../../../utils/withValuePath'
 import {withDocument} from '../../../utils/withDocument'
 import {CrossDatasetReferenceInput} from '../../../inputs/CrossDatasetReferenceInput'
 import {Alert} from '../../../components/Alert'
@@ -48,8 +47,6 @@ export interface StudioCrossDatasetReferenceInputProps
   extends ObjectInputProps<CrossDatasetReference, CrossDatasetReferenceSchemaType> {
   // From withDocument
   document: SanityDocument
-  // From withValuePath
-  getValuePath: () => Path
 }
 
 function useValueRef<T>(value: T): {current: T} {
@@ -70,7 +67,7 @@ function _StudioCrossDatasetReferenceInput(
   props: StudioCrossDatasetReferenceInputProps
   // ref: ForwardedRef<HTMLInputElement>
 ) {
-  const {getValuePath, schemaType, document} = props
+  const {path, schemaType, document} = props
   const {client, projectId} = useSource()
   const documentPreviewStore = useDocumentPreviewStore()
 
@@ -104,7 +101,7 @@ function _StudioCrossDatasetReferenceInput(
 
   const handleSearch = useCallback(
     (searchString: string) =>
-      from(resolveUserDefinedFilter(schemaType.options, documentRef.current, getValuePath())).pipe(
+      from(resolveUserDefinedFilter(schemaType.options, documentRef.current, path)).pipe(
         mergeMap(({filter, params}) =>
           search(crossDatasetClient, searchString, schemaType, {
             ...schemaType.options,
@@ -123,7 +120,7 @@ function _StudioCrossDatasetReferenceInput(
         })
       ),
 
-    [crossDatasetClient, documentRef, getValuePath, schemaType]
+    [crossDatasetClient, documentRef, path, schemaType]
   )
 
   const getReferenceInfo = useMemo(
@@ -187,6 +184,4 @@ function _StudioCrossDatasetReferenceInput(
   )
 }
 
-export const StudioCrossDatasetReferenceInput = withValuePath(
-  withDocument(_StudioCrossDatasetReferenceInput)
-)
+export const StudioCrossDatasetReferenceInput = withDocument(_StudioCrossDatasetReferenceInput)

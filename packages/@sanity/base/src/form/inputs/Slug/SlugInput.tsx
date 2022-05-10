@@ -12,7 +12,6 @@ import {TextInput, Button, Flex, Box, Card, Stack} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {PatchEvent, set, setIfMissing, unset} from '../../patch'
 import {withDocument} from '../../utils/withDocument'
-import {withValuePath} from '../../utils/withValuePath'
 import {ObjectInputProps} from '../../types'
 import {slugify} from './utils/slugify'
 import {useAsync} from './utils/useAsync'
@@ -135,4 +134,4 @@ const SlugInputInner = React.forwardRef(function SlugInput(
   )
 })
 
-export const SlugInput = withValuePath(withDocument(SlugInputInner))
+export const SlugInput = withDocument(SlugInputInner)

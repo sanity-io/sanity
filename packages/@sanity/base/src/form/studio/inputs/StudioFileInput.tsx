@@ -1,21 +1,14 @@
 import React, {useCallback} from 'react'
 import {FileInput, FileInputProps} from '../../inputs/files/FileInput'
 import {resolveUploader} from '../uploads/resolveUploader'
-import {withValuePath} from '../../utils/withValuePath'
 import {useFormBuilder} from '../../useFormBuilder'
-import {FIXME} from '../../types'
 import {useDocumentPreviewStore} from '../../../datastores'
 import {observeFileAsset} from './client-adapters/assets'
 import {wrapWithDocument} from './wrapWithDocument'
 
 export type StudioFileInputProps = Omit<FileInputProps, 'assetSources'>
 
-const FileInputWithValuePath = withValuePath(FileInput)
-
-export const StudioFileInput = React.forwardRef(function StudioFileInput(
-  props: StudioFileInputProps,
-  forwardedRef: any
-) {
+export function StudioFileInput(props: StudioFileInputProps) {
   const sourcesFromSchema = props.schemaType.options?.sources
   const documentPreviewStore = useDocumentPreviewStore()
   const {file} = useFormBuilder().__internal
@@ -35,13 +28,12 @@ export const StudioFileInput = React.forwardRef(function StudioFileInput(
   )
 
   return (
-    <FileInputWithValuePath
+    <FileInput
       {...props}
-      resolveUploader={resolveUploader}
-      observeAsset={observeAsset}
       assetSources={assetSources}
       directUploads={file.directUploads}
-      ref={forwardedRef as FIXME}
+      observeAsset={observeAsset}
+      resolveUploader={resolveUploader}
     />
   )
-})
+}

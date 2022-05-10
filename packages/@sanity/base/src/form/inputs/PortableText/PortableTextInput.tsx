@@ -11,9 +11,9 @@ import {
   InvalidValue,
 } from '@sanity/portable-text-editor'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
-import React, {useEffect, useState, useMemo, useCallback, useRef} from 'react'
+import React, {useEffect, useState, useMemo, useCallback, useRef, useImperativeHandle} from 'react'
 import {Subject} from 'rxjs'
-import {Box, Text, useForwardedRef, useToast} from '@sanity/ui'
+import {Box, Text, useToast} from '@sanity/ui'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import {FormPatch as FormBuilderPatch} from '../../patch'
 import type {
@@ -22,25 +22,12 @@ import type {
   PortableTextMarker,
   RenderCustomMarkers,
 } from '../../types'
-import {withPatchSubscriber} from '../../utils/withPatchSubscriber'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {RenderBlockActions} from './types'
 import {Compositor} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
+import {usePatches} from './usePatches'
 import {VisibleOnFocusButton} from './VisibleOnFocusButton'
-
-type PatchWithOrigin = FormBuilderPatch & {
-  origin: 'local' | 'remote' | 'internal'
-  timestamp: Date
-}
-
-type PatchSubscribe = (subscribeFn: PatchSubscriber) => () => void
-type PatchSubscriber = ({
-  patches,
-}: {
-  patches: PatchWithOrigin[]
-  snapshot: PortableTextBlock[] | undefined
-}) => void
 
 /**
  * @alpha
@@ -60,34 +47,11 @@ export interface PortableTextInputProps
  *
  * @alpha
  */
-export const PortableTextInput = withPatchSubscriber(
-  class PortableTextInput extends React.PureComponent<
-    PortableTextInputProps & {children: React.ReactNode; subscribe: PatchSubscribe}
-  > {
-    editorRef: React.RefObject<PortableTextEditor> = React.createRef()
-    focus() {
-      if (this.editorRef.current) {
-        PortableTextEditor.focus(this.editorRef.current)
-      }
-    }
-    blur() {
-      if (this.editorRef.current) {
-        PortableTextEditor.blur(this.editorRef.current)
-      }
-    }
-    render() {
-      return <PortableTextInputController {...this.props} ref={this.editorRef} />
-    }
-  }
-) as React.ComponentType as React.ComponentType<PortableTextInputProps>
-
-const PortableTextInputController = React.forwardRef(function PortableTextInputController(
-  props: PortableTextInputProps & {subscribe: PatchSubscribe},
-  ref: React.ForwardedRef<PortableTextEditor>
-) {
+export function PortableTextInput(props: PortableTextInputProps) {
   const {
-    focusPath,
     focused,
+    focusPath,
+    focusRef,
     hotkeys,
     markers = [],
     members,
@@ -96,37 +60,45 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
     onInsert,
     onPaste,
     onSetCollapsed,
+    path,
     renderBlockActions,
     renderCustomMarkers,
     renderItem,
-    subscribe,
     schemaType: type,
     value,
-    onBlur,
-    onFocus,
+    // onBlur,
+    // onFocus,
     onFocusPath,
     readOnly,
   } = props
 
-  const forwardedRef = useForwardedRef(ref)
+  // Make the PTE focusable from the outside
+  useImperativeHandle(focusRef, () => ({
+    focus() {
+      if (editorRef.current) {
+        PortableTextEditor.focus(editorRef.current)
+      }
+    },
+  }))
 
+  const {subscribe} = usePatches({path})
+  const editorRef = useRef<PortableTextEditor | null>(null)
   const [hasFocus, setHasFocus] = useState(false)
   const [ignoreValidationError, setIgnoreValidationError] = useState(false)
   const [invalidValue, setInvalidValue] = useState<InvalidValue | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
-
   const toast = useToast()
 
   // Memoized patch stream
-  const patches$: Subject<EditorPatch> = useMemo(() => new Subject(), [])
-  const patchObservable = useMemo(() => patches$.asObservable(), [patches$])
+  const remotePatchSubject: Subject<EditorPatch> = useMemo(() => new Subject(), [])
+  const remotePatch$ = useMemo(() => remotePatchSubject.asObservable(), [remotePatchSubject])
 
   const innerElementRef = useRef<HTMLDivElement | null>(null)
 
   const handleToggleFullscreen = useCallback(() => {
     setIsFullscreen((v) => !v)
-    if (forwardedRef.current) PortableTextEditor.focus(forwardedRef.current)
-  }, [forwardedRef])
+    if (editorRef.current) PortableTextEditor.focus(editorRef.current)
+  }, [editorRef])
 
   // Reset invalidValue if new value is coming in from props
   useEffect(() => {
@@ -135,23 +107,17 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
     }
   }, [invalidValue, value])
 
-  // Handle incoming patches from withPatchSubscriber HOC
-  const handleDocumentPatches = useCallback(
-    ({patches}: {patches: PatchWithOrigin[]; snapshot: PortableTextBlock[] | undefined}): void => {
-      const patchSelection =
-        patches && patches.length > 0 && patches.filter((patch) => patch.origin !== 'local')
-      if (patchSelection) {
-        patchSelection.map((patch) => patches$.next(patch))
-      }
-    },
-    [patches$]
-  )
-
   // Subscribe to incoming patches
   useEffect(() => {
-    const unsubscribe = subscribe(handleDocumentPatches)
-    return () => unsubscribe()
-  }, [handleDocumentPatches, subscribe])
+    return subscribe(({patches}): void => {
+      const patchSelection =
+        patches && patches.length > 0 && patches.filter((patch) => patch.origin !== 'local')
+
+      if (patchSelection) {
+        patchSelection.map((patch) => remotePatchSubject.next(patch))
+      }
+    })
+  }, [remotePatchSubject, subscribe])
 
   // Handle editor changes
   const handleEditorChange = useCallback(
@@ -164,9 +130,9 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
           break
         case 'selection':
           if (
-            forwardedRef.current &&
+            editorRef.current &&
             shouldSetEditorFormBuilderFocus(
-              forwardedRef.current,
+              editorRef.current,
               change.selection,
               focusPath || EMPTY_ARRAY
             )
@@ -179,8 +145,7 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
         case 'focus':
           setHasFocus(true)
           onFocusPath(
-            (forwardedRef.current &&
-              PortableTextEditor.getSelection(forwardedRef.current)?.focus.path) ||
+            (editorRef.current && PortableTextEditor.getSelection(editorRef.current)?.focus.path) ||
               []
           )
 
@@ -207,14 +172,14 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
         default:
       }
     },
-    [focusPath, forwardedRef, onBlur, onChange, onFocus, toast]
+    [focusPath, editorRef, onChange, onFocusPath, toast]
   )
 
   const handleFocusSkipperClick = useCallback(() => {
-    if (forwardedRef.current) {
-      PortableTextEditor.focus(forwardedRef.current)
+    if (editorRef.current) {
+      PortableTextEditor.focus(editorRef.current)
     }
-  }, [forwardedRef])
+  }, [editorRef])
 
   const handleIgnoreValidation = useCallback((): void => {
     setIgnoreValidationError(true)
@@ -257,8 +222,8 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
       {!ignoreValidationError && respondToInvalidContent}
       {(!invalidValue || ignoreValidationError) && (
         <PortableTextEditor
-          ref={ref}
-          incomingPatches$={patchObservable}
+          ref={editorRef}
+          incomingPatches$={remotePatch$}
           onChange={handleEditorChange}
           maxBlocks={undefined} // TODO: from schema?
           readOnly={readOnly}
@@ -280,7 +245,7 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
             onPaste={onPaste}
             onSetCollapsed={onSetCollapsed}
             onToggleFullscreen={handleToggleFullscreen}
-            patches$={patches$}
+            patches$={remotePatchSubject}
             renderBlockActions={renderBlockActions}
             renderCustomMarkers={renderCustomMarkers}
             renderItem={renderItem}
@@ -290,7 +255,7 @@ const PortableTextInputController = React.forwardRef(function PortableTextInputC
       )}
     </Box>
   )
-})
+}
 
 function shouldSetEditorFormBuilderFocus(
   editor: PortableTextEditor,

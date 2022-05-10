@@ -9,7 +9,6 @@ export * from './studio/focusManagers/SimpleFocusManager'
 
 // utils
 export * from './utils/withDocument'
-export * from './utils/withValuePath'
 
 // inputs
 export * from './inputs/PortableText/PortableTextInput'

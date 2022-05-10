@@ -12,7 +12,6 @@ import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, u
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 import {isNonNullable} from '../../../../util'
-import {withValuePath} from '../../../utils/withValuePath'
 import {withDocument} from '../../../utils/withDocument'
 import * as adapter from '../client-adapters/reference'
 import {ReferenceInput} from '../../../inputs/ReferenceInput/ReferenceInput'
@@ -48,9 +47,6 @@ export interface StudioReferenceInputProps
   extends ObjectInputProps<Reference, ReferenceSchemaType> {
   // From `withDocument`
   document: SanityDocument
-
-  // From `withValuePath`
-  getValuePath: () => Path
 }
 
 function useValueRef<T>(value: T): {current: T} {
@@ -71,7 +67,7 @@ function StudioReferenceInputInner(props: StudioReferenceInputProps) {
   const {client, schema} = useSource()
   const documentPreviewStore = useDocumentPreviewStore()
   const searchClient = useMemo(() => client.withConfig({apiVersion: '2021-03-25'}), [client])
-  const {getValuePath, schemaType, document} = props
+  const {path, schemaType, document} = props
   const {EditReferenceLinkComponent, onEditReference, activePath, initialValueTemplateItems} =
     useReferenceInputOptions()
 
@@ -81,13 +77,11 @@ function StudioReferenceInputInner(props: StudioReferenceInputProps) {
 
   const isDocumentLiveEdit = useMemo(() => refType?.liveEdit, [refType])
 
-  const valuePath = useMemo(getValuePath, [getValuePath])
-
   const disableNew = schemaType.options?.disableNew === true
 
   const handleSearch = useCallback(
     (searchString: string) =>
-      from(resolveUserDefinedFilter(schemaType.options, documentRef.current, getValuePath())).pipe(
+      from(resolveUserDefinedFilter(schemaType.options, documentRef.current, path)).pipe(
         mergeMap(({filter, params}) =>
           adapter.search(searchClient, searchString, schemaType, {
             ...schemaType.options,
@@ -106,7 +100,7 @@ function StudioReferenceInputInner(props: StudioReferenceInputProps) {
         })
       ),
 
-    [documentRef, getValuePath, searchClient, schemaType]
+    [documentRef, path, searchClient, schemaType]
   )
 
   const template = props.value?._strengthenOnPublish?.template
@@ -120,27 +114,27 @@ function StudioReferenceInputInner(props: StudioReferenceInputProps) {
           <EditReferenceLinkComponent
             {..._props}
             ref={forwardedRef}
-            parentRefPath={valuePath}
+            parentRefPath={path}
             template={template}
           />
         ) : null
       }),
-    [EditReferenceLinkComponent, valuePath, template]
+    [EditReferenceLinkComponent, path, template]
   )
 
   const handleEditReference = useCallback(
     (event: EditReferenceEvent) => {
       onEditReference?.({
-        parentRefPath: valuePath,
+        parentRefPath: path,
         id: event.id,
         type: event.type,
         template: event.template,
       })
     },
-    [onEditReference, valuePath]
+    [onEditReference, path]
   )
 
-  const selectedState = PathUtils.startsWith(valuePath, activePath?.path || [])
+  const selectedState = PathUtils.startsWith(path, activePath?.path || [])
     ? activePath?.state
     : 'none'
 
@@ -187,4 +181,4 @@ function StudioReferenceInputInner(props: StudioReferenceInputProps) {
   )
 }
 
-export const SanityReferenceInput = withValuePath(withDocument(StudioReferenceInputInner))
+export const SanityReferenceInput = withDocument(StudioReferenceInputInner)

@@ -1,9 +1,7 @@
 import React, {useCallback, useMemo} from 'react'
 import imageUrlBuilder from '@sanity/image-url'
 import {ImageInput, ImageInputProps} from '../../inputs/files/ImageInput'
-import {withValuePath} from '../../utils/withValuePath'
 import {useFormBuilder} from '../../useFormBuilder'
-import {FIXME} from '../../types'
 import {useDocumentPreviewStore} from '../../../datastores'
 import {useSource} from '../../../studio'
 import {observeImageAsset} from './client-adapters/assets'
@@ -11,12 +9,7 @@ import {wrapWithDocument} from './wrapWithDocument'
 
 type StudioImageInputProps = Omit<ImageInputProps, 'assetSources'>
 
-const ImageInputWithValuePath = withValuePath(ImageInput)
-
-export const StudioImageInput = React.forwardRef(function StudioImageInput(
-  props: StudioImageInputProps,
-  forwardedRef: any
-) {
+export function StudioImageInput(props: StudioImageInputProps) {
   const sourcesFromSchema = props.schemaType.options?.sources
   const {image} = useFormBuilder().__internal
   const documentPreviewStore = useDocumentPreviewStore()
@@ -33,20 +26,17 @@ export const StudioImageInput = React.forwardRef(function StudioImageInput(
   const builder = React.useMemo(() => imageUrlBuilder(versionedClient), [versionedClient])
 
   const observeAsset = useCallback(
-    (id: string) => {
-      return observeImageAsset(documentPreviewStore, id)
-    },
+    (id: string) => observeImageAsset(documentPreviewStore, id),
     [documentPreviewStore]
   )
 
   return (
-    <ImageInputWithValuePath
+    <ImageInput
       {...props}
       observeAsset={observeAsset}
       assetSources={assetSources}
       directUploads={image.directUploads}
-      ref={forwardedRef as FIXME}
       imageUrlBuilder={builder}
     />
   )
-})
+}
