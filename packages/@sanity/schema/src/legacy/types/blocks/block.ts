@@ -40,12 +40,21 @@ export const BlockType = {
 
     const {marks, styles, lists, of, ...rest} = subTypeDef
 
-    const spansField = createSpansField(marks, of)
-    const stylesField = createStylesField(styles)
-    const listsField = createListsField(lists)
+    const childrenField = createChildrenField(marks, of)
+    const styleField = createStyleField(styles)
+    const listField = createListField(lists)
+
+    const markDefsField = subTypeDef?.marks?.annotations && {
+      name: 'markDefs',
+      title: 'Mark definitions',
+      type: 'array',
+      of: subTypeDef.marks.annotations,
+    }
 
     // NOTE: if you update this please also update `BlockSchemaType` in`@sanity/types`
-    const fields = [spansField, stylesField, listsField].concat(subTypeDef.fields || [])
+    const fields = [childrenField, styleField, listField]
+      .concat(markDefsField || [])
+      .concat(subTypeDef.fields || [])
 
     const parsed = Object.assign(pick(BLOCK_CORE, INHERITED_FIELDS), rest, {
       type: BLOCK_CORE,
@@ -91,7 +100,7 @@ function ensureNormalStyle(styles) {
     : [BLOCK_STYLES.normal, ...styles]
 }
 
-function createStylesField(styles) {
+function createStyleField(styles) {
   return {
     name: 'style',
     title: 'Style',
@@ -102,7 +111,7 @@ function createStylesField(styles) {
   }
 }
 
-function createListsField(lists) {
+function createListField(lists) {
   return {
     name: 'list',
     title: 'List type',
@@ -115,7 +124,7 @@ function createListsField(lists) {
 
 const DEFAULT_ANNOTATIONS = [DEFAULT_LINK_ANNOTATION]
 
-function createSpansField(marks, of = []) {
+function createChildrenField(marks, of = []) {
   return {
     name: 'children',
     title: 'Content',
