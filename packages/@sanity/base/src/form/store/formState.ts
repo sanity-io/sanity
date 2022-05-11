@@ -255,8 +255,14 @@ function prepareObjectInputState<T>(
     readOnly,
   }
 
+  // note: this is needed because not all object types gets a ´fieldsets´ property during schema parsing.
+  // ideally members should be normalized as part of the schema parsing and not here
+  const normalizedSchemaMembers: typeof props.schemaType.fieldsets = props.schemaType.fieldsets
+    ? props.schemaType.fieldsets
+    : props.schemaType.fields.map((field) => ({single: true, field}))
+
   // create a members array for the object
-  const members = (props.schemaType.fieldsets || []).flatMap((fieldSet, index): ObjectMember[] => {
+  const members = normalizedSchemaMembers.flatMap((fieldSet, index): ObjectMember[] => {
     if (fieldSet.single) {
       // "single" means not part of a fieldset
       const fieldState = prepareFieldState({
