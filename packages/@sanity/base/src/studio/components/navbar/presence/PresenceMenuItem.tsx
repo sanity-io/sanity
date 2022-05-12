@@ -35,7 +35,7 @@ export const PresenceMenuItem = memo(function PresenceMenuItem({presence}: Prese
             intent="edit"
             params={{
               id: lastActiveLocation?.documentId,
-              path: encodeURIComponent(PathUtils.toString(lastActiveLocation?.path)),
+              path: PathUtils.toString(lastActiveLocation?.path),
             }}
             ref={ref}
           />
