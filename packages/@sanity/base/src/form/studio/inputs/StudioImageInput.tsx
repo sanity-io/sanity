@@ -8,7 +8,7 @@ import {observeImageAsset} from './client-adapters/assets'
 
 export type StudioImageInputProps = Omit<
   ImageInputProps,
-  'assetSources' | 'directUploads' | 'imageUrlBuilder' | 'observeAsset'
+  'assetSources' | 'directUploads' | 'imageUrlBuilder' | 'observeAsset' | 'client'
 >
 
 export function StudioImageInput(props: StudioImageInputProps) {
@@ -35,6 +35,7 @@ export function StudioImageInput(props: StudioImageInputProps) {
   return (
     <ImageInput
       {...props}
+      client={client}
       assetSources={assetSources}
       directUploads={image.directUploads}
       imageUrlBuilder={builder}

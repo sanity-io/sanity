@@ -1,45 +1,47 @@
-import React, {ForwardedRef, forwardRef} from 'react'
-// import {SchemaType} from '@sanity/types'
-// import {resolveUploader as sanityResolveUploader} from '../uploads/resolveUploader'
+import React, {ForwardedRef, forwardRef, useCallback} from 'react'
+import {SchemaType} from '@sanity/types'
+import {resolveUploader as defaultResolveUploader} from '../uploads/resolveUploader'
 import {ArrayInput} from '../../inputs/arrays/ArrayOfObjectsInput'
 import {ArrayOfPrimitivesInput} from '../../inputs/arrays/ArrayOfPrimitivesInput'
-// import * as is from '../../utils/is'
-// import {FileLike} from '../uploads/types'
-// import {FormBuilderContextValue} from '../../FormBuilderContext'
+import * as is from '../../utils/is'
 import {useFormBuilder} from '../../useFormBuilder'
 import {ArrayOfObjectsInputProps, ArrayOfPrimitivesInputProps} from '../../types'
 import {resolveInitialValueForType} from '../../../templates'
-
-// const arrayResolveUploader = (
-//   formBuilder: FormBuilderContextValue,
-//   type: SchemaType,
-//   file: FileLike
-// ) => {
-//   const SUPPORT_DIRECT_IMAGE_UPLOADS = formBuilder.__internal.image.directUploads
-//   const SUPPORT_DIRECT_FILE_UPLOADS = formBuilder.__internal.file.directUploads
-//   if (is.type('image', type) && !SUPPORT_DIRECT_IMAGE_UPLOADS) {
-//     return null
-//   }
-//   if (is.type('file', type) && !SUPPORT_DIRECT_FILE_UPLOADS) {
-//     return null
-//   }
-//   return sanityResolveUploader(type, file)
-// }
+import {FileLike, UploaderResolver} from '../uploads/types'
+import {useSource} from '../../../studio'
 
 export const StudioArrayInput = forwardRef(function StudioArrayInput(
-  props: ArrayOfObjectsInputProps
+  props: ArrayOfObjectsInputProps & {resolveUploader: UploaderResolver}
   // ref: ForwardedRef<typeof ArrayInput>
 ) {
-  // // const formBuilder = useFormBuilder()
-  //
-  // const resolveUploader = useCallback(
-  //   (type: SchemaType, file: FileLike) => {
-  //     return arrayResolveUploader(formBuilder, type, file)
-  //   },
-  //   [formBuilder]
-  // )
+  const formBuilder = useFormBuilder()
+  // todo abstract the client away
+  const {client} = useSource()
+  const supportsImageUploads = formBuilder.__internal.image.directUploads
+  const supportsFileUploads = formBuilder.__internal.file.directUploads
 
-  return <ArrayInput {...props} resolveInitialValue={resolveInitialValueForType} />
+  const resolveUploader = useCallback(
+    (type: SchemaType, file: FileLike) => {
+      if (is.type('image', type) && !supportsImageUploads) {
+        return null
+      }
+      if (is.type('file', type) && !supportsFileUploads) {
+        return null
+      }
+
+      return defaultResolveUploader(type, file)
+    },
+    [supportsFileUploads, supportsImageUploads]
+  )
+
+  return (
+    <ArrayInput
+      {...props}
+      resolveInitialValue={resolveInitialValueForType}
+      resolveUploader={resolveUploader}
+      client={client}
+    />
+  )
 })
 
 export const StudioArrayOfPrimitivesInput = forwardRef(function StudioArrayOfPrimitivesInput(

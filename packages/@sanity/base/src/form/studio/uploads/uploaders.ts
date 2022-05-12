@@ -1,5 +1,6 @@
 import {SchemaType} from '@sanity/types'
 import {map} from 'rxjs/operators'
+import {SanityClient} from '@sanity/client'
 import {set} from '../../patch'
 import {uploadImage} from './uploadImage'
 import {uploadFile} from './uploadFile'
@@ -8,20 +9,22 @@ import {Uploader, UploaderDef, UploadOptions} from './types'
 const UPLOAD_IMAGE: UploaderDef = {
   type: 'image',
   accepts: 'image/*',
-  upload: (file: File, type?: SchemaType, options?: UploadOptions) => uploadImage(file, options),
+  upload: (client: SanityClient, file: File, type?: SchemaType, options?: UploadOptions) =>
+    uploadImage(client, file, options),
 }
 
 const UPLOAD_FILE: UploaderDef = {
   type: 'file',
   accepts: '',
-  upload: (file: File, type: SchemaType, options?: UploadOptions) => uploadFile(file, options),
+  upload: (client: SanityClient, file: File, type: SchemaType, options?: UploadOptions) =>
+    uploadFile(client, file, options),
 }
 
 const UPLOAD_TEXT: UploaderDef = {
   type: 'string',
   accepts: 'text/*',
-  upload: (file: File, type: SchemaType, options?: UploadOptions) =>
-    uploadFile(file, options).pipe(
+  upload: (client: SanityClient, file: File, type: SchemaType, options?: UploadOptions) =>
+    uploadFile(client, file, options).pipe(
       map((content) => ({
         type: 'uploadEvent',
         patches: [set(content)],

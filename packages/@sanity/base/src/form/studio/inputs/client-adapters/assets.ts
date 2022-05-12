@@ -1,19 +1,21 @@
 import {mergeMap, map, catchError} from 'rxjs/operators'
 import {Observable, of as observableOf} from 'rxjs'
 import {FileAsset, ImageAsset} from '@sanity/types'
-import {SanityClient} from '@sanity/client'
+import {SanityClient, ProgressEvent, SanityAssetDocument} from '@sanity/client'
 import {withMaxConcurrency} from '../../utils'
 import {DocumentPreviewStore} from '../../../../preview'
 import {UploadOptions} from '../../uploads/types'
 
 const MAX_CONCURRENT_UPLOADS = 4
 
+type UploadEvent = ProgressEvent | {type: 'complete'; id: string; asset: SanityAssetDocument}
+
 function uploadSanityAsset(
   client: SanityClient,
   assetType: 'file' | 'image',
   file: File | Blob,
   options: UploadOptions = {}
-) {
+): Observable<UploadEvent> {
   const extract = options.metadata
   const preserveFilename = options.storeOriginalFilename
   const {label, title, description, creditLine, source} = options
@@ -28,11 +30,11 @@ function uploadSanityAsset(
       hash ? fetchExisting(client, `sanity.${assetType}Asset`, hash) : observableOf(null)
     ),
 
-    mergeMap((existing: FileAsset | ImageAsset | null) => {
+    mergeMap((existing: SanityAssetDocument | null) => {
       if (existing) {
         return observableOf({
           // complete with the existing asset document
-          type: 'complete',
+          type: 'complete' as const,
           id: existing._id,
           asset: existing,
         })
@@ -53,7 +55,7 @@ function uploadSanityAsset(
             event.type === 'response'
               ? {
                   // rewrite to a 'complete' event
-                  type: 'complete',
+                  type: 'complete' as const,
                   id: event.body.document._id,
                   asset: event.body.document,
                 }
@@ -66,11 +68,14 @@ function uploadSanityAsset(
 
 const uploadAsset = withMaxConcurrency(uploadSanityAsset, MAX_CONCURRENT_UPLOADS)
 
-export const uploadImageAsset = (file: File | Blob, options?: UploadOptions) =>
-  uploadAsset('image', file, options)
+export const uploadImageAsset = (
+  client: SanityClient,
+  file: File | Blob,
+  options?: UploadOptions
+) => uploadAsset(client, 'image', file, options)
 
-export const uploadFileAsset = (file: File | Blob, options?: UploadOptions) =>
-  uploadAsset('file', file, options)
+export const uploadFileAsset = (client: SanityClient, file: File | Blob, options?: UploadOptions) =>
+  uploadAsset(client, 'file', file, options)
 
 // note: there's currently 100% overlap between the ImageAsset document and the FileAsset documents as per interface required by the image and file input
 function observeAssetDoc(documentPreviewStore: DocumentPreviewStore, id: string) {

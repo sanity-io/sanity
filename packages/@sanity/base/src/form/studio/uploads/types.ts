@@ -1,3 +1,4 @@
+import {SanityClient} from '@sanity/client'
 import {AssetSourceSpec, SchemaType, AssetMetadataType} from '@sanity/types'
 import {Observable} from 'rxjs'
 import {FormPatch} from '../../patch'
@@ -22,13 +23,18 @@ export type UploadOptions = {
 export type UploaderDef = {
   type: string
   accepts: string
-  upload: (file: File, type: SchemaType) => Observable<UploadEvent>
+  upload: (client: SanityClient, file: File, type: SchemaType) => Observable<UploadEvent>
 }
 
 export type Uploader = {
   type: string
   accepts: string
-  upload: (file: File, type: SchemaType, options?: UploadOptions) => Observable<UploadEvent>
+  upload: (
+    client: SanityClient,
+    file: File,
+    type: SchemaType,
+    options?: UploadOptions
+  ) => Observable<UploadEvent>
   priority: number
 }
 

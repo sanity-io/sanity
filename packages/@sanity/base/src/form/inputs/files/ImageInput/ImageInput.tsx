@@ -37,6 +37,7 @@ import {ActionsMenu} from '../common/ActionsMenu'
 import {UploadWarning} from '../common/UploadWarning'
 import {ImagePreview} from './ImagePreview'
 import {ImageActionsMenu} from './ImageActionsMenu'
+import {SanityClient} from '@sanity/client'
 
 export interface Image extends Partial<BaseImage> {
   _upload?: UploadState
@@ -48,6 +49,7 @@ export interface ImageInputProps extends ObjectInputProps<Image, ImageSchemaType
   imageUrlBuilder: ImageUrlBuilder
   observeAsset: (documentId: string) => Observable<ImageAsset>
   resolveUploader: UploaderResolver
+  client: SanityClient
 }
 
 const getDevicePixelRatio = () => {
@@ -159,7 +161,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
   }
 
   uploadWith = (uploader: Uploader, file: File, assetDocumentProps: UploadOptions = {}) => {
-    const {schemaType, onChange} = this.props
+    const {schemaType, onChange, client} = this.props
     const {label, title, description, creditLine, source} = assetDocumentProps
     const options = {
       metadata: get(schemaType, 'options.metadata'),
@@ -174,7 +176,7 @@ export class ImageInput extends React.PureComponent<ImageInputProps, ImageInputS
     this.cancelUpload()
     this.setState({isUploading: true})
     onChange(setIfMissing({_type: schemaType.name}))
-    this.uploadSubscription = uploader.upload(file, schemaType, options).subscribe({
+    this.uploadSubscription = uploader.upload(client, file, schemaType, options).subscribe({
       next: (uploadEvent) => {
         if (uploadEvent.patches) {
           onChange(uploadEvent.patches)

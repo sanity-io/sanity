@@ -8,6 +8,7 @@ import {UploadOptions} from '../../../../studio/uploads/types'
 import {renderInput} from '../../../../test/renderInput'
 import {FIXME} from '../../../../types'
 import {FileInput, FileInputProps} from '../FileInput'
+import {SanityClient} from '@sanity/client'
 
 const fileTestType = {
   name: 'fileTest',
@@ -42,7 +43,7 @@ const resolveUploaderStub = () => ({
   priority: 1,
   type: 'file',
   accepts: 'file/*',
-  upload: (file: File, type?: SchemaType, options?: UploadOptions) => EMPTY,
+  upload: (client: SanityClient, file: File, type?: SchemaType, options?: UploadOptions) => EMPTY,
 })
 
 const defaultProps: Partial<FileInputProps> = {

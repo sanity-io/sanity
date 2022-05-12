@@ -1,5 +1,6 @@
 import {from as observableFrom, of as observableOf, Observable} from 'rxjs'
 import {catchError, concat, filter, map, merge, mergeMap} from 'rxjs/operators'
+import type {SanityClient} from '@sanity/client'
 import {set} from '../../patch'
 import {uploadImageAsset} from '../inputs/client-adapters/assets'
 import {readExif} from './image/readExif'
@@ -13,8 +14,12 @@ type Exif = {
   orientation: Orientation
 }
 
-export function uploadImage(file: File, options?: UploadOptions): Observable<UploadEvent> {
-  const upload$ = uploadImageAsset(file, options).pipe(
+export function uploadImage(
+  client: SanityClient,
+  file: File,
+  options?: UploadOptions
+): Observable<UploadEvent> {
+  const upload$ = uploadImageAsset(client, file, options).pipe(
     filter((event: any) => event.stage !== 'download'),
     map((event) => ({
       ...event,

@@ -13,8 +13,7 @@ import React from 'react'
 import {map} from 'rxjs/operators'
 import {Subscription} from 'rxjs'
 import {randomKey, resolveTypeName} from '@sanity/util/content'
-import {FormFieldSet} from '../../../components/formField'
-import {Uploader, UploadEvent} from '../../../studio/uploads/types'
+import {Uploader, UploaderResolver, UploadEvent} from '../../../studio/uploads/types'
 import {isDev} from '../../../../environment'
 import {Alert} from '../../../components/Alert'
 import {Details} from '../../../components/Details'
@@ -30,16 +29,10 @@ import {uploadTarget} from './uploadTarget/uploadTarget'
 import {isEmpty} from './item/helpers'
 import {ArrayItem} from './item/ArrayItem'
 import {MemberItem} from './MemberItem'
+import {withFocusRing} from '../../../components/withFocusRing'
+import {SanityClient} from '@sanity/client'
 
 type Toast = {push: (params: ToastParams) => void}
-
-let UploadTargetFieldsetMemo: any
-function getUploadTargetFieldset() {
-  if (!UploadTargetFieldsetMemo) {
-    UploadTargetFieldsetMemo = uploadTarget(FormFieldSet)
-  }
-  return UploadTargetFieldsetMemo
-}
 
 export function createProtoValue(type: SchemaType): ArrayMember {
   if (!isObjectSchemaType(type)) {
@@ -56,7 +49,14 @@ interface State {
   isResolvingInitialValue: boolean
 }
 
-export class ArrayInput extends React.PureComponent<ArrayOfObjectsInputProps<ArrayMember>> {
+const UploadTarget = uploadTarget(withFocusRing(Card))
+
+interface ArrayInputProps extends ArrayOfObjectsInputProps<ArrayMember> {
+  resolveUploader: UploaderResolver
+  client: SanityClient
+}
+
+export class ArrayInput extends React.PureComponent<ArrayInputProps> {
   _focusArea: HTMLElement | null = null
   toast: Toast | null = null
 
@@ -229,14 +229,14 @@ export class ArrayInput extends React.PureComponent<ArrayOfObjectsInputProps<Arr
   }
 
   handleUpload = ({file, type, uploader}: {file: File; type: SchemaType; uploader: Uploader}) => {
-    const {onChange} = this.props
+    const {onChange, client} = this.props
     const item = createProtoValue(type)
     const key = item._key
 
     this.insert(item, 'after', -1)
 
     const events$ = uploader
-      .upload(file, type)
+      .upload(client, file, type)
       .pipe(
         map((uploadEvent: UploadEvent) =>
           PatchEvent.from(uploadEvent.patches || []).prefixAll({_key: key})
@@ -305,6 +305,7 @@ export class ArrayInput extends React.PureComponent<ArrayOfObjectsInputProps<Arr
       members,
       renderField,
       renderInput,
+      resolveUploader,
     } = this.props
 
     const {isResolvingInitialValue} = this.state
@@ -382,48 +383,62 @@ export class ArrayInput extends React.PureComponent<ArrayOfObjectsInputProps<Arr
           </Alert>
         )}
 
-        <Stack data-ui="ArrayInput__content" space={3}>
-          {(members?.length > 0 || isResolvingInitialValue) && (
-            <Card border radius={1} paddingY={isGrid ? 2 : 1} paddingX={isGrid ? 2 : undefined}>
-              <List onSortEnd={this.handleSortEnd} isSortable={isSortable} isGrid={isGrid}>
-                {members.map((member, index) => {
-                  return (
-                    <Item key={member.key} isSortable={isSortable} isGrid={isGrid} index={index}>
-                      <MemberItem
-                        member={member}
-                        renderItem={this.renderItem}
-                        renderField={renderField}
-                        renderInput={renderInput}
-                      />
+        <UploadTarget
+          types={schemaType.of}
+          resolveUploader={resolveUploader}
+          onUpload={this.handleUpload}
+          tabIndex={0}
+        >
+          <Stack data-ui="ArrayInput__content" space={3}>
+            {members?.length === 0 && (
+              <Card padding={3} border style={{borderStyle: 'dashed'}} radius={2}>
+                <Text align="center" muted size={1}>
+                  {schemaType.placeholder || <>No items</>}
+                </Text>
+              </Card>
+            )}
+            {(members?.length > 0 || isResolvingInitialValue) && (
+              <Card border radius={1} paddingY={isGrid ? 2 : 1} paddingX={isGrid ? 2 : undefined}>
+                <List onSortEnd={this.handleSortEnd} isSortable={isSortable} isGrid={isGrid}>
+                  {members.map((member, index) => {
+                    return (
+                      <Item key={member.key} isSortable={isSortable} isGrid={isGrid} index={index}>
+                        <MemberItem
+                          member={member}
+                          renderItem={this.renderItem}
+                          renderField={renderField}
+                          renderInput={renderInput}
+                        />
+                      </Item>
+                    )
+                  })}
+                  {isResolvingInitialValue && (
+                    <Item isGrid={isGrid} index={-1}>
+                      <Card radius={1} padding={1}>
+                        <Flex align="center" justify="center" padding={3}>
+                          <Box marginX={3}>
+                            <Spinner muted />
+                          </Box>
+                          <Text>Resolving initial value…</Text>
+                        </Flex>
+                      </Card>
                     </Item>
-                  )
-                })}
-                {isResolvingInitialValue && (
-                  <Item isGrid={isGrid} index={-1}>
-                    <Card radius={1} padding={1}>
-                      <Flex align="center" justify="center" padding={3}>
-                        <Box marginX={3}>
-                          <Spinner muted />
-                        </Box>
-                        <Text>Resolving initial value…</Text>
-                      </Flex>
-                    </Card>
-                  </Item>
-                )}
-              </List>
-            </Card>
-          )}
+                  )}
+                </List>
+              </Card>
+            )}
+          </Stack>
+        </UploadTarget>
 
-          <DefaultArrayInputFunctions
-            type={schemaType}
-            value={value}
-            readOnly={readOnly}
-            onAppendItem={this.handleAppend}
-            onPrependItem={this.handlePrepend}
-            onCreateValue={createProtoValue}
-            onChange={onChange}
-          />
-        </Stack>
+        <DefaultArrayInputFunctions
+          type={schemaType}
+          value={value}
+          readOnly={readOnly}
+          onAppendItem={this.handleAppend}
+          onPrependItem={this.handlePrepend}
+          onCreateValue={createProtoValue}
+          onChange={onChange}
+        />
       </Stack>
     )
   }

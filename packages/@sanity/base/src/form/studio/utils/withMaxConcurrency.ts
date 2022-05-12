@@ -14,12 +14,12 @@ function remove<T>(array: Array<T>, item: T): Array<T> {
   return array
 }
 
-export function withMaxConcurrency(
-  func: (...args: any[]) => Observable<any>,
+export function withMaxConcurrency<Args extends any[], Ret>(
+  func: (...args: Args) => Observable<Ret>,
   concurrency: number = DEFAULT_CONCURRENCY
 ) {
   const throttler = createThrottler(concurrency)
-  return (...args: Array<any>) => observableFrom(throttler(func(...args)))
+  return (...args: Args) => observableFrom(throttler(func(...args))) as Observable<Ret>
 }
 
 export function createThrottler(concurrency: number = DEFAULT_CONCURRENCY) {

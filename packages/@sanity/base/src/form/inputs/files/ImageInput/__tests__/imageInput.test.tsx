@@ -9,6 +9,7 @@ import {ImageInput, ImageInputProps} from '../ImageInput'
 import {UploadOptions} from '../../../../studio/uploads/types'
 import {FIXME} from '../../../../types'
 import {renderInput} from '../../../../test/renderInput'
+import {SanityClient} from '@sanity/client'
 
 const imagesTest = {
   name: 'imagesTest',
@@ -71,7 +72,7 @@ const resolveUploaderStub = () => ({
   priority: 1,
   type: 'image',
   accepts: 'image/*',
-  upload: (file: File, type?: SchemaType, options?: UploadOptions) => EMPTY,
+  upload: (client: SanityClient, file: File, type?: SchemaType, options?: UploadOptions) => EMPTY,
 })
 
 const observeAssetStub = (id: string) =>

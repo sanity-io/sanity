@@ -9,8 +9,6 @@ import {
   File as BaseFile,
   FileAsset,
   FileSchemaType,
-  Path,
-  SchemaType,
 } from '@sanity/types'
 import {ImageIcon, SearchIcon} from '@sanity/icons'
 import {
@@ -24,9 +22,10 @@ import {
   ThemeColorToneKey,
   ToastParams,
 } from '@sanity/ui'
+import {SanityClient} from '@sanity/client'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {Uploader, UploaderResolver, UploadOptions} from '../../../studio/uploads/types'
-import {FileTarget, FileInfo} from '../common/styles'
+import {FileInfo, FileTarget} from '../common/styles'
 import {UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
 import {handleSelectAssetFromSource} from '../common/assetSource'
@@ -40,21 +39,14 @@ import {
   ChangeIndicatorCompareValueProvider,
   ChangeIndicatorWithProvidedFullPath,
 } from '../../../../components/changeIndicators'
-import {FormFieldSet} from '../../../components/formField'
 import {ImperativeToast} from '../../../../components/transitional'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'
 import {PresenceOverlay} from '../../../../presence'
 import {MemberField} from '../../ObjectInput/MemberField'
 import {FieldMember} from '../../../store/types/members'
 import {CardOverlay, FlexContainer} from './styles'
-// import {FileInputField} from './FileInputField'
 import {FileDetails} from './FileDetails'
 import {FileSkeleton} from './FileSkeleton'
-
-type Field = {
-  name: string
-  type: SchemaType
-}
 
 // We alias DOM File type here to distinguish it from the type of the File value
 type DOMFile = globalThis.File
@@ -68,6 +60,7 @@ export interface FileInputProps extends ObjectInputProps<File, FileSchemaType> {
   directUploads?: boolean
   observeAsset: (documentId: string) => Observable<FileAsset>
   resolveUploader: UploaderResolver
+  client: SanityClient
 }
 
 const HIDDEN_FIELDS = ['asset']
@@ -189,7 +182,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
   }
 
   uploadWith = (uploader: Uploader, file: DOMFile, assetDocumentProps: UploadOptions = {}) => {
-    const {schemaType, onChange} = this.props
+    const {schemaType, onChange, client} = this.props
     const {source} = assetDocumentProps
     const options = {
       metadata: get(schemaType, 'options.metadata'),
@@ -199,7 +192,7 @@ export class FileInput extends React.PureComponent<FileInputProps, FileInputStat
     this.cancelUpload()
     this.setState({isUploading: true})
     onChange(PatchEvent.from([setIfMissing({_type: schemaType.name})]))
-    this.uploadSubscription = uploader.upload(file, schemaType, options).subscribe({
+    this.uploadSubscription = uploader.upload(client, file, schemaType, options).subscribe({
       next: (uploadEvent) => {
         if (uploadEvent.patches) {
           onChange(PatchEvent.from(uploadEvent.patches))
