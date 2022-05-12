@@ -1,4 +1,5 @@
-import {createConfig, deskTool} from 'sanity'
+import {createConfig} from 'sanity'
+import {deskTool} from 'sanity/desk'
 import {schemaTypes} from './schema'
 
 export default createConfig({
