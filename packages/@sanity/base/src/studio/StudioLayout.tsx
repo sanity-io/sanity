@@ -1,5 +1,6 @@
 import {Box, Button, Card, Code, ErrorBoundary, Flex, Heading, Spinner} from '@sanity/ui'
-import React, {createElement, Suspense, useCallback, useEffect, useState} from 'react'
+import {startCase} from 'lodash'
+import React, {createElement, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {RouteScope, useRouter} from '../router'
 import {Navbar} from './components'
@@ -16,7 +17,7 @@ const SearchFullscreenPortalCard = styled(Card)`
 
 export function StudioLayout() {
   const {state: routerState} = useRouter()
-  const {tools} = useWorkspace()
+  const {name, title, tools} = useWorkspace()
   const activeToolName = typeof routerState.tool === 'string' ? routerState.tool : undefined
   const activeTool = tools.find((tool) => tool.name === activeToolName)
   const [toolError, setToolError] = useState<{error: Error; info: React.ErrorInfo} | null>(null)
@@ -24,6 +25,20 @@ export function StudioLayout() {
   const [fullscreenSearchPortalEl, setFullscreenSearchPortalEl] = useState<HTMLDivElement | null>(
     null
   )
+
+  const documentTitle = useMemo(() => {
+    const mainTitle = title || startCase(name)
+
+    if (activeToolName) {
+      return `${mainTitle} – ${startCase(activeToolName)}`
+    }
+
+    return mainTitle
+  }, [activeToolName, name, title])
+
+  useEffect(() => {
+    document.title = documentTitle
+  }, [documentTitle])
 
   const handleSearchOpenChange = useCallback((open: boolean) => {
     setSearchOpen(open)
