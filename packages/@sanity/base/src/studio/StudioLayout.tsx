@@ -2,6 +2,8 @@ import {Box, Button, Card, Code, ErrorBoundary, Flex, Heading, Spinner} from '@s
 import React, {createElement, Suspense, useCallback, useEffect, useState} from 'react'
 import {RouteScope, useRouter} from '../router'
 import {Navbar} from './components'
+import {NoToolsScreen} from './screens/NoToolsScreen'
+import {ToolNotFoundScreen} from './screens/ToolNotFoundScreen'
 import {useWorkspace} from './workspace'
 
 export function StudioLayout() {
@@ -23,12 +25,10 @@ export function StudioLayout() {
     <Flex data-ui="ToolScreen" direction="column" height="fill">
       <Navbar activeToolName={activeToolName} />
 
-      {!activeTool && (
-        <Card flex={1} overflow="auto" padding={4}>
-          <Heading as="h1">
-            No tool: <code>{activeToolName}</code>
-          </Heading>
-        </Card>
+      {tools.length === 0 && <NoToolsScreen />}
+
+      {tools.length > 0 && !activeTool && activeToolName && (
+        <ToolNotFoundScreen toolName={activeToolName} />
       )}
 
       {toolError && activeTool && (
