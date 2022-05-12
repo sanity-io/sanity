@@ -6,8 +6,5 @@
     "jsx": "preserve",
     "allowJs": true
   },
-  "references": [
-    {"path": "../../packages/@sanity/base/tsconfig.lib.json"},
-    {"path": "../../packages/@sanity/types"}
-  ]
+  "references": [{"path": "../../packages/sanity/tsconfig.lib.json"}]
 }

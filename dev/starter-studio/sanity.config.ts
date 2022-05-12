@@ -1,15 +1,11 @@
 import {codeInput} from '@sanity/code-input'
-import {createConfig, deskTool} from 'sanity'
-import {authorDocumentType} from './schema/author'
-import {postDocumentType} from './schema/post'
+import {createConfig} from 'sanity'
+import {deskTool} from 'sanity/desk'
 
 export default createConfig({
   dataset: 'test',
   plugins: [codeInput(), deskTool()],
   name: 'default',
   projectId: 'ppsg7ml5',
-  schema: {
-    types: [authorDocumentType, postDocumentType],
-  },
   title: 'Starter Studio',
 })
