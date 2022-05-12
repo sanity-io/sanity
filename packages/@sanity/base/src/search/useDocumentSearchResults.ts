@@ -37,6 +37,9 @@ const LOADING_STATE: DocumentSearchResultsState = {
   value: [],
 }
 
+// This value is used to improve performance by minimizing the number
+// of API requests, as well as improving the user experience by waiting
+// to display the search results until the user has finished typing.
 const DEBOUNCE_VALUE = 400
 
 export function useDocumentSearchResults(props: {
