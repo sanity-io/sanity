@@ -1,5 +1,6 @@
 /* eslint-disable react/react-in-jsx-scope */
-import {createConfig, deskTool, Studio} from 'sanity'
+import {createConfig, Studio} from 'sanity'
+import {deskTool} from 'sanity/desk'
 import {useMemo} from 'react'
 
 if (typeof window !== 'undefined') {
