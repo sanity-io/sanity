@@ -10,6 +10,8 @@ import {useResolvedPanes} from '../../structureResolvers'
 import {PaneNode} from '../../types'
 import {PaneLayout} from '../pane'
 import {useDeskTool} from '../DeskToolProvider'
+import {useSource} from '../../../studio'
+import {NoDocumentTypesScreen} from './NoDocumentTypesScreen'
 
 interface DeskToolProps {
   onPaneChange: (panes: Array<PaneNode | typeof LOADING_PANE>) => void
@@ -28,6 +30,7 @@ const isSaveHotkey = isHotkey('mod+s')
 export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
   const {navigate} = useRouter()
   const {push: pushToast} = useToast()
+  const {schema} = useSource()
   const {layoutCollapsed, setLayoutCollapsed} = useDeskTool()
   const {paneDataItems, resolvedPanes, routerPanes} = useResolvedPanes()
 
@@ -76,6 +79,14 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
     window.addEventListener('keydown', handleGlobalKeyDown)
     return () => window.removeEventListener('keydown', handleGlobalKeyDown)
   }, [pushToast])
+
+  const hasDocumentTypes = schema._original?.types.some((def) => {
+    return def.type === 'document'
+  })
+
+  if (!hasDocumentTypes) {
+    return <NoDocumentTypesScreen />
+  }
 
   return (
     <PortalProvider element={portalElement || null}>
