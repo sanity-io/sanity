@@ -1,9 +1,11 @@
 import React, {useCallback, useMemo} from 'react'
+import {SchemaType} from '@sanity/types'
 import {FileInput, FileInputProps} from '../../inputs/files/FileInput'
-import {resolveUploader} from '../uploads/resolveUploader'
+import {resolveUploader as defaultResolveUploader} from '../uploads/resolveUploader'
 import {useFormBuilder} from '../../useFormBuilder'
 import {useDocumentPreviewStore} from '../../../datastores'
 import {useSource} from '../../../studio'
+import {FileLike} from '../uploads/types'
 import {observeFileAsset} from './client-adapters/assets'
 
 export type StudioFileInputProps = Omit<
@@ -14,14 +16,23 @@ export type StudioFileInputProps = Omit<
 export function StudioFileInput(props: StudioFileInputProps) {
   const sourcesFromSchema = props.schemaType.options?.sources
   const documentPreviewStore = useDocumentPreviewStore()
-  const {file} = useFormBuilder().__internal
+  const {file: fileConfig} = useFormBuilder().__internal
   const {client} = useSource()
 
+  const resolveUploader = useCallback(
+    (type: SchemaType, file: FileLike) => {
+      if (!fileConfig.directUploads) {
+        return null
+      }
+      return defaultResolveUploader(type, file)
+    },
+    [fileConfig.directUploads]
+  )
   // NOTE: type.options.sources may be an empty array and in that case we're
   // disabling selecting images from asset source  (it's a feature, not a bug)
   const assetSources = useMemo(
-    () => sourcesFromSchema || file.assetSources,
-    [file, sourcesFromSchema]
+    () => sourcesFromSchema || fileConfig.assetSources,
+    [fileConfig, sourcesFromSchema]
   )
 
   const observeAsset = useCallback(
@@ -34,7 +45,7 @@ export function StudioFileInput(props: StudioFileInputProps) {
       {...props}
       client={client}
       assetSources={assetSources}
-      directUploads={file.directUploads}
+      directUploads={fileConfig.directUploads}
       observeAsset={observeAsset}
       resolveUploader={resolveUploader}
     />
