@@ -67,7 +67,7 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
           closable: true,
           id: 'auto-save-message',
           status: 'info',
-          title: 'Sanity auto-saves your work!',
+          title: 'Your work is automatically saved!',
           duration: 4000,
         })
       }
