@@ -1,15 +1,5 @@
-import {CloseIcon, ComposeIcon, MenuIcon, SearchIcon} from '@sanity/icons'
-import {
-  Box,
-  Button,
-  Card,
-  Flex,
-  Layer,
-  Text,
-  Tooltip,
-  useGlobalKeyDown,
-  useMediaIndex,
-} from '@sanity/ui'
+import {CloseIcon, MenuIcon, SearchIcon} from '@sanity/icons'
+import {Box, Button, Card, Flex, Layer, Text, useGlobalKeyDown, useMediaIndex} from '@sanity/ui'
 import React, {
   createElement,
   useCallback,
@@ -25,7 +15,7 @@ import {useWorkspace} from '../../workspace'
 import {useColorScheme} from '../../colorScheme'
 import {useRouterState, useStateLink} from '../../../router'
 import {UserMenu} from './userMenu'
-import {NewDocumentDialog} from './NewDocumentDialog'
+import {NewDocumentButton} from './NewDocumentButton'
 import {PresenceMenu} from './presence'
 import {SideMenu} from './SideMenu'
 import {SearchField} from './search'
@@ -80,13 +70,10 @@ export function Navbar(props: NavbarProps) {
   const mediaIndex = useMediaIndex()
   const activeToolName = typeof routerState.tool === 'string' ? routerState.tool : undefined
 
-  const [newDocumentDialogOpen, setNewDocumentDialogOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState<boolean>(false)
   const [sideMenuOpen, setSideMenuOpen] = useState<boolean>(false)
 
-  const [newDocumentButtonEl, setNewDocumentButtonEl] = useState<HTMLButtonElement | null>(null)
   const [sideMenuButtonEl, setSideMenuButtonEl] = useState<HTMLButtonElement | null>(null)
-
   const [searchInputElement, setSearchInputElement] = useState<HTMLInputElement | null>(null)
   const [searchOpenButtonEl, setSearchOpenButtonEl] = useState<HTMLButtonElement | null>(null)
   const [searchCloseButtonEl, setSearchCloseButtonEl] = useState<HTMLButtonElement | null>(null)
@@ -133,15 +120,6 @@ export function Navbar(props: NavbarProps) {
   const handleOpenSideMenu = useCallback(() => {
     setSideMenuOpen(true)
   }, [])
-
-  const handleNewDocumentButtonClick = useCallback(() => {
-    setNewDocumentDialogOpen(true)
-  }, [])
-
-  const handleNewDocumentDialogClose = useCallback(() => {
-    setNewDocumentDialogOpen(false)
-    newDocumentButtonEl?.focus()
-  }, [newDocumentButtonEl])
 
   const rootLinkContent = (() => {
     if (isValidElementType(logo)) return createElement(logo)
@@ -204,26 +182,9 @@ export function Navbar(props: NavbarProps) {
                 </Card>
               )} */}
 
-            <Tooltip
-              content={
-                <Box padding={2}>
-                  <Text size={1}>New document…</Text>
-                </Box>
-              }
-              placement="bottom"
-              portal
-              scheme={scheme}
-            >
-              <Box marginRight={shouldRender.brandingCenter ? undefined : 2}>
-                <Button
-                  aria-label="New document…"
-                  icon={ComposeIcon}
-                  mode="bleed"
-                  onClick={handleNewDocumentButtonClick}
-                  ref={setNewDocumentButtonEl}
-                />
-              </Box>
-            </Tooltip>
+            <Box marginRight={shouldRender.brandingCenter ? undefined : 2}>
+              <NewDocumentButton />
+            </Box>
 
             {(searchOpen || !shouldRender.searchFullscreen) && (
               <SearchCard
@@ -310,15 +271,15 @@ export function Navbar(props: NavbarProps) {
         </Flex>
       </Card>
 
-      <SideMenu
-        activeToolName={activeToolName}
-        isOpen={sideMenuOpen}
-        onClose={handleCloseSideMenu}
-        onSwitchTool={handleCloseSideMenu}
-        tools={tools}
-      />
-
-      {newDocumentDialogOpen && <NewDocumentDialog onClose={handleNewDocumentDialogClose} />}
+      {!shouldRender.tools && (
+        <SideMenu
+          activeToolName={activeToolName}
+          isOpen={sideMenuOpen}
+          onClose={handleCloseSideMenu}
+          onSwitchTool={handleCloseSideMenu}
+          tools={tools}
+        />
+      )}
     </RootLayer>
   )
 }
