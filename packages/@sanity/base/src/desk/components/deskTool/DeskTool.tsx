@@ -80,11 +80,11 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
     return () => window.removeEventListener('keydown', handleGlobalKeyDown)
   }, [pushToast])
 
-  const hasDocumentTypes = schema._original?.types.some((def) => {
-    return def.type === 'document'
+  const hasDefinedDocumentTypes = schema._original?.types.some((def) => {
+    return def.type === 'document' && !def.name.startsWith('sanity.')
   })
 
-  if (!hasDocumentTypes) {
+  if (!hasDefinedDocumentTypes) {
     return <NoDocumentTypesScreen />
   }
 
