@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-filename-extension */
 /* eslint-disable react/react-in-jsx-scope */
-import {createConfig, deskTool, Studio} from 'sanity'
+import {createConfig, Studio} from 'sanity'
+import {deskTool} from 'sanity/desk'
 
 const config = createConfig({
   plugins: [deskTool()],
