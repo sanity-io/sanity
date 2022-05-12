@@ -1,6 +1,7 @@
-import {createConfig, deskTool} from '@sanity/base'
 import {codeInput} from '@sanity/code-input'
 import {BookIcon} from '@sanity/icons'
+import {createConfig} from 'sanity'
+import {deskTool} from 'sanity/desk'
 import {imageAssetSource} from './assetSources'
 import {Branding} from './components/Branding'
 import {CustomMarkers} from './components/formBuilder/CustomMarkers'
