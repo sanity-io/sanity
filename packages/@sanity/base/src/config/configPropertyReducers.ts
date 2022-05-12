@@ -8,8 +8,8 @@ import {
   DuplicateAction,
   PublishAction,
   UnpublishAction,
-} from '../deskTool/actions'
-import {DocumentBadgeComponent, LiveEditBadge} from '../deskTool/badges'
+} from '../desk/actions'
+import {DocumentBadgeComponent, LiveEditBadge} from '../desk/badges'
 import {InputProps, FieldProps, ItemProps} from '../form'
 import {isRecord} from '../util'
 import {PreviewProps} from '../components/previews'

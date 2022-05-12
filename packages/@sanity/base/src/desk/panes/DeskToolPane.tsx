@@ -28,7 +28,7 @@ const paneMap = {
 }
 
 /**
- * @note The same pane might appear multiple times (split pane), so use index as tiebreaker
+ * NOTE: The same pane might appear multiple times (split pane), so use index as tiebreaker
  *
  * @internal
  */

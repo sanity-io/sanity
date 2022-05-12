@@ -10,7 +10,7 @@ import {useToast, Text, Box, Button, Flex, Label, Card, Stack} from '@sanity/ui'
 import {CopyToClipboard} from 'react-copy-to-clipboard'
 import {SanityDefaultPreview} from '../../../preview'
 import {useSource} from '../../../studio'
-import {ReferencePreviewLink} from '../deskTool/ReferencePreviewLink'
+import {ReferencePreviewLink} from './ReferencePreviewLink'
 import {ReferringDocuments} from './useReferringDocuments'
 import {
   ReferencesCard,

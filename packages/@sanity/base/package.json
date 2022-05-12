@@ -16,6 +16,11 @@
       "require": "./lib/cjs/_exports/_unstable.js",
       "default": "./lib/esm/_exports/_unstable.js"
     },
+    "./desk": {
+      "source": "./src/_exports/desk.ts",
+      "require": "./lib/cjs/_exports/desk.js",
+      "default": "./lib/esm/_exports/desk.js"
+    },
     "./form": {
       "source": "./src/_exports/form.ts",
       "require": "./lib/cjs/_exports/form.js",
@@ -28,6 +33,9 @@
     "*": {
       "_unstable": [
         "./lib/dts/src/_exports/_unstable.d.ts"
+      ],
+      "desk": [
+        "./lib/dts/src/_exports/desk.d.ts"
       ],
       "form": [
         "./lib/dts/src/_exports/form.d.ts"

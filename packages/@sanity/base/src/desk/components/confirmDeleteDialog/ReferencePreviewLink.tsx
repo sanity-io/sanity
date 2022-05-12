@@ -1,7 +1,7 @@
 import React, {useCallback} from 'react'
 import type {SanityDocument, SchemaType} from '@sanity/types'
 import {getPublishedId} from '../../../util'
-import {PreviewCard} from '../../../components'
+import {PreviewCard} from '../../../components/PreviewCard'
 import {useDocumentPresence} from '../../../hooks'
 import {useDocumentPreviewStore} from '../../../datastores'
 import {PaneItemPreview} from '../paneItem/PaneItemPreview'

@@ -23,8 +23,8 @@ import type {AuthController} from '../auth'
 import type {StudioTheme} from '../theme'
 import type {InitialValueTemplateItem, Template, TemplateResponse} from '../templates'
 import type {Router, RouterState} from '../router'
-import type {DocumentActionComponent} from '../deskTool/actions'
-import type {DocumentBadgeComponent} from '../deskTool/badges'
+import type {DocumentActionComponent} from '../desk/actions'
+import type {DocumentBadgeComponent} from '../desk/badges'
 import {PreviewProps} from '../components/previews'
 
 /**

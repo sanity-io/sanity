@@ -44,9 +44,10 @@ export type {
   DocumentBadgeComponent,
   DocumentBadgeProps,
   DocumentBadgeDescription,
-} from '../deskTool'
+} from '../desk'
 
-export * from '../deskTool/structureBuilder'
+export * from '../desk/structureBuilder'
+
 export * from '../field'
 export * from '../field/diff/components/ChangeBreadcrumb'
 export * from '../field/diff/components/ChangeTitleSegment'

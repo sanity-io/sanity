@@ -103,10 +103,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     () => historyStore.getTimelineController({client, documentId, documentType, timeline}),
     [client, documentId, documentType, timeline]
   )!
-  /**
-   * @todo: this will now happen on each render, but should be refactored so it happens only when
-   * the `rev`, `since` or `historyController` values change.
-   */
+
+  // @todo: this will now happen on each render, but should be refactored so it happens only when
+  // the `rev`, `since` or `historyController` values change.
   historyController.setRange(params.since || null, params.rev || null)
   const changesOpen = historyController.changesPanelActive()
 
