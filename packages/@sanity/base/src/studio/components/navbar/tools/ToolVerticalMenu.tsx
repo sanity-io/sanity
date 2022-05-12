@@ -3,6 +3,7 @@ import {Button, Stack} from '@sanity/ui'
 import {PlugIcon} from '@sanity/icons'
 import {StateLink, useRouterState} from '../../../../router'
 import {Tool} from '../../../../config'
+import {startCase} from 'lodash'
 
 interface ToolVerticalMenuProps {
   activeToolName?: string
@@ -19,7 +20,7 @@ export function ToolVerticalMenu(props: ToolVerticalMenuProps) {
     () => (
       <Stack as="ul" space={[1, 2]}>
         {tools.map((tool) => {
-          const title = tool.title || tool.name || undefined
+          const title = tool?.title || startCase(tool.name) || undefined
 
           const LinkComponent = (linkProps: any) => {
             return (

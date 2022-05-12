@@ -5,6 +5,7 @@ import {useRovingFocus} from '../../../../components/rovingFocus'
 import {StateLink, useRouterState} from '../../../../router'
 import {useColorScheme} from '../../../colorScheme'
 import {Tool} from '../../../../config'
+import {startCase} from 'lodash'
 
 interface ToolCollapseMenuProps {
   activeToolName?: string
@@ -37,6 +38,8 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
   const children = useMemo(
     () =>
       tools.map((tool, index) => {
+        const title = tool?.title || startCase(tool.name) || undefined
+
         const Link = forwardRef(function Link(
           linkProps: unknown,
           ref: React.Ref<HTMLAnchorElement>
@@ -64,7 +67,7 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
             key={index}
             mode="bleed"
             selected={activeToolName === tool.name}
-            text={tool.title}
+            text={title}
             tooltipProps={{scheme: scheme}}
           />
         )
