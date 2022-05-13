@@ -142,9 +142,6 @@ export default {
 
     const targetDatasetName = await (targetDataset ||
       promptForDatasetName(prompt, {message: 'Target dataset name:'}))
-    if (existingDatasets.includes(targetDatasetName)) {
-      throw new Error(`Target dataset "${targetDatasetName}" already exists`)
-    }
 
     const err = validateDatasetName(targetDatasetName)
     if (err) {
@@ -173,9 +170,9 @@ export default {
       followProgress(response.jobId, client, output)
     } catch (error) {
       if (error.statusCode) {
-        output.print(`${chalk.red(`Dataset copying failed:\n${error.response.body.message}`)}\n`)
+        output.print(`${chalk.red(`Dataset copying failed: \n${error.response.body.message}`)}\n`)
       } else {
-        output.print(`${chalk.red(`Dataset copying failed:\n${error.message}`)}\n`)
+        output.print(`${chalk.red(`Dataset copying failed: SECIBD >>>\n${error.message}`)}\n`)
       }
     }
   },
