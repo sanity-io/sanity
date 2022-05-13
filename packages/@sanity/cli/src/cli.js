@@ -69,6 +69,22 @@ module.exports = async function runCli(cliRoot) {
 }
 
 function getCoreModulePath(workDir) {
+  /* eslint-disable no-process-env */
+  if (process.env.SANITY_CLI_CORE_PATH) {
+    const local = fse.existsSync(process.env.SANITY_CLI_CORE_PATH)
+    if (local) {
+      console.log(
+        chalk.yellow(`[WARN] Loading @sanity/core from: ${process.env.SANITY_CLI_CORE_PATH}`)
+      )
+      return process.env.SANITY_CLI_CORE_PATH
+    }
+    console.error(
+      chalk.red(`Could not resolve SANITY_CLI_CORE_PATH: ${process.env.SANITY_CLI_CORE_PATH}`)
+    )
+    process.exit(1)
+  }
+  /* eslint-enable no-process-env */
+
   const pkgPath = resolveFrom.silent(workDir, '@sanity/core')
   if (pkgPath) {
     return pkgPath
