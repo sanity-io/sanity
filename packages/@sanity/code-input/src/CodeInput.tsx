@@ -1,5 +1,5 @@
 // @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
+// <reference types="@sanity/types/parts"
 
 import React, {useCallback, useEffect, useImperativeHandle, useRef} from 'react'
 import {FormFieldPresence} from '@sanity/base/presence'
@@ -287,80 +287,8 @@ const CodeInput = React.forwardRef(
     const filenamePresence = presence.filter((presenceItem) =>
       PathUtils.startsWith(PATH_FILENAME, presenceItem.path)
     )
-
-    const renderEditor = useCallback(() => {
-      const fixedLanguage = type.options?.language
-
-      const language = value?.language || fixedLanguage
-
-      // the language config from the schema
-      const configured = languages.find((entry) => entry.value === language)
-
-      // is the language officially supported (e.g. we import the mode by default)
-      const supported = language && isSupportedLanguage(language)
-
-      const mode = configured?.mode || (supported ? language : 'text')
-
+    const renderLanguageAlternatives = useCallback(() => {
       return (
-        <EditorContainer radius={1} shadow={1} readOnly={readOnly}>
-          <AceEditor
-            ref={aceEditorRef}
-            mode={mode}
-            theme={getTheme()}
-            width="100%"
-            onChange={handleCodeChange}
-            name={`editor-${aceEditorId}`}
-            value={(value && value.code) || ''}
-            markers={
-              value && value.highlightedLines
-                ? createHighlightMarkers(value.highlightedLines)
-                : undefined
-            }
-            onLoad={handleEditorLoad}
-            readOnly={readOnly}
-            tabSize={2}
-            wrapEnabled
-            setOptions={ACE_SET_OPTIONS}
-            editorProps={ACE_EDITOR_PROPS}
-            onFocus={handleCodeFocus}
-            onBlur={onBlur}
-          />
-        </EditorContainer>
-      )
-    }, [
-      type,
-      value,
-      readOnly,
-      getTheme,
-      handleCodeChange,
-      aceEditorId,
-      handleEditorLoad,
-      handleCodeFocus,
-      onBlur,
-    ])
-
-    if (type.options?.language) {
-      return (
-        <ChangeIndicatorProvider
-          path={PATH_CODE}
-          focusPath={focusPath}
-          value={value?.code}
-          compareValue={codeCompareValue}
-        >
-          <FormFieldSet title={type.title} description={type.description} level={level}>
-            {renderEditor()}
-          </FormFieldSet>
-        </ChangeIndicatorProvider>
-      )
-    }
-
-    return (
-      <FormFieldSet
-        title={type.title}
-        description={type.description}
-        level={level}
-        __unstable_changeIndicator={false}
-      >
         <ChangeIndicatorProvider
           path={PATH_LANGUAGE}
           focusPath={focusPath}
@@ -387,29 +315,72 @@ const CodeInput = React.forwardRef(
             </Select>
           </FormField>
         </ChangeIndicatorProvider>
-        {type.options?.withFilename && (
-          <ChangeIndicatorProvider
-            path={PATH_FILENAME}
-            focusPath={focusPath}
-            value={value?.filename}
-            compareValue={filenameCompareValue}
+      )
+    }, [
+      focusPath,
+      handleLanguageChange,
+      handleLanguageFocus,
+      languageCompareValue,
+      languageField?.title,
+      languagePresence,
+      languages,
+      level,
+      onBlur,
+      readOnly,
+      selectedLanguage?.value,
+    ])
+
+    const renderFilenameInput = useCallback(() => {
+      return (
+        <ChangeIndicatorProvider
+          path={PATH_FILENAME}
+          focusPath={focusPath}
+          value={value?.filename}
+          compareValue={filenameCompareValue}
+        >
+          <FormField
+            label={filenameField?.title || 'Filename'}
+            level={level + 1}
+            __unstable_presence={filenamePresence}
           >
-            <FormField
-              label={filenameField?.title || 'Filename'}
-              level={level + 1}
-              __unstable_presence={filenamePresence}
-            >
-              <TextInput
-                name="filename"
-                value={value?.filename || ''}
-                placeholder={filenameField?.placeholder}
-                onChange={handleFilenameChange}
-                onFocus={handleFilenameFocus}
-                onBlur={onBlur}
-              />
-            </FormField>
-          </ChangeIndicatorProvider>
-        )}
+            <TextInput
+              name="filename"
+              value={value?.filename || ''}
+              placeholder={filenameField?.placeholder}
+              onChange={handleFilenameChange}
+              onFocus={handleFilenameFocus}
+              onBlur={onBlur}
+            />
+          </FormField>
+        </ChangeIndicatorProvider>
+      )
+    }, [
+      filenameCompareValue,
+      filenameField?.placeholder,
+      filenameField?.title,
+      filenamePresence,
+      focusPath,
+      handleFilenameChange,
+      handleFilenameFocus,
+      level,
+      onBlur,
+      value?.filename,
+    ])
+
+    const renderEditor = useCallback(() => {
+      const fixedLanguage = type.options?.language
+
+      const language = value?.language || fixedLanguage
+
+      // the language config from the schema
+      const configured = languages.find((entry) => entry.value === language)
+
+      // is the language officially supported (e.g. we import the mode by default)
+      const supported = language && isSupportedLanguage(language)
+
+      const mode = configured?.mode || (supported ? language : 'text')
+
+      return (
         <ChangeIndicatorProvider
           path={PATH_CODE}
           focusPath={focusPath}
@@ -417,9 +388,62 @@ const CodeInput = React.forwardRef(
           compareValue={codeCompareValue}
         >
           <FormField label="Code" level={level + 1} __unstable_presence={codePresence}>
-            {renderEditor()}
+            <EditorContainer radius={1} shadow={1} readOnly={readOnly}>
+              <AceEditor
+                ref={aceEditorRef}
+                mode={mode}
+                theme={getTheme()}
+                width="100%"
+                onChange={handleCodeChange}
+                name={`editor-${aceEditorId}`}
+                value={(value && value.code) || ''}
+                markers={
+                  value && value.highlightedLines
+                    ? createHighlightMarkers(value.highlightedLines)
+                    : undefined
+                }
+                onLoad={handleEditorLoad}
+                readOnly={readOnly}
+                tabSize={2}
+                wrapEnabled
+                setOptions={ACE_SET_OPTIONS}
+                editorProps={ACE_EDITOR_PROPS}
+                onFocus={handleCodeFocus}
+                onBlur={onBlur}
+              />
+            </EditorContainer>
           </FormField>
         </ChangeIndicatorProvider>
+      )
+    }, [
+      type.options?.language,
+      value,
+      languages,
+      focusPath,
+      codeCompareValue,
+      level,
+      codePresence,
+      readOnly,
+      getTheme,
+      handleCodeChange,
+      aceEditorId,
+      handleEditorLoad,
+      handleCodeFocus,
+      onBlur,
+    ])
+
+    return (
+      <FormFieldSet
+        title={type.title}
+        description={type.description}
+        level={level}
+        __unstable_changeIndicator={false}
+      >
+        {(!type.options?.language ||
+          (type.options?.language && type.options?.languageAlternatives)) &&
+          renderLanguageAlternatives()}
+        {type?.options?.withFilename && renderFilenameInput()}
+        {renderEditor()}
       </FormFieldSet>
     )
   }
