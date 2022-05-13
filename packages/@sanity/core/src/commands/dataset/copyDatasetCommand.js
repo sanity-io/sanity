@@ -170,9 +170,9 @@ export default {
       followProgress(response.jobId, client, output)
     } catch (error) {
       if (error.statusCode) {
-        output.print(`${chalk.red(`Dataset copying failed: \n${error.response.body.message}`)}\n`)
+        output.print(`${chalk.red(`Dataset copying failed:\n${error.response.body.message}`)}\n`)
       } else {
-        output.print(`${chalk.red(`Dataset copying failed: \n${error.message}`)}\n`)
+        output.print(`${chalk.red(`Dataset copying failed:\n${error.message}`)}\n`)
       }
     }
   },
