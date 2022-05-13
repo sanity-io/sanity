@@ -439,9 +439,7 @@ const CodeInput = React.forwardRef(
         level={level}
         __unstable_changeIndicator={false}
       >
-        {(!type.options?.language ||
-          (type.options?.language && type.options?.languageAlternatives)) &&
-          renderLanguageAlternatives()}
+        {!type.options?.language && renderLanguageAlternatives()}
         {type?.options?.withFilename && renderFilenameInput()}
         {renderEditor()}
       </FormFieldSet>
