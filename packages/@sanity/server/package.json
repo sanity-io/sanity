@@ -67,7 +67,7 @@
     "strip-ansi": "^6.0.1",
     "style-loader": "^0.20.1",
     "symbol-observable": "^1.2.0",
-    "webpack": "^3.8.1",
+    "webpack": "^4.0.0",
     "webpack-hot-middleware": "2.25.1"
   },
   "devDependencies": {
