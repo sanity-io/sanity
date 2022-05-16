@@ -57,7 +57,6 @@ export interface CodeInputProps {
   compareValue?: CodeInputValue
   focusPath: Path
   level: number
-  markers: Marker[]
   onBlur: () => void
   onChange: (...args: any[]) => void
   onFocus: (path: Path) => void
