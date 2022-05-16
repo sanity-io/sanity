@@ -378,7 +378,7 @@ const CodeInput = React.forwardRef(
       // is the language officially supported (e.g. we import the mode by default)
       const supported = language && isSupportedLanguage(language)
 
-      const mode = configured?.mode || (supported ? language : 'text')
+      const mode = configured?.mode || (supported ? supported : 'text')
 
       return (
         <ChangeIndicatorProvider
