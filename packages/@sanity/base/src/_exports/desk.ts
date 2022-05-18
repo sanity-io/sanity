@@ -1,8 +1,64 @@
+export type {AuthController, SanityAuthProvider, SanityUser} from '../auth'
+
+export type {
+  GeneralPreviewLayoutKey,
+  PortableTextPreviewLayoutKey,
+  PreviewLayoutKey,
+  PreviewProps,
+  PreviewMediaDimensions,
+} from '../components/previews'
+
+export type {
+  AssetSourceResolver,
+  AsyncComposableOption,
+  ComposableOption,
+  ConfigContext,
+  DocumentActionsContext,
+  DocumentActionsResolver,
+  DocumentBadgesContext,
+  DocumentBadgesResolver,
+  DocumentPluginOptions,
+  FormBuilderComponentResolverContext,
+  FormBuilderFieldComponentResolver,
+  FormBuilderInputComponentResolver,
+  FormBuilderItemComponentResolver,
+  FormBuilderPreviewComponentResolver,
+  NewDocumentCreationContext,
+  NewDocumentOptionsContext,
+  NewDocumentOptionsResolver,
+  PartialContext,
+  Plugin,
+  PluginOptions,
+  ResolveProductionUrlContext,
+  SanityFormBuilderConfig,
+  SchemaPluginOptions,
+  Source,
+  TemplateResolver,
+  Tool,
+} from '../config'
+
+export type {
+  AuthStateChangedMessage,
+  AuthStateConfig,
+  AuthStateState,
+  AuthStateTokenStore,
+  AuthStore,
+  CurrentUserError,
+  CurrentUserEvent,
+  CurrentUserSnapshot,
+  EditStateFor,
+  MSG_AUTH_STATE_CHANGED,
+  UserStore,
+} from '../datastores'
+
 export {deskTool} from '../desk'
 
 export type {
   DefaultDocumentNodeResolver,
   DeskToolOptions,
+  RouterPanes,
+  RouterPaneGroup,
+  RouterPaneSibling,
   StructureBuilder,
   StructureResolver,
 } from '../desk'
@@ -33,6 +89,17 @@ export {
   DiscardChangesAction,
   HistoryRestoreAction,
 } from '../desk/actions'
+
+export {usePaneRouter} from '../desk/components'
+
+export type {
+  BackLinkProps,
+  ChildLinkProps,
+  EditReferenceOptions,
+  PaneRouterContextValue,
+  ParameterizedLinkProps,
+  ReferenceChildLinkProps,
+} from '../desk/components'
 
 export {
   ComponentBuilder,
@@ -112,3 +179,87 @@ export type {
   View,
   ViewBuilder,
 } from '../desk/structureBuilder'
+
+export type {
+  ArrayFieldProps,
+  ArrayOfObjectsFormNode,
+  ArrayOfObjectsInputProps,
+  ArrayOfObjectsMember,
+  ArrayOfPrimitivesElementType,
+  ArrayOfPrimitivesFormNode,
+  ArrayOfPrimitivesInputProps,
+  ArrayOfPrimitivesMember,
+  BaseFieldProps,
+  BaseFormNode,
+  BaseInputProps,
+  BaseItemProps,
+  BooleanFieldProps,
+  BooleanFormNode,
+  BooleanInputProps,
+  FieldMember,
+  FieldProps,
+  FieldSetMember,
+  FieldsetState,
+  FormArrayInputFunctionsProps,
+  FormBuilderArrayFunctionComponent,
+  FormBuilderCustomMarkersComponent,
+  FormBuilderMarkersComponent,
+  FormDiffMatchPatch,
+  FormFieldGroup,
+  FormInsertPatch,
+  FormInsertPatchPosition,
+  FormPatch,
+  FormPatchJSONValue,
+  FormPatchOrigin,
+  FormSetIfMissingPatch,
+  FormSetPatch,
+  FormUnsetPatch,
+  InputProps,
+  InsertItemEvent,
+  ItemProps,
+  MoveItemEvent,
+  NumberFieldProps,
+  NumberFormNode,
+  NumberInputProps,
+  ObjectFieldProps,
+  ObjectFormNode,
+  ObjectInputProps,
+  ObjectItemProps,
+  ObjectMember,
+  PatchArg,
+  PatchEvent,
+  PortableTextMarker,
+  PrimitiveFormNode,
+  PrimitiveItemProps,
+  RenderArrayOfObjectsItemCallback,
+  RenderArrayOfPrimitivesItemCallback,
+  RenderCustomMarkers,
+  RenderFieldCallback,
+  RenderInputCallback,
+  StringFieldProps,
+  StringFormNode,
+  StringInputProps,
+} from '../form'
+
+export type {FormFieldPresence} from '../presence'
+
+export type {
+  Route,
+  RouteChildren,
+  RouteSegment,
+  RouteTransform,
+  Router,
+  RouterNode,
+  RouterState,
+} from '../router'
+
+export type {
+  ArrayFieldDefinition,
+  FieldDefinition,
+  InitialValueTemplateItem,
+  ReferenceTarget,
+  Template,
+  TemplateParameter,
+  TemplateResponse,
+  TypeTarget,
+} from '../templates'

@@ -1,6 +1,6 @@
 import React from 'react'
 
-export interface FieldGroup {
+export interface FormFieldGroup {
   name: string
   selected?: boolean
   disabled?: boolean

@@ -8,7 +8,11 @@ import {
   RenderArrayOfPrimitivesItemCallback,
   FIXME,
 } from '../../types'
-import {ArrayOfObjectsNode, ArrayOfPrimitivesNode, ObjectNode} from '../../store/types/nodes'
+import {
+  ArrayOfObjectsFormNode,
+  ArrayOfPrimitivesFormNode,
+  ObjectFormNode,
+} from '../../store/types/nodes'
 import {ArrayOfObjectsField} from './members/ArrayOfObjectsField'
 import {PrimitiveField} from './members/PrimitiveField'
 import {ObjectField} from './members/ObjectField'
@@ -21,20 +25,22 @@ export interface MemberFieldProps {
   renderItem: RenderArrayOfObjectsItemCallback
 }
 
-function isMemberObject(member: FieldMember): member is FieldMember<ObjectNode> {
+function isMemberObject(member: FieldMember): member is FieldMember<ObjectFormNode> {
   return isObjectSchemaType(member.field.schemaType)
 }
 
 function isMemberArrayOfPrimitives(
   member: FieldMember
-): member is FieldMember<ArrayOfPrimitivesNode> {
+): member is FieldMember<ArrayOfPrimitivesFormNode> {
   return (
     isArraySchemaType(member.field.schemaType) &&
     member.field.schemaType.of.every((ofType) => isPrimitiveSchemaType(ofType))
   )
 }
 
-function isMemberArrayOfObjects(member: FieldMember): member is FieldMember<ArrayOfObjectsNode> {
+function isMemberArrayOfObjects(
+  member: FieldMember
+): member is FieldMember<ArrayOfObjectsFormNode> {
   return (
     isArraySchemaType(member.field.schemaType) &&
     member.field.schemaType.of.every((ofType) => isObjectSchemaType(ofType))

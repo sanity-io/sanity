@@ -1,3 +1,14 @@
+/* eslint-disable camelcase */
+
+export type {
+  GeneralPreviewLayoutKey,
+  PortableTextPreviewLayoutKey,
+  PreviewLayoutKey,
+  PreviewMediaDimensions,
+  PreviewProps,
+} from '../components/previews'
+export type {ChangeIndicatorContextProvidedProps} from '../components/changeIndicators'
+
 export {Timeline, TimelineController} from '../datastores'
 
 export type {
@@ -62,6 +73,8 @@ export {MemberFieldset} from '../form/inputs/ObjectInput/MemberFieldset'
 
 export * from '../form/inputs/arrays/ArrayOfObjectsInput/MemberItem'
 export * from '../form/inputs/arrays/ArrayOfPrimitivesInput/PrimitiveMemberItem'
+
+export type {FIXME_SanityDocument} from '../form/store/formState'
 
 export type {
   HashFocusManagerChildArgs,

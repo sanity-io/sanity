@@ -1,1 +1,1 @@
-export type {FieldGroup} from '../store/types/fieldGroup'
+export type {FormFieldGroup} from '../store/types/fieldGroup'

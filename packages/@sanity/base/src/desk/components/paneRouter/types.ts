@@ -26,7 +26,7 @@ export interface ParameterizedLinkProps {
   payload?: unknown
 }
 
-interface EditReferenceOptions {
+export interface EditReferenceOptions {
   parentRefPath: Path
   id: string
   type: string

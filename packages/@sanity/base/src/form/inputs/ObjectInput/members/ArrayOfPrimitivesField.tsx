@@ -1,6 +1,6 @@
 import React, {useCallback, useMemo, useRef} from 'react'
 import {FieldMember} from '../../../store/types/members'
-import {ArrayOfPrimitivesNode} from '../../../store/types/nodes'
+import {ArrayOfPrimitivesFormNode} from '../../../store/types/nodes'
 import {
   ArrayOfPrimitivesInputProps,
   MoveItemEvent,
@@ -57,7 +57,7 @@ function insertAfter<T>(
  * @param props - Component props
  */
 export function ArrayOfPrimitivesField(props: {
-  member: FieldMember<ArrayOfPrimitivesNode>
+  member: FieldMember<ArrayOfPrimitivesFormNode>
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback
   renderItem: RenderArrayOfPrimitivesItemCallback

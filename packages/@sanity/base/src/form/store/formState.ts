@@ -1,4 +1,5 @@
-/* eslint-disable no-else-return */
+/* eslint-disable camelcase, no-else-return */
+
 import {
   ArraySchemaType,
   CurrentUser,
@@ -22,8 +23,8 @@ import {
   FieldMember,
   ObjectMember,
 } from './types/members'
-import {ArrayOfObjectsNode, ArrayOfPrimitivesNode, ObjectNode} from './types/nodes'
-import {FieldGroup} from './types/fieldGroup'
+import {ArrayOfObjectsFormNode, ArrayOfPrimitivesFormNode, ObjectFormNode} from './types/nodes'
+import {FormFieldGroup} from './types/fieldGroup'
 import {getCollapsedWithDefaults} from './utils/getCollapsibleOptions'
 
 const ALL_FIELDS_GROUP = {
@@ -34,9 +35,9 @@ const ALL_FIELDS_GROUP = {
 
 function isFieldEnabledByGroupFilter(
   // the groups config for the "enclosing object" type
-  groupsConfig: FieldGroup[],
+  groupsConfig: FormFieldGroup[],
   field: ObjectField,
-  currentGroup: FieldGroup
+  currentGroup: FormFieldGroup
 ) {
   if (currentGroup.name === ALL_FIELDS_GROUP.name) {
     return true
@@ -182,7 +183,7 @@ function prepareFieldState(props: {
 interface RawState<SchemaType, T> {
   schemaType: SchemaType
   value?: T
-  document: SanityDocument
+  document: FIXME_SanityDocument
   currentUser: Omit<CurrentUser, 'role'>
   parent?: unknown
   hidden?: boolean
@@ -199,15 +200,15 @@ interface RawState<SchemaType, T> {
 function prepareObjectInputState<T>(
   props: RawState<ObjectSchemaType, T>,
   enableHiddenCheck?: false
-): ObjectNode
+): ObjectFormNode
 function prepareObjectInputState<T>(
   props: RawState<ObjectSchemaType, T>,
   enableHiddenCheck?: true
-): ObjectNode | null
+): ObjectFormNode | null
 function prepareObjectInputState<T>(
   props: RawState<ObjectSchemaType, T>,
   enableHiddenCheck = true
-): ObjectNode | null {
+): ObjectFormNode | null {
   if (props.level === MAX_FIELD_DEPTH) {
     return null
   }
@@ -232,7 +233,7 @@ function prepareObjectInputState<T>(
   const schemaTypeGroupConfig = props.schemaType.groups || []
   const defaultGroupName = (schemaTypeGroupConfig.find((g) => g.default) || ALL_FIELDS_GROUP)?.name
 
-  const groups = [ALL_FIELDS_GROUP, ...schemaTypeGroupConfig].flatMap((group): FieldGroup[] => {
+  const groups = [ALL_FIELDS_GROUP, ...schemaTypeGroupConfig].flatMap((group): FormFieldGroup[] => {
     const groupHidden = callConditionalProperty(group.hidden, conditionalFieldContext)
     const selected = group.name === (props.fieldGroupState?.value || defaultGroupName)
     return groupHidden
@@ -341,7 +342,7 @@ function prepareObjectInputState<T>(
 
 function prepareArrayInputState<T extends unknown[]>(
   props: RawState<ArraySchemaType, T>
-): ArrayOfObjectsNode | ArrayOfPrimitivesNode | null {
+): ArrayOfObjectsFormNode | ArrayOfPrimitivesFormNode | null {
   if (props.level === MAX_FIELD_DEPTH) {
     return null
   }
@@ -486,10 +487,10 @@ function prepareArrayOfPrimitivesMember(props: {
   ]
 }
 
-export type SanityDocument = Record<string, unknown>
+export type FIXME_SanityDocument = Record<string, unknown>
 
-export function prepareFormProps<T extends SanityDocument>(
+export function prepareFormProps<T extends FIXME_SanityDocument>(
   props: RawState<ObjectSchemaType, T>
-): ObjectNode | null {
+): ObjectFormNode | null {
   return prepareObjectInputState(props)
 }

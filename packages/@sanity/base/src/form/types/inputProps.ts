@@ -12,12 +12,12 @@ import * as React from 'react'
 import {FormPatch, FormSetPatch, FormUnsetPatch, PatchEvent} from '../patch'
 
 import {
-  ArrayOfObjectsNode,
-  ArrayOfPrimitivesNode,
-  BooleanNode,
-  NumberNode,
-  ObjectNode,
-  StringNode,
+  ArrayOfObjectsFormNode,
+  ArrayOfPrimitivesFormNode,
+  BooleanFormNode,
+  NumberFormNode,
+  ObjectFormNode,
+  StringFormNode,
 } from '../store/types/nodes'
 import {FormFieldPresence} from '../../presence'
 import {
@@ -27,7 +27,7 @@ import {
   RenderArrayOfPrimitivesItemCallback,
 } from './renderCallback'
 import {InsertItemEvent, MoveItemEvent} from './event'
-import {FieldGroup} from './fieldGroups'
+import {FormFieldGroup} from './fieldGroups'
 
 // these are the props shared by *all* inputs
 export interface BaseInputProps {
@@ -43,9 +43,9 @@ export interface BaseInputProps {
 export interface ObjectInputProps<
   T = {[key in string]: unknown},
   S extends ObjectSchemaType = ObjectSchemaType
-> extends ObjectNode<T, S>,
+> extends ObjectFormNode<T, S>,
     BaseInputProps {
-  groups: FieldGroup[]
+  groups: FormFieldGroup[]
 
   // todo: consider remove PatchEvent
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
@@ -66,7 +66,7 @@ export interface ObjectInputProps<
 export interface ArrayOfObjectsInputProps<
   T extends {_key: string} = {_key: string},
   S extends ArraySchemaType = ArraySchemaType
-> extends ArrayOfObjectsNode<T[], S>,
+> extends ArrayOfObjectsFormNode<T[], S>,
     BaseInputProps {
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
   onAppendItem: (item: T) => void
@@ -90,20 +90,20 @@ export interface ArrayOfObjectsInputProps<
   renderField: RenderFieldCallback
 }
 
-type ElementType<T extends any[]> = T extends (infer K)[] ? K : unknown
+export type ArrayOfPrimitivesElementType<T extends any[]> = T extends (infer K)[] ? K : unknown
 
 export interface ArrayOfPrimitivesInputProps<
   T extends (string | boolean | number)[] = (string | boolean | number)[],
   S extends ArraySchemaType = ArraySchemaType
-> extends ArrayOfPrimitivesNode<T, S>,
+> extends ArrayOfPrimitivesFormNode<T, S>,
     BaseInputProps {
   // note: not a priority to support collapsible arrays right now
   onSetCollapsed: (collapsed: boolean) => void
 
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
 
-  onAppendItem: (item: ElementType<T>) => void
-  onPrependItem: (item: ElementType<T>) => void
+  onAppendItem: (item: ArrayOfPrimitivesElementType<T>) => void
+  onPrependItem: (item: ArrayOfPrimitivesElementType<T>) => void
   onRemoveItem: (index: number) => void
   onMoveItem: (event: MoveItemEvent) => void
   onInsert: (event: {items: T; position: 'before' | 'after'; referenceIndex: number}) => void
@@ -115,18 +115,18 @@ export interface ArrayOfPrimitivesInputProps<
 }
 
 export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
-  extends StringNode<S>,
+  extends StringFormNode<S>,
     BaseInputProps {
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
 }
 
 export interface NumberInputProps<S extends NumberSchemaType = NumberSchemaType>
-  extends NumberNode<S>,
+  extends NumberFormNode<S>,
     BaseInputProps {
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
 }
 export interface BooleanInputProps<S extends BooleanSchemaType = BooleanSchemaType>
-  extends BooleanNode<S>,
+  extends BooleanFormNode<S>,
     BaseInputProps {
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
 }

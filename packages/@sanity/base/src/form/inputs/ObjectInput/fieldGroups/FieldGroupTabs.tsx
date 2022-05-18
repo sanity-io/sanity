@@ -1,12 +1,12 @@
 import React, {useCallback} from 'react'
 import {ElementQuery, Select, TabList} from '@sanity/ui'
 import styled from 'styled-components'
-import {FieldGroup} from '../../../types'
+import {FormFieldGroup} from '../../../types'
 import {GroupOption, GroupTab} from './GroupTab'
 
 interface FieldGroupTabsProps {
   inputId?: string
-  groups: FieldGroup[]
+  groups: FormFieldGroup[]
   shouldAutoFocus?: boolean
   onClick?: (name: string) => void
   disabled?: boolean

@@ -1,12 +1,14 @@
+/* eslint-disable camelcase */
+
 import {ObjectSchemaType, Path} from '@sanity/types'
 import {useLayoutEffect, useMemo, useRef} from 'react'
 import {pathFor} from '@sanity/util/paths'
 import {useCurrentUser} from '../../datastores'
 import {StateTree} from '../types'
-import {prepareFormProps, SanityDocument} from './formState'
+import {prepareFormProps, FIXME_SanityDocument} from './formState'
 
 import {immutableReconcile} from './utils/immutableReconcile'
-import {DocumentNode} from './types/nodes'
+import {DocumentFormNode} from './types/nodes'
 
 export function useFormState<
   T extends {[key in string]: unknown} = {[key in string]: unknown},
@@ -23,14 +25,14 @@ export function useFormState<
     fieldGroupState?: StateTree<string> | undefined
     expandedFieldSets?: StateTree<boolean> | undefined
     collapsedPaths?: StateTree<boolean> | undefined
-    value: Partial<SanityDocument>
+    value: Partial<FIXME_SanityDocument>
     focusPath: Path
   }
 ) {
   // note: feel free to move these state pieces out of this hook
   const currentUser = useCurrentUser()
 
-  const prev = useRef<DocumentNode | null>(null)
+  const prev = useRef<DocumentFormNode | null>(null)
 
   useLayoutEffect(() => {
     prev.current = null

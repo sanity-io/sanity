@@ -14,6 +14,7 @@ export type {
 export * from '../components/DefaultDocument'
 
 export type {
+  AssetSourceResolver,
   AsyncComposableOption,
   ComposableOption,
   Config,
@@ -27,6 +28,11 @@ export type {
   DocumentBadgesContext,
   DocumentBadgesResolver,
   DocumentPluginOptions,
+  FormBuilderComponentResolverContext,
+  FormBuilderFieldComponentResolver,
+  FormBuilderInputComponentResolver,
+  FormBuilderItemComponentResolver,
+  FormBuilderPreviewComponentResolver,
   NewDocumentCreationContext,
   NewDocumentOptionsContext,
   NewDocumentOptionsResolver,
@@ -67,18 +73,50 @@ export type {
   WrappedOperation,
 } from '../datastores'
 
+export type {
+  ActionComponent,
+  DocumentActionComponent,
+  DocumentActionConfirmModalProps,
+  DocumentActionDescription,
+  DocumentActionDialogModalProps,
+  DocumentActionModalProps,
+  DocumentActionPopoverModalProps,
+  DocumentActionProps,
+  DocumentBadgeComponent,
+  DocumentBadgeDescription,
+  DocumentBadgeProps,
+} from '../desk'
+
 export {isDev, isProd} from '../environment'
 
 export {PatchEvent} from '../form'
 
 export type {
+  ArrayFieldProps,
+  ArrayOfObjectsFormNode,
+  ArrayOfObjectsInputProps,
+  ArrayOfObjectsMember,
+  ArrayOfPrimitivesElementType,
+  ArrayOfPrimitivesFormNode,
+  ArrayOfPrimitivesInputProps,
+  ArrayOfPrimitivesMember,
+  BaseFieldProps,
   BaseInputProps,
+  BaseItemProps,
+  BaseFormNode,
+  BooleanFieldProps,
+  BooleanFormNode,
   BooleanInputProps,
+  FieldMember,
+  FieldProps,
+  FieldSetMember,
+  FieldsetState,
   FormArrayInputFunctionsProps,
   FormBuilderArrayFunctionComponent,
   FormBuilderCustomMarkersComponent,
   FormBuilderMarkersComponent,
   FormDiffMatchPatch,
+  FormFieldGroup,
   FormInsertPatch,
   FormInsertPatchPosition,
   FormPatch,
@@ -89,13 +127,28 @@ export type {
   FormUnsetPatch,
   InputProps,
   InsertItemEvent,
+  ItemProps,
+  MoveItemEvent,
+  NumberFieldProps,
   NumberInputProps,
+  NumberFormNode,
+  ObjectFieldProps,
   ObjectInputProps,
+  ObjectItemProps,
+  ObjectMember,
+  ObjectFormNode,
   PatchArg,
   PortableTextMarker,
+  PrimitiveFormNode,
+  PrimitiveItemProps,
+  RenderArrayOfObjectsItemCallback,
+  RenderArrayOfPrimitivesItemCallback,
   RenderCustomMarkers,
   RenderFieldCallback,
+  RenderInputCallback,
+  StringFieldProps,
   StringInputProps,
+  StringFormNode,
 } from '../form'
 
 export {

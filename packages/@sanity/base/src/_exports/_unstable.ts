@@ -1,8 +1,15 @@
 export type {AuthController, SanityAuthProvider, SanityUser} from '../auth'
 
 export type {
+  AssetSourceResolver,
+  ComposableOption,
   ConfigContext,
   DocumentActionsContext,
+  FormBuilderComponentResolverContext,
+  FormBuilderFieldComponentResolver,
+  FormBuilderInputComponentResolver,
+  FormBuilderItemComponentResolver,
+  FormBuilderPreviewComponentResolver,
   NewDocumentCreationContext,
   PartialContext,
   ResolveProductionUrlContext,
@@ -63,10 +70,83 @@ export * from '../field/diff/components/ValueError'
 
 export {PatchEvent} from '../form'
 
-export * from '../form/types'
-export * from '../form/patch/types'
+export type {
+  ArrayFieldProps,
+  ArrayOfObjectsFormNode,
+  ArrayOfObjectsInputProps,
+  ArrayOfObjectsMember,
+  ArrayOfPrimitivesElementType,
+  ArrayOfPrimitivesFormNode,
+  ArrayOfPrimitivesInputProps,
+  ArrayOfPrimitivesMember,
+  BaseFieldProps,
+  BaseFormNode,
+  BaseInputProps,
+  BaseItemProps,
+  BooleanFieldProps,
+  BooleanFormNode,
+  BooleanInputProps,
+  FieldMember,
+  FieldProps,
+  FieldSetMember,
+  FieldsetState,
+  FormArrayInputFunctionsProps,
+  FormBuilderArrayFunctionComponent,
+  FormBuilderCustomMarkersComponent,
+  FormBuilderMarkersComponent,
+  FormDiffMatchPatch,
+  FormFieldGroup,
+  FormInsertPatch,
+  FormInsertPatchPosition,
+  FormPatch,
+  FormPatchJSONValue,
+  FormPatchOrigin,
+  FormSetIfMissingPatch,
+  FormSetPatch,
+  FormUnsetPatch,
+  InputProps,
+  InsertItemEvent,
+  ItemProps,
+  MoveItemEvent,
+  NumberFieldProps,
+  NumberFormNode,
+  NumberInputProps,
+  ObjectFieldProps,
+  ObjectFormNode,
+  ObjectInputProps,
+  ObjectItemProps,
+  ObjectMember,
+  PatchArg,
+  PortableTextMarker,
+  PrimitiveFormNode,
+  PrimitiveItemProps,
+  RenderArrayOfObjectsItemCallback,
+  RenderArrayOfPrimitivesItemCallback,
+  RenderCustomMarkers,
+  RenderFieldCallback,
+  RenderInputCallback,
+  StringFieldProps,
+  StringFormNode,
+  StringInputProps,
+} from '../form'
 
-export * from '../presence'
+export {
+  DocumentPreviewPresence,
+  FieldPresence,
+  FieldPresenceWithOverlay,
+  FieldPresenceWithoutOverlay,
+  OverlayDisabled,
+  PresenceOverlay,
+  PresenceScope,
+} from '../presence'
+
+export type {
+  DocumentPreviewPresenceProps,
+  FieldPresenceProps,
+  FormFieldPresence,
+  PresenceOverlayProps,
+  PresenceScopeProps,
+} from '../presence'
 
 export {SanityDefaultPreview, SanityPreview} from '../preview'
 
@@ -81,13 +161,13 @@ export type {
   Id,
   ObserveForPreviewFn,
   ObservePathsFn,
+  Path,
   PreparedSnapshot,
+  PreviewValue,
   Previewable,
   PreviewableType,
   SanityDefaultPreviewProps,
   SanityPreviewProps,
-  Path,
-  PreviewValue,
 } from '../preview'
 
 export * from '../router'

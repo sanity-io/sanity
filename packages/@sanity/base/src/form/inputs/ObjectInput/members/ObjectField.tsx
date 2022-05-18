@@ -1,7 +1,7 @@
 import React, {useCallback, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
 import {FieldMember} from '../../../store/types/members'
-import {ObjectNode} from '../../../store/types/nodes'
+import {ObjectFormNode} from '../../../store/types/nodes'
 import {
   ObjectInputProps,
   RenderArrayOfObjectsItemCallback,
@@ -21,7 +21,7 @@ import {EMPTY_ARRAY} from '../../../utils/empty'
  * @param props - Component props
  */
 export const ObjectField = function ObjectField(props: {
-  member: FieldMember<ObjectNode>
+  member: FieldMember<ObjectFormNode>
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback
   renderItem: RenderArrayOfObjectsItemCallback

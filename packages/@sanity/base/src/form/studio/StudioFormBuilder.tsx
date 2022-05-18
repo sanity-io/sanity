@@ -13,7 +13,7 @@ import {PatchChannel} from '../patch/PatchChannel'
 import {FormFieldPresence} from '../../presence'
 import {FormPatch, PatchEvent} from '../patch'
 import {ObjectMember} from '../store/types/members'
-import {ObjectNode} from '../store/types/nodes'
+import {ObjectFormNode} from '../store/types/nodes'
 import {EMPTY_ARRAY} from '../utils/empty'
 import {ObjectInput} from '../inputs/ObjectInput'
 import {StudioFormBuilderProvider} from './StudioFormBuilderProvider'
@@ -22,7 +22,7 @@ import {FormCallbacksProvider} from './contexts/FormCallbacks'
 /**
  * @alpha
  */
-export interface StudioFormBuilderProps extends ObjectNode {
+export interface StudioFormBuilderProps extends ObjectFormNode {
   id: string
   focused: boolean | undefined
   changesOpen: boolean

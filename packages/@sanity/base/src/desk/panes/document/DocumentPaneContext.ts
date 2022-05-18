@@ -5,7 +5,7 @@ import {PatchEvent} from '../../../form'
 import {DocumentActionComponent} from '../../actions'
 import {DocumentBadgeComponent} from '../../badges'
 import {PaneView, PaneMenuItem, PaneMenuItemGroup} from '../../types'
-import {DocumentNode} from '../../../form/store/types/nodes'
+import {DocumentFormNode} from '../../../form/store/types/nodes'
 import {TimelineMode} from './types'
 
 // @todo: provide a TS type for this
@@ -55,7 +55,7 @@ export interface DocumentPaneContextValue {
   validation: ValidationMarker[]
   value: Partial<SanityDocument>
   views: PaneView[]
-  formState: DocumentNode | null
+  formState: DocumentFormNode | null
 }
 
 export const DocumentPaneContext = createContext<DocumentPaneContextValue | null>(null)
