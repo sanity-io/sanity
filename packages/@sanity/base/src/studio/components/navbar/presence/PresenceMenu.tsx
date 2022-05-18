@@ -10,14 +10,14 @@ import {
   MenuItem,
   Stack,
   Text,
-  Theme,
 } from '@sanity/ui'
 import React, {useMemo} from 'react'
-import styled, {css} from 'styled-components'
+import styled from 'styled-components'
 import {UserAvatar} from '../../../../components/UserAvatar'
 import {useGlobalPresence} from '../../../../hooks'
 import {useColorScheme} from '../../../colorScheme'
 import {useWorkspace} from '../../../workspace'
+import {StatusButton} from '../../StatusButton'
 import {PresenceMenuItem} from './PresenceMenuItem'
 
 const MAX_AVATARS = 4
@@ -36,29 +36,6 @@ const FooterStack = styled(Stack)`
   bottom: 0;
 `
 
-const StatusButton = styled(Button)(({theme}: {theme: Theme}) => {
-  const {color} = theme.sanity
-
-  return css`
-    position: relative;
-
-    &[data-active='true'] {
-      &:after {
-        content: '';
-        width: 6px;
-        height: 6px;
-        background: ${color.selectable?.positive.selected.bg};
-        position: absolute;
-        top: 0;
-        right: 0;
-        border-radius: 50%;
-        transform: translate(-7px, 7px);
-        border: 1px solid var(--card-bg-color);
-      }
-    }
-  `
-})
-
 interface PresenceMenuProps {
   collapse?: boolean
 }
@@ -72,7 +49,9 @@ export function PresenceMenu(props: PresenceMenuProps) {
 
   const button = useMemo(() => {
     if (collapse) {
-      return <StatusButton icon={UsersIcon} mode="bleed" data-active={hasPresence} />
+      return (
+        <StatusButton icon={UsersIcon} mode="bleed" active={hasPresence} statusTone="positive" />
+      )
     }
 
     return (

@@ -1,0 +1,77 @@
+import React, {useCallback, useMemo, useState} from 'react'
+import {PackageIcon} from '@sanity/icons'
+import {DialogProps} from '@sanity/ui'
+import {useModuleStatus} from '../../../../module-status'
+import {StatusButton} from '../../StatusButton'
+import {isDev} from '../../../../environment'
+import {useClient} from '../../../../hooks'
+import {ChangelogDialog} from './ChangelogDialog'
+import {ChangelogAccordion} from './ChangelogAccordion'
+
+const EMPTY_ARRAY: [] = []
+
+export function ChangelogButton() {
+  const [open, setOpen] = useState<boolean>(false)
+  const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
+  const client = useClient()
+  const versionedClient = useMemo(
+    () =>
+      client.withConfig({
+        apiVersion: '1',
+      }),
+    [client]
+  )
+
+  const {value, error, isLoading} = useModuleStatus({
+    client: versionedClient,
+  })
+
+  const {changelog, currentVersion, latestVersion, isUpToDate} = value || {}
+
+  const handleOpen = useCallback(() => setOpen(true), [])
+
+  const handleClose = useCallback(() => {
+    setOpen(false)
+
+    if (buttonElement) {
+      buttonElement.focus()
+    }
+  }, [buttonElement])
+
+  const dialogProps: Omit<DialogProps, 'id'> = useMemo(
+    () => ({
+      footer: <ChangelogAccordion defaultOpen={isDev} />,
+      onClickOutside: handleClose,
+      onClose: handleClose,
+      scheme: 'light',
+    }),
+    [handleClose]
+  )
+
+  if (error || isLoading || isUpToDate) {
+    return null
+  }
+
+  return (
+    <>
+      <StatusButton
+        active
+        icon={PackageIcon}
+        mode="bleed"
+        onClick={handleOpen}
+        ref={setButtonElement}
+        selected={open}
+        statusTone="primary"
+      />
+
+      {open && (
+        <ChangelogDialog
+          changelog={changelog || EMPTY_ARRAY}
+          currentVersion={currentVersion}
+          dialogProps={dialogProps}
+          latestVersion={latestVersion}
+        />
+      )}
+    </>
+  )
+}

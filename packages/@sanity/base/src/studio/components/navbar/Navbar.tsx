@@ -20,8 +20,9 @@ import {NewDocumentButton} from './NewDocumentButton'
 import {PresenceMenu} from './presence'
 import {NavDrawer} from './NavDrawer'
 import {SearchField} from './search'
-// import {WorkspaceMenu} from './workspace'
+//  import {WorkspaceMenu} from './workspace'
 import {ToolMenu as DefaultToolMenu} from './tools/ToolMenu'
+import {ChangelogButton} from './changelog'
 
 const RootLayer = styled(Layer)`
   min-height: auto;
@@ -90,6 +91,7 @@ export function Navbar(props: NavbarProps) {
   const shouldRender = useMemo(
     () => ({
       brandingCenter: mediaIndex <= 1,
+      changelog: mediaIndex > 1,
       collapsedPresenceMenu: mediaIndex <= 1,
       loginStatus: mediaIndex > 1,
       searchFullscreen: mediaIndex <= 1,
@@ -136,6 +138,22 @@ export function Navbar(props: NavbarProps) {
     return <Text weight="bold">{title}</Text>
   })()
 
+  const brandingComponent = useMemo(
+    () => (
+      <Button
+        aria-label={title}
+        as="a"
+        href={rootLink.href}
+        mode="bleed"
+        onClick={rootLink.handleClick}
+        padding={3}
+      >
+        {rootLinkContent}
+      </Button>
+    ),
+    [rootLink.handleClick, rootLink.href, rootLinkContent, title]
+  )
+
   // The HTML elements that are part of the search view (i.e. the "close" button that is visible
   // when in fullscreen mode on narrow devices) needs to be passed to `<Autocomplete />` so it knows
   // how to make the search experience work properly for non-sighted users.
@@ -169,20 +187,7 @@ export function Navbar(props: NavbarProps) {
               </Box>
             )}
 
-            {!shouldRender.brandingCenter && (
-              <Box marginRight={1}>
-                <Button
-                  aria-label={title}
-                  as="a"
-                  href={rootLink.href}
-                  mode="bleed"
-                  onClick={rootLink.handleClick}
-                  padding={3}
-                >
-                  {rootLinkContent}
-                </Button>
-              </Box>
-            )}
+            {!shouldRender.brandingCenter && <Box marginRight={1}>{brandingComponent}</Box>}
 
             {/* @todo: fix workspace implementation  */}
             {/* {shouldRender.spaces && (
@@ -241,22 +246,15 @@ export function Navbar(props: NavbarProps) {
             )}
           </LeftFlex>
 
-          {shouldRender.brandingCenter && (
-            <Box marginX={1}>
-              <Button
-                aria-label={title}
-                as="a"
-                href={rootLink.href}
-                mode="bleed"
-                onClick={rootLink.handleClick}
-                padding={3}
-              >
-                {rootLinkContent}
-              </Button>
-            </Box>
-          )}
+          {shouldRender.brandingCenter && <Box marginX={1}>{brandingComponent}</Box>}
 
           <Flex align="center">
+            {shouldRender.changelog && (
+              <Box marginRight={1}>
+                <ChangelogButton />
+              </Box>
+            )}
+
             <Box marginRight={1}>
               <PresenceMenu collapse={shouldRender.collapsedPresenceMenu} />
             </Box>
