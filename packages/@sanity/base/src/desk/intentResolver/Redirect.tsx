@@ -1,8 +1,8 @@
 import {Box, Card, Flex, Spinner, Text} from '@sanity/ui'
 import React, {useEffect} from 'react'
-import {useRouter} from '../../../../router'
-import {RouterPanes} from '../../../types'
-import {Delay} from '../../Delay'
+import {useRouter} from '../../router'
+import {Delay} from '../components/Delay'
+import {RouterPanes} from '../types'
 
 interface RedirectProps {
   panes: RouterPanes

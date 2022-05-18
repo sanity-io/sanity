@@ -3,8 +3,8 @@ import {Box, Button, Card, Code, Container, Heading, Label, Stack, Text} from '@
 import React, {useCallback} from 'react'
 import styled from 'styled-components'
 import {SyncIcon} from '@sanity/icons'
-import {SerializeError} from '../../structureBuilder'
-import {PaneResolutionError} from '../../structureResolvers'
+import {SerializeError} from './structureBuilder'
+import {PaneResolutionError} from './structureResolvers'
 
 const PathSegment = styled.span`
   &:not(:last-child)::after {

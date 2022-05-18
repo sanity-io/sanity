@@ -1,8 +1,8 @@
 /* eslint-disable react/no-array-index-key */
 import {Box, Card, Code, Flex, Radio, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
-import {DeskToolProvider} from '../components'
 import {LOADING_PANE} from '../constants'
+import {DeskToolProvider} from '../DeskToolProvider'
 import {useResolvedPanes} from '../structureResolvers'
 import {RouterPanes} from '../types'
 

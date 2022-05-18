@@ -1,4 +1,4 @@
-import {toState, toPath} from '../router'
+import {toState, toPath} from './router'
 
 describe('toPath', () => {
   it('takes in multiple pane groups and serializes them to a panes path for the state router', () => {
