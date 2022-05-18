@@ -3,18 +3,14 @@ import {
   ArraySchemaType,
   CurrentUser,
   isArraySchemaType,
-  isBooleanSchemaType,
-  isNumberSchemaType,
   isObjectSchemaType,
-  isStringSchemaType,
   ObjectField,
   ObjectSchemaType,
   Path,
-  User,
 } from '@sanity/types'
 
 import {castArray, pick} from 'lodash'
-import {isEqual, pathFor, trimChildPath, toString} from '@sanity/util/paths'
+import {isEqual, pathFor, toString, trimChildPath} from '@sanity/util/paths'
 import {FIXME} from '../types'
 import {StateTree} from './types/state'
 import {callConditionalProperties, callConditionalProperty} from './conditional-property'
@@ -30,12 +26,22 @@ import {ArrayOfObjectsNode, ArrayOfPrimitivesNode, ObjectNode} from './types/nod
 import {FieldGroup} from './types/fieldGroup'
 import {getCollapsedWithDefaults} from './utils/getCollapsibleOptions'
 
+const ALL_FIELDS_GROUP = {
+  name: 'all-fields',
+  title: 'All fields',
+  hidden: false,
+}
+
 function isFieldEnabledByGroupFilter(
   // the groups config for the "enclosing object" type
   groupsConfig: FieldGroup[],
   field: ObjectField,
   currentGroup: FieldGroup
 ) {
+  if (currentGroup.name === ALL_FIELDS_GROUP.name) {
+    return true
+  }
+
   // if there's no group config for the object type, all fields are visible
   if (groupsConfig.length === 0) {
     return true
@@ -224,11 +230,9 @@ function prepareObjectInputState<T>(
   }
 
   const schemaTypeGroupConfig = props.schemaType.groups || []
-  const defaultGroupName = (
-    schemaTypeGroupConfig.find((g) => g.default) || schemaTypeGroupConfig[0]
-  )?.name
+  const defaultGroupName = (schemaTypeGroupConfig.find((g) => g.default) || ALL_FIELDS_GROUP)?.name
 
-  const groups = schemaTypeGroupConfig.flatMap((group): FieldGroup[] => {
+  const groups = [ALL_FIELDS_GROUP, ...schemaTypeGroupConfig].flatMap((group): FieldGroup[] => {
     const groupHidden = callConditionalProperty(group.hidden, conditionalFieldContext)
     const selected = group.name === (props.fieldGroupState?.value || defaultGroupName)
     return groupHidden
@@ -236,6 +240,7 @@ function prepareObjectInputState<T>(
       : [
           {
             name: group.name,
+            title: group.title,
             selected,
           },
         ]
@@ -317,6 +322,8 @@ function prepareObjectInputState<T>(
     ]
   })
 
+  const hasFieldGroups = schemaTypeGroupConfig.length > 0
+
   return {
     compareValue: undefined,
     value: props.value as Record<string, unknown> | undefined,
@@ -328,7 +335,7 @@ function prepareObjectInputState<T>(
     focused: isEqual(props.path, props.focusPath),
     focusPath: trimChildPath(props.path, props.focusPath),
     members,
-    groups,
+    groups: hasFieldGroups ? groups : [],
   }
 }
 
