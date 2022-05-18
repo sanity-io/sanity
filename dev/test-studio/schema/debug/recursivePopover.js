@@ -1,10 +1,10 @@
-import {TiInfinity as icon} from 'react-icons/ti'
+// import {TiInfinity as icon} from 'react-icons/ti'
 
 export default {
   name: 'recursivePopoverTest',
   type: 'document',
   title: 'Recursive Popover Test',
-  icon,
+  // icon,
   fields: [
     {
       name: 'title',

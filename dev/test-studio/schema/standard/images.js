@@ -1,6 +1,6 @@
 import {ImagesIcon} from '@sanity/icons'
-import petsAssetSource from '../../parts/assetSources/pets'
-import noopAssetSource from '../../parts/assetSources/noop'
+// import petsAssetSource from '../../parts/assetSources/pets'
+// import noopAssetSource from '../../parts/assetSources/noop'
 
 export const myImage = {
   name: 'myImage',
@@ -45,7 +45,6 @@ export default {
           options: {
             isHighlighted: true,
           },
-          validation: (Rule) => Rule.required(),
         },
         {
           name: 'detailedCaption',
@@ -89,19 +88,8 @@ export default {
           options: {isHighlighted: true},
         },
         {
-          title: '👀',
-          name: 'description_eyes',
-          type: 'string',
-          options: {isHighlighted: true},
-        },
-        {
           title: 'Not so important',
           name: 'notsoimportant',
-          type: 'string',
-        },
-        {
-          title: 'not so important but electric boogaloo',
-          name: 'notsoimportant2',
           type: 'string',
         },
       ],
@@ -184,7 +172,7 @@ export default {
       type: 'image',
       title: 'Custom asset source',
       options: {
-        sources: [petsAssetSource, noopAssetSource],
+        // sources: [petsAssetSource, noopAssetSource],
       },
     },
     {

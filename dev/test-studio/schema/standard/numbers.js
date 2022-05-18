@@ -1,10 +1,10 @@
-import {TiSortNumerically as icon} from 'react-icons/ti'
+// import {TiSortNumerically as icon} from 'react-icons/ti'
 
 export default {
   name: 'numbersTest',
   type: 'document',
   title: 'Numbers test',
-  icon,
+  // icon,
   preview: {
     select: {
       title: 'title',

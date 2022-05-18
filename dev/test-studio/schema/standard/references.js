@@ -1,11 +1,11 @@
-import icon from 'part:@sanity/base/sync-icon'
+import {SyncIcon} from '@sanity/icons'
 
 export default {
   name: 'referenceTest',
   type: 'document',
   title: 'Reference test',
   description: 'Test cases for references',
-  icon,
+  icon: SyncIcon,
   fields: [
     {name: 'title', type: 'string'},
     {

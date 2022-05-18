@@ -1,16 +1,4 @@
-# Logs
-logs
-*.log
+/dist
 
-# Coverage directory used by tools like istanbul
-coverage
-
-# Dependency directories
-node_modules
-
-# Built assets
-dist
-
-# Plugin config
-config/@sanity/default-login.json
-config/.checksums
+# Ignore generated source files
+/workshop/scopes.js

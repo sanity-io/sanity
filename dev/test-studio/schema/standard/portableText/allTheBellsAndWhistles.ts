@@ -170,7 +170,7 @@ export const ptAllTheBellsAndWhistlesType = {
               title: 'title',
               body: 'body',
             },
-            prepare(selection) {
+            prepare(selection: any) {
               return selection
             },
             component: InfoBoxPreview,

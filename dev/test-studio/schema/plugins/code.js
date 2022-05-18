@@ -1,10 +1,5 @@
 import {CodeBlockIcon} from '@sanity/icons'
 
-/* eslint-disable import/no-unassigned-import */
-import 'ace-builds/src-noconflict/mode-rust'
-import 'ace-builds/src-noconflict/mode-c_cpp'
-/* eslint-enable import/no-unassigned-import */
-
 export default {
   name: 'codeTest',
   type: 'document',
@@ -24,40 +19,6 @@ export default {
       options: {
         withFilename: true,
       },
-    },
-    {
-      name: 'customMode',
-      title: 'Custom mode',
-      description: 'Custom, unsupported modes',
-      type: 'code',
-      options: {
-        languageAlternatives: [
-          {title: 'Rust', value: 'rust', mode: 'rust'},
-          {title: 'JavaScript', value: 'javascript'},
-          {title: 'C++', value: 'cpp', mode: 'c_cpp'},
-        ],
-      },
-    },
-    {
-      name: 'codeArray',
-      title: 'Code in arrays',
-      description: 'Code in arrays',
-      type: 'array',
-      of: [
-        {
-          type: 'block',
-        },
-        {
-          type: 'code',
-          options: {
-            withFilename: true,
-            languageAlternatives: [
-              {title: 'Rust', value: 'rust', mode: 'rust'},
-              {title: 'JavaScript', value: 'javascript'},
-            ],
-          },
-        },
-      ],
     },
     {
       name: 'cssOrJsCode',

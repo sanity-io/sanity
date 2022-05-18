@@ -1,16 +1,12 @@
-import {MdExtension as icon} from 'react-icons/md'
 import CustomStringInput from './components/CustomStringInput'
 import CustomMyObjectInput from './components/CustomMyObjectInput'
 import CustomFontStringInput from './components/CustomFontStringInput'
-import AuthorReferenceInput from './components/AuthorReferenceInput'
+import {AuthorReferenceInput} from './components/AuthorReferenceInput'
 
 export default {
   name: 'customInputsTest',
   title: 'Custom input tests',
   type: 'document',
-  icon,
-  // this should make a validation warning to appear in the console
-  components: {input: 'NOT A REACT COMPONENT'},
   fields: [
     {
       name: 'author',
@@ -26,6 +22,13 @@ export default {
       type: 'string',
       placeholder: 'This is the placeholder',
       components: {input: CustomStringInput},
+    },
+    {
+      type: 'string',
+      name: 'inputComponentErrorTest',
+      title: 'Input component error test',
+      // this should make a validation warning to appear in the console
+      components: {input: 'NOT A REACT COMPONENT'},
     },
     {
       name: 'myObject',
@@ -49,10 +52,10 @@ export default {
       // this should make a validation warning to appear in the console
       components: {input: undefined},
     },
-    {
-      name: 'taskEstimate',
-      title: 'Task estimate',
-      type: 'pertEstimate',
-    },
+    // {
+    //   name: 'taskEstimate',
+    //   title: 'Task estimate',
+    //   type: 'pertEstimate',
+    // },
   ],
 }

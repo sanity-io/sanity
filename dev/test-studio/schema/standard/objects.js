@@ -1,10 +1,10 @@
-import {FaPuzzlePiece as icon} from 'react-icons/fa'
+// import {FaPuzzlePiece as icon} from 'react-icons/fa'
 
 export const myObject = {
   type: 'object',
   name: 'myObject',
   title: 'My object',
-  icon,
+  // icon,
   // readOnly: true,
   fields: [
     {
@@ -46,6 +46,7 @@ export default {
         'This is a field of (anonymous, inline) object type. Values here should never get a `_type` property',
       // readOnly: true,
       // hidden: true,
+      options: {collapsible: true},
       fields: [
         {
           name: 'field1',

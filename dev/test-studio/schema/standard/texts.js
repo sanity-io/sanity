@@ -1,10 +1,10 @@
-import {MdFormatAlignLeft as icon} from 'react-icons/md'
+// import {MdFormatAlignLeft as icon} from 'react-icons/md'
 
 export default {
   name: 'textsTest',
   type: 'document',
   title: 'Texts tests',
-  icon,
+  // icon,
   fields: [
     {
       name: 'title',

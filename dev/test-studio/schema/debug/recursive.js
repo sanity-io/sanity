@@ -1,11 +1,11 @@
-import {TiInfinityOutline as icon} from 'react-icons/ti'
+// import {TiInfinityOutline as icon} from 'react-icons/ti'
 
 export default {
   name: 'recursiveDocument',
   description: 'This is the description to the madness',
   type: 'document',
   title: 'Recursive madness',
-  icon,
+  // icon,
   fieldsets: [
     {
       name: 'recursive',

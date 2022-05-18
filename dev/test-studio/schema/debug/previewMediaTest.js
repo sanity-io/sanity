@@ -1,10 +1,10 @@
-import {MdTv as icon} from 'react-icons/md'
+// import {MdTv as icon} from 'react-icons/md'
 
 export default {
   name: 'previewMediaTest',
   type: 'document',
   title: 'Preview: Using media in preview',
-  icon,
+  // icon,
   preview: {
     select: {
       title: 'title',

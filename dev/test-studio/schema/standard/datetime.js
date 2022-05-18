@@ -1,10 +1,10 @@
-import icon from 'part:@sanity/base/calendar-icon'
+import {CalendarIcon} from '@sanity/icons'
 
 export default {
   name: 'datetimeTest',
   type: 'document',
   title: 'Datetime test',
-  icon,
+  icon: CalendarIcon,
   fields: [
     {
       name: 'title',

@@ -54,24 +54,6 @@ export default {
       readOnly: true,
     },
     {
-      name: 'readOnlyWithFields',
-      title: 'A read only file with fields',
-      type: 'file',
-      readOnly: true,
-      fields: [
-        {
-          title: 'Description',
-          name: 'description',
-          type: 'string',
-        },
-        {
-          title: 'Not so important',
-          name: 'notsoimportant',
-          type: 'string',
-        },
-      ],
-    },
-    {
       name: 'fileWithoutOriginalFilename',
       title: 'File without original filename',
       type: 'file',

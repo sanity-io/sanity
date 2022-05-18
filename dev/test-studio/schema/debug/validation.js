@@ -1,10 +1,10 @@
-import sanityClient from 'part:@sanity/base/client'
+// import sanityClient from 'part:@sanity/base/client'
 import {points, featureCollection} from '@turf/helpers'
 import pointsWithinPolygon from '@turf/points-within-polygon'
-import norway from '../../data/norway'
+import norway from './data/norway'
 import {CustomObjectSelectInput} from './components/CustomObjectSelectInput'
 
-const client = sanityClient.withConfig({apiVersion: '1'})
+// const client = sanityClient.withConfig({apiVersion: '1'})
 
 export const validationArraySuperType = {
   name: 'imageArray',
@@ -204,9 +204,11 @@ export default {
                 return resolve(true)
               }
 
-              return client.fetch('*[_id == $id][0].coverImage', {id: value._ref}).then((cover) => {
-                resolve(cover ? true : 'Referenced book must have a cover image')
-              })
+              return Promise.resolve(true)
+
+              // return client.fetch('*[_id == $id][0].coverImage', {id: value._ref}).then((cover) => {
+              //   resolve(cover ? true : 'Referenced book must have a cover image')
+              // })
             })
         ),
     },

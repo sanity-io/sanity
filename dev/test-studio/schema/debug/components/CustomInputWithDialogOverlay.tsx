@@ -1,18 +1,23 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
 import React from 'react'
-import {PresenceOverlay, FieldPresence} from '@sanity/base/presence'
-import Dialog from 'part:@sanity/components/dialogs/default'
-import Button from 'part:@sanity/components/buttons/default'
-import {setIfMissing} from '@sanity/form-builder'
-import {FormBuilderInput} from 'part:@sanity/form-builder'
+import {PresenceOverlay, FieldPresence, DocumentPresence} from '@sanity/base/_unstable'
+import {Button, Dialog} from '@sanity/ui'
+import {setIfMissing} from '@sanity/base/form'
+import {ObjectSchemaType, Path} from '@sanity/types'
 
 export const CustomInputWithDialogOverlay = React.forwardRef(function CustomInputWithDialogOverlay(
-  props: any,
+  props: {
+    focusPath?: Path
+    level?: number
+    onBlur: () => void
+    onChange: (patches: any) => void
+    onFocus: (pathOrEvent?: Path | React.FocusEvent) => void
+    presence: DocumentPresence[]
+    type: ObjectSchemaType
+    value?: any
+  },
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
-  const {value, type, focusPath, onFocus, level, onChange, onBlur, presence} = props
+  const {focusPath, level = 0, onBlur, onChange, onFocus, presence, type, value} = props
 
   const handleFieldChange = React.useCallback(
     (field, fieldPatchEvent) => {
@@ -29,23 +34,26 @@ export const CustomInputWithDialogOverlay = React.forwardRef(function CustomInpu
   return (
     <>
       {isOpen && (
-        <Dialog onClose={() => setIsOpen(false)} padding="medium">
+        <Dialog id="todo" onClose={() => setIsOpen(false)}>
           <PresenceOverlay>
             <div style={{padding: 10}}>
               {type.fields.map((field, i) => (
                 // Delegate to the generic FormBuilderInput. It will resolve and insert the actual input component
                 // for the given field type
-                <FormBuilderInput
-                  level={level + 1}
-                  key={field.name}
-                  type={field.type}
-                  value={value && value[field.name]}
-                  onChange={(patchEvent) => handleFieldChange(field, patchEvent)}
-                  path={[field.name]}
-                  focusPath={focusPath}
-                  onFocus={onFocus}
-                  onBlur={onBlur}
-                />
+                <>TODO</>
+                // <FormBuilderInput
+                //   level={level + 1}
+                //   key={field.name}
+                //   type={field.type}
+                //   value={value && value[field.name]}
+                //   onChange={(patchEvent) => handleFieldChange(field, patchEvent)}
+                //   path={[field.name]}
+                //   focusPath={focusPath || []}
+                //   onFocus={onFocus}
+                //   onBlur={onBlur}
+                //   presence={[]}
+                //   validation={[]}
+                // />
               ))}
             </div>
           </PresenceOverlay>
@@ -55,7 +63,7 @@ export const CustomInputWithDialogOverlay = React.forwardRef(function CustomInpu
         <div>{type.title}</div>
         <em>{type.description}</em>
         <div>
-          <Button onClick={() => setIsOpen(true)}>Click to edit</Button>
+          <Button onClick={() => setIsOpen(true)} text="Click to edit" />
           {!isOpen && <FieldPresence maxAvatars={3} presence={presence} />}
           {/* Show field presence here! */}
         </div>

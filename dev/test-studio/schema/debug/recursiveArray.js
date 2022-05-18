@@ -1,10 +1,10 @@
-import {TiInfinity as icon} from 'react-icons/ti'
+// import {TiInfinity as icon} from 'react-icons/ti'
 
 export default {
   name: 'recursiveArraysTest',
   type: 'document',
   title: 'Recursive Arrays test',
-  icon,
+  // icon,
   fields: [
     {
       name: 'title',
