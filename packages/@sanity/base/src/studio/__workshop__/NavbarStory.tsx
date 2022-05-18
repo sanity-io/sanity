@@ -6,27 +6,40 @@ import {
   IceCreamIcon,
   MasterDetailIcon,
 } from '@sanity/icons'
+import {Card} from '@sanity/ui'
 import {useBoolean, useString} from '@sanity/ui-workshop'
-import React, {useMemo} from 'react'
+import React, {useMemo, useState} from 'react'
+import styled from 'styled-components'
 import {createConfig, Tool} from '../../config'
 import {isNonNullable} from '../../util/isNonNullable'
 import {isTruthy} from '../../util/isTruthy'
 import {Navbar} from '../components/navbar'
 import {StudioProvider} from '../StudioProvider'
 
+const SearchFullscreenPortalCard = styled(Card)`
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  flex: 1;
+`
+
 const ExampleTool = () => <div>Tool</div>
+
+const noop = () => null
 
 // const mockClient = createMockClient()
 
 export default function NavbarStory() {
   const projectName = useString('Project name', undefined)
+  const [portalEl, setPortalEl] = useState<HTMLDivElement | null>(null)
 
   // Create configuration
   const tools = useTools()
   const config = useMemo(
     () =>
       createConfig({
-        projectId: 'myProject',
+        // The same id as in the partless-studio sanity.config.ts
+        projectId: 'ppsg7ml5',
         dataset: 'production',
         name: 'default',
         title: projectName,
@@ -37,7 +50,8 @@ export default function NavbarStory() {
 
   return (
     <StudioProvider config={config}>
-      <Navbar />
+      <Navbar onSearchOpenChange={noop} fullscreenSearchPortalEl={portalEl} />
+      <SearchFullscreenPortalCard ref={setPortalEl} />
     </StudioProvider>
   )
 }
