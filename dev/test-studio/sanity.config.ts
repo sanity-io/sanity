@@ -16,7 +16,7 @@ import {workshopTool} from './workshop'
 
 export default createConfig({
   name: 'default',
-  title: 'Partless Studio',
+  title: 'Test Studio',
   logo: Branding,
   projectId: 'ppsg7ml5',
   dataset: 'test',
