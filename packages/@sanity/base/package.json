@@ -75,6 +75,7 @@
   "homepage": "https://www.sanity.io/",
   "dependencies": {
     "@juggle/resize-observer": "^3.3.1",
+    "@portabletext/react": "^1.0.6",
     "@portabletext/types": "^1.0.3",
     "@reach/auto-id": "^0.13.2",
     "@rexxars/react-json-inspector": "^7.1.1",
