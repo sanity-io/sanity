@@ -38,7 +38,7 @@ export default function NavbarStory() {
   const config = useMemo(
     () =>
       createConfig({
-        // The same id as in the partless-studio sanity.config.ts
+        // The same id as in the test-studio sanity.config.ts
         projectId: 'ppsg7ml5',
         dataset: 'production',
         name: 'default',
