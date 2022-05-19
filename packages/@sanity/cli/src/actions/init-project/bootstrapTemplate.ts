@@ -99,12 +99,14 @@ export async function bootstrapTemplate(
       uri: `/projects/${projectId}`,
       body: {metadata: {initialTemplate: `cli-${templateName}`}},
     })
-  } catch (err) {
-    if (err.statusCode === 401) {
-      output.warn(`\n${chalk.yellow('⚠')} Unauthorized to update metadata for this project`)
-    } else {
-      output.warn(`\n${chalk.red('⚠')} ${err.message}`)
+  } catch (err: unknown) {
+    // Non-critical that we update this metadata, and user does not need to be aware
+    let message = typeof err === 'string' ? err : '<unknown error>'
+    if (err instanceof Error) {
+      message = err.message
     }
+
+    debug('Failed to update initial template metadata for project: %s', message)
   }
 
   // Finish up by providing init process with template-specific info
