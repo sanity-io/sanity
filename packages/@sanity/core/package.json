@@ -38,7 +38,7 @@
     "@sanity/util": "2.29.5",
     "@sanity/uuid": "^3.0.1",
     "chalk": "^4.1.2",
-    "chokidar": "^3.0.0",
+    "chokidar": "^3.5.3",
     "configstore": "^5.0.1",
     "debug": "^3.2.7",
     "deep-sort-object": "^1.0.1",
@@ -65,7 +65,7 @@
     "yargs": "^17.3.0"
   },
   "devDependencies": {
-    "@sanity/cli": "2.29.3",
+    "@sanity/cli": "2.30.0",
     "@sanity/client": "^3.2.0",
     "@types/fs-extra": "^7.0.0",
     "@types/log-symbols": "^2.0.0",

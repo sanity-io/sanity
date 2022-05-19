@@ -76,10 +76,10 @@
     "watch": "../../bin/pkg-utils transpile --tsconfig tsconfig.lib.json --watch"
   },
   "dependencies": {
-    "@sanity/base": "2.29.3",
-    "@sanity/cli": "2.29.3",
-    "@sanity/core": "2.29.3",
-    "@sanity/types": "2.29.3"
+    "@sanity/base": "2.30.0",
+    "@sanity/cli": "2.30.0",
+    "@sanity/core": "2.30.0",
+    "@sanity/types": "2.29.5"
   },
   "peerDependencies": {
     "react": "^17.0.0",

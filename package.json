@@ -1,7 +1,7 @@
 {
   "private": true,
   "isSanityMonorepo": true,
-  "name": "sanity",
+  "name": "sanity-root",
   "bin": {
     "sanity-pkg-bundle": "./bin/pkg-utils bundle",
     "sanity-pkg-transpile": "./bin/pkg-utils transpile"

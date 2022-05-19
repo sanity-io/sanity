@@ -49,7 +49,7 @@
     "@rexxars/gitconfiglocal": "^3.0.1",
     "@sanity/client": "^3.2.0",
     "@sanity/generate-help-url": "^3.0.0",
-    "@sanity/types": "2.27.0",
+    "@sanity/types": "2.29.5",
     "@sanity/util": "2.29.5",
     "@types/configstore": "^5.0.1",
     "@types/decompress": "^4.2.4",
