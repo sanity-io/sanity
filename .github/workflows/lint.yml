@@ -51,7 +51,7 @@ jobs:
 
           for FILE_NAME in $CHANGED_JS_FILES
           do
-            yarn eslint -- $FILE_NAME
+            yarn eslint $FILE_NAME
           done
 
       # - name: Notify Slack about build failure
