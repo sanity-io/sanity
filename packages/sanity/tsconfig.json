@@ -1,12 +1,13 @@
 {
   "extends": "../../tsconfig.settings",
-  "include": ["./src/"],
+  "include": ["./src/", "./package.json"],
   "compilerOptions": {
     "composite": true,
     "declarationDir": "./lib/dts/",
     "rootDir": "./",
     "outDir": "./lib/dts/",
     "jsx": "react",
+    "resolveJsonModule": true,
     "paths": {
       "@self/*": ["./src/*"]
     }
