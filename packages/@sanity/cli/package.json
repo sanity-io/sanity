@@ -44,7 +44,6 @@
   "devDependencies": {
     "@babel/parser": "^7.17.7",
     "@babel/preset-env": "^7.16.4",
-    "@babel/preset-typescript": "^7.16.0",
     "@babel/traverse": "^7.17.3",
     "@rexxars/gitconfiglocal": "^3.0.1",
     "@sanity/client": "^3.2.0",

@@ -4,6 +4,7 @@
     "@sanity/base",
     "@sanity/color",
     "@sanity/desk-tool",
+    "@sanity/eslint-config-studio",
     "@sanity/form-builder",
     "@sanity/icons",
     "@sanity/types",

@@ -10,7 +10,6 @@
     "start": "http-server -a localhost -c-0 -p 3337 -s -P http://localhost:3337/index.html? dist"
   },
   "dependencies": {
-    "@sanity/ui": "^0.37.9",
     "react": "17.0.2",
     "sanity": "^2.29.3",
     "styled-components": "^5.2.0"

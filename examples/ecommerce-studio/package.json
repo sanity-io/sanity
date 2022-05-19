@@ -24,7 +24,6 @@
     "@sanity/core": "2.30.0",
     "@sanity/default-layout": "2.30.0",
     "@sanity/default-login": "2.30.0",
-    "@sanity/desk-tool": "2.30.0",
     "@sanity/form-builder": "2.30.0",
     "@sanity/ui": "^0.37.9",
     "prop-types": "^15.6.0",
