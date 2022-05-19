@@ -25,6 +25,7 @@ import {reconfigureV2Project} from './reconfigureV2Project'
 import {validateEmptyPath, absolutify} from './fsUtils'
 import {promptForAclMode, promptForDefaultConfig, promptForTypeScript} from './prompts'
 import {GenerateConfigOptions} from './createStudioConfig'
+import {tryGitInit} from './git'
 
 // eslint-disable-next-line no-process-env
 const isCI = process.env.CI
@@ -70,6 +71,8 @@ export default async function initSanity(
   const intendedPlan = cliFlags['project-plan']
   const intendedCoupon = cliFlags.coupon
   const reconfigure = cliFlags.reconfigure
+  const commitMessage = cliFlags.git
+  const useGit = typeof commitMessage === 'undefined' ? true : Boolean(commitMessage)
 
   let defaultConfig = cliFlags['dataset-default']
   let showDefaultConfigPrompt = !defaultConfig
@@ -199,6 +202,11 @@ export default async function initSanity(
 
   // Bootstrap Sanity, creating required project files, manifests etc
   await bootstrapTemplate(templateOptions, context)
+
+  // Try initializing a git repository
+  if (useGit) {
+    tryGitInit(outputPath, typeof commitMessage === 'string' ? commitMessage : undefined)
+  }
 
   // Now for the slow part... installing dependencies
   try {

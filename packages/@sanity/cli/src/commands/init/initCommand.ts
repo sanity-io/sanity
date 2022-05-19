@@ -50,6 +50,7 @@ export interface InitFlags {
   template?: string
   visibility?: string
   typescript?: boolean
+  git?: boolean | string
 
   'output-path'?: string
   'project-plan'?: string
