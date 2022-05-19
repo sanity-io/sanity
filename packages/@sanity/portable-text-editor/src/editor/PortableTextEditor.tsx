@@ -203,12 +203,12 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
     this.readOnly = props.readOnly || false
     this.state = state
     this.slateInstance = withPortableText(createEditor(), {
-      portableTextFeatures: this.portableTextFeatures,
-      keyGenerator: this.keyGenerator,
       change$: this.change$,
-      maxBlocks: this.maxBlocks,
       incomingPatches$: this.incomingPatches$,
-      readOnly: !!this.props.readOnly,
+      keyGenerator: this.keyGenerator,
+      maxBlocks: this.maxBlocks,
+      portableTextFeatures: this.portableTextFeatures,
+      readOnly: this.readOnly,
     })
   }
 
@@ -218,7 +218,17 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps,
   }
 
   componentDidUpdate(prevProps: PortableTextEditorProps) {
-    this.readOnly = this.props.readOnly || false
+    if (this.props.readOnly !== prevProps.readOnly) {
+      this.readOnly = this.props.readOnly || false
+      this.slateInstance.readOnly = this.readOnly
+    }
+    if (this.props.maxBlocks !== prevProps.maxBlocks) {
+      this.maxBlocks =
+        typeof this.props.maxBlocks === 'undefined'
+          ? undefined
+          : parseInt(this.props.maxBlocks.toString(), 10) || undefined
+      this.slateInstance.maxBlocks = this.maxBlocks
+    }
     // Validate again if value length has changed
     if (this.props.value && (prevProps.value || []).length !== this.props.value.length) {
       debug('Validating')
