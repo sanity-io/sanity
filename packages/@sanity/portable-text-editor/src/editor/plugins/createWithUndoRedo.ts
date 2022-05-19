@@ -56,6 +56,10 @@ export function createWithUndoRedo(incomingPatches$?: PatchObservable) {
     const {apply} = editor
     // Apply function for merging and saving local history inspired from 'slate-history' by Ian Storm Taylor
     editor.apply = (op: Operation) => {
+      if (editor.readOnly) {
+        apply(op)
+        return
+      }
       const {operations, history} = editor
       const {undos} = history
       const step = undos[undos.length - 1]
@@ -106,6 +110,9 @@ export function createWithUndoRedo(incomingPatches$?: PatchObservable) {
     }
 
     editor.undo = () => {
+      if (editor.readOnly) {
+        return
+      }
       const {undos} = editor.history
       if (undos.length > 0) {
         const step = undos[undos.length - 1]
@@ -144,6 +151,9 @@ export function createWithUndoRedo(incomingPatches$?: PatchObservable) {
     }
 
     editor.redo = () => {
+      if (editor.readOnly) {
+        return
+      }
       const {redos} = editor.history
       if (redos.length > 0) {
         const step = redos[redos.length - 1]

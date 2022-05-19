@@ -80,6 +80,8 @@ export interface PortableTextSlateEditor extends ReactEditor {
   isListBlock: (value: unknown) => value is ListItem
   isSelecting: boolean
   isThrottling: boolean
+  readOnly: boolean
+  maxBlocks: number | undefined
 
   /**
    * Increments selected list items levels, or decrements them if @reverse is true.

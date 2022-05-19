@@ -127,6 +127,9 @@ export function createWithPatches(
     const {apply} = editor
 
     editor.apply = (operation: Operation): void | Editor => {
+      if (editor.readOnly) {
+        editor.apply(operation)
+      }
       let patches: Patch[] = []
 
       // The previous value is needed to figure out the _key of deleted nodes. The editor.children would no
