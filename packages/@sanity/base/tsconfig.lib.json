@@ -20,6 +20,7 @@
     {"path": "../mutator/tsconfig.lib.json"},
     {"path": "../schema"},
     {"path": "../types"},
+    {"path": "../transaction-collator"},
     {"path": "../util/tsconfig.lib.json"},
     {"path": "../validation/tsconfig.lib.json"}
   ]

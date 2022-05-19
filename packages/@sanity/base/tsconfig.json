@@ -18,6 +18,7 @@
     {"path": "../imagetool"},
     {"path": "../schema"},
     {"path": "../types"},
+    {"path": "../transaction-collator"},
     {"path": "../util/tsconfig.lib.json"},
     {"path": "../validation/tsconfig.lib.json"}
   ]
